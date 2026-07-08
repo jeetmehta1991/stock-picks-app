@@ -458,14 +458,15 @@ class BacktestEngine:
             return _date.fromisoformat(str(v).split(" ")[0])
 
         def _parse_literal(v, default):
+            # B1260 (Council 303, S6-B1250-ENG1 owner-approved): delegate to
+            # the signals_serde writer-reader contract. Pre-B1260 this used
+            # bare ast.literal_eval, which parses NEITHER the checkpoint's
+            # numpy reprs NOR writer.py's JSON booleans -> silent {} default
+            # wiped signals_at_entry on every resume (B1250 ENG-1 VERIFIED).
             if v is None or _is_nan(v):
                 return default
-            if isinstance(v, (dict, list)):
-                return v
-            try:
-                return ast.literal_eval(str(v))
-            except (ValueError, SyntaxError):
-                return default
+            from backtest.util.signals_serde import loads_signals
+            return loads_signals(v, default)
 
         def _parse_bool(v):
             if isinstance(v, bool):
@@ -880,8 +881,20 @@ class BacktestEngine:
                     import pandas as _pd
                     checkpoint_path = self.output_dir / "trade_log_checkpoint.csv"
                     checkpoint_tmp = self.output_dir / "trade_log_checkpoint.csv.tmp"
-                    _pd.DataFrame([vars(t) for t in self.closed_trades]).to_csv(
-                        checkpoint_tmp, index=False)
+                    # B1260 (Council 303, S6-B1250-ENG1): serialize dict/list
+                    # fields via the signals_serde contract. Pre-B1260 the
+                    # raw vars(t) dicts hit to_csv as str(dict) with numpy
+                    # reprs + nan -> unparseable by the resume reader ->
+                    # every resume wiped signals_at_entry (B1250 ENG-1).
+                    from backtest.util.signals_serde import dumps_signals
+                    _rows = []
+                    for t in self.closed_trades:
+                        _r = dict(vars(t))
+                        for _k, _v in _r.items():
+                            if isinstance(_v, (dict, list)):
+                                _r[_k] = dumps_signals(_v)
+                        _rows.append(_r)
+                    _pd.DataFrame(_rows).to_csv(checkpoint_tmp, index=False)
                     _os.replace(checkpoint_tmp, checkpoint_path)
                     logger.debug("Checkpoint: %d trades -> %s", len(self.closed_trades), checkpoint_path)
                     _csv_written = True  # B1089 atomic-pair tracking

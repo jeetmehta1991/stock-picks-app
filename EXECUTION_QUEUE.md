@@ -5540,6 +5540,24 @@ Owner: "Commit batch A artifacts." Cleared the Gate B dirty-tree block: output_b
 
 Gate invocation in other sessions documented in reply: git gates auto-fire via pre-commit hook (fresh clones run scripts/install_git_hooks.bat|.sh once); Stop hook auto-loads from committed .claude/settings.json; stamp written by any full-pyramid run; manual runs: `python scripts/preflight.py --staged` / `python scripts/verify_turn_compliance.py`.
 
+### B1259 (2026-07-08 Council 303): OWNER DECISIONS — R5 PATH LOCKED
+
+Owner directives 2026-07-08 (verbatim decisions on B1258 questions):
+- **A: APPROVED** — ENG-1/2/3 fixes ship now (B1260-B1261).
+- **B: SCOPE FREEZE APPROVED, conditional** — a DATA-READINESS AUDIT runs BEFORE the scope is locked (one upfront audit replacing the serial-discovery pattern; ticket S6-B1259-DATA-READINESS-AUDIT, next major deliverable after ENG fixes).
+- **C: APPROVED** — "R5 after entire execution queue resolves" gate (owner directive 2026-06-16) is SUPERSEDED by "R5 after pre-R5 blockers only". Queue gates fix quality, not run existence.
+- **D: 1B FIRST** — agent overlay precedes Stage 3 paper trading per original plan sequence (no rules-only shortcut).
+- **R5 = Phase 2-linked, PHASED EXECUTION MANDATORY**: dry runs -> small batches -> full universe. No jump to full scale (CHECKLIST #13 pattern; explicit lesson from the 13-attempt R5 history). Full-universe launch remains owner-gated.
+
+| New ticket | Content | P |
+|---|---|---|
+| S6-B1259-DATA-READINESS-AUDIT | ONE upfront audit of every data source vs R5 requirements (coverage %, temporal span, NULL columns, producer-consumable) before scope lock — replaces serial gap discovery (news/shares_outstanding/rebalance/triangle pattern) | **P0 — before scope lock** |
+| S6-B1259-R5-PHASE-LADDER | R5 execution plan: dry run (3-5 tickers local) -> small batch (25-50 tickers) -> mid batch (150, Batch-A-scale revalidation) -> full universe (owner gate at each rung; resume checkpoints armed per rung) | **P0 — structure for step 4** |
+
+### B1260 (2026-07-08 Council 303 cont.): ENG-1 SHIPPED — signals_at_entry round-trip fixed
+
+S6-B1250-ENG1-SIGNALS-ROUNDTRIP: SHIPPED. New `backtest/util/signals_serde.py` writer-reader contract: `dumps_signals` (numpy->native, nan/inf->None, canonical JSON) + `loads_signals` (tolerant: JSON -> literal_eval -> legacy-numpy-repr regex rescue -> default + LOADS_FAILED_COUNT observability counter). Wired at all 3 sites: resume reader `_parse_literal` (backtest.py), checkpoint writer (backtest.py, dict/list fields serialized pre-to_csv), final-CSV writer (writer.py, replaces json.dumps(default=str)). Legacy pre-B1260 checkpoint files RESCUED (numpy-repr regex), not just new format. 3 pin tests (test_b1260_*) incl. the exact CSV round-trip that wiped Batch A. Pyramid green pre-commit.
+
 ### B1258 (2026-07-08 Council 302): GATES DOCUMENTED IN SKILL + STAGE-3 PATH ASSESSMENT
 
 Owner: (1) "Add these gates to the skill" - SKILL.md gains MECHANICAL ENFORCEMENT LAYER section (5-gate table + fresh-clone install note + manual dry-run commands + judgment-surface boundary). (2) Skill invocation in other sessions answered: auto-applies via committed skill description + CLAUDE.md Critical Rule + memory; explicit = /execution-discipline; travels with repo. (3) Stage-3 path + retrospective delivered in-chat (scope-freeze + pre-R5-blockers-only recommendation; awaiting owner decision on replacing the entire-queue-before-R5 gate with blockers-only gate).

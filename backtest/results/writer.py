@@ -91,8 +91,14 @@ def write_all_outputs(
                 # df_trades was empty and this branch was skipped.)
                 sample = df_csv[col].dropna().head(5)
                 if any(isinstance(v, (dict, list)) for v in sample):
+                    # B1260 (Council 303, S6-B1250-ENG1): use the signals_serde
+                    # contract (numpy-sanitized canonical JSON) instead of
+                    # json.dumps(default=str), so the resume reader's
+                    # loads_signals round-trips losslessly (numbers stay
+                    # numbers, not default=str strings).
+                    from backtest.util.signals_serde import dumps_signals
                     df_csv[col] = df_csv[col].apply(
-                        lambda v: json.dumps(v, default=str) if isinstance(v, (dict, list)) else v
+                        lambda v: dumps_signals(v) if isinstance(v, (dict, list)) else v
                     )
         df_csv.to_csv(output_dir / "trade_log.csv", index=False)
         logger.info("Wrote trade_log.csv (%d trades)", len(df_trades))

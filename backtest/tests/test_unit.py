@@ -12602,3 +12602,74 @@ def test_b1255_turn_gate_verifier(tmp_path, monkeypatch):
     assert not (tmp_path / ".stop_exempt").exists(), "sentinel must be consumed"
     assert (tmp_path / ".queue_exempt_log").exists(), "exemption must be logged"
     assert tg.main() == 2, "sentinel is one-shot; next call blocks again"
+
+
+# ---------------------------------------------------------------------------
+# B1260 (Council 303, S6-B1250-ENG1 owner-approved 2026-07-08): pin tests
+# for the signals_at_entry writer-reader contract (PIVOT #37 class).
+# The exact failure being pinned: checkpoint str(dict) with numpy reprs +
+# nan, and writer.py JSON booleans, both unparseable by ast.literal_eval
+# -> silent {} default wiped signals on every resume (B1250 ENG-1).
+# ---------------------------------------------------------------------------
+
+def test_b1260_eng1_roundtrip_numpy_nan_nested():
+    """Canonical round-trip: numpy scalars + nan + nested list survive
+    dumps -> loads with keys and values intact."""
+    import numpy as np
+    from backtest.util.signals_serde import dumps_signals, loads_signals
+    original = {
+        "rsi_14": np.float64(45.2),
+        "break_52w_high": np.True_,
+        "atr": float("nan"),
+        "vol_spike_17x": False,
+        "count": np.int64(7),
+        "nested": {"a": [1, np.float64(2.5), None]},
+    }
+    s = dumps_signals(original)
+    back = loads_signals(s, {})
+    assert set(back.keys()) == set(original.keys()), "no key loss on round-trip"
+    assert back["rsi_14"] == 45.2
+    assert back["break_52w_high"] is True
+    assert back["atr"] is None, "nan coerces to None, not parse failure"
+    assert back["count"] == 7
+    assert back["nested"]["a"][1] == 2.5
+
+
+def test_b1260_eng1_legacy_formats_rescued():
+    """Legacy pre-B1260 formats parse instead of wiping to default:
+    (a) Python repr with numpy scalars + bare nan (old checkpoint format);
+    (b) JSON with lowercase booleans (old writer.py format)."""
+    from backtest.util.signals_serde import loads_signals
+    legacy_checkpoint = ("{'rsi_14': np.float64(45.2), 'flag': np.True_, "
+                         "'atr': nan, 'x': 1.5}")
+    back = loads_signals(legacy_checkpoint, {})
+    assert back != {}, "legacy checkpoint repr must be rescued, not wiped"
+    assert back["rsi_14"] == 45.2 and back["flag"] is True and back["x"] == 1.5
+    legacy_writer = '{"vol_spike_17x": false, "close_above_open": true, "atr": 2.31}'
+    back2 = loads_signals(legacy_writer, {})
+    assert back2 != {}, "legacy JSON-boolean format must parse"
+    assert back2["close_above_open"] is True and back2["atr"] == 2.31
+    assert loads_signals("total garbage )( not parseable", {"d": 1}) == {"d": 1}
+
+
+def test_b1260_eng1_checkpoint_resume_roundtrip_via_csv(tmp_path):
+    """End-to-end pin: a signals dict written the way the CHECKPOINT writes
+    (dumps_signals -> DataFrame -> to_csv) and read the way RESUME reads
+    (read_csv -> loads_signals) preserves all keys. This is the exact
+    round-trip that wiped Batch A."""
+    import numpy as np
+    import pandas as pd
+    from backtest.util.signals_serde import dumps_signals, loads_signals
+    signals = {"rsi_14": np.float64(45.2), "break_52w_high": np.True_,
+               "atr": float("nan"), "vix_band": "mid"}
+    row = {"ticker": "AAPL", "signals_at_entry": dumps_signals(signals),
+           "context_bullets": dumps_signals(["bullet one", "bullet two"])}
+    p = tmp_path / "trade_log_checkpoint.csv"
+    pd.DataFrame([row]).to_csv(p, index=False)
+    read = pd.read_csv(p)
+    back = loads_signals(read["signals_at_entry"].iloc[0], {})
+    assert set(back.keys()) == set(signals.keys()), (
+        "checkpoint->resume round-trip must preserve every signal key "
+        "(B1250 ENG-1: pre-fix this returned {})")
+    bullets = loads_signals(read["context_bullets"].iloc[0], [])
+    assert bullets == ["bullet one", "bullet two"]
