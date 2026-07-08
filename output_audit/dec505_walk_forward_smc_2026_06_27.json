@@ -8,7 +8,7 @@
   "smoke": false,
   "fold_count": 4,
   "warmup_window": "2021-05-05 -> 2022-05-05",
-  "generated_at": "2026-06-27T16:49:23.667254Z",
+  "generated_at": "2026-06-27T16:53:02.361347Z",
   "total_trades": 856,
   "strategies": {
     "smc_bos_continuation": {

@@ -5532,4 +5532,10 @@ S6-B1253-GATE-B-STOP-HOOK: SHIPPED. scripts/verify_turn_compliance.py + .claude/
 
 FIRST LIVE CATCH (Gate B working before it was even committed): surfaced pre-existing uncommitted tracked changes = doc-sweep debt predating this turn, INCLUDING output_batch_A_150/engine_state.json carrying Batch A COMPLETION state (day 1043 / 8433 trades / status complete, never committed) + settings.local.json + archive doc edit + dec505 json + deleted b1019_a5_preflight_report.json + data/cache/info_cache.json (+1110 lines). OWNER DISPOSITION NEEDED: commit these run artifacts or discard - not auto-dispositioned per before-deleting-look rule.
 
-Compliance-gate program status: 5/5 gates SHIPPED (S6-B1253 all tickets closed). Note: Stop hook activates for NEW sessions reading settings.json.
+Compliance-gate program status: 5/5 gates SHIPPED (S6-B1253 all tickets closed). Note: Stop hook activates for NEW sessions reading settings.json. CORRECTION same-day: hook fired in the CURRENT session too (first live block 2026-07-08); .stop_exempt sentinel exercised once (logged).
+
+### B1256 (2026-07-08 Council 301): BATCH A ARTIFACTS COMMITTED (owner directive)
+
+Owner: "Commit batch A artifacts." Cleared the Gate B dirty-tree block: output_batch_A_150/engine_state.json (Batch A COMPLETION state: day 1043 / 8433 trades / status complete), data/cache/info_cache.json (+1110 lines run-accumulated cache), output_audit/dec505_walk_forward_smc json refresh, output_audit/b1019_a5_preflight_report.json deletion, archive PHASE_1A_BETA_PRE_RUN_ALIGNMENT_AUDIT.md (tooling-regenerated live-facts table: 219 strategies / 5694 cells / 41 overrides), .claude/settings.local.json (permissions churn; included to clear tree). No code changes; C6 not triggered (no .py staged).
+
+Gate invocation in other sessions documented in reply: git gates auto-fire via pre-commit hook (fresh clones run scripts/install_git_hooks.bat|.sh once); Stop hook auto-loads from committed .claude/settings.json; stamp written by any full-pyramid run; manual runs: `python scripts/preflight.py --staged` / `python scripts/verify_turn_compliance.py`.

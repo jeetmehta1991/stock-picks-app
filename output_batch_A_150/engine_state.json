@@ -1,13 +1,13 @@
 {
-  "simulated_day": 719,
-  "cells_completed": 5081,
-  "status": "resume_pending",
-  "sim_date": "2025-02-05",
-  "sim_day_index": 719,
-  "tickers_processed": 150,
-  "trades_so_far": 5081,
+  "simulated_day": 1043,
+  "cells_completed": 8433,
+  "status": "complete",
+  "sim_date": "2026-05-05",
+  "sim_day_index": 1043,
+  "tickers_processed": 0,
+  "trades_so_far": 8433,
   "open_trades": 0,
-  "timestamp": "2026-07-02T08:01:00Z",
-  "pid": 0,
-  "recovery_note": "B1076 manual recovery 2026-07-02: simulated_day corrected 704 -> 719 to match trade_log_checkpoint.csv max_exit=2025-02-05 (day 719). Original engine_state.json wrote at day 704 checkpoint (23:47Z); engine continued to day 719 completion + 720 start before Batch 394 wall-time KILL at 23:58:13Z. Final-flush wrote 5081 trades to CSV but did not re-write state.json. Backup: engine_state.json.pre_resume_backup."
+  "timestamp": "2026-07-02T16:55:07Z",
+  "pid": 20548,
+  "finalized_open_trades": 482
 }
