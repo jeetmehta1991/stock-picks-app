@@ -88,3 +88,7 @@ output_batch395_batch_*/skipped_trades.csv
 
 # Batch 514 (2026-05-31): P17a pilot decoded outputs (reproducible from scripts/extract_sec_edgar_xml_pilot.py)
 data_prefetch/sec_edgar_decoded/
+
+# B1254 compliance-gate artifacts (local state, never committed)
+.pyramid_stamp
+.queue_exempt_log

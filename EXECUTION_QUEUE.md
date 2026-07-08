@@ -5509,3 +5509,15 @@ Assessment: session miss-ledger shows 100% of catches came from executable check
 Anti-theater retroactive test (#136): gates A1-A4+B would have caught B1119 doc-sync suspension, B1251 queue gaps, ENG-6/8/10 pattern introductions, and any pyramid skip = 4 of 5 session miss classes. 5th class (judgment/content errors, Pass 52 type) explicitly NOT claimed - remains skill + owner review.
 
 Sequencing if approved: batch 1 = A1+A2+A3 (<=3 fixes per Council 201); batch 2 = A4+B. Each with pin tests + pyramid.
+
+### B1254 (2026-07-08 Council 300): COMPLIANCE GATES A1+A2+A3 SHIPPED (owner-approved "Approve")
+
+S6-B1253-GATE-A1-PYRAMID-STAMP: SHIPPED. backtest/tests/conftest.py pytest_sessionfinish writes .pyramid_stamp (timestamp/green/n_tests/git_head) ONLY when both tiers ran; preflight C6 blocks *.py commits on missing/red/stale stamp (stale = staged .py mtime newer than stamp).
+
+S6-B1253-GATE-A2-BANNED-PATTERN-DIFF: SHIPPED. preflight C7 scans staged ADDED lines: C7a not-s.get / C7b default-True gate / C7c relative data_prefetch Path / C7d except-Exception+bare-swallow. Waiver = same-line `# preflight-allow: <rule>` (visible in diff = auditable). tests/ + preflight itself exempt.
+
+S6-B1253-GATE-A3-QUEUE-ENTRY: SHIPPED. preflight C8 blocks commits not staging EXECUTION_QUEUE.md unless GIT_QUEUE_EXEMPT=1 (each exemption appended to .queue_exempt_log).
+
+3 pin tests (test_b1254_*) added; pyramid 861+2 -> 864+2 GREEN. .gitignore: .pyramid_stamp + .queue_exempt_log. This commit itself passes through C6/C7/C8 (first live exercise).
+
+Remaining: S6-B1253-GATE-A4 + GATE-B in B1255 (next).

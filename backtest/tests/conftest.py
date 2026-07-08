@@ -19,6 +19,48 @@ from __future__ import annotations
 import pytest
 
 
+def pytest_sessionfinish(session, exitstatus):
+    """B1254 (Council 300, S6-B1253-GATE-A1 owner-approved 2026-07-08):
+    write .pyramid_stamp at repo root when a session that included BOTH
+    pyramid tiers (test_unit.py + test_integration.py) finishes GREEN.
+
+    scripts/preflight.py C6 reads this stamp and BLOCKS commits staging
+    *.py files when the stamp is missing, red, or older than the newest
+    staged .py file's mtime (tests must run AFTER the last code edit).
+
+    Partial runs (single file / -k selections) do NOT write the stamp --
+    only a full-pyramid session counts, per feedback_pyramid_no_exceptions.
+    """
+    import json
+    import subprocess
+    import time
+    from pathlib import Path
+
+    ran_files = {Path(str(item.fspath)).name for item in session.items}
+    if not {"test_unit.py", "test_integration.py"} <= ran_files:
+        return
+    repo_root = Path(__file__).resolve().parents[2]
+    try:
+        head = subprocess.run(
+            ["git", "rev-parse", "HEAD"], cwd=repo_root,
+            capture_output=True, text=True, check=False,
+        ).stdout.strip()
+    except Exception:
+        head = "unknown"
+    stamp = {
+        "timestamp": time.time(),
+        "exitstatus": int(exitstatus),
+        "green": int(exitstatus) == 0,
+        "n_tests": len(session.items),
+        "git_head": head,
+    }
+    try:
+        (repo_root / ".pyramid_stamp").write_text(
+            json.dumps(stamp), encoding="utf-8")
+    except Exception:
+        pass  # stamp write failure must never fail the test run itself
+
+
 @pytest.fixture(autouse=True)
 def _smc_phase_production_for_semantic_tests(request, monkeypatch):
     """Auto-monkeypatch SMC_PHASE='PRODUCTION' for SMC semantic tests.

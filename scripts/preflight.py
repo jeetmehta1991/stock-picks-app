@@ -181,6 +181,138 @@ def check_prefetch_scripts_use_path_restricted_commit(paths: Iterable[Path]) -> 
     return violations
 
 
+def get_staged_added_lines() -> list[tuple[str, str]]:
+    """Return (file, added_line) pairs from the staged diff (B1254 C7)."""
+    try:
+        result = subprocess.run(
+            ["git", "diff", "--cached", "-U0", "--diff-filter=ACMR"],
+            cwd=REPO_ROOT, capture_output=True, text=True, check=False,
+        )
+    except Exception:
+        return []
+    pairs = []
+    current = ""
+    for line in result.stdout.splitlines():
+        if line.startswith("+++ b/"):
+            current = line[6:]
+        elif line.startswith("+") and not line.startswith("+++"):
+            pairs.append((current, line[1:]))
+    return pairs
+
+
+def check_pyramid_stamp(paths: Iterable[Path]) -> list[str]:
+    """C6 (B1254, S6-B1253-GATE-A1): block *.py commits without a fresh
+    GREEN full-pyramid stamp. Stamp written by backtest/tests/conftest.py
+    pytest_sessionfinish only when BOTH tiers ran and passed. Stale =
+    any staged .py under backtest/ or scripts/ modified AFTER the stamp.
+    """
+    import json
+    py_staged = [p for p in paths if p.suffix == ".py" and p.exists()
+                 and ("backtest" in p.parts or "scripts" in p.parts)
+                 and "vendored" not in p.parts and "tests" not in p.parts]
+    if not py_staged:
+        return []
+    stamp_path = REPO_ROOT / ".pyramid_stamp"
+    if not stamp_path.exists():
+        return ["C6 PYRAMID-STAMP | staged .py changes but no .pyramid_stamp; "
+                "run the full pyramid (test_unit.py + test_integration.py) first"]
+    try:
+        stamp = json.loads(stamp_path.read_text(encoding="utf-8"))
+    except Exception:
+        return ["C6 PYRAMID-STAMP | .pyramid_stamp unreadable; re-run the full pyramid"]
+    if not stamp.get("green"):
+        return ["C6 PYRAMID-STAMP | last full-pyramid run was RED; fix tests before commit"]
+    stamp_ts = float(stamp.get("timestamp", 0))
+    stale = [str(p.relative_to(REPO_ROOT)) for p in py_staged
+             if p.stat().st_mtime > stamp_ts]
+    if stale:
+        return [f"C6 PYRAMID-STAMP | staged .py modified AFTER last green pyramid: "
+                f"{stale[:5]}; re-run the full pyramid"]
+    return []
+
+
+# C7 banned patterns: (rule-id, compiled regex, path-scope substring, message)
+_BANNED_LINE_PATTERNS = [
+    ("C7a NOT-S-GET", re.compile(r"not\s+s\.get\("), "backtest/signals/",
+     "banned `not s.get(...)` gate (feedback_never_use_NOT_s_get_pattern); "
+     "use the positive symmetric producer signal"),
+    ("C7b DEFAULT-TRUE-GATE", re.compile(r"s\.get\(\s*['\"][a-z0-9_]+['\"]\s*,\s*True\s*\)"),
+     "backtest/signals/",
+     "default-True strategy gate auto-passes on missing producer key "
+     "(B657/W6-W8 silent-gap class); default False or add producer"),
+    ("C7c RELATIVE-PREFETCH-PATH", re.compile(r"Path\(\s*['\"]data_prefetch"), "backtest/",
+     "cwd-sensitive relative data_prefetch path (B1250 ENG-8); "
+     "anchor via Path(__file__)"),
+]
+
+
+def check_banned_patterns_in_staged_diff() -> list[str]:
+    """C7 (B1254, S6-B1253-GATE-A2): scan ADDED lines in the staged diff
+    for known bug-class patterns. Waiver: `# preflight-allow: <rule>` on
+    the same line (auditable in the diff itself).
+    """
+    violations = []
+    for fname, line in get_staged_added_lines():
+        if "preflight-allow" in line:
+            continue
+        if fname.startswith("backtest/tests/") or fname.startswith("scripts/preflight"):
+            continue
+        for rule_id, pattern, scope, msg in _BANNED_LINE_PATTERNS:
+            if scope not in fname.replace("\\", "/"):
+                continue
+            if pattern.search(line):
+                violations.append(f"{rule_id} | {fname}: {msg} | line: {line.strip()[:90]}")
+    # C7d: except Exception followed immediately by bare pass/return-empty
+    pairs = get_staged_added_lines()
+    for i in range(len(pairs) - 1):
+        f1, l1 = pairs[i]
+        f2, l2 = pairs[i + 1]
+        if f1 != f2 or not f1.replace("\\", "/").startswith("backtest/"):
+            continue
+        if f1.startswith("backtest/tests/"):
+            continue
+        if "preflight-allow" in l1 or "preflight-allow" in l2:
+            continue
+        if re.search(r"except\s+Exception\s*:?\s*$", l1.strip()) and \
+                l2.strip() in ("pass", "return {}", "return None", "continue"):
+            violations.append(
+                f"C7d SILENT-SWALLOW | {f1}: `except Exception` + bare "
+                f"`{l2.strip()}` without logging (CHECKLIST #122); pair with a "
+                f"logger call or `# preflight-allow: C7d` with justification")
+    return violations
+
+
+def check_queue_entry_staged() -> list[str]:
+    """C8 (B1254, S6-B1253-GATE-A3): every commit must stage
+    EXECUTION_QUEUE.md (CHECKLIST #94 queue-anchor rule) OR set env
+    GIT_QUEUE_EXEMPT=1 (exemption appended to .queue_exempt_log so
+    every bypass is auditable).
+    """
+    import os
+    import time as _t
+    staged = subprocess.run(
+        ["git", "diff", "--cached", "--name-only"],
+        cwd=REPO_ROOT, capture_output=True, text=True, check=False,
+    ).stdout.splitlines()
+    staged = [s.strip().replace("\\", "/") for s in staged if s.strip()]
+    if not staged:
+        return []
+    if any(s.endswith("EXECUTION_QUEUE.md") for s in staged):
+        return []
+    if os.environ.get("GIT_QUEUE_EXEMPT") == "1":
+        try:
+            with open(REPO_ROOT / ".queue_exempt_log", "a", encoding="utf-8") as fh:
+                fh.write(f"{_t.strftime('%Y-%m-%dT%H:%M:%S')} exempt commit staging: "
+                         f"{staged[:10]}\n")
+        except Exception:
+            pass
+        return []
+    return ["C8 QUEUE-ENTRY | commit does not stage EXECUTION_QUEUE.md "
+            "(CHECKLIST #94 queue-anchor). Add the batch entry, or set "
+            "GIT_QUEUE_EXEMPT=1 for a logged exemption (pure formatting/"
+            "revert commits only)"]
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--staged", action="store_true", help="check git-staged files only")
@@ -210,6 +342,12 @@ def main() -> int:
     all_violations += check_em_dash_in_scripts(files)
     all_violations += check_canonical_source_declared(files)
     all_violations += check_prefetch_scripts_use_path_restricted_commit(files)
+    # B1254 (Council 300, S6-B1253-GATE-A1/A2/A3 owner-approved): the
+    # mechanical compliance gates run only in --staged (commit) mode.
+    if args.staged or (not args.paths and not args.all):
+        all_violations += check_pyramid_stamp(files)
+        all_violations += check_banned_patterns_in_staged_diff()
+        all_violations += check_queue_entry_staged()
 
     if not all_violations:
         print("preflight: PASS - no rule violations found")

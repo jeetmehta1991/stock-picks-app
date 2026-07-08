@@ -12466,3 +12466,94 @@ def test_b1243_news_sentiment_returns_empty_when_both_sources_missing():
     # Fake ticker with no data anywhere
     r = compute_news_sentiment_signals("FAKE_TICKER_NONE", date(2026, 4, 15))
     assert r == {}, "B1243: must return empty dict when both sources unavailable"
+
+
+# ---------------------------------------------------------------------------
+# B1254 (Council 300, S6-B1253-GATE-A1/A2/A3 owner-approved 2026-07-08):
+# pin tests for the mechanical compliance gates in scripts/preflight.py.
+# Per feedback_writer_reader_schema_contract_pin_test + L205 (prose rules
+# without mechanical verifiers decay).
+# ---------------------------------------------------------------------------
+
+def _load_preflight_module():
+    import importlib.util
+    from pathlib import Path
+    p = Path(__file__).resolve().parents[2] / "scripts" / "preflight.py"
+    spec = importlib.util.spec_from_file_location("preflight_b1254", p)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+def test_b1254_c6_pyramid_stamp_blocks_missing_red_and_stale(tmp_path, monkeypatch):
+    """C6: missing stamp blocks; red stamp blocks; fresh green passes;
+    stale (py newer than stamp) blocks."""
+    import json
+    import time
+    pf = _load_preflight_module()
+    monkeypatch.setattr(pf, "REPO_ROOT", tmp_path)
+    py = tmp_path / "backtest" / "mod.py"
+    py.parent.mkdir(parents=True)
+    py.write_text("x = 1\n", encoding="utf-8")
+    staged = [py]
+    # missing stamp -> violation
+    assert any("C6" in v for v in pf.check_pyramid_stamp(staged))
+    # red stamp -> violation
+    (tmp_path / ".pyramid_stamp").write_text(
+        json.dumps({"green": False, "timestamp": time.time() + 60}), encoding="utf-8")
+    assert any("RED" in v for v in pf.check_pyramid_stamp(staged))
+    # fresh green -> pass
+    (tmp_path / ".pyramid_stamp").write_text(
+        json.dumps({"green": True, "timestamp": time.time() + 60}), encoding="utf-8")
+    assert pf.check_pyramid_stamp(staged) == []
+    # stale green (stamp older than py mtime) -> violation
+    (tmp_path / ".pyramid_stamp").write_text(
+        json.dumps({"green": True, "timestamp": time.time() - 9999}), encoding="utf-8")
+    assert any("AFTER" in v for v in pf.check_pyramid_stamp(staged))
+
+
+def test_b1254_c7_banned_pattern_scanner_flags_and_waives(monkeypatch):
+    """C7: not-s.get / default-True gate / relative prefetch path / silent
+    swallow all flagged on added lines; preflight-allow waiver passes."""
+    pf = _load_preflight_module()
+    synthetic = [
+        ("backtest/signals/screener.py", "    not s.get('above_x', True)"),
+        ("backtest/signals/screener.py", "    s.get('some_gate', True)"),
+        ("backtest/engine/backtest.py", "    p = Path('data_prefetch/fred/x.parquet')"),
+        ("backtest/signals/foo.py", "    except Exception:"),
+        ("backtest/signals/foo.py", "        pass"),
+        ("backtest/signals/screener.py", "    not s.get('waived', True)  # preflight-allow: C7a"),
+        ("backtest/tests/test_x.py", "    not s.get('in_tests_ok', True)"),
+    ]
+    monkeypatch.setattr(pf, "get_staged_added_lines", lambda: synthetic)
+    v = pf.check_banned_patterns_in_staged_diff()
+    assert any("C7a" in x for x in v), "not-s.get must be flagged"
+    assert any("C7b" in x for x in v), "default-True gate must be flagged"
+    assert any("C7c" in x for x in v), "relative prefetch path must be flagged"
+    assert any("C7d" in x for x in v), "silent swallow must be flagged"
+    assert not any("waived" in x for x in v), "preflight-allow must waive"
+    assert not any("in_tests_ok" in x for x in v), "tests dir exempt"
+
+
+def test_b1254_c8_queue_entry_gate(monkeypatch, tmp_path):
+    """C8: staged set without EXECUTION_QUEUE.md blocks; with it passes;
+    GIT_QUEUE_EXEMPT=1 passes and appends to the exemption log."""
+    import types
+    pf = _load_preflight_module()
+    monkeypatch.setattr(pf, "REPO_ROOT", tmp_path)
+
+    def fake_run(cmd, **kw):
+        return types.SimpleNamespace(stdout="backtest/mod.py\nREADME.md\n")
+    monkeypatch.setattr(pf.subprocess, "run", fake_run)
+    monkeypatch.delenv("GIT_QUEUE_EXEMPT", raising=False)
+    assert any("C8" in v for v in pf.check_queue_entry_staged())
+
+    def fake_run_with_queue(cmd, **kw):
+        return types.SimpleNamespace(stdout="backtest/mod.py\nEXECUTION_QUEUE.md\n")
+    monkeypatch.setattr(pf.subprocess, "run", fake_run_with_queue)
+    assert pf.check_queue_entry_staged() == []
+
+    monkeypatch.setattr(pf.subprocess, "run", fake_run)
+    monkeypatch.setenv("GIT_QUEUE_EXEMPT", "1")
+    assert pf.check_queue_entry_staged() == []
+    assert (tmp_path / ".queue_exempt_log").exists(), "exemption must be logged"
