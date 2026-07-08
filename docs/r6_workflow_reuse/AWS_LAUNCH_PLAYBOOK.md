@@ -38,7 +38,7 @@
 
 ## 1. Pre-flight gates (must pass before `aws ec2 run-instances`)
 
-These four gates fire BEFORE any AWS spend. Skipping any of them is a CHECKLIST violation.
+These five gates fire BEFORE any AWS spend. Skipping any of them is a CHECKLIST violation.
 
 ### Gate 1 - CHECKLIST #116: user-data 16KB after base64 encoding
 
@@ -89,6 +89,22 @@ fi
 ```
 
 **Why:** Without SSM, mid-run inspection requires SSH (key issues + security group rules + ENI access). SSM lets you `aws ssm start-session` into a running instance for free; B1028 forensics were blocked by missing SSM.
+
+### Gate 5 - B1256: install git compliance hooks on fresh clones
+
+**Rule:** any user-data / bootstrap that clones the repo AND commits from the instance (checkpoint pushes, result commits) MUST install the git hooks right after clone -- git hooks live in `.git/`, which does NOT travel with clones, so a fresh clone silently skips ALL commit gates (C1-C9: unicode/em-dash/canonical-source/pyramid-stamp/banned-patterns/queue-entry/doc-queue-xcheck per B1254-B1255).
+
+**Bootstrap line (add immediately after `git clone`):**
+```bash
+bash scripts/install_git_hooks.sh   # Windows launch scripts: scripts\install_git_hooks.bat
+```
+
+**Verification (in user-data self-check block):**
+```bash
+grep -q "preflight.py" .git/hooks/pre-commit || echo "FAIL: compliance hooks not installed"
+```
+
+**Note:** the Stop hook (Gate B, `.claude/settings.json`) and the preflight script itself ARE committed and travel with the clone automatically -- only the `.git/hooks/` shims need this install step. Instances that never `git commit` (pure compute + S3-upload pattern) can skip this gate; state the skip explicitly in the launch checklist per no-silent-skip.
 
 ---
 
