@@ -63,6 +63,31 @@ it wins over speed, over completeness, over looking finished.
 
 ---
 
+## MECHANICAL ENFORCEMENT LAYER (B1254-B1257 — the gates that make phases 3 and 6 physically binding)
+
+Owner-approved 2026-07-08. These run WITHOUT invocation; know they exist so
+you work WITH them, not against them:
+
+| Gate | Where it fires | What it blocks |
+|---|---|---|
+| C6 pyramid stamp | every `git commit` staging `*.py` (pre-commit hook) | commit without a fresh GREEN full pyramid (`.pyramid_stamp` written only by a both-tiers pytest session) |
+| C7 banned-pattern diff scan | every commit | ADDED lines with `not s.get(`, default-True strategy gates, relative `data_prefetch` paths, unlogged `except: pass` (waiver: same-line `# preflight-allow: <rule>`) |
+| C8 queue-entry gate | every commit | commits not staging EXECUTION_QUEUE.md (escape: `GIT_QUEUE_EXEMPT=1`, logged to `.queue_exempt_log`) |
+| C9 doc→queue cross-check | every commit | `output_audit/*.md` referencing ticket IDs absent from the queue |
+| Gate B Stop hook | every turn-end (`.claude/settings.json` hooks.Stop → `scripts/verify_turn_compliance.py`) | ending a turn with modified TRACKED files uncommitted (escape: one-shot `.stop_exempt`, logged) |
+
+- **Fresh clones** (AWS instances, new machines): git-hook shims do NOT
+  travel with clones — run `bash scripts/install_git_hooks.sh` (or `.bat`)
+  once after `git clone`, per AWS_LAUNCH_PLAYBOOK Gate 5. The Stop hook and
+  preflight script are committed and need no install.
+- **Manual dry-runs:** `python scripts/preflight.py --staged` (commit gates)
+  and `python scripts/verify_turn_compliance.py` (turn gate).
+- The gates cover the mechanically-checkable rules. Phases below remain
+  authoritative for the JUDGMENT surface (truth standard, audit depth,
+  recommendation quality) — the Pass 52 class of miss that no script catches.
+- Every escape-hatch use is logged and therefore auditable; using one is a
+  disclosure, not a workaround.
+
 ## Phase 0 — RECALL (before any analysis or recommendation)
 
 1. **Read `CHECKLIST.md`** (or confirm it is already in context this session).

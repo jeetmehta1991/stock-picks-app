@@ -5540,6 +5540,10 @@ Owner: "Commit batch A artifacts." Cleared the Gate B dirty-tree block: output_b
 
 Gate invocation in other sessions documented in reply: git gates auto-fire via pre-commit hook (fresh clones run scripts/install_git_hooks.bat|.sh once); Stop hook auto-loads from committed .claude/settings.json; stamp written by any full-pyramid run; manual runs: `python scripts/preflight.py --staged` / `python scripts/verify_turn_compliance.py`.
 
+### B1258 (2026-07-08 Council 302): GATES DOCUMENTED IN SKILL + STAGE-3 PATH ASSESSMENT
+
+Owner: (1) "Add these gates to the skill" - SKILL.md gains MECHANICAL ENFORCEMENT LAYER section (5-gate table + fresh-clone install note + manual dry-run commands + judgment-surface boundary). (2) Skill invocation in other sessions answered: auto-applies via committed skill description + CLAUDE.md Critical Rule + memory; explicit = /execution-discipline; travels with repo. (3) Stage-3 path + retrospective delivered in-chat (scope-freeze + pre-R5-blockers-only recommendation; awaiting owner decision on replacing the entire-queue-before-R5 gate with blockers-only gate).
+
 ### B1257 (2026-07-08 Council 301 cont.): AWS LAUNCH PLAYBOOK GATE 5 ADDED (owner directive)
 
 Owner: "Add line to launch playbook." docs/r6_workflow_reuse/AWS_LAUNCH_PLAYBOOK.md Section 1: new Gate 5 (B1256) - bootstrap must run scripts/install_git_hooks.sh immediately after git clone when the instance commits (hooks live in .git/, do not travel with clones -> fresh clone silently skips ALL commit gates C1-C9). Includes user-data verification grep + explicit-skip rule for compute-only instances. Pre-flight gate count 4 -> 5. Scripts' existence verified (install_git_hooks.bat + .sh both present).
