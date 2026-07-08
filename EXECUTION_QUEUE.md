@@ -5521,3 +5521,15 @@ S6-B1253-GATE-A3-QUEUE-ENTRY: SHIPPED. preflight C8 blocks commits not staging E
 3 pin tests (test_b1254_*) added; pyramid 861+2 -> 864+2 GREEN. .gitignore: .pyramid_stamp + .queue_exempt_log. This commit itself passes through C6/C7/C8 (first live exercise).
 
 Remaining: S6-B1253-GATE-A4 + GATE-B in B1255 (next).
+
+### B1255 (2026-07-08 Council 300 cont.): COMPLIANCE GATES A4+B SHIPPED — ALL 5 GATES LIVE
+
+S6-B1253-GATE-A4-DOC-QUEUE-XCHECK: SHIPPED. preflight C9: ticket-ID patterns (S\d-B\d{3,4}-*) in staged output_audit/*.md must exist in EXECUTION_QUEUE.md; unmatched IDs BLOCK the commit (mechanizes the B1251 manual check; archive/ exempt).
+
+S6-B1253-GATE-B-STOP-HOOK: SHIPPED. scripts/verify_turn_compliance.py + .claude/settings.json hooks.Stop. Exit 2 blocks turn-end when modified TRACKED files are uncommitted (CHECKLIST #67 doc-sweep debt); clean-tree fast-pass; one-shot .stop_exempt sentinel (consumed + logged to .queue_exempt_log) for intentional work-in-progress turns. Untracked files ignored (run artifacts accumulate legitimately).
+
+2 pin tests (test_b1255_*) added; pyramid 864+2 -> 866+2 GREEN. Live functional test: verifier exit 2 on dirty tree with correct file list + remediation message.
+
+FIRST LIVE CATCH (Gate B working before it was even committed): surfaced pre-existing uncommitted tracked changes = doc-sweep debt predating this turn, INCLUDING output_batch_A_150/engine_state.json carrying Batch A COMPLETION state (day 1043 / 8433 trades / status complete, never committed) + settings.local.json + archive doc edit + dec505 json + deleted b1019_a5_preflight_report.json + data/cache/info_cache.json (+1110 lines). OWNER DISPOSITION NEEDED: commit these run artifacts or discard - not auto-dispositioned per before-deleting-look rule.
+
+Compliance-gate program status: 5/5 gates SHIPPED (S6-B1253 all tickets closed). Note: Stop hook activates for NEW sessions reading settings.json.

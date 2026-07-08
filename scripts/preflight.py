@@ -313,6 +313,41 @@ def check_queue_entry_staged() -> list[str]:
             "revert commits only)"]
 
 
+_TICKET_ID_RE = re.compile(r"\bS\d+-B\d{3,4}-[A-Z0-9][A-Z0-9-]+\b")
+
+
+def check_doc_ticket_ids_in_queue(paths: Iterable[Path]) -> list[str]:
+    """C9 (B1255, S6-B1253-GATE-A4): every ticket-ID pattern mentioned in a
+    staged output_audit/*.md doc must exist in EXECUTION_QUEUE.md (working
+    copy). Findings-without-tickets-don't-exist, mechanically enforced
+    (L205; the B1251 gap class).
+    """
+    queue_path = REPO_ROOT / "EXECUTION_QUEUE.md"
+    try:
+        queue_text = queue_path.read_text(encoding="utf-8")
+    except Exception:
+        return ["C9 DOC-QUEUE-XCHECK | EXECUTION_QUEUE.md unreadable"]
+    violations = []
+    for p in paths:
+        if p.suffix != ".md" or "output_audit" not in p.parts or not p.exists():
+            continue
+        if "archive" in p.parts:
+            continue
+        try:
+            text = p.read_text(encoding="utf-8")
+        except Exception:
+            continue
+        ids = sorted(set(_TICKET_ID_RE.findall(text)))
+        missing = [t for t in ids if t not in queue_text]
+        if missing:
+            rel = p.relative_to(REPO_ROOT) if p.is_absolute() else p
+            violations.append(
+                f"C9 DOC-QUEUE-XCHECK | {rel}: ticket IDs referenced but absent "
+                f"from EXECUTION_QUEUE.md: {missing[:8]} (queue-anchor rule; "
+                f"add tickets before committing the doc)")
+    return violations
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--staged", action="store_true", help="check git-staged files only")
@@ -348,6 +383,8 @@ def main() -> int:
         all_violations += check_pyramid_stamp(files)
         all_violations += check_banned_patterns_in_staged_diff()
         all_violations += check_queue_entry_staged()
+        # B1255 (Council 300, S6-B1253-GATE-A4 owner-approved)
+        all_violations += check_doc_ticket_ids_in_queue(files)
 
     if not all_violations:
         print("preflight: PASS - no rule violations found")

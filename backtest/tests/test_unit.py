@@ -12557,3 +12557,48 @@ def test_b1254_c8_queue_entry_gate(monkeypatch, tmp_path):
     monkeypatch.setenv("GIT_QUEUE_EXEMPT", "1")
     assert pf.check_queue_entry_staged() == []
     assert (tmp_path / ".queue_exempt_log").exists(), "exemption must be logged"
+
+
+def test_b1255_c9_doc_queue_xcheck(tmp_path, monkeypatch):
+    """C9: ticket IDs in staged output_audit docs must exist in
+    EXECUTION_QUEUE.md; matched IDs pass, unmatched block, archive exempt."""
+    pf = _load_preflight_module()
+    monkeypatch.setattr(pf, "REPO_ROOT", tmp_path)
+    (tmp_path / "EXECUTION_QUEUE.md").write_text(
+        "S6-B1250-ENG1-SIGNALS-ROUNDTRIP is ticketed\n", encoding="utf-8")
+    doc_dir = tmp_path / "output_audit"
+    doc_dir.mkdir()
+    doc = doc_dir / "some_audit.md"
+    doc.write_text("refs S6-B1250-ENG1-SIGNALS-ROUNDTRIP only\n", encoding="utf-8")
+    assert pf.check_doc_ticket_ids_in_queue([doc]) == []
+    doc.write_text("refs S6-B9999-PHANTOM-TICKET here\n", encoding="utf-8")
+    v = pf.check_doc_ticket_ids_in_queue([doc])
+    assert any("PHANTOM" in x for x in v), "unmatched ticket ID must block"
+    arch = tmp_path / "output_audit" / "archive"
+    arch.mkdir()
+    adoc = arch / "old.md"
+    adoc.write_text("refs S6-B9999-PHANTOM-TICKET\n", encoding="utf-8")
+    assert pf.check_doc_ticket_ids_in_queue([adoc]) == []
+
+
+def test_b1255_turn_gate_verifier(tmp_path, monkeypatch):
+    """Gate B verifier: clean tree passes; modified tracked blocks (exit 2);
+    .stop_exempt sentinel consumed once and logged."""
+    import importlib.util
+    import types
+    from pathlib import Path as _P
+    p = _P(__file__).resolve().parents[2] / "scripts" / "verify_turn_compliance.py"
+    spec = importlib.util.spec_from_file_location("turn_gate_b1255", p)
+    tg = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(tg)
+    monkeypatch.setattr(tg, "REPO_ROOT", tmp_path)
+    monkeypatch.setattr(tg, "get_modified_tracked", lambda: [])
+    assert tg.main() == 0, "clean tree must fast-pass"
+    monkeypatch.setattr(tg, "get_modified_tracked",
+                        lambda: [" M backtest/mod.py", " M SOME_DOC.md"])
+    assert tg.main() == 2, "dirty tracked tree must block with exit 2"
+    (tmp_path / ".stop_exempt").write_text("", encoding="utf-8")
+    assert tg.main() == 0, "sentinel must pass once"
+    assert not (tmp_path / ".stop_exempt").exists(), "sentinel must be consumed"
+    assert (tmp_path / ".queue_exempt_log").exists(), "exemption must be logged"
+    assert tg.main() == 2, "sentinel is one-shot; next call blocks again"
