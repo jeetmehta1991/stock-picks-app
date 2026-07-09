@@ -12487,7 +12487,8 @@ def _load_preflight_module():
 
 def test_b1254_c6_pyramid_stamp_blocks_missing_red_and_stale(tmp_path, monkeypatch):
     """C6: missing stamp blocks; red stamp blocks; fresh green passes;
-    stale (py newer than stamp) blocks."""
+    stale (py newer than stamp) blocks. B1267 owner decision 2a: missing
+    stamp blocks DOC-ONLY commits too (no carve-outs)."""
     import json
     import time
     pf = _load_preflight_module()
@@ -12498,6 +12499,11 @@ def test_b1254_c6_pyramid_stamp_blocks_missing_red_and_stale(tmp_path, monkeypat
     staged = [py]
     # missing stamp -> violation
     assert any("C6" in v for v in pf.check_pyramid_stamp(staged))
+    # B1267 (2a): doc-only staged set ALSO blocked when stamp missing
+    doc = tmp_path / "SOME_DOC.md"
+    doc.write_text("x\n", encoding="utf-8")
+    assert any("C6" in v for v in pf.check_pyramid_stamp([doc])), (
+        "owner decision 2a: every commit requires the stamp, docs included")
     # red stamp -> violation
     (tmp_path / ".pyramid_stamp").write_text(
         json.dumps({"green": False, "timestamp": time.time() + 60}), encoding="utf-8")

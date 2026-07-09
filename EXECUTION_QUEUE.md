@@ -5564,6 +5564,30 @@ CLAUDE.md banner synced per owner approval (869->871 supersedes: committed value
 
 **ALL THREE PRE-R5 BLOCKERS NOW SHIPPED (ENG-1 B1260 + ENG-2/3 B1263). Pyramid 871+2 GREEN. Next: S6-B1259-DATA-READINESS-AUDIT (owner order item 3).**
 
+### B1267 (2026-07-08 Council 307): SCOPE LOCKED + R5 LADDER SPEC + C6 STRICT (owner decisions i/ii/iii + 6 batch requirements)
+
+Owner decisions: (i) 2a — C6 gate STRICT: every commit (docs included) requires green pyramid stamp; SHIPPED this batch (preflight + pin test). (ii) Full council blocks resume. (iii) All 3 scope-lock recommendations ACCEPTED — **SCOPE IS NOW LOCKED**: 4 index-event strategies run BLOCKED_UPSTREAM; B1230 degradation accepted; **window ending 2026-05-05 LOCKED for the entire backtesting process**.
+
+Counts (re-derived from code this batch): 219 registered = 219 ACTIVE (STRATEGIES_DISABLED_MISSING_PRODUCER empty) x 26 exit methods = **5,694 cube cells**. Batch A reference list = 150 unique tickers (tickers.txt verified).
+
+**R5 PHASE LADDER (S6-B1259-R5-PHASE-LADDER spec, owner 6 requirements embedded):**
+| Rung | Tickers | Purpose + gates |
+|---|---|---|
+| 1 DRY | 5 (AAPL, ABBV, BAC, BTU, DIA — mega-tech/pharma/bank/small-cap-T3/ETF, all in Batch A list) | engine-health validation: ENG-1 signals round-trip verified in output, checkpoint+resume drill, monitor armed, artifacts complete. NOT fire-completeness (5 tickers can't power rare strategies — scale-aware per feedback_monitor_baseline_must_scale) |
+| 2 SMALL | 50 (every-3rd of sorted Batch A 150 — deterministic, tier-stratified) | fire-count validation begins: quiet-fire CSV comparison at 1/3 scale; HALT rule active (req 5) |
+| 3 MID | exact Batch A 150 | full before/after comparability vs phase_1_quiet_fire_investigation.csv (req 4 at full strength) + producer fire audit (req 6) |
+| 4 FULL | Master-intersect-OHLCV (~1,927-1,929, computed at launch) | owner-gated final launch; AWS playbook Gates 1-5 |
+
+**Owner requirements 1-6 implementation:**
+1. Fail-loud monitor per rung: b1019 runtime monitor armed AT event boundary (CHECKLIST #117) + engine_state.json 30-min checkpoints + ENG-2 ATR-fallback WARNING + ENG-3 parquet .FAILED marker + monitor HALT-on-anomaly.
+2. Hourly health updates in chat: engine_state.json polled + reported hourly while rungs run.
+3. Cube fan-out output = **exit_compare.csv** (strategy x exit cells — the cube) + trade_log.parquet (canonical trades, DEC-491) + trade_exit_detail.csv (per-trade x exit) + strategy_regime_matrix.json (per-regime verdicts). Confirmed correct.
+4. Post-rung-1+2: quiet-fire fix verification vs phase_1_quiet_fire_investigation.csv (raw fires via EMIT_RAW_SIGNAL_FIRES=1 + trade counts, ticker-ratio-scaled) — ticket S6-B1267-QUIET-FIRE-VERIFY.
+5. HALT rule accepted: quiet/starved strategies at rungs 1-2 (beyond scale-expected rare + 4 BLOCKED_UPSTREAM + EXPLORATORY) -> NO PROCEED until fixed.
+6. Post-rung-1+2 producer fire audit: per-producer fired>=1 census from raw-fires sidecar; no-fire -> flagged table — ticket S6-B1267-PRODUCER-FIRE-AUDIT.
+
+Rung 1 launch awaits owner confirmation of this spec.
+
 ### B1266 (2026-07-08 Council 306): SELF-AUDIT — 4 compliance drifts found + disclosed (owner-prompted)
 
 Owner: "Any silent misses? Any non compliance?" Executed checks: tree clean; fresh pyramid at HEAD 871+2 GREEN; queue coverage B1262-B1265 verified. Four drifts found, all in the UNGATED judgment tier (L206 codified):

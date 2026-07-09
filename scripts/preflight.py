@@ -201,21 +201,27 @@ def get_staged_added_lines() -> list[tuple[str, str]]:
 
 
 def check_pyramid_stamp(paths: Iterable[Path]) -> list[str]:
-    """C6 (B1254, S6-B1253-GATE-A1): block *.py commits without a fresh
-    GREEN full-pyramid stamp. Stamp written by backtest/tests/conftest.py
-    pytest_sessionfinish only when BOTH tiers ran and passed. Stale =
-    any staged .py under backtest/ or scripts/ modified AFTER the stamp.
+    """C6 (B1254, S6-B1253-GATE-A1; B1267 owner decision 2a 2026-07-08):
+    EVERY commit requires an existing GREEN full-pyramid stamp
+    (feedback_pyramid_no_exceptions -- no doc/data carve-outs; the
+    pre-B1267 py-only scope codified exactly the carve-out the standing
+    rule rejects, L206 drift #2). Commits staging *.py additionally
+    require the stamp be FRESHER than the newest staged .py mtime.
+    Stamp written by backtest/tests/conftest.py pytest_sessionfinish
+    only when BOTH tiers ran and passed.
     """
     import json
-    py_staged = [p for p in paths if p.suffix == ".py" and p.exists()
+    staged_any = [p for p in paths if p.exists()]
+    if not staged_any:
+        return []
+    py_staged = [p for p in staged_any if p.suffix == ".py"
                  and ("backtest" in p.parts or "scripts" in p.parts)
                  and "vendored" not in p.parts and "tests" not in p.parts]
-    if not py_staged:
-        return []
     stamp_path = REPO_ROOT / ".pyramid_stamp"
     if not stamp_path.exists():
-        return ["C6 PYRAMID-STAMP | staged .py changes but no .pyramid_stamp; "
-                "run the full pyramid (test_unit.py + test_integration.py) first"]
+        return ["C6 PYRAMID-STAMP | no .pyramid_stamp; every commit requires "
+                "a green full pyramid (owner decision 2a, B1267); run "
+                "test_unit.py + test_integration.py first"]
     try:
         stamp = json.loads(stamp_path.read_text(encoding="utf-8"))
     except Exception:
