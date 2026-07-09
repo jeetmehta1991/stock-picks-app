@@ -5564,6 +5564,10 @@ CLAUDE.md banner synced per owner approval (869->871 supersedes: committed value
 
 **ALL THREE PRE-R5 BLOCKERS NOW SHIPPED (ENG-1 B1260 + ENG-2/3 B1263). Pyramid 871+2 GREEN. Next: S6-B1259-DATA-READINESS-AUDIT (owner order item 3).**
 
+### B1275 (2026-07-09 Council 314): RUNG 3 LAUNCHED (owner: "Launch rung 3")
+
+Exact Batch A 150 (deduped, persisted rung3_tickers.txt), locked window, EMIT_RAW_SIGNAL_FIRES=1, output_r5_rung3, post-B1273-fixes build. Liveness verified (cache loading 60/151). Persistent fail-loud monitor + hourly heartbeat armed. Est ~8-10 hr (rung-2-calibrated). Completion deliverables: 5 gates at 150-scale (incl. parquet PASS expectation post-FIX-1 + zero lead_lag trades post-FIX-2) + req-4 FULL-SCALE quiet-fire before/after (native 150-ticker comparability) + req-6 census + rung-4 chunking decision package.
+
 ### B1274 (2026-07-09 Council 313 cont.): REVIEW-3 COMPLETE — no producer bugs; all 4 zero-fires explained
 
 Distribution probes (10 tickers x 10 dates, 100 samples, EXECUTED): ALL keys present 100/100 — no consumed-never-produced defects. Verdicts:
