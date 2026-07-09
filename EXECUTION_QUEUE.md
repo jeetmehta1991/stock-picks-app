@@ -5564,6 +5564,16 @@ CLAUDE.md banner synced per owner approval (869->871 supersedes: committed value
 
 **ALL THREE PRE-R5 BLOCKERS NOW SHIPPED (ENG-1 B1260 + ENG-2/3 B1263). Pyramid 871+2 GREEN. Next: S6-B1259-DATA-READINESS-AUDIT (owner order item 3).**
 
+### B1274 (2026-07-09 Council 313 cont.): REVIEW-3 COMPLETE — no producer bugs; all 4 zero-fires explained
+
+Distribution probes (10 tickers x 10 dates, 100 samples, EXECUTED): ALL keys present 100/100 — no consumed-never-produced defects. Verdicts:
+- rsi21_slow: gate ANTI-CORRELATION (rsi_21<40 fires 29%, above_sma50 36%, JOINT 0% — deep oscillator weakness contradicts price-above-trend). Design flaw not bug; B1248 CUT-CANDIDATE verdict stands.
+- rsi_overbought_short: same anti-correlation (rsi_14>65 8% x below_sma50 64% = joint 0% — overbought names are rarely under their 50-day). B1248 F5 economic-contradiction note confirmed empirically.
+- weekly_bias_pullback_short: producer HEALTHY (weekly_bias_bear 58%); triple-coincidence stack legitimately rare (candle arm 10%); expect single-digit fires at 150 tickers.
+- news_reversal_long: sentiment<=-0.3 alone = 1/100 — the killer gate; B1248 F16 6->4-gate rec confirmed.
+
+DISPOSITION: no engine/producer defects; all 4 are gate-DESIGN class already covered by queued post-R5 levers (LEVER4 gate-budget + F16). Per SCOPE FREEZE: no loosening now — the cube measures them as-is. **RUNG-2 HALT LIFTED; rung 3 awaits owner gate.**
+
 ### B1273 (2026-07-09 Council 313): FIX-1 + FIX-2 SHIPPED (owner "1 2 3 approved execute now")
 
 FIX-1a: strat_dc20_break_retest bullets str->list (screener.py:3159; the only bare-string _strat3 call site). FIX-1b: writer.py defensive context_bullets list-coercion in parquet prep (class-level immunity). FIX-2: DEC-458 lead_lag merge REMOVED from screen_universe (function preserved unused for M10 rebuild); RESOLVES S6-B1250-ENG4 + S6-B1248-LEAD-LAG-ORPHAN. Old DEC-458 wiring pin test INVERTED with lineage note (must NOT appear). 3 new pin tests + 1 inverted; pyramid 871->874+2 GREEN. REVIEW-3 probes next; rung 3 gate after.
