@@ -5564,6 +5564,14 @@ CLAUDE.md banner synced per owner approval (869->871 supersedes: committed value
 
 **ALL THREE PRE-R5 BLOCKERS NOW SHIPPED (ENG-1 B1260 + ENG-2/3 B1263). Pyramid 871+2 GREEN. Next: S6-B1259-DATA-READINESS-AUDIT (owner order item 3).**
 
+### B1271 (2026-07-09 Council 311): RUNG 2 LAUNCHED (owner: "Launch rung 2")
+
+50 tickers (every-3rd of sorted Batch A 150, deterministic; list persisted to output_batch_A_150/rung2_tickers.txt), locked window 2022-05-05..2026-05-05, EMIT_RAW_SIGNAL_FIRES=1, output_r5_rung2. Liveness verified (day-1 sim + Quiver feeds loaded + 4 procs). Est 4-6 hr.
+
+Reqs 1+2 armed: persistent fail-loud monitor (terminal-status + Traceback/CRITICAL signatures + hourly health heartbeat to chat) — coverage includes crash states per Monitor silence-is-not-success rule.
+
+Post-completion deliverables queued: rung-2 gate report + req-4 quiet-fire fix verification (1/3-scaled vs phase_1_quiet_fire_investigation.csv) + req-5 HALT evaluation + req-6 producer fire census.
+
 ### B1270 (2026-07-09 Council 310): RUNG 1 COMPLETE — ALL 5 GATES PASS (36 min wall clock)
 
 G1 ENG-1 PASS: 118 trades, signals_at_entry 668-767 keys/trade (Batch A pre-fix: 0-4). G2 PASS: 99 checkpoint rows parse via resume path 668+ keys. G3 PASS: parquet 456KB, no .FAILED marker. G4 PASS: replay-ATR fallback 0/118 = 0.0% [OK] (pre-fix 100%). G5 PASS: raw-fires sidecar emitted. Wall clock 22:13->22:49 = 36 min (est 30-60: calibrated). Cube: 130 cells (5 strat x 26 exits at min-trades), trade_exit_detail 250KB, 27 exit_by_* slices, regime matrix.
