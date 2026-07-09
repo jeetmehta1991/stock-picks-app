@@ -5564,6 +5564,12 @@ CLAUDE.md banner synced per owner approval (869->871 supersedes: committed value
 
 **ALL THREE PRE-R5 BLOCKERS NOW SHIPPED (ENG-1 B1260 + ENG-2/3 B1263). Pyramid 871+2 GREEN. Next: S6-B1259-DATA-READINESS-AUDIT (owner order item 3).**
 
+### B1269 (2026-07-08 Council 309): RUNG 4 = LOCAL LAUNCH (owner directive)
+
+Owner: "rung 4 full will be launched locally too." Recorded in memory + ladder spec. Implication surfaced: local full-universe ~4-6 days naive (Batch A anchor 150 tickers = 10.5 hr); council rec (a) = ticker-chunked ~4 chunks via laptop_launch scripts + merge_batch_outputs.py (Batch-B-plan pattern), each ~1-1.5 days, resumable; chunking decision due at rung-3->4 gate. Rung-4 AWS playbook gates 1-5 become N/A except Gate 5 hooks-note (local repo already has hooks).
+
+RUNG 1 interim health (T+3min): engine_state day 50 / trades 6 / status running / sim_date 2022-07-14; log at 2022-08-31; 4 procs. Pacing: ~85 sim-days in ~3 min -> ~1,043 days projected ~35-40 min. On estimate.
+
 ### B1268 (2026-07-08 Council 308): R5 RUNG 1 LAUNCHED (owner: "Launch rung 1")
 
 Launched 2026-07-08 22:13 local: `python -m backtest.run_phase1a --phase 1a --tickers AAPL,ABBV,BAC,BTU,DIA --start 2022-05-05 --end 2026-05-05 --no-agents --no-git --output-dir output_r5_rung1` with EMIT_RAW_SIGNAL_FIRES=1 (req-6 census pipeline shakeout from rung 1). Liveness verified 45s in: PHASE_TIMING day=2022-05-05 emitting, Quiver bulk feeds loaded (insiders 1M rows, sec13fchanges 500K rows), 4 python procs.
