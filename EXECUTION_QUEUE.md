@@ -5564,6 +5564,10 @@ CLAUDE.md banner synced per owner approval (869->871 supersedes: committed value
 
 **ALL THREE PRE-R5 BLOCKERS NOW SHIPPED (ENG-1 B1260 + ENG-2/3 B1263). Pyramid 871+2 GREEN. Next: S6-B1259-DATA-READINESS-AUDIT (owner order item 3).**
 
+### B1265 (2026-07-08 Council 305 cont.): settings.local.json UNTRACKED (Gate B churn fix)
+
+Gate B blocked turn-end on `.claude/settings.local.json` churn (regenerates every session as tool permissions accrue; would re-dirty every turn forever). Durable fix per Claude Code convention (local settings are per-machine): `git rm --cached` + .gitignore entry. File stays on disk; leaves version control only. Committed B1256 copy remains in history.
+
 ### B1264 (2026-07-08 Council 305 cont.): S6-B1259-DATA-READINESS-AUDIT EXECUTED — GREEN with 3 exceptions
 
 New re-runnable `scripts/data_readiness_audit.py` (presence + universe coverage vs 1,937 Master symbols + temporal span + critical-field checks). Report: `output_audit/DATA_READINESS_AUDIT_2026_07_08.md` + JSON artifact. Two script errors caught + fixed mid-run (quiver/sec_edgar path phantom-names produced false MISSINGs; null-rate double-count) - corrected-run numbers only.
