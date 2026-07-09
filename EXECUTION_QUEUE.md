@@ -5564,7 +5564,13 @@ CLAUDE.md banner synced per owner approval (869->871 supersedes: committed value
 
 **ALL THREE PRE-R5 BLOCKERS NOW SHIPPED (ENG-1 B1260 + ENG-2/3 B1263). Pyramid 871+2 GREEN. Next: S6-B1259-DATA-READINESS-AUDIT (owner order item 3).**
 
-### B1267 (2026-07-08 Council 307): SCOPE LOCKED + R5 LADDER SPEC + C6 STRICT (owner decisions i/ii/iii + 6 batch requirements)
+### B1268 (2026-07-08 Council 308): R5 RUNG 1 LAUNCHED (owner: "Launch rung 1")
+
+Launched 2026-07-08 22:13 local: `python -m backtest.run_phase1a --phase 1a --tickers AAPL,ABBV,BAC,BTU,DIA --start 2022-05-05 --end 2026-05-05 --no-agents --no-git --output-dir output_r5_rung1` with EMIT_RAW_SIGNAL_FIRES=1 (req-6 census pipeline shakeout from rung 1). Liveness verified 45s in: PHASE_TIMING day=2022-05-05 emitting, Quiver bulk feeds loaded (insiders 1M rows, sec13fchanges 500K rows), 4 python procs.
+
+Per-rung time estimates delivered (DERIVED; rung-1 actual calibrates the ladder per CHECKLIST #123): rung 1 ~30-60min local / rung 2 ~4-6hr / rung 3 ~10-14hr (Batch A 10.5hr anchor) / rung 4 ~16-20hr AWS 4x4hr chunks $5-10.
+
+Rung-1 PASS gates (engine health, NOT fire-completeness): ENG-1 signals round-trip verified in output artifacts; checkpoint written + resume drill; trade_log.parquet present (no .FAILED marker); ATR-fallback rate <5% (ENG-2 report line); raw-fires sidecar emitted; hourly health cadence honored (run expected < 1hr -> completion report serves).
 
 Owner decisions: (i) 2a — C6 gate STRICT: every commit (docs included) requires green pyramid stamp; SHIPPED this batch (preflight + pin test). (ii) Full council blocks resume. (iii) All 3 scope-lock recommendations ACCEPTED — **SCOPE IS NOW LOCKED**: 4 index-event strategies run BLOCKED_UPSTREAM; B1230 degradation accepted; **window ending 2026-05-05 LOCKED for the entire backtesting process**.
 
