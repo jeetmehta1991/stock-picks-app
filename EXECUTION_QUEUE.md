@@ -5564,6 +5564,16 @@ CLAUDE.md banner synced per owner approval (869->871 supersedes: committed value
 
 **ALL THREE PRE-R5 BLOCKERS NOW SHIPPED (ENG-1 B1260 + ENG-2/3 B1263). Pyramid 871+2 GREEN. Next: S6-B1259-DATA-READINESS-AUDIT (owner order item 3).**
 
+### B1270 (2026-07-09 Council 310): RUNG 1 COMPLETE — ALL 5 GATES PASS (36 min wall clock)
+
+G1 ENG-1 PASS: 118 trades, signals_at_entry 668-767 keys/trade (Batch A pre-fix: 0-4). G2 PASS: 99 checkpoint rows parse via resume path 668+ keys. G3 PASS: parquet 456KB, no .FAILED marker. G4 PASS: replay-ATR fallback 0/118 = 0.0% [OK] (pre-fix 100%). G5 PASS: raw-fires sidecar emitted. Wall clock 22:13->22:49 = 36 min (est 30-60: calibrated). Cube: 130 cells (5 strat x 26 exits at min-trades), trade_exit_detail 250KB, 27 exit_by_* slices, regime matrix.
+
+Two verifier corrections (truth standard): initial G4-FAIL was gate-script UTF-8-vs-UTF-16 encoding miss, not engine; cube fan-out filename from engine run = exit_strategy_comparison.csv (exit_compare.csv is the merged-pipeline name) - req-3 answer amended.
+
+Req-6 preview: 189/219 strategies fired raw signals at 5 tickers (52w_high_breakout 226 raw fires - B1188 loosenings visibly working); 30 zero-fire = rare/event class, full census at rungs 2-3.
+
+RUNG 2 (50 tickers, ~4-6 hr est) awaits owner gate.
+
 ### B1269 (2026-07-08 Council 309): RUNG 4 = LOCAL LAUNCH (owner directive)
 
 Owner: "rung 4 full will be launched locally too." Recorded in memory + ladder spec. Implication surfaced: local full-universe ~4-6 days naive (Batch A anchor 150 tickers = 10.5 hr); council rec (a) = ticker-chunked ~4 chunks via laptop_launch scripts + merge_batch_outputs.py (Batch-B-plan pattern), each ~1-1.5 days, resumable; chunking decision due at rung-3->4 gate. Rung-4 AWS playbook gates 1-5 become N/A except Gate 5 hooks-note (local repo already has hooks).
