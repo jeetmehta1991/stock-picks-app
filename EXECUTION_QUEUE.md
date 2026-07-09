@@ -5564,6 +5564,16 @@ CLAUDE.md banner synced per owner approval (869->871 supersedes: committed value
 
 **ALL THREE PRE-R5 BLOCKERS NOW SHIPPED (ENG-1 B1260 + ENG-2/3 B1263). Pyramid 871+2 GREEN. Next: S6-B1259-DATA-READINESS-AUDIT (owner order item 3).**
 
+### B1266 (2026-07-08 Council 306): SELF-AUDIT — 4 compliance drifts found + disclosed (owner-prompted)
+
+Owner: "Any silent misses? Any non compliance?" Executed checks: tree clean; fresh pyramid at HEAD 871+2 GREEN; queue coverage B1262-B1265 verified. Four drifts found, all in the UNGATED judgment tier (L206 codified):
+1. Missing end-of-response compliance statements x2 (B1265 turn + /model turn) — Pass 52 rule violation; behavioral fix, resumed immediately.
+2. Doc-only commits without same-turn pyramid x4 (B1256/B1257/B1262/B1265) — violates feedback_pyramid_no_exceptions; ROOT CAUSE: C6 gate enforces stamp for *.py commits only = codifies the exact carve-out the standing rule rejects. **OWNER DECISION NEEDED: (a) strict — C6 requires fresh green stamp for EVERY commit (+~40s per doc commit), or (b) relax standing rule to match gate (code strict / doc rides standing-green stamp).** Ticket: S6-B1266-C6-SCOPE-DECISION.
+3. Council-format drift since ~B1245 (numbers assigned, explicit enumerate+recommend blocks absent) — owner clarification requested: does numbering satisfy feedback_mandatory_council_per_turn?
+4. Scope-ledger format drift (todos+prose vs the skill's explicit ledger+arithmetic block) — resumed.
+
+No breakage resulted from any drift (fresh pyramid GREEN). Meta-lesson L206: gated rules held 100%; ungated rules drifted within days — two-tier compliance is real.
+
 ### B1265 (2026-07-08 Council 305 cont.): settings.local.json UNTRACKED (Gate B churn fix)
 
 Gate B blocked turn-end on `.claude/settings.local.json` churn (regenerates every session as tool permissions accrue; would re-dirty every turn forever). Durable fix per Claude Code convention (local settings are per-machine): `git rm --cached` + .gitignore entry. File stays on disk; leaves version control only. Committed B1256 copy remains in history.
