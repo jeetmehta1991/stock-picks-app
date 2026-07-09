@@ -3156,8 +3156,12 @@ def strat_dc20_break_retest(s):
     return _strat3(fl, fs, "breakout",
         ["resistance_break_retest", "vol_below_avg", "adx_trending", "close_in_top_40pct_of_range"],
         ["support_break_retest", "vol_below_avg", "adx_trending", "close_in_bottom_40pct_of_range", "borrow_ok"],
-        "DC20 break-and-retest: channel high broken, retested on lower volume (Bulkowski 2005), ADX trending, strong-close confirmation (B728)",
-        "DC20 breakdown-and-retest: channel low broken, retested on lower volume (Bulkowski 2005), ADX trending, strong-close confirmation (B728)")
+        # B1273 (Council 313, FIX-1 owner-approved 2026-07-09): bullets must
+        # be LISTS -- the bare strings here were the only such call site and
+        # made pyarrow reject trade_log.parquet at rung 2 (mixed list/str in
+        # context_bullets; caught by the ENG-3 .FAILED marker).
+        ["DC20 break-and-retest: channel high broken, retested on lower volume (Bulkowski 2005), ADX trending, strong-close confirmation (B728)"],
+        ["DC20 breakdown-and-retest: channel low broken, retested on lower volume (Bulkowski 2005), ADX trending, strong-close confirmation (B728)"])
 
 
 def strat_r1_break_retest(s):
@@ -9054,18 +9058,15 @@ def screen_universe(
             )
             if result.get("liquidity_ok") and result.get("strategy_count", 0) >= min_strategies:
                 candidates.append(result)
-    # DEC-458: merge lead-lag cross-ticker candidates (sector rotation)
-    lead_lag = screen_lead_lag_sector(ohlcv_dict, info_dict, as_of)
-    existing_map = {c["ticker"]: c for c in candidates}
-    for ll in lead_lag:
-        t = ll["ticker"]
-        if t in existing_map:
-            existing_map[t]["strategies"].extend(ll["strategies"])
-            existing_map[t]["long_strategies"].extend(ll["long_strategies"])
-            existing_map[t]["strategy_count"] += 1
-            existing_map[t]["long_count"] += 1
-        else:
-            candidates.append(ll)
+    # B1273 (Council 313, FIX-2 owner-approved 2026-07-09): DEC-458 lead-lag
+    # merge REMOVED per S6-B1250-ENG4 + rung-2 finding. lead_lag_sector_rotation
+    # bypassed ALL_STRATEGIES (792 unregistered Batch A trades; at rung 2 its
+    # 15 trades were the ONLY 4-key-signals + ATR-proxy-fallback trades --
+    # candidates carried signals={} so every downstream analytic degraded).
+    # screen_lead_lag_sector() is intentionally PRESERVED unused for the M10
+    # sector-rotation deliberate rebuild (S6-B1248-NEW-STRATEGIES-M1-M15);
+    # a rebuilt version must register in ALL_STRATEGIES + emit full signals.
+    lead_lag = []  # was: screen_lead_lag_sector(ohlcv_dict, info_dict, as_of)
 
     candidates.sort(key=lambda x: (x["strategy_count"], x["tech_signal_count"]), reverse=True)
     logger.info("screen_universe [%s] regime=%s: %d/%d passed (incl. %d lead-lag)",

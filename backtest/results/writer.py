@@ -59,6 +59,13 @@ def write_all_outputs(
             # is empty dict everywhere). Replace empty dict/list with None
             # so pyarrow infers null type instead of empty struct.
             df_parquet = df_trades.copy()
+            # B1273 (Council 313, FIX-1b owner-approved): defensive coercion --
+            # context_bullets must be uniformly list-typed for pyarrow; a bare
+            # string from any strategy (rung-2 dc20 case) becomes a 1-elem list
+            # instead of failing the whole canonical parquet write.
+            if "context_bullets" in df_parquet.columns:
+                df_parquet["context_bullets"] = df_parquet["context_bullets"].apply(
+                    lambda v: [v] if isinstance(v, str) else v)
             for col in df_parquet.columns:
                 if df_parquet[col].dtype != "object":
                     continue

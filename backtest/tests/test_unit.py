@@ -6482,7 +6482,12 @@ def test_dec458_lead_lag_excludes_etf_sectors():
 
 
 def test_dec458_lead_lag_wired_in_screen_universe():
-    """DEC-458: lead_lag_sector_rotation appears in screen_universe output."""
+    """B1273 (Council 313, FIX-2 owner-approved 2026-07-09) INVERTS this pin:
+    DEC-458's lead_lag merge is REMOVED (S6-B1250-ENG4 registry bypass; the
+    15 rung-2 lead_lag trades were the only 4-key-signals + ATR-proxy trades).
+    New pin: lead_lag_sector_rotation must NOT appear in screen_universe
+    output. Original wiring pin preserved in git history; the M10 rebuild
+    (S6-B1248-NEW-STRATEGIES-M1-M15) will re-pin a registered version."""
     from backtest.signals.screener import screen_universe
     as_of = date(2024, 6, 1)
     ohlcv = {
@@ -6494,7 +6499,8 @@ def test_dec458_lead_lag_wired_in_screen_universe():
     info = {t: {"sector": "Financials"} for t in ohlcv}
     candidates = screen_universe(ohlcv, info, as_of)
     all_strats = [s["strategy"] for c in candidates for s in c.get("strategies", [])]
-    assert "lead_lag_sector_rotation" in all_strats, "DEC-458 not wired into screen_universe"
+    assert "lead_lag_sector_rotation" not in all_strats, (
+        "B1273 FIX-2: registry-bypass candidates must not be injected")
 
 
 # ---------------------------------------------------------------------------
@@ -12729,3 +12735,60 @@ def test_b1261_eng3_parquet_failure_writes_marker(tmp_path, monkeypatch):
     assert (tmp_path / "trade_log.parquet.FAILED").exists(), (
         "failed parquet write must leave explicit marker (ENG-3)")
     assert (tmp_path / "trade_log.csv").exists(), "CSV fallback still written"
+
+
+# ---------------------------------------------------------------------------
+# B1273 (Council 313, FIX-1/FIX-2 owner-approved 2026-07-09): rung-2 HALT fixes
+# ---------------------------------------------------------------------------
+
+def test_b1273_fix1_dc20_bullets_are_lists():
+    """FIX-1a: strat_dc20_break_retest context bullets are LISTS (the bare
+    strings at screener.py:3159 were the only such call site and broke the
+    rung-2 parquet write via pyarrow mixed-type rejection)."""
+    from backtest.signals.screener import strat_dc20_break_retest
+    s = {"resistance_break_retest": True, "vol_below_avg": True,
+         "adx_trending": True, "close_in_top_40pct_of_range": True,
+         "close_above_open": True}
+    r = strat_dc20_break_retest(s)
+    assert r is not None and r.get("context_bullets") is not None
+    assert isinstance(r["context_bullets"], list), (
+        "context_bullets contract: always a list (B1273 FIX-1a)")
+
+
+def test_b1273_fix1b_writer_coerces_string_bullets(tmp_path):
+    """FIX-1b: a bare-string context_bullets row no longer kills the
+    canonical parquet -- writer coerces to 1-elem list."""
+    import pandas as pd
+    from backtest.results.writer import write_all_outputs
+    df = pd.DataFrame([
+        {"ticker": "AAA", "strategy": "s1", "exit_reason": "x",
+         "regime": "bull", "combo_id": "a", "context_bullets": ["a", "b"],
+         "signals_at_entry": {"k": 1}},
+        {"ticker": "BBB", "strategy": "s2", "exit_reason": "x",
+         "regime": "bull", "combo_id": "b", "context_bullets": "bare string",
+         "signals_at_entry": {"k": 2}},
+    ])
+    try:
+        write_all_outputs(df_trades=df, metrics=pd.DataFrame(), skipped=[],
+                          cb_log=[], exit_compare=pd.DataFrame(),
+                          output_dir=tmp_path)
+    except Exception:
+        pass  # later blocks may reject minimal inputs; parquet block runs first
+    assert (tmp_path / "trade_log.parquet").exists(), (
+        "mixed str/list context_bullets must be coerced, not fail the write")
+    assert not (tmp_path / "trade_log.parquet.FAILED").exists()
+
+
+def test_b1273_fix2_lead_lag_merge_removed():
+    """FIX-2: screen_universe no longer injects lead_lag_sector_rotation
+    candidates (S6-B1250-ENG4 registry bypass; 15 rung-2 trades were the
+    only 4-key-signals + ATR-proxy trades). Function preserved for M10."""
+    import inspect
+    from backtest.signals import screener
+    src = inspect.getsource(screener.screen_universe)
+    assert "was: screen_lead_lag_sector" in src, "removal marker present"
+    assert "screen_lead_lag_sector(ohlcv_dict" not in src.replace(
+        "# was: screen_lead_lag_sector(ohlcv_dict", ""), (
+        "no live call to screen_lead_lag_sector in screen_universe")
+    assert hasattr(screener, "screen_lead_lag_sector"), (
+        "function preserved for M10 rebuild")

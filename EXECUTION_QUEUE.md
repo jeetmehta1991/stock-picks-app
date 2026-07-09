@@ -5564,6 +5564,10 @@ CLAUDE.md banner synced per owner approval (869->871 supersedes: committed value
 
 **ALL THREE PRE-R5 BLOCKERS NOW SHIPPED (ENG-1 B1260 + ENG-2/3 B1263). Pyramid 871+2 GREEN. Next: S6-B1259-DATA-READINESS-AUDIT (owner order item 3).**
 
+### B1273 (2026-07-09 Council 313): FIX-1 + FIX-2 SHIPPED (owner "1 2 3 approved execute now")
+
+FIX-1a: strat_dc20_break_retest bullets str->list (screener.py:3159; the only bare-string _strat3 call site). FIX-1b: writer.py defensive context_bullets list-coercion in parquet prep (class-level immunity). FIX-2: DEC-458 lead_lag merge REMOVED from screen_universe (function preserved unused for M10 rebuild); RESOLVES S6-B1250-ENG4 + S6-B1248-LEAD-LAG-ORPHAN. Old DEC-458 wiring pin test INVERTED with lineage note (must NOT appear). 3 new pin tests + 1 inverted; pyramid 871->874+2 GREEN. REVIEW-3 probes next; rung 3 gate after.
+
 ### B1272 (2026-07-09 Council 312): RUNG 2 COMPLETE — REQ-5 HALT (2 fixes + 7 review flags before rung 3)
 
 Run: 617 trades / 1043 days / 3h10m wall (est 4-6) / exit 0 / hourly heartbeats delivered / fail-loud monitor caught both issues in-flight.
