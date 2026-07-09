@@ -1,0 +1,159 @@
+{
+  "audit_date": "2026-07-08",
+  "universe_size": 1937,
+  "sources": {
+    "ohlcv:backtest\\data\\cache\\ohlcv": {
+      "present": true,
+      "files": 2123,
+      "universe_coverage": 1927,
+      "universe_coverage_pct": 99.5,
+      "sampled": 25,
+      "date_min": "2021-05-06",
+      "date_max": "2026-05-05"
+    },
+    "ohlcv:data_prefetch\\polygon\\ohlcv_daily": {
+      "present": true,
+      "files": 1931,
+      "universe_coverage": 1927,
+      "universe_coverage_pct": 99.5,
+      "sampled": 25,
+      "date_min": "2021-05-11",
+      "date_max": "2026-05-08"
+    },
+    "finra_short_interest": {
+      "present": true,
+      "files": 1926,
+      "universe_coverage": 1925,
+      "universe_coverage_pct": 99.4,
+      "sampled": 25,
+      "date_min": "2021-06-15",
+      "date_max": "2026-04-30",
+      "path": "data_prefetch\\finra\\short_interest",
+      "shares_outstanding_null_or_zero_rate": 1.0
+    },
+    "finnhub_profile2": {
+      "present": true,
+      "files": 1937,
+      "universe_coverage": 1935,
+      "universe_coverage_pct": 99.9,
+      "sampled": 25,
+      "date_min": null,
+      "date_max": null,
+      "path": "data_prefetch\\finnhub\\profile2"
+    },
+    "finnhub_company_news": {
+      "present": true,
+      "files": 1937,
+      "universe_coverage": 1935,
+      "universe_coverage_pct": 99.9,
+      "sampled": 25,
+      "date_min": "2018-07-27",
+      "date_max": "2026-05-08",
+      "path": "data_prefetch\\finnhub\\company_news"
+    },
+    "polygon_news": {
+      "present": true,
+      "files": 1927,
+      "universe_coverage": 1924,
+      "universe_coverage_pct": 99.3,
+      "sampled": 25,
+      "date_min": null,
+      "date_max": null,
+      "path": "data_prefetch\\polygon\\news"
+    },
+    "quiver_congress": {
+      "present": true,
+      "files": 1941,
+      "universe_coverage": 1935,
+      "universe_coverage_pct": 99.9,
+      "sampled": 25,
+      "date_min": null,
+      "date_max": null,
+      "path": "data_prefetch\\quiver\\congressional"
+    },
+    "quiver_insider": {
+      "present": true,
+      "files": 1941,
+      "universe_coverage": 1935,
+      "universe_coverage_pct": 99.9,
+      "sampled": 25,
+      "date_min": null,
+      "date_max": null,
+      "path": "data_prefetch\\quiver\\insider"
+    },
+    "quiver_institutional": {
+      "present": true,
+      "files": 1941,
+      "universe_coverage": 1935,
+      "universe_coverage_pct": 99.9,
+      "sampled": 25,
+      "date_min": null,
+      "date_max": null,
+      "path": "data_prefetch\\quiver\\institutional"
+    },
+    "sec_edgar_13d": {
+      "present": true,
+      "files": 1715,
+      "universe_coverage": 1712,
+      "universe_coverage_pct": 88.4,
+      "sampled": 25,
+      "date_min": null,
+      "date_max": null,
+      "path": "data_prefetch\\sec_edgar\\SC_13D"
+    },
+    "sec_edgar_8k": {
+      "present": true,
+      "files": 1716,
+      "universe_coverage": 1713,
+      "universe_coverage_pct": 88.4,
+      "sampled": 25,
+      "date_min": null,
+      "date_max": null,
+      "path": "data_prefetch\\sec_edgar\\8_K"
+    },
+    "polygon_financials_earnings_source": {
+      "present": true,
+      "files": 1937,
+      "universe_coverage": 1935,
+      "universe_coverage_pct": 99.9,
+      "sampled": 25,
+      "date_min": null,
+      "date_max": null,
+      "path": "data_prefetch\\polygon\\financials"
+    },
+    "index_rebalance_events": {
+      "present": false
+    },
+    "fred_vixcls": {
+      "present": true,
+      "rows": 1623,
+      "get_vix_rows": 1623
+    },
+    "fred_t10y2y": {
+      "present": true,
+      "rows": 1588
+    },
+    "aaii_weekly": {
+      "present": true,
+      "rows": 2022
+    },
+    "institutional_persistence_t1a": {
+      "present": true,
+      "files": 5,
+      "universe_coverage": 0,
+      "universe_coverage_pct": 0.0,
+      "sampled": 5,
+      "date_min": null,
+      "date_max": null
+    },
+    "cointegrated_pairs_t1a": {
+      "present": true,
+      "files": 5,
+      "universe_coverage": 0,
+      "universe_coverage_pct": 0.0,
+      "sampled": 5,
+      "date_min": null,
+      "date_max": null
+    }
+  }
+}

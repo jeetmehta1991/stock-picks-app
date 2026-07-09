@@ -5564,6 +5564,14 @@ CLAUDE.md banner synced per owner approval (869->871 supersedes: committed value
 
 **ALL THREE PRE-R5 BLOCKERS NOW SHIPPED (ENG-1 B1260 + ENG-2/3 B1263). Pyramid 871+2 GREEN. Next: S6-B1259-DATA-READINESS-AUDIT (owner order item 3).**
 
+### B1264 (2026-07-08 Council 305 cont.): S6-B1259-DATA-READINESS-AUDIT EXECUTED — GREEN with 3 exceptions
+
+New re-runnable `scripts/data_readiness_audit.py` (presence + universe coverage vs 1,937 Master symbols + temporal span + critical-field checks). Report: `output_audit/DATA_READINESS_AUDIT_2026_07_08.md` + JSON artifact. Two script errors caught + fixed mid-run (quiver/sec_edgar path phantom-names produced false MISSINGs; null-rate double-count) - corrected-run numbers only.
+
+Findings: OHLCV 99.5% / window-complete to 2026-05-05 (2mo stale = post-R5 refresh, already ticketed); FINRA shares_outstanding 100% NULL confirmed at scale (B1240 fallback covers, 99.9%); quiver+edgar+financials 88-99.9%; VIX consumable via engine path; finnhub news sampled back to 2018 (better than B1242 belief; L201 per-ticker variance applies); ONLY missing artifact = index_rebalance_events.parquet (4 strategies BLOCKED_UPSTREAM, known); S5-B1216 persistence gap stands (1 strategy).
+
+3 scope-lock decision points put to owner (recommendations: run R5 with 4 index strategies blocked; accept B1230 degradation; R5 on existing window ending 2026-05-05). Scope locks on owner acceptance -> R5 phase ladder begins.
+
 ### B1262 (2026-07-08 Council 304): SILENT-MISS VERIFICATION SWEEP (owner-prompted) — 3 found, 2 fixed, 1 proposed
 
 Owner: "Any silent misses?" Executed checks (grep L-headings, ATR-fallback site census, mini-run atr-key probe, queue coverage):
