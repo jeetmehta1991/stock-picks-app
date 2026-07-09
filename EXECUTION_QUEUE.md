@@ -5564,6 +5564,25 @@ CLAUDE.md banner synced per owner approval (869->871 supersedes: committed value
 
 **ALL THREE PRE-R5 BLOCKERS NOW SHIPPED (ENG-1 B1260 + ENG-2/3 B1263). Pyramid 871+2 GREEN. Next: S6-B1259-DATA-READINESS-AUDIT (owner order item 3).**
 
+### B1272 (2026-07-09 Council 312): RUNG 2 COMPLETE — REQ-5 HALT (2 fixes + 7 review flags before rung 3)
+
+Run: 617 trades / 1043 days / 3h10m wall (est 4-6) / exit 0 / hourly heartbeats delivered / fail-loud monitor caught both issues in-flight.
+
+GATES: G1 CONDITIONAL-PASS (602/617 trades 663-770 signal keys; 15 trades at 4 keys = ALL lead_lag_sector_rotation, the ENG-4 registry-bypass strategy — same 15 = the only ATR-proxy fallbacks). G2 PASS (checkpoint parses 663+ keys via resume path). G3 **FAIL-AS-DESIGNED** (parquet absent; ENG-3 .FAILED marker + ERROR fired correctly; root cause: strat_dc20_break_retest passes context_bullets as bare STRINGS at screener.py:3159-3160 — every other strategy passes lists — 3 trades -> pyarrow mixed-type rejection). G4 PASS (ATR fallback 15/617 = 2.4% [OK], all attributable to lead_lag). G5 PASS (census emitted).
+
+REQ-4 QUIET-FIRE VERDICT: **180/192 quiet-fire CSV strategies now raw-firing at just 50 tickers** (were quiet at 150 pre-B1188). THE LOOSENING FIXES WORKED. 12 still-zero: 1 stale row (dxy_headwind, deleted B1189), 4 classification_change (rare-event data class), 7 flagged below.
+
+REQ-6 CENSUS: 208/219 strategies raw-fired. 11 zero-fire flags: 4x classification_change (defensible: rare reclassification events), squeeze_setup_long (by-design rare, EXPLORATORY), gold_silver_risk_off_long + sector_rotation_defensive_long (need defensive-sector x regime coincidence — plausible at 50 tickers, re-check rung 3), news_reversal_long (siblings fire 14-6018 raw; its 6-gate stack too strict — B1248 F16 rec stands), rsi21_slow + rsi_overbought_short (suspicious: simple gates, 1043 days, 0 fires — producer/gate review), weekly_bias_pullback_short (bear-regime dependent; 2022 bear present — review).
+
+B832 news SPOF sentinel: tripped ONCE at start (50 consecutive empties, cold cache) then recovered (news strategies 14-6018 raw fires) — transient, noted.
+
+**REQ-5 HALT — rung 3 blocked pending:**
+| Item | Action | Status |
+|---|---|---|
+| FIX-1 | dc20_break_retest context_bullets str->list (2-line, screener.py:3159) + pin test | awaiting owner approve |
+| FIX-2 | ENG-4 lead_lag registry decision NOW ACTIVE (15 polluted trades/rung): register formally OR remove DEC-458 merge | awaiting owner decision |
+| REVIEW-3 | rsi21_slow + rsi_overbought_short + weekly_bias_pullback_short + news_reversal_long producer/gate review | to run after FIX approvals |
+
 ### B1271 (2026-07-09 Council 311): RUNG 2 LAUNCHED (owner: "Launch rung 2")
 
 50 tickers (every-3rd of sorted Batch A 150, deterministic; list persisted to output_batch_A_150/rung2_tickers.txt), locked window 2022-05-05..2026-05-05, EMIT_RAW_SIGNAL_FIRES=1, output_r5_rung2. Liveness verified (day-1 sim + Quiver feeds loaded + 4 procs). Est 4-6 hr.
