@@ -5564,6 +5564,10 @@ CLAUDE.md banner synced per owner approval (869->871 supersedes: committed value
 
 **ALL THREE PRE-R5 BLOCKERS NOW SHIPPED (ENG-1 B1260 + ENG-2/3 B1263). Pyramid 871+2 GREEN. Next: S6-B1259-DATA-READINESS-AUDIT (owner order item 3).**
 
+### B1280 (2026-07-15 Council 317 cont.): MIGRATION ROUTE SWITCHED TO GOOGLE DRIVE (owner: no pendrive)
+
+Parts A/C rewritten: 2 zips (right-click Compress) -> drive.google.com upload -> download + Extract All on new laptop (double-nesting warning added). Nearby Sharing noted as same-WiFi alternative. E3 added: delete zips from Drive after migration (.env keys in project zip).
+
 ### B1279 (2026-07-15 Council 317 cont.): MIGRATION GUIDE SIMPLIFIED (owner: "too complicated")
 
 Guide rewritten as copy-everything path: 2 folders via USB (whole project dir incl. data+.env ~3-5GB + Claude project folder ~450MB), 4 program installs, 3 command blocks, D3 resume-verification moment, troubleshooting table. Advanced clone-path preserved in git history. Parts A-E, ~1 hr total.

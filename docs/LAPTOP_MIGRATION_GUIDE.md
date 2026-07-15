@@ -5,26 +5,22 @@
 
 ---
 
-## PART A — On your OLD laptop (15 min)
+## PART A — On your OLD laptop: put 2 zips on Google Drive (20-40 min, mostly upload)
 
-**A1.** Plug in a USB drive (needs ~5 GB free; an external SSD is faster).
+**A1.** Open File Explorer, go to `C:\Users\jeetm\Github`. Right-click the `stock-picks-app` folder → **Compress to ZIP file**. Wait for `stock-picks-app.zip` (~2-4 GB) to finish.
+This zip is EVERYTHING — code, data, run results, and your API keys (.env).
 
-**A2.** Open File Explorer. Copy this folder onto the USB drive (right-click → Copy, then Paste into the USB drive):
-```
-C:\Users\jeetm\Github\stock-picks-app
-```
-This is EVERYTHING — code, data, run results, and your API keys (.env). Nothing else from the project is needed. (~3-5 GB, takes a few minutes.)
+**A2.** Go to `C:\Users\jeetm\.claude\projects`. Right-click the folder `c--Users-jeetm-Github-stock-picks-app` → **Compress to ZIP file** (~400 MB).
+This zip is your entire Claude Code history for this project — every session (including the current one) and Claude's memory.
+*Can't see the `.claude` folder? File Explorer → View → Show → Hidden items.*
 
-**A3.** Copy this second folder onto the USB drive the same way:
-```
-C:\Users\jeetm\.claude\projects\c--Users-jeetm-Github-stock-picks-app
-```
-This is your entire Claude Code history for this project — every session (including the current one) and Claude's memory. (~450 MB.)
-*Can't see the `.claude` folder? In File Explorer click View → Show → Hidden items.*
+**A3.** Go to **drive.google.com** (your jeetmehta1991@gmail.com account) → New → File upload → upload both zips. (The project zip takes the longest — start it and walk away.)
 
 **A4.** In VS Code: click the little account icon (bottom-left) → **Turn on Settings Sync** (if it isn't already) → sign in with GitHub. This puts your VS Code settings and extensions in the cloud.
 
 Done with the old laptop. Don't wipe it yet — keep it until Part D passes.
+
+*Alternative if both laptops are on the same WiFi and you'd rather skip the upload: Windows **Nearby Sharing** (Settings → System → Nearby sharing → Everyone nearby, on BOTH laptops; then right-click each zip → Share → pick the new laptop). Faster on slow internet; the Drive route is more reliable for multi-GB files.*
 
 ---
 
@@ -42,18 +38,19 @@ Install these, in this order, accepting the default options:
 
 ---
 
-## PART C — On your NEW laptop: paste the 2 folders (15 min)
+## PART C — On your NEW laptop: download + extract the 2 zips (15 min + download time)
 
-**C1.** Plug in the USB drive.
+**C1.** Go to drive.google.com, download both zips.
 
 **C2.** Create the folder `Github` in your user folder if it doesn't exist: open File Explorer, go to `C:\Users\<YOURNAME>`, right-click → New → Folder → name it `Github`.
 
-**C3.** Copy `stock-picks-app` from the USB drive into that `Github` folder. Final result must be exactly:
+**C3.** Right-click `stock-picks-app.zip` → **Extract All** → extract so the final result is exactly:
 ```
 C:\Users\<YOURNAME>\Github\stock-picks-app
 ```
+(⚠ Watch for double-nesting: if extraction gives you `...\Github\stock-picks-app\stock-picks-app\`, move the inner folder up one level.)
 
-**C4.** Copy the second folder from the USB into `C:\Users\<YOURNAME>\.claude\projects\` (the `.claude` folder was created when you logged into Claude Code in step B4).
+**C4.** Right-click the second zip → Extract All → put the extracted folder into `C:\Users\<YOURNAME>\.claude\projects\` (the `.claude` folder was created when you logged into Claude Code in step B4). Same double-nesting check.
 
 **C5.** ⚠ **ONLY IF your username on the new laptop is NOT `jeetm`:** rename the folder you just pasted. The name encodes the path — replace `jeetm` with your new username:
 - was: `c--Users-jeetm-Github-stock-picks-app`
@@ -94,6 +91,8 @@ A list of past sessions appears. Pick the newest one (the R5 ladder session). As
 **E1.** On github.com → Settings → Developer settings → Personal access tokens: revoke the old laptop's token; create a new one when Claude next needs to push (it will ask).
 
 **E2.** Keep the old laptop untouched for a week as backup, then delete at will.
+
+**E3.** Delete both zips from Google Drive (the project zip contains your `.env` API keys — don't leave it in the cloud longer than needed).
 
 ---
 
