@@ -5564,6 +5564,14 @@ CLAUDE.md banner synced per owner approval (869->871 supersedes: committed value
 
 **ALL THREE PRE-R5 BLOCKERS NOW SHIPPED (ENG-1 B1260 + ENG-2/3 B1263). Pyramid 871+2 GREEN. Next: S6-B1259-DATA-READINESS-AUDIT (owner order item 3).**
 
+### B1276 (2026-07-15 Council 315): RUNG 3 INTERRUPTED (session close 2026-07-10, day 813/1043) + RESUMED DETACHED (owner: "resume rung 3")
+
+Interruption forensics: previous Claude Code session exit killed the child engine process at sim-day 813 (78%), 534 trades, 2026-07-10 02:28 local. NOT a crash - process teardown; engine_state 'running' was the frozen heartbeat. Checkpoint INTACT: 534 trades, signals 707-761 keys parsing through the resume-reader path (ENG-1 fix holding through checkpoint at scale). open_trades=0 at freeze -> nothing dropped by the B1076 resume caveat.
+
+Resume launched 2026-07-15 02:20 via Start-Process DETACHED (survives session close - lesson applied immediately, and codified for rung 4). --resume-from-checkpoint output_r5_rung3; ~230 sim-days remaining (~2-2.5 hr). Monitor re-armed (process-liveness + stderr Traceback + hourly heartbeat; watches day>813 for terminal to ignore stale state).
+
+NOTE for rung-4 spec: engine runs MUST be detached from harness session (Start-Process / scheduled task) - session lifetime is now a proven interruption vector alongside spot/power.
+
 ### B1275 (2026-07-09 Council 314): RUNG 3 LAUNCHED (owner: "Launch rung 3")
 
 Exact Batch A 150 (deduped, persisted rung3_tickers.txt), locked window, EMIT_RAW_SIGNAL_FIRES=1, output_r5_rung3, post-B1273-fixes build. Liveness verified (cache loading 60/151). Persistent fail-loud monitor + hourly heartbeat armed. Est ~8-10 hr (rung-2-calibrated). Completion deliverables: 5 gates at 150-scale (incl. parquet PASS expectation post-FIX-1 + zero lead_lag trades post-FIX-2) + req-4 FULL-SCALE quiet-fire before/after (native 150-ticker comparability) + req-6 census + rung-4 chunking decision package.
