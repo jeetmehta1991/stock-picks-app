@@ -5564,6 +5564,16 @@ CLAUDE.md banner synced per owner approval (869->871 supersedes: committed value
 
 **ALL THREE PRE-R5 BLOCKERS NOW SHIPPED (ENG-1 B1260 + ENG-2/3 B1263). Pyramid 871+2 GREEN. Next: S6-B1259-DATA-READINESS-AUDIT (owner order item 3).**
 
+### B1277 (2026-07-15 Council 316): RUNG 3 EVAL + FIX-3/FIX-4 SHIPPED — RUNG 4 HELD BY OWNER
+
+RUNG 3 COMPLETE: 951 trades (534 restored + 417 fresh); G1 PASS 682-772 keys BOTH segments; G2 PASS (resume produced new trades); G4 PASS 0.0% ATR fallback; FIX-2 verified (0 lead_lag); cube 1,768 cells (68 strat x 26). Req-4 combined rungs 2+3: 180/192 verified firing; 145 strategies traded. G3 FAIL-AS-DESIGNED #2: pyarrow cross-segment struct type conflict (restored JSON-typed vs fresh runtime-typed signals).
+
+FIX-3 SHIPPED (owner "approve a"): parquet stores signals_at_entry/context_bullets/agent_reasoning as canonical JSON strings via dumps_signals (immune to nested type drift; consumers read via loads_signals). FIX-4 SHIPPED: raw-fires census flushed at checkpoint cadence (rung-3 G5 gap: interrupted segment census died in memory); ENG-10 closed same-batch (checkpoint write failures now logged). 2+1 pin tests; pyramid 876+2 GREEN.
+
+CONFIG DIVERGENCE DISCLOSED: rungs 1-3 ran deployment-mode (portfolio cap ON) vs Batch A cube spec (--phase 1a-beta --no-portfolio-cap --no-dd-halt --no-news --no-walk-forward) -> 951 vs 8,433 trades. Engine-health + raw-fire verification unaffected (pre-cap). Rung 4 spec = cube-mode flags + detached + chunked.
+
+**RUNG 4: OWNER DIRECTIVE "Dont run rung 4" — HELD. No launch without explicit command.** Est if/when approved: ~5-6 days local serial (4 chunks x ~33 hr at measured 150-ticker/10.5-hr cube-mode anchor); chunk-1 actual will calibrate; pool-worker tuning may compress.
+
 ### B1276 (2026-07-15 Council 315): RUNG 3 INTERRUPTED (session close 2026-07-10, day 813/1043) + RESUMED DETACHED (owner: "resume rung 3")
 
 Interruption forensics: previous Claude Code session exit killed the child engine process at sim-day 813 (78%), 534 trades, 2026-07-10 02:28 local. NOT a crash - process teardown; engine_state 'running' was the frozen heartbeat. Checkpoint INTACT: 534 trades, signals 707-761 keys parsing through the resume-reader path (ENG-1 fix holding through checkpoint at scale). open_trades=0 at freeze -> nothing dropped by the B1076 resume caveat.

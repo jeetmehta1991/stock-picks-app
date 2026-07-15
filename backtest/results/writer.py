@@ -66,6 +66,19 @@ def write_all_outputs(
             if "context_bullets" in df_parquet.columns:
                 df_parquet["context_bullets"] = df_parquet["context_bullets"].apply(
                     lambda v: [v] if isinstance(v, str) else v)
+            # B1277 (Council 316, FIX-3 owner-approved 2026-07-09 "approve a"):
+            # nested dict/list columns stored as canonical JSON STRINGS in the
+            # parquet too (same signals_serde contract as the CSV). Rung-3
+            # failure mode: pyarrow could not unify the signals_at_entry
+            # struct across the resume boundary (restored trades carry
+            # JSON-normalized types, fresh trades runtime types -> int-vs-str
+            # conflicts). A string column is immune to nested type drift;
+            # every consumer already reads via loads_signals (B1260 contract).
+            from backtest.util.signals_serde import dumps_signals
+            for _c in ("signals_at_entry", "context_bullets", "agent_reasoning"):
+                if _c in df_parquet.columns:
+                    df_parquet[_c] = df_parquet[_c].apply(
+                        lambda v: dumps_signals(v) if isinstance(v, (dict, list)) else v)
             for col in df_parquet.columns:
                 if df_parquet[col].dtype != "object":
                     continue

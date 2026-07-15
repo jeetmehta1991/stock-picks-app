@@ -937,8 +937,21 @@ class BacktestEngine:
                     _os.replace(checkpoint_tmp, checkpoint_path)
                     logger.debug("Checkpoint: %d trades -> %s", len(self.closed_trades), checkpoint_path)
                     _csv_written = True  # B1089 atomic-pair tracking
-                except Exception:
-                    pass
+                except Exception as _chk_exc:
+                    # B1277 (FIX-4 companion; closes B1250 ENG-10 while here):
+                    # checkpoint write failure now logged, not swallowed.
+                    logger.warning("Checkpoint CSV write failed: %s", _chk_exc)
+                # B1277 (Council 316, FIX-4 owner-approved): flush the raw
+                # signal-fire counter at checkpoint cadence. Rung-3 lesson:
+                # the counter lived only in memory until end-of-run emit, so
+                # the interrupted segment's census died with the process --
+                # G5 could only cover the resume segment. PID-tagged file is
+                # simply overwritten with cumulative counts each checkpoint.
+                try:
+                    from backtest.signals.screener import emit_raw_signal_fire_counts
+                    emit_raw_signal_fire_counts(self.output_dir)
+                except Exception as _rf_exc:
+                    logger.debug("raw-fires checkpoint flush skipped: %s", _rf_exc)
 
             # B1042 (2026-06-28) Council 136 Option-7 Layer 1 + B1043 Council 138
             # Sub-A F-01/F-05 fix: engine_state.json emission with SCHEMA MATCHING

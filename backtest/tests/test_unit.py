@@ -12792,3 +12792,53 @@ def test_b1273_fix2_lead_lag_merge_removed():
         "no live call to screen_lead_lag_sector in screen_universe")
     assert hasattr(screener, "screen_lead_lag_sector"), (
         "function preserved for M10 rebuild")
+
+
+# ---------------------------------------------------------------------------
+# B1277 (Council 316, FIX-3/FIX-4 owner-approved 2026-07-09 "approve a")
+# ---------------------------------------------------------------------------
+
+def test_b1277_fix3_parquet_survives_mixed_type_signals(tmp_path):
+    """FIX-3: signals dicts with CONFLICTING value types across rows (the
+    rung-3 resume-boundary failure: int in one row, str in another for the
+    same key) no longer kill the parquet -- stored as JSON strings and
+    round-trip via loads_signals."""
+    import pandas as pd
+    from backtest.results.writer import write_all_outputs
+    from backtest.util.signals_serde import loads_signals
+    df = pd.DataFrame([
+        {"ticker": "AAA", "strategy": "s1", "exit_reason": "x", "regime": "bull",
+         "combo_id": "a", "context_bullets": ["b1"],
+         "signals_at_entry": {"k": 1, "j": True}},          # int / bool
+        {"ticker": "BBB", "strategy": "s2", "exit_reason": "x", "regime": "bull",
+         "combo_id": "b", "context_bullets": ["b2"],
+         "signals_at_entry": {"k": "1", "j": 0.5}},         # str / float CONFLICT
+    ])
+    try:
+        write_all_outputs(df_trades=df, metrics=pd.DataFrame(), skipped=[],
+                          cb_log=[], exit_compare=pd.DataFrame(),
+                          output_dir=tmp_path)
+    except Exception:
+        pass  # later blocks may reject minimal inputs; parquet block runs first
+    assert (tmp_path / "trade_log.parquet").exists(), (
+        "cross-row type conflicts must not fail the canonical parquet (FIX-3)")
+    assert not (tmp_path / "trade_log.parquet.FAILED").exists()
+    back = pd.read_parquet(tmp_path / "trade_log.parquet")
+    d0 = loads_signals(back["signals_at_entry"].iloc[0], {})
+    assert d0.get("k") == 1 and d0.get("j") is True, "JSON round-trip intact"
+
+
+def test_b1277_fix4_raw_fires_flushed_at_checkpoint(tmp_path, monkeypatch):
+    """FIX-4: emit_raw_signal_fire_counts writes the PID-tagged census file
+    when the counter is armed + populated (checkpoint-cadence flush ensures
+    an interrupted run no longer loses its census -- rung-3 G5 gap)."""
+    import backtest.signals.screener as scr
+    monkeypatch.setattr(scr, "_B901_EMIT_RAW_FIRES", True, raising=False)
+    counter = getattr(scr, "_RAW_SIGNAL_FIRE_COUNTER", None)
+    assert counter is not None, "B901 counter must exist"
+    monkeypatch.setitem(counter, "test_strategy_b1277", 7)
+    path = scr.emit_raw_signal_fire_counts(tmp_path)
+    assert path is not None and path.exists(), "census file written on flush"
+    import pandas as pd
+    d = pd.read_csv(path)
+    assert (d["strategy"] == "test_strategy_b1277").any()
