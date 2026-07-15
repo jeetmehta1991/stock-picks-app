@@ -5564,6 +5564,10 @@ CLAUDE.md banner synced per owner approval (869->871 supersedes: committed value
 
 **ALL THREE PRE-R5 BLOCKERS NOW SHIPPED (ENG-1 B1260 + ENG-2/3 B1263). Pyramid 871+2 GREEN. Next: S6-B1259-DATA-READINESS-AUDIT (owner order item 3).**
 
+### B1278 (2026-07-15 Council 317): LAPTOP MIGRATION GUIDE (owner-requested)
+
+docs/LAPTOP_MIGRATION_GUIDE.md written + committed (readable from the NEW laptop). 8 steps: prerequisites, repo clone + PAT + hooks install (Gate 5), non-git payload copy (2.8 GB data_prefetch + caches + outputs + .env), **Claude session+memory transfer** (~434 MB `~/.claude/projects/c--Users-jeetm-Github-stock-picks-app/` — CRITICAL path-slug rule: project must live at same-shaped path or the folder must be renamed to the new slug; `claude --resume` then lists this session), VS Code Settings Sync, venv recreate (pandas-ta parity note), 7-point verification checklist (pyramid 876+2 + data-readiness re-run + session resume), old-laptop decommission (PAT revoke). No runs in flight - migration-safe state (rung 4 HELD).
+
 ### B1277 (2026-07-15 Council 316): RUNG 3 EVAL + FIX-3/FIX-4 SHIPPED — RUNG 4 HELD BY OWNER
 
 RUNG 3 COMPLETE: 951 trades (534 restored + 417 fresh); G1 PASS 682-772 keys BOTH segments; G2 PASS (resume produced new trades); G4 PASS 0.0% ATR fallback; FIX-2 verified (0 lead_lag); cube 1,768 cells (68 strat x 26). Req-4 combined rungs 2+3: 180/192 verified firing; 145 strategies traded. G3 FAIL-AS-DESIGNED #2: pyarrow cross-segment struct type conflict (restored JSON-typed vs fresh runtime-typed signals).
