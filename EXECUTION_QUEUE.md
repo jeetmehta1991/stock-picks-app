@@ -5568,6 +5568,15 @@ CLAUDE.md banner synced per owner approval (869->871 supersedes: committed value
 
 B4 = install Claude Code VS Code extension + panel sign-in (CLI optional); D3 = Open Folder -> Claude panel -> History (clock icon) -> pick newest session (transfer mechanics UNCHANGED - extension uses the same ~/.claude/projects/ folder); troubleshooting row updated (folder-open requirement).
 
+### B1282 (2026-07-15 Council 318): NEW LAPTOP VERIFIED — 3.5x SLOWER; RUNG-4 VENUE DECISION OPENED
+(renumbered from B1281 during rebase: the old laptop's final session had already published B1281 for the guide adaptation — batch-number collision resolved remote-wins per publish order)
+
+Migration verification COMPLETE on new machine: pyramid **876+2 GREEN** (143.7s), session+memory resumed with full context (owner-confirmed state check), .env present, data_prefetch present, git hooks installed, pandas-ta absent (parity), Python 3.14.6.
+
+Specs: i7-1355U (10C/12T U-series low-power) + 16 GB RAM vs old laptop (~40s pyramid). **Measured ~3.5x slower on this workload.** Implications for rung 4 (currently HELD): old-laptop estimate was ~33hr/chunk x 4 = 5-6 days; on THIS machine plausibly 2-4x that (pytest is an imperfect proxy for the pooled engine - a timing rung would calibrate properly). 16 GB RAM also constrains --screen-pool-workers (workers duplicate ohlcv_dict).
+
+VENUE OPTIONS for rung 4 (owner decision): (a) run on OLD laptop (still alive per guide E2; has the measured 10.5hr/150 anchor; session stays here, engine runs there detached); (b) run HERE accepting longer wall-clock, calibrate via chunk-1 or a 150-ticker timing probe first; (c) revisit AWS (prior owner directive said local - only owner can reopen). No launch until owner picks.
+
 ### B1280 (2026-07-15 Council 317 cont.): MIGRATION ROUTE SWITCHED TO GOOGLE DRIVE (owner: no pendrive)
 
 Parts A/C rewritten: 2 zips (right-click Compress) -> drive.google.com upload -> download + Extract All on new laptop (double-nesting warning added). Nearby Sharing noted as same-WiFi alternative. E3 added: delete zips from Drive after migration (.env keys in project zip).
