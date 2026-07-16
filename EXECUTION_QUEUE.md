@@ -5568,6 +5568,14 @@ CLAUDE.md banner synced per owner approval (869->871 supersedes: committed value
 
 B4 = install Claude Code VS Code extension + panel sign-in (CLI optional); D3 = Open Folder -> Claude panel -> History (clock icon) -> pick newest session (transfer mechanics UNCHANGED - extension uses the same ~/.claude/projects/ folder); troubleshooting row updated (folder-open requirement).
 
+### B1283 (2026-07-16 Council 319): SPEED GAP ROOT-CAUSE + AWS $15 BUDGET ASSESSMENT
+
+Owner challenged 3.5x (specs similar) + asked for R5-completion guarantee within $15 AWS.
+
+Speed: warm re-run 151s (cold 144s) - cache/AV ruled out; measurement stands BUT power scheme = BALANCED on U-series (throttles sustained all-core). Recommended: AC + Best Performance mode + re-benchmark before venue decision. Owner action pending.
+
+AWS: NO completion guarantee possible at $15 (c6a.16xlarge spot ~$0.9-1.2/hr UNVERIFIED x 16-20hr = $14-24 straddles budget; spot interruption retries burn partial hours). Bounded-SPEND structure available (per-chunk execution + spend check between chunks + Budget alarm; worst case hybrid AWS+local with checkpoints). ALSO: ~/.aws credentials did NOT migrate (not in either zip). Recommendation: don't gamble $15 - old laptop (free, 5-6d) or fix power mode here; AWS only if topped to $25-30.
+
 ### B1282 (2026-07-15 Council 318): NEW LAPTOP VERIFIED — 3.5x SLOWER; RUNG-4 VENUE DECISION OPENED
 (renumbered from B1281 during rebase: the old laptop's final session had already published B1281 for the guide adaptation — batch-number collision resolved remote-wins per publish order)
 
