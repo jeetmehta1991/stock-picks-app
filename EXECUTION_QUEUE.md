@@ -5568,6 +5568,14 @@ CLAUDE.md banner synced per owner approval (869->871 supersedes: committed value
 
 B4 = install Claude Code VS Code extension + panel sign-in (CLI optional); D3 = Open Folder -> Claude panel -> History (clock icon) -> pick newest session (transfer mechanics UNCHANGED - extension uses the same ~/.claude/projects/ folder); troubleshooting row updated (folder-open requirement).
 
+### B1287 (2026-07-16 Council 323): HYBRID PATH LOCKED + LOCAL CUBE-MODE VALIDATION LAUNCHED
+
+Owner decision: local cube-mode validation NOW, then HYBRID (smoke + chunk 1 on AWS on-demand ~$14, chunks 2-4 local). Recorded.
+
+Launch 1 failed instantly - 1a-beta requires --max-run-hours (stderr help caught by post-launch liveness check; $0 cost). Relaunch with --max-run-hours 6.0: LIVE (3 procs, Quiver feeds loading). Full Batch-A cube spec: 1a-beta + no-portfolio-cap + no-dd-halt + no-news + no-walk-forward + pool 1; auto-enabled by phase: no-regime-affinity + no-event-suppression + max-cands 200. 5 tickers (rung-1 set), locked window, detached, monitor armed.
+
+VALIDATION PASS GATES (first cube-mode run of B1285 fixes): (1) trade_log.parquet present, no .FAILED (FIX-3 first cube-scale test); (2) earnings_blackout cube cells: no PF-219 class, avg_hold bounded ~<=90d (B1285 cap live); (3) recommended-exit flags shift off hybrid_50pct (new composite live); (4) trades >> rung-1's 118 (no cap => several hundred expected on 5 tickers); (5) signals integrity + 0% ATR fallback.
+
 ### B1286 (2026-07-16 Council 322): NEW-AWS-ACCOUNT CREDIT QUESTION — ADVISED AGAINST
 
 Owner asked whether a new AWS account for ~$140 free credits makes sense for R4. Advised NO: one-free-tier-per-customer terms + mechanical detection (payment method/identity) + suspension risk lands MID-RUN (the one failure mode with no checkpoint recovery) — to save ~$35-50 when a $0 all-local path exists. Legitimate options restated: top-up (~$40-50 full on-demand), hybrid $14 (smoke + chunk 1 AWS, rest local), all-local $0. Awaiting venue pick + local cube-mode validation go-ahead.
