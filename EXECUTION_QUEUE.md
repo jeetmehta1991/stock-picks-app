@@ -5568,6 +5568,20 @@ CLAUDE.md banner synced per owner approval (869->871 supersedes: committed value
 
 B4 = install Claude Code VS Code extension + panel sign-in (CLI optional); D3 = Open Folder -> Claude panel -> History (clock icon) -> pick newest session (transfer mechanics UNCHANGED - extension uses the same ~/.claude/projects/ folder); troubleshooting row updated (folder-open requirement).
 
+### B1284 (2026-07-16 Council 320): NON-AWS CONFIRMED + RE-BENCHMARK + R3 ANOMALY SCAN + R4 COUNT
+
+Owner: non-AWS preferred (recorded; $15 preserved). Re-benchmark: 111s (was 151s; ~27% gain from power change; still ~2.8x old laptop's ~40s). R4 = **1,927 tickers** (Master 1,937 INTERSECT ohlcv cache 2,121, computed).
+
+R3 ANOMALY SCAN (951 trades): CLEAN on dates (0 inversions, 0 window violations), duplicates (0), signals integrity (742-760 keys + real ATR on random rows across resume segments). FLAGS:
+| # | Finding | Class |
+|---|---|---|
+| R3-F1 | 14 trades held >365d (max 662d), ALL exit_reason=trailing_stop | suspicious - trail should ratchet; ticket S6-B1284-LONG-HOLD-TRAIL-SPOTCHECK (verify trail updated across the hold on 2 samples) |
+| R3-F2 | orb_stocks_in_play_long x earnings_blackout cube cell: n=12 WR 83% PF 219.8 | KNOWN-OPEN P0 manifesting exactly as B1248 predicted - S6-B1248-EARNINGS-BLACKOUT-MAXHOLD + S6-B1248-COMPOSITE-EXPECTANCY-REWEIGHT not yet shipped; RECOMMEND shipping BOTH before R4 so the full cube isn't scored on contaminated cells (methodology fixes, pre-freeze tickets - owner approval requested) |
+| R3-F3 | exit concentration: trailing_stop 811/951 (85%); end_of_backtest 96 (10% censored) | deployment-mode expected (engine default trail); cube replay is where 26 exits tested; note only |
+| R3-F4 | CDE +108.4% via circuit_breaker_1 | plausible (2025 small-cap silver run; CB fired while in profit); note only |
+| R3-F5 | regime mix 736 bull/190 bear/25 neutral/0 crisis | crisis-zero plausible (2022 VIX peak ~35 below crisis threshold); neutral thin due hysteresis; observation |
+| R3-F6 | ticker concentration: ADSK 54 trades; 29/150 tickers zero trades | portfolio-cap slot monopolization (candidates sorted by strategy_count); disappears in R4 cube mode; note |
+
 ### B1283 (2026-07-16 Council 319): SPEED GAP ROOT-CAUSE + AWS $15 BUDGET ASSESSMENT
 
 Owner challenged 3.5x (specs similar) + asked for R5-completion guarantee within $15 AWS.
