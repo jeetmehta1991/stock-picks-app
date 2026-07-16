@@ -5568,6 +5568,13 @@ CLAUDE.md banner synced per owner approval (869->871 supersedes: committed value
 
 B4 = install Claude Code VS Code extension + panel sign-in (CLI optional); D3 = Open Folder -> Claude panel -> History (clock icon) -> pick newest session (transfer mechanics UNCHANGED - extension uses the same ~/.claude/projects/ folder); troubleshooting row updated (folder-open requirement).
 
+### B1288 (2026-07-16 Council 324): CUBE-MODE VALIDATION — ALL 5 GATES PASS
+
+455 trades / 5 tickers / <1 hr wall (beats 1.5-3hr est — favorable for chunk calibration). Gates:
+G1 PASS parquet present no marker (FIX-3 first cube-scale survival). G2 PASS earnings_blackout: max avg_hold 88d (was 692d) / max PF 13.2 (was 219); trade-level: 319 capped rides (233 no_upcoming_60d_cap + 86 no_earnings_known_60d_cap) + 19 natural — B1285 cap fully live. G3 PASS composite shift: hybrid_50pct recommended 5/33 (was 23% class-wide), next_pivot_target leads; all 5 remaining hybrid picks legitimately earned (PF 1.9-999, positive avg_pnl — spot-checked). G4 PASS 455 trades vs 118 deployment (3.9x, cap removal confirmed). G5 PASS signals 707-787 keys + 0.0% ATR fallback.
+
+**LOCAL VALIDATION COMPLETE — hybrid sequence unblocked.** Next: (i) AWS credentials on this machine (owner action: aws configure / paste keys — ~/.aws did not migrate); (ii) playbook Gates 1-5; (iii) ~$2.50 one-hour smoke; (iv) chunk-1 gate (~$12).
+
 ### B1287 (2026-07-16 Council 323): HYBRID PATH LOCKED + LOCAL CUBE-MODE VALIDATION LAUNCHED
 
 Owner decision: local cube-mode validation NOW, then HYBRID (smoke + chunk 1 on AWS on-demand ~$14, chunks 2-4 local). Recorded.
