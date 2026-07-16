@@ -5568,6 +5568,14 @@ CLAUDE.md banner synced per owner approval (869->871 supersedes: committed value
 
 B4 = install Claude Code VS Code extension + panel sign-in (CLI optional); D3 = Open Folder -> Claude panel -> History (clock icon) -> pick newest session (transfer mechanics UNCHANGED - extension uses the same ~/.claude/projects/ folder); troubleshooting row updated (folder-open requirement).
 
+### B1290 (2026-07-16 Council 325): RUNG 4 CHUNK 1 LAUNCHED LOCALLY (owner: "Start local run... ensure monitor armed")
+
+Hybrid re-sequenced by owner: local chunks first, AWS chunk later. Deterministic 4-chunk split generated + persisted (chunk1 A..CVRX 482 / chunk2 CVS..KNF 482 / chunk3 KNSL..RHLD 482 / chunk4 RIG..ZWS 481; files rung4_chunk*_tickers.txt).
+
+CHUNK 1 LIVE 12:09: 482 tickers, full cube spec (1a-beta, no-portfolio-cap, no-dd-halt, no-news, no-walk-forward, pool 1), locked window, EMIT_RAW_SIGNAL_FIRES=1, --max-run-hours 96 guard, DETACHED (survives session close), 30-min checkpoints + census flush (FIX-4). Monitor ARMED per owner requirement: process-liveness + stderr Traceback/CRITICAL + terminal-status + hourly heartbeat (monitor is session-bound; engine is not — on session close, engine continues, monitor re-arms next session).
+
+Duration: honestly wide band 1.5-4 days on this machine (5-ticker cube-val <1hr scaled ~100x ticker-days => ~2 days midpoint; chunk-1 actual calibrates chunks 2-4 + the AWS chunk decision). PASS gates at chunk boundary: artifacts complete (parquet clean), earnings-cap + composite behavior at scale, census, zero lead_lag, signals integrity.
+
 ### B1289 (2026-07-16 Council 324 cont.): IAM KEY-CREATION INSTRUCTIONS DELIVERED
 
 Owner asked where to find AWS keys. Instructed: create restricted IAM user `r5-runner` (EC2FullAccess + S3FullAccess, no console login) NOT root keys; access-key creation path + one-time-secret warning + delete-user-post-R5 cleanup step. Awaiting keys / aws-configure to proceed to Gates 1-5 -> smoke -> chunk-1 gate.
