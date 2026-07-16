@@ -5568,6 +5568,10 @@ CLAUDE.md banner synced per owner approval (869->871 supersedes: committed value
 
 B4 = install Claude Code VS Code extension + panel sign-in (CLI optional); D3 = Open Folder -> Claude panel -> History (clock icon) -> pick newest session (transfer mechanics UNCHANGED - extension uses the same ~/.claude/projects/ folder); troubleshooting row updated (folder-open requirement).
 
+### B1286 (2026-07-16 Council 322): NEW-AWS-ACCOUNT CREDIT QUESTION — ADVISED AGAINST
+
+Owner asked whether a new AWS account for ~$140 free credits makes sense for R4. Advised NO: one-free-tier-per-customer terms + mechanical detection (payment method/identity) + suspension risk lands MID-RUN (the one failure mode with no checkpoint recovery) — to save ~$35-50 when a $0 all-local path exists. Legitimate options restated: top-up (~$40-50 full on-demand), hybrid $14 (smoke + chunk 1 AWS, rest local), all-local $0. Awaiting venue pick + local cube-mode validation go-ahead.
+
 ### B1285 (2026-07-16 Council 321): PRE-R4 METHODOLOGY FIXES SHIPPED (owner "1 approved")
 
 S6-B1248-EARNINGS-BLACKOUT-MAXHOLD: SHIPPED. EARNINGS_BLACKOUT_MAX_BARS=60 caps ALL four ride paths (no_earnings_known / no_upcoming / tolerant / earnings-beyond-cap); 4 new cap reasons added to NON_FIRE_EXIT_REASONS; genuine T-1 blackout exits preserved. Kills the 692-day-hold class (B1248 P0-2) + the PF-219 cube cells (R3-F2).
