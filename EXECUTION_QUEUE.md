@@ -5568,6 +5568,14 @@ CLAUDE.md banner synced per owner approval (869->871 supersedes: committed value
 
 B4 = install Claude Code VS Code extension + panel sign-in (CLI optional); D3 = Open Folder -> Claude panel -> History (clock icon) -> pick newest session (transfer mechanics UNCHANGED - extension uses the same ~/.claude/projects/ folder); troubleshooting row updated (folder-open requirement).
 
+### B1285 (2026-07-16 Council 321): PRE-R4 METHODOLOGY FIXES SHIPPED (owner "1 approved")
+
+S6-B1248-EARNINGS-BLACKOUT-MAXHOLD: SHIPPED. EARNINGS_BLACKOUT_MAX_BARS=60 caps ALL four ride paths (no_earnings_known / no_upcoming / tolerant / earnings-beyond-cap); 4 new cap reasons added to NON_FIRE_EXIT_REASONS; genuine T-1 blackout exits preserved. Kills the 692-day-hold class (B1248 P0-2) + the PF-219 cube cells (R3-F2).
+
+S6-B1248-COMPOSITE-EXPECTANCY-REWEIGHT: SHIPPED. composite_score = 15% WR + 45% PF (log-scaled, continuous below 1.0) + 25% DD + 15% avg-R (new 4th arg; cube caller passes avg_pnl; legacy 3-arg neutral). Pin: hybrid_50pct-like cell now scores BELOW breakeven_plus_trail-like cell (the exact B1248 P0-1 inversion).
+
+2 pin tests; pyramid 878+2 GREEN (63s - note: this machine benchmarks 63-151s across runs; background-load variance; at best ~1.6x old laptop). NOTE: exit-cube results from rungs 1-3 used the OLD scoring - R4 (and any re-replay) uses the new one; recommended-flag histories are not comparable across the boundary.
+
 ### B1284 (2026-07-16 Council 320): NON-AWS CONFIRMED + RE-BENCHMARK + R3 ANOMALY SCAN + R4 COUNT
 
 Owner: non-AWS preferred (recorded; $15 preserved). Re-benchmark: 111s (was 151s; ~27% gain from power change; still ~2.8x old laptop's ~40s). R4 = **1,927 tickers** (Master 1,937 INTERSECT ohlcv cache 2,121, computed).

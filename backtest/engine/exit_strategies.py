@@ -477,6 +477,13 @@ def is_earnings_tolerant(strategy_name: str) -> bool:
     return strategy_name in EARNINGS_TOLERANT_STRATEGIES
 
 
+# B1285 (Council 321, S6-B1248-EARNINGS-BLACKOUT-MAXHOLD): max trading bars
+# any earnings_blackout path may hold. 60 bars ~ one quarter -- long enough
+# to reach the next report in the normal case, short enough that data-gap
+# rides can't accumulate market beta.
+EARNINGS_BLACKOUT_MAX_BARS = 60
+
+
 def exit_earnings_blackout(df_full, entry_date, entry_price, direction, atr,
                              signals=None, ticker: str = "",
                              strategy_name: str = "",
@@ -490,6 +497,13 @@ def exit_earnings_blackout(df_full, entry_date, entry_price, direction, atr,
         if len(df_full) == 0:
             return _base_result(entry_price, entry_price, entry_date,
                                 entry_date, "earnings_tolerant_skip", direction)
+        # B1285: tolerant rides are capped too (same buy-and-hold class).
+        _fut_tol = df_full[df_full.index.date > entry_date]
+        if len(_fut_tol) > EARNINGS_BLACKOUT_MAX_BARS:
+            seg = _fut_tol.iloc[:EARNINGS_BLACKOUT_MAX_BARS]
+            return _base_result(entry_price, float(seg.iloc[-1]["close"]),
+                                entry_date, seg.index[-1].date(),
+                                "earnings_tolerant_60d_cap", direction)
         last = df_full.iloc[-1]
         last_date = (df_full.index[-1].date()
                      if hasattr(df_full.index[-1], "date") else entry_date)
@@ -521,7 +535,22 @@ def exit_earnings_blackout(df_full, entry_date, entry_price, direction, atr,
                           ticker, exc)
             earnings_dates = []
 
+    # B1285 (Council 321, S6-B1248-EARNINGS-BLACKOUT-MAXHOLD owner-approved
+    # 2026-07-16 "1 approved"): every ride path is capped at
+    # EARNINGS_BLACKOUT_MAX_BARS so this method measures the BLACKOUT
+    # effect, not buy-and-hold. Pre-cap: no_earnings_known rides reached
+    # 692-day median holds / -219% median DD in Batch A (B1248 P0-2) and
+    # PF-219 cube cells at rung 3 (R3-F2). Cap reasons are NON_FIRE
+    # (the method's thesis did not fire; the cap did).
+    def _cap_at_max_bars(reason: str):
+        seg = future.iloc[:EARNINGS_BLACKOUT_MAX_BARS]
+        last_row = seg.iloc[-1]
+        return _base_result(entry_price, float(last_row["close"]), entry_date,
+                            seg.index[-1].date(), reason, direction)
+
     if not earnings_dates:
+        if len(future) > EARNINGS_BLACKOUT_MAX_BARS:
+            return _cap_at_max_bars("no_earnings_known_60d_cap")
         last = future.iloc[-1]
         return _base_result(entry_price, float(last["close"]), entry_date,
                             future.index[-1].date(), "no_earnings_known",
@@ -529,6 +558,8 @@ def exit_earnings_blackout(df_full, entry_date, entry_price, direction, atr,
 
     upcoming = sorted(d for d in earnings_dates if d > entry_date)
     if not upcoming:
+        if len(future) > EARNINGS_BLACKOUT_MAX_BARS:
+            return _cap_at_max_bars("no_upcoming_earnings_60d_cap")
         last = future.iloc[-1]
         return _base_result(entry_price, float(last["close"]), entry_date,
                             future.index[-1].date(), "no_upcoming_earnings",
@@ -536,6 +567,9 @@ def exit_earnings_blackout(df_full, entry_date, entry_price, direction, atr,
 
     next_earn = upcoming[0]
     bars_before = future[future.index.date < next_earn]
+    # B1285: earnings known but further out than the cap -> cap fires first.
+    if len(bars_before) > EARNINGS_BLACKOUT_MAX_BARS:
+        return _cap_at_max_bars("earnings_blackout_60d_cap")
     if bars_before.empty:
         target_idx = 0
     else:
@@ -1555,6 +1589,12 @@ NON_FIRE_EXIT_REASONS = {
     "no_earnings_known",
     "no_upcoming_earnings",
     "earnings_tolerant_skip",
+    # B1285: the 60-bar cap reasons are non-fires too -- the cap fired,
+    # not the method's blackout thesis.
+    "no_earnings_known_60d_cap",
+    "no_upcoming_earnings_60d_cap",
+    "earnings_tolerant_60d_cap",
+    "earnings_blackout_60d_cap",
 }
 
 # Recommended-flag guardrails per COMPREHENSIVE_REVIEW_2026_05_20.md:
@@ -1565,17 +1605,29 @@ CUBE_MIN_FIRE_RATE = 0.5
 
 
 def composite_score(win_rate: float, profit_factor: float,
-                    max_drawdown: float) -> float:
+                    max_drawdown: float, avg_pnl_pct: float = None) -> float:
+    """B1285 (Council 321, S6-B1248-COMPOSITE-EXPECTANCY-REWEIGHT
+    owner-approved 2026-07-16): 15% win rate + 45% profit factor
+    (log-scaled, UNCLIPPED below 1.0) + 25% drawdown + 15% avg-R proxy.
+
+    Replaces the pre-B1285 weighting (40% WR / 30% PF clipped-at-1 / 30% DD)
+    that selected hybrid_50pct_target as "recommended" for 30 of 132
+    strategies despite median PF 0.735 / ROI -16.4% (B1248 P0-1: the
+    high-win-rate negative-expectancy trap). A trader ranks exits by
+    expectancy, not raw WR.
+
+    PF log-scaling: PF 1.0 -> 50, PF 3.0 -> 100, PF 0.33 -> 0 (continuous
+    below 1.0 so a 0.9 exit beats a 0.5 exit -- the old clip made them tie).
+    avg_pnl_pct None (legacy 3-arg callers) -> neutral 50.
     """
-    Composite score: 40% ROI (via win_rate proxy) + 30% profit factor + 30% drawdown.
-    Score 0-100. Higher = better.
-    """
-    # Normalise each component to 0-100
-    wr_score  = min(win_rate * 100, 100)                         # 0-100
-    pf_score  = min((profit_factor - 1.0) / 1.0 * 100, 100)     # PF 1.0=0, 2.0=100
-    pf_score  = max(pf_score, 0)
-    dd_score  = max(100 - abs(max_drawdown) * 5, 0)              # 0% DD=100, 20% DD=0
-    return round(0.40 * wr_score + 0.30 * pf_score + 0.30 * dd_score, 2)
+    import math
+    wr_score = min(win_rate * 100, 100)
+    pf = max(profit_factor, 0.01)
+    pf_score = max(0.0, min(100.0, 50.0 + 50.0 * math.log(pf) / math.log(3.0)))
+    dd_score = max(100 - abs(max_drawdown) * 5, 0)
+    r_score = 50.0 if avg_pnl_pct is None else max(0.0, min(100.0, 50.0 + 10.0 * avg_pnl_pct))
+    return round(0.15 * wr_score + 0.45 * pf_score + 0.25 * dd_score
+                 + 0.15 * r_score, 2)
 
 
 def run_exit_comparison(
@@ -1690,7 +1742,8 @@ def run_exit_comparison(
         peak   = cum.cummax()
         mdd    = round(float((cum - peak).min()), 4)
 
-        cscore = composite_score(wr, pf, mdd)
+        # B1285: pass avg_pnl so the 15% avg-R component is live (not neutral).
+        cscore = composite_score(wr, pf, mdd, avg_pnl_pct=avg_pnl)
 
         # Batch 266 cube hardening: fire-rate = fraction of trades where the
         # exit method's intended trigger actually fired (vs defaulted to a

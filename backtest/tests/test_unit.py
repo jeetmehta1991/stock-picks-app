@@ -12842,3 +12842,63 @@ def test_b1277_fix4_raw_fires_flushed_at_checkpoint(tmp_path, monkeypatch):
     import pandas as pd
     d = pd.read_csv(path)
     assert (d["strategy"] == "test_strategy_b1277").any()
+
+
+# ---------------------------------------------------------------------------
+# B1285 (Council 321, owner-approved 2026-07-16 "1 approved"):
+# S6-B1248-EARNINGS-BLACKOUT-MAXHOLD + S6-B1248-COMPOSITE-EXPECTANCY-REWEIGHT
+# ---------------------------------------------------------------------------
+
+def _make_flat_df(n_days=300, start="2023-01-02"):
+    import pandas as pd
+    import numpy as np
+    idx = pd.bdate_range(start, periods=n_days)
+    return pd.DataFrame({"open": 100.0, "high": 101.0, "low": 99.0,
+                         "close": 100.0, "volume": 1e6}, index=idx)
+
+
+def test_b1285_earnings_blackout_60bar_cap():
+    """No-earnings-known rides are capped at EARNINGS_BLACKOUT_MAX_BARS
+    (pre-B1285: rode to end-of-data -> 692-day median holds in Batch A)."""
+    from datetime import date
+    from backtest.engine.exit_strategies import (
+        exit_earnings_blackout, EARNINGS_BLACKOUT_MAX_BARS,
+        NON_FIRE_EXIT_REASONS)
+    df = _make_flat_df(300)
+    entry = df.index[5].date()
+    r = exit_earnings_blackout(df, entry, 100.0, "long", 2.0,
+                               ticker="", strategy_name="not_tolerant",
+                               earnings_dates=[])
+    hold = (r["exit_date"] - entry).days
+    assert r["exit_reason"] == "no_earnings_known_60d_cap"
+    assert hold <= EARNINGS_BLACKOUT_MAX_BARS * 2, (
+        f"cap must bound the hold (~60 bars); got {hold} calendar days")
+    assert r["exit_reason"] in NON_FIRE_EXIT_REASONS, "cap = non-fire for fire-rate"
+    # earnings far beyond cap -> capped too
+    r2 = exit_earnings_blackout(df, entry, 100.0, "long", 2.0,
+                                ticker="", strategy_name="not_tolerant",
+                                earnings_dates=[date(2026, 1, 1)])
+    assert r2["exit_reason"] == "earnings_blackout_60d_cap"
+    # earnings INSIDE cap -> genuine T-1 blackout exit preserved
+    near = df.index[30].date()
+    r3 = exit_earnings_blackout(df, entry, 100.0, "long", 2.0,
+                                ticker="", strategy_name="not_tolerant",
+                                earnings_dates=[near])
+    assert r3["exit_reason"] == "earnings_blackout_T_minus_1"
+
+
+def test_b1285_composite_rewards_expectancy_over_winrate():
+    """The B1248 P0-1 pin: a hybrid_50pct-like cell (WR 65%, PF 0.74,
+    DD -80%) must now score BELOW a breakeven_plus_trail-like cell
+    (WR 27%, PF 1.89, DD -28%). Pre-B1285 weighting ranked them the
+    other way (that is exactly the bug)."""
+    from backtest.engine.exit_strategies import composite_score
+    hybrid_like = composite_score(0.65, 0.74, -79.6, avg_pnl_pct=-2.0)
+    breakeven_like = composite_score(0.27, 1.89, -28.2, avg_pnl_pct=1.5)
+    assert breakeven_like > hybrid_like, (
+        f"expectancy must outrank win rate: breakeven {breakeven_like} "
+        f"vs hybrid {hybrid_like}")
+    # PF continuity below 1.0 (old clip made 0.9 == 0.5)
+    assert composite_score(0.4, 0.9, -20) > composite_score(0.4, 0.5, -20)
+    # legacy 3-arg call still works (neutral avg-R)
+    assert isinstance(composite_score(0.5, 1.5, -10), float)
