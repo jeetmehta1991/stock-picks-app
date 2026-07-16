@@ -5568,6 +5568,10 @@ CLAUDE.md banner synced per owner approval (869->871 supersedes: committed value
 
 B4 = install Claude Code VS Code extension + panel sign-in (CLI optional); D3 = Open Folder -> Claude panel -> History (clock icon) -> pick newest session (transfer mechanics UNCHANGED - extension uses the same ~/.claude/projects/ folder); troubleshooting row updated (folder-open requirement).
 
+### B1289 (2026-07-16 Council 324 cont.): IAM KEY-CREATION INSTRUCTIONS DELIVERED
+
+Owner asked where to find AWS keys. Instructed: create restricted IAM user `r5-runner` (EC2FullAccess + S3FullAccess, no console login) NOT root keys; access-key creation path + one-time-secret warning + delete-user-post-R5 cleanup step. Awaiting keys / aws-configure to proceed to Gates 1-5 -> smoke -> chunk-1 gate.
+
 ### B1288 (2026-07-16 Council 324): CUBE-MODE VALIDATION — ALL 5 GATES PASS
 
 455 trades / 5 tickers / <1 hr wall (beats 1.5-3hr est — favorable for chunk calibration). Gates:
