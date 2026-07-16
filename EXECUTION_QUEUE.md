@@ -5564,6 +5564,10 @@ CLAUDE.md banner synced per owner approval (869->871 supersedes: committed value
 
 **ALL THREE PRE-R5 BLOCKERS NOW SHIPPED (ENG-1 B1260 + ENG-2/3 B1263). Pyramid 871+2 GREEN. Next: S6-B1259-DATA-READINESS-AUDIT (owner order item 3).**
 
+### B1281 (2026-07-15 Council 317 cont.): GUIDE ADAPTED FOR VS CODE EXTENSION WORKFLOW (owner: "chat in vs code not cli")
+
+B4 = install Claude Code VS Code extension + panel sign-in (CLI optional); D3 = Open Folder -> Claude panel -> History (clock icon) -> pick newest session (transfer mechanics UNCHANGED - extension uses the same ~/.claude/projects/ folder); troubleshooting row updated (folder-open requirement).
+
 ### B1280 (2026-07-15 Council 317 cont.): MIGRATION ROUTE SWITCHED TO GOOGLE DRIVE (owner: no pendrive)
 
 Parts A/C rewritten: 2 zips (right-click Compress) -> drive.google.com upload -> download + Extract All on new laptop (double-nesting warning added). Nearby Sharing noted as same-WiFi alternative. E3 added: delete zips from Drive after migration (.env keys in project zip).

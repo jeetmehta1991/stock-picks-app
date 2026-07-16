@@ -34,7 +34,7 @@ Install these, in this order, accepting the default options:
 
 **B3.** **VS Code** — download from code.visualstudio.com, install. Open it, click the account icon (bottom-left), **sign in with the same GitHub account** → your settings and extensions appear automatically.
 
-**B4.** **Claude Code** — download from claude.com/claude-code (or in a terminal: `npm install -g @anthropic-ai/claude-code` if you have Node.js). Then open PowerShell, type `claude`, press Enter, and log in with **jeetmehta1991@gmail.com** when the browser opens.
+**B4.** **Claude Code (VS Code extension — this is how you use it):** open VS Code → Extensions icon in the left bar → search **"Claude Code"** → Install (it may already have appeared via Settings Sync). Click the Claude icon that appears in the left bar → **Sign in** with **jeetmehta1991@gmail.com**. The CLI is optional; the extension is self-contained.
 
 ---
 
@@ -78,11 +78,14 @@ scripts\install_git_hooks.bat
 python -m pytest backtest/tests/test_unit.py backtest/tests/test_integration.py -q
 ```
 
-**D3.** Open the session — this is the "did my context survive?" moment:
-```powershell
-claude --resume
-```
-A list of past sessions appears. Pick the newest one (the R5 ladder session). Ask Claude: **"state check - where did we leave off?"** — the answer should say: rung 4 HELD, scope locked, window locked at 2026-05-05, all pre-R5 fixes shipped. If it does: **everything transferred, zero context lost.**
+**D3.** Open the session — this is the "did my context survive?" moment (VS Code, no terminal needed):
+1. VS Code → File → **Open Folder** → `C:\Users\<YOURNAME>\Github\stock-picks-app` (the extension keys sessions to this folder — it must be open).
+2. Click the **Claude icon** in the left bar to open the chat panel.
+3. Click the **History / past conversations** control at the top of the Claude panel (clock icon).
+4. The session list appears — pick the newest one (the R5 ladder session).
+5. Ask Claude: **"state check - where did we leave off?"** — the answer should say: rung 4 HELD, scope locked, window locked at 2026-05-05, all pre-R5 fixes shipped. If it does: **everything transferred, zero context lost.**
+
+(Terminal equivalent if you ever want it: `claude --resume` in the project folder.)
 
 ---
 
@@ -99,7 +102,7 @@ A list of past sessions appears. Pick the newest one (the R5 ladder session). As
 ### If something goes wrong
 | Symptom | Fix |
 |---|---|
-| `claude --resume` shows no sessions | The folder name from C5 doesn't match your project path — recheck the username spelling in the folder name |
+| Claude panel History shows no sessions | The folder name from C5 doesn't match your project path — recheck the username spelling in the folder name; also confirm VS Code has the project FOLDER open (File → Open Folder), not just a file |
 | Tests fail or `python` not found | Python wasn't added to PATH — reinstall Python with the checkbox ticked (B2) |
 | Git asks who you are on first commit | `git config --global user.name "jeetmehta1991"` and `git config --global user.email "jeetmehta1991@gmail.com"` |
 | Push asks for password | Paste a fresh PAT (E1) as the password |
