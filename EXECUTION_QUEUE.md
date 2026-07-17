@@ -5568,6 +5568,12 @@ CLAUDE.md banner synced per owner approval (869->871 supersedes: committed value
 
 B4 = install Claude Code VS Code extension + panel sign-in (CLI optional); D3 = Open Folder -> Claude panel -> History (clock icon) -> pick newest session (transfer mechanics UNCHANGED - extension uses the same ~/.claude/projects/ folder); troubleshooting row updated (folder-open requirement).
 
+### B1291 (2026-07-17 Council 326): AWS-LEG DESIGN HARDENING (owner skepticism + spot questions)
+
+Owner questions answered: (1) spot chunk-sizing — checkpoints bound interruption loss, not chunk size; rec 4 chunks on-demand / 8 chunks + 15-min checkpoints if spot. (2) **merge_batch_outputs.py flagged UNVERIFIED vs post-ENG-1/FIX-3 schema — honest gap admission**; merge dry-run (chunk-1 + cube-val artifacts) is now a HARD GATE before any AWS launch. (3) NEW Gate 6 = merge dry-run passed; NEW Gate 7 (spot-only) = interruption drill in smoke (terminate mid-run, verify S3 checkpoint + cloud resume — rung 3 proved local resume only); Monitor v2 spec: IMDS 2-min-notice watcher -> immediate flush+sync, S3 heartbeat staleness alarm, CloudWatch termination alarm -> owner email (session-independent). (4) Skepticism response: no clean chit offered — execution-validates posture (7 end-to-end runs this week, 6 bugs caught by fail-loud in cheap runs); AWS = accelerator not necessity; all-local fallback always available (~8-10d, $0).
+
+Tickets: S6-B1291-GATE6-MERGE-DRYRUN (blocks AWS launch; runs at chunk-1 completion) | S6-B1291-GATE7-INTERRUPTION-DRILL (spot-only) | S6-B1291-MONITOR-V2-SPEC (spot-only).
+
 ### B1290 (2026-07-16 Council 325): RUNG 4 CHUNK 1 LAUNCHED LOCALLY (owner: "Start local run... ensure monitor armed")
 
 Hybrid re-sequenced by owner: local chunks first, AWS chunk later. Deterministic 4-chunk split generated + persisted (chunk1 A..CVRX 482 / chunk2 CVS..KNF 482 / chunk3 KNSL..RHLD 482 / chunk4 RIG..ZWS 481; files rung4_chunk*_tickers.txt).
