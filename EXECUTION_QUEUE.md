@@ -5568,6 +5568,12 @@ CLAUDE.md banner synced per owner approval (869->871 supersedes: committed value
 
 B4 = install Claude Code VS Code extension + panel sign-in (CLI optional); D3 = Open Folder -> Claude panel -> History (clock icon) -> pick newest session (transfer mechanics UNCHANGED - extension uses the same ~/.claude/projects/ folder); troubleshooting row updated (folder-open requirement).
 
+### B1292 (2026-07-17 Council 327): OWNER ACTIVATION-CHECK CAUGHT FIX-4 POOL-MODE GAP
+
+Owner asked "wired but not engine activated?" — live probe found it: chunk 1 has checkpoints but NO mid-run raw_signal_fires file. ROOT CAUSE: _RAW_SIGNAL_FIRE_COUNTER lives in the pool WORKER process; FIX-4's flush runs in MAIN process (empty counter -> emit returns None -> no file, silently). End-of-run emission unaffected (cube-val precedent: file appears at write time). Impact: interrupted chunk still loses census — the exact FIX-4 target gap. Ticket S6-B1292-FIX4-POOLMODE (worker-side flush at checkpoint cadence or counter marshaling): FIX BEFORE CHUNKS 2-4; bounded known-gap for in-flight chunk 1 (completes normally -> census emitted at end).
+
+Also answered: AWS = nothing loaded (no creds/S3/instance; awaiting owner keys+topup+go); Gates 1-4 runbook-at-launch by design, 5 shipped, 6 pending chunk-1 completion (hard-blocks AWS), 7+MonitorV2 spot-contingent specs; PowerShell(*) rule verified in settings — session restart needed to load it.
+
 ### B1291 (2026-07-17 Council 326): AWS-LEG DESIGN HARDENING (owner skepticism + spot questions)
 
 Owner questions answered: (1) spot chunk-sizing — checkpoints bound interruption loss, not chunk size; rec 4 chunks on-demand / 8 chunks + 15-min checkpoints if spot. (2) **merge_batch_outputs.py flagged UNVERIFIED vs post-ENG-1/FIX-3 schema — honest gap admission**; merge dry-run (chunk-1 + cube-val artifacts) is now a HARD GATE before any AWS launch. (3) NEW Gate 6 = merge dry-run passed; NEW Gate 7 (spot-only) = interruption drill in smoke (terminate mid-run, verify S3 checkpoint + cloud resume — rung 3 proved local resume only); Monitor v2 spec: IMDS 2-min-notice watcher -> immediate flush+sync, S3 heartbeat staleness alarm, CloudWatch termination alarm -> owner email (session-independent). (4) Skepticism response: no clean chit offered — execution-validates posture (7 end-to-end runs this week, 6 bugs caught by fail-loud in cheap runs); AWS = accelerator not necessity; all-local fallback always available (~8-10d, $0).
