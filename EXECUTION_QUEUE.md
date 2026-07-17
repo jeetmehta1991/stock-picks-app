@@ -5568,6 +5568,12 @@ CLAUDE.md banner synced per owner approval (869->871 supersedes: committed value
 
 B4 = install Claude Code VS Code extension + panel sign-in (CLI optional); D3 = Open Folder -> Claude panel -> History (clock icon) -> pick newest session (transfer mechanics UNCHANGED - extension uses the same ~/.claude/projects/ folder); troubleshooting row updated (folder-open requirement).
 
+### B1293 (2026-07-17 Council 328): AWS CREDENTIALS CONFIGURED + VERIFIED ($0)
+
+r5-runner keys received (owner CSV); ~/.aws/credentials + config written (us-east-1); AWS CLI 1.45.50 installed via pip (fresh machine had none); `aws sts get-caller-identity` PASS -> arn:aws:iam::739685920493:user/r5-runner. Zero spend (STS free). Cleanup step stands: delete r5-runner user post-R5 (keys die with it; keys also present in chat transcript -> user deletion is the rotation).
+
+NEXT GATES (all owner-held): (i) top-up confirmation (~$45-50 CAD target for the 3-parallel-chunk plan); (ii) "run smoke" (~$2.50, includes CloudWatch email-alarm test); (iii) Gate 6 merge dry-run at chunk-1 completion HARD-BLOCKS chunk launches; (iv) S6-B1292-FIX4-POOLMODE fix before chunks 2-4.
+
 ### B1292 (2026-07-17 Council 327): OWNER ACTIVATION-CHECK CAUGHT FIX-4 POOL-MODE GAP
 
 Owner asked "wired but not engine activated?" — live probe found it: chunk 1 has checkpoints but NO mid-run raw_signal_fires file. ROOT CAUSE: _RAW_SIGNAL_FIRE_COUNTER lives in the pool WORKER process; FIX-4's flush runs in MAIN process (empty counter -> emit returns None -> no file, silently). End-of-run emission unaffected (cube-val precedent: file appears at write time). Impact: interrupted chunk still loses census — the exact FIX-4 target gap. Ticket S6-B1292-FIX4-POOLMODE (worker-side flush at checkpoint cadence or counter marshaling): FIX BEFORE CHUNKS 2-4; bounded known-gap for in-flight chunk 1 (completes normally -> census emitted at end).
