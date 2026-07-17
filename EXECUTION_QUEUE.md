@@ -5568,6 +5568,16 @@ CLAUDE.md banner synced per owner approval (869->871 supersedes: committed value
 
 B4 = install Claude Code VS Code extension + panel sign-in (CLI optional); D3 = Open Folder -> Claude panel -> History (clock icon) -> pick newest session (transfer mechanics UNCHANGED - extension uses the same ~/.claude/projects/ folder); troubleshooting row updated (folder-open requirement).
 
+### B1295 (2026-07-17 Council 330): SMOKE PREREQS STAGED + $50 CAD CAP + 15-MIN CADENCE (owner directives 1-3)
+
+Q1 queue check EXECUTED: B1287-B1294 contiguous, 4 hardening tickets present, FIX-4 closure recorded — no gaps found.
+
+Budget: AWS Budgets API AccessDenied for r5-runner (expected — narrow user). ENFORCEMENT PLAN: (a) owner console step (Billing -> Budgets -> Create: $36 USD ~ $50 CAD, email alert at 80%) — 2 minutes, instructions in chat; (b) operational hard caps regardless: smoke --max-run-hours 1.5 / chunk 8.0 + instance self-terminate (billing physically stops) + per-chunk owner gates + spot max-price cap.
+
+Smoke prereqs: bucket stock-picks-r5-jm-2026 creation + 2.8GB data payload compression IN FLIGHT (background); upload next; presigned-URL design AVOIDS IAM PassRole entirely (r5-runner cannot pass roles; instance uploads artifacts + heartbeat via presigned PUT, pulls data via presigned GET — no instance role needed, no owner IAM work). Old bucket stock-picks-batch395-jm-7421 (May 27) left untouched.
+
+Monitors: local chunk-1 re-armed at 15-MIN cadence (owner req; volume ~96 events/day disclosed — if platform auto-stops for volume, will re-arm + disclose). AWS smoke monitor arms at launch with same cadence. NO manual owner queries needed.
+
 ### B1294 (2026-07-17 Council 329): SPOT-SEQUENTIAL DECISION + FIX-4b SHIPPED
 
 Owner decisions: SPOT ONLY (supersedes on-demand preference); chunks 2-4 SEQUENTIAL inside chunk-1's ~2.5-day local window; credit card attached (postpaid — no top-up transaction needed; owner cap via Budget alarm + per-chunk gates, proposed $30 CAD alarm).
