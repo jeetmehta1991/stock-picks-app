@@ -8930,9 +8930,37 @@ def _pool_init(ohlcv_dict: dict, info_dict: dict) -> None:
         pass
 
 
+_WORKER_CENSUS_CALLS = 0
+
+
+def _worker_census_flush_tick(every: int = 200) -> bool:
+    """B1294 (Council 329, S6-B1292-FIX4-POOLMODE owner-approved via spot
+    decision 2026-07-17): worker-side census flush. FIX-4's checkpoint-time
+    flush ran in the MAIN process where the fire counter is empty under
+    pool mode (B1292 owner-prompted catch) -- so an interrupted run still
+    lost its census. This tick runs IN the worker (where the counter
+    lives) every `every` screen calls, writing the PID-tagged census file
+    to R5_OUTPUT_DIR (env, set by _init_screen_pool; inherited at spawn).
+    Returns True when a flush was attempted (pin-testable)."""
+    global _WORKER_CENSUS_CALLS
+    _WORKER_CENSUS_CALLS += 1
+    if _WORKER_CENSUS_CALLS % every != 0:
+        return False
+    import os
+    _d = os.environ.get("R5_OUTPUT_DIR")
+    if not _d:
+        return False
+    try:
+        emit_raw_signal_fire_counts(Path(_d))
+    except Exception as _exc:
+        logger.debug("worker census flush skipped: %s", _exc)
+    return True
+
+
 def _worker_screen_ticker(args):
     """Pool worker entry. Reads ohlcv from worker-global; slices to as_of
     locally; returns the screen_instrument result (or None on bad inputs)."""
+    _worker_census_flush_tick()  # B1294 FIX-4b: census survives interruption
     ticker, as_of, regime, vix_value, vix_history, xs_features = args
     if _WORKER_OHLCV is None or _WORKER_INFO is None:
         return None

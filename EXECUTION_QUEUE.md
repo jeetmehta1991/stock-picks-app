@@ -5568,6 +5568,14 @@ CLAUDE.md banner synced per owner approval (869->871 supersedes: committed value
 
 B4 = install Claude Code VS Code extension + panel sign-in (CLI optional); D3 = Open Folder -> Claude panel -> History (clock icon) -> pick newest session (transfer mechanics UNCHANGED - extension uses the same ~/.claude/projects/ folder); troubleshooting row updated (folder-open requirement).
 
+### B1294 (2026-07-17 Council 329): SPOT-SEQUENTIAL DECISION + FIX-4b SHIPPED
+
+Owner decisions: SPOT ONLY (supersedes on-demand preference); chunks 2-4 SEQUENTIAL inside chunk-1's ~2.5-day local window; credit card attached (postpaid — no top-up transaction needed; owner cap via Budget alarm + per-chunk gates, proposed $30 CAD alarm).
+
+FIX-4b SHIPPED (S6-B1292-FIX4-POOLMODE closed): `_worker_census_flush_tick` flushes the PID-tagged census FROM the worker process every 200 screen calls to R5_OUTPUT_DIR (env set at pool init, spawn-inherited). Pin test cadence+no-env; pyramid 876->879+2 GREEN. NOTE: chunk 1 (in flight) runs pre-FIX-4b code — its interruption-census gap remains until completion (bounded, disclosed B1292).
+
+SPOT-SEQUENTIAL PLAN: smoke (~$1 spot, includes Gate 7 interruption drill + Monitor v2 email-alarm test) -> Gate 6' merge dry-run on cube-val + SMOKE artifacts (equivalent inputs, unblocks chunks BEFORE chunk-1 completes; final integration merge re-runs after all 4) -> chunk 2 spot -> verify -> chunk 3 -> chunk 4. Est: 3 chunks x ~4-6hr spot x ~$1/hr = $13-20 USD ($18-27 CAD) + interruption overhead ~$1 each. Timeline: ~15-20hr sequential AWS inside the ~2-day remaining local window. Merge-test methodology logged in-chat (B1294 answer 1).
+
 ### B1293 (2026-07-17 Council 328): AWS CREDENTIALS CONFIGURED + VERIFIED ($0)
 
 r5-runner keys received (owner CSV); ~/.aws/credentials + config written (us-east-1); AWS CLI 1.45.50 installed via pip (fresh machine had none); `aws sts get-caller-identity` PASS -> arn:aws:iam::739685920493:user/r5-runner. Zero spend (STS free). Cleanup step stands: delete r5-runner user post-R5 (keys die with it; keys also present in chat transcript -> user deletion is the rotation).

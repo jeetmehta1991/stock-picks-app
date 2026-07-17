@@ -12902,3 +12902,22 @@ def test_b1285_composite_rewards_expectancy_over_winrate():
     assert composite_score(0.4, 0.9, -20) > composite_score(0.4, 0.5, -20)
     # legacy 3-arg call still works (neutral avg-R)
     assert isinstance(composite_score(0.5, 1.5, -10), float)
+
+
+def test_b1294_fix4b_worker_census_flush(tmp_path, monkeypatch):
+    """FIX-4b pin: the worker-side flush tick writes the PID-tagged census
+    at cadence when R5_OUTPUT_DIR is set (B1292 gap: main-process flush saw
+    an empty counter under pool mode -> interruption lost census)."""
+    import backtest.signals.screener as scr
+    monkeypatch.setattr(scr, "_B901_EMIT_RAW_FIRES", True, raising=False)
+    counter = getattr(scr, "_RAW_SIGNAL_FIRE_COUNTER")
+    monkeypatch.setitem(counter, "b1294_probe", 3)
+    monkeypatch.setenv("R5_OUTPUT_DIR", str(tmp_path))
+    monkeypatch.setattr(scr, "_WORKER_CENSUS_CALLS", 0, raising=False)
+    flushed = [scr._worker_census_flush_tick(every=5) for _ in range(5)]
+    assert flushed == [False, False, False, False, True], "flush at cadence only"
+    files = list(tmp_path.glob("raw_signal_fires*"))
+    assert files, "census file written from worker-side tick"
+    monkeypatch.delenv("R5_OUTPUT_DIR")
+    monkeypatch.setattr(scr, "_WORKER_CENSUS_CALLS", 0, raising=False)
+    assert scr._worker_census_flush_tick(every=1) is False, "no env -> no-op, no crash"

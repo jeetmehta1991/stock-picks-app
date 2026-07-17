@@ -1265,7 +1265,12 @@ class BacktestEngine:
         if self.screen_pool_workers <= 0 or self._screen_pool is not None:
             return
         import multiprocessing as mp
+        import os as _os_b1294
         from backtest.signals.screener import _pool_init
+        # B1294 (FIX-4b): expose output dir to spawn-inherited worker env so
+        # the worker-side census flush knows where to write (B1292 gap:
+        # counter lives in worker, main-process flush saw it empty).
+        _os_b1294.environ["R5_OUTPUT_DIR"] = str(self.output_dir)
         ctx = mp.get_context("spawn")
         # Cap workers at cpu_count so we don't oversubscribe (Hetzner CPX62
         # advertises 16 shared vCPU; setting screen_pool_workers=16 makes
