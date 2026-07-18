@@ -5576,6 +5576,10 @@ Catch 2 (monitor): drill controller false-TERMINAL on the PREVIOUS smoke's stale
 
 Drill instance i-01659762cd5a4fc9a running; controller v2 will terminate no-notice at day>100 with synced ckpt, then --resume relaunch proves recovery. Spend ~$2.6 of $50 CAD cap.
 
+### B1304 (2026-07-18 Council 337): CHUNK 2 -> OWNER PICKED (b) RUN-THROUGH; auto-resume controller armed
+
+Owner: "Chunk 2 b" = run to completion without a manual resume gate. Honest constraint stated: the running engine's --max-run-hours 8.0 can't be raised retroactively; intent honored instead by PRE-AUTHORIZING the auto-resume. Controller (beb948vqg) replaces the gated monitor: on any terminate-without-COMPLETE (8h cap ~day 990 OR spot interruption) it auto-relaunches aws_chunk_launch.py --chunk 2 --resume (owner-preauthorized via 'b'), tracks the new instance id, loops until CHUNK2_COMPLETE, with a 3-resume thrash-guard that escalates to owner on a failure loop. This is owner-DIRECTED auto-resume-spend (not unilateral) - the no-auto-resume rule is satisfied by the explicit 'b' authorization scoped to chunk 2 completion. Chunk 2 at day 510 (49pct) when decided.
+
 ### B1303 (2026-07-18 Council 336): 🚀 CHUNK 2 LAUNCHED (spot) + bug-status honesty + merge-validation answer
 
 Owner gated launch on "have all bugs been addressed?" HONEST ANSWER GIVEN: all CUBE-CORRUPTING bugs closed (ENG-1/2/3/4/10, FIX-1/2/3/4/4b, B1285, Gate-6 merge); 6 tickets OPEN but NONE cube-corrupting (ENG-5 observability gap / ENG-6 1-strat silent-kill scope-frozen / ENG-7 1-strat dead arms scope-frozen / ENG-8 latent-benign / ENG-9 uniform 1-day bias in validated smoke too / ENG-11 perf). Chunk 1 already running with same set open -> consistency argues launch as-is; ENG-5/6/7 remain post-R5 cleanup. Owner given full split to abort; proceeded.
