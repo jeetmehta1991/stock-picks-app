@@ -5576,6 +5576,14 @@ Catch 2 (monitor): drill controller false-TERMINAL on the PREVIOUS smoke's stale
 
 Drill instance i-01659762cd5a4fc9a running; controller v2 will terminate no-notice at day>100 with synced ckpt, then --resume relaunch proves recovery. Spend ~$2.6 of $50 CAD cap.
 
+### B1303 (2026-07-18 Council 336): 🚀 CHUNK 2 LAUNCHED (spot) + bug-status honesty + merge-validation answer
+
+Owner gated launch on "have all bugs been addressed?" HONEST ANSWER GIVEN: all CUBE-CORRUPTING bugs closed (ENG-1/2/3/4/10, FIX-1/2/3/4/4b, B1285, Gate-6 merge); 6 tickets OPEN but NONE cube-corrupting (ENG-5 observability gap / ENG-6 1-strat silent-kill scope-frozen / ENG-7 1-strat dead arms scope-frozen / ENG-8 latent-benign / ENG-9 uniform 1-day bias in validated smoke too / ENG-11 perf). Chunk 1 already running with same set open -> consistency argues launch as-is; ENG-5/6/7 remain post-R5 cleanup. Owner given full split to abort; proceeded.
+
+Merge-validation answer: merge script WAS validated in smoke (Gate 6 dry-run used cloud smoke output_smoke as a real input, exit 0, dedup removed 302 SPY-benchmark dups = 4x-dup class proven, parquet + 962-cell cube produced). Caveat: 2-batch small-input validation; final 4-chunk integration merge re-verified after all chunks.
+
+CHUNK 2 LIVE: i-00b744010d58b34bf, spot c6a.16xlarge, 482 tickers (chunk2 CVS..KNF via S3 presigned), 16 pool workers, 8h cap, self-terminate, Monitor v2 (60s hb + 5-min ckpt + IMDS watcher). Gate 1 PASS (b64 4844B). Local-monitor 15-min chat cadence: interruption/completion/fail-loud covered. New aws_chunk_launch.py generalizes proven smoke launcher; pyramid 879+2 GREEN. Local chunk 1 parallel ~59pct.
+
 ### B1302 (2026-07-18 Council 335): GATE 7 CLOSED — SPOT SURVIVAL PROVEN; validation ladder ALL GREEN
 
 Gate 7 PASS, verified from artifacts.tar (not heartbeat): resumed run reached day 1002 (window end) / status complete / parquet clean / no FAILED marker / self-terminated (no billing instances). Full cycle proven: run->ckpt-to-S3->no-notice-kill->relaunch->load-ckpt-day-100->continue->finish->self-terminate. Fidelity 476 vs 481 uninterrupted trades = ~99pct; the ~5-trade delta is the documented B1076 open-trade-drop resume caveat (<0.1pct of a chunk's ~25k trades; immaterial to per-cell cube stats; now QUANTIFIED not surprise).
