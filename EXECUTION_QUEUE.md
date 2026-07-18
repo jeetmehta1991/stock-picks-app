@@ -5576,6 +5576,18 @@ Catch 2 (monitor): drill controller false-TERMINAL on the PREVIOUS smoke's stale
 
 Drill instance i-01659762cd5a4fc9a running; controller v2 will terminate no-notice at day>100 with synced ckpt, then --resume relaunch proves recovery. Spend ~$2.6 of $50 CAD cap.
 
+### B1308 (2026-07-18 Council 340): MEASURED — calendar was a RED HERRING; real issue is PLATFORM nondeterminism (owner "council this")
+
+Owner asked to council the chunk-1 calendar impact + recalibration feasibility. MEASURED cube-val(Mon-Fri-local) vs smoke(NYSE-cloud), same 5 tickers: 455 vs 481 trades, 302 common, 153 Mon-Fri-only of which ONLY 6 are NYSE-holiday-dated. TRUTH-STANDARD CORRECTION: my prior "calendar contaminates ~25pct / ~5pct delta" was WRONG - calendar directly explains ~4pct of divergence (6/153). The real ~33pct trade churn is ENVIRONMENT NONDETERMINISM (Windows/Py3.14 vs Linux/Py3.11 numpy/BLAS float diffs flipping threshold-boundary signals); common trades are bit-identical pnl (199/200).
+
+Cell-level (5-ticker): WR median abs-diff 6.7pp / p90 18pp; best-exit agreement 15/29 - BUT confounded by 5-ticker small-sample noise; NOT conclusive at 482-ticker full-chunk scale (LLN should stabilize aggregates).
+
+ANSWERS: Q1 post-hoc calendar filter does NOT recalibrate (fixes only 6 trades; platform float uncorrectable post-hoc -> re-run only). Q2 impact materiality at scale = UNKNOWN, needs measurement.
+
+VERDICT: fix is PLATFORM CONSISTENCY not calendar. Rec: let chunk 1 finish locally (cross-check, not cancelled per owner), re-run chunk 1 on CLOUD (~$12) so merged cube = 4 chunks one platform+calendar; extend #158 fingerprint to OS/python/numpy as merge-critical. Cheaper alt (statistician): ~$1 20-ticker cloud-vs-local cell-stability check at full per-cell counts to EARN the mix-as-is answer. Owner decision pending -> ticket S6-B1308-PLATFORM-CONSISTENCY.
+
+L209 candidate: measure materiality before asserting it (I mis-attributed platform noise to calendar; the ~5pct claim was never isolated).
+
 ### B1307 (2026-07-18 Council 339): CHECKLIST #158 SHIPPED — env-fingerprint parity as an EXECUTABLE pre-run gate (owner directive)
 
 Owner: "add this to checklist as per skill requirements" + "why isn't pre-run env-fingerprint parity a pre-launch/checklist gate?" Honest answer given: (1) legit - multi-environment execution is new this session, checklist grows from manifested failures; (2) owned - L207 gave the signal at smoke time and I under-generalized (treated it as a one-off install, not a gate) = Phase 5 discipline gap.

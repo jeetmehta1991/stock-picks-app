@@ -2962,3 +2962,13 @@ Cloud smoke vs local runs: same window, 1002 vs 1043 sim-days. Root cause: `_tra
 **Generalized rules:** (a) environment-fingerprint parity (installed-package set + trading-day-grid hash) must be a PRE-RUN gate per chunk/run, emitted into artifacts + diffed across chunks BEFORE compute is spent -- not discovered post-hoc; (b) when a correctness fix lands mid-multi-run, evaluate cross-run consistency, not just per-run internal consistency, and surface the tradeoff to the owner rather than silently choosing; (c) semantic silent fallbacks (calendar/data-source/precision) must log WARNING with a fingerprint (extends L207).
 
 **Cost of the miss:** re-run chunk 1 (~$12 AWS or ~4-5 local days) vs ~40pct-sunk had it been caught at the resume decision. Cross-ref: L207 (calendar fallback); S6-B1305 (chunk-1 rerun decision); S6-B1250-ENG (silent-fallback family); B1302 (smoke = day 1002 NYSE proof).
+
+## L209 -- MEASURE MATERIALITY BEFORE ASSERTING IT; I MIS-ATTRIBUTED PLATFORM NOISE TO THE CALENDAR (Council 340 B1308 2026-07-18)
+
+**What happened:** After finding chunk 1 ran the Mon-Fri calendar (B1305), I asserted it would "contaminate ~25pct of the cube" / "~5pct trade delta" and recommended a re-run -- WITHOUT isolating the cause. Owner said "council this + explain the 25pct with an example." Measuring cube-val(Mon-Fri) vs smoke(NYSE) on identical 5 tickers showed: calendar directly explains only 6 of 153 divergent trades (~4pct); the real ~33pct trade churn is PLATFORM nondeterminism (Windows/Py3.14 vs Linux/Py3.11 float at signal thresholds). My "~5pct calendar delta" was an unisolated inference from a 455-vs-481 comparison that ALSO differed in platform. The recommendation (calendar re-run) addressed the wrong variable.
+
+**Miss class:** truth-standard -- asserted a DERIVED materiality figure as if measured. The ~5pct number was EXECUTED-adjacent (a real 455-vs-481) but the ATTRIBUTION to calendar was UNVERIFIED and stated as fact.
+
+**Generalized rules:** (a) before recommending an expensive fix for a defect, ISOLATE the defect's actual contribution with a controlled diff -- do not attribute a multi-variable delta to one variable; (b) a materiality percentage is a claim requiring its own measurement, not a plausible-sounding inference; (c) small-sample (5-ticker) cell instability is dominated by sampling noise and must NOT be extrapolated to full-scale cube behavior without a scale-matched check.
+
+**Consequence:** the honest reframe (platform consistency > calendar) is a BETTER fix and would have been missed had the owner not pushed for the example. Cross-ref: L207/L208 (calendar); S6-B1308-PLATFORM-CONSISTENCY; feedback_strategy_x_exit_cell_analysis (aggregates hide/reveal).
