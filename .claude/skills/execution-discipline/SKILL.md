@@ -22,6 +22,27 @@ suggestions. A skipped phase makes the turn non-compliant.**
 - The Truth & Evidence Standard below is **cross-cutting and absolute**: it
   binds every phase, every sentence, every number in every response.
 
+## GENERALIZATION MANDATE (owner directive 2026-07-18 — Council 341, HARD)
+
+Two mandatory requirements, owner-set after L207→L208→L209 (a silent
+calendar fallback was fixed as a one-off "install the package" instead of
+generalized to a pre-run parity gate; the under-generalization directly
+caused the chunk-1 cross-environment defect days later):
+
+1. **NO UNDER-GENERALIZATION.** When a defect is found, fix the CLASS, not
+   the instance. Before shipping any fix, state the failure class it
+   belongs to and confirm the fix closes the class (or add the gate/test
+   that does). A patch that leaves siblings of the same class open is
+   non-compliant.
+2. **NO ONE-OFF FIXES WITHOUT OWNER APPROVAL.** A deliberately narrow /
+   instance-only fix is allowed ONLY with explicit owner sign-off. Absent
+   that, generalize. When proposing any fix, explicitly say whether it is
+   class-level or one-off; if one-off, STOP and get approval before shipping.
+
+These bind every code change, audit remediation, and Phase 5 miss-capture.
+The test: "what else breaks the same way, and does this fix cover it?" —
+answered in-response, every fix.
+
 ---
 
 ## TRUTH & EVIDENCE STANDARD (cross-cutting — absolute, zero tolerance)

@@ -5576,6 +5576,12 @@ Catch 2 (monitor): drill controller false-TERMINAL on the PREVIOUS smoke's stale
 
 Drill instance i-01659762cd5a4fc9a running; controller v2 will terminate no-notice at day>100 with synced ckpt, then --resume relaunch proves recovery. Spend ~$2.6 of $50 CAD cap.
 
+### B1309 (2026-07-18 Council 341): GENERALIZATION MANDATE (skill, HARD) + PRE-MERGE RCA/CROSS-CHECK REQUIREMENT (owner directives)
+
+Owner directives: (1) "no under-generalization and no one-off fixes unless approved by me" - BOTH hard mandatory -> added GENERALIZATION MANDATE to execution-discipline SKILL.md (fix the class not the instance; declare class-vs-one-off per fix; one-off needs owner approval). Memory feedback_generalization_mandate_and_premerge_rca. (2) Owner PREFERS the cheaper $1 20-ticker cloud-vs-local cell-stability cross-check (over full chunk-1 cloud re-run); REQUIRES thorough RCA of cross-environment measurement differences BEFORE any merge; MUST REMIND owner of both before merging. S6-B1308 updated: cross-check = chosen path; S6-B1309-PREMERGE-RCA ticket (env-diff root cause: platform float / numpy-BLAS / Python 3.14-vs-3.11 / pkg versions). (3) Confirmed #158 IS in CHECKLIST (line 2678, verified).
+
+Gate explanation delivered to owner in-chat (C1-C9 preflight + Gate B stop-hook + playbook Gates 1-7 + R5 cube Gates 6-7).
+
 ### B1308 (2026-07-18 Council 340): MEASURED — calendar was a RED HERRING; real issue is PLATFORM nondeterminism (owner "council this")
 
 Owner asked to council the chunk-1 calendar impact + recalibration feasibility. MEASURED cube-val(Mon-Fri-local) vs smoke(NYSE-cloud), same 5 tickers: 455 vs 481 trades, 302 common, 153 Mon-Fri-only of which ONLY 6 are NYSE-holiday-dated. TRUTH-STANDARD CORRECTION: my prior "calendar contaminates ~25pct / ~5pct delta" was WRONG - calendar directly explains ~4pct of divergence (6/153). The real ~33pct trade churn is ENVIRONMENT NONDETERMINISM (Windows/Py3.14 vs Linux/Py3.11 numpy/BLAS float diffs flipping threshold-boundary signals); common trades are bit-identical pnl (199/200).
