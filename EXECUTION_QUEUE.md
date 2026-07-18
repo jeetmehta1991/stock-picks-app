@@ -5568,6 +5568,12 @@ CLAUDE.md banner synced per owner approval (869->871 supersedes: committed value
 
 B4 = install Claude Code VS Code extension + panel sign-in (CLI optional); D3 = Open Folder -> Claude panel -> History (clock icon) -> pick newest session (transfer mechanics UNCHANGED - extension uses the same ~/.claude/projects/ folder); troubleshooting row updated (folder-open requirement).
 
+### B1299 (2026-07-17 Council 333): MERGE FIXES SHIPPED — GATE 6 PASS; chunks unblocked on merge front
+
+S6-B1297-MERGE-FIXES CLOSED: fix-a merged trade_log.parquet via signals_serde contract (+ ENG-3-style .FAILED marker on failure); fix-b ENGINE-SCHEMA per-(strategy x exit) cube rebuilt from merged trade_exit_detail (PF from gross win/loss, per-cell path drawdown, fire-rate vs NON_FIRE set, composite via B1285 scorer, per-strategy recommended with 250d/0.5 guardrails) — the old 26-row per-exit summary renamed exit_method_summary.csv killing the PIVOT-#37 name collision; fix-c cross-batch dedup at trade + detail grain (benchmark auto-inclusion class); validator moved post-dedup. RE-RUN: exit 0, ALL VALIDATION PASSED, 634 deduped trades, 962-cell engine-schema cube, parquet written. Truth-standard correction recorded: "cube recompute broken" reframed to "schema-divergent name collision" after source read.
+
+Pyramid 879+2 GREEN. GATE 6 = PASS. Remaining pre-chunk-2: Gate 7 interruption drill (launching).
+
 ### B1297 (2026-07-17 Council 332): SMOKE COMPLETE + GATE 6 RAN AND CAUGHT REAL DEFECTS — CHUNKS BLOCKED ON MERGE FIXES
 
 🟢 SMOKE VERDICT: engine COMPLETE in cloud (~60-70 min wall, ~$1-1.4 spot, instance self-terminated -> billing stopped). Cloud gates: parquet CLEAN (FIX-3 in cloud), signals 679-759 keys, cube 858 rows = EXACTLY local cube-val (cross-env structural parity), 481 trades. Monitor v2a heartbeat worked end-to-end (15-min chat cadence + SMOKE_COMPLETE terminal detection).

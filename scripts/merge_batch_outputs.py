@@ -133,8 +133,36 @@ def main():
         sys.exit(1)
     # Remove batch source column before saving
     trade_log_clean = trade_log.drop(columns=["_batch_source"], errors="ignore")
+    # B1299 (Council 333, S6-B1297-MERGE-FIXES fix-c): CROSS-BATCH DEDUP.
+    # The engine auto-adds the benchmark (SPY) to every run's tradeable
+    # universe, so every chunk trades SPY -> N-times duplication in the
+    # merge (Gate 6 dry-run catch). Dedup on the trade identity key.
+    _pre = len(trade_log_clean)
+    if all(c in trade_log_clean.columns for c in ("ticker", "strategy", "entry_date")):
+        trade_log_clean = trade_log_clean.drop_duplicates(
+            subset=["ticker", "strategy", "entry_date"], keep="first")
+    if _pre - len(trade_log_clean):
+        print(f"  [OK] fix-c dedup: dropped {_pre - len(trade_log_clean)} "
+              f"cross-batch duplicate trades (benchmark auto-inclusion class)")
     trade_log_clean.to_csv(output_dir / "trade_log.csv", index=False)
     print(f"  [OK] {len(trade_log_clean)} total trades from {len(input_dirs)} batches")
+    # B1299 fix-a: merged CANONICAL parquet (DEC-491) via the FIX-3
+    # serialization contract (nested cols as JSON strings; loads_signals
+    # reads them back). Failure leaves the ENG-3-style marker.
+    try:
+        sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+        from backtest.util.signals_serde import dumps_signals, loads_signals
+        _pq = trade_log_clean.copy()
+        for _c in ("signals_at_entry", "context_bullets", "agent_reasoning"):
+            if _c in _pq.columns:
+                _pq[_c] = _pq[_c].apply(
+                    lambda v: dumps_signals(loads_signals(v, v))
+                    if isinstance(v, (str, dict, list)) else v)
+        _pq.to_parquet(output_dir / "trade_log.parquet", index=False)
+        print(f"  [OK] fix-a trade_log.parquet written ({len(_pq)} rows)")
+    except Exception as _e_pq:
+        print(f"  [FAIL] fix-a trade_log.parquet write failed: {_e_pq}")
+        (output_dir / "trade_log.parquet.FAILED").write_text(str(_e_pq))
 
     # -- 2. Re-compute strategy metrics on combined trade log --
     # Batch 201 (Issue-1 fix): prior imports referenced run_walk_forward and
@@ -198,8 +226,64 @@ def main():
         ted = merge_csv(input_dirs, "trade_exit_detail.csv")
         if not ted.empty:
             ted_clean = ted.drop(columns=["_batch_source"], errors="ignore")
+            # B1299 fix-c: same cross-batch dedup at detail grain.
+            if all(c in ted_clean.columns for c in
+                   ("ticker", "strategy", "entry_date", "exit_method")):
+                _tp = len(ted_clean)
+                ted_clean = ted_clean.drop_duplicates(
+                    subset=["ticker", "strategy", "entry_date", "exit_method"],
+                    keep="first")
+                if _tp - len(ted_clean):
+                    print(f"  [OK] fix-c detail dedup: dropped {_tp - len(ted_clean)} rows")
             ted_clean.to_csv(output_dir / "trade_exit_detail.csv", index=False)
             print(f"  [OK] trade_exit_detail.csv: {len(ted_clean)} rows merged")
+
+            # B1299 fix-b: rebuild the ENGINE-SCHEMA per-(strategy x exit)
+            # cube. Gate 6 caught a NAME COLLISION: this script previously
+            # wrote a per-exit-method summary (26 rows) under
+            # exit_strategy_comparison.csv, the filename the engine uses
+            # for the per-cell cube (858 rows at 5 tickers) -- PIVOT #37
+            # writer-reader class. The per-exit summary now writes to
+            # exit_method_summary.csv; this block rebuilds the true cube.
+            try:
+                from backtest.engine.exit_strategies import (
+                    composite_score, NON_FIRE_EXIT_REASONS,
+                    CUBE_MAX_AVG_HOLD_DAYS, CUBE_MIN_FIRE_RATE)
+                rows = []
+                for (strat, exm), g in ted_clean.groupby(["strategy", "exit_method"]):
+                    pnl = g["pnl_pct"].astype(float)
+                    wins = pnl[pnl > 0].sum()
+                    losses = abs(pnl[pnl <= 0].sum())
+                    pf = round(wins / losses, 4) if losses > 0 else (999.0 if wins > 0 else 0.0)
+                    g2 = g.sort_values("entry_date")
+                    cum = g2["pnl_pct"].astype(float).cumsum()
+                    mdd = round(float((cum - cum.cummax()).min()), 4) if len(cum) else 0.0
+                    fired = (~g["exit_reason"].isin(NON_FIRE_EXIT_REASONS)).mean() if "exit_reason" in g.columns else 1.0
+                    wr = round(float(g["win"].mean()), 4)
+                    avg_pnl = round(float(pnl.mean()), 4)
+                    avg_hold = round(float(g["hold_days"].mean()), 1) if "hold_days" in g.columns else 0.0
+                    rows.append({
+                        "strategy": strat, "exit_method": exm, "trades": len(g),
+                        "win_rate": wr, "profit_factor": pf, "avg_pnl_pct": avg_pnl,
+                        "total_roi_pct": round(float(pnl.sum()), 4),
+                        "max_drawdown_pct": mdd, "avg_hold_days": avg_hold,
+                        "actual_fire_rate": round(float(fired), 4),
+                        "composite_score": composite_score(wr, pf, mdd, avg_pnl_pct=avg_pnl),
+                        "recommended": False,
+                    })
+                cube_df = pd.DataFrame(rows)
+                if not cube_df.empty:
+                    # recommended = per-strategy max composite passing guardrails
+                    ok = cube_df[(cube_df.avg_hold_days <= CUBE_MAX_AVG_HOLD_DAYS)
+                                 & (cube_df.actual_fire_rate >= CUBE_MIN_FIRE_RATE)]
+                    best_idx = ok.sort_values("composite_score", ascending=False
+                                              ).groupby("strategy").head(1).index
+                    cube_df.loc[best_idx, "recommended"] = True
+                    cube_df.to_csv(output_dir / "exit_strategy_comparison.csv", index=False)
+                    print(f"  [OK] fix-b exit_strategy_comparison.csv rebuilt in "
+                          f"ENGINE schema: {len(cube_df)} strategy x exit cells")
+            except Exception as e_cell:
+                print(f"  [FAIL] fix-b engine-schema cube rebuild failed: {e_cell}")
 
             # 1D marginal aggregates per CONTEXT_COLUMN_NAMES dim
             try:
@@ -260,8 +344,10 @@ def main():
                         total_pnl_pct=("pnl_pct", "sum"),
                         median_pnl_pct=("pnl_pct", "median"),
                     ).reset_index().sort_values("total_pnl_pct", ascending=False))
-                    comp.to_csv(output_dir / "exit_strategy_comparison.csv", index=False)
-                    print(f"  [OK] exit_strategy_comparison.csv: {len(comp)} exit methods")
+                    # B1299 fix-b: renamed from exit_strategy_comparison.csv
+                    # (name collision with the engine's per-cell cube).
+                    comp.to_csv(output_dir / "exit_method_summary.csv", index=False)
+                    print(f"  [OK] exit_method_summary.csv: {len(comp)} exit methods")
                     # exit_strategy_best (per-strategy top exit by total_pnl)
                     best = (ted_clean.groupby(["strategy", "exit_method"]).agg(
                         total_pnl_pct=("pnl_pct", "sum"),
@@ -322,7 +408,9 @@ def main():
     print(f"\n{'='*60}")
     print("VALIDATION")
     print(f"{'='*60}")
-    issues = validate_merge(trade_log, input_dirs)
+    # B1299: validate the POST-dedup frame (pre-dedup duplicates are the
+    # benchmark-auto-inclusion class fix-c removes by design).
+    issues = validate_merge(trade_log_clean, input_dirs)
     if issues:
         print(f"[FAIL] {len(issues)} issues found:")
         for issue in issues:
