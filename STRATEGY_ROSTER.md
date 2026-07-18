@@ -15,7 +15,7 @@
 > - 1 strategy with `SCORE >= N of: [...]` expansion (52w_high_breakout multi-line list-sum pattern)
 > - All producers show semantic categories, not file names
 >
-> **Current state (as of 2026-07-07 B1237):** 219 strategies registered; 858+2 tests GREEN; CHECKLIST #1-#157; LEARNINGS L1-L202; Councils 278-288 major work: 40 SKIP loosen + 11 silent misses fixed + 25+ producer audits + 2 critical bugs FIXED + Stage 4 walks archived + 47 docs synced + STRATEGY_ROSTER quality-fixed (this batch).
+> **Current state (as of 2026-07-07 B1237):** 219 strategies registered; 858+2 tests GREEN; CHECKLIST #1-#158; LEARNINGS L1-L209; Councils 278-288 major work: 40 SKIP loosen + 11 silent misses fixed + 25+ producer audits + 2 critical bugs FIXED + Stage 4 walks archived + 47 docs synced + STRATEGY_ROSTER quality-fixed (this batch).
 
 ---
 

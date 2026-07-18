@@ -7,10 +7,10 @@
 > - `len(ALL_STRATEGIES) = 219` (was 220 pre-B1189 DELETE of dxy_headwind_multinational_short; was 221 pre-B874)
 > - `STRATEGIES_DISABLED_MISSING_PRODUCER = set()` (was `{dxy_headwind_multinational_short}` pre-B1189)
 > - Active strategies for Phase 1A-β cube: 219; cube cells 219×26 = 5,694
-> - Test count: **858 passed, 2 skipped** on `test_unit.py + test_integration.py`
+> - Test count: **880 passed, 2 skipped** on `test_unit.py + test_integration.py`
 > - **CHECKLIST items:** #1–#157 (added #151-#157 in Councils 279-285)
-> - **LEARNINGS lessons:** through L202 (added L197-L202 in Councils 279-285)
-> - **Latest batch:** B1231 (Council 285)
+> - **LEARNINGS lessons:** through L209 (added L197-L202 in Councils 279-285)
+> - **Latest batch:** B1310 (Council 342)
 >
 > **Recent Council 278-287 milestones (chronological):**
 > - Council 278 (B1188-B1204): 40 SKIP strategies loosened per CSV recommendations

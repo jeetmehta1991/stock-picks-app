@@ -5576,6 +5576,16 @@ Catch 2 (monitor): drill controller false-TERMINAL on the PREVIOUS smoke's stale
 
 Drill instance i-01659762cd5a4fc9a running; controller v2 will terminate no-notice at day>100 with synced ckpt, then --resume relaunch proves recovery. Spend ~$2.6 of $50 CAD cap.
 
+### B1311 (2026-07-18 Council 343): COMPREHENSIVE DOC-SYNC SWEEP — 48 banners updated to code-canonical
+
+Owner: "update all docs, address all drift, each non-archived doc, grep against codebase, no silent misses, retain formats." Canonical EXECUTED from code: 219 strat / 0 disabled / 5694 cells / 880+2 tests / CHECKLIST #158 / L209 / latest B1310.
+
+METHOD: banner-region-scoped script (first 40 lines only; historical narrative below preserved per L143), targeted regex on banner-specific canonical strings. 48 docs updated, ~156 field updates: test_count (858/869/876 -> 880), learnings range (L202/L205 -> L209), checklist range (#157 -> #158), latest batch (B1231/B1235/B1263 -> B1310 incl. inline lowercase variant caught on 2nd pass), banner date -> 2026-07-18, stray strat/cell counts (220 -> 219).
+
+SAFETY (no silent misses + no history corruption): EXCLUDED EXECUTION_QUEUE.md + LEARNINGS.md + CHECKLIST.md (sources / live batch-log; their canonical refs are point-in-time historical records e.g. B1262 "banner claimed 858" finding + B1233 "through L202" entry - blanket replace would corrupt L143 history). Banner-region-only edits mean historical narrative (e.g. CLAUDE.md line 38 "2026-06-22 post-B999: 861 passed") correctly UNTOUCHED. Final residual scan: 1 flag = that historical line (false positive; sweep regex required ", 2 skipped" not "+ 2 skipped"). Doc-count parser (sync_doc_counts.py) still actual=claimed. archive/** untouched.
+
+Minor known-residual: CLAUDE.md banner "as of 2026-07-18 (B1263, ...)" parenthetical batch-author ref not bumped (describes when block authored; date field correct). Non-material.
+
 ### B1310 (2026-07-18 Council 342): ENV-FINGERPRINT PARITY ADDED AS AWS PLAYBOOK GATE 6 (owner directive)
 
 Owner: "add pre-run environment-fingerprint parity check (package set + day-grid) to aws playbook gates." AWS_LAUNCH_PLAYBOOK Section 1: pre-flight gate count 5 -> 6; new Gate 6 (CHECKLIST #158/B1309) = emit env_fingerprint.json at launch + HALT if calendar_backend != nyse_mcal + pre-merge --check HARD HALT on parity mismatch. WIRED into aws_chunk_launch.py user-data (emits fingerprint before engine; chunks 3/4 + any re-run now produce it; chunk 2 predates so lacks one). Applied the generalization mandate: this is the CLASS fix (every mergeable chunk emits+checks), not a one-off. Pyramid 880+2 GREEN.
