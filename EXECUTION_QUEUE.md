@@ -5568,6 +5568,26 @@ CLAUDE.md banner synced per owner approval (869->871 supersedes: committed value
 
 B4 = install Claude Code VS Code extension + panel sign-in (CLI optional); D3 = Open Folder -> Claude panel -> History (clock icon) -> pick newest session (transfer mechanics UNCHANGED - extension uses the same ~/.claude/projects/ folder); troubleshooting row updated (folder-open requirement).
 
+### B1297 (2026-07-17 Council 332): SMOKE COMPLETE + GATE 6 RAN AND CAUGHT REAL DEFECTS — CHUNKS BLOCKED ON MERGE FIXES
+
+🟢 SMOKE VERDICT: engine COMPLETE in cloud (~60-70 min wall, ~$1-1.4 spot, instance self-terminated -> billing stopped). Cloud gates: parquet CLEAN (FIX-3 in cloud), signals 679-759 keys, cube 858 rows = EXACTLY local cube-val (cross-env structural parity), 481 trades. Monitor v2a heartbeat worked end-to-end (15-min chat cadence + SMOKE_COMPLETE terminal detection).
+
+🔍 SMOKE CAUGHT (the $1 that paid for itself): 1002 vs 1043 sim-days -> `pandas_market_calendars` NEVER INSTALLED LOCALLY; silent Mon-Fri fallback simulated ~41 NYSE holidays in ALL local runs. Cloud correct. Package installed (5.4.0); L207 codified. Trade-count delta (481 vs 455) plausibly the day-grid effect on time-stop exits.
+
+🔴 GATE 6 MERGE DRY-RUN: RAN on cube-val + cloud-smoke; trades sum correct (936=455+481) BUT: (a) merged trade_log.parquet NOT produced (script predates DEC-491/FIX-3 write path); (b) merged cube = 26 rows vs inputs' 858+858 (cube recompute broken vs current schema/naming); (c) SPY present in BOTH runs -> engine auto-adds benchmark to tradeable universe -> across 4 chunks SPY would duplicate 4x in final merge (dedup or benchmark-strip needed). Ticket S6-B1297-MERGE-FIXES (a+b+c) — **HARD-BLOCKS chunk launches per B1291 Gate 6.**
+
+⏳ GATE 7 interruption drill: NOT YET RUN (smoke completed too fast to interrupt) — pending as its own ~$1 drill run (launch, terminate ~15 min in post-first-heartbeat, verify IMDS checkpoint flush, --resume relaunch completes).
+
+Local chunk 1: day 388, 6,419 trades, pace recovered post-tar.
+
+### B1296 (2026-07-17 Council 331): 🚀 SPOT SMOKE LAUNCHED — i-003fb48a86f7413af
+
+Payload staged: r5_payload.tar 3.0GiB + r5_code.tar 5.4GiB in s3://stock-picks-r5-jm-2026/payload/ (Compress-Archive memory-stall killed -> streaming tar; I/O contention with local engine disclosed + resolved; lesson: no heavy local staging during chunks). scripts/aws_smoke_launch.py committed: presigned-URL design (no instance role), Monitor v2a heartbeat (60s->S3) + v2b IMDS interruption watcher (2-min notice -> checkpoint tar -> S3), spot max-price $1.40, self-terminate, 1.5h hard cap, --resume mode for Gate 7 drill relaunch.
+
+LAUNCH: Gate 1 PASS (4,296B b64 of 16,384) + Gate 3 PASS (monitor grep) + Gate 4 N/A-BY-DESIGN (no role = no SSM; forensics via /var/log push... console-output fallback) + Gate 5 N/A (instance never commits). AMI al2023 latest. Instance i-003fb48a86f7413af spot c6a.16xlarge. AWS 15-min monitor armed (heartbeat staleness >5min fail-loud + bootstrap-window 25min fail-loud + SMOKE_COMPLETE terminal). GATE 7 DRILL planned mid-run: manual terminate after first checkpoint -> verify IMDS flush -> --resume relaunch completes.
+
+Str.format/bash-brace collision caught pre-spend (KeyError at $0); token-replacement fix. Local chunk-1 pace recovered post-tar (~15/hr, day 310).
+
 ### B1295 (2026-07-17 Council 330): SMOKE PREREQS STAGED + $50 CAD CAP + 15-MIN CADENCE (owner directives 1-3)
 
 Q1 queue check EXECUTED: B1287-B1294 contiguous, 4 hardening tickets present, FIX-4 closure recorded — no gaps found.

@@ -184,11 +184,18 @@ def check_prefetch_scripts_use_path_restricted_commit(paths: Iterable[Path]) -> 
 def get_staged_added_lines() -> list[tuple[str, str]]:
     """Return (file, added_line) pairs from the staged diff (B1254 C7)."""
     try:
+        # B1298: explicit utf-8 decode with replacement -- on Windows the
+        # default cp1252 text decode CRASHES the whole preflight when the
+        # staged diff contains any multi-byte char (emoji in a doc), which
+        # blocked a legitimate commit. Gates must not be DoS-able by docs.
         result = subprocess.run(
             ["git", "diff", "--cached", "-U0", "--diff-filter=ACMR"],
             cwd=REPO_ROOT, capture_output=True, text=True, check=False,
+            encoding="utf-8", errors="replace",
         )
     except Exception:
+        return []
+    if result.stdout is None:
         return []
     pairs = []
     current = ""
@@ -296,10 +303,12 @@ def check_queue_entry_staged() -> list[str]:
     """
     import os
     import time as _t
-    staged = subprocess.run(
+    _res = subprocess.run(
         ["git", "diff", "--cached", "--name-only"],
         cwd=REPO_ROOT, capture_output=True, text=True, check=False,
-    ).stdout.splitlines()
+        encoding="utf-8", errors="replace",
+    )
+    staged = (_res.stdout or "").splitlines()
     staged = [s.strip().replace("\\", "/") for s in staged if s.strip()]
     if not staged:
         return []

@@ -2946,3 +2946,9 @@ Owner-prompted ("Any silent misses? Any non compliance?"). Executed checks found
 **Meta-lesson (extends L205):** mechanical gates create a two-tier compliance system -- gated rules hold at 100%, ungated rules drift within days even under an active skill. Every drift found here is in the ungated tier. Standing options: gate what can be gated (C6-every-commit), and schedule periodic owner-prompted self-audits for what cannot (response-format rules).
 
 **Cross-references:** L205 (prose-rules-decay); B1254-B1255 (gates); Pass 52 compliance-statement mandate; feedback_pyramid_no_exceptions; feedback_mandatory_council_per_turn.
+
+## L207 -- ENVIRONMENT-DEPENDENT SILENT FALLBACKS: NYSE CALENDAR (Council 331 B1297 2026-07-17)
+
+Cloud smoke vs local runs: same window, 1002 vs 1043 sim-days. Root cause: `_trading_days` silently falls back to Mon-Fri when `pandas_market_calendars` is missing -- it was NEVER INSTALLED locally, so every local run (all rungs, cube-val, chunk 1 in flight) simulated ~41 NYSE holidays as trading days (no bars -> no trades -> mostly waste + subtle time-stop day-count skew). The CLOUD env, installing requirements fresh, was correct. Fixed: package installed locally (5.4.0).
+
+**Lesson:** graceful fallbacks that change SEMANTICS (calendar, data source, precision) must log at WARNING with a fingerprint the smoke can diff, and cross-environment runs should compare environment fingerprints (package set + day-grid hash) as a first-class gate. The $1 smoke caught what months of local runs could not see. Cross-ref: B1296 smoke; ENG-class silent-fallback family (B1250); CHECKLIST #106.
