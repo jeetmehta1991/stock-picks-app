@@ -5568,6 +5568,14 @@ CLAUDE.md banner synced per owner approval (869->871 supersedes: committed value
 
 B4 = install Claude Code VS Code extension + panel sign-in (CLI optional); D3 = Open Folder -> Claude panel -> History (clock icon) -> pick newest session (transfer mechanics UNCHANGED - extension uses the same ~/.claude/projects/ folder); troubleshooting row updated (folder-open requirement).
 
+### B1300 (2026-07-17 Council 333 cont.): GATE 7 DRILL IN FLIGHT + 2 PRE-DRILL CATCHES
+
+Catch 1 (design): manual terminate / hard crash sends NO IMDS notice -> on-notice-only checkpoint shipping loses all progress. FIXED in launcher: heartbeat loop ships ckpt.tar to S3 every 5th beat (worst-case loss <=5 min for ANY death mode). First drill instance discarded pre-engine (~$0.03).
+
+Catch 2 (monitor): drill controller false-TERMINAL on the PREVIOUS smoke's stale SMOKE_COMPLETE heartbeat in S3. Lesson (mirror of silence-is-not-success): SUCCESS MARKERS MUST BE FRESHNESS-CHECKED. Stale smoke/ objects deleted; controller v2 armed (clean-slate S3 => any marker is fresh). Chunk monitors inherit the rule.
+
+Drill instance i-01659762cd5a4fc9a running; controller v2 will terminate no-notice at day>100 with synced ckpt, then --resume relaunch proves recovery. Spend ~$2.6 of $50 CAD cap.
+
 ### B1299 (2026-07-17 Council 333): MERGE FIXES SHIPPED — GATE 6 PASS; chunks unblocked on merge front
 
 S6-B1297-MERGE-FIXES CLOSED: fix-a merged trade_log.parquet via signals_serde contract (+ ENG-3-style .FAILED marker on failure); fix-b ENGINE-SCHEMA per-(strategy x exit) cube rebuilt from merged trade_exit_detail (PF from gross win/loss, per-cell path drawdown, fire-rate vs NON_FIRE set, composite via B1285 scorer, per-strategy recommended with 250d/0.5 guardrails) — the old 26-row per-exit summary renamed exit_method_summary.csv killing the PIVOT-#37 name collision; fix-c cross-batch dedup at trade + detail grain (benchmark auto-inclusion class); validator moved post-dedup. RE-RUN: exit 0, ALL VALIDATION PASSED, 634 deduped trades, 962-cell engine-schema cube, parquet written. Truth-standard correction recorded: "cube recompute broken" reframed to "schema-divergent name collision" after source read.

@@ -46,10 +46,18 @@ RESUME_ARGS=""
 if [ "@RESUME@" = "1" ]; then
   curl -sf -o ckpt.tar "@CKPT_GET@" && tar -xf ckpt.tar && RESUME_ARGS="--resume-from-checkpoint output_smoke"
 fi
-# Monitor v2a: heartbeat loop (engine_state + timestamp -> S3 every 60s)
-( while true; do
+# Monitor v2a: heartbeat loop (engine_state -> S3 every 60s) + B1300
+# periodic checkpoint sync every 5th beat: manual terminates and hard
+# crashes send NO IMDS notice, so on-notice-only shipping loses all
+# progress. Worst-case loss is now <=5 min regardless of death mode.
+( N=0; while true; do
     { echo "hb_utc=$(date -u +%FT%TZ)"; cat output_smoke/engine_state.json 2>/dev/null; } > /tmp/hb.txt
     curl -sf -X PUT -T /tmp/hb.txt "@HB_PUT@" || true
+    N=$((N+1))
+    if [ $((N % 5)) -eq 0 ] && [ -d output_smoke ]; then
+      tar -cf /tmp/ckpt.tar output_smoke 2>/dev/null
+      curl -sf -X PUT -T /tmp/ckpt.tar "@CKPT_PUT@" || true
+    fi
     sleep 60
   done ) &
 # Monitor v2b: IMDS spot-interruption watcher (2-min notice -> flush checkpoint)
