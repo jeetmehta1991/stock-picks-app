@@ -5576,6 +5576,10 @@ Catch 2 (monitor): drill controller false-TERMINAL on the PREVIOUS smoke's stale
 
 Drill instance i-01659762cd5a4fc9a running; controller v2 will terminate no-notice at day>100 with synced ckpt, then --resume relaunch proves recovery. Spend ~$2.6 of $50 CAD cap.
 
+### B1306 (2026-07-18 Council 338 cont.): L208 — owned the chunk-1 calendar miss (owner asked "why")
+
+Owner: "Why is chunk 1 running on incorrect calendar?" Honest two-layer root cause given + L208 codified: (1) L207 silent Mon-Fri fallback (package absent, no warning) -> chunk 1 born on wrong grid; (2) MY compounding decision at resume: re-uninstalled the package to keep chunk 1 internally consistent, without reconciling cross-chunk vs the correct-NYSE AWS chunks. Judgment-tier un-gated miss owned, not deflected. L208 rules: pre-run environment-fingerprint parity gate (package set + day-grid hash); cross-run consistency check (not just per-run) when a correctness fix lands mid-multi-run; extends L207. Informs S6-B1305 (chunk 1 re-runs onto NYSE grid + parity check whichever path chosen).
+
 ### B1305 (2026-07-18 Council 338): 🔴 CROSS-CHUNK CALENDAR-GRID INCONSISTENCY — chunk 1 NOT mergeable as-is (owner-prompted by merge question)
 
 Owner asked "will chunk 1 + chunk 2 be merged by the post-merge script?" -> surfaced a real defect. VERIFIED: chunk 1 (local) runs Mon-Fri fallback grid = 1043 sim-days (pandas_market_calendars was uninstalled at its resume start; running-engine calendar is fixed at init, later reinstall didn't fix it). Chunks 2-4 (AWS, fresh requirements install) run correct NYSE grid = 1002 sim-days (smoke completed day 1002, B1302). MATERIALITY: controlled cube-val (Mon-Fri, 455 trades) vs smoke (NYSE, 481 trades) SAME 5 tickers = ~5pct delta from grid alone. Merging as-is puts ~25pct of universe (chunk 1's 482 tickers) on the WRONG + inconsistent grid vs the other 75pct -> contaminates the measurement cube before winners analysis.
