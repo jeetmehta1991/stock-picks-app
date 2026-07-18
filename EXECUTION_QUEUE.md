@@ -5576,6 +5576,14 @@ Catch 2 (monitor): drill controller false-TERMINAL on the PREVIOUS smoke's stale
 
 Drill instance i-01659762cd5a4fc9a running; controller v2 will terminate no-notice at day>100 with synced ckpt, then --resume relaunch proves recovery. Spend ~$2.6 of $50 CAD cap.
 
+### B1302 (2026-07-18 Council 335): GATE 7 CLOSED — SPOT SURVIVAL PROVEN; validation ladder ALL GREEN
+
+Gate 7 PASS, verified from artifacts.tar (not heartbeat): resumed run reached day 1002 (window end) / status complete / parquet clean / no FAILED marker / self-terminated (no billing instances). Full cycle proven: run->ckpt-to-S3->no-notice-kill->relaunch->load-ckpt-day-100->continue->finish->self-terminate. Fidelity 476 vs 481 uninterrupted trades = ~99pct; the ~5-trade delta is the documented B1076 open-trade-drop resume caveat (<0.1pct of a chunk's ~25k trades; immaterial to per-cell cube stats; now QUANTIFIED not surprise).
+
+VALIDATION LADDER COMPLETE: smoke PASS (~$1.3) + Gate 6 merge PASS (after catching 3 defects) + Gate 7 interrupt/resume PASS + FIX-4b shipped + cross-env parity + zero billing leaks. Total spend ~$4-5 of $50 CAD cap BEFORE any real chunk. Every past-R5 failure class (interruption, failed-resume, silent monitor, budget runaway, merge break) now empirically closed with a fail-loud instrument or a proven recovery.
+
+Local chunk 1: ~57pct (day 600+), running. **CHUNK 2 (spot, ~$4-6, sequential) = OWNER-GATED next step.**
+
 ### B1301 (2026-07-18 Council 334): GATE-7 DRILL FIRED + RESUME LEG IN FLIGHT; local chunk 1 at 57pct
 
 Gate 7 progress: (1) drill instance ran to day 100 with periodic ckpt synced to S3; (2) controller TERMINATED it no-notice (harshest death mode) - FIRED successfully; (3) resume instance i-05c467541864daf12 launched with --resume, bootstrapping. Verification monitor armed with launch-epoch freshness guard + Gate-7 assertion: engine must reappear at day>=90 (proves checkpoint load) not day<10 (fresh restart = resume broken). Stale-heartbeat false-positive from prior instance (killed at 02:04Z) cleared - itself a codified lesson (success markers need freshness-checking, mirror of silence!=success).
