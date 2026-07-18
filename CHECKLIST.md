@@ -2675,4 +2675,19 @@ State compliance visibly: "Checklist: ✅ [each item]"
 
      **Enforcement.** Audit report must include "trace_verification" field showing the strategy -> inject_fn -> compute_fn chain.
 
+158. **HARD RULE -- PRE-RUN ENVIRONMENT-FINGERPRINT PARITY (per chunk/run; MANDATORY before any mergeable multi-run).** (Owner directive 2026-07-18 Council 339 + L207 + L208.)
+
+     **Trigger.** Any backtest run that will be MERGED with sibling runs (multi-chunk R5, local+AWS splits, any distributed cube), OR any run launched on a machine/environment not identical to the one that produced the sibling artifacts.
+
+     **Rule.** Before a run burns compute:
+       (a) Emit `scripts/env_fingerprint.py --emit <output_dir>/env_fingerprint.json` at launch (captures trading-day-grid total + hash, calendar backend, key package versions, code SHA).
+       (b) A `calendar_backend != nyse_mcal` fingerprint is a WARNING at emit and a HALT before a production/mergeable run (it means the degraded Mon-Fri fallback, L207).
+       (c) Before MERGING chunks, run `scripts/env_fingerprint.py --check <dir1>/env_fingerprint.json <dir2>/...` -- any mismatch on grid_total / grid_hash / calendar_backend is a HARD HALT; mismatched chunks re-run on the correct grid before merge (merge_batch_outputs.py enforces this automatically).
+
+     **Rationale.** B1305/B1306: chunk 1 ran the Mon-Fri fallback grid (1043 days) while AWS chunks ran the correct NYSE grid (1002); a silent semantic fallback (L207) + a resume decision that optimized per-run internal consistency without cross-run reconciliation (L208) locked ~25pct of the universe onto the wrong, incompatible grid -- caught only when the owner asked about the merge, after days of compute. No mechanical gate existed for cross-environment run parity because multi-environment execution was new this session.
+
+     **Retroactive coverage demo (per #136).** Would have caught: (1) the chunk-1 calendar defect (parity --check at chunk-2 launch flags grid 1043 vs 1002); (2) L207 itself (emit --warn shows calendar_backend=monfri_fallback locally); (3) any future package/precision drift across a distributed run. Verified live B1307: --check correctly HALTs on the chunk1(1043,monfri) vs local(1003,nyse) mismatch.
+
+     **Enforcement.** Executable, not prose: `scripts/env_fingerprint.py` (pin-tested); merge_batch_outputs.py calls --check on all input dirs and aborts on mismatch.
+
      **Cross-references.** L202; Council 285 B1230; CHECKLIST #154/#155/#156.

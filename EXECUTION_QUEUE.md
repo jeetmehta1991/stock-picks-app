@@ -5576,6 +5576,14 @@ Catch 2 (monitor): drill controller false-TERMINAL on the PREVIOUS smoke's stale
 
 Drill instance i-01659762cd5a4fc9a running; controller v2 will terminate no-notice at day>100 with synced ckpt, then --resume relaunch proves recovery. Spend ~$2.6 of $50 CAD cap.
 
+### B1307 (2026-07-18 Council 339): CHECKLIST #158 SHIPPED — env-fingerprint parity as an EXECUTABLE pre-run gate (owner directive)
+
+Owner: "add this to checklist as per skill requirements" + "why isn't pre-run env-fingerprint parity a pre-launch/checklist gate?" Honest answer given: (1) legit - multi-environment execution is new this session, checklist grows from manifested failures; (2) owned - L207 gave the signal at smoke time and I under-generalized (treated it as a one-off install, not a gate) = Phase 5 discipline gap.
+
+FIX (executable, not prose, per L206): CHECKLIST #158 HARD RULE added (#136 anti-theater demo: catches chunk-1 defect + L207 + future drift). scripts/env_fingerprint.py: --emit (grid total+hash, calendar backend, pkg versions, code SHA) + --check (HALT on grid/calendar mismatch). Path-anchor bug caught+fixed during build (run-as-script sys.path). merge_batch_outputs.py now runs the parity check on all input dirs (HALT on mismatch; --allow-env-mismatch owner override logged; absent-fingerprint = warn). Live-verified: --check HALTs on chunk1(1043,monfri) vs local(1003,nyse). Pin test test_b1307_*; pyramid 879->880+2 GREEN.
+
+NOTE local grid now = 1003 (NYSE, pkg installed) vs AWS smoke 1002 - 1-day boundary diff to reconcile at chunk-1 re-run (S6-B1305); both NYSE, both != chunk-1's running 1043 Mon-Fri.
+
 ### B1306 (2026-07-18 Council 338 cont.): L208 — owned the chunk-1 calendar miss (owner asked "why")
 
 Owner: "Why is chunk 1 running on incorrect calendar?" Honest two-layer root cause given + L208 codified: (1) L207 silent Mon-Fri fallback (package absent, no warning) -> chunk 1 born on wrong grid; (2) MY compounding decision at resume: re-uninstalled the package to keep chunk 1 internally consistent, without reconciling cross-chunk vs the correct-NYSE AWS chunks. Judgment-tier un-gated miss owned, not deflected. L208 rules: pre-run environment-fingerprint parity gate (package set + day-grid hash); cross-run consistency check (not just per-run) when a correctness fix lands mid-multi-run; extends L207. Informs S6-B1305 (chunk 1 re-runs onto NYSE grid + parity check whichever path chosen).

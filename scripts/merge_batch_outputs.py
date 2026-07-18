@@ -77,6 +77,9 @@ def main():
     p = argparse.ArgumentParser()
     p.add_argument("--input-dirs", nargs="+", required=True)
     p.add_argument("--output-dir", required=True)
+    p.add_argument("--allow-env-mismatch", action="store_true",
+                   help="B1307 CHECKLIST #158: proceed despite env-parity "
+                        "mismatch (owner override; logged)")
     p.add_argument("--yes", action="store_true",
                    help="Non-interactive: auto-accept partial-batch warnings. "
                         "Required for unattended Hetzner runs. (Stream A4)")
@@ -124,6 +127,43 @@ def main():
             if response != "yes":
                 print("Merge aborted.")
                 sys.exit(1)
+
+    # -- 0. B1307 (CHECKLIST #158): environment-fingerprint parity gate.
+    # HALT the merge if any two chunks ran on incompatible grids/calendars
+    # (the B1305 chunk-1 Mon-Fri-vs-NYSE defect). Fingerprints that are
+    # absent (legacy chunks) warn but don't block; present-and-mismatched
+    # blocks unless --allow-env-mismatch is set (owner override, logged).
+    fps = []
+    for d in input_dirs:
+        fp_path = Path(d) / "env_fingerprint.json"
+        if fp_path.exists():
+            try:
+                fps.append((d, json.loads(fp_path.read_text(encoding="utf-8"))))
+            except Exception:
+                pass
+    if len(fps) >= 2:
+        crit = ("grid_total", "grid_hash", "calendar_backend")
+        base_d, base = fps[0]
+        mm = [f"{d}:{k}={fp.get(k)} != {base_d}:{k}={base.get(k)}"
+              for d, fp in fps[1:] for k in crit if fp.get(k) != base.get(k)]
+        if mm:
+            print("[FAIL] ENV-PARITY (CHECKLIST #158): chunks ran on "
+                  "incompatible environments -- NOT mergeable:")
+            for m in mm:
+                print(f"   {m}")
+            if not getattr(args, "allow_env_mismatch", False):
+                print("   Re-run mismatched chunks on the correct grid, or "
+                      "pass --allow-env-mismatch (owner override, logged).")
+                sys.exit(1)
+            print("   --allow-env-mismatch: proceeding despite mismatch (owner override)")
+        else:
+            print(f"[OK] env-parity: {len(fps)} chunks agree on grid+calendar")
+    elif fps:
+        print(f"[WARN] env-parity: only {len(fps)}/{len(input_dirs)} chunks "
+              "have fingerprints; cannot fully verify (CHECKLIST #158)")
+    else:
+        print("[WARN] env-parity: no env_fingerprint.json in any chunk "
+              "(pre-#158 run); verify grids manually before trusting merge")
 
     # -- 1. Merge trade log --
     print("Merging trade_log.csv...")

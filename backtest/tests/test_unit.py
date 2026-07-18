@@ -12921,3 +12921,29 @@ def test_b1294_fix4b_worker_census_flush(tmp_path, monkeypatch):
     monkeypatch.delenv("R5_OUTPUT_DIR")
     monkeypatch.setattr(scr, "_WORKER_CENSUS_CALLS", 0, raising=False)
     assert scr._worker_census_flush_tick(every=1) is False, "no env -> no-op, no crash"
+
+
+def test_b1307_env_fingerprint_parity_gate(tmp_path):
+    """CHECKLIST #158 pin: env_fingerprint --check HALTs (exit 1) on a
+    grid/calendar mismatch and PASSes (exit 0) on agreement. Guards the
+    B1305 chunk-1 Mon-Fri-vs-NYSE cross-chunk defect from recurring."""
+    import json
+    import subprocess
+    import sys as _sys
+    from pathlib import Path as _P
+    script = _P(__file__).resolve().parents[2] / "scripts" / "env_fingerprint.py"
+    nyse = {"grid_total": 1002, "grid_hash": "aaaa", "calendar_backend": "nyse_mcal"}
+    monfri = {"grid_total": 1043, "grid_hash": "bbbb", "calendar_backend": "monfri_fallback"}
+    a = tmp_path / "a.json"; a.write_text(json.dumps(nyse))
+    b = tmp_path / "b.json"; b.write_text(json.dumps(monfri))
+    c = tmp_path / "c.json"; c.write_text(json.dumps(nyse))
+    # mismatch -> exit 1
+    r = subprocess.run([_sys.executable, str(script), "--check", str(a), str(b)],
+                       capture_output=True, text=True)
+    assert r.returncode == 1, "grid/calendar mismatch must HALT"
+    assert "ENV-PARITY FAIL" in r.stdout
+    # agreement -> exit 0
+    r2 = subprocess.run([_sys.executable, str(script), "--check", str(a), str(c)],
+                        capture_output=True, text=True)
+    assert r2.returncode == 0, "matching grids must PASS"
+    assert "ENV-PARITY PASS" in r2.stdout
