@@ -5576,6 +5576,10 @@ Catch 2 (monitor): drill controller false-TERMINAL on the PREVIOUS smoke's stale
 
 Drill instance i-01659762cd5a4fc9a running; controller v2 will terminate no-notice at day>100 with synced ckpt, then --resume relaunch proves recovery. Spend ~$2.6 of $50 CAD cap.
 
+### B1310 (2026-07-18 Council 342): ENV-FINGERPRINT PARITY ADDED AS AWS PLAYBOOK GATE 6 (owner directive)
+
+Owner: "add pre-run environment-fingerprint parity check (package set + day-grid) to aws playbook gates." AWS_LAUNCH_PLAYBOOK Section 1: pre-flight gate count 5 -> 6; new Gate 6 (CHECKLIST #158/B1309) = emit env_fingerprint.json at launch + HALT if calendar_backend != nyse_mcal + pre-merge --check HARD HALT on parity mismatch. WIRED into aws_chunk_launch.py user-data (emits fingerprint before engine; chunks 3/4 + any re-run now produce it; chunk 2 predates so lacks one). Applied the generalization mandate: this is the CLASS fix (every mergeable chunk emits+checks), not a one-off. Pyramid 880+2 GREEN.
+
 ### B1309 (2026-07-18 Council 341): GENERALIZATION MANDATE (skill, HARD) + PRE-MERGE RCA/CROSS-CHECK REQUIREMENT (owner directives)
 
 Owner directives: (1) "no under-generalization and no one-off fixes unless approved by me" - BOTH hard mandatory -> added GENERALIZATION MANDATE to execution-discipline SKILL.md (fix the class not the instance; declare class-vs-one-off per fix; one-off needs owner approval). Memory feedback_generalization_mandate_and_premerge_rca. (2) Owner PREFERS the cheaper $1 20-ticker cloud-vs-local cell-stability cross-check (over full chunk-1 cloud re-run); REQUIRES thorough RCA of cross-environment measurement differences BEFORE any merge; MUST REMIND owner of both before merging. S6-B1308 updated: cross-check = chosen path; S6-B1309-PREMERGE-RCA ticket (env-diff root cause: platform float / numpy-BLAS / Python 3.14-vs-3.11 / pkg versions). (3) Confirmed #158 IS in CHECKLIST (line 2678, verified).

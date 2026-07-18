@@ -38,7 +38,7 @@
 
 ## 1. Pre-flight gates (must pass before `aws ec2 run-instances`)
 
-These five gates fire BEFORE any AWS spend. Skipping any of them is a CHECKLIST violation.
+These six gates fire BEFORE any AWS spend. Skipping any of them is a CHECKLIST violation.
 
 ### Gate 1 - CHECKLIST #116: user-data 16KB after base64 encoding
 
@@ -105,6 +105,26 @@ grep -q "preflight.py" .git/hooks/pre-commit || echo "FAIL: compliance hooks not
 ```
 
 **Note:** the Stop hook (Gate B, `.claude/settings.json`) and the preflight script itself ARE committed and travel with the clone automatically -- only the `.git/hooks/` shims need this install step. Instances that never `git commit` (pure compute + S3-upload pattern) can skip this gate; state the skip explicitly in the launch checklist per no-silent-skip.
+
+### Gate 6 - CHECKLIST #158 / B1309: environment-fingerprint parity (package set + day-grid)
+
+**Rule:** every instance that runs a MERGEABLE backtest chunk MUST emit an environment fingerprint into its output dir at launch, and every chunk's fingerprint MUST agree on the merge-critical fields (`grid_total`, `grid_hash`, `calendar_backend`) before its artifacts feed the merged cube. This closes the B1305/B1308 class: chunk 1 ran the Mon-Fri fallback grid (1043d) while cloud chunks ran NYSE (1002d), and the deeper ~33pct local-vs-cloud trade churn was platform nondeterminism (Win/Py3.14 vs Linux/Py3.11 numpy-BLAS) -- neither caught by any gate because no environment-parity check existed.
+
+**In user-data (emit at launch, before/after the engine starts):**
+```bash
+python3.11 scripts/env_fingerprint.py --emit output_chunk${N}/env_fingerprint.json
+# calendar_backend != nyse_mcal in the output => degraded Mon-Fri fallback (L207) => HALT, do not spend
+```
+
+**Pre-merge verification (local, HARD HALT on mismatch):**
+```bash
+python scripts/env_fingerprint.py --check output_chunk*/env_fingerprint.json
+# merge_batch_outputs.py runs this automatically and aborts on mismatch (override: --allow-env-mismatch, logged)
+```
+
+**Parity requirement for a clean measurement cube:** all chunks share ONE platform + calendar. Mixing Windows-local with Linux-cloud chunks introduces float-nondeterminism churn (~33pct at trade level; cube-cell materiality at full scale UNKNOWN, per S6-B1308 -- resolve via the $1 20-ticker cloud-vs-local cell-stability cross-check before trusting a mixed-platform merge). The fingerprint captures pandas/numpy/pyarrow versions + code SHA; extend to OS+python for full platform parity.
+
+**Note:** compute-only chunks that never merge can skip; but any chunk feeding the R5 cube CANNOT.
 
 ---
 

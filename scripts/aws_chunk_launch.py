@@ -63,6 +63,10 @@ fi
     sleep 5
   done ) &
 export EMIT_RAW_SIGNAL_FIRES=1 PYTHONIOENCODING=utf-8
+# Gate 6 (CHECKLIST #158): emit environment fingerprint before the engine
+# burns compute; a monfri_fallback backend here = degraded grid (L207).
+mkdir -p output_chunk@N@
+python3.11 scripts/env_fingerprint.py --emit output_chunk@N@/env_fingerprint.json || true
 TICK=$(cat chunk_tickers.txt)
 python3.11 -m backtest.run_phase1a --phase 1a-beta --tickers "$TICK" \
   --start 2022-05-05 --end 2026-05-05 --no-news --no-walk-forward --no-agents \
