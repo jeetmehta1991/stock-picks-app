@@ -5576,6 +5576,15 @@ Catch 2 (monitor): drill controller false-TERMINAL on the PREVIOUS smoke's stale
 
 Drill instance i-01659762cd5a4fc9a running; controller v2 will terminate no-notice at day>100 with synced ckpt, then --resume relaunch proves recovery. Spend ~$2.6 of $50 CAD cap.
 
+### B1319 (2026-07-19 Council 351): re-run budget/N reality + Plan A/B (owner: hybrid, preserve chunk 1?, drop a chunk if N ok)
+
+APPROVALS logged: M2 isolation, M3=(a) bar-H/L consistency + DD-units, M4 retain, #159 parity gate, SMC cloud-arm+fail-loud gate.
+HARD CONFLICT surfaced: "preserve chunk 1 local" (X) "apply isolation M2". Isolation changes WHICH trades open (removes cross-strategy portfolio block) = engine change = requires RE-RUN; cannot post-hoc isolate a trade log. Chunk 1's current run = shared/non-isolated => superseded by isolation approval; merging as-is = 1 non-isolated chunk vs 3 isolated + Mon-Fri-cal + Windows-platform mismatch. Chunk-1 run still useful as cross-check LOCAL arm; cube data superseded.
+N-IMPACT (contaminated chunk2 extrapolation, uniform): pass-100-gate 4ch=112 / 3ch=99 (-13 marginal: bb_squeeze_volume/donchian_*/macd_crossover_short/pead_long...) / 2ch=86. CAVEAT: post-isolation trade counts RISE (insider_cluster 849raw->0) => fewer than 13 actually fail. Dropping 1 chunk tolerable for N. (There are 4 chunks not 5.)
+BUDGET REALITY: chunk2 took ~15.7h (8+7.7 resume) => ~$10-17/chunk spot. ~$20 spent, ~$30 left => afford ~2-3 cloud chunks. Full-4 all-cloud ~$60-84 total = IMPOSSIBLE under $50 => hybrid/reduced forced.
+PLAN A (full universe, platform-MIXED): chunk1 re-run LOCAL (free ~4-5d, isolation+NYSE+SMC) + 2-3 cloud; platform-mix NEEDS cross-check bless; slow. PLAN B (reduced ~1446, ALL-CLOUD clean): 3 cloud chunks isolated ~$30-51, drop 1 chunk (-13 marginal, fewer post-isolation), one platform, fast ~2d [REC lean].
+REC: (1) get cross-check verdict FIRST (chunk1 ~90%, ~1h) decides A-vs-B; (2) build fixes locally (no spend) meanwhile; (3) re-run owner-gated. Offered to hold for cross-check + start building fix batch locally. Owner decision pending.
+
 ### B1318 (2026-07-19 Council 350): "Council this" parity-gate + fix-batch (6 lenses) -> all-cloud single-platform recommendation
 
 HEADLINE (honesty reframe): "everything identical" cross-platform is IMPOSSIBLE (Win/Py3.14 vs Linux/Py3.11 numpy-BLAS float => never bit-identical = the ~33% churn). Parity gate can guarantee identical INPUTS+ENV+COVERAGE, not identical OUTPUTS cross-platform. => COUNCIL REC: run entire cube ALL-CLOUD single-platform (re-run chunk 1 on cloud too); local<->cloud merge-parity becomes moot, float churn eliminated as merge issue, parity gate simplifies to "each cloud chunk == cloud reference". Settles chunk-1 (re-run on cloud). Owner decision pending.
