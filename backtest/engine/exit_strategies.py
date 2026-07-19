@@ -412,6 +412,18 @@ def exit_hybrid_50pct(df_full, entry_date, entry_price, direction, atr,
                     "exit_reason": "stop_loss", "pnl_pct": round(pnl, 4),
                     "win": pnl > 0,
                     "hold_days": (idx.date() - entry_date).days}
+        # B1320 (Council 352, M3=a): SHORT hard-stop was MISSING - a losing
+        # short had no stop before half_taken and rode to end_of_data. Root
+        # cause of hybrid_50pct_target -32.7%/trade + -11941pp additive DD on
+        # short strategies (B1315/B1316). Symmetric close-based mirror of the
+        # long branch above (OHLCV-compatible, no intraday data needed).
+        if direction == "short" and close >= stop:
+            full_pnl = _pnl(entry_price, stop, direction)
+            pnl = (blended_pnl * 0.5 + full_pnl * 0.5) if half_taken else full_pnl
+            return {"exit_price": round(stop, 4), "exit_date": idx.date(),
+                    "exit_reason": "stop_loss", "pnl_pct": round(pnl, 4),
+                    "win": pnl > 0,
+                    "hold_days": (idx.date() - entry_date).days}
 
         # Take 50% at target
         if not half_taken:

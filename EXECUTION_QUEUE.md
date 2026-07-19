@@ -5576,6 +5576,14 @@ Catch 2 (monitor): drill controller false-TERMINAL on the PREVIOUS smoke's stale
 
 Drill instance i-01659762cd5a4fc9a running; controller v2 will terminate no-notice at day>100 with synced ckpt, then --resume relaunch proves recovery. Spend ~$2.6 of $50 CAD cap.
 
+### B1320 (2026-07-19 Council 352): FIX BATCH 1/4 — M3=a hybrid_50pct_target missing SHORT stop (scalar+vectorized) SHIPPED
+
+Owner "2 proceed, test extensively, wire+activate" + "council this". Building fix batch locally (no spend); Plan A/B held for cross-check.
+ROOT CAUSE (deeper than B1315 close-vs-intraday): exit_hybrid_50pct hard-stop block gated `if direction == "long" and close <= stop` -> SHORTS HAD NO HARD STOP at all before half_taken; a losing short rode to end_of_data => the -32.7%/trade + -11,941pp additive-DD anomaly on short strategies. NOT a close-vs-intraday issue; a MISSING branch. Minimal fix = symmetric close-based short stop (entry*1.10; OHLCV-compatible, no intraday data - addresses owner concern directly).
+EXTENSIVE-TEST FINDING: vectorized fast-path vexit_hybrid_50pct (exit_strategies_vectorized.py, Batch 412, --vectorized-cube-exits) ALSO lacked the short stop (line 889 even documented it) -> both paths shared the bug => parity held via a COVERAGE GAP (no losing-short case tested). chunk-2 launch did NOT use --vectorized-cube-exits so scalar fix reaches that cube; fixed vectorized too so latent bug closed. FIX: added symmetric short close-stop to BOTH scalar (exit_strategies.py) + vectorized (mirror of long branch: pre-stop entry*1.10 + post-target close-stop). Pin test_b1320: losing-short stops (not EOD) + long unaffected + 4-case scalar-vs-vectorized byte-parity (closes the coverage gap). Pyramid 880+2 GREEN; batch412 vec-suite 76 GREEN.
+DD-units (additive-vs-compounded) DEFERRED to post-re-measurement: with the short stop capping losses at ~10%, the -11,941pp extremes should largely vanish; re-check DD magnitude on next cube before deciding units change.
+BATCH DISCIPLINE: this is fix 1 of 4 (<=3/batch rule). Next: B2 cube isolation (M2, biggest - DESIGN FORK for owner), B3 parity+coverage gate #159 + SMC-fire gate (M1b), B4 SMC cloud-arm (M1a). M4 doc folds in.
+
 ### B1319 (2026-07-19 Council 351): re-run budget/N reality + Plan A/B (owner: hybrid, preserve chunk 1?, drop a chunk if N ok)
 
 APPROVALS logged: M2 isolation, M3=(a) bar-H/L consistency + DD-units, M4 retain, #159 parity gate, SMC cloud-arm+fail-loud gate.

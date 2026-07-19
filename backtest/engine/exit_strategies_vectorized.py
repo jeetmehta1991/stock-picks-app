@@ -884,13 +884,33 @@ def vexit_hybrid_50pct(df_full, entry_date, entry_price, direction, atr,
             "hold_days":   (dates[-1] - entry_date).days,
         }
     else:
-        # SHORT side - asymmetric vs LONG (per scalar). The scalar `# Hard
-        # stop` block is gated `if direction == "long" and close <= stop:`
-        # so shorts have NO close-based hard stop check (pre- or post-
-        # target). Only the post-target DEC-514 trail-fill check applies.
+        # SHORT side - B1320 (Council 352, M3=a): symmetric mirror of the LONG
+        # branch. Previously shorts had NO close-based hard stop (matching the
+        # pre-B1320 scalar bug), so a losing short rode to end_of_data ->
+        # -32.7%/trade + -11,941pp additive DD on short strategies (B1315/
+        # B1316). Now a close-based hard stop at entry*1.10 fires pre- AND
+        # post-target, mirroring scalar `if direction == "short" and close >= stop`.
         target = entry_price - target_mult * atr
+        initial_stop = entry_price * 1.10
+        pre_stop_hit = closes >= initial_stop
         target_hit = lows <= target
+        first_pre_stop = _first_true(pre_stop_hit)
         first_target = _first_true(target_hit)
+
+        # Pre-target stop fires (or both same bar - stop wins)
+        if first_pre_stop >= 0 and (first_target < 0
+                                     or first_pre_stop <= first_target):
+            full_pnl = _pnl(entry_price, initial_stop, direction)
+            pnl = full_pnl
+            exit_date = dates[first_pre_stop]
+            return {
+                "exit_price":  round(initial_stop, 4),
+                "exit_date":   exit_date,
+                "exit_reason": "stop_loss",
+                "pnl_pct":     round(pnl, 4),
+                "win":         pnl > 0,
+                "hold_days":   (exit_date - entry_date).days,
+            }
 
         if first_target < 0:
             last_close = closes[-1]
@@ -920,19 +940,36 @@ def vexit_hybrid_50pct(df_full, entry_date, entry_price, direction, atr,
                                   np.inf)
         acc_input = np.concatenate([[entry_price], candidate_post])
         post_stop_at_end = np.minimum.accumulate(acc_input)[1:]
+        post_stop_at_start = np.empty_like(post_stop_at_end)
+        post_stop_at_start[0] = initial_stop
+        post_stop_at_start[1:] = post_stop_at_end[:-1]
+        close_stop_hit = post_closes >= post_stop_at_start
         trail_fills = _fill_price_short_stop(post_stop_at_end, post_opens,
                                              post_highs, post_lows)
+        first_close_stop = _first_true(close_stop_hit)
         first_trail = _first_non_nan(trail_fills)
 
-        if first_trail >= 0:
+        winning_idx = -1
+        reason = None
+        fill_price = None
+        if first_close_stop >= 0 and (first_trail < 0
+                                       or first_close_stop <= first_trail):
+            winning_idx = first_close_stop
+            fill_price = float(post_stop_at_start[first_close_stop])
+            reason = "stop_loss"
+        elif first_trail >= 0:
+            winning_idx = first_trail
             fill_price = float(trail_fills[first_trail])
+            reason = "hybrid_trail"
+
+        if winning_idx >= 0:
             full_pnl = _pnl(entry_price, fill_price, direction)
             pnl = blended_pnl * 0.5 + full_pnl * 0.5
-            exit_date = dates[t + first_trail]
+            exit_date = dates[t + winning_idx]
             return {
                 "exit_price":  round(fill_price, 4),
                 "exit_date":   exit_date,
-                "exit_reason": "hybrid_trail",
+                "exit_reason": reason,
                 "pnl_pct":     round(pnl, 4),
                 "win":         pnl > 0,
                 "hold_days":   (exit_date - entry_date).days,
