@@ -75,7 +75,21 @@ python3.11 -m backtest.run_phase1a --phase 1a-beta --tickers "$TICK" \
 echo "ENGINE EXIT $? $(date -u +%FT%TZ)"
 tar -cf /tmp/artifacts.tar output_chunk@N@
 curl -sf -X PUT -T /tmp/artifacts.tar "@ART_PUT@"
-{ echo "hb_utc=$(date -u +%FT%TZ)"; echo "CHUNK@N@_COMPLETE"; } > /tmp/hb.txt
+# B1312 FIX (class-level, generalization mandate): the completion marker must
+# reflect ACTUAL window completion, not mere process exit. --max-run-hours and
+# spot-interruption leave engine_state status='running' (backtest.py:1082 emits
+# 'complete' ONLY after the full window finalizes). Writing CHUNK_COMPLETE
+# unconditionally fooled the auto-resume controller -- chunk 2 capped at day 669
+# (67%) yet was marked COMPLETE, so resumes=0 and the run stopped short. Gate the
+# marker on status; emit CAPPED (which the controller treats as resume-needed)
+# for every non-complete exit. Applies to all chunks + future spot runs.
+ST=$(python3.11 -c "import json;print(json.load(open('output_chunk@N@/engine_state.json')).get('status',''))" 2>/dev/null)
+DY=$(python3.11 -c "import json;print(json.load(open('output_chunk@N@/engine_state.json')).get('simulated_day',''))" 2>/dev/null)
+if [ "$ST" = "complete" ]; then
+  { echo "hb_utc=$(date -u +%FT%TZ)"; echo "CHUNK@N@_COMPLETE day=$DY"; } > /tmp/hb.txt
+else
+  { echo "hb_utc=$(date -u +%FT%TZ)"; echo "CHUNK@N@_CAPPED day=$DY status=$ST"; } > /tmp/hb.txt
+fi
 curl -sf -X PUT -T /tmp/hb.txt "@HB_PUT@"
 shutdown -h now
 """

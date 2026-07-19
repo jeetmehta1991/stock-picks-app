@@ -5576,6 +5576,14 @@ Catch 2 (monitor): drill controller false-TERMINAL on the PREVIOUS smoke's stale
 
 Drill instance i-01659762cd5a4fc9a running; controller v2 will terminate no-notice at day>100 with synced ckpt, then --resume relaunch proves recovery. Spend ~$2.6 of $50 CAD cap.
 
+### B1312 (2026-07-18 Council 344): 🔴 CHUNK 2 FALSE-COMPLETE — capped at day 669/~1002 but marked COMPLETE; launcher marker bug fixed (class-level)
+
+Auto-resume controller fired "CHUNK2 COMPLETE (peak=669, resumes=0)". VERIFIED via pulled artifacts: engine_state day=669, status='running', 10,996 trades; instance terminated at exactly 8h => --max-run-hours 8.0 fired at ~67% of the ~1002-day NYSE window. ROOT CAUSE (my launcher bug): aws_chunk_launch.py user-data wrote `CHUNK<N>_COMPLETE` UNCONDITIONALLY after engine process exit, regardless of actual completion. backtest.py:1082 emits status='complete' ONLY at full-window finalize (B1070 F-1.1); a max-hours/interrupt exit leaves status='running'. So the false marker fooled the controller -> resumes=0 -> a 67%-done run stopped short.
+
+CLASS FIX (generalization mandate — class-level, NOT one-off): user-data now reads engine_state status; emits CHUNK<N>_COMPLETE only when status=='complete', else CHUNK<N>_CAPPED (which the controller treats as resume-needed). Applies to all chunks + future spot runs. Pin test test_b1312_chunk_complete_marker_gated.py (2 asserts: status-gated marker + no unconditional COMPLETE echo). Pyramid 24 GREEN on affected files.
+
+RESUME DECISION HELD FOR OWNER (CHECKLIST #120 — do NOT auto-relaunch corrected version after halt; + owner AWS skepticism + spend). Chunk 2 needs a --resume from the day-669 checkpoint to finish the last ~333 days (~4h, ~$3, single shot under the 8h cap). Chunk 2 is cloud+cloud so internally consistent (no cross-env RCA needed for it). Ticket S6-B1312-CHUNK2-RESUME: owner go/no-go.
+
 ### B1311 (2026-07-18 Council 343): COMPREHENSIVE DOC-SYNC SWEEP — 48 banners updated to code-canonical
 
 Owner: "update all docs, address all drift, each non-archived doc, grep against codebase, no silent misses, retain formats." Canonical EXECUTED from code: 219 strat / 0 disabled / 5694 cells / 880+2 tests / CHECKLIST #158 / L209 / latest B1310.
