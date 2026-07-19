@@ -16,7 +16,9 @@
 
 # Source: B1052 sub-agent Alpha synthesis of B1042-B1051 R5 launch lineage per owner directive 2026-06-28 "Document the current workflow, processes, phases etc for reuse in r6" per CHECKLIST #77.
 
-**Doc A of 6-doc r6_workflow_reuse bundle.**
+**Doc A of 7-doc r6_workflow_reuse bundle.**
+
+**⚠ Superseded-for-model note:** this doc describes the ORIGINAL monolith autoladder (single instance runs phases 1->4, sentinel-gated). The CURRENT model is chunk-based — see `docs/r6_workflow_reuse/RUN_WORKFLOWS.md` (Doc G) for local + AWS run workflows + unified gate reference. Doc A remains valid for the sentinel contract + phase-gating philosophy.
 
 **Cross-link:** companion playbook `docs/r6_workflow_reuse/AWS_LAUNCH_PLAYBOOK.md` (Doc F) covers AWS-mechanics + AZ failover + spot capacity handling.
 

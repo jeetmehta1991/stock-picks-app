@@ -16,7 +16,9 @@
 
 # Source: B1052 sub-agent Alpha synthesis of B1028-B1051 AWS launch lineage per owner directive 2026-06-28 "Document the current workflow, processes, phases etc for reuse in r6" per CHECKLIST #77.
 
-**Doc F of 6-doc r6_workflow_reuse bundle.**
+**Doc F of 7-doc r6_workflow_reuse bundle.**
+
+**⚠ Current-model note:** the chunk-based execution model (local + AWS spot chunks, `aws_chunk_launch.py`) is documented in `docs/r6_workflow_reuse/RUN_WORKFLOWS.md` (Doc G). This doc's Section 1 Gates 1-6 + AZ/spot/externalization recipes remain the authoritative AWS-mechanics reference and are cross-referenced from Doc G.
 
 **Cross-link:** companion `docs/r6_workflow_reuse/R5_WORKFLOW.md` (Doc A) covers per-phase workflow + sentinel contract. **Read Doc A first**; this doc covers AWS-mechanics that are orthogonal to phase logic.
 
