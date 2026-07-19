@@ -5576,6 +5576,15 @@ Catch 2 (monitor): drill controller false-TERMINAL on the PREVIOUS smoke's stale
 
 Drill instance i-01659762cd5a4fc9a running; controller v2 will terminate no-notice at day>100 with synced ckpt, then --resume relaunch proves recovery. Spend ~$2.6 of $50 CAD cap.
 
+### B1317 (2026-07-19 Council 349): "Council this" M1-M4 fixes + 🔴 B1316 SMC CORRECTION (chunk cube invalid -> re-run pivot)
+
+🔴 CORRECTION to B1316: claimed "SMC silent uniform local+cloud, NOT a merge inconsistency" — WRONG. Evidence: config.py:1216 SMC_PHASE="PRODUCTION" since B1041 (2026-06-28; 07-17 cloud tar postdates it => both envs PRODUCTION). LOCAL chunk 1 fires SMC heavily (smc_breaker_block_long=41006, smc_bos_retest_entry=6866, judas_swing_short=742). CLOUD chunk 2 = ZERO. Gate is _SMC_AVAILABLE (smc_ict.py:131) not SMC_PHASE: vendored smartmoneyconcepts imports LOCAL, FAILS on cloud instance. => cloud chunks missing all 22 SMC/ICT; local has them = REAL chunk1-vs-chunk2 inconsistency; likely dominates cross-check divergence (> platform float). Truth-standard correction owned.
+M1 fix: producers correct (fire locally); cloud emits 0 because lib import fails (NOT a trade gate). -> ensure vendored/ + deps ship+import on cloud; fail-loud SMC-fire launch gate (0 fires=HALT); env_fingerprint smc_available merge-critical; re-run cloud chunks.
+M2 (owner decision = ISOLATED): correct FOR THE CUBE; reverses BUG-61 owner-approved "match live max_positions_per_ticker=1" (backtest.py:1743) BUT reconciles - cube=per-strategy standalone edge (isolate; own portfolio/cash/positions), portfolio-sim=realistic ROI (keep BUG-61). Mistake was running the CUBE through shared-portfolio path. Contrarian: isolation inflates ROI vs live -> winners still need shared-portfolio sim pre-deploy. -> S6-B1316-PORTFOLIO-GATE-CUBE-INDEPENDENCE (owner=isolated).
+M3 fix: exit_hybrid_50pct HAS 10% hard stop (not unbounded) but stop is CLOSE-based (close<=stop) while trail uses intraday fills -> shorts GAP THROUGH stop, exit late at close (squeeze -32.7%/trade). -> make hard-stop intraday (parity w/ trail); decide max_drawdown_pct additive-pp vs compounded for DD<20pp gate. S6-B1315-HYBRID-EXIT-LOSS-AUDIT.
+M4 answer: short_borrow_trap_avoid emits direction="avoid"; backtest.py:1789+2001 skip position-open for avoid. 67,619 raw = days_to_cover>8 emissions consumed as risk GATE by every short. 0 trades CORRECT/by-design. -> exclude avoid-direction from "219 strategies" denominator (218 tradeable + 1 gate).
+PIVOT: cloud chunk-2 cube INVALID for merge on 2 counts (missing SMC + shared-portfolio contamination) -> fix (isolation + SMC cloud arm + hybrid stop) -> smoke-verify -> RE-RUN cube. Awaiting owner go to spec fix batch + re-run plan; NO re-run without approval.
+
 ### B1316 (2026-07-19 Council 348): PER-STRATEGY RCA of chunk-2 silent/starved (owner: "show list of strategies and RCA of each")
 
 Full doc: output_audit/B1316_chunk2_silent_starved_rca_2026_07_19.md. RCA organized by 5 root-cause MECHANISMS (not per-strategy repetition):
