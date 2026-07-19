@@ -70,7 +70,7 @@ python3.11 scripts/env_fingerprint.py --emit output_chunk@N@/env_fingerprint.jso
 TICK=$(cat chunk_tickers.txt)
 python3.11 -m backtest.run_phase1a --phase 1a-beta --tickers "$TICK" \
   --start 2022-05-05 --end 2026-05-05 --no-news --no-walk-forward --no-agents \
-  --no-git --no-portfolio-cap --no-dd-halt --screen-pool-workers @POOL@ \
+  --no-git --no-portfolio-cap --no-dd-halt --cube-isolation --screen-pool-workers @POOL@ \
   --max-run-hours @MAXH@ --warn-run-hours 7.0 --output-dir output_chunk@N@ $RESUME_ARGS
 echo "ENGINE EXIT $? $(date -u +%FT%TZ)"
 tar -cf /tmp/artifacts.tar output_chunk@N@
