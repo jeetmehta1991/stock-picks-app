@@ -5576,6 +5576,16 @@ Catch 2 (monitor): drill controller false-TERMINAL on the PREVIOUS smoke's stale
 
 Drill instance i-01659762cd5a4fc9a running; controller v2 will terminate no-notice at day>100 with synced ckpt, then --resume relaunch proves recovery. Spend ~$2.6 of $50 CAD cap.
 
+### B1316 (2026-07-19 Council 348): PER-STRATEGY RCA of chunk-2 silent/starved (owner: "show list of strategies and RCA of each")
+
+Full doc: output_audit/B1316_chunk2_silent_starved_rca_2026_07_19.md. RCA organized by 5 root-cause MECHANISMS (not per-strategy repetition):
+🔴 MECH-2 (HEADLINE, cube-wide): portfolio.py:384 one-position-per-ticker gate fires 266,212 skips = 66% of all 401,240 skips. --no-portfolio-cap removed the position-COUNT cap but NOT the cross-strategy ticker-uniqueness gate. CONTRADICTS CLAUDE.md Approved Rules "One trade per ticker - Removed - all strategies fire independently". Per-strategy trade counts (=> silent/starved verdicts) are contaminated by which strategy grabbed the ticker first. Poster child insider_cluster_with_director_long 849 raw fires -> 0 trades (all tickers already held). DECISION NEEDED: shared-portfolio (realistic) vs per-strategy-isolated cube (independent verdict, CLAUDE.md intent). -> S6-B1316-PORTFOLIO-GATE-CUBE-INDEPENDENCE.
+🟡 MECH-1 (22 truly-silent, cube-wide BY DESIGN): SMC_PHASE!=PRODUCTION (smc_ict.py:126, B1038 B-CANARY/DEC-508). 18 SMC + turtle_soup_long/short + judas_swing_long/short (latter 4 CONSUME smc_liquidity_swept_dn/up -> same gate; CORRECTS B1315 "daily-bar inapplicable" hypothesis). Config flag => uniform local+cloud => NOT a merge inconsistency. R5 cube has ZERO SMC coverage until promoted. -> S6-B1316-SMC-PHASE-DECISION.
+🟠 MECH-3: hybrid_50pct_target exit anomaly (S6-B1315-HYBRID-EXIT-LOSS-AUDIT).
+MECH-4: short_borrow_trap_avoid 67,619 raw / 0 trades = avoid-GATE not a trade producer (BY DESIGN; exclude from starvation).
+🟢 MECH-5 (rare/EXPLORATORY/chunk-local): rsi_overbought_short (contradictory gates), classification_change_* (rare GICS reclass events), gold_silver/sector_rotation_defensive (rare macro x chunk-2 C-K sector mix), news_* (B1211 84% effective universe, C-K heavy in zero-coverage), squeeze_setup/weekly_bias (selective/slow), index-rebalance drift (rare events + portfolio gate). -> S6-B1316-8-SILENT-INVESTIGATE.
+CAVEAT: chunk2 = C-K slice (379 tickers); only MECH 1-4 cube-wide; MECH-5 rarity re-assess on MERGED cube. Fanout clean (3978=153x26). Commit + doc.
+
 ### B1315 (2026-07-19 Council 347): CHUNK 2 CUBE ANALYSIS — fanout clean; anomalies flagged (owner: "analyze chunk 2, silent/starved, fanout OK?")
 
 Downloaded chunk2 artifacts.tar (1.6GB), analyzed. 17,569 closed trades, 482 tickers x 1002 days.
