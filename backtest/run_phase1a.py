@@ -231,6 +231,14 @@ def main():
                         "ticker-uniqueness + cash-sufficiency still apply. "
                         "AUTO-ENABLED for phase=1a-beta; pass explicitly for "
                         "other phases. Phase 1B-alpha re-engages the cap.")
+    p.add_argument("--cube-isolation", action="store_true",
+                   help="B1321 (Council 353, M2 pure-signal isolation): every "
+                        "valid signal opens a trade; bypasses ALL cross-strategy "
+                        "PORTFOLIO gates (candidate cap, cross-strategy ticker "
+                        "block, cooldown, max-loss, factor-concentration, "
+                        "can_open, portfolio mirror). Per-(strategy x exit) cube "
+                        "cells become independent. Keep OFF for portfolio-sim "
+                        "(BUG-61 shared book). Pass explicitly for the cube.")
     p.add_argument("--no-dd-halt", action="store_true",
                    help="Batch 383 (owner 2026-05-26): bypass DEC-515 Level 6 "
                         "DD halt + Portfolio.can_open drawdown_suspend gate "
@@ -493,6 +501,8 @@ def main():
         screen_pool_workers=args.screen_pool_workers,  # Batch 322
         no_portfolio_cap=args.no_portfolio_cap,        # Batch 377
         no_dd_halt=args.no_dd_halt,                    # Batch 383
+        cube_isolation=args.cube_isolation,           # B1321 Council 353 M2
+
         no_regime_affinity=args.no_regime_affinity,    # Batch 384 Gate 2
         no_event_suppression=args.no_event_suppression, # Batch 384 Gate 3
         warn_run_hours=args.warn_run_hours,             # Batch 394 WARN at 4h

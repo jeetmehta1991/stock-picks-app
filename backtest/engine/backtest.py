@@ -131,8 +131,10 @@ class BacktestEngine:
         warn_run_hours:         Optional[float] = None, # Batch 394 owner 2026-05-27: WARN once when run exceeds this wall-time. None = disabled.
         max_run_hours:          Optional[float] = None, # Batch 394 owner 2026-05-27: hard sys.exit(1) at this wall-time after flushing checkpoint. None = disabled.
         resume_from_checkpoint: Optional[str] = None, # B1076 Council 191 Option 1: local dir with engine_state.json + trade_log_checkpoint.csv from prior interrupted run.
+        cube_isolation:         bool  = False, # B1321 Council 353 owner M2=(i): PURE-SIGNAL per-strategy isolation for the cube. Every valid signal opens a trade (PIT + data + same-strategy dedup + strategy-intrinsic gates ONLY). Bypasses ALL cross-strategy PORTFOLIO gates (candidate cap, cross-strategy ticker block, cooldown, max-loss, factor-concentration, can_open, portfolio mirror) so per-(strategy x exit) cube cells are independent of other strategies. Keep OFF for portfolio-sim (BUG-61 shared book).
     ):
         self.resume_from_checkpoint = resume_from_checkpoint
+        self.cube_isolation = cube_isolation
         self._resume_sim_day = -1  # set by _load_resume_checkpoint when active
         self._resumed_closed_trades_count = 0  # idempotency check
         self.no_portfolio_cap = bool(no_portfolio_cap)
@@ -1751,7 +1753,10 @@ class BacktestEngine:
         # Batch 279: opened_today set removed - dedup eliminated per Option 1.
         # See per-strategy-loop notes ~line 1043 for full rationale.
 
-        for cand in candidates[:self.max_cands]:
+        # B1321 (Council 353, M2 pure-signal isolation): no cross-strategy
+        # candidate cap in isolation - every strategy's signal is evaluated.
+        _cand_iter = candidates if self.cube_isolation else candidates[:self.max_cands]
+        for cand in _cand_iter:
             ticker = cand["ticker"]
             atr    = cand.get("atr", 0.0) or cand["last_close"] * 0.01
             close  = cand["last_close"]
@@ -1806,6 +1811,11 @@ class BacktestEngine:
             # ("ticker") preserves the prior owner-approved Option A behavior
             # exactly; alternate modes only fire when owner sets the flag.
             from backtest.config import BUG_61_BLOCK_MODE as _bug61_mode
+            # B1321 (Council 353): isolation forces same-strategy-only block
+            # (different strategies stack on a ticker; a strategy can't
+            # double-open). Removes the cross-strategy ticker contamination.
+            if self.cube_isolation:
+                _bug61_mode = "ticker_strategy"
             if _bug61_mode == "off":
                 pass  # No block; portfolio cap + cooldown + max-loss still apply
             elif _bug61_mode == "ticker_direction":
@@ -1876,7 +1886,7 @@ class BacktestEngine:
                 if 0 <= days_since < TICKER_STOPOUT_COOLDOWN_DAYS:
                     cooldown_breach = True
                     break
-            if cooldown_breach:
+            if cooldown_breach and not self.cube_isolation:
                 self.skipped_trades.append({
                     "ticker": ticker, "date": as_of,
                     "strategy": "(any)",
@@ -1904,7 +1914,7 @@ class BacktestEngine:
                     continue
                 if 0 <= days_ago <= _window_days:
                     _cum_pnl += float(getattr(ct, "pnl_pct", 0.0) or 0.0)
-            if _cum_pnl <= _cap_pct:
+            if _cum_pnl <= _cap_pct and not self.cube_isolation:
                 self.skipped_trades.append({
                     "ticker": ticker, "date": as_of,
                     "strategy": "(any)",
@@ -1923,7 +1933,8 @@ class BacktestEngine:
             # Batch 223 (research review Section C #3 owner-approved
             # 2026-05-18): tighten sector cap 30% -> 25% per Litterman
             # 2003 *Modern Investment Management* Ch 17 industry standard.
-            if hasattr(self, "portfolio") and self.portfolio.positions:
+            if (hasattr(self, "portfolio") and self.portfolio.positions
+                    and not self.cube_isolation):
                 _conc = self.portfolio.factor_concentration_breach(
                     sector_threshold_pct=25.0,
                 )
@@ -2547,7 +2558,10 @@ class BacktestEngine:
                             max_positions=_effective_cap,
                             drawdown_suspend_pct=_dd_suspend,
                         )
-                        if not ok:
+                        # B1321 (Council 353): isolation bypasses the portfolio
+                        # gate (position cap / cash / cross-strategy ticker
+                        # uniqueness) - every valid signal opens a trade.
+                        if not ok and not self.cube_isolation:
                             self.skipped_trades.append({
                                 "ticker": ticker, "date": as_of,
                                 "strategy": strat_entry["strategy"],
@@ -2641,6 +2655,15 @@ class BacktestEngine:
                 # Batch 279: opened_today removed (dedup eliminated per Option 1).
                 # open_tickers still updated for BUG-61 cross-day concurrent block.
                 open_tickers.add(ticker)  # BUG-61: lock ticker for cross-day
+
+                # B1321 (Council 353): in isolation, multiple strategies hold the
+                # same ticker, but Portfolio.positions is ticker-keyed and cannot
+                # represent that. The cube reads self.closed_trades (not portfolio
+                # state), so skip the portfolio mirror in isolation - the trade is
+                # already recorded in open_trades above. (Equity curve is not used
+                # for per-strategy cube cells, which are per-trade-% + per-strategy.)
+                if self.cube_isolation:
+                    continue
 
                 # BUG-95 sub-batch 2 + 4: mirror entry into Portfolio state.
                 # Sub-batch 4 has already gated this with can_open above; reaching

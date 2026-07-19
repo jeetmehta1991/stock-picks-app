@@ -5576,6 +5576,12 @@ Catch 2 (monitor): drill controller false-TERMINAL on the PREVIOUS smoke's stale
 
 Drill instance i-01659762cd5a4fc9a running; controller v2 will terminate no-notice at day>100 with synced ckpt, then --resume relaunch proves recovery. Spend ~$2.6 of $50 CAD cap.
 
+### B1321 (2026-07-19 Council 353): FIX BATCH 2/4 — M2=(i) pure-signal cube isolation SHIPPED (flag-gated, default OFF)
+
+Owner "1 i" (pure signal-quality) + "wire into engine and activate". Root problem (B1316): cube inherits shared-portfolio closed trades -> 266K ticker_already_in_portfolio skips (66%) contaminate per-strategy counts (insider_cluster 849 raw->0). Owner M2=(i): every valid signal opens a trade; bypass ALL cross-strategy PORTFOLIO gates; keep strategy-intrinsic (regime affinity, macro-regime, borrow/avoid, PIT, data, same-strategy dedup).
+IMPLEMENTATION: new BacktestEngine(cube_isolation=False) flag + run_phase1a --cube-isolation. Architecture verified: trades append to self.open_trades (backtest.py:2639) INDEPENDENT of portfolio; cube reads closed_trades not portfolio state -> bypassing portfolio gates keeps cube correct (only equity curve affected, unused by per-strategy cells). GUARDS (all `and not self.cube_isolation`, default-OFF => zero behavior change to portfolio-sim/BUG-61 path): (1) candidate cap -> iterate all; (2) force BUG_61_BLOCK_MODE=ticker_strategy (same-strategy-only block, diff strategies stack); (3) cooldown DEC-018 skip; (4) max-loss DEC-135 skip; (5) factor-concentration DEC-076 skip; (6) can_open portfolio gate skip; (7) portfolio.add_position mirror skip (ticker-keyed, can't hold 2 strategies same ticker). KEPT: macro-regime (2049), avoid/borrow (2311) = strategy-intrinsic. Note --no-portfolio-cap only removed position-COUNT cap (explains residual 266K ticker skips).
+TESTS: test_b1321 (flag defaults OFF + propagates + 6 source-guard pins). Pyramid 880+2 GREEN (default path unbroken - critical since guards are default-OFF no-ops). BEHAVIORAL validation (trade counts rise, no portfolio_gate/cooldown/max_loss skips, silent strategies reappear) = the isolation coverage-SMOKE built next with #159 (Batch 3). ACTIVATION: flag-gated not auto-on (avoids silently changing existing 1a-beta runs); re-run/launcher passes --cube-isolation explicitly. Batch 2 of 4.
+
 ### B1320 (2026-07-19 Council 352): FIX BATCH 1/4 — M3=a hybrid_50pct_target missing SHORT stop (scalar+vectorized) SHIPPED
 
 Owner "2 proceed, test extensively, wire+activate" + "council this". Building fix batch locally (no spend); Plan A/B held for cross-check.
