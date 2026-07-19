@@ -5576,6 +5576,17 @@ Catch 2 (monitor): drill controller false-TERMINAL on the PREVIOUS smoke's stale
 
 Drill instance i-01659762cd5a4fc9a running; controller v2 will terminate no-notice at day>100 with synced ckpt, then --resume relaunch proves recovery. Spend ~$2.6 of $50 CAD cap.
 
+### B1315 (2026-07-19 Council 347): CHUNK 2 CUBE ANALYSIS — fanout clean; anomalies flagged (owner: "analyze chunk 2, silent/starved, fanout OK?")
+
+Downloaded chunk2 artifacts.tar (1.6GB), analyzed. 17,569 closed trades, 482 tickers x 1002 days.
+FANOUT ✅ CLEAN: cube = 3,978 cells = EXACTLY 153 strategies x 26 exits; 0 incomplete-fanout; per-strat trade-count identical across all 26 exits. Cube drops <5-trade strategies (23 of them) as too sparse -> 176 produced >=1 trade, 153 cube-eligible. (Corrected my earlier "66 silent"=219-153 which mis-counted the 23 low-trade; TRUE zero-trade=43.)
+ANOMALY (real, actionable) -> S6-B1315-HYBRID-EXIT-LOSS-AUDIT: exit_method hybrid_50pct_target mean max_drawdown_pct = -803pp (2x next-worst trailing_15pct -341); extreme cells -11,941pp (xs_momentum_bottom_decile_short 73% WR but avg -32.7%/trade PF 0.32). Two parts: (a) max_drawdown_pct is ADDITIVE pnl-point units (sum of trade %), can exceed -100% -> "DD<20pp" gate measures additive DD (confirm intended); (b) hybrid_50pct_target likely does NOT cap short losses (unbounded squeeze) -> audit exit loss logic.
+SILENT (43 zero-trade): 26 truly-silent producers (0 raw fires) = 18 SMC silent BY DESIGN (smc_ict.py:126 SMC_PHASE!="PRODUCTION" B-CANARY per B1038/DEC-508; config flag uniform local+cloud so NOT a merge inconsistency; but R5 cube has ZERO SMC coverage until SMC_PHASE promoted -> OWNER DECISION S6-B1315-SMC-PHASE-DECISION) + 8 genuinely-unexpected (turtle_soup_long/short + judas_swing_long/short = ICT session concepts likely inapplicable to DAILY bars; gold_silver_risk_off_long, sector_rotation_defensive_long, rsi_overbought_short, classification_change_to_tech_long) -> S6-B1315-8-SILENT-PRODUCER-INVESTIGATE. + 17 gated-to-zero (raw fires but all entries gated) = known over-tight-gate class (Council 235-237 loosening lineage).
+STARVED: ~64 est below 100-trade overall gate at full universe (chunk2 x4; exact from merged cube). Direction skew 11,849 long vs 5,720 short (~2:1, shorts underfire, known).
+REGIME: only bull/bear/neutral in 2022-2026 window -> all "crisis" per-regime verdicts = INSUFFICIENT_DATA (expected).
+CUBE HEALTH: 0 NaN in win_rate/PF/composite/DD. PF capped at 999 sentinel (expected). Structurally sound.
+Follow-ups pending owner a/b/c: (a) formalize these tickets, (b) output_audit doc, (c) SMC_PHASE promote-or-defer before full cube.
+
 ### B1314 (2026-07-19 Council 346): CHUNK 2 COMPLETE (day 1002, B1312 marker correct) + owner picked C → $1 cross-check cloud arm launched
 
 CHUNK 2 (AWS resume) COMPLETE at day 1002 single-shot (resumes=0), ~08:38 UTC; artifacts.tar 1.6GB in S3; instance self-terminated; **B1312 status-gated marker fired correctly (genuine CHUNK2_COMPLETE, not false)**. Resume took ~7.7h (day 669->1002 at ~43/hr back-half slowdown; finished ~16min under the 8h cap). Controller bmp5es0w7 stopped. Total AWS ~$15-20 of $50 cap.
