@@ -5576,6 +5576,10 @@ Catch 2 (monitor): drill controller false-TERMINAL on the PREVIOUS smoke's stale
 
 Drill instance i-01659762cd5a4fc9a running; controller v2 will terminate no-notice at day>100 with synced ckpt, then --resume relaunch proves recovery. Spend ~$2.6 of $50 CAD cap.
 
+### B1322 (2026-07-19 Council 354): FIX BATCH 3/4 Part A — #159 env-manifest SMC-catcher SHIPPED
+
+Extended scripts/env_fingerprint.py (the CHECKLIST #158 parity gate) with the parts that would have CAUGHT the chunk-2 SMC gap (B1317): (1) probe_smc() = direct import-probe of vendored/smartmoneyconcepts + SMC_PHASE -> smc_lib_importable/smc_phase/smc_active (pip-freeze CANNOT see a vendored *directory* - only import-probe catches it); (2) numpy_blas backend (float-determinism awareness, L209); (3) FULL pip_freeze_hash + pip_n_packages (reported, not merge-critical - cross-platform wheels legitimately differ); (4) os + python version. smc_active ADDED to MERGE_CRITICAL -> a chunk WITH smc cannot merge with one WITHOUT (merge_batch_outputs --check now HARD-HALTs on the mismatch). --emit now WARNs loud when smc_active=False ("22 SMC/ICT strategies will be SILENT"). Live-verified LOCAL: smc_lib_importable=True/smc_phase=PRODUCTION/smc_active=True/numpy_blas=openblas/os=Windows-11/python=3.14.6/107 pkgs - CONFIRMS B1317 (local HAS smc, cloud didn't). Pin test_b1322 (3: smc_active in MERGE_CRITICAL + probe fields present + --check FAILs on smc_active mismatch). Pyramid 880+2 GREEN. Part B next: coverage-smoke on the ISOLATED engine (asserts every strategy fires + no portfolio_gate skips = M2 behavioral validation + M1b).
+
 ### B1321 (2026-07-19 Council 353): FIX BATCH 2/4 — M2=(i) pure-signal cube isolation SHIPPED (flag-gated, default OFF)
 
 Owner "1 i" (pure signal-quality) + "wire into engine and activate". Root problem (B1316): cube inherits shared-portfolio closed trades -> 266K ticker_already_in_portfolio skips (66%) contaminate per-strategy counts (insider_cluster 849 raw->0). Owner M2=(i): every valid signal opens a trade; bypass ALL cross-strategy PORTFOLIO gates; keep strategy-intrinsic (regime affinity, macro-regime, borrow/avoid, PIT, data, same-strategy dedup).

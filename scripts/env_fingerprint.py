@@ -38,7 +38,10 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 WINDOW_START = date(2022, 5, 5)
 WINDOW_END = date(2026, 5, 5)
 # Fields that MUST match across any set of chunks that will be merged.
-MERGE_CRITICAL = ("grid_total", "grid_hash", "calendar_backend")
+# B1322 (Council 354): added smc_active - the chunk-2 gap (B1317) was 22 SMC/ICT
+# strategies silent on cloud because the vendored lib failed to import there
+# while local had it. A chunk WITH SMC cannot be merged with a chunk WITHOUT it.
+MERGE_CRITICAL = ("grid_total", "grid_hash", "calendar_backend", "smc_active")
 
 
 def trading_day_grid():
@@ -68,15 +71,80 @@ def _pkg(name):
         return "absent"
 
 
+def probe_smc():
+    """Will SMC/ICT strategies actually EMIT? Requires the vendored
+    smartmoneyconcepts library importable AND SMC_PHASE == 'PRODUCTION'.
+    The chunk-2 gap (B1317): the lib imported LOCAL but FAILED on the cloud
+    instance -> 22 strategies silent on cloud only. pip-freeze can't see a
+    vendored *directory*, so we import-probe it directly.
+    Returns (lib_importable, smc_phase, smc_active)."""
+    lib_ok = False
+    try:
+        from vendored.smartmoneyconcepts.smartmoneyconcepts import smc  # noqa: F401
+        lib_ok = True
+    except Exception:
+        lib_ok = False
+    try:
+        from backtest.config import SMC_PHASE as _phase
+        phase = str(_phase)
+    except Exception:
+        phase = "unknown"
+    return lib_ok, phase, bool(lib_ok and phase == "PRODUCTION")
+
+
+def numpy_blas():
+    """BLAS backend name (float-determinism awareness - Win/MKL vs Linux/
+    OpenBLAS produce different threshold-boundary signals, L209)."""
+    try:
+        import io
+        import contextlib
+        import numpy as np
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            try:
+                np.show_config()
+            except Exception:
+                pass
+        txt = buf.getvalue().lower()
+        for b in ("mkl", "openblas", "blis", "accelerate"):
+            if b in txt:
+                return b
+        return "unknown"
+    except Exception:
+        return "error"
+
+
+def pip_freeze_hash():
+    """Hash + count of the FULL installed package set (not just 4 pins).
+    Reported (not merge-critical: cross-platform wheels legitimately differ);
+    a diff is a signal to inspect, not an automatic HALT."""
+    try:
+        import importlib.metadata as m
+        pkgs = sorted(
+            f"{d.metadata['Name']}=={d.version}" for d in m.distributions()
+            if d.metadata and d.metadata["Name"])
+        return hashlib.sha256("\n".join(pkgs).encode()).hexdigest()[:16], len(pkgs)
+    except Exception:
+        return "error", 0
+
+
 def fingerprint() -> dict:
+    import platform
     total, h, backend = trading_day_grid()
     try:
         sha = subprocess.run(["git", "rev-parse", "HEAD"], capture_output=True,
                              text=True).stdout.strip()[:12]
     except Exception:
         sha = "unknown"
+    smc_lib, smc_phase, smc_active = probe_smc()
+    freeze_hash, n_pkgs = pip_freeze_hash()
     return {
         "grid_total": total, "grid_hash": h, "calendar_backend": backend,
+        "smc_lib_importable": smc_lib, "smc_phase": smc_phase,
+        "smc_active": smc_active,
+        "numpy_blas": numpy_blas(),
+        "os": platform.platform(), "python": platform.python_version(),
+        "pip_freeze_hash": freeze_hash, "pip_n_packages": n_pkgs,
         "pkg_pandas_market_calendars": _pkg("pandas_market_calendars"),
         "pkg_pandas": _pkg("pandas"), "pkg_numpy": _pkg("numpy"),
         "pkg_pyarrow": _pkg("pyarrow"), "code_sha": sha,
@@ -99,6 +167,11 @@ def main() -> int:
             print("WARN: calendar backend is NOT the NYSE calendar "
                   "(pandas_market_calendars missing) -- run would use the "
                   "degraded Mon-Fri grid (L207/L208).")
+        if not fp["smc_active"]:
+            print(f"WARN: SMC NOT ACTIVE (lib_importable={fp['smc_lib_importable']}"
+                  f" phase={fp['smc_phase']}) -- 22 SMC/ICT strategies will be "
+                  "SILENT this run (B1317). If this env should have SMC, HALT "
+                  "and fix the vendored import before spending compute.")
         return 0
 
     if args.check:
