@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import argparse
 import base64
+import subprocess
 import sys
 
 import boto3
@@ -72,6 +73,15 @@ export EMIT_RAW_SIGNAL_FIRES=1 PYTHONIOENCODING=utf-8
 # burns compute; a monfri_fallback backend here = degraded grid (L207).
 mkdir -p output_chunk@N@
 python3.11 scripts/env_fingerprint.py --emit output_chunk@N@/env_fingerprint.json || true
+# B1328 (Council 360): HARD pre-engine gate - abort with ZERO engine spend if
+# the env is bad (smc_active / calendar / code_sha). Every batch refuses to
+# spend on a broken environment (owner directive).
+if ! python3.11 scripts/preengine_gate.py output_chunk@N@/env_fingerprint.json "@EXPECT_SHA@"; then
+  { echo "hb_utc=$(date -u +%FT%TZ)"; echo "CHUNK@N@_GATEFAIL"; } > /tmp/hb.txt
+  curl -sf -X PUT -T /tmp/hb.txt "@HB_PUT@"
+  curl -sf -X PUT -T /var/log/r5chunk.log "@LOG_PUT@" || true
+  shutdown -h now
+fi
 TICK=$(cat chunk_tickers.txt)
 python3.11 -m backtest.run_phase1a --phase 1a-beta --tickers "$TICK" \
   --start 2022-05-05 --end 2026-05-05 --no-news --no-walk-forward --no-agents \
@@ -135,6 +145,11 @@ def main() -> int:
         "@ART_PUT@": presign(s3, "put", f"chunk{n}/artifacts.tar"),
         "@RESUME@": "1" if args.resume else "0",
         "@POOL@": POOL_WORKERS, "@MAXH@": MAX_RUN_HOURS,
+        # B1328: expected code SHA (local HEAD at launch) for the pre-engine
+        # gate. A stale/mismatched cloud tar -> code_sha mismatch -> abort.
+        "@EXPECT_SHA@": subprocess.run(
+            ["git", "rev-parse", "HEAD"], capture_output=True, text=True
+        ).stdout.strip()[:12],
     }
     for k, v in subs.items():
         ud = ud.replace(k, v)
