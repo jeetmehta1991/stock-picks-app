@@ -44,3 +44,12 @@ def test_smc_inactive_fails(tmp_path):
     (tmp_path / "env_fingerprint.json").write_text(json.dumps({
         "smc_active": False, "smc_lib_importable": False, "smc_phase": "PRODUCTION"}))
     assert cs.analyze(str(tmp_path)) == 1  # SMC silent must FAIL
+
+
+def test_stale_code_sha_fails(tmp_path):
+    """B1324 stale-cloud-code gate: a code_sha != local HEAD must FAIL."""
+    _mkdir_clean(tmp_path)
+    (tmp_path / "env_fingerprint.json").write_text(json.dumps({
+        "smc_active": True, "smc_lib_importable": True, "smc_phase": "PRODUCTION",
+        "code_sha": "deadbeef0000"}))  # not the local HEAD
+    assert cs.analyze(str(tmp_path)) == 1  # stale code must FAIL

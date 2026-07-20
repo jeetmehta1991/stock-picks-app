@@ -92,6 +92,27 @@ def analyze(out_dir) -> int:
               f"phase={fp.get('smc_phase')} blas={fp.get('numpy_blas')} os={fp.get('os')}")
         if not fp.get("smc_active"):
             fails.append("smc_active=False -> 22 SMC/ICT strategies silent")
+        # code_sha parity: the cloud MUST run current code (B1324 stale-code
+        # gap - cloud ran 07-17 code all session). This is the gate that would
+        # have caught it before spending. Compared against local HEAD.
+        try:
+            local_sha = subprocess.run(
+                ["git", "rev-parse", "HEAD"], capture_output=True, text=True
+            ).stdout.strip()[:12]
+        except Exception:
+            local_sha = ""
+        cloud_sha = str(fp.get("code_sha", ""))[:12]
+        if cloud_sha and local_sha:
+            match = cloud_sha == local_sha
+            print(f"[CODE_SHA] cloud={cloud_sha} local={local_sha} -> "
+                  f"{'OK' if match else 'MISMATCH'}")
+            if not match:
+                fails.append(f"code_sha mismatch cloud={cloud_sha} "
+                             f"local={local_sha} (STALE cloud code - rebuild "
+                             "r5_code.tar)")
+        else:
+            warns.append(f"code_sha unavailable (cloud={cloud_sha!r} "
+                         f"local={local_sha!r}) - cannot verify code parity")
     else:
         warns.append("no env_fingerprint.json in output dir")
 
