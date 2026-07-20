@@ -5576,6 +5576,15 @@ Catch 2 (monitor): drill controller false-TERMINAL on the PREVIOUS smoke's stale
 
 Drill instance i-01659762cd5a4fc9a running; controller v2 will terminate no-notice at day>100 with synced ckpt, then --resume relaunch proves recovery. Spend ~$2.6 of $50 CAD cap.
 
+### B1331 (2026-07-20 Council 362): 🟢 BATCH 1 of R5 re-run COMPLETE + all pre-batch-1 validations GREEN (owner: "proceed")
+
+Owner "run pre batch 1 validation" then "proceed". ALL 4 VALIDATIONS GREEN @ batch-1 SHA e846b6d2cfb3:
+1. SMOKE A (chunk8, 10 tkr) all 6 checks PASS: fanout 3484=134x26 + isolation ZERO cross-strategy skips + smc_active=True + code_sha MATCH + all 5 CORE + 6 SPARSE families covered (smc_ict=26) + log CLEAN.
+2. DETERMINISM (chunk8 vs chunk7 twin, same 10 tkr/code): cells=3484 max|diff|=0.00e+00 BIT-IDENTICAL -> no within-platform nondeterminism.
+3. MERGE-APPEND (2 disjoint local 5-tkr runs): sum=3935==merged=3935, non-SPY overlap=0, SPY dupes=244 (handled by real-merge fix-c dedup) -> append mechanism VALIDATED.
+4. BATCH 1 (chunk11, SNDK/MU/WDC+AAPL/JPM/XOM/JNJ/NVDA/COIN/PG) COMPLETE all 6 checks PASS + owner tickers CONFIRMED TRADING: SNDK=94 MU=627 WDC=554 (total 3610 trades, 174 traded strategies). The pre-engine HALT gate (B1328) validated env before spend on every launch. FIRST clean R5 data batch after ~49 failed attempts - all fixes (M2/M3=a/#159/B4) + gates (pre-engine HALT + code_sha merge-critical) active + proven.
+Cost: batch1 ~$0.30 + 2 smokes ~$0.60 = total AWS session ~$25 of $50. HOLDING for owner go on BATCH 2 (next 20 disjoint T1a tickers); escalating plan 10->20->50->100->200->300->remaining, analyze each + append cumulatively. Batch-2 merge will use merge_batch_outputs (SPY dedup + code_sha/smc/calendar parity via #159).
+
 ### B1330 (2026-07-20 Council 361 cont.): dispersion-CB isolation bypass + 5 EXTENDED SMOKE checks (owner: CB bypass approved + "proceed with smoke tests")
 
 CB BYPASS (owner-approved rec): backtest.py dispersion CB DEC-128 now `if triggered and not self.cube_isolation` -> pure-signal cells don't lose entries to the market-wide halt (consistent w/ M2 bypassing other execution gates). Default path unchanged.
