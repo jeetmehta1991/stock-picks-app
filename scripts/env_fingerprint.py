@@ -135,7 +135,14 @@ def fingerprint() -> dict:
         sha = subprocess.run(["git", "rev-parse", "HEAD"], capture_output=True,
                              text=True).stdout.strip()[:12]
     except Exception:
-        sha = "unknown"
+        sha = ""
+    if not sha:
+        # B1326: no .git on the instance (lean git-archive tar) -> read the
+        # SHA baked into the tar by build_r5_code_tar.py.
+        try:
+            sha = Path("CODE_SHA").read_text(encoding="utf-8").strip()[:12]
+        except Exception:
+            sha = "unknown"
     smc_lib, smc_phase, smc_active = probe_smc()
     freeze_hash, n_pkgs = pip_freeze_hash()
     return {

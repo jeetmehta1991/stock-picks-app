@@ -37,6 +37,11 @@ curl -sf -o code.tar "@CODE_GET@" && tar -xf code.tar && rm code.tar
 curl -sf -o payload.tar "@PAYLOAD_GET@" && tar -xf payload.tar && rm payload.tar
 curl -sf -o chunk_tickers.txt "@TICKERS_GET@"
 python3.11 -m pip install --quiet -r requirements.txt
+# B1326 (Council 358, B4): install the vendored smartmoneyconcepts package so
+# the bare `import smartmoneyconcepts` (vendored __init__) resolves on cloud.
+# Local venv has it pip-installed; cloud only had the vendored dir -> the 22
+# SMC/ICT strategies were silent (B1317). setup.py is tracked -> -e install works.
+python3.11 -m pip install --quiet -e vendored/smartmoneyconcepts/ || echo "SMC_VENDORED_INSTALL_FAILED"
 RESUME_ARGS=""
 if [ "@RESUME@" = "1" ]; then
   curl -sf -o ckpt.tar "@CKPT_GET@" && tar -xf ckpt.tar && RESUME_ARGS="--resume-from-checkpoint output_chunk@N@"

@@ -45,6 +45,13 @@ def main() -> int:
         print(dirty[:500])
     subprocess.run(["git", "archive", "--format=tar", "-o", OUT, "HEAD", "--",
                     *INCLUDE_PATHS], check=True)
+    # Bake the SHA into the tar: the lean git-archive tar has no .git, so the
+    # instance can't `git rev-parse` -> env_fingerprint reads this CODE_SHA file
+    # instead (B1326). Extracts to /r5/CODE_SHA where the engine runs.
+    with open("CODE_SHA", "w", encoding="utf-8") as f:
+        f.write(sha)
+    subprocess.run(["tar", "-rf", OUT, "CODE_SHA"], check=True)
+    os.remove("CODE_SHA")
     size_mb = os.path.getsize(OUT) / 1e6
     print(f"built {OUT}: {size_mb:.0f} MB  @ SHA {sha[:12]}")
     if "--upload" in sys.argv:
