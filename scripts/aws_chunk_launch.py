@@ -91,6 +91,11 @@ else
   { echo "hb_utc=$(date -u +%FT%TZ)"; echo "CHUNK@N@_CAPPED day=$DY status=$ST"; } > /tmp/hb.txt
 fi
 curl -sf -X PUT -T /tmp/hb.txt "@HB_PUT@"
+# B1324 (Council 356): always upload the bootstrap/run log so failures are
+# DIAGNOSABLE off-instance (no SSM in the presigned-URL pattern). Without this,
+# a bootstrap failure is a black box (chunk-8 smoke produced empty output with
+# no visible cause).
+curl -sf -X PUT -T /var/log/r5chunk.log "@LOG_PUT@" || true
 shutdown -h now
 """
 
@@ -120,6 +125,7 @@ def main() -> int:
         "@TICKERS_GET@": presign(s3, "get", f"chunks/chunk{n}_tickers.txt"),
         "@CKPT_GET@": presign(s3, "get", f"chunk{n}/ckpt.tar"),
         "@HB_PUT@": presign(s3, "put", f"chunk{n}/heartbeat.txt"),
+        "@LOG_PUT@": presign(s3, "put", f"chunk{n}/r5chunk.log"),
         "@CKPT_PUT@": presign(s3, "put", f"chunk{n}/ckpt.tar"),
         "@ART_PUT@": presign(s3, "put", f"chunk{n}/artifacts.tar"),
         "@RESUME@": "1" if args.resume else "0",
