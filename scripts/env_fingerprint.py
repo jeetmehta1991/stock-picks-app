@@ -41,7 +41,10 @@ WINDOW_END = date(2026, 5, 5)
 # B1322 (Council 354): added smc_active - the chunk-2 gap (B1317) was 22 SMC/ICT
 # strategies silent on cloud because the vendored lib failed to import there
 # while local had it. A chunk WITH SMC cannot be merged with a chunk WITHOUT it.
-MERGE_CRITICAL = ("grid_total", "grid_hash", "calendar_backend", "smc_active")
+MERGE_CRITICAL = ("grid_total", "grid_hash", "calendar_backend", "smc_active",
+                  "code_sha")  # B1329: cross-batch code consistency - the
+# escalating-batch append plan requires ALL batches run the SAME code; without
+# this a batch at a different SHA would merge silently (adversarial-review gap).
 
 
 def trading_day_grid():
