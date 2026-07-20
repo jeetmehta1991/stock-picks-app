@@ -5576,6 +5576,11 @@ Catch 2 (monitor): drill controller false-TERMINAL on the PREVIOUS smoke's stale
 
 Drill instance i-01659762cd5a4fc9a running; controller v2 will terminate no-notice at day>100 with synced ckpt, then --resume relaunch proves recovery. Spend ~$2.6 of $50 CAD cap.
 
+### B1327 (2026-07-20 Council 359): 🟢 CLOUD SMOKE FULLY GREEN — everything on AWS validated end-to-end
+
+Re-smoke (chunk8 i-0c6f43a34a1e36d48, SMC-fix + baked SHA) COMPLETE day 1002, 3751 trades. coverage_smoke --analyze ALL GREEN: [FANOUT] 3484=134x26 OK + [ISOLATION] forbidden cross-strategy skips = NONE (M2 works on cloud) + [SMC] smc_active=True lib=True phase=PRODUCTION (B4 FIXED - pip install -e vendored/smartmoneyconcepts armed it on Linux) + [CODE_SHA] cloud=91c2627ea3a7 == local 91c2627ea3a7 OK (parity proven) + [COVERAGE] 219 reg / 198 raw / 187 traded. SMOKE PASS. os=Linux-amzn2023 blas=openblas.
+=> ALL 4 FIXES (M2 isolation / M3=a hybrid short-stop / #159 env+coverage gate / B4 SMC-arm) VALIDATED ON CLOUD. The owner's "everything on AWS identical + working" is now PROVEN by the #159 gate (not assumed). The gate did its job: caught stale-code + SMC-silent + code_sha-unknown across 4 smoke iterations BEFORE any full-run spend (~$2 total on smokes). READY for the reduced-universe all-cloud isolated re-run (owner-gated, ~$30 within cap). Smoke spend to date ~$2; total AWS session ~$20-22 of $50.
+
 ### B1326 (2026-07-19 Council 358): B4 SMC CLOUD-ARM root cause + fix + code_sha bake (cloud smoke w/ current code exposed both)
 
 Cloud smoke w/ CURRENT code (chunk8 SHA d03b1d73) ran (proves rebuild worked - no more --cube-isolation error) but log showed the B4 ROOT CAUSE definitively: `ModuleNotFoundError: No module named 'smartmoneyconcepts'` + smc_ict.import_smartmoneyconcepts fails + WARN SMC NOT ACTIVE (lib_importable=False). CAUSE: smartmoneyconcepts v0.0.27 is pip-installed in LOCAL venv but NOT in requirements.txt (only a commented `# pip install -e vendored/...` note); the vendored __init__.py does a BARE `from smartmoneyconcepts.smc import smc` needing the package on path -> works local (pip-installed), fails cloud (only vendored dir). This is why chunk-2 + all cloud runs had 22 SMC/ICT silent (B1317).
