@@ -1714,7 +1714,12 @@ class BacktestEngine:
                     _cb_result = _disp_cb(
                         _ret_df, window=20, sigma_threshold=3.0,
                     )
-                    if _cb_result.get("triggered"):
+                    # B1330 (Council 361, owner-approved): bypass the dispersion
+                    # CB in cube isolation - it's a market-wide execution-layer
+                    # halt, not a per-strategy signal gate; pure-signal cells
+                    # must not lose entries to it (consistent with M2 bypassing
+                    # the other execution gates).
+                    if _cb_result.get("triggered") and not self.cube_isolation:
                         self.circuit_breaker_log.append({
                             "date": as_of,
                             "event": "dispersion_cb_triggered_dec128",

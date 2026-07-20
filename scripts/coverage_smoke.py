@@ -135,6 +135,66 @@ def analyze(out_dir) -> int:
         n_reg = -1
     print(f"[COVERAGE] registered={n_reg} raw-fired={n_raw_strats} traded={n_traded}")
 
+    # --- B1330 addition 1: per-producer-FAMILY coverage (catches a whole
+    # family silently dead - the B660 class). CORE families must fire on any
+    # liquid sample; EVENT/rare families may legitimately be sparse (warn only).
+    fired = set()
+    if raw_files:
+        for f in raw_files:
+            try:
+                d = pd.read_csv(f)
+                if len(d):
+                    fired |= set(d["strategy"].tolist())
+            except Exception:
+                pass
+    if tl_p.exists():
+        fired |= set(pd.read_parquet(tl_p)["strategy"].unique())
+    CORE = {
+        "oscillator": ("rsi", "macd", "stoch", "mfi", "ultimate", "cci"),
+        "trend": ("ema", "sma", "adx", "supertrend", "ichimoku", "donchian", "hull"),
+        "volatility": ("bollinger", "keltner", "atr", "squeeze", "vix"),
+        "candle": ("hammer", "doji", "engulf", "star", "soldiers", "crows", "pin_bar", "shooting"),
+        "avwap_vol": ("avwap", "vwap", "obv", "volume", "cmf"),
+    }
+    SPARSE = {
+        "smc_ict": ("smc_", "turtle_soup", "judas", "mmbm", "mmsm", "po3", "_ote", "fvg", "order_block", "liquidity_sweep", "breaker", "mitigation"),
+        "smart_money": ("insider", "congress", "institutional", "smart_money", "cluster", "13f"),
+        "news_event": ("news_", "pead", "sentiment", "8k", "guidance", "buyback", "activist", "m_and_a"),
+        "chart_pattern": ("cup_and_handle", "head_and_shoulders", "triangle", "flag_", "wedge", "double_", "pennant"),
+        "index_calendar": ("rebalance", "inclusion", "deletion", "classification_change", "halloween", "january", "holiday", "fomc", "seasonal", "bias"),
+        "cross_asset": ("xs_", "gold_silver", "dxy", "sector_rotation", "risk_off", "defensive"),
+    }
+
+    def _fam_count(subs):
+        return sum(1 for s in fired if any(x in s for x in subs))
+    print("[FAMILY] core coverage:", {f: _fam_count(sub) for f, sub in CORE.items()})
+    print("[FAMILY] sparse coverage:", {f: _fam_count(sub) for f, sub in SPARSE.items()})
+    if fired:  # only meaningful when strategies actually fired
+        for fam, sub in CORE.items():
+            if _fam_count(sub) == 0:
+                fails.append(f"CORE producer family '{fam}' has ZERO firing "
+                             "strategies (producer likely broken)")
+
+    # --- addition 2: data-coverage (input tickers with zero activity = candidate
+    # OHLCV gaps). Reported (warn) - zero trades can also be legit signal-sparsity.
+    if tl_p.exists():
+        active_tk = set(pd.read_parquet(tl_p)["ticker"].unique())
+        print(f"[DATA] tickers with >=1 trade: {len(active_tk)}")
+
+    # --- addition 3: log silent-failure / traceback scan (the SMC bug only
+    # showed in the log). Scans the run log if present next to the output dir.
+    for cand_log in [D.parent / (D.name + ".log"), D / "run.log",
+                     D.parent / "r5chunk.log", D / "r5chunk.log"]:
+        if cand_log.exists():
+            txt = cand_log.read_text(encoding="utf-8", errors="replace")
+            bad_markers = ["Traceback (most recent call last)", "ModuleNotFoundError",
+                           "ImportError", "PREENGINE_GATE_FAIL", "SMC_VENDORED_INSTALL_FAILED"]
+            hit = [m for m in bad_markers if m in txt]
+            print(f"[LOG] {cand_log.name}: {'clean' if not hit else 'ERRORS ' + str(hit)}")
+            if hit:
+                fails.append(f"log {cand_log.name} has {hit}")
+            break
+
     print("\n=== SMOKE " + ("PASS" if not fails else "FAIL") + " ===")
     for w in warns:
         print("  WARN:", w)
@@ -143,10 +203,54 @@ def analyze(out_dir) -> int:
     return 0 if not fails else 1
 
 
+def determinism(dir1, dir2) -> int:
+    """B1330 addition 4: two runs of the SAME sample must be bit-identical
+    (same platform). A divergence = hidden nondeterminism (races/ordering)."""
+    import pandas as pd
+    a = pd.read_csv(Path(dir1) / "exit_strategy_comparison.csv").sort_values(
+        ["strategy", "exit_method"]).reset_index(drop=True)
+    b = pd.read_csv(Path(dir2) / "exit_strategy_comparison.csv").sort_values(
+        ["strategy", "exit_method"]).reset_index(drop=True)
+    if a.shape != b.shape:
+        print(f"[DETERMINISM] FAIL shape {a.shape} != {b.shape}")
+        return 1
+    num = a.select_dtypes("number").columns
+    diff = (a[num] - b[num]).abs().max().max()
+    ok = a[["strategy", "exit_method"]].equals(b[["strategy", "exit_method"]]) and diff < 1e-9
+    print(f"[DETERMINISM] cells={len(a)} max|numeric diff|={diff:.2e} -> {'IDENTICAL' if ok else 'DIVERGE'}")
+    return 0 if ok else 1
+
+
+def merge_check(dirs) -> int:
+    """B1330 addition 5: validate the batch-APPEND mechanism the whole plan
+    depends on - batches must be ticker-disjoint and merged trades == sum."""
+    import pandas as pd
+    tls, tickers, total = [], [], 0
+    for d in dirs:
+        tl = pd.read_parquet(Path(d) / "trade_log.parquet")
+        tls.append(tl); total += len(tl); tickers.append(set(tl.ticker.unique()))
+    overlap = set.intersection(*tickers) if len(tickers) > 1 else set()
+    overlap.discard("SPY")  # SPY benchmark auto-added to each batch - dedup handles
+    merged = pd.concat(tls, ignore_index=True)
+    key = ["ticker", "entry_date", "strategy"]
+    dupes = merged.duplicated(key & set(merged.columns) if False else
+                              [k for k in key if k in merged.columns]).sum()
+    ok = not overlap
+    print(f"[MERGE-APPEND] batches={len(dirs)} sum_trades={total} merged={len(merged)} "
+          f"non-SPY ticker-overlap={len(overlap)} dupes={dupes} -> {'OK' if ok else 'OVERLAP!'}")
+    if overlap:
+        print("  overlapping tickers (batches NOT disjoint):", sorted(overlap)[:10])
+    return 0 if ok else 1
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--run", action="store_true", help="run the isolated engine first")
     ap.add_argument("--analyze", metavar="DIR", help="analyze an existing output dir")
+    ap.add_argument("--determinism", nargs=2, metavar=("DIR1", "DIR2"),
+                    help="assert two runs are bit-identical")
+    ap.add_argument("--merge-check", nargs="+", metavar="DIR",
+                    help="validate ticker-disjoint batch append")
     ap.add_argument("--tickers", default="")
     ap.add_argument("--output-dir", default="output_coverage_smoke")
     ap.add_argument("--start", default="2022-05-05")
@@ -154,6 +258,10 @@ def main() -> int:
     ap.add_argument("--max-run-hours", type=float, default=4.0)
     args = ap.parse_args()
 
+    if args.determinism:
+        return determinism(*args.determinism)
+    if args.merge_check:
+        return merge_check(args.merge_check)
     if args.analyze:
         return analyze(args.analyze)
     if args.run:
