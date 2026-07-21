@@ -1,0 +1,41 @@
+{
+  "batch": 1,
+  "chunk": "chunk11",
+  "frozen_sha": "e846b6d2cfb3",
+  "window": "2022-05-05..2026-05-05",
+  "nyse_days": 1002,
+  "tickers_requested": [
+    "SNDK",
+    "MU",
+    "WDC",
+    "AAPL",
+    "JPM",
+    "XOM",
+    "JNJ",
+    "NVDA",
+    "COIN",
+    "PG"
+  ],
+  "trades": 3610,
+  "traded_strategies": 174,
+  "per_ticker": {
+    "MU": 627,
+    "WDC": 554,
+    "NVDA": 502,
+    "XOM": 385,
+    "AAPL": 309,
+    "JNJ": 304,
+    "JPM": 300,
+    "SPY": 244,
+    "PG": 225,
+    "SNDK": 94,
+    "COIN": 66
+  },
+  "checks": "all 6 PASS (fanout/isolation/smc/code_sha/family/log) B1331",
+  "cost_usd": 0.3,
+  "known_flags": [
+    "COIN first trade 2026-01-02 (activation-semantics open, B1334)",
+    "SPY benchmark traded (244)",
+    "raw_fires counter = pre-confirmation stage"
+  ]
+}

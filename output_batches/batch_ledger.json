@@ -1,0 +1,26 @@
+{
+  "sequence": "r5_t1a_escalating",
+  "frozen_sha": "e846b6d2cfb3",
+  "budget_cap_usd": 50.0,
+  "batches": [
+    {
+      "batch": 1,
+      "chunk": "chunk11",
+      "tickers": [
+        "SNDK",
+        "MU",
+        "WDC",
+        "AAPL",
+        "JPM",
+        "XOM",
+        "JNJ",
+        "NVDA",
+        "COIN",
+        "PG"
+      ],
+      "cost_usd": 0.3,
+      "committed": true,
+      "sha": "e846b6d2cfb3"
+    }
+  ]
+}

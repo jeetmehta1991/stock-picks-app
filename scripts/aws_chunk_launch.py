@@ -136,8 +136,30 @@ def main() -> int:
     ap.add_argument("--expect-sha", default=None,
                     help="expected code SHA for the pre-engine gate "
                          "(default: current git HEAD)")
+    # B1337 (#160): frozen batch sequences launch via --manifest; the
+    # prelaunch gate runs LOCALLY and must PASS before any AWS call.
+    ap.add_argument("--manifest", default=None,
+                    help="run_manifest.json -- runs scripts/prelaunch_gate.py "
+                         "first (HALT on fail, zero spend) and takes "
+                         "expect-sha from manifest.frozen_sha")
     args = ap.parse_args()
     n = str(args.chunk)
+
+    # B1337: manifest-gated launch (CHECKLIST #160/#161). Gate FAIL = no AWS
+    # calls at all -- the batch refuses to spend on unfrozen semantics or a
+    # stale artifact.
+    if args.manifest:
+        import json as _json
+        gate = subprocess.run(
+            [sys.executable, "scripts/prelaunch_gate.py",
+             "--manifest", args.manifest])
+        if gate.returncode != 0:
+            print("LAUNCH ABORTED: prelaunch gate failed (see above). "
+                  "Zero AWS spend.")
+            return 3
+        if not args.expect_sha:
+            args.expect_sha = str(_json.loads(
+                open(args.manifest, encoding="utf-8").read())["frozen_sha"])
 
     s3 = boto3.client("s3", region_name=REGION)
     ud = USERDATA_TEMPLATE

@@ -1,0 +1,18 @@
+{
+  "grid_total": 1003,
+  "grid_hash": "a6a8441d06cb9b32",
+  "calendar_backend": "nyse_mcal",
+  "smc_lib_importable": true,
+  "smc_phase": "PRODUCTION",
+  "smc_active": true,
+  "numpy_blas": "openblas",
+  "os": "Linux-6.1.176-221.360.amzn2023.x86_64-x86_64-with-glibc2.34",
+  "python": "3.11.15",
+  "pip_freeze_hash": "e99c8e5fc9c88045",
+  "pip_n_packages": 73,
+  "pkg_pandas_market_calendars": "5.4.0",
+  "pkg_pandas": "3.0.2",
+  "pkg_numpy": "2.4.4",
+  "pkg_pyarrow": "24.0.0",
+  "code_sha": "e846b6d2cfb3"
+}

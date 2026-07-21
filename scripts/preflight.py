@@ -295,6 +295,52 @@ def check_banned_patterns_in_staged_diff() -> list[str]:
     return violations
 
 
+_BATCH_CLAIM_RX = re.compile(
+    r"BATCH[ _-]?(\d+)[^\n]{0,60}?(COMPLETE|PASS\b|SUCCESS)", re.IGNORECASE)
+
+
+def find_unbacked_batch_claims(added_lines, has_outputs_fn) -> list[str]:
+    """C10 core (B1337, CHECKLIST #160 companion): a queue line CLAIMING a
+    batch complete requires that batch's outputs tracked in the repo
+    (output_batches/batch_<N>/). Pure function for testability;
+    has_outputs_fn(n) -> bool. Waiver: `preflight-allow: C10` on the line.
+    Batch-1 lineage: batch-1 outputs sat only in S3+temp for a full day
+    (B1334 miss) -- CSV-first requires results in-repo.
+    """
+    violations = []
+    seen = set()
+    for fname, line in added_lines:
+        if not fname.replace("\\", "/").endswith("EXECUTION_QUEUE.md"):
+            continue
+        if "preflight-allow" in line:
+            continue
+        for m in _BATCH_CLAIM_RX.finditer(line):
+            n = int(m.group(1))
+            # queue batch-numbering (B1234...) is 4-digit; run batches are small
+            if n > 500 or n in seen:
+                continue
+            seen.add(n)
+            if not has_outputs_fn(n):
+                violations.append(
+                    f"C10 BATCH-OUTPUTS | queue claims batch {n} "
+                    f"{m.group(2).upper()} but output_batches/batch_{n}/ has no "
+                    f"tracked/staged files (CSV-first; commit the cube CSV + "
+                    f"fingerprint + trade_log, or waive with "
+                    f"`preflight-allow: C10`)")
+    return violations
+
+
+def check_batch_outputs_committed() -> list[str]:
+    """C10 wrapper: staged-diff added lines + git-index lookup."""
+    def has_outputs(n: int) -> bool:
+        res = subprocess.run(
+            ["git", "ls-files", "--cached", f"output_batches/batch_{n}/"],
+            cwd=REPO_ROOT, capture_output=True, text=True, check=False,
+            encoding="utf-8", errors="replace")
+        return bool((res.stdout or "").strip())
+    return find_unbacked_batch_claims(get_staged_added_lines(), has_outputs)
+
+
 def check_queue_entry_staged() -> list[str]:
     """C8 (B1254, S6-B1253-GATE-A3): every commit must stage
     EXECUTION_QUEUE.md (CHECKLIST #94 queue-anchor rule) OR set env
@@ -400,6 +446,9 @@ def main() -> int:
         all_violations += check_queue_entry_staged()
         # B1255 (Council 300, S6-B1253-GATE-A4 owner-approved)
         all_violations += check_doc_ticket_ids_in_queue(files)
+        # B1337 (Council 365 owner-approved): C10 batch-complete claims
+        # require committed outputs (CSV-first)
+        all_violations += check_batch_outputs_committed()
 
     if not all_violations:
         print("preflight: PASS - no rule violations found")
