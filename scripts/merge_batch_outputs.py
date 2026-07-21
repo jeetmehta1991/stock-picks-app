@@ -142,7 +142,16 @@ def main():
             except Exception:
                 pass
     if len(fps) >= 2:
-        crit = ("grid_total", "grid_hash", "calendar_backend")
+        # B1332 (Council 362): use the SINGLE-SOURCE MERGE_CRITICAL (grid + cal
+        # + smc_active + code_sha) instead of a hardcoded grid+cal tuple. The
+        # adversarial review found the merge was NOT enforcing code_sha/smc_active
+        # (B1329 added them to MERGE_CRITICAL but the merge had its own list) ->
+        # batches at different code / SMC-state would have merged silently.
+        try:
+            from scripts.env_fingerprint import MERGE_CRITICAL as crit
+        except Exception:
+            crit = ("grid_total", "grid_hash", "calendar_backend",
+                    "smc_active", "code_sha")
         base_d, base = fps[0]
         mm = [f"{d}:{k}={fp.get(k)} != {base_d}:{k}={base.get(k)}"
               for d, fp in fps[1:] for k in crit if fp.get(k) != base.get(k)]
@@ -157,7 +166,7 @@ def main():
                 sys.exit(1)
             print("   --allow-env-mismatch: proceeding despite mismatch (owner override)")
         else:
-            print(f"[OK] env-parity: {len(fps)} chunks agree on grid+calendar")
+            print(f"[OK] env-parity: {len(fps)} chunks agree on {tuple(crit)}")
     elif fps:
         print(f"[WARN] env-parity: only {len(fps)}/{len(input_dirs)} chunks "
               "have fingerprints; cannot fully verify (CHECKLIST #158)")

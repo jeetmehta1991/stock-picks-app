@@ -5576,6 +5576,13 @@ Catch 2 (monitor): drill controller false-TERMINAL on the PREVIOUS smoke's stale
 
 Drill instance i-01659762cd5a4fc9a running; controller v2 will terminate no-notice at day>100 with synced ckpt, then --resume relaunch proves recovery. Spend ~$2.6 of $50 CAD cap.
 
+### B1332 (2026-07-20 Council 362 cont.): DEEP ADVERSARIAL REVIEW of batch-1 cube + POST-MERGE SCRIPT (owner directive) + merge-parity gap FIXED
+
+Owner: silent/starved? all exits working? which csv? counts? anomalies? deep adversarial review + council + post-merge working?
+VERIFIED GOOD: (1) CUBE FANOUT CLEAN - file=exit_strategy_comparison.csv, 3432=132 strat x 26 exits, ALL 26 exit methods present, 0 partial-fanout, 0 NaN/inf per exit. (2) COUNTS: 219 registered active strategies, 26 exit methods; 132 cube-eligible on 10 tkr. (3) M3 FIX WORKS on real data: hybrid_50pct_target DD -11941pp -> -400pp. (4) SILENT/STARVED = EXPECTED 10-tkr sparsity: 45 silent / 23 structural (0 raw fires) = ALL rare-event (classification_change x10, insider, news, index-drift, macro) needing events absent in 10 large-caps; normalize at full universe; NOT producer bugs. (5) POST-MERGE SCRIPT WORKS: merge_batch_outputs concat + SPY dedup (3935->3691, 244 SPY dupes removed, 0 residual) + cube rebuild (3120=120x26) + validation passed.
+🔴 REAL GAP FOUND+FIXED (my B1329 designed-not-verified miss): merge env-parity used HARDCODED crit=(grid_total,grid_hash,calendar_backend), NOT env_fingerprint.MERGE_CRITICAL -> B1329 code_sha+smc_active additions were NEVER enforced at merge; batches at different code/SMC would merge silently. FIX (B1332): merge imports MERGE_CRITICAL (single source). Verified: [OK] now shows all 5 fields; tamper code_sha=STALE9999 -> [FAIL] ENV-PARITY HALT. Pin test_b1332.
+FLAGS FOR OWNER REVIEW: (a) earnings_blackout is worst-DD exit (mean -157.9pp; pairs_mean_reversion_short x earnings_blackout = -20%/trade, -3096pp) - possible parallel to the hybrid short-stop issue (may not cap short losses; rides to earnings/60-bar); OR just a bad-strategy result. (b) max_drawdown_pct is ADDITIVE-pp units (deferred DD-units item) - decide additive-vs-compounded before winners analysis. (c) merge summary Portfolio return/heat are MEANINGLESS for isolation cubes (no real portfolio) - caveat/suppress. (d) 8 win_rate=1.0 / 9 PF=999 cells = small-sample (5-19 trades, newly-active SMC + next_pivot_target small targets); monitor at full scale for look-ahead. Pyramid TBD. Still HOLDING for batch-2 go.
+
 ### B1331 (2026-07-20 Council 362): 🟢 BATCH 1 of R5 re-run COMPLETE + all pre-batch-1 validations GREEN (owner: "proceed")
 
 Owner "run pre batch 1 validation" then "proceed". ALL 4 VALIDATIONS GREEN @ batch-1 SHA e846b6d2cfb3:
