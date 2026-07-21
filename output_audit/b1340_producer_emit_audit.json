@@ -1,0 +1,398 @@
+{
+  "sample": [
+    "AAPL",
+    "MSFT",
+    "NVDA",
+    "MU",
+    "WDC",
+    "AMD",
+    "TSLA",
+    "COIN",
+    "MARA",
+    "RIOT",
+    "XOM",
+    "CVX",
+    "JPM",
+    "GS",
+    "JNJ",
+    "LLY",
+    "PG",
+    "KO",
+    "CAT",
+    "GE",
+    "AMZN",
+    "META",
+    "NFLX",
+    "CRM",
+    "ORCL",
+    "INTC",
+    "F",
+    "GM",
+    "BAC",
+    "PYPL"
+  ],
+  "window": "(datetime.date(2022, 5, 5), datetime.date(2026, 5, 5))",
+  "n_key_seen": 550,
+  "results": [
+    {
+      "strategy": "classification_change_breakout_long",
+      "fires": 0,
+      "class": "DATA_FED_inconclusive",
+      "missing_keys": [
+        "classification_changed_recent",
+        "days_since_classification_change",
+        "new_sector"
+      ]
+    },
+    {
+      "strategy": "classification_change_from_tech_short",
+      "fires": 0,
+      "class": "DATA_FED_inconclusive",
+      "missing_keys": [
+        "classification_change_from_tech",
+        "new_sector",
+        "prior_sector"
+      ]
+    },
+    {
+      "strategy": "classification_change_momentum_long",
+      "fires": 0,
+      "class": "DATA_FED_inconclusive",
+      "missing_keys": [
+        "classification_changed_recent"
+      ]
+    },
+    {
+      "strategy": "classification_change_oversold_long",
+      "fires": 0,
+      "class": "DATA_FED_inconclusive",
+      "missing_keys": [
+        "classification_changed_recent"
+      ]
+    },
+    {
+      "strategy": "classification_change_recent_long",
+      "fires": 0,
+      "class": "DATA_FED_inconclusive",
+      "missing_keys": [
+        "classification_changed_recent",
+        "days_since_classification_change",
+        "new_sector",
+        "prior_sector"
+      ]
+    },
+    {
+      "strategy": "classification_change_to_defensive_short",
+      "fires": 0,
+      "class": "DATA_FED_inconclusive",
+      "missing_keys": [
+        "classification_change_to_defensive",
+        "new_sector"
+      ]
+    },
+    {
+      "strategy": "classification_change_to_tech_long",
+      "fires": 0,
+      "class": "DATA_FED_inconclusive",
+      "missing_keys": [
+        "classification_change_to_tech",
+        "new_sector"
+      ]
+    },
+    {
+      "strategy": "classification_change_volume_long",
+      "fires": 0,
+      "class": "DATA_FED_inconclusive",
+      "missing_keys": [
+        "classification_changed_recent",
+        "days_since_classification_change",
+        "new_sector"
+      ]
+    },
+    {
+      "strategy": "classification_change_with_insider_long",
+      "fires": 0,
+      "class": "DATA_FED_inconclusive",
+      "missing_keys": [
+        "classification_changed_recent",
+        "insider_cluster_active",
+        "new_sector"
+      ]
+    },
+    {
+      "strategy": "classification_change_with_institutional_long",
+      "fires": 0,
+      "class": "DATA_FED_inconclusive",
+      "missing_keys": [
+        "classification_changed_recent",
+        "institutional_buy",
+        "new_sector"
+      ]
+    },
+    {
+      "strategy": "gold_silver_risk_off_long",
+      "fires": 0,
+      "class": "DATA_FED_inconclusive",
+      "missing_keys": [
+        "risk_off_regime_gold_signal",
+        "sector"
+      ]
+    },
+    {
+      "strategy": "halloween_seasonal_long",
+      "fires": 0,
+      "class": "DATA_FED_inconclusive",
+      "missing_keys": [
+        "is_halloween_period_first_day"
+      ]
+    },
+    {
+      "strategy": "insider_cluster_long",
+      "fires": 0,
+      "class": "DATA_FED_inconclusive",
+      "missing_keys": [
+        "insider_cluster_active",
+        "insider_unique_buyers_30d"
+      ]
+    },
+    {
+      "strategy": "insider_cluster_with_director_long",
+      "fires": 0,
+      "class": "DATA_FED_inconclusive",
+      "missing_keys": [
+        "insider_cluster_active",
+        "insider_director_buyers_30d",
+        "insider_officer_buyers_30d",
+        "insider_unique_buyers_30d"
+      ]
+    },
+    {
+      "strategy": "institutional_increased_with_directors_long",
+      "fires": 0,
+      "class": "DATA_FED_inconclusive",
+      "missing_keys": [
+        "insider_unique_buyers_30d",
+        "institutional_increased"
+      ]
+    },
+    {
+      "strategy": "january_effect_small_cap_long",
+      "fires": 0,
+      "class": "DATA_FED_inconclusive",
+      "missing_keys": [
+        "cap_band",
+        "is_january_extended"
+      ]
+    },
+    {
+      "strategy": "news_momentum_short",
+      "fires": 0,
+      "class": "DATA_FED_inconclusive",
+      "missing_keys": [
+        "news_sentiment_5d",
+        "news_volume_zscore_5d"
+      ]
+    },
+    {
+      "strategy": "news_reversal_long",
+      "fires": 0,
+      "class": "DATA_FED_inconclusive",
+      "missing_keys": [
+        "news_count_5d",
+        "news_sentiment_5d",
+        "news_sentiment_shift"
+      ]
+    },
+    {
+      "strategy": "news_reversal_short",
+      "fires": 0,
+      "class": "DATA_FED_inconclusive",
+      "missing_keys": [
+        "news_count_5d",
+        "news_sentiment_5d",
+        "news_sentiment_shift"
+      ]
+    },
+    {
+      "strategy": "pead_with_insider_confirmation_long",
+      "fires": 0,
+      "class": "DATA_FED_inconclusive",
+      "missing_keys": [
+        "insider_cluster_active",
+        "pead_positive_surprise",
+        "within_pead_window"
+      ]
+    },
+    {
+      "strategy": "sector_rotation_defensive_long",
+      "fires": 0,
+      "class": "DATA_FED_inconclusive",
+      "missing_keys": [
+        "defensive_leadership",
+        "sector"
+      ]
+    },
+    {
+      "strategy": "short_borrow_trap_avoid",
+      "fires": 0,
+      "class": "DATA_FED_inconclusive",
+      "missing_keys": [
+        "days_to_cover"
+      ]
+    },
+    {
+      "strategy": "smc_mitigation_block_long",
+      "fires": 0,
+      "class": "DATA_FED_inconclusive",
+      "missing_keys": [
+        "smc_mitigation_block_long"
+      ]
+    },
+    {
+      "strategy": "squeeze_setup_long",
+      "fires": 0,
+      "class": "DATA_FED_inconclusive",
+      "missing_keys": [
+        "days_to_cover",
+        "insider_cluster_active",
+        "institutional_buy",
+        "news_sentiment_shift",
+        "pead_positive_surprise",
+        "short_interest_pct"
+      ]
+    },
+    {
+      "strategy": "weekly_bias_pullback_long",
+      "fires": 0,
+      "class": "DATA_FED_inconclusive",
+      "missing_keys": [
+        "weekly_bias_bull"
+      ]
+    },
+    {
+      "strategy": "weekly_bias_pullback_short",
+      "fires": 0,
+      "class": "DATA_FED_inconclusive",
+      "missing_keys": [
+        "weekly_bias_bear"
+      ]
+    },
+    {
+      "strategy": "xs_low_beta_long",
+      "fires": 0,
+      "class": "DATA_FED_inconclusive",
+      "missing_keys": [
+        "xs_avoid_high_ivol",
+        "xs_low_beta_decile_entry_recent_5d"
+      ]
+    },
+    {
+      "strategy": "flag_bull_long",
+      "fires": 779,
+      "class": "FIRES_OK_rare",
+      "missing_keys": []
+    },
+    {
+      "strategy": "adx_initiation",
+      "fires": 562,
+      "class": "FIRES_OK_rare",
+      "missing_keys": []
+    },
+    {
+      "strategy": "flag_bull_retest_long",
+      "fires": 210,
+      "class": "FIRES_OK_rare",
+      "missing_keys": []
+    },
+    {
+      "strategy": "golden_cross_50_200",
+      "fires": 174,
+      "class": "FIRES_OK_rare",
+      "missing_keys": []
+    },
+    {
+      "strategy": "golden_cross_volume",
+      "fires": 69,
+      "class": "FIRES_OK_rare",
+      "missing_keys": []
+    },
+    {
+      "strategy": "hammer_at_support_long",
+      "fires": 43,
+      "class": "FIRES_OK_rare",
+      "missing_keys": []
+    },
+    {
+      "strategy": "death_cross_50_200_volume",
+      "fires": 35,
+      "class": "FIRES_OK_rare",
+      "missing_keys": []
+    },
+    {
+      "strategy": "pivot_s2_bounce",
+      "fires": 18,
+      "class": "FIRES_OK_rare",
+      "missing_keys": []
+    },
+    {
+      "strategy": "mfi_oversold",
+      "fires": 17,
+      "class": "FIRES_OK_rare",
+      "missing_keys": []
+    },
+    {
+      "strategy": "flag_bear_retest_short",
+      "fires": 10,
+      "class": "FIRES_OK_rare",
+      "missing_keys": []
+    },
+    {
+      "strategy": "keltner_lower",
+      "fires": 9,
+      "class": "FIRES_OK_rare",
+      "missing_keys": []
+    },
+    {
+      "strategy": "pivot_r3_blowoff_short",
+      "fires": 2,
+      "class": "FIRES_OK_rare",
+      "missing_keys": []
+    },
+    {
+      "strategy": "supertrend_ichimoku_adx",
+      "fires": 2,
+      "class": "FIRES_OK_rare",
+      "missing_keys": []
+    },
+    {
+      "strategy": "pivot_s3_capitulation",
+      "fires": 0,
+      "class": "RED_FLAG_0fire_keys_present",
+      "missing_keys": []
+    },
+    {
+      "strategy": "post_deletion_drift_short",
+      "fires": 0,
+      "class": "RED_FLAG_0fire_keys_present",
+      "missing_keys": []
+    },
+    {
+      "strategy": "pre_rebalance_long",
+      "fires": 0,
+      "class": "RED_FLAG_0fire_keys_present",
+      "missing_keys": []
+    },
+    {
+      "strategy": "rsi21_slow",
+      "fires": 0,
+      "class": "RED_FLAG_0fire_keys_present",
+      "missing_keys": []
+    },
+    {
+      "strategy": "rsi_overbought_short",
+      "fires": 0,
+      "class": "RED_FLAG_0fire_keys_present",
+      "missing_keys": []
+    }
+  ]
+}

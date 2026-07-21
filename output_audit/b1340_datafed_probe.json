@@ -1,0 +1,42 @@
+{
+  "calls": 506,
+  "key_hits": {
+    "classification_changed_recent": 24,
+    "insider_unique_buyers_30d": 30,
+    "insider_cluster_active": 2,
+    "institutional_increased": 429,
+    "risk_off_regime_gold_signal": 115,
+    "defensive_leadership": 276,
+    "is_january_extended": 69,
+    "news_count_5d": 476,
+    "news_sentiment_shift": 455
+  },
+  "key_examples": {
+    "classification_changed_recent": "V@2023-06-15=True",
+    "insider_unique_buyers_30d": "DG@2023-06-15=3",
+    "insider_cluster_active": "DG@2023-06-15=True",
+    "institutional_increased": "V@2022-03-15=2",
+    "risk_off_regime_gold_signal": "V@2023-01-15=True",
+    "defensive_leadership": "V@2022-03-15=True",
+    "is_january_extended": "V@2023-01-15=True",
+    "news_count_5d": "V@2022-03-15=12",
+    "news_sentiment_shift": "V@2022-03-15=-0.0386"
+  },
+  "strat_fires": {
+    "classification_change_recent_long": 4,
+    "classification_change_to_defensive_short": 2,
+    "classification_change_from_tech_short": 1,
+    "insider_cluster_long": 0,
+    "insider_cluster_with_director_long": 0,
+    "pead_with_insider_confirmation_long": 0,
+    "institutional_increased_with_directors_long": 4,
+    "gold_silver_risk_off_long": 0,
+    "sector_rotation_defensive_long": 0,
+    "january_effect_small_cap_long": 0,
+    "news_reversal_long": 0,
+    "news_reversal_short": 0,
+    "news_momentum_short": 0,
+    "post_deletion_drift_short": 1,
+    "pre_rebalance_long": 0
+  }
+}
