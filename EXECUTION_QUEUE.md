@@ -5576,6 +5576,15 @@ Catch 2 (monitor): drill controller false-TERMINAL on the PREVIOUS smoke's stale
 
 Drill instance i-01659762cd5a4fc9a running; controller v2 will terminate no-notice at day>100 with synced ckpt, then --resume relaunch proves recovery. Spend ~$2.6 of $50 CAD cap.
 
+### B1333 (2026-07-20 Council 363): RCA of 45 silent strategies in batch 1 (owner: "45 is big, doesn't look right, RCA each") + time period + code-freeze plan
+
+Q: time period = 2022-05-05 -> 2026-05-05 LOCKED, ~1002 NYSE days (4y). RCA of ALL 45 silent (0 trades) - NONE are broken producers or isolation bugs:
+CAT-1 (23 STRUCTURAL, 0 raw fires) = rare EVENTS absent in 10 large-caps: classification_change x10 (GICS reclassification), insider_cluster/pead_with_insider (insider events), news_reversal/post_deletion_drift/pre_rebalance (news/index events), gold_silver/sector_rotation/january_effect (macro/seasonal), squeeze/pivot_s3/rsi_overbought_short/weekly_bias (narrow multi-gate). Producers WORK; events don't occur in sample; same set silent in chunk 2; WILL fire at full universe.
+CAT-2 (gated-to-zero, raw>0 0 trades) = the Batch-263 DIRECTIONAL-CONFIRMATION gate (screener.py:8802: long signal on RED candle close<open -> continue/skip). flag_bull_long fired 140x but ALL 140 fire-bars were red -> dropped (golden_cross_50_200=34, flag_bull_retest=39, smc_mitigation_block=28 same). KEY: _RAW_SIGNAL_FIRE_COUNTER (screener.py:8793) counts fires BEFORE downstream confirmation filters -> "140 raw -> 0" is NOT a bug, it's pre-confirmation counting. Normalizes at full universe (some breakouts close green).
+CAT-3: short_borrow_trap_avoid (90 raw) = avoid-GATE not trade producer (0 correct; roster = 218 tradeable + 1 gate).
+FLAGS (owner): (a) raw_fires counter misleading (pre-confirmation) + screener confirmation-drops NOT logged (diagnostic gap; add drop-logging later, non-spoiling). (b) 100%-confirmation-drop on some chart-patterns on 10 tkr = small-sample; if still 0 at full universe = strategy-design issue.
+NO CODE CHANGES (owner constraint "don't spoil batch 1 findings"): all diagnostic. CODE-FREEZE plan for batch 2: build tar at batch-1 SHA e846b6d2c (git archive <sha>) + launcher --expect-sha e846b6d2c so all batches share one code_sha (merge parity holds); my doc/test/merge commits (B1331/B1332/B1333) advance HEAD but DON'T touch the frozen engine tar. Batch-2 launch owner-gated.
+
 ### B1332 (2026-07-20 Council 362 cont.): DEEP ADVERSARIAL REVIEW of batch-1 cube + POST-MERGE SCRIPT (owner directive) + merge-parity gap FIXED
 
 Owner: silent/starved? all exits working? which csv? counts? anomalies? deep adversarial review + council + post-merge working?
