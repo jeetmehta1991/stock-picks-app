@@ -128,6 +128,14 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--chunk", type=int, required=True)
     ap.add_argument("--resume", action="store_true")
+    # B1336 (freeze mechanism): the pre-engine gate's expected code SHA.
+    # Default = git HEAD (ad-hoc smokes). Frozen batch sequences MUST pass the
+    # sequence SHA (e.g. --expect-sha e846b6d2c) so the on-instance gate
+    # validates against the frozen tar, not whatever HEAD has advanced to
+    # (L212 -- the B1333 plan promised this flag before it existed).
+    ap.add_argument("--expect-sha", default=None,
+                    help="expected code SHA for the pre-engine gate "
+                         "(default: current git HEAD)")
     args = ap.parse_args()
     n = str(args.chunk)
 
@@ -145,11 +153,11 @@ def main() -> int:
         "@ART_PUT@": presign(s3, "put", f"chunk{n}/artifacts.tar"),
         "@RESUME@": "1" if args.resume else "0",
         "@POOL@": POOL_WORKERS, "@MAXH@": MAX_RUN_HOURS,
-        # B1328: expected code SHA (local HEAD at launch) for the pre-engine
-        # gate. A stale/mismatched cloud tar -> code_sha mismatch -> abort.
-        "@EXPECT_SHA@": subprocess.run(
+        # B1328/B1336: expected code SHA for the on-instance pre-engine gate.
+        # --expect-sha (frozen sequences) overrides the HEAD default.
+        "@EXPECT_SHA@": (args.expect_sha or subprocess.run(
             ["git", "rev-parse", "HEAD"], capture_output=True, text=True
-        ).stdout.strip()[:12],
+        ).stdout.strip())[:12],
     }
     for k, v in subs.items():
         ud = ud.replace(k, v)

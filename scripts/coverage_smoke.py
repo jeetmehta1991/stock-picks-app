@@ -54,7 +54,7 @@ def run_isolated(tickers, out_dir, start, end, max_hours=4.0):
     return r.returncode
 
 
-def analyze(out_dir) -> int:
+def analyze(out_dir, expected_sha=None) -> int:
     import pandas as pd
     D = Path(out_dir)
     fails, warns = [], []
@@ -92,15 +92,20 @@ def analyze(out_dir) -> int:
               f"phase={fp.get('smc_phase')} blas={fp.get('numpy_blas')} os={fp.get('os')}")
         if not fp.get("smc_active"):
             fails.append("smc_active=False -> 22 SMC/ICT strategies silent")
-        # code_sha parity: the cloud MUST run current code (B1324 stale-code
-        # gap - cloud ran 07-17 code all session). This is the gate that would
-        # have caught it before spending. Compared against local HEAD.
-        try:
-            local_sha = subprocess.run(
-                ["git", "rev-parse", "HEAD"], capture_output=True, text=True
-            ).stdout.strip()[:12]
-        except Exception:
-            local_sha = ""
+        # code_sha parity (B1324 stale-code gap). B1336 (L212/B1334 fix):
+        # frozen batch sequences compare against the SEQUENCE SHA via
+        # --expected-sha, NOT git HEAD -- HEAD advances with doc/gate commits
+        # while the frozen engine tar stays at the sequence SHA, so the old
+        # HEAD-compare false-failed every frozen batch.
+        if expected_sha:
+            local_sha = expected_sha[:12]
+        else:
+            try:
+                local_sha = subprocess.run(
+                    ["git", "rev-parse", "HEAD"], capture_output=True, text=True
+                ).stdout.strip()[:12]
+            except Exception:
+                local_sha = ""
         cloud_sha = str(fp.get("code_sha", ""))[:12]
         if cloud_sha and local_sha:
             match = cloud_sha == local_sha
@@ -247,6 +252,9 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--run", action="store_true", help="run the isolated engine first")
     ap.add_argument("--analyze", metavar="DIR", help="analyze an existing output dir")
+    ap.add_argument("--expected-sha", default=None,
+                    help="B1336: frozen-sequence SHA for the code_sha parity "
+                         "check (default: current git HEAD)")
     ap.add_argument("--determinism", nargs=2, metavar=("DIR1", "DIR2"),
                     help="assert two runs are bit-identical")
     ap.add_argument("--merge-check", nargs="+", metavar="DIR",
@@ -263,7 +271,7 @@ def main() -> int:
     if args.merge_check:
         return merge_check(args.merge_check)
     if args.analyze:
-        return analyze(args.analyze)
+        return analyze(args.analyze, expected_sha=args.expected_sha)
     if args.run:
         if not args.tickers:
             print("--run requires --tickers")

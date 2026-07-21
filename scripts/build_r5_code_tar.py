@@ -35,15 +35,29 @@ INCLUDE_PATHS = [
 
 
 def main() -> int:
-    sha = subprocess.run(["git", "rev-parse", "HEAD"], capture_output=True,
+    import argparse
+    ap = argparse.ArgumentParser()
+    # B1336 (freeze mechanism, owner-approved): build at an ARBITRARY committed
+    # SHA, not just HEAD -- required so batch N>1 of a frozen sequence rebuilds
+    # the EXACT batch-1 code (L212: the promised freeze must exist in code).
+    ap.add_argument("--sha", default=None,
+                    help="commit to archive (default: HEAD). Frozen sequences "
+                         "pass the sequence SHA, e.g. e846b6d2c.")
+    ap.add_argument("--upload", action="store_true")
+    args = ap.parse_args()
+    ref = args.sha or "HEAD"
+    sha = subprocess.run(["git", "rev-parse", ref], capture_output=True,
                          text=True).stdout.strip()
+    if not sha:
+        print(f"FAIL: cannot resolve ref {ref!r}")
+        return 1
     dirty = subprocess.run(["git", "status", "--porcelain", "--untracked-files=no"],
                            capture_output=True, text=True).stdout.strip()
-    if dirty:
+    if dirty and ref == "HEAD":
         print("WARN: tracked files are modified/uncommitted -- git archive uses "
               "HEAD (committed state), so those changes will NOT be in the tar:")
         print(dirty[:500])
-    subprocess.run(["git", "archive", "--format=tar", "-o", OUT, "HEAD", "--",
+    subprocess.run(["git", "archive", "--format=tar", "-o", OUT, sha, "--",
                     *INCLUDE_PATHS], check=True)
     # Bake the SHA into the tar: the lean git-archive tar has no .git, so the
     # instance can't `git rev-parse` -> env_fingerprint reads this CODE_SHA file
@@ -54,11 +68,17 @@ def main() -> int:
     os.remove("CODE_SHA")
     size_mb = os.path.getsize(OUT) / 1e6
     print(f"built {OUT}: {size_mb:.0f} MB  @ SHA {sha[:12]}")
-    if "--upload" in sys.argv:
+    if args.upload:
         import boto3
+        s3 = boto3.client("s3", region_name="us-east-1")
         print(f"uploading -> s3://{BUCKET}/{KEY} ...")
-        boto3.client("s3", region_name="us-east-1").upload_file(OUT, BUCKET, KEY)
-        print(f"uploaded. Cloud runs will now use SHA {sha[:12]}. "
+        s3.upload_file(OUT, BUCKET, KEY)
+        # B1336 (CHECKLIST #161 artifact provenance): tiny .sha sidecar so
+        # prelaunch_gate can verify the S3 tar's SHA LOCALLY (1 API call)
+        # before any instance spend -- no 231MB download, no on-instance-only
+        # detection.
+        s3.put_object(Bucket=BUCKET, Key=KEY + ".sha", Body=sha.encode())
+        print(f"uploaded tar + sidecar {KEY}.sha = {sha[:12]}. "
               f"env_fingerprint code_sha must match (coverage_smoke code_sha gate).")
     else:
         print("(dry run -- pass --upload to push to S3)")
