@@ -1,0 +1,30 @@
+{
+  "batch": 2,
+  "tickers": [
+    "MSFT",
+    "AVGO",
+    "V",
+    "BRK-B",
+    "MA",
+    "LLY",
+    "UNH",
+    "AMZN",
+    "HD",
+    "GOOGL",
+    "META",
+    "CAT",
+    "GE",
+    "COST",
+    "KO",
+    "CVX",
+    "COP",
+    "NEE",
+    "DUK",
+    "AMT"
+  ],
+  "stratification": "sector (11 GICS, ~2/sector)",
+  "disjoint_from": [
+    "batch_1"
+  ],
+  "all_always_active": true
+}

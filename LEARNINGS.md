@@ -3002,3 +3002,23 @@ Cloud smoke vs local runs: same window, 1002 vs 1043 sim-days. Root cause: `_tra
 **Generalized rules:** (a) any flag/script/gate cited in a plan carries EXECUTED evidence it exists, or is labeled PROPOSED-NOT-BUILT (skill B1335 Rule 2); (b) plans that reference future mechanisms must build them BEFORE the step that needs them, gated by tests; (c) fresh-eyes review (different model / cold re-derivation) before every scale-up -- it is what caught this (skill B1335 Rule 4).
 
 **Consequence:** the freeze mechanism was built for real (--sha / --expect-sha / --expected-sha + prelaunch_gate) before batch 2, with pin tests, instead of failing at launch.
+
+## L213 -- A RAW COUNTER IS NOT A CANDIDATE COUNT: RCA BUILT ON UNVERIFIED COUNTER SEMANTICS IS FICTION (Council 366 B1339 2026-07-21)
+
+**What happened:** B1333 explained flag_bull_long's 0 trades as "fired 140x but all 140 fire-bars were red candles -> dropped by the confirmation gate." A free trace disproved it: (a) the confirmation gate drops ~39% of fires (38/97 on 4 tickers), not 100% (p of 140/140 red ~ 2^-140); (b) cube-isolation BYPASSES the candidate cap so every gate-survivor trades, yet 0 traded AND 0 were logged in skipped_trades; (c) therefore the raw counter (140, at screener.py:8793) and the trade-generation pass are NOT the same evaluation set. The "140" was real but counts fires at a point whose relationship to tradeable candidates was never verified -- and the entire causal story was built on equating the two.
+
+**Miss class:** RCA on an unverified measurement point (the counter-semantics trap, CHECKLIST #162) -- a DERIVED causal claim stated as "root cause" without verifying what the counter counts. Compounded by an incomplete first trace (used compute_all_signals alone, which does not even populate flag_bull_broke -- the producer is merged separately by screen_instrument).
+
+**Generalized rules:** (a) before any count anchors an RCA, verify its measurement point in the producer/pipeline (what stage, what pass, per-worker or aggregated?) -- #162; (b) a causal claim from a count is a HYPOTHESIS until the count's semantics are confirmed and the mechanism is reproduced; word it "hypothesis," never "root cause" (skill Rule 3); (c) when reproducing a strategy's fires, trace the FULL producer merge the engine actually uses (screen_instrument), not a single producer; (d) "0 trades + 0 skip-log entries" in isolation mode is diagnostic-signature "dropped by a SILENT screener-internal continue," distinct from "rejected by the engine" (logged).
+
+**Consequence:** B1333 Cat-2 retracted; flag_bull_long reclassified from "gate-killed" to "coverage/counter-semantics question, not a data bug" -> batch 1 does NOT need a re-run; the exact 140->0 deferred to a diagnostic build (drop-logging changes code_sha, so it never touches the frozen sequence).
+
+## L214 -- ANNUAL YEAR-START PIT MEMBERSHIP: PIT-SAFE BUT COARSE; A COMMON FIRST-TRADE DATE IS ITS FINGERPRINT (Council 366 B1339 2026-07-21)
+
+**What happened:** COIN (full 1255-row OHLCV) first-traded 2026-01-02 despite being added to T1a 2025-05-19 -- flagged as an anomaly with a "warmup-from-membership" hypothesis. EXECUTED disproof: the engine snapshots S&P membership at YEAR-START (backtest.py:393-418, BUG-222), so COIN (added 2025-05-19) and SNDK (added 2025-11-28) are both non-members at 2025-01-01 and members at 2026-01-01 -> both eligible only from 2026 -> both first-trade the same 2026-01-02. Full OHLCV rules out warmup.
+
+**Miss class:** anomaly hypothesis offered without checking the membership-gating code first (the mechanism was READ-able in one function). The "two very different tickers share an identical first-trade date" pattern was the tell that the cause is a shared calendar boundary, not per-ticker warmup.
+
+**Generalized rules:** (a) a shared boundary date across tickers with different histories points to a GLOBAL gate (calendar/membership snapshot), not a per-ticker property -- check the gate before hypothesizing per-ticker mechanisms; (b) year-start PIT snapshots are PIT-SAFE (no lookahead) but systematically under-count mid-year entrants by up to ~11 months -- a granularity tradeoff to surface to the owner, not a bug to "fix" silently; (c) always-active tickers have zero exposure -- roster around them when a granularity question is open (batch-2's 20 are all always-active).
+
+**Consequence:** COIN resolved as correct PIT behavior (batch 1 valid); granularity limitation ticketed as an owner decision (S6-B1339-PIT-GRANULARITY); batch-2 roster chosen all-always-active to sidestep it entirely.

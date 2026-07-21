@@ -1,0 +1,33 @@
+{
+  "sequence": "r5_t1a_escalating",
+  "batch": 2,
+  "frozen_sha": "e846b6d2cfb3",
+  "isolation": true,
+  "calendar": "nyse_mcal",
+  "tickers": [
+    "MSFT",
+    "AVGO",
+    "V",
+    "BRK-B",
+    "MA",
+    "LLY",
+    "UNH",
+    "AMZN",
+    "HD",
+    "GOOGL",
+    "META",
+    "CAT",
+    "GE",
+    "COST",
+    "KO",
+    "CVX",
+    "COP",
+    "NEE",
+    "DUK",
+    "AMT"
+  ],
+  "budget_cap_usd": 50.0,
+  "spent_usd": 0.3,
+  "projected_batch_usd": null,
+  "note": "projected_batch_usd filled after cost_projection; measure-and-project per L211"
+}

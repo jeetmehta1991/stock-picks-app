@@ -20,7 +20,10 @@
       ],
       "cost_usd": 0.3,
       "committed": true,
-      "sha": "e846b6d2cfb3"
+      "sha": "e846b6d2cfb3",
+      "n_tickers": 10,
+      "wall_min": 18.0
     }
-  ]
+  ],
+  "hourly_rate_usd": 1.2
 }
