@@ -26,12 +26,99 @@ nothing).
 """
 from __future__ import annotations
 
+import json
 import subprocess
 import sys
 import time
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
+
+# B1338 (Council 365, owner-approved): files that legitimately churn during
+# LIVE RUNS (engine writes them as side effects). A turn whose only
+# modifications are these must NOT block -- the pre-B1338 behavior forced
+# dozens of manual .stop_exempt cycles (pure waste, B1334 retrospective).
+# They still commit naturally with the next substantive doc-sweep.
+LIVE_RUN_CHURN = {
+    "STRATEGY_ROSTER.md",
+    "backtest/data/economic_calendar.json",
+    "data/cache/info_cache.json",
+}
+
+
+def split_churn(modified: list[str]) -> tuple[list[str], list[str]]:
+    """Split porcelain lines into (substantive, churn) by path."""
+    subst, churn = [], []
+    for ln in modified:
+        path = ln.split(maxsplit=1)[-1].strip().replace("\\", "/")
+        (churn if path in LIVE_RUN_CHURN else subst).append(ln)
+    return subst, churn
+
+
+def scan_transcript_entries(entries: list[dict]) -> tuple[bool, bool]:
+    """B1338 compliance-marker check (skill Phase 6 made mechanical).
+    Returns (commit_made_this_turn, compliance_marker_present) scanning
+    entries AFTER the last genuine user text message. Pure for testability."""
+    last_user = -1
+    for i, e in enumerate(entries):
+        if e.get("type") != "user":
+            continue
+        content = (e.get("message") or {}).get("content")
+        if isinstance(content, str) and content.strip():
+            last_user = i
+        elif isinstance(content, list) and any(
+                isinstance(c, dict) and c.get("type") == "text" for c in content):
+            last_user = i
+    commit_made = marker = False
+    for e in entries[last_user + 1:]:
+        if e.get("type") != "assistant":
+            continue
+        content = (e.get("message") or {}).get("content") or []
+        if not isinstance(content, list):
+            continue
+        for c in content:
+            if not isinstance(c, dict):
+                continue
+            if c.get("type") == "tool_use":
+                blob = json.dumps(c.get("input", {}))
+                if "git commit" in blob:
+                    commit_made = True
+            elif c.get("type") == "text" and "CHECKLIST compliance" in (c.get("text") or ""):
+                marker = True
+    return commit_made, marker
+
+
+def check_compliance_marker() -> str | None:
+    """Read the Stop-hook stdin JSON -> transcript; if a git commit happened
+    this turn but the final response has no 'CHECKLIST compliance' statement,
+    return a block message. FAIL-OPEN on any parse issue (a broken hook must
+    never brick turns)."""
+    try:
+        if sys.stdin.isatty():
+            return None
+        payload = json.loads(sys.stdin.read() or "{}")
+        tpath = payload.get("transcript_path")
+        if not tpath or not Path(tpath).exists():
+            return None
+        entries = []
+        with open(tpath, encoding="utf-8", errors="replace") as fh:
+            for line in fh:
+                line = line.strip()
+                if line:
+                    try:
+                        entries.append(json.loads(line))
+                    except Exception:
+                        pass
+        commit_made, marker = scan_transcript_entries(entries)
+        if commit_made and not marker:
+            return ("TURN-GATE BLOCK (Gate B v2, B1338): a git commit was made "
+                    "this turn but the final response has NO 'CHECKLIST "
+                    "compliance' statement (skill Phase 6 / CLAUDE.md "
+                    "mandatory end-of-response statement). Add the compliance "
+                    "statement and end the turn again.")
+    except Exception:
+        return None
+    return None
 
 
 def get_modified_tracked() -> list[str]:
@@ -57,9 +144,18 @@ def main() -> int:
             pass
         return 0
 
+    # B1338: compliance-marker check runs regardless of tree state (a turn
+    # can commit everything cleanly and still omit the mandated statement).
+    marker_block = check_compliance_marker()
+
     modified = get_modified_tracked()
-    if not modified:
-        return 0  # fast-pass: clean tree
+    substantive, _churn = split_churn(modified)
+    if marker_block and not substantive:
+        print(marker_block, file=sys.stderr)
+        return 2
+    if not substantive:
+        return 0  # fast-pass: clean tree or live-run churn only (B1338)
+    modified = substantive
 
     py_mod = [m for m in modified if m.endswith(".py")]
     msg = [
@@ -75,6 +171,8 @@ def main() -> int:
                    "before commit (preflight C6).")
     msg.append("Intentional work-in-progress? create .stop_exempt "
                "(one-shot, logged) and end the turn again.")
+    if marker_block:
+        msg.append(marker_block)
     print("\n".join(msg), file=sys.stderr)
     return 2
 
