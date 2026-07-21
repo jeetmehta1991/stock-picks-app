@@ -5576,6 +5576,10 @@ Catch 2 (monitor): drill controller false-TERMINAL on the PREVIOUS smoke's stale
 
 Drill instance i-01659762cd5a4fc9a running; controller v2 will terminate no-notice at day>100 with synced ckpt, then --resume relaunch proves recovery. Spend ~$2.6 of $50 CAD cap.
 
+### B1335 (2026-07-20 Council 365): SKILL/CHECKLIST/LEARNINGS codification SHIPPED (owner "approve all implement now" — commit 1 of 4)
+
+Docs commit (engine untouched; batch-1 tar frozen): SKILL.md new section "B1335 HARD RULES" = Rule 1 PRE-SPEND OBSOLESCENCE GATE (run_manifest pins SHA/isolation/calendar/universe/budget + written obsolescence enumeration; prelaunch_gate-enforced) + Rule 2 MECHANISM-EXISTENCE (plan-cited flags/scripts carry EXECUTED evidence or labeled PROPOSED-NOT-BUILT) + Rule 3 RCA EVIDENCE-TAGGING (causal claims tagged; DERIVED/UNVERIFIED = "hypothesis" never "root cause"; counters need verified measurement point) + Rule 4 FRESH-EYES REVIEW CADENCE (before every batch-size escalation). CHECKLIST: #159 FORMALIZED (pre-engine HALT + coverage smoke — was cited informally since B1328 without existing = numbering-drift miss owned) + #160 MEASUREMENT-SEMANTICS FREEZE + #161 ARTIFACT-PROVENANCE PRE-FLIGHT + #162 COUNTER-SEMANTICS VERIFICATION (each with #136 retroactive demo). LEARNINGS L210 stale-artifact class (tar/marker/heartbeat one family) + L211 launches-follow-frozen-semantics (chunk1/2 waste) + L212 plan-level designed-vs-verified (--expect-sha). Commits 2-4 next: freeze flags -> prelaunch_gate+C10+batch-1 outputs -> stop-hook v2.
+
 ### B1334 (2026-07-20 Council 364): FRESH-EYES ADVERSARIAL REVIEW of Opus 3-day work (owner directive; model switched to Fable) — 3 incorrect items + COIN anomaly + waste retrospective
 
 INCORRECT WORK / ACTIVE TRAPS (verified against code, not summaries):

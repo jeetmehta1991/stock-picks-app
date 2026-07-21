@@ -84,6 +84,47 @@ it wins over speed, over completeness, over looking finished.
 
 ---
 
+## B1335 HARD RULES — PRE-SPEND / MECHANISM-EXISTENCE / RCA-TAGGING (owner-approved 2026-07-20, Council 365)
+
+Derived from the B1334 fresh-eyes review of the chunk-1/chunk-2 waste and the
+batch-1 traps. Each rule retroactively catches >=2 real past misses (#136).
+
+1. **PRE-SPEND OBSOLESCENCE GATE.** Before any cost-bearing or multi-hour run:
+   write a `run_manifest.json` pinning **code SHA, isolation mode, calendar,
+   universe/ticker list, budget projection**; then answer in writing *"what
+   could make this run obsolete?"* — every enumerated risk gets a mechanical
+   gate or an explicit owner acceptance. Changing any pinned field mid-sequence
+   restarts the sequence. Enforced by `scripts/prelaunch_gate.py` (launcher-
+   wired; refuses launch without a passing manifest).
+   *Retroactive:* chunk 1 (isolation undecided, calendar unpinned), chunk 2
+   (stale SHA), chunk-9 cross-arm (three enumerable confounds) — all blocked.
+
+2. **MECHANISM-EXISTENCE RULE.** Any flag, script, gate, or capability cited
+   in a plan or promised to the owner carries EXECUTED evidence it exists
+   (`--help` output, grep of the flag, a test run) — or is explicitly labeled
+   **PROPOSED-NOT-BUILT**. A plan referencing an unverified mechanism is a
+   Truth-Standard violation *at the plan level*.
+   *Retroactive:* the promised-but-nonexistent `--expect-sha` (B1333/B1334);
+   the "monitor armed" code-presence claims (B1028 class).
+
+3. **RCA EVIDENCE-TAGGING.** Every causal claim in an owner-facing RCA is
+   tagged with its evidence class (EXECUTED / READ / DERIVED / UNVERIFIED).
+   DERIVED or UNVERIFIED causal claims must be worded **"hypothesis"**, never
+   "root cause". Any counter or metric used as RCA evidence requires its
+   **measurement point verified first** (what pipeline stage does it count?).
+   *Retroactive:* "all 140 fire-bars were red candles" (B1333 — counter was
+   pre-confirmation, default-permissive gate); "calendar contaminates ~25pct"
+   (L209).
+
+4. **FRESH-EYES REVIEW CADENCE (standing).** Before every batch-size
+   escalation (or every ~10 batches of a sequence), an adversarial review of
+   the accumulated work runs with fresh eyes — a different model or a cold
+   pass that re-derives claims from code/data rather than summaries. The
+   B1334 review (model-switch) caught 3 defects the author missed; this
+   cadence is the Tier-3 compliance mechanism for judgment-tier failures.
+
+---
+
 ## MECHANICAL ENFORCEMENT LAYER (B1254-B1257 — the gates that make phases 3 and 6 physically binding)
 
 Owner-approved 2026-07-08. These run WITHOUT invocation; know they exist so

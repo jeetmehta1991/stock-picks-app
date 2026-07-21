@@ -2972,3 +2972,33 @@ Cloud smoke vs local runs: same window, 1002 vs 1043 sim-days. Root cause: `_tra
 **Generalized rules:** (a) before recommending an expensive fix for a defect, ISOLATE the defect's actual contribution with a controlled diff -- do not attribute a multi-variable delta to one variable; (b) a materiality percentage is a claim requiring its own measurement, not a plausible-sounding inference; (c) small-sample (5-ticker) cell instability is dominated by sampling noise and must NOT be extrapolated to full-scale cube behavior without a scale-matched check.
 
 **Consequence:** the honest reframe (platform consistency > calendar) is a BETTER fix and would have been missed had the owner not pushed for the example. Cross-ref: L207/L208 (calendar); S6-B1308-PLATFORM-CONSISTENCY; feedback_strategy_x_exit_cell_analysis (aggregates hide/reveal).
+
+## L210 -- THE STALE-ARTIFACT CLASS: CODE TAR / COMPLETION MARKER / HEARTBEAT ARE ONE FAMILY (Council 364 B1334 2026-07-20)
+
+**What happened:** Three separately-discovered failures were the same defect class: (1) the 5.8GB cloud code tar went stale at 07-17 while local advanced ~10 batches -- chunk 2 and 3 smoke attempts ran obsolete code (~$17 + hours); (2) the launcher wrote CHUNK_COMPLETE unconditionally on process exit -- a capped 67%-done run was marked complete (B1312); (3) a stale S3 heartbeat false-triggered the Gate-7 drill controller (B1300). Each was fixed as found, but the CLASS -- an artifact consumed without verifying its provenance/freshness at point of use -- was only named at the B1334 review.
+
+**Miss class:** under-generalization (the GENERALIZATION MANDATE existed by then; the family link across tar/marker/heartbeat still wasn't drawn until fresh-eyes review).
+
+**Generalized rules:** (a) every deployable/consumable artifact carries provenance (SHA, timestamp, epoch) INSIDE or beside it; (b) every consumer verifies provenance at point of use (freshness vs launch epoch; SHA vs manifest); (c) verification happens at the CHEAPEST point -- locally before spend, not on-instance after boot. Codified: CHECKLIST #161; prelaunch_gate.py; CODE_SHA baked in tar + .sha sidecar; launch-epoch guards in controllers.
+
+**Consequence:** with #159+#161 in place, the same class was caught 4/4 times pre-spend during the batch-1 validation ladder (~$2 total vs the earlier ~$17+days).
+
+## L211 -- LONG-RUN LAUNCHES MUST FOLLOW SETTLED MEASUREMENT SEMANTICS, NOT PRECEDE THEM (Council 364 B1334 2026-07-20)
+
+**What happened:** Chunk 1 (local, ~5 days wall-clock) and chunk 2 (cloud, ~$15-17) were BOTH fully superseded: after they ran, the owner decided cube isolation (M2), the hybrid short-stop fix landed (M3), SMC cloud-arming was fixed (B4), and the calendar/platform was consolidated to all-cloud. Every one of those decisions changed WHICH trades open or WHAT the cube measures -- so the runs were obsolete regardless of how cleanly they executed. The waste was not execution failure; it was sequencing: multi-day/multi-dollar runs launched while measurement semantics (isolation mode, calendar, code state, platform) were still in flux.
+
+**Miss class:** process/sequencing -- "pipeline runs" was treated as launch-readiness; "measurement semantics frozen" is the actual launch-readiness bar.
+
+**Generalized rules:** (a) before any cost-bearing run, pin semantics in a run_manifest (SHA, isolation, calendar, universe, budget) -- CHECKLIST #160; (b) enumerate in writing "what could make this run obsolete?" and gate or owner-accept each item (skill B1335 Rule 1); (c) scale through cheap batches first so a semantics change invalidates $0.30, not $17 (owner's escalating-batch design -- adopted).
+
+**Consequence:** batch 1 ($0.30, all semantics frozen at e846b6d2c) survived its adversarial review with zero obsoleting findings -- first clean R5 data after ~49 attempts.
+
+## L212 -- A MECHANISM CITED IN A PLAN MUST BE EXECUTED-VERIFIED TO EXIST (PLAN-LEVEL DESIGNED-VS-VERIFIED) (Council 364 B1334 2026-07-20)
+
+**What happened:** B1333's code-freeze plan told the owner "build the tar at batch-1's SHA + pass --expect-sha e846b6d2c". Neither mechanism existed: aws_chunk_launch has no --expect-sha flag (it hardcodes git rev-parse HEAD) and build_r5_code_tar archives HEAD only. Launching batch 2 per the plan would have GATEFAILed at boot. Separately, coverage_smoke's code_sha check compares to git HEAD -- guaranteed false-fail on any frozen-SHA batch. The designed-vs-verified discipline (CHECKLIST #124/#126) had been applied to CODE claims but not to PLAN claims.
+
+**Miss class:** truth-standard at the plan level -- a promised capability is a factual claim like any other; citing it without EXECUTED evidence (--help, grep, test run) is the same fabrication family as "monitor armed" without an evidence artifact (B1028/#126).
+
+**Generalized rules:** (a) any flag/script/gate cited in a plan carries EXECUTED evidence it exists, or is labeled PROPOSED-NOT-BUILT (skill B1335 Rule 2); (b) plans that reference future mechanisms must build them BEFORE the step that needs them, gated by tests; (c) fresh-eyes review (different model / cold re-derivation) before every scale-up -- it is what caught this (skill B1335 Rule 4).
+
+**Consequence:** the freeze mechanism was built for real (--sha / --expect-sha / --expected-sha + prelaunch_gate) before batch 2, with pin tests, instead of failing at launch.

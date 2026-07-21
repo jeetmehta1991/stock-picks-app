@@ -2691,3 +2691,43 @@ State compliance visibly: "Checklist: ✅ [each item]"
      **Enforcement.** Executable, not prose: `scripts/env_fingerprint.py` (pin-tested); merge_batch_outputs.py calls --check on all input dirs and aborts on mismatch.
 
      **Cross-references.** L202; Council 285 B1230; CHECKLIST #154/#155/#156.
+
+159. **HARD RULE -- PRE-ENGINE HALT + COVERAGE SMOKE (executable env+coverage gate before/after every cloud batch).** (Owner-approved B1328/B1330 2026-07-20; formalized B1335 -- prior batches cited "#159" informally without this entry existing, itself a numbering-drift miss.)
+
+     **Trigger.** Every cloud batch/chunk launch and every batch analysis.
+
+     **Rule.** (a) At boot, BEFORE the engine spends: `scripts/preengine_gate.py <fingerprint> <expected_sha>` -- abort + shutdown (CHUNK_GATEFAIL) unless smc_active=True AND calendar_backend=nyse_mcal AND code_sha==expected. (b) After the run: `scripts/coverage_smoke.py --analyze <dir>` must PASS all checks: fanout==fired*26, ZERO cross-strategy portfolio-gate skips (isolation), smc_active, code_sha parity, all CORE producer families firing, log clean of tracebacks/silent-failures. (c) Determinism (`--determinism`) and merge-append (`--merge-check`) validated once per sequence.
+
+     **Rationale/Retroactive (per #136).** Caught, pre-spend or pre-scale: the stale 07-17 cloud tar, the SMC ModuleNotFoundError (22 silent strategies), code_sha=unknown, and (in chunk 2 retrospect) the shared-portfolio contamination. Four smoke iterations ~ $2 vs the ~$17+days burned before these gates existed.
+
+     **Enforcement.** Executable: preengine_gate.py (in launcher user-data), coverage_smoke.py (pin-tested test_b1323/test_b1330); merge parity via env_fingerprint.MERGE_CRITICAL (test_b1332).
+
+160. **HARD RULE -- MEASUREMENT-SEMANTICS FREEZE (run-manifest before any multi-hour/cost-bearing run).** (Owner-approved B1335 2026-07-20; from the B1334 waste retrospective.)
+
+     **Trigger.** Any run costing money or >1h wall-clock, and any multi-run sequence whose outputs will be merged.
+
+     **Rule.** A `run_manifest.json` pins: frozen code SHA, isolation mode, calendar backend, universe/ticker list (disjointness across sequence batches), budget cap + projection. `scripts/prelaunch_gate.py` must PASS before launch. Changing ANY pinned field mid-sequence invalidates prior batches -> restart the sequence (cheap-batches-first makes this affordable).
+
+     **Rationale/Retroactive (per #136).** Chunk 1 (~5 days laptop) and chunk 2 (~$15-17) were both obsoleted by post-hoc semantics changes (isolation decision, calendar, code fixes) -- launches preceded settled semantics. This gate makes that ordering physically impossible.
+
+     **Enforcement.** Executable: prelaunch_gate.py wired into aws_chunk_launch (refuses launch without passing manifest).
+
+161. **HARD RULE -- ARTIFACT-PROVENANCE PRE-FLIGHT (verify deployable artifacts LOCALLY before instance spend).** (Owner-approved B1335 2026-07-20.)
+
+     **Trigger.** Any launch consuming a pre-staged artifact (code tar, data payload, ticker list).
+
+     **Rule.** Every deployable artifact carries provenance (baked SHA / timestamp sidecar). The launcher verifies the S3 artifact's SHA against the manifest's frozen SHA LOCALLY, before `run_instances` -- not only on-instance after boot cost. Stale artifact = HALT + rebuild instruction.
+
+     **Rationale/Retroactive (per #136).** The 5.8GB whole-repo tar went stale (07-17) and burned chunk 2 + 3 smoke attempts; detection happened on-instance (after boot spend) or post-run. Same family: the false CHUNK2_COMPLETE marker (B1312) and stale heartbeats (B1300) -- artifacts must be provenance-checked at point of use.
+
+     **Enforcement.** Executable: build_r5_code_tar writes CODE_SHA into the tar + a .sha sidecar to S3; prelaunch_gate compares sidecar vs manifest pre-spend.
+
+162. **HARD RULE -- COUNTER-SEMANTICS VERIFICATION (before any counter/metric is used as RCA evidence).** (Owner-approved B1335 2026-07-20.)
+
+     **Trigger.** Any RCA, coverage claim, or fire-rate analysis that cites a counter, log tally, or emitted metric.
+
+     **Rule.** First verify WHAT the counter measures: (a) which pipeline stage (pre- or post- which gates?); (b) per-process/per-worker aggregation semantics; (c) single- or multi-pass counting. State the verified measurement point alongside the number. A conclusion built on an unverified counter is a hypothesis (skill B1335 Rule 3), never a root cause.
+
+     **Rationale/Retroactive (per #136).** `_RAW_SIGNAL_FIRE_COUNTER` counts BEFORE the screener's confirmation gates (screener.py:8793) and per-worker -- "140 raw fires -> 0 trades" was mis-read as a red-candle-gate RCA (B1333, overturned B1334). Also the B660 fire-count estimator class (independent-product vs measured).
+
+     **Enforcement.** Judgment-tier rule with a mechanical assist: RCA queue entries citing counters must name the verified measurement point; fresh-eyes review cadence (skill B1335 Rule 4) audits this.
