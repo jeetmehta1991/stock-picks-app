@@ -26,14 +26,44 @@ BUCKET = "stock-picks-r5-jm-2026"
 PAYLOAD_KEY = "payload/r5_payload.tar"
 
 
+def check_local_cache_serveable(tickers) -> list:
+    """B1349 FIX (batch-3 BRK-B/BF-B bug): the engine seeks OHLCV at the
+    _cache_path ENCODED name (cache.py:57 maps -/. -> _), so BRK-B -> BRK_B.parquet.
+    A file present under the raw name (BRK-B.parquet) is NEVER served. Since
+    launches now ship the local cache as a refresh overlay, verify each roster
+    ticker's _cache_path-encoded file exists in the LOCAL cache (authoritative
+    for what the overlay serves). Returns list of un-serveable tickers."""
+    import sys
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+    from backtest.data.cache import _cache_path
+    return sorted(t for t in tickers if not _cache_path(t).exists())
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--manifest", required=True)
     ap.add_argument("--bucket", default=BUCKET)
     ap.add_argument("--key", default=PAYLOAD_KEY)
+    ap.add_argument("--local-cache", action="store_true",
+                    help="B1349: check the LOCAL cache via _cache_path encoded "
+                         "names (what the cache-refresh overlay ships) instead of "
+                         "streaming the S3 payload -- instant + catches the "
+                         "filename-encoding class (BRK-B seek BRK_B.parquet).")
     args = ap.parse_args()
 
     tickers = set(json.loads(Path(args.manifest).read_text(encoding="utf-8"))["tickers"])
+
+    if args.local_cache:
+        bad = check_local_cache_serveable(tickers)
+        print(f"local-cache _cache_path check: {len(tickers)-len(bad)}/{len(tickers)} serveable")
+        if bad:
+            print(f"PAYLOAD_COVERAGE_FAIL: NOT SERVEABLE via _cache_path ({len(bad)}): {bad}")
+            print("  (create the _cache_path-encoded parquet e.g. BRK_B.parquet, "
+                  "then rebuild the cache-refresh overlay)")
+            return 3
+        print("PAYLOAD_COVERAGE_PASS: all roster tickers serveable via _cache_path "
+              "in the local cache (= overlay).")
+        return 0
     print(f"verifying {len(tickers)} tickers against s3://{args.bucket}/{args.key}")
 
     import boto3
