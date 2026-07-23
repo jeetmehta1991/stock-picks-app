@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Phase 1A-β Cube Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Source per CHECKLIST #77: built by scripts/build_phase_1a_beta_dashboard.py
+     from output_phase_1a_beta_merged_local/. Owner-directed Batch 313
+     2026-05-24 - per-(strategy x exit x regime x classifier) cube viewer. -->
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+         margin: 0; padding: 0; background: #f5f7fa; color: #333; }
+  header { background: #2c3e50; color: white; padding: 16px 24px; }
+  header h1 { margin: 0; font-size: 22px; font-weight: 600; }
+  header .meta { font-size: 12px; opacity: 0.8; margin-top: 4px; }
+  .tabs { background: white; border-bottom: 1px solid #ddd; padding: 0 24px;
+          display: flex; gap: 4px; overflow-x: auto; }
+  .tab { padding: 14px 18px; cursor: pointer; border-bottom: 3px solid transparent;
+         font-size: 14px; white-space: nowrap; }
+  .tab.active { border-bottom-color: #3498db; color: #3498db; font-weight: 600; }
+  .tab:hover { background: #f0f4f8; }
+  main { padding: 24px; max-width: 1600px; margin: 0 auto; }
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  .metric-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+                  gap: 12px; margin-bottom: 24px; }
+  .metric { background: white; padding: 14px 16px; border-radius: 6px;
+            border: 1px solid #e0e6ec; }
+  .metric .label { font-size: 11px; text-transform: uppercase; color: #7f8c8d;
+                   letter-spacing: 0.5px; }
+  .metric .value { font-size: 22px; font-weight: 600; margin-top: 4px; }
+  .metric .value.pos { color: #27ae60; }
+  .metric .value.neg { color: #e74c3c; }
+
+  .controls { background: white; padding: 12px 16px; border-radius: 6px;
+              border: 1px solid #e0e6ec; margin-bottom: 12px;
+              display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+  .controls label { font-size: 12px; color: #555; }
+  .controls select, .controls input[type="number"] {
+    padding: 6px 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; }
+  .controls .filter-tag { background: #ecf0f1; padding: 4px 10px; border-radius: 12px;
+                          font-size: 12px; }
+
+  table { width: 100%; border-collapse: collapse; background: white;
+          border-radius: 6px; overflow: hidden;
+          box-shadow: 0 1px 2px rgba(0,0,0,0.04); font-size: 13px; }
+  thead { background: #34495e; color: white; }
+  th { padding: 10px 12px; text-align: left; font-weight: 500; font-size: 12px;
+       cursor: pointer; user-select: none; }
+  th:hover { background: #2c3e50; }
+  th.sorted-asc::after { content: " ↑"; }
+  th.sorted-desc::after { content: " ↓"; }
+  td { padding: 8px 12px; border-bottom: 1px solid #eef2f5; }
+  tr:hover td { background: #f8fafc; }
+  .num { text-align: right; font-variant-numeric: tabular-nums; }
+  .pos { color: #27ae60; }
+  .neg { color: #e74c3c; }
+  .pos-strong { color: #27ae60; font-weight: 600; }
+  .neg-strong { color: #e74c3c; font-weight: 600; }
+  .muted { color: #95a5a6; }
+
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 10px;
+           font-size: 11px; font-weight: 500; }
+  .badge.green { background: #d5f4e6; color: #1e8449; }
+  .badge.red { background: #fadbd8; color: #c0392b; }
+  .badge.yellow { background: #fef5e7; color: #b9770e; }
+  .badge.gray { background: #ecf0f1; color: #566573; }
+
+  .notes { background: #fef9e7; border-left: 4px solid #f39c12;
+           padding: 12px 16px; margin-bottom: 18px; border-radius: 4px;
+           font-size: 13px; }
+  .notes h3 { margin: 0 0 8px 0; font-size: 14px; color: #b9770e; }
+  .notes p { margin: 4px 0; }
+  .notes code { background: white; padding: 1px 6px; border-radius: 3px;
+                font-size: 12px; }
+</style>
+</head>
+<body>
+  <header>
+    <h1>Phase 1A-β Cube Dashboard</h1>
+    <div class="meta">
+      <span id="meta-info">Loading...</span>
+    </div>
+  </header>
+
+  <nav class="tabs">
+    <div class="tab active" data-tab="overview">Overview</div>
+    <div class="tab" data-tab="cube">Cube Explorer</div>
+    <div class="tab" data-tab="survivors">Survivors (9 cells)</div>
+    <div class="tab" data-tab="underperformers">Underperformers (25)</div>
+    <div class="tab" data-tab="quiet">Quiet (60 strategies)</div>
+    <div class="tab" data-tab="walk">Walk-Forward</div>
+    <div class="tab" data-tab="data">Raw Data</div>
+  </nav>
+
+  <main>
+    <section id="panel-overview" class="panel active">
+      <div class="metric-grid" id="overview-metrics"></div>
+
+      <div class="notes">
+        <h3>Owner framework (per directive 2026-05-24)</h3>
+        <p>This dashboard is <strong>not</strong> for universal strategy verdicts. The cube surfaces best
+        (strategy × exit × regime × ticker × classifier) combinations. A strategy that lost money at
+        universe-wide aggregate may still be optimal for specific regimes / sectors / cap-bands /
+        tiers / volatility bands. <strong>No strategy is universally disabled.</strong></p>
+        <p>Use the <em>Cube Explorer</em> tab to slice across classifiers. Use <em>Survivors</em> for
+        IS+OOS-validated combinations. Use <em>Underperformers</em> for analysis priority.
+        <em>Quiet</em> lists 60 strategies that fired zero trades — investigation findings catalogued
+        in <code>BUILD_PLAN_PROGRESS.md</code>.</p>
+      </div>
+
+      <h2 style="margin-top:24px;font-size:16px;">Aggregate IS vs OOS</h2>
+      <table id="overview-is-oos"></table>
+    </section>
+
+    <section id="panel-cube" class="panel">
+      <div class="controls">
+        <label>Slice:
+          <select id="slice-selector"></select>
+        </label>
+        <label>Min trades:
+          <input type="number" id="min-n" value="5" min="0" style="width:60px">
+        </label>
+        <label>Sort by:
+          <select id="sort-by"></select>
+        </label>
+        <label>
+          <input type="checkbox" id="positive-only"> Positive only
+        </label>
+        <span id="cube-meta" class="filter-tag"></span>
+      </div>
+      <table id="cube-table"></table>
+    </section>
+
+    <section id="panel-survivors" class="panel">
+      <div class="notes">
+        <h3>9 IS+OOS-validated (strategy × exit) survivor cells</h3>
+        <p>Cells with both IS and OOS positive aggregate at OOS n≥10. Operates as the
+        candidate roster for Phase 1B agent overlay (NOT Phase 1B-α; that's the OUTPUT of Phase 1B).</p>
+      </div>
+      <table id="survivors-table"></table>
+    </section>
+
+    <section id="panel-underperformers" class="panel">
+      <div class="notes">
+        <h3>Strategies with negative OOS aggregate (n≥5)</h3>
+        <p>Per owner directive 2026-05-24, these are <strong>not disabled</strong>. They are flagged
+        for per-regime / per-classifier analysis — a strategy can lose money universe-wide but win in
+        specific sub-cubes. Use Cube Explorer to evaluate per slice.</p>
+      </div>
+      <table id="underperformers-table"></table>
+    </section>
+
+    <section id="panel-quiet" class="panel">
+      <div class="notes">
+        <h3>60 active strategies that fired ZERO trades</h3>
+        <p>Categorized in <code>BUILD_PLAN_PROGRESS.md</code>. Includes confirmed silent-gap bugs
+        (BUG-288 PEAD, BUG-289 Quality — both fixed in Batch 312), data-missing
+        (UUP, T5b pairs precompute, index_rebalance events), tight-by-design gates
+        (news_sentiment, volume profile), competition (calendar effects vs max-candidates cap),
+        and legitimately rare conditions (52w extremes, narrow SMC variants).</p>
+      </div>
+      <ul id="quiet-list" style="columns:3;column-gap:24px;font-size:13px;font-family:monospace;"></ul>
+    </section>
+
+    <section id="panel-walk" class="panel">
+      <div class="notes">
+        <h3>Walk-forward 4-fold (DEC-505) per-strategy verdict</h3>
+      </div>
+      <table id="walk-table"></table>
+    </section>
+
+    <section id="panel-data" class="panel">
+      <div class="notes">
+        <h3>Source data</h3>
+        <p>Raw per-cell IS/OOS CSV: <code>output_phase_1a_beta_merged_local/per_cell_is_oos.csv</code></p>
+        <p>Raw trade log (~7191 trades): <code>output_phase_1a_beta_merged_local/trade_log.csv</code></p>
+        <p>Dashboard regen: <code>python scripts/build_phase_1a_beta_dashboard.py</code></p>
+      </div>
+      <pre id="raw-overview" style="background:white;padding:14px;border-radius:6px;font-size:12px;overflow:auto;border:1px solid #ddd;"></pre>
+    </section>
+  </main>
+
+<script>
+let DATA = null;
+let CURRENT_SLICE = null;
+
+async function load() {
+  const resp = await fetch("data.json");
+  DATA = await resp.json();
+  document.getElementById("meta-info").textContent =
+    `Generated ${DATA.generated_at} · Phase ${DATA.phase} · IS ${DATA.is_window} / OOS ${DATA.oos_window}`;
+  renderOverview();
+  renderCubeControls();
+  renderCube();
+  renderSurvivors();
+  renderUnderperformers();
+  renderQuiet();
+  renderWalk();
+  renderRaw();
+}
+
+function cls(v) {
+  if (typeof v !== "number") return "";
+  if (v > 5) return "pos-strong";
+  if (v > 0) return "pos";
+  if (v < -5) return "neg-strong";
+  if (v < 0) return "neg";
+  return "";
+}
+
+function fmt(v, decimals = 2) {
+  if (v === null || v === undefined || (typeof v === "number" && isNaN(v))) return "—";
+  if (typeof v !== "number") return v;
+  return v.toFixed(decimals);
+}
+
+function renderOverview() {
+  const o = DATA.overview;
+  const cards = [
+    { label: "Trades", value: o.n_trades.toLocaleString() },
+    { label: "Win rate", value: o.win_rate + "%" },
+    { label: "Mean PnL/trade", value: fmt(o.mean_pnl_pct) + "%", cls: cls(o.mean_pnl_pct) },
+    { label: "Sum PnL (pp)", value: fmt(o.sum_pnl_pct, 1), cls: cls(o.sum_pnl_pct) },
+    { label: "Median hold (days)", value: fmt(o.median_hold_days, 1) },
+    { label: "Best trade", value: fmt(o.best_trade) + "%", cls: "pos-strong" },
+    { label: "Worst trade", value: fmt(o.worst_trade) + "%", cls: "neg-strong" },
+    { label: "Strategies fired", value: o.n_strategies },
+    { label: "Exit reasons", value: o.n_exits },
+    { label: "Tickers traded", value: o.n_tickers },
+  ];
+  const grid = document.getElementById("overview-metrics");
+  grid.innerHTML = cards.map(c =>
+    `<div class="metric"><div class="label">${c.label}</div>
+     <div class="value ${c.cls || ''}">${c.value}</div></div>`).join("");
+
+  const isoos = document.getElementById("overview-is-oos");
+  isoos.innerHTML = `
+    <thead><tr><th>Window</th><th class="num">n</th><th class="num">Mean PnL</th><th class="num">Sum (pp)</th></tr></thead>
+    <tbody>
+      <tr><td>IS (${DATA.is_window})</td><td class="num">${o.is_n}</td>
+          <td class="num ${cls(o.is_mean_pnl)}">${fmt(o.is_mean_pnl)}%</td>
+          <td class="num ${cls(o.is_sum)}">${fmt(o.is_sum, 1)}</td></tr>
+      <tr><td>OOS (${DATA.oos_window})</td><td class="num">${o.oos_n}</td>
+          <td class="num ${cls(o.oos_mean_pnl)}">${fmt(o.oos_mean_pnl)}%</td>
+          <td class="num ${cls(o.oos_sum)}">${fmt(o.oos_sum, 1)}</td></tr>
+    </tbody>`;
+}
+
+function renderCubeControls() {
+  const selectSlice = document.getElementById("slice-selector");
+  const slices = Object.keys(DATA.slices);
+  selectSlice.innerHTML = slices.map(s =>
+    `<option value="${s}">${s.replaceAll("_", " ")}</option>`).join("");
+  selectSlice.value = "strategy_x_exit";
+  selectSlice.onchange = renderCube;
+
+  const sortBy = document.getElementById("sort-by");
+  sortBy.innerHTML = ["sum_pnl", "mean_pnl", "n", "win_rate", "best", "worst"]
+    .map(k => `<option value="${k}">${k}</option>`).join("");
+  sortBy.value = "sum_pnl";
+  sortBy.onchange = renderCube;
+
+  document.getElementById("min-n").oninput = renderCube;
+  document.getElementById("positive-only").onchange = renderCube;
+}
+
+function renderCube() {
+  const sliceName = document.getElementById("slice-selector").value;
+  const minN = +document.getElementById("min-n").value;
+  const sortKey = document.getElementById("sort-by").value;
+  const posOnly = document.getElementById("positive-only").checked;
+  let rows = (DATA.slices[sliceName] || []).slice();
+  rows = rows.filter(r => r.n >= minN);
+  if (posOnly) rows = rows.filter(r => r.sum_pnl > 0);
+  rows.sort((a, b) => (b[sortKey] || 0) - (a[sortKey] || 0));
+
+  const meta = document.getElementById("cube-meta");
+  meta.textContent = `${rows.length} cells · sum_pnl total: ${
+    rows.reduce((s, r) => s + (r.sum_pnl || 0), 0).toFixed(1)}pp`;
+
+  const sampleKeys = rows[0] ? Object.keys(rows[0]) : [];
+  const dimKeys = sampleKeys.filter(k =>
+    !["n", "wins", "mean_pnl", "sum_pnl", "win_rate", "median_hold", "best", "worst"].includes(k));
+  const metricKeys = ["n", "win_rate", "mean_pnl", "sum_pnl", "median_hold", "best", "worst"];
+
+  const tbl = document.getElementById("cube-table");
+  tbl.innerHTML = `
+    <thead><tr>
+      ${dimKeys.map(k => `<th>${k}</th>`).join("")}
+      ${metricKeys.map(k => `<th class="num">${k}</th>`).join("")}
+    </tr></thead>
+    <tbody>
+      ${rows.slice(0, 500).map(r => `
+        <tr>
+          ${dimKeys.map(k => `<td>${r[k] ?? "—"}</td>`).join("")}
+          ${metricKeys.map(k => {
+            const v = r[k];
+            const numClass = ["mean_pnl", "sum_pnl", "best", "worst"].includes(k) ? cls(v) : "";
+            return `<td class="num ${numClass}">${fmt(v, k === "n" ? 0 : (k === "win_rate" ? 1 : 2))}</td>`;
+          }).join("")}
+        </tr>`).join("")}
+    </tbody>`;
+}
+
+function renderSurvivors() {
+  const tbl = document.getElementById("survivors-table");
+  const rows = DATA.survivors;
+  tbl.innerHTML = `
+    <thead><tr>
+      <th>Strategy</th><th>Exit</th>
+      <th class="num">IS n</th><th class="num">IS sum</th>
+      <th class="num">OOS n</th><th class="num">OOS WR</th>
+      <th class="num">OOS mean</th><th class="num">OOS sum</th>
+    </tr></thead>
+    <tbody>${rows.map(r => `
+      <tr>
+        <td>${r.strategy}</td><td>${r.exit_reason}</td>
+        <td class="num">${r.is_n}</td>
+        <td class="num ${cls(r.is_sum_pp)}">${fmt(r.is_sum_pp, 1)}</td>
+        <td class="num">${r.oos_n}</td>
+        <td class="num">${r.oos_wr_pct}%</td>
+        <td class="num ${cls(r.oos_mean_pct)}">${fmt(r.oos_mean_pct)}%</td>
+        <td class="num pos-strong">${fmt(r.oos_sum_pp, 1)}</td>
+      </tr>`).join("")}</tbody>`;
+}
+
+function renderUnderperformers() {
+  const tbl = document.getElementById("underperformers-table");
+  const rows = DATA.underperformers;
+  tbl.innerHTML = `
+    <thead><tr>
+      <th>Strategy</th>
+      <th class="num">IS n</th><th class="num">IS sum</th>
+      <th class="num">OOS n</th><th class="num">OOS WR</th>
+      <th class="num">OOS mean</th><th class="num">OOS sum</th>
+    </tr></thead>
+    <tbody>${rows.map(r => `
+      <tr>
+        <td>${r.strategy}</td>
+        <td class="num">${r.is_n}</td>
+        <td class="num ${cls(r.is_sum_pp)}">${fmt(r.is_sum_pp, 1)}</td>
+        <td class="num">${r.oos_n}</td>
+        <td class="num">${r.oos_wr_pct}%</td>
+        <td class="num ${cls(r.oos_mean_pct)}">${fmt(r.oos_mean_pct)}%</td>
+        <td class="num neg-strong">${fmt(r.oos_sum_pp, 1)}</td>
+      </tr>`).join("")}</tbody>`;
+}
+
+function renderQuiet() {
+  const list = document.getElementById("quiet-list");
+  list.innerHTML = DATA.quiet_strategies.map(s => `<li>${s}</li>`).join("");
+}
+
+function renderWalk() {
+  const tbl = document.getElementById("walk-table");
+  const rows = DATA.walk_forward || [];
+  tbl.innerHTML = `
+    <thead><tr><th>Strategy</th><th>Verdict</th></tr></thead>
+    <tbody>${rows.map(r => `
+      <tr><td>${r.strategy}</td><td>${r.verdict}</td></tr>`).join("")}</tbody>`;
+}
+
+function renderRaw() {
+  document.getElementById("raw-overview").textContent =
+    JSON.stringify(DATA.overview, null, 2);
+}
+
+// Tab switching
+document.querySelectorAll(".tab").forEach(tab => {
+  tab.onclick = () => {
+    document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+    document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
+    tab.classList.add("active");
+    document.getElementById("panel-" + tab.dataset.tab).classList.add("active");
+  };
+});
+
+load();
+</script>
+</body>
+</html>

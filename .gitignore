@@ -96,3 +96,4 @@ data_prefetch/sec_edgar_decoded/
 # B1265: settings.local.json is per-machine Claude Code local state (untracked by convention; was causing Gate B churn every turn)
 .claude/settings.local.json
 dashboard_r5/_artifact.html
+output_r5_cube_merged/

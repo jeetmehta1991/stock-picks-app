@@ -17,6 +17,7 @@ on:
       - 'dashboard_phase_1a_beta/**'
       - 'dashboard_phase_1b/**'
       - 'dashboard_r5/**'
+      - 'dashboard_r5_cube/**'
       - 'index.html'
       - '.nojekyll'
       - '.github/workflows/deploy_pages.yml'
@@ -46,7 +47,7 @@ jobs:
       - name: Prepare dashboards-only site (excludes data_prefetch/, backtest/, etc.)
         run: |
           set -e
-          mkdir -p _site/dashboard_sprint0a _site/dashboard_stage_2 _site/dashboard_phase_1a _site/dashboard_phase_1a_beta _site/dashboard_phase_1b _site/dashboard_r5
+          mkdir -p _site/dashboard_sprint0a _site/dashboard_stage_2 _site/dashboard_phase_1a _site/dashboard_phase_1a_beta _site/dashboard_phase_1b _site/dashboard_r5 _site/dashboard_r5_cube
           cp -r dashboard_sprint0a/* _site/dashboard_sprint0a/
           cp -r dashboard_stage_2/* _site/dashboard_stage_2/
           cp -r dashboard_phase_1a/* _site/dashboard_phase_1a/
@@ -55,6 +56,9 @@ jobs:
           # B1346: R5 batch dashboard (index.html only; _artifact.html is a
           # derived artifact helper, gitignored and not deployed).
           cp dashboard_r5/index.html _site/dashboard_r5/index.html
+          # B1347: R5 cube explorer (established phase_1a_beta template) - needs
+          # index.html + data.json (the cube payload).
+          cp dashboard_r5_cube/index.html dashboard_r5_cube/data.json _site/dashboard_r5_cube/
           cp index.html _site/index.html
           touch _site/.nojekyll
           echo "=== Site root contents ==="
