@@ -30,6 +30,38 @@ TEMPLATE_UI = REPO / "dashboard_phase_1a_beta" / "index.html"
 FROZEN_SHA = "e846b6d2cfb3"
 
 
+IS_END = pd.Timestamp("2024-06-30")
+OOS_START = pd.Timestamp("2024-07-01")
+R5_IS_WINDOW = "2022-05-05..2024-06-30"
+R5_OOS_WINDOW = "2024-07-01..2026-05-05"
+
+
+def _wide_is_oos(tl: pd.DataFrame):
+    """B1348 FIX: the established generator's AUTO-gen writes LONG-format
+    per_cell (is_in_sample bool) but its survivor/underperformer logic reads
+    WIDE columns (is_n/oos_n/is_sum_pp/oos_wr_pct/...). Pre-write the WIDE
+    files so those tabs populate instead of coming back empty."""
+    tl = tl.copy()
+    tl["entry_dt"] = pd.to_datetime(tl["entry_date"], errors="coerce")
+    tl["seg"] = tl["entry_dt"].apply(lambda d: "is" if d <= IS_END else "oos")
+
+    def agg(g):
+        out = {}
+        for seg in ("is", "oos"):
+            s = g[g.seg == seg]
+            out[f"{seg}_n"] = len(s)
+            out[f"{seg}_sum_pp"] = round(float(s.pnl_pct.sum()), 1) if len(s) else 0.0
+            out[f"{seg}_wr_pct"] = round(100 * s.win.astype(bool).mean(), 1) if len(s) else 0.0
+            out[f"{seg}_mean_pct"] = round(float(s.pnl_pct.mean()), 2) if len(s) else 0.0
+        return pd.Series(out)
+
+    exit_col = "exit_reason" if "exit_reason" in tl.columns else "strategy"
+    per_cell = tl.groupby(["strategy", exit_col]).apply(agg).reset_index()
+    per_cell.to_csv(MERGED / "per_cell_is_oos.csv", index=False)
+    per_strat = tl.groupby("strategy").apply(agg).reset_index()
+    per_strat.to_csv(MERGED / "per_strategy_is_oos.csv", index=False)
+
+
 def build_merged_input() -> int:
     MERGED.mkdir(exist_ok=True)
     frames = [pd.read_parquet(f)
@@ -39,6 +71,7 @@ def build_merged_input() -> int:
         return 0
     tl = pd.concat(frames, ignore_index=True)
     tl.to_csv(MERGED / "trade_log.csv", index=False)
+    _wide_is_oos(tl)  # WIDE per_cell + per_strategy so survivors/underperformers populate
     # loaded-but-unused by the established generator -> header-only stubs
     pd.DataFrame(columns=["strategy", "metric"]).to_csv(MERGED / "backtest_results.csv", index=False)
     pd.DataFrame(columns=["strategy", "verdict"]).to_csv(MERGED / "walk_forward_validation.csv", index=False)
@@ -67,6 +100,10 @@ def main() -> int:
     d["is_baseline"] = True
     d["delta_baseline"] = ("R5 (this run) -- per-(strategy x exit x regime) delta "
                            "populates at R6 re-run (owner 2026-07-23)")
+    # B1348: correct the window labels (generator hardcodes R4's 2022-01..2024-06)
+    d["is_window"] = R5_IS_WINDOW
+    d["oos_window"] = R5_OOS_WINDOW
+    d["walk_forward_note"] = "N/A -- R5 ran --no-walk-forward (cube-isolation run)"
     (CUBE_DIR / "data.json").write_text(json.dumps(d, default=str, indent=1), encoding="utf-8")
 
     base_dir = REPO / "output_audit" / "r5_baseline"
