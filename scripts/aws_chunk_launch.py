@@ -36,6 +36,12 @@ dnf install -y python3.11 python3.11-pip tar >/dev/null
 mkdir -p /r5 && cd /r5
 curl -sf -o code.tar "@CODE_GET@" && tar -xf code.tar && rm code.tar
 curl -sf -o payload.tar "@PAYLOAD_GET@" && tar -xf payload.tar && rm payload.tar
+# B1345 (Council 370): cache-refresh overlay. Overwrites the stale
+# backtest/data/cache (ohlcv + index.json) from the frozen payload snapshot so
+# tickers added/indexed AFTER that snapshot (e.g. BRK-B, BF-B) are serveable
+# instead of a cache-miss -> yfinance hard-cut -> 0 trades (the batch-2 BRK-B
+# defect). Graceful: absent object -> skip (backward-compatible with old runs).
+curl -sf -o cache_refresh.tar "@CACHE_REFRESH_GET@" && tar -xf cache_refresh.tar && rm cache_refresh.tar && echo "CACHE_REFRESH_APPLIED $(date -u +%FT%TZ)" || echo "CACHE_REFRESH_SKIPPED"
 curl -sf -o chunk_tickers.txt "@TICKERS_GET@"
 python3.11 -m pip install --quiet -r requirements.txt
 # B1326 (Council 358, B4): install the vendored smartmoneyconcepts package so
@@ -167,6 +173,7 @@ def main() -> int:
         "@N@": n,
         "@CODE_GET@": presign(s3, "get", "payload/r5_code.tar"),
         "@PAYLOAD_GET@": presign(s3, "get", "payload/r5_payload.tar"),
+        "@CACHE_REFRESH_GET@": presign(s3, "get", "payload/r5_cache_refresh.tar"),
         "@TICKERS_GET@": presign(s3, "get", f"chunks/chunk{n}_tickers.txt"),
         "@CKPT_GET@": presign(s3, "get", f"chunk{n}/ckpt.tar"),
         "@HB_PUT@": presign(s3, "put", f"chunk{n}/heartbeat.txt"),
