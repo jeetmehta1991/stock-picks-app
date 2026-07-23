@@ -27,7 +27,8 @@
     "AMT"
   ],
   "budget_cap_usd": 50.0,
-  "spent_usd": 0.3,
-  "projected_batch_usd": null,
-  "note": "projected_batch_usd filled after cost_projection; measure-and-project per L211"
+  "spent_usd": 26.0,
+  "projected_batch_usd": 1.0,
+  "note": "projected_batch_usd filled after cost_projection; measure-and-project per L211",
+  "chunk": 12
 }
