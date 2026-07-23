@@ -5576,6 +5576,10 @@ Catch 2 (monitor): drill controller false-TERMINAL on the PREVIOUS smoke's stale
 
 Drill instance i-01659762cd5a4fc9a running; controller v2 will terminate no-notice at day>100 with synced ckpt, then --resume relaunch proves recovery. Spend ~$2.6 of $50 CAD cap.
 
+### B1352 (2026-07-23 Council 373 cont.): BATCH 4 LAUNCHED - chunk14 i-01ac536072bc3cb52 (owner "run batch 4")
+
+Owner explicit go. Pre-flight all green: quota free, frozen tar e846b6d2c in S3, roster 100 (BRK-B/BF-B FOLD-IN + 98 sector-stratified disjoint from batches 1-3), _cache_path coverage gate 100/100 serveable (BRK-B/BF-B fix holds), prelaunch_gate PASS (budget 23+2.1<=50 honest total). LAUNCHED i-01ac536072bc3cb52 (100 tkr, cache-refresh overlay with BRK_B/BF_B active, user-data 9860B). Expected ~105min (~$2.10). Monitor armed + 15-min cadence. Validates BRK-B/BF-B trade this time.
+
 ### B1351 (2026-07-23 Council 373): BATCH 1-3 ANALYSIS + cost reconcile (owner "cost? analyze b1-3? anomalies? quiet/starved? producers? projected cost?")
 
 Cost: clean-seq AWS $2.04 (b1 0.30 + b2 0.60 + b3 1.14 measured 56.9min); + ~$20 pre-freeze waste + ~$0.60 smokes = ~$22-23/$50. Cost model 3 pts fits; b4(100)=$2.10; full-614 seq ~$12-14 more -> total ~$34-36 under cap. ANALYSIS (merged 1-3, 75 tkr, 27490 trades ex-SPY): 202/219 traded; overall WR 27.3% (RAW isolation cube - every signal trades, all combos incl bad, trailing exits - NOT deployable WR; survivors positive: totm_long +6.9%/trade, institutional_persistence_oversold +2.35%, smc_breaker_block +1.93%). ANOMALIES: 0 new (0 strategies WR=0/100 at n>=30 = no look-ahead); prior all dispositioned. QUIET: 17 (down 45->31->17), ALL explained (structural gaps to_tech/small_cap + contradictory-gate rsi_overbought/rsi21 + narrow multi-gate + avoid-gate short_borrow_trap), NONE broken producers. STARVED: 64<30, 109<100 (accumulate at full universe). PRODUCERS: all working (B1340 audit + 17-quiet all explained + 45->17 empirical). Batch 4 ready (BRK-B/BF-B folded, overlay+gate fixed), owner-gated. Ledger batch-3 timing updated.
