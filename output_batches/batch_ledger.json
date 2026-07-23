@@ -23,6 +23,39 @@
       "sha": "e846b6d2cfb3",
       "n_tickers": 10,
       "wall_min": 18.0
+    },
+    {
+      "batch": 2,
+      "chunk": "chunk12",
+      "tickers": [
+        "MSFT",
+        "AVGO",
+        "V",
+        "BRK-B",
+        "MA",
+        "LLY",
+        "UNH",
+        "AMZN",
+        "HD",
+        "GOOGL",
+        "META",
+        "CAT",
+        "GE",
+        "COST",
+        "KO",
+        "CVX",
+        "COP",
+        "NEE",
+        "DUK",
+        "AMT"
+      ],
+      "tickers_traded": 20,
+      "n_tickers": 20,
+      "cost_usd": 0.6,
+      "committed": true,
+      "sha": "e846b6d2cfb3",
+      "note": "BRK-B cache-index gap, 19/20 traded",
+      "wall_min": 29.4
     }
   ],
   "hourly_rate_usd": 1.2
