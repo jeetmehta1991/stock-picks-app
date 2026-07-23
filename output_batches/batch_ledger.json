@@ -111,10 +111,11 @@
       ],
       "n_tickers": 50,
       "tickers_traded": 45,
-      "cost_usd": 1.5,
+      "cost_usd": 1.14,
       "committed": true,
       "sha": "e846b6d2cfb3",
-      "note": "45/50 traded; BRK-B/BF-B filename bug, CASY annual-PIT, AZO/AIZ TBD"
+      "note": "45/50 traded; BRK-B/BF-B filename bug, CASY annual-PIT, AZO/AIZ TBD",
+      "wall_min": 56.9
     }
   ],
   "hourly_rate_usd": 1.2
