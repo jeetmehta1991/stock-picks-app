@@ -1,384 +1,997 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<title>Phase 1A-β Cube Dashboard</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<!-- Source per CHECKLIST #77: built by scripts/build_phase_1a_beta_dashboard.py
-     from output_phase_1a_beta_merged_local/. Owner-directed Batch 313
-     2026-05-24 - per-(strategy x exit x regime x classifier) cube viewer. -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Source of truth (per CHECKLIST #77): data sourced from output_v2/* artifacts produced by backtest/run_phase1a.py. Builder: scripts/build_dashboard_phase_1a.py. See DETAILED_PROJECT_PLAN.md §7.6 for the 9-tab spec. -->
+<title>Phase 1A Trade Summary Dashboard</title>
+
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
 <style>
-  * { box-sizing: border-box; }
-  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-         margin: 0; padding: 0; background: #f5f7fa; color: #333; }
-  header { background: #2c3e50; color: white; padding: 16px 24px; }
-  header h1 { margin: 0; font-size: 22px; font-weight: 600; }
-  header .meta { font-size: 12px; opacity: 0.8; margin-top: 4px; }
-  .tabs { background: white; border-bottom: 1px solid #ddd; padding: 0 24px;
-          display: flex; gap: 4px; overflow-x: auto; }
-  .tab { padding: 14px 18px; cursor: pointer; border-bottom: 3px solid transparent;
-         font-size: 14px; white-space: nowrap; }
-  .tab.active { border-bottom-color: #3498db; color: #3498db; font-weight: 600; }
-  .tab:hover { background: #f0f4f8; }
-  main { padding: 24px; max-width: 1600px; margin: 0 auto; }
-  .panel { display: none; }
-  .panel.active { display: block; }
-
-  .metric-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-                  gap: 12px; margin-bottom: 24px; }
-  .metric { background: white; padding: 14px 16px; border-radius: 6px;
-            border: 1px solid #e0e6ec; }
-  .metric .label { font-size: 11px; text-transform: uppercase; color: #7f8c8d;
-                   letter-spacing: 0.5px; }
-  .metric .value { font-size: 22px; font-weight: 600; margin-top: 4px; }
-  .metric .value.pos { color: #27ae60; }
-  .metric .value.neg { color: #e74c3c; }
-
-  .controls { background: white; padding: 12px 16px; border-radius: 6px;
-              border: 1px solid #e0e6ec; margin-bottom: 12px;
-              display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
-  .controls label { font-size: 12px; color: #555; }
-  .controls select, .controls input[type="number"] {
-    padding: 6px 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; }
-  .controls .filter-tag { background: #ecf0f1; padding: 4px 10px; border-radius: 12px;
-                          font-size: 12px; }
-
-  table { width: 100%; border-collapse: collapse; background: white;
-          border-radius: 6px; overflow: hidden;
-          box-shadow: 0 1px 2px rgba(0,0,0,0.04); font-size: 13px; }
-  thead { background: #34495e; color: white; }
-  th { padding: 10px 12px; text-align: left; font-weight: 500; font-size: 12px;
-       cursor: pointer; user-select: none; }
-  th:hover { background: #2c3e50; }
-  th.sorted-asc::after { content: " ↑"; }
-  th.sorted-desc::after { content: " ↓"; }
-  td { padding: 8px 12px; border-bottom: 1px solid #eef2f5; }
-  tr:hover td { background: #f8fafc; }
-  .num { text-align: right; font-variant-numeric: tabular-nums; }
-  .pos { color: #27ae60; }
-  .neg { color: #e74c3c; }
-  .pos-strong { color: #27ae60; font-weight: 600; }
-  .neg-strong { color: #e74c3c; font-weight: 600; }
-  .muted { color: #95a5a6; }
-
-  .badge { display: inline-block; padding: 2px 8px; border-radius: 10px;
-           font-size: 11px; font-weight: 500; }
-  .badge.green { background: #d5f4e6; color: #1e8449; }
-  .badge.red { background: #fadbd8; color: #c0392b; }
-  .badge.yellow { background: #fef5e7; color: #b9770e; }
-  .badge.gray { background: #ecf0f1; color: #566573; }
-
-  .notes { background: #fef9e7; border-left: 4px solid #f39c12;
-           padding: 12px 16px; margin-bottom: 18px; border-radius: 4px;
-           font-size: 13px; }
-  .notes h3 { margin: 0 0 8px 0; font-size: 14px; color: #b9770e; }
-  .notes p { margin: 4px 0; }
-  .notes code { background: white; padding: 1px 6px; border-radius: 3px;
-                font-size: 12px; }
+  :root { --bg:#0d1117; --panel:#161b22; --border:#30363d; --text:#c9d1d9; --accent:#58a6ff; --good:#10b981; --warn:#f59e0b; --bad:#ef4444; --muted:#8b949e; }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);padding:1rem;font-size:13px}
+  header{margin-bottom:1rem;padding:1rem;background:var(--panel);border:1px solid var(--border);border-radius:8px}
+  h1{font-size:1.5rem;color:#f0f6fc;margin-bottom:.25rem}
+  .sub{color:var(--muted);font-size:.85rem}
+  .meta{margin-top:.5rem;font-size:.7rem;color:var(--muted)}
+  nav{display:flex;flex-wrap:wrap;gap:.25rem;border-bottom:1px solid var(--border);margin-bottom:1rem}
+  .tab-btn{padding:.6rem 1rem;background:transparent;border:none;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;font-size:.85rem;font-family:inherit}
+  .tab-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
+  .tab-btn:hover{color:var(--text)}
+  section.panel{display:none;background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:1rem;margin-bottom:1rem}
+  section.panel.active{display:block}
+  h2{font-size:1.1rem;color:#f0f6fc;margin-bottom:.5rem;border-bottom:1px solid var(--border);padding-bottom:.4rem}
+  h3{font-size:.95rem;color:var(--accent);margin:1rem 0 .5rem}
+  p.desc{color:var(--muted);font-size:.8rem;margin-bottom:.75rem}
+  .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.6rem;margin-bottom:1rem}
+  .kpi{background:#0d1117;border:1px solid var(--border);border-radius:6px;padding:.7rem .9rem}
+  .kpi .v{font-size:1.4rem;font-weight:700;color:#f0f6fc;line-height:1.2}
+  .kpi .l{font-size:.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-top:.3rem}
+  .kpi .v.good{color:var(--good)} .kpi .v.warn{color:var(--warn)} .kpi .v.bad{color:var(--bad)}
+  .empty{padding:1rem;color:var(--muted);font-style:italic;background:#0d1117;border:1px dashed var(--border);border-radius:6px;text-align:center}
+  table.display{width:100%;font-size:.78rem;color:var(--text)}
+  table.display thead{background:#0d1117;color:var(--muted);text-transform:uppercase;font-size:.7rem;letter-spacing:.04em}
+  table.display thead th{padding:.5rem .6rem;border-bottom:1px solid var(--border)}
+  table.display tbody td{padding:.45rem .6rem;border-bottom:1px solid var(--border)}
+  table.display tbody tr:hover{background:#1c2128}
+  .dataTables_wrapper{color:var(--text);font-size:.78rem}
+  .dataTables_filter input, .dataTables_length select{background:#0d1117;border:1px solid var(--border);color:var(--text);padding:.25rem .4rem;border-radius:4px}
+  .dataTables_paginate .paginate_button{padding:.3rem .55rem;color:var(--muted)!important}
+  .dataTables_paginate .paginate_button.current{background:var(--accent)!important;color:#fff!important;border:none}
+  canvas{max-width:100%}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+  @media (max-width:900px){.row{grid-template-columns:1fr}}
+  .pill{display:inline-block;padding:.15rem .45rem;border-radius:10px;font-size:.65rem;font-weight:600}
+  .pill.pass{background:#10b98133;color:var(--good)}
+  .pill.fail{background:#ef444433;color:var(--bad)}
+  .pill.warn{background:#f59e0b33;color:var(--warn)}
+  .pill.muted{background:#30363d;color:var(--muted)}
+  .heatmap{display:grid;gap:2px;font-size:.7rem;margin-top:.5rem}
+  .heatmap .cell{padding:.4rem .3rem;text-align:center;border-radius:3px;border:1px solid var(--border)}
+  details{margin:.5rem 0;background:#0d1117;border:1px solid var(--border);border-radius:6px;padding:.4rem .7rem}
+  details summary{cursor:pointer;color:var(--accent);font-size:.85rem;font-weight:600}
+  details pre{margin-top:.4rem;font-size:.7rem;color:var(--muted);white-space:pre-wrap;overflow-x:auto}
+  a{color:var(--accent)}
+  /* Batch 430: marked.js rendered markdown for Tab 10 Optimizer Summary */
+  .md-render h1,.md-render h2,.md-render h3,.md-render h4{color:var(--accent);margin:.75rem 0 .35rem}
+  .md-render h1{font-size:1.1rem;border-bottom:1px solid var(--border);padding-bottom:.25rem}
+  .md-render h2{font-size:1rem;border-bottom:1px solid var(--border);padding-bottom:.2rem}
+  .md-render h3{font-size:.9rem}
+  .md-render h4{font-size:.85rem;color:var(--text)}
+  .md-render p{margin:.35rem 0;line-height:1.5}
+  .md-render ul,.md-render ol{margin:.35rem 0 .35rem 1.2rem}
+  .md-render li{margin:.15rem 0}
+  .md-render code{background:#1a1f29;color:#e4d3a8;padding:0 .25rem;border-radius:3px;font-size:.85em}
+  .md-render pre{background:#1a1f29;padding:.5rem;border-radius:4px;overflow-x:auto;margin:.4rem 0}
+  .md-render pre code{background:transparent;padding:0}
+  .md-render table{border-collapse:collapse;margin:.5rem 0;width:auto}
+  .md-render th,.md-render td{border:1px solid var(--border);padding:.25rem .5rem;font-size:.82rem;text-align:left}
+  .md-render th{background:#1a1f29;color:var(--accent)}
+  .md-render strong{color:var(--accent)}
+  .md-render blockquote{border-left:3px solid var(--accent);margin:.5rem 0;padding-left:.6rem;color:var(--muted)}
 </style>
 </head>
 <body>
-  <header>
-    <h1>Phase 1A-β Cube Dashboard</h1>
-    <div class="meta">
-      <span id="meta-info">Loading...</span>
+
+<header>
+<h1>Phase 1A Trade Summary Dashboard</h1>
+<div class="sub">Rules + smart-money baseline (no agents). Phase 1A-β cube view.</div>
+<!-- Batch 443 (2026-05-29): global round banner so every tab makes its data source explicit. -->
+<div id="round-banner" style="background:#1a1f29;border-left:4px solid var(--accent);padding:.4rem .7rem;border-radius:4px;margin:.4rem 0;font-size:.85rem;color:var(--text)"></div>
+<div class="meta" id="meta-line">Loading…</div>
+</header>
+
+<nav id="tabs">
+  <button class="tab-btn active" data-panel="overview">Overview</button>
+  <button class="tab-btn" data-panel="strategies">1. Strategies</button>
+  <button class="tab-btn" data-panel="regime">2. Regime</button>
+  <button class="tab-btn" data-panel="maemfe">3. MAE/MFE</button>
+  <button class="tab-btn" data-panel="equity">4. Equity</button>
+  <button class="tab-btn" data-panel="walkforward">5. Walk-fwd</button>
+  <button class="tab-btn" data-panel="smartmoney">6. Smart-$</button>
+  <button class="tab-btn" data-panel="sector">7. Sector</button>
+  <button class="tab-btn" data-panel="skipped">8. Skipped</button>
+  <button class="tab-btn" data-panel="circuit">9. CircuitBreakers</button>
+  <button class="tab-btn" data-panel="exits">Exits</button>
+  <button class="tab-btn" data-panel="trades">Trades</button>
+  <!-- Batch 419 (2026-05-28): cube-optimizer tabs per locked workflow Stage 3 -->
+  <button class="tab-btn" data-panel="optimizer">10. Optimizer</button>
+  <button class="tab-btn" data-panel="candidates">11. Candidates</button>
+  <button class="tab-btn" data-panel="quiet">12. Quiet</button>
+  <button class="tab-btn" data-panel="cubecells">13. Cell Cube</button>
+  <!-- Batch 434 (2026-05-29): owner-directed Reference / Background tab -->
+  <button class="tab-btn" data-panel="reference">14. Reference</button>
+  <!-- Batch 439 (2026-05-29): owner-directed Sample Trades walkthrough tab -->
+  <button class="tab-btn" data-panel="sample">15. Sample Trades</button>
+  <!-- Batch 441 (2026-05-29): owner-directed Cube Diff tracking tab -->
+  <button class="tab-btn" data-panel="cubediff">16. Cube Diff</button>
+  <!-- Batch 443 (2026-05-29): owner-directed Iteration Rounds + Cell Cube Comparison tabs -->
+  <button class="tab-btn" data-panel="rounds">17. Iteration Rounds</button>
+  <button class="tab-btn" data-panel="cellcompare">18. Cell Cube Compare</button>
+  <button class="tab-btn" data-panel="raw">Raw JSON</button>
+</nav>
+
+<section class="panel active" id="overview">
+  <h2>Overview — Portfolio KPIs</h2>
+  <p class="desc">Top-line portfolio metrics from the canonical backtest. Source: output_v2/portfolio_summary.json + portfolio_metrics.json + improvements_summary.json.</p>
+  <div class="kpi-grid" id="overview-kpis"></div>
+  <h3>Trade-level vs portfolio-level metrics</h3>
+  <p class="desc">Per-trade aggregates differ from compounded portfolio returns once position sizing + heat caps apply. BUG-95 portfolio implementation makes both viewable.</p>
+  <table id="overview-table" class="display compact"></table>
+</section>
+
+<section class="panel" id="strategies">
+  <h2>1. Per-strategy ranking</h2>
+  <p class="desc">All evaluated strategies with their core 9-criteria scores. PASS/FAIL pills reflect the overall thresholds per CLAUDE.md. Click headers to sort.</p>
+  <div class="kpi-grid" id="strat-kpis"></div>
+  <!-- Batch 435 (2026-05-29): inclusion-criteria callout for new viewers. -->
+  <div id="strat-inclusion-callout" class="callout" style="background:#1a1f29;border-left:3px solid var(--accent);padding:.6rem .8rem;margin:.5rem 0;font-size:.85rem;border-radius:4px;color:var(--text)"></div>
+  <table id="strategies-table" class="display compact"></table>
+  <h3>Winning strategies (declared)</h3>
+  <pre id="winning-pre" style="font-size:.7rem;color:var(--muted);background:#0d1117;padding:.5rem;border-radius:4px;overflow-x:auto"></pre>
+</section>
+
+<section class="panel" id="regime">
+  <h2>2. Per-regime verdict heatmap</h2>
+  <p class="desc">Per-(strategy × regime) PASS/FAIL/INSUFFICIENT_DATA verdict. Source: output_v2/strategy_regime_matrix.json.</p>
+  <div id="regime-heatmap"></div>
+  <h3>Stratified summary</h3>
+  <pre id="regime-summary-pre" style="font-size:.7rem;color:var(--muted);background:#0d1117;padding:.5rem;border-radius:4px;overflow-x:auto"></pre>
+</section>
+
+<section class="panel" id="maemfe">
+  <h2>3. MAE / MFE distribution</h2>
+  <p class="desc">Maximum Adverse / Favorable Excursion buckets — how often does a trade go against you before turning, and how much potential leave on the table.</p>
+  <div class="row">
+    <div><h3>MAE buckets</h3><table id="mae-table" class="display compact"></table></div>
+    <div><h3>MFE buckets</h3><table id="mfe-table" class="display compact"></table></div>
+  </div>
+</section>
+
+<section class="panel" id="equity">
+  <h2>4. Equity curve</h2>
+  <p class="desc">Compounded portfolio equity (DEC-491 Parquet). Source: output_v2/equity_curve.parquet.</p>
+  <div class="kpi-grid" id="equity-kpis"></div>
+  <canvas id="equity-chart" height="120"></canvas>
+</section>
+
+<section class="panel" id="walkforward">
+  <h2>5. Walk-forward + improvements</h2>
+  <p class="desc">Walk-forward windows + improvements_summary + rolling-Sharpe stability + bootstrap CI + stress metrics.</p>
+  <h3>Improvements summary</h3>
+  <pre id="improvements-pre" style="font-size:.7rem;color:var(--muted);background:#0d1117;padding:.5rem;border-radius:4px;overflow-x:auto"></pre>
+  <h3>Rolling Sharpe stability</h3>
+  <pre id="rolling-pre" style="font-size:.7rem;color:var(--muted);background:#0d1117;padding:.5rem;border-radius:4px;overflow-x:auto"></pre>
+  <h3>Bootstrap CI</h3>
+  <table id="bootstrap-table" class="display compact"></table>
+  <h3>Stress metrics</h3>
+  <pre id="stress-pre" style="font-size:.7rem;color:var(--muted);background:#0d1117;padding:.5rem;border-radius:4px;overflow-x:auto"></pre>
+</section>
+
+<section class="panel" id="smartmoney">
+  <h2>6. Smart-money signal lift</h2>
+  <p class="desc">Performance with / without smart-money signal present at entry. Source: output_v2/exit_by_smart_money_signal_present.csv + congressional_correlation.csv.</p>
+  <h3>Smart-money present at entry</h3>
+  <table id="smartmoney-table" class="display compact"></table>
+  <h3>Congressional trade correlation</h3>
+  <table id="congressional-table" class="display compact"></table>
+</section>
+
+<section class="panel" id="sector">
+  <h2>7. Sector breakdown</h2>
+  <p class="desc">Per-sector trade outcomes + sector concentration over time.</p>
+  <h3>Outcomes by sector</h3>
+  <table id="sector-table" class="display compact"></table>
+  <h3>Sector concentration</h3>
+  <table id="sector-conc-table" class="display compact"></table>
+</section>
+
+<section class="panel" id="skipped">
+  <h2>8. Skipped trades</h2>
+  <p class="desc">Candidates rejected by entry gates (liquidity / regime / circuit breaker / earnings / ticker-cooldown). First 5000 rows.</p>
+  <table id="skipped-table" class="display compact"></table>
+</section>
+
+<section class="panel" id="circuit">
+  <h2>9. Circuit breaker log</h2>
+  <p class="desc">Circuit-breaker activations during backtest + per-trade exit outcomes when active.</p>
+  <h3>Activation log</h3>
+  <table id="cb-log-table" class="display compact"></table>
+  <h3>Trade outcomes when CB active during hold</h3>
+  <table id="cb-active-table" class="display compact"></table>
+</section>
+
+<section class="panel" id="exits">
+  <h2>Exit method comparison</h2>
+  <p class="desc">Cross-cutting exit-method analysis. Multi-dimensional cube + best-per-strategy + pairwise comparison.</p>
+  <h3>Best exit per strategy</h3>
+  <table id="exit-best-table" class="display compact"></table>
+  <h3>Exit comparison (17 methods × N strategies)</h3>
+  <table id="exit-comparison-table" class="display compact"></table>
+  <h3>Multi-dim cube (sample)</h3>
+  <table id="exit-cube-table" class="display compact"></table>
+  <h3>Per-dimension exit breakdowns</h3>
+  <div id="exit-breakdowns"></div>
+</section>
+
+<section class="panel" id="trades">
+  <h2>Trade log (preview)</h2>
+  <p class="desc">First 10,000 trades from output_v2/trade_log.parquet (DEC-491 Parquet schema). For full trade-level audit, download the parquet.</p>
+  <table id="trades-table" class="display compact"></table>
+</section>
+
+<!-- Batch 419: cube-optimizer tabs per PHASE_1A_BETA_CUBE_OPTIMIZATION_WORKFLOW.md Stage 3 -->
+<section class="panel" id="optimizer">
+  <h2>10. Optimizer Summary</h2>
+  <p class="desc">Top-line output from <code>scripts/optimize_strategies_from_cube.py</code> (Batch 388 + Batch 391). The KPIs below + the markdown report come from this script.</p>
+
+  <!-- Batch 440 (2026-05-29): plain-English explainer for what the KPIs + jargon mean. -->
+  <details style="margin:.4rem 0;background:#1a1f29;border:1px solid var(--accent);padding:.4rem .7rem;border-radius:6px" open>
+    <summary style="cursor:pointer;color:var(--accent);font-weight:600">What do these KPIs and L1 / L2 / L3 mean? (click to collapse)</summary>
+    <div style="font-size:.85rem;color:var(--text);margin-top:.5rem">
+      <p style="margin:.3rem 0"><strong>Source dir.</strong> Which cube directory the optimizer read. <code>output_batch395_final/</code> = the merged Phase 1A-beta cube run. <code>output_optimization_candidates_2026_05_28/</code> is where the per-strategy JSONs + this summary were written.</p>
+
+      <p style="margin:.5rem 0 .2rem"><strong>Bucket counts.</strong> The optimizer classifies every strategy that fired in the cube into one of three Lens-B verdicts based on the DEC-426 5-Gate (n &gt;= 30, p &lt; 0.05 Bonferroni, PSR &gt;= 0.95, t &gt;= 3.4, R:R &gt;= 2.0). Buckets:</p>
+      <ul style="margin:.2rem 0 .4rem;padding-left:1.4rem">
+        <li><strong>PASS-strict</strong> - clears all 5 gates including PSR. Eligible for the 1A-alpha gate.</li>
+        <li><strong>PASS-relaxed</strong> - clears 4 of 5 (PSR &lt; 0.95). Common bucket; statistically promising but not strict.</li>
+        <li><strong>FAIL</strong> - clears fewer than 4 gates. Strategy is unlikely to survive walk-forward.</li>
+      </ul>
+
+      <p style="margin:.5rem 0 .2rem"><strong>L1 / L2 / L3 - three layers of cube analysis.</strong> The same trade data is sliced three different ways:</p>
+      <ul style="margin:.2rem 0 .4rem;padding-left:1.4rem">
+        <li><strong>L1 - Per-exit-method aggregate.</strong> For each of the 25 exit methods, pool ALL strategies that used it and compute aggregate Sharpe / PF / WR. Answers: "which exit method is best on average?" Useful as the default exit when a specific strategy doesn't have a clear cell winner.</li>
+        <li><strong>L2 - Per-(strategy x exit_method) cell.</strong> The headline lens. For every (strategy, exit_method) cell with n &gt;= 5 trades, compute the 5-Gate verdict. Tab 13 (Cell Cube) is the sortable view; this is where STRATEGY_EXIT_OVERRIDE candidates come from.</li>
+        <li><strong>L3 - Parameter-variant winner within a family.</strong> When a strategy has cells in multiple variants of the same exit family - e.g., <code>time_stop_10d</code> vs <code>time_stop_20d</code>, or <code>r_multiple_2r</code> vs <code>r_multiple_3r</code>, or <code>trailing_5pct</code> vs <code>trailing_10pct</code> vs <code>trailing_15pct</code> - L3 picks the winning variant per strategy. Answers: "given this strategy uses some-kind-of-time-stop, which exact day count works?"</li>
+      </ul>
+
+      <p style="margin:.5rem 0"><strong>1A-alpha gate.</strong> Owner-set gate: at least one strategy must show rules-only OOS Sharpe &gt;= 0.7 in at least one regime under 4-fold walk-forward. Currently LOCKED (best OOS Sharpe 0.419 in the prior cube). If the just-finished cube re-run opens it, Phase 1B-alpha ($300 Haiku agent overlay budget) becomes eligible. If not, loop back to entry-side optimization (Dim A thresholds, Dim B compound logic) and re-cube.</p>
+
+      <p style="margin:.5rem 0;background:#0d1117;padding:.4rem;border-radius:4px;font-size:.82rem"><strong>Quick read order:</strong> KPIs (overall bucket counts) -&gt; Tab 13 Cell Cube (sort by Sharpe DESC; look for 5-Gate strict passes in the top rows) -&gt; Tab 11 Candidates (drill into a specific strategy to see its 9-dim findings) -&gt; come back here to see the markdown report's recommendations.</p>
     </div>
-  </header>
+  </details>
 
-  <nav class="tabs">
-    <div class="tab active" data-tab="overview">Overview</div>
-    <div class="tab" data-tab="cube">Cube Explorer</div>
-    <div class="tab" data-tab="survivors">Survivors (9 cells)</div>
-    <div class="tab" data-tab="underperformers">Underperformers (25)</div>
-    <div class="tab" data-tab="quiet">Quiet (60 strategies)</div>
-    <div class="tab" data-tab="walk">Walk-Forward</div>
-    <div class="tab" data-tab="data">Raw Data</div>
-  </nav>
+  <div id="optimizer-kpis" class="kpis"></div>
 
-  <main>
-    <section id="panel-overview" class="panel active">
-      <div class="metric-grid" id="overview-metrics"></div>
+  <!-- Batch 440 (2026-05-29): per-bucket optimization proposals + how the latest cube re-run helps each. -->
+  <h3 style="margin-top:1rem">Optimization proposals - per Quiet bucket</h3>
+  <p class="desc">For each of the three quiet buckets, the workflow to optimize + a concrete example from the current cube + how the just-finished cube re-run (Batches 414 / 415 / 416 / 421) helps.</p>
 
-      <div class="notes">
-        <h3>Owner framework (per directive 2026-05-24)</h3>
-        <p>This dashboard is <strong>not</strong> for universal strategy verdicts. The cube surfaces best
-        (strategy × exit × regime × ticker × classifier) combinations. A strategy that lost money at
-        universe-wide aggregate may still be optimal for specific regimes / sectors / cap-bands /
-        tiers / volatility bands. <strong>No strategy is universally disabled.</strong></p>
-        <p>Use the <em>Cube Explorer</em> tab to slice across classifiers. Use <em>Survivors</em> for
-        IS+OOS-validated combinations. Use <em>Underperformers</em> for analysis priority.
-        <em>Quiet</em> lists 60 strategies that fired zero trades — investigation findings catalogued
-        in <code>BUILD_PLAN_PROGRESS.md</code>.</p>
-      </div>
+  <h4 style="margin:.7rem 0 .3rem">PRODUCER_LAYER_ZERO_LIKELY (6 strategies, all SMC)</h4>
+  <p class="desc" style="font-size:.85rem">Current list: <code>smc_choch_reversal</code>, <code>smc_equal_highs_sweep_short</code>, <code>smc_equal_lows_sweep_long</code>, <code>smc_liquidity_sweep_reversal</code>, <code>smc_ote_long</code>, <code>smc_ote_short</code>. All 6 are SMC (Smart Money Concept) strategies. The common factor: their producers depend on <code>backtest/signals/smc_ict.py::compute_smc_signals</code> which calls into the <code>vendored/smartmoneyconcepts</code> library. Investigation 2026-05-28 showed 0 of 29,159 trades had any <code>smc_*</code> key in <code>signals_at_entry</code> despite <code>compute_smc_signals</code> returning 28 keys in isolation on the local machine.</p>
+  <p style="font-size:.85rem;margin:.3rem 0"><strong>Proposal:</strong> the issue is environmental, not strategic. Fix the producer (likely an AWS-instance import failure in smartmoneyconcepts library, or a silent KeyError in the SMC compute path). DO NOT relax the strategy clauses - they require SMC keys that simply weren't there.</p>
+  <p style="font-size:.85rem;margin:.3rem 0;background:#1a3320;padding:.4rem;border-radius:4px"><strong>How the latest batch helps:</strong> <strong>Batch 416 (Silent producer logging)</strong> wired <code>_log_silent_producer_failure</code> at all 3 producer call sites in <code>screener.py</code>, including the SMC site. The just-finished cube re-run engine logs (downloaded by the merge) will now contain a rate-limited diagnostic line per (producer, exception-type) - first SMC failure surfaces the actual exception class and traceback. Once root cause is identified, the fix is either (a) install the missing native dep in the AMI bootstrap, (b) pin a compatible numba/smartmoneyconcepts version, or (c) catch + remediate the specific exception. Then re-cube and these 6 strategies should fire.</p>
 
-      <h2 style="margin-top:24px;font-size:16px;">Aggregate IS vs OOS</h2>
-      <table id="overview-is-oos"></table>
-    </section>
+  <h4 style="margin:.7rem 0 .3rem">COMPOUND_RESTRICTIVE (31 strategies)</h4>
+  <p class="desc" style="font-size:.85rem">Sample from current cube: <code>52w_low_breakdown</code>, 8 of 31 are <code>classification_change_*</code> variants (e.g. <code>classification_change_breakout_long</code>, <code>classification_change_momentum_long</code>, <code>classification_change_to_defensive_short</code>). These compound the Polygon ticker-classification-change event with one or two additional technical clauses (breakout, momentum, RSI, etc.). The optimizer found that the AND of (classification_change AND technical_signal) almost never fires together.</p>
+  <p style="font-size:.85rem;margin:.3rem 0"><strong>Proposal:</strong> for each strategy in this bucket, open Tab 11 Candidates -&gt; <code>dimension_b_compound</code>. The optimizer already produced concrete recommendations per strategy:</p>
+  <ul style="font-size:.85rem;margin:.3rem 0;padding-left:1.4rem">
+    <li><code>always_on</code> array - clauses with <code>fires_at</code> &gt;= 90%. They're not restricting anything; drop them to simplify.</li>
+    <li><code>restrictive</code> array - clauses with <code>fires_at</code> &lt;= 10% and high "n_present but rarely co-occurs". Either (a) loosen the threshold, (b) replace AND with OR for two near-equivalent clauses, or (c) substitute with a less-restrictive proxy (e.g. <code>classification_change_within_5d</code> instead of <code>classification_change_today</code>).</li>
+    <li><code>proposals</code> array - script-generated text suggestion per strategy.</li>
+  </ul>
+  <p style="font-size:.85rem;margin:.3rem 0;background:#1a3320;padding:.4rem;border-radius:4px"><strong>How the latest batch helps:</strong> <strong>Batch 415 (signals_at_entry enrichment)</strong> added <code>ticker</code>, <code>strategy_name</code>, <code>category</code> to the signals dict inside <code>run_exit_comparison</code>. This had a knock-on effect on COMPOUND_RESTRICTIVE diagnosis: previously, exit methods like <code>exit_earnings_blackout</code> and <code>exit_class_time_stop</code> couldn't look up the ticker's earnings calendar / strategy layer because the signals dict didn't have those keys - they always returned "no_earnings_known" / "momentum" defaults, which broke the dimension_b analysis for any strategy whose compound condition included an earnings or layer-conditional clause. After Batch 415 the cube can correctly evaluate those compound conditions, so the post-merge bucket list will more accurately reflect which strategies are truly compound-restrictive vs which were misclassified by the prior bug.</p>
 
-    <section id="panel-cube" class="panel">
-      <div class="controls">
-        <label>Slice:
-          <select id="slice-selector"></select>
-        </label>
-        <label>Min trades:
-          <input type="number" id="min-n" value="5" min="0" style="width:60px">
-        </label>
-        <label>Sort by:
-          <select id="sort-by"></select>
-        </label>
-        <label>
-          <input type="checkbox" id="positive-only"> Positive only
-        </label>
-        <span id="cube-meta" class="filter-tag"></span>
-      </div>
-      <table id="cube-table"></table>
-    </section>
+  <h4 style="margin:.7rem 0 .3rem">SKIPPED_AT_ENGINE (48 strategies)</h4>
+  <p class="desc" style="font-size:.85rem">Largest bucket. Sample: <code>52w_high_breakout</code>, <code>bb_squeeze_volume</code>, <code>cup_and_handle_long</code>, <code>death_cross_50_200_volume</code>, <code>camarilla_rsi_obv</code> (long + short). These DO generate candidates that pass the screener - the downstream engine gates kick them. Tab 8 (Skipped) shows the reason codes per skipped trade.</p>
+  <p style="font-size:.85rem;margin:.3rem 0"><strong>Proposal:</strong> open Tab 8 and group by <code>skip_reason</code>. The top reasons typically are:</p>
+  <ul style="font-size:.85rem;margin:.3rem 0;padding-left:1.4rem">
+    <li><strong>liquidity_floor</strong> (ADV too low) - candidate ticker doesn't have enough avg dollar volume. Fix: lower the ADV floor for small-cap strategies (tier-specific liquidity policy per DEC-321 / 366); or move the strategy to a more permissive tier.</li>
+    <li><strong>tier_too_low</strong> - candidate scored LOW in <code>_assign_confidence_tier</code>. Fix: this is by design for low-confluence trades; not a problem unless the strategy is supposed to be a singleton signal (e.g. a high-conviction breakout). If singleton: bypass the confluence rule for that strategy class.</li>
+    <li><strong>uniqueness</strong> - already in a position on this ticker. Fix: usually NOT a problem in Phase 1A-beta (the cube doesn't enforce uniqueness with <code>--no-portfolio-cap</code>); if this rises post-1B-alpha, allow stacked entries with smaller per-add sizing.</li>
+    <li><strong>cash_limit</strong> - daily cash spent. Fix: raise per-day allocation OR queue candidates across days.</li>
+  </ul>
+  <p style="font-size:.85rem;margin:.3rem 0;background:#1a3320;padding:.4rem;border-radius:4px"><strong>How the latest batch helps:</strong> the cube was run with <strong>--no-portfolio-cap and --no-event-suppression</strong>, so <code>uniqueness</code>, <code>cash_limit</code>, and event-window skips should have dropped significantly between the prior baseline (where 48 strategies were SKIPPED_AT_ENGINE) and the just-finished re-run. If the post-merge re-audit shows the bucket SHRINKS (say to 20-25), that confirms the cap/event gates were the main blockers and SKIPPED_AT_ENGINE was largely a Phase-1B-alpha problem hiding in Phase 1A-beta data. If it STAYS at ~48, the remaining cause is structural (liquidity floor or tier-too-low) and needs per-strategy tuning. <strong>Batch 421 (PEAD lru_cache)</strong> doesn't directly affect this bucket; <strong>Batch 414 (STRATEGY_EXIT_OVERRIDE)</strong> only pairs the 9 prior winners with <code>breakeven_plus_trail</code> which doesn't help quiet strategies.</p>
 
-    <section id="panel-survivors" class="panel">
-      <div class="notes">
-        <h3>9 IS+OOS-validated (strategy × exit) survivor cells</h3>
-        <p>Cells with both IS and OOS positive aggregate at OOS n≥10. Operates as the
-        candidate roster for Phase 1B agent overlay (NOT Phase 1B-α; that's the OUTPUT of Phase 1B).</p>
-      </div>
-      <table id="survivors-table"></table>
-    </section>
+  <h3 style="margin-top:1rem">optimization_summary.md (script-generated)</h3>
+  <!-- Batch 430: was <pre>; switched to <div> + marked.js render. -->
+  <div id="optimizer-md-rendered" class="md-render" style="font-size:.85rem;color:var(--text);background:#0d1117;padding:.75rem;border-radius:4px;overflow:auto;max-height:600px"></div>
+</section>
 
-    <section id="panel-underperformers" class="panel">
-      <div class="notes">
-        <h3>Strategies with negative OOS aggregate (n≥5)</h3>
-        <p>Per owner directive 2026-05-24, these are <strong>not disabled</strong>. They are flagged
-        for per-regime / per-classifier analysis — a strategy can lose money universe-wide but win in
-        specific sub-cubes. Use Cube Explorer to evaluate per slice.</p>
-      </div>
-      <table id="underperformers-table"></table>
-    </section>
+<section class="panel" id="candidates">
+  <h2>11. Per-strategy Candidates</h2>
+  <p class="desc">Per-strategy 9-dim optimizer findings (Lens A). Pick a strategy to drill in.</p>
+  <select id="candidate-picker" style="padding:.4rem;background:var(--panel);color:var(--text);border:1px solid var(--border);border-radius:4px;min-width:300px"></select>
+  <!-- Batch 430: was <pre>; now <div> + structured render (KPIs + dimension table + collapsible JSON). -->
+  <div id="candidate-detail" style="margin-top:.75rem;color:var(--text);overflow:auto;max-height:800px"></div>
+</section>
 
-    <section id="panel-quiet" class="panel">
-      <div class="notes">
-        <h3>60 active strategies that fired ZERO trades</h3>
-        <p>Categorized in <code>BUILD_PLAN_PROGRESS.md</code>. Includes confirmed silent-gap bugs
-        (BUG-288 PEAD, BUG-289 Quality — both fixed in Batch 312), data-missing
-        (UUP, T5b pairs precompute, index_rebalance events), tight-by-design gates
-        (news_sentiment, volume profile), competition (calendar effects vs max-candidates cap),
-        and legitimately rare conditions (52w extremes, narrow SMC variants).</p>
-      </div>
-      <ul id="quiet-list" style="columns:3;column-gap:24px;font-size:13px;font-family:monospace;"></ul>
-    </section>
+<section class="panel" id="quiet">
+  <h2>12. Quiet Strategies (producer-zero audit)</h2>
+  <p class="desc">Strategies with 0 fires in cube. Per <code>producer_zero_post_cube_audit.json</code>: 3-bucket classification by gate-key empirical emission.</p>
 
-    <section id="panel-walk" class="panel">
-      <div class="notes">
-        <h3>Walk-forward 4-fold (DEC-505) per-strategy verdict</h3>
-      </div>
-      <table id="walk-table"></table>
-    </section>
+  <!-- Batch 438 (2026-05-29): plain-English bucket explainer block. -->
+  <details style="margin:.5rem 0;background:#1a1f29;border:1px solid var(--accent);padding:.4rem .7rem;border-radius:6px" open>
+    <summary style="cursor:pointer;color:var(--accent);font-weight:600">What do these buckets mean? (click to collapse)</summary>
+    <div style="font-size:.85rem;color:var(--text);margin-top:.5rem">
+      <p style="margin:.3rem 0"><strong>The setup.</strong> A strategy is a list of entry conditions joined by AND (e.g. <code>near_52w_high AND price_above_ema_200 AND resistance_break_retest</code>). Each condition has a "producer" - the function that computes whether the condition is true today on this ticker. If a strategy fires zero trades in a backtest, it's "quiet". The optimizer (<code>producer_zero_post_cube_audit.json</code>) classifies the reason into one of three buckets so you know whether to fix the producer, restructure the rules, or loosen a downstream gate.</p>
 
-    <section id="panel-data" class="panel">
-      <div class="notes">
-        <h3>Source data</h3>
-        <p>Raw per-cell IS/OOS CSV: <code>output_phase_1a_beta_merged_local/per_cell_is_oos.csv</code></p>
-        <p>Raw trade log (~7191 trades): <code>output_phase_1a_beta_merged_local/trade_log.csv</code></p>
-        <p>Dashboard regen: <code>python scripts/build_phase_1a_beta_dashboard.py</code></p>
-      </div>
-      <pre id="raw-overview" style="background:white;padding:14px;border-radius:6px;font-size:12px;overflow:auto;border:1px solid #ddd;"></pre>
-    </section>
-  </main>
+      <p style="margin:.5rem 0 .2rem"><strong>1. PRODUCER_LAYER_ZERO_LIKELY</strong> (broken signal feed).</p>
+      <p style="margin:.2rem 0">At least one of the strategy's clauses NEVER returns truthy on any day or ticker in the backtest window. The producer is silently broken: bad data path, schema drift, exception caught and discarded. The strategy can't fire because its required ingredient is missing.</p>
+      <p style="margin:.2rem 0;color:var(--muted)"><em>Example.</em> SMC clauses depend on <code>compute_smc_signals</code> in <code>backtest/signals/smc_ict.py</code>. If the vendored library fails to import in the AWS environment, every SMC clause returns false silently. Batch 416 wired diagnostic logging so the actual failure mode shows up in <code>backtest.signals.screener</code> logs at the next cube re-run.</p>
+      <p style="margin:.2rem 0"><em>Fix:</em> repair the producer (data path, schema, import) - not the strategy rules.</p>
 
-<script>
-let DATA = null;
-let CURRENT_SLICE = null;
+      <p style="margin:.5rem 0 .2rem"><strong>2. COMPOUND_RESTRICTIVE</strong> (clauses fire alone but AND never satisfies).</p>
+      <p style="margin:.2rem 0">Each individual clause emits truthy on a reasonable share of days/tickers, but when you AND them all together the joint condition almost never happens. <strong>Everyday analogy.</strong> "I want to go for a run if it's sunny AND between 60-70F AND weekend AND my running partner is free AND I had at least 7 hours sleep." Each individual condition is common; the AND of all 5 might happen twice a year.</p>
+      <p style="margin:.2rem 0;color:var(--muted)"><em>Trading example.</em> A strategy with clauses <code>near_52w_high</code> (fires 8% of ticker-days), <code>price_above_ema_200</code> (60%), <code>resistance_break_retest</code> (5%). Each clause is fine on its own. But the AND - multiplied with correlation discount - lands around 0.1% of ticker-days, then liquidity/sector/regime gates trim further until zero trades.</p>
+      <p style="margin:.2rem 0"><em>Fix:</em> open Tab 11 -&gt; pick the strategy -&gt; <code>dimension_b_compound</code> section shows per-clause <code>fires_at</code> rates. The <code>restrictive</code> array is the AND-killer (low fire rate). The <code>always_on</code> array fires ~100% of the time - those don't add any restriction, drop them. The <code>proposals</code> array is the optimizer's suggestion.</p>
 
-async function load() {
-  const resp = await fetch("data.json");
-  DATA = await resp.json();
-  document.getElementById("meta-info").textContent =
-    `Generated ${DATA.generated_at} · Phase ${DATA.phase} · IS ${DATA.is_window} / OOS ${DATA.oos_window}`;
-  renderOverview();
-  renderCubeControls();
-  renderCube();
-  renderSurvivors();
-  renderUnderperformers();
-  renderQuiet();
-  renderWalk();
-  renderRaw();
-}
+      <p style="margin:.5rem 0 .2rem"><strong>3. SKIPPED_AT_ENGINE</strong> (downstream gate kicks the trade).</p>
+      <p style="margin:.2rem 0">The strategy DOES generate candidate trades that pass the screener, but a downstream engine gate rejects them: liquidity floor (ADV too low), position-size cap full, daily-cash limit, ticker-uniqueness (already in a position on this ticker), confidence tier too low.</p>
+      <p style="margin:.2rem 0;color:var(--muted)"><em>Example.</em> A small-cap momentum strategy generates 30 candidates a day on illiquid tickers. ADV floor rejects all 30. Strategy looks quiet from the outside.</p>
+      <p style="margin:.2rem 0"><em>Fix:</em> Tab 8 (Skipped) shows reason codes per skipped trade. Either loosen the gate (e.g. tier the strategy to a smaller-cap universe with a lower ADV floor) or accept the strategy is incompatible with current rules.</p>
 
-function cls(v) {
-  if (typeof v !== "number") return "";
-  if (v > 5) return "pos-strong";
-  if (v > 0) return "pos";
-  if (v < -5) return "neg-strong";
-  if (v < 0) return "neg";
-  return "";
-}
+      <p style="margin:.5rem 0;background:#0d1117;padding:.4rem;border-radius:4px;font-size:.82rem"><strong>Quick decision rule:</strong> PRODUCER fix the data; COMPOUND restructure the rules; SKIPPED loosen the downstream gate or move the strategy to a more permissive tier.</p>
+    </div>
+  </details>
 
-function fmt(v, decimals = 2) {
-  if (v === null || v === undefined || (typeof v === "number" && isNaN(v))) return "—";
-  if (typeof v !== "number") return v;
-  return v.toFixed(decimals);
-}
+  <div id="quiet-kpis" class="kpis"></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem">
+    <div>
+      <h3>PRODUCER_LAYER_ZERO_LIKELY</h3>
+      <p class="desc" style="font-size:.7rem">Gate keys never emit truthy → fix producer first</p>
+      <ul id="quiet-plz"></ul>
+    </div>
+    <div>
+      <h3>COMPOUND_RESTRICTIVE</h3>
+      <p class="desc" style="font-size:.7rem">Clauses emit but AND-compound never satisfies → loosen or restructure</p>
+      <ul id="quiet-cr"></ul>
+    </div>
+    <div>
+      <h3>SKIPPED_AT_ENGINE</h3>
+      <p class="desc" style="font-size:.7rem">Downstream gate (liquidity / cash / ticker uniqueness)</p>
+      <ul id="quiet-skip"></ul>
+    </div>
+  </div>
+</section>
 
-function renderOverview() {
-  const o = DATA.overview;
-  const cards = [
-    { label: "Trades", value: o.n_trades.toLocaleString() },
-    { label: "Win rate", value: o.win_rate + "%" },
-    { label: "Mean PnL/trade", value: fmt(o.mean_pnl_pct) + "%", cls: cls(o.mean_pnl_pct) },
-    { label: "Sum PnL (pp)", value: fmt(o.sum_pnl_pct, 1), cls: cls(o.sum_pnl_pct) },
-    { label: "Median hold (days)", value: fmt(o.median_hold_days, 1) },
-    { label: "Best trade", value: fmt(o.best_trade) + "%", cls: "pos-strong" },
-    { label: "Worst trade", value: fmt(o.worst_trade) + "%", cls: "neg-strong" },
-    { label: "Strategies fired", value: o.n_strategies },
-    { label: "Exit reasons", value: o.n_exits },
-    { label: "Tickers traded", value: o.n_tickers },
-  ];
-  const grid = document.getElementById("overview-metrics");
-  grid.innerHTML = cards.map(c =>
-    `<div class="metric"><div class="label">${c.label}</div>
-     <div class="value ${c.cls || ''}">${c.value}</div></div>`).join("");
+<section class="panel" id="cubecells">
+  <h2>13. Cell Verdict Cube</h2>
+  <p class="desc">Per-(strategy × exit) cell verdicts from Lens B L2 (Batch 391 <code>analyze_exit_methods</code>). 4-of-5 DEC-426 gates (n≥30, p&lt;0.05 Bonferroni, t≥3.4, R:R≥2.0). PSR&lt;0.95 excluded from this gate; strict 5-Gate is the 1A-α requirement.</p>
+  <table id="cube-cells-table" class="display compact"></table>
+</section>
 
-  const isoos = document.getElementById("overview-is-oos");
-  isoos.innerHTML = `
-    <thead><tr><th>Window</th><th class="num">n</th><th class="num">Mean PnL</th><th class="num">Sum (pp)</th></tr></thead>
+<!-- Batch 434 (2026-05-29): owner-directed Reference / Background tab.
+     Batch 445 (2026-05-29): added top-of-tab flowchart, Lens A + Lens B
+     explanations, cube-cell-metrics expansion preview. -->
+<section class="panel" id="reference">
+  <h2>14. Reference / Background</h2>
+  <p class="desc">Schema, methodology, and tab-by-tab navigation guide. Read this first if anything below is unclear.</p>
+
+  <!-- Batch 445: data-flow flowchart at the top so a new viewer
+       can answer "where do I look for X?" without reading the
+       whole reference page. -->
+  <h3 style="margin-top:.5rem">Where do I look for X? (data-flow flowchart)</h3>
+  <p class="desc" style="font-size:.85rem">A pipeline of stages with a tab consumer at each stage. Start at the top of the pipeline and walk down to the question you're trying to answer.</p>
+  <div style="background:#0d1117;border:1px solid var(--border);padding:.7rem;border-radius:6px;font-family:Menlo,Consolas,monospace;font-size:.78rem;line-height:1.5;color:var(--text);overflow-x:auto;margin-bottom:.5rem">
+<pre style="margin:0;color:var(--text);white-space:pre">
+  [Universe build]                            -> 1,531 tickers traded; 5 buckets T1a/T1c/T2/T3/ETFs
+       |                                         (Tab 14 Universe section)
+       v
+  [Backtest engine: walk day-by-day]
+       |   - classify regime (bull/neutral/bear/crisis)
+       |   - run 185 screeners; emit candidates
+       |   - score smart-money; assign confidence tier (Stage 1)
+       |   - in Phase 1B+: agents adjust tier (Stage 2 - off in 1A-beta)
+       |   - size position; check liquidity/cap/event gates (all off in 1A-beta)
+       v
+  [Trade execution + close via PRIMARY exit]   -> trade_log.csv (1 row per trade)
+       |                                         (Tab 1 Strategies / Tab 7 Sector
+       v                                          / Tab 8 Skipped / Trades tab)
+  [Cube replay: same trades x 25 exit methods] -> trade_exit_detail.csv (n_trades x 25 rows)
+       |                                         (Tabs 10-13 cube-side)
+       v
+  [Lens A - per-strategy 9-dim drill-down]     -> per_strategy_candidates JSONs
+       |   Batch 388: 9 dimensions A-I                            (Tab 11 Candidates)
+       v
+  [Lens B - per-(strategy x exit) cell verdict] -> exit_method_analysis.layer_2_*
+       |   Batch 391: 5-Gate (DEC-426)                            (Tab 13 Cell Cube)
+       v
+  [Optimizer summary + winners]                -> optimization_summary.md
+       |   STRATEGY_EXIT_OVERRIDE candidates                      (Tab 10 Optimizer)
+       v
+  [Walk-forward 4-fold (DEC-505)]              -> walk_forward_batch414_cells.json
+       |   1A-alpha gate: OOS Sharpe >= 0.7 in >= 1 regime        (Tab 5 Walk-fwd
+       |                                                           when populated)
+       v
+  [1A-alpha gate decision] -- LOCKED if no cell clears 0.7 OOS Sharpe
+       |
+       v
+  [Phase 1B-alpha agent overlay ($300 Haiku)]  -- only fires when gate opens
+</pre>
+  </div>
+
+  <p class="desc" style="font-size:.82rem"><strong>Cross-round view:</strong> Tab 16 (Cube Diff) shows the immediate R(n-1) -&gt; R(n) delta. Tab 17 (Iteration Rounds) is the persistent registry with every round's objectives + changes + findings. Tab 18 (Cell Cube Comparison) is the per-(strategy x exit) cell across all rounds side-by-side.</p>
+
+  <h3 style="margin-top:1rem">Quick "which tab answers which question?" lookup</h3>
+  <table class="display compact" style="font-size:.82rem">
+    <thead><tr><th>I want to know...</th><th>Go to</th></tr></thead>
     <tbody>
-      <tr><td>IS (${DATA.is_window})</td><td class="num">${o.is_n}</td>
-          <td class="num ${cls(o.is_mean_pnl)}">${fmt(o.is_mean_pnl)}%</td>
-          <td class="num ${cls(o.is_sum)}">${fmt(o.is_sum, 1)}</td></tr>
-      <tr><td>OOS (${DATA.oos_window})</td><td class="num">${o.oos_n}</td>
-          <td class="num ${cls(o.oos_mean_pnl)}">${fmt(o.oos_mean_pnl)}%</td>
-          <td class="num ${cls(o.oos_sum)}">${fmt(o.oos_sum, 1)}</td></tr>
-    </tbody>`;
-}
+      <tr><td>What is the overall portfolio return / Sharpe / DD?</td><td>Overview (data may be blank in 1A-beta cube)</td></tr>
+      <tr><td>Which strategies fired ≥ 1 trade and how did they each rank?</td><td>Tab 1</td></tr>
+      <tr><td>Per-strategy 9-dim optimizer findings (which clauses are restrictive, which exits pair best)?</td><td>Tab 11 (Lens A)</td></tr>
+      <tr><td>For a given strategy × exit cell, did the 5-Gate verdict clear?</td><td>Tab 13 (Lens B)</td></tr>
+      <tr><td>Which exits perform best on average across all strategies?</td><td>Tab 10 (L1 in optimization_summary.md)</td></tr>
+      <tr><td>Within a family (e.g. time_stop), which variant won (10d vs 20d)?</td><td>Tab 10 (L3 in optimization_summary.md)</td></tr>
+      <tr><td>Why is a strategy producing 0 trades?</td><td>Tab 12 (Quiet — 3-bucket diagnosis)</td></tr>
+      <tr><td>What candidate trades did the engine reject (and why)?</td><td>Tab 8 (Skipped)</td></tr>
+      <tr><td>How did the cube change between R2 and R3 (or any prior pair)?</td><td>Tab 16 (Cube Diff) / Tab 18 (Cell Cube Comparison)</td></tr>
+      <tr><td>What was each round's objective + what we changed + what we found?</td><td>Tab 17 (Iteration Rounds)</td></tr>
+      <tr><td>How does a trade actually flow start-to-finish?</td><td>Tab 15 (Sample Trades — 10 walked-through scenarios)</td></tr>
+    </tbody>
+  </table>
 
-function renderCubeControls() {
-  const selectSlice = document.getElementById("slice-selector");
-  const slices = Object.keys(DATA.slices);
-  selectSlice.innerHTML = slices.map(s =>
-    `<option value="${s}">${s.replaceAll("_", " ")}</option>`).join("");
-  selectSlice.value = "strategy_x_exit";
-  selectSlice.onchange = renderCube;
+  <h3 style="margin-top:1rem">Lens A vs Lens B - the two cube-optimizer views</h3>
+  <p class="desc" style="font-size:.85rem">The optimizer (<code>scripts/optimize_strategies_from_cube.py</code>) emits two complementary views of the cube. Same trade data, sliced differently. Use both - they answer different questions.</p>
 
-  const sortBy = document.getElementById("sort-by");
-  sortBy.innerHTML = ["sum_pnl", "mean_pnl", "n", "win_rate", "best", "worst"]
-    .map(k => `<option value="${k}">${k}</option>`).join("");
-  sortBy.value = "sum_pnl";
-  sortBy.onchange = renderCube;
-
-  document.getElementById("min-n").oninput = renderCube;
-  document.getElementById("positive-only").onchange = renderCube;
-}
-
-function renderCube() {
-  const sliceName = document.getElementById("slice-selector").value;
-  const minN = +document.getElementById("min-n").value;
-  const sortKey = document.getElementById("sort-by").value;
-  const posOnly = document.getElementById("positive-only").checked;
-  let rows = (DATA.slices[sliceName] || []).slice();
-  rows = rows.filter(r => r.n >= minN);
-  if (posOnly) rows = rows.filter(r => r.sum_pnl > 0);
-  rows.sort((a, b) => (b[sortKey] || 0) - (a[sortKey] || 0));
-
-  const meta = document.getElementById("cube-meta");
-  meta.textContent = `${rows.length} cells · sum_pnl total: ${
-    rows.reduce((s, r) => s + (r.sum_pnl || 0), 0).toFixed(1)}pp`;
-
-  const sampleKeys = rows[0] ? Object.keys(rows[0]) : [];
-  const dimKeys = sampleKeys.filter(k =>
-    !["n", "wins", "mean_pnl", "sum_pnl", "win_rate", "median_hold", "best", "worst"].includes(k));
-  const metricKeys = ["n", "win_rate", "mean_pnl", "sum_pnl", "median_hold", "best", "worst"];
-
-  const tbl = document.getElementById("cube-table");
-  tbl.innerHTML = `
-    <thead><tr>
-      ${dimKeys.map(k => `<th>${k}</th>`).join("")}
-      ${metricKeys.map(k => `<th class="num">${k}</th>`).join("")}
-    </tr></thead>
+  <h4 style="margin:.5rem 0 .2rem;color:var(--accent)">Lens A - Per-strategy 9-dimension drill-down (Tab 11 Candidates)</h4>
+  <p class="desc" style="font-size:.85rem">For ONE strategy at a time, decompose its trades along nine independent dimensions to find what's tunable. Authored Batch 388. Output: one JSON per strategy under <code>output_optimization_candidates_&lt;date&gt;/&lt;strategy&gt;.json</code>.</p>
+  <p style="font-size:.85rem">Use Lens A when you've identified a strategy that almost passes (e.g. it's in COMPOUND_RESTRICTIVE or has Sharpe 0.5-0.7) and you want to know which lever moves the needle: should you loosen a clause? change the exit pairing? widen the regime filter? cap the hold duration?</p>
+  <table class="display compact" style="font-size:.82rem;width:auto">
+    <thead><tr><th>Dim</th><th>Slice</th><th>Key fields in JSON</th><th>Use to answer</th></tr></thead>
     <tbody>
-      ${rows.slice(0, 500).map(r => `
-        <tr>
-          ${dimKeys.map(k => `<td>${r[k] ?? "—"}</td>`).join("")}
-          ${metricKeys.map(k => {
-            const v = r[k];
-            const numClass = ["mean_pnl", "sum_pnl", "best", "worst"].includes(k) ? cls(v) : "";
-            return `<td class="num ${numClass}">${fmt(v, k === "n" ? 0 : (k === "win_rate" ? 1 : 2))}</td>`;
-          }).join("")}
-        </tr>`).join("")}
-    </tbody>`;
-}
+      <tr><td>A</td><td>Entry-gate thresholds</td><td><code>candidates</code> (BINDING vs LOOSE per Batch 380)</td><td>Which numeric threshold (RSI &lt; X, ADX &gt; Y) is the binding constraint?</td></tr>
+      <tr><td>B</td><td>Compound logic (AND/OR clauses)</td><td><code>per_clause.fires_at</code>, <code>restrictive</code>, <code>always_on</code>, <code>proposals</code></td><td>Which clauses are AND-restrictive vs always_on noise? Drop always_on; loosen restrictive.</td></tr>
+      <tr><td>C</td><td>Regime</td><td><code>per_regime</code></td><td>Does this strategy only work in bull? In which historical regime windows does it pass?</td></tr>
+      <tr><td>D</td><td>Exit method pairing</td><td><code>best_exit</code> by Sharpe</td><td>Which of 25 exits pairs best for this strategy? Feeds STRATEGY_EXIT_OVERRIDE.</td></tr>
+      <tr><td>E</td><td>Sizing</td><td><code>per_tier</code></td><td>Are EXCEPTIONAL trades actually higher quality, or does the tier rank not differentiate?</td></tr>
+      <tr><td>F</td><td>Universe tier</td><td><code>per_tier_T1a / T1c / T2 / T3</code></td><td>Should this strategy run on T1a only, or extend to T3 momentum names?</td></tr>
+      <tr><td>G</td><td>Hold duration</td><td><code>per_hold_bucket</code></td><td>Optimal hold range; informs time_stop variant selection.</td></tr>
+      <tr><td>H</td><td>Cooldown</td><td><code>per_cooldown</code></td><td>Do back-to-back entries on same ticker degrade WR?</td></tr>
+      <tr><td>I</td><td>Macro</td><td><code>per_macro_regime</code></td><td>Combined regime + macro overlay; complements Dim C.</td></tr>
+    </tbody>
+  </table>
 
-function renderSurvivors() {
-  const tbl = document.getElementById("survivors-table");
-  const rows = DATA.survivors;
-  tbl.innerHTML = `
-    <thead><tr>
-      <th>Strategy</th><th>Exit</th>
-      <th class="num">IS n</th><th class="num">IS sum</th>
-      <th class="num">OOS n</th><th class="num">OOS WR</th>
-      <th class="num">OOS mean</th><th class="num">OOS sum</th>
-    </tr></thead>
-    <tbody>${rows.map(r => `
+  <h4 style="margin:.7rem 0 .2rem;color:var(--accent)">Lens B - Per-(strategy x exit) cell verdict (Tab 13 Cell Cube)</h4>
+  <p class="desc" style="font-size:.85rem">For EVERY (strategy, exit_method) pair with n ≥ 5 trades, compute the DEC-426 5-Gate verdict. Authored Batch 391. Output: <code>exit_method_analysis.json::layer_2_per_strategy_exit_cell</code>. Currently ~100 cells per round (see Tab 16 for why).</p>
+  <p style="font-size:.85rem">Use Lens B when you want the headline pass/fail screening across the entire cube at once. Sortable. Cells with <code>five_gate_pass = true</code> are 1A-alpha gate candidates pending walk-forward.</p>
+  <table class="display compact" style="font-size:.82rem;width:auto">
+    <thead><tr><th>Field</th><th>What it is</th><th>Pass threshold</th></tr></thead>
+    <tbody>
+      <tr><td><code>n</code></td><td>Number of trades in the cell</td><td>≥ 30 (Gate 1)</td></tr>
+      <tr><td><code>win_rate</code></td><td>Wins / n</td><td>Per CLAUDE.md 9 criteria</td></tr>
+      <tr><td><code>mean_pp</code></td><td>Mean PnL %</td><td>(input to other gates)</td></tr>
+      <tr><td><code>std_pp</code></td><td>Std PnL %</td><td>(input to Sharpe / t-stat)</td></tr>
+      <tr><td><code>profit_factor</code></td><td>Gross winners $ / gross losers $</td><td>Strategy gate; not in cell 5-Gate</td></tr>
+      <tr><td><code>sharpe</code></td><td>Per-trade Sharpe</td><td>Strategy gate (≥ 0.7 OOS for 1A-α)</td></tr>
+      <tr><td><code>t_stat</code></td><td>t-statistic vs 0</td><td>≥ 3.4 (Gate 4)</td></tr>
+      <tr><td><code>verdict</code></td><td>PASS / FAIL / INSUFFICIENT_SAMPLE</td><td>Composite of all 5 gates</td></tr>
+      <tr><td><code>five_gate_pass</code></td><td>All 5 gates clear (strict)</td><td>True iff every gate passes</td></tr>
+      <tr><td><code>gates</code></td><td>{n_gte_30, p_lt_0.05_bonf, psr_gte_0.95, t_gte_3.4, rr_gte_2.0}</td><td>Per-gate booleans</td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:.82rem;color:var(--muted);margin-top:.3rem">5-Gate (DEC-426): n &gt;= 30 AND Bonferroni p &lt; 0.05 across 4625 cells/regime AND PSR (Probabilistic Sharpe Ratio) &gt;= 0.95 AND t-stat &gt;= 3.4 AND R:R &gt;= 2.0. Strict requires all 5; 4-of-5 (excluding PSR) is the "relaxed" pass bucket.</p>
+
+  <h3 style="margin-top:1rem">Coming next: cube-cell metrics expansion (queued — see EXECUTION_QUEUE item #4)</h3>
+  <p class="desc" style="font-size:.85rem">The current L2 cell tracks 13 fields. 5 tiers of additional metrics queued. Each tier ships with its own glossary + interpretation rule inline in Tab 13 so you can read a number and know what to do with it. Preview:</p>
+  <table class="display compact" style="font-size:.78rem">
+    <thead><tr><th>Tier</th><th>Metric</th><th>What it tells you</th><th>Interpretation rule</th><th>Source</th></tr></thead>
+    <tbody>
+      <tr><td>A</td><td><code>sortino</code></td><td>Sharpe but only penalizes downside vol</td><td>If sortino &gt;&gt; sharpe → strategy gives up profitable upside variance; sharpe undersells it</td><td>metrics.py::_sortino_ratio</td></tr>
+      <tr><td>A</td><td><code>calmar</code></td><td>Return / max DD</td><td>Strategies with calmar &lt; 0.5 spend more time in drawdown than in profit</td><td>metrics.py::_calmar</td></tr>
+      <tr><td>A</td><td><code>deflated_sharpe</code></td><td>Sharpe adjusted for multiple testing across cells</td><td>If deflated &lt;&lt; raw, the raw Sharpe is selection-biased noise</td><td>metrics.py PSR variant</td></tr>
+      <tr><td>A</td><td><code>sharpe_at_5/10/20_bps</code></td><td>Sharpe net of round-trip slippage</td><td>If sharpe@20bps &lt; 0, strategy is dependent on no-cost execution</td><td>metrics.py DEC-404</td></tr>
+      <tr><td>A</td><td><code>avg_mae</code></td><td>Average max adverse excursion (% in red before recover/stop)</td><td>Big avg_mae = trades are pain to hold; trim stops or widen entries</td><td>trade_log.max_adverse_excursion</td></tr>
+      <tr><td>A</td><td><code>avg_mfe</code></td><td>Average max favorable excursion (% in green before exit)</td><td>If avg_mfe &gt;&gt; mean_pp, exit gives back too much profit</td><td>trade_log.max_favourable_excursion</td></tr>
+      <tr><td>A</td><td><code>mfe_mae_ratio</code></td><td>"Edge ratio" - structural advantage before exit</td><td>&gt; 2.0 is good; &lt; 1.0 means losing trades drop further than winners run</td><td>computed from above two</td></tr>
+      <tr><td>A</td><td><code>exit_efficiency</code></td><td>(exit - entry) / (best_price_reached - entry)</td><td>1.0 = exit caught the peak; 0.3 = gave back 70% of run-up</td><td>trade_log entry/exit/highest_close</td></tr>
+      <tr><td>A</td><td><code>hold_days_median / std / skew</code></td><td>Trade duration distribution</td><td>Right-skewed = trend strategy; flat distribution = chop</td><td>trade_log.hold_days</td></tr>
+      <tr><td>A</td><td><code>survivorship_sharpe</code></td><td>Sharpe after delisting/M&amp;A haircut</td><td>If big drop vs raw, strategy depends on dead names</td><td>trade_log.survivorship_haircut</td></tr>
+      <tr><td>A</td><td><code>capital_weighted_sharpe</code></td><td>Tier-weighted Sharpe (EXCEPTIONAL 6.7x MEDIUM)</td><td>Differs from unit Sharpe when tier mix is skewed</td><td>trade_log.confidence_tier × sizing</td></tr>
+      <tr><td>B</td><td><code>wr_with_smart_money / wr_without</code></td><td>Win rate conditional on smart-money signal</td><td>&gt; 3pp lift validates the smart-money gate (matches criterion 7)</td><td>trade_log.congressional/insider/institutional_signal</td></tr>
+      <tr><td>B</td><td><code>wr_by_vix_bucket</code></td><td>Win rate × VIX-at-entry bucket</td><td>Sharp cliffs across vol buckets = vol-dependent edge</td><td>trade_log.signals_at_entry.vix_at_entry</td></tr>
+      <tr><td>B</td><td><code>wr_by_days_to_earnings</code></td><td>Win rate × days-to-earnings bucket</td><td>Spike in 0-5 day bucket = pre-earnings drift effect</td><td>trade_log.days_to_earnings</td></tr>
+      <tr><td>B</td><td><code>wr_by_event_window</code></td><td>Win rate during FOMC/CPI/NFP window</td><td>If concentrated in events, will collapse when 1B-alpha turns event-suppression back on</td><td>trade_log.signals_at_entry.event_within_5d</td></tr>
+      <tr><td>C</td><td><code>sharpe_ci_95_low / high</code></td><td>Bootstrap 95% CI for Sharpe</td><td>If CI crosses 0, the point Sharpe is unreliable; widen n before trusting</td><td>NEW - bootstrap per cell</td></tr>
+      <tr><td>C</td><td><code>oos_sharpe</code></td><td>Out-of-sample Sharpe from walk-forward</td><td>OOS &gt; 0.7 in &gt;= 1 regime = 1A-alpha gate cell</td><td>walk_forward_batch414_cells.json</td></tr>
+      <tr><td>C</td><td><code>is_oos_decay</code></td><td>OOS / IS Sharpe ratio</td><td>&lt; 0.7 = significant overfit; cell unlikely to deploy</td><td>derived from oos_sharpe</td></tr>
+      <tr><td>C</td><td><code>effective_n</code></td><td>n adjusted for trade autocorrelation</td><td>If effective_n &lt;&lt; n, trades are clustered (e.g. one signal hits multiple tickers same day)</td><td>NEW - lag-1 autocorr</td></tr>
+      <tr><td>D</td><td><code>sqn</code></td><td>System Quality Number = mean(R) / std(R) × √n</td><td>Van Tharp: &lt; 1.6 = poor; 1.6-1.9 = avg; 2.0+ = excellent</td><td>NEW</td></tr>
+      <tr><td>D</td><td><code>k_ratio</code></td><td>Slope of log-equity curve / std error of slope</td><td>Smoothness score; higher = steady up-trend, less choppy</td><td>NEW</td></tr>
+      <tr><td>D</td><td><code>mar</code></td><td>CAGR / max DD</td><td>Industry-standard return-per-unit-suffering</td><td>NEW</td></tr>
+      <tr><td>E</td><td><code>kelly_fraction</code></td><td>Theoretical optimal sizing implied by WR + W/L</td><td>Compare to actual tier %; flag if actual &gt; 0.5 × Kelly (over-risking)</td><td>NEW</td></tr>
+      <tr><td>E</td><td><code>cvar_5pct</code></td><td>Expected Shortfall - avg loss in worst 5% of trades</td><td>More robust than max_loss; sizing input</td><td>NEW</td></tr>
+      <tr><td>E</td><td><code>risk_of_ruin</code></td><td>Probability of -50% portfolio DD given cell edge + actual sizing</td><td>If &gt; 5%, cell sizing is aggressive vs edge quality</td><td>NEW</td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:.82rem;color:var(--muted);margin-top:.3rem"><strong>Implementation order (queued):</strong> Tier A first (data exists; trivial to surface), then Tier B (slicing existing trade-log columns), then C (new computation: bootstrap + walk-forward join), then D (composite scores; literature formulas), then E (risk-management; needs sizing context). When each tier lands in Tab 13, the columns above will become the glossary inline next to the table for live reference.</p>
+
+  <!-- Batch 437 (2026-05-29): Phase 1A-beta cube-only dashboard. -->
+  <div style="background:#1a1f29;border:1px solid var(--accent);padding:.8rem 1rem;border-radius:6px;margin-bottom:.75rem;font-size:.88rem">
+    <h3 style="margin:0 0 .4rem;color:var(--accent);font-size:1rem">First-time viewer? Start here.</h3>
+    <p style="margin:.3rem 0"><strong>What this dashboard is.</strong> A read-only post-mortem of the Phase 1A-beta cube run. Per owner directive: Phase 1A-beta runs with all four legacy gates OFF (portfolio cap / drawdown halt / regime affinity / event suppression). Those gates only return in Phase 1B-alpha. The dashboard reflects this: the cube's <code>output_batch395_final/</code> is the single source for every tab.</p>
+
+    <p style="margin:.5rem 0 .3rem"><strong>What "Phase 1A-beta lenient" means in concrete CLI terms.</strong></p>
+    <table class="display compact" style="font-size:.82rem;margin:.4rem 0;width:auto">
+      <thead><tr><th>Gate</th><th>Phase 1A-beta (this dashboard)</th><th>Returns in</th></tr></thead>
+      <tbody>
+        <tr><td>Portfolio cap (max open positions)</td><td>off (<code>--no-portfolio-cap</code>)</td><td>Phase 1B-alpha</td></tr>
+        <tr><td>Drawdown halt</td><td>off (<code>--no-dd-halt</code>)</td><td>Phase 1B-alpha</td></tr>
+        <tr><td>Regime-affinity gate</td><td>off (<code>--no-regime-affinity</code>)</td><td>Phase 1B-alpha</td></tr>
+        <tr><td>Event suppression (FOMC/CPI/NFP/earnings)</td><td>off (<code>--no-event-suppression</code>)</td><td>Phase 1B-alpha</td></tr>
+      </tbody>
+    </table>
+
+    <p style="margin:.5rem 0 .3rem"><strong>Why some tabs say "No data".</strong> The cube engine writes per-strategy + per-exit + per-regime artifacts (trade_log, backtest_results, exit_strategy_*, regime/sector/event breakdowns), but does NOT emit the analyst overlays a single-run produces - <code>equity_curve.parquet</code>, <code>portfolio_metrics.json</code>, <code>improvements_summary.json</code>, <code>strategy_regime_matrix.json</code>, walk-forward + smart-money + congressional + bootstrap artifacts. Tabs that need those will render "No data" until the missing analyst step runs on the merged cube trade log. The structurally cube-native tabs (1 Strategies, Exits, Trades, 7 Sector, 8 Skipped, 9 CircuitBreakers, 10 Optimizer, 11 Candidates, 12 Quiet, 13 Cell Cube) are the ones currently meaningful.</p>
+
+    <p style="margin:.3rem 0"><strong>Recommended reading order for Phase 1A-beta verdict review:</strong> Tab 1 (101 strategies that fired in the cube) -> Tab 13 Cell Cube (per-strategy x exit method 5-Gate verdicts) -> Tab 10 Optimizer (Stage 3 candidate summary) -> Tab 11 Candidates (per-strategy 9-dim drill-down) -> Tab 12 Quiet (zero-fire diagnosis) -> Tabs 7-9 (sector / skipped / circuit).</p>
+    <p style="margin:.3rem 0"><strong>What "good" looks like for the 1A-alpha gate.</strong> &gt;= 1 strategy with rules-only Sharpe &gt;= 0.7 OOS in &gt;= 1 regime. Currently LOCKED at best OOS Sharpe 0.419 (per walk_forward_batch414_cells.json). The in-flight cube re-run re-evaluates this with Batches 414/415/416/421 fixes active.</p>
+    <p style="margin:.3rem 0"><strong>If a tab looks empty / wrong:</strong> hard-refresh (Ctrl+Shift+R). If still wrong, F12 -&gt; Console and paste any errors.</p>
+  </div>
+
+  <div id="reference-counts" class="kpis"></div>
+
+  <h3 style="margin-top:1rem">Strategy library and the count buckets you'll see</h3>
+  <p class="desc"><strong>Single source for every tab.</strong> The whole dashboard is built from the Phase 1A-beta cube output (<code>output_batch395_final/</code>) per owner directive. 185 = registered strategies in <code>backtest/signals/screener.py::ALL_STRATEGIES</code>. ~101 = strategies that fired &gt;= 1 trade in the cube (Tab 1 + the optimizer JSONs). ~85 = quiet strategies that produced zero trades even with all gates off (Tab 12 has the 3-bucket diagnosis).</p>
+  <p class="desc"><strong>Tab 1 inclusion criteria (literal):</strong> <code>compute_all_metrics</code> in <code>backtest/results/metrics.py</code> iterates over <code>df_trades["strategy"].unique()</code>. Any strategy with at least one row in <code>trade_log.csv</code> ends up as a row in <code>backtest_results.csv</code>. No threshold on number of trades. Strategies with zero trades simply don't appear in this table - Tab 12 has them.</p>
+  <table class="display compact" style="font-size:.85rem;margin-bottom:.5rem">
+    <thead><tr><th>Layer</th><th>Scope</th><th>~Count</th><th>Where</th></tr></thead>
+    <tbody>
+      <tr><td>Layer 1 baseline</td><td>Long-direction technical / momentum / mean-reversion</td><td>~60</td><td><code>screener.py</code> &mdash; classic SR/MA/pivot/RSI patterns</td></tr>
+      <tr><td>Layer 2 (Phase 0.D)</td><td>ICT / Earnings / Calendar overlays</td><td>+30-40</td><td><code>signals/smc_ict.py</code> + earnings overlay producers</td></tr>
+      <tr><td>Layer 2D</td><td>Form-derived ICT (FVG / OB / BOS / CHoCH)</td><td>+10-15</td><td><code>signals/smc_ict.py</code> via <code>vendored/smartmoneyconcepts</code></td></tr>
+      <tr><td>Layer 3 (Pass 52)</td><td>Chart-pattern + categories</td><td>+30-40</td><td><code>signals/chart_patterns.py</code></td></tr>
+      <tr><td>Layer 4</td><td>PENDING (Phase 1A-α onwards)</td><td>0</td><td>future</td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="margin-top:1rem">25 Exit methods</h3>
+  <p class="desc">Source: <code>backtest/engine/exit_strategies.py::EXIT_STRATEGIES</code>. Phase 1A-β cube replays every entry through every exit so each (strategy × exit × regime) cell gets its own verdict. The 9 winners pinned in Batch 414 all pair with <code>breakeven_plus_trail</code>.</p>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.4rem;font-size:.78rem">
+    <div>
+      <h4 style="font-size:.85rem;margin:.3rem 0">Trailing stops (5)</h4>
+      <ul style="margin:0;padding-left:1rem">
+        <li><code>atr_trail_1x</code> — 1× ATR trailing (Phase 1A v3 winner)</li>
+        <li><code>atr_trail_2x</code></li>
+        <li><code>atr_trail_mae_conditional</code></li>
+        <li><code>atr_trail_vix_conditional</code></li>
+        <li><code>chandelier_3x</code></li>
+      </ul>
+    </div>
+    <div>
+      <h4 style="font-size:.85rem;margin:.3rem 0">Fixed % trail (3)</h4>
+      <ul style="margin:0;padding-left:1rem">
+        <li><code>trailing_5pct</code></li>
+        <li><code>trailing_10pct</code></li>
+        <li><code>trailing_15pct</code></li>
+      </ul>
+      <h4 style="font-size:.85rem;margin:.3rem 0">Time-based (3)</h4>
+      <ul style="margin:0;padding-left:1rem">
+        <li><code>time_stop_10d</code></li>
+        <li><code>time_stop_20d</code></li>
+        <li><code>class_time_stop</code> — per strategy layer</li>
+      </ul>
+    </div>
+    <div>
+      <h4 style="font-size:.85rem;margin:.3rem 0">R:R / break-even (5)</h4>
+      <ul style="margin:0;padding-left:1rem">
+        <li><code>r_multiple_2r</code> / <code>r_multiple_3r</code></li>
+        <li><code>break_even_at_1r</code></li>
+        <li><code>breakeven_plus_trail</code> — Batch 414 winner</li>
+        <li><code>fixed_4r_2r</code></li>
+      </ul>
+    </div>
+    <div>
+      <h4 style="font-size:.85rem;margin:.3rem 0">MFE / multi-tier (3)</h4>
+      <ul style="margin:0;padding-left:1rem">
+        <li><code>mfe_lockin_trail</code></li>
+        <li><code>hybrid_50pct_target</code></li>
+        <li><code>multi_tier_partial</code></li>
+      </ul>
+    </div>
+    <div>
+      <h4 style="font-size:.85rem;margin:.3rem 0">Regime / signal (3)</h4>
+      <ul style="margin:0;padding-left:1rem">
+        <li><code>regime_flip</code></li>
+        <li><code>reverse_signal</code></li>
+        <li><code>ma_exit_ema9</code></li>
+      </ul>
+    </div>
+    <div>
+      <h4 style="font-size:.85rem;margin:.3rem 0">Event / structure (3)</h4>
+      <ul style="margin:0;padding-left:1rem">
+        <li><code>earnings_blackout</code> — exits before earnings</li>
+        <li><code>next_pivot_target</code></li>
+        <li><code>smc_mitigation_zone</code></li>
+      </ul>
+    </div>
+  </div>
+
+  <h3 style="margin-top:1rem">9 Success criteria (from CLAUDE.md)</h3>
+  <p class="desc">All overall thresholds must pass for a strategy to advance overall. Each strategy ALSO gets a per-regime verdict — a strategy valid in crisis but not bull is deployed only during crisis (intentional).</p>
+  <table class="display compact" style="font-size:.82rem">
+    <thead><tr><th>#</th><th>Criterion</th><th>Per-regime threshold</th><th>Overall threshold</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>Win rate</td><td>≥55% (high-vol: ≥50%)</td><td>same</td></tr>
+      <tr><td>2</td><td>Profit factor</td><td>&gt;1.3 (high-vol: &gt;1.2)</td><td>&gt;1.5 (literature canonical)</td></tr>
+      <tr><td>3</td><td>Expected value</td><td>&gt;0</td><td>same</td></tr>
+      <tr><td>4</td><td>Win/loss ratio</td><td>&gt;1.0</td><td>same</td></tr>
+      <tr><td>5</td><td>Max drawdown</td><td>&lt;20 pct-points (high-vol: &lt;25)</td><td>same</td></tr>
+      <tr><td>6</td><td>Total ROI</td><td>&gt;0%</td><td>same</td></tr>
+      <tr><td>7</td><td>Smart money lift</td><td>≥3pp win rate improvement</td><td>same</td></tr>
+      <tr><td>8</td><td>Macro correlation</td><td>≥5pp win rate diff</td><td>same</td></tr>
+      <tr><td>9</td><td>Min trades</td><td>≥30</td><td>≥100</td></tr>
+      <tr><td>10</td><td>Sharpe ratio</td><td>≥0.7</td><td>≥1.0</td></tr>
+      <tr><td>11</td><td>Per-regime verdict</td><td colspan="2">PASS in ≥1 regime (not universal pass required)</td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="margin-top:1rem">DEC-426 5-Gate (Phase 1A-β cube cell-level — different from the 9 criteria above)</h3>
+  <p class="desc">Per-(strategy × exit × regime) cell-level gate used by the cube optimizer. Stricter than the 9 criteria because each cell has fewer trades — the gates correct for multiple-testing.</p>
+  <table class="display compact" style="font-size:.82rem">
+    <thead><tr><th>Gate</th><th>Threshold</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr><td>n</td><td>≥ 30</td><td>Minimum trades for statistical power</td></tr>
+      <tr><td>p (Bonferroni)</td><td>&lt; 0.05</td><td>Multiple-testing correction across 4625 cells/regime</td></tr>
+      <tr><td>PSR (Probabilistic Sharpe)</td><td>≥ 0.95</td><td>Prob. that true Sharpe &gt; 0; strict 5-Gate gate</td></tr>
+      <tr><td>t-stat</td><td>≥ 3.4</td><td>Bailey-Lopez de Prado strict significance</td></tr>
+      <tr><td>R:R</td><td>≥ 2.0</td><td>Edge over implementation costs</td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="margin-top:1rem">Universe — 5-bucket architecture (DEC-303 / 477 / 494)</h3>
+  <table class="display compact" style="font-size:.82rem">
+    <thead><tr><th>Tier</th><th>Scope</th><th>Count</th><th>File</th></tr></thead>
+    <tbody>
+      <tr><td>T1a</td><td>S&amp;P 500 PIT</td><td>614 (503 active + 111 historical)</td><td><code>Backtesting universe/Tier 1A Universe_SP500 Tickers_Jan 2020 to May 2026.csv</code></td></tr>
+      <tr><td>T1 ETFs</td><td>Sector + broad-market ETFs</td><td>27</td><td><code>Backtesting universe/Tier 1 ETFs Universe_Sector and Broad-Market ETFs_May 2026.csv</code></td></tr>
+      <tr><td>T1c</td><td>NASDAQ-100 PIT</td><td>161 (101 active + 60 historical)</td><td><code>Backtesting universe/Tier 1C Universe_NASDAQ-100 Tickers_Jan 2020 to May 2026.csv</code></td></tr>
+      <tr><td>T2</td><td>Spinoffs &gt; $5B + recent IPOs &gt; $10B</td><td>347</td><td><code>Backtesting universe/Tier 2 Universe_Spinoffs and Recent IPOs_Feb 2010 to May 2026.csv</code></td></tr>
+      <tr><td>T3</td><td>Momentum top-100 non-T1 (Jegadeesh-Titman 12-1)</td><td>1923 period-rows / 1220 unique</td><td><code>Backtesting universe/Tier 3 Universe_Momentum Top-100_Jun 2022 to May 2026.csv</code></td></tr>
+      <tr><td>Master dedup</td><td>All 5 buckets unique with resolved_tier (T3&gt;T2&gt;T1c&gt;T1a&gt;ETF, DEC-504)</td><td>1937</td><td>Computed in <code>backtest/data/universe.py</code></td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="margin-top:1rem">Regime classification (real-time, no lookahead)</h3>
+  <ul style="font-size:.85rem">
+    <li><code>bull</code> &mdash; SPY above 200 EMA + 20-day realized vol &lt; 20%</li>
+    <li><code>neutral</code> &mdash; SPY above 200 EMA + vol 20-30%</li>
+    <li><code>bear</code> &mdash; SPY below 200 EMA</li>
+    <li><code>crisis</code> &mdash; vol &gt; 30% (flagged; longs allowed at 50% size per CLAUDE.md)</li>
+  </ul>
+  <p class="desc">Per-regime verdicts (Tab 2) are calibrated against 8 historical regime windows (covid_crisis_2020, bear_correction_2022, rate_rising_2022_2023, strong_bull_2023, rate_falling_2024, ai_sector_bull_2024, tariff_shock_2025, ai_divergence_2025_2026). Source: <code>output_v2/strategy_regime_matrix.json</code>.</p>
+
+  <h3 style="margin-top:1rem">Position sizing (confidence tiers)</h3>
+  <p class="desc"><strong>Two-stage process</strong> (Batch 438 correction - prior table tied sizing to the 9 criteria, which was wrong). Stage 1 assigns a <em>preliminary tier</em> per-trade at entry from rule-based confluence. Stage 2 lets agent scores shift the tier +/-1 in Phase 1B+. Phase 1A-beta has no agents, so Stage 2 is a no-op and Stage 1 is final. The strategy-level 9-criteria verdict (Tab 1's PASS pill) is a POST-HOC backtest summary; it does NOT feed into per-trade sizing.</p>
+
+  <h4 style="margin:.5rem 0 .3rem">Size table</h4>
+  <table class="display compact" style="font-size:.82rem">
+    <thead><tr><th>Tier</th><th>% of equity</th></tr></thead>
+    <tbody>
+      <tr><td>EXCEPTIONAL</td><td>5.0%</td></tr>
+      <tr><td>VERY HIGH</td><td>4.0%</td></tr>
+      <tr><td>HIGH</td><td>3.0%</td></tr>
+      <tr><td>MEDIUM-HIGH</td><td>1.5%</td></tr>
+      <tr><td>MEDIUM</td><td>0.75%</td></tr>
+      <tr><td>LOW</td><td>skip (no trade)</td></tr>
+      <tr><td>AVOID</td><td>skip (negative smart-money confluence)</td></tr>
+    </tbody>
+  </table>
+
+  <h4 style="margin:.7rem 0 .3rem">Stage 1 - Rule-based preliminary tier (the only step active in Phase 1A-beta)</h4>
+  <p class="desc">Source: <code>backtest/engine/backtest.py::_assign_confidence_tier</code>. Two inputs: <code>strategy_count</code> (how many strategies fired on the same ticker on the same day - "confluence") and <code>sm.composite_signal</code> (smart-money: congressional + insider). First match wins, in this order:</p>
+  <table class="display compact" style="font-size:.82rem">
+    <thead><tr><th>Rule</th><th>Tier</th></tr></thead>
+    <tbody>
+      <tr><td>smart-money = <code>congressional_sell+insider_cluster_sell</code></td><td>AVOID</td></tr>
+      <tr><td>smart-money = <code>congressional+insider_cluster</code> AND strategy_count &gt;= 4</td><td>EXCEPTIONAL</td></tr>
+      <tr><td>smart-money = <code>congressional_or_insider</code> AND strategy_count &gt;= 3</td><td>VERY_HIGH</td></tr>
+      <tr><td>strategy_count &gt;= 4 (no smart-money)</td><td>HIGH</td></tr>
+      <tr><td>strategy_count &gt;= 3</td><td>MEDIUM_HIGH</td></tr>
+      <tr><td>strategy_count &gt;= 2</td><td>MEDIUM</td></tr>
+      <tr><td>strategy_count &gt;= 1 AND sm.score &gt;= 2</td><td>LOW</td></tr>
+      <tr><td>else</td><td>LOW</td></tr>
+    </tbody>
+  </table>
+
+  <h4 style="margin:.7rem 0 .3rem">Stage 2 - Agent tier adjustment (Phase 1B+ only)</h4>
+  <p class="desc">Source: <code>backtest/engine/backtest.py::_adjust_tier_by_agent</code>. In Phase 1B-alpha the agent pipeline (11 active LLM nodes per propagate()) returns a 0-100 score per trade. Score &gt;= 75 upgrades the preliminary tier by one slot; score &lt;= 40 downgrades by one. <strong>Phase 1A-beta has agents OFF, so Stage 2 is a no-op</strong> and the preliminary tier IS the final tier.</p>
+
+  <h4 style="margin:.7rem 0 .3rem">Concrete example - Phase 1A-beta (no agents)</h4>
+  <div style="background:#1a1f29;border-left:3px solid var(--accent);padding:.6rem .8rem;font-size:.82rem;margin:.4rem 0;border-radius:4px">
+    <p style="margin:.2rem 0"><strong>Setup.</strong> Starting equity = $100,000. Date = 2026-05-20. Ticker = AAPL @ $185.</p>
+    <p style="margin:.4rem 0"><strong>Example A - EXCEPTIONAL.</strong> On this day, 4 strategies fire on AAPL: <code>near_52w_high</code>, <code>rsi_oversold_reversion</code>, <code>bollinger_tight</code>, <code>ma_crossover</code>. Smart money signal: congressional buys + insider cluster buys = <code>congressional+insider_cluster</code>. Rule match: <em>"smart-money = congressional+insider_cluster AND strategy_count &gt;= 4"</em> -&gt; preliminary tier = <strong>EXCEPTIONAL</strong>. No agents in 1A-beta -&gt; final tier = EXCEPTIONAL. Position = $100,000 x 5.0% = <strong>$5,000</strong> = 27 shares.</p>
+    <p style="margin:.4rem 0"><strong>Example B - MEDIUM.</strong> Same day, MSFT. 2 strategies fire. No smart-money signal. Rule match: "strategy_count &gt;= 2" -&gt; <strong>MEDIUM</strong> -&gt; $100,000 x 0.75% = <strong>$750</strong>.</p>
+    <p style="margin:.4rem 0"><strong>Example C - SKIP.</strong> NVDA. 1 strategy fires. Smart-money score = 0. Final rule "else" -&gt; <strong>LOW</strong> -&gt; <strong>no trade.</strong></p>
+    <p style="margin:.4rem 0"><strong>Example D - AVOID.</strong> META. 5 strategies fire. But smart money signal: congressional sell + insider cluster sell. The first rule kicks in: -&gt; <strong>AVOID</strong> regardless of confluence -&gt; <strong>no trade.</strong></p>
+  </div>
+
+  <h4 style="margin:.7rem 0 .3rem">Why "9 criteria" is mentioned elsewhere but NOT here</h4>
+  <p class="desc">Tab 1 (Strategies) shows a PASS pill if a strategy's POST-HOC backtest aggregate passed the 9 criteria (win rate / PF / EV / W:L / DD / ROI / smart-money lift / macro / min trades). That is a strategy-level summary computed AFTER the backtest finished, used for strategy approval/deprecation decisions. It does NOT influence per-trade sizing - the strategy could have an overall FAIL pill yet still emit individual trades during the backtest, and each of those trades got a tier from Stage 1 above. Sharpe (criterion 10) and per-regime verdict (criterion 11) are evaluated separately, which is why the dashboard sometimes says "9" and sometimes "11" - 9 are the legacy <code>passes_all</code> gates, +2 are tracked separately.</p>
+
+  <h3 style="margin-top:1rem">Tab navigation guide — what each tab shows + what to look for</h3>
+  <table class="display compact" style="font-size:.82rem">
+    <thead><tr><th>Tab</th><th>Shows</th><th>Look for</th><th>Source</th></tr></thead>
+    <tbody>
+      <tr><td>Overview</td><td>Portfolio KPIs (return, Sharpe, DD, heat) + key-value pairs</td><td>Sharpe ≥ 0.7 (1A-α gate); DD &lt; 20%; positive return</td><td><code>portfolio_summary.json</code> + <code>portfolio_metrics.json</code></td></tr>
+      <tr><td>1. Strategies</td><td>36 strategies passing min-trades threshold + 9-criteria PASS/FAIL</td><td>Strategies with green PASS pills + Sharpe &gt; 0.7</td><td><code>backtest_results.csv</code></td></tr>
+      <tr><td>2. Regime</td><td>Per-(strategy × regime) PASS / FAIL / INSUFFICIENT_DATA verdict</td><td>Green cells = regime-specific deployment candidates; "best_regimes" column</td><td><code>strategy_regime_matrix.json</code></td></tr>
+      <tr><td>3. MAE/MFE</td><td>Max Adverse / Favorable Excursion bucket histograms</td><td>Wide MFE distribution = healthy trend-catching; tight MAE = good stops</td><td><code>exit_by_mae_bucket.csv</code> / <code>exit_by_mfe_bucket.csv</code></td></tr>
+      <tr><td>4. Equity</td><td>Portfolio equity curve (Chart.js) + 6 KPIs</td><td>Smooth uptrend; no extended DD; alpha vs SPY &gt; 0</td><td><code>equity_curve.parquet</code></td></tr>
+      <tr><td>5. Walk-fwd</td><td>Improvements / rolling Sharpe stability / stress metrics JSON</td><td>OOS Sharpe ≥ IS Sharpe (or close); rolling Sharpe stable across folds</td><td><code>improvements_summary.json</code> + <code>rolling_sharpe_stability.json</code></td></tr>
+      <tr><td>6. Smart-$</td><td>Exit performance by smart-money signal present + congressional correlation</td><td>≥3pp win-rate lift when smart-money signal active</td><td><code>exit_by_smart_money_signal_present.csv</code></td></tr>
+      <tr><td>7. Sector</td><td>By-sector trades + concentration breakdowns</td><td>No single sector &gt; 50% of trades on most days</td><td><code>exit_by_sector.csv</code> + sector concentration report</td></tr>
+      <tr><td>8. Skipped</td><td>Reasons trades were skipped (liquidity / cash / etc.)</td><td>If a strategy is in Tab 12 SKIPPED_AT_ENGINE bucket, look here for which gate</td><td><code>skipped_trades.csv</code></td></tr>
+      <tr><td>9. CircuitBreakers</td><td>Circuit breaker activations log + by-active duration</td><td>Few activations (rare events); active duration brief</td><td><code>circuit_breaker_log.csv</code></td></tr>
+      <tr><td>Exits</td><td>25-method exit comparison + best per strategy + per-method cube</td><td>Which exit pairs best with which strategy</td><td><code>exit_strategy_comparison.csv</code> + <code>exit_method_multi_dim_cube.csv</code></td></tr>
+      <tr><td>Trades</td><td>First 10,000 trades from <code>trade_log.parquet</code></td><td>Full audit. For complete log, download the parquet.</td><td><code>trade_log.parquet</code></td></tr>
+      <tr><td>10. Optimizer</td><td>Stage 3 optimization summary (markdown rendered) + bucket KPIs</td><td>Buckets: PASS-strict / PASS-relaxed / FAIL; 9-dim optimizer findings</td><td><code>output_optimization_candidates_2026_05_28/optimization_summary.md</code></td></tr>
+      <tr><td>11. Candidates</td><td>Per-strategy 9-dim optimizer drill-down (aggregate KPIs + dim A-I summary + collapsible raw JSON)</td><td>Per-strategy A-I dimension status; which dims have proposals</td><td><code>output_optimization_candidates_2026_05_28/&lt;strategy&gt;.json</code></td></tr>
+      <tr><td>12. Quiet</td><td>3-bucket classification of zero-fire strategies (PRODUCER_LAYER_ZERO_LIKELY / COMPOUND_RESTRICTIVE / SKIPPED_AT_ENGINE)</td><td>Strategies that need producer fix OR clause restructure OR liquidity tuning</td><td><code>producer_zero_post_cube_audit.json</code></td></tr>
+      <tr><td>13. Cell Cube</td><td>Per-(strategy × exit) cell verdicts with DEC-426 5-Gate columns</td><td>5-Gate strict PASS = 1A-α gate candidate</td><td><code>exit_method_analysis.json</code> (Lens B L2)</td></tr>
+      <tr><td>15. Sample Trades</td><td>10 hand-built scenarios end-to-end (regime → strategies firing → smart money → tier → sizing → exit → P&amp;L → running equity)</td><td>Mental model for how a trade flows; the AVOID + LOW + crisis-haircut paths in particular</td><td>None - illustrative, not cube data</td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="margin-top:1rem">Quiet-strategy buckets explained (Tab 12)</h3>
+  <p class="desc">Strategies that fired zero trades in the cube get classified into one of three buckets so you know how to fix each one. Tab 12 shows the live lists; this section is the persistent explainer.</p>
+  <table class="display compact" style="font-size:.82rem">
+    <thead><tr><th>Bucket</th><th>What it means</th><th>Where to fix</th></tr></thead>
+    <tbody>
       <tr>
-        <td>${r.strategy}</td><td>${r.exit_reason}</td>
-        <td class="num">${r.is_n}</td>
-        <td class="num ${cls(r.is_sum_pp)}">${fmt(r.is_sum_pp, 1)}</td>
-        <td class="num">${r.oos_n}</td>
-        <td class="num">${r.oos_wr_pct}%</td>
-        <td class="num ${cls(r.oos_mean_pct)}">${fmt(r.oos_mean_pct)}%</td>
-        <td class="num pos-strong">${fmt(r.oos_sum_pp, 1)}</td>
-      </tr>`).join("")}</tbody>`;
-}
-
-function renderUnderperformers() {
-  const tbl = document.getElementById("underperformers-table");
-  const rows = DATA.underperformers;
-  tbl.innerHTML = `
-    <thead><tr>
-      <th>Strategy</th>
-      <th class="num">IS n</th><th class="num">IS sum</th>
-      <th class="num">OOS n</th><th class="num">OOS WR</th>
-      <th class="num">OOS mean</th><th class="num">OOS sum</th>
-    </tr></thead>
-    <tbody>${rows.map(r => `
+        <td><strong>PRODUCER_LAYER_ZERO_LIKELY</strong></td>
+        <td>At least one clause's producer never emits truthy. The signal feed is broken (bad data path, schema drift, silent exception). The strategy can't fire because the ingredient is missing.</td>
+        <td>Fix the producer (data source / formula / import). Not the rules.</td>
+      </tr>
       <tr>
-        <td>${r.strategy}</td>
-        <td class="num">${r.is_n}</td>
-        <td class="num ${cls(r.is_sum_pp)}">${fmt(r.is_sum_pp, 1)}</td>
-        <td class="num">${r.oos_n}</td>
-        <td class="num">${r.oos_wr_pct}%</td>
-        <td class="num ${cls(r.oos_mean_pct)}">${fmt(r.oos_mean_pct)}%</td>
-        <td class="num neg-strong">${fmt(r.oos_sum_pp, 1)}</td>
-      </tr>`).join("")}</tbody>`;
-}
+        <td><strong>COMPOUND_RESTRICTIVE</strong></td>
+        <td>Each clause is fine alone, but the AND of all clauses almost never happens. <em>Analogy:</em> "sunny AND 60-70F AND weekend AND running partner free AND 7+ hours sleep" - each is common; the AND of all 5 fires twice a year.</td>
+        <td>Tab 11 -&gt; strategy -&gt; <code>dimension_b_compound</code>. Drop <code>always_on</code> clauses; loosen <code>restrictive</code> clauses; follow the <code>proposals</code> hint.</td>
+      </tr>
+      <tr>
+        <td><strong>SKIPPED_AT_ENGINE</strong></td>
+        <td>The strategy DOES generate candidate trades that pass the screener, but a downstream gate rejects them: liquidity floor (ADV too low), position cap full, daily-cash limit, ticker-uniqueness, confidence tier too low.</td>
+        <td>Tab 8 (Skipped) -&gt; reason code per trade. Loosen the offending gate or move the strategy to a more permissive tier.</td>
+      </tr>
+    </tbody>
+  </table>
 
-function renderQuiet() {
-  const list = document.getElementById("quiet-list");
-  list.innerHTML = DATA.quiet_strategies.map(s => `<li>${s}</li>`).join("");
-}
+  <h3 style="margin-top:1rem">Glossary</h3>
+  <ul style="font-size:.82rem">
+    <li><b>PIT (point-in-time)</b> &mdash; data filtered to what would have been known at decision time; no lookahead.</li>
+    <li><b>Cube</b> &mdash; Phase 1A-β cube = 185 strategies × 25 exits × 7 regime windows = ~32,375 cells per regime window evaluated.</li>
+    <li><b>1A-α gate</b> &mdash; owner gate: ≥1 strategy with rules-only Sharpe ≥ 0.7 OOS in ≥1 regime. Currently LOCKED at 0.419 (best). Gate must open before Phase 1B-α $300 agent budget.</li>
+    <li><b>1A-β cube re-run</b> &mdash; full re-evaluation of cube on AWS spot infrastructure. Currently running Shape A: 3 × c7a.8xlarge spot, ~$9.30, ~5h.</li>
+    <li><b>5-Gate (DEC-426)</b> &mdash; strict cell-level gate above. Differs from the 9 criteria which are strategy-level overall.</li>
+    <li><b>Smart money</b> &mdash; aggregated congressional trades + insider buys + 13F flows. Acts as a quality multiplier on candidate trades.</li>
+    <li><b>BUG-95 portfolio metrics</b> &mdash; per-trade aggregates differ from compounded portfolio returns once position sizing + heat caps apply. The dashboard exposes both views.</li>
+  </ul>
 
-function renderWalk() {
-  const tbl = document.getElementById("walk-table");
-  const rows = DATA.walk_forward || [];
-  tbl.innerHTML = `
-    <thead><tr><th>Strategy</th><th>Verdict</th></tr></thead>
-    <tbody>${rows.map(r => `
-      <tr><td>${r.strategy}</td><td>${r.verdict}</td></tr>`).join("")}</tbody>`;
-}
+  <h3 style="margin-top:1rem">Data flow</h3>
+  <ol style="font-size:.82rem">
+    <li><b>Prefetch</b> &mdash; OHLCV + macro + sentiment + smart-money cached in <code>backtest/data/cache/</code> and <code>data_prefetch/</code> (Sprint 0A multi-API mandate).</li>
+    <li><b>Backtest engine</b> &mdash; <code>backtest/engine/backtest.py</code> walks day-by-day, classifies regime, runs screener (Tab 12), enters trades, runs exits (Tab 13).</li>
+    <li><b>Trade outputs</b> &mdash; per-trade rows in <code>trade_log.parquet</code> + per-exit replay in <code>trade_exit_detail.csv</code>.</li>
+    <li><b>Metrics</b> &mdash; <code>results/metrics.py</code> computes the 9 criteria + per-regime verdict from trade outputs.</li>
+    <li><b>Dashboard build</b> &mdash; <code>scripts/build_dashboard_phase_1a.py</code> serializes all outputs into <code>data.js</code> for this dashboard.</li>
+    <li><b>Cube optimizer</b> &mdash; <code>scripts/optimize_strategies_from_cube.py</code> emits the Stage 3 candidates (Tab 10/11) + verdict cube (Tab 13).</li>
+    <li><b>Walk-forward</b> &mdash; <code>scripts/walk_forward_batch414_cells.py</code> implements DEC-505 4-fold expanding-window for the 1A-α gate.</li>
+  </ol>
+</section>
 
-function renderRaw() {
-  document.getElementById("raw-overview").textContent =
-    JSON.stringify(DATA.overview, null, 2);
-}
+<!-- Batch 439 (2026-05-29): owner-directed Sample Trades walkthrough.
+     10 illustrative scenarios end-to-end (strategies firing, smart-money
+     signals, tier assignment, position sizing, exit method, P&L,
+     running equity) covering EXCEPTIONAL / VERY_HIGH / HIGH /
+     MEDIUM_HIGH / MEDIUM / LOW / AVOID + crisis 50% haircut + the
+     five most-common exit methods. NOT live data - hand-built so the
+     mechanics are unambiguous. -->
+<section class="panel" id="sample">
+  <h2>15. Sample Trades - Worked walkthrough</h2>
+  <p class="desc">10 hand-built scenarios that walk through the full pipeline: regime classification -&gt; strategies firing -&gt; smart-money composite -&gt; <code>_assign_confidence_tier</code> -&gt; (optional) <code>_adjust_tier_by_agent</code> -&gt; position sizing -&gt; exit method -&gt; P&amp;L -&gt; running equity. Starting equity $100,000. Phase 1A-beta (agents off, all 4 legacy gates off). These are illustrative - NOT from the cube run.</p>
 
-// Tab switching
-document.querySelectorAll(".tab").forEach(tab => {
-  tab.onclick = () => {
-    document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
-    document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
-    tab.classList.add("active");
-    document.getElementById("panel-" + tab.dataset.tab).classList.add("active");
-  };
-});
+  <div class="kpi-grid" style="display:grid;grid-template-columns:repeat(6,1fr);gap:.4rem;margin-bottom:.5rem">
+    <div class="kpi"><div class="v">$100,000</div><div class="l">Starting equity</div></div>
+    <div class="kpi"><div class="v">10</div><div class="l">Scenarios</div></div>
+    <div class="kpi"><div class="v">8</div><div class="l">Trades placed</div></div>
+    <div class="kpi"><div class="v">2</div><div class="l">Skipped (AVOID + LOW)</div></div>
+    <div class="kpi"><div class="v good">5 / 3</div><div class="l">Wins / Losses</div></div>
+    <div class="kpi"><div class="v">$100,010</div><div class="l">Final equity</div></div>
+  </div>
 
-load();
-</script>
+  <table class="display compact" style="font-size:.78rem;width:100%">
+    <thead>
+      <tr>
+        <th>#</th><th>Date</th><th>Ticker</th><th>Regime</th><th>Strategies</th>
+        <th>Smart $</th><th>Tier</th><th>Size %</th><th>Pos $</th>
+        <th>Entry</th><th>Exit</th><th>Exit reason</th><th>P&amp;L $</th><th>Equity after</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>1</td><td>02-15</td><td>AAPL</td><td>bull</td><td>4 (near_52w_high, rsi_pullback, breakout_retest, ma_crossover)</td><td>cong+insider buy</td><td><strong>EXCEPTIONAL</strong></td><td>5.0%</td><td>$4,995</td><td>$185.00</td><td>$202.00</td><td>atr_trail_1x</td><td class="good">+$459</td><td>$100,459</td></tr>
+      <tr><td>2</td><td>02-22</td><td>MSFT</td><td>bull</td><td>3 (bollinger_tight, rsi_pullback, vwap_reclaim)</td><td>none</td><td>MEDIUM_HIGH</td><td>1.5%</td><td>$1,230</td><td>$410.00</td><td>$425.00</td><td>atr_trail_1x</td><td class="good">+$45</td><td>$100,504</td></tr>
+      <tr style="background:#3a1f1f"><td>3</td><td>02-28</td><td>META</td><td>bull</td><td>5 (would have been EXCEPTIONAL+)</td><td><strong>cong_sell + insider_cluster_sell</strong></td><td><strong>AVOID</strong></td><td>skip</td><td>-</td><td>$580</td><td>-</td><td>-</td><td>$0</td><td>$100,504</td></tr>
+      <tr style="background:#2a2a3a"><td>4</td><td>03-03</td><td>NVDA</td><td>bull</td><td>1 (rsi_pullback)</td><td>none</td><td><strong>LOW</strong></td><td>skip</td><td>-</td><td>$890</td><td>-</td><td>-</td><td>$0</td><td>$100,504</td></tr>
+      <tr><td>5</td><td>03-05</td><td>TSLA</td><td>neutral</td><td>3 (support_bounce, oversold_reversal, volume_spike)</td><td>none</td><td>MEDIUM_HIGH</td><td>1.5%</td><td>$1,480</td><td>$185.00</td><td>$170.20</td><td><strong>atr stop hit</strong></td><td class="bad">-$118</td><td>$100,386</td></tr>
+      <tr><td>6</td><td>03-09</td><td>GOOGL</td><td>bull</td><td>3 (pullback, ema9_cross, channel_low)</td><td>none</td><td>MEDIUM_HIGH</td><td>1.5%</td><td>$1,450</td><td>$145.00</td><td>$146.00</td><td><strong>time_stop_20d</strong></td><td class="good">+$10</td><td>$100,396</td></tr>
+      <tr><td>7</td><td>03-12</td><td>NFLX</td><td>bull</td><td>2 (momentum_breakout, rsi_strong)</td><td>none</td><td>MEDIUM</td><td>0.75%</td><td>$620</td><td>$620.00</td><td>$632.00</td><td><strong>earnings_blackout</strong></td><td class="good">+$12</td><td>$100,408</td></tr>
+      <tr><td>8</td><td>03-15</td><td>JPM</td><td>bull -&gt; bear</td><td>4 (cup_handle, rsi_pullback, vol_spike, channel_break)</td><td>cong OR insider</td><td>VERY_HIGH</td><td>4.0%</td><td>$3,870</td><td>$215.00</td><td>$208.00</td><td><strong>regime_flip</strong></td><td class="bad">-$126</td><td>$100,282</td></tr>
+      <tr style="background:#3a2f1f"><td>9</td><td>03-22</td><td>COST</td><td><strong>crisis</strong></td><td>3 (defensives_bid, support_hold, oversold)</td><td>none</td><td>MED_HIGH x 0.5</td><td>0.75%</td><td>$710</td><td>$710.00</td><td>$735.00</td><td>atr_trail_1x</td><td class="good">+$25</td><td>$100,307</td></tr>
+      <tr><td>10</td><td>03-29</td><td>AMZN</td><td>bull</td><td>4 (cup_handle, breakout_retest, rsi_strong, ma_cross)</td><td>cong+insider buy</td><td><strong>EXCEPTIONAL</strong></td><td>5.0%</td><td>$4,914</td><td>$182.00</td><td>$171.50</td><td><strong>atr stop hit (gap-down)</strong></td><td class="bad">-$284</td><td>$100,010</td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="margin-top:1rem">Per-trade walkthrough (mechanics)</h3>
+  <details style="margin:.4rem 0" open>
+    <summary><strong>Trade 1 - EXCEPTIONAL win (cluster + confluence + follow-through)</strong></summary>
+    <p style="margin:.3rem 0;font-size:.84rem">2026-02-15 09:35 ET. AAPL @ $185.00. Regime classifier: vol 14%, SPY +5% over 200-EMA -&gt; bull. Screener fires 4 strategies on AAPL: <code>near_52w_high</code>, <code>rsi_pullback</code>, <code>breakout_retest</code>, <code>ma_crossover_bullish</code> -&gt; <code>strategy_count = 4</code>. Smart-money producers run: congressional disclosure 14 days old shows 3 senators bought AAPL; insider feed shows 2 Form 4 buys this week -&gt; <code>composite_signal = congressional+insider_cluster</code>.</p>
+    <p style="margin:.3rem 0;font-size:.84rem"><strong>Stage 1 _assign_confidence_tier:</strong> first rule match = "smart-money = congressional+insider_cluster AND strategy_count &gt;= 4" -&gt; <strong>EXCEPTIONAL</strong>.<br><strong>Stage 2 _adjust_tier_by_agent:</strong> Phase 1A-beta has agents off -&gt; no-op -&gt; final tier = EXCEPTIONAL.</p>
+    <p style="margin:.3rem 0;font-size:.84rem"><strong>Sizing:</strong> $100,000 x 5.0% = $5,000 -&gt; floor($5,000 / $185) = <strong>27 shares</strong> ($4,995 deployed). Initial stop $173.90 (6% below). Exit method: <code>atr_trail_1x</code>.<br><strong>Days 1-18:</strong> price drifts up to $208 on day 12 (high-water); trailing stop ratchets to $202. Day 18 close $202 -&gt; trailing stop hits. Exit @ $202.00. PnL = 27 x $17 = <strong>+$459</strong>.</p>
+  </details>
+  <details style="margin:.4rem 0">
+    <summary><strong>Trade 2 - MEDIUM_HIGH win (3 strats, no smart money)</strong></summary>
+    <p style="margin:.3rem 0;font-size:.84rem">MSFT @ $410. 3 strategies fire: <code>bollinger_tight</code>, <code>rsi_pullback</code>, <code>vwap_reclaim</code>. No congressional / insider in window -&gt; <code>sm.composite_signal = "none"</code>, <code>sm.score = 0</code>. Stage 1 first matching rule: "strategy_count &gt;= 3" -&gt; <strong>MEDIUM_HIGH</strong> (1.5%). $100,459 x 1.5% = $1,506.89 -&gt; 3 shares x $410 = $1,230 (capital efficiency drops on high-priced tickers). 12 days. Exit @ $425. PnL = 3 x $15 = <strong>+$45</strong>.</p>
+  </details>
+  <details style="margin:.4rem 0">
+    <summary><strong>Trade 3 - AVOID skip (negative smart-money cluster blocks entry)</strong></summary>
+    <p style="margin:.3rem 0;font-size:.84rem">META @ $580. 5 strategies fire (would normally be EXCEPTIONAL+). BUT smart-money composite: congressional disclosure shows 4 senators sold; insider cluster shows 6 Form 4 sells in 10 days -&gt; <code>composite_signal = "congressional_sell+insider_cluster_sell"</code>. Stage 1 first rule: <code>composite_signal == "congressional_sell+insider_cluster_sell"</code> -&gt; <strong>AVOID</strong> regardless of confluence -&gt; no trade. This catches insider-cluster-coordinated distribution before a drop.</p>
+  </details>
+  <details style="margin:.4rem 0">
+    <summary><strong>Trade 4 - LOW skip (insufficient confluence)</strong></summary>
+    <p style="margin:.3rem 0;font-size:.84rem">NVDA @ $890. 1 strategy fires (<code>rsi_pullback</code>). No smart-money signal, <code>sm.score = 0</code>. Stage 1 falls through all confluence rules -&gt; final rule "else" -&gt; <strong>LOW</strong> -&gt; no trade.</p>
+  </details>
+  <details style="margin:.4rem 0">
+    <summary><strong>Trade 5 - Stopped out (ATR stop hit)</strong></summary>
+    <p style="margin:.3rem 0;font-size:.84rem">TSLA @ $185. Regime classifier: vol 26% -&gt; neutral. 3 strats: <code>support_bounce</code>, <code>oversold_reversal</code>, <code>volume_spike</code>. No smart money -&gt; tier <strong>MEDIUM_HIGH</strong> (1.5%). Position: $100,504 x 1.5% = $1,507 -&gt; 8 shares ($1,480). Initial stop $172.05 (~7% below); atr_trail_1x. Day 3: guidance scare, TSLA gaps to $169. Stop fills @ <strong>$170.20</strong>. PnL = 8 x -$14.80 = <strong>-$118.40</strong>.</p>
+  </details>
+  <details style="margin:.4rem 0">
+    <summary><strong>Trade 6 - time_stop_20d (no follow-through)</strong></summary>
+    <p style="margin:.3rem 0;font-size:.84rem">GOOGL @ $145. 3 strats. Tier MEDIUM_HIGH, position 10 shares. Price oscillates $143-$148 for 20 trading days. No trailing-stop activation, no follow-through. Day 20 close $146. <code>time_stop_20d</code> fires -&gt; exit. PnL = 10 x $1 = <strong>+$10</strong>.</p>
+  </details>
+  <details style="margin:.4rem 0">
+    <summary><strong>Trade 7 - earnings_blackout exit (event protection)</strong></summary>
+    <p style="margin:.3rem 0;font-size:.84rem">NFLX @ $620. 2 strats -&gt; tier <strong>MEDIUM</strong> (0.75%). Position 1 share ($620). Day 6: earnings 2 days away. <code>exit_earnings_blackout</code> checks <code>days_to_earnings &lt;= 3</code> -&gt; exits before announcement to avoid binary risk. Exit @ $632. PnL = <strong>+$12</strong>.</p>
+  </details>
+  <details style="margin:.4rem 0">
+    <summary><strong>Trade 8 - regime_flip exit (macro change)</strong></summary>
+    <p style="margin:.3rem 0;font-size:.84rem">JPM @ $215. 4 strats. Smart money: <code>congressional_or_insider</code> (3 senators bought) -&gt; rule "smart_money = congressional_or_insider AND strat_count &gt;= 3" -&gt; <strong>VERY_HIGH</strong> (4%). Position 18 shares ($3,870). Day 5: SPY breaks 200-EMA on rate-hike news -&gt; regime classifier flips to bear. <code>exit_regime_flip</code> exits next bar @ <strong>$208</strong>. PnL = 18 x -$7 = <strong>-$126</strong>.</p>
+  </details>
+  <details style="margin:.4rem 0">
+    <summary><strong>Trade 9 - Crisis regime + 50% size haircut</strong></summary>
+    <p style="margin:.3rem 0;font-size:.84rem">COST @ $710. Regime classifier: 20-day vol 33% -&gt; <code>crisis</code> flag. 3 strats. Smart money none. Stage 1 -&gt; MEDIUM_HIGH (1.5%). <strong>CLAUDE.md rule:</strong> "crisis regime longs allowed at 50% size; flagged regime=crisis_CRISIS_FLAG" -&gt; effective size = 0.75%. Position: $100,282 x 0.75% = $752 -&gt; 1 share ($710). 8 days; vol normalizes back to neutral; exit @ $735 via atr_trail_1x. PnL = <strong>+$25</strong>.</p>
+  </details>
+  <details style="margin:.4rem 0">
+    <summary><strong>Trade 10 - EXCEPTIONAL loss (gap-down past stop)</strong></summary>
+    <p style="margin:.3rem 0;font-size:.84rem">AMZN @ $182. 4 strats + <code>congressional+insider_cluster</code> (buy) -&gt; <strong>EXCEPTIONAL</strong> (5%). Position 27 shares ($4,914). Day 2: AMZN pre-announces weak Q2 guidance; gaps from $179 to $173 at open. ATR stop was at $173 but gap opens below -&gt; fills @ <strong>$171.50</strong> with slippage. PnL = 27 x -$10.50 = <strong>-$283.50</strong>. <em>Even high-confluence trades can lose; sizing matters because losses ARE 5% positions, not 0.75%.</em></p>
+  </details>
+
+  <h3 style="margin-top:1rem">Aggregate (8 placed trades, 2 skips)</h3>
+  <table class="display compact" style="font-size:.85rem;width:auto">
+    <tbody>
+      <tr><td>Trades placed</td><td>8 of 10 (2 skipped: AVOID + LOW)</td></tr>
+      <tr><td>Wins / Losses</td><td>5 / 3 (62.5% win rate)</td></tr>
+      <tr><td>Avg win</td><td>($459 + $45 + $10 + $12 + $25) / 5 = <strong>$110.20</strong></td></tr>
+      <tr><td>Avg loss</td><td>($118 + $126 + $284) / 3 = <strong>$176.00</strong></td></tr>
+      <tr><td>Win / loss ratio</td><td>0.63 (avg-win / avg-loss; below the 1.0 criterion)</td></tr>
+      <tr><td>Profit factor</td><td>(5 x $110) / (3 x $176) = 1.04 (barely above 1)</td></tr>
+      <tr><td>Total P&amp;L</td><td>+$551 - $528 = <strong>+$10</strong> net (essentially break-even)</td></tr>
+      <tr><td>Tier mix</td><td>2 EXCEPTIONAL (5%) / 1 VERY_HIGH (4%) / 4 MEDIUM_HIGH (1.5%) / 1 MEDIUM (0.75%) / 1 crisis-haircut MED_HIGH (0.75%) / 1 AVOID / 1 LOW</td></tr>
+      <tr><td>Exit-method mix</td><td>3 atr_trail_1x / 2 atr stop hit / 1 time_stop_20d / 1 earnings_blackout / 1 regime_flip</td></tr>
+    </tbody>
+  </table>
+  <p class="desc" style="margin-top:.5rem"><strong>Takeaway.</strong> This sample is engineered to land near break-even on purpose - it mirrors the empirical cube finding (most cells fail strict 5-Gate). A 62.5% win rate sounds good, but with 0.63 W:L ratio + only 8 trades, profit factor 1.04 doesn't clear the 1.5 overall threshold. To pass the 9 criteria the strategy mix needs EITHER higher win rate (~70%) OR larger avg-win/avg-loss ratio (~1.5+). The cube optimizer (Tab 11) is what hunts for parameter combinations that achieve this.</p>
+</section>
+
+<!-- Batch 441 (2026-05-29): Cube Diff tracking - per-cell deltas between
+     iterations so owner can validate whether each optimization batch
+     actually moved the needle. -->
+<section class="panel" id="cubediff">
+  <h2>16. Cube Diff - Iteration tracking</h2>
+  <p class="desc">Track Phase 1A-beta cube changes across iterations: per-cell Sharpe / n / verdict deltas, quiet-bucket movement, total trade count, and which optimizations actually moved cells from FAIL -&gt; PASS.</p>
+
+  <!-- Owner-question answers + run-objectives block (Batch 441 static content). -->
+  <details style="margin:.4rem 0;background:#1a1f29;border:1px solid var(--accent);padding:.4rem .7rem;border-radius:6px" open>
+    <summary style="cursor:pointer;color:var(--accent);font-weight:600">Run objectives + answers to "what did we test" / "why limited rows" (click to collapse)</summary>
+    <div style="font-size:.85rem;color:var(--text);margin-top:.5rem">
+
+      <h4 style="margin:.4rem 0 .2rem;color:var(--accent)">Why are there so few rows in Tab 13 Cell Cube?</h4>
+      <p style="margin:.3rem 0"><strong>Theoretical ceiling: 4,625 cells per regime</strong> (185 strategies x 25 exit methods). Today's payload shows ~100 cells.</p>
+      <p style="margin:.3rem 0"><strong>Cube replay mechanics (corrected Batch 442).</strong> Each entry the strategy fires gets written to <code>trade_log.csv</code> once (closed via its primary exit). The cube replay then simulates that entry through ALL 25 exit methods - producing <code>trade_exit_detail.csv</code> with one row per <code>(trade x exit_method)</code>. So if a strategy fires 100 entries, <code>trade_exit_detail</code> has 100 x 25 = 2,500 rows for that strategy. The L2 groupby <code>(strategy, exit_method)</code> produces 25 cells per strategy, each cell containing the same 100 trades - so <strong>n = 100 in every cell</strong>, NOT divided across exits. Each entry gets multiplied by 25, not divided.</p>
+      <p style="margin:.3rem 0"><strong>So why only ~100 cells visible?</strong> 100 cells / 25 exits per strategy = ~4 fully-populated strategies, but the payload shows 20 unique strategies in L2 - meaning most strategies have only 5-6 exit cells, not the full 25. The cause is degenerate cells filtered out for reasons that are real bugs, not structural limits:</p>
+      <ul style="margin:.2rem 0 .4rem;padding-left:1.4rem">
+        <li><code>scripts/optimize_strategies_from_cube.py::analyze_exit_methods</code> Layer 2 excludes every cell with <code>n &lt; 5</code> trades (this is the only structural filter).</li>
+        <li><strong>Pre-Batch-415 bug</strong>: <code>exit_earnings_blackout</code> always returned <code>"no_earnings_known"</code> because <code>signals_at_entry</code> dict was missing <code>ticker</code> - so every cell using earnings_blackout had constant exit reason and got dropped as degenerate.</li>
+        <li><strong>Pre-Batch-415 bug</strong>: <code>exit_class_time_stop</code> defaulted to <code>"momentum"</code> for every strategy because <code>strategy_name</code> wasn't in the signals dict either - same constant-exit -&gt; degenerate filter.</li>
+        <li><strong>Pre-Batch-416 silent failures</strong>: SMC-derived strategies produced empty replays where SMC keys were absent - those cells had n=0 and got filtered.</li>
+        <li>Some exits genuinely don't apply (e.g., <code>earnings_blackout</code> on a strategy that never trades near earnings -&gt; 0 trades hit the blackout window -&gt; n=0).</li>
+      </ul>
+      <p style="margin:.3rem 0"><strong>Post-merge expectation</strong>: the just-finished re-run was the first one with Batches 414/415/416 active. The L2 cell count should rise materially (not stay flat at ~100) because the degenerate-cell filtering was a bug, not a structural limit. If it stays at ~100 after the merge + new optimizer run, the bugs are not yet fully fixed and we'd need to investigate further.</p>
+
+      <h4 style="margin:.6rem 0 .2rem;color:var(--accent)">What did this Phase 1A-beta re-run actually test?</h4>
+      <p style="margin:.3rem 0">Shape A launch on AWS (3 x c7a.8xlarge spot, ~$9.30, ~5h wall-time). Full cube: 185 active strategies x 25 exit methods x 7 historical regime windows, run with all four legacy gates OFF (<code>--no-portfolio-cap --no-dd-halt --no-regime-affinity --no-event-suppression</code>) on the canonical 2020-01-01 -&gt; 2026-05-XX window. Commit <code>948769bf2</code> (Batch 424 orchestrator slot logic).</p>
+      <p style="margin:.3rem 0"><strong>Key objectives of THIS iteration:</strong></p>
+      <ol style="margin:.2rem 0 .4rem;padding-left:1.4rem">
+        <li><strong>Validate Batch 415 (signals_at_entry enrichment).</strong> Prior cube: <code>signals_at_entry</code> dict was missing <code>ticker</code> + <code>strategy_name</code> + <code>category</code>, so <code>exit_earnings_blackout</code> always returned <code>"no_earnings_known"</code> and <code>exit_class_time_stop</code> always defaulted to <code>"momentum"</code>. Batch 415 added those keys at <code>run_exit_comparison</code> before each exit_fn call. Post-merge check: how many cells changed (especially for earnings-sensitive strategies and class-time-stop variants).</li>
+        <li><strong>Surface SMC silent-failure root cause via Batch 416.</strong> Prior cube: 0 of 29,159 trades had any <code>smc_*</code> key despite <code>compute_smc_signals</code> returning 28 keys locally. Batch 416 wired <code>_log_silent_producer_failure</code> rate-limited diagnostic logging at the SMC + classification_change + institutional_signal call sites. Post-merge: read engine logs (1 line per producer+exception-type) to identify the actual AWS-environment failure.</li>
+        <li><strong>Re-evaluate 1A-alpha gate.</strong> Currently LOCKED at best OOS Sharpe 0.419 (walk_forward_batch414_cells.json). If the re-run with fixes pushes any strategy past 0.7 OOS in any regime, gate opens; Phase 1B-alpha $300 Haiku agent budget becomes eligible. If not, loop back to entry-side optimization.</li>
+        <li><strong>Validate Batch 421 (PEAD lru_cache).</strong> Engine-speedup batch. Profile previously showed <code>load_quarterly_eps</code> at 67s cumtime / ~12% of total engine cost. lru_cache means each ticker's parquet reads once instead of once-per-day. Validate ~10-12% wall-time reduction vs prior cube.</li>
+        <li><strong>Refresh quiet-bucket lists.</strong> Prior bucket counts: PRODUCER_LAYER_ZERO_LIKELY = 6 (all SMC), COMPOUND_RESTRICTIVE = 31, SKIPPED_AT_ENGINE = 48. Post-merge re-audit shows movement: SKIPPED should drop most because <code>--no-portfolio-cap</code> + <code>--no-event-suppression</code> were the main blockers; if it stays at ~48 the cause is structural (liquidity floor).</li>
+        <li><strong>Refresh STRATEGY_REGIME_AFFINITY (Batches 417/418).</strong> 14 new + 15 override entries derived from prior cube cell stats. Validate they still hold under fresh data; surface any contradictions.</li>
+      </ol>
+
+      <h4 style="margin:.6rem 0 .2rem;color:var(--accent)">Total trade count - latest run vs previous</h4>
+      <table class="display compact" style="font-size:.85rem;width:auto">
+        <thead><tr><th></th><th>Total trades</th><th>Source</th></tr></thead>
+        <tbody>
+          <tr><td>Prior cube</td><td><strong>29,159</strong></td><td><code>archive/2026-05-29-pre-rerun-cube-snapshot/trade_log_prior.csv</code> (snapshotted before merge overwrite)</td></tr>
+          <tr><td>Latest re-run</td><td><strong>TBD (merge in flight)</strong></td><td><code>output_batch395_final/trade_log.csv</code> once merge completes</td></tr>
+          <tr><td>Delta</td><td><strong>TBD</strong></td><td>Will populate post-merge + dashboard rebuild</td></tr>
+        </tbody>
+      </table>
+      <p style="margin:.3rem 0;color:var(--muted);font-size:.82rem">Expected directional move: total trade count should rise modestly because Batch 415 fixes earnings_blackout / class_time_stop seeing the right ticker - those exits previously short-circuited and produced fewer cube replays. The PRODUCER_LAYER_ZERO_LIKELY bucket (6 SMC strategies, 0 trades each prior) should NOT contribute new trades yet - Batch 416 only logs the failure, doesn't fix the producer.</p>
+    </div>
+  </details>
+
+  <!-- Live diff KPIs + table (will populate when build_dashboard supports cube_diff payload). -->
+  <h3 style="margin-top:1rem">Live diff (current run vs prior snapshot)</h3>
+  <div id="cubediff-status" style="background:#3a2f1f;border-left:3px solid var(--warn);padding:.5rem .8rem;border-radius:4px;font-size:.85rem;margin-bottom:.5rem">
+    <strong>Diff not yet computed.</strong> The just-finished cube re-run (commit <code>948769bf2</code>) is still being merged from S3 (<code>aws_batch395_merge.py</code> background task). Once the merge + optimizer re-run + dashboard rebuild complete, this section will auto-populate with:
+    <ul style="margin:.3rem 0 .2rem;padding-left:1.4rem">
+      <li>Per-cell n / Sharpe / win-rate / profit-factor / verdict deltas.</li>
+      <li>Verdict-flip counts (FAIL -&gt; PASS-relaxed = improvement; PASS-strict -&gt; FAIL = regression).</li>
+      <li>New cells (didn't reach n &gt;= 5 before, do now) + retired cells (had n &gt;= 5 before, don't now).</li>
+      <li>Bucket-count diff: PRODUCER 6 -&gt; X, COMPOUND 31 -&gt; X, SKIPPED 48 -&gt; X.</li>
+      <li>Total trade-count delta.</li>
+      <li>Top 20 most-improved cells (largest +Sharpe delta) and top 20 most-regressed.</li>
+    </ul>
+    Prior baseline snapshot: <code>archive/2026-05-29-pre-rerun-cube-snapshot/exit_method_analysis_prior.json</code>.
+  </div>
+
+  <div id="cubediff-kpis" class="kpis"></div>
+
+  <h4 style="margin-top:.7rem">Bucket count delta</h4>
+  <table id="cubediff-buckets" class="display compact" style="font-size:.85rem"></table>
+
+  <h4 style="margin-top:.7rem">Most-improved cells (top 20 by +Sharpe delta)</h4>
+  <table id="cubediff-improved" class="display compact" style="font-size:.85rem"></table>
+
+  <h4 style="margin-top:.7rem">Most-regressed cells (top 20 by -Sharpe delta)</h4>
+  <table id="cubediff-regressed" class="display compact" style="font-size:.85rem"></table>
+
+  <h3 style="margin-top:1rem">How to iterate on this dashboard</h3>
+  <ol style="font-size:.85rem">
+    <li><strong>Snapshot.</strong> Before launching the next cube re-run, copy <code>output_batch395_final/trade_log.csv</code> + <code>output_optimization_candidates_*/exit_method_analysis.json</code> + <code>producer_zero_post_cube_audit.json</code> to <code>archive/&lt;date&gt;-pre-rerun-cube-snapshot/</code>. Append <code>_prior</code> suffix to filenames.</li>
+    <li><strong>Launch the cube re-run</strong> with the new batch of fixes (e.g. STRATEGY_EXIT_OVERRIDE updates, producer fixes, gate-threshold tuning).</li>
+    <li><strong>Merge + optimize.</strong> <code>aws_batch395_merge.py --upload-final</code> then <code>scripts/optimize_strategies_from_cube.py</code> on the new <code>output_batch395_final/</code>.</li>
+    <li><strong>Rebuild dashboard</strong> with <code>scripts/build_dashboard_phase_1a.py --source output_batch395_final</code>. The build script (Batch 441b extension) loads both the prior snapshot AND the current optimizer output, joins on (strategy, exit_method), computes per-cell deltas, and emits <code>D.cube_diff</code>. This Tab 16 then renders the diff KPIs + 3 tables above.</li>
+    <li><strong>Read the diff.</strong> Are the cells we tried to improve actually improved? Did the verdict flip from FAIL to PASS-relaxed? Did the bucket counts move in the expected direction? If yes, the optimization batch is validated; commit. If no, the hypothesis was wrong and we need a different lever.</li>
+  </ol>
+</section>
+
+<!-- Batch 443 (2026-05-29): Iteration Rounds registry tab. -->
+<section class="panel" id="rounds">
+  <h2>17. Iteration Rounds</h2>
+  <p class="desc">Phase 1A-beta cube re-run history. Each row is one full cube iteration. Source: <code>archive/cube_rounds/rounds.json</code> (append-only). Snapshot the prior round's outputs to <code>archive/&lt;date&gt;-pre-rerun-cube-snapshot/</code> BEFORE launching a new round so the diff can be computed.</p>
+
+  <h3 style="margin-top:.5rem">Round summary table</h3>
+  <table id="rounds-summary-table" class="display compact" style="font-size:.82rem;width:100%"></table>
+
+  <h3 style="margin-top:1rem">Per-round detail (objectives / changes / findings)</h3>
+  <div id="rounds-detail"></div>
+</section>
+
+<!-- Batch 443 (2026-05-29): Cell Cube cross-round comparison tab. -->
+<section class="panel" id="cellcompare">
+  <h2>18. Cell Cube Comparison</h2>
+  <p class="desc">Per-(strategy x exit_method) cell across every round. n / Sharpe / verdict for each round side-by-side, sorted by absolute |R3-R2 Sharpe delta| so the most-changed cells bubble up. Use this to validate whether a specific cell actually moved the way you expected from the round's changes.</p>
+  <div id="cellcompare-kpis" class="kpis"></div>
+  <table id="cellcompare-table" class="display compact" style="font-size:.78rem;width:100%"></table>
+</section>
+
+<section class="panel" id="raw">
+  <h2>Raw payload (debug)</h2>
+  <p class="desc">All payload keys + counts — use for cross-checking dashboard parsing.</p>
+  <pre id="raw-pre" style="font-size:.7rem;color:var(--muted);background:#0d1117;padding:.5rem;border-radius:4px;overflow-x:auto"></pre>
+</section>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<!-- Batch 430: markdown rendering for Tab 10 Optimizer Summary -->
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="data.js"></script>
+<script src="app.js"></script>
+
 </body>
 </html>

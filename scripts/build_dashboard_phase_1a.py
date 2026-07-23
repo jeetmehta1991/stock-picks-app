@@ -42,6 +42,10 @@ _parser.add_argument("--approvals", default="",
                           "decisions). Default empty -> looks for "
                           "<optimizer-dir>/approvals.json. Non-existent = "
                           "Candidates tab approvals header rendered as 'no data'.")
+_parser.add_argument("--output-dir", default="dashboard_phase_1a",
+                     help="B1350: dashboard output dir (default dashboard_phase_1a). "
+                          "Set to dashboard_r5_cube to build the R5 22-tab dashboard "
+                          "without clobbering the R4/Phase-1A one.")
 _args, _ = _parser.parse_known_args()
 OUT_DIR = REPO / _args.source
 OPT_DIR = REPO / _args.optimizer_dir
@@ -49,7 +53,7 @@ if _args.approvals:
     APPROVALS_PATH = Path(_args.approvals)
 else:
     APPROVALS_PATH = OPT_DIR / "approvals.json"
-DASH = REPO / "dashboard_phase_1a"
+DASH = REPO / _args.output_dir
 DASH.mkdir(parents=True, exist_ok=True)
 
 
