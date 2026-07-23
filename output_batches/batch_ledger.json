@@ -31,7 +31,6 @@
         "MSFT",
         "AVGO",
         "V",
-        "BRK-B",
         "MA",
         "LLY",
         "UNH",
@@ -54,8 +53,11 @@
       "cost_usd": 0.6,
       "committed": true,
       "sha": "e846b6d2cfb3",
-      "note": "BRK-B cache-index gap, 19/20 traded",
-      "wall_min": 29.4
+      "note": "BRK-B cache-index gap (deferred to batch 3 after cache-refresh); 19/20 covered",
+      "wall_min": 29.4,
+      "tickers_deferred": [
+        "BRK-B"
+      ]
     }
   ],
   "hourly_rate_usd": 1.2
