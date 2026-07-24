@@ -148,6 +148,19 @@ def main() -> int:
                     help="run_manifest.json -- runs scripts/prelaunch_gate.py "
                          "first (HALT on fail, zero spend) and takes "
                          "expect-sha from manifest.frozen_sha")
+    # B1358 (200-tkr hang RCA): launcher-config overrides ONLY -- these do NOT
+    # touch engine code, so code_sha (env_fingerprint.MERGE_CRITICAL) is
+    # unchanged and outputs still merge with the frozen batch sequence. The
+    # 200-ticker hang was pool memory-pressure (16 workers x full ohlcv copy +
+    # pre-warmed Quiver bulk caches -> OOM -> dead worker -> imap_unordered
+    # deadlock), NOT a bad ticker (bisect ruled that out). Drop to 8 workers to
+    # halve concurrent duplication; escalate instance RAM if it still hangs.
+    ap.add_argument("--pool-workers", default=POOL_WORKERS,
+                    help=f"screen-pool worker count (default {POOL_WORKERS}); "
+                         "use 8 for 200-ticker batches per B1358 RCA")
+    ap.add_argument("--instance-type", default=INSTANCE_TYPE,
+                    help=f"EC2 instance type (default {INSTANCE_TYPE}); "
+                         "r6a.16xlarge = 512GB if 8-worker/128GB still hangs")
     args = ap.parse_args()
     n = str(args.chunk)
 
@@ -181,7 +194,7 @@ def main() -> int:
         "@CKPT_PUT@": presign(s3, "put", f"chunk{n}/ckpt.tar"),
         "@ART_PUT@": presign(s3, "put", f"chunk{n}/artifacts.tar"),
         "@RESUME@": "1" if args.resume else "0",
-        "@POOL@": POOL_WORKERS, "@MAXH@": MAX_RUN_HOURS,
+        "@POOL@": str(args.pool_workers), "@MAXH@": MAX_RUN_HOURS,
         # B1328/B1336: expected code SHA for the on-instance pre-engine gate.
         # --expect-sha (frozen sequences) overrides the HEAD default.
         "@EXPECT_SHA@": (args.expect_sha or subprocess.run(
@@ -206,7 +219,7 @@ def main() -> int:
     ami = sorted(amis["Images"], key=lambda i: i["CreationDate"])[-1]["ImageId"]
 
     resp = ec2.run_instances(
-        ImageId=ami, InstanceType=INSTANCE_TYPE, MinCount=1, MaxCount=1,
+        ImageId=ami, InstanceType=args.instance_type, MinCount=1, MaxCount=1,
         InstanceMarketOptions={"MarketType": "spot", "SpotOptions": {
             "MaxPrice": SPOT_MAX_PRICE, "SpotInstanceType": "one-time",
             "InstanceInterruptionBehavior": "terminate"}},

@@ -6234,3 +6234,13 @@ Owner: (1) "Add these gates to the skill" - SKILL.md gains MECHANICAL ENFORCEMEN
 ### B1257 (2026-07-08 Council 301 cont.): AWS LAUNCH PLAYBOOK GATE 5 ADDED (owner directive)
 
 Owner: "Add line to launch playbook." docs/r6_workflow_reuse/AWS_LAUNCH_PLAYBOOK.md Section 1: new Gate 5 (B1256) - bootstrap must run scripts/install_git_hooks.sh immediately after git clone when the instance commits (hooks live in .git/, do not travel with clones -> fresh clone silently skips ALL commit gates C1-C9). Includes user-data verification grep + explicit-skip rule for compute-only instances. Pre-flight gate count 4 -> 5. Scripts' existence verified (install_git_hooks.bat + .sh both present).
+
+### B1358 (2026-07-24): 200-ticker hang RCA + POOL_WORKERS launcher override + next-200 roster
+
+Owner: "Do rca. 100 ticker batch size is too limited." → chose (B) bisect 5b for a bad ticker.
+- **Bad-ticker hypothesis RULED OUT (verified, not reasoned):** local `screen_instrument` sweep of all 100 of 5b's tickers at the exact hang date 2022-09-28 (day 100) → 100/100 clean + fast (0.3–0.6s; GPC 18s = first-ticker TA-impl warmup; FLIR 0.00s = delisted/no-data). Repro `$TEMP/bisect5b.py`. RCA doc: `output_audit/b1358_batch5_200tkr_hang_rca_2026_07_24.md`.
+- **Cause:** screen-pool memory pressure at 200-tkr scale (16 workers × full ohlcv copy + pre-warmed Quiver bulk caches → OOM → dead worker → `imap_unordered` deadlock; frozen-engine + live-heartbeat signature).
+- **Fix (launcher-config ONLY, frozen-SHA-safe — code_sha computed on-instance from frozen r5_code.tar, unaffected):** `scripts/aws_chunk_launch.py` gains `--pool-workers` + `--instance-type` overrides (default 16 / c6a.16xlarge unchanged). Next 200-tkr batch launches with `--pool-workers 8`; escalate `--instance-type r6a.16xlarge` (512GB) if it still hangs. Verified `--help` parses.
+- **Owner decision:** NO separate paid validation run — the next 200-tkr batch (with the fix) IS the validation, launched AFTER 5a completes.
+- **Roster pinned:** master T1a = 614; covered (batches 1-4 + 5a) = 271; uncovered = 343. Wrote `output_batches/batch_6_roster.json` (chunk17, 200 tkr = deferred 5b 100 + 100 fresh, pool_workers=8) + `batch_7_roster.json` (final tail 143). Two runs finish the cube, not three 100-tkr grinds.
+- **Status:** 5a running (day ~800/1002, healthy, cron a23ec04e armed). Batch 6 launches on 5a-completion per owner pre-approval.
