@@ -58,7 +58,7 @@ jobs:
           cp dashboard_r5/index.html _site/dashboard_r5/index.html
           # B1350: R5 cube dashboard on the 22-tab dashboard_phase_1a template -
           # index.html reads data.js (window.PHASE_1A_DATA); data.json for consumers.
-          cp dashboard_r5_cube/index.html dashboard_r5_cube/data.js dashboard_r5_cube/data.json dashboard_r5_cube/last_run.txt _site/dashboard_r5_cube/
+          cp dashboard_r5_cube/index.html dashboard_r5_cube/app.js dashboard_r5_cube/data.js dashboard_r5_cube/data.json dashboard_r5_cube/last_run.txt _site/dashboard_r5_cube/
           cp index.html _site/index.html
           touch _site/.nojekyll
           echo "=== Site root contents ==="

@@ -5576,6 +5576,10 @@ Catch 2 (monitor): drill controller false-TERMINAL on the PREVIOUS smoke's stale
 
 Drill instance i-01659762cd5a4fc9a running; controller v2 will terminate no-notice at day>100 with synced ckpt, then --resume relaunch proves recovery. Spend ~$2.6 of $50 CAD cap.
 
+### B1353 (2026-07-23 Council 373 cont.): FIX dashboard_r5_cube stuck-on-loading (owner "still shows loading")
+
+Root cause: the 22-tab index.html loads data.js (data) AND app.js (renderer) + CDN libs (jquery/datatables/chart.js/marked). I copied index.html+data.js but NOT app.js -> data present, nothing renders -> stuck "loading". FIX: copied dashboard_phase_1a/app.js -> dashboard_r5_cube/app.js + added app.js to the Pages deploy workflow copy step. (app.js is the only local asset; CDN libs load externally on Pages.) Regen note: the 22-tab regen = merge_batch_outputs -> build_dashboard_phase_1a --output-dir dashboard_r5_cube -> copy index.html+app.js -> cap data.js. Pushing redeploys.
+
 ### B1352 (2026-07-23 Council 373 cont.): BATCH 4 LAUNCHED - chunk14 i-01ac536072bc3cb52 (owner "run batch 4")
 
 Owner explicit go. Pre-flight all green: quota free, frozen tar e846b6d2c in S3, roster 100 (BRK-B/BF-B FOLD-IN + 98 sector-stratified disjoint from batches 1-3), _cache_path coverage gate 100/100 serveable (BRK-B/BF-B fix holds), prelaunch_gate PASS (budget 23+2.1<=50 honest total). LAUNCHED i-01ac536072bc3cb52 (100 tkr, cache-refresh overlay with BRK_B/BF_B active, user-data 9860B). Expected ~105min (~$2.10). Monitor armed + 15-min cadence. Validates BRK-B/BF-B trade this time.
