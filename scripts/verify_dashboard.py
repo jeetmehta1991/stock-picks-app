@@ -51,6 +51,23 @@ def check_dir(d: Path) -> list[str]:
                         if isinstance(v, (list, dict)) and len(v) > 0]
             if not nonempty:
                 fails.append("data.json parses but EVERY section is empty (all tabs blank)")
+            # B1355: content-correctness -- a data-driven header/round banner must
+            # resolve to POPULATED metadata for the current round, else the page
+            # shows a stale/empty banner (the R3-banner class: right data, wrong
+            # round shown). Catches "shows the wrong dataset", not just "renders".
+            cur = data.get("current_round")
+            if cur is not None:
+                ir = data.get("iteration_rounds", [])
+                meta = next((r for r in ir if r.get("id") == cur), None)
+                if meta is None:
+                    fails.append(f"current_round={cur} but no matching iteration_rounds entry "
+                                 "(banner will render empty/stale)")
+                else:
+                    blank = [f for f in ("label", "date_completed", "trades_total",
+                                         "n_strategies_fired") if not meta.get(f)]
+                    if blank:
+                        fails.append(f"current_round={cur} banner metadata blank: {blank} "
+                                     "(register the round in archive/cube_rounds/rounds.json)")
         except Exception as exc:
             fails.append(f"data.json does not parse: {exc}")
     return fails

@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-07-23T22:51:09.074760+00:00",
+ "generated_at": "2026-07-24T01:31:26.180127+00:00",
  "source_dir": "output_r5_merged_1_3",
  "optimizer_dir": null,
  "optimizer_summary_md": "",
@@ -101,12 +101,25 @@
     "Real edges that strengthened: pivot_s2_bounce / class_time_stop 1.28 -> 3.90 (Batch 415 fix landing - strategy_name now reaches class_time_stop correctly); vix_backwardation_long x 3 exits 0.80-1.71 -> 1.16-1.73; stoch_oversold / class_time_stop 1.60 -> 1.63 (n 6 -> 11 stable + slight gain = real edge).",
     "PRODUCER_LAYER_ZERO_LIKELY unchanged at 6 - Batch 416 logging didn't surface the SMC root cause OR the logs haven't been inspected yet. Need to download engine logs from the cube AMI."
    ]
+  },
+  {
+   "id": "R5",
+   "label": "Full-T1a R5 baseline cube (batches 1-3, escalating; frozen e846b6d2c)",
+   "date_completed": "2026-07-23",
+   "commit": "e846b6d2cfb3",
+   "n_strategies_fired": 202,
+   "L2_cells_n_gte_5": 405,
+   "is_baseline": true,
+   "universe": "T1a full-PIT (614 target)",
+   "note": "R5=baseline; per-cell delta starts at R6 (owner 2026-07-23). R5-vs-R3 delta not meaningful (different universe/window).",
+   "trades_total": 27490
   }
  ],
- "current_round": "R3",
+ "current_round": "R5",
  "round_ids": [
   "R2",
-  "R3"
+  "R3",
+  "R5"
  ],
  "cell_cube_comparison": [],
  "stage_4_approvals": {
@@ -162070,21 +162083,5 @@
     "total_pnl_pct": 62.5054
    }
   ]
- },
- "_display_caps": {
-  "cap": 2500,
-  "capped_arrays": {
-   "mae_bucket": 4628,
-   "mfe_bucket": 11700,
-   "smart_money_exit": 4498,
-   "by_sector": 47320,
-   "sector_concentration": 7024,
-   "skipped_trades": 5000,
-   "circuit_breaker_log": 5767,
-   "cb_by_active": 4498,
-   "exit_methods": 5174,
-   "exit_comparison": 4498
-  },
-  "note": "B1350: oversized merged per-dimension arrays capped for serveable size; proper re-aggregation of merged exit_by_* CSVs is S6-B1350-MERGE-REAGG"
  }
 }

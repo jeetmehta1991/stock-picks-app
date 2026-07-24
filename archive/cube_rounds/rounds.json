@@ -3,7 +3,6 @@
   "_schema_version": 1,
   "_authored_batch": 443,
   "_authored_date": "2026-05-29",
-
   "rounds": [
     {
       "id": "R2",
@@ -31,7 +30,6 @@
       "exit_method_analysis_path": "archive/2026-05-29-pre-rerun-cube-snapshot/exit_method_analysis_prior.json",
       "producer_zero_audit_path": "archive/2026-05-29-pre-rerun-cube-snapshot/producer_zero_post_cube_audit_prior.json",
       "trade_log_path": "archive/2026-05-29-pre-rerun-cube-snapshot/trade_log_prior.csv",
-
       "objectives": [
         "First full Phase 1A-beta cube run with all 4 legacy gates OFF (--no-portfolio-cap / --no-dd-halt / --no-regime-affinity / --no-event-suppression). Establish baseline.",
         "Validate 185-strategy x 25-exit cube replay produces sensible trade_log + trade_exit_detail.",
@@ -74,7 +72,6 @@
       "exit_method_analysis_path": "output_optimization_candidates_2026_05_29/exit_method_analysis.json",
       "producer_zero_audit_path": "output_optimization_candidates_2026_05_29/producer_zero_post_cube_audit.json",
       "trade_log_path": "output_batch395_final/trade_log.csv",
-
       "objectives": [
         "Validate Batch 415 signals_at_entry enrichment (ticker / strategy_name / category) - fixes pre-existing bugs in exit_earnings_blackout (returned no_earnings_known always) and exit_class_time_stop (defaulted to momentum always).",
         "Surface SMC silent-failure root cause via Batch 416 rate-limited diagnostic logging at 3 producer call sites (classification_change / institutional_signal / smc_ict).",
@@ -100,6 +97,18 @@
         "Real edges that strengthened: pivot_s2_bounce / class_time_stop 1.28 -> 3.90 (Batch 415 fix landing - strategy_name now reaches class_time_stop correctly); vix_backwardation_long x 3 exits 0.80-1.71 -> 1.16-1.73; stoch_oversold / class_time_stop 1.60 -> 1.63 (n 6 -> 11 stable + slight gain = real edge).",
         "PRODUCER_LAYER_ZERO_LIKELY unchanged at 6 - Batch 416 logging didn't surface the SMC root cause OR the logs haven't been inspected yet. Need to download engine logs from the cube AMI."
       ]
+    },
+    {
+      "id": "R5",
+      "label": "Full-T1a R5 baseline cube (batches 1-3, escalating; frozen e846b6d2c)",
+      "date_completed": "2026-07-23",
+      "commit": "e846b6d2cfb3",
+      "n_strategies_fired": 202,
+      "L2_cells_n_gte_5": 405,
+      "is_baseline": true,
+      "universe": "T1a full-PIT (614 target)",
+      "note": "R5=baseline; per-cell delta starts at R6 (owner 2026-07-23). R5-vs-R3 delta not meaningful (different universe/window).",
+      "trades_total": 27490
     }
   ]
 }
