@@ -6244,3 +6244,11 @@ Owner: "Do rca. 100 ticker batch size is too limited." → chose (B) bisect 5b f
 - **Owner decision:** NO separate paid validation run — the next 200-tkr batch (with the fix) IS the validation, launched AFTER 5a completes.
 - **Roster pinned:** master T1a = 614; covered (batches 1-4 + 5a) = 271; uncovered = 343. Wrote `output_batches/batch_6_roster.json` (chunk17, 200 tkr = deferred 5b 100 + 100 fresh, pool_workers=8) + `batch_7_roster.json` (final tail 143). Two runs finish the cube, not three 100-tkr grinds.
 - **Status:** 5a running (day ~800/1002, healthy, cron a23ec04e armed). Batch 6 launches on 5a-completion per owner pre-approval.
+
+### B1359 (2026-07-24): Batch 5a COMMITTED + hang-RCA empirically validated
+
+Batch 5a (chunk16, 100 tkr = first half of the split 200-tkr run) ran the FULL window to day 1002 (engine status=finished), 27,493 trades, 197 traded_strategies, 82/100 tickers_traded, wall 106.7min, cost $2.13. artifacts.tar was 2.47GB (fat trade_log) -> slimmed to 20-col zstd 0.71MB. env_fingerprint MERGE_CRITICAL identical to batch_4 (code_sha e846b6d2cfb3, grid_total 1003, grid_hash a6a8441d06cb9b32) -> mergeable. Ledger total $6.27/$50.
+- **RCA VALIDATED:** batch-5 (200 tkr) hung MID-run at day 100; batch 5a (100 tkr) ran clean PAST day 100 to day 1002. Confirms B1358: cause = screen-pool memory pressure at 200-ticker scale, NOT delisted tickers. Fix = --pool-workers 8 (frozen-SHA-safe).
+- **Finalize-script bug caught (L217 confirm-before-replicating):** tar had no plain summary.json; extractor matched regime_stratified_summary.json. Regenerated summary.json in batch_4 batch-metadata format before commit.
+
+S6-B1356-B4-NONTRADED (EXTENDED): batch-5a adds 3 eligible-yet-zero-fire tickers to the ESS/SATS/CIEN class: ABMD (160 in-window bars, delisted 2022-12), BIO (1003 bars, full), MLM (1003 bars, always-active large-cap). All have cache data present (NOT a BRK-B missing-cache bug) yet 0 trades across 197 traded strategies. Investigate: liquidity floor? annual-PIT eligibility gap? genuine no-signal? Deferred (non-blocking for cube merge; zero-trade tickers add no cube cells). The other 15 nontraded are PIT-legit (removed<2022-05-05 window / added>window / mid-year churn).

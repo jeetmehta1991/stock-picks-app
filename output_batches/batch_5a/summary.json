@@ -1,0 +1,15 @@
+{
+ "batch": "5a",
+ "chunk": "chunk16",
+ "frozen_sha": "e846b6d2cfb3",
+ "window": "2022-05-05..2026-05-05",
+ "trades": 27493,
+ "traded_strategies": 197,
+ "tickers_traded": 82,
+ "cost_usd": 2.13,
+ "instance_terminated": true,
+ "known_flags": [
+  "HANG-TEST PASS: ran full window to day 1002 (past day-100 where batch-5 200tkr hung) -> RCA confirmed pool-memory-at-200-scale is the cause, NOT delisted tickers",
+  "18 non-traded: 15 PIT-legit (removed<window / added>window / mid-year churn); 3 eligible-yet-zero-fire [ABMD(160 bars),BIO(1003),MLM(1003)] have full cache data -> same class as ESS/SATS/CIEN, see S6-B1356-B4-NONTRADED"
+ ]
+}
