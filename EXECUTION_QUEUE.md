@@ -5576,6 +5576,10 @@ Catch 2 (monitor): drill controller false-TERMINAL on the PREVIOUS smoke's stale
 
 Drill instance i-01659762cd5a4fc9a running; controller v2 will terminate no-notice at day>100 with synced ckpt, then --resume relaunch proves recovery. Spend ~$2.6 of $50 CAD cap.
 
+### B1357 (2026-07-24 Council 373 cont.): BATCH 5 LAUNCHED - chunk15 i-069870b5bc96c4abc + cadence cron armed (owner "proceed with batch 5")
+
+Owner go. Pre-flight green: quota free, frozen tar e846b6d2c, roster 200 sector-stratified DISJOINT from batches 1-4 (177 prior requested; pool 437 disjoint, 429 serveable, 8 delisted/no-cache excluded) - includes survivorship-free REMOVED tickers (ATVI/ABMD/DRE/ADS...) PIT-gated to active windows. _cache_path coverage gate 200/200 serveable. prelaunch_gate PASS (budget 25+4.02<=50). LAUNCHED i-069870b5bc96c4abc (200 tkr, cache-refresh overlay, user-data 9836B). Projected ~201min/~4.02. CADENCE MECHANISM ACTIVE (owner (c) both, per feedback_batch_run_update_cadence): CronCreate 71f08eb8 (7,22,37,52 * * * * = every 15min while idle) -> checks heartbeat + PushNotification progress; on CHUNK15_COMPLETE -> validate + commit slim + completion push + CronDelete. Session-only (re-arm on resume if still running). Cumulative ~29/50.
+
 ### B1356 (2026-07-24 Council 373 cont.): BATCH 4 COMPLETE (97/100) + BRK-B/BF-B FIX VALIDATED + update-cadence miss owned
 
 Batch 4 COMPLETE @ e846b6d2c: 34124 trades, 207 strategies, 97/100 traded, terminated, ~2.10. **BRK-B/BF-B FIX VALIDATED: BRK-B 261 trades, BF-B 372 (were 0 in b2/b3, _cache_path filename bug).** 3 non-traded ESS/SATS/CIEN -> S6-B1356-B4-NONTRADED. R5 dashboard LIVE (deployed data.js current_round=R5). CADENCE MISS OWNED (L219 + memory): 15-min updates lapsed (folded into dashboard-firefighting; cant push without mechanism). Owner BOTH -> from the next run: CronCreate(*/15 check-push)+PushNotification-on-done+CronDelete. Cumulative ~25/50.
