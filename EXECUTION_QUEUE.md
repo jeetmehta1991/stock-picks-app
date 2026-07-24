@@ -5576,6 +5576,10 @@ Catch 2 (monitor): drill controller false-TERMINAL on the PREVIOUS smoke's stale
 
 Drill instance i-01659762cd5a4fc9a running; controller v2 will terminate no-notice at day>100 with synced ckpt, then --resume relaunch proves recovery. Spend ~$2.6 of $50 CAD cap.
 
+### B1359 (2026-07-24 Council 373 cont.): BATCH 5a LAUNCHED (split, hang test) - chunk16 i-0b35cb6a64d5795d5 (owner "A")
+
+Owner chose A (split 200 -> 100-tkr). Split batch-5 roster: 5a[:100] (40 delisted) + 5b[100:] (22 delisted). LAUNCHED 5a chunk16 i-0b35cb6a64d5795d5 (100 tkr incl 40 delisted, frozen e846b6d2c, gate 100/100 serveable, prelaunch PASS budget 29+2.1<=50). HANG TEST: 5a includes 40 delisted at the KNOWN-GOOD 100-scale (batch 4 ran 100 clean). If 5a advances past day 100 (where the prior run hung) + finishes -> 200-SIZE was the cause (delisted OK), continue at 100/batch. If 5a hangs @ day 100 too -> DELISTED tickers are the cause -> exclude+investigate. Cadence cron a23ec04e (8,23,38,53 = */15) with L220 STALL-DETECTION (engine_state advancing not just heartbeat-alive) -> auto-terminate on confirmed hang + push. 5b roster saved (chunk 17 next). Projected ~1hr/~2.10.
+
 ### B1358 (2026-07-24 Council 373 cont.): BATCH 5 HUNG at day 100 -> terminated (cadence-caught) + decision surfaced
 
 Batch 5 (chunk15, 200 tkr, 62 delisted) HUNG at day 100/5701 trades: engine_state frozen (heartbeat-loop alive, engine pid stuck) across two 15-min cron checks + 45s re-read. 15-min cadence cron (L219) CAUGHT it -> terminated i-069870b5bc96c4abc at ~0.50 (vs ~10 to max-run-hours). Cron 71f08eb8 deleted. No log (hang=no clean shutdown); 138MB ckpt.tar exists. Hang @ day-100 checkpoint near CTXS/DRE delist (2022-10-03). CONFOUNDED cause: 200-ticker SCALE (2x batch-4) AND delisted-inclusion (new class) both changed vs batch-4. Frozen-SHA e846b6d2c blocks an engine fix (would break merge w/ 1-4). DECISION (owner, away -> no auto-relaunch): (A REC) split batch 5 into 100-tkr batches to isolate size-vs-delisted, keep frozen SHA; (B) exclude delisted, relaunch current-only (loses survivorship-free); (C) investigate+engine-fix (breaks frozen seq, re-run 1-5). L220. Spent still ~29/50.
