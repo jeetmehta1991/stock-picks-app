@@ -18,7 +18,7 @@
 
 **Doc A of 7-doc r6_workflow_reuse bundle.**
 
-**⚠ Superseded-for-model note:** this doc describes the ORIGINAL monolith autoladder (single instance runs phases 1->4, sentinel-gated). The CURRENT model is chunk-based — see `docs/r6_workflow_reuse/RUN_WORKFLOWS.md` (Doc G) for local + AWS run workflows + unified gate reference. Doc A remains valid for the sentinel contract + phase-gating philosophy.
+**⚠ Superseded-for-model note:** this doc describes the ORIGINAL monolith autoladder (single instance runs phases 1->4, sentinel-gated). The CURRENT model is chunk-based — see `docs/r6_workflow_reuse/FUTURE_BACKTESTING_REFERENCE.md` (renamed from RUN_WORKFLOWS.md 2026-07-24; the canonical future-backtesting reference) for local + AWS run workflows, cell isolation, sentinels/crons/monitors + unified gate reference. Doc A remains valid for the sentinel contract + phase-gating philosophy.
 
 **Cross-link:** companion playbook `docs/r6_workflow_reuse/AWS_LAUNCH_PLAYBOOK.md` (Doc F) covers AWS-mechanics + AZ failover + spot capacity handling.
 

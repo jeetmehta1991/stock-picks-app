@@ -13,10 +13,6 @@ on:
     paths:
       - 'dashboard_sprint0a/**'
       - 'dashboard_stage_2/**'
-      - 'dashboard_phase_1a/**'
-      - 'dashboard_phase_1a_beta/**'
-      - 'dashboard_phase_1b/**'
-      - 'dashboard_r5/**'
       - 'dashboard_r5_cube/**'
       - 'index.html'
       - '.nojekyll'
@@ -47,16 +43,14 @@ jobs:
       - name: Prepare dashboards-only site (excludes data_prefetch/, backtest/, etc.)
         run: |
           set -e
-          mkdir -p _site/dashboard_sprint0a _site/dashboard_stage_2 _site/dashboard_phase_1a _site/dashboard_phase_1a_beta _site/dashboard_phase_1b _site/dashboard_r5 _site/dashboard_r5_cube
+          # 2026-07-24 (B1362): phase-1a lineage dashboards (phase_1a, phase_1a_beta,
+          # phase_1b, r5) ARCHIVED to archive/dashboards_pre_r5_2026-07-24/ per owner
+          # directive - superseded by dashboard_r5_cube (the latest R5 cube dashboard).
+          # Retained: sprint0a (API coverage), stage_2 (decisions/bugs registry), r5_cube.
+          mkdir -p _site/dashboard_sprint0a _site/dashboard_stage_2 _site/dashboard_r5_cube
           cp -r dashboard_sprint0a/* _site/dashboard_sprint0a/
           cp -r dashboard_stage_2/* _site/dashboard_stage_2/
-          cp -r dashboard_phase_1a/* _site/dashboard_phase_1a/
-          cp -r dashboard_phase_1a_beta/* _site/dashboard_phase_1a_beta/
-          cp -r dashboard_phase_1b/* _site/dashboard_phase_1b/
-          # B1346: R5 batch dashboard (index.html only; _artifact.html is a
-          # derived artifact helper, gitignored and not deployed).
-          cp dashboard_r5/index.html _site/dashboard_r5/index.html
-          # B1350: R5 cube dashboard on the 22-tab dashboard_phase_1a template -
+          # R5 cube dashboard on the 22-tab template -
           # index.html reads data.js (window.PHASE_1A_DATA); data.json for consumers.
           cp dashboard_r5_cube/index.html dashboard_r5_cube/app.js dashboard_r5_cube/data.js dashboard_r5_cube/data.json dashboard_r5_cube/last_run.txt _site/dashboard_r5_cube/
           cp index.html _site/index.html
@@ -67,12 +61,8 @@ jobs:
           ls -la _site/dashboard_sprint0a
           echo "=== dashboard_stage_2 contents ==="
           ls -la _site/dashboard_stage_2
-          echo "=== dashboard_phase_1a contents ==="
-          ls -la _site/dashboard_phase_1a
-          echo "=== dashboard_phase_1a_beta contents ==="
-          ls -la _site/dashboard_phase_1a_beta
-          echo "=== dashboard_phase_1b contents ==="
-          ls -la _site/dashboard_phase_1b
+          echo "=== dashboard_r5_cube contents ==="
+          ls -la _site/dashboard_r5_cube
           echo "=== Site size ==="
           du -sh _site
 
