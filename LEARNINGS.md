@@ -3073,3 +3073,15 @@ Cloud smoke vs local runs: same window, 1002 vs 1043 sim-days. Root cause: `_tra
 **Generalized rules:** (a) any promised recurring owner-facing cadence gets a mechanical driver (CronCreate + PushNotification), never remember-to-report; (b) completion of a long/away-able task -> PushNotification (reaches owner when away, auto-skips when watching); (c) monitor-for-my-tracking != push-for-owner-cadence; (d) a dropped cadence is a miss to own, not to quietly resume.
 
 **Consequence:** memory feedback_batch_run_update_cadence; from batch 5 = CronCreate(*/15 check-and-push) + PushNotification on completion + CronDelete on done. Batch 4 completed+validated (BRK-B 261/BF-B 372 trades) despite the lapse.
+
+## L220 -- BATCH 5 (200 TKR + 62 DELISTED) HUNG AT DAY 100; CADENCE-CHECK CAUGHT IT; FROZEN-SHA BLOCKS AN ENGINE FIX (Council 373 B1358 2026-07-24)
+
+**What happened:** batch 5 (first 200-ticker batch, first to include 62 delisted/removed-mid-window tickers for survivorship-free 614-PIT coverage) HUNG at day 100 (2022-09-28). engine_state frozen at day100/5701 trades/ts 04:51 for 15+min (confirmed: heartbeat-loop alive but engine pid stuck, no advance across two 15-min cron checks + a 45s re-read). The 15-min cadence cron (armed same session per L219) CAUGHT it -> terminated the instance at ~$0.50 instead of letting it burn to --max-run-hours (~$10). Hang location = day 100 checkpoint boundary, near CTXS/DRE delisting (2022-10-03).
+
+**Two unresolved hypotheses (no r5chunk.log -- hang gives no clean shutdown upload):** (A) 200-ticker SCALE at the first checkpoint (2x batch-4's 100; batch 4 checkpointed fine); (B) a DELISTED-ticker edge case (partial OHLCV ending mid-window). Confounded: batch 5 changed BOTH size and delisted-inclusion vs batch 4.
+
+**The hard constraint:** the engine is FROZEN at e846b6d2c for merge parity with batches 1-4. Fixing an engine hang = new code_sha = can't merge with 1-4 = re-run everything. So an engine fix is expensive; the cheap paths keep the frozen SHA.
+
+**Generalized rules:** (a) a long-run cadence check must verify PROGRESS (engine_state advancing), not just liveness (heartbeat loop) -- a live wrapper around a stuck engine is the trap; discriminate with a short re-read + CPU/state-timestamp; (b) when scaling a batch dimension (2x tickers) AND adding a new input class (delisted tickers) in the SAME batch, you cannot attribute a failure -- change ONE axis at a time; (c) terminate a confirmed-hung paid run immediately (budget) -- reversible; (d) frozen-sequence runs cannot absorb engine fixes -- prefer roster/scale changes that keep the SHA.
+
+**Consequence:** instance terminated; batch 5 aborted; decision surfaced to owner (split into 100-tkr batches to isolate size-vs-delisted, keeping frozen SHA -- recommended -- vs investigate/engine-fix which breaks the sequence). No auto-relaunch (paid run + owner away).
