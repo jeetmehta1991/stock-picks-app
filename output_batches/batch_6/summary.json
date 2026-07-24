@@ -1,0 +1,15 @@
+{
+ "batch": 6,
+ "chunk": "chunk17",
+ "frozen_sha": "e846b6d2cfb3",
+ "window": "2022-05-05..2026-05-05",
+ "trades": 58968,
+ "traded_strategies": 206,
+ "tickers_traded": 167,
+ "cost_usd": 5.62,
+ "instance_terminated": true,
+ "known_flags": [
+  "POOL=8 FIX VALIDATED end-to-end: 200-tkr batch ran full window to day 1002 (pool=16 hung at day 100). 33 nontraded (delisted/PIT).",
+  "MERGE_CRITICAL code_sha=e846b6d2cfb3 grid_total=1003 grid_hash=a6a8441d06cb9b32"
+ ]
+}
