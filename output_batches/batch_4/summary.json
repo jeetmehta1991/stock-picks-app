@@ -1,0 +1,15 @@
+{
+  "batch": 4,
+  "chunk": "chunk14",
+  "frozen_sha": "e846b6d2cfb3",
+  "window": "2022-05-05..2026-05-05",
+  "trades": 34124,
+  "traded_strategies": 207,
+  "tickers_traded": 97,
+  "cost_usd": 2.1,
+  "instance_terminated": true,
+  "known_flags": [
+    "BRK-B/BF-B FIX VALIDATED: BRK-B 261 trades, BF-B 372 trades (were 0 in b2/b3)",
+    "3 non-traded: ['ESS', 'SATS', 'CIEN'] (check liquidity/annual-PIT class -> S6-B1356-B4-NONTRADED)"
+  ]
+}

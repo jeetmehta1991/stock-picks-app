@@ -3062,3 +3062,14 @@ Cloud smoke vs local runs: same window, 1002 vs 1043 sim-days. Root cause: `_tra
 **Generalized rules:** (a) a deliverable that RENDERS (dashboard, report page, chart, HTML/PDF export) is verified by RENDERING/LOADING it, not by confirming its data was written -- fetch the deployed URL + every local asset, assert 200 + not-stuck-loading + >=1 data section non-empty; (b) enumerate ALL local assets the page references (script src / link href) and confirm each is present AND deployed -- a missing renderer (app.js) leaves the page silently "loading"; (c) after ANY fix to a rendered artifact, re-run the FULL end-to-end render check, not just the one thing fixed; (d) "generated the data" != "the deliverable works" -- never tell the owner it's live/ready until a live render check passed. Codified: scripts/verify_dashboard.py (asset-completeness + data-presence + optional --url live render) + CHECKLIST #163; memory feedback_verify_rendered_artifact_end_to_end.
 
 **Consequence:** verify_dashboard built + run (dashboard_r5_cube PASS local; live --url check gates the "it's fixed" claim on app.js returning 200); the class (missing-asset / 404 / all-empty-tabs) now has a mechanical catch instead of the owner being the detector.
+
+
+## L219 -- A PROMISED CADENCE MUST BE MECHANICAL, NOT REMEMBER-TO-REPORT (Council 373 B1356 2026-07-24, OWNER CORRECTION)
+
+**What happened:** promised 15-min batch-status updates; batch-4 updates lapsed -- monitors fired every ~15min (I saw heartbeats + re-armed) but I folded status into dashboard-firefighting replies or skipped dedicated updates. Owner: why no updates? Causes: (1) other owner-initiated work crowded out the cadence; (2) STRUCTURAL -- a monitor notifies ME; owner only hears it if I proactively send a message that turn; I cannot push on a wall-clock timer without a mechanism.
+
+**Miss class:** commitment-without-mechanism -- a recurring owner-facing SLA implemented as remember-to-report, which decays when other work competes. Same family as L218: if it matters, make it mechanical.
+
+**Generalized rules:** (a) any promised recurring owner-facing cadence gets a mechanical driver (CronCreate + PushNotification), never remember-to-report; (b) completion of a long/away-able task -> PushNotification (reaches owner when away, auto-skips when watching); (c) monitor-for-my-tracking != push-for-owner-cadence; (d) a dropped cadence is a miss to own, not to quietly resume.
+
+**Consequence:** memory feedback_batch_run_update_cadence; from batch 5 = CronCreate(*/15 check-and-push) + PushNotification on completion + CronDelete on done. Batch 4 completed+validated (BRK-B 261/BF-B 372 trades) despite the lapse.
