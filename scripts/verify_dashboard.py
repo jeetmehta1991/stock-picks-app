@@ -29,12 +29,35 @@ def local_assets(index_html: str) -> list[str]:
     return sorted(set(re.findall(r'(?:src|href)="(?!https?://)([^"]+)"', index_html)))
 
 
-def check_dir(d: Path) -> list[str]:
+def check_forbidden_tokens(index_html: str, forbid: list[str]) -> list[str]:
+    """2026-07-24 (B1363): the STATIC-PROSE-STALENESS gate. The dashboard
+    generator writes only data.js/data.json - it NEVER rewrites index.html.
+    So a dashboard cloned from a prior round's template carries that round's
+    hardcoded prose (ticker counts, strategy counts, exit counts, source dirs,
+    OOS numbers) which survives every data regen AND passes the asset/data/
+    banner checks. This gate scans the RENDERED index.html for caller-supplied
+    forbidden substrings (prior-round tokens) and FAILS if any appear -- so a
+    green from this script actually means content-current, not just structurally
+    present. Class fix for the R4-prose-in-R5-dashboard miss."""
+    fails = []
+    for tok in forbid:
+        tok = tok.strip()
+        if tok and tok in index_html:
+            fails.append(f"forbidden stale token in index.html: {tok!r} "
+                         "(prior-round prose survived a data-only regen; "
+                         "static index.html must be updated for this round)")
+    return fails
+
+
+def check_dir(d: Path, forbid: list[str] | None = None) -> list[str]:
     fails = []
     idx = d / "index.html"
     if not idx.exists():
         return [f"{d}/index.html missing"]
-    assets = local_assets(idx.read_text(encoding="utf-8"))
+    idx_html = idx.read_text(encoding="utf-8")
+    if forbid:
+        fails += check_forbidden_tokens(idx_html, forbid)
+    assets = local_assets(idx_html)
     for a in assets:
         if not (d / a).exists():
             fails.append(f"referenced local asset MISSING: {a} (page will not render)")
@@ -93,9 +116,14 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--dir", required=True)
     ap.add_argument("--url", default=None, help="deployed base URL for a live render check")
+    ap.add_argument("--forbid", default="",
+                    help="SEMICOLON-separated prior-round tokens that must NOT appear "
+                         "in index.html (B1363 static-prose-staleness gate); "
+                         "semicolon delimiter so tokens may contain commas, e.g. '1,531 tickers'")
     args = ap.parse_args()
     d = Path(args.dir)
-    fails = check_dir(d)
+    forbid = [t for t in args.forbid.split(";") if t.strip()] if args.forbid else []
+    fails = check_dir(d, forbid=forbid)
     if args.url:
         assets = local_assets((d / "index.html").read_text(encoding="utf-8")) if (d / "index.html").exists() else []
         fails += check_live(args.url, assets)

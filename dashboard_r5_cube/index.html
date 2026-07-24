@@ -230,7 +230,7 @@
   <details style="margin:.4rem 0;background:#1a1f29;border:1px solid var(--accent);padding:.4rem .7rem;border-radius:6px" open>
     <summary style="cursor:pointer;color:var(--accent);font-weight:600">What do these KPIs and L1 / L2 / L3 mean? (click to collapse)</summary>
     <div style="font-size:.85rem;color:var(--text);margin-top:.5rem">
-      <p style="margin:.3rem 0"><strong>Source dir.</strong> Which cube directory the optimizer read. <code>output_batch395_final/</code> = the merged Phase 1A-beta cube run. <code>output_optimization_candidates_2026_05_28/</code> is where the per-strategy JSONs + this summary were written.</p>
+      <p style="margin:.3rem 0"><strong>Source dir.</strong> Which cube directory the optimizer read. <code>output_r5_merged_&lt;range&gt;/</code> = the merged Phase 1A-beta cube run. <code>output_optimization_candidates_2026_05_28/</code> is where the per-strategy JSONs + this summary were written.</p>
 
       <p style="margin:.5rem 0 .2rem"><strong>Bucket counts.</strong> The optimizer classifies every strategy that fired in the cube into one of three Lens-B verdicts based on the DEC-426 5-Gate (n &gt;= 30, p &lt; 0.05 Bonferroni, PSR &gt;= 0.95, t &gt;= 3.4, R:R &gt;= 2.0). Buckets:</p>
       <ul style="margin:.2rem 0 .4rem;padding-left:1.4rem">
@@ -241,12 +241,12 @@
 
       <p style="margin:.5rem 0 .2rem"><strong>L1 / L2 / L3 - three layers of cube analysis.</strong> The same trade data is sliced three different ways:</p>
       <ul style="margin:.2rem 0 .4rem;padding-left:1.4rem">
-        <li><strong>L1 - Per-exit-method aggregate.</strong> For each of the 25 exit methods, pool ALL strategies that used it and compute aggregate Sharpe / PF / WR. Answers: "which exit method is best on average?" Useful as the default exit when a specific strategy doesn't have a clear cell winner.</li>
+        <li><strong>L1 - Per-exit-method aggregate.</strong> For each of the 26 exit methods, pool ALL strategies that used it and compute aggregate Sharpe / PF / WR. Answers: "which exit method is best on average?" Useful as the default exit when a specific strategy doesn't have a clear cell winner.</li>
         <li><strong>L2 - Per-(strategy x exit_method) cell.</strong> The headline lens. For every (strategy, exit_method) cell with n &gt;= 5 trades, compute the 5-Gate verdict. Tab 13 (Cell Cube) is the sortable view; this is where STRATEGY_EXIT_OVERRIDE candidates come from.</li>
         <li><strong>L3 - Parameter-variant winner within a family.</strong> When a strategy has cells in multiple variants of the same exit family - e.g., <code>time_stop_10d</code> vs <code>time_stop_20d</code>, or <code>r_multiple_2r</code> vs <code>r_multiple_3r</code>, or <code>trailing_5pct</code> vs <code>trailing_10pct</code> vs <code>trailing_15pct</code> - L3 picks the winning variant per strategy. Answers: "given this strategy uses some-kind-of-time-stop, which exact day count works?"</li>
       </ul>
 
-      <p style="margin:.5rem 0"><strong>1A-alpha gate.</strong> Owner-set gate: at least one strategy must show rules-only OOS Sharpe &gt;= 0.7 in at least one regime under 4-fold walk-forward. Currently LOCKED (best OOS Sharpe 0.419 in the prior cube). If the just-finished cube re-run opens it, Phase 1B-alpha ($300 Haiku agent overlay budget) becomes eligible. If not, loop back to entry-side optimization (Dim A thresholds, Dim B compound logic) and re-cube.</p>
+      <p style="margin:.5rem 0"><strong>1A-alpha gate.</strong> Owner-set gate: at least one strategy must show rules-only OOS Sharpe &gt;= 0.7 in at least one regime under 4-fold walk-forward. The R5 OOS gate verdict is computed on the final merged 614-ticker cube and surfaced in Tab 5 / Tab 13; do not read a hardcoded number here. If a cell clears >= 0.7 OOS in >= 1 regime the gate opens and Phase 1B-alpha ($300 Haiku agent overlay budget) becomes eligible. If not, loop back to entry-side optimization (Dim A thresholds, Dim B compound logic) and re-cube.</p>
 
       <p style="margin:.5rem 0;background:#0d1117;padding:.4rem;border-radius:4px;font-size:.82rem"><strong>Quick read order:</strong> KPIs (overall bucket counts) -&gt; Tab 13 Cell Cube (sort by Sharpe DESC; look for 5-Gate strict passes in the top rows) -&gt; Tab 11 Candidates (drill into a specific strategy to see its 9-dim findings) -&gt; come back here to see the markdown report's recommendations.</p>
     </div>
@@ -366,12 +366,12 @@
   <p class="desc" style="font-size:.85rem">A pipeline of stages with a tab consumer at each stage. Start at the top of the pipeline and walk down to the question you're trying to answer.</p>
   <div style="background:#0d1117;border:1px solid var(--border);padding:.7rem;border-radius:6px;font-family:Menlo,Consolas,monospace;font-size:.78rem;line-height:1.5;color:var(--text);overflow-x:auto;margin-bottom:.5rem">
 <pre style="margin:0;color:var(--text);white-space:pre">
-  [Universe build]                            -> 1,531 tickers traded; 5 buckets T1a/T1c/T2/T3/ETFs
-       |                                         (Tab 14 Universe section)
+  [Universe build]                            -> R5: 614 T1a S&P-500 PIT tickers (survivorship-free;
+       |                                         503 active + 111 removed-in-window; single T1a bucket)
        v
   [Backtest engine: walk day-by-day]
        |   - classify regime (bull/neutral/bear/crisis)
-       |   - run 185 screeners; emit candidates
+       |   - run 219 strategy screeners; emit candidates
        |   - score smart-money; assign confidence tier (Stage 1)
        |   - in Phase 1B+: agents adjust tier (Stage 2 - off in 1A-beta)
        |   - size position; check liquidity/cap/event gates (all off in 1A-beta)
@@ -379,7 +379,7 @@
   [Trade execution + close via PRIMARY exit]   -> trade_log.csv (1 row per trade)
        |                                         (Tab 1 Strategies / Tab 7 Sector
        v                                          / Tab 8 Skipped / Trades tab)
-  [Cube replay: same trades x 25 exit methods] -> trade_exit_detail.csv (n_trades x 25 rows)
+  [Cube replay: same trades x 26 exit methods] -> trade_exit_detail.csv (n_trades x 26 rows)
        |                                         (Tabs 10-13 cube-side)
        v
   [Lens A - per-strategy 9-dim drill-down]     -> per_strategy_candidates JSONs
@@ -391,7 +391,7 @@
   [Optimizer summary + winners]                -> optimization_summary.md
        |   STRATEGY_EXIT_OVERRIDE candidates                      (Tab 10 Optimizer)
        v
-  [Walk-forward 4-fold (DEC-505)]              -> walk_forward_batch414_cells.json
+  [Walk-forward 4-fold (DEC-505)]              -> walk_forward_&lt;batch&gt;_cells.json
        |   1A-alpha gate: OOS Sharpe >= 0.7 in >= 1 regime        (Tab 5 Walk-fwd
        |                                                           when populated)
        v
@@ -434,7 +434,7 @@
       <tr><td>A</td><td>Entry-gate thresholds</td><td><code>candidates</code> (BINDING vs LOOSE per Batch 380)</td><td>Which numeric threshold (RSI &lt; X, ADX &gt; Y) is the binding constraint?</td></tr>
       <tr><td>B</td><td>Compound logic (AND/OR clauses)</td><td><code>per_clause.fires_at</code>, <code>restrictive</code>, <code>always_on</code>, <code>proposals</code></td><td>Which clauses are AND-restrictive vs always_on noise? Drop always_on; loosen restrictive.</td></tr>
       <tr><td>C</td><td>Regime</td><td><code>per_regime</code></td><td>Does this strategy only work in bull? In which historical regime windows does it pass?</td></tr>
-      <tr><td>D</td><td>Exit method pairing</td><td><code>best_exit</code> by Sharpe</td><td>Which of 25 exits pairs best for this strategy? Feeds STRATEGY_EXIT_OVERRIDE.</td></tr>
+      <tr><td>D</td><td>Exit method pairing</td><td><code>best_exit</code> by Sharpe</td><td>Which of 26 exits pairs best for this strategy? Feeds STRATEGY_EXIT_OVERRIDE.</td></tr>
       <tr><td>E</td><td>Sizing</td><td><code>per_tier</code></td><td>Are EXCEPTIONAL trades actually higher quality, or does the tier rank not differentiate?</td></tr>
       <tr><td>F</td><td>Universe tier</td><td><code>per_tier_T1a / T1c / T2 / T3</code></td><td>Should this strategy run on T1a only, or extend to T3 momentum names?</td></tr>
       <tr><td>G</td><td>Hold duration</td><td><code>per_hold_bucket</code></td><td>Optimal hold range; informs time_stop variant selection.</td></tr>
@@ -444,7 +444,7 @@
   </table>
 
   <h4 style="margin:.7rem 0 .2rem;color:var(--accent)">Lens B - Per-(strategy x exit) cell verdict (Tab 13 Cell Cube)</h4>
-  <p class="desc" style="font-size:.85rem">For EVERY (strategy, exit_method) pair with n ≥ 5 trades, compute the DEC-426 5-Gate verdict. Authored Batch 391. Output: <code>exit_method_analysis.json::layer_2_per_strategy_exit_cell</code>. Currently ~100 cells per round (see Tab 16 for why).</p>
+  <p class="desc" style="font-size:.85rem">For EVERY (strategy, exit_method) pair with n ≥ 5 trades, compute the DEC-426 5-Gate verdict. Authored Batch 391. Output: <code>exit_method_analysis.json::layer_2_per_strategy_exit_cell</code>. Cell count is read live from the merged R5 cube (theoretical ceiling 219 x 26 = 5,694 cells/ticker; the populated count depends on which cells reach the n threshold).</p>
   <p style="font-size:.85rem">Use Lens B when you want the headline pass/fail screening across the entire cube at once. Sortable. Cells with <code>five_gate_pass = true</code> are 1A-alpha gate candidates pending walk-forward.</p>
   <table class="display compact" style="font-size:.82rem;width:auto">
     <thead><tr><th>Field</th><th>What it is</th><th>Pass threshold</th></tr></thead>
@@ -461,7 +461,7 @@
       <tr><td><code>gates</code></td><td>{n_gte_30, p_lt_0.05_bonf, psr_gte_0.95, t_gte_3.4, rr_gte_2.0}</td><td>Per-gate booleans</td></tr>
     </tbody>
   </table>
-  <p style="font-size:.82rem;color:var(--muted);margin-top:.3rem">5-Gate (DEC-426): n &gt;= 30 AND Bonferroni p &lt; 0.05 across 4625 cells/regime AND PSR (Probabilistic Sharpe Ratio) &gt;= 0.95 AND t-stat &gt;= 3.4 AND R:R &gt;= 2.0. Strict requires all 5; 4-of-5 (excluding PSR) is the "relaxed" pass bucket.</p>
+  <p style="font-size:.82rem;color:var(--muted);margin-top:.3rem">5-Gate (DEC-426): n &gt;= 30 AND Bonferroni p &lt; 0.05 across the R5 cube's 219 x 26 = 5,694 cells/ticker AND PSR (Probabilistic Sharpe Ratio) &gt;= 0.95 AND t-stat &gt;= 3.4 AND R:R &gt;= 2.0. Strict requires all 5; 4-of-5 (excluding PSR) is the "relaxed" pass bucket.</p>
 
   <h3 style="margin-top:1rem">Coming next: cube-cell metrics expansion (queued — see EXECUTION_QUEUE item #4)</h3>
   <p class="desc" style="font-size:.85rem">The current L2 cell tracks 13 fields. 5 tiers of additional metrics queued. Each tier ships with its own glossary + interpretation rule inline in Tab 13 so you can read a number and know what to do with it. Preview:</p>
@@ -484,7 +484,7 @@
       <tr><td>B</td><td><code>wr_by_days_to_earnings</code></td><td>Win rate × days-to-earnings bucket</td><td>Spike in 0-5 day bucket = pre-earnings drift effect</td><td>trade_log.days_to_earnings</td></tr>
       <tr><td>B</td><td><code>wr_by_event_window</code></td><td>Win rate during FOMC/CPI/NFP window</td><td>If concentrated in events, will collapse when 1B-alpha turns event-suppression back on</td><td>trade_log.signals_at_entry.event_within_5d</td></tr>
       <tr><td>C</td><td><code>sharpe_ci_95_low / high</code></td><td>Bootstrap 95% CI for Sharpe</td><td>If CI crosses 0, the point Sharpe is unreliable; widen n before trusting</td><td>NEW - bootstrap per cell</td></tr>
-      <tr><td>C</td><td><code>oos_sharpe</code></td><td>Out-of-sample Sharpe from walk-forward</td><td>OOS &gt; 0.7 in &gt;= 1 regime = 1A-alpha gate cell</td><td>walk_forward_batch414_cells.json</td></tr>
+      <tr><td>C</td><td><code>oos_sharpe</code></td><td>Out-of-sample Sharpe from walk-forward</td><td>OOS &gt; 0.7 in &gt;= 1 regime = 1A-alpha gate cell</td><td>walk_forward_&lt;batch&gt;_cells.json</td></tr>
       <tr><td>C</td><td><code>is_oos_decay</code></td><td>OOS / IS Sharpe ratio</td><td>&lt; 0.7 = significant overfit; cell unlikely to deploy</td><td>derived from oos_sharpe</td></tr>
       <tr><td>C</td><td><code>effective_n</code></td><td>n adjusted for trade autocorrelation</td><td>If effective_n &lt;&lt; n, trades are clustered (e.g. one signal hits multiple tickers same day)</td><td>NEW - lag-1 autocorr</td></tr>
       <tr><td>D</td><td><code>sqn</code></td><td>System Quality Number = mean(R) / std(R) × √n</td><td>Van Tharp: &lt; 1.6 = poor; 1.6-1.9 = avg; 2.0+ = excellent</td><td>NEW</td></tr>
@@ -500,7 +500,7 @@
   <!-- Batch 437 (2026-05-29): Phase 1A-beta cube-only dashboard. -->
   <div style="background:#1a1f29;border:1px solid var(--accent);padding:.8rem 1rem;border-radius:6px;margin-bottom:.75rem;font-size:.88rem">
     <h3 style="margin:0 0 .4rem;color:var(--accent);font-size:1rem">First-time viewer? Start here.</h3>
-    <p style="margin:.3rem 0"><strong>What this dashboard is.</strong> A read-only post-mortem of the Phase 1A-beta cube run. Per owner directive: Phase 1A-beta runs with all four legacy gates OFF (portfolio cap / drawdown halt / regime affinity / event suppression). Those gates only return in Phase 1B-alpha. The dashboard reflects this: the cube's <code>output_batch395_final/</code> is the single source for every tab.</p>
+    <p style="margin:.3rem 0"><strong>What this dashboard is.</strong> A read-only post-mortem of the Phase 1A-beta cube run. Per owner directive: Phase 1A-beta runs with all four legacy gates OFF (portfolio cap / drawdown halt / regime affinity / event suppression). Those gates only return in Phase 1B-alpha. The dashboard reflects this: the R5 merged cube (<code>output_r5_merged_&lt;range&gt;/</code>, merged from the per-batch AWS chunk outputs) is the single source for every tab. This build currently reflects batches 1-3; it is finalized to the full 614-ticker cube (batches 1-7) at completion.</p>
 
     <p style="margin:.5rem 0 .3rem"><strong>What "Phase 1A-beta lenient" means in concrete CLI terms.</strong></p>
     <table class="display compact" style="font-size:.82rem;margin:.4rem 0;width:auto">
@@ -515,15 +515,15 @@
 
     <p style="margin:.5rem 0 .3rem"><strong>Why some tabs say "No data".</strong> The cube engine writes per-strategy + per-exit + per-regime artifacts (trade_log, backtest_results, exit_strategy_*, regime/sector/event breakdowns), but does NOT emit the analyst overlays a single-run produces - <code>equity_curve.parquet</code>, <code>portfolio_metrics.json</code>, <code>improvements_summary.json</code>, <code>strategy_regime_matrix.json</code>, walk-forward + smart-money + congressional + bootstrap artifacts. Tabs that need those will render "No data" until the missing analyst step runs on the merged cube trade log. The structurally cube-native tabs (1 Strategies, Exits, Trades, 7 Sector, 8 Skipped, 9 CircuitBreakers, 10 Optimizer, 11 Candidates, 12 Quiet, 13 Cell Cube) are the ones currently meaningful.</p>
 
-    <p style="margin:.3rem 0"><strong>Recommended reading order for Phase 1A-beta verdict review:</strong> Tab 1 (101 strategies that fired in the cube) -> Tab 13 Cell Cube (per-strategy x exit method 5-Gate verdicts) -> Tab 10 Optimizer (Stage 3 candidate summary) -> Tab 11 Candidates (per-strategy 9-dim drill-down) -> Tab 12 Quiet (zero-fire diagnosis) -> Tabs 7-9 (sector / skipped / circuit).</p>
-    <p style="margin:.3rem 0"><strong>What "good" looks like for the 1A-alpha gate.</strong> &gt;= 1 strategy with rules-only Sharpe &gt;= 0.7 OOS in &gt;= 1 regime. Currently LOCKED at best OOS Sharpe 0.419 (per walk_forward_batch414_cells.json). The in-flight cube re-run re-evaluates this with Batches 414/415/416/421 fixes active.</p>
+    <p style="margin:.3rem 0"><strong>Recommended reading order for Phase 1A-beta verdict review:</strong> Tab 1 (strategies that fired in the cube) -> Tab 13 Cell Cube (per-strategy x exit method 5-Gate verdicts) -> Tab 10 Optimizer (Stage 3 candidate summary) -> Tab 11 Candidates (per-strategy 9-dim drill-down) -> Tab 12 Quiet (zero-fire diagnosis) -> Tabs 7-9 (sector / skipped / circuit).</p>
+    <p style="margin:.3rem 0"><strong>What "good" looks like for the 1A-alpha gate.</strong> &gt;= 1 strategy with rules-only Sharpe &gt;= 0.7 OOS in &gt;= 1 regime. The R5 walk-forward OOS gate verdict is computed on the final merged 614-ticker cube (batches 1-7) and surfaced in Tab 5 / Tab 13 once that pass runs; do not read a hardcoded number here.</p>
     <p style="margin:.3rem 0"><strong>If a tab looks empty / wrong:</strong> hard-refresh (Ctrl+Shift+R). If still wrong, F12 -&gt; Console and paste any errors.</p>
   </div>
 
   <div id="reference-counts" class="kpis"></div>
 
   <h3 style="margin-top:1rem">Strategy library and the count buckets you'll see</h3>
-  <p class="desc"><strong>Single source for every tab.</strong> The whole dashboard is built from the Phase 1A-beta cube output (<code>output_batch395_final/</code>) per owner directive. 185 = registered strategies in <code>backtest/signals/screener.py::ALL_STRATEGIES</code>. ~101 = strategies that fired &gt;= 1 trade in the cube (Tab 1 + the optimizer JSONs). ~85 = quiet strategies that produced zero trades even with all gates off (Tab 12 has the 3-bucket diagnosis).</p>
+  <p class="desc"><strong>Single source for every tab.</strong> The whole dashboard is built from the R5 merged cube output (<code>output_r5_merged_&lt;range&gt;/</code>, merged from the per-batch AWS chunk artifacts) per owner directive. 219 = registered strategies in <code>backtest/signals/screener.py::ALL_STRATEGIES</code> (26 exit methods in <code>EXIT_STRATEGIES</code> -> 219 x 26 cells/ticker). The fired vs quiet counts are read live from the merged cube (Tab 1 = fired &gt;= 1 trade; Tab 12 = zero-fire 3-bucket diagnosis) and are finalized on the full 614-ticker cube (batches 1-7); this build reflects batches 1-3.</p>
   <p class="desc"><strong>Tab 1 inclusion criteria (literal):</strong> <code>compute_all_metrics</code> in <code>backtest/results/metrics.py</code> iterates over <code>df_trades["strategy"].unique()</code>. Any strategy with at least one row in <code>trade_log.csv</code> ends up as a row in <code>backtest_results.csv</code>. No threshold on number of trades. Strategies with zero trades simply don't appear in this table - Tab 12 has them.</p>
   <table class="display compact" style="font-size:.85rem;margin-bottom:.5rem">
     <thead><tr><th>Layer</th><th>Scope</th><th>~Count</th><th>Where</th></tr></thead>
@@ -623,7 +623,7 @@
     <thead><tr><th>Gate</th><th>Threshold</th><th>Purpose</th></tr></thead>
     <tbody>
       <tr><td>n</td><td>≥ 30</td><td>Minimum trades for statistical power</td></tr>
-      <tr><td>p (Bonferroni)</td><td>&lt; 0.05</td><td>Multiple-testing correction across 4625 cells/regime</td></tr>
+      <tr><td>p (Bonferroni)</td><td>&lt; 0.05</td><td>Multiple-testing correction across 5694 cells/regime</td></tr>
       <tr><td>PSR (Probabilistic Sharpe)</td><td>≥ 0.95</td><td>Prob. that true Sharpe &gt; 0; strict 5-Gate gate</td></tr>
       <tr><td>t-stat</td><td>≥ 3.4</td><td>Bailey-Lopez de Prado strict significance</td></tr>
       <tr><td>R:R</td><td>≥ 2.0</td><td>Edge over implementation costs</td></tr>
@@ -750,9 +750,9 @@
   <h3 style="margin-top:1rem">Glossary</h3>
   <ul style="font-size:.82rem">
     <li><b>PIT (point-in-time)</b> &mdash; data filtered to what would have been known at decision time; no lookahead.</li>
-    <li><b>Cube</b> &mdash; Phase 1A-β cube = 185 strategies × 25 exits × 7 regime windows = ~32,375 cells per regime window evaluated.</li>
-    <li><b>1A-α gate</b> &mdash; owner gate: ≥1 strategy with rules-only Sharpe ≥ 0.7 OOS in ≥1 regime. Currently LOCKED at 0.419 (best). Gate must open before Phase 1B-α $300 agent budget.</li>
-    <li><b>1A-β cube re-run</b> &mdash; full re-evaluation of cube on AWS spot infrastructure. Currently running Shape A: 3 × c7a.8xlarge spot, ~$9.30, ~5h.</li>
+    <li><b>Cube</b> &mdash; Phase 1A-β cube = 219 strategies × 26 exits × 7 regime windows = ~39,858 cells per regime window evaluated.</li>
+    <li><b>1A-α gate</b> &mdash; owner gate: ≥1 strategy with rules-only Sharpe ≥ 0.7 OOS in ≥1 regime, computed on the final merged R5 cube. Gate must open before Phase 1B-α $300 agent budget.</li>
+    <li><b>1A-β cube re-run</b> &mdash; full re-evaluation of cube on AWS spot infrastructure. Run as an escalating ladder of ticker-disjoint AWS spot chunks (c6a.16xlarge), merged into one cube; see docs/r6_workflow_reuse/FUTURE_BACKTESTING_REFERENCE.md.</li>
     <li><b>5-Gate (DEC-426)</b> &mdash; strict cell-level gate above. Differs from the 9 criteria which are strategy-level overall.</li>
     <li><b>Smart money</b> &mdash; aggregated congressional trades + insider buys + 13F flows. Acts as a quality multiplier on candidate trades.</li>
     <li><b>BUG-95 portfolio metrics</b> &mdash; per-trade aggregates differ from compounded portfolio returns once position sizing + heat caps apply. The dashboard exposes both views.</li>
@@ -766,7 +766,7 @@
     <li><b>Metrics</b> &mdash; <code>results/metrics.py</code> computes the 9 criteria + per-regime verdict from trade outputs.</li>
     <li><b>Dashboard build</b> &mdash; <code>scripts/build_dashboard_phase_1a.py</code> serializes all outputs into <code>data.js</code> for this dashboard.</li>
     <li><b>Cube optimizer</b> &mdash; <code>scripts/optimize_strategies_from_cube.py</code> emits the Stage 3 candidates (Tab 10/11) + verdict cube (Tab 13).</li>
-    <li><b>Walk-forward</b> &mdash; <code>scripts/walk_forward_batch414_cells.py</code> implements DEC-505 4-fold expanding-window for the 1A-α gate.</li>
+    <li><b>Walk-forward</b> &mdash; <code>scripts/walk_forward_&lt;batch&gt;_cells.py</code> implements DEC-505 4-fold expanding-window for the 1A-α gate.</li>
   </ol>
 </section>
 
@@ -886,9 +886,9 @@
     <div style="font-size:.85rem;color:var(--text);margin-top:.5rem">
 
       <h4 style="margin:.4rem 0 .2rem;color:var(--accent)">Why are there so few rows in Tab 13 Cell Cube?</h4>
-      <p style="margin:.3rem 0"><strong>Theoretical ceiling: 4,625 cells per regime</strong> (185 strategies x 25 exit methods). Today's payload shows ~100 cells.</p>
-      <p style="margin:.3rem 0"><strong>Cube replay mechanics (corrected Batch 442).</strong> Each entry the strategy fires gets written to <code>trade_log.csv</code> once (closed via its primary exit). The cube replay then simulates that entry through ALL 25 exit methods - producing <code>trade_exit_detail.csv</code> with one row per <code>(trade x exit_method)</code>. So if a strategy fires 100 entries, <code>trade_exit_detail</code> has 100 x 25 = 2,500 rows for that strategy. The L2 groupby <code>(strategy, exit_method)</code> produces 25 cells per strategy, each cell containing the same 100 trades - so <strong>n = 100 in every cell</strong>, NOT divided across exits. Each entry gets multiplied by 25, not divided.</p>
-      <p style="margin:.3rem 0"><strong>So why only ~100 cells visible?</strong> 100 cells / 25 exits per strategy = ~4 fully-populated strategies, but the payload shows 20 unique strategies in L2 - meaning most strategies have only 5-6 exit cells, not the full 25. The cause is degenerate cells filtered out for reasons that are real bugs, not structural limits:</p>
+      <p style="margin:.3rem 0"><strong>Theoretical ceiling: 5,694 cells per regime</strong> (219 strategies x 26 exit methods). The populated cell count is read live from the merged R5 cube.</p>
+      <p style="margin:.3rem 0"><strong>Cube replay mechanics (corrected Batch 442).</strong> Each entry the strategy fires gets written to <code>trade_log.csv</code> once (closed via its primary exit). The cube replay then simulates that entry through ALL 26 exit methods - producing <code>trade_exit_detail.csv</code> with one row per <code>(trade x exit_method)</code>. So if a strategy fires 100 entries, <code>trade_exit_detail</code> has 100 x 26 = 2,600 rows for that strategy. The L2 groupby <code>(strategy, exit_method)</code> produces 26 cells per strategy, each cell containing the same 100 trades - so <strong>n = 100 in every cell</strong>, NOT divided across exits. Each entry gets multiplied by 26, not divided.</p>
+      <p style="margin:.3rem 0"><strong>How many cells are populated?</strong> The populated cell count is read live from the merged R5 cube; a strategy has up to 26 exit cells (one per exit method) but only those reaching the n threshold appear. The cause is degenerate cells filtered out for reasons that are real bugs, not structural limits:</p>
       <ul style="margin:.2rem 0 .4rem;padding-left:1.4rem">
         <li><code>scripts/optimize_strategies_from_cube.py::analyze_exit_methods</code> Layer 2 excludes every cell with <code>n &lt; 5</code> trades (this is the only structural filter).</li>
         <li><strong>Pre-Batch-415 bug</strong>: <code>exit_earnings_blackout</code> always returned <code>"no_earnings_known"</code> because <code>signals_at_entry</code> dict was missing <code>ticker</code> - so every cell using earnings_blackout had constant exit reason and got dropped as degenerate.</li>
@@ -899,12 +899,12 @@
       <p style="margin:.3rem 0"><strong>Post-merge expectation</strong>: the just-finished re-run was the first one with Batches 414/415/416 active. The L2 cell count should rise materially (not stay flat at ~100) because the degenerate-cell filtering was a bug, not a structural limit. If it stays at ~100 after the merge + new optimizer run, the bugs are not yet fully fixed and we'd need to investigate further.</p>
 
       <h4 style="margin:.6rem 0 .2rem;color:var(--accent)">What did this Phase 1A-beta re-run actually test?</h4>
-      <p style="margin:.3rem 0">Shape A launch on AWS (3 x c7a.8xlarge spot, ~$9.30, ~5h wall-time). Full cube: 185 active strategies x 25 exit methods x 7 historical regime windows, run with all four legacy gates OFF (<code>--no-portfolio-cap --no-dd-halt --no-regime-affinity --no-event-suppression</code>) on the canonical 2020-01-01 -&gt; 2026-05-XX window. Commit <code>948769bf2</code> (Batch 424 orchestrator slot logic).</p>
+      <p style="margin:.3rem 0">R5 runs as an escalating ladder of ticker-disjoint AWS spot chunks (c6a.16xlarge, cube-isolation) merged into one cube. Full cube: 219 strategies x 26 exit methods per ticker over the LOCKED window 2022-05-05 -&gt; 2026-05-05 (~1002 NYSE days), gates off via <code>--cube-isolation --no-portfolio-cap --no-dd-halt</code>. Frozen code SHA e846b6d2cfb3. See FUTURE_BACKTESTING_REFERENCE.md.</p>
       <p style="margin:.3rem 0"><strong>Key objectives of THIS iteration:</strong></p>
       <ol style="margin:.2rem 0 .4rem;padding-left:1.4rem">
         <li><strong>Validate Batch 415 (signals_at_entry enrichment).</strong> Prior cube: <code>signals_at_entry</code> dict was missing <code>ticker</code> + <code>strategy_name</code> + <code>category</code>, so <code>exit_earnings_blackout</code> always returned <code>"no_earnings_known"</code> and <code>exit_class_time_stop</code> always defaulted to <code>"momentum"</code>. Batch 415 added those keys at <code>run_exit_comparison</code> before each exit_fn call. Post-merge check: how many cells changed (especially for earnings-sensitive strategies and class-time-stop variants).</li>
         <li><strong>Surface SMC silent-failure root cause via Batch 416.</strong> Prior cube: 0 of 29,159 trades had any <code>smc_*</code> key despite <code>compute_smc_signals</code> returning 28 keys locally. Batch 416 wired <code>_log_silent_producer_failure</code> rate-limited diagnostic logging at the SMC + classification_change + institutional_signal call sites. Post-merge: read engine logs (1 line per producer+exception-type) to identify the actual AWS-environment failure.</li>
-        <li><strong>Re-evaluate 1A-alpha gate.</strong> Currently LOCKED at best OOS Sharpe 0.419 (walk_forward_batch414_cells.json). If the re-run with fixes pushes any strategy past 0.7 OOS in any regime, gate opens; Phase 1B-alpha $300 Haiku agent budget becomes eligible. If not, loop back to entry-side optimization.</li>
+        <li><strong>Re-evaluate 1A-alpha gate.</strong> The OOS gate verdict is computed on the final merged R5 cube; if any strategy clears 0.7 OOS in any regime the gate opens and Phase 1B-alpha $300 Haiku agent budget becomes eligible. If not, loop back to entry-side optimization.</li>
         <li><strong>Validate Batch 421 (PEAD lru_cache).</strong> Engine-speedup batch. Profile previously showed <code>load_quarterly_eps</code> at 67s cumtime / ~12% of total engine cost. lru_cache means each ticker's parquet reads once instead of once-per-day. Validate ~10-12% wall-time reduction vs prior cube.</li>
         <li><strong>Refresh quiet-bucket lists.</strong> Prior bucket counts: PRODUCER_LAYER_ZERO_LIKELY = 6 (all SMC), COMPOUND_RESTRICTIVE = 31, SKIPPED_AT_ENGINE = 48. Post-merge re-audit shows movement: SKIPPED should drop most because <code>--no-portfolio-cap</code> + <code>--no-event-suppression</code> were the main blockers; if it stays at ~48 the cause is structural (liquidity floor).</li>
         <li><strong>Refresh STRATEGY_REGIME_AFFINITY (Batches 417/418).</strong> 14 new + 15 override entries derived from prior cube cell stats. Validate they still hold under fresh data; surface any contradictions.</li>
@@ -915,7 +915,7 @@
         <thead><tr><th></th><th>Total trades</th><th>Source</th></tr></thead>
         <tbody>
           <tr><td>Prior cube</td><td><strong>29,159</strong></td><td><code>archive/2026-05-29-pre-rerun-cube-snapshot/trade_log_prior.csv</code> (snapshotted before merge overwrite)</td></tr>
-          <tr><td>Latest re-run</td><td><strong>TBD (merge in flight)</strong></td><td><code>output_batch395_final/trade_log.csv</code> once merge completes</td></tr>
+          <tr><td>Latest re-run</td><td><strong>TBD (merge in flight)</strong></td><td><code>output_r5_merged_&lt;range&gt;/trade_log.csv</code> once merge completes</td></tr>
           <tr><td>Delta</td><td><strong>TBD</strong></td><td>Will populate post-merge + dashboard rebuild</td></tr>
         </tbody>
       </table>
@@ -926,7 +926,7 @@
   <!-- Live diff KPIs + table (will populate when build_dashboard supports cube_diff payload). -->
   <h3 style="margin-top:1rem">Live diff (current run vs prior snapshot)</h3>
   <div id="cubediff-status" style="background:#3a2f1f;border-left:3px solid var(--warn);padding:.5rem .8rem;border-radius:4px;font-size:.85rem;margin-bottom:.5rem">
-    <strong>Diff not yet computed.</strong> The just-finished cube re-run (commit <code>948769bf2</code>) is still being merged from S3 (<code>aws_batch395_merge.py</code> background task). Once the merge + optimizer re-run + dashboard rebuild complete, this section will auto-populate with:
+    <strong>Diff not yet computed.</strong> The R5 cube is merged from the per-batch AWS chunk artifacts (<code>scripts/merge_batch_outputs.py</code>) as batches complete. Once the merge + optimizer re-run + dashboard rebuild complete, this section will auto-populate with:
     <ul style="margin:.3rem 0 .2rem;padding-left:1.4rem">
       <li>Per-cell n / Sharpe / win-rate / profit-factor / verdict deltas.</li>
       <li>Verdict-flip counts (FAIL -&gt; PASS-relaxed = improvement; PASS-strict -&gt; FAIL = regression).</li>
@@ -951,10 +951,10 @@
 
   <h3 style="margin-top:1rem">How to iterate on this dashboard</h3>
   <ol style="font-size:.85rem">
-    <li><strong>Snapshot.</strong> Before launching the next cube re-run, copy <code>output_batch395_final/trade_log.csv</code> + <code>output_optimization_candidates_*/exit_method_analysis.json</code> + <code>producer_zero_post_cube_audit.json</code> to <code>archive/&lt;date&gt;-pre-rerun-cube-snapshot/</code>. Append <code>_prior</code> suffix to filenames.</li>
+    <li><strong>Snapshot.</strong> Before launching the next cube re-run, copy <code>output_r5_merged_&lt;range&gt;/trade_log.csv</code> + <code>output_optimization_candidates_*/exit_method_analysis.json</code> + <code>producer_zero_post_cube_audit.json</code> to <code>archive/&lt;date&gt;-pre-rerun-cube-snapshot/</code>. Append <code>_prior</code> suffix to filenames.</li>
     <li><strong>Launch the cube re-run</strong> with the new batch of fixes (e.g. STRATEGY_EXIT_OVERRIDE updates, producer fixes, gate-threshold tuning).</li>
-    <li><strong>Merge + optimize.</strong> <code>aws_batch395_merge.py --upload-final</code> then <code>scripts/optimize_strategies_from_cube.py</code> on the new <code>output_batch395_final/</code>.</li>
-    <li><strong>Rebuild dashboard</strong> with <code>scripts/build_dashboard_phase_1a.py --source output_batch395_final</code>. The build script (Batch 441b extension) loads both the prior snapshot AND the current optimizer output, joins on (strategy, exit_method), computes per-cell deltas, and emits <code>D.cube_diff</code>. This Tab 16 then renders the diff KPIs + 3 tables above.</li>
+    <li><strong>Merge + optimize.</strong> <code>aws_batch395_merge.py --upload-final</code> then <code>scripts/optimize_strategies_from_cube.py</code> on the new <code>output_r5_merged_&lt;range&gt;/</code>.</li>
+    <li><strong>Rebuild dashboard</strong> with <code>scripts/build_dashboard_phase_1a.py --source output_r5_merged_&lt;range&gt;</code>. The build script (Batch 441b extension) loads both the prior snapshot AND the current optimizer output, joins on (strategy, exit_method), computes per-cell deltas, and emits <code>D.cube_diff</code>. This Tab 16 then renders the diff KPIs + 3 tables above.</li>
     <li><strong>Read the diff.</strong> Are the cells we tried to improve actually improved? Did the verdict flip from FAIL to PASS-relaxed? Did the bucket counts move in the expected direction? If yes, the optimization batch is validated; commit. If no, the hypothesis was wrong and we need a different lever.</li>
   </ol>
 </section>
