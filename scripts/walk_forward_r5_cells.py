@@ -26,6 +26,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 from datetime import date
 from pathlib import Path
 
@@ -73,9 +74,45 @@ def _sharpe(a, hold):
         return {"n": int(n), "sharpe": 0.0, "wr": round(float((a > 0).mean()), 3)}
     avg_hold = float(hold.mean()) if len(hold) > 0 else 10.0
     trades_per_year = max(1.0, 252.0 / max(avg_hold, 1e-9))
-    sh = float(a.mean() / std) * (trades_per_year ** 0.5)
+    sr_pt = float(a.mean() / std)          # per-trade Sharpe
+    ann = trades_per_year ** 0.5
+    sh = sr_pt * ann
+    # F2 (B1378): Lo (2002, FAJ "The Statistics of Sharpe Ratios") IID standard error
+    # SE(SR) = sqrt((1 + SR^2/2)/n), scaled by the SAME annualization factor so the CI
+    # is on the ANNUALIZED number the 0.7 gate is applied to. Reported on every Sharpe
+    # (class fix, not per-caller) because a point Sharpe at n=30-40 has a ~+/-1.6 CI and
+    # is statistically indistinguishable from 0 -- ranking on the point estimate
+    # over-selects noise. t/p are one-sided (H0: SR <= 0) for the BH-FDR family below.
+    se_ann = math.sqrt((1.0 + 0.5 * sr_pt ** 2) / n) * ann
+    tstat = sr_pt * math.sqrt(n)
+    pval = 0.5 * math.erfc(tstat / math.sqrt(2.0))
     return {"n": int(n), "sharpe": round(sh, 3), "wr": round(float((a > 0).mean()), 3),
-            "avg_hold": round(avg_hold, 1)}
+            "avg_hold": round(avg_hold, 1), "se": round(se_ann, 3),
+            "ci_lo": round(sh - 1.96 * se_ann, 3), "ci_hi": round(sh + 1.96 * se_ann, 3),
+            "t": round(tstat, 2), "p": pval}
+
+
+def bh_fdr(pvals, q=0.05):
+    """Benjamini-Hochberg (1995) FDR control -- the repo's canonical multiple-testing
+    correction (B982 promoted BH-FDR over Bonferroni as a HARD gate at N>1000).
+    Returns (reject_flags in ORIGINAL order, largest passing threshold).
+
+    F3 (B1378): the loose set was selected from thousands of (strategy x exit x fold)
+    comparisons with NO correction, so a chunk of it is expected to clear by chance
+    alone. BH controls the expected FALSE-DISCOVERY fraction among the rejects at q."""
+    m = len(pvals)
+    if m == 0:
+        return [], 0.0
+    order = sorted(range(m), key=lambda i: pvals[i])
+    kmax, thresh = 0, 0.0
+    for rank, i in enumerate(order, start=1):
+        if pvals[i] <= q * rank / m:
+            kmax, thresh = rank, q * rank / m
+    rej = [False] * m
+    for rank, i in enumerate(order, start=1):
+        if rank <= kmax:
+            rej[i] = True
+    return rej, thresh
 
 
 def _validate_conditional(args) -> int:

@@ -13,6 +13,21 @@ B1371) was already fixed, but the "passed" set is **softer than it reads** and o
 **data-integrity contamination is material**. Nothing here is deploy-grade until findings
 1 and 6 are fixed and the analysis re-run.
 
+> **UPDATE 2 (B1378, owner-directed "Run f3 f4 f2"): F2 + F3 + F4 APPLIED - and the result
+> changes the headline.** Exit now picked on IS folds 1-3 only, fold 4 (2025-05 -> 2026-05)
+> held out to decide the verdict, BH-FDR q=0.05 over the holdout family, Lo(2002) 95% CIs on
+> every Sharpe, dual `fires` split per leg. **A leak was found in-council and fixed:** the
+> loose-pool pre-screen was selected across ALL FOUR folds (incl. F4), so grading pool members
+> on F4 was circular -> the pre-screen was dropped and EVERY (strategy x direction) in the cube
+> is now graded (207 rows / 159 strategies; 188 holdout-evaluable). **RESULT: 5 rows / 5
+> strategies PASS** (holdout Sharpe >= 0.7 + BH-FDR, all with CI lower bound > 0), 6 PASS-noFDR,
+> **177 DROP**, 19 UNEVAL. The 506/90 "passing" counts were selection artifacts of same-window
+> grading, not arithmetic errors. Lift is real but modest: holdout hit-rate 10.8% for
+> screen-selected rows vs 2.6% for rejected rows. All 11 survivors are LONG; `time_stop_10d`
+> is the exit on 5 of 11 (optimized exits transfer worst - hindsight-oracle exit hits 17.6%
+> of rows vs 5.9% for the IS-picked one). See L227/L228 + `PASSED_STRATEGY_EXIT_LIST.md`.
+> STILL OPEN: F5 (crisis absent), short borrow cost, cost-sensitivity ratio, one-year holdout.
+
 > **UPDATE (B1377, owner-approved re-run): F1 (net-of-cost) + F6 (winsorize) APPLIED.**
 > Winsorized per-trade pnl +/-300% + subtracted 20bps T1a round-trip cost, then re-ran the
 > whole gate/conditional/doc chain. Effect: **loose 613 -> 506, robust 115 -> 90, conditional

@@ -3130,3 +3130,38 @@ Cloud smoke vs local runs: same window, 1002 vs 1043 sim-days. Root cause: `_tra
 **What happened:** adding a cumulative-return column to the passed-strategy doc surfaced awesome_oscillator with a +13,389% cumulative at 0.14 Sharpe. Verified: ONE trade at +12,151% (median 2.54%). Cube-wide scan: 906 trades with |pnl_pct|>500%, ALL on SBNY (Signature Bank, FDIC-seized 2023-03 -> price ~$0); global max pnl_pct = 264,900%. The survivorship-free 614-ticker universe (correctly) includes tickers that collapsed in-window; their near-zero prices make (exit-entry)/entry explode. A single such trade dominates a cell's mean AND std -> cumulative return and Sharpe both unreliable for any affected cell (incl. pairs_mean_reversion_long, one of the 17 conditional survivors).
 
 **Generalized rules:** (a) any metric summed/averaged over per-trade returns from a survivorship-free universe MUST winsorize (cap +/-K%) or exclude post-collapse bars for delisted names -- otherwise a handful of collapse trades set the headline; (b) add a data-integrity assert at merge time (|pnl_pct| <= K, else flag+quarantine) so corrupt returns never reach analysis silently; (c) a cumulative/total-return column is a cheap outlier detector -- compute it early; the number that looks too good is the data bug; (d) re-run any gate/ranking that used raw returns after winsorizing (S6-B1376-WINSORIZE) -- the pre-winsorize passing set is provisional.
+
+### L227 - A true holdout collapses a selected strategy set by ~10x; report it in rows/strategies, not cells (B1378)
+
+The R5 loose set looked like 506 passing (strategy x exit) cells / 90 robust. Re-graded
+with the exit picked on 2022-2025 ONLY and the final year 2025-2026 held out, the whole
+cube yields **5 rows (5 strategies) PASS** (holdout Sharpe >= 0.7 + BH-FDR q<0.05, all with
+95% CI lower bound > 0), 6 more PASS-noFDR, and **177 rows DROP**. Nothing was wrong with
+the earlier arithmetic - the earlier method simply picked and graded on the same data.
+
+Three things this measured that a same-window method cannot:
+1. **The old screen has real but modest signal.** Holdout hit-rate 10.8% for rows the loose
+   screen selected vs 2.6% for rows it rejected (~4x lift). It concentrates candidates; it
+   does not identify winners.
+2. **Exit selection transfers poorly.** A hindsight-oracle exit clears 0.7 in the holdout on
+   17.6% of rows, the IS-picked exit on 5.9% - about a third. Optimized exits are the most
+   overfit component; `time_stop_10d` (a dumb time stop) is the exit on 5 of the 11 survivors.
+3. **The base tape is negative.** Every fold's all-trade aggregate Sharpe is <= +0.04
+   (F1 -0.28 / F2 +0.04 / F3 -0.18 / F4 -0.19), so survivors are a genuine tail, and the
+   holdout year is not anomalously hostile - it is a normal fold.
+
+**Reporting rule (owner correction, same batch):** report these in **rows (strategy x
+direction) or strategies** - the units a person deploys - never in "cells". "90 cells" and
+"5 strategies" describe the same artifact at different granularity and the first one reads
+as ~18x more evidence than exists.
+
+### L228 - A candidate pre-screen selected across ALL folds leaks the holdout (B1378)
+
+First cut of the holdout grading pre-screened to the loose pool, then graded on fold 4. But
+the pool was built from ">=0.7 in >=1 of ALL FOUR folds" - a strategy could be in the pool
+*because of* fold 4, making the holdout circular. Fix: drop the pre-screen and grade every
+(strategy x direction) in the cube, with pool membership demoted to a column and the BH-FDR
+family set to the full universe (188 evaluable rows). Effect: PASS 4 -> 5 rows, and the
+lift statistic (10.8% vs 2.6%) only became measurable once the rejected rows were graded too.
+**Class rule:** when a holdout grades a set, every filter upstream of it must be computable
+from IS data alone. Audit the provenance of the candidate list, not just the grading step.
