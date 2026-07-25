@@ -45,13 +45,24 @@ OOS_MIN_N = 30          # per-fold statistical-power floor (criterion 9 per-regi
 GATE_SHARPE = 0.7       # 1A-alpha OOS Sharpe threshold
 
 
-def _sharpe(a):
+def _sharpe(a, hold):
+    """ANNUALIZED per-trade Sharpe, IDENTICAL to backtest/results/metrics.py::_sharpe
+    (B1371 fix): per_trade_sharpe * sqrt(252/avg_hold). The gate threshold 0.7 was
+    calibrated against this annualized number; the prior version returned raw
+    per-trade mean/std, which is ~sqrt(trades/yr) too small and made the 0.7 bar
+    effectively require an annualized Sharpe of ~5 (owner-surfaced, only 10/4758
+    passed)."""
     n = len(a)
     if n < OOS_MIN_N:
         return None
     std = a.std(ddof=1) if n > 1 else 0.0
-    sh = float(a.mean() / std) if std > 0 else 0.0
-    return {"n": int(n), "sharpe": round(sh, 3), "wr": round(float((a > 0).mean()), 3)}
+    if std <= 0:
+        return {"n": int(n), "sharpe": 0.0, "wr": round(float((a > 0).mean()), 3)}
+    avg_hold = float(hold.mean()) if len(hold) > 0 else 10.0
+    trades_per_year = max(1.0, 252.0 / max(avg_hold, 1e-9))
+    sh = float(a.mean() / std) * (trades_per_year ** 0.5)
+    return {"n": int(n), "sharpe": round(sh, 3), "wr": round(float((a > 0).mean()), 3),
+            "avg_hold": round(avg_hold, 1)}
 
 
 def main() -> int:
@@ -84,7 +95,7 @@ def main() -> int:
         print(f"[INFO] 5-Gate shortlist: {len(cellset)} cells")
 
     print(f"[INFO] reading {cube} (usecols) ...")
-    df = pd.read_csv(cube, usecols=["strategy", "entry_date", "exit_method", "pnl_pct"],
+    df = pd.read_csv(cube, usecols=["strategy", "entry_date", "exit_method", "pnl_pct", "hold_days"],
                      low_memory=False)
     df["entry_date"] = pd.to_datetime(df["entry_date"]).dt.date
     print(f"[INFO] cube rows={len(df):,}; grouping by (strategy, exit_method) ...")
@@ -95,10 +106,11 @@ def main() -> int:
             continue
         ed = g["entry_date"].values
         pn = g["pnl_pct"].values
+        hd = g["hold_days"].values
         folds, qualifying = {}, []
         for name, o0, o1 in FOLDS:
             mask = (ed >= o0) & (ed < o1)
-            st = _sharpe(pn[mask])
+            st = _sharpe(pn[mask], hd[mask])
             folds[name] = st
             if st:
                 qualifying.append(st["sharpe"])
