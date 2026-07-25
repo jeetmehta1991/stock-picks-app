@@ -83,11 +83,11 @@
 </header>
 
 <nav id="tabs">
-  <button class="tab-btn active" data-panel="overview">Overview</button>
-  <button class="tab-btn" data-panel="strategies">1. Strategies</button>
-  <button class="tab-btn" data-panel="regime">2. Regime</button>
+  <button class="tab-btn" data-panel="overview" style="display:none">Overview</button>
+  <button class="tab-btn active" data-panel="strategies">1. Strategies</button>
+  <button class="tab-btn" data-panel="regime" style="display:none">2. Regime</button>
   <button class="tab-btn" data-panel="maemfe">3. MAE/MFE</button>
-  <button class="tab-btn" data-panel="equity">4. Equity</button>
+  <button class="tab-btn" data-panel="equity" style="display:none">4. Equity</button>
   <button class="tab-btn" data-panel="walkforward">5. Walk-fwd</button>
   <button class="tab-btn" data-panel="smartmoney">6. Smart-$</button>
   <button class="tab-btn" data-panel="sector">7. Sector</button>
@@ -105,14 +105,14 @@
   <!-- Batch 439 (2026-05-29): owner-directed Sample Trades walkthrough tab -->
   <button class="tab-btn" data-panel="sample">15. Sample Trades</button>
   <!-- Batch 441 (2026-05-29): owner-directed Cube Diff tracking tab -->
-  <button class="tab-btn" data-panel="cubediff">16. Cube Diff</button>
+  <button class="tab-btn" data-panel="cubediff" style="display:none">16. Cube Diff</button>
   <!-- Batch 443 (2026-05-29): owner-directed Iteration Rounds + Cell Cube Comparison tabs -->
   <button class="tab-btn" data-panel="rounds">17. Iteration Rounds</button>
-  <button class="tab-btn" data-panel="cellcompare">18. Cell Cube Compare</button>
+  <button class="tab-btn" data-panel="cellcompare" style="display:none">18. Cell Cube Compare</button>
   <button class="tab-btn" data-panel="raw">Raw JSON</button>
 </nav>
 
-<section class="panel active" id="overview">
+<section class="panel" id="overview">
   <h2>Overview — Portfolio KPIs</h2>
   <p class="desc">Top-line portfolio metrics from the canonical backtest. Source: output_v2/portfolio_summary.json + portfolio_metrics.json + improvements_summary.json.</p>
   <div class="kpi-grid" id="overview-kpis"></div>
@@ -121,7 +121,7 @@
   <table id="overview-table" class="display compact"></table>
 </section>
 
-<section class="panel" id="strategies">
+<section class="panel active" id="strategies">
   <h2>1. Per-strategy ranking</h2>
   <p class="desc">All evaluated strategies with their core 9-criteria scores. PASS/FAIL pills reflect the overall thresholds per CLAUDE.md. Click headers to sort.</p>
   <div class="kpi-grid" id="strat-kpis"></div>
