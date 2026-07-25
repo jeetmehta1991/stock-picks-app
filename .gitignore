@@ -99,3 +99,7 @@ dashboard_r5/_artifact.html
 output_r5_cube_merged/
 output_r5_merged_1_3/
 output_r5_cube_merged/
+
+# R5 cube build intermediates (large; regenerable from S3 artifacts) - B1366
+output_chunk*/
+output_r5_merged_*/
