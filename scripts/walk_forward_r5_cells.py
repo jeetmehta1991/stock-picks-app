@@ -45,6 +45,19 @@ OOS_MIN_N = 30          # per-fold statistical-power floor (criterion 9 per-regi
 GATE_SHARPE = 0.7       # 1A-alpha OOS Sharpe threshold
 
 
+def _friction(df, args):
+    """F6 winsorize + F1 net-of-cost applied to per-trade pnl_pct at read time (B1376)."""
+    w = getattr(args, "winsorize", 0.0) or 0.0
+    c = getattr(args, "cost_bps", 0.0) or 0.0
+    if w > 0:
+        df["pnl_pct"] = df["pnl_pct"].clip(-w, w)
+    if c > 0:
+        df["pnl_pct"] = df["pnl_pct"] - c / 100.0   # bps -> pct (20bps = 0.20%)
+    if w > 0 or c > 0:
+        print(f"[INFO] friction applied: winsorize=+/-{w} cost={c}bps")
+    return df
+
+
 def _sharpe(a, hold):
     """ANNUALIZED per-trade Sharpe, IDENTICAL to backtest/results/metrics.py::_sharpe
     (B1371 fix): per_trade_sharpe * sqrt(252/avg_hold). The gate threshold 0.7 was
@@ -84,6 +97,7 @@ def _validate_conditional(args) -> int:
                      usecols=["strategy", "exit_method", by, "entry_date", "pnl_pct", "hold_days"],
                      low_memory=False)
     df["entry_date"] = pd.to_datetime(df["entry_date"]).dt.date
+    df = _friction(df, args)
     IS, OOS = df[df.entry_date < split], df[df.entry_date >= split]
 
     def best_exit(sub):
@@ -166,6 +180,7 @@ def _conditional(args) -> int:
     print(f"[INFO] --by {by}: reading {cube} (usecols) ...")
     df = pd.read_csv(cube, usecols=["strategy", "exit_method", "pnl_pct", "hold_days", by],
                      low_memory=False)
+    df = _friction(df, args)
     print(f"[INFO] cube rows={len(df):,}; grouping by (strategy, exit_method, {by}) ...")
     rows = []
     for (strat, exit_m, val), g in df.groupby(["strategy", "exit_method", by], sort=False):
@@ -247,6 +262,12 @@ def main() -> int:
                          "on IS folds (entry 2022-2025), MEASURE both on the OOS fold (entry "
                          ">=2025-05-05). Answers 'does regime-conditional exit BEAT unconditional "
                          "OUT-OF-SAMPLE?' -> the deployable STRATEGY_EXIT_OVERRIDE survivors.")
+    ap.add_argument("--winsorize", type=float, default=0.0,
+                    help="F6 (B1376): clip per-trade pnl_pct to +/-this before metrics "
+                         "(e.g. 300) - removes delisting-collapse outliers (SBNY +264900pct). 0=off.")
+    ap.add_argument("--cost-bps", type=float, default=0.0,
+                    help="F1: subtract this round-trip cost (bps) from each trade's pnl_pct "
+                         "(T1a canonical = 20). 0=off. NOTE: does not add short-borrow (shorts understated).")
     ap.add_argument("--out", default=None)
     args = ap.parse_args()
 
@@ -276,6 +297,7 @@ def main() -> int:
     df = pd.read_csv(cube, usecols=["strategy", "entry_date", "exit_method", "pnl_pct", "hold_days"],
                      low_memory=False)
     df["entry_date"] = pd.to_datetime(df["entry_date"]).dt.date
+    df = _friction(df, args)
     print(f"[INFO] cube rows={len(df):,}; grouping by (strategy, exit_method) ...")
 
     results = []

@@ -28,6 +28,8 @@ FOLDS = [("F1", date(2022, 5, 5), date(2023, 5, 5)), ("F2", date(2023, 5, 5), da
          ("F3", date(2024, 5, 5), date(2025, 5, 5)), ("F4", date(2025, 5, 5), date(2026, 5, 5))]
 MIN_N = 30
 GATE = 0.7
+WINSORIZE = 300.0   # F6 (B1377): cap collapse-priced outliers (SBNY)
+COST_BPS = 20.0     # F1 (B1377): T1a round-trip cost (5bps slippage + 1bp commission + spread)
 
 
 def ann_sharpe(pnl, hold):
@@ -104,6 +106,9 @@ def main():
                      usecols=["strategy", "direction", "exit_method", "entry_date", "pnl_pct", "hold_days"],
                      low_memory=False)
     df["entry_date"] = pd.to_datetime(df["entry_date"]).dt.date
+    # F6 winsorize + F1 net-of-cost (B1377): every metric below is on NET, de-outliered pnl.
+    df["pnl_pct"] = df["pnl_pct"].clip(-WINSORIZE, WINSORIZE) - COST_BPS / 100.0
+    print(f"[INFO] friction applied: winsorize +/-{WINSORIZE}, cost {COST_BPS}bps (NET Sharpes)")
 
     def rows_for(strat, conditional):
         out = []
@@ -151,19 +156,21 @@ def main():
     md.append("<!-- Source: per CHECKLIST #77; B1375 auto-built by scripts/build_passed_strategy_exit_list.py from the R5 cube (output_r5_merged_1_7) + STRATEGY_ROSTER.md. Do NOT hand-edit; regenerate. -->\n")
     md.append("# Passed Strategy -> Exit List (R5, 2026-07-25)\n")
     md.append("> **Deep self-review of this artifact: `R5_ANALYSIS_DEEP_REVIEW.md`** (findings F1-F6, "
-              "severity + tickets). This list is a CANDIDATE set; the Sharpes are GROSS and pending a "
-              "winsorized (F6) + net-of-cost (F1) RE-RUN before any deploy/1B-alpha use.\n")
+              "severity + tickets). Sharpes are now NET of cost + winsorized (F1+F6 applied B1377); still "
+              "a CANDIDATE set pending F2 (CIs) / F3 (true holdout) / F4 (dual formula) / F5 (crisis).\n")
     md.append("**What this is:** the strategies whose (strategy x exit) cleared the LOOSE OOS gate "
               "(annualized OOS Sharpe >= 0.7 in >=1 of 4 DEC-505 folds) on the full 614-ticker R5 cube, "
               "with each strategy's best backtested exit, entry-gate formula, and OOS metrics. Dual "
               "strategies (trade long and short) appear as two rows.\n")
     md.append("**Method / caveats (read before deploying):**\n"
-              "- Sharpe is ANNUALIZED (per-trade x sqrt(252/avg_hold), matching `metrics.py::_sharpe`; the B1371 fix).\n"
+              "- Sharpe is ANNUALIZED (per-trade x sqrt(252/avg_hold), matching `metrics.py::_sharpe`; the B1371 fix), "
+              "and NOW **NET of 20bps round-trip cost + winsorized +/-300%** (F1+F6 applied B1377). "
+              "Before/after friction: loose 613->506, robust 115->90, conditional survivors 17->13.\n"
               "- **LOOSE gate** = >=0.7 in >=1 fold: a cell can clear in a single lucky year -> higher false-positive rate than the strict >=2-fold set. This is a wide candidate pool; the 1B agent layer + paper trading are the downstream filters.\n"
               "- **Regime-conditional (17):** the regime-varying exit BEAT the single best exit OUT-OF-SAMPLE (IS-pick 2022-2025 / OOS-measure 2025-2026, DeltaSharpe >= 0.3). Exit is assigned once at entry from `regime_at_entry`, held to close.\n"
               "- Metrics recomputed per (strategy x direction x exit); best exit = highest single-fold OOS Sharpe (n>=30 per fold).\n")
     md.append("\n**KNOWN LIMITATIONS (self-review B1375 - this is a CANDIDATE list, not a deploy list):**\n"
-              "1. **GROSS Sharpe - no transaction costs/slippage.** The cube `pnl_pct` carries no friction; net-of-cost Sharpes are lower and some cells will fail. The AUTO-FAIL cost-sensitivity gate (`metrics.py`) was NOT applied here -> S6-B1375-NET-OF-COST.\n"
+              "1. **[APPLIED B1377] Net-of-cost + winsorized.** 20bps T1a round-trip cost subtracted + pnl clipped +/-300% (SBNY collapse). Effect: loose 613->506, robust 115->90, conditional 17->13. REMAINING: shorts still exclude borrow cost (short rows understated); the formal cost-sensitivity ratio gate is not yet computed.\n"
               "2. **Small-sample noise, no confidence intervals.** ~14% of qualifying cells are n=30-40, where a Sharpe's 95% CI is ~+/-1.6 - a 0.7 point estimate is statistically indistinguishable from 0. Point Sharpes (incl. the 2.0-2.7 tops) are unreliable at low n -> S6-B1375-SHARPE-CI.\n"
               "3. **The LOOSE 613 lacks a true train/test holdout.** They are 'consistent across >=1 annual slice' selected from the SAME window (multiple-testing across 4758 cells x 4 folds, uncorrected). Only the 17 regime-conditional overrides have a genuine IS-pick/OOS-measure split -> the 613 is weaker evidence than the 17 -> S6-B1375-OOS-HOLDOUT.\n"
               "4. **Dual per-direction:** a strategy can clear the POOLED gate yet have neither direction clear individually (pooling averages long+short). Rows show per-direction metrics - a direction with best-fold OOS < 0.7 is a candidate to DROP, not deploy. The 'Entry gate' column currently shows the strategy-level compact for both direction rows (dual `fires` split by direction is TODO -> S6-B1375-DUAL-FORMULA).\n"

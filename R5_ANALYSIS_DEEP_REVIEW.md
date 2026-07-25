@@ -13,6 +13,14 @@ B1371) was already fixed, but the "passed" set is **softer than it reads** and o
 **data-integrity contamination is material**. Nothing here is deploy-grade until findings
 1 and 6 are fixed and the analysis re-run.
 
+> **UPDATE (B1377, owner-approved re-run): F1 (net-of-cost) + F6 (winsorize) APPLIED.**
+> Winsorized per-trade pnl +/-300% + subtracted 20bps T1a round-trip cost, then re-ran the
+> whole gate/conditional/doc chain. Effect: **loose 613 -> 506, robust 115 -> 90, conditional
+> survivors 17 -> 13** (~15-25% of the passing set was gross/outlier-inflated). Gate still
+> robustly OPEN (90 durable). REMAINING open: F2 (CIs), F3 (true holdout / multiple-testing),
+> F4 (dual per-direction formula), F5 (crisis), + shorts still exclude borrow cost, and the
+> formal cost-sensitivity RATIO gate is not yet computed. A merge-time |pnl|<=K assert is still TODO.
+
 ---
 
 ## Findings (most-severe first; all EXECUTED this session)
