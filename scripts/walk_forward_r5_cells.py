@@ -65,6 +65,93 @@ def _sharpe(a, hold):
             "avg_hold": round(avg_hold, 1)}
 
 
+def _validate_conditional(args) -> int:
+    """A / the gate: IS-pick / OOS-measure. Per strategy, pick its best exit
+    conditional-per-<by> AND unconditional on the IS folds (entry 2022-05-05 ->
+    2025-05-05), then MEASURE both exit policies on the OOS fold (entry >=
+    2025-05-05). A strategy's conditional override is deployable ONLY if the
+    conditional OOS annualized Sharpe beats the unconditional OOS Sharpe. This
+    disciplines the in-sample 87%-differ selection bias (council statistician +
+    outsider lenses)."""
+    import pandas as pd
+    by = args.by or "regime_at_entry"
+    cdir = REPO / args.cube_dir
+    out = Path(args.out) if args.out else (cdir / f"validate_conditional_exit_{by}.json")
+    split = date(2025, 5, 5)  # IS = folds 1-3, OOS = fold 4 (last year)
+    minn = args.cond_min_n
+    print(f"[INFO] validate-conditional by {by}: IS entry<{split}, OOS entry>={split}, n>={minn}")
+    df = pd.read_csv(cdir / "trade_exit_detail.csv",
+                     usecols=["strategy", "exit_method", by, "entry_date", "pnl_pct", "hold_days"],
+                     low_memory=False)
+    df["entry_date"] = pd.to_datetime(df["entry_date"]).dt.date
+    IS, OOS = df[df.entry_date < split], df[df.entry_date >= split]
+
+    def best_exit(sub):
+        b = None
+        for ex, g in sub.groupby("exit_method"):
+            if len(g) < minn:
+                continue
+            st = _sharpe(g.pnl_pct.values, g.hold_days.values)
+            if st and (b is None or st["sharpe"] > b[1]):
+                b = (ex, st["sharpe"])
+        return b
+
+    rows, cond_win, cond_win_margin, evaluated = [], 0, 0, 0
+    for strat in df.strategy.unique():
+        iss, oos = IS[IS.strategy == strat], OOS[OOS.strategy == strat]
+        u = best_exit(iss)
+        if u is None:
+            continue
+        uncond_exit = u[0]
+        cond = {}
+        for val, gv in iss.groupby(by):
+            b = best_exit(gv)
+            if b:
+                cond[val] = b[0]
+        # OOS measure both policies
+        ou = _sharpe(oos[oos.exit_method == uncond_exit].pnl_pct.values,
+                     oos[oos.exit_method == uncond_exit].hold_days.values)
+        parts = [gv[gv.exit_method == cond.get(val, uncond_exit)] for val, gv in oos.groupby(by)]
+        oc_df = pd.concat(parts) if parts else oos.iloc[0:0]
+        oc = _sharpe(oc_df.pnl_pct.values, oc_df.hold_days.values)
+        if ou is None or oc is None:
+            continue
+        evaluated += 1
+        delta = round(oc["sharpe"] - ou["sharpe"], 3)
+        wins = oc["sharpe"] > ou["sharpe"]
+        if wins:
+            cond_win += 1
+        if delta >= 0.3:
+            cond_win_margin += 1
+        rows.append({"strategy": strat, "uncond_exit": uncond_exit,
+                     "oos_uncond_sharpe": ou["sharpe"], "oos_cond_sharpe": oc["sharpe"],
+                     "oos_delta": delta, "cond_wins_oos": bool(wins),
+                     "cond_map": cond})
+    rows.sort(key=lambda r: -r["oos_delta"])
+    out.write_text(json.dumps({"by": by, "split": str(split), "cond_min_n": minn,
+                               "n_evaluated": evaluated, "n_cond_wins_oos": cond_win,
+                               "n_cond_wins_oos_margin_0.3": cond_win_margin,
+                               "strategies": rows}, indent=1), encoding="utf-8")
+    print(f"[OK] wrote {out}")
+    print(f"\n=== strategies where CONDITIONAL exit beats UNCONDITIONAL out-of-sample (top +delta) ===")
+    for r in rows[:12]:
+        if r["oos_delta"] > 0:
+            print(f"  {r['strategy'][:30]:30} uncond={r['uncond_exit'][:14]:14} "
+                  f"OOS uncond={r['oos_uncond_sharpe']:>5} cond={r['oos_cond_sharpe']:>5} "
+                  f"delta=+{r['oos_delta']}")
+    print(f"\n=== worst (conditional OVERFIT - loses OOS) ===")
+    for r in rows[-5:]:
+        print(f"  {r['strategy'][:30]:30} OOS uncond={r['oos_uncond_sharpe']:>5} "
+              f"cond={r['oos_cond_sharpe']:>5} delta={r['oos_delta']}")
+    print("\n" + "=" * 62)
+    print(f"evaluated {evaluated} strategies (IS+OOS both n>={minn}) | "
+          f"conditional beats unconditional OOS: {cond_win} ({100*cond_win/max(evaluated,1):.0f}%) | "
+          f"by margin >=0.3: {cond_win_margin}")
+    print(f"IS said 155/178 'differ' -> OOS-validated real advantage is the {cond_win_margin} margin set.")
+    print("=" * 62)
+    return 0
+
+
 def _conditional(args) -> int:
     """--by: rank (strategy x exit x <category-value>) by ANNUALIZED Sharpe over the
     full 2022-2026 window (n>=--cond-min-n). This is the per-category deployment map
@@ -155,9 +242,16 @@ def main() -> int:
                          "exit in each category value'.")
     ap.add_argument("--cond-min-n", type=int, default=30,
                     help="per-slice n floor for --by (conditioning shrinks n)")
+    ap.add_argument("--validate-conditional", action="store_true",
+                    help="A (the gate): per strategy, PICK best conditional-vs-unconditional exit "
+                         "on IS folds (entry 2022-2025), MEASURE both on the OOS fold (entry "
+                         ">=2025-05-05). Answers 'does regime-conditional exit BEAT unconditional "
+                         "OUT-OF-SAMPLE?' -> the deployable STRATEGY_EXIT_OVERRIDE survivors.")
     ap.add_argument("--out", default=None)
     args = ap.parse_args()
 
+    if args.validate_conditional:
+        return _validate_conditional(args)
     if args.by:
         return _conditional(args)
 
