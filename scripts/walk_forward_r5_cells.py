@@ -2,22 +2,25 @@
 
 Source attribution (per CHECKLIST #77):
   - Cube: output_r5_merged_1_7/trade_exit_detail.csv (the merged 7-batch R5 cube)
-  - Shortlist: output_optimization_candidates_2026_07_25/exit_method_analysis.json
-    layer_2_per_strategy_exit_cell (the DEC-426 5-Gate qualifying cells)
+  - Cell set: either the DEC-426 5-Gate shortlist
+    (output_optimization_candidates_2026_07_25/exit_method_analysis.json
+    layer_2_per_strategy_exit_cell) OR --all-cells = every (strategy x exit)
+    cell with in-sample n >= --min-n from exit_strategy_comparison.csv.
   - Method: DEC-505 4-fold expanding-window, disjoint 1y OOS -- the SAME folds +
     per-cell Sharpe as scripts/walk_forward_batch414_cells.py (which is hardcoded
-    to the R4 output_batch395_final cube + 9 R4-era winners). This is the R5
-    generalization: read the current cube + the current 5-Gate shortlist, not
-    round-specific hardcodes.
+    to the R4 cube + 9 R4-era winners). This is the R5 generalization: read the
+    current cube + a configurable cell set, evaluated by groupby in one pass.
   - Owner gate (CLAUDE.md): >=1 (strategy x exit) cell with rules-only OOS
-    Sharpe >= 0.7 in >=1 fold (proxy for >=1 regime) AND OOS n >= 30 for the
-    $300 Phase 1B-alpha agent overlay budget to be eligible. Prints GATE OPEN /
-    GATE LOCKED.
+    Sharpe >= 0.7 at OOS n >= 30 in >=1 fold for the $300 Phase 1B-alpha budget.
+
+Multiple-testing note: scanning all ~4.7k n>=30 cells x 4 folds inflates the
+best-of-folds false-positive rate. So this reports BOTH the loose count (>=0.7
+in >=1 fold) AND the robust count (>=0.7 in >=2 folds) -- the robust count is
+the multiple-testing-aware read. It does NOT weaken any threshold.
 
 Usage:
-  python scripts/walk_forward_r5_cells.py
-  python scripts/walk_forward_r5_cells.py --cube-dir output_r5_merged_1_7 \
-      --analysis output_optimization_candidates_2026_07_25/exit_method_analysis.json
+  python scripts/walk_forward_r5_cells.py                 # 5-Gate shortlist
+  python scripts/walk_forward_r5_cells.py --all-cells     # every n>=30 cell
 """
 from __future__ import annotations
 
@@ -42,11 +45,10 @@ OOS_MIN_N = 30          # per-fold statistical-power floor (criterion 9 per-regi
 GATE_SHARPE = 0.7       # 1A-alpha OOS Sharpe threshold
 
 
-def _sharpe(pnl: pd.Series):
-    n = len(pnl)
-    if n < 5:
+def _sharpe(a):
+    n = len(a)
+    if n < OOS_MIN_N:
         return None
-    a = pnl.values
     std = a.std(ddof=1) if n > 1 else 0.0
     sh = float(a.mean() / std) if std > 0 else 0.0
     return {"n": int(n), "sharpe": round(sh, 3), "wr": round(float((a > 0).mean()), 3)}
@@ -57,67 +59,83 @@ def main() -> int:
     ap.add_argument("--cube-dir", default="output_r5_merged_1_7")
     ap.add_argument("--analysis",
                     default="output_optimization_candidates_2026_07_25/exit_method_analysis.json")
+    ap.add_argument("--all-cells", action="store_true",
+                    help="evaluate every (strategy x exit) cell with in-sample n>=--min-n "
+                         "from exit_strategy_comparison.csv (not just the 5-Gate shortlist)")
+    ap.add_argument("--min-n", type=int, default=30, help="in-sample n floor for --all-cells")
     ap.add_argument("--out", default=None)
     args = ap.parse_args()
 
-    cube = REPO / args.cube_dir / "trade_exit_detail.csv"
-    out = Path(args.out) if args.out else (REPO / args.cube_dir / "walk_forward_r5_cells.json")
+    cdir = REPO / args.cube_dir
+    cube = cdir / "trade_exit_detail.csv"
+    out = Path(args.out) if args.out else (cdir / (
+        "walk_forward_r5_all_cells.json" if args.all_cells else "walk_forward_r5_cells.json"))
 
-    # shortlist = every L2 qualifying (strategy x exit) cell from the optimizer
-    an = json.loads((REPO / args.analysis).read_text(encoding="utf-8"))
-    l2 = an.get("layer_2_per_strategy_exit_cell", [])
-    cells = [(c.get("strategy"), c.get("exit_method")) for c in l2
-             if c.get("strategy") and c.get("exit_method")]
-    print(f"[INFO] {len(cells)} shortlist cells from {args.analysis}")
+    if args.all_cells:
+        cmp = pd.read_csv(cdir / "exit_strategy_comparison.csv")
+        ncol = "trades" if "trades" in cmp.columns else "n"
+        cellset = set(map(tuple, cmp[cmp[ncol] >= args.min_n][["strategy", "exit_method"]].values))
+        print(f"[INFO] --all-cells: {len(cellset)} cells with in-sample {ncol}>={args.min_n}")
+    else:
+        an = json.loads((REPO / args.analysis).read_text(encoding="utf-8"))
+        l2 = an.get("layer_2_per_strategy_exit_cell", [])
+        cellset = set((c.get("strategy"), c.get("exit_method")) for c in l2
+                      if c.get("strategy") and c.get("exit_method"))
+        print(f"[INFO] 5-Gate shortlist: {len(cellset)} cells")
 
-    print(f"[INFO] reading {cube} (usecols only) ...")
+    print(f"[INFO] reading {cube} (usecols) ...")
     df = pd.read_csv(cube, usecols=["strategy", "entry_date", "exit_method", "pnl_pct"],
                      low_memory=False)
     df["entry_date"] = pd.to_datetime(df["entry_date"]).dt.date
-    print(f"[INFO] cube rows={len(df):,}")
+    print(f"[INFO] cube rows={len(df):,}; grouping by (strategy, exit_method) ...")
 
-    results, gate_open_cells = [], []
-    for strat, exit_m in cells:
-        sub = df[(df["strategy"] == strat) & (df["exit_method"] == exit_m)]
-        folds = {}
-        best_oos = None
+    results = []
+    for (strat, exit_m), g in df.groupby(["strategy", "exit_method"], sort=False):
+        if (strat, exit_m) not in cellset:
+            continue
+        ed = g["entry_date"].values
+        pn = g["pnl_pct"].values
+        folds, qualifying = {}, []
         for name, o0, o1 in FOLDS:
-            m = sub[(sub["entry_date"] >= o0) & (sub["entry_date"] < o1)]
-            st = _sharpe(m["pnl_pct"])
+            mask = (ed >= o0) & (ed < o1)
+            st = _sharpe(pn[mask])
             folds[name] = st
-            if st and st["n"] >= OOS_MIN_N:
-                if best_oos is None or st["sharpe"] > best_oos:
-                    best_oos = st["sharpe"]
-        passes = best_oos is not None and best_oos >= GATE_SHARPE
-        row = {"strategy": strat, "exit_method": exit_m, "best_oos_sharpe_n>=30": best_oos,
-               "gate_pass": passes, "folds": folds}
-        results.append(row)
-        if passes:
-            gate_open_cells.append(row)
+            if st:
+                qualifying.append(st["sharpe"])
+        n_ge_07 = sum(1 for s in qualifying if s >= GATE_SHARPE)
+        best = max(qualifying) if qualifying else None
+        results.append({"strategy": strat, "exit_method": exit_m,
+                        "best_oos_sharpe": best, "n_folds_ge_0.7": n_ge_07,
+                        "n_qualifying_folds": len(qualifying), "folds": folds})
 
-    results.sort(key=lambda r: (r["best_oos_sharpe_n>=30"] is None, -(r["best_oos_sharpe_n>=30"] or -9)))
+    pass1 = [r for r in results if r["n_folds_ge_0.7"] >= 1]
+    pass2 = [r for r in results if r["n_folds_ge_0.7"] >= 2]
+    results.sort(key=lambda r: (r["best_oos_sharpe"] is None, -(r["best_oos_sharpe"] or -9)))
     out.write_text(json.dumps({"gate_threshold": GATE_SHARPE, "oos_min_n": OOS_MIN_N,
-                               "n_cells": len(results), "n_gate_pass": len(gate_open_cells),
+                               "mode": "all_cells" if args.all_cells else "shortlist",
+                               "n_cells_evaluated": len(results),
+                               "n_pass_1fold": len(pass1), "n_pass_2fold": len(pass2),
                                "cells": results}, indent=1), encoding="utf-8")
     print(f"[OK] wrote {out}")
 
     print("\n=== top cells by best OOS Sharpe (n>=30 folds) ===")
-    for r in results[:12]:
-        b = r["best_oos_sharpe_n>=30"]
-        print(f"  {r['strategy']} x {r['exit_method']}: best_OOS_Sharpe={b} "
-              f"{'<= PASS' if r['gate_pass'] else ''}")
+    for r in results[:15]:
+        print(f"  {r['strategy'][:30]:30} x {r['exit_method'][:18]:18} "
+              f"best={r['best_oos_sharpe']} folds>=0.7={r['n_folds_ge_0.7']}/{r['n_qualifying_folds']}")
 
-    print("\n" + "=" * 56)
-    if gate_open_cells:
-        print(f"1A-ALPHA GATE: OPEN -- {len(gate_open_cells)} cell(s) with OOS Sharpe "
-              f">= {GATE_SHARPE} at n>=30 in >=1 fold.")
-        print("  -> $300 Phase 1B-alpha agent overlay is ELIGIBLE (owner decision).")
+    print("\n" + "=" * 60)
+    print(f"CELLS EVALUATED: {len(results)}")
+    print(f"PASS loose  (>=0.7 in >=1 fold): {len(pass1)}   <- headline count")
+    print(f"PASS ROBUST (>=0.7 in >=2 folds): {len(pass2)}   <- multiple-testing-aware")
+    print("=" * 60)
+    if pass2:
+        print(f"1A-ALPHA GATE: OPEN (robust) -- {len(pass2)} cell(s) clear >=0.7 in >=2 folds.")
+    elif pass1:
+        print(f"1A-ALPHA GATE: OPEN (loose only) -- {len(pass1)} cell(s) at >=1 fold, "
+              f"but 0 clear >=2 folds. Treat as marginal.")
     else:
-        print(f"1A-ALPHA GATE: LOCKED -- no cell reached OOS Sharpe >= {GATE_SHARPE} "
-              f"at n>=30 in any fold.")
-        print("  -> loop back to entry-side optimization (Lens A/B) + re-cube; "
-              "do NOT commit the 1B-alpha budget.")
-    print("=" * 56)
+        print("1A-ALPHA GATE: LOCKED.")
+    print("=" * 60)
     return 0
 
 
