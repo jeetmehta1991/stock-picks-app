@@ -65,6 +65,53 @@ def _sharpe(a, hold):
             "avg_hold": round(avg_hold, 1)}
 
 
+def _conditional(args) -> int:
+    """--by: rank (strategy x exit x <category-value>) by ANNUALIZED Sharpe over the
+    full 2022-2026 window (n>=--cond-min-n). This is the per-category deployment map
+    -- which strategy x exit to run in which regime / vix bucket / sector / etc. It
+    is full-window conditional (like the engine's per-regime verdict), NOT a temporal
+    walk-forward; cross-reference the temporal-robust set (--all-cells) for stability."""
+    import pandas as pd
+    cdir = REPO / args.cube_dir
+    cube = cdir / "trade_exit_detail.csv"
+    by = args.by
+    out = Path(args.out) if args.out else (cdir / f"conditional_by_{by}.json")
+    print(f"[INFO] --by {by}: reading {cube} (usecols) ...")
+    df = pd.read_csv(cube, usecols=["strategy", "exit_method", "pnl_pct", "hold_days", by],
+                     low_memory=False)
+    print(f"[INFO] cube rows={len(df):,}; grouping by (strategy, exit_method, {by}) ...")
+    rows = []
+    for (strat, exit_m, val), g in df.groupby(["strategy", "exit_method", by], sort=False):
+        st = _sharpe(g["pnl_pct"].values, g["hold_days"].values) if len(g) >= args.cond_min_n else None
+        if st:
+            rows.append({"strategy": strat, "exit_method": exit_m, by: str(val),
+                         "sharpe": st["sharpe"], "n": st["n"], "wr": st["wr"]})
+    rows.sort(key=lambda r: -r["sharpe"])
+    passing = [r for r in rows if r["sharpe"] >= GATE_SHARPE]
+    # best (strategy x exit) per category value
+    best_per_val = {}
+    for r in rows:
+        v = r[by]
+        if v not in best_per_val or r["sharpe"] > best_per_val[v]["sharpe"]:
+            best_per_val[v] = r
+    out.write_text(json.dumps({"by": by, "gate_threshold": GATE_SHARPE,
+                               "cond_min_n": args.cond_min_n,
+                               "n_slices_evaluated": len(rows), "n_pass_0.7": len(passing),
+                               "best_per_category_value": best_per_val,
+                               "ranked": rows[:500]}, indent=1), encoding="utf-8")
+    print(f"[OK] wrote {out}")
+    print(f"\n=== BEST (strategy x exit) per {by} value (annualized Sharpe, n>={args.cond_min_n}) ===")
+    for v, r in sorted(best_per_val.items(), key=lambda kv: -kv[1]["sharpe"]):
+        print(f"  {v:14}: {r['strategy'][:30]:30} x {r['exit_method'][:16]:16} Sharpe={r['sharpe']:>5} n={r['n']} wr={r['wr']}")
+    print(f"\n=== top 15 (strategy x exit x {by}) overall ===")
+    for r in rows[:15]:
+        print(f"  {r['strategy'][:26]:26} x {r['exit_method'][:14]:14} @ {r[by]:12} Sharpe={r['sharpe']:>5} n={r['n']}")
+    print("\n" + "=" * 60)
+    print(f"{by}: {len(rows)} slices with n>={args.cond_min_n} | {len(passing)} clear Sharpe>=0.7")
+    print("=" * 60)
+    return 0
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--cube-dir", default="output_r5_merged_1_7")
@@ -74,8 +121,19 @@ def main() -> int:
                     help="evaluate every (strategy x exit) cell with in-sample n>=--min-n "
                          "from exit_strategy_comparison.csv (not just the 5-Gate shortlist)")
     ap.add_argument("--min-n", type=int, default=30, help="in-sample n floor for --all-cells")
+    ap.add_argument("--by", default=None,
+                    help="conditional mode: a cube categorical column (e.g. regime_at_entry, "
+                         "vix_at_entry, sector, smart_money_signal_present, confidence_tier). "
+                         "Ranks (strategy x exit x <by-value>) by ANNUALIZED Sharpe over the "
+                         "full 2022-2026 window with n>=--cond-min-n. Answers 'best strategy x "
+                         "exit in each category value'.")
+    ap.add_argument("--cond-min-n", type=int, default=30,
+                    help="per-slice n floor for --by (conditioning shrinks n)")
     ap.add_argument("--out", default=None)
     args = ap.parse_args()
+
+    if args.by:
+        return _conditional(args)
 
     cdir = REPO / args.cube_dir
     cube = cdir / "trade_exit_detail.csv"
