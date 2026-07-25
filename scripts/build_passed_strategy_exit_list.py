@@ -55,13 +55,16 @@ def parse_roster():
 
 
 def cell_metrics(sub):
-    """best exit for a (strategy[,direction]) subframe: per-exit best-fold OOS Sharpe."""
+    """best exit for a (strategy[,direction]) subframe: per-exit best-fold OOS Sharpe.
+    Returns the chosen exit's PER-FOLD metrics (F1-F4 Sharpe/n) + CUMULATIVE
+    (full-window Sharpe/n/WR/total-return)."""
     best = None
     for ex, g in sub.groupby("exit_method"):
-        folds = []
-        for _, o0, o1 in FOLDS:
+        perfold, folds = {}, []
+        for name, o0, o1 in FOLDS:
             m = g[(g.entry_date >= o0) & (g.entry_date < o1)]
             st = ann_sharpe(m.pnl_pct.values, m.hold_days.values)
+            perfold[name] = st  # {sharpe,n,wr,avg_hold} or None (n<30)
             if st:
                 folds.append(st["sharpe"])
         if not folds:
@@ -69,9 +72,17 @@ def cell_metrics(sub):
         bestfold = max(folds)
         nge = sum(1 for s in folds if s >= GATE)
         full = ann_sharpe(g.pnl_pct.values, g.hold_days.values)
+        # F6 (B1376): winsorize per-trade pnl +/-300% for the cumulative display so a single
+        # delisting-collapse trade (e.g. SBNY +264,900%) doesn't dominate. NOTE: Sharpe here is
+        # still on RAW pnl (matches the official analysis) - the winsorized RE-RUN is S6-B1376.
+        pnl_w = g.pnl_pct.clip(-300, 300)
+        cum = {"sharpe": full["sharpe"] if full else None, "n": int(len(g)),
+               "wr": full["wr"] if full else round(float((g.pnl_pct.values > 0).mean()), 3),
+               "ret": round(float(pnl_w.sum()), 1),  # cumulative sum of per-trade pnl% (winsorized +/-300%)
+               "avg_hold": full["avg_hold"] if full else None}
         rec = {"exit": ex, "best_oos": bestfold, "folds_ge_07": nge, "n_qual_folds": len(folds),
-               "n": full["n"] if full else int(len(g)), "wr": full["wr"] if full else None,
-               "full_sharpe": full["sharpe"] if full else None}
+               "n": cum["n"], "wr": cum["wr"], "full_sharpe": cum["sharpe"],
+               "perfold": perfold, "cum": cum}
         if best is None or bestfold > best["best_oos"]:
             best = rec
     return best
@@ -110,18 +121,25 @@ def main():
                         "roster": roster.get(strat, {})})
         return out
 
+    def fcell(pf, f):
+        st = pf.get(f)
+        return f"{st['sharpe']}({st['n']})" if st else "n<30"
+
     def table(strats, conditional):
-        lines = ["| Strategy | Dir | Best Exit | Regime-Cond | Regimes->Exit | OOS Sharpe (best fold) | Folds>=0.7 | n | WR | Entry gate (compact) |",
-                 "|---|---|---|---|---|---|---|---|---|---|"]
+        lines = ["| Strategy | Dir | Best Exit | Cond | F1 22-23 | F2 23-24 | F3 24-25 | F4 25-26 | "
+                 "Cumulative Sharpe/n/WR/ret% | Folds>=0.7 | Regimes->Exit (cond) / Entry gate |",
+                 "|---|---|---|---|---|---|---|---|---|---|---|"]
         appendix = []
         for s in strats:
             for r in rows_for(s, conditional):
                 ro = r["roster"]
                 cflag = "Y" if conditional else "N"
-                reg = r["regimes"] if conditional else (ro.get("affinity", "") or "all")
+                pf, cum = r["perfold"], r["cum"]
+                cumstr = f"{cum['sharpe']}/{cum['n']}/{cum['wr']}/{cum['ret']}%"
+                last = r["regimes"] if conditional else ro.get("compact", "?")
                 lines.append(f"| `{r['strategy']}` | {r['direction']} | `{r['exit']}` | {cflag} | "
-                             f"{reg if conditional else '-'} | {r['best_oos']} | {r['folds_ge_07']}/{r['n_qual_folds']} | "
-                             f"{r['n']} | {r['wr']} | {ro.get('compact','?')} |")
+                             f"{fcell(pf,'F1')} | {fcell(pf,'F2')} | {fcell(pf,'F3')} | {fcell(pf,'F4')} | "
+                             f"{cumstr} | {r['folds_ge_07']}/{r['n_qual_folds']} | {last} |")
             ro = roster.get(s, {})
             appendix.append(f"- **`{s}`** ({ro.get('direction','?')}, {ro.get('category','?')}): "
                             f"`{ro.get('fires','?')}` | signals: {ro.get('signals','?')}")
@@ -132,6 +150,9 @@ def main():
     md = []
     md.append("<!-- Source: per CHECKLIST #77; B1375 auto-built by scripts/build_passed_strategy_exit_list.py from the R5 cube (output_r5_merged_1_7) + STRATEGY_ROSTER.md. Do NOT hand-edit; regenerate. -->\n")
     md.append("# Passed Strategy -> Exit List (R5, 2026-07-25)\n")
+    md.append("> **Deep self-review of this artifact: `R5_ANALYSIS_DEEP_REVIEW.md`** (findings F1-F6, "
+              "severity + tickets). This list is a CANDIDATE set; the Sharpes are GROSS and pending a "
+              "winsorized (F6) + net-of-cost (F1) RE-RUN before any deploy/1B-alpha use.\n")
     md.append("**What this is:** the strategies whose (strategy x exit) cleared the LOOSE OOS gate "
               "(annualized OOS Sharpe >= 0.7 in >=1 of 4 DEC-505 folds) on the full 614-ticker R5 cube, "
               "with each strategy's best backtested exit, entry-gate formula, and OOS metrics. Dual "
@@ -149,6 +170,11 @@ def main():
               "5. **Crisis regime absent** (n<30 in the 2022-26 window) - this system is meant to buy dips in crisis; no crisis-regime evidence exists here.\n")
     md.append(f"**Counts:** {len(noncond)} non-conditional + {len(cond)} regime-conditional strategies "
               f"(dual strategies split by direction).\n")
+    md.append("**Column key:** `F1..F4` = the chosen exit's ANNUALIZED OOS Sharpe (n) in each disjoint "
+              "1-year fold (F1=2022-05->2023-05, F2=23->24, F3=24->25, F4=25->26); `n<30` = fold un-evaluable "
+              "(below the sample floor). `Cumulative` = full-window Sharpe / total n / win-rate / total return% "
+              "(sum of per-trade pnl%, GROSS). `Folds>=0.7` = how many evaluable folds cleared the gate. "
+              "Best exit = highest single-fold OOS Sharpe.\n")
     md.append("\n## A. Non-conditional strategies (single best exit)\n")
     md += nc_t
     md.append("\n## B. Regime-conditional strategies (exit varies by entry regime)\n")

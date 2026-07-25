@@ -2,6 +2,8 @@
 
 # Passed Strategy -> Exit List (R5, 2026-07-25)
 
+> **Deep self-review of this artifact: `R5_ANALYSIS_DEEP_REVIEW.md`** (findings F1-F6, severity + tickets). This list is a CANDIDATE set; the Sharpes are GROSS and pending a winsorized (F6) + net-of-cost (F1) RE-RUN before any deploy/1B-alpha use.
+
 **What this is:** the strategies whose (strategy x exit) cleared the LOOSE OOS gate (annualized OOS Sharpe >= 0.7 in >=1 of 4 DEC-505 folds) on the full 614-ticker R5 cube, with each strategy's best backtested exit, entry-gate formula, and OOS metrics. Dual strategies (trade long and short) appear as two rows.
 
 **Method / caveats (read before deploying):**
@@ -20,118 +22,120 @@
 
 **Counts:** 70 non-conditional + 17 regime-conditional strategies (dual strategies split by direction).
 
+**Column key:** `F1..F4` = the chosen exit's ANNUALIZED OOS Sharpe (n) in each disjoint 1-year fold (F1=2022-05->2023-05, F2=23->24, F3=24->25, F4=25->26); `n<30` = fold un-evaluable (below the sample floor). `Cumulative` = full-window Sharpe / total n / win-rate / total return% (sum of per-trade pnl%, GROSS). `Folds>=0.7` = how many evaluable folds cleared the gate. Best exit = highest single-fold OOS Sharpe.
+
 
 ## A. Non-conditional strategies (single best exit)
 
-| Strategy | Dir | Best Exit | Regime-Cond | Regimes->Exit | OOS Sharpe (best fold) | Folds>=0.7 | n | WR | Entry gate (compact) |
-|---|---|---|---|---|---|---|---|---|---|
-| `52w_high_breakout_pullback_long` | long | `next_pivot_target` | N | - | 1.415 | 3/3 | 146 | 0.856 | [Producer boolean] near_52w_high_retest_long (fires when producer emits True) |
-| `awesome_oscillator` | long | `regime_flip` | N | - | 1.356 | 1/4 | 517 | 0.603 | LONG: (ao_cross_up AND price_above_ema_20) \ |
-| `awesome_oscillator` | short | `next_pivot_target` | N | - | 0.251 | 0/4 | 495 | 0.721 | LONG: (ao_cross_up AND price_above_ema_20) \ |
-| `bollinger_tight` | long | `r_multiple_2r` | N | - | 2.297 | 1/2 | 143 | 0.476 | LONG: ( (bb_20_15_reclaim_from_lower_recent_3d OR bb_20_20_reclaim_from_lower_recent_3d) AND rsi_long_ok AND above_200 ) \ |
-| `bollinger_tight` | short | `earnings_blackout` | N | - | 0.884 | 1/1 | 128 | 0.602 | LONG: ( (bb_20_15_reclaim_from_lower_recent_3d OR bb_20_20_reclaim_from_lower_recent_3d) AND rsi_long_ok AND above_200 ) \ |
-| `bollinger_tight_with_smart_money_long` | long | `time_stop_10d` | N | - | 1.27 | 1/4 | 840 | 0.537 | base_fires AND _has_smart_money_buy(s) |
-| `bollinger_upper_short` | short | `ma_exit_ema9` | N | - | 1.736 | 2/3 | 129 | 0.527 | (bb_20_20_touch_upper AND rsi_14>65 AND shooting_star AND NOT short_borrow_trap) |
-| `bullish_engulfing_support` | long | `time_stop_10d` | N | - | 1.688 | 2/4 | 409 | 0.545 | LONG: (bullish_candle AND (near_s1 OR near_s2 OR at_key_fib) AND obv_bullish) \ |
-| `bullish_engulfing_support` | short | `next_pivot_target` | N | - | 0.461 | 0/4 | 582 | 0.794 | LONG: (bullish_candle AND (near_s1 OR near_s2 OR at_key_fib) AND obv_bullish) \ |
-| `camarilla_s3_bounce` | long | `next_pivot_target` | N | - | 2.058 | 1/4 | 136 | 0.882 | LONG: (near_cam_s3 AND rsi_14<40 AND obv_bullish) \ |
-| `camarilla_s3_bounce` | short | `earnings_blackout` | N | - | -0.28 | 0/1 | 91 | 0.352 | LONG: (near_cam_s3 AND rsi_14<40 AND obv_bullish) \ |
-| `cpr_narrow_momentum` | long | `next_pivot_target` | N | - | 2.4 | 1/4 | 273 | 0.751 | LONG: (cpr_narrow_tight AND above_cpr AND rsi_14>50 AND macd_12_26_9_bullish AND above_200) \ |
-| `cpr_narrow_momentum` | short | `next_pivot_target` | N | - | 0.668 | 0/4 | 728 | 0.672 | LONG: (cpr_narrow_tight AND above_cpr AND rsi_14>50 AND macd_12_26_9_bullish AND above_200) \ |
-| `cup_and_handle_long` | long | `next_pivot_target` | N | - | 2.092 | 3/4 | 164 | 0.866 | ( cup_handle_detected AND price_above_ema_200 AND vol_above_avg AND price_above_ema_50 ) |
-| `doji_at_support` | long | `ma_exit_ema9` | N | - | 1.177 | 1/4 | 229 | 0.371 | at_key_fib_wide, doji, near_s1_wide, near_s2_wide, vol_spike_12x |
-| `donchian_breakout_long` | long | `next_pivot_target` | N | - | 0.907 | 1/4 | 507 | 0.604 | (dc10_breakout_up AND vol_spike_12x AND macd_12_26_9_bullish AND close_above_open AND close_in_top_40pct_of_range) |
-| `donchian_breakout_with_smart_money_long` | long | `next_pivot_target` | N | - | 1.136 | 1/4 | 985 | 0.696 | base_fires AND _has_smart_money_buy(s) |
-| `flag_bull_long` | long | `class_time_stop` | N | - | 1.541 | 1/1 | 63 | 0.698 | ( flag_bull_broke AND price_above_ema_200 ) |
-| `golden_cross_50_200` | short | `hybrid_50pct_target` | N | - | -0.736 | 0/1 | 84 | 0.512 | LONG: ema_50_200_golden_cross \ |
-| `golden_cross_9_21` | long | `next_pivot_target` | N | - | 0.932 | 2/4 | 450 | 0.733 | LONG: (ema_9_21_golden_cross AND price_above_sma_50) \ |
-| `golden_cross_9_21` | short | `next_pivot_target` | N | - | 0.588 | 0/4 | 439 | 0.688 | LONG: (ema_9_21_golden_cross AND price_above_sma_50) \ |
-| `head_and_shoulders_bottom_long` | long | `time_stop_10d` | N | - | 2.667 | 1/4 | 146 | 0.589 | ( head_shoulders_bottom_detected AND price_above_ema_200 ) |
-| `htf_aligned_breakout_long` | long | `next_pivot_target` | N | - | 2.348 | 1/4 | 326 | 0.702 | ( above_prev_high AND vol_above_avg AND htf_aligned_bull ) |
-| `inside_bar_breakout` | long | `regime_flip` | N | - | 0.886 | 1/4 | 677 | 0.548 | (inside_bar AND adx>20 AND above_vwap) |
-| `insider_cluster_concentrated_sell_short` | short | `next_pivot_target` | N | - | 0.717 | 1/4 | 265 | 0.762 | ( concentrated_sell AND below_ema_200 AND NOT short_borrow_trap ) |
-| `institutional_breakout_confirmation_long` | long | `next_pivot_target` | N | - | 1.745 | 1/4 | 642 | 0.793 | ( institutional_buy AND resistance_break_retest AND price_above_ema_200 AND close_above_open ) |
-| `institutional_cluster_long` | long | `time_stop_10d` | N | - | 1.078 | 1/4 | 2451 | 0.539 | ( institutional_strong_buy AND price_above_ema_200 ) |
-| `institutional_committed_growth_long` | long | `time_stop_10d` | N | - | 1.205 | 1/4 | 1941 | 0.547 | ( n_grow>=3 AND price_above_ema_200 ) |
-| `institutional_high_conviction_long` | long | `ma_exit_ema9` | N | - | 0.955 | 1/4 | 2473 | 0.355 | ( institutional_new_positions>=3 AND price_above_ema_50 ) |
-| `institutional_insider_combo_long` | long | `time_stop_10d` | N | - | 1.14 | 1/4 | 2751 | 0.534 | ( (institutional_buy OR insider_cluster_active) AND price_above_ema_200 ) |
-| `institutional_multi_quarter_persistence_long` | long | `time_stop_10d` | N | - | 1.111 | 1/4 | 2516 | 0.537 | ( persistent_holders_4q>=5 AND price_above_ema_200 ) |
-| `institutional_oversold_long` | long | `time_stop_10d` | N | - | 1.495 | 1/4 | 386 | 0.531 | ( institutional_buy AND rsi_14<40 AND price_above_ema_200 ) |
-| `institutional_persistence_breakout_long` | long | `next_pivot_target` | N | - | 1.787 | 1/4 | 532 | 0.788 | ( institutional_increased>=3 AND resistance_break_retest AND price_above_ema_200 ) |
-| `institutional_persistence_momentum_long` | long | `regime_flip` | N | - | 1.138 | 1/4 | 2324 | 0.545 | ( institutional_increased>=3 AND macd_12_26_9_bullish AND price_above_ema_50 ) |
-| `institutional_persistence_oversold_long` | long | `time_stop_10d` | N | - | 1.205 | 1/4 | 716 | 0.552 | ( institutional_increased>=3 AND rsi_14<45 AND price_above_ema_200 ) |
-| `institutional_persistence_volume_long` | long | `ma_exit_ema9` | N | - | 1.223 | 1/4 | 1199 | 0.405 | ( institutional_increased>=3 AND vol_above_avg AND price_above_ema_50 ) |
-| `institutional_persistent_holders_long` | long | `time_stop_10d` | N | - | 1.098 | 1/4 | 1955 | 0.538 | ( institutional_increased>=5 AND price_above_ema_200 ) |
-| `institutional_recent_init_momentum_long` | long | `time_stop_10d` | N | - | 1.182 | 1/4 | 2268 | 0.53 | ( institutional_new_positions>=2 AND macd_12_26_9_bullish AND (price_above_ema_200 OR price_above_ema_50) ) |
-| `institutional_recent_init_volume_long` | long | `ma_exit_ema9` | N | - | 1.131 | 1/4 | 1075 | 0.399 | ( institutional_new_positions>=2 AND vol_above_avg AND price_above_ema_50 ) |
-| `institutional_strong_conviction_long` | long | `time_stop_10d` | N | - | 1.179 | 1/4 | 1826 | 0.542 | ( institutional_increased>=5 AND institutional_new_positions>=2 AND price_above_ema_200 ) |
-| `institutional_volume_confirmation_long` | long | `next_pivot_target` | N | - | 0.992 | 1/4 | 1387 | 0.722 | ( institutional_buy AND vol_above_avg AND price_above_ema_50 ) |
-| `m_and_a_target_long` | long | `earnings_blackout` | N | - | 0.883 | 1/4 | 1023 | 0.583 | [Producer boolean] 8k_item_1_01_filed_within_30d (fires when producer emits True) |
-| `macd_bullish_with_smart_money_long` | long | `next_pivot_target` | N | - | 1.825 | 1/4 | 1162 | 0.787 | base_fires AND _has_smart_money_buy(s) |
-| `macd_crossover_short` | short | `class_time_stop` | N | - | 0.701 | 1/4 | 1524 | 0.495 | macd_12_26_9_crossover_dn AND NOT short_borrow_trap |
-| `mmbm_long` | long | `r_multiple_3r` | N | - | 0.926 | 1/4 | 1337 | 0.302 | [Producer boolean] po3_mmbm_setup (fires when producer emits True) |
-| `naked_poc_retest_long` | long | `time_stop_10d` | N | - | 1.24 | 1/4 | 1788 | 0.536 | ( naked_poc_count>0 AND naked_poc_nearest_distance_pct<0.02 AND price_above_ema_200 ) |
-| `news_momentum_long` | long | `regime_flip` | N | - | 0.854 | 1/1 | 106 | 0.623 | ( news_sentiment_5d>=0.3 AND news_volume_zscore_5d>=1.0 AND dc20_breakout_up AND close_above_open AND close_in_top_40pct_of_range AND vol_above_avg ) |
-| `news_sentiment_long` | long | `next_pivot_target` | N | - | 1.46 | 1/4 | 906 | 0.786 | ( news_sentiment_mean>0.3 AND news_article_count>=3 AND price_above_ema_200 ) |
-| `news_sentiment_shift_long` | long | `next_pivot_target` | N | - | 1.348 | 1/4 | 357 | 0.776 | ( news_sentiment_shift>0.3 AND news_article_count>=2 AND price_above_ema_200 ) |
-| `orb_stocks_in_play_short` | short | `regime_flip` | N | - | 1.319 | 1/2 | 108 | 0.463 | ( gap_dn_1_5pct AND close_below_open AND vol_spike_2x AND below_ema_200 AND NOT short_borrow_trap) |
-| `pead_long_high_yoy_growth_only` | long | `time_stop_10d` | N | - | 1.217 | 3/4 | 2116 | 0.556 | ( within_pead_window AND yoy_surprise_high ) |
-| `pead_short` | short | `r_multiple_2r` | N | - | 1.093 | 1/4 | 872 | 0.299 | ( within_pead_window AND pead_negative_surprise AND NOT short_borrow_trap) |
-| `pead_with_smart_money_long` | long | `time_stop_10d` | N | - | 2.175 | 2/4 | 656 | 0.579 | base_fires AND _has_smart_money_buy(s) |
-| `pivot_r1_breakout` | long | `reverse_signal` | N | - | 2.368 | 2/4 | 407 | 0.479 | LONG: ( above_r1 AND vol_spike_15x AND macd_12_26_9_bullish AND avwap_long_ok ) \ |
-| `pivot_r1_breakout` | short | `breakeven_plus_trail` | N | - | 0.073 | 0/4 | 453 | 0.247 | LONG: ( above_r1 AND vol_spike_15x AND macd_12_26_9_bullish AND avwap_long_ok ) \ |
-| `pivot_s1_bounce` | long | `next_pivot_target` | N | - | 1.721 | 1/4 | 360 | 0.844 | LONG: (near_s1 AND (hammer OR bullish_pin_bar) AND obv_bullish) \ |
-| `pivot_s1_bounce` | short | `regime_flip` | N | - | 0.013 | 0/1 | 98 | 0.418 | LONG: (near_s1 AND (hammer OR bullish_pin_bar) AND obv_bullish) \ |
-| `po3_bullish` | long | `time_stop_10d` | N | - | 0.925 | 2/4 | 731 | 0.547 | ( po3_bullish AND price_above_ema_200 ) |
-| `poc_magnet_long` | long | `next_pivot_target` | N | - | 1.476 | 2/4 | 589 | 0.825 | ( vp_close_near_poc_pct<0.03 AND vp_close_above_poc AND price_above_ema_200 ) |
-| `prev_day_high_break` | long | `regime_flip` | N | - | 1.487 | 2/4 | 636 | 0.618 | LONG: (above_prev_high AND vol_spike_12x AND above_vwap) \ |
-| `prev_day_high_break` | short | `breakeven_plus_trail` | N | - | 0.177 | 0/4 | 788 | 0.269 | LONG: (above_prev_high AND vol_spike_12x AND above_vwap) \ |
-| `prev_day_low_bounce` | long | `next_pivot_target` | N | - | 1.792 | 1/4 | 405 | 0.84 | LONG: (near_prev_low AND hammer AND cmf_positive) \ |
-| `prev_day_low_bounce` | short | `class_time_stop` | N | - | 1.16 | 2/3 | 172 | 0.529 | LONG: (near_prev_low AND hammer AND cmf_positive) \ |
-| `rsi_oversold_with_smart_money_long` | long | `time_stop_10d` | N | - | 1.14 | 1/4 | 2753 | 0.534 | base_fires AND _has_smart_money_buy(s) |
-| `rsi_volume_200ema` | long | `ma_exit_ema9` | N | - | 2.072 | 1/4 | 233 | 0.429 | LONG: (rsi_14<40 AND vol_above_avg AND price_above_ema_200) \ |
-| `rsi_volume_200ema` | short | `ma_exit_ema9` | N | - | 1.588 | 1/4 | 315 | 0.489 | LONG: (rsi_14<40 AND vol_above_avg AND price_above_ema_200) \ |
-| `smc_breaker_block_long` | long | `next_pivot_target` | N | - | 1.295 | 2/4 | 948 | 0.824 | ( smc_breaker_block_bullish AND price_above_ema_200 ) |
-| `smc_discount_long` | long | `time_stop_10d` | N | - | 0.915 | 1/4 | 333 | 0.541 | ( smc_in_discount_zone AND (smc_bos_bullish OR smc_choch_bullish) AND price_above_ema_200 ) |
-| `smc_ote_long` | long | `chandelier_3x` | N | - | 0.969 | 1/4 | 228 | 0.053 | ( smc_ote_long_zone AND (smc_bos_bullish OR smc_choch_bullish) ) |
-| `squeeze_breakout` | long | `class_time_stop` | N | - | 1.378 | 2/4 | 1141 | 0.607 | [Producer boolean] squeeze_fire_up (fires when producer emits True) |
-| `stoch_oversold` | long | `chandelier_3x` | N | - | 0.57 | 0/2 | 115 | 0.07 | LONG: (stoch_broad_oversold AND stoch_bullish_cross AND price_above_ema_20) \ |
-| `stoch_oversold` | short | `class_time_stop` | N | - | 1.062 | 1/3 | 169 | 0.497 | LONG: (stoch_broad_oversold AND stoch_bullish_cross AND price_above_ema_20) \ |
-| `triangle_ascending_long` | long | `r_multiple_3r` | N | - | 1.895 | 2/4 | 330 | 0.309 | ( triangle_ascending_detected AND price_above_ema_200 ) |
-| `ultimate_oscillator` | long | `next_pivot_target` | N | - | 2.205 | 1/4 | 206 | 0.85 | LONG: ( (uo_oversold OR (rsi_2<5)) AND price_above_sma_200 AND close_above_open ) \ |
-| `ultimate_oscillator` | short | `breakeven_plus_trail` | N | - | 0.427 | 0/4 | 386 | 0.256 | LONG: ( (uo_oversold OR (rsi_2<5)) AND price_above_sma_200 AND close_above_open ) \ |
-| `value_area_breakout_long` | long | `r_multiple_2r` | N | - | 1.967 | 1/4 | 375 | 0.392 | ( vp_above_value_area AND vol_above_avg AND price_above_ema_200 ) |
-| `week_opening_gap_fill_up` | long | `class_time_stop` | N | - | 1.795 | 2/4 | 834 | 0.712 | ( bool(week_open_gap_down_15pct) AND days_since_last_earnings>2 ) |
-| `xs_combined_momentum_low_ivol` | long | `chandelier_3x` | N | - | 1.81 | 1/3 | 211 | 0.152 | ( xs_momentum_top_quintile AND xs_ivol_decile<=4 AND price_above_ema_200 ) |
-| `xs_low_beta_with_smart_money_long` | long | `next_pivot_target` | N | - | 1.544 | 2/4 | 452 | 0.832 | base_fires AND _has_smart_money_buy(s) |
-| `xs_momentum_quality_combined` | long | `time_stop_10d` | N | - | 1.426 | 2/3 | 163 | 0.601 | ( xs_momentum_top_quintile AND xs_quality_top_quintile AND price_above_ema_200 ) |
-| `xs_momentum_top_decile` | long | `next_pivot_target` | N | - | 2.474 | 3/4 | 253 | 0.838 | ( xs_momentum_top_decile AND xs_avoid_high_ivol AND xs_avoid_high_max AND price_above_ema_200 ) |
-| `xs_momentum_with_smart_money_long` | long | `time_stop_10d` | N | - | 1.573 | 3/4 | 658 | 0.602 | ( xs_momentum_top_decile AND price_above_ema_200 ) |
-| `xs_quality_top_quintile_long` | long | `time_stop_10d` | N | - | 1.419 | 1/2 | 85 | 0.647 | ( xs_quality_top_tercile AND price_above_ema_200 ) |
+| Strategy | Dir | Best Exit | Cond | F1 22-23 | F2 23-24 | F3 24-25 | F4 25-26 | Cumulative Sharpe/n/WR/ret% | Folds>=0.7 | Regimes->Exit (cond) / Entry gate |
+|---|---|---|---|---|---|---|---|---|---|---|
+| `52w_high_breakout_pullback_long` | long | `next_pivot_target` | N | n<30 | 1.415(36) | 0.966(47) | 0.767(50) | 0.965/146/0.856/138.5% | 3/3 | [Producer boolean] near_52w_high_retest_long (fires when producer emits True) |
+| `awesome_oscillator` | long | `regime_flip` | N | 1.356(188) | 0.33(85) | 0.183(120) | -0.13(124) | 0.144/517/0.603/1537.9% | 1/4 | LONG: (ao_cross_up AND price_above_ema_20) \ |
+| `awesome_oscillator` | short | `next_pivot_target` | N | 0.251(104) | -0.853(114) | -0.996(146) | -1.303(131) | -0.797/495/0.721/-465.1% | 0/4 | LONG: (ao_cross_up AND price_above_ema_20) \ |
+| `bollinger_tight` | long | `r_multiple_2r` | N | -4.191(33) | n<30 | 2.297(82) | n<30 | 0.951/143/0.476/132.1% | 1/2 | LONG: ( (bb_20_15_reclaim_from_lower_recent_3d OR bb_20_20_reclaim_from_lower_recent_3d) AND rsi_long_ok AND above_200 ) \ |
+| `bollinger_tight` | short | `earnings_blackout` | N | 0.884(68) | n<30 | n<30 | n<30 | 0.322/128/0.602/344.9% | 1/1 | LONG: ( (bb_20_15_reclaim_from_lower_recent_3d OR bb_20_20_reclaim_from_lower_recent_3d) AND rsi_long_ok AND above_200 ) \ |
+| `bollinger_tight_with_smart_money_long` | long | `time_stop_10d` | N | -1.051(231) | 1.27(224) | 0.451(226) | 0.478(159) | 0.22/840/0.537/226.2% | 1/4 | base_fires AND _has_smart_money_buy(s) |
+| `bollinger_upper_short` | short | `ma_exit_ema9` | N | n<30 | 1.128(35) | 1.736(37) | 0.644(32) | 0.422/129/0.527/11.7% | 2/3 | (bb_20_20_touch_upper AND rsi_14>65 AND shooting_star AND NOT short_borrow_trap) |
+| `bullish_engulfing_support` | long | `time_stop_10d` | N | -0.446(139) | 1.688(83) | 0.647(104) | 0.804(83) | 0.445/409/0.545/277.6% | 2/4 | LONG: (bullish_candle AND (near_s1 OR near_s2 OR at_key_fib) AND obv_bullish) \ |
+| `bullish_engulfing_support` | short | `next_pivot_target` | N | 0.461(144) | 0.251(148) | -0.662(138) | -0.238(152) | -0.021/582/0.794/-11.9% | 0/4 | LONG: (bullish_candle AND (near_s1 OR near_s2 OR at_key_fib) AND obv_bullish) \ |
+| `camarilla_s3_bounce` | long | `next_pivot_target` | N | 0.159(32) | 2.058(32) | -0.286(40) | 0.052(32) | 0.103/136/0.882/16.8% | 1/4 | LONG: (near_cam_s3 AND rsi_14<40 AND obv_bullish) \ |
+| `camarilla_s3_bounce` | short | `earnings_blackout` | N | n<30 | -0.28(30) | n<30 | n<30 | -0.306/91/0.352/-173.6% | 0/1 | LONG: (near_cam_s3 AND rsi_14<40 AND obv_bullish) \ |
+| `cpr_narrow_momentum` | long | `next_pivot_target` | N | -1.16(78) | 2.4(58) | 0.291(61) | -0.235(76) | 0.102/273/0.751/32.1% | 1/4 | LONG: (cpr_narrow_tight AND above_cpr AND rsi_14>50 AND macd_12_26_9_bullish AND above_200) \ |
+| `cpr_narrow_momentum` | short | `next_pivot_target` | N | -0.532(240) | 0.668(128) | -2.782(201) | -0.327(159) | -0.826/728/0.672/-811.8% | 0/4 | LONG: (cpr_narrow_tight AND above_cpr AND rsi_14>50 AND macd_12_26_9_bullish AND above_200) \ |
+| `cup_and_handle_long` | long | `next_pivot_target` | N | 0.67(56) | 2.092(36) | 1.751(40) | 1.065(32) | 1.315/164/0.866/173.5% | 3/4 | ( cup_handle_detected AND price_above_ema_200 AND vol_above_avg AND price_above_ema_50 ) |
+| `doji_at_support` | long | `ma_exit_ema9` | N | -2.017(66) | 1.177(50) | -3.913(56) | 0.155(57) | -0.436/229/0.371/-42.2% | 1/4 | at_key_fib_wide, doji, near_s1_wide, near_s2_wide, vol_spike_12x |
+| `donchian_breakout_long` | long | `next_pivot_target` | N | -0.226(192) | 0.907(107) | 0.601(86) | 0.208(122) | 0.334/507/0.604/403.2% | 1/4 | (dc10_breakout_up AND vol_spike_12x AND macd_12_26_9_bullish AND close_above_open AND close_in_top_40pct_of_range) |
+| `donchian_breakout_with_smart_money_long` | long | `next_pivot_target` | N | -0.021(365) | 1.136(213) | -0.261(175) | 0.057(232) | 0.296/985/0.696/465.8% | 1/4 | base_fires AND _has_smart_money_buy(s) |
+| `flag_bull_long` | long | `class_time_stop` | N | n<30 | 1.541(31) | n<30 | n<30 | 0.906/63/0.698/232.1% | 1/1 | ( flag_bull_broke AND price_above_ema_200 ) |
+| `golden_cross_50_200` | short | `hybrid_50pct_target` | N | n<30 | n<30 | -0.736(30) | n<30 | -0.112/84/0.512/-42.8% | 0/1 | LONG: ema_50_200_golden_cross \ |
+| `golden_cross_9_21` | long | `next_pivot_target` | N | -0.32(183) | 0.932(76) | -0.13(87) | 0.803(104) | 0.254/450/0.733/156.3% | 2/4 | LONG: (ema_9_21_golden_cross AND price_above_sma_50) \ |
+| `golden_cross_9_21` | short | `next_pivot_target` | N | 0.588(107) | 0.055(96) | -0.54(134) | -0.604(102) | -0.15/439/0.688/-109.3% | 0/4 | LONG: (ema_9_21_golden_cross AND price_above_sma_50) \ |
+| `head_and_shoulders_bottom_long` | long | `time_stop_10d` | N | -0.581(41) | 2.667(35) | 0.076(35) | 0.269(35) | 0.418/146/0.589/101.2% | 1/4 | ( head_shoulders_bottom_detected AND price_above_ema_200 ) |
+| `htf_aligned_breakout_long` | long | `next_pivot_target` | N | 0.029(76) | 2.348(69) | 0.3(90) | 0.615(91) | 0.68/326/0.702/395.7% | 1/4 | ( above_prev_high AND vol_above_avg AND htf_aligned_bull ) |
+| `inside_bar_breakout` | long | `regime_flip` | N | 0.08(97) | 0.886(101) | 0.466(259) | 0.213(220) | 0.38/677/0.548/764.6% | 1/4 | (inside_bar AND adx>20 AND above_vwap) |
+| `insider_cluster_concentrated_sell_short` | short | `next_pivot_target` | N | 0.717(54) | -0.458(55) | -1.149(81) | 0.071(75) | -0.299/265/0.762/-87.1% | 1/4 | ( concentrated_sell AND below_ema_200 AND NOT short_borrow_trap ) |
+| `institutional_breakout_confirmation_long` | long | `next_pivot_target` | N | -0.579(197) | 1.745(179) | -0.144(126) | 0.078(140) | 0.193/642/0.793/119.2% | 1/4 | ( institutional_buy AND resistance_break_retest AND price_above_ema_200 AND close_above_open ) |
+| `institutional_cluster_long` | long | `time_stop_10d` | N | -0.423(535) | 1.078(503) | 0.295(817) | 0.657(596) | 0.374/2451/0.539/1605.9% | 1/4 | ( institutional_strong_buy AND price_above_ema_200 ) |
+| `institutional_committed_growth_long` | long | `time_stop_10d` | N | -0.64(300) | 1.205(342) | 0.253(633) | 0.642(666) | 0.413/1941/0.547/1449.3% | 1/4 | ( n_grow>=3 AND price_above_ema_200 ) |
+| `institutional_high_conviction_long` | long | `ma_exit_ema9` | N | -0.24(498) | 0.955(556) | -0.128(681) | 0.269(738) | 0.235/2473/0.355/921.9% | 1/4 | ( institutional_new_positions>=3 AND price_above_ema_50 ) |
+| `institutional_insider_combo_long` | long | `time_stop_10d` | N | -0.34(749) | 1.14(558) | 0.295(828) | 0.658(616) | 0.361/2751/0.534/1710.7% | 1/4 | ( (institutional_buy OR insider_cluster_active) AND price_above_ema_200 ) |
+| `institutional_multi_quarter_persistence_long` | long | `time_stop_10d` | N | -0.445(626) | 1.111(474) | 0.365(749) | 0.658(667) | 0.374/2516/0.537/1563.4% | 1/4 | ( persistent_holders_4q>=5 AND price_above_ema_200 ) |
+| `institutional_oversold_long` | long | `time_stop_10d` | N | -0.724(67) | 1.495(72) | -0.011(154) | 0.043(93) | 0.129/386/0.531/79.5% | 1/4 | ( institutional_buy AND rsi_14<40 AND price_above_ema_200 ) |
+| `institutional_persistence_breakout_long` | long | `next_pivot_target` | N | -0.925(130) | 1.787(145) | -0.159(121) | 0.149(136) | 0.145/532/0.788/76.2% | 1/4 | ( institutional_increased>=3 AND resistance_break_retest AND price_above_ema_200 ) |
+| `institutional_persistence_momentum_long` | long | `regime_flip` | N | 0.236(702) | 1.138(537) | -0.086(521) | 0.16(564) | 0.34/2324/0.545/2788.1% | 1/4 | ( institutional_increased>=3 AND macd_12_26_9_bullish AND price_above_ema_50 ) |
+| `institutional_persistence_oversold_long` | long | `time_stop_10d` | N | -0.384(103) | 1.205(121) | 0.041(293) | 0.566(199) | 0.282/716/0.552/348.1% | 1/4 | ( institutional_increased>=3 AND rsi_14<45 AND price_above_ema_200 ) |
+| `institutional_persistence_volume_long` | long | `ma_exit_ema9` | N | 0.098(367) | 1.223(258) | 0.038(288) | 0.46(286) | 0.417/1199/0.405/1026.5% | 1/4 | ( institutional_increased>=3 AND vol_above_avg AND price_above_ema_50 ) |
+| `institutional_persistent_holders_long` | long | `time_stop_10d` | N | -0.69(259) | 1.098(359) | 0.264(747) | 0.658(590) | 0.394/1955/0.538/1391.6% | 1/4 | ( institutional_increased>=5 AND price_above_ema_200 ) |
+| `institutional_recent_init_momentum_long` | long | `time_stop_10d` | N | 0.113(541) | 1.182(521) | -0.025(595) | 0.153(611) | 0.311/2268/0.53/1209.2% | 1/4 | ( institutional_new_positions>=2 AND macd_12_26_9_bullish AND (price_above_ema_200 OR price_above_ema_50) ) |
+| `institutional_recent_init_volume_long` | long | `ma_exit_ema9` | N | -0.061(277) | 1.131(226) | 0.065(286) | 0.46(286) | 0.382/1075/0.399/860.7% | 1/4 | ( institutional_new_positions>=2 AND vol_above_avg AND price_above_ema_50 ) |
+| `institutional_strong_conviction_long` | long | `time_stop_10d` | N | -0.645(190) | 1.179(312) | 0.223(734) | 0.658(590) | 0.421/1826/0.542/1390.0% | 1/4 | ( institutional_increased>=5 AND institutional_new_positions>=2 AND price_above_ema_200 ) |
+| `institutional_volume_confirmation_long` | long | `next_pivot_target` | N | -0.204(519) | 0.992(281) | 0.591(292) | -0.087(295) | 0.271/1387/0.722/603.5% | 1/4 | ( institutional_buy AND vol_above_avg AND price_above_ema_50 ) |
+| `m_and_a_target_long` | long | `earnings_blackout` | N | 0.221(293) | 0.317(183) | 0.883(273) | 0.378(274) | 0.486/1023/0.583/5089.3% | 1/4 | [Producer boolean] 8k_item_1_01_filed_within_30d (fires when producer emits True) |
+| `macd_bullish_with_smart_money_long` | long | `next_pivot_target` | N | -0.416(330) | 1.825(251) | -0.008(304) | 0.373(277) | 0.306/1162/0.787/381.9% | 1/4 | base_fires AND _has_smart_money_buy(s) |
+| `macd_crossover_short` | short | `class_time_stop` | N | 0.701(332) | -0.437(360) | -0.444(410) | -0.403(422) | -0.147/1524/0.495/-895.9% | 1/4 | macd_12_26_9_crossover_dn AND NOT short_borrow_trap |
+| `mmbm_long` | long | `r_multiple_3r` | N | 0.926(379) | -0.009(318) | 0.533(291) | 0.357(349) | 0.493/1337/0.302/638.9% | 1/4 | [Producer boolean] po3_mmbm_setup (fires when producer emits True) |
+| `naked_poc_retest_long` | long | `time_stop_10d` | N | -0.093(513) | 1.24(369) | 0.406(493) | 0.326(413) | 0.386/1788/0.536/1041.3% | 1/4 | ( naked_poc_count>0 AND naked_poc_nearest_distance_pct<0.02 AND price_above_ema_200 ) |
+| `news_momentum_long` | long | `regime_flip` | N | 0.854(60) | n<30 | n<30 | n<30 | 0.856/106/0.623/269.8% | 1/1 | ( news_sentiment_5d>=0.3 AND news_volume_zscore_5d>=1.0 AND dc20_breakout_up AND close_above_open AND close_in_top_40pct_of_range AND vol_above_avg ) |
+| `news_sentiment_long` | long | `next_pivot_target` | N | -0.436(343) | 1.46(226) | 0.056(164) | 0.549(173) | 0.237/906/0.786/244.6% | 1/4 | ( news_sentiment_mean>0.3 AND news_article_count>=3 AND price_above_ema_200 ) |
+| `news_sentiment_shift_long` | long | `next_pivot_target` | N | 0.215(132) | 1.348(89) | -0.652(64) | -0.327(72) | 0.165/357/0.776/65.1% | 1/4 | ( news_sentiment_shift>0.3 AND news_article_count>=2 AND price_above_ema_200 ) |
+| `orb_stocks_in_play_short` | short | `regime_flip` | N | 1.319(31) | n<30 | n<30 | -0.671(31) | -0.127/108/0.463/-62.7% | 1/2 | ( gap_dn_1_5pct AND close_below_open AND vol_spike_2x AND below_ema_200 AND NOT short_borrow_trap) |
+| `pead_long_high_yoy_growth_only` | long | `time_stop_10d` | N | 0.175(811) | 1.217(460) | 1.03(423) | 0.702(422) | 0.638/2116/0.556/2128.0% | 3/4 | ( within_pead_window AND yoy_surprise_high ) |
+| `pead_short` | short | `r_multiple_2r` | N | 1.093(230) | -1.365(225) | -0.723(212) | -1.426(205) | -0.368/872/0.299/-314.1% | 1/4 | ( within_pead_window AND pead_negative_surprise AND NOT short_borrow_trap) |
+| `pead_with_smart_money_long` | long | `time_stop_10d` | N | 0.161(290) | 2.175(145) | 1.257(115) | 0.141(106) | 0.753/656/0.579/794.9% | 2/4 | base_fires AND _has_smart_money_buy(s) |
+| `pivot_r1_breakout` | long | `reverse_signal` | N | -1.834(127) | 2.368(95) | -3.087(94) | 2.096(91) | 1.038/407/0.479/665.2% | 2/4 | LONG: ( above_r1 AND vol_spike_15x AND macd_12_26_9_bullish AND avwap_long_ok ) \ |
+| `pivot_r1_breakout` | short | `breakeven_plus_trail` | N | 0.073(124) | -0.025(86) | -0.521(140) | -0.171(103) | -0.159/453/0.247/-294.4% | 0/4 | LONG: ( above_r1 AND vol_spike_15x AND macd_12_26_9_bullish AND avwap_long_ok ) \ |
+| `pivot_s1_bounce` | long | `next_pivot_target` | N | -1.305(97) | 1.721(82) | 0.556(89) | -0.236(92) | -0.169/360/0.844/-61.3% | 1/4 | LONG: (near_s1 AND (hammer OR bullish_pin_bar) AND obv_bullish) \ |
+| `pivot_s1_bounce` | short | `regime_flip` | N | n<30 | 0.013(30) | n<30 | n<30 | -0.774/98/0.418/-226.3% | 0/1 | LONG: (near_s1 AND (hammer OR bullish_pin_bar) AND obv_bullish) \ |
+| `po3_bullish` | long | `time_stop_10d` | N | -0.414(192) | 0.865(122) | 0.925(220) | 0.284(197) | 0.381/731/0.547/459.6% | 2/4 | ( po3_bullish AND price_above_ema_200 ) |
+| `poc_magnet_long` | long | `next_pivot_target` | N | -0.545(164) | 1.476(120) | 0.677(154) | 0.835(151) | 0.512/589/0.825/290.5% | 2/4 | ( vp_close_near_poc_pct<0.03 AND vp_close_above_poc AND price_above_ema_200 ) |
+| `prev_day_high_break` | long | `regime_flip` | N | 0.317(114) | 0.993(57) | 1.487(303) | 0.546(162) | 0.913/636/0.618/2287.1% | 2/4 | LONG: (above_prev_high AND vol_spike_12x AND above_vwap) \ |
+| `prev_day_high_break` | short | `breakeven_plus_trail` | N | 0.128(311) | 0.177(170) | -0.019(155) | -0.134(152) | 0.066/788/0.269/203.6% | 0/4 | LONG: (above_prev_high AND vol_spike_12x AND above_vwap) \ |
+| `prev_day_low_bounce` | long | `next_pivot_target` | N | -1.054(118) | 0.176(82) | 1.792(86) | -0.157(119) | -0.146/405/0.84/-58.8% | 1/4 | LONG: (near_prev_low AND hammer AND cmf_positive) \ |
+| `prev_day_low_bounce` | short | `class_time_stop` | N | 1.16(33) | 0.89(43) | 0.505(71) | n<30 | 0.748/172/0.529/149.3% | 2/3 | LONG: (near_prev_low AND hammer AND cmf_positive) \ |
+| `rsi_oversold_with_smart_money_long` | long | `time_stop_10d` | N | -0.34(749) | 1.14(558) | 0.295(828) | 0.648(618) | 0.358/2753/0.534/1701.1% | 1/4 | base_fires AND _has_smart_money_buy(s) |
+| `rsi_volume_200ema` | long | `ma_exit_ema9` | N | -4.589(37) | 2.072(36) | -4.525(97) | -0.87(63) | -2.183/233/0.429/-139.0% | 1/4 | LONG: (rsi_14<40 AND vol_above_avg AND price_above_ema_200) \ |
+| `rsi_volume_200ema` | short | `ma_exit_ema9` | N | -2.862(122) | -2.332(71) | 1.588(48) | 0.007(74) | -0.636/315/0.489/-46.8% | 1/4 | LONG: (rsi_14<40 AND vol_above_avg AND price_above_ema_200) \ |
+| `smc_breaker_block_long` | long | `next_pivot_target` | N | -0.113(112) | 1.295(135) | 0.025(345) | 0.766(356) | 0.423/948/0.824/417.4% | 2/4 | ( smc_breaker_block_bullish AND price_above_ema_200 ) |
+| `smc_discount_long` | long | `time_stop_10d` | N | -0.736(50) | 0.915(38) | 0.308(157) | 0.614(88) | 0.34/333/0.541/227.8% | 1/4 | ( smc_in_discount_zone AND (smc_bos_bullish OR smc_choch_bullish) AND price_above_ema_200 ) |
+| `smc_ote_long` | long | `chandelier_3x` | N | -2.286(97) | 0.169(34) | 0.015(55) | 0.969(42) | 0.139/228/0.053/42.6% | 1/4 | ( smc_ote_long_zone AND (smc_bos_bullish OR smc_choch_bullish) ) |
+| `squeeze_breakout` | long | `class_time_stop` | N | 0.343(361) | 0.965(161) | 1.378(431) | 0.045(188) | 0.739/1141/0.607/3974.3% | 2/4 | [Producer boolean] squeeze_fire_up (fires when producer emits True) |
+| `stoch_oversold` | long | `chandelier_3x` | N | -7.876(42) | n<30 | 0.57(33) | n<30 | -1.774/115/0.07/-124.6% | 0/2 | LONG: (stoch_broad_oversold AND stoch_bullish_cross AND price_above_ema_20) \ |
+| `stoch_oversold` | short | `class_time_stop` | N | -0.196(50) | n<30 | 1.062(64) | -1.613(34) | 0.14/169/0.497/29.3% | 1/3 | LONG: (stoch_broad_oversold AND stoch_bullish_cross AND price_above_ema_20) \ |
+| `triangle_ascending_long` | long | `r_multiple_3r` | N | -0.256(106) | 1.895(75) | 0.867(68) | 0.071(81) | 0.529/330/0.309/197.9% | 2/4 | ( triangle_ascending_detected AND price_above_ema_200 ) |
+| `ultimate_oscillator` | long | `next_pivot_target` | N | 0.383(40) | 0.674(56) | 2.205(53) | 0.027(57) | 0.585/206/0.85/361.0% | 1/4 | LONG: ( (uo_oversold OR (rsi_2<5)) AND price_above_sma_200 AND close_above_open ) \ |
+| `ultimate_oscillator` | short | `breakeven_plus_trail` | N | -0.665(152) | -0.263(63) | 0.427(76) | -0.645(95) | -0.219/386/0.256/-253.7% | 0/4 | LONG: ( (uo_oversold OR (rsi_2<5)) AND price_above_sma_200 AND close_above_open ) \ |
+| `value_area_breakout_long` | long | `r_multiple_2r` | N | 0.104(112) | 1.967(85) | 0.323(78) | -0.405(100) | 0.38/375/0.392/130.0% | 1/4 | ( vp_above_value_area AND vol_above_avg AND price_above_ema_200 ) |
+| `week_opening_gap_fill_up` | long | `class_time_stop` | N | 1.217(220) | 0.388(79) | 1.795(383) | 0.476(152) | 0.122/834/0.712/8110.8% | 2/4 | ( bool(week_open_gap_down_15pct) AND days_since_last_earnings>2 ) |
+| `xs_combined_momentum_low_ivol` | long | `chandelier_3x` | N | -0.799(65) | n<30 | -0.417(87) | 1.81(35) | 0.445/211/0.152/116.3% | 1/3 | ( xs_momentum_top_quintile AND xs_ivol_decile<=4 AND price_above_ema_200 ) |
+| `xs_low_beta_with_smart_money_long` | long | `next_pivot_target` | N | -0.915(177) | 1.544(69) | 1.139(133) | -0.258(73) | -0.021/452/0.832/-6.8% | 2/4 | base_fires AND _has_smart_money_buy(s) |
+| `xs_momentum_quality_combined` | long | `time_stop_10d` | N | -0.15(43) | n<30 | 1.426(42) | 1.228(50) | 1.099/163/0.601/359.4% | 2/3 | ( xs_momentum_top_quintile AND xs_quality_top_quintile AND price_above_ema_200 ) |
+| `xs_momentum_top_decile` | long | `next_pivot_target` | N | -0.803(56) | 2.474(44) | 1.154(103) | 1.615(50) | 0.737/253/0.838/175.6% | 3/4 | ( xs_momentum_top_decile AND xs_avoid_high_ivol AND xs_avoid_high_max AND price_above_ema_200 ) |
+| `xs_momentum_with_smart_money_long` | long | `time_stop_10d` | N | 0.719(176) | 1.153(94) | 0.516(226) | 1.573(162) | 0.917/658/0.602/1318.8% | 3/4 | ( xs_momentum_top_decile AND price_above_ema_200 ) |
+| `xs_quality_top_quintile_long` | long | `time_stop_10d` | N | 0.516(30) | n<30 | 1.419(33) | n<30 | 1.265/85/0.647/142.9% | 1/2 | ( xs_quality_top_tercile AND price_above_ema_200 ) |
 
 ## B. Regime-conditional strategies (exit varies by entry regime)
 
-| Strategy | Dir | Best Exit | Regime-Cond | Regimes->Exit | OOS Sharpe (best fold) | Folds>=0.7 | n | WR | Entry gate (compact) |
-|---|---|---|---|---|---|---|---|---|---|
-| `52w_high_breakout_with_smart_money_vol_below_long` | long | `next_pivot_target` | Y | bull:next_pivot_target(1.329), bear:time_stop_20d(0.271) | 2.191 | 2/4 | 203 | 0.813 | [Producer boolean] base_fires (fires when producer emits True) |
-| `donchian_breakout_retest_long` | long | `multi_tier_partial` | Y | bear:r_multiple_2r(0.605), bull:multi_tier_partial(0.45) | 0.786 | 1/4 | 547 | 0.378 | (dc20_resistance_break_retest_strong AND vol_below_avg AND macd_12_26_9_bullish AND close_above_open AND close_in_top_40pct_of_range) |
-| `double_bottom_long` | long | `time_stop_10d` | Y | bear:r_multiple_2r(1.332), bull:class_time_stop(0.249) | 1.385 | 1/4 | 287 | 0.537 | ( double_bottom_detected AND price_above_ema_200 AND close_in_top_40pct_of_range ) |
-| `hammer_at_support_long` | long | `class_time_stop` | Y | bear:class_time_stop(2.236), bull:r_multiple_2r(0.403) | 1.887 | 1/2 | 110 | 0.582 | (hammer AND (near_s1 OR near_s2 OR bb_20_20_touch_lower) AND rsi_14<35) |
-| `mfi_oversold_with_smart_money_long` | long | `r_multiple_2r` | Y | bear:chandelier_3x(1.05), bull:ma_exit_ema9(0.702) | 2.111 | 2/4 | 242 | 0.401 | base_fires AND _has_smart_money_buy(s) |
-| `morning_star` | long | `class_time_stop` | Y | bear:breakeven_plus_trail(0.564), neutral:breakeven_plus_trail(0.267), bull:r_multiple_2r(0.151) | 1.228 | 1/4 | 1053 | 0.532 | LONG: (morning_star AND rsi_14<45) \ |
-| `morning_star` | short | `regime_flip` | Y | bear:breakeven_plus_trail(0.564), neutral:breakeven_plus_trail(0.267), bull:r_multiple_2r(0.151) | 0.5 | 0/4 | 1227 | 0.455 | LONG: (morning_star AND rsi_14<45) \ |
-| `r1_break_retest` | long | `class_time_stop` | Y | neutral:class_time_stop(1.508), bear:next_pivot_target(0.563), bull:breakeven_plus_trail(0.14) | 0.782 | 1/4 | 1727 | 0.553 | LONG: (r1_break_retest_long AND above_r1 AND macd_12_26_9_bullish AND close_above_open AND close_in_top_40pct_of_range AND vol_below_avg AND above_avwap_20low) \ |
-| `r1_break_retest` | short | `r_multiple_2r` | Y | neutral:class_time_stop(1.508), bear:next_pivot_target(0.563), bull:breakeven_plus_trail(0.14) | 0.692 | 0/4 | 1644 | 0.313 | LONG: (r1_break_retest_long AND above_r1 AND macd_12_26_9_bullish AND close_above_open AND close_in_top_40pct_of_range AND vol_below_avg AND above_avwap_20low) \ |
-| `risk_off_bond_equity_short` | short | `regime_flip` | Y | bull:breakeven_plus_trail(0.454), bear:hybrid_50pct_target(-0.417), neutral:earnings_blackout(-1.405) | 0.699 | 0/4 | 1895 | 0.417 | risk_off_regime_bond_signal_strong AND NOT short_borrow_trap |
-| `shooting_star_short` | short | `ma_exit_ema9` | Y | bear:next_pivot_target(1.188), bull:ma_exit_ema9(0.354) | 2.713 | 2/4 | 250 | 0.52 | ((shooting_star OR bearish_pin_bar OR hanging_man OR dark_cloud_cover) AND (near_r1 OR near_r2 OR bb_20_20_touch_upper) AND rsi_14>65 AND NOT short_borrow_trap) |
-| `smc_equal_lows_sweep_long` | long | `chandelier_3x` | Y | bear:class_time_stop(1.245), bull:breakeven_plus_trail(0.334) | 1.049 | 1/4 | 382 | 0.149 | ( smc_equal_lows_swept AND smc_fvg_bullish_active ) |
-| `smc_fvg_retest_short` | short | `multi_tier_partial` | Y | bull:breakeven_plus_trail(0.151), bear:multi_tier_partial(-0.052) | 0.266 | 0/4 | 288 | 0.347 | ( smc_fvg_retest_short_zone AND below_ema_200 AND NOT short_borrow_trap) |
-| `squeeze_breakout_with_smart_money_long` | long | `time_stop_10d` | Y | bear:time_stop_20d(1.382), bull:breakeven_plus_trail(0.136) | 1.217 | 1/4 | 1139 | 0.595 | ( squeeze_fire_up AND close_above_open ) |
-| `supertrend_macd_short` | short | `multi_tier_partial` | Y | bear:multi_tier_partial(0.442), bull:hybrid_50pct_target(0.182) | 1.184 | 1/4 | 268 | 0.366 | (supertrend_bearish AND macd_12_26_9_bearish AND adx>20 AND NOT short_borrow_trap) |
-| `three_white_soldiers` | long | `hybrid_50pct_target` | Y | neutral:class_time_stop(1.47), bear:breakeven_plus_trail(0.276), bull:r_multiple_2r(0.238) | 0.456 | 0/4 | 1596 | 0.549 | (three_white_soldiers AND rsi_14<60) |
-| `totm_long` | long | `ma_exit_ema9` | Y | bear:r_multiple_2r(1.715), bull:breakeven_plus_trail(0.325) | 1.462 | 2/4 | 343 | 0.394 | is_totm_window_first_day AND price_above_ema_200 |
-| `turtle_soup_long` | long | `r_multiple_2r` | Y | bull:r_multiple_2r(0.789), bear:breakeven_plus_trail(0.666) | 1.266 | 2/4 | 324 | 0.367 | ( smc_liquidity_swept_dn AND above_prev_low AND close_above_open ) |
-| `vix_backwardation_long` | long | `time_stop_10d` | Y | bear:time_stop_20d(1.964), bull:breakeven_plus_trail(0.55) | 1.849 | 2/3 | 543 | 0.617 | ( vix_term_backwardation AND xs_quality_decile>=7 ) |
+| Strategy | Dir | Best Exit | Cond | F1 22-23 | F2 23-24 | F3 24-25 | F4 25-26 | Cumulative Sharpe/n/WR/ret% | Folds>=0.7 | Regimes->Exit (cond) / Entry gate |
+|---|---|---|---|---|---|---|---|---|---|---|
+| `52w_high_breakout_with_smart_money_vol_below_long` | long | `next_pivot_target` | Y | -0.541(53) | 2.191(61) | 1.656(48) | 0.227(41) | 0.742/203/0.813/163.0% | 2/4 | bull:next_pivot_target(1.329), bear:time_stop_20d(0.271) |
+| `donchian_breakout_retest_long` | long | `multi_tier_partial` | Y | -1.8(195) | 0.786(128) | -2.439(90) | -1.998(134) | 0.32/547/0.378/146.7% | 1/4 | bear:r_multiple_2r(0.605), bull:multi_tier_partial(0.45) |
+| `double_bottom_long` | long | `time_stop_10d` | Y | -0.44(72) | 1.385(70) | 0.407(81) | -0.793(64) | 0.069/287/0.537/28.7% | 1/4 | bear:r_multiple_2r(1.332), bull:class_time_stop(0.249) |
+| `hammer_at_support_long` | long | `class_time_stop` | Y | 1.887(37) | n<30 | n<30 | -0.538(30) | 1.118/110/0.582/149.0% | 1/2 | bear:class_time_stop(2.236), bull:r_multiple_2r(0.403) |
+| `mfi_oversold_with_smart_money_long` | long | `r_multiple_2r` | Y | -0.137(56) | 2.111(46) | -0.093(69) | 1.022(71) | 0.612/242/0.401/147.6% | 2/4 | bear:chandelier_3x(1.05), bull:ma_exit_ema9(0.702) |
+| `morning_star` | long | `class_time_stop` | Y | 0.389(379) | -0.034(220) | 1.228(235) | -0.182(219) | 0.392/1053/0.532/473.2% | 1/4 | bear:breakeven_plus_trail(0.564), neutral:breakeven_plus_trail(0.267), bull:r_multiple_2r(0.151) |
+| `morning_star` | short | `regime_flip` | Y | 0.5(263) | -0.823(296) | -0.083(275) | -0.563(393) | -0.309/1227/0.455/-1129.2% | 0/4 | bear:breakeven_plus_trail(0.564), neutral:breakeven_plus_trail(0.267), bull:r_multiple_2r(0.151) |
+| `r1_break_retest` | long | `class_time_stop` | Y | 0.324(702) | 0.52(256) | 0.782(431) | 0.622(338) | 0.498/1727/0.553/1219.9% | 1/4 | neutral:class_time_stop(1.508), bear:next_pivot_target(0.563), bull:breakeven_plus_trail(0.14) |
+| `r1_break_retest` | short | `r_multiple_2r` | Y | 0.692(441) | -0.509(431) | -1.156(374) | -1.172(398) | -0.371/1644/0.313/-473.2% | 0/4 | neutral:class_time_stop(1.508), bear:next_pivot_target(0.563), bull:breakeven_plus_trail(0.14) |
+| `risk_off_bond_equity_short` | short | `regime_flip` | Y | -0.578(767) | 0.699(159) | -0.719(880) | -0.535(89) | -0.564/1895/0.417/-3623.9% | 0/4 | bull:breakeven_plus_trail(0.454), bear:hybrid_50pct_target(-0.417), neutral:earnings_blackout(-1.405) |
+| `shooting_star_short` | short | `ma_exit_ema9` | Y | -6.585(51) | 2.713(71) | 2.335(69) | -2.021(59) | 0.108/250/0.52/4.8% | 2/4 | bear:next_pivot_target(1.188), bull:ma_exit_ema9(0.354) |
+| `smc_equal_lows_sweep_long` | long | `chandelier_3x` | Y | -0.413(53) | 1.049(75) | 0.444(141) | -1.816(113) | 0.253/382/0.149/249.3% | 1/4 | bear:class_time_stop(1.245), bull:breakeven_plus_trail(0.334) |
+| `smc_fvg_retest_short` | short | `multi_tier_partial` | Y | 0.266(118) | -1.796(52) | -2.681(58) | -1.807(60) | -0.409/288/0.347/-127.5% | 0/4 | bull:breakeven_plus_trail(0.151), bear:multi_tier_partial(-0.052) |
+| `squeeze_breakout_with_smart_money_long` | long | `time_stop_10d` | Y | -0.025(361) | 0.571(161) | 1.217(430) | -0.32(187) | 0.463/1139/0.595/879.7% | 1/4 | bear:time_stop_20d(1.382), bull:breakeven_plus_trail(0.136) |
+| `supertrend_macd_short` | short | `multi_tier_partial` | Y | 1.184(44) | -1.086(70) | -3.387(98) | -0.868(56) | 0.008/268/0.366/3.0% | 1/4 | bear:multi_tier_partial(0.442), bull:hybrid_50pct_target(0.182) |
+| `three_white_soldiers` | long | `hybrid_50pct_target` | Y | -0.124(631) | 0.456(274) | -0.015(370) | 0.272(321) | 0.107/1596/0.549/1041.1% | 0/4 | neutral:class_time_stop(1.47), bear:breakeven_plus_trail(0.276), bull:r_multiple_2r(0.238) |
+| `totm_long` | long | `ma_exit_ema9` | Y | -0.242(91) | 0.083(95) | 1.062(71) | 1.462(86) | 0.796/343/0.394/656.5% | 2/4 | bear:r_multiple_2r(1.715), bull:breakeven_plus_trail(0.325) |
+| `turtle_soup_long` | long | `r_multiple_2r` | Y | 0.789(76) | 1.266(61) | 0.067(92) | -0.084(95) | 0.636/324/0.367/1150.3% | 2/4 | bull:r_multiple_2r(0.789), bear:breakeven_plus_trail(0.666) |
+| `vix_backwardation_long` | long | `time_stop_10d` | Y | 1.849(53) | n<30 | 1.311(382) | -0.292(108) | 1.026/543/0.617/1021.0% | 2/3 | bear:time_stop_20d(1.964), bull:breakeven_plus_trail(0.55) |
 
 ## Appendix - entry-gate formulas (exact `fires` expression)
 
