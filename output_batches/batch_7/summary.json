@@ -1,0 +1,15 @@
+{
+ "batch": 7,
+ "chunk": "chunk18",
+ "frozen_sha": "e846b6d2cfb3",
+ "window": "2022-05-05..2026-05-05",
+ "trades": 42128,
+ "traded_strategies": 204,
+ "tickers_traded": 123,
+ "cost_usd": 3.04,
+ "instance_terminated": true,
+ "known_flags": [
+  "FINAL 143-tkr tail - completes the 614 T1a cube. pool=8. 20 nontraded (delisted/PIT).",
+  "MERGE_CRITICAL code_sha=e846b6d2cfb3 grid_total=1003 grid_hash=a6a8441d06cb9b32 match=True"
+ ]
+}
