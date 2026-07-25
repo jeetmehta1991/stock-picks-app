@@ -87,27 +87,53 @@ def _conditional(args) -> int:
             rows.append({"strategy": strat, "exit_method": exit_m, by: str(val),
                          "sharpe": st["sharpe"], "n": st["n"], "wr": st["wr"]})
     rows.sort(key=lambda r: -r["sharpe"])
-    passing = [r for r in rows if r["sharpe"] >= GATE_SHARPE]
-    # best (strategy x exit) per category value
-    best_per_val = {}
+
+    # (1) UNCONDITIONAL best exit per strategy (the base STRATEGY_EXIT_OVERRIDE):
+    #     group by (strategy, exit) over the whole window.
+    uncond = {}
+    for (strat, exit_m), g in df.groupby(["strategy", "exit_method"], sort=False):
+        st = _sharpe(g["pnl_pct"].values, g["hold_days"].values) if len(g) >= args.cond_min_n else None
+        if st:
+            cur = uncond.get(strat)
+            if cur is None or st["sharpe"] > cur["sharpe"]:
+                uncond[strat] = {"exit_method": exit_m, "sharpe": st["sharpe"], "n": st["n"]}
+
+    # (2) CONDITIONAL best exit per (strategy, by-value) -- the deployable
+    #     regime/vix/etc-conditioned exit override.
+    per_strat = {}
     for r in rows:
-        v = r[by]
-        if v not in best_per_val or r["sharpe"] > best_per_val[v]["sharpe"]:
-            best_per_val[v] = r
-    out.write_text(json.dumps({"by": by, "gate_threshold": GATE_SHARPE,
-                               "cond_min_n": args.cond_min_n,
-                               "n_slices_evaluated": len(rows), "n_pass_0.7": len(passing),
-                               "best_per_category_value": best_per_val,
-                               "ranked": rows[:500]}, indent=1), encoding="utf-8")
+        d = per_strat.setdefault(r["strategy"], {})
+        cur = d.get(r[by])
+        if cur is None or r["sharpe"] > cur["sharpe"]:
+            d[r[by]] = {"exit_method": r["exit_method"], "sharpe": r["sharpe"], "n": r["n"], "wr": r["wr"]}
+
+    # how often does the conditional best-exit DIFFER from the unconditional? (the
+    # value of conditioning: a strategy that wants a different exit in bear vs bull)
+    differ = 0
+    for strat, dv in per_strat.items():
+        base = uncond.get(strat, {}).get("exit_method")
+        if base and any(x["exit_method"] != base for x in dv.values()):
+            differ += 1
+
+    out.write_text(json.dumps({"by": by, "gate_threshold": GATE_SHARPE, "cond_min_n": args.cond_min_n,
+                               "n_slices": len(rows), "n_pass_0.7": sum(r["sharpe"] >= GATE_SHARPE for r in rows),
+                               "n_strategies": len(per_strat),
+                               "n_strategies_conditional_exit_differs": differ,
+                               "best_exit_per_strategy_uncond": uncond,
+                               "best_exit_per_strategy_by_value": per_strat}, indent=1), encoding="utf-8")
     print(f"[OK] wrote {out}")
-    print(f"\n=== BEST (strategy x exit) per {by} value (annualized Sharpe, n>={args.cond_min_n}) ===")
-    for v, r in sorted(best_per_val.items(), key=lambda kv: -kv[1]["sharpe"]):
-        print(f"  {v:14}: {r['strategy'][:30]:30} x {r['exit_method'][:16]:16} Sharpe={r['sharpe']:>5} n={r['n']} wr={r['wr']}")
-    print(f"\n=== top 15 (strategy x exit x {by}) overall ===")
-    for r in rows[:15]:
-        print(f"  {r['strategy'][:26]:26} x {r['exit_method'][:14]:14} @ {r[by]:12} Sharpe={r['sharpe']:>5} n={r['n']}")
+    print(f"\n=== FOR EACH STRATEGY: best exit unconditional vs per {by} (sample, top by uncond Sharpe) ===")
+    for strat in sorted(uncond, key=lambda s: -uncond[s]["sharpe"])[:15]:
+        u = uncond[strat]
+        cond = per_strat.get(strat, {})
+        cstr = "  ".join(f"{v}:{x['exit_method']}({x['sharpe']})" for v, x in
+                         sorted(cond.items(), key=lambda kv: -kv[1]["sharpe"]))
+        flag = " *regime-varies*" if any(x["exit_method"] != u["exit_method"] for x in cond.values()) else ""
+        print(f"  {strat[:30]:30} uncond={u['exit_method']}({u['sharpe']}){flag}")
+        print(f"       by {by}: {cstr}")
     print("\n" + "=" * 60)
-    print(f"{by}: {len(rows)} slices with n>={args.cond_min_n} | {len(passing)} clear Sharpe>=0.7")
+    print(f"{by}: {len(per_strat)} strategies with a qualifying exit | "
+          f"{differ} have a DIFFERENT best exit in >=1 {by} value than their unconditional best")
     print("=" * 60)
     return 0
 
