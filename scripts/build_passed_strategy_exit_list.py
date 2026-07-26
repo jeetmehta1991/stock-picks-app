@@ -645,6 +645,37 @@ def main():
     for s, name, _ in sorted(mirror_nodata):
         md.append(f"| `{s}` | `{name}` | `{_pexit.get(s, '?')}` | inherited from parent "
                   f"(owner decision 2026-07-26) | none - never backtested |")
+    # B1389: the regime-conditional analysis (B1372-B1374) is part of this story and was
+    # missing from the doc. Owner: "there were 17 strategies specific to regimes and others
+    # across all - that's missing." Restored WITH its outcome, which is the point.
+    md.append(f"\n## E. REGIME-CONDITIONAL EXITS - tested, and what became of them\n")
+    md.append("A separate analysis asked whether a strategy does better with an exit that VARIES "
+              "by the regime it entered in, versus one exit everywhere. Originally 17 strategies "
+              f"showed a gain; after net-of-cost + winsorization (B1377) **{len(cond)} survived** "
+              "with an out-of-sample DeltaSharpe >= 0.3 (IS-pick 2022-2025 / OOS-measure 2025-2026).\n")
+    md.append(f"**But none of them reached the promoted {len(evidenced)}.** Of the {len(cond)} "
+              "conditional survivors, 13 rows landed DROP and 1 landed PASS-noFDR under the "
+              "true-holdout grading. So **every one of the "
+              f"{len(evidenced)} promoted cells uses a SINGLE exit across all regimes** - the "
+              "`Cond` column in Table A is `N` for all of them.\n")
+    md.append("**Why both results are true at once:** the conditional test is RELATIVE - *does "
+              "varying the exit beat this strategy's own single best exit?* The holdout gate is "
+              "ABSOLUTE - *is the resulting Sharpe >= 0.5?* A strategy can improve on itself by "
+              "varying its exit and still sit below the absolute bar. That is exactly what happened: "
+              "13 improved relative to themselves; none cleared 0.5 out-of-sample.\n")
+    if cond:
+        md.append("| Regime-conditional survivor | OOS DeltaSharpe | Holdout verdict |\n|---|---|---|")
+        _cv = {}
+        for r in rows:
+            _cv.setdefault(r["strategy"], []).append(f"{r['direction']}={r['verdict']}")
+        for s in sorted(cond, key=lambda x: -ov[x]["oos_delta"]):
+            md.append(f"| `{s}` | +{ov[s]['oos_delta']:.2f} | "
+                      f"{'; '.join(_cv.get(s, ['not graded']))} |")
+        md.append("")
+    md.append("**Consequence for deployment:** no per-regime exit switching is required for the "
+              "promoted set. Each strategy carries one exit. Per-regime EVIDENCE still varies by "
+              "cell - see the 'Regimes with holdout evidence' column in Table A, which shows where "
+              "each cell actually has n >= 30 to stand on.\n")
     rc = REPO / "output_audit" / "b1385_regime_conditional_gate.json"
     if rc.exists():
         c = json.loads(rc.read_text(encoding="utf-8"))["counts"]

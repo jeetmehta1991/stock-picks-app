@@ -552,6 +552,50 @@ def load_regime_affinity() -> dict:
     return affinity
 
 
+def load_r5_exit_assignments() -> dict:
+    """B1389: per-strategy DEPLOYMENT EXIT from the R5 holdout grading, for the roster's
+    new 'Backtested exit (R5)' column. Returns {strategy: markdown cell}.
+
+    Sources `output_r5_merged_1_7/passed_strategy_exit_holdout_graded.json` (produced by
+    scripts/build_passed_strategy_exit_list.py). Promoted cells carry the exit that was
+    picked on IS and graded on the untouched holdout fold. Directive-added mirrors with no
+    backtest inherit their long parent's exit (owner decision 2026-07-26) and are marked
+    INHERITED so the roster never implies they were validated. Missing file -> all blanks,
+    never an exception: the roster must still build without the cube present."""
+    out: dict[str, str] = {}
+    try:
+        p = (Path(__file__).resolve().parent.parent / "output_r5_merged_1_7"
+             / "passed_strategy_exit_holdout_graded.json")
+        if not p.exists():
+            return out
+        data = json.loads(p.read_text(encoding="utf-8"))
+        promoted = [r for r in data.get("rows", [])
+                    if r.get("verdict") == "PASS" and not r.get("redundant_of")]
+        for r in promoted:
+            h = r.get("holdout") or {}
+            out[r["strategy"]] = (f"`{r['exit']}` <br>holdout-picked "
+                                  f"(Sharpe {h.get('sharpe')}, n={h.get('n')})")
+        # directive-added mirrors: inherit the long parent's exit, clearly marked
+        for parent, mirror in MIRROR_INHERITED_EXITS.items():
+            if parent in out:
+                pex = out[parent].split("`")[1]
+                out[mirror] = (f"`{pex}` <br>**INHERITED** from `{parent}` - "
+                               f"never backtested, EXPLORATORY")
+    except Exception:
+        return out
+    return out
+
+
+# B1389: mirrors wired in B1382 that have no cube data; owner decision 2026-07-26 is that
+# they inherit their long parent's exit as a placeholder. Keyed parent -> mirror so the
+# inherited exit stays derived from the parent's graded result rather than hard-coded.
+MIRROR_INHERITED_EXITS = {
+    "news_sentiment_long": "news_sentiment_short",
+    "poc_magnet_long": "poc_magnet_short",
+    "xs_combined_momentum_low_ivol": "xs_combined_momentum_high_ivol_short",
+}
+
+
 def load_stage_4_status() -> dict:
     """Read approvals.json and build a per-strategy Stage 4 status
     summary: dict[strategy -> {n_rows, statuses, classes, fired_in_r4,
@@ -1110,8 +1154,18 @@ def main() -> int:
     # Logical Formula = AND/OR/NOT structure matching CSV updated_producer_signals
     # column. Also switched Signals consumed from _strat-call-declared list (often
     # human-truncated) to body-grepped set for accuracy.
-    out_lines.append("| # | Name | Category | Direction | Trigger Conditions (plain) | Trigger (code) | Signals consumed | Producers | Logical Formula | Regime affinity | Roster Status |")
-    out_lines.append("|---|---|---|---|---|---|---|---|---|---|---|")
+    # B1389 (2026-07-26 owner directive "update the strategy roster/register docs"):
+    # the roster had NO exit column at all, so a strategy's DEPLOYMENT EXIT - the other
+    # half of every (strategy x exit) cell - was registered nowhere in the roster. Added
+    # as a first-class column sourced from the R5 holdout grading, with provenance, so
+    # every strategy carries its exit rather than hand-annotating individual rows:
+    #   holdout-picked   exit chosen on IS + graded on the untouched holdout fold (PASS)
+    #   INHERITED        directive-added mirror with no backtest; takes its long parent's
+    #                    exit as a placeholder (owner decision 2026-07-26) - NOT validated
+    #   (blank)          strategy is not in the promoted set; no deployment exit assigned
+    r5_exit = load_r5_exit_assignments()
+    out_lines.append("| # | Name | Category | Direction | Backtested exit (R5) | Trigger Conditions (plain) | Trigger (code) | Signals consumed | Producers | Logical Formula | Regime affinity | Roster Status |")
+    out_lines.append("|---|---|---|---|---|---|---|---|---|---|---|---|")
     for i, r in enumerate(rows, 1):
         trigger = r["fires_expr"].replace("|", "\\|").replace("\n", "<br>")
         # Truncate very long triggers for table readability
@@ -1137,6 +1191,7 @@ def main() -> int:
         trigger_plain = trigger_plain.replace("|", "\\|")
         out_lines.append(
             f"| {i} | `{r['name']}` | {r['category']} | {r['direction']} | "
+            f"{r5_exit.get(r['name'], '-')} | "
             f"{trigger_plain} | `{trigger}` | {sigs} | {producers} | "
             f"{logical_formula} | {r['regime']} | {r['status']} |"
         )

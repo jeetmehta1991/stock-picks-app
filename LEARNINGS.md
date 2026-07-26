@@ -3421,3 +3421,30 @@ metrics (drawdown, exposure, correlation) are not defined on an isolated, non-co
 cell; (c) exclusions must be ticketed and justified in the artifact, never silently dropped,
 or "we removed the gates that failed us" becomes indistinguishable from honest correction.
 Tickets: S6-B1387-MDD-PORTFOLIO-VS-CELL, S6-B1387-DSR-THRESHOLD-SEMANTICS.
+
+### L239 - A RELATIVE improvement test and an ABSOLUTE bar answer different questions; a strategy can pass one and fail the other (B1389)
+
+Owner asked where the ~17 regime-specific strategies went. Traced: the conditional analysis
+(B1372-B1374) found 17 strategies whose regime-VARYING exit beat their own single best exit;
+after net-of-cost + winsorization 13 survived at OOS DeltaSharpe >= 0.3. **None reached the
+promoted 22** - 13 of their rows landed DROP under the true-holdout grading and 1 landed
+PASS-noFDR.
+
+Both results are correct because the two tests ask different questions:
+- **Conditional test = RELATIVE.** "Does varying the exit by regime beat THIS strategy's own
+  single best exit?" Measured as a delta against itself.
+- **Holdout gate = ABSOLUTE.** "Is the resulting Sharpe >= 0.5 out-of-sample?"
+A strategy can improve substantially on itself and still sit below the absolute bar - which is
+precisely what happened. `turtle_soup_long` improved by +1.02 Sharpe from regime-varying its
+exit and still DROPPED, because its base was far below 0.5.
+
+**Consequence:** all 22 promoted cells use ONE exit across all regimes; no per-regime exit
+switching is needed for the deployed set. Per-regime EVIDENCE still differs per cell and must
+be reported separately (the "Regimes with holdout evidence" column).
+
+**Rules:** (a) never let a relative-improvement result imply absolute validity - report the
+delta AND the resulting level; (b) when a prior finding does not survive a later, stricter
+gate, keep it in the document WITH its outcome rather than deleting it, or the reader is left
+asking where it went (exactly what happened here); (c) a readability rebuild must not silently
+drop a dimension - the regime-conditional map disappeared from the doc during the B1388
+rebuild and only the owner noticed.
