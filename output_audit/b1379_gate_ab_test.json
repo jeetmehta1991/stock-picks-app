@@ -1,0 +1,50 @@
+{
+  "sharpe": {
+    "label": "Sharpe >= 0.7 (current)",
+    "is_selected_rows": 32,
+    "holdout_evaluable": 17,
+    "held_rows": 4,
+    "held_strategies": 4,
+    "held_long": 4,
+    "held_short": 0,
+    "fdr_rows": 2,
+    "fdr_strategies": 2,
+    "fdr_long": 2,
+    "fdr_short": 0,
+    "holdout_hit_rate": 0.2353,
+    "rejected_base_rate": 0.0174,
+    "lift": 13.49
+  },
+  "rr": {
+    "label": "WR>=50% AND payoff>=1.5 (owner proposal)",
+    "is_selected_rows": 34,
+    "holdout_evaluable": 26,
+    "held_rows": 7,
+    "held_strategies": 7,
+    "held_long": 7,
+    "held_short": 0,
+    "fdr_rows": 5,
+    "fdr_strategies": 5,
+    "fdr_long": 5,
+    "fdr_short": 0,
+    "holdout_hit_rate": 0.2692,
+    "rejected_base_rate": 0.0798,
+    "lift": 3.38
+  },
+  "rr55": {
+    "label": "WR>=55% AND payoff>=1.5 (repo criterion 1)",
+    "is_selected_rows": 30,
+    "holdout_evaluable": 23,
+    "held_rows": 1,
+    "held_strategies": 1,
+    "held_long": 1,
+    "held_short": 0,
+    "fdr_rows": 1,
+    "fdr_strategies": 1,
+    "fdr_long": 1,
+    "fdr_short": 0,
+    "holdout_hit_rate": 0.0435,
+    "rejected_base_rate": 0.0482,
+    "lift": 0.9
+  }
+}

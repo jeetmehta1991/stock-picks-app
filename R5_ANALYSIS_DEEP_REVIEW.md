@@ -13,6 +13,25 @@ B1371) was already fixed, but the "passed" set is **softer than it reads** and o
 **data-integrity contamination is material**. Nothing here is deploy-grade until findings
 1 and 6 are fixed and the analysis re-run.
 
+> **UPDATE 3 (B1379, owner Q: "R:R 1:1.5 + WR>50% - does it increase passing strategies?
+> we need 40-50 with an even long/short mix").** Measured, not argued -
+> `scripts/r5_gate_ladder_analysis.py`:
+> - **R:R helps, modestly.** WR>=50% + payoff>=1.5 roughly doubles survivors like-for-like
+>   (7 rows / 5 after FDR, vs 4 / 2 for Sharpe>=0.7) and shows 3.4x lift over the rows it
+>   rejects. But **WR>=55% + payoff>=1.5 has NO predictive power (0.9x lift)** - 55% is the
+>   wrong knob. Use R:R as a secondary filter, not the primary gate.
+> - **Ladder to 40-50** (pooled-IS pick, holdout-graded, BH-FDR): >=0.7 -> 14 rows / 9
+>   strategies; **>=0.5 -> 43 rows / 33 strategies**; >=0.3 -> 74 / 56; >=0.0 -> 102 / 55.
+>   40-50 is reachable at a 0.5 bar - a PASSING_CRITERIA change requiring owner approval.
+> - **Shorts: window-starved, NOT broken.** Shorts beat longs in the clean 2022 bear leg and
+>   561 of 1,898 short cells are positive-Sharpe there (top 1.96, +6.3%/trade). The window
+>   holds ~5 bear months in 48 and the holdout year has none. An even long/short roster is
+>   not reachable from this cube at any bar above 0 -> L229.
+> - **`regime_at_entry==bear` is a BUY signal here** (+1.14%/trade long, -2.36% short). Do
+>   not regime-gate shorts on it.
+> - **Method fix:** pooled-IS exit selection beats mean-of-per-fold (9 vs 5 FDR survivors at
+>   the same bar) -> L230; the published list should be re-issued with it.
+
 > **UPDATE 2 (B1378, owner-directed "Run f3 f4 f2"): F2 + F3 + F4 APPLIED - and the result
 > changes the headline.** Exit now picked on IS folds 1-3 only, fold 4 (2025-05 -> 2026-05)
 > held out to decide the verdict, BH-FDR q=0.05 over the holdout family, Lo(2002) 95% CIs on

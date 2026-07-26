@@ -3165,3 +3165,42 @@ family set to the full universe (188 evaluable rows). Effect: PASS 4 -> 5 rows, 
 lift statistic (10.8% vs 2.6%) only became measurable once the rejected rows were graded too.
 **Class rule:** when a holdout grades a set, every filter upstream of it must be computable
 from IS data alone. Audit the provenance of the candidate list, not just the grading step.
+
+### L229 - The short book is not broken, it is window-starved; and the regime label at entry is CONTRARIAN in this window (B1379)
+
+Zero shorts survive the R5 holdout, and 0 of 2,132 short cells clear Sharpe 0.7 even
+IN-SAMPLE. Before concluding the short side is mechanically broken, three tests:
+
+1. **Direction responds correctly to the tape.** In the clean bear leg 2022-05-05 ->
+   2022-10-14, shorts BEAT longs (short mean -0.435%/trade, Sharpe -0.199 vs long
+   -1.094%, -0.452). A sign/mechanics bug would not reverse the ordering correctly.
+2. **Short edge exists when the tape cooperates.** In that same bear leg, **561 of 1,898**
+   evaluable short cells have positive Sharpe, topping out at 1.96 with +6.3%/trade
+   (`ppo_crossover`, `pead_short`, `r1_break_retest`, `pead_short_negative_yoy_growth`,
+   `three_black_crows_short`, `parabolic_sar_flip`). Those are real short setups.
+3. **The window is the constraint.** 2022-05 -> 2026-05 contains ~5 months of downtrend
+   out of 48, and the holdout year has essentially none. A short book cannot be validated
+   on 10% of the sample, and no re-gating fixes that.
+
+**The surprise:** `regime_at_entry == bear` is where LONGS make their money (+1.143%/trade)
+and shorts lose worst (-2.361%), while `bull` entries are the weakest for longs (+0.063%).
+The classifier marks "bear" at high-vol/below-200EMA moments that were, in this window,
+near local bottoms - so it is a **buy-the-dip trigger, not a short trigger**. Regime-gating
+shorts on this label makes them WORSE. Do not wire shorts to `bear` regime affinity on the
+strength of intuition; this cube says the opposite. (Consistent with the system's stated
+"buy dips including in crisis" design - the classifier is doing its job, just not the job
+short strategies need.)
+
+**Consequence:** an even long/short roster is NOT reachable from this cube at any bar above
+Sharpe 0. Getting it requires extending the backtest window to cover real bear/crisis regimes
+(2008, 2011, 2015-16, 2018, 2020) - a data+compute decision, not a threshold decision.
+
+### L230 - Pool the IS window to pick, don't average per-fold statistics (B1379)
+
+Same cube, same holdout, same 0.7 bar - two exit-selection rules:
+- pick by MEAN of per-fold IS Sharpes (B1378): 11 rows clear, **5** survive BH-FDR
+- pick by Sharpe over the POOLED 3-year IS window (B1379): 14 rows clear, **9** survive
+Averaging per-fold Sharpes throws away sample size: each fold's estimate carries its own
+noise and the mean of four noisy estimates is noisier than one estimate on 3x the data.
+**Rule:** the selection statistic should be computed on the largest IS sample available;
+use per-fold consistency as a REPORTED diagnostic, not as the selection criterion.
