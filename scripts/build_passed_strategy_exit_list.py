@@ -322,6 +322,27 @@ def main():
         return sorted(jac, reverse=True), sorted(keep), dup, enb(nm), enb(sorted(keep))
 
     jac_pairs, keep_list, dup_of, enb_before, enb_after = _redundancy(passed)
+
+    # ---- THE DEPLOYABLE SET (B1384) -----------------------------------------------
+    # Each promoted strategy carries exactly ONE exit (chosen on IS, graded on the
+    # holdout), so the cube's 26-exit dimension is ALREADY COLLAPSED here: N evidenced
+    # strategies = N cells, NOT N x 26. Owner directive 2026-07-26: this document is the
+    # deployment list - the DROP / UNEVAL / PASS-noFDR populations are removed from the
+    # markdown (they remain in full in passed_strategy_exit_holdout_graded.json).
+    _ev_pass = [r for r in passed if not dup_of.get(r["strategy"])]
+    _byrow = {(r["strategy"], r["direction"]): r for r in rows}
+    mirror_data, mirror_nodata = [], []
+    for r in _ev_pass:
+        st, name, _note = mirror_status(r["strategy"], roster.get(r["strategy"], {}), roster)
+        if st not in ("REGISTERED-DUAL", "REGISTERED-STANDALONE"):
+            continue
+        m = (_byrow.get((r["strategy"], "short")) if st == "REGISTERED-DUAL"
+             else _byrow.get((name, "short")) or _byrow.get((name, "long")))
+        (mirror_data if m else mirror_nodata).append((r["strategy"], name, m))
+    evidenced = _ev_pass
+    total_cells = len(evidenced) + len(mirror_data) + len(mirror_nodata)
+    print(f"[DEPLOYABLE] {total_cells} cells = {len(evidenced)} evidenced long "
+          f"+ {len(mirror_data)} mirrors-with-data + {len(mirror_nodata)} mirrors-no-data")
     for r in rows:
         r["redundant_of"] = dup_of.get(r["strategy"]) if r in passed else None
     print(f"[REDUNDANCY] {len(passed)} promoted -> {len(keep_list)} after de-dup "
@@ -396,7 +417,18 @@ def main():
               "selection decision ever saw, and the **Verdict column is decided by the holdout alone**. "
               "Sharpes are ANNUALIZED, NET of 20bps round-trip cost, winsorized +/-300% (F1+F6, B1377), "
               "and carry a Lo(2002) 95% CI. Deep review: `R5_ANALYSIS_DEEP_REVIEW.md`.\n")
-    md.append("## Headline\n")
+    md.append("## Headline - what goes to the next phase\n")
+    md.append(f"| | Cells (strategy x direction x exit) | Evidence |\n|---|---|---|\n"
+              f"| **A. EVIDENCED long** | **{len(evidenced)}** | holdout Sharpe >= {GATE} + BH-FDR + CI lower bound > 0 |\n"
+              f"| **B. Directive mirrors, measured** | **{len(mirror_data)}** | in the cube, and ALL of them FAILED the holdout |\n"
+              f"| **C. Directive mirrors, unmeasured** | **{len(mirror_nodata)}** | never backtested - exit TBD |\n"
+              f"| **TOTAL** | **{total_cells}** | of which {len(evidenced)} carry forward evidence |\n")
+    md.append(f"**This is NOT strategies x 26.** Each promoted strategy carries exactly ONE exit - "
+              f"chosen on in-sample data, graded on the held-out year - so the cube's 26-exit dimension "
+              f"is already collapsed. {len(evidenced)} evidenced strategies = {len(evidenced)} cells. "
+              f"(A full cube RE-RUN, a measurement exercise rather than a deployment roster, would be "
+              f"222 x 26 = 5,772 cells.)\n")
+    md.append("### Grading population behind those cells\n")
     md.append(f"| Outcome | Rows (strategy x direction) | Strategies |\n|---|---|---|\n"
               f"| **PASS** (holdout Sharpe >= 0.5 AND survives BH-FDR q<0.05) | **{len(passed)}** | **{S(passed)}** |\n"
               f"| PASS-noFDR (cleared 0.7 but not multiple-testing-survivable) | {len(pass_nofdr)} | {S(pass_nofdr)} |\n"
@@ -445,7 +477,6 @@ def main():
               "in crisis; NO crisis-regime evidence exists in this set.\n"
               "6. **Not a deploy list.** Exit assignment (`STRATEGY_EXIT_OVERRIDE`) is a strategy change and "
               "requires explicit owner approval; paper trading is the next filter, not this table.\n")
-    keep = [r for r in rows if r["verdict"] in ("PASS", "PASS-noFDR")]
     ms, tally, mlongs, mneg = mirror_section(passed)
     md.append("\n## A0. SHORT MIRROR COVERAGE (owner standing directive 2026-07-25)\n")
     md.append("*\"Whichever long strategies go to the next phase, their mirror short symmetrical "
@@ -468,20 +499,39 @@ def main():
               "measured evidence on the argument that the window under-samples bear tape, not an "
               "absence of data. See L229.\n")
     md += ms
-    md.append("\n## A. SURVIVORS - cleared the holdout (the only rows with forward evidence)\n")
-    md.append("`PASS` = holdout Sharpe >= 0.7 AND survives BH-FDR. `PASS-noFDR` = cleared 0.7 but "
-              "not distinguishable from multiple-testing luck; treat as watchlist, not deploy.\n")
-    md += table(keep)
-    md.append("\n## B. DROP - selected in-sample, FAILED the holdout year\n")
-    md.append("These are the rows the pre-holdout method would have handed you. They are the reason "
-              "the holdout exists; each was picked on 2022-2025 and did not clear 0.7 on 2025-2026.\n")
-    md += table([r for r in rows if r["verdict"] == "DROP"])
-    md.append("\n## C. UNEVAL - holdout n<30 (no honest verdict possible)\n")
-    md += table([r for r in rows if r["verdict"] == "UNEVAL"])
-    md.append("\n## Appendix - entry-gate formulas for SURVIVORS (exact per-leg `fires` expression)\n")
-    for r in keep:
-        md.append(f"- **`{r['strategy']}`** [{r['direction']}, {r['category']}, {r['verdict']}]: "
-                  f"`{r['fires_leg']}`")
+    md.append(f"\n## A. EVIDENCED - {len(evidenced)} long cells (the only cells with forward evidence)\n")
+    md.append("Holdout Sharpe >= 0.5, survives BH-FDR q<0.05, and 95% CI lower bound above 0. "
+              "One exit per strategy, picked on IS (2022-05 -> 2025-05) and graded on the untouched "
+              "2025-05 -> 2026-05 holdout.\n")
+    md += table(evidenced)
+    md.append(f"\n## B. DIRECTIVE MIRRORS with measured evidence - {len(mirror_data)} cells\n")
+    md.append("Short mirrors of the promoted longs that ALREADY EXIST in the cube. They ship under the "
+              "owner's mirror-by-default directive, **not** on evidence: every one of them FAILED the "
+              "holdout. Carrying them is a deliberate override, justified by the window holding only "
+              "~5 downtrend months in 48 (L229). Size them separately from Section A.\n")
+    md.append("| Parent LONG | Short mirror | Mirror's exit | Mirror's OWN holdout Sharpe | Verdict |\n"
+              "|---|---|---|---|---|")
+    for s, name, m in sorted(mirror_data, key=lambda x: (x[2]["holdout"]["sharpe"] if x[2]["holdout"] else 99)):
+        h = m["holdout"]
+        ev = f"{h['sharpe']} (n={h['n']})" if h else "n<30 - un-evaluable"
+        md.append(f"| `{s}` | `{name}` | `{m['exit']}` | {ev} | **{m['verdict']}** |")
+    md.append(f"\n## C. DIRECTIVE MIRRORS without any data - {len(mirror_nodata)} cells (exit TBD)\n")
+    md.append("Wired in B1382 under the same directive. They have never been backtested, so **no exit "
+              "can be assigned from measurement**. Open owner decision: inherit the long parent's exit "
+              "as a default, or hold exit-TBD until a bear-inclusive window runs. All are tagged "
+              "EXPLORATORY and excluded from the multiple-testing family.\n")
+    md.append("| Parent LONG | Short mirror | Exit | Evidence |\n|---|---|---|---|")
+    for s, name, _ in sorted(mirror_nodata):
+        md.append(f"| `{s}` | `{name}` | *TBD - never backtested* | none |")
+    md.append(f"\n## Appendix - entry-gate formulas for the {len(evidenced)} evidenced cells "
+              "(exact per-leg `fires` expression)\n")
+    for r in evidenced:
+        md.append(f"- **`{r['strategy']}`** [{r['direction']}, {r['category']}]: `{r['fires_leg']}`")
+    md.append(f"\n---\n*The DROP ({len(dropped)}), UNEVAL ({len(uneval)}) and PASS-noFDR "
+              f"({len(pass_nofdr)}) populations were removed from this document per owner directive "
+              "2026-07-26 so it reads as the deployment list. They remain in full, with all metrics, "
+              "in `output_r5_merged_1_7/passed_strategy_exit_holdout_graded.json` - regenerate this "
+              "file with `python scripts/build_passed_strategy_exit_list.py`.*")
     out = REPO / "PASSED_STRATEGY_EXIT_LIST.md"
     out.write_text("\n".join(md), encoding="utf-8")
 
