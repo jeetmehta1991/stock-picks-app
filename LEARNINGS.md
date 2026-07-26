@@ -3204,3 +3204,36 @@ Averaging per-fold Sharpes throws away sample size: each fold's estimate carries
 noise and the mean of four noisy estimates is noisier than one estimate on 3x the data.
 **Rule:** the selection statistic should be computed on the largest IS sample available;
 use per-fold consistency as a REPORTED diagnostic, not as the selection criterion.
+
+### L231 - The R:R filter and the Sharpe gate select DISJOINT populations - never AND them (B1380)
+
+Owner approved R:R >= 1.5 + WR >= 50% as a secondary filter alongside the holdout Sharpe
+gate. Applied to the 29 strategies that PASS the 0.5 holdout bar, **exactly 1 of 29 also
+satisfies WR >= 50% + payoff >= 1.5.** ANDing them would delete 28 of 29 promotions.
+
+The reason is structural, not coincidental. The winning exit for 25 of the 29 is
+`breakeven_plus_trail`, whose whole mechanic is to truncate losers at breakeven and let
+winners run - it manufactures a LOW win rate (0.30-0.46) with a HIGH payoff (3.5-10.3).
+A WR>=50% requirement selects the opposite signature (frequent small wins), which is what
+the R:R gate found and why its survivors barely overlap the Sharpe survivors.
+
+**Rule:** report WR and payoff as DIAGNOSTIC columns describing a strategy's risk
+signature; use them as an OR-branch alternative acceptance route if a second route is
+wanted. Never AND a win-rate floor onto a Sharpe/expectancy gate without first measuring
+the overlap - the two encode incompatible trade-shape preferences. (Related: B1379 found
+WR>=55% + payoff>=1.5 has lift 0.9x, i.e. no predictive power at all.)
+
+### L232 - Regime is a market-wide DAILY LABEL that changes roughly every 40 trading days, not daily (B1380)
+
+Measured over the R5 window (1,002 trading days, 2022-05-05 -> 2026-05-04): the regime
+label is global (0 days carried more than one label across all tickers), and it changed
+**25 times - once per ~40 trading days**. Run lengths are strongly bimodal: mean 38.5 days
+but median 8, with four spells of 123-206 days and 9 of 26 runs lasting <= 5 days. Day
+share: bull 70.1% / bear 27.0% / neutral 2.9% / **crisis 0.0%** (confirms the F5 crisis gap).
+
+Two consequences: (1) assigning a regime-conditional exit ONCE at entry and holding it to
+close is sound - median hold ~15.8 days vs median regime run 8 days means trades DO span
+changes, and re-deciding the exit mid-trade would thrash during the whipsaw clusters
+(2023 had 9 changes, 2025 had 7); (2) any per-regime statistic in this window rests on
+bull data - 70% of days - so "works in bear" claims here are built on 271 days, and
+"works in crisis" claims have no data at all.

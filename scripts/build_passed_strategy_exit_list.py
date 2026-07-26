@@ -37,7 +37,13 @@ IS_FOLDS = [("F1", date(2022, 5, 5), date(2023, 5, 5)),
             ("F3", date(2024, 5, 5), date(2025, 5, 5))]
 HOLDOUT = ("F4", date(2025, 5, 5), date(2026, 5, 5))
 MIN_N = 30
-GATE = 0.7
+# B1380 owner-approved (2026-07-25): deployment bar moved 0.7 -> 0.5, because the grading
+# now carries TWO filters that did not exist when 0.7 was set (a true holdout + BH-FDR).
+# 0.5-with-holdout-and-FDR is stronger evidence than 0.7 was in-sample. 0.7 is retained as
+# a reported STRICT flag so the stronger rows stay visible.
+GATE = 0.5
+GATE_STRICT = 0.7
+RR_WR, RR_PAYOFF = 0.50, 1.5   # owner-approved SECONDARY filter (never 55% - lift 0.9x, B1379)
 WINSORIZE = 300.0   # F6 (B1377): cap collapse-priced outliers (SBNY)
 COST_BPS = 20.0     # F1 (B1377): T1a round-trip cost (5bps slippage + 1bp commission + spread)
 FDR_Q = 0.05
@@ -86,37 +92,78 @@ def split_compact(compact: str, direction) -> str:
     return ("SHORT:" + m.group(1)).strip() if m else c
 
 
+# Owner standing directive (2026-07-25): every LONG strategy promoted to the next phase
+# carries its symmetric SHORT mirror by default. The one principled exception is a signal
+# whose DATA SOURCE only exists on one side -- 13F institutional holdings, insider/congress
+# BUYING, buybacks, lobbying are long-only by construction (SEC reporting), so a mechanical
+# inverse is economically false, not merely weak. Precedent: B611 reverted exactly such a
+# mirror ("13F is long-only data per SEC rule; mechanical symmetry was economically false").
+ASYMMETRIC_SOURCE_TOKENS = ("smart_money", "institutional", "13f", "insider", "congress",
+                            "lobby", "buyback", "activist", "13d")
+
+
+def mirror_status(strat: str, ro: dict, roster: dict) -> tuple:
+    """Resolve the SHORT mirror of a LONG strategy. Returns (status, mirror_name, note)."""
+    blob = f"{strat} {ro.get('fires','')} {ro.get('signals','')}".lower()
+    hits = [t for t in ASYMMETRIC_SOURCE_TOKENS if t in blob]
+    if str(ro.get("direction", "")).strip().lower() == "dual":
+        return ("REGISTERED-DUAL", strat + " (short leg)",
+                "already trades both directions; the short leg ships with it")
+    for cand in (strat.replace("_long", "_short"), strat + "_short",
+                 strat.replace("_bullish", "_bearish"), strat.replace("_bottom", "_top"),
+                 strat.replace("_oversold", "_overbought"), strat.replace("_up", "_down")):
+        if cand != strat and cand in roster:
+            return ("REGISTERED-STANDALONE", cand, "symmetric short already registered")
+    if hits:
+        return ("NOT-DEFENSIBLE", "-",
+                f"long-only data source ({', '.join(hits)}) - B611 precedent; "
+                "a mechanical inverse would be economically false")
+    return ("MISSING-BUILDABLE", "-", "no short mirror registered -> Class 7 NEW candidate")
+
+
 def _fold_stats(g, lo, hi):
     m = g[(g.entry_date >= lo) & (g.entry_date < hi)]
     return _sharpe(m.pnl_pct.values, m.hold_days.values)
 
 
+def _payoff(a):
+    """avg win / avg loss -- the 'R' in R:R, for the owner-approved secondary filter."""
+    w, l = a[a > 0], a[a <= 0]
+    if not len(w) or not len(l) or l.mean() == 0:
+        return None
+    return round(float(w.mean() / abs(l.mean())), 2)
+
+
 def cell_metrics(sub):
-    """F3 (B1378) HONEST-HOLDOUT selection: choose the exit on IS folds 1-3 ONLY
-    (by MEAN evaluable IS Sharpe - the mean, not the max, so a single lucky IS year
-    can't win the pick), then report fold 4 as a never-selected-on holdout."""
+    """HONEST-HOLDOUT selection (F3, B1378): the exit is chosen on IS ONLY
+    (2022-05 -> 2025-05); fold 4 is never seen by the selection.
+
+    B1380 (L230): the selection statistic is the Sharpe of the POOLED 3-year IS window,
+    NOT the mean of per-fold Sharpes. Averaging four noisy fold-estimates is noisier than
+    one estimate on 3x the data -- measured, pooled selection yields 9 FDR survivors vs 5
+    at the same bar. Per-fold numbers are still REPORTED as a consistency diagnostic."""
     best = None
     for ex, g in sub.groupby("exit_method"):
-        perfold = {}
-        is_sh = []
-        for name, lo, hi in IS_FOLDS:
-            st = _fold_stats(g, lo, hi)
-            perfold[name] = st
-            if st:
-                is_sh.append(st["sharpe"])
-        if not is_sh:
-            continue                      # no evaluable IS fold -> cannot pick this exit
-        is_mean = sum(is_sh) / len(is_sh)
+        gi = g[(g.entry_date >= IS_FOLDS[0][1]) & (g.entry_date < HOLDOUT[1])]
+        is_pooled = _sharpe(gi.pnl_pct.values, gi.hold_days.values)
+        if not is_pooled:
+            continue                      # IS window below the power floor -> cannot pick
+        perfold = {name: _fold_stats(g, lo, hi) for name, lo, hi in IS_FOLDS}
         hold = _fold_stats(g, HOLDOUT[1], HOLDOUT[2])
         perfold["F4"] = hold
         full = _sharpe(g.pnl_pct.values, g.hold_days.values)
         cum = {"sharpe": full["sharpe"] if full else None, "n": int(len(g)),
                "wr": full["wr"] if full else round(float((g.pnl_pct.values > 0).mean()), 3),
                "ret": round(float(g.pnl_pct.sum()), 1)}
-        rec = {"exit": ex, "is_mean": round(is_mean, 3), "n_is_folds": len(is_sh),
-               "is_folds_ge_gate": sum(1 for s in is_sh if s >= GATE),
+        if hold:
+            h = g[(g.entry_date >= HOLDOUT[1]) & (g.entry_date < HOLDOUT[2])]
+            hold = {**hold, "payoff": _payoff(h.pnl_pct.values)}
+            perfold["F4"] = hold
+        rec = {"exit": ex, "is_pooled": is_pooled["sharpe"], "is_n": is_pooled["n"],
+               "is_folds_ge_gate": sum(1 for f in IS_FOLDS
+                                       if perfold[f[0]] and perfold[f[0]]["sharpe"] >= GATE),
                "holdout": hold, "perfold": perfold, "cum": cum}
-        if best is None or is_mean > best["is_mean"]:
+        if best is None or is_pooled["sharpe"] > best["is_pooled"]:
             best = rec
     return best
 
@@ -174,6 +221,9 @@ def main():
     for r in rows:
         h = r["holdout"]
         r.setdefault("bh", False)
+        r["strict"] = bool(h and h["sharpe"] >= GATE_STRICT)
+        r["rr_ok"] = bool(h and h["wr"] >= RR_WR and h.get("payoff") is not None
+                          and h["payoff"] >= RR_PAYOFF)
         if not h:
             r["verdict"] = "UNEVAL"       # holdout n<30 -> no honest verdict
         elif h["sharpe"] >= GATE and r["bh"]:
@@ -205,18 +255,44 @@ def main():
 
     def table(rs):
         out = ["| Strategy | Dir | Best Exit (IS-picked) | Cond | IS F1 | IS F2 | IS F3 | "
-               "HOLDOUT F4 | 95% CI lo | BH q<0.05 | Verdict | Cum Sharpe/n/WR/ret% | Entry gate (this leg) |",
-               "|---|---|---|---|---|---|---|---|---|---|---|---|---|"]
+               "HOLDOUT F4 | 95% CI lo | WR/payoff | R:R ok | >=0.7 | BH q<0.05 | Verdict | "
+               "Cum Sharpe/n/WR/ret% | Entry gate (this leg) |",
+               "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|"]
         for r in rs:
             pf, h, cum = r["perfold"], r["holdout"], r["cum"]
+            rr = f"{h['wr']}/{h.get('payoff')}" if h else "-"
             out.append(
                 f"| `{r['strategy']}` | {r['direction']} | `{r['exit']}` | "
                 f"{'Y' if r['conditional'] else 'N'} | "
                 f"{fcell(pf['F1'])} | {fcell(pf['F2'])} | {fcell(pf['F3'])} | {hcell(h)} | "
-                f"{h['ci_lo'] if h else '-'} | {'YES' if r['bh'] else 'no'} | {r['verdict']} | "
+                f"{h['ci_lo'] if h else '-'} | {rr} | {'YES' if r['rr_ok'] else 'no'} | "
+                f"{'YES' if r['strict'] else 'no'} | {'YES' if r['bh'] else 'no'} | {r['verdict']} | "
                 f"{cum['sharpe']}/{cum['n']}/{cum['wr']}/{cum['ret']}% | "
                 f"{(r['regimes'] + ' || ') if r['conditional'] and r['regimes'] else ''}{r['gate_leg']} |")
         return out
+
+    def mirror_section(passing_rows):
+        """Owner standing directive: promote the symmetric SHORT mirror of every promoted LONG.
+        Where the mirror ALREADY EXISTS it is already in this cube, so we report what the
+        holdout actually measured for it rather than calling it unvalidated."""
+        short_row = {(r["strategy"], r["direction"]): r for r in rows}
+        longs = sorted({r["strategy"] for r in passing_rows if _is_long(r["direction"])})
+        lines = ["| Promoted LONG | Mirror status | Short mirror | Mirror's OWN holdout evidence | Note |",
+                 "|---|---|---|---|---|"]
+        tally, measured_neg = {}, 0
+        for s in longs:
+            st, name, note = mirror_status(s, roster.get(s, {}), roster)
+            tally[st] = tally.get(st, 0) + 1
+            ev = "-"
+            probe = short_row.get((s, "short")) or short_row.get((name, "short"))
+            if probe:
+                h = probe["holdout"]
+                ev = (f"{h['sharpe']} (n={h['n']}) -> **{probe['verdict']}**" if h
+                      else f"n<30 -> {probe['verdict']}")
+                if h and h["sharpe"] < GATE:
+                    measured_neg += 1
+            lines.append(f"| `{s}` | **{st}** | `{name}` | {ev} | {note} |")
+        return lines, tally, longs, measured_neg
 
     md = []
     md.append("<!-- Source: per CHECKLIST #77; auto-built by scripts/build_passed_strategy_exit_list.py "
@@ -231,9 +307,9 @@ def main():
               "and carry a Lo(2002) 95% CI. Deep review: `R5_ANALYSIS_DEEP_REVIEW.md`.\n")
     md.append("## Headline\n")
     md.append(f"| Outcome | Rows (strategy x direction) | Strategies |\n|---|---|---|\n"
-              f"| **PASS** (holdout Sharpe >= 0.7 AND survives BH-FDR q<0.05) | **{len(passed)}** | **{S(passed)}** |\n"
+              f"| **PASS** (holdout Sharpe >= 0.5 AND survives BH-FDR q<0.05) | **{len(passed)}** | **{S(passed)}** |\n"
               f"| PASS-noFDR (cleared 0.7 but not multiple-testing-survivable) | {len(pass_nofdr)} | {S(pass_nofdr)} |\n"
-              f"| DROP (holdout Sharpe < 0.7 - selected-in-sample, failed live-forward) | {len(dropped)} | {S(dropped)} |\n"
+              f"| DROP (holdout Sharpe < 0.5 - selected-in-sample, failed live-forward) | {len(dropped)} | {S(dropped)} |\n"
               f"| UNEVAL (holdout n<30 - no honest verdict) | {len(uneval)} | {S(uneval)} |\n"
               f"| TOTAL graded rows (every strategy x direction in the cube) | {len(rows)} | {S(rows)} |\n")
     pool_ev = [r for r in ev if r["in_loose_pool"]]
@@ -270,6 +346,28 @@ def main():
               "6. **Not a deploy list.** Exit assignment (`STRATEGY_EXIT_OVERRIDE`) is a strategy change and "
               "requires explicit owner approval; paper trading is the next filter, not this table.\n")
     keep = [r for r in rows if r["verdict"] in ("PASS", "PASS-noFDR")]
+    ms, tally, mlongs, mneg = mirror_section(passed)
+    md.append("\n## A0. SHORT MIRROR COVERAGE (owner standing directive 2026-07-25)\n")
+    md.append("*\"Whichever long strategies go to the next phase, their mirror short symmetrical "
+              "strategies are by default to be added.\"* Applied to the "
+              f"{len(mlongs)} promoted LONG strategies:\n")
+    md.append("| Status | Count | Meaning |\n|---|---|---|\n"
+              f"| REGISTERED-DUAL | {tally.get('REGISTERED-DUAL',0)} | strategy already trades both legs - short ships automatically |\n"
+              f"| REGISTERED-STANDALONE | {tally.get('REGISTERED-STANDALONE',0)} | a symmetric short strategy already exists in the roster |\n"
+              f"| MISSING-BUILDABLE | {tally.get('MISSING-BUILDABLE',0)} | no mirror registered -> Class 7 NEW_STRATEGY to wire |\n"
+              f"| NOT-DEFENSIBLE | {tally.get('NOT-DEFENSIBLE',0)} | long-only DATA SOURCE (13F/insider/congress/buyback) - B611 precedent |\n")
+    md.append("> **Three warnings the directive should be read against.** (1) *Economic asymmetry*: "
+              "equities drift up, shorts pay borrow and carry unbounded squeeze risk, so a "
+              "structurally symmetric short is NOT expected to earn its long's return - it must be "
+              "sized and judged separately. (2) *No forward evidence*: **zero** short rows clear the "
+              "holdout in this cube (the window holds ~5 downtrend months in 48), so mirrors ship "
+              "UNVALIDATED-BY-CONSTRUCTION and should be tagged EXPLORATORY until a bear-inclusive "
+              f"window tests them. (3) *Worse than unvalidated for some*: **{mneg} of the mirrors "
+              "already exist in this cube and their own holdout evidence is NEGATIVE** (see the "
+              "'Mirror's OWN holdout evidence' column) - adding those is a deliberate override of "
+              "measured evidence on the argument that the window under-samples bear tape, not an "
+              "absence of data. See L229.\n")
+    md += ms
     md.append("\n## A. SURVIVORS - cleared the holdout (the only rows with forward evidence)\n")
     md.append("`PASS` = holdout Sharpe >= 0.7 AND survives BH-FDR. `PASS-noFDR` = cleared 0.7 but "
               "not distinguishable from multiple-testing luck; treat as watchlist, not deploy.\n")
