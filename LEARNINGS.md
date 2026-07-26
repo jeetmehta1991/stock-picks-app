@@ -3347,3 +3347,45 @@ must be evaluated on that strategy's native regime, pre-registered, never pooled
 (b) distinguish UNEVAL (untestable - no data) from FAIL (tested and refuted) in every
 report - collapsing them manufactures false refutations; (c) before concluding a class of
 strategies "does not work", check the regime composition of the window that judged it.
+
+### L237 - The R5 holdout gate checks 3 of the project's 17 canonical criteria; applying the cheap rest collapses 22 promoted cells to 2 (B1386)
+
+Owner asked what PASS / FAIL / UNEVAL mean. Answering from code surfaced a gap worth pinning
+before anyone treats the promoted list as validated.
+
+**What the R5 gate actually tests** (`build_passed_strategy_exit_list.py`, holdout fold only,
+NET winsorized returns, ANNUALIZED Sharpe):
+- UNEVAL  = holdout n < 30                       -> untestable, NOT refuted
+- PASS    = n >= 30 AND Sharpe >= 0.5 AND BH-FDR q<0.05
+- PASS-noFDR = n >= 30 AND Sharpe >= 0.5, FDR not survived
+- DROP/FAIL = n >= 30 AND Sharpe < 0.5           -> tested and refuted
+That is **three** conditions: an n-floor, a Sharpe bar, a multiple-testing correction.
+
+**The project's canonical `PASSING_CRITERIA` has 14 criteria + 3 AUTO-FAIL screens** - profit
+factor, win rate, win/loss ratio, expected value, ROI, max drawdown, Sharpe, Sortino, Calmar,
+deflated Sharpe >= 0.95, PSR >= 0.95, min_trades = 100, cost-sensitivity ratio, Chow
+break-point, ADF stationarity. The R5 gate checks 3 of them.
+
+**Measured consequence** on the 22 promoted cells (holdout):
+| criterion | threshold | clear |
+|---|---|---|
+| min_trades_per_regime / profit factor / win-loss / EV / ROI | - | 22/22 each |
+| min_trades (overall) | 100 | 16/22 |
+| **min_win_rate** | **0.45** | **4/22** |
+| **all simultaneously** | | **2/22** |
+
+The binding constraint is `min_win_rate`, and it is structural, not noise: the exit that wins
+selection (`breakeven_plus_trail`) truncates losers at breakeven and lets winners run, which
+MANUFACTURES a low win rate (0.30-0.46) with a high payoff (3.5-10.3). A win-rate floor and a
+Sharpe/expectancy gate encode incompatible trade shapes - the same tension as L231, now
+binding on the canonical criteria rather than on an optional filter.
+
+**Two divergences to keep visible:** (1) the analysis bar is 0.5 while `config.PASSING_CRITERIA`
+still specifies min_sharpe_per_regime 0.7 / overall 1.0 - config was deliberately NOT edited,
+as that is a canonical change needing its own approval, so the system currently holds two
+bars; (2) deflated Sharpe, PSR, Sortino, Calmar, max drawdown, cost-sensitivity ratio, Chow
+and ADF have not been computed for the promoted set at all.
+
+**Rule:** whenever a screening gate is narrower than the project's canonical criteria, say so
+in the artifact and quantify the gap. A verdict word ("PASS") inherits whatever authority the
+reader assumes - the artifact must state which gate produced it.

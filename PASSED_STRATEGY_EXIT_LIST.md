@@ -6,6 +6,36 @@
 
 > **This list is graded on a TRUE HOLDOUT (B1378).** The exit is picked using ONLY 2022-05 -> 2025-05 (IS folds 1-3); the final year 2025-05 -> 2026-05 (F4) is a holdout no selection decision ever saw, and the **Verdict column is decided by the holdout alone**. Sharpes are ANNUALIZED, NET of 20bps round-trip cost, winsorized +/-300% (F1+F6, B1377), and carry a Lo(2002) 95% CI. Deep review: `R5_ANALYSIS_DEEP_REVIEW.md`.
 
+## Verdict criteria - what PASS / DROP / UNEVAL actually mean here
+
+Evaluated on the HOLDOUT fold only (2025-05-05 -> 2026-05-05), on NET winsorized per-trade returns. Sharpe is ANNUALIZED (per-trade x sqrt(252/avg_hold), matching `metrics.py::_sharpe`).
+
+| Verdict | Condition | Meaning |
+|---|---|---|
+| **UNEVAL** | holdout n < 30 | **untestable, NOT refuted** - below the statistical-power floor. Never read as a failure. |
+| **PASS** | n >= 30 AND annualized Sharpe >= 0.5 AND survives BH-FDR q<0.05 | cleared the bar and is distinguishable from multiple-testing luck |
+| **PASS-noFDR** | n >= 30 AND Sharpe >= 0.5, FDR not survived | cleared the bar but indistinguishable from luck across the family - watchlist, not deploy |
+| **DROP** / **FAIL** | n >= 30 AND Sharpe < 0.5 | tested and refuted (`FAIL` is the same rule in the native-regime gate) |
+
+Reported ALONGSIDE the verdict but **not** gating it: 95% CI lower bound (Lo 2002), a STRICT flag for Sharpe >= 0.7, and the R:R diagnostic (win rate >= 0.5 AND payoff >= 1.5). R:R is deliberately NOT ANDed onto the gate - only 1 of the promoted strategies satisfies it, because the winning exit (`breakeven_plus_trail`) manufactures low-win-rate / high-payoff by design (L231).
+
+> **This is NOT the project's canonical PASSING_CRITERIA.** `backtest/config.py` carries 14 criteria + 3 AUTO-FAIL screens (profit factor, Sortino, Calmar, deflated Sharpe >= 0.95, PSR >= 0.95, max drawdown, win rate, win/loss ratio, min_trades = 100, cost-sensitivity ratio, Chow break-point, ADF stationarity). The gate above checks **three** of them: an n-floor, a Sharpe bar, and a multiple-testing correction. Two divergences to hold in mind: (1) the bar here is 0.5, while `config.PASSING_CRITERIA` still specifies `min_sharpe_per_regime` 0.7 / `min_sharpe_overall` 1.0 - config was deliberately NOT edited, since that is a canonical change requiring its own approval; (2) applying even the cheap canonical criteria to the promoted set collapses it - see the gap table below.
+
+**Canonical-criteria gap, measured on the holdout for the promoted cells (B1386):**
+
+| Canonical criterion | Threshold | Promoted cells clearing it |
+|---|---|---|
+| `min_trades_per_regime` | 30 | 22 / 22 |
+| `min_profit_factor_overall` | 1.3 | 22 / 22 |
+| `min_win_loss_ratio` | 1.0 | 22 / 22 |
+| `min_expected_value` | > 0 | 22 / 22 |
+| `min_total_roi` | > 0 | 22 / 22 |
+| `min_trades` (overall) | 100 | 16 / 22 |
+| **`min_win_rate`** | **0.45** | **4 / 22** |
+| **ALL of the above simultaneously** | | **2 / 22** |
+
+> **Read that table before treating this list as validated.** The binding constraint is `min_win_rate` - and it is not noise, it is the same structural tension as L231: the exit that wins selection truncates losers at breakeven and lets winners run, which produces a LOW win rate (0.30-0.46) with a HIGH payoff (3.5-10.3). A 0.45 win-rate floor and a Sharpe/expectancy gate encode incompatible trade shapes. That conflict is an OWNER DECISION, not something to resolve by quietly picking whichever gate flatters the set. Not yet computed at all: deflated Sharpe, PSR, Sortino, Calmar, max drawdown, cost-sensitivity ratio, Chow break-point, ADF.
+
 ## Timeframes (DEC-505 walk-forward)
 
 | Window | Dates | Trading days | Role |

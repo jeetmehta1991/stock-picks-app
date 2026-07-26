@@ -417,6 +417,47 @@ def main():
               "selection decision ever saw, and the **Verdict column is decided by the holdout alone**. "
               "Sharpes are ANNUALIZED, NET of 20bps round-trip cost, winsorized +/-300% (F1+F6, B1377), "
               "and carry a Lo(2002) 95% CI. Deep review: `R5_ANALYSIS_DEEP_REVIEW.md`.\n")
+    md.append("## Verdict criteria - what PASS / DROP / UNEVAL actually mean here\n")
+    md.append(f"Evaluated on the HOLDOUT fold only ({HOLDOUT[1]} -> {HOLDOUT[2]}), on NET winsorized "
+              f"per-trade returns. Sharpe is ANNUALIZED (per-trade x sqrt(252/avg_hold), matching "
+              f"`metrics.py::_sharpe`).\n")
+    md.append(f"| Verdict | Condition | Meaning |\n|---|---|---|\n"
+              f"| **UNEVAL** | holdout n < {MIN_N} | **untestable, NOT refuted** - below the statistical-power floor. Never read as a failure. |\n"
+              f"| **PASS** | n >= {MIN_N} AND annualized Sharpe >= {GATE} AND survives BH-FDR q<{FDR_Q} | cleared the bar and is distinguishable from multiple-testing luck |\n"
+              f"| **PASS-noFDR** | n >= {MIN_N} AND Sharpe >= {GATE}, FDR not survived | cleared the bar but indistinguishable from luck across the family - watchlist, not deploy |\n"
+              f"| **DROP** / **FAIL** | n >= {MIN_N} AND Sharpe < {GATE} | tested and refuted (`FAIL` is the same rule in the native-regime gate) |\n")
+    md.append(f"Reported ALONGSIDE the verdict but **not** gating it: 95% CI lower bound (Lo 2002), a "
+              f"STRICT flag for Sharpe >= {GATE_STRICT}, and the R:R diagnostic (win rate >= {RR_WR} AND "
+              f"payoff >= {RR_PAYOFF}). R:R is deliberately NOT ANDed onto the gate - only 1 of the "
+              f"promoted strategies satisfies it, because the winning exit (`breakeven_plus_trail`) "
+              f"manufactures low-win-rate / high-payoff by design (L231).\n")
+    md.append("> **This is NOT the project's canonical PASSING_CRITERIA.** `backtest/config.py` carries "
+              "14 criteria + 3 AUTO-FAIL screens (profit factor, Sortino, Calmar, deflated Sharpe >= 0.95, "
+              "PSR >= 0.95, max drawdown, win rate, win/loss ratio, min_trades = 100, cost-sensitivity "
+              "ratio, Chow break-point, ADF stationarity). The gate above checks **three** of them: an "
+              "n-floor, a Sharpe bar, and a multiple-testing correction. Two divergences to hold in mind: "
+              f"(1) the bar here is {GATE}, while `config.PASSING_CRITERIA` still specifies "
+              "`min_sharpe_per_regime` 0.7 / `min_sharpe_overall` 1.0 - config was deliberately NOT "
+              "edited, since that is a canonical change requiring its own approval; (2) applying even the "
+              "cheap canonical criteria to the promoted set collapses it - see the gap table below.\n")
+    md.append("**Canonical-criteria gap, measured on the holdout for the promoted cells (B1386):**\n\n"
+              "| Canonical criterion | Threshold | Promoted cells clearing it |\n|---|---|---|\n"
+              "| `min_trades_per_regime` | 30 | 22 / 22 |\n"
+              "| `min_profit_factor_overall` | 1.3 | 22 / 22 |\n"
+              "| `min_win_loss_ratio` | 1.0 | 22 / 22 |\n"
+              "| `min_expected_value` | > 0 | 22 / 22 |\n"
+              "| `min_total_roi` | > 0 | 22 / 22 |\n"
+              "| `min_trades` (overall) | 100 | 16 / 22 |\n"
+              "| **`min_win_rate`** | **0.45** | **4 / 22** |\n"
+              "| **ALL of the above simultaneously** | | **2 / 22** |\n")
+    md.append("> **Read that table before treating this list as validated.** The binding constraint is "
+              "`min_win_rate` - and it is not noise, it is the same structural tension as L231: the exit "
+              "that wins selection truncates losers at breakeven and lets winners run, which produces a "
+              "LOW win rate (0.30-0.46) with a HIGH payoff (3.5-10.3). A 0.45 win-rate floor and a "
+              "Sharpe/expectancy gate encode incompatible trade shapes. That conflict is an OWNER "
+              "DECISION, not something to resolve by quietly picking whichever gate flatters the set. "
+              "Not yet computed at all: deflated Sharpe, PSR, Sortino, Calmar, max drawdown, "
+              "cost-sensitivity ratio, Chow break-point, ADF.\n")
     md.append("## Timeframes (DEC-505 walk-forward)\n")
     md.append(f"| Window | Dates | Trading days | Role |\n|---|---|---|---|\n"
               f"| Warm-up | 2021-05-05 -> {IS_FOLDS[0][1]} | ~250 | indicator burn-in; no trades graded |\n"
