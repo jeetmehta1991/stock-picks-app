@@ -1533,7 +1533,10 @@ def test_bug_33_passing_criteria_emits_tiered_sharpe_thresholds():
     assert "min_sharpe_overall" in PASSING_CRITERIA
     assert "min_sharpe_per_regime" in PASSING_CRITERIA
     assert PASSING_CRITERIA["min_sharpe_overall"] == 1.0
-    assert PASSING_CRITERIA["min_sharpe_per_regime"] == 0.7
+    # B1387 (2026-07-26 owner-approved): per-regime bar 0.7 -> 0.5. The R5 grading that
+    # set 0.5 adds a true holdout fold + BH-FDR that the 0.7 bar never had.
+    # min_sharpe_overall is deliberately UNCHANGED at 1.0.
+    assert PASSING_CRITERIA["min_sharpe_per_regime"] == 0.5
     # Per-regime threshold MUST be <= overall (smaller samples = lower bar)
     assert PASSING_CRITERIA["min_sharpe_per_regime"] <= PASSING_CRITERIA["min_sharpe_overall"]
 
@@ -2771,7 +2774,7 @@ def test_bug_036_038_046_048_066_067_086_087_088_089_107_184_185_186_187_188_189
     """Batch 153 2026-05-13: 26 BUGs closed as RESOLVED-DECIDED (false-positives + phase-scope deferrals).
 
     BUG-036: STRATEGY_REGIME_BLOCKLIST is Phase 1A regime-gating mechanism; smooth weighting = Phase 1B DEC-422.
-    BUG-038: min_sharpe gates exist via BUG-33 (min_sharpe_overall=1.0, min_sharpe_per_regime=0.7).
+    BUG-038: min_sharpe gates exist via BUG-33 (min_sharpe_overall=1.0, min_sharpe_per_regime=0.5 post-B1387).
     BUG-046: Phase 1A uses cached market_cap as proxy; historical PIT market_cap = Phase 1B DEC-257.
     BUG-048: DEC-499 18-classifier includes Volatility/EM; per-sector criteria = Phase 1B DEC-422 cube.
     BUG-066: PROJECT_PLAN now has 1 "60 strategies" ref in correct Layer-1 context; CANONICAL_FACTS F-002 authoritative.
@@ -2816,7 +2819,11 @@ def test_bug_036_038_046_048_066_067_086_087_088_089_107_184_185_186_187_188_189
     assert "min_sharpe_overall" in PASSING_CRITERIA, "min_sharpe_overall missing from PASSING_CRITERIA"
     assert "min_sharpe_per_regime" in PASSING_CRITERIA, "min_sharpe_per_regime missing from PASSING_CRITERIA"
     assert PASSING_CRITERIA["min_sharpe_overall"] == 1.0, "min_sharpe_overall should be 1.0"
-    assert PASSING_CRITERIA["min_sharpe_per_regime"] == 0.7, "min_sharpe_per_regime should be 0.7"
+    assert PASSING_CRITERIA["min_sharpe_per_regime"] == 0.5, "min_sharpe_per_regime should be 0.5 post-B1387"
+    # B1387: win rate is a DIAGNOSTIC, not a gate (owner ruling "b sharpe"). Pinned so that
+    # silently re-promoting it to a hard gate fails loudly - profit_factor carries the
+    # win-rate x payoff tradeoff (PF = payoff x W/(1-W)) and stays gated.
+    assert PASSING_CRITERIA["win_rate_gate"] is False, "win_rate must remain a diagnostic (B1387)"
 
     # BUG-036: STRATEGY_REGIME_BLOCKLIST exists in config
     from backtest.config import STRATEGY_REGIME_BLOCKLIST

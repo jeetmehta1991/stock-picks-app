@@ -3389,3 +3389,35 @@ and ADF have not been computed for the promoted set at all.
 **Rule:** whenever a screening gate is narrower than the project's canonical criteria, say so
 in the artifact and quantify the gap. A verdict word ("PASS") inherits whatever authority the
 reader assumes - the artifact must state which gate produced it.
+
+### L238 - A canonical criterion can be mis-specified for the UNIT it is applied to; check reachability and modelling fit before reporting a 0/N verdict (B1387)
+
+Owner approved computing the full canonical `PASSING_CRITERIA` on the 22 promoted R5 cells
+before 1B-alpha. First run returned **0 of 22 clearing all 8 gates**. That number was NOT
+reported, because two of the eight are mis-specified for a cube CELL:
+
+1. **`max_drawdown >= -25%` is a PORTFOLIO criterion.** `metrics.py::_max_drawdown` compounds
+   `(1+pnl/100).cumprod()` - one position reinvested serially - which is correct for a
+   portfolio equity curve. But the R5 cube is ISOLATION-based by design: every signal opens
+   its own fixed-notional $10,000 trade, trades overlap in time, nothing compounds, and there
+   is no unified equity curve. The artifact is measurable: **corr(trade count, max drawdown)
+   = -0.63**, i.e. a cell scores worse purely for having MORE trades. 1 of 22 "cleared" it.
+2. **`min_deflated_sharpe >= 0.95` is unreachable by construction.** The implementation returns
+   `deflated = sharpe * sqrt(1 - (excess_kurt/4)*sharpe^2)`; the radicand is <= 1, therefore
+   **DSR <= Sharpe always** (verified empirically: 0 of 22 cells had DSR > Sharpe). So the gate
+   demands Sharpe >= 0.95, which directly contradicts the owner-approved 0.5 bar. The 0.95
+   threshold reads as if written for a PROBABILITY (as `min_psr` is) while this implementation
+   returns a scaled Sharpe. 17 of 22 also return None on high kurtosis. 0 of 22 cleared it.
+
+Excluding those two, **3 of 22** clear all six well-specified gates
+(`xs_momentum_with_smart_money_long`, `smc_breaker_block_long`,
+`institutional_persistence_breakout_long`); a 4th clears everything but `min_trades`=100.
+Binding constraints are `min_calmar` (8/22) and `min_psr` (14/22).
+
+**Rules:** (a) before reporting an N/N or 0/N gate result, verify each gate is REACHABLE given
+the other thresholds in force - a gate that no configuration can satisfy is a bug, not a
+finding; (b) verify each gate's modelling UNIT matches the object being graded - portfolio
+metrics (drawdown, exposure, correlation) are not defined on an isolated, non-compounding
+cell; (c) exclusions must be ticketed and justified in the artifact, never silently dropped,
+or "we removed the gates that failed us" becomes indistinguishable from honest correction.
+Tickets: S6-B1387-MDD-PORTFOLIO-VS-CELL, S6-B1387-DSR-THRESHOLD-SEMANTICS.

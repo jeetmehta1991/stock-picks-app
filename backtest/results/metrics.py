@@ -2402,7 +2402,9 @@ def compute_strategy_metrics(df: pd.DataFrame, strategy: str) -> dict:
 
         # Evaluate all 9 criteria (same sector-adjusted thresholds as overall)
         r_passes = {
-            "win_rate":       r_wr >= pc["min_win_rate"],
+            # B1387: win rate demoted to diagnostic (owner ruling "b sharpe"); the VALUE
+            # is still computed + reported, profit_factor carries the WR x payoff tradeoff.
+            "win_rate":       (not pc.get("win_rate_gate", True)) or r_wr >= pc["min_win_rate"],
             "profit_factor":  r_pf >= pc["min_profit_factor"],
             "expected_value": r_ev > pc["min_expected_value"],
             "win_loss_ratio": r_wl_r >= pc["min_win_loss_ratio"],
@@ -2412,8 +2414,10 @@ def compute_strategy_metrics(df: pd.DataFrame, strategy: str) -> dict:
             "smart_money_lift":  True,   # SM lift computed at strategy level, not per-regime
             "macro_correlation": True,   # macro corr computed at strategy level, not per-regime
         }
-        # Also require CI lower bound above 40% to avoid purely statistical noise
-        if r_ci_lo < 0.40:
+        # Also require CI lower bound above 40% to avoid purely statistical noise.
+        # B1387: this is a WIN-RATE CI gate, so it follows win_rate_gate - otherwise the
+        # demoted gate would come back in through the side door.
+        if pc.get("win_rate_gate", True) and r_ci_lo < 0.40:
             r_passes["win_rate"] = False
 
         verdict = "PASS" if all(r_passes.values()) else "FAIL"
@@ -2516,7 +2520,8 @@ def compute_strategy_metrics(df: pd.DataFrame, strategy: str) -> dict:
         except (TypeError, ValueError, ZeroDivisionError):
             calmar_val = None
     passes = {
-        "win_rate":           win_rate >= pc["min_win_rate"],
+        # B1387: diagnostic, not a gate (see config PASSING_CRITERIA win_rate_gate).
+        "win_rate":           (not pc.get("win_rate_gate", True)) or win_rate >= pc["min_win_rate"],
         "profit_factor":      pf >= pc["min_profit_factor"],
         "expected_value":     ev > pc["min_expected_value"],
         "win_loss_ratio":     wl_r >= pc["min_win_loss_ratio"],

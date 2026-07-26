@@ -21,20 +21,28 @@ Reported ALONGSIDE the verdict but **not** gating it: 95% CI lower bound (Lo 200
 
 > **This is NOT the project's canonical PASSING_CRITERIA.** `backtest/config.py` carries 14 criteria + 3 AUTO-FAIL screens (profit factor, Sortino, Calmar, deflated Sharpe >= 0.95, PSR >= 0.95, max drawdown, win rate, win/loss ratio, min_trades = 100, cost-sensitivity ratio, Chow break-point, ADF stationarity). The gate above checks **three** of them: an n-floor, a Sharpe bar, and a multiple-testing correction. Two divergences to hold in mind: (1) the bar here is 0.5, while `config.PASSING_CRITERIA` still specifies `min_sharpe_per_regime` 0.7 / `min_sharpe_overall` 1.0 - config was deliberately NOT edited, since that is a canonical change requiring its own approval; (2) applying even the cheap canonical criteria to the promoted set collapses it - see the gap table below.
 
-**Canonical-criteria gap, measured on the holdout for the promoted cells (B1386):**
+**FULL canonical criteria, measured on the holdout for the promoted cells** (B1387, `scripts/canonical_criteria_check.py`, reusing the `metrics.py` implementations rather than reimplementing them):
 
 | Canonical criterion | Threshold | Promoted cells clearing it |
 |---|---|---|
-| `min_trades_per_regime` | 30 | 22 / 22 |
+| `min_sharpe_per_regime` | 0.5 | 22 / 22 |
 | `min_profit_factor_overall` | 1.3 | 22 / 22 |
-| `min_win_loss_ratio` | 1.0 | 22 / 22 |
-| `min_expected_value` | > 0 | 22 / 22 |
-| `min_total_roi` | > 0 | 22 / 22 |
+| `min_sortino_per_regime` | 0.7 | 22 / 22 |
+| `min_psr` | 0.95 | 14 / 22 |
 | `min_trades` (overall) | 100 | 16 / 22 |
-| **`min_win_rate`** | **0.45** | **4 / 22** |
-| **ALL of the above simultaneously** | | **2 / 22** |
+| `min_calmar` | 0.5 | 8 / 22 |
+| **ALL SIX simultaneously** | | **3 / 22** |
+| ~~`max_drawdown`~~ | ~~-25%~~ | **MIS-APPLIED to a cube cell - excluded** |
+| ~~`min_deflated_sharpe`~~ | ~~0.95~~ | **UNREACHABLE BY CONSTRUCTION - excluded** |
 
-> **Read that table before treating this list as validated.** The binding constraint is `min_win_rate` - and it is not noise, it is the same structural tension as L231: the exit that wins selection truncates losers at breakeven and lets winners run, which produces a LOW win rate (0.30-0.46) with a HIGH payoff (3.5-10.3). A 0.45 win-rate floor and a Sharpe/expectancy gate encode incompatible trade shapes. That conflict is an OWNER DECISION, not something to resolve by quietly picking whichever gate flatters the set. Not yet computed at all: deflated Sharpe, PSR, Sortino, Calmar, max drawdown, cost-sensitivity ratio, Chow break-point, ADF.
+**The 3 clearing every well-specified canonical gate:** `xs_momentum_with_smart_money_long` (Sharpe 0.95, n=162), `smc_breaker_block_long` (0.69, n=356), `institutional_persistence_breakout_long` (0.68, n=136). A 4th, `smc_inverse_fvg`, clears everything except `min_trades`=100. Binding constraints among the valid gates: `min_calmar` (8/22) and `min_psr` (14/22).
+
+> **Two canonical gates are excluded because they are mis-specified for a cube CELL - not because they were inconvenient.** Both are ticketed, not silently dropped.
+>
+> - **`max_drawdown` >= -25% is a PORTFOLIO criterion.** `metrics.py::_max_drawdown` compounds `(1+pnl/100).cumprod()` - one position reinvested serially. But this cube is ISOLATION-based: every signal opens its own fixed-notional $10,000 trade, trades overlap in time, nothing compounds, and no unified equity curve exists. The artifact is visible in the data: **corr(trade count, max drawdown) = -0.63**, so a cell scores worse purely for having MORE trades. Ticket `S6-B1387-MDD-PORTFOLIO-VS-CELL`.
+> - **`min_deflated_sharpe` >= 0.95 is unreachable by construction.** The implementation returns `deflated = sharpe * sqrt(1 - (excess_kurt/4)*sharpe^2)`; that radicand is <= 1, so **DSR <= Sharpe always** (verified: 0 of 22 cells have DSR > Sharpe). Requiring DSR >= 0.95 therefore requires Sharpe >= 0.95, contradicting the owner-approved 0.5 bar. The 0.95 threshold reads as though written for a PROBABILITY (as `min_psr` is) while this implementation returns a scaled Sharpe; 17 of 22 also return None on high kurtosis. Ticket `S6-B1387-DSR-THRESHOLD-SEMANTICS`.
+>
+> Still not GATED for the promoted set: cost-sensitivity ratio, Chow break-point, ADF (the 3 AUTO-FAIL screens). `canonical_criteria_check.py` emits their raw values into `output_audit/b1387_canonical_criteria.json`.
 
 ## Timeframes (DEC-505 walk-forward)
 

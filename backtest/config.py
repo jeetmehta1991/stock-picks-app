@@ -537,6 +537,18 @@ PASSING_CRITERIA = {
     #       Bonferroni demands DSR not raw Sharpe. Already computed in
     #       backtest_results.csv `deflated_sharpe` column - just wasn't gated.
     "min_win_rate":            0.45,   # was 0.55; baseline per-regime
+    # B1387 (2026-07-26 owner ruling "b sharpe" on the win-rate-vs-Sharpe conflict):
+    # win rate is DEMOTED from a hard gate to a reported diagnostic. Measured cause:
+    # the exit that wins selection (breakeven_plus_trail) truncates losers at
+    # breakeven and lets winners run, MANUFACTURING a low win rate (0.30-0.46) with a
+    # high payoff (3.5-10.3) - only 4 of 22 promoted cells cleared 0.45 while 22 of 22
+    # cleared profit factor. A standalone win-rate floor and a Sharpe/expectancy gate
+    # encode incompatible trade shapes (L231/L237). Win rate is not a validity
+    # criterion on its own; PROFIT FACTOR already encodes the win-rate x payoff
+    # tradeoff (PF = payoff x W/(1-W)) and remains gated at min_profit_factor.
+    # Follows the Batch 186 precedent for smart_money_lift / macro_correlation:
+    # flag False => the gate auto-passes, the VALUE is still computed and reported.
+    "win_rate_gate":           False,  # B1387: diagnostic, not a gate
     "min_profit_factor":       1.2,    # unchanged per-regime
     "min_expected_value":      0.0,    # (win_rate x avg_win) + (loss_rate x avg_loss) > 0
     "min_win_loss_ratio":      1.0,    # avg win / avg loss > 1.0
@@ -563,7 +575,13 @@ PASSING_CRITERIA = {
     # industry-canonical "decent" Sharpe; 2.0 = "great". 0.7 per-regime is
     # achievable, not punitive.
     "min_sharpe_overall":      1.0,    # BUG-33: overall PASS requires Sharpe >= 1.0
-    "min_sharpe_per_regime":   0.7,    # BUG-33: per-regime PASS requires Sharpe >= 0.7
+    # B1387 (2026-07-26 owner-approved "reconcile config to the approved 0.5"):
+    # per-regime bar 0.7 -> 0.5. Rationale: the R5 grading that set 0.5 adds TWO
+    # filters the 0.7 bar never had - a true holdout fold (no selection ever saw it)
+    # and BH-FDR multiple-testing control - so 0.5-with-holdout-and-FDR is stronger
+    # evidence than 0.7 was in-sample. NOTE: min_sharpe_overall is UNCHANGED at 1.0;
+    # only the per-regime tier was in scope of the approval.
+    "min_sharpe_per_regime":   0.5,    # B1387: was 0.7 (BUG-33)
     # Batch 221 (validation 2026-05-18 owner-approved research review):
     # Add Sortino + Calmar + per-regime>=2 gates per Section B.
     # Sortino penalizes only downside vol; complements Sharpe by catching
