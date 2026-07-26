@@ -25,6 +25,7 @@ import re
 import sys
 from datetime import date
 from pathlib import Path
+import numpy as np
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -101,6 +102,23 @@ def split_compact(compact: str, direction) -> str:
 ASYMMETRIC_SOURCE_TOKENS = ("smart_money", "institutional", "13f", "insider", "congress",
                             "lobby", "buyback", "activist", "13d")
 
+# L233 (B1381): name-transform matching MISSES mirrors that exist under a different name.
+# `pead_long_high_yoy_growth_only`'s mirror is `pead_short_negative_yoy_growth` (they were
+# restored as an explicit PAIR in B709) and no string transform finds it. Curated map first,
+# transforms second - otherwise the generator reports MISSING and we wire a DUPLICATE.
+CURATED_MIRRORS = {
+    "pead_long_high_yoy_growth_only": "pead_short_negative_yoy_growth",
+    "pead_long": "pead_short",
+    "xs_momentum_top_decile": "xs_momentum_bottom_decile_short",
+}
+
+# A second principled exception, distinct from the long-only-data-source one: a CALENDAR /
+# SEASONAL anomaly is one-directional by construction. Turn-of-the-month is "returns cluster
+# positively around the month boundary" (Ariel 1987, Lakonishok-Smidt 1988) - the inverse is
+# not "returns cluster negatively", it is merely "no effect", so a mechanical short mirror
+# has no thesis behind it.
+ANOMALY_ASYMMETRIC = {"totm_long", "halloween_seasonal_long"}
+
 
 def mirror_status(strat: str, ro: dict, roster: dict) -> tuple:
     """Resolve the SHORT mirror of a LONG strategy. Returns (status, mirror_name, note)."""
@@ -109,11 +127,19 @@ def mirror_status(strat: str, ro: dict, roster: dict) -> tuple:
     if str(ro.get("direction", "")).strip().lower() == "dual":
         return ("REGISTERED-DUAL", strat + " (short leg)",
                 "already trades both directions; the short leg ships with it")
+    cur = CURATED_MIRRORS.get(strat)
+    if cur and cur in roster:
+        return ("REGISTERED-STANDALONE", cur,
+                "symmetric short already registered (curated pair - no name transform finds it)")
     for cand in (strat.replace("_long", "_short"), strat + "_short",
                  strat.replace("_bullish", "_bearish"), strat.replace("_bottom", "_top"),
                  strat.replace("_oversold", "_overbought"), strat.replace("_up", "_down")):
         if cand != strat and cand in roster:
             return ("REGISTERED-STANDALONE", cand, "symmetric short already registered")
+    if strat in ANOMALY_ASYMMETRIC:
+        return ("NOT-DEFENSIBLE-ANOMALY", "-",
+                "one-directional calendar/seasonal anomaly - the inverse of 'returns cluster "
+                "positively' is 'no effect', not 'returns cluster negatively'; no short thesis")
     if hits:
         return ("NOT-DEFENSIBLE", "-",
                 f"long-only data source ({', '.join(hits)}) - B611 precedent; "
@@ -181,7 +207,7 @@ def main():
 
     print("[INFO] reading cube ...")
     df = pd.read_csv(CUBE / "trade_exit_detail.csv",
-                     usecols=["strategy", "direction", "exit_method", "entry_date", "pnl_pct", "hold_days"],
+                     usecols=["strategy", "direction", "exit_method", "entry_date", "ticker", "pnl_pct", "hold_days"],
                      low_memory=False)
     df["entry_date"] = pd.to_datetime(df["entry_date"]).dt.date
     # F6 winsorize + F1 net-of-cost (B1377): every metric below is on NET, de-outliered pnl.
@@ -235,6 +261,66 @@ def main():
 
     n_ev = len(ev)
     passed = [r for r in rows if r["verdict"] == "PASS"]
+
+    # ---- REDUNDANCY (B1381) -------------------------------------------------------
+    # 13 of the promoted rows are 13F/smart-money variants, so "29 strategies" overstates
+    # breadth. Identity is measured by JACCARD on the (ticker, entry_date) trade set -
+    # NOT overlap/min(), which measures CO-OCCURRENCE (two different strategies firing on
+    # the same liquid name the same day is normal) and, chained transitively, absurdly
+    # merges turn-of-the-month with SMC order blocks. L234.
+    def _redundancy(prows):
+        sets, streams = {}, {}
+        for r in prows:
+            g = df[(df.strategy == r["strategy"]) & (df.direction == r["direction"])
+                   & (df.exit_method == r["exit"])]
+            sets[r["strategy"]] = set(zip(g.ticker, g.entry_date))
+            streams[r["strategy"]] = g.groupby("entry_date").pnl_pct.mean()
+        nm = [r["strategy"] for r in prows]
+        par = {n: n for n in nm}
+
+        def find(x):
+            while par[x] != x:
+                par[x] = par[par[x]]
+                x = par[x]
+            return x
+        jac = []
+        for i, a in enumerate(nm):
+            for b in nm[i + 1:]:
+                A, B = sets[a], sets[b]
+                if A and B:
+                    v = len(A & B) / len(A | B)
+                    if v >= 0.70:
+                        jac.append((round(v, 3), a, b))
+                        ra, rb = find(a), find(b)
+                        if ra != rb:
+                            par[ra] = rb
+        cl = {}
+        for n in nm:
+            cl.setdefault(find(n), []).append(n)
+        best = {r["strategy"]: r["holdout"]["sharpe"] for r in prows}
+        keep, dup = [], {}
+        for _, mem in cl.items():
+            ms = sorted(mem, key=lambda s: -best[s])
+            keep.append(ms[0])
+            for m in ms[1:]:
+                dup[m] = ms[0]
+        piv = pd.DataFrame(streams)
+
+        def enb(cols):
+            if len(cols) < 2:
+                return float(len(cols))
+            cc = piv[cols].corr(min_periods=60).fillna(0).values.copy()
+            np.fill_diagonal(cc, 1.0)
+            e = np.linalg.eigvalsh(cc)
+            e = e[e > 1e-9]
+            return float((e.sum() ** 2) / (e ** 2).sum())
+        return sorted(jac, reverse=True), sorted(keep), dup, enb(nm), enb(sorted(keep))
+
+    jac_pairs, keep_list, dup_of, enb_before, enb_after = _redundancy(passed)
+    for r in rows:
+        r["redundant_of"] = dup_of.get(r["strategy"]) if r in passed else None
+    print(f"[REDUNDANCY] {len(passed)} promoted -> {len(keep_list)} after de-dup "
+          f"({len(dup_of)} redundant) | effective bets {enb_before:.1f} -> {enb_after:.1f}")
     pass_nofdr = [r for r in rows if r["verdict"] == "PASS-noFDR"]
     dropped = [r for r in rows if r["verdict"] == "DROP"]
     uneval = [r for r in rows if r["verdict"] == "UNEVAL"]
@@ -312,6 +398,15 @@ def main():
               f"| DROP (holdout Sharpe < 0.5 - selected-in-sample, failed live-forward) | {len(dropped)} | {S(dropped)} |\n"
               f"| UNEVAL (holdout n<30 - no honest verdict) | {len(uneval)} | {S(uneval)} |\n"
               f"| TOTAL graded rows (every strategy x direction in the cube) | {len(rows)} | {S(rows)} |\n")
+    md.append(f"**Breadth after de-duplication (B1381):** the {len(passed)} promoted strategies contain "
+              f"{len(dup_of)} near-duplicates (Jaccard >= 0.70 on the (ticker, entry_date) trade set, all "
+              f"inside the 13F/smart-money family) -> **{len(keep_list)} distinct strategies**. Their daily "
+              f"return streams give an **effective number of bets of {enb_after:.1f}** "
+              f"(vs {enb_before:.1f} before de-dup): this roster is far less diversified than its count "
+              f"suggests, and position sizing should be set against the effective number, not the headline.\n")
+    md.append("| Kept | Redundant duplicates folded into it |\n|---|---|\n" + "\n".join(
+        f"| `{k}` | " + (", ".join(f"`{m}`" for m, r0 in sorted(dup_of.items()) if r0 == k) or "-") + " |"
+        for k in keep_list if any(r0 == k for r0 in dup_of.values())) + "\n")
     pool_ev = [r for r in ev if r["in_loose_pool"]]
     out_ev = [r for r in ev if not r["in_loose_pool"]]
     hit = lambda rs: (sum(1 for r in rs if r["holdout"]["sharpe"] >= GATE) / len(rs)) if rs else 0.0  # noqa: E731

@@ -16,6 +16,13 @@
 | UNEVAL (holdout n<30 - no honest verdict) | 40 | 37 |
 | TOTAL graded rows (every strategy x direction in the cube) | 229 | 178 |
 
+**Breadth after de-duplication (B1381):** the 29 promoted strategies contain 7 near-duplicates (Jaccard >= 0.70 on the (ticker, entry_date) trade set, all inside the 13F/smart-money family) -> **22 distinct strategies**. Their daily return streams give an **effective number of bets of 7.2** (vs 4.9 before de-dup): this roster is far less diversified than its count suggests, and position sizing should be set against the effective number, not the headline.
+
+| Kept | Redundant duplicates folded into it |
+|---|---|
+| `institutional_committed_growth_long` | `institutional_cluster_long`, `institutional_insider_combo_long`, `institutional_multi_quarter_persistence_long`, `institutional_persistent_holders_long`, `institutional_strong_conviction_long`, `rsi_oversold_with_smart_money_long` |
+| `institutional_persistence_breakout_long` | `institutional_breakout_confirmation_long` |
+
 **Does the old screen have predictive power?** Holdout hit-rate (Sharpe >= 0.7) is **36.5%** for rows the pre-holdout LOOSE screen selected (74 rows) vs **13.9%** for rows it rejected (115 rows). The screen carries real but modest signal - it roughly doubles the hit rate; it does not identify winners on its own.
 
 Of the 29 PASS rows, **29** also have a 95% CI lower bound above 0 (F2: the rest are point-estimate passes whose CI still straddles 0 at this n).
@@ -46,11 +53,11 @@ Of the 29 PASS rows, **29** also have a 95% CI lower bound above 0 (F2: the rest
 | Status | Count | Meaning |
 |---|---|---|
 | REGISTERED-DUAL | 10 | strategy already trades both legs - short ships automatically |
-| REGISTERED-STANDALONE | 1 | a symmetric short strategy already exists in the roster |
-| MISSING-BUILDABLE | 5 | no mirror registered -> Class 7 NEW_STRATEGY to wire |
+| REGISTERED-STANDALONE | 2 | a symmetric short strategy already exists in the roster |
+| MISSING-BUILDABLE | 3 | no mirror registered -> Class 7 NEW_STRATEGY to wire |
 | NOT-DEFENSIBLE | 13 | long-only DATA SOURCE (13F/insider/congress/buyback) - B611 precedent |
 
-> **Three warnings the directive should be read against.** (1) *Economic asymmetry*: equities drift up, shorts pay borrow and carry unbounded squeeze risk, so a structurally symmetric short is NOT expected to earn its long's return - it must be sized and judged separately. (2) *No forward evidence*: **zero** short rows clear the holdout in this cube (the window holds ~5 downtrend months in 48), so mirrors ship UNVALIDATED-BY-CONSTRUCTION and should be tagged EXPLORATORY until a bear-inclusive window tests them. (3) *Worse than unvalidated for some*: **11 of the mirrors already exist in this cube and their own holdout evidence is NEGATIVE** (see the 'Mirror's OWN holdout evidence' column) - adding those is a deliberate override of measured evidence on the argument that the window under-samples bear tape, not an absence of data. See L229.
+> **Three warnings the directive should be read against.** (1) *Economic asymmetry*: equities drift up, shorts pay borrow and carry unbounded squeeze risk, so a structurally symmetric short is NOT expected to earn its long's return - it must be sized and judged separately. (2) *No forward evidence*: **zero** short rows clear the holdout in this cube (the window holds ~5 downtrend months in 48), so mirrors ship UNVALIDATED-BY-CONSTRUCTION and should be tagged EXPLORATORY until a bear-inclusive window tests them. (3) *Worse than unvalidated for some*: **12 of the mirrors already exist in this cube and their own holdout evidence is NEGATIVE** (see the 'Mirror's OWN holdout evidence' column) - adding those is a deliberate override of measured evidence on the argument that the window under-samples bear tape, not an absence of data. See L229.
 
 | Promoted LONG | Mirror status | Short mirror | Mirror's OWN holdout evidence | Note |
 |---|---|---|---|---|
@@ -72,7 +79,7 @@ Of the 29 PASS rows, **29** also have a 95% CI lower bound above 0 (F2: the rest
 | `macd_fast_crossover` | **REGISTERED-DUAL** | `macd_fast_crossover (short leg)` | -0.201 (n=589) -> **DROP** | already trades both directions; the short leg ships with it |
 | `mfi_oversold_with_smart_money_long` | **NOT-DEFENSIBLE** | `-` | - | long-only data source (smart_money) - B611 precedent; a mechanical inverse would be economically false |
 | `news_sentiment_long` | **MISSING-BUILDABLE** | `-` | - | no short mirror registered -> Class 7 NEW candidate |
-| `pead_long_high_yoy_growth_only` | **MISSING-BUILDABLE** | `-` | - | no short mirror registered -> Class 7 NEW candidate |
+| `pead_long_high_yoy_growth_only` | **REGISTERED-STANDALONE** | `pead_short_negative_yoy_growth` | -0.847 (n=496) -> **DROP** | symmetric short already registered (curated pair - no name transform finds it) |
 | `poc_magnet_long` | **MISSING-BUILDABLE** | `-` | - | no short mirror registered -> Class 7 NEW candidate |
 | `r1_break_retest` | **REGISTERED-DUAL** | `r1_break_retest (short leg)` | -0.266 (n=398) -> **DROP** | already trades both directions; the short leg ships with it |
 | `rsi_oversold` | **REGISTERED-DUAL** | `rsi_oversold (short leg)` | 0.079 (n=169) -> **DROP** | already trades both directions; the short leg ships with it |
@@ -80,7 +87,7 @@ Of the 29 PASS rows, **29** also have a 95% CI lower bound above 0 (F2: the rest
 | `rsi_volume_200ema` | **REGISTERED-DUAL** | `rsi_volume_200ema (short leg)` | -0.149 (n=74) -> **DROP** | already trades both directions; the short leg ships with it |
 | `smc_breaker_block_long` | **REGISTERED-STANDALONE** | `smc_breaker_block_short` | -0.7 (n=427) -> **DROP** | symmetric short already registered |
 | `smc_inverse_fvg` | **REGISTERED-DUAL** | `smc_inverse_fvg (short leg)` | -0.234 (n=139) -> **DROP** | already trades both directions; the short leg ships with it |
-| `totm_long` | **MISSING-BUILDABLE** | `-` | - | no short mirror registered -> Class 7 NEW candidate |
+| `totm_long` | **NOT-DEFENSIBLE-ANOMALY** | `-` | - | one-directional calendar/seasonal anomaly - the inverse of 'returns cluster positively' is 'no effect', not 'returns cluster negatively'; no short thesis |
 | `xs_combined_momentum_low_ivol` | **MISSING-BUILDABLE** | `-` | - | no short mirror registered -> Class 7 NEW candidate |
 | `xs_momentum_with_smart_money_long` | **NOT-DEFENSIBLE** | `-` | - | long-only data source (smart_money) - B611 precedent; a mechanical inverse would be economically false |
 

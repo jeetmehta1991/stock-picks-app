@@ -3237,3 +3237,45 @@ changes, and re-deciding the exit mid-trade would thrash during the whipsaw clus
 (2023 had 9 changes, 2025 had 7); (2) any per-regime statistic in this window rests on
 bull data - 70% of days - so "works in bear" claims here are built on 271 days, and
 "works in crisis" claims have no data at all.
+
+### L233 - Name-transform mirror matching silently reports MISSING for pairs registered under a different name (B1381)
+
+The B1380 mirror resolver found a strategy's short mirror by string transforms
+(`_long`->`_short`, `+_short`, `_bullish`->`_bearish`, ...). It reported 5 promoted longs
+as MISSING-BUILDABLE. Verifying each against the actual 219-row roster before wiring:
+- `pead_long_high_yoy_growth_only` -> **`pead_short_negative_yoy_growth` ALREADY EXISTS**
+  (B709 restored the two as an explicit pair); no string transform can find it. Wiring the
+  "missing" mirror would have created a duplicate strategy.
+- `totm_long` -> a turn-of-the-month short is not a mirror at all (see L234b below).
+True count was 3, not 5. **Rule:** a mechanical name-matcher may only report a mirror as
+MISSING after a CURATED-PAIR lookup and a semantic scan of the same category; never wire a
+Class 7 NEW strategy off a transform-miss alone. Curated map now lives in
+`build_passed_strategy_exit_list.py::CURATED_MIRRORS`.
+
+**L233b - a one-directional anomaly has no mirror.** Turn-of-the-month (Ariel 1987,
+Lakonishok-Smidt 1988) says returns cluster POSITIVELY around the month boundary; the
+inverse of that claim is "no effect", not "returns cluster negatively". Same for Halloween
+seasonality. A mechanical short of a calendar anomaly has no thesis behind it - this is a
+SECOND principled exception to the mirror-by-default directive, distinct from the long-only
+data-source exception (`ANOMALY_ASYMMETRIC` set).
+
+### L234 - Set overlap / min(|A|,|B|) measures CO-OCCURRENCE, not strategy duplication (B1381)
+
+Measuring redundancy among 29 promoted strategies with `|A and B| / min(|A|,|B|)` on the
+(ticker, entry_date) trade set, then merging transitively at 0.80, collapsed **20 of 29
+into a single "cluster"** - including `totm_long` (turn-of-the-month) with
+`rsi_oversold_with_smart_money_long` and `smc_inverse_fvg` (order blocks). Those are
+unrelated strategies. Two errors compounded:
+1. **Wrong metric.** Different strategies firing on the same liquid ticker on the same day
+   is normal co-occurrence, not duplication. min() in the denominator also scores any small
+   set that happens to sit inside a large one as ~100%.
+2. **Transitive chaining.** At a 0.80 threshold, A~B and B~C chains A to C even when A and C
+   share nothing - one hub strategy drags in the whole roster.
+**Fix:** JACCARD (`|A and B| / |A or B|`, size-sensitive) for identity, and eigenvalue
+dispersion of the daily-return correlation matrix for the portfolio question. Correctly
+measured: **13 redundant pairs, all inside the 13F/smart-money family; 29 -> 22 distinct
+strategies; effective number of bets 4.9 -> 7.2**. The real finding survived - the roster is
+far less diversified than its count - but the first number was an artifact and would have
+been reported as fact had it not been sanity-checked against strategy semantics.
+**Rule:** before reporting a clustering result, check that the members are semantically
+plausible cluster-mates; a cluster that merges unrelated strategies indicts the metric.
