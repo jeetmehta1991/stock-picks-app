@@ -3307,3 +3307,43 @@ and prose that deliberately QUOTES bad phrasings (CANONICAL_FACTS' own "Not acce
 list, and "every doc independently states '6 agents', '60 strategies'"). None was a real
 stale claim, while the three REAL ones above were not flagged at all - the detector inverts
 signal and noise. Ticket: S6-B1382-DRIFT-REGEX-FALSE-POSITIVES.
+
+### L236 - Grade a strategy in the regime it is BUILT FOR; a pooled window silently indicts direction-conditional strategies (B1385)
+
+Owner correction 2026-07-26: "our gates do not test for success of short strategies in bear
+regimes and success of long strategies in bull regimes specifically." Correct, and it was a
+real defect in the B1378-B1384 grading, which pooled the whole holdout year.
+
+**Measured composition of the windows** (the reason it matters):
+| Window | bull | bear |
+|---|---|---|
+| IS pooled (751 trading days) | 481 (64%) | 259 (34%) |
+| **HOLDOUT (251 days)** | **221 (88%)** | **12 (5%)** |
+A pooled holdout therefore graded every SHORT strategy on a tape that was 88% the regime it
+is designed to lose in. "Zero shorts pass" was substantially a property of the GATE and the
+WINDOW, not a measured refutation of the strategies. This also contradicts the repo's own
+canonical design - PASSING_CRITERIA already carries a PER-REGIME verdict (criterion 11,
+"a strategy valid in crisis but not bull is deployed only during crisis - this is
+intentional") - so the pooled gate had quietly dropped a rule the project already had.
+
+**Fix (`scripts/regime_conditional_gate.py`):** grade each row in its native regime,
+PRE-REGISTERED BY DIRECTION (long -> bull entries, short -> bear entries) so it stays one
+test per row instead of a search over regimes that would need its own correction. The exit
+is picked on IS native-regime data too.
+
+**But fixing the gate did not rescue the shorts, and the reason is the useful part:**
+1. **77 of 88 short rows come back UNEVAL out-of-sample** - not failed, *untestable*: 12 bear
+   days yields <30 bear-regime trades per strategy. No gate design extracts a verdict from
+   tape that isn't in the window.
+2. In-sample, where bear data IS ample (259 days, ~30k short-in-bear trades), only **2 of 88**
+   shorts clear 0.5 + BH-FDR. Regime-conditioning explains part of the shortfall, not all.
+3. The bear-conditioned test is itself adverse here: per L229 `regime_at_entry == bear` is
+   where LONGS earned most and shorts lost worst, because the classifier flags "bear" at
+   high-vol/below-200EMA moments that were local bottoms in this window. "Short entered when
+   the label said bear" is nearer to *shorting the bottom* than *shorting a downtrend*.
+
+**Rules:** (a) any gate applied to a direction-conditional or regime-conditional strategy
+must be evaluated on that strategy's native regime, pre-registered, never pooled;
+(b) distinguish UNEVAL (untestable - no data) from FAIL (tested and refuted) in every
+report - collapsing them manufactures false refutations; (c) before concluding a class of
+strategies "does not work", check the regime composition of the window that judged it.

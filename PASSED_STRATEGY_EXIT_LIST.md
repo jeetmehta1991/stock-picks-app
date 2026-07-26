@@ -6,6 +6,28 @@
 
 > **This list is graded on a TRUE HOLDOUT (B1378).** The exit is picked using ONLY 2022-05 -> 2025-05 (IS folds 1-3); the final year 2025-05 -> 2026-05 (F4) is a holdout no selection decision ever saw, and the **Verdict column is decided by the holdout alone**. Sharpes are ANNUALIZED, NET of 20bps round-trip cost, winsorized +/-300% (F1+F6, B1377), and carry a Lo(2002) 95% CI. Deep review: `R5_ANALYSIS_DEEP_REVIEW.md`.
 
+## Timeframes (DEC-505 walk-forward)
+
+| Window | Dates | Trading days | Role |
+|---|---|---|---|
+| Warm-up | 2021-05-05 -> 2022-05-05 | ~250 | indicator burn-in; no trades graded |
+| **IS fold F1** | 2022-05-05 -> 2023-05-05 | ~251 | selection (reported per-fold as a consistency diagnostic) |
+| **IS fold F2** | 2023-05-05 -> 2024-05-05 | ~250 | selection |
+| **IS fold F3** | 2024-05-05 -> 2025-05-05 | ~250 | selection |
+| **IS pooled** | 2022-05-05 -> 2025-05-05 | 751 | **the exit is picked here** (pooled 3y Sharpe, L230) |
+| **HOLDOUT F4** | 2025-05-05 -> 2026-05-05 | 251 | **the verdict** - never seen by any selection step |
+| Full cube window | 2022-05-05 -> 2026-05-05 | 1,002 | 4 years, 614 tickers |
+
+**Regime composition of those windows** (market-wide daily label; the regime changed 25 times in 1,002 trading days, ~once per 40 - L232):
+
+| Window | bull | bear | neutral | crisis |
+|---|---|---|---|---|
+| IS pooled (751 days) | 481 (64%) | 259 (34%) | 11 (1%) | 0 |
+| **HOLDOUT (251 days)** | **221 (88%)** | **12 (5%)** | 18 (7%) | 0 |
+| Full window (1,002 days) | 702 (70%) | 271 (27%) | 29 (3%) | **0 (0%)** |
+
+> **Read the holdout composition before reading any SHORT result.** The holdout year is 88% bull and holds just 12 bear days, so a pooled holdout grades a short strategy almost entirely on the tape it is built to lose in. That is a property of the WINDOW, not of the strategies. See the native-regime gate below and `scripts/regime_conditional_gate.py`. Note also that **no crisis day exists anywhere in the cube** - this system is designed to buy dips in crisis and has zero crisis evidence.
+
 ## Headline - what goes to the next phase
 
 | | Cells (strategy x direction x exit) | Evidence |
@@ -150,15 +172,33 @@ Short mirrors of the promoted longs that ALREADY EXIST in the cube. They ship un
 | `bullish_engulfing_support` | `bullish_engulfing_support (short leg)` | `breakeven_plus_trail` | -0.038 (n=152) | **DROP** |
 | `rsi_oversold` | `rsi_oversold (short leg)` | `breakeven_plus_trail` | 0.079 (n=169) | **DROP** |
 
-## C. DIRECTIVE MIRRORS without any data - 3 cells (exit TBD)
+## C. DIRECTIVE MIRRORS without any data - 3 cells (exit INHERITED from parent)
 
-Wired in B1382 under the same directive. They have never been backtested, so **no exit can be assigned from measurement**. Open owner decision: inherit the long parent's exit as a default, or hold exit-TBD until a bear-inclusive window runs. All are tagged EXPLORATORY and excluded from the multiple-testing family.
+Wired in B1382 under the same directive. They have never been backtested, so no exit can be assigned from measurement. **Owner decision 2026-07-26: they inherit their long parent's exit as the default.** All are tagged EXPLORATORY and excluded from the multiple-testing family; the inherited exit is a placeholder to be re-measured the first time these run on a bear-inclusive window, not a validated choice.
 
-| Parent LONG | Short mirror | Exit | Evidence |
-|---|---|---|---|
-| `news_sentiment_long` | `news_sentiment_short` | *TBD - never backtested* | none |
-| `poc_magnet_long` | `poc_magnet_short` | *TBD - never backtested* | none |
-| `xs_combined_momentum_low_ivol` | `xs_combined_momentum_high_ivol_short` | *TBD - never backtested* | none |
+| Parent LONG | Short mirror | Inherited exit | Source of that exit | Evidence |
+|---|---|---|---|---|
+| `news_sentiment_long` | `news_sentiment_short` | `breakeven_plus_trail` | inherited from parent (owner decision 2026-07-26) | none - never backtested |
+| `poc_magnet_long` | `poc_magnet_short` | `time_stop_10d` | inherited from parent (owner decision 2026-07-26) | none - never backtested |
+| `xs_combined_momentum_low_ivol` | `xs_combined_momentum_high_ivol_short` | `breakeven_plus_trail` | inherited from parent (owner decision 2026-07-26) | none - never backtested |
+
+## D. NATIVE-REGIME GATE - does grading each direction in its OWN regime rescue the shorts?
+
+Owner correction 2026-07-26: *"our gates do not test for success of short strategies in bear regimes and success of long strategies in bull regimes specifically."* Correct - the grading above pools the holdout year. `scripts/regime_conditional_gate.py` re-grades every row in the regime it is built for (**long -> `bull` entries, short -> `bear` entries**), pre-registered by direction so it stays one test per row rather than a search over regimes. The exit is likewise picked on IS native-regime data only.
+
+| Direction | Rows | OOS PASS | OOS PASS-noFDR | OOS FAIL | OOS UNEVAL (n<30) | IS PASS | IS FAIL |
+|---|---|---|---|---|---|---|---|
+| long (graded on bull) | 124 | 11 | 29 | 84 | 25 | 11 | 84 |
+| **short (graded on bear)** | 88 | **2** | 4 | 82 | **77** | 2 | 82 |
+
+**What this settles.** The correction was right and the gate is now fixed - but fixing it does NOT rescue the shorts, for a reason worth stating precisely:
+
+1. **77 of 88 short rows are UNEVAL out-of-sample** - not failed, *untestable*. With 12 bear days in the holdout there are fewer than 30 bear-regime trades per strategy. No gate design can extract an out-of-sample verdict from tape that isn't there.
+2. **In-sample, where the bear data IS ample** (259 bear days, ~30,000 short-in-bear trades), only **2 of 88** short rows clear 0.5 + BH-FDR (`bollinger_tight`, `ppo_crossover`). So regime-conditioning explains part of the shortfall but not all of it - most shorts underperform even on bear-regime entries.
+3. **A caveat that cuts against the bear-conditioned test itself:** per L229, `regime_at_entry == bear` is where LONGS earned most (+1.14%/trade) and shorts lost worst (-2.36%) in this window - the classifier flags 'bear' at high-vol/below-200EMA moments that were, here, near local bottoms. So 'short entered when the label said bear' is closer to *shorting the bottom* than to *shorting a downtrend*.
+
+**Conclusion unchanged, but now for the right reason:** shorts are not refuted, they are *untested*. What they need is a bear-inclusive WINDOW (2008 / 2011 / 2015-16 / 2018 / 2020), not a different gate.
+
 
 ## Appendix - entry-gate formulas for the 22 evidenced cells (exact per-leg `fires` expression)
 

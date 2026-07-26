@@ -417,6 +417,27 @@ def main():
               "selection decision ever saw, and the **Verdict column is decided by the holdout alone**. "
               "Sharpes are ANNUALIZED, NET of 20bps round-trip cost, winsorized +/-300% (F1+F6, B1377), "
               "and carry a Lo(2002) 95% CI. Deep review: `R5_ANALYSIS_DEEP_REVIEW.md`.\n")
+    md.append("## Timeframes (DEC-505 walk-forward)\n")
+    md.append(f"| Window | Dates | Trading days | Role |\n|---|---|---|---|\n"
+              f"| Warm-up | 2021-05-05 -> {IS_FOLDS[0][1]} | ~250 | indicator burn-in; no trades graded |\n"
+              f"| **IS fold F1** | {IS_FOLDS[0][1]} -> {IS_FOLDS[0][2]} | ~251 | selection (reported per-fold as a consistency diagnostic) |\n"
+              f"| **IS fold F2** | {IS_FOLDS[1][1]} -> {IS_FOLDS[1][2]} | ~250 | selection |\n"
+              f"| **IS fold F3** | {IS_FOLDS[2][1]} -> {IS_FOLDS[2][2]} | ~250 | selection |\n"
+              f"| **IS pooled** | {IS_FOLDS[0][1]} -> {HOLDOUT[1]} | 751 | **the exit is picked here** (pooled 3y Sharpe, L230) |\n"
+              f"| **HOLDOUT F4** | {HOLDOUT[1]} -> {HOLDOUT[2]} | 251 | **the verdict** - never seen by any selection step |\n"
+              f"| Full cube window | {IS_FOLDS[0][1]} -> {HOLDOUT[2]} | 1,002 | 4 years, 614 tickers |\n")
+    md.append("**Regime composition of those windows** (market-wide daily label; the regime changed 25 "
+              "times in 1,002 trading days, ~once per 40 - L232):\n\n"
+              "| Window | bull | bear | neutral | crisis |\n|---|---|---|---|---|\n"
+              "| IS pooled (751 days) | 481 (64%) | 259 (34%) | 11 (1%) | 0 |\n"
+              "| **HOLDOUT (251 days)** | **221 (88%)** | **12 (5%)** | 18 (7%) | 0 |\n"
+              "| Full window (1,002 days) | 702 (70%) | 271 (27%) | 29 (3%) | **0 (0%)** |\n")
+    md.append("> **Read the holdout composition before reading any SHORT result.** The holdout year is "
+              "88% bull and holds just 12 bear days, so a pooled holdout grades a short strategy almost "
+              "entirely on the tape it is built to lose in. That is a property of the WINDOW, not of the "
+              "strategies. See the native-regime gate below and `scripts/regime_conditional_gate.py`. "
+              "Note also that **no crisis day exists anywhere in the cube** - this system is designed to "
+              "buy dips in crisis and has zero crisis evidence.\n")
     md.append("## Headline - what goes to the next phase\n")
     md.append(f"| | Cells (strategy x direction x exit) | Evidence |\n|---|---|---|\n"
               f"| **A. EVIDENCED long** | **{len(evidenced)}** | holdout Sharpe >= {GATE} + BH-FDR + CI lower bound > 0 |\n"
@@ -515,14 +536,52 @@ def main():
         h = m["holdout"]
         ev = f"{h['sharpe']} (n={h['n']})" if h else "n<30 - un-evaluable"
         md.append(f"| `{s}` | `{name}` | `{m['exit']}` | {ev} | **{m['verdict']}** |")
-    md.append(f"\n## C. DIRECTIVE MIRRORS without any data - {len(mirror_nodata)} cells (exit TBD)\n")
-    md.append("Wired in B1382 under the same directive. They have never been backtested, so **no exit "
-              "can be assigned from measurement**. Open owner decision: inherit the long parent's exit "
-              "as a default, or hold exit-TBD until a bear-inclusive window runs. All are tagged "
-              "EXPLORATORY and excluded from the multiple-testing family.\n")
-    md.append("| Parent LONG | Short mirror | Exit | Evidence |\n|---|---|---|---|")
+    md.append(f"\n## C. DIRECTIVE MIRRORS without any data - {len(mirror_nodata)} cells "
+              "(exit INHERITED from parent)\n")
+    md.append("Wired in B1382 under the same directive. They have never been backtested, so no exit can "
+              "be assigned from measurement. **Owner decision 2026-07-26: they inherit their long "
+              "parent's exit as the default.** All are tagged EXPLORATORY and excluded from the "
+              "multiple-testing family; the inherited exit is a placeholder to be re-measured the "
+              "first time these run on a bear-inclusive window, not a validated choice.\n")
+    md.append("| Parent LONG | Short mirror | Inherited exit | Source of that exit | Evidence |\n"
+              "|---|---|---|---|---|")
+    _pexit = {r["strategy"]: r["exit"] for r in evidenced}
     for s, name, _ in sorted(mirror_nodata):
-        md.append(f"| `{s}` | `{name}` | *TBD - never backtested* | none |")
+        md.append(f"| `{s}` | `{name}` | `{_pexit.get(s, '?')}` | inherited from parent "
+                  f"(owner decision 2026-07-26) | none - never backtested |")
+    rc = REPO / "output_audit" / "b1385_regime_conditional_gate.json"
+    if rc.exists():
+        c = json.loads(rc.read_text(encoding="utf-8"))["counts"]
+        md.append("\n## D. NATIVE-REGIME GATE - does grading each direction in its OWN regime rescue the shorts?\n")
+        md.append("Owner correction 2026-07-26: *\"our gates do not test for success of short strategies "
+                  "in bear regimes and success of long strategies in bull regimes specifically.\"* "
+                  "Correct - the grading above pools the holdout year. `scripts/regime_conditional_gate.py` "
+                  "re-grades every row in the regime it is built for (**long -> `bull` entries, short -> "
+                  "`bear` entries**), pre-registered by direction so it stays one test per row rather than "
+                  "a search over regimes. The exit is likewise picked on IS native-regime data only.\n")
+        md.append("| Direction | Rows | OOS PASS | OOS PASS-noFDR | OOS FAIL | OOS UNEVAL (n<30) | IS PASS | IS FAIL |\n"
+                  "|---|---|---|---|---|---|---|---|\n"
+                  f"| long (graded on bull) | 124 | {c['long']['PASS']} | {c['long']['PASS-noFDR']} | "
+                  f"{c['long']['FAIL']} | {c['long']['UNEVAL']} | {c['long']['PASS']} | {c['long']['FAIL']} |\n"
+                  f"| **short (graded on bear)** | 88 | **{c['short']['PASS']}** | {c['short']['PASS-noFDR']} | "
+                  f"{c['short']['FAIL']} | **{c['short']['UNEVAL']}** | {c['short']['PASS']} | {c['short']['FAIL']} |\n")
+        md.append("**What this settles.** The correction was right and the gate is now fixed - but fixing "
+                  "it does NOT rescue the shorts, for a reason worth stating precisely:\n\n"
+                  "1. **77 of 88 short rows are UNEVAL out-of-sample** - not failed, *untestable*. With 12 "
+                  "bear days in the holdout there are fewer than 30 bear-regime trades per strategy. No "
+                  "gate design can extract an out-of-sample verdict from tape that isn't there.\n"
+                  "2. **In-sample, where the bear data IS ample** (259 bear days, ~30,000 short-in-bear "
+                  "trades), only **2 of 88** short rows clear 0.5 + BH-FDR (`bollinger_tight`, "
+                  "`ppo_crossover`). So regime-conditioning explains part of the shortfall but not all of "
+                  "it - most shorts underperform even on bear-regime entries.\n"
+                  "3. **A caveat that cuts against the bear-conditioned test itself:** per L229, "
+                  "`regime_at_entry == bear` is where LONGS earned most (+1.14%/trade) and shorts lost "
+                  "worst (-2.36%) in this window - the classifier flags 'bear' at high-vol/below-200EMA "
+                  "moments that were, here, near local bottoms. So 'short entered when the label said "
+                  "bear' is closer to *shorting the bottom* than to *shorting a downtrend*.\n\n"
+                  "**Conclusion unchanged, but now for the right reason:** shorts are not refuted, they "
+                  "are *untested*. What they need is a bear-inclusive WINDOW (2008 / 2011 / 2015-16 / "
+                  "2018 / 2020), not a different gate.\n")
     md.append(f"\n## Appendix - entry-gate formulas for the {len(evidenced)} evidenced cells "
               "(exact per-leg `fires` expression)\n")
     for r in evidenced:
