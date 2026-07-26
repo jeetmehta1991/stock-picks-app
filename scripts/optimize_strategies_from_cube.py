@@ -910,6 +910,20 @@ def main() -> int:
     ap.add_argument("--output-dir", default="output_optimization_candidates")
     ap.add_argument("--strategy", default=None,
                     help="Only analyze this single strategy (default: all fired strategies)")
+    # B1392 (2026-07-26, owner-approved): IS-WINDOW RESTRICTION. Without this the
+    # optimizer reads the WHOLE cube including the holdout fold, so any entry-gate change
+    # it motivates would have been informed by the very data the next run is graded on --
+    # fit-and-test-on-the-same-data, which voids the verdict. Restricting the optimizer's
+    # input to the in-sample window keeps the holdout genuinely unseen by every selection
+    # decision. Defaults are the DEC-505 IS window (folds 1-3).
+    ap.add_argument("--is-start", default="2022-05-05",
+                    help="IS window start (inclusive), YYYY-MM-DD. Rows before this are dropped.")
+    ap.add_argument("--is-end", default="2025-05-05",
+                    help="IS window end (EXCLUSIVE), YYYY-MM-DD. This is the holdout boundary: "
+                         "entries on/after it are dropped so the holdout stays unseen.")
+    ap.add_argument("--no-is-filter", action="store_true",
+                    help="DANGEROUS: analyze the full cube including the holdout fold. Only for "
+                         "post-hoc forensics, NEVER for deriving gate changes that a later run grades.")
     args = ap.parse_args()
 
     in_dir = REPO / args.input_dir
@@ -924,6 +938,35 @@ def main() -> int:
     trade_log = pd.read_csv(in_dir / "trade_log.csv", low_memory=False)
     cube_path = in_dir / "trade_exit_detail.csv"
     cube = pd.read_csv(cube_path, low_memory=False) if cube_path.exists() else pd.DataFrame()
+
+    def _is_filter(df: pd.DataFrame, label: str) -> pd.DataFrame:
+        """B1392: drop everything outside the IS window so the holdout is never an input
+        to a gate decision. Fails LOUD if entry_date is missing - silently analyzing the
+        full window would be the exact contamination this flag exists to prevent."""
+        if df.empty:
+            return df
+        if "entry_date" not in df.columns:
+            raise SystemExit(f"[FATAL] {label} has no entry_date column; cannot apply the "
+                             f"IS-window filter. Refusing to run un-filtered (use "
+                             f"--no-is-filter only for forensics).")
+        d = pd.to_datetime(df["entry_date"], errors="coerce")
+        keep = (d >= pd.Timestamp(args.is_start)) & (d < pd.Timestamp(args.is_end))
+        out = df[keep].copy()
+        print(f"[IS-FILTER] {label}: {len(df):,} -> {len(out):,} rows "
+              f"({args.is_start} <= entry_date < {args.is_end}); "
+              f"{len(df) - len(out):,} holdout/out-of-window rows EXCLUDED")
+        return out
+
+    if args.no_is_filter:
+        print("[WARN] --no-is-filter: analyzing the FULL window INCLUDING the holdout. "
+              "Any gate change derived from this run is contaminated and must NOT be "
+              "graded by a later run on the same window.")
+    else:
+        trade_log = _is_filter(trade_log, "trade_log")
+        cube = _is_filter(cube, "cube")
+        if trade_log.empty:
+            print("[ERROR] IS filter removed every trade_log row - check --is-start/--is-end")
+            return 1
     screener_source = (REPO / "backtest" / "signals" / "screener.py").read_text(encoding="utf-8")
 
     fired = sorted(trade_log["strategy"].unique()) if not args.strategy else [args.strategy]

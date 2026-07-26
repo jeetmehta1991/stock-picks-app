@@ -3448,3 +3448,22 @@ gate, keep it in the document WITH its outcome rather than deleting it, or the r
 asking where it went (exactly what happened here); (c) a readability rebuild must not silently
 drop a dimension - the regime-conditional map disappeared from the doc during the B1388
 rebuild and only the owner noticed.
+
+### L240 - When two unit counts differ, show the reconciliation INLINE or it reads as an error (B1392)
+
+Reported "34 cells retire = 24 fully-settled strategies". Owner reasonably challenged it:
+"shouldn't it be 34 strategies? Isn't it 34 distinct strategies?" The number was right, but
+the sentence juxtaposed two units and left the reader to derive the gap.
+
+The reconciliation: 22 evidenced cells (22 names, all long) + 12 measured-mirror cells, of
+which **10 are REGISTERED-DUAL** - the short leg of a strategy that already appears as a long
+cell, i.e. the SAME strategy name - and only 2 are standalone mirrors with their own names.
+So 22 + 2 = 24 names across 22 + 12 = 34 cells; the 10-cell gap is the 10 dual strategies
+counted once per direction. Retiring `rsi_oversold` retires ONE strategy and TWO cells.
+
+**Rule:** whenever a cell/row count and a strategy count appear in the same claim, state the
+bridge in the same breath - "34 cells = 24 strategies, because 10 duals contribute a long and
+a short cell each". A bare "X = Y" across units always looks like an arithmetic error, and the
+reader is right to stop. Extends [[feedback_report_in_rows_or_strategies_not_cells]]: choosing
+the owner's unit is necessary but not sufficient - when both units are unavoidable, carry the
+reconciliation with them.
