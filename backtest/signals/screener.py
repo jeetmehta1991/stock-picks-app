@@ -3933,6 +3933,43 @@ def strat_xs_combined_momentum_low_ivol(s):
          "Above 200 EMA - regime gate"])
 
 
+def strat_xs_combined_momentum_high_ivol_short(s):
+    """B1382 (2026-07-25, owner standing directive): symmetric SHORT mirror of
+    `strat_xs_combined_momentum_low_ivol`, added under the mirror-by-default rule -- "whichever long
+    strategies go to the next phase, their mirror short symmetrical strategies are
+    by default to be added".
+
+    Thesis: the long buys TOP-quintile 12-1 momentum filtered to LOW idiosyncratic
+    vol (Asness-Moskowitz-Pedersen 2013 quality momentum). The economic mirror is the
+    JUNK leg -- BOTTOM-quintile momentum filtered to HIGH IVOL -- per Frazzini-Pedersen
+    2014 betting-against-beta and Asness-Frazzini-Pedersen 2019 quality-minus-junk,
+    where the short side is high-vol junk, NOT low-vol quality. Mirroring the IVOL
+    filter DIRECTION as well as the momentum leg is what makes this an economic mirror
+    rather than a mechanical one; a short that kept `xs_ivol_decile <= 4` would be
+    shorting low-vol quality names, which inverts the factor thesis. Consumes the
+    already-produced `xs_momentum_bottom_quintile` (cross_sectional.py: decile <= 2,
+    emitted but until now unconsumed).
+
+    STATUS: EXPLORATORY (registered in EXPLORATORY_STRATEGIES). The R5 window
+    2022-05 -> 2026-05 holds ~5 downtrend months in 48 and ZERO short rows cleared
+    the B1378 true holdout, so every directive-added mirror ships
+    unvalidated-by-construction until a bear-inclusive window can test it (L229).
+    Structural symmetry is not economic symmetry: equities drift up, shorts pay
+    borrow and carry unbounded squeeze risk, so this is sized and judged separately.
+    """
+    fires = (
+        s.get("xs_momentum_bottom_quintile", False)   # mirror of top_quintile (d>=9)
+        and s.get("xs_ivol_decile", 5) >= 7           # top 40% IVOL (mirror of <=4)
+        and s.get("below_ema_200", False)
+        and not _short_borrow_trap_active(s)
+    )
+    return _strat(fires, "short", "factor",
+        ["xs_momentum_bottom_quintile", "xs_ivol_decile>=7", "below_ema_200"],
+        ["Bottom-quintile 12-1 momentum (junk leg)",
+         "Top-40% IVOL (Frazzini-Pedersen 2014 BAB short side)",
+         "Below 200 EMA - regime gate"])
+
+
 def strat_po3_bullish(s):
     """Batch 217 (PO3 + multi-TF 2026-05-18 owner-approved). Power of 3
     bullish daily candle: open near top, manipulation sweeps below
@@ -6765,6 +6802,39 @@ def strat_poc_magnet_long(s):
          "Above 200 EMA (regime gate)"])
 
 
+def strat_poc_magnet_short(s):
+    """B1382 (2026-07-25, owner standing directive): symmetric SHORT mirror of
+    `strat_poc_magnet_long`, added under the mirror-by-default rule -- "whichever long
+    strategies go to the next phase, their mirror short symmetrical strategies are
+    by default to be added".
+
+    Thesis: Steidlmayer 1985 / Dalton 1990 Market Profile -- price is drawn to the
+    Point of Control from EITHER side, so the bearish case is a close BELOW the POC
+    inside the same proximity band. Consumes the already-produced positive-symmetric
+    `vp_close_below_poc` (volume_profile.py: `close < poc`, emitted but until now
+    unconsumed) instead of negating `vp_close_above_poc`.
+
+    STATUS: EXPLORATORY (registered in EXPLORATORY_STRATEGIES). The R5 window
+    2022-05 -> 2026-05 holds ~5 downtrend months in 48 and ZERO short rows cleared
+    the B1378 true holdout, so every directive-added mirror ships
+    unvalidated-by-construction until a bear-inclusive window can test it (L229).
+    Structural symmetry is not economic symmetry: equities drift up, shorts pay
+    borrow and carry unbounded squeeze risk, so this is sized and judged separately.
+    """
+    fires = (
+        s.get("vp_close_near_poc_pct", 1.0) < 0.03   # same B1201 band as the long
+        and s.get("vp_close_below_poc", False)
+        and s.get("below_ema_200", False)
+        and not _short_borrow_trap_active(s)
+    )
+    return _strat(fires, "short", "volume_profile",
+        ["vp_close_near_poc_pct<0.03", "vp_close_below_poc", "below_ema_200"],
+        [f"Within {s.get('vp_close_near_poc_pct', 0.0)*100:.1f}% of 60d POC "
+          f"(Dalton 1990 magnet effect, mirrored)",
+         "Bearish bias (close below POC)",
+         "Below 200 EMA (regime gate)"])
+
+
 def strat_value_area_breakout_long(s):
     """Batch 255: Value Area breakout long with volume confirmation.
     Dalton-Jones-Dalton 1990 Market Profile."""
@@ -7103,6 +7173,42 @@ def strat_news_sentiment_long(s):
         [f"7-day mean sentiment +{sent:.2f} (positive cluster, >+0.3; B1136 canonical Lopez-Lira-Tang)",
          f"{s.get('news_article_count', 0)} articles in window (>=3)",
          "Above 200 EMA (regime gate)"])
+
+
+def strat_news_sentiment_short(s):
+    """B1382 (2026-07-25, owner standing directive): symmetric SHORT mirror of
+    `strat_news_sentiment_long`, added under the mirror-by-default rule -- "whichever long
+    strategies go to the next phase, their mirror short symmetrical strategies are
+    by default to be added".
+
+    Thesis: Tetlock 2007 ("Giving Content to Investor Sentiment") documents that
+    NEGATIVE media tone predicts returns more durably than positive tone does, so a
+    negative-sentiment cluster is the economically defensible mirror of the positive
+    one -- not merely a sign flip. Same producer
+    (`data_prefetch/polygon/news/<TICKER>.parquet`, B748d-verified), the two
+    thresholds mirrored about zero, and the regime gate flipped to the
+    positive-symmetric `below_ema_200` rather than `not price_above_ema_200`
+    (per feedback_never_use_NOT_s_get_pattern).
+
+    STATUS: EXPLORATORY (registered in EXPLORATORY_STRATEGIES). The R5 window
+    2022-05 -> 2026-05 holds ~5 downtrend months in 48 and ZERO short rows cleared
+    the B1378 true holdout, so every directive-added mirror ships
+    unvalidated-by-construction until a bear-inclusive window can test it (L229).
+    Structural symmetry is not economic symmetry: equities drift up, shorts pay
+    borrow and carry unbounded squeeze risk, so this is sized and judged separately.
+    """
+    fires = (
+        s.get("news_sentiment_mean", 0.0) < -0.3   # mirror of B1136 > +0.3
+        and s.get("news_article_count", 0) >= 3
+        and s.get("below_ema_200", False)
+        and not _short_borrow_trap_active(s)
+    )
+    return _strat(fires, "short", "news_sentiment",
+        ["news_sentiment_mean<-0.3", "news_article_count>=3", "below_ema_200"],
+        [f"7-day mean sentiment {s.get('news_sentiment_mean', 0.0):+.2f} "
+          f"(negative cluster, < -0.3; Tetlock 2007 negative-tone predictability)",
+         f"{s.get('news_article_count', 0)} articles in window (>=3)",
+         "Below 200 EMA (regime gate)"])
 
 
 def strat_news_sentiment_shift_long(s):
@@ -7781,6 +7887,7 @@ ALL_STRATEGIES = {
     "xs_momentum_bottom_decile_short":  strat_xs_momentum_bottom_decile_short,
     "xs_low_beta_long":                 strat_xs_low_beta_long,
     "xs_combined_momentum_low_ivol":    strat_xs_combined_momentum_low_ivol,
+    "xs_combined_momentum_high_ivol_short": strat_xs_combined_momentum_high_ivol_short,
     # PO3 + multi-TF (9 - Batch 217 2026-05-18 owner-approved)
     # po3_bullish + po3_bearish: marked EXPLORATORY B722 per HYBRID Pattern F
     # rec; do NOT deploy to production; cube empirical adjudication only.
@@ -8081,6 +8188,7 @@ ALL_STRATEGIES = {
     "pairs_mean_reversion_short":       strat_pairs_mean_reversion_short,
     # News sentiment (4 - Batch 253 + Batch 467 P10 2026-05-29)
     "news_sentiment_long":              strat_news_sentiment_long,
+    "news_sentiment_short":               strat_news_sentiment_short,
     "news_sentiment_shift_long":        strat_news_sentiment_shift_long,
     "news_momentum_long":               strat_news_momentum_long,
     "news_reversal_short":              strat_news_reversal_short,
@@ -8117,6 +8225,7 @@ ALL_STRATEGIES = {
     "gold_silver_risk_off_long":        strat_gold_silver_risk_off_long,
     # Volume profile / VPVR (3 - Batch 255 2026-05-20 / Batch 233 module)
     "poc_magnet_long":                  strat_poc_magnet_long,
+    "poc_magnet_short":                   strat_poc_magnet_short,
     "value_area_breakout_long":         strat_value_area_breakout_long,
     "naked_poc_retest_long":            strat_naked_poc_retest_long,
 }

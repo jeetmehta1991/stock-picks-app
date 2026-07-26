@@ -4,7 +4,7 @@
 > **CLAUDE.md is source-of-truth per L143.** Line 95 strategy count already updated B1205 (220 -> 219 post-B1189). This banner is here for consistency with the 46 other synced docs.
 >
 > Current canonical values as of 2026-07-18 (B1263, owner-approved banner sync):
-> - 219 strategies registered; STRATEGIES_DISABLED_MISSING_PRODUCER empty
+> - 222 strategies registered (B1382 2026-07-25 owner standing directive 'mirror shorts by default': 219 -> 222 via 3 Class 7 NEW symmetric SHORT mirrors (news_sentiment_short + poc_magnet_short + xs_combined_momentum_high_ivol_short), all tagged EXPLORATORY (zero short rows cleared the B1378 true holdout; L229)); STRATEGIES_DISABLED_MISSING_PRODUCER empty
 > - Test count: 880 passed, 2 skipped
 > - CHECKLIST #1-#158, LEARNINGS L1-L209
 > - Latest batch: B1310 (Council 342); ENG-1 pre-R5 blocker fixed B1260; compliance gates C6-C9 + Stop hook live B1254-B1255

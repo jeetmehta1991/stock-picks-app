@@ -10619,9 +10619,13 @@ def test_batch373_e1_doc_count_pin_against_code():
     # B1189 (2026-07-06 Council 278 owner-approved DELETE): 220 -> 219 via
     # dxy_headwind_multinational_short elimination (was disabled since Batch 372
     # pending foreign_rev_pct producer that was never built).
-    assert len(ALL_STRATEGIES) == 219, (
-        f"F-002 drift: ALL_STRATEGIES expected 219 post-B1189 (dxy_headwind "
-        f"DELETED; was 220 post-B1010); got {len(ALL_STRATEGIES)}. "
+    # B1382 (2026-07-25 owner standing directive "mirror shorts by default"):
+    # 219 -> 222 via 3 Class 7 NEW symmetric SHORT mirrors of promoted longs
+    # (news_sentiment_short / poc_magnet_short / xs_combined_momentum_high_ivol_short).
+    # All 3 tagged EXPLORATORY - zero short rows cleared the B1378 true holdout.
+    assert len(ALL_STRATEGIES) == 222, (
+        f"F-002 drift: ALL_STRATEGIES expected 222 post-B1382 (3 mirror shorts "
+        f"wired; was 219 post-B1189); got {len(ALL_STRATEGIES)}. "
         f"Update doc count references in the same commit."
     )
     assert len(DEPRECATED_STRATEGIES) == 0, (
@@ -10648,9 +10652,9 @@ def test_batch373_e1_doc_count_pin_against_code():
         DEPRECATED_STRATEGIES | STRATEGIES_DISABLED_MISSING_PRODUCER
     )
     # B1189: dxy_headwind DELETED -> 220 registered - 1 = 219 registered / 219 active.
-    assert active == 219, (
-        f"F-002 drift: active strategy count expected 219 (219 registered "
-        f"post-B1189 dxy_headwind DELETE); got {active}."
+    assert active == 222, (
+        f"F-002 drift: active strategy count expected 222 (222 registered "
+        f"post-B1382 mirror-short wires); got {active}."
     )
 
     # F-004 exit method count
@@ -10661,10 +10665,10 @@ def test_batch373_e1_doc_count_pin_against_code():
     )
 
     # Cube cells = active strategies x exits (B1189: 219 active x 26 = 5694)
-    expected_cells = 219 * 26
-    assert expected_cells == 5694, (
-        f"Phase 1A-beta cube cells: expected 5,694 (219 active x 26 exits "
-        f"post-B1189 dxy_headwind DELETE); got {expected_cells}."
+    expected_cells = 222 * 26
+    assert expected_cells == 5772, (
+        f"Phase 1A-beta cube cells: expected 5,772 (222 active x 26 exits "
+        f"post-B1382 mirror-short wires); got {expected_cells}."
     )
 
 

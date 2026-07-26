@@ -68,6 +68,14 @@ import numpy as np
 # (looser gate set, different EMA windows), the EXPLORATORY marker
 # can be re-evaluated.
 EXPLORATORY_STRATEGIES = frozenset({
+    # B1382 (2026-07-25) owner standing directive "mirror shorts by default":
+    # 3 Class 7 NEW symmetric SHORT mirrors of promoted longs. Tagged EXPLORATORY
+    # because ZERO short rows cleared the B1378 true holdout -- the R5 window holds
+    # ~5 downtrend months in 48, so these are unvalidated-BY-CONSTRUCTION rather than
+    # measured-bad. Re-measure on a bear-inclusive window before any deployment (L229).
+    "news_sentiment_short",
+    "poc_magnet_short",
+    "xs_combined_momentum_high_ivol_short",
     "pivot_s3_capitulation",
     "pivot_r3_blowoff_short",
     "cup_and_handle_long",  # B685 owner-approved per B683 self-critique CP-1
