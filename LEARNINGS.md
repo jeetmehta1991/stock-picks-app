@@ -3279,3 +3279,31 @@ far less diversified than its count - but the first number was an artifact and w
 been reported as fact had it not been sanity-checked against strategy semantics.
 **Rule:** before reporting a clustering result, check that the members are semantically
 plausible cluster-mates; a cluster that merges unrelated strategies indicts the metric.
+
+### L235 - After a count change, GREP THE OLD VALUE; targeted string-replacement doc-sync silently misses instances (B1382)
+
+B1382 changed `len(ALL_STRATEGIES)` 219 -> 222. Doc-sync was done by replacing 6 KNOWN
+strings in CLAUDE.md + CANONICAL_FACTS.md, all 6 applied, and the batch was reported as
+count-synced. The turn-gate then surfaced an uncommitted drift-audit report, and grepping
+the OLD value found three MORE live claims still stale:
+- `CLAUDE.md` L74: "returns 219): `len(ALL_STRATEGIES) = 219` total registered"
+- `CANONICAL_FACTS.md` L125: "**220 IMPLEMENTED strategy classes registered**"
+- `CANONICAL_FACTS.md` L179: "`len(ALL_STRATEGIES) == 220` ... EXPLORATORY 13 ... 219 active"
+The last two had been stale since **B1189** (which took 220 -> 219) - so the repo carried a
+wrong canonical count for ~190 batches, and the count-pin TEST did not catch it because the
+test pins CODE values against CODE, not prose against code.
+
+**Rule:** a count change is not synced until `grep -n "<OLD VALUE>"` across forward-looking
+docs returns nothing that is a live claim. Patch-the-strings-I-remember is not a sweep.
+Cheap mechanical form, run BEFORE claiming sync:
+  `grep -nE "<old> (strateg|active|registered)|= <old>|<old> x 26" CLAUDE.md CANONICAL_FACTS.md ...`
+Also: `scripts/drift_audit_pre_phase_1a_beta.py` must be re-run AFTER the doc edits, not
+before - running it first captures the pre-sync state and reports a clean-looking delta.
+
+**L235b - the drift auditor's ACTIVE_CLAIM count is ~fully false-positive and should not be
+trusted as a gate.** Its 11 flags this turn were all regex artifacts: SECTION NUMBERS read as
+counts (`## 2.6 Agent overlay` -> "2 agents"; `### 18.7 Agent Value-Add Gate` -> "7 agents")
+and prose that deliberately QUOTES bad phrasings (CANONICAL_FACTS' own "Not acceptable"
+list, and "every doc independently states '6 agents', '60 strategies'"). None was a real
+stale claim, while the three REAL ones above were not flagged at all - the detector inverts
+signal and noise. Ticket: S6-B1382-DRIFT-REGEX-FALSE-POSITIVES.
