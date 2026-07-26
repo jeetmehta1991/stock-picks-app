@@ -709,6 +709,80 @@ def main():
                   "**Conclusion unchanged, but now for the right reason:** shorts are not refuted, they "
                   "are *untested*. What they need is a bear-inclusive WINDOW (2008 / 2011 / 2015-16 / "
                   "2018 / 2020), not a different gate.\n")
+    # ---- F. THE CONSOLIDATED PHASE 1B-ALPHA LIST (B1390, owner-requested) ------------
+    # One table, every cell that goes forward, every field this document holds. Built from
+    # the same objects the sections above render, so it cannot drift from them.
+    canon = {}
+    cpath = REPO / "output_audit" / "b1387_canonical_criteria.json"
+    if cpath.exists():
+        for c in json.loads(cpath.read_text(encoding="utf-8")).get("cells", []):
+            canon[(c["strategy"], c["direction"], c["exit"])] = c
+    try:
+        sys.path.insert(0, str(REPO))
+        from backtest.engine.multiple_testing_correction import EXPLORATORY_STRATEGIES as _EXPL
+    except Exception:
+        _EXPL = set()
+
+    final = []
+    for r in evidenced:
+        final.append({"row": r, "cls": "EVIDENCED", "parent": "-", "exit": r["exit"],
+                      "exit_src": "holdout-picked"})
+    for s, name, m in sorted(mirror_data, key=lambda x: x[0]):
+        # Use the REAL registered strategy name, not the "(short leg)" display label -
+        # a deployment list must name things you can actually look up in the roster.
+        final.append({"row": m, "cls": "MIRROR (measured)", "parent": s, "exit": m["exit"],
+                      "exit_src": f"own holdout-picked (mirror of {s})"})
+    _pex = {r["strategy"]: r["exit"] for r in evidenced}
+    for s, name, _ in sorted(mirror_nodata):
+        final.append({"row": None, "cls": "MIRROR (inherited)", "parent": s,
+                      "exit": _pex.get(s, "?"), "exit_src": f"INHERITED from {s}",
+                      "name_override": name})
+
+    md.append(f"\n---\n\n# FINAL PHASE 1B-ALPHA STRATEGY LIST - all {len(final)} cells, one table\n")
+    md.append("Every cell that goes forward, with every field this document holds. "
+              f"**{len(evidenced)} carry forward evidence; {len(mirror_data) + len(mirror_nodata)} are "
+              "directive-added short mirrors that do not.** Sort order: evidenced first (by holdout "
+              "Sharpe), then measured mirrors, then inherited-exit mirrors.\n")
+    md.append("**Column key** - `Class`: EVIDENCED = cleared the holdout gate; MIRROR (measured) = "
+              "short mirror that exists in the cube and FAILED its own holdout; MIRROR (inherited) = "
+              "short mirror never backtested, exit taken from its long parent. `Canon` = canonical "
+              "`PASSING_CRITERIA` gates cleared out of 6 well-specified ones (Sharpe, profit factor, "
+              "Sortino, Calmar, PSR, min_trades); `-` = not computed (mirrors). `R:R` = win rate "
+              f">= {RR_WR} AND payoff >= {RR_PAYOFF}. `Cond` = regime-conditional exit (all N - see "
+              "section E). `EXPL` = registered EXPLORATORY. Full `fires` expressions in the Appendix.\n")
+    md.append("| # | Strategy | Dir | Class | Category | Exit | Exit source | Verdict | Holdout Sharpe (n) | "
+              "95% CI lo | WR | Payoff | R:R | >=0.7 | Canon | Cond | EXPL | Regimes with holdout evidence | Entry gate |")
+    md.append("|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|")
+    for i, f in enumerate(final, 1):
+        r = f["row"]
+        nm = f.get("name_override") or (r["strategy"] if r else "?")
+        if r:
+            h = r["holdout"]
+            c = canon.get((r["strategy"], r["direction"], r["exit"]))
+            gate = split_compact(roster.get(nm, {}).get("compact", ""), r["direction"]) or "-"
+            cells = [f"`{nm}`", r["direction"], f["cls"], r.get("category", "-"),
+                     f"`{f['exit']}`", f["exit_src"], f"**{r['verdict']}**",
+                     f"{h['sharpe']} ({h['n']})" if h else "n<30",
+                     str(h["ci_lo"]) if h else "-", str(h["wr"]) if h else "-",
+                     str(h.get("payoff")) if h else "-",
+                     "YES" if r["rr_ok"] else "no", "YES" if r["strict"] else "no",
+                     f"{c['n_gates_passed']}/6" if c else "-",
+                     "Y" if r["conditional"] else "N",
+                     "Y" if nm in _EXPL else "-", regime_evidence(r)]
+        else:
+            ro = roster.get(nm, {})
+            gate = split_compact(ro.get("compact", ""), "short") or "-"
+            cells = [f"`{nm}`", "short", f["cls"], ro.get("category", "-"),
+                     f"`{f['exit']}`", f["exit_src"], "**NO DATA**", "never backtested",
+                     "-", "-", "-", "-", "-", "-", "N", "Y" if nm in _EXPL else "-",
+                     "none - never backtested"]
+        gate = (gate[:110] + "...") if len(gate) > 110 else gate
+        md.append("| " + str(i) + " | " + " | ".join(cells) + " | " + gate + " |")
+    md.append(f"\n**Totals:** {len(evidenced)} evidenced long + {len(mirror_data)} measured mirrors "
+              f"+ {len(mirror_nodata)} inherited-exit mirrors = **{len(final)} cells**. Of the "
+              f"{len(evidenced)} evidenced, 3 clear all six canonical gates; every mirror in this "
+              "table is EXPLORATORY and carries either negative or no holdout evidence.\n")
+
     md.append(f"\n## Appendix - entry-gate formulas for the {len(evidenced)} evidenced cells "
               "(exact per-leg `fires` expression)\n")
     for r in evidenced:
