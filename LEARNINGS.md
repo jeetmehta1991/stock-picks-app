@@ -3467,3 +3467,45 @@ a short cell each". A bare "X = Y" across units always looks like an arithmetic 
 reader is right to stop. Extends [[feedback_report_in_rows_or_strategies_not_cells]]: choosing
 the owner's unit is necessary but not sufficient - when both units are unavoidable, carry the
 reconciliation with them.
+
+### L241 - Lens A Dim A and Dim B are FIRE-CONDITIONED: they rank which gate binds, they cannot estimate what loosening would admit (B1393)
+
+Owner asked "dim a vs dim b?". Reading both implementations and running them on IS-only R5
+data (212 strategies) surfaced a limitation that **corrects my own B1391 recommendation**.
+
+**Dim A (numeric thresholds):** parses `s.get("k", d) <op> <num>` out of screener.py, then
+profiles that signal's distribution AMONG FIRES. BINDING = observed min/max within 10% of the
+threshold; LOOSE = clears it by >50%. Proposes loosen-25% or tighten-to-p25.
+Produced a proposal for **55 of 212** strategies.
+
+**Dim B (boolean clauses):** measures each boolean clause's True-rate AMONG FIRES.
+<30% = "restrictive" (suggest OR-fallback); >90% = "always_on" (suggest removal is harmless).
+Produced a proposal for **185 of 212**.
+
+**THE FLAW - both are conditioned on trades that FIRED.** In an AND-stack every gate is True
+at every fire BY CONSTRUCTION. Measured on `poc_magnet_long` (gates: `vp_close_near_poc_pct
+< 0.03 AND vp_close_above_poc AND price_above_ema_200`): all three clauses report **100.0%**
+on 438/589 fires, and Dim B duly labels all three "always_on ... removing them wouldn't reduce
+admission significantly". That conclusion is FALSE - removing `price_above_ema_200` would
+change admission enormously; the bars where it was False are simply absent from the trade log.
+Across all 212 strategies the clause fire-rate histogram peaks hard at 100% (476 clauses),
+which is the signature of this artifact, not of genuinely redundant gates.
+
+Dim A has the mirror problem: for `< 0.03` the observed max at fires is 0.0299 - just under the
+threshold BY CONSTRUCTION - so "BINDING" is near-guaranteed and carries no information about
+how many extra trades a 0.04 threshold would admit.
+
+**MY EARLIER ERROR (B1391):** I recommended "Dim B first - kill near-no-op clauses, precedent
+B654/B655 which found gates firing 87% and 99.19%". Those earlier findings measured clause
+fire rate over **ALL BARS**, not over fires. Different denominator, different question. I
+conflated them; the precedent does not transfer to Dim B as implemented.
+
+**No counterfactual population exists in the R5 outputs:** `skipped_trades.csv` (444,226 rows)
+carries only ticker/date/strategy/reason/close/next_open/atr - **no signal values** - so the
+non-firing bars cannot be reconstructed from what we have.
+
+**Rules:** (a) a statistic computed on the selected population cannot estimate the effect of
+changing the selection rule - that is selection-on-the-dependent-variable; (b) Dim A/B are
+legitimate as a RANKING of which gate is the active constraint, never as an estimate of the
+gain from loosening it; (c) to size a gate change you need BAR-LEVEL clause evaluation over
+the candidate universe, which is a tool we do not currently have.
