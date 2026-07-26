@@ -6,6 +6,22 @@
 
 > **This list is graded on a TRUE HOLDOUT (B1378).** The exit is picked using ONLY 2022-05 -> 2025-05 (IS folds 1-3); the final year 2025-05 -> 2026-05 (F4) is a holdout no selection decision ever saw, and the **Verdict column is decided by the holdout alone**. Sharpes are ANNUALIZED, NET of 20bps round-trip cost, winsorized +/-300% (F1+F6, B1377), and carry a Lo(2002) 95% CI. Deep review: `R5_ANALYSIS_DEEP_REVIEW.md`.
 
+## The funnel - every filter applied, and what each one removed
+
+| # | Stage | Criterion applied | Rows remaining |
+|---|---|---|---|
+| 0 | Every (strategy x direction) in the cube | - | 229 |
+| 1 | Holdout-evaluable | holdout n >= 30 (else UNEVAL) | 189 |
+| 2 | Cleared the Sharpe bar | holdout annualized Sharpe >= 0.5 | 43 |
+| 3 | Survived multiple testing | BH-FDR q < 0.05 across the holdout family | 29 |
+| 4 | Statistically non-zero | Lo(2002) 95% CI lower bound > 0 | 29 |
+| 5 | De-duplicated | Jaccard < 0.70 on the trade set (drops near-identical) | 22 |
+| 6 | Full canonical criteria | + Sortino, Calmar, PSR, profit factor, min_trades | **3** |
+
+**Read stages 5 and 6 together.** Stage 5 (22) is what this document lists and what goes to the next phase. Stage 6 (3) is how many of those also clear the project's canonical `PASSING_CRITERIA` - see the canonical table below. The gap between them is not a contradiction: stage 5 is a screening bar, stage 6 is the deployment bar.
+
+**On R:R:** win rate and payoff are REPORTED per cell (columns `WR`, `Payoff`, `R:R ok`) but are NOT part of the funnel. `R:R ok` means WR >= 0.5 AND payoff >= 1.5. Only 1 of the 22 satisfies it, so ANDing it in would have deleted 21 of 22 - because the exit that wins selection (`breakeven_plus_trail`) manufactures low-WR / high-payoff by design. Per owner ruling 2026-07-26, Sharpe governs and win rate is a diagnostic; `config.PASSING_CRITERIA["win_rate_gate"]` is now `False` (B1387).
+
 ## Verdict criteria - what PASS / DROP / UNEVAL actually mean here
 
 Evaluated on the HOLDOUT fold only (2025-05-05 -> 2026-05-05), on NET winsorized per-trade returns. Sharpe is ANNUALIZED (per-trade x sqrt(252/avg_hold), matching `metrics.py::_sharpe`).
@@ -19,7 +35,13 @@ Evaluated on the HOLDOUT fold only (2025-05-05 -> 2026-05-05), on NET winsorized
 
 Reported ALONGSIDE the verdict but **not** gating it: 95% CI lower bound (Lo 2002), a STRICT flag for Sharpe >= 0.7, and the R:R diagnostic (win rate >= 0.5 AND payoff >= 1.5). R:R is deliberately NOT ANDed onto the gate - only 1 of the promoted strategies satisfies it, because the winning exit (`breakeven_plus_trail`) manufactures low-win-rate / high-payoff by design (L231).
 
-> **This is NOT the project's canonical PASSING_CRITERIA.** `backtest/config.py` carries 14 criteria + 3 AUTO-FAIL screens (profit factor, Sortino, Calmar, deflated Sharpe >= 0.95, PSR >= 0.95, max drawdown, win rate, win/loss ratio, min_trades = 100, cost-sensitivity ratio, Chow break-point, ADF stationarity). The gate above checks **three** of them: an n-floor, a Sharpe bar, and a multiple-testing correction. Two divergences to hold in mind: (1) the bar here is 0.5, while `config.PASSING_CRITERIA` still specifies `min_sharpe_per_regime` 0.7 / `min_sharpe_overall` 1.0 - config was deliberately NOT edited, since that is a canonical change requiring its own approval; (2) applying even the cheap canonical criteria to the promoted set collapses it - see the gap table below.
+**This screen is narrower than the project's canonical `PASSING_CRITERIA`.**
+
+- The gate above checks **three** things: an n-floor, a Sharpe bar (0.5), and a multiple-testing correction.
+- `backtest/config.py` carries **14 criteria + 3 AUTO-FAIL screens**.
+- `min_sharpe_per_regime` was reconciled to 0.5 (B1387, owner-approved). `min_sharpe_overall` remains 1.0 - out of scope of that approval.
+- Win rate is now a DIAGNOSTIC, not a gate (`win_rate_gate = False`, B1387).
+- Applying the full canonical set collapses the promoted list from 22 to 3 - table below.
 
 **FULL canonical criteria, measured on the holdout for the promoted cells** (B1387, `scripts/canonical_criteria_check.py`, reusing the `metrics.py` implementations rather than reimplementing them):
 
@@ -128,7 +150,11 @@ Of the 29 PASS rows, **29** also have a 95% CI lower bound above 0 (F2: the rest
 | MISSING-BUILDABLE | 0 | no mirror registered -> Class 7 NEW_STRATEGY to wire |
 | NOT-DEFENSIBLE | 13 | long-only DATA SOURCE (13F/insider/congress/buyback) - B611 precedent |
 
-> **Three warnings the directive should be read against.** (1) *Economic asymmetry*: equities drift up, shorts pay borrow and carry unbounded squeeze risk, so a structurally symmetric short is NOT expected to earn its long's return - it must be sized and judged separately. (2) *No forward evidence*: **zero** short rows clear the holdout in this cube (the window holds ~5 downtrend months in 48), so mirrors ship UNVALIDATED-BY-CONSTRUCTION and should be tagged EXPLORATORY until a bear-inclusive window tests them. (3) *Worse than unvalidated for some*: **12 of the mirrors already exist in this cube and their own holdout evidence is NEGATIVE** (see the 'Mirror's OWN holdout evidence' column) - adding those is a deliberate override of measured evidence on the argument that the window under-samples bear tape, not an absence of data. See L229.
+**Three warnings this directive should be read against:**
+
+1. **Economic asymmetry.** Equities drift up; shorts pay borrow and carry unbounded squeeze risk. A structurally symmetric short is not expected to earn its long's return - size and judge it separately.
+2. **No forward evidence.** Zero short rows clear the holdout (the window holds ~5 downtrend months in 48). Mirrors ship unvalidated-by-construction; all are tagged EXPLORATORY.
+3. **Worse than unvalidated for 12 of them.** Those mirrors already exist in this cube and their own holdout evidence is NEGATIVE (see section B). Adding them overrides measured evidence - defensible only because the window under-samples bear tape (L229).
 
 | Promoted LONG | Mirror status | Short mirror | Mirror's OWN holdout evidence | Note |
 |---|---|---|---|---|
@@ -166,30 +192,30 @@ Of the 29 PASS rows, **29** also have a 95% CI lower bound above 0 (F2: the rest
 
 Holdout Sharpe >= 0.5, survives BH-FDR q<0.05, and 95% CI lower bound above 0. One exit per strategy, picked on IS (2022-05 -> 2025-05) and graded on the untouched 2025-05 -> 2026-05 holdout.
 
-| Strategy | Dir | Best Exit (IS-picked) | Cond | IS F1 | IS F2 | IS F3 | HOLDOUT F4 | 95% CI lo | WR/payoff | R:R ok | >=0.7 | BH q<0.05 | Verdict | Cum Sharpe/n/WR/ret% | Entry gate (this leg) |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| `avwap_252_breakout` | long | `breakeven_plus_trail` | N | 0.272(514) | 0.563(245) | 0.677(450) | **0.532**(314) | 0.246 | 0.363/3.6 | no | no | YES | PASS | 0.475/1523/0.394/9410.4% | LONG: ( reclaim_252_long AND vol_ok ) |
-| `break_retest_confluence` | long | `breakeven_plus_trail` | N | -0.05(225) | 0.608(147) | 0.237(103) | **0.52**(143) | 0.134 | 0.315/5.09 | no | no | YES | PASS | 0.338/618/0.257/1222.0% | LONG: (resistance_break_retest AND macd_12_26_9_bullish AND price_above_ema_20 AND price_above_ema_50 AND close_above_open AND close_in_top_40pct_of_range AND vol_below_avg) |
-| `bullish_engulfing_support` | long | `breakeven_plus_trail` | N | -0.106(139) | 0.694(83) | 0.671(104) | **0.725**(83) | 0.167 | 0.301/7.22 | no | YES | YES | PASS | 0.535/409/0.301/1228.6% | LONG: (bullish_candle AND (near_s1 OR near_s2 OR at_key_fib) AND obv_bullish) |
-| `cpr_narrow_bullish` | long | `breakeven_plus_trail` | N | 0.116(162) | 0.664(108) | 0.41(119) | **0.568**(114) | 0.157 | 0.377/4.51 | no | no | YES | PASS | 0.408/503/0.29/1735.4% | LONG: ( cpr_narrow_tight AND above_cpr AND (above_avwap_50low) AND (price_above_ema_200) ) |
-| `force_index_breakout` | long | `breakeven_plus_trail` | N | 0.135(464) | 0.496(190) | 0.604(298) | **0.519**(259) | 0.181 | 0.309/5.42 | no | no | YES | PASS | 0.44/1211/0.302/3553.2% | LONG: (force_index_cross_up AND price_above_ema_20 AND close_above_open) |
-| `institutional_committed_growth_long` | long | `breakeven_plus_trail` | N | -0.248(300) | 0.538(342) | 0.51(633) | **0.638**(666) | 0.437 | 0.383/4.54 | no | no | YES | PASS | 0.484/1941/0.308/6019.3% | ( n_grow>=3 AND price_above_ema_200 ) |
-| `institutional_high_conviction_long` | long | `breakeven_plus_trail` | N | -0.258(498) | 0.561(556) | 0.441(681) | **0.561**(738) | 0.377 | 0.328/5.44 | no | no | YES | PASS | 0.429/2473/0.3/6569.1% | ( institutional_new_positions>=3 AND price_above_ema_50 ) |
-| `institutional_persistence_breakout_long` | long | `breakeven_plus_trail` | N | -0.686(130) | 0.649(145) | 0.354(121) | **0.683**(136) | 0.317 | 0.404/6.0 | no | no | YES | PASS | 0.475/532/0.303/1756.0% | ( institutional_increased>=3 AND resistance_break_retest AND price_above_ema_200 ) |
-| `institutional_persistence_oversold_long` | long | `breakeven_plus_trail` | N | -0.067(103) | 0.389(121) | 0.459(293) | **0.517**(199) | 0.14 | 0.357/3.49 | no | no | YES | PASS | 0.412/716/0.3/1561.1% | ( institutional_increased>=3 AND rsi_14<45 AND price_above_ema_200 ) |
-| `macd_fast_crossover` | long | `breakeven_plus_trail` | N | 0.353(718) | 0.438(318) | 0.617(498) | **0.537**(378) | 0.264 | 0.333/4.8 | no | no | YES | PASS | 0.451/1912/0.335/7005.3% | LONG: macd_8_21_5_crossover_up |
-| `mfi_oversold_with_smart_money_long` | long | `breakeven_plus_trail` | N | 0.448(56) | 0.403(46) | 0.492(69) | **0.839**(71) | 0.113 | 0.366/4.45 | no | YES | YES | PASS | 0.54/242/0.314/636.5% | base_fires AND _has_smart_money_buy(s) |
-| `news_sentiment_long` | long | `breakeven_plus_trail` | N | 0.112(343) | 0.555(226) | 0.501(164) | **0.635**(173) | 0.214 | 0.353/4.97 | no | no | YES | PASS | 0.405/906/0.296/2625.4% | ( news_sentiment_mean>0.3 AND news_article_count>=3 AND price_above_ema_200 ) |
-| `pead_long_high_yoy_growth_only` | long | `breakeven_plus_trail` | N | 0.29(811) | 0.648(460) | 0.659(423) | **0.585**(422) | 0.361 | 0.308/7.05 | no | no | YES | PASS | 0.539/2116/0.325/8149.5% | ( within_pead_window AND yoy_surprise_high ) |
-| `poc_magnet_long` | long | `time_stop_10d` | N | 0.28(164) | 0.702(120) | 0.654(154) | **0.808**(151) | 0.134 | 0.603/1.14 | no | YES | YES | PASS | 0.599/589/0.577/550.4% | ( vp_close_near_poc_pct<0.03 AND vp_close_above_poc AND price_above_ema_200 ) |
-| `r1_break_retest` | long | `breakeven_plus_trail` | N | 0.29(702) | 0.421(256) | 0.583(431) | **0.501**(338) | 0.222 | 0.299/4.95 | no | no | YES | PASS | 0.428/1727/0.324/6173.8% | LONG: (r1_break_retest_long AND above_r1 AND macd_12_26_9_bullish AND close_above_open AND close_in_top_40pct_of_range AND vol_below_avg AND above_avwap_20low) |
-| `rsi_oversold` | long | `breakeven_plus_trail` | N | -0.867(173) | 0.561(298) | 0.246(222) | **0.596**(293) | 0.327 | 0.321/5.92 | no | no | YES | PASS | 0.405/986/0.241/2173.2% | LONG: ( (rsi_2<7 OR rsi_14<40) AND price_above_sma_50 AND above_200 ) |
-| `rsi_volume_200ema` | long | `earnings_blackout` | N | 0.842(37) | 0.278(36) | 0.58(97) | **0.545**(63) | 0.062 | 0.635/1.4 | no | no | YES | PASS | 0.54/233/0.618/1146.6% | LONG: (rsi_14<40 AND vol_above_avg AND price_above_ema_200) |
-| `smc_breaker_block_long` | long | `breakeven_plus_trail` | N | 0.188(112) | 0.471(135) | 0.434(345) | **0.693**(356) | 0.408 | 0.393/4.77 | no | no | YES | PASS | 0.497/948/0.325/2999.3% | ( smc_breaker_block_bullish AND price_above_ema_200 ) |
-| `smc_inverse_fvg` | long | `regime_flip` | N | -0.108(101) | 0.996(61) | 1.046(141) | **0.813**(92) | 0.193 | 0.587/2.01 | YES | YES | YES | PASS | 0.693/395/0.559/1136.7% | LONG: (smc_inverse_fvg_bullish) AND (price_above_ema_200) AND (vol_spike_2x OR force_index_cross_up) |
-| `totm_long` | long | `breakeven_plus_trail` | N | 0.214(91) | 0.474(95) | 0.614(71) | **0.963**(86) | 0.291 | 0.314/10.27 | no | YES | YES | PASS | 0.547/343/0.271/1527.0% | is_totm_window_first_day AND price_above_ema_200 |
-| `xs_combined_momentum_low_ivol` | long | `breakeven_plus_trail` | N | -0.725(65) | n<30 | 0.601(87) | **0.962**(35) | 0.188 | 0.371/9.73 | no | YES | YES | PASS | 0.531/211/0.251/853.5% | ( xs_momentum_top_quintile AND xs_ivol_decile<=4 AND price_above_ema_200 ) |
-| `xs_momentum_with_smart_money_long` | long | `breakeven_plus_trail` | N | 0.409(176) | 0.701(94) | 0.697(226) | **0.952**(162) | 0.503 | 0.457/5.04 | no | YES | YES | PASS | 0.687/658/0.394/3737.7% | ( xs_momentum_top_decile AND price_above_ema_200 ) |
+| Strategy | Exit | Verdict | Holdout Sharpe (n) | 95% CI lo | WR | Payoff | R:R ok | >=0.7 | Cond | Regimes with holdout evidence |
+|---|---|---|---|---|---|---|---|---|---|---|
+| `avwap_252_breakout` | `breakeven_plus_trail` | **PASS** | 0.532 (314) | 0.246 | 0.363 | 3.6 | no | no | N | **bull 0.474**(n=254); bear n=26<30; **neutral 0.77**(n=34) |
+| `break_retest_confluence` | `breakeven_plus_trail` | **PASS** | 0.52 (143) | 0.134 | 0.315 | 5.09 | no | no | N | **bull 0.523**(n=131); bear n=3<30; neutral n=9<30 |
+| `bullish_engulfing_support` | `breakeven_plus_trail` | **PASS** | 0.725 (83) | 0.167 | 0.301 | 7.22 | no | YES | N | **bull 0.716**(n=67); bear n=6<30; neutral n=10<30 |
+| `cpr_narrow_bullish` | `breakeven_plus_trail` | **PASS** | 0.568 (114) | 0.157 | 0.377 | 4.51 | no | no | N | **bull 0.485**(n=88); bear n=9<30; neutral n=17<30 |
+| `force_index_breakout` | `breakeven_plus_trail` | **PASS** | 0.519 (259) | 0.181 | 0.309 | 5.42 | no | no | N | **bull 0.265**(n=191); **bear 1.468**(n=32); **neutral 0.497**(n=36) |
+| `institutional_committed_growth_long` | `breakeven_plus_trail` | **PASS** | 0.638 (666) | 0.437 | 0.383 | 4.54 | no | no | N | **bull 0.514**(n=540); **bear 1.535**(n=60); **neutral 0.573**(n=66) |
+| `institutional_high_conviction_long` | `breakeven_plus_trail` | **PASS** | 0.561 (738) | 0.377 | 0.328 | 5.44 | no | no | N | **bull 0.516**(n=618); **bear 1.389**(n=34); **neutral 0.352**(n=86) |
+| `institutional_persistence_breakout_long` | `breakeven_plus_trail` | **PASS** | 0.683 (136) | 0.317 | 0.404 | 6.0 | no | no | N | **bull 0.58**(n=110); bear n=8<30; neutral n=18<30 |
+| `institutional_persistence_oversold_long` | `breakeven_plus_trail` | **PASS** | 0.517 (199) | 0.14 | 0.357 | 3.49 | no | no | N | **bull 0.358**(n=160); bear n=26<30; neutral n=13<30 |
+| `macd_fast_crossover` | `breakeven_plus_trail` | **PASS** | 0.537 (378) | 0.264 | 0.333 | 4.8 | no | no | N | **bull 0.415**(n=284); **bear 0.983**(n=59); **neutral 0.728**(n=35) |
+| `mfi_oversold_with_smart_money_long` | `breakeven_plus_trail` | **PASS** | 0.839 (71) | 0.113 | 0.366 | 4.45 | no | YES | N | **bull 0.676**(n=53); bear n=11<30; neutral n=7<30 |
+| `news_sentiment_long` | `breakeven_plus_trail` | **PASS** | 0.635 (173) | 0.214 | 0.353 | 4.97 | no | no | N | **bull 0.42**(n=140); bear n=19<30; neutral n=14<30 |
+| `pead_long_high_yoy_growth_only` | `breakeven_plus_trail` | **PASS** | 0.585 (422) | 0.361 | 0.308 | 7.05 | no | no | N | **bull 0.557**(n=354); bear n=26<30; **neutral 0.4**(n=42) |
+| `poc_magnet_long` | `time_stop_10d` | **PASS** | 0.808 (151) | 0.134 | 0.603 | 1.14 | no | YES | N | **bull 0.396**(n=125); bear n=11<30; neutral n=15<30 |
+| `r1_break_retest` | `breakeven_plus_trail` | **PASS** | 0.501 (338) | 0.222 | 0.299 | 4.95 | no | no | N | **bull 0.33**(n=272); bear n=26<30; **neutral 1.088**(n=40) |
+| `rsi_oversold` | `breakeven_plus_trail` | **PASS** | 0.596 (293) | 0.327 | 0.321 | 5.92 | no | no | N | **bull 0.612**(n=278); bear n=4<30; neutral n=11<30 |
+| `rsi_volume_200ema` | `earnings_blackout` | **PASS** | 0.545 (63) | 0.062 | 0.635 | 1.4 | no | no | N | **bull 0.423**(n=56); bear n=1<30; neutral n=6<30 |
+| `smc_breaker_block_long` | `breakeven_plus_trail` | **PASS** | 0.693 (356) | 0.408 | 0.393 | 4.77 | no | no | N | **bull 0.479**(n=283); **bear 1.883**(n=35); **neutral 0.827**(n=38) |
+| `smc_inverse_fvg` | `regime_flip` | **PASS** | 0.813 (92) | 0.193 | 0.587 | 2.01 | YES | YES | N | **bull 0.242**(n=69); bear n=18<30; neutral n=5<30 |
+| `totm_long` | `breakeven_plus_trail` | **PASS** | 0.963 (86) | 0.291 | 0.314 | 10.27 | no | YES | N | **bull 0.45**(n=72); bear n=14<30 |
+| `xs_combined_momentum_low_ivol` | `breakeven_plus_trail` | **PASS** | 0.962 (35) | 0.188 | 0.371 | 9.73 | no | YES | N | bull n=27<30; bear n=7<30; neutral n=1<30 |
+| `xs_momentum_with_smart_money_long` | `breakeven_plus_trail` | **PASS** | 0.952 (162) | 0.503 | 0.457 | 5.04 | no | YES | N | **bull 0.6**(n=126); bear n=24<30; neutral n=12<30 |
 
 ## B. DIRECTIVE MIRRORS with measured evidence - 12 cells
 

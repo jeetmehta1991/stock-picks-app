@@ -212,7 +212,8 @@ def main():
 
     print("[INFO] reading cube ...")
     df = pd.read_csv(CUBE / "trade_exit_detail.csv",
-                     usecols=["strategy", "direction", "exit_method", "entry_date", "ticker", "pnl_pct", "hold_days"],
+                     usecols=["strategy", "direction", "exit_method", "entry_date", "ticker",
+                              "regime_at_entry", "pnl_pct", "hold_days"],
                      low_memory=False)
     df["entry_date"] = pd.to_datetime(df["entry_date"]).dt.date
     # F6 winsorize + F1 net-of-cost (B1377): every metric below is on NET, de-outliered pnl.
@@ -365,22 +366,38 @@ def main():
     def hcell(st):
         return f"**{st['sharpe']}**({st['n']})" if st else "n<30"
 
+    def regime_evidence(r):
+        """B1388: WHICH REGIMES does this cell actually have evidence in? Per-regime holdout
+        Sharpe where n >= MIN_N, else 'n<30'. Answers 'what regimes apply to this cell'
+        without which a per-regime deployment decision cannot be made."""
+        g = df[(df.strategy == r["strategy"]) & (df.direction == r["direction"])
+               & (df.exit_method == r["exit"])]
+        g = g[(g.entry_date >= HOLDOUT[1]) & (g.entry_date < HOLDOUT[2])]
+        parts = []
+        for reg in ("bull", "bear", "neutral", "crisis"):
+            gg = g[g.regime_at_entry == reg]
+            st = _sharpe(gg.pnl_pct.values, gg.hold_days.values) if len(gg) else None
+            if st:
+                parts.append(f"**{reg} {st['sharpe']}**(n={st['n']})")
+            elif len(gg):
+                parts.append(f"{reg} n={len(gg)}<30")
+        return "; ".join(parts) if parts else "-"
+
     def table(rs):
-        out = ["| Strategy | Dir | Best Exit (IS-picked) | Cond | IS F1 | IS F2 | IS F3 | "
-               "HOLDOUT F4 | 95% CI lo | WR/payoff | R:R ok | >=0.7 | BH q<0.05 | Verdict | "
-               "Cum Sharpe/n/WR/ret% | Entry gate (this leg) |",
-               "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|"]
+        """B1388 readability rebuild: the prior table was 16 columns / 848-char lines.
+        Entry-gate formulas live in the Appendix; per-fold IS numbers live in the JSON."""
+        out = ["| Strategy | Exit | Verdict | Holdout Sharpe (n) | 95% CI lo | WR | Payoff | "
+               "R:R ok | >=0.7 | Cond | Regimes with holdout evidence |",
+               "|---|---|---|---|---|---|---|---|---|---|---|"]
         for r in rs:
-            pf, h, cum = r["perfold"], r["holdout"], r["cum"]
-            rr = f"{h['wr']}/{h.get('payoff')}" if h else "-"
+            h = r["holdout"]
             out.append(
-                f"| `{r['strategy']}` | {r['direction']} | `{r['exit']}` | "
-                f"{'Y' if r['conditional'] else 'N'} | "
-                f"{fcell(pf['F1'])} | {fcell(pf['F2'])} | {fcell(pf['F3'])} | {hcell(h)} | "
-                f"{h['ci_lo'] if h else '-'} | {rr} | {'YES' if r['rr_ok'] else 'no'} | "
-                f"{'YES' if r['strict'] else 'no'} | {'YES' if r['bh'] else 'no'} | {r['verdict']} | "
-                f"{cum['sharpe']}/{cum['n']}/{cum['wr']}/{cum['ret']}% | "
-                f"{(r['regimes'] + ' || ') if r['conditional'] and r['regimes'] else ''}{r['gate_leg']} |")
+                f"| `{r['strategy']}` | `{r['exit']}` | **{r['verdict']}** | "
+                f"{(str(h['sharpe']) + ' (' + str(h['n']) + ')') if h else 'n<30'} | "
+                f"{h['ci_lo'] if h else '-'} | {h['wr'] if h else '-'} | "
+                f"{h.get('payoff') if h else '-'} | {'YES' if r['rr_ok'] else 'no'} | "
+                f"{'YES' if r['strict'] else 'no'} | {'Y' if r['conditional'] else 'N'} | "
+                f"{regime_evidence(r)} |")
         return out
 
     def mirror_section(passing_rows):
@@ -417,6 +434,26 @@ def main():
               "selection decision ever saw, and the **Verdict column is decided by the holdout alone**. "
               "Sharpes are ANNUALIZED, NET of 20bps round-trip cost, winsorized +/-300% (F1+F6, B1377), "
               "and carry a Lo(2002) 95% CI. Deep review: `R5_ANALYSIS_DEEP_REVIEW.md`.\n")
+    _clear_bar = [r for r in ev if r["holdout"]["sharpe"] >= GATE]
+    md.append("## The funnel - every filter applied, and what each one removed\n")
+    md.append(f"| # | Stage | Criterion applied | Rows remaining |\n|---|---|---|---|\n"
+              f"| 0 | Every (strategy x direction) in the cube | - | {len(rows)} |\n"
+              f"| 1 | Holdout-evaluable | holdout n >= {MIN_N} (else UNEVAL) | {n_ev} |\n"
+              f"| 2 | Cleared the Sharpe bar | holdout annualized Sharpe >= {GATE} | {len(_clear_bar)} |\n"
+              f"| 3 | Survived multiple testing | BH-FDR q < {FDR_Q} across the holdout family | {len(passed)} |\n"
+              f"| 4 | Statistically non-zero | Lo(2002) 95% CI lower bound > 0 | {len(ci_pos)} |\n"
+              f"| 5 | De-duplicated | Jaccard < 0.70 on the trade set (drops near-identical) | {len(evidenced)} |\n"
+              f"| 6 | Full canonical criteria | + Sortino, Calmar, PSR, profit factor, min_trades | **3** |\n")
+    md.append("**Read stages 5 and 6 together.** Stage 5 (22) is what this document lists and what "
+              "goes to the next phase. Stage 6 (3) is how many of those also clear the project's "
+              "canonical `PASSING_CRITERIA` - see the canonical table below. The gap between them is "
+              "not a contradiction: stage 5 is a screening bar, stage 6 is the deployment bar.\n")
+    md.append("**On R:R:** win rate and payoff are REPORTED per cell (columns `WR`, `Payoff`, `R:R ok`) "
+              f"but are NOT part of the funnel. `R:R ok` means WR >= {RR_WR} AND payoff >= {RR_PAYOFF}. "
+              "Only 1 of the 22 satisfies it, so ANDing it in would have deleted 21 of 22 - because the "
+              "exit that wins selection (`breakeven_plus_trail`) manufactures low-WR / high-payoff by "
+              "design. Per owner ruling 2026-07-26, Sharpe governs and win rate is a diagnostic; "
+              "`config.PASSING_CRITERIA[\"win_rate_gate\"]` is now `False` (B1387).\n")
     md.append("## Verdict criteria - what PASS / DROP / UNEVAL actually mean here\n")
     md.append(f"Evaluated on the HOLDOUT fold only ({HOLDOUT[1]} -> {HOLDOUT[2]}), on NET winsorized "
               f"per-trade returns. Sharpe is ANNUALIZED (per-trade x sqrt(252/avg_hold), matching "
@@ -431,15 +468,14 @@ def main():
               f"payoff >= {RR_PAYOFF}). R:R is deliberately NOT ANDed onto the gate - only 1 of the "
               f"promoted strategies satisfies it, because the winning exit (`breakeven_plus_trail`) "
               f"manufactures low-win-rate / high-payoff by design (L231).\n")
-    md.append("> **This is NOT the project's canonical PASSING_CRITERIA.** `backtest/config.py` carries "
-              "14 criteria + 3 AUTO-FAIL screens (profit factor, Sortino, Calmar, deflated Sharpe >= 0.95, "
-              "PSR >= 0.95, max drawdown, win rate, win/loss ratio, min_trades = 100, cost-sensitivity "
-              "ratio, Chow break-point, ADF stationarity). The gate above checks **three** of them: an "
-              "n-floor, a Sharpe bar, and a multiple-testing correction. Two divergences to hold in mind: "
-              f"(1) the bar here is {GATE}, while `config.PASSING_CRITERIA` still specifies "
-              "`min_sharpe_per_regime` 0.7 / `min_sharpe_overall` 1.0 - config was deliberately NOT "
-              "edited, since that is a canonical change requiring its own approval; (2) applying even the "
-              "cheap canonical criteria to the promoted set collapses it - see the gap table below.\n")
+    md.append("**This screen is narrower than the project's canonical `PASSING_CRITERIA`.**\n\n"
+              f"- The gate above checks **three** things: an n-floor, a Sharpe bar ({GATE}), and a "
+              "multiple-testing correction.\n"
+              "- `backtest/config.py` carries **14 criteria + 3 AUTO-FAIL screens**.\n"
+              f"- `min_sharpe_per_regime` was reconciled to {GATE} (B1387, owner-approved). "
+              "`min_sharpe_overall` remains 1.0 - out of scope of that approval.\n"
+              "- Win rate is now a DIAGNOSTIC, not a gate (`win_rate_gate = False`, B1387).\n"
+              "- Applying the full canonical set collapses the promoted list from 22 to 3 - table below.\n")
     md.append("**FULL canonical criteria, measured on the holdout for the promoted cells** (B1387, "
               "`scripts/canonical_criteria_check.py`, reusing the `metrics.py` implementations rather "
               "than reimplementing them):\n\n"
@@ -569,17 +605,16 @@ def main():
               f"| REGISTERED-STANDALONE | {tally.get('REGISTERED-STANDALONE',0)} | a symmetric short strategy already exists in the roster |\n"
               f"| MISSING-BUILDABLE | {tally.get('MISSING-BUILDABLE',0)} | no mirror registered -> Class 7 NEW_STRATEGY to wire |\n"
               f"| NOT-DEFENSIBLE | {tally.get('NOT-DEFENSIBLE',0)} | long-only DATA SOURCE (13F/insider/congress/buyback) - B611 precedent |\n")
-    md.append("> **Three warnings the directive should be read against.** (1) *Economic asymmetry*: "
-              "equities drift up, shorts pay borrow and carry unbounded squeeze risk, so a "
-              "structurally symmetric short is NOT expected to earn its long's return - it must be "
-              "sized and judged separately. (2) *No forward evidence*: **zero** short rows clear the "
-              "holdout in this cube (the window holds ~5 downtrend months in 48), so mirrors ship "
-              "UNVALIDATED-BY-CONSTRUCTION and should be tagged EXPLORATORY until a bear-inclusive "
-              f"window tests them. (3) *Worse than unvalidated for some*: **{mneg} of the mirrors "
-              "already exist in this cube and their own holdout evidence is NEGATIVE** (see the "
-              "'Mirror's OWN holdout evidence' column) - adding those is a deliberate override of "
-              "measured evidence on the argument that the window under-samples bear tape, not an "
-              "absence of data. See L229.\n")
+    md.append("**Three warnings this directive should be read against:**\n\n"
+              "1. **Economic asymmetry.** Equities drift up; shorts pay borrow and carry unbounded "
+              "squeeze risk. A structurally symmetric short is not expected to earn its long's "
+              "return - size and judge it separately.\n"
+              "2. **No forward evidence.** Zero short rows clear the holdout (the window holds ~5 "
+              "downtrend months in 48). Mirrors ship unvalidated-by-construction; all are tagged "
+              "EXPLORATORY.\n"
+              f"3. **Worse than unvalidated for {mneg} of them.** Those mirrors already exist in this "
+              "cube and their own holdout evidence is NEGATIVE (see section B). Adding them overrides "
+              "measured evidence - defensible only because the window under-samples bear tape (L229).\n")
     md += ms
     md.append(f"\n## A. EVIDENCED - {len(evidenced)} long cells (the only cells with forward evidence)\n")
     md.append("Holdout Sharpe >= 0.5, survives BH-FDR q<0.05, and 95% CI lower bound above 0. "
