@@ -53,8 +53,8 @@ Of the 29 PASS rows, **29** also have a 95% CI lower bound above 0 (F2: the rest
 | Status | Count | Meaning |
 |---|---|---|
 | REGISTERED-DUAL | 10 | strategy already trades both legs - short ships automatically |
-| REGISTERED-STANDALONE | 2 | a symmetric short strategy already exists in the roster |
-| MISSING-BUILDABLE | 3 | no mirror registered -> Class 7 NEW_STRATEGY to wire |
+| REGISTERED-STANDALONE | 5 | a symmetric short strategy already exists in the roster |
+| MISSING-BUILDABLE | 0 | no mirror registered -> Class 7 NEW_STRATEGY to wire |
 | NOT-DEFENSIBLE | 13 | long-only DATA SOURCE (13F/insider/congress/buyback) - B611 precedent |
 
 > **Three warnings the directive should be read against.** (1) *Economic asymmetry*: equities drift up, shorts pay borrow and carry unbounded squeeze risk, so a structurally symmetric short is NOT expected to earn its long's return - it must be sized and judged separately. (2) *No forward evidence*: **zero** short rows clear the holdout in this cube (the window holds ~5 downtrend months in 48), so mirrors ship UNVALIDATED-BY-CONSTRUCTION and should be tagged EXPLORATORY until a bear-inclusive window tests them. (3) *Worse than unvalidated for some*: **12 of the mirrors already exist in this cube and their own holdout evidence is NEGATIVE** (see the 'Mirror's OWN holdout evidence' column) - adding those is a deliberate override of measured evidence on the argument that the window under-samples bear tape, not an absence of data. See L229.
@@ -78,9 +78,9 @@ Of the 29 PASS rows, **29** also have a 95% CI lower bound above 0 (F2: the rest
 | `institutional_strong_conviction_long` | **NOT-DEFENSIBLE** | `-` | - | long-only data source (institutional) - B611 precedent; a mechanical inverse would be economically false |
 | `macd_fast_crossover` | **REGISTERED-DUAL** | `macd_fast_crossover (short leg)` | -0.201 (n=589) -> **DROP** | already trades both directions; the short leg ships with it |
 | `mfi_oversold_with_smart_money_long` | **NOT-DEFENSIBLE** | `-` | - | long-only data source (smart_money) - B611 precedent; a mechanical inverse would be economically false |
-| `news_sentiment_long` | **MISSING-BUILDABLE** | `-` | - | no short mirror registered -> Class 7 NEW candidate |
+| `news_sentiment_long` | **REGISTERED-STANDALONE** | `news_sentiment_short` | - | symmetric short already registered |
 | `pead_long_high_yoy_growth_only` | **REGISTERED-STANDALONE** | `pead_short_negative_yoy_growth` | -0.847 (n=496) -> **DROP** | symmetric short already registered (curated pair - no name transform finds it) |
-| `poc_magnet_long` | **MISSING-BUILDABLE** | `-` | - | no short mirror registered -> Class 7 NEW candidate |
+| `poc_magnet_long` | **REGISTERED-STANDALONE** | `poc_magnet_short` | - | symmetric short already registered |
 | `r1_break_retest` | **REGISTERED-DUAL** | `r1_break_retest (short leg)` | -0.266 (n=398) -> **DROP** | already trades both directions; the short leg ships with it |
 | `rsi_oversold` | **REGISTERED-DUAL** | `rsi_oversold (short leg)` | 0.079 (n=169) -> **DROP** | already trades both directions; the short leg ships with it |
 | `rsi_oversold_with_smart_money_long` | **NOT-DEFENSIBLE** | `-` | - | long-only data source (smart_money) - B611 precedent; a mechanical inverse would be economically false |
@@ -88,7 +88,7 @@ Of the 29 PASS rows, **29** also have a 95% CI lower bound above 0 (F2: the rest
 | `smc_breaker_block_long` | **REGISTERED-STANDALONE** | `smc_breaker_block_short` | -0.7 (n=427) -> **DROP** | symmetric short already registered |
 | `smc_inverse_fvg` | **REGISTERED-DUAL** | `smc_inverse_fvg (short leg)` | -0.234 (n=139) -> **DROP** | already trades both directions; the short leg ships with it |
 | `totm_long` | **NOT-DEFENSIBLE-ANOMALY** | `-` | - | one-directional calendar/seasonal anomaly - the inverse of 'returns cluster positively' is 'no effect', not 'returns cluster negatively'; no short thesis |
-| `xs_combined_momentum_low_ivol` | **MISSING-BUILDABLE** | `-` | - | no short mirror registered -> Class 7 NEW candidate |
+| `xs_combined_momentum_low_ivol` | **REGISTERED-STANDALONE** | `xs_combined_momentum_high_ivol_short` | - | symmetric short already registered (curated pair - no name transform finds it) |
 | `xs_momentum_with_smart_money_long` | **NOT-DEFENSIBLE** | `-` | - | long-only data source (smart_money) - B611 precedent; a mechanical inverse would be economically false |
 
 ## A. SURVIVORS - cleared the holdout (the only rows with forward evidence)

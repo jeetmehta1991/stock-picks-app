@@ -110,6 +110,11 @@ CURATED_MIRRORS = {
     "pead_long_high_yoy_growth_only": "pead_short_negative_yoy_growth",
     "pead_long": "pead_short",
     "xs_momentum_top_decile": "xs_momentum_bottom_decile_short",
+    # B1383: wired in B1382 but NOT curated at the time, so the resolver kept
+    # reporting MISSING-BUILDABLE for a mirror that already exists -- the exact
+    # L233 failure mode recurring one batch later. Whenever a mirror is WIRED,
+    # it must be added here in the SAME batch or the doc grows a phantom to-do.
+    "xs_combined_momentum_low_ivol": "xs_combined_momentum_high_ivol_short",
 }
 
 # A second principled exception, distinct from the long-only-data-source one: a CALENDAR /
