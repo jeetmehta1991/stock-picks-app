@@ -186,11 +186,17 @@ def main() -> int:
     out.write_text(json.dumps({"window": [str(start), str(end)], "n_tickers": len(tickers),
                                "holdout_touched": False, "results": results},
                               indent=2), encoding="utf-8")
-    print(f"\n{'strategy':<40}{'base rate':>11}{'top binding clause':>34}{'lift':>8}")
+    # B1394 fix: the summary must show the top RELAXABLE clause. Sorting all clauses by lift
+    # put TRIGGER clauses at the top (macd_fast_crossover's crossover, lift 8.94) under a
+    # header reading "top binding clause" - re-introducing, in the summary view, exactly the
+    # misread the TRIGGER classification exists to prevent.
+    print(f"\n{'strategy':<40}{'base rate':>11}{'top RELAXABLE clause':>34}{'lift':>8}")
     for r in sorted(results, key=lambda r: -r["base_rate"]):
-        top = r["clauses"][0] if r["clauses"] else {}
-        print(f"  {r['strategy']:<38}{r['base_rate']:>11.5f}{str(top.get('clause'))[:32]:>34}"
-              f"{str(top.get('lift')):>8}")
+        rel = [c for c in r["clauses"] if c["verdict"].startswith("BINDING")]
+        top = rel[0] if rel else {}
+        label = str(top.get("clause", "- none relaxable -"))[:32]
+        print(f"  {r['strategy']:<38}{r['base_rate']:>11.5f}{label:>34}"
+              f"{str(top.get('lift', '-')):>8}")
     def _by(pfx):
         return [(r["strategy"], c["clause"], c["lift"]) for r in results for c in r["clauses"]
                 if c["verdict"].startswith(pfx)]
