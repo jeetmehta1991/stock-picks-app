@@ -1,0 +1,6227 @@
+{
+  "window": [
+    "2022-05-05",
+    "2025-05-05"
+  ],
+  "n_tickers": 2,
+  "holdout_touched": false,
+  "results": [
+    {
+      "strategy": "52w_high_breakout",
+      "bars_evaluated": 1502,
+      "base_fires": 10,
+      "base_rate": 0.006658,
+      "clauses": [
+        {
+          "clause": "break_52w_high",
+          "loo_rate": 0.557923,
+          "lift": 83.8,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "vol_spike_17x",
+          "loo_rate": 0.006658,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        },
+        {
+          "clause": "close_above_open",
+          "loo_rate": 0.006658,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        },
+        {
+          "clause": "close_in_top_40pct_of_range",
+          "loo_rate": 0.006658,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        },
+        {
+          "clause": "break_52w_high_clearance_atr_05",
+          "loo_rate": 0.006658,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        },
+        {
+          "clause": "break_52w_high_confirmed_today",
+          "loo_rate": 0.006658,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        },
+        {
+          "clause": "year_high",
+          "loo_rate": 0.006658,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        }
+      ]
+    },
+    {
+      "strategy": "52w_high_breakout_pullback_long",
+      "bars_evaluated": 1502,
+      "base_fires": 5,
+      "base_rate": 0.003329,
+      "clauses": [
+        {
+          "clause": "near_52w_high_retest_long",
+          "loo_rate": 1.0,
+          "lift": 300.4,
+          "verdict": "TRIGGER (forcing it true fires on ~every bar - relaxation is meaningless)"
+        }
+      ]
+    },
+    {
+      "strategy": "52w_high_breakout_with_smart_money_long",
+      "bars_evaluated": 1502,
+      "base_fires": 10,
+      "base_rate": 0.006658,
+      "clauses": [
+        {
+          "clause": "near_52w_high_95pct",
+          "loo_rate": 0.069241,
+          "lift": 10.4,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "vol_spike_12x",
+          "loo_rate": 0.036618,
+          "lift": 5.5,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "close_in_top_40pct_of_range",
+          "loo_rate": 0.008655,
+          "lift": 1.3,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "close_above_open",
+          "loo_rate": 0.007324,
+          "lift": 1.1,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "52w_high_breakout_with_smart_money_vol_below_long",
+      "bars_evaluated": 1502,
+      "base_fires": 33,
+      "base_rate": 0.021971,
+      "clauses": [
+        {
+          "clause": "near_52w_high_95pct",
+          "loo_rate": 0.21771,
+          "lift": 9.909,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "vol_below_avg",
+          "loo_rate": 0.036618,
+          "lift": 1.667,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "institutional_buy",
+          "loo_rate": 0.036618,
+          "lift": 1.667,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "close_in_top_40pct_of_range",
+          "loo_rate": 0.0253,
+          "lift": 1.152,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "close_above_open",
+          "loo_rate": 0.023968,
+          "lift": 1.091,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "52w_low_breakdown",
+      "bars_evaluated": 1502,
+      "base_fires": 11,
+      "base_rate": 0.007324,
+      "clauses": [
+        {
+          "clause": "break_52w_low",
+          "loo_rate": 0.15779,
+          "lift": 21.545,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "vol_above_avg",
+          "loo_rate": 0.009987,
+          "lift": 1.364,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "close_in_bottom_40pct_of_range",
+          "loo_rate": 0.007989,
+          "lift": 1.091,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "close_below_open",
+          "loo_rate": 0.007324,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        }
+      ]
+    },
+    {
+      "strategy": "52w_low_breakdown_pullback_short",
+      "bars_evaluated": 1502,
+      "base_fires": 15,
+      "base_rate": 0.009987,
+      "clauses": [
+        {
+          "clause": "near_52w_low_retest_short",
+          "loo_rate": 1.0,
+          "lift": 100.133,
+          "verdict": "TRIGGER (forcing it true fires on ~every bar - relaxation is meaningless)"
+        }
+      ]
+    },
+    {
+      "strategy": "52wh_break_retest",
+      "bars_evaluated": 1502,
+      "base_fires": 7,
+      "base_rate": 0.00466,
+      "clauses": [
+        {
+          "clause": "year_high_break_retest_long",
+          "loo_rate": 0.015313,
+          "lift": 3.286,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "near_52w_high",
+          "loo_rate": 0.006658,
+          "lift": 1.429,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.00466,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        },
+        {
+          "clause": "close_above_open",
+          "loo_rate": 0.00466,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        },
+        {
+          "clause": "close_in_top_40pct_of_range",
+          "loo_rate": 0.00466,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        }
+      ]
+    },
+    {
+      "strategy": "52wl_break_retest_short",
+      "bars_evaluated": 1502,
+      "base_fires": 14,
+      "base_rate": 0.009321,
+      "clauses": [
+        {
+          "clause": "year_low_break_retest_short",
+          "loo_rate": 0.0253,
+          "lift": 2.714,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "near_52w_low",
+          "loo_rate": 0.019973,
+          "lift": 2.143,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "close_in_bottom_40pct_of_range",
+          "loo_rate": 0.010652,
+          "lift": 1.143,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.009321,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        },
+        {
+          "clause": "above_avwap_20high",
+          "loo_rate": 0.009321,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        },
+        {
+          "clause": "below_ema_200",
+          "loo_rate": 0.009321,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        },
+        {
+          "clause": "close_below_open",
+          "loo_rate": 0.009321,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        }
+      ]
+    },
+    {
+      "strategy": "activist_13d_long",
+      "bars_evaluated": 1502,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "sc_13d_filed_within_30d",
+          "loo_rate": 1.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "sc_13d_latest_filer_identity",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "sc_13d_latest_percent_owned",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        }
+      ]
+    },
+    {
+      "strategy": "adx_initiation",
+      "bars_evaluated": 1502,
+      "base_fires": 25,
+      "base_rate": 0.016644,
+      "clauses": [
+        {
+          "clause": "adx_cross_up_20",
+          "loo_rate": 1.0,
+          "lift": 60.08,
+          "verdict": "TRIGGER (forcing it true fires on ~every bar - relaxation is meaningless)"
+        },
+        {
+          "clause": "adx_di_bull",
+          "loo_rate": 0.016644,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        },
+        {
+          "clause": "adx_di_bear",
+          "loo_rate": 0.016644,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        }
+      ]
+    },
+    {
+      "strategy": "avwap_20high_rejection_short",
+      "bars_evaluated": 1502,
+      "base_fires": 3,
+      "base_rate": 0.001997,
+      "clauses": [
+        {
+          "clause": "shooting_star",
+          "loo_rate": 0.022636,
+          "lift": 11.333,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "bearish_engulfing",
+          "loo_rate": 0.022636,
+          "lift": 11.333,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "vol_spike_12x",
+          "loo_rate": 0.016644,
+          "lift": 8.333,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "pct_from_avwap_20high",
+          "loo_rate": 0.007989,
+          "lift": 4.0,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "below_ema_200",
+          "loo_rate": 0.005992,
+          "lift": 3.0,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "above_avwap_20high",
+          "loo_rate": 0.0,
+          "lift": 0.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        }
+      ]
+    },
+    {
+      "strategy": "avwap_50_reclaim",
+      "bars_evaluated": 1502,
+      "base_fires": 121,
+      "base_rate": 0.080559,
+      "clauses": [
+        {
+          "clause": "avwap_50low_loss_recent_3d",
+          "loo_rate": 0.30759,
+          "lift": 3.818,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "avwap_50low_reclaim_recent_3d",
+          "loo_rate": 0.28229,
+          "lift": 3.504,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.130493,
+          "lift": 1.62,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "below_ema_200",
+          "loo_rate": 0.105193,
+          "lift": 1.306,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "macd_12_26_9_bullish",
+          "loo_rate": 0.039947,
+          "lift": 0.496,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        }
+      ]
+    },
+    {
+      "strategy": "awesome_oscillator",
+      "bars_evaluated": 1502,
+      "base_fires": 55,
+      "base_rate": 0.036618,
+      "clauses": [
+        {
+          "clause": "ao_cross_dn",
+          "loo_rate": 0.537949,
+          "lift": 14.691,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "ao_cross_up",
+          "loo_rate": 0.498668,
+          "lift": 13.618,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "price_above_ema_20",
+          "loo_rate": 0.038615,
+          "lift": 1.055,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "below_ema_20",
+          "loo_rate": 0.037284,
+          "lift": 1.018,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        }
+      ]
+    },
+    {
+      "strategy": "bb_squeeze_volume",
+      "bars_evaluated": 1502,
+      "base_fires": 41,
+      "base_rate": 0.027297,
+      "clauses": [
+        {
+          "clause": "squeeze_fire_up",
+          "loo_rate": 0.400133,
+          "lift": 14.659,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "squeeze_fire_dn",
+          "loo_rate": 0.400133,
+          "lift": 14.659,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "vol_above_avg",
+          "loo_rate": 0.055925,
+          "lift": 2.049,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "bollinger_lower",
+      "bars_evaluated": 1502,
+      "base_fires": 38,
+      "base_rate": 0.0253,
+      "clauses": [
+        {
+          "clause": "bb_20_20_reclaim_from_upper_recent_3d",
+          "loo_rate": 0.095206,
+          "lift": 3.763,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.065246,
+          "lift": 2.579,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "bb_20_20_reclaim_from_lower_recent_3d",
+          "loo_rate": 0.061252,
+          "lift": 2.421,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "below_ema_200",
+          "loo_rate": 0.059254,
+          "lift": 2.342,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "vix_band_high",
+          "loo_rate": 0.031292,
+          "lift": 1.237,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "rsi_2",
+          "loo_rate": 0.029294,
+          "lift": 1.158,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "adx",
+          "loo_rate": 0.026631,
+          "lift": 1.053,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "vix_band_low",
+          "loo_rate": 0.01265,
+          "lift": 0.5,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        },
+        {
+          "clause": "rsi_14",
+          "loo_rate": 0.011318,
+          "lift": 0.447,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        }
+      ]
+    },
+    {
+      "strategy": "bollinger_tight",
+      "bars_evaluated": 1502,
+      "base_fires": 27,
+      "base_rate": 0.017976,
+      "clauses": [
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.115846,
+          "lift": 6.444,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "below_ema_200",
+          "loo_rate": 0.080559,
+          "lift": 4.481,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "bb_20_15_reclaim_from_upper_recent_3d",
+          "loo_rate": 0.07723,
+          "lift": 4.296,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "bb_20_20_reclaim_from_upper_recent_3d",
+          "loo_rate": 0.07723,
+          "lift": 4.296,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "bb_20_15_reclaim_from_lower_recent_3d",
+          "loo_rate": 0.056591,
+          "lift": 3.148,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "bb_20_20_reclaim_from_lower_recent_3d",
+          "loo_rate": 0.056591,
+          "lift": 3.148,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "vix_band_high",
+          "loo_rate": 0.043941,
+          "lift": 2.444,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "rsi_2",
+          "loo_rate": 0.039281,
+          "lift": 2.185,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "rsi_14",
+          "loo_rate": 0.030626,
+          "lift": 1.704,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "vix_band_low",
+          "loo_rate": 0.017976,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        }
+      ]
+    },
+    {
+      "strategy": "bollinger_tight_with_smart_money_long",
+      "bars_evaluated": 1502,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "bb_20_20_squeeze",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "bb_20_15_squeeze",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "close_above_open",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        }
+      ]
+    },
+    {
+      "strategy": "bollinger_upper_short",
+      "bars_evaluated": 1502,
+      "base_fires": 5,
+      "base_rate": 0.003329,
+      "clauses": [
+        {
+          "clause": "shooting_star",
+          "loo_rate": 0.04261,
+          "lift": 12.8,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "bb_20_20_touch_upper",
+          "loo_rate": 0.007324,
+          "lift": 2.2,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "rsi_14",
+          "loo_rate": 0.005326,
+          "lift": 1.6,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "break_retest_volume",
+      "bars_evaluated": 1502,
+      "base_fires": 146,
+      "base_rate": 0.097204,
+      "clauses": [
+        {
+          "clause": "vol_below_avg",
+          "loo_rate": 0.196405,
+          "lift": 2.021,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "resistance_break_retest",
+          "loo_rate": 0.177763,
+          "lift": 1.829,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "support_break_retest",
+          "loo_rate": 0.167776,
+          "lift": 1.726,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "close_in_bottom_40pct_of_range",
+          "loo_rate": 0.112517,
+          "lift": 1.158,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "close_in_top_40pct_of_range",
+          "loo_rate": 0.109188,
+          "lift": 1.123,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "close_above_open",
+          "loo_rate": 0.105193,
+          "lift": 1.082,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "obv_bearish",
+          "loo_rate": 0.101864,
+          "lift": 1.048,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "obv_bullish",
+          "loo_rate": 0.101198,
+          "lift": 1.041,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "close_below_open",
+          "loo_rate": 0.101198,
+          "lift": 1.041,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "camarilla_r4_breakout",
+      "bars_evaluated": 1502,
+      "base_fires": 316,
+      "base_rate": 0.210386,
+      "clauses": [
+        {
+          "clause": "vol_above_avg",
+          "loo_rate": 0.430093,
+          "lift": 2.044,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "above_cam_r4",
+          "loo_rate": 0.400133,
+          "lift": 1.902,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "below_cam_s4",
+          "loo_rate": 0.400133,
+          "lift": 1.902,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "camarilla_s3_bounce",
+      "bars_evaluated": 1502,
+      "base_fires": 1,
+      "base_rate": 0.000666,
+      "clauses": [
+        {
+          "clause": "rsi_14",
+          "loo_rate": 0.041944,
+          "lift": 63.0,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "obv_bullish",
+          "loo_rate": 0.037284,
+          "lift": 56.0,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "obv_bearish",
+          "loo_rate": 0.029294,
+          "lift": 44.0,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "near_cam_s3",
+          "loo_rate": 0.011984,
+          "lift": 18.0,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "near_cam_r3",
+          "loo_rate": 0.007324,
+          "lift": 11.0,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "classification_change_breakout_long",
+      "bars_evaluated": 1502,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "classification_changed_recent",
+          "loo_rate": 0.1498,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "resistance_break_retest",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "days_since_classification_change",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "new_sector",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        }
+      ]
+    },
+    {
+      "strategy": "classification_change_from_tech_short",
+      "bars_evaluated": 1502,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "classification_change_from_tech",
+          "loo_rate": 0.594541,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "below_ema_200",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "prior_sector",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "new_sector",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        }
+      ]
+    },
+    {
+      "strategy": "classification_change_momentum_long",
+      "bars_evaluated": 1502,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "classification_changed_recent",
+          "loo_rate": 0.298935,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "macd_12_26_9_bullish",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "price_above_ema_50",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        }
+      ]
+    },
+    {
+      "strategy": "classification_change_oversold_long",
+      "bars_evaluated": 1502,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "rsi_14",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "classification_changed_recent",
+          "loo_rate": 0.009987,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        }
+      ]
+    },
+    {
+      "strategy": "classification_change_recent_long",
+      "bars_evaluated": 1502,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "classification_changed_recent",
+          "loo_rate": 0.405459,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "days_since_classification_change",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "new_sector",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "prior_sector",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        }
+      ]
+    },
+    {
+      "strategy": "classification_change_to_defensive_short",
+      "bars_evaluated": 1502,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "classification_change_to_defensive",
+          "loo_rate": 0.594541,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "below_ema_200",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "new_sector",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        }
+      ]
+    },
+    {
+      "strategy": "classification_change_to_tech_long",
+      "bars_evaluated": 1502,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "classification_change_to_tech",
+          "loo_rate": 0.405459,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "new_sector",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        }
+      ]
+    },
+    {
+      "strategy": "classification_change_volume_long",
+      "bars_evaluated": 1502,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "classification_changed_recent",
+          "loo_rate": 0.007989,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "vol_spike_2x",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "days_since_classification_change",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "new_sector",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        }
+      ]
+    },
+    {
+      "strategy": "classification_change_with_insider_long",
+      "bars_evaluated": 1502,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "classification_changed_recent",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "insider_cluster_active",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "new_sector",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        }
+      ]
+    },
+    {
+      "strategy": "classification_change_with_institutional_long",
+      "bars_evaluated": 1502,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "classification_changed_recent",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "institutional_buy",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "new_sector",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        }
+      ]
+    },
+    {
+      "strategy": "cmf_flip",
+      "bars_evaluated": 1502,
+      "base_fires": 67,
+      "base_rate": 0.044607,
+      "clauses": [
+        {
+          "clause": "cmf_cross_up",
+          "loo_rate": 0.549933,
+          "lift": 12.328,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "cmf_cross_dn",
+          "loo_rate": 0.494674,
+          "lift": 11.09,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "rsi_14",
+          "loo_rate": 0.051265,
+          "lift": 1.149,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "cpr_narrow_momentum",
+      "bars_evaluated": 1502,
+      "base_fires": 115,
+      "base_rate": 0.076565,
+      "clauses": [
+        {
+          "clause": "cpr_narrow_tight",
+          "loo_rate": 0.310253,
+          "lift": 4.052,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "below_cpr",
+          "loo_rate": 0.109188,
+          "lift": 1.426,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "macd_12_26_9_bearish",
+          "loo_rate": 0.103196,
+          "lift": 1.348,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.099201,
+          "lift": 1.296,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "above_cpr",
+          "loo_rate": 0.097204,
+          "lift": 1.27,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "below_ema_200",
+          "loo_rate": 0.095872,
+          "lift": 1.252,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "macd_12_26_9_bullish",
+          "loo_rate": 0.094541,
+          "lift": 1.235,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "rsi_14",
+          "loo_rate": 0.039281,
+          "lift": 0.513,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        }
+      ]
+    },
+    {
+      "strategy": "cpr_narrow_momentum_short",
+      "bars_evaluated": 1502,
+      "base_fires": 87,
+      "base_rate": 0.057923,
+      "clauses": [
+        {
+          "clause": "cpr_narrow_tight",
+          "loo_rate": 0.231691,
+          "lift": 4.0,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "below_cpr",
+          "loo_rate": 0.101198,
+          "lift": 1.747,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "macd_12_26_9_bearish",
+          "loo_rate": 0.085885,
+          "lift": 1.483,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "rsi_14",
+          "loo_rate": 0.071904,
+          "lift": 1.241,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "cup_and_handle_long",
+      "bars_evaluated": 1502,
+      "base_fires": 28,
+      "base_rate": 0.018642,
+      "clauses": [
+        {
+          "clause": "cup_handle_detected",
+          "loo_rate": 0.125166,
+          "lift": 6.714,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "vol_above_avg",
+          "loo_rate": 0.052597,
+          "lift": 2.821,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "price_above_ema_50",
+          "loo_rate": 0.022636,
+          "lift": 1.214,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.020639,
+          "lift": 1.107,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "cup_and_handle_retest_long",
+      "bars_evaluated": 1502,
+      "base_fires": 10,
+      "base_rate": 0.006658,
+      "clauses": [
+        {
+          "clause": "cup_handle_neckline_break_retest_long",
+          "loo_rate": 0.051931,
+          "lift": 7.8,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "cup_handle_detected",
+          "loo_rate": 0.031957,
+          "lift": 4.8,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "rsi_14",
+          "loo_rate": 0.007324,
+          "lift": 1.1,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.006658,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        },
+        {
+          "clause": "price_above_ema_50",
+          "loo_rate": 0.006658,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        }
+      ]
+    },
+    {
+      "strategy": "dc20_break_retest",
+      "bars_evaluated": 1502,
+      "base_fires": 177,
+      "base_rate": 0.117843,
+      "clauses": [
+        {
+          "clause": "resistance_break_retest",
+          "loo_rate": 0.313582,
+          "lift": 2.661,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "support_break_retest",
+          "loo_rate": 0.29028,
+          "lift": 2.463,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "vol_below_avg",
+          "loo_rate": 0.228362,
+          "lift": 1.938,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "close_in_bottom_40pct_of_range",
+          "loo_rate": 0.183755,
+          "lift": 1.559,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "close_in_top_40pct_of_range",
+          "loo_rate": 0.183089,
+          "lift": 1.554,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "death_cross_50_200_volume",
+      "bars_evaluated": 1502,
+      "base_fires": 3,
+      "base_rate": 0.001997,
+      "clauses": [
+        {
+          "clause": "ema_50_200_death_cross",
+          "loo_rate": 0.400133,
+          "lift": 200.333,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "vol_above_avg",
+          "loo_rate": 0.005326,
+          "lift": 2.667,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "doji_at_resistance_short",
+      "bars_evaluated": 1502,
+      "base_fires": 4,
+      "base_rate": 0.002663,
+      "clauses": [
+        {
+          "clause": "doji",
+          "loo_rate": 0.110519,
+          "lift": 41.5,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "vol_spike_12x",
+          "loo_rate": 0.038615,
+          "lift": 14.5,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "near_r1_wide",
+          "loo_rate": 0.003995,
+          "lift": 1.5,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "near_r2_wide",
+          "loo_rate": 0.003995,
+          "lift": 1.5,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "at_key_fib_wide",
+          "loo_rate": 0.003995,
+          "lift": 1.5,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "doji_at_support",
+      "bars_evaluated": 1502,
+      "base_fires": 4,
+      "base_rate": 0.002663,
+      "clauses": [
+        {
+          "clause": "doji",
+          "loo_rate": 0.122503,
+          "lift": 46.0,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "vol_spike_12x",
+          "loo_rate": 0.038615,
+          "lift": 14.5,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "near_s1_wide",
+          "loo_rate": 0.003995,
+          "lift": 1.5,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "near_s2_wide",
+          "loo_rate": 0.003995,
+          "lift": 1.5,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "at_key_fib_wide",
+          "loo_rate": 0.003995,
+          "lift": 1.5,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "donchian_10_breakout",
+      "bars_evaluated": 1502,
+      "base_fires": 69,
+      "base_rate": 0.045939,
+      "clauses": [
+        {
+          "clause": "dc10_strong_breakout_dn",
+          "loo_rate": 0.088549,
+          "lift": 1.928,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "dc10_strong_breakout_up",
+          "loo_rate": 0.073901,
+          "lift": 1.609,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "vol_above_avg",
+          "loo_rate": 0.053262,
+          "lift": 1.159,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "close_in_bottom_40pct_of_range",
+          "loo_rate": 0.047936,
+          "lift": 1.043,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "macd_12_26_9_bullish",
+          "loo_rate": 0.04727,
+          "lift": 1.029,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "close_in_top_40pct_of_range",
+          "loo_rate": 0.04727,
+          "lift": 1.029,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "macd_12_26_9_bearish",
+          "loo_rate": 0.04727,
+          "lift": 1.029,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "dc10_breakout_up_1pct",
+          "loo_rate": 0.045939,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        },
+        {
+          "clause": "close_above_open",
+          "loo_rate": 0.045939,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        },
+        {
+          "clause": "dc10_breakout_dn_1pct",
+          "loo_rate": 0.045939,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        },
+        {
+          "clause": "close_below_open",
+          "loo_rate": 0.045939,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        }
+      ]
+    },
+    {
+      "strategy": "donchian_breakdown_retest_short",
+      "bars_evaluated": 1502,
+      "base_fires": 53,
+      "base_rate": 0.035286,
+      "clauses": [
+        {
+          "clause": "dc20_support_break_retest_strong",
+          "loo_rate": 0.098535,
+          "lift": 2.792,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "vol_below_avg",
+          "loo_rate": 0.075233,
+          "lift": 2.132,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "close_in_bottom_40pct_of_range",
+          "loo_rate": 0.044607,
+          "lift": 1.264,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "macd_12_26_9_bearish",
+          "loo_rate": 0.043276,
+          "lift": 1.226,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "close_below_open",
+          "loo_rate": 0.037284,
+          "lift": 1.057,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "donchian_breakdown_short",
+      "bars_evaluated": 1502,
+      "base_fires": 48,
+      "base_rate": 0.031957,
+      "clauses": [
+        {
+          "clause": "vol_spike_12x",
+          "loo_rate": 0.075233,
+          "lift": 2.354,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "dc10_breakout_dn",
+          "loo_rate": 0.055925,
+          "lift": 1.75,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "close_in_bottom_40pct_of_range",
+          "loo_rate": 0.039281,
+          "lift": 1.229,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "macd_12_26_9_bearish",
+          "loo_rate": 0.033955,
+          "lift": 1.062,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "close_below_open",
+          "loo_rate": 0.031957,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        }
+      ]
+    },
+    {
+      "strategy": "donchian_breakout_long",
+      "bars_evaluated": 1502,
+      "base_fires": 39,
+      "base_rate": 0.025965,
+      "clauses": [
+        {
+          "clause": "vol_spike_12x",
+          "loo_rate": 0.069907,
+          "lift": 2.692,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "dc10_breakout_up",
+          "loo_rate": 0.044607,
+          "lift": 1.718,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "close_in_top_40pct_of_range",
+          "loo_rate": 0.031292,
+          "lift": 1.205,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "macd_12_26_9_bullish",
+          "loo_rate": 0.028628,
+          "lift": 1.103,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "close_above_open",
+          "loo_rate": 0.025965,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        }
+      ]
+    },
+    {
+      "strategy": "donchian_breakout_retest_long",
+      "bars_evaluated": 1502,
+      "base_fires": 40,
+      "base_rate": 0.026631,
+      "clauses": [
+        {
+          "clause": "dc20_resistance_break_retest_strong",
+          "loo_rate": 0.122503,
+          "lift": 4.6,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "vol_below_avg",
+          "loo_rate": 0.051265,
+          "lift": 1.925,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "close_in_top_40pct_of_range",
+          "loo_rate": 0.033955,
+          "lift": 1.275,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "close_above_open",
+          "loo_rate": 0.031957,
+          "lift": 1.2,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "macd_12_26_9_bullish",
+          "loo_rate": 0.029294,
+          "lift": 1.1,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "donchian_breakout_with_smart_money_long",
+      "bars_evaluated": 1502,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "dc20_breakout_up",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "close_above_open",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        }
+      ]
+    },
+    {
+      "strategy": "double_bottom_long",
+      "bars_evaluated": 1502,
+      "base_fires": 38,
+      "base_rate": 0.0253,
+      "clauses": [
+        {
+          "clause": "double_bottom_detected",
+          "loo_rate": 0.181092,
+          "lift": 7.158,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "close_in_top_40pct_of_range",
+          "loo_rate": 0.053262,
+          "lift": 2.105,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.045273,
+          "lift": 1.789,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "flag_bear_retest_short",
+      "bars_evaluated": 1502,
+      "base_fires": 9,
+      "base_rate": 0.005992,
+      "clauses": [
+        {
+          "clause": "flag_bear_break_retest_short",
+          "loo_rate": 0.171771,
+          "lift": 28.667,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "vol_below_avg",
+          "loo_rate": 0.010652,
+          "lift": 1.778,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "close_below_open",
+          "loo_rate": 0.009321,
+          "lift": 1.556,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.005992,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        },
+        {
+          "clause": "below_ema_200",
+          "loo_rate": 0.005992,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        }
+      ]
+    },
+    {
+      "strategy": "flag_bull_long",
+      "bars_evaluated": 1502,
+      "base_fires": 15,
+      "base_rate": 0.009987,
+      "clauses": [
+        {
+          "clause": "flag_bull_broke",
+          "loo_rate": 0.405459,
+          "lift": 40.6,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.009987,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        }
+      ]
+    },
+    {
+      "strategy": "flag_bull_retest_long",
+      "bars_evaluated": 1502,
+      "base_fires": 4,
+      "base_rate": 0.002663,
+      "clauses": [
+        {
+          "clause": "flag_bull_break_retest_long",
+          "loo_rate": 0.131824,
+          "lift": 49.5,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "close_above_open",
+          "loo_rate": 0.005992,
+          "lift": 2.25,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "vol_below_avg",
+          "loo_rate": 0.003995,
+          "lift": 1.5,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.002663,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        }
+      ]
+    },
+    {
+      "strategy": "gold_silver_risk_off_long",
+      "bars_evaluated": 1502,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "risk_off_regime_gold_signal",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "sector",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        }
+      ]
+    },
+    {
+      "strategy": "golden_cross_20_50",
+      "bars_evaluated": 1502,
+      "base_fires": 29,
+      "base_rate": 0.019308,
+      "clauses": [
+        {
+          "clause": "ema_20_50_golden_cross",
+          "loo_rate": 1.0,
+          "lift": 51.793,
+          "verdict": "TRIGGER (forcing it true fires on ~every bar - relaxation is meaningless)"
+        },
+        {
+          "clause": "ema_20_50_death_cross",
+          "loo_rate": 1.0,
+          "lift": 51.793,
+          "verdict": "TRIGGER (forcing it true fires on ~every bar - relaxation is meaningless)"
+        }
+      ]
+    },
+    {
+      "strategy": "golden_cross_50_200",
+      "bars_evaluated": 1502,
+      "base_fires": 16,
+      "base_rate": 0.010652,
+      "clauses": [
+        {
+          "clause": "ema_50_200_golden_cross",
+          "loo_rate": 1.0,
+          "lift": 93.875,
+          "verdict": "TRIGGER (forcing it true fires on ~every bar - relaxation is meaningless)"
+        },
+        {
+          "clause": "ema_50_200_death_cross",
+          "loo_rate": 1.0,
+          "lift": 93.875,
+          "verdict": "TRIGGER (forcing it true fires on ~every bar - relaxation is meaningless)"
+        }
+      ]
+    },
+    {
+      "strategy": "golden_cross_9_21",
+      "bars_evaluated": 1502,
+      "base_fires": 47,
+      "base_rate": 0.031292,
+      "clauses": [
+        {
+          "clause": "ema_9_21_death_cross",
+          "loo_rate": 0.534621,
+          "lift": 17.085,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "ema_9_21_golden_cross",
+          "loo_rate": 0.496671,
+          "lift": 15.872,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "below_sma_50",
+          "loo_rate": 0.036618,
+          "lift": 1.17,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "price_above_sma_50",
+          "loo_rate": 0.035286,
+          "lift": 1.128,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "golden_cross_volume",
+      "bars_evaluated": 1502,
+      "base_fires": 5,
+      "base_rate": 0.003329,
+      "clauses": [
+        {
+          "clause": "ema_50_200_golden_cross",
+          "loo_rate": 0.400133,
+          "lift": 120.2,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "ema_50_200_death_cross",
+          "loo_rate": 0.400133,
+          "lift": 120.2,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "vol_above_avg",
+          "loo_rate": 0.010652,
+          "lift": 3.2,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "halloween_seasonal_long",
+      "bars_evaluated": 1502,
+      "base_fires": 3,
+      "base_rate": 0.001997,
+      "clauses": [
+        {
+          "clause": "is_halloween_period_first_day",
+          "loo_rate": 0.405459,
+          "lift": 203.0,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.003995,
+          "lift": 2.0,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "hammer_at_support_long",
+      "bars_evaluated": 1502,
+      "base_fires": 5,
+      "base_rate": 0.003329,
+      "clauses": [
+        {
+          "clause": "hammer",
+          "loo_rate": 0.081225,
+          "lift": 24.4,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "near_s1",
+          "loo_rate": 0.009987,
+          "lift": 3.0,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "near_s2",
+          "loo_rate": 0.009987,
+          "lift": 3.0,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "bb_20_20_touch_lower",
+          "loo_rate": 0.009987,
+          "lift": 3.0,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "rsi_14",
+          "loo_rate": 0.007324,
+          "lift": 2.2,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "head_and_shoulders_bottom_long",
+      "bars_evaluated": 1502,
+      "base_fires": 51,
+      "base_rate": 0.033955,
+      "clauses": [
+        {
+          "clause": "head_shoulders_bottom_detected",
+          "loo_rate": 0.405459,
+          "lift": 11.941,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.05526,
+          "lift": 1.627,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "head_and_shoulders_top_short",
+      "bars_evaluated": 1502,
+      "base_fires": 65,
+      "base_rate": 0.043276,
+      "clauses": [
+        {
+          "clause": "head_shoulders_top_detected",
+          "loo_rate": 0.594541,
+          "lift": 13.738,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "below_ema_200",
+          "loo_rate": 0.057257,
+          "lift": 1.323,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "htf_aligned_breakout_long",
+      "bars_evaluated": 1502,
+      "base_fires": 73,
+      "base_rate": 0.048602,
+      "clauses": [
+        {
+          "clause": "htf_aligned_bull",
+          "loo_rate": 0.123169,
+          "lift": 2.534,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "above_prev_high",
+          "loo_rate": 0.113182,
+          "lift": 2.329,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "vol_above_avg",
+          "loo_rate": 0.099201,
+          "lift": 2.041,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "htf_aligned_breakout_short",
+      "bars_evaluated": 1502,
+      "base_fires": 112,
+      "base_rate": 0.074567,
+      "clauses": [
+        {
+          "clause": "below_prev_low",
+          "loo_rate": 0.183089,
+          "lift": 2.455,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "vol_above_avg",
+          "loo_rate": 0.135153,
+          "lift": 1.812,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "htf_aligned_bear",
+          "loo_rate": 0.124501,
+          "lift": 1.67,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "hull_rsi",
+      "bars_evaluated": 1502,
+      "base_fires": 79,
+      "base_rate": 0.052597,
+      "clauses": [
+        {
+          "clause": "price_above_ema_200_break_recent_5d",
+          "loo_rate": 0.237683,
+          "lift": 4.519,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "below_ema_200_break_recent_5d",
+          "loo_rate": 0.237017,
+          "lift": 4.506,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "adx",
+          "loo_rate": 0.116511,
+          "lift": 2.215,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "adx_trending",
+          "loo_rate": 0.116511,
+          "lift": 2.215,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "hull_bearish",
+          "loo_rate": 0.059254,
+          "lift": 1.127,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "price_above_hull",
+          "loo_rate": 0.057923,
+          "lift": 1.101,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "price_below_hull",
+          "loo_rate": 0.057923,
+          "lift": 1.101,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "hull_bullish",
+          "loo_rate": 0.053928,
+          "lift": 1.025,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "ichimoku_cloud_breakdown",
+      "bars_evaluated": 1502,
+      "base_fires": 8,
+      "base_rate": 0.005326,
+      "clauses": [
+        {
+          "clause": "ichi_tk_cross_dn",
+          "loo_rate": 0.4747,
+          "lift": 89.125,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "ichi_below_cloud",
+          "loo_rate": 0.016644,
+          "lift": 3.125,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "ichimoku_cloud_breakout",
+      "bars_evaluated": 1502,
+      "base_fires": 65,
+      "base_rate": 0.043276,
+      "clauses": [
+        {
+          "clause": "ichi_below_cloud_break_recent_5d",
+          "loo_rate": 0.286285,
+          "lift": 6.615,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "ichi_above_cloud_break_recent_5d",
+          "loo_rate": 0.182423,
+          "lift": 4.215,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "ichi_weekly_below_cloud",
+          "loo_rate": 0.099201,
+          "lift": 2.292,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "ichi_weekly_above_cloud",
+          "loo_rate": 0.08522,
+          "lift": 1.969,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "ichi_tk_bullish",
+          "loo_rate": 0.04727,
+          "lift": 1.092,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "ichi_tk_bearish",
+          "loo_rate": 0.043941,
+          "lift": 1.015,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        }
+      ]
+    },
+    {
+      "strategy": "ichimoku_tk_cross",
+      "bars_evaluated": 1502,
+      "base_fires": 48,
+      "base_rate": 0.031957,
+      "clauses": [
+        {
+          "clause": "ichi_tk_cross_up",
+          "loo_rate": 1.0,
+          "lift": 31.292,
+          "verdict": "TRIGGER (forcing it true fires on ~every bar - relaxation is meaningless)"
+        },
+        {
+          "clause": "ichi_tk_cross_dn",
+          "loo_rate": 1.0,
+          "lift": 31.292,
+          "verdict": "TRIGGER (forcing it true fires on ~every bar - relaxation is meaningless)"
+        },
+        {
+          "clause": "ichi_below_cloud",
+          "loo_rate": 0.031957,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        }
+      ]
+    },
+    {
+      "strategy": "inside_bar_breakout",
+      "bars_evaluated": 1502,
+      "base_fires": 25,
+      "base_rate": 0.016644,
+      "clauses": [
+        {
+          "clause": "inside_bar",
+          "loo_rate": 0.131824,
+          "lift": 7.92,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "above_vwap",
+          "loo_rate": 0.075233,
+          "lift": 4.52,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "adx",
+          "loo_rate": 0.021971,
+          "lift": 1.32,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "adx_trending",
+          "loo_rate": 0.016644,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        }
+      ]
+    },
+    {
+      "strategy": "insider_cluster_concentrated_sell_short",
+      "bars_evaluated": 1502,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "concentrated_sell",
+          "loo_rate": 0.594541,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "below_ema_200",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        }
+      ]
+    },
+    {
+      "strategy": "insider_cluster_long",
+      "bars_evaluated": 1502,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "insider_unique_buyers_30d",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "insider_cluster_active",
+          "loo_rate": 0.405459,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        }
+      ]
+    },
+    {
+      "strategy": "insider_cluster_with_director_long",
+      "bars_evaluated": 1502,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "insider_director_buyers_30d",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "insider_officer_buyers_30d",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "insider_cluster_active",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "insider_unique_buyers_30d",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        }
+      ]
+    },
+    {
+      "strategy": "institutional_breakout_confirmation_long",
+      "bars_evaluated": 1502,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "institutional_buy",
+          "loo_rate": 0.083222,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "resistance_break_retest",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "close_above_open",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        }
+      ]
+    },
+    {
+      "strategy": "institutional_buy_momentum_long",
+      "bars_evaluated": 1502,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "institutional_buy",
+          "loo_rate": 0.298935,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "macd_12_26_9_bullish",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "price_above_ema_50",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        }
+      ]
+    },
+    {
+      "strategy": "institutional_cluster_long",
+      "bars_evaluated": 1502,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "institutional_strong_buy",
+          "loo_rate": 0.405459,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "institutional_new_positions",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "institutional_increased",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        }
+      ]
+    },
+    {
+      "strategy": "institutional_increased_with_directors_long",
+      "bars_evaluated": 1502,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "institutional_increased",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "insider_unique_buyers_30d",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        }
+      ]
+    },
+    {
+      "strategy": "institutional_insider_combo_long",
+      "bars_evaluated": 1502,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "institutional_buy",
+          "loo_rate": 0.405459,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "insider_cluster_active",
+          "loo_rate": 0.405459,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        }
+      ]
+    },
+    {
+      "strategy": "institutional_multi_quarter_persistence_long",
+      "bars_evaluated": 1502,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "persistent_holders_4q",
+          "loo_rate": 0.405459,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "total_active_holders",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        }
+      ]
+    },
+    {
+      "strategy": "institutional_oversold_long",
+      "bars_evaluated": 1502,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "rsi_14",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "institutional_buy",
+          "loo_rate": 0.021305,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        }
+      ]
+    },
+    {
+      "strategy": "institutional_persistence_momentum_long",
+      "bars_evaluated": 1502,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "institutional_increased",
+          "loo_rate": 0.298935,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "macd_12_26_9_bullish",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "price_above_ema_50",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        }
+      ]
+    },
+    {
+      "strategy": "institutional_persistence_volume_long",
+      "bars_evaluated": 1502,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "institutional_increased",
+          "loo_rate": 0.168442,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "vol_above_avg",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "price_above_ema_50",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        }
+      ]
+    },
+    {
+      "strategy": "institutional_persistent_holders_long",
+      "bars_evaluated": 1502,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "institutional_increased",
+          "loo_rate": 0.405459,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        }
+      ]
+    },
+    {
+      "strategy": "institutional_recent_init_momentum_long",
+      "bars_evaluated": 1502,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "institutional_new_positions",
+          "loo_rate": 0.302929,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "macd_12_26_9_bullish",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "price_above_ema_50",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        }
+      ]
+    },
+    {
+      "strategy": "institutional_recent_init_volume_long",
+      "bars_evaluated": 1502,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "institutional_new_positions",
+          "loo_rate": 0.168442,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "vol_above_avg",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "price_above_ema_50",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        }
+      ]
+    },
+    {
+      "strategy": "institutional_strong_conviction_long",
+      "bars_evaluated": 1502,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "institutional_increased",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "institutional_new_positions",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        }
+      ]
+    },
+    {
+      "strategy": "institutional_volume_confirmation_long",
+      "bars_evaluated": 1502,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "institutional_buy",
+          "loo_rate": 0.168442,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "vol_above_avg",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "price_above_ema_50",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        }
+      ]
+    },
+    {
+      "strategy": "institutional_with_directors_long",
+      "bars_evaluated": 1502,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "insider_unique_buyers_30d",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "institutional_buy",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        }
+      ]
+    },
+    {
+      "strategy": "institutional_with_officers_long",
+      "bars_evaluated": 1502,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "insider_officer_buyers_30d",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "insider_director_buyers_30d",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "institutional_buy",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        }
+      ]
+    },
+    {
+      "strategy": "inverted_cup_and_handle_short",
+      "bars_evaluated": 1502,
+      "base_fires": 27,
+      "base_rate": 0.017976,
+      "clauses": [
+        {
+          "clause": "inverted_cup_handle_detected",
+          "loo_rate": 0.212383,
+          "lift": 11.815,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "vol_above_avg",
+          "loo_rate": 0.053928,
+          "lift": 3.0,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "below_ema_200",
+          "loo_rate": 0.019973,
+          "lift": 1.111,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "below_ema_50",
+          "loo_rate": 0.017976,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        }
+      ]
+    },
+    {
+      "strategy": "january_effect_small_cap_long",
+      "bars_evaluated": 1502,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "is_january_extended",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "cap_band",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        }
+      ]
+    },
+    {
+      "strategy": "judas_swing_long",
+      "bars_evaluated": 1502,
+      "base_fires": 2,
+      "base_rate": 0.001332,
+      "clauses": [
+        {
+          "clause": "smc_liquidity_swept_dn",
+          "loo_rate": 0.067909,
+          "lift": 51.0,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "near_pivot",
+          "loo_rate": 0.013316,
+          "lift": 10.0,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "close_above_open",
+          "loo_rate": 0.00466,
+          "lift": 3.5,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "judas_swing_short",
+      "bars_evaluated": 1502,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "smc_liquidity_swept_up",
+          "loo_rate": 0.125166,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "near_pivot",
+          "loo_rate": 0.001332,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        }
+      ]
+    },
+    {
+      "strategy": "keltner_lower",
+      "bars_evaluated": 1502,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "kc_touch_lower",
+          "loo_rate": 0.046605,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "hammer",
+          "loo_rate": 0.000666,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "bullish_engulfing",
+          "loo_rate": 0.000666,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "bullish_pin_bar",
+          "loo_rate": 0.000666,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "obv_bullish",
+          "loo_rate": 0.015313,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "kc_touch_upper",
+          "loo_rate": 0.052597,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "shooting_star",
+          "loo_rate": 0.001997,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "bearish_engulfing",
+          "loo_rate": 0.001997,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "bearish_pin_bar",
+          "loo_rate": 0.001997,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "obv_bearish",
+          "loo_rate": 0.011318,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        }
+      ]
+    },
+    {
+      "strategy": "m_and_a_target_long",
+      "bars_evaluated": 1502,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": []
+    },
+    {
+      "strategy": "macd_bullish_with_smart_money_long",
+      "bars_evaluated": 1502,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "macd_12_26_9_bullish",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        }
+      ]
+    },
+    {
+      "strategy": "macd_crossover",
+      "bars_evaluated": 1502,
+      "base_fires": 117,
+      "base_rate": 0.077896,
+      "clauses": [
+        {
+          "clause": "macd_12_26_9_crossover_up",
+          "loo_rate": 1.0,
+          "lift": 12.838,
+          "verdict": "TRIGGER (forcing it true fires on ~every bar - relaxation is meaningless)"
+        },
+        {
+          "clause": "macd_12_26_9_crossover_dn",
+          "loo_rate": 1.0,
+          "lift": 12.838,
+          "verdict": "TRIGGER (forcing it true fires on ~every bar - relaxation is meaningless)"
+        }
+      ]
+    },
+    {
+      "strategy": "macd_crossover_short",
+      "bars_evaluated": 1502,
+      "base_fires": 58,
+      "base_rate": 0.038615,
+      "clauses": [
+        {
+          "clause": "macd_12_26_9_crossover_dn",
+          "loo_rate": 1.0,
+          "lift": 25.897,
+          "verdict": "TRIGGER (forcing it true fires on ~every bar - relaxation is meaningless)"
+        }
+      ]
+    },
+    {
+      "strategy": "macd_ichimoku",
+      "bars_evaluated": 1502,
+      "base_fires": 117,
+      "base_rate": 0.077896,
+      "clauses": [
+        {
+          "clause": "macd_12_26_9_crossover_up",
+          "loo_rate": 1.0,
+          "lift": 12.838,
+          "verdict": "TRIGGER (forcing it true fires on ~every bar - relaxation is meaningless)"
+        },
+        {
+          "clause": "macd_12_26_9_crossover_dn",
+          "loo_rate": 1.0,
+          "lift": 12.838,
+          "verdict": "TRIGGER (forcing it true fires on ~every bar - relaxation is meaningless)"
+        }
+      ]
+    },
+    {
+      "strategy": "mfi_oversold",
+      "bars_evaluated": 1502,
+      "base_fires": 1,
+      "base_rate": 0.000666,
+      "clauses": [
+        {
+          "clause": "mfi_broad_oversold",
+          "loo_rate": 0.053928,
+          "lift": 81.0,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "mfi_broad_overbought",
+          "loo_rate": 0.053928,
+          "lift": 81.0,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "obv_bullish",
+          "loo_rate": 0.024634,
+          "lift": 37.0,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "obv_bearish",
+          "loo_rate": 0.014647,
+          "lift": 22.0,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "near_s1",
+          "loo_rate": 0.005326,
+          "lift": 8.0,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "near_s2",
+          "loo_rate": 0.005326,
+          "lift": 8.0,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "near_r1",
+          "loo_rate": 0.001997,
+          "lift": 3.0,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "near_r2",
+          "loo_rate": 0.001997,
+          "lift": 3.0,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "mmbm_long",
+      "bars_evaluated": 1502,
+      "base_fires": 27,
+      "base_rate": 0.017976,
+      "clauses": [
+        {
+          "clause": "po3_mmbm_setup",
+          "loo_rate": 1.0,
+          "lift": 55.63,
+          "verdict": "TRIGGER (forcing it true fires on ~every bar - relaxation is meaningless)"
+        }
+      ]
+    },
+    {
+      "strategy": "mmsm_short",
+      "bars_evaluated": 1502,
+      "base_fires": 40,
+      "base_rate": 0.026631,
+      "clauses": [
+        {
+          "clause": "po3_mmsm_setup",
+          "loo_rate": 1.0,
+          "lift": 37.55,
+          "verdict": "TRIGGER (forcing it true fires on ~every bar - relaxation is meaningless)"
+        }
+      ]
+    },
+    {
+      "strategy": "monthly_bias_momentum_long",
+      "bars_evaluated": 1502,
+      "base_fires": 51,
+      "base_rate": 0.033955,
+      "clauses": [
+        {
+          "clause": "above_prev_high_clearance_atr_05",
+          "loo_rate": 0.314913,
+          "lift": 9.275,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "monthly_bias_bull",
+          "loo_rate": 0.047936,
+          "lift": 1.412,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "monthly_momentum_pos",
+          "loo_rate": 0.035952,
+          "lift": 1.059,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "morning_star",
+      "bars_evaluated": 1502,
+      "base_fires": 35,
+      "base_rate": 0.023302,
+      "clauses": [
+        {
+          "clause": "morning_star",
+          "loo_rate": 0.394141,
+          "lift": 16.914,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "evening_star",
+          "loo_rate": 0.338881,
+          "lift": 14.543,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "rsi_14",
+          "loo_rate": 0.049268,
+          "lift": 2.114,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "naked_poc_retest_long",
+      "bars_evaluated": 1502,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "naked_poc_count",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "naked_poc_nearest_distance_pct",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        }
+      ]
+    },
+    {
+      "strategy": "news_momentum_long",
+      "bars_evaluated": 1502,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "news_sentiment_5d",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "news_volume_zscore_5d",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "dc20_breakout_up",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "close_above_open",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "close_in_top_40pct_of_range",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "vol_above_avg",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        }
+      ]
+    },
+    {
+      "strategy": "news_momentum_short",
+      "bars_evaluated": 1502,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "news_volume_zscore_5d",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "above_avwap_20high",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "news_sentiment_5d",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "dc20_breakout_dn",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "close_below_open",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "close_in_bottom_40pct_of_range",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "vol_above_avg",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "below_avwap_20high",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        }
+      ]
+    },
+    {
+      "strategy": "news_reversal_long",
+      "bars_evaluated": 1502,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "news_count_5d",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "news_sentiment_shift",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "news_sentiment_5d",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "pct_change_5d",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "close_above_open",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "close_in_top_40pct_of_range",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "insider_cluster_active",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "cfo_buy",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "large_dollar_buy",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "institutional_strong_buy",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "institutional_buy",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        }
+      ]
+    },
+    {
+      "strategy": "news_reversal_short",
+      "bars_evaluated": 1502,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "news_sentiment_5d",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "pct_change_5d",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "news_count_5d",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "news_sentiment_shift",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "close_below_open",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "close_in_bottom_40pct_of_range",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        }
+      ]
+    },
+    {
+      "strategy": "news_sentiment_shift_long",
+      "bars_evaluated": 1502,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "news_sentiment_shift",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "news_article_count",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        }
+      ]
+    },
+    {
+      "strategy": "news_sentiment_short",
+      "bars_evaluated": 1502,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "news_article_count",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "news_sentiment_mean",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "below_ema_200",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        }
+      ]
+    },
+    {
+      "strategy": "orb_stocks_in_play_long",
+      "bars_evaluated": 1502,
+      "base_fires": 5,
+      "base_rate": 0.003329,
+      "clauses": [
+        {
+          "clause": "vol_spike_2x",
+          "loo_rate": 0.010652,
+          "lift": 3.2,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "close_above_open",
+          "loo_rate": 0.00466,
+          "lift": 1.4,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "gap_up_2pct",
+          "loo_rate": 0.003329,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.003329,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        },
+        {
+          "clause": "gap_up_pct",
+          "loo_rate": 0.0,
+          "lift": 0.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        }
+      ]
+    },
+    {
+      "strategy": "orb_stocks_in_play_short",
+      "bars_evaluated": 1502,
+      "base_fires": 8,
+      "base_rate": 0.005326,
+      "clauses": [
+        {
+          "clause": "vol_spike_2x",
+          "loo_rate": 0.037949,
+          "lift": 7.125,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "gap_dn_1_5pct",
+          "loo_rate": 0.009321,
+          "lift": 1.75,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "close_below_open",
+          "loo_rate": 0.008655,
+          "lift": 1.625,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "below_ema_200",
+          "loo_rate": 0.006658,
+          "lift": 1.25,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "gap_dn_pct",
+          "loo_rate": 0.005326,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        }
+      ]
+    },
+    {
+      "strategy": "pairs_mean_reversion_long",
+      "bars_evaluated": 1502,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "pair_count_active",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "pair_half_life",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "pair_zscore_signed",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "pair_counterparty",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        }
+      ]
+    },
+    {
+      "strategy": "pairs_mean_reversion_short",
+      "bars_evaluated": 1502,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "pair_count_active",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "pair_zscore_signed",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "pair_half_life",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "pair_counterparty",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        }
+      ]
+    },
+    {
+      "strategy": "parabolic_sar_flip",
+      "bars_evaluated": 1502,
+      "base_fires": 54,
+      "base_rate": 0.035952,
+      "clauses": [
+        {
+          "clause": "psar_flip_up",
+          "loo_rate": 0.424101,
+          "lift": 11.796,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "psar_flip_dn",
+          "loo_rate": 0.424101,
+          "lift": 11.796,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "adx_trending",
+          "loo_rate": 0.087217,
+          "lift": 2.426,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "parabolic_sar_flip_short",
+      "bars_evaluated": 1502,
+      "base_fires": 65,
+      "base_rate": 0.043276,
+      "clauses": [
+        {
+          "clause": "psar_flip_dn",
+          "loo_rate": 1.0,
+          "lift": 23.108,
+          "verdict": "TRIGGER (forcing it true fires on ~every bar - relaxation is meaningless)"
+        }
+      ]
+    },
+    {
+      "strategy": "pead_long",
+      "bars_evaluated": 1502,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "within_pead_window",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "pead_positive_surprise",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "earnings_eps_yoy_growth",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "earnings_announcement_return",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        }
+      ]
+    },
+    {
+      "strategy": "pead_short",
+      "bars_evaluated": 1502,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "within_pead_window",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "pead_negative_surprise",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "earnings_eps_yoy_growth",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "earnings_announcement_return",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        }
+      ]
+    },
+    {
+      "strategy": "pead_with_insider_confirmation_long",
+      "bars_evaluated": 1502,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "within_pead_window",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "pead_positive_surprise",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "insider_cluster_active",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        }
+      ]
+    },
+    {
+      "strategy": "pead_with_smart_money_long",
+      "bars_evaluated": 1502,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "within_pead_window",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "pead_positive_surprise",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        }
+      ]
+    },
+    {
+      "strategy": "pivot_fib_confluence",
+      "bars_evaluated": 1502,
+      "base_fires": 2,
+      "base_rate": 0.001332,
+      "clauses": [
+        {
+          "clause": "hammer",
+          "loo_rate": 0.019973,
+          "lift": 15.0,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "bullish_engulfing",
+          "loo_rate": 0.019973,
+          "lift": 15.0,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "bullish_pin_bar",
+          "loo_rate": 0.019973,
+          "lift": 15.0,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "at_key_fib",
+          "loo_rate": 0.01731,
+          "lift": 13.0,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "shooting_star",
+          "loo_rate": 0.014647,
+          "lift": 11.0,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "bearish_engulfing",
+          "loo_rate": 0.014647,
+          "lift": 11.0,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "bearish_pin_bar",
+          "loo_rate": 0.014647,
+          "lift": 11.0,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "near_r1",
+          "loo_rate": 0.013981,
+          "lift": 10.5,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "near_r2",
+          "loo_rate": 0.013981,
+          "lift": 10.5,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "near_s1",
+          "loo_rate": 0.008655,
+          "lift": 6.5,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "near_s2",
+          "loo_rate": 0.008655,
+          "lift": 6.5,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "pivot_r1_breakout",
+      "bars_evaluated": 1502,
+      "base_fires": 65,
+      "base_rate": 0.043276,
+      "clauses": [
+        {
+          "clause": "vol_spike_15x",
+          "loo_rate": 0.23502,
+          "lift": 5.431,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "above_r1",
+          "loo_rate": 0.061917,
+          "lift": 1.431,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "below_s1",
+          "loo_rate": 0.053262,
+          "lift": 1.231,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "below_avwap_50low",
+          "loo_rate": 0.050599,
+          "lift": 1.169,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "macd_12_26_9_bullish",
+          "loo_rate": 0.04727,
+          "lift": 1.092,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "macd_12_26_9_bearish",
+          "loo_rate": 0.04727,
+          "lift": 1.092,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "above_avwap_50low",
+          "loo_rate": 0.043276,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        }
+      ]
+    },
+    {
+      "strategy": "pivot_r2_continuation",
+      "bars_evaluated": 1502,
+      "base_fires": 5,
+      "base_rate": 0.003329,
+      "clauses": [
+        {
+          "clause": "vol_spike_2x",
+          "loo_rate": 0.043276,
+          "lift": 13.0,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "above_r2",
+          "loo_rate": 0.008655,
+          "lift": 2.6,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "ema_50_200_bearish",
+          "loo_rate": 0.006658,
+          "lift": 2.0,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "adx_trending",
+          "loo_rate": 0.005992,
+          "lift": 1.8,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "below_s2",
+          "loo_rate": 0.005326,
+          "lift": 1.6,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "above_avwap_252low",
+          "loo_rate": 0.003329,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        },
+        {
+          "clause": "above_avwap_50low",
+          "loo_rate": 0.003329,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        },
+        {
+          "clause": "below_avwap_252low",
+          "loo_rate": 0.003329,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        },
+        {
+          "clause": "below_avwap_50low",
+          "loo_rate": 0.003329,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        },
+        {
+          "clause": "ema_50_200_bullish",
+          "loo_rate": 0.003329,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        },
+        {
+          "clause": "vol_spike_15x",
+          "loo_rate": 0.003329,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        }
+      ]
+    },
+    {
+      "strategy": "pivot_r3_blowoff_short",
+      "bars_evaluated": 1502,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "vol_below_avg",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "recent_blowoff_at_r3",
+          "loo_rate": 0.183755,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "bearish_engulfing",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "shooting_star",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "below_prev_low",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "bearish_pin_bar",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        }
+      ]
+    },
+    {
+      "strategy": "pivot_s1_bounce",
+      "bars_evaluated": 1502,
+      "base_fires": 4,
+      "base_rate": 0.002663,
+      "clauses": [
+        {
+          "clause": "near_r1",
+          "loo_rate": 0.041278,
+          "lift": 15.5,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "hammer",
+          "loo_rate": 0.036618,
+          "lift": 13.75,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "bullish_pin_bar",
+          "loo_rate": 0.036618,
+          "lift": 13.75,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "shooting_star",
+          "loo_rate": 0.035952,
+          "lift": 13.5,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "bearish_engulfing",
+          "loo_rate": 0.035952,
+          "lift": 13.5,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "near_s1",
+          "loo_rate": 0.031292,
+          "lift": 11.75,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "obv_bullish",
+          "loo_rate": 0.007989,
+          "lift": 3.0,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "obv_bearish",
+          "loo_rate": 0.005326,
+          "lift": 2.0,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "pivot_s2_bounce",
+      "bars_evaluated": 1502,
+      "base_fires": 2,
+      "base_rate": 0.001332,
+      "clauses": [
+        {
+          "clause": "near_s2",
+          "loo_rate": 0.035286,
+          "lift": 26.5,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "hammer",
+          "loo_rate": 0.023302,
+          "lift": 17.5,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "bullish_engulfing",
+          "loo_rate": 0.023302,
+          "lift": 17.5,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "bearish_engulfing",
+          "loo_rate": 0.014647,
+          "lift": 11.0,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "near_r2",
+          "loo_rate": 0.005326,
+          "lift": 4.0,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "rsi_14",
+          "loo_rate": 0.0,
+          "lift": 0.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        }
+      ]
+    },
+    {
+      "strategy": "pivot_s3_capitulation",
+      "bars_evaluated": 1502,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "recent_capitulation_at_s3",
+          "loo_rate": 0.191079,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "vol_below_avg",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "bullish_engulfing",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "hammer",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "above_prev_high",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "bullish_pin_bar",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        }
+      ]
+    },
+    {
+      "strategy": "po3_bearish",
+      "bars_evaluated": 1502,
+      "base_fires": 90,
+      "base_rate": 0.05992,
+      "clauses": [
+        {
+          "clause": "po3_bearish",
+          "loo_rate": 0.594541,
+          "lift": 9.922,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "below_ema_200",
+          "loo_rate": 0.10253,
+          "lift": 1.711,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "po3_bullish",
+      "bars_evaluated": 1502,
+      "base_fires": 59,
+      "base_rate": 0.039281,
+      "clauses": [
+        {
+          "clause": "po3_bullish",
+          "loo_rate": 0.405459,
+          "lift": 10.322,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.09787,
+          "lift": 2.492,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "poc_magnet_short",
+      "bars_evaluated": 1502,
+      "base_fires": 152,
+      "base_rate": 0.101198,
+      "clauses": [
+        {
+          "clause": "vp_close_near_poc_pct",
+          "loo_rate": 0.399467,
+          "lift": 3.947,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "vp_close_below_poc",
+          "loo_rate": 0.199734,
+          "lift": 1.974,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "below_ema_200",
+          "loo_rate": 0.153129,
+          "lift": 1.513,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "post_deletion_drift_short",
+      "bars_evaluated": 1502,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": []
+    },
+    {
+      "strategy": "post_inclusion_drift_long",
+      "bars_evaluated": 1502,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": []
+    },
+    {
+      "strategy": "post_inclusion_reversal_short",
+      "bars_evaluated": 1502,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": []
+    },
+    {
+      "strategy": "ppo_crossover",
+      "bars_evaluated": 1502,
+      "base_fires": 45,
+      "base_rate": 0.02996,
+      "clauses": [
+        {
+          "clause": "ppo_crossover_up",
+          "loo_rate": 0.424101,
+          "lift": 14.156,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "ppo_crossover_dn",
+          "loo_rate": 0.424101,
+          "lift": 14.156,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "adx_trending",
+          "loo_rate": 0.073901,
+          "lift": 2.467,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "pre_fomc_long_sleeve",
+      "bars_evaluated": 1502,
+      "base_fires": 19,
+      "base_rate": 0.01265,
+      "clauses": [
+        {
+          "clause": "pre_fomc_d1",
+          "loo_rate": 0.405459,
+          "lift": 32.053,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.030626,
+          "lift": 2.421,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "days_until_fomc",
+          "loo_rate": 0.01265,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        }
+      ]
+    },
+    {
+      "strategy": "pre_fomc_quality_momentum_long",
+      "bars_evaluated": 1502,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "pre_fomc_d1",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "xs_momentum_top_quintile",
+          "loo_rate": 0.01265,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        }
+      ]
+    },
+    {
+      "strategy": "pre_holiday_long",
+      "bars_evaluated": 1502,
+      "base_fires": 27,
+      "base_rate": 0.017976,
+      "clauses": [
+        {
+          "clause": "is_pre_holiday",
+          "loo_rate": 0.331558,
+          "lift": 18.444,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.038615,
+          "lift": 2.148,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "dow",
+          "loo_rate": 0.017976,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        }
+      ]
+    },
+    {
+      "strategy": "pre_rebalance_long",
+      "bars_evaluated": 1502,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": []
+    },
+    {
+      "strategy": "prev_day_high_break",
+      "bars_evaluated": 1502,
+      "base_fires": 130,
+      "base_rate": 0.086551,
+      "clauses": [
+        {
+          "clause": "vol_spike_12x",
+          "loo_rate": 0.280293,
+          "lift": 3.238,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "below_prev_low",
+          "loo_rate": 0.183755,
+          "lift": 2.123,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "above_vwap",
+          "loo_rate": 0.131824,
+          "lift": 1.523,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "above_prev_high",
+          "loo_rate": 0.11518,
+          "lift": 1.331,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "below_vwap",
+          "loo_rate": 0.095206,
+          "lift": 1.1,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "prev_day_low_bounce",
+      "bars_evaluated": 1502,
+      "base_fires": 6,
+      "base_rate": 0.003995,
+      "clauses": [
+        {
+          "clause": "hammer",
+          "loo_rate": 0.049268,
+          "lift": 12.333,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "shooting_star",
+          "loo_rate": 0.033289,
+          "lift": 8.333,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "near_prev_low",
+          "loo_rate": 0.032623,
+          "lift": 8.167,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "near_prev_high",
+          "loo_rate": 0.027963,
+          "lift": 7.0,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "cmf_positive",
+          "loo_rate": 0.007324,
+          "lift": 1.833,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "cmf_negative",
+          "loo_rate": 0.005326,
+          "lift": 1.333,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "prev_day_low_breakdown",
+      "bars_evaluated": 1502,
+      "base_fires": 102,
+      "base_rate": 0.067909,
+      "clauses": [
+        {
+          "clause": "vol_spike_12x",
+          "loo_rate": 0.217044,
+          "lift": 3.196,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "below_prev_low",
+          "loo_rate": 0.165113,
+          "lift": 2.431,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "below_vwap",
+          "loo_rate": 0.076565,
+          "lift": 1.127,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "risk_off_bond_equity_short",
+      "bars_evaluated": 1502,
+      "base_fires": 156,
+      "base_rate": 0.103862,
+      "clauses": [
+        {
+          "clause": "risk_off_regime_bond_signal_strong",
+          "loo_rate": 1.0,
+          "lift": 9.628,
+          "verdict": "TRIGGER (forcing it true fires on ~every bar - relaxation is meaningless)"
+        }
+      ]
+    },
+    {
+      "strategy": "roc_burst",
+      "bars_evaluated": 1502,
+      "base_fires": 33,
+      "base_rate": 0.021971,
+      "clauses": [
+        {
+          "clause": "roc_turning_up",
+          "loo_rate": 0.212383,
+          "lift": 9.667,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "roc_turning_dn",
+          "loo_rate": 0.212383,
+          "lift": 9.667,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "vol_spike_12x",
+          "loo_rate": 0.11984,
+          "lift": 5.455,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "rsi21_slow",
+      "bars_evaluated": 1502,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "rsi_21",
+          "loo_rate": 0.518642,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "price_above_sma_50",
+          "loo_rate": 0.22237,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "below_sma_50",
+          "loo_rate": 0.159121,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        }
+      ]
+    },
+    {
+      "strategy": "rsi9_extreme",
+      "bars_evaluated": 1502,
+      "base_fires": 1,
+      "base_rate": 0.000666,
+      "clauses": [
+        {
+          "clause": "rsi_9_extreme_os",
+          "loo_rate": 0.405459,
+          "lift": 609.0,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.025965,
+          "lift": 39.0,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "rsi_overbought_short",
+      "bars_evaluated": 1502,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "rsi_14",
+          "loo_rate": 0.518642,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "below_sma_50",
+          "loo_rate": 0.118509,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        }
+      ]
+    },
+    {
+      "strategy": "rsi_oversold_with_smart_money_long",
+      "bars_evaluated": 1502,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "rsi_14",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        }
+      ]
+    },
+    {
+      "strategy": "sector_rotation_defensive_long",
+      "bars_evaluated": 1502,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "defensive_leadership",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "sector",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        }
+      ]
+    },
+    {
+      "strategy": "shooting_star_short",
+      "bars_evaluated": 1502,
+      "base_fires": 8,
+      "base_rate": 0.005326,
+      "clauses": [
+        {
+          "clause": "shooting_star",
+          "loo_rate": 0.053262,
+          "lift": 10.0,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "bearish_pin_bar",
+          "loo_rate": 0.053262,
+          "lift": 10.0,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "hanging_man",
+          "loo_rate": 0.053262,
+          "lift": 10.0,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "dark_cloud_cover",
+          "loo_rate": 0.053262,
+          "lift": 10.0,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "rsi_14",
+          "loo_rate": 0.013981,
+          "lift": 2.625,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "near_r1",
+          "loo_rate": 0.011984,
+          "lift": 2.25,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "near_r2",
+          "loo_rate": 0.011984,
+          "lift": 2.25,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "bb_20_20_touch_upper",
+          "loo_rate": 0.011984,
+          "lift": 2.25,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "short_borrow_trap_avoid",
+      "bars_evaluated": 1502,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "days_to_cover",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        }
+      ]
+    },
+    {
+      "strategy": "simple_below_ema_50_short",
+      "bars_evaluated": 1502,
+      "base_fires": 183,
+      "base_rate": 0.121838,
+      "clauses": [
+        {
+          "clause": "below_ema_50_break_recent_5d",
+          "loo_rate": 1.0,
+          "lift": 8.208,
+          "verdict": "TRIGGER (forcing it true fires on ~every bar - relaxation is meaningless)"
+        }
+      ]
+    },
+    {
+      "strategy": "smc_bos_continuation",
+      "bars_evaluated": 1502,
+      "base_fires": 20,
+      "base_rate": 0.013316,
+      "clauses": [
+        {
+          "clause": "vol_spike_2x",
+          "loo_rate": 0.207057,
+          "lift": 15.55,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "force_index_cross_up",
+          "loo_rate": 0.207057,
+          "lift": 15.55,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "smc_bos_bearish",
+          "loo_rate": 0.037284,
+          "lift": 2.8,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "smc_bos_bullish",
+          "loo_rate": 0.033955,
+          "lift": 2.55,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "rsi_14",
+          "loo_rate": 0.015979,
+          "lift": 1.2,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.013981,
+          "lift": 1.05,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "below_ema_200",
+          "loo_rate": 0.013316,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        }
+      ]
+    },
+    {
+      "strategy": "smc_bos_retest_entry",
+      "bars_evaluated": 1502,
+      "base_fires": 103,
+      "base_rate": 0.068575,
+      "clauses": [
+        {
+          "clause": "smc_bos_retest_short",
+          "loo_rate": 0.630493,
+          "lift": 9.194,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "smc_bos_retest_long",
+          "loo_rate": 0.438083,
+          "lift": 6.388,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "below_ema_200",
+          "loo_rate": 0.114514,
+          "lift": 1.67,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.069241,
+          "lift": 1.01,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        }
+      ]
+    },
+    {
+      "strategy": "smc_choch_reversal",
+      "bars_evaluated": 1502,
+      "base_fires": 69,
+      "base_rate": 0.045939,
+      "clauses": [
+        {
+          "clause": "smc_choch_bearish",
+          "loo_rate": 0.404128,
+          "lift": 8.797,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "smc_choch_bullish",
+          "loo_rate": 0.39281,
+          "lift": 8.551,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "smc_fvg_bearish_active",
+          "loo_rate": 0.088549,
+          "lift": 1.928,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "smc_fvg_bullish_active",
+          "loo_rate": 0.077896,
+          "lift": 1.696,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "smc_discount_long",
+      "bars_evaluated": 1502,
+      "base_fires": 46,
+      "base_rate": 0.030626,
+      "clauses": [
+        {
+          "clause": "smc_in_discount_zone",
+          "loo_rate": 0.120506,
+          "lift": 3.935,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.11518,
+          "lift": 3.761,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "smc_bos_bullish",
+          "loo_rate": 0.099867,
+          "lift": 3.261,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "smc_choch_bullish",
+          "loo_rate": 0.099867,
+          "lift": 3.261,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "smc_dealing_range_pct",
+          "loo_rate": 0.030626,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        }
+      ]
+    },
+    {
+      "strategy": "smc_equal_highs_sweep_short",
+      "bars_evaluated": 1502,
+      "base_fires": 118,
+      "base_rate": 0.078562,
+      "clauses": [
+        {
+          "clause": "smc_equal_highs_swept",
+          "loo_rate": 0.389481,
+          "lift": 4.958,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "smc_bos_bearish",
+          "loo_rate": 0.389481,
+          "lift": 4.958,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "smc_fvg_bearish_active",
+          "loo_rate": 0.194407,
+          "lift": 2.475,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "smc_equal_lows_sweep_long",
+      "bars_evaluated": 1502,
+      "base_fires": 36,
+      "base_rate": 0.023968,
+      "clauses": [
+        {
+          "clause": "smc_equal_lows_swept",
+          "loo_rate": 0.369507,
+          "lift": 15.417,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "smc_fvg_bullish_active",
+          "loo_rate": 0.097204,
+          "lift": 4.056,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "smc_fvg_retest_long",
+      "bars_evaluated": 1502,
+      "base_fires": 30,
+      "base_rate": 0.019973,
+      "clauses": [
+        {
+          "clause": "smc_fvg_retest_long_zone",
+          "loo_rate": 0.405459,
+          "lift": 20.3,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.053262,
+          "lift": 2.667,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "smc_fvg_retest_short",
+      "bars_evaluated": 1502,
+      "base_fires": 75,
+      "base_rate": 0.049933,
+      "clauses": [
+        {
+          "clause": "smc_fvg_retest_short_zone",
+          "loo_rate": 0.594541,
+          "lift": 11.907,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "below_ema_200",
+          "loo_rate": 0.075233,
+          "lift": 1.507,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "smc_liquidity_sweep_reversal",
+      "bars_evaluated": 1502,
+      "base_fires": 507,
+      "base_rate": 0.33755,
+      "clauses": [
+        {
+          "clause": "smc_bos_bullish",
+          "loo_rate": 1.0,
+          "lift": 2.963,
+          "verdict": "TRIGGER (forcing it true fires on ~every bar - relaxation is meaningless)"
+        },
+        {
+          "clause": "smc_bos_bearish",
+          "loo_rate": 1.0,
+          "lift": 2.963,
+          "verdict": "TRIGGER (forcing it true fires on ~every bar - relaxation is meaningless)"
+        },
+        {
+          "clause": "smc_liquidity_swept_up",
+          "loo_rate": 0.382157,
+          "lift": 1.132,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "smc_liquidity_swept_dn",
+          "loo_rate": 0.358189,
+          "lift": 1.061,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "smc_choch_bullish",
+          "loo_rate": 0.352863,
+          "lift": 1.045,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "smc_choch_bearish",
+          "loo_rate": 0.338881,
+          "lift": 1.004,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        }
+      ]
+    },
+    {
+      "strategy": "smc_mitigation_block_long",
+      "bars_evaluated": 1502,
+      "base_fires": 1,
+      "base_rate": 0.000666,
+      "clauses": [
+        {
+          "clause": "smc_mitigation_block_long",
+          "loo_rate": 0.088549,
+          "lift": 133.0,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.021305,
+          "lift": 32.0,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "rsi_14",
+          "loo_rate": 0.000666,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        }
+      ]
+    },
+    {
+      "strategy": "smc_mitigation_block_short",
+      "bars_evaluated": 1502,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "rsi_14",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "smc_mitigation_block_short",
+          "loo_rate": 0.153795,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "below_ema_200",
+          "loo_rate": 0.014647,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        }
+      ]
+    },
+    {
+      "strategy": "smc_order_block_bounce",
+      "bars_evaluated": 1502,
+      "base_fires": 121,
+      "base_rate": 0.080559,
+      "clauses": [
+        {
+          "clause": "rsi_14",
+          "loo_rate": 0.360186,
+          "lift": 4.471,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.155792,
+          "lift": 1.934,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "below_ema_200",
+          "loo_rate": 0.107856,
+          "lift": 1.339,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "smc_ob_bearish_active",
+          "loo_rate": 0.105193,
+          "lift": 1.306,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "smc_ob_bullish_active",
+          "loo_rate": 0.095872,
+          "lift": 1.19,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "smc_ote_long",
+      "bars_evaluated": 1502,
+      "base_fires": 67,
+      "base_rate": 0.044607,
+      "clauses": [
+        {
+          "clause": "smc_ote_long_zone",
+          "loo_rate": 0.207057,
+          "lift": 4.642,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "smc_bos_bullish",
+          "loo_rate": 0.107856,
+          "lift": 2.418,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "smc_choch_bullish",
+          "loo_rate": 0.107856,
+          "lift": 2.418,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "smc_retracement_pct",
+          "loo_rate": 0.044607,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        }
+      ]
+    },
+    {
+      "strategy": "smc_ote_short",
+      "bars_evaluated": 1502,
+      "base_fires": 12,
+      "base_rate": 0.007989,
+      "clauses": [
+        {
+          "clause": "smc_ote_short_zone",
+          "loo_rate": 0.231691,
+          "lift": 29.0,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "smc_bos_bearish",
+          "loo_rate": 0.069907,
+          "lift": 8.75,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "smc_choch_bearish",
+          "loo_rate": 0.069907,
+          "lift": 8.75,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "smc_retracement_pct",
+          "loo_rate": 0.007989,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        }
+      ]
+    },
+    {
+      "strategy": "smc_premium_short",
+      "bars_evaluated": 1502,
+      "base_fires": 47,
+      "base_rate": 0.031292,
+      "clauses": [
+        {
+          "clause": "smc_in_premium_zone",
+          "loo_rate": 0.203063,
+          "lift": 6.489,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "smc_bos_bearish",
+          "loo_rate": 0.170439,
+          "lift": 5.447,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "smc_choch_bearish",
+          "loo_rate": 0.170439,
+          "lift": 5.447,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "below_ema_200",
+          "loo_rate": 0.054594,
+          "lift": 1.745,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "smc_dealing_range_pct",
+          "loo_rate": 0.031292,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        }
+      ]
+    },
+    {
+      "strategy": "squeeze_breakout",
+      "bars_evaluated": 1502,
+      "base_fires": 46,
+      "base_rate": 0.030626,
+      "clauses": [
+        {
+          "clause": "squeeze_fire_up",
+          "loo_rate": 1.0,
+          "lift": 32.652,
+          "verdict": "TRIGGER (forcing it true fires on ~every bar - relaxation is meaningless)"
+        }
+      ]
+    },
+    {
+      "strategy": "squeeze_breakout_with_smart_money_long",
+      "bars_evaluated": 1502,
+      "base_fires": 42,
+      "base_rate": 0.027963,
+      "clauses": [
+        {
+          "clause": "squeeze_fire_up",
+          "loo_rate": 0.474035,
+          "lift": 16.952,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "close_above_open",
+          "loo_rate": 0.030626,
+          "lift": 1.095,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "squeeze_setup_long",
+      "bars_evaluated": 1502,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "short_interest_pct",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "days_to_cover",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "institutional_buy",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "insider_cluster_active",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "news_sentiment_shift",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "within_pead_window",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "pead_positive_surprise",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "above_avwap_20low",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "vol_spike_15x",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "close_above_open",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "close_in_top_40pct_of_range",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        }
+      ]
+    },
+    {
+      "strategy": "stoch_oversold",
+      "bars_evaluated": 1502,
+      "base_fires": 9,
+      "base_rate": 0.005992,
+      "clauses": [
+        {
+          "clause": "stoch_broad_overbought",
+          "loo_rate": 0.074567,
+          "lift": 12.444,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "stoch_broad_oversold",
+          "loo_rate": 0.066578,
+          "lift": 11.111,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "price_above_ema_20",
+          "loo_rate": 0.058589,
+          "lift": 9.778,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "below_ema_20",
+          "loo_rate": 0.046605,
+          "lift": 7.778,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "stoch_bearish_cross",
+          "loo_rate": 0.010652,
+          "lift": 1.778,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "stoch_bullish_cross",
+          "loo_rate": 0.007324,
+          "lift": 1.222,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "stochrsi_overbought_short",
+      "bars_evaluated": 1502,
+      "base_fires": 89,
+      "base_rate": 0.059254,
+      "clauses": [
+        {
+          "clause": "stochrsi_cross_dn",
+          "loo_rate": 0.229028,
+          "lift": 3.865,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "stochrsi_overbought",
+          "loo_rate": 0.18775,
+          "lift": 3.169,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "rsi_14",
+          "loo_rate": 0.069241,
+          "lift": 1.169,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "stochrsi_oversold",
+      "bars_evaluated": 1502,
+      "base_fires": 73,
+      "base_rate": 0.048602,
+      "clauses": [
+        {
+          "clause": "stochrsi_cross_dn",
+          "loo_rate": 0.130493,
+          "lift": 2.685,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "stochrsi_cross_up",
+          "loo_rate": 0.109854,
+          "lift": 2.26,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "stochrsi_overbought",
+          "loo_rate": 0.095872,
+          "lift": 1.973,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.093209,
+          "lift": 1.918,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "below_ema_200",
+          "loo_rate": 0.080559,
+          "lift": 1.658,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "stochrsi_oversold",
+          "loo_rate": 0.079228,
+          "lift": 1.63,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "rsi_2",
+          "loo_rate": 0.048602,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        },
+        {
+          "clause": "rsi_14",
+          "loo_rate": 0.036618,
+          "lift": 0.753,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        }
+      ]
+    },
+    {
+      "strategy": "supertrend_ichimoku_adx",
+      "bars_evaluated": 1502,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "supertrend_flip_recent_long_5d",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "ichi_above_cloud_break_recent_5d",
+          "loo_rate": 0.000666,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "adx_strong",
+          "loo_rate": 0.007989,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "supertrend_flip_recent_short_5d",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "ichi_below_cloud_break_recent_5d",
+          "loo_rate": 0.001332,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        }
+      ]
+    },
+    {
+      "strategy": "supertrend_macd",
+      "bars_evaluated": 1502,
+      "base_fires": 37,
+      "base_rate": 0.024634,
+      "clauses": [
+        {
+          "clause": "supertrend_flip_recent_long_5d",
+          "loo_rate": 0.544607,
+          "lift": 22.108,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "supertrend_flip_recent_short_5d",
+          "loo_rate": 0.480027,
+          "lift": 19.486,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "macd_12_26_9_bullish",
+          "loo_rate": 0.038615,
+          "lift": 1.568,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "macd_12_26_9_bearish",
+          "loo_rate": 0.0253,
+          "lift": 1.027,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "supertrend_macd_short",
+      "bars_evaluated": 1502,
+      "base_fires": 15,
+      "base_rate": 0.009987,
+      "clauses": [
+        {
+          "clause": "supertrend_bearish",
+          "loo_rate": 0.298935,
+          "lift": 29.933,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "adx",
+          "loo_rate": 0.015313,
+          "lift": 1.533,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "macd_12_26_9_bearish",
+          "loo_rate": 0.009987,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        }
+      ]
+    },
+    {
+      "strategy": "tema_dema",
+      "bars_evaluated": 1502,
+      "base_fires": 68,
+      "base_rate": 0.045273,
+      "clauses": [
+        {
+          "clause": "tema_cross_up",
+          "loo_rate": 0.537949,
+          "lift": 11.882,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "tema_cross_dn",
+          "loo_rate": 0.507324,
+          "lift": 11.206,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "price_above_tema",
+          "loo_rate": 0.045273,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        },
+        {
+          "clause": "price_below_tema",
+          "loo_rate": 0.045273,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        }
+      ]
+    },
+    {
+      "strategy": "three_black_crows_short",
+      "bars_evaluated": 1502,
+      "base_fires": 51,
+      "base_rate": 0.033955,
+      "clauses": [
+        {
+          "clause": "three_black_crows",
+          "loo_rate": 0.726365,
+          "lift": 21.392,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "rsi_14",
+          "loo_rate": 0.084554,
+          "lift": 2.49,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "three_white_soldiers",
+      "bars_evaluated": 1502,
+      "base_fires": 44,
+      "base_rate": 0.029294,
+      "clauses": [
+        {
+          "clause": "three_white_soldiers",
+          "loo_rate": 0.798269,
+          "lift": 27.25,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "rsi_14",
+          "loo_rate": 0.05992,
+          "lift": 2.045,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "triangle_ascending_long",
+      "bars_evaluated": 1502,
+      "base_fires": 61,
+      "base_rate": 0.040613,
+      "clauses": [
+        {
+          "clause": "triangle_ascending_detected",
+          "loo_rate": 0.405459,
+          "lift": 9.984,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.073901,
+          "lift": 1.82,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "triangle_ascending_retest_long",
+      "bars_evaluated": 1502,
+      "base_fires": 21,
+      "base_rate": 0.013981,
+      "clauses": [
+        {
+          "clause": "triangle_ascending_detected",
+          "loo_rate": 0.049933,
+          "lift": 3.571,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "triangle_apex_break_retest_long",
+          "loo_rate": 0.040613,
+          "lift": 2.905,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.015313,
+          "lift": 1.095,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "triangle_descending_short",
+      "bars_evaluated": 1502,
+      "base_fires": 79,
+      "base_rate": 0.052597,
+      "clauses": [
+        {
+          "clause": "triangle_descending_detected",
+          "loo_rate": 0.594541,
+          "lift": 11.304,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "below_ema_200",
+          "loo_rate": 0.082557,
+          "lift": 1.57,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "turtle_soup_long",
+      "bars_evaluated": 1502,
+      "base_fires": 20,
+      "base_rate": 0.013316,
+      "clauses": [
+        {
+          "clause": "smc_liquidity_swept_dn",
+          "loo_rate": 0.453395,
+          "lift": 34.05,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "close_above_open",
+          "loo_rate": 0.021971,
+          "lift": 1.65,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "below_prev_low",
+          "loo_rate": 0.013316,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        },
+        {
+          "clause": "above_prev_low",
+          "loo_rate": 0.013316,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        }
+      ]
+    },
+    {
+      "strategy": "turtle_soup_short",
+      "bars_evaluated": 1502,
+      "base_fires": 119,
+      "base_rate": 0.079228,
+      "clauses": [
+        {
+          "clause": "smc_liquidity_swept_up",
+          "loo_rate": 0.488016,
+          "lift": 6.16,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "smc_bos_bearish",
+          "loo_rate": 0.488016,
+          "lift": 6.16,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "close_below_open",
+          "loo_rate": 0.123835,
+          "lift": 1.563,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "below_prev_high",
+          "loo_rate": 0.083888,
+          "lift": 1.059,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "above_prev_high",
+          "loo_rate": 0.079228,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        }
+      ]
+    },
+    {
+      "strategy": "ultimate_oscillator",
+      "bars_evaluated": 1502,
+      "base_fires": 8,
+      "base_rate": 0.005326,
+      "clauses": [
+        {
+          "clause": "uo_overbought",
+          "loo_rate": 0.311585,
+          "lift": 58.5,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "uo_oversold",
+          "loo_rate": 0.21771,
+          "lift": 40.875,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "rsi_2",
+          "loo_rate": 0.215712,
+          "lift": 40.5,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "close_below_open",
+          "loo_rate": 0.029294,
+          "lift": 5.5,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "close_above_open",
+          "loo_rate": 0.022636,
+          "lift": 4.25,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "price_above_sma_200",
+          "loo_rate": 0.014647,
+          "lift": 2.75,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "below_sma_200",
+          "loo_rate": 0.013316,
+          "lift": 2.5,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "uo",
+          "loo_rate": 0.005326,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        }
+      ]
+    },
+    {
+      "strategy": "value_area_breakout_long",
+      "bars_evaluated": 1502,
+      "base_fires": 123,
+      "base_rate": 0.081891,
+      "clauses": [
+        {
+          "clause": "vol_above_avg",
+          "loo_rate": 0.208389,
+          "lift": 2.545,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "vp_above_value_area",
+          "loo_rate": 0.144474,
+          "lift": 1.764,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.097204,
+          "lift": 1.187,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "vix_backwardation_long",
+      "bars_evaluated": 1502,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "xs_quality_decile",
+          "loo_rate": 0.054594,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "vix_term_backwardation",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        }
+      ]
+    },
+    {
+      "strategy": "vol_spike_2x_below_ema_50_short",
+      "bars_evaluated": 1502,
+      "base_fires": 93,
+      "base_rate": 0.061917,
+      "clauses": [
+        {
+          "clause": "vol_spike_15x",
+          "loo_rate": 0.531292,
+          "lift": 8.581,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "below_ema_50",
+          "loo_rate": 0.093875,
+          "lift": 1.516,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "volume_spike_breakout",
+      "bars_evaluated": 1502,
+      "base_fires": 112,
+      "base_rate": 0.074567,
+      "clauses": [
+        {
+          "clause": "dc20_breakout_dn",
+          "loo_rate": 0.179095,
+          "lift": 2.402,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "dc20_breakout_up",
+          "loo_rate": 0.175766,
+          "lift": 2.357,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "vol_above_avg",
+          "loo_rate": 0.107856,
+          "lift": 1.446,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "close_in_bottom_40pct_of_range",
+          "loo_rate": 0.085885,
+          "lift": 1.152,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "close_in_top_40pct_of_range",
+          "loo_rate": 0.080559,
+          "lift": 1.08,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "close_below_open",
+          "loo_rate": 0.075233,
+          "lift": 1.009,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        },
+        {
+          "clause": "above_avwap_20low",
+          "loo_rate": 0.074567,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        },
+        {
+          "clause": "close_above_open",
+          "loo_rate": 0.074567,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        },
+        {
+          "clause": "below_avwap_20high",
+          "loo_rate": 0.074567,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        }
+      ]
+    },
+    {
+      "strategy": "week_opening_gap_fill_down",
+      "bars_evaluated": 1502,
+      "base_fires": 18,
+      "base_rate": 0.011984,
+      "clauses": [
+        {
+          "clause": "week_open_gap_up_15pct",
+          "loo_rate": 1.0,
+          "lift": 83.444,
+          "verdict": "TRIGGER (forcing it true fires on ~every bar - relaxation is meaningless)"
+        },
+        {
+          "clause": "days_since_last_earnings",
+          "loo_rate": 0.011984,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        }
+      ]
+    },
+    {
+      "strategy": "week_opening_gap_fill_up",
+      "bars_evaluated": 1502,
+      "base_fires": 22,
+      "base_rate": 0.014647,
+      "clauses": [
+        {
+          "clause": "week_open_gap_down_15pct",
+          "loo_rate": 1.0,
+          "lift": 68.273,
+          "verdict": "TRIGGER (forcing it true fires on ~every bar - relaxation is meaningless)"
+        },
+        {
+          "clause": "days_since_last_earnings",
+          "loo_rate": 0.014647,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        }
+      ]
+    },
+    {
+      "strategy": "weekly_bias_pullback_long",
+      "bars_evaluated": 1502,
+      "base_fires": 9,
+      "base_rate": 0.005992,
+      "clauses": [
+        {
+          "clause": "rsi_14",
+          "loo_rate": 0.406791,
+          "lift": 67.889,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "weekly_bias_bull",
+          "loo_rate": 0.38482,
+          "lift": 64.222,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "weekly_bias_pullback_short",
+      "bars_evaluated": 1502,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "rsi_14",
+          "loo_rate": 0.039281,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "weekly_bias_bear",
+          "loo_rate": 0.014647,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "shooting_star",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "bearish_engulfing",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        }
+      ]
+    },
+    {
+      "strategy": "williams_r_oversold",
+      "bars_evaluated": 1502,
+      "base_fires": 83,
+      "base_rate": 0.05526,
+      "clauses": [
+        {
+          "clause": "williams_r",
+          "loo_rate": 0.398802,
+          "lift": 7.217,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "williams_r_oversold",
+          "loo_rate": 0.3249,
+          "lift": 5.88,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "rsi_2",
+          "loo_rate": 0.32024,
+          "lift": 5.795,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "cmf_negative",
+          "loo_rate": 0.109188,
+          "lift": 1.976,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.100533,
+          "lift": 1.819,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "below_ema_200",
+          "loo_rate": 0.075899,
+          "lift": 1.373,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "cmf_positive",
+          "loo_rate": 0.075233,
+          "lift": 1.361,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "williams_stoch_dual",
+      "bars_evaluated": 1502,
+      "base_fires": 21,
+      "base_rate": 0.013981,
+      "clauses": [
+        {
+          "clause": "stoch_bullish_cross",
+          "loo_rate": 0.111851,
+          "lift": 8.0,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "stoch_bearish_cross",
+          "loo_rate": 0.099201,
+          "lift": 7.095,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "near_s1",
+          "loo_rate": 0.032623,
+          "lift": 2.333,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "near_s2",
+          "loo_rate": 0.032623,
+          "lift": 2.333,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "near_s3",
+          "loo_rate": 0.032623,
+          "lift": 2.333,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "near_cam_s3",
+          "loo_rate": 0.032623,
+          "lift": 2.333,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "near_wood_s1",
+          "loo_rate": 0.032623,
+          "lift": 2.333,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "near_r1",
+          "loo_rate": 0.029294,
+          "lift": 2.095,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "near_r2",
+          "loo_rate": 0.029294,
+          "lift": 2.095,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "near_cam_r3",
+          "loo_rate": 0.029294,
+          "lift": 2.095,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "near_wood_r1",
+          "loo_rate": 0.029294,
+          "lift": 2.095,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "williams_r",
+          "loo_rate": 0.024634,
+          "lift": 1.762,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "williams_r_oversold",
+          "loo_rate": 0.023968,
+          "lift": 1.714,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "xs_combined_momentum_high_ivol_short",
+      "bars_evaluated": 1502,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "xs_ivol_decile",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "xs_momentum_bottom_quintile",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "below_ema_200",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        }
+      ]
+    },
+    {
+      "strategy": "xs_low_beta_long",
+      "bars_evaluated": 1502,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "xs_low_beta_decile_entry_recent_5d",
+          "loo_rate": 1.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "xs_avoid_high_ivol",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        }
+      ]
+    },
+    {
+      "strategy": "xs_low_beta_with_smart_money_long",
+      "bars_evaluated": 1502,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "xs_low_beta_top_quintile",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        }
+      ]
+    },
+    {
+      "strategy": "xs_momentum_bottom_decile_short",
+      "bars_evaluated": 1502,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "xs_momentum_bottom_decile",
+          "loo_rate": 0.594541,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "below_ema_200",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        }
+      ]
+    },
+    {
+      "strategy": "xs_momentum_quality_combined",
+      "bars_evaluated": 1502,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "xs_momentum_top_quintile",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "xs_quality_top_quintile",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        }
+      ]
+    },
+    {
+      "strategy": "xs_momentum_top_decile",
+      "bars_evaluated": 1502,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "xs_momentum_top_decile",
+          "loo_rate": 0.405459,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "xs_avoid_high_ivol",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "xs_avoid_high_max",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        }
+      ]
+    },
+    {
+      "strategy": "xs_quality_top_quintile_long",
+      "bars_evaluated": 1502,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "xs_quality_top_tercile",
+          "loo_rate": 0.405459,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        }
+      ]
+    }
+  ]
+}

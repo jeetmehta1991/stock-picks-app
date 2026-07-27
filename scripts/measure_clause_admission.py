@@ -117,7 +117,15 @@ def main() -> int:
     tickers = MFC._load_t1a_tickers_union_over_window(start, end)[: args.max_tickers]
     print(f"[INFO] {len(names)} strategies x {len(tickers)} tickers, bars {start} -> {end} (IS only)")
 
+    # B1397: EVENT-vs-STATE must be decided EMPIRICALLY, not by name. The probe showed the
+    # loo_rate>0.95 rule catches only a naked trigger; a trigger AND-ed with one filter slips
+    # through and lands at the TOP of the "relaxable" list (ema_50_200_death_cross, lift 200).
+    # An EVENT signal is intrinsically rare - True on a few percent of bars - and cannot be
+    # "loosened": the crossover either happened or it did not. So record each signal's OWN
+    # True-rate over bars and use that, which needs no name list and cannot go stale.
+    sig_true = {}   # signal key -> [n_true, n_seen]
     stats = {n: {"bars": 0, "base": 0, "loo": {c[0]: 0 for c in gates[n]}} for n in names}
+    watched = {k for n in names for k, _op, _th in gates[n]}
     for ti, tk in enumerate(tickers, 1):
         df = MFC._load_ohlcv(tk)
         if df is None or df.empty:
@@ -128,6 +136,12 @@ def main() -> int:
             print(f"  [skip] {tk}: {exc}")
             continue
         for _bar_date, sig in per_bar:
+            for k in watched:
+                if k in sig:
+                    e = sig_true.setdefault(k, [0, 0])
+                    e[1] += 1
+                    if sig[k] is True:
+                        e[0] += 1
             for n in names:
                 fn = ALL_STRATEGIES[n]
                 st = stats[n]
@@ -165,15 +179,25 @@ def main() -> int:
             # essentially every bar - loo_rate ~ 1.0. That is not "relaxing a filter", it is
             # deleting the strategy's reason to exist, so its lift must NOT be read as
             # admission headroom. Only FILTER/THRESHOLD clauses are legitimately loosenable.
+            tn, ts = sig_true.get(k, [0, 0])
+            own_rate = (tn / ts) if ts else None
+            # EVENT = the signal itself is intrinsically rare. Decided from data, before the
+            # lift rules, because a rare EVENT can show a huge lift and would otherwise sit at
+            # the top of the relaxable list while being unloosenable by nature.
+            is_event = own_rate is not None and 0 < own_rate < 0.05
             if base_rate <= 0:
                 verdict = "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
             elif loo_rate > 0.95:
-                verdict = "TRIGGER (forcing it true fires on ~every bar - relaxation is meaningless)"
+                verdict = "TRIGGER (forcing it true fires ~every bar - relaxation is meaningless)"
+            elif is_event:
+                verdict = (f"EVENT (signal true on only {own_rate:.1%} of bars - it either "
+                           f"happened or it did not; not loosenable)")
             elif loo_rate / base_rate < 1.02:
                 verdict = "NO-OP (relaxing admits nothing new - candidate to DROP)"
             else:
                 verdict = "BINDING (relaxable filter - this is where trades would come from)"
             cl.append({"clause": k, "loo_rate": round(loo_rate, 6),
+                       "signal_own_rate": round(own_rate, 6) if own_rate is not None else None,
                        "lift": round(loo_rate / base_rate, 3) if base_rate > 0 else None,
                        "verdict": verdict})
         cl.sort(key=lambda c: -(c["lift"] or 0))
@@ -200,9 +224,10 @@ def main() -> int:
     def _by(pfx):
         return [(r["strategy"], c["clause"], c["lift"]) for r in results for c in r["clauses"]
                 if c["verdict"].startswith(pfx)]
-    noop, trig, bind = _by("NO-OP"), _by("TRIGGER"), _by("BINDING")
+    noop, trig, bind, evt = _by("NO-OP"), _by("TRIGGER"), _by("BINDING"), _by("EVENT")
     print(f"\n[RESULT] across {len(results)} strategies: {len(noop)} NO-OP | "
-          f"{len(bind)} BINDING (relaxable) | {len(trig)} TRIGGER (not relaxable)")
+          f"{len(bind)} BINDING (relaxable) | {len(trig)} TRIGGER + {len(evt)} EVENT "
+          f"(not loosenable)")
     print("  NO-OP clauses - relaxing admits nothing new, candidates to DROP:")
     for s, c, _l in noop[:25]:
         print(f"     {s:<40} {c}")
