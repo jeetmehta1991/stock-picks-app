@@ -106,3 +106,6 @@ output_r5_merged_*/
 
 # B1403: per-bar signal cache (6.9MB/ticker; regenerable, never committed)
 output_audit/_signal_cache/
+
+# B1407: quality-lift full-candidate dumps (100MB+); summaries are committed instead
+output_audit/b1405_quality_lift_numeric.json

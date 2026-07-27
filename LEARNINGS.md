@@ -3674,3 +3674,36 @@ result would justify retiring work, the burden is on the SEARCH to be exhaustive
 conclusion is stated, not on the reader to challenge it; (c) if an owner's intuition contradicts
 a null result, check the coverage of the search before defending the result - here the intuition
 was right and the search was 68% complete.
+
+### L247 - Classify the SIGNAL, not just the inference: market-wide conditioners re-enter through every new door (B1406)
+
+L244 fixed the INFERENCE (cluster by date) after `vix_term_backwardation` topped six unrelated
+strategies. Adding numeric quantile splits (B1405, owner pushback) immediately produced the same
+pathology through a new door: the top numeric hits were `cot_copper_commercials_net_pct`,
+`cot_rut_mmoney_pctile_3y`, `cot_rut_commercials_pctile_3y` - Commitment-of-Traders series,
+which are WEEKLY and market-wide.
+
+Date-clustering did not stop them because a weekly macro series still spreads across enough
+distinct dates to clear a >=60-date test. The inference was fixed; the SIGNAL was not
+classified.
+
+**The general test - cross-sectional variation.** For each signal, the fraction of dates on
+which it takes more than one distinct value ACROSS TICKERS (measured on 40k sampled fires):
+
+| signal | dates with cross-ticker variation |
+|---|---|
+| `cot_rut_commercials_pctile_3y` | **0%** |
+| `cot_copper_commercials_net_pct` | **0%** |
+| `vix_term_backwardation` | **0%** |
+| `adx` / `rsi_14` / `atr_pct` | **100%** |
+
+A signal identical for every ticker on a given day CANNOT separate one trade from another - it
+can only select DAYS or PERIODS. It may still be a legitimate regime filter, but the claim "this
+filter improves trade quality" is unavailable to it, and its effective sample is the number of
+independent macro periods (a handful over three years), not the trade count.
+
+**Rules:** (a) classify each conditioning variable by whether it varies in the dimension you are
+claiming to select on - here, across tickers within a date; (b) fixing the inference does not
+close a defect class if the underlying variable type keeps reappearing - classify the INPUT;
+(c) market-wide conditioners belong in a separate bucket with their own (much smaller) effective
+sample, never mixed into a per-trade filter ranking.

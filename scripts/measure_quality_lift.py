@@ -104,6 +104,33 @@ def cluster_by_date(pnl, dates):
     return g
 
 
+def cross_sectional_variation(values, dates, tickers) -> float:
+    """B1406 - THE GENERAL GUARD. Fraction of dates on which this signal takes more than one
+    distinct value across tickers.
+
+    ~1.0 -> a PER-TICKER signal (adx, rsi_14, atr_pct measure 100%): it can genuinely separate
+            one trade from another on the same day.
+    ~0.0 -> a MARKET-WIDE signal (vix_term_backwardation, every cot_* series measure 0%): it is
+            identical for every ticker that day, so filtering on it can ONLY select DAYS or
+            PERIODS. It may still be a legitimate regime filter, but the claim "this separates
+            good trades from bad" is unavailable to it, and its effective sample is the number
+            of independent macro periods - a handful over three years - not the trade count.
+
+    This is the generalisation of the vix_term_backwardation defect (L244): date-clustering
+    fixed the INFERENCE, but market-wide conditioners kept re-entering through new doors (first
+    booleans, then COT numerics). Classifying the SIGNAL closes the class rather than the case.
+    """
+    df = pd.DataFrame({"v": list(values), "d": list(dates), "t": list(tickers)}).dropna(subset=["v"])
+    if df.empty:
+        return 1.0
+    per_date = df.groupby("d")["v"].nunique()
+    multi = df.groupby("d")["t"].nunique() > 1
+    per_date = per_date[multi.reindex(per_date.index).fillna(False)]
+    if len(per_date) == 0:
+        return 1.0
+    return round(float((per_date > 1).mean()), 4)
+
+
 def date_concentration(dates) -> tuple:
     """(n_distinct_dates, share of the single most common date). A gate whose retained trades
     pile onto a few dates is a date-picker, not a filter."""
@@ -129,6 +156,9 @@ def main() -> int:
     ap.add_argument("--quantiles", type=float, nargs="+", default=[0.25, 0.50, 0.75],
                     help="B1405: quantile cutoffs tested for each NUMERIC signal, in both "
                          "directions - this is where a data-chosen noise filter comes from")
+    ap.add_argument("--min-xs-variation", type=float, default=0.05,
+                    help="B1406: minimum fraction of dates on which the signal varies ACROSS "
+                         "tickers. Below this it is market-wide and can only select periods.")
     ap.add_argument("--max-top-date-share", type=float, default=0.10,
                     help="no single date may supply more than this share of retained trades")
     ap.add_argument("--output", default="output_audit/b1401_quality_lift.json")
@@ -144,7 +174,7 @@ def main() -> int:
     frames = []
     for ch in pd.read_csv(REPO / "output_r5_merged_1_7" / "trade_log.csv", chunksize=200000,
                           low_memory=False,
-                          usecols=["strategy", "entry_date", "pnl_pct", "signals_at_entry"]):
+                          usecols=["strategy", "ticker", "entry_date", "pnl_pct", "signals_at_entry"]):
         ch["entry_date"] = pd.to_datetime(ch["entry_date"]).dt.date
         frames.append(ch[(ch.entry_date >= IS_START) & (ch.entry_date < end)])
     tl = pd.concat(frames, ignore_index=True)
@@ -199,6 +229,11 @@ def main() -> int:
 
         for k, mask_arr in masks:
             mask = pd.Series(mask_arr)
+            base_key = k.split(">=")[0].split("<=")[0]
+            raw = [d.get(base_key) for d in sig]
+            raw = [v if isinstance(v, (int, float)) and not isinstance(v, bool)
+                   else (1.0 if v is True else (0.0 if v is False else None)) for v in raw]
+            xsv = cross_sectional_variation(raw, sub.entry_date.tolist(), sub.ticker.tolist())
             kept, dropped = pnl[mask.values], pnl[~mask.values]
             if len(kept) < args.min_retained or len(dropped) < 5:
                 continue
@@ -218,6 +253,9 @@ def main() -> int:
                 "n_dates_kept": n_dates,
                 "top_date_share": top_share,
                 "trades_per_date": round(ks["n"] / n_dates, 2) if n_dates else None,
+                "cross_sectional_variation": xsv,
+                "signal_class": ("PER-TICKER (selects trades)" if xsv >= 0.05
+                                 else "MARKET-WIDE (can only select days/periods)"),
                 "p_trade_level_INVALID": welch_p(kept, dropped),
                 "p": welch_p(ck, cd),          # the verdict p: clustered by date
             })
@@ -233,7 +271,11 @@ def main() -> int:
     survivors = [c for c in cands
                  if c["bh_reject"] and c["delta_wr"] > 0 and c["delta_exp"] > 0
                  and c["n_dates_kept"] >= args.min_dates
-                 and c["top_date_share"] <= args.max_top_date_share]
+                 and c["top_date_share"] <= args.max_top_date_share
+                 and c["cross_sectional_variation"] >= args.min_xs_variation]
+    marketwide = [c for c in cands
+                  if c["bh_reject"] and c["delta_wr"] > 0 and c["delta_exp"] > 0
+                  and c["cross_sectional_variation"] < args.min_xs_variation]
     survivors.sort(key=lambda c: -c["delta_exp"])
 
     print(f"\n[RESULT] {len(cands)} candidate gates tested across {len(targets)} strategies")
@@ -250,13 +292,22 @@ def main() -> int:
 
     out = REPO / args.output
     out.parent.mkdir(parents=True, exist_ok=True)
+    print(f"  [EXCLUDED] {len(marketwide)} candidates were MARKET-WIDE conditioners "
+          f"(constant across tickers on a date - they select periods, not trades)")
     out.write_text(json.dumps({
         "window": [str(IS_START), str(end)], "holdout_touched": False,
         "min_fires": args.min_fires, "min_retained": args.min_retained,
         "fdr_q": args.fdr_q, "bh_threshold": thr,
         "n_tested": len(cands), "n_fdr_survivors": sum(1 for c in cands if c["bh_reject"]),
         "n_proposals": len(survivors), "proposals": survivors,
-        "all_candidates": cands}, indent=2), encoding="utf-8")
+        # B1407: `all_candidates` used to dump every tested combination - 189,768 of them,
+        # producing a 143MB file that GitHub refuses (>100MB) and that nobody would read. The
+        # artifact keeps the DECISION-RELEVANT rows (proposals + excluded market-wide) plus a
+        # capped diagnostic sample, so it stays reviewable and committable.
+        "n_candidates_tested": len(cands),
+        "candidate_sample_capped": cands[:2000],
+        "n_marketwide_excluded": len(marketwide), "marketwide_conditioners": marketwide,
+        }, indent=2), encoding="utf-8")
     print(f"\n[OK] wrote {out}")
     print("[NOTE] PROPOSALS ONLY - nothing applied. These are IN-SAMPLE improvements and must "
           "be pre-registered before R6; R6 is what tests whether they survive.")
