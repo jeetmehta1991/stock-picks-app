@@ -3612,3 +3612,33 @@ cluster the inference on it before testing; (b) a conditioner that is CONSTANT a
 cross-section on a given day can only select days - treat any such "gate" as date-picking until
 proven otherwise; (c) an improvement is only interesting if the post-gate level clears the bar,
 not merely the delta.
+
+### L245 - Profile before optimising: 99.9% of the cost was recomputing signals the cube had already computed once (B1403)
+
+The clause-admission tool's 2-ticker verification timed out at 1200s, and my first instinct was
+that the newly-added threshold sweep had made it slow. Profiling said otherwise:
+
+| component | cost |
+|---|---|
+| per-bar signal precompute | **427.7s per ticker** (751 bars x 622 signals) |
+| 2,000 strategy-function calls | 0.00s |
+| 2,000 copies of the signal dict | 0.01s |
+
+The sweep and the leave-one-out evaluation - the parts I had just written and suspected - are
+free. **99.9% of runtime is recomputing per-bar signals**, and worse, recomputing signals the
+R5 cube already produced once. The timeout was simply 2 x ~430s brushing the 1200s limit.
+
+**Fix: cache the per-bar signals per (ticker, window).** Cold 7m11s -> **warm 2.3s**, a 185x
+speedup, with byte-identical output (lift 3.667 / 2.077 / 1.551 both runs). 6.9MB per ticker,
+so ~276MB for a 40-ticker sample - gitignored, regenerable.
+
+This changes the economics of the whole optimization workstream, not just one script. The cost
+model was "every analysis iteration costs hours", which discourages iteration and pushes toward
+getting it right first time on unverified code. It is now "pay once, iterate for free" - so
+re-running after each of the defect fixes (and there were five) costs minutes instead of a day.
+
+**Rules:** (a) profile before optimising, and specifically before blaming the code you just
+wrote - my suspicion was wrong and would have sent me tuning the sweep; (b) when an expensive
+intermediate is deterministic in its inputs, cache it before building analyses on top, because
+the iteration count is always higher than planned; (c) a 185x iteration speedup is worth more
+than any single analysis result, because it changes what is affordable to check.

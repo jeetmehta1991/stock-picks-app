@@ -103,3 +103,6 @@ output_r5_cube_merged/
 # R5 cube build intermediates (large; regenerable from S3 artifacts) - B1366
 output_chunk*/
 output_r5_merged_*/
+
+# B1403: per-bar signal cache (6.9MB/ticker; regenerable, never committed)
+output_audit/_signal_cache/

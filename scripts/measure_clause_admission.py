@@ -38,6 +38,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import pickle
 import re
 import sys
 from datetime import date, datetime
@@ -155,15 +156,38 @@ def main() -> int:
     HOLD = 10   # forward horizon in bars; matches the time_stop_10d exit family
     sweep = {n: {k: {m: [0, 0.0] for m in SWEEP_MULT}      # [n_new_admitted, sum_fwd_ret]
                  for k, _op, th in gates[n] if th is not None} for n in names}
+    # B1403: SIGNAL CACHE. Profiling showed per-bar signal precompute is ~428s/ticker while the
+    # entire leave-one-out + sweep evaluation costs <0.01s per 2000 calls - i.e. 99.9% of
+    # runtime is recomputing signals the R5 cube already computed once. Cache them per
+    # (ticker, window) so the expensive pass happens ONCE and every subsequent iteration of
+    # this analysis - and any other bar-level study - is effectively free.
+    cache_dir = REPO / "output_audit" / "_signal_cache"
+    cache_dir.mkdir(parents=True, exist_ok=True)
     for ti, tk in enumerate(tickers, 1):
-        df = MFC._load_ohlcv(tk)
-        if df is None or df.empty:
-            continue
-        try:
-            per_bar = MFC._precompute_signals_for_ticker(df, tk, start, end)
-        except Exception as exc:
-            print(f"  [skip] {tk}: {exc}")
-            continue
+        cpath = cache_dir / f"{tk}_{start}_{end}.pkl"
+        per_bar = None
+        if cpath.exists():
+            try:
+                per_bar = pickle.loads(cpath.read_bytes())
+            except Exception:
+                per_bar = None      # corrupt cache entry -> recompute, never fail the run
+        if per_bar is None:
+            df = MFC._load_ohlcv(tk)
+            if df is None or df.empty:
+                continue
+            try:
+                per_bar = MFC._precompute_signals_for_ticker(df, tk, start, end)
+            except Exception as exc:
+                print(f"  [skip] {tk}: {exc}")
+                continue
+            try:
+                cpath.write_bytes(pickle.dumps(per_bar, protocol=pickle.HIGHEST_PROTOCOL))
+            except Exception as exc:
+                print(f"  [cache-write failed for {tk}: {exc}]")
+        else:
+            df = MFC._load_ohlcv(tk)
+            if df is None or df.empty:
+                continue
         # forward return per bar date, for scoring what a loosened gate would newly admit
         closes = df["close"] if "close" in df.columns else df.get("Close")
         fwd = {}
