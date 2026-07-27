@@ -1,0 +1,100 @@
+{
+  "window": [
+    "2022-05-05",
+    "2025-05-05"
+  ],
+  "n_tickers": 3,
+  "holdout_touched": false,
+  "results": [
+    {
+      "strategy": "poc_magnet_long",
+      "bars_evaluated": 2253,
+      "base_fires": 99,
+      "base_rate": 0.043941,
+      "clauses": [
+        {
+          "clause": "vp_close_near_poc_pct",
+          "loo_rate": 0.233023,
+          "lift": 5.303,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.161119,
+          "lift": 3.667,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "vp_close_above_poc",
+          "loo_rate": 0.078562,
+          "lift": 1.788,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "rsi_oversold",
+      "bars_evaluated": 2253,
+      "base_fires": 77,
+      "base_rate": 0.034177,
+      "clauses": [
+        {
+          "clause": "rsi_14",
+          "loo_rate": 0.273413,
+          "lift": 8.0,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "rsi_2",
+          "loo_rate": 0.248557,
+          "lift": 7.273,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "below_sma_50",
+          "loo_rate": 0.087439,
+          "lift": 2.558,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "price_above_sma_50",
+          "loo_rate": 0.048824,
+          "lift": 1.429,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.040834,
+          "lift": 1.195,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "below_ema_200",
+          "loo_rate": 0.035064,
+          "lift": 1.026,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "macd_fast_crossover",
+      "bars_evaluated": 2253,
+      "base_fires": 252,
+      "base_rate": 0.111851,
+      "clauses": [
+        {
+          "clause": "macd_8_21_5_crossover_up",
+          "loo_rate": 1.0,
+          "lift": 8.94,
+          "verdict": "TRIGGER (forcing it true fires on ~every bar - relaxation is meaningless)"
+        },
+        {
+          "clause": "macd_8_21_5_crossover_dn",
+          "loo_rate": 1.0,
+          "lift": 8.94,
+          "verdict": "TRIGGER (forcing it true fires on ~every bar - relaxation is meaningless)"
+        }
+      ]
+    }
+  ]
+}

@@ -3509,3 +3509,36 @@ changing the selection rule - that is selection-on-the-dependent-variable; (b) D
 legitimate as a RANKING of which gate is the active constraint, never as an estimate of the
 gain from loosening it; (c) to size a gate change you need BAR-LEVEL clause evaluation over
 the candidate universe, which is a tool we do not currently have.
+
+### L242 - Leave-one-out clause admission: call the real strategy function; and an EVENT trigger is not a loosenable filter (B1394)
+
+Built `scripts/measure_clause_admission.py` to supply the number Lens A Dim A/B structurally
+cannot (L241): **what would relaxing this gate actually admit?** Method: over IS-window bars
+only, compute the strategy's base fire rate, then for each clause force that key to a
+maximally-permissive value and re-evaluate, giving `lift = loo_rate / base_rate`.
+
+**Two design choices that matter:**
+1. **Call `ALL_STRATEGIES[name](s)` rather than parsing the gate expression.** Strategies mix
+   AND, OR, defaults and helper calls (`_short_borrow_trap_active`). Any regex reconstruction
+   of that logic would be wrong somewhere and silently so. Mutating one key in the signal dict
+   and invoking the real function honours whatever the true boolean structure is.
+2. **Reuse `measure_fire_count._precompute_signals_for_ticker`** - the same per-bar producer
+   stack the fire-count measurement uses - rather than a second signal implementation that
+   could drift from it.
+
+**The trap the first run exposed:** `macd_fast_crossover` returned `loo_rate = 1.00000` on
+both clauses, i.e. forcing the crossover True fires on EVERY bar. That is not relaxing a
+filter, it is deleting the strategy's reason to exist. An EVENT trigger ("a crossover
+happened", "a breakout happened") has no meaningful relaxed form, so its lift must never be
+read as admission headroom. Only FILTER/THRESHOLD clauses are legitimately loosenable.
+Classification now distinguishes TRIGGER (loo_rate > 0.95) / NO-OP (lift < 1.02) / BINDING.
+
+**Worked example (3 tickers, IS window):** `poc_magnet_long` base rate 4.4% of bars; relaxing
+`vp_close_near_poc_pct` would admit 5.3x, `price_above_ema_200` 3.7x, `vp_close_above_poc`
+1.8x. That is a genuine ranking of where trades would come from - and it is exactly what a
+fire-conditioned statistic cannot produce, because every one of those clauses reads 100% among
+fires.
+
+**Rule:** before proposing a gate loosening, classify the clause. Dropping a NO-OP is free;
+loosening a BINDING filter is a real trade-off to be sized and pre-registered; "loosening" a
+TRIGGER is not an optimization, it is a different strategy.
