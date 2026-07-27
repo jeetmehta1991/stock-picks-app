@@ -3573,3 +3573,42 @@ positive evidence, and every unestablished case needs its own explicit bucket
 (ABSENT / UNDEFINED / NEVER-TRUE / EVENT / TRIGGER). If "take action" is the else-branch, every
 gap in the data silently becomes a recommendation. Ordering matters too: cheapest and most
 disqualifying checks first (absent -> starved -> trigger -> event -> no-op -> binding).
+
+### L244 - Trades sharing a DATE are not independent: cluster by date or a market-wide signal will masquerade as a strategy edge (B1402)
+
+The tightening instrument's first run ranked **`vix_term_backwardation` as the top added gate
+for SIX unrelated strategies** - `r1_break_retest`, `macd_ichimoku`, `macd_crossover`,
+`parabolic_sar_flip`, `tema_dema`, `pead_long_high_yoy_growth_only` - each with a spectacular
+expectancy jump (e.g. -1.01% -> +9.63% per trade). Six unrelated strategies sharing one magic
+gate is not a finding, it is a symptom.
+
+**Measured cause:** the retained trades for `r1_break_retest` spanned only **32 distinct dates
+out of 611**, and a SINGLE date - 2025-04-22, the post-tariff rebound - supplied **54 of 195
+retained trades at +24.6% mean**. `macd_crossover` retained 229 trades across 33 dates, same
+dominant date. `squeeze_breakout` + `usd_weakening`: 141 trades, 43 dates, 2025-04-24 at
++30.1%. The "gate" was not selecting better trades; it was selecting a handful of huge up-days.
+A market-wide DAILY signal (VIX term structure, USD direction) is precisely the conditioner
+that does this, because it is constant across tickers on a given day.
+
+**Why the existing guardrails did not catch it:** the Welch t-test counted 195 correlated
+trades as 195 independent draws, producing a p-value small enough to clear BH-FDR. FDR
+corrects for MULTIPLICITY, not for DEPENDENCE - it cannot rescue an inference whose unit of
+observation is wrong. min_retained=100 also passed, because 195 > 100.
+
+**Fix (three parts):** (1) collapse trades to one observation PER DATE before any inference -
+the effective sample is days, not trades; (2) require the retained set to span >= 60 distinct
+dates; (3) reject any candidate where a single date supplies > 10% of retained trades.
+Effect: 32,299 candidates -> 78 FDR survivors -> **54** after the date guards, and
+`vix_term_backwardation` / `usd_weakening` disappear entirely. Surviving proposals become
+plausible and strategy-relevant (`camarilla_r4_breakout` + `dc10_breakout_up`,
+`poc_magnet_long` + `above_avwap_252low`) with realistic magnitudes and healthy retention.
+
+**Second-order finding worth keeping:** only **25 of the 54** surviving proposals reach POSITIVE
+expectancy. The rest improve a losing strategy into a less-losing one (-3.5% -> -1.5%). A gate
+that improves expectancy is not the same as a gate that makes the strategy worth running.
+
+**Rules:** (a) whenever observations cluster on a shared dimension (date, ticker, sector),
+cluster the inference on it before testing; (b) a conditioner that is CONSTANT across the
+cross-section on a given day can only select days - treat any such "gate" as date-picking until
+proven otherwise; (c) an improvement is only interesting if the post-gate level clears the bar,
+not merely the delta.
