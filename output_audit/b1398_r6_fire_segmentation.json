@@ -1,0 +1,768 @@
+{
+  "segments": {
+    "NEVER FIRED (0)": 12,
+    "STARVED (1-99)": 67,
+    "QUIET (100-299)": 28,
+    "HIGH-FIRE (300+)": 91
+  },
+  "never_fired": [
+    "sector_rotation_defensive_long",
+    "squeeze_setup_long",
+    "short_borrow_trap_avoid",
+    "classification_change_to_tech_long",
+    "news_sentiment_short",
+    "xs_combined_momentum_high_ivol_short",
+    "classification_change_volume_long",
+    "rsi_overbought_short",
+    "gold_silver_risk_off_long",
+    "poc_magnet_short",
+    "classification_change_oversold_long",
+    "weekly_bias_pullback_short"
+  ],
+  "by_strategy": {
+    "camarilla_r4_breakout": {
+      "fires": 4478,
+      "wr": 0.2722
+    },
+    "pairs_mean_reversion_short": {
+      "fires": 4320,
+      "wr": 0.2449
+    },
+    "pairs_mean_reversion_long": {
+      "fires": 3775,
+      "wr": 0.2935
+    },
+    "stochrsi_overbought_short": {
+      "fires": 3172,
+      "wr": 0.3912
+    },
+    "simple_below_ema_50_short": {
+      "fires": 2534,
+      "wr": 0.2691
+    },
+    "smc_liquidity_sweep_reversal": {
+      "fires": 2363,
+      "wr": 0.2408
+    },
+    "cmf_flip": {
+      "fires": 2336,
+      "wr": 0.2517
+    },
+    "macd_crossover": {
+      "fires": 2223,
+      "wr": 0.2834
+    },
+    "macd_ichimoku": {
+      "fires": 2222,
+      "wr": 0.279
+    },
+    "institutional_insider_combo_long": {
+      "fires": 2135,
+      "wr": 0.2604
+    },
+    "rsi_oversold_with_smart_money_long": {
+      "fires": 2135,
+      "wr": 0.2604
+    },
+    "po3_bearish": {
+      "fires": 2067,
+      "wr": 0.2317
+    },
+    "institutional_buy_momentum_long": {
+      "fires": 2064,
+      "wr": 0.2573
+    },
+    "mmsm_short": {
+      "fires": 1901,
+      "wr": 0.2488
+    },
+    "dc20_break_retest": {
+      "fires": 1874,
+      "wr": 0.2321
+    },
+    "institutional_cluster_long": {
+      "fires": 1855,
+      "wr": 0.2609
+    },
+    "institutional_multi_quarter_persistence_long": {
+      "fires": 1849,
+      "wr": 0.2531
+    },
+    "williams_r_oversold": {
+      "fires": 1833,
+      "wr": 0.252
+    },
+    "stochrsi_oversold": {
+      "fires": 1818,
+      "wr": 0.2602
+    },
+    "risk_off_bond_equity_short": {
+      "fires": 1806,
+      "wr": 0.2492
+    },
+    "institutional_persistence_momentum_long": {
+      "fires": 1760,
+      "wr": 0.2659
+    },
+    "break_retest_volume": {
+      "fires": 1672,
+      "wr": 0.2327
+    },
+    "morning_star": {
+      "fires": 1668,
+      "wr": 0.2992
+    },
+    "institutional_recent_init_momentum_long": {
+      "fires": 1657,
+      "wr": 0.2607
+    },
+    "turtle_soup_short": {
+      "fires": 1478,
+      "wr": 0.2503
+    },
+    "tema_dema": {
+      "fires": 1422,
+      "wr": 0.2771
+    },
+    "naked_poc_retest_long": {
+      "fires": 1375,
+      "wr": 0.2735
+    },
+    "institutional_persistent_holders_long": {
+      "fires": 1365,
+      "wr": 0.2667
+    },
+    "cpr_narrow_momentum_short": {
+      "fires": 1297,
+      "wr": 0.2251
+    },
+    "three_white_soldiers": {
+      "fires": 1275,
+      "wr": 0.2392
+    },
+    "institutional_strong_conviction_long": {
+      "fires": 1236,
+      "wr": 0.2654
+    },
+    "parabolic_sar_flip": {
+      "fires": 1217,
+      "wr": 0.2901
+    },
+    "parabolic_sar_flip_short": {
+      "fires": 1216,
+      "wr": 0.2673
+    },
+    "three_black_crows_short": {
+      "fires": 1204,
+      "wr": 0.2608
+    },
+    "ppo_crossover": {
+      "fires": 1194,
+      "wr": 0.4757
+    },
+    "bollinger_lower": {
+      "fires": 1192,
+      "wr": 0.1493
+    },
+    "volume_spike_breakout": {
+      "fires": 1174,
+      "wr": 0.2487
+    },
+    "prev_day_high_break": {
+      "fires": 1110,
+      "wr": 0.264
+    },
+    "macd_crossover_short": {
+      "fires": 1102,
+      "wr": 0.2577
+    },
+    "institutional_volume_confirmation_long": {
+      "fires": 1092,
+      "wr": 0.2518
+    },
+    "avwap_50_reclaim": {
+      "fires": 1071,
+      "wr": 0.4192
+    },
+    "xs_momentum_bottom_decile_short": {
+      "fires": 1062,
+      "wr": 0.2863
+    },
+    "ichimoku_tk_cross": {
+      "fires": 1013,
+      "wr": 0.2577
+    },
+    "mmbm_long": {
+      "fires": 988,
+      "wr": 0.2601
+    },
+    "smc_order_block_bounce": {
+      "fires": 988,
+      "wr": 0.2632
+    },
+    "squeeze_breakout": {
+      "fires": 953,
+      "wr": 0.298
+    },
+    "squeeze_breakout_with_smart_money_long": {
+      "fires": 952,
+      "wr": 0.2983
+    },
+    "hull_rsi": {
+      "fires": 947,
+      "wr": 0.264
+    },
+    "institutional_persistence_volume_long": {
+      "fires": 913,
+      "wr": 0.2607
+    },
+    "macd_bullish_with_smart_money_long": {
+      "fires": 885,
+      "wr": 0.252
+    },
+    "vol_spike_2x_below_ema_50_short": {
+      "fires": 871,
+      "wr": 0.2078
+    },
+    "bb_squeeze_volume": {
+      "fires": 840,
+      "wr": 0.2524
+    },
+    "triangle_descending_short": {
+      "fires": 820,
+      "wr": 0.2451
+    },
+    "institutional_recent_init_volume_long": {
+      "fires": 789,
+      "wr": 0.2548
+    },
+    "htf_aligned_breakout_short": {
+      "fires": 780,
+      "wr": 0.2487
+    },
+    "donchian_breakdown_retest_short": {
+      "fires": 775,
+      "wr": 0.2271
+    },
+    "cpr_narrow_momentum": {
+      "fires": 766,
+      "wr": 0.2507
+    },
+    "awesome_oscillator": {
+      "fires": 757,
+      "wr": 0.2655
+    },
+    "donchian_10_breakout": {
+      "fires": 753,
+      "wr": 0.2696
+    },
+    "donchian_breakout_with_smart_money_long": {
+      "fires": 753,
+      "wr": 0.251
+    },
+    "m_and_a_target_long": {
+      "fires": 749,
+      "wr": 0.2764
+    },
+    "roc_burst": {
+      "fires": 690,
+      "wr": 0.2623
+    },
+    "donchian_breakdown_short": {
+      "fires": 689,
+      "wr": 0.2482
+    },
+    "golden_cross_9_21": {
+      "fires": 683,
+      "wr": 0.265
+    },
+    "week_opening_gap_fill_up": {
+      "fires": 682,
+      "wr": 0.2302
+    },
+    "bollinger_tight_with_smart_money_long": {
+      "fires": 681,
+      "wr": 0.2599
+    },
+    "pead_short": {
+      "fires": 667,
+      "wr": 0.3193
+    },
+    "pivot_r1_breakout": {
+      "fires": 666,
+      "wr": 0.2327
+    },
+    "smc_equal_highs_sweep_short": {
+      "fires": 647,
+      "wr": 0.2071
+    },
+    "prev_day_low_breakdown": {
+      "fires": 646,
+      "wr": 0.2616
+    },
+    "williams_stoch_dual": {
+      "fires": 562,
+      "wr": 0.2758
+    },
+    "pead_with_smart_money_long": {
+      "fires": 550,
+      "wr": 0.3164
+    },
+    "po3_bullish": {
+      "fires": 534,
+      "wr": 0.2734
+    },
+    "smc_bos_retest_entry": {
+      "fires": 528,
+      "wr": 0.2595
+    },
+    "institutional_breakout_confirmation_long": {
+      "fires": 502,
+      "wr": 0.251
+    },
+    "inside_bar_breakout": {
+      "fires": 457,
+      "wr": 0.291
+    },
+    "smc_choch_reversal": {
+      "fires": 456,
+      "wr": 0.2237
+    },
+    "ultimate_oscillator": {
+      "fires": 440,
+      "wr": 0.2977
+    },
+    "vix_backwardation_long": {
+      "fires": 435,
+      "wr": 0.2874
+    },
+    "prev_day_low_bounce": {
+      "fires": 433,
+      "wr": 0.2841
+    },
+    "week_opening_gap_fill_down": {
+      "fires": 418,
+      "wr": 0.201
+    },
+    "donchian_breakout_retest_long": {
+      "fires": 413,
+      "wr": 0.2107
+    },
+    "head_and_shoulders_top_short": {
+      "fires": 392,
+      "wr": 0.2755
+    },
+    "supertrend_macd": {
+      "fires": 389,
+      "wr": 0.2596
+    },
+    "donchian_breakout_long": {
+      "fires": 385,
+      "wr": 0.3117
+    },
+    "xs_low_beta_with_smart_money_long": {
+      "fires": 379,
+      "wr": 0.2296
+    },
+    "52w_low_breakdown_pullback_short": {
+      "fires": 354,
+      "wr": 0.1751
+    },
+    "ichimoku_cloud_breakout": {
+      "fires": 348,
+      "wr": 0.2615
+    },
+    "pivot_s1_bounce": {
+      "fires": 346,
+      "wr": 0.289
+    },
+    "smc_premium_short": {
+      "fires": 328,
+      "wr": 0.2774
+    },
+    "golden_cross_20_50": {
+      "fires": 309,
+      "wr": 0.2783
+    },
+    "inverted_cup_and_handle_short": {
+      "fires": 294,
+      "wr": 0.2483
+    },
+    "institutional_oversold_long": {
+      "fires": 293,
+      "wr": 0.2389
+    },
+    "news_sentiment_shift_long": {
+      "fires": 285,
+      "wr": 0.2491
+    },
+    "value_area_breakout_long": {
+      "fires": 275,
+      "wr": 0.2727
+    },
+    "smc_equal_lows_sweep_long": {
+      "fires": 269,
+      "wr": 0.3048
+    },
+    "bollinger_tight": {
+      "fires": 258,
+      "wr": 0.3295
+    },
+    "triangle_ascending_long": {
+      "fires": 249,
+      "wr": 0.2892
+    },
+    "smc_discount_long": {
+      "fires": 245,
+      "wr": 0.2408
+    },
+    "htf_aligned_breakout_long": {
+      "fires": 235,
+      "wr": 0.3064
+    },
+    "turtle_soup_long": {
+      "fires": 229,
+      "wr": 0.2533
+    },
+    "smc_fvg_retest_short": {
+      "fires": 228,
+      "wr": 0.2632
+    },
+    "stoch_oversold": {
+      "fires": 228,
+      "wr": 0.2632
+    },
+    "double_bottom_long": {
+      "fires": 223,
+      "wr": 0.278
+    },
+    "doji_at_resistance_short": {
+      "fires": 216,
+      "wr": 0.2546
+    },
+    "supertrend_macd_short": {
+      "fires": 215,
+      "wr": 0.2651
+    },
+    "xs_momentum_top_decile": {
+      "fires": 204,
+      "wr": 0.2843
+    },
+    "insider_cluster_concentrated_sell_short": {
+      "fires": 191,
+      "wr": 0.2565
+    },
+    "shooting_star_short": {
+      "fires": 191,
+      "wr": 0.288
+    },
+    "smc_ote_long": {
+      "fires": 188,
+      "wr": 0.2394
+    },
+    "smc_ote_short": {
+      "fires": 180,
+      "wr": 0.2778
+    },
+    "doji_at_support": {
+      "fires": 174,
+      "wr": 0.2931
+    },
+    "camarilla_s3_bounce": {
+      "fires": 168,
+      "wr": 0.2679
+    },
+    "52w_high_breakout_with_smart_money_vol_below_long": {
+      "fires": 162,
+      "wr": 0.3395
+    },
+    "ichimoku_cloud_breakdown": {
+      "fires": 162,
+      "wr": 0.1852
+    },
+    "pead_long": {
+      "fires": 136,
+      "wr": 0.2353
+    },
+    "cup_and_handle_long": {
+      "fires": 132,
+      "wr": 0.2652
+    },
+    "xs_momentum_quality_combined": {
+      "fires": 113,
+      "wr": 0.3451
+    },
+    "head_and_shoulders_bottom_long": {
+      "fires": 111,
+      "wr": 0.2613
+    },
+    "52w_high_breakout_pullback_long": {
+      "fires": 99,
+      "wr": 0.3131
+    },
+    "activist_13d_long": {
+      "fires": 98,
+      "wr": 0.2449
+    },
+    "pre_holiday_long": {
+      "fires": 98,
+      "wr": 0.2959
+    },
+    "bollinger_upper_short": {
+      "fires": 97,
+      "wr": 0.2784
+    },
+    "news_momentum_long": {
+      "fires": 96,
+      "wr": 0.2396
+    },
+    "golden_cross_50_200": {
+      "fires": 90,
+      "wr": 0.3111
+    },
+    "triangle_ascending_retest_long": {
+      "fires": 87,
+      "wr": 0.2184
+    },
+    "xs_quality_top_quintile_long": {
+      "fires": 87,
+      "wr": 0.2989
+    },
+    "institutional_with_directors_long": {
+      "fires": 83,
+      "wr": 0.253
+    },
+    "hammer_at_support_long": {
+      "fires": 80,
+      "wr": 0.3625
+    },
+    "orb_stocks_in_play_short": {
+      "fires": 80,
+      "wr": 0.3
+    },
+    "smc_bos_continuation": {
+      "fires": 80,
+      "wr": 0.2375
+    },
+    "cup_and_handle_retest_long": {
+      "fires": 79,
+      "wr": 0.2658
+    },
+    "institutional_with_officers_long": {
+      "fires": 78,
+      "wr": 0.2564
+    },
+    "52w_low_breakdown": {
+      "fires": 77,
+      "wr": 0.2208
+    },
+    "institutional_increased_with_directors_long": {
+      "fires": 77,
+      "wr": 0.2468
+    },
+    "pivot_fib_confluence": {
+      "fires": 75,
+      "wr": 0.1733
+    },
+    "xs_low_beta_long": {
+      "fires": 66,
+      "wr": 0.3182
+    },
+    "mfi_oversold": {
+      "fires": 63,
+      "wr": 0.2857
+    },
+    "52wl_break_retest_short": {
+      "fires": 60,
+      "wr": 0.2
+    },
+    "judas_swing_short": {
+      "fires": 57,
+      "wr": 0.2632
+    },
+    "post_inclusion_reversal_short": {
+      "fires": 57,
+      "wr": 0.3333
+    },
+    "avwap_20high_rejection_short": {
+      "fires": 56,
+      "wr": 0.1071
+    },
+    "pre_fomc_long_sleeve": {
+      "fires": 52,
+      "wr": 0.3269
+    },
+    "52w_high_breakout_with_smart_money_long": {
+      "fires": 51,
+      "wr": 0.3725
+    },
+    "flag_bull_long": {
+      "fires": 51,
+      "wr": 0.3333
+    },
+    "smc_fvg_retest_long": {
+      "fires": 48,
+      "wr": 0.2917
+    },
+    "pivot_r2_continuation": {
+      "fires": 46,
+      "wr": 0.2826
+    },
+    "post_deletion_drift_short": {
+      "fires": 46,
+      "wr": 0.1957
+    },
+    "flag_bear_retest_short": {
+      "fires": 45,
+      "wr": 0.2
+    },
+    "judas_swing_long": {
+      "fires": 44,
+      "wr": 0.2727
+    },
+    "news_reversal_short": {
+      "fires": 43,
+      "wr": 0.2791
+    },
+    "pivot_s2_bounce": {
+      "fires": 41,
+      "wr": 0.2439
+    },
+    "orb_stocks_in_play_long": {
+      "fires": 40,
+      "wr": 0.35
+    },
+    "rsi9_extreme": {
+      "fires": 40,
+      "wr": 0.45
+    },
+    "adx_initiation": {
+      "fires": 38,
+      "wr": 0.2368
+    },
+    "smc_mitigation_block_short": {
+      "fires": 38,
+      "wr": 0.3158
+    },
+    "monthly_bias_momentum_long": {
+      "fires": 35,
+      "wr": 0.2286
+    },
+    "golden_cross_volume": {
+      "fires": 34,
+      "wr": 0.3235
+    },
+    "keltner_lower": {
+      "fires": 34,
+      "wr": 0.3235
+    },
+    "flag_bull_retest_long": {
+      "fires": 30,
+      "wr": 0.3333
+    },
+    "52w_high_breakout": {
+      "fires": 26,
+      "wr": 0.4615
+    },
+    "death_cross_50_200_volume": {
+      "fires": 25,
+      "wr": 0.36
+    },
+    "pre_rebalance_long": {
+      "fires": 22,
+      "wr": 0.2727
+    },
+    "pre_fomc_quality_momentum_long": {
+      "fires": 20,
+      "wr": 0.45
+    },
+    "weekly_bias_pullback_long": {
+      "fires": 18,
+      "wr": 0.2222
+    },
+    "post_inclusion_drift_long": {
+      "fires": 17,
+      "wr": 0.5294
+    },
+    "insider_cluster_long": {
+      "fires": 14,
+      "wr": 0.1429
+    },
+    "insider_cluster_with_director_long": {
+      "fires": 14,
+      "wr": 0.1429
+    },
+    "classification_change_momentum_long": {
+      "fires": 13,
+      "wr": 0.2308
+    },
+    "52wh_break_retest": {
+      "fires": 12,
+      "wr": 0.1667
+    },
+    "classification_change_from_tech_short": {
+      "fires": 9,
+      "wr": 0.3333
+    },
+    "pead_with_insider_confirmation_long": {
+      "fires": 9,
+      "wr": 0.3333
+    },
+    "smc_mitigation_block_long": {
+      "fires": 9,
+      "wr": 0.2222
+    },
+    "rsi21_slow": {
+      "fires": 8,
+      "wr": 0.125
+    },
+    "classification_change_to_defensive_short": {
+      "fires": 7,
+      "wr": 0.4286
+    },
+    "classification_change_recent_long": {
+      "fires": 6,
+      "wr": 0.1667
+    },
+    "halloween_seasonal_long": {
+      "fires": 6,
+      "wr": 0.3333
+    },
+    "pivot_r3_blowoff_short": {
+      "fires": 6,
+      "wr": 0.3333
+    },
+    "classification_change_with_institutional_long": {
+      "fires": 5,
+      "wr": 0.0
+    },
+    "news_momentum_short": {
+      "fires": 4,
+      "wr": 0.25
+    },
+    "supertrend_ichimoku_adx": {
+      "fires": 3,
+      "wr": 0.3333
+    },
+    "classification_change_breakout_long": {
+      "fires": 2,
+      "wr": 0.0
+    },
+    "pivot_s3_capitulation": {
+      "fires": 2,
+      "wr": 0.5
+    },
+    "classification_change_with_insider_long": {
+      "fires": 1,
+      "wr": 0.0
+    },
+    "january_effect_small_cap_long": {
+      "fires": 1,
+      "wr": 0.0
+    },
+    "news_reversal_long": {
+      "fires": 1,
+      "wr": 0.0
+    }
+  }
+}

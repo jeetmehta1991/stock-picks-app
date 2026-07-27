@@ -138,10 +138,17 @@ def main() -> int:
         for _bar_date, sig in per_bar:
             for k in watched:
                 if k in sig:
-                    e = sig_true.setdefault(k, [0, 0])
-                    e[1] += 1
-                    if sig[k] is True:
-                        e[0] += 1
+                    # [n_true, n_bool_seen, n_numeric_seen] - booleans and numerics must be
+                    # counted separately: a numeric never satisfies `is True`, so lumping them
+                    # together reports own_rate 0.0 for every threshold signal and makes the
+                    # EVENT rule fire on the wrong things.
+                    e = sig_true.setdefault(k, [0, 0, 0])
+                    if isinstance(sig[k], bool):
+                        e[1] += 1
+                        if sig[k]:
+                            e[0] += 1
+                    elif isinstance(sig[k], (int, float)):
+                        e[2] += 1
             for n in names:
                 fn = ALL_STRATEGIES[n]
                 st = stats[n]
@@ -179,14 +186,21 @@ def main() -> int:
             # essentially every bar - loo_rate ~ 1.0. That is not "relaxing a filter", it is
             # deleting the strategy's reason to exist, so its lift must NOT be read as
             # admission headroom. Only FILTER/THRESHOLD clauses are legitimately loosenable.
-            tn, ts = sig_true.get(k, [0, 0])
-            own_rate = (tn / ts) if ts else None
+            tn, nb, nn = sig_true.get(k, [0, 0, 0])
+            own_rate = (tn / nb) if nb else None      # None for a numeric-only signal
             # EVENT = the signal itself is intrinsically rare. Decided from data, before the
             # lift rules, because a rare EVENT can show a huge lift and would otherwise sit at
-            # the top of the relaxable list while being unloosenable by nature.
+            # the top of the relaxable list while being unloosenable by nature. A boolean that
+            # was NEVER true in the sample is not evidence of relaxability either - it is
+            # either an even rarer event or an unpopulated producer, so it gets its own bucket
+            # rather than defaulting into BINDING.
+            never_true = own_rate is not None and tn == 0
             is_event = own_rate is not None and 0 < own_rate < 0.05
             if base_rate <= 0:
                 verdict = "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+            elif never_true:
+                verdict = (f"NEVER-TRUE in sample ({nb} bars seen, 0 true) - rare event or "
+                           f"unpopulated producer; NOT evidence of relaxability")
             elif loo_rate > 0.95:
                 verdict = "TRIGGER (forcing it true fires ~every bar - relaxation is meaningless)"
             elif is_event:
