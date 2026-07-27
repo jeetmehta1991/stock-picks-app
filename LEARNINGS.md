@@ -3642,3 +3642,35 @@ wrote - my suspicion was wrong and would have sent me tuning the sweep; (b) when
 intermediate is deterministic in its inputs, cache it before building analyses on top, because
 the iteration count is always higher than planned; (c) a 185x iteration speedup is worth more
 than any single analysis result, because it changes what is affordable to check.
+
+### L246 - "No fix exists" is a claim about the SEARCH SPACE, not about the strategies (B1405)
+
+Reported to the owner: "66 of the 91 high-fire strategies have no available fix from this
+analysis." Owner pushed back - "I don't buy this argument, there must be something that can be
+done to filter out noise and improve win rate" - and was right.
+
+**What the search actually covered**, measured on `camarilla_r4_breakout`:
+| | |
+|---|---|
+| distinct signals available per fire | **833** |
+| boolean - the only type tested | 534 |
+| **numeric - never tested** | **280** |
+| fraction of candidate space searched | **68%** |
+
+And within that 68% it tested only SINGLE signals, as plain true/false splits. Numeric signals
+(`adx`, `atr_pct`, `bb_bandwidth`, `avwap_*`, `ao`) are precisely where a data-chosen noise
+filter lives: a boolean like `adx_strong` encodes somebody's pre-selected cutoff, whereas the
+raw `adx` lets the data choose it. Excluding them removed the most informative third of the
+space and then the result was reported as a property of the strategies.
+
+**Still unsearched even after adding numeric quantile splits (B1405):** signal COMBINATIONS /
+interactions; exit-side changes (the recorded pnl is fixed to one exit, so "cut losers earlier"
+was never testable from this data); per-strategy regime conditioning; ticker or sector subsets;
+MFE/MAE path structure; and any signal absent from `signals_at_entry` altogether.
+
+**Rules:** (a) never report "no solution exists" from a bounded search - report "no solution
+found within [explicitly stated search space]" and enumerate what was NOT searched; (b) when a
+result would justify retiring work, the burden is on the SEARCH to be exhaustive before the
+conclusion is stated, not on the reader to challenge it; (c) if an owner's intuition contradicts
+a null result, check the coverage of the search before defending the result - here the intuition
+was right and the search was 68% complete.

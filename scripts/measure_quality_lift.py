@@ -126,6 +126,9 @@ def main() -> int:
     ap.add_argument("--min-dates", type=int, default=60,
                     help="candidate must retain trades on at least this many DISTINCT dates "
                          "(B1402: the effective sample is days, not trades)")
+    ap.add_argument("--quantiles", type=float, nargs="+", default=[0.25, 0.50, 0.75],
+                    help="B1405: quantile cutoffs tested for each NUMERIC signal, in both "
+                         "directions - this is where a data-chosen noise filter comes from")
     ap.add_argument("--max-top-date-share", type=float, default=0.10,
                     help="no single date may supply more than this share of retained trades")
     ap.add_argument("--output", default="output_audit/b1401_quality_lift.json")
@@ -161,15 +164,41 @@ def main() -> int:
                 sig.append(json.loads(raw) if isinstance(raw, str) else {})
             except Exception:
                 sig.append({})
-        keys = {}
+        # B1405 (owner pushback, and correct): the first version tested ONLY boolean signals.
+        # Measured on camarilla_r4_breakout, 833 distinct signals are available per strategy -
+        # 534 boolean, 280 NUMERIC - so the search covered 68% of the space and, worse, the
+        # coarser 68%. A boolean like `adx_strong` is somebody's pre-chosen cutoff; the raw
+        # `adx` lets the DATA choose it, which is exactly the noise-filtering mechanism we are
+        # looking for. Numeric signals are now tested as quantile splits in both directions.
+        keys, numkeys = {}, {}
         for d in sig:
             for k, v in d.items():
                 if isinstance(v, bool):
                     keys[k] = keys.get(k, 0) + 1
+                elif isinstance(v, (int, float)):
+                    numkeys[k] = numkeys.get(k, 0) + 1
+
+        masks = []      # (label, boolean mask over fires)
         for k, seen in keys.items():
+            if seen / len(sig) >= args.min_coverage:
+                masks.append((k, pd.Series([bool(d.get(k)) for d in sig]).values))
+        for k, seen in numkeys.items():
             if seen / len(sig) < args.min_coverage:
                 continue
-            mask = pd.Series([bool(d.get(k)) for d in sig])
+            vals = pd.Series([d.get(k) if isinstance(d.get(k), (int, float))
+                              and not isinstance(d.get(k), bool) else None for d in sig],
+                             dtype="float64")
+            if vals.notna().sum() < args.min_retained:
+                continue
+            for q in args.quantiles:
+                thr = vals.quantile(q)
+                if pd.isna(thr):
+                    continue
+                masks.append((f"{k}>=p{int(q*100)}({thr:.4g})", (vals >= thr).fillna(False).values))
+                masks.append((f"{k}<=p{int(q*100)}({thr:.4g})", (vals <= thr).fillna(False).values))
+
+        for k, mask_arr in masks:
+            mask = pd.Series(mask_arr)
             kept, dropped = pnl[mask.values], pnl[~mask.values]
             if len(kept) < args.min_retained or len(dropped) < 5:
                 continue
