@@ -71,6 +71,25 @@ def clauses_of(strategy: str, source: str) -> list[tuple[str, str, float | None]
     return [(k, op, th) for k, (op, th) in out.items()]
 
 
+SWEEP_MULT = (1.10, 1.25, 1.50, 2.00)   # candidate relaxations of a numeric threshold
+
+
+def relaxed_threshold(op: str, th: float, mult: float) -> float:
+    """The candidate threshold when a gate is loosened by `mult`. For a `>` gate loosening
+    means a LOWER bar; for a `<` gate it means a HIGHER ceiling."""
+    return th / mult if op in (">", ">=") else th * mult
+
+
+def satisfies(op: str, val, th: float) -> bool:
+    if not isinstance(val, (int, float)) or isinstance(val, bool):
+        return False
+    if op in (">", ">="):
+        return val >= th
+    if op in ("<", "<="):
+        return val <= th
+    return val == th
+
+
 def passing_value(op: str, th: float | None, cur):
     """The most permissive value for this clause - what it looks like when it cannot block."""
     if op == "bool" or th is None:
@@ -123,9 +142,19 @@ def main() -> int:
     # An EVENT signal is intrinsically rare - True on a few percent of bars - and cannot be
     # "loosened": the crossover either happened or it did not. So record each signal's OWN
     # True-rate over bars and use that, which needs no name list and cannot go stale.
-    sig_true = {}   # signal key -> [n_true, n_seen]
+    sig_true = {}   # signal key -> [n_true, n_bool_seen, n_numeric_seen]
     stats = {n: {"bars": 0, "base": 0, "loo": {c[0]: 0 for c in gates[n]}} for n in names}
     watched = {k for n in names for k, _op, _th in gates[n]}
+    # B1400 THE SWEEP. `lift` is a full-removal CEILING; it cannot say what 0.03 -> 0.04
+    # admits, so it cannot be used to CHOOSE a threshold. For each numeric-threshold clause we
+    # re-evaluate the strategy at candidate relaxed thresholds, admitting a bar only when its
+    # ACTUAL signal value satisfies the CANDIDATE threshold - which simulates the edited gate
+    # exactly. Alongside each candidate we accumulate the FORWARD RETURN of the bars it newly
+    # admits: a loosening that admits negative-expectancy trades is loosening into noise, which
+    # is the entire risk of this exercise, and admission counts alone cannot detect it.
+    HOLD = 10   # forward horizon in bars; matches the time_stop_10d exit family
+    sweep = {n: {k: {m: [0, 0.0] for m in SWEEP_MULT}      # [n_new_admitted, sum_fwd_ret]
+                 for k, _op, th in gates[n] if th is not None} for n in names}
     for ti, tk in enumerate(tickers, 1):
         df = MFC._load_ohlcv(tk)
         if df is None or df.empty:
@@ -135,6 +164,16 @@ def main() -> int:
         except Exception as exc:
             print(f"  [skip] {tk}: {exc}")
             continue
+        # forward return per bar date, for scoring what a loosened gate would newly admit
+        closes = df["close"] if "close" in df.columns else df.get("Close")
+        fwd = {}
+        if closes is not None:
+            c = closes.reset_index(drop=True)
+            idx_of = {d.date(): i for i, d in enumerate(df.index)}
+            for d, i in idx_of.items():
+                j = i + HOLD
+                if j < len(c) and c.iloc[i]:
+                    fwd[d] = float((c.iloc[j] - c.iloc[i]) / c.iloc[i] * 100.0)
         for _bar_date, sig in per_bar:
             for k in watched:
                 if k in sig:
@@ -170,6 +209,29 @@ def main() -> int:
                             st["loo"][k] += 1
                     except Exception:
                         pass
+                    # B1400 sweep: only meaningful for a numeric threshold on a bar that does
+                    # not already fire - we are counting what a RELAXED threshold would ADD.
+                    if th is None or base_fires:
+                        continue
+                    val = sig.get(k)
+                    if not isinstance(val, (int, float)) or isinstance(val, bool):
+                        continue
+                    for m in SWEEP_MULT:
+                        if not satisfies(op, val, relaxed_threshold(op, th, m)):
+                            continue      # still blocked even at the relaxed threshold
+                        s3 = dict(sig)
+                        s3[k] = passing_value(op, th, val)   # let it through the ORIGINAL gate
+                        try:
+                            r3 = fn(s3)
+                            if bool(r3.get("fires") if isinstance(r3, dict)
+                                    else getattr(r3, "fires", False)):
+                                cellw = sweep[n][k][m]
+                                cellw[0] += 1
+                                fr = fwd.get(_bar_date)
+                                if fr is not None:
+                                    cellw[1] += fr
+                        except Exception:
+                            pass
         if ti % 5 == 0:
             print(f"  ... {ti}/{len(tickers)} tickers")
 
@@ -224,10 +286,25 @@ def main() -> int:
                 verdict = "NO-OP (relaxing admits nothing new - candidate to DROP)"
             else:
                 verdict = "BINDING (relaxable filter - this is where trades would come from)"
-            cl.append({"clause": k, "loo_rate": round(loo_rate, 6),
-                       "signal_own_rate": round(own_rate, 6) if own_rate is not None else None,
-                       "lift": round(loo_rate / base_rate, 3) if base_rate > 0 else None,
-                       "verdict": verdict})
+            entry = {"clause": k, "loo_rate": round(loo_rate, 6),
+                     "signal_own_rate": round(own_rate, 6) if own_rate is not None else None,
+                     "lift": round(loo_rate / base_rate, 3) if base_rate > 0 else None,
+                     "verdict": verdict}
+            # B1400: the admission CURVE + the quality of what each relaxation would admit.
+            # This is what turns "this gate binds" into an implementable threshold value.
+            sw = sweep.get(n, {}).get(k)
+            if sw:
+                entry["sweep"] = [
+                    {"multiple": m,
+                     "new_threshold": round(relaxed_threshold(
+                         next(o for kk, o, _t in gates[n] if kk == k),
+                         next(t for kk, _o, t in gates[n] if kk == k), m), 5),
+                     "extra_fires": sw[m][0],
+                     "fires_after": st["base"] + sw[m][0],
+                     "mean_fwd_return_of_new_pct": (round(sw[m][1] / sw[m][0], 3)
+                                                    if sw[m][0] else None)}
+                    for m in SWEEP_MULT]
+            cl.append(entry)
         cl.sort(key=lambda c: -(c["lift"] or 0))
         results.append({"strategy": n, "bars_evaluated": st["bars"],
                         "base_fires": st["base"], "base_rate": round(base_rate, 6),
