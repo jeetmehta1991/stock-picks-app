@@ -6494,3 +6494,22 @@ The B1398 boolean/numeric fix VERIFIED working (`ema_50_200_golden_cross` own_ra
 ### B1407 (2026-07-27): artifact-size fix - the quality-lift JSON was 143MB and blocked the push
 
 `output_audit/b1405_quality_lift_numeric.json` reached **143MB** because the tool dumped `all_candidates` - every one of the 189,768 tested combinations with full nested stats. GitHub rejected the push (`GH001: File is 136.65 MB; exceeds the 100.00 MB limit`). FIXED AT SOURCE rather than by dropping the file from the commit: the artifact now writes the DECISION-RELEVANT rows only - `proposals` + excluded `marketwide_conditioners` + counts - plus a capped 2,000-row diagnostic sample, so it stays reviewable AND committable. The 143MB file is gitignored. Commit unwound with `git reset --soft` (working tree untouched; `git status` run first per the CLAUDE.md hard rule) and re-made. **RULE: an analysis artifact must carry what a decision needs, not every intermediate the search produced** - a 189k-row dump is unreadable by a human, unreviewable in a diff, and unstorable in git.
+
+### B1408 (2026-07-27): TIGHTENING RESULT with all guards - the owner's pushback vindicated in numbers
+
+Final fully-guarded tightening search (`output_audit/b1408_tightening_proposals.json`, 0.14MB slim artifact; the 161MB raw run is gitignored by pattern):
+
+| | original claim (boolean-only) | final (numeric + all guards) |
+|---|---|---|
+| candidates tested | 32,299 | **189,768** |
+| BH-FDR survivors | 78 | 1,044 |
+| MARKET-WIDE excluded (L247) | n/a | **605** |
+| proposals (per-ticker, date-guarded) | 54 | **375** |
+| reach POSITIVE expectancy | 25 | **155** |
+| **strategies with a +EV filter** | **11** | **42** |
+
+**So "66 of 91 high-fire strategies have no available fix" was wrong by a factor of ~4** - 42 of the 91 now have a per-ticker filter that turns them profitable in-sample. Guards applied to every one: date-clustered inference, >=60 distinct dates, <=10% single-date share, >=100 retained fires, BH-FDR across the full 189,768-test family, and cross-sectional variation >= 0.05 (per-ticker, not market-wide).
+
+**TOP +EV FILTERS (all with cross-sectional variation ~1.0, i.e. genuinely per-trade):** `poc_magnet_long` + `xs_beta>=p50` (exp +1.25 -> **+5.62%**, WR .299->.378, n 438->217); `pead_long_high_yoy_growth_only` + `short_interest_pct<=p25` (+0.85 -> **+5.44%**, n 1694->417); `pairs_mean_reversion_long` + `short_interest_pct<=p25` (+0.87 -> **+3.83%**, n 3775->930); `pead_long_high_yoy_growth_only` + `total_active_holders<=p25` (+0.85 -> +4.71%); `cpr_narrow_momentum` + `ao>=p75` (-2.55 -> **+3.57%**). These are economically legible - low short interest on a PEAD long means less squeeze/crowding, a beta floor on a POC-magnet mean-reversion long, momentum confirmation on a narrow-CPR breakout.
+
+**CAVEAT TO CARRY FORWARD:** a few survivors sit in a middle band of cross-sectional variation (`ao_positive` 0.37, `news_bearish_pct` 0.64) - partly market-wide. The 0.05 threshold only excludes PURE macro series; a stricter band should be considered when the change list is assembled. **ALL IN-SAMPLE** - R6 is what tests whether any of it survives. NO gate changed, NO AWS spend. (b) 40-ticker loosening run still executing.

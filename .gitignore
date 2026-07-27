@@ -108,4 +108,5 @@ output_r5_merged_*/
 output_audit/_signal_cache/
 
 # B1407: quality-lift full-candidate dumps (100MB+); summaries are committed instead
-output_audit/b1405_quality_lift_numeric.json
+output_audit/*quality_lift*.json
+!output_audit/b1408_tightening_proposals.json
