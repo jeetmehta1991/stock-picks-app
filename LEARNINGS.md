@@ -3542,3 +3542,34 @@ fires.
 **Rule:** before proposing a gate loosening, classify the clause. Dropping a NO-OP is free;
 loosening a BINDING filter is a real trade-off to be sized and pre-registered; "loosening" a
 TRIGGER is not an optimization, it is a different strategy.
+
+### L243 - "Relaxable" must be a POSITIVE conclusion, never the fallback for missing information (B1399)
+
+Five defects in a row in `measure_clause_admission.py`, all the same root cause: BINDING
+(= "this gate is relaxable, tune it") was the ELSE branch. Anything the classifier could not
+establish fell into it.
+
+The five, in order of discovery:
+1. summary sorted all clauses by lift under a "top binding clause" header -> a TRIGGER led the
+   relaxable list (B1395);
+2. a trigger AND-ed with one filter escaped the `loo_rate>0.95` rule and ranked top at lift 200
+   (`ema_50_200_death_cross`) (B1397);
+3. booleans and numerics were counted together via `sig[k] is True`, so every numeric threshold
+   reported own_rate 0.0 (B1398);
+4. booleans never true in-sample fell through to BINDING (B1398);
+5. **signals never present in ANY bar's dict** - the producer emits nothing - landed in BINDING
+   or NO-OP depending on whether other absent gates happened to mask them (B1399).
+
+Defect 5 is the most valuable: `52w_high_breakout` had FOUR signals never emitted
+(`break_52w_high`, `close_above_open`, `year_high`, `break_52w_high_clearance_atr_05`). That
+strategy is not tight, it is BROKEN - `s.get(k, False)` returns the default forever. Tuning its
+thresholds would have been meaningless work on a strategy whose producer never runs. New
+`ABSENT-PRODUCER` verdict makes this a first-class finding, which is directly useful for the 12
+never-fired and 67 starved strategies in the R6 segmentation: some fraction of them are
+producer bugs, not gate-tightness.
+
+**Rule:** in any classifier whose output drives action, the ACTIONABLE verdict must require
+positive evidence, and every unestablished case needs its own explicit bucket
+(ABSENT / UNDEFINED / NEVER-TRUE / EVENT / TRIGGER). If "take action" is the else-branch, every
+gap in the data silently becomes a recommendation. Ordering matters too: cheapest and most
+disqualifying checks first (absent -> starved -> trigger -> event -> no-op -> binding).

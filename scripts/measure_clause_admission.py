@@ -188,6 +188,14 @@ def main() -> int:
             # admission headroom. Only FILTER/THRESHOLD clauses are legitimately loosenable.
             tn, nb, nn = sig_true.get(k, [0, 0, 0])
             own_rate = (tn / nb) if nb else None      # None for a numeric-only signal
+            # B1399 (5th defect, and the most useful one): a signal that was NEVER PRESENT in
+            # any bar's signal dict means the PRODUCER EMITS NOTHING for it. `s.get(k, False)`
+            # then returns the default forever, so the gate is permanently blocking (or
+            # permanently inert) and the strategy is broken, not merely tight. Such a clause
+            # previously landed in BINDING or NO-OP depending on whether other absent gates
+            # happened to mask it - both labels are wrong and both would send us tuning a
+            # threshold on a strategy whose producer never runs.
+            absent = (nb == 0 and nn == 0)
             # EVENT = the signal itself is intrinsically rare. Decided from data, before the
             # lift rules, because a rare EVENT can show a huge lift and would otherwise sit at
             # the top of the relaxable list while being unloosenable by nature. A boolean that
@@ -196,7 +204,13 @@ def main() -> int:
             # rather than defaulting into BINDING.
             never_true = own_rate is not None and tn == 0
             is_event = own_rate is not None and 0 < own_rate < 0.05
-            if base_rate <= 0:
+            # Ordering principle (L243): BINDING is a POSITIVE conclusion and must be reached
+            # only when the evidence supports it. Every not-established case gets an explicit
+            # bucket, so "relaxable" is never the fallback for missing information.
+            if absent:
+                verdict = ("ABSENT-PRODUCER (signal never present in any bar - the gate reads "
+                           "its default forever; fix the producer, do NOT tune this gate)")
+            elif base_rate <= 0:
                 verdict = "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
             elif never_true:
                 verdict = (f"NEVER-TRUE in sample ({nb} bars seen, 0 true) - rare event or "
@@ -239,9 +253,14 @@ def main() -> int:
         return [(r["strategy"], c["clause"], c["lift"]) for r in results for c in r["clauses"]
                 if c["verdict"].startswith(pfx)]
     noop, trig, bind, evt = _by("NO-OP"), _by("TRIGGER"), _by("BINDING"), _by("EVENT")
+    absent_cl = _by("ABSENT-PRODUCER")
     print(f"\n[RESULT] across {len(results)} strategies: {len(noop)} NO-OP | "
           f"{len(bind)} BINDING (relaxable) | {len(trig)} TRIGGER + {len(evt)} EVENT "
-          f"(not loosenable)")
+          f"(not loosenable) | {len(absent_cl)} ABSENT-PRODUCER (broken, fix upstream)")
+    if absent_cl:
+        print("  ABSENT-PRODUCER clauses - the producer emits nothing; these are BUGS, not gates:")
+        for s, c, _l in absent_cl[:25]:
+            print(f"     {s:<40} {c}")
     print("  NO-OP clauses - relaxing admits nothing new, candidates to DROP:")
     for s, c, _l in noop[:25]:
         print(f"     {s:<40} {c}")
