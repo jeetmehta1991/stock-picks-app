@@ -3870,3 +3870,45 @@ dimension in the data (date, ticker) and require variation in the one your claim
 raw levels in native units (dollars, share counts) almost never are; (c) when a defect class
 recurs in a new form after each fix, the fix was at the wrong level - generalise to the
 principle (L247 said this and I still missed the ticker dimension until it bit).
+
+### L253 - Two examples are not a measurement: "the exit is the bigger lever" was wrong at roster scale (B1415)
+
+After the owner's best-exit correction I told them the R6 change set should probably be "exit
+reassignment first, entry filters second - the exit is the larger, safer lever". That came from
+two worked examples where the best exit beat the best entry filter outright
+(`camarilla_r4_breakout` +3.235% vs +0.389%; `pairs_mean_reversion_long` +6.611% vs +3.835%).
+
+Measured across all 196 strategies instead of two:
+- **only 26 of 196** would change exit even under naive argmax - **170 are already on their best
+  exit**, because prior batches' `STRATEGY_EXIT_OVERRIDE` work already did this;
+- of those 26, only **6** survive the guards (per-fold consistency + margin + date-clustered FDR);
+- all 6 propose the SAME exit, `breakeven_plus_trail`, which is already best for 90/196 (46%).
+
+So the two examples were drawn - unknowingly - from the 13% of the roster where an exit change is
+even available. The lever is real but small, and it is not "per-strategy exit tuning"; it is "a
+handful of strategies should move to the one exit that dominates this tape".
+
+**Rule:** before characterising the SIZE of a lever, measure it across the population, not on the
+examples that prompted the idea. Examples are chosen because they are striking, which is exactly
+the selection that makes them unrepresentative. State "n=2" out loud when that is the evidence.
+
+### L253b - Guard design must answer the prior finding, not repeat the mistake it warns about
+
+L227 had already measured that exit selection transfers poorly (IS-picked exits cleared the
+holdout bar on 5.9% of rows vs a hindsight oracle's 17.6%). Naive argmax over 26 exits is exactly
+that failure mode. So the reassignment tool was built with a CONSISTENCY guard - the proposed exit
+must be top-quartile in >= 2 of the 3 IS folds, not merely best on the pooled window - plus a
+margin floor and date-clustered significance. Effect: 26 naive candidates -> 6 survivors, and all
+6 are consistent in 3 of 3 folds and are structurally simple exits, the class L227 found transfers
+best. **When a prior LEARNING names a failure mode, the new instrument must contain a guard that
+specifically targets it; otherwise the learning is a note rather than a control.**
+
+### L253c - Disclosure: a diagnostic holdout peek (B1415)
+
+To test whether `breakeven_plus_trail`'s dominance was an artifact of one period, I computed
+all-trade mean pnl by exit per fold INCLUDING the holdout fold (it ranks #1 in all four; F4
++1.485%). That is a holdout peek. It was coarse (aggregate across all strategies, not per-cell)
+and the R5 grading had already surfaced this exit as the pick on 25 of 29 promoted cells, so the
+marginal leakage is small - but it is not zero, and R6 holdout results for exit-related claims are
+correspondingly weaker. Recording it rather than letting it pass: **a holdout is spent by looking,
+not only by deciding, and the spending must be logged when it happens.**
