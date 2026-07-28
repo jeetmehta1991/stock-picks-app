@@ -13,58 +13,53 @@
 | HIGH-FIRE | >= 300 | **TIGHTEN** | volume is fine; win rate / R:R / Sharpe is the problem |
 
 
-## Summary: 23 changes covering 23 of 198 R6 strategies
+## Summary: 18 changes covering 18 of 198 R6 strategies
 
 | | n |
 |---|---|
-| TIGHTEN (add a selectivity gate) | **23** |
+| TIGHTEN (add a selectivity gate) | **18** |
 | LOOSEN (relax a binding threshold) | **0** |
-| Skipped with reason | 86 |
-| Remaining, not yet covered | 175 |
+| Skipped with reason | 106 |
+| Remaining, not yet covered | 180 |
 
 
 ## A. TIGHTEN - high-fire strategies, add a selectivity gate
 
 | Strategy | Cluster | Fires | Add gate | Fires after | Win rate | Expectancy %/trade | Dates | XS-var |
 |---|---|---|---|---|---|---|---|---|
-| `donchian_breakout_long` | breakout | 385 | `news_sentiment_score>=p25(0)` | 385 -> 358 | 0.312 -> 0.324 | **+2.119 -> +2.619** | 207 | 0.9589 |
-| `volume_spike_breakout` | breakout | 1174 | `ppo>=p75(0.4294)` | 1174 -> 294 | 0.245 -> 0.313 | **-2.071 -> +2.232** | 200 | 1.0 |
-| `morning_star` | candle | 1668 | `pct_change_20d<=p50(-0.001207)` | 1668 -> 834 | 0.294 -> 0.309 | **-0.832 -> +1.407** | 320 | 1.0 |
-| `triangle_descending_short` | chart_pattern | 820 | `days_since_last_earnings>=p75(105.8)` | 820 -> 204 | 0.244 -> 0.397 | **-3.463 -> +0.373** | 137 | 0.9807 |
-| `cpr_narrow_momentum` | confluence | 766 | `ao>=p75(0.5141)` | 766 -> 192 | 0.249 -> 0.375 | **-2.555 -> +3.567** | 146 | 1.0 |
-| `macd_ichimoku` | confluence | 2222 | `bb_10_20_bandwidth>=p50(0.0728)` | 2222 -> 1113 | 0.274 -> 0.316 | **-1.035 -> +1.194** | 407 | 1.0 |
-| `mmbm_long` | ict | 988 | `institutional_increased<=p50(6)` | 988 -> 495 | 0.255 -> 0.281 | **-0.473 -> +1.562** | 229 | 0.9744 |
-| `institutional_multi_quarter_persistence_long` | institutional_persistence | 1849 | `short_interest_pct<=p25(0.01261)` | 1849 -> 459 | 0.252 -> 0.283 | **-1.029 -> +1.836** | 279 | 1.0 |
-| `awesome_oscillator` | momentum | 757 | `adx_di_plus>=p25(18.83)` | 757 -> 568 | 0.262 -> 0.289 | **-1.143 -> +0.095** | 323 | 1.0 |
-| `macd_crossover` | momentum | 2223 | `bb_10_20_bandwidth>=p50(0.0728)` | 2223 -> 1113 | 0.279 -> 0.317 | **-1.001 -> +1.160** | 407 | 1.0 |
-| `stochrsi_oversold` | momentum | 1818 | `mfi<=p25(41.64)` | 1818 -> 455 | 0.255 -> 0.297 | **-2.495 -> +1.254** | 273 | 1.0 |
-| `pairs_mean_reversion_long` | pairs | 3775 | `short_interest_pct<=p25(0.01301)` | 3775 -> 930 | 0.292 -> 0.320 | **+0.865 -> +3.835** | 423 | 1.0 |
-| `camarilla_r4_breakout` | pivot | 4478 | `bb_10_20_pctb>=p75(0.6939)` | 4478 -> 1120 | 0.268 -> 0.292 | **-1.158 -> +0.607** | 419 | 1.0 |
-| `pivot_r1_breakout` | pivot | 666 | `xs_max_anomaly_decile>=p50(7)` | 666 -> 370 | 0.230 -> 0.254 | **-1.696 -> +0.095** | 238 | 0.906 |
-| `pivot_s1_bounce` | pivot | 346 | `year_low>=p25(40.8)` | 346 -> 259 | 0.283 -> 0.317 | **-0.533 -> +0.828** | 186 | 1.0 |
-| `institutional_cluster_long` | smart_money_13f | 1855 | `short_interest_pct<=p25(0.01302)` | 1855 -> 457 | 0.259 -> 0.300 | **-0.646 -> +2.237** | 281 | 1.0 |
-| `institutional_insider_combo_long` | smart_money_combo | 2135 | `short_interest_pct<=p25(0.01234)` | 2135 -> 527 | 0.259 -> 0.286 | **-0.486 -> +2.459** | 303 | 1.0 |
-| `bollinger_tight_with_smart_money_long` | smart_money_sleeve | 681 | `persistent_holders_8q<=p50(6)` | 681 -> 378 | 0.260 -> 0.270 | **-0.444 -> +1.358** | 238 | 0.9276 |
-| `rsi_oversold_with_smart_money_long` | smart_money_sleeve | 2135 | `short_interest_pct<=p25(0.01234)` | 2135 -> 527 | 0.259 -> 0.286 | **-0.486 -> +2.459** | 303 | 1.0 |
-| `xs_low_beta_with_smart_money_long` | smart_money_sleeve | 379 | `pair_half_life>=p25(6.55)` | 379 -> 268 | 0.230 -> 0.272 | **-1.842 -> +0.155** | 174 | 1.0 |
-| `golden_cross_9_21` | trend | 683 | `ppo_hist>=p50(0.0841)` | 683 -> 342 | 0.264 -> 0.304 | **-1.799 -> +0.278** | 207 | 1.0 |
-| `parabolic_sar_flip` | trend | 1217 | `macd_8_21_5_hist>=p75(0.319)` | 1217 -> 305 | 0.286 -> 0.298 | **-1.130 -> +2.163** | 159 | 1.0 |
-| `tema_dema` | trend | 1422 | `atr_pct>=p25(2.054)` | 1422 -> 1066 | 0.274 -> 0.295 | **-0.740 -> +0.393** | 449 | 1.0 |
+| `break_retest_volume` | breakout | 1672 | `ppo_hist>=p50(-0.2823)` | 1672 -> 836 | 0.242 -> 0.248 | **+0.238 -> +2.716** | 402 | 1.0 |
+| `dc20_break_retest` | breakout | 1874 | `ppo_hist>=p50(-0.2513)` | 1874 -> 937 | 0.232 -> 0.234 | **+0.056 -> +2.315** | 416 | 1.0 |
+| `morning_star` | candle | 1668 | `squeeze_momentum<=p50(0.0096)` | 1668 -> 834 | 0.262 -> 0.296 | **+2.340 -> +4.236** | 309 | 1.0 |
+| `xs_momentum_bottom_decile_short` | factor | 1062 | `xs_max_anomaly<=p50(0.0648)` | 1062 -> 529 | 0.427 -> 0.548 | **-1.215 -> +0.525** | 310 | 0.9956 |
+| `cmf_flip` | mean_reversion | 2336 | `po3_accum_range_pct>=p25(0.0458)` | 2336 -> 1756 | 0.297 -> 0.326 | **+2.191 -> +2.899** | 565 | 1.0 |
+| `awesome_oscillator` | momentum | 757 | `pct_from_avwap_50low>=p25(-0.46)` | 757 -> 544 | 0.283 -> 0.318 | **+2.111 -> +3.370** | 303 | 1.0 |
+| `macd_crossover_short` | momentum | 1102 | `weekly_momentum_4w>=p25(-0.0013)` | 1102 -> 826 | 0.254 -> 0.263 | **+0.222 -> +0.934** | 369 | 1.0 |
+| `ppo_crossover` | momentum | 1194 | `rsi_2>=p50(53.87)` | 1194 -> 597 | 0.553 -> 0.615 | **+2.118 -> +4.997** | 263 | 1.0 |
+| `simple_below_ema_50_short` | momentum_trend | 2534 | `committed_growth_holders>=p50(3)` | 2534 -> 1342 | 0.254 -> 0.276 | **-0.116 -> +0.357** | 489 | 0.9729 |
+| `pairs_mean_reversion_long` | pairs | 3775 | `vp_close_near_poc_pct>=p75(0.1369)` | 3775 -> 946 | 0.607 -> 0.669 | **+6.611 -> +17.109** | 393 | 1.0 |
+| `pairs_mean_reversion_short` | pairs | 4320 | `ppo_signal>=p25(-0.858)` | 4320 -> 3240 | 0.221 -> 0.228 | **-0.623 -> +0.216** | 662 | 1.0 |
+| `camarilla_r4_breakout` | pivot | 4478 | `xs_ivol>=p50(0.2598)` | 4478 -> 2219 | 0.320 -> 0.390 | **+3.235 -> +4.875** | 597 | 1.0 |
+| `m_and_a_target_long` | sec_edgar_sleeve | 749 | `po3_accum_range_pct>=p25(0.0556)` | 749 -> 562 | 0.598 -> 0.639 | **+5.314 -> +7.279** | 283 | 1.0 |
+| `institutional_volume_confirmation_long` | smart_money_13f | 1092 | `stoch_d>=p25(45.63)` | 1092 -> 819 | 0.316 -> 0.327 | **+3.203 -> +3.647** | 365 | 1.0 |
+| `pead_with_smart_money_long` | smart_money_sleeve | 550 | `ppo_signal<=p25(-1.959)` | 550 -> 138 | 0.622 -> 0.696 | **+5.481 -> +10.817** | 95 | 1.0 |
+| `xs_low_beta_with_smart_money_long` | smart_money_sleeve | 379 | `pair_half_life>=p25(6.55)` | 379 -> 268 | 0.335 -> 0.381 | **+1.437 -> +4.087** | 174 | 1.0 |
+| `ichimoku_tk_cross` | trend | 1013 | `news_sentiment_5d>=p25(0)` | 1013 -> 945 | 0.265 -> 0.269 | **+1.691 -> +1.909** | 456 | 0.8297 |
+| `tema_dema` | trend | 1422 | `ao<=p75(2.866)` | 1422 -> 1066 | 0.300 -> 0.335 | **+2.464 -> +3.257** | 464 | 1.0 |
 
-## C. Why only 23 and not more
+## C. Why only 18 and not more
 
-- **39** tightening candidates were for strategies that are NOT high-fire - the routing rule forbids tightening those; they belong in the loosening queue.
-- **45** were rejected for cross-sectional variation < 0.75, i.e. the signal is partly MARKET-WIDE and would select periods rather than trades (L247).
+- **18** tightening candidates were for strategies that are NOT high-fire - the routing rule forbids tightening those; they belong in the loosening queue.
+- **86** were rejected for cross-sectional variation < 0.75, i.e. the signal is partly MARKET-WIDE and would select periods rather than trades (L247).
 - On the loosening side, a candidate must both relax a genuinely BINDING clause AND admit new trades with POSITIVE forward return. Most did not.
 
 
-## D. Remaining work - 175 strategies, routed by the same rule
+## D. Remaining work - 180 strategies, routed by the same rule
 
 | Queue | n |
 |---|---|
 | LOOSEN / NEVER | 12 |
 | LOOSEN / QUIET | 28 |
 | LOOSEN / STARVED | 67 |
-| TIGHTEN / HIGH-FIRE | 68 |
+| TIGHTEN / HIGH-FIRE | 73 |
 
 The loosening queue is blocked on the measurement-stack fix (L248): the clause-admission tool emits 622 signals/bar against the engine's 835, so any strategy whose gates touch a missing signal has an unreliable base rate. 116 of 198 are affected.

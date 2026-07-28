@@ -62,7 +62,7 @@ def load(name):
 
 def main() -> int:
     roster = parse_roster()
-    tight = load("b1408_tightening_proposals.json")
+    tight = load("b1414_tightening_proposals_v2.json") or load("b1408_tightening_proposals.json")
     loose = load("b1404_clause_admission_40t.json")
     valid = load("b1409_loosening_validity.json")
     seg = load("b1398_r6_fire_segmentation.json")
@@ -90,7 +90,7 @@ def main() -> int:
             skipped.append({"strategy": s, "reason": f"tightening proposed but segment={segment(s)}"
                                                      " - routing rule forbids tightening a non-high-fire strategy"})
             continue
-        if c["cross_sectional_variation"] < MIN_XSV_STRICT:
+        if c["cross_sectional_variation"] < MIN_XSV_STRICT or (c.get("between_ticker_share") or 0) > 0.50:
             skipped.append({"strategy": s, "signal": c["add_gate"],
                             "reason": f"cross-sectional variation {c['cross_sectional_variation']} "
                                       f"< {MIN_XSV_STRICT} - partly market-wide (B1408 caveat)"})
