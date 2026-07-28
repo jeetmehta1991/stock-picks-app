@@ -3707,3 +3707,43 @@ claiming to select on - here, across tickers within a date; (b) fixing the infer
 close a defect class if the underlying variable type keeps reappearing - classify the INPUT;
 (c) market-wide conditioners belong in a separate bucket with their own (much smaller) effective
 sample, never mixed into a per-trade filter ranking.
+
+### L248 - A measurement stack that only APPROXIMATES the engine will report its own gaps as findings about the system (B1409)
+
+The 40-ticker loosening run flagged **282 clauses across 116 of 198 strategies** as
+ABSENT-PRODUCER - "the producer emits nothing, the strategy is broken, do not tune this gate".
+That would have been a headline finding: a majority of the roster broken.
+
+It was wrong, and the tell was internal: `camarilla_r4_breakout` was flagged for
+`above_cam_r4` and `below_cam_s4` - its two core signals - yet that strategy fires **4,478
+times** in the R5 cube. A strategy cannot fire 4,478 times on gates that never evaluate true.
+
+**Decisive test:** cross-reference the flagged signals against `signals_at_entry` in the
+trade log, which is the ENGINE's own output. Of the 115 distinct signals flagged ABSENT,
+**111 are emitted by the real engine** (`above_cam_r4`, `bearish_engulfing`,
+`above_prev_high`, `at_key_fib`, `below_cpr`, ...). Only 4 are absent from engine output too.
+
+**Root cause:** `measure_clause_admission` reuses
+`measure_fire_count._precompute_signals_for_ticker`, which computes technical.py plus a TIER-1
+subset - NOT the full set the engine's `screener.py` orchestration assembles. My stack produced
+622 signals per bar; the engine's trade log carries 835. Reusing an existing component was the
+right instinct (L245), but I reused one that approximates the engine rather than reproducing it,
+and never verified equivalence.
+
+**Blast radius:** the loosening measurement is unreliable for the **116 of 198** strategies
+whose gates touch a missing signal - their gates read `s.get(k, False)` forever, so base_rate,
+lift, and the whole sweep are wrong. It also explains "69 strategies had 0 fires on 40 tickers":
+60 of those 69 have an ABSENT clause, so they are not starved, they are unfirable IN MY STACK.
+**73 strategies have no absent clause and do fire - those results stand** (146 usable BINDING
+clauses, 32 usable sweep candidates).
+
+**The TIGHTENING half is unaffected**, and the asymmetry is the lesson: `measure_quality_lift`
+reads `signals_at_entry` FROM THE ENGINE'S OWN OUTPUT, so it inherits the real signal set by
+construction and cannot drift from it. The loosening tool recomputes, and drifted.
+
+**Rules:** (a) prefer consuming the system's own recorded output over recomputing it - recompute
+only when the question genuinely requires counterfactuals, as loosening does; (b) when you must
+recompute, VERIFY EQUIVALENCE against recorded output before drawing conclusions - here a
+one-line key-set comparison (622 vs 835) would have caught it immediately; (c) an internal
+contradiction (a "broken" strategy with thousands of fires) is a stronger signal than any
+statistic - chase it.
