@@ -3830,3 +3830,43 @@ Two defects fell out that no amount of reviewing the guard list would have surfa
 pipeline's output. A guard list reads as complete because each guard is individually sensible;
 only a worked example exposes what NO guard covers, and only carrying real numbers through
 exposes unit mismatches between stages.
+
+### L252 - A conditioner must vary in the dimension you claim to select on - THREE pathologies, one shape (B1413)
+
+Third instance of the same failure, found immediately after the best-exit rebaseline. With the
+baseline corrected, the top filters for `pairs_mean_reversion_long` became `bb_20_20_mid<=47.21`,
+`monthly_close<=44.98`, `avwap_252low<=44.16` - all DOLLAR-DENOMINATED PRICE LEVELS. That filter
+reads "only trade stocks priced under about $47": a universe restriction dressed as a signal,
+and one that cannot transfer as prices drift.
+
+**Variance decomposition** on that strategy's fires - what fraction of a signal's variance sits
+BETWEEN tickers rather than within them:
+
+| signal | between-ticker share | what it encodes |
+|---|---|---|
+| `bb_20_20_mid` | **0.911** | which stock |
+| `monthly_close` | **0.914** | which stock |
+| `avwap_252low` | **0.915** | which stock |
+| `rsi_14` | 0.215 | when |
+| `adx` | 0.190 | when |
+| `bb_20_20_pctb` | 0.214 | when |
+
+**The unifying principle**, now covering all three dimensions a conditioner can vary in:
+
+| pathology | test | what the filter really selects |
+|---|---|---|
+| market-wide (VIX, COT, DXY) | cross-sectional variation LOW | **days** |
+| price level (bb mid, avwap, close) | between-ticker share HIGH | **stocks** |
+| what we want | varies within ticker over time | **moments** |
+
+Both bad classes pass every statistical guard - FDR, date-clustering, retention, forward return
+- because they ARE statistically real. A sub-$47 universe genuinely did better in-sample. The
+defect is not significance, it is that the variable does not vary in the dimension the claim
+requires.
+
+**Rules:** (a) for any conditioning variable, decompose its variance across every grouping
+dimension in the data (date, ticker) and require variation in the one your claim is about;
+(b) bounded, cross-ticker-comparable quantities (rsi, adx, percent-b, percentiles) are safe;
+raw levels in native units (dollars, share counts) almost never are; (c) when a defect class
+recurs in a new form after each fix, the fix was at the wrong level - generalise to the
+principle (L247 said this and I still missed the ticker dimension until it bit).

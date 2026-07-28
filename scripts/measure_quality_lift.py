@@ -131,6 +131,36 @@ def cross_sectional_variation(values, dates, tickers) -> float:
     return round(float((per_date > 1).mean()), 4)
 
 
+def between_ticker_share(values, tickers) -> float:
+    """B1413 - THE THIRD PATHOLOGY, same shape as the first two. Fraction of the signal's total
+    variance that sits BETWEEN tickers rather than within them.
+
+    ~0.9 -> the signal mostly encodes WHICH STOCK this is, not WHEN. Measured on
+            `pairs_mean_reversion_long`: bb_20_20_mid 0.911, monthly_close 0.914,
+            avwap_252low 0.915 - all dollar-denominated LEVELS. A filter like
+            `bb_20_20_mid <= 47.21` reads as "only trade stocks under about $47": a UNIVERSE
+            restriction dressed as a signal, which cannot transfer as prices drift.
+    ~0.2 -> a genuine signal (rsi_14 0.215, adx 0.190, bb_20_20_pctb 0.214) - bounded,
+            comparable across tickers, and varying mostly WITHIN a ticker over time.
+
+    The three guards now cover all three dimensions a conditioner can vary in:
+        cross_sectional_variation LOW  -> selects DAYS    (market-wide: VIX, COT, DXY)
+        between_ticker_share      HIGH -> selects STOCKS  (price levels: bb mid, avwap, close)
+        what we actually want          -> selects MOMENTS within a ticker
+    """
+    df = pd.DataFrame({"v": pd.to_numeric(pd.Series(list(values)), errors="coerce"),
+                       "t": list(tickers)}).dropna(subset=["v"])
+    if len(df) < 50:
+        return 0.0
+    grand = df.v.mean()
+    total = ((df.v - grand) ** 2).sum()
+    if total <= 0:
+        return 0.0
+    g = df.groupby("t").v.agg(["mean", "size"])
+    between = (g["size"] * (g["mean"] - grand) ** 2).sum()
+    return round(float(between / total), 4)
+
+
 def date_concentration(dates) -> tuple:
     """(n_distinct_dates, share of the single most common date). A gate whose retained trades
     pile onto a few dates is a date-picker, not a filter."""
@@ -161,6 +191,11 @@ def main() -> int:
                          "tickers. Below this it is market-wide and can only select periods.")
     ap.add_argument("--max-top-date-share", type=float, default=0.10,
                     help="no single date may supply more than this share of retained trades")
+    ap.add_argument("--max-between-ticker-share", type=float, default=0.50,
+                    help="B1413: reject a signal whose variance is mostly BETWEEN tickers "
+                         "- it encodes WHICH STOCK rather than WHEN, so filtering on it is "
+                         "a universe restriction (e.g. price levels: only trade sub-$47 "
+                         "stocks), not a signal edge.")
     ap.add_argument("--use-assigned-exit", action="store_true",
                     help="B1412: fall back to trade_log's ASSIGNED exit. The DEFAULT is "
                          "best-exit, because a filter must be judged on the exit the strategy "
@@ -267,6 +302,7 @@ def main() -> int:
             raw = [v if isinstance(v, (int, float)) and not isinstance(v, bool)
                    else (1.0 if v is True else (0.0 if v is False else None)) for v in raw]
             xsv = cross_sectional_variation(raw, sub.entry_date.tolist(), sub.ticker.tolist())
+            bts = between_ticker_share(raw, sub.ticker.tolist())
             kept, dropped = pnl[mask.values], pnl[~mask.values]
             if len(kept) < args.min_retained or len(dropped) < 5:
                 continue
@@ -287,6 +323,7 @@ def main() -> int:
                 "top_date_share": top_share,
                 "trades_per_date": round(ks["n"] / n_dates, 2) if n_dates else None,
                 "cross_sectional_variation": xsv,
+                "between_ticker_share": bts,
                 "signal_class": ("PER-TICKER (selects trades)" if xsv >= 0.05
                                  else "MARKET-WIDE (can only select days/periods)"),
                 "p_trade_level_INVALID": welch_p(kept, dropped),
@@ -305,7 +342,8 @@ def main() -> int:
                  if c["bh_reject"] and c["delta_wr"] > 0 and c["delta_exp"] > 0
                  and c["n_dates_kept"] >= args.min_dates
                  and c["top_date_share"] <= args.max_top_date_share
-                 and c["cross_sectional_variation"] >= args.min_xs_variation]
+                 and c["cross_sectional_variation"] >= args.min_xs_variation
+                 and c["between_ticker_share"] <= args.max_between_ticker_share]
     marketwide = [c for c in cands
                   if c["bh_reject"] and c["delta_wr"] > 0 and c["delta_exp"] > 0
                   and c["cross_sectional_variation"] < args.min_xs_variation]
