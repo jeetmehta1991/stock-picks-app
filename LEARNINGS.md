@@ -3747,3 +3747,30 @@ recompute, VERIFY EQUIVALENCE against recorded output before drawing conclusions
 one-line key-set comparison (622 vs 835) would have caught it immediately; (c) an internal
 contradiction (a "broken" strategy with thousands of fires) is a stronger signal than any
 statistic - chase it.
+
+### L249 - "Valid measurement" is not "actionable change": I quoted 42+73 and delivered 25 (B1410)
+
+Told the owner the valid material was "42 tightening + 73 loosening". Assembling the actual
+change list produced **23 TIGHTEN + 2 LOOSEN = 25**. The gap was not new information - it was
+two filters I had already established but had not applied when quoting the numbers.
+
+**Tightening 42 -> 23:**
+- 42 strategies had a +EV filter
+- only **30** are HIGH-FIRE, and the routing rule (owner, B1398) forbids tightening a strategy
+  that is not high-fire - the other 12 belong in the loosening queue
+- only **23** also pass the strict cross-sectional test (>= 0.75), the caveat I had myself
+  flagged in B1408 about mid-band signals being partly market-wide
+
+**Loosening 73 -> 2:**
+- "73" was the count of strategies whose loosening MEASUREMENT is valid (no ABSENT-PRODUCER
+  clause), which I quoted as if it were the count eligible for a loosening CHANGE
+- of those 73, **40 are HIGH-FIRE** - they must be TIGHTENED, not loosened; only 33 are
+  starved/quiet/never and therefore eligible at all
+- of those 33, only **2** have a sweep candidate that both relaxes a genuinely BINDING clause
+  AND admits new trades with positive forward return
+
+**Rule:** a count is only actionable after every downstream filter has been applied to it.
+Quoting an upstream count ("valid measurements") as if it were a downstream one ("changes we can
+make") sets an expectation the pipeline cannot meet, and the correction lands as a shortfall
+rather than as the filters doing their job. Before quoting any number to the owner, ask: what
+still has to be true for each of these to become an action, and has that been applied?

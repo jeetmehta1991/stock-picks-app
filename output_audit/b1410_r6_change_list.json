@@ -1,0 +1,1142 @@
+{
+  "generated": "B1410",
+  "status": "PRE-REGISTERED PROPOSAL - nothing applied",
+  "window": "IS only 2022-05-05 -> 2025-05-05; holdout never read",
+  "routing_rule": {
+    "<100": "LOOSEN",
+    "100-299": "LOOSEN (selective)",
+    ">=300": "TIGHTEN"
+  },
+  "counts": {
+    "total_changes": 25,
+    "tighten": 23,
+    "loosen": 2,
+    "strategies_covered": 25,
+    "r6_total": 198,
+    "remaining_uncovered": 173
+  },
+  "changes": [
+    {
+      "strategy": "weekly_bias_pullback_long",
+      "cluster": "multi_timeframe",
+      "direction": "long",
+      "segment": "STARVED",
+      "fires_is": 18,
+      "treatment": "LOOSEN",
+      "change": "RELAX rsi_14 by x1.5 -> threshold 67.5",
+      "expected": {
+        "fires_added_on_40_tickers": 10736,
+        "fwd_return_of_new_trades_pct": 0.109,
+        "clause_lift_ceiling": 127.299
+      },
+      "evidence": {
+        "verdict": "BINDING",
+        "signal_own_rate": null
+      },
+      "prediction_for_r6": "fires rise from 18 toward >= 100 (min_trades) and expectancy does not fall below the current level"
+    },
+    {
+      "strategy": "poc_magnet_short",
+      "cluster": "volume_profile",
+      "direction": "short",
+      "segment": "NEVER",
+      "fires_is": 0,
+      "treatment": "LOOSEN",
+      "change": "RELAX vp_close_near_poc_pct by x1.25 -> threshold 0.0375",
+      "expected": {
+        "fires_added_on_40_tickers": 509,
+        "fwd_return_of_new_trades_pct": 0.302,
+        "clause_lift_ceiling": 3.727
+      },
+      "evidence": {
+        "verdict": "BINDING",
+        "signal_own_rate": null
+      },
+      "prediction_for_r6": "fires rise from 0 toward >= 100 (min_trades) and expectancy does not fall below the current level"
+    },
+    {
+      "strategy": "donchian_breakout_long",
+      "cluster": "breakout",
+      "direction": "long",
+      "segment": "HIGH-FIRE",
+      "fires_is": 385,
+      "treatment": "TIGHTEN",
+      "change": "ADD gate: news_sentiment_score>=p25(0)",
+      "expected": {
+        "fires": "385 -> 358",
+        "win_rate": "0.312 -> 0.324",
+        "expectancy_pct": "+2.119 -> +2.619",
+        "payoff": "3.108 -> 3.163"
+      },
+      "evidence": {
+        "n_dates_kept": 207,
+        "top_date_share": 0.0196,
+        "cross_sectional_variation": 0.9589,
+        "p_date_clustered": 7.376005900410101e-05
+      },
+      "prediction_for_r6": "holdout expectancy > +2.119% (the unfiltered baseline) with >= 179 fires"
+    },
+    {
+      "strategy": "volume_spike_breakout",
+      "cluster": "breakout",
+      "direction": "dual",
+      "segment": "HIGH-FIRE",
+      "fires_is": 1174,
+      "treatment": "TIGHTEN",
+      "change": "ADD gate: ppo>=p75(0.4294)",
+      "expected": {
+        "fires": "1174 -> 294",
+        "win_rate": "0.245 -> 0.313",
+        "expectancy_pct": "-2.071 -> +2.232",
+        "payoff": "2.021 -> 3.101"
+      },
+      "evidence": {
+        "n_dates_kept": 200,
+        "top_date_share": 0.0374,
+        "cross_sectional_variation": 1.0,
+        "p_date_clustered": 3.523891191298858e-05
+      },
+      "prediction_for_r6": "holdout expectancy > -2.071% (the unfiltered baseline) with >= 147 fires"
+    },
+    {
+      "strategy": "morning_star",
+      "cluster": "candle",
+      "direction": "dual",
+      "segment": "HIGH-FIRE",
+      "fires_is": 1668,
+      "treatment": "TIGHTEN",
+      "change": "ADD gate: pct_change_20d<=p50(-0.001207)",
+      "expected": {
+        "fires": "1668 -> 834",
+        "win_rate": "0.294 -> 0.309",
+        "expectancy_pct": "-0.832 -> +1.407",
+        "payoff": "2.056 -> 2.812"
+      },
+      "evidence": {
+        "n_dates_kept": 320,
+        "top_date_share": 0.0348,
+        "cross_sectional_variation": 1.0,
+        "p_date_clustered": 0.00013629254717203334
+      },
+      "prediction_for_r6": "holdout expectancy > -0.832% (the unfiltered baseline) with >= 417 fires"
+    },
+    {
+      "strategy": "triangle_descending_short",
+      "cluster": "chart_pattern",
+      "direction": "short",
+      "segment": "HIGH-FIRE",
+      "fires_is": 820,
+      "treatment": "TIGHTEN",
+      "change": "ADD gate: days_since_last_earnings>=p75(105.8)",
+      "expected": {
+        "fires": "820 -> 204",
+        "win_rate": "0.244 -> 0.397",
+        "expectancy_pct": "-3.463 -> +0.373",
+        "payoff": "1.315 -> 1.649"
+      },
+      "evidence": {
+        "n_dates_kept": 137,
+        "top_date_share": 0.0245,
+        "cross_sectional_variation": 0.9807,
+        "p_date_clustered": 2.754645542787843e-06
+      },
+      "prediction_for_r6": "holdout expectancy > -3.463% (the unfiltered baseline) with >= 102 fires"
+    },
+    {
+      "strategy": "cpr_narrow_momentum",
+      "cluster": "confluence",
+      "direction": "dual",
+      "segment": "HIGH-FIRE",
+      "fires_is": 766,
+      "treatment": "TIGHTEN",
+      "change": "ADD gate: ao>=p75(0.5141)",
+      "expected": {
+        "fires": "766 -> 192",
+        "win_rate": "0.249 -> 0.375",
+        "expectancy_pct": "-2.555 -> +3.567",
+        "payoff": "1.816 -> 2.876"
+      },
+      "evidence": {
+        "n_dates_kept": 146,
+        "top_date_share": 0.0417,
+        "cross_sectional_variation": 1.0,
+        "p_date_clustered": 7.872216128248842e-05
+      },
+      "prediction_for_r6": "holdout expectancy > -2.555% (the unfiltered baseline) with >= 96 fires"
+    },
+    {
+      "strategy": "macd_ichimoku",
+      "cluster": "confluence",
+      "direction": "dual",
+      "segment": "HIGH-FIRE",
+      "fires_is": 2222,
+      "treatment": "TIGHTEN",
+      "change": "ADD gate: bb_10_20_bandwidth>=p50(0.0728)",
+      "expected": {
+        "fires": "2222 -> 1113",
+        "win_rate": "0.274 -> 0.316",
+        "expectancy_pct": "-1.035 -> +1.194",
+        "payoff": "2.184 -> 2.636"
+      },
+      "evidence": {
+        "n_dates_kept": 407,
+        "top_date_share": 0.0305,
+        "cross_sectional_variation": 1.0,
+        "p_date_clustered": 9.248875708541324e-05
+      },
+      "prediction_for_r6": "holdout expectancy > -1.035% (the unfiltered baseline) with >= 556 fires"
+    },
+    {
+      "strategy": "mmbm_long",
+      "cluster": "ict",
+      "direction": "long",
+      "segment": "HIGH-FIRE",
+      "fires_is": 988,
+      "treatment": "TIGHTEN",
+      "change": "ADD gate: institutional_increased<=p50(6)",
+      "expected": {
+        "fires": "988 -> 495",
+        "win_rate": "0.255 -> 0.281",
+        "expectancy_pct": "-0.473 -> +1.562",
+        "payoff": "2.675 -> 3.333"
+      },
+      "evidence": {
+        "n_dates_kept": 229,
+        "top_date_share": 0.0646,
+        "cross_sectional_variation": 0.9744,
+        "p_date_clustered": 0.00018269005840584326
+      },
+      "prediction_for_r6": "holdout expectancy > -0.473% (the unfiltered baseline) with >= 247 fires"
+    },
+    {
+      "strategy": "institutional_multi_quarter_persistence_long",
+      "cluster": "institutional_persistence",
+      "direction": "long",
+      "segment": "HIGH-FIRE",
+      "fires_is": 1849,
+      "treatment": "TIGHTEN",
+      "change": "ADD gate: short_interest_pct<=p25(0.01261)",
+      "expected": {
+        "fires": "1849 -> 459",
+        "win_rate": "0.252 -> 0.283",
+        "expectancy_pct": "-1.029 -> +1.836",
+        "payoff": "2.464 -> 3.338"
+      },
+      "evidence": {
+        "n_dates_kept": 279,
+        "top_date_share": 0.0523,
+        "cross_sectional_variation": 1.0,
+        "p_date_clustered": 0.00010916573369735656
+      },
+      "prediction_for_r6": "holdout expectancy > -1.029% (the unfiltered baseline) with >= 229 fires"
+    },
+    {
+      "strategy": "awesome_oscillator",
+      "cluster": "momentum",
+      "direction": "dual",
+      "segment": "HIGH-FIRE",
+      "fires_is": 757,
+      "treatment": "TIGHTEN",
+      "change": "ADD gate: adx_di_plus>=p25(18.83)",
+      "expected": {
+        "fires": "757 -> 568",
+        "win_rate": "0.262 -> 0.289",
+        "expectancy_pct": "-1.143 -> +0.095",
+        "payoff": "2.269 -> 2.506"
+      },
+      "evidence": {
+        "n_dates_kept": 323,
+        "top_date_share": 0.0299,
+        "cross_sectional_variation": 1.0,
+        "p_date_clustered": 3.326242110065526e-05
+      },
+      "prediction_for_r6": "holdout expectancy > -1.143% (the unfiltered baseline) with >= 284 fires"
+    },
+    {
+      "strategy": "macd_crossover",
+      "cluster": "momentum",
+      "direction": "dual",
+      "segment": "HIGH-FIRE",
+      "fires_is": 2223,
+      "treatment": "TIGHTEN",
+      "change": "ADD gate: bb_10_20_bandwidth>=p50(0.0728)",
+      "expected": {
+        "fires": "2223 -> 1113",
+        "win_rate": "0.279 -> 0.317",
+        "expectancy_pct": "-1.001 -> +1.160",
+        "payoff": "2.156 -> 2.608"
+      },
+      "evidence": {
+        "n_dates_kept": 407,
+        "top_date_share": 0.0305,
+        "cross_sectional_variation": 1.0,
+        "p_date_clustered": 0.00015607331031457577
+      },
+      "prediction_for_r6": "holdout expectancy > -1.001% (the unfiltered baseline) with >= 556 fires"
+    },
+    {
+      "strategy": "stochrsi_oversold",
+      "cluster": "momentum",
+      "direction": "dual",
+      "segment": "HIGH-FIRE",
+      "fires_is": 1818,
+      "treatment": "TIGHTEN",
+      "change": "ADD gate: mfi<=p25(41.64)",
+      "expected": {
+        "fires": "1818 -> 455",
+        "win_rate": "0.255 -> 0.297",
+        "expectancy_pct": "-2.495 -> +1.254",
+        "payoff": "1.786 -> 2.902"
+      },
+      "evidence": {
+        "n_dates_kept": 273,
+        "top_date_share": 0.0154,
+        "cross_sectional_variation": 1.0,
+        "p_date_clustered": 5.286474357796205e-05
+      },
+      "prediction_for_r6": "holdout expectancy > -2.495% (the unfiltered baseline) with >= 227 fires"
+    },
+    {
+      "strategy": "pairs_mean_reversion_long",
+      "cluster": "pairs",
+      "direction": "long",
+      "segment": "HIGH-FIRE",
+      "fires_is": 3775,
+      "treatment": "TIGHTEN",
+      "change": "ADD gate: short_interest_pct<=p25(0.01301)",
+      "expected": {
+        "fires": "3775 -> 930",
+        "win_rate": "0.292 -> 0.320",
+        "expectancy_pct": "+0.865 -> +3.835",
+        "payoff": "2.812 -> 3.668"
+      },
+      "evidence": {
+        "n_dates_kept": 423,
+        "top_date_share": 0.0333,
+        "cross_sectional_variation": 1.0,
+        "p_date_clustered": 5.594548730891356e-06
+      },
+      "prediction_for_r6": "holdout expectancy > +0.865% (the unfiltered baseline) with >= 465 fires"
+    },
+    {
+      "strategy": "camarilla_r4_breakout",
+      "cluster": "pivot",
+      "direction": "dual",
+      "segment": "HIGH-FIRE",
+      "fires_is": 4478,
+      "treatment": "TIGHTEN",
+      "change": "ADD gate: bb_10_20_pctb>=p75(0.6939)",
+      "expected": {
+        "fires": "4478 -> 1120",
+        "win_rate": "0.268 -> 0.292",
+        "expectancy_pct": "-1.158 -> +0.607",
+        "payoff": "2.171 -> 2.696"
+      },
+      "evidence": {
+        "n_dates_kept": 419,
+        "top_date_share": 0.033,
+        "cross_sectional_variation": 1.0,
+        "p_date_clustered": 0.00016699636976664193
+      },
+      "prediction_for_r6": "holdout expectancy > -1.158% (the unfiltered baseline) with >= 560 fires"
+    },
+    {
+      "strategy": "pivot_r1_breakout",
+      "cluster": "pivot",
+      "direction": "dual",
+      "segment": "HIGH-FIRE",
+      "fires_is": 666,
+      "treatment": "TIGHTEN",
+      "change": "ADD gate: xs_max_anomaly_decile>=p50(7)",
+      "expected": {
+        "fires": "666 -> 370",
+        "win_rate": "0.230 -> 0.254",
+        "expectancy_pct": "-1.696 -> +0.095",
+        "payoff": "2.425 -> 2.985"
+      },
+      "evidence": {
+        "n_dates_kept": 238,
+        "top_date_share": 0.0243,
+        "cross_sectional_variation": 0.906,
+        "p_date_clustered": 0.00018913905396603022
+      },
+      "prediction_for_r6": "holdout expectancy > -1.696% (the unfiltered baseline) with >= 185 fires"
+    },
+    {
+      "strategy": "pivot_s1_bounce",
+      "cluster": "pivot",
+      "direction": "dual",
+      "segment": "HIGH-FIRE",
+      "fires_is": 346,
+      "treatment": "TIGHTEN",
+      "change": "ADD gate: year_low>=p25(40.8)",
+      "expected": {
+        "fires": "346 -> 259",
+        "win_rate": "0.283 -> 0.317",
+        "expectancy_pct": "-0.533 -> +0.828",
+        "payoff": "2.293 -> 2.494"
+      },
+      "evidence": {
+        "n_dates_kept": 186,
+        "top_date_share": 0.0193,
+        "cross_sectional_variation": 1.0,
+        "p_date_clustered": 5.576536227000929e-06
+      },
+      "prediction_for_r6": "holdout expectancy > -0.533% (the unfiltered baseline) with >= 129 fires"
+    },
+    {
+      "strategy": "institutional_cluster_long",
+      "cluster": "smart_money_13f",
+      "direction": "long",
+      "segment": "HIGH-FIRE",
+      "fires_is": 1855,
+      "treatment": "TIGHTEN",
+      "change": "ADD gate: short_interest_pct<=p25(0.01302)",
+      "expected": {
+        "fires": "1855 -> 457",
+        "win_rate": "0.259 -> 0.300",
+        "expectancy_pct": "-0.646 -> +2.237",
+        "payoff": "2.539 -> 3.31"
+      },
+      "evidence": {
+        "n_dates_kept": 281,
+        "top_date_share": 0.0569,
+        "cross_sectional_variation": 1.0,
+        "p_date_clustered": 0.00010994332324890067
+      },
+      "prediction_for_r6": "holdout expectancy > -0.646% (the unfiltered baseline) with >= 228 fires"
+    },
+    {
+      "strategy": "institutional_insider_combo_long",
+      "cluster": "smart_money_combo",
+      "direction": "long",
+      "segment": "HIGH-FIRE",
+      "fires_is": 2135,
+      "treatment": "TIGHTEN",
+      "change": "ADD gate: short_interest_pct<=p25(0.01234)",
+      "expected": {
+        "fires": "2135 -> 527",
+        "win_rate": "0.259 -> 0.286",
+        "expectancy_pct": "-0.486 -> +2.459",
+        "payoff": "2.631 -> 3.574"
+      },
+      "evidence": {
+        "n_dates_kept": 303,
+        "top_date_share": 0.0417,
+        "cross_sectional_variation": 1.0,
+        "p_date_clustered": 9.154355031378837e-05
+      },
+      "prediction_for_r6": "holdout expectancy > -0.486% (the unfiltered baseline) with >= 263 fires"
+    },
+    {
+      "strategy": "bollinger_tight_with_smart_money_long",
+      "cluster": "smart_money_sleeve",
+      "direction": "long",
+      "segment": "HIGH-FIRE",
+      "fires_is": 681,
+      "treatment": "TIGHTEN",
+      "change": "ADD gate: persistent_holders_8q<=p50(6)",
+      "expected": {
+        "fires": "681 -> 378",
+        "win_rate": "0.260 -> 0.270",
+        "expectancy_pct": "-0.444 -> +1.358",
+        "payoff": "2.629 -> 3.349"
+      },
+      "evidence": {
+        "n_dates_kept": 238,
+        "top_date_share": 0.045,
+        "cross_sectional_variation": 0.9276,
+        "p_date_clustered": 0.00020782569084535526
+      },
+      "prediction_for_r6": "holdout expectancy > -0.444% (the unfiltered baseline) with >= 189 fires"
+    },
+    {
+      "strategy": "rsi_oversold_with_smart_money_long",
+      "cluster": "smart_money_sleeve",
+      "direction": "long",
+      "segment": "HIGH-FIRE",
+      "fires_is": 2135,
+      "treatment": "TIGHTEN",
+      "change": "ADD gate: short_interest_pct<=p25(0.01234)",
+      "expected": {
+        "fires": "2135 -> 527",
+        "win_rate": "0.259 -> 0.286",
+        "expectancy_pct": "-0.486 -> +2.459",
+        "payoff": "2.631 -> 3.574"
+      },
+      "evidence": {
+        "n_dates_kept": 303,
+        "top_date_share": 0.0417,
+        "cross_sectional_variation": 1.0,
+        "p_date_clustered": 9.154355031378837e-05
+      },
+      "prediction_for_r6": "holdout expectancy > -0.486% (the unfiltered baseline) with >= 263 fires"
+    },
+    {
+      "strategy": "xs_low_beta_with_smart_money_long",
+      "cluster": "smart_money_sleeve",
+      "direction": "long",
+      "segment": "HIGH-FIRE",
+      "fires_is": 379,
+      "treatment": "TIGHTEN",
+      "change": "ADD gate: pair_half_life>=p25(6.55)",
+      "expected": {
+        "fires": "379 -> 268",
+        "win_rate": "0.230 -> 0.272",
+        "expectancy_pct": "-1.842 -> +0.155",
+        "payoff": "2.372 -> 2.746"
+      },
+      "evidence": {
+        "n_dates_kept": 174,
+        "top_date_share": 0.0858,
+        "cross_sectional_variation": 1.0,
+        "p_date_clustered": 5.234451770320921e-05
+      },
+      "prediction_for_r6": "holdout expectancy > -1.842% (the unfiltered baseline) with >= 134 fires"
+    },
+    {
+      "strategy": "golden_cross_9_21",
+      "cluster": "trend",
+      "direction": "dual",
+      "segment": "HIGH-FIRE",
+      "fires_is": 683,
+      "treatment": "TIGHTEN",
+      "change": "ADD gate: ppo_hist>=p50(0.0841)",
+      "expected": {
+        "fires": "683 -> 342",
+        "win_rate": "0.264 -> 0.304",
+        "expectancy_pct": "-1.799 -> +0.278",
+        "payoff": "1.944 -> 2.411"
+      },
+      "evidence": {
+        "n_dates_kept": 207,
+        "top_date_share": 0.0322,
+        "cross_sectional_variation": 1.0,
+        "p_date_clustered": 0.000190581892255655
+      },
+      "prediction_for_r6": "holdout expectancy > -1.799% (the unfiltered baseline) with >= 171 fires"
+    },
+    {
+      "strategy": "parabolic_sar_flip",
+      "cluster": "trend",
+      "direction": "dual",
+      "segment": "HIGH-FIRE",
+      "fires_is": 1217,
+      "treatment": "TIGHTEN",
+      "change": "ADD gate: macd_8_21_5_hist>=p75(0.319)",
+      "expected": {
+        "fires": "1217 -> 305",
+        "win_rate": "0.286 -> 0.298",
+        "expectancy_pct": "-1.130 -> +2.163",
+        "payoff": "2.025 -> 3.275"
+      },
+      "evidence": {
+        "n_dates_kept": 159,
+        "top_date_share": 0.0525,
+        "cross_sectional_variation": 1.0,
+        "p_date_clustered": 0.00022854681624901553
+      },
+      "prediction_for_r6": "holdout expectancy > -1.130% (the unfiltered baseline) with >= 152 fires"
+    },
+    {
+      "strategy": "tema_dema",
+      "cluster": "trend",
+      "direction": "dual",
+      "segment": "HIGH-FIRE",
+      "fires_is": 1422,
+      "treatment": "TIGHTEN",
+      "change": "ADD gate: atr_pct>=p25(2.054)",
+      "expected": {
+        "fires": "1422 -> 1066",
+        "win_rate": "0.274 -> 0.295",
+        "expectancy_pct": "-0.740 -> +0.393",
+        "payoff": "2.323 -> 2.55"
+      },
+      "evidence": {
+        "n_dates_kept": 449,
+        "top_date_share": 0.0197,
+        "cross_sectional_variation": 1.0,
+        "p_date_clustered": 1.6902574128743216e-05
+      },
+      "prediction_for_r6": "holdout expectancy > -0.740% (the unfiltered baseline) with >= 533 fires"
+    }
+  ],
+  "skipped_with_reason": [
+    {
+      "strategy": "poc_magnet_long",
+      "reason": "tightening proposed but segment=STARVED - routing rule forbids tightening a non-high-fire strategy"
+    },
+    {
+      "strategy": "pead_long_high_yoy_growth_only",
+      "reason": "tightening proposed but segment=STARVED - routing rule forbids tightening a non-high-fire strategy"
+    },
+    {
+      "strategy": "pead_long_high_yoy_growth_only",
+      "reason": "tightening proposed but segment=STARVED - routing rule forbids tightening a non-high-fire strategy"
+    },
+    {
+      "strategy": "pead_long_high_yoy_growth_only",
+      "reason": "tightening proposed but segment=STARVED - routing rule forbids tightening a non-high-fire strategy"
+    },
+    {
+      "strategy": "pead_long_high_yoy_growth_only",
+      "reason": "tightening proposed but segment=STARVED - routing rule forbids tightening a non-high-fire strategy"
+    },
+    {
+      "strategy": "cpr_narrow_momentum",
+      "signal": "ao_positive",
+      "reason": "cross-sectional variation 0.3743 < 0.75 - partly market-wide (B1408 caveat)"
+    },
+    {
+      "strategy": "naked_poc_retest_long",
+      "signal": "news_bearish_pct>=p75(0.0909)",
+      "reason": "cross-sectional variation 0.6435 < 0.75 - partly market-wide (B1408 caveat)"
+    },
+    {
+      "strategy": "pead_long_high_yoy_growth_only",
+      "reason": "tightening proposed but segment=STARVED - routing rule forbids tightening a non-high-fire strategy"
+    },
+    {
+      "strategy": "camarilla_r4_breakout",
+      "signal": "bb_20_20_touch_upper",
+      "reason": "cross-sectional variation 0.324 < 0.75 - partly market-wide (B1408 caveat)"
+    },
+    {
+      "strategy": "pead_long_high_yoy_growth_only",
+      "reason": "tightening proposed but segment=STARVED - routing rule forbids tightening a non-high-fire strategy"
+    },
+    {
+      "strategy": "poc_magnet_long",
+      "reason": "tightening proposed but segment=STARVED - routing rule forbids tightening a non-high-fire strategy"
+    },
+    {
+      "strategy": "pead_long_high_yoy_growth_only",
+      "reason": "tightening proposed but segment=STARVED - routing rule forbids tightening a non-high-fire strategy"
+    },
+    {
+      "strategy": "camarilla_r4_breakout",
+      "signal": "bb_20_20_pctb_gt_95",
+      "reason": "cross-sectional variation 0.3224 < 0.75 - partly market-wide (B1408 caveat)"
+    },
+    {
+      "strategy": "cpr_narrow_momentum",
+      "signal": "ema_9_21_bullish",
+      "reason": "cross-sectional variation 0.3509 < 0.75 - partly market-wide (B1408 caveat)"
+    },
+    {
+      "strategy": "xs_momentum_with_smart_money_long",
+      "reason": "tightening proposed but segment=STARVED - routing rule forbids tightening a non-high-fire strategy"
+    },
+    {
+      "strategy": "pead_long_high_yoy_growth_only",
+      "reason": "tightening proposed but segment=STARVED - routing rule forbids tightening a non-high-fire strategy"
+    },
+    {
+      "strategy": "xs_momentum_with_smart_money_long",
+      "reason": "tightening proposed but segment=STARVED - routing rule forbids tightening a non-high-fire strategy"
+    },
+    {
+      "strategy": "xs_momentum_with_smart_money_long",
+      "reason": "tightening proposed but segment=STARVED - routing rule forbids tightening a non-high-fire strategy"
+    },
+    {
+      "strategy": "xs_momentum_with_smart_money_long",
+      "reason": "tightening proposed but segment=STARVED - routing rule forbids tightening a non-high-fire strategy"
+    },
+    {
+      "strategy": "camarilla_r4_breakout",
+      "signal": "dc10_breakout_up",
+      "reason": "cross-sectional variation 0.3882 < 0.75 - partly market-wide (B1408 caveat)"
+    },
+    {
+      "strategy": "pead_long_high_yoy_growth_only",
+      "reason": "tightening proposed but segment=STARVED - routing rule forbids tightening a non-high-fire strategy"
+    },
+    {
+      "strategy": "volume_spike_breakout",
+      "signal": "above_cam_r4",
+      "reason": "cross-sectional variation 0.3169 < 0.75 - partly market-wide (B1408 caveat)"
+    },
+    {
+      "strategy": "pead_long_high_yoy_growth_only",
+      "reason": "tightening proposed but segment=STARVED - routing rule forbids tightening a non-high-fire strategy"
+    },
+    {
+      "strategy": "poc_magnet_long",
+      "reason": "tightening proposed but segment=STARVED - routing rule forbids tightening a non-high-fire strategy"
+    },
+    {
+      "strategy": "camarilla_r4_breakout",
+      "signal": "bb_10_20_pctb_gt_85",
+      "reason": "cross-sectional variation 0.4326 < 0.75 - partly market-wide (B1408 caveat)"
+    },
+    {
+      "strategy": "pead_long_high_yoy_growth_only",
+      "reason": "tightening proposed but segment=STARVED - routing rule forbids tightening a non-high-fire strategy"
+    },
+    {
+      "strategy": "camarilla_r4_breakout",
+      "signal": "bb_10_20_pctb_gt_8",
+      "reason": "cross-sectional variation 0.4836 < 0.75 - partly market-wide (B1408 caveat)"
+    },
+    {
+      "strategy": "camarilla_r4_breakout",
+      "signal": "dc10_breakout_up_1pct",
+      "reason": "cross-sectional variation 0.4375 < 0.75 - partly market-wide (B1408 caveat)"
+    },
+    {
+      "strategy": "tema_dema",
+      "signal": "rsi_2_rising",
+      "reason": "cross-sectional variation 0.4299 < 0.75 - partly market-wide (B1408 caveat)"
+    },
+    {
+      "strategy": "tema_dema",
+      "signal": "rsi_9_rising",
+      "reason": "cross-sectional variation 0.4299 < 0.75 - partly market-wide (B1408 caveat)"
+    },
+    {
+      "strategy": "tema_dema",
+      "signal": "rsi_21_rising",
+      "reason": "cross-sectional variation 0.4299 < 0.75 - partly market-wide (B1408 caveat)"
+    },
+    {
+      "strategy": "tema_dema",
+      "signal": "rsi_14_rising",
+      "reason": "cross-sectional variation 0.4328 < 0.75 - partly market-wide (B1408 caveat)"
+    },
+    {
+      "strategy": "tema_dema",
+      "signal": "close_above_open",
+      "reason": "cross-sectional variation 0.3313 < 0.75 - partly market-wide (B1408 caveat)"
+    },
+    {
+      "strategy": "tema_dema",
+      "signal": "tema_above_dema",
+      "reason": "cross-sectional variation 0.3313 < 0.75 - partly market-wide (B1408 caveat)"
+    },
+    {
+      "strategy": "tema_dema",
+      "signal": "tema_cross_up",
+      "reason": "cross-sectional variation 0.3313 < 0.75 - partly market-wide (B1408 caveat)"
+    },
+    {
+      "strategy": "tema_dema",
+      "signal": "price_above_tema",
+      "reason": "cross-sectional variation 0.3313 < 0.75 - partly market-wide (B1408 caveat)"
+    },
+    {
+      "strategy": "tema_dema",
+      "signal": "price_above_dema",
+      "reason": "cross-sectional variation 0.3313 < 0.75 - partly market-wide (B1408 caveat)"
+    },
+    {
+      "strategy": "news_sentiment_long",
+      "reason": "tightening proposed but segment=STARVED - routing rule forbids tightening a non-high-fire strategy"
+    },
+    {
+      "strategy": "morning_star",
+      "signal": "below_sma_21",
+      "reason": "cross-sectional variation 0.3333 < 0.75 - partly market-wide (B1408 caveat)"
+    },
+    {
+      "strategy": "pead_long_high_yoy_growth_only",
+      "reason": "tightening proposed but segment=STARVED - routing rule forbids tightening a non-high-fire strategy"
+    },
+    {
+      "strategy": "m_and_a_target_long",
+      "signal": "short_interest_observations>=p25(27.25)",
+      "reason": "cross-sectional variation 0.0706 < 0.75 - partly market-wide (B1408 caveat)"
+    },
+    {
+      "strategy": "news_sentiment_long",
+      "reason": "tightening proposed but segment=STARVED - routing rule forbids tightening a non-high-fire strategy"
+    },
+    {
+      "strategy": "camarilla_r4_breakout",
+      "signal": "dc10_new_high",
+      "reason": "cross-sectional variation 0.4951 < 0.75 - partly market-wide (B1408 caveat)"
+    },
+    {
+      "strategy": "news_sentiment_long",
+      "reason": "tightening proposed but segment=STARVED - routing rule forbids tightening a non-high-fire strategy"
+    },
+    {
+      "strategy": "pead_long_high_yoy_growth_only",
+      "reason": "tightening proposed but segment=STARVED - routing rule forbids tightening a non-high-fire strategy"
+    },
+    {
+      "strategy": "pead_long_high_yoy_growth_only",
+      "reason": "tightening proposed but segment=STARVED - routing rule forbids tightening a non-high-fire strategy"
+    },
+    {
+      "strategy": "pead_long_high_yoy_growth_only",
+      "reason": "tightening proposed but segment=STARVED - routing rule forbids tightening a non-high-fire strategy"
+    },
+    {
+      "strategy": "pead_long_high_yoy_growth_only",
+      "reason": "tightening proposed but segment=STARVED - routing rule forbids tightening a non-high-fire strategy"
+    },
+    {
+      "strategy": "institutional_breakout_confirmation_long",
+      "signal": "psar_bullish",
+      "reason": "cross-sectional variation 0.3158 < 0.75 - partly market-wide (B1408 caveat)"
+    },
+    {
+      "strategy": "camarilla_r4_breakout",
+      "signal": "bb_20_15_pctb_gt_95",
+      "reason": "cross-sectional variation 0.4852 < 0.75 - partly market-wide (B1408 caveat)"
+    },
+    {
+      "strategy": "naked_poc_retest_long",
+      "signal": "short_interest_observations<=p75(56)",
+      "reason": "cross-sectional variation 0.0879 < 0.75 - partly market-wide (B1408 caveat)"
+    },
+    {
+      "strategy": "smc_breaker_block_long",
+      "reason": "tightening proposed but segment=STARVED - routing rule forbids tightening a non-high-fire strategy"
+    },
+    {
+      "strategy": "cpr_narrow_bullish",
+      "reason": "tightening proposed but segment=STARVED - routing rule forbids tightening a non-high-fire strategy"
+    },
+    {
+      "strategy": "cpr_narrow_bullish",
+      "reason": "tightening proposed but segment=STARVED - routing rule forbids tightening a non-high-fire strategy"
+    },
+    {
+      "strategy": "volume_spike_breakout",
+      "signal": "sma_9_21_bullish",
+      "reason": "cross-sectional variation 0.428 < 0.75 - partly market-wide (B1408 caveat)"
+    },
+    {
+      "strategy": "awesome_oscillator",
+      "signal": "above_avwap_20low",
+      "reason": "cross-sectional variation 0.3207 < 0.75 - partly market-wide (B1408 caveat)"
+    },
+    {
+      "strategy": "camarilla_r4_breakout",
+      "signal": "bb_20_20_pctb_gt_8",
+      "reason": "cross-sectional variation 0.5378 < 0.75 - partly market-wide (B1408 caveat)"
+    },
+    {
+      "strategy": "camarilla_r4_breakout",
+      "signal": "bb_20_15_pctb_gt_9",
+      "reason": "cross-sectional variation 0.5378 < 0.75 - partly market-wide (B1408 caveat)"
+    },
+    {
+      "strategy": "prev_day_low_bounce",
+      "signal": "short_interest_observations>=p25(28)",
+      "reason": "cross-sectional variation 0.0941 < 0.75 - partly market-wide (B1408 caveat)"
+    },
+    {
+      "strategy": "camarilla_r4_breakout",
+      "signal": "bb_20_15_pctb_gt_85",
+      "reason": "cross-sectional variation 0.5691 < 0.75 - partly market-wide (B1408 caveat)"
+    },
+    {
+      "strategy": "institutional_committed_growth_long",
+      "reason": "tightening proposed but segment=STARVED - routing rule forbids tightening a non-high-fire strategy"
+    },
+    {
+      "strategy": "macd_fast_crossover",
+      "reason": "tightening proposed but segment=STARVED - routing rule forbids tightening a non-high-fire strategy"
+    },
+    {
+      "strategy": "institutional_persistence_volume_long",
+      "signal": "above_prev_low",
+      "reason": "cross-sectional variation 0.0714 < 0.75 - partly market-wide (B1408 caveat)"
+    },
+    {
+      "strategy": "cpr_narrow_bullish",
+      "reason": "tightening proposed but segment=STARVED - routing rule forbids tightening a non-high-fire strategy"
+    },
+    {
+      "strategy": "rsi_oversold",
+      "reason": "tightening proposed but segment=STARVED - routing rule forbids tightening a non-high-fire strategy"
+    },
+    {
+      "strategy": "institutional_breakout_confirmation_long",
+      "signal": "buy_count<=p25(0)",
+      "reason": "cross-sectional variation 0.1316 < 0.75 - partly market-wide (B1408 caveat)"
+    },
+    {
+      "strategy": "institutional_breakout_confirmation_long",
+      "signal": "buy_count<=p50(0)",
+      "reason": "cross-sectional variation 0.1316 < 0.75 - partly market-wide (B1408 caveat)"
+    },
+    {
+      "strategy": "institutional_breakout_confirmation_long",
+      "signal": "buy_count<=p75(0)",
+      "reason": "cross-sectional variation 0.1316 < 0.75 - partly market-wide (B1408 caveat)"
+    },
+    {
+      "strategy": "cpr_narrow_bullish",
+      "reason": "tightening proposed but segment=STARVED - routing rule forbids tightening a non-high-fire strategy"
+    },
+    {
+      "strategy": "institutional_breakout_confirmation_long",
+      "signal": "r1_break_retest_long",
+      "reason": "cross-sectional variation 0.1228 < 0.75 - partly market-wide (B1408 caveat)"
+    },
+    {
+      "strategy": "camarilla_r4_breakout",
+      "signal": "bb_20_20_pctb_gt_75",
+      "reason": "cross-sectional variation 0.5872 < 0.75 - partly market-wide (B1408 caveat)"
+    },
+    {
+      "strategy": "institutional_persistence_breakout_long",
+      "reason": "tightening proposed but segment=STARVED - routing rule forbids tightening a non-high-fire strategy"
+    },
+    {
+      "strategy": "macd_fast_crossover",
+      "reason": "tightening proposed but segment=STARVED - routing rule forbids tightening a non-high-fire strategy"
+    },
+    {
+      "strategy": "macd_fast_crossover",
+      "reason": "tightening proposed but segment=STARVED - routing rule forbids tightening a non-high-fire strategy"
+    },
+    {
+      "strategy": "smc_inverse_fvg",
+      "reason": "tightening proposed but segment=STARVED - routing rule forbids tightening a non-high-fire strategy"
+    },
+    {
+      "strategy": "institutional_breakout_confirmation_long",
+      "signal": "force_index_positive",
+      "reason": "cross-sectional variation 0.114 < 0.75 - partly market-wide (B1408 caveat)"
+    },
+    {
+      "strategy": "institutional_persistence_momentum_long",
+      "signal": "above_prev_low",
+      "reason": "cross-sectional variation 0.0694 < 0.75 - partly market-wide (B1408 caveat)"
+    },
+    {
+      "strategy": "golden_cross_20_50",
+      "signal": "short_interest_observations>=p25(24.25)",
+      "reason": "cross-sectional variation 0.0851 < 0.75 - partly market-wide (B1408 caveat)"
+    },
+    {
+      "strategy": "institutional_breakout_confirmation_long",
+      "signal": "price_above_sma_50",
+      "reason": "cross-sectional variation 0.0526 < 0.75 - partly market-wide (B1408 caveat)"
+    },
+    {
+      "strategy": "m_and_a_target_long",
+      "signal": "house_buy_count_90d>=p25(0)",
+      "reason": "cross-sectional variation 0.515 < 0.75 - partly market-wide (B1408 caveat)"
+    },
+    {
+      "strategy": "m_and_a_target_long",
+      "signal": "house_buy_count_90d>=p50(0)",
+      "reason": "cross-sectional variation 0.515 < 0.75 - partly market-wide (B1408 caveat)"
+    },
+    {
+      "strategy": "m_and_a_target_long",
+      "signal": "house_sell_count_90d>=p25(0)",
+      "reason": "cross-sectional variation 0.5569 < 0.75 - partly market-wide (B1408 caveat)"
+    },
+    {
+      "strategy": "m_and_a_target_long",
+      "signal": "house_sell_count_90d>=p50(0)",
+      "reason": "cross-sectional variation 0.5569 < 0.75 - partly market-wide (B1408 caveat)"
+    },
+    {
+      "strategy": "institutional_persistence_oversold_long",
+      "reason": "tightening proposed but segment=STARVED - routing rule forbids tightening a non-high-fire strategy"
+    }
+  ],
+  "remaining_work_routed": {
+    "LOOSEN / NEVER": {
+      "n": 11,
+      "strategies": [
+        "classification_change_oversold_long",
+        "classification_change_to_tech_long",
+        "classification_change_volume_long",
+        "gold_silver_risk_off_long",
+        "news_sentiment_short",
+        "rsi_overbought_short",
+        "sector_rotation_defensive_long",
+        "short_borrow_trap_avoid",
+        "squeeze_setup_long",
+        "weekly_bias_pullback_short",
+        "xs_combined_momentum_high_ivol_short"
+      ]
+    },
+    "LOOSEN / QUIET": {
+      "n": 28,
+      "strategies": [
+        "52w_high_breakout_with_smart_money_vol_below_long",
+        "bollinger_tight",
+        "camarilla_s3_bounce",
+        "cup_and_handle_long",
+        "doji_at_resistance_short",
+        "doji_at_support",
+        "double_bottom_long",
+        "head_and_shoulders_bottom_long",
+        "htf_aligned_breakout_long",
+        "ichimoku_cloud_breakdown",
+        "insider_cluster_concentrated_sell_short",
+        "institutional_oversold_long",
+        "inverted_cup_and_handle_short",
+        "news_sentiment_shift_long",
+        "pead_long",
+        "shooting_star_short",
+        "smc_discount_long",
+        "smc_equal_lows_sweep_long",
+        "smc_fvg_retest_short",
+        "smc_ote_long",
+        "smc_ote_short",
+        "stoch_oversold",
+        "supertrend_macd_short",
+        "triangle_ascending_long",
+        "turtle_soup_long",
+        "value_area_breakout_long",
+        "xs_momentum_quality_combined",
+        "xs_momentum_top_decile"
+      ]
+    },
+    "LOOSEN / STARVED": {
+      "n": 66,
+      "strategies": [
+        "52w_high_breakout",
+        "52w_high_breakout_pullback_long",
+        "52w_high_breakout_with_smart_money_long",
+        "52w_low_breakdown",
+        "52wh_break_retest",
+        "52wl_break_retest_short",
+        "activist_13d_long",
+        "adx_initiation",
+        "avwap_20high_rejection_short",
+        "bollinger_upper_short",
+        "classification_change_breakout_long",
+        "classification_change_from_tech_short",
+        "classification_change_momentum_long",
+        "classification_change_recent_long",
+        "classification_change_to_defensive_short",
+        "classification_change_with_insider_long",
+        "classification_change_with_institutional_long",
+        "cup_and_handle_retest_long",
+        "death_cross_50_200_volume",
+        "flag_bear_retest_short",
+        "flag_bull_long",
+        "flag_bull_retest_long",
+        "golden_cross_50_200",
+        "golden_cross_volume",
+        "halloween_seasonal_long",
+        "hammer_at_support_long",
+        "insider_cluster_long",
+        "insider_cluster_with_director_long",
+        "institutional_increased_with_directors_long",
+        "institutional_with_directors_long",
+        "institutional_with_officers_long",
+        "january_effect_small_cap_long",
+        "judas_swing_long",
+        "judas_swing_short",
+        "keltner_lower",
+        "mfi_oversold",
+        "monthly_bias_momentum_long",
+        "news_momentum_long",
+        "news_momentum_short",
+        "news_reversal_long",
+        "news_reversal_short",
+        "orb_stocks_in_play_long",
+        "orb_stocks_in_play_short",
+        "pead_with_insider_confirmation_long",
+        "pivot_fib_confluence",
+        "pivot_r2_continuation",
+        "pivot_r3_blowoff_short",
+        "pivot_s2_bounce",
+        "pivot_s3_capitulation",
+        "post_deletion_drift_short",
+        "post_inclusion_drift_long",
+        "post_inclusion_reversal_short",
+        "pre_fomc_long_sleeve",
+        "pre_fomc_quality_momentum_long",
+        "pre_holiday_long",
+        "pre_rebalance_long",
+        "rsi21_slow",
+        "rsi9_extreme",
+        "smc_bos_continuation",
+        "smc_fvg_retest_long",
+        "smc_mitigation_block_long",
+        "smc_mitigation_block_short",
+        "supertrend_ichimoku_adx",
+        "triangle_ascending_retest_long",
+        "xs_low_beta_long",
+        "xs_quality_top_quintile_long"
+      ]
+    },
+    "TIGHTEN / HIGH-FIRE": {
+      "n": 68,
+      "strategies": [
+        "52w_low_breakdown_pullback_short",
+        "avwap_50_reclaim",
+        "bb_squeeze_volume",
+        "bollinger_lower",
+        "break_retest_volume",
+        "cmf_flip",
+        "cpr_narrow_momentum_short",
+        "dc20_break_retest",
+        "donchian_10_breakout",
+        "donchian_breakdown_retest_short",
+        "donchian_breakdown_short",
+        "donchian_breakout_retest_long",
+        "donchian_breakout_with_smart_money_long",
+        "golden_cross_20_50",
+        "head_and_shoulders_top_short",
+        "htf_aligned_breakout_short",
+        "hull_rsi",
+        "ichimoku_cloud_breakout",
+        "ichimoku_tk_cross",
+        "inside_bar_breakout",
+        "institutional_breakout_confirmation_long",
+        "institutional_buy_momentum_long",
+        "institutional_persistence_momentum_long",
+        "institutional_persistence_volume_long",
+        "institutional_persistent_holders_long",
+        "institutional_recent_init_momentum_long",
+        "institutional_recent_init_volume_long",
+        "institutional_strong_conviction_long",
+        "institutional_volume_confirmation_long",
+        "m_and_a_target_long",
+        "macd_bullish_with_smart_money_long",
+        "macd_crossover_short",
+        "mmsm_short",
+        "naked_poc_retest_long",
+        "pairs_mean_reversion_short",
+        "parabolic_sar_flip_short",
+        "pead_short",
+        "pead_with_smart_money_long",
+        "po3_bearish",
+        "po3_bullish",
+        "ppo_crossover",
+        "prev_day_high_break",
+        "prev_day_low_bounce",
+        "prev_day_low_breakdown",
+        "risk_off_bond_equity_short",
+        "roc_burst",
+        "simple_below_ema_50_short",
+        "smc_bos_retest_entry",
+        "smc_choch_reversal",
+        "smc_equal_highs_sweep_short",
+        "smc_liquidity_sweep_reversal",
+        "smc_order_block_bounce",
+        "smc_premium_short",
+        "squeeze_breakout",
+        "squeeze_breakout_with_smart_money_long",
+        "stochrsi_overbought_short",
+        "supertrend_macd",
+        "three_black_crows_short",
+        "three_white_soldiers",
+        "turtle_soup_short",
+        "ultimate_oscillator",
+        "vix_backwardation_long",
+        "vol_spike_2x_below_ema_50_short",
+        "week_opening_gap_fill_down",
+        "week_opening_gap_fill_up",
+        "williams_r_oversold",
+        "williams_stoch_dual",
+        "xs_momentum_bottom_decile_short"
+      ]
+    }
+  }
+}
