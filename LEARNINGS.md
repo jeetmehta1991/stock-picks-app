@@ -3774,3 +3774,59 @@ Quoting an upstream count ("valid measurements") as if it were a downstream one 
 make") sets an expectation the pipeline cannot meet, and the correction lands as a shortfall
 rather than as the filters doing their job. Before quoting any number to the owner, ask: what
 still has to be true for each of these to become an action, and has that been applied?
+
+### L250 - Optimise against the outcome the strategy will actually deploy with: exit choice dominates entry filtering (B1412)
+
+Owner correction 2026-07-28: "the guards are eventually based on exit method selected. We have
+26 exit methods and win rate may vary for each strategy x exit cell. The gates need to be
+evaluated on the BEST exit for each strategy and not the default exit."
+
+Correct, and the magnitude is decisive. For `camarilla_r4_breakout` across its 26 exits
+(IS window, net of friction):
+
+| | win rate | expectancy |
+|---|---|---|
+| spread across the 26 exits | **0.103 - 0.589** | **-1.401% to +3.235%** |
+| best exit `breakeven_plus_trail` | 0.320 | **+3.235%** |
+| assigned exit used in my search | - | negative |
+
+`trade_log` carries ONE exit per strategy - the ASSIGNED one - so every filter I searched was
+optimised against the wrong outcome variable. Two worked examples show the exit dominating the
+filter outright:
+
+| strategy | best exit, NO filter | my proposed filter, assigned exit |
+|---|---|---|
+| `camarilla_r4_breakout` | `breakeven_plus_trail` **+3.235%** | +0.389% |
+| `pairs_mean_reversion_long` | `earnings_blackout` **+6.611%** | +3.835% |
+
+In both cases the strategy needs no entry filter at all once the exit is right - the filter was
+solving a problem the exit had created. **Fix:** pick each strategy's best exit from the cube
+first, re-point pnl at that exit, and only then search for filters. Join key
+(ticker, strategy, entry_date), verified present in both files.
+
+**Rules:** (a) before optimising a component, confirm you are measuring the configuration that
+will actually be deployed - here the deployed exit differs from the recorded one; (b) when a
+system has an N-way choice upstream of the thing you are tuning, tune AFTER fixing that choice,
+not against an arbitrary setting of it; (c) a large spread across a configuration dimension
+(0.103-0.589 win rate) is itself the finding - it means that dimension, not the one you were
+tuning, is where the leverage is.
+
+### L251 - Working one example end-to-end found two defects the guard LIST could not (B1411)
+
+Asked for a worked example of each treatment, I traced `weekly_bias_pullback_long` through every
+loosening guard. **All six passed and the change was still wrong**: it took an 18-fire strategy
+to ~10,754 fires. Its real gate is `rsi_14 < 45` (a pullback); relaxing x1.5 gives `< 67.5`,
+true on most bars, so the strategy's entire premise disappears.
+
+Two defects fell out that no amount of reviewing the guard list would have surfaced:
+1. **No maximum admission ratio.** Nothing capped how far a relaxation could multiply fires.
+   Added at 5x; it immediately rejected BOTH loosening proposals (9,156x and 7,814x).
+2. **A unit mismatch.** `fires_is` came from trade_log (FULL 614-ticker cube) while
+   `extra_fires` came from the 40-ticker clause-admission run, and the change list compared them
+   directly - wrong by 614/40 = **15.35x**. The "minimum sufficient loosening" logic was
+   therefore choosing against a target that was off by an order of magnitude.
+
+**Rule:** trace at least one candidate end-to-end through every guard before trusting a
+pipeline's output. A guard list reads as complete because each guard is individually sensible;
+only a worked example exposes what NO guard covers, and only carrying real numbers through
+exposes unit mismatches between stages.

@@ -13,14 +13,14 @@
 | HIGH-FIRE | >= 300 | **TIGHTEN** | volume is fine; win rate / R:R / Sharpe is the problem |
 
 
-## Summary: 25 changes covering 25 of 198 R6 strategies
+## Summary: 23 changes covering 23 of 198 R6 strategies
 
 | | n |
 |---|---|
 | TIGHTEN (add a selectivity gate) | **23** |
-| LOOSEN (relax a binding threshold) | **2** |
-| Skipped with reason | 84 |
-| Remaining, not yet covered | 173 |
+| LOOSEN (relax a binding threshold) | **0** |
+| Skipped with reason | 86 |
+| Remaining, not yet covered | 175 |
 
 
 ## A. TIGHTEN - high-fire strategies, add a selectivity gate
@@ -51,27 +51,20 @@
 | `parabolic_sar_flip` | trend | 1217 | `macd_8_21_5_hist>=p75(0.319)` | 1217 -> 305 | 0.286 -> 0.298 | **-1.130 -> +2.163** | 159 | 1.0 |
 | `tema_dema` | trend | 1422 | `atr_pct>=p25(2.054)` | 1422 -> 1066 | 0.274 -> 0.295 | **-0.740 -> +0.393** | 449 | 1.0 |
 
-## B. LOOSEN - starved/quiet strategies, relax the binding threshold
-
-| Strategy | Cluster | Segment | Fires | Change | Extra fires (40 tkr) | Fwd return of NEW trades |
-|---|---|---|---|---|---|---|
-| `weekly_bias_pullback_long` | multi_timeframe | STARVED | 18 | RELAX rsi_14 by x1.5 -> threshold 67.5 | +10736 | +0.11% |
-| `poc_magnet_short` | volume_profile | NEVER | 0 | RELAX vp_close_near_poc_pct by x1.25 -> threshold 0.0375 | +509 | +0.30% |
-
-## C. Why only 25 and not more
+## C. Why only 23 and not more
 
 - **39** tightening candidates were for strategies that are NOT high-fire - the routing rule forbids tightening those; they belong in the loosening queue.
 - **45** were rejected for cross-sectional variation < 0.75, i.e. the signal is partly MARKET-WIDE and would select periods rather than trades (L247).
 - On the loosening side, a candidate must both relax a genuinely BINDING clause AND admit new trades with POSITIVE forward return. Most did not.
 
 
-## D. Remaining work - 173 strategies, routed by the same rule
+## D. Remaining work - 175 strategies, routed by the same rule
 
 | Queue | n |
 |---|---|
-| LOOSEN / NEVER | 11 |
+| LOOSEN / NEVER | 12 |
 | LOOSEN / QUIET | 28 |
-| LOOSEN / STARVED | 66 |
+| LOOSEN / STARVED | 67 |
 | TIGHTEN / HIGH-FIRE | 68 |
 
 The loosening queue is blocked on the measurement-stack fix (L248): the clause-admission tool emits 622 signals/bar against the engine's 835, so any strategy whose gates touch a missing signal has an unreliable base rate. 116 of 198 are affected.

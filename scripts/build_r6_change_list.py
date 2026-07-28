@@ -40,6 +40,20 @@ AUD = REPO / "output_audit"
 MIN_FWD_RET = 0.0        # a loosening must admit trades with positive forward return
 MIN_XSV_STRICT = 0.75    # B1408 caveat: mid-band signals are partly market-wide
 
+# B1411 (owner: "missing guard: a maximum admission ratio - add").
+# Found by working the weekly_bias_pullback_long example: every existing guard PASSED and the
+# change was still wrong - it took an 18-fire strategy to ~10,754 fires. That is not loosening
+# a filter, it is deleting the strategy's selectivity; whatever survives is not the strategy any
+# more. Its real gate is `rsi_14 < 45` (a pullback); relaxing to `< 67.5` admits almost any bar.
+MAX_ADMISSION_RATIO = 5.0     # a relaxation may at most 5x a strategy's fire count
+
+# B1411 UNIT BUG found in the same example: `fires_is` comes from trade_log (the FULL 614-ticker
+# cube) while `extra_fires` comes from the 40-ticker clause-admission run. The change list
+# compared them directly, so the fire target was wrong by ~15x. Normalise before comparing.
+FULL_UNIVERSE_TICKERS = 614
+SWEEP_SAMPLE_TICKERS = 40
+UNIVERSE_SCALE = FULL_UNIVERSE_TICKERS / SWEEP_SAMPLE_TICKERS
+
 
 def load(name):
     p = AUD / name
@@ -117,17 +131,37 @@ def main() -> int:
                     cands.append((c, sw))
         if not cands:
             continue
-        # minimum sufficient loosening: smallest multiple that clears the fire target
-        target = 100 - fires.get(s, 0)
-        ok = [x for x in cands if x[1]["extra_fires"] >= target] or cands
-        c, sw = min(ok, key=lambda x: (x[1]["multiple"], -x[1]["extra_fires"]))
+        # B1411: normalise the 40-ticker sweep count to the full universe BEFORE comparing it
+        # to a full-universe fire count, then apply the admission-ratio cap.
+        cur = max(fires.get(s, 0), 1)
+        scored = []
+        for c, sw in cands:
+            extra_full = sw["extra_fires"] * UNIVERSE_SCALE
+            ratio = (cur + extra_full) / cur
+            scored.append((c, sw, extra_full, ratio))
+        within = [x for x in scored if x[3] <= MAX_ADMISSION_RATIO]
+        if not within:
+            best = min(scored, key=lambda x: x[3])
+            skipped.append({"strategy": s, "clause": best[0]["clause"],
+                            "reason": f"every relaxation exceeds the {MAX_ADMISSION_RATIO}x admission "
+                                      f"cap - smallest is {best[3]:,.0f}x ({cur} -> "
+                                      f"{cur + best[2]:,.0f} fires). Loosening cannot reach "
+                                      f"min_trades without destroying the strategy's selectivity."})
+            continue
+        # minimum sufficient: smallest multiple that still reaches the fire target
+        target = max(100 - cur, 0)
+        ok = [x for x in within if x[2] >= target] or within
+        c, sw, extra_full, ratio = min(ok, key=lambda x: (x[1]["multiple"], -x[2]))
         changes.append({
             "strategy": s, "cluster": roster.get(s, {}).get("category", "?"),
             "direction": roster.get(s, {}).get("direction", "?"),
             "segment": segn, "fires_is": fires.get(s, 0),
             "treatment": "LOOSEN",
             "change": f"RELAX {c['clause']} by x{sw['multiple']} -> threshold {sw['new_threshold']}",
-            "expected": {"fires_added_on_40_tickers": sw["extra_fires"],
+            "expected": {"fires_now_full_universe": cur,
+                         "fires_after_full_universe": round(cur + extra_full),
+                         "admission_ratio": round(ratio, 2),
+                         "raw_extra_fires_on_40_tickers": sw["extra_fires"],
                          "fwd_return_of_new_trades_pct": sw["mean_fwd_return_of_new_pct"],
                          "clause_lift_ceiling": c["lift"]},
             "evidence": {"verdict": c["verdict"].split(" (")[0],
@@ -186,12 +220,12 @@ def main() -> int:
                       f"{ev['n_dates_kept']} | {ev['cross_sectional_variation']} |")
     if loosen:
         md.append("\n## B. LOOSEN - starved/quiet strategies, relax the binding threshold\n")
-        md.append("| Strategy | Cluster | Segment | Fires | Change | Extra fires (40 tkr) | Fwd return of NEW trades |\n"
+        md.append("| Strategy | Cluster | Segment | Fires | Change | Fires after (admission ratio) | Fwd return of NEW trades |\n"
                   "|---|---|---|---|---|---|---|")
         for c in loosen:
             e = c["expected"]
             md.append(f"| `{c['strategy']}` | {c['cluster']} | {c['segment']} | {c['fires_is']} | "
-                      f"{c['change']} | +{e['fires_added_on_40_tickers']} | "
+                      f"{c['change']} | {e['fires_now_full_universe']} -> {e['fires_after_full_universe']} ({e['admission_ratio']}x) | "
                       f"{e['fwd_return_of_new_trades_pct']:+.2f}% |")
     md.append(f"\n## C. Why only {len(changes)} and not more\n")
     md.append(f"- **{sum(1 for s in skipped if 'routing rule forbids' in s['reason'])}** tightening "

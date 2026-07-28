@@ -161,6 +161,12 @@ def main() -> int:
                          "tickers. Below this it is market-wide and can only select periods.")
     ap.add_argument("--max-top-date-share", type=float, default=0.10,
                     help="no single date may supply more than this share of retained trades")
+    ap.add_argument("--use-assigned-exit", action="store_true",
+                    help="B1412: fall back to trade_log's ASSIGNED exit. The DEFAULT is "
+                         "best-exit, because a filter must be judged on the exit the strategy "
+                         "will actually deploy with - win rate across the 26 exits spans "
+                         "0.103-0.589 for a single strategy, so the assigned exit is the wrong "
+                         "outcome variable to optimise against.")
     ap.add_argument("--output", default="output_audit/b1401_quality_lift.json")
     args = ap.parse_args()
 
@@ -179,6 +185,33 @@ def main() -> int:
         frames.append(ch[(ch.entry_date >= IS_START) & (ch.entry_date < end)])
     tl = pd.concat(frames, ignore_index=True)
     tl["pnl_pct"] = tl["pnl_pct"].clip(-WINSORIZE, WINSORIZE) - COST_BPS / 100.0
+
+    # B1412 (owner correction 2026-07-28): "the guards are eventually based on exit method
+    # selected... the gates need to be evaluated on the BEST exit for each strategy and not the
+    # default exit". Correct, and the effect is large: for camarilla_r4_breakout the win rate
+    # across its 26 exits spans 0.103 to 0.589 and expectancy -1.401% to +3.235%. trade_log
+    # carries ONE exit per strategy - the ASSIGNED one - so searching filters against it
+    # optimises the wrong outcome variable. Some strategies need no filter at all once the exit
+    # is right (camarilla_r4_breakout is already +3.235% on breakeven_plus_trail).
+    # Fix: pick each strategy's best exit from the cube, then re-point pnl at that exit before
+    # any filter search. Join key is (ticker, strategy, entry_date), verified present in both.
+    if not args.use_assigned_exit:
+        cube = pd.read_csv(REPO / "output_r5_merged_1_7" / "trade_exit_detail.csv", low_memory=False,
+                           usecols=["strategy", "ticker", "entry_date", "exit_method", "pnl_pct"])
+        cube["entry_date"] = pd.to_datetime(cube["entry_date"]).dt.date
+        cube = cube[(cube.entry_date >= IS_START) & (cube.entry_date < end)]
+        cube["pnl_pct"] = cube["pnl_pct"].clip(-WINSORIZE, WINSORIZE) - COST_BPS / 100.0
+        bestx = (cube.groupby(["strategy", "exit_method"]).pnl_pct.mean()
+                     .reset_index().sort_values("pnl_pct", ascending=False)
+                     .groupby("strategy").first()["exit_method"].to_dict())
+        sel = cube.merge(pd.Series(bestx, name="best_exit").rename_axis("strategy").reset_index(),
+                         on="strategy")
+        sel = sel[sel.exit_method == sel.best_exit][["strategy", "ticker", "entry_date", "pnl_pct"]]
+        before = len(tl)
+        tl = tl.drop(columns=["pnl_pct"]).merge(sel, on=["strategy", "ticker", "entry_date"], how="inner")
+        print(f"[BEST-EXIT] re-pointed pnl to each strategy's best exit; "
+              f"{len(bestx)} strategies mapped, trades {before:,} -> {len(tl):,}")
+        json.dump(bestx, open(REPO / "output_audit" / "b1412_best_exit_per_strategy.json", "w"), indent=2)
     counts = tl.strategy.value_counts()
     targets = [s for s, c in counts.items() if c >= args.min_fires]
     print(f"[INFO] {len(tl):,} IS trades | {len(targets)} strategies with >= {args.min_fires} fires")

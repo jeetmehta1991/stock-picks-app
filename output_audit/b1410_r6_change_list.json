@@ -8,52 +8,14 @@
     ">=300": "TIGHTEN"
   },
   "counts": {
-    "total_changes": 25,
+    "total_changes": 23,
     "tighten": 23,
-    "loosen": 2,
-    "strategies_covered": 25,
+    "loosen": 0,
+    "strategies_covered": 23,
     "r6_total": 198,
-    "remaining_uncovered": 173
+    "remaining_uncovered": 175
   },
   "changes": [
-    {
-      "strategy": "weekly_bias_pullback_long",
-      "cluster": "multi_timeframe",
-      "direction": "long",
-      "segment": "STARVED",
-      "fires_is": 18,
-      "treatment": "LOOSEN",
-      "change": "RELAX rsi_14 by x1.5 -> threshold 67.5",
-      "expected": {
-        "fires_added_on_40_tickers": 10736,
-        "fwd_return_of_new_trades_pct": 0.109,
-        "clause_lift_ceiling": 127.299
-      },
-      "evidence": {
-        "verdict": "BINDING",
-        "signal_own_rate": null
-      },
-      "prediction_for_r6": "fires rise from 18 toward >= 100 (min_trades) and expectancy does not fall below the current level"
-    },
-    {
-      "strategy": "poc_magnet_short",
-      "cluster": "volume_profile",
-      "direction": "short",
-      "segment": "NEVER",
-      "fires_is": 0,
-      "treatment": "LOOSEN",
-      "change": "RELAX vp_close_near_poc_pct by x1.25 -> threshold 0.0375",
-      "expected": {
-        "fires_added_on_40_tickers": 509,
-        "fwd_return_of_new_trades_pct": 0.302,
-        "clause_lift_ceiling": 3.727
-      },
-      "evidence": {
-        "verdict": "BINDING",
-        "signal_own_rate": null
-      },
-      "prediction_for_r6": "fires rise from 0 toward >= 100 (min_trades) and expectancy does not fall below the current level"
-    },
     {
       "strategy": "donchian_breakout_long",
       "cluster": "breakout",
@@ -942,17 +904,28 @@
     {
       "strategy": "institutional_persistence_oversold_long",
       "reason": "tightening proposed but segment=STARVED - routing rule forbids tightening a non-high-fire strategy"
+    },
+    {
+      "strategy": "poc_magnet_short",
+      "clause": "vp_close_near_poc_pct",
+      "reason": "every relaxation exceeds the 5.0x admission cap - smallest is 7,814x (1 -> 7,814 fires). Loosening cannot reach min_trades without destroying the strategy's selectivity."
+    },
+    {
+      "strategy": "weekly_bias_pullback_long",
+      "clause": "rsi_14",
+      "reason": "every relaxation exceeds the 5.0x admission cap - smallest is 9,156x (18 -> 164,816 fires). Loosening cannot reach min_trades without destroying the strategy's selectivity."
     }
   ],
   "remaining_work_routed": {
     "LOOSEN / NEVER": {
-      "n": 11,
+      "n": 12,
       "strategies": [
         "classification_change_oversold_long",
         "classification_change_to_tech_long",
         "classification_change_volume_long",
         "gold_silver_risk_off_long",
         "news_sentiment_short",
+        "poc_magnet_short",
         "rsi_overbought_short",
         "sector_rotation_defensive_long",
         "short_borrow_trap_avoid",
@@ -995,7 +968,7 @@
       ]
     },
     "LOOSEN / STARVED": {
-      "n": 66,
+      "n": 67,
       "strategies": [
         "52w_high_breakout",
         "52w_high_breakout_pullback_long",
@@ -1061,6 +1034,7 @@
         "smc_mitigation_block_short",
         "supertrend_ichimoku_adx",
         "triangle_ascending_retest_long",
+        "weekly_bias_pullback_long",
         "xs_low_beta_long",
         "xs_quality_top_quintile_long"
       ]
