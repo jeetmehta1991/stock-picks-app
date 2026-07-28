@@ -63,6 +63,7 @@ REPO = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+import numpy as np  # noqa: E402
 import pandas as pd  # noqa: E402
 
 from backtest.signals.screener import ALL_STRATEGIES, screen_instrument  # noqa: E402
@@ -97,7 +98,7 @@ def relaxed_threshold(op: str, th: float, mult: float) -> float:
 
 
 def satisfies(op: str, val, th: float) -> bool:
-    if not isinstance(val, (int, float)) or isinstance(val, bool):
+    if not isinstance(val, (int, float, np.integer, np.floating)) or isinstance(val, (bool, np.bool_)):
         return False
     if op in (">", ">="):
         return val >= th
@@ -248,12 +249,20 @@ def main() -> int:
                     # counted separately: a numeric never satisfies `is True`, so lumping them
                     # together reports own_rate 0.0 for every threshold signal and makes the
                     # EVENT rule fire on the wrong things.
+                    # B1417: the engine emits NUMPY scalars alongside Python ones - 76 of 747
+                    # signals are np.bool_ (pivot/candle producers build them from pandas
+                    # comparisons). `isinstance(np.bool_(True), bool)` is FALSE and np.bool_ is
+                    # not an int/float either, so a naive type check incremented NEITHER counter
+                    # and the signal was reported as "never present" -> a fabricated
+                    # ABSENT-PRODUCER verdict on `above_cam_r4`, `below_cam_s4` and every other
+                    # numpy-bool gate. Use numpy-aware tests.
                     e = sig_true.setdefault(k, [0, 0, 0])
-                    if isinstance(sig[k], bool):
+                    v = sig[k]
+                    if isinstance(v, (bool, np.bool_)):
                         e[1] += 1
-                        if sig[k]:
+                        if bool(v):
                             e[0] += 1
-                    elif isinstance(sig[k], (int, float)):
+                    elif isinstance(v, (int, float, np.integer, np.floating)):
                         e[2] += 1
             for n in names:
                 fn = ALL_STRATEGIES[n]
@@ -281,7 +290,7 @@ def main() -> int:
                     if th is None or base_fires:
                         continue
                     val = sig.get(k)
-                    if not isinstance(val, (int, float)) or isinstance(val, bool):
+                    if not isinstance(val, (int, float, np.integer, np.floating)) or isinstance(val, (bool, np.bool_)):
                         continue
                     for m in SWEEP_MULT:
                         if not satisfies(op, val, relaxed_threshold(op, th, m)):

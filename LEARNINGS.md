@@ -3941,3 +3941,36 @@ second and a fresh-group unit, because the first carries one-time initialisation
 part of the marginal cost - and the error runs in BOTH directions: an optimistic first
 measurement understates the total, a cold first measurement overstates it by 65x and can kill a
 correct design.
+
+### L255 - numpy scalars are not Python scalars: 76 of 747 signals were silently uncounted, fabricating ABSENT-PRODUCER verdicts (B1417)
+
+After fixing the signal stack to call the engine's own assembler (B1416), the smoke test STILL
+flagged `above_cam_r4` and `below_cam_s4` as ABSENT-PRODUCER for `camarilla_r4_breakout` - while
+the same run showed the strategy firing on **147 of 750 bars**. A strategy cannot fire 147 times
+on gates whose signals are never present. That contradiction was the tell.
+
+**Cause:** the engine emits NUMPY scalars alongside Python ones - pivot and candle producers
+build booleans from pandas comparisons, so they are `np.bool_`, not `bool`:
+
+```
+isinstance(np.bool_(True), bool)          -> False
+isinstance(np.bool_(True), (int, float))  -> False
+```
+
+My counter had `if isinstance(v, bool): ... elif isinstance(v, (int,float)): ...`, so a numpy
+bool incremented NEITHER branch, leaving n_bool_seen = n_numeric_seen = 0, which the verdict
+ladder reads as "never present in any bar" -> ABSENT-PRODUCER. **76 of 747 engine signals are
+`np.bool_`** and every gate on one of them was fabricating a broken-producer finding. The same
+blind spot sat in `satisfies()`, which gates the threshold sweep, so those clauses were also
+silently excluded from sweeping.
+
+This is the FIFTH false finding this instrument produced, and the third caused by a TYPE or
+DIMENSION assumption rather than by statistics (numpy scalars here; market-wide vs per-ticker in
+L247; between-ticker vs within-ticker in L252). The statistical guards were never the weak part.
+
+**Rules:** (a) when consuming a dict assembled by pandas/numpy code, test types with
+`(bool, np.bool_)` and `(int, float, np.integer, np.floating)` - a bare `isinstance(v, bool)` is
+a silent filter, not a check; (b) an if/elif type ladder with no else-branch discards the cases
+it does not recognise - log or count the fall-through, because that residue is exactly where
+this hid; (c) once again the contradiction (147 fires on an "absent" signal) found the bug that
+the statistics could not - always reconcile a finding against a directly observed fact.
