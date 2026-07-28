@@ -3912,3 +3912,32 @@ and the R5 grading had already surfaced this exit as the pick on 25 of 29 promot
 marginal leakage is small - but it is not zero, and R6 holdout results for exit-related claims are
 correspondingly weaker. Recording it rather than letting it pass: **a holdout is spent by looking,
 not only by deciding, and the spending must be logged when it happens.**
+
+### L254 - Cold vs warm cost: a 534-hour projection was really 8 hours (B1416)
+
+Implementing the L248 fix meant calling the engine's own per-bar assembler
+(`screener.screen_instrument`) instead of an approximation. First measurement: **64 seconds for
+ONE BAR**, which projects to 801 min/ticker and **534 hours** for 40 tickers - i.e. "impossible,
+abandon this approach".
+
+Measuring a second and third bar instead of extrapolating from the first:
+
+| | |
+|---|---|
+| bar 1 (cold) | 47.5s |
+| bars 2-11 (warm) | **0.988s** median |
+| first bar of a NEW ticker | 1.9s |
+| => 40 tickers | **8.2 hours** |
+
+The 47s was one-time module-level cache warm-up (parquet loads for insider / institutional /
+news / COT). Extrapolating from it would have discarded the correct fix as infeasible and sent
+me back to patching the approximation - the very thing that caused the defect.
+
+This is the FOURTH timing mis-estimate in this workstream (2.4h -> 4.7h -> 9.7h, and now 534h ->
+8.2h). Every one came from extrapolating a partial measurement.
+
+**Rule:** never extrapolate a per-unit cost from the first unit. Measure at least the first,
+second and a fresh-group unit, because the first carries one-time initialisation that is not
+part of the marginal cost - and the error runs in BOTH directions: an optimistic first
+measurement understates the total, a cold first measurement overstates it by 65x and can kill a
+correct design.

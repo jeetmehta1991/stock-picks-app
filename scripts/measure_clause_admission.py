@@ -27,8 +27,23 @@ Any regex reconstruction of that logic would be wrong somewhere and silently so.
 mutate one key in the signal dict and invoke `ALL_STRATEGIES[name](s)` itself, so whatever the
 real boolean structure is, it is honoured exactly.
 
-Signals are produced by REUSING `measure_fire_count._precompute_signals_for_ticker` - the same
-per-bar producer stack the fire-count measurement uses - rather than a second implementation.
+SIGNAL SOURCE (B1416 - this changed, and the reason matters)
+Signals come from `screener.screen_instrument`, the ENGINE'S OWN per-bar pipeline - the same
+code that produced the cube. It previously reused
+`measure_fire_count._precompute_signals_for_ticker`, which computes technical.py plus a TIER-1
+subset: 622 signals/bar against the engine's 832. The 210 missing ones were predominantly the
+EXTERNAL-DATA producers (smart money, COT, news, SEC EDGAR, cross-sectional panel), so any
+strategy gating on them read `s.get(k, False)` forever and its base_rate/lift/sweep were wrong -
+116 of 198 strategies affected (L248). Worse, it reported that blind spot as a finding: 282
+clauses flagged ABSENT-PRODUCER when 111 of the 115 distinct signals are emitted perfectly well
+by the real engine.
+
+Reusing an existing component was the right instinct; reusing one that APPROXIMATES the thing
+being measured was not. Calling the engine's own assembler makes drift impossible by
+construction. Cost, measured before committing: 47.5s one-time cold warm-up, then 0.988s/bar and
+1.9s per new ticker => ~12.4 min/ticker => ~8.2h for 40 tickers. The signal cache is
+VERSION-KEYED because old entries hold 622-signal dicts and would silently reintroduce the
+defect this fixes.
 
 Usage:
   python scripts/measure_clause_admission.py --max-tickers 40 --strategies poc_magnet_long
@@ -50,7 +65,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import pandas as pd  # noqa: E402
 
-from backtest.signals.screener import ALL_STRATEGIES  # noqa: E402
+from backtest.signals.screener import ALL_STRATEGIES, screen_instrument  # noqa: E402
 import measure_fire_count as MFC  # noqa: E402  (reuse its producer stack + loaders)
 
 IS_START, IS_END = date(2022, 5, 5), date(2025, 5, 5)   # holdout (>= IS_END) never touched
@@ -161,10 +176,26 @@ def main() -> int:
     # runtime is recomputing signals the R5 cube already computed once. Cache them per
     # (ticker, window) so the expensive pass happens ONCE and every subsequent iteration of
     # this analysis - and any other bar-level study - is effectively free.
+    # B1416 (L248 FIX): the old stack reused
+    # `measure_fire_count._precompute_signals_for_ticker`, which computes technical.py + a
+    # TIER-1 subset - 622 signals/bar against the engine's 832. 210 signals were missing,
+    # predominantly the EXTERNAL-DATA producers (smart money, COT, news, SEC EDGAR, the
+    # cross-sectional panel), so any strategy gating on them read `s.get(k, False)` forever and
+    # its base_rate/lift/sweep were wrong - 116 of 198 strategies affected.
+    #
+    # The fix is to stop approximating and call the ENGINE'S OWN per-bar pipeline,
+    # `screener.screen_instrument`, which is what produced the cube. No approximation, so no
+    # drift is possible by construction.
+    #
+    # Cost, MEASURED before committing: 47.5s on the very first call (module-level cache warm-up),
+    # then 0.988s/bar warm and 1.9s per new ticker => ~12.4 min/ticker => ~8.2h for 40 tickers.
+    # The cache below is version-keyed because the OLD entries hold the 622-signal dicts and
+    # would silently reintroduce exactly the defect this fixes.
+    SIGNAL_STACK_VERSION = "v2_screen_instrument"
     cache_dir = REPO / "output_audit" / "_signal_cache"
     cache_dir.mkdir(parents=True, exist_ok=True)
     for ti, tk in enumerate(tickers, 1):
-        cpath = cache_dir / f"{tk}_{start}_{end}.pkl"
+        cpath = cache_dir / f"{tk}_{start}_{end}_{SIGNAL_STACK_VERSION}.pkl"
         per_bar = None
         if cpath.exists():
             try:
@@ -176,7 +207,19 @@ def main() -> int:
             if df is None or df.empty:
                 continue
             try:
-                per_bar = MFC._precompute_signals_for_ticker(df, tk, start, end)
+                # B1416: the ENGINE's own assembler, not an approximation of it.
+                per_bar = []
+                for i in range(250, len(df)):
+                    bd = df.index[i].date()
+                    if bd < start or bd >= end:
+                        continue
+                    try:
+                        cand = screen_instrument(tk, df.iloc[: i + 1], {}, bd, "neutral")
+                    except Exception:
+                        continue
+                    sg = cand.get("signals") if isinstance(cand, dict) else None
+                    if sg:
+                        per_bar.append((bd, sg))
             except Exception as exc:
                 print(f"  [skip] {tk}: {exc}")
                 continue
