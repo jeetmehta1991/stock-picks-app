@@ -4013,3 +4013,35 @@ retirement question, not a tuning one.
 **Rule:** when a measurement instrument and the system disagree about the system's own behaviour,
 the instrument is wrong until proven otherwise. Every one of the five false findings this
 instrument produced was resolved in the system's favour.
+
+### L257 - A code patcher must preserve the ORIGINAL semantics, and the test must check that - not just the new behaviour (B1421)
+
+Applying 18 approved entry filters to `screener.py`, my patcher wrapped each `fires`/`fl`/`fs`
+expression as `(<original>) and (<new gate>)`. To keep a trailing `#` comment valid it moved the
+comment to the END of the replacement. That is correct for a SINGLE-LINE expression and
+catastrophic for a MULTI-LINE one: everything on the lines AFTER the comment got relocated behind
+it and was commented out.
+
+Concretely, `xs_momentum_bottom_decile_short` became:
+```
+fires = ((... below_ema_200 ...) and (xs_max_anomaly <= 0.0648) # B630 sweep and not _short_borrow_trap_active(s))
+```
+**The `_short_borrow_trap_active` guard - a risk control on a SHORT strategy - was commented
+out.** `break_retest_volume` similarly lost `close_above_open` and `close_in_top_40pct_of_range`.
+
+**Why my verification did not catch it.** I ran three checks: gate-present (a flawed single-line
+grep that produced 6 false alarms and sent me looking the wrong way), behavioural blocking
+(18/18 PASS), and all-strategies-callable (222/222 PASS). Every one of them tested the NEW
+behaviour or the absence of crashes. **None tested that the ORIGINAL gates still applied.** A
+strategy with its risk guard silently deleted still blocks correctly on the new gate, still
+imports, and still returns a dict - it looks perfectly healthy.
+
+The bug was found by eyeballing the rendered source while chasing an unrelated false alarm, not
+by any of the checks. That is luck, not process.
+
+**Rules:** (a) when a patcher rewrites an expression, the test must assert the ORIGINAL clause
+set is still present and still enforced - diff the pre/post clause list per strategy, do not
+merely re-run the function; (b) never relocate a comment across a line boundary in a
+whitespace/newline-significant expression - append the new condition AFTER the complete
+expression instead, leaving every original line byte-identical; (c) a behavioural test that only
+exercises the path you added cannot detect what you removed.

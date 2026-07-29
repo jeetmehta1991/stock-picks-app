@@ -203,6 +203,15 @@ TRAILING_STOP = {
 #
 # Strategies not listed fall through to TRAILING_STOP defaults.
 STRATEGY_EXIT_OVERRIDE: dict[str, dict] = {
+    # B1420 (2026-07-28 owner-approved): EXIT REASSIGNMENT, 6 strategies -> breakeven_plus_trail.
+    # Derived IS-only (2022-05 -> 2025-05) and guarded against L227, which measured exit
+    # selection as the MOST overfit component (IS-picked exits cleared the holdout bar on 5.9%
+    # of rows vs a hindsight oracle 17.6%). Naive argmax over 26 exits is exactly that failure,
+    # so each proposal had to be TOP-QUARTILE IN >=2 OF 3 IS FOLDS (all 6 are 3/3), beat the
+    # incumbent by >=0.5%/trade, and clear a DATE-CLUSTERED BH-FDR test. 26 strategies would
+    # change under naive argmax; only these 6 survived. All 6 are structurally simple exits,
+    # the class L227 found transfers best. Predictions pre-registered for R6 in
+    # output_audit/b1415_exit_reassignment.json - each can be falsified.
     # Batch 309 (2026-05-24 owner-approved): Phase 1B-alpha survivor roster.
     # Per per_cell_is_oos.csv from Phase 1A-beta 7,191-trade run, these 7
     # unique strategies have at least one (strategy x exit) cell with BOTH
@@ -285,8 +294,10 @@ STRATEGY_EXIT_OVERRIDE: dict[str, dict] = {
     "avwap_252_breakout":              {"exit_method": "breakeven_plus_trail"},
     "pre_fomc_long_sleeve":            {"exit_method": "earnings_blackout"},
     "institutional_buy_momentum_long": {"exit_method": "earnings_blackout"},
-    "morning_star":                    {"exit_method": "time_stop_10d"},
-    "williams_stoch_dual":             {"exit_method": "next_pivot_target"},
+    # B1420: time_stop_10d -> breakeven_plus_trail | IS expectancy +0.01% -> +2.34% (margin +2.33), WR 0.491 -> 0.262, top-quartile in 3/3 IS folds
+    "morning_star":                    {"exit_method": "breakeven_plus_trail"},
+    # B1420: next_pivot_target -> breakeven_plus_trail | IS expectancy -0.10% -> +0.94% (margin +1.04), WR 0.826 -> 0.230, top-quartile in 3/3 IS folds
+    "williams_stoch_dual":             {"exit_method": "breakeven_plus_trail"},
     "squeeze_breakout":                {"exit_method": "earnings_blackout"},
     "orb_stocks_in_play_long":         {"exit_method": "earnings_blackout"},
     "macd_fast_crossover":             {"exit_method": "earnings_blackout"},
@@ -294,14 +305,18 @@ STRATEGY_EXIT_OVERRIDE: dict[str, dict] = {
     "golden_cross_9_21":               {"exit_method": "next_pivot_target"},
     "ultimate_oscillator":             {"exit_method": "earnings_blackout"},
     "ppo_crossover":                   {"exit_method": "class_time_stop"},
-    "tema_dema":                       {"exit_method": "next_pivot_target"},
+    # B1420: next_pivot_target -> breakeven_plus_trail | IS expectancy +0.03% -> +2.46% (margin +2.43), WR 0.671 -> 0.300, top-quartile in 3/3 IS folds
+    "tema_dema":                       {"exit_method": "breakeven_plus_trail"},
     "cpr_narrow_momentum":             {"exit_method": "time_stop_10d"},
     "three_white_soldiers":            {"exit_method": "next_pivot_target"},
     "break_retest_volume":             {"exit_method": "earnings_blackout"},
-    "macd_crossover":                  {"exit_method": "time_stop_10d"},
+    # B1420: time_stop_10d -> breakeven_plus_trail | IS expectancy -0.12% -> +2.04% (margin +2.17), WR 0.488 -> 0.301, top-quartile in 3/3 IS folds
+    "macd_crossover":                  {"exit_method": "breakeven_plus_trail"},
     "awesome_oscillator":              {"exit_method": "earnings_blackout"},
-    "stochrsi_overbought_short":       {"exit_method": "class_time_stop"},
-    "hull_rsi":                        {"exit_method": "next_pivot_target"},
+    # B1420: class_time_stop -> breakeven_plus_trail | IS expectancy -1.55% -> -0.14% (margin +1.42), WR 0.441 -> 0.245, top-quartile in 3/3 IS folds
+    "stochrsi_overbought_short":       {"exit_method": "breakeven_plus_trail"},
+    # B1420: next_pivot_target -> breakeven_plus_trail | IS expectancy -0.46% -> +0.79% (margin +1.24), WR 0.643 -> 0.288, top-quartile in 3/3 IS folds
+    "hull_rsi":                        {"exit_method": "breakeven_plus_trail"},
     "parabolic_sar_flip":              {"exit_method": "next_pivot_target"},
     "pead_short":                      {"exit_method": "regime_flip"},
 
