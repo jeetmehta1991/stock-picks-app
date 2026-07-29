@@ -1,0 +1,4931 @@
+{
+  "window": [
+    "2022-05-05",
+    "2025-05-05"
+  ],
+  "n_tickers": 40,
+  "holdout_touched": false,
+  "results": [
+    {
+      "strategy": "52w_high_breakout",
+      "bars_evaluated": 28659,
+      "base_fires": 640,
+      "base_rate": 0.022332,
+      "clauses": [
+        {
+          "clause": "break_52w_high",
+          "loo_rate": 0.588541,
+          "signal_own_rate": 0.022715,
+          "lift": 26.355,
+          "verdict": "EVENT (signal true on only 2.3% of bars - it either happened or it did not; not loosenable)"
+        },
+        {
+          "clause": "vol_spike_17x",
+          "loo_rate": 0.022715,
+          "signal_own_rate": 0.05862,
+          "lift": 1.017,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        },
+        {
+          "clause": "close_above_open",
+          "loo_rate": 0.022715,
+          "signal_own_rate": 0.508043,
+          "lift": 1.017,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        },
+        {
+          "clause": "close_in_top_40pct_of_range",
+          "loo_rate": 0.022715,
+          "signal_own_rate": 0.436442,
+          "lift": 1.017,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        },
+        {
+          "clause": "break_52w_high_clearance_atr_05",
+          "loo_rate": 0.022715,
+          "signal_own_rate": 0.007083,
+          "lift": 1.017,
+          "verdict": "EVENT (signal true on only 0.7% of bars - it either happened or it did not; not loosenable)"
+        },
+        {
+          "clause": "break_52w_high_confirmed_today",
+          "loo_rate": 0.022715,
+          "signal_own_rate": 0.016679,
+          "lift": 1.017,
+          "verdict": "EVENT (signal true on only 1.7% of bars - it either happened or it did not; not loosenable)"
+        },
+        {
+          "clause": "year_high",
+          "loo_rate": 0.022332,
+          "signal_own_rate": null,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        }
+      ]
+    },
+    {
+      "strategy": "52w_high_breakout_pullback_long",
+      "bars_evaluated": 28659,
+      "base_fires": 669,
+      "base_rate": 0.023343,
+      "clauses": [
+        {
+          "clause": "near_52w_high_retest_long",
+          "loo_rate": 1.0,
+          "signal_own_rate": 0.023343,
+          "lift": 42.839,
+          "verdict": "TRIGGER (forcing it true fires ~every bar - relaxation is meaningless)"
+        }
+      ]
+    },
+    {
+      "strategy": "52w_high_breakout_with_smart_money_long",
+      "bars_evaluated": 28659,
+      "base_fires": 626,
+      "base_rate": 0.021843,
+      "clauses": [
+        {
+          "clause": "vol_spike_12x",
+          "loo_rate": 0.097875,
+          "signal_own_rate": 0.210859,
+          "lift": 4.481,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "near_52w_high_95pct",
+          "loo_rate": 0.079137,
+          "signal_own_rate": 0.213336,
+          "lift": 3.623,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "close_in_top_40pct_of_range",
+          "loo_rate": 0.027321,
+          "signal_own_rate": 0.436442,
+          "lift": 1.251,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "close_above_open",
+          "loo_rate": 0.023274,
+          "signal_own_rate": 0.508043,
+          "lift": 1.065,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "52w_high_breakout_with_smart_money_vol_below_long",
+      "bars_evaluated": 28659,
+      "base_fires": 2372,
+      "base_rate": 0.082766,
+      "clauses": [
+        {
+          "clause": "near_52w_high_95pct",
+          "loo_rate": 0.33288,
+          "signal_own_rate": 0.213336,
+          "lift": 4.022,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "close_in_top_40pct_of_range",
+          "loo_rate": 0.106354,
+          "signal_own_rate": 0.436442,
+          "lift": 1.285,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "vol_below_avg",
+          "loo_rate": 0.097875,
+          "signal_own_rate": 0.609163,
+          "lift": 1.183,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "institutional_buy",
+          "loo_rate": 0.097875,
+          "signal_own_rate": 0.634914,
+          "lift": 1.183,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "close_above_open",
+          "loo_rate": 0.091245,
+          "signal_own_rate": 0.508043,
+          "lift": 1.102,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "52w_low_breakdown",
+      "bars_evaluated": 28659,
+      "base_fires": 198,
+      "base_rate": 0.006909,
+      "clauses": [
+        {
+          "clause": "break_52w_low",
+          "loo_rate": 0.138211,
+          "signal_own_rate": 0.011933,
+          "lift": 20.005,
+          "verdict": "EVENT (signal true on only 1.2% of bars - it either happened or it did not; not loosenable)"
+        },
+        {
+          "clause": "vol_above_avg",
+          "loo_rate": 0.008828,
+          "signal_own_rate": 0.390837,
+          "lift": 1.278,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "close_in_bottom_40pct_of_range",
+          "loo_rate": 0.007991,
+          "signal_own_rate": 0.392547,
+          "lift": 1.157,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "close_below_open",
+          "loo_rate": 0.006944,
+          "signal_own_rate": 0.487526,
+          "lift": 1.005,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        }
+      ]
+    },
+    {
+      "strategy": "52wh_break_retest",
+      "bars_evaluated": 28659,
+      "base_fires": 583,
+      "base_rate": 0.020343,
+      "clauses": [
+        {
+          "clause": "year_high_break_retest_long",
+          "loo_rate": 0.053037,
+          "signal_own_rate": 0.053107,
+          "lift": 2.607,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "close_in_top_40pct_of_range",
+          "loo_rate": 0.025472,
+          "signal_own_rate": 0.436442,
+          "lift": 1.252,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "near_52w_high",
+          "loo_rate": 0.023972,
+          "signal_own_rate": 0.096793,
+          "lift": 1.178,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "close_above_open",
+          "loo_rate": 0.021808,
+          "signal_own_rate": 0.508043,
+          "lift": 1.072,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.020343,
+          "signal_own_rate": 0.542622,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        }
+      ]
+    },
+    {
+      "strategy": "52wl_break_retest_short",
+      "bars_evaluated": 28659,
+      "base_fires": 192,
+      "base_rate": 0.006699,
+      "clauses": [
+        {
+          "clause": "year_low_break_retest_short",
+          "loo_rate": 0.01804,
+          "signal_own_rate": 0.025402,
+          "lift": 2.693,
+          "verdict": "EVENT (signal true on only 2.5% of bars - it either happened or it did not; not loosenable)"
+        },
+        {
+          "clause": "near_52w_low",
+          "loo_rate": 0.010398,
+          "signal_own_rate": 0.029938,
+          "lift": 1.552,
+          "verdict": "EVENT (signal true on only 3.0% of bars - it either happened or it did not; not loosenable)"
+        },
+        {
+          "clause": "close_in_bottom_40pct_of_range",
+          "loo_rate": 0.008305,
+          "signal_own_rate": 0.392547,
+          "lift": 1.24,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "close_below_open",
+          "loo_rate": 0.006944,
+          "signal_own_rate": 0.487526,
+          "lift": 1.036,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.006699,
+          "signal_own_rate": 0.542622,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        },
+        {
+          "clause": "above_avwap_20high",
+          "loo_rate": 0.006699,
+          "signal_own_rate": 0.333996,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        },
+        {
+          "clause": "below_ema_200",
+          "loo_rate": 0.006699,
+          "signal_own_rate": 0.457378,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        }
+      ]
+    },
+    {
+      "strategy": "activist_13d_long",
+      "bars_evaluated": 28659,
+      "base_fires": 84,
+      "base_rate": 0.002931,
+      "clauses": [
+        {
+          "clause": "sc_13d_filed_within_30d",
+          "loo_rate": 1.0,
+          "signal_own_rate": 0.016,
+          "lift": 341.179,
+          "verdict": "TRIGGER (forcing it true fires ~every bar - relaxation is meaningless)"
+        },
+        {
+          "clause": "sc_13d_latest_filer_identity",
+          "loo_rate": 0.002931,
+          "signal_own_rate": null,
+          "lift": 1.0,
+          "verdict": "ABSENT-PRODUCER (signal never present in any bar - the gate reads its default forever; fix the producer, do NOT tune this gate)"
+        },
+        {
+          "clause": "sc_13d_latest_percent_owned",
+          "loo_rate": 0.002931,
+          "signal_own_rate": null,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        }
+      ]
+    },
+    {
+      "strategy": "adx_initiation",
+      "bars_evaluated": 28659,
+      "base_fires": 539,
+      "base_rate": 0.018807,
+      "clauses": [
+        {
+          "clause": "adx_cross_up_20",
+          "loo_rate": 0.977738,
+          "signal_own_rate": 0.019296,
+          "lift": 51.987,
+          "verdict": "TRIGGER (forcing it true fires ~every bar - relaxation is meaningless)"
+        },
+        {
+          "clause": "adx_di_bull",
+          "loo_rate": 0.019296,
+          "signal_own_rate": 0.5123,
+          "lift": 1.026,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "adx_di_bear",
+          "loo_rate": 0.018807,
+          "signal_own_rate": 0.4877,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        }
+      ]
+    },
+    {
+      "strategy": "avwap_20high_rejection_short",
+      "bars_evaluated": 28659,
+      "base_fires": 50,
+      "base_rate": 0.001745,
+      "clauses": [
+        {
+          "clause": "shooting_star",
+          "loo_rate": 0.018249,
+          "signal_own_rate": 0.04079,
+          "lift": 10.46,
+          "verdict": "EVENT (signal true on only 4.1% of bars - it either happened or it did not; not loosenable)"
+        },
+        {
+          "clause": "bearish_engulfing",
+          "loo_rate": 0.018249,
+          "signal_own_rate": 0.03594,
+          "lift": 10.46,
+          "verdict": "EVENT (signal true on only 3.6% of bars - it either happened or it did not; not loosenable)"
+        },
+        {
+          "clause": "vol_spike_12x",
+          "loo_rate": 0.012178,
+          "signal_own_rate": 0.210859,
+          "lift": 6.98,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "below_ema_200",
+          "loo_rate": 0.007502,
+          "signal_own_rate": 0.457378,
+          "lift": 4.3,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "pct_from_avwap_20high",
+          "loo_rate": 0.005897,
+          "signal_own_rate": null,
+          "lift": 3.38,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "above_avwap_20high",
+          "loo_rate": 0.0,
+          "signal_own_rate": 0.333996,
+          "lift": 0.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        }
+      ]
+    },
+    {
+      "strategy": "bollinger_tight",
+      "bars_evaluated": 28659,
+      "base_fires": 676,
+      "base_rate": 0.023588,
+      "clauses": [
+        {
+          "clause": "below_ema_200",
+          "loo_rate": 0.098887,
+          "signal_own_rate": 0.457378,
+          "lift": 4.192,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.086849,
+          "signal_own_rate": 0.542622,
+          "lift": 3.682,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "bb_20_15_reclaim_from_lower_recent_3d",
+          "loo_rate": 0.075788,
+          "signal_own_rate": 0.113472,
+          "lift": 3.213,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "bb_20_20_reclaim_from_lower_recent_3d",
+          "loo_rate": 0.075788,
+          "signal_own_rate": 0.073938,
+          "lift": 3.213,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "bb_20_15_reclaim_from_upper_recent_3d",
+          "loo_rate": 0.069751,
+          "signal_own_rate": 0.127778,
+          "lift": 2.957,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "bb_20_20_reclaim_from_upper_recent_3d",
+          "loo_rate": 0.069751,
+          "signal_own_rate": 0.077707,
+          "lift": 2.957,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "rsi_2",
+          "loo_rate": 0.059493,
+          "signal_own_rate": null,
+          "lift": 2.522,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "rsi_14",
+          "loo_rate": 0.051223,
+          "signal_own_rate": null,
+          "lift": 2.172,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "vix_band_high",
+          "loo_rate": 0.048606,
+          "signal_own_rate": null,
+          "lift": 2.061,
+          "verdict": "ABSENT-PRODUCER (signal never present in any bar - the gate reads its default forever; fix the producer, do NOT tune this gate)"
+        },
+        {
+          "clause": "vix_band_low",
+          "loo_rate": 0.023588,
+          "signal_own_rate": null,
+          "lift": 1.0,
+          "verdict": "ABSENT-PRODUCER (signal never present in any bar - the gate reads its default forever; fix the producer, do NOT tune this gate)"
+        }
+      ]
+    },
+    {
+      "strategy": "bollinger_upper_short",
+      "bars_evaluated": 28659,
+      "base_fires": 44,
+      "base_rate": 0.001535,
+      "clauses": [
+        {
+          "clause": "shooting_star",
+          "loo_rate": 0.048501,
+          "signal_own_rate": 0.04079,
+          "lift": 31.591,
+          "verdict": "EVENT (signal true on only 4.1% of bars - it either happened or it did not; not loosenable)"
+        },
+        {
+          "clause": "bb_20_20_touch_upper",
+          "loo_rate": 0.005653,
+          "signal_own_rate": 0.089361,
+          "lift": 3.682,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "rsi_14",
+          "loo_rate": 0.002547,
+          "signal_own_rate": null,
+          "lift": 1.659,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)",
+          "sweep": [
+            {
+              "multiple": 1.1,
+              "new_threshold": 59.09091,
+              "extra_fires": 19,
+              "fires_after": 63,
+              "mean_fwd_return_of_new_pct": -1.24
+            },
+            {
+              "multiple": 1.25,
+              "new_threshold": 52.0,
+              "extra_fires": 27,
+              "fires_after": 71,
+              "mean_fwd_return_of_new_pct": -1.586
+            },
+            {
+              "multiple": 1.5,
+              "new_threshold": 43.33333,
+              "extra_fires": 29,
+              "fires_after": 73,
+              "mean_fwd_return_of_new_pct": -0.806
+            },
+            {
+              "multiple": 2.0,
+              "new_threshold": 32.5,
+              "extra_fires": 29,
+              "fires_after": 73,
+              "mean_fwd_return_of_new_pct": -0.806
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "strategy": "camarilla_s3_bounce",
+      "bars_evaluated": 28659,
+      "base_fires": 86,
+      "base_rate": 0.003001,
+      "clauses": [
+        {
+          "clause": "obv_bearish",
+          "loo_rate": 0.048466,
+          "signal_own_rate": 0.472347,
+          "lift": 16.151,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "rsi_14",
+          "loo_rate": 0.046931,
+          "signal_own_rate": null,
+          "lift": 15.64,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)",
+          "sweep": [
+            {
+              "multiple": 1.1,
+              "new_threshold": 54.54545,
+              "extra_fires": 97,
+              "fires_after": 183,
+              "mean_fwd_return_of_new_pct": -0.022
+            },
+            {
+              "multiple": 1.25,
+              "new_threshold": 48.0,
+              "extra_fires": 324,
+              "fires_after": 410,
+              "mean_fwd_return_of_new_pct": 0.173
+            },
+            {
+              "multiple": 1.5,
+              "new_threshold": 40.0,
+              "extra_fires": 758,
+              "fires_after": 844,
+              "mean_fwd_return_of_new_pct": -0.011
+            },
+            {
+              "multiple": 2.0,
+              "new_threshold": 30.0,
+              "extra_fires": 1200,
+              "fires_after": 1286,
+              "mean_fwd_return_of_new_pct": 0.121
+            }
+          ]
+        },
+        {
+          "clause": "obv_bullish",
+          "loo_rate": 0.032346,
+          "signal_own_rate": 0.527653,
+          "lift": 10.779,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "near_cam_r3",
+          "loo_rate": 0.019121,
+          "signal_own_rate": 0.156077,
+          "lift": 6.372,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "near_cam_s3",
+          "loo_rate": 0.016714,
+          "signal_own_rate": 0.147039,
+          "lift": 5.57,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "classification_change_breakout_long",
+      "bars_evaluated": 28659,
+      "base_fires": 26,
+      "base_rate": 0.000907,
+      "clauses": [
+        {
+          "clause": "classification_changed_recent",
+          "loo_rate": 0.206183,
+          "signal_own_rate": 1.0,
+          "lift": 227.269,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "resistance_break_retest",
+          "loo_rate": 0.001605,
+          "signal_own_rate": 0.252521,
+          "lift": 1.769,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.001151,
+          "signal_own_rate": 0.542622,
+          "lift": 1.269,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "days_since_classification_change",
+          "loo_rate": 0.000907,
+          "signal_own_rate": null,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        },
+        {
+          "clause": "new_sector",
+          "loo_rate": 0.000907,
+          "signal_own_rate": null,
+          "lift": 1.0,
+          "verdict": "ABSENT-PRODUCER (signal never present in any bar - the gate reads its default forever; fix the producer, do NOT tune this gate)"
+        }
+      ]
+    },
+    {
+      "strategy": "classification_change_from_tech_short",
+      "bars_evaluated": 28659,
+      "base_fires": 77,
+      "base_rate": 0.002687,
+      "clauses": [
+        {
+          "clause": "classification_change_from_tech",
+          "loo_rate": 0.430476,
+          "signal_own_rate": 1.0,
+          "lift": 160.221,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "below_ema_200",
+          "loo_rate": 0.004292,
+          "signal_own_rate": 0.457378,
+          "lift": 1.597,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "prior_sector",
+          "loo_rate": 0.002687,
+          "signal_own_rate": null,
+          "lift": 1.0,
+          "verdict": "ABSENT-PRODUCER (signal never present in any bar - the gate reads its default forever; fix the producer, do NOT tune this gate)"
+        },
+        {
+          "clause": "new_sector",
+          "loo_rate": 0.002687,
+          "signal_own_rate": null,
+          "lift": 1.0,
+          "verdict": "ABSENT-PRODUCER (signal never present in any bar - the gate reads its default forever; fix the producer, do NOT tune this gate)"
+        }
+      ]
+    },
+    {
+      "strategy": "classification_change_momentum_long",
+      "bars_evaluated": 28659,
+      "base_fires": 38,
+      "base_rate": 0.001326,
+      "clauses": [
+        {
+          "clause": "classification_changed_recent",
+          "loo_rate": 0.335357,
+          "signal_own_rate": 1.0,
+          "lift": 252.921,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "price_above_ema_50",
+          "loo_rate": 0.002617,
+          "signal_own_rate": 0.527757,
+          "lift": 1.974,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "macd_12_26_9_bullish",
+          "loo_rate": 0.002268,
+          "signal_own_rate": 0.51387,
+          "lift": 1.711,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "classification_change_oversold_long",
+      "bars_evaluated": 28659,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "rsi_14",
+          "loo_rate": 0.001605,
+          "signal_own_rate": null,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)",
+          "sweep": [
+            {
+              "multiple": 1.1,
+              "new_threshold": 38.5,
+              "extra_fires": 0,
+              "fires_after": 0,
+              "mean_fwd_return_of_new_pct": null
+            },
+            {
+              "multiple": 1.25,
+              "new_threshold": 43.75,
+              "extra_fires": 0,
+              "fires_after": 0,
+              "mean_fwd_return_of_new_pct": null
+            },
+            {
+              "multiple": 1.5,
+              "new_threshold": 52.5,
+              "extra_fires": 4,
+              "fires_after": 4,
+              "mean_fwd_return_of_new_pct": -4.055
+            },
+            {
+              "multiple": 2.0,
+              "new_threshold": 70.0,
+              "extra_fires": 30,
+              "fires_after": 30,
+              "mean_fwd_return_of_new_pct": 0.594
+            }
+          ]
+        },
+        {
+          "clause": "classification_changed_recent",
+          "loo_rate": 0.010782,
+          "signal_own_rate": 1.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 3.5e-05,
+          "signal_own_rate": 0.542622,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        }
+      ]
+    },
+    {
+      "strategy": "classification_change_recent_long",
+      "bars_evaluated": 28659,
+      "base_fires": 46,
+      "base_rate": 0.001605,
+      "clauses": [
+        {
+          "clause": "classification_changed_recent",
+          "loo_rate": 0.542622,
+          "signal_own_rate": 1.0,
+          "lift": 338.065,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.004292,
+          "signal_own_rate": 0.542622,
+          "lift": 2.674,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "days_since_classification_change",
+          "loo_rate": 0.001605,
+          "signal_own_rate": null,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        },
+        {
+          "clause": "new_sector",
+          "loo_rate": 0.001605,
+          "signal_own_rate": null,
+          "lift": 1.0,
+          "verdict": "ABSENT-PRODUCER (signal never present in any bar - the gate reads its default forever; fix the producer, do NOT tune this gate)"
+        },
+        {
+          "clause": "prior_sector",
+          "loo_rate": 0.001605,
+          "signal_own_rate": null,
+          "lift": 1.0,
+          "verdict": "ABSENT-PRODUCER (signal never present in any bar - the gate reads its default forever; fix the producer, do NOT tune this gate)"
+        }
+      ]
+    },
+    {
+      "strategy": "classification_change_to_defensive_short",
+      "bars_evaluated": 28659,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "classification_change_to_defensive",
+          "loo_rate": 0.430476,
+          "signal_own_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "below_ema_200",
+          "loo_rate": 0.0,
+          "signal_own_rate": 0.457378,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "new_sector",
+          "loo_rate": 0.0,
+          "signal_own_rate": null,
+          "lift": null,
+          "verdict": "ABSENT-PRODUCER (signal never present in any bar - the gate reads its default forever; fix the producer, do NOT tune this gate)"
+        }
+      ]
+    },
+    {
+      "strategy": "classification_change_to_tech_long",
+      "bars_evaluated": 28659,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "classification_change_to_tech",
+          "loo_rate": 0.542622,
+          "signal_own_rate": 0.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.0,
+          "signal_own_rate": 0.542622,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "new_sector",
+          "loo_rate": 0.0,
+          "signal_own_rate": null,
+          "lift": null,
+          "verdict": "ABSENT-PRODUCER (signal never present in any bar - the gate reads its default forever; fix the producer, do NOT tune this gate)"
+        }
+      ]
+    },
+    {
+      "strategy": "classification_change_volume_long",
+      "bars_evaluated": 28659,
+      "base_fires": 1,
+      "base_rate": 3.5e-05,
+      "clauses": [
+        {
+          "clause": "classification_changed_recent",
+          "loo_rate": 0.01626,
+          "signal_own_rate": 1.0,
+          "lift": 466.0,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "vol_spike_2x",
+          "loo_rate": 0.001605,
+          "signal_own_rate": 0.031648,
+          "lift": 46.0,
+          "verdict": "EVENT (signal true on only 3.2% of bars - it either happened or it did not; not loosenable)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.000105,
+          "signal_own_rate": 0.542622,
+          "lift": 3.0,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "days_since_classification_change",
+          "loo_rate": 3.5e-05,
+          "signal_own_rate": null,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        },
+        {
+          "clause": "new_sector",
+          "loo_rate": 3.5e-05,
+          "signal_own_rate": null,
+          "lift": 1.0,
+          "verdict": "ABSENT-PRODUCER (signal never present in any bar - the gate reads its default forever; fix the producer, do NOT tune this gate)"
+        }
+      ]
+    },
+    {
+      "strategy": "classification_change_with_insider_long",
+      "bars_evaluated": 28659,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "classification_changed_recent",
+          "loo_rate": 0.004152,
+          "signal_own_rate": 1.0,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "insider_cluster_active",
+          "loo_rate": 0.001605,
+          "signal_own_rate": 0.203791,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.0,
+          "signal_own_rate": 0.542622,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "new_sector",
+          "loo_rate": 0.0,
+          "signal_own_rate": null,
+          "lift": null,
+          "verdict": "ABSENT-PRODUCER (signal never present in any bar - the gate reads its default forever; fix the producer, do NOT tune this gate)"
+        }
+      ]
+    },
+    {
+      "strategy": "classification_change_with_institutional_long",
+      "bars_evaluated": 28659,
+      "base_fires": 46,
+      "base_rate": 0.001605,
+      "clauses": [
+        {
+          "clause": "classification_changed_recent",
+          "loo_rate": 0.329739,
+          "signal_own_rate": 1.0,
+          "lift": 205.435,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.002896,
+          "signal_own_rate": 0.542622,
+          "lift": 1.804,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "institutional_buy",
+          "loo_rate": 0.001605,
+          "signal_own_rate": 0.634914,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        },
+        {
+          "clause": "new_sector",
+          "loo_rate": 0.001605,
+          "signal_own_rate": null,
+          "lift": 1.0,
+          "verdict": "ABSENT-PRODUCER (signal never present in any bar - the gate reads its default forever; fix the producer, do NOT tune this gate)"
+        }
+      ]
+    },
+    {
+      "strategy": "cup_and_handle_long",
+      "bars_evaluated": 28659,
+      "base_fires": 908,
+      "base_rate": 0.031683,
+      "clauses": [
+        {
+          "clause": "cup_handle_detected",
+          "loo_rate": 0.163788,
+          "signal_own_rate": 0.153774,
+          "lift": 5.17,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "vol_above_avg",
+          "loo_rate": 0.081859,
+          "signal_own_rate": 0.390837,
+          "lift": 2.584,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "price_above_ema_50",
+          "loo_rate": 0.037859,
+          "signal_own_rate": 0.527757,
+          "lift": 1.195,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.03601,
+          "signal_own_rate": 0.542622,
+          "lift": 1.137,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "cup_and_handle_retest_long",
+      "bars_evaluated": 28659,
+      "base_fires": 587,
+      "base_rate": 0.020482,
+      "clauses": [
+        {
+          "clause": "cup_handle_neckline_break_retest_long",
+          "loo_rate": 0.071461,
+          "signal_own_rate": 0.064657,
+          "lift": 3.489,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "cup_handle_detected",
+          "loo_rate": 0.041732,
+          "signal_own_rate": 0.153774,
+          "lift": 2.037,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "rsi_14",
+          "loo_rate": 0.027845,
+          "signal_own_rate": null,
+          "lift": 1.359,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)",
+          "sweep": [
+            {
+              "multiple": 1.1,
+              "new_threshold": 77.0,
+              "extra_fires": 188,
+              "fires_after": 775,
+              "mean_fwd_return_of_new_pct": -0.184
+            },
+            {
+              "multiple": 1.25,
+              "new_threshold": 87.5,
+              "extra_fires": 211,
+              "fires_after": 798,
+              "mean_fwd_return_of_new_pct": -0.357
+            },
+            {
+              "multiple": 1.5,
+              "new_threshold": 105.0,
+              "extra_fires": 211,
+              "fires_after": 798,
+              "mean_fwd_return_of_new_pct": -0.357
+            },
+            {
+              "multiple": 2.0,
+              "new_threshold": 140.0,
+              "extra_fires": 211,
+              "fires_after": 798,
+              "mean_fwd_return_of_new_pct": -0.357
+            }
+          ]
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.020971,
+          "signal_own_rate": 0.542622,
+          "lift": 1.024,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "price_above_ema_50",
+          "loo_rate": 0.020552,
+          "signal_own_rate": 0.527757,
+          "lift": 1.003,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        }
+      ]
+    },
+    {
+      "strategy": "death_cross_50_200_volume",
+      "bars_evaluated": 28659,
+      "base_fires": 43,
+      "base_rate": 0.0015,
+      "clauses": [
+        {
+          "clause": "ema_50_200_death_cross",
+          "loo_rate": 0.368575,
+          "signal_own_rate": 0.003524,
+          "lift": 245.651,
+          "verdict": "EVENT (signal true on only 0.4% of bars - it either happened or it did not; not loosenable)"
+        },
+        {
+          "clause": "vol_above_avg",
+          "loo_rate": 0.00335,
+          "signal_own_rate": 0.390837,
+          "lift": 2.233,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "doji_at_resistance_short",
+      "bars_evaluated": 28659,
+      "base_fires": 179,
+      "base_rate": 0.006246,
+      "clauses": [
+        {
+          "clause": "doji",
+          "loo_rate": 0.120451,
+          "signal_own_rate": 0.05206,
+          "lift": 19.285,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "vol_spike_12x",
+          "loo_rate": 0.038836,
+          "signal_own_rate": 0.210859,
+          "lift": 6.218,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "near_r1_wide",
+          "loo_rate": 0.009177,
+          "signal_own_rate": 0.565896,
+          "lift": 1.469,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "near_r2_wide",
+          "loo_rate": 0.009177,
+          "signal_own_rate": 0.369134,
+          "lift": 1.469,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "at_key_fib_wide",
+          "loo_rate": 0.009177,
+          "signal_own_rate": 0.339928,
+          "lift": 1.469,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "doji_at_support",
+      "bars_evaluated": 28659,
+      "base_fires": 193,
+      "base_rate": 0.006734,
+      "clauses": [
+        {
+          "clause": "doji",
+          "loo_rate": 0.130465,
+          "signal_own_rate": 0.05206,
+          "lift": 19.373,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "vol_spike_12x",
+          "loo_rate": 0.040371,
+          "signal_own_rate": 0.210859,
+          "lift": 5.995,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "near_s1_wide",
+          "loo_rate": 0.00963,
+          "signal_own_rate": 0.52706,
+          "lift": 1.43,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "near_s2_wide",
+          "loo_rate": 0.00963,
+          "signal_own_rate": 0.315084,
+          "lift": 1.43,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "at_key_fib_wide",
+          "loo_rate": 0.00963,
+          "signal_own_rate": 0.339928,
+          "lift": 1.43,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "double_bottom_long",
+      "bars_evaluated": 28659,
+      "base_fires": 1181,
+      "base_rate": 0.041209,
+      "clauses": [
+        {
+          "clause": "double_bottom_detected",
+          "loo_rate": 0.252521,
+          "signal_own_rate": 0.144632,
+          "lift": 6.128,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "close_in_top_40pct_of_range",
+          "loo_rate": 0.088559,
+          "signal_own_rate": 0.436442,
+          "lift": 2.149,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.063575,
+          "signal_own_rate": 0.542622,
+          "lift": 1.543,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "flag_bear_retest_short",
+      "bars_evaluated": 28659,
+      "base_fires": 65,
+      "base_rate": 0.002268,
+      "clauses": [
+        {
+          "clause": "flag_bear_break_retest_short",
+          "loo_rate": 0.13057,
+          "signal_own_rate": 0.007258,
+          "lift": 57.569,
+          "verdict": "EVENT (signal true on only 0.7% of bars - it either happened or it did not; not loosenable)"
+        },
+        {
+          "clause": "vol_below_avg",
+          "loo_rate": 0.004152,
+          "signal_own_rate": 0.609163,
+          "lift": 1.831,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "close_below_open",
+          "loo_rate": 0.003524,
+          "signal_own_rate": 0.487526,
+          "lift": 1.554,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "below_ema_200",
+          "loo_rate": 0.002303,
+          "signal_own_rate": 0.457378,
+          "lift": 1.015,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.002268,
+          "signal_own_rate": 0.542622,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        }
+      ]
+    },
+    {
+      "strategy": "flag_bull_long",
+      "bars_evaluated": 28659,
+      "base_fires": 655,
+      "base_rate": 0.022855,
+      "clauses": [
+        {
+          "clause": "flag_bull_broke",
+          "loo_rate": 0.542622,
+          "signal_own_rate": 0.024181,
+          "lift": 23.742,
+          "verdict": "EVENT (signal true on only 2.4% of bars - it either happened or it did not; not loosenable)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.024181,
+          "signal_own_rate": 0.542622,
+          "lift": 1.058,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "flag_bull_retest_long",
+      "bars_evaluated": 28659,
+      "base_fires": 169,
+      "base_rate": 0.005897,
+      "clauses": [
+        {
+          "clause": "flag_bull_break_retest_long",
+          "loo_rate": 0.180258,
+          "signal_own_rate": 0.021355,
+          "lift": 30.568,
+          "verdict": "EVENT (signal true on only 2.1% of bars - it either happened or it did not; not loosenable)"
+        },
+        {
+          "clause": "vol_below_avg",
+          "loo_rate": 0.011933,
+          "signal_own_rate": 0.609163,
+          "lift": 2.024,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "close_above_open",
+          "loo_rate": 0.010503,
+          "signal_own_rate": 0.508043,
+          "lift": 1.781,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.006246,
+          "signal_own_rate": 0.542622,
+          "lift": 1.059,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "gold_silver_risk_off_long",
+      "bars_evaluated": 28659,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "risk_off_regime_gold_signal",
+          "loo_rate": 0.0,
+          "signal_own_rate": 0.391954,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "sector",
+          "loo_rate": 0.0,
+          "signal_own_rate": null,
+          "lift": null,
+          "verdict": "ABSENT-PRODUCER (signal never present in any bar - the gate reads its default forever; fix the producer, do NOT tune this gate)"
+        }
+      ]
+    },
+    {
+      "strategy": "golden_cross_50_200",
+      "bars_evaluated": 28659,
+      "base_fires": 193,
+      "base_rate": 0.006734,
+      "clauses": [
+        {
+          "clause": "ema_50_200_golden_cross",
+          "loo_rate": 1.0,
+          "signal_own_rate": 0.003385,
+          "lift": 148.492,
+          "verdict": "TRIGGER (forcing it true fires ~every bar - relaxation is meaningless)"
+        },
+        {
+          "clause": "ema_50_200_death_cross",
+          "loo_rate": 0.949859,
+          "signal_own_rate": 0.003524,
+          "lift": 141.047,
+          "verdict": "EVENT (signal true on only 0.4% of bars - it either happened or it did not; not loosenable)"
+        }
+      ]
+    },
+    {
+      "strategy": "golden_cross_volume",
+      "bars_evaluated": 28659,
+      "base_fires": 84,
+      "base_rate": 0.002931,
+      "clauses": [
+        {
+          "clause": "ema_50_200_golden_cross",
+          "loo_rate": 0.390837,
+          "signal_own_rate": 0.003385,
+          "lift": 133.345,
+          "verdict": "EVENT (signal true on only 0.3% of bars - it either happened or it did not; not loosenable)"
+        },
+        {
+          "clause": "ema_50_200_death_cross",
+          "loo_rate": 0.36875,
+          "signal_own_rate": 0.003524,
+          "lift": 125.81,
+          "verdict": "EVENT (signal true on only 0.4% of bars - it either happened or it did not; not loosenable)"
+        },
+        {
+          "clause": "vol_above_avg",
+          "loo_rate": 0.006734,
+          "signal_own_rate": 0.390837,
+          "lift": 2.298,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "halloween_seasonal_long",
+      "bars_evaluated": 28659,
+      "base_fires": 59,
+      "base_rate": 0.002059,
+      "clauses": [
+        {
+          "clause": "is_halloween_period_first_day",
+          "loo_rate": 0.542622,
+          "signal_own_rate": 0.004013,
+          "lift": 263.576,
+          "verdict": "EVENT (signal true on only 0.4% of bars - it either happened or it did not; not loosenable)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.004013,
+          "signal_own_rate": 0.542622,
+          "lift": 1.949,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "hammer_at_support_long",
+      "bars_evaluated": 28659,
+      "base_fires": 56,
+      "base_rate": 0.001954,
+      "clauses": [
+        {
+          "clause": "hammer",
+          "loo_rate": 0.056666,
+          "signal_own_rate": 0.047489,
+          "lift": 29.0,
+          "verdict": "EVENT (signal true on only 4.7% of bars - it either happened or it did not; not loosenable)"
+        },
+        {
+          "clause": "rsi_14",
+          "loo_rate": 0.008968,
+          "signal_own_rate": null,
+          "lift": 4.589,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)",
+          "sweep": [
+            {
+              "multiple": 1.1,
+              "new_threshold": 38.5,
+              "extra_fires": 30,
+              "fires_after": 86,
+              "mean_fwd_return_of_new_pct": -1.093
+            },
+            {
+              "multiple": 1.25,
+              "new_threshold": 43.75,
+              "extra_fires": 73,
+              "fires_after": 129,
+              "mean_fwd_return_of_new_pct": -0.678
+            },
+            {
+              "multiple": 1.5,
+              "new_threshold": 52.5,
+              "extra_fires": 130,
+              "fires_after": 186,
+              "mean_fwd_return_of_new_pct": -0.265
+            },
+            {
+              "multiple": 2.0,
+              "new_threshold": 70.0,
+              "extra_fires": 198,
+              "fires_after": 254,
+              "mean_fwd_return_of_new_pct": 0.185
+            }
+          ]
+        },
+        {
+          "clause": "near_s1",
+          "loo_rate": 0.00478,
+          "signal_own_rate": 0.112565,
+          "lift": 2.446,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "near_s2",
+          "loo_rate": 0.00478,
+          "signal_own_rate": 0.053805,
+          "lift": 2.446,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "bb_20_20_touch_lower",
+          "loo_rate": 0.00478,
+          "signal_own_rate": 0.078265,
+          "lift": 2.446,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "head_and_shoulders_bottom_long",
+      "bars_evaluated": 28659,
+      "base_fires": 841,
+      "base_rate": 0.029345,
+      "clauses": [
+        {
+          "clause": "head_shoulders_bottom_detected",
+          "loo_rate": 0.542622,
+          "signal_own_rate": 0.051816,
+          "lift": 18.491,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.051816,
+          "signal_own_rate": 0.542622,
+          "lift": 1.766,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "htf_aligned_breakout_long",
+      "bars_evaluated": 28659,
+      "base_fires": 1821,
+      "base_rate": 0.06354,
+      "clauses": [
+        {
+          "clause": "above_prev_high",
+          "loo_rate": 0.1484,
+          "signal_own_rate": 0.281203,
+          "lift": 2.336,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "vol_above_avg",
+          "loo_rate": 0.13556,
+          "signal_own_rate": 0.390837,
+          "lift": 2.133,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "htf_aligned_bull",
+          "loo_rate": 0.122963,
+          "signal_own_rate": 0.391291,
+          "lift": 1.935,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "ichimoku_cloud_breakdown",
+      "bars_evaluated": 28659,
+      "base_fires": 227,
+      "base_rate": 0.007921,
+      "clauses": [
+        {
+          "clause": "ichi_tk_cross_dn",
+          "loo_rate": 0.387766,
+          "signal_own_rate": 0.021529,
+          "lift": 48.956,
+          "verdict": "EVENT (signal true on only 2.2% of bars - it either happened or it did not; not loosenable)"
+        },
+        {
+          "clause": "ichi_below_cloud",
+          "loo_rate": 0.020482,
+          "signal_own_rate": 0.406574,
+          "lift": 2.586,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "insider_cluster_concentrated_sell_short",
+      "bars_evaluated": 28659,
+      "base_fires": 240,
+      "base_rate": 0.008374,
+      "clauses": [
+        {
+          "clause": "concentrated_sell",
+          "loo_rate": 0.430476,
+          "signal_own_rate": 0.059754,
+          "lift": 51.404,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "below_ema_200",
+          "loo_rate": 0.058934,
+          "signal_own_rate": 0.457378,
+          "lift": 7.037,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "insider_cluster_long",
+      "bars_evaluated": 28659,
+      "base_fires": 119,
+      "base_rate": 0.004152,
+      "clauses": [
+        {
+          "clause": "insider_cluster_active",
+          "loo_rate": 0.542622,
+          "signal_own_rate": 0.203791,
+          "lift": 130.681,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.010503,
+          "signal_own_rate": 0.542622,
+          "lift": 2.529,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "insider_unique_buyers_30d",
+          "loo_rate": 0.004152,
+          "signal_own_rate": null,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        }
+      ]
+    },
+    {
+      "strategy": "insider_cluster_with_director_long",
+      "bars_evaluated": 28659,
+      "base_fires": 119,
+      "base_rate": 0.004152,
+      "clauses": [
+        {
+          "clause": "insider_cluster_active",
+          "loo_rate": 0.018668,
+          "signal_own_rate": 0.203791,
+          "lift": 4.496,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.010503,
+          "signal_own_rate": 0.542622,
+          "lift": 2.529,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "insider_director_buyers_30d",
+          "loo_rate": 0.004152,
+          "signal_own_rate": null,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)",
+          "sweep": [
+            {
+              "multiple": 1.1,
+              "new_threshold": 0.90909,
+              "extra_fires": 0,
+              "fires_after": 119,
+              "mean_fwd_return_of_new_pct": null
+            },
+            {
+              "multiple": 1.25,
+              "new_threshold": 0.8,
+              "extra_fires": 0,
+              "fires_after": 119,
+              "mean_fwd_return_of_new_pct": null
+            },
+            {
+              "multiple": 1.5,
+              "new_threshold": 0.66667,
+              "extra_fires": 0,
+              "fires_after": 119,
+              "mean_fwd_return_of_new_pct": null
+            },
+            {
+              "multiple": 2.0,
+              "new_threshold": 0.5,
+              "extra_fires": 0,
+              "fires_after": 119,
+              "mean_fwd_return_of_new_pct": null
+            }
+          ]
+        },
+        {
+          "clause": "insider_officer_buyers_30d",
+          "loo_rate": 0.004152,
+          "signal_own_rate": null,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)",
+          "sweep": [
+            {
+              "multiple": 1.1,
+              "new_threshold": 0.90909,
+              "extra_fires": 0,
+              "fires_after": 119,
+              "mean_fwd_return_of_new_pct": null
+            },
+            {
+              "multiple": 1.25,
+              "new_threshold": 0.8,
+              "extra_fires": 0,
+              "fires_after": 119,
+              "mean_fwd_return_of_new_pct": null
+            },
+            {
+              "multiple": 1.5,
+              "new_threshold": 0.66667,
+              "extra_fires": 0,
+              "fires_after": 119,
+              "mean_fwd_return_of_new_pct": null
+            },
+            {
+              "multiple": 2.0,
+              "new_threshold": 0.5,
+              "extra_fires": 0,
+              "fires_after": 119,
+              "mean_fwd_return_of_new_pct": null
+            }
+          ]
+        },
+        {
+          "clause": "insider_unique_buyers_30d",
+          "loo_rate": 0.004152,
+          "signal_own_rate": null,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        }
+      ]
+    },
+    {
+      "strategy": "institutional_increased_with_directors_long",
+      "bars_evaluated": 28659,
+      "base_fires": 375,
+      "base_rate": 0.013085,
+      "clauses": [
+        {
+          "clause": "insider_unique_buyers_30d",
+          "loo_rate": 0.257546,
+          "signal_own_rate": null,
+          "lift": 19.683,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)",
+          "sweep": [
+            {
+              "multiple": 1.1,
+              "new_threshold": 0.90909,
+              "extra_fires": 0,
+              "fires_after": 375,
+              "mean_fwd_return_of_new_pct": null
+            },
+            {
+              "multiple": 1.25,
+              "new_threshold": 0.8,
+              "extra_fires": 0,
+              "fires_after": 375,
+              "mean_fwd_return_of_new_pct": null
+            },
+            {
+              "multiple": 1.5,
+              "new_threshold": 0.66667,
+              "extra_fires": 0,
+              "fires_after": 375,
+              "mean_fwd_return_of_new_pct": null
+            },
+            {
+              "multiple": 2.0,
+              "new_threshold": 0.5,
+              "extra_fires": 0,
+              "fires_after": 375,
+              "mean_fwd_return_of_new_pct": null
+            }
+          ]
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.035172,
+          "signal_own_rate": 0.542622,
+          "lift": 2.688,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "institutional_increased",
+          "loo_rate": 0.018668,
+          "signal_own_rate": null,
+          "lift": 1.427,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)",
+          "sweep": [
+            {
+              "multiple": 1.1,
+              "new_threshold": 2.72727,
+              "extra_fires": 0,
+              "fires_after": 375,
+              "mean_fwd_return_of_new_pct": null
+            },
+            {
+              "multiple": 1.25,
+              "new_threshold": 2.4,
+              "extra_fires": 0,
+              "fires_after": 375,
+              "mean_fwd_return_of_new_pct": null
+            },
+            {
+              "multiple": 1.5,
+              "new_threshold": 2.0,
+              "extra_fires": 51,
+              "fires_after": 426,
+              "mean_fwd_return_of_new_pct": 0.04
+            },
+            {
+              "multiple": 2.0,
+              "new_threshold": 1.5,
+              "extra_fires": 51,
+              "fires_after": 426,
+              "mean_fwd_return_of_new_pct": 0.04
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "strategy": "institutional_oversold_long",
+      "bars_evaluated": 28659,
+      "base_fires": 602,
+      "base_rate": 0.021006,
+      "clauses": [
+        {
+          "clause": "rsi_14",
+          "loo_rate": 0.329739,
+          "signal_own_rate": null,
+          "lift": 15.698,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)",
+          "sweep": [
+            {
+              "multiple": 1.1,
+              "new_threshold": 44.0,
+              "extra_fires": 593,
+              "fires_after": 1195,
+              "mean_fwd_return_of_new_pct": -0.376
+            },
+            {
+              "multiple": 1.25,
+              "new_threshold": 50.0,
+              "extra_fires": 1966,
+              "fires_after": 2568,
+              "mean_fwd_return_of_new_pct": -0.259
+            },
+            {
+              "multiple": 1.5,
+              "new_threshold": 60.0,
+              "extra_fires": 5004,
+              "fires_after": 5606,
+              "mean_fwd_return_of_new_pct": -0.132
+            },
+            {
+              "multiple": 2.0,
+              "new_threshold": 80.0,
+              "extra_fires": 8782,
+              "fires_after": 9384,
+              "mean_fwd_return_of_new_pct": 0.031
+            }
+          ]
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.136222,
+          "signal_own_rate": 0.542622,
+          "lift": 6.485,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "institutional_buy",
+          "loo_rate": 0.033672,
+          "signal_own_rate": 0.634914,
+          "lift": 1.603,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "institutional_with_directors_long",
+      "bars_evaluated": 28659,
+      "base_fires": 458,
+      "base_rate": 0.015981,
+      "clauses": [
+        {
+          "clause": "insider_unique_buyers_30d",
+          "loo_rate": 0.329739,
+          "signal_own_rate": null,
+          "lift": 20.633,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)",
+          "sweep": [
+            {
+              "multiple": 1.1,
+              "new_threshold": 0.90909,
+              "extra_fires": 0,
+              "fires_after": 458,
+              "mean_fwd_return_of_new_pct": null
+            },
+            {
+              "multiple": 1.25,
+              "new_threshold": 0.8,
+              "extra_fires": 0,
+              "fires_after": 458,
+              "mean_fwd_return_of_new_pct": null
+            },
+            {
+              "multiple": 1.5,
+              "new_threshold": 0.66667,
+              "extra_fires": 0,
+              "fires_after": 458,
+              "mean_fwd_return_of_new_pct": null
+            },
+            {
+              "multiple": 2.0,
+              "new_threshold": 0.5,
+              "extra_fires": 0,
+              "fires_after": 458,
+              "mean_fwd_return_of_new_pct": null
+            }
+          ]
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.042814,
+          "signal_own_rate": 0.542622,
+          "lift": 2.679,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "institutional_buy",
+          "loo_rate": 0.018668,
+          "signal_own_rate": 0.634914,
+          "lift": 1.168,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "institutional_with_officers_long",
+      "bars_evaluated": 28659,
+      "base_fires": 458,
+      "base_rate": 0.015981,
+      "clauses": [
+        {
+          "clause": "insider_officer_buyers_30d",
+          "loo_rate": 0.329739,
+          "signal_own_rate": null,
+          "lift": 20.633,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)",
+          "sweep": [
+            {
+              "multiple": 1.1,
+              "new_threshold": 0.90909,
+              "extra_fires": 0,
+              "fires_after": 458,
+              "mean_fwd_return_of_new_pct": null
+            },
+            {
+              "multiple": 1.25,
+              "new_threshold": 0.8,
+              "extra_fires": 0,
+              "fires_after": 458,
+              "mean_fwd_return_of_new_pct": null
+            },
+            {
+              "multiple": 1.5,
+              "new_threshold": 0.66667,
+              "extra_fires": 0,
+              "fires_after": 458,
+              "mean_fwd_return_of_new_pct": null
+            },
+            {
+              "multiple": 2.0,
+              "new_threshold": 0.5,
+              "extra_fires": 0,
+              "fires_after": 458,
+              "mean_fwd_return_of_new_pct": null
+            }
+          ]
+        },
+        {
+          "clause": "insider_director_buyers_30d",
+          "loo_rate": 0.329739,
+          "signal_own_rate": null,
+          "lift": 20.633,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)",
+          "sweep": [
+            {
+              "multiple": 1.1,
+              "new_threshold": 0.90909,
+              "extra_fires": 0,
+              "fires_after": 458,
+              "mean_fwd_return_of_new_pct": null
+            },
+            {
+              "multiple": 1.25,
+              "new_threshold": 0.8,
+              "extra_fires": 0,
+              "fires_after": 458,
+              "mean_fwd_return_of_new_pct": null
+            },
+            {
+              "multiple": 1.5,
+              "new_threshold": 0.66667,
+              "extra_fires": 0,
+              "fires_after": 458,
+              "mean_fwd_return_of_new_pct": null
+            },
+            {
+              "multiple": 2.0,
+              "new_threshold": 0.5,
+              "extra_fires": 0,
+              "fires_after": 458,
+              "mean_fwd_return_of_new_pct": null
+            }
+          ]
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.042814,
+          "signal_own_rate": 0.542622,
+          "lift": 2.679,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "institutional_buy",
+          "loo_rate": 0.018668,
+          "signal_own_rate": 0.634914,
+          "lift": 1.168,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "inverted_cup_and_handle_short",
+      "bars_evaluated": 28659,
+      "base_fires": 563,
+      "base_rate": 0.019645,
+      "clauses": [
+        {
+          "clause": "inverted_cup_handle_detected",
+          "loo_rate": 0.141526,
+          "signal_own_rate": 0.13713,
+          "lift": 7.204,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "vol_above_avg",
+          "loo_rate": 0.051014,
+          "signal_own_rate": 0.390837,
+          "lift": 2.597,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "below_ema_200",
+          "loo_rate": 0.02596,
+          "signal_own_rate": 0.457378,
+          "lift": 1.321,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "below_ema_50",
+          "loo_rate": 0.023623,
+          "signal_own_rate": 0.472243,
+          "lift": 1.202,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "january_effect_small_cap_long",
+      "bars_evaluated": 28659,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "is_january_extended",
+          "loo_rate": 0.0,
+          "signal_own_rate": 0.104749,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "cap_band",
+          "loo_rate": 0.0,
+          "signal_own_rate": null,
+          "lift": null,
+          "verdict": "ABSENT-PRODUCER (signal never present in any bar - the gate reads its default forever; fix the producer, do NOT tune this gate)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.0,
+          "signal_own_rate": 0.542622,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        }
+      ]
+    },
+    {
+      "strategy": "judas_swing_long",
+      "bars_evaluated": 28659,
+      "base_fires": 20,
+      "base_rate": 0.000698,
+      "clauses": [
+        {
+          "clause": "smc_liquidity_swept_dn",
+          "loo_rate": 0.075613,
+          "signal_own_rate": 0.01148,
+          "lift": 108.35,
+          "verdict": "EVENT (signal true on only 1.1% of bars - it either happened or it did not; not loosenable)"
+        },
+        {
+          "clause": "near_pivot",
+          "loo_rate": 0.004431,
+          "signal_own_rate": 0.157437,
+          "lift": 6.35,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "close_above_open",
+          "loo_rate": 0.00157,
+          "signal_own_rate": 0.508043,
+          "lift": 2.25,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "judas_swing_short",
+      "bars_evaluated": 28659,
+      "base_fires": 63,
+      "base_rate": 0.002198,
+      "clauses": [
+        {
+          "clause": "smc_liquidity_swept_up",
+          "loo_rate": 0.149168,
+          "signal_own_rate": 0.019366,
+          "lift": 67.857,
+          "verdict": "EVENT (signal true on only 1.9% of bars - it either happened or it did not; not loosenable)"
+        },
+        {
+          "clause": "near_pivot",
+          "loo_rate": 0.017202,
+          "signal_own_rate": 0.157437,
+          "lift": 7.825,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "keltner_lower",
+      "bars_evaluated": 28659,
+      "base_fires": 19,
+      "base_rate": 0.000663,
+      "clauses": [
+        {
+          "clause": "kc_touch_lower",
+          "loo_rate": 0.063122,
+          "signal_own_rate": 0.104295,
+          "lift": 95.211,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "kc_touch_upper",
+          "loo_rate": 0.047001,
+          "signal_own_rate": 0.130674,
+          "lift": 70.895,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "obv_bearish",
+          "loo_rate": 0.010119,
+          "signal_own_rate": 0.472347,
+          "lift": 15.263,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "obv_bullish",
+          "loo_rate": 0.008968,
+          "signal_own_rate": 0.527653,
+          "lift": 13.526,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "shooting_star",
+          "loo_rate": 0.004431,
+          "signal_own_rate": 0.04079,
+          "lift": 6.684,
+          "verdict": "EVENT (signal true on only 4.1% of bars - it either happened or it did not; not loosenable)"
+        },
+        {
+          "clause": "bearish_engulfing",
+          "loo_rate": 0.004431,
+          "signal_own_rate": 0.03594,
+          "lift": 6.684,
+          "verdict": "EVENT (signal true on only 3.6% of bars - it either happened or it did not; not loosenable)"
+        },
+        {
+          "clause": "bearish_pin_bar",
+          "loo_rate": 0.004431,
+          "signal_own_rate": 0.050141,
+          "lift": 6.684,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "hammer",
+          "loo_rate": 0.003454,
+          "signal_own_rate": 0.047489,
+          "lift": 5.211,
+          "verdict": "EVENT (signal true on only 4.7% of bars - it either happened or it did not; not loosenable)"
+        },
+        {
+          "clause": "bullish_engulfing",
+          "loo_rate": 0.003454,
+          "signal_own_rate": 0.03737,
+          "lift": 5.211,
+          "verdict": "EVENT (signal true on only 3.7% of bars - it either happened or it did not; not loosenable)"
+        },
+        {
+          "clause": "bullish_pin_bar",
+          "loo_rate": 0.003454,
+          "signal_own_rate": 0.057957,
+          "lift": 5.211,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "mfi_oversold",
+      "bars_evaluated": 28659,
+      "base_fires": 41,
+      "base_rate": 0.001431,
+      "clauses": [
+        {
+          "clause": "mfi_broad_oversold",
+          "loo_rate": 0.066576,
+          "signal_own_rate": 0.09449,
+          "lift": 46.537,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "mfi_broad_overbought",
+          "loo_rate": 0.054712,
+          "signal_own_rate": 0.130919,
+          "lift": 38.244,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "obv_bearish",
+          "loo_rate": 0.034265,
+          "signal_own_rate": 0.472347,
+          "lift": 23.951,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "obv_bullish",
+          "loo_rate": 0.018563,
+          "signal_own_rate": 0.527653,
+          "lift": 12.976,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "near_r1",
+          "loo_rate": 0.006455,
+          "signal_own_rate": 0.129139,
+          "lift": 4.512,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "near_r2",
+          "loo_rate": 0.006455,
+          "signal_own_rate": 0.070624,
+          "lift": 4.512,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "near_s1",
+          "loo_rate": 0.005025,
+          "signal_own_rate": 0.112565,
+          "lift": 3.512,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "near_s2",
+          "loo_rate": 0.005025,
+          "signal_own_rate": 0.053805,
+          "lift": 3.512,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "monthly_bias_momentum_long",
+      "bars_evaluated": 28659,
+      "base_fires": 1332,
+      "base_rate": 0.046478,
+      "clauses": [
+        {
+          "clause": "above_prev_high_clearance_atr_05",
+          "loo_rate": 0.403433,
+          "signal_own_rate": 0.093967,
+          "lift": 8.68,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "monthly_bias_bull",
+          "loo_rate": 0.056422,
+          "signal_own_rate": 0.450544,
+          "lift": 1.214,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "monthly_momentum_pos",
+          "loo_rate": 0.051328,
+          "signal_own_rate": 0.543769,
+          "lift": 1.104,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "news_momentum_long",
+      "bars_evaluated": 28659,
+      "base_fires": 276,
+      "base_rate": 0.00963,
+      "clauses": [
+        {
+          "clause": "dc20_breakout_up",
+          "loo_rate": 0.029136,
+          "signal_own_rate": 0.088628,
+          "lift": 3.025,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "news_volume_zscore_5d",
+          "loo_rate": 0.019505,
+          "signal_own_rate": null,
+          "lift": 2.025,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)",
+          "sweep": [
+            {
+              "multiple": 1.1,
+              "new_threshold": 0.90909,
+              "extra_fires": 14,
+              "fires_after": 290,
+              "mean_fwd_return_of_new_pct": 3.63
+            },
+            {
+              "multiple": 1.25,
+              "new_threshold": 0.8,
+              "extra_fires": 29,
+              "fires_after": 305,
+              "mean_fwd_return_of_new_pct": 0.333
+            },
+            {
+              "multiple": 1.5,
+              "new_threshold": 0.66667,
+              "extra_fires": 46,
+              "fires_after": 322,
+              "mean_fwd_return_of_new_pct": 0.694
+            },
+            {
+              "multiple": 2.0,
+              "new_threshold": 0.5,
+              "extra_fires": 64,
+              "fires_after": 340,
+              "mean_fwd_return_of_new_pct": 0.872
+            }
+          ]
+        },
+        {
+          "clause": "news_sentiment_5d",
+          "loo_rate": 0.013259,
+          "signal_own_rate": null,
+          "lift": 1.377,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)",
+          "sweep": [
+            {
+              "multiple": 1.1,
+              "new_threshold": 0.27273,
+              "extra_fires": 11,
+              "fires_after": 287,
+              "mean_fwd_return_of_new_pct": -0.01
+            },
+            {
+              "multiple": 1.25,
+              "new_threshold": 0.24,
+              "extra_fires": 25,
+              "fires_after": 301,
+              "mean_fwd_return_of_new_pct": 0.32
+            },
+            {
+              "multiple": 1.5,
+              "new_threshold": 0.2,
+              "extra_fires": 40,
+              "fires_after": 316,
+              "mean_fwd_return_of_new_pct": 0.126
+            },
+            {
+              "multiple": 2.0,
+              "new_threshold": 0.15,
+              "extra_fires": 57,
+              "fires_after": 333,
+              "mean_fwd_return_of_new_pct": -0.238
+            }
+          ]
+        },
+        {
+          "clause": "vol_above_avg",
+          "loo_rate": 0.013085,
+          "signal_own_rate": 0.390837,
+          "lift": 1.359,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "close_in_top_40pct_of_range",
+          "loo_rate": 0.010922,
+          "signal_own_rate": 0.436442,
+          "lift": 1.134,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "close_above_open",
+          "loo_rate": 0.009875,
+          "signal_own_rate": 0.508043,
+          "lift": 1.025,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "news_momentum_short",
+      "bars_evaluated": 28659,
+      "base_fires": 16,
+      "base_rate": 0.000558,
+      "clauses": [
+        {
+          "clause": "news_volume_zscore_5d",
+          "loo_rate": 0.00178,
+          "signal_own_rate": null,
+          "lift": 3.188,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)",
+          "sweep": [
+            {
+              "multiple": 1.1,
+              "new_threshold": 1.36364,
+              "extra_fires": 2,
+              "fires_after": 18,
+              "mean_fwd_return_of_new_pct": -0.108
+            },
+            {
+              "multiple": 1.25,
+              "new_threshold": 1.2,
+              "extra_fires": 2,
+              "fires_after": 18,
+              "mean_fwd_return_of_new_pct": -0.108
+            },
+            {
+              "multiple": 1.5,
+              "new_threshold": 1.0,
+              "extra_fires": 6,
+              "fires_after": 22,
+              "mean_fwd_return_of_new_pct": 1.107
+            },
+            {
+              "multiple": 2.0,
+              "new_threshold": 0.75,
+              "extra_fires": 13,
+              "fires_after": 29,
+              "mean_fwd_return_of_new_pct": -0.358
+            }
+          ]
+        },
+        {
+          "clause": "dc20_breakout_dn",
+          "loo_rate": 0.001396,
+          "signal_own_rate": 0.07024,
+          "lift": 2.5,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "close_in_bottom_40pct_of_range",
+          "loo_rate": 0.000628,
+          "signal_own_rate": 0.392547,
+          "lift": 1.125,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "vol_above_avg",
+          "loo_rate": 0.000628,
+          "signal_own_rate": 0.390837,
+          "lift": 1.125,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "above_avwap_20high",
+          "loo_rate": 0.000558,
+          "signal_own_rate": 0.333996,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        },
+        {
+          "clause": "close_below_open",
+          "loo_rate": 0.000558,
+          "signal_own_rate": 0.487526,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        },
+        {
+          "clause": "below_avwap_20high",
+          "loo_rate": 0.000558,
+          "signal_own_rate": 0.665829,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        },
+        {
+          "clause": "news_sentiment_5d",
+          "loo_rate": 0.0,
+          "signal_own_rate": null,
+          "lift": 0.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        }
+      ]
+    },
+    {
+      "strategy": "news_reversal_long",
+      "bars_evaluated": 28659,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "news_count_5d",
+          "loo_rate": 0.0,
+          "signal_own_rate": null,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)",
+          "sweep": [
+            {
+              "multiple": 1.1,
+              "new_threshold": 2.72727,
+              "extra_fires": 0,
+              "fires_after": 0,
+              "mean_fwd_return_of_new_pct": null
+            },
+            {
+              "multiple": 1.25,
+              "new_threshold": 2.4,
+              "extra_fires": 0,
+              "fires_after": 0,
+              "mean_fwd_return_of_new_pct": null
+            },
+            {
+              "multiple": 1.5,
+              "new_threshold": 2.0,
+              "extra_fires": 0,
+              "fires_after": 0,
+              "mean_fwd_return_of_new_pct": null
+            },
+            {
+              "multiple": 2.0,
+              "new_threshold": 1.5,
+              "extra_fires": 0,
+              "fires_after": 0,
+              "mean_fwd_return_of_new_pct": null
+            }
+          ]
+        },
+        {
+          "clause": "news_sentiment_shift",
+          "loo_rate": 0.000209,
+          "signal_own_rate": null,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)",
+          "sweep": [
+            {
+              "multiple": 1.1,
+              "new_threshold": 0.18182,
+              "extra_fires": 1,
+              "fires_after": 1,
+              "mean_fwd_return_of_new_pct": 9.668
+            },
+            {
+              "multiple": 1.25,
+              "new_threshold": 0.16,
+              "extra_fires": 1,
+              "fires_after": 1,
+              "mean_fwd_return_of_new_pct": 9.668
+            },
+            {
+              "multiple": 1.5,
+              "new_threshold": 0.13333,
+              "extra_fires": 1,
+              "fires_after": 1,
+              "mean_fwd_return_of_new_pct": 9.668
+            },
+            {
+              "multiple": 2.0,
+              "new_threshold": 0.1,
+              "extra_fires": 1,
+              "fires_after": 1,
+              "mean_fwd_return_of_new_pct": 9.668
+            }
+          ]
+        },
+        {
+          "clause": "news_sentiment_5d",
+          "loo_rate": 0.0,
+          "signal_own_rate": null,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "pct_change_5d",
+          "loo_rate": 0.0,
+          "signal_own_rate": null,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "close_above_open",
+          "loo_rate": 3.5e-05,
+          "signal_own_rate": 0.508043,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "close_in_top_40pct_of_range",
+          "loo_rate": 0.0,
+          "signal_own_rate": 0.436442,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "insider_cluster_active",
+          "loo_rate": 0.0,
+          "signal_own_rate": 0.203791,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "cfo_buy",
+          "loo_rate": 0.0,
+          "signal_own_rate": 0.002807,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "large_dollar_buy",
+          "loo_rate": 0.0,
+          "signal_own_rate": 0.009298,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "institutional_strong_buy",
+          "loo_rate": 0.0,
+          "signal_own_rate": 0.558498,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "institutional_buy",
+          "loo_rate": 0.0,
+          "signal_own_rate": 0.634914,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        }
+      ]
+    },
+    {
+      "strategy": "news_reversal_short",
+      "bars_evaluated": 28659,
+      "base_fires": 7,
+      "base_rate": 0.000244,
+      "clauses": [
+        {
+          "clause": "pct_change_5d",
+          "loo_rate": 0.013853,
+          "signal_own_rate": null,
+          "lift": 56.714,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)",
+          "sweep": [
+            {
+              "multiple": 1.1,
+              "new_threshold": 0.07273,
+              "extra_fires": 4,
+              "fires_after": 11,
+              "mean_fwd_return_of_new_pct": 2.735
+            },
+            {
+              "multiple": 1.25,
+              "new_threshold": 0.064,
+              "extra_fires": 12,
+              "fires_after": 19,
+              "mean_fwd_return_of_new_pct": 1.968
+            },
+            {
+              "multiple": 1.5,
+              "new_threshold": 0.05333,
+              "extra_fires": 18,
+              "fires_after": 25,
+              "mean_fwd_return_of_new_pct": 0.081
+            },
+            {
+              "multiple": 2.0,
+              "new_threshold": 0.04,
+              "extra_fires": 33,
+              "fires_after": 40,
+              "mean_fwd_return_of_new_pct": 0.607
+            }
+          ]
+        },
+        {
+          "clause": "news_sentiment_5d",
+          "loo_rate": 0.000872,
+          "signal_own_rate": null,
+          "lift": 3.571,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)",
+          "sweep": [
+            {
+              "multiple": 1.1,
+              "new_threshold": 0.27273,
+              "extra_fires": 3,
+              "fires_after": 10,
+              "mean_fwd_return_of_new_pct": 0.407
+            },
+            {
+              "multiple": 1.25,
+              "new_threshold": 0.24,
+              "extra_fires": 3,
+              "fires_after": 10,
+              "mean_fwd_return_of_new_pct": 0.407
+            },
+            {
+              "multiple": 1.5,
+              "new_threshold": 0.2,
+              "extra_fires": 4,
+              "fires_after": 11,
+              "mean_fwd_return_of_new_pct": -0.687
+            },
+            {
+              "multiple": 2.0,
+              "new_threshold": 0.15,
+              "extra_fires": 6,
+              "fires_after": 13,
+              "mean_fwd_return_of_new_pct": 0.622
+            }
+          ]
+        },
+        {
+          "clause": "close_in_bottom_40pct_of_range",
+          "loo_rate": 0.000698,
+          "signal_own_rate": 0.392547,
+          "lift": 2.857,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "close_below_open",
+          "loo_rate": 0.000349,
+          "signal_own_rate": 0.487526,
+          "lift": 1.429,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "news_count_5d",
+          "loo_rate": 0.000279,
+          "signal_own_rate": null,
+          "lift": 1.143,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)",
+          "sweep": [
+            {
+              "multiple": 1.1,
+              "new_threshold": 2.72727,
+              "extra_fires": 0,
+              "fires_after": 7,
+              "mean_fwd_return_of_new_pct": null
+            },
+            {
+              "multiple": 1.25,
+              "new_threshold": 2.4,
+              "extra_fires": 0,
+              "fires_after": 7,
+              "mean_fwd_return_of_new_pct": null
+            },
+            {
+              "multiple": 1.5,
+              "new_threshold": 2.0,
+              "extra_fires": 0,
+              "fires_after": 7,
+              "mean_fwd_return_of_new_pct": null
+            },
+            {
+              "multiple": 2.0,
+              "new_threshold": 1.5,
+              "extra_fires": 0,
+              "fires_after": 7,
+              "mean_fwd_return_of_new_pct": null
+            }
+          ]
+        },
+        {
+          "clause": "news_sentiment_shift",
+          "loo_rate": 0.0,
+          "signal_own_rate": null,
+          "lift": 0.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        }
+      ]
+    },
+    {
+      "strategy": "news_sentiment_shift_long",
+      "bars_evaluated": 28659,
+      "base_fires": 1613,
+      "base_rate": 0.056282,
+      "clauses": [
+        {
+          "clause": "news_sentiment_shift",
+          "loo_rate": 0.363132,
+          "signal_own_rate": null,
+          "lift": 6.452,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)",
+          "sweep": [
+            {
+              "multiple": 1.1,
+              "new_threshold": 0.27273,
+              "extra_fires": 168,
+              "fires_after": 1781,
+              "mean_fwd_return_of_new_pct": -0.299
+            },
+            {
+              "multiple": 1.25,
+              "new_threshold": 0.24,
+              "extra_fires": 441,
+              "fires_after": 2054,
+              "mean_fwd_return_of_new_pct": -0.021
+            },
+            {
+              "multiple": 1.5,
+              "new_threshold": 0.2,
+              "extra_fires": 769,
+              "fires_after": 2382,
+              "mean_fwd_return_of_new_pct": 0.082
+            },
+            {
+              "multiple": 2.0,
+              "new_threshold": 0.15,
+              "extra_fires": 1235,
+              "fires_after": 2848,
+              "mean_fwd_return_of_new_pct": 0.025
+            }
+          ]
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.112565,
+          "signal_own_rate": 0.542622,
+          "lift": 2.0,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "news_article_count",
+          "loo_rate": 0.069193,
+          "signal_own_rate": null,
+          "lift": 1.229,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)",
+          "sweep": [
+            {
+              "multiple": 1.1,
+              "new_threshold": 1.81818,
+              "extra_fires": 0,
+              "fires_after": 1613,
+              "mean_fwd_return_of_new_pct": null
+            },
+            {
+              "multiple": 1.25,
+              "new_threshold": 1.6,
+              "extra_fires": 0,
+              "fires_after": 1613,
+              "mean_fwd_return_of_new_pct": null
+            },
+            {
+              "multiple": 1.5,
+              "new_threshold": 1.33333,
+              "extra_fires": 0,
+              "fires_after": 1613,
+              "mean_fwd_return_of_new_pct": null
+            },
+            {
+              "multiple": 2.0,
+              "new_threshold": 1.0,
+              "extra_fires": 370,
+              "fires_after": 1983,
+              "mean_fwd_return_of_new_pct": 0.416
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "strategy": "news_sentiment_short",
+      "bars_evaluated": 28659,
+      "base_fires": 200,
+      "base_rate": 0.006979,
+      "clauses": [
+        {
+          "clause": "news_article_count",
+          "loo_rate": 0.017307,
+          "signal_own_rate": null,
+          "lift": 2.48,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)",
+          "sweep": [
+            {
+              "multiple": 1.1,
+              "new_threshold": 2.72727,
+              "extra_fires": 0,
+              "fires_after": 200,
+              "mean_fwd_return_of_new_pct": null
+            },
+            {
+              "multiple": 1.25,
+              "new_threshold": 2.4,
+              "extra_fires": 0,
+              "fires_after": 200,
+              "mean_fwd_return_of_new_pct": null
+            },
+            {
+              "multiple": 1.5,
+              "new_threshold": 2.0,
+              "extra_fires": 154,
+              "fires_after": 354,
+              "mean_fwd_return_of_new_pct": 0.748
+            },
+            {
+              "multiple": 2.0,
+              "new_threshold": 1.5,
+              "extra_fires": 154,
+              "fires_after": 354,
+              "mean_fwd_return_of_new_pct": 0.748
+            }
+          ]
+        },
+        {
+          "clause": "below_ema_200",
+          "loo_rate": 0.009561,
+          "signal_own_rate": 0.457378,
+          "lift": 1.37,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "news_sentiment_mean",
+          "loo_rate": 0.0,
+          "signal_own_rate": null,
+          "lift": 0.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        }
+      ]
+    },
+    {
+      "strategy": "orb_stocks_in_play_long",
+      "bars_evaluated": 28659,
+      "base_fires": 52,
+      "base_rate": 0.001814,
+      "clauses": [
+        {
+          "clause": "vol_spike_2x",
+          "loo_rate": 0.011201,
+          "signal_own_rate": 0.031648,
+          "lift": 6.173,
+          "verdict": "EVENT (signal true on only 3.2% of bars - it either happened or it did not; not loosenable)"
+        },
+        {
+          "clause": "close_above_open",
+          "loo_rate": 0.003245,
+          "signal_own_rate": 0.508043,
+          "lift": 1.788,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.002303,
+          "signal_own_rate": 0.542622,
+          "lift": 1.269,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "gap_up_2pct",
+          "loo_rate": 0.001814,
+          "signal_own_rate": 0.032206,
+          "lift": 1.0,
+          "verdict": "EVENT (signal true on only 3.2% of bars - it either happened or it did not; not loosenable)"
+        },
+        {
+          "clause": "gap_up_pct",
+          "loo_rate": 0.0,
+          "signal_own_rate": null,
+          "lift": 0.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        }
+      ]
+    },
+    {
+      "strategy": "orb_stocks_in_play_short",
+      "bars_evaluated": 28659,
+      "base_fires": 82,
+      "base_rate": 0.002861,
+      "clauses": [
+        {
+          "clause": "vol_spike_2x",
+          "loo_rate": 0.021041,
+          "signal_own_rate": 0.031648,
+          "lift": 7.354,
+          "verdict": "EVENT (signal true on only 3.2% of bars - it either happened or it did not; not loosenable)"
+        },
+        {
+          "clause": "gap_dn_1_5pct",
+          "loo_rate": 0.008374,
+          "signal_own_rate": 0.057539,
+          "lift": 2.927,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "close_below_open",
+          "loo_rate": 0.004815,
+          "signal_own_rate": 0.487526,
+          "lift": 1.683,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "below_ema_200",
+          "loo_rate": 0.003943,
+          "signal_own_rate": 0.457378,
+          "lift": 1.378,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "gap_dn_pct",
+          "loo_rate": 0.002861,
+          "signal_own_rate": null,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        }
+      ]
+    },
+    {
+      "strategy": "pead_long",
+      "bars_evaluated": 28659,
+      "base_fires": 3418,
+      "base_rate": 0.119264,
+      "clauses": [
+        {
+          "clause": "pead_positive_surprise",
+          "loo_rate": 0.473429,
+          "signal_own_rate": 0.265477,
+          "lift": 3.97,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "within_pead_window",
+          "loo_rate": 0.253777,
+          "signal_own_rate": 0.486151,
+          "lift": 2.128,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "earnings_eps_yoy_growth",
+          "loo_rate": 0.119264,
+          "signal_own_rate": null,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        },
+        {
+          "clause": "earnings_announcement_return",
+          "loo_rate": 0.119264,
+          "signal_own_rate": null,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        }
+      ]
+    },
+    {
+      "strategy": "pead_with_insider_confirmation_long",
+      "bars_evaluated": 28659,
+      "base_fires": 41,
+      "base_rate": 0.001431,
+      "clauses": [
+        {
+          "clause": "insider_cluster_active",
+          "loo_rate": 0.119264,
+          "signal_own_rate": 0.203791,
+          "lift": 83.366,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "pead_positive_surprise",
+          "loo_rate": 0.006106,
+          "signal_own_rate": 0.265477,
+          "lift": 4.268,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "within_pead_window",
+          "loo_rate": 0.002163,
+          "signal_own_rate": 0.486151,
+          "lift": 1.512,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "pivot_fib_confluence",
+      "bars_evaluated": 28659,
+      "base_fires": 91,
+      "base_rate": 0.003175,
+      "clauses": [
+        {
+          "clause": "shooting_star",
+          "loo_rate": 0.030915,
+          "signal_own_rate": 0.04079,
+          "lift": 9.736,
+          "verdict": "EVENT (signal true on only 4.1% of bars - it either happened or it did not; not loosenable)"
+        },
+        {
+          "clause": "bearish_engulfing",
+          "loo_rate": 0.030915,
+          "signal_own_rate": 0.03594,
+          "lift": 9.736,
+          "verdict": "EVENT (signal true on only 3.6% of bars - it either happened or it did not; not loosenable)"
+        },
+        {
+          "clause": "bearish_pin_bar",
+          "loo_rate": 0.030915,
+          "signal_own_rate": 0.050141,
+          "lift": 9.736,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "hammer",
+          "loo_rate": 0.0276,
+          "signal_own_rate": 0.047489,
+          "lift": 8.692,
+          "verdict": "EVENT (signal true on only 4.7% of bars - it either happened or it did not; not loosenable)"
+        },
+        {
+          "clause": "bullish_engulfing",
+          "loo_rate": 0.0276,
+          "signal_own_rate": 0.03737,
+          "lift": 8.692,
+          "verdict": "EVENT (signal true on only 3.7% of bars - it either happened or it did not; not loosenable)"
+        },
+        {
+          "clause": "bullish_pin_bar",
+          "loo_rate": 0.0276,
+          "signal_own_rate": 0.057957,
+          "lift": 8.692,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "at_key_fib",
+          "loo_rate": 0.020552,
+          "signal_own_rate": 0.14833,
+          "lift": 6.473,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "near_s1",
+          "loo_rate": 0.018563,
+          "signal_own_rate": 0.112565,
+          "lift": 5.846,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "near_s2",
+          "loo_rate": 0.018563,
+          "signal_own_rate": 0.053805,
+          "lift": 5.846,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "near_r1",
+          "loo_rate": 0.017063,
+          "signal_own_rate": 0.129139,
+          "lift": 5.374,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "near_r2",
+          "loo_rate": 0.017063,
+          "signal_own_rate": 0.070624,
+          "lift": 5.374,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "pivot_r2_continuation",
+      "bars_evaluated": 28659,
+      "base_fires": 74,
+      "base_rate": 0.002582,
+      "clauses": [
+        {
+          "clause": "vol_spike_2x",
+          "loo_rate": 0.042884,
+          "signal_own_rate": 0.031648,
+          "lift": 16.608,
+          "verdict": "EVENT (signal true on only 3.2% of bars - it either happened or it did not; not loosenable)"
+        },
+        {
+          "clause": "above_r2",
+          "loo_rate": 0.009561,
+          "signal_own_rate": 0.110227,
+          "lift": 3.703,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "adx_trending",
+          "loo_rate": 0.006316,
+          "signal_own_rate": 0.419135,
+          "lift": 2.446,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "below_s2",
+          "loo_rate": 0.006246,
+          "signal_own_rate": 0.101643,
+          "lift": 2.419,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "ema_50_200_bearish",
+          "loo_rate": 0.004431,
+          "signal_own_rate": 0.439827,
+          "lift": 1.716,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "ema_50_200_bullish",
+          "loo_rate": 0.003594,
+          "signal_own_rate": 0.560173,
+          "lift": 1.392,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "above_avwap_252low",
+          "loo_rate": 0.002582,
+          "signal_own_rate": 0.754688,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        },
+        {
+          "clause": "above_avwap_50low",
+          "loo_rate": 0.002582,
+          "signal_own_rate": 0.748107,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        },
+        {
+          "clause": "below_avwap_252low",
+          "loo_rate": 0.002582,
+          "signal_own_rate": 0.245277,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        },
+        {
+          "clause": "below_avwap_50low",
+          "loo_rate": 0.002582,
+          "signal_own_rate": 0.251823,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        },
+        {
+          "clause": "vol_spike_15x",
+          "loo_rate": 0.002582,
+          "signal_own_rate": 0.091943,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        }
+      ]
+    },
+    {
+      "strategy": "pivot_r3_blowoff_short",
+      "bars_evaluated": 28659,
+      "base_fires": 1,
+      "base_rate": 3.5e-05,
+      "clauses": [
+        {
+          "clause": "recent_blowoff_at_r3",
+          "loo_rate": 0.167068,
+          "signal_own_rate": 0.000733,
+          "lift": 4788.0,
+          "verdict": "EVENT (signal true on only 0.1% of bars - it either happened or it did not; not loosenable)"
+        },
+        {
+          "clause": "bearish_engulfing",
+          "loo_rate": 0.000349,
+          "signal_own_rate": 0.03594,
+          "lift": 10.0,
+          "verdict": "EVENT (signal true on only 3.6% of bars - it either happened or it did not; not loosenable)"
+        },
+        {
+          "clause": "shooting_star",
+          "loo_rate": 0.000349,
+          "signal_own_rate": 0.04079,
+          "lift": 10.0,
+          "verdict": "EVENT (signal true on only 4.1% of bars - it either happened or it did not; not loosenable)"
+        },
+        {
+          "clause": "below_prev_low",
+          "loo_rate": 0.000349,
+          "signal_own_rate": 0.246485,
+          "lift": 10.0,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "bearish_pin_bar",
+          "loo_rate": 0.000349,
+          "signal_own_rate": 0.050141,
+          "lift": 10.0,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "vol_below_avg",
+          "loo_rate": 0.000105,
+          "signal_own_rate": 0.609163,
+          "lift": 3.0,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "pivot_s2_bounce",
+      "bars_evaluated": 28659,
+      "base_fires": 18,
+      "base_rate": 0.000628,
+      "clauses": [
+        {
+          "clause": "bearish_engulfing",
+          "loo_rate": 0.028612,
+          "signal_own_rate": 0.03594,
+          "lift": 45.556,
+          "verdict": "EVENT (signal true on only 3.6% of bars - it either happened or it did not; not loosenable)"
+        },
+        {
+          "clause": "near_s2",
+          "loo_rate": 0.024844,
+          "signal_own_rate": 0.053805,
+          "lift": 39.556,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "hammer",
+          "loo_rate": 0.023972,
+          "signal_own_rate": 0.047489,
+          "lift": 38.167,
+          "verdict": "EVENT (signal true on only 4.7% of bars - it either happened or it did not; not loosenable)"
+        },
+        {
+          "clause": "bullish_engulfing",
+          "loo_rate": 0.023972,
+          "signal_own_rate": 0.03737,
+          "lift": 38.167,
+          "verdict": "EVENT (signal true on only 3.7% of bars - it either happened or it did not; not loosenable)"
+        },
+        {
+          "clause": "near_r2",
+          "loo_rate": 0.006106,
+          "signal_own_rate": 0.070624,
+          "lift": 9.722,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "rsi_14",
+          "loo_rate": 0.0,
+          "signal_own_rate": null,
+          "lift": 0.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)",
+          "sweep": [
+            {
+              "multiple": 1.1,
+              "new_threshold": 54.54545,
+              "extra_fires": 0,
+              "fires_after": 18,
+              "mean_fwd_return_of_new_pct": null
+            },
+            {
+              "multiple": 1.25,
+              "new_threshold": 48.0,
+              "extra_fires": 0,
+              "fires_after": 18,
+              "mean_fwd_return_of_new_pct": null
+            },
+            {
+              "multiple": 1.5,
+              "new_threshold": 40.0,
+              "extra_fires": 0,
+              "fires_after": 18,
+              "mean_fwd_return_of_new_pct": null
+            },
+            {
+              "multiple": 2.0,
+              "new_threshold": 30.0,
+              "extra_fires": 0,
+              "fires_after": 18,
+              "mean_fwd_return_of_new_pct": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "strategy": "pivot_s3_capitulation",
+      "bars_evaluated": 28659,
+      "base_fires": 1,
+      "base_rate": 3.5e-05,
+      "clauses": [
+        {
+          "clause": "recent_capitulation_at_s3",
+          "loo_rate": 0.210545,
+          "signal_own_rate": 0.001221,
+          "lift": 6034.0,
+          "verdict": "EVENT (signal true on only 0.1% of bars - it either happened or it did not; not loosenable)"
+        },
+        {
+          "clause": "vol_below_avg",
+          "loo_rate": 0.000349,
+          "signal_own_rate": 0.609163,
+          "lift": 10.0,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "bullish_engulfing",
+          "loo_rate": 0.000314,
+          "signal_own_rate": 0.03737,
+          "lift": 9.0,
+          "verdict": "EVENT (signal true on only 3.7% of bars - it either happened or it did not; not loosenable)"
+        },
+        {
+          "clause": "hammer",
+          "loo_rate": 0.000314,
+          "signal_own_rate": 0.047489,
+          "lift": 9.0,
+          "verdict": "EVENT (signal true on only 4.7% of bars - it either happened or it did not; not loosenable)"
+        },
+        {
+          "clause": "above_prev_high",
+          "loo_rate": 0.000314,
+          "signal_own_rate": 0.281203,
+          "lift": 9.0,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "bullish_pin_bar",
+          "loo_rate": 0.000314,
+          "signal_own_rate": 0.057957,
+          "lift": 9.0,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "poc_magnet_short",
+      "bars_evaluated": 28659,
+      "base_fires": 2321,
+      "base_rate": 0.080987,
+      "clauses": [
+        {
+          "clause": "vp_close_near_poc_pct",
+          "loo_rate": 0.297742,
+          "signal_own_rate": null,
+          "lift": 3.676,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)",
+          "sweep": [
+            {
+              "multiple": 1.1,
+              "new_threshold": 0.033,
+              "extra_fires": 183,
+              "fires_after": 2504,
+              "mean_fwd_return_of_new_pct": 0.025
+            },
+            {
+              "multiple": 1.25,
+              "new_threshold": 0.0375,
+              "extra_fires": 487,
+              "fires_after": 2808,
+              "mean_fwd_return_of_new_pct": 0.378
+            },
+            {
+              "multiple": 1.5,
+              "new_threshold": 0.045,
+              "extra_fires": 960,
+              "fires_after": 3281,
+              "mean_fwd_return_of_new_pct": 0.456
+            },
+            {
+              "multiple": 2.0,
+              "new_threshold": 0.06,
+              "extra_fires": 1868,
+              "fires_after": 4189,
+              "mean_fwd_return_of_new_pct": 0.476
+            }
+          ]
+        },
+        {
+          "clause": "below_ema_200",
+          "loo_rate": 0.157403,
+          "signal_own_rate": 0.457378,
+          "lift": 1.944,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "vp_close_below_poc",
+          "loo_rate": 0.142538,
+          "signal_own_rate": 0.447783,
+          "lift": 1.76,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "post_deletion_drift_short",
+      "bars_evaluated": 28659,
+      "base_fires": 77,
+      "base_rate": 0.002687,
+      "clauses": []
+    },
+    {
+      "strategy": "post_inclusion_drift_long",
+      "bars_evaluated": 28659,
+      "base_fires": 49,
+      "base_rate": 0.00171,
+      "clauses": []
+    },
+    {
+      "strategy": "post_inclusion_reversal_short",
+      "bars_evaluated": 28659,
+      "base_fires": 79,
+      "base_rate": 0.002757,
+      "clauses": []
+    },
+    {
+      "strategy": "pre_fomc_long_sleeve",
+      "bars_evaluated": 28659,
+      "base_fires": 472,
+      "base_rate": 0.01647,
+      "clauses": [
+        {
+          "clause": "pre_fomc_d1",
+          "loo_rate": 0.542622,
+          "signal_own_rate": 0.030671,
+          "lift": 32.947,
+          "verdict": "EVENT (signal true on only 3.1% of bars - it either happened or it did not; not loosenable)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.030671,
+          "signal_own_rate": 0.542622,
+          "lift": 1.862,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "days_until_fomc",
+          "loo_rate": 0.01647,
+          "signal_own_rate": null,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        }
+      ]
+    },
+    {
+      "strategy": "pre_fomc_quality_momentum_long",
+      "bars_evaluated": 28659,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "pre_fomc_d1",
+          "loo_rate": 0.0,
+          "signal_own_rate": 0.030671,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "xs_momentum_top_quintile",
+          "loo_rate": 0.01647,
+          "signal_own_rate": null,
+          "lift": null,
+          "verdict": "ABSENT-PRODUCER (signal never present in any bar - the gate reads its default forever; fix the producer, do NOT tune this gate)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.0,
+          "signal_own_rate": 0.542622,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        }
+      ]
+    },
+    {
+      "strategy": "pre_holiday_long",
+      "bars_evaluated": 28659,
+      "base_fires": 611,
+      "base_rate": 0.02132,
+      "clauses": [
+        {
+          "clause": "is_pre_holiday",
+          "loo_rate": 0.443142,
+          "signal_own_rate": 0.039953,
+          "lift": 20.786,
+          "verdict": "EVENT (signal true on only 4.0% of bars - it either happened or it did not; not loosenable)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.038627,
+          "signal_own_rate": 0.542622,
+          "lift": 1.812,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "dow",
+          "loo_rate": 0.02132,
+          "signal_own_rate": null,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)",
+          "sweep": [
+            {
+              "multiple": 1.1,
+              "new_threshold": 0.0,
+              "extra_fires": 0,
+              "fires_after": 611,
+              "mean_fwd_return_of_new_pct": null
+            },
+            {
+              "multiple": 1.25,
+              "new_threshold": 0.0,
+              "extra_fires": 0,
+              "fires_after": 611,
+              "mean_fwd_return_of_new_pct": null
+            },
+            {
+              "multiple": 1.5,
+              "new_threshold": 0.0,
+              "extra_fires": 0,
+              "fires_after": 611,
+              "mean_fwd_return_of_new_pct": null
+            },
+            {
+              "multiple": 2.0,
+              "new_threshold": 0.0,
+              "extra_fires": 0,
+              "fires_after": 611,
+              "mean_fwd_return_of_new_pct": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "strategy": "pre_rebalance_long",
+      "bars_evaluated": 28659,
+      "base_fires": 46,
+      "base_rate": 0.001605,
+      "clauses": []
+    },
+    {
+      "strategy": "rsi21_slow",
+      "bars_evaluated": 28659,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "rsi_21",
+          "loo_rate": 0.455913,
+          "signal_own_rate": null,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)",
+          "sweep": [
+            {
+              "multiple": 1.1,
+              "new_threshold": 54.54545,
+              "extra_fires": 3,
+              "fires_after": 3,
+              "mean_fwd_return_of_new_pct": -2.158
+            },
+            {
+              "multiple": 1.25,
+              "new_threshold": 48.0,
+              "extra_fires": 2168,
+              "fires_after": 2168,
+              "mean_fwd_return_of_new_pct": 0.26
+            },
+            {
+              "multiple": 1.5,
+              "new_threshold": 40.0,
+              "extra_fires": 8872,
+              "fires_after": 8872,
+              "mean_fwd_return_of_new_pct": 0.516
+            },
+            {
+              "multiple": 2.0,
+              "new_threshold": 30.0,
+              "extra_fires": 12677,
+              "fires_after": 12677,
+              "mean_fwd_return_of_new_pct": 0.602
+            }
+          ]
+        },
+        {
+          "clause": "price_above_sma_50",
+          "loo_rate": 0.154262,
+          "signal_own_rate": 0.522035,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "below_sma_50",
+          "loo_rate": 0.186748,
+          "signal_own_rate": 0.477965,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        }
+      ]
+    },
+    {
+      "strategy": "rsi9_extreme",
+      "bars_evaluated": 28659,
+      "base_fires": 20,
+      "base_rate": 0.000698,
+      "clauses": [
+        {
+          "clause": "rsi_9_extreme_os",
+          "loo_rate": 0.542622,
+          "signal_own_rate": 0.015353,
+          "lift": 777.55,
+          "verdict": "EVENT (signal true on only 1.5% of bars - it either happened or it did not; not loosenable)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.015353,
+          "signal_own_rate": 0.542622,
+          "lift": 22.0,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "rsi_overbought_short",
+      "bars_evaluated": 28659,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "rsi_14",
+          "loo_rate": 0.455913,
+          "signal_own_rate": null,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)",
+          "sweep": [
+            {
+              "multiple": 1.1,
+              "new_threshold": 59.09091,
+              "extra_fires": 9,
+              "fires_after": 9,
+              "mean_fwd_return_of_new_pct": -0.595
+            },
+            {
+              "multiple": 1.25,
+              "new_threshold": 52.0,
+              "extra_fires": 844,
+              "fires_after": 844,
+              "mean_fwd_return_of_new_pct": 0.413
+            },
+            {
+              "multiple": 1.5,
+              "new_threshold": 43.33333,
+              "extra_fires": 5255,
+              "fires_after": 5255,
+              "mean_fwd_return_of_new_pct": 0.589
+            },
+            {
+              "multiple": 2.0,
+              "new_threshold": 32.5,
+              "extra_fires": 11151,
+              "fires_after": 11151,
+              "mean_fwd_return_of_new_pct": 0.59
+            }
+          ]
+        },
+        {
+          "clause": "below_sma_50",
+          "loo_rate": 0.133326,
+          "signal_own_rate": 0.477965,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        }
+      ]
+    },
+    {
+      "strategy": "sector_rotation_defensive_long",
+      "bars_evaluated": 28659,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "defensive_leadership",
+          "loo_rate": 0.0,
+          "signal_own_rate": 0.490003,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "sector",
+          "loo_rate": 0.0,
+          "signal_own_rate": null,
+          "lift": null,
+          "verdict": "ABSENT-PRODUCER (signal never present in any bar - the gate reads its default forever; fix the producer, do NOT tune this gate)"
+        }
+      ]
+    },
+    {
+      "strategy": "shooting_star_short",
+      "bars_evaluated": 28659,
+      "base_fires": 123,
+      "base_rate": 0.004292,
+      "clauses": [
+        {
+          "clause": "shooting_star",
+          "loo_rate": 0.073206,
+          "signal_own_rate": 0.04079,
+          "lift": 17.057,
+          "verdict": "EVENT (signal true on only 4.1% of bars - it either happened or it did not; not loosenable)"
+        },
+        {
+          "clause": "bearish_pin_bar",
+          "loo_rate": 0.073206,
+          "signal_own_rate": 0.050141,
+          "lift": 17.057,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "hanging_man",
+          "loo_rate": 0.073206,
+          "signal_own_rate": null,
+          "lift": 17.057,
+          "verdict": "ABSENT-PRODUCER (signal never present in any bar - the gate reads its default forever; fix the producer, do NOT tune this gate)"
+        },
+        {
+          "clause": "dark_cloud_cover",
+          "loo_rate": 0.073206,
+          "signal_own_rate": null,
+          "lift": 17.057,
+          "verdict": "ABSENT-PRODUCER (signal never present in any bar - the gate reads its default forever; fix the producer, do NOT tune this gate)"
+        },
+        {
+          "clause": "rsi_14",
+          "loo_rate": 0.012527,
+          "signal_own_rate": null,
+          "lift": 2.919,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)",
+          "sweep": [
+            {
+              "multiple": 1.1,
+              "new_threshold": 59.09091,
+              "extra_fires": 72,
+              "fires_after": 195,
+              "mean_fwd_return_of_new_pct": 0.543
+            },
+            {
+              "multiple": 1.25,
+              "new_threshold": 52.0,
+              "extra_fires": 136,
+              "fires_after": 259,
+              "mean_fwd_return_of_new_pct": 0.627
+            },
+            {
+              "multiple": 1.5,
+              "new_threshold": 43.33333,
+              "extra_fires": 195,
+              "fires_after": 318,
+              "mean_fwd_return_of_new_pct": 0.452
+            },
+            {
+              "multiple": 2.0,
+              "new_threshold": 32.5,
+              "extra_fires": 233,
+              "fires_after": 356,
+              "mean_fwd_return_of_new_pct": 0.291
+            }
+          ]
+        },
+        {
+          "clause": "near_r1",
+          "loo_rate": 0.009665,
+          "signal_own_rate": 0.129139,
+          "lift": 2.252,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "near_r2",
+          "loo_rate": 0.009665,
+          "signal_own_rate": 0.070624,
+          "lift": 2.252,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "bb_20_20_touch_upper",
+          "loo_rate": 0.009665,
+          "signal_own_rate": 0.089361,
+          "lift": 2.252,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "short_borrow_trap_avoid",
+      "bars_evaluated": 28659,
+      "base_fires": 1443,
+      "base_rate": 0.050351,
+      "clauses": [
+        {
+          "clause": "days_to_cover",
+          "loo_rate": 0.0,
+          "signal_own_rate": null,
+          "lift": 0.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        }
+      ]
+    },
+    {
+      "strategy": "smc_bos_continuation",
+      "bars_evaluated": 28659,
+      "base_fires": 484,
+      "base_rate": 0.016888,
+      "clauses": [
+        {
+          "clause": "vol_spike_2x",
+          "loo_rate": 0.191982,
+          "signal_own_rate": 0.031648,
+          "lift": 11.368,
+          "verdict": "EVENT (signal true on only 3.2% of bars - it either happened or it did not; not loosenable)"
+        },
+        {
+          "clause": "force_index_cross_up",
+          "loo_rate": 0.191982,
+          "signal_own_rate": 0.064447,
+          "lift": 11.368,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "smc_bos_bullish",
+          "loo_rate": 0.046408,
+          "signal_own_rate": 0.153913,
+          "lift": 2.748,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "smc_bos_bearish",
+          "loo_rate": 0.034405,
+          "signal_own_rate": 0.143376,
+          "lift": 2.037,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.017377,
+          "signal_own_rate": 0.542622,
+          "lift": 1.029,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "below_ema_200",
+          "loo_rate": 0.017272,
+          "signal_own_rate": 0.457378,
+          "lift": 1.023,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "rsi_14",
+          "loo_rate": 0.011061,
+          "signal_own_rate": null,
+          "lift": 0.655,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        }
+      ]
+    },
+    {
+      "strategy": "smc_discount_long",
+      "bars_evaluated": 28659,
+      "base_fires": 932,
+      "base_rate": 0.03252,
+      "clauses": [
+        {
+          "clause": "smc_bos_bullish",
+          "loo_rate": 0.167522,
+          "signal_own_rate": 0.153913,
+          "lift": 5.151,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "smc_choch_bullish",
+          "loo_rate": 0.167522,
+          "signal_own_rate": 0.038731,
+          "lift": 5.151,
+          "verdict": "EVENT (signal true on only 3.9% of bars - it either happened or it did not; not loosenable)"
+        },
+        {
+          "clause": "smc_in_discount_zone",
+          "loo_rate": 0.162183,
+          "signal_own_rate": 0.55309,
+          "lift": 4.987,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.059597,
+          "signal_own_rate": 0.542622,
+          "lift": 1.833,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "smc_dealing_range_pct",
+          "loo_rate": 0.03252,
+          "signal_own_rate": null,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        }
+      ]
+    },
+    {
+      "strategy": "smc_equal_lows_sweep_long",
+      "bars_evaluated": 28659,
+      "base_fires": 252,
+      "base_rate": 0.008793,
+      "clauses": [
+        {
+          "clause": "smc_equal_lows_swept",
+          "loo_rate": 0.397327,
+          "signal_own_rate": 0.028124,
+          "lift": 45.187,
+          "verdict": "EVENT (signal true on only 2.8% of bars - it either happened or it did not; not loosenable)"
+        },
+        {
+          "clause": "smc_fvg_bullish_active",
+          "loo_rate": 0.028124,
+          "signal_own_rate": 0.397327,
+          "lift": 3.198,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "smc_fvg_retest_long",
+      "bars_evaluated": 28659,
+      "base_fires": 1044,
+      "base_rate": 0.036428,
+      "clauses": [
+        {
+          "clause": "smc_fvg_retest_long_zone",
+          "loo_rate": 0.542622,
+          "signal_own_rate": 0.061168,
+          "lift": 14.896,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.061168,
+          "signal_own_rate": 0.542622,
+          "lift": 1.679,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "smc_fvg_retest_short",
+      "bars_evaluated": 28659,
+      "base_fires": 997,
+      "base_rate": 0.034788,
+      "clauses": [
+        {
+          "clause": "smc_fvg_retest_short_zone",
+          "loo_rate": 0.430476,
+          "signal_own_rate": 0.063889,
+          "lift": 12.374,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "below_ema_200",
+          "loo_rate": 0.0604,
+          "signal_own_rate": 0.457378,
+          "lift": 1.736,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "smc_mitigation_block_long",
+      "bars_evaluated": 28659,
+      "base_fires": 44,
+      "base_rate": 0.001535,
+      "clauses": [
+        {
+          "clause": "smc_mitigation_block_long",
+          "loo_rate": 0.144911,
+          "signal_own_rate": 0.011654,
+          "lift": 94.386,
+          "verdict": "EVENT (signal true on only 1.2% of bars - it either happened or it did not; not loosenable)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.011584,
+          "signal_own_rate": 0.542622,
+          "lift": 7.545,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "rsi_14",
+          "loo_rate": 0.001605,
+          "signal_own_rate": null,
+          "lift": 1.045,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)",
+          "sweep": [
+            {
+              "multiple": 1.1,
+              "new_threshold": 55.0,
+              "extra_fires": 2,
+              "fires_after": 46,
+              "mean_fwd_return_of_new_pct": -9.88
+            },
+            {
+              "multiple": 1.25,
+              "new_threshold": 62.5,
+              "extra_fires": 2,
+              "fires_after": 46,
+              "mean_fwd_return_of_new_pct": -9.88
+            },
+            {
+              "multiple": 1.5,
+              "new_threshold": 75.0,
+              "extra_fires": 2,
+              "fires_after": 46,
+              "mean_fwd_return_of_new_pct": -9.88
+            },
+            {
+              "multiple": 2.0,
+              "new_threshold": 100.0,
+              "extra_fires": 2,
+              "fires_after": 46,
+              "mean_fwd_return_of_new_pct": -9.88
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "strategy": "smc_mitigation_block_short",
+      "bars_evaluated": 28659,
+      "base_fires": 38,
+      "base_rate": 0.001326,
+      "clauses": [
+        {
+          "clause": "smc_mitigation_block_short",
+          "loo_rate": 0.11745,
+          "signal_own_rate": 0.018284,
+          "lift": 88.579,
+          "verdict": "EVENT (signal true on only 1.8% of bars - it either happened or it did not; not loosenable)"
+        },
+        {
+          "clause": "below_ema_200",
+          "loo_rate": 0.017412,
+          "signal_own_rate": 0.457378,
+          "lift": 13.132,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "rsi_14",
+          "loo_rate": 0.001326,
+          "signal_own_rate": null,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)",
+          "sweep": [
+            {
+              "multiple": 1.1,
+              "new_threshold": 45.45455,
+              "extra_fires": 0,
+              "fires_after": 38,
+              "mean_fwd_return_of_new_pct": null
+            },
+            {
+              "multiple": 1.25,
+              "new_threshold": 40.0,
+              "extra_fires": 0,
+              "fires_after": 38,
+              "mean_fwd_return_of_new_pct": null
+            },
+            {
+              "multiple": 1.5,
+              "new_threshold": 33.33333,
+              "extra_fires": 0,
+              "fires_after": 38,
+              "mean_fwd_return_of_new_pct": null
+            },
+            {
+              "multiple": 2.0,
+              "new_threshold": 25.0,
+              "extra_fires": 0,
+              "fires_after": 38,
+              "mean_fwd_return_of_new_pct": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "strategy": "smc_ote_long",
+      "bars_evaluated": 28659,
+      "base_fires": 316,
+      "base_rate": 0.011026,
+      "clauses": [
+        {
+          "clause": "smc_ote_long_zone",
+          "loo_rate": 0.191423,
+          "signal_own_rate": 0.071147,
+          "lift": 17.361,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "smc_bos_bullish",
+          "loo_rate": 0.071147,
+          "signal_own_rate": 0.153913,
+          "lift": 6.453,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "smc_choch_bullish",
+          "loo_rate": 0.071147,
+          "signal_own_rate": 0.038731,
+          "lift": 6.453,
+          "verdict": "EVENT (signal true on only 3.9% of bars - it either happened or it did not; not loosenable)"
+        },
+        {
+          "clause": "smc_retracement_pct",
+          "loo_rate": 0.011026,
+          "signal_own_rate": null,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        }
+      ]
+    },
+    {
+      "strategy": "smc_ote_short",
+      "bars_evaluated": 28659,
+      "base_fires": 325,
+      "base_rate": 0.01134,
+      "clauses": [
+        {
+          "clause": "smc_ote_short_zone",
+          "loo_rate": 0.178408,
+          "signal_own_rate": 0.07673,
+          "lift": 15.732,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "smc_bos_bearish",
+          "loo_rate": 0.07174,
+          "signal_own_rate": 0.143376,
+          "lift": 6.326,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "smc_choch_bearish",
+          "loo_rate": 0.07174,
+          "signal_own_rate": 0.045884,
+          "lift": 6.326,
+          "verdict": "EVENT (signal true on only 4.6% of bars - it either happened or it did not; not loosenable)"
+        },
+        {
+          "clause": "smc_retracement_pct",
+          "loo_rate": 0.01134,
+          "signal_own_rate": null,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        }
+      ]
+    },
+    {
+      "strategy": "squeeze_setup_long",
+      "bars_evaluated": 28659,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "short_interest_pct",
+          "loo_rate": 3.5e-05,
+          "signal_own_rate": null,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "days_to_cover",
+          "loo_rate": 0.0,
+          "signal_own_rate": null,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "institutional_buy",
+          "loo_rate": 0.0,
+          "signal_own_rate": 0.634914,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "insider_cluster_active",
+          "loo_rate": 0.0,
+          "signal_own_rate": 0.203791,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "news_sentiment_shift",
+          "loo_rate": 0.0,
+          "signal_own_rate": null,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "within_pead_window",
+          "loo_rate": 0.0,
+          "signal_own_rate": 0.486151,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "pead_positive_surprise",
+          "loo_rate": 0.0,
+          "signal_own_rate": 0.265477,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "above_avwap_20low",
+          "loo_rate": 0.0,
+          "signal_own_rate": 0.733208,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "vol_spike_15x",
+          "loo_rate": 0.0,
+          "signal_own_rate": 0.091943,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "close_above_open",
+          "loo_rate": 0.0,
+          "signal_own_rate": 0.508043,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "close_in_top_40pct_of_range",
+          "loo_rate": 0.0,
+          "signal_own_rate": 0.436442,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        }
+      ]
+    },
+    {
+      "strategy": "stoch_oversold",
+      "bars_evaluated": 28659,
+      "base_fires": 127,
+      "base_rate": 0.004431,
+      "clauses": [
+        {
+          "clause": "stoch_broad_oversold",
+          "loo_rate": 0.068495,
+          "signal_own_rate": 0.245508,
+          "lift": 15.457,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "stoch_broad_overbought",
+          "loo_rate": 0.058027,
+          "signal_own_rate": 0.30329,
+          "lift": 13.094,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "below_ema_20",
+          "loo_rate": 0.051572,
+          "signal_own_rate": 0.471405,
+          "lift": 11.638,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "price_above_ema_20",
+          "loo_rate": 0.044872,
+          "signal_own_rate": 0.528595,
+          "lift": 10.126,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "stoch_bearish_cross",
+          "loo_rate": 0.009212,
+          "signal_own_rate": 0.12244,
+          "lift": 2.079,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "stoch_bullish_cross",
+          "loo_rate": 0.007223,
+          "signal_own_rate": 0.121986,
+          "lift": 1.63,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "supertrend_ichimoku_adx",
+      "bars_evaluated": 28659,
+      "base_fires": 3,
+      "base_rate": 0.000105,
+      "clauses": [
+        {
+          "clause": "adx_strong",
+          "loo_rate": 0.009142,
+          "signal_own_rate": 0.07017,
+          "lift": 87.333,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "ichi_above_cloud_break_recent_5d",
+          "loo_rate": 0.002094,
+          "signal_own_rate": 0.082313,
+          "lift": 20.0,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "ichi_below_cloud_break_recent_5d",
+          "loo_rate": 0.000733,
+          "signal_own_rate": 0.082557,
+          "lift": 7.0,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "supertrend_flip_recent_short_5d",
+          "loo_rate": 0.000279,
+          "signal_own_rate": 0.017726,
+          "lift": 2.667,
+          "verdict": "EVENT (signal true on only 1.8% of bars - it either happened or it did not; not loosenable)"
+        },
+        {
+          "clause": "supertrend_flip_recent_long_5d",
+          "loo_rate": 0.000209,
+          "signal_own_rate": 0.018144,
+          "lift": 2.0,
+          "verdict": "EVENT (signal true on only 1.8% of bars - it either happened or it did not; not loosenable)"
+        }
+      ]
+    },
+    {
+      "strategy": "supertrend_macd_short",
+      "bars_evaluated": 28659,
+      "base_fires": 312,
+      "base_rate": 0.010887,
+      "clauses": [
+        {
+          "clause": "supertrend_bearish",
+          "loo_rate": 0.306221,
+          "signal_own_rate": 0.015318,
+          "lift": 28.128,
+          "verdict": "EVENT (signal true on only 1.5% of bars - it either happened or it did not; not loosenable)"
+        },
+        {
+          "clause": "adx",
+          "loo_rate": 0.013224,
+          "signal_own_rate": null,
+          "lift": 1.215,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)",
+          "sweep": [
+            {
+              "multiple": 1.1,
+              "new_threshold": 18.18182,
+              "extra_fires": 26,
+              "fires_after": 338,
+              "mean_fwd_return_of_new_pct": 0.47
+            },
+            {
+              "multiple": 1.25,
+              "new_threshold": 16.0,
+              "extra_fires": 46,
+              "fires_after": 358,
+              "mean_fwd_return_of_new_pct": 0.452
+            },
+            {
+              "multiple": 1.5,
+              "new_threshold": 13.33333,
+              "extra_fires": 65,
+              "fires_after": 377,
+              "mean_fwd_return_of_new_pct": 0.656
+            },
+            {
+              "multiple": 2.0,
+              "new_threshold": 10.0,
+              "extra_fires": 67,
+              "fires_after": 379,
+              "mean_fwd_return_of_new_pct": 0.703
+            }
+          ]
+        },
+        {
+          "clause": "macd_12_26_9_bearish",
+          "loo_rate": 0.011131,
+          "signal_own_rate": 0.48613,
+          "lift": 1.022,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "triangle_ascending_long",
+      "bars_evaluated": 28659,
+      "base_fires": 2218,
+      "base_rate": 0.077393,
+      "clauses": [
+        {
+          "clause": "triangle_ascending_detected",
+          "loo_rate": 0.542622,
+          "signal_own_rate": 0.107645,
+          "lift": 7.011,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.107645,
+          "signal_own_rate": 0.542622,
+          "lift": 1.391,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "triangle_ascending_retest_long",
+      "bars_evaluated": 28659,
+      "base_fires": 971,
+      "base_rate": 0.033881,
+      "clauses": [
+        {
+          "clause": "triangle_ascending_detected",
+          "loo_rate": 0.118916,
+          "signal_own_rate": 0.107645,
+          "lift": 3.51,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "triangle_apex_break_retest_long",
+          "loo_rate": 0.077393,
+          "signal_own_rate": 0.155344,
+          "lift": 2.284,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.042151,
+          "signal_own_rate": 0.542622,
+          "lift": 1.244,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "turtle_soup_long",
+      "bars_evaluated": 28659,
+      "base_fires": 120,
+      "base_rate": 0.004187,
+      "clauses": [
+        {
+          "clause": "smc_liquidity_swept_dn",
+          "loo_rate": 0.488119,
+          "signal_own_rate": 0.01148,
+          "lift": 116.575,
+          "verdict": "EVENT (signal true on only 1.1% of bars - it either happened or it did not; not loosenable)"
+        },
+        {
+          "clause": "close_above_open",
+          "loo_rate": 0.007014,
+          "signal_own_rate": 0.508043,
+          "lift": 1.675,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "above_prev_low",
+          "loo_rate": 0.004431,
+          "signal_own_rate": 0.752085,
+          "lift": 1.058,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "below_prev_low",
+          "loo_rate": 0.004187,
+          "signal_own_rate": 0.246485,
+          "lift": 1.0,
+          "verdict": "NO-OP (relaxing admits nothing new - candidate to DROP)"
+        }
+      ]
+    },
+    {
+      "strategy": "value_area_breakout_long",
+      "bars_evaluated": 28659,
+      "base_fires": 2692,
+      "base_rate": 0.093932,
+      "clauses": [
+        {
+          "clause": "vol_above_avg",
+          "loo_rate": 0.2364,
+          "signal_own_rate": 0.390837,
+          "lift": 2.517,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "vp_above_value_area",
+          "loo_rate": 0.208067,
+          "signal_own_rate": 0.270735,
+          "lift": 2.215,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.106319,
+          "signal_own_rate": 0.542622,
+          "lift": 1.132,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "weekly_bias_pullback_long",
+      "bars_evaluated": 28659,
+      "base_fires": 107,
+      "base_rate": 0.003734,
+      "clauses": [
+        {
+          "clause": "rsi_14",
+          "loo_rate": 0.474825,
+          "signal_own_rate": null,
+          "lift": 127.178,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)",
+          "sweep": [
+            {
+              "multiple": 1.1,
+              "new_threshold": 49.5,
+              "extra_fires": 964,
+              "fires_after": 1071,
+              "mean_fwd_return_of_new_pct": -0.12
+            },
+            {
+              "multiple": 1.25,
+              "new_threshold": 56.25,
+              "extra_fires": 4259,
+              "fires_after": 4366,
+              "mean_fwd_return_of_new_pct": -0.125
+            },
+            {
+              "multiple": 1.5,
+              "new_threshold": 67.5,
+              "extra_fires": 10723,
+              "fires_after": 10830,
+              "mean_fwd_return_of_new_pct": 0.107
+            },
+            {
+              "multiple": 2.0,
+              "new_threshold": 90.0,
+              "extra_fires": 13500,
+              "fires_after": 13607,
+              "mean_fwd_return_of_new_pct": 0.092
+            }
+          ]
+        },
+        {
+          "clause": "weekly_bias_bull",
+          "loo_rate": 0.331938,
+          "signal_own_rate": 0.474825,
+          "lift": 88.907,
+          "verdict": "BINDING (relaxable filter - this is where trades would come from)"
+        }
+      ]
+    },
+    {
+      "strategy": "weekly_bias_pullback_short",
+      "bars_evaluated": 28659,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "rsi_14",
+          "loo_rate": 0.031404,
+          "signal_own_rate": null,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)",
+          "sweep": [
+            {
+              "multiple": 1.1,
+              "new_threshold": 54.54545,
+              "extra_fires": 12,
+              "fires_after": 12,
+              "mean_fwd_return_of_new_pct": 0.691
+            },
+            {
+              "multiple": 1.25,
+              "new_threshold": 48.0,
+              "extra_fires": 139,
+              "fires_after": 139,
+              "mean_fwd_return_of_new_pct": 2.07
+            },
+            {
+              "multiple": 1.5,
+              "new_threshold": 40.0,
+              "extra_fires": 437,
+              "fires_after": 437,
+              "mean_fwd_return_of_new_pct": 1.229
+            },
+            {
+              "multiple": 2.0,
+              "new_threshold": 30.0,
+              "extra_fires": 797,
+              "fires_after": 797,
+              "mean_fwd_return_of_new_pct": 0.924
+            }
+          ]
+        },
+        {
+          "clause": "weekly_bias_bear",
+          "loo_rate": 0.015213,
+          "signal_own_rate": 0.418821,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "shooting_star",
+          "loo_rate": 0.000174,
+          "signal_own_rate": 0.04079,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        },
+        {
+          "clause": "bearish_engulfing",
+          "loo_rate": 0.000174,
+          "signal_own_rate": 0.03594,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        }
+      ]
+    },
+    {
+      "strategy": "xs_combined_momentum_high_ivol_short",
+      "bars_evaluated": 28659,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "xs_ivol_decile",
+          "loo_rate": 0.0,
+          "signal_own_rate": null,
+          "lift": null,
+          "verdict": "ABSENT-PRODUCER (signal never present in any bar - the gate reads its default forever; fix the producer, do NOT tune this gate)",
+          "sweep": [
+            {
+              "multiple": 1.1,
+              "new_threshold": 6.36364,
+              "extra_fires": 0,
+              "fires_after": 0,
+              "mean_fwd_return_of_new_pct": null
+            },
+            {
+              "multiple": 1.25,
+              "new_threshold": 5.6,
+              "extra_fires": 0,
+              "fires_after": 0,
+              "mean_fwd_return_of_new_pct": null
+            },
+            {
+              "multiple": 1.5,
+              "new_threshold": 4.66667,
+              "extra_fires": 0,
+              "fires_after": 0,
+              "mean_fwd_return_of_new_pct": null
+            },
+            {
+              "multiple": 2.0,
+              "new_threshold": 3.5,
+              "extra_fires": 0,
+              "fires_after": 0,
+              "mean_fwd_return_of_new_pct": null
+            }
+          ]
+        },
+        {
+          "clause": "xs_momentum_bottom_quintile",
+          "loo_rate": 0.0,
+          "signal_own_rate": null,
+          "lift": null,
+          "verdict": "ABSENT-PRODUCER (signal never present in any bar - the gate reads its default forever; fix the producer, do NOT tune this gate)"
+        },
+        {
+          "clause": "below_ema_200",
+          "loo_rate": 0.0,
+          "signal_own_rate": 0.457378,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        }
+      ]
+    },
+    {
+      "strategy": "xs_low_beta_long",
+      "bars_evaluated": 28659,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "xs_low_beta_decile_entry_recent_5d",
+          "loo_rate": 1.0,
+          "signal_own_rate": null,
+          "lift": null,
+          "verdict": "ABSENT-PRODUCER (signal never present in any bar - the gate reads its default forever; fix the producer, do NOT tune this gate)"
+        },
+        {
+          "clause": "xs_avoid_high_ivol",
+          "loo_rate": 0.0,
+          "signal_own_rate": null,
+          "lift": null,
+          "verdict": "ABSENT-PRODUCER (signal never present in any bar - the gate reads its default forever; fix the producer, do NOT tune this gate)"
+        }
+      ]
+    },
+    {
+      "strategy": "xs_momentum_quality_combined",
+      "bars_evaluated": 28659,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "xs_momentum_top_quintile",
+          "loo_rate": 0.0,
+          "signal_own_rate": null,
+          "lift": null,
+          "verdict": "ABSENT-PRODUCER (signal never present in any bar - the gate reads its default forever; fix the producer, do NOT tune this gate)"
+        },
+        {
+          "clause": "xs_quality_top_quintile",
+          "loo_rate": 0.0,
+          "signal_own_rate": null,
+          "lift": null,
+          "verdict": "ABSENT-PRODUCER (signal never present in any bar - the gate reads its default forever; fix the producer, do NOT tune this gate)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.0,
+          "signal_own_rate": 0.542622,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        }
+      ]
+    },
+    {
+      "strategy": "xs_momentum_top_decile",
+      "bars_evaluated": 28659,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "xs_momentum_top_decile",
+          "loo_rate": 0.542622,
+          "signal_own_rate": null,
+          "lift": null,
+          "verdict": "ABSENT-PRODUCER (signal never present in any bar - the gate reads its default forever; fix the producer, do NOT tune this gate)"
+        },
+        {
+          "clause": "xs_avoid_high_ivol",
+          "loo_rate": 0.0,
+          "signal_own_rate": null,
+          "lift": null,
+          "verdict": "ABSENT-PRODUCER (signal never present in any bar - the gate reads its default forever; fix the producer, do NOT tune this gate)"
+        },
+        {
+          "clause": "xs_avoid_high_max",
+          "loo_rate": 0.0,
+          "signal_own_rate": null,
+          "lift": null,
+          "verdict": "ABSENT-PRODUCER (signal never present in any bar - the gate reads its default forever; fix the producer, do NOT tune this gate)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.0,
+          "signal_own_rate": 0.542622,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        }
+      ]
+    },
+    {
+      "strategy": "xs_quality_top_quintile_long",
+      "bars_evaluated": 28659,
+      "base_fires": 0,
+      "base_rate": 0.0,
+      "clauses": [
+        {
+          "clause": "xs_quality_top_tercile",
+          "loo_rate": 0.542622,
+          "signal_own_rate": null,
+          "lift": null,
+          "verdict": "ABSENT-PRODUCER (signal never present in any bar - the gate reads its default forever; fix the producer, do NOT tune this gate)"
+        },
+        {
+          "clause": "price_above_ema_200",
+          "loo_rate": 0.0,
+          "signal_own_rate": 0.542622,
+          "lift": null,
+          "verdict": "UNDEFINED (base fire rate 0 - strategy starved on this sample)"
+        }
+      ]
+    }
+  ]
+}

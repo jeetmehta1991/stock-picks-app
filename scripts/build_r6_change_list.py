@@ -63,7 +63,7 @@ def load(name):
 def main() -> int:
     roster = parse_roster()
     tight = load("b1414_tightening_proposals_v2.json") or load("b1408_tightening_proposals.json")
-    loose = load("b1404_clause_admission_40t.json")
+    loose = load("b1418_loosening_enginestack.json") or load("b1404_clause_admission_40t.json")
     valid = load("b1409_loosening_validity.json")
     seg = load("b1398_r6_fire_segmentation.json")
     if not all([tight, loose, valid, seg]):
@@ -72,7 +72,7 @@ def main() -> int:
 
     fires = {s: v["fires"] for s, v in seg["by_strategy"].items()}
     never = set(seg["never_fired"])
-    clean = set(valid["clean_strategies"])
+    clean = {r["strategy"] for r in loose["results"] if not any(c["verdict"].startswith("ABSENT") for c in r["clauses"])}  # B1419: from the CURRENT run
 
     def segment(s):
         if s in never:

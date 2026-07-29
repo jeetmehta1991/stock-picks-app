@@ -3974,3 +3974,42 @@ a silent filter, not a check; (b) an if/elif type ladder with no else-branch dis
 it does not recognise - log or count the fall-through, because that residue is exactly where
 this hid; (c) once again the contradiction (147 fires on an "absent" signal) found the bug that
 the statistics could not - always reconcile a finding against a directly observed fact.
+
+### L256 - The 8.2h corrected loosening run: 83% of the "broken producer" findings were my own measurement artifact (B1418)
+
+The owner approved 10h to unblock the 107-strategy loosening queue after L248 established that
+the measurement stack emitted 622 signals/bar against the engine's 832. Re-run on the engine's
+own assembler (`screen_instrument`), same 40 tickers, same guards:
+
+| | approximated stack | engine stack |
+|---|---|---|
+| ABSENT-PRODUCER clauses | 186 | **29** |
+| strategies flagged broken | 116 of 198 | **20** |
+| BINDING (loosenable) clauses | 121 | **237** |
+| strategies that actually fire | 63 | **89** |
+
+**26 strategies were unfirable IN MY STACK, not starved.** Had the earlier numbers driven the R6
+change list, we would have "retired" or "fixed producers" for strategies that work perfectly well.
+
+**The residual 20 are real and coherent**, which is what makes them believable: 8 of them are the
+entire `classification_change_*` cluster, all missing `new_sector` / `prior_sector`; plus
+`gold_silver_risk_off_long` and `sector_rotation_defensive_long` missing `sector`,
+`january_effect_small_cap_long` missing `cap_band`, `bollinger_tight` missing `vix_band_high/low`.
+These are categorical/metadata fields that genuinely are not populated - a producer-side bug, not
+gate tightness. That cluster's death is now explained rather than assumed.
+
+**Yield, against my pre-registered expectation ("the yield will be low"):** 3 loosening changes
+from 107 strategies, and **all three at the MINIMUM x1.1 multiple** - `news_momentum_long`
+(96 -> 311 fires, new trades +3.63% forward), `news_reversal_short` (43 -> 104, +2.73%),
+`supertrend_macd_short` (215 -> 614, +0.47%). The "loosen as little as necessary" rule selected
+itself; nothing needed a big relaxation to become viable.
+
+**9 strategies were rejected by the admission cap**, and the numbers show why the cap was worth
+adding: the smallest available relaxation for `institutional_oversold_long` was **461x**
+(293 -> 135,097 fires), for `hammer_at_support_long` 39x, for `camarilla_s3_bounce` 31x. These are
+strategies that CANNOT be loosened into statistical significance while remaining themselves - a
+retirement question, not a tuning one.
+
+**Rule:** when a measurement instrument and the system disagree about the system's own behaviour,
+the instrument is wrong until proven otherwise. Every one of the five false findings this
+instrument produced was resolved in the system's favour.
