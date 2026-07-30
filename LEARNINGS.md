@@ -4045,3 +4045,33 @@ merely re-run the function; (b) never relocate a comment across a line boundary 
 whitespace/newline-significant expression - append the new condition AFTER the complete
 expression instead, leaving every original line byte-identical; (c) a behavioural test that only
 exercises the path you added cannot detect what you removed.
+
+### L258 - The forward-return guard uses a fixed horizon, not the strategy's exit - it can bless trades the real exit would lose (B1423)
+
+Asked to rule the 3 loosening candidates in or out, checking each against its actual record
+exposed a flaw in my own guard #5.
+
+`news_reversal_short`: the loosening guard passed it because the newly-admitted trades showed a
+**+2.73% 10-day forward return**. Its actual record on its best exit (`chandelier_3x`) is
+**IS expectancy -0.435% with a win rate of 0.000 across 40 trades**, and holdout -0.460%. A
+strategy that has never had a winning trade cannot have genuinely profitable admissions.
+
+The contradiction is explained by what the guard measures: a **fixed 10-day forward price
+change from entry**, NOT the pnl the strategy's own exit would realise. Price can drift up over
+10 days while a chandelier stop takes the trade out at a loss on day 2. So the guard answers
+"did the price move favourably?" when the question is "would this strategy have made money?"
+
+**Consequence for how it should be used:** guard #5 can SCREEN OUT obviously-bad admissions
+(negative drift) but cannot CERTIFY good ones. It is a necessary condition, not a sufficient
+one, and I presented it as stronger than it is when describing the methodology to the owner.
+
+**The right fix** is to evaluate admitted trades under the strategy's assigned exit rather than
+a fixed horizon - the cube has per-exit pnl, but only for trades that FIRED, and these are by
+definition trades that did not. Simulating the exit on new entries requires replaying the exit
+manager over the forward bars. Until that exists, a loosening proposal must ALSO be checked
+against the strategy's existing expectancy and win rate, which is what caught this one.
+
+**Rules:** (a) a proxy metric must be labelled as a proxy every time it is used as a gate, with
+the specific thing it cannot see; (b) when a proxy and the direct record disagree, the direct
+record wins and the proxy is the suspect; (c) a strategy with a 0.000 win rate over a
+meaningful sample is REFUTED, not starved - more trades will not help it.

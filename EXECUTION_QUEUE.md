@@ -6615,3 +6615,17 @@ Retry of the B1421 failure. **Root change in approach: no surgery inside the exp
 **INDEPENDENT VERIFICATION (not the patcher's own checks):** `git diff` shows **28 added lines, 0 REMOVED** (27 gate lines = 9 duals x2 legs + 9 singles, plus the roster-regen line); the three clauses the previous attempt destroyed are INTACT (`_short_borrow_trap_active` on `xs_momentum_bottom_decile_short`, `close_above_open` + `close_in_top_40pct_of_range` on `break_retest_volume`); **RISK-CONTROL ENFORCEMENT re-tested - all 4 short strategies still BLOCK at days_to_cover=9** (this is precisely the check absent in B1421, whose three green checks could not see a deleted guard); 222/222 strategies callable. `STRATEGY_ROSTER.md` regenerated. **Pyramid 880 passed / 2 skipped.**
 
 **R6 CHANGE SET NOW APPLIED: 18 entry filters + 6 exit reassignments = 24 changes across 23 strategies** - exactly the set the owner approved, nothing more. **STILL NOT APPLIED and NOT covered by that approval: the 3 loosening changes** (`news_momentum_long`, `news_reversal_short`, `supertrend_macd_short`) which postdate it. Every applied gate carries its pre-registered R6 prediction inline as a comment, so R6 can falsify each one individually. NO AWS spend.
+
+### B1423 (2026-07-28): loosening sign-off recommendation - 1 IN, 2 OUT [owner asked "in or out?"]
+
+Evaluated each of the 3 loosening candidates against its ACTUAL record on its best exit rather than the loosening guards alone:
+
+| strategy | IS exp | IS WR | IS n | holdout exp | recommendation |
+|---|---|---|---|---|---|
+| `news_momentum_long` | **+2.774** | 0.360 | 89 | **+1.978** | **IN** |
+| `news_reversal_short` | -0.435 | **0.000** | 40 | -0.460 | **OUT** |
+| `supertrend_macd_short` | +0.585 | 0.274 | 212 | **-2.036** | **OUT** |
+
+**IN - `news_momentum_long`:** positive in BOTH windows and genuinely starved (89 IS / 17 holdout trades, below min_trades so no verdict is possible at any edge). Loosening to ~311 fires converts untestable -> testable, which is precisely the purpose. **OUT - `news_reversal_short`:** win rate **0.000 across 40 IS trades** is evidence, not insufficient data; negative in the holdout too. **OUT - `supertrend_macd_short`:** already QUIET (212 trades) not starved, and the holdout has already rejected it at -2.036%.
+
+**DEFECT FOUND IN MY OWN GUARD #5 (L258):** the forward-return guard passed `news_reversal_short` at +2.73% for a strategy with a 0.000 win rate. Cause - the guard measures a **fixed 10-day forward price change from entry, NOT the pnl the strategy's own exit would realise**. Price can drift up over 10 days while a `chandelier_3x` stop exits at a loss on day 2. So guard #5 can SCREEN OUT bad admissions but cannot CERTIFY good ones; it is necessary, not sufficient, and I described it to the owner as stronger than it is. Proper fix requires replaying the exit manager over forward bars for non-fired entries (the cube only has per-exit pnl for trades that DID fire) -> ticket **S6-B1423-LOOSENING-EXIT-AWARE-QUALITY**. Until then every loosening proposal must also be checked against the strategy's existing expectancy and win rate - which is what caught this. NOTHING APPLIED; awaiting owner sign-off on the 1-in-2-out recommendation. NO AWS spend.
