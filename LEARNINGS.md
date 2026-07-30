@@ -4075,3 +4075,37 @@ against the strategy's existing expectancy and win rate, which is what caught th
 the specific thing it cannot see; (b) when a proxy and the direct record disagree, the direct
 record wins and the proxy is the suspect; (c) a strategy with a 0.000 win rate over a
 meaningful sample is REFUTED, not starved - more trades will not help it.
+
+### L259 - The health monitor's staleness check has never measured staleness: two bugs, one of them on the remote path too (B1426)
+
+Owner asked for hourly sentinel updates on the local R6 run. Reusing the existing 14-check
+monitor (`monitor_phase_1a_beta_health.py`, `--local` mode) rather than writing a new one
+surfaced two defects in W2 LOG-STALENESS, both of which had to be fixed before the check could
+be trusted to report anything.
+
+**Bug 1 - timezone.** `state.last_progress_ts` is parsed from the engine's own log line and is
+NAIVE: it carries whatever clock the engine wrote in. A remote AWS host logs UTC, so comparing
+against `datetime.utcnow()` was correct there; a LOCAL run logs LOCAL time, so the same
+comparison manufactured a phantom staleness equal to the UTC offset. Measured: W2 reported
+**18,254s stale (5.07h) for a log line written 1 SECOND earlier**. Fixed by making the reference
+clock mode-aware, and a negative age is now surfaced as CLOCK-SKEW rather than silently passing.
+
+**Bug 2 - missing `re.MULTILINE`, and this one affects the REMOTE path too.**
+`RE_LOG_TS = re.compile(r"^(?P<ts>...)")` has no MULTILINE flag, so `^` anchors to the start of
+the whole tail BLOCK, not each line. `finditer` over a 500-line window returned **exactly ONE
+match** - the first line. W2 was therefore measuring the age of the OLDEST line in its window,
+not the newest, and reported ~1h of phantom staleness purely as a function of window size.
+Measured: 1 match across 500 timestamped lines; last match 18:04:28 while the true last line was
+19:07:06. After the fix: 500 matches, last 19:08:25, and the monitor went from `warn=1` to
+**`ok=8 warn=0 kill=0`**.
+
+**Why this matters more than a wrong number:** a check that fires on every poll is a check
+nobody reads. W2 crying wolf continuously is exactly how a genuine engine hang gets ignored -
+the alarm is already on. An always-firing alarm is worse than no alarm, because it manufactures
+the appearance of monitoring.
+
+**Rules:** (a) before trusting a monitor, verify it against a directly observed fact - here,
+file mtime said 1s while the monitor said 5 hours; (b) a naive timestamp must be compared
+against a clock in the SAME frame, and mode-switching code (local vs remote) is where that
+breaks; (c) `^` in a multi-line `finditer` without `re.MULTILINE` silently matches once - the
+symptom is "suspiciously few matches", which reads as sparse data rather than as a bug.

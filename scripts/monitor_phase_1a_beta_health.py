@@ -83,8 +83,16 @@ RE_MILESTONE_YEAR = re.compile(
 )
 
 # Engine timestamp: "2026-05-27 02:25:00,557 [INFO] ..."
+# B1426 BUG: this was compiled WITHOUT re.MULTILINE, so `^` anchored to the start of the whole
+# tail BLOCK rather than each line - `finditer` returned exactly ONE match (the first line of
+# the window) no matter how many timestamped lines it contained. W2 staleness was therefore
+# measuring the age of the OLDEST line in the tail, not the newest, and reported ~1h of phantom
+# staleness on a 500-line window purely as a function of window size. This affects the REMOTE
+# path too, not just --local; W2 has never measured what it claims to measure.
+# Measured here: 1 match across 500 timestamped lines; last match 18:04:28 while the true last
+# line was 19:07:06.
 RE_LOG_TS = re.compile(
-    r"^(?P<ts>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})"
+    r"^(?P<ts>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})", re.MULTILINE
 )
 
 # Crash signatures
@@ -193,10 +201,29 @@ def check_w1_wall_time_kill(
 def check_w2_log_staleness(
     state: MonitorState, log: str, args
 ) -> tuple[str, str]:
-    """W2: last log timestamp > 10min ago = engine likely crashed/hung."""
+    """W2: last log timestamp > 10min ago = engine likely crashed/hung.
+
+    B1426 TIMEZONE FIX. `state.last_progress_ts` is parsed from the engine's own log line and
+    is NAIVE - it carries whatever clock the engine wrote in. Remote AWS hosts log in UTC, so
+    comparing against `utcnow()` was right there; a LOCAL run logs in LOCAL time, so the same
+    comparison produced a phantom staleness equal to the UTC offset. Measured on this machine
+    (UTC-5): the monitor reported "18254s stale" (5.07h) for a log written 1 SECOND earlier.
+
+    That is worse than a cosmetic bug - it fires W2 on every poll of every local run, and a
+    check that always cries wolf is a check nobody reads when a real hang happens.
+
+    A NEGATIVE age is also now surfaced rather than silently passing: it can only mean the
+    reference clock and the log clock disagree, which is the same class of defect.
+    """
     if state.last_progress_ts is None:
         return "ok", "no progress line yet"
-    age_s = (datetime.utcnow() - state.last_progress_ts).total_seconds()
+    now = datetime.now() if getattr(args, "local", None) else datetime.utcnow()
+    age_s = (now - state.last_progress_ts).total_seconds()
+    if age_s < -60:
+        return "warn", (
+            f"W2 CLOCK-SKEW: log timestamp is {abs(age_s):.0f}s in the FUTURE relative to the "
+            f"reference clock - staleness cannot be judged (check log timezone vs monitor mode)"
+        )
     if age_s > args.log_stale_seconds:
         return "warn", (
             f"W2 LOG-STALE: last engine log {age_s:.0f}s ago "
