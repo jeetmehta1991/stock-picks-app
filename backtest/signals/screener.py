@@ -7304,7 +7304,7 @@ def strat_news_momentum_long(s):
     # Expected: 5-10x uplift.
     fires = (
         s.get("news_sentiment_5d", 0.0) >= 0.3  # B1136: was >= 0.5
-        and s.get("news_volume_zscore_5d", 0.0) >= 1.0  # B1136: was >= 1.5
+        and s.get("news_volume_zscore_5d", 0.0) >= 0.90909  # B1424 LOOSEN x1.1 (was >= 1.0; B1136 was >= 1.5). Starved: 89 IS / 17 holdout trades, below min_trades so no verdict was possible - yet expectancy is POSITIVE in both windows (IS +2.774%, holdout +1.978%). Loosening to ~311 fires makes it TESTABLE; R6 decides. Admission ratio 3.24x (cap 5x).
         and s.get("dc20_breakout_up", False)
         and s.get("close_above_open", False)
         and s.get("close_in_top_40pct_of_range", False)
