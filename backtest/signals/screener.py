@@ -931,7 +931,9 @@ def strat_camarilla_r4_breakout(s):
     # B1200 (2026-07-06 Council 278 owner-approved): widen vol_spike_2x ->
     # vol_above_avg per B1179 htf_aligned_breakout_long precedent (Shannon canonical).
     fl = (s.get("above_cam_r4") and s.get("vol_above_avg"))
+    fl = fl and (s.get("xs_ivol", float("-inf")) >= 0.2598)  # B1422 selectivity gate: IS(best-exit) exp +3.235 -> +4.875, WR 0.320 -> 0.390, fires 4478 -> 2219, 597 dates
     fs = (s.get("below_cam_s4") and s.get("vol_above_avg")) and not _short_borrow_trap_active(s)
+    fs = fs and (s.get("xs_ivol", float("-inf")) >= 0.2598)  # B1422 selectivity gate: IS(best-exit) exp +3.235 -> +4.875, WR 0.320 -> 0.390, fires 4478 -> 2219, 597 dates
     return _strat3(fl, fs, "pivot",
         ["above_cam_r4","vol_above_avg"], ["below_cam_s4","vol_above_avg", "borrow_ok"],
         ["Price broke above Camarilla R4  -  breakout level (Slim Khan / Nick Scott; B641 re-anchored from R3 misuse)","Volume above avg confirms buying (B1200: was 2x per Shannon canonical)"],
@@ -1162,8 +1164,10 @@ def strat_awesome_oscillator(s):
       SHORT: ao_cross_dn + below_ema_20  (B627 F1 positive symmetric)
     """
     fl = (s.get("ao_cross_up") and s.get("price_above_ema_20"))
+    fl = fl and (s.get("pct_from_avwap_50low", float("-inf")) >= -0.46)  # B1422 selectivity gate: IS(best-exit) exp +2.111 -> +3.370, WR 0.283 -> 0.318, fires 757 -> 544, 303 dates
     # B627 F1: positive symmetric (B609 producer)
     fs = (s.get("ao_cross_dn") and s.get("below_ema_20")) and not _short_borrow_trap_active(s)
+    fs = fs and (s.get("pct_from_avwap_50low", float("-inf")) >= -0.46)  # B1422 selectivity gate: IS(best-exit) exp +2.111 -> +3.370, WR 0.283 -> 0.318, fires 757 -> 544, 303 dates
     return _strat3(fl, fs, "momentum",
         ["ao_cross_up","price_above_ema_20"],
         ["ao_cross_dn","below_ema_20", "borrow_ok"],
@@ -1210,7 +1214,9 @@ def strat_stochrsi_oversold(s):
 
 def strat_ppo_crossover(s):
     fl = (s.get("ppo_crossover_up") and s.get("adx_trending"))
+    fl = fl and (s.get("rsi_2", float("-inf")) >= 53.87)  # B1422 selectivity gate: IS(best-exit) exp +2.118 -> +4.997, WR 0.553 -> 0.615, fires 1194 -> 597, 263 dates
     fs = (s.get("ppo_crossover_dn") and s.get("adx_trending")) and not _short_borrow_trap_active(s)
+    fs = fs and (s.get("rsi_2", float("-inf")) >= 53.87)  # B1422 selectivity gate: IS(best-exit) exp +2.118 -> +4.997, WR 0.553 -> 0.615, fires 1194 -> 597, 263 dates
     return _strat3(fl, fs, "momentum",
         ["ppo_crossover_up","adx_trending"], ["ppo_crossover_dn","adx_trending", "borrow_ok"],
         ["PPO crossed above signal  -  momentum bullish","ADX confirms trend"],
@@ -1346,7 +1352,9 @@ def strat_parabolic_sar_flip(s):
 def strat_tema_dema(s):
     # B634 sweep: positive symmetric price_below_tema (B634 producer)
     fl = (s.get("tema_cross_up") and s.get("price_above_tema"))
+    fl = fl and (s.get("ao", float("inf")) <= 2.866)  # B1422 selectivity gate: IS(best-exit) exp +2.464 -> +3.257, WR 0.300 -> 0.335, fires 1422 -> 1066, 464 dates
     fs = (s.get("tema_cross_dn") and s.get("price_below_tema")) and not _short_borrow_trap_active(s)
+    fs = fs and (s.get("ao", float("inf")) <= 2.866)  # B1422 selectivity gate: IS(best-exit) exp +2.464 -> +3.257, WR 0.300 -> 0.335, fires 1422 -> 1066, 464 dates
     return _strat3(fl, fs, "trend",
         ["tema_cross_up","price_above_tema"], ["tema_cross_dn","price_below_tema", "borrow_ok"],
         ["TEMA crossed above DEMA  -  fast MA system bullish","Price above TEMA"],
@@ -1367,7 +1375,9 @@ def strat_ichimoku_tk_cross(s):
     # to increase fires. TK cross EVENT is 5d-recency-anchored so retains
     # timeliness. Expected 2-3x uplift.
     fl = s.get("ichi_tk_cross_up")  # B1134 dropped: ichi_above_cloud (redundant)
+    fl = fl and (s.get("news_sentiment_5d", float("-inf")) >= 0.0)  # B1422 selectivity gate: IS(best-exit) exp +1.691 -> +1.909, WR 0.265 -> 0.269, fires 1013 -> 945, 456 dates
     fs = s.get("ichi_tk_cross_dn") and not _short_borrow_trap_active(s)  # B1134 dropped: ichi_below_cloud
+    fs = fs and (s.get("news_sentiment_5d", float("-inf")) >= 0.0)  # B1422 selectivity gate: IS(best-exit) exp +1.691 -> +1.909, WR 0.265 -> 0.269, fires 1013 -> 945, 456 dates
     return _strat3(fl, fs, "trend",
         ["ichi_tk_cross_up"], ["ichi_tk_cross_dn", "borrow_ok"],
         ["Ichimoku Tenkan crossed above Kijun - TK cross bullish (B1134 self-sufficient)"],
@@ -1738,7 +1748,9 @@ def strat_mfi_oversold(s):
 
 def strat_cmf_flip(s):
     fl = (s.get("cmf_cross_up") and s.get("rsi_14", 50) < 50)
+    fl = fl and (s.get("po3_accum_range_pct", float("-inf")) >= 0.0458)  # B1422 selectivity gate: IS(best-exit) exp +2.191 -> +2.899, WR 0.297 -> 0.326, fires 2336 -> 1756, 565 dates
     fs = (s.get("cmf_cross_dn") and s.get("rsi_14", 50) > 50) and not _short_borrow_trap_active(s)
+    fs = fs and (s.get("po3_accum_range_pct", float("-inf")) >= 0.0458)  # B1422 selectivity gate: IS(best-exit) exp +2.191 -> +2.899, WR 0.297 -> 0.326, fires 2336 -> 1756, 565 dates
     return _strat3(fl, fs, "mean_reversion",
         ["cmf_cross_up","rsi_14<50"], ["cmf_cross_dn","rsi_14>50", "borrow_ok"],
         ["CMF crossed above zero  -  money flow turned positive","RSI below 50"],
@@ -2366,7 +2378,9 @@ def strat_morning_star(s):
       SHORT = evening_star AND rsi_14 > 55  (mirror).
     """
     fl = (s.get("morning_star") and s.get("rsi_14", 50) < 45)
+    fl = fl and (s.get("squeeze_momentum", float("inf")) <= 0.0096)  # B1422 selectivity gate: IS(best-exit) exp +2.340 -> +4.236, WR 0.262 -> 0.296, fires 1668 -> 834, 309 dates
     fs = (s.get("evening_star") and s.get("rsi_14", 50) > 55) and not _short_borrow_trap_active(s)
+    fs = fs and (s.get("squeeze_momentum", float("inf")) <= 0.0096)  # B1422 selectivity gate: IS(best-exit) exp +2.340 -> +4.236, WR 0.262 -> 0.296, fires 1668 -> 834, 309 dates
     return _strat3(fl, fs, "candle",
         ["morning_star","rsi_14<45"], ["evening_star","rsi_14>55", "borrow_ok"],
         ["Three-bar morning star  -  Nison bullish reversal (bottom call)","RSI not deep-oversold"],
@@ -2874,6 +2888,7 @@ def strat_parabolic_sar_flip_short(s):
 
 def strat_macd_crossover_short(s):
     fires = s.get("macd_12_26_9_crossover_dn") and not _short_borrow_trap_active(s)
+    fires = fires and (s.get("weekly_momentum_4w", float("-inf")) >= -0.0013)  # B1422 selectivity gate: IS(best-exit) exp +0.222 -> +0.934, WR 0.254 -> 0.263, fires 1102 -> 826, 369 dates
     return _strat(fires, "short", "momentum",
         ["macd_12_26_9_crossover_dn", "borrow_ok"],
         ["MACD 12/26/9 histogram crossed below zero",
@@ -3148,11 +3163,13 @@ def strat_dc20_break_retest(s):
     # retest already implies trend continuation; adx is redundant confirmation.
     fl = (s.get("resistance_break_retest") and s.get("vol_below_avg")
           and s.get("close_in_top_40pct_of_range"))
+    fl = fl and (s.get("ppo_hist", float("-inf")) >= -0.2513)  # B1422 selectivity gate: IS(best-exit) exp +0.056 -> +2.315, WR 0.232 -> 0.234, fires 1874 -> 937, 416 dates
           # B1147 dropped: adx_trending (redundant with retest continuation thesis)
     fs = (s.get("support_break_retest") and s.get("vol_below_avg")
           and s.get("close_in_bottom_40pct_of_range")
           # B1147 dropped: adx_trending
           and not _short_borrow_trap_active(s))
+    fs = fs and (s.get("ppo_hist", float("-inf")) >= -0.2513)  # B1422 selectivity gate: IS(best-exit) exp +0.056 -> +2.315, WR 0.232 -> 0.234, fires 1874 -> 937, 416 dates
     return _strat3(fl, fs, "breakout",
         ["resistance_break_retest", "vol_below_avg", "adx_trending", "close_in_top_40pct_of_range"],
         ["support_break_retest", "vol_below_avg", "adx_trending", "close_in_bottom_40pct_of_range", "borrow_ok"],
@@ -3402,11 +3419,13 @@ def strat_break_retest_volume(s):
           and s.get("close_above_open")
           and s.get("close_in_top_40pct_of_range")  # B728 strong-close
           and s.get("vol_below_avg"))
+    fl = fl and (s.get("ppo_hist", float("-inf")) >= -0.2823)  # B1422 selectivity gate: IS(best-exit) exp +0.238 -> +2.716, WR 0.242 -> 0.248, fires 1672 -> 836, 402 dates
     fs = (s.get("support_break_retest")
           and s.get("obv_bearish")           # B617: switched from obv_falling
           and s.get("close_below_open")
           and s.get("close_in_bottom_40pct_of_range")  # B728 strong-close
           and s.get("vol_below_avg") and not _short_borrow_trap_active(s))
+    fs = fs and (s.get("ppo_hist", float("-inf")) >= -0.2823)  # B1422 selectivity gate: IS(best-exit) exp +0.238 -> +2.716, WR 0.242 -> 0.248, fires 1672 -> 836, 402 dates
     return _strat3(fl, fs, "breakout",
         ["resistance_break_retest", "obv_bullish", "close_above_open",
          "close_in_top_40pct_of_range", "vol_below_avg"],
@@ -3853,6 +3872,7 @@ def strat_xs_momentum_bottom_decile_short(s):
         s.get("xs_momentum_bottom_decile", False)
         and s.get("below_ema_200", False)  # B630 sweep
      and not _short_borrow_trap_active(s))
+    fires = fires and (s.get("xs_max_anomaly", float("inf")) <= 0.0648)  # B1422 selectivity gate: IS(best-exit) exp -1.215 -> +0.525, WR 0.427 -> 0.548, fires 1062 -> 529, 310 dates
     return _strat(fires, "short", "factor",
         ["xs_momentum_bottom_decile", "below_ema_200", "borrow_ok"],
         ["Cross-sectional 12-1 momentum bottom decile",
@@ -5096,6 +5116,7 @@ def strat_m_and_a_target_long(s):
       feasibility re-evaluation regardless of cube verdict.
     """
     fires = bool(s.get("8k_item_1_01_filed_within_30d", False))
+    fires = fires and (s.get("po3_accum_range_pct", float("-inf")) >= 0.0556)  # B1422 selectivity gate: IS(best-exit) exp +5.314 -> +7.279, WR 0.598 -> 0.639, fires 749 -> 562, 283 dates
     return _strat(fires, "long", "sec_edgar_sleeve",
         ["8k_item_1_01_filed_within_30d"],
         ["8-K Item 1.01 (material definitive agreement) filed <=30d ago",
@@ -5877,6 +5898,7 @@ def strat_simple_below_ema_50_short(s):
     Regime affinity: NO ENTRY -> B291 SHORT default {bear, crisis, neutral}.
     """
     fires = s.get("below_ema_50_break_recent_5d", False) and not _short_borrow_trap_active(s)
+    fires = fires and (s.get("committed_growth_holders", float("-inf")) >= 3.0)  # B1422 selectivity gate: IS(best-exit) exp -0.116 -> +0.357, WR 0.254 -> 0.276, fires 2534 -> 1342, 489 dates
     return _strat(fires, "short", "momentum_trend",
         ["below_ema_50_break_recent_5d", "borrow_ok"],
         ["Price JUST broke below 50 EMA (within last 5 bars)",
@@ -6762,6 +6784,7 @@ def strat_institutional_volume_confirmation_long(s):
         and s.get("vol_above_avg", False)  # B1141: was vol_spike_2x (Lo-Wang canonical broad-participation)
         and s.get("price_above_ema_50", False)
     )
+    fires = fires and (s.get("stoch_d", float("-inf")) >= 45.63)  # B1422 selectivity gate: IS(best-exit) exp +3.203 -> +3.647, WR 0.316 -> 0.327, fires 1092 -> 819, 365 dates
     return _strat(fires, "long", "smart_money_13f",
         ["institutional_buy","vol_above_avg","price_above_ema_50"],  # B1141 loosened
         ["13F institutional new/increased positions",
@@ -7099,6 +7122,7 @@ def strat_pairs_mean_reversion_long(s):
         and s.get("pair_zscore_signed", 0.0) < -2.0
         and s.get("pair_half_life", 0.0) >= 5
     )
+    fires = fires and (s.get("vp_close_near_poc_pct", float("-inf")) >= 0.1369)  # B1422 selectivity gate: IS(best-exit) exp +6.611 -> +17.109, WR 0.607 -> 0.669, fires 3775 -> 946, 393 dates
     z = s.get("pair_zscore_signed", 0.0)
     peer = s.get("pair_counterparty", "")
     return _strat(fires, "long", "pairs",
@@ -7115,6 +7139,7 @@ def strat_pairs_mean_reversion_short(s):
         and s.get("pair_zscore_signed", 0.0) > 2.0
         and s.get("pair_half_life", 0.0) >= 5
      and not _short_borrow_trap_active(s))
+    fires = fires and (s.get("ppo_signal", float("-inf")) >= -0.858)  # B1422 selectivity gate: IS(best-exit) exp -0.623 -> +0.216, WR 0.221 -> 0.228, fires 4320 -> 3240, 662 dates
     z = s.get("pair_zscore_signed", 0.0)
     peer = s.get("pair_counterparty", "")
     return _strat(fires, "short", "pairs",
@@ -7751,6 +7776,7 @@ def strat_xs_low_beta_with_smart_money_long(s):
         and s.get("price_above_ema_200", False)
     )
     fires = base_fires and _has_smart_money_buy(s)
+    fires = fires and (s.get("pair_half_life", float("-inf")) >= 6.55)  # B1422 selectivity gate: IS(best-exit) exp +1.437 -> +4.087, WR 0.335 -> 0.381, fires 379 -> 268, 174 dates
     return _strat(fires, "long", "smart_money_sleeve",
         ["xs_low_beta_top_quintile", "price_above_ema_200",
          "smart_money_buy"],
@@ -7806,6 +7832,7 @@ def strat_pead_with_smart_money_long(s):
         and s.get("pead_positive_surprise", False)
     )
     fires = base_fires and _has_smart_money_buy(s)
+    fires = fires and (s.get("ppo_signal", float("inf")) <= -1.959)  # B1422 selectivity gate: IS(best-exit) exp +5.481 -> +10.817, WR 0.622 -> 0.696, fires 550 -> 138, 95 dates
     return _strat(fires, "long", "smart_money_sleeve",
         ["within_pead_window", "pead_positive_surprise",
          "smart_money_buy"],
