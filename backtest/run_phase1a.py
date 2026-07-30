@@ -10,6 +10,7 @@ Usage:
 
 import argparse
 import logging
+import os
 import sys
 from datetime import date, datetime
 from pathlib import Path
@@ -33,6 +34,31 @@ from backtest.signals.screener import ALL_STRATEGIES
 # at module level; engine uses what run_phase1a passes to it. Sum across
 # 8 chunks = full 220 (sum-verified by B1084 pin test).
 import backtest.signals.screener as _screener_mod
+# B1425: explicit strategy-subset filter, generalising the B1084 chunk mechanism above.
+# STRATEGY_SUBSET_FILE=<path> narrows ALL_STRATEGIES to the newline-separated names in that
+# file. Motivation: a TARGETED re-run over only the strategies whose gates changed, so the
+# pre-registered predictions can be tested without paying for the full 222-strategy cube.
+# Deliberately a file rather than a comma list - the subsets in play are 20+ names and belong
+# in a committed artifact, not a shell line. Unknown names are reported and skipped rather than
+# silently dropped, because a typo that quietly shrinks the run is exactly the failure mode
+# this repo keeps hitting.
+_subset_path = os.environ.get("STRATEGY_SUBSET_FILE")
+if _subset_path:
+    _want = [ln.strip() for ln in Path(_subset_path).read_text(encoding="utf-8").splitlines()
+             if ln.strip() and not ln.startswith("#")]
+    _known = {n: f for n, f in ALL_STRATEGIES.items() if n in set(_want)}
+    _missing = sorted(set(_want) - set(_known))
+    print(f"[B1425 STRATEGY_SUBSET_FILE] {_subset_path}: requested {len(_want)}, "
+          f"matched {len(_known)}/{len(ALL_STRATEGIES)}")
+    if _missing:
+        print(f"[B1425 WARNING] {len(_missing)} requested name(s) not in ALL_STRATEGIES "
+              f"and were SKIPPED: {_missing}")
+    if not _known:
+        raise SystemExit("[B1425 FATAL] strategy subset resolved to ZERO strategies - refusing "
+                         "to run a backtest that would silently measure nothing.")
+    _screener_mod.ALL_STRATEGIES = _known
+    ALL_STRATEGIES = _known
+
 _chunk_idx = _screener_mod.get_chunk_index_from_env()
 if _chunk_idx is not None:
     _chunk_strategies = _screener_mod.get_strategy_chunk(_chunk_idx, n_chunks=8)
