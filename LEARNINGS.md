@@ -4158,3 +4158,27 @@ judge exits on PF + W/L, no WR gate. **Rule:** when a proposed gate on one metri
 candidate that passes the existing gates on related metrics, surface the conflict with the
 decomposition (WR, avg win, avg loss, W/L, PF, expectancy) before applying either - the conflict
 is usually evidence the new gate is measuring something the old ones already cover better.
+
+### L263
+**A stale line in CLAUDE.md is not a live gate - and re-raising a settled decision costs the owner
+more than an unasked question.** (B1429, owner correction.) I told the owner that
+`PASSING_CRITERIA` #1 (win rate >=55%) contradicted the newly-shipped default exit, that "zero
+strategies can ever pass", and that Phase 1B gating was blocked by arithmetic. All three were
+false. **Batch 186** (2026-05-16) had already relaxed 0.55 -> 0.45 baseline / 0.40 high-vol, and
+**B1387** (2026-07-26, owner ruling "b sharpe") had *demoted win rate to a reported diagnostic
+entirely* - `win_rate_gate: False` - citing verbatim the same mechanism I presented as a
+discovery: "the exit that wins selection (breakeven_plus_trail) truncates losers at breakeven and
+lets winners run, MANUFACTURING a low win rate... PROFIT FACTOR already encodes the win-rate x
+payoff tradeoff (PF = payoff x W/(1-W))." Twenty-two promoted cells exist and 22 of 22 cleared
+profit factor. **The aggravating detail:** I *did* execute the code, and it returned
+`min_win_rate 0.45, win_rate_gate False` in the same turn - then I quoted CLAUDE.md line 154 as
+the binding criterion anyway. Having the right evidence is not the same as reading it. The
+CLAUDE.md criteria table had never been synced to either decision, and a doc that lags an
+owner-approved config change will manufacture exactly this error again. **Rules:** (a) when a
+criterion appears to conflict with a result, resolve it against `config.py` + `git log -S` on the
+constant, never against a narrative doc - the doc is the least reliable source in the repo;
+(b) before surfacing any "owner decision needed", grep the decision history for that constant -
+a settled ruling re-opened is worse than a question never asked, because it spends owner
+attention re-deciding and implies the prior decision was not recorded. Fixed the root cause same
+turn: CLAUDE.md #1 now states the demotion and its lineage. Reinforces
+`feedback_audit_recommendations_against_existing_directives`.

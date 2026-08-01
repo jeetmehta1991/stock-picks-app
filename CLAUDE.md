@@ -151,7 +151,7 @@ All overall thresholds must pass for a strategy to advance overall. Additionally
 
 | # | Criterion | Per-regime threshold | Overall threshold | Source |
 |---|---|---|---|---|
-| 1 | Win rate | ≥55% (high-vol: ≥50%) | same | original |
+| 1 | Win rate | **DIAGNOSTIC, NOT A GATE** (`win_rate_gate: False`) — value computed + reported; `min_win_rate` 0.45 baseline / 0.40 high-vol retained for reporting only | same | **B1387** (owner ruling "b sharpe" 2026-07-26) supersedes Batch 186 (0.55→0.45) which superseded original 0.55 |
 | 2 | Profit factor | >1.3 (high-vol: >1.2) | >1.5 (literature canonical) | BUG-32 Batch 111 |
 | 3 | Expected value | >0 | same | original |
 | 4 | Win/loss ratio | >1.0 | same | original |

@@ -6696,3 +6696,32 @@ Owner approved the B1423 recommendation. **APPLIED: `news_momentum_long` gate `n
 - **S6-B1423** - loosening quality guard is a fixed-horizon proxy, not exit-aware.
 - **DECISION PENDING** - full-roster controlled re-run (option B) to grade the 25 changes properly.
   Not launched; requires owner approval for spend.
+
+## B1430 (2026-08-01) - owner challenge upheld on both points; two claims retracted
+
+**RETRACTED (1) - "PASSING_CRITERIA #1 blocks Phase 1B"**
+False. Win rate was relaxed at Batch 186 (0.55 -> 0.45 baseline / 0.40 high-vol) and then
+DEMOTED to a reported diagnostic at **B1387** (2026-07-26, owner ruling "b sharpe"):
+`win_rate_gate: False`. B1387's inline rationale is verbatim the L262 argument, citing the same
+exit. An approved set exists: **22 promoted cells / 22 distinct strategies**, 22 of 22 clearing
+profit factor + sortino + per-regime Sharpe (`b1387_canonical_criteria.json`).
+Root cause: CLAUDE.md criteria table never synced to either decision. FIXED - #1 now states the
+demotion + lineage. L263.
+
+**RETRACTED (2) - "the controlled re-run needs 222 strategies"**
+Wrong reason and wrong number. The batch gate is standalone against PASSING_CRITERIA and needs
+no R5 baseline. The real constraint is measured: `max_candidates_per_day=30` **binds on 99.8% of
+days** (median 66 candidates for 30 slots) with only 23 strategies running - so trade admission
+depends on the coexisting roster. That roster is the Phase 1B book, not the register.
+22 promoted and 23 changed are **DISJOINT** (verified) -> correct run is their **union: 45**.
+
+**OPEN - DECISION PENDING**
+- **45-strategy validation run** (22 promoted + 23 changed, competing for the same 30 daily
+  slots). Recommend 150-ticker local sample FIRST (free) to see whether the changed strategies
+  win any slots at all, before any spend on full universe. NOT launched.
+- **S6-B1430a (NEW)** - promoted-set drawdown: of 22 promoted cells only **1 of 22** clears
+  `max_drawdown`; 8/22 calmar, 14/22 psr, 16/22 min_trades, **0/22 deflated_sharpe**. Profit
+  factor is not the binding constraint on the Phase 1B set - drawdown is. Surfaced B1430,
+  not actioned, needs owner direction.
+
+**CARRIED OPEN:** S6-B1428a, S6-B1428b, S6-B1428c, S6-B1427, S6-B1419, S6-B1423 (see B1429).
