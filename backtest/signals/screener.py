@@ -1213,10 +1213,13 @@ def strat_stochrsi_oversold(s):
 
 
 def strat_ppo_crossover(s):
+    # B1429 REVERTED the B1422 rsi_2>=53.87 selectivity gate (owner-approved "A + E").
+    #   Proposal predicted retention 1194 -> 597 (0.50). Measured post-apply on the R5 IS
+    #   window, same 150 tickers: 293 -> 58 fires = 0.198, below the 0.20 coverage floor the
+    #   tightening instrument requires. The floor was checked at proposal time and never
+    #   re-asserted after application (ticket S6-B1428b).
     fl = (s.get("ppo_crossover_up") and s.get("adx_trending"))
-    fl = fl and (s.get("rsi_2", float("-inf")) >= 53.87)  # B1422 selectivity gate: IS(best-exit) exp +2.118 -> +4.997, WR 0.553 -> 0.615, fires 1194 -> 597, 263 dates
     fs = (s.get("ppo_crossover_dn") and s.get("adx_trending")) and not _short_borrow_trap_active(s)
-    fs = fs and (s.get("rsi_2", float("-inf")) >= 53.87)  # B1422 selectivity gate: IS(best-exit) exp +2.118 -> +4.997, WR 0.553 -> 0.615, fires 1194 -> 597, 263 dates
     return _strat3(fl, fs, "momentum",
         ["ppo_crossover_up","adx_trending"], ["ppo_crossover_dn","adx_trending", "borrow_ok"],
         ["PPO crossed above signal  -  momentum bullish","ADX confirms trend"],
@@ -2887,8 +2890,10 @@ def strat_parabolic_sar_flip_short(s):
 # --- Momentum shorts (3) ---
 
 def strat_macd_crossover_short(s):
+    # B1429 REVERTED the B1422 weekly_momentum_4w>=-0.0013 selectivity gate (owner-approved
+    #   "A + E"). Proposal predicted 1102 -> 826 (0.75). Measured post-apply, R5 IS window,
+    #   same 150 tickers: 254 -> 28 fires = 0.110, far below the 0.20 floor (S6-B1428b).
     fires = s.get("macd_12_26_9_crossover_dn") and not _short_borrow_trap_active(s)
-    fires = fires and (s.get("weekly_momentum_4w", float("-inf")) >= -0.0013)  # B1422 selectivity gate: IS(best-exit) exp +0.222 -> +0.934, WR 0.254 -> 0.263, fires 1102 -> 826, 369 dates
     return _strat(fires, "short", "momentum",
         ["macd_12_26_9_crossover_dn", "borrow_ok"],
         ["MACD 12/26/9 histogram crossed below zero",
@@ -3872,7 +3877,9 @@ def strat_xs_momentum_bottom_decile_short(s):
         s.get("xs_momentum_bottom_decile", False)
         and s.get("below_ema_200", False)  # B630 sweep
      and not _short_borrow_trap_active(s))
-    fires = fires and (s.get("xs_max_anomaly", float("inf")) <= 0.0648)  # B1422 selectivity gate: IS(best-exit) exp -1.215 -> +0.525, WR 0.427 -> 0.548, fires 1062 -> 529, 310 dates
+    # B1429 REVERTED the B1422 xs_max_anomaly<=0.0648 selectivity gate (owner-approved "A + E").
+    #   Proposal predicted 1062 -> 529 (0.50). Measured post-apply, R5 IS window, same 150
+    #   tickers: 271 -> 50 fires = 0.185, below the 0.20 coverage floor (S6-B1428b).
     return _strat(fires, "short", "factor",
         ["xs_momentum_bottom_decile", "below_ema_200", "borrow_ok"],
         ["Cross-sectional 12-1 momentum bottom decile",
@@ -7122,7 +7129,9 @@ def strat_pairs_mean_reversion_long(s):
         and s.get("pair_zscore_signed", 0.0) < -2.0
         and s.get("pair_half_life", 0.0) >= 5
     )
-    fires = fires and (s.get("vp_close_near_poc_pct", float("-inf")) >= 0.1369)  # B1422 selectivity gate: IS(best-exit) exp +6.611 -> +17.109, WR 0.607 -> 0.669, fires 3775 -> 946, 393 dates
+    # B1429 REVERTED the B1422 vp_close_near_poc_pct>=0.1369 selectivity gate (owner-approved
+    #   "A + E"). Proposal predicted 3775 -> 946 (0.25). Measured post-apply, R5 IS window,
+    #   same 150 tickers: 948 -> 102 fires = 0.108, below the 0.20 coverage floor (S6-B1428b).
     z = s.get("pair_zscore_signed", 0.0)
     peer = s.get("pair_counterparty", "")
     return _strat(fires, "long", "pairs",
@@ -7831,8 +7840,10 @@ def strat_pead_with_smart_money_long(s):
         s.get("within_pead_window", False)
         and s.get("pead_positive_surprise", False)
     )
+    # B1429 REVERTED the B1422 ppo_signal<=-1.959 selectivity gate (owner-approved "A + E").
+    #   Proposal predicted 550 -> 138 (0.25). Measured post-apply, R5 IS window, same 150
+    #   tickers: 132 -> 13 fires = 0.098, the worst breach of the 0.20 floor (S6-B1428b).
     fires = base_fires and _has_smart_money_buy(s)
-    fires = fires and (s.get("ppo_signal", float("inf")) <= -1.959)  # B1422 selectivity gate: IS(best-exit) exp +5.481 -> +10.817, WR 0.622 -> 0.696, fires 550 -> 138, 95 dates
     return _strat(fires, "long", "smart_money_sleeve",
         ["within_pead_window", "pead_positive_surprise",
          "smart_money_buy"],

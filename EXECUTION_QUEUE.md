@@ -6659,3 +6659,40 @@ Owner approved the B1423 recommendation. **APPLIED: `news_momentum_long` gate `n
 **SENTINEL ARMED (not merely designed - CHECKLIST #121/#124):** hourly cron `a57acf1f` at :13 past (off the :00 mark). Each fire runs the 14-check monitor `--once`, verifies liveness via PowerShell `Get-Process` (authoritative on Windows per standing rule), derives days/1003 + closed trades + s/day + ETA from the log, and reports ONE line. Escalates immediately without waiting for the next hour on: process gone before day 1003, any KILL check, genuine staleness >30min sanity-checked against file mtime, or trade-rate deviation >2x from the ~62 s/day baseline. On completion it CronDeletes itself and grades the 25 pre-registered predictions. Cron is SESSION-ONLY and auto-expires after 7 days.
 
 **RUN STATUS (EXECUTED this turn):** PID 10324 alive, day 180/1003, 855 trades closed, 151 open, ~62.4 s/day, **ETA ~14.2h**. NO AWS spend.
+
+## B1429 (2026-07-31) - default exit change + coverage-floor reverts (owner-approved "A + E")
+
+**SHIPPED**
+- `TRAILING_STOP["primary_exit"]` atr_trail_1x -> **breakeven_plus_trail** (config.py:180).
+  R6 holdout, 5,796 trades x 26 exits: atr_trail_1x exp -1.28pp / WR 0.199 / W-L 1.06 / PF 0.26
+  (rank 24 of 26); breakeven_plus_trail exp +1.39pp / WR 0.247 / W-L 4.87 / PF 1.60 (rank 1).
+  Delta +2.68pp per trade. **181 of 222 strategies** had no STRATEGY_EXIT_OVERRIDE and were
+  running the worst-of-26 exit. Only 4 of 26 exits are profitable on holdout.
+- **5 B1422 selectivity gates REVERTED** for breaching the 0.20 coverage floor post-application
+  (measured 0.098-0.198 vs 0.25-0.75 predicted): ppo_crossover (rsi_2), macd_crossover_short
+  (weekly_momentum_4w), xs_momentum_bottom_decile_short (xs_max_anomaly),
+  pairs_mean_reversion_long (vp_close_near_poc_pct), pead_with_smart_money_long (ppo_signal).
+  27 -> 21 B1422 gates. Clause-set diff verified: `_short_borrow_trap_active` 118 unchanged,
+  `_has_smart_money_buy` 13 unchanged, every removed line a B1422 gate.
+- Owner decision D: exits judged on **PF>1.5 + W/L>1.0, no win-rate gate**. `win_rate_gate`
+  remains False. CLAUDE.md criterion #1 (WR>=55%) is superseded for exit selection.
+- Pyramid 880 passed / 2 skipped. LEARNINGS L260-L262.
+
+**WITHDRAWN**
+- `b1428_r6_prediction_grades.json` (5 CONFIRMED / 8 REFUTED / 10 INSUFFICIENT). Confounded per
+  L260 - do not cite. The B1420 exit reassignments were graded REFUTED by that artifact; the
+  clean within-run evidence says the opposite and they stand.
+
+**OPEN**
+- **S6-B1428a** - exit-reassignment guards (fold consistency + margin + date-clustered FDR +
+  min trades) do not establish transfer. Require holdout confirmation before an exit change ships.
+- **S6-B1428b** - re-assert the coverage floor from the post-change artifact, failing loudly on
+  breach. Root cause of the 5 reverts above. (L261)
+- **S6-B1428c** - `grade_r6_predictions.py` must not be used for cross-run deltas until it holds
+  roster + universe + candidate cap fixed. (L260)
+- **S6-B1427** - monitor W6 hardcodes `proxy_total=185`, not STRATEGY_SUBSET_FILE-aware; emits
+  "199 of 185 (108%)" on every targeted run. Same class as PIVOT #36.
+- **S6-B1419** - classification_change cluster dead; producer never emits new_sector/prior_sector.
+- **S6-B1423** - loosening quality guard is a fixed-horizon proxy, not exit-aware.
+- **DECISION PENDING** - full-roster controlled re-run (option B) to grade the 25 changes properly.
+  Not launched; requires owner approval for spend.

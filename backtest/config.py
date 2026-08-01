@@ -167,7 +167,17 @@ TRAILING_STOP = {
     # at exit_manager.py:291-302 was added in Batch 262 but gated on this
     # key with default False -> never fired. Now defaults True.
     "breakeven_move_at_1r": True,
-    "primary_exit":      "atr_trail_1x",  # Phase 1A results: atr_trail_1x wins 20/29 strategies
+    # B1429 (owner-approved 2026-07-31, Council "A + E"): was atr_trail_1x.
+    #   R6 holdout (2025-05-05 ->), 5,796 trades x 26 exits, winsorized +/-300 net 20bps:
+    #     atr_trail_1x          exp -1.28pp  WR 0.199  W/L 1.06  PF 0.26   <- rank 24 of 26
+    #     breakeven_plus_trail  exp +1.39pp  WR 0.247  W/L 4.87  PF 1.60   <- rank 1
+    #   Delta +2.68pp/trade. 181 of 222 strategies had no STRATEGY_EXIT_OVERRIDE and
+    #   were therefore running the worst-of-26 exit.
+    #   Owner decision D (2026-07-31): judge exits on PF>1.5 + W/L>1.0, NOT win rate --
+    #   breakeven_plus_trail is the only exit of 26 passing both; the WR>=0.40-compliant
+    #   alternative (hybrid_50pct_target) fails both (PF 1.11, W/L 0.90).
+    #   Prior "wins 20/29 strategies" was the Phase 1A v3 archive on a 29-strategy roster.
+    "primary_exit":      "breakeven_plus_trail",
     # Stop only moves in favour of trade  -  never reverses
     # BUG-232 RESOLVED-IMPLEMENTED Batch 113 2026-05-12 (owner-approved
     # option C 2026-05-12): config-toggleable trailing ratchet source.

@@ -4109,3 +4109,52 @@ file mtime said 1s while the monitor said 5 hours; (b) a naive timestamp must be
 against a clock in the SAME frame, and mode-switching code (local vs remote) is where that
 breaks; (c) `^` in a multi-line `finditer` without `re.MULTILINE` silently matches once - the
 symptom is "suspiciously few matches", which reads as sparse data rather than as a bug.
+
+### L260
+**Cross-run A/B in this engine is invalid unless roster AND universe AND candidate cap are held
+identical.** (B1428, self-caught during R6 grading.) I graded 25 pre-registered changes by
+comparing R6 (23 strategies x 150 tickers) against R5 (222 x 614), controlling for tickers by
+restricting R5 to the same 150 names. That control was insufficient and the resulting
+5-CONFIRMED / 8-REFUTED / 10-INSUFFICIENT verdict was withdrawn. **The tell:** four strategies
+(`hull_rsi`, `macd_crossover`, `stochrsi_overbought_short`, `williams_stoch_dual`) had an exit
+reassignment and *no entry change whatsoever*, yet their fire counts moved 0.98x / 0.64x / 0.29x
+/ 0.21x between runs. An exit method cannot change whether a signal fires, so 100% of that
+movement was confound - up to a **79% swing with zero attributable cause**, larger than every
+effect being measured. A second tell pointed the same way: several *tightened* strategies showed
+*more* fires in R6 than R5, which a filter cannot produce. **Mechanism:** `max_candidates_per_day`
+(30) makes daily trade selection a competition across the entire registered roster, so shrinking
+the roster from 222 to 23 changes which signals become trades independently of any gate change;
+portfolio state and sizing then diverge downstream. **Rule:** only *within-run* comparisons are
+sound - exit-cube cells scored over one identical trade set are safe, and that is exactly the
+comparison that survived and produced the B1429 default-exit finding. To A/B a gate change, the
+control run must hold roster, universe and cap fixed and vary only the gate. Generalizes to every
+future targeted re-run, and it is why `STRATEGY_SUBSET_FILE` runs can measure *levels* but never
+*deltas versus a full-roster baseline*.
+
+### L261
+**A guard checked at proposal time is not a guard unless it is re-asserted after application.**
+(B1428/B1429.) The tightening instrument required a filter to retain >=20% of a strategy's fires.
+All 18 filters passed that floor when proposed - predicted retention 0.25-0.75. Measured after
+application on the same IS window and tickers, five delivered **0.098 / 0.108 / 0.110 / 0.185 /
+0.198**, every one below the floor they had cleared. Nothing failed loudly; the strategies simply
+went quiet and would have been misread as "starved" and queued for *loosening* - the exact
+opposite of the correct action. Predicted-vs-realised diverged because the proposal estimated
+coverage from a signal-stack approximation rather than from the engine's own post-gate fire
+counts. **Rule:** any guard expressed as a threshold on a post-change quantity must be re-measured
+from the artifact after the change ships, and must fail loudly on breach. Proposal-time arithmetic
+is a forecast, not a verification. Same class as the WIRED-vs-verified distinction in
+`feedback_designed_vs_verified_requires_evidence_artifact`.
+
+### L262
+**Win rate is not a quality measure; win rate x payoff is.** (B1429, owner decision D.) A 40%
+win-rate floor was set after observing that profitable strategies were running 20-25%. Applied to
+the R6 holdout exit cube it eliminated `breakeven_plus_trail` (WR 0.247) - the single profitable
+exit of 26, and the *only* one passing both criteria the project already enforces: profit factor
+>1.5 (measured 1.60) and win/loss ratio >1.0 (measured 4.87). The compliant alternative,
+`hybrid_50pct_target`, wins 55% of the time with an average win of +7.87 against an average loss
+of **-8.72** - W/L 0.90, PF 1.11, failing both. The floor would have selected a negative-skew
+profile over a positive-skew one on the strength of the metric that ignores skew. Owner resolved:
+judge exits on PF + W/L, no WR gate. **Rule:** when a proposed gate on one metric would reject a
+candidate that passes the existing gates on related metrics, surface the conflict with the
+decomposition (WR, avg win, avg loss, W/L, PF, expectancy) before applying either - the conflict
+is usually evidence the new gate is measuring something the old ones already cover better.

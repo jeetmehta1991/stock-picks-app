@@ -1,0 +1,1197 @@
+{
+  "generated": "B1428",
+  "basis": "R5 restricted to the same 150 tickers; fires reported as ratio, not counts",
+  "conventions": {
+    "winsorize": 300.0,
+    "cost_bps": 20.0,
+    "min_holdout_n": 30
+  },
+  "windows": {
+    "is": [
+      "2022-05-05",
+      "2025-05-05"
+    ],
+    "holdout": [
+      "2025-05-05",
+      "2026-05-05"
+    ]
+  },
+  "summary": {
+    "CONFIRMED": 5,
+    "REFUTED": 8,
+    "INSUFFICIENT_DATA": 10
+  },
+  "grades": [
+    {
+      "strategy": "awesome_oscillator",
+      "change_kinds": [
+        "ENTRY"
+      ],
+      "evaluated_at_exit": "atr_trail_1x",
+      "entry_change": {
+        "treatment": "TIGHTEN",
+        "segment": "HIGH-FIRE",
+        "change": "ADD gate: pct_from_avwap_50low>=p25(-0.46)",
+        "prediction": "holdout expectancy > +2.111% (the unfiltered baseline) with >= 272 fires",
+        "expected": {
+          "fires": "757 -> 544",
+          "win_rate": "0.283 -> 0.318",
+          "expectancy_pct": "+2.111 -> +3.370",
+          "payoff": "5.028 -> 6.321"
+        }
+      },
+      "is": {
+        "r5": {
+          "fires": 191,
+          "exp": -0.9419,
+          "wr": 0.2723
+        },
+        "r6": {
+          "fires": 85,
+          "exp": -1.1931,
+          "wr": 0.2353
+        },
+        "fires_ratio": 0.445,
+        "d_exp": -0.2512,
+        "d_wr": -0.037
+      },
+      "holdout": {
+        "r5": {
+          "fires": 67,
+          "exp": -1.0948,
+          "wr": 0.194
+        },
+        "r6": {
+          "fires": 3,
+          "exp": 1.4126,
+          "wr": 0.3333
+        },
+        "fires_ratio": 0.045,
+        "d_exp": 2.5074,
+        "d_wr": 0.1393
+      },
+      "verdict": "INSUFFICIENT_DATA",
+      "verdict_why": "holdout fires=3 < 30"
+    },
+    {
+      "strategy": "break_retest_volume",
+      "change_kinds": [
+        "ENTRY"
+      ],
+      "evaluated_at_exit": "atr_trail_1x",
+      "entry_change": {
+        "treatment": "TIGHTEN",
+        "segment": "HIGH-FIRE",
+        "change": "ADD gate: ppo_hist>=p50(-0.2823)",
+        "prediction": "holdout expectancy > +0.238% (the unfiltered baseline) with >= 418 fires",
+        "expected": {
+          "fires": "1672 -> 836",
+          "win_rate": "0.242 -> 0.248",
+          "expectancy_pct": "+0.238 -> +2.716",
+          "payoff": "3.352 -> 6.501"
+        }
+      },
+      "is": {
+        "r5": {
+          "fires": 413,
+          "exp": -1.2111,
+          "wr": 0.2397
+        },
+        "r6": {
+          "fires": 414,
+          "exp": -1.2353,
+          "wr": 0.1957
+        },
+        "fires_ratio": 1.002,
+        "d_exp": -0.0242,
+        "d_wr": -0.044
+      },
+      "holdout": {
+        "r5": {
+          "fires": 119,
+          "exp": -1.3285,
+          "wr": 0.2101
+        },
+        "r6": {
+          "fires": 162,
+          "exp": -0.8419,
+          "wr": 0.2346
+        },
+        "fires_ratio": 1.361,
+        "d_exp": 0.4866,
+        "d_wr": 0.0245
+      },
+      "verdict": "CONFIRMED",
+      "verdict_why": "holdout d_exp=+0.487pp d_wr=+0.025"
+    },
+    {
+      "strategy": "camarilla_r4_breakout",
+      "change_kinds": [
+        "ENTRY"
+      ],
+      "evaluated_at_exit": "atr_trail_1x",
+      "entry_change": {
+        "treatment": "TIGHTEN",
+        "segment": "HIGH-FIRE",
+        "change": "ADD gate: xs_ivol>=p50(0.2598)",
+        "prediction": "holdout expectancy > +3.235% (the unfiltered baseline) with >= 1109 fires",
+        "expected": {
+          "fires": "4478 -> 2219",
+          "win_rate": "0.320 -> 0.390",
+          "expectancy_pct": "+3.235 -> +4.875",
+          "payoff": "4.989 -> 4.209"
+        }
+      },
+      "is": {
+        "r5": {
+          "fires": 1150,
+          "exp": -1.3132,
+          "wr": 0.2287
+        },
+        "r6": {
+          "fires": 360,
+          "exp": -1.6001,
+          "wr": 0.2472
+        },
+        "fires_ratio": 0.313,
+        "d_exp": -0.2869,
+        "d_wr": 0.0185
+      },
+      "holdout": {
+        "r5": {
+          "fires": 334,
+          "exp": -1.634,
+          "wr": 0.1946
+        },
+        "r6": {
+          "fires": 173,
+          "exp": -1.9285,
+          "wr": 0.1445
+        },
+        "fires_ratio": 0.518,
+        "d_exp": -0.2945,
+        "d_wr": -0.0501
+      },
+      "verdict": "REFUTED",
+      "verdict_why": "holdout d_exp=-0.294pp d_wr=-0.050"
+    },
+    {
+      "strategy": "cmf_flip",
+      "change_kinds": [
+        "ENTRY"
+      ],
+      "evaluated_at_exit": "atr_trail_1x",
+      "entry_change": {
+        "treatment": "TIGHTEN",
+        "segment": "HIGH-FIRE",
+        "change": "ADD gate: po3_accum_range_pct>=p25(0.0458)",
+        "prediction": "holdout expectancy > +2.191% (the unfiltered baseline) with >= 878 fires",
+        "expected": {
+          "fires": "2336 -> 1756",
+          "win_rate": "0.297 -> 0.326",
+          "expectancy_pct": "+2.191 -> +2.899",
+          "payoff": "4.727 -> 4.616"
+        }
+      },
+      "is": {
+        "r5": {
+          "fires": 588,
+          "exp": -1.1465,
+          "wr": 0.2432
+        },
+        "r6": {
+          "fires": 159,
+          "exp": -0.8877,
+          "wr": 0.3522
+        },
+        "fires_ratio": 0.27,
+        "d_exp": 0.2588,
+        "d_wr": 0.109
+      },
+      "holdout": {
+        "r5": {
+          "fires": 153,
+          "exp": -1.2421,
+          "wr": 0.2222
+        },
+        "r6": {
+          "fires": 17,
+          "exp": -1.4741,
+          "wr": 0.1765
+        },
+        "fires_ratio": 0.111,
+        "d_exp": -0.232,
+        "d_wr": -0.0457
+      },
+      "verdict": "INSUFFICIENT_DATA",
+      "verdict_why": "holdout fires=17 < 30"
+    },
+    {
+      "strategy": "dc20_break_retest",
+      "change_kinds": [
+        "ENTRY"
+      ],
+      "evaluated_at_exit": "atr_trail_1x",
+      "entry_change": {
+        "treatment": "TIGHTEN",
+        "segment": "HIGH-FIRE",
+        "change": "ADD gate: ppo_hist>=p50(-0.2513)",
+        "prediction": "holdout expectancy > +0.056% (the unfiltered baseline) with >= 468 fires",
+        "expected": {
+          "fires": "1874 -> 937",
+          "win_rate": "0.232 -> 0.234",
+          "expectancy_pct": "+0.056 -> +2.315",
+          "payoff": "3.361 -> 6.389"
+        }
+      },
+      "is": {
+        "r5": {
+          "fires": 471,
+          "exp": -1.2648,
+          "wr": 0.2314
+        },
+        "r6": {
+          "fires": 457,
+          "exp": -1.3114,
+          "wr": 0.1926
+        },
+        "fires_ratio": 0.97,
+        "d_exp": -0.0466,
+        "d_wr": -0.0388
+      },
+      "holdout": {
+        "r5": {
+          "fires": 130,
+          "exp": -1.3324,
+          "wr": 0.2154
+        },
+        "r6": {
+          "fires": 182,
+          "exp": -0.8835,
+          "wr": 0.2308
+        },
+        "fires_ratio": 1.4,
+        "d_exp": 0.4489,
+        "d_wr": 0.0154
+      },
+      "verdict": "CONFIRMED",
+      "verdict_why": "holdout d_exp=+0.449pp d_wr=+0.015"
+    },
+    {
+      "strategy": "hull_rsi",
+      "change_kinds": [
+        "EXIT"
+      ],
+      "evaluated_at_exit": "breakeven_plus_trail",
+      "exit_change": {
+        "from": "next_pivot_target",
+        "to": "breakeven_plus_trail",
+        "predicted_margin": 1.2443,
+        "predicted_exp": 0.7888,
+        "predicted_wr": 0.2883
+      },
+      "is": {
+        "r5": {
+          "fires": 230,
+          "exp": 0.4401,
+          "wr": 0.2522
+        },
+        "r6": {
+          "fires": 225,
+          "exp": -0.5204,
+          "wr": 0.2133
+        },
+        "fires_ratio": 0.978,
+        "d_exp": -0.9605,
+        "d_wr": -0.0389
+      },
+      "holdout": {
+        "r5": {
+          "fires": 79,
+          "exp": 2.5918,
+          "wr": 0.4304
+        },
+        "r6": {
+          "fires": 62,
+          "exp": 0.4253,
+          "wr": 0.2419
+        },
+        "fires_ratio": 0.785,
+        "d_exp": -2.1665,
+        "d_wr": -0.1885
+      },
+      "verdict": "REFUTED",
+      "verdict_why": "holdout d_exp=-2.167pp d_wr=-0.189"
+    },
+    {
+      "strategy": "ichimoku_tk_cross",
+      "change_kinds": [
+        "ENTRY"
+      ],
+      "evaluated_at_exit": "atr_trail_1x",
+      "entry_change": {
+        "treatment": "TIGHTEN",
+        "segment": "HIGH-FIRE",
+        "change": "ADD gate: news_sentiment_5d>=p25(0)",
+        "prediction": "holdout expectancy > +1.691% (the unfiltered baseline) with >= 472 fires",
+        "expected": {
+          "fires": "1013 -> 945",
+          "win_rate": "0.265 -> 0.269",
+          "expectancy_pct": "+1.691 -> +1.909",
+          "payoff": "4.796 -> 4.995"
+        }
+      },
+      "is": {
+        "r5": {
+          "fires": 243,
+          "exp": -1.5353,
+          "wr": 0.1811
+        },
+        "r6": {
+          "fires": 146,
+          "exp": -1.5684,
+          "wr": 0.1712
+        },
+        "fires_ratio": 0.601,
+        "d_exp": -0.0331,
+        "d_wr": -0.0099
+      },
+      "holdout": {
+        "r5": {
+          "fires": 76,
+          "exp": -0.9347,
+          "wr": 0.2368
+        },
+        "r6": {
+          "fires": 71,
+          "exp": -1.43,
+          "wr": 0.1127
+        },
+        "fires_ratio": 0.934,
+        "d_exp": -0.4953,
+        "d_wr": -0.1241
+      },
+      "verdict": "REFUTED",
+      "verdict_why": "holdout d_exp=-0.495pp d_wr=-0.124"
+    },
+    {
+      "strategy": "institutional_volume_confirmation_long",
+      "change_kinds": [
+        "ENTRY"
+      ],
+      "evaluated_at_exit": "atr_trail_1x",
+      "entry_change": {
+        "treatment": "TIGHTEN",
+        "segment": "HIGH-FIRE",
+        "change": "ADD gate: stoch_d>=p25(45.63)",
+        "prediction": "holdout expectancy > +3.203% (the unfiltered baseline) with >= 409 fires",
+        "expected": {
+          "fires": "1092 -> 819",
+          "win_rate": "0.316 -> 0.327",
+          "expectancy_pct": "+3.203 -> +3.647",
+          "payoff": "5.481 -> 5.797"
+        }
+      },
+      "is": {
+        "r5": {
+          "fires": 266,
+          "exp": -1.1701,
+          "wr": 0.2368
+        },
+        "r6": {
+          "fires": 383,
+          "exp": -1.2066,
+          "wr": 0.2193
+        },
+        "fires_ratio": 1.44,
+        "d_exp": -0.0365,
+        "d_wr": -0.0175
+      },
+      "holdout": {
+        "r5": {
+          "fires": 77,
+          "exp": -1.5062,
+          "wr": 0.1818
+        },
+        "r6": {
+          "fires": 163,
+          "exp": -1.5098,
+          "wr": 0.184
+        },
+        "fires_ratio": 2.117,
+        "d_exp": -0.0036,
+        "d_wr": 0.0022
+      },
+      "verdict": "REFUTED",
+      "verdict_why": "holdout d_exp=-0.004pp d_wr=+0.002"
+    },
+    {
+      "strategy": "m_and_a_target_long",
+      "change_kinds": [
+        "ENTRY"
+      ],
+      "evaluated_at_exit": "atr_trail_1x",
+      "entry_change": {
+        "treatment": "TIGHTEN",
+        "segment": "HIGH-FIRE",
+        "change": "ADD gate: po3_accum_range_pct>=p25(0.0556)",
+        "prediction": "holdout expectancy > +5.314% (the unfiltered baseline) with >= 281 fires",
+        "expected": {
+          "fires": "749 -> 562",
+          "win_rate": "0.598 -> 0.639",
+          "expectancy_pct": "+5.314 -> +7.279",
+          "payoff": "1.526 -> 1.618"
+        }
+      },
+      "is": {
+        "r5": {
+          "fires": 193,
+          "exp": -1.484,
+          "wr": 0.2021
+        },
+        "r6": {
+          "fires": 92,
+          "exp": -1.263,
+          "wr": 0.2065
+        },
+        "fires_ratio": 0.477,
+        "d_exp": 0.221,
+        "d_wr": 0.0044
+      },
+      "holdout": {
+        "r5": {
+          "fires": 67,
+          "exp": -1.831,
+          "wr": 0.1642
+        },
+        "r6": {
+          "fires": 51,
+          "exp": -1.324,
+          "wr": 0.2745
+        },
+        "fires_ratio": 0.761,
+        "d_exp": 0.507,
+        "d_wr": 0.1103
+      },
+      "verdict": "CONFIRMED",
+      "verdict_why": "holdout d_exp=+0.507pp d_wr=+0.110"
+    },
+    {
+      "strategy": "macd_crossover",
+      "change_kinds": [
+        "EXIT"
+      ],
+      "evaluated_at_exit": "breakeven_plus_trail",
+      "exit_change": {
+        "from": "time_stop_10d",
+        "to": "breakeven_plus_trail",
+        "predicted_margin": 2.166,
+        "predicted_exp": 2.041,
+        "predicted_wr": 0.3014
+      },
+      "is": {
+        "r5": {
+          "fires": 535,
+          "exp": 1.6984,
+          "wr": 0.2916
+        },
+        "r6": {
+          "fires": 340,
+          "exp": 0.0836,
+          "wr": 0.2294
+        },
+        "fires_ratio": 0.636,
+        "d_exp": -1.6148,
+        "d_wr": -0.0622
+      },
+      "holdout": {
+        "r5": {
+          "fires": 164,
+          "exp": 3.232,
+          "wr": 0.372
+        },
+        "r6": {
+          "fires": 133,
+          "exp": 1.7371,
+          "wr": 0.2632
+        },
+        "fires_ratio": 0.811,
+        "d_exp": -1.4949,
+        "d_wr": -0.1088
+      },
+      "verdict": "REFUTED",
+      "verdict_why": "holdout d_exp=-1.495pp d_wr=-0.109"
+    },
+    {
+      "strategy": "macd_crossover_short",
+      "change_kinds": [
+        "ENTRY"
+      ],
+      "evaluated_at_exit": "atr_trail_1x",
+      "entry_change": {
+        "treatment": "TIGHTEN",
+        "segment": "HIGH-FIRE",
+        "change": "ADD gate: weekly_momentum_4w>=p25(-0.0013)",
+        "prediction": "holdout expectancy > +0.222% (the unfiltered baseline) with >= 413 fires",
+        "expected": {
+          "fires": "1102 -> 826",
+          "win_rate": "0.254 -> 0.263",
+          "expectancy_pct": "+0.222 -> +0.934",
+          "payoff": "3.216 -> 4.205"
+        }
+      },
+      "is": {
+        "r5": {
+          "fires": 254,
+          "exp": -1.5003,
+          "wr": 0.1654
+        },
+        "r6": {
+          "fires": 28,
+          "exp": -1.8764,
+          "wr": 0.1429
+        },
+        "fires_ratio": 0.11,
+        "d_exp": -0.3761,
+        "d_wr": -0.0225
+      },
+      "holdout": {
+        "r5": {
+          "fires": 102,
+          "exp": -1.2843,
+          "wr": 0.1961
+        },
+        "r6": {
+          "fires": 3,
+          "exp": -1.5989,
+          "wr": 0.3333
+        },
+        "fires_ratio": 0.029,
+        "d_exp": -0.3146,
+        "d_wr": 0.1372
+      },
+      "verdict": "INSUFFICIENT_DATA",
+      "verdict_why": "holdout fires=3 < 30"
+    },
+    {
+      "strategy": "morning_star",
+      "change_kinds": [
+        "ENTRY",
+        "EXIT"
+      ],
+      "evaluated_at_exit": "breakeven_plus_trail",
+      "exit_change": {
+        "from": "time_stop_10d",
+        "to": "breakeven_plus_trail",
+        "predicted_margin": 2.3287,
+        "predicted_exp": 2.3404,
+        "predicted_wr": 0.262
+      },
+      "entry_change": {
+        "treatment": "TIGHTEN",
+        "segment": "HIGH-FIRE",
+        "change": "ADD gate: squeeze_momentum<=p50(0.0096)",
+        "prediction": "holdout expectancy > +2.340% (the unfiltered baseline) with >= 417 fires",
+        "expected": {
+          "fires": "1668 -> 834",
+          "win_rate": "0.262 -> 0.296",
+          "expectancy_pct": "+2.340 -> +4.236",
+          "payoff": "6.081 -> 7.432"
+        }
+      },
+      "is": {
+        "r5": {
+          "fires": 437,
+          "exp": 1.3904,
+          "wr": 0.2563
+        },
+        "r6": {
+          "fires": 162,
+          "exp": 0.4924,
+          "wr": 0.2222
+        },
+        "fires_ratio": 0.371,
+        "d_exp": -0.898,
+        "d_wr": -0.0341
+      },
+      "holdout": {
+        "r5": {
+          "fires": 148,
+          "exp": -0.122,
+          "wr": 0.2568
+        },
+        "r6": {
+          "fires": 56,
+          "exp": 0.9625,
+          "wr": 0.25
+        },
+        "fires_ratio": 0.378,
+        "d_exp": 1.0845,
+        "d_wr": -0.0068
+      },
+      "verdict": "CONFIRMED",
+      "verdict_why": "holdout d_exp=+1.085pp d_wr=-0.007"
+    },
+    {
+      "strategy": "news_momentum_long",
+      "change_kinds": [
+        "ENTRY"
+      ],
+      "evaluated_at_exit": "atr_trail_1x",
+      "entry_change": {
+        "treatment": "LOOSEN",
+        "segment": "STARVED",
+        "change": "RELAX news_volume_zscore_5d by x1.1 -> threshold 0.90909",
+        "prediction": "fires rise from 96 toward >= 100 (min_trades) and expectancy does not fall below the current level",
+        "expected": {
+          "fires_now_full_universe": 96,
+          "fires_after_full_universe": 311,
+          "admission_ratio": 3.24,
+          "raw_extra_fires_on_40_tickers": 14,
+          "fwd_return_of_new_trades_pct": 3.63,
+          "clause_lift_ceiling": 2.025
+        }
+      },
+      "is": {
+        "r5": {
+          "fires": 32,
+          "exp": -1.2944,
+          "wr": 0.25
+        },
+        "r6": {
+          "fires": 43,
+          "exp": -1.6566,
+          "wr": 0.1628
+        },
+        "fires_ratio": 1.344,
+        "d_exp": -0.3622,
+        "d_wr": -0.0872
+      },
+      "holdout": {
+        "r5": {
+          "fires": 4,
+          "exp": -1.6668,
+          "wr": 0.0
+        },
+        "r6": {
+          "fires": 23,
+          "exp": -2.5869,
+          "wr": 0.0435
+        },
+        "fires_ratio": 5.75,
+        "d_exp": -0.9201,
+        "d_wr": 0.0435
+      },
+      "verdict": "INSUFFICIENT_DATA",
+      "verdict_why": "holdout fires=23 < 30"
+    },
+    {
+      "strategy": "pairs_mean_reversion_long",
+      "change_kinds": [
+        "ENTRY"
+      ],
+      "evaluated_at_exit": "atr_trail_1x",
+      "entry_change": {
+        "treatment": "TIGHTEN",
+        "segment": "HIGH-FIRE",
+        "change": "ADD gate: vp_close_near_poc_pct>=p75(0.1369)",
+        "prediction": "holdout expectancy > +6.611% (the unfiltered baseline) with >= 473 fires",
+        "expected": {
+          "fires": "3775 -> 946",
+          "win_rate": "0.607 -> 0.669",
+          "expectancy_pct": "+6.611 -> +17.109",
+          "payoff": "1.522 -> 2.341"
+        }
+      },
+      "is": {
+        "r5": {
+          "fires": 948,
+          "exp": -1.3905,
+          "wr": 0.2489
+        },
+        "r6": {
+          "fires": 102,
+          "exp": -1.2619,
+          "wr": 0.2941
+        },
+        "fires_ratio": 0.108,
+        "d_exp": 0.1286,
+        "d_wr": 0.0452
+      },
+      "holdout": {
+        "r5": {
+          "fires": 319,
+          "exp": -1.7667,
+          "wr": 0.2163
+        },
+        "r6": {
+          "fires": 7,
+          "exp": -1.1165,
+          "wr": 0.2857
+        },
+        "fires_ratio": 0.022,
+        "d_exp": 0.6502,
+        "d_wr": 0.0694
+      },
+      "verdict": "INSUFFICIENT_DATA",
+      "verdict_why": "holdout fires=7 < 30"
+    },
+    {
+      "strategy": "pairs_mean_reversion_short",
+      "change_kinds": [
+        "ENTRY"
+      ],
+      "evaluated_at_exit": "atr_trail_1x",
+      "entry_change": {
+        "treatment": "TIGHTEN",
+        "segment": "HIGH-FIRE",
+        "change": "ADD gate: ppo_signal>=p25(-0.858)",
+        "prediction": "holdout expectancy > -0.623% (the unfiltered baseline) with >= 1620 fires",
+        "expected": {
+          "fires": "4320 -> 3240",
+          "win_rate": "0.221 -> 0.228",
+          "expectancy_pct": "-0.623 -> +0.216",
+          "payoff": "2.778 -> 3.696"
+        }
+      },
+      "is": {
+        "r5": {
+          "fires": 1054,
+          "exp": -1.5049,
+          "wr": 0.1841
+        },
+        "r6": {
+          "fires": 568,
+          "exp": -0.9982,
+          "wr": 0.2042
+        },
+        "fires_ratio": 0.539,
+        "d_exp": 0.5067,
+        "d_wr": 0.0201
+      },
+      "holdout": {
+        "r5": {
+          "fires": 298,
+          "exp": -1.4976,
+          "wr": 0.1779
+        },
+        "r6": {
+          "fires": 246,
+          "exp": -1.1914,
+          "wr": 0.1829
+        },
+        "fires_ratio": 0.826,
+        "d_exp": 0.3062,
+        "d_wr": 0.005
+      },
+      "verdict": "CONFIRMED",
+      "verdict_why": "holdout d_exp=+0.306pp d_wr=+0.005"
+    },
+    {
+      "strategy": "pead_with_smart_money_long",
+      "change_kinds": [
+        "ENTRY"
+      ],
+      "evaluated_at_exit": "atr_trail_1x",
+      "entry_change": {
+        "treatment": "TIGHTEN",
+        "segment": "HIGH-FIRE",
+        "change": "ADD gate: ppo_signal<=p25(-1.959)",
+        "prediction": "holdout expectancy > +5.481% (the unfiltered baseline) with >= 69 fires",
+        "expected": {
+          "fires": "550 -> 138",
+          "win_rate": "0.622 -> 0.696",
+          "expectancy_pct": "+5.481 -> +10.817",
+          "payoff": "1.457 -> 1.852"
+        }
+      },
+      "is": {
+        "r5": {
+          "fires": 132,
+          "exp": -0.3479,
+          "wr": 0.3106
+        },
+        "r6": {
+          "fires": 13,
+          "exp": -1.3263,
+          "wr": 0.2308
+        },
+        "fires_ratio": 0.098,
+        "d_exp": -0.9784,
+        "d_wr": -0.0798
+      },
+      "holdout": {
+        "r5": {
+          "fires": 21,
+          "exp": -1.211,
+          "wr": 0.2381
+        },
+        "r6": {
+          "fires": 3,
+          "exp": -2.7728,
+          "wr": 0.0
+        },
+        "fires_ratio": 0.143,
+        "d_exp": -1.5618,
+        "d_wr": -0.2381
+      },
+      "verdict": "INSUFFICIENT_DATA",
+      "verdict_why": "holdout fires=3 < 30"
+    },
+    {
+      "strategy": "ppo_crossover",
+      "change_kinds": [
+        "ENTRY"
+      ],
+      "evaluated_at_exit": "atr_trail_1x",
+      "entry_change": {
+        "treatment": "TIGHTEN",
+        "segment": "HIGH-FIRE",
+        "change": "ADD gate: rsi_2>=p50(53.87)",
+        "prediction": "holdout expectancy > +2.118% (the unfiltered baseline) with >= 298 fires",
+        "expected": {
+          "fires": "1194 -> 597",
+          "win_rate": "0.553 -> 0.615",
+          "expectancy_pct": "+2.118 -> +4.997",
+          "payoff": "1.183 -> 1.469"
+        }
+      },
+      "is": {
+        "r5": {
+          "fires": 293,
+          "exp": -1.1882,
+          "wr": 0.2287
+        },
+        "r6": {
+          "fires": 58,
+          "exp": -1.0222,
+          "wr": 0.3276
+        },
+        "fires_ratio": 0.198,
+        "d_exp": 0.166,
+        "d_wr": 0.0989
+      },
+      "holdout": {
+        "r5": {
+          "fires": 93,
+          "exp": -0.9009,
+          "wr": 0.2473
+        },
+        "r6": {
+          "fires": 10,
+          "exp": -1.9457,
+          "wr": 0.1
+        },
+        "fires_ratio": 0.108,
+        "d_exp": -1.0448,
+        "d_wr": -0.1473
+      },
+      "verdict": "INSUFFICIENT_DATA",
+      "verdict_why": "holdout fires=10 < 30"
+    },
+    {
+      "strategy": "simple_below_ema_50_short",
+      "change_kinds": [
+        "ENTRY"
+      ],
+      "evaluated_at_exit": "atr_trail_1x",
+      "entry_change": {
+        "treatment": "TIGHTEN",
+        "segment": "HIGH-FIRE",
+        "change": "ADD gate: committed_growth_holders>=p50(3)",
+        "prediction": "holdout expectancy > -0.116% (the unfiltered baseline) with >= 671 fires",
+        "expected": {
+          "fires": "2534 -> 1342",
+          "win_rate": "0.254 -> 0.276",
+          "expectancy_pct": "-0.116 -> +0.357",
+          "payoff": "2.81 -> 2.963"
+        }
+      },
+      "is": {
+        "r5": {
+          "fires": 626,
+          "exp": -1.5539,
+          "wr": 0.1933
+        },
+        "r6": {
+          "fires": 137,
+          "exp": -2.3561,
+          "wr": 0.146
+        },
+        "fires_ratio": 0.219,
+        "d_exp": -0.8022,
+        "d_wr": -0.0473
+      },
+      "holdout": {
+        "r5": {
+          "fires": 194,
+          "exp": -1.8438,
+          "wr": 0.1237
+        },
+        "r6": {
+          "fires": 40,
+          "exp": -2.0539,
+          "wr": 0.05
+        },
+        "fires_ratio": 0.206,
+        "d_exp": -0.2101,
+        "d_wr": -0.0737
+      },
+      "verdict": "REFUTED",
+      "verdict_why": "holdout d_exp=-0.210pp d_wr=-0.074"
+    },
+    {
+      "strategy": "stochrsi_overbought_short",
+      "change_kinds": [
+        "EXIT"
+      ],
+      "evaluated_at_exit": "breakeven_plus_trail",
+      "exit_change": {
+        "from": "class_time_stop",
+        "to": "breakeven_plus_trail",
+        "predicted_margin": 1.415,
+        "predicted_exp": -0.136,
+        "predicted_wr": 0.2446
+      },
+      "is": {
+        "r5": {
+          "fires": 787,
+          "exp": -0.0729,
+          "wr": 0.2452
+        },
+        "r6": {
+          "fires": 226,
+          "exp": 1.1698,
+          "wr": 0.3805
+        },
+        "fires_ratio": 0.287,
+        "d_exp": 1.2427,
+        "d_wr": 0.1353
+      },
+      "holdout": {
+        "r5": {
+          "fires": 268,
+          "exp": -0.8346,
+          "wr": 0.1978
+        },
+        "r6": {
+          "fires": 42,
+          "exp": -1.4235,
+          "wr": 0.2143
+        },
+        "fires_ratio": 0.157,
+        "d_exp": -0.5889,
+        "d_wr": 0.0165
+      },
+      "verdict": "REFUTED",
+      "verdict_why": "holdout d_exp=-0.589pp d_wr=+0.017"
+    },
+    {
+      "strategy": "tema_dema",
+      "change_kinds": [
+        "ENTRY",
+        "EXIT"
+      ],
+      "evaluated_at_exit": "breakeven_plus_trail",
+      "exit_change": {
+        "from": "next_pivot_target",
+        "to": "breakeven_plus_trail",
+        "predicted_margin": 2.4313,
+        "predicted_exp": 2.4641,
+        "predicted_wr": 0.3003
+      },
+      "entry_change": {
+        "treatment": "TIGHTEN",
+        "segment": "HIGH-FIRE",
+        "change": "ADD gate: ao<=p75(2.866)",
+        "prediction": "holdout expectancy > +2.464% (the unfiltered baseline) with >= 533 fires",
+        "expected": {
+          "fires": "1422 -> 1066",
+          "win_rate": "0.300 -> 0.335",
+          "expectancy_pct": "+2.464 -> +3.257",
+          "payoff": "4.992 -> 4.858"
+        }
+      },
+      "is": {
+        "r5": {
+          "fires": 341,
+          "exp": 1.8977,
+          "wr": 0.3196
+        },
+        "r6": {
+          "fires": 118,
+          "exp": -0.9429,
+          "wr": 0.1695
+        },
+        "fires_ratio": 0.346,
+        "d_exp": -2.8406,
+        "d_wr": -0.1501
+      },
+      "holdout": {
+        "r5": {
+          "fires": 112,
+          "exp": 0.3583,
+          "wr": 0.2679
+        },
+        "r6": {
+          "fires": 12,
+          "exp": 11.6837,
+          "wr": 0.6667
+        },
+        "fires_ratio": 0.107,
+        "d_exp": 11.3254,
+        "d_wr": 0.3988
+      },
+      "verdict": "INSUFFICIENT_DATA",
+      "verdict_why": "holdout fires=12 < 30"
+    },
+    {
+      "strategy": "williams_stoch_dual",
+      "change_kinds": [
+        "EXIT"
+      ],
+      "evaluated_at_exit": "breakeven_plus_trail",
+      "exit_change": {
+        "from": "next_pivot_target",
+        "to": "breakeven_plus_trail",
+        "predicted_margin": 1.0371,
+        "predicted_exp": 0.9401,
+        "predicted_wr": 0.2295
+      },
+      "is": {
+        "r5": {
+          "fires": 137,
+          "exp": 0.8198,
+          "wr": 0.219
+        },
+        "r6": {
+          "fires": 29,
+          "exp": -1.0502,
+          "wr": 0.1379
+        },
+        "fires_ratio": 0.212,
+        "d_exp": -1.87,
+        "d_wr": -0.0811
+      },
+      "holdout": {
+        "r5": {
+          "fires": 39,
+          "exp": 0.3812,
+          "wr": 0.2821
+        },
+        "r6": {
+          "fires": 0,
+          "exp": null,
+          "wr": null
+        },
+        "fires_ratio": 0.0,
+        "d_exp": null,
+        "d_wr": null
+      },
+      "verdict": "INSUFFICIENT_DATA",
+      "verdict_why": "holdout fires=0 < 30"
+    },
+    {
+      "strategy": "xs_low_beta_with_smart_money_long",
+      "change_kinds": [
+        "ENTRY"
+      ],
+      "evaluated_at_exit": "atr_trail_1x",
+      "entry_change": {
+        "treatment": "TIGHTEN",
+        "segment": "HIGH-FIRE",
+        "change": "ADD gate: pair_half_life>=p25(6.55)",
+        "prediction": "holdout expectancy > +1.437% (the unfiltered baseline) with >= 134 fires",
+        "expected": {
+          "fires": "379 -> 268",
+          "win_rate": "0.335 -> 0.381",
+          "expectancy_pct": "+1.437 -> +4.087",
+          "payoff": "2.398 -> 2.676"
+        }
+      },
+      "is": {
+        "r5": {
+          "fires": 105,
+          "exp": -0.8341,
+          "wr": 0.2857
+        },
+        "r6": {
+          "fires": 67,
+          "exp": -0.7146,
+          "wr": 0.209
+        },
+        "fires_ratio": 0.638,
+        "d_exp": 0.1195,
+        "d_wr": -0.0767
+      },
+      "holdout": {
+        "r5": {
+          "fires": 27,
+          "exp": -0.212,
+          "wr": 0.3333
+        },
+        "r6": {
+          "fires": 36,
+          "exp": -0.8951,
+          "wr": 0.2778
+        },
+        "fires_ratio": 1.333,
+        "d_exp": -0.6831,
+        "d_wr": -0.0555
+      },
+      "verdict": "REFUTED",
+      "verdict_why": "holdout d_exp=-0.683pp d_wr=-0.056"
+    },
+    {
+      "strategy": "xs_momentum_bottom_decile_short",
+      "change_kinds": [
+        "ENTRY"
+      ],
+      "evaluated_at_exit": "atr_trail_1x",
+      "entry_change": {
+        "treatment": "TIGHTEN",
+        "segment": "HIGH-FIRE",
+        "change": "ADD gate: xs_max_anomaly<=p50(0.0648)",
+        "prediction": "holdout expectancy > -1.215% (the unfiltered baseline) with >= 264 fires",
+        "expected": {
+          "fires": "1062 -> 529",
+          "win_rate": "0.427 -> 0.548",
+          "expectancy_pct": "-1.215 -> +0.525",
+          "payoff": "1.065 -> 0.918"
+        }
+      },
+      "is": {
+        "r5": {
+          "fires": 271,
+          "exp": -1.6397,
+          "wr": 0.2251
+        },
+        "r6": {
+          "fires": 50,
+          "exp": -1.1951,
+          "wr": 0.28
+        },
+        "fires_ratio": 0.185,
+        "d_exp": 0.4446,
+        "d_wr": 0.0549
+      },
+      "holdout": {
+        "r5": {
+          "fires": 100,
+          "exp": -1.6743,
+          "wr": 0.21
+        },
+        "r6": {
+          "fires": 8,
+          "exp": -2.3679,
+          "wr": 0.25
+        },
+        "fires_ratio": 0.08,
+        "d_exp": -0.6936,
+        "d_wr": 0.04
+      },
+      "verdict": "INSUFFICIENT_DATA",
+      "verdict_why": "holdout fires=8 < 30"
+    }
+  ]
+}
