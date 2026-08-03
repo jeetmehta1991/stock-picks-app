@@ -4274,3 +4274,25 @@ caught it was redundancy** - a second, independent enumeration running in parall
 discipline. Generalized detection signal: when a claim is "I enumerated X and found N", state N
 against the DENOMINATOR (N of M) and show the M; "7 candidates" hid that M was 10 and read was 1.
 A count without its denominator is not an enumeration, it is a sample.
+
+### L268
+**A ticket's stated cause is a claim and carries the same evidence burden as any other — an
+unverified diagnosis propagates as fact because tickets are read as conclusions.** (B1434,
+self-caught.) Ticket S6-B1419 asserted "classification_change cluster dead - producer never emits
+new_sector/prior_sector". Every part was wrong, verified this turn: the producer
+`get_classification_change_signals` IS implemented and emits all six keys including
+`new_sector`/`prior_sector` (`backtest/data/universe.py:668-679`); it IS wired into the signal
+dict (`backtest/data/signal_loader.py:312`); a test already pins that wiring
+(`test_batch557_phase1a_beta_classification_cluster_verdict.py:56`); `sector_history.csv` exists
+with 44 rows / 22 tickers; and `new_sector`/`prior_sector` are **context strings for display, not
+gates at all** - the actual gate is `classification_changed_recent`. **The real cause is data
+scarcity:** the file spans 2018-09-24 -> 2023-03-17 and the entire 4-year backtest window contains
+**14 reclassification events on one single date (2023-03-17)**. Nine strategies each layering
+further gates (retest, EMA-200, insider, institutional) on top of 14 ticker-days cannot produce
+cube evidence, and no gate-loosening changes that - they are structurally starved, not
+mis-tuned. **This is a COMPLIANCE failure, not a missing rule** (CHECKLIST #136): the B1335 RCA
+EVIDENCE-TAGGING rule already requires DERIVED/UNVERIFIED causal claims to be worded "hypothesis",
+never "root cause". I wrote a root-cause assertion into a ticket without executing the call path.
+**Detection signal:** any ticket whose body names a cause but cites no command output is
+UNVERIFIED; before acting on or repeating it, run the path. Cheapest possible check here would
+have been one grep for the producer name - it would have failed the claim in seconds.

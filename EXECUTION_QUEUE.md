@@ -6826,3 +6826,54 @@ with M shown - a count without its denominator is a sample, not an enumeration.
 
 Pyramid 885 passed / 2 skipped (unchanged - no code touched).
 R6b cube run continues; no config change made as a result of this finding.
+
+## B1434 (2026-08-03) - disposition the 26 uncubed strategies + CORRECT ticket S6-B1419
+
+**S6-B1419 IS WRONG - CLOSED AS MISDIAGNOSED.** It claimed "classification_change cluster dead -
+producer never emits new_sector/prior_sector". Verified this turn, all four parts false:
+- producer `get_classification_change_signals` IS implemented, emits all 6 keys incl.
+  new_sector/prior_sector (`backtest/data/universe.py:668-679`)
+- IS wired into the signal dict (`backtest/data/signal_loader.py:312`)
+- a test already pins the wiring (`test_batch557_phase1a_beta_classification_cluster_verdict.py:56`)
+- `new_sector`/`prior_sector` are CONTEXT STRINGS, not gates. The gate is
+  `classification_changed_recent`.
+**Actual cause: data scarcity.** `sector_history.csv` spans 2018-09-24 -> 2023-03-17; the whole
+2022-05-05..2026-05-05 window holds **14 reclassification events on ONE date (2023-03-17)**.
+LEARNINGS L268 (a ticket's stated cause carries the same evidence burden as any claim).
+
+**THE 26 STRATEGIES WITH NO CUBE EVIDENCE (222 registered - 196 in R5 cube), dispositioned:**
+
+*Group 1 - postdate the cube (3). NOT silent. Action: include in next cube run.*
+news_sentiment_short, poc_magnet_short, xs_combined_momentum_high_ivol_short
+(wired B1382 2026-07-25; R5 cube artifact dated 2026-07-24 - one day earlier.)
+
+*Group 2 - STRUCTURALLY STARVED by data, not mis-tuned (9). Action: mark starved, do NOT loosen.*
+classification_change_{breakout_long, from_tech_short, momentum_long, oversold_long, recent_long,
+to_tech_long, volume_long, with_insider_long, with_institutional_long}
+Per `feedback_no_prior_edge_consolidate_before_tune`: loosening gates against a 14-event universe
+manufactures overfit. Needs a data decision (extend sector_history.csv) or retirement - owner call.
+
+*Group 3 - UNVERIFIED cause (14). Action: S6-B1434a measurement pass, no re-run needed.*
+gold_silver_risk_off_long, halloween_seasonal_long, january_effect_small_cap_long,
+news_momentum_short, news_reversal_long, pead_with_insider_confirmation_long,
+pivot_r3_blowoff_short, pivot_s3_capitulation, rsi_overbought_short,
+sector_rotation_defensive_long, short_borrow_trap_avoid, squeeze_setup_long,
+supertrend_ichimoku_adx, weekly_bias_pullback_short
+Some are known-rare BY DESIGN (halloween/january fire once a year; squeeze_setup_long measured
+~2.5 fires/yr at B620; pivot_s3_capitulation 18.3/yr at B643, EXPLORATORY). The rest are NOT
+verified - do not assume. `scripts/measure_fire_count.py` gives fires/yr without simulating
+trades, separating "rare by design, accept" from "actually broken".
+
+**OPEN (new this batch)**
+- **S6-B1434a** - fire-count measurement pass over Group 3 (14 strategies), zero-spend instrument.
+- **S6-B1434b** - owner decision: extend `sector_history.csv` beyond 2023-03-17, or retire the
+  9-strategy classification_change cluster. Currently 9 strategies depend on 14 ticker-days.
+- **S6-B1434c** (from the prior turn's exit-mechanism question) - the cube replays all 26 exits
+  over ONE trade set produced by the ASSIGNED exit (verified: 196/196 strategies have identical
+  trade counts across all 26 exits; hold spans 3.2d-116.1d = 36.8x; same-strategy dedup retained
+  under isolation). So per-cell RANKING is transfer-valid but absolute LEVELS are conditioned on
+  a trade population the winning exit would not itself generate. R6b is the first clean
+  measurement of the effect.
+
+**UNCHANGED**: S6-B1430a (promoted-set drawdown 1/22 - primary Phase 1B blocker), S6-B1431a,
+S6-B1431b, S6-B1428a/b/c, S6-B1427, S6-B1423. R6b cube run active.
