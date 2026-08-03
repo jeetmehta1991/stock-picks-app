@@ -6803,3 +6803,26 @@ event suppression ON. Killed at day 17/1003 after 53 min.
 **OPEN** - unchanged: S6-B1431a (trade_log.exit_method `trailing_stop` not in cube vocabulary),
 S6-B1431b (26 registered strategies with no cube evidence), S6-B1430a (promoted-set drawdown
 1/22), S6-B1428a/b/c, S6-B1427, S6-B1419, S6-B1423.
+
+## B1433 (2026-08-03) - enumeration-completeness miss (analysis-only turn)
+
+A backgrounded enumeration returned and contradicted a claim made in B1432: I stated "7 candidates,
+2 authoritative, both read" for the canonical cube invocation, having read **1 of 10** launch
+scripts. Full sweep of all ten now EXECUTED:
+- `aws_chunk_launch.py` is the ONLY cube-isolation launcher (cube=1, agents_off=1). Template
+  choice CONFIRMED correct.
+- All three LAPTOP launchers (batch_a, batch_b, batch_b_detached) run `--no-agents` but NOT
+  `--cube-isolation` - there is no laptop cube precedent.
+- Laptop time-cap precedent: Batch A 24.0h (150 tickers; raised from 6.0 after it killed a run at
+  day 720/1044), Batch B 120.0h (1787 tickers). The running R6b cap of 48h for 150 tickers in cube
+  mode sits correctly between.
+- `--screen-pool-workers`: laptop launchers use 1; R6b passes none (0 = sequential). At 150 tickers
+  a 1-worker pool adds IPC overhead over sequential (PIVOT #35 class). NOT restarting - explicitly
+  dispositioned, not skipped.
+
+LEARNINGS L267 ADDENDUM: third instance of the replicate-don't-author class this session; caught by
+redundancy (a parallel enumeration), not by discipline. New rule: report enumerations as "N of M"
+with M shown - a count without its denominator is a sample, not an enumeration.
+
+Pyramid 885 passed / 2 skipped (unchanged - no code touched).
+R6b cube run continues; no config change made as a result of this finding.

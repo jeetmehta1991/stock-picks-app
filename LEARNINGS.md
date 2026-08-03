@@ -4261,3 +4261,16 @@ followed). **Detection signal:** if a launch command is being typed rather than 
 run `grep -rln -- "--<mode-flag>" --include=*.py --include=*.md --include=*.sh .` first and diff
 the intended command against every hit. The mechanical form of this now lives in the B1432
 `CUBE_MODE_REQUIRED` assert, which makes the omission impossible rather than merely discouraged.
+
+**L267 ADDENDUM (same session, one turn later).** Immediately after writing L267 I claimed a
+complete enumeration - "7 candidates, 2 authoritative, both read" - having actually read **1 of 10**
+launch scripts. A backgrounded `ls scripts/*launch*` that I had launched and forgotten returned
+afterwards and exposed it, including three LAPTOP launchers never examined while launching a
+laptop run. The conclusion survived: a full sweep confirmed `aws_chunk_launch.py` is the ONLY
+cube-isolation launcher of the ten, so the template choice was right. But the METHOD was not, and
+a right answer reached by an unsound method is not evidence the method works. **Third instance of
+this class in one session** (R6 launch, R6b launch, this enumeration claim). **What actually
+caught it was redundancy** - a second, independent enumeration running in parallel - not
+discipline. Generalized detection signal: when a claim is "I enumerated X and found N", state N
+against the DENOMINATOR (N of M) and show the M; "7 candidates" hid that M was 10 and read was 1.
+A count without its denominator is not an enumeration, it is a sample.
