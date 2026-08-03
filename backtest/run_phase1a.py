@@ -549,19 +549,58 @@ def main():
     print(f"[B1431 RUN MODE] {json.dumps(_mode)}")
     logger.info("[B1431 RUN MODE] %s", json.dumps(_mode))
 
-    # MODE ASSERT: a STRATEGY_SUBSET_FILE run is a cube run by intent - a subset
-    # cannot be evaluated inside a shared capital book, because the candidate cap
-    # and the equity-dependent DD halt make admission depend on which OTHER
-    # strategies are loaded. Refuse rather than emit a portfolio artifact that
-    # will later be read as a cube.
-    if _mode["strategy_subset_file"] and not (args.cube_isolation and args.no_dd_halt):
-        raise SystemExit(
-            "[B1431 MODE ASSERT] STRATEGY_SUBSET_FILE is set but the run is not in "
-            f"cube mode (cube_isolation={args.cube_isolation}, no_dd_halt={args.no_dd_halt}).\n"
-            "A strategy subset in portfolio mode measures competition against an "
-            "arbitrary roster, not per-strategy edge (see LEARNINGS L260/L264).\n"
-            "Re-launch with --cube-isolation --no-dd-halt, or unset STRATEGY_SUBSET_FILE."
-        )
+    # B1432 MODE ASSERT (generalized from B1431, which checked only 2 of 6 gates).
+    #
+    # CUBE_MODE_REQUIRED is the SINGLE definition of what a cube run is, derived
+    # from the canonical R5 invocation at scripts/aws_chunk_launch.py:92-95 - not
+    # from memory, and not from whichever flags last caused harm. Every entry is
+    # correctness-critical for per-(strategy x exit) measurement:
+    #
+    #   cube_isolation      every valid signal opens a trade; no cross-strategy
+    #                       candidate cap, so cells do not depend on the roster
+    #   no_dd_halt          the L6 drawdown halt is equity-path-dependent, so it
+    #                       suppresses DIFFERENT signals depending on prior P&L
+    #   no_portfolio_cap    open-position cap is portfolio construction, not
+    #                       per-cell edge
+    #   no_regime_affinity  cube must produce cells for every strategy x regime,
+    #                       including regimes the affinity table would block
+    #   no_event_suppression cube measures robustness THROUGH events
+    #   run_agents=False    PROVEN CONTAMINATION (B1432): with agents on but the
+    #                       API unavailable, the failed score (<=40, the downgrade
+    #                       threshold) knocked EVERY candidate above LOW down one
+    #                       tier - measured live as MEDIUM_HIGH 3->0, MEDIUM 2->3,
+    #                       LOW 11->13. Tier drives position sizing, so every
+    #                       trade was mis-sized and all P&L was wrong.
+    #
+    # NOTE: --phase 1a-beta auto-enables four of these (portfolio_cap, dd_halt,
+    # regime_affinity, event_suppression) and raises max-cands 30 -> 200, but does
+    # NOT set cube_isolation or no_agents. That partial auto-enable is exactly the
+    # trap: `--phase 1a` plus two hand-picked flags LOOKS like a cube run and is not.
+    CUBE_MODE_REQUIRED = {
+        "cube_isolation":       (args.cube_isolation,       True,  "--cube-isolation"),
+        "no_dd_halt":           (args.no_dd_halt,           True,  "--no-dd-halt"),
+        "no_portfolio_cap":     (args.no_portfolio_cap,     True,  "--no-portfolio-cap"),
+        "no_regime_affinity":   (args.no_regime_affinity,   True,  "--no-regime-affinity"),
+        "no_event_suppression": (args.no_event_suppression, True,  "--no-event-suppression"),
+        "agents_disabled":      (not agents,                True,  "--no-agents"),
+    }
+    _cube_intent = bool(_mode["strategy_subset_file"]) or args.cube_isolation
+    if _cube_intent:
+        _violations = [(k, flag) for k, (actual, want, flag) in CUBE_MODE_REQUIRED.items()
+                       if actual != want]
+        if _violations:
+            raise SystemExit(
+                "[B1432 MODE ASSERT] This is a CUBE run (STRATEGY_SUBSET_FILE set "
+                "and/or --cube-isolation) but the cube gate set is incomplete.\n"
+                "  MISSING: " + ", ".join(f for _, f in _violations) + "\n"
+                "  A partial cube configuration silently produces a PORTFOLIO artifact "
+                "that will later be read as a cube (LEARNINGS L260/L264/L266).\n"
+                "  Canonical invocation: scripts/aws_chunk_launch.py:92-95 -\n"
+                "    --phase 1a-beta --cube-isolation --no-agents --no-news \\\n"
+                "    --no-walk-forward --no-git --max-run-hours <H>\n"
+                "  (--phase 1a-beta auto-enables portfolio_cap/dd_halt/regime_affinity/"
+                "event_suppression; cube_isolation and no_agents are NOT auto-enabled.)"
+            )
 
     engine = BacktestEngine(
         universe=universe, start=start, end=end,

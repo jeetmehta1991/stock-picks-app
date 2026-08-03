@@ -4221,3 +4221,43 @@ silently rebinds that name for the whole function** - grep for `^\s+import <name
 functions when a `UnboundLocalError` appears on a module that is obviously imported at the top.
 The generalized detection signal: any new guard whose test suite contains no `subprocess` call is
 untested.
+
+### L266
+**A mode guard must validate the COMPLETE mode definition, not the subset of flags that last
+caused harm.** (B1432, owner-escalated after a second wasted run.) B1431 shipped a guard requiring
+`--cube-isolation` and `--no-dd-halt` for subset runs. The very next launch passed both, was
+accepted by that guard, and was still wrong: it ran with agents ON, portfolio cap ON, regime
+affinity ON and event suppression ON. **Measured contamination:** with agents enabled and no
+`ANTHROPIC_API_KEY`, `_run_agent_context` returned a score at or below the downgrade threshold
+(40), so `_adjust_tier_by_agent` knocked every candidate above LOW down one tier - observed live
+as MEDIUM_HIGH 3->0, MEDIUM 2->3, LOW 11->13 across the first 16 trades. Tier drives position
+sizing (5/4/3/1.5/0.75%), so every trade was mis-sized and all downstream P&L invalid. Rate was
+also 189 s/day = 3.0x baseline (52h ETA) from 1,223 failed API retries.
+**Root cause, and it is not "I forgot --no-agents":** `--phase 1a-beta` AUTO-ENABLES four gates
+(`no_portfolio_cap`, `no_dd_halt`, `no_regime_affinity`, `no_event_suppression`) and raises
+`max-cands` 30->200, but does NOT set `cube_isolation` or `no_agents`. I used `--phase 1a` and
+hand-picked two flags. **That partial auto-enable is the trap: a phase plus a couple of flags
+LOOKS like a cube run and is not.** The same root cause explains the ORIGINAL R6 run's skip census
+(11,457 regime_affinity_block + 939 EVENT_SUPPRESSION + 19,259 level_6_halt) - both runs failed
+identically and I diagnosed only the part that was visible.
+**Fix (class-level):** a single `CUBE_MODE_REQUIRED` table in `run_phase1a.py` enumerating all six
+gates, derived from the canonical invocation at `scripts/aws_chunk_launch.py:92-95`, asserted
+whenever cube INTENT is present (subset file set OR `--cube-isolation`), naming every missing flag
+in the refusal. **Rules:** (a) when a guard is written after an incident, define it from the
+authoritative specification of the correct state, never from the delta that caused the incident;
+(b) a guard that admits a configuration which then fails is itself a defect, not a partial success;
+(c) partial auto-enable by mode/phase is a design smell - enumerate what the mode does NOT set.
+
+### L267
+**Enumerate the known-good invocation BEFORE launching, every time - the file existed both times.**
+(B1432.) `docs/r6_workflow_reuse/FUTURE_BACKTESTING_REFERENCE.md` and
+`scripts/aws_chunk_launch.py` both document the canonical cube invocation in full. They existed
+before the R6 run and before the R6b run. I authored a launch command from memory twice, wasting
+23.6h and 0.9h, and only enumerated the candidates on the third attempt - after the owner asked.
+L264 already stated the rule ("replicate a known-good invocation, never author a new one"); I wrote
+it and then violated it three hours later, which makes this a COMPLIANCE failure, not a missing
+rule (CHECKLIST #136: do not add a new checklist item where an existing one was simply not
+followed). **Detection signal:** if a launch command is being typed rather than copied, stop -
+run `grep -rln -- "--<mode-flag>" --include=*.py --include=*.md --include=*.sh .` first and diff
+the intended command against every hit. The mechanical form of this now lives in the B1432
+`CUBE_MODE_REQUIRED` assert, which makes the omission impossible rather than merely discouraged.

@@ -12995,12 +12995,13 @@ def test_b1431_subset_without_cube_mode_is_refused():
     import pathlib
     src = pathlib.Path(__file__).resolve().parent.parent / "run_phase1a.py"
     text = src.read_text(encoding="utf-8")
-    assert "[B1431 MODE ASSERT]" in text, "the subset/cube mode assert was removed"
-    # the guard must require BOTH flags - cube_isolation alone still leaves the
-    # equity-dependent DD halt active, which is path-dependent on other trades
-    assert "args.cube_isolation and args.no_dd_halt" in text, (
-        "mode assert must require BOTH --cube-isolation AND --no-dd-halt; "
-        "cube_isolation alone leaves the DD halt suppressing signals"
+    # B1432 generalized this guard: the marker and the condition both moved from
+    # the 2-flag check to the full CUBE_MODE_REQUIRED set. The BEHAVIOUR pinned
+    # here is unchanged - a subset run must not proceed outside cube mode.
+    assert "[B1432 MODE ASSERT]" in text, "the subset/cube mode assert was removed"
+    assert "_cube_intent" in text, (
+        "mode assert must key off cube INTENT (subset file or --cube-isolation), "
+        "so a subset run cannot slip through by omitting --cube-isolation"
     )
     assert "SystemExit" in text, "mode assert must halt the run, not warn"
 
@@ -13029,7 +13030,7 @@ def test_b1431_mode_assert_actually_fires_end_to_end():
     )
     out = r.stdout + r.stderr
     assert r.returncode != 0, "subset run without cube flags must NOT succeed"
-    assert "[B1431 MODE ASSERT]" in out, (
+    assert "[B1432 MODE ASSERT]" in out, (
         f"expected the mode assert to fire; got:\n{out[-1500:]}"
     )
     assert "UnboundLocalError" not in out and "Traceback" not in out, (
@@ -13037,3 +13038,50 @@ def test_b1431_mode_assert_actually_fires_end_to_end():
     )
     # provenance must be emitted BEFORE the halt, so a refused launch is auditable
     assert "[B1431 RUN MODE]" in out, "run mode must be recorded even on refusal"
+
+
+def test_b1432_cube_mode_requires_the_complete_gate_set():
+    """B1431's assert checked 2 of 6 cube gates; this pins all 6.
+
+    Lineage: the R6b relaunch passed --cube-isolation --no-dd-halt and still ran
+    with agents ON, portfolio cap ON, regime affinity ON and event suppression ON,
+    because `--phase 1a` auto-enables none of those (only `--phase 1a-beta` does).
+    Agents-on with no API key returned a score <= the downgrade threshold, knocking
+    EVERY candidate above LOW down one tier -> every trade mis-sized. B1431's
+    narrow assert passed that launch. Class: a mode guard must validate the
+    COMPLETE mode definition, not the subset of flags that last caused harm.
+    """
+    import pathlib
+    src = pathlib.Path(__file__).resolve().parent.parent / "run_phase1a.py"
+    text = src.read_text(encoding="utf-8")
+    assert "CUBE_MODE_REQUIRED" in text, "the single cube-mode definition was removed"
+    for gate in ("cube_isolation", "no_dd_halt", "no_portfolio_cap",
+                 "no_regime_affinity", "no_event_suppression", "agents_disabled"):
+        assert f'"{gate}"' in text, f"CUBE_MODE_REQUIRED lost the {gate} gate"
+
+
+def test_b1432_partial_cube_config_is_refused_end_to_end():
+    """EXECUTE the exact launch that wasted the R6b run; require refusal.
+
+    --cube-isolation + --no-dd-halt WITHOUT --no-agents et al. must now HALT.
+    This is the precise command that ran for 53 minutes producing mis-tiered
+    trades. Per L265 this test runs the guard rather than grepping for it.
+    """
+    import subprocess, sys as _sys, os as _os, pathlib
+    repo = pathlib.Path(__file__).resolve().parent.parent.parent
+    env = dict(_os.environ)
+    env["PYTHONIOENCODING"] = "utf-8"
+    r = subprocess.run(
+        [_sys.executable, str(repo / "backtest" / "run_phase1a.py"),
+         "--phase", "1a", "--tickers", "AAPL",
+         "--start", "2024-01-02", "--end", "2024-01-05",
+         "--no-git", "--no-news", "--cube-isolation", "--no-dd-halt"],
+        capture_output=True, text=True, env=env, cwd=str(repo), timeout=600,
+    )
+    out = r.stdout + r.stderr
+    assert r.returncode != 0, "a PARTIAL cube configuration must not be allowed to run"
+    assert "[B1432 MODE ASSERT]" in out, f"expected the cube gate-set assert:\n{out[-1500:]}"
+    # the missing gates must be NAMED - a guard that says only "misconfigured"
+    # sends the operator back to guessing, which is how this recurred
+    assert "--no-agents" in out, "assert must name the missing flags, not just refuse"
+    assert "Traceback" not in out, f"must halt cleanly via SystemExit:\n{out[-1500:]}"

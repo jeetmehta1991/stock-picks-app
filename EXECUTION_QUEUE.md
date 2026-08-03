@@ -6769,3 +6769,37 @@ tema_dema, xs_low_beta_with_smart_money_long.
 
 **NEXT**: launch the 14-strategy cube run (`--cube-isolation --no-dd-halt`, 150 tickers, local,
 zero spend).
+
+## B1432 (2026-08-03) - generalize the cube mode guard after a second misconfigured run
+
+**INCIDENT.** The R6b relaunch (14 strategies) passed `--cube-isolation --no-dd-halt` and was
+accepted by the B1431 guard, but ran with agents ON, portfolio cap ON, regime affinity ON and
+event suppression ON. Killed at day 17/1003 after 53 min.
+- **Contamination (measured, not inferred):** agents enabled without `ANTHROPIC_API_KEY` returned
+  a score <= the 40 downgrade threshold, so EVERY candidate above LOW was downgraded one tier -
+  MEDIUM_HIGH 3->0, MEDIUM 2->3, LOW 11->13 in the first 16 trades. Tier drives position sizing,
+  so all P&L was invalid.
+- **Cost:** 189 s/day = 3.0x baseline, 52h projected, from 1,223 failed API retries.
+- **Root cause:** `--phase 1a-beta` auto-enables 4 gates and raises max-cands 30->200 but does NOT
+  set `cube_isolation` or `no_agents`. `--phase 1a` + two hand-picked flags looks like a cube run
+  and is not. Same root cause as the ORIGINAL R6 run (11,457 regime_affinity_block + 939
+  EVENT_SUPPRESSION + 19,259 level_6_halt skips) - both runs failed identically.
+
+**SHIPPED (1 fix, class-level)**
+- `CUBE_MODE_REQUIRED` in `run_phase1a.py`: single definition of cube mode, all 6 gates
+  (cube_isolation, no_dd_halt, no_portfolio_cap, no_regime_affinity, no_event_suppression,
+  agents_disabled), derived from the canonical `scripts/aws_chunk_launch.py:92-95`. Asserted on
+  cube INTENT (subset file OR --cube-isolation); refusal NAMES every missing flag.
+- 2 new pin tests (one subprocesses the exact wasted launch); 2 B1431 tests updated to the
+  generalized guard. Positive case verified end-to-end: correct invocation exits 0 with all 6
+  gates True and max_cands=200.
+- Pyramid 885 passed / 2 skipped (was 883).
+- LEARNINGS L266 (guards define from the correct-state spec, not the incident delta),
+  L267 (enumerate the known-good invocation before launching - COMPLIANCE failure, not a missing
+  rule, per CHECKLIST #136).
+
+**RELAUNCH**: R6b 14-strategy cube, corrected invocation, local, 150 tickers, zero spend.
+
+**OPEN** - unchanged: S6-B1431a (trade_log.exit_method `trailing_stop` not in cube vocabulary),
+S6-B1431b (26 registered strategies with no cube evidence), S6-B1430a (promoted-set drawdown
+1/22), S6-B1428a/b/c, S6-B1427, S6-B1419, S6-B1423.
