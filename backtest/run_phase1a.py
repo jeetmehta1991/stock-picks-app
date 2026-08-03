@@ -9,6 +9,7 @@ Usage:
 """
 
 import argparse
+import json  # B1431: run-mode provenance emission
 import logging
 import os
 import sys
@@ -518,6 +519,50 @@ def main():
     # baseline canonical runs (which use --no-git for clean output) silently
     # skipped walk-forward and reported walk_forward_summary {total: 0}.
     walk_forward_enabled = not args.no_walk_forward
+
+    # B1431 (2026-08-01, owner-approved): RUN MODE PROVENANCE + MODE ASSERT.
+    #
+    # Why this exists: the B1425 R6 local run was launched WITHOUT --cube-isolation
+    # and WITHOUT --no-dd-halt while R5 had both. 23.6h of compute measured a
+    # capital-constrained portfolio simulation, not a per-(strategy x exit) cube:
+    # 42,763 of 48,559 signals (88%) were suppressed by execution-layer gates, and
+    # 29.2 candidates/day were processed against max_cands=30 while 66/day were
+    # offered. NONE of that was recoverable from the log, because run_phase1a.py
+    # never recorded how it was invoked - the mode had to be reverse-engineered
+    # from skip-reason fingerprints days later.
+    #
+    # Class (not instance): ANY long-running run must be able to state its own
+    # configuration from its own artifacts. Both halves ship together -
+    # provenance without the assert would still have let the run start wrong.
+    _mode = {
+        "argv": sys.argv,
+        "cube_isolation": bool(args.cube_isolation),
+        "no_dd_halt": bool(args.no_dd_halt),
+        "no_portfolio_cap": bool(args.no_portfolio_cap),
+        "no_regime_affinity": bool(args.no_regime_affinity),
+        "no_event_suppression": bool(args.no_event_suppression),
+        "max_candidates_per_day": args.max_cands,
+        "strategy_subset_file": os.environ.get("STRATEGY_SUBSET_FILE"),
+        "universe_size": len(universe),
+        "start": str(start), "end": str(end),
+    }
+    print(f"[B1431 RUN MODE] {json.dumps(_mode)}")
+    logger.info("[B1431 RUN MODE] %s", json.dumps(_mode))
+
+    # MODE ASSERT: a STRATEGY_SUBSET_FILE run is a cube run by intent - a subset
+    # cannot be evaluated inside a shared capital book, because the candidate cap
+    # and the equity-dependent DD halt make admission depend on which OTHER
+    # strategies are loaded. Refuse rather than emit a portfolio artifact that
+    # will later be read as a cube.
+    if _mode["strategy_subset_file"] and not (args.cube_isolation and args.no_dd_halt):
+        raise SystemExit(
+            "[B1431 MODE ASSERT] STRATEGY_SUBSET_FILE is set but the run is not in "
+            f"cube mode (cube_isolation={args.cube_isolation}, no_dd_halt={args.no_dd_halt}).\n"
+            "A strategy subset in portfolio mode measures competition against an "
+            "arbitrary roster, not per-strategy edge (see LEARNINGS L260/L264).\n"
+            "Re-launch with --cube-isolation --no-dd-halt, or unset STRATEGY_SUBSET_FILE."
+        )
+
     engine = BacktestEngine(
         universe=universe, start=start, end=end,
         phase=phase_key, max_candidates_per_day=args.max_cands,
@@ -536,7 +581,12 @@ def main():
         resume_from_checkpoint=args.resume_from_checkpoint, # B1076 Council 191
     )
     if args.no_git:
-        import os
+        # B1431: removed a redundant `import os` here. `os` is imported at module
+        # scope (line 14), and this function-local import made `os` a LOCAL name
+        # for the whole of main() - so any earlier reference raised
+        # UnboundLocalError. That is precisely what broke the B1431 run-mode
+        # block on its first execution. Class: a function-local re-import of a
+        # module-scope name silently rebinds it for the entire function.
         os.environ["BACKTEST_NO_GIT"] = "1"
         print("[WARN]  --no-git: parallel batch mode")
         print("   - Git operations suppressed - commit manually when all batches complete")

@@ -4182,3 +4182,42 @@ a settled ruling re-opened is worse than a question never asked, because it spen
 attention re-deciding and implies the prior decision was not recorded. Fixed the root cause same
 turn: CLAUDE.md #1 now states the demotion and its lineage. Reinforces
 `feedback_audit_recommendations_against_existing_directives`.
+
+### L264
+**A long-running run must be able to state its own configuration; and a subset run in
+portfolio mode is not a cube.** (B1431, owner correction.) The R6 local run was launched
+WITHOUT `--cube-isolation` and WITHOUT `--no-dd-halt` while R5 had both. It therefore measured a
+capital-constrained portfolio simulation, not a per-(strategy x exit) cube: 42,763 of 48,559
+signals (**88%**) were suppressed by execution-layer gates, and 29.2 candidates/day were processed
+against `max_candidates_per_day=30` while 66/day were offered. **Root cause:** I authored a fresh
+launch command around the new `STRATEGY_SUBSET_FILE` mechanism instead of replicating R5's
+known-good invocation - the failure class of
+`feedback_confirm_existing_template_before_replicating`, which I had been applying to dashboards
+and formats but not to run invocations, where it costs 23.6 hours. **Compounding defect:**
+`run_phase1a.py` never logged its own argv, so the mode was unrecoverable from the log and had to
+be reverse-engineered days later from skip-reason fingerprints (`level_6_halt_dd`=19,259 in R6 vs
+0 in R5) plus a 29.2-vs-30 arithmetic argument. **Both halves shipped:** a `[B1431 RUN MODE]`
+provenance record (argv + every resolved mode flag) emitted to stdout AND the logger, and a mode
+assert that refuses to start when `STRATEGY_SUBSET_FILE` is set without BOTH cube flags - a subset
+cannot be evaluated inside a shared capital book because the candidate cap and the
+equity-dependent DD halt make admission depend on which OTHER strategies are loaded. **Rules:**
+(a) replicate a known-good invocation, never author a new one, and diff the flag set against it
+before launch; (b) any run costing more than minutes emits its full resolved configuration into
+its own artifacts; (c) a subset + portfolio mode combination is refused at startup, not diagnosed
+afterwards.
+
+### L265
+**A pin test that greps source is not a pin test for a control-flow guard.** (B1431, self-caught.)
+The two pin tests written for the L264 mode assert both **PASSED against broken code**. The shipped
+guard raised `UnboundLocalError` on its first real execution - a function-local `import os` further
+down `main()` rebound the module-scope `os` for the entire function scope, so the new block's
+`os.environ.get(...)` referenced an unbound local and the run died with a traceback instead of the
+intended clean refusal. The grep tests asserted the strings `[B1431 MODE ASSERT]` and `SystemExit`
+were present in the file; both were, and neither string presence implied the guard could run. Only
+executing the bad launch end-to-end exposed it. **Two rules:** (a) a pin test for a guard MUST
+exercise the guard's control flow - subprocess the failing case and assert on exit code plus the
+absence of `Traceback`, not on source text; (b) **a function-local re-import of a module-scope name
+silently rebinds that name for the whole function** - grep for `^\s+import <name>` inside long
+functions when a `UnboundLocalError` appears on a module that is obviously imported at the top.
+The generalized detection signal: any new guard whose test suite contains no `subprocess` call is
+untested.

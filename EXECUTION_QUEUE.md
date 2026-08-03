@@ -6725,3 +6725,47 @@ depends on the coexisting roster. That roster is the Phase 1B book, not the regi
   not actioned, needs owner direction.
 
 **CARRIED OPEN:** S6-B1428a, S6-B1428b, S6-B1428c, S6-B1427, S6-B1419, S6-B1423 (see B1429).
+
+## B1431 (2026-08-01) - B1429 validated free on the existing cube + run-mode provenance/assert
+
+**FINDING (zero compute): B1429 is vindicated on 147 strategies, not 23.**
+Re-read `output_r5_merged_1_7/trade_exit_detail.csv` (holdout, n>=30, winsorize +/-300, 20bps):
+- `breakeven_plus_trail` beats `atr_trail_1x` on **145 of 147 strategies (99%)**
+- mean lift **+2.83pp**, median +2.42pp; best `totm_long` +10.30pp
+- **`atr_trail_1x` profitable on 0 of 147**; `breakeven_plus_trail` profitable on 111 of 147 (76%)
+- only 2 made worse (mean -0.49pp), worst `week_opening_gap_fill_down` -0.85pp
+Artifact: `output_audit/b1431_r5_cube_bpt_reread.csv`. The cube already holds all 26 exits for
+all 196 strategies, so NO re-run was needed to answer the exit question - it was answerable from
+existing data the whole time.
+
+**SHIPPED (2 fixes, within the <=3 batch cap)**
+- `[B1431 RUN MODE]` provenance: argv + every resolved mode flag emitted to stdout AND logger.
+- `[B1431 MODE ASSERT]`: refuses launch when `STRATEGY_SUBSET_FILE` is set without BOTH
+  `--cube-isolation` and `--no-dd-halt`. Verified end-to-end (exit 1, clean SystemExit).
+- Removed a function-local `import os` in `main()` that shadowed the module-scope import and
+  broke the provenance block on first execution.
+- 3 pin tests, one of which subprocesses the bad launch. Pyramid 883 passed / 2 skipped (was 880).
+- LEARNINGS L264 (replicate invocations; runs must self-describe), L265 (grep-only pin tests are
+  not pin tests for guards).
+
+**RE-RUN SCOPE CORRECTED: 14 strategies, not 198/45/23.**
+222 registered - 181 default-exit (cube already has it) - 4 exit-only (cube already has it)
+- 5 reverted by B1429 (back to R5 gates) = **14 with a live gate change**, all present in the
+R5 cube: awesome_oscillator, break_retest_volume, camarilla_r4_breakout, cmf_flip,
+dc20_break_retest, ichimoku_tk_cross, institutional_volume_confirmation_long, m_and_a_target_long,
+morning_star, news_momentum_long, pairs_mean_reversion_short, simple_below_ema_50_short,
+tema_dema, xs_low_beta_with_smart_money_long.
+
+**OPEN**
+- **S6-B1431a** - `trade_log.exit_method` writes `trailing_stop`, which is NOT in the cube's
+  26-exit vocabulary (65% of rows). Writer-reader schema mismatch, PIVOT #37 class; needs a pin
+  test on the shared vocabulary. Silently dropped 114 of 147 strategies from a comparison before
+  it was caught.
+- **S6-B1431b** - R5 cube holds 196 strategies against 222 registered: **26 have no cube evidence
+  at all**. Must be dispositioned before promotion decisions.
+- **S6-B1430a** - promoted set: only 1 of 22 clears max_drawdown, 0/22 deflated_sharpe,
+  8/22 calmar. Drawdown, not profit factor, is the binding Phase 1B constraint.
+- S6-B1428a / S6-B1428b / S6-B1428c / S6-B1427 / S6-B1419 / S6-B1423 - unchanged, see B1429 entry.
+
+**NEXT**: launch the 14-strategy cube run (`--cube-isolation --no-dd-halt`, 150 tickers, local,
+zero spend).

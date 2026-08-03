@@ -12951,3 +12951,89 @@ def test_b1307_env_fingerprint_parity_gate(tmp_path):
                         capture_output=True, text=True)
     assert r2.returncode == 0, "matching grids must PASS"
     assert "ENV-PARITY PASS" in r2.stdout
+
+
+# ---------------------------------------------------------------------------
+# B1431 pin tests: run-mode provenance + subset/cube mode assert.
+#
+# Lineage: the R6 local run (B1425) was launched without --cube-isolation and
+# without --no-dd-halt while R5 had both. It produced a portfolio-mode artifact
+# that was read as a cube; 88% of signals were suppressed by execution-layer
+# gates and the mode was not recoverable from the log. These tests pin BOTH
+# halves of the B1431 fix - the assert that refuses the bad launch, and the
+# provenance line that makes any run self-describing.
+# ---------------------------------------------------------------------------
+
+def test_b1431_run_mode_provenance_emitted():
+    """run_phase1a.py must emit the resolved run mode, not just accept flags.
+
+    Without this, a completed run cannot state how it was invoked - which is
+    exactly why the R6 misconfiguration took days and a skip-reason forensic
+    to detect.
+    """
+    import pathlib
+    src = pathlib.Path(__file__).resolve().parent.parent / "run_phase1a.py"
+    text = src.read_text(encoding="utf-8")
+    assert "[B1431 RUN MODE]" in text, "run-mode provenance line was removed"
+    for field in ("cube_isolation", "no_dd_halt", "strategy_subset_file",
+                  "max_candidates_per_day", "argv"):
+        assert f'"{field}"' in text, f"run-mode record lost the {field} field"
+    # emitted to BOTH stdout and the logfile - the log is what survives the run
+    assert text.count("[B1431 RUN MODE]") >= 2, (
+        "run mode must go to stdout AND the logger; a stdout-only record is "
+        "lost when the run is backgrounded to a logfile"
+    )
+
+
+def test_b1431_subset_without_cube_mode_is_refused():
+    """STRATEGY_SUBSET_FILE without cube mode must HALT, not silently proceed.
+
+    A strategy subset in portfolio mode measures competition against an
+    arbitrary roster (candidate cap + equity-dependent DD halt), not
+    per-strategy edge. This is the exact launch that wasted 23.6h.
+    """
+    import pathlib
+    src = pathlib.Path(__file__).resolve().parent.parent / "run_phase1a.py"
+    text = src.read_text(encoding="utf-8")
+    assert "[B1431 MODE ASSERT]" in text, "the subset/cube mode assert was removed"
+    # the guard must require BOTH flags - cube_isolation alone still leaves the
+    # equity-dependent DD halt active, which is path-dependent on other trades
+    assert "args.cube_isolation and args.no_dd_halt" in text, (
+        "mode assert must require BOTH --cube-isolation AND --no-dd-halt; "
+        "cube_isolation alone leaves the DD halt suppressing signals"
+    )
+    assert "SystemExit" in text, "mode assert must halt the run, not warn"
+
+
+def test_b1431_mode_assert_actually_fires_end_to_end():
+    """EXECUTE the bad launch and require a non-zero exit + the assert message.
+
+    Why this test exists on top of the two source-grep tests above: those two
+    PASSED while the shipped code was broken. The first execution of the B1431
+    block raised UnboundLocalError (a function-local `import os` later in main()
+    rebound the module-scope `os` for the entire function), so the run died with
+    a traceback instead of the intended guard. Grepping source proves a string
+    is present; only running it proves the guard works. Class: a pin test for a
+    control-flow guard MUST exercise the control flow.
+    """
+    import subprocess, sys as _sys, os as _os, pathlib
+    repo = pathlib.Path(__file__).resolve().parent.parent.parent
+    env = dict(_os.environ)
+    env["STRATEGY_SUBSET_FILE"] = str(repo / "output_audit" / "_r6_changed_strategies.txt")
+    env["PYTHONIOENCODING"] = "utf-8"
+    r = subprocess.run(
+        [_sys.executable, str(repo / "backtest" / "run_phase1a.py"),
+         "--phase", "1a", "--tickers", "AAPL",
+         "--start", "2024-01-02", "--end", "2024-01-05", "--no-git", "--no-news"],
+        capture_output=True, text=True, env=env, cwd=str(repo), timeout=600,
+    )
+    out = r.stdout + r.stderr
+    assert r.returncode != 0, "subset run without cube flags must NOT succeed"
+    assert "[B1431 MODE ASSERT]" in out, (
+        f"expected the mode assert to fire; got:\n{out[-1500:]}"
+    )
+    assert "UnboundLocalError" not in out and "Traceback" not in out, (
+        f"guard must halt cleanly via SystemExit, not crash:\n{out[-1500:]}"
+    )
+    # provenance must be emitted BEFORE the halt, so a refused launch is auditable
+    assert "[B1431 RUN MODE]" in out, "run mode must be recorded even on refusal"
