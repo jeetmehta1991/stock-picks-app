@@ -6877,3 +6877,53 @@ trades, separating "rare by design, accept" from "actually broken".
 
 **UNCHANGED**: S6-B1430a (promoted-set drawdown 1/22 - primary Phase 1B blocker), S6-B1431a,
 S6-B1431b, S6-B1428a/b/c, S6-B1427, S6-B1423. R6b cube run active.
+
+## B1435 (2026-08-03) - full canonical criteria on the 49 re-scored + the drawdown finding
+
+**FREE RE-SCORE (B1435 first half).** The 160 remaining strategies (222 - 22 promoted - 26 uncubed
+- 14 in R6b) were all scored at the OLD default exit `atr_trail_1x`, which B1431 measured as
+profitable for 0 of 147 strategies. Re-scored on the existing R5 cube at `breakeven_plus_trail`,
+holdout, n>=30: **112 gradeable, 68 clear PF>=1.2 + W/L>=1.0 + EV>0, 49 of those with n>=100**.
+Artifact `output_audit/b1435_remaining160_bpt_rescore.csv`.
+
+**FULL CANONICAL CRITERIA (B1435 second half) - 0 of 68 clear all gates.**
+Extended `scripts/canonical_criteria_check.py` (class-level: `--strategies-file` / `--exit` /
+`--label` / `--output`) rather than reimplementing the criteria - it reuses `metrics.py`, which is
+the whole point of that script. Default path regression-verified: still returns the identical
+22 cells / 0-of-22. Artifact `output_audit/b1435_the49_canonical.json`.
+
+  criterion            threshold   the 49 (68 cells)   the 22 promoted
+  profit_factor              1.3        49/68              22/22
+  sortino                    0.7        47/68              22/22
+  psr                       0.95        47/68              14/22
+  min_trades                 100        59/68              16/22
+  sharpe_per_regime          0.5        23/68              22/22
+  calmar                     0.5         7/68               8/22
+  max_drawdown             > -25         1/68               1/22   <-- binding
+  deflated_sharpe           0.95         0/68               0/22   <-- binding
+
+**RETRACTION:** the earlier "Phase 1B could go 22 -> 71 strategies" framing is withdrawn. Under
+the full criteria NOTHING passes - not the 49, not the 22.
+
+**S6-B1430a UPGRADED to the primary Phase 1B blocker, with a testable hypothesis.**
+`_max_drawdown` (backtest/results/metrics.py) computes a COMPOUNDED peak-to-trough over the
+strategy's own trade sequence - arithmetically correct, but it chains every trade as if 100% of
+capital rolled from one into the next. In cube isolation each signal is an INDEPENDENT
+fixed-notional trade with no portfolio. Real deployment sizes at 0.75-5% per the CLAUDE.md
+confidence tiers, runs trades concurrently, and blends 20+ strategies. So a -86% cell figure is
+not the -25% PORTFOLIO drawdown the threshold constrains. 1 of 90 cells passing is the signature
+of a category mismatch, not of a bad roster. HYPOTHESIS (per B1335 RCA evidence-tagging - NOT
+asserted as root cause): recalibrating or portfolio-izing this gate unblocks promotion.
+**Next measurement (free, not yet run):** portfolio-level drawdown on a blended book of the
+22 + 49 at realistic position sizing. NO threshold change proposed or applied - owner decision.
+Second binding gate `deflated_sharpe` at 0/90 is not discriminating either (many cells return
+None); needs its own disposition.
+
+**OWNER DIRECTIVES RECEIVED, APPROVED, NOT YET EXECUTED** (deliberately held, not dropped):
+- retire Group 2 (9 classification_change) - code change, own pyramid
+- execute + backtest Group 1 (3 mirror shorts) - needs CPU; R6b ~1.7h from done
+- measurement pass on Group 3 (14) via `scripts/measure_fire_count.py` - zero spend
+Held because the drawdown finding may reorder them, and because Group 1 would contend with the
+running cube. Asked owner to confirm sequencing.
+
+Pyramid 885 passed / 2 skipped. R6b cube at 89% (day 894/1003), healthy, zero spend.

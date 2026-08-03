@@ -18,6 +18,7 @@ Note on win rate: per the owner's B1387 ruling it is a DIAGNOSTIC, not a gate
 """
 from __future__ import annotations
 
+import argparse
 import json
 import sys
 from datetime import date
@@ -42,15 +43,45 @@ WINSORIZE, COST_BPS = 300.0, 20.0
 
 
 def main() -> int:
-    graded = json.loads((CUBE / "passed_strategy_exit_holdout_graded.json").read_text(encoding="utf-8"))
-    promoted = [r for r in graded["rows"] if r["verdict"] == "PASS" and not r.get("redundant_of")]
-    keys = {(r["strategy"], r["direction"], r["exit"]) for r in promoted}
-    print(f"[INFO] {len(promoted)} promoted cells | canonical criteria from backtest/config.py")
-    print(f"[INFO] win_rate_gate={PC.get('win_rate_gate')} (B1387: diagnostic, not gated)")
+    # B1435: made set-selectable. Previously hardcoded to the B1387 promoted cells,
+    # so grading any OTHER candidate set meant reimplementing the criteria - exactly
+    # what this script exists to prevent. --strategies-file + --exit let it grade any
+    # roster at any exit while still reusing the metrics.py implementations.
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--strategies-file", default=None,
+                    help="newline-delimited strategy names; default = B1387 promoted cells")
+    ap.add_argument("--exit", default=None,
+                    help="grade every strategy at THIS exit (required with --strategies-file, "
+                         "since a bare strategy name does not identify a cube cell)")
+    ap.add_argument("--label", default="the promoted cells")
+    ap.add_argument("--output", default="output_audit/b1387_canonical_criteria.json")
+    args = ap.parse_args()
 
     df = pd.read_csv(CUBE / "trade_exit_detail.csv",
                      usecols=["strategy", "direction", "exit_method", "entry_date",
                               "pnl_pct", "hold_days"], low_memory=False)
+
+    if args.strategies_file:
+        if not args.exit:
+            raise SystemExit("[B1435] --strategies-file requires --exit: a strategy name alone "
+                             "does not identify a (strategy x direction x exit) cube cell.")
+        want = {ln.strip() for ln in Path(args.strategies_file).read_text(
+            encoding="utf-8").splitlines() if ln.strip()}
+        sub = df[(df.strategy.isin(want)) & (df.exit_method == args.exit)]
+        keys = set(map(tuple, sub[["strategy", "direction", "exit_method"]].drop_duplicates().values))
+        missing = want - {k[0] for k in keys}
+        print(f"[INFO] {len(want)} requested | {len(keys)} cells resolved at exit={args.exit}"
+              + (f" | ABSENT from cube: {len(missing)}" if missing else ""))
+        if missing:
+            print(f"[WARN] not in cube at this exit: {sorted(missing)[:10]}"
+                  + (" ..." if len(missing) > 10 else ""))
+    else:
+        graded = json.loads((CUBE / "passed_strategy_exit_holdout_graded.json").read_text(encoding="utf-8"))
+        promoted = [r for r in graded["rows"] if r["verdict"] == "PASS" and not r.get("redundant_of")]
+        keys = {(r["strategy"], r["direction"], r["exit"]) for r in promoted}
+        print(f"[INFO] {len(promoted)} promoted cells | canonical criteria from backtest/config.py")
+    print(f"[INFO] win_rate_gate={PC.get('win_rate_gate')} (B1387: diagnostic, not gated)")
+
     df["entry_date"] = pd.to_datetime(df["entry_date"]).dt.date
     df["pnl_pct"] = df["pnl_pct"].clip(-WINSORIZE, WINSORIZE) - COST_BPS / 100.0
     df = df[(df.entry_date >= HO[0]) & (df.entry_date < HO[1])]
@@ -102,7 +133,7 @@ def main() -> int:
         out.append(r)
 
     print("\n" + "=" * 108)
-    print("FULL CANONICAL CRITERIA on the promoted cells (holdout fold, NET winsorized)")
+    print(f"FULL CANONICAL CRITERIA on {args.label} (holdout fold, NET winsorized)")
     print("=" * 108)
     names = ["sharpe_per_regime", "profit_factor", "max_drawdown", "sortino",
              "calmar", "psr", "deflated_sharpe", "min_trades"]
@@ -124,7 +155,7 @@ def main() -> int:
               f"{f(r['psr'],7)}{f(r['deflated_sharpe'],7)}{f(r['max_drawdown'],9,1)}{r['n']:>6}"
               f"{r['n_gates_passed']:>4}/{len(names)}")
 
-    p = REPO / "output_audit" / "b1387_canonical_criteria.json"
+    p = REPO / args.output
     p.write_text(json.dumps({"criteria": {k: thr[k] for k in names},
                              "n_promoted": len(out),
                              "clearing": {k: sum(1 for r in out if r["gates"][k]) for k in names},
