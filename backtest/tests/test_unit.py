@@ -13130,20 +13130,25 @@ def test_b1436_every_gate_site_honours_its_flag():
         )
 
 
-def test_b1436_calmar_still_depends_on_isolation_drawdown():
-    """Documents the OPEN class: calmar's denominator is the demoted drawdown.
+def test_b1437_calmar_gate_demoted_closing_the_drawdown_class():
+    """S6-B1436a RESOLVED by B1437 (owner: "calmar to be removed as well").
 
-    max_drawdown was demoted because an isolation-cube drawdown compounds one
-    strategy at full notional and is not the portfolio quantity the threshold
-    describes. `_calmar` divides by that same number, so it inherits the defect -
-    and it is now the tightest binding gate (15 of 90 cells). This test does NOT
-    assert calmar is wrong; it pins the DEPENDENCY so the open question stays
-    visible and cannot be lost. Owner decision pending (S6-B1436a).
+    calmar = return / abs(max_drawdown), so its denominator is the isolation-cube
+    drawdown demoted in B1436. Gating calmar while max_drawdown was demoted
+    re-imposed the same quantity as a ratio - calmar became the tightest gate at
+    15 of 90 cells immediately after B1436. This pin holds BOTH facts: the
+    dependency still exists in the maths (so the value stays meaningful for
+    Phase 1B), and the GATE is off (so it cannot silently re-block).
     """
     import inspect
     from backtest.results import metrics
-    src = inspect.getsource(metrics._calmar)
-    assert "_max_drawdown" in src, (
-        "calmar no longer depends on _max_drawdown - if that is intentional, "
-        "S6-B1436a is resolved and this pin should be updated to say so"
+    from backtest.config import PASSING_CRITERIA as PC
+    assert "_max_drawdown" in inspect.getsource(metrics._calmar), (
+        "calmar no longer depends on _max_drawdown - if the denominator was "
+        "redefined, this pin and the B1437 rationale both need updating"
     )
+    assert PC.get("calmar_gate") is False, (
+        "calmar was demoted B1437 as CLASS CLOSURE for the isolation-cube drawdown "
+        "gates; re-enabling it re-imposes max_drawdown through the back door"
+    )
+    assert PC.get("min_calmar") is not None, "threshold must survive the demotion"

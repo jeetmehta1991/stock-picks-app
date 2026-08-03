@@ -124,7 +124,8 @@ def main() -> int:
             "max_drawdown": (not PC.get("max_drawdown_gate", True))
                             or float(mdd) >= -PC["max_drawdown"],
             "sortino": (sortino is not None and sortino >= PC["min_sortino_per_regime"]),
-            "calmar": (calmar is not None and calmar >= PC["min_calmar"]),
+            "calmar": (not PC.get("calmar_gate", True))
+                      or (calmar is not None and calmar >= PC["min_calmar"]),
             "psr": (r["psr"] is not None and r["psr"] >= PC["min_psr"]),
             "deflated_sharpe": (not PC.get("deflated_sharpe_gate", True))
                                or (r["deflated_sharpe"] is not None

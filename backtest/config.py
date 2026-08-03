@@ -596,6 +596,15 @@ PASSING_CRITERIA = {
     #     Multiple-testing control remains via BH-FDR (B982) + PSR, both still gated.
     "max_drawdown_gate":       False,  # B1436: diagnostic; re-engage at Phase 1B (portfolio-level)
     "deflated_sharpe_gate":    False,  # B1436: diagnostic, not a gate
+    # (c) calmar_gate -- B1437 owner ruling "calmar to be removed as well".
+    #     CLASS CLOSURE, not a third one-off: calmar = return / abs(max_drawdown), so its
+    #     DENOMINATOR is the isolation-cube drawdown demoted in (a). Demoting max_drawdown
+    #     while leaving calmar gated re-imposed the same quantity as a ratio - calmar became
+    #     the tightest gate at 15 of 90 cells immediately after B1436. Enumerated every
+    #     _max_drawdown consumer to confirm these are the only two gates in the class;
+    #     `portfolio_max_drawdown_pct` (metrics.py, computed on a real equity curve) is the
+    #     Phase 1B quantity and is unaffected. RE-ENGAGE AT PHASE 1B alongside max_drawdown.
+    "calmar_gate":             False,  # B1437: diagnostic; re-engage at Phase 1B (portfolio-level)
     "min_profit_factor":       1.2,    # unchanged per-regime
     "min_expected_value":      0.0,    # (win_rate x avg_win) + (loss_rate x avg_loss) > 0
     "min_win_loss_ratio":      1.0,    # avg win / avg loss > 1.0

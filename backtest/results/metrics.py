@@ -2555,7 +2555,10 @@ def compute_strategy_metrics(df: pd.DataFrame, strategy: str) -> dict:
         "psr":                (psr_dict.get("psr") is None) or (psr_dict.get("psr") >= pc.get("min_psr", 0.95)),
         # Batch 221 NEW gates (Sortino + Calmar). None auto-passes (insufficient sample).
         "sortino":            (sortino_val is None) or (sortino_val >= pc.get("min_sortino_overall", 1.0)),
-        "calmar":             (calmar_val is None) or (calmar_val >= pc.get("min_calmar", 0.5)),
+        # B1437: demoted (owner). calmar divides by the isolation-cube drawdown demoted
+        # in B1436, so gating it re-imposes that quantity as a ratio.
+        "calmar":             (not pc.get("calmar_gate", True))
+                              or (calmar_val is None) or (calmar_val >= pc.get("min_calmar", 0.5)),
         # Batch 890 (2026-06-18) Council 16 owner-approved DEC-612 cost-
         # sensitivity AUTO-FAIL: degraded-Sharpe (at 20bps realistic friction)
         # must retain >=50% of clean-Sharpe value. Insufficient-sample auto-
