@@ -2408,7 +2408,9 @@ def compute_strategy_metrics(df: pd.DataFrame, strategy: str) -> dict:
             "profit_factor":  r_pf >= pc["min_profit_factor"],
             "expected_value": r_ev > pc["min_expected_value"],
             "win_loss_ratio": r_wl_r >= pc["min_win_loss_ratio"],
-            "max_drawdown":   r_mdd >= -pc["max_drawdown"],
+            # B1436: demoted to diagnostic (owner). Isolation-cube MDD compounds one
+            # strategy full-notional; the -25 threshold describes PORTFOLIO drawdown.
+            "max_drawdown":   (not pc.get("max_drawdown_gate", True)) or r_mdd >= -pc["max_drawdown"],
             "total_roi":      r_roi > pc["min_total_roi"],
             "trade_count":    n_r >= MIN_REGIME_TRADES,
             "smart_money_lift":  True,   # SM lift computed at strategy level, not per-regime
@@ -2525,7 +2527,8 @@ def compute_strategy_metrics(df: pd.DataFrame, strategy: str) -> dict:
         "profit_factor":      pf >= pc["min_profit_factor"],
         "expected_value":     ev > pc["min_expected_value"],
         "win_loss_ratio":     wl_r >= pc["min_win_loss_ratio"],
-        "max_drawdown":       mdd >= -pc["max_drawdown"],
+        # B1436: demoted to diagnostic (owner); re-engage at Phase 1B portfolio level.
+        "max_drawdown":       (not pc.get("max_drawdown_gate", True)) or mdd >= -pc["max_drawdown"],
         "total_roi":          roi > pc["min_total_roi"],
         # Batch 186 owner-approved 2026-05-16: smart_money_lift / macro_correlation
         # now per-strategy opt-in. When pc[flag] is False (the new default), the
@@ -2538,7 +2541,10 @@ def compute_strategy_metrics(df: pd.DataFrame, strategy: str) -> dict:
         # Batch 186 NEW gate: DSR (multi-testing-corrected PSR per Bailey-Lopez 2014).
         # None means insufficient sample - auto-passes to avoid double-penalty
         # with the n>=30 / trade_count gates already in place.
-        "deflated_sharpe":    (dsr_value is None) or (dsr_value >= pc.get("min_deflated_sharpe", 0.95)),
+        # B1436: demoted to diagnostic (owner "deflated_sharpe - remove"). Cleared 0 of
+        # 90 cells; multiple-testing control stays with BH-FDR (B982) + PSR, both gated.
+        "deflated_sharpe":    (not pc.get("deflated_sharpe_gate", True))
+                              or (dsr_value is None) or (dsr_value >= pc.get("min_deflated_sharpe", 0.95)),
         # B983 (2026-06-21) Council 86 Option-7 owner-approved 2026-06-21
         # DEC #6 PSR companion gate (Bailey-Lopez de Prado 2012): per-
         # strategy Pr(SR > 0). SEPARATE from DSR family-level gate per

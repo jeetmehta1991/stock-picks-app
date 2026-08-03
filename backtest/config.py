@@ -574,6 +574,28 @@ PASSING_CRITERIA = {
     # Follows the Batch 186 precedent for smart_money_lift / macro_correlation:
     # flag False => the gate auto-passes, the VALUE is still computed and reported.
     "win_rate_gate":           False,  # B1387: diagnostic, not a gate
+    # B1436 (2026-08-03 owner ruling): TWO further gates demoted to diagnostics,
+    # following the Batch 186 / B1387 precedent exactly (flag False => the gate
+    # auto-passes, the VALUE is still computed and reported).
+    #
+    # (a) max_drawdown_gate -- owner: "max_drawdown can only happen in phase 1B when
+    #     we analyze portfolio performance. Illogical to have it as a gate now."
+    #     Measured cause: `_max_drawdown` compounds a strategy's own trade sequence as
+    #     if 100% of capital rolled from each trade into the next. In cube isolation
+    #     every signal is an INDEPENDENT fixed-notional trade with no portfolio, while
+    #     real deployment sizes at 0.75-5% per the confidence tiers and runs 20+
+    #     strategies concurrently. So the cell figure is not the portfolio drawdown the
+    #     -25 threshold describes. It cleared 1 of 90 cells (1/22 promoted + 1/68
+    #     re-scored) while profit factor cleared 71 of 90 - the signature of a category
+    #     mismatch, not a bad roster. RE-ENGAGE AT PHASE 1B on a blended book.
+    #
+    # (b) deflated_sharpe_gate -- owner: "deflated_sharpe - remove".
+    #     Cleared 0 of 90 cells and returns None for many of them, so it was rejecting
+    #     everything rather than discriminating. DSR deflates for multiple testing across
+    #     N trials; at 222 registered strategies the hurdle is effectively absolute.
+    #     Multiple-testing control remains via BH-FDR (B982) + PSR, both still gated.
+    "max_drawdown_gate":       False,  # B1436: diagnostic; re-engage at Phase 1B (portfolio-level)
+    "deflated_sharpe_gate":    False,  # B1436: diagnostic, not a gate
     "min_profit_factor":       1.2,    # unchanged per-regime
     "min_expected_value":      0.0,    # (win_rate x avg_win) + (loss_rate x avg_loss) > 0
     "min_win_loss_ratio":      1.0,    # avg win / avg loss > 1.0

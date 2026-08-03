@@ -155,7 +155,7 @@ All overall thresholds must pass for a strategy to advance overall. Additionally
 | 2 | Profit factor | >1.3 (high-vol: >1.2) | >1.5 (literature canonical) | BUG-32 Batch 111 |
 | 3 | Expected value | >0 | same | original |
 | 4 | Win/loss ratio | >1.0 | same | original |
-| 5 | Max drawdown | <20 pct-points (high-vol: <25) | same | original |
+| 5 | Max drawdown | **DIAGNOSTIC, NOT A GATE** (`max_drawdown_gate: False`) — computed + reported; **re-engage at Phase 1B on a blended portfolio** | same | **B1436** (owner 2026-08-03: "can only happen in phase 1B when we analyze portfolio performance"; isolation-cube MDD compounds one strategy full-notional — cleared 1 of 90 cells) |
 | 6 | Total ROI | >0% | same | original |
 | 7 | Smart money lift | ≥3pp win rate improvement | same | original |
 | 8 | Macro correlation | ≥5pp win rate diff | same | original |
@@ -164,7 +164,7 @@ All overall thresholds must pass for a strategy to advance overall. Additionally
 | 11 | Per-regime verdict | PASS in ≥1 regime (not universal pass required) | -- | original; B891 DEC-611 reverted min_regimes_passing from 2 to 1 per CLAUDE.md canonical (Batch 221 had drifted to 2 via Carver 2015 universal-strategy rule which doesn't scale to 218-strategy per-regime library) |
 | 12 | Sortino ratio | ≥0.7 | ≥1.0 | Batch 221 (Sortino-Price 1991 JoI; asymmetric vol penalty) |
 | 13 | Calmar ratio | ≥0.5 (CAGR / max DD) | same | Batch 221 (Carver 2019 "Leveraged Trading"; path-aware) |
-| 14 | Deflated Sharpe (DSR) | ≥0.95 | same | Batch 186 (Bailey-Lopez de Prado 2014 multi-testing correction) |
+| 14 | Deflated Sharpe (DSR) | **DIAGNOSTIC, NOT A GATE** (`deflated_sharpe_gate: False`) — computed + reported | same | **B1436** (owner 2026-08-03 "remove"; cleared 0 of 90 cells and returns None for many. Multiple-testing control remains via BH-FDR B982 + PSR, both still gated) |
 | **AUTO-FAIL #1** | **Cost-sensitivity ratio** | `sharpe_at_20bps / sharpe_at_0bps ≥ 0.5` (insufficient sample → auto-pass) | same | **B890 DEC-612** (Council 15 promoted from advisory to gate; catches strategies that die under realistic friction) |
 | **AUTO-FAIL #2** | **Chow break-point** | p ≥ 0.05 OR post-break Sharpe ≥ 0.3 | same | **B890 DEC-613** (catches dead-strategy regime-coincidence false positives) |
 | **AUTO-FAIL #3** | **ADF stationarity (regime-conditional: mean-rev strategies only)** | non-mean-rev → auto-pass; mean-rev → p ≥ 0.10 (non-stationary equity passes; stationary = whip-saw non-compounder fails) | same | **B890 DEC-614** (mean-rev taxonomy at `MEAN_REVERSION_STRATEGIES` set; explicit auditable file per Council 16 Contrarian) |

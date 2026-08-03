@@ -13,14 +13,14 @@
   "clearing": {
     "sharpe_per_regime": 22,
     "profit_factor": 22,
-    "max_drawdown": 1,
+    "max_drawdown": 22,
     "sortino": 22,
     "calmar": 8,
     "psr": 14,
-    "deflated_sharpe": 0,
+    "deflated_sharpe": 22,
     "min_trades": 16
   },
-  "all_gates": 0,
+  "all_gates": 3,
   "cells": [
     {
       "strategy": "avwap_252_breakout",
@@ -42,14 +42,14 @@
       "gates": {
         "sharpe_per_regime": true,
         "profit_factor": true,
-        "max_drawdown": false,
+        "max_drawdown": true,
         "sortino": true,
         "calmar": false,
         "psr": true,
-        "deflated_sharpe": false,
+        "deflated_sharpe": true,
         "min_trades": true
       },
-      "n_gates_passed": 5,
+      "n_gates_passed": 7,
       "all_gates": false
     },
     {
@@ -72,14 +72,14 @@
       "gates": {
         "sharpe_per_regime": true,
         "profit_factor": true,
-        "max_drawdown": false,
+        "max_drawdown": true,
         "sortino": true,
         "calmar": false,
         "psr": false,
-        "deflated_sharpe": false,
+        "deflated_sharpe": true,
         "min_trades": true
       },
-      "n_gates_passed": 4,
+      "n_gates_passed": 6,
       "all_gates": false
     },
     {
@@ -102,14 +102,14 @@
       "gates": {
         "sharpe_per_regime": true,
         "profit_factor": true,
-        "max_drawdown": false,
+        "max_drawdown": true,
         "sortino": true,
         "calmar": true,
         "psr": false,
-        "deflated_sharpe": false,
+        "deflated_sharpe": true,
         "min_trades": false
       },
-      "n_gates_passed": 4,
+      "n_gates_passed": 6,
       "all_gates": false
     },
     {
@@ -132,14 +132,14 @@
       "gates": {
         "sharpe_per_regime": true,
         "profit_factor": true,
-        "max_drawdown": false,
+        "max_drawdown": true,
         "sortino": true,
         "calmar": false,
         "psr": false,
-        "deflated_sharpe": false,
+        "deflated_sharpe": true,
         "min_trades": true
       },
-      "n_gates_passed": 4,
+      "n_gates_passed": 6,
       "all_gates": false
     },
     {
@@ -162,14 +162,14 @@
       "gates": {
         "sharpe_per_regime": true,
         "profit_factor": true,
-        "max_drawdown": false,
+        "max_drawdown": true,
         "sortino": true,
         "calmar": false,
         "psr": true,
-        "deflated_sharpe": false,
+        "deflated_sharpe": true,
         "min_trades": true
       },
-      "n_gates_passed": 5,
+      "n_gates_passed": 7,
       "all_gates": false
     },
     {
@@ -192,14 +192,14 @@
       "gates": {
         "sharpe_per_regime": true,
         "profit_factor": true,
-        "max_drawdown": false,
+        "max_drawdown": true,
         "sortino": true,
         "calmar": false,
         "psr": true,
-        "deflated_sharpe": false,
+        "deflated_sharpe": true,
         "min_trades": true
       },
-      "n_gates_passed": 5,
+      "n_gates_passed": 7,
       "all_gates": false
     },
     {
@@ -222,14 +222,14 @@
       "gates": {
         "sharpe_per_regime": true,
         "profit_factor": true,
-        "max_drawdown": false,
+        "max_drawdown": true,
         "sortino": true,
         "calmar": false,
         "psr": true,
-        "deflated_sharpe": false,
+        "deflated_sharpe": true,
         "min_trades": true
       },
-      "n_gates_passed": 5,
+      "n_gates_passed": 7,
       "all_gates": false
     },
     {
@@ -252,15 +252,15 @@
       "gates": {
         "sharpe_per_regime": true,
         "profit_factor": true,
-        "max_drawdown": false,
+        "max_drawdown": true,
         "sortino": true,
         "calmar": true,
         "psr": true,
-        "deflated_sharpe": false,
+        "deflated_sharpe": true,
         "min_trades": true
       },
-      "n_gates_passed": 6,
-      "all_gates": false
+      "n_gates_passed": 8,
+      "all_gates": true
     },
     {
       "strategy": "institutional_persistence_oversold_long",
@@ -282,14 +282,14 @@
       "gates": {
         "sharpe_per_regime": true,
         "profit_factor": true,
-        "max_drawdown": false,
+        "max_drawdown": true,
         "sortino": true,
         "calmar": false,
         "psr": true,
-        "deflated_sharpe": false,
+        "deflated_sharpe": true,
         "min_trades": true
       },
-      "n_gates_passed": 5,
+      "n_gates_passed": 7,
       "all_gates": false
     },
     {
@@ -312,14 +312,14 @@
       "gates": {
         "sharpe_per_regime": true,
         "profit_factor": true,
-        "max_drawdown": false,
+        "max_drawdown": true,
         "sortino": true,
         "calmar": false,
         "psr": true,
-        "deflated_sharpe": false,
+        "deflated_sharpe": true,
         "min_trades": true
       },
-      "n_gates_passed": 5,
+      "n_gates_passed": 7,
       "all_gates": false
     },
     {
@@ -342,14 +342,14 @@
       "gates": {
         "sharpe_per_regime": true,
         "profit_factor": true,
-        "max_drawdown": false,
+        "max_drawdown": true,
         "sortino": true,
         "calmar": true,
         "psr": false,
-        "deflated_sharpe": false,
+        "deflated_sharpe": true,
         "min_trades": false
       },
-      "n_gates_passed": 4,
+      "n_gates_passed": 6,
       "all_gates": false
     },
     {
@@ -372,14 +372,14 @@
       "gates": {
         "sharpe_per_regime": true,
         "profit_factor": true,
-        "max_drawdown": false,
+        "max_drawdown": true,
         "sortino": true,
         "calmar": false,
         "psr": false,
-        "deflated_sharpe": false,
+        "deflated_sharpe": true,
         "min_trades": true
       },
-      "n_gates_passed": 4,
+      "n_gates_passed": 6,
       "all_gates": false
     },
     {
@@ -402,14 +402,14 @@
       "gates": {
         "sharpe_per_regime": true,
         "profit_factor": true,
-        "max_drawdown": false,
+        "max_drawdown": true,
         "sortino": true,
         "calmar": false,
         "psr": true,
-        "deflated_sharpe": false,
+        "deflated_sharpe": true,
         "min_trades": true
       },
-      "n_gates_passed": 5,
+      "n_gates_passed": 7,
       "all_gates": false
     },
     {
@@ -432,14 +432,14 @@
       "gates": {
         "sharpe_per_regime": true,
         "profit_factor": true,
-        "max_drawdown": false,
+        "max_drawdown": true,
         "sortino": true,
         "calmar": false,
         "psr": true,
-        "deflated_sharpe": false,
+        "deflated_sharpe": true,
         "min_trades": true
       },
-      "n_gates_passed": 5,
+      "n_gates_passed": 7,
       "all_gates": false
     },
     {
@@ -462,14 +462,14 @@
       "gates": {
         "sharpe_per_regime": true,
         "profit_factor": true,
-        "max_drawdown": false,
+        "max_drawdown": true,
         "sortino": true,
         "calmar": false,
         "psr": true,
-        "deflated_sharpe": false,
+        "deflated_sharpe": true,
         "min_trades": true
       },
-      "n_gates_passed": 5,
+      "n_gates_passed": 7,
       "all_gates": false
     },
     {
@@ -492,14 +492,14 @@
       "gates": {
         "sharpe_per_regime": true,
         "profit_factor": true,
-        "max_drawdown": false,
+        "max_drawdown": true,
         "sortino": true,
         "calmar": false,
         "psr": false,
-        "deflated_sharpe": false,
+        "deflated_sharpe": true,
         "min_trades": true
       },
-      "n_gates_passed": 4,
+      "n_gates_passed": 6,
       "all_gates": false
     },
     {
@@ -522,14 +522,14 @@
       "gates": {
         "sharpe_per_regime": true,
         "profit_factor": true,
-        "max_drawdown": false,
+        "max_drawdown": true,
         "sortino": true,
         "calmar": false,
         "psr": true,
-        "deflated_sharpe": false,
+        "deflated_sharpe": true,
         "min_trades": false
       },
-      "n_gates_passed": 4,
+      "n_gates_passed": 6,
       "all_gates": false
     },
     {
@@ -552,15 +552,15 @@
       "gates": {
         "sharpe_per_regime": true,
         "profit_factor": true,
-        "max_drawdown": false,
+        "max_drawdown": true,
         "sortino": true,
         "calmar": true,
         "psr": true,
-        "deflated_sharpe": false,
+        "deflated_sharpe": true,
         "min_trades": true
       },
-      "n_gates_passed": 6,
-      "all_gates": false
+      "n_gates_passed": 8,
+      "all_gates": true
     },
     {
       "strategy": "smc_inverse_fvg",
@@ -582,14 +582,14 @@
       "gates": {
         "sharpe_per_regime": true,
         "profit_factor": true,
-        "max_drawdown": false,
+        "max_drawdown": true,
         "sortino": true,
         "calmar": true,
         "psr": true,
-        "deflated_sharpe": false,
+        "deflated_sharpe": true,
         "min_trades": false
       },
-      "n_gates_passed": 5,
+      "n_gates_passed": 7,
       "all_gates": false
     },
     {
@@ -612,14 +612,14 @@
       "gates": {
         "sharpe_per_regime": true,
         "profit_factor": true,
-        "max_drawdown": false,
+        "max_drawdown": true,
         "sortino": true,
         "calmar": true,
         "psr": false,
-        "deflated_sharpe": false,
+        "deflated_sharpe": true,
         "min_trades": false
       },
-      "n_gates_passed": 4,
+      "n_gates_passed": 6,
       "all_gates": false
     },
     {
@@ -646,10 +646,10 @@
         "sortino": true,
         "calmar": true,
         "psr": false,
-        "deflated_sharpe": false,
+        "deflated_sharpe": true,
         "min_trades": false
       },
-      "n_gates_passed": 5,
+      "n_gates_passed": 6,
       "all_gates": false
     },
     {
@@ -672,15 +672,15 @@
       "gates": {
         "sharpe_per_regime": true,
         "profit_factor": true,
-        "max_drawdown": false,
+        "max_drawdown": true,
         "sortino": true,
         "calmar": true,
         "psr": true,
-        "deflated_sharpe": false,
+        "deflated_sharpe": true,
         "min_trades": true
       },
-      "n_gates_passed": 6,
-      "all_gates": false
+      "n_gates_passed": 8,
+      "all_gates": true
     }
   ]
 }

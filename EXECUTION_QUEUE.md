@@ -6927,3 +6927,43 @@ Held because the drawdown finding may reorder them, and because Group 1 would co
 running cube. Asked owner to confirm sequencing.
 
 Pyramid 885 passed / 2 skipped. R6b cube at 89% (day 894/1003), healthy, zero spend.
+
+## B1436 (2026-08-03) - demote max_drawdown + deflated_sharpe to diagnostics (owner ruling)
+
+**OWNER RULING.** (a) "max_drawdown can only happen in phase 1B when we analyze portfolio
+performance. Illogical to have it as a gate now." (b) "deflated_sharpe - remove".
+
+**APPLIED** using the Batch 186 / B1387 demotion pattern exactly (flag False => gate auto-passes,
+VALUE still computed and reported; thresholds retained so the diagnostic survives):
+- `PASSING_CRITERIA["max_drawdown_gate"] = False` - re-engage at Phase 1B on a blended book
+- `PASSING_CRITERIA["deflated_sharpe_gate"] = False`
+- 3 gate sites in `metrics.py` honour the flags (2 max_drawdown: per-regime + overall; 1 DSR)
+- `scripts/canonical_criteria_check.py` honours them too, so the offline report cannot drift
+  from what the engine actually gates on
+- CLAUDE.md passing-criteria rows 5 and 14 synced
+- 3 pin tests incl. one asserting BOTH max_drawdown sites are patched (a single missed site
+  would silently re-block one code path). Pyramid 888 passed / 2 skipped (was 885).
+
+**EFFECT (re-measured this turn, holdout, NET winsorized):**
+                          before      after
+  22 promoted cells        0/22        3/22
+  49 re-scored (68 cells)  0/68        1/68
+  max_drawdown clearing    1/90       90/90
+  deflated_sharpe clearing 0/90       90/90
+
+**NEW BINDING GATE - and it has the SAME defect (S6-B1436a, OWNER DECISION NEEDED).**
+`calmar` is now the tightest gate at **15 of 90** (8/22 + 7/68). `_calmar` computes
+`mdd = abs(_max_drawdown(pnl_series))` - its denominator IS the isolation-cube drawdown just
+demoted. The generalization mandate is NOT satisfied by this batch: the CLASS is "gates whose
+value depends on isolation-cube drawdown", max_drawdown was the named instance, calmar is its
+sibling and was left in place because only two demotions were approved. Not applied unilaterally.
+Pinned by `test_b1436_calmar_still_depends_on_isolation_drawdown` so the open question cannot be
+lost. Options: (i) demote calmar to Phase 1B alongside max_drawdown; (ii) keep it, accepting that
+it re-imposes the demoted quantity through the back door; (iii) redefine calmar's denominator.
+
+**REMAINING BINDING after the demotions:** calmar 15/90, sharpe_per_regime 45/90,
+min_trades 75/90, psr 61/90.
+
+**UNCHANGED OPEN:** S6-B1434a/b/c, S6-B1431a/b, S6-B1428a/b/c, S6-B1427, S6-B1423. Owner
+directives (retire Group 2 / backtest Group 1 / measure Group 3) still approved-not-executed.
+R6b cube ~90%.

@@ -13085,3 +13085,65 @@ def test_b1432_partial_cube_config_is_refused_end_to_end():
     # sends the operator back to guessing, which is how this recurred
     assert "--no-agents" in out, "assert must name the missing flags, not just refuse"
     assert "Traceback" not in out, f"must halt cleanly via SystemExit:\n{out[-1500:]}"
+
+
+# ---------------------------------------------------------------------------
+# B1436 pin tests: max_drawdown + deflated_sharpe demoted to diagnostics.
+# Mirrors the B1387 win_rate_gate pin - a silent re-promotion of either gate
+# must fail loudly, because both were demoted on an explicit owner ruling.
+# ---------------------------------------------------------------------------
+
+def test_b1436_demoted_gates_are_false():
+    """Both flags must stay False. Re-enabling is an owner decision, not a default."""
+    from backtest.config import PASSING_CRITERIA as PC
+    assert PC.get("max_drawdown_gate") is False, (
+        "max_drawdown was demoted B1436 (owner: portfolio-level concept, belongs in "
+        "Phase 1B). Re-engaging it here re-blocks promotion on a category mismatch."
+    )
+    assert PC.get("deflated_sharpe_gate") is False, (
+        "deflated_sharpe was demoted B1436 (owner: 'remove'). It cleared 0 of 90 cells."
+    )
+    # the THRESHOLDS stay - the values are still computed and reported
+    assert "max_drawdown" in PC and "min_deflated_sharpe" in PC, (
+        "demotion must keep the thresholds so the diagnostic value is still reported; "
+        "deleting them turns a demotion into a removal"
+    )
+
+
+def test_b1436_every_gate_site_honours_its_flag():
+    """All gate sites must read the flag - one unpatched site silently re-blocks."""
+    import pathlib
+    m = (pathlib.Path(__file__).resolve().parent.parent / "results" / "metrics.py").read_text(encoding="utf-8")
+    # 2 max_drawdown sites (per-regime + overall), 1 deflated_sharpe site
+    assert m.count('pc.get("max_drawdown_gate"') == 2, (
+        "expected BOTH max_drawdown gate sites (per-regime and overall) to honour the "
+        "flag; a missed site means the gate still binds in one code path"
+    )
+    assert m.count('pc.get("deflated_sharpe_gate"') == 1, "deflated_sharpe gate site lost its flag"
+    # the offline criteria script must not drift from what the engine gates on
+    c = (pathlib.Path(__file__).resolve().parent.parent.parent
+         / "scripts" / "canonical_criteria_check.py").read_text(encoding="utf-8")
+    for flag in ("max_drawdown_gate", "deflated_sharpe_gate"):
+        assert flag in c, (
+            f"canonical_criteria_check.py must honour {flag} too - otherwise the "
+            f"offline criteria report contradicts the engine's actual gating"
+        )
+
+
+def test_b1436_calmar_still_depends_on_isolation_drawdown():
+    """Documents the OPEN class: calmar's denominator is the demoted drawdown.
+
+    max_drawdown was demoted because an isolation-cube drawdown compounds one
+    strategy at full notional and is not the portfolio quantity the threshold
+    describes. `_calmar` divides by that same number, so it inherits the defect -
+    and it is now the tightest binding gate (15 of 90 cells). This test does NOT
+    assert calmar is wrong; it pins the DEPENDENCY so the open question stays
+    visible and cannot be lost. Owner decision pending (S6-B1436a).
+    """
+    import inspect
+    from backtest.results import metrics
+    src = inspect.getsource(metrics._calmar)
+    assert "_max_drawdown" in src, (
+        "calmar no longer depends on _max_drawdown - if that is intentional, "
+        "S6-B1436a is resolved and this pin should be updated to say so"
+    )

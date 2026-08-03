@@ -119,12 +119,16 @@ def main() -> int:
         gates = {
             "sharpe_per_regime": (sharpe is not None and sharpe >= PC["min_sharpe_per_regime"]),
             "profit_factor": pf >= PC["min_profit_factor_overall"],
-            "max_drawdown": float(mdd) >= -PC["max_drawdown"],
+            # B1436: honour the config flags rather than hardcoding the gate, so this
+            # script cannot drift from what a canonical backtest actually gates on.
+            "max_drawdown": (not PC.get("max_drawdown_gate", True))
+                            or float(mdd) >= -PC["max_drawdown"],
             "sortino": (sortino is not None and sortino >= PC["min_sortino_per_regime"]),
             "calmar": (calmar is not None and calmar >= PC["min_calmar"]),
             "psr": (r["psr"] is not None and r["psr"] >= PC["min_psr"]),
-            "deflated_sharpe": (r["deflated_sharpe"] is not None
-                                and r["deflated_sharpe"] >= PC["min_deflated_sharpe"]),
+            "deflated_sharpe": (not PC.get("deflated_sharpe_gate", True))
+                               or (r["deflated_sharpe"] is not None
+                                   and r["deflated_sharpe"] >= PC["min_deflated_sharpe"]),
             "min_trades": n >= PC["min_trades"],
         }
         r["gates"] = gates
