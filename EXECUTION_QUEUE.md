@@ -7117,3 +7117,32 @@ elapsed=<s>`) emitted on a timer by long-running scripts, so silence always mean
 poc_magnet_short, xs_combined_momentum_high_ivol_short), canonical cube invocation copied from
 `scripts/aws_chunk_launch.py:92-95` per L264/L267, 150-ticker seeded sample, full window,
 `--max-run-hours 48`. Zero spend.
+
+## B1443 (2026-08-04) - Group 3 measurement KILLED for memory pressure; Group 1 continues
+
+**OWNER-APPROVED KILL.** Two concurrent jobs drove commit charge to **30.2GB of a 32.3GB limit
+(94%)** with only 1.65GB free RAM. At that level Windows fails the NEXT allocation, killing
+whichever job asks - not the one we would choose. Killed the Group 3 fire-count measurement
+(PIDs 18560 + 21628) as the cheaper restart: no long backtest lost, and it was the lower-value
+of the two.
+Post-kill measured: free RAM 1.65 -> **2.98GB**, commit 30.2 -> **28.2GB**. Group 1 worker
+(PID 6868, 2,971MB) survived and its cumulative rate improved **99 -> 72 s/day** as contention
+cleared.
+
+**DEBT CREATED - Group 3 measurement still owes an answer.** 14 strategies, ~1,900s of CPU
+discarded. Re-launch is wired into the Group 1 completion sentinel (cron 117757b8) so it cannot be
+forgotten; command and dedup check recorded there. Until it runs, the Group 3 disposition
+("rare by design" vs "actually broken") remains **UNVERIFIED** - do not treat those 14 as
+dispositioned.
+
+**Group 1 backtest RUNNING**: PID 6868, all 6 cube gates True, agents DISABLED, 150 tickers,
+day ~8/1003. ETA not yet trustworthy - the early 99 s/day reading overestimates; R6b precedent
+says it settles to 56-72 s/day, implying ~16-20h. Hourly sentinel armed (117757b8) carrying a
+**commit-charge watch at 31GB** as an escalation trigger.
+
+**S6-B1442a reinforced (third instance).** Group 3's lack of progress instrumentation was not just
+a health-check nuisance this time - it made an ETA impossible to give, and it means the ~1,900s
+of discarded work cannot even be quantified as a percentage. A periodic heartbeat is now blocking
+real decisions, not just tidiness.
+
+**UNCHANGED OPEN:** S6-B1438a, S6-B1434a/b/c, S6-B1431a/b, S6-B1428a/b/c, S6-B1427, S6-B1423.
