@@ -13194,3 +13194,90 @@ def test_b1441_data_scarcity_retirement_is_wired_and_semantically_separate():
         "sector_history.csv is extended (S6-B1434b)"
     )
     assert len(set(ALL_STRATEGIES) - DS - MP - DEP) == 213, "active count drifted from 213"
+
+
+# ---------------------------------------------------------------------------
+# B1456 -- ORPHANED-CRITERION GUARD
+#
+# Canonical criterion #11 (`min_regimes_passing`) sat in PASSING_CRITERIA for
+# 1,400+ batches, enforced by nothing, while test_dec611_* asserted its VALUE
+# was 1 and passed every run. A value-pin test proves a constant equals a
+# number; it says nothing about whether any code READS it. That gap is what
+# let an entire canonical criterion go unimplemented behind green tests.
+#
+# This guard closes the CLASS: every PASSING_CRITERIA key must be referenced by
+# at least one non-test module, or be explicitly allowlisted with the ticket
+# tracking its wiring. New orphans fail the pyramid; known orphans stay visible
+# instead of silently accumulating.
+# ---------------------------------------------------------------------------
+
+# Known-unwired keys. Each MUST carry the ticket that tracks wiring it.
+# Removing a key from this dict without wiring it will fail the test.
+# "Unwired" here means NO GATING MODULE READS IT - it cannot reject anything.
+# A key may still be read by reporting/measurement code and belong on this list:
+# min_trades_per_regime is read by verify_batch_completion.py to report, and
+# min_regimes_passing by measure_criterion_11.py to measure. Neither gates.
+_KNOWN_UNWIRED_CRITERIA = {
+    "min_regimes_passing":   "S6-B1456a - criterion #11, per-regime verdict; owner decision open",
+    "min_sharpe_overall":    "S6-B1456c - overall-tier bar; unused because the gate set is pooled",
+    "min_trades_per_regime": "S6-B1456a - per-regime count bar; only the pooled tier is wired",
+}
+
+
+def test_b1456_no_orphaned_passing_criteria():
+    """Every PASSING_CRITERIA key is read by a non-test module, or is allowlisted.
+
+    Catches the L289 failure class: a threshold that exists, is value-pinned, and
+    gates nothing. Would have caught min_regimes_passing at B891.
+    """
+    import re as _re
+    from pathlib import Path as _Path
+
+    from backtest.config import PASSING_CRITERIA as _PC
+
+    # Scan the modules that DECIDE pass/fail, not every module that mentions a key.
+    # The looser "read anywhere" definition is defeated by measurement/reporting
+    # scripts: measure_criterion_11.py reads min_regimes_passing to MEASURE what it
+    # would admit, which does not make it a live gate. A threshold is wired only if
+    # it can reject something.
+    repo = _Path(__file__).resolve().parents[2]
+    gating = [
+        repo / "backtest" / "results" / "metrics.py",
+        repo / "backtest" / "engine" / "improvements.py",
+        repo / "scripts" / "build_phase_1b_roster.py",
+        repo / "scripts" / "canonical_criteria_check.py",
+        repo / "scripts" / "best_exit_by_gates.py",
+    ]
+    sources = []
+    for p in gating:
+        assert p.exists(), f"gating module missing: {p} - update this list"
+        sources.append(p.read_text(encoding="utf-8", errors="ignore"))
+    assert sources, "no source files scanned - the guard would vacuously pass"
+
+    orphaned = []
+    for key in sorted(_PC):
+        pat = _re.compile(r"""["']""" + _re.escape(key) + r"""["']""")
+        if not any(pat.search(s) for s in sources):
+            orphaned.append(key)
+
+    unexpected = [k for k in orphaned if k not in _KNOWN_UNWIRED_CRITERIA]
+    assert not unexpected, (
+        "NEW orphaned PASSING_CRITERIA key(s) - defined but read by no non-test "
+        f"module: {unexpected}. Either wire the key into a gate, or add it to "
+        "_KNOWN_UNWIRED_CRITERIA with the ticket tracking its wiring. A threshold "
+        "that gates nothing is a policy the project believes it enforces and does not."
+    )
+
+    # the allowlist must not rot: a key listed as unwired that IS now wired
+    # should be removed from the allowlist so the guard keeps its teeth.
+    stale = [k for k in _KNOWN_UNWIRED_CRITERIA if k not in orphaned]
+    assert not stale, (
+        f"allowlisted key(s) are now wired: {stale}. Remove them from "
+        "_KNOWN_UNWIRED_CRITERIA so the guard continues to protect them."
+    )
+
+
+def test_b1456_unwired_allowlist_carries_tickets():
+    """Each allowlisted orphan names the ticket tracking its wiring."""
+    for key, note in _KNOWN_UNWIRED_CRITERIA.items():
+        assert "S6-" in note, f"{key}: allowlist entry must cite a ticket, got {note!r}"

@@ -7647,3 +7647,47 @@ and the standing memory `feedback_asymmetric_data_sources_break_mechanical_inver
   moves), not a value-pin. Retrofit for the 2 ORPHANED + 1 ADVISORY keys first. L289.
 - **S6-B1456c (MED)** — declare which threshold tier the live gate set implements and justify each
   per-key deviation; the current mix is unowned. L290.
+
+---
+
+## B1457 (2026-08-04) — the affinity bypass never got its counterpart; orphan guard shipped
+
+**Q: which regime does `sharpe_per_regime >= 0.5` consider? For a long, is it bull only?**
+**ANSWER: no regime — it is pooled over ALL of them.** A long strategy's holdout Sharpe mixes its
+bull, neutral, bear and crisis trades into one number. It is not bull-only, and it is not the
+strategy's declared regime either.
+
+Worse, that is the opposite of the design. `backtest.py:129` bypasses `STRATEGY_REGIME_AFFINITY`
+for the 1A-beta cube precisely so *"the cube measures per-regime cell verdicts empirically"* — and
+the per-regime verdict (criterion #11) was never implemented. The bypass shipped at Batch 384; its
+counterpart never did. We deliberately collected regime-diverse data and then averaged it away. L292.
+
+**Measured impact on the 13 roster cells** (holdout, chosen exit, in-affinity vs pooled Sharpe):
+
+| cell | declared affinity | pooled | in-affinity | delta | off-affinity trades |
+|---|---|---|---|---|---|
+| `avwap_252_breakout` | bear, neutral | 0.53 | **0.90** | **+0.37** | 254 |
+| `poc_magnet_long` | bull, neutral | 0.81 | **0.52** | -0.29 | 11 |
+| `smc_breaker_block_long` | bull, neutral | 0.69 | 0.52 | -0.17 | 35 |
+| `macd_fast_crossover` | bull | 0.54 | 0.41 | -0.12 | 94 |
+| `force_index_breakout` | all 4 | 0.52 | 0.52 | 0.00 | 0 |
+| 7 others | **none declared** | - | - | - | 0 |
+
+Effect runs BOTH ways and is material against a 0.50 bar. Only 101 of 222 strategies declare any
+affinity at all.
+
+**Shipped: orphaned-criterion guard** (`test_b1456_no_orphaned_passing_criteria` + allowlist-rot
+check). Every `PASSING_CRITERIA` key must be read by a GATING module or be allowlisted with its
+ticket. Would have caught criterion #11 at B891. The first version defined "wired" as read-anywhere
+and was defeated by this turn's own measurement script — corrected to gating-modules-only. L293.
+Pyramid 891 passed (+2), 2 skipped.
+
+### Tickets opened
+- **S6-B1457a (HIGH, owner decision)** — regrade the roster IN-AFFINITY for the 6 cells that declare
+  one, and decide whether affinity-restricted grading becomes the standard. Pairs with S6-B1456a;
+  both are the same underlying fix (stop pooling across regimes a strategy disclaims).
+- **S6-B1457b (MED)** — 121 of 222 strategies declare no regime affinity, so "in-affinity grading"
+  is undefined for them. Decide: infer from cube evidence, require a declaration at registration,
+  or treat undeclared as all-regimes.
+- **S6-B1457c (MED)** — codify the bypass rule: any flag disabling a safeguard "so X can be
+  measured" ships with X or a linked ticket for X, verified in the same batch. L292.

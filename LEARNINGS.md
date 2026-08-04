@@ -4660,3 +4660,32 @@ error widens and PSR>=0.95 becomes harder — two effects in opposite directions
 when a gate change alters BOTH the threshold and the sample the statistic is computed on, the net
 direction is not derivable by inspection and must be measured. Report the churn (in/out), never
 only the net.**
+
+### L292
+**A deliberate bypass shipped without the capability it existed to enable — for 1,000+ batches.**
+`backtest.py:129` disables `STRATEGY_REGIME_AFFINITY` for the Phase 1A-beta cube with the stated
+rationale: *"Cube measures per-regime cell verdicts empirically; let data say which regime works per
+strategy. Re-engaged Phase 1B-alpha."* The bypass shipped at Batch 384. **The per-regime cell verdict
+it was turning the filter off to enable is canonical criterion #11, which was never implemented
+(L289).** So the cube deliberately traded every strategy in every regime — including regimes the
+strategy declares it is not for — and the grading pipeline then pooled those trades into a single
+Sharpe, averaging away the exact signal the bypass was collecting. Measured impact on the 13 roster
+cells: 7 declare no affinity at all, and of the 6 that do, restricting to declared regimes moves
+holdout Sharpe by **-0.29 to +0.37** on a **0.50** bar — `avwap_252_breakout` goes 0.53 -> 0.90 once
+its 254 off-affinity trades are dropped, `poc_magnet_long` falls 0.81 -> 0.52. **Generalized rule: a
+flag that DISABLES a safeguard "so that X can be measured" is only half a change. The batch that
+ships the bypass must also ship X, or an explicitly linked ticket for X — a bypass whose counterpart
+never lands silently converts a designed measurement into lost data.**
+
+### L293
+**My own orphan guard was defeated within minutes by a script I wrote in the same turn.** The first
+version of `test_b1456_no_orphaned_passing_criteria` defined "wired" as *read by any non-test
+module*. It immediately reported `min_regimes_passing` as wired — because `measure_criterion_11.py`,
+written earlier in the same turn to MEASURE what criterion #11 would admit, reads the key. Reading a
+threshold to report on it is not gating on it. Had the looser definition shipped, the guard would
+have gone permanently green the moment anyone wrote a diagnostic touching a dead key — protecting
+nothing while appearing to protect everything. Fixed by scanning only the modules that decide
+pass/fail. **Generalized rule: a guard against dead configuration must define "alive" as CAN REJECT
+SOMETHING, never as IS MENTIONED SOMEWHERE. Mention-based liveness checks are defeated by the
+observability code written to investigate the very thing they guard.** The test caught this itself,
+which is the argument for making guards fail loudly on their own allowlist drift.
