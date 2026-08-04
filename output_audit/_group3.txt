@@ -1,0 +1,14 @@
+gold_silver_risk_off_long
+halloween_seasonal_long
+january_effect_small_cap_long
+news_momentum_short
+news_reversal_long
+pead_with_insider_confirmation_long
+pivot_r3_blowoff_short
+pivot_s3_capitulation
+rsi_overbought_short
+sector_rotation_defensive_long
+short_borrow_trap_avoid
+squeeze_setup_long
+supertrend_ichimoku_adx
+weekly_bias_pullback_short

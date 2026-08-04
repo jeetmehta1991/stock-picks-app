@@ -13152,3 +13152,45 @@ def test_b1437_calmar_gate_demoted_closing_the_drawdown_class():
         "gates; re-enabling it re-imposes max_drawdown through the back door"
     )
     assert PC.get("min_calmar") is not None, "threshold must survive the demotion"
+
+
+def test_b1441_data_scarcity_retirement_is_wired_and_semantically_separate():
+    """Group 2 retirement: producer WORKS, data is thin - a distinct cause.
+
+    Deliberately NOT folded into STRATEGIES_DISABLED_MISSING_PRODUCER, whose
+    docstring scopes it to "a required upstream data producer does not exist".
+    For classification_change the producer is implemented, wired and pinned; what
+    is missing is DATA - sector_history.csv holds 14 reclassification events in
+    the entire backtest window, all on 2023-03-17. Filing them under
+    MISSING_PRODUCER would send a reader hunting a producer that is not missing,
+    which is the confusion that made ticket S6-B1419 wrong (all four of its
+    claims were false).
+    """
+    import inspect
+    from backtest.config import (STRATEGIES_DISABLED_DATA_SCARCITY as DS,
+                                 STRATEGIES_DISABLED_MISSING_PRODUCER as MP,
+                                 DEPRECATED_STRATEGIES as DEP)
+    from backtest.signals import screener
+    from backtest.signals.screener import ALL_STRATEGIES
+
+    assert len(DS) == 9, f"expected the 9 classification_change strategies; got {len(DS)}"
+    assert all(n.startswith("classification_change_") for n in DS), (
+        "the data-scarcity set is scoped to the classification_change cluster; "
+        "adding an unrelated strategy needs its own documented cause"
+    )
+    assert DS <= set(ALL_STRATEGIES), f"retired names not in the registry: {sorted(DS - set(ALL_STRATEGIES))}"
+    assert not (DS & MP), "a strategy cannot be BOTH missing-producer and data-scarce"
+
+    # both screener consumer sites must honour it, or a retired strategy still fires
+    src = inspect.getsource(screener.screen_instrument)
+    assert "_DATA_SCARCE" in src, (
+        "screen_instrument does not skip data-scarce strategies - the retirement "
+        "is cosmetic and they would still generate candidates"
+    )
+    # the producer itself must remain intact - this is a DATA retirement, not a code one
+    from backtest.data.universe import get_classification_change_signals
+    assert callable(get_classification_change_signals), (
+        "producer removed - retirement was supposed to be reversible when "
+        "sector_history.csv is extended (S6-B1434b)"
+    )
+    assert len(set(ALL_STRATEGIES) - DS - MP - DEP) == 213, "active count drifted from 213"

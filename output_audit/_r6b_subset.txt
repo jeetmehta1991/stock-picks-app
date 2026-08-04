@@ -1,0 +1,14 @@
+awesome_oscillator
+break_retest_volume
+camarilla_r4_breakout
+cmf_flip
+dc20_break_retest
+ichimoku_tk_cross
+institutional_volume_confirmation_long
+m_and_a_target_long
+morning_star
+news_momentum_long
+pairs_mean_reversion_short
+simple_below_ema_50_short
+tema_dema
+xs_low_beta_with_smart_money_long

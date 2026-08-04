@@ -1242,6 +1242,38 @@ DEPRECATED_STRATEGIES: set[str] = set()
 #     (S4-B673-SM4-FEASIBILITY-FAILURE-RECLASSIFICATION ticket
 #     tracks separately). NOT in this set.
 STRATEGIES_DISABLED_MISSING_PRODUCER: set[str] = set()
+
+# B1441 (2026-08-03 owner directive "Retire group 2") - SEMANTICALLY DISTINCT from both
+# sets above, and deliberately NOT folded into MISSING_PRODUCER.
+#
+# These strategies have a producer that WORKS. `get_classification_change_signals`
+# (backtest/data/universe.py:605) is implemented, wired via signal_loader.py:312, pinned
+# by test_batch557_phase1a_beta_classification_cluster_verdict.py, and emits all six keys.
+# What is missing is DATA: `Backtesting universe/sector_history.csv` spans 2018-09-24 ->
+# 2023-03-17, so the entire 2022-05-05..2026-05-05 backtest window contains just
+# **14 reclassification events, all on one date (2023-03-17)**. Nine strategies each
+# layering further gates (retest, EMA-200, insider, institutional) on 14 ticker-days
+# cannot produce cube evidence. Structurally starved, NOT mis-tuned - per
+# `feedback_no_prior_edge_consolidate_before_tune`, loosening against a 14-event universe
+# would manufacture overfit.
+#
+# Filing these under MISSING_PRODUCER would send a future reader hunting for a producer
+# that is not missing - precisely the confusion that made ticket S6-B1419 wrong for weeks
+# (it asserted "producer never emits new_sector/prior_sector"; all four parts were false).
+# Naming the real cause is the fix.
+#
+# RE-ENABLE when sector_history.csv is extended past 2023-03-17 (S6-B1434b).
+STRATEGIES_DISABLED_DATA_SCARCITY: set[str] = {
+    "classification_change_breakout_long",
+    "classification_change_from_tech_short",
+    "classification_change_momentum_long",
+    "classification_change_oversold_long",
+    "classification_change_recent_long",
+    "classification_change_to_tech_long",
+    "classification_change_volume_long",
+    "classification_change_with_insider_long",
+    "classification_change_with_institutional_long",
+}
 # B1189 (2026-07-06 Council 278 owner-approved DELETE): dxy_headwind_multinational_short
 # ELIMINATED per owner directive. Was disabled since Batch 372 pending foreign_rev_pct
 # producer that was never built. Owner-decision 2026-07-06 to eliminate strategy

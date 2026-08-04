@@ -37,7 +37,9 @@ from backtest.results.metrics import (                       # noqa: E402
 )
 from walk_forward_r5_cells import _sharpe                    # noqa: E402
 
-CUBE = REPO / "output_r5_merged_1_7"
+# B1439: --cube makes this usable on ANY cube run, not just R5. Hardcoding it meant
+# grading a new run required a parallel implementation of the criteria.
+DEFAULT_CUBE = "output_r5_merged_1_7"
 HO = (date(2025, 5, 5), date(2026, 5, 5))
 WINSORIZE, COST_BPS = 300.0, 20.0
 
@@ -53,9 +55,11 @@ def main() -> int:
     ap.add_argument("--exit", default=None,
                     help="grade every strategy at THIS exit (required with --strategies-file, "
                          "since a bare strategy name does not identify a cube cell)")
+    ap.add_argument("--cube", default=DEFAULT_CUBE, help="cube output dir to grade")
     ap.add_argument("--label", default="the promoted cells")
     ap.add_argument("--output", default="output_audit/b1387_canonical_criteria.json")
     args = ap.parse_args()
+    CUBE = REPO / args.cube
 
     df = pd.read_csv(CUBE / "trade_exit_detail.csv",
                      usecols=["strategy", "direction", "exit_method", "entry_date",

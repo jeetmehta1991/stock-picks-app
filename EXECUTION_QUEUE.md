@@ -7040,3 +7040,54 @@ run shape that do not hold for cube/subset runs.
 
 Directives 1-3 (retire Group 2 / backtest Group 1 / measure Group 3) still approved-not-executed;
 Group 1's CPU constraint lifts when the replay finishes.
+
+## B1439-B1441 (2026-08-04) - R6b graded (NEGATIVE) + Group 2 retired + Group 3 measuring
+
+### B1439 - R6b COMPLETE and GRADED. The optimization effort failed.
+Run finished 18.4h, 77 artifacts, trade_log.csv 273MB, trade_exit_detail.csv 98MB,
+299,754 exit-rows / 14 strategies x 26 exits. Cron cea0c7bf deleted.
+
+**Pre-registered predictions: HELD 4 / FAILED 9 / INSUFFICIENT_DATA 1.**
+Binomial P(>=4 of 13 | chance) = **0.954** - the change set performed WORSE than a coin flip.
+SELF-CORRECTION: the first grading pass scored "expectancy > 0" and returned HELD=10. The
+pre-registrations state SPECIFIC baselines (e.g. institutional_volume_confirmation_long predicted
+> +3.203%, delivered +2.82% = a MISS). Grading against the recorded threshold rather than a
+convenient one flipped 10/14 -> 4/13. Fires targets NOT graded: they are full-universe 614-ticker
+figures and R6b ran 150 (ratio not absolute, per the standing units rule).
+Pattern: tightening filters fitted to IS expectancies of +2..+5pp delivered +0.3..+2.9pp OOS.
+**The IS gains were largely fitted noise.**
+
+**Full canonical criteria on the R6b cube: 0 of 22 cells clear all gates**, with
+sharpe_per_regime 0/22 (vs 22/22 for the R5 promoted set). Artifact
+`output_audit/b1439_r6b_canonical.json`; per-strategy detail `b1439_r6b_standalone.csv`.
+
+Standalone positive: 11 of 14 have positive holdout expectancy at their BEST exit - and
+`trailing_15pct` wins for 5 of them, not `breakeven_plus_trail`. Noted against B1429: the
+pooled-best exit is not universally best per-strategy, which is what a per-cell cube is for.
+
+Tooling: `canonical_criteria_check.py` gained `--cube` (was hardcoded to R5). Regression-verified:
+R5 default still returns 12/22.
+
+### B1441 - OWNER DIRECTIVE 1: Group 2 RETIRED (9 classification_change strategies)
+New `STRATEGIES_DISABLED_DATA_SCARCITY` in config.py, deliberately SEPARATE from
+STRATEGIES_DISABLED_MISSING_PRODUCER. That set is scoped to "a required upstream producer does
+not exist"; here the producer is implemented (universe.py:605), wired (signal_loader.py:312) and
+pinned by an existing test. The DATA is thin: sector_history.csv spans 2018-09-24 -> 2023-03-17,
+so the window holds 14 reclassification events on ONE date. Filing them under MISSING_PRODUCER
+would send a future reader hunting a producer that is not missing - the exact confusion that made
+S6-B1419 wrong on all four of its claims.
+Both screener consumer sites honour the new set (registry snapshot + screen_instrument loop);
+a cosmetic retirement that still fired was the failure mode guarded against.
+**222 registered -> 9 retired -> 213 ACTIVE.** Producer left intact: reversible when
+sector_history.csv is extended (S6-B1434b). Pyramid 889 passed / 2 skipped.
+
+### OWNER DIRECTIVE 3: Group 3 measurement pass RUNNING
+14 strategies via `scripts/measure_fire_count.py`, 150-ticker seeded sample, full window,
+backgrounded (exceeded a 10-min foreground budget). Output ->
+`output_audit/b1440_group3_firecount.json`. Separates "rare by design" (halloween/january fire
+once a year; squeeze_setup_long ~2.5/yr at B620; pivot_s3_capitulation 18.3/yr at B643) from
+"actually broken" - which is UNVERIFIED for the rest.
+
+### OWNER DIRECTIVE 2: Group 1 backtest - NEXT, launches after the Group 3 measurement clears
+3 mirror shorts (news_sentiment_short, poc_magnet_short, xs_combined_momentum_high_ivol_short).
+Sequenced to avoid CPU contention, not deferred.

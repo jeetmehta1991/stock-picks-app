@@ -8290,7 +8290,8 @@ def validate_strategy_roster() -> dict:
     """
     from backtest.config import DEPRECATED_STRATEGIES as _DEPRECATED
     from backtest.config import STRATEGIES_DISABLED_MISSING_PRODUCER as _MISSING_PRODUCER
-    _BLOCKED = _DEPRECATED | _MISSING_PRODUCER
+    from backtest.config import STRATEGIES_DISABLED_DATA_SCARCITY as _DATA_SCARCE  # B1441
+    _BLOCKED = _DEPRECATED | _MISSING_PRODUCER | _DATA_SCARCE
     summary = {
         "total_registered":         len(ALL_STRATEGIES),
         "deprecated_count":         sum(1 for k in ALL_STRATEGIES if k in _DEPRECATED),
@@ -8884,6 +8885,7 @@ def screen_instrument(
     # Sprint-1 data deliverables. See config.py docstring on
     # STRATEGIES_DISABLED_MISSING_PRODUCER for re-enablement criteria.
     from backtest.config import STRATEGIES_DISABLED_MISSING_PRODUCER as _MISSING_PRODUCER
+    from backtest.config import STRATEGIES_DISABLED_DATA_SCARCITY as _DATA_SCARCE  # B1441
     # Batch 310 (2026-05-24): Phase 1B-alpha disable mechanism REVERTED per
     # owner directive "DO NOT DISABLE ANYTHING TILL I ANALYZE AND COMMAND".
     # The PHASE_1B_ALPHA_DISABLED_STRATEGIES constant in config.py is now
@@ -8920,6 +8922,11 @@ def screen_instrument(
             # Batch 372: gated by Sprint-1 data deliverable, not literature.
             # Re-enable in same line by removing from
             # STRATEGIES_DISABLED_MISSING_PRODUCER once producer lands.
+            continue
+        if name in _DATA_SCARCE:
+            # B1441 (owner "Retire group 2"): producer WORKS, the DATA is thin.
+            # sector_history.csv holds 14 reclassification events in the whole
+            # window, all on 2023-03-17. Re-enable when it is extended (S6-B1434b).
             continue
         # Batch 310 (2026-05-24): PHASE_1B_ALPHA_DISABLED_STRATEGIES skip
         # REVERTED per owner directive. All previously-disabled strategies
