@@ -7091,3 +7091,29 @@ once a year; squeeze_setup_long ~2.5/yr at B620; pivot_s3_capitulation 18.3/yr a
 ### OWNER DIRECTIVE 2: Group 1 backtest - NEXT, launches after the Group 3 measurement clears
 3 mirror shorts (news_sentiment_short, poc_magnet_short, xs_combined_momentum_high_ivol_short).
 Sequenced to avoid CPU contention, not deferred.
+
+## B1442 (2026-08-04) - duplicate-process miss (self-caught) + Group 1 launch
+
+**MISS (mine).** The Group 3 measurement was launched in the foreground; the Bash tool reported
+`Command timed out after 10m 0s` and I read that as the run having stopped, then launched a second
+copy in the background. `Get-CimInstance Win32_Process` showed FOUR python processes - two
+parent/child pairs (10412/33520 @21:47:36, 21628/18560 @21:57:57) running the IDENTICAL command
+line and both targeting `output_audit/b1440_group3_firecount.json`. They competed for CPU for ~20
+minutes (which is why the log looked stalled and read like a hang) and would have raced on one
+JSON file at completion. Orphan pair killed; the backgrounded pair survives and was verified
+WORKING by CPU delta (+22.1s over 25s wall, ~88% of a core) - it is in the silent signal-precompute
+phase, the same log-silence pattern as S6-B1438a but in a different tool.
+COMPLIANCE failure against `feedback_check_existing_pids_before_long_background_launch`, not a new
+rule (CHECKLIST #136). LEARNINGS **L269**: a tool timeout returns control, it does not kill the
+process; enumerate PIDs by COMMAND LINE before relaunching anything long-running.
+
+**S6-B1442a (NEW).** The silent-phase problem is now confirmed in two independent tools
+(`run_phase1a.py` exit-cube replay, `measure_fire_count.py` signal precompute). Any long job that
+logs nothing for a multi-minute compute phase is indistinguishable from a hang, and the standing
+remedy - CPU-delta sampling - is manual. Class-level fix: a heartbeat line (`[HEARTBEAT] phase=<x>
+elapsed=<s>`) emitted on a timer by long-running scripts, so silence always means trouble.
+
+**OWNER DIRECTIVE 2 - Group 1 backtest LAUNCHED**: 3 mirror shorts (news_sentiment_short,
+poc_magnet_short, xs_combined_momentum_high_ivol_short), canonical cube invocation copied from
+`scripts/aws_chunk_launch.py:92-95` per L264/L267, 150-ticker seeded sample, full window,
+`--max-run-hours 48`. Zero spend.

@@ -4296,3 +4296,25 @@ never "root cause". I wrote a root-cause assertion into a ticket without executi
 **Detection signal:** any ticket whose body names a cause but cites no command output is
 UNVERIFIED; before acting on or repeating it, run the path. Cheapest possible check here would
 have been one grep for the producer name - it would have failed the claim in seconds.
+
+### L269
+**A tool-level timeout returns control; it does not kill the process. Verify death before
+relaunching.** (B1442, self-caught.) The Group 3 fire-count measurement was launched in the
+foreground and the Bash tool reported `Command timed out after 10m 0s`. I read that as "the run
+stopped" and launched a second copy in the background. Both were still alive 20 minutes later -
+`Get-CimInstance Win32_Process` showed FOUR python processes (two parent/child pairs, PIDs
+10412/33520 from 21:47:36 and 21628/18560 from 21:57:57) running the identical command and both
+targeting the same output path `output_audit/b1440_group3_firecount.json`. Consequences: they
+competed for CPU (which is why the log appeared stalled and looked like a hang), and on completion
+they would have raced on one JSON file - last-writer-wins at best, a torn file at worst.
+`feedback_check_existing_pids_before_long_background_launch` already names this exact class
+("race condition on same-output-path"), so this is a COMPLIANCE failure, not a missing rule
+(CHECKLIST #136). **What made it slip:** the memory is phrased around *deliberately* launching a
+second job, and this did not feel like one - it felt like retrying a job that had ended. The
+timeout message is what created the false belief. **Rules:** (a) `timeout`, tool budgets and
+`SIGKILL`-less cancellation do not terminate a detached child - after ANY timeout, run
+`Get-CimInstance Win32_Process -Filter "Name='python.exe'"` and confirm the PID is gone before
+relaunching; (b) a "stalled" log on a long job is at least as likely to mean CPU contention from a
+duplicate as it is to mean a hang - enumerate processes before diagnosing the job; (c) match on
+COMMAND LINE, not process count - two pairs of python.exe looked unremarkable until the cmdlines
+were compared and proved identical.
