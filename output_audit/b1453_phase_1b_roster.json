@@ -33,33 +33,35 @@
   "n_passed_fdr": 20,
   "n_roster": 13,
   "dup_of": {
-    "institutional_breakout_confirmation_long": "institutional_persistence_breakout_long",
-    "institutional_multi_quarter_persistence_long": "institutional_committed_growth_long",
-    "institutional_insider_combo_long": "institutional_committed_growth_long",
-    "institutional_persistent_holders_long": "institutional_committed_growth_long",
-    "institutional_strong_conviction_long": "institutional_committed_growth_long",
-    "institutional_cluster_long": "institutional_committed_growth_long",
-    "rsi_oversold_with_smart_money_long": "institutional_committed_growth_long"
+    "institutional_persistent_holders_long": "institutional_strong_conviction_long",
+    "institutional_committed_growth_long": "institutional_strong_conviction_long",
+    "institutional_insider_combo_long": "institutional_strong_conviction_long",
+    "rsi_oversold_with_smart_money_long": "institutional_strong_conviction_long",
+    "institutional_cluster_long": "institutional_strong_conviction_long",
+    "institutional_multi_quarter_persistence_long": "institutional_strong_conviction_long",
+    "institutional_breakout_confirmation_long": "institutional_persistence_breakout_long"
   },
   "mirrors": {
     "registered": [
-      "52wl_break_retest_short",
-      "macd_crossover_short",
+      "pead_short_negative_yoy_growth",
       "poc_magnet_short",
       "smc_breaker_block_short",
       "xs_momentum_bottom_decile_short"
     ],
     "long_only_data": [
-      "institutional_committed_growth_long",
       "institutional_high_conviction_long",
       "institutional_persistence_breakout_long",
-      "institutional_persistence_oversold_long"
+      "institutional_persistence_oversold_long",
+      "institutional_strong_conviction_long"
     ],
-    "needs_creation": [
+    "dual_self": [
       "avwap_252_breakout",
       "force_index_breakout",
-      "pead_long_high_yoy_growth_only"
-    ]
+      "macd_crossover",
+      "macd_fast_crossover",
+      "r1_break_retest"
+    ],
+    "needs_creation": []
   },
   "roster": [
     {
@@ -101,6 +103,42 @@
     {
       "cube": "R5",
       "n_tickers": 544,
+      "strategy": "pead_long_high_yoy_growth_only",
+      "direction": "long",
+      "exit": "breakeven_plus_trail",
+      "is_sharpe": 0.53,
+      "is_n_gates": 5,
+      "holdout": {
+        "n": 422,
+        "sharpe": 0.585,
+        "sortino": 2.966,
+        "psr": 1.0,
+        "profit_factor": 3.14,
+        "payoff": 7.05,
+        "expectancy": 4.4218,
+        "win_rate": 0.308,
+        "p": 9.397771619735096e-08,
+        "ci_lo": 0.361,
+        "gates": {
+          "sharpe_per_regime": true,
+          "profit_factor": true,
+          "sortino": true,
+          "psr": true,
+          "min_trades": true
+        },
+        "n_gates": 5,
+        "all_live_gates": true
+      },
+      "bh": true,
+      "verdict": "PASS",
+      "mirror_status": "REGISTERED",
+      "mirror": "pead_short_negative_yoy_growth",
+      "asym_signals": [],
+      "mirror_registered": true
+    },
+    {
+      "cube": "R5",
+      "n_tickers": 544,
       "strategy": "poc_magnet_long",
       "direction": "long",
       "exit": "time_stop_10d",
@@ -131,6 +169,225 @@
       "verdict": "PASS",
       "mirror_status": "REGISTERED",
       "mirror": "poc_magnet_short",
+      "asym_signals": [],
+      "mirror_registered": true
+    },
+    {
+      "cube": "R5",
+      "n_tickers": 544,
+      "strategy": "avwap_252_breakout",
+      "direction": "long",
+      "exit": "breakeven_plus_trail",
+      "is_sharpe": 0.483,
+      "is_n_gates": 4,
+      "holdout": {
+        "n": 314,
+        "sharpe": 0.532,
+        "sortino": 1.62,
+        "psr": 1.0,
+        "profit_factor": 2.053,
+        "payoff": 3.6,
+        "expectancy": 2.234,
+        "win_rate": 0.363,
+        "p": 0.00011359308181324335,
+        "ci_lo": 0.246,
+        "gates": {
+          "sharpe_per_regime": true,
+          "profit_factor": true,
+          "sortino": true,
+          "psr": true,
+          "min_trades": true
+        },
+        "n_gates": 5,
+        "all_live_gates": true
+      },
+      "bh": true,
+      "verdict": "PASS",
+      "mirror_status": "DUAL-SELF",
+      "mirror": "avwap_252_breakout",
+      "asym_signals": [],
+      "mirror_registered": true
+    },
+    {
+      "cube": "R5",
+      "n_tickers": 544,
+      "strategy": "macd_fast_crossover",
+      "direction": "long",
+      "exit": "breakeven_plus_trail",
+      "is_sharpe": 0.437,
+      "is_n_gates": 4,
+      "holdout": {
+        "n": 378,
+        "sharpe": 0.537,
+        "sortino": 2.211,
+        "psr": 1.0,
+        "profit_factor": 2.399,
+        "payoff": 4.8,
+        "expectancy": 3.1257,
+        "win_rate": 0.333,
+        "p": 4.8279388074765265e-05,
+        "ci_lo": 0.264,
+        "gates": {
+          "sharpe_per_regime": true,
+          "profit_factor": true,
+          "sortino": true,
+          "psr": true,
+          "min_trades": true
+        },
+        "n_gates": 5,
+        "all_live_gates": true
+      },
+      "bh": true,
+      "verdict": "PASS",
+      "mirror_status": "DUAL-SELF",
+      "mirror": "macd_fast_crossover",
+      "asym_signals": [],
+      "mirror_registered": true
+    },
+    {
+      "cube": "R5",
+      "n_tickers": 544,
+      "strategy": "institutional_strong_conviction_long",
+      "direction": "long",
+      "exit": "breakeven_plus_trail",
+      "is_sharpe": 0.436,
+      "is_n_gates": 4,
+      "holdout": {
+        "n": 590,
+        "sharpe": 0.613,
+        "sortino": 2.811,
+        "psr": 1.0,
+        "profit_factor": 2.814,
+        "payoff": 5.05,
+        "expectancy": 4.1704,
+        "win_rate": 0.358,
+        "p": 2.006736036088151e-09,
+        "ci_lo": 0.406,
+        "gates": {
+          "sharpe_per_regime": true,
+          "profit_factor": true,
+          "sortino": true,
+          "psr": true,
+          "min_trades": true
+        },
+        "n_gates": 5,
+        "all_live_gates": true
+      },
+      "bh": true,
+      "verdict": "PASS",
+      "mirror_status": "LONG-ONLY-DATA",
+      "mirror": null,
+      "asym_signals": [
+        "institutional_increased",
+        "institutional_new_positions"
+      ],
+      "mirror_registered": false
+    },
+    {
+      "cube": "R5",
+      "n_tickers": 544,
+      "strategy": "macd_crossover",
+      "direction": "long",
+      "exit": "breakeven_plus_trail",
+      "is_sharpe": 0.434,
+      "is_n_gates": 4,
+      "holdout": {
+        "n": 265,
+        "sharpe": 0.588,
+        "sortino": 2.408,
+        "psr": 1.0,
+        "profit_factor": 2.544,
+        "payoff": 5.2,
+        "expectancy": 3.1603,
+        "win_rate": 0.328,
+        "p": 0.00014513123703885927,
+        "ci_lo": 0.266,
+        "gates": {
+          "sharpe_per_regime": true,
+          "profit_factor": true,
+          "sortino": true,
+          "psr": true,
+          "min_trades": true
+        },
+        "n_gates": 5,
+        "all_live_gates": true
+      },
+      "bh": true,
+      "verdict": "PASS",
+      "mirror_status": "DUAL-SELF",
+      "mirror": "macd_crossover",
+      "asym_signals": [],
+      "mirror_registered": true
+    },
+    {
+      "cube": "R5",
+      "n_tickers": 544,
+      "strategy": "force_index_breakout",
+      "direction": "long",
+      "exit": "breakeven_plus_trail",
+      "is_sharpe": 0.423,
+      "is_n_gates": 4,
+      "holdout": {
+        "n": 259,
+        "sharpe": 0.519,
+        "sortino": 2.528,
+        "psr": 1.0,
+        "profit_factor": 2.423,
+        "payoff": 5.42,
+        "expectancy": 3.2149,
+        "win_rate": 0.309,
+        "p": 0.0011821817774107907,
+        "ci_lo": 0.181,
+        "gates": {
+          "sharpe_per_regime": true,
+          "profit_factor": true,
+          "sortino": true,
+          "psr": true,
+          "min_trades": true
+        },
+        "n_gates": 5,
+        "all_live_gates": true
+      },
+      "bh": true,
+      "verdict": "PASS",
+      "mirror_status": "DUAL-SELF",
+      "mirror": "force_index_breakout",
+      "asym_signals": [],
+      "mirror_registered": true
+    },
+    {
+      "cube": "R5",
+      "n_tickers": 544,
+      "strategy": "r1_break_retest",
+      "direction": "long",
+      "exit": "breakeven_plus_trail",
+      "is_sharpe": 0.42,
+      "is_n_gates": 4,
+      "holdout": {
+        "n": 338,
+        "sharpe": 0.501,
+        "sortino": 1.823,
+        "psr": 1.0,
+        "profit_factor": 2.108,
+        "payoff": 4.95,
+        "expectancy": 2.4025,
+        "win_rate": 0.299,
+        "p": 0.00019333821921375385,
+        "ci_lo": 0.222,
+        "gates": {
+          "sharpe_per_regime": true,
+          "profit_factor": true,
+          "sortino": true,
+          "psr": true,
+          "min_trades": true
+        },
+        "n_gates": 5,
+        "all_live_gates": true
+      },
+      "bh": true,
+      "verdict": "PASS",
+      "mirror_status": "DUAL-SELF",
+      "mirror": "r1_break_retest",
       "asym_signals": [],
       "mirror_registered": true
     },
@@ -211,22 +468,22 @@
     {
       "cube": "R5",
       "n_tickers": 544,
-      "strategy": "institutional_committed_growth_long",
+      "strategy": "institutional_persistence_oversold_long",
       "direction": "long",
       "exit": "breakeven_plus_trail",
-      "is_sharpe": 0.413,
+      "is_sharpe": 0.38,
       "is_n_gates": 4,
       "holdout": {
-        "n": 666,
-        "sharpe": 0.638,
-        "sortino": 2.845,
+        "n": 199,
+        "sharpe": 0.517,
+        "sortino": 1.575,
         "psr": 1.0,
-        "profit_factor": 2.816,
-        "payoff": 4.54,
-        "expectancy": 4.2502,
-        "win_rate": 0.383,
-        "p": 1.2125202342598967e-10,
-        "ci_lo": 0.437,
+        "profit_factor": 1.933,
+        "payoff": 3.49,
+        "expectancy": 2.3437,
+        "win_rate": 0.357,
+        "p": 0.003301567481339818,
+        "ci_lo": 0.14,
         "gates": {
           "sharpe_per_regime": true,
           "profit_factor": true,
@@ -244,78 +501,6 @@
       "asym_signals": [
         "institutional_increased"
       ],
-      "mirror_registered": false
-    },
-    {
-      "cube": "R5",
-      "n_tickers": 544,
-      "strategy": "macd_crossover",
-      "direction": "long",
-      "exit": "breakeven_plus_trail",
-      "is_sharpe": 0.434,
-      "is_n_gates": 4,
-      "holdout": {
-        "n": 265,
-        "sharpe": 0.588,
-        "sortino": 2.408,
-        "psr": 1.0,
-        "profit_factor": 2.544,
-        "payoff": 5.2,
-        "expectancy": 3.1603,
-        "win_rate": 0.328,
-        "p": 0.00014513123703885927,
-        "ci_lo": 0.266,
-        "gates": {
-          "sharpe_per_regime": true,
-          "profit_factor": true,
-          "sortino": true,
-          "psr": true,
-          "min_trades": true
-        },
-        "n_gates": 5,
-        "all_live_gates": true
-      },
-      "bh": true,
-      "verdict": "PASS",
-      "mirror_status": "REGISTERED",
-      "mirror": "macd_crossover_short",
-      "asym_signals": [],
-      "mirror_registered": true
-    },
-    {
-      "cube": "R5",
-      "n_tickers": 544,
-      "strategy": "pead_long_high_yoy_growth_only",
-      "direction": "long",
-      "exit": "breakeven_plus_trail",
-      "is_sharpe": 0.53,
-      "is_n_gates": 5,
-      "holdout": {
-        "n": 422,
-        "sharpe": 0.585,
-        "sortino": 2.966,
-        "psr": 1.0,
-        "profit_factor": 3.14,
-        "payoff": 7.05,
-        "expectancy": 4.4218,
-        "win_rate": 0.308,
-        "p": 9.397771619735096e-08,
-        "ci_lo": 0.361,
-        "gates": {
-          "sharpe_per_regime": true,
-          "profit_factor": true,
-          "sortino": true,
-          "psr": true,
-          "min_trades": true
-        },
-        "n_gates": 5,
-        "all_live_gates": true
-      },
-      "bh": true,
-      "verdict": "PASS",
-      "mirror_status": "NEEDS-CREATION",
-      "mirror": null,
-      "asym_signals": [],
       "mirror_registered": false
     },
     {
@@ -355,188 +540,6 @@
         "institutional_new_positions"
       ],
       "mirror_registered": false
-    },
-    {
-      "cube": "R5",
-      "n_tickers": 544,
-      "strategy": "macd_fast_crossover",
-      "direction": "long",
-      "exit": "breakeven_plus_trail",
-      "is_sharpe": 0.437,
-      "is_n_gates": 4,
-      "holdout": {
-        "n": 378,
-        "sharpe": 0.537,
-        "sortino": 2.211,
-        "psr": 1.0,
-        "profit_factor": 2.399,
-        "payoff": 4.8,
-        "expectancy": 3.1257,
-        "win_rate": 0.333,
-        "p": 4.8279388074765265e-05,
-        "ci_lo": 0.264,
-        "gates": {
-          "sharpe_per_regime": true,
-          "profit_factor": true,
-          "sortino": true,
-          "psr": true,
-          "min_trades": true
-        },
-        "n_gates": 5,
-        "all_live_gates": true
-      },
-      "bh": true,
-      "verdict": "PASS",
-      "mirror_status": "REGISTERED",
-      "mirror": "macd_crossover_short",
-      "asym_signals": [],
-      "mirror_registered": true
-    },
-    {
-      "cube": "R5",
-      "n_tickers": 544,
-      "strategy": "avwap_252_breakout",
-      "direction": "long",
-      "exit": "breakeven_plus_trail",
-      "is_sharpe": 0.483,
-      "is_n_gates": 4,
-      "holdout": {
-        "n": 314,
-        "sharpe": 0.532,
-        "sortino": 1.62,
-        "psr": 1.0,
-        "profit_factor": 2.053,
-        "payoff": 3.6,
-        "expectancy": 2.234,
-        "win_rate": 0.363,
-        "p": 0.00011359308181324335,
-        "ci_lo": 0.246,
-        "gates": {
-          "sharpe_per_regime": true,
-          "profit_factor": true,
-          "sortino": true,
-          "psr": true,
-          "min_trades": true
-        },
-        "n_gates": 5,
-        "all_live_gates": true
-      },
-      "bh": true,
-      "verdict": "PASS",
-      "mirror_status": "NEEDS-CREATION",
-      "mirror": null,
-      "asym_signals": [],
-      "mirror_registered": false
-    },
-    {
-      "cube": "R5",
-      "n_tickers": 544,
-      "strategy": "force_index_breakout",
-      "direction": "long",
-      "exit": "breakeven_plus_trail",
-      "is_sharpe": 0.423,
-      "is_n_gates": 4,
-      "holdout": {
-        "n": 259,
-        "sharpe": 0.519,
-        "sortino": 2.528,
-        "psr": 1.0,
-        "profit_factor": 2.423,
-        "payoff": 5.42,
-        "expectancy": 3.2149,
-        "win_rate": 0.309,
-        "p": 0.0011821817774107907,
-        "ci_lo": 0.181,
-        "gates": {
-          "sharpe_per_regime": true,
-          "profit_factor": true,
-          "sortino": true,
-          "psr": true,
-          "min_trades": true
-        },
-        "n_gates": 5,
-        "all_live_gates": true
-      },
-      "bh": true,
-      "verdict": "PASS",
-      "mirror_status": "NEEDS-CREATION",
-      "mirror": null,
-      "asym_signals": [],
-      "mirror_registered": false
-    },
-    {
-      "cube": "R5",
-      "n_tickers": 544,
-      "strategy": "institutional_persistence_oversold_long",
-      "direction": "long",
-      "exit": "breakeven_plus_trail",
-      "is_sharpe": 0.38,
-      "is_n_gates": 4,
-      "holdout": {
-        "n": 199,
-        "sharpe": 0.517,
-        "sortino": 1.575,
-        "psr": 1.0,
-        "profit_factor": 1.933,
-        "payoff": 3.49,
-        "expectancy": 2.3437,
-        "win_rate": 0.357,
-        "p": 0.003301567481339818,
-        "ci_lo": 0.14,
-        "gates": {
-          "sharpe_per_regime": true,
-          "profit_factor": true,
-          "sortino": true,
-          "psr": true,
-          "min_trades": true
-        },
-        "n_gates": 5,
-        "all_live_gates": true
-      },
-      "bh": true,
-      "verdict": "PASS",
-      "mirror_status": "LONG-ONLY-DATA",
-      "mirror": null,
-      "asym_signals": [
-        "institutional_increased"
-      ],
-      "mirror_registered": false
-    },
-    {
-      "cube": "R5",
-      "n_tickers": 544,
-      "strategy": "r1_break_retest",
-      "direction": "long",
-      "exit": "breakeven_plus_trail",
-      "is_sharpe": 0.42,
-      "is_n_gates": 4,
-      "holdout": {
-        "n": 338,
-        "sharpe": 0.501,
-        "sortino": 1.823,
-        "psr": 1.0,
-        "profit_factor": 2.108,
-        "payoff": 4.95,
-        "expectancy": 2.4025,
-        "win_rate": 0.299,
-        "p": 0.00019333821921375385,
-        "ci_lo": 0.222,
-        "gates": {
-          "sharpe_per_regime": true,
-          "profit_factor": true,
-          "sortino": true,
-          "psr": true,
-          "min_trades": true
-        },
-        "n_gates": 5,
-        "all_live_gates": true
-      },
-      "bh": true,
-      "verdict": "PASS",
-      "mirror_status": "REGISTERED",
-      "mirror": "52wl_break_retest_short",
-      "asym_signals": [],
-      "mirror_registered": true
     }
   ],
   "all_rows": [
@@ -727,10 +730,10 @@
       },
       "bh": true,
       "verdict": "PASS",
-      "mirror_status": "NEEDS-CREATION",
-      "mirror": null,
+      "mirror_status": "DUAL-SELF",
+      "mirror": "avwap_252_breakout",
       "asym_signals": [],
-      "mirror_registered": false
+      "mirror_registered": true
     },
     {
       "cube": "R5",
@@ -2115,10 +2118,10 @@
       },
       "bh": true,
       "verdict": "PASS",
-      "mirror_status": "NEEDS-CREATION",
-      "mirror": null,
+      "mirror_status": "DUAL-SELF",
+      "mirror": "force_index_breakout",
       "asym_signals": [],
-      "mirror_registered": false
+      "mirror_registered": true
     },
     {
       "cube": "R5",
@@ -2866,13 +2869,7 @@
         "all_live_gates": true
       },
       "bh": true,
-      "verdict": "PASS",
-      "mirror_status": "LONG-ONLY-DATA",
-      "mirror": null,
-      "asym_signals": [
-        "institutional_increased"
-      ],
-      "mirror_registered": false
+      "verdict": "PASS"
     },
     {
       "cube": "R5",
@@ -3286,7 +3283,14 @@
         "all_live_gates": true
       },
       "bh": true,
-      "verdict": "PASS"
+      "verdict": "PASS",
+      "mirror_status": "LONG-ONLY-DATA",
+      "mirror": null,
+      "asym_signals": [
+        "institutional_increased",
+        "institutional_new_positions"
+      ],
+      "mirror_registered": false
     },
     {
       "cube": "R5",
@@ -3515,8 +3519,8 @@
       },
       "bh": true,
       "verdict": "PASS",
-      "mirror_status": "REGISTERED",
-      "mirror": "macd_crossover_short",
+      "mirror_status": "DUAL-SELF",
+      "mirror": "macd_crossover",
       "asym_signals": [],
       "mirror_registered": true
     },
@@ -3615,8 +3619,8 @@
       },
       "bh": true,
       "verdict": "PASS",
-      "mirror_status": "REGISTERED",
-      "mirror": "macd_crossover_short",
+      "mirror_status": "DUAL-SELF",
+      "mirror": "macd_fast_crossover",
       "asym_signals": [],
       "mirror_registered": true
     },
@@ -4255,10 +4259,10 @@
       },
       "bh": true,
       "verdict": "PASS",
-      "mirror_status": "NEEDS-CREATION",
-      "mirror": null,
+      "mirror_status": "REGISTERED",
+      "mirror": "pead_short_negative_yoy_growth",
       "asym_signals": [],
-      "mirror_registered": false
+      "mirror_registered": true
     },
     {
       "cube": "R5",
@@ -4903,8 +4907,8 @@
       },
       "bh": true,
       "verdict": "PASS",
-      "mirror_status": "REGISTERED",
-      "mirror": "52wl_break_retest_short",
+      "mirror_status": "DUAL-SELF",
+      "mirror": "r1_break_retest",
       "asym_signals": [],
       "mirror_registered": true
     },

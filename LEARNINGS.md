@@ -4516,3 +4516,58 @@ overlap. **Rule:** where an explicit human declaration of a relationship exists,
 authority; heuristics are the fallback for pairs nobody has declared. Corollary: a convention is
 only useful if something reads it - the B1452 annotation sat unread until this batch made it
 machine-readable.
+
+### L281
+**A "missing mirror" audit that reads the registry but not the strategy body will invent
+strategies that already exist.** B1453's roster reported three shorts as NEEDS-CREATION. All
+three already existed: `avwap_252_breakout` and `force_index_breakout` are DUAL — one registered
+class emits both legs (`fl`/`fs`, `reclaim_252_long`/`loss_252_short`) and the cube already
+carries both directions as separate rows — and `pead_short_negative_yoy_growth` was registered
+outright. Acting on that report would have wired three redundant classes and created exactly the
+duplicate-signal class L282 documents. Root cause: mirror existence was inferred from the
+registry name list, when the authoritative evidence is (a) the docstring's `EXACT MIRROR of X`
+declaration and (b) a short branch in the strategy body. `is_dual()` now detects `^\s*fs\s*=`
+and treats a dual's own short branch as its mirror. Detection signal that would have caught it
+earlier: the cube itself already contained `direction=short` rows for all three — a mirror audit
+that cross-checked its NEEDS-CREATION list against distinct directions present in the cube would
+have returned zero. **Generalized rule: existence claims about code artifacts are settled by the
+artifact, never by a name list.**
+
+### L282
+**Three registered strategies, one signal — jaccard 1.000, undetected for the entire project.**
+The bear stress test surfaced `macd_crossover` (short leg), `macd_crossover_short` and
+`macd_ichimoku` reporting byte-identical bear numbers (Sharpe 0.31 / PF 1.41 / n 250). Probing
+the trade sets: `macd_crossover` short vs `macd_crossover_short` = **jaccard 1.000** on
+(ticker, entry_date) across 1,524 trades; `macd_ichimoku` = 0.999, i.e. its ichimoku gate is a
+no-op on the short side. A dual's short branch duplicating a separately-registered standalone
+short is the same META-PATTERN B874 deleted `camarilla_rsi_obv` for. It survived because the
+Jaccard<0.70 redundancy gate runs INSIDE the Gate-1 promotion pipeline — it only ever sees cells
+that already cleared the holdout bar, so redundancy among FAILING strategies is structurally
+invisible. **Generalized rule: a de-duplication gate placed downstream of a performance gate
+cannot find duplicates that fail the performance gate. Redundancy detection belongs at
+registration, over the full roster, independent of performance.** Ticketed S6-B1455a.
+
+### L283
+**Selecting the de-dup canonical on the graded window is the B1452 lookahead in miniature.**
+`build_phase_1b_roster.py` broke redundancy ties with `-r["holdout"]["sharpe"]` — best-by-holdout
+Sharpe. Not arbitrary (it had already superseded B1444's largest-trade-set heuristic, which was),
+but still selection on the window the result is graded on: among cluster members it picks
+whichever happened to do best where the verdict is read. Far milder than B1452 (2 candidates, not
+26) which is exactly why it survived the B1452 sweep — that sweep looked for the 26-way argmax
+and stopped. Changed to `-r["is_sharpe"]`, and it was material: the institutional cluster's
+canonical moved from `institutional_committed_growth_long` to `institutional_strong_conviction_long`.
+**Generalized rule: when a lookahead is found, grep every read of the graded window in the same
+file — not just the idiom that caused it. Severity varies with candidate count; validity does not.**
+
+### L284
+**"Shorts are untested" was a data-partition artifact, not a fact about shorts.** Every prior
+statement that the holdout could not evaluate shorts (B1385's regime gate: 0 PASS / 77 UNEVAL)
+was read as "insufficient bear data". Measured: the locked window contains **567,814 bear-regime
+short trades** — abundant — but they sit in the 2022-23 fold, while the 2025-26 holdout holds only
+33,644 spread so thin that **0 of 93 strategies reach n>=100 at any exit**. The constraint was
+never data volume; it was which fold the bear landed in. Repartitioning (select post-bear, grade
+in-bear) made 1,560 short cells gradable with no new run, no prefetch and no window change — after
+I had already begun scoping a paid prefetch to obtain bear data the project already owned.
+**Generalized rule: before sourcing new data to answer a question, measure the distribution of
+the data already held across the folds — "we lack X" and "X is in the wrong fold" are different
+problems with different costs, and UNEVAL never distinguishes them.**

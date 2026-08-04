@@ -4883,7 +4883,21 @@ def strat_pead_long_high_yoy_growth_only(s):
 
 
 def strat_pead_short_negative_yoy_growth(s):
-    """Batch 507 (2026-05-31, M6 Path-2 sleeve registered per owner go);
+    """EXACT MIRROR of strat_pead_long_high_yoy_growth_only (annotated B1454).
+
+    Symmetric on the YoY-surprise axis: the parent requires HIGH positive YoY EPS growth
+    inside the PEAD window; this requires NEGATIVE YoY growth. Same event window, same
+    producer (`earnings_eps_yoy_growth`), inverted sign - a genuine economic mirror rather
+    than a mechanical flip, and PEAD is symmetric by construction (Bernard-Thomas 1989:
+    drift follows the surprise in BOTH directions).
+
+    Why the annotation was needed: B1453's roster generator reported the parent as
+    NEEDS-CREATION because token overlap between `pead_long_high_yoy_growth_only` and this
+    name is 3 against a threshold of 4 - it would have had a redundant fourth pead short
+    wired. Declaring the pair here makes it machine-readable (the B1452 convention) instead
+    of relying on string similarity.
+
+    Batch 507 (2026-05-31, M6 Path-2 sleeve registered per owner go);
     DELETED B682; RESTORED B709 EMPIRICAL-RESTORE.
 
     PEAD short restricted to negative YoY-growth surprise cells.

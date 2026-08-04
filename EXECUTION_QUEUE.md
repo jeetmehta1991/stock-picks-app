@@ -7469,3 +7469,48 @@ NEEDS CREATION (3) - avwap_252_breakout, force_index_breakout, pead_long_high_yo
 
 **S6-B1452a still OPEN** - two generators now share the window discipline by duplication. The
 canonical one should gain a selection-objective switch so there is one implementation.
+
+---
+
+## B1454-B1455 (2026-08-04) — mirror audit corrected; bear evidence obtained without a new run
+
+**B1454 — three mirrors were NOT missing.** B1453 reported `avwap_252_breakout`,
+`force_index_breakout`, `pead_long_high_yoy_growth_only` as NEEDS-CREATION. All three already
+exist: two are DUAL (one class, both legs; the cube already carries `direction=short` rows),
+one was registered outright. `is_dual()` added; `pead` pair annotated `EXACT MIRROR of`.
+Roster mirror status is now **registered 4 / dual-self 5 / long-only-excused 4 / needs-creation 0**.
+**Nothing to create.** Funnel unchanged: 253 -> 211 -> 23 -> 20 -> 13 graded; 17 deployable. L281.
+
+**B1454b — de-dup canonical moved off the graded window.** Tie-break was holdout Sharpe
+(selection on the graded fold); now IS Sharpe. Material: institutional cluster canonical moved
+`committed_growth` -> `strong_conviction`. L283.
+
+**B1455 — bear-regime stress test, no new run required.** Owner directive "run bear inclusive
+window". A NEW window is blocked by data (OHLCV cache begins 2021-05-06; real bear outside the
+lock needs a paid prefetch + a window unlock — neither authorised). But the locked window already
+holds **567,814 bear short trades**; they were simply in the 2022-23 fold while the holdout held
+33,644 spread across 93 strategies at **0 cells >= n100**. That — not weak shorts — is why B1385
+returned 77 UNEVAL. `scripts/bear_regime_stress_test.py` repartitions instead: select on
+2023-05->2026-05, grade on bear entries in 2022-05->2023-05. L284.
+
+**Result (STRESS TEST, temporally backwards — NOT a promotion verdict):**
+| direction | gradable in bear | clear all 5 live gates | positive expectancy |
+|---|---|---|---|
+| SHORT | 82 | **0** | 18/82 (22%) |
+| LONG | 110 | 4 | 58/110 (53%) |
+
+Shorts fail in the bear market they exist for, and underperform longs *in that same bear*. Per
+owner directive the mirrors are **retained regardless** — this sizes the exposure, it does not
+re-litigate the roster.
+
+### Tickets opened
+- **S6-B1455a (HIGH)** — `macd_crossover` short leg vs `macd_crossover_short`: **jaccard 1.000**
+  over 1,524 trades; `macd_ichimoku` 0.999 (ichimoku gate is a short-side no-op). Three registered
+  strategies, one signal. Same META-PATTERN as B874. Root cause is structural: the Jaccard<0.70
+  gate sits inside the Gate-1 promotion pipeline, so it can only see cells that already passed —
+  redundancy among failing strategies is invisible by construction. **Move redundancy detection to
+  registration time, over the full roster, independent of performance.** L282.
+- **S6-B1455b (MED)** — sweep the full roster for dual-vs-standalone duplicate pairs using the
+  same (ticker, entry_date) jaccard probe; B874 and S6-B1455a are two instances of one class.
+
+**S6-B1452a still OPEN** (two generators duplicate the window discipline).

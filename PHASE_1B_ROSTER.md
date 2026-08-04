@@ -42,35 +42,43 @@
 | 2 | `poc_magnet_long` | long | R5 | 544 | `time_stop_10d` |   0.52 |   0.81 | 151 |   1.34 | 0.603 |   1.72 |   1.14 | `poc_magnet_short` |
 | 3 | `smc_breaker_block_long` | long | R5 | 544 | `breakeven_plus_trail` |   0.40 |   0.69 | 356 |   4.46 | 0.393 |   3.09 |   4.77 | `smc_breaker_block_short` |
 | 4 | `institutional_persistence_breakout_long` | long | R5 | 544 | `breakeven_plus_trail` |   0.39 |   0.68 | 136 |   5.58 | 0.404 |   4.07 |   6.00 | LONG-ONLY DATA |
-| 5 | `institutional_committed_growth_long` | long | R5 | 544 | `breakeven_plus_trail` |   0.41 |   0.64 | 666 |   4.25 | 0.383 |   2.82 |   4.54 | LONG-ONLY DATA |
-| 6 | `macd_crossover` | long | R5 | 544 | `breakeven_plus_trail` |   0.43 |   0.59 | 265 |   3.16 | 0.328 |   2.54 |   5.20 | `macd_crossover_short` |
-| 7 | `pead_long_high_yoy_growth_only` | long | R5 | 544 | `breakeven_plus_trail` |   0.53 |   0.58 | 422 |   4.42 | 0.308 |   3.14 |   7.05 | **NEEDS CREATION** |
+| 5 | `institutional_strong_conviction_long` | long | R5 | 544 | `breakeven_plus_trail` |   0.44 |   0.61 | 590 |   4.17 | 0.358 |   2.81 |   5.05 | LONG-ONLY DATA |
+| 6 | `macd_crossover` | long | R5 | 544 | `breakeven_plus_trail` |   0.43 |   0.59 | 265 |   3.16 | 0.328 |   2.54 |   5.20 | **NEEDS CREATION** |
+| 7 | `pead_long_high_yoy_growth_only` | long | R5 | 544 | `breakeven_plus_trail` |   0.53 |   0.58 | 422 |   4.42 | 0.308 |   3.14 |   7.05 | `pead_short_negative_yoy_growth` |
 | 8 | `institutional_high_conviction_long` | long | R5 | 544 | `breakeven_plus_trail` |   0.37 |   0.56 | 738 |   3.81 | 0.328 |   2.65 |   5.44 | LONG-ONLY DATA |
-| 9 | `macd_fast_crossover` | long | R5 | 544 | `breakeven_plus_trail` |   0.44 |   0.54 | 378 |   3.13 | 0.333 |   2.40 |   4.80 | `macd_crossover_short` |
+| 9 | `macd_fast_crossover` | long | R5 | 544 | `breakeven_plus_trail` |   0.44 |   0.54 | 378 |   3.13 | 0.333 |   2.40 |   4.80 | **NEEDS CREATION** |
 | 10 | `avwap_252_breakout` | long | R5 | 544 | `breakeven_plus_trail` |   0.48 |   0.53 | 314 |   2.23 | 0.363 |   2.05 |   3.60 | **NEEDS CREATION** |
 | 11 | `force_index_breakout` | long | R5 | 544 | `breakeven_plus_trail` |   0.42 |   0.52 | 259 |   3.21 | 0.309 |   2.42 |   5.42 | **NEEDS CREATION** |
 | 12 | `institutional_persistence_oversold_long` | long | R5 | 544 | `breakeven_plus_trail` |   0.38 |   0.52 | 199 |   2.34 | 0.357 |   1.93 |   3.49 | LONG-ONLY DATA |
-| 13 | `r1_break_retest` | long | R5 | 544 | `breakeven_plus_trail` |   0.42 |   0.50 | 338 |   2.40 | 0.299 |   2.11 |   4.95 | `52wl_break_retest_short` |
+| 13 | `r1_break_retest` | long | R5 | 544 | `breakeven_plus_trail` |   0.42 |   0.50 | 338 |   2.40 | 0.299 |   2.11 |   4.95 | **NEEDS CREATION** |
 
 ## Symmetric short mirrors
 
 Owner standing directive: *promoted longs carry short mirrors by default* - the mirror is retained irrespective of its own cube result. The single excuse is a **long-only DATA SOURCE** (13F / insider / congressional / buyback), where a mechanical inverse is economically false rather than merely untested (B611 reversal).
 
-- **REGISTERED and retained (5):** `52wl_break_retest_short`, `macd_crossover_short`, `poc_magnet_short`, `smc_breaker_block_short`, `xs_momentum_bottom_decile_short`
+- **REGISTERED and retained (4):** `pead_short_negative_yoy_growth`, `poc_magnet_short`, `smc_breaker_block_short`, `xs_momentum_bottom_decile_short`
 - **LONG-ONLY DATA, mirror excused (4):**
-    - `institutional_committed_growth_long` - consumes `institutional_increased`
     - `institutional_high_conviction_long` - consumes `institutional_new_positions`
     - `institutional_persistence_breakout_long` - consumes `institutional_increased`
     - `institutional_persistence_oversold_long` - consumes `institutional_increased`
+    - `institutional_strong_conviction_long` - consumes `institutional_increased`, `institutional_new_positions`
 
     Excusal is decided from the signals each function ACTUALLY consumes, never from its name. B1453 caught `xs_momentum_with_smart_money_long` being excused on its name alone while B1194 had already removed its smart_money gate - it is NOT excused and its exact mirror `xs_momentum_bottom_decile_short` is retained.
-- **NEEDS CREATION (3):** `avwap_252_breakout`, `force_index_breakout`, `pead_long_high_yoy_growth_only`
+- **DUAL - own short branch is the mirror, nothing to create (5):** `avwap_252_breakout`, `force_index_breakout`, `macd_crossover`, `macd_fast_crossover`, `r1_break_retest`
+- **NEEDS CREATION (0):** none
 
-**Deployable total: 13 graded cells + 5 registered mirrors = 18**, plus 3 mirrors to create.
+**Deployable total: 13 graded cells + 4 registered mirrors + 5 dual self-mirrors = 17** (dual mirrors are already counted in their parent cell), plus 0 mirrors to create.
 
 ## What this roster does NOT establish
 
-1. **Shorts are untested, not refuted.** The holdout is 88% bull / 5% bear (12 of 251 days, B1385). A short cell that fails here failed in a window with almost no bear data. Retained mirrors carry no holdout evidence and should not be read as validated.
+1. **Shorts are now TESTED IN BEAR — and they fail there too (B1455).** The earlier wording ("untested, not refuted") was itself a data-partition artifact and is retracted. The holdout is 88% bull and holds only 33,644 bear-short trades spread across 93 strategies, so **0 cells reach n>=100** — that is why B1385's regime gate returned 77 UNEVAL. But the locked window *does* contain **567,814 bear-regime short trades**, sitting in the 2022-23 fold. Repartitioning (select on 2023-05->2026-05, grade on bear entries in 2022-05->2023-05; `scripts/bear_regime_stress_test.py`) makes them gradable with no new run:
+
+   | direction | gradable in bear | clear all 5 live gates | positive expectancy |
+   |---|---|---|---|
+   | SHORT | 82 | **0** | 18/82 (22%) |
+   | LONG | 110 | 4 | 58/110 (53%) |
+
+   Shorts clear nothing in the bear market they exist for, and are *outperformed by longs inside that same bear*. **Caveat this is a stress test, not a promotion verdict** — it selects on later data and grades on earlier data, so it is temporally backwards and not walk-forward valid; the chosen exit is fitted to post-bear conditions. Per owner directive the mirrors are **retained irrespective**. This sizes the exposure being taken on structural-symmetry grounds; it does not validate it.
 2. **Levels are conditioned on the incumbent exit's trade set (S6-B1434c).** The cube replays all 26 exits over trades the ASSIGNED exit generated; ranking transfers, absolute magnitudes do not.
 3. **`min_trades` will tighten in deployment.** Longer-hold exits plus same-strategy dedup reduce live fire counts below these cube figures.
 4. **Blocked strategies excluded upstream:** 9 (9 data-scarcity, 0 missing-producer, 0 deprecated).

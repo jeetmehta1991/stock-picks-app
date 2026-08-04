@@ -148,6 +148,27 @@ def _declared_mirrors() -> dict[str, str]:
 _DECLARED = None
 
 
+def is_dual(name: str) -> bool:
+    """A DUAL strategy's own short branch IS its mirror - nothing needs creating.
+
+    B1454 fix, self-caught: the first roster flagged `avwap_252_breakout` and
+    `force_index_breakout` as NEEDS-CREATION. Both are dual (`reclaim_252_long`/
+    `loss_252_short`, and `fl`/`fs`) and the R5 cube carries BOTH directions for each.
+    Wiring a separate `_short` strategy would have created a redundant duplicate of a
+    branch that already trades. Detected from the SOURCE (a short branch exists), which is
+    the same logic-over-name principle as L279.
+    """
+    import inspect
+    import re as _re
+    try:
+        src = inspect.getsource(ALL_STRATEGIES[name])
+    except Exception:
+        return False
+    if _re.search(r"^\s*fs\s*=", src, _re.M):
+        return True
+    return bool(_re.search(r"_short\s*=", src)) and bool(_re.search(r"_long\s*=", src))
+
+
 def mirror_status(name: str) -> tuple[str, str | None]:
     global _DECLARED
     if _DECLARED is None:
@@ -157,6 +178,8 @@ def mirror_status(name: str) -> tuple[str, str | None]:
     # explicit statement of intent about this specific pair.
     if name in _DECLARED:
         return "REGISTERED", _DECLARED[name]
+    if is_dual(name):
+        return "DUAL-SELF", name          # its own short branch is the mirror
     asym, _hits = uses_long_only_data(name)
     if asym:
         return "LONG-ONLY-DATA", None
@@ -232,9 +255,13 @@ def main() -> int:
                         "PASS-noFDR" if h["all_live_gates"] else "DROP")
 
     passed = [r for r in rows if r["verdict"] == "PASS"]
-    # DE-DUP. selection-justified: canonical = highest HOLDOUT Sharpe, which is the promotion
-    # statistic itself. Supersedes B1444's largest-trade-set heuristic (S6-B1445b).
-    passed.sort(key=lambda r: -(r["holdout"]["sharpe"] or -9))
+    # DE-DUP. selection-justified: canonical = highest **IS** Sharpe. B1454 correction - the
+    # previous version ranked on HOLDOUT Sharpe, which is a selection decision made on the
+    # graded window and biases the reported roster upward. Milder than the 26-exit lookahead
+    # retracted at B1452 (2 near-identical candidates, not 26) but the same class, so it is
+    # fixed rather than excused. IS Sharpe keeps every selection decision inside the
+    # selection window (CHECKLIST #165 + the B1452 window discipline).
+    passed.sort(key=lambda r: -(r["is_sharpe"] or -9))
     dup_of, kept = {}, []
     for r in passed:
         red = None
@@ -258,6 +285,7 @@ def main() -> int:
     blocked = STRATEGIES_DISABLED_DATA_SCARCITY | STRATEGIES_DISABLED_MISSING_PRODUCER | DEPRECATED_STRATEGIES
     mirrors_reg = sorted({r["mirror"] for r in kept if r["mirror_status"] == "REGISTERED" and r["mirror"]})
     mirrors_new = sorted({r["strategy"] for r in kept if r["mirror_status"] == "NEEDS-CREATION"})
+    mirrors_dual = sorted({r["strategy"] for r in kept if r["mirror_status"] == "DUAL-SELF"})
     mirrors_asym = sorted({r["strategy"] for r in kept if r["mirror_status"] == "LONG-ONLY-DATA"})
 
     def fmt(v, w=6, d=2):
@@ -348,11 +376,15 @@ def main() -> int:
           "mirror `xs_momentum_bottom_decile_short` is retained.")
     else:
         A("    - none")
+    A(f"- **DUAL - own short branch is the mirror, nothing to create ({len(mirrors_dual)}):** " +
+      (", ".join(f"`{m}`" for m in mirrors_dual) if mirrors_dual else "none"))
     A(f"- **NEEDS CREATION ({len(mirrors_new)}):** " +
       (", ".join(f"`{m}`" for m in mirrors_new) if mirrors_new else "none"))
     A("")
     A(f"**Deployable total: {len(kept)} graded cells + {len(mirrors_reg)} registered mirrors "
-      f"= {len(kept) + len(mirrors_reg)}**, plus {len(mirrors_new)} mirrors to create.")
+      f"+ {len(mirrors_dual)} dual self-mirrors = {len(kept) + len(mirrors_reg)}** "
+      f"(dual mirrors are already counted in their parent cell), plus "
+      f"{len(mirrors_new)} mirrors to create.")
     A("")
     A("## What this roster does NOT establish")
     A("")
@@ -386,7 +418,7 @@ def main() -> int:
          "n_cells": len(rows), "n_passed_fdr": len(passed), "n_roster": len(kept),
          "dup_of": dup_of,
          "mirrors": {"registered": mirrors_reg, "long_only_data": mirrors_asym,
-                     "needs_creation": mirrors_new},
+                     "dual_self": mirrors_dual, "needs_creation": mirrors_new},
          "roster": [{k: v for k, v in r.items() if k != "trades"} for r in kept],
          "all_rows": rows}, indent=2, default=str), encoding="utf-8")
 
@@ -394,8 +426,8 @@ def main() -> int:
           f"{sum(1 for r in rows if r['holdout'])} -> all-gates "
           f"{sum(1 for r in rows if r['holdout'] and r['holdout']['all_live_gates'])} -> "
           f"BH-FDR {len(passed)} -> de-duped {len(kept)}")
-    print(f"[MIRRORS] registered {len(mirrors_reg)} | long-only-excused {len(mirrors_asym)} | "
-          f"needs-creation {len(mirrors_new)}")
+    print(f"[MIRRORS] registered {len(mirrors_reg)} | dual-self {len(mirrors_dual)} | "
+          f"long-only-excused {len(mirrors_asym)} | needs-creation {len(mirrors_new)}")
     print(f"[OK] wrote {args.output} + {args.json}")
     return 0
 
