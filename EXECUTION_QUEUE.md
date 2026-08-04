@@ -7691,3 +7691,42 @@ Pyramid 891 passed (+2), 2 skipped.
   or treat undeclared as all-regimes.
 - **S6-B1457c (MED)** — codify the bypass rule: any flag disabling a safeguard "so X can be
   measured" ships with X or a linked ticket for X, verified in the same batch. L292.
+
+---
+
+## B1458 (2026-08-04) — the 5-gate set is really 3; recommendation corrected
+
+**Owner challenge: "so we retain sharpe_per_regime >= 0.5 as is even though it's a major gating
+issue?" — NO, and the earlier phrasing understated it.** A gate is a THRESHOLD plus the SAMPLE the
+statistic is computed on. My recommendation was about the threshold only:
+- **threshold 0.5 — KEEP.** Loosening to 0.40 buys 21 cells by weakening the bar for everything,
+  including genuinely weak cells. Not recommended.
+- **sample (pooled across all regimes) — FIX.** This is the real defect (L292) and it is tracked by
+  S6-B1456a + S6-B1457a, both awaiting owner decision.
+
+**Leave-one-out contribution (211 evaluable, baseline 23 pass):**
+
+| gate | pass if dropped | uniquely rejects |
+|---|---|---|
+| `sharpe_per_regime` | 55 | **32** |
+| `min_trades` | 34 | 11 |
+| `psr` | 27 | 4 |
+| `profit_factor` | 23 | **0** |
+| `sortino` | 23 | **0** |
+
+Profit factor and Sortino do **zero** independent work — every cell they reject is already rejected
+elsewhere. The five-gate screen is a three-gate screen. Consequence: the apparent defence-in-depth
+is correlation, so a defect in the dominant gate's sample has no independent gate to catch it. L294.
+
+**Sharpe as computed** (`scripts/walk_forward_r5_cells.py::_sharpe`, identical to
+`metrics.py::_sharpe` per B1371): `sharpe = (mean(pnl)/std(pnl)) * sqrt(252/avg_hold)`, plus a
+Lo (2002) IID standard error `sqrt((1+SR^2/2)/n)` on the same annualized scale, and a one-sided
+p-value feeding BH-FDR. Holding-period skew CHECKED and absent: `breakeven_plus_trail` is the chosen
+exit for 103 of 211 population cells and 11 of 13 roster cells, so the roster is not an artifact of
+short-hold exits earning a larger annualization multiplier.
+
+### Tickets opened
+- **S6-B1458a (MED)** — publish the leave-one-out table with every gate-screen result; a pass count
+  without it cannot show whether the screen has independent constraints or one binding gate.
+- **S6-B1458b (MED)** — decide whether `profit_factor` and `sortino` stay as documentation-value
+  gates or are demoted to diagnostics like win_rate/calmar/MDD. They currently reject nothing.

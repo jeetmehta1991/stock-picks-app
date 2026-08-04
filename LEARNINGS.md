@@ -4689,3 +4689,18 @@ pass/fail. **Generalized rule: a guard against dead configuration must define "a
 SOMETHING, never as IS MENTIONED SOMEWHERE. Mention-based liveness checks are defeated by the
 observability code written to investigate the very thing they guard.** The test caught this itself,
 which is the argument for making guards fail loudly on their own allowlist drift.
+
+### L294
+**Two of the five "live" gates reject nothing — the gate set is effectively three, and the one
+doing the work is computed on the wrong sample.** Leave-one-out on the 211 holdout-evaluable cells
+(baseline 23 pass): dropping `profit_factor` still gives 23, dropping `sortino` still gives 23 —
+**each uniquely rejects 0 cells.** Only `sharpe` (uniquely rejects 32), `min_trades` (11) and `psr`
+(4) do independent work. Cause: Sortino uses downside deviation, so Sortino >= Sharpe for nearly all
+return distributions, and a 0.7 Sortino bar is slack behind a 0.5 Sharpe bar; profit factor >= 1.3
+is likewise implied in practice by a positive Sharpe over 100+ trades. This matters beyond tidiness:
+the apparent safety of "five independent gates" is false, so when the dominant gate's SAMPLE is
+wrong (L292 — pooled across regimes the strategy disclaims) **no other gate is positioned to catch
+it.** The redundancy that looked like defence-in-depth was correlation. **Generalized rule: a
+multi-gate screen must be reported with a leave-one-out contribution table. Gates that uniquely
+reject zero are decoration, and their presence creates false confidence that a defect in the
+binding gate would be caught elsewhere.**
