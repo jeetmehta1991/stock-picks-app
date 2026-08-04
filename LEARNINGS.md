@@ -4442,3 +4442,46 @@ which is all source code - is written via the Write tool or a small file-based p
 never a heredoc. Verify with `python -m py_compile` before staging, ALWAYS, when the edited file
 is part of the commit or test machinery. Detection signal: if a patch is being assembled inside a
 shell string, stop and put it in a file.
+
+
+### L276
+**Selecting among N candidates ON the graded window and then reporting a pass on that window is
+circular, and with N=26 it will almost always "succeed".** (B1452, self-caught, retracts a number
+given to the owner one turn earlier.) Asked to select each cell's exit by "the exit that clears
+most gates", I filtered the cube to the HOLDOUT first and then chose, per cell, whichever of the
+26 exits cleared the most gates THERE - then reported that 35 cells passed on the holdout. The 35
+measured selection freedom, not edge: a maximum over 26 candidates evaluated on the same window
+used to grade is guaranteed to flatter. Corrected to SELECT on IS folds 1-3 and GRADE the single
+chosen exit once on the untouched holdout: **23**, not 35. **What should have caught it instantly:**
+`build_passed_strategy_exit_list.py` already did it correctly and its docstring says so -
+"the exit is picked using ONLY 2022-05 -> 2025-05; the final year is a holdout no selection
+decision ever saw". I wrote a parallel script instead of reading how the canonical one worked, and
+reproduced a lookahead the project had already solved. **Rules:** (a) any "best X" chosen from a
+menu must be chosen on data disjoint from the data that grades it - state both windows explicitly
+in the output header, which makes the violation visible on sight; (b) when a canonical
+implementation of the same task exists, read its window discipline BEFORE writing a variant -
+`feedback_confirm_existing_template_before_replicating` applies to statistical method, not just to
+file formats; (c) a suspiciously large improvement (3 -> 35) is a prompt to audit the method, not
+to report the number.
+
+### L277
+**A dual strategy's long and short legs must be graded separately; pooling them destroys a passing
+leg.** (B1452.) The first gates-argmax script grouped by `(strategy, exit)` and pooled directions.
+Measured on `macd_crossover` @ breakeven_plus_trail, holdout: long n=265 Sharpe **0.588 PASSES**,
+short n=422 Sharpe **0.086 FAILS**, pooled n=687 Sharpe **0.338 FAILS**. The pooling silently
+"lost" 9 strategies that fixed-exit runs had passed and hid 42 more from grading entirely
+(147 gradeable vs the correct 189). **The detection signal that worked:** two of my own artifacts
+disagreed on the same cell (n=687 vs n=265) and I measured rather than picked one - the canonical
+funnel's own stage 0 is "229 (strategy x direction)", which is the authority. **Rule:** the grain
+of every cube analysis is (strategy x DIRECTION x exit). A dual strategy is two independent bets
+that happen to share a name; any aggregation across direction must be justified, never default.
+
+### L278
+**I asserted how existing code worked without reading it, and told the owner a false thing about
+it.** (B1452.) I stated that `build_passed_strategy_exit_list.py` "selects exits by IS argmax
+EXPECTANCY" and listed that as a staleness item needing repair. It selects by argmax IS-pooled
+**SHARPE** (line 197: `is_pooled["sharpe"] > best["is_pooled"]`) - a defensible risk-adjusted
+choice, and IS-only. The generator was more correct than the replacement I was proposing for it.
+**Rule:** a claim about what existing code does is a READ claim and requires the read. "It probably
+does X because that is what I would have done" is UNVERIFIED, and stating it as the reason to
+change working code is how correct implementations get replaced by worse ones.

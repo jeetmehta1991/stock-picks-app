@@ -3871,8 +3871,23 @@ def strat_xs_momentum_top_decile(s):
 
 
 def strat_xs_momentum_bottom_decile_short(s):
-    """Batch 220: Symmetric short on bottom-decile 12-1 momentum +
-    below-200-EMA regime gate."""
+    """EXACT MIRROR of strat_xs_momentum_with_smart_money_long (annotated B1452 per owner
+    directive 2026-08-04: "no need for name change just notate that its an exact mirror").
+
+    The pairing is exact on the CURRENT logic of the parent, not on its name. B1194
+    (2026-07-06, Council 278 owner-approved) DROPPED the smart_money gate from
+    xs_momentum_with_smart_money_long, so the parent now fires on
+    `xs_momentum_top_decile AND price_above_ema_200` - both direction-symmetric. This
+    strategy is its exact inverse: bottom decile + below the 200 EMA. The parent's name
+    still says `with_smart_money` and no longer uses it; the name was deliberately left
+    alone per the owner directive.
+
+    Consequence for the mirror rule: the B1382 exclusion of this pair as data-asymmetric
+    (13F is long-only per SEC, so a mechanical short mirror would be economically false -
+    feedback_asymmetric_data_sources_break_mechanical_inverse + the B611 reversal) was
+    already stale when it was made, because B1194 predates B1382 by 19 days. No new
+    Class 7 strategy is needed: the exact mirror already exists and is this function.
+    """
     fires = (
         s.get("xs_momentum_bottom_decile", False)
         and s.get("below_ema_200", False)  # B630 sweep

@@ -7368,3 +7368,57 @@ Write tool or a file patcher, and `py_compile` before staging).
 false positive, since "LAUNCHED" appears elsewhere in LEARNINGS. It was caught only by applying
 CHECKLIST #166 (a search result is evidence about the PATTERN until validated) to the audit's own
 output. An audit tool needs the same scepticism as the thing it audits.
+
+
+## B1452 (2026-08-04) - RETRACT the 35; gates-argmax done correctly gives 23
+
+**RETRACTION.** B1451 reported "35 strategies clear all 5 live gates at their best-by-gates exit".
+That number is WITHDRAWN. The script filtered to the HOLDOUT before selecting, so it chose per cell
+whichever of 26 exits passed on the graded window and then reported a pass there - circular. It
+measured selection freedom, not edge. LEARNINGS **L276**.
+
+**CORRECTED METHOD (matches the canonical generator's window discipline):**
+SELECT the exit on IS folds F1-F3 (2022-05-05 -> 2025-05-05) by argmax GATES-CLEARED, tie-break IS
+Sharpe; GRADE the single chosen exit once on the untouched holdout F4.
+
+**RESULT: 23 of 229 (strategy x direction) cells clear all 5 live gates on the holdout.**
+Artifact `output_audit/b1452_best_exit_by_gates_is_selected.json`.
+
+  method                                        selection window   passing
+  doc stage 6 (8 gates, promoted exits)         IS                    3     stale, pre-demotion
+  fixed breakeven_plus_trail (B1435/B1444)      none                 28     exit not optimised
+  gates-argmax on HOLDOUT (B1451)               HOLDOUT              35     RETRACTED - circular
+  gates-argmax on IS, graded on holdout         IS                   23     DEFENSIBLE
+
+**The owner's directive is validated but smaller than the broken run implied:** gates-argmax picks
+a different exit than Sharpe-argmax in **19 of 229 cells** (the retracted version claimed 115).
+Real, worth having, not transformative.
+
+**ALL 23 PASSERS ARE LONG. Zero shorts.** Consistent with B1385: the holdout is 88% bull / 5% bear
+(12 of 251 days), so shorts remain UNTESTED, not refuted - they need a bear-inclusive window.
+
+**Standout:** `xs_momentum_with_smart_money_long` at `regime_flip` - IS Sharpe 0.58 -> holdout
+**1.00**. Improving out of sample is the opposite of the overfit signature.
+
+**TWO FURTHER SELF-CAUGHT DEFECTS**
+- **L277 dual-leg pooling.** The first script grouped by (strategy, exit), pooling long+short.
+  macd_crossover @ bpt holdout: long n=265 Sharpe 0.588 PASSES, short n=422 Sharpe 0.086 FAILS,
+  pooled n=687 Sharpe 0.338 FAILS. Cost: 9 strategies falsely "lost", 42 hidden from grading
+  (147 vs the correct 189). Fixed to (strategy x direction x exit) - the canonical funnel's own
+  stage 0 grain.
+- **L278 false claim about existing code.** I told the owner the generator "selects exits by IS
+  argmax EXPECTANCY" and listed it as needing repair. It selects by argmax IS-pooled SHARPE
+  (line 197) and is IS-only. The generator was more correct than my proposed replacement.
+
+**S6-B1452a (NEW) - fold gates-argmax into the canonical generator, do NOT keep a parallel script.**
+`best_exit_by_gates.py` currently duplicates the generator's window logic. The generator should
+gain a selection-objective switch (Sharpe vs gates-cleared) so there is ONE implementation of the
+window discipline. Until then `PASSED_STRATEGY_EXIT_LIST.md` is NOT regenerated - a fresh timestamp
+on stale numbers is worse than a visibly dated doc.
+
+**PASSED_STRATEGY_EXIT_LIST.md staleness (corrected list, one item withdrawn):**
+  stage 5: 22 -> next phase          -> 16 after Gate-1 + Jaccard (B1444)
+  stage 6: 3 clear canonical         -> 23 at IS-selected gates-argmax exit (this batch)
+  37 deployable cells                -> superseded; the 3 mirrors now have cube data
+  8 gates all binding                -> only 5 bind (B1436/B1437)
+  ~~exit picked by argmax expectancy~~ -> WITHDRAWN, it is argmax IS Sharpe and was always IS-only
