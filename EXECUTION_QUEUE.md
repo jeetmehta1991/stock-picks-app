@@ -7016,3 +7016,27 @@ R6b is the first clean measurement.
 
 **S6-B1436a CLOSED** by this batch. Owner directives (retire Group 2 / backtest Group 1 / measure
 Group 3) still approved-not-executed. R6b cube ~90%.
+
+## B1438 (2026-08-04) - R6b main loop complete; monitor W2 gap ticketed
+
+**R6b MAIN SIMULATION LOOP COMPLETE.** `engine_state.json`: status="complete", day 1003/1003,
+sim_date 2026-05-05, **11,529 trades**, 712 finalized open positions. Process still ALIVE running
+the post-loop exit-cube replay (26 exit methods over the trade set). `trade_log.csv` /
+`trade_exit_detail.csv` NOT yet written - completion trigger deliberately NOT treated as met.
+
+**S6-B1438a (NEW) - monitor W2 cannot distinguish "hung" from "silent post-processing phase".**
+W2 LOG-STALE fired at 2,033s (threshold 1800s). The staleness reading is TRUE - the engine writes
+no log lines during the exit-cube replay - but the inference "engine crashed/hung" is FALSE. Ruled
+out by sampling process CPU twice across the monitor's own runtime: +29.4s CPU over ~55s wall, so
+the process is burning ~50% of a core. Memory flat at 2,453MB.
+This will misfire on EVERY cube run at exactly this point, which is the cry-wolf failure mode -
+a real W2 during the replay window would now be indistinguishable from this one.
+**Fix (class-level):** W2 should treat `engine_state.json` status="complete" + a live PID + an
+advancing CPU counter as a distinct RUN-PHASE state, not as staleness. Cheapest correct version:
+read `engine_state.json` and suppress W2 when status=="complete" and the process is alive; the
+stronger version samples CPU delta the way this check did manually.
+Same class as S6-B1427 (W6 hardcoded denominator): the monitor's checks encode assumptions about
+run shape that do not hold for cube/subset runs.
+
+Directives 1-3 (retire Group 2 / backtest Group 1 / measure Group 3) still approved-not-executed;
+Group 1's CPU constraint lifts when the replay finishes.
