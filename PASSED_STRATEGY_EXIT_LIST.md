@@ -1,5 +1,19 @@
 <!-- Source: per CHECKLIST #77; auto-built by scripts/build_passed_strategy_exit_list.py from the R5 cube (output_r5_merged_1_7) + STRATEGY_ROSTER.md. Do NOT hand-edit; regenerate. -->
 
+> # ⚠ SUPERSEDED (B1453, 2026-08-04)
+>
+> **`PHASE_1B_ROSTER.md` is the source of truth.** This document is retained for lineage only.
+>
+> It is stale on four counts: (a) R5-only, so it excludes the R6b and Group-1 cubes; (b) it
+> pre-dates the B1436/B1437 gate demotions, so its "stage 6 = 3" counts eight gates when only
+> five bind; (c) it selects each exit by argmax IS-**Sharpe** rather than argmax IS
+> **gates-cleared** (owner directive 2026-08-04); (d) its 22/37 headline pre-dates the Gate-1
+> and Jaccard re-run. Its METHOD was sound throughout - the IS-select / holdout-grade window
+> discipline it documents is what B1452 had to restore after a lookahead crept into a
+> replacement script.
+>
+> Regenerate the current roster: `python scripts/build_phase_1b_roster.py`
+
 # Passed Strategy -> Exit List (R5, TRUE-HOLDOUT graded)
 
 **Generated:** B1378 | **Cube:** `output_r5_merged_1_7` (614 tickers, 7 batches, 2022-05-05 -> 2026-05-05)

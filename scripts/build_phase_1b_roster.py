@@ -1,0 +1,404 @@
+"""scripts/build_phase_1b_roster.py (B1453) -- THE Phase 1B roster, consolidated.
+
+OWNER DIRECTIVE 2026-08-04: "I need the updated strategy list with all strategies that pass the
+updated argmax criteria on gates from r5, r6 and gate 1 runs along with symmetrical short mirrors.
+This is the source of truth."
+
+WHY A NEW GENERATOR RATHER THAN EDITING build_passed_strategy_exit_list.py
+That script is bound to the R5 cube's auxiliary artifacts (walk_forward_r5_all_cells_annualized
+.json, best_exit_per_strategy_by_regime.json, passed_strategy_exit_holdout_graded.json), none of
+which exist for the R6b or Group-1 cubes. Making it multi-cube would be a large refactor of a
+working script mid-decision. This generator reuses its METHOD -- the IS-select / holdout-grade
+window discipline, the same metrics.py implementations, the same BH-FDR and Jaccard -- and reads
+all three cubes. S6-B1452a tracks consolidating the two.
+
+METHOD (the corrected one; B1452 retracted a holdout-selected variant)
+  1 SELECT   each (strategy x direction) cell's exit on IS folds F1-F3 (2022-05-05 -> 2025-05-05)
+             by argmax GATES-CLEARED, tie-break IS Sharpe. The holdout is never read here.
+  2 GRADE    the single chosen exit once on the holdout F4 (2025-05-05 -> 2026-05-05).
+  3 GATE 1   BH-FDR (q<0.05) across the holdout family, so the roster survives multiple testing.
+  4 DE-DUP   Jaccard >= 0.70 on the (ticker, entry_date) holdout trade set drops near-identical
+             cells. Canonical member chosen by holdout Sharpe -- selection-justified: Sharpe is
+             the promotion statistic, not a proxy for it (CHECKLIST #165; supersedes the B1444
+             largest-trade-set heuristic flagged as arbitrary in S6-B1445b).
+  5 MIRRORS  every survivor gets its symmetric short mirror resolved: REGISTERED (exists),
+             LONG-ONLY-DATA (excused per feedback_asymmetric_data_sources_break_mechanical_inverse
+             + the B611 reversal), or NEEDS-CREATION.
+
+CROSS-CUBE CAVEAT, stated in the output because it bounds every comparison:
+R5 ran 544 tickers; R6b and Group-1 ran ~140 (a seeded 150-ticker sample). Per-trade statistics
+(Sharpe, PF, expectancy) are comparable across cubes because they are per-trade ratios. TRADE
+COUNTS are NOT -- so `min_trades` is materially harder to clear on the small-sample cubes and a
+cell can be UNEVAL there purely from universe size. Flagged per cell rather than silently pooled.
+"""
+from __future__ import annotations
+
+import argparse
+import json
+import sys
+from datetime import date
+from pathlib import Path
+
+import pandas as pd
+
+REPO = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(REPO))
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+from backtest.config import PASSING_CRITERIA as PC          # noqa: E402
+from backtest.results.metrics import _sortino_ratio, _deflated_sharpe  # noqa: E402
+from walk_forward_r5_cells import _sharpe, bh_fdr            # noqa: E402
+from backtest.signals.screener import ALL_STRATEGIES         # noqa: E402
+from backtest.config import (STRATEGIES_DISABLED_DATA_SCARCITY,  # noqa: E402
+                             STRATEGIES_DISABLED_MISSING_PRODUCER, DEPRECATED_STRATEGIES)
+
+IS_START, IS_END = date(2022, 5, 5), date(2025, 5, 5)
+HO_START, HO_END = date(2025, 5, 5), date(2026, 5, 5)
+WINSORIZE, COST_BPS, MIN_N, FDR_Q, JACCARD = 300.0, 20.0, 30, 0.05, 0.70
+
+CUBES = [("R5", "output_r5_merged_1_7"),
+         ("R6b", "output_r6b_cube_14"),
+         ("Group1", "output_r6c_group1_3")]
+
+LIVE_GATES = ("sharpe_per_regime", "profit_factor", "sortino", "psr", "min_trades")
+DEMOTED = ("max_drawdown", "calmar", "deflated_sharpe", "win_rate")
+# 13F / insider / congressional / buyback data is LONG-ONLY by SEC rule, so a mechanical short
+# mirror is economically false, not merely untested (B611 reversal).
+ASYM_MARKERS = ("institutional_", "insider", "smart_money", "congress", "13f", "13d",
+                "activist", "lobbying", "buyback")
+
+
+def evaluate(pnl: pd.Series, hold: pd.Series) -> dict | None:
+    n = len(pnl)
+    if n < MIN_N:
+        return None
+    sh = _sharpe(pnl.values, hold)
+    sharpe = sh["sharpe"] if sh else None
+    sortino = _sortino_ratio(pnl, hold)
+    dsr = _deflated_sharpe(sharpe or 0.0, n, float(pnl.skew()), float(pnl.kurtosis()))
+    w, l = pnl[pnl > 0], pnl[pnl <= 0]
+    pf = float(w.sum() / abs(l.sum())) if len(l) and l.sum() != 0 else float("inf")
+    payoff = float(w.mean() / abs(l.mean())) if len(w) and len(l) and l.mean() != 0 else None
+    gates = {
+        "sharpe_per_regime": sharpe is not None and sharpe >= PC["min_sharpe_per_regime"],
+        "profit_factor":     pf >= PC["min_profit_factor_overall"],
+        "sortino":           sortino is not None and sortino >= PC["min_sortino_per_regime"],
+        "psr":               dsr.get("psr") is not None and dsr["psr"] >= PC["min_psr"],
+        "min_trades":        n >= PC["min_trades"],
+    }
+    return {"n": n, "sharpe": sharpe, "sortino": sortino, "psr": dsr.get("psr"),
+            "profit_factor": round(pf, 3), "payoff": round(payoff, 2) if payoff else None,
+            "expectancy": round(float(pnl.mean()), 4),
+            "win_rate": round(float((pnl > 0).mean()), 3),
+            "p": sh.get("p") if sh else None, "ci_lo": sh.get("ci_lo") if sh else None,
+            "gates": gates, "n_gates": sum(1 for v in gates.values() if v),
+            "all_live_gates": all(gates.values())}
+
+
+def uses_long_only_data(name: str) -> tuple[bool, list[str]]:
+    """Decide data-asymmetry from the SIGNALS THE FUNCTION ACTUALLY CONSUMES, never the name.
+
+    B1453 fix, self-caught on the first generated roster: `xs_momentum_with_smart_money_long`
+    was classified LONG-ONLY-DATA purely because its NAME contains "smart_money" - but B1194
+    (2026-07-06, Council 278) REMOVED the smart_money gate, so it now fires on
+    `xs_momentum_top_decile AND price_above_ema_200`, both direction-symmetric, and its exact
+    mirror `xs_momentum_bottom_decile_short` already exists (annotated B1452). Name-based
+    inference over a stale name wrongly excused a mirror the owner had just directed be paired.
+    Class: a strategy's DATA DEPENDENCIES are a property of its consumed signal keys; the name
+    is documentation and can go stale (the same class as S6-B1419's misdiagnosis).
+    """
+    import inspect
+    import re as _re
+    try:
+        src = inspect.getsource(ALL_STRATEGIES[name])
+    except Exception:
+        return False, []
+    keys = set(_re.findall(r"s\.get\(\"([a-z0-9_]+)\"", src))
+    hits = sorted(k for k in keys if any(a in k for a in ASYM_MARKERS))
+    return bool(hits), hits
+
+
+def _declared_mirrors() -> dict[str, str]:
+    """Pairs DECLARED in a docstring as `EXACT MIRROR of <parent>` -- the authoritative source.
+
+    B1453: stem/token matching cannot bridge `xs_momentum_with_smart_money_long` ->
+    `xs_momentum_bottom_decile_short` (2 shared tokens, threshold 3), so it reported
+    NEEDS-CREATION for a pair the owner had just directed be recognised and which was annotated
+    at B1452. Rather than special-casing that one strategy, this reads the annotation convention
+    itself: any strategy whose docstring says "EXACT MIRROR of X" declares the X <-> self pair.
+    Curated intent beats string similarity, and the annotation is where intent already lives.
+    """
+    import inspect
+    import re as _re
+    out: dict[str, str] = {}
+    for nm, fn in ALL_STRATEGIES.items():
+        try:
+            doc = inspect.getdoc(fn) or ""
+        except Exception:
+            continue
+        m = _re.search(r"EXACT MIRROR of\s+(?:strat_)?([a-z0-9_]+)", doc)
+        if m:
+            parent = m.group(1)
+            if parent in ALL_STRATEGIES:
+                out[parent] = nm      # parent -> its declared mirror
+                out[nm] = parent      # and the reverse
+    return out
+
+
+_DECLARED = None
+
+
+def mirror_status(name: str) -> tuple[str, str | None]:
+    global _DECLARED
+    if _DECLARED is None:
+        _DECLARED = _declared_mirrors()
+    reg = set(ALL_STRATEGIES)
+    # A DECLARED pairing outranks both the asymmetry heuristic and string matching: it is an
+    # explicit statement of intent about this specific pair.
+    if name in _DECLARED:
+        return "REGISTERED", _DECLARED[name]
+    asym, _hits = uses_long_only_data(name)
+    if asym:
+        return "LONG-ONLY-DATA", None
+    stem = name[:-5] if name.endswith("_long") else (name[:-6] if name.endswith("_short") else name)
+    want_short = not name.endswith("_short")
+    for cand in ([stem + "_short", stem] if want_short else [stem + "_long", stem]):
+        if cand in reg and cand != name:
+            return "REGISTERED", cand
+    STOP = {"long", "short", "with", "the", "of", "and"}
+    toks = {t for t in name.split("_") if t not in STOP}
+    best, bn = 0, None
+    for r in reg:
+        if r == name or (want_short and not r.endswith("_short")):
+            continue
+        ov = len({t for t in r.split("_") if t not in STOP} & toks)
+        if ov > best:
+            best, bn = ov, r
+    if bn and best >= max(2, len(toks) - 1):
+        return "REGISTERED", bn
+    return "NEEDS-CREATION", None
+
+
+def main() -> int:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--output", default="PHASE_1B_ROSTER.md")
+    ap.add_argument("--json", default="output_audit/b1453_phase_1b_roster.json")
+    args = ap.parse_args()
+
+    rows = []
+    for label, cube in CUBES:
+        p = REPO / cube / "trade_exit_detail.csv"
+        if not p.exists():
+            print(f"[WARN] {label}: {cube} missing - SKIPPED (recorded in the doc)")
+            continue
+        df = pd.read_csv(p, usecols=["strategy", "direction", "exit_method", "entry_date",
+                                     "ticker", "pnl_pct", "hold_days"], low_memory=False)
+        df["entry_date"] = pd.to_datetime(df["entry_date"]).dt.date
+        df["pnl_pct"] = df["pnl_pct"].clip(-WINSORIZE, WINSORIZE) - COST_BPS / 100.0
+        ntick = df.ticker.nunique()
+        print(f"[INFO] {label:<7} {cube:<24} rows={len(df):>8} tickers={ntick:>4}")
+        for (strat, direction), g in df.groupby(["strategy", "direction"]):
+            isg = g[(g.entry_date >= IS_START) & (g.entry_date < IS_END)]
+            cands = []
+            for ex, ge in isg.groupby("exit_method"):
+                r = evaluate(ge["pnl_pct"], ge["hold_days"])
+                if r:
+                    r["exit"] = ex
+                    cands.append(r)
+            if not cands:
+                continue
+            pick = max(cands, key=lambda c: (c["n_gates"], c["sharpe"] or -9))
+            hog = g[(g.entry_date >= HO_START) & (g.entry_date < HO_END)
+                    & (g.exit_method == pick["exit"])]
+            graded = evaluate(hog["pnl_pct"], hog["hold_days"])
+            rows.append({"cube": label, "n_tickers": ntick, "strategy": strat,
+                         "direction": direction, "exit": pick["exit"],
+                         "is_sharpe": pick["sharpe"], "is_n_gates": pick["n_gates"],
+                         "holdout": graded,
+                         "trades": set(map(tuple, hog[["ticker", "entry_date"]].values))})
+
+    ev = [r for r in rows if r["holdout"] and r["holdout"]["p"] is not None]
+    if ev:
+        rej, thr = bh_fdr([r["holdout"]["p"] for r in ev], q=FDR_Q)
+        for r, ok in zip(ev, rej):
+            r["bh"] = bool(ok)
+    else:
+        thr = 0.0
+    for r in rows:
+        r.setdefault("bh", False)
+        h = r["holdout"]
+        r["verdict"] = ("UNEVAL" if h is None else
+                        "PASS" if (h["all_live_gates"] and r["bh"]) else
+                        "PASS-noFDR" if h["all_live_gates"] else "DROP")
+
+    passed = [r for r in rows if r["verdict"] == "PASS"]
+    # DE-DUP. selection-justified: canonical = highest HOLDOUT Sharpe, which is the promotion
+    # statistic itself. Supersedes B1444's largest-trade-set heuristic (S6-B1445b).
+    passed.sort(key=lambda r: -(r["holdout"]["sharpe"] or -9))
+    dup_of, kept = {}, []
+    for r in passed:
+        red = None
+        for k in kept:
+            A, B = r["trades"], k["trades"]
+            if A and B and len(A & B) / len(A | B) >= JACCARD:
+                red = k["strategy"]
+                break
+        if red:
+            dup_of[r["strategy"]] = red
+        else:
+            kept.append(r)
+
+    for r in kept:
+        st, nm = mirror_status(r["strategy"])
+        r["mirror_status"], r["mirror"] = st, nm
+        _asym, _hits = uses_long_only_data(r["strategy"])
+        r["asym_signals"] = _hits
+        r["mirror_registered"] = nm in set(ALL_STRATEGIES) if nm else False
+
+    blocked = STRATEGIES_DISABLED_DATA_SCARCITY | STRATEGIES_DISABLED_MISSING_PRODUCER | DEPRECATED_STRATEGIES
+    mirrors_reg = sorted({r["mirror"] for r in kept if r["mirror_status"] == "REGISTERED" and r["mirror"]})
+    mirrors_new = sorted({r["strategy"] for r in kept if r["mirror_status"] == "NEEDS-CREATION"})
+    mirrors_asym = sorted({r["strategy"] for r in kept if r["mirror_status"] == "LONG-ONLY-DATA"})
+
+    def fmt(v, w=6, d=2):
+        return f"{v:>{w}.{d}f}" if isinstance(v, (int, float)) else f"{'-':>{w}}"
+
+    L = []
+    A = L.append
+    A("<!-- AUTO-GENERATED by scripts/build_phase_1b_roster.py (B1453). Do NOT hand-edit; regenerate. -->")
+    A("")
+    A("# PHASE 1B ROSTER - THE SOURCE OF TRUTH")
+    A("")
+    A(f"**Generated:** B1453 | **Cubes:** " + ", ".join(f"{l} (`{c}`)" for l, c in CUBES))
+    A("")
+    A("> Owner directive 2026-08-04: *\"I need the updated strategy list with all strategies that "
+      "pass the updated argmax criteria on gates from r5, r6 and gate 1 runs along with symmetrical "
+      "short mirrors. This is the source of truth.\"*")
+    A("")
+    A("**This supersedes `PASSED_STRATEGY_EXIT_LIST.md`**, which is R5-only, pre-dates the "
+      "B1436/B1437 gate demotions, and selects exits by argmax IS-Sharpe rather than argmax "
+      "gates-cleared.")
+    A("")
+    A("## Method - and the one thing that makes it honest")
+    A("")
+    A("| Step | What | Window |")
+    A("|---|---|---|")
+    A("| 1 SELECT | each cell's exit by **argmax GATES-CLEARED** (tie-break IS Sharpe) | IS F1-F3 `2022-05-05 -> 2025-05-05` |")
+    A("| 2 GRADE | the **single chosen** exit, once | HOLDOUT F4 `2025-05-05 -> 2026-05-05` |")
+    A(f"| 3 GATE 1 | BH-FDR q<{FDR_Q} across the holdout family | holdout |")
+    A(f"| 4 DE-DUP | Jaccard >= {JACCARD} on (ticker, entry_date); canonical = highest holdout Sharpe | holdout |")
+    A("| 5 MIRRORS | symmetric short mirror resolved for every survivor | registry |")
+    A("")
+    A("**The holdout is never read during selection.** B1452 retracted an earlier variant that "
+      "chose among 26 exits ON the holdout and then graded there - with 26 candidates that almost "
+      "always \"passes\" and reported 35 instead of the honest count. One test per cell.")
+    A("")
+    A(f"**Gates (only {len(LIVE_GATES)} of 8 bind).** Live: " +
+      ", ".join(f"`{g}`" for g in LIVE_GATES) + f". Demoted to diagnostics: " +
+      ", ".join(f"`{g}`" for g in DEMOTED) + " (B1387 win rate; B1436 max_drawdown + "
+      "deflated_sharpe; B1437 calmar - calmar divides by the demoted drawdown).")
+    A("")
+    A("**CROSS-CUBE CAVEAT.** R5 ran 544 tickers; R6b and Group-1 ran ~140. Per-trade ratios "
+      "(Sharpe, PF, expectancy) ARE comparable. **Trade counts are NOT** - `min_trades >= 100` is "
+      "materially harder on the small-sample cubes, so a cell may be UNEVAL there purely from "
+      "universe size. The `Cube` and `Tickers` columns are shown on every row so this is never "
+      "hidden.")
+    A("")
+    A("## Funnel")
+    A("")
+    A("| # | Stage | Rows |")
+    A("|---|---|---|")
+    A(f"| 0 | (strategy x direction) cells with a selectable IS exit | {len(rows)} |")
+    A(f"| 1 | Holdout-evaluable (n >= {MIN_N} at the chosen exit) | {sum(1 for r in rows if r['holdout'])} |")
+    A(f"| 2 | Clear all {len(LIVE_GATES)} live gates on the holdout | {sum(1 for r in rows if r['holdout'] and r['holdout']['all_live_gates'])} |")
+    A(f"| 3 | Survive BH-FDR (q<{FDR_Q}, threshold p<={thr:.5f}) | {len(passed)} |")
+    A(f"| 4 | De-duplicated (Jaccard < {JACCARD}) | **{len(kept)}** |")
+    A("")
+    A(f"## THE ROSTER - {len(kept)} cells")
+    A("")
+    A("| # | Strategy | Dir | Cube | Tkrs | Exit | IS Shrp | HO Shrp | HO n | Exp | WR | PF | Payoff | Mirror |")
+    A("|---|---|---|---|---|---|---|---|---|---|---|---|---|---|")
+    for i, r in enumerate(sorted(kept, key=lambda x: -(x["holdout"]["sharpe"] or -9)), 1):
+        h = r["holdout"]
+        mir = (f"`{r['mirror']}`" if r["mirror_status"] == "REGISTERED"
+               else ("LONG-ONLY DATA" if r["mirror_status"] == "LONG-ONLY-DATA" else "**NEEDS CREATION**"))
+        A(f"| {i} | `{r['strategy']}` | {r['direction']} | {r['cube']} | {r['n_tickers']} | "
+          f"`{r['exit']}` | {fmt(r['is_sharpe'])} | {fmt(h['sharpe'])} | {h['n']} | "
+          f"{fmt(h['expectancy'])} | {fmt(h['win_rate'],5,3)} | {fmt(h['profit_factor'])} | "
+          f"{fmt(h['payoff'])} | {mir} |")
+    A("")
+    A("## Symmetric short mirrors")
+    A("")
+    A("Owner standing directive: *promoted longs carry short mirrors by default* - the mirror is "
+      "retained irrespective of its own cube result. The single excuse is a **long-only DATA "
+      "SOURCE** (13F / insider / congressional / buyback), where a mechanical inverse is "
+      "economically false rather than merely untested (B611 reversal).")
+    A("")
+    A(f"- **REGISTERED and retained ({len(mirrors_reg)}):** " +
+      (", ".join(f"`{m}`" for m in mirrors_reg) if mirrors_reg else "none"))
+    A(f"- **LONG-ONLY DATA, mirror excused ({len(mirrors_asym)}):**")
+    if mirrors_asym:
+        _ev = {r["strategy"]: r.get("asym_signals") or [] for r in kept}
+        for m in mirrors_asym:
+            A(f"    - `{m}` - consumes " + ", ".join(f"`{k}`" for k in _ev.get(m, [])))
+        A("")
+        A("    Excusal is decided from the signals each function ACTUALLY consumes, never from its "
+          "name. B1453 caught `xs_momentum_with_smart_money_long` being excused on its name alone "
+          "while B1194 had already removed its smart_money gate - it is NOT excused and its exact "
+          "mirror `xs_momentum_bottom_decile_short` is retained.")
+    else:
+        A("    - none")
+    A(f"- **NEEDS CREATION ({len(mirrors_new)}):** " +
+      (", ".join(f"`{m}`" for m in mirrors_new) if mirrors_new else "none"))
+    A("")
+    A(f"**Deployable total: {len(kept)} graded cells + {len(mirrors_reg)} registered mirrors "
+      f"= {len(kept) + len(mirrors_reg)}**, plus {len(mirrors_new)} mirrors to create.")
+    A("")
+    A("## What this roster does NOT establish")
+    A("")
+    A("1. **Shorts are untested, not refuted.** The holdout is 88% bull / 5% bear (12 of 251 days, "
+      "B1385). A short cell that fails here failed in a window with almost no bear data. Retained "
+      "mirrors carry no holdout evidence and should not be read as validated.")
+    A("2. **Levels are conditioned on the incumbent exit's trade set (S6-B1434c).** The cube "
+      "replays all 26 exits over trades the ASSIGNED exit generated; ranking transfers, absolute "
+      "magnitudes do not.")
+    A("3. **`min_trades` will tighten in deployment.** Longer-hold exits plus same-strategy dedup "
+      "reduce live fire counts below these cube figures.")
+    A(f"4. **Blocked strategies excluded upstream:** {len(blocked)} "
+      f"({len(STRATEGIES_DISABLED_DATA_SCARCITY)} data-scarcity, "
+      f"{len(STRATEGIES_DISABLED_MISSING_PRODUCER)} missing-producer, "
+      f"{len(DEPRECATED_STRATEGIES)} deprecated).")
+    A("")
+    A("## Reproduce")
+    A("")
+    A("```\npython scripts/build_phase_1b_roster.py\n```")
+    A("")
+
+    (REPO / args.output).write_text("\n".join(L), encoding="utf-8")
+    for r in rows:
+        r.pop("trades", None)
+    (REPO / args.json).write_text(json.dumps(
+        {"generated": "B1453", "cubes": {l: c for l, c in CUBES},
+         "live_gates": list(LIVE_GATES), "demoted": list(DEMOTED),
+         "selection_window": [str(IS_START), str(IS_END)],
+         "grading_window": [str(HO_START), str(HO_END)],
+         "fdr_q": FDR_Q, "fdr_threshold": thr, "jaccard": JACCARD,
+         "n_cells": len(rows), "n_passed_fdr": len(passed), "n_roster": len(kept),
+         "dup_of": dup_of,
+         "mirrors": {"registered": mirrors_reg, "long_only_data": mirrors_asym,
+                     "needs_creation": mirrors_new},
+         "roster": [{k: v for k, v in r.items() if k != "trades"} for r in kept],
+         "all_rows": rows}, indent=2, default=str), encoding="utf-8")
+
+    print(f"\n[FUNNEL] cells {len(rows)} -> holdout-evaluable "
+          f"{sum(1 for r in rows if r['holdout'])} -> all-gates "
+          f"{sum(1 for r in rows if r['holdout'] and r['holdout']['all_live_gates'])} -> "
+          f"BH-FDR {len(passed)} -> de-duped {len(kept)}")
+    print(f"[MIRRORS] registered {len(mirrors_reg)} | long-only-excused {len(mirrors_asym)} | "
+          f"needs-creation {len(mirrors_new)}")
+    print(f"[OK] wrote {args.output} + {args.json}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

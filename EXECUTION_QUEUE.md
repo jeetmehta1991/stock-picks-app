@@ -7422,3 +7422,50 @@ on stale numbers is worse than a visibly dated doc.
   37 deployable cells                -> superseded; the 3 mirrors now have cube data
   8 gates all binding                -> only 5 bind (B1436/B1437)
   ~~exit picked by argmax expectancy~~ -> WITHDRAWN, it is argmax IS Sharpe and was always IS-only
+
+
+## B1453 (2026-08-04) - PHASE_1B_ROSTER.md generated: THE source of truth
+
+**OWNER DIRECTIVE:** "You need to regenerate the document. I need the updated strategy list with
+all strategies that pass the updated argmax criteria on gates from r5, r6 and gate 1 runs along
+with symmetrical short mirrors. This is the source of truth."
+
+**DELIVERED: `PHASE_1B_ROSTER.md`** + `scripts/build_phase_1b_roster.py` +
+`output_audit/b1453_phase_1b_roster.json`. `PASSED_STRATEGY_EXIT_LIST.md` carries a SUPERSEDED
+banner pointing at it, retained for lineage.
+
+**Method (the corrected B1452 discipline, applied across all three cubes):**
+SELECT each (strategy x direction) cell's exit on IS F1-F3 by argmax GATES-CLEARED (tie-break IS
+Sharpe) -> GRADE the single chosen exit once on the untouched holdout F4 -> BH-FDR q<0.05 across
+the holdout family -> Jaccard >= 0.70 de-dup, canonical = highest holdout Sharpe -> resolve
+mirrors. Cubes: R5 (544 tickers), R6b (140), Group-1 (136).
+
+**FUNNEL:** 253 cells -> 211 holdout-evaluable -> 23 clear all 5 live gates -> 20 survive BH-FDR
+-> **13 after de-dup**.
+
+**ROSTER: 13 graded cells + 5 registered mirrors = 18 deployable**, plus 3 mirrors to create.
+All 13 are LONG. Top 3 by holdout Sharpe: `xs_momentum_with_smart_money_long` @ regime_flip 1.00,
+`poc_magnet_long` @ time_stop_10d 0.81, `smc_breaker_block_long` @ breakeven_plus_trail 0.69.
+
+**MIRRORS:** REGISTERED and retained (5) - 52wl_break_retest_short, macd_crossover_short,
+poc_magnet_short, smc_breaker_block_short, xs_momentum_bottom_decile_short. LONG-ONLY DATA and
+excused (4) - the institutional_* cells, each with the consumed signal named as evidence.
+NEEDS CREATION (3) - avwap_252_breakout, force_index_breakout, pead_long_high_yoy_growth_only.
+
+**TWO SELF-CAUGHT DEFECTS during generation, both fixed before the doc was accepted:**
+- **L279 name-based data-source inference.** `xs_momentum_with_smart_money_long` was excused from
+  needing a mirror because its NAME contains "smart_money" - but B1194 removed that gate 19 days
+  before B1382 relied on the name, and my generator relied on it again. Now decided from the
+  `s.get(...)` keys actually consumed: 4 of 5 flags were genuine, 1 false. Same class as S6-B1419.
+- **L280 curated intent ignored in favour of string similarity.** After the first fix the pair
+  still failed (2 shared tokens vs a threshold of 3), reporting NEEDS-CREATION for a pairing the
+  owner directed and I annotated at B1452. Now any docstring declaring `EXACT MIRROR of X`
+  establishes the pair authoritatively. The B1452 annotation sat unread until this batch made it
+  machine-readable.
+
+**The doc states what it does NOT establish**, in the doc itself: shorts are untested not refuted
+(holdout is 88% bull / 5% bear, B1385); levels are conditioned on the incumbent exit's trade set
+(S6-B1434c); `min_trades` will tighten in deployment; 9 strategies blocked upstream.
+
+**S6-B1452a still OPEN** - two generators now share the window discipline by duplication. The
+canonical one should gain a selection-objective switch so there is one implementation.

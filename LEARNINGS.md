@@ -4485,3 +4485,34 @@ choice, and IS-only. The generator was more correct than the replacement I was p
 **Rule:** a claim about what existing code does is a READ claim and requires the read. "It probably
 does X because that is what I would have done" is UNVERIFIED, and stating it as the reason to
 change working code is how correct implementations get replaced by worse ones.
+
+
+### L279
+**A strategy's data dependencies are a property of the signals it consumes, not of its name.**
+(B1453, self-caught on the first generated roster.) The mirror-eligibility check excused
+`xs_momentum_with_smart_money_long` from needing a short mirror by pattern-matching
+"smart_money" in its NAME - concluding 13F long-only data, so a mechanical inverse would be
+economically false. But **B1194 (2026-07-06, Council 278) removed the smart_money gate**: the
+function now fires on `xs_momentum_top_decile AND price_above_ema_200`, both direction-symmetric,
+and its exact mirror `xs_momentum_bottom_decile_short` already exists. The name is documentation
+that went stale nineteen days before the B1382 batch that relied on it, and my generator relied
+on it again a month later. Fixed by deciding asymmetry from the `s.get("...")` keys the function
+actually reads: 4 of 5 flagged strategies genuinely consume `institutional_increased` /
+`institutional_new_positions` / `committed_growth_holders`; exactly one was a false positive.
+**Same class as S6-B1419** (a ticket asserting a missing producer that was implemented, wired and
+tested). **Rule:** any classification of a strategy - data source, direction, category, symmetry -
+is derived from its consumed signal keys or its source, never from tokens in its identifier. Names
+are for humans and drift silently; the gate list cannot.
+
+### L280
+**When curated intent exists, read it - do not re-derive it with string similarity.** (B1453.)
+After the name-based fix, the same pair failed again: stem matching cannot bridge
+`xs_momentum_with_smart_money_long` -> `xs_momentum_bottom_decile_short` (2 shared tokens against
+a threshold of 3), so it reported NEEDS-CREATION for a pairing the owner had explicitly directed
+one turn earlier and which I had annotated into the mirror's docstring at B1452. The fix was not a
+better similarity metric but reading the annotation: any docstring declaring `EXACT MIRROR of X`
+now establishes that pair authoritatively, outranking both the asymmetry heuristic and token
+overlap. **Rule:** where an explicit human declaration of a relationship exists, it is the
+authority; heuristics are the fallback for pairs nobody has declared. Corollary: a convention is
+only useful if something reads it - the B1452 annotation sat unread until this batch made it
+machine-readable.
