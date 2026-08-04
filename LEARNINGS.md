@@ -4320,12 +4320,21 @@ COMMAND LINE, not process count - two pairs of python.exe looked unremarkable un
 were compared and proved identical.
 
 ### L270
-**A routed work-plan is a finding; an artifact is not a ticket.** (B1444, owner-caught.) B1410
-sorted **177 strategies** into four work queues (TIGHTEN/HIGH-FIRE 73, LOOSEN/STARVED 65,
-LOOSEN/QUIET 27, LOOSEN/NEVER 12) inside `output_audit/b1410_r6_change_list.json` and wrote
-**zero tickets**. Verified: `remaining_work_routed`, `LOOSEN / STARVED`, `LOOSEN / QUIET`,
-`TIGHTEN / HIGH-FIRE` each returned 0 hits in EXECUTION_QUEUE.md, and no B1410 section existed at
-all. CHECKLIST #94 / `feedback_execution_queue_mandatory_per_turn` is explicit that findings
+**[CORRECTED B1445 - the original entry below was FALSE and is retracted.]** B1410 DID record the
+backlog: EXECUTION_QUEUE.md line 6533 reads "REMAINING 173, ROUTED BY THE SAME RULE:
+TIGHTEN/HIGH-FIRE 68, LOOSEN/STARVED 66, LOOSEN/QUIET 28, LOOSEN/NEVER 11", and a B1410 section
+exists at line 6525. **I grepped `"LOOSEN / STARVED"` with spaces around the slash (the JSON key
+format); the queue writes `LOOSEN/STARVED` without them. Zero hits, and I reported absence as
+fact** - to the owner, into this file, and into a commit. THAT is the primary lesson: a grep whose
+pattern cannot match the target proves nothing, and "0 hits" is evidence about the PATTERN until
+the pattern is shown to match something. The real, narrower miss stands: the backlog was recorded
+as PROSE COUNTS in a batch entry, with no ticket IDs and no strategy names, so it was not
+trackable or greppable by strategy. A count in a paragraph is a record; it is not a ticket.
+
+**Original (RETRACTED) text:** "A routed work-plan is a finding; an artifact is not a ticket. B1410
+sorted 177 strategies into four work queues inside b1410_r6_change_list.json and wrote zero
+tickets; remaining_work_routed / LOOSEN / STARVED / LOOSEN / QUIET / TIGHTEN / HIGH-FIRE each
+returned 0 hits and no B1410 section existed at all. CHECKLIST #94 / `feedback_execution_queue_mandatory_per_turn` is explicit that findings
 without tickets do not exist, and the "finding" definition (B1251) already covers
 recommendations and levers, not just bugs - so this is a COMPLIANCE failure, not a missing rule.
 **What made it invisible for ~30 batches:** the work WAS recorded, in a machine-readable artifact

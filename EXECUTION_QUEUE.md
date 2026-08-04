@@ -7149,10 +7149,13 @@ real decisions, not just tidiness.
 
 ## B1444 (2026-08-04) - TICKET THE B1410 BACKLOG (owner-caught miss)
 
-**MISS (owner-caught).** B1410 routed **177 strategies** into four work queues inside
-`output_audit/b1410_r6_change_list.json` and **never wrote a single ticket**. Verified this turn:
-`remaining_work_routed`, `LOOSEN / STARVED`, `LOOSEN / QUIET`, `TIGHTEN / HIGH-FIRE` all return
-ZERO hits in EXECUTION_QUEUE.md, and there is no B1410 section at all. CHECKLIST #94 /
+**[CORRECTED B1445 - the claim below was FALSE.]** B1410 DID record the backlog at line 6533
+("REMAINING 173 ... TIGHTEN/HIGH-FIRE 68, LOOSEN/STARVED 66, LOOSEN/QUIET 28, LOOSEN/NEVER 11")
+and a B1410 section exists at line 6525. My grep used `"LOOSEN / STARVED"` (spaces around the
+slash, JSON-key format) against a file that writes `LOOSEN/STARVED`; 0 hits proved nothing about
+the file and everything about the pattern. RETRACTED.
+**The real, narrower miss:** recorded as prose counts, with no ticket IDs and no strategy names -
+not trackable per strategy. The S6-B1444a-d tickets below remain the correct remediation. CHECKLIST #94 /
 `feedback_execution_queue_mandatory_per_turn`: findings without tickets do not exist. I compounded
 it by describing them as 'a backlog' without checking the backlog was recorded. LEARNINGS L270.
 
@@ -7224,3 +7227,36 @@ of these and returned 4/13 on pre-registered predictions (binomial p=0.954 vs ch
 canonical criteria. Working the remaining 156 by the same method has no measured expected value.
 Per `feedback_no_prior_edge_consolidate_before_tune`, these should NOT be bulk-worked; the queue
 exists so the population is visible and dispositioned, not as a mandate to tune 156 strategies.
+
+
+## B1445 (2026-08-04) - retraction + two real defects the owner surfaced
+
+**RETRACTION.** The B1444 "never wrote a single ticket / no B1410 section" claim was FALSE, caused
+by a grep pattern that could not match the file's formatting. Corrected in place above and in
+LEARNINGS L270. The narrower miss (prose counts, no ticket IDs, no names) stands and is remediated
+by S6-B1444a-d.
+
+**S6-B1445a (NEW, owner-surfaced) - the router DROPS instead of RE-ROUTING.**
+`build_r6_change_list.py:89-92` rejects a tightening proposal when `segment(s) != "HIGH-FIRE"` and
+then `continue`s, so the strategy lands in NO queue. Owner: "if it's not tightening it's
+loosening, why skip?" - correct. **10 strategies fell through entirely** (in neither the skip-work
+nor any LOOSEN queue): avwap_252_breakout, cpr_narrow_bullish, force_index_breakout,
+institutional_committed_growth_long, institutional_high_conviction_long, macd_fast_crossover,
+news_sentiment_long, pead_long_high_yoy_growth_only, r1_break_retest, smc_breaker_block_short.
+7 of the 10 are in today's retained-16, so no harm landed - but the routing gap is structural.
+FIX: rejection on DIRECTION must redirect to the opposite queue, never `continue`.
+
+**S6-B1445b (NEW, self-flagged) - my de-dup survivor selection is not defensible.**
+The B1444 Jaccard run picked the cluster canonical by LARGEST TRADE SET
+(`sorted(sets, key=lambda s: -len(sets[s]))`). That is a size heuristic with no performance
+basis. The canonical pipeline (`build_passed_strategy_exit_list.py::_redundancy`) uses an
+eigenvalue effective-N ((sum l)^2 / sum l^2 on the correlation matrix). WHICH CLUSTERS EXIST is
+sound; WHICH MEMBER SURVIVES is not. `institutional_multi_quarter_persistence_long` won a cluster
+of six on trade count, not merit. **DECOMMISSIONED BUCKET NOT CREATED** - decommissioning six
+strategies on a size heuristic is hard to undo; redo selection with effective-N first.
+
+**Q3 reconciliation (owner asked why 177 vs 147):** 177 = routed backlog at B1410. Of those today:
+15 PASS, 9 RETIRED, 3 Group 1, 14 Group 3, 136 FAILED-cubed. The 147 figure is a different
+population - FAILED-cubed strategies never touched by ANY R6 change (154 - 7 touched). Both
+correct, different questions. B1410's own 173/25 became 177/21 when B1411-B1412's admission-ratio
+cap rejected both loosening proposals (9,156x and 7,814x).
