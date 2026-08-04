@@ -7730,3 +7730,46 @@ short-hold exits earning a larger annualization multiplier.
   without it cannot show whether the screen has independent constraints or one binding gate.
 - **S6-B1458b (MED)** — decide whether `profit_factor` and `sortino` stay as documentation-value
   gates or are demoted to diagnostics like win_rate/calmar/MDD. They currently reject nothing.
+
+---
+
+## B1459 (2026-08-04) — sizing the sample fix END-TO-END; my B1456 sizing was wrong
+
+**Owner question: "after fixing, how many strategies pass vs current?"** Answered by running each
+variant through the SAME downstream pipeline the roster uses (gates -> BH-FDR q<0.05 -> Jaccard>=0.70
+de-dup) rather than stopping at the gate. `scripts/compare_sample_fix_variants.py`. Selection
+discipline identical and unchanged across variants (argmax IS gates-cleared, holdout read once);
+only the GRADING sample differs. R5 cube, 196 strategies, 87 declaring an affinity.
+
+| variant | evaluable | gates | BH-FDR | **final** | long | short | vs POOLED |
+|---|---|---|---|---|---|---|---|
+| **POOLED** (current) | 131 | 22 | 21 | **14** | 14 | 0 | — |
+| **IN-AFFINITY** | 101 | 18 | 16 | **10** | 10 | 0 | +0 / -4 |
+| **PER-REGIME** (#11) | 175 | 28 | 20 | **12** | 12 | 0 | +7 / -9 |
+| **BOTH** | 150 | 24 | 18 | **11** | 11 | 0 | +7 / -10 |
+
+**RETRACTION.** At B1456 I said criterion #11 "would be MORE permissive" and sized it as "union = 37
+cells". Both were GATE-stage numbers quoted as if end-to-end. End-to-end the ordering inverts —
+every fix yields FEWER cells. Per-regime admits more at the gate (n>=30 not n>=100) but each carries
+a weaker p-value, so BH-FDR removes 8 of 28 where it removed 1 of 22. L295.
+
+**No variant admits a single SHORT.** All final rosters are 100% long under every sample definition.
+
+### Recommendation (owner decision — nothing applied)
+1. **Adopt IN-AFFINITY as the grading sample.** It is pre-registered (the affinity map lives in
+   `regime_selector.py`, not chosen post-hoc), strictly conservative (a subset — adds nothing), and
+   the 4 cells it drops cleared the bar only on trades in regimes their own declaration disclaims —
+   trades production would never place. That is false-positive removal, not lost edge. Cost: roster
+   14 -> 10 on the R5 basis (~13 -> ~10 when regenerated across all three cubes). L296.
+2. **Do NOT adopt PER-REGIME (#11) as a replacement.** It changes the sample AND the threshold tier
+   at once, and churns 9 of 14 out for 7 in at weaker significance. Keep it as the reported
+   per-regime verdict (deployment metadata: which regimes a cell is cleared for), not the gate.
+3. **Do NOT take the union of variants.** Running two definitions and keeping whatever passes either
+   is precisely the multiple-testing failure BH-FDR exists to prevent.
+
+### Tickets opened
+- **S6-B1459a (HIGH, owner decision)** — adopt IN-AFFINITY grading; regenerate the roster across all
+  three cubes; expect ~10 cells. Supersedes the sizing in S6-B1456a.
+- **S6-B1459b (MED)** — 109 of 196 cube strategies declare no affinity, so IN-AFFINITY is a no-op
+  for them. How much further the roster moves depends entirely on S6-B1457b (undeclared policy);
+  resolve that before treating ~10 as final.

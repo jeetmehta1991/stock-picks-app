@@ -1,0 +1,542 @@
+{
+  "MEASUREMENT_ONLY": true,
+  "cube": "output_r5_merged_1_7",
+  "results": {
+    "POOLED": {
+      "evaluable": 131,
+      "gates": 22,
+      "fdr": 21,
+      "final": 14,
+      "long": 14,
+      "short": 0,
+      "cells": [
+        {
+          "strategy": "xs_momentum_with_smart_money_long",
+          "direction": "long",
+          "exit": "regime_flip",
+          "n": 162,
+          "sharpe": 1.004,
+          "ok": true,
+          "p": 8.25447608273e-06
+        },
+        {
+          "strategy": "poc_magnet_long",
+          "direction": "long",
+          "exit": "time_stop_10d",
+          "n": 151,
+          "sharpe": 0.808,
+          "ok": true,
+          "p": 0.008884204055925717
+        },
+        {
+          "strategy": "smc_breaker_block_long",
+          "direction": "long",
+          "exit": "breakeven_plus_trail",
+          "n": 356,
+          "sharpe": 0.693,
+          "ok": true,
+          "p": 6.357381615533083e-07
+        },
+        {
+          "strategy": "institutional_persistence_breakout_long",
+          "direction": "long",
+          "exit": "breakeven_plus_trail",
+          "n": 136,
+          "sharpe": 0.683,
+          "ok": true,
+          "p": 8.689885189825228e-05
+        },
+        {
+          "strategy": "institutional_committed_growth_long",
+          "direction": "long",
+          "exit": "breakeven_plus_trail",
+          "n": 666,
+          "sharpe": 0.638,
+          "ok": true,
+          "p": 1.2125236111035037e-10
+        },
+        {
+          "strategy": "pead_long_high_yoy_growth_only",
+          "direction": "long",
+          "exit": "breakeven_plus_trail",
+          "n": 422,
+          "sharpe": 0.585,
+          "ok": true,
+          "p": 9.397822445123306e-08
+        },
+        {
+          "strategy": "institutional_high_conviction_long",
+          "direction": "long",
+          "exit": "breakeven_plus_trail",
+          "n": 738,
+          "sharpe": 0.561,
+          "ok": true,
+          "p": 7.170180842936146e-10
+        },
+        {
+          "strategy": "macd_fast_crossover",
+          "direction": "long",
+          "exit": "breakeven_plus_trail",
+          "n": 378,
+          "sharpe": 0.537,
+          "ok": true,
+          "p": 4.8279418812929124e-05
+        },
+        {
+          "strategy": "avwap_252_breakout",
+          "direction": "long",
+          "exit": "breakeven_plus_trail",
+          "n": 314,
+          "sharpe": 0.532,
+          "ok": true,
+          "p": 0.00011359329276651399
+        },
+        {
+          "strategy": "force_index_breakout",
+          "direction": "long",
+          "exit": "breakeven_plus_trail",
+          "n": 259,
+          "sharpe": 0.519,
+          "ok": true,
+          "p": 0.001182181154762686
+        },
+        {
+          "strategy": "institutional_persistence_oversold_long",
+          "direction": "long",
+          "exit": "breakeven_plus_trail",
+          "n": 199,
+          "sharpe": 0.517,
+          "ok": true,
+          "p": 0.0033015728026361806
+        },
+        {
+          "strategy": "prev_day_high_break",
+          "direction": "long",
+          "exit": "regime_flip",
+          "n": 162,
+          "sharpe": 0.509,
+          "ok": true,
+          "p": 0.0153583638241424
+        },
+        {
+          "strategy": "smc_order_block_bounce",
+          "direction": "long",
+          "exit": "breakeven_plus_trail",
+          "n": 134,
+          "sharpe": 0.502,
+          "ok": true,
+          "p": 0.026023571682235475
+        },
+        {
+          "strategy": "r1_break_retest",
+          "direction": "long",
+          "exit": "breakeven_plus_trail",
+          "n": 338,
+          "sharpe": 0.501,
+          "ok": true,
+          "p": 0.00019333813223344363
+        }
+      ]
+    },
+    "IN-AFFINITY": {
+      "evaluable": 101,
+      "gates": 18,
+      "fdr": 16,
+      "final": 10,
+      "long": 10,
+      "short": 0,
+      "cells": [
+        {
+          "strategy": "xs_momentum_with_smart_money_long",
+          "direction": "long",
+          "exit": "regime_flip",
+          "n": 162,
+          "sharpe": 1.004,
+          "ok": true,
+          "p": 8.25447608273e-06
+        },
+        {
+          "strategy": "institutional_persistence_breakout_long",
+          "direction": "long",
+          "exit": "breakeven_plus_trail",
+          "n": 136,
+          "sharpe": 0.683,
+          "ok": true,
+          "p": 8.689885189825228e-05
+        },
+        {
+          "strategy": "institutional_committed_growth_long",
+          "direction": "long",
+          "exit": "breakeven_plus_trail",
+          "n": 666,
+          "sharpe": 0.638,
+          "ok": true,
+          "p": 1.2125236111035037e-10
+        },
+        {
+          "strategy": "pead_long_high_yoy_growth_only",
+          "direction": "long",
+          "exit": "breakeven_plus_trail",
+          "n": 422,
+          "sharpe": 0.585,
+          "ok": true,
+          "p": 9.397822445123306e-08
+        },
+        {
+          "strategy": "institutional_high_conviction_long",
+          "direction": "long",
+          "exit": "breakeven_plus_trail",
+          "n": 738,
+          "sharpe": 0.561,
+          "ok": true,
+          "p": 7.170180842936146e-10
+        },
+        {
+          "strategy": "smc_breaker_block_long",
+          "direction": "long",
+          "exit": "breakeven_plus_trail",
+          "n": 321,
+          "sharpe": 0.522,
+          "ok": true,
+          "p": 0.00023581231488152308
+        },
+        {
+          "strategy": "force_index_breakout",
+          "direction": "long",
+          "exit": "breakeven_plus_trail",
+          "n": 259,
+          "sharpe": 0.519,
+          "ok": true,
+          "p": 0.001182181154762686
+        },
+        {
+          "strategy": "institutional_persistence_oversold_long",
+          "direction": "long",
+          "exit": "breakeven_plus_trail",
+          "n": 199,
+          "sharpe": 0.517,
+          "ok": true,
+          "p": 0.0033015728026361806
+        },
+        {
+          "strategy": "smc_order_block_bounce",
+          "direction": "long",
+          "exit": "breakeven_plus_trail",
+          "n": 134,
+          "sharpe": 0.502,
+          "ok": true,
+          "p": 0.026023571682235475
+        },
+        {
+          "strategy": "r1_break_retest",
+          "direction": "long",
+          "exit": "breakeven_plus_trail",
+          "n": 338,
+          "sharpe": 0.501,
+          "ok": true,
+          "p": 0.00019333813223344363
+        }
+      ]
+    },
+    "PER-REGIME": {
+      "evaluable": 175,
+      "gates": 28,
+      "fdr": 20,
+      "final": 12,
+      "long": 12,
+      "short": 0,
+      "cells": [
+        {
+          "strategy": "pairs_mean_reversion_long",
+          "direction": "long",
+          "exit": "r_multiple_2r",
+          "n": 63,
+          "sharpe": 1.638,
+          "ok": true,
+          "p": 0.004341387855160023,
+          "passing_regimes": [
+            "bear",
+            "neutral"
+          ]
+        },
+        {
+          "strategy": "institutional_committed_growth_long",
+          "direction": "long",
+          "exit": "breakeven_plus_trail",
+          "n": 60,
+          "sharpe": 1.535,
+          "ok": true,
+          "p": 6.014128025334323e-06,
+          "passing_regimes": [
+            "bull",
+            "neutral"
+          ]
+        },
+        {
+          "strategy": "institutional_high_conviction_long",
+          "direction": "long",
+          "exit": "breakeven_plus_trail",
+          "n": 34,
+          "sharpe": 1.389,
+          "ok": true,
+          "p": 0.00028879534514728277,
+          "passing_regimes": [
+            "bull"
+          ]
+        },
+        {
+          "strategy": "macd_crossover",
+          "direction": "long",
+          "exit": "regime_flip",
+          "n": 47,
+          "sharpe": 1.337,
+          "ok": true,
+          "p": 0.0009277206869664426,
+          "passing_regimes": [
+            "bear"
+          ]
+        },
+        {
+          "strategy": "vix_backwardation_long",
+          "direction": "long",
+          "exit": "regime_flip",
+          "n": 33,
+          "sharpe": 1.112,
+          "ok": true,
+          "p": 0.014865153773738444,
+          "passing_regimes": [
+            "bear"
+          ]
+        },
+        {
+          "strategy": "bollinger_lower",
+          "direction": "long",
+          "exit": "reverse_signal",
+          "n": 41,
+          "sharpe": 1.076,
+          "ok": true,
+          "p": 0.008203548526923876,
+          "passing_regimes": [
+            "bear"
+          ]
+        },
+        {
+          "strategy": "parabolic_sar_flip",
+          "direction": "long",
+          "exit": "class_time_stop",
+          "n": 32,
+          "sharpe": 1.059,
+          "ok": true,
+          "p": 0.01088061535901803,
+          "passing_regimes": [
+            "bear"
+          ]
+        },
+        {
+          "strategy": "macd_fast_crossover",
+          "direction": "long",
+          "exit": "breakeven_plus_trail",
+          "n": 59,
+          "sharpe": 0.983,
+          "ok": true,
+          "p": 0.004602067802605417,
+          "passing_regimes": [
+            "bear",
+            "neutral"
+          ]
+        },
+        {
+          "strategy": "ppo_crossover",
+          "direction": "long",
+          "exit": "earnings_blackout",
+          "n": 34,
+          "sharpe": 0.96,
+          "ok": true,
+          "p": 0.013720064172327013,
+          "passing_regimes": [
+            "bear"
+          ]
+        },
+        {
+          "strategy": "institutional_persistence_breakout_long",
+          "direction": "long",
+          "exit": "breakeven_plus_trail",
+          "n": 110,
+          "sharpe": 0.58,
+          "ok": true,
+          "p": 0.0032184637712172046,
+          "passing_regimes": [
+            "bull"
+          ]
+        },
+        {
+          "strategy": "pead_long_high_yoy_growth_only",
+          "direction": "long",
+          "exit": "breakeven_plus_trail",
+          "n": 354,
+          "sharpe": 0.557,
+          "ok": true,
+          "p": 4.768156750037801e-06,
+          "passing_regimes": [
+            "bull"
+          ]
+        },
+        {
+          "strategy": "pivot_s1_bounce",
+          "direction": "long",
+          "exit": "breakeven_plus_trail",
+          "n": 89,
+          "sharpe": 0.503,
+          "ok": true,
+          "p": 0.01822860991786206,
+          "passing_regimes": [
+            "bull"
+          ]
+        }
+      ]
+    },
+    "BOTH": {
+      "evaluable": 150,
+      "gates": 24,
+      "fdr": 18,
+      "final": 11,
+      "long": 11,
+      "short": 0,
+      "cells": [
+        {
+          "strategy": "pairs_mean_reversion_long",
+          "direction": "long",
+          "exit": "r_multiple_2r",
+          "n": 63,
+          "sharpe": 1.638,
+          "ok": true,
+          "p": 0.004341387855160023,
+          "passing_regimes": [
+            "bear"
+          ]
+        },
+        {
+          "strategy": "institutional_committed_growth_long",
+          "direction": "long",
+          "exit": "breakeven_plus_trail",
+          "n": 60,
+          "sharpe": 1.535,
+          "ok": true,
+          "p": 6.014128025334323e-06,
+          "passing_regimes": [
+            "bull",
+            "neutral"
+          ]
+        },
+        {
+          "strategy": "institutional_high_conviction_long",
+          "direction": "long",
+          "exit": "breakeven_plus_trail",
+          "n": 34,
+          "sharpe": 1.389,
+          "ok": true,
+          "p": 0.00028879534514728277,
+          "passing_regimes": [
+            "bull"
+          ]
+        },
+        {
+          "strategy": "macd_crossover",
+          "direction": "long",
+          "exit": "regime_flip",
+          "n": 47,
+          "sharpe": 1.337,
+          "ok": true,
+          "p": 0.0009277206869664426,
+          "passing_regimes": [
+            "bear"
+          ]
+        },
+        {
+          "strategy": "vix_backwardation_long",
+          "direction": "long",
+          "exit": "regime_flip",
+          "n": 33,
+          "sharpe": 1.112,
+          "ok": true,
+          "p": 0.014865153773738444,
+          "passing_regimes": [
+            "bear"
+          ]
+        },
+        {
+          "strategy": "bollinger_lower",
+          "direction": "long",
+          "exit": "reverse_signal",
+          "n": 41,
+          "sharpe": 1.076,
+          "ok": true,
+          "p": 0.008203548526923876,
+          "passing_regimes": [
+            "bear"
+          ]
+        },
+        {
+          "strategy": "parabolic_sar_flip",
+          "direction": "long",
+          "exit": "class_time_stop",
+          "n": 32,
+          "sharpe": 1.059,
+          "ok": true,
+          "p": 0.01088061535901803,
+          "passing_regimes": [
+            "bear"
+          ]
+        },
+        {
+          "strategy": "ppo_crossover",
+          "direction": "long",
+          "exit": "earnings_blackout",
+          "n": 34,
+          "sharpe": 0.96,
+          "ok": true,
+          "p": 0.013720064172327013,
+          "passing_regimes": [
+            "bear"
+          ]
+        },
+        {
+          "strategy": "institutional_persistence_breakout_long",
+          "direction": "long",
+          "exit": "breakeven_plus_trail",
+          "n": 110,
+          "sharpe": 0.58,
+          "ok": true,
+          "p": 0.0032184637712172046,
+          "passing_regimes": [
+            "bull"
+          ]
+        },
+        {
+          "strategy": "pead_long_high_yoy_growth_only",
+          "direction": "long",
+          "exit": "breakeven_plus_trail",
+          "n": 354,
+          "sharpe": 0.557,
+          "ok": true,
+          "p": 4.768156750037801e-06,
+          "passing_regimes": [
+            "bull"
+          ]
+        },
+        {
+          "strategy": "pivot_s1_bounce",
+          "direction": "long",
+          "exit": "breakeven_plus_trail",
+          "n": 89,
+          "sharpe": 0.503,
+          "ok": true,
+          "p": 0.01822860991786206,
+          "passing_regimes": [
+            "bull"
+          ]
+        }
+      ]
+    }
+  }
+}

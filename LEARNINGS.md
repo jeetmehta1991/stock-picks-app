@@ -4704,3 +4704,29 @@ it.** The redundancy that looked like defence-in-depth was correlation. **Genera
 multi-gate screen must be reported with a leave-one-out contribution table. Gates that uniquely
 reject zero are decoration, and their presence creates false confidence that a defect in the
 binding gate would be caught elsewhere.**
+
+### L295
+**I reported a gate-stage count as if it were an end-to-end count, and it reversed the conclusion.**
+At B1456 I told the owner criterion #11 "would be MORE permissive than pooled" and sized the option
+as "union = 37 cells". Both came from the GATE stage only (28 pass vs 22). Run end-to-end through
+the SAME downstream pipeline the roster uses — gates -> BH-FDR -> Jaccard de-dup — the ordering
+inverts: **POOLED 14, PER-REGIME 12, IN-AFFINITY 10, BOTH 11.** Every sample fix yields FEWER final
+cells. Cause: per-regime evaluation admits more cells at the gate (n>=30 instead of n>=100) but each
+carries a weaker p-value from the smaller sample, so BH-FDR removes 8 of 28 where it removed only 1
+of 22; in-affinity restriction shrinks samples below the n>=100 floor and pushes cells to UNEVAL
+rather than to PASS. **Generalized rule: a count taken at any stage of a multi-stage funnel must be
+labelled with its stage, and a recommendation may only be sized on the FINAL stage. Intermediate
+counts move in the opposite direction from final counts whenever a later stage is sample-size
+sensitive — and BH-FDR always is.** Detection: any option sized with a number, state which funnel
+stage produced it, or re-run to the end before quoting it.
+
+### L296
+**The correct fix costs cells rather than adding them, and that does not make it the wrong fix.**
+IN-AFFINITY grading drops 4 of the 14 pooled passers and adds **zero** — it is strictly a subset.
+Those 4 cleared the bar only on trades taken in regimes their own `STRATEGY_REGIME_AFFINITY`
+declaration disclaims, i.e. trades production would never place. Removing them is false-positive
+elimination, not lost edge. The temptation to prefer the variant with the larger count is exactly
+the pressure that produced the B1452 lookahead (26-way exit search on the graded window inflated 23
+to 35). **Generalized rule: correctness of the SAMPLE is decided on whether the sample matches what
+production will actually trade — never on how many survivors it yields. Report the cost openly and
+let the count fall.**
