@@ -4623,3 +4623,40 @@ at the current bar, meaning 23 sits on a cliff edge and is highly sensitive to a
 re-derived. **Generalized rule: any reported pass-count that depends on a tunable threshold ships
 with its sensitivity curve. A single count invites "is it too strict?" and cannot answer it; the
 curve converts a judgement call into a visible tradeoff.**
+
+### L289
+**A unit test that pins a constant's VALUE makes an unimplemented criterion look covered.**
+Canonical criterion #11 (`min_regimes_passing`) survived 1,400+ batches unimplemented while
+`test_unit.py:8300` asserted `PASSING_CRITERIA["min_regimes_passing"] == 1` and passed every run.
+The test pins the value; nothing tests the USE. A repo-wide enforcement audit
+(`scripts/audit_criteria_enforcement.py`, B1456) classifies all 29 `PASSING_CRITERIA` keys as
+ENFORCED (read inside a gating expression) / ADVISORY (read but never rejects) / ORPHANED (read by
+no non-test module) and finds **2 ORPHANED — `min_regimes_passing` and `min_sharpe_overall` — plus
+1 ADVISORY, `min_trades_per_regime`.** All three are the per-regime/overall SPLIT keys: the project
+designed a two-tier threshold architecture and wired only the pooled tier. **Generalized rule: a
+config constant with a value-pin test and no consumer test is worse than an absent constant — it
+manufactures the appearance of coverage. Every threshold ships with a test that the threshold
+CHANGES AN OUTCOME (flip it, assert the verdict moves), not merely that it equals a number.**
+Detection: the ENFORCED/ADVISORY/ORPHANED audit, now runnable and repeatable.
+
+### L290
+**The live gate set mixes per-regime and overall thresholds on a single pooled computation.**
+Surfaced by the same audit. The roster's five gates draw from BOTH tiers with no stated rationale:
+Sharpe uses `min_sharpe_per_regime` (0.5), Sortino uses `min_sortino_per_regime` (0.7), profit
+factor uses `min_profit_factor_overall` (1.3), trade count uses `min_trades` (100) — all applied to
+one pooled sample. Each choice was locally reasonable when made; the combination was never reviewed
+as a set, so the effective bar is neither the overall tier nor the per-regime tier but an unexamined
+hybrid. **Generalized rule: when a config exposes tiered thresholds, the gate set must declare which
+tier it implements and justify any per-key deviation. Mixed tiers are a silent, unowned policy.**
+
+### L291
+**Criterion #11 is not simply "more permissive" — it is a different filter, and assuming a direction
+would have been wrong.** I predicted a proper per-regime verdict would admit MORE cells. Measured
+(`scripts/measure_criterion_11.py`, R5 holdout, 229 cells): pooled admits 22, #11 admits 28 — but
+only 13 overlap. **15 cells are admitted ONLY by #11, and 9 that pass pooled FAIL #11.** The churn
+is larger than the net change (+6). Cause: #11 relaxes trade count (30 vs 100) and profit factor
+(1.2 vs 1.3), but a within-regime sample is a fraction of the pooled one, so the Sharpe standard
+error widens and PSR>=0.95 becomes harder — two effects in opposite directions. **Generalized rule:
+when a gate change alters BOTH the threshold and the sample the statistic is computed on, the net
+direction is not derivable by inspection and must be measured. Report the churn (in/out), never
+only the net.**

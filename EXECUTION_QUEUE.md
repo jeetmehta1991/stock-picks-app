@@ -7594,3 +7594,56 @@ neutral 52 | bear 0**.
 - **S6-B1455f (MED)** — rename the gate key `sharpe_per_regime` -> `sharpe_pooled` across the
   generators + JSON consumers. Deferred from this batch: it changes a published artifact schema and
   is not behaviour-neutral for anything reading the key. L287.
+
+---
+
+## B1456 (2026-08-04) — criteria enforcement audit; criterion #11 measured
+
+**Q1 — why #11 was missed, and what else.** New repeatable audit
+`scripts/audit_criteria_enforcement.py` classifies all 29 `PASSING_CRITERIA` keys:
+
+| class | count | keys |
+|---|---|---|
+| ENFORCED | 26 | read inside a gating expression |
+| ADVISORY | 1 | `min_trades_per_regime` (only `verify_batch_completion.py`; never rejects) |
+| **ORPHANED** | **2** | **`min_regimes_passing`, `min_sharpe_overall`** — read by NO non-test module |
+
+Root cause: `test_unit.py:8300` asserts `min_regimes_passing == 1` and passes every run. The test
+pins the VALUE; nothing tests the USE — green tests, zero implementation. L289. All three
+non-enforced keys are the per-regime/overall SPLIT keys: the two-tier threshold architecture was
+designed and only the pooled tier was wired. Related: the live gate set draws from BOTH tiers on one
+pooled sample (Sharpe + Sortino per-regime thresholds, PF + trades overall) — an unowned hybrid. L290.
+
+**Q2 — what #11 admits.** `scripts/measure_criterion_11.py` (measurement only, nothing changed).
+Per-regime tier = trades>=30, sharpe>=0.5, sortino>=0.7, pf>=1.2, psr>=0.95; PASS = clears all of
+those inside `min_regimes_passing`=1 regime. R5 holdout, 229 cells:
+
+| | cells |
+|---|---|
+| POOLED pass (current roster gate) | 22 |
+| **CRITERION #11 pass** | **28** |
+| both | 13 |
+| **admitted ONLY by #11** | **15** |
+| pooled-pass but FAILS #11 | 9 |
+
+Not simply more permissive — churn (15 in / 9 out) exceeds the net (+6), because #11 relaxes the
+count/PF bars but shrinks the sample, widening Sharpe SE and tightening PSR. L291.
+Regime carrying the passers: bull 12 · neutral 12 · **bear 8** (bear cells exist at n>=30 though
+none reach n>=100). Direction: long 27 · short 1 (`risk_off_bond_equity_short`).
+
+**Q3 — why 13F strategies are long-only.** SEC Form 13F obliges managers with >=$100M in 13(f)
+securities to disclose LONG positions only; short positions are not reportable. A position DECREASE
+is therefore ambiguous (profit-taking / rebalancing / redemptions / risk limits), not a disclosed
+bearish view, so the mechanical inverse is economically false rather than merely untested. This is
+the B611 precedent (a Class 7 NEW short mirror was wired and then reverted for exactly this reason)
+and the standing memory `feedback_asymmetric_data_sources_break_mechanical_inverse`.
+
+### Tickets opened
+- **S6-B1456a (HIGH, owner decision)** — implement criterion #11 as an ADDITIONAL reported verdict
+  alongside the pooled one, not a replacement. Union = 37 cells, each carrying its passing regimes
+  as deployment metadata (a bear-only passer deploys only in bear). This is what the per-regime
+  architecture was built for. Gate-semantics change: requires owner approval.
+- **S6-B1456b (HIGH)** — every threshold ships with a CONSUMER test (flip it, assert the verdict
+  moves), not a value-pin. Retrofit for the 2 ORPHANED + 1 ADVISORY keys first. L289.
+- **S6-B1456c (MED)** — declare which threshold tier the live gate set implements and justify each
+  per-key deviation; the current mix is unowned. L290.
