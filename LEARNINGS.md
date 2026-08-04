@@ -4378,3 +4378,23 @@ consequence:** all 13 shipped tightenings were add-a-gate, and 9 of 13 failed th
 prediction. **Rule:** a selectivity change must consider MODIFY-EXISTING-THRESHOLD before
 ADD-NEW-GATE and prefer it when both are available, because it preserves the thesis.
 Ticket S6-B1446a.
+
+
+### L273
+**A guard that rejects unproven items cannot coexist with a rule that routes proven ones
+elsewhere - together they are a ratchet.** (B1447, owner directive: "#136 rejects items that
+wouldn't retroactively catch misses - remove".) CHECKLIST #136 required a proposed item to
+demonstrate it would have caught 2 of the last 3 PIVOTs, or be rejected as theater. Phase 5.2
+routed anything an EXISTING item should have caught to "compliance failure, record in the L-entry
+instead". Each rule is individually defensible. Composed, they close both exits: a NOVEL failure
+class has no prior instances to demonstrate coverage against - that is what novel MEANS - so it
+fails #136; a familiar one is covered by an existing item, so it fails 5.2. **Measured effect:**
+CHECKLIST.md went untouched 2026-07-23 -> 2026-08-04 (~90 batches) while eight L-entries
+accumulated, and four of those eight were genuinely new classes that only became #164-#167 after
+the owner intervened. **The deeper error was mine in application, not only in the rules:** #136's
+own scope clarification (B1083) already exempted process directives, and its exceptions list
+already allowed bug-fix artifacts - I applied the strictest reading uniformly instead of using
+those carve-outs. **Rule:** a rejection gate on ADDING safeguards must be paired with a
+periodic check that safeguards are still being added; if the gate is never passed, the gate is
+the defect. #136 is now a REPORTING obligation (state what an item would and would not have
+caught) rather than a rejection gate.

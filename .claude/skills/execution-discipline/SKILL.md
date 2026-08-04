@@ -262,12 +262,16 @@ deferral:
 
 1. **LEARNINGS.md entry** (next L-number): what happened, root cause, the
    generalized rule, and the detection signal that would have caught it earlier.
-2. **CHECKLIST.md addition** ONLY if the miss is a NEW failure class not
-   covered by existing items — and it must pass the ANTI-AUDIT-THEATER GUARD
-   (CHECKLIST #136): demonstrate the new item would have retroactively caught
-   the last 3 relevant PIVOTs/misses, or it is theater and gets rejected.
-   If an existing item should have caught it, the miss is a COMPLIANCE failure —
-   record that in the L-entry instead of adding a redundant item.
+2. **CHECKLIST.md addition.** (B1447: the #136 retroactive-coverage REQUIREMENT
+   is REMOVED by owner directive — an item is no longer rejected for failing to
+   show it would have caught 2 of the last 3 PIVOTs. State what it would and
+   would not have caught; that is a reporting obligation, not a gate. A novel
+   failure class has no prior instances by definition.)
+   If an existing item should have caught the miss, that is a COMPLIANCE failure
+   and belongs in the L-entry — but see the ratchet warning: when three or more
+   L-entries accumulate with NO checklist addition, re-examine them AS A BATCH.
+   Between 2026-07-23 and 2026-08-04 that ratchet produced 8 L-entries and 0
+   checklist items over ~90 batches (L271); four were genuinely new classes.
 3. **Memory write** if the lesson is a standing owner-behavior rule
    (a `feedback_*` file + `MEMORY.md` pointer).
 4. **Fix or ticket** — the miss itself is either remediated this turn or gets

@@ -7304,3 +7304,34 @@ every other disposition (FAILED-cubed, FAILED-R6b, the 177-routed backlog, in-te
 ONE rework population with a single ID space, replacing the overlapping 177/154/147/136 figures
 that are currently hard to track. BLOCKED until Group 1 (running) and Group 3 (killed B1443,
 re-launch wired to Group 1 completion) both land.
+
+
+## B1447 (2026-08-04) - remove the #136 retroactive-coverage REQUIREMENT (owner directive)
+
+**OWNER DIRECTIVE (verbatim):** "#136 rejects items that wouldn't retroactively catch misses -
+remove".
+
+**APPLIED**
+- **CHECKLIST #136 DOWNGRADED** from HARD RULE to a reporting obligation. The requirement that a
+  proposed item demonstrate it would have caught 2 of the last 3 PIVOTs, on pain of rejection, is
+  REMOVED. What remains: state what a new item would and would not have caught, so its expected
+  value is visible. An item with ZERO retroactive coverage may now be added - a novel failure
+  class has no prior instances by definition.
+- **SKILL.md Phase 5.2 aligned** - the "or it is theater and gets rejected" gate language is gone,
+  replaced with the reporting obligation plus the ratchet warning (3+ L-entries with no checklist
+  addition triggers a BATCH re-examination).
+- **Retained deliberately:** #136's acceptable-exceptions list and the B1083 process-vs-audit
+  scope clarification. The guard was right that adding layers is not free and that "this is the
+  structural fix" is a claim to distrust; that is now carried by reporting, not by rejection.
+- **NOT changed:** the ~20 existing items carrying "Retroactive coverage demo (per #136)" blocks.
+  Those are historical records of what was argued when each was added, not active gates.
+
+**LEARNINGS L273** - a rejection gate on ADDING safeguards must be paired with a periodic check
+that safeguards are still being added; if the gate is never passed, the gate is the defect.
+Honest note recorded there: #136 already contained carve-outs (B1083 process-vs-audit scope, the
+acceptable-exceptions list) that I did not use - the ratchet was as much my uniform strict
+reading as the rule text.
+
+**Evidence for the change:** CHECKLIST.md untouched 2026-07-23 -> 2026-08-04 (~90 batches) while
+L263-L270 accumulated; four of those eight were genuinely new classes and became #164-#167 only
+after owner intervention (B1446).
