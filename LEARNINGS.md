@@ -4318,3 +4318,24 @@ relaunching; (b) a "stalled" log on a long job is at least as likely to mean CPU
 duplicate as it is to mean a hang - enumerate processes before diagnosing the job; (c) match on
 COMMAND LINE, not process count - two pairs of python.exe looked unremarkable until the cmdlines
 were compared and proved identical.
+
+### L270
+**A routed work-plan is a finding; an artifact is not a ticket.** (B1444, owner-caught.) B1410
+sorted **177 strategies** into four work queues (TIGHTEN/HIGH-FIRE 73, LOOSEN/STARVED 65,
+LOOSEN/QUIET 27, LOOSEN/NEVER 12) inside `output_audit/b1410_r6_change_list.json` and wrote
+**zero tickets**. Verified: `remaining_work_routed`, `LOOSEN / STARVED`, `LOOSEN / QUIET`,
+`TIGHTEN / HIGH-FIRE` each returned 0 hits in EXECUTION_QUEUE.md, and no B1410 section existed at
+all. CHECKLIST #94 / `feedback_execution_queue_mandatory_per_turn` is explicit that findings
+without tickets do not exist, and the "finding" definition (B1251) already covers
+recommendations and levers, not just bugs - so this is a COMPLIANCE failure, not a missing rule.
+**What made it invisible for ~30 batches:** the work WAS recorded, in a machine-readable artifact
+with better structure than a ticket would have had. The JSON felt like the deliverable. But
+EXECUTION_QUEUE.md is the only surface anyone greps, so a 177-item plan sitting in
+`output_audit/*.json` is functionally identical to never having produced it.
+**I compounded it this session** by reporting "the 147 aren't unexamined, they're a backlog"
+without checking whether the backlog existed anywhere greppable - describing a queue I had not
+verified was a queue. **Rules:** (a) any artifact that ENUMERATES FUTURE WORK gets tickets in the
+same turn, with the items inlined - a ticket that says "see the JSON" reproduces the failure;
+(b) the per-turn queue cross-check must grep the artifact's own routing keys, not just its
+filename; (c) when describing prior work as "queued" or "backlogged", grep the queue first - the
+word implies a location, and asserting it without checking is an UNVERIFIED claim stated as fact.

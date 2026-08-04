@@ -1,0 +1,82 @@
+[
+  {
+    "strategy": "avwap_252_breakout",
+    "mirror": null,
+    "class": "NEEDS-CREATION"
+  },
+  {
+    "strategy": "bollinger_lower",
+    "mirror": null,
+    "class": "NEEDS-CREATION"
+  },
+  {
+    "strategy": "force_index_breakout",
+    "mirror": null,
+    "class": "NEEDS-CREATION"
+  },
+  {
+    "strategy": "institutional_breakout_confirmation_long",
+    "mirror": null,
+    "class": "ASYM-LONG-ONLY"
+  },
+  {
+    "strategy": "institutional_high_conviction_long",
+    "mirror": null,
+    "class": "ASYM-LONG-ONLY"
+  },
+  {
+    "strategy": "institutional_multi_quarter_persistence_long",
+    "mirror": null,
+    "class": "ASYM-LONG-ONLY"
+  },
+  {
+    "strategy": "institutional_persistence_oversold_long",
+    "mirror": null,
+    "class": "ASYM-LONG-ONLY"
+  },
+  {
+    "strategy": "macd_bullish_with_smart_money_long",
+    "mirror": null,
+    "class": "ASYM-LONG-ONLY"
+  },
+  {
+    "strategy": "macd_fast_crossover",
+    "mirror": "macd_crossover_short",
+    "class": "REGISTERED"
+  },
+  {
+    "strategy": "pead_long_high_yoy_growth_only",
+    "mirror": null,
+    "class": "NEEDS-CREATION"
+  },
+  {
+    "strategy": "pead_with_smart_money_long",
+    "mirror": null,
+    "class": "ASYM-LONG-ONLY"
+  },
+  {
+    "strategy": "poc_magnet_long",
+    "mirror": "poc_magnet_short",
+    "class": "REGISTERED"
+  },
+  {
+    "strategy": "r1_break_retest",
+    "mirror": "52wl_break_retest_short",
+    "class": "REGISTERED"
+  },
+  {
+    "strategy": "smc_breaker_block_long",
+    "mirror": "smc_breaker_block_short",
+    "class": "REGISTERED"
+  },
+  {
+    "strategy": "smc_equal_lows_sweep_long",
+    "mirror": "smc_equal_highs_sweep_short",
+    "class": "REGISTERED"
+  },
+  {
+    "strategy": "xs_momentum_with_smart_money_long",
+    "mirror": "xs_momentum_bottom_decile_short",
+    "class": "REGISTERED"
+  }
+]

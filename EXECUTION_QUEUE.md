@@ -7146,3 +7146,81 @@ of discarded work cannot even be quantified as a percentage. A periodic heartbea
 real decisions, not just tidiness.
 
 **UNCHANGED OPEN:** S6-B1438a, S6-B1434a/b/c, S6-B1431a/b, S6-B1428a/b/c, S6-B1427, S6-B1423.
+
+## B1444 (2026-08-04) - TICKET THE B1410 BACKLOG (owner-caught miss)
+
+**MISS (owner-caught).** B1410 routed **177 strategies** into four work queues inside
+`output_audit/b1410_r6_change_list.json` and **never wrote a single ticket**. Verified this turn:
+`remaining_work_routed`, `LOOSEN / STARVED`, `LOOSEN / QUIET`, `TIGHTEN / HIGH-FIRE` all return
+ZERO hits in EXECUTION_QUEUE.md, and there is no B1410 section at all. CHECKLIST #94 /
+`feedback_execution_queue_mandatory_per_turn`: findings without tickets do not exist. I compounded
+it by describing them as 'a backlog' without checking the backlog was recorded. LEARNINGS L270.
+
+Full lists inlined below deliberately - pointing at the JSON is what produced the miss.
+
+**ROUTING RULE (owner, B1398):** fires <100 STARVED -> LOOSEN; 100-299 QUIET -> LOOSEN;
+>=300 HIGH-FIRE -> TIGHTEN. Never both; never loosen a high-fire strategy.
+
+### S6-B1444d - TIGHTEN / HIGH-FIRE (73 strategies) - OPEN, NEVER WORKED
+  52w_low_breakdown_pullback_short, avwap_50_reclaim, bb_squeeze_volume, bollinger_lower
+  bollinger_tight_with_smart_money_long, cpr_narrow_momentum, cpr_narrow_momentum_short, donchian_10_breakout
+  donchian_breakdown_retest_short, donchian_breakdown_short, donchian_breakout_long, donchian_breakout_retest_long
+  donchian_breakout_with_smart_money_long, golden_cross_20_50, golden_cross_9_21, head_and_shoulders_top_short
+  htf_aligned_breakout_short, hull_rsi, ichimoku_cloud_breakout, inside_bar_breakout
+  institutional_breakout_confirmation_long, institutional_buy_momentum_long, institutional_cluster_long, institutional_insider_combo_long
+  institutional_multi_quarter_persistence_long, institutional_persistence_momentum_long, institutional_persistence_volume_long, institutional_persistent_holders_long
+  institutional_recent_init_momentum_long, institutional_recent_init_volume_long, institutional_strong_conviction_long, macd_bullish_with_smart_money_long
+  macd_crossover, macd_ichimoku, mmbm_long, mmsm_short
+  naked_poc_retest_long, parabolic_sar_flip, parabolic_sar_flip_short, pead_short
+  pivot_r1_breakout, pivot_s1_bounce, po3_bearish, po3_bullish
+  prev_day_high_break, prev_day_low_bounce, prev_day_low_breakdown, risk_off_bond_equity_short
+  roc_burst, rsi_oversold_with_smart_money_long, smc_bos_retest_entry, smc_choch_reversal
+  smc_equal_highs_sweep_short, smc_liquidity_sweep_reversal, smc_order_block_bounce, smc_premium_short
+  squeeze_breakout, squeeze_breakout_with_smart_money_long, stochrsi_overbought_short, stochrsi_oversold
+  supertrend_macd, three_black_crows_short, three_white_soldiers, triangle_descending_short
+  turtle_soup_short, ultimate_oscillator, vix_backwardation_long, vol_spike_2x_below_ema_50_short
+  volume_spike_breakout, week_opening_gap_fill_down, week_opening_gap_fill_up, williams_r_oversold
+  williams_stoch_dual
+
+### S6-B1444a - LOOSEN / STARVED (65 strategies) - OPEN, NEVER WORKED
+  52w_high_breakout, 52w_high_breakout_pullback_long, 52w_high_breakout_with_smart_money_long, 52w_low_breakdown
+  52wh_break_retest, 52wl_break_retest_short, activist_13d_long, adx_initiation
+  avwap_20high_rejection_short, bollinger_upper_short, classification_change_breakout_long, classification_change_from_tech_short
+  classification_change_momentum_long, classification_change_recent_long, classification_change_to_defensive_short, classification_change_with_insider_long
+  classification_change_with_institutional_long, cup_and_handle_retest_long, death_cross_50_200_volume, flag_bear_retest_short
+  flag_bull_long, flag_bull_retest_long, golden_cross_50_200, golden_cross_volume
+  halloween_seasonal_long, hammer_at_support_long, insider_cluster_long, insider_cluster_with_director_long
+  institutional_increased_with_directors_long, institutional_with_directors_long, institutional_with_officers_long, january_effect_small_cap_long
+  judas_swing_long, judas_swing_short, keltner_lower, mfi_oversold
+  monthly_bias_momentum_long, news_momentum_short, news_reversal_long, orb_stocks_in_play_long
+  orb_stocks_in_play_short, pead_with_insider_confirmation_long, pivot_fib_confluence, pivot_r2_continuation
+  pivot_r3_blowoff_short, pivot_s2_bounce, pivot_s3_capitulation, post_deletion_drift_short
+  post_inclusion_drift_long, post_inclusion_reversal_short, pre_fomc_long_sleeve, pre_fomc_quality_momentum_long
+  pre_holiday_long, pre_rebalance_long, rsi21_slow, rsi9_extreme
+  smc_bos_continuation, smc_fvg_retest_long, smc_mitigation_block_long, smc_mitigation_block_short
+  supertrend_ichimoku_adx, triangle_ascending_retest_long, weekly_bias_pullback_long, xs_low_beta_long
+  xs_quality_top_quintile_long
+
+### S6-B1444b - LOOSEN / QUIET (27 strategies) - OPEN, NEVER WORKED
+  52w_high_breakout_with_smart_money_vol_below_long, bollinger_tight, camarilla_s3_bounce, cup_and_handle_long
+  doji_at_resistance_short, doji_at_support, double_bottom_long, head_and_shoulders_bottom_long
+  htf_aligned_breakout_long, ichimoku_cloud_breakdown, insider_cluster_concentrated_sell_short, institutional_oversold_long
+  inverted_cup_and_handle_short, news_sentiment_shift_long, pead_long, shooting_star_short
+  smc_discount_long, smc_equal_lows_sweep_long, smc_fvg_retest_short, smc_ote_long
+  smc_ote_short, stoch_oversold, triangle_ascending_long, turtle_soup_long
+  value_area_breakout_long, xs_momentum_quality_combined, xs_momentum_top_decile
+
+### S6-B1444c - LOOSEN / NEVER (12 strategies) - OPEN, NEVER WORKED
+  classification_change_oversold_long, classification_change_to_tech_long, classification_change_volume_long, gold_silver_risk_off_long
+  news_sentiment_short, poc_magnet_short, rsi_overbought_short, sector_rotation_defensive_long
+  short_borrow_trap_avoid, squeeze_setup_long, weekly_bias_pullback_short, xs_combined_momentum_high_ivol_short
+
+**TOTAL BACKLOG: 177 strategies.** Of these, 147 currently sit in the FAILED-cubed bucket -
+they failed on their ORIGINAL gates, having never been optimized. 9 are RETIRED (data scarcity,
+B1441) and should be struck from these queues. Cross-check before working any of them.
+
+**CAVEAT that bounds the value of this backlog (B1439 evidence):** the R6 programme executed 21
+of these and returned 4/13 on pre-registered predictions (binomial p=0.954 vs chance) and 0/22 on
+canonical criteria. Working the remaining 156 by the same method has no measured expected value.
+Per `feedback_no_prior_edge_consolidate_before_tune`, these should NOT be bulk-worked; the queue
+exists so the population is visible and dispositioned, not as a mandate to tune 156 strategies.

@@ -1,0 +1,66 @@
+{
+  "roster": [
+    "avwap_252_breakout",
+    "bollinger_lower",
+    "force_index_breakout",
+    "institutional_breakout_confirmation_long",
+    "institutional_high_conviction_long",
+    "institutional_multi_quarter_persistence_long",
+    "institutional_persistence_oversold_long",
+    "macd_bullish_with_smart_money_long",
+    "macd_fast_crossover",
+    "pead_long_high_yoy_growth_only",
+    "pead_with_smart_money_long",
+    "poc_magnet_long",
+    "r1_break_retest",
+    "smc_breaker_block_long",
+    "smc_equal_lows_sweep_long",
+    "xs_momentum_with_smart_money_long"
+  ],
+  "dup_of": {
+    "institutional_committed_growth_long": "institutional_multi_quarter_persistence_long",
+    "rsi_oversold_with_smart_money_long": "institutional_multi_quarter_persistence_long",
+    "institutional_insider_combo_long": "institutional_multi_quarter_persistence_long",
+    "institutional_cluster_long": "institutional_multi_quarter_persistence_long",
+    "institutional_persistent_holders_long": "institutional_multi_quarter_persistence_long",
+    "institutional_strong_conviction_long": "institutional_multi_quarter_persistence_long",
+    "institutional_persistence_breakout_long": "institutional_breakout_confirmation_long"
+  },
+  "pairs": [
+    [
+      "institutional_committed_growth_long",
+      "institutional_multi_quarter_persistence_long",
+      0.8696
+    ],
+    [
+      "rsi_oversold_with_smart_money_long",
+      "institutional_multi_quarter_persistence_long",
+      0.7603
+    ],
+    [
+      "institutional_insider_combo_long",
+      "institutional_multi_quarter_persistence_long",
+      0.7575
+    ],
+    [
+      "institutional_cluster_long",
+      "institutional_multi_quarter_persistence_long",
+      0.7493
+    ],
+    [
+      "institutional_persistent_holders_long",
+      "institutional_multi_quarter_persistence_long",
+      0.7531
+    ],
+    [
+      "institutional_strong_conviction_long",
+      "institutional_multi_quarter_persistence_long",
+      0.7531
+    ],
+    [
+      "institutional_persistence_breakout_long",
+      "institutional_breakout_confirmation_long",
+      0.9714
+    ]
+  ]
+}

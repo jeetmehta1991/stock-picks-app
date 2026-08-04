@@ -1,0 +1,146 @@
+[
+  {
+    "s": "bollinger_lower",
+    "n": 430,
+    "sharpe": 0.516,
+    "ci_lo": 0.253,
+    "p": 5.433650994470148e-05,
+    "verdict": "PASS",
+    "bh": true
+  },
+  {
+    "s": "institutional_breakout_confirmation_long",
+    "n": 140,
+    "sharpe": 0.669,
+    "ci_lo": 0.304,
+    "p": 0.00011490241806933132,
+    "verdict": "PASS",
+    "bh": true
+  },
+  {
+    "s": "institutional_cluster_long",
+    "n": 596,
+    "sharpe": 0.612,
+    "ci_lo": 0.407,
+    "p": 1.5361224663967755e-09,
+    "verdict": "PASS",
+    "bh": true
+  },
+  {
+    "s": "institutional_insider_combo_long",
+    "n": 616,
+    "sharpe": 0.614,
+    "ci_lo": 0.411,
+    "p": 9.525922392813508e-10,
+    "verdict": "PASS",
+    "bh": true
+  },
+  {
+    "s": "institutional_multi_quarter_persistence_long",
+    "n": 667,
+    "sharpe": 0.635,
+    "ci_lo": 0.438,
+    "p": 6.90754556595632e-11,
+    "verdict": "PASS",
+    "bh": true
+  },
+  {
+    "s": "institutional_persistent_holders_long",
+    "n": 590,
+    "sharpe": 0.613,
+    "ci_lo": 0.406,
+    "p": 2.006736036088151e-09,
+    "verdict": "PASS",
+    "bh": true
+  },
+  {
+    "s": "institutional_strong_conviction_long",
+    "n": 590,
+    "sharpe": 0.613,
+    "ci_lo": 0.406,
+    "p": 2.006736036088151e-09,
+    "verdict": "PASS",
+    "bh": true
+  },
+  {
+    "s": "macd_bullish_with_smart_money_long",
+    "n": 277,
+    "sharpe": 0.574,
+    "ci_lo": 0.291,
+    "p": 2.6656822125517227e-05,
+    "verdict": "PASS",
+    "bh": true
+  },
+  {
+    "s": "macd_crossover",
+    "n": 687,
+    "sharpe": 0.338,
+    "ci_lo": 0.133,
+    "p": 0.0005870450572361778,
+    "verdict": "DROP",
+    "bh": true
+  },
+  {
+    "s": "macd_ichimoku",
+    "n": 685,
+    "sharpe": 0.332,
+    "ci_lo": 0.127,
+    "p": 0.0007310982818841041,
+    "verdict": "DROP",
+    "bh": true
+  },
+  {
+    "s": "parabolic_sar_flip",
+    "n": 401,
+    "sharpe": 0.185,
+    "ci_lo": -0.103,
+    "p": 0.10414669675502342,
+    "verdict": "DROP",
+    "bh": false
+  },
+  {
+    "s": "pead_with_smart_money_long",
+    "n": 106,
+    "sharpe": 0.54,
+    "ci_lo": 0.098,
+    "p": 0.007617252104765295,
+    "verdict": "PASS",
+    "bh": true
+  },
+  {
+    "s": "prev_day_high_break",
+    "n": 314,
+    "sharpe": 0.309,
+    "ci_lo": 0.012,
+    "p": 0.020542768294616872,
+    "verdict": "DROP",
+    "bh": true
+  },
+  {
+    "s": "rsi_oversold_with_smart_money_long",
+    "n": 618,
+    "sharpe": 0.611,
+    "ci_lo": 0.408,
+    "p": 1.100558662192881e-09,
+    "verdict": "PASS",
+    "bh": true
+  },
+  {
+    "s": "smc_equal_lows_sweep_long",
+    "n": 113,
+    "sharpe": 0.52,
+    "ci_lo": 0.005,
+    "p": 0.023003670839364936,
+    "verdict": "PASS",
+    "bh": true
+  },
+  {
+    "s": "volume_spike_breakout",
+    "n": 326,
+    "sharpe": 0.159,
+    "ci_lo": -0.139,
+    "p": 0.14774688159941055,
+    "verdict": "DROP",
+    "bh": false
+  }
+]
