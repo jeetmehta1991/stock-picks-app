@@ -214,8 +214,15 @@ def main() -> int:
         if not p.exists():
             print(f"[WARN] {label}: {cube} missing - SKIPPED (recorded in the doc)")
             continue
+        # B1455b: the four label columns are low-cardinality over millions of rows, so reading
+        # them as `category` and the numerics as float32/int32 cuts peak RSS by ~4x. Without
+        # this the read OOMs whenever another job holds memory - regenerating the source-of-truth
+        # doc must not depend on the machine being otherwise idle.
         df = pd.read_csv(p, usecols=["strategy", "direction", "exit_method", "entry_date",
-                                     "ticker", "pnl_pct", "hold_days"], low_memory=False)
+                                     "ticker", "pnl_pct", "hold_days"], low_memory=False,
+                         dtype={"strategy": "category", "direction": "category",
+                                "exit_method": "category", "ticker": "category",
+                                "pnl_pct": "float32", "hold_days": "float32"})
         df["entry_date"] = pd.to_datetime(df["entry_date"]).dt.date
         df["pnl_pct"] = df["pnl_pct"].clip(-WINSORIZE, WINSORIZE) - COST_BPS / 100.0
         ntick = df.ticker.nunique()
@@ -348,8 +355,15 @@ def main() -> int:
     A("|---|---|---|---|---|---|---|---|---|---|---|---|---|---|")
     for i, r in enumerate(sorted(kept, key=lambda x: -(x["holdout"]["sharpe"] or -9)), 1):
         h = r["holdout"]
-        mir = (f"`{r['mirror']}`" if r["mirror_status"] == "REGISTERED"
-               else ("LONG-ONLY DATA" if r["mirror_status"] == "LONG-ONLY-DATA" else "**NEEDS CREATION**"))
+        # B1455b: render every status the classifier can emit. This previously fell through
+        # to "**NEEDS CREATION**" for anything that was not REGISTERED or LONG-ONLY-DATA, so
+        # DUAL-SELF rows rendered as needing creation while the summary block below correctly
+        # reported zero - the table and its own summary contradicted each other in a shipped doc.
+        mir = {"REGISTERED": f"`{r['mirror']}`",
+               "LONG-ONLY-DATA": "LONG-ONLY DATA",
+               "DUAL-SELF": "DUAL (own short leg)",
+               "NEEDS-CREATION": "**NEEDS CREATION**"}.get(
+                   r["mirror_status"], f"**UNCLASSIFIED: {r['mirror_status']}**")
         A(f"| {i} | `{r['strategy']}` | {r['direction']} | {r['cube']} | {r['n_tickers']} | "
           f"`{r['exit']}` | {fmt(r['is_sharpe'])} | {fmt(h['sharpe'])} | {h['n']} | "
           f"{fmt(h['expectancy'])} | {fmt(h['win_rate'],5,3)} | {fmt(h['profit_factor'])} | "
@@ -388,9 +402,26 @@ def main() -> int:
     A("")
     A("## What this roster does NOT establish")
     A("")
-    A("1. **Shorts are untested, not refuted.** The holdout is 88% bull / 5% bear (12 of 251 days, "
-      "B1385). A short cell that fails here failed in a window with almost no bear data. Retained "
-      "mirrors carry no holdout evidence and should not be read as validated.")
+    A("1. **Shorts ARE now tested in bear - and they fail there too (B1455).** The earlier wording "
+      "here (\"untested, not refuted\") was itself a data-partition artifact and is retracted. The "
+      "holdout is 88% bull and holds only 33,644 bear-regime short trades spread across 93 "
+      "strategies, so **0 cells reach n>=100** - that, not weak short edge, is why B1385's "
+      "regime-conditional gate returned 77 UNEVAL. But the locked window *does* contain **567,814 "
+      "bear-regime short trades**; they sit in the 2022-23 fold. Repartitioning (select "
+      "2023-05->2026-05, grade on bear entries 2022-05->2023-05; `scripts/bear_regime_stress_test.py`) "
+      "makes 1,560 short cells gradable with no new run:")
+    A("")
+    A("   | direction | gradable in bear | clear all 5 live gates | positive expectancy |")
+    A("   |---|---|---|---|")
+    A("   | SHORT | 82 | **0** | 18/82 (22%) |")
+    A("   | LONG | 110 | 4 | 58/110 (53%) |")
+    A("")
+    A("   Shorts clear nothing in the bear market they exist for, and are outperformed by longs "
+      "*inside that same bear*. **This is a stress test, not a promotion verdict** - it selects on "
+      "later data and grades on earlier data, so it is temporally backwards and not walk-forward "
+      "valid; the chosen exit is fitted to post-bear conditions. Per owner directive the mirrors "
+      "are **retained irrespective**. This sizes the exposure taken on structural-symmetry "
+      "grounds; it does not validate it.")
     A("2. **Levels are conditioned on the incumbent exit's trade set (S6-B1434c).** The cube "
       "replays all 26 exits over trades the ASSIGNED exit generated; ranking transfers, absolute "
       "magnitudes do not.")

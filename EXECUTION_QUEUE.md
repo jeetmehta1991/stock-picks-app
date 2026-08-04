@@ -7514,3 +7514,41 @@ re-litigate the roster.
   same (ticker, entry_date) jaccard probe; B874 and S6-B1455a are two instances of one class.
 
 **S6-B1452a still OPEN** (two generators duplicate the window discipline).
+
+---
+
+## B1455b (2026-08-04) — roster doc contradicted itself; generator hardened
+
+Owner question "why is it just 17 deployable?" triggered a re-read of the shipped roster, which
+surfaced two defects in the deliverable itself:
+
+1. **Table vs summary contradiction.** The Mirror column rendered `**NEEDS CREATION**` on the 5
+   DUAL rows while the summary said `NEEDS CREATION (0): none`. The column was a 2-branch
+   conditional whose `else` swallowed every unhandled status. Replaced with an explicit
+   status→label map + loud `**UNCLASSIFIED**` fallback. L285.
+2. **Hand-edit clobbered.** The B1455 bear caveat had been written into the auto-generated doc and
+   was reverted by the next regeneration — undoing a published retraction. Moved into the
+   generator's emitter. L286.
+3. **OOM under concurrent load.** The generator OOM'd reading the 4.9M-row R5 cube while the
+   Group-3 job held memory. Label columns now read as `category`, numerics as `float32` (~4x lower
+   peak RSS) — regenerating the source-of-truth doc must not require an idle machine.
+
+**Attrition attribution (EXECUTED this turn, denominator 211 holdout-evaluable cells):**
+
+| gate | blocks | sole blocker for |
+|---|---|---|
+| `sharpe_per_regime` >= 0.5 | 166 (79%) | **32** |
+| `psr` >= 0.95 | 126 (60%) | 4 |
+| `sortino` >= 0.7 | 123 (58%) | 0 |
+| `profit_factor` >= 1.3 | 119 (56%) | 0 |
+| `min_trades` >= 100 | 67 (32%) | 11 |
+
+Gates cleared per cell: 5/5 = 23 · **4/5 = 47** · 3/5 = 18 · 2/5 = 10 · 1/5 = 77 · 0/5 = 36.
+
+### Tickets opened
+- **S6-B1455c (HIGH)** — de-dup uses Jaccard on (ticker, entry_date), i.e. **signal overlap**, not
+  **return correlation**. Two cells can share few entries yet be highly correlated in P&L. 4 of the
+  13 roster cells are `institutional_*` variants that passed Jaccard<0.7. Effective breadth may be
+  materially below 13. Measure the return-correlation matrix of the 13 before sizing a Phase 1B book.
+- **S6-B1455d (MED)** — 47 cells clear 4 of 5 gates. Enumerate them with their single blocker; this
+  is the highest-yield tuning population and overlaps the untouched S6-B1444 backlog.

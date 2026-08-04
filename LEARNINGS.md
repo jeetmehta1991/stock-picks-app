@@ -4571,3 +4571,28 @@ I had already begun scoping a paid prefetch to obtain bear data the project alre
 **Generalized rule: before sourcing new data to answer a question, measure the distribution of
 the data already held across the folds — "we lack X" and "X is in the wrong fold" are different
 problems with different costs, and UNEVAL never distinguishes them.**
+
+### L285
+**A rendered artifact contradicted its own summary in a shipped doc, because only the JSON was
+verified.** B1454 reported "needs-creation 0" — true of the JSON and of the doc's summary block,
+and FALSE of the doc's own roster table, which still rendered `**NEEDS CREATION**` on the five
+DUAL rows. Cause: the Mirror-column expression was a two-branch conditional whose `else` swept
+every unhandled status into "NEEDS CREATION", so adding the `DUAL-SELF` status silently mis-rendered
+it. I verified the generator's JSON output and its summary counters and never re-read the rendered
+markdown — the exact artifact a reader consumes. Fixed by replacing the conditional with an explicit
+status→label map whose fallback is a loud `**UNCLASSIFIED: <status>**`, so a future unhandled status
+is impossible to mistake for a real verdict. **Generalized rule: for any generated deliverable, the
+verification target is the RENDERED artifact, not the data structure behind it. A summary counter
+and the table it summarizes are two different renderings and can disagree.** (CHECKLIST #163 says
+this for dashboards; it applies to every generated doc.)
+
+### L286
+**Hand-editing an auto-generated doc silently loses the edit at the next regeneration.**
+The B1455 bear-stress-test caveat was written directly into `PHASE_1B_ROSTER.md` — whose first line
+reads "AUTO-GENERATED ... Do NOT hand-edit; regenerate" — and was committed. The very next
+regeneration, one turn later, reverted it to the old "shorts are untested, not refuted" text,
+undoing a retraction. Had I not re-read the regenerated file the doc would have silently reverted
+to a claim I had publicly retracted. The content belonged in the generator's emitter. **Generalized
+rule: content in a generated artifact is written to the GENERATOR. If a file carries a do-not-edit
+banner, editing it is a defect regardless of how correct the content is — the banner is a
+machine-enforceable contract and the regeneration is its enforcement.**
