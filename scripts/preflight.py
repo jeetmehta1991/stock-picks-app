@@ -330,6 +330,68 @@ def find_unbacked_batch_claims(added_lines, has_outputs_fn) -> list[str]:
     return violations
 
 
+
+def check_arbitrary_selection_declared() -> list[str]:
+    """C11 (B1446, owner directive: "No arbitrary decisions. That's an absolute red flag").
+
+    Scan ADDED lines in the staged diff for CONVENIENCE-DEFAULT selection idioms --
+    picking a winner by size, order, or first match -- and require the enclosing hunk to
+    carry either a justification marker or an explicit ARBITRARY-PENDING-JUSTIFICATION
+    label. A number published from an unjustified selection rule carries authority the
+    method does not have (CHECKLIST #165).
+
+    Lineage: B1444 de-duplication chose each cluster's survivor by LARGEST TRADE SET --
+    a size heuristic with no performance basis -- while the canonical pipeline uses
+    eigenvalue effective-N. Six strategies were nearly decommissioned on it.
+
+    Waiver: in-hunk "# selection-justified: <measured basis>" or
+    "ARBITRARY-PENDING-JUSTIFICATION".
+    """
+    try:
+        result = subprocess.run(
+            ["git", "diff", "--cached", "--unified=3", "--", "*.py"],
+            cwd=REPO_ROOT, capture_output=True, text=True, check=False,
+        )
+        diff = result.stdout
+    except Exception:
+        return []
+    if not diff:
+        return []
+    idioms = [
+        (re.compile(r"sorted\([^)]*key\s*=\s*lambda[^)]*:\s*-?len\("), "sorted-by-size"),
+        (re.compile(r"\.idxmax\(\)|\.idxmin\(\)"), "argmax/argmin selection"),
+        (re.compile(r"max\([^)]*key\s*=\s*len|min\([^)]*key\s*=\s*len"), "max/min-by-length"),
+    ]
+    waivers = ("selection-justified", "ARBITRARY-PENDING-JUSTIFICATION")
+    violations: list[str] = []
+    hunk: list[str] = []
+    added: list[str] = []
+
+    def flush() -> None:
+        blob = "\n".join(hunk)
+        if any(w in blob for w in waivers):
+            return
+        for line in added:
+            for pat, label in idioms:
+                if pat.search(line):
+                    violations.append(
+                        "C11 ARBITRARY-SELECTION | " + label + " with no stated basis | "
+                        + line.strip()[:80]
+                        + " | add '# selection-justified: <measured basis>' or "
+                        "'ARBITRARY-PENDING-JUSTIFICATION' + ticket (CHECKLIST #165)"
+                    )
+                    return
+
+    for line in diff.splitlines():
+        if line.startswith("@@"):
+            flush()
+            hunk, added = [], []
+        hunk.append(line)
+        if line.startswith("+") and not line.startswith("+++"):
+            added.append(line[1:])
+    flush()
+    return violations
+
 def check_batch_outputs_committed() -> list[str]:
     """C10 wrapper: staged-diff added lines + git-index lookup."""
     def has_outputs(n: int) -> bool:
@@ -449,6 +511,8 @@ def main() -> int:
         # B1337 (Council 365 owner-approved): C10 batch-complete claims
         # require committed outputs (CSV-first)
         all_violations += check_batch_outputs_committed()
+        # B1446 (owner: "No arbitrary decisions"): C11 selection-rule gate
+        all_violations += check_arbitrary_selection_declared()
 
     if not all_violations:
         print("preflight: PASS - no rule violations found")

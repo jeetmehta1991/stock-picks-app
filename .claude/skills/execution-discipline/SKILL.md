@@ -328,6 +328,48 @@ deferral:
 
 ---
 
+## B1446 HARD RULES - NO-ARBITRARY-DECISIONS / ROUTED-WORK-TICKETS (owner-directed 2026-08-04)
+
+Owner, verbatim: **"No arbitrary decisions. That's an absolute red flag."** and
+**"routed work plan becomes trackable tickets - that's a genuine gap."**
+
+1. **NO ARBITRARY DECISIONS (CHECKLIST #165).** Whenever code or analysis CHOOSES among
+   candidates - which duplicate survives, which exit is canonical, which threshold, which
+   sample, which tie-break - the criterion is stated inline AND justified on a measured
+   basis, or explicitly labelled `ARBITRARY-PENDING-JUSTIFICATION` **in the same message
+   that publishes any number derived from it**, with a ticket to replace it. Convenience
+   defaults (first match, largest N, alphabetical, insertion order) ARE arbitrary until
+   argued. Publishing a number from an unjustified rule without the label is a
+   Truth-Standard violation: the number carries authority the method does not.
+   *Lineage:* B1444 chose de-dup survivors by largest trade set while the canonical
+   pipeline uses eigenvalue effective-N; six strategies were nearly decommissioned on it.
+
+2. **ROUTED WORK BECOMES TICKETS (CHECKLIST #164).** Any artifact or turn that ENUMERATES
+   FUTURE WORK produces EXECUTION_QUEUE tickets with an S6-xxx ID, the ITEM NAMES inlined,
+   and a disposition. Prose counts are a record, not a ticket - not greppable per item,
+   not closeable individually. The per-turn cross-check greps the artifact's routing KEYS
+   **and item NAMES**, not its filename.
+   *Lineage:* B1410 routed 177 strategies and recorded only bucket counts; invisible ~30
+   batches until the owner asked.
+
+3. **ZERO-HIT GREPS PROVE NOTHING UNTIL THE PATTERN IS VALIDATED (CHECKLIST #166).** Before
+   reporting an absence, prove the pattern CAN match - run it against a known-present
+   instance or invert it. "0 hits" from an unvalidated pattern is UNVERIFIED, never
+   "it is not there".
+   *Lineage:* B1444 grepped `"LOOSEN / STARVED"` against a file writing `LOOSEN/STARVED`;
+   the false absence was reported to the owner, written to LEARNINGS and committed.
+
+4. **REJECTION ON DIRECTION MUST REDIRECT (CHECKLIST #167).** A router rejecting a candidate
+   for being the WRONG KIND of change re-routes it to the opposite queue; it never
+   `continue`s the item out of the pipeline.
+
+5. **MISS-CAPTURE IS TWO FILES, NOT ONE.** Phase 5 requires a LEARNINGS entry AND a
+   CHECKLIST evaluation. Classifying every miss as "compliance failure, no new item" is
+   itself a drift pattern: between B1263 and B1445 the session wrote L263-L270 (8 entries)
+   and ZERO checklist items, with CHECKLIST untouched for 12 days. If three or more
+   L-entries accumulate without a checklist item, that is a signal the anti-theater guard
+   (#136) is being over-applied - re-examine them as a batch.
+
 ## TRIPWIRE TABLE — recurring mistake classes and their pre-action checks
 
 Before acting, scan this table. If the action matches a row, run the tripwire
@@ -352,6 +394,10 @@ check FIRST. Each row is a real failure that recurred until its check existed.
 | Defer doc updates because "the turn was only analysis" | No — CSV/investigation-only turns still sweep | B1119 (22 batches silent suspension) |
 | Treat CLAUDE.md banner as scope authority | Scope lives in PROJECT_PLAN.md + DEC-NNN | `feedback_banner_is_status_not_scope_authority` |
 | Declare partial success on a data/pre-warm fix | Verify the EXACT names/keys landed (phantom-name check) | PIVOT #34 |
+| Choose among candidates (dup survivor, canonical exit, threshold, sample) | State + justify the criterion, or label ARBITRARY-PENDING-JUSTIFICATION + ticket | CHECKLIST #165; B1444 largest-trade-set de-dup |
+| Report that something is ABSENT from a search | Validate the pattern can match (run it on a known-present instance) first | CHECKLIST #166; B1444 false "no B1410 section" |
+| Produce a routing table / candidate list / "remaining N" | File S6-xxx tickets with item NAMES inlined, not prose counts | CHECKLIST #164; B1410 177 strategies |
+| Reject a candidate for being the wrong KIND of change | Re-route to the opposite queue; never `continue` it out | CHECKLIST #167; 10 strategies dropped |
 | Skip pyramid because "docs only" | No carve-outs — pyramid every commit | `feedback_pyramid_no_exceptions` |
 
 ## Quick-reference: the five commitments

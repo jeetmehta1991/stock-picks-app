@@ -4348,3 +4348,33 @@ same turn, with the items inlined - a ticket that says "see the JSON" reproduces
 (b) the per-turn queue cross-check must grep the artifact's own routing keys, not just its
 filename; (c) when describing prior work as "queued" or "backlogged", grep the queue first - the
 word implies a location, and asserting it without checking is an UNVERIFIED claim stated as fact.
+
+
+### L271
+**Eight LEARNINGS entries and zero CHECKLIST items in one session is itself the drift signal.**
+(B1446, owner-asked: "such gaps and mistakes are automatically to be updated in checklist and
+learnings. is it being done?") **Answer: no.** L263-L270 were written this session; `CHECKLIST.md`
+was last modified **2026-07-23**, twelve days and ~90 batches earlier. The mechanism is worth
+naming: CHECKLIST #136 (anti-audit-theater) rejects a new item unless it would retroactively have
+caught the last 3 misses, and Phase 5.2 says that if an EXISTING item should have caught it, the
+miss is a COMPLIANCE failure recorded in the L-entry instead. Both rules are correct. Applied to
+EVERY miss they become a ratchet that permanently suppresses checklist growth - each miss looks
+like a compliance failure in isolation, while the PATTERN of eight is itself a new class.
+**Rule:** three or more L-entries without a CHECKLIST addition triggers re-examination of them AS
+A BATCH against #136, not individually. Applied here: of L263-L270, four were genuinely new
+classes and became #164-#167.
+
+### L272
+**Tightening was implemented as ADD-A-GATE only; modifying an EXISTING threshold was never
+considered.** (B1446, owner-surfaced: "shouldn't a possibility be to modify the thresholds of
+existing entry gates?") The loosening tool DOES modify thresholds -
+`measure_clause_admission.py` sweeps `SWEEP_MULT = (1.10, 1.25, 1.50, 2.00)` against an existing
+numeric gate. The tightening tool `measure_quality_lift.py` emits only `add_gate` and has no path
+that makes an existing gate stricter. The asymmetry is backwards from what the thesis wants:
+tightening `rsi_14 < 45` to `< 40` keeps the SAME strategy, more selective; bolting
+`xs_ivol >= p50` onto `camarilla_r4_breakout` grafts an unrelated volatility filter onto a
+pivot-breakout thesis, adds overfit surface, and changes what the strategy IS. **Measured
+consequence:** all 13 shipped tightenings were add-a-gate, and 9 of 13 failed their pre-registered
+prediction. **Rule:** a selectivity change must consider MODIFY-EXISTING-THRESHOLD before
+ADD-NEW-GATE and prefer it when both are available, because it preserves the thesis.
+Ticket S6-B1446a.

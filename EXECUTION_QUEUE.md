@@ -7260,3 +7260,47 @@ strategies on a size heuristic is hard to undo; redo selection with effective-N 
 population - FAILED-cubed strategies never touched by ANY R6 change (154 - 7 touched). Both
 correct, different questions. B1410's own 173/25 became 177/21 when B1411-B1412's admission-ratio
 cap rejected both loosening proposals (9,156x and 7,814x).
+
+
+## B1446 (2026-08-04) - no-arbitrary-decisions hook + routed-work tickets + checklist ratchet
+
+**OWNER DIRECTIVES (verbatim):** "routed work plan becomes trackable tickets - that's a genuine
+gap. address in skill and checklist"; "No arbitrary decisions. thats an absolute red flag. add to
+skill has a hard check. ensure its always enforced and add hooks. no sillent misses"; "such gaps
+and mistakes are automatically to be updated in checklist and learnings. is it being done?"
+
+**ANSWER to the third: NO.** L263-L270 written this session; CHECKLIST.md last touched
+2026-07-23, ~90 batches earlier. Root cause LEARNINGS **L271**: #136 anti-theater + "compliance
+failure, not a new item" are each correct but together form a ratchet suppressing checklist
+growth. New rule: 3+ L-entries with no checklist addition triggers a BATCH re-examination.
+
+**SHIPPED**
+- **CHECKLIST #164** routed work becomes trackable tickets (S6 IDs + item NAMES inlined, not prose)
+- **CHECKLIST #165** no arbitrary decisions - every selection rule justified on a measured basis
+  or labelled ARBITRARY-PENDING-JUSTIFICATION + ticketed
+- **CHECKLIST #166** a zero-hit grep is evidence about the PATTERN until the pattern is validated
+- **CHECKLIST #167** rejection on direction must REDIRECT, never drop
+- **SKILL.md** new "B1446 HARD RULES" section (5 rules, incl. miss-capture-is-two-files) +
+  4 tripwire-table rows
+- **HOOK (mechanical, as asked): `scripts/preflight.py` C11 `check_arbitrary_selection_declared`**
+  scans ADDED lines in the staged diff for convenience-default selection idioms (sorted-by-size,
+  idxmax/idxmin, max/min-by-length) and BLOCKS the commit unless the hunk carries
+  `# selection-justified: <basis>` or `ARBITRARY-PENDING-JUSTIFICATION`.
+  **Self-tested live against the actual B1444 defect line** `sorted(sets, key=lambda s:
+  -len(sets[s]))` -> C11 fires and blocks; waiver path verified.
+
+**S6-B1446a (NEW, owner-surfaced) - TIGHTENING CANNOT MODIFY AN EXISTING THRESHOLD.**
+`measure_quality_lift.py` emits only `add_gate`; no path makes an existing gate stricter, while
+`measure_clause_admission.py` (loosening) DOES sweep thresholds. Backwards: tightening
+`rsi_14 < 45` to `< 40` keeps the same strategy more selective; adding `xs_ivol >= p50` to a
+pivot-breakout grafts an unrelated filter. All 13 shipped tightenings were add-a-gate; 9 of 13
+failed their prediction. LEARNINGS L272. FIX: add a modify-existing-threshold candidate generator
+and prefer it when both are available.
+
+**S6-B1446b (NEW, owner directive) - FRESH-START REPARTITION after Group 1 + Group 3 land.**
+Owner: "once group 1 and 3 are done, i want a fresh start. we retain passed and decommissioned as
+it and rework all failed." Plan: freeze PASSED and DECOMMISSIONED as terminal buckets; collapse
+every other disposition (FAILED-cubed, FAILED-R6b, the 177-routed backlog, in-test remnants) into
+ONE rework population with a single ID space, replacing the overlapping 177/154/147/136 figures
+that are currently hard to track. BLOCKED until Group 1 (running) and Group 3 (killed B1443,
+re-launch wired to Group 1 completion) both land.
