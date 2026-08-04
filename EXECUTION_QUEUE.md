@@ -7335,3 +7335,36 @@ reading as the rule text.
 **Evidence for the change:** CHECKLIST.md untouched 2026-07-23 -> 2026-08-04 (~90 batches) while
 L263-L270 accumulated; four of those eight were genuinely new classes and became #164-#167 only
 after owner intervention (B1446).
+
+
+## B1448 (2026-08-04) - session miss-capture audit (owner-asked): 5 silent misses found and closed
+
+**OWNER QUESTIONS:** "is it a part of the skill that every miss and mistake needs to be added
+automatically without owner prompt to checklist and learnings?" and "is the checklist compliance
+happening in each turn? any silent misses in this session?"
+
+**ANSWER 1 - YES, it is in the skill.** SKILL.md:259-261: a miss is "any error, silent skip, stale
+claim, wrong count, missed scope item, or owner correction - found by you, the owner, or an audit.
+Same turn, no deferral." SKILL.md:18: "This skill applies UNPROMPTED." No owner prompt required.
+
+**ANSWER 2 - NO, compliance was NOT complete. Audit run this turn found 5 SILENT MISSES.** All
+five were disclosed to the owner in chat and/or written into a commit message or queue entry, but
+none reached LEARNINGS, which Phase 5.1 requires:
+  1. queue entry claimed Group 1 "LAUNCHED" before it was launched (B1442)
+  2. "Phase 1B could go 22 -> 71 strategies" overclaim, retracted B1435
+  3. R6b grading rule scored "expectancy > 0" instead of the pre-registered baselines (10/14 vs
+     the correct 4/13), self-caught B1439
+  4. de-dup survivor chosen by largest trade set - ticketed S6-B1445b, became CHECKLIST #165,
+     but no L-entry
+  5. heredoc corrupted `scripts/preflight.py` (the commit gate) with a SyntaxError, and a second
+     heredoc aborted before two doc appends landed
+
+**CLOSED THIS TURN:** LEARNINGS **L274** (disclosing a miss in chat or a commit message is NOT
+miss-capture - the obligation is discharged by the LEARNINGS entry; chat, commits and tickets are
+additional, never substitutes) and **L275** (heredocs must not be used to write source; use the
+Write tool or a file patcher, and `py_compile` before staging).
+
+**Method note worth keeping:** the audit's first pass reported miss #1 as CAPTURED - a keyword
+false positive, since "LAUNCHED" appears elsewhere in LEARNINGS. It was caught only by applying
+CHECKLIST #166 (a search result is evidence about the PATTERN until validated) to the audit's own
+output. An audit tool needs the same scepticism as the thing it audits.

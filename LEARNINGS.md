@@ -4398,3 +4398,47 @@ those carve-outs. **Rule:** a rejection gate on ADDING safeguards must be paired
 periodic check that safeguards are still being added; if the gate is never passed, the gate is
 the defect. #136 is now a REPORTING obligation (state what an item would and would not have
 caught) rather than a rejection gate.
+
+
+### L274
+**Disclosing a miss in conversation or a commit message is NOT miss-capture.** (B1448,
+owner-audited: "any silent misses in this session?") A systematic audit of this session found
+**five** misses that were acknowledged to the owner in chat, or written into a commit message or
+an EXECUTION_QUEUE entry, but never given a LEARNINGS entry - which Phase 5.1 requires for EVERY
+miss, same turn, no deferral:
+  1. **Premature status claim** - a queue entry saying the Group 1 backtest was "LAUNCHED" was
+     committed BEFORE launching it. Disclosed in chat, fixed by launching immediately; no L-entry.
+  2. **"Phase 1B could go 22 -> 71 strategies"** - overclaimed before the full criteria had run;
+     retracted in chat and in the B1435 commit; no L-entry.
+  3. **Grading rule too generous** - the first R6b prediction pass scored "expectancy > 0" and
+     returned HELD=10; the pre-registrations state specific baselines, and grading against them
+     gave 4/13. Self-caught, recorded in the commit; no L-entry.
+  4. **Arbitrary de-dup survivor selection** - cluster canonical chosen by largest trade set.
+     Ticketed S6-B1445b and became CHECKLIST #165; no L-entry.
+  5. **Heredoc corruption** (see L275).
+**Why the gap forms:** a chat disclosure feels like the account has been settled - the owner has
+been told, the correction is visible in the transcript, and the commit message carries it into
+git. All three are ephemeral for retrieval: nobody greps a transcript, and commit messages are
+searchable only if you already suspect what you are looking for. LEARNINGS is the only surface
+read at session start (Phase 0.2). **A miss disclosed but not recorded will recur, because the
+next session begins without it.** **Rule:** the miss-capture obligation is discharged by the
+LEARNINGS entry, not by telling the owner. Chat disclosure, commit text and queue tickets are
+ADDITIONAL, never substitutes.
+**Meta-note on how this was found:** the audit initially reported miss #1 as CAPTURED - a keyword
+false positive, because the word "LAUNCHED" appears elsewhere in LEARNINGS. It was caught only by
+applying CHECKLIST #166 (a search result is evidence about the PATTERN until validated) to the
+audit's own output. An audit tool needs the same scepticism as the thing it audits.
+
+### L275
+**A shell heredoc is the wrong instrument for writing source code, and it corrupted a
+commit-blocking hook.** (B1448.) Twice in one session a `<<'EOF'` heredoc mangled inserted Python:
+first the escape sequences inside a patch string were interpreted by bash, writing a literal
+newline into `"\n".join(...)` and producing `SyntaxError: unterminated string literal` in
+`scripts/preflight.py` - the pre-commit gate itself; then a second heredoc broke on an apostrophe
+and aborted before two doc appends landed. The first is the serious one: a corrupted preflight.py
+would have failed every subsequent commit, and it was only caught because `py_compile` was run
+before staging. **Rule:** any content containing quotes, backslashes, `$`, or newline escapes -
+which is all source code - is written via the Write tool or a small file-based patcher script,
+never a heredoc. Verify with `python -m py_compile` before staging, ALWAYS, when the edited file
+is part of the commit or test machinery. Detection signal: if a patch is being assembled inside a
+shell string, stop and put it in a file.
