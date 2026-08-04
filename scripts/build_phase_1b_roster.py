@@ -333,6 +333,19 @@ def main() -> int:
       ", ".join(f"`{g}`" for g in DEMOTED) + " (B1387 win rate; B1436 max_drawdown + "
       "deflated_sharpe; B1437 calmar - calmar divides by the demoted drawdown).")
     A("")
+    A("**`sharpe_per_regime` IS A MISNOMER - it is POOLED, not per-regime (B1455c).** The gate "
+      "computes ONE Sharpe over the whole holdout for the cell and compares it to the config key "
+      "`min_sharpe_per_regime` (0.5); there is no regime split anywhere in the computation. The "
+      "name records the THRESHOLD borrowed, not the method. This matters two ways: (a) the "
+      "pipeline is already using overall Sharpe, so switching to \"overall\" means adopting "
+      "`min_sharpe_overall` = **1.0**, which is far STRICTER - it cuts the 23 passers to 1; "
+      "(b) canonical criterion #11 (per-regime verdict, PASS in >=1 regime) is NOT implemented "
+      "here. A true per-regime verdict would be MORE permissive than pooled, since a cell would "
+      "need only its best regime. Measured feasibility on the holdout - cells reaching n>=100 "
+      "within a regime: **bull 3,042 | neutral 52 | bear 0**. So a per-regime verdict is "
+      "computable in bull, marginal in neutral, and impossible in bear on this fold. Ticketed "
+      "S6-B1455e; no threshold changes without owner approval.")
+    A("")
     A("**CROSS-CUBE CAVEAT.** R5 ran 544 tickers; R6b and Group-1 ran ~140. Per-trade ratios "
       "(Sharpe, PF, expectancy) ARE comparable. **Trade counts are NOT** - `min_trades >= 100` is "
       "materially harder on the small-sample cubes, so a cell may be UNEVAL there purely from "

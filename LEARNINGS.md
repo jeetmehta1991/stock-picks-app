@@ -4596,3 +4596,30 @@ to a claim I had publicly retracted. The content belonged in the generator's emi
 rule: content in a generated artifact is written to the GENERATOR. If a file carries a do-not-edit
 banner, editing it is a defect regardless of how correct the content is — the banner is a
 machine-enforceable contract and the regeneration is its enforcement.**
+
+### L287
+**A gate named for the threshold it borrows, not the method it uses, propagated a false premise to
+the owner.** The roster pipeline's `sharpe_per_regime` gate computes ONE pooled Sharpe over the whole
+holdout and compares it to the config key `min_sharpe_per_regime` (0.5). There is no regime split
+anywhere in it. The name records which threshold was borrowed. This is not cosmetic: the owner asked
+whether to "use Sharpe overall and not by regime" to admit MORE strategies — a question that only
+makes sense if the gate were per-regime, and whose literal answer inverts the intent, because
+`min_sharpe_overall` is **1.0** and adopting it cuts passers 23 -> 1. Worse, the misnomer masked a
+real gap: canonical criterion #11 (per-regime verdict, PASS in >=1 regime) is **not implemented** in
+this pipeline at all, and implementing it properly would be MORE permissive than the pooled gate,
+not less. **Generalized rule: an identifier that names its threshold/config source rather than its
+computation is a latent false claim — it will eventually be read as a description of the method.
+Name gates for what they compute; if a borrowed threshold is deliberate, say so at the definition.**
+Detection signal: any gate key whose name asserts a decomposition (per_regime, per_sector, rolling)
+must have that decomposition visible in the same function — grep the computation, not the key.
+
+### L288
+**Sensitivity was never published alongside a gate result, so "is the bar too strict?" was
+unanswerable without new work.** Every prior roster reported the count at ONE threshold (23 at
+Sharpe>=0.5). The owner's question required the curve, which took one query: 1.00 -> 1 | 0.70 -> 2 |
+0.60 -> 12 | 0.50 -> 23 | 0.45 -> 39 | 0.40 -> 44 | 0.35 -> 50 | 0.30 -> 52 (cells clearing all five
+gates). The shape is the actual finding — the marginal yield per 0.05 of Sharpe is steepest exactly
+at the current bar, meaning 23 sits on a cliff edge and is highly sensitive to a threshold nobody
+re-derived. **Generalized rule: any reported pass-count that depends on a tunable threshold ships
+with its sensitivity curve. A single count invites "is it too strict?" and cannot answer it; the
+curve converts a judgement call into a visible tradeoff.**

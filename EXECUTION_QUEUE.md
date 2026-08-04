@@ -7552,3 +7552,45 @@ Gates cleared per cell: 5/5 = 23 · **4/5 = 47** · 3/5 = 18 · 2/5 = 10 · 1/5 
   materially below 13. Measure the return-correlation matrix of the 13 before sizing a Phase 1B book.
 - **S6-B1455d (MED)** — 47 cells clear 4 of 5 gates. Enumerate them with their single blocker; this
   is the highest-yield tuning population and overlaps the untouched S6-B1444 backlog.
+
+---
+
+## B1455c (2026-08-04) — five owner questions answered; gate misnomer disclosed
+
+**Q1 — the 9 blocked upstream** = `STRATEGIES_DISABLED_DATA_SCARCITY`, all `classification_change_*`
+(retired B1441: `sector_history.csv` carries 102 lines with 14 events on a single date — too sparse
+to produce a tradeable signal).
+
+**Q2 — why 253 cells, not 181x2.** Most strategies are single-direction BY REGISTRATION: a long and
+its short mirror are two separate entries in the 181, each contributing one cell. Distribution:
+124 strategies produce 1 cell · 49 produce 2 (true DUAL, both legs) · 1 produces 3 · 7 produce 4
+(same strategy graded in more than one cube). 124 + 98 + 3 + 28 = 253.
+
+**Q3 — the 7 de-dup removals, all one family.** 6 collapsed into `institutional_strong_conviction_long`
+(`institutional_persistent_holders_long`, `institutional_committed_growth_long`,
+`institutional_insider_combo_long`, `rsi_oversold_with_smart_money_long`, `institutional_cluster_long`,
+`institutional_multi_quarter_persistence_long`); 1 into `institutional_persistence_breakout_long`
+(`institutional_breakout_confirmation_long`). Worked example — strong_conviction gates on
+`{institutional_increased, institutional_new_positions, price_above_ema_200}` and committed_growth on
+`{committed_growth_holders, institutional_increased, price_above_ema_200}`: 2 of 3 gates identical,
+and the differentiator is another 13F-derived label over the same filings, so they fire on the same
+tickers on the same days (Jaccard >= 0.7).
+
+**Q4 — `sharpe_per_regime` is POOLED, not per-regime.** See L287. Switching to "overall" adopts
+`min_sharpe_overall` = 1.0 and cuts 23 -> 1. Sensitivity (cells clearing all five): 1.00 -> 1 |
+0.70 -> 2 | 0.60 -> 12 | **0.50 -> 23** | 0.45 -> 39 | 0.40 -> 44 | 0.35 -> 50 | 0.30 -> 52. L288.
+Per-regime feasibility on the holdout, cells reaching n>=100 within a regime: **bull 3,042 |
+neutral 52 | bear 0**.
+
+**Q5 — roster cells with NO mirror (4):** `institutional_strong_conviction_long`,
+`institutional_persistence_breakout_long`, `institutional_persistence_oversold_long`,
+`institutional_high_conviction_long` — all excused as long-only 13F data.
+
+### Tickets opened
+- **S6-B1455e (HIGH)** — canonical criterion #11 (per-regime verdict, PASS in >=1 regime) is NOT
+  implemented in the roster pipeline; the pooled gate stands in for it. Implementing it properly
+  would be MORE permissive than pooled. Feasible in bull (3,042 cells), marginal in neutral (52),
+  impossible in bear (0) on this holdout. Requires owner approval — it is a gate-semantics change.
+- **S6-B1455f (MED)** — rename the gate key `sharpe_per_regime` -> `sharpe_pooled` across the
+  generators + JSON consumers. Deferred from this batch: it changes a published artifact schema and
+  is not behaviour-neutral for anything reading the key. L287.
