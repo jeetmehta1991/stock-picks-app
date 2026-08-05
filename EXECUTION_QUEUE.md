@@ -7773,3 +7773,67 @@ a weaker p-value, so BH-FDR removes 8 of 28 where it removed 1 of 22. L295.
 - **S6-B1459b (MED)** — 109 of 196 cube strategies declare no affinity, so IN-AFFINITY is a no-op
   for them. How much further the roster moves depends entirely on S6-B1457b (undeclared policy);
   resolve that before treating ~10 as final.
+
+---
+
+## B1460 (2026-08-05) — OWNER DECISION: pooled grading retained; S6 triage; Group 3 closed
+
+**OWNER DECISION 2026-08-05: "retain as is."** Pooled grading stands. The roster is graded on all
+holdout trades regardless of declared regime affinity. Recorded, applied to the ticket set below.
+
+**Group 3 fire-count measurement COMPLETE** (the B1443 debt; process exited, 150 tickers, 0 cache
+misses). 14 strategies, none of them on the roster:
+
+| verdict | n | strategies |
+|---|---|---|
+| PASS_CUBE | 2 | `halloween_seasonal_long` (244/yr), `pead_with_insider_confirmation_long` (77/yr) |
+| BORDERLINE | 1 | `news_momentum_short` (58/yr) |
+| FAIL_FIRE_STARVED | 11 | the remainder, 0.0-16.2/yr projected |
+
+These 14 are no longer UNVERIFIED. The 2 PASS_CUBE + 1 BORDERLINE are candidates for a FUTURE cube
+run — they have NOT been graded through the holdout pipeline and are **not** roster additions.
+
+### FINAL COUNT FOR PHASE 1B
+
+| unit | count |
+|---|---|
+| graded cells (all long) | 13 |
+| distinct strategies graded | 13 |
+| + separately-registered short mirrors | 4 |
+| **= DISTINCT REGISTERED STRATEGIES** | **17** |
+| deployable LEGS (13 long + 4 mirror-short + 5 dual-short) | 22 |
+
+Context: 222 registered total, 9 disabled data-scarcity. Of the 13 graded: 5 are DUAL (own short
+leg), 4 have no mirror (long-only 13F data), 4 carry a separately-registered mirror.
+
+### S6 TRIAGE against the decision
+
+**CLOSED — owner-rejected (the sample-fix family):**
+- `S6-B1456a` implement criterion #11 as a gate — REJECTED, pooled retained
+- `S6-B1457a` regrade in-affinity — REJECTED, pooled retained
+- `S6-B1459a` adopt IN-AFFINITY grading — REJECTED, pooled retained
+- `S6-B1459b` sizing dependency on undeclared-affinity policy — MOOT, only bound S6-B1459a
+
+**STILL LIVE — independent of the grading-sample decision. These do NOT go away:**
+- **`S6-B1455c` (HIGHEST)** — de-dup uses Jaccard on (ticker, entry_date) = SIGNAL overlap, not
+  RETURN correlation. **4 of the 13 are `institutional_*` variants.** Effective breadth may be well
+  below 13, which matters directly for sizing a 17-strategy book. Unmeasured.
+- `S6-B1455a` (HIGH) — redundancy detection sits downstream of the performance gate, so duplicate
+  FAILING strategies are structurally invisible (macd trio, jaccard 1.000). Independent defect.
+- `S6-B1456b` (HIGH) — threshold CONSUMER tests. Orphan half shipped B1457; the ADVISORY-class check
+  (flip it, assert the verdict moves) is not built.
+- `S6-B1444a-d` (HIGH) — **147 of 154 failing strategies were never tuned.** The single largest
+  remaining source of roster upside; untouched by any gate decision.
+- `S6-B1455d` (MED) — the 47 cells clearing 4 of 5 gates, with their single blocker named.
+- `S6-B1457c` (MED) — codify: a bypass ships with the capability it exists to enable. Process rule
+  earned by L292; applies to future flags regardless of this decision.
+- `S6-B1452a` (MED) — two roster generators duplicate the window discipline.
+- `S6-B1458a/b` (MED) — publish leave-one-out with every screen; decide PF/Sortino demotion.
+
+### RESIDUAL RISK the decision does not remove — flagged, not ticketed away
+`backtest.py:129` states affinity is **"Re-engaged Phase 1B-alpha."** Grading is pooled but
+production 1B will re-engage the filter, so **4 of the 13 roster strategies will trade FEWER regimes
+live than they were graded on** (`poc_magnet_long` and `smc_breaker_block_long` {bull,neutral},
+`macd_fast_crossover` {bull}, `avwap_252_breakout` {bear,neutral}). `force_index_breakout` declares
+all four (no change) and 7 declare none. This is a grade-vs-deployment mismatch, accepted by the
+owner decision, recorded here so it is not rediscovered as a surprise in 1B. Tracked S6-B1460a.
