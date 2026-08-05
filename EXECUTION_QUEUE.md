@@ -7911,3 +7911,70 @@ co-movement; no-trade days enter as zeros). True breadth is worse than 2.5. L297
     that programme will regrade repeatedly and two divergent implementations will compound.
   - `S6-B1457c` (bypass ships with its counterpart) — CHECKLIST addition, cheap, bundle with any
     batch as a doc change.
+
+---
+
+## B1462 (2026-08-05) — breadth corrected to the right book; S6-B1461a CLOSED (hypothesis refuted)
+
+**OWNER CORRECTION 2026-08-05: "The roster is 22 cells, and not 13 cells?"** Correct, and B1461's
+breadth number was computed on the wrong book. RETRACTED and re-measured. L299.
+
+### Why 13, 17 and 22 are all true — the three cardinalities
+
+| count | what it is |
+|---|---|
+| **13** | graded CELLS — (strategy x direction x exit) that cleared the holdout gates. All long. |
+| **17** | distinct REGISTERED STRATEGIES — 13 graded + 4 separately-registered short mirrors. |
+| **22** | deployable LEGS — 13 long + 4 mirror-short + 5 dual-short (a dual adds a leg, not a strategy). |
+
+B1461 iterated the roster JSON's `roster` array, which holds only the 13 graded cells, and reported
+that as "the roster's" breadth. Shorts are near-uncorrelated with the longs, so excluding them
+biased breadth DOWNWARD.
+
+### Corrected breadth (mean-per-trade specification; 21 of 22 legs measurable)
+
+| book | n | rho_bar | **N_eff** |
+|---|---|---|---|
+| LONG ONLY (what B1461 reported) | 13 | 0.288 | **2.9** |
+| **DEPLOYABLE BOOK** | 21 | 0.097 | **7.2** |
+| LONG ONLY, beta-residualised | 13 | 0.287 | 2.9 |
+| **DEPLOYABLE, beta-residualised** | 21 | 0.096 | **7.2** |
+
+`poc_magnet_short` has NO holdout trades at its parent's exit and cannot be measured (21 of 22).
+
+### S6-B1461a — CLOSED. The clustering is NOT market beta.
+Hypothesis was "nine ways to be long beta"; residualising against SPY moves N_eff by **0.0** and
+mean R^2 across 21 legs is **0.010**. Refuted. Beta-neutralising would not restore breadth; the
+co-movement comes from shared ticker selection / signal family / entry timing. L301.
+A first attempt returned betas of 6.2 — a mis-specification (summed per-trade P&L is trade VOLUME,
+not return), corrected to mean-per-trade, betas then -2.01..+1.53. L300.
+
+### THE CAVEAT THAT DOMINATES THE 7.2
+The breadth gain from 2.9 to 7.2 comes entirely from the 8 short legs — which have **no holdout
+evidence of positive edge**. They are retained by the owner's symmetry directive, B1455 measured
+0 of 82 shorts clearing all five gates in bear, and several carry negative alpha. So the deployable
+book is better diversified than the long book **only if you are willing to fund legs whose edge is
+unproven**. Evidenced breadth remains ~2.9.
+
+### Ticket actions this batch (per owner 2026-08-05)
+- **S6-B1461a** — CLOSED, hypothesis refuted (above).
+- **S6-B1455c** — CLOSED, superseded by this corrected measurement.
+- **S6-B1455d MERGED** into a single consolidated ticket per owner instruction:
+- **`S6-OPT-196` (NEW, consolidated, HIGH)** — the optimisation programme over the **196**-strategy
+  backlog (159 never touched + 37 previously attempted, incl. all 14 Group-3 now FAIL). Absorbs
+  S6-B1455d (the 47 four-of-five cells are its highest-yield slice), S6-B1444a-d, S6-B1446a/b,
+  S6-B1461c. **Backlog size corrected 147 -> 196** per owner instruction; the 147 never reproduced
+  under a sum-asserting partition (L298).
+
+### Sequenced next (batch cap <=3/batch, Council 201 — owner said proceed on all; these are queued
+in dependency order, not deferred)
+1. **`S6-B1452a`** consolidate the two roster generators — FIRST, because S6-OPT-196 will regrade
+   repeatedly and two divergent implementations compound every regrade.
+2. **`S6-B1455a`** move redundancy detection to registration time, over the full roster, independent
+   of performance — now strongly warranted: Jaccard missed a 9-way cluster AND a jaccard-1.000 pair.
+3. **`S6-B1458a` + `S6-B1461b`** publish leave-one-out AND N_eff beside the cell count in
+   `PHASE_1B_ROSTER.md` — same generator, one change.
+4. **`S6-B1456b`** threshold consumer tests (advisory half; orphan half shipped B1457).
+5. **`S6-B1457c`** CHECKLIST item: a bypass ships with the capability it exists to enable.
+6. **`S6-B1458b`** PF/Sortino demotion — LAST, deliberately: they reject nothing on today's
+   population, but S6-OPT-196 changes that population, so decide after it runs.

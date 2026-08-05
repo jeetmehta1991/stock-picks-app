@@ -4759,3 +4759,41 @@ could drift indefinitely without contradiction. **Generalized rule: population c
 only from a script that partitions the FULL registry into disjoint buckets and asserts the sum. An
 unconstrained count is an opinion; a partition that must sum is a measurement.** Detection: any
 headcount without a sum-to-total assertion should be treated as UNVERIFIED.
+
+### L299
+**I measured the roster's breadth on 13 of its 22 legs and reported the result as the roster's
+breadth.** B1461's headline "N_eff = 2.5, the roster behaves like ~3 independent bets" was computed
+over the 13 graded LONG cells only. The deployable book is 22 legs: 13 long + 5 dual short + 4
+registered mirror short. The nine short legs were silently excluded because the roster JSON's
+`roster` array holds only graded cells, and I iterated it without asking whether it equalled the
+deployable set — the same 13-vs-17-vs-22 distinction I had myself documented one batch earlier.
+Direction of the error is not neutral: shorts are near-uncorrelated with the longs, so excluding
+them BIASED BREADTH DOWNWARD. Corrected: **long-only N_eff 2.9, deployable-book N_eff 7.2 of 21
+measurable legs.** **Generalized rule: when a metric is computed over "the roster", state which of
+the roster's several cardinalities is being used and assert it against the deployable set. A
+collection with more than one legitimate count needs the count named at every use.**
+
+### L300
+**A regression whose coefficients are implausible is mis-specified, and the implausibility is the
+only warning you get.** The first residualisation returned market betas of 6.195 and 6.105 for
+equity long strategies. No equity strategy carries 6x market sensitivity; that number was the
+specification failing, not a finding. Cause: the daily series was the SUM of per-trade `pnl_pct` on
+each entry date, so a day with 20 trades had 20x the magnitude of a day with 1 -- trade VOLUME, not
+return. Regressing volume-scaled sums on SPY percent returns is dimensionally inconsistent, and the
+fitted beta absorbs the trade-count variation. Re-specified as MEAN per-trade P&L: betas fall to a
+plausible -2.01..+1.53 and mean R^2 is 0.010. **Generalized rule: before reporting any regression,
+sanity-check the coefficient against its physical meaning. A beta of 6 on an equity strategy, a
+win rate above 1, a Sharpe above 10 -- these are specification alarms, and the correct response is
+to re-derive the input series, not to report the number with a caveat.**
+
+### L301
+**S6-B1461a verdict: the roster's clustering is NOT market beta -- my hypothesis was wrong.**
+I predicted the 9-cell cluster was "nine ways to be long beta in an 88%-bull holdout" and that
+residualising against SPY would collapse it. Measured: removing SPY moves long-only rho_bar from
+0.288 to 0.287 and N_eff from 2.9 to 2.9; deployable-book rho_bar 0.097 to 0.096, N_eff 7.2 to 7.2.
+Mean R^2 across all 21 legs is **0.010** -- SPY explains one percent of the variance. The strategies
+genuinely co-move for reasons other than the market factor (shared ticker selection, shared signal
+family, shared entry timing), and beta-neutralising the book would NOT restore breadth.
+**Generalized rule: a diversification deficit attributed to a common factor must be demonstrated by
+residualising against that factor, not assumed from the strategies' descriptions. "They are all
+long equity" is a hypothesis, and here it was false.**
