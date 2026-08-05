@@ -52,47 +52,23 @@ from backtest.signals.screener import ALL_STRATEGIES         # noqa: E402
 from backtest.config import (STRATEGIES_DISABLED_DATA_SCARCITY,  # noqa: E402
                              STRATEGIES_DISABLED_MISSING_PRODUCER, DEPRECATED_STRATEGIES)
 
-IS_START, IS_END = date(2022, 5, 5), date(2025, 5, 5)
-HO_START, HO_END = date(2025, 5, 5), date(2026, 5, 5)
-WINSORIZE, COST_BPS, MIN_N, FDR_Q, JACCARD = 300.0, 20.0, 30, 0.05, 0.70
+# S6-B1452a (B1463): the window discipline, the conditioning and the gate evaluation now
+# live in ONE place. Two files independently defining IS_END is how the B1452 lookahead
+# would recur unnoticed, and S6-OPT-196 regrades the 196-strategy backlog repeatedly.
+from roster_core import (                                    # noqa: E402
+    IS_START, IS_END, HO_START, HO_END, WINSORIZE, COST_BPS, MIN_N, FDR_Q, JACCARD,
+    LIVE_GATES, DEMOTED, evaluate, select_exit,
+)
 
 CUBES = [("R5", "output_r5_merged_1_7"),
          ("R6b", "output_r6b_cube_14"),
          ("Group1", "output_r6c_group1_3")]
 
-LIVE_GATES = ("sharpe_per_regime", "profit_factor", "sortino", "psr", "min_trades")
-DEMOTED = ("max_drawdown", "calmar", "deflated_sharpe", "win_rate")
 # 13F / insider / congressional / buyback data is LONG-ONLY by SEC rule, so a mechanical short
 # mirror is economically false, not merely untested (B611 reversal).
 ASYM_MARKERS = ("institutional_", "insider", "smart_money", "congress", "13f", "13d",
                 "activist", "lobbying", "buyback")
 
-
-def evaluate(pnl: pd.Series, hold: pd.Series) -> dict | None:
-    n = len(pnl)
-    if n < MIN_N:
-        return None
-    sh = _sharpe(pnl.values, hold)
-    sharpe = sh["sharpe"] if sh else None
-    sortino = _sortino_ratio(pnl, hold)
-    dsr = _deflated_sharpe(sharpe or 0.0, n, float(pnl.skew()), float(pnl.kurtosis()))
-    w, l = pnl[pnl > 0], pnl[pnl <= 0]
-    pf = float(w.sum() / abs(l.sum())) if len(l) and l.sum() != 0 else float("inf")
-    payoff = float(w.mean() / abs(l.mean())) if len(w) and len(l) and l.mean() != 0 else None
-    gates = {
-        "sharpe_per_regime": sharpe is not None and sharpe >= PC["min_sharpe_per_regime"],
-        "profit_factor":     pf >= PC["min_profit_factor_overall"],
-        "sortino":           sortino is not None and sortino >= PC["min_sortino_per_regime"],
-        "psr":               dsr.get("psr") is not None and dsr["psr"] >= PC["min_psr"],
-        "min_trades":        n >= PC["min_trades"],
-    }
-    return {"n": n, "sharpe": sharpe, "sortino": sortino, "psr": dsr.get("psr"),
-            "profit_factor": round(pf, 3), "payoff": round(payoff, 2) if payoff else None,
-            "expectancy": round(float(pnl.mean()), 4),
-            "win_rate": round(float((pnl > 0).mean()), 3),
-            "p": sh.get("p") if sh else None, "ci_lo": sh.get("ci_lo") if sh else None,
-            "gates": gates, "n_gates": sum(1 for v in gates.values() if v),
-            "all_live_gates": all(gates.values())}
 
 
 def uses_long_only_data(name: str) -> tuple[bool, list[str]]:
@@ -361,6 +337,59 @@ def main() -> int:
     A(f"| 2 | Clear all {len(LIVE_GATES)} live gates on the holdout | {sum(1 for r in rows if r['holdout'] and r['holdout']['all_live_gates'])} |")
     A(f"| 3 | Survive BH-FDR (q<{FDR_Q}, threshold p<={thr:.5f}) | {len(passed)} |")
     A(f"| 4 | De-duplicated (Jaccard < {JACCARD}) | **{len(kept)}** |")
+    A("")
+
+    # S6-B1458a: a pass count alone cannot show whether a screen has independent
+    # constraints or one binding gate. Leave-one-out makes that visible, and here it
+    # shows profit_factor and sortino uniquely rejecting ZERO cells - the five-gate
+    # screen is a three-gate screen (L294).
+    A("### Gate contribution (leave-one-out)")
+    A("")
+    A("A pass count hides whether a screen has five independent constraints or one binding gate.")
+    A("")
+    A("| gate | cells passing if this gate is DROPPED | uniquely rejects |")
+    A("|---|---|---|")
+    _ev = [r for r in rows if r.get("holdout")]
+    _base = sum(1 for r in _ev if all(r["holdout"]["gates"].values()))
+    for _g in LIVE_GATES:
+        _n = sum(1 for r in _ev
+                 if all(v for k, v in r["holdout"]["gates"].items() if k != _g))
+        _u = _n - _base
+        _mark = " **(rejects nothing)**" if _u == 0 else ""
+        A(f"| `{_g}` | {_n} | {_u}{_mark} |")
+    A("")
+
+    # S6-B1461b: a roster used for portfolio construction must never show only its
+    # nominal count. N_eff is read from the breadth artifact rather than recomputed,
+    # so there is ONE implementation of it (same principle as S6-B1452a).
+    A("### Effective breadth - READ THIS BEFORE SIZING")
+    A("")
+    _bp = REPO / "output_audit" / "b1462_breadth_alpha.json"
+    if _bp.exists():
+        try:
+            _b = json.loads(_bp.read_text(encoding="utf-8"))["breadth"]
+            A(f"| book | legs | mean pairwise corr | **N_eff** |")
+            A("|---|---|---|---|")
+            for _k, _lab in (("long_only", "LONG ONLY (the graded cells)"),
+                             ("deployable", "DEPLOYABLE BOOK (all legs)")):
+                _r = _b.get(_k)
+                if _r:
+                    A(f"| {_lab} | {_r['n']} | {_r['rho_bar']:.3f} | **{_r['n_eff']:.1f}** |")
+            A("")
+            A("The cell count is NOT the number of independent bets. De-dup compares (ticker, "
+              "entry_date) SIGNAL overlap; two cells sharing few entries can still move together "
+              "through shared ticker selection, signal family or entry timing. Beta-residualising "
+              "against SPY moves N_eff by ~0.0 (mean R^2 0.010), so this is NOT market beta and "
+              "beta-neutralising would not restore breadth (S6-B1461a, L301).")
+            A("")
+            A("**The deployable figure is carried by the short legs, which have NO holdout "
+              "evidence of positive edge** - they are retained by the owner's symmetry directive, "
+              "0 of 82 shorts cleared all five gates in bear (B1455), and several carry negative "
+              "alpha. Evidenced breadth is the LONG ONLY row.")
+        except Exception as _e:                        # preflight-allow: bare-report
+            A(f"_breadth artifact unreadable ({_e}); run scripts/measure_roster_breadth_and_alpha.py_")
+    else:
+        A("_N_eff NOT MEASURED - run `scripts/measure_roster_breadth_and_alpha.py` before sizing._")
     A("")
     A(f"## THE ROSTER - {len(kept)} cells")
     A("")

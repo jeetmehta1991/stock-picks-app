@@ -7978,3 +7978,55 @@ in dependency order, not deferred)
 5. **`S6-B1457c`** CHECKLIST item: a bypass ships with the capability it exists to enable.
 6. **`S6-B1458b`** PF/Sortino demotion — LAST, deliberately: they reject nothing on today's
    population, but S6-OPT-196 changes that population, so decide after it runs.
+
+---
+
+## B1463 (2026-08-05) — S6-B1452a, S6-B1455a, S6-B1458a+S6-B1461b SHIPPED
+
+Owner approved the full sequence; Council-201 caps at 3 substantive per batch, so this batch is
+items 1-3. Items 4-6 (S6-B1456b, S6-B1457c, S6-B1458b) remain queued in order.
+
+**S6-B1452a — CLOSED. One implementation of the window discipline.** New `scripts/roster_core.py`
+holds the fold boundaries, winsorisation, cost, power floor, LIVE/DEMOTED gate tuples, `evaluate()`
+and `select_exit(objective=)`. `build_phase_1b_roster.py` and `best_exit_by_gates.py` now import it;
+their local copies are deleted. The objective fork that justified two files is now a parameter
+(`"gates"` | `"sharpe"`), both IS-only. **Parity verified: the regenerated roster JSON and markdown
+are byte-identical (`git diff --stat` empty), and `best_exit_by_gates.py` still reports 23.**
+Rationale: two files independently defining `IS_END` is how the B1452 lookahead recurs unnoticed,
+and S6-OPT-196 regrades repeatedly.
+
+**S6-B1455a — CLOSED, and it found six more than the one it was opened for.** New
+`scripts/audit_registration_redundancy.py` compares EVERY (strategy x direction) cell against every
+other on (ticker, entry_date), with no reference to returns, gates or verdicts.
+**7 NEAR-IDENTICAL pairs (jaccard >= 0.95)**, plus 28 in [0.70, 0.95):
+
+| jaccard | pair | note |
+|---|---|---|
+| 1.0000 | `macd_crossover\|short` x `macd_crossover_short\|short` | the known one |
+| 0.9993 | `institutional_insider_combo_long` x `rsi_oversold_with_smart_money_long` | different names, same trades |
+| 0.9993 | `macd_crossover\|long` x `macd_ichimoku\|long` | ichimoku gate near-inert |
+| 0.9987 | `macd_crossover\|short` x `macd_ichimoku\|short` | " |
+| 0.9987 | `macd_crossover_short\|short` x `macd_ichimoku\|short` | transitive |
+| 0.9982 | `squeeze_breakout` x `squeeze_breakout_with_smart_money_long` | smart_money gate inert |
+| 0.9850 | `prev_day_high_break\|short` x `prev_day_low_breakdown\|short` | **SEMANTICALLY OPPOSITE** |
+
+Pinned by `test_b1463_no_new_near_identical_pairs` (skips when the cube is absent). Pyramid 892 (+1).
+
+**S6-B1458a + S6-B1461b — CLOSED.** `PHASE_1B_ROSTER.md` now publishes, from the generator:
+a leave-one-out gate-contribution table (showing `profit_factor` and `sortino` **rejecting nothing**)
+and an effective-breadth table with the caveat that the deployable figure is carried by short legs
+with no holdout evidence. N_eff is READ from the breadth artifact, not recomputed — one
+implementation, per S6-B1452a's principle.
+
+**Specification defect caught in the rendered page (L302).** The doc first published N_eff 2.5/5.8 —
+the `.sum()` numbers I had already retracted at L300. The fix had lived only in an inline probe, not
+in `measure_roster_breadth_and_alpha.py`. Corrected at source (mean-per-trade; non-trading days NaN
+not 0.0), which also moved the largest cluster from 9 to 6. Published figures are now **2.9 / 7.2**.
+
+### Tickets opened
+- **S6-B1463a (HIGH)** — 6 of the 7 near-identical pairs are new. Decide per pair: delete one, merge,
+  or justify. `institutional_insider_combo_long` / `rsi_oversold_with_smart_money_long` at 0.9993
+  under unrelated names is the clearest deletion candidate.
+- **S6-B1463b (HIGH, suspected BUG not redundancy)** — `prev_day_high_break|short` and
+  `prev_day_low_breakdown|short` are semantically OPPOSITE yet fire 98.5% identically. Investigate
+  the producer; a break-above and a breakdown-below should not share entries.

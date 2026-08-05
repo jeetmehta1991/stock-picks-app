@@ -13281,3 +13281,66 @@ def test_b1456_unwired_allowlist_carries_tickets():
     """Each allowlisted orphan names the ticket tracking its wiring."""
     for key, note in _KNOWN_UNWIRED_CRITERIA.items():
         assert "S6-" in note, f"{key}: allowlist entry must cite a ticket, got {note!r}"
+
+
+# ---------------------------------------------------------------------------
+# B1463 / S6-B1455a -- REGISTRATION-TIME REDUNDANCY PIN
+#
+# Redundancy detection used to live inside the promotion pipeline, so it only
+# ever compared cells that had ALREADY cleared the holdout gates. Duplicate
+# FAILING strategies were invisible by construction -- which is how
+# macd_crossover|short and macd_crossover_short|short sat at jaccard 1.000 over
+# 1,524 identical trades without anything flagging it.
+#
+# This pins the known near-identical set. A NEW duplicate registration fails the
+# pyramid instead of surviving to a cube run. Each entry carries WHY it is known.
+# ---------------------------------------------------------------------------
+
+_KNOWN_NEAR_IDENTICAL = {
+    ("macd_crossover|short", "macd_crossover_short|short"):
+        "S6-B1455a - dual short branch duplicates a standalone short (B874 class)",
+    ("institutional_insider_combo_long|long", "rsi_oversold_with_smart_money_long|long"):
+        "S6-B1463a - different names, same trades; one of the two gates is inert",
+    ("macd_crossover|long", "macd_ichimoku|long"):
+        "S6-B1463a - ichimoku gate is a near-no-op on the long side",
+    ("macd_crossover|short", "macd_ichimoku|short"):
+        "S6-B1463a - ichimoku gate is a near-no-op on the short side",
+    ("macd_crossover_short|short", "macd_ichimoku|short"):
+        "S6-B1463a - transitive with the two above",
+    ("squeeze_breakout|long", "squeeze_breakout_with_smart_money_long|long"):
+        "S6-B1463a - the smart_money gate is inert; the pair is one strategy",
+    ("prev_day_high_break|short", "prev_day_low_breakdown|short"):
+        "S6-B1463b - SEMANTICALLY OPPOSITE strategies firing 98.5pct identically; "
+        "suspected producer defect, not mere redundancy",
+}
+
+
+def test_b1463_no_new_near_identical_pairs():
+    """No NEW (strategy x direction) pair at jaccard >= 0.95 beyond the known set.
+
+    Skips when the R5 cube is absent (fresh clone / CI without artifacts) rather than
+    failing, since the cube is a large generated artifact and not part of the repo.
+    """
+    import sys as _sys
+    from pathlib import Path as _Path
+
+    repo = _Path(__file__).resolve().parents[2]
+    cube = repo / "output_r5_merged_1_7" / "trade_exit_detail.csv"
+    if not cube.exists():
+        import pytest
+        pytest.skip(f"cube absent at {cube}; redundancy pin needs generated artifacts")
+
+    _sys.path.insert(0, str(repo / "scripts"))
+    from audit_registration_redundancy import compute_pairs, NEAR_IDENTICAL
+
+    pairs = compute_pairs(min_jaccard=NEAR_IDENTICAL)
+    found = {tuple(sorted((p["a"], p["b"]))) for p in pairs}
+    known = {tuple(sorted(k)) for k in _KNOWN_NEAR_IDENTICAL}
+
+    new = found - known
+    assert not new, (
+        f"NEW near-identical strategy pair(s) at jaccard >= {NEAR_IDENTICAL}: {sorted(new)}. "
+        "Two registrations firing on the same trades is one strategy counted twice - it "
+        "doubles drag while appearing as two independent results in every count. Delete or "
+        "merge one, or add it to _KNOWN_NEAR_IDENTICAL with its ticket."
+    )

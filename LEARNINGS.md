@@ -4797,3 +4797,18 @@ family, shared entry timing), and beta-neutralising the book would NOT restore b
 **Generalized rule: a diversification deficit attributed to a common factor must be demonstrated by
 residualising against that factor, not assumed from the strategies' descriptions. "They are all
 long equity" is a hypothesis, and here it was false.**
+
+### L302
+**A mis-specification I had already diagnosed reached the published document anyway.** L300 recorded
+that summing per-trade `pnl_pct` per day yields trade VOLUME rather than a return series. I fixed
+the specification in an ad-hoc probe, reported the corrected 2.9 / 7.2, and left the SCRIPT on the
+broken `.sum()`. One batch later S6-B1461b wired the roster doc to read that script's artifact, and
+`PHASE_1B_ROSTER.md` published 2.5 / 5.8 -- the numbers I had already retracted. Caught only by
+reading the rendered page. Root cause: the fix lived in a throwaway shell probe, not in the artifact
+generator, so the diagnosis and the code disagreed and the code won. Additionally the panel
+zero-filled non-trading days, treating "no trade" as "0% return" and biasing every correlation
+toward zero; fixing it to NaN moved the largest cluster from 9 to 6. **Generalized rule: a
+correction discovered in a probe is not applied until it is in the artifact-producing code. Re-run
+the real generator and diff its output before claiming a number is corrected -- an inline probe
+proves the diagnosis, never the fix.** This is the same class as L286 (hand-edited generated doc):
+the durable location for a change is the generator, always.

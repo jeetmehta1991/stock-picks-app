@@ -1,0 +1,290 @@
+{
+  "cube": "output_r5_merged_1_7",
+  "near_identical_bar": 0.95,
+  "redundant_bar": 0.7,
+  "min_trades": 50,
+  "n_near_identical": 7,
+  "n_redundant": 28,
+  "pairs": [
+    {
+      "a": "macd_crossover|short",
+      "b": "macd_crossover_short|short",
+      "jaccard": 1.0,
+      "n_a": 1524,
+      "n_b": 1524,
+      "shared": 1524
+    },
+    {
+      "a": "institutional_insider_combo_long|long",
+      "b": "rsi_oversold_with_smart_money_long|long",
+      "jaccard": 0.9993,
+      "n_a": 2751,
+      "n_b": 2753,
+      "shared": 2751
+    },
+    {
+      "a": "macd_crossover|long",
+      "b": "macd_ichimoku|long",
+      "jaccard": 0.9993,
+      "n_a": 1386,
+      "n_b": 1385,
+      "shared": 1385
+    },
+    {
+      "a": "macd_crossover|short",
+      "b": "macd_ichimoku|short",
+      "jaccard": 0.9987,
+      "n_a": 1524,
+      "n_b": 1522,
+      "shared": 1522
+    },
+    {
+      "a": "macd_crossover_short|short",
+      "b": "macd_ichimoku|short",
+      "jaccard": 0.9987,
+      "n_a": 1524,
+      "n_b": 1522,
+      "shared": 1522
+    },
+    {
+      "a": "squeeze_breakout|long",
+      "b": "squeeze_breakout_with_smart_money_long|long",
+      "jaccard": 0.9982,
+      "n_a": 1141,
+      "n_b": 1139,
+      "shared": 1139
+    },
+    {
+      "a": "prev_day_high_break|short",
+      "b": "prev_day_low_breakdown|short",
+      "jaccard": 0.985,
+      "n_a": 788,
+      "n_b": 800,
+      "shared": 788
+    },
+    {
+      "a": "institutional_increased_with_directors_long|long",
+      "b": "institutional_with_directors_long|long",
+      "jaccard": 0.9364,
+      "n_a": 103,
+      "n_b": 110,
+      "shared": 103
+    },
+    {
+      "a": "institutional_persistent_holders_long|long",
+      "b": "institutional_strong_conviction_long|long",
+      "jaccard": 0.934,
+      "n_a": 1955,
+      "n_b": 1826,
+      "shared": 1826
+    },
+    {
+      "a": "break_retest_volume|short",
+      "b": "dc20_break_retest|short",
+      "jaccard": 0.9014,
+      "n_a": 1399,
+      "n_b": 1552,
+      "shared": 1399
+    },
+    {
+      "a": "institutional_cluster_long|long",
+      "b": "institutional_insider_combo_long|long",
+      "jaccard": 0.8909,
+      "n_a": 2451,
+      "n_b": 2751,
+      "shared": 2451
+    },
+    {
+      "a": "institutional_with_directors_long|long",
+      "b": "institutional_with_officers_long|long",
+      "jaccard": 0.8909,
+      "n_a": 110,
+      "n_b": 98,
+      "shared": 98
+    },
+    {
+      "a": "institutional_cluster_long|long",
+      "b": "rsi_oversold_with_smart_money_long|long",
+      "jaccard": 0.8903,
+      "n_a": 2451,
+      "n_b": 2753,
+      "shared": 2451
+    },
+    {
+      "a": "break_retest_volume|long",
+      "b": "dc20_break_retest|long",
+      "jaccard": 0.8875,
+      "n_a": 765,
+      "n_b": 862,
+      "shared": 765
+    },
+    {
+      "a": "institutional_buy_momentum_long|long",
+      "b": "institutional_persistence_momentum_long|long",
+      "jaccard": 0.879,
+      "n_a": 2644,
+      "n_b": 2324,
+      "shared": 2324
+    },
+    {
+      "a": "institutional_persistence_volume_long|long",
+      "b": "institutional_volume_confirmation_long|long",
+      "jaccard": 0.8645,
+      "n_a": 1199,
+      "n_b": 1387,
+      "shared": 1199
+    },
+    {
+      "a": "institutional_breakout_confirmation_long|long",
+      "b": "institutional_persistence_breakout_long|long",
+      "jaccard": 0.8287,
+      "n_a": 642,
+      "n_b": 532,
+      "shared": 532
+    },
+    {
+      "a": "institutional_increased_with_directors_long|long",
+      "b": "institutional_with_officers_long|long",
+      "jaccard": 0.8273,
+      "n_a": 103,
+      "n_b": 98,
+      "shared": 91
+    },
+    {
+      "a": "break_retest_confluence|short",
+      "b": "dc20_break_retest|short",
+      "jaccard": 0.8189,
+      "n_a": 1271,
+      "n_b": 1552,
+      "shared": 1271
+    },
+    {
+      "a": "institutional_multi_quarter_persistence_long|long",
+      "b": "rsi_oversold_with_smart_money_long|long",
+      "jaccard": 0.8131,
+      "n_a": 2516,
+      "n_b": 2753,
+      "shared": 2363
+    },
+    {
+      "a": "institutional_insider_combo_long|long",
+      "b": "institutional_multi_quarter_persistence_long|long",
+      "jaccard": 0.8125,
+      "n_a": 2751,
+      "n_b": 2516,
+      "shared": 2361
+    },
+    {
+      "a": "smc_liquidity_sweep_reversal|short",
+      "b": "turtle_soup_short|short",
+      "jaccard": 0.8011,
+      "n_a": 1805,
+      "n_b": 1880,
+      "shared": 1639
+    },
+    {
+      "a": "break_retest_confluence|short",
+      "b": "break_retest_volume|short",
+      "jaccard": 0.7895,
+      "n_a": 1271,
+      "n_b": 1399,
+      "shared": 1178
+    },
+    {
+      "a": "institutional_persistence_volume_long|long",
+      "b": "institutional_recent_init_volume_long|long",
+      "jaccard": 0.7849,
+      "n_a": 1199,
+      "n_b": 1075,
+      "shared": 1000
+    },
+    {
+      "a": "institutional_cluster_long|long",
+      "b": "institutional_multi_quarter_persistence_long|long",
+      "jaccard": 0.7752,
+      "n_a": 2451,
+      "n_b": 2516,
+      "shared": 2169
+    },
+    {
+      "a": "institutional_recent_init_volume_long|long",
+      "b": "institutional_volume_confirmation_long|long",
+      "jaccard": 0.7751,
+      "n_a": 1075,
+      "n_b": 1387,
+      "shared": 1075
+    },
+    {
+      "a": "institutional_cluster_long|long",
+      "b": "institutional_persistent_holders_long|long",
+      "jaccard": 0.7638,
+      "n_a": 2451,
+      "n_b": 1955,
+      "shared": 1908
+    },
+    {
+      "a": "institutional_persistence_momentum_long|long",
+      "b": "institutional_recent_init_momentum_long|long",
+      "jaccard": 0.752,
+      "n_a": 2324,
+      "n_b": 2268,
+      "shared": 1971
+    },
+    {
+      "a": "institutional_buy_momentum_long|long",
+      "b": "institutional_recent_init_momentum_long|long",
+      "jaccard": 0.7487,
+      "n_a": 2644,
+      "n_b": 2268,
+      "shared": 2103
+    },
+    {
+      "a": "institutional_cluster_long|long",
+      "b": "institutional_strong_conviction_long|long",
+      "jaccard": 0.745,
+      "n_a": 2451,
+      "n_b": 1826,
+      "shared": 1826
+    },
+    {
+      "a": "break_retest_confluence|long",
+      "b": "dc20_break_retest|long",
+      "jaccard": 0.7169,
+      "n_a": 618,
+      "n_b": 862,
+      "shared": 618
+    },
+    {
+      "a": "institutional_insider_combo_long|long",
+      "b": "institutional_persistent_holders_long|long",
+      "jaccard": 0.7107,
+      "n_a": 2751,
+      "n_b": 1955,
+      "shared": 1955
+    },
+    {
+      "a": "institutional_persistent_holders_long|long",
+      "b": "rsi_oversold_with_smart_money_long|long",
+      "jaccard": 0.7101,
+      "n_a": 1955,
+      "n_b": 2753,
+      "shared": 1955
+    },
+    {
+      "a": "institutional_committed_growth_long|long",
+      "b": "institutional_persistent_holders_long|long",
+      "jaccard": 0.7073,
+      "n_a": 1941,
+      "n_b": 1955,
+      "shared": 1614
+    },
+    {
+      "a": "break_retest_confluence|long",
+      "b": "break_retest_volume|long",
+      "jaccard": 0.7032,
+      "n_a": 618,
+      "n_b": 765,
+      "shared": 571
+    }
+  ]
+}

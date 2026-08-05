@@ -44,37 +44,18 @@ from backtest.config import PASSING_CRITERIA as PC          # noqa: E402
 from backtest.results.metrics import _sortino_ratio, _deflated_sharpe  # noqa: E402
 from walk_forward_r5_cells import _sharpe                    # noqa: E402
 
-IS_START, IS_END = date(2022, 5, 5), date(2025, 5, 5)      # SELECTION window
-HO_START, HO_END = date(2025, 5, 5), date(2026, 5, 5)      # GRADING window (never selected on)
-WINSORIZE, COST_BPS = 300.0, 20.0
-MIN_N = 30
+# S6-B1452a (B1463): fold boundaries, conditioning, gates and the selection objective are
+# imported from roster_core so this file and build_phase_1b_roster.py cannot drift apart.
+# The objective difference that justified two scripts is now roster_core.select_exit's
+# `objective=` switch ("gates" here, the owner's 2026-08-04 directive).
+from roster_core import (                                    # noqa: E402
+    IS_START, IS_END, HO_START, HO_END, WINSORIZE, COST_BPS, MIN_N, LIVE_GATES,
+    evaluate as _core_evaluate,
+)
 
-LIVE_GATES = ("sharpe_per_regime", "profit_factor", "sortino", "psr", "min_trades")
 
 
-def evaluate(pnl: pd.Series, hold: pd.Series) -> dict | None:
-    """All five live gates on one (cell, window). None if under the power floor."""
-    n = len(pnl)
-    if n < MIN_N:
-        return None
-    sh = _sharpe(pnl.values, hold)
-    sharpe = sh["sharpe"] if sh else None
-    sortino = _sortino_ratio(pnl, hold)
-    dsr = _deflated_sharpe(sharpe or 0.0, n, float(pnl.skew()), float(pnl.kurtosis()))
-    wins, loss = pnl[pnl > 0], pnl[pnl <= 0]
-    pf = float(wins.sum() / abs(loss.sum())) if len(loss) and loss.sum() != 0 else float("inf")
-    gates = {
-        "sharpe_per_regime": sharpe is not None and sharpe >= PC["min_sharpe_per_regime"],
-        "profit_factor":     pf >= PC["min_profit_factor_overall"],
-        "sortino":           sortino is not None and sortino >= PC["min_sortino_per_regime"],
-        "psr":               dsr.get("psr") is not None and dsr["psr"] >= PC["min_psr"],
-        "min_trades":        n >= PC["min_trades"],
-    }
-    return {"n": n, "sharpe": sharpe, "sortino": sortino, "psr": dsr.get("psr"),
-            "profit_factor": round(pf, 3), "expectancy": round(float(pnl.mean()), 4),
-            "win_rate": round(float((pnl > 0).mean()), 3),
-            "gates": gates, "n_gates": sum(1 for v in gates.values() if v),
-            "all_live_gates": all(gates.values())}
+evaluate = _core_evaluate   # S6-B1452a: one implementation
 
 
 def main() -> int:

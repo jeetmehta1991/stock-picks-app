@@ -45,6 +45,7 @@ WINSORIZE, COST_BPS, CLUSTER_RHO = 300.0, 20.0, 0.50
 
 
 def breadth(panel: pd.DataFrame, label: str) -> dict:
+    panel = panel.dropna(axis=1, how="all")
     C = panel.corr()
     n = C.shape[0]
     if n < 2:
@@ -112,12 +113,15 @@ def main() -> int:
         if g.empty:
             missing.append(label)
             continue
-        series[label] = g.groupby("entry_date")["pnl_pct"].sum()
+        # MEAN per trade, not SUM (L300): a summed daily series is trade VOLUME, not
+        # return, and regressing it on SPY percent returns produced betas of 6.2 -- a
+        # specification failure, not a finding. Mean is dimensionally consistent.
+        series[label] = g.groupby("entry_date")["pnl_pct"].mean()
     if missing:
         print(f"  [WARN] {len(missing)} leg(s) have NO holdout trades at the parent exit "
               f"-> excluded, cannot be measured: {', '.join(missing)}\n")
 
-    panel = pd.DataFrame(series).fillna(0.0).sort_index()
+    panel = pd.DataFrame(series).sort_index()   # NaN = no trade that day, not a zero return
     long_cols = [c for c in panel.columns if c.endswith("|L")]
 
     print("  RAW P&L breadth")
@@ -139,20 +143,22 @@ def main() -> int:
     ccol = "close" if "close" in spy.columns else "Close"
     spy[dcol] = pd.to_datetime(spy[dcol])
     spy = spy.set_index(dcol)[ccol].sort_index()
-    mkt = (spy.pct_change() * 100.0).reindex(panel.index).fillna(0.0)
+    mkt = (spy.pct_change() * 100.0).reindex(panel.index)
 
     print(f"\n  BETA RESIDUALISATION vs SPY  ({len(mkt)} aligned days)")
     print(f"  {'leg':<46}{'alpha/day':>11}{'beta':>8}{'R2':>7}")
     resid, rows = {}, []
-    X = np.column_stack([np.ones(len(mkt)), mkt.values])
     for c in panel.columns:
-        y = panel[c].values
+        both = pd.concat([panel[c], mkt], axis=1).dropna()
+        if len(both) < 30:
+            continue
+        y = both.iloc[:, 0].values
+        X = np.column_stack([np.ones(len(both)), both.iloc[:, 1].values])
         coef, *_ = np.linalg.lstsq(X, y, rcond=None)
-        fit = X @ coef
-        e = y - fit
+        e = y - X @ coef
         ss_t = float(((y - y.mean()) ** 2).sum())
         r2 = 1.0 - float((e ** 2).sum()) / ss_t if ss_t > 0 else 0.0
-        resid[c] = pd.Series(e, index=panel.index)
+        resid[c] = pd.Series(e, index=both.index)
         rows.append({"leg": c, "alpha": float(coef[0]), "beta": float(coef[1]), "r2": r2})
     for r in sorted(rows, key=lambda x: -x["alpha"])[:24]:
         print(f"  {r['leg']:<46}{r['alpha']:>11.4f}{r['beta']:>8.3f}{r['r2']:>7.3f}")

@@ -36,6 +36,29 @@
 | 3 | Survive BH-FDR (q<0.05, threshold p<=0.01256) | 20 |
 | 4 | De-duplicated (Jaccard < 0.7) | **13** |
 
+### Gate contribution (leave-one-out)
+
+A pass count hides whether a screen has five independent constraints or one binding gate.
+
+| gate | cells passing if this gate is DROPPED | uniquely rejects |
+|---|---|---|
+| `sharpe_per_regime` | 55 | 32 |
+| `profit_factor` | 23 | 0 **(rejects nothing)** |
+| `sortino` | 23 | 0 **(rejects nothing)** |
+| `psr` | 27 | 4 |
+| `min_trades` | 34 | 11 |
+
+### Effective breadth - READ THIS BEFORE SIZING
+
+| book | legs | mean pairwise corr | **N_eff** |
+|---|---|---|---|
+| LONG ONLY (the graded cells) | 13 | 0.288 | **2.9** |
+| DEPLOYABLE BOOK (all legs) | 21 | 0.097 | **7.2** |
+
+The cell count is NOT the number of independent bets. De-dup compares (ticker, entry_date) SIGNAL overlap; two cells sharing few entries can still move together through shared ticker selection, signal family or entry timing. Beta-residualising against SPY moves N_eff by ~0.0 (mean R^2 0.010), so this is NOT market beta and beta-neutralising would not restore breadth (S6-B1461a, L301).
+
+**The deployable figure is carried by the short legs, which have NO holdout evidence of positive edge** - they are retained by the owner's symmetry directive, 0 of 82 shorts cleared all five gates in bear (B1455), and several carry negative alpha. Evidenced breadth is the LONG ONLY row.
+
 ## THE ROSTER - 13 cells
 
 | # | Strategy | Dir | Cube | Tkrs | Exit | IS Shrp | HO Shrp | HO n | Exp | WR | PF | Payoff | Mirror |
