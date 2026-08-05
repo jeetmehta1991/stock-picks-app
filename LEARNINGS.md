@@ -4730,3 +4730,32 @@ the pressure that produced the B1452 lookahead (26-way exit search on the graded
 to 35). **Generalized rule: correctness of the SAMPLE is decided on whether the sample matches what
 production will actually trade — never on how many survivors it yields. Report the cost openly and
 let the count fall.**
+
+### L297
+**The roster is 13 cells and roughly 3 independent bets.** S6-B1455c measured what Jaccard de-dup
+structurally cannot see. De-dup compares (ticker, entry_date) SIGNAL overlap; two cells can share
+almost no entries and still move together through shared factor, sector or market-beta exposure.
+Measured on holdout daily P&L: mean pairwise correlation **0.344**, max **0.842**, 27 of 78 pairs at
+rho >= 0.5, and **effective breadth N_eff = 2.5 against a nominal 13**. Single-linkage at rho >= 0.5
+collapses **9 of the 13 into ONE cluster** spanning families that look unrelated by name —
+`institutional_*` x3, `macd_*` x2, `poc_magnet_long`, `smc_breaker_block_long`,
+`xs_momentum_with_smart_money_long`, `force_index_breakout`. In an 88%-bull holdout they are nine
+ways to be long beta. Critically the estimate is **optimistic by construction**: entry-date P&L
+attribution understates co-movement from overlapping holds, and no-trade days enter as zeros which
+drags correlations toward zero. Both biases inflate N_eff, so the true breadth is worse than 2.5.
+**Generalized rule: a de-duplication gate must state WHICH kind of redundancy it detects. Signal
+overlap and return correlation are different failure modes, and passing the first tells you nothing
+about the second. Any roster intended for portfolio construction ships with an effective-breadth
+number beside its cell count.**
+
+### L298
+**A count quoted for weeks did not survive its first reproducible derivation.** "147 of 154 failing
+strategies were never tuned" was repeated across several batches as the size of the optimisation
+backlog. Deriving the partition from live sources and asserting it sums to the registry gives a
+different picture: 222 = 13 roster + 4 mirrors + 9 retired + **196 backlog**, of which **159 never
+touched** and 37 had a prior tuning attempt (Group 3 14, R6b 14, R6-changed 7, Group 1 2). Neither
+147 nor 154 appears. The old figure had no script behind it and no reconciliation constraint, so it
+could drift indefinitely without contradiction. **Generalized rule: population counts are published
+only from a script that partitions the FULL registry into disjoint buckets and asserts the sum. An
+unconstrained count is an opinion; a partition that must sum is a measurement.** Detection: any
+headcount without a sum-to-total assertion should be treated as UNVERIFIED.

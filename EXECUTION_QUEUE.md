@@ -7837,3 +7837,77 @@ live than they were graded on** (`poc_magnet_long` and `smc_breaker_block_long` 
 `macd_fast_crossover` {bull}, `avwap_252_breakout` {bear,neutral}). `force_index_breakout` declares
 all four (no change) and 7 declare none. This is a grade-vs-deployment mismatch, accepted by the
 owner decision, recorded here so it is not rediscovered as a surprise in 1B. Tracked S6-B1460a.
+
+---
+
+## B1461 (2026-08-05) — population partitioned; S6-B1455c CLOSED with a hard finding
+
+**OWNER DIRECTIVE 2026-08-05: all 14 Group-3 strategies move to FAIL and re-enter optimisation.**
+Applied. They are additional to the never-touched population, not part of it — see the partition.
+
+### Population partition (`scripts/reconcile_strategy_population.py`, asserts sum == registry)
+
+| bucket | n |
+|---|---|
+| ROSTER-PASS (graded) | 13 |
+| ROSTER-MIRROR (symmetry directive) | 4 |
+| DISABLED data-scarcity (Group 2, retired) | 9 |
+| GROUP 3 (fire-count measured, now FAIL per owner) | 14 |
+| GROUP 1 (loosened + graded) | 2 |
+| R6b (loosened + graded, NEGATIVE) | 14 |
+| R6 changed (loosened, superseded) | 7 |
+| **NEVER TOUCHED** | **159** |
+| **TOTAL** | **222** = registry |
+
+**ANSWER to "are they part of the 147 or additional?" — ADDITIONAL, and the 147 was wrong.**
+The optimisation backlog is **196**: 159 never touched + 37 with a prior tuning attempt (Group 3 14,
+R6b 14, R6-changed 7, Group 1 2). Neither 147 nor 154 reproduces. The old figure had no script and
+no reconciliation constraint behind it. L298. (Group 1 shows 2 not 3 because `poc_magnet_short` is
+now a ROSTER-MIRROR and the partition is disjoint, most-specific-first.)
+
+### S6-B1455c — CLOSED. Effective breadth is 2.5, not 13.
+
+`scripts/measure_roster_breadth.py`, holdout daily P&L, 248 trading days:
+
+| metric | value |
+|---|---|
+| mean pairwise correlation | **0.344** |
+| max pairwise correlation | 0.842 |
+| pairs at rho >= 0.5 | 27 of 78 |
+| **effective breadth N_eff** | **2.5** (nominal 13) |
+| clusters at rho >= 0.5 | **5** |
+
+**9 of the 13 collapse into ONE cluster**: `institutional_high_conviction_long`,
+`institutional_persistence_breakout_long`, `institutional_strong_conviction_long`, `macd_crossover`,
+`macd_fast_crossover`, `poc_magnet_long`, `smc_breaker_block_long`,
+`xs_momentum_with_smart_money_long`, `force_index_breakout`. Standalone: `avwap_252_breakout`,
+`r1_break_retest`, `pead_long_high_yoy_growth_only`, `institutional_persistence_oversold_long`.
+
+**The estimate is optimistic by construction** (entry-date attribution understates overlapping-hold
+co-movement; no-trade days enter as zeros). True breadth is worse than 2.5. L297.
+
+### Tickets
+- **S6-B1461a (HIGHEST, next action)** — residualise each roster cell against SPY and re-rank on
+  ALPHA rather than raw return. This separates "nine ways to be long beta in a bull year" from nine
+  distinct edges, and is the measurement that decides whether the 9-cluster collapses to one line or
+  survives as several. Blocks any Phase 1B sizing decision.
+- **S6-B1461b (HIGH)** — publish `N_eff` beside the cell count in `PHASE_1B_ROSTER.md`; a roster
+  used for portfolio construction must not show only its nominal count. L297.
+- **S6-B1461c (MED)** — Group 3's 14 formally added to the optimisation backlog (196 total).
+
+### Sequencing for the remaining owner-requested items (batch cap <=3/batch, Council 201)
+- **NEXT BATCH** — `S6-B1461a` beta-residualisation (blocks sizing) + `S6-B1455a` move redundancy
+  detection to registration time, now clearly warranted since Jaccard missed a 9-way cluster.
+- **THEN** — `S6-B1456b` threshold consumer tests (flip-the-value, assert the verdict moves); the
+  orphan half shipped at B1457, this is the advisory half.
+- **MED items, recommended disposition:**
+  - `S6-B1455d` (47 four-of-five cells) — FOLD INTO the 196-strategy optimisation programme rather
+    than run separately; it is the highest-yield slice of that backlog, not a distinct workstream.
+  - `S6-B1458a` (publish leave-one-out) — DO IT WITH S6-B1461b; both are "ship the diagnostic beside
+    the headline count" and touch the same generator.
+  - `S6-B1458b` (demote PF/Sortino) — DEFER until after the optimisation programme; they reject
+    nothing today, but on a re-tuned population that may change, and demoting is irreversible-ish.
+  - `S6-B1452a` (consolidate the two generators) — DO IT BEFORE the optimisation programme, since
+    that programme will regrade repeatedly and two divergent implementations will compound.
+  - `S6-B1457c` (bypass ships with its counterpart) — CHECKLIST addition, cheap, bundle with any
+    batch as a doc change.
