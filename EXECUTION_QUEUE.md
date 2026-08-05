@@ -8030,3 +8030,9 @@ not 0.0), which also moved the largest cluster from 9 to 6. Published figures ar
 - **S6-B1463b (HIGH, suspected BUG not redundancy)** — `prev_day_high_break|short` and
   `prev_day_low_breakdown|short` are semantically OPPOSITE yet fire 98.5% identically. Investigate
   the producer; a break-above and a breakdown-below should not share entries.
+
+**B1463b (artifact refresh)** — `output_audit/b1452_best_exit_by_gates_is_selected.json` regenerated
+during the S6-B1452a parity check. Behaviour-neutral: `n_cells` 229, `n_passing_holdout` 23,
+`n_uneval` 40, `n_objective_disagree` 19 all unchanged and the selected (strategy, direction, exit)
+list is identical; the added lines are the additive `ci_lo` diagnostic that `roster_core.evaluate()`
+returns and the deleted local copy did not. No ticket state changes.
