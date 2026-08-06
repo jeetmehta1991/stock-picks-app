@@ -4906,3 +4906,39 @@ rather than edge. **Generalized rule: when a pipeline SELECTS among options per 
 grades the winner, any pair of near-duplicate units is a free replicate of the selection step.
 Duplicates are usually treated as waste to be deleted; they are also the only within-pipeline
 measurement of its own reliability -- measure them before deleting them.**
+
+### L309
+**I called exit selection "noise" from a single pair; measured across 32 replicates it is 94%
+STABLE, and the real finding is narrower and more useful.** B1466 read one duplicate pair
+(`macd_crossover` vs `macd_ichimoku`, 0.365 Sharpe apart on identical entries) and I wrote "exit
+selection looks like noise". S6-B1466a measured all of them:
+
+| tier | pairs | same exit chosen | median abs dSharpe when differing | IS winner won OOS | verdict flips |
+|---|---|---|---|---|---|
+| jaccard >= 0.95 | 7 | 5 (71%) | 0.369 = **74% of the 0.50 gate** | 4 of 5 | 1 |
+| 0.70 <= j < 0.95 | 25 | 25 (**100%**) | n/a | 12 of 25 | 0 |
+
+**30 of 32 twins chose the SAME exit.** The rule is stable; my n=1 generalisation was wrong and is
+retracted. What survives is sharper: **when selection does diverge (~6% of pairs) it costs ~0.37
+Sharpe, three quarters of the gate**, and it flipped one verdict -- one cell entered the Phase 1B
+roster while its twin, on the same trades, failed. Calibrated impact: 12 of the 13 roster cells
+clear the gate by LESS than 0.369, so ~6% x 12 => **roughly one roster cell is plausibly there by
+exit luck** -- not twelve.
+A second trap avoided: the 53% IS-winner-wins-OOS rate across both tiers looks damning but is
+EXPECTED, because near-twins have a true performance difference near zero and ranking two
+near-identical things is inherently ~random. It is not evidence the IS->OOS ranking is broken in
+general. **Generalized rule: a single observation licenses a hypothesis, never a characterisation.
+And when a replicate design returns ~50% discrimination, check whether the true effect being
+discriminated is itself ~0 before calling the discriminator uninformative.**
+
+### L310
+**The project has 431 test files and calls 2 of them "the pyramid".** `python -m pytest
+backtest/tests/test_unit.py backtest/tests/test_integration.py` is the command in CLAUDE.md, the
+skill, and the C6 pre-commit stamp -- while `backtest/tests/` holds 431 `test_*.py` files. DEC-503
+mandates a 13-tier pyramid; habit narrowed it to two files, and the mechanical gate blessed the
+narrow run, so 429 files' worth of assertions have no enforcement point. B1465 found two pins in
+`test_batch743...` red with no known start date, purely because the changed strategies happened to
+be named in that file and I grepped for references. **Generalized rule: a verification gate is
+defined by what it EXECUTES, not by what exists. Any test file outside the enforced command is
+documentation, and documentation cannot fail. Either a file is in the gate or it should be deleted
+-- an unrun test is worse than no test, because it produces the appearance of coverage.**

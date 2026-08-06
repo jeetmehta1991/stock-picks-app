@@ -8184,3 +8184,62 @@ This also confirms empirically why S6-B1455a mattered: de-dup never saw this pai
 4. **S6-OPT-196** the optimisation programme, now bound by CHECKLIST #169.
 5. **Phase 1B sizing** — still gated on evidenced breadth ~2.9, and now additionally on the
    outcome of (1).
+
+---
+
+## B1467 (2026-08-06) — S6-B1466a CLOSED (and B1466's framing corrected); S6-B1465b measured
+
+### S6-B1466a — exit-selection noise, measured across 32 replicates
+
+`scripts/measure_exit_selection_noise.py`. Each near-duplicate pair fires on ~identical entries but
+had its exit selected INDEPENDENTLY, so any holdout gap is selection variance.
+
+| tier | pairs | same exit | median abs dSharpe when differing | IS winner won OOS | verdict flips |
+|---|---|---|---|---|---|
+| jaccard >= 0.95 | 7 | 5 (71%) | **0.369 = 74% of the 0.50 gate** | 4 of 5 | **1** |
+| 0.70 <= j < 0.95 | 25 | 25 (**100%**) | n/a | 12 of 25 | 0 |
+
+**CORRECTION to B1466.** I wrote "exit selection looks like noise" from ONE pair. Measured:
+**30 of 32 twins chose the same exit** — the rule is stable and that characterisation is retracted.
+L309.
+
+**What survives, and it is actionable.** When selection diverges (~6% of pairs) it costs ~0.37
+Sharpe — three quarters of the gate — and it flipped exactly one verdict: `macd_crossover|long`
+(0.588, PASSED, on the roster) vs `macd_ichimoku|long` (0.223, failed) on 99.93% identical entries.
+
+**Roster margin analysis vs the 0.369 noise floor:**
+
+| | cells |
+|---|---|
+| clear the gate by MORE than the noise floor | **1** (`xs_momentum_with_smart_money_long`, margin 0.504) |
+| sit WITHIN one noise unit of the gate | **12** (margins 0.001 to 0.308) |
+
+Calibrated reading: ~6% divergence rate x 12 marginal cells => **roughly ONE roster cell is
+plausibly there by exit luck** — not twelve. Stating this precisely because the raw "12 of 13"
+invites the over-claim.
+
+A second over-claim avoided: the 53% IS-winner-wins-OOS rate across tiers is EXPECTED, since
+near-twins have a true difference near zero and ranking near-identical things is inherently
+~random. It is NOT evidence the IS->OOS ranking is broken in general.
+
+### S6-B1465b — the pyramid covers 2 of 431 test files
+
+`ls backtest/tests/test_*.py | wc -l` = **431**. The enforced command — in CLAUDE.md, the skill,
+and the C6 pre-commit stamp — runs **2**. DEC-503 mandates 13 tiers. 429 files have no enforcement
+point, which is why B1465's two red pins had no known start date. L310.
+
+### S6-B1465a — diagnosed, NOT fixed
+`test_batch743` pin5/pin7 fail because **no strategy fires at all** under the synthetic fixtures;
+`_short_borrow_trap_active` is False, so the borrow gate is not the blocker. The fixtures' 55 keys
+no longer satisfy any of the 29 strategies' current gates — fixture drift accumulated across
+B722/B1139/B1194/B1197-era changes, not a code defect. Repair means re-deriving a fixture that
+satisfies 29 strategies' present gate expressions: real work, out of this batch's cap.
+
+### Tickets
+- **S6-B1467a (HIGH)** — decide the enforced pyramid command. Options: (a) run all 431 and fix the
+  red, (b) define an explicit tiered manifest and enforce THAT, (c) delete unrun files. Current
+  state is the worst of the three: they exist, they are not run, and they read as coverage.
+- **S6-B1467b (MED)** — repair the `test_batch743` fixtures so pin5/pin7 assert something.
+- **S6-B1467c (MED)** — consider a selection-noise haircut: treat cells clearing the gate by less
+  than the measured floor as PROVISIONAL rather than PASS. Would reclassify 12 of 13 — which is why
+  it is a proposal for the owner, not an applied change.
