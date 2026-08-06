@@ -941,13 +941,26 @@ def strat_camarilla_r4_breakout(s):
 
 
 def strat_prev_day_high_break(s):
-    fl = (s.get("above_prev_high") and s.get("vol_spike_12x") and s.get("above_vwap"))
-    # B634 sweep: positive symmetric below_vwap (B634 producer)
-    fs = (s.get("below_prev_low") and s.get("vol_spike_12x") and s.get("below_vwap")) and not _short_borrow_trap_active(s)
-    return _strat3(fl, fs, "pivot",
-        ["above_prev_high","vol_spike_15x","above_vwap"], ["below_prev_low","vol_spike_15x","below_vwap", "borrow_ok"],
-        ["Price broke above previous day's high","Volume confirms participation","Above VWAP  -  buyers in control"],
-        ["Price broke below previous day's low","Volume confirms participation","Below VWAP  -  sellers in control"])
+    """LONG-ONLY since B1465 (owner-approved S6-B1463a).
+
+    Its former SHORT branch was character-identical to standalone
+    `strat_prev_day_low_breakdown` -- both fired on
+    `below_prev_low AND vol_spike_12x AND below_vwap AND not borrow_trap` -- giving
+    jaccard 0.9850 over 788 of 800 shared trades. The 1.5% gap is OUTSIDE DAYS:
+    when price breaks BOTH the prior high and the prior low, `_strat3` resolves to
+    the long branch while the standalone still fires short, so this branch was a
+    strict SUBSET of the standalone, never a distinct strategy.
+    The standalone is retained (it is the more complete implementation) and a
+    strategy named for breaking the previous day's HIGH is semantically long.
+    """
+    fires = (s.get("above_prev_high") and s.get("vol_spike_12x") and s.get("above_vwap"))
+    # B1465: converted _strat3 (dual) -> _strat (long-only). A long-only strategy that
+    # still called _strat3 would be a dual with a dead short branch, which is both
+    # misleading and trips the B743 pin requiring every _strat3 short branch to carry
+    # an explicit borrow gate - correctly, since a dual MUST have one.
+    return _strat(fires, "long", "pivot",
+        ["above_prev_high","vol_spike_15x","above_vwap"],
+        ["Price broke above previous day's high","Volume confirms participation","Above VWAP  -  buyers in control"])
 
 
 def strat_prev_day_low_bounce(s):
@@ -6072,11 +6085,16 @@ def strat_institutional_insider_combo_long(s):
     RFS (institutions) - when BOTH sources accumulate simultaneously, the
     edge is multiplicative not additive (independent information channels).
     Stronger conviction than either alone."""
-    # B1197 (2026-07-06 Council 278 owner-approved): change (institutional_buy AND
-    # insider_cluster_active) -> (institutional_buy OR insider_cluster_active).
-    # Per rec "either signal counts vs requiring both". Retain EMA200.
+    # B1465 (2026-08-05 owner-approved S6-B1463a): REVERTED B1197's AND -> OR.
+    # The OR made this strategy fire on (institutional_buy OR insider_cluster),
+    # which is exactly `_has_smart_money_buy` - converging it onto
+    # rsi_oversold_with_smart_money_long at jaccard 0.9993. The AND was the
+    # DOCUMENTED THESIS (Cohen-Malloy-Pomorski 2012 + Cohen-Frazzini-Malloy 2008:
+    # the edge is multiplicative BECAUSE the channels are independent), so the
+    # loosening erased the strategy's reason to exist. Reverting restores a
+    # distinct strategy rather than deleting one (L303).
     fires = (
-        (s.get("institutional_buy", False) or s.get("insider_cluster_active", False))
+        (s.get("institutional_buy", False) and s.get("insider_cluster_active", False))
         and s.get("price_above_ema_200", False)
     )
     return _strat(fires, "long", "smart_money_combo",
@@ -8320,7 +8338,8 @@ def validate_strategy_roster() -> dict:
     from backtest.config import DEPRECATED_STRATEGIES as _DEPRECATED
     from backtest.config import STRATEGIES_DISABLED_MISSING_PRODUCER as _MISSING_PRODUCER
     from backtest.config import STRATEGIES_DISABLED_DATA_SCARCITY as _DATA_SCARCE  # B1441
-    _BLOCKED = _DEPRECATED | _MISSING_PRODUCER | _DATA_SCARCE
+    from backtest.config import STRATEGIES_DISABLED_DUPLICATE as _DUPLICATE  # B1465
+    _BLOCKED = _DEPRECATED | _MISSING_PRODUCER | _DATA_SCARCE | _DUPLICATE
     summary = {
         "total_registered":         len(ALL_STRATEGIES),
         "deprecated_count":         sum(1 for k in ALL_STRATEGIES if k in _DEPRECATED),
@@ -8915,6 +8934,7 @@ def screen_instrument(
     # STRATEGIES_DISABLED_MISSING_PRODUCER for re-enablement criteria.
     from backtest.config import STRATEGIES_DISABLED_MISSING_PRODUCER as _MISSING_PRODUCER
     from backtest.config import STRATEGIES_DISABLED_DATA_SCARCITY as _DATA_SCARCE  # B1441
+    from backtest.config import STRATEGIES_DISABLED_DUPLICATE as _DUPLICATE  # B1465
     # Batch 310 (2026-05-24): Phase 1B-alpha disable mechanism REVERTED per
     # owner directive "DO NOT DISABLE ANYTHING TILL I ANALYZE AND COMMAND".
     # The PHASE_1B_ALPHA_DISABLED_STRATEGIES constant in config.py is now
@@ -8956,6 +8976,12 @@ def screen_instrument(
             # B1441 (owner "Retire group 2"): producer WORKS, the DATA is thin.
             # sector_history.csv holds 14 reclassification events in the whole
             # window, all on 2023-03-17. Re-enable when it is extended (S6-B1434b).
+            continue
+        if name in _DUPLICATE:
+            # B1465 (owner-approved S6-B1463a): fires on gates identical to a
+            # surviving registration, so it doubles that signal's drag while
+            # counting as an independent result. All three were MANUFACTURED by
+            # loosening batches that removed the differentiating gate (L303).
             continue
         # Batch 310 (2026-05-24): PHASE_1B_ALPHA_DISABLED_STRATEGIES skip
         # REVERTED per owner directive. All previously-disabled strategies

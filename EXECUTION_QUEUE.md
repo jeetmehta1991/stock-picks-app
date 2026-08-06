@@ -8099,3 +8099,48 @@ at **162** while the real total reached **169** — displayed on every commit un
 "Doc count sync". Pattern corrected to `^\*{0,2}#?(\d+)[.\s]` (single capture group, because the
 framework reads only the first; a two-group alternation silently skips the bold form and reports
 162 again). Verified against the real `count_lines()`: **169**, matching items #1-#169. L305.
+
+---
+
+## B1465 (2026-08-05) — S6-B1463a CLOSED: all five dispositions applied (owner-approved)
+
+**New `STRATEGIES_DISABLED_DUPLICATE` set** in `config.py`, wired into `screener.py` at both
+gate sites plus the skip loop. Semantically distinct from every existing disable set, following the
+B1441 precedent of adding a set rather than overloading one:
+
+| set | means |
+|---|---|
+| `DEPRECATED_STRATEGIES` | literature-null |
+| `STRATEGIES_DISABLED_MISSING_PRODUCER` | producer does not exist |
+| `STRATEGIES_DISABLED_DATA_SCARCITY` | producer works, data is thin |
+| **`STRATEGIES_DISABLED_DUPLICATE`** | **strategy works and is a COPY of another** |
+
+| # | disposition | applied |
+|---|---|---|
+| 1 | `squeeze_breakout_with_smart_money_long` | DISABLED-DUPLICATE (0.9982 vs `squeeze_breakout`; B1194 deleted its differentiator) |
+| 2 | `macd_crossover_short` | DISABLED-DUPLICATE (1.0000 vs `macd_crossover` short leg, 1,524 identical trades) |
+| 3 | `macd_ichimoku` | DISABLED-DUPLICATE — **B1139 dropped BOTH ichimoku cloud gates**, leaving a strategy named `macd_ichimoku` containing no ichimoku and byte-identical to `macd_crossover` |
+| 4 | `institutional_insider_combo_long` | **B1197 REVERTED, OR -> AND.** Restores the documented thesis (Cohen-Malloy-Pomorski 2012 + Cohen-Frazzini-Malloy 2008: multiplicative BECAUSE the channels are independent). Reverting restores a distinct strategy instead of deleting one. |
+| 5 | `prev_day_high_break` | **LONG-ONLY.** Converted `_strat3` -> `_strat`; its short branch was character-identical to standalone `prev_day_low_breakdown` and a strict subset (788 of 800). |
+
+Counts: **222 registered · 12 disabled (3 duplicate + 9 scarcity) · 210 ACTIVE.**
+Disabled rather than deleted: bodies stay readable, ~15 referencing tests keep passing, re-enable
+is a one-line revert. `_strat3` population pin 60 -> 59 (same rationale as B899's 61 -> 60).
+
+**Item 3 is the third loosening-induced collapse**, confirming L303 emphatically: B1139, B1194 and
+B1197 each removed the only gate distinguishing a strategy from a simpler sibling. CHECKLIST #169
+(post-loosening redundancy audit) is the standing fix and binds S6-OPT-196.
+
+**Verification.** Pyramid 894 passed / 2 skipped. Referencing test files run separately (L306):
+37 passed, 2 failed — and a `git stash` baseline proved **both failures PRE-DATE this batch**.
+Redundancy audit re-run per #169 still reports 7 pairs because it reads the **R5 cube, generated
+before these fixes**; the pairs clear when the cube is regenerated, not before.
+
+### Tickets opened
+- **S6-B1465a (HIGH, PRE-EXISTING)** — `test_batch743...pin5` and `pin7` have been failing outside
+  the 2-file pyramid for an unknown number of batches. Not caused by B1465. Diagnose and fix.
+- **S6-B1465b (HIGH)** — the "full pyramid" in practice is `test_unit.py + test_integration.py`,
+  while DEC-503 mandates 13 tiers. Establish what the real command should be and make it the
+  enforced one; the C6 pre-commit stamp currently blesses the 2-file run. L306.
+- **S6-B1465c (MED)** — regenerate the cube so the redundancy audit reflects the B1465 fixes;
+  until then `_KNOWN_NEAR_IDENTICAL` retains all 7 entries by necessity.

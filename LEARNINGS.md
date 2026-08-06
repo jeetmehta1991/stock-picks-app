@@ -4862,3 +4862,30 @@ changes, the counter must change in the same batch -- and the fix is verified by
 counter's output against an independently derived expected value, never by observing that it now
 prints something.** Detection signal: a monitored count that has not moved while the underlying
 document demonstrably grew.
+
+### L306
+**The "full pyramid" is two files, and a test file outside it had been red for an unknown number of
+batches.** `python -m pytest backtest/tests/test_unit.py backtest/tests/test_integration.py` is the
+command this project calls the pyramid, and it reported 894 passed after B1465's roster changes.
+Running the test files that actually REFERENCE the changed strategies found
+`test_batch743_b718b_strat3_second_chunk_explicit_borrow_gate.py` failing -- and a `git stash`
+baseline proved **2 of the 3 failures pre-dated my change**. That file is not in the two-file
+pyramid, so nobody had run it. The project's own DEC-503 mandates a 13-tier pyramid; the habitual
+2-file command silently became the definition. **Generalized rule: after changing a shared artifact
+(a registry, a config set, a producer), run the test files that REFERENCE the changed names --
+`grep -rln <name> backtest/tests/` -- not only the default pyramid command. And when they fail,
+establish the baseline with `git stash` BEFORE attributing the failure to your change: I would
+otherwise have "fixed" two pre-existing defects into my own batch and mis-recorded the cause.**
+
+### L307
+**Disabling a dual's short branch with `fs = False` is not the same as making the strategy
+long-only, and a pin caught the difference.** My first fix set `fs = False` inside
+`strat_prev_day_high_break` while it still called `_strat3`. That left a DUAL strategy with a dead
+short branch, which is (a) misleading to any reader, and (b) tripped B743's pin requiring every
+`_strat3` short branch to carry an explicit borrow gate -- correctly, because a dual must have one.
+The honest change was to convert the function to `_strat(fires, "long", ...)`, after which the dual
+pin no longer applies because it is no longer a dual, and the `_strat3` population count moved
+60 -> 59 with the same rationale B899 used when B874 deleted a dual. **Generalized rule: when a
+strategy stops being bidirectional, change its CONSTRUCTOR, not just its branch value. A neutered
+branch keeps every structural property of the old shape -- including the invariants other tests
+assert about that shape.**

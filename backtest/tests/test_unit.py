@@ -13310,8 +13310,9 @@ _KNOWN_NEAR_IDENTICAL = {
     ("squeeze_breakout|long", "squeeze_breakout_with_smart_money_long|long"):
         "S6-B1463a - the smart_money gate is inert; the pair is one strategy",
     ("prev_day_high_break|short", "prev_day_low_breakdown|short"):
-        "S6-B1463b - SEMANTICALLY OPPOSITE strategies firing 98.5pct identically; "
-        "suspected producer defect, not mere redundancy",
+        "B1465 RESOLVED - not a producer defect: the gates were character-identical. "
+        "prev_day_high_break is now long-only. Entry retained because the R5 cube "
+        "predates the fix; drop it when the cube is regenerated",
 }
 
 

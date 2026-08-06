@@ -1274,6 +1274,44 @@ STRATEGIES_DISABLED_DATA_SCARCITY: set[str] = {
     "classification_change_with_insider_long",
     "classification_change_with_institutional_long",
 }
+
+
+# B1465 (2026-08-05 owner-approved, ticket S6-B1463a) -- DUPLICATE REGISTRATIONS.
+# SEMANTICALLY DISTINCT from every other disable set, following the B1441 precedent
+# of creating a new set rather than overloading one:
+#   DEPRECATED_STRATEGIES              literature-null (no replicable peer-reviewed edge)
+#   STRATEGIES_DISABLED_MISSING_PRODUCER  the producer does not exist
+#   STRATEGIES_DISABLED_DATA_SCARCITY  the producer works, the DATA is thin
+#   STRATEGIES_DISABLED_DUPLICATE      <- the strategy WORKS and is a COPY of another
+#
+# Each entry fires on gates identical (or near-identical) to a surviving registration,
+# so it doubles that signal's drag while presenting as an independent result in every
+# count, gate tally and multiple-testing denominator. Found by
+# scripts/audit_registration_redundancy.py, which compares every (strategy x direction)
+# cell to every other WITHOUT reference to returns -- the roster's own de-dup runs
+# downstream of the performance gate and therefore only ever compares winners (L303).
+#
+# ROOT CAUSE IN ALL THREE CASES: a loosening batch removed the only differentiating
+# gate. These are not historical accidents; they were manufactured by optimisation.
+# CHECKLIST #169 now requires this audit after every loosening batch, which directly
+# binds S6-OPT-196 (196 strategies to be loosened).
+#
+# Disabled rather than deleted: the function bodies stay readable, the ~15 referencing
+# tests keep passing, and re-enablement is a one-line revert if a differentiating gate
+# is restored.
+STRATEGIES_DISABLED_DUPLICATE: set[str] = {
+    # jaccard 0.9982 vs `squeeze_breakout`. B1194 (Council 278) dropped the smart_money
+    # AND-requirement "to isolate the squeeze breakout pure thesis", leaving bare
+    # `squeeze_fire_up` -- which IS squeeze_breakout. The loosening deleted the strategy.
+    "squeeze_breakout_with_smart_money_long",
+    # jaccard 1.0000 vs `macd_crossover`'s short branch over 1,524 trades - literally the
+    # same trades under two registrations. Same META-PATTERN as B874 camarilla_rsi_obv.
+    "macd_crossover_short",
+    # jaccard 0.9993/0.9987 vs `macd_crossover` on BOTH legs. B1139 (Council 253) dropped
+    # both ichimoku cloud gates as "redundant with cross direction", leaving a strategy
+    # named macd_ichimoku that contains no ichimoku and is byte-identical to macd_crossover.
+    "macd_ichimoku",
+}
 # B1189 (2026-07-06 Council 278 owner-approved DELETE): dxy_headwind_multinational_short
 # ELIMINATED per owner directive. Was disabled since Batch 372 pending foreign_rev_pct
 # producer that was never built. Owner-decision 2026-07-06 to eliminate strategy

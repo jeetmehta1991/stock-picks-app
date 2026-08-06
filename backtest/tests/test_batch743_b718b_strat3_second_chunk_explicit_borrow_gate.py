@@ -62,8 +62,12 @@ def test_b743_pin2_all_30_registered():
 
 
 def test_b743_pin3_combined_strat3_count_is_60():
-    """B742 (31) + B743 (29 post-B874) = 60 total dual `_strat3` strategies.
-    Was 61 at B743 time; B899 migration post-B874 deletion of camarilla_rsi_obv.
+    """B742 (31) + B743 (29 post-B874) = 59 total dual `_strat3` strategies.
+    Was 61 at B743 time; B899 migration post-B874 deletion of camarilla_rsi_obv;
+    B1465 (owner-approved S6-B1463a) 60 -> 59: prev_day_high_break converted from
+    _strat3 to _strat because its SHORT branch was character-identical to standalone
+    prev_day_low_breakdown (jaccard 0.9850, a strict subset). It is genuinely long-only
+    now, so a dual-strategy pin no longer applies to it.
 
     Cluster-wide regression guard: if a new dual strategy is added later,
     this test fails and the author is forced to add it to either cohort
@@ -72,7 +76,7 @@ def test_b743_pin3_combined_strat3_count_is_60():
     import re
     src = open("backtest/signals/screener.py", encoding="utf-8").read()
     strat3_count = len(re.findall(r'return _strat3\(', src))
-    expected = 60  # B899 migration: 61 -> 60 post-B874 deletion of camarilla_rsi_obv dual
+    expected = 59  # B1465: 60 -> 59, prev_day_high_break _strat3 -> _strat (long-only)
     assert strat3_count == expected, (
         f"expected {expected} dual _strat3 strategies; got {strat3_count}. "
         f"If a new dual strategy was added, it must be added to either B742 or B743 cohort "
