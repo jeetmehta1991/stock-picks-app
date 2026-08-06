@@ -4845,3 +4845,20 @@ started in `technical.py` chasing a signal that behaves correctly. **Generalized
 attributing a cross-strategy anomaly to a producer, read BOTH consumers' gate expressions. Two
 strategies sharing entries is far more often shared gates than a broken signal, and the producer
 hypothesis sends the investigation to the wrong file.**
+
+### L305
+**A count printed on every single commit had been wrong for ~110 batches and nobody read it.**
+`scripts/sync_doc_counts.py` counted CHECKLIST items with `^(\d+)\.\s+` -- the original
+numbered-list form. Items #163 onward were added in a bold form (`**#163 (B1354) - TITLE.**`),
+which that pattern cannot match, so the printed total froze at 162 from B1354 while the real total
+grew to 169. The stale number was displayed on every commit as part of a block literally headed
+"Doc count sync", i.e. the mechanism whose entire job is catching count drift was itself drifting,
+in public, ~110 times. Two further traps in fixing it: (a) the framework reads only the FIRST
+capture group, so an alternation with two groups silently skips every bold-form match and would
+have "fixed" it back to 162; (b) the naive pattern matched 171 because incidental numbered lines
+inside item bodies collide -- unique IDs, not raw matches, is the right count. **Generalized rule:
+an automated count is only as good as its last format change. When a document's item FORMAT
+changes, the counter must change in the same batch -- and the fix is verified by asserting the
+counter's output against an independently derived expected value, never by observing that it now
+prints something.** Detection signal: a monitored count that has not moved while the underlying
+document demonstrably grew.

@@ -8092,3 +8092,10 @@ All five are strategy-roster changes and need explicit owner approval per CLAUDE
 ### Remaining
 - **S6-B1458b** PF/Sortino demotion — still LAST, after S6-OPT-196 changes the population.
 - **S6-OPT-196** — now additionally bound by CHECKLIST #169.
+
+**B1464b (count-drift fix)** — `sync_doc_counts.py` counted CHECKLIST items with `^(\d+)\.\s+`,
+which cannot match the bold form (`**#163 ...**`) used from B1354 onward. The printed total froze
+at **162** while the real total reached **169** — displayed on every commit under a heading reading
+"Doc count sync". Pattern corrected to `^\*{0,2}#?(\d+)[.\s]` (single capture group, because the
+framework reads only the first; a two-group alternation silently skips the bold form and reports
+162 again). Verified against the real `count_lines()`: **169**, matching items #1-#169. L305.

@@ -113,7 +113,12 @@ CHECKS = [
     {
         "name": "CHECKLIST items",
         "doc": "CHECKLIST.md",
-        "count_pattern": r"^(\d+)\.\s+",
+        # B1464: items 1-162 use the original numbered-list form ("12. TITLE"); items
+        # #163+ were added in the bold form ("**#163 (B1354) - TITLE.**"). The old
+        # pattern matched only the first, so the printed total silently stalled at 162
+        # from B1354 onward while seven real items existed - a count published on every
+        # commit that did not reproduce against the file (the L298 class). Match both.
+        "count_pattern": r"^\*{0,2}#?(\d+)[.\s]",
         "claim_regex": None,  # CHECKLIST has no header total claim
         "claim_doc": None,
     },
