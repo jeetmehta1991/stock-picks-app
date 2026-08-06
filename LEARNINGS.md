@@ -4987,3 +4987,20 @@ its green certifies "these tests pass when nothing else has run", not "these tes
 **Generalized rule: a test suite's isolation properties are part of its verdict. Any gate that runs
 a SUBSET must periodically run inside the FULL suite to confirm its result is order-independent --
 otherwise the subset is not a sample of the suite, it is a different experiment.**
+
+### L314
+**My bisection tool reported the opposite of the truth because its probe could be silently
+skipped.** `bisect_test_polluter.py` ran `pytest -x [chunk] [2 target tests]` and inferred the
+probe's result from the run-wide summary. Two independent defects, both fatal, both mine:
+(a) **`-x` aborts at the first failure**, and the candidate set contains 172 known-unrelated
+failures -- so pytest stopped long before reaching the targets, which never executed;
+(b) the verdict was read from the SUMMARY LINE (`" failed" not in tail`), which reflects those 172
+unrelated failures, not the probe. Together they produced a confident "targets PASS with every
+candidate file running first" and a printed conclusion that bisection was the wrong tool -- from a
+run where the probe never ran. Caught only because the empty summary tail looked wrong and I tested
+the sharper hypothesis separately (`test_integration.py` alone: 149 passed, so the polluter is
+cross-file after all). **Generalized rule: a diagnostic that infers a specific result from an
+aggregate signal is broken whenever the aggregate has other contributors -- and a search whose
+probe can be skipped must assert the probe RAN before interpreting its outcome. Read the target's
+own result line; never infer it from a summary you do not control.** Both defects are now fixed in
+the tool, and an absent summary is reported INCONCLUSIVE rather than as a pass.

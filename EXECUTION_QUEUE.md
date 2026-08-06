@@ -8317,3 +8317,65 @@ Polluter search so far — EXCLUDED: my B1464 threshold test (mutates `PASSING_C
 
 This strengthens the recommendation for **option (b)** on S6-B1467a: a manifest that names tiers
 AND requires the enforced tier to be re-validated inside a full run periodically.
+
+---
+
+## B1469 (2026-08-06) — S6-B1468a polluter bisection launched; status consolidated
+
+**`scripts/bisect_test_polluter.py`** — binary search over the 430 candidate files, running
+[chunk] + [the 2 target tests] with the targets LAST so chunk side effects are still in place.
+~log2(430) ~ 9 steps at seconds-to-minutes each, versus ~35 min for a full pass. Guards against
+forcing a wrong answer: it HALTS if the targets fail alone (a real defect, not pollution), reports
+explicitly if the full candidate list does NOT reproduce (ordering/parallelism, not a single file),
+and reports the surviving candidate set if neither half reproduces (a cross-split interaction).
+Running; result next turn.
+
+### Consolidated state (all EXECUTED this session)
+
+| | |
+|---|---|
+| Phase 1B roster | 13 graded cells · 17 strategies · 22 legs |
+| Population | 222 registered · 12 disabled · 210 active |
+| Optimisation backlog | 196 (159 never touched + 37 attempted) |
+| Evidenced breadth | ~2.9 (deployable 7.2, carried by unevidenced shorts) |
+| Exit-selection exposure | ~1 roster cell plausibly there by exit luck |
+| Test suite | 172 failed / 5,470 passed / 11 errors across 431 files; gate runs 2 |
+
+### Owner decisions open
+- **S6-B1467a** pyramid definition — recommend (b) tiered manifest **plus** periodic full-run
+  re-validation of the enforced tier.
+- **S6-B1467c** selection-noise haircut — would reclassify 12 of 13 to PROVISIONAL. Calibrated
+  exposure is ~1 cell, so a blanket reclassification may overcorrect; but PASS on a cell sitting
+  0.001 above the bar overstates certainty the other way. Owner's call.
+
+### Sequence
+1. S6-B1468a polluter bisect (RUNNING) — a defect in the gate that IS enforced.
+2. S6-B1467b repair `test_batch743` fixtures.
+3. S6-B1465c regenerate the cube (222/12/210) — UNBLOCKED, replicates already measured.
+4. S6-OPT-196 the 196-strategy programme, bound by CHECKLIST #169.
+5. Phase 1B sizing — gated on breadth and the haircut decision.
+
+**Note on priority:** items 3-4 are the only ones that can ADD strategies. 17 from a library where
+95% was never tuned is a floor, not a verdict; items 1-2 are verification hygiene.
+
+### B1469b — the bisection was invalid; the polluter is cross-file and still unidentified
+
+The B1469 run reported "targets PASS with every candidate file running first" and concluded
+bisection was the wrong tool. **That result is RETRACTED — the probe never ran.** Two defects in my
+own script: `-x` aborted at the first of the 172 known-unrelated failures, and the verdict was read
+from the run-wide summary rather than the targets' own result. L314.
+
+**What IS established (executed):**
+- targets pass alone — 0.74s
+- **`test_integration.py` in full — 149 passed**, so the polluter is NOT inside that file
+- therefore the pollution is genuinely CROSS-FILE and remains unidentified
+
+Tool fixed: `-x` removed, verdict now read from the targets' own FAILED lines, and an absent
+summary reports INCONCLUSIVE instead of passing. A correct bisection is a multi-hour job (early
+steps approach a full-suite pass at ~35 min); worth running as a dedicated background task rather
+than inline.
+
+**S6-B1468a stays OPEN** — re-run the corrected bisection. Note both targets are config/state
+dependent (`test_bug_30` patches `backtest.config.CIRCUIT_BREAKERS` via `mock.patch.dict`, which
+restores on exit), so the likely mechanism is another file replacing or permanently mutating a
+config object rather than a value inside it.
