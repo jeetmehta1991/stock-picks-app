@@ -8036,3 +8036,59 @@ during the S6-B1452a parity check. Behaviour-neutral: `n_cells` 229, `n_passing_
 `n_uneval` 40, `n_objective_disagree` 19 all unchanged and the selected (strategy, direction, exit)
 list is identical; the added lines are the additive `ci_lo` diagnostic that `roster_core.evaluate()`
 returns and the deleted local copy did not. No ticket state changes.
+
+---
+
+## B1464 (2026-08-05) — batch 2 of 3: S6-B1456b, S6-B1457c, S6-B1463b
+
+**S6-B1463b — CLOSED, and RECLASSIFIED. Not a producer bug: a duplicate registration.**
+I filed it as "a break-above and a breakdown-below should not share entries — investigate the
+producer". Reading both sources, the gates are character-identical:
+
+```
+prev_day_high_break  fs    = below_prev_low AND vol_spike_12x AND below_vwap AND not borrow_trap
+prev_day_low_breakdown fires = below_prev_low AND vol_spike_12x AND below_vwap AND not borrow_trap
+```
+
+The SHORT branch of a strategy named for breaking the previous day's HIGH is a second copy of the
+breakdown strategy. The 1.5% gap is OUTSIDE DAYS: when price breaks both the prior high and prior
+low, the dual resolves to its long branch while the standalone still fires short (788 of 800
+shared; `prev_day_high_break|short` is a strict subset). Same class as B874. Had this been worked
+as filed, the investigation would have started in `technical.py` chasing a correct signal. L304.
+
+**ROOT CAUSE OF THE PAIRS IS THE LOOSENING CAMPAIGN (L303).** Reading the source for three of the
+seven, Council 278 removed the only gate that made each strategy distinct:
+- **B1194** dropped the smart_money requirement from `squeeze_breakout_with_smart_money_long`,
+  leaving bare `squeeze_fire_up` = `squeeze_breakout` (0.9982).
+- **B1197** changed `institutional_insider_combo_long` AND -> OR, converging it onto
+  `rsi_oversold_with_smart_money_long` (0.9993).
+Each loosening was individually reasonable and approved. None was checked against the rest of the
+roster. **This binds S6-OPT-196**, which will loosen across 196 strategies.
+
+**S6-B1456b — CLOSED.** `test_b1464_live_gate_thresholds_actually_gate` moves each live threshold
+past the observed statistic and asserts the gate flips both ways, restoring the config after.
+`test_b1464_demoted_flags_actually_demote` pins the four B1436/B1437 demotion flags. This is the
+ADVISORY half the B1457 orphan guard could not reach: a threshold that is read but cannot change a
+verdict passes an orphan check and fails this one.
+
+**S6-B1457c — CLOSED. CHECKLIST #168** (a bypass ships with the capability it exists to enable) and
+**#169** (after any loosening, re-run the registration-time redundancy audit). Both carry retroactive
+lineage per #136. Checklist 167 -> 169.
+
+Pyramid 894 passed (+2), 2 skipped.
+
+### S6-B1463a — per-pair recommendation (OWNER DECISION, nothing applied)
+
+| pair | jaccard | recommendation |
+|---|---|---|
+| `squeeze_breakout_with_smart_money_long` x `squeeze_breakout` | 0.9982 | **DELETE the _with_smart_money variant.** B1194 removed its only differentiator; it is now a renamed copy. |
+| `institutional_insider_combo_long` x `rsi_oversold_with_smart_money_long` | 0.9993 | **REVERT B1197 (OR -> AND)** rather than delete. The AND was the documented thesis (Cohen-Malloy-Pomorski 2012 + Cohen-Frazzini-Malloy 2008, "multiplicative not additive"); the OR erased it. Reverting restores a distinct strategy instead of losing one. |
+| `prev_day_high_break\|short` x `prev_day_low_breakdown` | 0.9850 | **REMOVE the short branch from `prev_day_high_break`**, making it long-only. Keep the standalone: it is the more complete implementation (fires on outside days) and the name is semantically long. |
+| `macd_crossover\|short` x `macd_crossover_short` | 1.0000 | **DELETE `macd_crossover_short`.** Exact duplicate of the dual's branch, B874 precedent. |
+| `macd_crossover` x `macd_ichimoku` (long + short) | 0.999 | **INVESTIGATE then decide** — the ichimoku gate is near-inert on both sides; either it is mis-keyed (a B975-class silent gap) or genuinely non-binding. Do not delete before checking which. |
+
+All five are strategy-roster changes and need explicit owner approval per CLAUDE.md. None applied.
+
+### Remaining
+- **S6-B1458b** PF/Sortino demotion — still LAST, after S6-OPT-196 changes the population.
+- **S6-OPT-196** — now additionally bound by CHECKLIST #169.

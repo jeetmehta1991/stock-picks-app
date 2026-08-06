@@ -4812,3 +4812,36 @@ correction discovered in a probe is not applied until it is in the artifact-prod
 the real generator and diff its output before claiming a number is corrected -- an inline probe
 proves the diagnosis, never the fix.** This is the same class as L286 (hand-edited generated doc):
 the durable location for a change is the generator, always.
+
+### L303
+**A loosening campaign silently manufactured duplicate strategies, and the redundancy gate could
+not see it.** B1463's registration-time audit found 7 pairs at jaccard >= 0.95. Reading the source
+for three of them, the cause is not coincidence -- it is the Council 278 loosening campaign removing
+the ONLY gate that distinguished each strategy from a simpler sibling:
+  * B1194 dropped the smart_money requirement from `squeeze_breakout_with_smart_money_long`,
+    leaving bare `squeeze_fire_up` -- byte-equivalent to `squeeze_breakout` (jaccard 0.9982).
+  * B1197 changed `institutional_insider_combo_long` from (institutional_buy AND insider_cluster)
+    to OR, converging it onto `rsi_oversold_with_smart_money_long` (0.9993).
+  * `prev_day_high_break`'s SHORT branch is character-identical to standalone
+    `prev_day_low_breakdown` (0.9850; the 1.5% gap is OUTSIDE DAYS, where the dual resolves to its
+    long branch and the standalone still fires short) -- the B874 class again.
+Each loosening was individually reasonable and locally approved. None was checked against the rest
+of the roster, because de-dup lives downstream of the performance gate and only ever compares
+winners. **Generalized rule: loosening is not a local operation. Removing a gate moves a strategy
+through signal space and can land it on top of another registration, and the resulting duplicate
+doubles drag while presenting as two independent results in every count. Every loosening batch ends
+with a full-roster redundancy audit** (CHECKLIST #169). This binds S6-OPT-196 directly: it will
+loosen across 196 strategies, and without the audit it will manufacture duplicates at scale.
+
+### L304
+**My "suspected producer defect" was a duplicate registration, and the distinction mattered.**
+I reported `prev_day_high_break|short` x `prev_day_low_breakdown|short` at 0.9850 as a "suspected
+producer bug -- a break-above and a breakdown-below should not share entries", and ticketed it as
+such. Reading the source: both consume `below_prev_low AND vol_spike_12x AND below_vwap AND
+not _short_borrow_trap_active` -- identical gates. The SHORT branch of a strategy named for
+breaking the previous day's HIGH is simply a second copy of the breakdown strategy. No producer is
+wrong; the registration is. Had the ticket been worked as filed, the investigation would have
+started in `technical.py` chasing a signal that behaves correctly. **Generalized rule: before
+attributing a cross-strategy anomaly to a producer, read BOTH consumers' gate expressions. Two
+strategies sharing entries is far more often shared gates than a broken signal, and the producer
+hypothesis sends the investigation to the wrong file.**

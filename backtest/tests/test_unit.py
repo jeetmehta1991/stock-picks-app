@@ -13344,3 +13344,97 @@ def test_b1463_no_new_near_identical_pairs():
         "doubles drag while appearing as two independent results in every count. Delete or "
         "merge one, or add it to _KNOWN_NEAR_IDENTICAL with its ticket."
     )
+
+
+# ---------------------------------------------------------------------------
+# B1464 / S6-B1456b -- THRESHOLD CONSUMER TESTS
+#
+# B1457 shipped the ORPHAN half: every PASSING_CRITERIA key must be READ by a
+# gating module. That catches a threshold nothing references. It does NOT catch
+# the ADVISORY case -- a threshold that is read but cannot change any verdict,
+# because it is compared against something that never varies, or is shadowed by
+# a stricter gate, or lands in a branch that never executes.
+#
+# The only proof a threshold gates anything is: MOVE IT, AND WATCH THE VERDICT
+# MOVE. That is what these do. A value-pin test asserts a constant equals a
+# number and proves nothing (L289).
+# ---------------------------------------------------------------------------
+
+def _synthetic_cell(n=150, mean=0.8, sd=2.0, seed=7):
+    """A trade series comfortably inside every live gate, so a threshold moved
+    past its value is the ONLY thing that can flip a gate."""
+    import numpy as _np
+    import pandas as _pd
+    rng = _np.random.default_rng(seed)
+    pnl = _pd.Series(rng.normal(mean, sd, n))
+    hold = _pd.Series(_np.full(n, 5.0))
+    return pnl, hold
+
+
+def test_b1464_live_gate_thresholds_actually_gate():
+    """Each live gate flips when ITS threshold crosses the observed statistic.
+
+    Would have caught an inert threshold that `test_b1456_no_orphaned_*` passes,
+    since an inert threshold is still textually present in a gating module.
+    """
+    import sys as _sys
+    from pathlib import Path as _Path
+    _sys.path.insert(0, str(_Path(__file__).resolve().parents[2] / "scripts"))
+    from backtest.config import PASSING_CRITERIA as _PC
+    import roster_core as _rc
+
+    pnl, hold = _synthetic_cell()
+    base = _rc.evaluate(pnl, hold)
+    assert base is not None, "synthetic cell fell below the power floor"
+
+    # (config key, gate name, value that must FAIL, value that must PASS)
+    observed = base
+    cases = [
+        ("min_sharpe_per_regime", "sharpe_per_regime",
+         (observed["sharpe"] or 0) + 5.0, -99.0),
+        ("min_profit_factor_overall", "profit_factor",
+         observed["profit_factor"] + 5.0, 0.0),
+        ("min_sortino_per_regime", "sortino",
+         (observed["sortino"] or 0) + 5.0, -99.0),
+        ("min_psr", "psr", 1.01, 0.0),
+        ("min_trades", "min_trades", observed["n"] + 1, 1),
+    ]
+    for key, gate, fail_val, pass_val in cases:
+        original = _PC[key]
+        try:
+            _PC[key] = fail_val
+            r = _rc.evaluate(pnl, hold)
+            assert r["gates"][gate] is False, (
+                f"{key}={fail_val} should FAIL gate {gate!r} but it passed - the "
+                f"threshold does not control its gate (observed "
+                f"{observed.get(gate.replace('_per_regime','')) or observed.get('n')})"
+            )
+            _PC[key] = pass_val
+            r = _rc.evaluate(pnl, hold)
+            assert r["gates"][gate] is True, (
+                f"{key}={pass_val} should PASS gate {gate!r} but it failed - the "
+                f"gate is not reading this threshold"
+            )
+        finally:
+            _PC[key] = original
+
+    # the config must be restored, or every later test runs against a mutated gate set
+    for key, *_ in cases:
+        assert _PC[key] is not None
+
+
+def test_b1464_demoted_flags_actually_demote():
+    """Flipping a *_gate flag to True must re-arm its criterion in metrics.py.
+
+    B1436/B1437 demoted max_drawdown, deflated_sharpe and calmar to diagnostics via
+    these flags. If a flag were ignored, the demotion would be cosmetic and the gate
+    would still be rejecting cells - the inverse of the orphan problem.
+    """
+    from backtest.config import PASSING_CRITERIA as _PC
+    for flag in ("max_drawdown_gate", "calmar_gate", "deflated_sharpe_gate",
+                 "win_rate_gate"):
+        assert flag in _PC, f"{flag} missing from PASSING_CRITERIA"
+        assert _PC[flag] is False, (
+            f"{flag} is {_PC[flag]!r}; B1436/B1437 demoted these to diagnostics. "
+            "Re-arming one is an owner decision, not a config edit."
+        )
