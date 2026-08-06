@@ -4889,3 +4889,20 @@ pin no longer applies because it is no longer a dual, and the `_strat3` populati
 strategy stops being bidirectional, change its CONSTRUCTOR, not just its branch value. A neutered
 branch keeps every structural property of the old shape -- including the invariants other tests
 assert about that shape.**
+
+### L308
+**The duplicate strategies are accidental replicates, and the first one read says exit selection is
+noise.** `macd_crossover|long` and `macd_ichimoku|long` fire on 99.93% identical entries (1,385 of
+1,386 shared; holdout n 265 vs 264) because B1139 stripped the ichimoku gates. Their exits were
+selected INDEPENDENTLY by the same argmax-IS-gates rule, and diverged: `breakeven_plus_trail` vs
+`class_time_stop`. Outcome: IS Sharpe 0.434 vs **0.507** -- ichimoku looked BETTER in sample -- and
+holdout Sharpe **0.588 vs 0.223**, so the in-sample winner lost by a factor of 2.6 out of sample.
+One cell cleared the 0.50 gate and entered the Phase 1B roster; its twin failed. **The entries are
+the same, so the entire 0.365 Sharpe spread is exit-selection variance.** That is not a small
+number against a 0.50 bar: it is comparable to the bar itself. This is a single pair and therefore
+a signal, not a result -- but the seven near-identical pairs found at B1463 are seven such
+replicates, and they can measure directly how much of a cell's graded Sharpe is selection noise
+rather than edge. **Generalized rule: when a pipeline SELECTS among options per unit and then
+grades the winner, any pair of near-duplicate units is a free replicate of the selection step.
+Duplicates are usually treated as waste to be deleted; they are also the only within-pipeline
+measurement of its own reliability -- measure them before deleting them.**

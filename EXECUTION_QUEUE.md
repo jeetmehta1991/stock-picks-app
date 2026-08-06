@@ -8144,3 +8144,43 @@ before these fixes**; the pairs clear when the cube is regenerated, not before.
   enforced one; the C6 pre-commit stamp currently blesses the 2-file run. L306.
 - **S6-B1465c (MED)** — regenerate the cube so the redundancy audit reflects the B1465 fixes;
   until then `_KNOWN_NEAR_IDENTICAL` retains all 7 entries by necessity.
+
+---
+
+## B1466 (2026-08-06) — the duplicates are natural replicates; exit selection looks like noise
+
+Answering "what's next" surfaced a finding that outranks the queued work.
+
+`macd_crossover|long` vs `macd_ichimoku|long` — 99.93% identical entries (B1139 stripped the
+ichimoku gates), exits selected independently by the same rule:
+
+| cell | IS Sharpe | chosen exit | HOLDOUT Sharpe | verdict |
+|---|---|---|---|---|
+| `macd_crossover\|long` | 0.434 | `breakeven_plus_trail` | **0.588** | PASSED -> on the roster |
+| `macd_ichimoku\|long` | **0.507** | `class_time_stop` | **0.223** | FAILED |
+
+Same trades. The in-sample winner lost 2.6x out of sample. **The whole 0.365 Sharpe spread is
+exit-selection variance, against a 0.50 gate.** L308.
+
+This also confirms empirically why S6-B1455a mattered: de-dup never saw this pair because
+`macd_ichimoku` FAILED the gates, and de-dup runs only on passers.
+
+### Tickets opened
+- **S6-B1466a (HIGHEST — do before any Phase 1B sizing)** — use all 7 near-identical pairs as
+  replicates to quantify exit-selection noise: for each pair, entries are ~identical, so the
+  holdout-Sharpe difference is selection variance. If that variance is comparable to the gate
+  margin, some of the 13 roster cells passed on exit luck, and the honest fix is either an exit
+  chosen by rule rather than by search, or a selection-noise haircut applied to the bar.
+- **S6-B1466b (HIGH)** — the pairs must be measured BEFORE the cube is regenerated (S6-B1465c),
+  because regeneration with the B1465 fixes removes the duplicate cells and destroys the replicates.
+  Sequencing constraint, not a preference.
+
+### Recommended order from here
+1. **S6-B1466a** measure exit-selection noise (cheap, blocks sizing, and the data disappears at
+   step 3).
+2. **S6-B1465a/b** the pyramid definition — 2 pins have been red outside the 2-file run for an
+   unknown span; everything below rests on the pyramid meaning something.
+3. **S6-B1465c** regenerate the cube with the B1465 population (222/12/210).
+4. **S6-OPT-196** the optimisation programme, now bound by CHECKLIST #169.
+5. **Phase 1B sizing** — still gated on evidenced breadth ~2.9, and now additionally on the
+   outcome of (1).
