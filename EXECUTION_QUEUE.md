@@ -8243,3 +8243,41 @@ satisfies 29 strategies' present gate expressions: real work, out of this batch'
 - **S6-B1467c (MED)** — consider a selection-noise haircut: treat cells clearing the gate by less
   than the measured floor as PROVISIONAL rather than PASS. Would reclassify 12 of 13 — which is why
   it is a proposal for the owner, not an applied change.
+
+---
+
+## B1468 (2026-08-06) — S6-B1465b ANSWERED: the suite fails 172 while the gate passes 894
+
+Full run of `backtest/tests/` (431 files, 38m42s):
+
+| | count |
+|---|---|
+| **failed** | **172** |
+| passed | 5,470 |
+| skipped | 96 |
+| xfailed | 5 |
+| **errors** | **11** |
+
+Against the enforced gate — `test_unit.py + test_integration.py` — reporting **894 passed,
+2 skipped**. So the commit gate covers roughly **14%** of the suite's assertions, and **~3% of the
+whole suite is red** with no start date and no owner. The two pins found at B1465 were found by
+grepping for changed strategy names; no gate would ever have surfaced them. L312.
+
+**Not a claim that 172 are real defects.** Visible in the tail: `test_batch419_dashboard_tabs.py`
+(9 errors) and `test_engine_optimization_parity.py` (2 errors) look artifact-dependent — they need
+generated outputs that are not in the repo — and `test_batch743`'s are confirmed stale fixtures.
+The point is that **nobody knows the split**, because nothing runs them.
+
+**Evidence lost and being recovered (L311).** The run was piped through `tail -12`, so the captured
+file holds twelve lines and the 172 FAILED test NAMES — the actionable part — were discarded at
+write time. A second full run with complete capture is in flight; the per-file breakdown lands with it.
+
+### S6-B1467a is now a decision with a number attached
+- (a) **run all 431 and fix the red** — 172 failures + 11 errors of unknown composition
+- (b) **define an explicit tiered manifest** (DEC-503's 13 tiers) and enforce THAT, triaging the
+  172 into in-tier (must fix) and out-of-tier (delete or quarantine)
+- (c) **delete the unrun files** — honest, and loses whatever real coverage is buried in them
+
+**Recommendation: (b).** (a) blocks all other work behind an unscoped cleanup; (c) discards
+coverage before knowing what it protects. (b) makes the gate's scope explicit and turns the 172
+into a triaged, closable list rather than a standing unknown. Owner decision — nothing applied.

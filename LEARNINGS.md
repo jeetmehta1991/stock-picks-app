@@ -4942,3 +4942,30 @@ be named in that file and I grepped for references. **Generalized rule: a verifi
 defined by what it EXECUTES, not by what exists. Any test file outside the enforced command is
 documentation, and documentation cannot fail. Either a file is in the gate or it should be deleted
 -- an unrun test is worse than no test, because it produces the appearance of coverage.**
+
+### L311
+**The full-suite verdict landed and I had thrown away the evidence with my own `tail -12`.**
+The 38-minute run of all 431 test files returned **172 failed, 5470 passed, 96 skipped, 11 errors**
+-- the headline S6-B1465b needed. But the command was `pytest ... | tail -12`, so the captured
+artifact is twelve lines: the summary plus a fragment of the ERROR list. The 172 FAILED test names
+-- the only actionable part, and the input to deciding what the enforced pyramid should be -- were
+discarded at write time and cost a second 38-minute run to recover. The `tail` was added reflexively
+to keep tool output small, a habit that is correct for interactive probes and wrong for a
+long-running job whose output IS the deliverable. **Generalized rule: any command whose runtime
+exceeds a few minutes writes its FULL output to a file; apply `tail`/`head` to the FILE when
+reading, never to the pipe when producing. Truncating at capture time is irreversible, and the
+cost of rediscovery scales with the job you cannot cheaply repeat.** Detection signal: a
+backgrounded command whose stdout is piped into a filter.
+
+### L312
+**The enforced pyramid passes 894 while the suite it lives in fails 172.** Measured: 431 test
+files, of which the enforced command runs 2, reporting `894 passed, 2 skipped`. Running all 431:
+**172 failed / 5470 passed / 96 skipped / 11 errors**. So every commit in recent memory has been
+gated on a green signal covering roughly 14% of the assertions that exist, while ~3% of the whole
+suite is red -- and the two red pins I found at B1465 were found by grepping for changed strategy
+names, not by any gate. This is not an argument that all 172 are real defects: some will be stale
+fixtures (B743's are), some environment-dependent (the dashboard-tab and engine-parity errors look
+like missing generated artifacts). The point is that nobody knows which, because nothing runs them.
+**Generalized rule: the gap between "the suite" and "the enforced subset" must be measured and
+published, not assumed to be zero. An unmeasured gap defaults to being treated as zero by everyone
+reading a green stamp -- which is precisely the false assurance the stamp exists to prevent.**
