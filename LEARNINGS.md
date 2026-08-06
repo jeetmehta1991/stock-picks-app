@@ -4969,3 +4969,21 @@ like missing generated artifacts). The point is that nobody knows which, because
 **Generalized rule: the gap between "the suite" and "the enforced subset" must be measured and
 published, not assumed to be zero. An unmeasured gap defaults to being treated as zero by everyone
 reading a green stamp -- which is precisely the false assurance the stamp exists to prevent.**
+
+### L313
+**Two tests INSIDE the enforced pyramid fail when the whole suite runs, and pass in isolation --
+the commit gate's green is order-dependent.** The full-suite recapture attributed 2 of the 172
+failures to `test_integration.py`, which is one of the two files the enforced gate actually runs
+and which reports `894 passed` every commit. Run alone, both pass in 0.74s:
+`test_bug_30_check_circuit_breakers_gate_on_config` and
+`test_bug_232_intraday_extreme_uses_today_high_for_longs`. So they are not broken -- something
+earlier in a 431-file run mutates shared state they depend on. Checked and EXCLUDED as the
+polluter: my own B1464 threshold test (it mutates `PASSING_CRITERIA` but restores in `finally`,
+verified by running it immediately before both), and `test_b983_psr_companion_gate.py` (the only
+other file that writes to a config dict). The culprit is elsewhere and locating it needs bisection
+across 431 files at ~35 minutes a pass. **This is worse than the 429-unrun-files problem it was
+found inside: it means the gate that IS enforced passes partly BECAUSE it runs in isolation, so
+its green certifies "these tests pass when nothing else has run", not "these tests pass".**
+**Generalized rule: a test suite's isolation properties are part of its verdict. Any gate that runs
+a SUBSET must periodically run inside the FULL suite to confirm its result is order-independent --
+otherwise the subset is not a sample of the suite, it is a different experiment.**

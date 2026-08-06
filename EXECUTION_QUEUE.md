@@ -8281,3 +8281,39 @@ write time. A second full run with complete capture is in flight; the per-file b
 **Recommendation: (b).** (a) blocks all other work behind an unscoped cleanup; (c) discards
 coverage before knowing what it protects. (b) makes the gate's scope explicit and turns the 172
 into a triaged, closable list rather than a standing unknown. Owner decision — nothing applied.
+
+### B1468b — recaptured breakdown, and a sharper finding inside it
+
+Full suite re-run with complete capture (35m27s, identical totals: **172 failed / 5,470 passed /
+96 skipped / 11 errors**). Concentration by file:
+
+| failures+errors | file |
+|---|---|
+| 45 | `test_batch419_dashboard_tabs.py` |
+| 10 | `test_silent_gap_pyramid.py` |
+| 5 | `test_batch627_family_bug_sweep_not_s_get_ema_20.py` |
+| 4 each | `test_batch741...`, `test_batch728...`, `test_batch572...` |
+| 3 each | 11 files |
+| 2 each | 9 files incl. **`test_integration.py`** |
+
+**45 of 172 (26%) are one dashboard file** — consistent with the artifact-dependence hypothesis,
+not 172 independent defects.
+
+**THE FINDING THAT MATTERS: 2 failures are INSIDE the enforced pyramid.**
+`test_integration.py::test_bug_30_check_circuit_breakers_gate_on_config` and
+`::test_bug_232_intraday_extreme_uses_today_high_for_longs` fail in the full run and **pass in
+isolation in 0.74s**. The enforced gate's `894 passed` is therefore ORDER-DEPENDENT: it certifies
+"these pass when nothing else has run", not "these pass". L313.
+
+Polluter search so far — EXCLUDED: my B1464 threshold test (mutates `PASSING_CRITERIA`, restores in
+`finally`; verified by running it immediately before both), and `test_b983_psr_companion_gate.py`
+(the only other file writing to a config dict). Locating it needs bisection at ~35 min/pass.
+
+- **S6-B1468a (HIGH)** — bisect for the state polluter breaking the two `test_integration.py` tests.
+  This outranks the 429-unrun-files problem: it is a defect in the gate that IS enforced.
+- **S6-B1468b (MED)** — triage `test_batch419_dashboard_tabs.py` (45) and
+  `test_engine_optimization_parity.py` (11 errors) as artifact-dependent; if they require generated
+  outputs absent from the repo they belong in a separate tier that skips cleanly rather than errors.
+
+This strengthens the recommendation for **option (b)** on S6-B1467a: a manifest that names tiers
+AND requires the enforced tier to be re-validated inside a full run periodically.
