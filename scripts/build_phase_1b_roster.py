@@ -55,6 +55,17 @@ from backtest.config import (STRATEGIES_DISABLED_DATA_SCARCITY,  # noqa: E402
 # S6-B1452a (B1463): the window discipline, the conditioning and the gate evaluation now
 # live in ONE place. Two files independently defining IS_END is how the B1452 lookahead
 # would recur unnoticed, and S6-OPT-196 regrades the 196-strategy backlog repeatedly.
+# S6-B1467c (owner-approved 2026-08-06) -- SELECTION-NOISE HAIRCUT.
+# B1467 measured exit-selection variance using duplicate strategies as natural
+# replicates: near-identical entries, independently chosen exits. When the choice
+# diverged (~6% of 32 pairs) the holdout Sharpe gap was 0.369 -- 74% of the 0.50 gate --
+# and it flipped one verdict outright (macd_crossover 0.588 PASS vs macd_ichimoku 0.223
+# fail, on 99.93% identical trades). A cell clearing the gate by LESS than that gap
+# cannot be distinguished from one that cleared it on exit luck, so it is reported
+# PROVISIONAL rather than PASS. This changes no gate and drops no cell: it labels how
+# much of the margin is decision-grade.
+SELECTION_NOISE_FLOOR = 0.369
+
 from roster_core import (                                    # noqa: E402
     IS_START, IS_END, HO_START, HO_END, WINSORIZE, COST_BPS, MIN_N, FDR_Q, JACCARD,
     LIVE_GATES, DEMOTED, evaluate, select_exit,
@@ -393,8 +404,8 @@ def main() -> int:
     A("")
     A(f"## THE ROSTER - {len(kept)} cells")
     A("")
-    A("| # | Strategy | Dir | Cube | Tkrs | Exit | IS Shrp | HO Shrp | HO n | Exp | WR | PF | Payoff | Mirror |")
-    A("|---|---|---|---|---|---|---|---|---|---|---|---|---|---|")
+    A("| # | Strategy | Dir | Status | Cube | Tkrs | Exit | IS Shrp | HO Shrp | margin | HO n | Exp | WR | PF | Payoff | Mirror |")
+    A("|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|")
     for i, r in enumerate(sorted(kept, key=lambda x: -(x["holdout"]["sharpe"] or -9)), 1):
         h = r["holdout"]
         # B1455b: render every status the classifier can emit. This previously fell through
@@ -406,10 +417,29 @@ def main() -> int:
                "DUAL-SELF": "DUAL (own short leg)",
                "NEEDS-CREATION": "**NEEDS CREATION**"}.get(
                    r["mirror_status"], f"**UNCLASSIFIED: {r['mirror_status']}**")
-        A(f"| {i} | `{r['strategy']}` | {r['direction']} | {r['cube']} | {r['n_tickers']} | "
-          f"`{r['exit']}` | {fmt(r['is_sharpe'])} | {fmt(h['sharpe'])} | {h['n']} | "
+        margin = (h["sharpe"] or 0) - PC["min_sharpe_per_regime"]
+        status = "ROBUST" if margin >= SELECTION_NOISE_FLOOR else "**PROVISIONAL**"
+        r["margin"], r["status"] = round(margin, 3), status.strip("*")
+        A(f"| {i} | `{r['strategy']}` | {r['direction']} | {status} | {r['cube']} | {r['n_tickers']} | "
+          f"`{r['exit']}` | {fmt(r['is_sharpe'])} | {fmt(h['sharpe'])} | {margin:+.3f} | {h['n']} | "
           f"{fmt(h['expectancy'])} | {fmt(h['win_rate'],5,3)} | {fmt(h['profit_factor'])} | "
           f"{fmt(h['payoff'])} | {mir} |")
+    A("")
+    _rob = [r for r in kept if r.get("status") == "ROBUST"]
+    _prov = [r for r in kept if r.get("status") == "PROVISIONAL"]
+    A(f"**Status (S6-B1467c, owner-approved).** ROBUST **{len(_rob)}** / "
+      f"PROVISIONAL **{len(_prov)}**. A cell is ROBUST only if it clears the "
+      f"{PC['min_sharpe_per_regime']} Sharpe gate by more than the measured "
+      f"selection-noise floor of {SELECTION_NOISE_FLOOR}. That floor is the holdout-Sharpe gap "
+      "observed between duplicate strategies with ~identical entries whose exits were chosen "
+      "independently (B1467) -- i.e. the amount of a cell's margin that the exit choice alone "
+      "can account for. PROVISIONAL does NOT mean the cell failed: it cleared every live gate. "
+      "It means its margin is smaller than the pipeline's own decision noise, so PASS overstates "
+      "the certainty.")
+    A("")
+    A("**Do not read PROVISIONAL as \"12 of 13 are luck\".** Selection diverged in only ~6% of "
+      "the 32 replicate pairs, so the calibrated exposure is **roughly ONE roster cell** placed "
+      "by exit luck -- not twelve. The label marks which cells COULD be affected, not which are.")
     A("")
     A("## Symmetric short mirrors")
     A("")

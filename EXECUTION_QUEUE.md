@@ -8379,3 +8379,48 @@ than inline.
 dependent (`test_bug_30` patches `backtest.config.CIRCUIT_BREAKERS` via `mock.patch.dict`, which
 restores on exit), so the likely mechanism is another file replacing or permanently mutating a
 config object rather than a value inside it.
+
+---
+
+## B1470 (2026-08-06) — S6-B1467a + S6-B1467c SHIPPED (both owner-approved)
+
+### S6-B1467c — selection-noise haircut, APPLIED
+`PHASE_1B_ROSTER.md` now carries a **Status** column and a **margin** column. A cell is ROBUST only
+if it clears the 0.50 Sharpe gate by more than the measured selection-noise floor of **0.369**
+(B1467: the holdout-Sharpe gap between duplicate strategies with ~identical entries whose exits
+were chosen independently).
+
+**ROBUST 1 / PROVISIONAL 12.** Only `xs_momentum_with_smart_money_long` (margin +0.504) clears by
+more than the pipeline's own decision noise. The rest range +0.308 down to **+0.001**.
+
+No gate moved, no cell dropped. The doc states inline that PROVISIONAL does NOT mean failed — every
+one cleared all five live gates — and that the calibrated exposure is **~1 cell** placed by exit
+luck, not twelve, so the label marks which cells COULD be affected rather than which are.
+
+### S6-B1467a — tiered manifest, SHIPPED
+`backtest/tests/pyramid_tiers.py` declares three tiers, derived from the B1468 full run:
+
+| tier | files | meaning |
+|---|---|---|
+| **GATE** | **2** | every commit must pass — identical to what C6 already enforced, so adopting the manifest changed NO commit behaviour on day one |
+| **QUARANTINE** | **75** | known-red in the B1468 full run; awaiting triage into real-defect vs artifact-dependent |
+| **EXTENDED** | **354** | passing in the full run but outside the gate — DERIVED, so a new test file lands here automatically |
+| total | **431** | partition asserted |
+
+Pinned by `test_b1470_pyramid_tiers_partition_the_suite` (no file can belong to no tier — the exact
+invisibility that hid 429 files) and `test_b1470_gate_matches_the_enforced_command` (the manifest
+cannot document a gate nobody runs).
+
+**CHECKLIST #170** makes it binding: the enforced tier must be re-validated INSIDE a full run before
+any phase launch or roster promotion, and a GATE test that passes alone but fails in-suite is a
+BLOCKER. Without that clause a manifest would inherit the very blind spot it was written to fix.
+Checklist 169 -> 170. Gate pyramid 896 passed (+2).
+
+### Still open
+- **S6-B1468a** — the cross-file polluter breaking 2 GATE tests. Bisection tool corrected (B1469b);
+  a correct run is a multi-hour background job. **Until it closes, GATE's green is known
+  order-dependent** — recorded in the manifest docstring rather than assumed away.
+- **S6-B1467b** — repair `test_batch743` fixtures.
+- **S6-B1465c** — regenerate the cube (222/12/210), unblocked.
+- **S6-OPT-196** — the 196-strategy programme, bound by CHECKLIST #169.
+- **Phase 1B sizing** — now informed by ROBUST 1 / PROVISIONAL 12 and evidenced breadth ~2.9.

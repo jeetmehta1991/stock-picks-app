@@ -98,7 +98,9 @@
       "mirror_status": "REGISTERED",
       "mirror": "xs_momentum_bottom_decile_short",
       "asym_signals": [],
-      "mirror_registered": true
+      "mirror_registered": true,
+      "margin": 0.504,
+      "status": "ROBUST"
     },
     {
       "cube": "R5",
@@ -134,7 +136,9 @@
       "mirror_status": "REGISTERED",
       "mirror": "pead_short_negative_yoy_growth",
       "asym_signals": [],
-      "mirror_registered": true
+      "mirror_registered": true,
+      "margin": 0.085,
+      "status": "PROVISIONAL"
     },
     {
       "cube": "R5",
@@ -170,7 +174,9 @@
       "mirror_status": "REGISTERED",
       "mirror": "poc_magnet_short",
       "asym_signals": [],
-      "mirror_registered": true
+      "mirror_registered": true,
+      "margin": 0.308,
+      "status": "PROVISIONAL"
     },
     {
       "cube": "R5",
@@ -206,7 +212,9 @@
       "mirror_status": "DUAL-SELF",
       "mirror": "avwap_252_breakout",
       "asym_signals": [],
-      "mirror_registered": true
+      "mirror_registered": true,
+      "margin": 0.032,
+      "status": "PROVISIONAL"
     },
     {
       "cube": "R5",
@@ -242,7 +250,9 @@
       "mirror_status": "DUAL-SELF",
       "mirror": "macd_fast_crossover",
       "asym_signals": [],
-      "mirror_registered": true
+      "mirror_registered": true,
+      "margin": 0.037,
+      "status": "PROVISIONAL"
     },
     {
       "cube": "R5",
@@ -281,7 +291,9 @@
         "institutional_increased",
         "institutional_new_positions"
       ],
-      "mirror_registered": false
+      "mirror_registered": false,
+      "margin": 0.113,
+      "status": "PROVISIONAL"
     },
     {
       "cube": "R5",
@@ -317,7 +329,9 @@
       "mirror_status": "DUAL-SELF",
       "mirror": "macd_crossover",
       "asym_signals": [],
-      "mirror_registered": true
+      "mirror_registered": true,
+      "margin": 0.088,
+      "status": "PROVISIONAL"
     },
     {
       "cube": "R5",
@@ -353,7 +367,9 @@
       "mirror_status": "DUAL-SELF",
       "mirror": "force_index_breakout",
       "asym_signals": [],
-      "mirror_registered": true
+      "mirror_registered": true,
+      "margin": 0.019,
+      "status": "PROVISIONAL"
     },
     {
       "cube": "R5",
@@ -389,7 +405,9 @@
       "mirror_status": "DUAL-SELF",
       "mirror": "r1_break_retest",
       "asym_signals": [],
-      "mirror_registered": true
+      "mirror_registered": true,
+      "margin": 0.001,
+      "status": "PROVISIONAL"
     },
     {
       "cube": "R5",
@@ -425,7 +443,9 @@
       "mirror_status": "REGISTERED",
       "mirror": "smc_breaker_block_short",
       "asym_signals": [],
-      "mirror_registered": true
+      "mirror_registered": true,
+      "margin": 0.193,
+      "status": "PROVISIONAL"
     },
     {
       "cube": "R5",
@@ -463,7 +483,9 @@
       "asym_signals": [
         "institutional_increased"
       ],
-      "mirror_registered": false
+      "mirror_registered": false,
+      "margin": 0.183,
+      "status": "PROVISIONAL"
     },
     {
       "cube": "R5",
@@ -501,7 +523,9 @@
       "asym_signals": [
         "institutional_increased"
       ],
-      "mirror_registered": false
+      "mirror_registered": false,
+      "margin": 0.017,
+      "status": "PROVISIONAL"
     },
     {
       "cube": "R5",
@@ -539,7 +563,9 @@
       "asym_signals": [
         "institutional_new_positions"
       ],
-      "mirror_registered": false
+      "mirror_registered": false,
+      "margin": 0.061,
+      "status": "PROVISIONAL"
     }
   ],
   "all_rows": [
@@ -733,7 +759,9 @@
       "mirror_status": "DUAL-SELF",
       "mirror": "avwap_252_breakout",
       "asym_signals": [],
-      "mirror_registered": true
+      "mirror_registered": true,
+      "margin": 0.032,
+      "status": "PROVISIONAL"
     },
     {
       "cube": "R5",
@@ -2121,7 +2149,9 @@
       "mirror_status": "DUAL-SELF",
       "mirror": "force_index_breakout",
       "asym_signals": [],
-      "mirror_registered": true
+      "mirror_registered": true,
+      "margin": 0.019,
+      "status": "PROVISIONAL"
     },
     {
       "cube": "R5",
@@ -2907,7 +2937,9 @@
       "asym_signals": [
         "institutional_new_positions"
       ],
-      "mirror_registered": false
+      "mirror_registered": false,
+      "margin": 0.061,
+      "status": "PROVISIONAL"
     },
     {
       "cube": "R5",
@@ -3053,7 +3085,9 @@
       "asym_signals": [
         "institutional_increased"
       ],
-      "mirror_registered": false
+      "mirror_registered": false,
+      "margin": 0.183,
+      "status": "PROVISIONAL"
     },
     {
       "cube": "R5",
@@ -3123,7 +3157,9 @@
       "asym_signals": [
         "institutional_increased"
       ],
-      "mirror_registered": false
+      "mirror_registered": false,
+      "margin": 0.017,
+      "status": "PROVISIONAL"
     },
     {
       "cube": "R5",
@@ -3290,7 +3326,9 @@
         "institutional_increased",
         "institutional_new_positions"
       ],
-      "mirror_registered": false
+      "mirror_registered": false,
+      "margin": 0.113,
+      "status": "PROVISIONAL"
     },
     {
       "cube": "R5",
@@ -3522,7 +3560,9 @@
       "mirror_status": "DUAL-SELF",
       "mirror": "macd_crossover",
       "asym_signals": [],
-      "mirror_registered": true
+      "mirror_registered": true,
+      "margin": 0.088,
+      "status": "PROVISIONAL"
     },
     {
       "cube": "R5",
@@ -3622,7 +3662,9 @@
       "mirror_status": "DUAL-SELF",
       "mirror": "macd_fast_crossover",
       "asym_signals": [],
-      "mirror_registered": true
+      "mirror_registered": true,
+      "margin": 0.037,
+      "status": "PROVISIONAL"
     },
     {
       "cube": "R5",
@@ -4262,7 +4304,9 @@
       "mirror_status": "REGISTERED",
       "mirror": "pead_short_negative_yoy_growth",
       "asym_signals": [],
-      "mirror_registered": true
+      "mirror_registered": true,
+      "margin": 0.085,
+      "status": "PROVISIONAL"
     },
     {
       "cube": "R5",
@@ -4602,7 +4646,9 @@
       "mirror_status": "REGISTERED",
       "mirror": "poc_magnet_short",
       "asym_signals": [],
-      "mirror_registered": true
+      "mirror_registered": true,
+      "margin": 0.308,
+      "status": "PROVISIONAL"
     },
     {
       "cube": "R5",
@@ -4910,7 +4956,9 @@
       "mirror_status": "DUAL-SELF",
       "mirror": "r1_break_retest",
       "asym_signals": [],
-      "mirror_registered": true
+      "mirror_registered": true,
+      "margin": 0.001,
+      "status": "PROVISIONAL"
     },
     {
       "cube": "R5",
@@ -5398,7 +5446,9 @@
       "mirror_status": "REGISTERED",
       "mirror": "smc_breaker_block_short",
       "asym_signals": [],
-      "mirror_registered": true
+      "mirror_registered": true,
+      "margin": 0.193,
+      "status": "PROVISIONAL"
     },
     {
       "cube": "R5",
@@ -7118,7 +7168,9 @@
       "mirror_status": "REGISTERED",
       "mirror": "xs_momentum_bottom_decile_short",
       "asym_signals": [],
-      "mirror_registered": true
+      "mirror_registered": true,
+      "margin": 0.504,
+      "status": "ROBUST"
     },
     {
       "cube": "R5",

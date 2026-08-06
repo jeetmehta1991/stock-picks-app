@@ -5004,3 +5004,19 @@ aggregate signal is broken whenever the aggregate has other contributors -- and 
 probe can be skipped must assert the probe RAN before interpreting its outcome. Read the target's
 own result line; never infer it from a summary you do not control.** Both defects are now fixed in
 the tool, and an absent summary is reported INCONCLUSIVE rather than as a pass.
+
+### L315
+**Both owner-approved fixes were labelling changes, and that was the right shape for each.**
+S6-B1467c (selection-noise haircut) and S6-B1467a (tiered pyramid manifest) each had an obvious
+aggressive form -- drop the 12 marginal cells, delete the 429 unrun files -- and each was
+implemented instead as a HONEST LABEL over unchanged behaviour: cells are marked
+ROBUST/PROVISIONAL with no gate moved and no cell dropped; tiers are declared with GATE identical
+to what C6 already enforced, so adopting the manifest changed no commit behaviour on day one.
+The reason is the same in both cases: the underlying uncertainty was real but its SIZE was
+calibrated small (roughly one roster cell placed by exit luck; 45 of 172 failures concentrated in
+one artifact-dependent file). An aggressive fix would have destroyed information proportional to
+the whole population in response to a defect proportional to a fraction of it. **Generalized rule:
+when a measurement reveals that a published status overstates certainty, the first fix is to
+correct the STATUS, not to act on the underlying items. Labelling is reversible, preserves the
+evidence for a later decision, and forces the uncertainty to be stated in the artifact where
+readers meet it -- pruning does none of those.**

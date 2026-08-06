@@ -13439,3 +13439,48 @@ def test_b1464_demoted_flags_actually_demote():
             f"{flag} is {_PC[flag]!r}; B1436/B1437 demoted these to diagnostics. "
             "Re-arming one is an owner decision, not a config edit."
         )
+
+
+# ---------------------------------------------------------------------------
+# B1470 / S6-B1467a -- PYRAMID TIER MANIFEST INTEGRITY
+#
+# The manifest only means something if it PARTITIONS the suite. If a file can
+# belong to no tier, it is invisible exactly the way the 429 unrun files were.
+# ---------------------------------------------------------------------------
+
+def test_b1470_pyramid_tiers_partition_the_suite():
+    """GATE + QUARANTINE + EXTENDED == every test file, with no overlaps."""
+    import sys as _sys
+    from pathlib import Path as _Path
+    _sys.path.insert(0, str(_Path(__file__).resolve().parent))
+    import pyramid_tiers as pt
+
+    every = set(pt.all_test_files())
+    gate, quar, ext = set(pt.GATE), set(pt.QUARANTINE), set(pt.extended())
+
+    assert not (gate & quar), f"file in both GATE and QUARANTINE: {sorted(gate & quar)}"
+    assert gate <= every, f"GATE names a missing file: {sorted(gate - every)}"
+    assert quar <= every, (
+        f"QUARANTINE names a missing file: {sorted(quar - every)}. If it was deleted, "
+        "remove it from the manifest in the same commit."
+    )
+    assert gate | quar | ext == every, (
+        f"tiers do not cover the suite; unassigned: {sorted(every - (gate | quar | ext))}"
+    )
+
+
+def test_b1470_gate_matches_the_enforced_command():
+    """The manifest's GATE must equal what C6 actually enforces.
+
+    If these drift, the manifest documents a gate nobody runs -- the failure it exists
+    to prevent, one level up.
+    """
+    import sys as _sys
+    from pathlib import Path as _Path
+    _sys.path.insert(0, str(_Path(__file__).resolve().parent))
+    import pyramid_tiers as pt
+
+    assert set(pt.GATE) == {"test_unit.py", "test_integration.py"}, (
+        f"GATE is {sorted(pt.GATE)}; the enforced command runs test_unit.py + "
+        "test_integration.py. Change both together or neither."
+    )
