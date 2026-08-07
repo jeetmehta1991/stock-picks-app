@@ -8654,3 +8654,29 @@ Group 2 at B1441.
   compliance gap.
 - **S6-B1474e (LOW)** — `test_batch465_orphan_scripts_registry.py` exceeds 300s alone; needs its own
   budget or a scope reduction.
+
+---
+
+## B1475 (2026-08-07) — S6-B1473a: probe built, HALTs honestly, ticket stays OPEN
+
+`scripts/probe_disabled_strategies.py` calls `screen_instrument()` (the function owning the skip
+loop) and asserts BOTH halves: that no blocked strategy reaches the candidate list, AND that at
+least one enabled strategy does — because without the second half the first is vacuous.
+
+**Result: 0 strategies fire**, with synthetic OHLCV and with 500 bars of real cached AAPL history,
+and no exception is raised either way. The probe **HALTs** instead of claiming success. The guard
+written for the L314/L322 class caught its own author.
+
+**S6-B1473a remains OPEN.** There is still NO runtime evidence that the B1465 disables exclude
+anything — only source inspection, which is what the ticket exists to replace.
+
+**The finding underneath (L325):** verification kept collapsing to grep BECAUSE the runtime path is
+expensive to reach standalone. That difficulty is the root cause of the
+`feedback_wired_means_engine_consumed` violations, not carelessness.
+
+### Tickets
+- **S6-B1475a (HIGH)** — build a reusable ENGINE FIXTURE that reaches `screen_instrument()` on a
+  real call path (prefetched producer inputs + `xs_features` panel + populated signal dict), so
+  runtime verification stops being expensive enough to skip. This unblocks S6-B1473a and every
+  future "is it wired?" question.
+- **S6-B1473a** — stays open pending that fixture.

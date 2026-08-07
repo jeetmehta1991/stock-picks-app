@@ -5151,3 +5151,20 @@ of the whole set. **Generalized rule: concentration tells you about the concentr
 Before characterising a population from its largest cluster, ask what fraction of the POPULATION
 that cluster is — 45 of 172 failures was 1 of 72 files, and the two denominators support opposite
 conclusions.** Detection signal: any claim of the form "mostly X, because the biggest group is X".
+
+### L325
+**The engine's screening path cannot be exercised standalone, which is itself why the disable
+verification kept defaulting to source inspection.** S6-B1473a set out to prove at RUNTIME that the
+B1465 duplicate disables actually exclude their members. `screen_instrument()` -- the function that
+owns the skip loop -- returns zero candidates when called directly with synthetic OHLCV AND with 500
+bars of real cached AAPL history, raising no exception either time. So the producers it depends on
+need context a standalone call does not supply (prefetched news/13F/short-interest parquet, an
+`xs_features` panel, a populated signal dict). **The probe HALTED rather than reporting success**,
+because "no disabled strategy fired" is vacuously true when nothing fires at all -- the guard built
+for L314/L322 did its job on its own author. The finding underneath: verification kept collapsing to
+grep BECAUSE the runtime path is expensive to reach, and that difficulty is the actual root cause of
+the `feedback_wired_means_engine_consumed` violations, not carelessness. **Generalized rule: when a
+verification repeatedly degrades to source inspection, treat the DIFFICULTY OF THE RUNTIME PROBE as
+the defect and fix that -- build a fixture that reaches the real path once, and reuse it -- rather
+than re-committing to a discipline that the code makes expensive to follow.** S6-B1473a stays OPEN
+with the probe committed and honestly reporting HALT; the fixture is ticketed as S6-B1475a.
