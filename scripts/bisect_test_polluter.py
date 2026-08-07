@@ -49,7 +49,7 @@ TARGETS = [
 ]
 
 
-def run(files: list[str], timeout: int = 1800) -> bool:
+def run(files: list[str], timeout: int = 5400) -> bool:
     """True if the TARGETS still pass with `files` running first."""
     # NO -x. B1469 first attempt used it and the result was invalid: the candidate set
     # contains 172 known failures, so -x aborted at the first one and the TARGETS never
@@ -60,8 +60,16 @@ def run(files: list[str], timeout: int = 1800) -> bool:
     try:
         r = subprocess.run(cmd, cwd=REPO, capture_output=True, text=True, timeout=timeout)
     except subprocess.TimeoutExpired:
-        print(f"    [TIMEOUT] {len(files)} files - treating as NOT reproducing")
-        return True
+        # B1476: this used to `return True` ("targets pass, not reproducing"), which is the
+        # SAME defect as the -x abort and the summary-reading: an absent result read as a
+        # pass. It is the THIRD instance in this one tool, and it survived the B1469b and
+        # B1474 repairs because each fixed only the path that had just failed. A timeout is
+        # INCONCLUSIVE and must stop the search, never silently answer it (CHECKLIST #174).
+        raise SystemExit(
+            "[HALT] pytest exceeded " + str(timeout) + "s on " + str(len(files)) + " files. "
+            "The probe did not complete, so nothing can be concluded. The full suite takes "
+            "~35min, so a chunk this size needs a larger budget or a smaller first split."
+        )
     out = r.stdout + r.stderr
     _assert_pytest_ran(out, f'{len(files)} files')
     tail = out.strip().splitlines()[-1] if out.strip() else ""
@@ -70,8 +78,14 @@ def run(files: list[str], timeout: int = 1800) -> bool:
     target_failed = any(f"FAILED {t}" in out or t.split("::")[-1] in out.split("FAILED")[-1]
                         for t in TARGETS if "FAILED" in out)
     if not tail:
-        print(f"    {len(files):>4} files -> [NO SUMMARY] treating as INCONCLUSIVE")
-        return True
+        # B1476: FOURTH instance of the same defect in this one tool - it PRINTED
+        # "INCONCLUSIVE" and then returned True, which the caller reads as "targets pass".
+        # Naming a result inconclusive and then returning a verdict for it is worse than
+        # not naming it. Inconclusive must STOP the search.
+        raise SystemExit(
+            "[HALT] pytest produced no summary line for " + str(len(files)) + " files. "
+            "The probe's result is unknown and unknown is not a pass."
+        )
     ok = not target_failed
     print(f"    {len(files):>4} files -> {'targets PASS' if ok else 'targets FAIL'}   {tail[:70]}")
     return ok

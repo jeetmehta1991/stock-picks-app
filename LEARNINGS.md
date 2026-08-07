@@ -5168,3 +5168,24 @@ verification repeatedly degrades to source inspection, treat the DIFFICULTY OF T
 the defect and fix that -- build a fixture that reaches the real path once, and reuse it -- rather
 than re-committing to a discipline that the code makes expensive to follow.** S6-B1473a stays OPEN
 with the probe committed and honestly reporting HALT; the fixture is ticketed as S6-B1475a.
+
+### L326
+**One ~100-line tool contained FOUR separate paths that converted "unknown" into "pass", and I
+fixed them one at a time across three batches while writing the checklist item about the class.**
+`bisect_test_polluter.py`'s `run()` returns True meaning "the targets passed, this chunk is not the
+polluter". The four ways it could say that without knowing:
+  1. **`-x` abort** - stopped at the first of 172 unrelated failures, probe never ran (B1469b)
+  2. **verdict read from the run-wide summary** - `" failed" not in tail` reflected those 172 (B1469b)
+  3. **`--timeout=120`** - an uninstalled plugin made pytest reject its arguments and run nothing (B1474)
+  4. **`except TimeoutExpired: return True`** and **`if not tail: print("INCONCLUSIVE"); return True`**
+     - a 30-minute cap on a ~35-minute job, and a branch that NAMED the result inconclusive and
+     then returned a verdict for it anyway (B1476)
+Each repair fixed the path that had just failed, and each time I recorded the tool as fixed. Cause
+4 was reached only after 1-3 were gone, and it printed a conclusion identical to the earlier false
+ones. I wrote CHECKLIST #174 ("prove the probe RAN") between instances 3 and 4 and still left 4 in
+place. **Generalized rule: when a function has a DEFAULT-SAFE-LOOKING return, enumerate EVERY path
+that reaches it before declaring the function fixed - grep the return value, not the bug. In a
+search or diagnostic, the safe default is HALT, never the answer that lets the search continue:
+"not reproducing" advances a bisection past the truth, so a bug that produces it is invisible by
+construction.** All four now raise SystemExit; the only `return True` left in the file is inside a
+comment describing this.

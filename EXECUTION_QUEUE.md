@@ -8680,3 +8680,26 @@ expensive to reach standalone. That difficulty is the root cause of the
   runtime verification stops being expensive enough to skip. This unblocks S6-B1473a and every
   future "is it wired?" question.
 - **S6-B1473a** — stays open pending that fixture.
+
+---
+
+## B1476 (2026-08-07) — the bisection ran for real, then timed out and called it a pass
+
+Step 0 finally shows genuine pytest output (`2 passed in 2.14s`) — the B1474 fix worked. **Step 1
+timed out at the 1800s subprocess cap and the handler returned "not reproducing"**, reproducing the
+same false conclusion a third and fourth time.
+
+**Four separate unknown-as-pass paths existed in one ~100-line tool** (L326): `-x` abort, summary
+reading, `--timeout` plugin rejection, and now the TimeoutExpired handler plus a branch that printed
+"INCONCLUSIVE" and returned a verdict anyway. Each repair fixed only the path that had just failed.
+
+**Fixed:** subprocess cap 1800s -> 5400s (the full suite alone takes ~35min, so 30 was never
+enough), and BOTH remaining paths now `raise SystemExit`. Verified: the only `return True` left in
+the file is inside a comment.
+
+**S6-B1468a still OPEN and still unmeasured.** The bisection has never completed a step-1
+reproduction. Next run needs the larger budget and should start from a SMALLER first split rather
+than all 430 files at once.
+
+- **S6-B1476a (HIGH)** — re-run the bisection with the corrected budget, starting from halves rather
+  than the full list, as a dedicated long-running job.
