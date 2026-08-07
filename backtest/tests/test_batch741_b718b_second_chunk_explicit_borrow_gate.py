@@ -34,7 +34,6 @@ B741_STRATEGIES = [
     "classification_change_from_tech_short",
     "vol_spike_2x_below_ema_50_short",
     "risk_off_bond_equity_short",
-    "dxy_headwind_multinational_short",
     "pairs_mean_reversion_short",
     "news_momentum_short",
     "news_reversal_short",
@@ -43,7 +42,9 @@ B741_STRATEGIES = [
 
 def test_b741_pin1_count_matches_25():
     """B741 second chunk -- exactly 25 strategies refactored this batch."""
-    assert len(B741_STRATEGIES) == 25
+    # B1471: 25 -> 24 after B1189 deleted dxy_headwind_multinational_short from the
+    # cohort. The pin was never updated because this file is outside the enforced gate.
+    assert len(B741_STRATEGIES) == 24
 
 
 def test_b741_pin2_all_25_registered():

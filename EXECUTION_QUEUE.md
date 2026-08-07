@@ -8424,3 +8424,47 @@ Checklist 169 -> 170. Gate pyramid 896 passed (+2).
 - **S6-B1465c** — regenerate the cube (222/12/210), unblocked.
 - **S6-OPT-196** — the 196-strategy programme, bound by CHECKLIST #169.
 - **Phase 1B sizing** — now informed by ROBUST 1 / PROVISIONAL 12 and evidenced breadth ~2.9.
+
+---
+
+## B1471 (2026-08-06) — S6-B1467b CLOSED; the quarantine's first triage found a real defect
+
+### S6-B1467b — `test_batch743` fixtures repaired, 7 of 7 pass
+The hand-maintained `_permissive_bearish_dict()` / `_permissive_bullish_dict()` (~55 literal keys)
+had drifted so far that **nothing fired under them**, so pin5 and pin7 asserted on empty lists.
+Replaced with fixtures **DERIVED by parsing each strategy's own `fl =` / `fs =` expressions**, so
+they cannot drift: add a gate to a strategy and the fixture grows the key on the next run. Side
+assignment matters — setting every key True makes both branches fire and `_strat3` resolves to
+direction `avoid` (measured 21 of 29), so long-side keys are False in the bearish dict and vice
+versa. Verified: 20 shorts fire, 23 longs fire, 0 shorts leak at DTC=10, 23 longs still fire at
+DTC=10. **7 passed.**
+
+### Triage of the sibling files split into two classes (L316)
+**Stale pins — FIXED:** `test_b741_pin2` named `dxy_headwind_multinational_short`, deleted at B1189
+(2026-07-06); `test_b741_pin1` counted 25 where the cohort is now 24.
+
+**A REAL DEFECT — reported, NOT fixed:** `test_b741_pin5` reports **53 pure-short strategies against
+a cohort of 49**. The 4 uncovered:
+
+| strategy | borrow gate | declares `borrow_ok` | |
+|---|---|---|---|
+| `insider_cluster_concentrated_sell_short` | yes | yes | compliant, merely unregistered (B1010) |
+| `news_sentiment_short` | yes | **NO** | B1382 |
+| `poc_magnet_short` | yes | **NO** | B1382 |
+| `xs_combined_momentum_high_ivol_short` | yes | **NO** | B1382 |
+
+The three B1382 mirror shorts have the FUNCTIONAL gate but skip the S4-B713 audit-trail declaration.
+**pin5 is now correctly red for a real reason** instead of incorrectly red for a stale one — left
+failing deliberately rather than pinned away.
+
+`test_batch744_borrow_gate_lint.py` REVERTED to HEAD — its `pin1_live_screener_has_zero_violations`
+reports actual lint violations, a third class, out of this batch's scope.
+
+### Tickets
+- **S6-B1471a (HIGH)** — add `borrow_ok` to `signals_used` for the 3 B1382 mirror shorts and
+  register all 4 in the B740/B741 cohorts. Restores compliance with the owner-approved S4-B713
+  discipline; needs approval because it edits strategy declarations.
+- **S6-B1471b (HIGH)** — triage the remaining ~73 QUARANTINE files. B1471 shows the split is
+  real-finding vs stale-pin vs lint-violation, and cannot be assumed.
+- **S6-B1471c (MED)** — the derived-fixture pattern should replace hand-maintained signal dicts
+  across the other borrow-gate test files; they will drift the same way.

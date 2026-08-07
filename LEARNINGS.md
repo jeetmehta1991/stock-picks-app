@@ -5020,3 +5020,23 @@ when a measurement reveals that a published status overstates certainty, the fir
 correct the STATUS, not to act on the underlying items. Labelling is reversible, preserves the
 evidence for a later decision, and forces the uncertainty to be stated in the artifact where
 readers meet it -- pruning does none of those.**
+
+### L316
+**The quarantined tests contain real defects, not only stale pins -- and one of them caught a
+compliance gap that shipped 12 days ago.** Repairing `test_batch743` (S6-B1467b) led into its
+sibling files, where the failures split into two genuinely different classes:
+  * **STALE PINS** -- `test_b741_pin2` still named `dxy_headwind_multinational_short`, deleted at
+    B1189 on 2026-07-06; `test_b741_pin1` counted a 25-strategy cohort that is now 24. Bookkeeping
+    that no batch updated because the file sits outside the enforced gate.
+  * **A REAL FINDING** -- `test_b741_pin5` reports 53 pure-short strategies against a cohort of 49.
+    Probing the 4 uncovered: `insider_cluster_concentrated_sell_short` (B1010) is fully compliant
+    and merely unregistered, but the three B1382 mirror shorts (`news_sentiment_short`,
+    `poc_magnet_short`, `xs_combined_momentum_high_ivol_short`) carry the functional borrow gate
+    while **failing to declare `borrow_ok` in `signals_used`** -- the S4-B713 audit-trail
+    discipline. B1382 wired three strategies and skipped a required step, and the test that would
+    have said so was never run.
+This corrects my B1468 framing. I characterised the 172 failures as probably concentrated and
+artifact-dependent (45 in one dashboard file), which was true but incomplete: the tail contains
+findings. **Generalized rule: a red test outside the gate is UNTRIAGED, not presumed stale. The
+prior that "old failing tests are bit-rot" is what let a compliance gap sit unreported -- triage
+distinguishes stale-pin from real-finding, and only measurement can tell them apart.**

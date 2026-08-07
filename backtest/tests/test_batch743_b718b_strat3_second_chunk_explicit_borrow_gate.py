@@ -149,110 +149,57 @@ def test_b743_pin7_long_branch_unaffected_by_borrow_trap():
 
 
 # --------------------------------------------------------------------------
+
+# ---------------------------------------------------------------------------
+# B1471 (S6-B1467b) -- FIXTURES DERIVED FROM THE STRATEGIES, NOT HAND-MAINTAINED.
+#
+# The previous fixtures were literal dicts of ~55 keys. They had drifted so far
+# from the strategies' current gates that NOTHING fired under them: pin5 ("expect
+# >=1 SHORT fire") and pin7 ("expect >=1 LONG fire") failed on empty lists, and had
+# been failing for an unknown span because this file is outside the enforced 2-file
+# gate (L310/L312). A stale fixture does not fail loudly -- it asserts nothing and
+# still reports red, so it reads as a broken test rather than a broken fixture.
+#
+# Root cause is that the fixture duplicated knowledge the strategies already hold.
+# Every gate change (B722 STATE->EVENT, B1139/B1194/B1197 loosening, B1465 disables)
+# silently invalidated it. These build the dicts BY PARSING the strategies' own
+# `fl =` and `fs =` expressions, so the fixture cannot drift from what it tests:
+# add a gate to a strategy and the fixture grows the key on the next run.
+#
+# Side assignment matters: setting every key True makes both branches fire at once
+# and `_strat3` resolves the conflict to direction "avoid" (measured: 21 of 29), so
+# the long-side keys are set False in the bearish dict and vice versa.
+# ---------------------------------------------------------------------------
+
+def _side_keys() -> tuple[set, set]:
+    """(long-side keys, short-side keys) across B743_STRATEGIES, read from source."""
+    import inspect
+    import re as _re
+    long_k, short_k = set(), set()
+    for name in B743_STRATEGIES:
+        src = inspect.getsource(ALL_STRATEGIES[name])
+        fl = _re.search(r"^\s*fl\s*=(.*?)(?=^\s*fs\s*=)", src, _re.S | _re.M)
+        fs = _re.search(r"^\s*fs\s*=(.*?)(?=^\s*return)", src, _re.S | _re.M)
+        if fl:
+            long_k |= set(_re.findall(r's\.get\("([a-z0-9_]+)"', fl.group(1)))
+        if fs:
+            short_k |= set(_re.findall(r's\.get\("([a-z0-9_]+)"', fs.group(1)))
+    return long_k, short_k
+
+
 def _permissive_bearish_dict() -> dict:
-    return {
-        "days_to_cover": 0.0,
-        # Bollinger SHORT
-        "below_bollinger_lower": False, "above_bollinger_upper": True,
-        "bollinger_distance_pct": 0.05, "bb_width_pct": 0.05, "bb_squeeze_active": True,
-        # Keltner
-        "above_keltner_upper": True, "below_keltner_lower": False,
-        # Stoch
-        "stoch_overbought": True, "stoch_bearish_cross": True,
-        # Volume
-        "vol_spike_15x": True, "vol_spike_2x": True, "vol_below_avg": True,
-        "below_volume_breakout_high": True, "above_volume_breakout_high": False,
-        "force_index_bearish": True, "below_donchian_lower_recent_3d": True,
-        # Candle bearish
-        "evening_star": True, "bearish_engulfing_support": False,
-        "bearish_engulfing": True,
-        # MACD / Ichimoku
-        "macd_bearish": True, "macd_bear_cross_recent": True,
-        "ichi_below_cloud": True, "ichi_below_cloud_break_recent_5d": True,
-        "weekly_below_cloud": True, "below_kumo_top": True,
-        # BB squeeze
-        "bb_squeeze_release_down": True,
-        # Pivot fib
-        "near_pivot_resistance_fib": True,
-        # Golden cross volume (SHORT = death cross + volume)
-        "death_cross_volume_short": True,
-        # CPR
-        "cpr_narrow_tight": True, "cpr_narrow": True,
-        # Camarilla
-        "near_camarilla_r4": True,
-        # Supertrend confluence
-        "supertrend_bearish": True, "ichi_below_cloud_break_recent_5d": True,
-        "adx_trending": True,
-        # Williams stoch
-        "williams_r": -10, "stoch_overbought": True,
-        # Break retest
-        "resistance_break_retest": True, "dc20_break_retest_short": True,
-        "r1_break_retest_short": True, "below_avwap_252low": True,
-        "above_avwap_50": False,
-        # Trend
-        "below_ema_50": True, "below_ema_200": True, "below_sma_50": True,
-        "below_ema_200_break_recent_5d": True,
-        # 200 EMA gate
-        "price_above_ema_200": False,
-        # Momentum
-        "rsi_14": 75.0, "rsi_21": 75.0, "rsi_9": 75.0,
-        # SMC SHORT
-        "smc_inverse_fvg_short": True, "smc_bos_short_recent": True,
-        "smc_bos_short_retest_active": True, "smc_choch_short_recent": True,
-        "smc_order_block_short_bounce": True, "smc_liquidity_sweep_short_reversal": True,
-        # AVWAP
-        "below_avwap_252low": True, "above_avwap_50": False,
-        "avwap_50_rejection_short": True,
-    }
+    """Short-side gates True, long-side False, borrow trap OFF."""
+    long_k, short_k = _side_keys()
+    d = {k: False for k in long_k}
+    d.update({k: True for k in short_k})
+    d["days_to_cover"] = 0.0
+    return d
 
 
 def _permissive_bullish_dict() -> dict:
-    return {
-        "days_to_cover": 0.0,
-        # Bollinger LONG
-        "below_bollinger_lower": True, "above_bollinger_upper": False,
-        "bb_squeeze_active": True, "bb_squeeze_release_up": True,
-        # Keltner
-        "below_keltner_lower": True,
-        # Stoch
-        "stoch_oversold": True, "stoch_bullish_cross": True,
-        # Volume
-        "vol_spike_15x": True, "vol_spike_2x": True,
-        "above_volume_breakout_high": True, "force_index_bullish": True,
-        "above_donchian_upper_recent_3d": True,
-        # Candle bullish
-        "morning_star": True, "bullish_engulfing": True,
-        "bullish_engulfing_support": True,
-        # MACD / Ichimoku
-        "macd_bullish": True, "macd_bull_cross_recent": True,
-        "ichi_above_cloud": True, "ichi_above_cloud_break_recent_5d": True,
-        "weekly_above_cloud": True, "above_kumo_bottom": True,
-        # Pivot fib
-        "near_pivot_support_fib": True,
-        # Golden cross volume
-        "golden_cross_50_200_recent": True, "vol_spike_15x": True,
-        # CPR
-        "cpr_narrow_tight": True, "cpr_narrow": True,
-        # Camarilla
-        "near_camarilla_s3": True,
-        # Supertrend confluence
-        "supertrend_bullish": True, "ichi_above_cloud_break_recent_5d": True,
-        "adx_trending": True,
-        # Williams stoch
-        "williams_r": -90, "stoch_oversold": True,
-        # Break retest
-        "support_break_retest": True, "dc20_break_retest_long": True,
-        "r1_break_retest_long": True, "above_avwap_252high": True,
-        # Trend bullish
-        "price_above_ema_50": True, "price_above_ema_200": True, "above_sma_50": True,
-        "price_above_ema_200_break_recent_5d": True,
-        # Momentum
-        "rsi_14": 25.0, "rsi_21": 25.0, "rsi_9": 25.0,
-        # SMC LONG
-        "smc_inverse_fvg_long": True, "smc_bos_long_recent": True,
-        "smc_bos_long_retest_active": True, "smc_choch_long_recent": True,
-        "smc_order_block_long_bounce": True, "smc_liquidity_sweep_long_reversal": True,
-        # AVWAP
-        "above_avwap_252high": True, "above_avwap_50": True,
-        "avwap_50_reclaim_long": True,
-    }
+    """Long-side gates True, short-side False, borrow trap OFF."""
+    long_k, short_k = _side_keys()
+    d = {k: False for k in short_k}
+    d.update({k: True for k in long_k})
+    d["days_to_cover"] = 0.0
+    return d
