@@ -5081,3 +5081,29 @@ them so failure BLOCKS the commit (`script && git commit`), never so the commit 
 step -- and when a traceback appears anywhere in a turn's output, resolve it before writing any
 number that depends on it.** The Truth-Standard cost here was real: the false count reached a
 pushed commit message and had to be retracted rather than merely fixed.
+
+### L320
+**CLAUDE.md was not synced once in ~45 batches, and no gate noticed - the B1119 class recurring at
+twice the length.** CHECKLIST #67 mandates a per-turn doc-sync of every forward-looking non-archive
+document, and CLAUDE.md is the explicitly named source-of-truth. Its banner sat stale on three of
+four counts for this entire session: test count 880 (actual 896), `CHECKLIST #1-#158` (actual
+#1-#181), `LEARNINGS L1-L209` (actual L1-L319). B1119 remediated exactly this failure across 22
+batches and added the rule; this instance ran roughly twice as long and was caught only because the
+owner asked for an audit. The mechanical gates that DID fire all session (C6 pyramid stamp, C8
+queue-entry, Gate B Stop hook) each enforce a different obligation and none of them reads CLAUDE.md.
+**Generalized rule: a per-turn doc obligation with no mechanical check is not a rule, it is an
+intention. Every named source-of-truth document needs a freshness assertion wired into the same
+pre-commit path as the counts it publishes - the ones that held this session were programmatic
+without exception, and the ones that decayed were prose.** Ticketed S6-B1473c.
+
+### L321
+**Fifty of fifty-seven learnings were never codified, and I recorded each one as if the loop had
+closed.** The skill's Phase 5 requires a LEARNINGS entry AND a CHECKLIST addition for any new
+failure class. I wrote L263-L319 diligently and added seven checklist items, so **50 entries
+described a failure with nothing preventing its recurrence** - while every turn's compliance
+statement reported Phase-5 satisfied, because I was checking that an L-entry existed rather than
+that the class was guarded. Remediated by grouping the uncovered entries into 11 class-level items
+(#171-#181); one item per entry would have produced 50 near-duplicates and been the audit theater
+#136 exists to reject. **Generalized rule: writing the lesson is the cheap half. A miss is not
+closed until something MECHANICAL or PROCEDURAL would catch its class next time - and compliance
+self-checks must verify the guard exists, not that the note was written.**

@@ -8511,3 +8511,70 @@ traceback printed directly above the commit hash and I read past it. L319.
 by `test_b1470_pyramid_tiers_partition_the_suite`. Three files cleared, not four —
 `test_batch740` was never broken, so the honest count of QUARANTINE files fixed by B1472 is **3**.
 The 24/24 pass across the four-file borrow-gate family stands as measured.
+
+---
+
+## B1473 (2026-08-07) — owner-directed compliance audit: learnings codified + silent misses
+
+### Finding 1 — 50 of 57 session learnings had NO checklist item
+Owner: *"as per skill each learning and mistake needs to be codified in the checklist too"*. Measured:
+**L263-L319 = 57 entries this session; only 7 cited in CHECKLIST.md** (L263, L270, L271, L289, L292,
+L303, L313) via items #164-#170. **50 uncovered.**
+
+Remediated by grouping the uncovered entries into distinct FAILURE CLASSES rather than one item per
+entry (one-per-entry would be 50 near-duplicate items and would itself be audit theater):
+
+| new item | covers | class |
+|---|---|---|
+| **#171** | L286, L302 | content goes in the GENERATOR, never the generated file |
+| **#172** | L285, L299 | verify the RENDERED artifact; name WHICH cardinality |
+| **#173** | L306, L311, L319 | long jobs capture fully; mutating scripts GATE the commit |
+| **#174** | L314 | a diagnostic reads its own probe and proves the probe RAN |
+| **#175** | L288, L294, L297 | ship sensitivity + leave-one-out + N_eff beside any headline |
+| **#176** | L291, L295, L300, L309 | measure direction; label funnel stage; implausible coef = alarm; n=1 is a hypothesis |
+| **#177** | L298 | population counts come from a sum-ASSERTING partition |
+| **#178** | L287, L290, L293, L305 | name gates for what they compute; declare the tier; alive = can reject |
+| **#179** | L307, L317, L318 | derive invariants once; change the CONSTRUCTOR; pins change LAST |
+| **#180** | L304, L316 | read both consumers before blaming a producer; red-outside-gate is UNTRIAGED |
+| **#181** | L308, L315 | duplicates are free replicates; correct the STATUS before pruning items |
+
+CHECKLIST **170 -> 181**.
+
+### Finding 2 (SILENT MISS, significant) — CLAUDE.md never synced this session
+`CHECKLIST #67` mandates a per-turn doc-sync of every forward-looking non-archive doc, and CLAUDE.md
+is explicitly the named source-of-truth. **It was not updated once across ~45 batches this session.**
+Stale on 3 of 4 banner counts: test count 880 (actual 896), `CHECKLIST #1-#158` (actual #1-#181),
+`LEARNINGS L1-L209` (actual L1-L319). This is the **B1119 class recurring** — that batch remediated
+22 batches of silent doc-sync suspension, and the same failure ran ~2x longer here without being
+noticed by me or by any gate.
+
+**Remediated this batch:** banner now carries the corrected counts, the 222-registered/**210-active**
+split with the B1465 duplicate disables named, the full-suite caveat (gate runs 2 of 431; 172 failed;
+GATE green is order-dependent), and the Phase 1B roster status (**ROBUST 1 / PROVISIONAL 12**,
+evidenced breadth **~2.9**, backlog **196**).
+
+### Finding 3 (SILENT MISS) — the internal task list drifted from reality
+Four rows were wrong at the time of the audit: a completed full-suite run still marked in_progress,
+and S6-B1467a / S6-B1467c / S6-B1467b marked pending after all three had shipped (B1470, B1471).
+A tracking artifact that disagrees with the queue is the same class the queue-anchor rule exists to
+prevent, one level in.
+
+### Finding 4 (SILENT MISS) — a promise not kept
+B1469 stated the corrected bisection would be launched "at the end of the turn". It was not launched,
+and three turns passed without the omission being noticed. **S6-B1468a remains open with the tool
+fixed but never re-run** — so the GATE-green order-dependence is still unmeasured.
+
+### Finding 5 (VERIFICATION GAP, not yet closed) — B1465 disables never runtime-probed
+The three `STRATEGIES_DISABLED_DUPLICATE` entries were verified by reading `config.py` and counting
+the registry. **No runtime probe confirms the screener's skip loop actually excludes them on a real
+call path** — precisely the `feedback_wired_means_engine_consumed` rule ("wired means engine-consumed,
+not grep-found"). Ticketed rather than claimed.
+
+### Tickets opened
+- **S6-B1473a (HIGH)** — runtime-probe the B1465 duplicate disables through the screener call path;
+  registry counts are not engine-consumption evidence.
+- **S6-B1473b (HIGH)** — re-run the CORRECTED `bisect_test_polluter.py` as a dedicated background
+  job. Closes the B1469 unkept promise and S6-B1468a.
+- **S6-B1473c (MED)** — add a mechanical CLAUDE.md banner freshness check to `sync_doc_counts.py`
+  (test count, CHECKLIST max, LEARNINGS max, active-strategy count), so this cannot silently rot for
+  45 batches again. Prose rules decayed here; only a programmatic check has ever held.
