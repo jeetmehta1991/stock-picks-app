@@ -5137,3 +5137,17 @@ looked at closely. **Generalized rule: a tool repaired in response to a wrong re
 until it has been re-run on a case with a KNOWN answer. Where a full run is too expensive, run a
 cheap positive control -- here, one file known to fail and one known to pass -- before declaring
 the repair complete.**
+
+### L324
+**I inferred a population's composition from where its members were concentrated, and the inference
+was backwards.** At B1468 I reported the full suite's 172 failures as "consistent with
+artifact-dependence, not 172 independent defects", reasoning that 45 of them sat in one dashboard
+file and 11 were engine-parity errors. The measured triage (each file run alone, 72 files) returns
+**BEHAVIOUR 36 / STALE-PIN 31 / ARTIFACT 2 / UNKNOWN 2 / TIMEOUT 1**. Only **two files** are
+artifact-dependent. The concentration observation was true and load-bearing for nothing: a large
+failure count inside one file means that FILE is one problem, and says nothing whatever about the
+other 71 files. I let a comforting explanation for the biggest cluster stand in for a description
+of the whole set. **Generalized rule: concentration tells you about the concentrated members only.
+Before characterising a population from its largest cluster, ask what fraction of the POPULATION
+that cluster is — 45 of 172 failures was 1 of 72 files, and the two denominators support opposite
+conclusions.** Detection signal: any claim of the form "mostly X, because the biggest group is X".

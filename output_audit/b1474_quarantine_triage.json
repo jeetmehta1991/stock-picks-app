@@ -1,0 +1,372 @@
+{
+  "n_files": 72,
+  "counts": {
+    "BEHAVIOUR": 36,
+    "STALE-PIN": 31,
+    "ARTIFACT": 2,
+    "TIMEOUT": 1,
+    "UNKNOWN": 2
+  },
+  "rows": [
+    {
+      "file": "test_b1042_engine_state_emit.py",
+      "class": "BEHAVIOUR",
+      "detail": "E   AssertionError: launch_r5_master_4y_v2.sh must INVOKE B1019 monitor per Council 136 Option-7 Layer 2; mere"
+    },
+    {
+      "file": "test_b936_section_09b_extractor.py",
+      "class": "BEHAVIOUR",
+      "detail": "E   AssertionError: dxy_headwind_multinational_short must surface DISABLED_MISSING_PRODUCER; got: []"
+    },
+    {
+      "file": "test_b970_stream_v_reproducibility.py",
+      "class": "BEHAVIOUR",
+      "detail": "E   AssertionError: assert ['prev_day_lo...cluster_long'] == ['prev_day_hi...irector_long']"
+    },
+    {
+      "file": "test_b985_section_01_fstring_detection_extension.py",
+      "class": "BEHAVIOUR",
+      "detail": "E   AssertionError: B985: shooting_star_short expected wiring_coverage_pct=100.0 post-fix; got 75.0. signals_o"
+    },
+    {
+      "file": "test_batch394_cube_pool_parity.py",
+      "class": "STALE-PIN",
+      "detail": "E   AssertionError: sequential run failed rc=2"
+    },
+    {
+      "file": "test_batch419_dashboard_tabs.py",
+      "class": "ARTIFACT",
+      "detail": "E   AssertionError: C:\\Users\\jeetm\\Github\\stock-picks-app\\dashboard_phase_1a\\index.html missing"
+    },
+    {
+      "file": "test_batch464_writer_outputs_registry.py",
+      "class": "STALE-PIN",
+      "detail": "E   AssertionError: 1 CLASSIFICATION entries now have python readers (remove from registry): ['trade_exit_deta"
+    },
+    {
+      "file": "test_batch465_orphan_scripts_registry.py",
+      "class": "TIMEOUT",
+      "detail": ""
+    },
+    {
+      "file": "test_batch467_news_p10.py",
+      "class": "BEHAVIOUR",
+      "detail": "E   assert True is False"
+    },
+    {
+      "file": "test_batch519_p15_sleeves_wireup.py",
+      "class": "BEHAVIOUR",
+      "detail": "E   assert 'from backtest.signals.short_interest import compute_short_interest_signals' in '\"\"\"\\nsignals/scree"
+    },
+    {
+      "file": "test_batch522_p17_sleeve_scaffolds.py",
+      "class": "BEHAVIOUR",
+      "detail": "E   assert False is True"
+    },
+    {
+      "file": "test_batch523_verification_matrix_regen_drift.py",
+      "class": "BEHAVIOUR",
+      "detail": "E   AssertionError: BUG-018 engine status changed: PARTIAL-ORPHAN (was FUNC-DEAD). If intentional (e.g. optimi"
+    },
+    {
+      "file": "test_batch557_phase1a_beta_classification_cluster_verdict.py",
+      "class": "BEHAVIOUR",
+      "detail": "E   AssertionError: screener must call the producer with (ticker, as_of)"
+    },
+    {
+      "file": "test_batch558_phase1a_beta_institutional_cluster_verdict.py",
+      "class": "BEHAVIOUR",
+      "detail": "E   assert 'from backtest.data.smart_money import institutional_signal' in '\"\"\"\\nsignals/screener.py - All Lay"
+    },
+    {
+      "file": "test_batch561_sector_history_2023_expansion.py",
+      "class": "BEHAVIOUR",
+      "detail": "E   AssertionError: V signal should expire by 2023-06-17 (92d post-event > 90d window); got {'classification_c"
+    },
+    {
+      "file": "test_batch572_doji_at_resistance_short.py",
+      "class": "BEHAVIOUR",
+      "detail": "E   assert False is True"
+    },
+    {
+      "file": "test_batch574_narrow_scope_doji_wide_bands.py",
+      "class": "BEHAVIOUR",
+      "detail": "E   assert False == True"
+    },
+    {
+      "file": "test_batch584_donchian_bug_fix.py",
+      "class": "BEHAVIOUR",
+      "detail": "E   assert False == True"
+    },
+    {
+      "file": "test_batch586_52w_high_walk.py",
+      "class": "BEHAVIOUR",
+      "detail": "E   assert True == False"
+    },
+    {
+      "file": "test_batch589_52w_threshold_tweaks.py",
+      "class": "BEHAVIOUR",
+      "detail": "E   assert True == False"
+    },
+    {
+      "file": "test_batch590_pullback_redesign.py",
+      "class": "BEHAVIOUR",
+      "detail": "E   AssertionError: assert False == True"
+    },
+    {
+      "file": "test_batch591_donchian_walk.py",
+      "class": "BEHAVIOUR",
+      "detail": "E   assert False == True"
+    },
+    {
+      "file": "test_batch595_donchian_tight_pair_walk.py",
+      "class": "BEHAVIOUR",
+      "detail": "E   assert False is True"
+    },
+    {
+      "file": "test_batch596_donchian_retest_pair_walk.py",
+      "class": "STALE-PIN",
+      "detail": "E   AssertionError: assert 222 == 220"
+    },
+    {
+      "file": "test_batch597_volume_spike_breakout_walk.py",
+      "class": "STALE-PIN",
+      "detail": "E   assert False is True"
+    },
+    {
+      "file": "test_batch598_avwap_symmetry.py",
+      "class": "BEHAVIOUR",
+      "detail": "E   assert (False is True)"
+    },
+    {
+      "file": "test_batch603_news_strategies_walk.py",
+      "class": "BEHAVIOUR",
+      "detail": "E   assert True is False"
+    },
+    {
+      "file": "test_batch606_r1_break_retest_walk.py",
+      "class": "STALE-PIN",
+      "detail": "E   AssertionError: assert 222 == 220"
+    },
+    {
+      "file": "test_batch607_flag_break_retest_walk.py",
+      "class": "STALE-PIN",
+      "detail": "E   AssertionError: assert 222 == 220"
+    },
+    {
+      "file": "test_batch608_break_retest_volume_walk.py",
+      "class": "BEHAVIOUR",
+      "detail": "E   assert (False is True)"
+    },
+    {
+      "file": "test_batch609_break_retest_confluence_walk.py",
+      "class": "STALE-PIN",
+      "detail": "E   AssertionError: assert 222 == 220"
+    },
+    {
+      "file": "test_batch610_institutional_breakout_walk.py",
+      "class": "STALE-PIN",
+      "detail": "E   assert True is False"
+    },
+    {
+      "file": "test_batch612_silent_gap_refactors.py",
+      "class": "STALE-PIN",
+      "detail": "E   assert (False is True)"
+    },
+    {
+      "file": "test_batch613_52w_high_sm_rewalk.py",
+      "class": "STALE-PIN",
+      "detail": "E   assert True is False"
+    },
+    {
+      "file": "test_batch614_news_reversal_walk.py",
+      "class": "STALE-PIN",
+      "detail": "E   AssertionError: assert 222 == 220"
+    },
+    {
+      "file": "test_batch615_squeeze_setup_walk.py",
+      "class": "STALE-PIN",
+      "detail": "E   AssertionError: assert 222 == 220"
+    },
+    {
+      "file": "test_batch616_low_priority_refactor.py",
+      "class": "BEHAVIOUR",
+      "detail": "E   assert True is False"
+    },
+    {
+      "file": "test_batch617_critique_corrections.py",
+      "class": "BEHAVIOUR",
+      "detail": "E   assert (False is True)"
+    },
+    {
+      "file": "test_batch621_fire_count_audit.py",
+      "class": "BEHAVIOUR",
+      "detail": "E   AssertionError: REAL FAIL set drift -- expected {'volume_spike_breakout', '52wl_break_retest_short', 'dc20"
+    },
+    {
+      "file": "test_batch623_direction_disagg_audit.py",
+      "class": "STALE-PIN",
+      "detail": "E   assert 17 == 18"
+    },
+    {
+      "file": "test_batch625_walk_commit_fire_count_pin.py",
+      "class": "UNKNOWN",
+      "detail": "E   Failed: Walk commits missing 'Fire-count projection:' token (CHECKLIST k requirement). Either run scripts/"
+    },
+    {
+      "file": "test_batch626_force_index_walk.py",
+      "class": "STALE-PIN",
+      "detail": "E   AssertionError: assert 222 == 220"
+    },
+    {
+      "file": "test_batch627_family_bug_sweep_not_s_get_ema_20.py",
+      "class": "STALE-PIN",
+      "detail": "E   assert (False is True)"
+    },
+    {
+      "file": "test_batch628_obv_bullish_family_sweep.py",
+      "class": "STALE-PIN",
+      "detail": "E   assert (False is True)"
+    },
+    {
+      "file": "test_batch629_cmf_family_sweep.py",
+      "class": "STALE-PIN",
+      "detail": "E   AssertionError: assert 222 == 220"
+    },
+    {
+      "file": "test_batch630_mega_sweep_E.py",
+      "class": "STALE-PIN",
+      "detail": "E   AssertionError: assert 222 == 220"
+    },
+    {
+      "file": "test_batch631_ultimate_oscillator_walk.py",
+      "class": "STALE-PIN",
+      "detail": "E   AssertionError: assert 222 == 220"
+    },
+    {
+      "file": "test_batch633_tier3_complete_sweep.py",
+      "class": "STALE-PIN",
+      "detail": "E   assert (False is True)"
+    },
+    {
+      "file": "test_batch639_morning_star_reversal_walk.py",
+      "class": "BEHAVIOUR",
+      "detail": "E   assert (False is True)"
+    },
+    {
+      "file": "test_batch641_tier1_walk_bundle_followups.py",
+      "class": "STALE-PIN",
+      "detail": "E   assert (False is True)"
+    },
+    {
+      "file": "test_batch643_w5_capitulation_redesign.py",
+      "class": "STALE-PIN",
+      "detail": "E   AssertionError: assert 222 == 220"
+    },
+    {
+      "file": "test_batch645_w5_mirror.py",
+      "class": "STALE-PIN",
+      "detail": "E   AssertionError: assert 222 == 220"
+    },
+    {
+      "file": "test_batch657_t8_ichimoku_cloud_default_true_fix.py",
+      "class": "BEHAVIOUR",
+      "detail": "E   AssertionError: B657: missing adx_trending should block LONG (confluence preserved)"
+    },
+    {
+      "file": "test_batch659_silent_gap_unify.py",
+      "class": "BEHAVIOUR",
+      "detail": "E   AssertionError: B659 W7 regression: LONG fires when AVWAP keys missing"
+    },
+    {
+      "file": "test_batch670_sm9_sm23_deletion_and_replacement.py",
+      "class": "STALE-PIN",
+      "detail": "E   AssertionError: B670 + B722 trajectory: ALL_STRATEGIES count is 222; expected 221 (222 post-B670 + 3 B685 "
+    },
+    {
+      "file": "test_batch671_borrow_trap_central_gate_plus_threshold_tighten.py",
+      "class": "STALE-PIN",
+      "detail": "E   assert True is False"
+    },
+    {
+      "file": "test_batch682_b680_self_critique_actions.py",
+      "class": "STALE-PIN",
+      "detail": "E   AssertionError: B682 trajectory through B722: expected 221 (218 post-B682 + 3 B685 NEW + 1 B686 NEW + 2 B7"
+    },
+    {
+      "file": "test_batch686_inverted_cup_and_handle.py",
+      "class": "STALE-PIN",
+      "detail": "E   AssertionError: B686 trajectory through B722: expected 221 (222 post-B686 + 2 B709 - 3 B722); got 222"
+    },
+    {
+      "file": "test_batch688_macd_docstring_honesty.py",
+      "class": "ARTIFACT",
+      "detail": "E   FileNotFoundError: [Errno 2] No such file or directory: 'C:\\\\Users\\\\jeetm\\\\Github\\\\stock-picks-app\\\\STAGE_"
+    },
+    {
+      "file": "test_batch697_br1_score_loosen.py",
+      "class": "BEHAVIOUR",
+      "detail": "E   AssertionError: Break + only vol_spike_17x should not fire (need 2-of-3 score)"
+    },
+    {
+      "file": "test_batch698_br1_anti_fakeout_producers.py",
+      "class": "BEHAVIOUR",
+      "detail": "E   assert True is False"
+    },
+    {
+      "file": "test_batch721_simple_below_ema_50_short_state_to_event.py",
+      "class": "BEHAVIOUR",
+      "detail": "E   AssertionError: Strategy must fire on EVENT-anchored signal post-B721; got {'fires': False, 'direction': '"
+    },
+    {
+      "file": "test_batch722_hull_event_plus_deletions.py",
+      "class": "STALE-PIN",
+      "detail": "E   AssertionError: Expected ALL_STRATEGIES == 221 post-B722; got 222. Either B722 deletions incomplete or ano"
+    },
+    {
+      "file": "test_batch728_breakout_retest_strong_close.py",
+      "class": "BEHAVIOUR",
+      "detail": "E   assert False is True"
+    },
+    {
+      "file": "test_batch730_double_bottom_long_cp2_reviewer_spec.py",
+      "class": "BEHAVIOUR",
+      "detail": "E   AssertionError: Should not fire without vol_spike_15x post-B730; got {'fires': True, 'direction': 'long', "
+    },
+    {
+      "file": "test_batch748b_dead_producer_disposition.py",
+      "class": "STALE-PIN",
+      "detail": "E   AssertionError: strategy count drifted to 222; expected 221"
+    },
+    {
+      "file": "test_batch748c_walkback_plus_new_exploratory.py",
+      "class": "STALE-PIN",
+      "detail": "E   AssertionError: assert 222 == 220"
+    },
+    {
+      "file": "test_dec491_492_493_sprint2.py",
+      "class": "BEHAVIOUR",
+      "detail": "E   AssertionError: INV-014: uniformly-empty agent_reasoning should be null in parquet"
+    },
+    {
+      "file": "test_engine_optimization_parity.py",
+      "class": "UNKNOWN",
+      "detail": "E   Failed: run_phase1a CLI returned rc=2"
+    },
+    {
+      "file": "test_schema_contracts.py",
+      "class": "BEHAVIOUR",
+      "detail": "E   AssertionError: _check_b2_schema must enforce trade_log column contract"
+    },
+    {
+      "file": "test_silent_gap_pyramid.py",
+      "class": "STALE-PIN",
+      "detail": "E   AssertionError: BUG-111 + Wave 3 + 333b + P10 + SM1 + M6 + P15 + P17 + B572/580/581/586/588/591/592/599/60"
+    },
+    {
+      "file": "test_sprint2_acceptance.py",
+      "class": "BEHAVIOUR",
+      "detail": "E   AssertionError: DEC-491: nested dict not preserved through Parquet roundtrip"
+    }
+  ]
+}

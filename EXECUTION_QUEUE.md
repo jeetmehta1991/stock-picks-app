@@ -8612,3 +8612,45 @@ Triage re-running in background with full capture per CHECKLIST #173.
   assume it; each is silently a no-op run today. Until then no script may pass `--timeout`.
 - **S6-B1474b (MED)** — sweep all `scripts/*.py` for pytest invocations passing plugin-dependent
   flags, and give each the `_assert_pytest_ran` guard. This is the class; two instances are known.
+
+### B1474b — S6-B1471b COMPLETE: the quarantine is mostly BEHAVIOUR, not artifact rot
+
+Corrected triage, each file run ALONE so classification is not contaminated by cross-file pollution:
+
+| class | files | meaning |
+|---|---|---|
+| **BEHAVIOUR** | **36** | assertions about what the code DOES — the real-finding candidates |
+| **STALE-PIN** | **31** | count/name equality a later batch changed |
+| ARTIFACT | 2 | `test_batch419_dashboard_tabs.py`, `test_batch688_macd_docstring_honesty.py` |
+| UNKNOWN | 2 | `test_batch625_walk_commit_fire_count_pin.py`, `test_engine_optimization_parity.py` |
+| TIMEOUT | 1 | `test_batch465_orphan_scripts_registry.py` (>300s alone) |
+
+**This REFUTES my B1468 characterisation.** I wrote that the 172 failures looked
+"consistent with artifact-dependence, not 172 independent defects", reasoning from 45 of them being
+in one dashboard file. At FILE level only **2 of 72** are artifact-dependent; **36 assert on
+behaviour**. The concentration observation was true and the inference from it was wrong — a large
+count in one file says that file is one problem, not that the other 71 are.
+
+Sample of what the BEHAVIOUR class actually contains (all EXECUTED):
+- `test_b936_section_09b_extractor.py` — asserts on `dxy_headwind_multinational_short`, **deleted at
+  B1189**. Same stale-reference class as B1471's `test_b741_pin2`, so some BEHAVIOUR rows will
+  reclassify on reading.
+- `test_batch523_verification_matrix_regen_drift.py` — "BUG-018 engine status changed"
+- `test_batch557_..._classification_cluster` — "screener must call the producer"
+- `test_batch561_sector_history_2023_expansion.py` — "V signal should expire by 2023-0…"
+- `test_batch572_doji_at_resistance_short.py`, `test_batch467_news_p10.py` — bare `assert False is True`
+
+The `test_batch557` and `test_batch561` rows are notable: a "screener must call the producer"
+assertion and a signal-expiry assertion are exactly the shape of the B1465-class defect (a wired
+gate that stopped being consumed), and `sector_history` is the same file whose sparsity retired
+Group 2 at B1441.
+
+### Tickets
+- **S6-B1474c (HIGH)** — read the 36 BEHAVIOUR files individually. Expect a mix: stale references
+  (like `test_b936`'s deleted strategy) reclassify to STALE-PIN, but any that assert a producer is
+  called or a signal expires must be treated as a live defect until disproved (CHECKLIST #180).
+- **S6-B1474d (MED)** — the 31 STALE-PIN files are mechanical, but per CHECKLIST #179 each delta's
+  CAUSE is confirmed before its pin moves; B1471 showed one "stale pin" was hiding a real
+  compliance gap.
+- **S6-B1474e (LOW)** — `test_batch465_orphan_scripts_registry.py` exceeds 300s alone; needs its own
+  budget or a scope reduction.
