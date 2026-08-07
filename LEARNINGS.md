@@ -5040,3 +5040,27 @@ artifact-dependent (45 in one dashboard file), which was true but incomplete: th
 findings. **Generalized rule: a red test outside the gate is UNTRIAGED, not presumed stale. The
 prior that "old failing tests are bit-rot" is what let a compliance gap sit unreported -- triage
 distinguishes stale-pin from real-finding, and only measurement can tell them apart.**
+
+### L317
+**The same invariant was pinned independently in two files, so it drifted in one and not the
+other.** The count of dual `_strat3` strategies is asserted in BOTH `test_batch743` pin3 and
+`test_batch744` pin2. When B1465 converted `prev_day_high_break` from `_strat3` to `_strat`, I
+updated the B743 copy (60 -> 59) because that file failed in front of me, and left the B744 copy
+at 60 -- invisible, because B744 sits outside the enforced gate. The same duplication explains
+why the pure-short population count read 50 in B741 and 51 in B744: three roster batches
+(B1010 +1, B1382 +3, B1189 -1) updated neither, and the two files had already diverged before that.
+**Generalized rule: an invariant asserted in more than one place has more than one truth. Derive it
+once -- a shared helper, a manifest, a single fixture -- and let the other sites import it. A
+duplicated pin does not double the protection; it halves it, because the first copy to fail gets
+fixed and the second silently records the old world.**
+
+### L318
+**Updating a count pin is legitimate only after the defect it exposed is fixed -- order matters.**
+`test_b744_pin2` expected 51 pure-shorts against an actual 53, and the obvious move was to write
+53. Doing that first would have permanently buried the finding underneath: three of those shorts
+carried the borrow gate WITHOUT declaring `borrow_ok`, violating the owner-approved S4-B713
+audit-trail discipline. The correct sequence was: add the declarations, register the 4 uncovered
+strategies in the cohort, and only THEN raise the pin -- at which point the number is a
+description of a compliant world rather than an accommodation of a broken one. **Generalized rule:
+when a count pin fails, the pin is the last thing to change. Ask what the delta MEANS first; a pin
+raised before its cause is understood converts a detector into a rubber stamp.**

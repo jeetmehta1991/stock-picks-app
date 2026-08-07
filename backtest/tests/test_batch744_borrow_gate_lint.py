@@ -59,9 +59,18 @@ def test_b744_pin2_short_strategy_count_matches_b718b_cohort():
     # B1010 (2026-06-22): Added strat_insider_cluster_concentrated_sell_short
     # per Council 103 Option-6 (Class 7 NEW pure-short). 50->51 pure,
     # 60 dual unchanged, 110->111 total.
-    assert len(pure) == 51, f"expected 51 pure-short (B740+B741 post-B874+B1010); got {len(pure)}"
-    assert len(dual) == 60, f"expected 60 dual _strat3 (B742+B743 post-B874); got {len(dual)}"
-    assert len(rep.short_strategies) == 111
+    # B1471: 51 -> 53 after S6-B1471a registered the 4 uncovered pure-shorts in the
+    # B741 cohort and added borrow_ok declarations to the 3 B1382 mirror shorts.
+    # Updating this pin is legitimate ONLY because the underlying compliance gap was
+    # fixed first; raising it beforehand would have buried the defect.
+    assert len(pure) == 53, f"expected 53 pure-short (post-B1189/B1382/B1471); got {len(pure)}"
+    # B1471: 60 -> 59. B1465 converted prev_day_high_break from _strat3 to _strat after its
+    # SHORT branch was found character-identical to standalone prev_day_low_breakdown. NOTE the
+    # same number is pinned independently in test_batch743 pin3 - a duplicated pin across two
+    # files, which is exactly why it drifted in one and not the other (S6-B1471d).
+    assert len(dual) == 59, f"expected 59 dual _strat3 (post-B1465); got {len(dual)}"
+    # total 111 -> 112: pure 51->53 (+2 net) and dual 60->59 (-1) = 110 + 2 = 112
+    assert len(rep.short_strategies) == 112
 
 
 def test_b744_pin3_synthetic_missing_gate_caught(tmp_path):

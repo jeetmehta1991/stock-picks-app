@@ -37,6 +37,16 @@ B741_STRATEGIES = [
     "pairs_mean_reversion_short",
     "news_momentum_short",
     "news_reversal_short",
+    # B1471 (S6-B1471a): the 4 pure-shorts test_b741_pin5 found outside both cohorts.
+    # insider_cluster_concentrated_sell_short (B1010) was already fully compliant and
+    # merely unregistered; the three B1382 mirror shorts had the functional borrow gate
+    # but did not DECLARE borrow_ok until B1471 added it. Registering them here is what
+    # makes pin5 (cohort must cover every pure-short) close legitimately rather than by
+    # raising its expected number.
+    "insider_cluster_concentrated_sell_short",
+    "news_sentiment_short",
+    "poc_magnet_short",
+    "xs_combined_momentum_high_ivol_short",
 ]
 
 
@@ -44,7 +54,7 @@ def test_b741_pin1_count_matches_25():
     """B741 second chunk -- exactly 25 strategies refactored this batch."""
     # B1471: 25 -> 24 after B1189 deleted dxy_headwind_multinational_short from the
     # cohort. The pin was never updated because this file is outside the enforced gate.
-    assert len(B741_STRATEGIES) == 24
+    assert len(B741_STRATEGIES) == 28   # B1471: 24 + the 4 registered above
 
 
 def test_b741_pin2_all_25_registered():
@@ -91,7 +101,11 @@ def test_b741_pin5_combined_b740_b741_covers_all_50_pure_short_strategies():
     src = open("backtest/signals/screener.py", encoding="utf-8").read()
     # count `_strat(<var>, "short"` occurrences
     pure_short_count = len(re.findall(r'_strat\([A-Za-z_]\w*,\s*"short"', src))
-    expected = 50  # B899 migration: 51 -> 50 post-B874 camarilla_rsi_obv_short deletion
+    # B1471: 50 -> 53. Reconciles exactly: 50 + 1 (B1010 insider_cluster_concentrated
+    # _sell_short) + 3 (B1382 mirror shorts) - 1 (B1189 deleted dxy_headwind_multi
+    # national_short) = 53. None of those batches updated this pin because the file
+    # sits outside the enforced 2-file gate (L316).
+    expected = 53
     assert pure_short_count == expected, (
         f"expected {expected} pure-short strategies in screener.py; got {pure_short_count}. "
         f"If a new pure-short was added, it must be added to either B740 or B741 cohort + given "

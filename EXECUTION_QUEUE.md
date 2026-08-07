@@ -8468,3 +8468,35 @@ reports actual lint violations, a third class, out of this batch's scope.
   real-finding vs stale-pin vs lint-violation, and cannot be assumed.
 - **S6-B1471c (MED)** — the derived-fixture pattern should replace hand-maintained signal dicts
   across the other borrow-gate test files; they will drift the same way.
+
+---
+
+## B1472 (2026-08-06) — S6-B1471a CLOSED; the whole borrow-gate cluster is green (24/24)
+
+### S6-B1471a — compliance restored, then the pins updated (in that order)
+1. **Added `borrow_ok`** to `signals_used` for the three B1382 mirror shorts
+   (`news_sentiment_short`, `poc_magnet_short`, `xs_combined_momentum_high_ivol_short`). The gate
+   was already enforcing via `_short_borrow_trap_active`; only the S4-B713 audit-trail declaration
+   was missing, so the trail did not show a gate that was in fact working.
+2. **Registered all 4 uncovered pure-shorts** in the B741 cohort (the 3 above plus
+   `insider_cluster_concentrated_sell_short`, which was already compliant and merely unregistered).
+3. **Only then** updated the count pins, each with its arithmetic shown:
+   - B741 pin1 cohort 24 -> 28 · pin5 population 50 -> 53 (= 50 +1 B1010 +3 B1382 -1 B1189)
+   - B744 pin2 pure 51 -> 53 · dual 60 -> 59 (B1465 `_strat3` -> `_strat`) · total 111 -> 112
+
+**Order was the point (L318).** Writing 53 into the pin first would have permanently buried the
+compliance gap underneath a green test.
+
+**Result: 24 of 24 pass across `test_batch740` + `741` + `743` + `744`** — four QUARANTINE files
+cleared, from 9 failures at the B1468 baseline.
+
+### L317 — a duplicated invariant
+The dual `_strat3` count is pinned independently in B743 AND B744. B1465 updated the B743 copy
+because it failed in front of me and left B744 at the old value. Same duplication explains the
+pure-short count reading 50 in one file and 51 in another. A duplicated pin does not double
+protection; it halves it.
+
+### Tickets
+- **S6-B1471d (MED)** — de-duplicate the cross-file invariants (dual `_strat3` count, pure-short
+  population, cohort membership). Derive once, import everywhere. L317.
+- **S6-B1471b** remains open — ~71 QUARANTINE files still untriaged (75 minus these 4).

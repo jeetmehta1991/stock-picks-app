@@ -4019,7 +4019,7 @@ def strat_xs_combined_momentum_high_ivol_short(s):
         and not _short_borrow_trap_active(s)
     )
     return _strat(fires, "short", "factor",
-        ["xs_momentum_bottom_quintile", "xs_ivol_decile>=7", "below_ema_200"],
+        ["xs_momentum_bottom_quintile", "xs_ivol_decile>=7", "below_ema_200", "borrow_ok"],
         ["Bottom-quintile 12-1 momentum (junk leg)",
          "Top-40% IVOL (Frazzini-Pedersen 2014 BAB short side)",
          "Below 200 EMA - regime gate"])
@@ -6905,7 +6905,7 @@ def strat_poc_magnet_short(s):
         and not _short_borrow_trap_active(s)
     )
     return _strat(fires, "short", "volume_profile",
-        ["vp_close_near_poc_pct<0.03", "vp_close_below_poc", "below_ema_200"],
+        ["vp_close_near_poc_pct<0.03", "vp_close_below_poc", "below_ema_200", "borrow_ok"],
         [f"Within {s.get('vp_close_near_poc_pct', 0.0)*100:.1f}% of 60d POC "
           f"(Dalton 1990 magnet effect, mirrored)",
          "Bearish bias (close below POC)",
@@ -7285,7 +7285,11 @@ def strat_news_sentiment_short(s):
         and not _short_borrow_trap_active(s)
     )
     return _strat(fires, "short", "news_sentiment",
-        ["news_sentiment_mean<-0.3", "news_article_count>=3", "below_ema_200"],
+        ["news_sentiment_mean<-0.3", "news_article_count>=3", "below_ema_200", "borrow_ok"],  # B1471 (S6-B1471a): +borrow_ok per the S4-B713 audit-trail discipline.
+        # The gate was already applied via _short_borrow_trap_active above; B1382 wired
+        # these three mirror shorts without DECLARING it, so the audit trail did not show
+        # a gate that was in fact enforcing. Surfaced by test_b741_pin5, which had never
+        # been run because the file sits outside the enforced 2-file gate (L316).
         [f"7-day mean sentiment {s.get('news_sentiment_mean', 0.0):+.2f} "
           f"(negative cluster, < -0.3; Tetlock 2007 negative-tone predictability)",
          f"{s.get('news_article_count', 0)} articles in window (>=3)",
