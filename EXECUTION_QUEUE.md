@@ -8578,3 +8578,37 @@ not grep-found"). Ticketed rather than claimed.
 - **S6-B1473c (MED)** — add a mechanical CLAUDE.md banner freshness check to `sync_doc_counts.py`
   (test count, CHECKLIST max, LEARNINGS max, active-strategy count), so this cannot silently rot for
   45 batches again. Prose rules decayed here; only a programmatic check has ever held.
+
+---
+
+## B1474 (2026-08-07) — S6-B1471b: the triage tool measured NOTHING; corrected and re-running
+
+**First run: all 72 QUARANTINE files classified UNKNOWN, every detail field empty.** That is
+implausible, and the implausibility was the only signal.
+
+**Root cause:** `--timeout=120` requires the `pytest-timeout` plugin, which is **not installed
+here**. pytest replies `error: unrecognized arguments: --timeout=120` and exits without collecting
+anything, so all 72 subprocesses ran **zero tests**.
+
+**This also corrects L314.** `bisect_test_polluter.py` passes the same flag, so the bisection's
+false "targets PASS with every candidate file running first" was caused FIRST by pytest rejecting
+its arguments — not only by `-x` aborting and by reading the run-wide summary. Both of those were
+real defects, but removing them would not have made the tool work. **My B1469b "fix" was recorded
+as a resolution without re-running the tool** (L323).
+
+**Remediated in BOTH tools:**
+- `--timeout` removed; the `subprocess.run(timeout=)` already provided the same protection without
+  a plugin dependency
+- `_assert_pytest_ran()` added and wired at both call sites: HALTs on `unrecognized arguments` /
+  `ERROR: usage:` rather than classifying non-pytest output
+- guard f-string repaired (a double-escaped `
+` had produced a syntax error caught by `ast.parse`
+  before commit)
+
+Triage re-running in background with full capture per CHECKLIST #173.
+
+### Tickets
+- **S6-B1474a (HIGH)** — decide whether to add `pytest-timeout` to the environment. Several scripts
+  assume it; each is silently a no-op run today. Until then no script may pass `--timeout`.
+- **S6-B1474b (MED)** — sweep all `scripts/*.py` for pytest invocations passing plugin-dependent
+  flags, and give each the `_assert_pytest_ran` guard. This is the class; two instances are known.

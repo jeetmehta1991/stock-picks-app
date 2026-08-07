@@ -28,6 +28,21 @@ import sys
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
+
+# B1474: pytest-timeout is NOT installed in this environment, so passing --timeout made
+# pytest exit with "unrecognized arguments" and run ZERO tests. Both this script and
+# bisect_test_polluter.py silently measured nothing until the implausibility of the
+# result (72 of 72 identical) exposed it. The subprocess timeout below does the same job
+# without depending on a plugin, and _assert_pytest_ran refuses to classify output that
+# is not a pytest result (CHECKLIST #174: prove the probe RAN).
+def _assert_pytest_ran(out: str, label: str) -> None:
+    if "unrecognized arguments" in out or "ERROR: usage:" in out:
+        raise SystemExit(
+            "[HALT] pytest rejected its arguments while running " + str(label)
+            + ": " + out[:300]
+            + " -- the probe never executed; any classification would be fiction."
+        )
+
 TARGETS = [
     "backtest/tests/test_integration.py::test_bug_30_check_circuit_breakers_gate_on_config",
     "backtest/tests/test_integration.py::test_bug_232_intraday_extreme_uses_today_high_for_longs",
@@ -41,13 +56,14 @@ def run(files: list[str], timeout: int = 1800) -> bool:
     # ran -- which the script then read as "targets PASS". A bisection whose probe can
     # be skipped silently reports the opposite of the truth.
     cmd = [sys.executable, "-m", "pytest", "-q", "-p", "no:randomly",
-           "--tb=no", "--timeout=120", *files, *TARGETS]
+           "--tb=no", *files, *TARGETS]
     try:
         r = subprocess.run(cmd, cwd=REPO, capture_output=True, text=True, timeout=timeout)
     except subprocess.TimeoutExpired:
         print(f"    [TIMEOUT] {len(files)} files - treating as NOT reproducing")
         return True
-    out = r.stdout
+    out = r.stdout + r.stderr
+    _assert_pytest_ran(out, f'{len(files)} files')
     tail = out.strip().splitlines()[-1] if out.strip() else ""
     # Read the TARGETS' own result, never the run-wide summary: the candidate set has
     # 172 unrelated failures, so " failed" in the summary says nothing about the probe.

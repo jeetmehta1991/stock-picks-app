@@ -5107,3 +5107,33 @@ that the class was guarded. Remediated by grouping the uncovered entries into 11
 #136 exists to reject. **Generalized rule: writing the lesson is the cheap half. A miss is not
 closed until something MECHANICAL or PROCEDURAL would catch its class next time - and compliance
 self-checks must verify the guard exists, not that the note was written.**
+
+### L322
+**Two diagnostic tools passed a pytest flag that does not exist here, so neither ever ran a single
+test -- and one of them had already produced a conclusion I published.** `--timeout=120` requires
+the `pytest-timeout` plugin, which is NOT installed in this environment; pytest responds
+`error: unrecognized arguments: --timeout=120` and exits without collecting anything.
+`triage_quarantine.py` therefore classified all 72 QUARANTINE files as UNKNOWN with empty detail --
+caught only because 72 of 72 landing in one bucket is implausible. Worse,
+`bisect_test_polluter.py` carried the same flag, which means **my L314 root-cause was incomplete**:
+I attributed the bisection's false "targets PASS" to `-x` aborting and to reading the run-wide
+summary, and both were real defects, but the FIRST cause was that pytest rejected its arguments and
+ran nothing at all. Removing `-x` and fixing the verdict-parsing would not have made that tool work.
+**Generalized rule: a wrapper around an external command must verify the command ACCEPTED ITS
+ARGUMENTS before interpreting any output -- an unrecognised flag is indistinguishable from a clean
+result to any parser that only looks for failure keywords. Assert a positive marker of real
+execution (a collection count, a summary line, a result row), never merely the absence of the word
+"failed".** Both tools now call `_assert_pytest_ran()` and HALT on a usage error. Also: an
+implausibly uniform result (all N in one class) is a tool-failure signal, not a finding -- the same
+alarm as L300's beta of 6.2.
+
+### L323
+**Fixing a diagnostic twice without re-validating it end-to-end is how a broken tool survives.**
+`bisect_test_polluter.py` was "fixed" at B1469b (removed `-x`, corrected verdict parsing) and I
+recorded that as the resolution -- without re-running it, because a correct run is a multi-hour
+job. It was still broken by `--timeout`, so the recorded fix would have failed exactly as before.
+The tell was available: B1469b's own output showed the probe returning a summary line I never
+looked at closely. **Generalized rule: a tool repaired in response to a wrong result is not fixed
+until it has been re-run on a case with a KNOWN answer. Where a full run is too expensive, run a
+cheap positive control -- here, one file known to fail and one known to pass -- before declaring
+the repair complete.**
