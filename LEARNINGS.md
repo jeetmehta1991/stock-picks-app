@@ -5064,3 +5064,20 @@ strategies in the cohort, and only THEN raise the pin -- at which point the numb
 description of a compliant world rather than an accommodation of a broken one. **Generalized rule:
 when a count pin fails, the pin is the last thing to change. Ask what the delta MEANS first; a pin
 raised before its cause is understood converts a detector into a rubber stamp.**
+
+### L319
+**I shipped a false number in a commit message because a patch script aborted and I did not check
+its output.** The B1472 commit states "pyramid_tiers.py QUARANTINE 75 -> 71". The patch script that
+was supposed to make that true raised `AssertionError:
+test_batch740_b718b_first_chunk_explicit_borrow_gate.py not in QUARANTINE` on its FIRST entry and
+exited, removing NOTHING -- and because it ran in a `&&` chain whose later commands (pyramid_tiers
+print, git add, git commit) were separated by `&&` only from each other, the commit proceeded
+anyway. The traceback was printed directly above the commit hash and I read past it. Actual cause:
+`test_batch740` was never quarantined -- it was already green in the B1468 baseline -- so my
+"4 files cleared" was 3 cleared plus one that was never broken. Corrected: QUARANTINE 75 -> 72,
+EXTENDED 354 -> 357, partition re-asserted. **Generalized rule: a script that mutates a tracked
+artifact must have its exit status checked before the commit that describes the mutation. Chain
+them so failure BLOCKS the commit (`script && git commit`), never so the commit is a sibling
+step -- and when a traceback appears anywhere in a turn's output, resolve it before writing any
+number that depends on it.** The Truth-Standard cost here was real: the false count reached a
+pushed commit message and had to be retracted rather than merely fixed.

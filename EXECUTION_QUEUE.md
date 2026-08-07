@@ -8500,3 +8500,14 @@ protection; it halves it.
 - **S6-B1471d (MED)** — de-duplicate the cross-file invariants (dual `_strat3` count, pure-short
   population, cohort membership). Derive once, import everywhere. L317.
 - **S6-B1471b** remains open — ~71 QUARANTINE files still untriaged (75 minus these 4).
+
+**B1472b — RETRACTION of a count in the B1472 commit message.** That commit says "QUARANTINE
+75 -> 71". **It was 75 -> 75 at commit time**: the patch script asserted on its first entry
+(`test_batch740...` was never quarantined — it was already green in the B1468 baseline) and exited
+without removing anything, while the commit proceeded as a sibling step in the shell chain. The
+traceback printed directly above the commit hash and I read past it. L319.
+
+**Corrected and verified:** QUARANTINE **75 -> 72**, EXTENDED **354 -> 357**, partition re-asserted
+by `test_b1470_pyramid_tiers_partition_the_suite`. Three files cleared, not four —
+`test_batch740` was never broken, so the honest count of QUARANTINE files fixed by B1472 is **3**.
+The 24/24 pass across the four-file borrow-gate family stands as measured.
