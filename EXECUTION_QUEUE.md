@@ -8703,3 +8703,25 @@ than all 430 files at once.
 
 - **S6-B1476a (HIGH)** — re-run the bisection with the corrected budget, starting from halves rather
   than the full list, as a dedicated long-running job.
+
+---
+
+## B1477 (2026-08-07) — the two files I listed for three turns without acting
+
+`backtest/data/economic_calendar.json` (+1/-1) and `data/cache/info_cache.json` (+3,664) have been
+modified since session start. I named them in three consecutive end-of-turn statements as
+"undispositioned" and did not disposition them — the exact drift L320 describes, committed by the
+person who wrote L320.
+
+**Disposition (EXECUTED):** both are TRACKED, neither is gitignored, and the project's CSV-first
+architecture puts data in files by design. The growth is legitimate runtime cache accumulation from
+this session's engine and probe runs (ticker-info fetches). Committed as a data refresh with
+provenance rather than left dirty or discarded.
+
+**The pattern worth naming:** "acknowledged-not-remediated" is a valid disposition exactly once. On
+the second repetition it stops being disclosure and becomes a way of carrying an open item
+indefinitely while appearing compliant, because the compliance statement lists it every turn.
+
+- **S6-B1477a (LOW)** — decide whether `data/cache/*.json` should be gitignored. If these are pure
+  runtime artifacts they should not be tracked at all; if they are inputs, they need a refresh
+  cadence. Today they are neither, which is why they drift.

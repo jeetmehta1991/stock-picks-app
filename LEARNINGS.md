@@ -5189,3 +5189,16 @@ search or diagnostic, the safe default is HALT, never the answer that lets the s
 "not reproducing" advances a bisection past the truth, so a bug that produces it is invisible by
 construction.** All four now raise SystemExit; the only `return True` left in the file is inside a
 comment describing this.
+
+### L327
+**"ACKNOWLEDGED-NOT-REMEDIATED" became a way to carry an item indefinitely while appearing
+compliant.** Two modified tracked files were listed in three consecutive end-of-turn compliance
+statements as undispositioned. Each listing was honest in isolation and the disclosure discipline
+was satisfied every time — which is the problem: the statement made the omission VISIBLE without
+making it COSTLY, so it survived turns in which I completed far harder work. I wrote L320 about
+prose obligations decaying without mechanical checks, and then demonstrated it on an item I was
+re-reading aloud each turn. **Generalized rule: a disclosure line is valid ONCE. If the same item
+appears in a second end-of-turn statement it must either be remediated that turn or converted into
+a ticket with an owner and a priority — repeating a disclosure is not disclosure, it is a way to
+keep the ledger balanced while the work does not move.** Detection: diff consecutive compliance
+statements and flag any item appearing twice.

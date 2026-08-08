@@ -1686,5 +1686,3669 @@
     "market_cap": 0,
     "exchange": "ARCX",
     "ipo_date": "2001-08-14"
+  },
+  "AAL": {
+    "name": "American Airlines",
+    "sector": "Industrials",
+    "industry": "AIR TRANSPORTATION, SCHEDULED",
+    "market_cap": 8558323672.78,
+    "exchange": "XNAS",
+    "ipo_date": "1972-06-01"
+  },
+  "AAON": {
+    "name": NaN,
+    "sector": "Industrials",
+    "industry": "AIR-COND & WARM AIR HEATG EQUIP & COMM & INDL REFRIG EQUIP",
+    "market_cap": 8045236889.599999,
+    "exchange": "XNAS",
+    "ipo_date": "1990-12-01"
+  },
+  "AAP": {
+    "name": NaN,
+    "sector": "Consumer Discretionary",
+    "industry": "RETAIL-AUTO & HOME SUPPLY STORES",
+    "market_cap": 3503317108.56,
+    "exchange": "XNYS",
+    "ipo_date": "2001-11-29"
+  },
+  "ABAT": {
+    "name": NaN,
+    "sector": "Materials",
+    "industry": "MINING & QUARRYING OF NONMETALLIC MINERALS (NO FUELS)",
+    "market_cap": 449787071.675,
+    "exchange": "XNAS",
+    "ipo_date": "2015-10-15"
+  },
+  "ABMD": {
+    "name": NaN,
+    "sector": "Health Care",
+    "industry": "Unknown",
+    "market_cap": 0,
+    "exchange": "",
+    "ipo_date": null
+  },
+  "ABSI": {
+    "name": NaN,
+    "sector": "Industrials",
+    "industry": "SERVICES-COMMERCIAL PHYSICAL & BIOLOGICAL RESEARCH",
+    "market_cap": 924912196.6,
+    "exchange": "XNAS",
+    "ipo_date": "2021-07-22"
+  },
+  "ACCD": {
+    "name": NaN,
+    "sector": "Unknown",
+    "industry": "Unknown",
+    "market_cap": 0,
+    "exchange": "",
+    "ipo_date": null
+  },
+  "ACET": {
+    "name": NaN,
+    "sector": "Health Care",
+    "industry": "PHARMACEUTICAL PREPARATIONS",
+    "market_cap": 79927118.55000001,
+    "exchange": "XNAS",
+    "ipo_date": "2020-09-16"
+  },
+  "ACHC": {
+    "name": NaN,
+    "sector": "Health Care",
+    "industry": "SERVICES-SPECIALTY OUTPATIENT FACILITIES, NEC",
+    "market_cap": 2326765783.1,
+    "exchange": "XNAS",
+    "ipo_date": "2011-11-01"
+  },
+  "ACHR": {
+    "name": NaN,
+    "sector": "Consumer Discretionary",
+    "industry": "AIRCRAFT",
+    "market_cap": 4869023237.690001,
+    "exchange": "XNYS",
+    "ipo_date": "2021-09-17"
+  },
+  "ACIW": {
+    "name": NaN,
+    "sector": "Information Technology",
+    "industry": "SERVICES-PREPACKAGED SOFTWARE",
+    "market_cap": 4385411514.37,
+    "exchange": "XNAS",
+    "ipo_date": "1995-02-23"
+  },
+  "ACLS": {
+    "name": NaN,
+    "sector": "Industrials",
+    "industry": "SPECIAL INDUSTRY MACHINERY, NEC",
+    "market_cap": 5254824870.0,
+    "exchange": "XNAS",
+    "ipo_date": "2000-07-11"
+  },
+  "ACLX": {
+    "name": NaN,
+    "sector": "Health Care",
+    "industry": "Unknown",
+    "market_cap": 0,
+    "exchange": "",
+    "ipo_date": null
+  },
+  "ACMR": {
+    "name": NaN,
+    "sector": "Industrials",
+    "industry": "SPECIAL INDUSTRY MACHINERY, NEC",
+    "market_cap": 3666979611.36,
+    "exchange": "XNAS",
+    "ipo_date": "2017-11-03"
+  },
+  "ACVA": {
+    "name": NaN,
+    "sector": "Industrials",
+    "industry": "SERVICES-BUSINESS SERVICES, NEC",
+    "market_cap": 957847569.66,
+    "exchange": "XNYS",
+    "ipo_date": "2021-03-24"
+  },
+  "ADMA": {
+    "name": NaN,
+    "sector": "Health Care",
+    "industry": "BIOLOGICAL PRODUCTS, (NO DIAGNOSTIC SUBSTANCES)",
+    "market_cap": 2341828772.64,
+    "exchange": "XNAS",
+    "ipo_date": "2013-10-17"
+  },
+  "ADPT": {
+    "name": NaN,
+    "sector": "Health Care",
+    "industry": "BIOLOGICAL PRODUCTS, (NO DIAGNOSTIC SUBSTANCES)",
+    "market_cap": 2309440576.56,
+    "exchange": "XNAS",
+    "ipo_date": "2019-06-27"
+  },
+  "ADS": {
+    "name": NaN,
+    "sector": "Financials",
+    "industry": "Unknown",
+    "market_cap": 0,
+    "exchange": "",
+    "ipo_date": null
+  },
+  "ADSE": {
+    "name": NaN,
+    "sector": "Industrials",
+    "industry": "Unknown",
+    "market_cap": 688403037.1999999,
+    "exchange": "XNAS",
+    "ipo_date": "2021-12-23"
+  },
+  "ADTN": {
+    "name": NaN,
+    "sector": "Information Technology",
+    "industry": "TELEPHONE & TELEGRAPH APPARATUS",
+    "market_cap": 1272480151.0,
+    "exchange": "XNAS",
+    "ipo_date": "1994-08-09"
+  },
+  "AEO": {
+    "name": NaN,
+    "sector": "Consumer Discretionary",
+    "industry": "RETAIL-FAMILY CLOTHING STORES",
+    "market_cap": 2818468568.2400002,
+    "exchange": "XNYS",
+    "ipo_date": "1994-04-29"
+  },
+  "AERI": {
+    "name": NaN,
+    "sector": "Unknown",
+    "industry": "Unknown",
+    "market_cap": 0,
+    "exchange": "",
+    "ipo_date": null
+  },
+  "AEVA": {
+    "name": NaN,
+    "sector": "Consumer Discretionary",
+    "industry": "MOTOR VEHICLE PARTS & ACCESSORIES",
+    "market_cap": 1044348425.63,
+    "exchange": "XNAS",
+    "ipo_date": "2021-03-15"
+  },
+  "AEYE": {
+    "name": NaN,
+    "sector": "Information Technology",
+    "industry": "SERVICES-PREPACKAGED SOFTWARE",
+    "market_cap": 95271610.02,
+    "exchange": "XNAS",
+    "ipo_date": "2013-04-15"
+  },
+  "AGFY": {
+    "name": NaN,
+    "sector": "Unknown",
+    "industry": "Unknown",
+    "market_cap": 0,
+    "exchange": "",
+    "ipo_date": null
+  },
+  "AGI": {
+    "name": NaN,
+    "sector": "Materials",
+    "industry": "Unknown",
+    "market_cap": 17638547262.0,
+    "exchange": "XNYS",
+    "ipo_date": "1996-10-11"
+  },
+  "AGIO": {
+    "name": NaN,
+    "sector": "Health Care",
+    "industry": "PHARMACEUTICAL PREPARATIONS",
+    "market_cap": 1604544010.82,
+    "exchange": "XNAS",
+    "ipo_date": "2013-07-24"
+  },
+  "AGYS": {
+    "name": NaN,
+    "sector": "Information Technology",
+    "industry": "SERVICES-COMPUTER INTEGRATED SYSTEMS DESIGN",
+    "market_cap": 1927101414.3200002,
+    "exchange": "XNAS",
+    "ipo_date": "1973-01-02"
+  },
+  "AI": {
+    "name": NaN,
+    "sector": "Information Technology",
+    "industry": "SERVICES-PREPACKAGED SOFTWARE",
+    "market_cap": 1394795731.2,
+    "exchange": "XNYS",
+    "ipo_date": "2020-12-09"
+  },
+  "AIMC": {
+    "name": NaN,
+    "sector": "Unknown",
+    "industry": "Unknown",
+    "market_cap": 0,
+    "exchange": "",
+    "ipo_date": null
+  },
+  "AISP": {
+    "name": NaN,
+    "sector": "Information Technology",
+    "industry": "SERVICES-PREPACKAGED SOFTWARE",
+    "market_cap": 87992734.72,
+    "exchange": "XNAS",
+    "ipo_date": "2023-12-22"
+  },
+  "AIV": {
+    "name": NaN,
+    "sector": "Financials",
+    "industry": "REAL ESTATE INVESTMENT TRUSTS",
+    "market_cap": 609950215.9200001,
+    "exchange": "XNYS",
+    "ipo_date": "2020-12-15"
+  },
+  "AJRD": {
+    "name": NaN,
+    "sector": "Unknown",
+    "industry": "Unknown",
+    "market_cap": 0,
+    "exchange": "",
+    "ipo_date": null
+  },
+  "AKRO": {
+    "name": NaN,
+    "sector": "Unknown",
+    "industry": "Unknown",
+    "market_cap": 0,
+    "exchange": "",
+    "ipo_date": null
+  },
+  "AKUS": {
+    "name": NaN,
+    "sector": "Unknown",
+    "industry": "Unknown",
+    "market_cap": 0,
+    "exchange": "",
+    "ipo_date": null
+  },
+  "ALDX": {
+    "name": NaN,
+    "sector": "Health Care",
+    "industry": "PHARMACEUTICAL PREPARATIONS",
+    "market_cap": 104958658.32,
+    "exchange": "XNAS",
+    "ipo_date": "2014-05-02"
+  },
+  "ALGS": {
+    "name": NaN,
+    "sector": "Health Care",
+    "industry": "BIOLOGICAL PRODUCTS, (NO DIAGNOSTIC SUBSTANCES)",
+    "market_cap": 39418980.51,
+    "exchange": "XNAS",
+    "ipo_date": "2020-10-16"
+  },
+  "ALHC": {
+    "name": NaN,
+    "sector": "Financials",
+    "industry": "HOSPITAL & MEDICAL SERVICE PLANS",
+    "market_cap": 3750151549.2200003,
+    "exchange": "XNAS",
+    "ipo_date": "2021-03-26"
+  },
+  "ALK": {
+    "name": NaN,
+    "sector": "Industrials",
+    "industry": "AIR TRANSPORTATION, SCHEDULED",
+    "market_cap": 4511186713.3,
+    "exchange": "XNYS",
+    "ipo_date": "1972-06-01"
+  },
+  "ALKT": {
+    "name": NaN,
+    "sector": "Information Technology",
+    "industry": "SERVICES-PREPACKAGED SOFTWARE",
+    "market_cap": 1792571164.5,
+    "exchange": "XNAS",
+    "ipo_date": "2021-04-14"
+  },
+  "ALLT": {
+    "name": NaN,
+    "sector": "Information Technology",
+    "industry": "Unknown",
+    "market_cap": 379643248.24,
+    "exchange": "XNAS",
+    "ipo_date": "2006-11-16"
+  },
+  "ALPN": {
+    "name": NaN,
+    "sector": "Unknown",
+    "industry": "Unknown",
+    "market_cap": 0,
+    "exchange": "",
+    "ipo_date": null
+  },
+  "ALT": {
+    "name": NaN,
+    "sector": "Health Care",
+    "industry": "PHARMACEUTICAL PREPARATIONS",
+    "market_cap": 633597877.02,
+    "exchange": "XNAS",
+    "ipo_date": "2005-10-06"
+  },
+  "ALTG": {
+    "name": NaN,
+    "sector": "Materials",
+    "industry": "WHOLESALE-INDUSTRIAL MACHINERY & EQUIPMENT",
+    "market_cap": 270030996.5,
+    "exchange": "XNYS",
+    "ipo_date": "2019-04-25"
+  },
+  "ALTS": {
+    "name": NaN,
+    "sector": "Information Technology",
+    "industry": "Unknown",
+    "market_cap": 0,
+    "exchange": "",
+    "ipo_date": null
+  },
+  "ALXN": {
+    "name": "Alexion Pharmaceuticals",
+    "sector": "Health Care",
+    "industry": "Unknown",
+    "market_cap": 0,
+    "exchange": "",
+    "ipo_date": null
+  },
+  "ALXO": {
+    "name": NaN,
+    "sector": "Health Care",
+    "industry": "PHARMACEUTICAL PREPARATIONS",
+    "market_cap": 281230226.53,
+    "exchange": "XNAS",
+    "ipo_date": "2020-07-17"
+  },
+  "AMAL": {
+    "name": NaN,
+    "sector": "Financials",
+    "industry": "STATE COMMERCIAL BANKS",
+    "market_cap": 1246961737.25,
+    "exchange": "XNAS",
+    "ipo_date": "2018-06-06"
+  },
+  "AMAM": {
+    "name": NaN,
+    "sector": "Unknown",
+    "industry": "Unknown",
+    "market_cap": 0,
+    "exchange": "",
+    "ipo_date": null
+  },
+  "AMLX": {
+    "name": NaN,
+    "sector": "Health Care",
+    "industry": "PHARMACEUTICAL PREPARATIONS",
+    "market_cap": 1784038863.4199998,
+    "exchange": "XNAS",
+    "ipo_date": "2022-01-07"
+  },
+  "AMPG": {
+    "name": NaN,
+    "sector": "Information Technology",
+    "industry": "COMMUNICATIONS EQUIPMENT, NEC",
+    "market_cap": 58261987.699999996,
+    "exchange": "XNAS",
+    "ipo_date": "2013-02-21"
+  },
+  "AMPH": {
+    "name": NaN,
+    "sector": "Health Care",
+    "industry": "PHARMACEUTICAL PREPARATIONS",
+    "market_cap": 1064385878.5999999,
+    "exchange": "XNAS",
+    "ipo_date": "2014-06-25"
+  },
+  "AMPX": {
+    "name": NaN,
+    "sector": "Industrials",
+    "industry": "MISCELLANEOUS ELECTRICAL MACHINERY, EQUIPMENT & SUPPLIES",
+    "market_cap": 3124508683.59,
+    "exchange": "XNYS",
+    "ipo_date": "2022-09-15"
+  },
+  "AMPY": {
+    "name": NaN,
+    "sector": "Energy",
+    "industry": "CRUDE PETROLEUM & NATURAL GAS",
+    "market_cap": 228732400.98,
+    "exchange": "XNYS",
+    "ipo_date": "2012-04-20"
+  },
+  "AMR": {
+    "name": NaN,
+    "sector": "Energy",
+    "industry": "BITUMINOUS COAL & LIGNITE SURFACE MINING",
+    "market_cap": 2514346779.84,
+    "exchange": "XNYS",
+    "ipo_date": "2016-08-18"
+  },
+  "AMRX": {
+    "name": NaN,
+    "sector": "Health Care",
+    "industry": "PHARMACEUTICAL PREPARATIONS",
+    "market_cap": 4344805782.66,
+    "exchange": "XNAS",
+    "ipo_date": "2018-05-07"
+  },
+  "AMSC": {
+    "name": NaN,
+    "sector": "Industrials",
+    "industry": "MOTORS & GENERATORS",
+    "market_cap": 2717233104.95,
+    "exchange": "XNAS",
+    "ipo_date": "1991-12-11"
+  },
+  "AMTM": {
+    "name": NaN,
+    "sector": "Industrials",
+    "industry": "SERVICES-BUSINESS SERVICES, NEC",
+    "market_cap": 6071546530.64,
+    "exchange": "XNYS",
+    "ipo_date": "2024-09-24"
+  },
+  "AMTX": {
+    "name": NaN,
+    "sector": "Materials",
+    "industry": "INDUSTRIAL ORGANIC CHEMICALS",
+    "market_cap": 220791705.12,
+    "exchange": "XNAS",
+    "ipo_date": "1990-03-26"
+  },
+  "ANDE": {
+    "name": NaN,
+    "sector": "Industrials",
+    "industry": "WHOLESALE-FARM PRODUCT RAW MATERIALS",
+    "market_cap": 2323467234.65,
+    "exchange": "XNAS",
+    "ipo_date": "1996-02-20"
+  },
+  "ANF": {
+    "name": NaN,
+    "sector": "Consumer Discretionary",
+    "industry": "RETAIL-FAMILY CLOTHING STORES",
+    "market_cap": 3552238885.0000005,
+    "exchange": "XNYS",
+    "ipo_date": "1996-09-26"
+  },
+  "ANIP": {
+    "name": NaN,
+    "sector": "Health Care",
+    "industry": "PHARMACEUTICAL PREPARATIONS",
+    "market_cap": 1912381643.88,
+    "exchange": "XNAS",
+    "ipo_date": "1999-09-13"
+  },
+  "ANNX": {
+    "name": NaN,
+    "sector": "Health Care",
+    "industry": "PHARMACEUTICAL PREPARATIONS",
+    "market_cap": 926291484.6,
+    "exchange": "XNAS",
+    "ipo_date": "2020-07-24"
+  },
+  "ANRO": {
+    "name": NaN,
+    "sector": "Health Care",
+    "industry": "PHARMACEUTICAL PREPARATIONS",
+    "market_cap": 858441382.1899999,
+    "exchange": "XNYS",
+    "ipo_date": "2024-02-02"
+  },
+  "ANSS": {
+    "name": "Ansys",
+    "sector": "Information Technology",
+    "industry": "Unknown",
+    "market_cap": 0,
+    "exchange": "",
+    "ipo_date": null
+  },
+  "AOSL": {
+    "name": NaN,
+    "sector": "Information Technology",
+    "industry": "SEMICONDUCTORS & RELATED DEVICES",
+    "market_cap": 1468101497.25,
+    "exchange": "XNAS",
+    "ipo_date": "2010-04-29"
+  },
+  "APEI": {
+    "name": NaN,
+    "sector": "Consumer Discretionary",
+    "industry": "SERVICES-EDUCATIONAL SERVICES",
+    "market_cap": 1029367620.14,
+    "exchange": "XNAS",
+    "ipo_date": "2007-11-09"
+  },
+  "APEN": {
+    "name": NaN,
+    "sector": "Unknown",
+    "industry": "Unknown",
+    "market_cap": 0,
+    "exchange": "",
+    "ipo_date": null
+  },
+  "APLT": {
+    "name": NaN,
+    "sector": "Unknown",
+    "industry": "Unknown",
+    "market_cap": 0,
+    "exchange": "",
+    "ipo_date": null
+  },
+  "APPS": {
+    "name": NaN,
+    "sector": "Financials",
+    "industry": "PATENT OWNERS & LESSORS",
+    "market_cap": 477201733.34,
+    "exchange": "XNAS",
+    "ipo_date": "1995-05-24"
+  },
+  "APTS": {
+    "name": NaN,
+    "sector": "Unknown",
+    "industry": "Unknown",
+    "market_cap": 0,
+    "exchange": "",
+    "ipo_date": null
+  },
+  "AQST": {
+    "name": NaN,
+    "sector": "Health Care",
+    "industry": "PHARMACEUTICAL PREPARATIONS",
+    "market_cap": 525723612.66,
+    "exchange": "XNAS",
+    "ipo_date": "2018-07-25"
+  },
+  "ARCH": {
+    "name": NaN,
+    "sector": "Unknown",
+    "industry": "Unknown",
+    "market_cap": 0,
+    "exchange": "",
+    "ipo_date": null
+  },
+  "ARCT": {
+    "name": NaN,
+    "sector": "Health Care",
+    "industry": "PHARMACEUTICAL PREPARATIONS",
+    "market_cap": 259502619.97000003,
+    "exchange": "XNAS",
+    "ipo_date": "2013-05-22"
+  },
+  "ARDX": {
+    "name": NaN,
+    "sector": "Health Care",
+    "industry": "PHARMACEUTICAL PREPARATIONS",
+    "market_cap": 1753908647.6999998,
+    "exchange": "XNAS",
+    "ipo_date": "2014-06-19"
+  },
+  "ARHS": {
+    "name": NaN,
+    "sector": "Consumer Discretionary",
+    "industry": "RETAIL-FURNITURE STORES",
+    "market_cap": 1077513993.27,
+    "exchange": "XNAS",
+    "ipo_date": "2021-11-04"
+  },
+  "ARIS": {
+    "name": NaN,
+    "sector": "Materials",
+    "industry": "Unknown",
+    "market_cap": 3905529585.42,
+    "exchange": "XNYS",
+    "ipo_date": "2012-12-07"
+  },
+  "ARLO": {
+    "name": NaN,
+    "sector": "Consumer Discretionary",
+    "industry": "HOUSEHOLD AUDIO & VIDEO EQUIPMENT",
+    "market_cap": 1587532833.98,
+    "exchange": "XNYS",
+    "ipo_date": "2018-08-03"
+  },
+  "ARLP": {
+    "name": NaN,
+    "sector": "Energy",
+    "industry": "BITUMINOUS COAL & LIGNITE SURFACE MINING",
+    "market_cap": 3302671421.67,
+    "exchange": "XNAS",
+    "ipo_date": "1999-08-17"
+  },
+  "ARMN": {
+    "name": NaN,
+    "sector": "Unknown",
+    "industry": "Unknown",
+    "market_cap": 0,
+    "exchange": "",
+    "ipo_date": null
+  },
+  "ARNC": {
+    "name": NaN,
+    "sector": "Industrials",
+    "industry": "Unknown",
+    "market_cap": 0,
+    "exchange": "",
+    "ipo_date": null
+  },
+  "AROC": {
+    "name": NaN,
+    "sector": "Utilities",
+    "industry": "NATURAL GAS TRANSMISSION",
+    "market_cap": 6852189449.2,
+    "exchange": "XNYS",
+    "ipo_date": "2000-05-24"
+  },
+  "ARQQ": {
+    "name": NaN,
+    "sector": "Information Technology",
+    "industry": "Unknown",
+    "market_cap": 245421149.12,
+    "exchange": "XNAS",
+    "ipo_date": "2021-09-07"
+  },
+  "ARQT": {
+    "name": NaN,
+    "sector": "Health Care",
+    "industry": "PHARMACEUTICAL PREPARATIONS",
+    "market_cap": 3023020428.3300004,
+    "exchange": "XNAS",
+    "ipo_date": "2020-01-31"
+  },
+  "ARRY": {
+    "name": NaN,
+    "sector": "Consumer Discretionary",
+    "industry": "SEMICONDUCTORS & RELATED DEVICES",
+    "market_cap": 1244249939.49,
+    "exchange": "XNAS",
+    "ipo_date": "2020-10-15"
+  },
+  "ASC": {
+    "name": NaN,
+    "sector": "Industrials",
+    "industry": "Unknown",
+    "market_cap": 766681117.06,
+    "exchange": "XNYS",
+    "ipo_date": "2013-08-01"
+  },
+  "ASO": {
+    "name": NaN,
+    "sector": "Consumer Discretionary",
+    "industry": "RETAIL-MISCELLANEOUS SHOPPING GOODS STORES",
+    "market_cap": 3513112977.64,
+    "exchange": "XNAS",
+    "ipo_date": "2020-10-02"
+  },
+  "ASPC": {
+    "name": NaN,
+    "sector": "Information Technology",
+    "industry": "BLANK CHECKS",
+    "market_cap": 26882181.5,
+    "exchange": "XNAS",
+    "ipo_date": "2025-01-03"
+  },
+  "ASPI": {
+    "name": NaN,
+    "sector": "Materials",
+    "industry": "MISCELLANEOUS CHEMICAL PRODUCTS",
+    "market_cap": 697505096.38,
+    "exchange": "XNAS",
+    "ipo_date": "2022-11-10"
+  },
+  "ASPN": {
+    "name": NaN,
+    "sector": "Industrials",
+    "industry": "WHOLESALE-LUMBER & OTHER CONSTRUCTION MATERIALS",
+    "market_cap": 341241484.36,
+    "exchange": "XNYS",
+    "ipo_date": "2014-06-13"
+  },
+  "ASRT": {
+    "name": NaN,
+    "sector": "Health Care",
+    "industry": "PHARMACEUTICAL PREPARATIONS",
+    "market_cap": 143040882.6,
+    "exchange": "XNAS",
+    "ipo_date": "1997-11-05"
+  },
+  "ASST": {
+    "name": NaN,
+    "sector": "Financials",
+    "industry": "FINANCE SERVICES",
+    "market_cap": 1188821456.68,
+    "exchange": "XNAS",
+    "ipo_date": "2025-09-15"
+  },
+  "ASTI": {
+    "name": NaN,
+    "sector": "Information Technology",
+    "industry": "SEMICONDUCTORS & RELATED DEVICES",
+    "market_cap": 42105397.15,
+    "exchange": "XNAS",
+    "ipo_date": "2006-08-10"
+  },
+  "ASUR": {
+    "name": NaN,
+    "sector": "Information Technology",
+    "industry": "SERVICES-COMPUTER INTEGRATED SYSTEMS DESIGN",
+    "market_cap": 249243390.76999998,
+    "exchange": "XNAS",
+    "ipo_date": "1993-08-04"
+  },
+  "ASYS": {
+    "name": NaN,
+    "sector": "Industrials",
+    "industry": "SPECIAL INDUSTRY MACHINERY, NEC",
+    "market_cap": 262125994.57500002,
+    "exchange": "XNAS",
+    "ipo_date": "1983-08-02"
+  },
+  "ATAI": {
+    "name": NaN,
+    "sector": "Health Care",
+    "industry": "PHARMACEUTICAL PREPARATIONS",
+    "market_cap": 1530043456.32,
+    "exchange": "XNAS",
+    "ipo_date": "2021-06-18"
+  },
+  "ATEC": {
+    "name": NaN,
+    "sector": "Health Care",
+    "industry": "SURGICAL & MEDICAL INSTRUMENTS & APPARATUS",
+    "market_cap": 1074987241.95,
+    "exchange": "XNAS",
+    "ipo_date": "2006-06-02"
+  },
+  "ATGE": {
+    "name": NaN,
+    "sector": "Unknown",
+    "industry": "Unknown",
+    "market_cap": 0,
+    "exchange": "",
+    "ipo_date": null
+  },
+  "ATI": {
+    "name": NaN,
+    "sector": "Materials",
+    "industry": "STEEL PIPE & TUBES",
+    "market_cap": 22528538089.16,
+    "exchange": "XNYS",
+    "ipo_date": "1993-12-03"
+  },
+  "ATKR": {
+    "name": NaN,
+    "sector": "Industrials",
+    "industry": "MISCELLANEOUS ELECTRICAL MACHINERY, EQUIPMENT & SUPPLIES",
+    "market_cap": 2574078687.1800003,
+    "exchange": "XNYS",
+    "ipo_date": "2016-06-10"
+  },
+  "ATLX": {
+    "name": NaN,
+    "sector": "Materials",
+    "industry": "MINING & QUARRYING OF NONMETALLIC MINERALS (NO FUELS)",
+    "market_cap": 155500318.39999998,
+    "exchange": "XNAS",
+    "ipo_date": "2012-06-27"
+  },
+  "ATNM": {
+    "name": NaN,
+    "sector": "Health Care",
+    "industry": "PHARMACEUTICAL PREPARATIONS",
+    "market_cap": 38904992.56,
+    "exchange": "XASE",
+    "ipo_date": "2007-07-19"
+  },
+  "ATVI": {
+    "name": "Activision Blizzard",
+    "sector": "Communication Services",
+    "industry": "Unknown",
+    "market_cap": 0,
+    "exchange": "",
+    "ipo_date": null
+  },
+  "ATYR": {
+    "name": NaN,
+    "sector": "Health Care",
+    "industry": "BIOLOGICAL PRODUCTS, (NO DIAGNOSTIC SUBSTANCES)",
+    "market_cap": 101973260.48,
+    "exchange": "XNAS",
+    "ipo_date": "2015-05-07"
+  },
+  "AU": {
+    "name": NaN,
+    "sector": "Materials",
+    "industry": "Unknown",
+    "market_cap": 49794459280.0,
+    "exchange": "XNYS",
+    "ipo_date": "1987-07-29"
+  },
+  "AUPH": {
+    "name": NaN,
+    "sector": "Health Care",
+    "industry": "PHARMACEUTICAL PREPARATIONS",
+    "market_cap": 2110848073.38,
+    "exchange": "XNAS",
+    "ipo_date": "2009-10-21"
+  },
+  "AURC": {
+    "name": NaN,
+    "sector": "Unknown",
+    "industry": "Unknown",
+    "market_cap": 0,
+    "exchange": "",
+    "ipo_date": null
+  },
+  "AVAV": {
+    "name": NaN,
+    "sector": "Consumer Discretionary",
+    "industry": "AIRCRAFT",
+    "market_cap": 8824006230.27,
+    "exchange": "XNAS",
+    "ipo_date": "2007-01-23"
+  },
+  "AVD": {
+    "name": NaN,
+    "sector": "Materials",
+    "industry": "AGRICULTURAL CHEMICALS",
+    "market_cap": 83056864.98,
+    "exchange": "XNYS",
+    "ipo_date": "1987-03-03"
+  },
+  "AVDL": {
+    "name": NaN,
+    "sector": "Unknown",
+    "industry": "Unknown",
+    "market_cap": 0,
+    "exchange": "",
+    "ipo_date": null
+  },
+  "AVEO": {
+    "name": NaN,
+    "sector": "Unknown",
+    "industry": "Unknown",
+    "market_cap": 0,
+    "exchange": "",
+    "ipo_date": null
+  },
+  "AVPT": {
+    "name": NaN,
+    "sector": "Information Technology",
+    "industry": "SERVICES-PREPACKAGED SOFTWARE",
+    "market_cap": 2215736385.12,
+    "exchange": "XNAS",
+    "ipo_date": "2021-07-02"
+  },
+  "AVXL": {
+    "name": NaN,
+    "sector": "Health Care",
+    "industry": "BIOLOGICAL PRODUCTS, (NO DIAGNOSTIC SUBSTANCES)",
+    "market_cap": 309523671.71999997,
+    "exchange": "XNAS",
+    "ipo_date": "2006-08-02"
+  },
+  "AXGN": {
+    "name": NaN,
+    "sector": "Health Care",
+    "industry": "ELECTROMEDICAL & ELECTROTHERAPEUTIC APPARATUS",
+    "market_cap": 2312171787.52,
+    "exchange": "XNAS",
+    "ipo_date": "1986-12-17"
+  },
+  "AXON": {
+    "name": "Axon Enterprise",
+    "sector": "Industrials",
+    "industry": "ORDNANCE & ACCESSORIES, (NO VEHICLES/GUIDED MISSILES)",
+    "market_cap": 31089589477.86,
+    "exchange": "XNAS",
+    "ipo_date": "2001-06-07"
+  },
+  "AXTI": {
+    "name": NaN,
+    "sector": "Information Technology",
+    "industry": "SEMICONDUCTORS & RELATED DEVICES",
+    "market_cap": 6858312378.72,
+    "exchange": "XNAS",
+    "ipo_date": "1998-05-21"
+  },
+  "AZEK": {
+    "name": NaN,
+    "sector": "Unknown",
+    "industry": "Unknown",
+    "market_cap": 0,
+    "exchange": "",
+    "ipo_date": null
+  },
+  "AZN": {
+    "name": "AstraZeneca",
+    "sector": "Health Care",
+    "industry": "Unknown",
+    "market_cap": 286782827508.36,
+    "exchange": "XNYS",
+    "ipo_date": "2009-10-23"
+  },
+  "AZPN": {
+    "name": NaN,
+    "sector": "Unknown",
+    "industry": "Unknown",
+    "market_cap": 0,
+    "exchange": "",
+    "ipo_date": null
+  },
+  "AZZ": {
+    "name": NaN,
+    "sector": "Industrials",
+    "industry": "COATING, ENGRAVING & ALLIED SERVICES",
+    "market_cap": 4375672449.96,
+    "exchange": "XNYS",
+    "ipo_date": "1973-01-02"
+  },
+  "BAM": {
+    "name": "Brookfield Asset Management Ltd.",
+    "sector": "Financials",
+    "industry": "INVESTMENT ADVICE",
+    "market_cap": 79665121052.22,
+    "exchange": "XNYS",
+    "ipo_date": "2022-12-01"
+  },
+  "BANF": {
+    "name": NaN,
+    "sector": "Financials",
+    "industry": "NATIONAL COMMERCIAL BANKS",
+    "market_cap": 3844785011.76,
+    "exchange": "XNAS",
+    "ipo_date": "1990-03-27"
+  },
+  "BBAI": {
+    "name": NaN,
+    "sector": "Information Technology",
+    "industry": "SERVICES-PREPACKAGED SOFTWARE",
+    "market_cap": 2093009096.5,
+    "exchange": "XNYS",
+    "ipo_date": "2021-12-08"
+  },
+  "BBIO": {
+    "name": "BridgeBio Pharma, Inc. Common Stock",
+    "sector": "Health Care",
+    "industry": "PHARMACEUTICAL PREPARATIONS",
+    "market_cap": 13200122886.390001,
+    "exchange": "XNAS",
+    "ipo_date": "2019-06-27"
+  },
+  "BBUC": {
+    "name": "Brookfield Business Corporation Class A Subordinate Voting Shares",
+    "sector": "Industrials",
+    "industry": "Unknown",
+    "market_cap": 7243191200.35,
+    "exchange": "XNYS",
+    "ipo_date": "2016-05-31"
+  },
+  "BBW": {
+    "name": NaN,
+    "sector": "Consumer Discretionary",
+    "industry": "RETAIL-HOBBY, TOY & GAME SHOPS",
+    "market_cap": 467616404.43,
+    "exchange": "XNYS",
+    "ipo_date": "2004-10-28"
+  },
+  "BBWI": {
+    "name": NaN,
+    "sector": "Consumer Discretionary",
+    "industry": "RETAIL-RETAIL STORES, NEC",
+    "market_cap": 3866544345.6,
+    "exchange": "XNYS",
+    "ipo_date": "1973-02-02"
+  },
+  "BCC": {
+    "name": NaN,
+    "sector": "Industrials",
+    "industry": "WHOLESALE-LUMBER & OTHER CONSTRUCTION MATERIALS",
+    "market_cap": 2612486000.64,
+    "exchange": "XNYS",
+    "ipo_date": "2013-02-06"
+  },
+  "BCPC": {
+    "name": NaN,
+    "sector": "Materials",
+    "industry": "CHEMICALS & ALLIED PRODUCTS",
+    "market_cap": 5185112933.68,
+    "exchange": "XNAS",
+    "ipo_date": "1986-06-03"
+  },
+  "BDC": {
+    "name": NaN,
+    "sector": "Materials",
+    "industry": "DRAWING & INSULATING OF NONFERROUS WIRE",
+    "market_cap": 4464934186.0,
+    "exchange": "XNYS",
+    "ipo_date": "1993-11-24"
+  },
+  "BDTX": {
+    "name": NaN,
+    "sector": "Health Care",
+    "industry": "BIOLOGICAL PRODUCTS, (NO DIAGNOSTIC SUBSTANCES)",
+    "market_cap": 161591002.67999998,
+    "exchange": "XNAS",
+    "ipo_date": "2020-01-30"
+  },
+  "BE": {
+    "name": "Bloom Energy Corporation",
+    "sector": "Utilities",
+    "industry": "ELECTRICAL INDUSTRIAL APPARATUS",
+    "market_cap": 81200190997.96,
+    "exchange": "XNYS",
+    "ipo_date": "2018-07-25"
+  },
+  "BEPC": {
+    "name": "Brookfield Renewable Corporation Class A Exchangeable Subordinate Voting Shares",
+    "sector": "Utilities",
+    "industry": "Unknown",
+    "market_cap": 6821071428.599999,
+    "exchange": "XNYS",
+    "ipo_date": "2020-07-24"
+  },
+  "BETR": {
+    "name": NaN,
+    "sector": "Financials",
+    "industry": "LOAN BROKERS",
+    "market_cap": 702245889.48,
+    "exchange": "XNAS",
+    "ipo_date": "2023-08-24"
+  },
+  "BFRG": {
+    "name": NaN,
+    "sector": "Health Care",
+    "industry": "PHARMACEUTICAL PREPARATIONS",
+    "market_cap": 13067965.998000002,
+    "exchange": "XNAS",
+    "ipo_date": "2023-02-14"
+  },
+  "BHC": {
+    "name": NaN,
+    "sector": "Health Care",
+    "industry": "PHARMACEUTICAL PREPARATIONS",
+    "market_cap": 2110137388.6000001,
+    "exchange": "XNYS",
+    "ipo_date": "1994-03-31"
+  },
+  "BHVN": {
+    "name": NaN,
+    "sector": "Health Care",
+    "industry": "PHARMACEUTICAL PREPARATIONS",
+    "market_cap": 1511632339.6,
+    "exchange": "XNYS",
+    "ipo_date": "2022-09-23"
+  },
+  "BIDU": {
+    "name": "Baidu",
+    "sector": "Communication Services",
+    "industry": "Unknown",
+    "market_cap": 47836121328.81,
+    "exchange": "XNAS",
+    "ipo_date": "2005-08-05"
+  },
+  "BIO": {
+    "name": NaN,
+    "sector": "Health Care",
+    "industry": "LABORATORY ANALYTICAL INSTRUMENTS",
+    "market_cap": 6931789113.959999,
+    "exchange": "XNYS",
+    "ipo_date": "1980-02-29"
+  },
+  "BIRK": {
+    "name": "Birkenstock Holding plc",
+    "sector": "Consumer Discretionary",
+    "industry": "Unknown",
+    "market_cap": 7282679817.6,
+    "exchange": "XNYS",
+    "ipo_date": "2023-10-11"
+  },
+  "BJ": {
+    "name": "BJs Wholesale Club Holdings, Inc. Common Stock",
+    "sector": "Consumer Discretionary",
+    "industry": "RETAIL-VARIETY STORES",
+    "market_cap": 11988600560.6,
+    "exchange": "XNYS",
+    "ipo_date": "2018-06-28"
+  },
+  "BKD": {
+    "name": NaN,
+    "sector": "Health Care",
+    "industry": "SERVICES-NURSING & PERSONAL CARE FACILITIES",
+    "market_cap": 3386039307.2799997,
+    "exchange": "XNYS",
+    "ipo_date": "2005-11-22"
+  },
+  "BKNG": {
+    "name": "Booking Holdings",
+    "sector": "Consumer Discretionary",
+    "industry": "TRANSPORTATION SERVICES",
+    "market_cap": 130427538347.51999,
+    "exchange": "XNAS",
+    "ipo_date": "1999-03-31"
+  },
+  "BKR": {
+    "name": "Baker Hughes",
+    "sector": "Energy",
+    "industry": "OIL & GAS FIELD MACHINERY & EQUIPMENT",
+    "market_cap": 66141220028.990005,
+    "exchange": "XNAS",
+    "ipo_date": "2017-07-05"
+  },
+  "BKSY": {
+    "name": NaN,
+    "sector": "Information Technology",
+    "industry": "RADIO & TV BROADCASTING & COMMUNICATIONS EQUIPMENT",
+    "market_cap": 1503286643.26,
+    "exchange": "XNYS",
+    "ipo_date": "2021-09-10"
+  },
+  "BKTI": {
+    "name": NaN,
+    "sector": "Information Technology",
+    "industry": "RADIO & TV BROADCASTING & COMMUNICATIONS EQUIPMENT",
+    "market_cap": 350489975.11,
+    "exchange": "XASE",
+    "ipo_date": "1978-10-03"
+  },
+  "BLBD": {
+    "name": NaN,
+    "sector": "Consumer Discretionary",
+    "industry": "TRUCK & BUS BODIES",
+    "market_cap": 2230487093.28,
+    "exchange": "XNAS",
+    "ipo_date": "2014-03-20"
+  },
+  "BLCO": {
+    "name": "Bausch + Lomb Corporation",
+    "sector": "Information Technology",
+    "industry": "OPHTHALMIC GOODS",
+    "market_cap": 5704581728.0,
+    "exchange": "XNYS",
+    "ipo_date": "2022-05-06"
+  },
+  "BLD": {
+    "name": "TopBuild Corp. Common Stock",
+    "sector": "Industrials",
+    "industry": "CONSTRUCTION - SPECIAL TRADE CONTRACTORS",
+    "market_cap": 12352438727.73,
+    "exchange": "XNYS",
+    "ipo_date": "2015-06-17"
+  },
+  "BLFS": {
+    "name": NaN,
+    "sector": "Health Care",
+    "industry": "ELECTROMEDICAL & ELECTROTHERAPEUTIC APPARATUS",
+    "market_cap": 1062648776.25,
+    "exchange": "XNAS",
+    "ipo_date": "1989-11-22"
+  },
+  "BLSH": {
+    "name": "Bullish",
+    "sector": "Information Technology",
+    "industry": "Unknown",
+    "market_cap": 6719538211.26,
+    "exchange": "XNYS",
+    "ipo_date": "2025-08-13"
+  },
+  "BLU": {
+    "name": NaN,
+    "sector": "Unknown",
+    "industry": "Unknown",
+    "market_cap": 0,
+    "exchange": "",
+    "ipo_date": null
+  },
+  "BMEA": {
+    "name": NaN,
+    "sector": "Health Care",
+    "industry": "PHARMACEUTICAL PREPARATIONS",
+    "market_cap": 115679104.0,
+    "exchange": "XNAS",
+    "ipo_date": "2021-04-16"
+  },
+  "BMI": {
+    "name": NaN,
+    "sector": "Industrials",
+    "industry": "TOTALIZING FLUID METERS & COUNTING DEVICES",
+    "market_cap": 3611714287.5,
+    "exchange": "XNYS",
+    "ipo_date": "1972-06-01"
+  },
+  "BMR": {
+    "name": NaN,
+    "sector": "Information Technology",
+    "industry": "Unknown",
+    "market_cap": 30127916.759999998,
+    "exchange": "XNAS",
+    "ipo_date": "2023-02-28"
+  },
+  "BMRN": {
+    "name": "BioMarin Pharmaceutical",
+    "sector": "Health Care",
+    "industry": "PHARMACEUTICAL PREPARATIONS",
+    "market_cap": 10553330314.800001,
+    "exchange": "XNAS",
+    "ipo_date": "1999-07-23"
+  },
+  "BMY": {
+    "name": "Bristol Myers Squibb",
+    "sector": "Health Care",
+    "industry": "PHARMACEUTICAL PREPARATIONS",
+    "market_cap": 115560811867.73001,
+    "exchange": "XNYS",
+    "ipo_date": "1952-06-23"
+  },
+  "BNT": {
+    "name": "Brookfield Wealth Solutions Ltd.",
+    "sector": "Financials",
+    "industry": "Unknown",
+    "market_cap": 12674499196.8,
+    "exchange": "XNYS",
+    "ipo_date": "2021-06-28"
+  },
+  "BOOT": {
+    "name": "Boot Barn Holdings, Inc.",
+    "sector": "Consumer Discretionary",
+    "industry": "RETAIL-SHOE STORES",
+    "market_cap": 5229272088.900001,
+    "exchange": "XNYS",
+    "ipo_date": "2014-10-30"
+  },
+  "BOWL": {
+    "name": NaN,
+    "sector": "Unknown",
+    "industry": "Unknown",
+    "market_cap": 0,
+    "exchange": "",
+    "ipo_date": null
+  },
+  "BPMC": {
+    "name": NaN,
+    "sector": "Unknown",
+    "industry": "Unknown",
+    "market_cap": 0,
+    "exchange": "",
+    "ipo_date": null
+  },
+  "BPT": {
+    "name": NaN,
+    "sector": "Unknown",
+    "industry": "Unknown",
+    "market_cap": 0,
+    "exchange": "",
+    "ipo_date": null
+  },
+  "BQ": {
+    "name": NaN,
+    "sector": "Consumer Discretionary",
+    "industry": "Unknown",
+    "market_cap": 3603108.4378,
+    "exchange": "XASE",
+    "ipo_date": "2025-07-11"
+  },
+  "BR": {
+    "name": "Broadridge Financial Solutions",
+    "sector": "Industrials",
+    "industry": "SERVICES-BUSINESS SERVICES, NEC",
+    "market_cap": 17676057530.510002,
+    "exchange": "XNYS",
+    "ipo_date": "2007-03-22"
+  },
+  "BRBR": {
+    "name": NaN,
+    "sector": "Consumer Staples",
+    "industry": "FOOD AND KINDRED PRODUCTS",
+    "market_cap": 1290684135.0,
+    "exchange": "XNYS",
+    "ipo_date": "2019-10-17"
+  },
+  "BRG": {
+    "name": NaN,
+    "sector": "Unknown",
+    "industry": "Unknown",
+    "market_cap": 0,
+    "exchange": "",
+    "ipo_date": null
+  },
+  "BRO": {
+    "name": "Brown & Brown",
+    "sector": "Financials",
+    "industry": "INSURANCE AGENTS, BROKERS & SERVICE",
+    "market_cap": 19170889886.96,
+    "exchange": "XNYS",
+    "ipo_date": "1981-02-27"
+  },
+  "BROS": {
+    "name": "Dutch Bros Inc.",
+    "sector": "Consumer Discretionary",
+    "industry": "RETAIL-EATING & DRINKING PLACES",
+    "market_cap": 7517902255.320001,
+    "exchange": "XNYS",
+    "ipo_date": "2021-09-15"
+  },
+  "BRX": {
+    "name": "BRIXMOR PROPERTY GROUP INC.",
+    "sector": "Financials",
+    "industry": "REAL ESTATE INVESTMENT TRUSTS",
+    "market_cap": 9294081128.93,
+    "exchange": "XNYS",
+    "ipo_date": "2013-10-30"
+  },
+  "BRY": {
+    "name": NaN,
+    "sector": "Unknown",
+    "industry": "Unknown",
+    "market_cap": 0,
+    "exchange": "",
+    "ipo_date": null
+  },
+  "BRZE": {
+    "name": NaN,
+    "sector": "Information Technology",
+    "industry": "SERVICES-PREPACKAGED SOFTWARE",
+    "market_cap": 2489064521.88,
+    "exchange": "XNAS",
+    "ipo_date": "2021-11-17"
+  },
+  "BSM": {
+    "name": NaN,
+    "sector": "Energy",
+    "industry": "CRUDE PETROLEUM & NATURAL GAS",
+    "market_cap": 2883615921.67,
+    "exchange": "XNYS",
+    "ipo_date": "2015-05-01"
+  },
+  "BSX": {
+    "name": "Boston Scientific",
+    "sector": "Health Care",
+    "industry": "SURGICAL & MEDICAL INSTRUMENTS & APPARATUS",
+    "market_cap": 83235890024.0,
+    "exchange": "XNYS",
+    "ipo_date": "1992-05-18"
+  },
+  "BSY": {
+    "name": "Bentley Systems, Incorporated Class B Common Stock",
+    "sector": "Information Technology",
+    "industry": "SERVICES-PREPACKAGED SOFTWARE",
+    "market_cap": 9725121476.58,
+    "exchange": "XNAS",
+    "ipo_date": "2020-09-23"
+  },
+  "BTAI": {
+    "name": NaN,
+    "sector": "Health Care",
+    "industry": "PHARMACEUTICAL PREPARATIONS",
+    "market_cap": 35196961.800000004,
+    "exchange": "XNAS",
+    "ipo_date": "2018-03-08"
+  },
+  "BTBT": {
+    "name": NaN,
+    "sector": "Financials",
+    "industry": "FINANCE SERVICES",
+    "market_cap": 630294032.67,
+    "exchange": "XNAS",
+    "ipo_date": "2018-03-20"
+  },
+  "BTCT": {
+    "name": NaN,
+    "sector": "Financials",
+    "industry": "FINANCE SERVICES",
+    "market_cap": 11801049.0,
+    "exchange": "XNAS",
+    "ipo_date": "2020-03-31"
+  },
+  "BTDR": {
+    "name": NaN,
+    "sector": "Information Technology",
+    "industry": "Unknown",
+    "market_cap": 3674036160.2999997,
+    "exchange": "XNAS",
+    "ipo_date": "2023-04-14"
+  },
+  "BTM": {
+    "name": NaN,
+    "sector": "Financials",
+    "industry": "FINANCE SERVICES",
+    "market_cap": 60487814.14,
+    "exchange": "XNAS",
+    "ipo_date": "2023-07-03"
+  },
+  "BTOG": {
+    "name": NaN,
+    "sector": "Financials",
+    "industry": "Unknown",
+    "market_cap": 3413922.9200000004,
+    "exchange": "XNAS",
+    "ipo_date": "2019-08-14"
+  },
+  "BTSG": {
+    "name": "BrightSpring Health Services, Inc. Common Stock",
+    "sector": "Health Care",
+    "industry": "SERVICES-HOME HEALTH CARE SERVICES",
+    "market_cap": 10227256310.52,
+    "exchange": "XNAS",
+    "ipo_date": "2024-01-26"
+  },
+  "BUR": {
+    "name": NaN,
+    "sector": "Financials",
+    "industry": "FINANCE SERVICES",
+    "market_cap": 1160156432.0,
+    "exchange": "XNYS",
+    "ipo_date": "2013-04-15"
+  },
+  "BURL": {
+    "name": "BURLINGTON STORES, INC.",
+    "sector": "Consumer Discretionary",
+    "industry": "RETAIL-DEPARTMENT STORES",
+    "market_cap": 19900231733.83,
+    "exchange": "XNYS",
+    "ipo_date": "2013-10-02"
+  },
+  "BVH": {
+    "name": NaN,
+    "sector": "Unknown",
+    "industry": "Unknown",
+    "market_cap": 0,
+    "exchange": "",
+    "ipo_date": null
+  },
+  "BVS": {
+    "name": NaN,
+    "sector": "Health Care",
+    "industry": "SURGICAL & MEDICAL INSTRUMENTS & APPARATUS",
+    "market_cap": 738610181.4,
+    "exchange": "XNAS",
+    "ipo_date": "2021-02-11"
+  },
+  "BW": {
+    "name": NaN,
+    "sector": "Industrials",
+    "industry": "HEATING EQUIPMENT, EXCEPT ELECTRIC & WARM AIR FURNACES",
+    "market_cap": 2110785161.0500002,
+    "exchange": "XNYS",
+    "ipo_date": "2015-06-16"
+  },
+  "BWA": {
+    "name": NaN,
+    "sector": "Consumer Discretionary",
+    "industry": "MOTOR VEHICLE PARTS & ACCESSORIES",
+    "market_cap": 12242113002.08,
+    "exchange": "XNYS",
+    "ipo_date": "1993-08-12"
+  },
+  "BWMX": {
+    "name": NaN,
+    "sector": "Consumer Discretionary",
+    "industry": "Unknown",
+    "market_cap": 637243471.1999999,
+    "exchange": "XNYS",
+    "ipo_date": "2020-03-13"
+  },
+  "BWXT": {
+    "name": "BWX Technologies, Inc.",
+    "sector": "Industrials",
+    "industry": "ENGINES & TURBINES",
+    "market_cap": 19715472464.8,
+    "exchange": "XNYS",
+    "ipo_date": "2010-07-12"
+  },
+  "BX": {
+    "name": "Blackstone Inc.",
+    "sector": "Financials",
+    "industry": "INVESTMENT ADVICE",
+    "market_cap": 153389865753.43,
+    "exchange": "XNYS",
+    "ipo_date": "2007-06-22"
+  },
+  "BXC": {
+    "name": NaN,
+    "sector": "Industrials",
+    "industry": "WHOLESALE-LUMBER, PLYWOOD, MILLWORK & WOOD PANELS",
+    "market_cap": 456826586.5,
+    "exchange": "XNYS",
+    "ipo_date": "2004-12-14"
+  },
+  "BXP": {
+    "name": "BXP, Inc.",
+    "sector": "Real Estate",
+    "industry": "REAL ESTATE INVESTMENT TRUSTS",
+    "market_cap": 9495169625.92,
+    "exchange": "XNYS",
+    "ipo_date": "1997-06-18"
+  },
+  "BXSL": {
+    "name": "Blackstone Secured Lending Fund",
+    "sector": "Financials",
+    "industry": "Unknown",
+    "market_cap": 5702469360.05,
+    "exchange": "XNYS",
+    "ipo_date": "2021-10-28"
+  },
+  "BYRN": {
+    "name": NaN,
+    "sector": "Industrials",
+    "industry": "MISCELLANEOUS ELECTRICAL MACHINERY, EQUIPMENT & SUPPLIES",
+    "market_cap": 124997953.53999999,
+    "exchange": "XNAS",
+    "ipo_date": "2006-09-12"
+  },
+  "BZH": {
+    "name": NaN,
+    "sector": "Industrials",
+    "industry": "OPERATIVE BUILDERS",
+    "market_cap": 516882630.75,
+    "exchange": "XNYS",
+    "ipo_date": "1994-02-23"
+  },
+  "C": {
+    "name": "Citigroup",
+    "sector": "Financials",
+    "industry": "NATIONAL COMMERCIAL BANKS",
+    "market_cap": 217634560000.0,
+    "exchange": "XNYS",
+    "ipo_date": "1986-06-02"
+  },
+  "CABA": {
+    "name": NaN,
+    "sector": "Health Care",
+    "industry": "BIOLOGICAL PRODUCTS, (NO DIAGNOSTIC SUBSTANCES)",
+    "market_cap": 608175739.08,
+    "exchange": "XNAS",
+    "ipo_date": "2019-10-25"
+  },
+  "CADL": {
+    "name": NaN,
+    "sector": "Health Care",
+    "industry": "BIOLOGICAL PRODUCTS, (NO DIAGNOSTIC SUBSTANCES)",
+    "market_cap": 559051923.5699999,
+    "exchange": "XNAS",
+    "ipo_date": "2021-07-27"
+  },
+  "CAG": {
+    "name": "Conagra Brands",
+    "sector": "Consumer Staples",
+    "industry": "FOOD AND KINDRED PRODUCTS",
+    "market_cap": 6731610784.92,
+    "exchange": "XNYS",
+    "ipo_date": "1972-06-01"
+  },
+  "CAH": {
+    "name": "Cardinal Health",
+    "sector": "Health Care",
+    "industry": "WHOLESALE-DRUGS, PROPRIETARIES & DRUGGISTS' SUNDRIES",
+    "market_cap": 44848079173.950005,
+    "exchange": "XNYS",
+    "ipo_date": "1983-08-04"
+  },
+  "CAI": {
+    "name": "Caris Life Sciences, Inc. Common Stock",
+    "sector": "Health Care",
+    "industry": "SERVICES-MEDICAL LABORATORIES",
+    "market_cap": 5407334485.849999,
+    "exchange": "XNAS",
+    "ipo_date": "2025-06-18"
+  },
+  "CAL": {
+    "name": NaN,
+    "sector": "Materials",
+    "industry": "FOOTWEAR, (NO RUBBER)",
+    "market_cap": 455163648.31,
+    "exchange": "XNYS",
+    "ipo_date": "1984-07-12"
+  },
+  "CALM": {
+    "name": NaN,
+    "sector": "Consumer Staples",
+    "industry": "Unknown",
+    "market_cap": 3602989517.4,
+    "exchange": "XNAS",
+    "ipo_date": "1996-12-12"
+  },
+  "CALX": {
+    "name": NaN,
+    "sector": "Communication Services",
+    "industry": "COMMUNICATIONS SERVICES, NEC",
+    "market_cap": 2828107137.6600003,
+    "exchange": "XNYS",
+    "ipo_date": "2010-03-24"
+  },
+  "CAMT": {
+    "name": NaN,
+    "sector": "Information Technology",
+    "industry": "Unknown",
+    "market_cap": 9427954861.779999,
+    "exchange": "XNAS",
+    "ipo_date": "2000-07-28"
+  },
+  "CAPR": {
+    "name": NaN,
+    "sector": "Health Care",
+    "industry": "PHARMACEUTICAL PREPARATIONS",
+    "market_cap": 1988542706.7600002,
+    "exchange": "XNAS",
+    "ipo_date": "2002-06-20"
+  },
+  "CAR": {
+    "name": NaN,
+    "sector": "Consumer Discretionary",
+    "industry": "SERVICES-AUTO RENTAL & LEASING (NO DRIVERS)",
+    "market_cap": 5801422450.78,
+    "exchange": "XNAS",
+    "ipo_date": "1968-12-02"
+  },
+  "CARR": {
+    "name": "Carrier Global",
+    "sector": "Industrials",
+    "industry": "AIR-COND & WARM AIR HEATG EQUIP & COMM & INDL REFRIG EQUIP",
+    "market_cap": 56396410721.700005,
+    "exchange": "XNYS",
+    "ipo_date": "2020-03-18"
+  },
+  "CART": {
+    "name": "Maplebear Inc. Common Stock",
+    "sector": "Industrials",
+    "industry": "SERVICES-BUSINESS SERVICES, NEC",
+    "market_cap": 9506281150.08,
+    "exchange": "XNAS",
+    "ipo_date": "2023-09-19"
+  },
+  "CASY": {
+    "name": "Casey's",
+    "sector": "Consumer Staples",
+    "industry": "RETAIL-AUTO DEALERS & GASOLINE STATIONS",
+    "market_cap": 31716022004.2,
+    "exchange": "XNAS",
+    "ipo_date": "1983-10-20"
+  },
+  "CATX": {
+    "name": NaN,
+    "sector": "Health Care",
+    "industry": "PHARMACEUTICAL PREPARATIONS",
+    "market_cap": 435547824.09999996,
+    "exchange": "XASE",
+    "ipo_date": "2003-12-29"
+  },
+  "CAVA": {
+    "name": "CAVA Group, Inc.",
+    "sector": "Consumer Discretionary",
+    "industry": "RETAIL-EATING PLACES",
+    "market_cap": 10420072402.33,
+    "exchange": "XNYS",
+    "ipo_date": "2023-06-15"
+  },
+  "CB": {
+    "name": "Chubb Limited",
+    "sector": "Financials",
+    "industry": "FIRE, MARINE & CASUALTY INSURANCE",
+    "market_cap": 124852168121.4,
+    "exchange": "XNYS",
+    "ipo_date": "1984-02-29"
+  },
+  "CBAY": {
+    "name": NaN,
+    "sector": "Unknown",
+    "industry": "Unknown",
+    "market_cap": 0,
+    "exchange": "",
+    "ipo_date": null
+  },
+  "CBOE": {
+    "name": "Cboe Global Markets",
+    "sector": "Financials",
+    "industry": "SECURITY & COMMODITY BROKERS, DEALERS, EXCHANGES & SERVICES",
+    "market_cap": 36210209264.0,
+    "exchange": "BATS",
+    "ipo_date": "2010-06-15"
+  },
+  "CBRE": {
+    "name": "CBRE Group",
+    "sector": "Real Estate",
+    "industry": "REAL ESTATE",
+    "market_cap": 42505254607.64,
+    "exchange": "XNYS",
+    "ipo_date": "2004-06-10"
+  },
+  "CCB": {
+    "name": NaN,
+    "sector": "Financials",
+    "industry": "STATE COMMERCIAL BANKS",
+    "market_cap": 1142349750.45,
+    "exchange": "XNAS",
+    "ipo_date": "2018-07-18"
+  },
+  "CCCC": {
+    "name": NaN,
+    "sector": "Health Care",
+    "industry": "BIOLOGICAL PRODUCTS, (NO DIAGNOSTIC SUBSTANCES)",
+    "market_cap": 322829855.34000003,
+    "exchange": "XNAS",
+    "ipo_date": "2020-10-02"
+  },
+  "CCEP": {
+    "name": "Coca-Cola Europacific Partners",
+    "sector": "Consumer Staples",
+    "industry": "Unknown",
+    "market_cap": 42108097359.899994,
+    "exchange": "XNAS",
+    "ipo_date": "1986-11-21"
+  },
+  "CCI": {
+    "name": "Crown Castle",
+    "sector": "Real Estate",
+    "industry": "REAL ESTATE INVESTMENT TRUSTS",
+    "market_cap": 39377789303.04,
+    "exchange": "XNYS",
+    "ipo_date": "1998-08-18"
+  },
+  "CCJ": {
+    "name": NaN,
+    "sector": "Energy",
+    "industry": "Unknown",
+    "market_cap": 53901561357.28,
+    "exchange": "XNYS",
+    "ipo_date": "1996-03-14"
+  },
+  "CCL": {
+    "name": "Carnival",
+    "sector": "Consumer Discretionary",
+    "industry": "WATER TRANSPORTATION",
+    "market_cap": 38119041159.04,
+    "exchange": "XNYS",
+    "ipo_date": "1987-07-24"
+  },
+  "CCRD": {
+    "name": NaN,
+    "sector": "Unknown",
+    "industry": "Unknown",
+    "market_cap": 0,
+    "exchange": "",
+    "ipo_date": null
+  },
+  "CCRN": {
+    "name": NaN,
+    "sector": "Industrials",
+    "industry": "SERVICES-HELP SUPPLY SERVICES",
+    "market_cap": 325533982.77,
+    "exchange": "XNAS",
+    "ipo_date": "2001-10-25"
+  },
+  "CCXI": {
+    "name": NaN,
+    "sector": "Information Technology",
+    "industry": "BLANK CHECKS",
+    "market_cap": 569254000.0,
+    "exchange": "XNAS",
+    "ipo_date": "2026-02-09"
+  },
+  "CD": {
+    "name": NaN,
+    "sector": "Financials",
+    "industry": "FINANCE SERVICES",
+    "market_cap": 470900114.0,
+    "exchange": "XNAS",
+    "ipo_date": "2023-02-28"
+  },
+  "CDIO": {
+    "name": NaN,
+    "sector": "Health Care",
+    "industry": "IN VITRO & IN VIVO DIAGNOSTIC SUBSTANCES",
+    "market_cap": 5386233.58,
+    "exchange": "XNAS",
+    "ipo_date": "2022-10-26"
+  },
+  "CDLX": {
+    "name": NaN,
+    "sector": "Information Technology",
+    "industry": "SERVICES-COMPUTER PROGRAMMING, DATA PROCESSING, ETC.",
+    "market_cap": 43781213.655,
+    "exchange": "XNAS",
+    "ipo_date": "2018-02-09"
+  },
+  "CDNA": {
+    "name": NaN,
+    "sector": "Health Care",
+    "industry": "SERVICES-MEDICAL LABORATORIES",
+    "market_cap": 1082266126.95,
+    "exchange": "XNAS",
+    "ipo_date": "2014-07-17"
+  },
+  "CDNS": {
+    "name": "Cadence Design Systems",
+    "sector": "Information Technology",
+    "industry": "SERVICES-PREPACKAGED SOFTWARE",
+    "market_cap": 97887098400.0,
+    "exchange": "XNAS",
+    "ipo_date": "1987-06-10"
+  },
+  "CDR": {
+    "name": NaN,
+    "sector": "Unknown",
+    "industry": "Unknown",
+    "market_cap": 0,
+    "exchange": "",
+    "ipo_date": null
+  },
+  "CDTX": {
+    "name": NaN,
+    "sector": "Unknown",
+    "industry": "Unknown",
+    "market_cap": 0,
+    "exchange": "",
+    "ipo_date": null
+  },
+  "CDW": {
+    "name": "CDW Corporation",
+    "sector": "Information Technology",
+    "industry": "RETAIL-CATALOG & MAIL-ORDER HOUSES",
+    "market_cap": 13949216467.0,
+    "exchange": "XNAS",
+    "ipo_date": "2013-06-27"
+  },
+  "CDXC": {
+    "name": NaN,
+    "sector": "Unknown",
+    "industry": "Unknown",
+    "market_cap": 0,
+    "exchange": "",
+    "ipo_date": null
+  },
+  "CE": {
+    "name": NaN,
+    "sector": "Materials",
+    "industry": "PLASTIC MATERIAL, SYNTH RESIN/RUBBER, CELLULOS (NO GLASS)",
+    "market_cap": 6952641726.96,
+    "exchange": "XNYS",
+    "ipo_date": "2005-01-21"
+  },
+  "CEG": {
+    "name": "Constellation Energy",
+    "sector": "Utilities",
+    "industry": "ELECTRIC SERVICES",
+    "market_cap": 116941474228.15999,
+    "exchange": "XNAS",
+    "ipo_date": "2022-01-19"
+  },
+  "CEIX": {
+    "name": NaN,
+    "sector": "Unknown",
+    "industry": "Unknown",
+    "market_cap": 0,
+    "exchange": "",
+    "ipo_date": null
+  },
+  "CELC": {
+    "name": "Celcuity Inc. Common Stock",
+    "sector": "Health Care",
+    "industry": "SERVICES-MEDICAL LABORATORIES",
+    "market_cap": 6740065962.0,
+    "exchange": "XNAS",
+    "ipo_date": "2017-09-20"
+  },
+  "CELH": {
+    "name": NaN,
+    "sector": "Consumer Staples",
+    "industry": "BOTTLED & CANNED SOFT DRINKS & CARBONATED WATERS",
+    "market_cap": 8426191259.999999,
+    "exchange": "XNAS",
+    "ipo_date": "2006-11-01"
+  },
+  "CEP": {
+    "name": NaN,
+    "sector": "Unknown",
+    "industry": "Unknown",
+    "market_cap": 0,
+    "exchange": "",
+    "ipo_date": null
+  },
+  "CERE": {
+    "name": NaN,
+    "sector": "Unknown",
+    "industry": "Unknown",
+    "market_cap": 0,
+    "exchange": "",
+    "ipo_date": null
+  },
+  "CERN": {
+    "name": "Cerner",
+    "sector": "Health Care",
+    "industry": "Unknown",
+    "market_cap": 0,
+    "exchange": "",
+    "ipo_date": null
+  },
+  "CF": {
+    "name": "CF Industries",
+    "sector": "Materials",
+    "industry": "AGRICULTURAL CHEMICALS",
+    "market_cap": 18397104135.84,
+    "exchange": "XNYS",
+    "ipo_date": "2005-08-11"
+  },
+  "CFG": {
+    "name": "Citizens Financial Group",
+    "sector": "Financials",
+    "industry": "STATE COMMERCIAL BANKS",
+    "market_cap": 27749513034.04,
+    "exchange": "XNYS",
+    "ipo_date": "2014-09-24"
+  },
+  "CG": {
+    "name": "The Carlyle Group Inc. Common Stock",
+    "sector": "Financials",
+    "industry": "INVESTMENT ADVICE",
+    "market_cap": 18279832071.2,
+    "exchange": "XNAS",
+    "ipo_date": "2012-05-03"
+  },
+  "CGAU": {
+    "name": NaN,
+    "sector": "Materials",
+    "industry": "Unknown",
+    "market_cap": 3576696940.55,
+    "exchange": "XNYS",
+    "ipo_date": "2004-06-29"
+  },
+  "CGEM": {
+    "name": NaN,
+    "sector": "Health Care",
+    "industry": "BIOLOGICAL PRODUCTS, (NO DIAGNOSTIC SUBSTANCES)",
+    "market_cap": 921156186.2,
+    "exchange": "XNAS",
+    "ipo_date": "2021-01-08"
+  },
+  "CHD": {
+    "name": "Church & Dwight",
+    "sector": "Consumer Staples",
+    "industry": "SOAP, DETERGENTS, CLEANG PREPARATIONS, PERFUMES, COSMETICS",
+    "market_cap": 22500164445.92,
+    "exchange": "XNYS",
+    "ipo_date": "1976-12-30"
+  },
+  "CHK": {
+    "name": NaN,
+    "sector": "Unknown",
+    "industry": "Unknown",
+    "market_cap": 0,
+    "exchange": "",
+    "ipo_date": null
+  },
+  "CHKP": {
+    "name": "Check Point Software",
+    "sector": "Information Technology",
+    "industry": "Unknown",
+    "market_cap": 11910681941.73,
+    "exchange": "XNAS",
+    "ipo_date": "1996-06-28"
+  },
+  "CHRD": {
+    "name": "Chord Energy Corporation Common Stock",
+    "sector": "Energy",
+    "industry": "CRUDE PETROLEUM & NATURAL GAS",
+    "market_cap": 7927084896.360001,
+    "exchange": "XNAS",
+    "ipo_date": "2020-11-20"
+  },
+  "CHRW": {
+    "name": "C.H. Robinson",
+    "sector": "Industrials",
+    "industry": "ARRANGEMENT OF TRANSPORTATION OF FREIGHT & CARGO",
+    "market_cap": 19872216150.78,
+    "exchange": "XNAS",
+    "ipo_date": "1997-10-15"
+  },
+  "CHTR": {
+    "name": "Charter Communications",
+    "sector": "Communication Services",
+    "industry": "CABLE & OTHER PAY TELEVISION SERVICES",
+    "market_cap": 19249539731.24,
+    "exchange": "XNAS",
+    "ipo_date": "1999-11-08"
+  },
+  "CHWY": {
+    "name": "Chewy, Inc.",
+    "sector": "Consumer Discretionary",
+    "industry": "RETAIL-CATALOG & MAIL-ORDER HOUSES",
+    "market_cap": 10246086544.76,
+    "exchange": "XNYS",
+    "ipo_date": "2019-06-14"
+  },
+  "CHX": {
+    "name": NaN,
+    "sector": "Unknown",
+    "industry": "Unknown",
+    "market_cap": 0,
+    "exchange": "",
+    "ipo_date": null
+  },
+  "CHYM": {
+    "name": "Chime Financial, Inc. Class A Common Stock",
+    "sector": "Financials",
+    "industry": "FINANCE SERVICES",
+    "market_cap": 8300172006.47,
+    "exchange": "XNAS",
+    "ipo_date": "2025-06-12"
+  },
+  "CI": {
+    "name": "Cigna",
+    "sector": "Health Care",
+    "industry": "HOSPITAL & MEDICAL SERVICE PLANS",
+    "market_cap": 74592847279.92,
+    "exchange": "XNYS",
+    "ipo_date": "1982-04-01"
+  },
+  "CIEN": {
+    "name": "Ciena",
+    "sector": "Information Technology",
+    "industry": "TELEPHONE & TELEGRAPH APPARATUS",
+    "market_cap": 81557198709.33,
+    "exchange": "XNYS",
+    "ipo_date": "1997-02-07"
+  },
+  "CINF": {
+    "name": "Cincinnati Financial",
+    "sector": "Financials",
+    "industry": "FIRE, MARINE & CASUALTY INSURANCE",
+    "market_cap": 24816394019.06,
+    "exchange": "XNAS",
+    "ipo_date": "1972-06-01"
+  },
+  "CIR": {
+    "name": NaN,
+    "sector": "Unknown",
+    "industry": "Unknown",
+    "market_cap": 0,
+    "exchange": "",
+    "ipo_date": null
+  },
+  "CL": {
+    "name": "Colgate-Palmolive",
+    "sector": "Consumer Staples",
+    "industry": "PERFUMES, COSMETICS & OTHER TOILET PREPARATIONS",
+    "market_cap": 70544689569.59999,
+    "exchange": "XNYS",
+    "ipo_date": "1951-01-09"
+  },
+  "CLBT": {
+    "name": NaN,
+    "sector": "Information Technology",
+    "industry": "Unknown",
+    "market_cap": 3285122389.89,
+    "exchange": "XNAS",
+    "ipo_date": "2021-08-31"
+  },
+  "CLFD": {
+    "name": NaN,
+    "sector": "Information Technology",
+    "industry": "TELEPHONE & TELEGRAPH APPARATUS",
+    "market_cap": 414394245.08000004,
+    "exchange": "XNAS",
+    "ipo_date": "1986-08-07"
+  },
+  "CLMB": {
+    "name": NaN,
+    "sector": "Health Care",
+    "industry": "WHOLESALE-COMPUTERS & PERIPHERAL EQUIPMENT & SOFTWARE",
+    "market_cap": 365063036.0,
+    "exchange": "XNAS",
+    "ipo_date": "1995-07-18"
+  },
+  "CLPT": {
+    "name": NaN,
+    "sector": "Health Care",
+    "industry": "SURGICAL & MEDICAL INSTRUMENTS & APPARATUS",
+    "market_cap": 343939603.52000004,
+    "exchange": "XNAS",
+    "ipo_date": "2012-05-18"
+  },
+  "CLR": {
+    "name": NaN,
+    "sector": "Unknown",
+    "industry": "Unknown",
+    "market_cap": 0,
+    "exchange": "",
+    "ipo_date": null
+  },
+  "CLRB": {
+    "name": NaN,
+    "sector": "Health Care",
+    "industry": "PHARMACEUTICAL PREPARATIONS",
+    "market_cap": 14967655.37,
+    "exchange": "XNAS",
+    "ipo_date": "2005-04-19"
+  },
+  "CLSK": {
+    "name": NaN,
+    "sector": "Financials",
+    "industry": "FINANCE SERVICES",
+    "market_cap": 3708417238.5,
+    "exchange": "XNAS",
+    "ipo_date": "2011-04-11"
+  },
+  "CLX": {
+    "name": "Clorox",
+    "sector": "Consumer Staples",
+    "industry": "SPECIALTY CLEANING, POLISHING AND SANITATION PREPARATIONS",
+    "market_cap": 10884130803.51,
+    "exchange": "XNYS",
+    "ipo_date": "1972-06-01"
+  },
+  "CLYM": {
+    "name": NaN,
+    "sector": "Health Care",
+    "industry": "PHARMACEUTICAL PREPARATIONS",
+    "market_cap": 583731595.46,
+    "exchange": "XNAS",
+    "ipo_date": "2021-08-10"
+  },
+  "CMA": {
+    "name": NaN,
+    "sector": "Financials",
+    "industry": "Unknown",
+    "market_cap": 0,
+    "exchange": "",
+    "ipo_date": null
+  },
+  "CMCL": {
+    "name": NaN,
+    "sector": "Materials",
+    "industry": "Unknown",
+    "market_cap": 439757647.56,
+    "exchange": "XASE",
+    "ipo_date": "1984-09-13"
+  },
+  "CMCSA": {
+    "name": "Comcast",
+    "sector": "Communication Services",
+    "industry": "CABLE & OTHER PAY TELEVISION SERVICES",
+    "market_cap": 94449723047.08,
+    "exchange": "XNAS",
+    "ipo_date": "1973-01-02"
+  },
+  "CME": {
+    "name": "CME Group",
+    "sector": "Financials",
+    "industry": "SECURITY & COMMODITY BROKERS, DEALERS, EXCHANGES & SERVICES",
+    "market_cap": 104482694113.98,
+    "exchange": "XNAS",
+    "ipo_date": "2002-12-06"
+  },
+  "CMG": {
+    "name": "Chipotle Mexican Grill",
+    "sector": "Consumer Discretionary",
+    "industry": "RETAIL-EATING PLACES",
+    "market_cap": 41996711160.0,
+    "exchange": "XNYS",
+    "ipo_date": "2006-01-26"
+  },
+  "CMI": {
+    "name": "Cummins",
+    "sector": "Industrials",
+    "industry": "ENGINES & TURBINES",
+    "market_cap": 98767054595.92,
+    "exchange": "XNYS",
+    "ipo_date": "1972-06-01"
+  },
+  "CMP": {
+    "name": NaN,
+    "sector": "Materials",
+    "industry": "MINING & QUARRYING OF NONMETALLIC MINERALS (NO FUELS)",
+    "market_cap": 1107702203.58,
+    "exchange": "XNYS",
+    "ipo_date": "2003-12-12"
+  },
+  "CMPO": {
+    "name": NaN,
+    "sector": "Unknown",
+    "industry": "Unknown",
+    "market_cap": 0,
+    "exchange": "",
+    "ipo_date": null
+  },
+  "CMPR": {
+    "name": NaN,
+    "sector": "Communication Services",
+    "industry": "COMMERCIAL PRINTING",
+    "market_cap": 2169256696.7999997,
+    "exchange": "XNAS",
+    "ipo_date": "2005-09-30"
+  },
+  "CMPX": {
+    "name": NaN,
+    "sector": "Health Care",
+    "industry": "BIOLOGICAL PRODUCTS, (NO DIAGNOSTIC SUBSTANCES)",
+    "market_cap": 336764401.05,
+    "exchange": "XNAS",
+    "ipo_date": "2020-11-13"
+  },
+  "CMS": {
+    "name": "CMS Energy",
+    "sector": "Utilities",
+    "industry": "ELECTRIC & OTHER SERVICES COMBINED",
+    "market_cap": 22875496528.1,
+    "exchange": "XNYS",
+    "ipo_date": "1972-06-01"
+  },
+  "CNC": {
+    "name": "Centene Corporation",
+    "sector": "Health Care",
+    "industry": "HOSPITAL & MEDICAL SERVICE PLANS",
+    "market_cap": 27321788010.0,
+    "exchange": "XNYS",
+    "ipo_date": "2001-12-13"
+  },
+  "CNCE": {
+    "name": NaN,
+    "sector": "Unknown",
+    "industry": "Unknown",
+    "market_cap": 0,
+    "exchange": "",
+    "ipo_date": null
+  },
+  "CNH": {
+    "name": "CNH INDUSTRIAL N.V.",
+    "sector": "Industrials",
+    "industry": "CONSTRUCTION MACHINERY & EQUIP",
+    "market_cap": 13416264810.34,
+    "exchange": "XNYS",
+    "ipo_date": "2013-09-30"
+  },
+  "CNK": {
+    "name": NaN,
+    "sector": "Communication Services",
+    "industry": "SERVICES-MOTION PICTURE THEATERS",
+    "market_cap": 3238524557.07,
+    "exchange": "XNYS",
+    "ipo_date": "2007-04-24"
+  },
+  "CNM": {
+    "name": "Core & Main, Inc.",
+    "sector": "Consumer Discretionary",
+    "industry": "WHOLESALE-DURABLE GOODS, NEC",
+    "market_cap": 9529623745.02,
+    "exchange": "XNYS",
+    "ipo_date": "2021-07-23"
+  },
+  "CNP": {
+    "name": "CenterPoint Energy",
+    "sector": "Utilities",
+    "industry": "ELECTRIC SERVICES",
+    "market_cap": 27690994088.399998,
+    "exchange": "XNYS",
+    "ipo_date": "1972-06-30"
+  },
+  "CNQ": {
+    "name": NaN,
+    "sector": "Energy",
+    "industry": "Unknown",
+    "market_cap": 95222071380.15001,
+    "exchange": "XNYS",
+    "ipo_date": "2000-07-31"
+  },
+  "CNX": {
+    "name": NaN,
+    "sector": "Energy",
+    "industry": "CRUDE PETROLEUM & NATURAL GAS",
+    "market_cap": 5171006060.7,
+    "exchange": "XNYS",
+    "ipo_date": "1999-04-30"
+  },
+  "COCO": {
+    "name": NaN,
+    "sector": "Consumer Staples",
+    "industry": "BEVERAGES",
+    "market_cap": 3920211815.52,
+    "exchange": "XNAS",
+    "ipo_date": "2021-10-21"
+  },
+  "COEP": {
+    "name": NaN,
+    "sector": "Health Care",
+    "industry": "Unknown",
+    "market_cap": 0,
+    "exchange": "",
+    "ipo_date": null
+  },
+  "COF": {
+    "name": "Capital One",
+    "sector": "Financials",
+    "industry": "NATIONAL COMMERCIAL BANKS",
+    "market_cap": 122653488220.40001,
+    "exchange": "XNYS",
+    "ipo_date": "1994-11-16"
+  },
+  "COGT": {
+    "name": "Cogent Biosciences, Inc. Common Stock",
+    "sector": "Health Care",
+    "industry": "PHARMACEUTICAL PREPARATIONS",
+    "market_cap": 6129035303.48,
+    "exchange": "XNAS",
+    "ipo_date": "2018-03-29"
+  },
+  "COHR": {
+    "name": "Coherent Corp.",
+    "sector": "Information Technology",
+    "industry": "OPTICAL INSTRUMENTS & LENSES",
+    "market_cap": 64619369928.840004,
+    "exchange": "XNYS",
+    "ipo_date": "1987-10-02"
+  },
+  "COIN": {
+    "name": "Coinbase",
+    "sector": "Financials",
+    "industry": "FINANCE SERVICES",
+    "market_cap": 52276320455.240005,
+    "exchange": "XNAS",
+    "ipo_date": "2021-04-14"
+  },
+  "COKE": {
+    "name": NaN,
+    "sector": "Consumer Staples",
+    "industry": "BOTTLED & CANNED SOFT DRINKS & CARBONATED WATERS",
+    "market_cap": 14013115172.880001,
+    "exchange": "XNAS",
+    "ipo_date": "1972-09-21"
+  },
+  "COLB": {
+    "name": "Columbia Banking Systems Inc",
+    "sector": "Financials",
+    "industry": "STATE COMMERCIAL BANKS",
+    "market_cap": 8742609053.199999,
+    "exchange": "XNAS",
+    "ipo_date": "2023-03-01"
+  },
+  "COMM": {
+    "name": NaN,
+    "sector": "Unknown",
+    "industry": "Unknown",
+    "market_cap": 0,
+    "exchange": "",
+    "ipo_date": null
+  },
+  "COMP": {
+    "name": "Compass, Inc.",
+    "sector": "Real Estate",
+    "industry": "REAL ESTATE AGENTS & MANAGERS (FOR OTHERS)",
+    "market_cap": 6894383394.360001,
+    "exchange": "XNYS",
+    "ipo_date": "2021-04-01"
+  },
+  "COO": {
+    "name": "Cooper Companies (The)",
+    "sector": "Health Care",
+    "industry": "OPHTHALMIC GOODS",
+    "market_cap": 11925392005.76,
+    "exchange": "XNAS",
+    "ipo_date": "1983-01-21"
+  },
+  "COR": {
+    "name": "Cencora",
+    "sector": "Health Care",
+    "industry": "WHOLESALE-DRUGS, PROPRIETARIES & DRUGGISTS' SUNDRIES",
+    "market_cap": 49165684568.68,
+    "exchange": "XNYS",
+    "ipo_date": "1995-04-04"
+  },
+  "CORT": {
+    "name": NaN,
+    "sector": "Health Care",
+    "industry": "PHARMACEUTICAL PREPARATIONS",
+    "market_cap": 5598385627.099999,
+    "exchange": "XNAS",
+    "ipo_date": "2004-04-14"
+  },
+  "CORZ": {
+    "name": "Core Scientific, Inc. Common Stock",
+    "sector": "Financials",
+    "industry": "FINANCE SERVICES",
+    "market_cap": 7773099973.259999,
+    "exchange": "XNAS",
+    "ipo_date": "2024-01-24"
+  },
+  "COTY": {
+    "name": NaN,
+    "sector": "Consumer Staples",
+    "industry": "PERFUMES, COSMETICS & OTHER TOILET PREPARATIONS",
+    "market_cap": 2333236060.7,
+    "exchange": "XNYS",
+    "ipo_date": "2013-06-13"
+  },
+  "CPAY": {
+    "name": "Corpay",
+    "sector": "Financials",
+    "industry": "SERVICES-BUSINESS SERVICES, NEC",
+    "market_cap": 20198693705.7,
+    "exchange": "XNYS",
+    "ipo_date": "2010-12-15"
+  },
+  "CPB": {
+    "name": "Campbell's Company (The)",
+    "sector": "Consumer Staples",
+    "industry": "FOOD AND KINDRED PRODUCTS",
+    "market_cap": 6249150388.4800005,
+    "exchange": "XNAS",
+    "ipo_date": "1954-12-13"
+  },
+  "CPG": {
+    "name": NaN,
+    "sector": "Unknown",
+    "industry": "Unknown",
+    "market_cap": 0,
+    "exchange": "",
+    "ipo_date": null
+  },
+  "CPK": {
+    "name": NaN,
+    "sector": "Utilities",
+    "industry": "NATURAL GAS TRANSMISSION & DISTRIBUTION",
+    "market_cap": 3018566446.69,
+    "exchange": "XNYS",
+    "ipo_date": "1972-06-01"
+  },
+  "CPNG": {
+    "name": "Coupang, Inc.",
+    "sector": "Consumer Discretionary",
+    "industry": "RETAIL-CATALOG & MAIL-ORDER HOUSES",
+    "market_cap": 32113698555.89,
+    "exchange": "XNYS",
+    "ipo_date": "2021-03-11"
+  },
+  "CPRI": {
+    "name": NaN,
+    "sector": "Consumer Discretionary",
+    "industry": "LEATHER & LEATHER PRODUCTS",
+    "market_cap": 2298632375.85,
+    "exchange": "XNYS",
+    "ipo_date": "2011-12-15"
+  },
+  "CPRT": {
+    "name": "Copart",
+    "sector": "Industrials",
+    "industry": "RETAIL-AUTO DEALERS & GASOLINE STATIONS",
+    "market_cap": 32164867075.32,
+    "exchange": "XNAS",
+    "ipo_date": "1994-03-17"
+  },
+  "CPRX": {
+    "name": NaN,
+    "sector": "Health Care",
+    "industry": "PHARMACEUTICAL PREPARATIONS",
+    "market_cap": 3734001232.36,
+    "exchange": "XNAS",
+    "ipo_date": "2006-11-08"
+  },
+  "CPS": {
+    "name": NaN,
+    "sector": "Consumer Discretionary",
+    "industry": "MOTOR VEHICLE PARTS & ACCESSORIES",
+    "market_cap": 544909665.96,
+    "exchange": "XNYS",
+    "ipo_date": "2010-05-25"
+  },
+  "CPT": {
+    "name": "Camden Property Trust",
+    "sector": "Real Estate",
+    "industry": "REAL ESTATE INVESTMENT TRUSTS",
+    "market_cap": 10385685366.76,
+    "exchange": "XNYS",
+    "ipo_date": "1993-07-22"
+  },
+  "CRBG": {
+    "name": "Corebridge Financial, Inc.",
+    "sector": "Financials",
+    "industry": "LIFE INSURANCE",
+    "market_cap": 12811199811.300001,
+    "exchange": "XNYS",
+    "ipo_date": "2022-09-15"
+  },
+  "CRBP": {
+    "name": NaN,
+    "sector": "Health Care",
+    "industry": "PHARMACEUTICAL PREPARATIONS",
+    "market_cap": 193682186.88,
+    "exchange": "XNAS",
+    "ipo_date": "2014-10-24"
+  },
+  "CRC": {
+    "name": "California Resources Corporation",
+    "sector": "Energy",
+    "industry": "CRUDE PETROLEUM & NATURAL GAS",
+    "market_cap": 5453769566.7,
+    "exchange": "XNYS",
+    "ipo_date": "2020-10-28"
+  },
+  "CRCL": {
+    "name": "Circle Internet Group, Inc.",
+    "sector": "Financials",
+    "industry": "FINANCE SERVICES",
+    "market_cap": 30110229156.0,
+    "exchange": "XNYS",
+    "ipo_date": "2025-06-05"
+  },
+  "CRCT": {
+    "name": NaN,
+    "sector": "Industrials",
+    "industry": "SPECIAL INDUSTRY MACHINERY, NEC",
+    "market_cap": 931949934.96,
+    "exchange": "XNAS",
+    "ipo_date": "2021-03-25"
+  },
+  "CRDF": {
+    "name": NaN,
+    "sector": "Health Care",
+    "industry": "BIOLOGICAL PRODUCTS, (NO DIAGNOSTIC SUBSTANCES)",
+    "market_cap": 114861425.28,
+    "exchange": "XNAS",
+    "ipo_date": "1997-05-22"
+  },
+  "CRDO": {
+    "name": "Credo Technology Group Holding Ltd Ordinary Shares",
+    "sector": "Information Technology",
+    "industry": "SEMICONDUCTORS & RELATED DEVICES",
+    "market_cap": 36574578602.6,
+    "exchange": "XNAS",
+    "ipo_date": "2022-01-27"
+  },
+  "CRH": {
+    "name": "CRH plc",
+    "sector": "Materials",
+    "industry": "CEMENT, HYDRAULIC",
+    "market_cap": 76782886820.56,
+    "exchange": "XNYS",
+    "ipo_date": "2009-09-10"
+  },
+  "CRK": {
+    "name": NaN,
+    "sector": "Energy",
+    "industry": "CRUDE PETROLEUM & NATURAL GAS",
+    "market_cap": 4402500521.68,
+    "exchange": "XNYS",
+    "ipo_date": "1987-11-10"
+  },
+  "CRL": {
+    "name": "Charles River Laboratories",
+    "sector": "Health Care",
+    "industry": "SERVICES-COMMERCIAL PHYSICAL & BIOLOGICAL RESEARCH",
+    "market_cap": 8966914390.8,
+    "exchange": "XNYS",
+    "ipo_date": "2000-06-23"
+  },
+  "CRM": {
+    "name": "Salesforce",
+    "sector": "Information Technology",
+    "industry": "SERVICES-PREPACKAGED SOFTWARE",
+    "market_cap": 148223157875.36,
+    "exchange": "XNYS",
+    "ipo_date": "2004-06-23"
+  },
+  "CRMD": {
+    "name": NaN,
+    "sector": "Health Care",
+    "industry": "PHARMACEUTICAL PREPARATIONS",
+    "market_cap": 631460434.5,
+    "exchange": "XNAS",
+    "ipo_date": "2010-05-13"
+  },
+  "CRNC": {
+    "name": NaN,
+    "sector": "Information Technology",
+    "industry": "SERVICES-PREPACKAGED SOFTWARE",
+    "market_cap": 458734255.58,
+    "exchange": "XNAS",
+    "ipo_date": "2019-09-16"
+  },
+  "CRNX": {
+    "name": NaN,
+    "sector": "Health Care",
+    "industry": "PHARMACEUTICAL PREPARATIONS",
+    "market_cap": 4397883004.85,
+    "exchange": "XNAS",
+    "ipo_date": "2018-07-18"
+  },
+  "CROX": {
+    "name": NaN,
+    "sector": "Materials",
+    "industry": "RUBBER & PLASTICS FOOTWEAR",
+    "market_cap": 5254680276.0,
+    "exchange": "XNAS",
+    "ipo_date": "2006-02-08"
+  },
+  "CRS": {
+    "name": NaN,
+    "sector": "Materials",
+    "industry": "STEEL WORKS, BLAST FURNACES & ROLLING MILLS (COKE OVENS)",
+    "market_cap": 22763959993.920002,
+    "exchange": "XNYS",
+    "ipo_date": "1968-11-06"
+  },
+  "CRSP": {
+    "name": "CRISPR Therapeutics AG",
+    "sector": "Health Care",
+    "industry": "BIOLOGICAL PRODUCTS, (NO DIAGNOSTIC SUBSTANCES)",
+    "market_cap": 5312399463.36,
+    "exchange": "XNAS",
+    "ipo_date": "2016-10-19"
+  },
+  "CRT": {
+    "name": NaN,
+    "sector": "Financials",
+    "industry": "OIL ROYALTY TRADERS",
+    "market_cap": 63840000.0,
+    "exchange": "XNYS",
+    "ipo_date": "1992-02-27"
+  },
+  "CRWD": {
+    "name": "CrowdStrike",
+    "sector": "Information Technology",
+    "industry": "SERVICES-PREPACKAGED SOFTWARE",
+    "market_cap": 119140909384.47,
+    "exchange": "XNAS",
+    "ipo_date": "2019-06-12"
+  },
+  "CRWV": {
+    "name": "CoreWeave, Inc. Class A Common Stock",
+    "sector": "Information Technology",
+    "industry": "SERVICES-PREPACKAGED SOFTWARE",
+    "market_cap": 72881049246.08,
+    "exchange": "XNAS",
+    "ipo_date": "2025-03-28"
+  },
+  "CSCO": {
+    "name": "Cisco",
+    "sector": "Information Technology",
+    "industry": "COMPUTER COMMUNICATIONS EQUIPMENT",
+    "market_cap": 361968198368.88,
+    "exchange": "XNAS",
+    "ipo_date": "1990-02-16"
+  },
+  "CSGP": {
+    "name": "CoStar Group",
+    "sector": "Real Estate",
+    "industry": "SERVICES-BUSINESS SERVICES, NEC",
+    "market_cap": 13912679210.05,
+    "exchange": "XNAS",
+    "ipo_date": "1998-07-01"
+  },
+  "CSPI": {
+    "name": NaN,
+    "sector": "Information Technology",
+    "industry": "SERVICES-COMPUTER INTEGRATED SYSTEMS DESIGN",
+    "market_cap": 91100718.13,
+    "exchange": "XNAS",
+    "ipo_date": "1982-01-29"
+  },
+  "CSX": {
+    "name": "CSX Corporation",
+    "sector": "Industrials",
+    "industry": "RAILROADS, LINE-HAUL OPERATING",
+    "market_cap": 84731131833.6,
+    "exchange": "XNAS",
+    "ipo_date": "1980-11-03"
+  },
+  "CTAS": {
+    "name": "Cintas",
+    "sector": "Industrials",
+    "industry": "MEN'S & BOYS' FURNISHGS, WORK CLOTHG, & ALLIED GARMENTS",
+    "market_cap": 67758754473.840004,
+    "exchange": "XNAS",
+    "ipo_date": "1983-08-18"
+  },
+  "CTGO": {
+    "name": NaN,
+    "sector": "Materials",
+    "industry": "GOLD AND SILVER ORES",
+    "market_cap": 755826888.5999999,
+    "exchange": "XASE",
+    "ipo_date": "2021-11-24"
+  },
+  "CTIC": {
+    "name": NaN,
+    "sector": "Unknown",
+    "industry": "Unknown",
+    "market_cap": 0,
+    "exchange": "",
+    "ipo_date": null
+  },
+  "CTLT": {
+    "name": NaN,
+    "sector": "Health Care",
+    "industry": "Unknown",
+    "market_cap": 0,
+    "exchange": "",
+    "ipo_date": null
+  },
+  "CTRA": {
+    "name": "Coterra",
+    "sector": "Energy",
+    "industry": "CRUDE PETROLEUM & NATURAL GAS",
+    "market_cap": 24724651514.640003,
+    "exchange": "XNYS",
+    "ipo_date": "1990-02-08"
+  },
+  "CTRE": {
+    "name": "CareTrust REIT, Inc",
+    "sector": "Financials",
+    "industry": "REAL ESTATE INVESTMENT TRUSTS",
+    "market_cap": 8813406037.8,
+    "exchange": "XNYS",
+    "ipo_date": "2014-05-29"
+  },
+  "CTSH": {
+    "name": "Cognizant",
+    "sector": "Information Technology",
+    "industry": "SERVICES-COMPUTER PROGRAMMING SERVICES",
+    "market_cap": 24279090000.0,
+    "exchange": "XNAS",
+    "ipo_date": "1998-06-19"
+  },
+  "CTVA": {
+    "name": "Corteva",
+    "sector": "Materials",
+    "industry": "Unknown",
+    "market_cap": 54789497880.0,
+    "exchange": "XNYS",
+    "ipo_date": "2019-05-24"
+  },
+  "CTXS": {
+    "name": "Citrix Systems",
+    "sector": "Information Technology",
+    "industry": "Unknown",
+    "market_cap": 0,
+    "exchange": "",
+    "ipo_date": null
+  },
+  "CUBI": {
+    "name": NaN,
+    "sector": "Financials",
+    "industry": "STATE COMMERCIAL BANKS",
+    "market_cap": 2635197058.56,
+    "exchange": "XNYS",
+    "ipo_date": "2011-12-28"
+  },
+  "CURI": {
+    "name": NaN,
+    "sector": "Communication Services",
+    "industry": "SERVICES-MOTION PICTURE & VIDEO TAPE PRODUCTION",
+    "market_cap": 183198684.0,
+    "exchange": "XNAS",
+    "ipo_date": "2020-10-15"
+  },
+  "CUTR": {
+    "name": NaN,
+    "sector": "Unknown",
+    "industry": "Unknown",
+    "market_cap": 0,
+    "exchange": "",
+    "ipo_date": null
+  },
+  "CVBF": {
+    "name": NaN,
+    "sector": "Financials",
+    "industry": "STATE COMMERCIAL BANKS",
+    "market_cap": 3638551884.3999996,
+    "exchange": "XNAS",
+    "ipo_date": "1983-03-16"
+  },
+  "CVE": {
+    "name": NaN,
+    "sector": "Energy",
+    "industry": "Unknown",
+    "market_cap": 54310988040.0,
+    "exchange": "XNYS",
+    "ipo_date": "2009-11-02"
+  },
+  "CVI": {
+    "name": NaN,
+    "sector": "Energy",
+    "industry": "PETROLEUM REFINING",
+    "market_cap": 3296398341.21,
+    "exchange": "XNYS",
+    "ipo_date": "2007-10-23"
+  },
+  "CVLT": {
+    "name": NaN,
+    "sector": "Information Technology",
+    "industry": "SERVICES-PREPACKAGED SOFTWARE",
+    "market_cap": 4450647708.2699995,
+    "exchange": "XNAS",
+    "ipo_date": "2006-09-22"
+  },
+  "CVNA": {
+    "name": "Carvana",
+    "sector": "Consumer Discretionary",
+    "industry": "RETAIL-AUTO DEALERS & GASOLINE STATIONS",
+    "market_cap": 55781674270.26,
+    "exchange": "XNYS",
+    "ipo_date": "2017-04-28"
+  },
+  "CVRX": {
+    "name": NaN,
+    "sector": "Health Care",
+    "industry": "SURGICAL & MEDICAL INSTRUMENTS & APPARATUS",
+    "market_cap": 186023061.49,
+    "exchange": "XNAS",
+    "ipo_date": "2021-06-30"
+  },
+  "CVS": {
+    "name": "CVS Health",
+    "sector": "Health Care",
+    "industry": "RETAIL-DRUG STORES AND PROPRIETARY STORES",
+    "market_cap": 110827045886.02,
+    "exchange": "XNYS",
+    "ipo_date": "1952-10-01"
+  },
+  "D": {
+    "name": "Dominion Energy",
+    "sector": "Utilities",
+    "industry": "ELECTRIC SERVICES",
+    "market_cap": 54209631040.92,
+    "exchange": "XNYS",
+    "ipo_date": "1972-06-01"
+  },
+  "DFS": {
+    "name": NaN,
+    "sector": "Financials",
+    "industry": "Unknown",
+    "market_cap": 0,
+    "exchange": "",
+    "ipo_date": null
+  },
+  "DLTR": {
+    "name": "Dollar Tree",
+    "sector": "Consumer Staples",
+    "industry": "RETAIL-VARIETY STORES",
+    "market_cap": 18792948933.06,
+    "exchange": "XNAS",
+    "ipo_date": "1995-03-06"
+  },
+  "DOV": {
+    "name": "Dover Corporation",
+    "sector": "Industrials",
+    "industry": "CONSTRUCTION, MINING & MATERIALS HANDLING MACHINERY & EQUIP",
+    "market_cap": 30592380032.52,
+    "exchange": "XNYS",
+    "ipo_date": "1956-12-03"
+  },
+  "DTE": {
+    "name": "DTE Energy",
+    "sector": "Utilities",
+    "industry": "ELECTRIC SERVICES",
+    "market_cap": 29631552903.72,
+    "exchange": "XNYS",
+    "ipo_date": "1949-11-16"
+  },
+  "DVN": {
+    "name": "Devon Energy",
+    "sector": "Energy",
+    "industry": "CRUDE PETROLEUM & NATURAL GAS",
+    "market_cap": 28959117933.4,
+    "exchange": "XNYS",
+    "ipo_date": "1988-09-30"
+  },
+  "EBAY": {
+    "name": "eBay Inc.",
+    "sector": "Consumer Discretionary",
+    "industry": "SERVICES-BUSINESS SERVICES, NEC",
+    "market_cap": 48018600000.0,
+    "exchange": "XNAS",
+    "ipo_date": "1998-09-24"
+  },
+  "EFX": {
+    "name": "Equifax",
+    "sector": "Industrials",
+    "industry": "SERVICES-CONSUMER CREDIT REPORTING, COLLECTION AGENCIES",
+    "market_cap": 20623341238.8,
+    "exchange": "XNYS",
+    "ipo_date": "1971-05-11"
+  },
+  "EPAM": {
+    "name": "EPAM Systems",
+    "sector": "Information Technology",
+    "industry": "SERVICES-COMPUTER PROGRAMMING SERVICES",
+    "market_cap": 5643399816.62,
+    "exchange": "XNYS",
+    "ipo_date": "2012-02-08"
+  },
+  "EQT": {
+    "name": "EQT Corporation",
+    "sector": "Energy",
+    "industry": "CRUDE PETROLEUM & NATURAL GAS",
+    "market_cap": 35877418080.0,
+    "exchange": "XNYS",
+    "ipo_date": "1950-06-05"
+  },
+  "ESS": {
+    "name": "Essex Property Trust",
+    "sector": "Real Estate",
+    "industry": "REAL ESTATE INVESTMENT TRUSTS",
+    "market_cap": 17174592365.14,
+    "exchange": "XNYS",
+    "ipo_date": "1994-06-06"
+  },
+  "ETSY": {
+    "name": NaN,
+    "sector": "Industrials",
+    "industry": "SERVICES-BUSINESS SERVICES, NEC",
+    "market_cap": 6165408128.07,
+    "exchange": "XNYS",
+    "ipo_date": "2015-04-16"
+  },
+  "EXC": {
+    "name": "Exelon",
+    "sector": "Utilities",
+    "industry": "ELECTRIC & OTHER SERVICES COMBINED",
+    "market_cap": 46063342596.82,
+    "exchange": "XNAS",
+    "ipo_date": "1972-06-01"
+  },
+  "EXPD": {
+    "name": "Expeditors International",
+    "sector": "Industrials",
+    "industry": "ARRANGEMENT OF TRANSPORTATION OF FREIGHT & CARGO",
+    "market_cap": 19967309760.0,
+    "exchange": "XNYS",
+    "ipo_date": "1984-09-26"
+  },
+  "EXPE": {
+    "name": "Expedia Group",
+    "sector": "Consumer Discretionary",
+    "industry": "TRANSPORTATION SERVICES",
+    "market_cap": 29604645512.82,
+    "exchange": "XNAS",
+    "ipo_date": "1999-11-10"
+  },
+  "FMC": {
+    "name": NaN,
+    "sector": "Materials",
+    "industry": "CHEMICALS & ALLIED PRODUCTS",
+    "market_cap": 1849420001.79,
+    "exchange": "XNYS",
+    "ipo_date": "1986-05-29"
+  },
+  "FRC": {
+    "name": NaN,
+    "sector": "Financials",
+    "industry": "Unknown",
+    "market_cap": 0,
+    "exchange": "",
+    "ipo_date": null
+  },
+  "FTNT": {
+    "name": "Fortinet",
+    "sector": "Information Technology",
+    "industry": "COMPUTER PERIPHERAL EQUIPMENT, NEC",
+    "market_cap": 65852579127.65,
+    "exchange": "XNAS",
+    "ipo_date": "2009-11-18"
+  },
+  "GDDY": {
+    "name": "GoDaddy",
+    "sector": "Information Technology",
+    "industry": "SERVICES-COMPUTER INTEGRATED SYSTEMS DESIGN",
+    "market_cap": 11305775283.6,
+    "exchange": "XNYS",
+    "ipo_date": "2015-04-01"
+  },
+  "GEHC": {
+    "name": "GE HealthCare",
+    "sector": "Health Care",
+    "industry": "X-RAY APPARATUS & TUBES & RELATED IRRADIATION APPARATUS",
+    "market_cap": 28082744408.71,
+    "exchange": "XNAS",
+    "ipo_date": "2022-12-15"
+  },
+  "GEN": {
+    "name": "Gen Digital",
+    "sector": "Information Technology",
+    "industry": "SERVICES-PREPACKAGED SOFTWARE",
+    "market_cap": 11846783419.439999,
+    "exchange": "XNAS",
+    "ipo_date": "1989-06-23"
+  },
+  "GIS": {
+    "name": "General Mills",
+    "sector": "Consumer Staples",
+    "industry": "GRAIN MILL PRODUCTS",
+    "market_cap": 18716200315.26,
+    "exchange": "XNYS",
+    "ipo_date": "1952-11-14"
+  },
+  "GM": {
+    "name": "General Motors",
+    "sector": "Consumer Discretionary",
+    "industry": "MOTOR VEHICLES & PASSENGER CAR BODIES",
+    "market_cap": 70961050846.5,
+    "exchange": "XNYS",
+    "ipo_date": "2010-11-18"
+  },
+  "GPC": {
+    "name": "Genuine Parts Company",
+    "sector": "Consumer Discretionary",
+    "industry": "WHOLESALE-MOTOR VEHICLE SUPPLIES & NEW PARTS",
+    "market_cap": 14518013252.05,
+    "exchange": "XNYS",
+    "ipo_date": "1968-08-20"
+  },
+  "HCA": {
+    "name": "HCA Healthcare",
+    "sector": "Health Care",
+    "industry": "SERVICES-GENERAL MEDICAL & SURGICAL HOSPITALS, NEC",
+    "market_cap": 95269102110.0,
+    "exchange": "XNYS",
+    "ipo_date": "2011-03-10"
+  },
+  "HIG": {
+    "name": "Hartford (The)",
+    "sector": "Financials",
+    "industry": "FIRE, MARINE & CASUALTY INSURANCE",
+    "market_cap": 36593723161.8,
+    "exchange": "XNYS",
+    "ipo_date": "1995-12-15"
+  },
+  "HOLX": {
+    "name": NaN,
+    "sector": "Health Care",
+    "industry": "Unknown",
+    "market_cap": 0,
+    "exchange": "",
+    "ipo_date": null
+  },
+  "HOOD": {
+    "name": "Robinhood Markets",
+    "sector": "Financials",
+    "industry": "SECURITY BROKERS, DEALERS & FLOTATION COMPANIES",
+    "market_cap": 71184924755.84999,
+    "exchange": "XNAS",
+    "ipo_date": "2021-07-29"
+  },
+  "HPQ": {
+    "name": "HP Inc.",
+    "sector": "Information Technology",
+    "industry": "COMPUTER & OFFICE EQUIPMENT",
+    "market_cap": 19580519760.59,
+    "exchange": "XNYS",
+    "ipo_date": "1957-11-06"
+  },
+  "HST": {
+    "name": "Host Hotels & Resorts",
+    "sector": "Real Estate",
+    "industry": "REAL ESTATE INVESTMENT TRUSTS",
+    "market_cap": 14901385922.32,
+    "exchange": "XNAS",
+    "ipo_date": "1983-04-06"
+  },
+  "HSY": {
+    "name": "Hershey Company (The)",
+    "sector": "Consumer Staples",
+    "industry": "SUGAR & CONFECTIONERY PRODUCTS",
+    "market_cap": 37812032974.52,
+    "exchange": "XNYS",
+    "ipo_date": "1947-09-19"
+  },
+  "INTC": {
+    "name": "Intel",
+    "sector": "Information Technology",
+    "industry": "SEMICONDUCTORS & RELATED DEVICES",
+    "market_cap": 567988260000.0,
+    "exchange": "XNAS",
+    "ipo_date": "1971-10-13"
+  },
+  "INVH": {
+    "name": "Invitation Homes",
+    "sector": "Real Estate",
+    "industry": "REAL ESTATE OPERATORS (NO DEVELOPERS) & LESSORS",
+    "market_cap": 17072765815.439999,
+    "exchange": "XNYS",
+    "ipo_date": "2017-02-01"
+  },
+  "IT": {
+    "name": "Gartner",
+    "sector": "Information Technology",
+    "industry": "SERVICES-MANAGEMENT SERVICES",
+    "market_cap": 10113082833.45,
+    "exchange": "XNYS",
+    "ipo_date": "1993-10-29"
+  },
+  "KIM": {
+    "name": "Kimco Realty",
+    "sector": "Real Estate",
+    "industry": "REAL ESTATE INVESTMENT TRUSTS",
+    "market_cap": 16050477049.6,
+    "exchange": "XNYS",
+    "ipo_date": "1991-11-22"
+  },
+  "KMX": {
+    "name": NaN,
+    "sector": "Consumer Discretionary",
+    "industry": "RETAIL-AUTO DEALERS & GASOLINE STATIONS",
+    "market_cap": 5591990792.45,
+    "exchange": "XNYS",
+    "ipo_date": "1997-02-04"
+  },
+  "KR": {
+    "name": "Kroger",
+    "sector": "Consumer Staples",
+    "industry": "RETAIL-GROCERY STORES",
+    "market_cap": 40436116082.11,
+    "exchange": "XNYS",
+    "ipo_date": "1951-01-12"
+  },
+  "KVUE": {
+    "name": "Kenvue",
+    "sector": "Consumer Staples",
+    "industry": "PERFUMES, COSMETICS & OTHER TOILET PREPARATIONS",
+    "market_cap": 33944120307.76,
+    "exchange": "XNYS",
+    "ipo_date": "2023-05-04"
+  },
+  "L": {
+    "name": "Loews Corporation",
+    "sector": "Financials",
+    "industry": "FIRE, MARINE & CASUALTY INSURANCE",
+    "market_cap": 21665404638.170002,
+    "exchange": "XNYS",
+    "ipo_date": "1972-06-01"
+  },
+  "LNC": {
+    "name": NaN,
+    "sector": "Financials",
+    "industry": "LIFE INSURANCE",
+    "market_cap": 7193311472.16,
+    "exchange": "XNYS",
+    "ipo_date": "1969-08-20"
+  },
+  "LRCX": {
+    "name": "Lam Research",
+    "sector": "Information Technology",
+    "industry": "SPECIAL INDUSTRY MACHINERY, NEC",
+    "market_cap": 371632184070.0,
+    "exchange": "XNAS",
+    "ipo_date": "1984-05-04"
+  },
+  "MAR": {
+    "name": "Marriott International",
+    "sector": "Consumer Discretionary",
+    "industry": "HOTELS & MOTELS",
+    "market_cap": 95126481406.58,
+    "exchange": "XNAS",
+    "ipo_date": "1998-03-30"
+  },
+  "MBC": {
+    "name": NaN,
+    "sector": "Consumer Staples",
+    "industry": "WOOD HOUSEHOLD FURNITURE, (NO UPHOLSTERED)",
+    "market_cap": 985464949.7,
+    "exchange": "XNYS",
+    "ipo_date": "2022-12-09"
+  },
+  "MCO": {
+    "name": "Moody's Corporation",
+    "sector": "Financials",
+    "industry": "SERVICES-CONSUMER CREDIT REPORTING, COLLECTION AGENCIES",
+    "market_cap": 78366837144.31999,
+    "exchange": "XNYS",
+    "ipo_date": "1984-11-05"
+  },
+  "MO": {
+    "name": "Altria",
+    "sector": "Consumer Staples",
+    "industry": "CIGARETTES",
+    "market_cap": 117176267959.95,
+    "exchange": "XNYS",
+    "ipo_date": "1972-06-01"
+  },
+  "MOH": {
+    "name": NaN,
+    "sector": "Health Care",
+    "industry": "HOSPITAL & MEDICAL SERVICE PLANS",
+    "market_cap": 10286624000.0,
+    "exchange": "XNYS",
+    "ipo_date": "2003-07-02"
+  },
+  "MOS": {
+    "name": "Mosaic Company (The)",
+    "sector": "Materials",
+    "industry": "AGRICULTURAL CHEMICALS",
+    "market_cap": 7488466932.639999,
+    "exchange": "XNYS",
+    "ipo_date": "1988-01-26"
+  },
+  "MRSH": {
+    "name": "Marsh McLennan",
+    "sector": "Financials",
+    "industry": "INSURANCE AGENTS, BROKERS & SERVICE",
+    "market_cap": 78966118713.90001,
+    "exchange": "XNYS",
+    "ipo_date": "1969-06-04"
+  },
+  "MTD": {
+    "name": "Mettler Toledo",
+    "sector": "Health Care",
+    "industry": "LABORATORY ANALYTICAL INSTRUMENTS",
+    "market_cap": 26870576075.2,
+    "exchange": "XNYS",
+    "ipo_date": "1997-11-14"
+  },
+  "NDAQ": {
+    "name": "Nasdaq, Inc.",
+    "sector": "Financials",
+    "industry": "SECURITY & COMMODITY BROKERS, DEALERS, EXCHANGES & SERVICES",
+    "market_cap": 50446239181.6,
+    "exchange": "XNAS",
+    "ipo_date": "2002-07-01"
+  },
+  "NFLX": {
+    "name": "Netflix",
+    "sector": "Communication Services",
+    "industry": "SERVICES-VIDEO TAPE RENTAL",
+    "market_cap": 371687186066.56,
+    "exchange": "XNAS",
+    "ipo_date": "2002-05-23"
+  },
+  "NLSN": {
+    "name": NaN,
+    "sector": "Industrials",
+    "industry": "Unknown",
+    "market_cap": 0,
+    "exchange": "",
+    "ipo_date": null
+  },
+  "NOC": {
+    "name": "Northrop Grumman",
+    "sector": "Industrials",
+    "industry": "SEARCH, DETECTION, NAVIGATION, GUIDANCE, AERONAUTICAL SYS",
+    "market_cap": 79481933169.6,
+    "exchange": "XNYS",
+    "ipo_date": "1972-06-01"
+  },
+  "NSC": {
+    "name": "Norfolk Southern",
+    "sector": "Industrials",
+    "industry": "RAILROADS, LINE-HAUL OPERATING",
+    "market_cap": 71252446817.25,
+    "exchange": "XNYS",
+    "ipo_date": "1982-06-02"
+  },
+  "NWL": {
+    "name": NaN,
+    "sector": "Materials",
+    "industry": "PLASTICS PRODUCTS, NEC",
+    "market_cap": 1963166306.64,
+    "exchange": "XNAS",
+    "ipo_date": "1972-06-13"
+  },
+  "NWSA": {
+    "name": "News Corp (Class A)",
+    "sector": "Communication Services",
+    "industry": "NEWSPAPERS: PUBLISHING OR PUBLISHING & PRINTING",
+    "market_cap": 14340574401.6,
+    "exchange": "XNAS",
+    "ipo_date": "2013-06-19"
+  },
+  "ODFL": {
+    "name": "Old Dominion",
+    "sector": "Industrials",
+    "industry": "TRUCKING (NO LOCAL)",
+    "market_cap": 41787565716.26,
+    "exchange": "XNAS",
+    "ipo_date": "1991-10-24"
+  },
+  "OGN": {
+    "name": NaN,
+    "sector": "Health Care",
+    "industry": "PHARMACEUTICAL PREPARATIONS",
+    "market_cap": 3521477559.42,
+    "exchange": "XNYS",
+    "ipo_date": "2021-05-14"
+  },
+  "OKE": {
+    "name": "Oneok",
+    "sector": "Energy",
+    "industry": "NATURAL GAS TRANSMISSION & DISTRIBUTION",
+    "market_cap": 53930812131.2,
+    "exchange": "XNYS",
+    "ipo_date": "1954-05-24"
+  },
+  "OXY": {
+    "name": "Occidental Petroleum",
+    "sector": "Energy",
+    "industry": "CRUDE PETROLEUM & NATURAL GAS",
+    "market_cap": 54824264719.119995,
+    "exchange": "XNYS",
+    "ipo_date": "1972-06-01"
+  },
+  "PANW": {
+    "name": "Palo Alto Networks",
+    "sector": "Information Technology",
+    "industry": "COMPUTER PERIPHERAL EQUIPMENT, NEC",
+    "market_cap": 148964480000.0,
+    "exchange": "XNAS",
+    "ipo_date": "2012-07-20"
+  },
+  "PAYC": {
+    "name": NaN,
+    "sector": "Information Technology",
+    "industry": "SERVICES-PREPACKAGED SOFTWARE",
+    "market_cap": 6023092060.44,
+    "exchange": "XNYS",
+    "ipo_date": "2014-04-15"
+  },
+  "PAYX": {
+    "name": "Paychex",
+    "sector": "Industrials",
+    "industry": "SERVICES-ENGINEERING, ACCOUNTING, RESEARCH, MANAGEMENT",
+    "market_cap": 32740620705.78,
+    "exchange": "XNAS",
+    "ipo_date": "1983-08-26"
+  },
+  "PEG": {
+    "name": "Public Service Enterprise Group",
+    "sector": "Utilities",
+    "industry": "ELECTRIC & OTHER SERVICES COMBINED",
+    "market_cap": 39541803248.7,
+    "exchange": "XNYS",
+    "ipo_date": "1972-06-01"
+  },
+  "PENN": {
+    "name": NaN,
+    "sector": "Consumer Discretionary",
+    "industry": "HOTELS & MOTELS",
+    "market_cap": 2241876464.25,
+    "exchange": "XNAS",
+    "ipo_date": "1994-05-26"
+  },
+  "PGR": {
+    "name": "Progressive Corporation",
+    "sector": "Financials",
+    "industry": "FIRE, MARINE & CASUALTY INSURANCE",
+    "market_cap": 114997416115.20001,
+    "exchange": "XNYS",
+    "ipo_date": "1972-06-01"
+  },
+  "PH": {
+    "name": "Parker Hannifin",
+    "sector": "Industrials",
+    "industry": "MISCELLANEOUS FABRICATED METAL PRODUCTS",
+    "market_cap": 113813139894.73999,
+    "exchange": "XNYS",
+    "ipo_date": "1964-12-09"
+  },
+  "PLD": {
+    "name": "Prologis",
+    "sector": "Real Estate",
+    "industry": "REAL ESTATE INVESTMENT TRUSTS",
+    "market_cap": 133231100200.0,
+    "exchange": "XNYS",
+    "ipo_date": "1997-11-21"
+  },
+  "PODD": {
+    "name": "Insulet Corporation",
+    "sector": "Health Care",
+    "industry": "SURGICAL & MEDICAL INSTRUMENTS & APPARATUS",
+    "market_cap": 10478214653.92,
+    "exchange": "XNAS",
+    "ipo_date": "2007-05-15"
+  },
+  "PRU": {
+    "name": "Prudential Financial",
+    "sector": "Financials",
+    "industry": "LIFE INSURANCE",
+    "market_cap": 34785568000.0,
+    "exchange": "XNYS",
+    "ipo_date": "2001-12-13"
+  },
+  "PSKY": {
+    "name": "Paramount Skydance Corporation",
+    "sector": "Communication Services",
+    "industry": "TELEVISION BROADCASTING STATIONS",
+    "market_cap": 12210178062.78,
+    "exchange": "XNAS",
+    "ipo_date": "1937-08-02"
+  },
+  "PYPL": {
+    "name": "PayPal",
+    "sector": "Financials",
+    "industry": "SERVICES-BUSINESS SERVICES, NEC",
+    "market_cap": 40815021161.11,
+    "exchange": "XNAS",
+    "ipo_date": "2015-07-20"
+  },
+  "RHI": {
+    "name": NaN,
+    "sector": "Industrials",
+    "industry": "SERVICES-HELP SUPPLY SERVICES",
+    "market_cap": 2677023224.13,
+    "exchange": "XNYS",
+    "ipo_date": "1975-10-02"
+  },
+  "RJF": {
+    "name": "Raymond James Financial",
+    "sector": "Financials",
+    "industry": "SECURITY BROKERS, DEALERS & FLOTATION COMPANIES",
+    "market_cap": 31013402000.0,
+    "exchange": "XNYS",
+    "ipo_date": "1983-07-01"
+  },
+  "RSG": {
+    "name": "Republic Services",
+    "sector": "Industrials",
+    "industry": "REFUSE SYSTEMS",
+    "market_cap": 61695461980.479996,
+    "exchange": "XNYS",
+    "ipo_date": "1998-07-01"
+  },
+  "SATS": {
+    "name": "EchoStar",
+    "sector": "Communication Services",
+    "industry": "COMMUNICATIONS SERVICES, NEC",
+    "market_cap": 36443310101.25,
+    "exchange": "XNAS",
+    "ipo_date": "2007-12-31"
+  },
+  "SBAC": {
+    "name": "SBA Communications",
+    "sector": "Real Estate",
+    "industry": "REAL ESTATE INVESTMENT TRUSTS",
+    "market_cap": 23168405433.48,
+    "exchange": "XNAS",
+    "ipo_date": "1999-06-16"
+  },
+  "SOLS": {
+    "name": "Solstice Advanced Materials",
+    "sector": "Materials",
+    "industry": "CHEMICALS & ALLIED PRODUCTS",
+    "market_cap": 13022821497.310001,
+    "exchange": "XNAS",
+    "ipo_date": "2025-10-20"
+  },
+  "STLD": {
+    "name": "Steel Dynamics",
+    "sector": "Materials",
+    "industry": "STEEL WORKS, BLAST FURNACES & ROLLING MILLS (COKE OVENS)",
+    "market_cap": 34877861084.85,
+    "exchange": "XNAS",
+    "ipo_date": "1996-11-22"
+  },
+  "STT": {
+    "name": "State Street Corporation",
+    "sector": "Financials",
+    "industry": "STATE COMMERCIAL BANKS",
+    "market_cap": 41858246070.920006,
+    "exchange": "XNYS",
+    "ipo_date": "1975-02-18"
+  },
+  "STZ": {
+    "name": "Constellation Brands",
+    "sector": "Consumer Staples",
+    "industry": "BEVERAGES",
+    "market_cap": 26224104539.43,
+    "exchange": "XNYS",
+    "ipo_date": "1986-07-31"
+  },
+  "SW": {
+    "name": "Smurfit Westrock",
+    "sector": "Materials",
+    "industry": "PAPERBOARD CONTAINERS & BOXES",
+    "market_cap": 21969800227.420002,
+    "exchange": "XNYS",
+    "ipo_date": "2008-04-10"
+  },
+  "SYY": {
+    "name": "Sysco",
+    "sector": "Consumer Staples",
+    "industry": "WHOLESALE-GROCERIES & RELATED PRODUCTS",
+    "market_cap": 35065130644.64,
+    "exchange": "XNYS",
+    "ipo_date": "1972-06-01"
+  },
+  "TDG": {
+    "name": "TransDigm Group",
+    "sector": "Industrials",
+    "industry": "AIRCRAFT PARTS & AUXILIARY EQUIPMENT, NEC",
+    "market_cap": 68986803264.70999,
+    "exchange": "XNYS",
+    "ipo_date": "2006-03-15"
+  },
+  "TEL": {
+    "name": "TE Connectivity",
+    "sector": "Information Technology",
+    "industry": "WHOLESALE-ELECTRONIC PARTS & EQUIPMENT, NEC",
+    "market_cap": 63099114869.829994,
+    "exchange": "XNYS",
+    "ipo_date": "2007-06-14"
+  },
+  "TFC": {
+    "name": "Truist Financial",
+    "sector": "Financials",
+    "industry": "NATIONAL COMMERCIAL BANKS",
+    "market_cap": 63290667170.0,
+    "exchange": "XNYS",
+    "ipo_date": "1973-01-02"
+  },
+  "TJX": {
+    "name": "TJX Companies",
+    "sector": "Consumer Discretionary",
+    "industry": "RETAIL-FAMILY CLOTHING STORES",
+    "market_cap": 171898827183.34998,
+    "exchange": "XNYS",
+    "ipo_date": "1965-11-17"
+  },
+  "TKO": {
+    "name": "TKO Group Holdings",
+    "sector": "Communication Services",
+    "industry": "SERVICES-AMUSEMENT & RECREATION SERVICES",
+    "market_cap": 14279092676.31,
+    "exchange": "XNYS",
+    "ipo_date": "2023-09-12"
+  },
+  "TMUS": {
+    "name": "T-Mobile US",
+    "sector": "Communication Services",
+    "industry": "RADIOTELEPHONE COMMUNICATIONS",
+    "market_cap": 209038663135.72,
+    "exchange": "XNAS",
+    "ipo_date": "2007-04-19"
+  },
+  "TPR": {
+    "name": "Tapestry, Inc.",
+    "sector": "Consumer Discretionary",
+    "industry": "LEATHER & LEATHER PRODUCTS",
+    "market_cap": 30132750309.090004,
+    "exchange": "XNYS",
+    "ipo_date": "2000-10-05"
+  },
+  "TWTR": {
+    "name": NaN,
+    "sector": "Communication Services",
+    "industry": "Unknown",
+    "market_cap": 0,
+    "exchange": "",
+    "ipo_date": null
+  },
+  "TYL": {
+    "name": "Tyler Technologies",
+    "sector": "Information Technology",
+    "industry": "SERVICES-PREPACKAGED SOFTWARE",
+    "market_cap": 13520994445.749998,
+    "exchange": "XNYS",
+    "ipo_date": "1969-03-24"
+  },
+  "UNP": {
+    "name": "Union Pacific Corporation",
+    "sector": "Industrials",
+    "industry": "RAILROADS, LINE-HAUL OPERATING",
+    "market_cap": 159251695122.99002,
+    "exchange": "XNYS",
+    "ipo_date": "1969-06-20"
+  },
+  "VICI": {
+    "name": "Vici Properties",
+    "sector": "Real Estate",
+    "industry": "REAL ESTATE INVESTMENT TRUSTS",
+    "market_cap": 30849752357.55,
+    "exchange": "XNYS",
+    "ipo_date": "2017-10-17"
+  },
+  "VRT": {
+    "name": "Vertiv",
+    "sector": "Industrials",
+    "industry": "ELECTRONIC COMPONENTS, NEC",
+    "market_cap": 137864336238.72,
+    "exchange": "XNYS",
+    "ipo_date": "2018-07-30"
+  },
+  "VRTX": {
+    "name": "Vertex Pharmaceuticals",
+    "sector": "Health Care",
+    "industry": "PHARMACEUTICAL PREPARATIONS",
+    "market_cap": 108539886580.04999,
+    "exchange": "XNAS",
+    "ipo_date": "1991-07-31"
+  },
+  "WBD": {
+    "name": "Warner Bros. Discovery",
+    "sector": "Communication Services",
+    "industry": "CABLE & OTHER PAY TELEVISION SERVICES",
+    "market_cap": 68181680169.6,
+    "exchange": "XNAS",
+    "ipo_date": "2005-07-06"
+  },
+  "WEC": {
+    "name": "WEC Energy Group",
+    "sector": "Utilities",
+    "industry": "ELECTRIC & OTHER SERVICES COMBINED",
+    "market_cap": 37113183751.32,
+    "exchange": "XNYS",
+    "ipo_date": "1972-06-01"
+  },
+  "WHR": {
+    "name": NaN,
+    "sector": "Consumer Staples",
+    "industry": "HOUSEHOLD APPLIANCES",
+    "market_cap": 3526730051.0,
+    "exchange": "XNYS",
+    "ipo_date": "1955-09-19"
+  },
+  "WM": {
+    "name": "Waste Management",
+    "sector": "Industrials",
+    "industry": "REFUSE SYSTEMS",
+    "market_cap": 88555484831.04001,
+    "exchange": "XNYS",
+    "ipo_date": "1988-09-30"
+  },
+  "ZION": {
+    "name": NaN,
+    "sector": "Financials",
+    "industry": "NATIONAL COMMERCIAL BANKS",
+    "market_cap": 9411457230.0,
+    "exchange": "XNAS",
+    "ipo_date": "1972-06-01"
   }
 }
