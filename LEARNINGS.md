@@ -5219,3 +5219,17 @@ every classifying input is still complete -- when a new category is added to con
 that reads config must gain it in the SAME batch, and quoting a bucket count alongside a number
 from a DIFFERENT source (config vs script) is where the inconsistency becomes invisible. Derive
 every figure in a single statement from ONE run of ONE artifact.**
+
+### L329
+**The bisection worked on the fifth attempt and its most valuable output was a REFUSAL.** After
+four repairs (L314, L322, L326) `bisect_test_polluter.py` narrowed 430 candidate files to 13 in
+seven steps: 430 -> 215 -> 107 -> 53 -> 26 -> 13, each still reproducing the target failure. Then
+BOTH halves of the 13 passed alone (6 files PASS, 7 files PASS) while all 13 together FAIL. Rather
+than pick a file, the tool reported **"the cause is an INTERACTION across the split, not one file"**
+and listed the survivors -- the guard written at B1469 doing exactly its job on a real case. A tool
+that had been forced to name a single culprit would have named one of thirteen innocents.
+**Generalized rule: a search must be able to return "the assumption behind this search is false".
+Bisection assumes a single cause; without an explicit branch for the both-halves-pass case it will
+silently return whichever half it examined last, and that answer is indistinguishable from a
+correct one.** Follow-on: the SMC hypothesis (two candidates mutate `_cfg.SMC_PHASE`) was tested
+and REFUTED -- both use `monkeypatch.setattr`, which auto-restores; all 18 tests pass together.

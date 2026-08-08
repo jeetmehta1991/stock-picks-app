@@ -8763,3 +8763,35 @@ is precisely the failure that produced the chunk-1/chunk-2 waste. **Next batch: 
 pass the gate, then launch** — with the 222/12/210 population and the B1465 disables live.
 
 - **S6-B1478a (HIGH)** — build the S6-B1465c run manifest and pass `prelaunch_gate.py`, then launch.
+
+---
+
+## B1479 (2026-08-07) — the bisection ran to completion: 430 -> 13, and the cause is an INTERACTION
+
+Fifth attempt, after four tool repairs. Full narrowing (each step still reproducing):
+
+`430 -> 215 -> 107 -> 53 -> 26 -> 13` files, then **6-file half PASS** and **7-file half PASS**
+while all 13 together FAIL.
+
+**[RESULT] the cause is an INTERACTION across the split, not one file.** The tool reported that
+rather than naming a culprit — the B1469 guard working on a real case. Forced to give a single
+answer it would have named one of thirteen innocents (L329).
+
+**13 surviving candidates:** `test_aaii_demo`, `test_aaii_smoke`, `test_acceptance`,
+`test_acceptance_functional`, `test_apewisdom_demo`, `test_apewisdom_smoke`,
+`test_b1009_inv_057_058_earnings_blackout_pit`, `test_b1038_smc_phase_canary`,
+`test_b1039_dec505_smc_walk_forward`, `test_b1039_smc_coverage_uplift`,
+`test_b1042_engine_state_emit`, `test_b1043_blocker_fixes`, `test_b1049_launch_script_var_scope`.
+
+**SMC hypothesis tested and REFUTED (EXECUTED):** the only two candidates that mutate global state
+(`test_b1038` and `test_b1039_smc_coverage_uplift`, both on `_cfg.SMC_PHASE`) use
+`monkeypatch.setattr`, which auto-restores. Run together with both targets: **18 passed**.
+
+**S6-B1468a: substantially advanced, still OPEN.** Search space cut from 430 to 13 and the failure
+mode reclassified from single-file to interaction.
+
+- **S6-B1479a (HIGH)** — pairwise/subset search across the 13 to identify the interacting set.
+  ~78 pairs, each cheap (the 13 run in ~6s), so this is minutes not hours — unlike every prior step.
+- **S6-B1479b (MED)** — the `aaii`/`apewisdom` demo+smoke pairs are network/cache-backed fixtures;
+  a shared cache file written by one and read by another is the most likely interaction shape and
+  should be checked first.
