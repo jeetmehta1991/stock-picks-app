@@ -5202,3 +5202,20 @@ appears in a second end-of-turn statement it must either be remediated that turn
 a ticket with an owner and a priority — repeating a disclosure is not disclosure, it is a way to
 keep the ledger balanced while the work does not move.** Detection: diff consecutive compliance
 statements and flag any item appearing twice.
+
+### L328
+**A sum-asserting partition can be internally consistent and still wrong, because the assertion
+catches missing members and not MISCLASSIFIED ones.** Owner: *"if we have 17 in the roster and 12
+disabled, why are there 196 in backlog from 222 if all are mutually exclusive"* -- 17+12+196 = 225.
+Cause: `reconcile_strategy_population.py` was written at B1461 and never taught about
+`STRATEGIES_DISABLED_DUPLICATE`, which I created at B1465. The three duplicates therefore stayed in
+the BACKLOG buckets (1 in R6-changed, 2 in NEVER-TOUCHED) while I quoted "12 disabled" from config
+and "196 backlog" from the script in the same breath. **The partition's `assert total == registry`
+passed on BOTH runs**, because the members never left the partition -- they were merely in the wrong
+bucket. Corrected: 17 roster + 12 disabled + **193** backlog (157 never touched + 36 attempted).
+This is a direct hole in CHECKLIST #177, which I wrote three batches ago claiming a sum-asserting
+partition makes a count a measurement. **Generalized rule: a partition must assert its SUM and that
+every classifying input is still complete -- when a new category is added to config, the partition
+that reads config must gain it in the SAME batch, and quoting a bucket count alongside a number
+from a DIFFERENT source (config vs script) is where the inconsistency becomes invisible. Derive
+every figure in a single statement from ONE run of ONE artifact.**

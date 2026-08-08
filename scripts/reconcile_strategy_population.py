@@ -27,7 +27,10 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO))
 
-from backtest.config import STRATEGIES_DISABLED_DATA_SCARCITY as DISABLED  # noqa: E402
+from backtest.config import (  # noqa: E402
+    STRATEGIES_DISABLED_DATA_SCARCITY as DISABLED,
+    STRATEGIES_DISABLED_DUPLICATE as DUPLICATE,
+)
 from backtest.signals.screener import ALL_STRATEGIES  # noqa: E402
 
 
@@ -50,6 +53,12 @@ def _load(path):
 def main() -> int:
     registry = _names(ALL_STRATEGIES)
     disabled = {s.replace("strat_", "") for s in DISABLED}
+    # B1478 (owner-caught): this script was written at B1461 and never taught about
+    # STRATEGIES_DISABLED_DUPLICATE, created at B1465. The 3 duplicates therefore stayed
+    # in the BACKLOG buckets while I quoted "12 disabled" and "196 backlog" together --
+    # which sums to 225, not 222. The sum-assertion did NOT catch it, because the members
+    # never left the partition; they were merely in the wrong bucket (L328).
+    duplicate = {s.replace("strat_", "") for s in DUPLICATE}
 
     roster_json = json.loads((REPO / "output_audit" / "b1453_phase_1b_roster.json")
                              .read_text(encoding="utf-8"))
@@ -67,6 +76,7 @@ def main() -> int:
         ("ROSTER-PASS (graded, on the 1B roster)", roster),
         ("ROSTER-MIRROR (retained by symmetry directive)", mirrors),
         ("DISABLED data-scarcity (Group 2, retired)", disabled),
+        ("DISABLED duplicate (B1465, copies of a survivor)", duplicate),
         ("GROUP 3 (fire-count measured B1460)", group3),
         ("GROUP 1 (loosened + graded B1449)", group1),
         ("R6b (loosened + graded B1439, NEGATIVE)", r6b),

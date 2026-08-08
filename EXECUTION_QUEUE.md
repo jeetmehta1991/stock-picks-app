@@ -8725,3 +8725,41 @@ indefinitely while appearing compliant, because the compliance statement lists i
 - **S6-B1477a (LOW)** — decide whether `data/cache/*.json` should be gitignored. If these are pure
   runtime artifacts they should not be tracked at all; if they are inputs, they need a refresh
   cadence. Today they are neither, which is why they drift.
+
+---
+
+## B1478 (2026-08-07) — owner caught a 3-strategy misclassification a passing assertion could not see
+
+**Owner:** *"if we have 17 in the roster and 12 disabled, why are there 196 in backlog from 222 if
+all are mutually exclusive"* — 17+12+196 = **225**, not 222.
+
+**Cause:** `reconcile_strategy_population.py` was written at B1461 and never taught about
+`STRATEGIES_DISABLED_DUPLICATE`, created at B1465. The 3 duplicates stayed in BACKLOG buckets
+(1 in R6-changed, 2 in NEVER-TOUCHED) while I quoted "12 disabled" from **config** and "196 backlog"
+from the **script** in the same sentence.
+
+**The partition's `assert total == registry` PASSED on both runs** — the members never left the
+partition, they were in the wrong bucket. L328.
+
+**Corrected, single source, one run:**
+
+| bucket | n |
+|---|---|
+| ROSTER (13 graded + 4 mirrors) | **17** |
+| DISABLED (9 data-scarcity + 3 duplicate) | **12** |
+| **OPTIMISATION BACKLOG** | **193** (157 never touched + 36 attempted) |
+| **TOTAL** | **222** ✓ |
+
+**Remediated:** partition now reads `STRATEGIES_DISABLED_DUPLICATE`; **CHECKLIST #177 amended** —
+the sum-assertion is necessary and NOT sufficient, and every figure in one statement must come from
+ONE run of ONE artifact; CLAUDE.md banner corrected 196 → 193.
+
+### S6-B1465c (cube regeneration) — APPROVED, NOT LAUNCHED THIS BATCH
+Owner approved. **Deliberately not fired**, because CHECKLIST/B1335 Rule 1 requires a PRE-SPEND
+OBSOLESCENCE GATE before any multi-hour run: a `run_manifest.json` pinning code SHA, isolation mode,
+calendar, universe/ticker list and budget projection, plus a written answer to "what could make this
+run obsolete?", enforced by `scripts/prelaunch_gate.py`. Firing a multi-hour cube without that gate
+is precisely the failure that produced the chunk-1/chunk-2 waste. **Next batch: build the manifest,
+pass the gate, then launch** — with the 222/12/210 population and the B1465 disables live.
+
+- **S6-B1478a (HIGH)** — build the S6-B1465c run manifest and pass `prelaunch_gate.py`, then launch.

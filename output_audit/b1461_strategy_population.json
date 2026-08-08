@@ -33,6 +33,11 @@
       "classification_change_with_insider_long",
       "classification_change_with_institutional_long"
     ],
+    "DISABLED duplicate (B1465, copies of a survivor)": [
+      "macd_crossover_short",
+      "macd_ichimoku",
+      "squeeze_breakout_with_smart_money_long"
+    ],
     "GROUP 3 (fire-count measured B1460)": [
       "gold_silver_risk_off_long",
       "halloween_seasonal_long",
@@ -71,7 +76,6 @@
     ],
     "R6 changed (loosened, superseded)": [
       "hull_rsi",
-      "macd_crossover_short",
       "pairs_mean_reversion_long",
       "pead_with_smart_money_long",
       "ppo_crossover",
@@ -153,7 +157,6 @@
       "judas_swing_short",
       "keltner_lower",
       "macd_bullish_with_smart_money_long",
-      "macd_ichimoku",
       "mfi_oversold",
       "mfi_oversold_with_smart_money_long",
       "mmbm_long",
@@ -211,7 +214,6 @@
       "smc_ote_short",
       "smc_premium_short",
       "squeeze_breakout",
-      "squeeze_breakout_with_smart_money_long",
       "stoch_oversold",
       "stochrsi_oversold",
       "supertrend_macd",
@@ -240,7 +242,7 @@
       "xs_quality_top_quintile_long"
     ]
   },
-  "optimisation_backlog_n": 196,
+  "optimisation_backlog_n": 193,
   "optimisation_backlog": [
     "52w_high_breakout",
     "52w_high_breakout_pullback_long",
@@ -328,8 +330,6 @@
     "keltner_lower",
     "m_and_a_target_long",
     "macd_bullish_with_smart_money_long",
-    "macd_crossover_short",
-    "macd_ichimoku",
     "mfi_oversold",
     "mfi_oversold_with_smart_money_long",
     "mmbm_long",
@@ -403,7 +403,6 @@
     "smc_ote_short",
     "smc_premium_short",
     "squeeze_breakout",
-    "squeeze_breakout_with_smart_money_long",
     "squeeze_setup_long",
     "stoch_oversold",
     "stochrsi_overbought_short",
