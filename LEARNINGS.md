@@ -5233,3 +5233,23 @@ Bisection assumes a single cause; without an explicit branch for the both-halves
 silently return whichever half it examined last, and that answer is indistinguishable from a
 correct one.** Follow-on: the SMC hypothesis (two candidates mutate `_cfg.SMC_PHASE`) was tested
 and REFUTED -- both use `monkeypatch.setattr`, which auto-restores; all 18 tests pass together.
+
+### L330
+**S6-B1468a SOLVED: `importlib.reload()` on the config module is the polluter, and it took 430 ->
+13 -> 2 files to see it.** After the bisection narrowed to 13 and reported an INTERACTION (L329), a
+greedy forward search found the trigger on the 9th file and backward minimisation reduced it to a
+**2-file minimal reproducing set**, sanity-checked:
+`test_acceptance_functional.py` + `test_b1039_dec505_smc_walk_forward.py`.
+Mechanism, read at `test_b1039_dec505_smc_walk_forward.py:83`: the test calls
+`importlib.reload(cfg)` on `backtest.config`. Reload REBINDS every module-level object to NEW
+instances. Any module that imported by VALUE -- `from backtest.config import CIRCUIT_BREAKERS` --
+keeps the OLD dict, while `mock.patch.dict("backtest.config.CIRCUIT_BREAKERS", ...)` in
+`test_bug_30` patches the NEW one. The engine then reads a dict nobody patched. The second file is
+required only because it causes `exit_manager` to be imported, and therefore bound, BEFORE the
+reload happens -- which is why no single file reproduced and why four earlier tool defects all
+produced "not reproducing" without anyone noticing they were wrong.
+**Generalized rule: `importlib.reload()` of a module that others import BY VALUE is a
+process-global mutation with unbounded blast radius, and it is invisible to every isolation
+mechanism pytest offers -- monkeypatch, fixtures and `patch.dict` all operate on object identity
+that reload has already broken. Treat reload of a config/constants module as forbidden in tests;
+assert on the DISK VALUE by re-reading the file instead.**

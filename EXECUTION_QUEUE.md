@@ -8795,3 +8795,38 @@ mode reclassified from single-file to interaction.
 - **S6-B1479b (MED)** — the `aaii`/`apewisdom` demo+smoke pairs are network/cache-backed fixtures;
   a shared cache file written by one and read by another is the most likely interaction shape and
   should be checked first.
+
+---
+
+## B1480 (2026-08-07) — S6-B1468a SOLVED: `importlib.reload()` on backtest.config
+
+Greedy forward search across the 13 B1479 candidates found the trigger on file 9; backward
+minimisation reduced it to a **2-file MINIMAL REPRODUCING SET**, sanity-verified:
+
+```
+backtest/tests/test_acceptance_functional.py
+backtest/tests/test_b1039_dec505_smc_walk_forward.py
+```
+
+Both REQUIRED — neither reproduces alone, which is exactly why the single-file bisection could not
+find it and why four separate tool defects all reported "not reproducing" unchallenged.
+
+**MECHANISM** (`test_b1039_dec505_smc_walk_forward.py:83`): the test calls `importlib.reload(cfg)`
+on `backtest.config`. Reload rebinds every module-level object to NEW instances. Modules that
+imported BY VALUE (`from backtest.config import CIRCUIT_BREAKERS`) keep the OLD dict, while
+`mock.patch.dict("backtest.config.CIRCUIT_BREAKERS", ...)` inside
+`test_bug_30_check_circuit_breakers_gate_on_config` patches the NEW one — so the engine reads a dict
+nobody patched. `test_acceptance_functional.py` is required only because it imports `exit_manager`
+first, binding the pre-reload objects. L330.
+
+**This is why the enforced GATE's green was order-dependent** (L313): the 2 failing GATE tests are
+correct; a test in another file breaks object identity underneath them.
+
+### Tickets
+- **S6-B1480a (HIGH)** — remove the `importlib.reload(cfg)` from
+  `test_b1039_dec505_smc_walk_forward.py`. Its intent is to assert the ON-DISK `SMC_PHASE` value;
+  re-read the file (or `ast`-parse it) instead of reloading the module into the live process.
+- **S6-B1480b (HIGH)** — grep the suite for every `importlib.reload(` of a config/constants module
+  and give the class the same treatment. This is the generalization, not the instance.
+- **S6-B1480c (MED)** — once fixed, re-run the full suite and confirm the 2 GATE failures clear;
+  that also re-validates CHECKLIST #170's requirement that GATE pass INSIDE a full run.
