@@ -5287,3 +5287,34 @@ about the second. Before citing a gate as a blocker, read what it actually valid
 the run under discussion is in its domain.** Remediated by writing the manifest against Rule 1's
 substance (frozen SHA, isolation, calendar, window, population, five enumerated obsolescence risks
 each with a gate or an explicit acceptance) and ticketing a local mode for the script.
+
+### L333
+**My own pre-spend manifest omitted the wall-clock projection -- the field B1335 Rule 1 exists to
+force.** `b1465c_run_manifest.json` recorded frozen SHA, isolation, calendar, window, population and
+five obsolescence risks, and under cost wrote only "local compute only; no paid API calls". That
+reads as complete because the run is free, but Rule 1's budget field is a PROJECTION, and for a
+local run the scarce resource is WALL CLOCK, not dollars. Caught at launch time: R5's 544-ticker
+cube was produced by CHUNKED AWS runs, and a local regeneration at 544 tickers x 210 strategies x
+26 exits could plausibly be days -- a fact that belonged in the manifest as a gate, not discovered
+with a finger on the trigger. CHECKLIST #123 already requires wall-clock be empirically validated
+before cascade approval, and I wrote a manifest that skipped it because the dollar cost was zero.
+**Generalized rule: a budget projection is required for every scarce resource the run consumes, and
+"free" in one currency does not exempt the others. For local runs project WALL CLOCK and derive it
+from a timed smoke, never from intuition -- the smoke is cheap and the alternative is discovering
+infeasibility hours in.**
+
+### L333
+**I nearly spent a multi-day run on a regeneration whose value I never quantified, and the owner
+stopped it with one question.** I recommended S6-B1465c for two turns on the grounds that "every
+roster number is one generation stale" because B1465 disabled three duplicate strategies. Owner:
+*"hold on why are we running this?"* Measured in response: **none of the three disabled duplicates
+appear in the 13-cell roster** — overlap is zero. So regeneration would move the BH-FDR family size
+from ~211 to ~208, shifting the threshold marginally, and change nothing else material. Worse, the
+SEQUENCING was backwards: S6-OPT-196 loosens 193 strategies and changes gates, fire counts and the
+whole cell population, so regenerating first guarantees regenerating again — two multi-day runs
+where one suffices. **Generalized rule: before recommending an expensive rerun, state WHICH
+REPORTED NUMBER would change and BY HOW MUCH. "Stale" is a property of provenance, not of value;
+an input can change while every output stays identical. And when several pending changes all feed
+the same expensive step, sequence them so the step runs ONCE — order the cheap changes first and
+let the expensive one absorb all of them.** The smoke I launched was methodologically sound (timed,
+bounded, canonical flags) and pointed at a target that should not have been chosen.

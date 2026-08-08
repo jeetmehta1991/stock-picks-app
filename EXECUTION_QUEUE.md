@@ -8892,3 +8892,70 @@ downstream de-dup removes them anyway, so the roster is unaffected either direct
   bypasses the gate or gets told it is blocked by a check that cannot pass.
 - **S6-B1478a — CLOSED** (manifest built). **S6-B1465c is now launchable**: owner-approved, manifest
   written, risks enumerated, no gate legitimately blocking it.
+
+---
+
+## B1483 (2026-08-08) — S6-B1465c: timed smoke launched instead of a blind multi-day run
+
+**Pre-flight caught a gap in my own manifest.** `b1465c_run_manifest.json` recorded cost as "local
+compute only; no paid API calls" and **no wall-clock projection**. For a local run wall clock IS the
+budget, and B1335 Rule 1's projection field applies to every scarce resource — "free in dollars"
+does not exempt it. R5's 544-ticker cube came from CHUNKED AWS runs; a local regeneration at
+544 tickers x 210 strategies x 26 exits is plausibly days. L333.
+
+**Launched a bounded timed smoke** rather than firing blind — the project's own smoke→demo→full
+protocol (#68) and wall-clock validation rule (#123):
+
+```
+python -m backtest.run_phase1a --phase 1a-beta --tickers "AAPL,MSFT,NVDA,JPM,XOM"   --start 2022-05-05 --end 2026-05-05 --no-news --no-walk-forward --no-agents   --no-git --no-portfolio-cap --no-dd-halt --cube-isolation   --max-run-hours 1.5 --warn-run-hours 1.0 --output-dir output_b1483_smoke5
+```
+
+Flags **copied from `scripts/aws_chunk_launch.py:92-95`**, not authored — L264 is the R6 run that
+went out without `--cube-isolation` because I wrote a command from memory. The 6-gate mode assert in
+`run_phase1a.py:580` now enforces this independently.
+
+Pre-launch checks EXECUTED: zero competing python PIDs; canonical flag set read from the reference
+launcher; no S3/spend involved.
+
+**Next:** derive tickers/hour from the smoke, project 544 tickers, and bring the owner a wall-clock
+number BEFORE committing to the full regeneration. If the projection is measured in days, the
+options are chunking, a reduced universe, or AWS — a decision the owner should make with a number
+in hand rather than after a stalled run.
+
+- **S6-B1483a** — add a `wall_clock_projection_hours` field to the manifest schema and make it
+  REQUIRED for local runs; a free run still spends the scarcest resource in this project.
+
+---
+
+## B1483 (2026-08-08) — S6-B1465c HALTED by owner challenge; sequencing was backwards
+
+**Owner: "hold on why are we running this?"** Smoke stopped (0 python processes), `output_b1483_smoke5`
+removed. Nothing committed from it.
+
+**Measured in response:** the 3 B1465 duplicate disables (`macd_crossover_short`, `macd_ichimoku`,
+`squeeze_breakout_with_smart_money_long`) have **ZERO overlap with the 13-cell roster**.
+
+So regenerating the cube now would change the BH-FDR family size ~211 → ~208, shifting the threshold
+marginally, and **nothing else material**. My "every roster number is one generation stale"
+justification, repeated across two turns, oversold provenance as value. L333.
+
+**The sequencing was also backwards.** S6-OPT-196 loosens 193 strategies — changing gates, fire
+counts and the entire cell population. Regenerating before it guarantees regenerating again:
+**two multi-day runs where one suffices.**
+
+### REVISED RECOMMENDATION (supersedes B1478/B1482)
+1. **S6-OPT-196 first** — the optimisation programme, bound by CHECKLIST #169. It is the only work
+   that can move the roster off 17 strategies / 1 ROBUST cell, and it is the change the cube needs
+   to absorb.
+2. **Then ONE cube regeneration** incorporating S6-OPT-196 *and* the B1465 disables together.
+3. Cheap verification tickets (S6-B1480c, S6-B1481a, S6-B1475a) can run alongside, since none of
+   them feeds the cube.
+
+**S6-B1465c: re-classified from READY to DEFERRED-BEHIND-S6-OPT-196.** The manifest
+(`b1465c_run_manifest.json`) stays valid and will need its `frozen_sha` re-pinned at actual launch.
+
+- **S6-B1483a** — before ANY expensive rerun, state which reported number changes and by how much.
+  This should have been in the manifest's obsolescence section and was not.
+- **S6-B1483b** — the manifest still lacks a wall-clock projection; local runs spend wall clock, and
+  "free in dollars" does not exempt the field. Derive from a timed smoke when the run is actually
+  wanted.
