@@ -5353,8 +5353,11 @@ pattern-based sweep produces a LIST OF CANDIDATES, never a list of fixes. Each s
 determines its remedy, and one of them is usually "correct as written" -- a sweep that changes
 every hit is applying the pattern, not the lesson.**
 
-### L336
-**A quarantined test I had classified as a live-defect candidate turned out to be exactly that.**
+### L336 — **RETRACTED at B1486. See L337.** The claim below is WRONG: the 92-day behaviour
+is CORRECT per B1142 (Council 254 widened the window 90 -> 180). Preserved verbatim for
+lineage; do not cite it.
+
+~~A quarantined test I had classified as a live-defect candidate turned out to be exactly that.~~
 `test_batch561_window_expiry_at_91_days` asserts `classification_changed_recent` expires at the
 90-day window; the producer returns **`True` at 92 days** with
 `days_since_classification_change: 92`. A `git stash` baseline confirms this pre-dates my change
@@ -5364,3 +5367,19 @@ every hit is applying the pattern, not the lesson.**
 L316: had the 172 failures been dismissed as bit-rot, a producer that fails to expire a signal past
 its own window would still be live** -- and `sector_history` is the same data file whose sparsity
 retired 9 strategies at B1441, so its signals feed real gating decisions.
+
+### L337
+**I declared a producer defect real without reading the producer, one batch after writing the rule
+that says read it first.** L336 claimed `test_batch561_window_expiry_at_91_days` had caught a live
+bug: `classification_changed_recent` still True at 92 days against a 90-day window. Reading
+`universe.py:608`: `lookback_days: int = 180,  # B1142: was 90 (Council 254 LOOSEN per Turn 9 -
+widened for structural rarity)`. The window was deliberately doubled by an owner-approved batch and
+the TEST was never updated. At 92 days the producer is correct; this is a STALE PIN, the most
+common class in the quarantine (31 of 72), not a defect. **L336 is retracted.**
+What I got right was the process: at B1474b I flagged it "live defect until disproved" per
+CHECKLIST #180, which is the correct posture. What I got wrong was announcing the verdict before
+doing the disproving — #180 says treat it as live, not declare it live. Re-pinned to the real
+boundary (179d inside / 181d outside) with the B1142 citation, so it still guards expiry rather
+than being deleted; file now 8 passed. **Generalized rule: "treat as X until disproved" is a
+PRIORITY instruction, not a conclusion. The investigation it triggers is what produces the verdict,
+and reporting the verdict before running it converts a sound triage rule into a fabrication.**

@@ -162,16 +162,28 @@ def test_batch561_cons_disc_to_staples_cohort():
 
 
 def test_batch561_window_expiry_at_91_days():
-    """At as_of 2023-06-17 (92 days post-reclassification), all 13
-    tickers' signal expires (lookback_days=90 default)."""
-    from backtest.data.universe import get_classification_change_signals
-    for ticker in ALL_2023_TICKERS:
-        out = get_classification_change_signals(ticker, date(2023, 6, 17))
-        assert out == {}, (
-            f"{ticker} signal should expire by 2023-06-17 (92d "
-            f"post-event > 90d window); got {out}"
-        )
+    """B1486 (S6-B1485a): RECLASSIFIED from live-defect to STALE PIN.
 
+    This pinned a 90-day expiry window. `universe.py:608` reads
+        lookback_days: int = 180,  # B1142: was 90 (Council 254 LOOSEN per Turn 9)
+    so the window was deliberately widened 90 -> 180, owner-approved, and the test was
+    never updated. At 92 days `classification_changed_recent=True` is CORRECT behaviour.
+
+    Per CHECKLIST #179 the pin moves only after its delta is explained - the explanation
+    is B1142. Re-pinned to the real boundary so it still guards expiry rather than being
+    deleted: 179 days inside, 181 days outside.
+    """
+    import datetime as _dt
+    from backtest.data.universe import get_classification_change_signals as _sig
+
+    # the event these fixtures are built around
+    event = _dt.date(2023, 3, 17)
+    inside = _sig("V", event + _dt.timedelta(days=179))
+    outside = _sig("V", event + _dt.timedelta(days=181))
+    assert inside.get("classification_changed_recent") is True, (
+        f"179d after the event is INSIDE the B1142 180-day window; got {inside}")
+    assert outside.get("classification_changed_recent") in (False, None), (
+        f"181d after the event is OUTSIDE the B1142 180-day window; got {outside}")
 
 def test_batch561a_flt_restored_with_parquet():
     """B561a follow-on: FLT.parquet was fetched + FLT row pair restored

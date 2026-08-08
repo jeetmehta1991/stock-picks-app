@@ -9070,3 +9070,33 @@ whose sparsity retired 9 strategies at B1441 — its signals feed real gating.
 `S6-B1473c` CLAUDE.md freshness check · `S6-B1471d` de-duplicate invariants · `S6-B1477a` gitignore
 · `S6-B1482a` prelaunch LOCAL mode · `S6-B1483a/b` manifest fields · `S6-B1474a` pytest-timeout ·
 `S6-B1474e` test_batch465 budget · `S6-B1455f` gate rename. All still cheap; none started.
+
+---
+
+## B1486 (2026-08-08) — S6-B1485a RETRACTED (not a defect) + S6-B1473c shipped
+
+### S6-B1485a — RETRACTED. There is no producer defect.
+`universe.py:608`: `lookback_days: int = 180,  # B1142: was 90 (Council 254 LOOSEN per Turn 9)`.
+The window was deliberately widened 90 → 180 by an owner-approved batch; the TEST still pinned 90.
+At 92 days `classification_changed_recent=True` is **correct**. This is a STALE PIN — the largest
+quarantine class (31 of 72) — not a live defect. **L336 retracted in place; L337 added.**
+
+The process was right and the announcement was wrong: #180 says *treat* a red test as live until
+disproved. I reported the verdict before doing the disproving. Re-pinned to the real boundary
+(179d inside / 181d outside) with the B1142 citation so it still guards expiry rather than being
+deleted — `test_batch561` now **8 passed**.
+
+### S6-B1473c — SHIPPED, and it fired immediately
+`test_b1486_claude_md_banner_counts_are_fresh` asserts the CLAUDE.md banner's `CHECKLIST #1-#N` and
+`LEARNINGS L1-LN` ranges match the files. Placed in the **enforced GATE**, not the advisory
+doc-count report — every gate that held during the L320 lapse was programmatic; the one that decayed
+was prose.
+
+**It failed on its first run**: banner said L1-L319, LEARNINGS was at L336. Synced to
+**CHECKLIST #1-#181 / LEARNINGS L1-L336**. Gate now **897 passed** (+1).
+
+Scope note: it checks only the two counts that grow by appending. Strategy and test counts move for
+approved reasons mid-batch and would make the gate flaky.
+
+### Still carried (cheap)
+`S6-B1471d` · `S6-B1477a` · `S6-B1482a` · `S6-B1483a/b` · `S6-B1474a` · `S6-B1474e` · `S6-B1455f`

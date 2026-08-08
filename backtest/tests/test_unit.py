@@ -13484,3 +13484,51 @@ def test_b1470_gate_matches_the_enforced_command():
         f"GATE is {sorted(pt.GATE)}; the enforced command runs test_unit.py + "
         "test_integration.py. Change both together or neither."
     )
+
+
+# ---------------------------------------------------------------------------
+# B1486 / S6-B1473c -- CLAUDE.md BANNER FRESHNESS
+#
+# CLAUDE.md is the named source-of-truth and CHECKLIST #67 mandates a per-turn
+# doc-sync. It was not synced ONCE across ~45 batches (L320) and went stale on
+# three of four banner counts. Every gate that HELD that session was
+# programmatic; the one that decayed was prose. So this lives in the enforced
+# GATE, not in the advisory doc-count report nobody reads.
+# ---------------------------------------------------------------------------
+
+def test_b1486_claude_md_banner_counts_are_fresh():
+    """The CLAUDE.md banner's CHECKLIST and LEARNINGS ranges must not lag reality.
+
+    Deliberately checks only the two counts that are cheap and unambiguous to
+    re-derive. Strategy/test counts move for approved reasons mid-batch and would
+    make this flaky; these two only ever grow by appending.
+    """
+    import re as _re
+    from pathlib import Path as _Path
+
+    repo = _Path(__file__).resolve().parents[2]
+    banner = (repo / "CLAUDE.md").read_text(encoding="utf-8", errors="ignore")
+
+    checklist = (repo / "CHECKLIST.md").read_text(encoding="utf-8", errors="ignore")
+    pat = _re.compile(r"^(?:\*{0,2}#?)(\d+)[.\s]")
+    actual_ck = max(int(m.group(1)) for ln in checklist.splitlines()
+                    if (m := pat.match(ln)))
+
+    learnings = (repo / "LEARNINGS.md").read_text(encoding="utf-8", errors="ignore")
+    actual_l = max(int(n) for n in _re.findall(r"^### L(\d+)$", learnings, _re.M))
+
+    m_ck = _re.search(r"CHECKLIST #1-#(\d+)", banner)
+    m_l = _re.search(r"LEARNINGS L1-L(\d+)", banner)
+    assert m_ck, "CLAUDE.md banner has no 'CHECKLIST #1-#N' claim to check"
+    assert m_l, "CLAUDE.md banner has no 'LEARNINGS L1-LN' claim to check"
+
+    claimed_ck, claimed_l = int(m_ck.group(1)), int(m_l.group(1))
+    assert claimed_ck == actual_ck, (
+        f"CLAUDE.md banner claims CHECKLIST #1-#{claimed_ck}; CHECKLIST.md ends at "
+        f"#{actual_ck}. Sync the banner (CHECKLIST #67) - it went ~45 batches stale "
+        "once already (L320)."
+    )
+    assert claimed_l == actual_l, (
+        f"CLAUDE.md banner claims LEARNINGS L1-L{claimed_l}; LEARNINGS.md ends at "
+        f"L{actual_l}. Sync the banner (CHECKLIST #67)."
+    )
