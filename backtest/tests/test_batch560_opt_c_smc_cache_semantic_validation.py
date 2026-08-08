@@ -92,10 +92,15 @@ def test_batch560_flag_default_remains_false():
     """USE_SMC_PANEL_CACHE must default to False (semantic-safe).
     Owner flip is gated behind explicit decision after this
     validation pass."""
-    import importlib
-    import backtest.config as cfg
-    importlib.reload(cfg)
-    assert cfg.USE_SMC_PANEL_CACHE is False, (
+    # B1481 (S6-B1480a/b): was importlib.reload(cfg). Reload rebinds every module-level
+    # object, so modules importing BY VALUE keep the OLD one and patch.dict then patches
+    # an object the engine never reads - the S6-B1468a polluter (L330). disk_value()
+    # ast-parses config.py, answering the same question without touching global state.
+    import sys as _sys
+    from pathlib import Path as _Path
+    _sys.path.insert(0, str(_Path(__file__).resolve().parent))
+    from config_disk import disk_value
+    assert disk_value("USE_SMC_PANEL_CACHE") is False, (
         "Per B560 validation: cache semantic divergence vs uncached "
         "is widespread (100pct of pairs differ on at least 1 signal). "
         "Flag must stay False until owner accepts the semantic shift."

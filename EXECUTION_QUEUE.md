@@ -8830,3 +8830,31 @@ correct; a test in another file breaks object identity underneath them.
   and give the class the same treatment. This is the generalization, not the instance.
 - **S6-B1480c (MED)** — once fixed, re-run the full suite and confirm the 2 GATE failures clear;
   that also re-validates CHECKLIST #170's requirement that GATE pass INSIDE a full run.
+
+---
+
+## B1481 (2026-08-08) — S6-B1480a/b SHIPPED: the polluter is fixed and verified
+
+New `backtest/tests/config_disk.py::disk_value()` reads a constant's ON-DISK value by `ast`-parsing
+`backtest/config.py` — no import, no execution, no global state touched.
+
+**All three `importlib.reload(cfg)` call sites replaced:**
+`test_b1039_dec505_smc_walk_forward.py` (the proven culprit), `test_batch555_opt_c_smc_panel_wire_in.py`,
+`test_batch560_opt_c_smc_cache_semantic_validation.py`. Zero live `reload(cfg)` sites remain.
+
+**VERIFIED on the minimal reproducing set** — the exact 2-file combination that broke the GATE
+tests: `test_acceptance_functional.py` + `test_b1039_dec505_smc_walk_forward.py` + both targets →
+**41 passed**. The other two patched files: **8 passed**. Gate pyramid: **896 passed, 2 skipped**.
+
+**Why the fix is the right shape (L331):** all three sites wanted the COMMITTED value, not the
+in-process one. Reload can only report that by first destroying in-process state; an `ast` read
+answers it directly and cannot be influenced by anything the session has already done.
+
+### Still open in this class
+- **S6-B1481a (MED)** — 3 non-`cfg` reload sites remain: `test_batch412_golden_regression.py`
+  (`exit_mod`), `test_batch561_sector_history_2023_expansion.py` (`universe`), and
+  `test_b1039`'s own `reload(sys.modules["run_dec505_walk_forward_smc"])`. Same hazard class,
+  different targets — each needs its intent read before substituting.
+- **S6-B1480c (HIGH)** — re-run the FULL suite and confirm the 2 GATE failures clear there. That is
+  the CHECKLIST #170 obligation (the enforced tier must pass INSIDE a full run) and the only
+  evidence that closes S6-B1468a outright rather than by local repro.

@@ -5253,3 +5253,20 @@ process-global mutation with unbounded blast radius, and it is invisible to ever
 mechanism pytest offers -- monkeypatch, fixtures and `patch.dict` all operate on object identity
 that reload has already broken. Treat reload of a config/constants module as forbidden in tests;
 assert on the DISK VALUE by re-reading the file instead.**
+
+### L331
+**The polluter's fix was to answer the question the tests were actually asking.** All three
+`importlib.reload(cfg)` call sites had the same INTENT -- assert the value COMMITTED TO DISK, not
+whatever the process had monkeypatched -- implemented in the one way that corrupts the session:
+reload re-executes the module and rebinds every name, so modules that imported by value keep the
+old object and `patch.dict` afterwards patches something the engine never reads. Replacing them
+with an `ast`-parse of `config.py` (`backtest/tests/config_disk.py::disk_value`) is not a
+workaround; it answers the question MORE directly, because a disk read cannot be influenced by
+anything the process has already done, whereas a reload can only ever report the disk value by
+first destroying the in-process state. Verified on the 2-file minimal reproducing set that broke
+two GATE tests for an unknown number of batches: **41 passed**. **Generalized rule: when a test
+reaches for a heavyweight global operation (module reload, cache clear, singleton reset), ask what
+QUESTION it is trying to answer -- the operation is usually a proxy for reading a fact, and reading
+the fact directly is both safer and more precise. `reload` to check a constant, `cache_clear` to
+check a computation, and monkeypatching a singleton to check its default are all the same
+substitution.**

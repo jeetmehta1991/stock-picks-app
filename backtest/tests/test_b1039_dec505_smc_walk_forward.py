@@ -82,9 +82,17 @@ def test_b1039_smc_phase_monkey_patch_in_memory_only():
     finally:
         cfg.SMC_PHASE = original
     # Re-import config from disk; canonical value per B1041 = 'PRODUCTION'
-    importlib.reload(cfg)
-    assert cfg.SMC_PHASE in ("PRODUCTION", "B-CANARY"), (
-        f"Disk SMC_PHASE in unexpected state {cfg.SMC_PHASE!r}. "
+    # B1481 (S6-B1480a/b): was importlib.reload(cfg). Reload rebinds every module-level
+    # object, so modules importing BY VALUE keep the OLD one and patch.dict then patches
+    # an object the engine never reads - the S6-B1468a polluter (L330). disk_value()
+    # ast-parses config.py, answering the same question without touching global state.
+    import sys as _sys
+    from pathlib import Path as _Path
+    _sys.path.insert(0, str(_Path(__file__).resolve().parent))
+    from config_disk import disk_value
+    on_disk = disk_value("SMC_PHASE")
+    assert on_disk in ("PRODUCTION", "B-CANARY"), (
+        f"Disk SMC_PHASE in unexpected state {on_disk!r}. "
         "Valid values: 'PRODUCTION' (B1041+) or 'B-CANARY' (B1038-B1040)."
     )
 

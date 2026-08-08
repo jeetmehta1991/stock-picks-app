@@ -64,9 +64,15 @@ def _load_full_ohlc(ticker: str) -> pd.DataFrame:
 
 def test_batch555_use_smc_panel_cache_flag_default_false():
     """The flag must DEFAULT to False so wire-in is opt-in."""
-    import backtest.config as cfg
-    importlib.reload(cfg)
-    assert cfg.USE_SMC_PANEL_CACHE is False, (
+    # B1481 (S6-B1480a/b): was importlib.reload(cfg). Reload rebinds every module-level
+    # object, so modules importing BY VALUE keep the OLD one and patch.dict then patches
+    # an object the engine never reads - the S6-B1468a polluter (L330). disk_value()
+    # ast-parses config.py, answering the same question without touching global state.
+    import sys as _sys
+    from pathlib import Path as _Path
+    _sys.path.insert(0, str(_Path(__file__).resolve().parent))
+    from config_disk import disk_value
+    assert disk_value("USE_SMC_PANEL_CACHE") is False, (
         "USE_SMC_PANEL_CACHE must default to False; flip only after "
         "end-to-end empirical validation"
     )
