@@ -183,8 +183,16 @@ def test_golden_summary_byte_equal_tier_1():
 def test_flag_default_off_at_module_import():
     """Hard guarantee that importing the engine never silently flips the
     feature flag - any production run must opt-in via the CLI flag."""
-    import importlib
-    importlib.reload(exit_mod)
-    assert exit_mod.USE_VECTORIZED_EXITS is False, (
+    # B1485 (S6-B1481a): was importlib.reload(exit_mod). backtest.py imports FUNCTIONS
+    # from exit_strategies BY VALUE (_pool_cube_replay_worker, run_exit_comparison), so a
+    # reload rebinds them while the engine keeps the old objects - the same hazard that
+    # made two GATE tests order-dependent (L330). The assertion wants the ON-DISK default,
+    # which disk_value() reads without touching the live process.
+    import sys as _sys
+    from pathlib import Path as _Path
+    _sys.path.insert(0, str(_Path(__file__).resolve().parent))
+    from config_disk import disk_value
+    _es = _Path(__file__).resolve().parents[1] / "engine" / "exit_strategies.py"
+    assert disk_value("USE_VECTORIZED_EXITS", _es) is False, (
         "USE_VECTORIZED_EXITS must default to False at import time so "
         "in-flight runs and next-default runs are unaffected by Batch 412.")

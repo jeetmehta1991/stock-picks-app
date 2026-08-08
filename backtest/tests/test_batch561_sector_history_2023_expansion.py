@@ -72,10 +72,18 @@ ALL_2023_TICKERS = (
 def reload_sector_history():
     """sector_history.csv is module-level cached in universe.py.
     Reload to pick up CSV changes between test runs."""
-    import importlib
+    # B1485 (S6-B1481a): was importlib.reload(u). The INTENT here is cache invalidation,
+    # not a disk read (L331 - read the intent before substituting). universe.py:547 holds
+    # _SECTOR_HISTORY_CACHE as a module global, so nulling it invalidates exactly what this
+    # fixture wants while leaving every other binding in the process intact. Reload would
+    # rebind the whole module for every importer, which is the L330 hazard.
     import backtest.data.universe as u
-    importlib.reload(u)
-    yield
+    _saved = u._SECTOR_HISTORY_CACHE
+    u._SECTOR_HISTORY_CACHE = None
+    try:
+        yield
+    finally:
+        u._SECTOR_HISTORY_CACHE = _saved
 
 
 def test_batch561_thirteen_2023_tickers_present_in_csv():

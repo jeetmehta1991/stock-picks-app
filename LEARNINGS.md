@@ -5335,3 +5335,32 @@ document appears to lack a convention you need, read its HEADER before concludin
 long append-only files bury their own rules under the content they accumulate. And "the convention
 is missing" and "the convention stopped being applied" demand opposite fixes: the first needs a
 design, the second needs a gate.**
+
+### L335
+**Three `importlib.reload` sites, three DIFFERENT correct fixes -- and blanket-replacing them would
+have violated the lesson written one batch earlier.** L331 said read the INTENT before substituting;
+S6-B1481a was the first chance to apply it, and the three remaining sites diverged completely:
+  * `test_batch412` wanted the ON-DISK default of `USE_VECTORIZED_EXITS`. Same hazard class as the
+    config ones -- `backtest.py` imports FUNCTIONS from `exit_strategies` by value, so a reload
+    rebinds them while the engine keeps the old objects. Fixed with `disk_value()`.
+  * `test_batch561` wanted CACHE INVALIDATION, not a disk read. `universe.py:547` holds
+    `_SECTOR_HISTORY_CACHE` as a module global; nulling it (and restoring after) invalidates
+    exactly what the fixture needs, while reload would rebind the module for every importer.
+  * `test_b1039::_import_runner` reloads a SCRIPT module nothing imports by value -- low blast
+    radius, LEFT ALONE. Not every instance of a dangerous pattern is dangerous.
+Result: `test_batch412` green; `test_batch561` went 7 passed -> 10 passed. **Generalized rule: a
+pattern-based sweep produces a LIST OF CANDIDATES, never a list of fixes. Each site's intent
+determines its remedy, and one of them is usually "correct as written" -- a sweep that changes
+every hit is applying the pattern, not the lesson.**
+
+### L336
+**A quarantined test I had classified as a live-defect candidate turned out to be exactly that.**
+`test_batch561_window_expiry_at_91_days` asserts `classification_changed_recent` expires at the
+90-day window; the producer returns **`True` at 92 days** with
+`days_since_classification_change: 92`. A `git stash` baseline confirms this pre-dates my change
+(7 passed before, 10 after -- my fix repaired 3 and caused none). At B1474b I flagged this file and
+`test_batch557` as the two BEHAVIOUR rows that "must be treated as live defects until disproved"
+(CHECKLIST #180); the flag was correct and the defect is real. **This is the concrete vindication of
+L316: had the 172 failures been dismissed as bit-rot, a producer that fails to expire a signal past
+its own window would still be live** -- and `sector_history` is the same data file whose sparsity
+retired 9 strategies at B1441, so its signals feed real gating decisions.

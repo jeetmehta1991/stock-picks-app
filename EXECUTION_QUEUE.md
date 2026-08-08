@@ -9038,3 +9038,35 @@ Status token, which is why a text scan finds closure language for only 60 of 193
 - **S6-B1484c (MED)** — add a preflight check that any commit touching `EXECUTION_QUEUE.md` which
   introduces a new `S6-*` ID also introduces a Status token for it. The enum decayed because
   nothing enforced it — the same prose-without-a-gate class as L320.
+
+---
+
+## B1485 (2026-08-08) — S6-B1481a RESOLVED; and it surfaced a real producer defect
+
+**Three reload sites, three different correct fixes** (L335) — applying L331's "read the intent"
+rather than sweeping the pattern:
+
+| site | intent | fix |
+|---|---|---|
+| `test_batch412_golden_regression` | on-disk default of `USE_VECTORIZED_EXITS` | `disk_value()` — `backtest.py` imports functions from `exit_strategies` BY VALUE, so reload rebinds them under the engine |
+| `test_batch561_sector_history_2023_expansion` | cache invalidation | null `universe._SECTOR_HISTORY_CACHE` and restore after — reload would rebind the module for every importer |
+| `test_b1039::_import_runner` | load a SCRIPT module | **LEFT ALONE** — nothing imports it by value; low blast radius. Not every instance of a dangerous pattern is dangerous. |
+
+**Result:** `test_batch412` green · `test_batch561` **7 passed → 10 passed**.
+
+### A REAL DEFECT, surfaced not caused (L336)
+`test_batch561_window_expiry_at_91_days` fails: `classification_changed_recent` is still **`True` at
+92 days** (`days_since_classification_change: 92`) against a **90-day** window. `git stash` baseline
+confirms it pre-dates this batch.
+
+At B1474b I flagged this file and `test_batch557` as the two BEHAVIOUR rows to treat as live defects
+until disproved (CHECKLIST #180). **The flag was right.** And `sector_history` is the same data file
+whose sparsity retired 9 strategies at B1441 — its signals feed real gating.
+
+- **S6-B1485a (HIGH)** — fix the expiry window in the `classification_change` producer; a signal
+  that outlives its own window over-fires every consumer downstream.
+
+### Carried from the "cheap" batch (Council-201 cap: 3 substantive per batch)
+`S6-B1473c` CLAUDE.md freshness check · `S6-B1471d` de-duplicate invariants · `S6-B1477a` gitignore
+· `S6-B1482a` prelaunch LOCAL mode · `S6-B1483a/b` manifest fields · `S6-B1474a` pytest-timeout ·
+`S6-B1474e` test_batch465 budget · `S6-B1455f` gate rename. All still cheap; none started.
