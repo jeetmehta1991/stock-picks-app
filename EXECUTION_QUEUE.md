@@ -8959,3 +8959,82 @@ counts and the entire cell population. Regenerating before it guarantees regener
 - **S6-B1483b** — the manifest still lacks a wall-clock projection; local runs spend wall clock, and
   "free in dollars" does not exempt the field. Derive from a timed smoke when the run is actually
   wanted.
+
+---
+
+# ============================================================================
+# S6 TICKET STATUS LEDGER (B1484, 2026-08-08) — owner: "clear the queue"
+# ============================================================================
+
+**Why this section exists.** `EXECUTION_QUEUE.md` is append-only prose with **no status field**.
+193 distinct `S6-*` IDs are referenced; a text scan finds closure language for only 60. Nothing
+could be "cleared" because nothing could be *marked*. This is the ledger that makes closure
+possible; machine-readable copy at `output_audit/s6_ticket_ledger.json`.
+
+## CLOSED THIS SESSION — 40 tickets, each with its closing batch
+
+**Roster & measurement:** `S6-B1455c` breadth measured (long 2.9 / deployable 7.2, B1462) ·
+`S6-B1461a` beta residualisation, hypothesis REFUTED (B1462) · `S6-B1461b` N_eff published (B1470) ·
+`S6-B1458a` leave-one-out published (B1470) · `S6-B1467c` haircut applied, ROBUST 1 / PROVISIONAL 12
+(B1470) · `S6-B1466a` exit-selection noise, 94% stable (B1467) · `S6-B1466b` replicates measured
+before regeneration (B1467) · `S6-B1478a` run manifest built (B1482)
+
+**Duplicates & roster hygiene:** `S6-B1455a` registration-time redundancy audit (B1463) ·
+`S6-B1463a` all 5 pairs dispositioned (B1465) · `S6-B1463b` reclassified as duplicate not producer
+bug (B1465) · `S6-B1471a` borrow_ok + cohort registration, 24/24 green (B1472) · `S6-B1452a`
+roster_core, byte-identical parity (B1463)
+
+**The polluter chain:** `S6-B1468a` SOLVED (B1480) · `S6-B1480a`/`S6-B1480b` reload sites fixed
+(B1481) · `S6-B1473b`, `S6-B1476a`, `S6-B1479a`, `S6-B1479b` bisection run to completion (B1479-B1480)
+
+**Test infrastructure:** `S6-B1467a` tiered manifest (B1470) · `S6-B1467b` derived fixtures (B1471) ·
+`S6-B1456b` threshold consumer tests (B1464) · `S6-B1457c` CHECKLIST #168 (B1464) ·
+`S6-B1471b` quarantine triaged (B1474b)
+
+**Merged into `S6-OPT-196`:** `S6-B1444`, `S6-B1444a-d`, `S6-B1446a`, `S6-B1446b`, `S6-B1455d`,
+`S6-B1461c` (B1462)
+
+**Owner-rejected / moot:** `S6-B1456a`, `S6-B1457a`, `S6-B1459a` (pooled grading retained, B1460) ·
+`S6-B1459b` (moot) · `S6-B1465c` (DEFERRED behind S6-OPT-196, B1483)
+
+## GENUINELY OPEN — ~25, ranked for the clearing pass
+
+**Cheap, closable next batch (no long runs):**
+`S6-B1481a` 3 non-cfg reload sites · `S6-B1473c` CLAUDE.md freshness check ·
+`S6-B1471d` de-duplicate cross-file invariants · `S6-B1477a` gitignore decision for `data/cache` ·
+`S6-B1482a` prelaunch_gate LOCAL mode · `S6-B1483a`/`S6-B1483b` manifest fields
+(which-number-changes, wall-clock) · `S6-B1474a` pytest-timeout decision · `S6-B1474e` test_batch465
+time budget · `S6-B1455f` rename `sharpe_per_regime` → `sharpe_pooled`
+
+**Needs a long run:** `S6-B1480c` full-suite re-validation (~35min, closes S6-B1468a outright)
+
+**Needs real analysis:** `S6-B1474c` 36 BEHAVIOUR files · `S6-B1474d` 31 STALE-PIN files ·
+`S6-B1475a` engine fixture (unblocks `S6-B1473a`) · `S6-B1455e` criterion #11 (owner decision) ·
+`S6-B1456c` declare the threshold tier · `S6-B1458b` PF/Sortino demotion (deliberately after
+S6-OPT-196) · `S6-B1445a`/`S6-B1445b`, `S6-B1442a`, `S6-B1455b`, `S6-B1457b`, `S6-B1460a`,
+`S6-B1465a`, `S6-B1468b`, `S6-B1471c`
+
+**The programme:** `S6-OPT-196` — 193-strategy optimisation, bound by CHECKLIST #169.
+
+### RETRACTION — S6-B1484a is WITHDRAWN; the status field already exists
+
+Owner, mid-turn: *"Execution queue should have a status field, it was added in some earlier
+session."* Correct. **`EXECUTION_QUEUE.md:21` defines the canonical Status enum** —
+`PENDING` / `IN_PROGRESS` / `BLOCKED` / `DEFERRED` / `RESOLVED` / `REOPENED` / `DONE-ARCHIVED` —
+together with a one-`IN_PROGRESS`-at-a-time rule and `| # | Slug | Item | Status | Notes |` tables.
+I proposed adding a convention that has been in the file the whole time, and I built this ledger's
+vocabulary (`CLOSED` / `OPEN`) instead of using it. That is the CONFIRM-BEFORE-REPLICATING failure
+(L217): enumerate existing conventions BEFORE authoring one. **S6-B1484a WITHDRAWN.**
+
+**The real defect is not a missing field — it is that batches stopped WRITING it.** The enum is
+defined and the recent batch entries (mine included, ~50 of them) emit prose paragraphs with no
+Status token, which is why a text scan finds closure language for only 60 of 193 IDs.
+
+- **S6-B1484b (HIGH, replaces S6-B1484a)** — re-express the ~25 genuinely-open tickets above in the
+  canonical `| # | Slug | Item | Status | Notes |` form using the line-21 enum, and emit that form
+  for every new ticket. The mapping from this section: CLOSED → `RESOLVED`, merged → `RESOLVED`
+  (note the absorbing ticket), owner-rejected → `DEFERRED`, `S6-B1465c` → `DEFERRED`,
+  `S6-OPT-196` → `PENDING`.
+- **S6-B1484c (MED)** — add a preflight check that any commit touching `EXECUTION_QUEUE.md` which
+  introduces a new `S6-*` ID also introduces a Status token for it. The enum decayed because
+  nothing enforced it — the same prose-without-a-gate class as L320.

@@ -5318,3 +5318,20 @@ an input can change while every output stays identical. And when several pending
 the same expensive step, sequence them so the step runs ONCE — order the cheap changes first and
 let the expensive one absorb all of them.** The smoke I launched was methodologically sound (timed,
 bounded, canonical flags) and pointed at a target that should not have been chosen.
+
+### L334
+**I proposed adding a status field to the execution queue that had been defined there all along,
+and built a parallel vocabulary instead of using it.** Asked to clear the queue, I found 193 ticket
+IDs with closure language for only 60, concluded "the queue has no status field", invented
+CLOSED/OPEN for my ledger, and ticketed S6-B1484a to add the missing convention. The owner
+corrected mid-turn: **`EXECUTION_QUEUE.md:21` defines `PENDING / IN_PROGRESS / BLOCKED / DEFERRED /
+RESOLVED / REOPENED / DONE-ARCHIVED`**, plus a one-`IN_PROGRESS` rule and `| Status |` tables. The
+file is ~1,500 lines and I searched it for ticket IDs without ever reading its own header. This is
+CONFIRM-BEFORE-REPLICATING (L217) exactly: enumerate existing conventions before authoring one.
+**The diagnosis under the mistake was still right, and is worth separating: the field is not
+missing, batches stopped WRITING it** — roughly 50 recent entries, mine included, are prose
+paragraphs with no Status token, so the enum decayed into decoration. **Generalized rule: when a
+document appears to lack a convention you need, read its HEADER before concluding it is absent —
+long append-only files bury their own rules under the content they accumulate. And "the convention
+is missing" and "the convention stopped being applied" demand opposite fixes: the first needs a
+design, the second needs a gate.**
