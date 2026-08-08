@@ -1,0 +1,52 @@
+{
+  "sequence": "s6_b1465c_cube_regen_local",
+  "batch": "B1465c",
+  "frozen_sha": "39d775ecc4ca863d17cd969d31504f908c3ef982",
+  "isolation": true,
+  "calendar": "nyse_mcal",
+  "execution": "LOCAL",
+  "_gate_note": "scripts/prelaunch_gate.py CANNOT validate this manifest: it reads a tar SHA from S3 (BUCKET=stock-picks-r5-jm-2026) and returns 3 when that read fails, and it budgets in USD. It was built for the R5 AWS batch sequence. This is a LOCAL run: no S3 artifact, no USD spend. B1335 Rule 1's SUBSTANCE is satisfied below; the SCRIPT does not apply. Extending it with a local mode is S6-B1482a.",
+  "budget_cap_usd": 0.0,
+  "spent_usd": 0.0,
+  "projected_batch_usd": 0.0,
+  "cost_model": "local compute only; no paid API calls (Stage 2 NO-LIVE-API hard cut)",
+  "window": {
+    "is": [
+      "2022-05-05",
+      "2025-05-05"
+    ],
+    "holdout": [
+      "2025-05-05",
+      "2026-05-05"
+    ],
+    "note": "LOCKED per owner; unchanged from the graded cube"
+  },
+  "population": {
+    "registered": 222,
+    "active": 210,
+    "disabled_data_scarcity": 9,
+    "disabled_duplicate": 3
+  },
+  "obsolescence_risks": [
+    {
+      "risk": "a strategy roster change lands mid-run",
+      "gate": "frozen_sha pinned above; any screener.py commit after it invalidates the run"
+    },
+    {
+      "risk": "the 3 B1465 duplicate disables are not actually excluded at runtime",
+      "gate": "OPEN - S6-B1473a could not be closed (probe HALTs, L325). ACCEPTED RISK: if the disables do not fire, the regenerated cube carries the duplicates and the de-dup step removes them downstream, so the roster is unaffected either way"
+    },
+    {
+      "risk": "a loosening batch runs concurrently and changes gates",
+      "gate": "CHECKLIST #169 requires the redundancy audit after any loosening; do not run S6-OPT-196 concurrently with this regeneration"
+    },
+    {
+      "risk": "output path collides with a live job",
+      "gate": "check running PIDs before launch (feedback_check_existing_pids_before_long_background_launch)"
+    },
+    {
+      "risk": "the 2 GATE tests are still order-dependent, so a green pyramid is not trustworthy",
+      "gate": "MITIGATED B1481 (polluter fixed, verified on the minimal repro); full-suite confirmation is S6-B1480c and is NOT a blocker for a local measurement run"
+    }
+  ]
+}

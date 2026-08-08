@@ -8858,3 +8858,37 @@ answers it directly and cannot be influenced by anything the session has already
 - **S6-B1480c (HIGH)** — re-run the FULL suite and confirm the 2 GATE failures clear there. That is
   the CHECKLIST #170 obligation (the enforced tier must pass INSIDE a full run) and the only
   evidence that closes S6-B1468a outright rather than by local repro.
+
+---
+
+## B1482 (2026-08-08) — S6-B1478a: manifest built; the gate I cited does not apply to a local run
+
+**CORRECTION.** Across two turns I told the owner S6-B1465c was blocked on
+`scripts/prelaunch_gate.py`. **That gate is AWS-only.** `s3_tar_sha()` reads a sidecar from
+`BUCKET=stock-picks-r5-jm-2026`; `main()` returns 3 when that read raises; budgets are USD; the
+ledger enforces non-overlapping ticker batches. Built for the R5 AWS spend sequence. S6-B1465c is
+LOCAL — no S3 artifact, no spend, no batch split — so the script could only ever return FAIL.
+I verified the gate EXISTED (`--help`) and never checked whether it APPLIED. L332.
+
+**`output_audit/b1465c_run_manifest.json` written** against B1335 Rule 1's substance:
+
+| field | value |
+|---|---|
+| frozen_sha | `39d775ecc4ca` |
+| isolation | true |
+| calendar | `nyse_mcal` |
+| window | IS 2022-05-05→2025-05-05 / holdout 2025-05-05→2026-05-05 (LOCKED) |
+| population | 222 registered · **210 active** · 9 scarcity · 3 duplicate |
+| cost | local compute only; no paid API (Stage 2 NO-LIVE-API hard cut) |
+
+**Five obsolescence risks enumerated**, each with a gate or an explicit acceptance — including the
+honest one: **S6-B1473a is unclosed**, so it is not proven at runtime that the 3 duplicate disables
+fire. ACCEPTED, with reasoning: if they do not, the regenerated cube carries the duplicates and the
+downstream de-dup removes them anyway, so the roster is unaffected either direction.
+
+### Tickets
+- **S6-B1482a (MED)** — give `prelaunch_gate.py` a LOCAL mode: skip the S3 sidecar and USD-budget
+  checks, keep SHA/isolation/calendar/obsolescence. Otherwise every future local run either
+  bypasses the gate or gets told it is blocked by a check that cannot pass.
+- **S6-B1478a — CLOSED** (manifest built). **S6-B1465c is now launchable**: owner-approved, manifest
+  written, risks enumerated, no gate legitimately blocking it.

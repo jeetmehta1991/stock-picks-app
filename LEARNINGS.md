@@ -5270,3 +5270,20 @@ QUESTION it is trying to answer -- the operation is usually a proxy for reading 
 the fact directly is both safer and more precise. `reload` to check a constant, `cache_clear` to
 check a computation, and monkeypatching a singleton to check its default are all the same
 substitution.**
+
+### L332
+**I cited `prelaunch_gate.py` as the blocker for a LOCAL run across two turns; it is AWS-only and
+can never pass locally.** B1335 Rule 2 (MECHANISM-EXISTENCE) says any script cited in a plan carries
+EXECUTED evidence it exists. I checked existence -- `--help` ran -- and stopped there, which is
+exactly half the rule. Reading the source: `s3_tar_sha()` fetches a sidecar from
+`BUCKET = "stock-picks-r5-jm-2026"` and `main()` returns 3 when that read raises, so the gate
+hard-fails without S3; its budget fields are USD and its ledger enforces non-overlapping ticker
+batches. It was built for the R5 AWS spend sequence. S6-B1465c is a LOCAL cube regeneration: no S3
+artifact, no USD spend, no batch split. **The gate's SUBSTANCE applies to any multi-hour run; the
+SCRIPT applies only to the AWS one**, and I twice told the owner a local launch was blocked on a
+check that could only ever return FAIL. **Generalized rule: mechanism-existence has two halves --
+the mechanism EXISTS, and it APPLIES to the case at hand. `--help` proves the first and nothing
+about the second. Before citing a gate as a blocker, read what it actually validates and confirm
+the run under discussion is in its domain.** Remediated by writing the manifest against Rule 1's
+substance (frozen SHA, isolation, calendar, window, population, five enumerated obsolescence risks
+each with a gate or an explicit acceptance) and ticketing a local mode for the script.
