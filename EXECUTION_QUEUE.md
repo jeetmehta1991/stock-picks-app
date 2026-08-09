@@ -9165,3 +9165,35 @@ twice reported as blocking a local launch now passes on the real manifest. L340.
 ### Cheap queue: 2 of 9 left
 `S6-B1474e` (test_batch465 >300s alone) · `S6-B1455f` (rename `sharpe_per_regime` → `sharpe_pooled`;
 touches a published JSON key, so it needs a consumer sweep first).
+
+---
+
+## B1489 (2026-08-09) — the last 2 "cheap" tickets are not cheap; reclassified with evidence
+
+**S6-B1455f — RECLASSIFIED cheap -> SCHEMA MIGRATION (deferred).** `"sharpe_per_regime"` appears in
+**6 Python files** and as a gates-dict key in **every published artifact**
+(`b1453_phase_1b_roster.json`, `b1452_*`, `b1467_*`). A bare rename silently breaks every reader of
+those JSONs, so this needs a compatibility window (emit both keys, migrate readers, drop the old),
+not an edit.
+
+**Its actual goal is met without the migration.** The name misleads readers, so the warning now
+sits at the definition site in `roster_core.py`: an explicit block stating it computes ONE POOLED
+Sharpe, that the name records the borrowed config key rather than the method, and that criterion #11
+is a separate unimplemented thing (S6-B1455e, owner decision). Anyone reading the gate now reads the
+correction with it.
+
+**S6-B1474e — RECLASSIFIED cheap -> BLOCKED.** `test_batch465` exceeds 300s alone and needs a
+timeout marker; `pytest-timeout` was DECLARED in `requirements.txt` at B1487 but declaring is not
+installing, so the marker does not exist in this environment. Blocked on
+`pip install -r requirements.txt`.
+
+**L341: "cheap" is a claim about blast radius, and blast radius is measured.** I ranked these from
+their one-line titles without grepping their identifiers across code and artifacts. A rename
+touching a serialized key is a migration; a test fix depending on an uninstalled plugin is blocked.
+
+### CHEAP QUEUE CLOSED: 7 of 9 resolved, 2 honestly reclassified
+Resolved: `S6-B1481a` · `S6-B1473c` · `S6-B1477a` · `S6-B1474a` · `S6-B1483a` · `S6-B1483b` ·
+`S6-B1471d` · `S6-B1482a`. Reclassified: `S6-B1455f` (migration) · `S6-B1474e` (blocked).
+
+**Next is S6-OPT-196** - the only work that moves the roster off 17 strategies / 1 ROBUST cell.
+`S6-B1480c` full-suite re-validation is still running in the background.

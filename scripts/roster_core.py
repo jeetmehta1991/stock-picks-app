@@ -97,6 +97,14 @@ def evaluate(pnl: pd.Series, hold: pd.Series, *, min_n: int | None = None,
     pf = float(w.sum() / abs(l.sum())) if len(l) and l.sum() != 0 else float("inf")
     payoff = float(w.mean() / abs(l.mean())) if len(w) and len(l) and l.mean() != 0 else None
     gates = {
+        # NAME WARNING (S6-B1455f, B1489): "sharpe_per_regime" is a MISNOMER kept for schema
+        # compatibility. This computes ONE POOLED Sharpe over the whole window - there is no
+        # regime split anywhere in it. The name records the CONFIG KEY it borrows
+        # (min_sharpe_per_regime = 0.5), not the method. Renaming it is a SCHEMA MIGRATION, not
+        # a rename: the key appears in 6 py files and as a gates-dict key in every published
+        # artifact (b1453_phase_1b_roster.json, b1452_*, b1467_*), so a bare rename silently
+        # breaks every reader of those. Canonical criterion #11 (a real per-regime verdict) is
+        # NOT implemented here - that is S6-B1455e, an owner decision. L287.
         "sharpe_per_regime": sharpe is not None and sharpe >= PC["min_sharpe_per_regime"],
         "profit_factor":     pf >= pf_bar,
         "sortino":           sortino is not None and sortino >= PC["min_sortino_per_regime"],

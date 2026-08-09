@@ -5423,3 +5423,20 @@ batch splits. Result: `PRELAUNCH_GATE_PASS`. **Generalized rule: when a gate is 
 something, verify it CAN pass for that case before treating its refusal as information. An
 inapplicable gate produces the same output as a genuine block, and the fix is to extend the gate's
 domain -- not to bypass it, and not to keep reporting the blockage.**
+
+### L341
+**Two of the four "cheap" tickets were not cheap, and the label came from me.** I ranked the queue's
+remaining items into cheap / long-run / analysis, then found on execution that:
+  * `S6-B1455f` ("rename `sharpe_per_regime` to `sharpe_pooled`") is a SCHEMA MIGRATION. The key
+    lives in 6 Python files AND as a gates-dict key in every published artifact
+    (`b1453_phase_1b_roster.json`, `b1452_*`, `b1467_*`). A bare rename silently breaks every reader
+    of those JSONs. Cost is a migration with a compatibility window, not an edit.
+  * `S6-B1474e` (`test_batch465` exceeds 300s alone) cannot be actioned at all until
+    `pytest-timeout` is installed - I declared it in `requirements.txt` at B1487 but declaring is
+    not installing, so the marker it needs does not exist in this environment yet.
+Both were labelled cheap from their one-line descriptions without checking their blast radius.
+**Generalized rule: "cheap" is a claim about blast radius, and blast radius is measured, not
+estimated from a ticket title. Before ranking work by cost, grep each item's identifier across code
+AND published artifacts - a rename that touches a serialized key is a migration, and a test fix that
+depends on an uninstalled plugin is blocked, not cheap.** Achieved S6-B1455f's actual GOAL (stop the
+name misleading readers) at the definition site instead, and reclassified both tickets honestly.
