@@ -5383,3 +5383,17 @@ boundary (179d inside / 181d outside) with the B1142 citation, so it still guard
 than being deleted; file now 8 passed. **Generalized rule: "treat as X until disproved" is a
 PRIORITY instruction, not a conclusion. The investigation it triggers is what produces the verdict,
 and reporting the verdict before running it converts a sound triage rule into a fabrication.**
+
+### L338
+**Second time this session I ticketed a decision the repository had already made, in a file I never
+opened.** S6-B1477a asked whether `data/cache/*.json` should be gitignored. `.gitignore:12` carries
+an explicit comment: *"# data/cache/ is NOT excluded here — we want it committed"*. The decision was
+deliberate, recorded at the point of enforcement, and 140K in size. L334 was the same shape: I
+proposed adding a Status field that `EXECUTION_QUEUE.md:21` already defined. In both cases I
+reasoned from behaviour I observed (files drifting; tickets lacking status) to "no decision exists",
+when the decision existed and something downstream had lapsed. **Generalized rule: before opening a
+ticket that asks "should we X?", grep the enforcement point for X — `.gitignore` for ignore
+questions, the config for threshold questions, the document's own header for convention questions.
+Observed drift is evidence that a rule is not being FOLLOWED, never evidence that it does not
+EXIST, and the two need opposite fixes.** Both tickets closed as already-decided rather than
+implemented.

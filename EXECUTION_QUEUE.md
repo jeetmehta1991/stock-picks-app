@@ -9100,3 +9100,38 @@ approved reasons mid-batch and would make the gate flaky.
 
 ### Still carried (cheap)
 `S6-B1471d` · `S6-B1477a` · `S6-B1482a` · `S6-B1483a/b` · `S6-B1474a` · `S6-B1474e` · `S6-B1455f`
+
+---
+
+## B1487 (2026-08-09) — three cheap tickets closed; two were already decided
+
+**S6-B1477a — CLOSED AS ALREADY-DECIDED.** `.gitignore:12`:
+`# data/cache/ is NOT excluded here — we want it committed`. Deliberate, recorded at the
+enforcement point, 140K. No change needed. **Second instance this session of ticketing a settled
+decision** (L334 was the Status enum); both times I inferred "no decision exists" from observed
+drift. L338.
+
+**S6-B1474a — CLOSED.** `requirements.txt` pinned `pytest==9.0.3` and `pytest-xdist` and **never
+`pytest-timeout`**, so `--timeout=120` was never valid here. Added `pytest-timeout==2.4.0` with the
+L322 lineage inline. Declaration only — takes effect on `pip install -r requirements.txt`. The
+`_assert_pytest_ran()` guards remain the real protection; this restores the timeout the scripts were
+reaching for.
+
+**S6-B1483a/b — CLOSED.** `b1465c_run_manifest.json` gains:
+- `which_numbers_change` — the analysis that HALTED the run: the 3 disables have **zero overlap**
+  with the 13-cell roster, so regeneration moves BH-FDR family size ~211→~208 and nothing else.
+- `wall_clock_projection_hours: null` — REQUIRED before launch, deliberately null, with the note
+  that R5's cube came from chunked AWS runs and a local one is plausibly days.
+- `status: DEFERRED-BEHIND-S6-OPT-196`.
+
+### Cheap queue after this batch
+Remaining: `S6-B1471d` (de-duplicate cross-file invariants) · `S6-B1482a` (prelaunch LOCAL mode) ·
+`S6-B1474e` (test_batch465 time budget) · `S6-B1455f` (rename `sharpe_per_regime` → `sharpe_pooled`).
+**4 left of the original 9.**
+
+**B1487b — the banner gate fired on its author, second batch running.** `test_b1486_claude_md_banner
+_counts_are_fresh` failed this batch because L338 was added and the banner still read L336. Synced
+to **CHECKLIST #1-#181 / LEARNINGS L1-L338**. Worth recording rather than quietly fixing: the L320
+lapse ran ~45 batches undetected, and the mechanical version has now caught the same drift twice in
+two batches — including both times against the person who wrote it. That is the argument for
+CHECKLIST #170's "programmatic beats prose", made empirically.

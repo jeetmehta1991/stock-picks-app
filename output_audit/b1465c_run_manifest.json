@@ -48,5 +48,11 @@
       "risk": "the 2 GATE tests are still order-dependent, so a green pyramid is not trustworthy",
       "gate": "MITIGATED B1481 (polluter fixed, verified on the minimal repro); full-suite confirmation is S6-B1480c and is NOT a blocker for a local measurement run"
     }
-  ]
+  ],
+  "wall_clock_projection_hours": null,
+  "_wall_clock_note": "S6-B1483b: REQUIRED before launch and deliberately null. R5's 544-ticker cube came from CHUNKED AWS runs; a local regeneration is plausibly days. Derive from a timed smoke at actual launch - 'free in dollars' does not exempt the scarcest resource (L333).",
+  "which_numbers_change": {
+    "S6-B1483a": "REQUIRED analysis, answered 2026-08-08 and it HALTED this run: the 3 B1465 duplicate disables have ZERO overlap with the 13-cell roster. Regeneration moves the BH-FDR family size ~211 -> ~208 and changes nothing else material. That is not worth a multi-day run on its own, which is why S6-B1465c is now DEFERRED behind S6-OPT-196 so one run absorbs both."
+  },
+  "status": "DEFERRED-BEHIND-S6-OPT-196"
 }

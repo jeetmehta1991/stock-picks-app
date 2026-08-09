@@ -90,6 +90,12 @@ pandas-market-calendars==5.4.0
 # ---------------------------------------------------------------------------
 pytest==9.0.3
 pytest-xdist==3.8.0
+# B1487 (S6-B1474a): NOT previously declared. Two diagnostic scripts passed
+# --timeout=120; without this plugin pytest exits 'unrecognized arguments' and runs
+# ZERO tests, which both scripts read as a clean pass (L322). scripts/ now guard via
+# _assert_pytest_ran(), but the timeout protection they wanted only exists if this is
+# installed. Requires `pip install -r requirements.txt` to take effect.
+pytest-timeout==2.4.0
 hypothesis==6.152.4
 
 # ---------------------------------------------------------------------------
