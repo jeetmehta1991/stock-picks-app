@@ -9135,3 +9135,33 @@ to **CHECKLIST #1-#181 / LEARNINGS L1-L338**. Worth recording rather than quietl
 lapse ran ~45 batches undetected, and the mechanical version has now caught the same drift twice in
 two batches — including both times against the person who wrote it. That is the argument for
 CHECKLIST #170's "programmatic beats prose", made empirically.
+
+---
+
+## B1488 (2026-08-09) — S6-B1471d + S6-B1482a CLOSED; 2 of 4 cheap tickets done
+
+**S6-B1471d — CLOSED.** New `backtest/tests/roster_invariants.py` derives the dual-`_strat3` and
+pure-short counts from `screener.py` and exports `EXPECTED_DUAL_STRAT3 = 59` /
+`EXPECTED_PURE_SHORT = 53` with their full lineage inline. `test_batch741`, `test_batch743` and
+`test_batch744` now IMPORT instead of re-literalling — a roster change moves ONE constant.
+Family **24/24 green**.
+
+Wiring it surfaced a name collision (`test_batch741` binds a local `pure_short_count`; the import
+shadowed it into a function object). Aliased. The collision existed *because* the files had grown
+separate vocabularies for one concept — confirmation the duplication was real. L339.
+
+**S6-B1482a — CLOSED.** `prelaunch_gate.py` gains LOCAL mode: `"execution": "LOCAL"` skips the S3
+sidecar and USD budget while KEEPING required fields, isolation and calendar, and ADDING two
+LOCAL-only requirements so it is not a bypass — non-empty `obsolescence_risks` and a present
+`wall_clock_projection_hours`. It then caught a real gap: the manifest had no `tickers` because a
+local run resolves its universe through the tier loader; `universe` now satisfies that for LOCAL
+only (the AWS ledger needs explicit tickers for non-overlapping splits).
+
+**`PRELAUNCH_GATE_PASS batch=B1465c frozen_sha=39d775ecc4ca tickers=universe:T1a`** — the gate I
+twice reported as blocking a local launch now passes on the real manifest. L340.
+
+**Also running:** S6-B1480c full-suite re-validation, background, ~35min.
+
+### Cheap queue: 2 of 9 left
+`S6-B1474e` (test_batch465 >300s alone) · `S6-B1455f` (rename `sharpe_per_regime` → `sharpe_pooled`;
+touches a published JSON key, so it needs a consumer sweep first).

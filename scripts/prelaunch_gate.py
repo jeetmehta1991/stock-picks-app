@@ -40,7 +40,14 @@ def s3_tar_sha() -> str:
 
 def check(manifest: dict, ledger: dict, tar_sha: str) -> list[str]:
     fails = []
+    local_run = str(manifest.get("execution", "")).upper() == "LOCAL"
     for k in REQUIRED:
+        # B1488: a LOCAL run selects its universe through the tier loader rather than an
+        # explicit ticker list, so `universe` satisfies the requirement in its place. The
+        # AWS sequence still needs `tickers` because its ledger enforces non-overlapping
+        # per-batch splits, which only exist there.
+        if local_run and k == "tickers" and manifest.get("universe"):
+            continue
         if k not in manifest or manifest[k] in (None, "", []):
             fails.append(f"manifest missing/empty field: {k}")
     if fails:
@@ -50,6 +57,17 @@ def check(manifest: dict, ledger: dict, tar_sha: str) -> list[str]:
     if manifest["calendar"] != "nyse_mcal":
         fails.append(f"calendar={manifest['calendar']} != nyse_mcal (L207)")
     frozen = str(manifest["frozen_sha"])
+    local = str(manifest.get("execution", "")).upper() == "LOCAL"
+    if local:
+        # LOCAL: no S3 artifact and no spend. Everything above this line still applies -
+        # required fields, isolation, calendar - and the caller must still have answered
+        # "what could make this run obsolete?" in the manifest (B1335 Rule 1).
+        if not manifest.get("obsolescence_risks"):
+            fails.append("LOCAL manifest missing obsolescence_risks (B1335 Rule 1)")
+        if "wall_clock_projection_hours" not in manifest:
+            fails.append("LOCAL manifest missing wall_clock_projection_hours "
+                         "(wall clock is the scarce resource when dollars are not; L333)")
+        return fails
     if not tar_sha:
         fails.append("S3 tar .sha sidecar missing/unreadable -- rebuild+upload "
                      "via build_r5_code_tar --sha <frozen> --upload (#161)")
@@ -90,11 +108,21 @@ def main() -> int:
         except Exception as exc:
             print(f"PRELAUNCH_GATE_FAIL: ledger unreadable: {exc}")
             return 3
-    try:
-        tar_sha = s3_tar_sha()
-    except Exception as exc:
-        print(f"PRELAUNCH_GATE_FAIL: cannot read S3 tar sidecar: {exc}")
-        return 3
+    # B1488 (S6-B1482a): LOCAL mode. This gate was built for the R5 AWS batch sequence -
+    # it reads a tar SHA from S3 and budgets in USD. A LOCAL run has neither, so before this
+    # the gate returned 3 unconditionally and a local launch was "blocked" by a check that
+    # could never pass (L332). A manifest declaring "execution": "LOCAL" skips the S3 and
+    # USD checks and keeps everything that still applies: required fields, isolation,
+    # calendar, and the obsolescence enumeration.
+    if str(manifest.get("execution", "")).upper() == "LOCAL":
+        print("PRELAUNCH_GATE: LOCAL mode - skipping S3 tar sidecar and USD budget checks")
+        tar_sha = None
+    else:
+        try:
+            tar_sha = s3_tar_sha()
+        except Exception as exc:
+            print(f"PRELAUNCH_GATE_FAIL: cannot read S3 tar sidecar: {exc}")
+            return 3
     fails = check(manifest, ledger, tar_sha)
     if fails:
         print("PRELAUNCH_GATE_FAIL (#160/#161):")
@@ -103,7 +131,7 @@ def main() -> int:
         return 3
     print(f"PRELAUNCH_GATE_PASS batch={manifest['batch']} "
           f"frozen_sha={str(manifest['frozen_sha'])[:12]} "
-          f"tickers={len(manifest['tickers'])} "
+          f"tickers={len(manifest['tickers']) if manifest.get('tickers') else 'universe:' + str((manifest.get('universe') or {}).get('tier', '?'))} "
           f"budget {manifest['spent_usd']}+{manifest['projected_batch_usd']}"
           f"<={manifest['budget_cap_usd']}")
     return 0

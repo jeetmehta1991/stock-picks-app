@@ -73,10 +73,18 @@ def test_b743_pin3_combined_strat3_count_is_60():
     this test fails and the author is forced to add it to either cohort
     AND give it explicit gate per the S4-B713 discipline.
     """
-    import re
-    src = open("backtest/signals/screener.py", encoding="utf-8").read()
-    strat3_count = len(re.findall(r'return _strat3\(', src))
-    expected = 59  # B1465: 60 -> 59, prev_day_high_break _strat3 -> _strat (long-only)
+    import sys as _sys
+    from pathlib import Path as _Path
+    _sys.path.insert(0, str(_Path(__file__).resolve().parent))
+    # aliased: these files already bind local names `pure_short_count` / `dual`,
+    # and an unaliased import shadowed one of them into a function object.
+    from roster_invariants import (dual_strat3_count as _derive_dual,
+                                   pure_short_count as _derive_short,
+                                   EXPECTED_DUAL_STRAT3, EXPECTED_PURE_SHORT)
+    # B1488 (S6-B1471d): DERIVED, not re-literalled. This number was pinned in two
+    # files and drifted in one (L317) - a duplicated pin halves protection.
+    strat3_count = _derive_dual()
+    expected = EXPECTED_DUAL_STRAT3
     assert strat3_count == expected, (
         f"expected {expected} dual _strat3 strategies; got {strat3_count}. "
         f"If a new dual strategy was added, it must be added to either B742 or B743 cohort "

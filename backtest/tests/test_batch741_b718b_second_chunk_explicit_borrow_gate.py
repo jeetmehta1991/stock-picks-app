@@ -105,7 +105,17 @@ def test_b741_pin5_combined_b740_b741_covers_all_50_pure_short_strategies():
     # _sell_short) + 3 (B1382 mirror shorts) - 1 (B1189 deleted dxy_headwind_multi
     # national_short) = 53. None of those batches updated this pin because the file
     # sits outside the enforced 2-file gate (L316).
-    expected = 53
+    import sys as _sys
+    from pathlib import Path as _Path
+    _sys.path.insert(0, str(_Path(__file__).resolve().parent))
+    # aliased: these files already bind local names `pure_short_count` / `dual`,
+    # and an unaliased import shadowed one of them into a function object.
+    from roster_invariants import (dual_strat3_count as _derive_dual,
+                                   pure_short_count as _derive_short,
+                                   EXPECTED_DUAL_STRAT3, EXPECTED_PURE_SHORT)
+    # B1488 (S6-B1471d): DERIVED, not re-literalled. This number was pinned in two
+    # files and drifted in one (L317) - a duplicated pin halves protection.
+    expected = EXPECTED_PURE_SHORT
     assert pure_short_count == expected, (
         f"expected {expected} pure-short strategies in screener.py; got {pure_short_count}. "
         f"If a new pure-short was added, it must be added to either B740 or B741 cohort + given "

@@ -63,12 +63,22 @@ def test_b744_pin2_short_strategy_count_matches_b718b_cohort():
     # B741 cohort and added borrow_ok declarations to the 3 B1382 mirror shorts.
     # Updating this pin is legitimate ONLY because the underlying compliance gap was
     # fixed first; raising it beforehand would have buried the defect.
-    assert len(pure) == 53, f"expected 53 pure-short (post-B1189/B1382/B1471); got {len(pure)}"
+    import sys as _sys
+    from pathlib import Path as _Path
+    _sys.path.insert(0, str(_Path(__file__).resolve().parent))
+    # aliased: these files already bind local names `pure_short_count` / `dual`,
+    # and an unaliased import shadowed one of them into a function object.
+    from roster_invariants import (dual_strat3_count as _derive_dual,
+                                   pure_short_count as _derive_short,
+                                   EXPECTED_DUAL_STRAT3, EXPECTED_PURE_SHORT)
+    # B1488 (S6-B1471d): DERIVED, not re-literalled. This number was pinned in two
+    # files and drifted in one (L317) - a duplicated pin halves protection.
+    assert len(pure) == EXPECTED_PURE_SHORT, f"pure-short: got {len(pure)}"
     # B1471: 60 -> 59. B1465 converted prev_day_high_break from _strat3 to _strat after its
     # SHORT branch was found character-identical to standalone prev_day_low_breakdown. NOTE the
     # same number is pinned independently in test_batch743 pin3 - a duplicated pin across two
     # files, which is exactly why it drifted in one and not the other (S6-B1471d).
-    assert len(dual) == 59, f"expected 59 dual _strat3 (post-B1465); got {len(dual)}"
+    assert len(dual) == EXPECTED_DUAL_STRAT3, f"dual _strat3: got {len(dual)}"
     # total 111 -> 112: pure 51->53 (+2 net) and dual 60->59 (-1) = 110 + 2 = 112
     assert len(rep.short_strategies) == 112
 

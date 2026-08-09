@@ -5397,3 +5397,29 @@ questions, the config for threshold questions, the document's own header for con
 Observed drift is evidence that a rule is not being FOLLOWED, never evidence that it does not
 EXIST, and the two need opposite fixes.** Both tickets closed as already-decided rather than
 implemented.
+
+### L339
+**De-duplicating an invariant surfaced a name collision the duplication had been hiding.** S6-B1471d
+moved the dual-`_strat3` and pure-short counts into `backtest/tests/roster_invariants.py` so three
+files import instead of re-literalling. The first wiring failed: `test_batch741` already binds a
+LOCAL variable named `pure_short_count`, and importing a function of that name shadowed it, so the
+assertion compared a function object to 53. The collision existed only because the files had each
+grown their own vocabulary for the same concept -- exactly the divergence the ticket was closing.
+Fixed by aliasing (`pure_short_count as _derive_short`); family now 24/24. **Generalized rule: when
+consolidating a duplicated concept, expect the duplicates to have diverged in NAMING as well as in
+VALUE. Import under an alias that cannot collide, and treat a shadowing error during consolidation
+as confirmation the duplication was real rather than as an obstacle to it.**
+
+### L340
+**A gate that cannot pass is indistinguishable from a gate that is failing, and I reported the
+second for two turns.** S6-B1482a gave `prelaunch_gate.py` a LOCAL mode: a manifest declaring
+`"execution": "LOCAL"` skips the S3 tar-sidecar and USD-budget checks while KEEPING everything that
+still applies -- required fields, isolation, calendar -- and ADDING two LOCAL-specific requirements
+(`obsolescence_risks` non-empty, `wall_clock_projection_hours` present) so the mode is not a bypass.
+Running it immediately caught a real gap: my manifest had no `tickers`, because a local run resolves
+its universe through the tier loader rather than a frozen list; `universe` now satisfies that
+requirement for LOCAL only, since the AWS ledger needs explicit tickers to enforce non-overlapping
+batch splits. Result: `PRELAUNCH_GATE_PASS`. **Generalized rule: when a gate is reported as blocking
+something, verify it CAN pass for that case before treating its refusal as information. An
+inapplicable gate produces the same output as a genuine block, and the fix is to extend the gate's
+domain -- not to bypass it, and not to keep reporting the blockage.**

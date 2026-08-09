@@ -54,5 +54,10 @@
   "which_numbers_change": {
     "S6-B1483a": "REQUIRED analysis, answered 2026-08-08 and it HALTED this run: the 3 B1465 duplicate disables have ZERO overlap with the 13-cell roster. Regeneration moves the BH-FDR family size ~211 -> ~208 and changes nothing else material. That is not worth a multi-day run on its own, which is why S6-B1465c is now DEFERRED behind S6-OPT-196 so one run absorbs both."
   },
-  "status": "DEFERRED-BEHIND-S6-OPT-196"
+  "status": "DEFERRED-BEHIND-S6-OPT-196",
+  "universe": {
+    "tier": "T1a",
+    "resolved_at_runtime": true,
+    "note": "LOCAL runs resolve the universe through backtest.data.universe at as_of, not from a frozen list. R5 graded 544 tickers; the count at launch is whatever T1a is PIT-active then."
+  }
 }
