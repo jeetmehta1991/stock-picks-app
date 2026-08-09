@@ -5440,3 +5440,18 @@ estimated from a ticket title. Before ranking work by cost, grep each item's ide
 AND published artifacts - a rename that touches a serialized key is a migration, and a test fix that
 depends on an uninstalled plugin is blocked, not cheap.** Achieved S6-B1455f's actual GOAL (stop the
 name misleading readers) at the definition site instead, and reclassified both tickets honestly.
+
+### L342
+**The full-suite re-validation closed S6-B1468a and proved the local repro had not been enough on
+its own.** B1481 fixed the `importlib.reload` polluter and verified it on the 2-file minimal
+reproducing set (41 passed). I deliberately reported that as "fixed and locally verified, NOT
+closed", because CHECKLIST #170 requires the enforced tier to pass INSIDE a full run -- a subset
+that passes in isolation certifies only that it passes in isolation, which was the original defect.
+The full run (51m50s) now shows **zero failures in either GATE file**, against 2 at the B1468
+baseline. Suite-wide: **172 -> 163 failed, 5470 -> 5482 passed**, and the borrow-gate cluster
+(`test_batch740/741/743/744`) is green in-suite as well as alone. **The discipline earned its
+keep**: had I closed the ticket on the minimal repro, the claim would have been true but
+unsupported, and the gap between "passes with two files" and "passes with 431" is exactly where the
+original defect lived. **Generalized rule: when a fix targets an ISOLATION defect, the verification
+must run at the scale the defect appeared at. A minimal reproducer proves the mechanism; only the
+full population proves the fix.**

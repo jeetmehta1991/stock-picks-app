@@ -9197,3 +9197,36 @@ Resolved: `S6-B1481a` · `S6-B1473c` · `S6-B1477a` · `S6-B1474a` · `S6-B1483a
 
 **Next is S6-OPT-196** - the only work that moves the roster off 17 strategies / 1 ROBUST cell.
 `S6-B1480c` full-suite re-validation is still running in the background.
+
+---
+
+## B1490 (2026-08-09) — S6-B1480c COMPLETE; S6-B1468a CLOSED OUTRIGHT
+
+Full suite, 431 files, 51m50s:
+
+| | B1468 baseline | now | delta |
+|---|---|---|---|
+| failed | 172 | **163** | **-9** |
+| passed | 5,470 | **5,482** | **+12** |
+| errors | 11 | 11 | 0 |
+
+**GATE-file failures in the full run: ZERO.** `test_integration.py::test_bug_30_check_circuit
+_breakers_gate_on_config` and `::test_bug_232_intraday_extreme_uses_today_high_for_longs` — the two
+that passed alone and failed in-suite for an unknown number of batches — now pass **inside the full
+suite**. The borrow-gate cluster (`test_batch740/741/743/744`) is green in-suite too.
+
+**S6-B1468a CLOSED OUTRIGHT.** CHECKLIST #170's obligation is satisfied: the enforced tier has been
+re-validated INSIDE a full run, so its green is no longer order-dependent. **S6-B1480c CLOSED.**
+
+**Why this mattered (L342):** B1481 verified the fix on a 2-file minimal repro and I reported it as
+"locally verified, NOT closed". A subset that passes in isolation certifies only isolation — which
+was the original defect. The gap between "passes with 2 files" and "passes with 431" is exactly
+where the bug lived. A minimal reproducer proves the MECHANISM; only the full population proves the
+FIX.
+
+### Remaining 163 failures — unchanged in character
+Still the B1474 triage: **BEHAVIOUR 36 / STALE-PIN 31 / ARTIFACT 2** at file level, with
+`test_batch419_dashboard_tabs` alone accounting for 45 test-level failures. None of them is in the
+GATE. Tracked as `S6-B1474c` / `S6-B1474d`.
+
+**The queue is now clear enough for S6-OPT-196.**
