@@ -10,6 +10,20 @@ only remaining path to a deployable Phase 1B.
 
 ---
 
+## 0a. SUPERSESSION BANNER — B1500-B1510 (2026-08-10)
+
+The first worked example (`smc_breaker_block_long`) ran end-to-end and **corrected four load-bearing
+claims in this plan.** Read this before Sections 2.2 / 2.3 / 2.3a, which are marked inline.
+
+| # | claim as originally written | corrected by measurement |
+|---|---|---|
+| 1 | "no resimulation is required for tightening" | **Only for SUBSET-SAFE parameters.** A parameter that can ADD fires (`swing_length`, EMA `span`) produces trades R5 never took, and the cube holds no P&L for those. §2.3a corrected. |
+| 2 | population = 41 strategies at n>300 | **The band is built on UNVERIFIED n.** The worked example's measured holdout n is **147**, not the 356 carried — it was never in the n>300 band. **The whole partition must be re-derived from measured n (S6-B1502a).** |
+| 3 | tunable surface = numerics in the gate expression | **Wrong layer.** The surface is the transitive closure of the PRODUCER parameters. A strategy whose gate is two booleans still had 6 producer parameters (L355). |
+| 4 | cost scales with combinations | **Cost = ENGINE RUNS = product of the fire-ADDING bands only.** 4,000 combinations needed **20** runs, not 4,000 (L371). |
+
+**Reporting is now standardised and mechanically enforced — see §6.**
+
 ## 0. HOLDOUT POLICY — SETTLED BY OWNER (2026-08-09)
 
 **RULING: the holdout window is LOCKED to R5's dates. `2025-05-05 -> 2026-05-05`, 1 year, unchanged.**
@@ -77,7 +91,7 @@ FORWARD-LOOKING -- Phase 1's 820 candidate configs are the genuine threat, not t
 
 ---
 
-## 2. PHASE 1 — TIGHTENING (offline, zero engine runs)
+## 2. PHASE 1 — TIGHTENING (offline for SUBSET-SAFE params only — see §2.3a)
 
 ### 2.1 Why tightening is cheap and loosening is not
 `trade_log.csv` carries a `signals_at_entry` column: the **complete producer signal dict at the
@@ -89,7 +103,13 @@ entry bar**, ~22 KB per trade (verified B1497: `{"pivot": 158.6, "cpr_narrow": t
 - **LOOSENING is impossible offline.** A looser threshold admits trades that were never generated.
   No amount of replay conjures them.
 
-### 2.2 Population — 41 strategies (n > 300)
+### 2.2 Population — 41 strategies (n > 300)  🔴 SUPERSEDED, see §0a #2
+
+> **CORRECTION B1502.** The band assignments below were never validated against measured holdout n.
+> The first strategy examined, `smc_breaker_block_long`, was treated as n>300; its MEASURED holdout
+> n is **147** (full-period 352), which places it MID-BAND. **Re-derive every band from measured n
+> before Phase 1 is scoped (S6-B1502a).** The counts below are retained for lineage only.
+
 
 | band | strategies | in Phase 1? |
 |---|---|---|
@@ -175,23 +195,32 @@ and almost certainly admit nothing. Both readings are defensible; the choice is 
 **Step 6 — GRADE ONCE.** The <= 41 chosen configs are graded on the holdout in a single pass, with
 BH-FDR across that family plus the 2 incumbents. **This is the only holdout read in Phase 1.**
 
-### 2.3a NO RESIMULATION IS REQUIRED FOR TIGHTENING — verified
+### 2.3a RESIMULATION — the rule is SUBSET-SAFETY, not "tightening"  🔴 CORRECTED B1508
+
 *(Owner concern: "we would need to resimulate on the entire cube. thus the best strategy x exit cell
 post optimization and rerun may change after tightening.")*
 
-**The premise is right and the conclusion does not follow.** The best exit CAN change when
-tightening changes the trade population -- Step 3 explicitly re-runs exit selection for exactly that
-reason. But it needs no resimulation, because **the cube already stores every trade's outcome under
-every exit.**
+**The original answer — "tightening never needs the engine" — was too broad.** The correct
+criterion is whether a parameter can only REMOVE fires or can also ADD them.
+
+| | parameter class | cube-gradable? | why |
+|---|---|---|---|
+| ✅ | **SUBSET-SAFE** — can only remove fires | **YES, free and exact** | every surviving trade already exists in the cube under all 26 exits, so grading is a lookup |
+| 🔴 | **FIRE-ADDING** — can change WHICH bars fire | **NO — needs the engine** | produces `(ticker, date)` pairs R5 never took; the cube holds no P&L for them |
+
+A parameter is fire-adding whenever it changes the producer's own detection (e.g. `swing_length`
+rebuilds the order-block set) or swaps one leg of the gate for a different signal (e.g. EMA span
+200 -> 50). **Neither is "loosening" in the ordinary sense, and both were mis-classified as free
+under the original wording.**
 
 VERIFIED B1499: for `macd_crossover|long`, all 202 sampled `(ticker, entry_date)` trades carry
-**26 distinct `exit_method` rows each** -- the full exit set. So a tightened subset's outcome under
-any of the 26 exits is a lookup, not a simulation.
+**26 distinct `exit_method` rows each**. So the subset-safe half is genuinely exact — the best exit
+CAN change when the population changes, and Step 3 re-selects it, but no simulation is involved.
 
-**What this does and does not cover:**
-- **Covered exactly:** any TIGHTENING, at any of the 26 exits, for trades that exist.
-- **NOT covered:** loosening (trades that were never generated), and any exit outside the 26.
-  Both are Phase 2 and both need the engine.
+**Cost consequence (L371).** The run count is the product of the FIRE-ADDING bands alone; every
+subset-safe combination then derives offline from each run. For the worked example: 4,000
+combinations, but **20 engine runs** (4 `swing_length` x 5 EMA `span`), with all 200 subset-safe
+combinations free inside each. Costing by combinations would have overstated the workload 200x.
 
 ### 2.4 Error checks (each one closes a defect this session actually produced)
 
@@ -264,7 +293,7 @@ State these now, so the programme can be stopped on evidence rather than fatigue
 
 ---
 
-## 5. OWNER DECISIONS REQUIRED BEFORE ANY WORK
+## 5. OWNER DECISIONS REQUIRED BEFORE ANY WORK  (superseded by §8 — live list)
 
 1. ~~Holdout strategy A/B/C~~ — **SETTLED 2026-08-09.** Window LOCKED to R5 dates for
    comparability; Option C (read it once, optimise inside the IS folds) is the operative design.
@@ -273,3 +302,220 @@ State these now, so the programme can be stopped on evidence rather than fatigue
    before Phase 1 grades?** They currently return `None` on a 1-year holdout.
 4. **FDR family size:** 41 (one config per strategy) or 820 (every config tested)? The conservative
    reading is 820; the pre-registration + one-winner-per-strategy design is what makes 41 defensible.
+
+---
+
+## 6. LOCKED REPORTING STANDARD — CHECKLIST #183 (owner-locked B1510)
+
+Every strategy entering S6-OPT-196 is reported through `scripts/producer_variant_table.py` as ONE
+artifact in three sections. Adding a strategy = adding a `SPECS` entry (formula + params); the
+renderer is strategy-agnostic. **Regenerate, never hand-edit** — a hand-edited copy is reverted by
+the next generation (L286).
+
+### 6.1 Section 1 — BOOLEAN FORMULA (REQUIRED; a SPEC without it is rejected)
+
+Header must state the formula is READ from source, never recalled. Two layers:
+
+```
+=============================== PRODUCER LAYER ===============================
+
+P1  swings  =  swing_highs_lows( ohlc, swing_length = 20 )
+                   -> a bar is a swing high if its high is the highest
+                      across swing_length bars BEFORE and AFTER it
+                   PARAMETER: swing_length = 20   (library default is 50)
+
+P2  ob_df   =  ob( ohlc, swings, close_mitigation = False )
+                   -> emits, per detected block:  OB (+1 bull / -1 bear),
+                      Top, Bottom, MitigatedIndex
+                   PARAMETER: close_mitigation = False
+                      False -> a block counts as mitigated when the HIGH/LOW
+                               pierces it
+                      True  -> only when the CLOSE pierces it  (stricter)
+
+P3  events  =  ob_df[ OB != 0 ].tail( 20 )
+                   PARAMETER: tail N = 20     (hardcoded literal, not an argument)
+
+P4  per event e:   e.is_mitigated = ( MitigatedIndex > 0 )
+                                    AND ( MitigatedIndex < today_index )
+                   -> no parameter; derived from P2's MitigatedIndex
+
+P5  per event e:   e.broken_up    = ( close > e.Top )
+                   -> no parameter; strict inequality, zero buffer
+
+P6  ema_50_200 =  compute_ema_sma( df )      # pairs (9,21),(20,50),(50,200)
+       price_above_ema_200  =  close > EMA(close, span = 200)
+                   PARAMETER: span = 200, emitted only from the (50,200) pair
+
+=============================== STRATEGY LAYER ===============================
+
+breaker_bullish  =  AT LEAST ONE event e in P3 satisfies ALL of:
+                        ( e.OB == -1 )          <- bearish block      [from P2]
+                        AND ( e.is_mitigated )                        [from P4]
+                        AND ( e.broken_up )                           [from P5]
+
+fires            =  ( breaker_bullish )  AND  ( price_above_ema_200 ) [from P6]
+```
+
+**Rules the format enforces.** Every producer gets a `Pn` id, its call signature with the LIVE
+production value inline, a plain-language note on what it emits, and an explicit `PARAMETER:` line
+— or `no parameter` where none exists. The STRATEGY LAYER spells out `AT LEAST ONE ... ALL OF`
+rather than symbolic OR/AND, and tags every clause with the `Pn` it came from, so a reader can walk
+from any gate back to the producer that computes it.
+
+**Why Section 1 exists at all:** at B1500 a strategy was called untunable because its gate read as
+two booleans. Forcing the producer layer to be written first makes that error unwritable — those
+booleans had six parameters behind them (L355).
+
+### 6.2 Section 2 — TABLE A, parameter inventory
+
+One row per `Pn`. Required fields, all test-pinned by `test_b1510_producer_artifact_standard`:
+
+| field | meaning |
+|---|---|
+| `id` | `Pn`, matching Section 1 |
+| `producer` | the function or expression that computes it |
+| `param` | parameter name, or `-` if none exists |
+| `production` | the LIVE value today |
+| `band` | every value to be tested |
+| `subset_safe` | `True` = cube-gradable free, `False` = needs engine resim, `None` = no parameter |
+| `status` | `TESTED` / `UNTESTED` / `PENDING` (tested but never gradable) / `N/A` |
+| `derivation` | **WHY this band holds these values** — must cite a measurement or a stated rule |
+| `evidence` | source `file:line`. **Never inference.** |
+
+`derivation` and `evidence` exist because at B1507 a band was silently narrowed from 5 values to 2
+on an unstated economic hunch (L369). With those fields required, the narrowing cannot be written
+down without exposing that it has no basis.
+
+### 6.3 Section 3 — TABLE B, combination results
+
+15 columns in three groups, taken from `roster_core.evaluate()`'s return dict — **what it emits,
+never a wishlist:**
+
+- **GATED (6) — decide PASS/FAIL:** `pooled_sharpe` >= 1.0, `profit_factor` >= 1.3,
+  `sortino` >= 0.7, `psr` >= 0.95, `min_trades_holdout` >= 25, `min_trades_full_period` > 100
+- **DIAGNOSTIC (5) — reported, not gated:** `win_rate` (demoted B1387), `payoff`, `expectancy`,
+  `p` (one-sided, H0: SR<=0), `ci_lo` (Sharpe CI lower bound)
+- **CONTEXT (4):** fires, holdout n, full-period n, exit chosen IN-SAMPLE
+
+**Known gap (S6-B1509a):** `max_drawdown`, `calmar` and `deflated_sharpe` were demoted to
+DIAGNOSTIC at B1436/B1437, but `roster_core.evaluate()` computes none of them — so "diagnostic" has
+meant ABSENT rather than reported-not-gated. `metrics.py` has all three (L374).
+
+**Why all 15 and not just Sharpe (L373):** reporting Sharpe alone hid that the worked example's
+`ci_lo` is **-0.034** — its 95% Sharpe lower bound sits below zero. Omitting cheap metrics is not
+brevity, it is suppressing the interval around the headline.
+
+### 6.4 Computed, never hand-written
+
+The generator derives and prints: the **CHECKLIST #182 denominator** ("N of M combinations passed,
+across X of Y applicable producers"), **FULL FACTORIAL**, combinations run, **percent covered**, and
+the **free-vs-resim split**. Hand-counting reintroduced the exact error #182 exists to prevent
+(L368: my "3 of 6" was really "3 of 5").
+
+### 6.5 Drift guard
+
+`validate_spec()` **blocks generation** when a `Pn` appears in Section 1 but has no Table A row, or
+vice versa, and rejects any SPEC lacking a formula. Section 1 and Table A are two views of one
+inventory, and a hand-maintained pair diverges. Verified against three drift modes and in BOTH
+directions, per the B1504 lesson that a gate exercised one way may block everything (L375).
+
+---
+
+## 7. WORKED EXAMPLE — `smc_breaker_block_long` (B1500-B1510)
+
+The first strategy taken end-to-end. Recorded because the method's failure modes only became
+visible by running it.
+
+### 7.1 What was found
+
+**The gate looked untunable and had 6 producer parameters behind it.** `fires = breaker_bullish AND
+price_above_ema_200` — two booleans, no numbers. Following each to its producer surfaced
+`swing_length`, `close_mitigation`, `tail N`, OB-age recency, the break test, and EMA `span`.
+
+**The signal was saturated.** `smc_breaker_block_bullish` fired on **124 of 124 bars** on AAPL.
+Instrumenting the QUALIFYING EVENT rather than the aggregate rate explained why: it is an `OR` over
+the last 20 order blocks with **no time limit**, so one block aged 294-469 bars, with price 7.5-60%
+away, latches TRUE forever. `tail(20)` is a COUNT window where a TIME window was intended
+(S6-B1500a). Same class as B654 `cpr_narrow` (87% True) and B655 `supertrend_bullish` (99.19%).
+
+**Two populations, cleanly separable.** Across 5 tickers: latches at 17-54% distance and 343-407
+bars old; true retests at 0.8-0.9% and 49-133 bars. An empty gap on BOTH axes (distance 3-7%, age
+134-294), and the axes agree on which bars are which — that gap is what set the bands.
+
+**The tightening DIRECTION was backwards.** A breaker block is a RETEST, so the lever is an UPPER
+bound on distance, not a lower one. The original framing would have selected harder for the latches
+(L359).
+
+### 7.2 Result
+
+**0 of 200 combinations passed, across 3 of 6 applicable producers.**
+24 gradable, 164 NO_EXIT_SELECTABLE, 12 BELOW_POWER_FLOOR.
+
+| knob | effect |
+|---|---|
+| OB-age cap <=180 | 352 -> 109 fires, Sharpe **0.473 -> 0.563** — the filter genuinely works |
+| `close_mitigation=True` | helps in **12 of 12** matched cells, median **+0.005**, best **+0.059** |
+| `tail N` | **inert** — the qualifying event is always among the newest 3 |
+| `break_pct_max` (owner-approved NEW-GATE) | **0 of 160 combinations gradable** — economically the cleanest discriminator, statistically unusable at n=352 |
+
+**All 24 gradable cells fail on `pooled_sharpe` alone**; the other five gates pass everywhere. The
+best cell reaches 0.617 and then fails TWO gates, because the filtering that lifted the ratio cut
+holdout n to 115 and PSR reads sample size.
+
+**The decisive number is not Sharpe.** The R5 baseline's `ci_lo` is **-0.034**. Since a subset
+cannot have a tighter confidence interval than its parent, no tightening can produce a subset whose
+interval excludes zero. That is a stronger argument than the Sharpe gap because it concerns sample,
+not effect size (S6-B1509b).
+
+### 7.3 Cost model, measured
+
+| quantity | value |
+|---|---|
+| full factorial | **4,000** |
+| subset-safe subspace (derives free per run) | 200 |
+| **distinct engine runs** | **20** (4 `swing_length` x 5 EMA `span`) |
+| **measured: 1 ticker x 1 config, full window** | **~35 min** (2.11 s/sim-day x 1,003 days) |
+| 20 configs at ONE ticker | ~12 h |
+| multi-ticker slope | **UNVERIFIED — S6-B1508a** |
+
+**Deliberately not extrapolated to 161 or 503 tickers.** An earlier producer-only estimate came in
+**9x light** against the first real engine measurement (L367); per-sim-day cost may amortise across
+tickers rather than scale linearly, and a ~6-minute run at 10 tickers settles it.
+
+### 7.4 Universe finding
+
+The SP50 subset (top 50 by market cap; **50/50 reconciled against T1a, 50/50 with cached OHLCV**)
+retains only **31 of 352 fires across 11 of 50 tickers**. All 40 combinations returned
+NO_EXIT_SELECTABLE — not a bad result, NO result. **Measure the retention ratio BEFORE running under
+any universe restriction, and halt below the gates' n-floor** (L365, S6-B1505c). Two disclosed
+limits on the subset itself: only 249 of 503 T1a actives carry `market_cap`, so it is the top 50 of
+249 rankable; and selection uses TODAY's cap over a 2022-2026 window, which is survivorship-
+flavoured — acceptable for tuning, not for a verdict (S6-B1504a/b).
+
+### 7.5 What this example changes about the method
+
+1. **Start at the producer layer, always.** The gate expression is not the tunable surface.
+2. **Instrument the qualifying event before tuning anything.** Saturation usually means a stale
+   member of a disjunction is latching, not that a threshold is loose.
+3. **Classify every parameter subset-safe vs fire-adding first.** It decides both the cost model
+   and what can be graded offline.
+4. **Check retention before restricting the universe.**
+5. **A strategy can be un-rescuable for sample reasons rather than edge reasons** — `ci_lo` < 0 on
+   the baseline is a stop sign that no amount of tightening addresses.
+
+---
+
+## 8. OPEN OWNER DECISIONS (live as of B1510)
+
+| ticket | decision |
+|---|---|
+| **S6-B1508a** | 10-ticker timed run to establish the multi-ticker slope (~6 min). **Removes the last unknown from the cost model.** |
+| **S6-B1507b** | Add EMA spans 100/250? They do NOT exist in `compute_ema_sma` — producer edit, NEW-GATE class. |
+| **S6-B1505a** | Test-universe policy: SP50 vs R5-fired vs full T1a, with a retention-ratio precheck. |
+| **S6-B1509a** | Wire `max_drawdown` / `calmar` / `deflated_sharpe` into `roster_core.evaluate()` as reported-not-gated. |
+| **S6-B1502a** | Re-derive the whole band partition from MEASURED holdout n before Phase 1 is scoped. |
+| **S6-B1505b** | Approve engine resimulation for P1/P6 — gated on S6-B1508a's number. |
+
+**Standing rule (`feedback_ask_before_adding_gates_vs_threshold_only`):** whether optimisation may
+ADD a gate or stays threshold-only is situational — **ask every time**. Label every knob
+EXISTING-THRESHOLD or NEW-GATE before building any grid.

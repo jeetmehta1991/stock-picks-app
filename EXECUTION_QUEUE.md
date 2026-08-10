@@ -9988,3 +9988,37 @@ Adding a strategy = adding a SPECS entry with formula + params; the renderer is 
 
 **OPEN OWNER DECISIONS (carried):** S6-B1508a 10-ticker timing slope · S6-B1507b EMA spans 100/250
 (NEW-GATE) · S6-B1505a test-universe policy · S6-B1509a wire max_drawdown/calmar/deflated_sharpe.
+
+---
+
+## B1511 (2026-08-10) - STRATEGY_OPTIMISATION_PLAN.md updated with locked formats + worked example
+
+**OWNER DIRECTIVE:** update the plan doc; be comprehensive; add the locked-in formats.
+
+**4 SUPERSESSIONS recorded as a banner (new §0a)** - the worked example corrected load-bearing
+claims the plan was built on:
+1. *"no resimulation required for tightening"* -> only for SUBSET-SAFE params; fire-ADDING params
+   (`swing_length`, EMA `span`) produce trades R5 never took. **§2.3a rewritten.**
+2. *population = 41 at n>300* -> band built on UNVERIFIED n; the example's MEASURED holdout n is
+   **147**, not 356. **§2.2 marked SUPERSEDED; partition must be re-derived (S6-B1502a).**
+3. *tunable surface = gate-expression numerics* -> it is the transitive closure of PRODUCER
+   parameters (L355).
+4. *cost scales with combinations* -> cost = ENGINE RUNS = product of fire-ADDING bands alone;
+   4,000 combinations needed **20** runs (L371).
+
+**NEW §6 LOCKED REPORTING STANDARD** (CHECKLIST #183): Section 1 boolean formula verbatim in the
+owner-specified layout, Section 2 Table A field contract, Section 3 Table B's 15 metrics split
+GATED/DIAGNOSTIC/CONTEXT, §6.4 computed-never-hand-written, §6.5 the drift guard. Each subsection
+records WHICH defect it closes (L355 / L369 / L373 / L368 / L375).
+
+**NEW §7 WORKED EXAMPLE** - findings, result (0 of 200 across 3 of 6), measured cost model, the
+SP50 retention finding, and 5 method changes it forces.
+
+**NEW §8 OPEN OWNER DECISIONS** - 6 live tickets; §5 marked superseded by it.
+
+Two stale headers reconciled: §2 no longer claims "zero engine runs"; §5 points to §8.
+Plan 275 -> 521 lines. Pyramid 899 passed + 2 skipped.
+
+| ticket | pri | item |
+|---|---|---|
+| S6-B1511a | LOW | Plan §2.3 "six steps" still predates the producer-layer discovery. Rewrite as the 8-step method §7.5 implies once a 2nd strategy has run and the method is confirmed stable. |
