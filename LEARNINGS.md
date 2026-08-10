@@ -5868,3 +5868,24 @@ representations of the same fact, a mechanical cross-check between them is the s
 saying "keep these in sync" is not.** Tested in both drift directions per the B1504 lesson that a
 gate exercised in only one direction may block everything. CHECKLIST #183,
 `test_b1510_producer_artifact_standard`.
+
+### L376
+**A 1-ticker run is NOT a subset of a 381-ticker run - universe size changes WHICH entries are
+taken.** B1512. The engine timing run (AAPL alone, `--cube-isolation`, full locked window,
+EXIT=0 in 2572 s) produced **8** entries for `smc_breaker_block_long` on AAPL; R5's 381-ticker run
+produced **6** for the same ticker, same window, same code (no commit has touched this strategy
+since Batch 216 or its producer since Batch 556, both pre-R5). **HYPOTHESIS (not established):
+candidate competition** - with 381 tickers more signals compete for a max-candidates cap, so some
+AAPL fires lose their slot; alone, AAPL wins every day it fires. Could equally be portfolio-cap or
+sizing interaction; the mechanism is UNVERIFIED. **Rule: resimulation must run at the BASELINE's
+universe size, or its entry counts are not comparable to the baseline.** A cheap small-universe
+resim is a different question, not a faster answer to the same one. Detection signal: same
+(strategy, ticker, window, code) yielding different entry counts across two runs.
+
+### L377
+**Extrapolating from a sim-day rate under-counted wall-clock by 23pct.** B1512. I projected
+~35 min from 2.11 s/sim-day x 1,003 days; the measured run took **42.9 min**. The gap is the
+wrap-up phase - cube write, metrics, reporting - which no per-day rate contains. Second instance of
+the same class this session (L367: producer-only timing was 9x light against the engine).
+**Rule: a rate measured over the INNER loop never yields total wall-clock; only an end-to-end
+timed run does.**

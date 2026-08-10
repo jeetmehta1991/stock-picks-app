@@ -10022,3 +10022,24 @@ Plan 275 -> 521 lines. Pyramid 899 passed + 2 skipped.
 | ticket | pri | item |
 |---|---|---|
 | S6-B1511a | LOW | Plan §2.3 "six steps" still predates the producer-layer discovery. Rewrite as the 8-step method §7.5 implies once a 2nd strategy has run and the method is confirmed stable. |
+
+---
+
+## B1512 (2026-08-10) - engine timing COMPLETE; universe size changes entry counts
+
+**S6-B1506a MEASURED.** One ticker x one config x full locked window: **EXIT=0, 2572 s = 42.9 min**.
+Cube verified: 9,984 rows / 49 strategies / 26 exits / 2 tickers. My sim-day extrapolation said
+~35 min - **23pct light**, because wrap-up (cube write, metrics) is not in the per-day rate (L377).
+**-> 20 engine configs at ONE ticker = ~14.3 h.**
+
+**FINDING (L376): a 1-ticker run is NOT a subset of the 381-ticker run.**
+`smc_breaker_block_long` on AAPL: timing run **8** entries vs R5 **6** entries - same ticker, same
+window, same code (nothing has touched this strategy since Batch 216, or its producer since Batch
+556, both pre-R5). HYPOTHESIS: candidate competition against the max-candidates cap. **UNVERIFIED**
+- could be portfolio-cap or sizing interaction.
+
+| ticket | pri | item |
+|---|---|---|
+| **S6-B1512a** | **HIGH** | Verify the 8-vs-6 mechanism before any resim is costed. Candidate-cap vs portfolio-cap vs sizing. If confirmed, **resim MUST run at the baseline's universe size** or entry counts are not comparable to R5 - which invalidates the cheap small-universe path and re-opens S6-B1505a. |
+| **S6-B1508a** | **REVISED** | The 10-ticker slope run is still needed, but its purpose changes: not just wall-clock scaling, but measuring how entry COUNTS move with universe size. Pair the two measurements. |
+| S6-B1505b | HIGH | (carried) P1/P6 resim approval - now gated on S6-B1512a, not only on timing. |
