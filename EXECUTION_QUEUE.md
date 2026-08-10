@@ -9906,3 +9906,29 @@ covered, and the free-vs-resim split, so under-coverage cannot hide in prose aga
 | **S6-B1507a** | **HIGH** | **OWNER DECISION: add a break-margin parameter to P5?** NEW-GATE class. Instrumentation says it is the cleanest discriminator measured (real retests 0.5-2.7pct vs latches 7.5-60pct), but it changes the strategy's thesis surface. |
 | **S6-B1507b** | **HIGH** | **OWNER DECISION: add EMA spans 100/250?** They do NOT exist in `compute_ema_sma` - requires a producer edit, NEW-GATE class. |
 | **S6-B1507c** | MED | P6 band widened 2 -> 5 raises the factorial 320 -> 800 and the resim subspace 280 -> 760. Re-cost S6-B1506a against the widened grid once engine timing lands. |
+
+---
+
+## B1508 (2026-08-10) - P5 approved + tested; factorial 4,000; cost is 20 engine runs
+
+**OWNER APPROVED** P5 `break_pct_max` as a NEW-GATE (`feedback_ask_before_adding_gates_vs_threshold_only`).
+Band from the B1501 measurement: 0.01 / 0.02 / 0.03 / 0.05 / None. Factorial 800 -> **4,000**.
+
+**RESULT: 0 of 200 free combinations passed, across 4 of 6 applicable producers.**
+24 gradable / 164 NO_EXIT_SELECTABLE / 12 BELOW_POWER_FLOOR. Best cell unchanged:
+`close_mitigation=True, tail<=5` Sharpe 0.617, failing `pooled_sharpe` AND `psr`.
+
+**P5 SPECIFICALLY: 0 of 160 P5-capped combinations were gradable** (L372). The cap is
+economically the cleanest discriminator measured and statistically unusable at this sample size -
+"approved, tested, not gradable" is a distinct outcome from untested and from failed.
+
+**COST MODEL (L371).** Only P1 and P6 ADD fires; P2/P3/P4/P5 only remove them, so all 200
+subset-safe combinations derive OFFLINE from each engine run. **Distinct engine runs = 4 x 5 = 20**,
+NOT 4,000. Measured: 1 ticker x 1 config = **~35 min** (2.11 s/sim-day x 1,003 days) -> ~12 h for
+20 configs at ONE ticker.
+
+| ticket | pri | item |
+|---|---|---|
+| **S6-B1508a** | **HIGH** | **Second timed run at ~10 tickers to establish the multi-ticker slope.** The 1-ticker measurement cannot be extrapolated to 161/503 - per-sim-day cost may amortise across tickers rather than scale linearly. ~6 min to remove the last unknown from the cost model (L367 discipline). |
+| **S6-B1508b** | **HIGH** | P5 is unusable at n=352. It becomes testable only if the fire base grows - i.e. it is an ARGUMENT FOR the larger universe (S6-B1505a), not an independent lever. |
+| S6-B1507b | HIGH | (carried) OWNER DECISION: add EMA spans 100/250? They do not exist in `compute_ema_sma`; NEW-GATE. |

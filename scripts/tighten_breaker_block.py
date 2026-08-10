@@ -36,6 +36,10 @@ R5_CUBE = Path("output_r5_rung4_chunk1/trade_exit_detail.csv")
 
 # Candidate levels. Each list ANCHORS at the production default (last element)
 # so "no change" is always in the grid and the baseline is reproducible.
+# P5 break_pct_max: NEW-GATE, OWNER-APPROVED B1507. Production has no such
+# parameter (`close > top` is strict). Band from the B1501 measurement: real
+# retests 0.5-2.7pct, stale latches 7.5-60pct, empty gap 3-7pct. UPPER bound
+# per L359 - a breaker block is a RETEST, so closer is stricter.
 BREAK_PCT_MAX = [0.01, 0.02, 0.03, 0.05, None]   # None = production (no cap)
 AGE_BARS_MAX = [60, 120, 180, 250, None]         # None = production (no cap)
 TAIL_N = [3, 5, 10, 20]                          # 20 = production
@@ -146,12 +150,13 @@ def main() -> int:
         print(f"close_mitigation={cm}: diagnosed {len(diags[cm])} of {len(fires)} fires")
 
     rows = []
-    for cm, amax, tn in itertools.product(CLOSE_MITIGATION, AGE_BARS_MAX, TAIL_N):
-        bmax = None   # B1503: BREAK_PCT_MAX retired -- it was OUT OF SCOPE (L361)
+    for cm, bmax, amax, tn in itertools.product(
+            CLOSE_MITIGATION, BREAK_PCT_MAX, AGE_BARS_MAX, TAIL_N):
         keep = {k for k, d in diags[cm].items() if survives(d, bmax, amax, tn)}
         if not keep:
-            rows.append({"close_mitigation": cm, "age_bars_max": amax,
-                         "tail_n": tn, "fires": 0, "verdict": "ZERO_FIRES"})
+            rows.append({"close_mitigation": cm, "break_pct_max": bmax,
+                         "age_bars_max": amax, "tail_n": tn, "fires": 0,
+                         "verdict": "ZERO_FIRES"})
             continue
         sub = g[[(r.ticker, r.entry_date) in keep
                  for r in g.itertuples()]]
@@ -159,14 +164,15 @@ def main() -> int:
         ho_m = rc.holdout(sub)
         exit_pick, _ = rc.select_exit(is_m)
         if exit_pick is None:
-            rows.append({"close_mitigation": cm, "age_bars_max": amax,
-                         "tail_n": tn, "fires": len(keep),
+            rows.append({"close_mitigation": cm, "break_pct_max": bmax,
+                         "age_bars_max": amax, "tail_n": tn, "fires": len(keep),
                          "verdict": "NO_EXIT_SELECTABLE"})
             continue
         hb = ho_m[ho_m.exit_method == exit_pick]
         fp_n = int((sub.exit_method == exit_pick).sum())
         res = rc.evaluate(hb["pnl_pct"], hb["hold_days"], full_period_n=fp_n)
-        row = {"close_mitigation": cm, "age_bars_max": amax, "tail_n": tn,
+        row = {"close_mitigation": cm, "break_pct_max": bmax,
+               "age_bars_max": amax, "tail_n": tn,
                "fires": len(keep), "exit": exit_pick,
                "holdout_n": len(hb), "full_period_n": fp_n}
         if res is None:

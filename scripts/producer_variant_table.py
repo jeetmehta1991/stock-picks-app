@@ -56,11 +56,17 @@ SPECS: dict[str, dict] = {
              "derivation": "measured real retests 45-134 bars, latches 294-469, gap 134-294 (B1501).",
              "subset_safe": True, "status": "TESTED",
              "evidence": "smc_ict.py:252 (event_recency_bars, S6-B1500a)"},
-            {"id": "P5", "producer": "break test (close > top)", "param": "-",
-             "production": "strict", "type": "-", "band": [],
-             "derivation": "NO PARAMETER EXISTS. Adding one is NEW-GATE class -> ask owner first.",
-             "subset_safe": None, "status": "N/A",
-             "evidence": "smc_ict.py:283-284"},
+            {"id": "P5", "producer": "break test (close > top)", "param": "break_pct_max",
+             "production": None, "type": "float|None", "band": [0.01, 0.02, 0.03, 0.05, None],
+             "derivation": "NEW-GATE, OWNER-APPROVED B1507 (was N/A - production has no such "
+                           "parameter; `close > top` is a strict inequality). Band from the "
+                           "B1501 measurement: real retests 0.5-2.7pct from the zone, stale "
+                           "latches 7.5-60pct, empty gap 3-7pct. Caps at 1/2/3pct bracket the "
+                           "retest population; 5pct sits in the gap; None = production. "
+                           "Direction is an UPPER bound (L359: a breaker block is a RETEST, so "
+                           "CLOSER is stricter).",
+             "subset_safe": True, "status": "PENDING",
+             "evidence": "smc_ict.py:283-284 (no parameter today)"},
             {"id": "P6", "producer": "compute_ema_sma", "param": "span",
              "production": 200, "type": "int", "band": [9, 20, 21, 50, 200],
              "derivation": "ALL spans the producer emits (READ technical.py:750 pairs "

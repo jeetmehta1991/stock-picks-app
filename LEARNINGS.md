@@ -5814,3 +5814,22 @@ thorough. `producer_variant_table.py` now computes and prints FULL FACTORIAL, co
 percent covered, and the free-vs-resim split. **Rule: any grid result must report its coverage of
 the full factorial alongside the pass count** - a denominator on combinations, the same way #182
 requires one on producers.
+
+### L371
+**Cost scales with ENGINE RUNS, not with combinations - and conflating them inflates the estimate
+20x.** B1508. The full factorial for `smc_breaker_block_long` is **4,000** combinations, but only
+P1 (`swing_length`) and P6 (EMA `span`) ADD fires; P2/P3/P4/P5 only remove them, so all **200**
+subset-safe combinations derive OFFLINE from whatever each engine run produces. **Distinct engine
+runs needed = 4 x 5 = 20**, not 4,000. **Rule: when costing a grid, partition the parameters into
+fire-ADDING and fire-REMOVING first; the run count is the product of the ADDING bands alone.**
+Reporting "4,000 combinations" as the workload would have overstated cost by 200x and likely killed
+a feasible experiment.
+
+### L372
+**An owner-approved NEW-GATE can still be untestable, and that is a result worth reporting.**
+B1508. P5 `break_pct_max` was approved and banded from measured data (retests 0.5-2.7pct vs latches
+7.5-60pct). Running it: **0 of 160 P5-capped combinations were gradable** - all returned
+NO_EXIT_SELECTABLE because the cap leaves too few in-sample trades to rank 26 exits. The parameter
+is economically the cleanest discriminator measured AND statistically unusable at this sample size.
+**Rule: report "approved, tested, not gradable" explicitly - it is different from untested and
+different from failed**, and collapsing the three is how a denominator becomes misleading.
