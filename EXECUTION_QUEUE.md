@@ -9827,3 +9827,27 @@ flagged every compliant sentence; (3) a regex edit that mangled an existing func
 | **S6-B1504a** | **MED** | **DISCLOSED LIMITATION:** only **249 of 503** T1a actives carry `market_cap` in `info_cache.json`, so this is the top 50 of 249 RANKABLE, not of 503. The other 254 were never eligible. Backfill caps or accept the restriction explicitly. |
 | **S6-B1504b** | **MED** | Selection is by market cap **as of today** for a 2022-2026 window - survivorship-flavoured. Acceptable for parameter tuning if disclosed; NOT acceptable as the basis of a strategy verdict. Pin this caveat wherever SP50 results are reported. |
 | S6-B1503a/b/c | HIGH | (carried) P2 `close_mitigation`, P1 `swing_length`, P6 EMA span - the 3 untested producers. Now runnable on the SP50 subset. |
+
+---
+
+## B1505 (2026-08-10) - P2 close_mitigation measured; SP50 cannot grade this strategy
+
+**RESULT (denominator per #182): 0 of 40 combinations across 3 of 6 producers passed.**
+Tested P2 `close_mitigation` x P3 `tail N` x P4 age. UNTESTED: P1 `swing_length`, P6 EMA span -
+both can ADD fires, so neither is a cube subset and both need ENGINE resimulation.
+
+**S6-B1503a CLOSED - P2 measured.** Improves Sharpe in 12 of 12 matched cells (median **+0.005**,
+best **+0.059**: 0.558 -> 0.617 at tail<=5, close_mitigation=True). Directionally real, far too
+small to matter. Best-Sharpe cell now fails TWO gates (`pooled_sharpe` + `psr`) rather than one -
+filtering raised the ratio but cut holdout n to 115, and PSR reads sample (L366).
+
+**SP50 RETENTION FAILURE (L365).** The SP50 subset retains **31 of 352 fires across 11 of 50
+tickers**; all 40 combinations returned NO_EXIT_SELECTABLE. The subset is sound - it just does not
+intersect this strategy.
+
+| ticket | pri | item |
+|---|---|---|
+| **S6-B1505a** | **HIGH** | **OWNER DECISION: test-universe policy.** SP50 retains 6pct of this strategy's fires. Proposal: use SP50 only where a strategy concentrates in mega-caps, else full R5 universe - and check the retention ratio BEFORE each run, HALTing below the gates' n-floor. |
+| **S6-B1505b** | **HIGH** | **OWNER DECISION: approve engine resimulation for P1 `swing_length` (10/20/30/50) + P6 EMA span (50 vs 200).** Highest-leverage untested knob - every order block derives from swings. Local, no batch. Not started per the standing spend rule. |
+| **S6-B1505c** | MED | Add a retention-ratio preflight to `tighten_breaker_block.py` implementing L365 mechanically rather than as prose. |
+| S6-B1503a | **CLOSED** | P2 measured - see above. |

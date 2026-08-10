@@ -1,0 +1,287 @@
+{
+  "strategy": "smc_breaker_block_long",
+  "r5_baseline_fires": 31,
+  "diagnosed": 2,
+  "results": [
+    {
+      "close_mitigation": true,
+      "age_bars_max": null,
+      "tail_n": 10,
+      "fires": 31,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "age_bars_max": null,
+      "tail_n": 20,
+      "fires": 31,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "age_bars_max": null,
+      "tail_n": 10,
+      "fires": 31,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "age_bars_max": null,
+      "tail_n": 20,
+      "fires": 31,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "age_bars_max": null,
+      "tail_n": 5,
+      "fires": 27,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "age_bars_max": null,
+      "tail_n": 5,
+      "fires": 26,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "age_bars_max": null,
+      "tail_n": 3,
+      "fires": 15,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "age_bars_max": null,
+      "tail_n": 3,
+      "fires": 14,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "age_bars_max": 250,
+      "tail_n": 5,
+      "fires": 9,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "age_bars_max": 250,
+      "tail_n": 10,
+      "fires": 9,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "age_bars_max": 250,
+      "tail_n": 20,
+      "fires": 9,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "age_bars_max": 250,
+      "tail_n": 5,
+      "fires": 9,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "age_bars_max": 250,
+      "tail_n": 10,
+      "fires": 9,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "age_bars_max": 250,
+      "tail_n": 20,
+      "fires": 9,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "age_bars_max": 250,
+      "tail_n": 3,
+      "fires": 8,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "age_bars_max": 250,
+      "tail_n": 3,
+      "fires": 8,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "age_bars_max": 180,
+      "tail_n": 3,
+      "fires": 6,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "age_bars_max": 180,
+      "tail_n": 5,
+      "fires": 6,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "age_bars_max": 180,
+      "tail_n": 10,
+      "fires": 6,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "age_bars_max": 180,
+      "tail_n": 20,
+      "fires": 6,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "age_bars_max": 180,
+      "tail_n": 3,
+      "fires": 6,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "age_bars_max": 180,
+      "tail_n": 5,
+      "fires": 6,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "age_bars_max": 180,
+      "tail_n": 10,
+      "fires": 6,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "age_bars_max": 180,
+      "tail_n": 20,
+      "fires": 6,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "age_bars_max": 60,
+      "tail_n": 3,
+      "fires": 2,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "age_bars_max": 60,
+      "tail_n": 5,
+      "fires": 2,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "age_bars_max": 60,
+      "tail_n": 10,
+      "fires": 2,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "age_bars_max": 60,
+      "tail_n": 20,
+      "fires": 2,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "age_bars_max": 120,
+      "tail_n": 3,
+      "fires": 2,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "age_bars_max": 120,
+      "tail_n": 5,
+      "fires": 2,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "age_bars_max": 120,
+      "tail_n": 10,
+      "fires": 2,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "age_bars_max": 120,
+      "tail_n": 20,
+      "fires": 2,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "age_bars_max": 60,
+      "tail_n": 3,
+      "fires": 2,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "age_bars_max": 60,
+      "tail_n": 5,
+      "fires": 2,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "age_bars_max": 60,
+      "tail_n": 10,
+      "fires": 2,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "age_bars_max": 60,
+      "tail_n": 20,
+      "fires": 2,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "age_bars_max": 120,
+      "tail_n": 3,
+      "fires": 2,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "age_bars_max": 120,
+      "tail_n": 5,
+      "fires": 2,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "age_bars_max": 120,
+      "tail_n": 10,
+      "fires": 2,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "age_bars_max": 120,
+      "tail_n": 20,
+      "fires": 2,
+      "verdict": "NO_EXIT_SELECTABLE"
+    }
+  ]
+}

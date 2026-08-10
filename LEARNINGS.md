@@ -5754,3 +5754,24 @@ edit that mangled an existing function's indentation. **Rule: a compliance gate 
 asserting BOTH directions -- the offending sentence must trip it AND the compliant sentence must
 pass.** Testing only the trip direction would have shipped a gate that blocked everything, which
 fails open into being disabled. Same class as `feedback_silent_failure_pairing_rule`.
+
+### L365
+**A ticker filter can silently zero-out an experiment; check retention BEFORE the run, not after.**
+B1505. The owner-directed SP50 subset (top 50 by market cap, 50/50 reconciled against T1a) retains
+only **31 of `smc_breaker_block_long`'s 352 R5 fires across 11 of the 50 tickers**. All 40
+combinations returned NO_EXIT_SELECTABLE - not a bad result, NO result: too few in-sample trades
+to rank 26 exits. The subset is sound; it simply does not intersect this strategy. **Rule: before
+running any experiment under a universe restriction, measure the retention ratio (fires retained /
+fires in baseline) and HALT if it falls below what the gates' n-floors require.** A filter that
+removes 94% of the evidence produces confident-looking empty output. Detection signal: a grid
+where every cell shares the same non-gradable verdict.
+
+### L366
+**`close_mitigation` measured: consistent in direction, negligible in size.** B1505. P2 was the
+last free untested producer knob. Matched-pair across all 12 gradable cells it improves Sharpe in
+**12 of 12** - so it is genuinely removing worse trades - but median gain is **+0.005** and best is
+**+0.059** (0.558 -> 0.617 at tail<=5). Against a 0.53 shortfall to the 1.0 bar it is not a lever.
+Worth recording separately: the best-Sharpe cell now fails **two** gates rather than one
+(`pooled_sharpe` AND `psr`), because the filtering that raised the ratio cut holdout n to 115 and
+PSR reads sample size. **Rule: when reporting a tightening gain, report the gate count too - a
+higher Sharpe on a thinner sample can be a net regression.**

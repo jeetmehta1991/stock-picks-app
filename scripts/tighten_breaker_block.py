@@ -39,6 +39,9 @@ R5_CUBE = Path("output_r5_rung4_chunk1/trade_exit_detail.csv")
 BREAK_PCT_MAX = [0.01, 0.02, 0.03, 0.05, None]   # None = production (no cap)
 AGE_BARS_MAX = [60, 120, 180, 250, None]         # None = production (no cap)
 TAIL_N = [3, 5, 10, 20]                          # 20 = production
+# P2 close_mitigation (READ smc.py:380). False = mitigated on high/low (production);
+# True = mitigated only on CLOSE, strictly fewer mitigations => strictly fewer fires.
+CLOSE_MITIGATION = [True, False]                 # False = production
 
 
 def _load_ohlcv(ticker: str) -> pd.DataFrame | None:
@@ -54,7 +57,8 @@ def _load_ohlcv(ticker: str) -> pd.DataFrame | None:
 
 
 def diagnose_fire(df: pd.DataFrame, when: pd.Timestamp,
-                  swing_length: int = 20) -> dict | None:
+                  swing_length: int = 20,
+                  close_mitigation: bool = False) -> dict | None:
     """Recover age_bars / break_pct / rank for the OB events qualifying at `when`.
 
     PIT preserved: the producer sees ohlc.iloc[:i+1] only, exactly as production.
@@ -65,7 +69,7 @@ def diagnose_fire(df: pd.DataFrame, when: pd.Timestamp,
         return None
     sub = df.iloc[:i + 1]
     swings = _smc.swing_highs_lows(sub, swing_length=swing_length)
-    ob_df = _smc.ob(sub, swings)
+    ob_df = _smc.ob(sub, swings, close_mitigation=close_mitigation)
     if ob_df is None or "OB" not in ob_df.columns:
         return None
     nz = ob_df[ob_df["OB"].fillna(0) != 0]
@@ -105,6 +109,7 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", default="output_audit/b1502_tightening_grid.json")
     ap.add_argument("--limit-tickers", type=int, default=0)
+    ap.add_argument("--tickers-file", default="")
     a = ap.parse_args()
 
     cube = rc.load_cube(R5_CUBE)
@@ -116,26 +121,36 @@ def main() -> int:
           f"= {len(g)} cube rows")
 
     tickers = sorted(fires.ticker.unique())
+    if a.tickers_file:
+        allow = {l.strip() for l in open(a.tickers_file) if l.strip()}
+        before = len(tickers)
+        tickers = [t for t in tickers if t in allow]
+        fires = fires[fires.ticker.isin(tickers)]
+        print(f"ticker filter {a.tickers_file}: {before} -> {len(tickers)} tickers, "
+              f"{len(fires)} fires retained")
     if a.limit_tickers:
         tickers = tickers[:a.limit_tickers]
 
     # One instrumented pass per fire; results reused by every combination.
-    diags: dict[tuple, dict] = {}
+    diags: dict[bool, dict] = {cm: {} for cm in CLOSE_MITIGATION}
     for t in tickers:
         df = _load_ohlcv(t)
         if df is None:
             continue
         for when in fires[fires.ticker == t].entry_date:
-            d = diagnose_fire(df, pd.Timestamp(when))
-            if d:
-                diags[(t, when)] = d
-    print(f"diagnosed {len(diags)} of {len(fires)} fires")
+            for cm in CLOSE_MITIGATION:
+                d = diagnose_fire(df, pd.Timestamp(when), close_mitigation=cm)
+                if d:
+                    diags[cm][(t, when)] = d
+    for cm in CLOSE_MITIGATION:
+        print(f"close_mitigation={cm}: diagnosed {len(diags[cm])} of {len(fires)} fires")
 
     rows = []
-    for bmax, amax, tn in itertools.product(BREAK_PCT_MAX, AGE_BARS_MAX, TAIL_N):
-        keep = {k for k, d in diags.items() if survives(d, bmax, amax, tn)}
+    for cm, amax, tn in itertools.product(CLOSE_MITIGATION, AGE_BARS_MAX, TAIL_N):
+        bmax = None   # B1503: BREAK_PCT_MAX retired -- it was OUT OF SCOPE (L361)
+        keep = {k for k, d in diags[cm].items() if survives(d, bmax, amax, tn)}
         if not keep:
-            rows.append({"break_pct_max": bmax, "age_bars_max": amax,
+            rows.append({"close_mitigation": cm, "age_bars_max": amax,
                          "tail_n": tn, "fires": 0, "verdict": "ZERO_FIRES"})
             continue
         sub = g[[(r.ticker, r.entry_date) in keep
@@ -144,14 +159,14 @@ def main() -> int:
         ho_m = rc.holdout(sub)
         exit_pick, _ = rc.select_exit(is_m)
         if exit_pick is None:
-            rows.append({"break_pct_max": bmax, "age_bars_max": amax,
+            rows.append({"close_mitigation": cm, "age_bars_max": amax,
                          "tail_n": tn, "fires": len(keep),
                          "verdict": "NO_EXIT_SELECTABLE"})
             continue
         hb = ho_m[ho_m.exit_method == exit_pick]
         fp_n = int((sub.exit_method == exit_pick).sum())
         res = rc.evaluate(hb["pnl_pct"], hb["hold_days"], full_period_n=fp_n)
-        row = {"break_pct_max": bmax, "age_bars_max": amax, "tail_n": tn,
+        row = {"close_mitigation": cm, "age_bars_max": amax, "tail_n": tn,
                "fires": len(keep), "exit": exit_pick,
                "holdout_n": len(hb), "full_period_n": fp_n}
         if res is None:
@@ -173,7 +188,7 @@ def main() -> int:
     print(f"\n{'break':>6} {'age':>5} {'tail':>4} {'fires':>6} {'ho_n':>5} "
           f"{'fp_n':>5} {'sharpe':>7} {'pass':>4}  verdict")
     for r in rows[:18]:
-        print(f"{str(r['break_pct_max']):>6} {str(r['age_bars_max']):>5} "
+        print(f"{str(r['close_mitigation']):>6} {str(r['age_bars_max']):>5} "
               f"{r['tail_n']:>4} {r.get('fires', 0):>6} "
               f"{r.get('holdout_n', 0):>5} {r.get('full_period_n', 0):>5} "
               f"{(f'{r.get(chr(115)+chr(104)+chr(97)+chr(114)+chr(112)+chr(101)):.3f}' if r.get('sharpe') is not None else '-'):>7} "
