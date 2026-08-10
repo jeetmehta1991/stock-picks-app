@@ -9230,3 +9230,47 @@ Still the B1474 triage: **BEHAVIOUR 36 / STALE-PIN 31 / ARTIFACT 2** at file lev
 GATE. Tracked as `S6-B1474c` / `S6-B1474d`.
 
 **The queue is now clear enough for S6-OPT-196.**
+
+---
+
+## B1491 (2026-08-09) — 6 de-duplicated strategies disabled; the 187 partitioned
+
+**OWNER DIRECTIVE:** *"These 6 need to be in the disabled strategy list with a note that they have
+been deduplicated."* Applied.
+
+**`STRATEGIES_DISABLED_DUPLICATE` 3 -> 9** (total disabled 12 -> 18, ACTIVE 210 -> **204**):
+`institutional_cluster_long` · `institutional_committed_growth_long` ·
+`institutional_insider_combo_long` · `institutional_multi_quarter_persistence_long` ·
+`institutional_persistent_holders_long` · `rsi_oversold_with_smart_money_long`
+
+**These are NOT defective.** Each cleared all five live gates AND survived BH-FDR at
+**p = 1e-9 to 7e-11** against a 0.0126 threshold. They were removed at DE-DUP (Jaccard >= 0.70 on
+the holdout trade set), all six collapsing into `institutional_strong_conviction_long`, which IS on
+the roster. Promoting them counts one bet up to seven times - this is the cluster that drove
+effective breadth to **N_eff 2.9** against a nominal 13. Re-enable only if the canonical member is
+dropped.
+
+**BASE = 222 - 17 roster - 18 disabled = 187**, matching the owner's arithmetic exactly.
+
+### The 187 partitioned by best-cell holdout n
+
+| band | strategies | phase |
+|---|---|---|
+| **n > 300** | **24** | **TIGHTENING** |
+| 100 < n <= 300 | 54 | tightening *with an n-floor constraint* |
+| n <= 100 | 46 | loosening |
+| no gradable cell | 63 | loosening |
+| **total** | **187** | |
+
+**TIGHTENING 24** (78 with the mid-band) · **LOOSENING 109**.
+
+**Recommendation: Phase 1 = the 24 only.** In that band `min_trades` cannot bind, so tightening has
+no n-floor interaction. The mid-band's 54 could clear Sharpe and then fail `min_trades >= 100`, a
+materially harder search. **OWNER DECISION OPEN: include the mid-band in Phase 1 or not.**
+
+### Why `n < 30` means UNEVAL, not FAIL
+`n` counts holdout trades for ONE `(strategy x direction x exit)` cell: one year (not four), at the
+single IS-chosen exit (not pooled over 26), per direction. `roster_core.MIN_N = 30` is a POWER
+floor - below it the annualised Sharpe standard error is ~+/-1.6, indistinguishable from zero, so a
+verdict would be noise. Distinct from the `min_trades >= 100` GATE: 30 is "measurable at all", 100
+is "passes".

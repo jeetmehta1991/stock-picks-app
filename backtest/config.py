@@ -1311,6 +1311,21 @@ STRATEGIES_DISABLED_DUPLICATE: set[str] = {
     # both ichimoku cloud gates as "redundant with cross direction", leaving a strategy
     # named macd_ichimoku that contains no ichimoku and is byte-identical to macd_crossover.
     "macd_ichimoku",
+    # B1491 (2026-08-09 owner directive: "These 6 need to be in the disabled strategy list
+    # with a note that they have been deduplicated"). DE-DUPLICATED, not defective: each
+    # CLEARED all five live gates AND survived BH-FDR with p between 1e-9 and 7e-11 against a
+    # 0.0126 threshold - they are genuinely profitable. They were removed at the DE-DUP step,
+    # Jaccard >= 0.70 on the (ticker, entry_date) holdout trade set, all six collapsing into
+    # the SAME canonical survivor `institutional_strong_conviction_long`, which IS on the
+    # Phase 1B roster. Promoting them would count one bet up to seven times - this is the
+    # cluster that drove effective breadth to N_eff 2.9 against a nominal 13 (B1462).
+    # Re-enable only if the canonical member is ever dropped.
+    "institutional_cluster_long",                    # dedup -> institutional_strong_conviction_long
+    "institutional_committed_growth_long",           # dedup -> institutional_strong_conviction_long
+    "institutional_insider_combo_long",              # dedup -> institutional_strong_conviction_long
+    "institutional_multi_quarter_persistence_long",  # dedup -> institutional_strong_conviction_long
+    "institutional_persistent_holders_long",         # dedup -> institutional_strong_conviction_long
+    "rsi_oversold_with_smart_money_long",            # dedup -> institutional_strong_conviction_long
 }
 # B1189 (2026-07-06 Council 278 owner-approved DELETE): dxy_headwind_multinational_short
 # ELIMINATED per owner directive. Was disabled since Batch 372 pending foreign_rev_pct
