@@ -10074,3 +10074,45 @@ tighten the old one.
 
 **STILL BLOCKING:** S6-B1512a (8-vs-6 mechanism) and S6-B1508a (10-ticker slope). Neither the cost
 nor the universe can be settled without them.
+
+---
+
+## B1514 (2026-08-10) - universe ladder ARMED at R5's 381; rung 5 launched under a gated manifest
+
+**OWNER DIRECTIVE:** *"match R5 at 381. do it in incremental batches of tickers - 5,10,20,50,100,
+200, etc. till we hit 381. Sentinels to be armed. All metrics to be calculated"*
+
+**SHIPPED** `scripts/universe_ladder_run.py`. Rungs **5/10/20/50/100/200/381**, **NESTED** (each a
+strict superset of the last) so successive rungs differ ONLY in universe size - a non-nested ladder
+would confound size with composition. Ticker order is deterministic and stated: descending R5
+fire-count for the target strategy, then alphabetical, so small rungs carry signal instead of empty
+universes (the SP50 failure class, L365).
+
+**UNIVERSE DERIVED FROM THE BASELINE ARTIFACT, not a CSV:** `ticker.nunique()` of
+`output_r5_rung4_chunk1/trade_exit_detail.csv` = **381**, all 381 with cached OHLCV, zero missing.
+Per L378 this is deliberately NOT T1a's 503.
+
+**4 SENTINELS ARMED, each halting the ladder:**
+- **S1 wall-clock** - elapsed > 2x the ladder's own projection
+- **S2 entry ratio** - entries/ticker deviating >2x from the R5 rate (**this IS the L376 question**)
+- **S3 zero-fire** - a rung producing no entries for the target strategy
+- **S4 exit contract** - any entry not carrying exactly 26 exits (CHECKLIST #130)
+
+**ALL Table B METRICS per rung** via `roster_core` - the same evaluator the roster uses.
+
+**PRE-SPEND GATE PASSED** (B1335 Rule 1): `output_audit/b1514_run_manifest.json` pins frozen_sha
+`86aad6bd4`, isolation, nyse_mcal calendar, the 381-ticker sha256, LOCAL execution, $0 spend, and
+**7 enumerated obsolescence risks each with a mechanical gate**.
+`PRELAUNCH_GATE_PASS batch=B1514 frozen_sha=86aad6bd4dcc tickers=381`.
+
+**RUNG 5 ONLY LAUNCHED - and here is why that matters.** The single measured point is 42.9 min at
+1 ticker. Under a LINEAR assumption the full ladder (766 ticker-runs) would be **~548 hours**.
+Linear is almost certainly pessimistic - per-sim-day overhead should amortise across tickers, and
+measuring that is the ladder's whole purpose - but it is the only bound the evidence supports.
+**Rung 5's linear upper bound is 3.57 h.** If rung 5 lands near it, the local 381 ladder is
+infeasible and that is an owner decision, not mine.
+
+| ticket | pri | item |
+|---|---|---|
+| **S6-B1514a** | **HIGH** | Report rung 5's measured slope + entry ratio, re-project rungs 10-381, and get owner go/no-go before rung 10. Phased-ladder discipline - no cascade on an unmeasured projection. |
+| S6-B1508a / S6-B1512a | **IN PROGRESS** | Both answered by this ladder: wall-clock scaling (S6-B1508a) and whether universe size drives entry selection (S6-B1512a, via sentinel S2). |
