@@ -5740,3 +5740,17 @@ this is scope-of-CONCLUSION (widening what I claim). Distinct, and previously un
 **Rule:** before stating any verdict about an object, enumerate that object's FULL parameter space
 and mark each dimension TESTED / UNTESTED; the verdict sentence must name its denominator. See
 CHECKLIST #182.
+
+### L364
+**The verdict-denominator rule is now MECHANICALLY enforced, and building it exposed 3 defects
+in my own gate.** B1504. CHECKLIST #182 (L363) was prose; prose rules decay. The Stop hook now
+runs `scan_verdict_denominators()` which blocks any turn whose response uses verdict language
+with no "N of M" scope in the same text block. Building it, the pin test caught THREE real bugs
+I had shipped into the gate: (1) two gates each calling `sys.stdin.read()` -- stdin is
+single-read, so the second always saw empty and silently never fired; (2) `\b` written as a
+literal BACKSPACE (0x08) because a raw-string prefix was lost through a heredoc, so the
+denominator regex matched nothing and every compliant sentence was flagged; (3) a regex-based
+edit that mangled an existing function's indentation. **Rule: a compliance gate needs a pin test
+asserting BOTH directions -- the offending sentence must trip it AND the compliant sentence must
+pass.** Testing only the trip direction would have shipped a gate that blocked everything, which
+fails open into being disabled. Same class as `feedback_silent_failure_pairing_rule`.

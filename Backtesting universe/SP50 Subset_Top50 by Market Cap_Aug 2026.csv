@@ -1,0 +1,51 @@
+Symbol,Company,Sector,added_date,removed_date,rank_by_market_cap
+NVDA,Nvidia,Information Technology,,,1
+GOOGL,Alphabet Inc. (Class A),Communication Services,,,2
+AAPL,Apple Inc.,Information Technology,,,3
+MSFT,Microsoft,Information Technology,,,4
+AMZN,Amazon,Consumer Discretionary,,,5
+AVGO,Broadcom,Information Technology,,,6
+META,Meta Platforms,Communication Services,,,7
+TSLA,"Tesla, Inc.",Consumer Discretionary,,,8
+WMT,Walmart,Consumer Staples,,,9
+BRK-B,Berkshire Hathaway,Financials,,,10
+JPM,JPMorgan Chase,Financials,,,11
+LLY,Lilly (Eli),Health Care,,,12
+XOM,ExxonMobil,Energy,,,13
+V,Visa Inc.,Financials,,,14
+INTC,Intel,Information Technology,,,15
+JNJ,Johnson & Johnson,Health Care,,,16
+ORCL,Oracle Corporation,Information Technology,,,17
+MA,Mastercard,Financials,,,18
+AMD,Advanced Micro Devices,Information Technology,,,19
+COST,Costco,Consumer Staples,,,20
+BAC,Bank of America,Financials,,,21
+CAT,Caterpillar Inc.,Industrials,,,22
+NFLX,Netflix,Communication Services,,,23
+LRCX,Lam Research,Information Technology,,,24
+CVX,Chevron Corporation,Energy,,,25
+CSCO,Cisco,Information Technology,,,26
+ABBV,AbbVie,Health Care,,,27
+HD,Home Depot (The),Consumer Discretionary,,,28
+AMAT,Applied Materials,Information Technology,,,29
+PG,Procter & Gamble,Consumer Staples,,,30
+KO,Coca-Cola Company (The),Consumer Staples,,,31
+GE,GE Aerospace,Industrials,,,32
+MS,Morgan Stanley,Financials,,,33
+UNH,UnitedHealth Group,Health Care,,,34
+MRK,Merck & Co.,Health Care,,,35
+GS,Goldman Sachs,Financials,,,36
+RTX,RTX Corporation,Industrials,,,37
+WFC,Wells Fargo,Financials,,,38
+AXP,American Express,Financials,,,39
+MCD,McDonald's,Consumer Discretionary,,,40
+C,Citigroup,Financials,,,41
+PEP,PepsiCo,Consumer Staples,,,42
+TMUS,T-Mobile US,Communication Services,,,43
+ADI,Analog Devices,Information Technology,,,44
+TMO,Thermo Fisher Scientific,Health Care,,,45
+NEE,NextEra Energy,Utilities,,,46
+DIS,Walt Disney Company (The),Communication Services,,,47
+ANET,Arista Networks,Information Technology,,,48
+BA,Boeing,Industrials,,,49
+AMGN,Amgen,Health Care,,,50

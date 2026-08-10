@@ -13544,3 +13544,55 @@ def test_b1486_claude_md_banner_counts_are_fresh():
         f"CLAUDE.md banner claims LEARNINGS L1-L{claimed_l}; LEARNINGS.md ends at "
         f"L{actual_l}. Sync the banner (CHECKLIST #67)."
     )
+
+
+def test_b1504_verdict_denominator_gate():
+    """CHECKLIST #182 / L363: a verdict without its denominator must BLOCK.
+
+    Pin test for the real B1502 defect -- "cannot clear the Sharpe bar" shipped
+    on 2 of 6 producers. The gate constrains the SENTENCE, so the test asserts
+    on the exact strings involved.
+    """
+    import importlib.util as _ilu
+    from pathlib import Path as _P
+    _spec = _ilu.spec_from_file_location(
+        "_vtc", _P(__file__).resolve().parents[2] / "scripts" / "verify_turn_compliance.py")
+    _vtc = _ilu.module_from_spec(_spec)
+    _spec.loader.exec_module(_vtc)
+
+    def _entries(assistant_text):
+        return [
+            {"type": "user", "message": {"content": "go"}},
+            {"type": "assistant",
+             "message": {"content": [{"type": "text", "text": assistant_text}]}},
+        ]
+
+    # (a) THE ACTUAL B1502 SENTENCE -> must be caught.
+    bad = _vtc.scan_verdict_denominators(
+        _entries("smc_breaker_block_long cannot clear the Sharpe bar."))
+    assert bad, "verdict with no denominator must trip the gate"
+
+    # (b) The SAME verdict carrying its denominator -> must pass.
+    ok = _vtc.scan_verdict_denominators(_entries(
+        "0 of 20 combinations across 2 of 6 producers passed, so it "
+        "cannot clear the Sharpe bar on the tested subset."))
+    assert ok == [], f"denominator-bearing verdict must pass, got {ok}"
+
+    # (c) The other real B1500 over-scope -> must be caught.
+    assert _vtc.scan_verdict_denominators(
+        _entries("These strategies are untunable.")), "untunable claim must trip"
+    assert _vtc.scan_verdict_denominators(
+        _entries("There is nothing to tighten here.")), "nothing-to-tighten must trip"
+
+    # (d) Ordinary prose must NOT trip -- the gate has to stay low-noise.
+    for benign in ("The pyramid passed 897 tests.",
+                   "The test fails on Windows.",
+                   "I ran 20 combinations and recorded the results."):
+        assert _vtc.scan_verdict_denominators(_entries(benign)) == [], \
+            f"false positive on benign text: {benign!r}"
+
+    # (e) Only text AFTER the last user message is scanned.
+    entries = _entries("cannot clear the bar")
+    entries.append({"type": "user", "message": {"content": "next"}})
+    assert _vtc.scan_verdict_denominators(entries) == [], \
+        "text before the last user message must not be re-scanned"

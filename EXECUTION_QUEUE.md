@@ -9801,3 +9801,29 @@ combinations across 2 of 6 producers passed. L363 + CHECKLIST #182 (verdict deno
 | **S6-B1503c** | **HIGH** | **P6 EMA span** - `compute_ema_sma` emits only spans 9/21/20/50/200 (READ technical.py:750). `price_above_ema_50` EXISTS and is free to test; 100/250 do NOT exist and would need a producer edit = NEW-GATE class, so ASK per `feedback_ask_before_adding_gates_vs_threshold_only`. |
 | **S6-B1503d** | MED | Re-run the full grid as P1 x P2 x P3 x P4 x P6 once the above land, and restate the verdict WITH its denominator per #182. |
 | **S6-B1502a** | HIGH | (carried) Band misclassification - holdout n=147 puts this strategy MID-BAND, not in the n>300 band of 41. Re-derive the partition from measured n. |
+
+---
+
+## B1504 (2026-08-10) - verdict-denominator gate MECHANISED + SP50 test subset derived
+
+**SHIPPED (owner-directed, L363 -> mechanical).** CHECKLIST #182 was prose; prose decays. The Stop
+hook now runs `scan_verdict_denominators()` (`scripts/verify_turn_compliance.py`), blocking any
+turn whose response states a verdict with no "N of M" denominator in the same text block. Added to
+`.claude/skills/execution-discipline/SKILL.md` as Truth-Standard clause 8 + a row in the mechanical
+enforcement table. Pin test `test_b1504_verdict_denominator_gate` asserts BOTH directions on the
+two REAL sentences that caused the misses.
+
+**3 defects in my own gate, caught by its pin test (L364):** (1) two Stop-hook gates each calling
+`sys.stdin.read()` - single-read stream, so the second silently never fired; (2) `\b` written as a
+literal BACKSPACE (0x08) via a lost raw-string prefix, so the denominator regex matched nothing and
+flagged every compliant sentence; (3) a regex edit that mangled an existing function's indentation.
+
+**SP50 TEST SUBSET (owner-directed).** `Backtesting universe/SP50 Subset_Top50 by Market Cap_Aug
+2026.csv` + `output_audit/sp50_subset.txt`. Reconciliation: **50/50 present in T1a active (503)**;
+**50/50 have cached OHLCV**.
+
+| ticket | pri | item |
+|---|---|---|
+| **S6-B1504a** | **MED** | **DISCLOSED LIMITATION:** only **249 of 503** T1a actives carry `market_cap` in `info_cache.json`, so this is the top 50 of 249 RANKABLE, not of 503. The other 254 were never eligible. Backfill caps or accept the restriction explicitly. |
+| **S6-B1504b** | **MED** | Selection is by market cap **as of today** for a 2022-2026 window - survivorship-flavoured. Acceptable for parameter tuning if disclosed; NOT acceptable as the basis of a strategy verdict. Pin this caveat wherever SP50 results are reported. |
+| S6-B1503a/b/c | HIGH | (carried) P2 `close_mitigation`, P1 `swing_length`, P6 EMA span - the 3 untested producers. Now runnable on the SP50 subset. |

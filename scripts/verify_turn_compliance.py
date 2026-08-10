@@ -27,6 +27,7 @@ nothing).
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 import sys
 import time
@@ -87,37 +88,115 @@ def scan_transcript_entries(entries: list[dict]) -> tuple[bool, bool]:
                 marker = True
     return commit_made, marker
 
+_ENTRIES_CACHE: list | None = None
+
+
+def _read_entries() -> list:
+    """Parse the Stop-hook transcript ONCE. stdin is a single-read stream, so
+    every gate must share this cache rather than re-reading it (B1504 defect:
+    two gates each calling sys.stdin.read() -> the second always saw '')."""
+    global _ENTRIES_CACHE
+    if _ENTRIES_CACHE is not None:
+        return _ENTRIES_CACHE
+    _ENTRIES_CACHE = []
+    try:
+        payload = json.loads(sys.stdin.read() or "{}")
+    except Exception:
+        return _ENTRIES_CACHE
+    tpath = payload.get("transcript_path")
+    if not tpath or not os.path.exists(tpath):
+        return _ENTRIES_CACHE
+    with open(tpath, encoding="utf-8", errors="ignore") as fh:
+        for line in fh:
+            try:
+                _ENTRIES_CACHE.append(json.loads(line))
+            except Exception:
+                continue
+    return _ENTRIES_CACHE
+
+
+# B1504 / CHECKLIST #182 -- VERDICT DENOMINATOR GATE.
+# Root cause (L363): the Truth Standard's evidence classes tag a claim's
+# PROVENANCE, not its SCOPE. "20 combinations ran and 0 passed" and "the
+# strategy cannot clear the bar" rest on IDENTICAL evidence and both tag
+# EXECUTED, yet the second is false. Nothing required a verdict to carry its
+# denominator, so a 2-of-6-producer investigation shipped as a verdict.
+# This gate makes the denominator mechanically required in the sentence.
+VERDICT_PATTERNS = [
+    r"cannot\s+(?:clear|pass|reach|meet)",
+    r"(?:does|do)\s+not\s+clear",
+    r"\buntunable\b",
+    r"nothing\s+to\s+(?:tighten|tune)",
+    r"no\s+combination\s+(?:passes|clears|wins)",
+    r"cannot\s+be\s+(?:rescued|salvaged|saved)",
+    r"is\s+not\s+(?:viable|salvageable)",
+]
+# A denominator: "0 of 20", "2 of 6 producers", "13 of 41 strategies".
+DENOMINATOR_RE = r"\b\d+\s+of\s+\d+\b"
+
+
+def scan_verdict_denominators(entries: list[dict]) -> list[str]:
+    """Return assistant text blocks stating a VERDICT with no denominator.
+
+    Pure for testability. A block trips the gate when it uses verdict language
+    about an object's capability but names no "N of M" scope anywhere in it.
+    """
+    import re as _re
+    last_user = -1
+    for i, e in enumerate(entries):
+        if e.get("type") != "user":
+            continue
+        content = (e.get("message") or {}).get("content")
+        if isinstance(content, str) and content.strip():
+            last_user = i
+        elif isinstance(content, list) and any(
+                isinstance(c, dict) and c.get("type") == "text" for c in content):
+            last_user = i
+    offenders = []
+    for e in entries[last_user + 1:]:
+        if e.get("type") != "assistant":
+            continue
+        content = (e.get("message") or {}).get("content") or []
+        if not isinstance(content, list):
+            continue
+        for c in content:
+            if not isinstance(c, dict) or c.get("type") != "text":
+                continue
+            text = c.get("text") or ""
+            if _re.search(DENOMINATOR_RE, text):
+                continue  # scope is named -> compliant
+            for pat in VERDICT_PATTERNS:
+                m = _re.search(pat, text, _re.I)
+                if m:
+                    lo = max(0, m.start() - 60)
+                    offenders.append(text[lo:m.end() + 60].replace(chr(10), " "))
+                    break
+    return offenders
+
+
+def check_verdict_denominator() -> str | None:
+    """Stop-hook wrapper: block a turn that states a verdict without its scope."""
+    bad = scan_verdict_denominators(_read_entries())
+    if not bad:
+        return None
+    out = ["TURN-GATE BLOCK (CHECKLIST #182, B1504): a VERDICT was stated "
+           "without its denominator. Name the tested scope explicitly "
+           "(e.g. '0 of 20 combinations across 2 of 6 producers'):"]
+    out += [f"  ...{b}..." for b in bad[:3]]
+    return chr(10).join(out)
+
 
 def check_compliance_marker() -> str | None:
-    """Read the Stop-hook stdin JSON -> transcript; if a git commit happened
-    this turn but the final response has no 'CHECKLIST compliance' statement,
-    return a block message. FAIL-OPEN on any parse issue (a broken hook must
-    never brick turns)."""
-    try:
-        if sys.stdin.isatty():
-            return None
-        payload = json.loads(sys.stdin.read() or "{}")
-        tpath = payload.get("transcript_path")
-        if not tpath or not Path(tpath).exists():
-            return None
-        entries = []
-        with open(tpath, encoding="utf-8", errors="replace") as fh:
-            for line in fh:
-                line = line.strip()
-                if line:
-                    try:
-                        entries.append(json.loads(line))
-                    except Exception:
-                        pass
-        commit_made, marker = scan_transcript_entries(entries)
-        if commit_made and not marker:
-            return ("TURN-GATE BLOCK (Gate B v2, B1338): a git commit was made "
-                    "this turn but the final response has NO 'CHECKLIST "
-                    "compliance' statement (skill Phase 6 / CLAUDE.md "
-                    "mandatory end-of-response statement). Add the compliance "
-                    "statement and end the turn again.")
-    except Exception:
-        return None
+    """Read the shared transcript cache; if a git commit happened this turn
+    but the final response has no CHECKLIST compliance statement, block."""
+    commit_made, marker = scan_transcript_entries(_read_entries())
+    if commit_made and not marker:
+        return ("TURN-GATE BLOCK (Gate B v2, B1338): a git commit was made "
+                "this turn but the final response has NO 'CHECKLIST "
+                "compliance' statement (skill Phase 6 / CLAUDE.md "
+                "mandatory end-of-response statement). Add the compliance "
+                "statement and end the turn again.")
+    return None
     return None
 
 
@@ -147,6 +226,12 @@ def main() -> int:
     # B1338: compliance-marker check runs regardless of tree state (a turn
     # can commit everything cleanly and still omit the mandated statement).
     marker_block = check_compliance_marker()
+    # B1504 / CHECKLIST #182: runs regardless of tree state -- an over-scoped
+    # verdict is a defect even when the turn commits nothing.
+    verdict_block = check_verdict_denominator()
+    if verdict_block:
+        print(verdict_block, file=sys.stderr)
+        return 2
 
     modified = get_modified_tracked()
     substantive, _churn = split_churn(modified)

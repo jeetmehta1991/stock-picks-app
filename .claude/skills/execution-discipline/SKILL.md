@@ -78,6 +78,21 @@ it wins over speed, over completeness, over looking finished.
    and visibly** in the next message — state what was claimed, what is
    actually true, and the evidence. Then Phase 5 (L-entry). A quiet
    correction is a second fabrication.
+8. **VERDICT SCOPE (CHECKLIST #182, B1504).** The four evidence classes tag a
+   claim's PROVENANCE, not its SCOPE - so an EXECUTED claim can still be false
+   by reaching further than what was measured. Before stating any verdict about
+   an object (strategy, producer, module, dataset), enumerate that object's FULL
+   parameter/dimension space and mark each entry TESTED / UNTESTED. **The verdict
+   sentence must name its denominator** - "0 of 20 combinations across 2 of 6
+   producers", never "it fails". MECHANICALLY ENFORCED: the Stop hook
+   (`scan_verdict_denominators` in `scripts/verify_turn_compliance.py`) blocks a
+   turn whose response uses verdict language with no "N of M" in the same block.
+   *Lineage:* B1502 shipped "cannot clear the Sharpe bar" on 2 of 6 producers;
+   B1500 shipped "16 of 41 strategies have nothing to tighten" having enumerated
+   only gate expressions, never producers. Note this is distinct from the scope-of-
+   ACTION rule (L361, widening what you DO without approval) - this covers
+   scope-of-CONCLUSION.
+
 7. **"I don't know" and "this failed" are always compliant answers.**
    Reporting a failed test, an interrupted run, or an unresolved question
    accurately is success; dressing it up is the violation.
@@ -136,6 +151,7 @@ you work WITH them, not against them:
 | C7 banned-pattern diff scan | every commit | ADDED lines with `not s.get(`, default-True strategy gates, relative `data_prefetch` paths, unlogged `except: pass` (waiver: same-line `# preflight-allow: <rule>`) |
 | C8 queue-entry gate | every commit | commits not staging EXECUTION_QUEUE.md (escape: `GIT_QUEUE_EXEMPT=1`, logged to `.queue_exempt_log`) |
 | C9 doc→queue cross-check | every commit | `output_audit/*.md` referencing ticket IDs absent from the queue |
+| #182 verdict-denominator | every turn-end (Stop hook) | a response stating a verdict with no "N of M" denominator naming the tested scope (B1504) |
 | Gate B Stop hook | every turn-end (`.claude/settings.json` hooks.Stop → `scripts/verify_turn_compliance.py`) | ending a turn with modified TRACKED files uncommitted (escape: one-shot `.stop_exempt`, logged) |
 
 - **Fresh clones** (AWS instances, new machines): git-hook shims do NOT
