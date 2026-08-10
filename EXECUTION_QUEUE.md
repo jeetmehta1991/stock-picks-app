@@ -10205,3 +10205,29 @@ number of FLAG VALUES. Data was correct, the report was not.
 | **S6-B1517a** | **HIGH** | **MANDATORY PRE-LAUNCH STEP, not prose:** every long-run launch arms a */15 CronCreate check-and-push + completion PushNotification + CronDelete on finish, IN THE LAUNCH TURN. Rung 10 must not launch without it (L385). |
 | **S6-B1517b** | **HIGH** | No rung's PASS may be reported as a strategy result until entries/ticker converges to R5's 0.9239. At rung 5 the ratio is 26.63x, so all 4 passers are artifacts. |
 | **S6-B1517c** | MED | Only 6 of 200 combinations were gradable at 5 tickers. Report gradability per rung as a first-class metric - it determines from which rung the grid is interpretable at all. |
+
+---
+
+## B1518 (2026-08-10) - PACKAGED RUN BLOCKED: P1/P6 never reach the engine
+
+**OWNER:** *"Can it be packaged into one run? Sequencing is not making sense."* Correct on both
+counts. Cost is driven by ENGINE RUNS (~42 min each), not universe size, and the 6-rung ladder was
+answering a question the owner had already closed by ruling "match R5 at 381" (L388). **Ladder
+HALTED; rung 5 retained as a result.** Notification cron `adf6a839` armed BEFORE that launch per
+S6-B1517a - that gate held.
+
+**THE PACKAGED RUN CANNOT LAUNCH (L387).** Verified at the gate, before ~14 h was spent:
+- `screener.py:8699` -> `compute_smc_signals(df, ticker=ticker)`; **only `ticker` is passed**, so
+  P1 `swing_length` always takes its default 20.
+- `technical.py:750` -> `for fast, slow in [(9,21),(20,50),(50,200)]`; **hardcoded literal**, so P6
+  `span` cannot be varied.
+
+**All 20 engine configs would have produced 20 IDENTICAL cubes.** The B1500 sandbox called
+`compute_smc_signals` DIRECTLY with arguments - not the engine's call path. Gate 0 proved isolation,
+never engine-consumption. `feedback_wired_means_engine_consumed`, violated while holding the rule.
+
+| ticket | pri | item |
+|---|---|---|
+| **S6-B1518a** | **BLOCKER** | **OWNER APPROVAL NEEDED - production code change.** Plumb P1/P6 to the engine: (a) `config.py` gains `SMC_SWING_LENGTH` + `EMA_PAIRS`; (b) `screener.py:8699` passes `swing_length` from config; (c) `technical.py:750` reads pairs from config. Small and well-defined, but it touches the SIMULATION path, so it needs sign-off and a pin test proving a changed value actually alters engine output. |
+| **S6-B1518b** | **HIGH** | Pin test: set `SMC_SWING_LENGTH` to a non-default, run the engine on 1 ticker, assert the fire set CHANGES. Without it "plumbed" is another grep-level claim. |
+| **S6-B1518c** | MED | Audit every other SPEC parameter the same way before its grid is costed - does it reach the engine, or only the producer in isolation? Applies to all 41 tightening-band strategies, not just this one. |

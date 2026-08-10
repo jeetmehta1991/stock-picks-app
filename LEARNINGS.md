@@ -5988,3 +5988,24 @@ reported `diagnosed: 2` where the true figure was 123 fires per flag value: when
 data was correct; the report was not. **Rule: when a container gains a nesting level, grep every
 `len()` / `.keys()` / iteration over it** - aggregate reporting silently re-points at the new outer
 level and produces a plausible small number that reads as catastrophic data loss.
+
+### L387
+**The sandbox proved the PRODUCER is parameterisable; the ENGINE never passes those parameters.**
+B1518. Caught at the launch gate for a ~14 h packaged run. `screener.py:8699` calls
+`compute_smc_signals(df, ticker=ticker)` - **only `ticker`**, so `swing_length` always takes its
+default 20 - and `technical.py:750` hardcodes the EMA pairs as a literal `[(9,21),(20,50),(50,200)]`.
+**All 20 engine configs would have run at identical production values and produced 20 IDENTICAL
+cubes.** My B1500 sandbox called `compute_smc_signals` DIRECTLY with arguments, which is not the
+engine's call path; Gate 0 proved isolation, never engine-consumption. **This is
+`feedback_wired_means_engine_consumed` committed while holding the rule.** Rule: before costing any
+parameter sweep, PROVE the parameter reaches the engine on its real call path - a sandbox that
+bypasses the caller proves only that the function has an argument.
+
+### L388
+**Sequencing a diagnostic after the decision it informs is pure waste - the owner caught it.**
+B1518: *"Can it be packaged into one run? Sequencing is not making sense."* Correct. My plan ran a
+6-rung universe ladder (~4 h) to find where results converge, THEN the parameter grid at 381. But
+the universe was already DECIDED at 381 by owner ruling, so the convergence curve answered a closed
+question. **Rule: before running a diagnostic, name the DECISION it changes; if the decision is
+already made, the diagnostic is documentation, not a gate** - and it should not sit in front of the
+deliverable.
