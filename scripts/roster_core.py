@@ -105,7 +105,16 @@ def evaluate(pnl: pd.Series, hold: pd.Series, *, min_n: int | None = None,
         # artifact (b1453_phase_1b_roster.json, b1452_*, b1467_*), so a bare rename silently
         # breaks every reader of those. Canonical criterion #11 (a real per-regime verdict) is
         # NOT implemented here - that is S6-B1455e, an owner decision. L287.
-        "sharpe_per_regime": sharpe is not None and sharpe >= PC["min_sharpe_per_regime"],
+        "sharpe_per_regime": sharpe is not None and sharpe >= PC["min_sharpe_overall"],
+        # B1493 (owner-approved 2026-08-09: "a sharpe of >0.5 is too weak... it needs to
+        # be >1.0"). Switched from min_sharpe_per_regime (0.5) to min_sharpe_overall
+        # (1.0). This ARMS a bar that already existed: min_sharpe_overall is the
+        # canonical overall threshold in CLAUDE.md criterion #10 and was one of the two
+        # ORPHANED keys found at B1456 - defined, value-pinned, read by no gate. The
+        # pipeline had been applying the LENIENT per-regime bar to a POOLED statistic.
+        # Measured before the change: 34 cells clear at 0.5, 8 at 0.7, 4 at 1.0 - the
+        # collapse between 0.5 and 0.7 is the band B1467 measured as INSIDE the 0.369
+        # selection-noise floor, i.e. never distinguishable from noise.
         "profit_factor":     pf >= pf_bar,
         "sortino":           sortino is not None and sortino >= PC["min_sortino_per_regime"],
         "psr":               dsr.get("psr") is not None and dsr["psr"] >= PC["min_psr"],

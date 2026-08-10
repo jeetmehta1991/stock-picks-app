@@ -5485,3 +5485,30 @@ exactly what made the guard blind: before it, every caller held its own copy and
 all.** **Generalized rule: when code is consolidated into a shared module, every checker that
 enumerates source files BY HAND must be updated in the SAME batch -- a hardcoded file list is a
 duplicate of the module graph, and it goes stale the moment the graph changes.**
+
+### L345
+**Arming the canonical Sharpe bar cut the roster from 16 cells to 2, and the sensitivity curve
+predicted it exactly.** Owner: *"a sharpe of >0.5 is too weak... it needs to be >1.0."* The change
+was one line -- `roster_core` now reads `min_sharpe_overall` (1.0) instead of
+`min_sharpe_per_regime` (0.5) -- and it ARMED a key that already existed as CLAUDE.md criterion #10
+and had sat ORPHANED since B1456. Measured before applying: 34 cells at 0.5, 8 at 0.7, 4 at 1.0.
+The near-vertical drop between 0.5 and 0.7 is the band B1467 independently measured as inside the
+**0.369 selection-noise floor** -- so the bulk of the roster had never been distinguishable from
+noise, and two separate lines of evidence agreed without being designed to. Final: 4 cleared the
+gates, BH-FDR removed 2 (including `pivot_r1_breakout` at Sharpe 1.528 with p=0.113 -- a high ratio
+on 91 trades), leaving **2 cells, both ROBUST, PROVISIONAL 0**. **Generalized rule: publishing the
+sensitivity curve BEFORE a threshold decision converts an argument into an arithmetic -- the owner
+could see that 0.5 -> 1.0 costs 30 cells and chose knowingly. A threshold changed without its curve
+is a change whose cost is discovered afterward.**
+
+### L346
+**A two-cell roster is the correct output of a correct pipeline, and saying so is the job.** After
+this change the deployable set is 2 cells / 3 strategies, all in the `xs_momentum_*` family -- not a
+diversified book by any reading. The temptation is to soften the bar until the number looks like a
+portfolio. But every gate here is now the canonical one, the holdout was read once, BH-FDR controls
+the family, and both survivors clear by more than the measured noise floor. **The pipeline is not
+producing too few strategies; the strategy library is producing too few edges that survive honest
+grading.** Those are different problems with different fixes, and only the second one is real.
+**Generalized rule: when a correctly-specified filter returns an uncomfortably small result, the
+error is in the population or the search, never in the filter -- relaxing the filter to reach a
+target count converts a measurement into a target.**

@@ -9322,3 +9322,52 @@ passed vacuously. `test_b1456` reported the new keys as orphaned, exposing **L34
 guard's hardcoded gating-module list never included `scripts/roster_core.py`, the canonical
 evaluator created at B1463. From B1463 the guard watched the CALLERS while the evaluator they
 delegate to was invisible. Both fixed; pyramid **897 passed**.
+
+---
+
+## B1493 (2026-08-09) — owner-approved: Sharpe gate 0.5 -> 1.0. Roster 16 -> 2 cells.
+
+**OWNER:** *"i believe a sharpe of >0.5 is too weak... it needs to be >1.0."* Applied.
+
+**This ARMS a bar that already existed.** `min_sharpe_overall = 1.0` is the canonical overall
+threshold (CLAUDE.md criterion #10) and was one of the two ORPHANED keys found at B1456 - defined,
+value-pinned by a test, read by no gate. The pipeline had been applying `min_sharpe_per_regime`
+(0.5, the LENIENT per-regime bar) to a POOLED statistic. `roster_core.evaluate()` now reads
+`min_sharpe_overall`.
+
+### FUNNEL: `253 -> 211 evaluable -> 4 gates -> 2 BH-FDR -> 2 de-duped`
+
+**Roster 16 -> 2 cells / 3 distinct strategies.**
+
+| strategy | dir | n | Sharpe | PF | exit | status |
+|---|---|---|---|---|---|---|
+| `xs_momentum_top_decile` | long | 50 | **1.349** | 2.34 | `time_stop_10d` | **ROBUST** |
+| `xs_momentum_with_smart_money_long` | long | 162 | **1.004** | 2.94 | `regime_flip` | **ROBUST** |
+
+Both carry the same registered mirror, `xs_momentum_bottom_decile_short`. **ROBUST 2 / PROVISIONAL 0**
+- for the first time every roster member clears the bar by more than the 0.369 selection-noise floor.
+
+### What the bar removed, and why that is the point
+Sensitivity measured BEFORE applying: **34 cells at 0.5 -> 8 at 0.7 -> 4 at 1.0**. The collapse
+between 0.5 and 0.7 is precisely the band B1467 measured as INSIDE the selection-noise floor: those
+cells were never statistically distinguishable from noise, and the 0.5 bar was admitting them.
+
+**BH-FDR then removed 2 of the 4** that cleared the gates:
+- `pivot_r1_breakout` Sharpe 1.528 but **p=0.113** vs a 0.0126 threshold - a high ratio on only 91
+  trades, exactly what FDR exists to reject
+- `xs_momentum_quality_combined` Sharpe 1.133, p=0.0276 - also above threshold
+
+### The strategic consequence, stated plainly
+The deployable roster is now **2 cells from 3 strategies, all in one family (`xs_momentum_*`)**.
+Effective breadth is not meaningfully measurable at n=2 and is certainly worse than the ~2.9 measured
+at 13 cells. **This is not a deployable book on its own** - it is a small set of genuinely
+significant edges. S6-OPT-196 (tightening) shifts from "an enhancement" to **the only path to a
+deployable Phase 1B**.
+
+### Both guards fired again, correctly
+`test_b1456` allowlist-rot assertion fired the moment `min_sharpe_overall` became live (it was on
+the known-orphaned list). `test_b1464` was flipping `min_sharpe_per_regime`, which the gate no
+longer reads, and would have passed vacuously. Both updated. Pyramid **897 passed**.
+
+- **S6-B1493a (HIGH)** — with the roster at 2, decide whether Phase 1B proceeds on this basis or
+  waits for S6-OPT-196 to deliver additional ROBUST cells.

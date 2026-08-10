@@ -13219,7 +13219,9 @@ def test_b1441_data_scarcity_retirement_is_wired_and_semantically_separate():
 # min_regimes_passing by measure_criterion_11.py to measure. Neither gates.
 _KNOWN_UNWIRED_CRITERIA = {
     "min_regimes_passing":   "S6-B1456a - criterion #11, per-regime verdict; owner decision open",
-    "min_sharpe_overall":    "S6-B1456c - overall-tier bar; unused because the gate set is pooled",
+    # B1493: min_sharpe_overall REMOVED from this allowlist - it is now WIRED as the
+    # live Sharpe gate (owner-approved 0.5 -> 1.0). The allowlist-rot assertion caught
+    # it the moment it became live, which is the guard working as designed.
     "min_trades_per_regime": "S6-B1456a - per-regime count bar; only the pooled tier is wired",
 }
 
@@ -13396,7 +13398,9 @@ def test_b1464_live_gate_thresholds_actually_gate():
     # (config key, gate name, value that must FAIL, value that must PASS)
     observed = base
     cases = [
-        ("min_sharpe_per_regime", "sharpe_per_regime",
+        # B1493: the gate now reads min_sharpe_overall (1.0), not min_sharpe_per_regime.
+        # Flipping the unread key would make this vacuously pass.
+        ("min_sharpe_overall", "sharpe_per_regime",
          (observed["sharpe"] or 0) + 5.0, -99.0),
         ("min_profit_factor_overall", "profit_factor",
          observed["profit_factor"] + 5.0, 0.0),

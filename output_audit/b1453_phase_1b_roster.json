@@ -30,80 +30,18 @@
   "fdr_threshold": 0.012559241706161139,
   "jaccard": 0.7,
   "n_cells": 253,
-  "n_passed_fdr": 23,
-  "n_roster": 16,
-  "dup_of": {
-    "institutional_persistent_holders_long": "institutional_strong_conviction_long",
-    "institutional_committed_growth_long": "institutional_strong_conviction_long",
-    "institutional_insider_combo_long": "institutional_strong_conviction_long",
-    "rsi_oversold_with_smart_money_long": "institutional_strong_conviction_long",
-    "institutional_cluster_long": "institutional_strong_conviction_long",
-    "institutional_multi_quarter_persistence_long": "institutional_strong_conviction_long",
-    "institutional_breakout_confirmation_long": "institutional_persistence_breakout_long"
-  },
+  "n_passed_fdr": 2,
+  "n_roster": 2,
+  "dup_of": {},
   "mirrors": {
     "registered": [
-      "pead_short_negative_yoy_growth",
-      "poc_magnet_short",
-      "smc_breaker_block_short",
       "xs_momentum_bottom_decile_short"
     ],
-    "long_only_data": [
-      "institutional_high_conviction_long",
-      "institutional_persistence_breakout_long",
-      "institutional_persistence_oversold_long",
-      "institutional_strong_conviction_long"
-    ],
-    "dual_self": [
-      "avwap_252_breakout",
-      "force_index_breakout",
-      "macd_crossover",
-      "macd_fast_crossover",
-      "r1_break_retest",
-      "rsi_volume_200ema",
-      "smc_inverse_fvg"
-    ],
+    "long_only_data": [],
+    "dual_self": [],
     "needs_creation": []
   },
   "roster": [
-    {
-      "cube": "R5",
-      "n_tickers": 544,
-      "strategy": "smc_inverse_fvg",
-      "direction": "long",
-      "exit": "regime_flip",
-      "is_sharpe": 0.678,
-      "is_n_gates": 5,
-      "holdout": {
-        "n": 92,
-        "sharpe": 0.813,
-        "sortino": 2.357,
-        "psr": 1.0,
-        "profit_factor": 2.861,
-        "payoff": 2.01,
-        "expectancy": 4.9155,
-        "win_rate": 0.587,
-        "p": 0.0044172482505294595,
-        "ci_lo": 0.193,
-        "gates": {
-          "sharpe_per_regime": true,
-          "profit_factor": true,
-          "sortino": true,
-          "psr": true,
-          "min_trades": true
-        },
-        "n_gates": 5,
-        "all_live_gates": true
-      },
-      "bh": true,
-      "verdict": "PASS",
-      "mirror_status": "DUAL-SELF",
-      "mirror": "smc_inverse_fvg",
-      "asym_signals": [],
-      "mirror_registered": true,
-      "margin": 0.313,
-      "status": "PROVISIONAL"
-    },
     {
       "cube": "R5",
       "n_tickers": 544,
@@ -111,7 +49,7 @@
       "direction": "long",
       "exit": "time_stop_10d",
       "is_sharpe": 0.671,
-      "is_n_gates": 5,
+      "is_n_gates": 4,
       "holdout": {
         "n": 50,
         "sharpe": 1.349,
@@ -149,7 +87,7 @@
       "direction": "long",
       "exit": "regime_flip",
       "is_sharpe": 0.578,
-      "is_n_gates": 5,
+      "is_n_gates": 4,
       "holdout": {
         "n": 162,
         "sharpe": 1.004,
@@ -179,509 +117,6 @@
       "mirror_registered": true,
       "margin": 0.504,
       "status": "ROBUST"
-    },
-    {
-      "cube": "R5",
-      "n_tickers": 544,
-      "strategy": "rsi_volume_200ema",
-      "direction": "long",
-      "exit": "earnings_blackout",
-      "is_sharpe": 0.539,
-      "is_n_gates": 5,
-      "holdout": {
-        "n": 63,
-        "sharpe": 0.545,
-        "sortino": 1.007,
-        "psr": 1.0,
-        "profit_factor": 2.442,
-        "payoff": 1.4,
-        "expectancy": 4.7018,
-        "win_rate": 0.635,
-        "p": 0.01210340692387199,
-        "ci_lo": 0.062,
-        "gates": {
-          "sharpe_per_regime": true,
-          "profit_factor": true,
-          "sortino": true,
-          "psr": true,
-          "min_trades": true
-        },
-        "n_gates": 5,
-        "all_live_gates": true
-      },
-      "bh": true,
-      "verdict": "PASS",
-      "mirror_status": "DUAL-SELF",
-      "mirror": "rsi_volume_200ema",
-      "asym_signals": [],
-      "mirror_registered": true,
-      "margin": 0.045,
-      "status": "PROVISIONAL"
-    },
-    {
-      "cube": "R5",
-      "n_tickers": 544,
-      "strategy": "pead_long_high_yoy_growth_only",
-      "direction": "long",
-      "exit": "breakeven_plus_trail",
-      "is_sharpe": 0.53,
-      "is_n_gates": 5,
-      "holdout": {
-        "n": 422,
-        "sharpe": 0.585,
-        "sortino": 2.966,
-        "psr": 1.0,
-        "profit_factor": 3.14,
-        "payoff": 7.05,
-        "expectancy": 4.4218,
-        "win_rate": 0.308,
-        "p": 9.397822445123306e-08,
-        "ci_lo": 0.361,
-        "gates": {
-          "sharpe_per_regime": true,
-          "profit_factor": true,
-          "sortino": true,
-          "psr": true,
-          "min_trades": true
-        },
-        "n_gates": 5,
-        "all_live_gates": true
-      },
-      "bh": true,
-      "verdict": "PASS",
-      "mirror_status": "REGISTERED",
-      "mirror": "pead_short_negative_yoy_growth",
-      "asym_signals": [],
-      "mirror_registered": true,
-      "margin": 0.085,
-      "status": "PROVISIONAL"
-    },
-    {
-      "cube": "R5",
-      "n_tickers": 544,
-      "strategy": "poc_magnet_long",
-      "direction": "long",
-      "exit": "time_stop_10d",
-      "is_sharpe": 0.522,
-      "is_n_gates": 5,
-      "holdout": {
-        "n": 151,
-        "sharpe": 0.808,
-        "sortino": 1.457,
-        "psr": 1.0,
-        "profit_factor": 1.722,
-        "payoff": 1.14,
-        "expectancy": 1.3383,
-        "win_rate": 0.603,
-        "p": 0.008884204055925717,
-        "ci_lo": 0.134,
-        "gates": {
-          "sharpe_per_regime": true,
-          "profit_factor": true,
-          "sortino": true,
-          "psr": true,
-          "min_trades": true
-        },
-        "n_gates": 5,
-        "all_live_gates": true
-      },
-      "bh": true,
-      "verdict": "PASS",
-      "mirror_status": "REGISTERED",
-      "mirror": "poc_magnet_short",
-      "asym_signals": [],
-      "mirror_registered": true,
-      "margin": 0.308,
-      "status": "PROVISIONAL"
-    },
-    {
-      "cube": "R5",
-      "n_tickers": 544,
-      "strategy": "avwap_252_breakout",
-      "direction": "long",
-      "exit": "breakeven_plus_trail",
-      "is_sharpe": 0.483,
-      "is_n_gates": 4,
-      "holdout": {
-        "n": 314,
-        "sharpe": 0.532,
-        "sortino": 1.62,
-        "psr": 1.0,
-        "profit_factor": 2.053,
-        "payoff": 3.6,
-        "expectancy": 2.234,
-        "win_rate": 0.363,
-        "p": 0.00011359329276651399,
-        "ci_lo": 0.246,
-        "gates": {
-          "sharpe_per_regime": true,
-          "profit_factor": true,
-          "sortino": true,
-          "psr": true,
-          "min_trades": true
-        },
-        "n_gates": 5,
-        "all_live_gates": true
-      },
-      "bh": true,
-      "verdict": "PASS",
-      "mirror_status": "DUAL-SELF",
-      "mirror": "avwap_252_breakout",
-      "asym_signals": [],
-      "mirror_registered": true,
-      "margin": 0.032,
-      "status": "PROVISIONAL"
-    },
-    {
-      "cube": "R5",
-      "n_tickers": 544,
-      "strategy": "macd_fast_crossover",
-      "direction": "long",
-      "exit": "breakeven_plus_trail",
-      "is_sharpe": 0.437,
-      "is_n_gates": 4,
-      "holdout": {
-        "n": 378,
-        "sharpe": 0.537,
-        "sortino": 2.211,
-        "psr": 1.0,
-        "profit_factor": 2.399,
-        "payoff": 4.8,
-        "expectancy": 3.1257,
-        "win_rate": 0.333,
-        "p": 4.8279418812929124e-05,
-        "ci_lo": 0.264,
-        "gates": {
-          "sharpe_per_regime": true,
-          "profit_factor": true,
-          "sortino": true,
-          "psr": true,
-          "min_trades": true
-        },
-        "n_gates": 5,
-        "all_live_gates": true
-      },
-      "bh": true,
-      "verdict": "PASS",
-      "mirror_status": "DUAL-SELF",
-      "mirror": "macd_fast_crossover",
-      "asym_signals": [],
-      "mirror_registered": true,
-      "margin": 0.037,
-      "status": "PROVISIONAL"
-    },
-    {
-      "cube": "R5",
-      "n_tickers": 544,
-      "strategy": "institutional_strong_conviction_long",
-      "direction": "long",
-      "exit": "breakeven_plus_trail",
-      "is_sharpe": 0.436,
-      "is_n_gates": 4,
-      "holdout": {
-        "n": 590,
-        "sharpe": 0.613,
-        "sortino": 2.811,
-        "psr": 1.0,
-        "profit_factor": 2.814,
-        "payoff": 5.05,
-        "expectancy": 4.1704,
-        "win_rate": 0.358,
-        "p": 2.0067434849506634e-09,
-        "ci_lo": 0.406,
-        "gates": {
-          "sharpe_per_regime": true,
-          "profit_factor": true,
-          "sortino": true,
-          "psr": true,
-          "min_trades": true
-        },
-        "n_gates": 5,
-        "all_live_gates": true
-      },
-      "bh": true,
-      "verdict": "PASS",
-      "mirror_status": "LONG-ONLY-DATA",
-      "mirror": null,
-      "asym_signals": [
-        "institutional_increased",
-        "institutional_new_positions"
-      ],
-      "mirror_registered": false,
-      "margin": 0.113,
-      "status": "PROVISIONAL"
-    },
-    {
-      "cube": "R5",
-      "n_tickers": 544,
-      "strategy": "macd_crossover",
-      "direction": "long",
-      "exit": "breakeven_plus_trail",
-      "is_sharpe": 0.434,
-      "is_n_gates": 4,
-      "holdout": {
-        "n": 265,
-        "sharpe": 0.588,
-        "sortino": 2.408,
-        "psr": 1.0,
-        "profit_factor": 2.544,
-        "payoff": 5.2,
-        "expectancy": 3.1603,
-        "win_rate": 0.328,
-        "p": 0.0001451312346879518,
-        "ci_lo": 0.266,
-        "gates": {
-          "sharpe_per_regime": true,
-          "profit_factor": true,
-          "sortino": true,
-          "psr": true,
-          "min_trades": true
-        },
-        "n_gates": 5,
-        "all_live_gates": true
-      },
-      "bh": true,
-      "verdict": "PASS",
-      "mirror_status": "DUAL-SELF",
-      "mirror": "macd_crossover",
-      "asym_signals": [],
-      "mirror_registered": true,
-      "margin": 0.088,
-      "status": "PROVISIONAL"
-    },
-    {
-      "cube": "R5",
-      "n_tickers": 544,
-      "strategy": "force_index_breakout",
-      "direction": "long",
-      "exit": "breakeven_plus_trail",
-      "is_sharpe": 0.423,
-      "is_n_gates": 4,
-      "holdout": {
-        "n": 259,
-        "sharpe": 0.519,
-        "sortino": 2.528,
-        "psr": 1.0,
-        "profit_factor": 2.423,
-        "payoff": 5.42,
-        "expectancy": 3.2149,
-        "win_rate": 0.309,
-        "p": 0.001182181154762686,
-        "ci_lo": 0.181,
-        "gates": {
-          "sharpe_per_regime": true,
-          "profit_factor": true,
-          "sortino": true,
-          "psr": true,
-          "min_trades": true
-        },
-        "n_gates": 5,
-        "all_live_gates": true
-      },
-      "bh": true,
-      "verdict": "PASS",
-      "mirror_status": "DUAL-SELF",
-      "mirror": "force_index_breakout",
-      "asym_signals": [],
-      "mirror_registered": true,
-      "margin": 0.019,
-      "status": "PROVISIONAL"
-    },
-    {
-      "cube": "R5",
-      "n_tickers": 544,
-      "strategy": "r1_break_retest",
-      "direction": "long",
-      "exit": "breakeven_plus_trail",
-      "is_sharpe": 0.42,
-      "is_n_gates": 4,
-      "holdout": {
-        "n": 338,
-        "sharpe": 0.501,
-        "sortino": 1.823,
-        "psr": 1.0,
-        "profit_factor": 2.108,
-        "payoff": 4.95,
-        "expectancy": 2.4025,
-        "win_rate": 0.299,
-        "p": 0.00019333813223344363,
-        "ci_lo": 0.222,
-        "gates": {
-          "sharpe_per_regime": true,
-          "profit_factor": true,
-          "sortino": true,
-          "psr": true,
-          "min_trades": true
-        },
-        "n_gates": 5,
-        "all_live_gates": true
-      },
-      "bh": true,
-      "verdict": "PASS",
-      "mirror_status": "DUAL-SELF",
-      "mirror": "r1_break_retest",
-      "asym_signals": [],
-      "mirror_registered": true,
-      "margin": 0.001,
-      "status": "PROVISIONAL"
-    },
-    {
-      "cube": "R5",
-      "n_tickers": 544,
-      "strategy": "smc_breaker_block_long",
-      "direction": "long",
-      "exit": "breakeven_plus_trail",
-      "is_sharpe": 0.402,
-      "is_n_gates": 4,
-      "holdout": {
-        "n": 356,
-        "sharpe": 0.693,
-        "sortino": 3.266,
-        "psr": 1.0,
-        "profit_factor": 3.091,
-        "payoff": 4.77,
-        "expectancy": 4.4607,
-        "win_rate": 0.393,
-        "p": 6.357381615533083e-07,
-        "ci_lo": 0.408,
-        "gates": {
-          "sharpe_per_regime": true,
-          "profit_factor": true,
-          "sortino": true,
-          "psr": true,
-          "min_trades": true
-        },
-        "n_gates": 5,
-        "all_live_gates": true
-      },
-      "bh": true,
-      "verdict": "PASS",
-      "mirror_status": "REGISTERED",
-      "mirror": "smc_breaker_block_short",
-      "asym_signals": [],
-      "mirror_registered": true,
-      "margin": 0.193,
-      "status": "PROVISIONAL"
-    },
-    {
-      "cube": "R5",
-      "n_tickers": 544,
-      "strategy": "institutional_persistence_breakout_long",
-      "direction": "long",
-      "exit": "breakeven_plus_trail",
-      "is_sharpe": 0.39,
-      "is_n_gates": 4,
-      "holdout": {
-        "n": 136,
-        "sharpe": 0.683,
-        "sortino": 3.978,
-        "psr": 1.0,
-        "profit_factor": 4.073,
-        "payoff": 6.0,
-        "expectancy": 5.5802,
-        "win_rate": 0.404,
-        "p": 8.689885189825228e-05,
-        "ci_lo": 0.317,
-        "gates": {
-          "sharpe_per_regime": true,
-          "profit_factor": true,
-          "sortino": true,
-          "psr": true,
-          "min_trades": true
-        },
-        "n_gates": 5,
-        "all_live_gates": true
-      },
-      "bh": true,
-      "verdict": "PASS",
-      "mirror_status": "LONG-ONLY-DATA",
-      "mirror": null,
-      "asym_signals": [
-        "institutional_increased"
-      ],
-      "mirror_registered": false,
-      "margin": 0.183,
-      "status": "PROVISIONAL"
-    },
-    {
-      "cube": "R5",
-      "n_tickers": 544,
-      "strategy": "institutional_persistence_oversold_long",
-      "direction": "long",
-      "exit": "breakeven_plus_trail",
-      "is_sharpe": 0.38,
-      "is_n_gates": 4,
-      "holdout": {
-        "n": 199,
-        "sharpe": 0.517,
-        "sortino": 1.575,
-        "psr": 1.0,
-        "profit_factor": 1.933,
-        "payoff": 3.49,
-        "expectancy": 2.3437,
-        "win_rate": 0.357,
-        "p": 0.0033015728026361806,
-        "ci_lo": 0.14,
-        "gates": {
-          "sharpe_per_regime": true,
-          "profit_factor": true,
-          "sortino": true,
-          "psr": true,
-          "min_trades": true
-        },
-        "n_gates": 5,
-        "all_live_gates": true
-      },
-      "bh": true,
-      "verdict": "PASS",
-      "mirror_status": "LONG-ONLY-DATA",
-      "mirror": null,
-      "asym_signals": [
-        "institutional_increased"
-      ],
-      "mirror_registered": false,
-      "margin": 0.017,
-      "status": "PROVISIONAL"
-    },
-    {
-      "cube": "R5",
-      "n_tickers": 544,
-      "strategy": "institutional_high_conviction_long",
-      "direction": "long",
-      "exit": "breakeven_plus_trail",
-      "is_sharpe": 0.374,
-      "is_n_gates": 4,
-      "holdout": {
-        "n": 738,
-        "sharpe": 0.561,
-        "sortino": 2.741,
-        "psr": 1.0,
-        "profit_factor": 2.654,
-        "payoff": 5.44,
-        "expectancy": 3.8098,
-        "win_rate": 0.328,
-        "p": 7.170180842936146e-10,
-        "ci_lo": 0.377,
-        "gates": {
-          "sharpe_per_regime": true,
-          "profit_factor": true,
-          "sortino": true,
-          "psr": true,
-          "min_trades": true
-        },
-        "n_gates": 5,
-        "all_live_gates": true
-      },
-      "bh": true,
-      "verdict": "PASS",
-      "mirror_status": "LONG-ONLY-DATA",
-      "mirror": null,
-      "asym_signals": [
-        "institutional_new_positions"
-      ],
-      "mirror_registered": false,
-      "margin": 0.061,
-      "status": "PROVISIONAL"
     }
   ],
   "all_rows": [
@@ -692,7 +127,7 @@
       "direction": "long",
       "exit": "next_pivot_target",
       "is_sharpe": 0.876,
-      "is_n_gates": 5,
+      "is_n_gates": 4,
       "holdout": {
         "n": 50,
         "sharpe": 0.587,
@@ -705,17 +140,17 @@
         "p": 0.202637177608298,
         "ci_lo": -0.801,
         "gates": {
-          "sharpe_per_regime": true,
+          "sharpe_per_regime": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
           "min_trades": true
         },
-        "n_gates": 5,
-        "all_live_gates": true
+        "n_gates": 4,
+        "all_live_gates": false
       },
       "bh": false,
-      "verdict": "PASS-noFDR"
+      "verdict": "DROP"
     },
     {
       "cube": "R5",
@@ -724,7 +159,7 @@
       "direction": "long",
       "exit": "regime_flip",
       "is_sharpe": 0.902,
-      "is_n_gates": 5,
+      "is_n_gates": 4,
       "holdout": null,
       "bh": false,
       "verdict": "UNEVAL"
@@ -736,7 +171,7 @@
       "direction": "long",
       "exit": "next_pivot_target",
       "is_sharpe": 0.792,
-      "is_n_gates": 5,
+      "is_n_gates": 4,
       "holdout": {
         "n": 41,
         "sharpe": 0.101,
@@ -861,23 +296,17 @@
         "p": 0.00011359329276651399,
         "ci_lo": 0.246,
         "gates": {
-          "sharpe_per_regime": true,
+          "sharpe_per_regime": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
           "min_trades": true
         },
-        "n_gates": 5,
-        "all_live_gates": true
+        "n_gates": 4,
+        "all_live_gates": false
       },
       "bh": true,
-      "verdict": "PASS",
-      "mirror_status": "DUAL-SELF",
-      "mirror": "avwap_252_breakout",
-      "asym_signals": [],
-      "mirror_registered": true,
-      "margin": 0.032,
-      "status": "PROVISIONAL"
+      "verdict": "DROP"
     },
     {
       "cube": "R5",
@@ -931,17 +360,17 @@
         "p": 0.09229133014089343,
         "ci_lo": -0.324,
         "gates": {
-          "sharpe_per_regime": true,
+          "sharpe_per_regime": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
           "min_trades": true
         },
-        "n_gates": 5,
-        "all_live_gates": true
+        "n_gates": 4,
+        "all_live_gates": false
       },
       "bh": false,
-      "verdict": "PASS-noFDR"
+      "verdict": "DROP"
     },
     {
       "cube": "R5",
@@ -982,7 +411,7 @@
       "direction": "long",
       "exit": "regime_flip",
       "is_sharpe": 0.628,
-      "is_n_gates": 5,
+      "is_n_gates": 4,
       "holdout": {
         "n": 124,
         "sharpe": -0.202,
@@ -1108,28 +537,28 @@
       "n_tickers": 544,
       "strategy": "bollinger_lower",
       "direction": "long",
-      "exit": "reverse_signal",
-      "is_sharpe": 0.524,
+      "exit": "breakeven_plus_trail",
+      "is_sharpe": 0.476,
       "is_n_gates": 4,
       "holdout": {
         "n": 237,
-        "sharpe": 0.486,
-        "sortino": 0.479,
+        "sharpe": 0.657,
+        "sortino": 2.488,
         "psr": 1.0,
-        "profit_factor": 1.849,
-        "payoff": 0.74,
-        "expectancy": 2.4363,
-        "win_rate": 0.713,
-        "p": 0.0007563708918271692,
-        "ci_lo": 0.183,
+        "profit_factor": 2.617,
+        "payoff": 4.59,
+        "expectancy": 3.1488,
+        "win_rate": 0.363,
+        "p": 4.2306346751289856e-05,
+        "ci_lo": 0.324,
         "gates": {
           "sharpe_per_regime": false,
           "profit_factor": true,
-          "sortino": false,
+          "sortino": true,
           "psr": true,
           "min_trades": true
         },
-        "n_gates": 3,
+        "n_gates": 4,
         "all_live_gates": false
       },
       "bh": true,
@@ -1275,13 +704,13 @@
         "p": 0.0037366923492198425,
         "ci_lo": 0.134,
         "gates": {
-          "sharpe_per_regime": true,
+          "sharpe_per_regime": false,
           "profit_factor": true,
           "sortino": true,
           "psr": false,
           "min_trades": true
         },
-        "n_gates": 4,
+        "n_gates": 3,
         "all_live_gates": false
       },
       "bh": true,
@@ -1403,13 +832,13 @@
         "p": 0.0046865050350078895,
         "ci_lo": 0.167,
         "gates": {
-          "sharpe_per_regime": true,
+          "sharpe_per_regime": false,
           "profit_factor": true,
           "sortino": true,
           "psr": false,
           "min_trades": true
         },
-        "n_gates": 4,
+        "n_gates": 3,
         "all_live_gates": false
       },
       "bh": true,
@@ -1454,7 +883,7 @@
       "direction": "long",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.534,
-      "is_n_gates": 5,
+      "is_n_gates": 4,
       "holdout": {
         "n": 594,
         "sharpe": 0.467,
@@ -1639,13 +1068,13 @@
         "p": 0.0029340949631427673,
         "ci_lo": 0.157,
         "gates": {
-          "sharpe_per_regime": true,
+          "sharpe_per_regime": false,
           "profit_factor": true,
           "sortino": true,
           "psr": false,
           "min_trades": true
         },
-        "n_gates": 4,
+        "n_gates": 3,
         "all_live_gates": false
       },
       "bh": true,
@@ -1690,7 +1119,7 @@
       "direction": "long",
       "exit": "regime_flip",
       "is_sharpe": 0.592,
-      "is_n_gates": 5,
+      "is_n_gates": 4,
       "holdout": {
         "n": 76,
         "sharpe": -0.086,
@@ -1799,17 +1228,17 @@
         "p": 0.17730860608873344,
         "ci_lo": -0.917,
         "gates": {
-          "sharpe_per_regime": true,
+          "sharpe_per_regime": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
           "min_trades": true
         },
-        "n_gates": 5,
-        "all_live_gates": true
+        "n_gates": 4,
+        "all_live_gates": false
       },
       "bh": false,
-      "verdict": "PASS-noFDR"
+      "verdict": "DROP"
     },
     {
       "cube": "R5",
@@ -2226,7 +1655,7 @@
       "direction": "long",
       "exit": "class_time_stop",
       "is_sharpe": 0.76,
-      "is_n_gates": 5,
+      "is_n_gates": 4,
       "holdout": null,
       "bh": false,
       "verdict": "UNEVAL"
@@ -2251,23 +1680,17 @@
         "p": 0.001182181154762686,
         "ci_lo": 0.181,
         "gates": {
-          "sharpe_per_regime": true,
+          "sharpe_per_regime": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
           "min_trades": true
         },
-        "n_gates": 5,
-        "all_live_gates": true
+        "n_gates": 4,
+        "all_live_gates": false
       },
       "bh": true,
-      "verdict": "PASS",
-      "mirror_status": "DUAL-SELF",
-      "mirror": "force_index_breakout",
-      "asym_signals": [],
-      "mirror_registered": true,
-      "margin": 0.019,
-      "status": "PROVISIONAL"
+      "verdict": "DROP"
     },
     {
       "cube": "R5",
@@ -2321,17 +1744,17 @@
         "p": 0.08897445530619079,
         "ci_lo": -0.257,
         "gates": {
-          "sharpe_per_regime": true,
+          "sharpe_per_regime": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
           "min_trades": true
         },
-        "n_gates": 5,
-        "all_live_gates": true
+        "n_gates": 4,
+        "all_live_gates": false
       },
       "bh": false,
-      "verdict": "PASS-noFDR"
+      "verdict": "DROP"
     },
     {
       "cube": "R5",
@@ -2397,17 +1820,17 @@
         "p": 0.07115218608297576,
         "ci_lo": -0.205,
         "gates": {
-          "sharpe_per_regime": true,
+          "sharpe_per_regime": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
           "min_trades": true
         },
-        "n_gates": 5,
-        "all_live_gates": true
+        "n_gates": 4,
+        "all_live_gates": false
       },
       "bh": false,
-      "verdict": "PASS-noFDR"
+      "verdict": "DROP"
     },
     {
       "cube": "R5",
@@ -2480,7 +1903,7 @@
       "direction": "long",
       "exit": "chandelier_3x",
       "is_sharpe": 0.605,
-      "is_n_gates": 5,
+      "is_n_gates": 4,
       "holdout": {
         "n": 35,
         "sharpe": 0.925,
@@ -2493,13 +1916,13 @@
         "p": 0.060192513848377364,
         "ci_lo": -0.262,
         "gates": {
-          "sharpe_per_regime": true,
+          "sharpe_per_regime": false,
           "profit_factor": true,
           "sortino": true,
           "psr": false,
           "min_trades": true
         },
-        "n_gates": 4,
+        "n_gates": 3,
         "all_live_gates": false
       },
       "bh": false,
@@ -2544,7 +1967,7 @@
       "direction": "long",
       "exit": "r_multiple_3r",
       "is_sharpe": 0.762,
-      "is_n_gates": 5,
+      "is_n_gates": 4,
       "holdout": {
         "n": 91,
         "sharpe": 0.638,
@@ -2557,13 +1980,13 @@
         "p": 0.08636943247950558,
         "ci_lo": -0.284,
         "gates": {
-          "sharpe_per_regime": true,
+          "sharpe_per_regime": false,
           "profit_factor": true,
           "sortino": true,
           "psr": false,
           "min_trades": true
         },
-        "n_gates": 4,
+        "n_gates": 3,
         "all_live_gates": false
       },
       "bh": false,
@@ -2717,13 +2140,13 @@
         "p": 0.13856980807402697,
         "ci_lo": -0.718,
         "gates": {
-          "sharpe_per_regime": true,
+          "sharpe_per_regime": false,
           "profit_factor": true,
           "sortino": true,
           "psr": false,
           "min_trades": true
         },
-        "n_gates": 4,
+        "n_gates": 3,
         "all_live_gates": false
       },
       "bh": false,
@@ -2909,17 +2332,17 @@
         "p": 0.00011490244452406748,
         "ci_lo": 0.304,
         "gates": {
-          "sharpe_per_regime": true,
+          "sharpe_per_regime": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
           "min_trades": true
         },
-        "n_gates": 5,
-        "all_live_gates": true
+        "n_gates": 4,
+        "all_live_gates": false
       },
       "bh": true,
-      "verdict": "PASS"
+      "verdict": "DROP"
     },
     {
       "cube": "R5",
@@ -2973,17 +2396,17 @@
         "p": 1.5361258447473426e-09,
         "ci_lo": 0.407,
         "gates": {
-          "sharpe_per_regime": true,
+          "sharpe_per_regime": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
           "min_trades": true
         },
-        "n_gates": 5,
-        "all_live_gates": true
+        "n_gates": 4,
+        "all_live_gates": false
       },
       "bh": true,
-      "verdict": "PASS"
+      "verdict": "DROP"
     },
     {
       "cube": "R5",
@@ -3005,17 +2428,17 @@
         "p": 1.2125236111035037e-10,
         "ci_lo": 0.437,
         "gates": {
-          "sharpe_per_regime": true,
+          "sharpe_per_regime": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
           "min_trades": true
         },
-        "n_gates": 5,
-        "all_live_gates": true
+        "n_gates": 4,
+        "all_live_gates": false
       },
       "bh": true,
-      "verdict": "PASS"
+      "verdict": "DROP"
     },
     {
       "cube": "R5",
@@ -3037,25 +2460,17 @@
         "p": 7.170180842936146e-10,
         "ci_lo": 0.377,
         "gates": {
-          "sharpe_per_regime": true,
+          "sharpe_per_regime": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
           "min_trades": true
         },
-        "n_gates": 5,
-        "all_live_gates": true
+        "n_gates": 4,
+        "all_live_gates": false
       },
       "bh": true,
-      "verdict": "PASS",
-      "mirror_status": "LONG-ONLY-DATA",
-      "mirror": null,
-      "asym_signals": [
-        "institutional_new_positions"
-      ],
-      "mirror_registered": false,
-      "margin": 0.061,
-      "status": "PROVISIONAL"
+      "verdict": "DROP"
     },
     {
       "cube": "R5",
@@ -3064,7 +2479,7 @@
       "direction": "long",
       "exit": "time_stop_10d",
       "is_sharpe": 0.617,
-      "is_n_gates": 5,
+      "is_n_gates": 4,
       "holdout": null,
       "bh": false,
       "verdict": "UNEVAL"
@@ -3089,17 +2504,17 @@
         "p": 9.525914182855123e-10,
         "ci_lo": 0.411,
         "gates": {
-          "sharpe_per_regime": true,
+          "sharpe_per_regime": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
           "min_trades": true
         },
-        "n_gates": 5,
-        "all_live_gates": true
+        "n_gates": 4,
+        "all_live_gates": false
       },
       "bh": true,
-      "verdict": "PASS"
+      "verdict": "DROP"
     },
     {
       "cube": "R5",
@@ -3121,17 +2536,17 @@
         "p": 6.907567976720068e-11,
         "ci_lo": 0.438,
         "gates": {
-          "sharpe_per_regime": true,
+          "sharpe_per_regime": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
           "min_trades": true
         },
-        "n_gates": 5,
-        "all_live_gates": true
+        "n_gates": 4,
+        "all_live_gates": false
       },
       "bh": true,
-      "verdict": "PASS"
+      "verdict": "DROP"
     },
     {
       "cube": "R5",
@@ -3185,25 +2600,17 @@
         "p": 8.689885189825228e-05,
         "ci_lo": 0.317,
         "gates": {
-          "sharpe_per_regime": true,
+          "sharpe_per_regime": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
           "min_trades": true
         },
-        "n_gates": 5,
-        "all_live_gates": true
+        "n_gates": 4,
+        "all_live_gates": false
       },
       "bh": true,
-      "verdict": "PASS",
-      "mirror_status": "LONG-ONLY-DATA",
-      "mirror": null,
-      "asym_signals": [
-        "institutional_increased"
-      ],
-      "mirror_registered": false,
-      "margin": 0.183,
-      "status": "PROVISIONAL"
+      "verdict": "DROP"
     },
     {
       "cube": "R5",
@@ -3257,25 +2664,17 @@
         "p": 0.0033015728026361806,
         "ci_lo": 0.14,
         "gates": {
-          "sharpe_per_regime": true,
+          "sharpe_per_regime": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
           "min_trades": true
         },
-        "n_gates": 5,
-        "all_live_gates": true
+        "n_gates": 4,
+        "all_live_gates": false
       },
       "bh": true,
-      "verdict": "PASS",
-      "mirror_status": "LONG-ONLY-DATA",
-      "mirror": null,
-      "asym_signals": [
-        "institutional_increased"
-      ],
-      "mirror_registered": false,
-      "margin": 0.017,
-      "status": "PROVISIONAL"
+      "verdict": "DROP"
     },
     {
       "cube": "R5",
@@ -3329,17 +2728,17 @@
         "p": 2.0067434849506634e-09,
         "ci_lo": 0.406,
         "gates": {
-          "sharpe_per_regime": true,
+          "sharpe_per_regime": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
           "min_trades": true
         },
-        "n_gates": 5,
-        "all_live_gates": true
+        "n_gates": 4,
+        "all_live_gates": false
       },
       "bh": true,
-      "verdict": "PASS"
+      "verdict": "DROP"
     },
     {
       "cube": "R5",
@@ -3425,26 +2824,17 @@
         "p": 2.0067434849506634e-09,
         "ci_lo": 0.406,
         "gates": {
-          "sharpe_per_regime": true,
+          "sharpe_per_regime": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
           "min_trades": true
         },
-        "n_gates": 5,
-        "all_live_gates": true
+        "n_gates": 4,
+        "all_live_gates": false
       },
       "bh": true,
-      "verdict": "PASS",
-      "mirror_status": "LONG-ONLY-DATA",
-      "mirror": null,
-      "asym_signals": [
-        "institutional_increased",
-        "institutional_new_positions"
-      ],
-      "mirror_registered": false,
-      "margin": 0.113,
-      "status": "PROVISIONAL"
+      "verdict": "DROP"
     },
     {
       "cube": "R5",
@@ -3485,7 +2875,7 @@
       "direction": "long",
       "exit": "time_stop_10d",
       "is_sharpe": 0.63,
-      "is_n_gates": 5,
+      "is_n_gates": 4,
       "holdout": {
         "n": 31,
         "sharpe": -0.256,
@@ -3517,7 +2907,7 @@
       "direction": "long",
       "exit": "r_multiple_3r",
       "is_sharpe": 0.632,
-      "is_n_gates": 5,
+      "is_n_gates": 4,
       "holdout": null,
       "bh": false,
       "verdict": "UNEVAL"
@@ -3561,7 +2951,7 @@
       "direction": "long",
       "exit": "ma_exit_ema9",
       "is_sharpe": 0.821,
-      "is_n_gates": 5,
+      "is_n_gates": 4,
       "holdout": null,
       "bh": false,
       "verdict": "UNEVAL"
@@ -3585,7 +2975,7 @@
       "direction": "long",
       "exit": "earnings_blackout",
       "is_sharpe": 0.502,
-      "is_n_gates": 5,
+      "is_n_gates": 4,
       "holdout": {
         "n": 274,
         "sharpe": 0.356,
@@ -3662,23 +3052,17 @@
         "p": 0.0001451312346879518,
         "ci_lo": 0.266,
         "gates": {
-          "sharpe_per_regime": true,
+          "sharpe_per_regime": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
           "min_trades": true
         },
-        "n_gates": 5,
-        "all_live_gates": true
+        "n_gates": 4,
+        "all_live_gates": false
       },
       "bh": true,
-      "verdict": "PASS",
-      "mirror_status": "DUAL-SELF",
-      "mirror": "macd_crossover",
-      "asym_signals": [],
-      "mirror_registered": true,
-      "margin": 0.088,
-      "status": "PROVISIONAL"
+      "verdict": "DROP"
     },
     {
       "cube": "R5",
@@ -3764,23 +3148,17 @@
         "p": 4.8279418812929124e-05,
         "ci_lo": 0.264,
         "gates": {
-          "sharpe_per_regime": true,
+          "sharpe_per_regime": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
           "min_trades": true
         },
-        "n_gates": 5,
-        "all_live_gates": true
+        "n_gates": 4,
+        "all_live_gates": false
       },
       "bh": true,
-      "verdict": "PASS",
-      "mirror_status": "DUAL-SELF",
-      "mirror": "macd_fast_crossover",
-      "asym_signals": [],
-      "mirror_registered": true,
-      "margin": 0.037,
-      "status": "PROVISIONAL"
+      "verdict": "DROP"
     },
     {
       "cube": "R5",
@@ -3821,7 +3199,7 @@
       "direction": "long",
       "exit": "class_time_stop",
       "is_sharpe": 0.507,
-      "is_n_gates": 5,
+      "is_n_gates": 4,
       "holdout": {
         "n": 264,
         "sharpe": 0.223,
@@ -3910,13 +3288,13 @@
         "p": 0.010532588626655575,
         "ci_lo": 0.113,
         "gates": {
-          "sharpe_per_regime": true,
+          "sharpe_per_regime": false,
           "profit_factor": true,
           "sortino": true,
           "psr": false,
           "min_trades": true
         },
-        "n_gates": 4,
+        "n_gates": 3,
         "all_live_gates": false
       },
       "bh": true,
@@ -4089,7 +3467,7 @@
       "direction": "long",
       "exit": "regime_flip",
       "is_sharpe": 0.844,
-      "is_n_gates": 5,
+      "is_n_gates": 4,
       "holdout": null,
       "bh": false,
       "verdict": "UNEVAL"
@@ -4126,13 +3504,13 @@
         "p": 0.0013705334552592161,
         "ci_lo": 0.214,
         "gates": {
-          "sharpe_per_regime": true,
+          "sharpe_per_regime": false,
           "profit_factor": true,
           "sortino": true,
           "psr": false,
           "min_trades": true
         },
-        "n_gates": 4,
+        "n_gates": 3,
         "all_live_gates": false
       },
       "bh": true,
@@ -4381,7 +3759,7 @@
       "direction": "long",
       "exit": "chandelier_3x",
       "is_sharpe": 0.517,
-      "is_n_gates": 5,
+      "is_n_gates": 4,
       "holdout": null,
       "bh": false,
       "verdict": "UNEVAL"
@@ -4393,7 +3771,7 @@
       "direction": "long",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.53,
-      "is_n_gates": 5,
+      "is_n_gates": 4,
       "holdout": {
         "n": 422,
         "sharpe": 0.585,
@@ -4406,23 +3784,17 @@
         "p": 9.397822445123306e-08,
         "ci_lo": 0.361,
         "gates": {
-          "sharpe_per_regime": true,
+          "sharpe_per_regime": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
           "min_trades": true
         },
-        "n_gates": 5,
-        "all_live_gates": true
+        "n_gates": 4,
+        "all_live_gates": false
       },
       "bh": true,
-      "verdict": "PASS",
-      "mirror_status": "REGISTERED",
-      "mirror": "pead_short_negative_yoy_growth",
-      "asym_signals": [],
-      "mirror_registered": true,
-      "margin": 0.085,
-      "status": "PROVISIONAL"
+      "verdict": "DROP"
     },
     {
       "cube": "R5",
@@ -4495,7 +3867,7 @@
       "direction": "long",
       "exit": "time_stop_10d",
       "is_sharpe": 0.739,
-      "is_n_gates": 5,
+      "is_n_gates": 4,
       "holdout": {
         "n": 106,
         "sharpe": 0.005,
@@ -4527,7 +3899,7 @@
       "direction": "long",
       "exit": "r_multiple_3r",
       "is_sharpe": 0.986,
-      "is_n_gates": 5,
+      "is_n_gates": 4,
       "holdout": null,
       "bh": false,
       "verdict": "UNEVAL"
@@ -4551,7 +3923,7 @@
       "direction": "long",
       "exit": "reverse_signal",
       "is_sharpe": 0.937,
-      "is_n_gates": 5,
+      "is_n_gates": 4,
       "holdout": {
         "n": 91,
         "sharpe": 1.528,
@@ -4735,7 +4107,7 @@
       "direction": "long",
       "exit": "time_stop_10d",
       "is_sharpe": 0.522,
-      "is_n_gates": 5,
+      "is_n_gates": 4,
       "holdout": {
         "n": 151,
         "sharpe": 0.808,
@@ -4748,23 +4120,17 @@
         "p": 0.008884204055925717,
         "ci_lo": 0.134,
         "gates": {
-          "sharpe_per_regime": true,
+          "sharpe_per_regime": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
           "min_trades": true
         },
-        "n_gates": 5,
-        "all_live_gates": true
+        "n_gates": 4,
+        "all_live_gates": false
       },
       "bh": true,
-      "verdict": "PASS",
-      "mirror_status": "REGISTERED",
-      "mirror": "poc_magnet_short",
-      "asym_signals": [],
-      "mirror_registered": true,
-      "margin": 0.308,
-      "status": "PROVISIONAL"
+      "verdict": "DROP"
     },
     {
       "cube": "R5",
@@ -4773,7 +4139,7 @@
       "direction": "short",
       "exit": "regime_flip",
       "is_sharpe": 0.589,
-      "is_n_gates": 5,
+      "is_n_gates": 4,
       "holdout": null,
       "bh": false,
       "verdict": "UNEVAL"
@@ -4817,7 +4183,7 @@
       "direction": "long",
       "exit": "earnings_blackout",
       "is_sharpe": 0.539,
-      "is_n_gates": 5,
+      "is_n_gates": 4,
       "holdout": {
         "n": 155,
         "sharpe": 0.462,
@@ -4918,17 +4284,17 @@
         "p": 0.0153583638241424,
         "ci_lo": 0.044,
         "gates": {
-          "sharpe_per_regime": true,
+          "sharpe_per_regime": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
           "min_trades": true
         },
-        "n_gates": 5,
-        "all_live_gates": true
+        "n_gates": 4,
+        "all_live_gates": false
       },
       "bh": false,
-      "verdict": "PASS-noFDR"
+      "verdict": "DROP"
     },
     {
       "cube": "R5",
@@ -5001,7 +4367,7 @@
       "direction": "short",
       "exit": "class_time_stop",
       "is_sharpe": 0.525,
-      "is_n_gates": 5,
+      "is_n_gates": 4,
       "holdout": null,
       "bh": false,
       "verdict": "UNEVAL"
@@ -5058,23 +4424,17 @@
         "p": 0.00019333813223344363,
         "ci_lo": 0.222,
         "gates": {
-          "sharpe_per_regime": true,
+          "sharpe_per_regime": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
           "min_trades": true
         },
-        "n_gates": 5,
-        "all_live_gates": true
+        "n_gates": 4,
+        "all_live_gates": false
       },
       "bh": true,
-      "verdict": "PASS",
-      "mirror_status": "DUAL-SELF",
-      "mirror": "r1_break_retest",
-      "asym_signals": [],
-      "mirror_registered": true,
-      "margin": 0.001,
-      "status": "PROVISIONAL"
+      "verdict": "DROP"
     },
     {
       "cube": "R5",
@@ -5147,7 +4507,7 @@
       "direction": "long",
       "exit": "r_multiple_2r",
       "is_sharpe": 0.536,
-      "is_n_gates": 5,
+      "is_n_gates": 4,
       "holdout": {
         "n": 90,
         "sharpe": 0.807,
@@ -5160,17 +4520,17 @@
         "p": 0.08320018416432232,
         "ci_lo": -0.342,
         "gates": {
-          "sharpe_per_regime": true,
+          "sharpe_per_regime": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
           "min_trades": true
         },
-        "n_gates": 5,
-        "all_live_gates": true
+        "n_gates": 4,
+        "all_live_gates": false
       },
       "bh": false,
-      "verdict": "PASS-noFDR"
+      "verdict": "DROP"
     },
     {
       "cube": "R5",
@@ -5236,13 +4596,13 @@
         "p": 5.078799173802131e-06,
         "ci_lo": 0.327,
         "gates": {
-          "sharpe_per_regime": true,
+          "sharpe_per_regime": false,
           "profit_factor": true,
           "sortino": true,
           "psr": false,
           "min_trades": true
         },
-        "n_gates": 4,
+        "n_gates": 3,
         "all_live_gates": false
       },
       "bh": true,
@@ -5300,17 +4660,17 @@
         "p": 1.1005535999919859e-09,
         "ci_lo": 0.408,
         "gates": {
-          "sharpe_per_regime": true,
+          "sharpe_per_regime": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
           "min_trades": true
         },
-        "n_gates": 5,
-        "all_live_gates": true
+        "n_gates": 4,
+        "all_live_gates": false
       },
       "bh": true,
-      "verdict": "PASS"
+      "verdict": "DROP"
     },
     {
       "cube": "R5",
@@ -5319,7 +4679,7 @@
       "direction": "long",
       "exit": "earnings_blackout",
       "is_sharpe": 0.539,
-      "is_n_gates": 5,
+      "is_n_gates": 4,
       "holdout": {
         "n": 63,
         "sharpe": 0.545,
@@ -5332,23 +4692,17 @@
         "p": 0.01210340692387199,
         "ci_lo": 0.062,
         "gates": {
-          "sharpe_per_regime": true,
+          "sharpe_per_regime": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
           "min_trades": true
         },
-        "n_gates": 5,
-        "all_live_gates": true
+        "n_gates": 4,
+        "all_live_gates": false
       },
       "bh": true,
-      "verdict": "PASS",
-      "mirror_status": "DUAL-SELF",
-      "mirror": "rsi_volume_200ema",
-      "asym_signals": [],
-      "mirror_registered": true,
-      "margin": 0.045,
-      "status": "PROVISIONAL"
+      "verdict": "DROP"
     },
     {
       "cube": "R5",
@@ -5490,17 +4844,17 @@
         "p": 0.06486736159542236,
         "ci_lo": -0.194,
         "gates": {
-          "sharpe_per_regime": true,
+          "sharpe_per_regime": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
           "min_trades": true
         },
-        "n_gates": 5,
-        "all_live_gates": true
+        "n_gates": 4,
+        "all_live_gates": false
       },
       "bh": false,
-      "verdict": "PASS-noFDR"
+      "verdict": "DROP"
     },
     {
       "cube": "R5",
@@ -5554,23 +4908,17 @@
         "p": 6.357381615533083e-07,
         "ci_lo": 0.408,
         "gates": {
-          "sharpe_per_regime": true,
+          "sharpe_per_regime": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
           "min_trades": true
         },
-        "n_gates": 5,
-        "all_live_gates": true
+        "n_gates": 4,
+        "all_live_gates": false
       },
       "bh": true,
-      "verdict": "PASS",
-      "mirror_status": "REGISTERED",
-      "mirror": "smc_breaker_block_short",
-      "asym_signals": [],
-      "mirror_registered": true,
-      "margin": 0.193,
-      "status": "PROVISIONAL"
+      "verdict": "DROP"
     },
     {
       "cube": "R5",
@@ -5655,7 +5003,7 @@
       "direction": "long",
       "exit": "earnings_blackout",
       "is_sharpe": 0.582,
-      "is_n_gates": 5,
+      "is_n_gates": 4,
       "holdout": {
         "n": 88,
         "sharpe": 0.339,
@@ -5719,7 +5067,7 @@
       "direction": "long",
       "exit": "class_time_stop",
       "is_sharpe": 0.638,
-      "is_n_gates": 5,
+      "is_n_gates": 4,
       "holdout": {
         "n": 113,
         "sharpe": 0.051,
@@ -5751,7 +5099,7 @@
       "direction": "long",
       "exit": "next_pivot_target",
       "is_sharpe": 0.774,
-      "is_n_gates": 5,
+      "is_n_gates": 4,
       "holdout": null,
       "bh": false,
       "verdict": "UNEVAL"
@@ -5795,7 +5143,7 @@
       "direction": "long",
       "exit": "regime_flip",
       "is_sharpe": 0.678,
-      "is_n_gates": 5,
+      "is_n_gates": 4,
       "holdout": {
         "n": 92,
         "sharpe": 0.813,
@@ -5808,23 +5156,17 @@
         "p": 0.0044172482505294595,
         "ci_lo": 0.193,
         "gates": {
-          "sharpe_per_regime": true,
+          "sharpe_per_regime": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
           "min_trades": true
         },
-        "n_gates": 5,
-        "all_live_gates": true
+        "n_gates": 4,
+        "all_live_gates": false
       },
       "bh": true,
-      "verdict": "PASS",
-      "mirror_status": "DUAL-SELF",
-      "mirror": "smc_inverse_fvg",
-      "asym_signals": [],
-      "mirror_registered": true,
-      "margin": 0.313,
-      "status": "PROVISIONAL"
+      "verdict": "DROP"
     },
     {
       "cube": "R5",
@@ -5954,17 +5296,17 @@
         "p": 0.026023571682235475,
         "ci_lo": -0.008,
         "gates": {
-          "sharpe_per_regime": true,
+          "sharpe_per_regime": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
           "min_trades": true
         },
-        "n_gates": 5,
-        "all_live_gates": true
+        "n_gates": 4,
+        "all_live_gates": false
       },
       "bh": false,
-      "verdict": "PASS-noFDR"
+      "verdict": "DROP"
     },
     {
       "cube": "R5",
@@ -6101,7 +5443,7 @@
       "direction": "long",
       "exit": "class_time_stop",
       "is_sharpe": 0.857,
-      "is_n_gates": 5,
+      "is_n_gates": 4,
       "holdout": {
         "n": 188,
         "sharpe": 0.006,
@@ -6133,7 +5475,7 @@
       "direction": "long",
       "exit": "regime_flip",
       "is_sharpe": 0.803,
-      "is_n_gates": 5,
+      "is_n_gates": 4,
       "holdout": {
         "n": 187,
         "sharpe": -0.368,
@@ -6165,7 +5507,7 @@
       "direction": "long",
       "exit": "r_multiple_2r",
       "is_sharpe": 0.657,
-      "is_n_gates": 5,
+      "is_n_gates": 4,
       "holdout": null,
       "bh": false,
       "verdict": "UNEVAL"
@@ -6522,13 +5864,13 @@
         "p": 0.0020135831818944207,
         "ci_lo": 0.291,
         "gates": {
-          "sharpe_per_regime": true,
+          "sharpe_per_regime": false,
           "profit_factor": true,
           "sortino": true,
           "psr": false,
           "min_trades": true
         },
-        "n_gates": 4,
+        "n_gates": 3,
         "all_live_gates": false
       },
       "bh": true,
@@ -6541,7 +5883,7 @@
       "direction": "long",
       "exit": "r_multiple_3r",
       "is_sharpe": 0.516,
-      "is_n_gates": 5,
+      "is_n_gates": 4,
       "holdout": {
         "n": 81,
         "sharpe": -0.091,
@@ -6617,7 +5959,7 @@
       "direction": "long",
       "exit": "r_multiple_2r",
       "is_sharpe": 0.734,
-      "is_n_gates": 5,
+      "is_n_gates": 4,
       "holdout": {
         "n": 95,
         "sharpe": -0.297,
@@ -6681,7 +6023,7 @@
       "direction": "long",
       "exit": "next_pivot_target",
       "is_sharpe": 0.679,
-      "is_n_gates": 5,
+      "is_n_gates": 4,
       "holdout": {
         "n": 57,
         "sharpe": -0.1,
@@ -6745,7 +6087,7 @@
       "direction": "long",
       "exit": "regime_flip",
       "is_sharpe": 0.561,
-      "is_n_gates": 5,
+      "is_n_gates": 4,
       "holdout": {
         "n": 100,
         "sharpe": 0.278,
@@ -6937,7 +6279,7 @@
       "direction": "long",
       "exit": "class_time_stop",
       "is_sharpe": 0.871,
-      "is_n_gates": 5,
+      "is_n_gates": 4,
       "holdout": {
         "n": 152,
         "sharpe": 0.435,
@@ -7110,13 +6452,13 @@
         "p": 0.005469079921617434,
         "ci_lo": 0.188,
         "gates": {
-          "sharpe_per_regime": true,
+          "sharpe_per_regime": false,
           "profit_factor": true,
           "sortino": true,
           "psr": false,
           "min_trades": true
         },
-        "n_gates": 4,
+        "n_gates": 3,
         "all_live_gates": false
       },
       "bh": true,
@@ -7205,7 +6547,7 @@
       "direction": "long",
       "exit": "time_stop_10d",
       "is_sharpe": 0.932,
-      "is_n_gates": 5,
+      "is_n_gates": 4,
       "holdout": {
         "n": 50,
         "sharpe": 1.133,
@@ -7237,7 +6579,7 @@
       "direction": "long",
       "exit": "time_stop_10d",
       "is_sharpe": 0.671,
-      "is_n_gates": 5,
+      "is_n_gates": 4,
       "holdout": {
         "n": 50,
         "sharpe": 1.349,
@@ -7275,7 +6617,7 @@
       "direction": "long",
       "exit": "regime_flip",
       "is_sharpe": 0.578,
-      "is_n_gates": 5,
+      "is_n_gates": 4,
       "holdout": {
         "n": 162,
         "sharpe": 1.004,
@@ -7433,7 +6775,7 @@
       "direction": "long",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.545,
-      "is_n_gates": 5,
+      "is_n_gates": 4,
       "holdout": {
         "n": 175,
         "sharpe": 0.241,
@@ -7785,7 +7127,7 @@
       "direction": "long",
       "exit": "regime_flip",
       "is_sharpe": 0.531,
-      "is_n_gates": 5,
+      "is_n_gates": 4,
       "holdout": null,
       "bh": false,
       "verdict": "UNEVAL"
