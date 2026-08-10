@@ -5634,3 +5634,42 @@ scoring, not a round number times a population count.** **Generalized rule: a nu
 claim. If it was not measured or derived, label it arbitrary in the same sentence you write it --
 the moment it survives one review unchallenged it becomes a premise, and premises do not get
 re-examined.**
+
+### L355
+**Reading the gate expression is not reading the strategy.** B1500. I classified
+`smc_breaker_block_long` as UNTUNABLE because both gates in `fires = ...` are booleans, and
+extrapolated that to "16 of 41 strategies have nothing to tighten". Owner corrected: booleans are
+PRODUCED by functions with their own parameters, and `price_above_ema_200` names a period that is
+itself a tunable. **Rule: the tunable surface of a strategy is the transitive closure of its
+producers' parameters, not the literals visible at the consumption site.** Same class as
+`feedback_wired_means_engine_consumed` — stopping at the grep-visible layer. Detection signal: any
+claim that a strategy has "no thresholds" must be backed by reading each consumed signal's producer.
+
+### L356
+**Two #165 violations in one session, both by choosing a number instead of deriving one.**
+B1500. (a) Grid candidates presented as deciles of `committed_growth_holders` — deciles were reflex,
+and the signal is an integer holder-count whose mass sits in single digits, so 7 of 9 cuts were
+artifacts. (b) "~4 levels each" introduced with no derivation, then taken as given by the owner in
+the next turn. **Rule: the NUMBER OF LEVELS and the SPACING are both parameters and both need a
+derivation rule** — anchor at the production default, step monotonically toward strict, terminate
+where holdout n<25 or full-period n<=100. Detection signal: any integer in a plan that cannot be
+traced to a measurement or a stated rule.
+
+### L357
+**`OR` over N historical events saturates — it is a fire-rate bug, not a signal.** B1500.
+`smc_breaker_block_bullish` is a disjunction over the last 20 order-block events with NO recency
+limit (`ob_events.tail(20)`, `smc_ict.py:266-298`); measured 124/124 bars TRUE on AAPL. Batch 556
+raised the scan from ~0-1 real events to 20 to fix under-firing and overshot into saturation, and
+`event_recency_bars` never applied to this loop — a COUNT window silently replaced a TIME window.
+Same class as B654 `cpr_narrow` (87% True) and B655 `supertrend_bullish` (99.19% True). **Rule:
+any signal built as OR-over-N-events needs a fire-rate measurement at wire time; N is a saturation
+knob, not a coverage knob.**
+
+### L358
+**Two retractions from asserting mechanism without reading the diff.** B1500. (a) Claimed the
+100% fire rate came from "stacked loosenings, Batch 556 then Batch 1137" — reading the B1137 diff
+showed its three changes hit FVG/OTE/Discount-Premium, and the `in_zone` it modified is the FVG
+loop's variable at line 202, not the identically-named one in the order-block loop at 266-298.
+(b) Claimed Batch A vs R5 had "two confounds" (universe AND producer) — only the universe moved
+(133 -> 381 tickers). **Rule: attributing an effect to a commit requires reading that commit's
+diff, not its message; identically-named locals in sibling loops are a known trap.**

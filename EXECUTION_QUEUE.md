@@ -9700,3 +9700,31 @@ number times a population. **S6-B1499a.** L354.
 2. Mid-band 58 (100<n<=300): in Phase 1 or deferred?
 3. AUTO-FAIL screens against IS/full-period first (S6-B1495a)?
 4. FDR family: per-strategy-derived sum (with airtight separation) or the conservative full grid?
+
+---
+
+## B1500 (2026-08-09) — producer sandbox for S6-OPT-196 Phase 1; R5 pinned as baseline
+
+**OWNER RULING:** R5 results and R5 boolean logic are THE baseline for optimisation comparison.
+Verified for `smc_breaker_block_long`: `git log -S"smc_breaker_block_long" -- screener.py` returns
+ONE commit ever (Batch 216, 2026-05-18), and the last breaker-producer change (Batch 556,
+2026-06-02) predates R5. **Today's code IS the R5 baseline for this strategy** — no re-derivation
+needed. R5 artifact: `output_r5_rung4_chunk1/` = 352 fires x 26 exits, 2022-05-06..2026-05-04.
+
+**SHIPPED:** `scripts/producer_sandbox.py` — varies SMC producer params with zero production
+mutation (`compute_smc_signals` is already fully parameterised, so the sandbox passes arguments
+rather than editing defaults). **Gate 0 ISOLATION PASS**: explicit-defaults output == implicit-
+defaults output, so measured deltas are attributable to the varied parameter. Measured cost:
+~0.067 s/bar => ~50 s per config per ticker over the IS window.
+
+| ticket | pri | item |
+|---|---|---|
+| **S6-B1500a** | **HIGH** | `smc_breaker_block_bullish` fires 124/124 bars (AAPL, 2024 H1). It is an OR over `ob_events.tail(20)` with NO recency filter — a COUNT window where a TIME window was intended. `event_recency_bars` gates a sibling signal only. Fix before any variant is measured, else every variant inherits saturation. L357. |
+| **S6-B1500b** | HIGH | Refactor sandbox to expose `ob_df` so `tail(N)` / break-margin / recency variants derive from ONE producer run per `swing_length` (~256 configs -> ~4 runs). EMA x breaker cross-product is free — the legs are independent booleans ANDed at the gate. PROPOSED-NOT-BUILT. |
+| **S6-B1500c** | HIGH | Instrumented pass recording, per firing bar: OB event age, break distance `(close-bot)/bot`, event count, qualifying-event rank. These distributions are what SET the level values; until measured, no level set is defensible (L356). |
+| **S6-B1500d** | MED | Reconcile n=356 (quoted as this strategy's HOLDOUT n) against 352 FULL-PERIOD fires in the R5 cube. Both cannot hold; if holdout n is materially lower, its place in the n>300 tightening band is wrong. |
+| **S6-B1500e** | MED | Selection-noise floor: 0.369 (B1467) was measured for best-of-26-exits. A producer-grid search is a far wider family and BH-FDR is excluded by owner ruling — the floor must be re-measured for the actual search width before any winner is believed. |
+| **S6-B1500f** | LOW | `output_batch_A_150/trade_exit_detail.csv` carries 1 exit method, not 26 — it is not a cube and cannot support exit re-selection. Pin so it is not reached for by mistake. |
+
+**DECISIONS REMAINING** (carried): mid-band 58 in Phase 1 or deferred; AUTO-FAIL screens against
+IS/full-period (S6-B1495a); FDR family sizing (moot for now — BH-FDR excluded by owner ruling).

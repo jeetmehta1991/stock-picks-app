@@ -1,0 +1,32 @@
+{
+  "ticker": "AAPL",
+  "window": [
+    "2024-01-01",
+    "2024-06-30"
+  ],
+  "production_defaults": {
+    "swing_length": 20,
+    "fvg_lookback": 5,
+    "liquidity_range_pct": 0.01,
+    "dealing_range_lookback": 50,
+    "event_recency_bars": 90
+  },
+  "results": [
+    {
+      "event_recency_bars": 30,
+      "swing_length": 20,
+      "elapsed_sec": 8.3,
+      "bars_evaluated": 124,
+      "breaker_bullish_true": 124,
+      "fires_smc_leg": 124
+    },
+    {
+      "event_recency_bars": 90,
+      "swing_length": 20,
+      "elapsed_sec": 8.4,
+      "bars_evaluated": 124,
+      "breaker_bullish_true": 124,
+      "fires_smc_leg": 124
+    }
+  ]
+}
