@@ -10172,3 +10172,36 @@ valid rung the owner had directed be kept.
 | **S6-B1516a** | **HIGH** | **OWNER DECISION: continue the ladder to 10/20/50/100/200/381.** Wall-clock says it is cheap (~42 min/rung, ~5 h for all remaining). The entry-rate curve across rungs is now THE deliverable - it shows where small-universe inflation converges to the R5 rate. |
 | **S6-B1516b** | **HIGH** | No rung's gate verdict may be quoted as a strategy result until the entry rate converges to R5's. Pin this caveat wherever rung metrics are reported. |
 | S6-B1512a | **CLOSED** | Mechanism CONFIRMED empirically: universe size drives entry counts, 26.63x at n=5. |
+
+---
+
+## B1517 (2026-08-10) - rung 5 analysed: 4 of 200 PASS and all 4 are the artifact
+
+**OWNER CORRECTION (L385): sentinels are not failing loud.** S2 tripped, halted the ladder, and
+wrote to a log that reached no one until the owner asked. `feedback_batch_run_update_cadence`
+requires a */15 check-and-push + completion notification armed AT LAUNCH; I armed nothing. Same
+class as B1019's 0-byte monitor.log. **A sentinel is not armed until its OUTPUT PATH TO THE OWNER
+is armed.**
+
+**THE 4,000 ACCOUNTING.** Rung 5 ran **ONE** engine config (production P1=20/P2=False/P6=200).
+**200** subset-safe combinations (P2 x P3 x P4 x P5) derive from it offline; the other **3,800**
+need the remaining **19** engine configs (P1 4 x P6 5 = 20). **So 200 of 4,000, at the rung-5
+universe only.**
+
+**CUBE FANOUT - VERIFIED CLEAN.** `smc_breaker_block_long`: 123 entries, exits-per-entry = {26},
+all == 26. Across ALL 128 strategies: 3,619 entries, **0** with != 26 exits. CHECKLIST #130 holds.
+
+**GATES: 4 of 200 PASS - and all 4 are INVALID.** 144 NO_EXIT_SELECTABLE / 32 ZERO_FIRES /
+18 BELOW_POWER_FLOOR / 4 PASS / 2 FAIL; only **6 gradable**. All four passers sit at essentially
+production settings (no caps, tail 10 or 20), fires=123, Sharpe 1.036, 6/6 gates - i.e. the same
+26.63x entry-rate artifact S2 caught. Tightening contributed nothing.
+
+**REPORTING BUG FIXED (L386).** The grid JSON reported `diagnosed: 2` where the truth was 123 fires
+per flag value: when `close_mitigation` became the outer key, `len(diags)` began reporting the
+number of FLAG VALUES. Data was correct, the report was not.
+
+| ticket | pri | item |
+|---|---|---|
+| **S6-B1517a** | **HIGH** | **MANDATORY PRE-LAUNCH STEP, not prose:** every long-run launch arms a */15 CronCreate check-and-push + completion PushNotification + CronDelete on finish, IN THE LAUNCH TURN. Rung 10 must not launch without it (L385). |
+| **S6-B1517b** | **HIGH** | No rung's PASS may be reported as a strategy result until entries/ticker converges to R5's 0.9239. At rung 5 the ratio is 26.63x, so all 4 passers are artifacts. |
+| **S6-B1517c** | MED | Only 6 of 200 combinations were gradable at 5 tickers. Report gradability per rung as a first-class metric - it determines from which rung the grid is interpretable at all. |

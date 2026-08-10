@@ -5967,3 +5967,24 @@ exactly and discard a valid result the owner had directed be retained. S1/S3/S4 
 zero-fire, exit-contract) ARE errors. **Rule: classify each sentinel as ERROR (invalidates the run,
 re-do) or FINDING (result is valid, halt for a decision) at the time it is armed** - conflating them
 either discards good data or hides real failures behind "expected" trips.
+
+### L385
+**A sentinel that writes to a log nobody watches is not "fail loud".** B1517, owner correction:
+*"Sentinels fail loud clearly isnt working. This was flagged only after i prompted it."* Correct.
+Rung 5's S2 sentinel tripped at 26.63x, halted the ladder, and wrote it to
+`output_audit/b1514_ladder.log` - where it sat until the owner asked for an update. **The standing
+rule `feedback_batch_run_update_cadence` requires arming a */15 check-and-push plus a completion
+notification AT EACH BATCH LAUNCH. I launched and armed nothing.** Same class as B1019's 0-byte
+monitor.log: the mechanism existed, produced correct output, and reached no one. **Rule: a sentinel
+is not armed until its OUTPUT PATH TO THE OWNER is armed - the trip condition and the notification
+are one deliverable, not two.** Detection signal: any long-running launch with no cron/notification
+created in the same turn.
+
+### L386
+**`len()` of a dict that gained an outer key silently changed meaning.** B1517. The grid JSON
+reported `diagnosed: 2` where the true figure was 123 fires per flag value: when
+`close_mitigation` became the outer key, `diags` went from `{(ticker,date): ...}` to
+`{bool: {(ticker,date): ...}}`, so `len(diags)` reported the number of FLAG VALUES, not fires. The
+data was correct; the report was not. **Rule: when a container gains a nesting level, grep every
+`len()` / `.keys()` / iteration over it** - aggregate reporting silently re-points at the new outer
+level and produces a plausible small number that reads as catastrophic data loss.

@@ -113,10 +113,11 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", default="output_audit/b1502_tightening_grid.json")
     ap.add_argument("--limit-tickers", type=int, default=0)
+    ap.add_argument("--cube", default="", help="cube to grade against; default R5")
     ap.add_argument("--tickers-file", default="")
     a = ap.parse_args()
 
-    cube = rc.load_cube(R5_CUBE)
+    cube = rc.load_cube(Path(a.cube) if a.cube else R5_CUBE)
     g = cube[cube["strategy"] == STRATEGY].copy()
     # load_cube yields entry_date as datetime.date; roster_core's window
     # helpers compare against date objects, so do NOT convert to datetime64.
@@ -191,7 +192,10 @@ def main() -> int:
     Path(a.out).parent.mkdir(parents=True, exist_ok=True)
     Path(a.out).write_text(json.dumps(
         {"strategy": STRATEGY, "r5_baseline_fires": len(fires),
-         "diagnosed": len(diags), "results": rows}, indent=2))
+         # B1517: was len(diags) which, after close_mitigation became the outer
+         # key, reported 2 (the number of flag values) instead of the fire count.
+         "diagnosed": {str(k): len(v) for k, v in diags.items()},
+         "results": rows}, indent=2))
 
     print(f"\n{'break':>6} {'age':>5} {'tail':>4} {'fires':>6} {'ho_n':>5} "
           f"{'fp_n':>5} {'sharpe':>7} {'pass':>4}  verdict")
