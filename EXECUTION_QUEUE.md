@@ -9433,3 +9433,90 @@ redundant WITH, so they are eligible for tightening like any other unpromoted st
 
 **TIGHTENING 41** (99 with the mid-band) · **LOOSENING 108**. The tightening band grew 24 -> 41
 because 14 cells that previously held roster places at the 0.5 bar are now optimisation candidates.
+
+---
+
+## B1495 (2026-08-09) — COUNCIL: keep BH-FDR. A false premise corrected, with the numbers.
+
+### CORRECTION FIRST — the Sharpe gate is NOT on 4 years
+Owner: *"since we are now using sharpe > 1.0 on the entire 4 years..."* **It is not.**
+
+| gate | window |
+|---|---|
+| `sharpe_per_regime` >= 1.0 | **HOLDOUT, 1 year** |
+| `profit_factor` >= 1.3 | HOLDOUT, 1 year |
+| `sortino` >= 0.7 | HOLDOUT, 1 year |
+| `psr` >= 0.95 | HOLDOUT, 1 year |
+| BH-FDR p-value | HOLDOUT, 1 year |
+| `min_trades` | **the ONLY 4-year touchpoint** - holdout n>=25 AND full-period n>100 |
+
+The argument for dropping BH-FDR rested on a 4-year Sharpe being self-evidently strong. A **1-year**
+Sharpe of 1.0 is a far weaker claim: one year of 50-162 trades is exactly the sample size where luck
+produces high ratios. **The premise inverts the conclusion - a 1-year window makes multiple-testing
+control MORE necessary, not less.**
+
+### AND BH-FDR IS NOT THE RESTRICTIVE GATE — it removed 2 cells
+
+Drop-off across 211 evaluable cells:
+
+| gate | blocks |
+|---|---|
+| **`sharpe_per_regime`** | **207 of 211** |
+| `psr` | 126 |
+| `sortino` | 122 |
+| `profit_factor` | 119 |
+| `min_trades` | **1** |
+
+Sequential funnel: `253 -> 211 evaluable (-42) -> 4 gates (-207) -> 2 BH-FDR (-2) -> 2 de-dup (-0)`.
+
+**BH-FDR removed 2. Sharpe removed 207.** At the old 0.5 bar BH-FDR removed 11 (34->23); at 1.0 it
+removes 2, because raising Sharpe already did most of its work. It is now nearly free.
+
+### RECOMMENDATION: KEEP IT
+1. It costs 2 cells, not "most of the book".
+2. It is the ONLY family-wise control across **211 simultaneous tests**. Without it, at q=0.05 you
+   would expect ~10 false discoveries by chance alone from 211 tests - more than the entire roster.
+3. The holdout is 1 year. Everything above argues for MORE correction, not less.
+4. It caught a real case this run: `pivot_r1_breakout`, Sharpe **1.528** but p=0.113 on 91 trades.
+   That is precisely the "high ratio, thin sample" pattern a per-cell gate cannot see and FDR can.
+
+**The honest counter-argument, stated:** with only 4 cells reaching FDR, the correction is doing
+little work and its cost is a cell like `xs_momentum_quality_combined` (Sharpe 1.133, p=0.0276).
+If the roster stays this small the debate is nearly moot either way. It becomes load-bearing again
+the moment S6-OPT-196 widens the candidate set.
+
+### OTHER MULTIPLE-TESTING CRITERIA (owner: "any other criteria like BH FDR?")
+| mechanism | scope | status |
+|---|---|---|
+| **PSR >= 0.95** | PER-CELL significance: P(true Sharpe > 0) | LIVE - blocks 126 |
+| **BH-FDR q<0.05** | FAMILY-wise false-discovery control over 211 | LIVE - blocks 2 |
+| `deflated_sharpe` >= 0.95 | multiple-testing-ADJUSTED Sharpe | **DEMOTED B1436** |
+| Bonferroni | family-wise error rate | **never wired** (B982 promoted BH-FDR instead) |
+
+So there are two live layers - one per-cell (PSR), one family-wise (BH-FDR) - and the third
+(deflated Sharpe) was demoted to a diagnostic.
+
+### AUTO-FAIL SCREENS — owner is right that they matter, and there is a blocker
+Owner: *"This will be important in phase 1B as now strategies run in isolation."* Agreed in
+principle. **Measured on both roster cells, all three return `None`:**
+
+```
+xs_momentum_top_decile             cost_sens=None  chow p=None  adf p=None
+xs_momentum_with_smart_money_long  cost_sens=None  chow p=None  adf p=None
+```
+
+They cannot compute on a 1-year series of 50-162 trades - Chow needs enough observations either
+side of a break point, ADF needs a long series. Per CLAUDE.md the screens **auto-pass on
+insufficient sample**, so wiring them into the roster pipeline today would add three gates that
+pass unconditionally: the appearance of 8 gates with the force of 5.
+
+- **S6-B1495a (HIGH)** — implement the AUTO-FAIL screens against the **IS window (3 years)** or the
+  full 4-year series, where they can actually compute, rather than the 1-year holdout where they
+  return None. This is the only way the owner's Phase-1B isolation concern gets real coverage.
+
+### `min_trades_per_regime` — CLOSED as WON'T-FIX
+Owner: *"this is correct as i dont have alot of confidence in our regime determination
+methodology."* Accepted and closed. **S6-B1455e CLOSED-WONTFIX.** Recording the reasoning: a gate
+built on a classifier the owner does not trust would import that uncertainty into every promotion
+decision while appearing to add rigour. Leaving it orphaned is the honest position, and it is now a
+DECISION rather than an oversight.

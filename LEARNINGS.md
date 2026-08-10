@@ -5525,3 +5525,31 @@ inherits that artifact's lifetime. Record the dependency explicitly and re-check
 whenever the referenced artifact changes status -- a redundancy claim is relative, and when the
 thing it is relative to disappears, so does the claim.** Ticket the inverse too: if the parent is
 ever restored, these six become redundant again.
+
+### L348
+**A proposal to remove a gate rested on a false premise about which window it uses, and the numbers
+inverted the conclusion twice over.** Owner: *"since we are now using sharpe > 1.0 on the entire 4
+years, does it make sense to do away with BH FDR entirely as its a major gate restricting most
+strategies?"* Two factual corrections, both measured: (1) the Sharpe gate runs on the **HOLDOUT, 1
+year** -- the ONLY 4-year touchpoint in the whole gate set is the `min_trades` full-period leg added
+at B1492. A 1-year Sharpe on 50-162 trades is exactly the regime where luck produces high ratios,
+so the short window argues for MORE multiple-testing control, not less. (2) BH-FDR is not the
+restrictive gate: across 211 evaluable cells **Sharpe blocks 207 and BH-FDR removes 2**. At the old
+0.5 bar FDR removed 11; raising Sharpe did most of its work, so it is now nearly free. **Generalized
+rule: before accepting or rejecting a proposal to remove a control, measure (a) which window or
+population it actually operates on, and (b) how many items it actually removes. A control believed
+to be expensive is often cheap, and the belief usually traces to a property it does not have.**
+
+### L349
+**Three gates would have been added that pass unconditionally.** The owner correctly flagged the 3
+AUTO-FAIL screens (cost-sensitivity, Chow, ADF) as important for Phase 1B, where strategies run in
+isolation. Measured before wiring: **all three return `None` on both roster cells** -- they cannot
+compute on a 1-year series of 50-162 trades, because Chow needs enough observations either side of
+a candidate break and ADF needs a long series. CLAUDE.md specifies these screens **auto-pass on
+insufficient sample**, so wiring them into the holdout-graded pipeline would have produced *the
+appearance of 8 gates with the force of 5* -- the same false-assurance class as the orphaned
+criteria (L289) and the zero-contribution gates (L294), arrived at from a different direction.
+**Generalized rule: before adding a gate, evaluate it on the actual data it will judge and confirm
+it RETURNS A VERDICT. A gate that cannot compute is worse than an absent one, because it is counted
+in the gate tally.** Fix is to run them on the IS or full-period series where they can compute
+(S6-B1495a), not on the holdout.
