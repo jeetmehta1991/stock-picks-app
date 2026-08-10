@@ -9620,3 +9620,36 @@ tightening-induced duplicates #169, direction assumed L291). **Kill criteria sta
 2. Mid-band 58 strategies (100<n<=300): in Phase 1 or deferred?
 3. Implement the 3 AUTO-FAIL screens against IS/full-period first (S6-B1495a)?
 4. FDR family size: 41 (one config per strategy) or 820 (every config tested)?
+
+---
+
+## B1498 (2026-08-09) — OWNER RULING: holdout window LOCKED to R5 dates
+
+**Owner:** *"We do not change the dates and duration of the holdout period. they remain the same as
+in r5. this is to ensure comparibility. No logic changing that even if its been graded 9 times on
+pre-optimized gates."*
+
+**Holdout `2025-05-05 -> 2026-05-05` is LOCKED.** Option A (re-partition) REJECTED, Option B
+(extend forward) unavailable. `STRATEGY_OPTIMISATION_PLAN.md` section 0 rewritten; decision #1 in
+section 5 struck as settled.
+
+**This does NOT conflict with Option C, which is now the operative design.** C never proposed moving
+the holdout's dates -- it governs how many TIMES the fixed window is read. The two are complementary:
+window fixed (owner ruling) + read exactly once per phase on the final candidate set (Option C) +
+all intermediate optimisation inside F1/F2/F3.
+
+**L351's magnitude corrected (L352).** The owner's phrase "pre-optimized gates" identifies a real
+distinction I understated: those 9 reads tuned ~3-5 GLOBAL gate configurations (Sharpe 0.5 -> 1.0,
+`min_trades` 100 -> 25/100) and did NOT select among strategies on holdout performance. That is a
+far smaller multiple-testing spend than Phase 1's proposed 41 x 20 strategy-specific search, and the
+Sharpe bar was chosen on principle from a curve presented BEFORE the choice. **The genuine threat is
+forward-looking -- the 820 candidate configs -- not the 9 reads already taken.**
+
+**And the reason for locking is the one I missed entirely:** comparability across R5, R6b and every
+measurement since. A programme whose purpose is to show optimisation beats R5 cannot be graded on a
+different window than R5 was.
+
+### THREE OWNER DECISIONS REMAIN
+2. Mid-band 58 strategies (100 < n <= 300): in Phase 1 or deferred?
+3. Implement the 3 AUTO-FAIL screens against IS/full-period first (S6-B1495a)?
+4. FDR family size: 41 (one config per strategy) or 820 (every config tested)?

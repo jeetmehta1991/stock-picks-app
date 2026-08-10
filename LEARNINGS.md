@@ -5582,3 +5582,27 @@ reads as a running total across the whole project, not per batch. A holdout is a
 every rule change that triggers a regrade spends some of it -- the spend is invisible when each
 individual regrade is separately justified.** Remedy proposed in `STRATEGY_OPTIMISATION_PLAN.md`
 section 0: nested CV inside the IS folds, with the holdout touched exactly once at the end.
+
+### L352
+**I raised the holdout-reuse count as a blocker without weighing what those reads actually BOUGHT,
+and the owner's ruling supplied the missing distinction.** L351 counted ~9 regrades of the fixed
+holdout and framed the accumulated selection pressure as something that had to be solved before
+optimisation could start. Owner: *"We do not change the dates and duration of the holdout period...
+this is to ensure comparibility. No logic changing that even if its been graded 9 times on
+**pre-optimized gates**."* Two things I had wrong:
+  * **Magnitude.** Those 9 reads tuned a handful of GLOBAL gate parameters -- Sharpe 0.5 -> 1.0,
+    `min_trades` 100 -> 25/100 -- an effective search space of ~3-5 configurations. They did NOT
+    select among strategies on holdout performance. Tuning a few global thresholds is a far smaller
+    multiple-testing spend than the 41 x 20 strategy-specific search Phase 1 proposes, and the
+    Sharpe bar was chosen on PRINCIPLE from a curve shown before the choice, not by scanning for the
+    value that produced the nicest roster.
+  * **What a fixed holdout is FOR.** Comparability across R5, R6b and every measurement taken since
+    is the reason the window is locked. A programme whose purpose is to show optimisation beats R5
+    cannot be graded on a different window than R5 was -- so re-partitioning would have destroyed
+    the very comparison the work exists to make. I had treated statistical freshness as the only
+    axis and missed that one entirely.
+**Generalized rule: before proposing to change a fixed reference (a holdout, a baseline, a control),
+state what that fixture is FOR. Reference points buy comparability, and comparability is usually
+worth more than the marginal statistical benefit of refreshing them -- an argument that only counts
+the statistics will always conclude "refresh it".** L351 stands as a discipline with its magnitude
+corrected; the real threat is forward-looking, not the reads already taken.

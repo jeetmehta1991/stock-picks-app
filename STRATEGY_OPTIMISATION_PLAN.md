@@ -10,42 +10,47 @@ only remaining path to a deployable Phase 1B.
 
 ---
 
-## 0. THE BLOCKER THAT MUST BE SOLVED FIRST
+## 0. HOLDOUT POLICY — SETTLED BY OWNER (2026-08-09)
 
-**The holdout is worn.** The window `2025-05-05 -> 2026-05-05` has been graded **approximately nine
-times this session** with *changing* gate definitions:
+**RULING: the holdout window is LOCKED to R5's dates. `2025-05-05 -> 2026-05-05`, 1 year, unchanged.**
+Owner: *"We do not change the dates and duration of the holdout period. they remain the same as in
+r5. this is to ensure comparibility. No logic changing that even if its been graded 9 times on
+pre-optimized gates."*
 
-| batch | what changed |
+**Option A (re-partition) is REJECTED. Option B (extend forward) is unavailable.**
+
+**The rationale is sound and worth recording:** moving the holdout would make the optimised roster
+incomparable to the R5 baseline, the R6b result, and every measurement taken this session. A
+programme whose purpose is to show that optimisation improves on R5 cannot be graded on a different
+window than R5 was. **Comparability is the point of a fixed holdout, and it outranks the marginal
+statistical benefit of a fresher one.**
+
+### This does NOT conflict with Option C — C is now the operative design
+Option C (nested cross-validation inside the IS folds, holdout read exactly ONCE at the end)
+**never proposed changing the holdout's dates.** It governs how many TIMES the fixed window is read,
+not where it sits. So the owner's ruling and Option C are complementary, and C is now the design:
+
+- **The holdout window is fixed** (owner ruling)
+- **Phase 1 reads it exactly once**, on the final <=41-config candidate set (Option C)
+- **All intermediate optimisation happens inside F1/F2/F3**, which the holdout ruling does not touch
+
+### Moderating the L351 concern — the owner's distinction is correct
+L351 counted ~9 holdout regrades and treated them as accumulated selection pressure. The owner's
+phrase **"pre-optimized gates"** identifies a real distinction I understated:
+
+| what those 9 reads did | what they did NOT do |
 |---|---|
-| B1453 | initial build, Sharpe >= 0.5 |
-| B1454 | de-dup canonical rule changed |
-| B1463 | evaluator consolidated into `roster_core` |
-| B1470 | selection-noise haircut applied |
-| B1492 | `min_trades` split into two legs, holdout floor 100 -> 25 |
-| B1493 | Sharpe bar 0.5 -> 1.0 |
-| B1494 | 6 disables reverted |
-| B1496 | gate renamed + split |
+| calibrated a handful of GLOBAL gate parameters (Sharpe 0.5 -> 1.0; `min_trades` 100 -> 25/100) | select among strategies on holdout performance |
+| effective search space: ~3-5 distinct gate configurations | 41 x 20 strategy-specific configs |
 
-Each regeneration is another look at the same data with a different rule. **That is selection on the
-holdout**, differing from the B1452 lookahead only in being spread across batches rather than
-executed in one loop. The final roster of 2 is almost certainly not over-fit -- the bar is high and
-the survivors clear it wide -- but the *holdout's remaining power to adjudicate NEW candidates is
-degraded*, and an optimisation programme that grades hundreds of tightened configs against it would
-consume what is left.
+Tuning a few global thresholds is a far smaller multiple-testing spend than cherry-picking
+strategies, and the Sharpe bar in particular was chosen **on principle** ("0.5 is too weak"), from a
+sensitivity curve presented before the choice -- not by scanning for whichever value produced the
+nicest roster. That is materially different from optimisation.
 
-**Three options. This is the first owner decision, and everything downstream depends on it.**
-
-| option | mechanism | cost | consequence |
-|---|---|---|---|
-| **A. Re-partition** | make 2024-05 -> 2025-05 the new holdout; IS becomes 2022-05 -> 2024-05 | free | IS shrinks to 2 years; the current 2 roster cells must be re-graded on the new fold |
-| **B. Extend forward** | acquire 2026-05 -> 2027-05 data as a fresh holdout | needs data that does not exist yet | clean, but unavailable now |
-| **C. Nested CV inside IS** | optimise and validate entirely within F1/F2/F3; the 1y holdout is touched exactly ONCE at the very end for the final roster | free | strongest available; requires that NO intermediate result is graded on the holdout |
-
-**Recommendation: C.** It is free, it preserves the holdout's single-use property for the one
-decision that matters, and it is the only option that scales to hundreds of candidate configs.
-A and C are compatible; B is not available.
-
----
+**The spend is real but small.** L351 stands as a discipline (count holdout reads project-wide) with
+its magnitude corrected: the prior reads consumed little, and the reason to adopt Option C is
+FORWARD-LOOKING -- Phase 1's 820 candidate configs are the genuine threat, not the 9 that happened.
 
 ## 1. GOVERNING CONSTRAINTS (bind both phases)
 
@@ -198,7 +203,8 @@ State these now, so the programme can be stopped on evidence rather than fatigue
 
 ## 5. OWNER DECISIONS REQUIRED BEFORE ANY WORK
 
-1. **Holdout strategy: A, B or C from section 0.** Nothing can start until this is settled.
+1. ~~Holdout strategy A/B/C~~ — **SETTLED 2026-08-09.** Window LOCKED to R5 dates for
+   comparability; Option C (read it once, optimise inside the IS folds) is the operative design.
 2. **Mid-band (58 strategies at 100 < n <= 300): in Phase 1 or deferred?**
 3. **Do the 3 AUTO-FAIL screens get implemented against the IS/full-period series (S6-B1495a)
    before Phase 1 grades?** They currently return `None` on a 1-year holdout.
