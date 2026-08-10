@@ -227,7 +227,11 @@ def main() -> int:
             pick = max(cands, key=lambda c: (c["n_gates"], c["sharpe"] or -9))
             hog = g[(g.entry_date >= HO_START) & (g.entry_date < HO_END)
                     & (g.exit_method == pick["exit"])]
-            graded = evaluate(hog["pnl_pct"], hog["hold_days"])
+            graded = evaluate(hog["pnl_pct"], hog["hold_days"],
+                         # B1492: the full-period leg. `g` is the WHOLE cell across all
+                         # four years at the chosen exit, so len(g) is the period total
+                         # the new gate needs. Without this the 4y leg silently no-ops.
+                         full_period_n=len(g[g.exit_method == pick["exit"]]))
             rows.append({"cube": label, "n_tickers": ntick, "strategy": strat,
                          "direction": direction, "exit": pick["exit"],
                          "is_sharpe": pick["sharpe"], "is_n_gates": pick["n_gates"],

@@ -13244,6 +13244,11 @@ def test_b1456_no_orphaned_passing_criteria():
     gating = [
         repo / "backtest" / "results" / "metrics.py",
         repo / "backtest" / "engine" / "improvements.py",
+        # B1492: roster_core.py was created at B1463 as THE canonical gate implementation
+        # and never added here, so this guard has been blind to the pipeline's real gate
+        # ever since - it only saw the callers, not the evaluator. Found when the two-leg
+        # min_trades keys read by roster_core were reported as orphaned.
+        repo / "scripts" / "roster_core.py",
         repo / "scripts" / "build_phase_1b_roster.py",
         repo / "scripts" / "canonical_criteria_check.py",
         repo / "scripts" / "best_exit_by_gates.py",
@@ -13398,7 +13403,10 @@ def test_b1464_live_gate_thresholds_actually_gate():
         ("min_sortino_per_regime", "sortino",
          (observed["sortino"] or 0) + 5.0, -99.0),
         ("min_psr", "psr", 1.01, 0.0),
-        ("min_trades", "min_trades", observed["n"] + 1, 1),
+        # B1492: the gate now reads min_trades_holdout (the legacy `min_trades` key no
+        # longer controls it). Flipping the key the gate does not read would make this
+        # test vacuously pass - the exact failure it exists to catch.
+        ("min_trades_holdout", "min_trades", observed["n"] + 1, 1),
     ]
     for key, gate, fail_val, pass_val in cases:
         original = _PC[key]

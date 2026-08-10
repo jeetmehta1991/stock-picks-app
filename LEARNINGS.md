@@ -5455,3 +5455,33 @@ unsupported, and the gap between "passes with two files" and "passes with 431" i
 original defect lived. **Generalized rule: when a fix targets an ISOLATION defect, the verification
 must run at the scale the defect appeared at. A minimal reproducer proves the mechanism; only the
 full population proves the fix.**
+
+### L343
+**The `min_trades` gate demanded 100 trades in ONE year of a FOUR-year window, and I described it
+wrongly before measuring it.** `roster_core.evaluate()` checked `n >= 100` against whichever window
+it received. It is called twice -- on IS to RANK exits, and on the holdout to DECIDE pass/fail -- so
+the binding rule was **100 trades in the 1-year holdout**, roughly 4x harsher than "100 trades"
+reads, since the holdout is 25% of the window. I first described this as "100 in IS AND 100 in
+holdout independently", which overstated the IS side: that call cannot fail a cell, it only orders
+candidate exits. Owner: *"this is too harsh and needs to be undone."* Measured before changing:
+relaxing the holdout leg to 25 admits **11 cells**, three at Sharpe 1.53 / 1.35 / 1.13, above the
+then-current roster's best. Implemented as specified: `min_trades_full_period > 100` (4y, NEW -- no
+gate read a period total before) AND `min_trades_holdout >= 25` (1y, was 100). The 4-year leg is
+what makes the low holdout floor safe, because n=25-30 sits at the `MIN_N` power floor where
+annualised Sharpe SE is ~+/-1.6. **Generalized rule: a threshold applied to "whatever window the
+function received" is not one rule, it is as many rules as there are callers. Put the window in the
+KEY NAME (`min_trades_holdout`, not `min_trades`) so a reader cannot mistake which period it
+governs.**
+
+### L344
+**My orphan guard never watched the file it was written to protect.**
+`test_b1456_no_orphaned_passing_criteria` scans a hardcoded list of GATING modules and flags any
+`PASSING_CRITERIA` key none of them reads. `scripts/roster_core.py` -- created at B1463 as THE single
+canonical gate implementation, the entire point of S6-B1452a -- was never added to that list. So from
+B1463 onward the guard watched the CALLERS (`build_phase_1b_roster`, `best_exit_by_gates`) while the
+evaluator they both delegate to was invisible. It surfaced only because B1492's new keys are read by
+`roster_core` alone and were reported as orphaned. **The consolidation that made the gate correct is
+exactly what made the guard blind: before it, every caller held its own copy and the guard saw them
+all.** **Generalized rule: when code is consolidated into a shared module, every checker that
+enumerates source files BY HAND must be updated in the SAME batch -- a hardcoded file list is a
+duplicate of the module graph, and it goes stale the moment the graph changes.**

@@ -32,9 +32,9 @@
 |---|---|---|
 | 0 | (strategy x direction) cells with a selectable IS exit | 253 |
 | 1 | Holdout-evaluable (n >= 30 at the chosen exit) | 211 |
-| 2 | Clear all 5 live gates on the holdout | 23 |
-| 3 | Survive BH-FDR (q<0.05, threshold p<=0.01256) | 20 |
-| 4 | De-duplicated (Jaccard < 0.7) | **13** |
+| 2 | Clear all 5 live gates on the holdout | 34 |
+| 3 | Survive BH-FDR (q<0.05, threshold p<=0.01256) | 23 |
+| 4 | De-duplicated (Jaccard < 0.7) | **16** |
 
 ### Gate contribution (leave-one-out)
 
@@ -42,11 +42,11 @@ A pass count hides whether a screen has five independent constraints or one bind
 
 | gate | cells passing if this gate is DROPPED | uniquely rejects |
 |---|---|---|
-| `sharpe_per_regime` | 55 | 32 |
-| `profit_factor` | 23 | 0 **(rejects nothing)** |
-| `sortino` | 23 | 0 **(rejects nothing)** |
-| `psr` | 27 | 4 |
-| `min_trades` | 34 | 11 |
+| `sharpe_per_regime` | 74 | 40 |
+| `profit_factor` | 34 | 0 **(rejects nothing)** |
+| `sortino` | 34 | 0 **(rejects nothing)** |
+| `psr` | 45 | 11 |
+| `min_trades` | 34 | 0 **(rejects nothing)** |
 
 ### Effective breadth - READ THIS BEFORE SIZING
 
@@ -59,25 +59,28 @@ The cell count is NOT the number of independent bets. De-dup compares (ticker, e
 
 **The deployable figure is carried by the short legs, which have NO holdout evidence of positive edge** - they are retained by the owner's symmetry directive, 0 of 82 shorts cleared all five gates in bear (B1455), and several carry negative alpha. Evidenced breadth is the LONG ONLY row.
 
-## THE ROSTER - 13 cells
+## THE ROSTER - 16 cells
 
 | # | Strategy | Dir | Status | Cube | Tkrs | Exit | IS Shrp | HO Shrp | margin | HO n | Exp | WR | PF | Payoff | Mirror |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 1 | `xs_momentum_with_smart_money_long` | long | ROBUST | R5 | 544 | `regime_flip` |   0.58 |   1.00 | +0.504 | 162 |   5.63 | 0.593 |   2.94 |   2.02 | `xs_momentum_bottom_decile_short` |
-| 2 | `poc_magnet_long` | long | **PROVISIONAL** | R5 | 544 | `time_stop_10d` |   0.52 |   0.81 | +0.308 | 151 |   1.34 | 0.603 |   1.72 |   1.14 | `poc_magnet_short` |
-| 3 | `smc_breaker_block_long` | long | **PROVISIONAL** | R5 | 544 | `breakeven_plus_trail` |   0.40 |   0.69 | +0.193 | 356 |   4.46 | 0.393 |   3.09 |   4.77 | `smc_breaker_block_short` |
-| 4 | `institutional_persistence_breakout_long` | long | **PROVISIONAL** | R5 | 544 | `breakeven_plus_trail` |   0.39 |   0.68 | +0.183 | 136 |   5.58 | 0.404 |   4.07 |   6.00 | LONG-ONLY DATA |
-| 5 | `institutional_strong_conviction_long` | long | **PROVISIONAL** | R5 | 544 | `breakeven_plus_trail` |   0.44 |   0.61 | +0.113 | 590 |   4.17 | 0.358 |   2.81 |   5.05 | LONG-ONLY DATA |
-| 6 | `macd_crossover` | long | **PROVISIONAL** | R5 | 544 | `breakeven_plus_trail` |   0.43 |   0.59 | +0.088 | 265 |   3.16 | 0.328 |   2.54 |   5.20 | DUAL (own short leg) |
-| 7 | `pead_long_high_yoy_growth_only` | long | **PROVISIONAL** | R5 | 544 | `breakeven_plus_trail` |   0.53 |   0.58 | +0.085 | 422 |   4.42 | 0.308 |   3.14 |   7.05 | `pead_short_negative_yoy_growth` |
-| 8 | `institutional_high_conviction_long` | long | **PROVISIONAL** | R5 | 544 | `breakeven_plus_trail` |   0.37 |   0.56 | +0.061 | 738 |   3.81 | 0.328 |   2.65 |   5.44 | LONG-ONLY DATA |
-| 9 | `macd_fast_crossover` | long | **PROVISIONAL** | R5 | 544 | `breakeven_plus_trail` |   0.44 |   0.54 | +0.037 | 378 |   3.13 | 0.333 |   2.40 |   4.80 | DUAL (own short leg) |
-| 10 | `avwap_252_breakout` | long | **PROVISIONAL** | R5 | 544 | `breakeven_plus_trail` |   0.48 |   0.53 | +0.032 | 314 |   2.23 | 0.363 |   2.05 |   3.60 | DUAL (own short leg) |
-| 11 | `force_index_breakout` | long | **PROVISIONAL** | R5 | 544 | `breakeven_plus_trail` |   0.42 |   0.52 | +0.019 | 259 |   3.21 | 0.309 |   2.42 |   5.42 | DUAL (own short leg) |
-| 12 | `institutional_persistence_oversold_long` | long | **PROVISIONAL** | R5 | 544 | `breakeven_plus_trail` |   0.38 |   0.52 | +0.017 | 199 |   2.34 | 0.357 |   1.93 |   3.49 | LONG-ONLY DATA |
-| 13 | `r1_break_retest` | long | **PROVISIONAL** | R5 | 544 | `breakeven_plus_trail` |   0.42 |   0.50 | +0.001 | 338 |   2.40 | 0.299 |   2.11 |   4.95 | DUAL (own short leg) |
+| 1 | `xs_momentum_top_decile` | long | ROBUST | R5 | 544 | `time_stop_10d` |   0.67 |   1.35 | +0.849 | 50 |   2.23 | 0.660 |   2.34 |   1.20 | `xs_momentum_bottom_decile_short` |
+| 2 | `xs_momentum_with_smart_money_long` | long | ROBUST | R5 | 544 | `regime_flip` |   0.58 |   1.00 | +0.504 | 162 |   5.63 | 0.593 |   2.94 |   2.02 | `xs_momentum_bottom_decile_short` |
+| 3 | `smc_inverse_fvg` | long | **PROVISIONAL** | R5 | 544 | `regime_flip` |   0.68 |   0.81 | +0.313 | 92 |   4.92 | 0.587 |   2.86 |   2.01 | DUAL (own short leg) |
+| 4 | `poc_magnet_long` | long | **PROVISIONAL** | R5 | 544 | `time_stop_10d` |   0.52 |   0.81 | +0.308 | 151 |   1.34 | 0.603 |   1.72 |   1.14 | `poc_magnet_short` |
+| 5 | `smc_breaker_block_long` | long | **PROVISIONAL** | R5 | 544 | `breakeven_plus_trail` |   0.40 |   0.69 | +0.193 | 356 |   4.46 | 0.393 |   3.09 |   4.77 | `smc_breaker_block_short` |
+| 6 | `institutional_persistence_breakout_long` | long | **PROVISIONAL** | R5 | 544 | `breakeven_plus_trail` |   0.39 |   0.68 | +0.183 | 136 |   5.58 | 0.404 |   4.07 |   6.00 | LONG-ONLY DATA |
+| 7 | `institutional_strong_conviction_long` | long | **PROVISIONAL** | R5 | 544 | `breakeven_plus_trail` |   0.44 |   0.61 | +0.113 | 590 |   4.17 | 0.358 |   2.81 |   5.05 | LONG-ONLY DATA |
+| 8 | `macd_crossover` | long | **PROVISIONAL** | R5 | 544 | `breakeven_plus_trail` |   0.43 |   0.59 | +0.088 | 265 |   3.16 | 0.328 |   2.54 |   5.20 | DUAL (own short leg) |
+| 9 | `pead_long_high_yoy_growth_only` | long | **PROVISIONAL** | R5 | 544 | `breakeven_plus_trail` |   0.53 |   0.58 | +0.085 | 422 |   4.42 | 0.308 |   3.14 |   7.05 | `pead_short_negative_yoy_growth` |
+| 10 | `institutional_high_conviction_long` | long | **PROVISIONAL** | R5 | 544 | `breakeven_plus_trail` |   0.37 |   0.56 | +0.061 | 738 |   3.81 | 0.328 |   2.65 |   5.44 | LONG-ONLY DATA |
+| 11 | `rsi_volume_200ema` | long | **PROVISIONAL** | R5 | 544 | `earnings_blackout` |   0.54 |   0.55 | +0.045 | 63 |   4.70 | 0.635 |   2.44 |   1.40 | DUAL (own short leg) |
+| 12 | `macd_fast_crossover` | long | **PROVISIONAL** | R5 | 544 | `breakeven_plus_trail` |   0.44 |   0.54 | +0.037 | 378 |   3.13 | 0.333 |   2.40 |   4.80 | DUAL (own short leg) |
+| 13 | `avwap_252_breakout` | long | **PROVISIONAL** | R5 | 544 | `breakeven_plus_trail` |   0.48 |   0.53 | +0.032 | 314 |   2.23 | 0.363 |   2.05 |   3.60 | DUAL (own short leg) |
+| 14 | `force_index_breakout` | long | **PROVISIONAL** | R5 | 544 | `breakeven_plus_trail` |   0.42 |   0.52 | +0.019 | 259 |   3.21 | 0.309 |   2.42 |   5.42 | DUAL (own short leg) |
+| 15 | `institutional_persistence_oversold_long` | long | **PROVISIONAL** | R5 | 544 | `breakeven_plus_trail` |   0.38 |   0.52 | +0.017 | 199 |   2.34 | 0.357 |   1.93 |   3.49 | LONG-ONLY DATA |
+| 16 | `r1_break_retest` | long | **PROVISIONAL** | R5 | 544 | `breakeven_plus_trail` |   0.42 |   0.50 | +0.001 | 338 |   2.40 | 0.299 |   2.11 |   4.95 | DUAL (own short leg) |
 
-**Status (S6-B1467c, owner-approved).** ROBUST **1** / PROVISIONAL **12**. A cell is ROBUST only if it clears the 0.5 Sharpe gate by more than the measured selection-noise floor of 0.369. That floor is the holdout-Sharpe gap observed between duplicate strategies with ~identical entries whose exits were chosen independently (B1467) -- i.e. the amount of a cell's margin that the exit choice alone can account for. PROVISIONAL does NOT mean the cell failed: it cleared every live gate. It means its margin is smaller than the pipeline's own decision noise, so PASS overstates the certainty.
+**Status (S6-B1467c, owner-approved).** ROBUST **2** / PROVISIONAL **14**. A cell is ROBUST only if it clears the 0.5 Sharpe gate by more than the measured selection-noise floor of 0.369. That floor is the holdout-Sharpe gap observed between duplicate strategies with ~identical entries whose exits were chosen independently (B1467) -- i.e. the amount of a cell's margin that the exit choice alone can account for. PROVISIONAL does NOT mean the cell failed: it cleared every live gate. It means its margin is smaller than the pipeline's own decision noise, so PASS overstates the certainty.
 
 **Do not read PROVISIONAL as "12 of 13 are luck".** Selection diverged in only ~6% of the 32 replicate pairs, so the calibrated exposure is **roughly ONE roster cell** placed by exit luck -- not twelve. The label marks which cells COULD be affected, not which are.
 
@@ -93,10 +96,10 @@ Owner standing directive: *promoted longs carry short mirrors by default* - the 
     - `institutional_strong_conviction_long` - consumes `institutional_increased`, `institutional_new_positions`
 
     Excusal is decided from the signals each function ACTUALLY consumes, never from its name. B1453 caught `xs_momentum_with_smart_money_long` being excused on its name alone while B1194 had already removed its smart_money gate - it is NOT excused and its exact mirror `xs_momentum_bottom_decile_short` is retained.
-- **DUAL - own short branch is the mirror, nothing to create (5):** `avwap_252_breakout`, `force_index_breakout`, `macd_crossover`, `macd_fast_crossover`, `r1_break_retest`
+- **DUAL - own short branch is the mirror, nothing to create (7):** `avwap_252_breakout`, `force_index_breakout`, `macd_crossover`, `macd_fast_crossover`, `r1_break_retest`, `rsi_volume_200ema`, `smc_inverse_fvg`
 - **NEEDS CREATION (0):** none
 
-**Deployable total: 13 graded cells + 4 registered mirrors + 5 dual self-mirrors = 17** (dual mirrors are already counted in their parent cell), plus 0 mirrors to create.
+**Deployable total: 16 graded cells + 4 registered mirrors + 7 dual self-mirrors = 20** (dual mirrors are already counted in their parent cell), plus 0 mirrors to create.
 
 ## What this roster does NOT establish
 

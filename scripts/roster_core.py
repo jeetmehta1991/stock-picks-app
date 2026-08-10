@@ -76,7 +76,7 @@ def load_cube(path: Path, extra_columns: list[str] | None = None) -> pd.DataFram
 
 
 def evaluate(pnl: pd.Series, hold: pd.Series, *, min_n: int | None = None,
-             pf_bar: float | None = None) -> dict | None:
+             pf_bar: float | None = None, full_period_n: int | None = None) -> dict | None:
     """The five live gates on one (cell, window). None below the power floor.
 
     `min_n` / `pf_bar` default to the POOLED tier. Callers measuring the per-regime tier
@@ -109,7 +109,19 @@ def evaluate(pnl: pd.Series, hold: pd.Series, *, min_n: int | None = None,
         "profit_factor":     pf >= pf_bar,
         "sortino":           sortino is not None and sortino >= PC["min_sortino_per_regime"],
         "psr":               dsr.get("psr") is not None and dsr["psr"] >= PC["min_psr"],
-        "min_trades":        n >= PC["min_trades"],
+        # B1492 (owner-approved 2026-08-09). WAS `n >= 100` against whatever window was
+        # passed, and the binding call is the HOLDOUT - so it demanded 100 trades in ONE
+        # year while the window is four. Owner: "this is too harsh and needs to be undone.
+        # it should have only two criteria overall (4 years) n >100 and holdout (1 year)
+        # n>=25." Both legs now enforced:
+        #   full-period (4yr) > 100   - NEW, no gate read a period total before this
+        #   holdout     (1yr) >= 25   - was 100
+        # The 4-year leg is what makes the low holdout floor safe: n=25-30 sits at the
+        # MIN_N power floor where annualised Sharpe SE is ~+/-1.6, so a thin holdout is
+        # only acceptable when the full period is deep.
+        "min_trades":        (n >= PC["min_trades_holdout"]
+                              and (full_period_n is None
+                                   or full_period_n > PC["min_trades_full_period"])),
     }
     return {"n": n, "sharpe": sharpe, "sortino": sortino, "psr": dsr.get("psr"),
             "profit_factor": round(pf, 3), "payoff": round(payoff, 2) if payoff else None,

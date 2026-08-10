@@ -9274,3 +9274,51 @@ single IS-chosen exit (not pooled over 26), per direction. `roster_core.MIN_N = 
 floor - below it the annualised Sharpe standard error is ~+/-1.6, indistinguishable from zero, so a
 verdict would be noise. Distinct from the `min_trades >= 100` GATE: 30 is "measurable at all", 100
 is "passes".
+
+---
+
+## B1492 (2026-08-09) — owner-approved: min_trades split into two legs; roster 13 -> 16
+
+**OWNER DIRECTIVE:** *"it should have only two criteria overall (4 years) n >100 and holdout
+(1 year) n>=25."* Implemented and regenerated.
+
+**The defect.** `min_trades = 100` was applied to whatever window `evaluate()` received. The BINDING
+call is the holdout, so it demanded **100 trades in 1 year of a 4-year window** -- ~4x harsher than
+it reads. My earlier "100 in IS AND 100 in holdout independently" overstated the IS side: that call
+only ranks exits, it cannot fail a cell. L343.
+
+**The fix** -- `config.py` gains two explicit keys; `roster_core.evaluate()` enforces both:
+- `min_trades_full_period > 100` over the 4y window -- **NEW, no gate read a period total before**
+- `min_trades_holdout >= 25` in the 1y holdout -- was 100
+
+The 4-year leg is what makes the low holdout floor safe: n=25-30 sits at the `MIN_N` power floor
+where annualised Sharpe SE is ~+/-1.6.
+
+**Result: funnel `253 -> 211 -> 34 gates -> 23 BH-FDR -> 16 de-duped`.** Roster **13 -> 16 cells,
+ZERO dropped**, **20 distinct strategies** (was 17). New entrants:
+
+| strategy | n | Sharpe | status |
+|---|---|---|---|
+| `xs_momentum_top_decile` | 50 | **1.349** | **ROBUST** |
+| `smc_inverse_fvg` | 92 | 0.813 | PROVISIONAL |
+| `rsi_volume_200ema` | 63 | 0.545 | PROVISIONAL |
+
+ROBUST 1 -> **2**; PROVISIONAL 14.
+
+### The SECOND gate group (answering the owner's question)
+Beyond the 5 live gates there are **3 AUTO-FAIL screens**: cost-sensitivity
+(`sharpe@20bps / sharpe@0bps >= 0.5`), Chow break-point (`p >= 0.05` OR post-break Sharpe >= 0.3),
+and ADF stationarity (mean-reversion strategies only, `p >= 0.10`).
+
+**`metrics.py` implements all three. `roster_core.py` implements NONE.** The roster has been graded
+on 5 gates, not 8.
+
+- **S6-B1492a (HIGH)** — decide whether the 3 AUTO-FAIL screens join the roster pipeline. They are
+  the difference between the canonical 14+3 criteria and the 5 actually enforced.
+
+### Two guards fired on this change — both correctly
+`test_b1464` flipped the legacy `min_trades` key, which the gate no longer reads; it would have
+passed vacuously. `test_b1456` reported the new keys as orphaned, exposing **L344**: the orphan
+guard's hardcoded gating-module list never included `scripts/roster_core.py`, the canonical
+evaluator created at B1463. From B1463 the guard watched the CALLERS while the evaluator they
+delegate to was invisible. Both fixed; pyramid **897 passed**.

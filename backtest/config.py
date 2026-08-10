@@ -612,7 +612,13 @@ PASSING_CRITERIA = {
     "min_total_roi":           0.0,    # positive total ROI over backtest period
     "smart_money_lift":        False,  # was True; now per-strategy opt-in via uses_smart_money_signal attribute
     "macro_correlation":       False,  # was True; now per-strategy opt-in via uses_macro_signal attribute
-    "min_trades":              100,    # minimum 100 trades for statistical validity
+    "min_trades":              100,   # legacy single-window key; superseded by the two below
+    # B1492 (owner-approved 2026-08-09): the old single `min_trades` was applied to
+    # whichever window evaluate() received, and the BINDING call is the holdout - so it
+    # demanded 100 trades in ONE year of a FOUR-year window, roughly a 4x harsher bar
+    # than "100 trades" reads. Split into two explicit legs.
+    "min_trades_full_period":  100,   # > 100 over the whole 4y window
+    "min_trades_holdout":      25,    # >= 25 in the 1y holdout    # minimum 100 trades for statistical validity
     "min_deflated_sharpe":     0.95,   # NEW Batch 186: DSR-based stat significance (multi-testing-corrected PSR)
     # B983 (2026-06-21) Council 86 Option-7 owner-approved 2026-06-21 per
     # directive 'Approve your recommendation. Proceed council this.':
