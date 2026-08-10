@@ -2775,3 +2775,16 @@ State compliance visibly: "Checklist: ✅ [each item]"
 **#180 (B1473, from L304+L316) - ATTRIBUTE BEFORE INVESTIGATING; UNTRIAGED IS NOT STALE.** (a) Before blaming a PRODUCER for a cross-strategy anomaly, read BOTH consumers' gate expressions - two strategies sharing entries is far more often shared gates than a broken signal, and a producer hypothesis sends the investigation to the wrong file (L304). (b) A red test outside the enforced gate is UNTRIAGED, not presumed bit-rot: triage separates stale-pin from real-finding from lint-violation, and the "old failing tests are rot" prior let an S4-B713 compliance gap sit unreported for 12 days (L316).
 
 **#181 (B1473, from L308+L315) - USE WHAT THE PIPELINE ACCIDENTALLY GIVES YOU, AND LABEL BEFORE PRUNING.** (a) When a pipeline SELECTS among options per unit then grades the winner, any pair of near-duplicate units is a FREE REPLICATE of the selection step - duplicates are usually treated as waste to delete, but they are the only within-pipeline measurement of its own reliability. Measure them before deleting them (L308). (b) When a measurement shows a published status OVERSTATES certainty, the first fix is to correct the STATUS, not to act on the underlying items: labelling is reversible, preserves the evidence, and states the uncertainty where readers meet it (L315).
+
+**#182 VERDICT DENOMINATOR RULE (B1503).** Before stating any verdict about an object (strategy,
+producer, module, dataset), enumerate that object's FULL parameter/dimension space and mark each
+entry TESTED or UNTESTED. The verdict sentence MUST name its denominator - "0 of 20 combinations
+across 2 of 6 producers", never "it fails". A verdict whose scope exceeds the measured scope is a
+Truth-Standard violation even when every underlying number is EXECUTED, because the evidence
+classes tag PROVENANCE and not SCOPE.
+
+*Anti-theatre check (#136) - retroactive catches:* (1) B1502 "cannot clear the Sharpe bar" on 2 of
+6 producers; (2) B1500 "16 of 41 strategies have nothing to tighten", concluded about PRODUCERS
+having enumerated only GATE EXPRESSIONS; (3) B1500 "16 untunable" propagated into a revised
+Phase-1 population of 25, a planning number derived from an over-scoped verdict. Does NOT overlap
+#165 (invented numbers) or L361 (scope of ACTION) - this covers scope of CONCLUSION.

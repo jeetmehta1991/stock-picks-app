@@ -9785,3 +9785,19 @@ Recency is the only in-scope knob with leverage and it exhausts trades at age<=1
 | **S6-B1502a** | **HIGH** | Band misclassification: at holdout n=147 this strategy is MID-BAND (100<n<=300), NOT the n>300 tightening band of 41. Re-derive the whole partition from measured holdout n before Phase 1 scoping. |
 | **S6-B1502b** | MED | Remaining in-scope knob is `swing_length` - it can ADD fires, so it is not a subset and needs resimulation (~50 s/ticker). Against a 0.44 shortfall, measure before assuming. |
 | **S6-B1502c** | MED | Owner decision: adding NEW gates (e.g. a proximity cap) is out of current scope. Confirm whether Phase 2 admits gate-ADDITION as a distinct lever, or whether it stays threshold-only. |
+
+---
+
+## B1503 (2026-08-10) - RETRACTION: B1502's verdict was drawn on 2 of 6 producers
+
+**OWNER CORRECTION.** B1502 concluded `smc_breaker_block_long` "cannot clear the Sharpe bar" having
+tested only P3 (`tail N`) and P4 (age). **VERDICT RETRACTED.** Correct statement: 0 of 20
+combinations across 2 of 6 producers passed. L363 + CHECKLIST #182 (verdict denominator rule).
+
+| ticket | pri | item |
+|---|---|---|
+| **S6-B1503a** | **HIGH** | **P2 `close_mitigation=True`** - existing bool on `_smc.ob()`, READ at smc.py:380. Strictly fewer mitigations => strictly fewer fires => a SUBSET of R5, so gradable from the cube for FREE. Never tested. Run first. |
+| **S6-B1503b** | **HIGH** | **P1 `swing_length`** (current 20, library default 50) - candidates 10/20/30/50. Changes swing detection, so it can ADD fires: NOT a subset, needs resimulation ~50 s/ticker. Highest-leverage untested knob since every order block derives from it. |
+| **S6-B1503c** | **HIGH** | **P6 EMA span** - `compute_ema_sma` emits only spans 9/21/20/50/200 (READ technical.py:750). `price_above_ema_50` EXISTS and is free to test; 100/250 do NOT exist and would need a producer edit = NEW-GATE class, so ASK per `feedback_ask_before_adding_gates_vs_threshold_only`. |
+| **S6-B1503d** | MED | Re-run the full grid as P1 x P2 x P3 x P4 x P6 once the above land, and restate the verdict WITH its denominator per #182. |
+| **S6-B1502a** | HIGH | (carried) Band misclassification - holdout n=147 puts this strategy MID-BAND, not in the n>300 band of 41. Re-derive the partition from measured n. |

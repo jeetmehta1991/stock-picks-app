@@ -5719,3 +5719,24 @@ The verdict rests entirely on the 20 in-scope combinations. That is luck, not di
 invented knob produced the best cell, the whole result would have been unusable and I would have
 had to re-run. **Rule: when a scope violation is found in a completed analysis, re-score on the
 compliant subset FIRST and state whether the conclusion survives, before discussing anything else.**
+
+### L363
+**RETRACTION + root cause: I declared a strategy FAILED having tested 2 of its 6 producers.**
+B1503. B1502 shipped with the title "smc_breaker_block_long cannot clear the Sharpe bar" on the
+basis of 20 combinations spanning P3 (`tail N`) and P4 (age). UNTESTED: **P1 `swing_length`**
+(changes how order blocks are detected AT ALL, so it moves everything downstream), **P2
+`close_mitigation`** (an existing bool, strictly tightening, gradable from the cube for free), and
+**P6 EMA span**. The verdict is RETRACTED; the correct statement is "0 of 20 combinations across
+2 of 6 producers passed".
+
+**Root cause - a gap the Truth Standard does not cover.** Its four classes (EXECUTED / READ /
+DERIVED / UNVERIFIED) tag a claim's PROVENANCE, not its SCOPE. "20 combinations ran and 0 passed"
+and "the strategy cannot clear the bar" are backed by identical evidence and both tag as EXECUTED,
+yet the second is false. The scope ledger does not catch it either: the ledger enumerates planned
+ACTIONS, so a 2-knob investigation of a 6-knob object closes as DONE. **Nothing in the system
+required a verdict to carry its denominator.** L361 covers scope-of-ACTION (widening what I do);
+this is scope-of-CONCLUSION (widening what I claim). Distinct, and previously uncovered.
+
+**Rule:** before stating any verdict about an object, enumerate that object's FULL parameter space
+and mark each dimension TESTED / UNTESTED; the verdict sentence must name its denominator. See
+CHECKLIST #182.
