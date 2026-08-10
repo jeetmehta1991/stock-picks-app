@@ -10116,3 +10116,28 @@ infeasible and that is an owner decision, not mine.
 |---|---|---|
 | **S6-B1514a** | **HIGH** | Report rung 5's measured slope + entry ratio, re-project rungs 10-381, and get owner go/no-go before rung 10. Phased-ladder discipline - no cascade on an unmeasured projection. |
 | S6-B1508a / S6-B1512a | **IN PROGRESS** | Both answered by this ladder: wall-clock scaling (S6-B1508a) and whether universe size drives entry selection (S6-B1512a, via sentinel S2). |
+
+---
+
+## B1515 (2026-08-10) - 766 vs 381 corrected; rung 5 scaling looks sublinear
+
+**OWNER CORRECTION (L380):** *"universe is 381 tickers and not 766."* **381 is the universe**; 766
+was cumulative ticker-runs across all 7 rungs. **Consequence beyond wording:** the deliverable needs
+381 and the intermediate rungs are only a measurement device, so once the slope is known the ladder
+should **SKIP to 381** - 381 ticker-runs instead of 766, half the work for the same output.
+
+**INTERIM (rung 5 in flight, EXECUTED from its log):** **1.36 s/sim-day at 5 tickers vs 2.11 at 1
+ticker** - projecting ~22.7 min for 5 tickers against the measured 42.9 min for 1. If it holds,
+per-ticker cost is NOT the driver and the linear 548 h upper bound collapses. **Caveat: different
+machine load between the two runs, so indicative not clean.**
+
+**WHAT RUNG 5 WILL AND WILL NOT PRODUCE (L381).** Scaling metrics (`sec_per_ticker`, entries/ticker
+vs the R5 rate) - YES, that is its purpose. Statistical metrics (`sharpe`/`sortino`/`psr`/gates) -
+**expected ABSENT**: `evaluate()` returns None below MIN_N=30 holdout trades, and R5 averaged 0.92
+entries/ticker over 381, so 5 tickers cannot plausibly reach 30 HOLDOUT entries. Stated in advance
+so an empty metrics block is not misread as a failure.
+
+| ticket | pri | item |
+|---|---|---|
+| **S6-B1515a** | **HIGH** | **Ladder EXIT PLAN.** If rung 5 confirms sublinear scaling, skip intermediate rungs and go 5 -> 381 directly. Owner go/no-go with the measured slope before the 381 run (supersedes the walk-every-rung reading of S6-B1514a). |
+| S6-B1514a | REVISED | Report rung 5 slope + entry ratio; re-project; owner decides skip-to-381 vs continue the ladder. |

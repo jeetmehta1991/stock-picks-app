@@ -5917,3 +5917,25 @@ paid that simulation cost**. "Free" is a property of the EXISTING cube, never of
 **Rule: distinguish "costs nothing" from "already paid".** A materialised result is free to READ
 and was expensive to PRODUCE; collapsing the two hides the cost from anyone planning a NEW run.
 Detection signal: calling a dimension free without naming which artifact already contains it.
+
+### L380
+**I quoted cumulative ticker-runs in a sentence about universe size.** B1515, owner correction:
+*"universe is 381 tickers and not 766."* Correct. **381 is the universe**; 766 is the SUM of the
+ladder rungs (5+10+20+50+100+200+381) - total ticker-runs if every rung executes. Both numbers are
+real but they answer different questions, and I put the cost figure in a sentence about scope.
+
+**The correction exposes a real inefficiency, not just wording.** The deliverable needs 381. The
+intermediate rungs are a MEASUREMENT DEVICE, not part of the answer - so once the slope is known,
+the ladder should SKIP to 381 rather than walk every rung: 381 ticker-runs instead of 766, half the
+work for the same output. **Rule: state which question a number answers (scope vs cost vs
+cumulative work) in the sentence that carries it** - and when a diagnostic ladder is built, plan its
+EXIT, or it silently becomes the deliverable.
+
+### L381
+**A rung can be valid and still not produce the headline metrics - say so before it runs.** B1515.
+Rung 5 will emit scaling metrics (`sec_per_ticker`, entries/ticker vs the R5 rate) but its
+statistical metrics will almost certainly be absent: `roster_core.evaluate()` returns None below
+MIN_N=30 holdout trades, and R5 averaged 0.92 entries/ticker over 381, so five tickers cannot
+plausibly yield 30 HOLDOUT entries. **Rule: when a diagnostic step cannot produce the headline
+metrics, state that BEFORE it runs** - otherwise an empty metrics block later reads as a failure
+rather than the expected result, and invites re-running something that worked.
