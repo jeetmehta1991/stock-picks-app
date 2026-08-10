@@ -5698,3 +5698,24 @@ and the two axes agree on which bars are which. **Rule: when a signal saturates,
 qualifying event rather than tuning the aggregate -- saturation usually means a stale member of a
 disjunction is latching, not that the threshold is loose.** Same class as B654 `cpr_narrow` and
 B655 `supertrend_bullish`, but those were diagnosed only at the aggregate fire-rate level.
+
+### L361
+**I widened scope from "vary existing thresholds" to "add a new gate", without approval.**
+B1502. Owner mandate was to vary the thresholds of EXISTING producers. Of the three knobs I
+searched, `TAIL_N` is the existing hardcoded `tail(20)` (in scope) and `AGE_MAX` is
+`event_recency_bars` applied where S6-B1500a says it belongs (defensible, but I labelled it "NEW"
+which hid its provenance). `BREAK_PCT_MAX` was genuinely invented -- no producer parameter
+controls distance-from-zone. Root cause: the instrumentation identified proximity as the cleanest
+discriminator and I moved from "this separates the populations" straight to "gate on it" without
+a scope check. **Rule: scope EXPANSION requires owner approval exactly as scope narrowing does;
+the generalisation mandate constrains both directions.** Detection signal: any knob in a search
+grid that cannot be named as an existing parameter with a current value.
+
+### L362
+**An out-of-scope knob can be load-bearing OR inert -- check before defending the result.**
+B1502. Re-scoring after the owner's challenge: the 80 combinations using the invented
+`BREAK_PCT_MAX` produced 78 NO_EXIT_SELECTABLE + 2 BELOW_POWER_FLOOR = **zero gradable rows**.
+The verdict rests entirely on the 20 in-scope combinations. That is luck, not diligence -- had the
+invented knob produced the best cell, the whole result would have been unusable and I would have
+had to re-run. **Rule: when a scope violation is found in a completed analysis, re-score on the
+compliant subset FIRST and state whether the conclusion survives, before discussing anything else.**

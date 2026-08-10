@@ -9757,3 +9757,31 @@ BOTH axes (break_pct 3-7pct, age 134-294) and the axes agree on the split. L359,
 | **S6-B1501b** | **HIGH** | Scale the probe to CHECKLIST #154 minimum (>=25 tickers, >=4 dates, >=12 months) before any level is fixed. Measured cost ~50 s/ticker per 6-month window. |
 | **S6-B1501c** | **HIGH** | Post-tightening n forecast: if the proximity cap holds at ~3 fires/ticker/6mo, R5's 352 fires collapse hard. Check against holdout n>=25 AND full-period n>100 BEFORE committing - the strategy may not survive correct tightening, which is a legitimate outcome. |
 | S6-B1501d | MED | NVDA fires 0 across the probe window. Confirm whether that is a data gap or a genuine absence of mitigated bearish OBs. |
+
+---
+
+## B1502 (2026-08-10) - tightening grid graded; smc_breaker_block_long cannot clear the Sharpe bar
+
+**SHIPPED** `scripts/tighten_breaker_block.py`. Tightening only REMOVES fires, so each variant is a
+strict SUBSET of R5's 352 fires and the R5 cube already holds every one under all 26 exits ->
+graded exactly, no resimulation. Gate logic delegates to `roster_core` so the bar is identical to
+the roster's. Exit chosen IN-SAMPLE only; holdout graded once.
+
+**SCOPE CORRECTION (owner challenge, L361):** mandate was to vary EXISTING producer thresholds.
+`BREAK_PCT_MAX` was invented and is OUT OF SCOPE. Re-scored on the 20 in-scope combinations
+(`TAIL_N` = existing `tail(20)`; `AGE_MAX` = `event_recency_bars` per S6-B1500a): the 80
+out-of-scope rows yielded ZERO gradable results, so the verdict is unchanged (L362).
+
+**IN-SCOPE RESULT (161 tickers, full 2022-05-06..2026-05-04, 352/352 fires diagnosed):**
+12 FAIL / 4 BELOW_POWER_FLOOR / 4 NO_EXIT_SELECTABLE / **0 PASS**. All 12 gradable rows fail on
+`pooled_sharpe` ALONE - profit_factor, sortino, psr and both trade-count gates pass everywhere.
+Baseline Sharpe 0.473; best tightened 0.563 (age<=180, 109 fires, holdout n=34); bar is 1.0.
+Recency is the only in-scope knob with leverage and it exhausts trades at age<=120 (holdout n=20).
+`TAIL_N` is inert - qualifying event is always among the newest 3.
+
+| ticket | pri | item |
+|---|---|---|
+| **S6-B1500d** | **CLOSED** | Holdout n MEASURED = **147** (full-period 352). The "n=356" carried earlier was wrong. |
+| **S6-B1502a** | **HIGH** | Band misclassification: at holdout n=147 this strategy is MID-BAND (100<n<=300), NOT the n>300 tightening band of 41. Re-derive the whole partition from measured holdout n before Phase 1 scoping. |
+| **S6-B1502b** | MED | Remaining in-scope knob is `swing_length` - it can ADD fires, so it is not a subset and needs resimulation (~50 s/ticker). Against a 0.44 shortfall, measure before assuming. |
+| **S6-B1502c** | MED | Owner decision: adding NEW gates (e.g. a proximity cap) is out of current scope. Confirm whether Phase 2 admits gate-ADDITION as a distinct lever, or whether it stays threshold-only. |
