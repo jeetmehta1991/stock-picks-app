@@ -9851,3 +9851,32 @@ intersect this strategy.
 | **S6-B1505b** | **HIGH** | **OWNER DECISION: approve engine resimulation for P1 `swing_length` (10/20/30/50) + P6 EMA span (50 vs 200).** Highest-leverage untested knob - every order block derives from swings. Local, no batch. Not started per the standing spend rule. |
 | **S6-B1505c** | MED | Add a retention-ratio preflight to `tighten_breaker_block.py` implementing L365 mechanically rather than as prose. |
 | S6-B1503a | **CLOSED** | P2 measured - see above. |
+
+---
+
+## B1506 (2026-08-10) - standard producer-variant table + engine timing measurement
+
+**SHIPPED** `scripts/producer_variant_table.py` - the repeatable reporting contract for S6-OPT-196.
+Enumerated existing templates first per `feedback_confirm_existing_template_before_replicating`:
+no producer-variant template exists (`build_fire_bar_matrix.py` is the nearest and serves a
+different purpose), so this is new rather than a duplicate.
+
+Two tables per strategy: **A** = parameter inventory (every producer parameter, TESTED/UNTESTED,
+subset-safe, and WHY the band holds those values, each row citing its source line); **B** =
+combination results with gates passed and gates failed. **The CHECKLIST #182 denominator is
+COMPUTED from Table A**, not hand-counted - which immediately corrected my prose from "3 of 6" to
+**"3 of 5 applicable"** (P5 has no parameter, so it is not a testable dimension). L368.
+First artifact: `output_audit/PRODUCER_VARIANT_TABLE_smc_breaker_block_long.md`.
+Adding a strategy = adding a SPECS entry; the renderer is strategy-agnostic.
+
+**ENGINE TIMING (S6-B1505b prerequisite).** One-ticker run launched detached. Interim result:
+**one ticker exceeds 10 minutes**, versus my producer-only extrapolation of ~67 s/ticker/config -
+roughly 9x, because the engine computes every signal family and simulates 26 exits per trade.
+L367: a component measurement must never be presented as a run cost. **All prior effort estimates
+(7.5 h SP50 / 24 h at 161 / 75 h at full T1a) are WITHDRAWN pending the completed measurement.**
+
+| ticket | pri | item |
+|---|---|---|
+| **S6-B1506a** | **HIGH** | Complete the one-ticker engine timing, then re-cost P1 x P2 (8 producer configs) at 50 / 161 / 503 tickers from MEASURED engine time. Owner decision on universe follows that number, not before. |
+| **S6-B1506b** | MED | Extend `SPECS` in `producer_variant_table.py` as each new strategy enters optimisation - every row must cite a source line, never inference. |
+| S6-B1505a/b | HIGH | (carried) test-universe policy; engine-resim approval - both now gated on S6-B1506a's measured number. |

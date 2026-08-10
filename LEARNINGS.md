@@ -5775,3 +5775,21 @@ Worth recording separately: the best-Sharpe cell now fails **two** gates rather 
 (`pooled_sharpe` AND `psr`), because the filtering that raised the ratio cut holdout n to 115 and
 PSR reads sample size. **Rule: when reporting a tightening gain, report the gate count too - a
 higher Sharpe on a thinner sample can be a net regression.**
+
+### L367
+**Producer-only timing is a LOWER BOUND on engine cost, and the gap is large.** B1506. I costed
+the P1/P6 resimulation at ~67 s/ticker/config by extrapolating the measured SMC producer walk
+(1,003 bars x 0.067 s/bar) and labelled the engine half UNVERIFIED. The first timed one-ticker
+engine run **exceeded 10 minutes** - already ~9x the producer-only figure - because the engine
+computes every signal family and simulates 26 exits per trade, not just SMC. **Rule: never present
+a component measurement as a run cost, even labelled; either measure the whole pipeline or give no
+number.** The label protected the claim's honesty but the table still anchored a decision on a
+figure off by an order of magnitude.
+
+### L368
+**A generated table caught a denominator error in my own prose.** B1506. I had been writing
+"3 of 6 producers"; `producer_variant_table.py` computes the denominator from Table A and emits
+**"3 of 5 applicable producers"** - P5 (the break test) has NO parameter, so it is not a testable
+dimension and does not belong in the denominator. **Rule: the denominator required by CHECKLIST
+#182 must be COMPUTED from a parameter inventory, not counted by hand.** Hand-counting reintroduces
+the error the rule exists to prevent.
