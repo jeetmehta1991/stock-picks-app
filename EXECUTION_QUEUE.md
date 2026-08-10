@@ -10270,3 +10270,26 @@ L373 all metrics / #182 denominator / L382 small-universe artifacts / L391 behav
 |---|---|---|
 | **S6-B1520a** | **BLOCKER** | Replace `test_b1519_...` source assertions with the ENGINE-ARTIFACT diff once the two runs land. Until then the plumbing is VERIFIED-BY-CONFIG, not verified-by-behaviour. |
 | **S6-B1520b** | **HIGH** | Per-rung sweep runner: 20 configs (P1 4 x P6 5) per ticker batch, monitor armed per rung, all metrics per config. Blocked on S6-B1520a. |
+
+---
+
+## B1521 (2026-08-10) - monitor tick: ladder-watch retired, hourly monitor carries coverage
+
+**LADDER WATCH FIRED (cron `adf6a839`). Nothing new needed the owner.** State EXECUTED:
+2 python processes alive (the **pin proof**, not the ladder); ladder rungs recorded = **[5]** only;
+rung 5 exit=0, 42.4 min, 123 entries, **24.60/ticker vs R5 0.9239 = 26.63x**, holdout n=43,
+Sharpe 1.036, 6/6 gates, S2 tripped - **all already reported at B1516**. No PushNotification: the
+trip is not new information.
+
+**`adf6a839` RETIRED (CronDelete).** It watched the universe ladder, which was HALTED at B1518 when
+the design moved to per-rung parameter sweeps. A monitor firing every 13 minutes against a dead
+state file is noise, and noise trains both parties to ignore alerts - the same decay that made the
+original sentinel useless (L385). **Retiring a stale monitor is part of monitoring, not a gap in it.**
+
+**COVERAGE AFTER RETIREMENT:** hourly cron `2082b848` reports every hour while ANY run is active
+(currently the pin proof); each sweep rung arms its own monitor in its launch turn per plan SS9
+item 13. No period is uncovered.
+
+| ticket | pri | item |
+|---|---|---|
+| S6-B1521a | LOW | When the per-rung sweep launches, confirm `2082b848` picks up its state file - it currently globs `output_audit/b152*_sweep_state.json`, which must match the runner's actual output path. |
