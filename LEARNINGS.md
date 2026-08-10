@@ -5566,3 +5566,19 @@ what the merged presentation implied. **Generalized rule: a gate that ANDs two c
 gates for reporting purposes. Merged, a drop-off table cannot show which condition binds, and the
 merge silently attributes one condition's rejections to the other.** Same family as L294's
 leave-one-out requirement: a screen's composition must be visible, not just its verdict.
+
+### L351
+**The holdout has been graded roughly nine times this session with CHANGING gate definitions, and
+nobody counted until the optimisation plan forced it.** `2025-05-05 -> 2026-05-05` was re-graded at
+B1453 (Sharpe 0.5), B1454 (de-dup rule), B1463 (evaluator consolidation), B1470 (haircut), B1492
+(min_trades split, floor 100 -> 25), B1493 (Sharpe 1.0), B1494 (disables reverted) and B1496
+(rename + split). Each regeneration is another look at the same data under a different rule --
+**selection on the holdout**, differing from the B1452 lookahead only in being spread across batches
+instead of executed in one loop, which is exactly why no single batch looked wrong. The final
+2-cell roster is probably not over-fit (the bar is high and both survivors clear it wide), but the
+holdout's remaining power to adjudicate NEW candidates is degraded, and an optimisation programme
+grading hundreds of configs against it would exhaust what is left. **Generalized rule: count holdout
+reads as a running total across the whole project, not per batch. A holdout is a consumable, and
+every rule change that triggers a regrade spends some of it -- the spend is invisible when each
+individual regrade is separately justified.** Remedy proposed in `STRATEGY_OPTIMISATION_PLAN.md`
+section 0: nested CV inside the IS folds, with the holdout touched exactly once at the end.

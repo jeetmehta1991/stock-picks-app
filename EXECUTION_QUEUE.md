@@ -9577,3 +9577,46 @@ Older published artifacts (`b1452_*`, `b1467_*`) carry the old `sharpe_per_regim
 gates dicts. Readers of those files will see the old name; `b1453_phase_1b_roster.json` is
 regenerated with `pooled_sharpe`. **S6-B1496a (LOW)** - decide whether to backfill the historical
 artifacts or leave them as point-in-time records.
+
+---
+
+## B1497 (2026-08-09) — STRATEGY_OPTIMISATION_PLAN.md written (PROPOSAL, nothing implemented)
+
+Owner requested a comprehensive Phase 1 / Phase 2 optimisation plan. Written to
+**`STRATEGY_OPTIMISATION_PLAN.md`**. Nothing in it is implemented; every phase needs approval.
+
+### THE BLOCKER IT SURFACED (L351)
+**The holdout has been graded ~9 times this session with changing gate definitions** -- B1453,
+B1454, B1463, B1470, B1492, B1493, B1494, B1496. Each regrade is another look at the same data under
+a different rule, i.e. selection on the holdout, spread across batches instead of executed in one
+loop, which is why no single batch looked wrong. The 2-cell roster is probably fine (high bar, wide
+margins) but the holdout's power to adjudicate NEW candidates is degraded.
+
+**Three options, section 0 of the plan:** (A) re-partition to a 2024-25 holdout, (B) extend forward
+to 2026-27 data that does not exist yet, (C) **nested CV inside the IS folds with the holdout read
+exactly once at the end**. **Recommend C** -- free, preserves single-use, and the only one that
+scales to hundreds of configs.
+
+### PLAN SUMMARY
+**Phase 1 (tightening, 41 strategies at n>300, ZERO engine runs).** `signals_at_entry` carries the
+full producer dict per trade (~22 KB), so a tighter threshold selects a strict SUBSET of trades with
+known outcomes -- exact and free. Six steps: extract (holdout sealed to a path the optimiser cannot
+reference) -> pre-register a <=20-config grid from consumed signals only -> score F1/F2/F3
+SEPARATELY -> **fold-stability filter (the anti-R6b mechanism: clear in all three folds, not
+pooled)** -> one config per strategy -> grade once with BH-FDR.
+
+**Phase 2 (loosening, 108 strategies).** Cannot be done offline -- looser thresholds admit trades
+that were never generated. ONE permissive superset engine run converts all later loosening
+optimisation into the same free offline problem. Gated behind Phase 1 reporting: if tuning cannot
+rescue strategies that already fire 300+ times, that should change Phase 2's design before it is
+paid for.
+
+**8 error checks**, each closing a defect this session actually produced (leakage L276, no-op gate
+leg B1492, extractor bugs L323, silent no-op filters L322, vacuous passes L325, count drift L298,
+tightening-induced duplicates #169, direction assumed L291). **Kill criteria stated up front.**
+
+### FOUR OWNER DECISIONS BLOCK ALL WORK
+1. **Holdout strategy A / B / C** (section 0) -- nothing starts until this is settled
+2. Mid-band 58 strategies (100<n<=300): in Phase 1 or deferred?
+3. Implement the 3 AUTO-FAIL screens against IS/full-period first (S6-B1495a)?
+4. FDR family size: 41 (one config per strategy) or 820 (every config tested)?
