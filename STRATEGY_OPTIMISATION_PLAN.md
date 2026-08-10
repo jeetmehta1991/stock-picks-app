@@ -519,3 +519,59 @@ flavoured — acceptable for tuning, not for a verdict (S6-B1504a/b).
 **Standing rule (`feedback_ask_before_adding_gates_vs_threshold_only`):** whether optimisation may
 ADD a gate or stays threshold-only is situational — **ask every time**. Label every knob
 EXISTING-THRESHOLD or NEW-GATE before building any grid.
+
+
+---
+
+## 9. PER-STRATEGY EXECUTION CHECKLIST (B1520, owner-directed)
+
+**Every strategy entering S6-OPT-196 runs this list in order.** Each item exists because it failed
+on `smc_breaker_block_long`, the first strategy through - the L-number is the incident.
+
+### 9.1 BEFORE any measurement
+
+| # | gate | why (incident) |
+|---|---|---|
+| 1 | **Read the PRODUCER layer, not the gate expression.** Follow every consumed signal to the function that computes it and enumerate that function's parameters. | L355 - a gate reading as two booleans had **6** producer parameters; I called it untunable. |
+| 2 | **Prove each parameter reaches the ENGINE.** Grep the engine's real call path. A parameter the producer accepts but the caller never passes is NOT tunable. | L387 - `screener` called `compute_smc_signals(df, ticker=ticker)`; a 20-config sweep would have produced 20 IDENTICAL cubes. |
+| 3 | **Check whether a variant is ALREADY emitted** before editing a producer to emit it. | L389 - EMA spans 9/20/21/50/200 already existed; the fix was a one-line consumer change, not a producer edit. |
+| 4 | **Label every knob EXISTING-THRESHOLD or NEW-GATE. Any NEW-GATE -> ASK THE OWNER.** | `feedback_ask_before_adding_gates_vs_threshold_only`; L361 - I invented `BREAK_PCT_MAX` and ran 80 out-of-scope combinations. |
+| 5 | **Classify each parameter SUBSET-SAFE (only removes fires) or FIRE-ADDING.** Run count = product of the FIRE-ADDING bands ALONE. | L371 - 4,000 combinations needed **20** engine runs; costing by combinations overstates 200x. |
+
+### 9.2 DERIVING the bands
+
+| # | gate | why |
+|---|---|---|
+| 6 | **Instrument the QUALIFYING EVENT before tuning.** Record what actually satisfied the signal - age, distance, rank - not just the aggregate fire rate. | L360 - saturation (124/124 bars) was ONE stale order block latching, invisible at the aggregate level. |
+| 7 | **Derive band values from the measured distribution.** Never percentile-by-reflex, never a round number. Anchor level 1 at the production value. | L356 (deciles on an integer count), L369 (P6 band silently narrowed 5 -> 2). |
+| 8 | **State the economic event the signal captures, then check the threshold DIRECTION serves it.** | L359 - a breaker block is a RETEST, so the lever is an UPPER bound; my version selected harder for the noise. |
+| 9 | **Terminate each band where holdout n < 25 or full-period n <= 100.** The gates set the last rung, not taste. | The strict end was untestable on every run - the sample, not the effect, is binding. |
+
+### 9.3 BEFORE any run
+
+| # | gate | why |
+|---|---|---|
+| 10 | **Write `run_manifest.json`, pass `prelaunch_gate.py`.** Pin frozen_sha, isolation, calendar, universe sha256, budget, and enumerate obsolescence risks each with a MECHANICAL gate. | B1335 Rule 1. It caught the P1/P6 blocker before ~14 h was spent. |
+| 11 | **Derive the universe from the BASELINE ARTIFACT, not a roster CSV.** | L378 - R5 ran **381**; T1a has 503. Substituting the universe breaks comparability exactly as changing holdout dates would. |
+| 12 | **Measure the RETENTION RATIO before restricting the universe. Halt below the gates' n-floor.** | L365 - SP50 retained 31 of 352 fires; all 40 combinations returned NO result. |
+| 13 | **ARM THE MONITOR IN THE LAUNCH TURN**: hourly PushNotification while active + a */13 sentinel check + CronDelete on completion. **A run is not launched until its output path to the owner is armed.** | L385 - a sentinel tripped, halted the ladder, and reached no one until the owner asked. |
+| 14 | **Classify each sentinel ERROR (invalidates -> re-run) or FINDING (result valid -> halt for a decision).** | L384 - treating every trip as failure would have discarded a valid rung and re-run it identically. |
+| 15 | **Never extrapolate cost from one point.** Two measured points minimum before any projection. | L367 (9x light), L377 (23pct light), L383 (~100x heavy). Three in one session. |
+
+### 9.4 REPORTING the result
+
+| # | gate | why |
+|---|---|---|
+| 16 | **Use the locked 3-section artifact (SS6 / CHECKLIST #183).** Formula + Table A + Table B, generated, never hand-edited. | Hand-maintained views diverge. |
+| 17 | **Report ALL metrics the evaluator emits**, not the headline. | L373 - Sharpe alone hid `ci_lo` = -0.034, below zero. |
+| 18 | **The verdict MUST carry its denominator** - "N of M combinations across X of Y producers". Computed, never hand-counted. | CHECKLIST #182; L368 - hand-counting reproduced the error the rule exists to prevent. |
+| 19 | **A small-universe PASS is an ARTIFACT until entries/ticker converges to the baseline rate.** | L382 - rung 5 passed all 6 gates at **26.63x** the R5 entry rate. |
+| 20 | **A pin test must be BEHAVIOURAL, not textual.** Set the non-default, RUN the engine, assert the FIRE SET changes. | B1520 - my first "pin test" grepped source strings. That is the grep-found trap wearing a test's clothes. |
+
+### 9.5 Standing rules that bind every step
+
+- **No silent misses.** Every scope item ends with a terminal disposition; a finding without a
+  queue ticket does not exist.
+- **Owner approval** for every threshold/gate/production-path change. Approval for one strategy is
+  not approval for the next.
+- **Pyramid green before every commit**; doc-sweep and queue entry in the same turn.

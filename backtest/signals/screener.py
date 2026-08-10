@@ -48,6 +48,9 @@ from typing import Optional
 
 import pandas as pd
 
+from backtest import config as _cfg  # B1519: module alias so the
+# optimisation knobs are read at CALL time, picking up any env override
+# applied per engine run rather than freezing at import.
 from backtest.config import ENTRY_GAP_ATR_MULT, LIQUIDITY
 from backtest.data.fetcher import passes_liquidity_filter
 from backtest.signals.technical import compute_all_signals, count_bullish_signals
@@ -4300,14 +4303,18 @@ def strat_smc_breaker_block_short(s):
 def strat_smc_breaker_block_long(s):
     """Batch 216: Breaker block long - bearish OB that was mitigated +
     price now above top -> flips to support."""
+    # B1519: the trend leg reads the CONFIGURED span. Default 200 reproduces
+    # production exactly; the sweep varies it across the emitted spans
+    # 9/20/21/50/200 without touching the producer.
+    _ema_key = f"price_above_ema_{_cfg.STRAT_EMA_SPAN}"
     fires = (
         s.get("smc_breaker_block_bullish", False)
-        and s.get("price_above_ema_200", False)
+        and s.get(_ema_key, False)
     )
     return _strat(fires, "long", "smc",
-        ["smc_breaker_block_bullish", "price_above_ema_200"],
+        ["smc_breaker_block_bullish", _ema_key],
         ["Bearish Order Block mitigated + price above - role flipped to support",
-         "Above 200 EMA (regime gate)"])
+         f"Above {_cfg.STRAT_EMA_SPAN} EMA (regime gate)"])
 
 
 def strat_smc_mitigation_block_long(s):
@@ -8696,7 +8703,11 @@ def screen_instrument(
         # read the 6 SMC primitives from the panel cache (primed at
         # engine init from full per-ticker OHLCV) instead of recomputing
         # via the vendored library on every (ticker, as_of) call.
-        smc_out = compute_smc_signals(df, ticker=ticker)
+        # B1519: pass the swing_length knob on the ENGINE call path. Previously
+        # only `ticker` was passed, so the producer default won and no sweep
+        # could vary it (L387).
+        smc_out = compute_smc_signals(
+            df, ticker=ticker, swing_length=_cfg.SMC_SWING_LENGTH)
         if smc_out:
             signals.update(smc_out)
         else:

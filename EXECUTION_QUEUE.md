@@ -10231,3 +10231,42 @@ never engine-consumption. `feedback_wired_means_engine_consumed`, violated while
 | **S6-B1518a** | **BLOCKER** | **OWNER APPROVAL NEEDED - production code change.** Plumb P1/P6 to the engine: (a) `config.py` gains `SMC_SWING_LENGTH` + `EMA_PAIRS`; (b) `screener.py:8699` passes `swing_length` from config; (c) `technical.py:750` reads pairs from config. Small and well-defined, but it touches the SIMULATION path, so it needs sign-off and a pin test proving a changed value actually alters engine output. |
 | **S6-B1518b** | **HIGH** | Pin test: set `SMC_SWING_LENGTH` to a non-default, run the engine on 1 ticker, assert the fire set CHANGES. Without it "plumbed" is another grep-level claim. |
 | **S6-B1518c** | MED | Audit every other SPEC parameter the same way before its grid is costed - does it reach the engine, or only the producer in isolation? Applies to all 41 tightening-band strategies, not just this one. |
+
+---
+
+## B1519-B1520 (2026-08-10) - P1/P6 plumbed (owner-approved); pin test CORRECTED; monitors armed
+
+**S6-B1518a CLOSED - OWNER-APPROVED PLUMBING SHIPPED.** `config.py` gains env-overridable
+`SMC_SWING_LENGTH` (default 20) and `STRAT_EMA_SPAN` (default 200); `screener.py` forwards
+`swing_length` on the ENGINE call path and the breaker-block trend leg reads
+`price_above_ema_{SPAN}` instead of a hardcoded 200. Defaults reproduce production exactly, so an
+unset environment is a no-op and ONE frozen SHA can drive an N-config sweep.
+
+**L389:** P6 needed NO producer change - spans 9/20/21/50/200 are already emitted, so the sweep
+varies which EMITTED signal the strategy consumes. Blast radius shrank from every EMA consumer to
+this one strategy. **L390:** two defects caught by EXECUTING the import, not reading the diff -
+screener had no module alias for config (`_cfg` undefined) and `config.py` had no top-level
+`import os`.
+
+**OWNER CORRECTION (L391) - THE PIN TEST WAS TEXTUAL, NOT BEHAVIOURAL.** I promised a test that
+runs the engine and asserts the fire set changes, and shipped one whose assertions are
+`assert "swing_length" in <source>`. **That is the grep-found trap inside the test written to close
+it.** Replacement RUNNING: two real engine runs on AAPL (2022-05-05..2023-05-05) at `swing_length`
+20 vs 50, asserting the fire sets differ.
+
+**OWNER CORRECTION (L392) - MONITORING WAS EXCEPTION-ONLY.** Cron `adf6a839` notified only on
+sentinel trips; the owner asked for HOURLY updates. **Hourly cron `2082b848` armed** - reports every
+hour while any run is active, leads with any trip, self-deletes when nothing is running.
+
+**PLAN SS9 ADDED - 20-item PER-STRATEGY EXECUTION CHECKLIST**, owner-directed, binding on every
+subsequent strategy. Each item cites the incident that produced it (L355 producer layer / L387
+engine-consumption / L389 already-emitted variants / L361 NEW-GATE approval / L371 subset-safe
+classification / L360 instrument the qualifying event / L356+L369 derived bands / L359 threshold
+direction / B1335 pre-spend gate / L378 baseline universe / L365 retention ratio / L385 monitor
+armed at launch / L384 sentinel classification / L367+L377+L383 no single-point extrapolation /
+L373 all metrics / #182 denominator / L382 small-universe artifacts / L391 behavioural pin tests).
+
+| ticket | pri | item |
+|---|---|---|
+| **S6-B1520a** | **BLOCKER** | Replace `test_b1519_...` source assertions with the ENGINE-ARTIFACT diff once the two runs land. Until then the plumbing is VERIFIED-BY-CONFIG, not verified-by-behaviour. |
+| **S6-B1520b** | **HIGH** | Per-rung sweep runner: 20 configs (P1 4 x P6 5) per ticker batch, monitor armed per rung, all metrics per config. Blocked on S6-B1520a. |

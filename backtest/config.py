@@ -14,6 +14,7 @@ Single source of truth for:
   - AI model selection
 """
 
+import os  # B1519: env-overridable optimisation knobs
 from datetime import date
 
 # -----------------------------------------------------------------------------
@@ -2398,4 +2399,20 @@ USE_PRECOMPUTED_SIGNALS = True
 # Cache MISS (ticker not primed) falls back to per-call library compute,
 # preserving back-compat.
 # -----------------------------------------------------------------------------
+# --- S6-OPT-196 producer-optimisation knobs (B1519, owner-approved) ---------
+# Env-overridable so ONE code SHA can run an N-config parameter sweep: each
+# engine run exports a different value instead of the tree being edited between
+# runs (which would break the frozen_sha pin and make runs non-comparable).
+# Defaults reproduce production EXACTLY, so an unset environment is a no-op.
+#
+# L387 lineage: these existed as producer arguments but the ENGINE never passed
+# them - screener called compute_smc_signals(df, ticker=ticker) only - so a
+# 20-config sweep would have produced 20 IDENTICAL cubes.
+SMC_SWING_LENGTH: int = int(os.environ.get("SMC_SWING_LENGTH", "20"))
+
+# Which EMA span the trend leg reads. compute_ema_sma emits spans 9/20/21/50/200
+# from pairs (9,21),(20,50),(50,200) - so no producer change is needed, only a
+# change of which emitted signal the strategy consumes.
+STRAT_EMA_SPAN: int = int(os.environ.get("STRAT_EMA_SPAN", "200"))
+
 USE_SMC_PANEL_CACHE = False

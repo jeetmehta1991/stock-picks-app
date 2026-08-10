@@ -13637,3 +13637,56 @@ def test_b1510_producer_artifact_standard():
     s2 = copy.deepcopy(next(iter(_m.SPECS.values())))
     s2["formula"] = s2["formula"] + "\n\nP98  foo = bar( baz = 1 )"
     assert any("P98" in e for e in _m.validate_spec(s2)), "extra formula step must be caught"
+
+
+def test_b1519_optimisation_knobs_reach_the_engine():
+    """S6-B1518b / L387: prove P1 and P6 reach the ENGINE, not just config.
+
+    The B1500 sandbox called compute_smc_signals DIRECTLY with arguments, which
+    proved only that the function has a parameter. The engine called it as
+    compute_smc_signals(df, ticker=ticker) - so a 20-config sweep would have
+    produced 20 IDENTICAL cubes. This test pins the CALL PATH.
+    """
+    import os as _os
+    import re as _re
+    from pathlib import Path as _P
+
+    root = _P(__file__).resolve().parents[2]
+    screener_src = (root / "backtest" / "signals" / "screener.py").read_text(
+        encoding="utf-8", errors="ignore")
+
+    # (a) the engine's producer call must forward swing_length
+    m = _re.search(r"compute_smc_signals\((.*?)\)", screener_src, _re.S)
+    assert m, "compute_smc_signals call not found in screener"
+    assert "swing_length" in m.group(1), (
+        "screener calls compute_smc_signals WITHOUT swing_length - the knob "
+        "cannot reach the engine (L387 regression)")
+
+    # (b) the trend leg must read the CONFIGURED span, not a hardcoded 200
+    assert 'f"price_above_ema_{_cfg.STRAT_EMA_SPAN}"' in screener_src, (
+        "breaker_block long must read the configured EMA span, not a literal")
+
+    # (c) defaults reproduce production EXACTLY - an unset env is a no-op
+    from backtest.tests.config_disk import disk_value
+    cfg_path = root / "backtest" / "config.py"
+    assert 'os.environ.get("SMC_SWING_LENGTH", "20")' in cfg_path.read_text(
+        encoding="utf-8", errors="ignore"), "SMC_SWING_LENGTH default must be 20"
+    assert 'os.environ.get("STRAT_EMA_SPAN", "200")' in cfg_path.read_text(
+        encoding="utf-8", errors="ignore"), "STRAT_EMA_SPAN default must be 200"
+
+    # (d) the env override actually changes the value a fresh process sees
+    import subprocess as _sp
+    import sys as _sys
+    code = "import backtest.config as c; print(c.SMC_SWING_LENGTH, c.STRAT_EMA_SPAN)"
+    env = dict(_os.environ, SMC_SWING_LENGTH="50", STRAT_EMA_SPAN="50",
+               PYTHONPATH=str(root))
+    out = _sp.check_output([_sys.executable, "-c", code], env=env,
+                           cwd=str(root), text=True).strip()
+    assert out == "50 50", f"env override did not take effect: got {out!r}"
+
+    base = _sp.check_output(
+        [_sys.executable, "-c", code],
+        env={k: v for k, v in dict(_os.environ, PYTHONPATH=str(root)).items()
+             if k not in ("SMC_SWING_LENGTH", "STRAT_EMA_SPAN")},
+        cwd=str(root), text=True).strip()
+    assert base == "20 200", f"defaults must reproduce production: got {base!r}"

@@ -6009,3 +6009,43 @@ the universe was already DECIDED at 381 by owner ruling, so the convergence curv
 question. **Rule: before running a diagnostic, name the DECISION it changes; if the decision is
 already made, the diagnostic is documentation, not a gate** - and it should not sit in front of the
 deliverable.
+
+### L389
+**P6 needed no producer change - only a change of which emitted signal the strategy reads.**
+B1519. I had scoped EMA-span variation as a `technical.py` edit (unpick the hardcoded pair list).
+Reading it again: `compute_ema_sma` ALREADY emits `price_above_ema_` at spans 9/20/21/50/200, so
+the sweep varies **which existing signal the strategy consumes**, via `STRAT_EMA_SPAN`. That turned
+a producer edit into a one-line strategy-side lookup and shrank the blast radius from every EMA
+consumer to this one strategy. **Rule: before editing a producer to emit a new variant, check
+whether the variant is ALREADY emitted and the consumer is simply hardcoded to one of them.**
+
+### L390
+**The plumbing had a NameError I would have shipped without the syntax+import check.** B1519. My
+edits referenced `_cfg.SMC_SWING_LENGTH` in `screener.py`, but screener imports only specific NAMES
+from config (`from backtest.config import ENTRY_GAP_ATR_MULT, LIQUIDITY`) - there was no module
+alias, so `_cfg` was undefined. Separately `config.py` had no top-level `import os`, so the new knob
+raised at import. Both were caught by running the import, not by reading the diff. **Rule: after
+any cross-module edit, EXECUTE the import before claiming the change works** - a diff that looks
+right imports symbols the target file may not have.
+
+### L391
+**My "pin test" grepped source strings - the grep-found trap wearing a test's clothes.** B1520,
+owner correction. I promised *"a pin test that sets a non-default value, runs the engine on one
+ticker, and asserts the fire set actually changes"* and shipped
+`test_b1519_optimisation_knobs_reach_the_engine`, whose first two assertions are
+`assert "swing_length" in <screener source>` - **textual, not behavioural**. It proves the call
+site contains a token, not that the engine's OUTPUT changes. That is precisely
+`feedback_wired_means_engine_consumed`, committed inside the test written to close that very rule.
+**Rule: a pin test for "X reaches the engine" MUST diff an ENGINE ARTIFACT under two values of X.**
+Source assertions may accompany it as fast guards but can never stand alone. Replacement in flight:
+two real engine runs on AAPL at `swing_length` 20 vs 50, asserting the fire sets differ.
+
+### L392
+**Monitoring was exception-only when the owner had asked for scheduled updates.** B1520:
+*"For any run, i need updates every hour as per the monitor standards and full monitor needs to be
+armed for each rung run."* My cron `adf6a839` notified ONLY on sentinel trips and stayed silent on
+routine progress - I had explicitly coded "no notification for routine progress", which is the
+opposite of an hourly report. **Rule: "update me every hour" means a SCHEDULED report while a run
+is active; silence is correct only when nothing is running.** Exception-only alerting and periodic
+reporting are different products and one does not substitute for the other. Hourly cron `2082b848`
+armed alongside the */13 sentinel check.
