@@ -2,9 +2,51 @@
 
 **Gate:** `(breaker_bullish) AND (price_above_ema_200)`
 
+## Section 1 - boolean formula (READ from source, never recalled)
+
+```
+=============================== PRODUCER LAYER ===============================
+
+P1  swings  =  swing_highs_lows( ohlc, swing_length = 20 )
+                   -> a bar is a swing high if its high is the highest
+                      across swing_length bars BEFORE and AFTER it
+                   PARAMETER: swing_length = 20   (library default is 50)
+
+P2  ob_df   =  ob( ohlc, swings, close_mitigation = False )
+                   -> emits, per detected block:  OB (+1 bull / -1 bear),
+                      Top, Bottom, MitigatedIndex
+                   PARAMETER: close_mitigation = False
+                      False -> a block counts as mitigated when the HIGH/LOW
+                               pierces it
+                      True  -> only when the CLOSE pierces it  (stricter)
+
+P3  events  =  ob_df[ OB != 0 ].tail( 20 )
+                   PARAMETER: tail N = 20     (hardcoded literal, not an argument)
+
+P4  per event e:   e.is_mitigated = ( MitigatedIndex > 0 )
+                                    AND ( MitigatedIndex < today_index )
+                   -> no parameter; derived from P2's MitigatedIndex
+
+P5  per event e:   e.broken_up    = ( close > e.Top )
+                   -> no parameter; strict inequality, zero buffer
+
+P6  ema_50_200 =  compute_ema_sma( df )      # pairs (9,21),(20,50),(50,200)
+       price_above_ema_200  =  close > EMA(close, span = 200)
+                   PARAMETER: span = 200, emitted only from the (50,200) pair
+
+=============================== STRATEGY LAYER ===============================
+
+breaker_bullish  =  AT LEAST ONE event e in P3 satisfies ALL of:
+                        ( e.OB == -1 )          <- bearish block      [from P2]
+                        AND ( e.is_mitigated )                        [from P4]
+                        AND ( e.broken_up )                           [from P5]
+
+fires            =  ( breaker_bullish )  AND  ( price_above_ema_200 ) [from P6]
+```
+
 **R5 baseline:** 352 fires / 161 tickers / holdout n=147 / 2022-05-06..2026-05-04 (`output_r5_rung4_chunk1`)
 
-## Table A - parameter inventory
+## Section 2 - Table A: parameter inventory
 
 | ID | producer | parameter | production | band tested | subset-safe | status | why this band |
 |---|---|---|---|---|---|---|---|
@@ -15,7 +57,7 @@
 | P5 | `break test (close > top)` | `break_pct_max` | none | 0.010, 0.020, 0.030, 0.050, none | YES - cube-gradable, free | **PENDING** | NEW-GATE, OWNER-APPROVED B1507 (was N/A - production has no such parameter; `close > top` is a strict inequality). Band from the B1501 measurement: real retests 0.5-2.7pct from the zone, stale latches 7.5-60pct, empty gap 3-7pct. Caps at 1/2/3pct bracket the retest population; 5pct sits in the gap; None = production. Direction is an UPPER bound (L359: a breaker block is a RETEST, so CLOSER is stricter). |
 | P6 | `compute_ema_sma` | `span` | 200 | 9, 20, 21, 50, 200 | NO - needs engine resim | **UNTESTED** | ALL spans the producer emits (READ technical.py:750 pairs (9,21),(20,50),(50,200)). B1507 widened from [50,200] - the earlier band silently dropped 9/20/21 with no stated rule (#165). 9/20/21 are short-horizon and weak trend filters economically, but exclusion must be a MEASURED result, not a pre-judgement. Spans 100/250 do NOT exist -> NEW-GATE, ask owner. |
 
-## Table B - combination results
+## Section 3 - Table B: combination results
 
 | close_mitigation | break_pct_max | age_bars_max | tail_n | fires | ho n | full n | exit | **Sharpe** | **PF** | **Sortino** | **PSR** | win% | payoff | expectancy | p | CI-lo | gates | failing | verdict |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|

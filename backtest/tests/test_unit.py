@@ -13596,3 +13596,44 @@ def test_b1504_verdict_denominator_gate():
     entries.append({"type": "user", "message": {"content": "next"}})
     assert _vtc.scan_verdict_denominators(entries) == [], \
         "text before the last user message must not be re-scanned"
+
+
+def test_b1510_producer_artifact_standard():
+    """CHECKLIST #183: the 3-section artifact is the locked reporting format.
+
+    Section 1 (formula) + Table A + Table B. The formula and Table A are two
+    views of the same inventory, so they are checked against each other
+    mechanically - a hand-maintained pair silently diverges.
+    """
+    import importlib.util as _ilu
+    from pathlib import Path as _P
+    _spec = _ilu.spec_from_file_location(
+        "_pvt", _P(__file__).resolve().parents[2] / "scripts" / "producer_variant_table.py")
+    _m = _ilu.module_from_spec(_spec)
+    _spec.loader.exec_module(_m)
+
+    assert _m.SPECS, "SPECS must not be empty"
+    for name, spec in _m.SPECS.items():
+        # every shipped SPEC is self-consistent
+        assert _m.validate_spec(spec) == [], f"{name} SPEC drift: {_m.validate_spec(spec)}"
+        assert spec.get("formula"), f"{name} missing REQUIRED formula section"
+        assert "PRODUCER LAYER" in spec["formula"], f"{name} formula missing PRODUCER LAYER"
+        assert "STRATEGY LAYER" in spec["formula"], f"{name} formula missing STRATEGY LAYER"
+        for p in spec["params"]:
+            for field in ("id", "producer", "param", "production", "band",
+                          "derivation", "subset_safe", "status", "evidence"):
+                assert field in p, f"{name}/{p.get('id')} missing Table A field {field!r}"
+            assert p["evidence"], f"{name}/{p['id']} has no source-line evidence"
+
+    # the validator must actually FIRE on drift, both directions (B1504 lesson:
+    # a gate tested in only one direction is a gate that may block everything)
+    import copy
+    s = copy.deepcopy(next(iter(_m.SPECS.values())))
+    s["params"].append({"id": "P99", "param": "x", "band": [], "status": "UNTESTED",
+                        "subset_safe": True, "producer": "z", "production": 1,
+                        "derivation": "-", "evidence": "-"})
+    assert any("P99" in e for e in _m.validate_spec(s)), "extra Table A row must be caught"
+
+    s2 = copy.deepcopy(next(iter(_m.SPECS.values())))
+    s2["formula"] = s2["formula"] + "\n\nP98  foo = bar( baz = 1 )"
+    assert any("P98" in e for e in _m.validate_spec(s2)), "extra formula step must be caught"

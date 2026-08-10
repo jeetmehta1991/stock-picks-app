@@ -5852,3 +5852,19 @@ but `roster_core.evaluate()` computes none of them, so "diagnostic" has meant "a
 "reported and not gated". `metrics.py` has all three. **Rule: demoting a criterion to diagnostic
 creates an obligation to keep REPORTING it; verify the demotion target still emits the value.**
 Same class as the orphaned-config-key findings at B1456.
+
+### L375
+**The reporting format is now the artifact, and the two views of it are checked against each
+other.** B1510, owner-locked. Every strategy entering S6-OPT-196 is reported through ONE 3-section
+artifact: **Section 1 boolean formula** (PRODUCER LAYER P1..PN with each parameter's production
+value, then STRATEGY LAYER showing how the P-outputs combine, each clause tagged with its source
+P), **Section 2 Table A** parameter inventory with a per-row `evidence` source line, **Section 3
+Table B** with all 15 metrics split GATED / DIAGNOSTIC / CONTEXT.
+
+The load-bearing part is `validate_spec()`: the formula and Table A are two views of the same
+inventory, so generation is BLOCKED if a P-id appears in one and not the other, in either
+direction, and a SPEC with no formula is rejected outright. **Rule: when a standard has two
+representations of the same fact, a mechanical cross-check between them is the standard - prose
+saying "keep these in sync" is not.** Tested in both drift directions per the B1504 lesson that a
+gate exercised in only one direction may block everything. CHECKLIST #183,
+`test_b1510_producer_artifact_standard`.

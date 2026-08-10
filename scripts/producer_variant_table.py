@@ -32,6 +32,43 @@ from pathlib import Path
 SPECS: dict[str, dict] = {
     "smc_breaker_block_long": {
         "gate": "(breaker_bullish) AND (price_above_ema_200)",
+        "formula": """=============================== PRODUCER LAYER ===============================
+
+P1  swings  =  swing_highs_lows( ohlc, swing_length = 20 )
+                   -> a bar is a swing high if its high is the highest
+                      across swing_length bars BEFORE and AFTER it
+                   PARAMETER: swing_length = 20   (library default is 50)
+
+P2  ob_df   =  ob( ohlc, swings, close_mitigation = False )
+                   -> emits, per detected block:  OB (+1 bull / -1 bear),
+                      Top, Bottom, MitigatedIndex
+                   PARAMETER: close_mitigation = False
+                      False -> a block counts as mitigated when the HIGH/LOW
+                               pierces it
+                      True  -> only when the CLOSE pierces it  (stricter)
+
+P3  events  =  ob_df[ OB != 0 ].tail( 20 )
+                   PARAMETER: tail N = 20     (hardcoded literal, not an argument)
+
+P4  per event e:   e.is_mitigated = ( MitigatedIndex > 0 )
+                                    AND ( MitigatedIndex < today_index )
+                   -> no parameter; derived from P2's MitigatedIndex
+
+P5  per event e:   e.broken_up    = ( close > e.Top )
+                   -> no parameter; strict inequality, zero buffer
+
+P6  ema_50_200 =  compute_ema_sma( df )      # pairs (9,21),(20,50),(50,200)
+       price_above_ema_200  =  close > EMA(close, span = 200)
+                   PARAMETER: span = 200, emitted only from the (50,200) pair
+
+=============================== STRATEGY LAYER ===============================
+
+breaker_bullish  =  AT LEAST ONE event e in P3 satisfies ALL of:
+                        ( e.OB == -1 )          <- bearish block      [from P2]
+                        AND ( e.is_mitigated )                        [from P4]
+                        AND ( e.broken_up )                           [from P5]
+
+fires            =  ( breaker_bullish )  AND  ( price_above_ema_200 ) [from P6]""",
         "baseline": {"artifact": "output_r5_rung4_chunk1", "fires": 352,
                      "tickers": 161, "holdout_n": 147,
                      "window": "2022-05-06..2026-05-04"},
@@ -83,6 +120,23 @@ SPECS: dict[str, dict] = {
 
 GATE_ORDER = ("pooled_sharpe", "profit_factor", "sortino", "psr",
               "min_trades_holdout", "min_trades_full_period")
+
+
+def validate_spec(spec: dict) -> list[str]:
+    """Formula and Table A must not drift apart. Every P-id in the formula needs
+    a params row and every params row needs a formula step - a mechanical check,
+    because a hand-maintained pair of views silently diverges (L368 class)."""
+    import re as _re
+    ids_formula = set(_re.findall(r"^(P\d+)\s", spec.get("formula", ""), _re.M))
+    ids_params = {p["id"] for p in spec["params"]}
+    errs = []
+    for i in sorted(ids_formula - ids_params):
+        errs.append(f"{i} appears in the formula but has no Table A row")
+    for i in sorted(ids_params - ids_formula):
+        errs.append(f"{i} has a Table A row but no formula step")
+    if not spec.get("formula"):
+        errs.append("SPEC has no `formula` - it is REQUIRED (B1510 standard)")
+    return errs
 
 
 def _fmt(v) -> str:
@@ -162,15 +216,24 @@ def main() -> int:
     gradable = [r for r in results if r["verdict"] in ("PASS", "FAIL")]
     passed = [r for r in results if r["verdict"] == "PASS"]
 
+    errs = validate_spec(spec)
+    if errs:
+        print("SPEC VALIDATION FAILED (formula <-> Table A drift):")
+        for e in errs:
+            print(f"  {e}")
+        return 1
+
     out = [f"# Producer variant table - `{a.strategy}`", "",
            f"**Gate:** `{spec['gate']}`", "",
+           "## Section 1 - boolean formula (READ from source, never recalled)", "",
+           "```", spec["formula"], "```", "",
            f"**R5 baseline:** {spec['baseline']['fires']} fires / "
            f"{spec['baseline']['tickers']} tickers / holdout n="
            f"{spec['baseline']['holdout_n']} / {spec['baseline']['window']} "
            f"(`{spec['baseline']['artifact']}`)", "",
-           "## Table A - parameter inventory", ""]
+           "## Section 2 - Table A: parameter inventory", ""]
     out += table_a(spec)
-    out += ["", "## Table B - combination results", ""]
+    out += ["", "## Section 3 - Table B: combination results", ""]
     out += table_b(results, keys)
     out += ["", "## Verdict (CHECKLIST #182 - denominator required)", "",
             f"**{len(passed)} of {len(results)} combinations passed, across "

@@ -9958,3 +9958,33 @@ lower bound is BELOW ZERO. Neither fact was visible while reporting Sharpe alone
 |---|---|---|
 | **S6-B1509a** | **HIGH** | **`max_drawdown`, `calmar`, `deflated_sharpe` are computed NOWHERE in the roster path** (L374). CLAUDE.md demoted all three to DIAGNOSTIC (B1436/B1437), but `roster_core.evaluate()` emits none, so "diagnostic" has meant ABSENT. `metrics.py` has all three - wire them into `evaluate()` as reported-not-gated. |
 | **S6-B1509b** | MED | CI-lo < 0 on the BASELINE means no tightening of a subset can rescue it - a subset cannot have a tighter interval than its parent by construction. Fold this into the P1/P6 go/no-go. |
+
+---
+
+## B1510 (2026-08-10) - OWNER-LOCKED: 3-section producer-optimisation artifact standard
+
+**OWNER DIRECTIVE:** *"standardize the format of showing the boolean formula for all producers in
+each strategy that we optimize going ahead and then table A and table B formats... lock this in."*
+
+**LOCKED as CHECKLIST #183.** `scripts/producer_variant_table.py` now emits ONE artifact per
+strategy in three sections:
+- **Section 1 BOOLEAN FORMULA** - PRODUCER LAYER (P1..PN: assignment, what it emits, PARAMETER with
+  production value) then STRATEGY LAYER (how P-outputs combine, each clause tagged with its P).
+  Header states READ from source, never recalled. **REQUIRED - a SPEC without it is rejected.**
+- **Section 2 TABLE A** - per-P inventory + `evidence` source line; required fields test-pinned.
+- **Section 3 TABLE B** - GATED (6) / DIAGNOSTIC (5) / CONTEXT (4), 15 metrics.
+- **Computed, never hand-written:** #182 denominator, FULL FACTORIAL, combinations run, percent
+  covered, free-vs-resim split.
+
+**`validate_spec()` blocks generation on formula <-> Table A drift in EITHER direction** (L375),
+verified against 3 drift modes: extra Table A row, extra formula step, missing formula. Pinned by
+`test_b1510_producer_artifact_standard` (899 tests, was 898).
+
+Adding a strategy = adding a SPECS entry with formula + params; the renderer is strategy-agnostic.
+
+| ticket | pri | item |
+|---|---|---|
+| **S6-B1510a** | MED | Backfill a SPECS entry (formula + Table A) for each strategy as it enters optimisation. Every `evidence` field must cite a source line - never inference (#183). |
+
+**OPEN OWNER DECISIONS (carried):** S6-B1508a 10-ticker timing slope · S6-B1507b EMA spans 100/250
+(NEW-GATE) · S6-B1505a test-universe policy · S6-B1509a wire max_drawdown/calmar/deflated_sharpe.

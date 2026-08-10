@@ -2788,3 +2788,27 @@ classes tag PROVENANCE and not SCOPE.
 having enumerated only GATE EXPRESSIONS; (3) B1500 "16 untunable" propagated into a revised
 Phase-1 population of 25, a planning number derived from an over-scoped verdict. Does NOT overlap
 #165 (invented numbers) or L361 (scope of ACTION) - this covers scope of CONCLUSION.
+
+**#183 PRODUCER-OPTIMISATION ARTIFACT STANDARD (B1510, owner-locked).** Every strategy entering
+S6-OPT-196 is reported through `scripts/producer_variant_table.py` in ONE 3-section artifact, so
+results are comparable across strategies and nothing is reported ad hoc:
+
+- **Section 1 - BOOLEAN FORMULA.** PRODUCER LAYER (P1..PN: the assignment, what it emits, and its
+  PARAMETER with the production value) then STRATEGY LAYER (how the P-outputs combine, each clause
+  tagged with the P it came from). Header states it is READ from source, never recalled.
+- **Section 2 - TABLE A, parameter inventory.** Per P-id: producer, parameter, production value,
+  band tested, subset-safe (free vs needs-resim), status, why-this-band, and a source-line
+  `evidence` field. Required fields are test-pinned.
+- **Section 3 - TABLE B, combination results.** GATED (6): pooled_sharpe, profit_factor, sortino,
+  psr, min_trades_holdout, min_trades_full_period. DIAGNOSTIC (5): win_rate, payoff, expectancy,
+  p, ci_lo. CONTEXT (4): fires, holdout n, full-period n, exit chosen in-sample.
+- **Computed, never hand-written:** the #182 denominator, FULL FACTORIAL, combinations run,
+  percent covered, and the free-vs-resim split.
+- **`validate_spec()` blocks generation on formula<->Table A drift** in either direction; a SPEC
+  without a `formula` is rejected. Pinned by `test_b1510_producer_artifact_standard`.
+
+*Anti-theatre check (#136) - retroactive catches:* (1) B1507 P6 band silently narrowed to [50,200]
+with no stated rule - the `derivation` + `evidence` fields make that unwritable; (2) B1502 "cannot
+clear the bar" on 2 of 6 producers - the computed denominator catches it; (3) B1500 "16 of 41
+untunable" concluded from gate expressions - Section 1's PRODUCER LAYER forces the producer read
+before any verdict.
