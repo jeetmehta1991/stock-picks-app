@@ -9653,3 +9653,50 @@ different window than R5 was.
 2. Mid-band 58 strategies (100 < n <= 300): in Phase 1 or deferred?
 3. Implement the 3 AUTO-FAIL screens against IS/full-period first (S6-B1495a)?
 4. FDR family size: 41 (one config per strategy) or 820 (every config tested)?
+
+---
+
+## B1499 (2026-08-09) — five owner challenges to the optimisation plan; all five land
+
+**1. "we would need to resimulate on the entire cube... best strategy x exit cell may change after
+tightening."** Premise RIGHT, conclusion does not follow. The best exit CAN change when tightening
+changes the trade population -- Step 3 re-runs exit selection for exactly that reason. But **no
+resimulation is needed: the cube already stores every trade's outcome under every exit.**
+VERIFIED: `macd_crossover|long`, all 202 sampled `(ticker, entry_date)` trades carry **26 distinct
+`exit_method` rows each**. A tightened subset's outcome at any of the 26 exits is a LOOKUP.
+Covered exactly: any tightening at any of the 26 exits. NOT covered: loosening, and exits outside
+the 26 -- both Phase 2, both need the engine. New plan section **2.3a**.
+
+**2. "The R6b prior is the base rate - this is incorrect especially for the untouched strategies."**
+CORRECT, constraint #6 rewritten. R6b was **LOOSENING** on **14 already-examined** strategies;
+Phase 1 is **TIGHTENING** on **41 mostly-untouched** ones. Neither dimension matches, so the number
+transfers to neither. R6b remains valid as a WARNING that IS-fitted changes can fail on holdout --
+motivation for the discipline, not a numerical expectation. **Phase 1 has no prior.** L353.
+
+**3. "Step 3/4 - is this really necessary? Holdout is the only one that should matter."**
+Step 3 is NOT optional, and the owner's premise is why: the holdout IS the only thing that decides,
+and Step 3 is what keeps it able to. Every config must be selected somewhere; selecting on the
+holdout is the B1452 lookahead (max-over-20 on the graded window always "passes").
+**Step 4 IS optional, and the challenge changes the design.** Recommendation revised: **keep
+fold-stability as a REPORTED TAG, not a hard filter.** Select the pooled-IS winner, carry
+`fold_stable: true/false` into the grade. Nothing real is silently killed (the owner's concern), and
+if fold-unstable configs systematically fail the holdout that becomes *measured evidence* for
+hard-filtering in Phase 2 rather than an assumption imposed now.
+
+**4. "Step 5 - explain."** BH-FDR controls false discoveries among hypotheses tested **on the
+grading data**. The 820 IS scores never touch the holdout, so the holdout sees one hypothesis per
+strategy: m = 41 + 2 incumbents. **Valid only if the separation is airtight** -- enforced
+mechanically (the optimiser is handed an IS-only path and has no reference to the holdout file), not
+by intention. Conservative alternative m=820 is ~20x tighter and would likely admit nothing. Owner
+decision #4.
+
+**5. "why 41 x 20?"** **41 is measured. 20 was ARBITRARY** -- I wrote it without a basis, violating
+CHECKLIST #165, which I authored at B1446. Now labelled `ARBITRARY-PENDING-JUSTIFICATION` in the
+plan. The cap must be DERIVED per strategy: (decile thresholds) x (numeric signals actually
+consumed), so the family is the **SUM of per-strategy grids counted before scoring**, not a round
+number times a population. **S6-B1499a.** L354.
+
+### DECISIONS REMAINING
+2. Mid-band 58 (100<n<=300): in Phase 1 or deferred?
+3. AUTO-FAIL screens against IS/full-period first (S6-B1495a)?
+4. FDR family: per-strategy-derived sum (with airtight separation) or the conservative full grid?

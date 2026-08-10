@@ -66,9 +66,14 @@ FORWARD-LOOKING -- Phase 1's 820 candidate configs are the genuine threat, not t
    de-dup correction are both instances of this being violated in mild forms.
 5. **Every reported number ships with its diagnostics** -- sensitivity curve, leave-one-out
    contribution, churn (in/out), and effective breadth (CHECKLIST #175, #176).
-6. **The R6b prior is the base rate.** The last IS-fitted change set graded **4 held / 9 failed,
-   binomial p=0.954**. Any Phase-1 result must beat that, and the design below exists specifically
-   to beat it.
+6. **There is NO usable prior for this population.** *(Corrected 2026-08-09 - owner: "The R6b prior
+   is the base rate - this is incorrect especially for the untouched strategies.")* R6b was a
+   **LOOSENING** experiment on **14 already-examined** strategies and graded 4 held / 9 failed
+   (p=0.954). Phase 1 is **TIGHTENING** on **41 mostly-never-touched** strategies. Different
+   operation, different population - citing it as the base rate was a category error. R6b remains
+   relevant as evidence that *IS-fitted changes can fail on holdout*, i.e. as motivation for the
+   discipline, but **not as a numerical expectation.** Phase 1 has no prior; that is itself a reason
+   to run it.
 
 ---
 
@@ -110,25 +115,83 @@ read (enforced by a path the Phase-1 code has no reference to).
   wrongly excused a mirror because B1194 had made the name stale).
 - **Which thresholds:** fixed quantiles of the observed IS distribution (deciles), so the grid is
   data-defined but *rule*-defined, not cherry-picked.
-- **Cap:** <= 20 configs per strategy. 41 x 20 = **820 tests**, the declared FDR family.
+- **Cap: ARBITRARY-PENDING-JUSTIFICATION.** *(Owner: "why 41 x 20?")* **41 is measured** -- the
+  n>300 population. **20 was arbitrary** -- I wrote it without a basis, which violates CHECKLIST
+  #165 (every selection rule must be justified on a measured basis or explicitly labelled
+  arbitrary). Labelling it now rather than defending it. The cap should be DERIVED, and the honest
+  way is: cap = the number of decile thresholds x the number of consumed numeric signals, computed
+  PER STRATEGY from its actual gate expression. A strategy gating on one numeric signal has ~9
+  candidate thresholds; one gating on three has ~27. **The real family size is therefore the sum of
+  per-strategy grids, not 41 x a round number** -- and it must be counted before scoring, not
+  estimated. S6-B1499a.
 - Committed to the queue BEFORE any scoring.
 
-**Step 3 — SCORE ON IS FOLDS SEPARATELY.** For each config: surviving subset -> re-run exit
-selection on that subset (the best exit can change when the trade population changes) -> compute
-the 6 live gates on **F1, F2 and F3 independently**.
+**Step 3 — SCORE ON IS FOLDS SEPARATELY.**
+*(Owner challenge 2026-08-09: "is this step really necessary? Holdout is the only one that should
+matter and not these folds? same for step 4?")*
 
-**Step 4 — STABILITY FILTER (the anti-R6b mechanism).** Keep a config ONLY if it clears the gates
-in **all three folds**, not in the pooled IS. R6b's failure was that pooled-IS winners were
-fold-specific noise. A config that works in 2022-23, 2023-24 AND 2024-25 is a materially different
-claim from one that works on average. **Expect this to eliminate most candidates. That is the
-point.**
+**The folds are not a grading mechanism. They are where SELECTION happens.** Every config must be
+chosen somewhere, and there are only two places:
+- **On the holdout** -- this is the B1452 lookahead, retracted. With 20 configs per strategy a
+  maximum-over-20 on the graded window almost always "passes", and the number means nothing.
+- **On the IS** -- the config is chosen blind to the holdout, then graded once.
 
-**Step 5 — ONE CONFIG PER STRATEGY.** Among fold-stable survivors, select by argmax gates-cleared,
-tie-break IS Sharpe (the owner's B1451 objective). One winner per strategy, so the holdout family
-is at most 41 -- not 820.
+So Step 3's existence is not optional; the holdout *is* the only thing that decides, and Step 3 is
+what keeps it able to decide.
+
+**Step 4 — FOLD-STABILITY FILTER. This one IS optional, and here is the honest trade-off.**
+
+| | select on POOLED IS (skip Step 4) | require all 3 folds (Step 4) |
+|---|---|---|
+| candidates reaching the holdout | more | far fewer |
+| protection against IS overfit | none beyond the holdout itself | strong -- a config must work in 2022-23 AND 2023-24 AND 2024-25 |
+| cost | some holdout tests wasted on IS-noise winners | **kills real candidates that happen to be fold-uneven** |
+
+**Recommendation: keep Step 4, but as a REPORTED TAG rather than a hard filter.** Score every config
+on pooled IS *and* record its fold-stability; select the pooled-IS winner but carry
+`fold_stable: true/false` into the holdout grade. That way:
+- nothing real is silently killed before it reaches the holdout (the owner's concern), and
+- if fold-unstable configs systematically fail the holdout, that is measured evidence for
+  hard-filtering in Phase 2 rather than an assumption imposed now.
+
+This is strictly more informative than either extreme and costs nothing.
+
+**Step 5 — ONE CONFIG PER STRATEGY, and why the FDR family is 41 not 820.**
+*(Owner: "explain")*
+
+BH-FDR controls false discoveries among **hypotheses tested on the grading data**. The 820 IS scores
+are not hypotheses tested on the holdout -- **they never touch it**. The holdout sees exactly one
+hypothesis per strategy: *"does this strategy's chosen config have positive edge out of sample?"*
+That is <= 41 tests, so m = 41 + 2 incumbents.
+
+**This is only valid if the IS/holdout separation is airtight.** If any holdout information leaks
+into the choice of config, the 820 become real holdout tests and m must be 820. The separation is
+therefore enforced mechanically, not by intention: the Phase-1 optimiser is given a file path
+containing IS rows only and has no reference to the holdout file (Step 1).
+
+**The conservative alternative is m = 820**, which would raise the BH threshold roughly 20x tighter
+and almost certainly admit nothing. Both readings are defensible; the choice is owner decision #4.
 
 **Step 6 — GRADE ONCE.** The <= 41 chosen configs are graded on the holdout in a single pass, with
 BH-FDR across that family plus the 2 incumbents. **This is the only holdout read in Phase 1.**
+
+### 2.3a NO RESIMULATION IS REQUIRED FOR TIGHTENING — verified
+*(Owner concern: "we would need to resimulate on the entire cube. thus the best strategy x exit cell
+post optimization and rerun may change after tightening.")*
+
+**The premise is right and the conclusion does not follow.** The best exit CAN change when
+tightening changes the trade population -- Step 3 explicitly re-runs exit selection for exactly that
+reason. But it needs no resimulation, because **the cube already stores every trade's outcome under
+every exit.**
+
+VERIFIED B1499: for `macd_crossover|long`, all 202 sampled `(ticker, entry_date)` trades carry
+**26 distinct `exit_method` rows each** -- the full exit set. So a tightened subset's outcome under
+any of the 26 exits is a lookup, not a simulation.
+
+**What this does and does not cover:**
+- **Covered exactly:** any TIGHTENING, at any of the 26 exits, for trades that exist.
+- **NOT covered:** loosening (trades that were never generated), and any exit outside the 26.
+  Both are Phase 2 and both need the engine.
 
 ### 2.4 Error checks (each one closes a defect this session actually produced)
 

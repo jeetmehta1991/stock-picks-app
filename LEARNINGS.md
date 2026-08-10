@@ -5606,3 +5606,31 @@ state what that fixture is FOR. Reference points buy comparability, and comparab
 worth more than the marginal statistical benefit of refreshing them -- an argument that only counts
 the statistics will always conclude "refresh it".** L351 stands as a discipline with its magnitude
 corrected; the real threat is forward-looking, not the reads already taken.
+
+### L353
+**I cited R6b as the base rate for a population it says nothing about.** The optimisation plan's
+governing constraint #6 read *"The R6b prior is the base rate... 4 held / 9 failed, p=0.954. Any
+Phase-1 result must beat that."* Owner: *"this is incorrect especially for the untouched
+strategies."* Correct -- R6b was a **LOOSENING** experiment on **14 already-examined** strategies;
+Phase 1 is **TIGHTENING** on **41 mostly-never-touched** ones. Different operation, different
+population, so the number transfers to neither. What R6b legitimately supplies is a WARNING that
+IS-fitted changes can fail on holdout -- motivation for the discipline, not a numerical expectation.
+Setting a false prior is not a harmless conservatism: it would have made a 9-of-41 conversion read
+as "in line with expectations" when there was no expectation to be in line with. **Generalized rule:
+a prior transfers only across matched operation AND matched population. Before citing a past result
+as a base rate, state both dimensions and check they hold -- an unmatched prior is a fabricated
+expectation wearing the clothes of evidence.**
+
+### L354
+**I put an unjustified number in a plan one batch after writing the rule against it.** The Phase-1
+grid was capped at "<= 20 configs per strategy", making the declared FDR family 41 x 20 = 820.
+Owner: *"why 41 x 20?"* **41 is measured** (the n>300 population). **20 was invented** -- no basis,
+no derivation, chosen because it looked reasonable. CHECKLIST #165 requires every selection rule to
+be justified on a measured basis or explicitly labelled `ARBITRARY-PENDING-JUSTIFICATION`, and I
+wrote #165 myself at B1446. The cap should be DERIVED per strategy: (decile thresholds) x (numeric
+signals the strategy actually consumes), so a one-signal strategy has ~9 candidates and a
+three-signal one ~27 -- **and the family size is the SUM of per-strategy grids, counted before
+scoring, not a round number times a population count.** **Generalized rule: a number in a plan is a
+claim. If it was not measured or derived, label it arbitrary in the same sentence you write it --
+the moment it survives one review unchallenged it becomes a premise, and premises do not get
+re-examined.**
