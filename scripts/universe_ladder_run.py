@@ -64,6 +64,10 @@ def build_ladder() -> tuple[list[str], dict]:
 def sentinels(rung: int, elapsed: float, proj: float | None,
               out_dir: Path, base: dict) -> list[str]:
     """Return TRIPPED sentinel messages. Empty list = all clear."""
+    # ERROR sentinels (S1/S3/S4) mean the rung is INVALID -> re-run it.
+    # S2 is a FINDING, not an error: an entry-rate deviation is the very thing
+    # under test (L376), so the rung's result is RETAINED and the ladder halts
+    # for an owner decision rather than queuing a pointless identical re-run.
     trips = []
     if proj and elapsed > 2 * proj:
         trips.append(f"S1 WALL-CLOCK: {elapsed/60:.1f} min vs projection "
@@ -138,13 +142,27 @@ def main() -> int:
         "baseline": base, "rungs": []}
     per_ticker = None
     for done in state["rungs"]:
-        if done.get("elapsed_sec") and done.get("rung"):
+        if (done.get("exit_code") == 0 and not done.get("sentinels_tripped")
+                and done.get("elapsed_sec") and done.get("rung")):
             per_ticker = done["elapsed_sec"] / done["rung"]
 
     for rung in rungs:
-        if any(r["rung"] == rung for r in state["rungs"]):
-            print(f"rung {rung}: already done, skipping")
+        # OWNER DIRECTIVE B1516: every SUCCESSFUL rung is a RETAINED RESULT, not
+        # scaffolding - the rungs together are the scaling curve. A FAILED rung is
+        # re-done. So skip only on success; a failed record is dropped and retried.
+        prior = [r for r in state["rungs"] if r["rung"] == rung]
+        def _errors(rec):
+            return [t for t in (rec.get("sentinels_tripped") or [])
+                    if not t.startswith("S2 ")]
+        ok = [r for r in prior if r.get("exit_code") == 0 and not _errors(r)]
+        if ok:
+            print(f"rung {rung}: RETAINED RESULT (exit=0, no sentinels) - skipping")
             continue
+        if prior:
+            print(f"rung {rung}: prior attempt had ERROR sentinels "
+                  f"(exit={prior[-1].get('exit_code')}, "
+                  f"sentinels={prior[-1].get('sentinels_tripped')}) - RE-RUNNING")
+            state["rungs"] = [r for r in state["rungs"] if r["rung"] != rung]
         tick = order[:rung]
         tf = Path(f"output_audit/_ladder_{rung}.txt")
         tf.write_text("\n".join(tick) + "\n")

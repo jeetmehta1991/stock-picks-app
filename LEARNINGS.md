@@ -5939,3 +5939,31 @@ MIN_N=30 holdout trades, and R5 averaged 0.92 entries/ticker over 381, so five t
 plausibly yield 30 HOLDOUT entries. **Rule: when a diagnostic step cannot produce the headline
 metrics, state that BEFORE it runs** - otherwise an empty metrics block later reads as a failure
 rather than the expected result, and invites re-running something that worked.
+
+### L382
+**Rung 5 passed all 6 gates and the result is an ARTIFACT - the sentinel caught it.** B1516.
+5 tickers produced **123 entries = 24.60/ticker** against R5's **0.9239/ticker** - a **26.63x**
+deviation, so S2 tripped and the ladder halted. Its metrics read as a clean win (Sharpe 1.036,
+Sortino 3.257, PSR 1.0, PF 1.93, holdout n=43, **all 6 gates PASS**) but with 5 tickers there is no
+candidate competition, so nearly every fire becomes an entry. **Reporting "all 6 gates pass" would
+have been the most damaging false claim of this session.** `ci_lo` = **-0.236**, still below zero,
+quietly contradicting the headline - which is exactly why L373 required reporting every metric.
+**L376 is now CONFIRMED, not hypothesised: universe size drives which entries are taken.** Rule:
+a small-universe rung's gate verdict is NOT comparable to a large-universe baseline; only the
+scaling CURVE across rungs is interpretable.
+
+### L383
+**Wall-clock is nearly FLAT in tickers - 1 ticker 42.9 min, 5 tickers 42.4 min.** B1516. Per-sim-day
+overhead dominates and per-ticker cost is close to zero, so the linear 548 h upper bound for the
+381 ladder collapses. **Rule: measure the slope with 2 points before costing anything - a single
+point plus a linearity assumption produced an estimate ~2 orders of magnitude wrong.** Third
+instance of this class today (L367 producer-only 9x light, L377 sim-day rate 23pct light).
+
+### L384
+**Not every tripped sentinel means re-run - separate ERROR sentinels from FINDING sentinels.**
+B1516. My ladder marked any tripped sentinel as failure and queued the rung for re-run. But S2
+(entry-rate deviation) is the QUESTION UNDER TEST, not a malfunction: re-running would reproduce it
+exactly and discard a valid result the owner had directed be retained. S1/S3/S4 (wall-clock,
+zero-fire, exit-contract) ARE errors. **Rule: classify each sentinel as ERROR (invalidates the run,
+re-do) or FINDING (result is valid, halt for a decision) at the time it is armed** - conflating them
+either discards good data or hides real failures behind "expected" trips.

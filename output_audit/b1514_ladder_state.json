@@ -1,0 +1,45 @@
+{
+  "baseline": {
+    "r5_universe": 381,
+    "r5_entries": 352,
+    "r5_tickers_fired": 161,
+    "r5_entries_per_ticker": 0.9239
+  },
+  "rungs": [
+    {
+      "rung": 5,
+      "exit_code": 0,
+      "elapsed_sec": 2542.8,
+      "sec_per_ticker": 508.55,
+      "projection_sec": null,
+      "sentinels_tripped": [
+        "S2 ENTRY RATIO: 24.6000/ticker vs R5 0.9239 = 26.63x (outside 0.5-2.0)"
+      ],
+      "metrics": {
+        "entries": 123,
+        "exits": 26,
+        "exit": "time_stop_10d",
+        "holdout_n": 43,
+        "full_period_n": 123,
+        "sharpe": 1.036,
+        "sortino": 3.257,
+        "psr": 1.0,
+        "profit_factor": 1.93,
+        "payoff": 1.84,
+        "expectancy": 5.5797,
+        "win_rate": 0.512,
+        "p": 0.05252378815413054,
+        "ci_lo": -0.236,
+        "gates": {
+          "pooled_sharpe": true,
+          "profit_factor": true,
+          "sortino": true,
+          "psr": true,
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
+        },
+        "gates_passed": 6
+      }
+    }
+  ]
+}

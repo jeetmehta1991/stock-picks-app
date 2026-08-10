@@ -10141,3 +10141,34 @@ so an empty metrics block is not misread as a failure.
 |---|---|---|
 | **S6-B1515a** | **HIGH** | **Ladder EXIT PLAN.** If rung 5 confirms sublinear scaling, skip intermediate rungs and go 5 -> 381 directly. Owner go/no-go with the measured slope before the 381 run (supersedes the walk-every-rung reading of S6-B1514a). |
 | S6-B1514a | REVISED | Report rung 5 slope + entry ratio; re-project; owner decides skip-to-381 vs continue the ladder. |
+
+---
+
+## B1516 (2026-08-10) - RUNG 5 COMPLETE: gates "pass" but it is an artifact; S2 caught it
+
+**OWNER DIRECTIVE:** *"These rungs should be a part of the answer and rung 5 is the measurement as
+well. If any error we re do but the results if successful are a part of the answer."* Implemented -
+successful rungs are RETAINED; only rungs with ERROR sentinels are re-run.
+
+**RESULT - rung 5, EXECUTED:** exit=0, **42.4 min**, 123 entries, exit `time_stop_10d`,
+holdout n=43, **all 6 gates PASS** (Sharpe 1.036 / Sortino 3.257 / PSR 1.0 / PF 1.93 / win 51.2pct).
+
+**THAT PASS IS AN ARTIFACT (L382). S2 TRIPPED: 24.60 entries/ticker vs R5's 0.9239 = 26.63x.**
+With 5 tickers there is no candidate competition, so nearly every fire becomes an entry.
+**L376 is CONFIRMED, not hypothesised - universe size drives which entries are taken.** `ci_lo` =
+-0.236, still below zero, contradicting the headline (exactly what L373's all-metrics rule exists
+for). Ladder halted itself; no cascade.
+
+**WALL-CLOCK IS NEARLY FLAT (L383):** 1 ticker 42.9 min, 5 tickers **42.4 min**. Per-sim-day
+overhead dominates; per-ticker cost is ~0. **The linear 548 h bound for the 381 ladder collapses.**
+Third bad extrapolation of the session (L367 9x light, L377 23pct light) - hence measure, not model.
+
+**SCRIPT FIX (L384):** sentinels now split ERROR (S1/S3/S4 - invalidate, re-run) vs FINDING (S2 -
+result valid, halt for owner). Previously ANY trip queued a re-run, which would have discarded a
+valid rung the owner had directed be kept.
+
+| ticket | pri | item |
+|---|---|---|
+| **S6-B1516a** | **HIGH** | **OWNER DECISION: continue the ladder to 10/20/50/100/200/381.** Wall-clock says it is cheap (~42 min/rung, ~5 h for all remaining). The entry-rate curve across rungs is now THE deliverable - it shows where small-universe inflation converges to the R5 rate. |
+| **S6-B1516b** | **HIGH** | No rung's gate verdict may be quoted as a strategy result until the entry rate converges to R5's. Pin this caveat wherever rung metrics are reported. |
+| S6-B1512a | **CLOSED** | Mechanism CONFIRMED empirically: universe size drives entry counts, 26.63x at n=5. |
