@@ -179,8 +179,10 @@ def main() -> int:
             row["verdict"] = "BELOW_POWER_FLOOR"
         else:
             gates = {k: bool(res["gates"][k]) for k in rc.LIVE_GATES}
-            row.update({"sharpe": res.get("sharpe"), "psr": res.get("psr"),
-                        "gates": gates,
+            row.update({k: res.get(k) for k in
+                        ("sharpe", "sortino", "psr", "profit_factor", "payoff",
+                         "expectancy", "win_rate", "p", "ci_lo")})
+            row.update({"gates": gates,
                         "gates_passed": sum(gates.values()),
                         "verdict": "PASS" if all(gates.values()) else "FAIL"})
         rows.append(row)

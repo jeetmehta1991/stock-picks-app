@@ -5833,3 +5833,22 @@ NO_EXIT_SELECTABLE because the cap leaves too few in-sample trades to rank 26 ex
 is economically the cleanest discriminator measured AND statistically unusable at this sample size.
 **Rule: report "approved, tested, not gradable" explicitly - it is different from untested and
 different from failed**, and collapsing the three is how a denominator becomes misleading.
+
+### L373
+**Reporting Sharpe alone hid that the baseline's confidence interval spans zero.** B1509. Table B
+had been showing Sharpe / gates / verdict. Expanded to every metric `roster_core.evaluate()`
+already computes, the R5 baseline row reads: Sharpe 0.473, PF **1.841**, Sortino **1.220**, PSR
+1.000, win 38.1pct, payoff **2.990**, p 0.033, **CI-lo -0.034**. Two things were invisible before:
+the strategy is a low-hit-rate / large-payoff profile that clears PF and Sortino comfortably, and
+its **95pct Sharpe lower bound is BELOW ZERO** - the baseline edge is not distinguishable from
+nothing. **Rule: report every metric the evaluator already computes; omitting cheap ones is not
+brevity, it is suppressing the interval around the headline.** Detection signal: a results table
+narrower than its evaluator's return dict.
+
+### L374
+**Three canonical diagnostics are computed nowhere in the roster path.** B1509. CLAUDE.md demoted
+`max_drawdown` (B1436), `calmar` (B1437) and `deflated_sharpe` (B1436) from gates to DIAGNOSTIC -
+but `roster_core.evaluate()` computes none of them, so "diagnostic" has meant "absent" rather than
+"reported and not gated". `metrics.py` has all three. **Rule: demoting a criterion to diagnostic
+creates an obligation to keep REPORTING it; verify the demotion target still emits the value.**
+Same class as the orphaned-config-key findings at B1456.

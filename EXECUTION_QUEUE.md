@@ -9932,3 +9932,29 @@ NOT 4,000. Measured: 1 ticker x 1 config = **~35 min** (2.11 s/sim-day x 1,003 d
 | **S6-B1508a** | **HIGH** | **Second timed run at ~10 tickers to establish the multi-ticker slope.** The 1-ticker measurement cannot be extrapolated to 161/503 - per-sim-day cost may amortise across tickers rather than scale linearly. ~6 min to remove the last unknown from the cost model (L367 discipline). |
 | **S6-B1508b** | **HIGH** | P5 is unusable at n=352. It becomes testable only if the fire base grows - i.e. it is an ARGUMENT FOR the larger universe (S6-B1505a), not an independent lever. |
 | S6-B1507b | HIGH | (carried) OWNER DECISION: add EMA spans 100/250? They do not exist in `compute_ema_sma`; NEW-GATE. |
+
+---
+
+## B1509 (2026-08-10) - final Table A locked; Table B expanded to the full metric set
+
+**TABLE A FINAL - 6 producers, all bands locked with per-row justification and source line:**
+P1 `swing_length` [10,20,30,50] RESIM | P2 `close_mitigation` [F,T] FREE | P3 `tail_n` [3,5,10,20]
+FREE | P4 `age_bars_max` [60,120,180,250,None] FREE | P5 `break_pct_max` [.01,.02,.03,.05,None]
+FREE | P6 `span` [9,20,21,50,200] RESIM.
+**Factorial 4,000 | 20 distinct engine runs | 200 derive free per run.**
+
+**TABLE B METRICS** (READ from `roster_core.evaluate()` - what it returns, not a wishlist):
+- **GATED (6):** pooled_sharpe >=1.0, profit_factor >=1.3, sortino >=0.7, psr >=0.95,
+  min_trades_holdout >=25, min_trades_full_period >100
+- **DIAGNOSTIC (5):** win_rate, payoff, expectancy, p (one-sided H0: SR<=0), ci_lo
+- **CONTEXT (4):** fires, holdout n, full-period n, exit chosen in-sample
+
+**WHAT THE WIDER ROW REVEALED (L373).** R5 baseline: Sharpe 0.473 | PF **1.841** | Sortino
+**1.220** | PSR 1.000 | win 38.1pct | payoff **2.990** | p 0.033 | **CI-lo -0.034**. The strategy
+clears PF and Sortino comfortably and is a low-hit-rate/large-payoff profile - and its 95pct Sharpe
+lower bound is BELOW ZERO. Neither fact was visible while reporting Sharpe alone.
+
+| ticket | pri | item |
+|---|---|---|
+| **S6-B1509a** | **HIGH** | **`max_drawdown`, `calmar`, `deflated_sharpe` are computed NOWHERE in the roster path** (L374). CLAUDE.md demoted all three to DIAGNOSTIC (B1436/B1437), but `roster_core.evaluate()` emits none, so "diagnostic" has meant ABSENT. `metrics.py` has all three - wire them into `evaluate()` as reported-not-gated. |
+| **S6-B1509b** | MED | CI-lo < 0 on the BASELINE means no tightening of a subset can rescue it - a subset cannot have a tighter interval than its parent by construction. Fold this into the P1/P6 go/no-go. |

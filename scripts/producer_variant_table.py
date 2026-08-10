@@ -110,16 +110,29 @@ def table_a(spec: dict) -> list[str]:
 
 
 def table_b(results: list[dict], keys: list[str]) -> list[str]:
+    """Every metric roster_core.evaluate() computes, split GATED vs DIAGNOSTIC.
+
+    GATED (6) decide PASS/FAIL. DIAGNOSTIC are computed and reported but do NOT
+    gate - per CLAUDE.md, win_rate was demoted at B1387 and max_drawdown /
+    calmar / deflated_sharpe at B1436-B1437. Reporting them keeps a cell's
+    character visible even when the verdict is FAIL.
+    """
     hdr = " | ".join(keys)
-    rows = [f"| {hdr} | fires | holdout n | full n | exit | Sharpe | gates | failing | verdict |",
-            "|" + "---|" * (len(keys) + 8)]
+    rows = [f"| {hdr} | fires | ho n | full n | exit | **Sharpe** | **PF** | "
+            f"**Sortino** | **PSR** | win% | payoff | expectancy | p | CI-lo | "
+            f"gates | failing | verdict |",
+            "|" + "---|" * (len(keys) + 16)]
     for r in results:
         vals = " | ".join(_fmt(r.get(k)) for k in keys)
         fail = ", ".join(k for k, v in (r.get("gates") or {}).items() if not v) or "-"
         rows.append(
             f"| {vals} | {r.get('fires', 0)} | {_fmt(r.get('holdout_n'))} | "
             f"{_fmt(r.get('full_period_n'))} | {r.get('exit', '-')} | "
-            f"{_fmt(r.get('sharpe'))} | "
+            f"{_fmt(r.get('sharpe'))} | {_fmt(r.get('profit_factor'))} | "
+            f"{_fmt(r.get('sortino'))} | {_fmt(r.get('psr'))} | "
+            f"{_fmt(r.get('win_rate'))} | {_fmt(r.get('payoff'))} | "
+            f"{_fmt(r.get('expectancy'))} | {_fmt(r.get('p'))} | "
+            f"{_fmt(r.get('ci_lo'))} | "
             f"{r.get('gates_passed', '-')}/{len(GATE_ORDER)} | {fail} | {r['verdict']} |")
     return rows
 
