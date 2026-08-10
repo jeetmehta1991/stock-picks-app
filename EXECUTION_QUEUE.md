@@ -10043,3 +10043,34 @@ window, same code (nothing has touched this strategy since Batch 216, or its pro
 | **S6-B1512a** | **HIGH** | Verify the 8-vs-6 mechanism before any resim is costed. Candidate-cap vs portfolio-cap vs sizing. If confirmed, **resim MUST run at the baseline's universe size** or entry counts are not comparable to R5 - which invalidates the cheap small-universe path and re-opens S6-B1505a. |
 | **S6-B1508a** | **REVISED** | The 10-ticker slope run is still needed, but its purpose changes: not just wall-clock scaling, but measuring how entry COUNTS move with universe size. Pair the two measurements. |
 | S6-B1505b | HIGH | (carried) P1/P6 resim approval - now gated on S6-B1512a, not only on timing. |
+
+---
+
+## B1513 (2026-08-10) - scope arithmetic: 4,000 not 8,000; R5's universe is 381 not T1a's 503
+
+**OWNER QUESTION:** *"we would be testing 8000 combinations across 26 exits correct? full t1a universe?"*
+
+**1. It is 4,000, not 8,000.** 4(P1) x 2(P2) x 4(P3) x 5(P4) x 5(P5) x 5(P6) = **4,000** (EXECUTED
+from the SPECS inventory, not hand-counted).
+
+**2. x 26 exits = 104,000 cells. CORRECTED after owner challenge (L379):** the exits ARE
+simulated - EXECUTED on the 42.9-min run, one entry carries 26 rows with hold_days 4-134 and 15
+distinct pnl values, so each exit is genuinely walked forward. **The cost is already INSIDE each
+engine run's wall-clock**, so exits do not multiply the RUN COUNT - 20 runs each emit all 26.
+Grading tightened subsets against the R5 cube is free only because R5 already PAID that cost.
+Verdicts: one exit selected in-sample per config, graded once on holdout, so 104,000 cells ->
+**4,000 verdicts**. Cost remains **20 engine runs** (P1 x P6, the only fire-ADDING bands).
+
+**3. NOT full T1a (L378).** EXECUTED: R5 rung4 ran **381 tickers**; T1a active is **503** - 122
+tickers R5 never ran. The comparable universe is the BASELINE ARTIFACT's measured universe, not the
+current roster CSV. With L376 (universe size appears to drive which entries are taken), a 503-run
+would yield entry counts not comparable to R5's 352 - it would establish a NEW baseline rather than
+tighten the old one.
+
+| ticket | pri | item |
+|---|---|---|
+| **S6-B1505a** | **REVISED** | Universe decision is now 3-way with a stated default: **match R5 at 381** (comparable), SP50 50 (unusable - 31/352 retention), or T1a 503 (new baseline, not a tightening). Recommendation: 381. Gated on S6-B1512a. |
+| **S6-B1513a** | MED | Establish WHY R5 ran 381 of 503 T1a actives - PIT-active filtering, liquidity floor, or cache coverage. Needed before any universe is called "full". |
+
+**STILL BLOCKING:** S6-B1512a (8-vs-6 mechanism) and S6-B1508a (10-ticker slope). Neither the cost
+nor the universe can be settled without them.

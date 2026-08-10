@@ -5889,3 +5889,31 @@ wrap-up phase - cube write, metrics, reporting - which no per-day rate contains.
 the same class this session (L367: producer-only timing was 9x light against the engine).
 **Rule: a rate measured over the INNER loop never yields total wall-clock; only an end-to-end
 timed run does.**
+
+### L378
+**"Full T1a" is NOT the R5 baseline universe - R5 ran 381 tickers, T1a active is 503.** B1513.
+The optimisation discussion had been treating "full T1a" as the natural maximal universe, but the
+R5 cube being tightened against was produced on **381** tickers (EXECUTED: `trade_exit_detail.csv`
+`ticker.nunique()`), while T1a currently has **503** actives - **122 tickers R5 never ran**. Given
+L376 (a 1-ticker run took 8 AAPL entries where R5 took 6, so universe size appears to drive which
+entries are taken at all), running 503 would produce entry counts not comparable to R5's 352.
+**Rule: the comparable universe is the BASELINE ARTIFACT's measured universe, not the current
+roster file.** Universe substitution breaks comparability the same way changing holdout dates
+would - and the holdout was locked for exactly that reason. Detection signal: a universe named from
+a CSV rather than re-derived from the baseline artifact.
+
+### L379
+**"Exits are free" was wrong - they ARE simulated, the cost is just already inside each engine
+run.** B1513, owner correction. I told the owner the 26 exits carry no cost. They challenged it:
+exits depend on conditions fulfilled AFTER entry, so they must be simulated. **They are right, and
+the artifact proves it** - EXECUTED on the 42.9-min run, ONE entry carries 26 rows with hold_days
+ranging **4 to 134** and **15 distinct pnl values**. Each exit is genuinely walked forward.
+
+**The precise statement:** the 26-exit simulation is bundled INSIDE each engine run's wall-clock
+(the measured 42.9 min already contains it), so exits do not multiply the RUN COUNT - 20 runs each
+emit all 26. And grading a tightened subset against the R5 cube is free only because **R5 already
+paid that simulation cost**. "Free" is a property of the EXISTING cube, never of exits in general.
+
+**Rule: distinguish "costs nothing" from "already paid".** A materialised result is free to READ
+and was expensive to PRODUCE; collapsing the two hides the cost from anyone planning a NEW run.
+Detection signal: calling a dimension free without naming which artifact already contains it.
