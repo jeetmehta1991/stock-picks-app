@@ -9371,3 +9371,65 @@ longer reads, and would have passed vacuously. Both updated. Pyramid **897 passe
 
 - **S6-B1493a (HIGH)** — with the roster at 2, decide whether Phase 1B proceeds on this basis or
   waits for S6-OPT-196 to deliver additional ROBUST cells.
+
+---
+
+## B1494 (2026-08-09) — BH-FDR audited; 6 disables reverted; optimisation population 207
+
+### BH-FDR AUDIT (owner: "is bh fdr being applied correctly for the entire 4 years?")
+
+**Correct as implemented — and it should NOT span 4 years.**
+
+| property | value | verdict |
+|---|---|---|
+| family size `m` | **211** (ALL holdout-evaluable cells, not just gate-passers) | correct — testing only survivors would be selection-then-correction |
+| threshold | `0.05 x 53/211 = 0.012559` | arithmetic verified |
+| p-value source | `_sharpe()` one-sided, H0: SR <= 0 | correct |
+| p-value window | **HOLDOUT only**, n = holdout trades | **correct, deliberately not 4y** |
+
+The hypothesis under test is *"does this cell have positive edge on the UNTOUCHED holdout?"*
+A 4-year p-value would test a different hypothesis using data that includes the selection window —
+circular, the same class as the B1452 lookahead.
+
+**One asymmetry worth knowing (not a bug).** p-value power scales with holdout n, and B1492 lowered
+the holdout floor to 25. A cell at n=30 needs a far higher Sharpe to reach p <= 0.0126 than one at
+n=162. Statistically correct — small samples SHOULD need stronger evidence — but it means the new
+low-n entrants face a materially harder FDR bar. `xs_momentum_top_decile` cleared at n=50 with
+p=0.0107, barely inside.
+
+### TWO KNOWN GAPS REMAIN (stated, not buried)
+1. **3 AUTO-FAIL screens unimplemented** in the roster pipeline (cost-sensitivity, Chow, ADF) —
+   `metrics.py` has all three, `roster_core.py` has none. Graded on 5 gates, not 8. **S6-B1492a.**
+2. **`min_trades_per_regime = 30` still orphaned** — nothing stops a cell passing on trades
+   concentrated in one regime. **S6-B1455e.**
+
+### PHASE 1B ROSTER — FINAL, 3 strategies (owner-directed)
+| strategy | role | n | Sharpe |
+|---|---|---|---|
+| `xs_momentum_top_decile` | graded LONG | 50 | 1.349 |
+| `xs_momentum_with_smart_money_long` | graded LONG | 162 | 1.004 |
+| `xs_momentum_bottom_decile_short` | registered mirror | — | retained by symmetry directive |
+
+ROBUST 2 / PROVISIONAL 0.
+
+### 6 DE-DUP DISABLES REVERTED (owner directive)
+The six institutional/`rsi_oversold` cells disabled at B1491 are returned to the optimisation
+population. **The rationale for reversal is sound and worth recording:** they were disabled as
+redundant against `institutional_strong_conviction_long` — but after B1493 armed the Sharpe gate to
+1.0, that parent **no longer holds a roster place**. There is no canonical survivor for them to be
+redundant WITH, so they are eligible for tightening like any other unpromoted strategy.
+`STRATEGIES_DISABLED_DUPLICATE` 9 -> 3 (only the B1465 gate-identical copies remain).
+
+### OPTIMISATION POPULATION: 207
+`222 registered - 3 roster - 12 disabled = 207`
+
+| band | strategies | phase |
+|---|---|---|
+| **n > 300** | **41** | TIGHTENING |
+| 100 < n <= 300 | 58 | tightening w/ n-floor constraint |
+| n <= 100 | 45 | loosening |
+| no gradable cell | 63 | loosening |
+| **total** | **207** | |
+
+**TIGHTENING 41** (99 with the mid-band) · **LOOSENING 108**. The tightening band grew 24 -> 41
+because 14 cells that previously held roster places at the 0.5 bar are now optimisation candidates.

@@ -4,7 +4,7 @@
 > **CLAUDE.md is source-of-truth per L143.** Line 95 strategy count already updated B1205 (220 -> 219 post-B1189). This banner is here for consistency with the 46 other synced docs.
 >
 > Current canonical values as of 2026-07-18 (B1263, owner-approved banner sync):
-> - 222 strategies REGISTERED / **204 ACTIVE** (18 disabled: 9 STRATEGIES_DISABLED_DATA_SCARCITY
+> - 222 strategies REGISTERED / **210 ACTIVE** (12 disabled, B1494 reverted the 6 de-dup disables: 9 STRATEGIES_DISABLED_DATA_SCARCITY
   classification_change + 3 STRATEGIES_DISABLED_DUPLICATE added B1465 - macd_crossover_short,
   macd_ichimoku, squeeze_breakout_with_smart_money_long, each firing on gates identical to a
   surviving registration after a loosening batch removed their differentiator) (B1382 2026-07-25 owner standing directive 'mirror shorts by default': 219 -> 222 via 3 Class 7 NEW symmetric SHORT mirrors (news_sentiment_short + poc_magnet_short + xs_combined_momentum_high_ivol_short), all tagged EXPLORATORY (zero short rows cleared the B1378 true holdout; L229)); STRATEGIES_DISABLED_MISSING_PRODUCER empty
@@ -13,8 +13,8 @@
   **163 failed / 5,482 passed / 11 errors** (B1490; was 172/5,470), and ZERO of them are GATE tests as of B1490 -
   S6-B1468a CLOSED, the order-dependence is fixed and re-validated in-suite. Tiers are declared in
   `backtest/tests/pyramid_tiers.py`: GATE 2 / QUARANTINE 72 / EXTENDED 357.
-> - CHECKLIST #1-#181, LEARNINGS L1-L346
-- **PHASE 1B ROSTER (B1470, source of truth `PHASE_1B_ROSTER.md`):** **2 graded cells / 3 distinct strategies** (B1493: Sharpe gate armed to the canonical 1.0). Status after the S6-B1467c selection-noise haircut: **ROBUST 2 / PROVISIONAL 0** (B1493) - only `xs_momentum_with_smart_money_long` clears the 0.50 Sharpe gate by more than the measured 0.369 selection-noise floor. **Evidenced effective breadth ~2.9, NOT 13** (deployable 7.2, carried by short legs with no holdout evidence). Optimisation backlog **187** strategies (B1491: 222 - 17 roster - 18 disabled). Partitioned by best-cell holdout n: TIGHTENING 24 (n>300) | MID-BAND 54 (100<n<=300, needs an n-floor constraint) | LOOSENING 109 (46 at n<=100 + 63 with no gradable cell).
+> - CHECKLIST #1-#181, LEARNINGS L1-L347
+- **PHASE 1B ROSTER (B1470, source of truth `PHASE_1B_ROSTER.md`):** **2 graded cells / 3 distinct strategies** (B1493: Sharpe gate armed to the canonical 1.0). Status after the S6-B1467c selection-noise haircut: **ROBUST 2 / PROVISIONAL 0** (B1493) - only `xs_momentum_with_smart_money_long` clears the 0.50 Sharpe gate by more than the measured 0.369 selection-noise floor. **Evidenced effective breadth ~2.9, NOT 13** (deployable 7.2, carried by short legs with no holdout evidence). Optimisation backlog **207** strategies (B1494: 222 - 3 roster - 12 disabled). Partitioned by best-cell holdout n: TIGHTENING 41 (n>300) | MID-BAND 58 (100<n<=300) | LOOSENING 108 (45 at n<=100 + 63 with no gradable cell).
 > - Latest batch: B1310 (Council 342); ENG-1 pre-R5 blocker fixed B1260; compliance gates C6-C9 + Stop hook live B1254-B1255
 > - Owner decisions 2026-07-08 (B1259): scope freeze after data-readiness audit; blockers-only R5 gate SUPERSEDES entire-queue gate; R5 phased ladder (dry->small->mid->full, owner-gated rungs); 1B before Stage 3
 > - Councils 278-287 (historical): 40 SKIP loosen + 11 silent misses fixed + 25+ producer audits + 2 critical bugs FIXED

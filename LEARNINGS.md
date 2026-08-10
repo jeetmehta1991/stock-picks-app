@@ -5512,3 +5512,16 @@ grading.** Those are different problems with different fixes, and only the secon
 **Generalized rule: when a correctly-specified filter returns an uncomfortably small result, the
 error is in the population or the search, never in the filter -- relaxing the filter to reach a
 target count converts a measurement into a target.**
+
+### L347
+**A de-duplication disable is only valid while its canonical survivor holds a roster place.** At
+B1491 six cells were disabled as redundant against `institutional_strong_conviction_long`. At B1493
+the Sharpe bar was armed to 1.0 and that parent fell off the roster -- leaving six strategies
+disabled for being duplicates of something no longer promoted. The owner caught it and directed the
+reversal. The dependency is easy to miss because the two batches are separated and the disable
+records the RELATIONSHIP ("dedup -> parent") without recording that the relationship is CONDITIONAL
+on the parent surviving. **Generalized rule: any disable justified by reference to another artifact
+inherits that artifact's lifetime. Record the dependency explicitly and re-check every such disable
+whenever the referenced artifact changes status -- a redundancy claim is relative, and when the
+thing it is relative to disappears, so does the claim.** Ticket the inverse too: if the parent is
+ever restored, these six become redundant again.
