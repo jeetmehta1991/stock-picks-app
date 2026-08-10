@@ -5553,3 +5553,16 @@ criteria (L289) and the zero-contribution gates (L294), arrived at from a differ
 it RETURNS A VERDICT. A gate that cannot compute is worse than an absent one, because it is counted
 in the gate tally.** Fix is to run them on the IS or full-period series where they can compute
 (S6-B1495a), not on the holdout.
+
+### L350
+**Two requirements reported as one gate hid which of them was doing the work.** B1492 split
+`min_trades` into `min_trades_full_period > 100` (4y) and `min_trades_holdout >= 25` (1y), but I
+kept presenting them as a single `min_trades` gate in every drop-off table. Owner: *"min_trades
+should be 2 gates right? why are you only showing 1?"* Splitting them in `LIVE_GATES` (5 -> 6)
+immediately revealed an asymmetry that had been invisible: **the holdout leg blocks 0 cells; the
+full-period leg blocks 1**. So the leg the owner was worried about being too harsh now binds
+nothing, and the leg that was NEWLY ADDED is the only one rejecting anything -- the opposite of
+what the merged presentation implied. **Generalized rule: a gate that ANDs two conditions is two
+gates for reporting purposes. Merged, a drop-off table cannot show which condition binds, and the
+merge silently attributes one condition's rejections to the other.** Same family as L294's
+leave-one-out requirement: a screen's composition must be visible, not just its verdict.

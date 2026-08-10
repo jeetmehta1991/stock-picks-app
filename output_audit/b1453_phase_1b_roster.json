@@ -6,11 +6,12 @@
     "Group1": "output_r6c_group1_3"
   },
   "live_gates": [
-    "sharpe_per_regime",
+    "pooled_sharpe",
     "profit_factor",
     "sortino",
     "psr",
-    "min_trades"
+    "min_trades_holdout",
+    "min_trades_full_period"
   ],
   "demoted": [
     "max_drawdown",
@@ -49,7 +50,7 @@
       "direction": "long",
       "exit": "time_stop_10d",
       "is_sharpe": 0.671,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 50,
         "sharpe": 1.349,
@@ -62,13 +63,14 @@
         "p": 0.010652580711095594,
         "ci_lo": 0.171,
         "gates": {
-          "sharpe_per_regime": true,
+          "pooled_sharpe": true,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 5,
+        "n_gates": 6,
         "all_live_gates": true
       },
       "bh": true,
@@ -87,7 +89,7 @@
       "direction": "long",
       "exit": "regime_flip",
       "is_sharpe": 0.578,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 162,
         "sharpe": 1.004,
@@ -100,13 +102,14 @@
         "p": 8.25447608273e-06,
         "ci_lo": 0.534,
         "gates": {
-          "sharpe_per_regime": true,
+          "pooled_sharpe": true,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 5,
+        "n_gates": 6,
         "all_live_gates": true
       },
       "bh": true,
@@ -127,7 +130,7 @@
       "direction": "long",
       "exit": "next_pivot_target",
       "is_sharpe": 0.876,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 50,
         "sharpe": 0.587,
@@ -140,13 +143,14 @@
         "p": 0.202637177608298,
         "ci_lo": -0.801,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 4,
+        "n_gates": 5,
         "all_live_gates": false
       },
       "bh": false,
@@ -159,7 +163,7 @@
       "direction": "long",
       "exit": "regime_flip",
       "is_sharpe": 0.902,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": null,
       "bh": false,
       "verdict": "UNEVAL"
@@ -171,7 +175,7 @@
       "direction": "long",
       "exit": "next_pivot_target",
       "is_sharpe": 0.792,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 41,
         "sharpe": 0.101,
@@ -184,13 +188,14 @@
         "p": 0.44735667643015464,
         "ci_lo": -1.391,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -203,7 +208,7 @@
       "direction": "short",
       "exit": "hybrid_50pct_target",
       "is_sharpe": -0.314,
-      "is_n_gates": 2,
+      "is_n_gates": 3,
       "holdout": null,
       "bh": false,
       "verdict": "UNEVAL"
@@ -215,7 +220,7 @@
       "direction": "short",
       "exit": "hybrid_50pct_target",
       "is_sharpe": -0.787,
-      "is_n_gates": 2,
+      "is_n_gates": 3,
       "holdout": {
         "n": 73,
         "sharpe": -0.255,
@@ -228,13 +233,14 @@
         "p": 0.8512841740017032,
         "ci_lo": -0.737,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": true,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 2,
+        "n_gates": 3,
         "all_live_gates": false
       },
       "bh": false,
@@ -247,7 +253,7 @@
       "direction": "short",
       "exit": "hybrid_50pct_target",
       "is_sharpe": -0.635,
-      "is_n_gates": 2,
+      "is_n_gates": 3,
       "holdout": null,
       "bh": false,
       "verdict": "UNEVAL"
@@ -259,7 +265,7 @@
       "direction": "long",
       "exit": "earnings_blackout",
       "is_sharpe": 0.39,
-      "is_n_gates": 3,
+      "is_n_gates": 4,
       "holdout": null,
       "bh": false,
       "verdict": "UNEVAL"
@@ -271,7 +277,7 @@
       "direction": "short",
       "exit": "hybrid_50pct_target",
       "is_sharpe": -0.902,
-      "is_n_gates": 2,
+      "is_n_gates": 3,
       "holdout": null,
       "bh": false,
       "verdict": "UNEVAL"
@@ -283,7 +289,7 @@
       "direction": "long",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.483,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 314,
         "sharpe": 0.532,
@@ -296,13 +302,14 @@
         "p": 0.00011359329276651399,
         "ci_lo": 0.246,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 4,
+        "n_gates": 5,
         "all_live_gates": false
       },
       "bh": true,
@@ -315,7 +322,7 @@
       "direction": "short",
       "exit": "hybrid_50pct_target",
       "is_sharpe": -0.59,
-      "is_n_gates": 2,
+      "is_n_gates": 3,
       "holdout": {
         "n": 154,
         "sharpe": -0.565,
@@ -328,13 +335,14 @@
         "p": 0.9989381654043301,
         "ci_lo": -0.932,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -347,7 +355,7 @@
       "direction": "long",
       "exit": "regime_flip",
       "is_sharpe": 0.471,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 38,
         "sharpe": 0.656,
@@ -360,13 +368,14 @@
         "p": 0.09229133014089343,
         "ci_lo": -0.324,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 4,
+        "n_gates": 5,
         "all_live_gates": false
       },
       "bh": false,
@@ -379,7 +388,7 @@
       "direction": "short",
       "exit": "hybrid_50pct_target",
       "is_sharpe": -0.369,
-      "is_n_gates": 2,
+      "is_n_gates": 3,
       "holdout": {
         "n": 227,
         "sharpe": -0.256,
@@ -392,13 +401,14 @@
         "p": 0.9614509443608352,
         "ci_lo": -0.541,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -411,7 +421,7 @@
       "direction": "long",
       "exit": "regime_flip",
       "is_sharpe": 0.628,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 124,
         "sharpe": -0.202,
@@ -424,13 +434,14 @@
         "p": 0.7721336539852822,
         "ci_lo": -0.733,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -443,7 +454,7 @@
       "direction": "short",
       "exit": "hybrid_50pct_target",
       "is_sharpe": -0.243,
-      "is_n_gates": 2,
+      "is_n_gates": 3,
       "holdout": {
         "n": 131,
         "sharpe": -0.879,
@@ -456,13 +467,14 @@
         "p": 0.9999931571187701,
         "ci_lo": -1.289,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -475,7 +487,7 @@
       "direction": "long",
       "exit": "regime_flip",
       "is_sharpe": 1.36,
-      "is_n_gates": 5,
+      "is_n_gates": 6,
       "holdout": {
         "n": 68,
         "sharpe": -0.383,
@@ -488,13 +500,14 @@
         "p": 0.8556962577016094,
         "ci_lo": -1.094,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -507,7 +520,7 @@
       "direction": "short",
       "exit": "hybrid_50pct_target",
       "is_sharpe": -0.376,
-      "is_n_gates": 2,
+      "is_n_gates": 3,
       "holdout": {
         "n": 105,
         "sharpe": -0.835,
@@ -520,13 +533,14 @@
         "p": 0.9999001878315523,
         "ci_lo": -1.289,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -539,7 +553,7 @@
       "direction": "long",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.476,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 237,
         "sharpe": 0.657,
@@ -552,13 +566,14 @@
         "p": 4.2306346751289856e-05,
         "ci_lo": 0.324,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 4,
+        "n_gates": 5,
         "all_live_gates": false
       },
       "bh": true,
@@ -571,7 +586,7 @@
       "direction": "short",
       "exit": "hybrid_50pct_target",
       "is_sharpe": -0.099,
-      "is_n_gates": 2,
+      "is_n_gates": 3,
       "holdout": {
         "n": 193,
         "sharpe": -0.115,
@@ -584,13 +599,14 @@
         "p": 0.757378064558199,
         "ci_lo": -0.438,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -603,7 +619,7 @@
       "direction": "long",
       "exit": "class_time_stop",
       "is_sharpe": 1.051,
-      "is_n_gates": 5,
+      "is_n_gates": 6,
       "holdout": null,
       "bh": false,
       "verdict": "UNEVAL"
@@ -615,7 +631,7 @@
       "direction": "short",
       "exit": "earnings_blackout",
       "is_sharpe": 0.287,
-      "is_n_gates": 3,
+      "is_n_gates": 4,
       "holdout": null,
       "bh": false,
       "verdict": "UNEVAL"
@@ -627,7 +643,7 @@
       "direction": "long",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.292,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 159,
         "sharpe": 0.404,
@@ -640,13 +656,14 @@
         "p": 0.018508339998197728,
         "ci_lo": 0.022,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 4,
+        "n_gates": 5,
         "all_live_gates": false
       },
       "bh": false,
@@ -659,7 +676,7 @@
       "direction": "short",
       "exit": "hybrid_50pct_target",
       "is_sharpe": -0.377,
-      "is_n_gates": 2,
+      "is_n_gates": 3,
       "holdout": {
         "n": 32,
         "sharpe": -0.228,
@@ -672,13 +689,14 @@
         "p": 0.7348097278191101,
         "ci_lo": -0.942,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -691,7 +709,7 @@
       "direction": "long",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.276,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 143,
         "sharpe": 0.52,
@@ -704,13 +722,14 @@
         "p": 0.0037366923492198425,
         "ci_lo": 0.134,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": true,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 3,
+        "n_gates": 4,
         "all_live_gates": false
       },
       "bh": true,
@@ -723,7 +742,7 @@
       "direction": "short",
       "exit": "hybrid_50pct_target",
       "is_sharpe": -0.298,
-      "is_n_gates": 2,
+      "is_n_gates": 3,
       "holdout": {
         "n": 296,
         "sharpe": -0.394,
@@ -736,13 +755,14 @@
         "p": 0.9994861969821829,
         "ci_lo": -0.631,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -755,7 +775,7 @@
       "direction": "long",
       "exit": "r_multiple_2r",
       "is_sharpe": 0.45,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 182,
         "sharpe": -0.824,
@@ -768,13 +788,14 @@
         "p": 0.980954000818997,
         "ci_lo": -1.606,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -787,7 +808,7 @@
       "direction": "short",
       "exit": "breakeven_plus_trail",
       "is_sharpe": -0.209,
-      "is_n_gates": 1,
+      "is_n_gates": 2,
       "holdout": {
         "n": 310,
         "sharpe": -0.331,
@@ -800,13 +821,14 @@
         "p": 0.9814802407323018,
         "ci_lo": -0.642,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -819,7 +841,7 @@
       "direction": "long",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.497,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 83,
         "sharpe": 0.725,
@@ -832,13 +854,14 @@
         "p": 0.0046865050350078895,
         "ci_lo": 0.167,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": true,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 3,
+        "n_gates": 4,
         "all_live_gates": false
       },
       "bh": true,
@@ -851,7 +874,7 @@
       "direction": "short",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.051,
-      "is_n_gates": 1,
+      "is_n_gates": 2,
       "holdout": {
         "n": 152,
         "sharpe": -0.038,
@@ -864,13 +887,14 @@
         "p": 0.5668309052882746,
         "ci_lo": -0.476,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -883,7 +907,7 @@
       "direction": "long",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.534,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 594,
         "sharpe": 0.467,
@@ -896,13 +920,14 @@
         "p": 7.349071738243787e-06,
         "ci_lo": 0.254,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 4,
+        "n_gates": 5,
         "all_live_gates": false
       },
       "bh": true,
@@ -915,7 +940,7 @@
       "direction": "short",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.022,
-      "is_n_gates": 1,
+      "is_n_gates": 2,
       "holdout": {
         "n": 702,
         "sharpe": -0.362,
@@ -928,13 +953,14 @@
         "p": 0.9994104132067798,
         "ci_lo": -0.581,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -947,7 +973,7 @@
       "direction": "long",
       "exit": "earnings_blackout",
       "is_sharpe": 0.433,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 32,
         "sharpe": 0.207,
@@ -960,13 +986,14 @@
         "p": 0.2697143544549153,
         "ci_lo": -0.456,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 2,
+        "n_gates": 3,
         "all_live_gates": false
       },
       "bh": false,
@@ -979,7 +1006,7 @@
       "direction": "short",
       "exit": "earnings_blackout",
       "is_sharpe": -0.18,
-      "is_n_gates": 1,
+      "is_n_gates": 2,
       "holdout": null,
       "bh": false,
       "verdict": "UNEVAL"
@@ -991,7 +1018,7 @@
       "direction": "long",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.473,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 353,
         "sharpe": 0.332,
@@ -1004,13 +1031,14 @@
         "p": 0.008555235167369793,
         "ci_lo": 0.058,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 4,
+        "n_gates": 5,
         "all_live_gates": false
       },
       "bh": true,
@@ -1023,7 +1051,7 @@
       "direction": "short",
       "exit": "hybrid_50pct_target",
       "is_sharpe": -0.171,
-      "is_n_gates": 2,
+      "is_n_gates": 3,
       "holdout": {
         "n": 305,
         "sharpe": -0.74,
@@ -1036,13 +1064,14 @@
         "p": 0.9999999893564409,
         "ci_lo": -1.006,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -1055,7 +1084,7 @@
       "direction": "long",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.367,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 114,
         "sharpe": 0.568,
@@ -1068,13 +1097,14 @@
         "p": 0.0029340949631427673,
         "ci_lo": 0.157,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": true,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 3,
+        "n_gates": 4,
         "all_live_gates": false
       },
       "bh": true,
@@ -1087,7 +1117,7 @@
       "direction": "short",
       "exit": "hybrid_50pct_target",
       "is_sharpe": -0.473,
-      "is_n_gates": 2,
+      "is_n_gates": 3,
       "holdout": {
         "n": 153,
         "sharpe": -0.411,
@@ -1100,13 +1130,14 @@
         "p": 0.9882384384269884,
         "ci_lo": -0.77,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -1119,7 +1150,7 @@
       "direction": "long",
       "exit": "regime_flip",
       "is_sharpe": 0.592,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 76,
         "sharpe": -0.086,
@@ -1132,13 +1163,14 @@
         "p": 0.5984134224923119,
         "ci_lo": -0.759,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -1151,7 +1183,7 @@
       "direction": "short",
       "exit": "hybrid_50pct_target",
       "is_sharpe": -0.464,
-      "is_n_gates": 2,
+      "is_n_gates": 3,
       "holdout": {
         "n": 159,
         "sharpe": -0.283,
@@ -1164,13 +1196,14 @@
         "p": 0.9428439108139923,
         "ci_lo": -0.635,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -1183,7 +1216,7 @@
       "direction": "short",
       "exit": "hybrid_50pct_target",
       "is_sharpe": -0.342,
-      "is_n_gates": 2,
+      "is_n_gates": 3,
       "holdout": {
         "n": 399,
         "sharpe": -0.362,
@@ -1196,13 +1229,14 @@
         "p": 0.9996708925010491,
         "ci_lo": -0.572,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -1215,7 +1249,7 @@
       "direction": "long",
       "exit": "next_pivot_target",
       "is_sharpe": 1.123,
-      "is_n_gates": 5,
+      "is_n_gates": 6,
       "holdout": {
         "n": 32,
         "sharpe": 0.81,
@@ -1228,13 +1262,14 @@
         "p": 0.17730860608873344,
         "ci_lo": -0.917,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 4,
+        "n_gates": 5,
         "all_live_gates": false
       },
       "bh": false,
@@ -1247,7 +1282,7 @@
       "direction": "long",
       "exit": "trailing_15pct",
       "is_sharpe": 0.237,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": null,
       "bh": false,
       "verdict": "UNEVAL"
@@ -1259,7 +1294,7 @@
       "direction": "long",
       "exit": "r_multiple_2r",
       "is_sharpe": 0.412,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 200,
         "sharpe": -0.676,
@@ -1272,13 +1307,14 @@
         "p": 0.9634040817233536,
         "ci_lo": -1.419,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -1291,7 +1327,7 @@
       "direction": "short",
       "exit": "breakeven_plus_trail",
       "is_sharpe": -0.225,
-      "is_n_gates": 1,
+      "is_n_gates": 2,
       "holdout": {
         "n": 340,
         "sharpe": -0.311,
@@ -1304,13 +1340,14 @@
         "p": 0.9799518269509575,
         "ci_lo": -0.608,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -1323,7 +1360,7 @@
       "direction": "short",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.035,
-      "is_n_gates": 1,
+      "is_n_gates": 2,
       "holdout": {
         "n": 90,
         "sharpe": -0.824,
@@ -1336,13 +1373,14 @@
         "p": 0.995565604566997,
         "ci_lo": -1.454,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -1355,7 +1393,7 @@
       "direction": "long",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.446,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 57,
         "sharpe": 0.37,
@@ -1368,13 +1406,14 @@
         "p": 0.1386789758293697,
         "ci_lo": -0.301,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 4,
+        "n_gates": 5,
         "all_live_gates": false
       },
       "bh": false,
@@ -1387,7 +1426,7 @@
       "direction": "long",
       "exit": "regime_flip",
       "is_sharpe": 0.416,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 98,
         "sharpe": 0.381,
@@ -1400,13 +1439,14 @@
         "p": 0.1050899635222679,
         "ci_lo": -0.217,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 4,
+        "n_gates": 5,
         "all_live_gates": false
       },
       "bh": false,
@@ -1419,7 +1459,7 @@
       "direction": "short",
       "exit": "hybrid_50pct_target",
       "is_sharpe": -0.265,
-      "is_n_gates": 2,
+      "is_n_gates": 3,
       "holdout": {
         "n": 115,
         "sharpe": -0.663,
@@ -1432,13 +1472,14 @@
         "p": 0.9992078751077447,
         "ci_lo": -1.084,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -1451,7 +1492,7 @@
       "direction": "short",
       "exit": "hybrid_50pct_target",
       "is_sharpe": -0.397,
-      "is_n_gates": 2,
+      "is_n_gates": 3,
       "holdout": {
         "n": 224,
         "sharpe": -0.408,
@@ -1464,13 +1505,14 @@
         "p": 0.9982425614655459,
         "ci_lo": -0.685,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -1483,7 +1525,7 @@
       "direction": "short",
       "exit": "breakeven_plus_trail",
       "is_sharpe": -0.039,
-      "is_n_gates": 1,
+      "is_n_gates": 2,
       "holdout": {
         "n": 183,
         "sharpe": -0.525,
@@ -1496,13 +1538,14 @@
         "p": 0.9914917700166563,
         "ci_lo": -0.959,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -1515,7 +1558,7 @@
       "direction": "long",
       "exit": "regime_flip",
       "is_sharpe": 0.398,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 122,
         "sharpe": 0.366,
@@ -1528,13 +1571,14 @@
         "p": 0.08927265899501076,
         "ci_lo": -0.169,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 4,
+        "n_gates": 5,
         "all_live_gates": false
       },
       "bh": false,
@@ -1547,7 +1591,7 @@
       "direction": "long",
       "exit": "r_multiple_2r",
       "is_sharpe": 0.407,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 134,
         "sharpe": -0.407,
@@ -1560,13 +1604,14 @@
         "p": 0.8244144546451562,
         "ci_lo": -1.265,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -1579,7 +1624,7 @@
       "direction": "long",
       "exit": "time_stop_10d",
       "is_sharpe": 0.395,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 232,
         "sharpe": -0.073,
@@ -1592,13 +1637,14 @@
         "p": 0.6050980110248426,
         "ci_lo": -0.61,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -1611,7 +1657,7 @@
       "direction": "long",
       "exit": "fixed_4r_2r",
       "is_sharpe": 0.343,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 64,
         "sharpe": -0.226,
@@ -1624,13 +1670,14 @@
         "p": 0.7099438288226023,
         "ci_lo": -1.028,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -1643,7 +1690,7 @@
       "direction": "short",
       "exit": "hybrid_50pct_target",
       "is_sharpe": -1.059,
-      "is_n_gates": 2,
+      "is_n_gates": 3,
       "holdout": null,
       "bh": false,
       "verdict": "UNEVAL"
@@ -1655,7 +1702,7 @@
       "direction": "long",
       "exit": "class_time_stop",
       "is_sharpe": 0.76,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": null,
       "bh": false,
       "verdict": "UNEVAL"
@@ -1667,7 +1714,7 @@
       "direction": "long",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.423,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 259,
         "sharpe": 0.519,
@@ -1680,13 +1727,14 @@
         "p": 0.001182181154762686,
         "ci_lo": 0.181,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 4,
+        "n_gates": 5,
         "all_live_gates": false
       },
       "bh": true,
@@ -1699,7 +1747,7 @@
       "direction": "short",
       "exit": "hybrid_50pct_target",
       "is_sharpe": -0.304,
-      "is_n_gates": 2,
+      "is_n_gates": 3,
       "holdout": {
         "n": 417,
         "sharpe": -0.506,
@@ -1712,13 +1760,14 @@
         "p": 0.9999995396286376,
         "ci_lo": -0.711,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -1731,7 +1780,7 @@
       "direction": "long",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.481,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 30,
         "sharpe": 0.539,
@@ -1744,13 +1793,14 @@
         "p": 0.08897445530619079,
         "ci_lo": -0.257,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 4,
+        "n_gates": 5,
         "all_live_gates": false
       },
       "bh": false,
@@ -1763,7 +1813,7 @@
       "direction": "short",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.14,
-      "is_n_gates": 2,
+      "is_n_gates": 3,
       "holdout": {
         "n": 74,
         "sharpe": -0.762,
@@ -1776,13 +1826,14 @@
         "p": 0.9845075533466421,
         "ci_lo": -1.464,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -1795,7 +1846,7 @@
       "direction": "short",
       "exit": "hybrid_50pct_target",
       "is_sharpe": -0.226,
-      "is_n_gates": 2,
+      "is_n_gates": 3,
       "holdout": null,
       "bh": false,
       "verdict": "UNEVAL"
@@ -1807,7 +1858,7 @@
       "direction": "long",
       "exit": "time_stop_10d",
       "is_sharpe": 0.472,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 104,
         "sharpe": 0.599,
@@ -1820,13 +1871,14 @@
         "p": 0.07115218608297576,
         "ci_lo": -0.205,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 4,
+        "n_gates": 5,
         "all_live_gates": false
       },
       "bh": false,
@@ -1839,7 +1891,7 @@
       "direction": "short",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.11,
-      "is_n_gates": 2,
+      "is_n_gates": 3,
       "holdout": {
         "n": 102,
         "sharpe": 0.07,
@@ -1852,13 +1904,14 @@
         "p": 0.39914439344946695,
         "ci_lo": -0.468,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -1871,7 +1924,7 @@
       "direction": "long",
       "exit": "r_multiple_2r",
       "is_sharpe": 1.049,
-      "is_n_gates": 5,
+      "is_n_gates": 6,
       "holdout": {
         "n": 30,
         "sharpe": -0.073,
@@ -1884,13 +1937,14 @@
         "p": 0.532592344019198,
         "ci_lo": -1.818,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -1903,7 +1957,7 @@
       "direction": "long",
       "exit": "chandelier_3x",
       "is_sharpe": 0.605,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 35,
         "sharpe": 0.925,
@@ -1916,13 +1970,14 @@
         "p": 0.060192513848377364,
         "ci_lo": -0.262,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": true,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 3,
+        "n_gates": 4,
         "all_live_gates": false
       },
       "bh": false,
@@ -1935,7 +1990,7 @@
       "direction": "short",
       "exit": "hybrid_50pct_target",
       "is_sharpe": -0.225,
-      "is_n_gates": 2,
+      "is_n_gates": 3,
       "holdout": {
         "n": 85,
         "sharpe": -0.885,
@@ -1948,13 +2003,14 @@
         "p": 0.9998460946653613,
         "ci_lo": -1.384,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -1967,7 +2023,7 @@
       "direction": "long",
       "exit": "r_multiple_3r",
       "is_sharpe": 0.762,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 91,
         "sharpe": 0.638,
@@ -1980,13 +2036,14 @@
         "p": 0.08636943247950558,
         "ci_lo": -0.284,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": true,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 3,
+        "n_gates": 4,
         "all_live_gates": false
       },
       "bh": false,
@@ -1999,7 +2056,7 @@
       "direction": "short",
       "exit": "hybrid_50pct_target",
       "is_sharpe": -0.32,
-      "is_n_gates": 2,
+      "is_n_gates": 3,
       "holdout": {
         "n": 216,
         "sharpe": -0.494,
@@ -2012,13 +2069,14 @@
         "p": 0.9995024631831291,
         "ci_lo": -0.792,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -2031,7 +2089,7 @@
       "direction": "long",
       "exit": "earnings_blackout",
       "is_sharpe": 0.401,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 121,
         "sharpe": 0.106,
@@ -2044,13 +2102,14 @@
         "p": 0.273728906005351,
         "ci_lo": -0.241,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -2063,7 +2122,7 @@
       "direction": "short",
       "exit": "hybrid_50pct_target",
       "is_sharpe": -0.063,
-      "is_n_gates": 2,
+      "is_n_gates": 3,
       "holdout": {
         "n": 202,
         "sharpe": -0.105,
@@ -2076,13 +2135,14 @@
         "p": 0.7546152311308749,
         "ci_lo": -0.404,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -2095,7 +2155,7 @@
       "direction": "short",
       "exit": "hybrid_50pct_target",
       "is_sharpe": -0.794,
-      "is_n_gates": 2,
+      "is_n_gates": 3,
       "holdout": {
         "n": 35,
         "sharpe": -0.483,
@@ -2108,13 +2168,14 @@
         "p": 0.8949545330447409,
         "ci_lo": -1.247,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -2127,7 +2188,7 @@
       "direction": "long",
       "exit": "r_multiple_2r",
       "is_sharpe": 1.092,
-      "is_n_gates": 5,
+      "is_n_gates": 6,
       "holdout": {
         "n": 49,
         "sharpe": 0.882,
@@ -2140,13 +2201,14 @@
         "p": 0.13856980807402697,
         "ci_lo": -0.718,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": true,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 3,
+        "n_gates": 4,
         "all_live_gates": false
       },
       "bh": false,
@@ -2159,7 +2221,7 @@
       "direction": "short",
       "exit": "hybrid_50pct_target",
       "is_sharpe": -0.402,
-      "is_n_gates": 2,
+      "is_n_gates": 3,
       "holdout": {
         "n": 114,
         "sharpe": -0.337,
@@ -2172,13 +2234,14 @@
         "p": 0.9519428772464091,
         "ci_lo": -0.736,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -2191,7 +2254,7 @@
       "direction": "long",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.421,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 150,
         "sharpe": 0.031,
@@ -2204,13 +2267,14 @@
         "p": 0.4469547236113868,
         "ci_lo": -0.421,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -2223,7 +2287,7 @@
       "direction": "short",
       "exit": "hybrid_50pct_target",
       "is_sharpe": -0.21,
-      "is_n_gates": 2,
+      "is_n_gates": 3,
       "holdout": {
         "n": 156,
         "sharpe": -0.233,
@@ -2236,13 +2300,14 @@
         "p": 0.9204258805733525,
         "ci_lo": -0.559,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -2255,7 +2320,7 @@
       "direction": "long",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.427,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 220,
         "sharpe": 0.465,
@@ -2268,13 +2333,14 @@
         "p": 0.0029060786949307955,
         "ci_lo": 0.132,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 4,
+        "n_gates": 5,
         "all_live_gates": false
       },
       "bh": true,
@@ -2287,7 +2353,7 @@
       "direction": "short",
       "exit": "hybrid_50pct_target",
       "is_sharpe": -0.421,
-      "is_n_gates": 2,
+      "is_n_gates": 3,
       "holdout": {
         "n": 75,
         "sharpe": -0.371,
@@ -2300,13 +2366,14 @@
         "p": 0.9263435522760481,
         "ci_lo": -0.876,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -2319,7 +2386,7 @@
       "direction": "long",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.389,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 140,
         "sharpe": 0.669,
@@ -2332,13 +2399,14 @@
         "p": 0.00011490244452406748,
         "ci_lo": 0.304,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 4,
+        "n_gates": 5,
         "all_live_gates": false
       },
       "bh": true,
@@ -2351,7 +2419,7 @@
       "direction": "long",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.365,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 580,
         "sharpe": 0.478,
@@ -2364,13 +2432,14 @@
         "p": 1.7214254052716446e-06,
         "ci_lo": 0.274,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 4,
+        "n_gates": 5,
         "all_live_gates": false
       },
       "bh": true,
@@ -2383,7 +2452,7 @@
       "direction": "long",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.405,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 596,
         "sharpe": 0.612,
@@ -2396,13 +2465,14 @@
         "p": 1.5361258447473426e-09,
         "ci_lo": 0.407,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 4,
+        "n_gates": 5,
         "all_live_gates": false
       },
       "bh": true,
@@ -2415,7 +2485,7 @@
       "direction": "long",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.413,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 666,
         "sharpe": 0.638,
@@ -2428,13 +2498,14 @@
         "p": 1.2125236111035037e-10,
         "ci_lo": 0.437,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 4,
+        "n_gates": 5,
         "all_live_gates": false
       },
       "bh": true,
@@ -2447,7 +2518,7 @@
       "direction": "long",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.374,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 738,
         "sharpe": 0.561,
@@ -2460,13 +2531,14 @@
         "p": 7.170180842936146e-10,
         "ci_lo": 0.377,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 4,
+        "n_gates": 5,
         "all_live_gates": false
       },
       "bh": true,
@@ -2479,7 +2551,7 @@
       "direction": "long",
       "exit": "time_stop_10d",
       "is_sharpe": 0.617,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": null,
       "bh": false,
       "verdict": "UNEVAL"
@@ -2491,7 +2563,7 @@
       "direction": "long",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.407,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 616,
         "sharpe": 0.614,
@@ -2504,13 +2576,14 @@
         "p": 9.525914182855123e-10,
         "ci_lo": 0.411,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 4,
+        "n_gates": 5,
         "all_live_gates": false
       },
       "bh": true,
@@ -2523,7 +2596,7 @@
       "direction": "long",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.399,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 667,
         "sharpe": 0.635,
@@ -2536,13 +2609,14 @@
         "p": 6.907567976720068e-11,
         "ci_lo": 0.438,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 4,
+        "n_gates": 5,
         "all_live_gates": false
       },
       "bh": true,
@@ -2555,7 +2629,7 @@
       "direction": "long",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.315,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 93,
         "sharpe": 0.484,
@@ -2568,13 +2642,14 @@
         "p": 0.05009634031814085,
         "ci_lo": -0.097,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 4,
+        "n_gates": 5,
         "all_live_gates": false
       },
       "bh": false,
@@ -2587,7 +2662,7 @@
       "direction": "long",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.39,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 136,
         "sharpe": 0.683,
@@ -2600,13 +2675,14 @@
         "p": 8.689885189825228e-05,
         "ci_lo": 0.317,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 4,
+        "n_gates": 5,
         "all_live_gates": false
       },
       "bh": true,
@@ -2619,7 +2695,7 @@
       "direction": "long",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.42,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 564,
         "sharpe": 0.492,
@@ -2632,13 +2708,14 @@
         "p": 1.3786397141605014e-06,
         "ci_lo": 0.284,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 4,
+        "n_gates": 5,
         "all_live_gates": false
       },
       "bh": true,
@@ -2651,7 +2728,7 @@
       "direction": "long",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.38,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 199,
         "sharpe": 0.517,
@@ -2664,13 +2741,14 @@
         "p": 0.0033015728026361806,
         "ci_lo": 0.14,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 4,
+        "n_gates": 5,
         "all_live_gates": false
       },
       "bh": true,
@@ -2683,7 +2761,7 @@
       "direction": "long",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.436,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 286,
         "sharpe": 0.483,
@@ -2696,13 +2774,14 @@
         "p": 0.0007226807916290174,
         "ci_lo": 0.183,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 4,
+        "n_gates": 5,
         "all_live_gates": false
       },
       "bh": true,
@@ -2715,7 +2794,7 @@
       "direction": "long",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.427,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 590,
         "sharpe": 0.613,
@@ -2728,13 +2807,14 @@
         "p": 2.0067434849506634e-09,
         "ci_lo": 0.406,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 4,
+        "n_gates": 5,
         "all_live_gates": false
       },
       "bh": true,
@@ -2747,7 +2827,7 @@
       "direction": "long",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.421,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 611,
         "sharpe": 0.494,
@@ -2760,13 +2840,14 @@
         "p": 4.847341553249846e-07,
         "ci_lo": 0.295,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 4,
+        "n_gates": 5,
         "all_live_gates": false
       },
       "bh": true,
@@ -2779,7 +2860,7 @@
       "direction": "long",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.445,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 286,
         "sharpe": 0.483,
@@ -2792,13 +2873,14 @@
         "p": 0.0007226807916290174,
         "ci_lo": 0.183,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 4,
+        "n_gates": 5,
         "all_live_gates": false
       },
       "bh": true,
@@ -2811,7 +2893,7 @@
       "direction": "long",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.436,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 590,
         "sharpe": 0.613,
@@ -2824,13 +2906,14 @@
         "p": 2.0067434849506634e-09,
         "ci_lo": 0.406,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 4,
+        "n_gates": 5,
         "all_live_gates": false
       },
       "bh": true,
@@ -2843,7 +2926,7 @@
       "direction": "long",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.376,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 295,
         "sharpe": 0.457,
@@ -2856,13 +2939,14 @@
         "p": 0.0012412325188081565,
         "ci_lo": 0.159,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 4,
+        "n_gates": 5,
         "all_live_gates": false
       },
       "bh": true,
@@ -2875,7 +2959,7 @@
       "direction": "long",
       "exit": "time_stop_10d",
       "is_sharpe": 0.63,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 31,
         "sharpe": -0.256,
@@ -2888,13 +2972,14 @@
         "p": 0.6347593814725534,
         "ci_lo": -1.715,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -2907,7 +2992,7 @@
       "direction": "long",
       "exit": "r_multiple_3r",
       "is_sharpe": 0.632,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": null,
       "bh": false,
       "verdict": "UNEVAL"
@@ -2919,7 +3004,7 @@
       "direction": "short",
       "exit": "hybrid_50pct_target",
       "is_sharpe": -0.214,
-      "is_n_gates": 2,
+      "is_n_gates": 3,
       "holdout": {
         "n": 72,
         "sharpe": -0.123,
@@ -2932,13 +3017,14 @@
         "p": 0.7004248766640067,
         "ci_lo": -0.582,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -2951,7 +3037,7 @@
       "direction": "long",
       "exit": "ma_exit_ema9",
       "is_sharpe": 0.821,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": null,
       "bh": false,
       "verdict": "UNEVAL"
@@ -2963,7 +3049,7 @@
       "direction": "short",
       "exit": "hybrid_50pct_target",
       "is_sharpe": -0.327,
-      "is_n_gates": 2,
+      "is_n_gates": 3,
       "holdout": null,
       "bh": false,
       "verdict": "UNEVAL"
@@ -2975,7 +3061,7 @@
       "direction": "long",
       "exit": "earnings_blackout",
       "is_sharpe": 0.502,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 274,
         "sharpe": 0.356,
@@ -2988,13 +3074,14 @@
         "p": 0.0008423684403481348,
         "ci_lo": 0.132,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 4,
+        "n_gates": 5,
         "all_live_gates": false
       },
       "bh": true,
@@ -3007,7 +3094,7 @@
       "direction": "long",
       "exit": "regime_flip",
       "is_sharpe": 0.425,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 277,
         "sharpe": 0.276,
@@ -3020,13 +3107,14 @@
         "p": 0.0641553327620278,
         "ci_lo": -0.081,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 4,
+        "n_gates": 5,
         "all_live_gates": false
       },
       "bh": false,
@@ -3039,7 +3127,7 @@
       "direction": "long",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.434,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 265,
         "sharpe": 0.588,
@@ -3052,13 +3140,14 @@
         "p": 0.0001451312346879518,
         "ci_lo": 0.266,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 4,
+        "n_gates": 5,
         "all_live_gates": false
       },
       "bh": true,
@@ -3071,7 +3160,7 @@
       "direction": "short",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.074,
-      "is_n_gates": 2,
+      "is_n_gates": 3,
       "holdout": {
         "n": 422,
         "sharpe": 0.086,
@@ -3084,13 +3173,14 @@
         "p": 0.26475510632543614,
         "ci_lo": -0.181,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 2,
+        "n_gates": 3,
         "all_live_gates": false
       },
       "bh": false,
@@ -3103,7 +3193,7 @@
       "direction": "short",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.074,
-      "is_n_gates": 2,
+      "is_n_gates": 3,
       "holdout": {
         "n": 422,
         "sharpe": 0.086,
@@ -3116,13 +3206,14 @@
         "p": 0.26475510632543614,
         "ci_lo": -0.181,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 2,
+        "n_gates": 3,
         "all_live_gates": false
       },
       "bh": false,
@@ -3135,7 +3226,7 @@
       "direction": "long",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.437,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 378,
         "sharpe": 0.537,
@@ -3148,13 +3239,14 @@
         "p": 4.8279418812929124e-05,
         "ci_lo": 0.264,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 4,
+        "n_gates": 5,
         "all_live_gates": false
       },
       "bh": true,
@@ -3167,7 +3259,7 @@
       "direction": "short",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.161,
-      "is_n_gates": 2,
+      "is_n_gates": 3,
       "holdout": {
         "n": 589,
         "sharpe": -0.201,
@@ -3180,13 +3272,14 @@
         "p": 0.9481107187856783,
         "ci_lo": -0.443,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -3199,7 +3292,7 @@
       "direction": "long",
       "exit": "class_time_stop",
       "is_sharpe": 0.507,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 264,
         "sharpe": 0.223,
@@ -3212,13 +3305,14 @@
         "p": 0.0724673306681068,
         "ci_lo": -0.078,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": false,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 3,
+        "n_gates": 4,
         "all_live_gates": false
       },
       "bh": false,
@@ -3231,7 +3325,7 @@
       "direction": "short",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.075,
-      "is_n_gates": 2,
+      "is_n_gates": 3,
       "holdout": {
         "n": 421,
         "sharpe": 0.086,
@@ -3244,13 +3338,14 @@
         "p": 0.264380961840434,
         "ci_lo": -0.181,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 2,
+        "n_gates": 3,
         "all_live_gates": false
       },
       "bh": false,
@@ -3263,7 +3358,7 @@
       "direction": "long",
       "exit": "next_pivot_target",
       "is_sharpe": 1.341,
-      "is_n_gates": 5,
+      "is_n_gates": 6,
       "holdout": null,
       "bh": false,
       "verdict": "UNEVAL"
@@ -3275,7 +3370,7 @@
       "direction": "long",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.456,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 71,
         "sharpe": 0.839,
@@ -3288,13 +3383,14 @@
         "p": 0.010532588626655575,
         "ci_lo": 0.113,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": true,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 3,
+        "n_gates": 4,
         "all_live_gates": false
       },
       "bh": true,
@@ -3307,7 +3403,7 @@
       "direction": "long",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.288,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 349,
         "sharpe": 0.461,
@@ -3320,13 +3416,14 @@
         "p": 0.00016168616611599124,
         "ci_lo": 0.208,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 4,
+        "n_gates": 5,
         "all_live_gates": false
       },
       "bh": true,
@@ -3339,7 +3436,7 @@
       "direction": "short",
       "exit": "breakeven_plus_trail",
       "is_sharpe": -0.021,
-      "is_n_gates": 1,
+      "is_n_gates": 2,
       "holdout": {
         "n": 555,
         "sharpe": -0.09,
@@ -3352,13 +3449,14 @@
         "p": 0.7733102480575536,
         "ci_lo": -0.326,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -3371,7 +3469,7 @@
       "direction": "long",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.427,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 219,
         "sharpe": 0.319,
@@ -3384,13 +3482,14 @@
         "p": 0.04660078827217325,
         "ci_lo": -0.055,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 4,
+        "n_gates": 5,
         "all_live_gates": false
       },
       "bh": false,
@@ -3403,7 +3502,7 @@
       "direction": "short",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.182,
-      "is_n_gates": 2,
+      "is_n_gates": 3,
       "holdout": {
         "n": 393,
         "sharpe": -0.206,
@@ -3416,13 +3515,14 @@
         "p": 0.9270483784077057,
         "ci_lo": -0.484,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -3435,7 +3535,7 @@
       "direction": "long",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.435,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 413,
         "sharpe": 0.461,
@@ -3448,13 +3548,14 @@
         "p": 5.2992760536498386e-05,
         "ci_lo": 0.226,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 4,
+        "n_gates": 5,
         "all_live_gates": false
       },
       "bh": true,
@@ -3467,7 +3568,7 @@
       "direction": "long",
       "exit": "regime_flip",
       "is_sharpe": 0.844,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": null,
       "bh": false,
       "verdict": "UNEVAL"
@@ -3479,7 +3580,7 @@
       "direction": "short",
       "exit": "hybrid_50pct_target",
       "is_sharpe": -0.274,
-      "is_n_gates": 2,
+      "is_n_gates": 3,
       "holdout": null,
       "bh": false,
       "verdict": "UNEVAL"
@@ -3491,7 +3592,7 @@
       "direction": "long",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.358,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 173,
         "sharpe": 0.635,
@@ -3504,13 +3605,14 @@
         "p": 0.0013705334552592161,
         "ci_lo": 0.214,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": true,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 3,
+        "n_gates": 4,
         "all_live_gates": false
       },
       "bh": true,
@@ -3523,7 +3625,7 @@
       "direction": "long",
       "exit": "chandelier_3x",
       "is_sharpe": 0.403,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 72,
         "sharpe": -0.016,
@@ -3536,13 +3638,14 @@
         "p": 0.5108512862075513,
         "ci_lo": -1.158,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -3555,7 +3658,7 @@
       "direction": "long",
       "exit": "r_multiple_2r",
       "is_sharpe": 1.412,
-      "is_n_gates": 5,
+      "is_n_gates": 6,
       "holdout": null,
       "bh": false,
       "verdict": "UNEVAL"
@@ -3567,7 +3670,7 @@
       "direction": "short",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.467,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 31,
         "sharpe": -0.061,
@@ -3580,13 +3683,14 @@
         "p": 0.5511266753739434,
         "ci_lo": -0.996,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -3599,7 +3703,7 @@
       "direction": "long",
       "exit": "r_multiple_2r",
       "is_sharpe": 0.451,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 1261,
         "sharpe": -0.092,
@@ -3612,13 +3716,14 @@
         "p": 0.7411518528285259,
         "ci_lo": -0.371,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -3631,7 +3736,7 @@
       "direction": "short",
       "exit": "breakeven_plus_trail",
       "is_sharpe": -0.209,
-      "is_n_gates": 1,
+      "is_n_gates": 2,
       "holdout": {
         "n": 1378,
         "sharpe": -0.153,
@@ -3644,13 +3749,14 @@
         "p": 0.9712368061350689,
         "ci_lo": -0.311,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -3663,7 +3769,7 @@
       "direction": "long",
       "exit": "class_time_stop",
       "is_sharpe": 0.468,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 161,
         "sharpe": 0.35,
@@ -3676,13 +3782,14 @@
         "p": 0.015272143560826169,
         "ci_lo": 0.031,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 4,
+        "n_gates": 5,
         "all_live_gates": false
       },
       "bh": false,
@@ -3695,7 +3802,7 @@
       "direction": "short",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.174,
-      "is_n_gates": 2,
+      "is_n_gates": 3,
       "holdout": {
         "n": 240,
         "sharpe": -0.373,
@@ -3708,13 +3815,14 @@
         "p": 0.967691086957023,
         "ci_lo": -0.769,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -3727,7 +3835,7 @@
       "direction": "short",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.108,
-      "is_n_gates": 2,
+      "is_n_gates": 3,
       "holdout": {
         "n": 456,
         "sharpe": -0.4,
@@ -3740,13 +3848,14 @@
         "p": 0.9973671305251213,
         "ci_lo": -0.682,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -3759,7 +3868,7 @@
       "direction": "long",
       "exit": "chandelier_3x",
       "is_sharpe": 0.517,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": null,
       "bh": false,
       "verdict": "UNEVAL"
@@ -3771,7 +3880,7 @@
       "direction": "long",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.53,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 422,
         "sharpe": 0.585,
@@ -3784,13 +3893,14 @@
         "p": 9.397822445123306e-08,
         "ci_lo": 0.361,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 4,
+        "n_gates": 5,
         "all_live_gates": false
       },
       "bh": true,
@@ -3803,7 +3913,7 @@
       "direction": "short",
       "exit": "hybrid_50pct_target",
       "is_sharpe": -0.205,
-      "is_n_gates": 2,
+      "is_n_gates": 3,
       "holdout": {
         "n": 205,
         "sharpe": -0.568,
@@ -3816,13 +3926,14 @@
         "p": 0.9999722794716402,
         "ci_lo": -0.85,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -3835,7 +3946,7 @@
       "direction": "short",
       "exit": "class_time_stop",
       "is_sharpe": -0.039,
-      "is_n_gates": 1,
+      "is_n_gates": 2,
       "holdout": {
         "n": 496,
         "sharpe": -0.847,
@@ -3848,13 +3959,14 @@
         "p": 0.9999999999999947,
         "ci_lo": -1.068,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -3867,7 +3979,7 @@
       "direction": "long",
       "exit": "time_stop_10d",
       "is_sharpe": 0.739,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 106,
         "sharpe": 0.005,
@@ -3880,13 +3992,14 @@
         "p": 0.4948224851961065,
         "ci_lo": -0.785,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -3899,7 +4012,7 @@
       "direction": "long",
       "exit": "r_multiple_3r",
       "is_sharpe": 0.986,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": null,
       "bh": false,
       "verdict": "UNEVAL"
@@ -3911,7 +4024,7 @@
       "direction": "short",
       "exit": "next_pivot_target",
       "is_sharpe": -0.924,
-      "is_n_gates": 1,
+      "is_n_gates": 2,
       "holdout": null,
       "bh": false,
       "verdict": "UNEVAL"
@@ -3923,7 +4036,7 @@
       "direction": "long",
       "exit": "reverse_signal",
       "is_sharpe": 0.937,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 91,
         "sharpe": 1.528,
@@ -3936,13 +4049,14 @@
         "p": 0.11318087201009158,
         "ci_lo": -0.957,
         "gates": {
-          "sharpe_per_regime": true,
+          "pooled_sharpe": true,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 5,
+        "n_gates": 6,
         "all_live_gates": true
       },
       "bh": false,
@@ -3955,7 +4069,7 @@
       "direction": "short",
       "exit": "hybrid_50pct_target",
       "is_sharpe": -0.359,
-      "is_n_gates": 2,
+      "is_n_gates": 3,
       "holdout": {
         "n": 103,
         "sharpe": -0.645,
@@ -3968,13 +4082,14 @@
         "p": 0.9963550760919395,
         "ci_lo": -1.125,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -3987,7 +4102,7 @@
       "direction": "long",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.318,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 92,
         "sharpe": 0.482,
@@ -4000,13 +4115,14 @@
         "p": 0.021835233406308708,
         "ci_lo": 0.009,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 4,
+        "n_gates": 5,
         "all_live_gates": false
       },
       "bh": false,
@@ -4019,7 +4135,7 @@
       "direction": "short",
       "exit": "hybrid_50pct_target",
       "is_sharpe": -0.576,
-      "is_n_gates": 2,
+      "is_n_gates": 3,
       "holdout": null,
       "bh": false,
       "verdict": "UNEVAL"
@@ -4031,7 +4147,7 @@
       "direction": "long",
       "exit": "r_multiple_3r",
       "is_sharpe": 0.247,
-      "is_n_gates": 3,
+      "is_n_gates": 4,
       "holdout": null,
       "bh": false,
       "verdict": "UNEVAL"
@@ -4043,7 +4159,7 @@
       "direction": "short",
       "exit": "breakeven_plus_trail",
       "is_sharpe": -0.315,
-      "is_n_gates": 1,
+      "is_n_gates": 2,
       "holdout": {
         "n": 557,
         "sharpe": 0.129,
@@ -4056,13 +4172,14 @@
         "p": 0.15297696069071337,
         "ci_lo": -0.118,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 2,
+        "n_gates": 3,
         "all_live_gates": false
       },
       "bh": false,
@@ -4075,7 +4192,7 @@
       "direction": "long",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.423,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 197,
         "sharpe": 0.488,
@@ -4088,13 +4205,14 @@
         "p": 0.007072564846340544,
         "ci_lo": 0.095,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 4,
+        "n_gates": 5,
         "all_live_gates": false
       },
       "bh": true,
@@ -4107,7 +4225,7 @@
       "direction": "long",
       "exit": "time_stop_10d",
       "is_sharpe": 0.522,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 151,
         "sharpe": 0.808,
@@ -4120,13 +4238,14 @@
         "p": 0.008884204055925717,
         "ci_lo": 0.134,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 4,
+        "n_gates": 5,
         "all_live_gates": false
       },
       "bh": true,
@@ -4139,7 +4258,7 @@
       "direction": "short",
       "exit": "regime_flip",
       "is_sharpe": 0.589,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": null,
       "bh": false,
       "verdict": "UNEVAL"
@@ -4151,7 +4270,7 @@
       "direction": "short",
       "exit": "r_multiple_3r",
       "is_sharpe": 0.429,
-      "is_n_gates": 3,
+      "is_n_gates": 4,
       "holdout": {
         "n": 43,
         "sharpe": -3.97,
@@ -4164,13 +4283,14 @@
         "p": 0.9999993598202479,
         "ci_lo": -5.783,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": false
+          "min_trades_holdout": true,
+          "min_trades_full_period": false
         },
-        "n_gates": 0,
+        "n_gates": 1,
         "all_live_gates": false
       },
       "bh": false,
@@ -4183,7 +4303,7 @@
       "direction": "long",
       "exit": "earnings_blackout",
       "is_sharpe": 0.539,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 155,
         "sharpe": 0.462,
@@ -4196,13 +4316,14 @@
         "p": 0.0015475555602210967,
         "ci_lo": 0.152,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 4,
+        "n_gates": 5,
         "all_live_gates": false
       },
       "bh": true,
@@ -4215,7 +4336,7 @@
       "direction": "short",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.123,
-      "is_n_gates": 2,
+      "is_n_gates": 3,
       "holdout": {
         "n": 239,
         "sharpe": 0.111,
@@ -4228,13 +4349,14 @@
         "p": 0.2660544570025811,
         "ci_lo": -0.236,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 2,
+        "n_gates": 3,
         "all_live_gates": false
       },
       "bh": false,
@@ -4247,7 +4369,7 @@
       "direction": "long",
       "exit": "next_pivot_target",
       "is_sharpe": 1.694,
-      "is_n_gates": 5,
+      "is_n_gates": 6,
       "holdout": null,
       "bh": false,
       "verdict": "UNEVAL"
@@ -4259,7 +4381,7 @@
       "direction": "long",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.324,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": null,
       "bh": false,
       "verdict": "UNEVAL"
@@ -4271,7 +4393,7 @@
       "direction": "long",
       "exit": "regime_flip",
       "is_sharpe": 1.098,
-      "is_n_gates": 5,
+      "is_n_gates": 6,
       "holdout": {
         "n": 162,
         "sharpe": 0.509,
@@ -4284,13 +4406,14 @@
         "p": 0.0153583638241424,
         "ci_lo": 0.044,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 4,
+        "n_gates": 5,
         "all_live_gates": false
       },
       "bh": false,
@@ -4303,7 +4426,7 @@
       "direction": "short",
       "exit": "hybrid_50pct_target",
       "is_sharpe": -0.162,
-      "is_n_gates": 2,
+      "is_n_gates": 3,
       "holdout": {
         "n": 152,
         "sharpe": -0.372,
@@ -4316,13 +4439,14 @@
         "p": 0.9769321448025703,
         "ci_lo": -0.741,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -4335,7 +4459,7 @@
       "direction": "long",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.318,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 119,
         "sharpe": 0.48,
@@ -4348,13 +4472,14 @@
         "p": 0.008258277006832874,
         "ci_lo": 0.083,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": true,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 3,
+        "n_gates": 4,
         "all_live_gates": false
       },
       "bh": true,
@@ -4367,7 +4492,7 @@
       "direction": "short",
       "exit": "class_time_stop",
       "is_sharpe": 0.525,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": null,
       "bh": false,
       "verdict": "UNEVAL"
@@ -4379,7 +4504,7 @@
       "direction": "short",
       "exit": "hybrid_50pct_target",
       "is_sharpe": -0.17,
-      "is_n_gates": 2,
+      "is_n_gates": 3,
       "holdout": {
         "n": 154,
         "sharpe": -0.377,
@@ -4392,13 +4517,14 @@
         "p": 0.9785690577237005,
         "ci_lo": -0.744,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -4411,7 +4537,7 @@
       "direction": "long",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.42,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 338,
         "sharpe": 0.501,
@@ -4424,13 +4550,14 @@
         "p": 0.00019333813223344363,
         "ci_lo": 0.222,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 4,
+        "n_gates": 5,
         "all_live_gates": false
       },
       "bh": true,
@@ -4443,7 +4570,7 @@
       "direction": "short",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.143,
-      "is_n_gates": 2,
+      "is_n_gates": 3,
       "holdout": {
         "n": 398,
         "sharpe": -0.266,
@@ -4456,13 +4583,14 @@
         "p": 0.9668064029213048,
         "ci_lo": -0.55,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -4475,7 +4603,7 @@
       "direction": "short",
       "exit": "hybrid_50pct_target",
       "is_sharpe": -0.337,
-      "is_n_gates": 1,
+      "is_n_gates": 2,
       "holdout": {
         "n": 89,
         "sharpe": -0.665,
@@ -4488,13 +4616,14 @@
         "p": 0.9865671090737704,
         "ci_lo": -1.263,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -4507,7 +4636,7 @@
       "direction": "long",
       "exit": "r_multiple_2r",
       "is_sharpe": 0.536,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 90,
         "sharpe": 0.807,
@@ -4520,13 +4649,14 @@
         "p": 0.08320018416432232,
         "ci_lo": -0.342,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 4,
+        "n_gates": 5,
         "all_live_gates": false
       },
       "bh": false,
@@ -4539,7 +4669,7 @@
       "direction": "short",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.049,
-      "is_n_gates": 1,
+      "is_n_gates": 2,
       "holdout": {
         "n": 138,
         "sharpe": -0.453,
@@ -4552,13 +4682,14 @@
         "p": 0.9592372190927547,
         "ci_lo": -0.966,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -4571,7 +4702,7 @@
       "direction": "long",
       "exit": "regime_flip",
       "is_sharpe": 2.343,
-      "is_n_gates": 5,
+      "is_n_gates": 6,
       "holdout": null,
       "bh": false,
       "verdict": "UNEVAL"
@@ -4583,7 +4714,7 @@
       "direction": "long",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.33,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 293,
         "sharpe": 0.596,
@@ -4596,13 +4727,14 @@
         "p": 5.078799173802131e-06,
         "ci_lo": 0.327,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": true,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 3,
+        "n_gates": 4,
         "all_live_gates": false
       },
       "bh": true,
@@ -4615,7 +4747,7 @@
       "direction": "short",
       "exit": "hybrid_50pct_target",
       "is_sharpe": -0.29,
-      "is_n_gates": 2,
+      "is_n_gates": 3,
       "holdout": {
         "n": 169,
         "sharpe": -0.319,
@@ -4628,13 +4760,14 @@
         "p": 0.97228942840593,
         "ci_lo": -0.647,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -4647,7 +4780,7 @@
       "direction": "long",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.407,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 618,
         "sharpe": 0.611,
@@ -4660,13 +4793,14 @@
         "p": 1.1005535999919859e-09,
         "ci_lo": 0.408,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 4,
+        "n_gates": 5,
         "all_live_gates": false
       },
       "bh": true,
@@ -4679,7 +4813,7 @@
       "direction": "long",
       "exit": "earnings_blackout",
       "is_sharpe": 0.539,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 63,
         "sharpe": 0.545,
@@ -4692,13 +4826,14 @@
         "p": 0.01210340692387199,
         "ci_lo": 0.062,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 4,
+        "n_gates": 5,
         "all_live_gates": false
       },
       "bh": true,
@@ -4711,7 +4846,7 @@
       "direction": "short",
       "exit": "earnings_blackout",
       "is_sharpe": 0.151,
-      "is_n_gates": 2,
+      "is_n_gates": 3,
       "holdout": {
         "n": 74,
         "sharpe": -0.149,
@@ -4724,13 +4859,14 @@
         "p": 0.7633957319386417,
         "ci_lo": -0.559,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -4743,7 +4879,7 @@
       "direction": "short",
       "exit": "hybrid_50pct_target",
       "is_sharpe": -0.141,
-      "is_n_gates": 2,
+      "is_n_gates": 3,
       "holdout": {
         "n": 59,
         "sharpe": -0.416,
@@ -4756,13 +4892,14 @@
         "p": 0.9287403080569927,
         "ci_lo": -0.977,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -4775,7 +4912,7 @@
       "direction": "short",
       "exit": "breakeven_plus_trail",
       "is_sharpe": -0.039,
-      "is_n_gates": 1,
+      "is_n_gates": 2,
       "holdout": {
         "n": 765,
         "sharpe": -0.149,
@@ -4788,13 +4925,14 @@
         "p": 0.9199709960935405,
         "ci_lo": -0.356,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -4807,7 +4945,7 @@
       "direction": "long",
       "exit": "regime_flip",
       "is_sharpe": 1.237,
-      "is_n_gates": 5,
+      "is_n_gates": 6,
       "holdout": null,
       "bh": false,
       "verdict": "UNEVAL"
@@ -4819,7 +4957,7 @@
       "direction": "short",
       "exit": "hybrid_50pct_target",
       "is_sharpe": -0.644,
-      "is_n_gates": 2,
+      "is_n_gates": 3,
       "holdout": null,
       "bh": false,
       "verdict": "UNEVAL"
@@ -4831,7 +4969,7 @@
       "direction": "long",
       "exit": "regime_flip",
       "is_sharpe": 0.423,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 55,
         "sharpe": 0.631,
@@ -4844,13 +4982,14 @@
         "p": 0.06486736159542236,
         "ci_lo": -0.194,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 4,
+        "n_gates": 5,
         "all_live_gates": false
       },
       "bh": false,
@@ -4863,7 +5002,7 @@
       "direction": "short",
       "exit": "hybrid_50pct_target",
       "is_sharpe": -0.293,
-      "is_n_gates": 2,
+      "is_n_gates": 3,
       "holdout": {
         "n": 99,
         "sharpe": 0.005,
@@ -4876,13 +5015,14 @@
         "p": 0.49034106753858575,
         "ci_lo": -0.378,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -4895,7 +5035,7 @@
       "direction": "long",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.402,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 356,
         "sharpe": 0.693,
@@ -4908,13 +5048,14 @@
         "p": 6.357381615533083e-07,
         "ci_lo": 0.408,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 4,
+        "n_gates": 5,
         "all_live_gates": false
       },
       "bh": true,
@@ -4927,7 +5068,7 @@
       "direction": "short",
       "exit": "hybrid_50pct_target",
       "is_sharpe": -0.46,
-      "is_n_gates": 2,
+      "is_n_gates": 3,
       "holdout": {
         "n": 427,
         "sharpe": -0.247,
@@ -4940,13 +5081,14 @@
         "p": 0.9847388090168212,
         "ci_lo": -0.472,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -4959,7 +5101,7 @@
       "direction": "long",
       "exit": "hybrid_50pct_target",
       "is_sharpe": -0.127,
-      "is_n_gates": 2,
+      "is_n_gates": 3,
       "holdout": null,
       "bh": false,
       "verdict": "UNEVAL"
@@ -4971,7 +5113,7 @@
       "direction": "short",
       "exit": "hybrid_50pct_target",
       "is_sharpe": -0.947,
-      "is_n_gates": 2,
+      "is_n_gates": 3,
       "holdout": {
         "n": 66,
         "sharpe": -0.551,
@@ -4984,13 +5126,14 @@
         "p": 0.9831327926375397,
         "ci_lo": -1.068,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -5003,7 +5146,7 @@
       "direction": "long",
       "exit": "earnings_blackout",
       "is_sharpe": 0.582,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 88,
         "sharpe": 0.339,
@@ -5016,13 +5159,14 @@
         "p": 0.04712711251039481,
         "ci_lo": -0.061,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 4,
+        "n_gates": 5,
         "all_live_gates": false
       },
       "bh": false,
@@ -5035,7 +5179,7 @@
       "direction": "short",
       "exit": "breakeven_plus_trail",
       "is_sharpe": -0.326,
-      "is_n_gates": 1,
+      "is_n_gates": 2,
       "holdout": {
         "n": 191,
         "sharpe": -0.577,
@@ -5048,13 +5192,14 @@
         "p": 0.9960552594653438,
         "ci_lo": -1.007,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -5067,7 +5212,7 @@
       "direction": "long",
       "exit": "class_time_stop",
       "is_sharpe": 0.638,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 113,
         "sharpe": 0.051,
@@ -5080,13 +5225,14 @@
         "p": 0.4137020875570431,
         "ci_lo": -0.409,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -5099,7 +5245,7 @@
       "direction": "long",
       "exit": "next_pivot_target",
       "is_sharpe": 0.774,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": null,
       "bh": false,
       "verdict": "UNEVAL"
@@ -5111,7 +5257,7 @@
       "direction": "short",
       "exit": "hybrid_50pct_target",
       "is_sharpe": -0.54,
-      "is_n_gates": 2,
+      "is_n_gates": 3,
       "holdout": {
         "n": 60,
         "sharpe": -0.391,
@@ -5124,13 +5270,14 @@
         "p": 0.9204740075458799,
         "ci_lo": -0.94,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -5143,7 +5290,7 @@
       "direction": "long",
       "exit": "regime_flip",
       "is_sharpe": 0.678,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 92,
         "sharpe": 0.813,
@@ -5156,13 +5303,14 @@
         "p": 0.0044172482505294595,
         "ci_lo": 0.193,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 4,
+        "n_gates": 5,
         "all_live_gates": false
       },
       "bh": true,
@@ -5175,7 +5323,7 @@
       "direction": "short",
       "exit": "hybrid_50pct_target",
       "is_sharpe": -0.494,
-      "is_n_gates": 2,
+      "is_n_gates": 3,
       "holdout": {
         "n": 139,
         "sharpe": -0.549,
@@ -5188,13 +5336,14 @@
         "p": 0.9959270196917505,
         "ci_lo": -0.961,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -5207,7 +5356,7 @@
       "direction": "long",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.491,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 227,
         "sharpe": 0.392,
@@ -5220,13 +5369,14 @@
         "p": 0.016587538110348368,
         "ci_lo": 0.029,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 4,
+        "n_gates": 5,
         "all_live_gates": false
       },
       "bh": false,
@@ -5239,7 +5389,7 @@
       "direction": "short",
       "exit": "breakeven_plus_trail",
       "is_sharpe": -0.348,
-      "is_n_gates": 1,
+      "is_n_gates": 2,
       "holdout": {
         "n": 343,
         "sharpe": -0.035,
@@ -5252,13 +5402,14 @@
         "p": 0.5899169058241741,
         "ci_lo": -0.341,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -5271,7 +5422,7 @@
       "direction": "short",
       "exit": "hybrid_50pct_target",
       "is_sharpe": -0.567,
-      "is_n_gates": 2,
+      "is_n_gates": 3,
       "holdout": null,
       "bh": false,
       "verdict": "UNEVAL"
@@ -5283,7 +5434,7 @@
       "direction": "long",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.417,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 134,
         "sharpe": 0.502,
@@ -5296,13 +5447,14 @@
         "p": 0.026023571682235475,
         "ci_lo": -0.008,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 4,
+        "n_gates": 5,
         "all_live_gates": false
       },
       "bh": false,
@@ -5315,7 +5467,7 @@
       "direction": "short",
       "exit": "hybrid_50pct_target",
       "is_sharpe": -0.288,
-      "is_n_gates": 2,
+      "is_n_gates": 3,
       "holdout": {
         "n": 218,
         "sharpe": -0.635,
@@ -5328,13 +5480,14 @@
         "p": 0.9999827493138683,
         "ci_lo": -0.941,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -5347,7 +5500,7 @@
       "direction": "long",
       "exit": "earnings_blackout",
       "is_sharpe": 0.305,
-      "is_n_gates": 3,
+      "is_n_gates": 4,
       "holdout": {
         "n": 42,
         "sharpe": 0.065,
@@ -5360,13 +5513,14 @@
         "p": 0.41251656533496595,
         "ci_lo": -0.514,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -5379,7 +5533,7 @@
       "direction": "short",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.119,
-      "is_n_gates": 2,
+      "is_n_gates": 3,
       "holdout": {
         "n": 82,
         "sharpe": -0.302,
@@ -5392,13 +5546,14 @@
         "p": 0.8560699456344163,
         "ci_lo": -0.86,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -5411,7 +5566,7 @@
       "direction": "short",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.031,
-      "is_n_gates": 1,
+      "is_n_gates": 2,
       "holdout": {
         "n": 105,
         "sharpe": -0.188,
@@ -5424,13 +5579,14 @@
         "p": 0.7598163744200341,
         "ci_lo": -0.71,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -5443,7 +5599,7 @@
       "direction": "long",
       "exit": "class_time_stop",
       "is_sharpe": 0.857,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 188,
         "sharpe": 0.006,
@@ -5456,13 +5612,14 @@
         "p": 0.4878803232655279,
         "ci_lo": -0.382,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -5475,7 +5632,7 @@
       "direction": "long",
       "exit": "regime_flip",
       "is_sharpe": 0.803,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 187,
         "sharpe": -0.368,
@@ -5488,13 +5645,14 @@
         "p": 0.9529190028128722,
         "ci_lo": -0.801,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -5507,7 +5665,7 @@
       "direction": "long",
       "exit": "r_multiple_2r",
       "is_sharpe": 0.657,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": null,
       "bh": false,
       "verdict": "UNEVAL"
@@ -5519,7 +5677,7 @@
       "direction": "short",
       "exit": "class_time_stop",
       "is_sharpe": 0.398,
-      "is_n_gates": 3,
+      "is_n_gates": 4,
       "holdout": {
         "n": 34,
         "sharpe": -1.784,
@@ -5532,13 +5690,14 @@
         "p": 0.981856818556907,
         "ci_lo": -3.508,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -5551,7 +5710,7 @@
       "direction": "short",
       "exit": "breakeven_plus_trail",
       "is_sharpe": -0.05,
-      "is_n_gates": 1,
+      "is_n_gates": 2,
       "holdout": {
         "n": 1115,
         "sharpe": -0.175,
@@ -5564,13 +5723,14 @@
         "p": 0.9763754267922071,
         "ci_lo": -0.348,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -5583,7 +5743,7 @@
       "direction": "long",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.249,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 296,
         "sharpe": 0.411,
@@ -5596,13 +5756,14 @@
         "p": 0.0031240976075041648,
         "ci_lo": 0.114,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 4,
+        "n_gates": 5,
         "all_live_gates": false
       },
       "bh": true,
@@ -5615,7 +5776,7 @@
       "direction": "short",
       "exit": "hybrid_50pct_target",
       "is_sharpe": -0.318,
-      "is_n_gates": 2,
+      "is_n_gates": 3,
       "holdout": {
         "n": 319,
         "sharpe": -0.195,
@@ -5628,13 +5789,14 @@
         "p": 0.9329055797536685,
         "ci_lo": -0.451,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -5647,7 +5809,7 @@
       "direction": "long",
       "exit": "next_pivot_target",
       "is_sharpe": 1.449,
-      "is_n_gates": 5,
+      "is_n_gates": 6,
       "holdout": null,
       "bh": false,
       "verdict": "UNEVAL"
@@ -5659,7 +5821,7 @@
       "direction": "short",
       "exit": "hybrid_50pct_target",
       "is_sharpe": -0.468,
-      "is_n_gates": 2,
+      "is_n_gates": 3,
       "holdout": {
         "n": 89,
         "sharpe": -0.523,
@@ -5672,13 +5834,14 @@
         "p": 0.9914714040754102,
         "ci_lo": -0.959,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -5691,7 +5854,7 @@
       "direction": "short",
       "exit": "atr_trail_2x",
       "is_sharpe": 0.108,
-      "is_n_gates": 2,
+      "is_n_gates": 3,
       "holdout": {
         "n": 56,
         "sharpe": -1.184,
@@ -5704,13 +5867,14 @@
         "p": 0.9938577426253434,
         "ci_lo": -2.136,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -5723,7 +5887,7 @@
       "direction": "long",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.476,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 194,
         "sharpe": 0.415,
@@ -5736,13 +5900,14 @@
         "p": 0.022313413607874987,
         "ci_lo": 0.008,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 4,
+        "n_gates": 5,
         "all_live_gates": false
       },
       "bh": false,
@@ -5755,7 +5920,7 @@
       "direction": "short",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.184,
-      "is_n_gates": 2,
+      "is_n_gates": 3,
       "holdout": {
         "n": 260,
         "sharpe": -0.246,
@@ -5768,13 +5933,14 @@
         "p": 0.9109119874320737,
         "ci_lo": -0.605,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -5787,7 +5953,7 @@
       "direction": "short",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.105,
-      "is_n_gates": 2,
+      "is_n_gates": 3,
       "holdout": {
         "n": 470,
         "sharpe": -0.173,
@@ -5800,13 +5966,14 @@
         "p": 0.9019741684894288,
         "ci_lo": -0.436,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -5819,7 +5986,7 @@
       "direction": "long",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.197,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 321,
         "sharpe": 0.395,
@@ -5832,13 +5999,14 @@
         "p": 0.004579751485773254,
         "ci_lo": 0.096,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 4,
+        "n_gates": 5,
         "all_live_gates": false
       },
       "bh": true,
@@ -5851,7 +6019,7 @@
       "direction": "long",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.466,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 86,
         "sharpe": 0.963,
@@ -5864,13 +6032,14 @@
         "p": 0.0020135831818944207,
         "ci_lo": 0.291,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": true,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 3,
+        "n_gates": 4,
         "all_live_gates": false
       },
       "bh": true,
@@ -5883,7 +6052,7 @@
       "direction": "long",
       "exit": "r_multiple_3r",
       "is_sharpe": 0.516,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 81,
         "sharpe": -0.091,
@@ -5896,13 +6065,14 @@
         "p": 0.5697280487579802,
         "ci_lo": -1.102,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -5915,7 +6085,7 @@
       "direction": "long",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.155,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": null,
       "bh": false,
       "verdict": "UNEVAL"
@@ -5927,7 +6097,7 @@
       "direction": "short",
       "exit": "breakeven_plus_trail",
       "is_sharpe": -0.107,
-      "is_n_gates": 1,
+      "is_n_gates": 2,
       "holdout": {
         "n": 244,
         "sharpe": -0.172,
@@ -5940,13 +6110,14 @@
         "p": 0.8192928418153194,
         "ci_lo": -0.543,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -5959,7 +6130,7 @@
       "direction": "long",
       "exit": "r_multiple_2r",
       "is_sharpe": 0.734,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 95,
         "sharpe": -0.297,
@@ -5972,13 +6143,14 @@
         "p": 0.6983703512799179,
         "ci_lo": -1.418,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -5991,7 +6163,7 @@
       "direction": "short",
       "exit": "breakeven_plus_trail",
       "is_sharpe": -0.329,
-      "is_n_gates": 1,
+      "is_n_gates": 2,
       "holdout": {
         "n": 402,
         "sharpe": 0.105,
@@ -6004,13 +6176,14 @@
         "p": 0.22772372896539808,
         "ci_lo": -0.171,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 2,
+        "n_gates": 3,
         "all_live_gates": false
       },
       "bh": false,
@@ -6023,7 +6196,7 @@
       "direction": "long",
       "exit": "next_pivot_target",
       "is_sharpe": 0.679,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 57,
         "sharpe": -0.1,
@@ -6036,13 +6209,14 @@
         "p": 0.5770940597917203,
         "ci_lo": -1.103,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -6055,7 +6229,7 @@
       "direction": "short",
       "exit": "hybrid_50pct_target",
       "is_sharpe": -0.27,
-      "is_n_gates": 2,
+      "is_n_gates": 3,
       "holdout": {
         "n": 95,
         "sharpe": -0.562,
@@ -6068,13 +6242,14 @@
         "p": 0.991345340592535,
         "ci_lo": -1.032,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -6087,7 +6262,7 @@
       "direction": "long",
       "exit": "regime_flip",
       "is_sharpe": 0.561,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 100,
         "sharpe": 0.278,
@@ -6100,13 +6275,14 @@
         "p": 0.17794576171907567,
         "ci_lo": -0.314,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 4,
+        "n_gates": 5,
         "all_live_gates": false
       },
       "bh": false,
@@ -6119,7 +6295,7 @@
       "direction": "long",
       "exit": "regime_flip",
       "is_sharpe": 1.558,
-      "is_n_gates": 5,
+      "is_n_gates": 6,
       "holdout": {
         "n": 108,
         "sharpe": -0.132,
@@ -6132,13 +6308,14 @@
         "p": 0.6794041013566665,
         "ci_lo": -0.688,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -6151,7 +6328,7 @@
       "direction": "short",
       "exit": "hybrid_50pct_target",
       "is_sharpe": -0.478,
-      "is_n_gates": 2,
+      "is_n_gates": 3,
       "holdout": {
         "n": 269,
         "sharpe": -0.488,
@@ -6164,13 +6341,14 @@
         "p": 0.9998635667196348,
         "ci_lo": -0.755,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -6183,7 +6361,7 @@
       "direction": "long",
       "exit": "time_stop_10d",
       "is_sharpe": 0.431,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 142,
         "sharpe": -0.13,
@@ -6196,13 +6374,14 @@
         "p": 0.6449099743186087,
         "ci_lo": -0.818,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -6215,7 +6394,7 @@
       "direction": "short",
       "exit": "breakeven_plus_trail",
       "is_sharpe": -0.071,
-      "is_n_gates": 1,
+      "is_n_gates": 2,
       "holdout": {
         "n": 184,
         "sharpe": -0.435,
@@ -6228,13 +6407,14 @@
         "p": 0.9752636048364692,
         "ci_lo": -0.872,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -6247,7 +6427,7 @@
       "direction": "short",
       "exit": "hybrid_50pct_target",
       "is_sharpe": -0.767,
-      "is_n_gates": 2,
+      "is_n_gates": 3,
       "holdout": {
         "n": 215,
         "sharpe": -1.799,
@@ -6260,13 +6440,14 @@
         "p": 1.0,
         "ci_lo": -2.174,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -6279,7 +6460,7 @@
       "direction": "long",
       "exit": "class_time_stop",
       "is_sharpe": 0.871,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 152,
         "sharpe": 0.435,
@@ -6292,13 +6473,14 @@
         "p": 0.014847817804627291,
         "ci_lo": 0.04,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 4,
+        "n_gates": 5,
         "all_live_gates": false
       },
       "bh": false,
@@ -6311,7 +6493,7 @@
       "direction": "long",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.234,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 405,
         "sharpe": 0.487,
@@ -6324,13 +6506,14 @@
         "p": 2.855855666680672e-05,
         "ci_lo": 0.247,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 4,
+        "n_gates": 5,
         "all_live_gates": false
       },
       "bh": true,
@@ -6343,7 +6526,7 @@
       "direction": "short",
       "exit": "breakeven_plus_trail",
       "is_sharpe": -0.272,
-      "is_n_gates": 1,
+      "is_n_gates": 2,
       "holdout": {
         "n": 297,
         "sharpe": 0.076,
@@ -6356,13 +6539,14 @@
         "p": 0.3337574052649854,
         "ci_lo": -0.27,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -6375,7 +6559,7 @@
       "direction": "long",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.317,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 58,
         "sharpe": 0.186,
@@ -6388,13 +6572,14 @@
         "p": 0.3013309038628975,
         "ci_lo": -0.515,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": false,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 3,
+        "n_gates": 4,
         "all_live_gates": false
       },
       "bh": false,
@@ -6407,7 +6592,7 @@
       "direction": "short",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.151,
-      "is_n_gates": 2,
+      "is_n_gates": 3,
       "holdout": {
         "n": 130,
         "sharpe": -0.209,
@@ -6420,13 +6605,14 @@
         "p": 0.8039119730967299,
         "ci_lo": -0.69,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -6439,7 +6625,7 @@
       "direction": "long",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.45,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 35,
         "sharpe": 0.962,
@@ -6452,13 +6638,14 @@
         "p": 0.005469079921617434,
         "ci_lo": 0.188,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": true,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 3,
+        "n_gates": 4,
         "all_live_gates": false
       },
       "bh": true,
@@ -6471,7 +6658,7 @@
       "direction": "long",
       "exit": "r_multiple_2r",
       "is_sharpe": 1.103,
-      "is_n_gates": 5,
+      "is_n_gates": 6,
       "holdout": null,
       "bh": false,
       "verdict": "UNEVAL"
@@ -6483,7 +6670,7 @@
       "direction": "long",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.22,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 73,
         "sharpe": 0.446,
@@ -6496,13 +6683,14 @@
         "p": 0.06008887630312874,
         "ci_lo": -0.121,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": true,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 3,
+        "n_gates": 4,
         "all_live_gates": false
       },
       "bh": false,
@@ -6515,7 +6703,7 @@
       "direction": "short",
       "exit": "hybrid_50pct_target",
       "is_sharpe": -0.269,
-      "is_n_gates": 2,
+      "is_n_gates": 3,
       "holdout": {
         "n": 322,
         "sharpe": -0.153,
@@ -6528,13 +6716,14 @@
         "p": 0.8607748673226712,
         "ci_lo": -0.431,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -6547,7 +6736,7 @@
       "direction": "long",
       "exit": "time_stop_10d",
       "is_sharpe": 0.932,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 50,
         "sharpe": 1.133,
@@ -6560,13 +6749,14 @@
         "p": 0.027645113245559298,
         "ci_lo": -0.047,
         "gates": {
-          "sharpe_per_regime": true,
+          "pooled_sharpe": true,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 5,
+        "n_gates": 6,
         "all_live_gates": true
       },
       "bh": false,
@@ -6579,7 +6769,7 @@
       "direction": "long",
       "exit": "time_stop_10d",
       "is_sharpe": 0.671,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 50,
         "sharpe": 1.349,
@@ -6592,13 +6782,14 @@
         "p": 0.010652580711095594,
         "ci_lo": 0.171,
         "gates": {
-          "sharpe_per_regime": true,
+          "pooled_sharpe": true,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 5,
+        "n_gates": 6,
         "all_live_gates": true
       },
       "bh": true,
@@ -6617,7 +6808,7 @@
       "direction": "long",
       "exit": "regime_flip",
       "is_sharpe": 0.578,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 162,
         "sharpe": 1.004,
@@ -6630,13 +6821,14 @@
         "p": 8.25447608273e-06,
         "ci_lo": 0.534,
         "gates": {
-          "sharpe_per_regime": true,
+          "pooled_sharpe": true,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 5,
+        "n_gates": 6,
         "all_live_gates": true
       },
       "bh": true,
@@ -6655,7 +6847,7 @@
       "direction": "long",
       "exit": "time_stop_10d",
       "is_sharpe": 1.054,
-      "is_n_gates": 5,
+      "is_n_gates": 6,
       "holdout": null,
       "bh": false,
       "verdict": "UNEVAL"
@@ -6667,7 +6859,7 @@
       "direction": "long",
       "exit": "regime_flip",
       "is_sharpe": 0.452,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 143,
         "sharpe": 0.281,
@@ -6680,13 +6872,14 @@
         "p": 0.13280008379540217,
         "ci_lo": -0.215,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 2,
+        "n_gates": 3,
         "all_live_gates": false
       },
       "bh": false,
@@ -6699,7 +6892,7 @@
       "direction": "short",
       "exit": "hybrid_50pct_target",
       "is_sharpe": -0.492,
-      "is_n_gates": 2,
+      "is_n_gates": 3,
       "holdout": null,
       "bh": false,
       "verdict": "UNEVAL"
@@ -6711,7 +6904,7 @@
       "direction": "long",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.291,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 194,
         "sharpe": 0.492,
@@ -6724,13 +6917,14 @@
         "p": 0.0010738398996908067,
         "ci_lo": 0.174,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 4,
+        "n_gates": 5,
         "all_live_gates": false
       },
       "bh": true,
@@ -6743,7 +6937,7 @@
       "direction": "short",
       "exit": "hybrid_50pct_target",
       "is_sharpe": -0.684,
-      "is_n_gates": 2,
+      "is_n_gates": 3,
       "holdout": {
         "n": 62,
         "sharpe": -0.092,
@@ -6756,13 +6950,14 @@
         "p": 0.638352416812605,
         "ci_lo": -0.6,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -6775,7 +6970,7 @@
       "direction": "long",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.545,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 175,
         "sharpe": 0.241,
@@ -6788,13 +6983,14 @@
         "p": 0.12526351527319318,
         "ci_lo": -0.171,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 4,
+        "n_gates": 5,
         "all_live_gates": false
       },
       "bh": false,
@@ -6807,7 +7003,7 @@
       "direction": "short",
       "exit": "hybrid_50pct_target",
       "is_sharpe": -0.134,
-      "is_n_gates": 2,
+      "is_n_gates": 3,
       "holdout": {
         "n": 165,
         "sharpe": -0.342,
@@ -6820,13 +7016,14 @@
         "p": 0.9642954962755865,
         "ci_lo": -0.715,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -6839,7 +7036,7 @@
       "direction": "long",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.422,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 151,
         "sharpe": 0.41,
@@ -6852,13 +7049,14 @@
         "p": 0.030985414990333277,
         "ci_lo": -0.023,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 4,
+        "n_gates": 5,
         "all_live_gates": false
       },
       "bh": false,
@@ -6871,7 +7069,7 @@
       "direction": "short",
       "exit": "hybrid_50pct_target",
       "is_sharpe": -0.022,
-      "is_n_gates": 2,
+      "is_n_gates": 3,
       "holdout": {
         "n": 80,
         "sharpe": -0.768,
@@ -6884,13 +7082,14 @@
         "p": 0.9977637336095093,
         "ci_lo": -1.311,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -6903,7 +7102,7 @@
       "direction": "long",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.287,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 206,
         "sharpe": 0.467,
@@ -6916,13 +7115,14 @@
         "p": 0.0014971821895119336,
         "ci_lo": 0.156,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 4,
+        "n_gates": 5,
         "all_live_gates": false
       },
       "bh": true,
@@ -6935,7 +7135,7 @@
       "direction": "short",
       "exit": "hybrid_50pct_target",
       "is_sharpe": -0.616,
-      "is_n_gates": 2,
+      "is_n_gates": 3,
       "holdout": {
         "n": 69,
         "sharpe": -0.133,
@@ -6948,13 +7148,14 @@
         "p": 0.706163301004307,
         "ci_lo": -0.617,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -6967,7 +7168,7 @@
       "direction": "long",
       "exit": "regime_flip",
       "is_sharpe": 0.448,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 91,
         "sharpe": 0.362,
@@ -6980,13 +7181,14 @@
         "p": 0.12533833212355294,
         "ci_lo": -0.258,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": false,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 3,
+        "n_gates": 4,
         "all_live_gates": false
       },
       "bh": false,
@@ -6999,7 +7201,7 @@
       "direction": "short",
       "exit": "breakeven_plus_trail",
       "is_sharpe": -0.2,
-      "is_n_gates": 1,
+      "is_n_gates": 2,
       "holdout": {
         "n": 79,
         "sharpe": 0.407,
@@ -7012,13 +7214,14 @@
         "p": 0.09660476159029092,
         "ci_lo": -0.209,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 4,
+        "n_gates": 5,
         "all_live_gates": false
       },
       "bh": false,
@@ -7031,7 +7234,7 @@
       "direction": "long",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.361,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 198,
         "sharpe": 0.491,
@@ -7044,13 +7247,14 @@
         "p": 0.0012741426432609944,
         "ci_lo": 0.168,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 4,
+        "n_gates": 5,
         "all_live_gates": false
       },
       "bh": true,
@@ -7063,7 +7267,7 @@
       "direction": "long",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.367,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 74,
         "sharpe": 0.315,
@@ -7076,13 +7280,14 @@
         "p": 0.14822040709500836,
         "ci_lo": -0.279,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 4,
+        "n_gates": 5,
         "all_live_gates": false
       },
       "bh": false,
@@ -7095,7 +7300,7 @@
       "direction": "long",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.392,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 161,
         "sharpe": 0.099,
@@ -7108,13 +7313,14 @@
         "p": 0.3130684371013185,
         "ci_lo": -0.299,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -7127,7 +7333,7 @@
       "direction": "long",
       "exit": "regime_flip",
       "is_sharpe": 0.531,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": null,
       "bh": false,
       "verdict": "UNEVAL"
@@ -7139,7 +7345,7 @@
       "direction": "short",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.125,
-      "is_n_gates": 2,
+      "is_n_gates": 3,
       "holdout": {
         "n": 318,
         "sharpe": -0.143,
@@ -7152,13 +7358,14 @@
         "p": 0.8046265405218532,
         "ci_lo": -0.471,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -7171,7 +7378,7 @@
       "direction": "short",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.129,
-      "is_n_gates": 2,
+      "is_n_gates": 3,
       "holdout": {
         "n": 248,
         "sharpe": -0.128,
@@ -7184,13 +7391,14 @@
         "p": 0.7587387184461849,
         "ci_lo": -0.486,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -7203,7 +7411,7 @@
       "direction": "long",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.373,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 143,
         "sharpe": -0.43,
@@ -7216,13 +7424,14 @@
         "p": 0.9558682581136688,
         "ci_lo": -0.926,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -7235,7 +7444,7 @@
       "direction": "short",
       "exit": "breakeven_plus_trail",
       "is_sharpe": -0.114,
-      "is_n_gates": 1,
+      "is_n_gates": 2,
       "holdout": {
         "n": 58,
         "sharpe": -0.061,
@@ -7248,13 +7457,14 @@
         "p": 0.5671463096852003,
         "ci_lo": -0.771,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -7267,7 +7477,7 @@
       "direction": "long",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.241,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 36,
         "sharpe": 0.359,
@@ -7280,13 +7490,14 @@
         "p": 0.18300137113852416,
         "ci_lo": -0.424,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 4,
+        "n_gates": 5,
         "all_live_gates": false
       },
       "bh": false,
@@ -7299,7 +7510,7 @@
       "direction": "short",
       "exit": "hybrid_50pct_target",
       "is_sharpe": -0.166,
-      "is_n_gates": 2,
+      "is_n_gates": 3,
       "holdout": {
         "n": 39,
         "sharpe": -0.556,
@@ -7312,13 +7523,14 @@
         "p": 0.9312356497171769,
         "ci_lo": -1.299,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -7331,7 +7543,7 @@
       "direction": "short",
       "exit": "hybrid_50pct_target",
       "is_sharpe": -0.102,
-      "is_n_gates": 2,
+      "is_n_gates": 3,
       "holdout": {
         "n": 155,
         "sharpe": -0.008,
@@ -7344,13 +7556,14 @@
         "p": 0.5212292286573557,
         "ci_lo": -0.307,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": false,
           "sortino": false,
           "psr": false,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "all_live_gates": false
       },
       "bh": false,
@@ -7363,7 +7576,7 @@
       "direction": "short",
       "exit": "breakeven_plus_trail",
       "is_sharpe": 0.316,
-      "is_n_gates": 4,
+      "is_n_gates": 5,
       "holdout": {
         "n": 120,
         "sharpe": 0.375,
@@ -7376,13 +7589,14 @@
         "p": 0.08096294960300032,
         "ci_lo": -0.152,
         "gates": {
-          "sharpe_per_regime": false,
+          "pooled_sharpe": false,
           "profit_factor": true,
           "sortino": true,
           "psr": true,
-          "min_trades": true
+          "min_trades_holdout": true,
+          "min_trades_full_period": true
         },
-        "n_gates": 4,
+        "n_gates": 5,
         "all_live_gates": false
       },
       "bh": false,

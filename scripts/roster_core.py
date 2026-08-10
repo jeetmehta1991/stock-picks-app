@@ -50,7 +50,8 @@ IS_START, IS_END = date(2022, 5, 5), date(2025, 5, 5)
 HO_START, HO_END = date(2025, 5, 5), date(2026, 5, 5)
 WINSORIZE, COST_BPS, MIN_N, FDR_Q, JACCARD = 300.0, 20.0, 30, 0.05, 0.70
 
-LIVE_GATES = ("sharpe_per_regime", "profit_factor", "sortino", "psr", "min_trades")
+LIVE_GATES = ("pooled_sharpe", "profit_factor", "sortino", "psr",
+              "min_trades_holdout", "min_trades_full_period")   # B1496: 5 -> 6
 DEMOTED = ("max_drawdown", "calmar", "deflated_sharpe", "win_rate")
 
 CUBE_COLUMNS = ["strategy", "direction", "exit_method", "entry_date",
@@ -97,40 +98,19 @@ def evaluate(pnl: pd.Series, hold: pd.Series, *, min_n: int | None = None,
     pf = float(w.sum() / abs(l.sum())) if len(l) and l.sum() != 0 else float("inf")
     payoff = float(w.mean() / abs(l.mean())) if len(w) and len(l) and l.mean() != 0 else None
     gates = {
-        # NAME WARNING (S6-B1455f, B1489): "sharpe_per_regime" is a MISNOMER kept for schema
-        # compatibility. This computes ONE POOLED Sharpe over the whole window - there is no
-        # regime split anywhere in it. The name records the CONFIG KEY it borrows
-        # (min_sharpe_per_regime = 0.5), not the method. Renaming it is a SCHEMA MIGRATION, not
-        # a rename: the key appears in 6 py files and as a gates-dict key in every published
-        # artifact (b1453_phase_1b_roster.json, b1452_*, b1467_*), so a bare rename silently
-        # breaks every reader of those. Canonical criterion #11 (a real per-regime verdict) is
-        # NOT implemented here - that is S6-B1455e, an owner decision. L287.
-        "sharpe_per_regime": sharpe is not None and sharpe >= PC["min_sharpe_overall"],
-        # B1493 (owner-approved 2026-08-09: "a sharpe of >0.5 is too weak... it needs to
-        # be >1.0"). Switched from min_sharpe_per_regime (0.5) to min_sharpe_overall
-        # (1.0). This ARMS a bar that already existed: min_sharpe_overall is the
-        # canonical overall threshold in CLAUDE.md criterion #10 and was one of the two
-        # ORPHANED keys found at B1456 - defined, value-pinned, read by no gate. The
-        # pipeline had been applying the LENIENT per-regime bar to a POOLED statistic.
-        # Measured before the change: 34 cells clear at 0.5, 8 at 0.7, 4 at 1.0 - the
-        # collapse between 0.5 and 0.7 is the band B1467 measured as INSIDE the 0.369
-        # selection-noise floor, i.e. never distinguishable from noise.
+        # B1496 (owner-directed rename): was "sharpe_per_regime", a MISNOMER - this computes
+        # ONE POOLED Sharpe over the window, with no regime split anywhere. The old name
+        # recorded the config key it used to borrow, not the method, and it propagated a false
+        # premise to the owner more than once (L287). Now named for what it computes.
+        "pooled_sharpe":     sharpe is not None and sharpe >= PC["min_sharpe_overall"],
         "profit_factor":     pf >= pf_bar,
         "sortino":           sortino is not None and sortino >= PC["min_sortino_per_regime"],
         "psr":               dsr.get("psr") is not None and dsr["psr"] >= PC["min_psr"],
-        # B1492 (owner-approved 2026-08-09). WAS `n >= 100` against whatever window was
-        # passed, and the binding call is the HOLDOUT - so it demanded 100 trades in ONE
-        # year while the window is four. Owner: "this is too harsh and needs to be undone.
-        # it should have only two criteria overall (4 years) n >100 and holdout (1 year)
-        # n>=25." Both legs now enforced:
-        #   full-period (4yr) > 100   - NEW, no gate read a period total before this
-        #   holdout     (1yr) >= 25   - was 100
-        # The 4-year leg is what makes the low holdout floor safe: n=25-30 sits at the
-        # MIN_N power floor where annualised Sharpe SE is ~+/-1.6, so a thin holdout is
-        # only acceptable when the full period is deep.
-        "min_trades":        (n >= PC["min_trades_holdout"]
-                              and (full_period_n is None
-                                   or full_period_n > PC["min_trades_full_period"])),
+        # B1496 (owner-directed split): min_trades is TWO independent requirements and was
+        # reported as one gate, understating the gate count and hiding which leg blocks a cell.
+        "min_trades_holdout":     n >= PC["min_trades_holdout"],
+        "min_trades_full_period": (full_period_n is None
+                                   or full_period_n > PC["min_trades_full_period"]),
     }
     return {"n": n, "sharpe": sharpe, "sortino": sortino, "psr": dsr.get("psr"),
             "profit_factor": round(pf, 3), "payoff": round(payoff, 2) if payoff else None,

@@ -9520,3 +9520,60 @@ methodology."* Accepted and closed. **S6-B1455e CLOSED-WONTFIX.** Recording the 
 built on a classifier the owner does not trust would import that uncertainty into every promotion
 decision while appearing to add rigour. Leaving it orphaned is the honest position, and it is now a
 DECISION rather than an oversight.
+
+---
+
+## B1496 (2026-08-09) — owner-directed: `pooled_sharpe` rename + `min_trades` split into 2 gates
+
+**1. `sharpe_per_regime` -> `pooled_sharpe`.** Owner-directed. The old name recorded the config key
+it once borrowed, not the method: it computes ONE POOLED Sharpe with no regime split anywhere, and
+it propagated a false premise to the owner twice (L287, and again at B1495 where "Sharpe on 4 years"
+followed from the same confusion). Now named for what it computes. **This closes S6-B1455f**, which
+B1489 had deferred as a schema migration - the owner's directive supersedes that deferral.
+
+**2. `min_trades` split into TWO gates.** Owner: *"min_trades should be 2 gates right? why are you
+only showing 1?"* Correct - B1492 created two independent requirements and I kept reporting them as
+one, which understated the gate count AND hid which leg binds. `LIVE_GATES` **5 -> 6**.
+
+Splitting immediately paid: **`min_trades_holdout` blocks 0 cells; `min_trades_full_period` blocks 1**.
+That asymmetry was invisible while merged.
+
+### THE COMPLETE GATE STRUCTURE (3 groups + 1 unimplemented)
+
+**GROUP 1 - structural eligibility** (253 -> 211, -42)
+- a selectable IS exit must exist
+- `MIN_N` power floor: holdout n >= 30, else UNEVAL (not FAIL)
+
+**GROUP 2 - the 6 live gates** (211 -> 4, -207)
+
+| gate | threshold | window | blocks |
+|---|---|---|---|
+| `pooled_sharpe` | >= 1.0 | holdout 1y | **207** |
+| `psr` | >= 0.95 | holdout 1y | 126 |
+| `sortino` | >= 0.70 | holdout 1y | 122 |
+| `profit_factor` | >= 1.30 | holdout 1y | 119 |
+| `min_trades_holdout` | >= 25 | holdout 1y | 0 |
+| `min_trades_full_period` | > 100 | **4y** | 1 |
+
+**GROUP 3 - post-gate pipeline** (4 -> 2)
+- **BH-FDR** q=0.05, threshold COMPUTED not fixed: BH sorts the m p-values and takes the largest
+  rank k with `p(k) <= q*k/m`. This run **k=53, m=211 -> p <= 0.012559**. It tightens automatically
+  as the family grows, which is why it matters more once S6-OPT-196 widens the candidate set. (-2)
+- **de-dup** Jaccard >= 0.70 on (ticker, entry_date). (-0)
+
+**GROUP 4 - the 3 AUTO-FAIL screens: SPECIFIED BUT NOT IMPLEMENTED** (S6-B1495a). Measured at
+B1495 as returning `None` on a 1-year holdout, so wiring them there would add three
+unconditionally-passing gates.
+
+### PSR, for the record
+**Probabilistic Sharpe Ratio** (Bailey & Lopez de Prado): P(true Sharpe > 0) given the observed
+Sharpe, sample size, and the return distribution's **skew and kurtosis**. `>= 0.95` = 95% confidence
+the edge is real rather than a sampling artifact. It is the PER-CELL counterpart to BH-FDR's
+FAMILY-wise control, and it penalises fat tails and negative skew that raw Sharpe hides - which is
+why it independently blocks 126 cells.
+
+### Known consequence of the rename
+Older published artifacts (`b1452_*`, `b1467_*`) carry the old `sharpe_per_regime` key in their
+gates dicts. Readers of those files will see the old name; `b1453_phase_1b_roster.json` is
+regenerated with `pooled_sharpe`. **S6-B1496a (LOW)** - decide whether to backfill the historical
+artifacts or leave them as point-in-time records.

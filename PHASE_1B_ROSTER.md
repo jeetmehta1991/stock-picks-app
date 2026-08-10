@@ -20,7 +20,7 @@
 
 **The holdout is never read during selection.** B1452 retracted an earlier variant that chose among 26 exits ON the holdout and then graded there - with 26 candidates that almost always "passes" and reported 35 instead of the honest count. One test per cell.
 
-**Gates (only 5 of 8 bind).** Live: `sharpe_per_regime`, `profit_factor`, `sortino`, `psr`, `min_trades`. Demoted to diagnostics: `max_drawdown`, `calmar`, `deflated_sharpe`, `win_rate` (B1387 win rate; B1436 max_drawdown + deflated_sharpe; B1437 calmar - calmar divides by the demoted drawdown).
+**Gates (only 6 of 8 bind).** Live: `pooled_sharpe`, `profit_factor`, `sortino`, `psr`, `min_trades_holdout`, `min_trades_full_period`. Demoted to diagnostics: `max_drawdown`, `calmar`, `deflated_sharpe`, `win_rate` (B1387 win rate; B1436 max_drawdown + deflated_sharpe; B1437 calmar - calmar divides by the demoted drawdown).
 
 **`sharpe_per_regime` IS A MISNOMER - it is POOLED, not per-regime (B1455c).** The gate computes ONE Sharpe over the whole holdout for the cell and compares it to the config key `min_sharpe_per_regime` (0.5); there is no regime split anywhere in the computation. The name records the THRESHOLD borrowed, not the method. This matters two ways: (a) the pipeline is already using overall Sharpe, so switching to "overall" means adopting `min_sharpe_overall` = **1.0**, which is far STRICTER - it cuts the 23 passers to 1; (b) canonical criterion #11 (per-regime verdict, PASS in >=1 regime) is NOT implemented here. A true per-regime verdict would be MORE permissive than pooled, since a cell would need only its best regime. Measured feasibility on the holdout - cells reaching n>=100 within a regime: **bull 3,042 | neutral 52 | bear 0**. So a per-regime verdict is computable in bull, marginal in neutral, and impossible in bear on this fold. Ticketed S6-B1455e; no threshold changes without owner approval.
 
@@ -32,7 +32,7 @@
 |---|---|---|
 | 0 | (strategy x direction) cells with a selectable IS exit | 253 |
 | 1 | Holdout-evaluable (n >= 30 at the chosen exit) | 211 |
-| 2 | Clear all 5 live gates on the holdout | 4 |
+| 2 | Clear all 6 live gates on the holdout | 4 |
 | 3 | Survive BH-FDR (q<0.05, threshold p<=0.01256) | 2 |
 | 4 | De-duplicated (Jaccard < 0.7) | **2** |
 
@@ -42,11 +42,12 @@ A pass count hides whether a screen has five independent constraints or one bind
 
 | gate | cells passing if this gate is DROPPED | uniquely rejects |
 |---|---|---|
-| `sharpe_per_regime` | 75 | 71 |
+| `pooled_sharpe` | 75 | 71 |
 | `profit_factor` | 4 | 0 **(rejects nothing)** |
 | `sortino` | 4 | 0 **(rejects nothing)** |
 | `psr` | 4 | 0 **(rejects nothing)** |
-| `min_trades` | 4 | 0 **(rejects nothing)** |
+| `min_trades_holdout` | 4 | 0 **(rejects nothing)** |
+| `min_trades_full_period` | 4 | 0 **(rejects nothing)** |
 
 ### Effective breadth - READ THIS BEFORE SIZING
 

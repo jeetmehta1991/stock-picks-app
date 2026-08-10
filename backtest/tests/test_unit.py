@@ -13400,7 +13400,7 @@ def test_b1464_live_gate_thresholds_actually_gate():
     cases = [
         # B1493: the gate now reads min_sharpe_overall (1.0), not min_sharpe_per_regime.
         # Flipping the unread key would make this vacuously pass.
-        ("min_sharpe_overall", "sharpe_per_regime",
+        ("min_sharpe_overall", "pooled_sharpe",
          (observed["sharpe"] or 0) + 5.0, -99.0),
         ("min_profit_factor_overall", "profit_factor",
          observed["profit_factor"] + 5.0, 0.0),
@@ -13410,7 +13410,7 @@ def test_b1464_live_gate_thresholds_actually_gate():
         # B1492: the gate now reads min_trades_holdout (the legacy `min_trades` key no
         # longer controls it). Flipping the key the gate does not read would make this
         # test vacuously pass - the exact failure it exists to catch.
-        ("min_trades_holdout", "min_trades", observed["n"] + 1, 1),
+        ("min_trades_holdout", "min_trades_holdout", observed["n"] + 1, 1),
     ]
     for key, gate, fail_val, pass_val in cases:
         original = _PC[key]
