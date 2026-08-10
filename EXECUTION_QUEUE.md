@@ -9728,3 +9728,32 @@ defaults output, so measured deltas are attributable to the varied parameter. Me
 
 **DECISIONS REMAINING** (carried): mid-band 58 in Phase 1 or deferred; AUTO-FAIL screens against
 IS/full-period (S6-B1495a); FDR family sizing (moot for now — BH-FDR excluded by owner ruling).
+
+---
+
+## B1501 (2026-08-10) - breaker-block instrumented: saturation is ONE stale order block latching
+
+**SHIPPED** `scripts/instrument_breaker_block.py` (S6-B1500c CLOSED). Records per qualifying
+breaker event: `age_bars`, `break_pct = (close-top)/top`, `rank` from newest OB, `n_ob_events`.
+PIT preserved by recomputing swings/ob per bar on `ohlc.iloc[:i+1]`, mirroring production.
+
+**PROBE (5 tickers, 2024 H1 - NOT a coverage claim; CHECKLIST #154 wants >=25 tickers / >=4 dates):**
+
+| ticker | fires | age median | break_pct median | rank |
+|---|---|---|---|---|
+| AAPL | 124/124 | 343 | 16.8pct | 2 |
+| JPM | 124/124 | 407 | 54.3pct | 3 |
+| NVDA | 0 | - | - | - |
+| XOM | 3 | 133 | 0.90pct | 1 |
+| PFE | 3 | 49 | 0.80pct | 1 |
+
+**DIAGNOSIS:** bimodal. Saturated tickers latch on ONE order block aged 294-469 bars with price
+7.5-60pct above the zone; non-saturated tickers show genuine retests at 0.5-2.7pct. Clean gap on
+BOTH axes (break_pct 3-7pct, age 134-294) and the axes agree on the split. L359, L360.
+
+| ticket | pri | item |
+|---|---|---|
+| **S6-B1501a** | **HIGH** | DERIVED levels, replacing the invented ones: `break_pct` MAX (proximity cap, candidates 1/2/3pct) and `age_bars` MAX (recency cap, candidates 60/120/180). Direction is an UPPER bound on both - L359 corrects my earlier lower-bound framing. |
+| **S6-B1501b** | **HIGH** | Scale the probe to CHECKLIST #154 minimum (>=25 tickers, >=4 dates, >=12 months) before any level is fixed. Measured cost ~50 s/ticker per 6-month window. |
+| **S6-B1501c** | **HIGH** | Post-tightening n forecast: if the proximity cap holds at ~3 fires/ticker/6mo, R5's 352 fires collapse hard. Check against holdout n>=25 AND full-period n>100 BEFORE committing - the strategy may not survive correct tightening, which is a legitimate outcome. |
+| S6-B1501d | MED | NVDA fires 0 across the probe window. Confirm whether that is a data gap or a genuine absence of mitigated bearish OBs. |

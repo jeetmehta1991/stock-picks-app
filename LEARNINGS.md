@@ -5673,3 +5673,28 @@ loop's variable at line 202, not the identically-named one in the order-block lo
 (b) Claimed Batch A vs R5 had "two confounds" (universe AND producer) — only the universe moved
 (133 -> 381 tickers). **Rule: attributing an effect to a commit requires reading that commit's
 diff, not its message; identically-named locals in sibling loops are a known trap.**
+
+### L359
+**I had the tightening DIRECTION backwards on breaker blocks, and measurement caught it.**
+B1501. I proposed "break margin" as a tightening lever meaning *require price to break FURTHER
+beyond the zone*. The instrumented pass (S6-B1500c, 5 tickers, 2024 H1) shows the opposite: the
+ICT breaker concept is a RETEST -- a mitigated order block flips role, and the trade is price
+returning TO the flipped zone. So the tightening lever is an UPPER bound on distance
+(proximity), not a lower bound. **Rule: before proposing a threshold direction, state the
+economic event the signal is supposed to capture and check the direction serves it.** A
+threshold moved the wrong way looks like tightening (fewer fires) while selecting harder for
+exactly the wrong population.
+
+### L360
+**A saturated signal was hiding two populations, and the split is measurable.** B1501.
+`smc_breaker_block_bullish` instrumented across AAPL/JPM/NVDA/XOM/PFE splits cleanly:
+- **Permanent latches** -- AAPL 124/124 bars and JPM 124/124, qualifying on ONE order block aged
+  294-469 bars (14-22 months) with price 7.5-60% above the zone, same `rank` on every bar. The
+  signal never expires because `ob_events.tail(20)` is a COUNT window with no recency limit, so
+  one ancient block latches TRUE forever.
+- **True retests** -- XOM 3 bars and PFE 3 bars, price 0.5-2.7% from the zone, ages 45-134 bars.
+There is a clean empirical GAP on both axes (break_pct ~3-7%, age ~134-294) that separates them,
+and the two axes agree on which bars are which. **Rule: when a signal saturates, instrument the
+qualifying event rather than tuning the aggregate -- saturation usually means a stale member of a
+disjunction is latching, not that the threshold is loose.** Same class as B654 `cpr_narrow` and
+B655 `supertrend_bullish`, but those were diagnosed only at the aggregate fire-rate level.

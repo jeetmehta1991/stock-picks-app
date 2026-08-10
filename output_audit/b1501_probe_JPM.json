@@ -1,0 +1,1899 @@
+{
+  "ticker": "JPM",
+  "window": [
+    "2024-01-01",
+    "2024-06-30"
+  ],
+  "summary": {
+    "firing_bars": 124,
+    "age_bars_quantiles": {
+      "0.1": 358.3,
+      "0.25": 376.75,
+      "0.5": 407.5,
+      "0.75": 438.25,
+      "0.9": 456.7
+    },
+    "age_bars_min_max": [
+      346,
+      469
+    ],
+    "rank_quantiles": {
+      "0.1": 3.0,
+      "0.25": 3.0,
+      "0.5": 3.0,
+      "0.75": 4.0,
+      "0.9": 4.0
+    },
+    "break_pct_quantiles": {
+      "0.1": 0.38115357639327496,
+      "0.25": 0.43546023913549303,
+      "0.5": 0.5429949974334082,
+      "0.75": 0.5891560632147362,
+      "0.9": 0.6058899526235212
+    },
+    "n_qualifying_mean": 1.0,
+    "n_qualifying_max": 1
+  },
+  "rows": [
+    {
+      "bar": "2024-01-02",
+      "n_ob_events": 5,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 346,
+      "max_break_pct": 0.38507344370548197,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 346,
+          "break_pct": 0.38507344370548197
+        }
+      ]
+    },
+    {
+      "bar": "2024-01-03",
+      "n_ob_events": 5,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 347,
+      "max_break_pct": 0.3790366870645062,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 347,
+          "break_pct": 0.3790366870645062
+        }
+      ]
+    },
+    {
+      "bar": "2024-01-04",
+      "n_ob_events": 5,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 348,
+      "max_break_pct": 0.3796806077728768,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 348,
+          "break_pct": 0.3796806077728768
+        }
+      ]
+    },
+    {
+      "bar": "2024-01-05",
+      "n_ob_events": 5,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 349,
+      "max_break_pct": 0.3866027553878625,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 349,
+          "break_pct": 0.3866027553878625
+        }
+      ]
+    },
+    {
+      "bar": "2024-01-08",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 350,
+      "max_break_pct": 0.3845905031742039,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 350,
+          "break_pct": 0.3845905031742039
+        }
+      ]
+    },
+    {
+      "bar": "2024-01-09",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 351,
+      "max_break_pct": 0.3736438511319011,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 351,
+          "break_pct": 0.3736438511319011
+        }
+      ]
+    },
+    {
+      "bar": "2024-01-10",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 352,
+      "max_break_pct": 0.3765414943195695,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 352,
+          "break_pct": 0.3765414943195695
+        }
+      ]
+    },
+    {
+      "bar": "2024-01-11",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 353,
+      "max_break_pct": 0.3707462079442328,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 353,
+          "break_pct": 0.3707462079442328
+        }
+      ]
+    },
+    {
+      "bar": "2024-01-12",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 354,
+      "max_break_pct": 0.3606849468759398,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 354,
+          "break_pct": 0.3606849468759398
+        }
+      ]
+    },
+    {
+      "bar": "2024-01-16",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 355,
+      "max_break_pct": 0.3521529974900274,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 355,
+          "break_pct": 0.3521529974900274
+        }
+      ]
+    },
+    {
+      "bar": "2024-01-17",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 356,
+      "max_break_pct": 0.3449088895208564,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 356,
+          "break_pct": 0.3449088895208564
+        }
+      ]
+    },
+    {
+      "bar": "2024-01-18",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 357,
+      "max_break_pct": 0.34756506244288565,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 357,
+          "break_pct": 0.34756506244288565
+        }
+      ]
+    },
+    {
+      "bar": "2024-01-19",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 358,
+      "max_break_pct": 0.37082669803277907,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 358,
+          "break_pct": 0.37082669803277907
+        }
+      ]
+    },
+    {
+      "bar": "2024-01-22",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 359,
+      "max_break_pct": 0.3692168962618523,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 359,
+          "break_pct": 0.3692168962618523
+        }
+      ]
+    },
+    {
+      "bar": "2024-01-23",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 360,
+      "max_break_pct": 0.36020200634466176,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 360,
+          "break_pct": 0.36020200634466176
+        }
+      ]
+    },
+    {
+      "bar": "2024-01-24",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 361,
+      "max_break_pct": 0.3723560097151596,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 361,
+          "break_pct": 0.3723560097151596
+        }
+      ]
+    },
+    {
+      "bar": "2024-01-25",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 362,
+      "max_break_pct": 0.3919955913204674,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 362,
+          "break_pct": 0.3919955913204674
+        }
+      ]
+    },
+    {
+      "bar": "2024-01-26",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 363,
+      "max_break_pct": 0.38668324547640875,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 363,
+          "break_pct": 0.38668324547640875
+        }
+      ]
+    },
+    {
+      "bar": "2024-01-29",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 364,
+      "max_break_pct": 0.3903052994609941,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 364,
+          "break_pct": 0.3903052994609941
+        }
+      ]
+    },
+    {
+      "bar": "2024-01-30",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 365,
+      "max_break_pct": 0.4187987908064,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 365,
+          "break_pct": 0.4187987908064
+        }
+      ]
+    },
+    {
+      "bar": "2024-01-31",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 366,
+      "max_break_pct": 0.40342518389404836,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 366,
+          "break_pct": 0.40342518389404836
+        }
+      ]
+    },
+    {
+      "bar": "2024-02-01",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 367,
+      "max_break_pct": 0.3983543083156285,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 367,
+          "break_pct": 0.3983543083156285
+        }
+      ]
+    },
+    {
+      "bar": "2024-02-02",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 368,
+      "max_break_pct": 0.40640331717026285,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 368,
+          "break_pct": 0.40640331717026285
+        }
+      ]
+    },
+    {
+      "bar": "2024-02-05",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 369,
+      "max_break_pct": 0.404552045133697,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 369,
+          "break_pct": 0.404552045133697
+        }
+      ]
+    },
+    {
+      "bar": "2024-02-06",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 370,
+      "max_break_pct": 0.4093814504464776,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 370,
+          "break_pct": 0.4093814504464776
+        }
+      ]
+    },
+    {
+      "bar": "2024-02-07",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 371,
+      "max_break_pct": 0.4120376233685071,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 371,
+          "break_pct": 0.4120376233685071
+        }
+      ]
+    },
+    {
+      "bar": "2024-02-08",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 372,
+      "max_break_pct": 0.40696674779008746,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 372,
+          "break_pct": 0.40696674779008746
+        }
+      ]
+    },
+    {
+      "bar": "2024-02-09",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 373,
+      "max_break_pct": 0.4086570396495605,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 373,
+          "break_pct": 0.4086570396495605
+        }
+      ]
+    },
+    {
+      "bar": "2024-02-12",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 374,
+      "max_break_pct": 0.4149352665561753,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 374,
+          "break_pct": 0.4149352665561753
+        }
+      ]
+    },
+    {
+      "bar": "2024-02-13",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 375,
+      "max_break_pct": 0.4026202830085847,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 375,
+          "break_pct": 0.4026202830085847
+        }
+      ]
+    },
+    {
+      "bar": "2024-02-14",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 376,
+      "max_break_pct": 0.41686702868128767,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 376,
+          "break_pct": 0.41686702868128767
+        }
+      ]
+    },
+    {
+      "bar": "2024-02-15",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 377,
+      "max_break_pct": 0.4477752226830836,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 377,
+          "break_pct": 0.4477752226830836
+        }
+      ]
+    },
+    {
+      "bar": "2024-02-16",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 378,
+      "max_break_pct": 0.4410140552451907,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 378,
+          "break_pct": 0.4410140552451907
+        }
+      ]
+    },
+    {
+      "bar": "2024-02-20",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 379,
+      "max_break_pct": 0.4466483614434347,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 379,
+          "break_pct": 0.4466483614434347
+        }
+      ]
+    },
+    {
+      "bar": "2024-02-21",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 380,
+      "max_break_pct": 0.45606570180335704,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 380,
+          "break_pct": 0.45606570180335704
+        }
+      ]
+    },
+    {
+      "bar": "2024-02-22",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 381,
+      "max_break_pct": 0.4735320510179135,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 381,
+          "break_pct": 0.4735320510179135
+        }
+      ]
+    },
+    {
+      "bar": "2024-02-23",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 382,
+      "max_break_pct": 0.48093713916417724,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 382,
+          "break_pct": 0.48093713916417724
+        }
+      ]
+    },
+    {
+      "bar": "2024-02-26",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 383,
+      "max_break_pct": 0.4758662635857577,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 383,
+          "break_pct": 0.4758662635857577
+        }
+      ]
+    },
+    {
+      "bar": "2024-02-27",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 384,
+      "max_break_pct": 0.47659067438267455,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 384,
+          "break_pct": 0.47659067438267455
+        }
+      ]
+    },
+    {
+      "bar": "2024-02-28",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 385,
+      "max_break_pct": 0.48407625261748455,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 385,
+          "break_pct": 0.48407625261748455
+        }
+      ]
+    },
+    {
+      "bar": "2024-02-29",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 386,
+      "max_break_pct": 0.49759858749327035,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 386,
+          "break_pct": 0.49759858749327035
+        }
+      ]
+    },
+    {
+      "bar": "2024-03-01",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 387,
+      "max_break_pct": 0.4914008506752018,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 387,
+          "break_pct": 0.4914008506752018
+        }
+      ]
+    },
+    {
+      "bar": "2024-03-04",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 388,
+      "max_break_pct": 0.5025889729831436,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 388,
+          "break_pct": 0.5025889729831436
+        }
+      ]
+    },
+    {
+      "bar": "2024-03-05",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 389,
+      "max_break_pct": 0.51764061954131,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 389,
+          "break_pct": 0.51764061954131
+        }
+      ]
+    },
+    {
+      "bar": "2024-03-06",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 390,
+      "max_break_pct": 0.5255286482188516,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 390,
+          "break_pct": 0.5255286482188516
+        }
+      ]
+    },
+    {
+      "bar": "2024-03-07",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 391,
+      "max_break_pct": 0.5121672935201586,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 391,
+          "break_pct": 0.5121672935201586
+        }
+      ]
+    },
+    {
+      "bar": "2024-03-08",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 392,
+      "max_break_pct": 0.5149844466192806,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 392,
+          "break_pct": 0.5149844466192806
+        }
+      ]
+    },
+    {
+      "bar": "2024-03-11",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 393,
+      "max_break_pct": 0.5155478772391049,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 393,
+          "break_pct": 0.5155478772391049
+        }
+      ]
+    },
+    {
+      "bar": "2024-03-12",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 394,
+      "max_break_pct": 0.5280238409637883,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 394,
+          "break_pct": 0.5280238409637883
+        }
+      ]
+    },
+    {
+      "bar": "2024-03-13",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 395,
+      "max_break_pct": 0.5404193145999251,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 395,
+          "break_pct": 0.5404193145999251
+        }
+      ]
+    },
+    {
+      "bar": "2024-03-14",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 396,
+      "max_break_pct": 0.5129721944056219,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 396,
+          "break_pct": 0.5129721944056219
+        }
+      ]
+    },
+    {
+      "bar": "2024-03-15",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 397,
+      "max_break_pct": 0.5317263850369202,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 397,
+          "break_pct": 0.5317263850369202
+        }
+      ]
+    },
+    {
+      "bar": "2024-03-18",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 398,
+      "max_break_pct": 0.5507220459338571,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 398,
+          "break_pct": 0.5507220459338571
+        }
+      ]
+    },
+    {
+      "bar": "2024-03-19",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 399,
+      "max_break_pct": 0.5598174259395939,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 399,
+          "break_pct": 0.5598174259395939
+        }
+      ]
+    },
+    {
+      "bar": "2024-03-20",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 400,
+      "max_break_pct": 0.5802619084303654,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 400,
+          "break_pct": 0.5802619084303654
+        }
+      ]
+    },
+    {
+      "bar": "2024-03-21",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 401,
+      "max_break_pct": 0.6022357026035171,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 401,
+          "break_pct": 0.6022357026035171
+        }
+      ]
+    },
+    {
+      "bar": "2024-03-22",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 402,
+      "max_break_pct": 0.5825961209982092,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 402,
+          "break_pct": 0.5825961209982092
+        }
+      ]
+    },
+    {
+      "bar": "2024-03-25",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 403,
+      "max_break_pct": 0.5681079050598673,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 403,
+          "break_pct": 0.5681079050598673
+        }
+      ]
+    },
+    {
+      "bar": "2024-03-26",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 404,
+      "max_break_pct": 0.5754325031175845,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 404,
+          "break_pct": 0.5754325031175845
+        }
+      ]
+    },
+    {
+      "bar": "2024-03-27",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 405,
+      "max_break_pct": 0.605938246676649,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 405,
+          "break_pct": 0.605938246676649
+        }
+      ]
+    },
+    {
+      "bar": "2024-03-28",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 406,
+      "max_break_pct": 0.6122164735832638,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 406,
+          "break_pct": 0.6122164735832638
+        }
+      ]
+    },
+    {
+      "bar": "2024-04-01",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 407,
+      "max_break_pct": 0.601269821540961,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 407,
+          "break_pct": 0.601269821540961
+        }
+      ]
+    },
+    {
+      "bar": "2024-04-02",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 408,
+      "max_break_pct": 0.6006259008325904,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 408,
+          "break_pct": 0.6006259008325904
+        }
+      ]
+    },
+    {
+      "bar": "2024-04-03",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 409,
+      "max_break_pct": 0.596118455873995,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 409,
+          "break_pct": 0.596118455873995
+        }
+      ]
+    },
+    {
+      "bar": "2024-04-04",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 410,
+      "max_break_pct": 0.5747885824092139,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 410,
+          "break_pct": 0.5747885824092139
+        }
+      ]
+    },
+    {
+      "bar": "2024-04-05",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 411,
+      "max_break_pct": 0.5892767983475556,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 411,
+          "break_pct": 0.5892767983475556
+        }
+      ]
+    },
+    {
+      "bar": "2024-04-08",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 412,
+      "max_break_pct": 0.5975672774678291,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 412,
+          "break_pct": 0.5975672774678291
+        }
+      ]
+    },
+    {
+      "bar": "2024-04-09",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 413,
+      "max_break_pct": 0.5868620956911655,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 413,
+          "break_pct": 0.5868620956911655
+        }
+      ]
+    },
+    {
+      "bar": "2024-04-10",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 414,
+      "max_break_pct": 0.5733397608153797,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 414,
+          "break_pct": 0.5733397608153797
+        }
+      ]
+    },
+    {
+      "bar": "2024-04-11",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 415,
+      "max_break_pct": 0.5730178004611944,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 415,
+          "break_pct": 0.5730178004611944
+        }
+      ]
+    },
+    {
+      "bar": "2024-04-12",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 416,
+      "max_break_pct": 0.4712783285386159,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 416,
+          "break_pct": 0.4712783285386159
+        }
+      ]
+    },
+    {
+      "bar": "2024-04-15",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 417,
+      "max_break_pct": 0.47208322942407926,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 417,
+          "break_pct": 0.47208322942407926
+        }
+      ]
+    },
+    {
+      "bar": "2024-04-16",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 418,
+      "max_break_pct": 0.45526080091789367,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 418,
+          "break_pct": 0.45526080091789367
+        }
+      ]
+    },
+    {
+      "bar": "2024-04-17",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 419,
+      "max_break_pct": 0.4494655145425569,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 419,
+          "break_pct": 0.4494655145425569
+        }
+      ]
+    },
+    {
+      "bar": "2024-04-18",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 420,
+      "max_break_pct": 0.45888285490247904,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 420,
+          "break_pct": 0.45888285490247904
+        }
+      ]
+    },
+    {
+      "bar": "2024-04-19",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 421,
+      "max_break_pct": 0.4955058451910655,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 421,
+          "break_pct": 0.4955058451910655
+        }
+      ]
+    },
+    {
+      "bar": "2024-04-22",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 422,
+      "max_break_pct": 0.5245627671562955,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 422,
+          "break_pct": 0.5245627671562955
+        }
+      ]
+    },
+    {
+      "bar": "2024-04-23",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 423,
+      "max_break_pct": 0.5465365613294472,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 423,
+          "break_pct": 0.5465365613294472
+        }
+      ]
+    },
+    {
+      "bar": "2024-04-24",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 424,
+      "max_break_pct": 0.5541026296528037,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 424,
+          "break_pct": 0.5541026296528037
+        }
+      ]
+    },
+    {
+      "bar": "2024-04-25",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 425,
+      "max_break_pct": 0.5564368422206476,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 425,
+          "break_pct": 0.5564368422206476
+        }
+      ]
+    },
+    {
+      "bar": "2024-04-26",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 426,
+      "max_break_pct": 0.5574027232832037,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 426,
+          "break_pct": 0.5574027232832037
+        }
+      ]
+    },
+    {
+      "bar": "2024-04-29",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 427,
+      "max_break_pct": 0.5557124314237305,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 427,
+          "break_pct": 0.5557124314237305
+        }
+      ]
+    },
+    {
+      "bar": "2024-04-30",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 428,
+      "max_break_pct": 0.5433169577875936,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 428,
+          "break_pct": 0.5433169577875936
+        }
+      ]
+    },
+    {
+      "bar": "2024-05-01",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 429,
+      "max_break_pct": 0.5442828388501497,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 429,
+          "break_pct": 0.5442828388501497
+        }
+      ]
+    },
+    {
+      "bar": "2024-05-02",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 430,
+      "max_break_pct": 0.5426730370792228,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 430,
+          "break_pct": 0.5426730370792228
+        }
+      ]
+    },
+    {
+      "bar": "2024-05-03",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 431,
+      "max_break_pct": 0.5334166768963932,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 431,
+          "break_pct": 0.5334166768963932
+        }
+      ]
+    },
+    {
+      "bar": "2024-05-06",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 432,
+      "max_break_pct": 0.5454097000897985,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 432,
+          "break_pct": 0.5454097000897985
+        }
+      ]
+    },
+    {
+      "bar": "2024-05-07",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 433,
+      "max_break_pct": 0.5433974478761399,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 433,
+          "break_pct": 0.5433974478761399
+        }
+      ]
+    },
+    {
+      "bar": "2024-05-08",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 434,
+      "max_break_pct": 0.5747885824092139,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 434,
+          "break_pct": 0.5747885824092139
+        }
+      ]
+    },
+    {
+      "bar": "2024-05-09",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 435,
+      "max_break_pct": 0.5896792487902875,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 435,
+          "break_pct": 0.5896792487902875
+        }
+      ]
+    },
+    {
+      "bar": "2024-05-10",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 436,
+      "max_break_pct": 0.5999014900356732,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 436,
+          "break_pct": 0.5999014900356732
+        }
+      ]
+    },
+    {
+      "bar": "2024-05-13",
+      "n_ob_events": 4,
+      "n_qualifying": 1,
+      "min_rank": 3,
+      "min_age_bars": 437,
+      "max_break_pct": 0.5995795296814876,
+      "events": [
+        {
+          "rank": 3,
+          "age_bars": 437,
+          "break_pct": 0.5995795296814876
+        }
+      ]
+    },
+    {
+      "bar": "2024-05-14",
+      "n_ob_events": 5,
+      "n_qualifying": 1,
+      "min_rank": 4,
+      "min_age_bars": 438,
+      "max_break_pct": 0.6219557742973713,
+      "events": [
+        {
+          "rank": 4,
+          "age_bars": 438,
+          "break_pct": 0.6219557742973713
+        }
+      ]
+    },
+    {
+      "bar": "2024-05-15",
+      "n_ob_events": 5,
+      "n_qualifying": 1,
+      "min_rank": 4,
+      "min_age_bars": 439,
+      "max_break_pct": 0.626785179610152,
+      "events": [
+        {
+          "rank": 4,
+          "age_bars": 439,
+          "break_pct": 0.626785179610152
+        }
+      ]
+    },
+    {
+      "bar": "2024-05-16",
+      "n_ob_events": 5,
+      "n_qualifying": 1,
+      "min_rank": 4,
+      "min_age_bars": 440,
+      "max_break_pct": 0.6296828227978203,
+      "events": [
+        {
+          "rank": 4,
+          "age_bars": 440,
+          "break_pct": 0.6296828227978203
+        }
+      ]
+    },
+    {
+      "bar": "2024-05-17",
+      "n_ob_events": 5,
+      "n_qualifying": 1,
+      "min_rank": 4,
+      "min_age_bars": 441,
+      "max_break_pct": 0.6483565233405719,
+      "events": [
+        {
+          "rank": 4,
+          "age_bars": 441,
+          "break_pct": 0.6483565233405719
+        }
+      ]
+    },
+    {
+      "bar": "2024-05-20",
+      "n_ob_events": 5,
+      "n_qualifying": 1,
+      "min_rank": 4,
+      "min_age_bars": 442,
+      "max_break_pct": 0.5742251517893896,
+      "events": [
+        {
+          "rank": 4,
+          "age_bars": 442,
+          "break_pct": 0.5742251517893896
+        }
+      ]
+    },
+    {
+      "bar": "2024-05-21",
+      "n_ob_events": 5,
+      "n_qualifying": 1,
+      "min_rank": 4,
+      "min_age_bars": 443,
+      "max_break_pct": 0.605938246676649,
+      "events": [
+        {
+          "rank": 4,
+          "age_bars": 443,
+          "break_pct": 0.605938246676649
+        }
+      ]
+    },
+    {
+      "bar": "2024-05-22",
+      "n_ob_events": 5,
+      "n_qualifying": 1,
+      "min_rank": 4,
+      "min_age_bars": 444,
+      "max_break_pct": 0.5961989459625413,
+      "events": [
+        {
+          "rank": 4,
+          "age_bars": 444,
+          "break_pct": 0.5961989459625413
+        }
+      ]
+    },
+    {
+      "bar": "2024-05-23",
+      "n_ob_events": 5,
+      "n_qualifying": 1,
+      "min_rank": 4,
+      "min_age_bars": 445,
+      "max_break_pct": 0.5850108236545994,
+      "events": [
+        {
+          "rank": 4,
+          "age_bars": 445,
+          "break_pct": 0.5850108236545994
+        }
+      ]
+    },
+    {
+      "bar": "2024-05-24",
+      "n_ob_events": 5,
+      "n_qualifying": 1,
+      "min_rank": 4,
+      "min_age_bars": 446,
+      "max_break_pct": 0.6155165672136639,
+      "events": [
+        {
+          "rank": 4,
+          "age_bars": 446,
+          "break_pct": 0.6155165672136639
+        }
+      ]
+    },
+    {
+      "bar": "2024-05-28",
+      "n_ob_events": 5,
+      "n_qualifying": 1,
+      "min_rank": 4,
+      "min_age_bars": 447,
+      "max_break_pct": 0.6057772664995562,
+      "events": [
+        {
+          "rank": 4,
+          "age_bars": 447,
+          "break_pct": 0.6057772664995562
+        }
+      ]
+    },
+    {
+      "bar": "2024-05-29",
+      "n_ob_events": 5,
+      "n_qualifying": 1,
+      "min_rank": 4,
+      "min_age_bars": 448,
+      "max_break_pct": 0.5945891441916146,
+      "events": [
+        {
+          "rank": 4,
+          "age_bars": 448,
+          "break_pct": 0.5945891441916146
+        }
+      ]
+    },
+    {
+      "bar": "2024-05-30",
+      "n_ob_events": 5,
+      "n_qualifying": 1,
+      "min_rank": 4,
+      "min_age_bars": 449,
+      "max_break_pct": 0.6044089349942685,
+      "events": [
+        {
+          "rank": 4,
+          "age_bars": 449,
+          "break_pct": 0.6044089349942685
+        }
+      ]
+    },
+    {
+      "bar": "2024-05-31",
+      "n_ob_events": 5,
+      "n_qualifying": 1,
+      "min_rank": 4,
+      "min_age_bars": 450,
+      "max_break_pct": 0.6309706642145617,
+      "events": [
+        {
+          "rank": 4,
+          "age_bars": 450,
+          "break_pct": 0.6309706642145617
+        }
+      ]
+    },
+    {
+      "bar": "2024-06-03",
+      "n_ob_events": 5,
+      "n_qualifying": 1,
+      "min_rank": 4,
+      "min_age_bars": 451,
+      "max_break_pct": 0.624450967042308,
+      "events": [
+        {
+          "rank": 4,
+          "age_bars": 451,
+          "break_pct": 0.624450967042308
+        }
+      ]
+    },
+    {
+      "bar": "2024-06-04",
+      "n_ob_events": 5,
+      "n_qualifying": 1,
+      "min_rank": 4,
+      "min_age_bars": 452,
+      "max_break_pct": 0.6030406034889805,
+      "events": [
+        {
+          "rank": 4,
+          "age_bars": 452,
+          "break_pct": 0.6030406034889805
+        }
+      ]
+    },
+    {
+      "bar": "2024-06-05",
+      "n_ob_events": 5,
+      "n_qualifying": 1,
+      "min_rank": 4,
+      "min_age_bars": 453,
+      "max_break_pct": 0.5877474866651752,
+      "events": [
+        {
+          "rank": 4,
+          "age_bars": 453,
+          "break_pct": 0.5877474866651752
+        }
+      ]
+    },
+    {
+      "bar": "2024-06-06",
+      "n_ob_events": 5,
+      "n_qualifying": 1,
+      "min_rank": 4,
+      "min_age_bars": 454,
+      "max_break_pct": 0.5849303335660532,
+      "events": [
+        {
+          "rank": 4,
+          "age_bars": 454,
+          "break_pct": 0.5849303335660532
+        }
+      ]
+    },
+    {
+      "bar": "2024-06-07",
+      "n_ob_events": 5,
+      "n_qualifying": 1,
+      "min_rank": 4,
+      "min_age_bars": 455,
+      "max_break_pct": 0.6093993204841416,
+      "events": [
+        {
+          "rank": 4,
+          "age_bars": 455,
+          "break_pct": 0.6093993204841416
+        }
+      ]
+    },
+    {
+      "bar": "2024-06-10",
+      "n_ob_events": 5,
+      "n_qualifying": 1,
+      "min_rank": 4,
+      "min_age_bars": 456,
+      "max_break_pct": 0.6066626574735661,
+      "events": [
+        {
+          "rank": 4,
+          "age_bars": 456,
+          "break_pct": 0.6066626574735661
+        }
+      ]
+    },
+    {
+      "bar": "2024-06-11",
+      "n_ob_events": 5,
+      "n_qualifying": 1,
+      "min_rank": 4,
+      "min_age_bars": 457,
+      "max_break_pct": 0.5644053609867357,
+      "events": [
+        {
+          "rank": 4,
+          "age_bars": 457,
+          "break_pct": 0.5644053609867357
+        }
+      ]
+    },
+    {
+      "bar": "2024-06-12",
+      "n_ob_events": 5,
+      "n_qualifying": 1,
+      "min_rank": 4,
+      "min_age_bars": 458,
+      "max_break_pct": 0.5416266659281204,
+      "events": [
+        {
+          "rank": 4,
+          "age_bars": 458,
+          "break_pct": 0.5416266659281204
+        }
+      ]
+    },
+    {
+      "bar": "2024-06-13",
+      "n_ob_events": 5,
+      "n_qualifying": 1,
+      "min_rank": 4,
+      "min_age_bars": 459,
+      "max_break_pct": 0.5587710547884915,
+      "events": [
+        {
+          "rank": 4,
+          "age_bars": 459,
+          "break_pct": 0.5587710547884915
+        }
+      ]
+    },
+    {
+      "bar": "2024-06-14",
+      "n_ob_events": 5,
+      "n_qualifying": 1,
+      "min_rank": 4,
+      "min_age_bars": 460,
+      "max_break_pct": 0.5597369358510477,
+      "events": [
+        {
+          "rank": 4,
+          "age_bars": 460,
+          "break_pct": 0.5597369358510477
+        }
+      ]
+    },
+    {
+      "bar": "2024-06-17",
+      "n_ob_events": 5,
+      "n_qualifying": 1,
+      "min_rank": 4,
+      "min_age_bars": 461,
+      "max_break_pct": 0.5693957464766088,
+      "events": [
+        {
+          "rank": 4,
+          "age_bars": 461,
+          "break_pct": 0.5693957464766088
+        }
+      ]
+    },
+    {
+      "bar": "2024-06-18",
+      "n_ob_events": 5,
+      "n_qualifying": 1,
+      "min_rank": 4,
+      "min_age_bars": 462,
+      "max_break_pct": 0.5856547443629703,
+      "events": [
+        {
+          "rank": 4,
+          "age_bars": 462,
+          "break_pct": 0.5856547443629703
+        }
+      ]
+    },
+    {
+      "bar": "2024-06-20",
+      "n_ob_events": 5,
+      "n_qualifying": 1,
+      "min_rank": 4,
+      "min_age_bars": 463,
+      "max_break_pct": 0.5990965891502096,
+      "events": [
+        {
+          "rank": 4,
+          "age_bars": 463,
+          "break_pct": 0.5990965891502096
+        }
+      ]
+    },
+    {
+      "bar": "2024-06-21",
+      "n_ob_events": 5,
+      "n_qualifying": 1,
+      "min_rank": 4,
+      "min_age_bars": 464,
+      "max_break_pct": 0.5800204381647264,
+      "events": [
+        {
+          "rank": 4,
+          "age_bars": 464,
+          "break_pct": 0.5800204381647264
+        }
+      ]
+    },
+    {
+      "bar": "2024-06-24",
+      "n_ob_events": 5,
+      "n_qualifying": 1,
+      "min_rank": 4,
+      "min_age_bars": 465,
+      "max_break_pct": 0.6007868810096829,
+      "events": [
+        {
+          "rank": 4,
+          "age_bars": 465,
+          "break_pct": 0.6007868810096829
+        }
+      ]
+    },
+    {
+      "bar": "2024-06-25",
+      "n_ob_events": 5,
+      "n_qualifying": 1,
+      "min_rank": 4,
+      "min_age_bars": 466,
+      "max_break_pct": 0.594267183837429,
+      "events": [
+        {
+          "rank": 4,
+          "age_bars": 466,
+          "break_pct": 0.594267183837429
+        }
+      ]
+    },
+    {
+      "bar": "2024-06-26",
+      "n_ob_events": 5,
+      "n_qualifying": 1,
+      "min_rank": 4,
+      "min_age_bars": 467,
+      "max_break_pct": 0.5891158181704631,
+      "events": [
+        {
+          "rank": 4,
+          "age_bars": 467,
+          "break_pct": 0.5891158181704631
+        }
+      ]
+    },
+    {
+      "bar": "2024-06-27",
+      "n_ob_events": 5,
+      "n_qualifying": 1,
+      "min_rank": 4,
+      "min_age_bars": 468,
+      "max_break_pct": 0.6031210935775267,
+      "events": [
+        {
+          "rank": 4,
+          "age_bars": 468,
+          "break_pct": 0.6031210935775267
+        }
+      ]
+    },
+    {
+      "bar": "2024-06-28",
+      "n_ob_events": 5,
+      "n_qualifying": 1,
+      "min_rank": 4,
+      "min_age_bars": 469,
+      "max_break_pct": 0.6279925309383471,
+      "events": [
+        {
+          "rank": 4,
+          "age_bars": 469,
+          "break_pct": 0.6279925309383471
+        }
+      ]
+    }
+  ]
+}
