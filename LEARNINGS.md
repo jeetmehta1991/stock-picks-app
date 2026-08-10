@@ -5793,3 +5793,24 @@ figure off by an order of magnitude.
 dimension and does not belong in the denominator. **Rule: the denominator required by CHECKLIST
 #182 must be COMPUTED from a parameter inventory, not counted by hand.** Hand-counting reintroduces
 the error the rule exists to prevent.
+
+### L369
+**I narrowed a band without a stated rule, inside the very table built to prevent that.** B1507.
+Owner: *"why only 50,200 bands for p6? should be more."* Correct. `compute_ema_sma` emits spans
+**9, 20, 21, 50, 200** (READ technical.py:750, pairs (9,21)/(20,50)/(50,200)); I banded only
+[50, 200] and silently dropped three. The implicit reasoning - that 9/20/21 are short-horizon and
+weak as trend filters - may well be right, but **an economic pre-judgement is not a derivation, and
+exclusion must be a MEASURED result.** This is a #165 violation committed while building the
+artifact whose purpose is to make band derivation explicit, which is the notable part: a template
+does not enforce itself unless something checks it. Band widened to all 5 emitted spans.
+
+### L370
+**Coverage-of-factorial must be COMPUTED and displayed, not left to prose.** B1507. Owner:
+*"why only 40 combinations - should be alot more on factorial."* The full factorial across the 5
+applicable producers is **4 x 2 x 4 x 5 x 5 = 800**; I ran **40 = 5%**, because only the
+subset-safe subspace (P2 x P3 x P4) grades free from the cube while the other 760 need engine
+resimulation. That ratio was inferable from Table A but never stated, so "40 combinations" read as
+thorough. `producer_variant_table.py` now computes and prints FULL FACTORIAL, combinations run,
+percent covered, and the free-vs-resim split. **Rule: any grid result must report its coverage of
+the full factorial alongside the pass count** - a denominator on combinations, the same way #182
+requires one on producers.

@@ -9880,3 +9880,29 @@ L367: a component measurement must never be presented as a run cost. **All prior
 | **S6-B1506a** | **HIGH** | Complete the one-ticker engine timing, then re-cost P1 x P2 (8 producer configs) at 50 / 161 / 503 tickers from MEASURED engine time. Owner decision on universe follows that number, not before. |
 | **S6-B1506b** | MED | Extend `SPECS` in `producer_variant_table.py` as each new strategy enters optimisation - every row must cite a source line, never inference. |
 | S6-B1505a/b | HIGH | (carried) test-universe policy; engine-resim approval - both now gated on S6-B1506a's measured number. |
+
+---
+
+## B1507 (2026-08-10) - owner challenge on bands: P6 widened, factorial coverage now computed
+
+**OWNER CHALLENGE, 4 parts. 3 land, 1 premise does not.**
+
+1. **P5 no band -> CORRECT, and it needs an owner decision.** The break test is `close > top`, a
+   strict inequality with NO parameter (READ smc_ict.py). Giving it a band means ADDING a margin
+   parameter = NEW-GATE class. This is the `BREAK_PCT_MAX` I was corrected for inventing at B1502.
+   **ASKING per `feedback_ask_before_adding_gates_vs_threshold_only`.**
+2. **P2 no band -> premise does not hold.** `ob()` takes exactly ONE tunable parameter,
+   `close_mitigation: bool` (READ smc.py:376-381). `[False, True]` IS the exhaustive space.
+3. **P6 band too narrow -> CORRECT, my miss (L369).** Producer emits spans **9, 20, 21, 50, 200**;
+   I banded only [50, 200] with no stated rule. Widened to all 5.
+4. **Only 40 combinations -> CORRECT (L370).** Full factorial = 4 x 2 x 4 x 5 x 5 = **800**. I ran
+   **40 = 5%** - the subset-safe subspace that grades free. The other **760 need engine resim**.
+
+`producer_variant_table.py` now COMPUTES and prints full factorial, combinations run, percent
+covered, and the free-vs-resim split, so under-coverage cannot hide in prose again.
+
+| ticket | pri | item |
+|---|---|---|
+| **S6-B1507a** | **HIGH** | **OWNER DECISION: add a break-margin parameter to P5?** NEW-GATE class. Instrumentation says it is the cleanest discriminator measured (real retests 0.5-2.7pct vs latches 7.5-60pct), but it changes the strategy's thesis surface. |
+| **S6-B1507b** | **HIGH** | **OWNER DECISION: add EMA spans 100/250?** They do NOT exist in `compute_ema_sma` - requires a producer edit, NEW-GATE class. |
+| **S6-B1507c** | MED | P6 band widened 2 -> 5 raises the factorial 320 -> 800 and the resim subspace 280 -> 760. Re-cost S6-B1506a against the widened grid once engine timing lands. |
