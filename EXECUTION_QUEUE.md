@@ -10443,3 +10443,34 @@ gradient.
 | **S6-B1525a** | **CLOSED** | P1 = 4 live values. Factorial 4,000, 20 engine runs, unchanged. |
 | **S6-B1526a** | MED | The 20 -> 30 cliff means the interesting region is 20-30, unsampled. Consider adding 24/26 to P1 **only with owner approval** - it widens the band and the run count (5 values -> 25 engine runs). NOT doing this unilaterally. |
 | **S6-B1520b** | **UNBLOCKED** | Per-rung sweep runner: 20 configs per ticker batch, monitor armed in the launch turn, batches starting at 5 tickers per owner directive. |
+
+---
+
+## B1527 (2026-08-10) - hourly monitor retired; all jobs idle, sweep awaiting owner go
+
+**HOURLY RUN REPORT.** EXECUTED: **0 python processes.** All jobs terminal:
+- pin proof short-window (b1520): `SW=20 EXIT=0`, `SW=50 EXIT=0`, `PIN_PROOF_DONE`
+- pin proof full-window (b1522): `SW=20 EXIT=0`, `SW=50 EXIT=0`, `PIN2_DONE`
+- swing-band probe (b1526): COMPLETE, 4 configs measured
+- universe ladder: rungs `[5]`, HALTED at B1518 by design; S2 trip known since B1516
+- parameter sweep: **NOT LAUNCHED** - S6-B1520b unblocked, awaiting owner go
+
+**No PushNotification sent** - there is no active run, and an hourly "nothing running" is precisely
+the noise that trains both parties to ignore alerts (the L385 decay).
+
+**`2082b848` RETIRED per its own rule #5** (nothing running, nothing queued). This is CORRECT and
+not a coverage gap: plan SS9 item 13 makes monitor-arming a LAUNCH-TURN GATE, so the next run arms
+its own. A monitor idling against no job is not coverage - it is habituation.
+
+**RE-ARM OBLIGATION, stated so it cannot be lost:** the next launch (per-rung sweep or otherwise)
+MUST arm, in the same turn as the launch: an hourly PushNotification while active, a short-interval
+sentinel check, and CronDelete on completion. Failing to do so is the L385 miss repeating.
+
+| ticket | pri | item |
+|---|---|---|
+| **S6-B1527a** | **HIGH** | Monitor re-arm is a LAUNCH-TURN GATE (plan SS9 item 13). Verify at next launch that the cron's state-file path matches the runner's actual output (carries S6-B1521a). |
+
+**OPEN OWNER DECISIONS:** S6-B1520b (launch the per-rung sweep, 20 configs x 5 tickers first) ·
+S6-B1526a (add swing_length 24/26 to sample the 8.6x cliff - takes the sweep to 25 engine runs) ·
+S6-B1507b (EMA spans 100/250, NEW-GATE) · S6-B1509a (wire max_drawdown/calmar/deflated_sharpe) ·
+S6-B1502a (re-derive the band partition from measured holdout n).
