@@ -6049,3 +6049,23 @@ opposite of an hourly report. **Rule: "update me every hour" means a SCHEDULED r
 is active; silence is correct only when nothing is running.** Exception-only alerting and periodic
 reporting are different products and one does not substitute for the other. Hourly cron `2082b848`
 armed alongside the */13 sentinel check.
+
+### L393
+**My behavioural pin test produced a VACUOUS PASS - both fire sets were empty.** B1522. The
+replacement for the grep-level test (L391) ran two real engine runs on AAPL at `swing_length` 20 vs
+50 and compared fire sets. Result: **0 entries in BOTH**, so "FIRE SETS IDENTICAL: True" - which
+proves nothing. Cause: I chose a short window (2022-05-05..2023-05-03) for speed, and
+`smc_breaker_block_long`'s six AAPL entries all fall on 2023-07-18 or later, **entirely outside it**.
+**Rule: before running a differential test, verify the SUBJECT ACTUALLY OCCURS in the chosen window
+- an empty-vs-empty comparison reports agreement and reads as a pass.** Same unknown-as-pass class
+as L322/L326. Detection signal: a differential assertion where both sides have n=0.
+
+### L394
+**The same run DID prove the knob works - at the aggregate level.** B1522. While
+`smc_breaker_block_long` fired 0 times in both runs, the cubes differ overall: **sw=20 -> 13
+strategies / 76 entries; sw=50 -> 16 strategies / 95 entries.** That difference is impossible
+unless `SMC_SWING_LENGTH` reached the engine and changed producer output that strategies consume.
+So L387's blocker is **CLOSED at the engine level** - and separately still open for this specific
+strategy, pending the full-window rerun. **Rule: when a targeted test is vacuous, check whether the
+same artifact answers the question at a coarser grain before re-running blind** - the evidence was
+already in the cube I was about to discard.

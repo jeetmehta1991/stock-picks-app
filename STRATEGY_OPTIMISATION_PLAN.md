@@ -567,6 +567,8 @@ on `smc_breaker_block_long`, the first strategy through - the L-number is the in
 | 18 | **The verdict MUST carry its denominator** - "N of M combinations across X of Y producers". Computed, never hand-counted. | CHECKLIST #182; L368 - hand-counting reproduced the error the rule exists to prevent. |
 | 19 | **A small-universe PASS is an ARTIFACT until entries/ticker converges to the baseline rate.** | L382 - rung 5 passed all 6 gates at **26.63x** the R5 entry rate. |
 | 20 | **A pin test must be BEHAVIOURAL, not textual.** Set the non-default, RUN the engine, assert the FIRE SET changes. | B1520 - my first "pin test" grepped source strings. That is the grep-found trap wearing a test's clothes. |
+| 21 | **Before any differential test, assert the SUBJECT OCCURS in the chosen window.** A differential with n=0 on BOTH sides reports agreement and reads as a pass. | L393 - the behavioural pin test compared two EMPTY fire sets, because the short window excluded all six of the strategy's fire dates. |
+| 22 | **When a targeted test comes back vacuous, check whether the same artifact answers at a coarser grain before re-running.** | L394 - the cubes I was about to discard already proved the knob works (13/76 vs 16/95 entries). |
 
 ### 9.5 Standing rules that bind every step
 

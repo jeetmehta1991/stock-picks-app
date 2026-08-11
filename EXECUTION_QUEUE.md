@@ -10293,3 +10293,30 @@ item 13. No period is uncovered.
 | ticket | pri | item |
 |---|---|---|
 | S6-B1521a | LOW | When the per-rung sweep launches, confirm `2082b848` picks up its state file - it currently globs `output_audit/b152*_sweep_state.json`, which must match the runner's actual output path. |
+
+---
+
+## B1522 (2026-08-10) - hourly report + pin proof: vacuous at strategy level, PROVEN at engine level
+
+**HOURLY RUN REPORT (cron `2082b848`, owner standing directive).** At tick: pin-proof runs 1 and 2
+COMPLETE (`SW=20 EXIT=0`, `SW=50 EXIT=0`), sim-days 252/251 each, 9.1 min and 6.8 min. Ladder
+rungs = [5] (halted B1518 by design). Sweep: not launched, blocked on S6-B1520a. PushNotification
+SENT with the result - not exception-only.
+
+**PIN PROOF, HONESTLY: VACUOUS at the strategy level (L393).** `smc_breaker_block_long` fired **0**
+entries in BOTH runs, so "fire sets identical" compared two empty sets and proves nothing. Cause:
+the short window (2022-05-05..2023-05-03) EXCLUDES all six of its AAPL entry dates, which start
+2023-07-18. An empty-vs-empty differential reports agreement and reads as a pass.
+
+**BUT PROVEN AT THE ENGINE LEVEL (L394):** the same cubes differ overall - **sw=20 -> 13 strategies
+/ 76 entries; sw=50 -> 16 strategies / 95 entries**. That is impossible unless `SMC_SWING_LENGTH`
+reached the engine and changed consumed producer output. **L387's blocker is CLOSED at engine
+level.**
+
+**FULL-WINDOW RERUN LAUNCHED** (2022-05-05..2026-05-05, ~43 min x2) to close the strategy-level
+question. Covers all six AAPL fire dates.
+
+| ticket | pri | item |
+|---|---|---|
+| **S6-B1520a** | **PARTIAL** | Engine-level plumbing PROVEN (76 vs 95 entries). Strategy-level fire-set diff pending the full-window rerun. |
+| **S6-B1522a** | **HIGH** | Add to plan SS9 as item 21: **before any differential test, assert the SUBJECT OCCURS in the window** - a differential with n=0 on both sides is a vacuous pass (L393). |
