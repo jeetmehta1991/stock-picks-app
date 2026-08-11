@@ -13640,12 +13640,24 @@ def test_b1510_producer_artifact_standard():
 
 
 def test_b1519_optimisation_knobs_reach_the_engine():
-    """S6-B1518b / L387: prove P1 and P6 reach the ENGINE, not just config.
+    """S6-B1518b / L387: REGRESSION GUARD on the P1/P6 engine plumbing.
 
-    The B1500 sandbox called compute_smc_signals DIRECTLY with arguments, which
-    proved only that the function has a parameter. The engine called it as
-    compute_smc_signals(df, ticker=ticker) - so a 20-config sweep would have
-    produced 20 IDENTICAL cubes. This test pins the CALL PATH.
+    SCOPE, stated honestly (L391): this test is a source-level guard. It catches
+    the plumbing being REMOVED; it does NOT by itself prove engine behaviour
+    changes - asserting a token appears at a call site is the grep-found trap.
+
+    The BEHAVIOURAL proof is a recorded one-time verification (B1525, CHECKLIST
+    #124 evidence-artifact pattern), not re-run here because it costs ~30 min of
+    engine time per arm:
+
+        AAPL, 2022-05-05..2026-05-05, smc_breaker_block_long
+        SMC_SWING_LENGTH=20 -> 8 entries
+        SMC_SWING_LENGTH=50 -> 0 entries
+        fire sets identical: False | shared: 0
+        aggregate across 49 strategies: 384 vs 409 entries
+
+    Re-run via scripts/ with SMC_SWING_LENGTH set, comparing
+    output_pin2_sw{20,50}/trade_exit_detail.csv, if this guard ever fails.
     """
     import os as _os
     import re as _re

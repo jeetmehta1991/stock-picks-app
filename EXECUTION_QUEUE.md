@@ -10373,3 +10373,38 @@ without values forces the reader back to the source to learn what is actually be
 | ticket | pri | item |
 |---|---|---|
 | S6-B1524a | LOW | Apply the same production + band-VALUES columns to every future SPEC as strategies are added (S6-B1510a), so no strategy reports band sizes alone. |
+
+---
+
+## B1525 (2026-08-10) - S6-B1520a CLOSED: plumbing proven behaviourally; swing_length=50 kills the strategy
+
+**HOURLY RUN REPORT:** 0 python processes - both pin-proof arms COMPLETE (`SW=20 EXIT=0`,
+`SW=50 EXIT=0`, `PIN2_DONE`). Ladder: rung [5] only, halted B1518 by design. Sweep: not launched.
+PushNotification SENT with the result.
+
+**S6-B1520a CLOSED - BEHAVIOURAL PROOF (L395).** AAPL, full locked window, `smc_breaker_block_long`:
+
+| `SMC_SWING_LENGTH` | entries | |
+|---|---|---|
+| 20 (production) | **8** | |
+| 50 (library default) | **0** | |
+| | **fire sets identical: False, shared: 0** | aggregate 384 vs 409 entries across 49 strategies |
+
+The knob reaches the ENGINE and changes STRATEGY output - verified by artifact, not by config or
+by grep. The plumbing (B1519) is behaviourally confirmed.
+
+**THE INCIDENTAL FINDING MATTERS MORE.** `swing_length=50` is the LIBRARY DEFAULT and at that value
+this strategy fires **ZERO times over four years**. One of P1's four band values is not a
+tightening, it is an extinction. A grid summary quoting "4 swing_length values tested" would hide
+that 25pct of the axis is empty.
+
+**TEST SCOPE CORRECTED (L396).** `test_b1519_...` remains a source-level REGRESSION GUARD - it
+catches the plumbing being REMOVED - and its docstring now states plainly that it does NOT prove
+engine behaviour, citing this recorded verification with its numbers and the reproduction command
+(CHECKLIST #124 evidence-artifact pattern). The behavioural check costs ~30 min per arm and cannot
+live in the pyramid; silence about that scope is how a guard gets mistaken for a proof.
+
+| ticket | pri | item |
+|---|---|---|
+| **S6-B1525a** | **HIGH** | P1 band is effectively **3 live values + 1 extinction**. Report `swing_length=50` as a zero-fire result rather than averaging it into the grid; confirm whether 30 also collapses before the sweep is costed. |
+| **S6-B1520b** | **UNBLOCKED** | Per-rung sweep runner: 20 configs (P1 4 x P6 5) per ticker batch, monitor armed in the launch turn, all metrics per config. Owner directed batches starting at 5 tickers. |

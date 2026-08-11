@@ -6069,3 +6069,25 @@ So L387's blocker is **CLOSED at the engine level** - and separately still open 
 strategy, pending the full-window rerun. **Rule: when a targeted test is vacuous, check whether the
 same artifact answers the question at a coarser grain before re-running blind** - the evidence was
 already in the cube I was about to discard.
+
+### L395
+**Behavioural proof landed: the plumbing works, and `swing_length=50` KILLS the strategy.** B1525.
+The full-window pin proof (AAPL, 2022-05-05..2026-05-05) closes S6-B1520a:
+`SMC_SWING_LENGTH=20` -> **8** `smc_breaker_block_long` entries; `=50` -> **0**; fire sets NOT
+identical, **zero overlap**; aggregate across 49 strategies 384 vs 409 entries. The knob reaches
+the engine and changes strategy output - verified by artifact, not by config or grep.
+
+**The incidental finding matters more than the proof.** `swing_length=50` is the LIBRARY DEFAULT
+(production overrides to 20), and at 50 this strategy fires **zero times over four years**. So one
+of the four values in P1's band is not a tightening - it is an extinction. **Rule: when a band
+contains a value that zeroes the subject, that is a RESULT to report, not a cell to average over**;
+a grid summary quoting "4 swing_length values tested" would hide that 25pct of the axis is empty.
+
+### L396
+**A test that cannot afford its own evidence must CITE the evidence, not fake it.** B1525. The
+behavioural check costs ~30 min of engine time per arm, so it cannot live in the pyramid. Rather
+than leave the source-level guard overclaiming (L391), its docstring now states its SCOPE - it
+catches the plumbing being REMOVED, it does not prove behaviour - and cites the recorded one-time
+verification with its numbers and the command to reproduce it. **Rule: when a proof is too
+expensive to automate, record it as a linked evidence artifact (CHECKLIST #124) and make the cheap
+guard declare what it does NOT cover.** Silence about scope is how a guard gets mistaken for a proof.
