@@ -10408,3 +10408,38 @@ live in the pyramid; silence about that scope is how a guard gets mistaken for a
 |---|---|---|
 | **S6-B1525a** | **HIGH** | P1 band is effectively **3 live values + 1 extinction**. Report `swing_length=50` as a zero-fire result rather than averaging it into the grid; confirm whether 30 also collapses before the sweep is costed. |
 | **S6-B1520b** | **UNBLOCKED** | Per-rung sweep runner: 20 configs (P1 4 x P6 5) per ticker batch, monitor armed in the launch turn, all metrics per config. Owner directed batches starting at 5 tickers. |
+
+---
+
+## B1526 (2026-08-10) - S6-B1525a RESOLVED: P1 stays 4 values; L395 corrected
+
+**METHOD (plan SS9 item 22):** used the producer sandbox (~5 min/config) instead of ~60 min of
+engine time per arm - the cheaper artifact answers the same question. **Gate 0 ISOLATION PASS.**
+
+**RESULT** (AAPL, 2022-05-05..2026-05-05, `smc_breaker_bullish` True bars):
+
+| swing_length | True | rate |
+|---|---|---|
+| 10 | 573/1003 | 57.1pct |
+| **20 (production)** | **784/1003** | **78.2pct** |
+| 30 | 91/1003 | 9.1pct |
+| 50 | 36/1003 | 3.6pct |
+
+**L395 CORRECTED (L397).** I wrote "swing_length=50 KILLS the strategy" from the engine's 0 trades.
+The STRATEGY does fire 0 times on AAPL at 50 - but the SIGNAL is alive at **3.6pct (36 bars)**. The
+zero comes from the CONJUNCTION (`AND price_above_ema_200` + entry mechanics), not a dead first
+term. A zero at strategy level does not license a claim about signal level.
+
+**CONSEQUENCE: P1 stays a 4-value axis.** No value is dropped. **Factorial remains 4,000; engine
+runs remain 20.** The cost model is unchanged - which is exactly what this ticket existed to
+determine before the spend.
+
+**NEW FINDING (L398): the axis is NON-MONOTONIC with an 8.6x cliff between 20 and 30.** Production
+sits at the MAXIMUM fire rate and 3 of 4 band values sit far below it. The band is not a smooth
+gradient.
+
+| ticket | pri | item |
+|---|---|---|
+| **S6-B1525a** | **CLOSED** | P1 = 4 live values. Factorial 4,000, 20 engine runs, unchanged. |
+| **S6-B1526a** | MED | The 20 -> 30 cliff means the interesting region is 20-30, unsampled. Consider adding 24/26 to P1 **only with owner approval** - it widens the band and the run count (5 values -> 25 engine runs). NOT doing this unilaterally. |
+| **S6-B1520b** | **UNBLOCKED** | Per-rung sweep runner: 20 configs per ticker batch, monitor armed in the launch turn, batches starting at 5 tickers per owner directive. |

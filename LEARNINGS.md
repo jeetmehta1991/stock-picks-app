@@ -6091,3 +6091,30 @@ catches the plumbing being REMOVED, it does not prove behaviour - and cites the 
 verification with its numbers and the command to reproduce it. **Rule: when a proof is too
 expensive to automate, record it as a linked evidence artifact (CHECKLIST #124) and make the cheap
 guard declare what it does NOT cover.** Silence about scope is how a guard gets mistaken for a proof.
+
+### L397
+**CORRECTION to L395: `swing_length=50` does not kill the SIGNAL - it fires on 36 bars.** B1526,
+S6-B1525a resolved. Producer sandbox on AAPL over the locked window (Gate 0 ISOLATION PASS):
+
+| swing_length | breaker_bullish True | rate |
+|---|---|---|
+| 10 | 573/1003 | 57.1pct |
+| **20 (production)** | **784/1003** | **78.2pct** |
+| 30 | 91/1003 | 9.1pct |
+| 50 | 36/1003 | 3.6pct |
+
+L395 recorded "swing_length=50 KILLS the strategy" from the engine's 0 trades. **True for the
+STRATEGY on AAPL, but the inference that the axis is extinct was wrong** - the signal is alive at
+3.6pct and the zero comes from the CONJUNCTION (`AND price_above_ema_200` plus entry mechanics),
+not from a dead first term. **Rule: a zero at the STRATEGY level does not license a claim about the
+SIGNAL level - measure the term you are describing.** Consequence: P1 stays a 4-value axis, the
+factorial stays 4,000 and the sweep stays 20 engine runs.
+
+### L398
+**The swing_length axis is NON-MONOTONIC with an 8.6x cliff between 20 and 30.** B1526. Rates run
+57.1pct -> 78.2pct -> 9.1pct -> 3.6pct: production sits at the MAXIMUM, and the very next band
+value collapses the signal by 8.6x. So every alternative is a de-facto tightening, but the band is
+not a smooth gradient and 3 of its 4 values sit far below production. **Rule: measure a band's
+response curve before assuming rungs are evenly spaced in EFFECT** - a grid that treats 10/20/30/50
+as comparable steps is sampling one dense region and one near-empty one, and averaging across them
+is meaningless.
