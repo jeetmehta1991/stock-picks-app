@@ -10542,3 +10542,30 @@ unmeasured.**
 | **S6-B1529a** | **BLOCKER on S6-B1520b** | Measure ticker scaling properly before any sweep is costed: run the SAME config at **50 tickers**, and repeat one point twice to quantify within-condition variance. An effect must exceed that variance to count as slope. |
 | **S6-B1529b** | MED | Check whether the R5 run's own wall-clock was recorded anywhere (logs, manifests, AUDIT entries). A completed 381-ticker run is a free anchor for the curve and may already exist. |
 | **S6-B1520b** | **BLOCKED** | Sweep cannot be costed until S6-B1529a lands. |
+
+---
+
+## B1530 (2026-08-11) - S6-B1529b CLOSED (not recoverable); scaling measurement LAUNCHED
+
+**S6-B1529b CLOSED - NOT RECOVERABLE (L403).** R5's wall-clock is not recorded anywhere.
+`output_r5_rung4_chunk1` mtimes span 19:25:01..20:15:59 = 0.85 h, but the earliest file is
+`trade_log_checkpoint.csv`, which is periodically OVERWRITTEN - its mtime marks the LAST checkpoint,
+i.e. roughly the END of the sim loop. The 51 min that follow are post-processing. The sim-loop
+duration cannot be derived. An mtime bounds a run only for WRITE-ONCE artifacts.
+
+**S6-B1529a LAUNCHED.** Two runs, production config, full locked window, nested ticker sets taken
+from the R5 381 order:
+1. **50 tickers** - the informative point; the 5-381 range is entirely unmeasured
+2. **5 tickers REPEAT** - the variance control; the prior 5-ticker point must be reproduced before
+   any 50-vs-5 difference can be called a slope (L401: the 1-ticker spread was 28pct)
+
+**Monitor `70ada735` ARMED BEFORE LAUNCH** (plan SS9 item 13). It computes s/sim-day for both,
+compares against the recorded points (1 ticker 2.56 / 2.01; 5 tickers 2.54), and **projects 381
+ONLY if the 50-ticker value exceeds the measured within-condition variance**. Trips on non-zero
+exit, on death-without-output, and at 3 h overrun.
+
+| ticket | pri | item |
+|---|---|---|
+| **S6-B1529b** | **CLOSED** | R5 wall-clock NOT recoverable from artifacts (L403). |
+| **S6-B1529a** | **RUNNING** | 50-ticker + 5-ticker-repeat measurement in flight. |
+| **S6-B1520b** | **BLOCKED** | Sweep cost cannot be stated until S6-B1529a lands. |

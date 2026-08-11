@@ -6181,3 +6181,15 @@ tickers, so cost cannot be linear-in-tickers (that would imply ~265 h per run). 
 somewhere between flat and linear, and the 5-381 range is entirely unmeasured. **Rule: when
 extrapolating a cost curve, look for an EXISTING completed run at the target scale - it is a free
 upper bound and often already exists in the artifacts.**
+
+### L403
+**A checkpoint file's mtime marks the END of the sim loop, not the start - it does not bound run
+duration.** B1530, S6-B1529b. I hoped R5's wall-clock could be recovered free from artifact mtimes.
+`output_r5_rung4_chunk1` spans 19:25:01 -> 20:15:59 = **0.85 h**, but the EARLIEST file is
+`trade_log_checkpoint.csv`, which the engine writes periodically and OVERWRITES - so its mtime is
+the LAST checkpoint, roughly when the simulation ENDED. The 51 minutes that follow are
+post-processing (metrics, bootstrap CIs, report). **The sim-loop duration is not recoverable.**
+No runtime is recorded in any doc searched. **Rule: an artifact's mtime bounds a run only if the
+artifact is WRITE-ONCE; overwritten files (checkpoints, state, logs) mark the last write, and using
+their span as a duration silently measures the wrong interval.** S6-B1529b closes as
+NOT-RECOVERABLE, and the measurement still has to be made.
