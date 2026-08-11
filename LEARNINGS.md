@@ -6118,3 +6118,34 @@ not a smooth gradient and 3 of its 4 values sit far below production. **Rule: me
 response curve before assuming rungs are evenly spaced in EFFECT** - a grid that treats 10/20/30/50
 as comparable steps is sampling one dense region and one near-empty one, and averaging across them
 is meaningless.
+
+### L399
+**swing_length 20/24/26 give an IDENTICAL count - the cliff is a step, not a gradient.** B1528,
+S6-B1526a resolved. Producer sandbox, AAPL, locked window, Gate 0 ISOLATION PASS:
+
+| swing_length | breaker_bullish True | rate |
+|---|---|---|
+| 10 | 573/1003 | 57.1pct |
+| **20 (production)** | **784/1003** | **78.2pct** |
+| **24** | **784/1003** | **78.2pct** |
+| **26** | **784/1003** | **78.2pct** |
+| 30 | 91/1003 | 9.1pct |
+| 50 | 36/1003 | 3.6pct |
+
+The transition sits between **26 and 30**, and the 20-26 range is FLAT. This is consistent with the
+saturation finding (L360): when a signal is TRUE on 78pct of bars because one ancient order block
+latches, small changes in swing detection cannot move it - the latch dominates.
+
+**CAVEAT, stated rather than glossed: identical COUNTS are not identical SETS.** I measured how
+many bars are True, not WHICH. 784 at swing_length 20 and 784 at 26 could in principle be different
+bars, which would still change trades. Establishing set identity needs a per-bar diff, not a count.
+**Rule: a count-level equality claim must declare that it is count-level** - "no difference" and
+"no difference in the statistic I measured" are not the same sentence.
+
+### L400
+**The cheap probe saved a 50pct cost increase on a decision that looked reasonable.** B1528. Adding
+24 and 26 to P1 would have taken the band 4 -> 6 values and the sweep 20 -> 30 engine runs, roughly
++50pct wall-clock, to sample a region that turns out to be FLAT. Two sandbox runs at ~4.6 min each
+settled it. **Rule: when a proposed band extension would multiply an expensive run count, measure
+the region's response FIRST at producer level** - the cost ratio here was about 9 minutes against
+roughly 7 hours.

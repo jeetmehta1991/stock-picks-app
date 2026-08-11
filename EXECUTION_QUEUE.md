@@ -10474,3 +10474,39 @@ sentinel check, and CronDelete on completion. Failing to do so is the L385 miss 
 S6-B1526a (add swing_length 24/26 to sample the 8.6x cliff - takes the sweep to 25 engine runs) ·
 S6-B1507b (EMA spans 100/250, NEW-GATE) · S6-B1509a (wire max_drawdown/calmar/deflated_sharpe) ·
 S6-B1502a (re-derive the band partition from measured holdout n).
+
+---
+
+## B1528 (2026-08-11) - S6-B1526a RESOLVED: cliff is SHARP; do NOT extend the band
+
+**MONITOR DISCIPLINE:** `95997bdd` armed BEFORE launch (plan SS9 item 13), reported the verdict,
+PushNotification sent, then CronDeleted on completion. The gate worked as designed.
+
+**RESULT** (producer sandbox, AAPL, locked window, **Gate 0 ISOLATION PASS**):
+
+| swing_length | True | rate |
+|---|---|---|
+| 10 | 573/1003 | 57.1pct |
+| **20 (production)** | **784/1003** | **78.2pct** |
+| **24** | **784/1003** | **78.2pct** |
+| **26** | **784/1003** | **78.2pct** |
+| 30 | 91/1003 | 9.1pct |
+| 50 | 36/1003 | 3.6pct |
+
+**VERDICT: the cliff is SHARP.** 20/24/26 are identical at the count level; the collapse sits
+between **26 and 30**. The 20-26 region is FLAT, consistent with L360's saturation finding - a
+latched ancient order block dominates, so small swing-detection changes cannot move the signal.
+
+**RECOMMENDATION: do NOT add 24/26.** They carry no count-level information. **P1 stays 4 values,
+factorial stays 4,000, sweep stays 20 engine runs** - avoiding a ~50pct wall-clock increase
+(L400: ~9 min of probing against ~7 h of avoided run time).
+
+**CAVEAT RECORDED (L399):** identical COUNTS are not identical SETS. I measured how many bars are
+True, not which. Set identity would need a per-bar diff. "No difference" and "no difference in the
+statistic I measured" are different claims.
+
+| ticket | pri | item |
+|---|---|---|
+| **S6-B1526a** | **CLOSED** | Cliff SHARP; band NOT extended; sweep stays 20 engine runs. |
+| **S6-B1528a** | LOW | If P1 results later look anomalous, run a per-BAR set diff across swing_length 20/24/26 - count equality does not prove set equality (L399). |
+| **S6-B1520b** | **NEXT - AWAITING OWNER GO** | Per-rung sweep: 20 configs (P1 4 x P6 5) per ticker batch, monitor armed in the launch turn, batches starting at 5 tickers. |

@@ -1,0 +1,32 @@
+{
+  "ticker": "AAPL",
+  "window": [
+    "2022-05-05",
+    "2026-05-05"
+  ],
+  "production_defaults": {
+    "swing_length": 20,
+    "fvg_lookback": 5,
+    "liquidity_range_pct": 0.01,
+    "dealing_range_lookback": 50,
+    "event_recency_bars": 90
+  },
+  "results": [
+    {
+      "event_recency_bars": 90,
+      "swing_length": 24,
+      "elapsed_sec": 278.9,
+      "bars_evaluated": 1003,
+      "breaker_bullish_true": 784,
+      "fires_smc_leg": 784
+    },
+    {
+      "event_recency_bars": 90,
+      "swing_length": 26,
+      "elapsed_sec": 270.3,
+      "bars_evaluated": 1003,
+      "breaker_bullish_true": 784,
+      "fires_smc_leg": 784
+    }
+  ]
+}
