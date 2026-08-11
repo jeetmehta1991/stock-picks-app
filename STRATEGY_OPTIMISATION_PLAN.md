@@ -569,6 +569,7 @@ on `smc_breaker_block_long`, the first strategy through - the L-number is the in
 | 20 | **A pin test must be BEHAVIOURAL, not textual.** Set the non-default, RUN the engine, assert the FIRE SET changes. | B1520 - my first "pin test" grepped source strings. That is the grep-found trap wearing a test's clothes. |
 | 21 | **Before any differential test, assert the SUBJECT OCCURS in the chosen window.** A differential with n=0 on BOTH sides reports agreement and reads as a pass. | L393 - the behavioural pin test compared two EMPTY fire sets, because the short window excluded all six of the strategy's fire dates. |
 | 22 | **When a targeted test comes back vacuous, check whether the same artifact answers at a coarser grain before re-running.** | L394 - the cubes I was about to discard already proved the knob works (13/76 vs 16/95 entries). |
+| 23 | **The factorial is NEVER shown without the boolean producer formula.** Emit both from `producer_variant_table.py --factorial`, which cannot print one without the other. | B1523 owner directive - a bare "4,000 combinations" is unreadable without the formula that generates it, and invites debate about the number instead of the structure. |
 
 ### 9.5 Standing rules that bind every step
 

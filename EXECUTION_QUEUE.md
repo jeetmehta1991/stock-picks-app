@@ -10320,3 +10320,32 @@ question. Covers all six AAPL fire dates.
 |---|---|---|
 | **S6-B1520a** | **PARTIAL** | Engine-level plumbing PROVEN (76 vs 95 entries). Strategy-level fire-set diff pending the full-window rerun. |
 | **S6-B1522a** | **HIGH** | Add to plan SS9 as item 21: **before any differential test, assert the SUBJECT OCCURS in the window** - a differential with n=0 on both sides is a vacuous pass (L393). |
+
+---
+
+## B1523 (2026-08-10) - OWNER DIRECTIVE: the factorial never travels without the formula
+
+**OWNER:** *"Everytime you show factorial you need to show boolean producer formula again."*
+
+**CODIFIED AS CHECKLIST #184 + plan SS9 item 23, and MECHANISED.**
+`producer_variant_table.py --factorial` emits Section 1's boolean producer formula and the
+factorial breakdown **together, and cannot emit one without the other** - the coupling lives in the
+tool rather than in remembering. `--results` is no longer required for this mode, so there is no
+excuse to hand-type the number.
+
+**Rationale recorded:** a bare "4,000 combinations" is unreadable alone. It invites argument about
+the number instead of inspection of the structure, and it hides the FIRE-ADDING vs subset-safe
+split that determines cost. With the formula first, `20 engine runs x 200 offline = 4,000` is
+self-evident.
+
+**Anti-theatre (#136) retroactive catches:** B1513 ("8000 combinations across 26 exits?"), B1507
+("why only 40 combinations"), B1517 ("have all 4000 been accounted for") - each required
+re-deriving the parameter structure that the formula makes visible.
+
+**Also fixed this turn:** the heredoc escape defect recurred (embedded `\n` inside f-strings became
+literal newlines, breaking the file). Rewrote the block using separate `print("")` calls - third
+occurrence of this class today, so the mitigation is now structural rather than careful quoting.
+
+| ticket | pri | item |
+|---|---|---|
+| S6-B1523a | LOW | Third recurrence of the heredoc escape defect (also L364, B1510). Prefer the Write tool or a here-doc-free patch script for any block containing regex escapes or embedded newlines. |

@@ -194,7 +194,13 @@ def table_b(results: list[dict], keys: list[str]) -> list[str]:
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--strategy", required=True)
-    ap.add_argument("--results", required=True, help="grid results JSON")
+    ap.add_argument("--results", default="", help="grid results JSON")
+    # B1523 owner directive: "Everytime you show factorial you need to show
+    # boolean producer formula again." This mode emits the FORMULA and the
+    # FACTORIAL together and cannot emit one without the other - the coupling is
+    # in the tool, not in anyone remembering.
+    ap.add_argument("--factorial", action="store_true",
+                    help="print Section 1 formula + factorial breakdown; no results needed")
     ap.add_argument("--keys", default="close_mitigation,age_bars_max,tail_n")
     ap.add_argument("--out", default="")
     a = ap.parse_args()
@@ -202,6 +208,46 @@ def main() -> int:
     spec = SPECS.get(a.strategy)
     if spec is None:
         print(f"no SPEC for {a.strategy}; add one to SPECS (never infer at runtime)")
+        return 1
+    if a.factorial:
+        errs = validate_spec(spec)
+        if errs:
+            print("SPEC VALIDATION FAILED:")
+            for e in errs:
+                print(f"  {e}")
+            return 1
+        applicable = [p for p in spec["params"] if p["status"] != "N/A"]
+        fact = math.prod(len(p["band"]) for p in applicable)
+        free = math.prod(len(p["band"]) for p in applicable if p["subset_safe"])
+        runs = math.prod(len(p["band"]) for p in applicable if not p["subset_safe"])
+        print(f"# {a.strategy} - FORMULA + FACTORIAL (never shown apart)")
+        print("")
+        print("## Boolean producer formula (READ from source)")
+        print("")
+        print("```")
+        print(spec["formula"])
+        print("```")
+        print("")
+        print("## Factorial")
+        print("")
+        print("| | parameter | band | class | own engine run? |")
+        print("|---|---|---|---|---|")
+        for p in applicable:
+            cls = "subset-safe" if p["subset_safe"] else "**FIRE-ADDING**"
+            need = "no - derives offline" if p["subset_safe"] else "**YES**"
+            print(f"| {p['id']} | `{p['param']}` | {len(p['band'])} | {cls} | {need} |")
+        expr = " x ".join(str(len(p["band"])) for p in applicable)
+        print("")
+        print("```")
+        print(f"FULL FACTORIAL   {expr} = {fact}")
+        print(f"offline per run  {free}")
+        print(f"ENGINE RUNS      {runs}")
+        print(f"check            {runs} x {free} = {runs * free}")
+        print("```")
+        return 0
+
+    if not a.results:
+        print("--results is required unless --factorial is passed")
         return 1
     data = json.loads(Path(a.results).read_text())
     results = data["results"]

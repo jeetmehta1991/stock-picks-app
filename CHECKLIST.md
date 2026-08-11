@@ -2812,3 +2812,21 @@ with no stated rule - the `derivation` + `evidence` fields make that unwritable;
 clear the bar" on 2 of 6 producers - the computed denominator catches it; (3) B1500 "16 of 41
 untunable" concluded from gate expressions - Section 1's PRODUCER LAYER forces the producer read
 before any verdict.
+
+**#184 FACTORIAL NEVER TRAVELS ALONE (B1523, owner directive).** Any statement of a strategy's
+combination factorial - in chat, a doc, or a commit message - MUST be immediately preceded by that
+strategy's boolean PRODUCER formula (plan SS6.1 / CHECKLIST #183 Section 1). Use
+`python scripts/producer_variant_table.py --strategy <name> --factorial`, which emits the formula
+and the factorial together and **cannot emit one without the other**; the coupling lives in the
+tool, not in remembering.
+
+*Rationale:* a bare "4,000 combinations" is unreadable on its own - it invites argument about the
+number rather than inspection of the structure that produces it, and it hides which parameters are
+FIRE-ADDING (needing their own engine run) versus subset-safe (deriving offline). Showing the
+formula first makes `20 engine runs x 200 offline = 4,000` self-evident.
+
+*Anti-theatre check (#136) - retroactive catches:* (1) B1513 "8000 combinations across 26 exits?" -
+the owner could not verify 4,000 without re-deriving the structure; (2) B1507 "why only 40
+combinations" - the coverage fraction was invisible without the parameter classes; (3) B1517 "have
+all 4000 been accounted for" - answering required the FIRE-ADDING vs subset-safe split, which only
+the formula makes visible.
