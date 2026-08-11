@@ -10510,3 +10510,35 @@ statistic I measured" are different claims.
 | **S6-B1526a** | **CLOSED** | Cliff SHARP; band NOT extended; sweep stays 20 engine runs. |
 | **S6-B1528a** | LOW | If P1 results later look anomalous, run a per-BAR set diff across swing_length 20/24/26 - count equality does not prove set equality (L399). |
 | **S6-B1520b** | **NEXT - AWAITING OWNER GO** | Per-rung sweep: 20 configs (P1 4 x P6 5) per ticker batch, monitor armed in the launch turn, batches starting at 5 tickers. |
+
+---
+
+## B1529 (2026-08-11) - OWNER CORRECTION: ticker scaling is UNMEASURED; sweep cost WITHDRAWN
+
+**OWNER:** *"Why is the time the same for each batch?"* The honest answer: **it is not established
+that it is.** I read noise as signal (L401).
+
+| run | tickers | s/sim-day |
+|---|---|---|
+| B1512 | 1 | 2.56 |
+| B1522 | 1 | **2.01** |
+| B1516 | 5 | 2.54 |
+
+**The SAME 1-ticker config varied 28pct between runs and the 5-ticker value falls INSIDE that
+spread.** Two points separated by less than the within-condition variance are not a slope. My
+"wall-clock is near-flat in tickers" claim and the **"~14 h per ticker batch" sweep cost are
+WITHDRAWN.**
+
+**Mechanism (why it LOOKED flat):** ~1,003 sim-days each carry fixed overhead - calendar, regime,
+macro, benchmark, logging - independent of ticker count; per-ticker screening rides on top. At 1 vs
+5 tickers the fixed term swamps the variable term. That reveals nothing about the crossover point.
+
+**Known bound (L402):** R5 DID complete at 381 tickers, so cost is NOT linear-in-tickers (which
+would imply ~265 h/run). The curve lies between flat and linear; **the 5-381 range is entirely
+unmeasured.**
+
+| ticket | pri | item |
+|---|---|---|
+| **S6-B1529a** | **BLOCKER on S6-B1520b** | Measure ticker scaling properly before any sweep is costed: run the SAME config at **50 tickers**, and repeat one point twice to quantify within-condition variance. An effect must exceed that variance to count as slope. |
+| **S6-B1529b** | MED | Check whether the R5 run's own wall-clock was recorded anywhere (logs, manifests, AUDIT entries). A completed 381-ticker run is a free anchor for the curve and may already exist. |
+| **S6-B1520b** | **BLOCKED** | Sweep cannot be costed until S6-B1529a lands. |

@@ -6149,3 +6149,35 @@ bars, which would still change trades. Establishing set identity needs a per-bar
 settled it. **Rule: when a proposed band extension would multiply an expensive run count, measure
 the region's response FIRST at producer level** - the cost ratio here was about 9 minutes against
 roughly 7 hours.
+
+### L401
+**"Wall-clock is flat in tickers" was noise read as signal - owner caught it.** B1529. I claimed
+per-ticker cost is ~0 from 42.9 min at 1 ticker vs 42.4 min at 5. Re-derived across every recorded
+run:
+
+| run | tickers | s/sim-day |
+|---|---|---|
+| B1512 | 1 | 2.56 |
+| B1522 | 1 | **2.01** |
+| B1516 | 5 | 2.54 |
+
+**The SAME 1-ticker configuration varied 28pct between runs, and the 5-ticker value falls INSIDE
+that spread.** The data cannot distinguish a per-ticker slope from machine-load variance. I compared
+2.54 to 2.56 and called it flat.
+
+**Mechanism:** the engine loops over ~1,003 sim-days with per-day fixed overhead (calendar, regime,
+macro, benchmark, logging) independent of ticker count; per-ticker screening rides on top. At 1 vs 5
+tickers the fixed term dominates so completely that the variable term is buried. **That says nothing
+about where the crossover sits** - at 381 the per-ticker term may dominate instead.
+
+**Consequence: the "~14 h per ticker batch" sweep cost is WITHDRAWN.** Fourth extrapolation error
+this session (L367 9x light, L377 23pct light, L383 ~100x heavy, now this) and the most expensive
+if acted on. **Rule: two points are not a slope when their separation is smaller than the
+within-condition variance - measure the variance FIRST, then require the effect to exceed it.**
+
+### L402
+**A known-completed prior run bounds an unmeasured scaling curve.** B1529. R5 DID complete at 381
+tickers, so cost cannot be linear-in-tickers (that would imply ~265 h per run). The curve is
+somewhere between flat and linear, and the 5-381 range is entirely unmeasured. **Rule: when
+extrapolating a cost curve, look for an EXISTING completed run at the target scale - it is a free
+upper bound and often already exists in the artifacts.**
