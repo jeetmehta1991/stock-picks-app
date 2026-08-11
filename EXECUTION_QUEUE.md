@@ -10603,3 +10603,38 @@ runs; (3) harvest all 128 strategies from every cube; (4) parallelise independen
 | **S6-B1531b** | **HIGH** | Build the harvester: extract per-strategy metrics for ALL strategies from each config's cube, not one. Reuses `roster_core`; the grid logic already exists in `tighten_breaker_block.py`. |
 | **S6-B1531c** | **HIGH** | Map producer axes per strategy FAMILY (SMC 18, EMA consumers, RSI, MACD, ...) so one orthogonal sweep serves every family rather than each buying its own grid. |
 | **S6-B1520b** | **SUPERSEDED** | Per-strategy sweep replaced by the harvest-all design. |
+
+---
+
+## B1532 (2026-08-11) - SCALING IS LINEAR: ~0.57 s/day/ticker; universe becomes the cost driver
+
+**S6-B1529a INTERIM (17/1003 sim-days, 2pct - direction certain, magnitude provisional):**
+
+| tickers | s/sim-day | projected per run |
+|---|---|---|
+| 5 | 2.54 | ~42 min |
+| **50** | **28.25** | **~7.9 h** |
+| 381 (projected) | ~217 | **~60 h** |
+
+**11x slower for 10x tickers.** Slope ~0.57 s/day/ticker, intercept ~0 - essentially linear through
+the origin. **The 20-config sweep is ~158 h at 50 tickers and ~1,200 h (~50 days) at 381.**
+PushNotification SENT.
+
+**B1518 PARTIALLY REVERSED (L405).** I halted the universe ladder as "answering a closed question".
+That held under FLAT scaling; under LINEAR scaling universe size is the DOMINANT cost term, so the
+entry-rate convergence point decides whether we run at 100 (~16 h) or 381 (~60 h). A decision
+justified by a cost model must be re-opened when that cost model is retracted - I retracted
+flatness at L401 without revisiting what it had justified.
+
+**L406:** L404's ~200x saving and L405's ~14x penalty are both real. Net still a large win, but
+L404's "~15 h" silently reused the flat-scaling per-unit cost retracted at L401.
+
+**RECOMMENDATION: let the 50-ticker run finish.** It delivers BOTH the scaling slope AND the
+entry-rate convergence point at 50 - and rung 5's 26.63x inflation makes convergence the gating
+question for universe choice.
+
+| ticket | pri | item |
+|---|---|---|
+| **S6-B1532a** | **HIGH** | Re-open the universe ladder as a COST question, not a comparability one. Entry-rate convergence (5 -> 50 -> 100 -> 381) now sets the run cost directly. |
+| **S6-B1532b** | **HIGH** | Recompute the slope at run completion - the 28.25 s/day is 2pct-of-run and warmup-inflated. |
+| **S6-B1532c** | MED | Profile the engine: 0.57 s per ticker per sim-day for ~270 signals looks slow. A 2-3x engine speedup would move the 381 sweep from ~1,200 h to ~400-600 h and may be cheaper than any design change. |

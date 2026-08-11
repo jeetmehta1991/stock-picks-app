@@ -6213,3 +6213,32 @@ isolates strategies. If candidate caps or portfolio caps create cross-strategy i
 harvested result differs from a single-strategy run and the saving evaporates. Rung 5's unexplained
 26.63x entry inflation is a live hypothesis for exactly such an interaction. **Verify isolation
 BEFORE building the harvester.**
+
+### L405
+**Ticker scaling is roughly LINEAR - 11x slower for 10x tickers - which reverses a design decision
+I made two batches ago.** B1532. Interim from the 50-ticker run (17/1003 sim-days):
+
+| tickers | s/sim-day |
+|---|---|
+| 5 | 2.54 |
+| **50** | **28.25** |
+
+Slope ~0.57 s/day/ticker, intercept ~0. Projections: **~7.9 h per run at 50, ~60 h at 381**, so the
+20-config sweep is ~158 h at 50 and **~1,200 h at 381**. *Caveat: 2pct of the run; early bars carry
+warmup, so the magnitude is provisional though the direction is far outside the 28pct noise band.*
+
+**This partially reverses B1518.** I halted the universe ladder because it "answered a question
+already closed by ruling 381" - correct under FLAT scaling, wrong under LINEAR, where universe size
+becomes the dominant cost term and the convergence point determines whether we run at 100 tickers
+(~16 h) or 381 (~60 h). **Rule: a decision justified by a cost model must be re-opened when the
+cost model is retracted** - I retracted flatness at L401 but did not revisit what flatness had been
+used to justify.
+
+### L406
+**Two corrections can point in opposite directions and both still be right.** B1532. L404's
+harvest-all redesign cut the sweep ~200x (3,920 runs -> 20). L405's linear scaling multiplies each
+remaining run by ~14x at full universe. Net: still a large win, but not the "15 h" L404 implied -
+that figure silently assumed the flat-scaling model retracted at L401. **Rule: when a new estimate
+reuses a per-unit cost, re-check that the per-unit cost survived the last retraction** - the
+composition of a fixed correction and a retracted assumption reads as progress while carrying the
+old error forward.
