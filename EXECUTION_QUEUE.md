@@ -10349,3 +10349,27 @@ occurrence of this class today, so the mitigation is now structural rather than 
 | ticket | pri | item |
 |---|---|---|
 | S6-B1523a | LOW | Third recurrence of the heredoc escape defect (also L364, B1510). Prefer the Write tool or a here-doc-free patch script for any block containing regex escapes or embedded newlines. |
+
+---
+
+## B1524 (2026-08-10) - factorial table gains production + band-VALUES columns; MitigatedIndex documented
+
+**OWNER:** *"What is mitigated index? What are the bands for close mitigation? In the above table
+you are also supposed to provide the bands itself in a new column."*
+
+**`MitigatedIndex` (READ smc.py:69, field reused for OB at smc.py:557):** *"the index of the candle
+that mitigated the fair value gap"* - i.e. for an order block, **the BAR INDEX of the candle that
+broke through the zone**; `0` means never mitigated. It is an **INDEX, not a flag**, which is
+precisely why an ancient block stays eligible forever absent an age check (S6-B1500a). Added to the
+Section 1 formula so it is never re-asked.
+
+**`close_mitigation` bands = `False`, `True`** - a boolean, so both values ARE the complete space.
+`False` (production) = mitigated when the HIGH/LOW pierces the zone; `True` = only when the CLOSE
+pierces it, hence strictly fewer mitigations and strictly fewer fires.
+
+**FACTORIAL TABLE now carries `production` and `band VALUES` columns**, not just band SIZE. A count
+without values forces the reader back to the source to learn what is actually being tested.
+
+| ticket | pri | item |
+|---|---|---|
+| S6-B1524a | LOW | Apply the same production + band-VALUES columns to every future SPEC as strategies are added (S6-B1510a), so no strategy reports band sizes alone. |

@@ -53,6 +53,10 @@ P3  events  =  ob_df[ OB != 0 ].tail( 20 )
 P4  per event e:   e.is_mitigated = ( MitigatedIndex > 0 )
                                     AND ( MitigatedIndex < today_index )
                    -> no parameter; derived from P2's MitigatedIndex
+                   -> MitigatedIndex = the BAR INDEX of the candle that broke
+                      through the zone (smc.py:69); 0 means never mitigated.
+                      It is an INDEX, not a flag - which is why an ancient block
+                      stays eligible forever with no age check (S6-B1500a).
 
 P5  per event e:   e.broken_up    = ( close > e.Top )
                    -> no parameter; strict inequality, zero buffer
@@ -230,12 +234,13 @@ def main() -> int:
         print("")
         print("## Factorial")
         print("")
-        print("| | parameter | band | class | own engine run? |")
-        print("|---|---|---|---|---|")
+        print("| | parameter | production | band VALUES | n | class | own engine run? |")
+        print("|---|---|---|---|---|---|---|")
         for p in applicable:
             cls = "subset-safe" if p["subset_safe"] else "**FIRE-ADDING**"
             need = "no - derives offline" if p["subset_safe"] else "**YES**"
-            print(f"| {p['id']} | `{p['param']}` | {len(p['band'])} | {cls} | {need} |")
+            vals = ", ".join(_fmt(b) for b in p["band"]) or "-"
+            print(f"| {p['id']} | `{p['param']}` | {_fmt(p['production'])} | {vals} | {len(p['band'])} | {cls} | {need} |")
         expr = " x ".join(str(len(p["band"])) for p in applicable)
         print("")
         print("```")
