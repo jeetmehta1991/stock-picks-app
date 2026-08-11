@@ -10569,3 +10569,37 @@ exit, on death-without-output, and at 3 h overrun.
 | **S6-B1529b** | **CLOSED** | R5 wall-clock NOT recoverable from artifacts (L403). |
 | **S6-B1529a** | **RUNNING** | 50-ticker + 5-ticker-repeat measurement in flight. |
 | **S6-B1520b** | **BLOCKED** | Sweep cost cannot be stated until S6-B1529a lands. |
+
+---
+
+## B1531 (2026-08-11) - OWNER CHALLENGE: the sweep design wastes ~99.2% of every run
+
+**OWNER:** *"Is there a faster way to do this... across 196 strategies its almost never ending."*
+Correct. EXECUTED evidence:
+
+| measurement | value |
+|---|---|
+| strategies in ONE engine cube | **128** |
+| SMC strategies sharing P1 `swing_length` | **18** |
+| EMA-span (P6) gate references in screener.py | **334** |
+
+**I was harvesting 1 strategy of 128 per run, then planning to re-run the identical simulation for
+the next strategy.**
+
+| approach | engine runs for 196 strategies |
+|---|---|
+| current: 20 configs PER strategy | ~3,920 runs ~= **4 months** |
+| **harvest-all: 20 configs, all strategies per cube** | **20 runs ~= 15 h** |
+
+**~200x reduction, no new science** - just reading every strategy out of each cube (L404).
+
+**DESIGN:** (1) group strategies by shared PRODUCER axes; (2) ONE global sweep where each config
+assigns values across all families simultaneously, orthogonal so every family's axis varies across
+runs; (3) harvest all 128 strategies from every cube; (4) parallelise independent configs.
+
+| ticket | pri | item |
+|---|---|---|
+| **S6-B1531a** | **BLOCKER** | **Verify `--cube-isolation` genuinely isolates strategies.** The entire economy depends on it: if candidate/portfolio caps create cross-strategy interaction, a harvested result differs from a single-strategy run. Rung 5's unexplained 26.63x entry inflation is a live hypothesis for such an interaction. Cheap check, gates everything. |
+| **S6-B1531b** | **HIGH** | Build the harvester: extract per-strategy metrics for ALL strategies from each config's cube, not one. Reuses `roster_core`; the grid logic already exists in `tighten_breaker_block.py`. |
+| **S6-B1531c** | **HIGH** | Map producer axes per strategy FAMILY (SMC 18, EMA consumers, RSI, MACD, ...) so one orthogonal sweep serves every family rather than each buying its own grid. |
+| **S6-B1520b** | **SUPERSEDED** | Per-strategy sweep replaced by the harvest-all design. |

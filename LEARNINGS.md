@@ -6193,3 +6193,23 @@ No runtime is recorded in any doc searched. **Rule: an artifact's mtime bounds a
 artifact is WRITE-ONCE; overwritten files (checkpoints, state, logs) mark the last write, and using
 their span as a duration silently measures the wrong interval.** S6-B1529b closes as
 NOT-RECOVERABLE, and the measurement still has to be made.
+
+### L404
+**The design was harvesting 1 strategy from a cube containing 128 - a ~200x waste.** B1531, owner
+challenge: *"Is there a faster way... across 196 strategies its almost never ending."* Correct, and
+the fix is structural. EXECUTED: one engine run produces **128 strategies** in its cube; **18** SMC
+strategies share the P1 `swing_length` producer; EMA spans (P6) appear in **334** gate references.
+
+**A run at config (P1=x, P6=y) is simultaneously that config's datapoint for EVERY strategy
+consuming those producers.** I was planning 20 configs PER STRATEGY - 20 x 196 = ~3,920 runs,
+roughly 4 months - when 20 runs harvested across all strategies covers the same ground in ~15 h.
+
+**Rule: when an expensive job computes N outputs and you consume 1, the unit of work is the JOB,
+not the output - batch every consumer that shares the job's parameters into a single execution.**
+The subset-safe axes then derive offline for all 128 strategies from each cube, not one at a time.
+
+**GATING UNKNOWN, stated before any build:** this economy holds ONLY if `--cube-isolation` truly
+isolates strategies. If candidate caps or portfolio caps create cross-strategy interaction, a
+harvested result differs from a single-strategy run and the saving evaporates. Rung 5's unexplained
+26.63x entry inflation is a live hypothesis for exactly such an interaction. **Verify isolation
+BEFORE building the harvester.**
