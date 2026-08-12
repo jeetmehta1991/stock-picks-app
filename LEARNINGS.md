@@ -6319,3 +6319,37 @@ before theorising about code. (2) **Get the traceback before naming a cause**: `
 dump_traceback_later` located it in one run, where timeline-based reasoning had pointed at the wrong
 file. (3) **Force-killing processes in bulk has system-level side effects** - prefer targeted PIDs,
 and treat repeated `-Force` sweeps as a change to machine state, not a neutral cleanup.
+
+### L412
+**The profiler meant to find the bottleneck had itself been broken for months.** B1539.
+`scripts/profile_process_day_lever_c.py` builds a synthetic argparse Namespace and monkey-patches
+`parse_args` to return it. It died on `args.tickers_file` (flag added Council 224, 2026-07-01) and
+then on `args.cube_isolation` - **two separate CLI additions silently broke the profiler**, and
+nobody noticed because nobody ran it. Same class as the sequential `--screen-pool-workers` default
+(L407): a capability that exists, is documented, and does not work when reached for.
+
+**My first fix was instance-level and wrong** - I hand-added `tickers_file`, which surfaced
+`cube_isolation`, which would have surfaced the next one. The fix that holds inherits the REAL
+parser's defaults and overlays only the profile's overrides, so any future flag is picked up
+automatically. **Rule: when a synthetic argument object shadows a real parser, DERIVE it from that
+parser - a hand-maintained copy rots silently at every flag addition, and the rot is invisible
+until someone runs the tool.**
+
+### L413
+**94.1pct of engine wall-clock is ONE phase, and the fix was written down in 2026-05 and never
+executed.** B1539. Phase decomposition of the completed 1003-day pool run (EXECUTED from its
+PHASE_TIMING log, no new compute):
+
+| phase | total | pct of measured |
+|---|---|---|
+| **screen_done** | **8,463 s** | **94.1pct** |
+| pre_exits | 379 s | 4.2pct |
+| sentiment_done | 83 s | 0.9pct |
+| pre_screen / ohlcv_pit_built / exits_done | 68 s | 0.7pct |
+| **uninstrumented remainder** | **3,055 s** | **25.4pct of wall-clock** |
+
+Everything outside screening is rounding error. And Batch 371's own docstring already names the
+remedy: *"CROSS-ticker vectorization (compute panel-level signals for all 1937 tickers in one pandas
+op vs 1937 separate calls)"*. **Rule: before profiling, grep prior profiling artifacts for a stated
+conclusion - a finding that was reached, documented and never executed is cheaper to act on than to
+rediscover.** The 25.4pct outside every PHASE_TIMING bracket is separately worth instrumenting.

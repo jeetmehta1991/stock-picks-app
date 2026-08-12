@@ -112,7 +112,18 @@ def main():
         # Monkey-patch parse_args to inject our namespace
         import argparse as _ap
         original_parse_args = _ap.ArgumentParser.parse_args
-        _ap.ArgumentParser.parse_args = lambda self, *a, **kw: args  # noqa
+        # B1539: the harness Namespace rotted - it predates --tickers-file
+        # (Council 224) and --cube-isolation, and died on each in turn. Instead
+        # of hand-listing every flag added since, take the REAL parser's
+        # defaults and overlay only what the profile overrides, so any future
+        # flag is inherited automatically.
+        def _merged(self, *a, **kw):
+            base = _ap.Namespace(**{act.dest: act.default
+                                    for act in self._actions})
+            for k, v in vars(args).items():
+                setattr(base, k, v)
+            return base
+        _ap.ArgumentParser.parse_args = _merged  # noqa
         try:
             run_phase1a.main()
         finally:

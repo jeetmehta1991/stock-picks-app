@@ -10823,3 +10823,35 @@ standing cap is **$50 CAD**, so the question is whether spot pricing puts 800 CP
 | **S6-B1537a** | **HIGH** | Get a REAL AWS quote: instance type, spot vs on-demand, $/hr, projected total against the $50 CAD cap. No launch without owner-typed approval. |
 | **S6-B1532c** | **APPROVED - TOP** | Profile the engine (62pct serial), fix, and test extensively. **BLOCKED: `import pandas` hangs, so no Python profiling can run until WMI recovers.** |
 | **S6-B1537b** | HIGH | Config definition now recorded here; fold into STRATEGY_OPTIMISATION_PLAN.md SS6 so it is never re-asked. |
+
+---
+
+## B1539 (2026-08-11) - profiler was rotted; 94.1pct of runtime is ONE phase
+
+**PROFILER ROT FIXED (L412).** `profile_process_day_lever_c.py` died on `args.tickers_file`
+(Council 224) then `args.cube_isolation` - two CLI additions had silently broken it and nobody
+noticed because nobody ran it. **My first fix was instance-level and wrong**; the fix that holds
+DERIVES the Namespace from the real parser's defaults and overlays only the profile's overrides, so
+future flags are inherited. Same class as the sequential `--screen-pool-workers` default (L407).
+
+**PHASE DECOMPOSITION (L413), EXECUTED from the completed pool run's log - zero new compute:**
+
+| phase | total | pct of measured |
+|---|---|---|
+| **screen_done** | **8,463 s** | **94.1pct** |
+| pre_exits | 379 s | 4.2pct |
+| sentiment_done | 83 s | 0.9pct |
+| others | 68 s | 0.7pct |
+| **uninstrumented** | **3,055 s** | **25.4pct of wall-clock** |
+
+**Optimising anything outside screening is noise.** Batch 371's docstring already names the remedy -
+cross-ticker vectorisation - written 2026-05 and never executed.
+
+**PROFILE ITSELF: NOT YET OBTAINED.** The harness now runs, but my 540 s tool ceiling killed it
+before cProfile emitted stats. Needs a detached run.
+
+| ticket | pri | item |
+|---|---|---|
+| **S6-B1539a** | **HIGH** | Re-run the profiler DETACHED to completion; it needs ~10+ min and dies on the foreground ceiling. |
+| **S6-B1539b** | **HIGH** | Target confirmed: inside `screen_done`. Test the Batch 371 hypothesis - per-ticker signal computation that should be a cross-ticker panel op. |
+| **S6-B1539c** | MED | Instrument the 25.4pct outside every PHASE_TIMING bracket (pool spin-up/teardown, checkpoint writes, logging). |
