@@ -6242,3 +6242,80 @@ that figure silently assumed the flat-scaling model retracted at L401. **Rule: w
 reuses a per-unit cost, re-check that the per-unit cost survived the last retraction** - the
 composition of a fixed correction and a retracted assumption reads as progress while carrying the
 old error forward.
+
+### L407
+**The engine ran SEQUENTIALLY by default on a 12-core box - and parallelising it only buys 1.53x.**
+B1533, owner challenge *"No way 1200h total for 381 tickers is possible."* Partly right, and the
+cause was a default I never overrode: `--screen-pool-workers` defaults to **0 (sequential)**, on a
+machine with **12 logical processors**. So per-day ticker screening ran one ticker at a time, which
+is exactly why scaling measured linear.
+
+**Measured, like-for-like on the first 40 days (both warmup):**
+
+| | s/sim-day |
+|---|---|
+| sequential, 50 tickers | 25.74 |
+| **pool=10, 50 tickers** | **16.81** |
+| **speedup** | **1.53x** |
+
+Pool steady state (days 200-1003): **12.42 s/day**, 0.2484 s/day/ticker -> **26.4 h per run at 381**,
+**527 h for a 20-config sweep**. So the 1,200 h figure was a sequential-default artifact; the real
+number is ~527 h, still 22 days.
+
+**The important part is WHY the pool only gives 1.53x.** By Amdahl with 10 workers, a 1.53x speedup
+implies a parallel fraction of only **~38pct** - roughly **62pct of per-day work is serial**. More
+cores cannot beat ~1.6x. **Rule: measure the parallel FRACTION before buying hardware or workers -
+a speedup far below worker count means the bottleneck is serial code, and profiling it is the only
+lever that moves.**
+
+### L408
+**A warmup-window rate compared against a full-run rate overstates the speedup by 37pct.** B1533.
+My first read gave "2.09x" by comparing the sequential run's first-40-day rate (25.10) against the
+pool run's FULL-run rate (12.01). Like-for-like on the same 40 days it is **1.53x**. The sequential
+arm had been killed at 40 days, so only the early window existed for it. **Rule: when one arm is
+truncated, compare both arms over the TRUNCATED arm's window - never a partial against a complete,
+because warmup is front-loaded and inflates whichever arm is measured only at the start.**
+
+### L409
+**A timed-out command chain still executed its earlier steps - I re-ran it and duplicated an
+L-entry.** B1534. My chain was `cat >> LEARNINGS.md ... && cat >> EXECUTION_QUEUE.md ... && sed
+CLAUDE.md && pytest`. Pytest hit the 10-minute tool ceiling and returned 143, so I treated the whole
+chain as failed and re-ran the writes - but the appends had ALREADY succeeded, producing **two
+`### L407` blocks** and leaving the banner at L407 while the file reached L408.
+**Rule: a non-zero exit from a chained command means the LAST step failed, not that earlier steps
+did not run - verify what landed before re-running any chain containing appends.** Detection signal:
+`grep -oE "^### L[0-9]+" | sort | uniq -d` before every commit. Note this also revealed four
+PRE-EXISTING duplicates (L114, L115, L253, L333) from earlier sessions - the same class, undetected
+until now.
+
+### L410
+**The pool run finished all 1003 sim-days but wrote NO cube - post-processing was killed with the
+session.** B1534. `output_pool_test/` contains only `engine_state.json` and
+`trade_log_checkpoint.csv`; `trade_exit_detail.csv` is absent. The sim loop completed at 200.8 min,
+but the metrics/cube write is a SEPARATE post-loop phase (R5's own artifacts show ~51 min of
+post-processing after the last checkpoint, L403). So the run yielded its TIMING but not its
+**entry-rate convergence point at 50 tickers** - the datapoint that decides whether 100 tickers
+suffices. **Rule: a long run is not complete when the sim loop ends; completion is the terminal
+ARTIFACT existing.** Checking `%` of sim-days is a progress metric, never a completion test.
+
+### L411
+**The pyramid "hang" was a wedged Windows WMI service, not my code - and I nearly blamed my own
+change.** B1534. Symptom: `pytest` ran 11 min consuming **1.6 CPU-seconds** - blocked, not
+computing. My first hypothesis was the B1519 `screener.py` edit (`from backtest import config as
+_cfg`), which fit the timeline. Faulthandler proved otherwise:
+
+```
+pandas/compat/_constants.py:19 -> platform.machine() -> platform.win32_ver()
+                               -> platform._wmi_query()   <-- HANGING
+```
+
+EXECUTED: `import pandas` rc=124; **`platform.machine()` rc=124 with no pandas involved at all**;
+`Winmgmt` reports Running but is unresponsive. **Everything importing pandas is blocked** - the
+pyramid, every script. Probable cause: my repeated `Get-Process python | Stop-Process -Force`
+sweeps this turn.
+
+**Rules.** (1) **A process consuming ~0 CPU over minutes is BLOCKED, not slow** - check CPU-seconds
+before theorising about code. (2) **Get the traceback before naming a cause**: `faulthandler.
+dump_traceback_later` located it in one run, where timeline-based reasoning had pointed at the wrong
+file. (3) **Force-killing processes in bulk has system-level side effects** - prefer targeted PIDs,
+and treat repeated `-Force` sweeps as a change to machine state, not a neutral cleanup.

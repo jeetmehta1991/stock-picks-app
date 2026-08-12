@@ -10638,3 +10638,188 @@ question for universe choice.
 | **S6-B1532a** | **HIGH** | Re-open the universe ladder as a COST question, not a comparability one. Entry-rate convergence (5 -> 50 -> 100 -> 381) now sets the run cost directly. |
 | **S6-B1532b** | **HIGH** | Recompute the slope at run completion - the 28.25 s/day is 2pct-of-run and warmup-inflated. |
 | **S6-B1532c** | MED | Profile the engine: 0.57 s per ticker per sim-day for ~270 signals looks slow. A 2-3x engine speedup would move the 381 sweep from ~1,200 h to ~400-600 h and may be cheaper than any design change. |
+---
+
+## B1533 (2026-08-11) - engine ran SEQUENTIAL by default; pool buys only 1.53x; 62pct is serial
+
+**OWNER:** *"No way 1200h total for 381 tickers is possible."* Partly right. **Cause: a default I
+never overrode** - `--screen-pool-workers` defaults to **0 (sequential)** on a **12-logical-core**
+machine, so per-day ticker screening ran one ticker at a time. That is why scaling measured linear.
+
+**MEASURED (pool run COMPLETED 1003/1003 sim-days, 3.35 h, and survived the session ending):**
+
+| | s/sim-day |
+|---|---|
+| sequential, 50 tickers (first 40 days) | 25.74 |
+| **pool=10, 50 tickers (same 40 days)** | **16.81** |
+| **like-for-like speedup** | **1.53x** |
+| pool steady state (days 200-1003) | **12.42** |
+
+**Projections: 0.2484 s/day/ticker -> 26.4 h per run at 381 -> ~527 h for a 20-config sweep.**
+The 1,200 h figure was a sequential-default artifact; 527 h is the real number, still 22 days.
+
+**L408 - my first read said 2.09x and was wrong:** it compared the sequential arm's 40-day
+(warmup) rate against the pool arm's FULL-run rate. Like-for-like it is 1.53x. Never compare a
+truncated arm against a complete one; warmup is front-loaded.
+
+**THE DECISIVE FINDING (L407): the pool gives only 1.53x on 10 workers.** By Amdahl that implies a
+parallel fraction of ~38pct - **~62pct of per-day work is SERIAL**. More cores cannot beat ~1.6x.
+
+| ticket | pri | item |
+|---|---|---|
+| **S6-B1532c** | **NOW TOP PRIORITY** | Profile the engine's per-day loop. ~62pct is serial; that fraction is the only lever that moves the number. A 3x cut in serial time takes the 381 sweep from ~527 h to ~200 h. |
+| **S6-B1533a** | **HIGH** | Make `--screen-pool-workers` explicit in every launch and in plan SS9 - the sequential default silently cost ~1.5x on every run this session. |
+| **S6-B1533b** | MED | Read the entry-rate convergence point from `output_pool_test` (50 tickers) - it is the ladder datapoint that decides whether 100 tickers suffices, which is now the second-largest cost lever after the serial fraction. |
+
+---
+
+## B1534 (2026-08-11) - two self-inflicted defects found before commit
+
+**1. DUPLICATE `### L407` (L409).** My command chain was `cat >> LEARNINGS.md && cat >>
+EXECUTION_QUEUE.md && sed CLAUDE.md && pytest`. Pytest hit the 10-minute tool ceiling (exit 143), I
+read the chain as failed, and re-ran the writes - **but the appends had already succeeded**. Result:
+two `### L407` blocks, banner stuck at L407 while the file reached L408. Superseded copy removed;
+banner corrected to L410. **A non-zero exit from a chain means the LAST step failed, not that
+earlier steps did not run.**
+
+**Also surfaced: four PRE-EXISTING duplicate L-numbers from earlier sessions** - L114, L115, L253,
+L333 - the same class, undetected until now.
+
+**2. THE POOL RUN WROTE NO CUBE (L410).** `output_pool_test/` holds only `engine_state.json` and
+`trade_log_checkpoint.csv`; **`trade_exit_detail.csv` is ABSENT**. The sim loop finished all 1003
+days in 200.8 min, but the metrics/cube write is a SEPARATE post-loop phase (R5's own artifacts show
+~51 min of post-processing after the last checkpoint, L403), and the session ended during it.
+**So the run yielded TIMING but not the entry-rate convergence point at 50 tickers** - the datapoint
+that decides whether 100 tickers suffices. Completion is the terminal ARTIFACT existing, never a
+sim-day percentage.
+
+| ticket | pri | item |
+|---|---|---|
+| **S6-B1534a** | **HIGH** | Add a pre-commit duplicate-L check: `grep -oE "^### L[0-9]+" LEARNINGS.md \| sort \| uniq -d` must be empty. Would have caught this and the four historical duplicates. |
+| **S6-B1534b** | **HIGH** | Re-run the 50-ticker pool config to obtain the CUBE (entry-rate convergence). ~3.4 h sim + ~1 h post-processing; must not be interrupted. Monitor armed in the launch turn. |
+| **S6-B1534c** | LOW | L114/L115/L253/L333 duplicates predate this session. Do NOT renumber - historical references point at them; record the collision instead. |
+
+---
+
+## B1534b (2026-08-11) - TOOLCHAIN BLOCKED: Windows WMI wedged; pyramid cannot run
+
+**NOT A CODE DEFECT (L411).** `import pandas` and even bare `platform.machine()` both hang
+(rc=124). Faulthandler traceback: `pandas/compat/_constants.py:19 -> platform.machine() ->
+platform.win32_ver() -> platform._wmi_query()`. `Winmgmt` reports Running but is unresponsive.
+**Everything importing pandas is blocked**, including the test pyramid. Probable cause: repeated
+`Get-Process python | Stop-Process -Force` sweeps this turn.
+
+**CONSEQUENCE: the pre-commit gate (C6) requires a fresh green pyramid, which cannot be produced.**
+Doc changes for B1533/B1534 (L407-L411, queue entries, banner -> L411) are WRITTEN but UNCOMMITTED.
+`.stop_exempt` used - the designed, logged escape - rather than `--no-verify`, which would bypass
+the gate silently.
+
+| ticket | pri | item |
+|---|---|---|
+| **S6-B1534d** | **BLOCKER** | Commit the pending B1533/B1534 doc changes once the toolchain recovers. Requires a green pyramid; owner may need to restart `Winmgmt` (a machine-wide action, not taken unilaterally). |
+| **S6-B1534e** | MED | Stop bulk `Stop-Process -Force` on python; target specific PIDs. Repeated force-sweeps are a change to machine state, not neutral cleanup (L411). |
+
+---
+
+## B1535 (2026-08-11) - scaling watch: BOTH arms invalid; toolchain still blocked; monitor retired
+
+**TOOLCHAIN STILL DOWN.** `import pandas` rc=124 - the Windows WMI hang (L411) has not cleared.
+**Nothing can run**, including the pyramid required to commit. 0 python processes.
+
+**S6-B1529a: BOTH ARMS INVALID.**
+
+| arm | exit | sim-days | verdict |
+|---|---|---|---|
+| 50t sequential | **127** | 40/1003 | INVALID - killed mid-run |
+| 5t repeat (variance control) | **127** | 0/1003 | **NEVER RAN** |
+
+`EXIT=127` is "command not found": killing the parent tore down the shell function mid-sequence.
+**The 5-ticker variance control never executed**, so the within-condition variance that L401 said
+must precede any slope claim is STILL unmeasured. The only survivor is the b1533 pool run's
+timing (1003/1003 sim-days, 12.42 s/day steady state), salvaged from its LOG - its cube is absent
+(L410).
+
+**Monitor `70ada735` RETIRED** - it watched two dead arms that cannot be restarted while the
+toolchain is down. Re-arm is a launch-turn gate (plan SS9 item 13).
+
+**`.stop_exempt` used again** - docs from B1533/B1534 remain uncommitted because C6 requires a green
+pyramid. Not bypassed with `--no-verify`.
+
+| ticket | pri | item |
+|---|---|---|
+| **S6-B1534d** | **BLOCKER** | Commit pending B1533-B1535 docs (L407-L411) once the toolchain recovers. |
+| **S6-B1535a** | **HIGH** | Re-run BOTH S6-B1529a arms after recovery - neither produced a valid measurement, and the 5t variance control is the precondition for any slope claim (L401). |
+| **S6-B1535b** | **HIGH** | Launch long runs so they survive a parent kill: the shell-function wrapper turned a process kill into EXIT=127 for every remaining arm. Use independent detached invocations per arm. |
+
+**B1535 ADDENDUM - the commit attempt and why it correctly failed.** Docs-only staging still hit
+`C6 PYRAMID-STAMP | last full-pyramid run was RED`. I had expected C6 to skip when no `.py` is
+staged; it also blocks on a RED stamp, and the stamp is red because I KILLED those pytest runs
+mid-flight - a killed run records as failure. **The gate is right:** the stamp is red precisely
+because the suite's state is unknown. Not bypassed with `--no-verify`. Note `preflight` itself ran
+fine over all 3 files, so the commit tooling does NOT need pandas - only the pyramid does.
+
+---
+
+## B1536 (2026-08-11) - OWNER CONSTRAINT SURFACED: the target was UNDER 6 HOURS
+
+**OWNER:** *"I asked for alternatives because i didn't agree with even 120h run. I wanted it under
+6h."* **I never designed to that constraint** - I kept reporting measurements instead of engineering
+to the stated budget. The 6h target had not appeared in any plan, cost model or ticket until now.
+
+**FEASIBILITY (DERIVED from the measured 0.2484 wall-s/ticker-day and ~1.53x effective
+parallelism => ~0.38 CPU-s/ticker-day):**
+
+```
+20 configs x 381 tickers x 1003 days = 7.64M ticker-days
+x ~0.38 CPU-s                        = ~800 CPU-hours
+on 12 cores at PERFECT efficiency    = ~67 h wall-clock  <- the FLOOR
+```
+
+**6 h is NOT reachable locally at full scope.** Not by scheduling, not by fixing the pool. Hitting
+6 h needs ~11x less work or ~11x more machine.
+
+| lever | factor | cost |
+|---|---|---|
+| AWS ~128 vCPU | ~11x | money + explicit typed owner approval |
+| engine speedup (62pct serial) | 2-3x realistic | profiling work |
+| fewer tickers (381 -> 100) | 3.8x | only if entry-rate converges (UNMEASURED) |
+| fewer configs (20 -> 6) | 3.3x | drops P1 or P6 coverage |
+| shorter window | - | REFUSED - owner locked it |
+
+No single lever suffices. Engine 2.5x x 100 tickers 3.8x = 9.5x -> ~7 h, close and free of spend
+but gated on profiling AND on the convergence datapoint the pool run failed to write.
+
+| ticket | pri | item |
+|---|---|---|
+| **S6-B1536a** | **BLOCKER** | **Record the 6h budget as a first-class CONSTRAINT in STRATEGY_OPTIMISATION_PLAN.md.** Every cost model to date was built without it - that is why 527 h was reported as a finding rather than a failure. |
+| **S6-B1532c** | **TOP** | Profile the engine. 62pct serial is the only lever that costs nothing per run and compounds with every other choice. |
+| **S6-B1536b** | HIGH | Owner decision: AWS (~128 vCPU) is the ONLY route to 6 h at full scope. Requires typed approval and a budget figure; NOT assumed. |
+
+---
+
+## B1537 (2026-08-11) - owner rulings: configs are NON-NEGOTIABLE; engine profiling APPROVED
+
+**RULING 1 - FEWER CONFIGS IS OUT OF QUESTION.** *"The goal is to ensure that most strategies pass
+all gates with the maximum sharpe. That can not be done with fewer configs."* Accepted and struck
+from the lever list. Cost must be met by SPEED or MACHINE, never by narrowing the search.
+
+**RULING 2 - ENGINE SPEEDUP APPROVED**, with extensive testing (S6-B1532c).
+
+**WHAT A CONFIG IS** (asked, and it had never been defined in the queue): a config is ONE assignment
+to every **FIRE-ADDING** parameter. For `smc_breaker_block_long` only P1 `swing_length` (4 values)
+and P6 EMA `span` (5 values) are fire-adding, so **4 x 5 = 20 configs**, e.g. config #1 =
+(swing_length=10, span=9) ... config #20 = (swing_length=50, span=200). Each needs its OWN engine
+run because those parameters change WHICH BARS FIRE, producing trades the cube has no P&L for.
+P2/P3/P4/P5 only REMOVE fires, so all **200** of their combinations derive offline from each cube.
+**20 runs x 200 offline = 4,000.**
+
+**AWS COST - STRUCTURE ONLY, PRICING NOT VERIFIED.** Compute requirement ~**800 CPU-hours**
+(DERIVED: 7.64M ticker-days x ~0.38 CPU-s). On 96 vCPU that is ~8.3 h wall-clock. Dollar cost =
+800 CPU-hours x $/CPU-hour - **I have NOT verified current pricing and will not invent it.** The
+standing cap is **$50 CAD**, so the question is whether spot pricing puts 800 CPU-hours under that.
+
+| ticket | pri | item |
+|---|---|---|
+| **S6-B1537a** | **HIGH** | Get a REAL AWS quote: instance type, spot vs on-demand, $/hr, projected total against the $50 CAD cap. No launch without owner-typed approval. |
+| **S6-B1532c** | **APPROVED - TOP** | Profile the engine (62pct serial), fix, and test extensively. **BLOCKED: `import pandas` hangs, so no Python profiling can run until WMI recovers.** |
+| **S6-B1537b** | HIGH | Config definition now recorded here; fold into STRATEGY_OPTIMISATION_PLAN.md SS6 so it is never re-asked. |
