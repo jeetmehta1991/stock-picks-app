@@ -10855,3 +10855,35 @@ before cProfile emitted stats. Needs a detached run.
 | **S6-B1539a** | **HIGH** | Re-run the profiler DETACHED to completion; it needs ~10+ min and dies on the foreground ceiling. |
 | **S6-B1539b** | **HIGH** | Target confirmed: inside `screen_done`. Test the Batch 371 hypothesis - per-ticker signal computation that should be a cross-ticker panel op. |
 | **S6-B1539c** | MED | Instrument the 25.4pct outside every PHASE_TIMING bracket (pool spin-up/teardown, checkpoint writes, logging). |
+
+---
+
+## B1541 (2026-08-12) - PROFILE LANDED: compute_smc_signals is 27.2pct of runtime
+
+**S6-B1539a CLOSED.** Profiler ran detached to completion, `PROFILE_RC=0`, 20 tickers x 32 sim-days,
+1389.7 s. The `1/1 tickers` line I flagged last turn was a per-ticker cache call - harness confirms
+`target tickers: 20`. **Concern was unfounded and was raised as a question, not a finding.**
+
+| frame | cumtime | pct of total | calls | per call |
+|---|---|---|---|---|
+| `screen_instrument` | 1027.2 s | 73.9pct | 672 | 1.529 s |
+| **`compute_smc_signals`** | **378.2 s** | **27.2pct** | **714** | **0.530 s** |
+| `smart_money_score` | 198.3 s | 14.3pct | 3124 | 0.063 s |
+| `compute_all_signals` | 198.2 s | 14.3pct | 672 | 0.295 s |
+
+**MECHANISM (L414): redundant recomputation, not slow code.** `compute_smc_signals` runs ONCE PER
+TICKER PER DAY and re-derives swings + order blocks over the ENTIRE history every call - the same
+swings computed ~1,003 times per ticker per run. Call COUNT is what reveals this; cumtime alone
+would not.
+
+**THE FIX ALREADY EXISTS AND IS OFF (L415).** `USE_SMC_PANEL_CACHE` has been `False` since Batch
+555: *"flag stays OFF until owner approves full-cube semantic comparison"*, with a pinned EMPIRICAL
+DIVERGENCE of bool 10.6pct / float 50pct on AAPL. **Fourth instance this session of a capability
+that exists and is not in effect** (L407 sequential default, L412 rotted profiler, L385 log-only
+sentinel).
+
+| ticket | pri | item |
+|---|---|---|
+| **S6-B1541a** | **TOP** | Resolve the `USE_SMC_PANEL_CACHE` divergence (bool 10.6pct / float 50pct, Batch 555). It gates a **27.2pct** cost centre. The divergence causes are already documented - boundary-effect swings, OB forward-mutation, retracement iloc lag. **Owner approval required to enable.** |
+| **S6-B1541b** | HIGH | `smart_money_score`: 3,124 calls for 672 screen_instrument calls = ~4.6 calls per ticker-day. Check for repeated identical lookups. |
+| **S6-B1541c** | MED | 25.4pct of wall-clock remains outside every PHASE_TIMING bracket (L413). |

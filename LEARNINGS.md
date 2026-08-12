@@ -6353,3 +6353,34 @@ remedy: *"CROSS-ticker vectorization (compute panel-level signals for all 1937 t
 op vs 1937 separate calls)"*. **Rule: before profiling, grep prior profiling artifacts for a stated
 conclusion - a finding that was reached, documented and never executed is cheaper to act on than to
 rediscover.** The 25.4pct outside every PHASE_TIMING bracket is separately worth instrumenting.
+
+### L414
+**cProfile: `compute_smc_signals` is 27.2pct of TOTAL runtime, and it is redundant recomputation.**
+B1541 (20 tickers x 32 sim-days, 1389.7 s total, EXECUTED):
+
+| frame | cumtime | pct | calls | per call |
+|---|---|---|---|---|
+| `_process_day` | 1330.7 s | 95.8pct | 32 | 41.58 s |
+| `screen_universe` | 1053.8 s | 75.8pct | 32 | 32.93 s |
+| `screen_instrument` | 1027.2 s | 73.9pct | 672 | 1.529 s |
+| **`compute_smc_signals`** | **378.2 s** | **27.2pct** | **714** | **0.530 s** |
+| `smart_money_score` | 198.3 s | 14.3pct | 3124 | 0.063 s |
+| `compute_all_signals` | 198.2 s | 14.3pct | 672 | 0.295 s |
+
+Within screening: SMC **36.8pct**, smart-money 19.3pct, technical 19.3pct.
+
+**It is called ONCE PER TICKER PER DAY and recomputes swing detection plus order blocks over the
+ENTIRE history each time** - the same swings are re-derived ~1,003 times per ticker across a full
+run. That is not a vectorisation problem, it is redundant recomputation, and it is cacheable per
+ticker with PIT slicing. **Rule: profile call COUNT alongside cumtime - 714 calls at 0.530 s each
+says "same work repeated", where one call at 378 s would say "one slow algorithm".**
+
+### L415
+**The cache for the biggest cost centre already exists and is switched OFF.** B1541.
+`USE_SMC_PANEL_CACHE` in `config.py` has been `False` since Batch 555, with the recorded reason
+*"flag stays OFF until owner approves full-cube semantic comparison"* and a pinned EMPIRICAL
+DIVERGENCE of bool 10.6pct / float 50pct on AAPL. So the fix for a 27pct cost centre was built,
+measured, found semantically divergent, and parked - **fourth instance this session of a capability
+that exists and is not in effect** (sequential pool default L407, rotted profiler L412, log-only
+sentinel L385). **Rule: when profiling names a hot path, grep for an existing disabled optimisation
+before designing a new one - and read WHY it was disabled, because that reason is the real work.**
