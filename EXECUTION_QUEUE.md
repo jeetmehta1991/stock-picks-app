@@ -10955,3 +10955,27 @@ on the A/B run.
 | **S6-B1544b** | **HIGH** | Make monitor-arming mechanical: same tool invocation as the launch, not a preceding step (L420). |
 | S6-B1543a | CLOSED | Measured 6.3pct, not 14.3pct - and unusable regardless. |
 | S6-B1543b | CLOSED | Cap bound on 1 of 972 days; moot since isolation bypasses it anyway (L419). |
+
+---
+
+## B1545 (2026-08-12) - OWNER-APPROVED: isolation bypasses tier sizing; monitor gate MECHANISED
+
+**S6-B1544a CLOSED (L421).** Owner: *"Should --cube-isolation also bypass tier sizing? Yes even if
+we lose comparison."* Implemented. `--cube-isolation` bypassed every cross-strategy gate but still
+applied `TIER_POSITION_SIZE_PCT`, where **LOW/AVOID -> 0.0 -> trade SKIPPED**. Smart-money and agent
+tier data were deciding WHICH SIGNALS BECOME TRADES - exactly what isolation exists to remove
+(measured B1544: 245/124 entry differences from this alone). Every valid signal now opens at
+`CUBE_ISOLATION_SIZE_PCT = 0.01`. **The value cannot affect any gate** - the cube records `pnl_pct`,
+a PERCENTAGE, so size cancels. Owner accepted the loss of R5 trade-POPULATION comparability.
+
+**S6-B1544b CLOSED (L422) - CHECKLIST #185.** Prose failed three times (L385, L392, L420), all by
+the author of the rule. `scan_unmonitored_launch()` in `scripts/verify_turn_compliance.py` now
+BLOCKS any turn that backgrounds a long-running runner without a CronCreate/PushNotification in the
+same turn. Pinned BOTH directions by `test_b1545_monitor_armed_gate`.
+
+Pyramid **902 passed** + 2 skipped (was 901).
+
+| ticket | pri | item |
+|---|---|---|
+| **S6-B1545a** | **HIGH** | Re-baseline: with tier sizing bypassed, R5's 352 fires for `smc_breaker_block_long` are NO LONGER the comparison point - R5 ran WITH tier gating. A fresh baseline run is needed before any optimisation result is graded against it. |
+| **S6-B1545b** | MED | Quantify how many R5 trades were suppressed by LOW/AVOID tiers - it sizes the gap between the old and new baseline. |

@@ -13755,3 +13755,50 @@ def test_b1543_optimization_mode_gates():
     # (c) the 1a-beta 200 cap must SURVIVE for non-optimization runs
     assert 'args.phase == "1a-beta" and args.max_cands == 30' in run, (
         "the original 1a-beta 200-cap branch must remain for normal runs")
+
+
+def test_b1545_monitor_armed_gate():
+    """L420 / plan SS9 item 13: an unmonitored long-run launch must BLOCK.
+
+    Tested in BOTH directions (B1504 lesson): the unmonitored launch trips it,
+    and the SAME launch with a monitor armed in the same turn passes. A gate
+    exercised one way may block everything.
+    """
+    import importlib.util as _ilu
+    from pathlib import Path as _P
+    _spec = _ilu.spec_from_file_location(
+        "_vtc2", _P(__file__).resolve().parents[2] / "scripts" / "verify_turn_compliance.py")
+    _m = _ilu.module_from_spec(_spec)
+    _spec.loader.exec_module(_m)
+
+    def _entries(*tool_uses):
+        return [
+            {"type": "user", "message": {"content": "go"}},
+            {"type": "assistant", "message": {"content": list(tool_uses)}},
+        ]
+
+    launch = {"type": "tool_use", "name": "Bash",
+              "input": {"command": "nohup bash -c 'python backtest/run_phase1a.py --tickers AAPL' &",
+                        "run_in_background": True}}
+    arm = {"type": "tool_use", "name": "CronCreate",
+           "input": {"cron": "*/15 * * * *", "prompt": "watch the run"}}
+
+    # (a) launch WITHOUT a monitor -> must trip
+    assert _m.scan_unmonitored_launch(_entries(launch)), (
+        "an unmonitored long-run launch must trip the gate")
+
+    # (b) SAME launch WITH a monitor armed in the same turn -> must pass
+    assert _m.scan_unmonitored_launch(_entries(arm, launch)) == [], (
+        "a launch with a monitor armed in the same turn must pass")
+
+    # (c) ordinary tool use with no launch -> must not trip
+    benign = {"type": "tool_use", "name": "Bash",
+              "input": {"command": "git status --short"}}
+    assert _m.scan_unmonitored_launch(_entries(benign)) == [], (
+        "false positive on a non-launch command")
+
+    # (d) only activity AFTER the last user message counts
+    ents = _entries(launch)
+    ents.append({"type": "user", "message": {"content": "next"}})
+    assert _m.scan_unmonitored_launch(ents) == [], (
+        "launches before the last user message must not be re-scanned")

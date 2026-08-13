@@ -37,6 +37,7 @@ from backtest.data.cache import get_ohlcv_bulk as cached_ohlcv_bulk
 from backtest.data.universe import fetch_info_bulk, get_sector_map
 from backtest.data.macro import macro_snapshot
 from backtest.data.sentiment import sentiment_snapshot
+from backtest.config import CUBE_ISOLATION_SIZE_PCT
 from backtest.data.smart_money import smart_money_score
 from backtest.engine.regime_filter import (
     get_regime_context, get_spy_ema200, get_vix_smoothed,
@@ -2352,6 +2353,19 @@ class BacktestEngine:
                 # hasattr guard tolerates test paths bypassing __init__.
                 if hasattr(self, "portfolio"):
                     size_pct = TIER_POSITION_SIZE_PCT.get(tier, 0.0)
+                    # B1545 (owner-approved): in cube isolation, the sizing TIER
+                    # must not gate ENTRY. LOW/AVOID map to 0.0, and a 0 size
+                    # skips the trade - so smart-money/agent tier data was
+                    # silently deciding WHICH SIGNALS BECOME TRADES, which is
+                    # exactly what isolation exists to remove (L418: a measured
+                    # A/B showed 245/124 entry differences from this alone).
+                    # Every valid signal now opens a trade at a UNIFORM size.
+                    # Metrics are unaffected because the cube records pnl_pct,
+                    # a PERCENTAGE - size cancels. Owner accepted the loss of
+                    # R5 comparability on the trade POPULATION to get
+                    # signal-pure cells.
+                    if self.cube_isolation:
+                        size_pct = CUBE_ISOLATION_SIZE_PCT
                     # Batch 279 (2026-05-20 owner-approved Option 1): when
                     # N strategies fire on the same ticker the same day, divide
                     # base tier size by N so aggregate ticker exposure stays

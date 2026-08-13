@@ -855,6 +855,14 @@ STARTING_CAPITAL = 100_000.0   # CAD; portfolio simulation base
 # default in results.metrics.portfolio_return_metrics. Engine uses this to
 # compute size_pct passed to Portfolio.add_position and Portfolio.can_open.
 # AVOID tier maps to 0 (no position; gated upstream); LOW maps to 0 to skip.
+# B1545 (owner-approved): uniform position size used ONLY under
+# --cube-isolation. The sizing tier maps LOW/AVOID to 0.0, and a zero size skips
+# the trade - so tier data (smart-money, agents) was deciding WHICH SIGNALS
+# BECOME TRADES, defeating the purpose of isolation. Under isolation every valid
+# signal opens a trade at this uniform size. The VALUE is arbitrary and cannot
+# affect any gate: the cube records pnl_pct, a PERCENTAGE, so size cancels.
+CUBE_ISOLATION_SIZE_PCT: float = 0.01
+
 TIER_POSITION_SIZE_PCT = {
     "EXCEPTIONAL": 0.05,
     "VERY_HIGH":   0.04,

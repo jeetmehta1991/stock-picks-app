@@ -186,6 +186,72 @@ def check_verdict_denominator() -> str | None:
     return chr(10).join(out)
 
 
+# B1545 / plan SS9 item 13 -- MONITOR-ARMED GATE.
+# L420: I launched three long runs with no monitor AFTER writing the rule that
+# forbids it. A rule applied only when remembered is not a control, so this
+# reads the transcript and BLOCKS the turn when a long-running launch happened
+# without an arming call in the SAME turn.
+LAUNCH_MARKERS = (
+    "run_phase1a.py",
+    "universe_ladder_run.py",
+    "nohup",
+    "run_in_background",
+)
+ARM_MARKERS = ("CronCreate", "cron", "PushNotification", "Monitor")
+
+
+def scan_unmonitored_launch(entries: list[dict]) -> list[str]:
+    """Return launch snippets that had no monitor armed in the same turn.
+
+    Pure for testability. A launch is any tool_use whose input mentions a
+    long-running runner; an arm is any tool_use naming a scheduling or
+    notification tool. Both are counted only AFTER the last real user message.
+    """
+    last_user = -1
+    for i, e in enumerate(entries):
+        if e.get("type") != "user":
+            continue
+        content = (e.get("message") or {}).get("content")
+        if isinstance(content, str) and content.strip():
+            last_user = i
+        elif isinstance(content, list) and any(
+                isinstance(c, dict) and c.get("type") == "text" for c in content):
+            last_user = i
+    launches, armed = [], False
+    for e in entries[last_user + 1:]:
+        if e.get("type") != "assistant":
+            continue
+        content = (e.get("message") or {}).get("content") or []
+        if not isinstance(content, list):
+            continue
+        for c in content:
+            if not isinstance(c, dict) or c.get("type") != "tool_use":
+                continue
+            name = str(c.get("name", ""))
+            blob = json.dumps(c.get("input", {}))
+            if any(m in name for m in ARM_MARKERS) or any(
+                    m in blob for m in ("CronCreate", "PushNotification")):
+                armed = True
+            # a launch: long-running runner AND backgrounded
+            if any(m in blob for m in LAUNCH_MARKERS[:2]) and (
+                    "nohup" in blob or c.get("input", {}).get("run_in_background")):
+                launches.append(blob[:140])
+    return [] if (armed or not launches) else launches
+
+
+def check_monitor_armed() -> str | None:
+    """Block a turn that launched a long run without arming its reporting path."""
+    bad = scan_unmonitored_launch(_read_entries())
+    if not bad:
+        return None
+    out = ["TURN-GATE BLOCK (plan SS9 item 13 / L420, B1545): a long-running job "
+           "was LAUNCHED with no monitor armed in the same turn. Arm a CronCreate "
+           "status check + PushNotification on completion, or state explicitly why "
+           "this run needs none:"]
+    out += [f"  ...{b}..." for b in bad[:2]]
+    return chr(10).join(out)
+
+
 def check_compliance_marker() -> str | None:
     """Read the shared transcript cache; if a git commit happened this turn
     but the final response has no CHECKLIST compliance statement, block."""
@@ -231,6 +297,11 @@ def main() -> int:
     verdict_block = check_verdict_denominator()
     if verdict_block:
         print(verdict_block, file=sys.stderr)
+        return 2
+    # B1545: monitor-armed gate (L420 - third unmonitored launch).
+    monitor_block = check_monitor_armed()
+    if monitor_block:
+        print(monitor_block, file=sys.stderr)
         return 2
 
     modified = get_modified_tracked()

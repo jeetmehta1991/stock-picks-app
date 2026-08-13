@@ -2830,3 +2830,18 @@ the owner could not verify 4,000 without re-deriving the structure; (2) B1507 "w
 combinations" - the coverage fraction was invisible without the parameter classes; (3) B1517 "have
 all 4000 been accounted for" - answering required the FIRE-ADDING vs subset-safe split, which only
 the formula makes visible.
+
+**#185 MONITOR-ARMED GATE (B1545, owner-directed).** A long-running job is not launched until its
+REPORTING PATH TO THE OWNER is armed **in the same turn**: a scheduled status check (CronCreate) and
+a completion PushNotification, deleted when the job ends. **MECHANICALLY ENFORCED** -
+`scan_unmonitored_launch()` in `scripts/verify_turn_compliance.py` blocks any turn that backgrounds
+a long runner without an arming call after the last user message.
+
+*Why mechanical:* plan SS9 item 13 stated this in prose and I violated it THREE times after writing
+it (L385 sentinel wrote only to a log; L392 exception-only instead of scheduled; L420 the A/B run
+with no monitor at all). A rule applied only when remembered is not a control.
+
+*Anti-theatre check (#136) - retroactive catches:* (1) B1544's A/B launch, no monitor at all;
+(2) B1514's ladder, armed but exception-only so a tripped sentinel reached no one until asked;
+(3) B1530's scaling arms, which died silently with no completion path. Pinned BOTH directions by
+`test_b1545_monitor_armed_gate` - unmonitored trips, same-turn-armed passes.

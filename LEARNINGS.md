@@ -6441,3 +6441,24 @@ wrote only to a log) and L392 (exception-only instead of scheduled) are the same
 is the third instance AFTER codification. **A rule I apply only when I remember it is not a
 control.** The mechanical fix is the one that works: the arming call must be in the SAME tool
 invocation as the launch, not a preceding step I can skip.
+
+### L421
+**Cube isolation now bypasses TIER SIZING - owner accepted losing R5 population comparability.**
+B1545. `--cube-isolation` bypassed every CROSS-STRATEGY gate but still ran
+`size_pct = TIER_POSITION_SIZE_PCT.get(tier, 0.0)`, and LOW/AVOID map to **0.0**, where a zero size
+SKIPS the trade. So smart-money and agent tier data were deciding **which signals become trades** -
+precisely what isolation exists to remove. Measured at B1544: that alone moved 245/124 entries in a
+20-ticker A/B. Under isolation every valid signal now opens at `CUBE_ISOLATION_SIZE_PCT`.
+**The uniform value cannot affect any gate** - the cube records `pnl_pct`, a PERCENTAGE, so size
+cancels. Owner: *"Yes even if we lose comparison"*. **Rule: an "isolation" mode must bypass every
+gate that can ZERO a position, not only the ones labelled portfolio-level** - a sizing table with a
+0.0 entry is an entry filter wearing a sizing table's name.
+
+### L422
+**The monitor rule is now MECHANICAL after three violations of my own prose.** B1545, owner:
+*"How do we avoid this in the future?"* Prose in plan SS9 item 13 failed three times (L385, L392,
+L420). `scan_unmonitored_launch()` in the Stop hook now BLOCKS any turn that backgrounds a
+long-running runner without a CronCreate/PushNotification in the same turn, pinned in both
+directions. **Rule: when a discipline rule has been violated by its own author more than once, stop
+rewriting the rule and move it into a gate that reads the transcript** - the fix for a forgotten
+rule is never a better-worded rule.
