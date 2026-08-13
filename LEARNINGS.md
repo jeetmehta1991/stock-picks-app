@@ -6384,3 +6384,25 @@ measured, found semantically divergent, and parked - **fourth instance this sess
 that exists and is not in effect** (sequential pool default L407, rotted profiler L412, log-only
 sentinel L385). **Rule: when profiling names a hot path, grep for an existing disabled optimisation
 before designing a new one - and read WHY it was disabled, because that reason is the real work.**
+
+### L416
+**14.3pct of runtime computed a value the cube cannot record - owner spotted it.** B1543. Owner:
+*"Arent the strategies run in isolation? Why size if all are isolated?"* Correct. `smart_money_score`
+is 3,124 calls per 672 `screen_instrument` calls (14.3pct of runtime, B1541) and feeds ONLY the
+confidence-tier POSITION SIZING. But `trade_exit_detail.csv` records **`pnl_pct` - a percentage** -
+with no size/shares/notional column, and 1a-beta auto-enables `--no-portfolio-cap`, so capital
+cannot suppress a trade either. **Position size cannot move any of the 6 live gates.**
+**Rule: before optimising a hot path, check whether its OUTPUT reaches the artifact you grade on -
+14.3pct of a run spent producing a value the cube does not store is pure waste, and cheaper to find
+than any speedup.** CAVEAT recorded: it also populates the trade-log `smart_money_score` column and
+the "smart money lift >=3pp" criterion (NOT a live gate), so that column reads 0 in optimisation
+cubes and is not comparable to R5.
+
+### L417
+**A cap sized for one purpose silently binds in another.** B1543. `max_cands` is auto-raised 30 ->
+200 for 1a-beta, sized (Batch 386) for "~29 strategies competing for slots". A PARAMETER SWEEP does
+not know how many combinations fire, so 200 may bind - and a binding cap makes tickers COMPETE,
+which (a) breaks the disjoint-universe APPEND design the owner proposed, and (b) is the leading
+unexplained mechanism for the 26.63x entry inflation at 5 tickers (L376). **Rule: when reusing a
+run mode for a new purpose, re-derive every CAP against the new purpose - a limit calibrated for
+scenario A is an unexamined assumption in scenario B.** OPTIMIZATION_MODE now uncaps it.

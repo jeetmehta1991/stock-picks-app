@@ -13702,3 +13702,49 @@ def test_b1519_optimisation_knobs_reach_the_engine():
              if k not in ("SMC_SWING_LENGTH", "STRAT_EMA_SPAN")},
         cwd=str(root), text=True).strip()
     assert base == "20 200", f"defaults must reproduce production: got {base!r}"
+
+
+def test_b1543_optimization_mode_gates():
+    """S6-B1543: OPTIMIZATION_MODE must default OFF and gate BOTH changes.
+
+    Defaults matter more than the feature: production and every R5-comparable
+    run must be byte-identical with the env unset, or optimisation cubes stop
+    being comparable to the baseline they are measured against.
+    """
+    import os as _os
+    import subprocess as _sp
+    import sys as _sys
+    from pathlib import Path as _P
+
+    root = _P(__file__).resolve().parents[2]
+
+    # (a) default OFF, and ON only when the env says so
+    code = "import backtest.config as c; print(int(c.OPTIMIZATION_MODE))"
+    env_off = {k: v for k, v in dict(_os.environ, PYTHONPATH=str(root)).items()
+               if k != "OPTIMIZATION_MODE"}
+    off = _sp.check_output([_sys.executable, "-c", code], env=env_off,
+                           cwd=str(root), text=True).strip()
+    assert off == "0", f"OPTIMIZATION_MODE must default OFF, got {off!r}"
+    on = _sp.check_output([_sys.executable, "-c", code],
+                          env=dict(env_off, OPTIMIZATION_MODE="1"),
+                          cwd=str(root), text=True).strip()
+    assert on == "1", f"OPTIMIZATION_MODE=1 must enable, got {on!r}"
+
+    # (b) BOTH call sites are actually gated - source guards, paired with the
+    #     behavioural check in (a). Neither alone is sufficient (L391).
+    eng = (root / "backtest" / "engine" / "backtest.py").read_text(
+        encoding="utf-8", errors="ignore")
+    assert "if not _OPT_MODE:" in eng, "smart_money_score call is not gated"
+    idx = eng.index("if not _OPT_MODE:")
+    assert "smart_money_score(ticker, as_of)" in eng[idx:idx + 400], (
+        "the _OPT_MODE guard does not wrap the smart_money_score call")
+
+    run = (root / "backtest" / "run_phase1a.py").read_text(
+        encoding="utf-8", errors="ignore")
+    assert "_OPT_MODE and args.max_cands == 30" in run, (
+        "max_cands auto-raise is not gated by OPTIMIZATION_MODE")
+    assert "args.max_cands = 10000" in run, "uncapped value missing"
+
+    # (c) the 1a-beta 200 cap must SURVIVE for non-optimization runs
+    assert 'args.phase == "1a-beta" and args.max_cands == 30' in run, (
+        "the original 1a-beta 200-cap branch must remain for normal runs")

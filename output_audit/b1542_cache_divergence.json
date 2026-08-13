@@ -1,0 +1,144 @@
+{
+  "tickers_used": [
+    "A",
+    "AA",
+    "AAL",
+    "AAOI",
+    "AAON",
+    "AAP",
+    "AAPL",
+    "ABBV",
+    "ABNB",
+    "ABT",
+    "ACCD",
+    "ACGL",
+    "ACHC",
+    "ACHR",
+    "ACI",
+    "ACIW",
+    "ACLS",
+    "ACLX",
+    "ACMR",
+    "ACN",
+    "ACVA",
+    "ADBE",
+    "ADI",
+    "ADM",
+    "ADMA"
+  ],
+  "samples": 200,
+  "per_family": {
+    "other": {
+      "checked": 1000,
+      "diverged": 200,
+      "rate": 0.2
+    },
+    "liquidity": {
+      "checked": 800,
+      "diverged": 123,
+      "rate": 0.1537
+    },
+    "ob": {
+      "checked": 1200,
+      "diverged": 118,
+      "rate": 0.0983
+    },
+    "bos_choch": {
+      "checked": 1200,
+      "diverged": 77,
+      "rate": 0.0642
+    },
+    "retracements": {
+      "checked": 600,
+      "diverged": 38,
+      "rate": 0.0633
+    },
+    "fvg": {
+      "checked": 800,
+      "diverged": 25,
+      "rate": 0.0312
+    }
+  },
+  "per_key": {
+    "smc_mitigation_block_short": {
+      "checked": 200,
+      "diverged": 5
+    },
+    "smc_ote_short_zone": {
+      "checked": 200,
+      "diverged": 23
+    },
+    "smc_ote_long_zone": {
+      "checked": 200,
+      "diverged": 15
+    },
+    "smc_breaker_block_bullish": {
+      "checked": 200,
+      "diverged": 23
+    },
+    "smc_fvg_bullish_active": {
+      "checked": 200,
+      "diverged": 9
+    },
+    "smc_liquidity_swept_up": {
+      "checked": 200,
+      "diverged": 18
+    },
+    "smc_ob_bullish_active": {
+      "checked": 200,
+      "diverged": 48
+    },
+    "smc_fvg_bearish_active": {
+      "checked": 200,
+      "diverged": 16
+    },
+    "smc_liquidity_swept_dn": {
+      "checked": 200,
+      "diverged": 16
+    },
+    "smc_bos_bearish": {
+      "checked": 200,
+      "diverged": 21
+    },
+    "smc_retracement_pct": {
+      "checked": 200,
+      "diverged": 200
+    },
+    "smc_breaker_block_bearish": {
+      "checked": 200,
+      "diverged": 9
+    },
+    "smc_choch_bearish": {
+      "checked": 200,
+      "diverged": 21
+    },
+    "smc_bos_retest_long": {
+      "checked": 200,
+      "diverged": 2
+    },
+    "smc_bos_bullish": {
+      "checked": 200,
+      "diverged": 20
+    },
+    "smc_mitigation_block_long": {
+      "checked": 200,
+      "diverged": 4
+    },
+    "smc_ob_bearish_active": {
+      "checked": 200,
+      "diverged": 29
+    },
+    "smc_equal_lows_swept": {
+      "checked": 200,
+      "diverged": 46
+    },
+    "smc_choch_bullish": {
+      "checked": 200,
+      "diverged": 13
+    },
+    "smc_equal_highs_swept": {
+      "checked": 200,
+      "diverged": 43
+    }
+  }
+}

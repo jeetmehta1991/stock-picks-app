@@ -10887,3 +10887,36 @@ sentinel).
 | **S6-B1541a** | **TOP** | Resolve the `USE_SMC_PANEL_CACHE` divergence (bool 10.6pct / float 50pct, Batch 555). It gates a **27.2pct** cost centre. The divergence causes are already documented - boundary-effect swings, OB forward-mutation, retracement iloc lag. **Owner approval required to enable.** |
 | **S6-B1541b** | HIGH | `smart_money_score`: 3,124 calls for 672 screen_instrument calls = ~4.6 calls per ticker-day. Check for repeated identical lookups. |
 | **S6-B1541c** | MED | 25.4pct of wall-clock remains outside every PHASE_TIMING bracket (L413). |
+
+---
+
+## B1543 (2026-08-12) - OWNER-APPROVED: OPTIMIZATION_MODE skips smart-money + uncaps candidates
+
+**OWNER RULINGS, both implemented behind ONE env-gated switch defaulting OFF:**
+1. *"smart_money_score call needs to be skipped for strategy optimization runs"*
+2. *"max_cands 30 -> 200. Skip this configuration... 200 may be too less"*
+
+**`config.OPTIMIZATION_MODE`** (env `OPTIMIZATION_MODE=1`, default **False**). When ON:
+- **`smart_money_score` SKIPPED** - 14.3pct of runtime (3,124 calls / 672 screen_instrument, B1541).
+  Justified because the cube records **`pnl_pct`, a PERCENTAGE**, with no size column, and 1a-beta
+  auto-enables `--no-portfolio-cap`, so sizing cannot move any of the 6 live gates (L416).
+- **`max_cands` UNCAPPED (10000)** rather than auto-raised to 200. The 200 was sized for ~29
+  competing strategies; a sweep cannot know how many combinations fire, and a binding cap makes
+  tickers compete - breaking the disjoint-universe APPEND design and matching the unexplained
+  26.63x inflation at 5 tickers (L417).
+
+**DEFAULTS UNCHANGED.** With the env unset, production and every R5-comparable run behave exactly
+as before - the 1a-beta 200-cap branch is retained and test-pinned.
+
+**PIN TEST** `test_b1543_optimization_mode_gates`: default-OFF and env-ON verified in FRESH
+SUBPROCESSES (behavioural, not just source), both call sites confirmed gated, and the original
+1a-beta branch asserted still present. Pyramid **901 passed** + 2 skipped (was 900).
+
+**DISCLOSED CAVEAT:** `smart_money_score` also populates the trade-log column of that name and the
+"smart money lift >=3pp" criterion - **not** one of the 6 live gates. Optimisation cubes will carry
+0 there and that column is not comparable to R5.
+
+| ticket | pri | item |
+|---|---|---|
+| **S6-B1543a** | **HIGH** | Measure the actual speedup from OPTIMIZATION_MODE before costing the sweep - 14.3pct is the profiler's share, not a measured wall-clock delta. |
+| **S6-B1543b** | **HIGH** | Test whether the 200 cap EVER bound in R5. If it did, appended disjoint runs are not equivalent to a 381 run and Phase 3 cannot collapse into Phase 2. |

@@ -2185,11 +2185,18 @@ class BacktestEngine:
                 sm = {"composite_signal": "none", "score": 0,
                       "congressional_signal": "none", "insider_signal": "none",
                       "institutional_signal": "none"}
-                try:
-                    sm = smart_money_score(ticker, as_of)
-                except Exception as e:
-                    logger.warning("smart_money_score failed for %s @ %s: %s",
-                                   ticker, as_of, e)
+                # B1543 (owner-approved): OPTIMIZATION_MODE skips this call.
+                # It is 14.3pct of runtime and feeds ONLY confidence-tier
+                # position sizing; the cube records pnl_pct (a PERCENTAGE), so
+                # sizing cannot move any of the 6 live gates. The sentinel above
+                # is retained, so downstream code sees the same shape.
+                from backtest.config import OPTIMIZATION_MODE as _OPT_MODE
+                if not _OPT_MODE:
+                    try:
+                        sm = smart_money_score(ticker, as_of)
+                    except Exception as e:
+                        logger.warning("smart_money_score failed for %s @ %s: %s",
+                                       ticker, as_of, e)
 
                 # Stage 1  -  rule-based preliminary tier
                 # Batch 489 (M9 wire-in): also pass strategy names so

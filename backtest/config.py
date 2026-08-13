@@ -2408,6 +2408,25 @@ USE_PRECOMPUTED_SIGNALS = True
 # L387 lineage: these existed as producer arguments but the ENGINE never passed
 # them - screener called compute_smc_signals(df, ticker=ticker) only - so a
 # 20-config sweep would have produced 20 IDENTICAL cubes.
+# --- S6-OPT-196 OPTIMIZATION MODE (B1543, owner-approved) -------------------
+# Marks a run as a PARAMETER SEARCH rather than a portfolio simulation. Default
+# False: production and every R5-comparable run are unaffected.
+#
+# When True:
+#   * smart_money_score is SKIPPED. It costs 14.3pct of runtime (3,124 calls per
+#     672 screen_instrument calls, B1541) and feeds ONLY the confidence-tier
+#     position sizing. The cube records `pnl_pct` - a PERCENTAGE - so sizing
+#     cannot change any of the 6 live gates. CAVEAT: it also populates the
+#     trade-log `smart_money_score` column and the "smart money lift >=3pp"
+#     criterion (NOT a live gate), so those are 0 in optimization cubes and that
+#     column is not comparable to R5.
+#   * the max_cands auto-raise to 200 is SKIPPED. 200 was sized for ~29
+#     strategies competing; a parameter sweep does not know how many
+#     combinations fire, and a binding cap would make tickers compete - which
+#     would break the disjoint-universe APPEND design and is the leading
+#     hypothesis for the unexplained 26.63x entry inflation at 5 tickers (L376).
+OPTIMIZATION_MODE: bool = os.environ.get("OPTIMIZATION_MODE", "0") == "1"
+
 SMC_SWING_LENGTH: int = int(os.environ.get("SMC_SWING_LENGTH", "20"))
 
 # Which EMA span the trend leg reads. compute_ema_sma emits spans 9/20/21/50/200

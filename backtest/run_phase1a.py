@@ -345,7 +345,16 @@ def main():
     # cost-control rationale for 30 cap does not apply. 200 admits ~6.7x
     # more candidates/day, supporting empirical cube fires for the now-29+
     # strategies competing for slots.
-    if args.phase == "1a-beta" and args.max_cands == 30:
+    # B1543 (owner-approved): in OPTIMIZATION_MODE the 200 cap is NOT applied.
+    # It was sized for ~29 strategies competing for slots; a parameter sweep
+    # cannot know how many combinations fire, and a binding cap makes tickers
+    # compete - which would break the disjoint-universe APPEND design.
+    from backtest.config import OPTIMIZATION_MODE as _OPT_MODE
+    if _OPT_MODE and args.max_cands == 30:
+        print("[B1543] OPTIMIZATION_MODE -> max-cands UNCAPPED (10000) "
+              "so the candidate cap cannot bind during a parameter sweep.")
+        args.max_cands = 10000
+    elif args.phase == "1a-beta" and args.max_cands == 30:
         print("[Batch 386] Phase 1a-beta detected -> raising --max-cands 30 -> 200 "
               "(cube evaluation needs more candidate throughput; cost is $0 without "
               "agents). Pass --max-cands explicitly to override.")
