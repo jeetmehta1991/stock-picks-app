@@ -13732,12 +13732,19 @@ def test_b1543_optimization_mode_gates():
 
     # (b) BOTH call sites are actually gated - source guards, paired with the
     #     behavioural check in (a). Neither alone is sufficient (L391).
+    # (b) B1544 REVERT PIN: smart_money_score must NOT be gated. B1543 skipped
+    #     it, arguing sizing cannot move the gates. WRONG - config.py:857 says
+    #     "LOW maps to 0 to skip", so tier GATES ENTRY, and a measured A/B showed
+    #     the entry set changed (245 only-ON / 124 only-OFF of ~5.2k). This pin
+    #     stops the skip being reintroduced on the same faulty reasoning.
     eng = (root / "backtest" / "engine" / "backtest.py").read_text(
         encoding="utf-8", errors="ignore")
-    assert "if not _OPT_MODE:" in eng, "smart_money_score call is not gated"
-    idx = eng.index("if not _OPT_MODE:")
-    assert "smart_money_score(ticker, as_of)" in eng[idx:idx + 400], (
-        "the _OPT_MODE guard does not wrap the smart_money_score call")
+    assert "if not _OPT_MODE:" not in eng, (
+        "smart_money_score must NOT be gated by OPTIMIZATION_MODE - tier gates "
+        "ENTRY via LOW->skip, so skipping it changes the trade population "
+        "(B1544 revert)")
+    assert "smart_money_score(ticker, as_of)" in eng, (
+        "the smart_money_score call must remain unconditional")
 
     run = (root / "backtest" / "run_phase1a.py").read_text(
         encoding="utf-8", errors="ignore")

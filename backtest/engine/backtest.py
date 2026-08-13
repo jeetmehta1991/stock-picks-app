@@ -2185,18 +2185,19 @@ class BacktestEngine:
                 sm = {"composite_signal": "none", "score": 0,
                       "congressional_signal": "none", "insider_signal": "none",
                       "institutional_signal": "none"}
-                # B1543 (owner-approved): OPTIMIZATION_MODE skips this call.
-                # It is 14.3pct of runtime and feeds ONLY confidence-tier
-                # position sizing; the cube records pnl_pct (a PERCENTAGE), so
-                # sizing cannot move any of the 6 live gates. The sentinel above
-                # is retained, so downstream code sees the same shape.
-                from backtest.config import OPTIMIZATION_MODE as _OPT_MODE
-                if not _OPT_MODE:
-                    try:
-                        sm = smart_money_score(ticker, as_of)
-                    except Exception as e:
-                        logger.warning("smart_money_score failed for %s @ %s: %s",
-                                       ticker, as_of, e)
+                # B1544 REVERTED (B1543's skip was WRONG). I argued sizing could
+                # not move the gates because the cube records pnl_pct, a
+                # PERCENTAGE. But tier does not only SIZE a trade - config.py:857:
+                # "LOW maps to 0 to skip". Tier GATES ENTRY. Measured A/B on 20
+                # tickers x 2y: skipping this call changed the entry set (245 only
+                # -ON, 124 only-OFF of ~5.2k), so optimisation cubes would not be
+                # comparable to R5. The saving was 6.3pct measured, not the 14.3pct
+                # profiler share - not worth a semantic change even if it were safe.
+                try:
+                    sm = smart_money_score(ticker, as_of)
+                except Exception as e:
+                    logger.warning("smart_money_score failed for %s @ %s: %s",
+                                   ticker, as_of, e)
 
                 # Stage 1  -  rule-based preliminary tier
                 # Batch 489 (M9 wire-in): also pass strategy names so

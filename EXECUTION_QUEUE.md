@@ -10920,3 +10920,38 @@ SUBPROCESSES (behavioural, not just source), both call sites confirmed gated, an
 |---|---|---|
 | **S6-B1543a** | **HIGH** | Measure the actual speedup from OPTIMIZATION_MODE before costing the sweep - 14.3pct is the profiler's share, not a measured wall-clock delta. |
 | **S6-B1543b** | **HIGH** | Test whether the 200 cap EVER bound in R5. If it did, appended disjoint runs are not equivalent to a 381 run and Phase 3 cannot collapse into Phase 2. |
+
+---
+
+## B1544 (2026-08-12) - REVERT B1543's smart-money skip; uncapping was a no-op; monitor miss
+
+**RETRACTION (L418).** B1543 skipped `smart_money_score` in OPTIMIZATION_MODE on my argument that
+sizing cannot move the 6 gates. **WRONG.** `config.py:857`: **"LOW maps to 0 to skip"** - the
+confidence tier GATES ENTRY, not just size. Measured A/B (20 tickers x 2y, both `--cube-isolation`):
+
+| | elapsed | entries |
+|---|---|---|
+| OPTIMIZATION_MODE=1 | 2584 s | 5,318 |
+| OPTIMIZATION_MODE=0 | 2759 s | 5,197 |
+| | **1.068x (6.3pct)** | **entry sets NOT identical: 245 only-ON, 124 only-OFF** |
+
+Optimisation cubes would not have been comparable to R5. **REVERTED**, and the pin test now asserts
+the skip is ABSENT so it cannot return on the same reasoning. Measured saving was 6.3pct, not the
+14.3pct profiler share.
+
+**L419 - the uncapping was a NO-OP.** `backtest.py:1763`:
+`_cand_iter = candidates if self.cube_isolation else candidates[:self.max_cands]`. Isolation has
+bypassed the candidate cap since B1321. **AND THE GAP THAT MATTERS: isolation bypasses CROSS-STRATEGY
+gates but NOT position sizing** - `backtest.py:2354` still applies `TIER_POSITION_SIZE_PCT` with
+LOW -> 0.0 -> skip. Cube cells are independent of other STRATEGIES, not of the sizing tier.
+
+**L420 - MONITOR MISS, third after codification.** Owner: *"Why wasnt monitor armed?"* Plan SS9
+item 13 is mine and I did not follow it: no monitor, no hourly update, no completion notification
+on the A/B run.
+
+| ticket | pri | item |
+|---|---|---|
+| **S6-B1544a** | **HIGH** | **OWNER DECISION:** should `--cube-isolation` ALSO bypass tier sizing (LOW->skip)? Today a strategy's cube cells depend on the sizing tier, so smart-money data still gates which trades exist. Bypassing it would make cells truly signal-pure - but changes every cube vs R5. |
+| **S6-B1544b** | **HIGH** | Make monitor-arming mechanical: same tool invocation as the launch, not a preceding step (L420). |
+| S6-B1543a | CLOSED | Measured 6.3pct, not 14.3pct - and unusable regardless. |
+| S6-B1543b | CLOSED | Cap bound on 1 of 972 days; moot since isolation bypasses it anyway (L419). |

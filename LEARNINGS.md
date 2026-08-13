@@ -6406,3 +6406,38 @@ which (a) breaks the disjoint-universe APPEND design the owner proposed, and (b)
 unexplained mechanism for the 26.63x entry inflation at 5 tickers (L376). **Rule: when reusing a
 run mode for a new purpose, re-derive every CAP against the new purpose - a limit calibrated for
 scenario A is an unexamined assumption in scenario B.** OPTIMIZATION_MODE now uncaps it.
+
+### L418
+**RETRACTION of L416: skipping smart_money_score CHANGES THE TRADE POPULATION.** B1544. I argued
+sizing could not move the 6 gates because the cube records `pnl_pct`, a PERCENTAGE, with no size
+column. The schema reading was right; the inference was wrong. **`config.py:857`: "LOW maps to 0 to
+skip"** - the confidence tier does not only SIZE a trade, it GATES ENTRY. Measured A/B (20 tickers x
+2y, both `--cube-isolation`): **entry sets NOT identical - 245 only-ON, 124 only-OFF of ~5.2k.**
+Optimisation cubes would not have been comparable to R5. **Reverted.**
+
+Measured saving was **6.3pct**, not the 14.3pct profiler share - skipping a call does not return its
+profiled cost. **Rule: "X cannot affect Y" requires tracing X's CONSUMERS, not inspecting Y's
+schema.** An absent column proves the value is not RECORDED, never that it is not USED upstream.
+
+### L419
+**`--cube-isolation` already bypasses `max_cands` - my uncapping was a no-op.** B1544.
+`backtest.py:1763`: `_cand_iter = candidates if self.cube_isolation else candidates[:self.max_cands]`.
+The line-134 docstring lists every gate isolation bypasses: candidate cap, cross-strategy ticker
+block, cooldown, max-loss, factor-concentration, can_open, portfolio mirror. **Rule: before adding
+a bypass, grep whether the mode you are already running bypasses it** - I changed a runner flag for
+a cap the engine had ignored since B1321.
+
+**AND THE GAP THAT MATTERS:** isolation bypasses CROSS-STRATEGY gates but **NOT position sizing**.
+`backtest.py:2354` still applies `TIER_POSITION_SIZE_PCT`, and LOW -> 0.0 -> skip. So per-strategy
+cube cells are independent of OTHER STRATEGIES but still gated by the sizing tier - which is why
+the A/B entry sets differed under isolation.
+
+### L420
+**I launched a run with no monitor - third time after codifying the rule myself.** B1544, owner:
+*"Why wasnt monitor armed? Its supposed to be armed for every run?"* Correct. Plan SS9 item 13,
+which I wrote, states "a run is not launched until its output path to the owner is armed". I
+launched the A/B with no monitor, no hourly update, and no completion notification. L385 (sentinel
+wrote only to a log) and L392 (exception-only instead of scheduled) are the same failure, and this
+is the third instance AFTER codification. **A rule I apply only when I remember it is not a
+control.** The mechanical fix is the one that works: the arming call must be in the SAME tool
+invocation as the launch, not a preceding step I can skip.
