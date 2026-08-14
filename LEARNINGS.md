@@ -6775,3 +6775,42 @@ cached PIT data. Corrected within the same exchange, per the Truth Standard's re
 tickers" still produced correct results in 3,696s, and a real 21-ticker yfinance download plus
 sleeps could not have been that cheap. A cost/behaviour inconsistency is a prompt to re-verify the
 mechanism, not to move on.
+
+### L439 — make the optimisation safe to be WRONG, not just correct
+
+**B1565 / S6-B1563c.** L437 blocked demand-driven signal pruning because static key extraction
+cannot see runtime-built keys, and a wrongly-pruned key returns `.get()`'s default instead of
+failing — a silent misfire.
+
+The instinct is to make the derivation perfect. That is the wrong target: **warmup recording can
+only observe branches that EXECUTE during warmup.** A strategy whose EMA leg is reached only in a
+bull regime would go unrecorded no matter how careful the analysis. Perfect derivation is not
+achievable, so it cannot be the safety mechanism.
+
+**Two mechanisms, and the second is what makes the first safe to be wrong:**
+1. `RecordingSignals` — observe reads rather than parse source. Catches runtime-built keys because
+   it watches the read happen. EXECUTED: it captured `price_above_ema_200`, the exact key a static
+   scan misses.
+2. `GuardedSignals` — a read of any key whose producer was pruned RAISES `SkippedSignalError`
+   instead of returning a default. EXECUTED: pruning from the STATIC key set (i.e. reproducing the
+   L437 mistake deliberately) now fails loudly instead of silently misfiring.
+
+**Generalized rule:** *when an optimisation decides what work to skip, the skipped work must be
+detectable at the point of use.* Do not aim for a derivation that is always right; aim for one
+whose errors are loud. `.get(key, default)` is the anti-pattern precisely because it makes absence
+indistinguishable from a legitimate value.
+
+**Also codified:** a shared key emitted by BOTH a kept and a skipped producer must NOT be marked
+skipped (`test_b1565_shared_key_is_not_marked_skipped`). A false-positive guard that raises on a
+key that is actually present is as damaging as a missing guard — it would make pruning look broken
+and get it disabled.
+
+**Measurement discipline note:** `compute_all_signals` measured 157.66 ms in one process and
+47.43 ms in another this session — **3.3x apart** (L401's class). The RATIO is same-process and
+robust (pruning removes 95.7pct of the call, 1 of 33 producers kept for
+`smc_breaker_block_long`), which derives ~13.7pct of total runtime against its 14.3pct profile
+share. The ABSOLUTE per-call numbers are not trustworthy and a second concordant run is owed
+before treating 13.7pct as firm.
+
+**Scope:** pruning activates ONLY when a strategy subset is active. Full-roster production cube
+runs take the unpruned path unchanged (`feedback_narrow_scope_blast_radius`).

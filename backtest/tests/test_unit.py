@@ -14126,3 +14126,120 @@ def test_b1564_backfill_refuses_diffuse_distribution():
     assert tot == 40
     assert n / tot < 0.50, (
         "constructed fixture is not diffuse; the refusal path would not trip")
+
+
+# ---------------------------------------------------------------------------
+# B1565 / S6-B1563c -- demand-driven pruning that cannot fail silently (L437)
+# ---------------------------------------------------------------------------
+
+def _b1565_sample_df():
+    import pytest
+    import pandas as pd
+    from backtest.data.cache import _cache_path
+    for t in ("AAPL", "ABT", "ACN", "A"):
+        p = _cache_path(t)
+        if p.exists():
+            df = pd.read_parquet(p)
+            if "date" in df.columns:
+                df = df.set_index("date")
+            df = df.sort_index()
+            if len(df) >= 300:
+                return df.iloc[:800]
+    pytest.skip("no cached OHLCV frame long enough to build the producer map")
+
+
+def test_b1565_recorder_captures_runtime_built_key():
+    """The whole point: observe reads instead of parsing source.
+
+    `smc_breaker_block_long` builds `price_above_ema_<span>` at runtime, so a
+    static scan sees 1 of its 2 keys. The recorder must see BOTH.
+    """
+    from backtest.signals import demand_pruning as DP
+    import backtest.signals.technical as T
+    from backtest.signals.screener import ALL_STRATEGIES
+
+    sl = _b1565_sample_df()
+    full = T.compute_all_signals(sl)
+    full["smc_breaker_block_bullish"] = True
+
+    read = set()
+    ALL_STRATEGIES["smc_breaker_block_long"](DP.RecordingSignals(full, read))
+
+    assert "smc_breaker_block_bullish" in read
+    ema = [k for k in read if k.startswith("price_above_ema_")]
+    assert ema, (
+        "recorder missed the runtime-built EMA key -- this is the exact key "
+        "static analysis cannot see (L437)")
+
+
+def test_b1565_guard_raises_instead_of_silently_defaulting():
+    """A wrongly-pruned key must RAISE, never return .get()'s default.
+
+    This is the mechanism that makes pruning safe to get wrong. Simulates the
+    L437 mistake directly: prune from STATIC keys, then evaluate.
+    """
+    import inspect
+    import re
+    import pytest
+    from backtest.signals import demand_pruning as DP
+    import backtest.signals.technical as T
+    from backtest.signals.screener import ALL_STRATEGIES
+
+    sl = _b1565_sample_df()
+    km = DP.build_producer_key_map(sl)
+    full = T.compute_all_signals(sl)
+    full["smc_breaker_block_bullish"] = True
+    fn = ALL_STRATEGIES["smc_breaker_block_long"]
+
+    static = set(re.findall(r's\.get\(\s*["\']([a-zA-Z0-9_]+)',
+                            inspect.getsource(fn)))
+    keep = DP.required_producers(static, km)
+    skipped = DP.skipped_keys(keep, km)
+    pruned = {k: v for k, v in full.items() if k not in skipped}
+
+    with pytest.raises(DP.SkippedSignalError):
+        fn(DP.GuardedSignals(pruned, skipped))
+
+
+def test_b1565_correct_pruning_preserves_strategy_verdict():
+    """Pruning from a RECORDED key set must not change the strategy's answer."""
+    from backtest.signals import demand_pruning as DP
+    import backtest.signals.technical as T
+    from backtest.signals.screener import ALL_STRATEGIES
+
+    sl = _b1565_sample_df()
+    km = DP.build_producer_key_map(sl)
+    full = T.compute_all_signals(sl)
+    full["smc_breaker_block_bullish"] = True
+    fn = ALL_STRATEGIES["smc_breaker_block_long"]
+
+    baseline = fn(dict(full))
+
+    read = set()
+    fn(DP.RecordingSignals(full, read))
+    keep = DP.required_producers(read, km)
+    skipped = DP.skipped_keys(keep, km)
+    pruned = {k: v for k, v in full.items() if k not in skipped}
+    after = fn(DP.GuardedSignals(pruned, skipped))
+
+    assert bool(baseline) == bool(after)
+    if isinstance(baseline, dict) and isinstance(after, dict):
+        assert baseline.get("fires") == after.get("fires"), (
+            "pruning changed the strategy's verdict")
+    # and it must actually have pruned something, or the test proves nothing
+    assert len(keep) < len(km), "nothing was pruned; test is vacuous"
+
+
+def test_b1565_shared_key_is_not_marked_skipped():
+    """A key emitted by BOTH a kept and a skipped producer is still present.
+
+    Marking it skipped would raise on a key that is actually there -- a
+    false-positive guard is as damaging as a missing one.
+    """
+    from backtest.signals import demand_pruning as DP
+    km = {"pA": frozenset({"shared", "onlyA"}),
+          "pB": frozenset({"shared", "onlyB"})}
+    sk = DP.skipped_keys({"pA"}, km)
+    assert "onlyB" in sk
+    assert "shared" not in sk, "shared key wrongly marked skipped"
+    assert "onlyA" not in sk
