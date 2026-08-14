@@ -268,6 +268,7 @@ def get_ohlcv_bulk(
     end: date,
     force_refresh: bool = False,
     delay: float = 0.3,
+    probe: bool = False,
 ) -> dict[str, pd.DataFrame]:
     """
     Fetch OHLCV for multiple tickers using cache.
@@ -288,6 +289,18 @@ def get_ohlcv_bulk(
                 date.fromisoformat(cached["start"]) <= start):
             try:
                 df = pd.read_parquet(cache_file)
+                # B1561 DEFECT B (writer-reader schema contract, PIVOT #37 class):
+                # the WRITER stores dates in a `date` COLUMN alongside a
+                # RangeIndex, but this reader assumed a DatetimeIndex. On a
+                # RangeIndex `pd.to_datetime` yields 1970-01-01 for every row,
+                # so `mask` matched ZERO rows and EVERY ticker fell through to
+                # the yfinance fetch below -- i.e. the bulk cache path had
+                # never returned a hit, and every backtest silently
+                # re-downloaded its whole universe (Stage-2 NO-LIVE-API
+                # violation). Normalise the column to the index first, exactly
+                # as every other reader in the repo already does.
+                if not isinstance(df.index, pd.DatetimeIndex) and "date" in df.columns:
+                    df = df.set_index("date")
                 df.index = pd.to_datetime(df.index).tz_localize(None)
                 mask = (df.index.date >= start) & (df.index.date <= end)
                 # DEC-308 + DEC-382 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3
@@ -300,8 +313,12 @@ def get_ohlcv_bulk(
                 if mask.sum() >= 1:
                     results[ticker] = df[mask]
                     continue
-            except Exception:
-                pass
+            except Exception as e:
+                # CHECKLIST #122: a swallowed read error silently degrades to a
+                # live fetch. Log it so cache defects surface as themselves
+                # rather than as unexplained network traffic.
+                logger.warning("Cache read FAILED for %s (%r) - falling through "
+                               "to fetch", ticker, e)
         to_fetch.append(ticker)
 
     cached_count = len(results)
@@ -310,6 +327,35 @@ def get_ohlcv_bulk(
 
     # Fetch uncached tickers
     if to_fetch:
+        # B1561 CLASS-LEVEL GUARD. CLAUDE.md HARD CUT (owner directive
+        # 2026-05-05): "NO LIVE API CALLS in Stage 2 backtest". Defect B above
+        # meant that rule was violated on EVERY run for months without a single
+        # visible symptom, because a cache miss degrades silently into a
+        # download. The class is "a cache miss must never be able to become a
+        # silent network call". This guard closes the class for every caller of
+        # get_ohlcv_bulk, not just the one that surfaced it: any future cache
+        # regression now fails LOUDLY at the boundary instead of quietly
+        # serving non-point-in-time yfinance data.
+        from backtest.config import STAGE2_NO_LIVE_FETCH
+        if STAGE2_NO_LIVE_FETCH and probe:
+            # A PROBE is a caller asking "is this symbol cached?" as part of a
+            # designed canonical-then-proxy fallback (macro.py's ^VIX->VXX and
+            # DX-Y.NYB->UUP ladders). A miss there is the EXPECTED path, not a
+            # violation, so return cached-only and let the caller try its next
+            # candidate. Distinguishing "I require this" from "I'm checking for
+            # this" is what keeps the guard strict without breaking fallbacks.
+            logger.info("Probe miss (no live fetch): %s", to_fetch[:5])
+            return results
+        if STAGE2_NO_LIVE_FETCH:
+            raise RuntimeError(
+                f"STAGE-2 NO-LIVE-API VIOLATION: get_ohlcv_bulk would fetch "
+                f"{len(to_fetch)} of {len(tickers)} tickers from yfinance "
+                f"(first 10: {to_fetch[:10]}). Requested window "
+                f"{start} -> {end}. This is a CACHE MISS, not a data gap: "
+                f"check that the parquet covers the window and that the index "
+                f"'start'/'end' bracket it. Set STAGE2_NO_LIVE_FETCH=0 to "
+                f"permit live fetches (setup/prefetch only, never a backtest)."
+            )
         logger.info("Fetching %d tickers from yfinance...", len(to_fetch))
         for i, ticker in enumerate(to_fetch):
             if i > 0 and i % 10 == 0:

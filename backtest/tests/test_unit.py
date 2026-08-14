@@ -13817,3 +13817,100 @@ def test_b1545_monitor_armed_gate():
     ents.append({"type": "user", "message": {"content": "next"}})
     assert _m.scan_unmonitored_launch(ents) == [], (
         "launches before the last user message must not be re-scanned")
+
+
+# ---------------------------------------------------------------------------
+# B1561 -- get_ohlcv_bulk cache path + Stage-2 no-live-fetch guard
+#
+# DEFECT B was a writer-reader schema-contract break (PIVOT #37 class): the
+# writer stores dates in a `date` COLUMN next to a RangeIndex, the reader did
+# `pd.to_datetime(df.index)` on that RangeIndex -> every row became 1970-01-01
+# -> the date mask matched ZERO rows -> EVERY ticker fell through to a live
+# yfinance fetch. The bulk cache path had never produced a hit, so every
+# backtest silently re-downloaded its universe (Stage-2 NO-LIVE-API violation,
+# non-PIT data). Symptom was 11.2s of rate-limit `time.sleep` in a profile.
+#
+# These tests are BEHAVIOURAL per L391/L393: they exercise the real function
+# against a real on-disk parquet and assert on RETURNED DATA, with the fetch
+# path booby-trapped so any live call fails the test rather than passing it
+# quietly. A source-grep assertion would not have caught this bug.
+# ---------------------------------------------------------------------------
+
+def _b1561_cached_ticker():
+    """Pick a ticker whose parquet + index entry both exist, else skip."""
+    import pytest
+    from backtest.data.cache import _load_index, _cache_path
+    idx = _load_index()
+    for t, meta in idx.items():
+        if meta.get("start") and meta.get("end") and _cache_path(t).exists():
+            return t, date.fromisoformat(meta["start"]), date.fromisoformat(meta["end"])
+    pytest.skip("no cached OHLCV parquet available in this environment")
+
+
+def test_b1561_bulk_cache_hits_without_fetching():
+    """A fully-covered window must be served from disk with ZERO fetches.
+
+    This is the DEFECT B regression pin. Pre-fix this asserted 0 hits and 1
+    fetch attempt; the `date`-column normalisation is what makes it pass.
+    """
+    import backtest.data.cache as C
+    ticker, c_start, c_end = _b1561_cached_ticker()
+
+    attempts = []
+
+    def _trap(t, *a, **k):
+        attempts.append(t)
+        raise AssertionError(f"LIVE FETCH attempted for {t} on a covered window")
+
+    orig = C.get_ohlcv
+    try:
+        C.get_ohlcv = _trap
+        out = C.get_ohlcv_bulk([ticker], start=c_start, end=c_end)
+    finally:
+        C.get_ohlcv = orig
+
+    assert attempts == [], f"cache miss caused a fetch: {attempts}"
+    assert ticker in out, "covered window returned no data from cache"
+    df = out[ticker]
+    assert len(df) > 0, "cache hit returned an EMPTY frame"
+    # The 1970-01-01 signature of the bug: dates must be real, in-window.
+    assert df.index.min().date() >= c_start, (
+        f"row before window start -- index not parsed from the `date` column "
+        f"(got {df.index.min().date()}, expected >= {c_start})")
+    assert df.index.max().date() <= c_end
+    assert df.index.min().year > 1971, (
+        "epoch dates present: RangeIndex was coerced instead of the `date` column")
+
+
+def test_b1561_stage2_guard_blocks_live_fetch():
+    """An UNCOVERED window must RAISE, not silently download.
+
+    Pins the guard in the other direction so a future default flip to
+    permissive fails here rather than in a 4-hour run's network traffic.
+    """
+    import pytest
+    import backtest.data.cache as C
+    ticker, c_start, c_end = _b1561_cached_ticker()
+
+    def _trap(t, *a, **k):
+        raise AssertionError("guard did not fire; live fetch was reached")
+
+    orig = C.get_ohlcv
+    try:
+        C.get_ohlcv = _trap
+        with pytest.raises(RuntimeError, match="STAGE-2 NO-LIVE-API VIOLATION"):
+            # one day earlier than the cache holds == genuinely uncovered
+            C.get_ohlcv_bulk([ticker],
+                             start=c_start - timedelta(days=1), end=c_end)
+    finally:
+        C.get_ohlcv = orig
+
+
+def test_b1561_guard_flag_defaults_on():
+    """Stage-2 enforcement is ON by default; only setup jobs may disable it."""
+    from backtest.config import STAGE2_NO_LIVE_FETCH
+    import os
+    if os.environ.get("STAGE2_NO_LIVE_FETCH") is None:
+        assert STAGE2_NO_LIVE_FETCH is True, (
+            "STAGE2_NO_LIVE_FETCH must default True -- a backtest must never "
+            "reach the network (CLAUDE.md HARD CUT 2026-05-05)")

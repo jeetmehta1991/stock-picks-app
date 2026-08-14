@@ -250,7 +250,10 @@ def _load_vix_from_ohlcv_cache() -> Optional[pd.DataFrame]:
     # Try canonical source FIRST (note ordering reversal vs old code)
     candidates = [("^VIX", False), ("VXX", True)]
     for symbol, is_proxy in candidates:
-        result = cached_ohlcv_bulk([symbol], start=_date(2020,1,1), end=_date(2026,12,31))
+        # B1561: probe=True -- a miss here is the designed fallback path
+        # (canonical -> proxy), not a Stage-2 live-fetch violation.
+        result = cached_ohlcv_bulk([symbol], start=_date(2020,1,1),
+                                   end=_date(2026,12,31), probe=True)
         if symbol in result and not result[symbol].empty:
             df = result[symbol][["close"]].rename(columns={"close": "vix"})
             _VIX_CACHE = df
@@ -284,7 +287,10 @@ def _load_dxy_from_ohlcv_cache() -> Optional[pd.DataFrame]:
     from datetime import date as _date
     candidates = [("DX-Y.NYB", False), ("UUP", True)]
     for symbol, is_proxy in candidates:
-        result = cached_ohlcv_bulk([symbol], start=_date(2020,1,1), end=_date(2026,12,31))
+        # B1561: probe=True -- a miss here is the designed fallback path
+        # (canonical -> proxy), not a Stage-2 live-fetch violation.
+        result = cached_ohlcv_bulk([symbol], start=_date(2020,1,1),
+                                   end=_date(2026,12,31), probe=True)
         if symbol in result and not result[symbol].empty:
             df = result[symbol][["close"]].rename(columns={"close": "dxy"})
             _DXY_CACHE = df

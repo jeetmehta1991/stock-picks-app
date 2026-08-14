@@ -2435,6 +2435,15 @@ USE_PRECOMPUTED_SIGNALS = True
 #     hypothesis for the unexplained 26.63x entry inflation at 5 tickers (L376).
 OPTIMIZATION_MODE: bool = os.environ.get("OPTIMIZATION_MODE", "0") == "1"
 
+# B1561 -- STAGE-2 NO-LIVE-API ENFORCEMENT (CLAUDE.md HARD CUT 2026-05-05).
+# Defaults ON: a backtest must never reach the network. Until B1561 this rule
+# was policy-only, and a reader/writer schema mismatch in get_ohlcv_bulk
+# (dates in a `date` COLUMN vs a reader assuming a DatetimeIndex) meant EVERY
+# run silently re-downloaded its entire universe from yfinance -- non-PIT data,
+# no symptom other than 11.2s of rate-limit sleep in a profile.
+# Set to 0 ONLY for one-time SETUP/prefetch jobs, never for a backtest.
+STAGE2_NO_LIVE_FETCH: bool = os.environ.get("STAGE2_NO_LIVE_FETCH", "1") == "1"
+
 SMC_SWING_LENGTH: int = int(os.environ.get("SMC_SWING_LENGTH", "20"))
 
 # Which EMA span the trend leg reads. compute_ema_sma emits spans 9/20/21/50/200

@@ -11136,3 +11136,7 @@ permission-MODE decision for the owner, not an allowlist change.
 | ticket | pri | item |
 |---|---|---|
 | **S6-B1560a** | **HIGH** | Push at END of every turn, not just commit. `git log origin/main..HEAD` must be empty (L434). Consider extending the Stop hook to check `[ahead N]`. |
+| **S6-B1561a** | **DONE** | Fixed `get_ohlcv_bulk` defect B (date-column normalisation) + `STAGE2_NO_LIVE_FETCH` guard (default ON) + `probe=True` for macro fallback ladders + 3 behavioural pin tests. Pyramid 905/2 GREEN. L435. |
+| **S6-B1561b** | **OWNER** | **Defect A unresolved:** `DATA_LOAD_START=2021-05-05` vs cached start `2021-05-06` — cache still misses on the real backtest window, so the guard now RAISES on live runs. Options: (A2) set `DATA_LOAD_START = 2021-05-06`, one line, warmup only, locked 2022-05-05→2026-05-05 window untouched — RECOMMENDED; (A1) leading-gap tolerance in the coverage check; (A3) re-prefetch 2021-05-05 via live API. Needs owner ruling — config change. |
+| **S6-B1561c** | **MED** | Audit every other `get_ohlcv_bulk` / cache reader for the same writer-reader schema assumption (`metrics.py:2801`, `recompute_cube_from_trade_log.py:87`, `test_performance_load.py`). Defect B's class may have siblings. |
+| **S6-B1561d** | **MED** | `USE_PRECOMPUTED_SIGNALS = True` but `precompute_cache_info()` → `{'dir_exists': False, 'ticker_count': 0}`. Flag ON, cache empty, miss swallowed by bare `except`. Populate or turn off. |

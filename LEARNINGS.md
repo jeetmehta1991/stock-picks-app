@@ -6616,3 +6616,51 @@ repeated "committed" reports were true locally and false from where the owner wa
 done until `git status -sb` shows no `[ahead N]`.** Detection signal: `git log origin/main..HEAD`
 non-empty at end of turn. This is the same class as L410 (completion is the ARTIFACT, not the
 percentage): I checked the step I performed rather than the state the owner observes.
+
+### L435 — the OHLCV bulk cache never worked; every backtest silently re-downloaded its universe
+
+**B1561.** A profile showed `time.sleep` burning 11.2s across 26 calls. Tracing it reached
+`cache.get_ohlcv_bulk`'s yfinance rate-limit pauses — and the run log confirmed
+`Fetching 21 tickers from yfinance...`. A Stage-2 backtest was making live API calls, which
+CLAUDE.md has forbidden by HARD CUT since 2026-05-05.
+
+**Two independent defects, either sufficient to kill the cache path:**
+
+- **A (coverage off-by-one):** `DATA_LOAD_START = 2021-05-05`; every cached ticker's index start
+  is `2021-05-06`. The check `cached["start"] <= start` is False for every ticker, forever.
+- **B (writer-reader schema contract, PIVOT #37 class):** the writer stores dates in a `date`
+  COLUMN beside a `RangeIndex`; the reader did `pd.to_datetime(df.index)` on that RangeIndex,
+  yielding **1970-01-01** for every row, so the date mask matched ZERO rows.
+
+B means the bulk cache path had **never returned a hit for any ticker**. 2,123 cached parquets
+were dead weight. Consequences ranked: yfinance is **not point-in-time** (it back-adjusts), a
+failed fetch dropped the ticker **silently** (`if not df.empty`), and only third, it was slow.
+
+**Root cause of the invisibility:** a cache miss degrades into a *successful* download. The system
+had no failing state — it produced plausible results while violating its own core data rule. The
+only symptom in months of runs was 11 seconds of sleep in one profile.
+
+**Generalized rule:** *a cache miss must never be able to become a silent network call.* Fixing
+the schema bug alone would leave the class open — any future regression would degrade the same
+silent way. `STAGE2_NO_LIVE_FETCH` (default True) makes the boundary itself fail loudly.
+
+**The guard immediately found a second instance:** it fired on `DX-Y.NYB` inside the test suite,
+proving `test_macro_snapshot_includes_batch13_expansion` had been passing *by making a live
+network call*.
+
+**Design correction the guard needed:** macro runs deliberate canonical-then-proxy ladders
+(`^VIX`→`VXX`, `DX-Y.NYB`→`UUP`). A miss there is the EXPECTED path. The guard was wrong to treat
+it as a violation, so `probe=True` now separates "I require this data" from "I'm checking whether
+this exists". A guard that cannot express that distinction forces callers to swallow its
+exception — which would have rebuilt the very silence it was added to remove.
+
+**Detection signal that would have caught it years earlier:** assert on RETURNED DATA, not on
+call success. `test_b1561_bulk_cache_hits_without_fetching` traps the fetch path so a live call
+FAILS the test; the pre-existing tests called the function and checked it didn't throw, which a
+silent download satisfies perfectly.
+
+**Also corrected this turn:** I reported `compute_all_signals` at "502 ms/bar vs a ~25 ms
+docstring" and `compute_parabolic_sar` as "83.5% of signal cost". Both were **cold-start
+measurements dominated by Numba JIT compilation**. Steady state is 47.4 ms and 0.1 ms. Retracted
+within the same exchange. **Rule: never quote a per-call cost from an unrepeated first call in a
+JIT-compiled path — report cold and steady separately, always.**
