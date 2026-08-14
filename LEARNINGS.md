@@ -6698,3 +6698,44 @@ they are DELISTED (ABMD, ADS, AERI acquired). The END check has the mirror flaw 
 have recent bars, so they re-fetch forever and the guard now raises on them. Fixing this needs new
 index metadata (`fetched_through`) to distinguish "delisted, cache complete" from "cache stale";
 the index today stores only `start`/`end`/`rows`. NOT fixed — ticketed, not silently accepted.
+
+### L437 — demand-driven signal pruning cannot use static analysis; a runtime-built key is invisible
+
+**B1563.** Owner approved items 2/3/4 of the runtime plan. Item 2 was "derive the required signal
+keys from the active strategy subset and skip every producer that emits none of them."
+
+Measured the prize first (profile `cumtime`, 1389.7s total): `compute_all_signals` **14.3%**,
+`compute_smc_signals` **27.2%**, `screen_instrument` 73.9%, `_process_day` 95.8%. Real, but far
+below the ~6x the per-bar arithmetic suggested.
+
+Then the blocker. Static extraction of `s.get("literal")` for `smc_breaker_block_long` returned
+**one** key, `smc_breaker_block_bullish`, implying **0 of 33 producers needed**. The strategy
+actually reads a second key:
+
+```python
+_ema_key = f"price_above_ema_{_cfg.STRAT_EMA_SPAN}"   # B1519, built at RUNTIME
+fires = s.get("smc_breaker_block_bullish", False) and s.get(_ema_key, False)
+```
+
+A static scan cannot see it. Pruning on that basis would skip `compute_ema_sma`, the strategy
+would read a missing key, `.get(..., False)` would return the default, and **the strategy would
+silently never fire** — no exception, no warning, a plausible zero-fire result. It would have hit
+the exact strategy under optimisation, and the B1519 f-string was my own change.
+
+**6 of 222 strategies** use dynamic key access (EXECUTED scan).
+
+**Generalized rule:** *any optimisation that decides what to compute from what the code appears to
+read must record accesses at RUNTIME, or fail loudly on absence — never infer from source text.*
+The `.get(key, default)` idiom is what makes this class invisible: it converts "this was never
+computed" into "this is False", which is a legal value.
+
+**Required design before item 2 or 3 can ship (S6-B1563c):** (a) runtime key-access recording
+rather than static inference, or an explicit dynamic-key declaration per strategy; AND (b) a hard
+gate that distinguishes "absent because its producer was skipped" from "absent legitimately", so a
+skipped-producer read RAISES instead of defaulting. Without (b) the optimisation is a silent-miss
+generator.
+
+**Item 4 shipped instead:** `USE_PRECOMPUTED_SIGNALS` was **True with an empty cache**
+(`dir_exists: False, ticker_count: 0`) — every lookup missed, swallowed by a bare except. Set
+False, and pinned flag-vs-cache state in BOTH directions so the pair cannot drift again. Populating
+it needs the same PIT audit that measured the sibling `USE_SMC_PANEL_CACHE` UNSAFE at 11.5%.

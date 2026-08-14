@@ -2388,7 +2388,18 @@ USE_PANEL_TECHNICAL_SIGNALS = True
 # materializes after scripts/precompute_signals.py runs on full
 # universe + writes parquets to data_prefetch/precomputed_signals/.
 # -----------------------------------------------------------------------------
-USE_PRECOMPUTED_SIGNALS = True
+# B1563: was True, but `precompute_cache_info()` returns
+# {'dir_exists': False, 'ticker_count': 0} -- the flag has been ON with an
+# EMPTY cache, so every lookup missed and the miss was swallowed by a bare
+# `except Exception: signals = None` in screen_instrument. A flag advertising
+# a 10-50x optimisation that has never held a single row is worse than no
+# flag: it makes the code read as if the fast path exists.
+# Turning it OFF is the honest state. Re-enabling requires (a) populating the
+# cache AND (b) a per-key PIT-divergence audit first -- the sibling
+# USE_SMC_PANEL_CACHE was measured UNSAFE at 11.5pct divergence (B1542), and
+# a signals cache primed from full series carries the same lookahead risk.
+# See S6-B1563b.
+USE_PRECOMPUTED_SIGNALS = False
 
 # -----------------------------------------------------------------------------
 # USE_SMC_PANEL_CACHE - Batch 555 OPT-C Phase 4 wire-in flag (2026-06-02)

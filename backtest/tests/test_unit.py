@@ -13987,3 +13987,59 @@ def test_b1562_data_load_start_matches_cached_history():
         f"first bar for {len(starts)-covered} of {len(starts)} tickers "
         f"({covered/len(starts):.1%} covered). The bulk loader would treat "
         f"nearly every ticker as a miss (L435).")
+
+
+def test_b1563_precomputed_signals_flag_matches_cache_reality():
+    """USE_PRECOMPUTED_SIGNALS must not be ON while the cache is empty.
+
+    The flag was True with `dir_exists: False, ticker_count: 0` -- every
+    lookup missed and screen_instrument swallowed it in a bare except, so
+    the code advertised a fast path that had never held a row. This pins
+    flag and cache state together in BOTH directions so they cannot drift.
+    """
+    from backtest.config import USE_PRECOMPUTED_SIGNALS
+    from backtest.signals.precomputed_cache import precompute_cache_info
+    info = precompute_cache_info()
+    if USE_PRECOMPUTED_SIGNALS:
+        assert info["ticker_count"] > 0, (
+            "USE_PRECOMPUTED_SIGNALS is ON but the precomputed cache is EMPTY "
+            f"({info}) -- every lookup misses silently. Populate it (with a "
+            "PIT-divergence audit, see S6-B1563b) or set the flag False.")
+    else:
+        # Flag OFF is only correct while the cache is unpopulated/unvalidated.
+        # If someone populates it, this fails and forces the audit + flip.
+        assert info["ticker_count"] == 0, (
+            f"precomputed cache is POPULATED ({info['ticker_count']} tickers) "
+            "but USE_PRECOMPUTED_SIGNALS is False -- run the PIT-divergence "
+            "audit (S6-B1563b) and turn the flag on, or remove the cache.")
+
+
+def test_b1563_dynamic_signal_keys_block_static_pruning():
+    """Pins WHY demand-driven skip_indicators cannot use static analysis.
+
+    `smc_breaker_block_long` builds its trend-gate key at RUNTIME
+    (f"price_above_ema_{STRAT_EMA_SPAN}"), so a static scan of s.get()
+    literals sees only ONE key and would skip compute_ema_sma -- after which
+    the strategy reads a missing key, gets the `False` default, and silently
+    never fires. This test fails if anyone builds static-only pruning by
+    asserting the dynamic pattern still exists and is still invisible.
+    """
+    import inspect
+    import re
+    from backtest.signals.screener import ALL_STRATEGIES
+
+    fn = ALL_STRATEGIES["smc_breaker_block_long"]
+    src = inspect.getsource(fn)
+    literal_keys = set(re.findall(r's\.get\(\s*["\']([a-zA-Z0-9_]+)', src))
+
+    assert re.search(r'_ema_key\s*=\s*f["\']price_above_ema_', src), (
+        "the runtime-constructed EMA key is gone; if the strategy is now "
+        "static, re-evaluate whether static pruning became safe")
+    assert not any(k.startswith("price_above_ema_") for k in literal_keys), (
+        "EMA key is now a literal -- static extraction would see it")
+    assert "smc_breaker_block_bullish" in literal_keys
+    # The invisible-key hazard in one assertion: a static scan under-counts.
+    assert len(literal_keys) == 1, (
+        f"static scan sees {literal_keys}; the strategy actually ALSO reads a "
+        "runtime-built price_above_ema_<span> key. Any demand-driven pruning "
+        "must record keys at RUNTIME or declare dynamic keys explicitly.")
