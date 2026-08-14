@@ -11110,3 +11110,29 @@ armed hourly-unconditional.
 |---|---|---|
 | **S6-B1559a** | **HIGH** | On concurrency-test completion: report per-config elapsed vs the 2,759 s baseline, confirm no MemoryError, and re-cost the 20-config sweep. This decides whether 91 h collapses. |
 | **S6-B1559b** | MED | Attribution run: isolate whether the Sharpe 0.473 -> 0.860 gain came from the tier bypass, the universe, or the window. |
+
+---
+
+## B1560 (2026-08-14) - 39 commits PUSHED (L434); read-only allowlist merged
+
+**OWNER: "STRATEGY_OPTIMISATION_PLAN.md still shows updated 4 days ago on git."** Correct. The doc
+WAS committed (`6df2fb3ba`, 921 lines, SS11 present in HEAD) but the branch was **[ahead 39]** -
+nothing pushed since `408aece8a` four days ago. Every "committed" report was true locally and false
+from the owner's view. **Pushed: `408aece8a..6df2fb3ba`, branch now clean.** L434.
+
+**PERMISSION ALLOWLIST (/fewer-permission-prompts):** scanned **12,285 Bash calls** across 51
+transcripts. Merged **11 read-only AWS patterns** into `.claude/settings.json` (80 -> 91):
+`s3 ls`, `s3api head-object`/`list-objects-v2`, `ec2 describe-instances`/`describe-volumes`/
+`describe-spot-instance-requests`/`describe-spot-price-history`/`describe-images`/
+`describe-security-groups`/`get-console-output`, `sts get-caller-identity`.
+
+**HONEST ASSESSMENT: this will barely reduce prompts.** The dominant source is `python` (1,322
+calls) and allowlisting it grants arbitrary code execution, which the skill forbids. `cd` (~7,586)
+and `grep`/`tail`/`cat`/`ls`/`head`/`wc`/`sed` (~1,500) are already auto-allowed and never prompted.
+`git add`/`commit`/`push` (547), `aws s3 cp`/`sync`/`rm` (366), `ssh` (79) and `powershell` (89) are
+mutating or arbitrary-execution and must keep prompting. Reducing `python` prompts is a
+permission-MODE decision for the owner, not an allowlist change.
+
+| ticket | pri | item |
+|---|---|---|
+| **S6-B1560a** | **HIGH** | Push at END of every turn, not just commit. `git log origin/main..HEAD` must be empty (L434). Consider extending the Stop hook to check `[ahead N]`. |

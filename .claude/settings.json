@@ -102,7 +102,18 @@
       "Bash(PYTHONIOENCODING=utf-8 python -u temp_staging/batch12b_pytrends.py)",
       "Bash(python -c \"import urllib3; print\\('urllib3 version:', urllib3.__version__\\)\")",
       "Bash(python -c \"import smartmoneyconcepts; print\\('module path:', smartmoneyconcepts.__file__\\); print\\('version:', getattr\\(smartmoneyconcepts,'__version__','no version'\\)\\)\")",
-      "Bash(SMC_CREDIT=0 python -c \"from smartmoneyconcepts import smc; print\\('smc class methods:', [m for m in dir\\(smc\\) if not m.startswith\\('_'\\)][:10]\\)\")"
+      "Bash(SMC_CREDIT=0 python -c \"from smartmoneyconcepts import smc; print\\('smc class methods:', [m for m in dir\\(smc\\) if not m.startswith\\('_'\\)][:10]\\)\")",
+      "Bash(aws s3 ls *)",
+      "Bash(aws s3api head-object *)",
+      "Bash(aws s3api list-objects-v2 *)",
+      "Bash(aws ec2 describe-instances *)",
+      "Bash(aws ec2 describe-volumes *)",
+      "Bash(aws ec2 describe-spot-instance-requests *)",
+      "Bash(aws ec2 describe-spot-price-history *)",
+      "Bash(aws ec2 describe-images *)",
+      "Bash(aws ec2 describe-security-groups *)",
+      "Bash(aws ec2 get-console-output *)",
+      "Bash(aws sts get-caller-identity *)"
     ]
   }
 }

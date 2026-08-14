@@ -6605,3 +6605,14 @@ Every entry was individually responsive and the whole was unusable for its state
 this without me?" - if the answer needs any inference, it is notes, not a runbook.** SS11 added:
 exact commands per step, every flag with its reason, failure modes with symptoms, and the measured
 costs.
+
+### L434
+**I let 39 commits sit unpushed while telling the owner docs were "committed".** B1560, owner:
+*"STRATEGY_OPTIMISATION_PLAN.md this still shows updated 4 days ago on git."* Correct - and my
+repeated "committed" reports were true locally and false from where the owner was looking.
+`feedback_standing_approvals` covers per-turn git push; I committed every turn and pushed none for
+39 batches, so SS10, SS11, CHECKLIST #185/#186 and L423-L433 were invisible on GitHub.
+**Rule: "committed" is not "delivered" when the reader's view is the remote - a doc update is not
+done until `git status -sb` shows no `[ahead N]`.** Detection signal: `git log origin/main..HEAD`
+non-empty at end of turn. This is the same class as L410 (completion is the ARTIFACT, not the
+percentage): I checked the step I performed rather than the state the owner observes.
