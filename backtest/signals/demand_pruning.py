@@ -288,8 +288,14 @@ def _finalise():
     km = _PRODUCER_KEYS or {}
     keep = required_producers(_STATE["read"], km)
     _STATE["skip_producers"] = frozenset(set(km) - keep)
-    _STATE["skip"] = skipped_keys(keep, km)
     _STATE["mode"] = "pruned"
+    # B1569: SMC-skipped keys must join the guard set too. Without this a key
+    # from a pruned SMC primitive would be merely ABSENT, and `.get()` would
+    # hand back a default -- the exact silent misfire (L437) the guard exists
+    # to prevent. `smc_skip_primitives()` requires mode=="pruned", hence the
+    # ordering above.
+    _smc_skipped = smc_skipped_keys(smc_skip_primitives())
+    _STATE["skip"] = frozenset(set(skipped_keys(keep, km)) | set(_smc_skipped))
     log.info("demand-pruning ARMED: %d/%d producers kept, %d keys pruned "
              "(recorded %d reads over warmup)",
              len(keep), len(km), len(_STATE["skip"]), len(_STATE["read"]))
@@ -297,3 +303,60 @@ def _finalise():
 
 __all__ += ["begin_bar", "wrap", "reset_state", "state",
             "WARMUP_BARS_DEFAULT"]
+
+
+# ---------------------------------------------------------------------------
+# B1569 -- SMC primitive pruning (compute_smc_signals = 27.2pct of runtime)
+#
+# Measured per-primitive cost (steady-state median of 5, 800-bar AAPL):
+#     retracements 121.99 ms (46.7pct) | fvg 73.39 (28.1) | bos_choch 47.24 (18.1)
+#     ob 10.53 (4.0) | swing_highs_lows 5.42 (2.1) | liquidity 2.50 (1.0)
+# The three guarded here are 92.9pct of the cost. `ob`, `liquidity` and the
+# shared `swings` dependency stay always-on: they are cheap, and `swings` feeds
+# four primitives so skipping it would require all four to be unused.
+#
+# This map is HARDCODED for runtime cheapness -- deriving it would cost three
+# extra compute_smc_signals calls per bar, which is the thing we are avoiding.
+# `test_b1569_smc_primitive_map_matches_reality` RE-DERIVES it by diffing real
+# output and fails if it drifts, so the constant cannot silently rot.
+# ---------------------------------------------------------------------------
+
+SMC_PRIMITIVE_KEYS: dict[str, frozenset[str]] = {
+    "fvg": frozenset({
+        "smc_fvg_bearish_active", "smc_fvg_bullish_active",
+        "smc_fvg_retest_long_zone", "smc_fvg_retest_short_zone",
+        "smc_inverse_fvg_bearish", "smc_inverse_fvg_bullish",
+    }),
+    "bos_choch": frozenset({
+        "smc_bos_bearish", "smc_bos_bullish",
+        "smc_bos_retest_long", "smc_bos_retest_short",
+        "smc_choch_bearish", "smc_choch_bullish",
+    }),
+    "retracements": frozenset({
+        "smc_ote_long_zone", "smc_ote_short_zone", "smc_retracement_pct",
+    }),
+}
+
+
+def smc_skip_primitives(read_keys: Iterable[str] | None = None) -> set:
+    """SMC primitives whose keys are never read -> safe to skip.
+
+    Returns an EMPTY set unless pruning is armed, so the unpruned path is
+    unchanged. During warmup nothing is skipped, because the read set is still
+    being collected and skipping early would hide the very reads we need.
+    """
+    if _STATE["mode"] != "pruned":
+        return set()
+    rk = set(read_keys) if read_keys is not None else set(_STATE["read"])
+    return {p for p, keys in SMC_PRIMITIVE_KEYS.items() if not (keys & rk)}
+
+
+def smc_skipped_keys(skipped_prims: Iterable[str]) -> frozenset[str]:
+    """Keys that will be absent because their SMC primitive was skipped."""
+    out: set[str] = set()
+    for p in skipped_prims:
+        out |= set(SMC_PRIMITIVE_KEYS.get(p, ()))
+    return frozenset(out)
+
+
+__all__ += ["SMC_PRIMITIVE_KEYS", "smc_skip_primitives", "smc_skipped_keys"]

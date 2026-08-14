@@ -80,6 +80,7 @@ def compute_smc_signals(
     dealing_range_lookback: int = 50,
     event_recency_bars: int = 90,
     ticker: Optional[str] = None,
+    skip_primitives: Optional[set] = None,
 ) -> dict:
     """Compute SMC / ICT signals for a single-ticker OHLCV DataFrame.
 
@@ -163,7 +164,12 @@ def compute_smc_signals(
     fvg_df = None
     try:
         # B555 OPT-C: cache-first dispatch
-        if _cached_primitives is not None and "fvg" in _cached_primitives:
+        # B1569: 28.1pct of SMC primitive cost. Skipped -> empty frame ->
+        # the column guards below emit nothing, and GuardedSignals raises if
+        # anything actually reads a key we chose not to compute.
+        if skip_primitives and "fvg" in skip_primitives:
+            fvg_df = pd.DataFrame()
+        elif _cached_primitives is not None and "fvg" in _cached_primitives:
             fvg_df = _cached_primitives["fvg"]
         else:
             fvg_df = _smc.fvg(ohlc)
@@ -304,7 +310,10 @@ def compute_smc_signals(
         # BOS / CHoCH with Level for retest logic
         bos_df = None
         try:
-            if _cached_primitives is not None and "bos_choch" in _cached_primitives:
+            # B1569: 18.1pct of SMC primitive cost.
+            if skip_primitives and "bos_choch" in skip_primitives:
+                bos_df = pd.DataFrame()
+            elif _cached_primitives is not None and "bos_choch" in _cached_primitives:
                 bos_df = _cached_primitives["bos_choch"]
             else:
                 bos_df = _smc.bos_choch(ohlc, swings)
@@ -407,7 +416,10 @@ def compute_smc_signals(
         # Batch 216: retracements primitive for OTE (Optimal Trade Entry)
         # 62-79% Fibonacci zone after CHoCH.
         try:
-            if _cached_primitives is not None and "retracements" in _cached_primitives:
+            # B1569: 46.7pct of SMC primitive cost -- the single largest.
+            if skip_primitives and "retracements" in skip_primitives:
+                ret_df = pd.DataFrame()
+            elif _cached_primitives is not None and "retracements" in _cached_primitives:
                 ret_df = _cached_primitives["retracements"]
             else:
                 ret_df = _smc.retracements(ohlc, swings)

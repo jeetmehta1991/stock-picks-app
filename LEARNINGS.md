@@ -6926,3 +6926,43 @@ without tripping the Stage-2 guard.
 **Scope of the claim:** 1 strategy x 5 tickers x 2 years, sequential, single machine, one A/B pair.
 The 14.64pct applies to a single-strategy subset run. It does NOT transfer to a full-roster cube
 run, where every producer is read and pruning is inert by design.
+
+### L443 — SMC primitive pruning: 91.5pct of the largest single cost centre
+
+**B1569 / S6-B1565c.** `compute_smc_signals` is 27.2pct of runtime — the biggest single phase after
+the day loop itself. Measured per-primitive (steady-state median of 5, 800-bar AAPL):
+
+```
+retracements 121.99 ms (46.7pct)   fvg 73.39 (28.1)   bos_choch 47.24 (18.1)
+ob            10.53 ms ( 4.0pct)   swings 5.42 (2.1)  liquidity  2.50 (1.0)
+```
+
+**One primitive, `retracements`, is nearly half the cost of the most expensive phase in the
+system** — and `smc_breaker_block_long` never reads a single key it produces.
+
+Guarded the top three (92.9pct of cost). `ob` and `liquidity` stay always-on because they are
+cheap, and `swings` stays because it feeds four primitives — skipping it would require all four to
+be unused, which is a coupling not worth the risk for 2.1pct.
+
+**Measured: 279.44 -> 23.79 ms, a 91.5pct saving**, with `smc_breaker_block_bullish` still present.
+
+**A skipped primitive yields an EMPTY frame**, so the existing `if "FVG" in df.columns` guards emit
+nothing. Absence — not a wrong value — is what `GuardedSignals` then protects.
+
+**The map is hardcoded, and a test re-derives it.** Deriving primitive->keys at runtime would cost
+three extra `compute_smc_signals` calls per bar, which is precisely what we are avoiding. So
+`SMC_PRIMITIVE_KEYS` is a constant — and constants rot. `test_b1569_smc_primitive_map_matches_reality`
+recomputes it by diffing real producer output and fails on any drift. **This is the general answer
+to "hardcode for speed vs derive for correctness": hardcode the value, and let a test own the
+derivation.** The diff also VALIDATED the split empirically rather than trusting the hand-written
+prefix map in `smc_cache_divergence_by_primitive.py` — fvg lost exactly its 6 keys, bos_choch
+exactly its 6, retracements exactly its 3.
+
+**Ordering bug caught while wiring:** `_finalise()` originally set `_STATE["skip"]` before mode
+became "pruned", but `smc_skip_primitives()` returns an empty set unless mode is already "pruned".
+The SMC keys would have been silently omitted from the guard set — pruned, absent, and defaulting.
+Fixed by setting mode first. **A guard that is populated in the wrong order is not a guard.**
+
+**Unmeasured:** no end-to-end run yet with SMC pruning armed. Against the 27.2pct share a 91.5pct
+primitive saving DERIVES ~24.9pct of total runtime, on top of the OBSERVED 14.64pct from B1568.
+That is a derivation, not a measurement — B1568 is the precedent for how to settle it.

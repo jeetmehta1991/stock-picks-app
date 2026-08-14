@@ -8713,8 +8713,15 @@ def screen_instrument(
         # B1519: pass the swing_length knob on the ENGINE call path. Previously
         # only `ticker` was passed, so the producer default won and no sweep
         # could vary it (L387).
+        # B1569: skip SMC primitives whose keys the active strategy subset
+        # never reads. Empty set unless pruning is ARMED, so the full-roster
+        # path is unchanged. Keys from a skipped primitive are added to the
+        # GuardedSignals skip set below, so reading one RAISES.
+        from backtest.signals import demand_pruning as _dp
+        _smc_skip = _dp.smc_skip_primitives()
         smc_out = compute_smc_signals(
-            df, ticker=ticker, swing_length=_cfg.SMC_SWING_LENGTH)
+            df, ticker=ticker, swing_length=_cfg.SMC_SWING_LENGTH,
+            skip_primitives=_smc_skip)
         if smc_out:
             signals.update(smc_out)
         else:

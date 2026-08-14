@@ -14372,3 +14372,94 @@ def test_b1567_kill_switch_disables_pruning():
             os.environ.pop("STRATEGY_SUBSET_FILE", None)
         else:
             os.environ["STRATEGY_SUBSET_FILE"] = old_sub
+
+
+# ---------------------------------------------------------------------------
+# B1569 -- SMC primitive pruning (compute_smc_signals = 27.2pct of runtime)
+# ---------------------------------------------------------------------------
+
+def _b1569_smc_df():
+    import pytest
+    from backtest.config import SMC_PHASE
+    from backtest.signals import smc_ict
+    if SMC_PHASE != "PRODUCTION" or not smc_ict._SMC_AVAILABLE:
+        pytest.skip("SMC not in PRODUCTION phase / library unavailable")
+    df = _b1565_sample_df()
+    need = {"open", "high", "low", "close"}
+    if not need.issubset(set(df.columns)):
+        pytest.skip("sample frame lacks OHLC columns")
+    return df
+
+
+def test_b1569_smc_primitive_map_matches_reality():
+    """RE-DERIVE the hardcoded map by diffing real output.
+
+    SMC_PRIMITIVE_KEYS is hardcoded so the hot path does not pay three extra
+    compute calls per bar. That makes it a constant that can rot silently as
+    signals are added -- so this test recomputes it from the producer and
+    fails on any drift.
+    """
+    from backtest.signals import smc_ict
+    from backtest.signals.demand_pruning import SMC_PRIMITIVE_KEYS
+
+    sl = _b1569_smc_df()
+    full = smc_ict.compute_smc_signals(sl)
+    assert full, "SMC produced no signals; cannot validate the map"
+
+    for prim, declared in SMC_PRIMITIVE_KEYS.items():
+        out = smc_ict.compute_smc_signals(sl, skip_primitives={prim})
+        actual = frozenset(set(full) - set(out))
+        assert actual == declared, (
+            f"SMC_PRIMITIVE_KEYS[{prim!r}] has drifted.\n"
+            f"  declared: {sorted(declared)}\n"
+            f"  actual  : {sorted(actual)}\n"
+            f"Update the constant in demand_pruning.py.")
+
+
+def test_b1569_unskipped_smc_path_is_unchanged():
+    """skip_primitives=None / omitted must behave exactly as before B1569."""
+    from backtest.signals import smc_ict
+    sl = _b1569_smc_df()
+    a = smc_ict.compute_smc_signals(sl)
+    b = smc_ict.compute_smc_signals(sl, skip_primitives=None)
+    c = smc_ict.compute_smc_signals(sl, skip_primitives=set())
+    assert set(a) == set(b) == set(c)
+    assert len(a) > 10, f"SMC key count collapsed to {len(a)}"
+
+
+def test_b1569_required_smc_key_survives_pruning():
+    """The strategy's own SMC key must survive when everything else is cut."""
+    from backtest.signals import smc_ict
+    sl = _b1569_smc_df()
+    pruned = smc_ict.compute_smc_signals(
+        sl, skip_primitives={"fvg", "bos_choch", "retracements"})
+    assert "smc_breaker_block_bullish" in pruned, (
+        "breaker key was pruned away -- it belongs to the `ob` primitive, "
+        "which must stay on")
+    full = smc_ict.compute_smc_signals(sl)
+    assert len(pruned) < len(full), "no SMC pruning took effect"
+
+
+def test_b1569_smc_skip_is_inert_until_armed():
+    """No pruning during warmup or when disabled.
+
+    Skipping during warmup would hide the very reads the recorder needs, and
+    the resulting skip set would then be wrong in the direction that raises.
+    """
+    from backtest.signals import demand_pruning as DP
+    DP.reset_state()
+    assert DP.smc_skip_primitives() == set(), "pruned SMC before arming"
+    DP._STATE["mode"] = "warmup"
+    assert DP.smc_skip_primitives() == set(), "pruned SMC during warmup"
+    DP.reset_state()
+
+
+def test_b1569_skipped_smc_keys_join_the_guard_set():
+    """A pruned SMC key must RAISE on read, not return .get()'s default."""
+    from backtest.signals import demand_pruning as DP
+    skipped = DP.smc_skipped_keys({"fvg"})
+    assert "smc_fvg_bullish_active" in skipped
+    g = DP.GuardedSignals({"other": 1}, skipped)
+    import pytest
+    with pytest.raises(DP.SkippedSignalError):
+        g.get("smc_fvg_bullish_active", False)
