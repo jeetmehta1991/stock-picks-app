@@ -13899,9 +13899,12 @@ def test_b1561_stage2_guard_blocks_live_fetch():
     try:
         C.get_ohlcv = _trap
         with pytest.raises(RuntimeError, match="STAGE-2 NO-LIVE-API VIOLATION"):
-            # one day earlier than the cache holds == genuinely uncovered
+            # B1562: "uncovered" now means STALE -- missing bars at the END of
+            # the window. (Pre-B1562 this test moved `start` earlier instead,
+            # which is no longer a miss: a late-listing ticker legitimately
+            # holds less history and must be served, not re-fetched.)
             C.get_ohlcv_bulk([ticker],
-                             start=c_start - timedelta(days=1), end=c_end)
+                             start=c_start, end=c_end + timedelta(days=30))
     finally:
         C.get_ohlcv = orig
 
@@ -13914,3 +13917,73 @@ def test_b1561_guard_flag_defaults_on():
         assert STAGE2_NO_LIVE_FETCH is True, (
             "STAGE2_NO_LIVE_FETCH must default True -- a backtest must never "
             "reach the network (CLAUDE.md HARD CUT 2026-05-05)")
+
+
+# ---------------------------------------------------------------------------
+# B1562 -- cache coverage is END-anchored, not START-anchored
+#
+# The old check also demanded `cached["start"] <= start`, which is
+# UNSATISFIABLE for any security that listed after `start`. 415 of 2,122
+# cached tickers are recent IPOs whose index start equals their parquet's
+# first bar (ABAT 2023-09-21, ABVX 2023-10-20) -- they re-fetched on every
+# run forever. Staleness lives at the END of a window; a late start just
+# means less history, which downstream already rejects
+# (screener.py:8556, len(df) < 30 -> insufficient_history).
+# ---------------------------------------------------------------------------
+
+def test_b1562_short_history_ticker_is_served_not_fetched():
+    """A ticker that listed AFTER the warmup start must serve from cache."""
+    import pytest
+    import backtest.data.cache as C
+    from backtest.data.cache import _load_index, _cache_path
+    from backtest.config import DATA_LOAD_START
+
+    idx = _load_index()
+    late = None
+    for t, m in idx.items():
+        if (m.get("start") and m.get("end") and _cache_path(t).exists()
+                and date.fromisoformat(m["start"]) > DATA_LOAD_START
+                and date.fromisoformat(m["end"]) >= date(2026, 5, 5)):
+            late = (t, date.fromisoformat(m["start"]))
+            break
+    if late is None:
+        pytest.skip("no late-listing cached ticker in this environment")
+    ticker, first = late
+
+    def _trap(t, *a, **k):
+        raise AssertionError(
+            f"{t} listed {first} (after warmup start {DATA_LOAD_START}); a "
+            f"start-anchored coverage check would fetch it forever")
+
+    orig = C.get_ohlcv
+    try:
+        C.get_ohlcv = _trap
+        out = C.get_ohlcv_bulk([ticker], start=DATA_LOAD_START, end=date(2026, 5, 5))
+    finally:
+        C.get_ohlcv = orig
+
+    assert ticker in out and len(out[ticker]) > 0
+    assert out[ticker].index.min().date() >= DATA_LOAD_START
+
+
+def test_b1562_data_load_start_matches_cached_history():
+    """DATA_LOAD_START must be a date the cache can actually serve.
+
+    Pins the L435 root cause: the constant asked for 2021-05-05, no ticker
+    held a 2021-05-05 bar, so coverage failed for 2,118 of 2,122 tickers.
+    """
+    import pytest
+    from backtest.data.cache import _load_index, _cache_path
+    from backtest.config import DATA_LOAD_START
+
+    idx = _load_index()
+    starts = [date.fromisoformat(m["start"]) for t, m in idx.items()
+              if m.get("start") and _cache_path(t).exists()]
+    if not starts:
+        pytest.skip("no cached OHLCV in this environment")
+    covered = sum(1 for s in starts if s <= DATA_LOAD_START)
+    assert covered / len(starts) >= 0.5, (
+        f"DATA_LOAD_START={DATA_LOAD_START} is earlier than the cache's own "
+        f"first bar for {len(starts)-covered} of {len(starts)} tickers "
+        f"({covered/len(starts):.1%} covered). The bulk loader would treat "
+        f"nearly every ticker as a miss (L435).")

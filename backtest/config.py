@@ -28,7 +28,13 @@ from datetime import date
 # -----------------------------------------------------------------------------
 BACKTEST_START  = date(2022, 5, 5)   # First tradeable date (post 1y warmup)
 BACKTEST_END    = date(2026, 5, 5)   # Polygon cache end
-DATA_LOAD_START = date(2021, 5, 5)   # 1y warmup window for 252-day indicators
+DATA_LOAD_START = date(2021, 5, 6)   # 1y warmup window for 252-day indicators
+# B1562 (owner-approved A2 2026-08-14): was 2021-05-05, but NO cached ticker
+# holds a 2021-05-05 bar -- the universe prefetch's first bar is 2021-05-06, so
+# the cache-coverage check failed for 2,118 of 2,122 tickers and every run
+# re-downloaded from yfinance (L435). Warmup only: the LOCKED backtest window
+# 2022-05-05 -> 2026-05-05 is untouched, and one leading bar cannot change a
+# 252-day indicator's state a year later.
 PHASE_1D_START  = date(2021, 5, 5)   # Pass 53: extended window aligned to cache start (was 2020-01-01)
 
 # Walk-forward folds (DEC-505 supersedes DEC-109):

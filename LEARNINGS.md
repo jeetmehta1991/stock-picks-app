@@ -6664,3 +6664,37 @@ docstring" and `compute_parabolic_sar` as "83.5% of signal cost". Both were **co
 measurements dominated by Numba JIT compilation**. Steady state is 47.4 ms and 0.1 ms. Retracted
 within the same exchange. **Rule: never quote a per-call cost from an unrepeated first call in a
 JIT-compiled path — report cold and steady separately, always.**
+
+### L436 — a start-anchored cache-coverage check is unsatisfiable for anything that listed late
+
+**B1562.** Owner approved "A2" — move `DATA_LOAD_START` from 2021-05-05 to 2021-05-06 to match the
+cache's actual first bar. Measured before shipping: **A2 alone covers 1,707 of 2,122 tickers
+(80.4%)**, leaving 415 fetching on every run.
+
+Those 415 are **not cache defects.** Their index start EQUALS their parquet's first bar (ABAT
+2023-09-21, ABVX 2023-10-20) — recent IPOs. **No security that listed after `start` can ever
+satisfy `cached_start <= start`**, no matter how the cache is rebuilt. The check conflated "the
+cache is incomplete" with "this security has less history than the window."
+
+The codebase already carried the right principle at `cache.py:293-299` — *"Cache should serve what
+it has; downstream filters reject if insufficient"* — but had applied it only to the row-count
+check, never to the date check. Staleness lives at the **END** of a window; a late start is just
+less history, and `screener.py:8556` already rejects `len(df) < 30` as insufficient_history.
+
+**Generalized rule:** *coverage checks assert freshness at the END of a window and serve whatever
+exists at the START.* Any check comparing a requested boundary against a first-observed value is
+suspect — the observed value can never precede the request that produced it.
+
+**Two misses of my own, both caught by running the code:**
+1. I would have shipped A2 as approved and left 19.6% of the universe fetching. Measuring coverage
+   universe-wide BEFORE the edit is what caught it — a 20-ticker sample said 100%.
+2. My own B1561 guard test encoded the OLD semantics (it built an "uncovered" window by moving
+   `start` earlier) and failed once the fix landed. **A test written against a defect's behaviour
+   becomes a defender of that defect.** When changing semantics, re-read the existing tests as
+   specifications of the thing being changed, not as neutral oracles.
+
+**Known remaining gap (S6-B1562b):** 260 of 2,122 tickers have `end` before the window end because
+they are DELISTED (ABMD, ADS, AERI acquired). The END check has the mirror flaw — they can never
+have recent bars, so they re-fetch forever and the guard now raises on them. Fixing this needs new
+index metadata (`fetched_through`) to distinguish "delisted, cache complete" from "cache stale";
+the index today stores only `start`/`end`/`rows`. NOT fixed — ticketed, not silently accepted.

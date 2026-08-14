@@ -282,11 +282,22 @@ def get_ohlcv_bulk(
     for ticker in tickers:
         cache_file = _cache_path(ticker)
         cached = index.get(ticker, {})
+        # B1562 DEFECT A. The old check ALSO required
+        # `cached["start"] <= start`, which is unsatisfiable for any security
+        # that listed after `start`: 415 of 2,122 cached tickers are recent
+        # IPOs whose index start EQUALS their parquet's first bar (ABAT
+        # 2023-09-21, ABVX 2023-10-20). Those can never "cover" a 2021 warmup
+        # start no matter how the cache is built, so they re-fetched on every
+        # single run. Staleness lives at the END of the window, not the start:
+        # a cache missing RECENT bars is stale and must refresh; a cache
+        # starting late simply holds less history. This applies the principle
+        # already documented below for the row-count check -- "cache should
+        # serve what it has; downstream filters reject if insufficient" --
+        # which is enforced at screener.py:8556 (len(df) < 30 ->
+        # insufficient_history) and by the >=200-bar signal requirement.
         if (not force_refresh and cache_file.exists() and
                 cached.get("end") and
-                date.fromisoformat(cached["end"]) >= end and
-                cached.get("start") and
-                date.fromisoformat(cached["start"]) <= start):
+                date.fromisoformat(cached["end"]) >= end):
             try:
                 df = pd.read_parquet(cache_file)
                 # B1561 DEFECT B (writer-reader schema contract, PIVOT #37 class):
