@@ -6846,3 +6846,42 @@ exercised deliberately; the default path is exercised by everything else, silent
 no run is faster. The capability is complete and callable —
 `compute_all_signals(df, skip_indicators=...)` with the set from `demand_pruning` — but the
 warmup-record-then-prune integration, gated on `STRATEGY_SUBSET_FILE`, remains.
+
+### L441 — demand-pruning wired; the load-bearing test is that it does NOTHING by default
+
+**B1567 / S6-B1565b part (b).** The warmup-record-then-prune state machine is now wired into
+`screen_instrument` at all three points: both `compute_all_signals` call sites (panel and
+non-panel) supply a skip set, and the signals dict is wrapped once after every producer has
+contributed and before anything reads it.
+
+**EXECUTED behaviour:**
+```
+no STRATEGY_SUBSET_FILE : mode=off,    wrap() returns THE SAME OBJECT
+with subset, warmup=3   : bars 0-2 RecordingSignals, 513 keys
+after warmup            : GuardedSignals, 32/33 producers skipped, 513 -> 47 keys
+strategy still evaluates: no SkippedSignalError
+```
+
+**The test that carries the weight is `test_b1567_pruning_is_inert_without_a_strategy_subset`,**
+and specifically its `assert DP.wrap(d) is d`. Not "returns an equal dict" -- the SAME OBJECT.
+A wrapper on the production path would add a Python-level `__getitem__`/`get` to every one of the
+~2,000 signal reads per bar across 222 strategies, on the hottest path in the system. Identity is
+the only assertion that catches that; equality would pass while the run got slower.
+
+**Generalized rule (extends L440):** an opt-in optimisation must be provably INERT when opted out,
+and "inert" means object identity on the pass-through path, not just equivalent output. The opted-
+in path gets deliberate testing; the opted-out path is what every other run silently depends on.
+
+**Three env controls, all pinned by tests:** `STRATEGY_SUBSET_FILE` (the gate -- no subset, no
+pruning), `DEMAND_PRUNING=0` (kill switch that overrides the gate), `DEMAND_PRUNING_WARMUP`
+(recording length, default 25 bars).
+
+**Degrade-to-safe:** if the producer key map cannot be built, `begin_bar` sets mode="off" and the
+run computes everything. An optimisation must never be able to break a run -- and because
+`GuardedSignals` raises on a missed key rather than defaulting, the failure modes are (a) slower,
+or (b) loud. Never (c) silently wrong.
+
+**Wall-clock is still UNMEASURED on a real run.** The per-call ratio is 95.8pct of
+`compute_all_signals` twice concordantly, and that call is 14.3pct of profile runtime, but no
+end-to-end run has been timed with pruning armed. S6-B1565d remains open; treat ~13.7pct as
+DERIVED until a run confirms it.

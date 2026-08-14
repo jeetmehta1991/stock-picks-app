@@ -8595,10 +8595,17 @@ def screen_instrument(
             # sub-agent finding. compute_ema_sma cost: +25ms/ticker/day.
             # Drift-guard pyramid test prevents future re-introduction.
             skip = {"rsi", "simple_returns"}
+            # B1567: demand-pruning adds producers the ACTIVE strategy subset
+            # never reads. Empty unless STRATEGY_SUBSET_FILE is set, so the
+            # full-roster path is unchanged.
+            from backtest.signals import demand_pruning as _dp
+            skip = skip | _dp.begin_bar(df)
             signals = compute_all_signals(df, skip_indicators=skip)
             signals.update(panel_signals)
         else:
-            signals = compute_all_signals(df)
+            from backtest.signals import demand_pruning as _dp
+            signals = compute_all_signals(
+                df, skip_indicators=_dp.begin_bar(df))
     if not signals:
         return {"ticker": ticker, "as_of": as_of, "liquidity_ok": True,
                 "fail_reason": "no_signals", "strategies": []}
@@ -8977,6 +8984,12 @@ def screen_instrument(
         "pairs_mean_reversion_long", "pairs_mean_reversion_short",
         "post_inclusion_reversal_short",  # fade-the-pop is counter-day
     }
+    # B1567: wrap AFTER every producer has contributed and BEFORE anything
+    # reads. During warmup this records reads (incl. runtime-built keys);
+    # afterwards it RAISES on any read of a pruned-away key rather than
+    # letting `.get()` return a default and silently misfire (L437).
+    from backtest.signals import demand_pruning as _dp
+    signals = _dp.wrap(signals)
     close_above_open = signals.get("close_above_open", True)  # default-permissive
     close_below_open = signals.get("close_below_open", False)
     for name, fn in ALL_STRATEGIES.items():

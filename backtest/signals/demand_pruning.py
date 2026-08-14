@@ -197,3 +197,103 @@ __all__ = [
     "RecordingSignals", "GuardedSignals", "SkippedSignalError",
     "required_producers", "skipped_keys",
 ]
+
+
+# ---------------------------------------------------------------------------
+# B1567 -- process-local warmup -> prune state machine
+#
+# Enabled ONLY when a strategy subset is active. A full-roster production cube
+# run reads every producer anyway, so pruning would buy nothing and risk
+# everything; `enabled()` returning False makes this module inert.
+#
+# Under --screen-pool-workers each worker is its own process with its own
+# state, so each performs its own warmup. That is wasteful by a few bars and
+# CORRECT -- sharing recorded keys across processes would couple workers.
+# ---------------------------------------------------------------------------
+
+WARMUP_BARS_DEFAULT = 25
+
+_STATE = {
+    "mode": None,          # None=undecided, "off", "warmup", "pruned"
+    "read": set(),
+    "skip": frozenset(),
+    "warmup_left": 0,
+}
+
+
+def _decide_mode() -> str:
+    import os
+    if os.environ.get("DEMAND_PRUNING", "1") != "1":
+        return "off"
+    # Gate: a strategy subset must be active. Full-roster runs stay unpruned.
+    subset = os.environ.get("STRATEGY_SUBSET_FILE")
+    if not subset:
+        return "off"
+    return "warmup"
+
+
+def reset_state():
+    """Test-only: return the state machine to undecided."""
+    _STATE.update({"mode": None, "read": set(), "skip": frozenset(),
+                   "warmup_left": 0})
+
+
+def state() -> dict:
+    return dict(_STATE)
+
+
+def begin_bar(sample_df=None) -> set:
+    """Skip set for THIS bar's compute_all_signals call.
+
+    Empty during warmup (everything is computed so reads can be observed) and
+    the derived set afterwards.
+    """
+    import os
+    if _STATE["mode"] is None:
+        _STATE["mode"] = _decide_mode()
+        if _STATE["mode"] == "warmup":
+            _STATE["warmup_left"] = int(
+                os.environ.get("DEMAND_PRUNING_WARMUP", WARMUP_BARS_DEFAULT))
+            if _PRODUCER_KEYS is None and sample_df is not None:
+                try:
+                    build_producer_key_map(sample_df)
+                except Exception:
+                    # Never let the optimisation break the run: fall back to
+                    # computing everything (CHECKLIST #122 -- but this one is
+                    # a documented degrade-to-safe, and it is LOGGED below).
+                    _STATE["mode"] = "off"
+    if _STATE["mode"] == "pruned":
+        return set(_STATE["skip_producers"])
+    return set()
+
+
+def wrap(signals: dict) -> dict:
+    """Wrap the signals dict for this bar and advance the warmup counter."""
+    mode = _STATE["mode"]
+    if mode == "warmup":
+        wrapped = RecordingSignals(signals, _STATE["read"])
+        _STATE["warmup_left"] -= 1
+        if _STATE["warmup_left"] <= 0:
+            _finalise()
+        return wrapped
+    if mode == "pruned":
+        return GuardedSignals(signals, _STATE["skip"])
+    return signals
+
+
+def _finalise():
+    """Turn recorded reads into a producer skip set."""
+    import logging
+    log = logging.getLogger(__name__)
+    km = _PRODUCER_KEYS or {}
+    keep = required_producers(_STATE["read"], km)
+    _STATE["skip_producers"] = frozenset(set(km) - keep)
+    _STATE["skip"] = skipped_keys(keep, km)
+    _STATE["mode"] = "pruned"
+    log.info("demand-pruning ARMED: %d/%d producers kept, %d keys pruned "
+             "(recorded %d reads over warmup)",
+             len(keep), len(km), len(_STATE["skip"]), len(_STATE["read"]))
+
+
+__all__ += ["begin_bar", "wrap", "reset_state", "state",
+            "WARMUP_BARS_DEFAULT"]

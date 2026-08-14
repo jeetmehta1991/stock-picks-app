@@ -14291,3 +14291,84 @@ def test_b1566_pruning_keeps_required_and_drops_the_rest():
     assert "price_above_ema_200" in pruned, "required key was pruned away"
     assert "rsi_14" not in pruned, "unrelated producer was not pruned"
     assert len(pruned) < len(T.compute_all_signals(sl))
+
+
+def test_b1567_pruning_is_inert_without_a_strategy_subset():
+    """THE safety test: a full-roster run must be untouched.
+
+    `wrap` must return the SAME OBJECT (not a copy, not a wrapper) so there is
+    zero added overhead and zero behaviour change on the production cube path.
+    """
+    import os
+    from backtest.signals import demand_pruning as DP
+    old = os.environ.pop("STRATEGY_SUBSET_FILE", None)
+    try:
+        DP.reset_state()
+        assert DP.begin_bar(None) == set(), "pruned producers without a subset"
+        d = {"a": 1}
+        assert DP.wrap(d) is d, (
+            "wrap returned a new object on the unpruned path -- production "
+            "runs would pay wrapper overhead on every signal read")
+        assert DP.state()["mode"] == "off"
+    finally:
+        DP.reset_state()
+        if old is not None:
+            os.environ["STRATEGY_SUBSET_FILE"] = old
+
+
+def test_b1567_warmup_then_prune_transition():
+    """Records during warmup, prunes after, and keeps the strategy working."""
+    import os
+    from backtest.signals import demand_pruning as DP
+    import backtest.signals.technical as T
+    from backtest.signals.screener import ALL_STRATEGIES
+
+    sl = _b1565_sample_df()
+    old_sub = os.environ.get("STRATEGY_SUBSET_FILE")
+    old_warm = os.environ.get("DEMAND_PRUNING_WARMUP")
+    os.environ["STRATEGY_SUBSET_FILE"] = "dummy_subset.txt"
+    os.environ["DEMAND_PRUNING_WARMUP"] = "2"
+    try:
+        DP.reset_state()
+        fn = ALL_STRATEGIES["smc_breaker_block_long"]
+        modes, sizes = [], []
+        for _ in range(4):
+            sk = DP.begin_bar(sl)
+            sig = T.compute_all_signals(sl, skip_indicators=sk)
+            sig["smc_breaker_block_bullish"] = True
+            w = DP.wrap(sig)
+            fn(w)                      # must NOT raise: keys were recorded
+            modes.append(DP.state()["mode"])
+            sizes.append(len(sig))
+        assert modes[0] == "warmup"
+        assert modes[-1] == "pruned"
+        assert sizes[-1] < sizes[0], (
+            f"no pruning took effect ({sizes[0]} -> {sizes[-1]})")
+    finally:
+        DP.reset_state()
+        for k, v in (("STRATEGY_SUBSET_FILE", old_sub),
+                     ("DEMAND_PRUNING_WARMUP", old_warm)):
+            if v is None:
+                os.environ.pop(k, None)
+            else:
+                os.environ[k] = v
+
+
+def test_b1567_kill_switch_disables_pruning():
+    """DEMAND_PRUNING=0 must fully disable, even with a subset active."""
+    import os
+    from backtest.signals import demand_pruning as DP
+    old_sub = os.environ.get("STRATEGY_SUBSET_FILE")
+    os.environ["STRATEGY_SUBSET_FILE"] = "dummy_subset.txt"
+    os.environ["DEMAND_PRUNING"] = "0"
+    try:
+        DP.reset_state()
+        assert DP.begin_bar(None) == set()
+        assert DP.state()["mode"] == "off"
+    finally:
+        os.environ.pop("DEMAND_PRUNING", None)
+        DP.reset_state()
+        if old_sub is None:
+            os.environ.pop("STRATEGY_SUBSET_FILE", None)
+        else:
+            os.environ["STRATEGY_SUBSET_FILE"] = old_sub
