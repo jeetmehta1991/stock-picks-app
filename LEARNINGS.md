@@ -6885,3 +6885,44 @@ or (b) loud. Never (c) silently wrong.
 `compute_all_signals` twice concordantly, and that call is 14.3pct of profile runtime, but no
 end-to-end run has been timed with pruning armed. S6-B1565d remains open; treat ~13.7pct as
 DERIVED until a run confirms it.
+
+### L442 — demand pruning OBSERVED at 14.6pct with a bit-identical cube; the derivation held
+
+**B1568 / S6-B1565d.** Everything in B1565-B1567 rested on a DERIVED number. It is now observed.
+
+**A/B, identical config run twice sequentially and solo, differing only in `DEMAND_PRUNING`:**
+```
+TAG=off PRUNE=0 EXIT=0 ELAPSED=1920 CUBE_ROWS=1353
+TAG=on  PRUNE=1 EXIT=0 ELAPSED=1639 CUBE_ROWS=1353
+observed saving = (1920-1639)/1920 = 14.64pct    (1.171x)
+derived         = 95.8pct of compute_all_signals x 14.3pct profile share = ~13.7pct
+```
+**The derivation HELD and was slightly CONSERVATIVE (+0.94pp).** After a session of wrong
+projections, the one built from two concordant per-call ratios times a measured profile share came
+in within a percentage point.
+
+**Correctness gate passed at the strongest available bar.** Row counts matching is weak evidence;
+the cubes are **BIT-IDENTICAL** — same SHA256 `615233dbab2756d0` over 1,352 rows x 37 columns,
+zero differences across all 8 numeric columns, identical (ticker, entry_date, strategy,
+exit_method) key sets. Pruning 30 of 33 producers changed the output not at all.
+
+**The guard never fired** across the full 503-day window while running on 3 of 33 producers,
+recorded from only 5 reads during warmup. That is real-run evidence the recorder captured what the
+strategy reads — including the runtime-built `price_above_ema_200` key that blocked this work at
+L437.
+
+**Method note worth keeping:** my in-run projections declined monotonically — 25-29pct at the
+first ON sample, 16-19pct, then 12-13pct, against 14.64pct actual. **Early samples of a partially
+warmed run are systematically optimistic.** Refusing to call the verdict until `ELAPSED` existed
+was correct; had I reported the first sample as the result it would have been off by 2x. The
+discipline that worked was tabulating every revision rather than silently replacing the previous
+estimate.
+
+**Also validated incidentally in a real engine run:** zero `CACHE MISS` (the B1561/B1562/B1564
+cache fixes hold end-to-end, not just in unit probes), and `Probe miss (no live fetch)` appearing
+in the log confirms B1561's `probe=True` path lets macro's canonical->proxy ladder fall through
+without tripping the Stage-2 guard.
+
+**Scope of the claim:** 1 strategy x 5 tickers x 2 years, sequential, single machine, one A/B pair.
+The 14.64pct applies to a single-strategy subset run. It does NOT transfer to a full-roster cube
+run, where every producer is read and pruning is inert by design.
