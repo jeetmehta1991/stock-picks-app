@@ -6636,7 +6636,7 @@ B means the bulk cache path had **never returned a hit for any ticker**. 2,123 c
 were dead weight. Consequences ranked: yfinance is **not point-in-time** (it back-adjusts), a
 failed fetch dropped the ticker **silently** (`if not df.empty`), and only third, it was slow.
 
-**Root cause of the invisibility:** a cache miss degrades into a *successful* download. The system
+**[CORRECTED by L438: there was NO download - `_fetch_from_yfinance` is a no-op stub. A cache miss degraded into an EMPTY frame and a silently DROPPED ticker.]** Original text: a cache miss degrades into a *successful* download. The system
 had no failing state — it produced plausible results while violating its own core data rule. The
 only symptom in months of runs was 11 seconds of sleep in one profile.
 
@@ -6739,3 +6739,39 @@ generator.
 (`dir_exists: False, ticker_count: 0`) — every lookup missed, swallowed by a bare except. Set
 False, and pinned flag-vs-cache state in BOTH directions so the pair cannot drift again. Populating
 it needs the same PIT audit that measured the sibling `USE_SMC_PANEL_CACHE` UNSAFE at 11.5%.
+
+### L438 — CORRECTION to L435/L436: no live download ever happened; I inferred a network call from a log string
+
+**B1564 (retraction, same session).** L435 claimed "every backtest silently re-downloaded its
+universe from yfinance", that the data was "not point-in-time", and that every prior cube result
+was contaminated. **All three are FALSE.**
+
+EXECUTED: `_fetch_from_yfinance` is a **no-op stub** returning an empty DataFrame — yfinance was
+hard-cut at the fetch level per DEC-497 D4 (2026-05-06). All three call sites (cache.py:193, 223,
+249) reach that stub. `get_ohlcv('AAPL', 2021-05-06, 2026-05-05)` returns **1255 cached rows**.
+
+**How the error was made:** the run log prints `Fetching N tickers from yfinance...` and the code
+below it calls `time.sleep(delay)` in a fetch loop. I traced the CALLER, saw a rate-limit sleep,
+and concluded a network call. **I never read the callee's body** — the single function that
+settles the question. The 11.2s of sleep was real, but it was sleeping between calls to a stub.
+
+**What survives:** Defect B (get_ohlcv_bulk's schema mismatch) is real — the bulk path never hit
+cache and fell through to the slower per-ticker `get_ohlcv`, which handles Schema-B correctly.
+Defect A is real. The fixes are correct and the sleep is genuinely eliminated. The guard keeps its
+value for a DIFFERENT reason than I gave: a cache miss returns an EMPTY frame and
+`if not df.empty` then **silently DROPS the ticker from the universe** — silent data loss, not
+silent download. That is worth failing loudly on.
+
+**Generalized rule:** *a log message is a claim by the code's author, not evidence of behaviour.*
+Before attributing an EFFECT (network I/O, mutation, spend) to a call site, read the CALLEE to
+verify the effect is still implemented. Deprecated-to-stub is a common and invisible state — the
+log line survives the removal of the thing it describes.
+
+**Severity of the miss:** the owner made a decision ("retain past results as is") on the false
+premise. The decision stands, but for the opposite reason — the results were computed on correctly
+cached PIT data. Corrected within the same exchange, per the Truth Standard's retract-visibly rule.
+
+**Detection signal:** the contradiction was available the whole time — a run that "downloaded 21
+tickers" still produced correct results in 3,696s, and a real 21-ticker yfinance download plus
+sleeps could not have been that cheap. A cost/behaviour inconsistency is a prompt to re-verify the
+mechanism, not to move on.

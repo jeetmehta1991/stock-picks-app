@@ -202,6 +202,10 @@ def get_ohlcv(
                         "start": str(combined.index[0].date()),
                         "end":   str(combined.index[-1].date()),
                         "rows":  len(combined),
+                        # B1564: the requested end, NOT the last observed bar.
+                        # A delisted ticker's last bar precedes it forever, so
+                        # comparing `end` alone re-fetches it on every run.
+                        "fetched_through": str(end),
                     }
                     _save_index(index)
                     mask = (combined.index.date >= start) & (combined.index.date <= end)
@@ -229,6 +233,10 @@ def get_ohlcv(
                         "start": str(combined.index[0].date()),
                         "end":   str(combined.index[-1].date()),
                         "rows":  len(combined),
+                        # B1564: the requested end, NOT the last observed bar.
+                        # A delisted ticker's last bar precedes it forever, so
+                        # comparing `end` alone re-fetches it on every run.
+                        "fetched_through": str(end),
                     }
                     _save_index(index)
                     mask = (combined.index.date >= start) & (combined.index.date <= end)
@@ -251,6 +259,8 @@ def get_ohlcv(
             "start": str(df.index[0].date()),
             "end":   str(df.index[-1].date()),
             "rows":  len(df),
+            # B1564: see above -- requested end, not last observed bar.
+            "fetched_through": str(end),
         }
         _save_index(index)
     except TickerCollisionError:
@@ -295,9 +305,19 @@ def get_ohlcv_bulk(
         # serve what it has; downstream filters reject if insufficient" --
         # which is enforced at screener.py:8556 (len(df) < 30 ->
         # insufficient_history) and by the >=200-bar signal requirement.
-        if (not force_refresh and cache_file.exists() and
-                cached.get("end") and
-                date.fromisoformat(cached["end"]) >= end):
+        # B1564: `end` is the last OBSERVED bar; `fetched_through` is the last
+        # date we ASKED for. A delisted ticker (ABMD, ACCD, ADS) has a final bar
+        # that precedes every future window end, so comparing `end` alone marks
+        # it uncovered forever -- 260 of 2,122 cached tickers. `fetched_through`
+        # says "we requested through this date and this is all that exists",
+        # which is the only way to tell "delisted, complete" from "stale".
+        _covers_end = False
+        if cached.get("end") and date.fromisoformat(cached["end"]) >= end:
+            _covers_end = True
+        elif cached.get("fetched_through") and \
+                date.fromisoformat(cached["fetched_through"]) >= end:
+            _covers_end = True
+        if not force_refresh and cache_file.exists() and _covers_end:
             try:
                 df = pd.read_parquet(cache_file)
                 # B1561 DEFECT B (writer-reader schema contract, PIVOT #37 class):
@@ -359,13 +379,18 @@ def get_ohlcv_bulk(
             return results
         if STAGE2_NO_LIVE_FETCH:
             raise RuntimeError(
-                f"STAGE-2 NO-LIVE-API VIOLATION: get_ohlcv_bulk would fetch "
-                f"{len(to_fetch)} of {len(tickers)} tickers from yfinance "
-                f"(first 10: {to_fetch[:10]}). Requested window "
-                f"{start} -> {end}. This is a CACHE MISS, not a data gap: "
-                f"check that the parquet covers the window and that the index "
-                f"'start'/'end' bracket it. Set STAGE2_NO_LIVE_FETCH=0 to "
-                f"permit live fetches (setup/prefetch only, never a backtest)."
+                f"CACHE MISS on {len(to_fetch)} of {len(tickers)} tickers "
+                f"(first 10: {to_fetch[:10]}). Requested window {start} -> "
+                f"{end}.\n"
+                f"WHY THIS RAISES (B1564/L438): yfinance is a NO-OP STUB "
+                f"(DEC-497 D4), so the fetch below returns an EMPTY frame and "
+                f"`if not df.empty` then SILENTLY DROPS these tickers from the "
+                f"universe. Silent data loss, not a download. A run would "
+                f"continue with a smaller universe and never say so.\n"
+                f"FIX: confirm the parquet covers the window and that the "
+                f"index brackets it ('end' >= requested end, or "
+                f"'fetched_through' >= requested end for delisted names). "
+                f"Set STAGE2_NO_LIVE_FETCH=0 to allow the drop (setup only)."
             )
         logger.info("Fetching %d tickers from yfinance...", len(to_fetch))
         for i, ticker in enumerate(to_fetch):

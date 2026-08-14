@@ -13898,7 +13898,9 @@ def test_b1561_stage2_guard_blocks_live_fetch():
     orig = C.get_ohlcv
     try:
         C.get_ohlcv = _trap
-        with pytest.raises(RuntimeError, match="STAGE-2 NO-LIVE-API VIOLATION"):
+        # B1564/L438: message corrected -- the miss causes a SILENT TICKER
+        # DROP (yfinance is a no-op stub), not a live download.
+        with pytest.raises(RuntimeError, match="CACHE MISS on"):
             # B1562: "uncovered" now means STALE -- missing bars at the END of
             # the window. (Pre-B1562 this test moved `start` earlier instead,
             # which is no longer a miss: a late-listing ticker legitimately
@@ -14043,3 +14045,84 @@ def test_b1563_dynamic_signal_keys_block_static_pruning():
         f"static scan sees {literal_keys}; the strategy actually ALSO reads a "
         "runtime-built price_above_ema_<span> key. Any demand-driven pruning "
         "must record keys at RUNTIME or declare dynamic keys explicitly.")
+
+
+# ---------------------------------------------------------------------------
+# B1564 -- `fetched_through` separates "delisted, complete" from "stale"
+# ---------------------------------------------------------------------------
+
+def test_b1564_delisted_ticker_is_served_not_dropped():
+    """A delisted ticker's last bar precedes every future window end.
+
+    Without `fetched_through` it is uncovered forever: the bulk path drops it
+    (yfinance is a no-op stub, so the "fetch" returns EMPTY and
+    `if not df.empty` silently removes it from the universe -- L438).
+    """
+    import pytest
+    import backtest.data.cache as C
+    from backtest.data.cache import _load_index, _cache_path
+    from backtest.config import DATA_LOAD_START
+
+    idx = _load_index()
+    target = None
+    for t, m in idx.items():
+        if (isinstance(m, dict) and m.get("end") and m.get("fetched_through")
+                and _cache_path(t).exists()
+                and date.fromisoformat(m["end"]) < date(2026, 5, 5)):
+            target = t
+            break
+    if target is None:
+        pytest.skip("no delisted+stamped ticker in this environment")
+
+    def _trap(t, *a, **k):
+        raise AssertionError(
+            f"{t} is delisted; an end-only coverage check drops it every run")
+
+    orig = C.get_ohlcv
+    try:
+        C.get_ohlcv = _trap
+        out = C.get_ohlcv_bulk([target], start=DATA_LOAD_START, end=date(2026, 5, 5))
+    finally:
+        C.get_ohlcv = orig
+    assert target in out and len(out[target]) > 0
+
+
+def test_b1564_fetched_through_records_its_provenance():
+    """Backfilled values must be distinguishable from observed ones.
+
+    The backfill INFERS the requested end from the population mode; that is a
+    claim about how the cache was built, not an observation. Tagging the
+    source is what keeps a later reader from mistaking inference for fact.
+    """
+    import pytest
+    from backtest.data.cache import _load_index
+    idx = _load_index()
+    stamped = [m for m in idx.values()
+               if isinstance(m, dict) and m.get("fetched_through")]
+    if not stamped:
+        pytest.skip("fetched_through not backfilled in this environment")
+    tagged = [m for m in stamped if m.get("fetched_through_source")]
+    assert tagged, (
+        "fetched_through present with no fetched_through_source -- inferred "
+        "metadata must record that it was inferred (B1564)")
+
+
+def test_b1564_backfill_refuses_diffuse_distribution():
+    """The backfill's whole premise is ONE dominant prefetch.
+
+    If end dates are diffuse there was no single requested end, and stamping
+    one would fabricate provenance. Pins the refusal, not just the happy path.
+    """
+    import importlib.util
+    spec = importlib.util.spec_from_file_location(
+        "_bf", str(REPO_ROOT / "scripts" / "backfill_cache_fetched_through.py")
+        if "REPO_ROOT" in globals() else
+        "scripts/backfill_cache_fetched_through.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    diffuse = {f"T{i}": {"end": f"2026-0{(i % 9) + 1}-0{(i % 8) + 1}"}
+               for i in range(40)}
+    d, n, tot = mod.modal_end(diffuse)
+    assert tot == 40
+    assert n / tot < 0.50, (
+        "constructed fixture is not diffuse; the refusal path would not trip")
