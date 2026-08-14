@@ -10979,3 +10979,134 @@ Pyramid **902 passed** + 2 skipped (was 901).
 |---|---|---|
 | **S6-B1545a** | **HIGH** | Re-baseline: with tier sizing bypassed, R5's 352 fires for `smc_breaker_block_long` are NO LONGER the comparison point - R5 ran WITH tier gating. A fresh baseline run is needed before any optimisation result is graded against it. |
 | **S6-B1545b** | MED | Quantify how many R5 trades were suppressed by LOW/AVOID tiers - it sizes the gap between the old and new baseline. |
+
+---
+
+## B1547 (2026-08-12) - S6-B1545a RETRACTED (7.3 h saved); hourly monitor re-armed
+
+**OWNER Q: "Why do we need a run for above?" - correct, we do not (L423).** I scoped a 4-year
+re-baseline because the tier-sizing bypass invalidated R5's 352-fire population. But **all 6 live
+gates are ABSOLUTE thresholds**, so admission depends on a candidate's OWN 4-year metrics and no
+baseline is consulted. The top-10 validation already yields the verdict, and production parameters
+are one of the 20 configs, so that number arrives free if it ranks. **S6-B1545a RETRACTED - 7.3 h
+removed from the plan.**
+
+**OWNER Q: "Has monitor been armed? Will i be updated every hour?" - armed YES, hourly NO (L424).**
+`4a528196` fired every 17 min but pushed only on completion/failure/overrun - exception-only, for
+the FOURTH time against a standing hourly directive (L392 recorded this exact distinction).
+**CHECKLIST #185 did not catch it: #185 asserts a monitor EXISTS, not that it reports on the
+owner's cadence.** Deleted and re-armed as `1dd0252b`, hourly at :11, unconditional push while any
+run is active.
+
+| ticket | pri | item |
+|---|---|---|
+| **S6-B1545a** | **RETRACTED** | Not needed - gates are absolute (L423). |
+| **S6-B1547a** | **HIGH** | Extend CHECKLIST #185 to assert monitor CADENCE, not just existence - a control that exists but reports exception-only fails the owner's directive while passing the gate (L424). |
+
+---
+
+## B1548 (2026-08-12) - monitor CADENCE gate (#186); plan SS10 repeatable workflow
+
+**OWNER: "ensure this never ever happens again"** (exception-only monitoring). **CHECKLIST #186 +
+mechanical enforcement.** #185 asserted a monitor EXISTS; I then armed exception-only anyway and
+**#185 PASSED** - the control existed, it just did not do what was asked. Armed wrongly FOUR times:
+L385 (log only), L392 (exception-only), L420 (none), L424 (exception-only past #185).
+`scan_unmonitored_launch()` now inspects the CronCreate PROMPT and requires BOTH a **PERIODIC**
+marker ("every hour"/"hourly") and an **UNCONDITIONAL** marker ("do not withhold"/"silence is
+correct only when nothing is running"). Pinned both directions: exception-only TRIPS,
+periodic-unconditional PASSES.
+
+**OWNER: "Update the strategy optimization doc comprehensively."** Plan **SS10 THE REPEATABLE
+WORKFLOW** added (~718 lines total): 4 phases with windows/universes and the reasoning for each;
+the MEASURED cost model (0.2613 s/ticker-day from two concordant points) and the five extrapolation
+failures that justify requiring two; engine settings table incl. the sequential-default trap and
+the tier-sizing bypass; monitor arming with its cadence requirement; "completion is an ARTIFACT,
+never a percentage"; result-interpretation rules; standing owner rulings; and the five
+highest-cost checklist items.
+
+**L425:** the pyramid CANNOT run green while an engine run is in flight - `test_b1463` OOMs loading
+the 149 MB R5 cube. Commits are blocked for the duration of every sweep run, so doc-commits must be
+sequenced BEFORE launching.
+
+| ticket | pri | item |
+|---|---|---|
+| **S6-B1547a** | **CLOSED** | Cadence now asserted by #186, not just existence. |
+| **S6-B1548a** | MED | Make `test_b1463` memory-bounded (chunked read or usecols) so the pyramid can run alongside an engine run (L425). |
+
+---
+
+## B1552 (2026-08-14) - pilot hit MemoryError in cube replay; concurrency plan likely INFEASIBLE
+
+**Sim loop DONE (501/503).** Post-processing raised `MemoryError` during parallel cube replay and
+fell back to sequential per the Council 233 fix - **the run RECOVERED, it is not dead.** The
+trailing `_pickle.UnpicklingError` is pool-teardown fallout. Checkpoint 509 MB. Cube still ABSENT.
+
+**THE CONSEQUENCE THAT MATTERS (L426): 10-way config concurrency is probably INFEASIBLE.** ONE
+config exhausted memory during replay; ten in parallel would multiply exactly the pressure that
+broke it. The "~5-6 h for 20 configs" arithmetic I was heading toward assumed concurrency that the
+machine may not support. **No sweep cost will be quoted until one config is measured END-TO-END -
+day loop PLUS post-processing.**
+
+Also resolves the `test_b1463` OOM diagnosis: the machine is memory-BOUND at this cube size, not
+merely contended.
+
+| ticket | pri | item |
+|---|---|---|
+| **S6-B1552a** | **HIGH** | Measure PEAK MEMORY of one config end-to-end before designing any concurrency. A wall-clock that divides by N says nothing about N copies fitting in RAM. |
+| **S6-B1552b** | **HIGH** | Re-cost the sweep from the END-TO-END figure (day loop + post-processing), not the day loop alone - post-processing is now on the slow path and unmeasured. |
+| S6-B1548a | RAISED | The `test_b1463` OOM is one symptom of the same memory bound; chunked reads help the pyramid but not the replay. |
+
+---
+
+## B1555 (2026-08-14) - pilot HUNG 83 min after completing; memory reclaimed; timings corrected
+
+**THE PILOT WAS DONE AT 03:18:22** (`All outputs written`) and still held 12 processes at **04:41** -
+**83 minutes, log untouched**. Work COMPLETE and verified: cube 197 MB, 77 artifacts, 182
+strategies, 22,651 entries, **all 26/26 exits** (#130). Hung in POOL TEARDOWN, matching the earlier
+`_pickle.UnpicklingError`, which also explains the missing exit record. Processes killed; **all 77
+artifacts intact**.
+
+**MY MONITORING FAILURE (L427):** I reported "12 procs alive" across THREE hourly ticks and read it
+as *running*. Process count is not liveness - **the OUTPUT advancing is**. The commit backlog sat
+blocked for ~83 min of nothing. Log-mtime-vs-now is the cheap discriminator and belongs in every
+monitor prompt.
+
+**TIMING CORRECTED (L428):** the ~4.6 h end-to-end I reported came from PROCESS ELAPSED, which
+included the hang. Real duration must be derived from log first/last timestamps.
+
+| ticket | pri | item |
+|---|---|---|
+| **S6-B1555a** | **HIGH** | Add a STALL check to every monitor prompt: if log mtime has not advanced in 15 min while processes live, report a suspected hang. Three ticks missed this one. |
+| **S6-B1555b** | **HIGH** | Recompute true end-to-end from log timestamps and re-cost the 20-config sweep on that figure, not on process elapsed. |
+| **S6-B1555c** | MED | Investigate the pool-teardown hang - it produced no exit record, so an unattended sweep would stall indefinitely between configs. |
+
+---
+
+## B1559 (2026-08-14) - SS11 RUNBOOK added; 200 combinations graded; concurrency test running
+
+**OWNER: "Why has this doc not been updated comprehensively despite multiple instructions?"**
+Fair, and the answer is L433: I wrote RATIONALE, not a RUNBOOK. SS9 and SS10 explain why each rule
+exists; **neither contained a single runnable command.** Someone told to "run the next strategy"
+could not do it from either.
+
+**SS11 RUNBOOK added** (plan now 921 lines): exact copy-paste commands for Steps 0-4, every flag
+with its reason (incl. `STRATEGY_SUBSET_FILE` - omitting it cost a 4.56 h run), the ticker-ordering
+script, monitor-arming requirements, completion-is-an-artifact check, grading + table generation
+commands, and a FAILURE MODES table mapping symptom -> cause -> reference.
+
+**CONFIG #1 GRADED - 200 combinations from the pilot cube:**
+`0 of 200 PASS` · 8 gradable · 138 NO_EXIT_SELECTABLE · 38 ZERO_FIRES · 16 BELOW_POWER_FLOOR.
+Best: `close_mitigation=True, tail_n=10`, 234 fires, holdout n=108, exit `breakeven_plus_trail`,
+**Sharpe 0.860** (needs 1.0), Sortino 3.491, PSR 1.0, PF 2.98, **ci_lo +0.243** - POSITIVE for the
+first time (was -0.034 on the R5 cube). **5 of 6 gates; fails `pooled_sharpe` alone.**
+**ATTRIBUTION UNRESOLVED:** tier-sizing bypass, 100 vs 381 tickers, and 2y vs 4y all changed
+together - the improvement cannot be assigned among them.
+
+**CONCURRENCY TEST RUNNING** (B1558): 3 configs, 1 strategy each via `STRATEGY_SUBSET_FILE`,
+20 tickers, 2y, `pool=3` each. Baseline: 182 strategies same shape = 2,759 s. Monitor `ed140f0d`
+armed hourly-unconditional.
+
+| ticket | pri | item |
+|---|---|---|
+| **S6-B1559a** | **HIGH** | On concurrency-test completion: report per-config elapsed vs the 2,759 s baseline, confirm no MemoryError, and re-cost the 20-config sweep. This decides whether 91 h collapses. |
+| **S6-B1559b** | MED | Attribution run: isolate whether the Sharpe 0.473 -> 0.860 gain came from the tier bypass, the universe, or the window. |

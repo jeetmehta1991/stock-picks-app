@@ -578,3 +578,344 @@ on `smc_breaker_block_long`, the first strategy through - the L-number is the in
 - **Owner approval** for every threshold/gate/production-path change. Approval for one strategy is
   not approval for the next.
 - **Pyramid green before every commit**; doc-sweep and queue entry in the same turn.
+
+---
+
+## 10. THE REPEATABLE WORKFLOW (B1548 — supersedes §2's method for all strategies)
+
+Everything below is what the `smc_breaker_block_long` walkthrough actually cost us to learn. Run it
+in order for every strategy. Each numbered gate cites the incident that produced it.
+
+### 10.1 The four phases
+
+| phase | scope | window | universe | produces |
+|---|---|---|---|---|
+| **0 INVENTORY** | build the SPECS entry | — | — | formula + Table A + factorial |
+| **1 SEARCH** | all fire-adding configs | **2 years** | **100** | ranked combinations |
+| **2 VALIDATE** | top 10 | **4 years** | **281 disjoint + 100 append = 381** | gate verdicts |
+| **3 ADMIT** | best 1 | 4 years | 381 | Phase 1B decision |
+
+**Why 2 years in Phase 1?** Ranking needs only relative ordering. Grading needs the locked
+IS(3y)+holdout(1y) split, which a 2-year window cannot provide. Search cheap, grade properly.
+
+**Why 100 then 281?** The 281 are DISJOINT from the 100, so validation is genuine out-of-sample
+across the ticker dimension — a combination selected by luck on 100 will not replicate. Appending
+the two reconstructs 381 (valid because `--cube-isolation` bypasses the candidate cap, verified
+`backtest.py:1763`; R5's cap bound on 1 of 972 days and isolation ignores it entirely).
+
+**NO separate baseline run (L423).** All 6 gates are ABSOLUTE thresholds, so admission depends on a
+candidate's own metrics. Production parameters are one of the configs anyway, so that number arrives
+free if it ranks. Scoping a baseline run wasted 7.3 h of plan before this was caught.
+
+### 10.2 Cost model — measured, not assumed
+
+```
+0.2613 s per ticker-day   (pool=10; two concordant points, 10pct apart:
+                           0.2484 @ 50t x 4y, 0.2743 @ 20t x 2y)
+
+per run  =  tickers x sim-days x 0.2613
+100 tickers x  503 days (2y)  ~= 3.65 h      <- Phase 1, per config
+100 tickers x 1003 days (4y)  ~= 7.3 h
+381 tickers x 1003 days (4y)  ~= 27.7 h
+```
+
+**ALWAYS set `--screen-pool-workers`.** The default is **0 = SEQUENTIAL** (L407). On a 12-core box
+`pool=10` measured **1.53x** like-for-like. It is not more because ~62pct of per-day work is serial.
+
+**Run configs CONCURRENTLY, not the pool wider.** Amdahl caps in-run parallelism at ~1.6x; separate
+configs are independent processes and scale far better.
+
+**Never extrapolate from one point.** Five extrapolations were wrong this session: 9x light
+(L367), 23pct light (L377), ~100x heavy (L383), flat-scaling read from noise (L401), and a
+profiler-share mistaken for a wall-clock saving (L418). **Two concordant measurements minimum
+before any projection.**
+
+### 10.3 Engine settings for optimisation runs
+
+| setting | value | why |
+|---|---|---|
+| `--cube-isolation` | ON | bypasses ALL cross-strategy gates (`backtest.py:134`) |
+| `--screen-pool-workers` | 10 | default 0 is sequential (L407) |
+| `--no-agents --no-news --no-git --no-walk-forward` | ON | not consumed by the 6 gates |
+| `--max-run-hours` | set | the runner REFUSES to start without it |
+| `OPTIMIZATION_MODE` | 1 | uncaps `max_cands` (no-op under isolation, L419) |
+| `SMC_SWING_LENGTH` / `STRAT_EMA_SPAN` | per config | env-plumbed B1519; verify they reach the ENGINE |
+
+**Isolation also bypasses TIER SIZING (B1545, owner-approved).** `TIER_POSITION_SIZE_PCT` maps
+LOW/AVOID to **0.0**, and a zero size SKIPS the trade — so tier data was deciding which signals
+became trades. Under isolation every valid signal opens at `CUBE_ISOLATION_SIZE_PCT`. Size cannot
+affect any gate because the cube records `pnl_pct`, a PERCENTAGE.
+
+**Do NOT skip `smart_money_score` (L418).** It looks like pure sizing, but tier gates ENTRY via
+LOW→skip. A measured A/B showed 245/124 entry differences. The saving was 6.3pct, not the 14.3pct
+profiler share.
+
+### 10.4 Monitor arming — MANDATORY, MECHANICALLY ENFORCED
+
+**A run is not launched until its reporting path is armed IN THE SAME TURN** (CHECKLIST #185).
+
+The arming call must promise BOTH:
+1. a **PERIODIC** report — "every hour" / "hourly"
+2. that it is **UNCONDITIONAL** — "do not withhold", "silence is correct only when nothing is running"
+
+**Exception-only alerting does NOT satisfy this.** It was armed wrongly FOUR times (L385 wrote only
+to a log; L392 exception-only; L420 no monitor at all; L424 exception-only again — and #185's first
+version PASSED that last one because it checked EXISTENCE, not CADENCE).
+
+`scan_unmonitored_launch()` in `scripts/verify_turn_compliance.py` blocks the turn otherwise.
+Pinned both directions by `test_b1545_monitor_armed_gate`.
+
+Also required: **trip conditions** for non-zero exit, death-without-artifact, and overrun past 2x
+projection; and **CronDelete on completion** so stale monitors do not train everyone to ignore alerts.
+
+### 10.5 Completion is an ARTIFACT, never a percentage
+
+A run is complete when `trade_exit_detail.csv` EXISTS. **A run once finished all 1,003 sim-days and
+wrote no cube** (L410) — post-processing is a separate phase and died with the session. Checking
+sim-day percentage would have reported 100pct.
+
+Verify on completion: cube exists · every entry carries exactly 26 exits (#130) · entries/ticker vs
+the baseline rate · gradability (how many combinations produced a verdict at all).
+
+### 10.6 Interpreting results
+
+- **A small-universe PASS is an ARTIFACT until entries/ticker converges** (L382). Rung 5 passed all
+  6 gates at **26.63x** the R5 entry rate.
+- **Report ALL 15 metrics**, never Sharpe alone (L373) — it hid a `ci_lo` of -0.034, below zero.
+- **The verdict carries its denominator** (#182): "N of M combinations across X of Y producers",
+  COMPUTED from Table A, never hand-counted.
+- **`ci_lo < 0` on a baseline is a stop sign.** A subset cannot have a tighter interval than its
+  parent, so no tightening fixes it.
+- **Disabling `min_trades` during Phase 1 ranking is correct** — at 100 tickers the floor would
+  reject candidates for sample size rather than quality. It is re-enabled for Phase 2 grading.
+
+### 10.7 Standing owner rulings
+
+| ruling | status |
+|---|---|
+| Holdout dates and duration NEVER change | LOCKED |
+| Fewer configs to save time | **OUT OF QUESTION** — cost comes from speed or machine |
+| Threshold-only vs adding a NEW gate | **ASK EVERY TIME** — no default |
+| Universe 100 for search | approved; speed is key |
+| Isolation bypasses tier sizing | approved, comparability loss accepted |
+| Hourly updates while any run is active | STANDING |
+| AWS | requires a REAL quote against the $50 CAD cap and typed approval |
+
+### 10.8 Per-strategy checklist
+
+Run §9's 23 items in order. The five that cost the most when skipped:
+
+1. **Read the PRODUCER layer, not the gate expression** (L355) — a gate of two booleans had 6
+   producer parameters behind it.
+2. **Prove each parameter reaches the ENGINE** (L387) — `screener` called
+   `compute_smc_signals(df, ticker=ticker)`; a 20-config sweep would have produced 20 IDENTICAL cubes.
+3. **Classify subset-safe vs fire-adding FIRST** (L371) — run count is the product of the
+   fire-ADDING bands alone; 4,000 combinations needed 20 runs, not 4,000.
+4. **Harvest ALL strategies from every cube** (L404) — one run computes 128; reading one wastes 99.2pct.
+5. **Pin tests must be BEHAVIOURAL** (L391, L393) — assert the ENGINE ARTIFACT changes, and verify
+   the subject actually OCCURS in the window, or the test passes on two empty sets.
+
+---
+
+# 11. RUNBOOK — EXACT COMMANDS TO OPTIMISE ONE STRATEGY
+
+§10 explains WHY. **This section is HOW.** Copy-paste, substitute `<STRATEGY>`, run in order.
+Everything here is EXECUTED-verified on `smc_breaker_block_long` (B1546-B1558).
+
+---
+
+## STEP 0 — Build the SPECS entry (no run; ~1 hour of reading)
+
+**0.1** Read the strategy's gate in `backtest/signals/screener.py`:
+```bash
+grep -n "def strat_<STRATEGY>" -A 12 backtest/signals/screener.py
+```
+
+**0.2** For EVERY signal in the gate, find its producer and that producer's parameters.
+**Do not stop at the gate expression** — a gate of two booleans had 6 producer parameters (L355).
+```bash
+grep -rn "<signal_name>" backtest/signals/*.py | grep -v screener
+```
+
+**0.3** For every parameter, PROVE it reaches the engine, not just the producer (L387):
+```bash
+grep -n "compute_<producer>(" backtest/signals/screener.py     # is the arg PASSED?
+```
+A parameter the producer accepts but the caller never passes is **NOT tunable** — plumb it first
+(pattern: `backtest/config.py` env-var + pass at the call site, see `SMC_SWING_LENGTH` B1519).
+
+**0.4** Classify each parameter:
+- **SUBSET-SAFE** — can only REMOVE fires -> derives offline from any cube, FREE
+- **FIRE-ADDING** — changes WHICH bars fire -> needs its own engine run
+
+**Engine runs = product of the FIRE-ADDING bands only.** Everything else is free (L371).
+
+**0.5** Derive each band from MEASURED distributions, never round numbers (L356, L369).
+Instrument the qualifying event first:
+```bash
+PYTHONPATH=. python scripts/instrument_breaker_block.py --ticker AAPL \
+  --start 2022-05-05 --end 2026-05-05 --out output_audit/<STRATEGY>_instr.json
+```
+
+**0.6** Add the SPECS entry to `scripts/producer_variant_table.py` — `formula` + `params`, every row
+citing `evidence` as `file:line`. Then verify:
+```bash
+PYTHONPATH=. python scripts/producer_variant_table.py --strategy <STRATEGY> --factorial
+```
+This BLOCKS if the formula and Table A disagree, and prints the factorial + engine-run count.
+
+---
+
+## STEP 1 — SEARCH: all fire-adding configs, 100 tickers, 2 years
+
+### 1.1 Build the input files
+
+```bash
+# ONE strategy only. This is the difference between a 4.6 h run and a 20 min run.
+echo "<STRATEGY>" > output_audit/_subset_<STRATEGY>.txt
+
+# 100 tickers, ordered by R5 fire-count for THIS strategy so small runs carry signal
+PYTHONPATH=. python - <<'PY'
+import pandas as pd
+S="<STRATEGY>"
+c=pd.read_csv('output_r5_rung4_chunk1/trade_exit_detail.csv',low_memory=False,
+              usecols=['strategy','ticker','entry_date'])
+uni=sorted(c.ticker.unique())
+g=c[c.strategy==S]
+fires=g.groupby('ticker').apply(lambda d: d.groupby('entry_date').ngroups,
+                                include_groups=False) if len(g) else {}
+order=sorted(uni,key=lambda t:(-int(fires.get(t,0)),t))
+open('output_audit/_sweep_100.txt','w').write('\n'.join(order[:100])+'\n')
+print('wrote 100 tickers; top 5:',order[:5])
+PY
+```
+
+### 1.2 ARM THE MONITOR — **BEFORE** the launch, in the SAME turn
+
+**The Stop hook BLOCKS the turn otherwise** (CHECKLIST #185/#186). The CronCreate prompt MUST
+contain a PERIODIC marker (`every hour` / `hourly`) AND an UNCONDITIONAL marker
+(`do not withhold` / `silence is correct only when nothing is running`).
+Exception-only alerting does NOT satisfy it — that was armed wrongly four times.
+
+### 1.3 Launch one config
+
+```bash
+STRATEGY_SUBSET_FILE=output_audit/_subset_<STRATEGY>.txt \
+OPTIMIZATION_MODE=1 \
+SMC_SWING_LENGTH=<P1_value> STRAT_EMA_SPAN=<P6_value> \
+PYTHONPATH=. python backtest/run_phase1a.py \
+  --tickers-file output_audit/_sweep_100.txt \
+  --phase 1a-beta --cube-isolation \
+  --no-agents --no-news --no-git --no-walk-forward \
+  --screen-pool-workers 3 \
+  --start 2024-05-05 --end 2026-05-05 \
+  --max-run-hours 4.0 \
+  --output-dir output_<STRATEGY>_cfg<N>
+```
+
+**Every flag matters:**
+
+| flag / env | why |
+|---|---|
+| `STRATEGY_SUBSET_FILE` | **runs ONE strategy instead of 182.** Omitting it cost a 4.56 h run (L432) |
+| `OPTIMIZATION_MODE=1` | uncaps `max_cands` |
+| `SMC_SWING_LENGTH`, `STRAT_EMA_SPAN` | the FIRE-ADDING config; one run per combination of these |
+| `--cube-isolation` | bypasses ALL cross-strategy gates AND tier sizing (B1545) |
+| `--screen-pool-workers 3` | **default is 0 = SEQUENTIAL** (L407). Use ~3 per concurrent config |
+| `--max-run-hours` | the runner REFUSES to start without it |
+| `--start 2024-05-05` | 2-year SEARCH window; ranking only |
+
+### 1.4 Concurrency
+
+Launch several configs as **separate processes**, each with `--screen-pool-workers 3`.
+In-run parallelism caps at ~1.6x (Amdahl, ~62pct serial), so concurrency across configs scales
+better. **Keep total workers <= cores.** Watch for `MemoryError` in the log — the 182-strategy
+pilot hit it during cube replay; single-strategy cubes are ~1/182 the size, which is what makes
+concurrency viable.
+
+### 1.5 Completion is an ARTIFACT, never a percentage
+
+```bash
+ls -la output_<STRATEGY>_cfg<N>/trade_exit_detail.csv   # THIS is completion
+```
+A run once finished all 1,003 sim-days and wrote **no cube** (L410). Also expect the process to
+hang after writing — the pool does not always exit. Verify the artifact, then kill if needed.
+
+---
+
+## STEP 2 — GRADE: derive the subset-safe combinations
+
+```bash
+PYTHONPATH=.:scripts python scripts/tighten_breaker_block.py \
+  --cube output_<STRATEGY>_cfg<N>/trade_exit_detail.csv \
+  --out output_audit/<STRATEGY>_cfg<N>_grid.json
+```
+
+Per combination this: filters the cube to surviving fires, selects the best exit **IN-SAMPLE ONLY**,
+grades the holdout on all 6 gates via `roster_core` (identical bar to the Phase 1B roster), and
+records all 15 metrics.
+
+**Verdicts:** `PASS` · `FAIL` · `BELOW_POWER_FLOOR` (holdout n < 30) ·
+`NO_EXIT_SELECTABLE` (too few IS trades to rank 26 exits) · `ZERO_FIRES`
+
+**Generate the locked artifact:**
+```bash
+PYTHONPATH=. python scripts/producer_variant_table.py \
+  --strategy <STRATEGY> \
+  --results output_audit/<STRATEGY>_cfg<N>_grid.json \
+  --keys close_mitigation,break_pct_max,age_bars_max,tail_n \
+  --out output_audit/PRODUCER_VARIANT_TABLE_<STRATEGY>.md
+```
+
+---
+
+## STEP 3 — VALIDATE the top 10 (4 years, disjoint tickers)
+
+Rank all combinations by Sharpe with `min_trades` DISABLED (at 100 tickers the floor rejects on
+sample size, not quality). Take the top 10 — they will span only a few distinct engine configs.
+
+Re-run those configs on the **281 tickers NOT in the search set**, full 4-year window, then append
+to the 100-ticker 4-year runs to reconstruct 381. Valid because `--cube-isolation` bypasses the
+candidate cap (`backtest.py:1763`).
+
+**NO separate baseline run is needed** (L423) — all 6 gates are ABSOLUTE thresholds, so admission
+depends on a candidate's own 4-year metrics.
+
+---
+
+## STEP 4 — ADMIT
+
+A combination enters Phase 1B only if it passes **all 6 gates on the 4-year holdout**:
+`pooled_sharpe >= 1.0` · `profit_factor >= 1.3` · `sortino >= 0.7` · `psr >= 0.95` ·
+`min_trades_holdout >= 25` · `min_trades_full_period > 100`
+
+**Report the verdict WITH its denominator** (#182): *"N of M combinations passed, across X of Y
+applicable producers"* — computed by the table generator, never hand-counted.
+
+---
+
+## REFERENCE — measured costs
+
+| shape | measured |
+|---|---|
+| 182 strategies, 100 tickers, 2y | **4.56 h** (2.63 h day loop + 1.93 h post-processing) |
+| 182 strategies, 20 tickers, 2y | 2,759 s |
+| per ticker-day (pool=10) | 0.2613 s |
+| post-processing share | **42pct of every run** |
+
+**Single-strategy costs are being measured now (B1558).** Until that lands, do NOT project — five
+projections were wrong this session (L367, L377, L383, L401, L418).
+
+---
+
+## FAILURE MODES — check these before believing a result
+
+| symptom | cause | reference |
+|---|---|---|
+| all combinations `NO_EXIT_SELECTABLE` | too few IS trades to rank 26 exits | B1502 |
+| a small universe PASSES all gates | entry-rate artifact, not edge | L382 (26.63x) |
+| `ci_lo < 0` | edge indistinguishable from zero; no tightening fixes it | L373 |
+| entry sets differ across runs | universe size or tier gating changed the population | L376, L418 |
+| run completes, no cube | post-processing died; percentage lied | L410 |
+| `MemoryError` in cube replay | cube too large; use the subset filter | B1552 |
+| pyramid OOMs mid-run | an engine run holds RAM; commit BEFORE launching | L425 |

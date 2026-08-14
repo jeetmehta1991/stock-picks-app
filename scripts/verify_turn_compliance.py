@@ -231,7 +231,22 @@ def scan_unmonitored_launch(entries: list[dict]) -> list[str]:
             blob = json.dumps(c.get("input", {}))
             if any(m in name for m in ARM_MARKERS) or any(
                     m in blob for m in ("CronCreate", "PushNotification")):
-                armed = True
+                # B1548 (L424): a monitor that EXISTS but reports exception-only
+                # fails the owner's standing hourly directive while passing the
+                # existence check. #185 caught absence; it did not catch cadence,
+                # and I armed exception-only FOUR times. So the arming call must
+                # ALSO promise an unconditional periodic report.
+                _low = blob.lower()
+                _periodic = ("every hour" in _low or "hourly" in _low
+                             or "scheduled report" in _low)
+                _unconditional = ("do not withhold" in _low
+                                  or "unconditional" in _low
+                                  or "silence is correct only" in _low
+                                  or "silence is correct onlY".lower() in _low)
+                if "CronCreate" in name or "CronCreate" in blob:
+                    armed = _periodic and _unconditional
+                else:
+                    armed = armed or False
             # a launch: long-running runner AND backgrounded
             if any(m in blob for m in LAUNCH_MARKERS[:2]) and (
                     "nohup" in blob or c.get("input", {}).get("run_in_background")):
@@ -244,10 +259,12 @@ def check_monitor_armed() -> str | None:
     bad = scan_unmonitored_launch(_read_entries())
     if not bad:
         return None
-    out = ["TURN-GATE BLOCK (plan SS9 item 13 / L420, B1545): a long-running job "
-           "was LAUNCHED with no monitor armed in the same turn. Arm a CronCreate "
-           "status check + PushNotification on completion, or state explicitly why "
-           "this run needs none:"]
+    out = ["TURN-GATE BLOCK (CHECKLIST #185 / L420+L424): a long-running job was "
+           "LAUNCHED without a monitor armed in the same turn AT THE OWNER'S "
+           "CADENCE. The CronCreate prompt must promise a PERIODIC report "
+           "('every hour' / 'hourly') AND state it is UNCONDITIONAL ('do not "
+           "withhold' / 'silence is correct only when nothing is running'). "
+           "Exception-only alerting does NOT satisfy this (armed 4x wrongly):"]
     out += [f"  ...{b}..." for b in bad[:2]]
     return chr(10).join(out)
 

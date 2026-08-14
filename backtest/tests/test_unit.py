@@ -13787,17 +13787,32 @@ def test_b1545_monitor_armed_gate():
     assert _m.scan_unmonitored_launch(_entries(launch)), (
         "an unmonitored long-run launch must trip the gate")
 
-    # (b) SAME launch WITH a monitor armed in the same turn -> must pass
-    assert _m.scan_unmonitored_launch(_entries(arm, launch)) == [], (
-        "a launch with a monitor armed in the same turn must pass")
+    # (b) B1548 (L424): an EXCEPTION-ONLY monitor must STILL trip. This is the
+    #     failure #185 missed - the monitor existed, so the gate passed, while
+    #     the owner got no hourly report. Armed wrongly FOUR times.
+    exception_only = {"type": "tool_use", "name": "CronCreate",
+                      "input": {"cron": "*/17 * * * *",
+                                "prompt": "Report ONLY if a sentinel trips or "
+                                          "the run exits non-zero."}}
+    assert _m.scan_unmonitored_launch(_entries(exception_only, launch)), (
+        "an EXCEPTION-ONLY monitor must NOT satisfy the gate (L424)")
 
-    # (c) ordinary tool use with no launch -> must not trip
+    # (c) a monitor promising a PERIODIC UNCONDITIONAL report must pass
+    good = {"type": "tool_use", "name": "CronCreate",
+            "input": {"cron": "11 * * * *",
+                      "prompt": "HOURLY REPORT: send a PushNotification EVERY "
+                                "hour while any run is active. Do not withhold "
+                                "because nothing changed."}}
+    assert _m.scan_unmonitored_launch(_entries(good, launch)) == [], (
+        "a periodic UNCONDITIONAL monitor must satisfy the gate")
+
+    # (d) ordinary tool use with no launch -> must not trip
     benign = {"type": "tool_use", "name": "Bash",
               "input": {"command": "git status --short"}}
     assert _m.scan_unmonitored_launch(_entries(benign)) == [], (
         "false positive on a non-launch command")
 
-    # (d) only activity AFTER the last user message counts
+    # (e) only activity AFTER the last user message counts
     ents = _entries(launch)
     ents.append({"type": "user", "message": {"content": "next"}})
     assert _m.scan_unmonitored_launch(ents) == [], (

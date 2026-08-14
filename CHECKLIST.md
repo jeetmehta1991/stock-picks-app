@@ -2845,3 +2845,20 @@ with no monitor at all). A rule applied only when remembered is not a control.
 (2) B1514's ladder, armed but exception-only so a tripped sentinel reached no one until asked;
 (3) B1530's scaling arms, which died silently with no completion path. Pinned BOTH directions by
 `test_b1545_monitor_armed_gate` - unmonitored trips, same-turn-armed passes.
+
+**#186 MONITOR CADENCE, NOT JUST EXISTENCE (B1548, owner directive "ensure this never ever happens
+again").** The arming call for any long-running job must promise BOTH a **PERIODIC** report
+("every hour" / "hourly") AND that it is **UNCONDITIONAL** ("do not withhold", "silence is correct
+only when nothing is running"). **Exception-only alerting does NOT satisfy the monitor requirement.**
+
+*Why this exists on top of #185:* #185 asserts a monitor EXISTS. I then armed exception-only
+monitoring anyway and #185 PASSED - the control existed, it just did not do what was asked. Armed
+wrongly four times: L385 (wrote only to a log), L392 (exception-only), L420 (none at all), L424
+(exception-only again, past #185).
+
+*Mechanically enforced:* `scan_unmonitored_launch()` inspects the CronCreate prompt and rejects a
+launch whose monitor lacks both markers. Pinned BOTH directions by
+`test_b1545_monitor_armed_gate` - exception-only trips, periodic-unconditional passes.
+
+*Anti-theatre check (#136):* retroactively catches L392, L424, and the first `4a528196` arming in
+B1546 - all of which passed the existence check while leaving the owner uninformed.
