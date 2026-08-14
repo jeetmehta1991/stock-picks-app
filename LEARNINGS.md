@@ -6814,3 +6814,35 @@ before treating 13.7pct as firm.
 
 **Scope:** pruning activates ONLY when a strategy subset is active. Full-roster production cube
 runs take the unpruned path unchanged (`feedback_narrow_scope_blast_radius`).
+
+### L440 — 33 producers guarded; pruning removes 95.8pct of compute_all_signals
+
+**B1566 / S6-B1565b (part a).** `compute_all_signals` had skip-guards on 3 of its 33 producer
+calls, so the `skip_indicators` mechanism existed at ~9pct of its reach. All 33 are now guarded
+through one helper, `_producer_skipped(name, skip)`, which accepts BOTH the full function name
+(`compute_rsi`) and Batch 538's legacy short name (`rsi`) so the panel path keeps working.
+
+**The safety property that mattered most: an EMPTY skip set must be byte-identical to before.**
+33 call sites were rewritten mechanically; a single inverted guard would silently delete every
+signal. `test_b1566_unpruned_path_is_unchanged` pins the full key count (512) across `None`,
+`set()`, and the default, so the production cube path cannot regress unnoticed.
+
+**Measured (EXECUTED, same process, steady-state median of 5):**
+```
+unpruned  141.40 ms   512 keys
+pruned      6.00 ms    46 keys   (keeping only compute_ema_sma)
+saving    95.8pct
+```
+This is now the SECOND concordant ratio measurement (95.7pct in B1565, 95.8pct here), which
+clears the two-measurement bar for the RATIO. The ABSOLUTE per-call time still varies widely
+across processes (47.43 / 141.40 / 157.66 ms this session), so only the ratio is trustworthy —
+S6-B1565d still owes a wall-clock measurement on a real run.
+
+**Rule reinforced:** when a mechanical rewrite touches N call sites, the test that matters is not
+that the new behaviour works — it is that the DEFAULT behaviour is unchanged. The new path is
+exercised deliberately; the default path is exercised by everything else, silently.
+
+**Still not wired (S6-B1565b part b):** nothing in `screen_instrument` yet chooses a skip set, so
+no run is faster. The capability is complete and callable —
+`compute_all_signals(df, skip_indicators=...)` with the set from `demand_pruning` — but the
+warmup-record-then-prune integration, gated on `STRATEGY_SUBSET_FILE`, remains.

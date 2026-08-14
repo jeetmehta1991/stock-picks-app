@@ -14243,3 +14243,51 @@ def test_b1565_shared_key_is_not_marked_skipped():
     assert "onlyB" in sk
     assert "shared" not in sk, "shared key wrongly marked skipped"
     assert "onlyA" not in sk
+
+
+def test_b1566_unpruned_path_is_unchanged():
+    """An EMPTY skip set must behave exactly as before B1566.
+
+    33 producer calls were wrapped in guards. If the guard is ever inverted or
+    the helper mis-handles an empty set, every signal silently vanishes -- so
+    this pins the full key count on the default path.
+    """
+    import backtest.signals.technical as T
+    sl = _b1565_sample_df()
+    a = T.compute_all_signals(sl)
+    b = T.compute_all_signals(sl, skip_indicators=set())
+    c = T.compute_all_signals(sl, skip_indicators=None)
+    assert len(a) > 400, f"unpruned signal count collapsed to {len(a)}"
+    assert set(a) == set(b) == set(c), "empty/None skip changed the key set"
+
+
+def test_b1566_skip_accepts_full_and_legacy_names():
+    """Guards take the full function name; Batch 538's panel path passes short
+    names and must keep working. Both are pinned."""
+    import backtest.signals.technical as T
+    sl = _b1565_sample_df()
+    full = T.compute_all_signals(sl)
+    assert "rsi_14" in full
+
+    by_full = T.compute_all_signals(sl, skip_indicators={"compute_rsi"})
+    by_short = T.compute_all_signals(sl, skip_indicators={"rsi"})
+    assert "rsi_14" not in by_full, "full-name skip did not take effect"
+    assert "rsi_14" not in by_short, "legacy short-name skip regressed"
+
+
+def test_b1566_pruning_keeps_required_and_drops_the_rest():
+    """End-to-end: recorded keys -> producer set -> pruned compute.
+
+    Asserts the required key SURVIVES and an unrelated one is GONE. A test
+    that only checked 'fewer keys' would pass even if the wrong ones were cut.
+    """
+    import backtest.signals.technical as T
+    from backtest.signals import demand_pruning as DP
+    sl = _b1565_sample_df()
+    km = DP.build_producer_key_map(sl)
+    keep = DP.required_producers({"price_above_ema_200"}, km)
+    assert keep, "no producer claims price_above_ema_200"
+    pruned = T.compute_all_signals(sl, skip_indicators=set(km) - keep)
+    assert "price_above_ema_200" in pruned, "required key was pruned away"
+    assert "rsi_14" not in pruned, "unrelated producer was not pruned"
+    assert len(pruned) < len(T.compute_all_signals(sl))

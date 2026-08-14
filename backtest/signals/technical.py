@@ -2375,6 +2375,19 @@ def compute_pivot_break_retest_signals(df: pd.DataFrame) -> dict:
 # MASTER AGGREGATOR
 # -----------------------------------------------------------------------------
 
+def _producer_skipped(name: str, skip: set) -> bool:
+    """B1565: is this producer pruned away?
+
+    Accepts the FULL function name ("compute_rsi") or the legacy short name
+    ("rsi") -- Batch 538's panel path passes short names and must keep working.
+    An EMPTY skip set means nothing is skipped, so the unpruned path is
+    byte-identical to pre-B1565 behaviour.
+    """
+    if not skip:
+        return False
+    return name in skip or name.replace("compute_", "", 1) in skip
+
+
 def compute_all_signals(df: pd.DataFrame,
                           skip_indicators: set | None = None) -> dict:
     """
@@ -2396,47 +2409,77 @@ def compute_all_signals(df: pd.DataFrame,
         return {}
     skip = skip_indicators or set()
     signals = {}
-    signals.update(compute_pivots(df))
+    if not _producer_skipped("compute_pivots", skip):
+        signals.update(compute_pivots(df))
     # B643 (2026-06-09 W5 redesign option C): capitulation-lookback
     # producer consumed by strat_pivot_s3_capitulation; emits
     # `recent_capitulation_at_s3` over a 5-bar window.
-    signals.update(compute_capitulation_lookback(df))
+    if not _producer_skipped("compute_capitulation_lookback", skip):
+        signals.update(compute_capitulation_lookback(df))
     # B645 (2026-06-09 Class 7 NEW mirror per owner directive (a)):
     # symmetric blowoff-lookback producer consumed by
     # strat_pivot_r3_blowoff_short.
-    signals.update(compute_blowoff_lookback(df))
-    signals.update(compute_fibonacci(df))
-    signals.update(compute_vwap(df))
-    if "rsi" not in skip:
+    if not _producer_skipped("compute_blowoff_lookback", skip):
+        signals.update(compute_blowoff_lookback(df))
+    if not _producer_skipped("compute_fibonacci", skip):
+        signals.update(compute_fibonacci(df))
+    if not _producer_skipped("compute_vwap", skip):
+        signals.update(compute_vwap(df))
+    if not _producer_skipped("compute_rsi", skip):
         signals.update(compute_rsi(df))
-    signals.update(compute_stochrsi(df))
-    signals.update(compute_stochastic(df))
-    signals.update(compute_macd(df))
-    signals.update(compute_ppo(df))
-    signals.update(compute_williams_r(df))
-    signals.update(compute_roc(df))
-    signals.update(compute_awesome_oscillator(df))
-    signals.update(compute_ultimate_oscillator(df))
-    if "ema_sma" not in skip:
+    if not _producer_skipped("compute_stochrsi", skip):
+        signals.update(compute_stochrsi(df))
+    if not _producer_skipped("compute_stochastic", skip):
+        signals.update(compute_stochastic(df))
+    if not _producer_skipped("compute_macd", skip):
+        signals.update(compute_macd(df))
+    if not _producer_skipped("compute_ppo", skip):
+        signals.update(compute_ppo(df))
+    if not _producer_skipped("compute_williams_r", skip):
+        signals.update(compute_williams_r(df))
+    if not _producer_skipped("compute_roc", skip):
+        signals.update(compute_roc(df))
+    if not _producer_skipped("compute_awesome_oscillator", skip):
+        signals.update(compute_awesome_oscillator(df))
+    if not _producer_skipped("compute_ultimate_oscillator", skip):
+        signals.update(compute_ultimate_oscillator(df))
+    if not _producer_skipped("compute_ema_sma", skip):
         signals.update(compute_ema_sma(df))
-    signals.update(compute_dema_tema(df))
-    signals.update(compute_adx(df))
-    signals.update(compute_parabolic_sar(df))
-    signals.update(compute_ichimoku(df))
-    signals.update(compute_supertrend(df))
-    signals.update(compute_chandelier_exit(df))
-    signals.update(compute_hull_ma(df))
-    signals.update(compute_bollinger(df))
-    signals.update(compute_keltner(df))
-    signals.update(compute_donchian(df))
-    signals.update(compute_atr_levels(df))
-    signals.update(compute_squeeze(df))
-    signals.update(compute_volume(df))
-    signals.update(compute_candles(df))
-    signals.update(compute_break_retest_signals(df))  # BUG-111
-    signals.update(compute_52w_break_retest_signals(df))  # B605 F1 - 52w-anchored retest
-    signals.update(compute_pivot_break_retest_signals(df))  # B606 F1 - R1/S1-anchored retest
-    if "simple_returns" not in skip:
+    if not _producer_skipped("compute_dema_tema", skip):
+        signals.update(compute_dema_tema(df))
+    if not _producer_skipped("compute_adx", skip):
+        signals.update(compute_adx(df))
+    if not _producer_skipped("compute_parabolic_sar", skip):
+        signals.update(compute_parabolic_sar(df))
+    if not _producer_skipped("compute_ichimoku", skip):
+        signals.update(compute_ichimoku(df))
+    if not _producer_skipped("compute_supertrend", skip):
+        signals.update(compute_supertrend(df))
+    if not _producer_skipped("compute_chandelier_exit", skip):
+        signals.update(compute_chandelier_exit(df))
+    if not _producer_skipped("compute_hull_ma", skip):
+        signals.update(compute_hull_ma(df))
+    if not _producer_skipped("compute_bollinger", skip):
+        signals.update(compute_bollinger(df))
+    if not _producer_skipped("compute_keltner", skip):
+        signals.update(compute_keltner(df))
+    if not _producer_skipped("compute_donchian", skip):
+        signals.update(compute_donchian(df))
+    if not _producer_skipped("compute_atr_levels", skip):
+        signals.update(compute_atr_levels(df))
+    if not _producer_skipped("compute_squeeze", skip):
+        signals.update(compute_squeeze(df))
+    if not _producer_skipped("compute_volume", skip):
+        signals.update(compute_volume(df))
+    if not _producer_skipped("compute_candles", skip):
+        signals.update(compute_candles(df))
+    if not _producer_skipped("compute_break_retest_signals", skip):
+        signals.update(compute_break_retest_signals(df))  # BUG-111
+    if not _producer_skipped("compute_52w_break_retest_signals", skip):
+        signals.update(compute_52w_break_retest_signals(df))  # B605 F1 - 52w-anchored retest
+    if not _producer_skipped("compute_pivot_break_retest_signals", skip):
+        signals.update(compute_pivot_break_retest_signals(df))  # B606 F1 - R1/S1-anchored retest
+    if not _producer_skipped("compute_simple_returns", skip):
         signals.update(compute_simple_returns(df))        # Batch 467 P10
     return {k: v for k, v in signals.items() if v is not None}
 
