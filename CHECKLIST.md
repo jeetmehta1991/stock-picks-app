@@ -2881,3 +2881,23 @@ four checks; would also have caught any chunk-vs-merged substitution in the R5 r
 series. **Lineage:** a doc rule said "derive from the BASELINE ARTIFACT" (L378) and
 was followed to an abandoned alphabetical chunk — 380/381 tickers starting A-C, no
 MSFT/NVDA/GOOGL, 248 tickers the real baseline never ran.
+
+### #188 — ACKNOWLEDGED MISS => LEARNINGS ENTRY, SAME TURN (B1573 / L446)
+
+**If a response admits an error, it gets an L-entry in that same turn.** Severity is not the filter.
+
+Trigger phrases (any of): "I was wrong", "retract", "correction", "my error", "my bug",
+"that was misleading", "I should have", "caught by preflight/the hook".
+
+**Then, per Phase 5, one of:**
+- a NEW CHECKLIST item (must pass #136 retroactive-coverage), OR
+- an explicit note "compliance failure against existing item N".
+Silence on both is the violation.
+
+**Mechanically enforced:** `scan_unrecorded_miss()` in `scripts/verify_turn_compliance.py` blocks
+turn-end when acknowledgement language appears without LEARNINGS.md being modified.
+
+**Retroactive coverage (#136):** catches all 12 unrecorded misses enumerated in L446, including
+the 5th instance of the monitor-cadence class (L420/L424) and the twice-repeated commit-message
+shell-quoting error. **Lineage:** big findings got entries, small ones did not - and the small
+recurring ones are precisely what a written record prevents.

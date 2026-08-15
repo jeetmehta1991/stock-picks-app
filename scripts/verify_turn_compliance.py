@@ -254,6 +254,20 @@ def scan_unmonitored_launch(entries: list[dict]) -> list[str]:
     return [] if (armed or not launches) else launches
 
 
+def check_unrecorded_miss() -> str | None:
+    """Block a turn that ACKNOWLEDGED a miss without writing it to LEARNINGS."""
+    try:
+        import subprocess
+        r = subprocess.run(["git", "status", "--porcelain", "LEARNINGS.md"],
+                           capture_output=True, text=True, timeout=15)
+        touched = bool(r.stdout.strip())
+    except Exception:
+        # Never let the gate itself break the turn; fail OPEN and say so.
+        return None
+    bad = scan_unrecorded_miss(_read_entries(), touched)
+    return bad[0] if bad else None
+
+
 def check_monitor_armed() -> str | None:
     """Block a turn that launched a long run without arming its reporting path."""
     bad = scan_unmonitored_launch(_read_entries())
@@ -294,6 +308,55 @@ def get_modified_tracked() -> list[str]:
     return [ln.strip() for ln in result.stdout.splitlines() if ln.strip()]
 
 
+# B1573 / CHECKLIST #188 -- an acknowledged miss must land in LEARNINGS the SAME
+# turn. 12 misses were admitted in-response this session and never written down;
+# the big ones got entries, the small recurring ones did not -- and recurrence,
+# not severity, is what makes a miss expensive. Prose cannot enforce prose.
+MISS_PHRASES = (
+    "i was wrong", "i am wrong", "retract", "retraction",
+    "my error", "my mistake", "my bug", "that was my",
+    "i should have", "was misleading", "that result is misleading",
+    "caught by preflight", "caught by the hook", "the hook is right",
+    "correction:", "correcting my", "i nearly shipped", "i almost shipped",
+)
+
+
+def scan_unrecorded_miss(entries, learnings_modified: bool):
+    """Return [reason] when a miss was acknowledged but LEARNINGS was not touched.
+
+    Only ASSISTANT text is scanned -- the owner pointing out an error is not the
+    trigger; ACKNOWLEDGING it is. Fires once per turn with the phrases found.
+    """
+    if learnings_modified:
+        return []
+    hits = []
+    for e in entries or []:
+        if (e or {}).get("type") != "assistant":
+            continue
+        msg = (e.get("message") or {})
+        content = msg.get("content")
+        blob = ""
+        if isinstance(content, str):
+            blob = content
+        elif isinstance(content, list):
+            blob = " ".join(
+                c.get("text", "") for c in content
+                if isinstance(c, dict) and c.get("type") == "text")
+        low = blob.lower()
+        for ph in MISS_PHRASES:
+            if ph in low:
+                hits.append(ph)
+    if not hits:
+        return []
+    uniq = sorted(set(hits))[:4]
+    return [("TURN-GATE BLOCK (CHECKLIST #188 / L446): this turn ACKNOWLEDGED a "
+             f"miss ({uniq}) but LEARNINGS.md was not modified. Severity is not "
+             "the filter -- 12 unrecorded misses this session included the 5th "
+             "instance of the monitor-cadence class. Add the L-entry (plus a new "
+             "CHECKLIST item or an explicit 'compliance failure against item N') "
+             "and end the turn again.")]
+
+
 def main() -> int:
     sentinel = REPO_ROOT / ".stop_exempt"
     if sentinel.exists():
@@ -316,6 +379,14 @@ def main() -> int:
         print(verdict_block, file=sys.stderr)
         return 2
     # B1545: monitor-armed gate (L420 - third unmonitored launch).
+    # B1573 / CHECKLIST #188: an acknowledged miss must land in LEARNINGS the
+    # SAME turn. Checked BEFORE the monitor gate so a turn that both admits a
+    # miss and launches a run reports the miss first.
+    miss_block = check_unrecorded_miss()
+    if miss_block:
+        print(miss_block, file=sys.stderr)
+        return 2
+
     monitor_block = check_monitor_armed()
     if monitor_block:
         print(monitor_block, file=sys.stderr)

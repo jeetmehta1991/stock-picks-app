@@ -7053,3 +7053,44 @@ SPY TSLA AAPL AMZN NVDA MSFT AMD GOOGL GOOG MRNA NFLX PYPL — visibly a univers
 
 **Rule design lesson:** a prose rule that names a SOURCE CATEGORY cannot enforce itself. Rules of
 the form "use X" need a companion check of the form "and here is how you verify this IS X".
+
+### L446 — twelve misses were acknowledged in conversation and never written down
+
+**B1573.** Owner asked directly: *"Have you been updating both docs each turn if mistakes or misses
+as per skill requirements?"* **Audited by grep rather than recall. Answer: NO.**
+
+11 L-entries (L435-L445) captured the big findings. **~12 smaller misses were surfaced in-response,
+corrected verbally, and never recorded:**
+
+1. Wrong-path alarm (`output_bb_cfg_*` vs `output_par_*`) - I wrote *"owed: L-entry"* and never wrote it.
+2. RAM 2.1-2.3 GB carried from 5-ticker runs to a 100-ticker run without re-deriving (peak was 2.8 GB).
+3. "RAM may climb further" - it fell.
+4. Monitor cadence wording blocked by #185/#186 - MY OWN rule, 5th instance of that class (L420, L424).
+5. Test harness did not narrow `ALL_STRATEGIES`, producing a misleading `skipped=[]`.
+6. Backticks in commit messages broke the shell - TWICE (B1564, B1571).
+7. Em-dash in my own new script, caught by preflight C1/C2.
+8. Bare `except: continue` in my own new scanner, caught by preflight C7d.
+9. Numeric-column comparison crashed on a boolean column in the cube SHA check.
+10. ADV-window trade-off presented one-sided (owner: *"Nope"*).
+11. Nested heredoc delimiter (`PY`) terminated my outer heredoc.
+12. Master universe CSV parse returned 8 rows; disclosed but never recorded.
+
+**Only ONE CHECKLIST item was added all session (#187)** while Phase 5 requires, for every miss,
+either a new item OR an explicit "compliance failure against existing item N". Neither happened for
+the twelve.
+
+**Why the big ones got recorded and the small ones did not.** A finding that changes a NUMBER or a
+DESIGN felt worth an entry; a finding that only cost a retry felt like noise. **That instinct is
+exactly wrong.** Items 4, 6, 7, 8 are all repeat classes - #4 for the fifth time. Small recurring
+misses are the ones a written record would actually prevent, because they recur precisely because
+nobody wrote them down.
+
+**Mechanically enforced (B1573):** `scan_unrecorded_miss()` in
+`scripts/verify_turn_compliance.py` scans the turn's own responses for acknowledgement language
+("I was wrong", "retract", "my error", "correction:", "that was my bug", "misleading") and BLOCKS
+the turn end unless LEARNINGS.md was modified in the same turn. Prose cannot enforce prose - the
+only miss-capture rules that have held in this repo are the ones a script checks.
+
+**Rule:** *if you say it was a mistake in the response, it goes in LEARNINGS in the same turn.*
+Severity is not the filter. Recurrence is what makes a miss expensive, and severity does not
+predict recurrence.

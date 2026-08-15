@@ -14463,3 +14463,42 @@ def test_b1569_skipped_smc_keys_join_the_guard_set():
     import pytest
     with pytest.raises(DP.SkippedSignalError):
         g.get("smc_fvg_bullish_active", False)
+
+
+def test_b1573_unrecorded_miss_gate_both_directions():
+    """CHECKLIST #188: acknowledging a miss without an L-entry must BLOCK.
+
+    12 misses were admitted in-response and never written down (L446). The big
+    findings got entries; the small recurring ones did not - and recurrence,
+    not severity, is what makes a miss expensive. Prose could not enforce this;
+    this gate does.
+    """
+    import importlib.util
+    spec = importlib.util.spec_from_file_location(
+        "_vtc", "scripts/verify_turn_compliance.py")
+    m = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(m)
+
+    def ent(text, role="assistant"):
+        if role == "assistant":
+            return [{"type": "assistant",
+                     "message": {"content": [{"type": "text", "text": text}]}}]
+        return [{"type": "user", "message": {"content": text}}]
+
+    admit = ent("I was wrong about the RAM figure.")
+
+    # (a) admits a miss, LEARNINGS untouched -> BLOCK
+    assert m.scan_unrecorded_miss(admit, False), (
+        "acknowledged miss with no LEARNINGS entry must block")
+    # (b) admits a miss, LEARNINGS modified -> pass
+    assert m.scan_unrecorded_miss(admit, True) == [], (
+        "recording the miss must clear the gate")
+    # (c) no acknowledgement -> pass regardless
+    assert m.scan_unrecorded_miss(ent("The run completed normally."), False) == []
+    # (d) the OWNER pointing out an error is not the trigger; acknowledging is
+    assert m.scan_unrecorded_miss(ent("you were wrong", role="user"), False) == []
+    # (e) other phrasings of the same admission are caught
+    for phrase in ("Retraction: the cache claim was false.",
+                   "That was my bug in the check script.",
+                   "caught by preflight - correctly."):
+        assert m.scan_unrecorded_miss(ent(phrase), False), f"missed: {phrase}"
