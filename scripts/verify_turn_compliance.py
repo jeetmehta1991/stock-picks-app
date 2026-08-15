@@ -339,8 +339,26 @@ def scan_unrecorded_miss(entries, learnings_modified: bool):
     """
     if learnings_modified:
         return []
+    # B1577: window to THIS TURN only. The first version scanned the whole
+    # transcript, so phrases from earlier turns ("caught by preflight",
+    # "correction:") kept re-firing forever - a gate that fires on a turn with
+    # no miss is the same defect L447 fixed, one layer up. The sibling scanners
+    # already window on the last real user message; this now matches them.
+    entries = list(entries or [])
+    last_user = -1
+    for i, e in enumerate(entries):
+        if (e or {}).get("type") != "user":
+            continue
+        content = ((e.get("message") or {}).get("content"))
+        if isinstance(content, str):
+            last_user = i
+        elif isinstance(content, list) and any(
+                isinstance(c, dict) and c.get("type") == "text" for c in content):
+            last_user = i
+    entries = entries[last_user + 1:] if last_user >= 0 else entries
+
     hits = []
-    for e in entries or []:
+    for e in entries:
         if (e or {}).get("type") != "assistant":
             continue
         msg = (e.get("message") or {})

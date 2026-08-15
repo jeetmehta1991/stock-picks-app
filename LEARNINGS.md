@@ -7151,3 +7151,33 @@ hard-codes its path, and those consumers are invisible from the file itself.
 "fix the universe file", the three scripts would still be reading the chunk today. **A cleanup task
 is a free audit of every reference to the thing being cleaned up** - worth doing deliberately, not
 only when a move forces it.
+
+### L449 — the miss gate scanned the whole transcript, so it fired forever
+
+**B1577.** `scan_unrecorded_miss()` (B1573, #188) blocked a monitor tick that acknowledged nothing.
+The phrases it reported - "caught by preflight", "correction:", "i nearly shipped" - were from
+**earlier turns**. It iterated every assistant message in the transcript rather than only the
+current turn's.
+
+Left alone it would have fired on **every future turn for the rest of the session**, because those
+phrases are permanently in the history. The only way past would have been `.stop_exempt` each time,
+which is precisely the erosion L447 described - and this is the SECOND defect in the same gate in
+two turns.
+
+**The sibling scanner already solved this.** `scan_unmonitored_launch()` carries an explicit
+"counted only AFTER the last real user message" window, with a test pinning it. I wrote a new
+scanner beside it and did not copy the windowing.
+
+**Generalised rule:** *when adding a scanner to a family of scanners, diff it against its siblings
+before shipping.* The siblings encode constraints learned the hard way - turn windowing here - and
+a new member that skips them re-earns every lesson. This is `feedback_confirm_existing_template_
+before_replicating` applied to code rather than documents: the template existed, I wrote alongside
+it instead of from it.
+
+**Pattern across L447 + L449:** both defects made the gate fire on turns that had done nothing
+wrong. **A miss-detector's failure mode is not "misses a miss" - it is "cries wolf until disabled".**
+Every gate that blocks a turn needs its false-positive path tested as hard as its true-positive
+path, and both directions pinned.
+
+**Compliance failure against existing item:** `feedback_confirm_existing_template_before_replicating`
+- I had the sibling scanner in the same file and did not enumerate what it did differently.

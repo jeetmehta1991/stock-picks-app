@@ -14530,3 +14530,31 @@ def test_b1574_miss_gate_accepts_committed_learnings():
             "message": {"content": [{"type": "text", "text": "my error"}]}}]
     assert m.scan_unrecorded_miss(ent, True) == []
     assert m.scan_unrecorded_miss(ent, False)
+
+
+def test_b1577_miss_gate_windows_to_current_turn():
+    """L449: acknowledgements in EARLIER turns must not re-fire the gate.
+
+    The first version scanned the whole transcript, so phrases like
+    "correction:" fired on every subsequent turn forever - the only way past
+    being .stop_exempt, which erodes every gate sharing that mechanism.
+    """
+    import importlib.util
+    spec = importlib.util.spec_from_file_location(
+        "_vtc3", "scripts/verify_turn_compliance.py")
+    m = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(m)
+
+    A = lambda t: {"type": "assistant",
+                   "message": {"content": [{"type": "text", "text": t}]}}
+    U = lambda t: {"type": "user", "message": {"content": t}}
+
+    # miss admitted BEFORE the last user message -> not this turn's problem
+    assert m.scan_unrecorded_miss(
+        [A("correction: I was wrong"), U("next task"), A("all healthy")],
+        False) == [], "stale acknowledgement from a prior turn must not fire"
+    # miss admitted AFTER the last user message -> must block
+    assert m.scan_unrecorded_miss([U("go"), A("my error")], False), \
+        "acknowledgement in the current turn must still block"
+    # ...and recording it clears the gate
+    assert m.scan_unrecorded_miss([U("go"), A("my error")], True) == []
