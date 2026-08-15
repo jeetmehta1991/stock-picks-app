@@ -774,21 +774,52 @@ This BLOCKS if the formula and Table A disagree, and prints the factorial + engi
 # ONE strategy only. This is the difference between a 4.6 h run and a 20 min run.
 echo "<STRATEGY>" > output_audit/_subset_<STRATEGY>.txt
 
-# 100 tickers, ordered by R5 fire-count for THIS strategy so small runs carry signal
-PYTHONPATH=. python - <<'PY'
-import pandas as pd
-S="<STRATEGY>"
-c=pd.read_csv('output_r5_rung4_chunk1/trade_exit_detail.csv',low_memory=False,
-              usecols=['strategy','ticker','entry_date'])
-uni=sorted(c.ticker.unique())
-g=c[c.strategy==S]
-fires=g.groupby('ticker').apply(lambda d: d.groupby('entry_date').ngroups,
-                                include_groups=False) if len(g) else {}
-order=sorted(uni,key=lambda t:(-int(fires.get(t,0)),t))
-open('output_audit/_sweep_100.txt','w').write('\n'.join(order[:100])+'\n')
-print('wrote 100 tickers; top 5:',order[:5])
-PY
+# THE 100-TICKER SEARCH UNIVERSE IS FIXED AND SHARED BY EVERY STRATEGY.
+# Rebuild ONLY if the 381-universe changes. Owner ruling 2026-08-14.
+# Builder: scripts/build_sweep_100.py
 ```
+
+#### CRITERION: top 100 by average dollar volume (ADV) over the WARMUP window
+
+**Owner ruling 2026-08-14.** ONE fixed list, shared by every strategy.
+
+**Why fixed, not per-strategy.** The previous builder ranked tickers by *that strategy's* R5 fire
+count, so each strategy was searched on the 100 tickers where it had historically fired most. That
+is **in-sample selection**: it inflates apparent edge, and by a different amount per strategy, so
+cross-strategy comparisons are corrupted too. A fixed list costs statistical power for
+rarely-firing strategies and buys an unbiased, comparable result.
+
+**Why ADV.** The search phase exists to RANK combinations on 100 tickers such that the ranking
+transfers to 381. Liquidity is strategy-neutral, stable, and matches what would actually be traded,
+so fills and slippage stay realistic.
+
+**Why the WARMUP window (2021-05-06 to 2022-05-05).** It precedes the locked backtest window
+entirely, so universe selection carries no lookahead into the period being measured.
+
+**TWO DISCLOSED BIASES — do not rediscover these later:**
+
+1. **SPY is in the list** (ADV $37.2B, ~2.8x AAPL). It is a Tier-1 ETF and legitimately inside the
+   381, but it is an index, not a single stock, and strategies behave differently on it.
+2. **41 of 381 are excluded** for lacking 100 warmup bars, which means **every ticker that listed
+   after 2021-05-06 is structurally ineligible** (ACLX, ALAB, AISP, AMLX, ...). Recent IPOs can
+   never enter this SEARCH universe. They remain in the 381 used for Phase-2 VALIDATION, so no
+   combination is ever *admitted* on the biased universe — but its RANKING is derived from one.
+
+**The fixed 100 (ADV-ranked, highest first):**
+
+```
+SPY  AAPL  AMZN  AMD  BA  BAC  CRM  ADBE  C  COIN
+AVGO  CSCO  ABNB  COST  AMAT  CMCSA  ABBV  CRWD  AFRM  BKNG
+BMY  CCL  CAT  CHTR  ACN  ATVI  BIDU  ABT  AAL  ASML
+AXP  AMGN  ADI  COP  BLK  BX  CVNA  AMT  COF  CMG
+AZN  CSX  AA  AON  CI  BIIB  ADSK  ALGN  CL  ADP
+BDX  CB  BSX  CME  CCI  APD  BBY  CERN  CNC  BK
+CAR  BKR  A  AIG  AEP  APA  ALL  CTSH  ALB  CHWY
+CMI  BAX  CTRA  APTV  CFG  CLX  CPNG  CARR  CDNS  ANET
+CF  BBWI  ADM  APPS  APO  CROX  BURL  CTXS  APH  AFL
+CTAS  ALLY  CRL  AMP  ARE  AJG  CSGP  AVB  CTVA  CAH
+```
+
 
 ### 1.2 ARM THE MONITOR — **BEFORE** the launch, in the SAME turn
 
