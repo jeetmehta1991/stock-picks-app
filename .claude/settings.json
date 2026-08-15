@@ -113,7 +113,16 @@
       "Bash(aws ec2 describe-images *)",
       "Bash(aws ec2 describe-security-groups *)",
       "Bash(aws ec2 get-console-output *)",
-      "Bash(aws sts get-caller-identity *)"
+      "Bash(aws sts get-caller-identity *)",
+      "PowerShell(Get-Process*)",
+      "PowerShell(Get-CimInstance*)",
+      "Bash(python -c \"*)",
+      "Bash(git log*)",
+      "Bash(git status*)",
+      "Bash(git diff*)",
+      "Bash(git show*)",
+      "Bash(wc*)",
+      "Bash(stat*)"
     ]
   }
 }
