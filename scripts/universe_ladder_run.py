@@ -38,7 +38,11 @@ from pathlib import Path
 import pandas as pd
 
 REPO = Path(__file__).resolve().parents[1]
-R5_CUBE = REPO / "output_r5_rung4_chunk1" / "trade_exit_detail.csv"
+# B1575: was output_r5_rung4_chunk1 - an ABANDONED alphabetically-
+# partitioned chunk (380/381 tickers A-C, no MSFT/NVDA/GOOGL, 248
+# tickers the real R5 never ran). L445. The real baseline is
+# output_r5_merged_1_7 (544 tickers, A-Z).
+R5_CUBE = REPO / "output_r5_merged_1_7" / "trade_exit_detail.csv"
 STRATEGY = "smc_breaker_block_long"
 RUNGS = [5, 10, 20, 50, 100, 200, 381]
 EXPECTED_EXITS = 26

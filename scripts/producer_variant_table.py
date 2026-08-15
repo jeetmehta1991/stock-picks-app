@@ -73,7 +73,10 @@ breaker_bullish  =  AT LEAST ONE event e in P3 satisfies ALL of:
                         AND ( e.broken_up )                           [from P5]
 
 fires            =  ( breaker_bullish )  AND  ( price_above_ema_200 ) [from P6]""",
-        "baseline": {"artifact": "output_r5_rung4_chunk1", "fires": 352,
+        # B1575: baseline artifact corrected per L445 - rung4_chunk1 was an
+        # abandoned A-C chunk. Fire count is from that defective cube and is
+        # NOT comparable to merged_1_7; re-measure before citing it.
+        "baseline": {"artifact": "output_r5_merged_1_7", "fires": None,
                      "tickers": 161, "holdout_n": 147,
                      "window": "2022-05-06..2026-05-04"},
         "params": [

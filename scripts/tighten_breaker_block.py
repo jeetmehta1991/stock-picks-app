@@ -32,7 +32,11 @@ with contextlib.redirect_stdout(io.StringIO()):
     from vendored.smartmoneyconcepts.smartmoneyconcepts import smc as _smc
 
 STRATEGY = "smc_breaker_block_long"
-R5_CUBE = Path("output_r5_rung4_chunk1/trade_exit_detail.csv")
+# B1575: was output_r5_rung4_chunk1 - an ABANDONED alphabetically-
+# partitioned chunk (380/381 tickers A-C, no MSFT/NVDA/GOOGL, 248
+# tickers the real R5 never ran). L445. The real baseline is
+# output_r5_merged_1_7 (544 tickers, A-Z).
+R5_CUBE = Path("output_r5_merged_1_7/trade_exit_detail.csv")
 
 # Candidate levels. Each list ANCHORS at the production default (last element)
 # so "no change" is always in the grid and the baseline is reproducible.

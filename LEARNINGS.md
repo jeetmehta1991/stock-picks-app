@@ -7120,3 +7120,34 @@ against one representation of a thing rather than the thing itself.
 
 **Compliance failure against existing item:** none - #188 is one turn old and this is a defect IN
 it, not a lapse against it. #188's text stands; its implementation was wrong for one commit.
+
+### L448 — archiving the defective artifact exposed three LIVE scripts still reading it
+
+**B1575.** Owner approved archiving every superseded run and retaining only `output_r5_merged_1_7`.
+Checking references BEFORE moving (rather than moving and fixing fallout) found that
+`output_r5_rung4_chunk1` - the abandoned A-C chunk from L445 - was **hard-coded in three live
+optimisation scripts**, not merely mentioned in docs:
+
+```
+scripts/tighten_breaker_block.py:35   R5_CUBE = output_r5_rung4_chunk1/...
+scripts/universe_ladder_run.py:41     R5_CUBE = output_r5_rung4_chunk1/...
+scripts/producer_variant_table.py:76  "baseline": {"artifact": "output_r5_rung4_chunk1", "fires": 352}
+```
+
+**These are the scripts that DO the optimisation.** The grading harness, the ladder runner, and the
+locked reporting-contract table were all reading a 381-ticker A-C slice as if it were the R5
+baseline. L445 identified the defect in one universe FILE; the same wrong artifact was wired into
+the tooling in three more places that a universe-file audit would never have surfaced.
+
+All three repointed to `output_r5_merged_1_7`. `producer_variant_table.py`'s baseline `fires: 352`
+was set to `None` with a comment: that count came from the defective cube and is **not comparable**
+to the real baseline, so silently carrying the number forward would have been worse than losing it.
+
+**Generalised rule:** *when an artifact is found to be defective, grep for it across CODE, not just
+docs, before archiving or repointing.* A defect in a data file propagates to every consumer that
+hard-codes its path, and those consumers are invisible from the file itself.
+
+**What made this catchable:** archiving forced a reference check. Had the owner asked only to
+"fix the universe file", the three scripts would still be reading the chunk today. **A cleanup task
+is a free audit of every reference to the thing being cleaned up** - worth doing deliberately, not
+only when a move forces it.

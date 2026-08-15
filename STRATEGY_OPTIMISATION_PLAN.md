@@ -807,17 +807,22 @@ entirely, so universe selection carries no lookahead into the period being measu
 
 **The fixed 100 (ADV-ranked, highest first):**
 
+**Source universe: `output_audit/r5_universe_544.txt`** (from `output_r5_merged_1_7`, the R5 baseline `PHASE_1B_ROSTER.md` cites). **NOT** the former `r5_universe_381.txt`, which came from an abandoned alphabetically-partitioned chunk - 380/381 tickers A-C, no MSFT/NVDA/GOOGL, 248 tickers R5 never ran (L445). Verify any universe file before use:
 ```
-SPY  AAPL  AMZN  AMD  BA  BAC  CRM  ADBE  C  COIN
-AVGO  CSCO  ABNB  COST  AMAT  CMCSA  ABBV  CRWD  AFRM  BKNG
-BMY  CCL  CAT  CHTR  ACN  ATVI  BIDU  ABT  AAL  ASML
-AXP  AMGN  ADI  COP  BLK  BX  CVNA  AMT  COF  CMG
-AZN  CSX  AA  AON  CI  BIIB  ADSK  ALGN  CL  ADP
-BDX  CB  BSX  CME  CCI  APD  BBY  CERN  CNC  BK
-CAR  BKR  A  AIG  AEP  APA  ALL  CTSH  ALB  CHWY
-CMI  BAX  CTRA  APTV  CFG  CLX  CPNG  CARR  CDNS  ANET
-CF  BBWI  ADM  APPS  APO  CROX  BURL  CTXS  APH  AFL
-CTAS  ALLY  CRL  AMP  ARE  AJG  CSGP  AVB  CTVA  CAH
+python scripts/verify_universe_artifact.py output_audit/_sweep_100.txt --compare-cube output_r5_merged_1_7/trade_exit_detail.csv
+```
+
+```
+SPY  TSLA  AAPL  AMZN  NVDA  MSFT  AMD  GOOGL  GOOG  MRNA
+NFLX  PYPL  BA  BAC  JPM  V  XOM  DIS  MU  PFE
+CVX  INTC  CRM  MA  ADBE  QCOM  C  F  BRK-B  WFC
+UNH  HD  T  JNJ  TWTR  COIN  PG  WMT  UBER  AVGO
+VZ  CSCO  ABNB  COST  AMAT  GS  MRK  CMCSA  NKE  GM
+KO  PLTR  MS  ABBV  CRWD  TXN  ORCL  OXY  BKNG  TGT
+TMO  LRCX  LOW  INTU  BMY  FCX  NOW  CCL  SBUX  PEP
+CAT  DHR  GE  LLY  CHTR  ACN  ATVI  UNP  ABT  AAL
+PANW  MCD  DE  IBM  SPGI  NEE  AXP  LMT  AMGN  ADI
+TMUS  HON  MDT  COP  FDX  UAL  UPS  DASH  LIN  CVS
 ```
 
 
