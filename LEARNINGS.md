@@ -7181,3 +7181,34 @@ path, and both directions pinned.
 
 **Compliance failure against existing item:** `feedback_confirm_existing_template_before_replicating`
 - I had the sibling scanner in the same file and did not enumerate what it did differently.
+
+### L450 — I raised a stall alarm from a rate computed between two timestamps I never checked
+
+**B1578.** Reported the B1576 configs as "appearing STALLED": 149 min elapsed with only ~4 sim-days
+of apparent progress since the previous tick, and falling worker RAM.
+
+**Wrong.** CPU sampling showed both workers at ~100pct of a core (5.97s / 5.89s per 6s wall), the
+log had been written 14 seconds earlier, and `PHASE_TIMING day=2025-11-18 screen_done dur=23.290s`
+gave the real cost: **23.2 s per sim-day**, which reconciles exactly with 149 min over ~386 elapsed
+trading days. Nothing was stalled.
+
+**The error:** I compared the previous tick's log reading - taken at the very END of a long turn,
+after a 3-minute pyramid and several commits - against this tick's, and treated the two as one
+9-minute monitor interval. **They were not a known distance apart.** A rate needs two timestamps;
+I had two readings and assumed the interval.
+
+**Falling RAM reinforced the wrong conclusion.** It was consistent with "winding down", and I let a
+second ambiguous signal confirm the first rather than treating both as unexplained.
+
+**Generalised rule:** *never compute a rate from two observations whose time separation you did not
+measure.* Monitor ticks are NOT evenly spaced - cron fires only when the REPL is idle, and a turn's
+own work shifts when readings are taken. Record the timestamp WITH each reading, or derive the rate
+from the process's own internal instrumentation (here `PHASE_TIMING ... dur=`), which carries its
+own clock.
+
+**Cost of the miss:** a false alarm on a healthy 3-hour run. Cheap this time. The same reflex
+applied to a REAL stall would be the mirror error - and the fix is identical: measure the interval
+or use the run's own timing output, never eyeball two log lines.
+
+**Compliance failure against existing item:** L401 (measurement discipline - two concordant
+measurements before a claim). I had one interval, unmeasured, and still asserted a 100x slowdown.
