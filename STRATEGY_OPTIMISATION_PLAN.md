@@ -817,11 +817,12 @@ PYTHONPATH=. python backtest/run_phase1a.py \
 
 | flag / env | why |
 |---|---|
-| `STRATEGY_SUBSET_FILE` | **runs ONE strategy instead of 182.** Omitting it cost a 4.56 h run (L432) |
-| `OPTIMIZATION_MODE=1` | uncaps `max_cands` |
+| `STRATEGY_SUBSET_FILE` | **MANDATORY — never optional.** Runs ONE strategy instead of 182 AND is the gate that enables demand pruning. Omitting it loses BOTH savings, **silently**, exactly as B1558 did (4.56 h, L432). Owner-agreed 2026-08-14 to make it non-optional in this command. **Never set it for Phase 1B / full-roster runs.** |
+| `OPTIMIZATION_MODE=1` | uncaps `max_cands`; **no-op under `--cube-isolation`** (L419). Does NOT skip `smart_money_score` — that was tried and REVERTED (L418) |
 | `SMC_SWING_LENGTH`, `STRAT_EMA_SPAN` | the FIRE-ADDING config; one run per combination of these |
+| `DEMAND_PRUNING=0` | **only if a run dies with `SkippedSignalError`** — that means warmup missed a key some regime reads. Default `1`. Raise `DEMAND_PRUNING_WARMUP` (default 25) before disabling |
 | `--cube-isolation` | bypasses ALL cross-strategy gates AND tier sizing (B1545) |
-| `--screen-pool-workers 3` | **default is 0 = SEQUENTIAL** (L407). Use ~3 per concurrent config |
+| `--screen-pool-workers` | **default is 0 = SEQUENTIAL** (L407). Use 0 for a clean timing measurement; ~3 per config when running several concurrently. **Total workers must never exceed 10 physical cores** |
 | `--max-run-hours` | the runner REFUSES to start without it |
 | `--start 2024-05-05` | 2-year SEARCH window; ranking only |
 
@@ -894,19 +895,104 @@ applicable producers"* — computed by the table generator, never hand-counted.
 
 ---
 
-## REFERENCE — measured costs
+## REFERENCE — ENGINE CONTROLS (code-verified B1570, 2026-08-14)
+
+**Every control on the optimisation path, what it does, and whether it is optimisation-only.**
+Values below were read from `backtest/config.py` at cite time, not from memory.
+
+| control | default | scope | what it does |
+|---|---|---|---|
+| `STRATEGY_SUBSET_FILE=<path>` | unset | **OPT-ONLY** | Newline-separated strategy names. `run_phase1a.py` REPLACES `ALL_STRATEGIES` with the matched subset, so only those strategies are evaluated. **Refuses to start if it resolves to zero** (`B1425 FATAL`), so a typo cannot silently become a full-roster run. **This is also the gate for demand pruning — without it, pruning is OFF.** |
+| `DEMAND_PRUNING` | `1` (on) | **OPT-ONLY** | Kill switch for demand-driven signal pruning. Inert anyway unless `STRATEGY_SUBSET_FILE` is set. Set `0` to disable if a run dies with `SkippedSignalError`. |
+| `DEMAND_PRUNING_WARMUP` | `25` bars | **OPT-ONLY** | Bars spent RECORDING which signal keys are read before pruning arms. Raise it if a strategy's branches are rare. |
+| `OPTIMIZATION_MODE` | `0` | **OPT-ONLY** | Uncaps `max_candidates_per_day`. **No-op under `--cube-isolation`** (isolation already bypasses the cap, L419). Does NOT skip `smart_money_score` — that was tried and REVERTED (L418), because tier maps LOW→0.0 and a zero size SKIPS the trade, so tier GATES ENTRY. |
+| `SMC_SWING_LENGTH` | `20` | sweep knob | Swing length for SMC primitives. FIRE-ADDING — each value needs its own engine run. |
+| `STRAT_EMA_SPAN` | `200` | sweep knob | Which EMA span the trend leg reads. FIRE-ADDING. Built into the key at RUNTIME (`f"price_above_ema_{span}"`) — see the L437 trap below. |
+| `STAGE2_NO_LIVE_FETCH` | `1` (on) | **ALWAYS-ON** | Raises on any OHLCV cache miss instead of degrading silently. Set `0` ONLY for prefetch/setup, never a backtest. |
+| `ENGINE_OUTPUT_DIR` | unset | infra | Output directory override. |
+
+**Config flags (not env), current live values:**
+`USE_PRECOMPUTED_SIGNALS=False` (B1563 — the cache is EMPTY; re-enabling needs a PIT audit first) ·
+`USE_SMC_PANEL_CACHE=False` (**UNSAFE** — 11.5pct divergence measured, B1542) ·
+`USE_PANEL_TECHNICAL_SIGNALS=True` · `SMC_PHASE='PRODUCTION'` (if not PRODUCTION, `compute_smc_signals`
+returns `{}` and every SMC strategy silently dies) · `DATA_LOAD_START=2021-05-06` ·
+`CUBE_ISOLATION_SIZE_PCT=0.01`.
+
+---
+
+## REFERENCE — WHAT GETS SKIPPED, AND WHEN
+
+Demand pruning computes only the producers whose signal keys the ACTIVE strategies actually read.
+
+**It arms in three stages.** Bars 1-25 compute EVERYTHING and RECORD reads. Then the skip set is
+derived and pruning arms. From then on the signals dict is wrapped in `GuardedSignals`, so reading a
+pruned-away key RAISES `SkippedSignalError` instead of returning `.get()`'s default.
+
+**How the required-key set is built — BOTH methods, unioned (B1570):**
+- **RUNTIME recording** catches keys built at runtime, e.g. `f"price_above_ema_{STRAT_EMA_SPAN}"`.
+  A static scan sees only ONE of `smc_breaker_block_long`'s two keys (L437).
+- **STATIC extraction** catches keys a boolean SHORT-CIRCUITED past. `smc_ote_long` is
+  `s.get(zone) and (s.get(bos) or ...)`; if `zone` is False across all warmup bars the `and` never
+  evaluates the right side, so the bos keys are never READ and `bos_choch` would be pruned (L444).
+
+The two fail in COMPLEMENTARY directions. Union is strictly safer — it can only KEEP more producers.
+
+**Measured effect on `smc_breaker_block_long` (1 strategy):**
+- Technical: **32 of 33 producers skipped**, 512 → 46 keys, 95.8pct off `compute_all_signals`
+- SMC: **3 of 6 primitives skipped** (`retracements` 46.7pct + `fvg` 28.1pct + `bos_choch` 18.1pct of
+  SMC cost), 91.5pct off `compute_smc_signals`. `ob`, `liquidity`, `swings` always run.
+
+**SMC redundancy is automatic.** 22 strategies read `smc_*` keys; each keeps exactly the primitives
+it needs — verified on `smc_fvg_retest_long` (keeps fvg), `smc_ote_long` (keeps bos_choch +
+retracements), `smc_bos_continuation` (keeps bos_choch).
+
+### PHASE 1B IS DIFFERENT — pruning is INERT there by design
+`STRATEGY_SUBSET_FILE` is an OPTIMISATION-ONLY device. Phase 1B simulates all passed strategies
+together, where every producer is read anyway. With no subset file, `wrap()` returns **the same
+object** (identity-pinned by test) and `smc_skip_primitives()` returns empty — **zero overhead, zero
+behaviour change**. Never set the subset file for a Phase 1B or full-roster cube run.
+
+---
+
+## REFERENCE — MEASURED COSTS (and why a percentage alone is a lie)
 
 | shape | measured |
 |---|---|
-| 182 strategies, 100 tickers, 2y | **4.56 h** (2.63 h day loop + 1.93 h post-processing) |
-| 182 strategies, 20 tickers, 2y | 2,759 s |
-| per ticker-day (pool=10) | 0.2613 s |
-| post-processing share | **42pct of every run** |
+| 182 strategies, 100 tickers, 2y, pool=10 | **4.56 h** (2.63 h day loop + 1.93 h post-processing) |
+| 182 strategies, 20 tickers, 2y, pool=3 x3 concurrent | 3,696 s |
+| **1 strategy, 5 tickers, 2y, pool=0, UNPRUNED, cold cache** | **1,920 s** (B1568) |
+| **1 strategy, 5 tickers, 2y, pool=0, UNPRUNED, warm cache** | **703 s** (B1569b) |
+| **1 strategy, 5 tickers, 2y, pool=0, PRUNED, warm cache** | **366 s** (B1569b) |
+| Machine | 10 physical / 12 logical cores, 15.6 GB RAM |
 
-**Single-strategy costs are being measured now (B1558).** Until that lands, do NOT project — five
-projections were wrong this session (L367, L377, L383, L401, L418).
+**THE SAME UNPRUNED CONFIG TOOK 1,920 s AND 703 s — 2.7x apart, same machine, same code.** The only
+difference was OS file-cache warmth. Consequences you must respect:
+
+1. **Cross-session elapsed times are NOT comparable.** A/B arms must run BACK-TO-BACK in one session.
+2. **A saving is a fraction OF A BASELINE, and the baseline's composition is not constant.** Pruning
+   measured **14.64pct** against a cold baseline and **47.94pct** against a warm one — the cold
+   baseline carries I/O that pruning cannot remove and dilutes the fraction. Quote the saving WITH
+   its cache condition, never alone.
+3. Comparing B1569b's pruned arm (366 s) to B1568's cold baseline (1,920 s) would report **81pct**,
+   two-thirds of it filesystem cache. That is the trap re-running the baseline exists to avoid.
+
+**Correctness bar for any optimisation claim:** the cube must be BIT-IDENTICAL, not merely
+same-row-count. B1568 + B1569b cubes all hash to `615233dbab2756d0` (1,352 x 37).
 
 ---
+
+## REFERENCE — PARALLELISM
+
+- **Cores: 10 physical.** With `--screen-pool-workers 0` (sequential) each config is ~1 core.
+- **RAM is the binding constraint, not cores.** A single worker measured **2.1-2.3 GB**; at 15.6 GB
+  total that caps concurrency at roughly **5-6 configs**, not 10.
+- **Run configs CONCURRENTLY rather than widening the pool.** In-run parallelism caps at ~1.6x
+  (Amdahl, ~62pct serial); separate processes scale far better. B1558 measured 2.24x throughput at
+  3-way.
+- **Never let total workers exceed physical cores** — pool=60 on 1 ticker ran 11.6x SLOWER than
+  sequential (L-pool).
+- **Do NOT run a pyramid or any other CPU work during a timing A/B.** It inflates the arm in flight
+  and biases the saving upward.
 
 ## FAILURE MODES — check these before believing a result
 
