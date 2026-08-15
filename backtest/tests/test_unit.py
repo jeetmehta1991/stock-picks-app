@@ -14502,3 +14502,31 @@ def test_b1573_unrecorded_miss_gate_both_directions():
                    "That was my bug in the check script.",
                    "caught by preflight - correctly."):
         assert m.scan_unrecorded_miss(ent(phrase), False), f"missed: {phrase}"
+
+
+def test_b1574_miss_gate_accepts_committed_learnings():
+    """L447: the gate must accept an L-entry that was WRITTEN AND COMMITTED.
+
+    B1573's first implementation checked only working-tree modification, so
+    complying fully (write + commit in the same turn) left LEARNINGS.md clean
+    and TRIPPED the gate. A gate that fires on correct behaviour trains people
+    to bypass it, which erodes every gate sharing that mechanism.
+    """
+    import inspect
+    import importlib.util
+    spec = importlib.util.spec_from_file_location(
+        "_vtc2", "scripts/verify_turn_compliance.py")
+    m = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(m)
+
+    src = inspect.getsource(m.check_unrecorded_miss)
+    # NB: the source has ["git", "log", ...] as separate list elements, so the
+    # literal "git log" never appears - assert on the tokens actually present.
+    assert '"log"' in src and "--name-only" in src, (
+        "check_unrecorded_miss must ALSO accept LEARNINGS.md committed in this "
+        "turn's HEAD, not just working-tree modification (L447)")
+    # and the underlying scanner still honours the flag in both directions
+    ent = [{"type": "assistant",
+            "message": {"content": [{"type": "text", "text": "my error"}]}}]
+    assert m.scan_unrecorded_miss(ent, True) == []
+    assert m.scan_unrecorded_miss(ent, False)

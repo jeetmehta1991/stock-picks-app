@@ -258,9 +258,19 @@ def check_unrecorded_miss() -> str | None:
     """Block a turn that ACKNOWLEDGED a miss without writing it to LEARNINGS."""
     try:
         import subprocess
+        # B1574: "modified" must mean modified-OR-COMMITTED this turn. The
+        # first version checked only the working tree, so writing the L-entry
+        # and COMMITTING it - the behaviour the skill actually requires -
+        # left the file clean and tripped this gate. A gate that punishes
+        # compliance trains people to bypass it.
         r = subprocess.run(["git", "status", "--porcelain", "LEARNINGS.md"],
                            capture_output=True, text=True, timeout=15)
         touched = bool(r.stdout.strip())
+        if not touched:
+            h = subprocess.run(
+                ["git", "log", "-1", "--name-only", "--pretty=format:"],
+                capture_output=True, text=True, timeout=15)
+            touched = "LEARNINGS.md" in (h.stdout or "")
     except Exception:
         # Never let the gate itself break the turn; fail OPEN and say so.
         return None

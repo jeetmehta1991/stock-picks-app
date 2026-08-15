@@ -7094,3 +7094,29 @@ only miss-capture rules that have held in this repo are the ones a script checks
 **Rule:** *if you say it was a mistake in the response, it goes in LEARNINGS in the same turn.*
 Severity is not the filter. Recurrence is what makes a miss expensive, and severity does not
 predict recurrence.
+
+### L447 — the miss-capture gate punished the exact behaviour it was built to require
+
+**B1574.** `check_unrecorded_miss()` (B1573, CHECKLIST #188) blocked the very turn that created it.
+
+Not a false alarm about the miss - a defect in the gate. It tested
+`git status --porcelain LEARNINGS.md`, i.e. **working-tree modification only**. But the skill
+requires the L-entry be written AND COMMITTED in the same turn. Doing that leaves the file clean,
+so the gate fired on a turn that had complied perfectly.
+
+**A gate that fires on correct behaviour is worse than no gate**, because the only way past it is
+to bypass it - which trains everyone to reach for `.stop_exempt` and erodes every other gate that
+shares the mechanism.
+
+**Fix:** `touched` is now working-tree-modified **OR** present in `git log -1 --name-only`. Both the
+"wrote it, not yet committed" and "wrote it and committed it" paths satisfy the gate; only "never
+wrote it" blocks.
+
+**Generalised rule:** *when a gate asserts that work happened, enumerate every legitimate END STATE
+of that work, not just the one in front of you.* Here the states were "modified" and "committed";
+I checked one. The same trap applies to any check written against a snapshot of a workflow rather
+than its full lifecycle - which is the same shape as L445's wrong-artifact class: a check matched
+against one representation of a thing rather than the thing itself.
+
+**Compliance failure against existing item:** none - #188 is one turn old and this is a defect IN
+it, not a lapse against it. #188's text stands; its implementation was wrong for one commit.
