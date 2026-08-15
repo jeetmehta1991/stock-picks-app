@@ -48,6 +48,7 @@ production cube runs take the unpruned path unchanged.
 from __future__ import annotations
 
 import inspect
+import logging
 import re
 from typing import Iterable
 
@@ -281,12 +282,68 @@ def wrap(signals: dict) -> dict:
     return signals
 
 
+def _static_keys_of_active_strategies() -> set:
+    """Signal-key literals appearing in the ACTIVE strategies' source.
+
+    A FLOOR, not the answer. Static extraction cannot see runtime-built keys
+    (L437), which is why runtime recording exists -- but it DOES see keys that
+    runtime recording misses because a boolean short-circuited past them. Used
+    only in union with recorded reads, so it can only widen what is kept.
+
+    ALL_STRATEGIES is already narrowed by STRATEGY_SUBSET_FILE at import
+    (run_phase1a.py), so this scans exactly the strategies that will run.
+    """
+    keys: set = set()
+    try:
+        import inspect
+        import re
+        from backtest.signals.screener import ALL_STRATEGIES
+        for fn in ALL_STRATEGIES.values():
+            try:
+                src = inspect.getsource(fn)
+            except Exception as _e:
+                # CHECKLIST #122: NOT benign. A strategy whose source cannot be
+                # read contributes no static keys, so the floor is lower than
+                # it should be and we may OVER-prune -- which surfaces later as
+                # a SkippedSignalError mid-run rather than here.
+                logging.getLogger(__name__).warning(
+                    "static-key scan could not read source for %r (%r); its "
+                    "keys are absent from the prune floor", fn, _e)
+                continue
+            keys |= set(re.findall(r's\.get\(\s*["\']([a-zA-Z0-9_]+)', src))
+            keys |= set(re.findall(r's\[\s*["\']([a-zA-Z0-9_]+)', src))
+    except Exception as _e:
+        # Degrade to runtime-only recording rather than break the run; the
+        # guard still converts any missed key into a loud failure. Logged
+        # because a silent degrade here removes the short-circuit protection
+        # (L444) without any visible symptom.
+        logging.getLogger(__name__).warning(
+            "static-key floor unavailable (%r); falling back to runtime-only "
+            "recording -- short-circuited keys will NOT be protected", _e)
+        return set()
+    return keys
+
 def _finalise():
     """Turn recorded reads into a producer skip set."""
     import logging
     log = logging.getLogger(__name__)
     km = _PRODUCER_KEYS or {}
-    keep = required_producers(_STATE["read"], km)
+    # B1570: union RUNTIME-recorded reads with STATICALLY-extracted literals.
+    # The two methods fail in COMPLEMENTARY directions, so neither alone is
+    # sufficient:
+    #   - static misses RUNTIME-BUILT keys (smc_breaker_block_long's
+    #     f"price_above_ema_{span}") -- that is L437, which blocked this work.
+    #   - runtime misses SHORT-CIRCUITED keys. smc_ote_long is
+    #     `s.get("smc_ote_long_zone") and (s.get("smc_bos_bullish") or ...)`;
+    #     if the zone is False on every warmup bar the `and` short-circuits and
+    #     the bos keys are NEVER read, so bos_choch gets pruned -- and the run
+    #     then dies on the first bar where the zone goes True.
+    # Union is strictly safer than either: it can only ever KEEP more
+    # producers, never fewer, so it cannot introduce a missing key.
+    _static = _static_keys_of_active_strategies()
+    _read = set(_STATE["read"]) | _static
+    _STATE["static_keys"] = frozenset(_static)
+    keep = required_producers(_read, km)
     _STATE["skip_producers"] = frozenset(set(km) - keep)
     _STATE["mode"] = "pruned"
     # B1569: SMC-skipped keys must join the guard set too. Without this a key
@@ -347,7 +404,10 @@ def smc_skip_primitives(read_keys: Iterable[str] | None = None) -> set:
     """
     if _STATE["mode"] != "pruned":
         return set()
-    rk = set(read_keys) if read_keys is not None else set(_STATE["read"])
+    # B1570: same union as _finalise -- short-circuited SMC keys (smc_ote_long)
+    # are invisible to runtime recording and would otherwise be pruned.
+    rk = (set(read_keys) if read_keys is not None
+          else set(_STATE["read"]) | set(_STATE.get("static_keys", ())))
     return {p for p, keys in SMC_PRIMITIVE_KEYS.items() if not (keys & rk)}
 
 

@@ -6966,3 +6966,49 @@ Fixed by setting mode first. **A guard that is populated in the wrong order is n
 **Unmeasured:** no end-to-end run yet with SMC pruning armed. Against the 27.2pct share a 91.5pct
 primitive saving DERIVES ~24.9pct of total runtime, on top of the OBSERVED 14.64pct from B1568.
 That is a derivation, not a measurement — B1568 is the precedent for how to settle it.
+
+### L444 — SMC pruning OBSERVED at 47.9pct; and the baseline itself moved 2.7x between sessions
+
+**B1569b / B1570.** Second end-to-end A/B, SMC pruning wired:
+```
+TAG=off PRUNE=0 EXIT=0 ELAPSED=703 CUBE_ROWS=1353
+TAG=on  PRUNE=1 EXIT=0 ELAPSED=366 CUBE_ROWS=1353
+observed saving = (703-366)/703 = 47.94pct  (1.921x)
+```
+**Correctness gate passed at the strongest bar: ALL THREE cubes bit-identical** — `ab2_off`,
+`ab2_on`, and B1568's cube all hash to `615233dbab2756d0` (1,352 x 37). Pruning 30 of 33 technical
+producers AND 3 of 6 SMC primitives changed the traded population not at all.
+
+**The number that must not be quoted naked.** B1568's OFF arm took **1,920s**; this session's
+identical OFF arm took **703s** — **2.7x faster**, on the same machine, same config, same code path
+(`DEMAND_PRUNING=0`). Cause is environmental: warm OS file caches after several runs over the same
+parquets. It is NOT the code — B1569 *added* work to the unpruned path (33 `_producer_skipped`
+calls per bar instead of 3).
+
+**This is why the saving percentage rose from 14.64pct to 47.94pct rather than to the ~39.5pct the
+derivation implied.** A cold-cache baseline carries I/O that pruning cannot remove, diluting the
+measured saving; a warm baseline is compute-dominated, so the same optimisation looks larger. **The
+saving is a fraction OF A BASELINE, and the baseline's composition is not constant.** Quote both
+numbers with their cache condition, never one alone.
+
+**Generalized rule:** *cross-session elapsed times on this machine are not comparable.* A/B arms
+must run back-to-back in a single session. Had I compared this run's ON arm (366s) against B1568's
+OFF arm (1,920s) I would have reported an 81pct saving, of which roughly two-thirds is filesystem
+cache. Re-running the baseline instead of reusing the prior one is what prevented that.
+
+**B1570 (static-key floor) shipped alongside**, from the owner's question "any smc strategies will
+need to call on relevant producers if needed — hope this redundancy is built in." It was, but
+INCOMPLETELY: `smc_ote_long` is
+`s.get("smc_ote_long_zone") and (s.get("smc_bos_bullish") or ...)`. If the zone is False on every
+warmup bar the `and` SHORT-CIRCUITS, the bos keys are never read, `bos_choch` is pruned — and the
+run dies on the first bar the zone goes True. Runtime recording cannot see a read that never
+happens.
+
+**Static and runtime key-discovery fail in COMPLEMENTARY directions** — static misses runtime-built
+keys (L437), runtime misses short-circuited keys — so `_finalise()` now unions them. Union is
+strictly safer: it can only KEEP more producers, never fewer. Verified across 4 SMC strategies with
+the roster narrowed as `run_phase1a.py:60` narrows it; `smc_ote_long` now keeps `bos_choch` while
+`smc_breaker_block_long` still prunes 32/33 producers and 3/3 primitives.
+
+**Method note:** the hole surfaced only because I tested a DIFFERENT strategy than the one under
+optimisation. Testing the subject you have been staring at confirms what you already believe.
