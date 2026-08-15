@@ -2862,3 +2862,22 @@ launch whose monitor lacks both markers. Pinned BOTH directions by
 
 *Anti-theatre check (#136):* retroactively catches L392, L424, and the first `4a528196` arming in
 B1546 - all of which passed the existence check while leaving the owner uninformed.
+
+### #187 — ARTIFACT PROVENANCE: characterise the contents, never trust the name (B1572 / L445)
+
+Before any artifact becomes an input to analysis or a run:
+1. **Open it and characterise its CONTENTS.** Never infer scope from a filename, a
+   row count, or the doc that pointed at it.
+2. **Reconcile against the artifact every other consumer uses.** Divergent counts
+   for "the same" baseline mean someone is on a different artifact.
+3. **Universes/entity lists — run the mechanical check:**
+   `python scripts/verify_universe_artifact.py <file> --compare-cube <cube.csv>`
+   Flags alphabetical skew, mega-cap absence, narrow coverage, provenance mismatch.
+4. **Deliberate narrowness is fine — STATE IT** in the consuming doc. Unstated
+   narrowness is the defect.
+
+**Retroactive coverage (#136):** catches the B1571 `r5_universe_381.txt` miss on all
+four checks; would also have caught any chunk-vs-merged substitution in the R5 rung
+series. **Lineage:** a doc rule said "derive from the BASELINE ARTIFACT" (L378) and
+was followed to an abandoned alphabetical chunk — 380/381 tickers starting A-C, no
+MSFT/NVDA/GOOGL, 248 tickers the real baseline never ran.

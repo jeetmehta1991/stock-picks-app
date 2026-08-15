@@ -7012,3 +7012,44 @@ the roster narrowed as `run_phase1a.py:60` narrows it; `smc_ote_long` now keeps 
 
 **Method note:** the hole surfaced only because I tested a DIFFERENT strategy than the one under
 optimisation. Testing the subject you have been staring at confirms what you already believe.
+
+### L445 — "use the artifact, not the roster" does not say use the RIGHT artifact
+
+**B1572.** The runbook rule (L378) said *derive the universe from the BASELINE ARTIFACT, not a
+roster CSV*. I followed it — to `output_audit/r5_universe_381.txt`, which came from
+`output_r5_rung4_chunk1`: an **abandoned, alphabetically-partitioned chunk run**.
+
+```
+the "381"              : 381 tickers, 380 start A/B/C (100pct), 3/18 mega-caps
+real R5 (merged_1_7)   : 544 tickers,  137 start A/B/C (25pct), 18/18 mega-caps
+overlap 133 | in-381-not-in-R5 248 | in-R5-not-in-381 411
+```
+
+**It was not a subset — it was a DIFFERENT RUN.** It contained 248 tickers R5 never executed. MSFT,
+NVDA, GOOGL, META, TSLA were all absent, purely alphabetically. Every artifact I derived from it
+(the ADV-ranked 100, two live configs) inherited the defect.
+
+**Why it survived a rule written to prevent exactly this.** L378 named a *category* of source
+("baseline artifact") and I matched a *filename* to that category. **381 vs 544 is not a
+discrepancy a filename reveals**, and no consumer ever cross-checked the two.
+
+**What DID work:** the owner asked "if only 120 of those are in the current S&P 500, isn't that a
+big miss?" — a coverage question about CONTENTS. One letter-distribution count answered it in
+seconds. **The check was always cheap; nobody had run it.**
+
+**Blast radius, measured not assumed:** `PHASE_1B_ROSTER.md:5` cites
+`output_r5_merged_1_7` and prints `544` in every row's Tickers column. **The Phase 1B strategy
+selection is NOT contaminated.** Damage was confined to this session's optimisation work.
+
+**Generalised rule:** *before any artifact becomes an input, characterise its CONTENTS and
+reconcile it against the artifact other consumers use.* Never infer scope from a filename, a row
+count, or the doc that pointed at it. A filename is a claim by its author, not evidence.
+
+**Made mechanical (CHECKLIST #187, skill ARTIFACT-PROVENANCE RULE):**
+`scripts/verify_universe_artifact.py` fails on alphabetical skew, mega-cap absence, narrow letter
+coverage, and provenance mismatch vs a baseline cube. Retroactively it flags the 381 on **all four**
+(#136 satisfied). The rebuilt 544 universe and its ADV-100 both PASS, and the new top-12 reads
+SPY TSLA AAPL AMZN NVDA MSFT AMD GOOGL GOOG MRNA NFLX PYPL — visibly a universe rather than a slice.
+
+**Rule design lesson:** a prose rule that names a SOURCE CATEGORY cannot enforce itself. Rules of
+the form "use X" need a companion check of the form "and here is how you verify this IS X".

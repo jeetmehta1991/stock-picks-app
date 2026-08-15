@@ -270,6 +270,42 @@ Surface-level = non-compliant. Every audit must satisfy ALL of:
    every sentence becomes a candidate ticket BEFORE synthesis
    (`feedback_line_by_line_ticket_extraction_before_synthesis`).
 
+## ARTIFACT-PROVENANCE RULE (B1572 — L445, HARD, mechanically enforced)
+
+**"Use the artifact, not the roster" is only half a rule. It does not say use the
+RIGHT artifact.**
+
+A universe was taken from `output_audit/r5_universe_381.txt` because a doc rule
+said to derive from the baseline artifact. That file came from
+`output_r5_rung4_chunk1` — an ABANDONED, alphabetically-partitioned chunk run.
+**380 of its 381 tickers start with A, B or C.** The real baseline,
+`output_r5_merged_1_7`, has 544 tickers, 25pct A-C, and contains MSFT / NVDA /
+GOOGL / META / TSLA — none of which were in the 381. Overlap: 133. The file held
+248 tickers the baseline never ran. Every downstream artifact inherited it
+silently, because 381-vs-544 is not a discrepancy a filename reveals.
+
+**Before ANY artifact becomes an input to analysis or a run:**
+
+1. **Open it and characterise its CONTENTS** — never infer scope from its name,
+   its size, or the doc that pointed at it. A filename is a claim by its author.
+2. **Reconcile it against the artifact everything else uses.** If two consumers
+   of "the same" baseline see different counts, one of them is on a different
+   artifact. Ask which, before proceeding.
+3. **For any ticker/entity universe, run the mechanical check:**
+   ```
+   python scripts/verify_universe_artifact.py <file> --compare-cube <baseline_cube.csv>
+   ```
+   It fails on alphabetical skew, mega-cap absence, narrow letter coverage, and
+   provenance mismatch — the four ways this class presents. Retroactively it
+   flags the 381 on ALL FOUR (CHECKLIST #136 satisfied).
+4. **A deliberately narrow input is fine — say so IN WRITING** in the doc that
+   consumes it. Unstated narrowness is the defect; stated narrowness is a scope.
+
+**Generalised beyond universes:** the same trap applies to any cube, roster,
+cache, or results file selected by name. **"Which artifact, and does its coverage
+match what I am claiming?" is a question with an executable answer — so execute
+it rather than reasoning about it.**
+
 ## Phase 5 — MISS-CAPTURE FEEDBACK LOOP (whenever a miss is found)
 
 A "miss" = any error, silent skip, stale claim, wrong count, missed scope item,
