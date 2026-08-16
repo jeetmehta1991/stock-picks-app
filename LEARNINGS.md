@@ -7578,3 +7578,33 @@ rather than reading nearby lines.
 
 **Generalised rule:** *when wiring a consumer to a producer, assert BOTH ends in the same test.* A
 reader with no writer and a writer with no reader are equally silent, and both look like progress.
+
+### L462 — the regime_flip defect lands on one of the two ROBUST Phase 1B rows
+
+**B1594.** Blast radius of L461 measured rather than estimated.
+
+**Phase 1B roster, 1 hit — and it is not a minor one.** Row 2,
+`xs_momentum_with_smart_money_long`, is one of only **TWO ROBUST cells in the entire roster**
+(CLAUDE.md: "ROBUST 2 / PROVISIONAL 0"), and its assigned exit is `regime_flip`.
+
+Its numbers are real, but they are **`time_stop_20d`'s numbers wearing a `regime_flip` label** -
+because pre-B1593 no caller ever supplied `regime_series`.
+
+**The sharp edge is the FIX, not the defect.** B1593 fix C changes what `regime_flip` does. So that
+roster row's backtested performance no longer corresponds to the exit it names: **deploying it now
+would run genuine regime-flip logic that has never been measured.** A fix can invalidate a
+conclusion that the defect itself left intact - the numbers were self-consistent while the bug
+stood, and stopped being so the moment it was corrected.
+
+**This session's grids are clean:** 0 of 1,200 rows selected `regime_flip`.
+
+**Generalised rule:** *after fixing a defect, ask which SHIPPED conclusions depended on the old
+behaviour - and measure it, do not assume the fix is purely additive.* The instinct after a fix is
+to move on; the obligation is to re-check what was already decided under the old behaviour.
+
+**Also delivered this turn (owner directive, owed for several turns):** the runbook now carries a
+**MANDATORY POST-CONFIG ANALYSIS** section that runs after every config without prompting - cube
+sanity, grading with the config's OWN `--swing-length`, a 6-check outlier sweep, a 50-trade spot
+check, and a verdict stated with its denominators. Every check cites the incident that produced it
+(L445, L454, L455, L457, L461), so a future reader sees why it exists rather than treating it as
+ceremony.

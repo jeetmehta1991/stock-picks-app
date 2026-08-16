@@ -1030,6 +1030,51 @@ same-row-count. B1568 + B1569b cubes all hash to `615233dbab2756d0` (1,352 x 37)
 - **Do NOT run a pyramid or any other CPU work during a timing A/B.** It inflates the arm in flight
   and biases the saving upward.
 
+## MANDATORY POST-CONFIG ANALYSIS (owner directive - run after EVERY config, unprompted)
+
+**This runs after every config completes. No prompt required. Skipping a step is a silent miss.**
+
+### 1. Cube sanity - BEFORE trusting any number
+```bash
+python -c "
+import pandas as pd; d=pd.read_csv('output_cfg<N>/trade_exit_detail.csv',low_memory=False)
+ex=d.groupby(['ticker','entry_date']).exit_method.nunique()
+print('strategies',d.strategy.nunique(),'| exits/entry',sorted(ex.unique()),'| entries',len(ex))
+print('mega-caps',[t for t in ['NVDA','MSFT','TSLA'] if t in set(d.ticker)])"
+```
+PASS requires: exactly **1** strategy, exactly **[26]** exits/entry, mega-caps PRESENT
+(their absence means the archived A-C chunk universe, L445).
+
+### 2. Grade - with the CONFIG'S OWN parameters
+```bash
+PYTHONPATH=.:scripts python scripts/tighten_breaker_block.py   --cube output_cfg<N>/trade_exit_detail.csv   --swing-length <THE SW THIS CONFIG RAN> --min-n 10   --out output_audit/<batch>_cfg<N>_grid.json
+```
+**`--swing-length` MUST match the run.** The grader RE-DERIVES every fire; a mismatch silently
+drops the fires that do not reproduce - cfg2 lost 167 of 420 that way (L454). The union
+diagnosis-loss gate aborts above 2pct.
+
+### 3. Outlier + discrepancy sweep - ALL of these, every time
+| check | why |
+|---|---|
+| cube entries == grid max fires | catches silent diagnosis loss (L454) |
+| verdict distribution | `NO_EXIT_SELECTABLE` is a SAMPLE-SIZE verdict, not exit quality |
+| rank by `ci_lo`, NOT `sharpe` | the higher Sharpe can have a NEGATIVE lower bound (L455) |
+| `exits_effective` vs 26 | duplicate exits collapse; "best of 26" is usually fewer (L461) |
+| PASS rows with marginal `ci_lo` | 5 of 200 at `ci_lo` +0.08 is a WEAK positive, not a result |
+| any PASS selecting `regime_flip` | it was a time stop pre-B1593; re-derive before trusting |
+
+### 4. Spot check 50 random trades - EVERY config
+```bash
+PYTHONPATH=. python scripts/spot_check_trades.py   --cube output_cfg<N>/trade_exit_detail.csv --n 50   --swing-length <SW> --ema-span <SPAN>
+```
+Re-derives every producer INDEPENDENTLY from raw parquet under PIT and checks execution.
+**Expected: 100pct agreement, 0 execution failures.** Anything less is a finding.
+**If the CHECKER disagrees with the engine, suspect the CHECKER first** (L457).
+
+### 5. Report the verdict WITH its denominators
+Never a bare PASS count. State: N of M combinations, X of Y producers varied, `exits_effective`
+of 26, and the `ci_lo` of every PASS. **Margin of error is part of the verdict, not a footnote.**
+
 ## FAILURE MODES — check these before believing a result
 
 | symptom | cause | reference |
