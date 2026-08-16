@@ -1466,6 +1466,14 @@ class BacktestEngine:
         # history for end-of-run transition-matrix computation. Cheap O(1)
         # per day; matrix computed once at finalize().
         self._regime_history.append(regime)
+        # B1593 (owner-approved C): a DATE-KEYED regime map. `_regime_history`
+        # is order-only, so `exit_regime_flip` could never locate the regime for
+        # a given bar and fell back to a time stop on EVERY trade in EVERY cube
+        # (L460: identical to time_stop_20d on 330 of 330). Threaded to exits
+        # via `signals_at_entry`, which is already carried on every trade.
+        if not hasattr(self, "_regime_by_date"):
+            self._regime_by_date = {}
+        self._regime_by_date[as_of] = regime   # _process_day(self, as_of)
         # DEC-106 RESOLVED-IMPLEMENTED Batch 80 2026-05-12 owner-mandated
         # wiring: multi-input regime scorecard (Phase A telemetry). Uses
         # whatever inputs are currently available (VIX + SPY trend + AAII

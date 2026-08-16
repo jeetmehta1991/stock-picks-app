@@ -142,6 +142,26 @@ def select_exit(g: pd.DataFrame, objective: str = "gates",
     if objective not in ("gates", "sharpe"):
         raise ValueError(f"unknown objective {objective!r}; use 'gates' or 'sharpe'")
     isg = in_sample(g)
+    # B1593 (owner-approved B): COLLAPSE exits that are byte-identical on this
+    # cell before selecting. Several "distinct" exits are documented FALLBACKS -
+    # regime_flip degrades to time_stop_20d when no regime series is supplied,
+    # and reverse_signal degrades to atr_trail for the 214 strategies absent
+    # from the Batch-227a registry. Measured identical on 330 of 330 trades
+    # (L460). Selecting "best of 26" across duplicates inflates the apparent
+    # breadth of the search and makes the n_gates tie-break arbitrary between
+    # columns that are the same column.
+    _seen: dict[tuple, str] = {}
+    _dupes: dict[str, str] = {}
+    for _ex, _ge in isg.groupby("exit_method", observed=True):
+        _sig = tuple(_ge.sort_values(["ticker", "entry_date"])["pnl_pct"]
+                     .round(6).tolist())
+        if _sig in _seen:
+            _dupes[str(_ex)] = _seen[_sig]
+        else:
+            _seen[_sig] = str(_ex)
+    if _dupes:
+        isg = isg[~isg["exit_method"].astype(str).isin(_dupes.keys())]
+
     best, best_key = None, None
     for ex, ge in isg.groupby("exit_method", observed=True):
         # S6-B1584c: the SEARCH phase passes its own floor. Default None
@@ -153,4 +173,9 @@ def select_exit(g: pd.DataFrame, objective: str = "gates",
                else (r["sharpe"] or -9,))
         if best_key is None or key > best_key:
             best_key, best = key, (str(ex), r)
+    # B1593 (A): disclose what was collapsed so a reader can see the TRUE
+    # breadth the selection ran over, rather than assuming 26.
+    if best and _dupes:
+        best[1]["exits_collapsed"] = len(_dupes)
+        best[1]["exits_effective"] = len(_seen)
     return best if best else (None, None)

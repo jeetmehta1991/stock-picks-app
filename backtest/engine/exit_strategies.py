@@ -693,13 +693,23 @@ def exit_regime_flip(df_full, entry_date, entry_price, direction, atr, signals=N
         atr: ATR at entry.
         signals: signals dict at entry (used to extract entry-regime if available).
         regime_series: optional pandas Series of regime per date (key = date).
-            If not provided, falls back to signals.get('regime_at_entry') and
-            re-uses it (no flip detection possible).
+            B1593 (owner-approved C): when None, this now ALSO looks for
+            `regime_by_date` inside `signals`. Before that, no caller anywhere
+            passed regime_series, so this exit fell back to a time stop on
+            EVERY trade in EVERY cube ever produced - measured identical to
+            time_stop_20d on 330 of 330 trades (L460). A DEC-516 owner-approved
+            exit had never once evaluated its own logic.
         max_days: maximum hold without flip -> defaults to time stop at this many days.
 
     Returns:
         Same _base_result dict as other exit functions.
     """
+    # B1593 (C): recover the regime series from `signals` when the caller did
+    # not pass one explicitly. `signals` is already threaded to every exit, so
+    # this needs no registry-signature change.
+    if regime_series is None and isinstance(signals, dict):
+        regime_series = signals.get("regime_by_date") or None
+
     future = df_full[df_full.index.date > entry_date] if hasattr(df_full.index, 'date') \
              else df_full[pd.to_datetime(df_full["date"]).dt.date > entry_date]
     if future.empty:

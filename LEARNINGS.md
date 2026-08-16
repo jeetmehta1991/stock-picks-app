@@ -7540,3 +7540,41 @@ noise; 330 of 330 is structure. I nearly dismissed this as a formatting artifact
 module checklist, then to an FP/FN map. The ask was broader: **find bugs and logic errors**. Both
 narrowings dropped scope, and the FP/FN lens alone would not have found this, because identical
 exits are neither a false positive nor a false negative - they are a loss of information.
+
+### L461 — a DEC-516 owner-approved exit had never once executed its own logic
+
+**B1593.** RCA of L460's identical exits, confirmed at source:
+
+- **`regime_flip` == `time_stop_20d` on 330/330** because the registry lambda
+  (`exit_strategies.py:1567`) never passes `regime_series`, and the function's own docstring says it
+  *"falls back to time_stop_max_days if regime data unavailable"* with `max_days=20`.
+  **No caller anywhere supplied it.** A DEC-516 owner-approved exit has therefore been a time stop
+  in every cube ever produced - R5 and the Phase 1B roster inputs included.
+- **`reverse_signal` == `atr_trail_1x` on 330/330** because the Batch-227a reverse registry holds
+  **8 strategies** and `smc_breaker_block_long` is not among them; the source comment states the
+  fallback plainly.
+
+**Neither is a bug.** Both behave exactly as written and documented. **The defect is that a fallback
+is invisible at the point where results are read** - nothing in the cube, the grid or the verdict
+says "this exit is not the exit you think it is".
+
+**Three fixes shipped (owner-approved A+B+C):**
+- **A** `select_exit` now reports `exits_effective` / `exits_collapsed`. Measured on cfg1:
+  **26 stored -> 23 effective, 3 collapsed.**
+- **B** byte-identical exits are collapsed BEFORE selection, so "best of N" reports the true N and
+  the `n_gates` tie-break stops being arbitrary between identical columns.
+- **C** `exit_regime_flip` recovers `regime_by_date` from `signals`, and the engine now POPULATES it
+  per sim-day in `_process_day`.
+
+**A near-miss worth recording.** I first shipped C as the READ side only - `exit_regime_flip`
+looking for a key nothing wrote. That is the designed-not-armed failure (CHECKLIST #121) in its
+purest form: a fix that changes no behaviour while appearing complete. Caught before commit, and
+the pin test now asserts BOTH sides.
+
+**Also caught:** I wrote `self._regime_by_date[sim_date]` where the enclosing function is
+`_process_day(self, as_of)` - `sim_date` does not exist there. A NameError inside the day loop would
+have killed every run at bar 1. Verified the enclosing scope by executing `inspect.getsource`
+rather than reading nearby lines.
+
+**Generalised rule:** *when wiring a consumer to a producer, assert BOTH ends in the same test.* A
+reader with no writer and a writer with no reader are equally silent, and both look like progress.

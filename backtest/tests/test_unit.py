@@ -14680,3 +14680,64 @@ def test_b1587_unverified_cause_gate():
     # (e) "I don't know" is compliant and must never trip the gate
     assert m.scan_unverified_cause(
         [U("go"), A("The cause is UNKNOWN; I have not tested it.")]) == []
+
+
+def test_b1593_select_exit_collapses_duplicate_exits():
+    """B: byte-identical exits must not count as separate choices.
+
+    regime_flip degrades to time_stop_20d when no regime series is supplied and
+    reverse_signal degrades to atr_trail for the 214 strategies absent from the
+    Batch-227a registry - measured identical on 330 of 330 trades (L460).
+    Selecting "best of 26" across duplicates inflates the apparent breadth and
+    makes the n_gates tie-break arbitrary between identical columns.
+    """
+    import sys
+    import pandas as pd
+    sys.path.insert(0, "scripts")
+    import roster_core as rc
+
+    n = 40
+    base = pd.DataFrame({
+        "ticker": ["AAA"] * n,
+        "entry_date": pd.date_range("2022-06-01", periods=n, freq="7D").date,
+        "pnl_pct": [1.0, -0.5] * (n // 2),
+        "hold_days": [10.0] * n,
+    })
+    frames = []
+    for name, mult in (("exit_a", 1.0), ("exit_a_clone", 1.0), ("exit_b", 0.5)):
+        f = base.copy()
+        f["exit_method"] = name
+        f["pnl_pct"] = f["pnl_pct"] * mult
+        frames.append(f)
+    g = pd.concat(frames, ignore_index=True)
+
+    pick, stats = rc.select_exit(g, min_n=10)
+    assert pick is not None
+    # exit_a and exit_a_clone are identical -> one of them must be collapsed
+    assert stats.get("exits_collapsed") == 1, (
+        f"expected 1 collapsed duplicate, got {stats.get('exits_collapsed')}")
+    assert stats.get("exits_effective") == 2, (
+        f"expected 2 EFFECTIVE exits of 3 stored, got "
+        f"{stats.get('exits_effective')}")
+    assert pick != "exit_a_clone", "the collapsed duplicate must not be chosen"
+
+
+def test_b1593_regime_flip_reads_regime_from_signals():
+    """C: exit_regime_flip must recover regime_by_date from `signals`.
+
+    No caller ever passed regime_series, so a DEC-516 owner-approved exit fell
+    back to a time stop on every trade in every cube ever produced. `signals` is
+    already threaded to every exit, so this needs no registry change.
+    """
+    import inspect
+    from backtest.engine import exit_strategies as ex
+    src = inspect.getsource(ex.exit_regime_flip)
+    assert 'signals.get("regime_by_date")' in src, (
+        "exit_regime_flip must read regime_by_date from signals (B1593 C)")
+    # and the engine must WRITE it - a read with no writer is the
+    # designed-vs-armed failure (CHECKLIST #121)
+    from backtest.engine.backtest import BacktestEngine
+    esrc = inspect.getsource(BacktestEngine._process_day)
+    assert "_regime_by_date[as_of]" in esrc, (
+        "engine must POPULATE _regime_by_date; a reader with no writer is a "
+        "designed-not-armed gate")
