@@ -2959,3 +2959,27 @@ An unanchored rule gets rediscovered by repeating the failure that produced it.
 L436, L437, L439, L441, L444, L447, L448, L449, L451, L453, L454, L457, L459, L460, L461.
 Every rule that HELD this session had a script behind it (#182, #185/#186, #187, #188, #189);
 the ones that decayed were prose.
+
+### #192 — WRITING A STANDARD: WALK THE FULL LIFECYCLE, NOT THE MIDDLE (B1598 / L465)
+
+**A standard written from one traversal captures that traversal, not the process.**
+
+The post-config standard was written immediately after an analysis, so it encoded the
+analysis just performed — and omitted BOTH bookends: the pre-launch checks (universe
+provenance, RAM ceiling, sweep-knob differentiation) and the post-fix re-check. Those
+were invisible to the author because they had already happened.
+
+**When writing or revising any standard, walk the FULL lifecycle and ask what is done
+at each boundary:**
+1. **BEFORE** — what must be verified so the work is not wasted?
+2. **DURING** — what is being encoded (this is what you remember, because it is where
+   the effort was).
+3. **AFTER** — what must be re-checked because this cycle changed something?
+
+**Then place each check where it will be READ IN TIME.** A pre-launch check filed under
+post-config analysis is read too late to run — placement decides whether a check fires
+(owner correction 2026-08-16).
+
+**Retroactive coverage (#136):** catches the 5-step post-config standard (missing both
+bookends AND the adversarial review), and the runbook's original §11 which documented
+rationale without a runnable command sequence (L433).

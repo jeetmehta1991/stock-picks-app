@@ -7694,3 +7694,26 @@ pre-launch as "step 0" of the analysis standard. It belongs in the LAUNCH sectio
 already existed - a pre-launch check filed under post-config analysis would be read too late to run.
 
 **Anchored:** CHECKLIST #190 (post-fix), #191 (anchor-the-rule), and the runbook sections above.
+
+### L466 — the anchor gate caught me one turn after I wired it, on the entry that created it
+
+**B1598.** `scan_orphan_rule()` (CHECKLIST #191, wired B1597) blocked the very next turn, flagging
+**L465** as an unanchored rule.
+
+**It was right.** I had claimed L465 was anchored because the entry MENTIONS #190 and #191 - but
+neither item cites L465, and L465 states its own distinct rule (*walk the full lifecycle when
+writing a standard*). **I anchored the entry to the rules it referenced instead of giving its own
+rule a home.** Fixed by CHECKLIST **#192**.
+
+**This is the third gate this session to catch its own author within one or two turns** - the miss
+gate (L447, L449, L453), the cause gate, and now the anchor gate. That is not embarrassing, it is
+the design working: **a gate that never fires on the person who built it is probably not checking
+anything real.**
+
+**Generalised rule:** *citing a rule is not anchoring a rule.* An L-entry that references existing
+CHECKLIST items is still an orphan if its OWN generalised rule has no item. The test is not "does
+this entry mention a checklist item" but "if someone reads the checklist, will they encounter this
+rule".
+
+**Anchored:** CHECKLIST #192 cites L465; this entry's rule is anchored by #191, which already
+requires exactly this and which I violated one turn after writing it.
