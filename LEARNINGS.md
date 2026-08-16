@@ -7633,3 +7633,37 @@ twice. It is now step 5, quoting the owner's phrasing VERBATIM ("find bugs and l
 units/scale, config blindness, provenance - each carrying the incident that produced it. **The FP/FN
 lens alone would have missed this session's largest finding**, since identical exit methods are
 neither a false positive nor a false negative.
+
+### L464 — 75pct of this session's rules were orphans; the one the owner caught was not exceptional
+
+**B1596.** Owner asked how many gaps of the LEARNINGS-only class existed this session. **MEASURED,
+not estimated: 31 L-entries, 24 state a generalised rule, and 18 are referenced in NEITHER CHECKLIST
+nor the skill.** A **75pct orphan rate**. The instance the owner caught (L462) was typical, not an
+outlier.
+
+Orphans: L433, L434, L435, L436, L437, L439, L441, L444, L447, L448, L449, L451, L453, L454, L457,
+L459, L460, L461.
+
+**Why it happened.** Writing the L-entry FEELS like closing the loop - the insight is captured, the
+prose is good, the commit is green. But capture is not enforcement. **LEARNINGS is read when
+someone goes looking; CHECKLIST and the skill are read every turn.** I was archiving rules and
+experiencing it as installing them.
+
+**The confirming pattern:** every rule that HELD this session had a script behind it - #182 verdict
+denominators, #185/#186 monitor cadence, #187 artifact provenance, #188 miss capture, #189 untested
+cause. **Every rule that decayed was prose.** That is not a coincidence about rule quality; it is
+about placement.
+
+**Generalised rule:** *an insight is not recorded until it is ANCHORED where it will be re-read.*
+Every L-entry stating a generalised rule must, in the same turn, be anchored by a new CHECKLIST item
+citing the L-number or an explicit citation of an existing item.
+
+**Made mechanical:** `scan_orphan_rule()` + CHECKLIST **#191**. Pinned four ways, including that a
+narrative-only entry passes cleanly - the gate must not push toward manufacturing rules.
+
+**Two self-caught errors this turn, both worth the record.** (1) I declared I had "relabelled the
+wrong occurrence" of `regime_flip` - wrong: the `grep` ran BEFORE the python in the same command
+chain, so it showed pre-edit state. **A command chain is not a timeline; ordering inside one is not
+the order of observation.** (2) The heredoc escaping trap bit a third time (`\n` becoming a literal
+newline in an f-string) - the fix each time is to write the patch to a FILE rather than pipe it
+through a shell.

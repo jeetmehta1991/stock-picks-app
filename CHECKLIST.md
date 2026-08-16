@@ -2940,3 +2940,22 @@ After ANY defect fix, before moving on:
 `time_stop_20d`'s. The fix means deploying it would run logic never measured. Also catches B1589
 (the 17pct Sharpe correction re-scaling every roster Sharpe against a 1.0 gate) and B1562 (the
 end-anchored coverage change altering which tickers any prior run would have served).
+
+### #191 — A RULE RECORDED ONLY IN LEARNINGS IS A STORY, NOT A GATE (B1596 / L464)
+
+**MEASURED this session: 24 L-entries state a generalised rule; 18 are referenced in
+NEITHER CHECKLIST nor the skill — a 75pct orphan rate.**
+
+LEARNINGS is read when someone goes looking. CHECKLIST and the skill are read every turn.
+An unanchored rule gets rediscovered by repeating the failure that produced it.
+
+**Every L-entry that states a generalised rule MUST, the same turn, be anchored by:**
+- a NEW CHECKLIST item citing the L-number, OR
+- an explicit citation of an EXISTING item that already covers it.
+
+**Mechanically checked:** `scan_orphan_rule()` in `scripts/verify_turn_compliance.py`.
+
+**Retroactive coverage (#136):** flags all 18 orphans from this session — L433, L434, L435,
+L436, L437, L439, L441, L444, L447, L448, L449, L451, L453, L454, L457, L459, L460, L461.
+Every rule that HELD this session had a script behind it (#182, #185/#186, #187, #188, #189);
+the ones that decayed were prose.

@@ -320,6 +320,44 @@ def scan_unverified_cause(entries):
              "hypothesis presented as a finding is a fabrication.")]
 
 
+# B1596 / CHECKLIST #191 -- a rule recorded ONLY in LEARNINGS is a story, not a
+# gate. MEASURED this session: 24 L-entries state a generalised rule and 18 are
+# referenced in NEITHER CHECKLIST nor the skill - a 75pct orphan rate. LEARNINGS
+# is read when someone goes looking; CHECKLIST and the skill are read every turn.
+# Every rule that HELD this session had a script behind it (#182, #185/#186,
+# #187, #188, #189); the ones that decayed were prose.
+RULE_MARKERS = ("generalised rule", "generalized rule", "**rule:**")
+
+
+def scan_orphan_rule(learnings_text, checklist_text, skill_text, new_entries):
+    import re
+    """Flag L-entries added THIS TURN that state a rule but are anchored nowhere.
+
+    A rule is ANCHORED when its L-number appears in CHECKLIST.md or the skill -
+    which is what makes it consulted every turn rather than merely archived.
+    """
+    orphans = []
+    for ln in new_entries or []:
+        pat = "\n### " + re.escape(ln) + r"\b(.*?)(?=\n### L|\Z)"
+        m = re.search(pat, learnings_text, re.S)
+        if not m:
+            continue
+        body = m.group(1).lower()
+        if not any(k in body for k in RULE_MARKERS):
+            continue                      # narrative entry, no rule to anchor
+        if ln in checklist_text or ln in skill_text:
+            continue                      # anchored
+        orphans.append(ln)
+    if not orphans:
+        return []
+    return [("TURN-GATE BLOCK (CHECKLIST #191 / L464): these L-entries state a "
+             "GENERALISED RULE but are referenced in neither CHECKLIST nor the "
+             "skill: " + str(orphans) + ". A rule recorded only in LEARNINGS is "
+             "a story, not a gate - it gets rediscovered by repeating the "
+             "failure that produced it. Add a CHECKLIST item (or cite an "
+             "existing one) referencing the L-number, then end the turn again.")]
+
+
 def check_unrecorded_miss() -> str | None:
     """Block a turn that ACKNOWLEDGED a miss without writing it to LEARNINGS."""
     try:
