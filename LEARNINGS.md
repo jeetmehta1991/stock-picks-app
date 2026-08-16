@@ -7424,3 +7424,44 @@ days is now VERIFIED as the convention, but whether that is CORRECT for the Shar
 `roster_core.evaluate` is **untested**. If annualisation assumes ~252 trading days while `hold_days`
 counts calendar days, every Sharpe in every grid is scaled wrongly. I am NOT asserting that it is -
 I have not measured it.
+
+### L458 — annualised Sharpe is 17.1pct too low: 252 trading days divided by a CALENDAR-day hold
+
+**B1589.** S6-B1588c asked whether `hold_days` being CALENDAR days is correct for the Sharpe
+annualisation. **It is not.** `walk_forward_r5_cells._sharpe` (imported by `roster_core`) computes:
+
+```python
+avg_hold = float(hold.mean())                              # CALENDAR days (verified 20/20, B1588)
+trades_per_year = max(1.0, 252.0 / max(avg_hold, 1e-9))    # 252 = TRADING days per year
+```
+
+**MEASURED on 400 real trades:** mean calendar hold 27.13, mean trading hold 18.66, ratio **1.454**
+(365/252 = 1.448).
+
+```
+trades_per_year   CURRENT (252/calendar) =  9.3
+                  correct (252/trading)  = 13.5
+                  correct (365/calendar) = 13.5
+```
+
+**Both correct formulations agree at 13.5**, which is what makes this a units mismatch rather than a
+convention choice. Sharpe scales as sqrt(trades_per_year), so the scale factor is **0.829 - every
+annualised Sharpe is 17.1pct TOO LOW.** The best PASS row, 1.108, becomes **1.336**.
+
+**Direction matters: the error is CONSERVATIVE.** Nothing was wrongly ADMITTED. Things may have been
+wrongly REJECTED - which is the quieter failure, because a rejected strategy generates no artifact
+to audit.
+
+**Blast radius is NOT limited to this session.** `roster_core` imports this `_sharpe`, and
+`PHASE_1B_ROSTER.md` was built on `roster_core`. **The Phase 1B roster Sharpes are subject to the
+same 17.1pct understatement**, and the 1.0 gate was applied to the understated number.
+
+**NOT FIXED - requires owner approval.** Changing the Sharpe formula changes every gate outcome on
+every cube, including the roster that Phase 1B selection rests on. This is precisely the class where
+a unilateral "fix" would be worse than the defect.
+
+**Why the earlier B1371 fix did not catch it:** that fix corrected a MISSING annualisation
+(per-trade -> annualised) and was calibrated against the 0.7 gate. It changed the FORMULA's shape
+without checking the UNITS of the variable feeding it. **A calibration that makes a threshold
+"look right" can hide a unit error underneath it** - the gate was tuned to the wrong number, so the
+wrong number looked correct.
