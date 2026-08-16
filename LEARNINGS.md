@@ -7465,3 +7465,42 @@ a unilateral "fix" would be worse than the defect.
 without checking the UNITS of the variable feeding it. **A calibration that makes a threshold
 "look right" can hide a unit error underneath it** - the gate was tuned to the wrong number, so the
 wrong number looked correct.
+
+### L459 — 252-trading units fix lands; and exit selection is directionally right but imprecise
+
+**B1590.** Owner ruled "252 trading". `_sharpe` now converts the CALENDAR hold to TRADING days
+(`avg_hold * 252/365`) before annualising on 252 - algebraically identical to `365/calendar`, but
+written so the basis is stated rather than hidden in a constant.
+
+**Measured impact (both configs regraded):**
+```
+cfg1  best sharpe 0.851 -> 1.024   PASS 0 -> 0
+cfg2  best sharpe 1.860 -> 2.239   PASS 5 -> 9
+```
+The conservative error HAD been rejecting valid combinations - cfg2 gains 4.
+
+**The exit question, answered with measurement.** `roster_core.select_exit` picks the exit
+IN-SAMPLE by `(n_gates, sharpe)`, then grades the HOLDOUT on that single exit. So the search space
+is **4,000 x 26 = 104,000 cells collapsed to 4,000** by in-sample selection - the owner's framing is
+correct and the "4,000 combinations" label understates what is being searched.
+
+**How well that selection transfers (cfg2, all 26 exits gradable in both windows):**
+```
+IS-best exit  ma_exit_ema9   IS 0.729 -> HO 0.789
+HO-best exit  time_stop_10d              HO 0.903
+Spearman rank correlation IS vs HO across 26 exits : 0.324
+HO median across exits                             : 0.239
+```
+
+**Read carefully, this says two things at once.** The IS pick is NOT the HO best, and the rank
+correlation is weak (0.324). **But the IS pick lands at 0.789 against a median of 0.239** - so
+selection is capturing something real, not noise, and it realises 87pct of the achievable 0.903.
+
+**Generalised rule:** *a selection rule can be directionally sound and positionally wrong at the
+same time, and reporting only one of those is misleading.* Quoting the IS-selected exit's holdout
+Sharpe as "the" result hides 0.114 of forgone performance AND hides that a different exit would have
+won. Both belong in the verdict.
+
+**Not yet decided (S6-B1590b):** whether to keep IS-best, report a top-k holdout RANGE, or apply a
+measured selection-noise haircut (the S6-B1467c precedent measured a 0.369 floor). Owner ruling
+needed - this changes what every grid reports.

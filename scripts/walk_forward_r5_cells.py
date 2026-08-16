@@ -72,8 +72,19 @@ def _sharpe(a, hold):
     std = a.std(ddof=1) if n > 1 else 0.0
     if std <= 0:
         return {"n": int(n), "sharpe": 0.0, "wr": round(float((a > 0).mean()), 3)}
-    avg_hold = float(hold.mean()) if len(hold) > 0 else 10.0
-    trades_per_year = max(1.0, 252.0 / max(avg_hold, 1e-9))
+    # B1589 UNITS FIX (owner ruling 2026-08-16: "252 trading").
+    # `hold_days` in the cube is CALENDAR days - VERIFIED 20/20 against real
+    # trades (B1588). Dividing 252 TRADING days by a CALENDAR hold mixed units
+    # and understated trades_per_year by the calendar/trading ratio, measured at
+    # 1.454 on 400 trades (365/252 = 1.448). Every annualised Sharpe was
+    # therefore 17.1pct TOO LOW - conservative, so nothing was wrongly admitted,
+    # but strategies may have been wrongly REJECTED.
+    # Convert the hold to TRADING days first, then annualise on 252. This is
+    # algebraically identical to 365/calendar; it is written this way because it
+    # states the basis explicitly instead of hiding it in a constant.
+    avg_hold = float(hold.mean()) if len(hold) > 0 else 10.0   # CALENDAR days
+    avg_hold_trading = max(avg_hold * (252.0 / 365.0), 1e-9)
+    trades_per_year = max(1.0, 252.0 / avg_hold_trading)
     sr_pt = float(a.mean() / std)          # per-trade Sharpe
     ann = trades_per_year ** 0.5
     sh = sr_pt * ann
