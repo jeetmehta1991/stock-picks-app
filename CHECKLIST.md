@@ -3021,3 +3021,27 @@ improve the file.
 
 **Retroactive coverage (#136):** catches the B1596 roster relabel, and any future
 regeneration from the pre-B1593 cubes.
+
+### #200 — PARSE THE WHOLE FILE BEFORE APPENDING; A GREEN CHECK ON UNPARSEABLE INPUT IS A SILENT SKIP (B1603 / L469)
+
+**Two failures, one root: reading the TAIL of a collection instead of parsing it.**
+
+1. **NUMBERING.** CHECKLIST items #187-#193 were appended without deriving the true maximum —
+   a legacy item **192** already existed. The tail showed only my own additions.
+2. **FORMAT.** LEARNINGS entries were written as `### L435 — title` when the convention is a
+   bare `### L434`. **34 entries became invisible to
+   `test_b1486_claude_md_banner_counts_are_fresh`**, which therefore "passed" for ~30 turns
+   while the banner sat 34 entries stale.
+
+**Before appending to any numbered or formatted collection:**
+- **Derive the current MAX by parsing the WHOLE file**, never by reading its end.
+- **Derive the existing FORMAT the same way**, and match it — do not invent one.
+- **Check the parser that consumes it.** If a test extracts items by regex, confirm your
+  addition MATCHES that regex.
+
+**A green check on an unparseable input is not a pass — it is a silent skip.** A test that
+cannot see your work will never fail on it. When adding to a collection a test reads, verify
+the test's count CHANGED.
+
+**Retroactive coverage (#136):** catches the #192 collision, the 34 invisible L-entries, and
+the ~30 turns of falsely-green banner checks.
