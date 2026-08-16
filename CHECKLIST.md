@@ -2908,7 +2908,10 @@ recurring ones are precisely what a written record prevents.
 not fix it - the reader still receives a cause.
 
 1. If a cause can be tested with a command you know how to run, **RUN IT FIRST**.
-2. If it cannot be tested cheaply, say the cause is **UNKNOWN**. That is complete.
+2. If it cannot be tested cheaply, say the cause is **UNKNOWN** — and **TICKET IT**
+   as `UNKNOWN - RCA NEEDED` in EXECUTION_QUEUE (owner directive 2026-08-16).
+   Stating UNKNOWN without a ticket turns an open question into a closed one:
+   the investigation stops and nothing records that it must resume.
 3. **Never** put an untested cause in a durable artifact (queue, LEARNINGS, doc,
    commit message) - those are read later by people who will not re-derive your
    confidence.

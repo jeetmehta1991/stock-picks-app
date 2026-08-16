@@ -7394,3 +7394,33 @@ never push me toward inventing a cause to satisfy it.
 **Retroactively catches:** L455 (this one), L450 (a stall "explained" by falling RAM before CPU was
 sampled), L438 (a network call inferred from a log string without reading the callee). **Three
 instances this session of the same reflex: explain first, verify later.**
+
+### L457 — my spot-checker flagged 70pct of trades as broken; the checker was wrong
+
+**B1588.** A 50-trade adversarial spot check of cfg1 reported **35 of 50 execution failures** on
+`hold_days`. Reported as-is that reads like a serious engine defect.
+
+**It was my checker.** All 35 deltas were NEGATIVE and scaled with holding period (-2 on short
+holds, -9 on a 22-day hold) - the signature of calendar-vs-trading days. **TESTED before naming
+it** (CHECKLIST #189): recorded `hold_days` matched CALENDAR days **20 of 20**. My checker compared
+TRADING days.
+
+**After the fix, both configs: 100/100 producer agreement, 0 execution failures.**
+
+**What the check actually establishes.** For 100 sampled trades across two configs, re-deriving
+every producer INDEPENDENTLY from the raw parquet - swings, order blocks, mitigation, break, EMA -
+under strict PIT (`ohlc.iloc[:i+1]`) reproduces the engine's fire decision **exactly**. That is the
+strongest evidence this session that the strategy path is correct.
+
+**Generalised rule:** *when a verification tool disagrees with the system under test, the tool is
+the first suspect, not the second.* A checker is newer, less exercised, and written by someone who
+has just formed a theory of how the system works. I had a 70pct "failure rate" - a number so high
+it should have prompted "what would make MY check wrong?" before "what is broken in the engine?".
+Real defects are usually rare; a check that fails most of the time is usually measuring the wrong
+thing.
+
+**Open, ticketed as UNKNOWN - RCA NEEDED** (owner directive 2026-08-16): `hold_days` being CALENDAR
+days is now VERIFIED as the convention, but whether that is CORRECT for the Sharpe annualisation in
+`roster_core.evaluate` is **untested**. If annualisation assumes ~252 trading days while `hold_days`
+counts calendar days, every Sharpe in every grid is scaled wrongly. I am NOT asserting that it is -
+I have not measured it.

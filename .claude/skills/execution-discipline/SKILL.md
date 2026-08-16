@@ -287,8 +287,11 @@ than to write.
 
 1. **If a cause can be tested with a command you already know how to run, RUN IT
    before naming the cause.** Not after, not "next turn".
-2. **If it cannot be tested cheaply, say the cause is UNKNOWN.** "I don't know
-   why" is a compliant, complete answer. Naming a plausible mechanism is not.
+2. **If it cannot be tested cheaply, say the cause is UNKNOWN - and TICKET it**
+   as `UNKNOWN - RCA NEEDED` (owner directive 2026-08-16). "I don't know why"
+   is a compliant answer ONLY when paired with a ticket; unticketed, it turns an
+   open question into a closed one - the investigation stops and nothing records
+   that it must resume. Naming a plausible mechanism instead is not an option.
 3. **Never let a hypothesis enter a durable artifact** - queue ticket, LEARNINGS
    entry, doc, commit message - without EXECUTED evidence beside it. Durable
    artifacts are read later by people who will not re-derive your confidence.
