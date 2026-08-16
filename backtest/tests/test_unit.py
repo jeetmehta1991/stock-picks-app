@@ -14614,3 +14614,34 @@ def test_b1581_warmup_counts_distinct_sim_days():
             os.environ.pop("STRATEGY_SUBSET_FILE", None)
         else:
             os.environ["STRATEGY_SUBSET_FILE"] = old_sub
+
+
+def test_b1583_miss_gate_passes_all_compliant_shapes():
+    """L453: a gate must pass the full distribution of COMPLIANT turns.
+
+    Three defects in this gate came from testing it against the situation that
+    motivated it rather than the range it would meet. The compliant shapes are:
+      (a) L-entry written, not yet committed
+      (b) L-entry committed at HEAD
+      (c) L-entry committed, then a LATER commit lands without it
+    (c) is what broke it: a turn making two commits is this repo's norm.
+    """
+    import inspect
+    import importlib.util
+    spec = importlib.util.spec_from_file_location(
+        "_vtc4", "scripts/verify_turn_compliance.py")
+    m = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(m)
+
+    src = inspect.getsource(m.check_unrecorded_miss)
+    assert '"-6"' in src or "'-6'" in src, (
+        "gate must scan several recent commits, not just HEAD - an L-entry in "
+        "commit N-1 is still an L-entry written this turn (L453)")
+    assert "porcelain" in src, "working-tree path must remain (shape a)"
+
+    # the underlying scanner still blocks a genuine unrecorded miss
+    A = lambda t: {"type": "assistant",
+                   "message": {"content": [{"type": "text", "text": t}]}}
+    U = lambda t: {"type": "user", "message": {"content": t}}
+    assert m.scan_unrecorded_miss([U("go"), A("my error")], False)
+    assert m.scan_unrecorded_miss([U("go"), A("my error")], True) == []

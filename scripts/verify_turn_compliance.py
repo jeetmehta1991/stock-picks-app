@@ -267,8 +267,12 @@ def check_unrecorded_miss() -> str | None:
                            capture_output=True, text=True, timeout=15)
         touched = bool(r.stdout.strip())
         if not touched:
+            # B1583: check the last SEVERAL commits, not just HEAD. A turn
+            # routinely makes multiple commits; L452 landed in commit N-1 and
+            # commit N (queue-only) then hid it from `git log -1`. Same shape as
+            # L447 - I enumerated one legitimate end state and missed the rest.
             h = subprocess.run(
-                ["git", "log", "-1", "--name-only", "--pretty=format:"],
+                ["git", "log", "-6", "--name-only", "--pretty=format:"],
                 capture_output=True, text=True, timeout=15)
             touched = "LEARNINGS.md" in (h.stdout or "")
     except Exception:

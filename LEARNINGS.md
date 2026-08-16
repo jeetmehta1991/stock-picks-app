@@ -7267,3 +7267,35 @@ writing the test before believing the fix.
 `WARMUP_BARS_DEFAULT = 25` meant **0.25 SIM-DAYS** at 100 tickers. Now counts DISTINCT sim-dates
 via `as_of`, with a logged per-call fallback when no date is supplied. `screen_instrument` passes
 `as_of` through. Pinned by asserting 50 calls on ONE day do not exhaust a 2-day warmup.
+
+### L453 — third defect in the miss gate: it checked only HEAD, and turns make several commits
+
+**B1583.** The gate blocked a turn in which **L452 had been written and committed**. Cause: it
+tested `git status --porcelain` (clean - committed) then `git log -1` (HEAD). L452 landed in the
+B1581 commit; the B1582 commit followed with only `EXECUTION_QUEUE.md`, so HEAD no longer named
+`LEARNINGS.md`. Fixed to scan the last 6 commits.
+
+**This is L447 repeating verbatim.** L447's rule was: *"when a gate asserts that work happened,
+enumerate every legitimate END STATE of that work, not just the one in front of you."* I then
+enumerated exactly two - working-tree-modified and committed-at-HEAD - and shipped. **A turn making
+two commits is not an exotic case; it is this session's normal pattern.**
+
+**Three defects in one gate across three turns** (L447 working-tree-only, L449 whole-transcript
+scan, L453 HEAD-only). Every one made it fire on a compliant turn. **The recurring root is that I
+tested the gate against the situation that prompted it, never against the range of situations it
+would meet.**
+
+**Generalised rule:** *a gate must be tested against the full distribution of legitimate turns, not
+the single turn that motivated it.* Before shipping a blocker, enumerate at least three DIFFERENT
+compliant shapes it must pass - here: (a) L-entry uncommitted, (b) L-entry at HEAD, (c) L-entry
+behind a later commit - and assert it passes all of them. Testing only the failing case proves
+nothing about false positives, which are the failure mode that gets gates disabled.
+
+**Compliance failure against existing item:** L447, whose own rule I restated and then violated one
+turn later.
+
+**Also noted:** the phrase that tripped it was "conclusions I'd have to retract" - a FUTURE
+CONDITIONAL, not an admission. The matcher is substring-based and context-blind. I am deliberately
+NOT loosening it: a gate that occasionally over-fires on a compliant turn is tolerable; one that
+under-fires on a real miss is not. The fix belongs in the end-state check, which is where the
+actual bug was.
