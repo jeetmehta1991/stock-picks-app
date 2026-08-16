@@ -7329,3 +7329,39 @@ is a hidden second implementation; if its config can drift from the first, it wi
 Probable cause is the `if i < 250: return None` warmup guard, **UNVERIFIED**. I deliberately did NOT
 raise the 2pct tolerance to make the run pass - loosening a threshold until it goes green is how
 this defect stayed hidden in the first place. Ticketed.
+
+### L455 — two defects jointly suppressed a real result, and I reported the suppression as a finding
+
+**B1586.** Regrading both cubes after fixing the config-blind grader (L454) AND applying the owner's
+Step-1 `MIN_N=10` REVERSED the conclusion:
+
+```
+                    BEFORE (defective)        AFTER (both fixed)
+cfg1 gradable/PASS      31 / 0                   97 / 0
+cfg2 gradable/PASS      16 / 0                  163 / 5 PASS
+cfg2 best          Sharpe 0.918, ci_lo -0.649   Sharpe 1.108, ci_lo +0.082, PF 3.133
+```
+
+**I had declared cfg2 "unusable" and headlined "0 PASS" as a result.** cfg2 is in fact the config
+with passing combinations. Two defects - grading at the wrong `swing_length`, and a `MIN_N`
+calibrated for a 4-year full-universe run - were jointly suppressing a real signal, and I reported
+the suppression as though it were the measurement.
+
+**The 4pct residual was ALSO not a defect.** My warmup-guard hypothesis was wrong (all 17 fires sat
+at bars 799-1158). They diagnose under `close_mitigation=False`, the branch the engine actually ran;
+`cm=True` is a strictly TIGHTER swept variant that is SUPPOSED to find fewer order blocks. **The
+abort gate I had just shipped was itself wrong** - it checked each branch independently, so a
+variant doing its job looked like a 4pct failure. Now checked on the UNION: 0.0pct on both configs.
+
+**Generalised rule:** *when a gate fires on a swept dimension, ask whether the sweep VARIANT is
+supposed to differ before treating divergence as loss.* A tightening parameter that removes nothing
+is the broken case; one that removes fires is working. I built a check that could not tell the
+difference between the thing it was measuring and the thing it was guarding against.
+
+**And the compounding lesson:** *a null result from a pipeline with known unfixed defects is not a
+result.* I reported "0 PASS across 400 combinations" while holding open tickets for a 40pct entry
+loss and an unruled MIN_N. The honest output at that moment was "no verdict available yet".
+
+**Margin of error, applied:** the surviving PASS has `ci_lo = +0.082` - barely above zero. 5 of 200
+at a marginal lower bound is a weak positive, not something to act on. `n_holdout` returned `None`,
+which is itself a reporting gap (S6-B1586c).
