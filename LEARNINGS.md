@@ -7717,3 +7717,36 @@ rule".
 
 **Anchored:** CHECKLIST #192 cites L465; this entry's rule is anchored by #191, which already
 requires exactly this and which I violated one turn after writing it.
+
+### L467 — a downstream relabel is undone by the generator that produced it
+
+**B1600.** Re-derived the Phase 1B roster on the corrected Sharpe (S6-B1589b). Two outcomes, one
+expected and one not.
+
+**Expected:** Sharpes rose ~20pct - `xs_momentum_top_decile` 0.67 -> 0.81,
+`xs_momentum_with_smart_money_long` 0.58 -> 0.69. Funnel 253 cells -> 211 holdout-evaluable -> 3
+all-gates -> 2 BH-FDR -> 2 de-duped. **Roster composition UNCHANGED** - same two ROBUST strategies.
+The uplift moved every number and crossed no admission boundary.
+
+**Not expected: the regenerated roster selects `regime_flip` AGAIN.** The R5 cube predates B1593
+fix C, so its `regime_flip` column is still time-stop data; the generator re-picks it and re-applies
+the label I corrected in B1596. **A relabel applied to the OUTPUT is undone by the next run of the
+GENERATOR.**
+
+I wrote to a separate file rather than over `PHASE_1B_ROSTER.md`, so nothing was lost - but only
+because the diff-before-promote habit held. Overwriting directly would have silently reverted a
+correction while appearing to improve the file.
+
+**Generalised rule:** *a correction applied downstream of a generator is temporary. Fix it in the
+generator, in its INPUT, or accept that the next regeneration reverts it - and record which choice
+was made.* The three real options here are re-running R5 under fix C (expensive), teaching the
+generator to relabel known-degraded exits, or documenting the discrepancy permanently. **None is
+free, and picking silently is the failure mode.**
+
+**Corollary on regeneration generally:** *regenerating an artifact from a stale input does not
+"refresh" it - it re-imports every defect the input still carries, including ones already fixed
+downstream.* The Sharpe correction and the exit mislabel live at different layers, so one
+regeneration fixed one and reverted the other.
+
+**Anchored:** CHECKLIST #190 (post-fix re-check), which is what surfaced this - the re-check is
+what caught that the fix and the relabel do not compose.

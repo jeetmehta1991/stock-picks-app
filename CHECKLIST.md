@@ -2993,3 +2993,25 @@ post-config analysis is read too late to run — placement decides whether a che
 **Retroactive coverage (#136):** catches the 5-step post-config standard (missing both
 bookends AND the adversarial review), and the runbook's original §11 which documented
 rationale without a runnable command sequence (L433).
+
+### #193 — A CORRECTION DOWNSTREAM OF A GENERATOR IS TEMPORARY (B1600 / L467)
+
+**Regenerating an artifact from a stale input does not refresh it — it re-imports every
+defect the input still carries, including ones already fixed downstream.**
+
+The Phase 1B roster's `regime_flip` label was corrected by hand (B1596). Re-deriving the
+roster **re-selected `regime_flip` and re-applied the wrong label**, because the R5 cube
+predates the fix and still holds time-stop data in that column.
+
+**Before correcting any generated artifact, decide and RECORD where the fix belongs:**
+1. **In the GENERATOR** — survives regeneration.
+2. **In its INPUT** — survives, but usually means re-running something expensive.
+3. **In the OUTPUT only** — temporary; the next regeneration reverts it. Legitimate ONLY
+   when paired with a written note saying so.
+
+**Picking silently is the failure mode.** And always **diff before promoting** a regenerated
+artifact over a corrected one — overwriting directly reverts corrections while appearing to
+improve the file.
+
+**Retroactive coverage (#136):** catches the B1596 roster relabel, and any future
+regeneration from the pre-B1593 cubes.
