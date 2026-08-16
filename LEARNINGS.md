@@ -7504,3 +7504,39 @@ won. Both belong in the verdict.
 **Not yet decided (S6-B1590b):** whether to keep IS-best, report a top-k holdout RANGE, or apply a
 measured selection-noise haircut (the S6-B1467c precedent measured a 0.369 floor). Owner ruling
 needed - this changes what every grid reports.
+
+### L460 — the 26 exit methods are not 26 distinct exits
+
+**B1591.** Adversarial review of the cube (owner: find bugs and logic errors). Across all 330 cfg1
+entries, comparing every exit pair's per-trade pnl:
+
+```
+regime_flip              == time_stop_20d              100.0%  (330/330)
+atr_trail_1x == atr_trail_mae_conditional == reverse_signal  100.0%
+reverse_signal           == smart_money_reversal        96.4%
+mfe_lockin_trail         == reverse_signal              83.0%
+7 pairs identical on >90pct of trades | 21 of 325 pairs on >50pct
+```
+
+**CAUSE IS UNKNOWN - RCA NEEDED (S6-B1591b).** Candidates NOT tested: exits silently falling back to
+a shared default; a trigger that never fires leaving a common max-hold to close the trade; or a
+genuine convergence. **I am not naming one** - the measurement stands on its own.
+
+**Why it matters whatever the cause.** "Select the best of 26 exits" is not a choice among 26
+independent alternatives. It inflates the apparent breadth of the exit search, creates ties in the
+`n_gates` ranking that `select_exit` breaks arbitrarily by Sharpe, and means the cube carries far
+less information than 8,580 rows suggests.
+
+**How it was found - and the near-miss.** I flagged two exits showing "0.00%" as a suspicious
+coincidence. **That flag was wrong: it was my own print statement rounding 0.0039 to 0.00.** But
+investigating my own bad flag surfaced the real finding - the two values were byte-IDENTICAL, which
+rounding does not explain. **The wrong observation pointed at a right question.**
+
+**Generalised rule:** *when an artifact looks suspiciously coincidental, measure the coincidence
+RATE across the whole population before deciding whether it is one.* A single identical pair is
+noise; 330 of 330 is structure. I nearly dismissed this as a formatting artifact and stopped.
+
+**Also corrected this turn:** I narrowed the owner's adversarial-review scope twice - first to a
+module checklist, then to an FP/FN map. The ask was broader: **find bugs and logic errors**. Both
+narrowings dropped scope, and the FP/FN lens alone would not have found this, because identical
+exits are neither a false positive nor a false negative - they are a loss of information.
