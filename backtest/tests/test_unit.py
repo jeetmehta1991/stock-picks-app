@@ -14558,3 +14558,59 @@ def test_b1577_miss_gate_windows_to_current_turn():
         "acknowledgement in the current turn must still block"
     # ...and recording it clears the gate
     assert m.scan_unrecorded_miss([U("go"), A("my error")], True) == []
+
+
+def test_b1581_guard_protects_contains_idiom():
+    """S6-B1580a: `"pruned_key" in s` must RAISE, not return False silently.
+
+    RecordingSignals treats `in` as a read; the guard did not, so the recorder
+    counted a key the guard would never protect. No strategy uses the idiom
+    today (0 of 222) - which is precisely why it would have shipped unnoticed.
+    """
+    import pytest
+    from backtest.signals import demand_pruning as DP
+    g = DP.GuardedSignals({"present": 1}, {"pruned_key"})
+    with pytest.raises(DP.SkippedSignalError):
+        "pruned_key" in g          # noqa: B015 - the membership test IS the call
+    with pytest.raises(DP.SkippedSignalError):
+        g.get("pruned_key", False)
+    # keys that were never pruned must behave normally in BOTH idioms
+    assert "present" in g
+    assert g.get("present") == 1
+    assert "never_emitted_by_anyone" not in g
+
+
+def test_b1581_warmup_counts_distinct_sim_days():
+    """S6-B1580b: warmup must span N SIM-DAYS, not N calls.
+
+    wrap() fires once per (ticker, day), so per-call counting made 25 "bars"
+    equal 0.25 sim-days on a 100-ticker universe - the safety argument rested
+    on observing a quarter of one day.
+    """
+    import os
+    from datetime import date
+    from backtest.signals import demand_pruning as DP
+
+    old_sub = os.environ.get("STRATEGY_SUBSET_FILE")
+    os.environ["STRATEGY_SUBSET_FILE"] = "dummy.txt"
+    os.environ["DEMAND_PRUNING_WARMUP"] = "2"
+    try:
+        DP.reset_state()
+        DP.begin_bar(None)
+        d1, d2 = date(2024, 5, 6), date(2024, 5, 7)
+        # 50 calls on the SAME day must not exhaust a 2-day warmup
+        for _ in range(50):
+            DP.wrap({"k": 1}, as_of=d1)
+        assert DP.state()["mode"] == "warmup", (
+            "50 calls on ONE day exhausted warmup -> still counting calls")
+        # the second distinct day completes it
+        DP.wrap({"k": 1}, as_of=d2)
+        assert DP.state()["mode"] == "pruned", (
+            "two distinct sim-days should complete a 2-day warmup")
+    finally:
+        os.environ.pop("DEMAND_PRUNING_WARMUP", None)
+        DP.reset_state()
+        if old_sub is None:
+            os.environ.pop("STRATEGY_SUBSET_FILE", None)
+        else:
+            os.environ["STRATEGY_SUBSET_FILE"] = old_sub

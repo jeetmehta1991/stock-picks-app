@@ -8996,7 +8996,7 @@ def screen_instrument(
     # afterwards it RAISES on any read of a pruned-away key rather than
     # letting `.get()` return a default and silently misfire (L437).
     from backtest.signals import demand_pruning as _dp
-    signals = _dp.wrap(signals)
+    signals = _dp.wrap(signals, as_of=as_of)
     close_above_open = signals.get("close_above_open", True)  # default-permissive
     close_below_open = signals.get("close_below_open", False)
     for name, fn in ALL_STRATEGIES.items():

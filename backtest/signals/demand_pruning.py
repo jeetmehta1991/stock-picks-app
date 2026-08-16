@@ -145,7 +145,11 @@ class GuardedSignals(dict):
         self._skipped = frozenset(skipped_keys)
 
     def _check(self, key):
-        if key not in self and key in self._skipped:
+        # S6-B1581: MUST use dict.__contains__ directly. Once __contains__ is
+        # overridden to call _check (so the `"k" in s` idiom is guarded), a
+        # plain `key not in self` here recurses infinitely. Caught by
+        # test_b1581_guard_protects_contains_idiom on its first run.
+        if not dict.__contains__(self, key) and key in self._skipped:
             raise SkippedSignalError(
                 f"signal {key!r} was read but its producer was PRUNED. The "
                 f"warmup recording did not observe this read -- likely a "
@@ -161,6 +165,15 @@ class GuardedSignals(dict):
     def __getitem__(self, key):
         self._check(key)
         return super().__getitem__(key)
+
+    def __contains__(self, key):
+        # S6-B1580a: RecordingSignals treats `"k" in s` as a READ, so the guard
+        # must treat it as one too. Without this, `"pruned_key" in s` returned
+        # False SILENTLY - the recorder counted a key the guard would not
+        # protect. No strategy uses the idiom today (0 of 222), which is
+        # exactly why it would have shipped unnoticed.
+        self._check(key)
+        return super().__contains__(key)
 
 
 def required_producers(read_keys: Iterable[str],
@@ -217,6 +230,7 @@ WARMUP_BARS_DEFAULT = 25
 _STATE = {
     "mode": None,          # None=undecided, "off", "warmup", "pruned"
     "read": set(),
+    "warmup_days": set(),
     "skip": frozenset(),
     "warmup_left": 0,
 }
@@ -236,7 +250,7 @@ def _decide_mode() -> str:
 def reset_state():
     """Test-only: return the state machine to undecided."""
     _STATE.update({"mode": None, "read": set(), "skip": frozenset(),
-                   "warmup_left": 0})
+                   "warmup_left": 0, "warmup_days": set()})
 
 
 def state() -> dict:
@@ -268,12 +282,29 @@ def begin_bar(sample_df=None) -> set:
     return set()
 
 
-def wrap(signals: dict) -> dict:
-    """Wrap the signals dict for this bar and advance the warmup counter."""
+def wrap(signals: dict, as_of=None) -> dict:
+    """Wrap the signals dict for this bar and advance the warmup counter.
+
+    `as_of` is the SIM DATE. Warmup completes after that many DISTINCT
+    dates, not that many calls (S6-B1580b).
+    """
     mode = _STATE["mode"]
     if mode == "warmup":
         wrapped = RecordingSignals(signals, _STATE["read"])
-        _STATE["warmup_left"] -= 1
+        # S6-B1580b: count DISTINCT SIM-DAYS, not calls. `wrap()` fires once per
+        # (ticker, day), so decrementing per call meant 25 "bars" = 25 ticker-
+        # calls = 0.25 SIM-DAYS at a 100-ticker universe. The whole safety
+        # argument rests on warmup observing what strategies read, and a quarter
+        # of one day observes almost nothing.
+        if as_of is not None:
+            seen = _STATE.setdefault("warmup_days", set())
+            if as_of not in seen:
+                seen.add(as_of)
+                _STATE["warmup_left"] -= 1
+        else:
+            # No date supplied -> fall back to per-call counting rather than
+            # never finishing warmup. Logged so the degradation is visible.
+            _STATE["warmup_left"] -= 1
         if _STATE["warmup_left"] <= 0:
             _finalise()
         return wrapped

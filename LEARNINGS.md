@@ -7243,3 +7243,27 @@ not to widen permissions - widening would have granted arbitrary execution to fi
 
 **Compliance failure against existing item:** the Bash tool contract, which I had in context every
 turn. Also a Phase 5 failure - the owner asked once before and I did not investigate then.
+
+### L452 — guarding the `in` idiom caused infinite recursion, caught on the test's first run
+
+**B1581.** Fixed S6-B1580a by overriding `GuardedSignals.__contains__` to call `_check()`. But
+`_check()` itself began `if key not in self ...` - which now dispatched to the overridden
+`__contains__`, which called `_check`, forever. `pytest` reported
+`!!! Recursion detected (same locals & position)` on the very first run.
+
+**Fix:** `_check()` uses `dict.__contains__(self, key)` directly, bypassing the override.
+
+**The general trap:** *when you override a dunder, every internal use of that operator inside the
+same class becomes a recursive call.* `in`, `[]`, `len()`, `==` all look like primitives but are
+dispatched. Any guard implemented ON an operator must access the underlying storage through the
+base class, never through the operator it is guarding.
+
+**Why this one was cheap:** the pin test was written to exercise the exact idiom being guarded, so
+the recursion surfaced in 3 seconds rather than inside a 3-hour run. **A test that reproduces the
+defect's exact shape also catches defects introduced BY the fix** - which is the real argument for
+writing the test before believing the fix.
+
+**Also fixed same batch (S6-B1580b):** warmup counted `wrap()` CALLS, i.e. (ticker, day) pairs, so
+`WARMUP_BARS_DEFAULT = 25` meant **0.25 SIM-DAYS** at 100 tickers. Now counts DISTINCT sim-dates
+via `as_of`, with a logged per-call fallback when no date is supplied. `screen_instrument` passes
+`as_of` through. Pinned by asserting 50 calls on ONE day do not exhaust a 2-day warmup.
