@@ -270,6 +270,39 @@ Surface-level = non-compliant. Every audit must satisfy ALL of:
    every sentence becomes a candidate ticket BEFORE synthesis
    (`feedback_line_by_line_ticket_extraction_before_synthesis`).
 
+## NO-UNTESTED-CAUSE RULE (B1587 - L455, HARD, mechanically enforced)
+
+**A hypothesis presented as a finding is a fabrication.** The Truth Standard already
+said "word DERIVED/UNVERIFIED causal claims as hypothesis, never root cause"
+(B1335 rule 3). **It did not help**, because labelling is a formatting act and the
+reader still receives a cause.
+
+**The failure it did not prevent (L455):** a 4pct residual in a grading run was
+explained as *"probable cause is the `i < 250` warmup guard"*, written into the
+response AND the queue. It was **wrong** - the affected rows sat at bars
+799-1158 - and **one command disproved it**. The hypothesis was cheaper to TEST
+than to write.
+
+**The rule is therefore not about labelling. It is about ORDER:**
+
+1. **If a cause can be tested with a command you already know how to run, RUN IT
+   before naming the cause.** Not after, not "next turn".
+2. **If it cannot be tested cheaply, say the cause is UNKNOWN.** "I don't know
+   why" is a compliant, complete answer. Naming a plausible mechanism is not.
+3. **Never let a hypothesis enter a durable artifact** - queue ticket, LEARNINGS
+   entry, doc, commit message - without EXECUTED evidence beside it. Durable
+   artifacts are read later by people who will not re-derive your confidence.
+4. **A wrong cause is worse than no cause**: it closes the investigation. L455's
+   hypothesis would have sent the next reader to the warmup guard, which was
+   fine, while the real explanation (a swept `close_mitigation` variant behaving
+   exactly as designed) went unexamined.
+
+**Mechanically enforced:** `scan_unverified_cause()` in
+`scripts/verify_turn_compliance.py` blocks turn-end when cause language
+("probable cause", "likely because", "I suspect", "most likely", ...) appears
+with no evidence language ("EXECUTED", "confirmed by", "I ran", "probe",
+"ruled out") anywhere in the same turn. Windowed to the current turn.
+
 ## ARTIFACT-PROVENANCE RULE (B1572 — L445, HARD, mechanically enforced)
 
 **"Use the artifact, not the roster" is only half a rule. It does not say use the

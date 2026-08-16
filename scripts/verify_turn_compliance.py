@@ -254,6 +254,72 @@ def scan_unmonitored_launch(entries: list[dict]) -> list[str]:
     return [] if (armed or not launches) else launches
 
 
+# B1587 / CHECKLIST #189 -- an untested causal claim must not ship as a finding.
+# L455: "probable cause is the i<250 warmup guard" was published as the
+# explanation of a 4pct residual. It was WRONG (the fires sat at bars 799-1158)
+# and one command disproved it. The rule is not "label hypotheses" - the skill
+# already says that and it did not help. The rule is: if the test is available,
+# RUN IT before publishing a cause.
+CAUSE_PHRASES = (
+    "probable cause", "likely cause", "likely because", "probably because",
+    "i suspect", "suspect the", "my hypothesis", "hypothesis is",
+    "most likely", "presumably", "it appears to be caused",
+)
+# Evidence that the claim was actually tested in the same turn.
+PROOF_PHRASES = (
+    "executed", "confirmed by", "verified by", "proven by", "measured",
+    "i ran", "re-ran", "probe", "test shows", "disproved", "ruled out",
+)
+
+
+def scan_unverified_cause(entries):
+    """Flag a turn that states a CAUSE without evidence of testing it.
+
+    Windowed to the current turn (L449). Fires only when cause language appears
+    with NO proof language anywhere in the same turn's assistant text -- the
+    check is deliberately coarse, because the remedy (run the probe, or say
+    "I don't know") is cheap and the failure (a wrong cause shipped as fact) is
+    expensive.
+    """
+    entries = list(entries or [])
+    last_user = -1
+    for i, e in enumerate(entries):
+        if (e or {}).get("type") != "user":
+            continue
+        content = ((e.get("message") or {}).get("content"))
+        if isinstance(content, str) or (
+                isinstance(content, list) and any(
+                    isinstance(c, dict) and c.get("type") == "text"
+                    for c in content)):
+            last_user = i
+    entries = entries[last_user + 1:] if last_user >= 0 else entries
+
+    blob = []
+    for e in entries:
+        if (e or {}).get("type") != "assistant":
+            continue
+        content = ((e.get("message") or {}).get("content"))
+        if isinstance(content, str):
+            blob.append(content)
+        elif isinstance(content, list):
+            blob.extend(c.get("text", "") for c in content
+                        if isinstance(c, dict) and c.get("type") == "text")
+    low = " ".join(blob).lower()
+    if not low:
+        return []
+    causes = [c for c in CAUSE_PHRASES if c in low]
+    if not causes:
+        return []
+    if any(pp in low for pp in PROOF_PHRASES):
+        return []
+    return [("TURN-GATE BLOCK (CHECKLIST #189 / L455): this turn states a CAUSE "
+             f"({sorted(set(causes))[:3]}) with no evidence it was TESTED. "
+             "L455: a 'probable cause' shipped as the explanation of a 4pct "
+             "residual was wrong, and one command disproved it. Either run the "
+             "probe and cite it, or say plainly that the cause is UNKNOWN. A "
+             "hypothesis presented as a finding is a fabrication.")]
+
+
 def check_unrecorded_miss() -> str | None:
     """Block a turn that ACKNOWLEDGED a miss without writing it to LEARNINGS."""
     try:
@@ -414,6 +480,11 @@ def main() -> int:
     # B1573 / CHECKLIST #188: an acknowledged miss must land in LEARNINGS the
     # SAME turn. Checked BEFORE the monitor gate so a turn that both admits a
     # miss and launches a run reports the miss first.
+    cause_block = scan_unverified_cause(_read_entries())
+    if cause_block:
+        print(cause_block[0], file=sys.stderr)
+        return 2
+
     miss_block = check_unrecorded_miss()
     if miss_block:
         print(miss_block, file=sys.stderr)

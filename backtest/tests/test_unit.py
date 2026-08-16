@@ -14645,3 +14645,38 @@ def test_b1583_miss_gate_passes_all_compliant_shapes():
     U = lambda t: {"type": "user", "message": {"content": t}}
     assert m.scan_unrecorded_miss([U("go"), A("my error")], False)
     assert m.scan_unrecorded_miss([U("go"), A("my error")], True) == []
+
+
+def test_b1587_unverified_cause_gate():
+    """CHECKLIST #189 / L455: naming a CAUSE without testing it must block.
+
+    The Truth Standard already required labelling hypotheses. It did not help -
+    labelling is a formatting act and the reader still receives a cause. The
+    enforceable rule is about ORDER: run the probe, or say UNKNOWN.
+    """
+    import importlib.util
+    spec = importlib.util.spec_from_file_location(
+        "_vtc5", "scripts/verify_turn_compliance.py")
+    m = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(m)
+
+    A = lambda t: {"type": "assistant",
+                   "message": {"content": [{"type": "text", "text": t}]}}
+    U = lambda t: {"type": "user", "message": {"content": t}}
+
+    # (a) cause asserted, nothing tested -> BLOCK
+    assert m.scan_unverified_cause(
+        [U("go"), A("Probable cause is the warmup guard.")]), \
+        "an untested cause must block"
+    # (b) cause asserted WITH evidence -> pass
+    assert m.scan_unverified_cause(
+        [U("go"), A("Probable cause is X. EXECUTED: the probe confirms it.")]
+    ) == [], "a tested cause must pass"
+    # (c) no cause language at all -> pass
+    assert m.scan_unverified_cause([U("go"), A("The run completed.")]) == []
+    # (d) cause from a PRIOR turn must not re-fire (L449 windowing)
+    assert m.scan_unverified_cause(
+        [A("probable cause is X"), U("next"), A("all fine")]) == []
+    # (e) "I don't know" is compliant and must never trip the gate
+    assert m.scan_unverified_cause(
+        [U("go"), A("The cause is UNKNOWN; I have not tested it.")]) == []

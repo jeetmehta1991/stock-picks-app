@@ -2901,3 +2901,22 @@ turn-end when acknowledgement language appears without LEARNINGS.md being modifi
 the 5th instance of the monitor-cadence class (L420/L424) and the twice-repeated commit-message
 shell-quoting error. **Lineage:** big findings got entries, small ones did not - and the small
 recurring ones are precisely what a written record prevents.
+
+### #189 — NO UNTESTED CAUSE: run the probe or say UNKNOWN (B1587 / L455)
+
+**A hypothesis presented as a finding is a fabrication.** Labelling it "probable" does
+not fix it - the reader still receives a cause.
+
+1. If a cause can be tested with a command you know how to run, **RUN IT FIRST**.
+2. If it cannot be tested cheaply, say the cause is **UNKNOWN**. That is complete.
+3. **Never** put an untested cause in a durable artifact (queue, LEARNINGS, doc,
+   commit message) - those are read later by people who will not re-derive your
+   confidence.
+4. A wrong cause is worse than none: it closes the investigation.
+
+**Mechanically enforced:** `scan_unverified_cause()` in `scripts/verify_turn_compliance.py`
+blocks turn-end on cause language without evidence language in the same turn.
+
+**Retroactive coverage (#136):** catches L455 (the `i<250` warmup-guard hypothesis,
+disproved by one command); L450 (a stall "explained" by falling RAM before CPU was
+sampled); and L438 (a network call inferred from a log string without reading the callee).

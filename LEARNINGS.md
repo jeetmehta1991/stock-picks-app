@@ -7365,3 +7365,32 @@ loss and an unruled MIN_N. The honest output at that moment was "no verdict avai
 **Margin of error, applied:** the surviving PASS has `ci_lo = +0.082` - barely above zero. 5 of 200
 at a marginal lower bound is a weak positive, not something to act on. `n_holdout` returned `None`,
 which is itself a reporting gap (S6-B1586c).
+
+### L456 — I published a cause that was cheaper to test than to write
+
+**B1587.** Owner: *"You are not allowed to give hypothesis as findings which you did last turn."*
+Correct, and the specific offence was naming *"probable cause is the `i < 250` warmup guard"* as the
+explanation of a 4pct residual - in the response AND in a queue ticket. It was **wrong** (the rows
+sat at bars 799-1158) and **one command disproved it**.
+
+**Why the existing rule failed.** The Truth Standard already said to word unverified causal claims
+as "hypothesis", never "root cause" (B1335 rule 3), and I did label it. **Labelling is a formatting
+act; the reader still receives a cause.** A rule about vocabulary cannot fix a problem of ORDER.
+
+**The enforceable rule is ORDER, not vocabulary:** if a cause can be tested with a command you
+already know how to run, RUN IT before naming the cause. If it cannot be tested cheaply, say the
+cause is UNKNOWN - which is a complete answer.
+
+**Why a wrong cause is worse than none:** it CLOSES the investigation. My warmup-guard hypothesis
+would have sent the next reader to a mechanism that was working fine, while the real explanation - a
+swept `close_mitigation` variant behaving exactly as designed - went unexamined. It also would have
+been read as fact from a durable artifact by someone who would not re-derive my confidence.
+
+**Made mechanical (CHECKLIST #189, skill NO-UNTESTED-CAUSE RULE):**
+`scan_unverified_cause()` blocks turn-end when cause language appears with no evidence language in
+the same turn. Pinned five ways, including that "the cause is UNKNOWN" passes cleanly - the gate must
+never push me toward inventing a cause to satisfy it.
+
+**Retroactively catches:** L455 (this one), L450 (a stall "explained" by falling RAM before CPU was
+sampled), L438 (a network call inferred from a log string without reading the callee). **Three
+instances this session of the same reflex: explain first, verify later.**
