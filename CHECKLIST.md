@@ -2953,6 +2953,16 @@ An unanchored rule gets rediscovered by repeating the failure that produced it.
 - a NEW CHECKLIST item citing the L-number, OR
 - an explicit citation of an EXISTING item that already covers it.
 
+**THE TEST (sharpened by L466): "if someone reads the CHECKLIST, will they encounter
+this rule?"** — NOT "does this entry mention a checklist item". **Citing a rule is not
+anchoring a rule.** An L-entry that references existing items is still an orphan when its
+OWN generalised rule has no home. L465 mentioned #190 and #191 and was still an orphan,
+because neither item carried its rule.
+
+**Anchor to an EXISTING item when the new rule REFINES it** (as L466 refines this item);
+open a NEW item only when the rule is genuinely distinct. One item per L-entry would bloat
+the checklist into something nobody reads — which is this item's own failure mode.
+
 **Mechanically checked:** `scan_orphan_rule()` in `scripts/verify_turn_compliance.py`.
 
 **Retroactive coverage (#136):** flags all 18 orphans from this session — L433, L434, L435,
