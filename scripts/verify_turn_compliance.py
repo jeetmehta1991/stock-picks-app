@@ -358,6 +358,32 @@ def scan_orphan_rule(learnings_text, checklist_text, skill_text, new_entries):
              "existing one) referencing the L-number, then end the turn again.")]
 
 
+def check_orphan_rule() -> str | None:
+    """Block a turn whose new L-entries state a rule anchored nowhere (#191)."""
+    try:
+        import re
+        import subprocess
+        from pathlib import Path
+        r = subprocess.run(["git", "diff", "HEAD", "--unified=0", "--", "LEARNINGS.md"],
+                           capture_output=True, text=True, timeout=15)
+        added = r.stdout or ""
+        if not added.strip():
+            r2 = subprocess.run(["git", "log", "-1", "-p", "--unified=0", "--", "LEARNINGS.md"],
+                                capture_output=True, text=True, timeout=15)
+            added = r2.stdout or ""
+        new_entries = re.findall(r"^\+### (L\d+)", added, re.M)
+        if not new_entries:
+            return None
+        L = Path("LEARNINGS.md").read_text(encoding="utf-8", errors="ignore")
+        C = Path("CHECKLIST.md").read_text(encoding="utf-8", errors="ignore")
+        S = Path(".claude/skills/execution-discipline/SKILL.md").read_text(
+            encoding="utf-8", errors="ignore")
+    except Exception:
+        return None          # never let the gate itself break the turn
+    bad = scan_orphan_rule(L, C, S, new_entries)
+    return bad[0] if bad else None
+
+
 def check_unrecorded_miss() -> str | None:
     """Block a turn that ACKNOWLEDGED a miss without writing it to LEARNINGS."""
     try:
@@ -521,6 +547,11 @@ def main() -> int:
     cause_block = scan_unverified_cause(_read_entries())
     if cause_block:
         print(cause_block[0], file=sys.stderr)
+        return 2
+
+    orphan_block = check_orphan_rule()
+    if orphan_block:
+        print(orphan_block, file=sys.stderr)
         return 2
 
     miss_block = check_unrecorded_miss()

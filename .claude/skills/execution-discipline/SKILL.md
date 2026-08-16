@@ -270,6 +270,28 @@ Surface-level = non-compliant. Every audit must satisfy ALL of:
    every sentence becomes a candidate ticket BEFORE synthesis
    (`feedback_line_by_line_ticket_extraction_before_synthesis`).
 
+## ANCHOR-THE-RULE RULE (B1597 - L464, CHECKLIST #191, mechanically enforced)
+
+**A rule recorded only in LEARNINGS is a story, not a gate.**
+
+MEASURED across one session: 24 L-entries stated a generalised rule and **18 were
+referenced in NEITHER CHECKLIST nor this skill - a 75pct orphan rate.**
+
+Writing the L-entry FEELS like closing the loop: the insight is captured, the prose
+is good, the commit is green. **But capture is not enforcement.** LEARNINGS is read
+when someone goes looking; CHECKLIST and this skill are read every turn. An
+unanchored rule gets rediscovered by repeating the failure that produced it.
+
+**Every L-entry stating a generalised rule MUST, in the same turn, be anchored by a
+NEW CHECKLIST item citing the L-number, or an explicit citation of an EXISTING item
+that already covers it.**
+
+*The confirming pattern:* every rule that HELD had a script behind it (#182, #185/#186,
+#187, #188, #189). Every rule that decayed was prose. **Placement is not filing - it
+decides whether a rule is enforced, consulted, or merely archived.**
+
+Enforced by `scan_orphan_rule()` in `scripts/verify_turn_compliance.py`.
+
 ## POST-FIX RE-CHECK RULE (B1595 - L462, CHECKLIST #190)
 
 **A fix can invalidate a conclusion the defect itself left intact.** While the bug

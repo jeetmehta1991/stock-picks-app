@@ -768,6 +768,34 @@ This BLOCKS if the formula and Table A disagree, and prints the factorial + engi
 
 ## STEP 1 — SEARCH: all fire-adding configs, 100 tickers, 2 years
 
+### 1.0 PRE-LAUNCH GATE - run BEFORE building anything
+
+**Each config costs ~3.3 h. These checks cost seconds and each one has already caught a
+defect that would have wasted a full run.**
+
+```bash
+# (a) UNIVERSE PROVENANCE - is this the artifact you think it is?  (L445)
+python scripts/verify_universe_artifact.py output_audit/_sweep_100.txt \
+  --compare-cube output_r5_merged_1_7/trade_exit_detail.csv
+```
+Must print **"looks like a broad universe"**. A SLICE verdict means alphabetical skew, absent
+mega-caps, or tickers the baseline never ran - the exact defect that made 2 configs search an
+abandoned A-C chunk.
+
+```bash
+# (b) RAM CEILING - how many configs fit CONCURRENTLY?  (measured, not assumed)
+powershell -c "$os=Get-CimInstance Win32_OperatingSystem; \
+  'free_MB={0} total_MB={1}' -f [math]::Round($os.FreePhysicalMemory/1KB), \
+  [math]::Round($os.TotalVisibleMemorySize/1KB)"
+```
+**PEAK per worker measured at 3,223 MB** (`PeakWorkingSet64`, NOT a spot reading - spot
+readings understated it three times). Non-python baseline ~6.4 GB of 15.6 GB, so
+**3 concurrent configs**, not 5-6. Exceeding it risks MemoryError mid-sweep.
+
+**(c) CONFIRM THE SWEEP KNOBS DIFFER.** The engine does NOT log `SMC_SWING_LENGTH` /
+`STRAT_EMA_SPAN` (S6-B1576b), so a sweep can silently run N identical configs. Assert distinct
+values across concurrent launches before starting.
+
 ### 1.1 Build the input files
 
 ```bash
@@ -1097,7 +1125,21 @@ Run every lens, every config:
 not ticketed does not exist (#94). Causes go in only when TESTED - otherwise `UNKNOWN - RCA NEEDED`
 (#189).
 
-### 6. Report the verdict WITH its denominators
+### 6. POST-FIX RE-CHECK - if this config-run cycle FIXED anything (CHECKLIST #190)
+
+**A fix can invalidate a conclusion the defect itself left intact.** While the bug stood the
+numbers were self-consistent; correcting it breaks that consistency for anything already shipped.
+
+For every defect fixed during this cycle:
+1. **GREP for the shipped conclusions that depended on the old behaviour** - grids, rosters, docs.
+   Do not recall them.
+2. **MEASURE the overlap.** Do not assume a fix is purely additive.
+3. **Ticket each affected conclusion for re-derivation**, or state explicitly why it survives.
+
+*Lineage:* the `regime_flip` fix landed on one of only TWO ROBUST Phase 1B roster cells, whose
+numbers were `time_stop_20d`'s all along.
+
+### 7. Report the verdict WITH its denominators
 Never a bare PASS count. State: N of M combinations, X of Y producers varied, `exits_effective`
 of 26, and the `ci_lo` of every PASS. **Margin of error is part of the verdict, not a footnote.**
 

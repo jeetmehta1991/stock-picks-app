@@ -14741,3 +14741,34 @@ def test_b1593_regime_flip_reads_regime_from_signals():
     assert "_regime_by_date[as_of]" in esrc, (
         "engine must POPULATE _regime_by_date; a reader with no writer is a "
         "designed-not-armed gate")
+
+
+def test_b1597_orphan_rule_gate_wired_and_pinned():
+    """CHECKLIST #191 / L464: a rule stated in LEARNINGS must be ANCHORED.
+
+    MEASURED: 24 L-entries stated a rule this session and 18 were referenced in
+    neither CHECKLIST nor the skill - a 75pct orphan rate. Every rule that HELD
+    had a script behind it; every rule that decayed was prose.
+    """
+    import inspect
+    import importlib.util
+    spec = importlib.util.spec_from_file_location(
+        "_vtc6", "scripts/verify_turn_compliance.py")
+    m = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(m)
+
+    L = "\n### L999 - t\ntext\n**Generalised rule:** always do X.\n"
+    N = "\n### L998 - t\njust a narrative.\n"
+    # rule stated, anchored nowhere -> BLOCK
+    assert m.scan_orphan_rule(L, "", "", ["L999"])
+    # anchored in CHECKLIST -> pass
+    assert m.scan_orphan_rule(L, "per L999", "", ["L999"]) == []
+    # anchored in the SKILL -> pass
+    assert m.scan_orphan_rule(L, "", "per L999", ["L999"]) == []
+    # narrative with no rule -> pass (must not push toward inventing rules)
+    assert m.scan_orphan_rule(N, "", "", ["L998"]) == []
+    # and it must be WIRED, not merely defined (CHECKLIST #121)
+    main_src = inspect.getsource(m.main)
+    assert "check_orphan_rule()" in main_src, (
+        "scan_orphan_rule must be WIRED into main() - a scanner that is defined "
+        "but never called is the designed-not-armed failure")

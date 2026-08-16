@@ -7667,3 +7667,30 @@ chain, so it showed pre-edit state. **A command chain is not a timeline; orderin
 the order of observation.** (2) The heredoc escaping trap bit a third time (`\n` becoming a literal
 newline in an f-string) - the fix each time is to write the patch to a FILE rather than pipe it
 through a shell.
+
+### L465 — the standard covered the middle and neither bookend
+
+**B1597.** Owner asked whether anything else from this session was missing from the post-config
+standard. **Three things were, and they share a shape: the standard covered the MIDDLE of a config
+cycle and neither END.**
+
+- **PRE-LAUNCH** (now §1.0): universe provenance via `verify_universe_artifact.py`, the measured RAM
+  ceiling, and confirming the sweep knobs actually differ. Each costs seconds; each has already
+  caught a defect that would have wasted a 3.3 h run.
+- **POST-FIX** (now step 6): if the cycle FIXED anything, grep for shipped conclusions that depended
+  on the old behaviour and measure the overlap (CHECKLIST #190).
+
+**Why I missed both.** I wrote the standard immediately after finishing an analysis, so I encoded
+the analysis I had just done. **A standard written from one traversal captures that traversal, not
+the process** - the checks I ran before launching and the re-checks I ran after fixing were
+invisible to me because they had already happened.
+
+**Generalised rule:** *when writing a standard from experience, walk the FULL lifecycle - before,
+during, after - and ask what was done at each boundary, not just what was done in the middle.* The
+middle is what you remember because it is where the effort was.
+
+**Placement matters as much as content** (L464 again): the owner corrected my instinct to add
+pre-launch as "step 0" of the analysis standard. It belongs in the LAUNCH section (§1.0), which
+already existed - a pre-launch check filed under post-config analysis would be read too late to run.
+
+**Anchored:** CHECKLIST #190 (post-fix), #191 (anchor-the-rule), and the runbook sections above.
