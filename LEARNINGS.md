@@ -7750,3 +7750,39 @@ regeneration fixed one and reverted the other.
 
 **Anchored:** CHECKLIST #190 (post-fix re-check), which is what surfaced this - the re-check is
 what caught that the fix and the relabel do not compose.
+
+### L468 — "anchored" is not "enforced"; and the fix belongs in the generator
+
+**B1602.** Owner asked how the OTHER rules in LEARNINGS are enforced. **Measured across this
+session's 7 CHECKLIST additions: 3 AUTO-GATED, 1 tooled-but-manual, 3 prose-only.**
+
+**#191 solved the wrong half of the problem.** It ensures a rule REACHES CheckLIST - but a
+CHECKLIST item is CONSULTED, not ENFORCED. I had been treating "anchored" and "enforced" as one
+tier. They are three:
+
+```
+TIER 1  AUTO-GATED   a script blocks the turn       #188 #189 #191 (+#187 #190 as of B1602)
+TIER 2  TOOLED       a script exists, run by hand   #187 (before promotion)
+TIER 3  PROSE        consulted every turn           #192 #193
+```
+
+**Two promoted to TIER 1 this batch:**
+- **#190** - a commit whose message says FIX/DEFECT/RCA must touch a downstream artifact or a
+  queue entry. A fix with zero downstream footprint is either self-contained or an unrecorded
+  invalidation; the gate cannot tell which, so it ASKS, and "self-contained" in the queue satisfies it.
+- **#187** - a `run_phase1a.py` launch requires `verify_universe_artifact.py` in the same turn.
+  Two configs once searched an abandoned A-C chunk for 3.3 h each because nobody looked.
+
+**Two that CANNOT be gated, stated rather than hidden:** #192 (*walk the lifecycle*) and #193
+(*decide where a fix belongs*) are judgement rules. **A gate that pretends to check judgement is
+worse than an honest prose rule**, because it manufactures false assurance.
+
+**And the generator fix (owner option 2).** The roster relabel was reverted by the next
+regeneration (L467). The correction now lives in `roster_core.truthful_exit_name()` - the shared
+library every consumer imports - so it SURVIVES. **VERIFIED by regenerating: `regime_flip` ->
+`time_stop_20d`, 0 remaining.** It is also cube-aware: a post-B1593 cube is returned unchanged,
+because the degradation was fixed, not permanent.
+
+**Generalised rule:** *state the enforcement TIER when adding a rule, and promote it to a gate
+whenever the rule is mechanically decidable.* A rule's home determines whether it is enforced,
+consulted, or archived - and pretending prose is a gate is how 18 rules became orphans.

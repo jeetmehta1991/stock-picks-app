@@ -68,7 +68,7 @@ SELECTION_NOISE_FLOOR = 0.369
 
 from roster_core import (                                    # noqa: E402
     IS_START, IS_END, HO_START, HO_END, WINSORIZE, COST_BPS, MIN_N, FDR_Q, JACCARD,
-    LIVE_GATES, DEMOTED, evaluate, select_exit,
+    LIVE_GATES, DEMOTED, evaluate, select_exit, truthful_exit_name,
 )
 
 CUBES = [("R5", "output_r5_merged_1_7"),
@@ -233,7 +233,7 @@ def main() -> int:
                          # the new gate needs. Without this the 4y leg silently no-ops.
                          full_period_n=len(g[g.exit_method == pick["exit"]]))
             rows.append({"cube": label, "n_tickers": ntick, "strategy": strat,
-                         "direction": direction, "exit": pick["exit"],
+                         "direction": direction, "exit": truthful_exit_name(pick["exit"])[0],
                          "is_sharpe": pick["sharpe"], "is_n_gates": pick["n_gates"],
                          "holdout": graded,
                          "trades": set(map(tuple, hog[["ticker", "entry_date"]].values))})

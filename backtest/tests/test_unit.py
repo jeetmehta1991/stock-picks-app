@@ -14772,3 +14772,55 @@ def test_b1597_orphan_rule_gate_wired_and_pinned():
     assert "check_orphan_rule()" in main_src, (
         "scan_orphan_rule must be WIRED into main() - a scanner that is defined "
         "but never called is the designed-not-armed failure")
+
+
+def test_b1602_postfix_and_universe_gates_pinned():
+    """#190 and #187 promoted from prose to AUTO-GATED (L467, L445)."""
+    import importlib.util
+    spec = importlib.util.spec_from_file_location(
+        "_vtc7", "scripts/verify_turn_compliance.py")
+    m = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(m)
+
+    # #190 - a FIX commit must show a downstream re-check
+    assert m.scan_postfix_recheck("B1: fixed the thing", ["scripts/x.py"])
+    assert m.scan_postfix_recheck("B1: fixed", ["PHASE_1B_ROSTER.md"]) == []
+    assert m.scan_postfix_recheck("B1: fixed", ["EXECUTION_QUEUE.md"]) == []
+    assert m.scan_postfix_recheck("B1: add a feature", ["scripts/x.py"]) == []
+
+    A = lambda t: {"type": "assistant",
+                   "message": {"content": [{"type": "tool_use", "input": t}]}}
+    U = lambda t: {"type": "user", "message": {"content": t}}
+    # #187 - a launch requires a universe verification the same turn
+    assert m.scan_unverified_universe(
+        [U("go"), A("nohup python backtest/run_phase1a.py --output-dir out")])
+    assert m.scan_unverified_universe(
+        [U("go"), A("python scripts/verify_universe_artifact.py x"),
+         A("nohup python backtest/run_phase1a.py --output-dir out")]) == []
+    assert m.scan_unverified_universe([U("go"), A("ls -la")]) == []
+
+
+def test_b1602_degraded_exit_relabel_survives_regeneration():
+    """L467: the fix must live in the GENERATOR, not the output.
+
+    Relabelling PHASE_1B_ROSTER.md by hand was reverted by the very next
+    regeneration. The correction now lives in roster_core, which every consumer
+    imports, so it survives.
+    """
+    import sys
+    sys.path.insert(0, "scripts")
+    import roster_core as rc
+
+    # pre-B1593 cube: report what the exit ACTUALLY DID
+    label, note = rc.truthful_exit_name("regime_flip", cube_predates_b1593=True)
+    assert label == "time_stop_20d"
+    assert "DEGRADED" in note
+    # post-B1593 cube: the exit was fixed, so do NOT relabel
+    assert rc.truthful_exit_name("regime_flip", False) == ("regime_flip", "")
+    # an undegraded exit is untouched in both cases
+    assert rc.truthful_exit_name("time_stop_10d", True)[0] == "time_stop_10d"
+    # and the generator must actually USE it (CHECKLIST #121)
+    src = (__import__("pathlib").Path("scripts/build_phase_1b_roster.py")
+           .read_text(encoding="utf-8"))
+    assert "truthful_exit_name(pick[" in src, (
+        "build_phase_1b_roster must APPLY the relabel, not merely import it")

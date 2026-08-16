@@ -384,6 +384,102 @@ def check_orphan_rule() -> str | None:
     return bad[0] if bad else None
 
 
+# B1602 / CHECKLIST #190 -> AUTO-GATED. A fix can invalidate a conclusion the
+# defect itself left intact: while the bug stood the numbers were
+# self-consistent. L467 - the roster relabel was reverted by the very next
+# regeneration because the fix belonged in the GENERATOR, not the output.
+FIX_WORDS = ("fix:", "fixed", "bugfix", "defect", "root cause", "rca",
+             "corrected", "correction")
+# Artifacts whose conclusions are DOWNSTREAM of engine/grading behaviour.
+DOWNSTREAM_ARTIFACTS = ("PHASE_1B_ROSTER.md", "PASSED_STRATEGY_EXIT_LIST.md",
+                        "STRATEGY_OPTIMISATION_PLAN.md", "EXECUTION_QUEUE.md")
+
+
+def scan_postfix_recheck(commit_msg, changed_files):
+    """Flag a FIX commit that touched no downstream artifact and no queue entry.
+
+    A fix with zero downstream footprint is either genuinely self-contained or
+    an unrecorded invalidation. The gate cannot tell which - so it asks, and an
+    EXECUTION_QUEUE entry saying "self-contained" satisfies it.
+    """
+    low = (commit_msg or "").lower()
+    if not any(w in low for w in FIX_WORDS):
+        return []
+    touched = [f for f in (changed_files or [])
+               if any(a in f for a in DOWNSTREAM_ARTIFACTS)]
+    if touched:
+        return []
+    return [("TURN-GATE BLOCK (CHECKLIST #190 / L467): this turn commits a FIX "
+             "but touched no downstream artifact and no queue entry. A fix can "
+             "invalidate a conclusion the defect left intact - the roster "
+             "relabel was reverted by the next regeneration because the fix "
+             "belonged in the GENERATOR, not the output. GREP for shipped "
+             "conclusions that depended on the old behaviour, MEASURE the "
+             "overlap, and ticket each - or record 'self-contained' in "
+             "EXECUTION_QUEUE and end the turn again.")]
+
+
+# B1602 / CHECKLIST #187 -> AUTO-GATED. Launching a config against an
+# unverified universe is the B1571 failure: two configs searched an abandoned
+# A-C chunk for 3.3 h each before anyone looked at the ticker list.
+def scan_unverified_universe(entries):
+    """Flag a LAUNCH whose turn never ran verify_universe_artifact.py."""
+    entries = list(entries or [])
+    last_user = -1
+    for i, e in enumerate(entries):
+        if (e or {}).get("type") != "user":
+            continue
+        c = ((e.get("message") or {}).get("content"))
+        if isinstance(c, str) or (isinstance(c, list) and any(
+                isinstance(x, dict) and x.get("type") == "text" for x in c)):
+            last_user = i
+    entries = entries[last_user + 1:] if last_user >= 0 else entries
+
+    blob = []
+    for e in entries:
+        msg = (e.get("message") or {})
+        content = msg.get("content")
+        if isinstance(content, list):
+            for c in content:
+                if isinstance(c, dict):
+                    blob.append(str(c.get("input", "")) + str(c.get("text", "")))
+        elif isinstance(content, str):
+            blob.append(content)
+    text = " ".join(blob)
+    low = text.lower()
+    launched = ("run_phase1a.py" in low and
+                ("nohup" in low or "--output-dir" in low))
+    if not launched:
+        return []
+    if "verify_universe_artifact" in low:
+        return []
+    return [("TURN-GATE BLOCK (CHECKLIST #187 / L445): a config was LAUNCHED "
+             "without running verify_universe_artifact.py in the same turn. "
+             "Two configs once searched an abandoned A-C chunk for 3.3 h each "
+             "because nobody looked at the ticker list. Run it against the "
+             "baseline cube, then end the turn again.")]
+
+
+def check_postfix_recheck() -> str | None:
+    """#190 auto-gate: a FIX commit must show downstream re-check."""
+    try:
+        import subprocess
+        m = subprocess.run(["git", "log", "-1", "--pretty=%B"],
+                           capture_output=True, text=True, timeout=15).stdout
+        f = subprocess.run(["git", "log", "-1", "--name-only", "--pretty=format:"],
+                           capture_output=True, text=True, timeout=15).stdout
+    except Exception:
+        return None
+    bad = scan_postfix_recheck(m, [x for x in (f or "").splitlines() if x.strip()])
+    return bad[0] if bad else None
+
+
+def check_unverified_universe() -> str | None:
+    """#187 auto-gate: a launch requires a universe verification the same turn."""
+    bad = scan_unverified_universe(_read_entries())
+    return bad[0] if bad else None
+
+
 def check_unrecorded_miss() -> str | None:
     """Block a turn that ACKNOWLEDGED a miss without writing it to LEARNINGS."""
     try:
@@ -547,6 +643,16 @@ def main() -> int:
     cause_block = scan_unverified_cause(_read_entries())
     if cause_block:
         print(cause_block[0], file=sys.stderr)
+        return 2
+
+    universe_block = check_unverified_universe()
+    if universe_block:
+        print(universe_block, file=sys.stderr)
+        return 2
+
+    postfix_block = check_postfix_recheck()
+    if postfix_block:
+        print(postfix_block, file=sys.stderr)
         return 2
 
     orphan_block = check_orphan_rule()

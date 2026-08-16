@@ -2965,6 +2965,12 @@ the checklist into something nobody reads — which is this item's own failure m
 
 **Mechanically checked:** `scan_orphan_rule()` in `scripts/verify_turn_compliance.py`.
 
+**ENFORCEMENT TIERS (L468) — "anchored" is not "enforced".** Measured across this session's
+additions: 3 AUTO-GATED, 1 tooled-but-manual, 3 prose-only. A CHECKLIST item is CONSULTED;
+only a gate is ENFORCED. **When adding an item, state which tier it is in**, and promote it
+to a gate if the rule is mechanically decidable. #187 and #190 were promoted in B1602;
+#192 and #193 are judgement rules and stay prose — that limit is stated, not hidden.
+
 **Retroactive coverage (#136):** flags all 18 orphans from this session — L433, L434, L435,
 L436, L437, L439, L441, L444, L447, L448, L449, L451, L453, L454, L457, L459, L460, L461.
 Every rule that HELD this session had a script behind it (#182, #185/#186, #187, #188, #189);

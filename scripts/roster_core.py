@@ -60,6 +60,33 @@ CUBE_DTYPES = {"strategy": "category", "direction": "category", "exit_method": "
                "ticker": "category", "pnl_pct": "float32", "hold_days": "float32"}
 
 
+# B1602 (owner-approved option 2, L467/CHECKLIST #193): exits that DEGRADED to a
+# different exit in every cube produced before B1593. Relabelling downstream was
+# reverted by the next regeneration, so the correction lives HERE - in the shared
+# library every consumer imports - and therefore survives.
+#
+# `regime_flip` : no caller ever passed `regime_series`, so it fell back to a
+#   20-day time stop on every trade in every cube (measured identical to
+#   time_stop_20d on 330/330). B1593 fix C wired it, so cubes generated AFTER
+#   that fix are genuine and must NOT be relabelled.
+DEGRADED_EXITS_PRE_B1593 = {"regime_flip": "time_stop_20d"}
+
+
+def truthful_exit_name(exit_name, cube_predates_b1593=True):
+    """Report what an exit ACTUALLY DID, not what it was called.
+
+    Returns (label, footnote). A cube generated after B1593 is returned
+    unchanged - the degradation was fixed, not permanent.
+    """
+    if not cube_predates_b1593:
+        return exit_name, ""
+    true_name = DEGRADED_EXITS_PRE_B1593.get(str(exit_name))
+    if not true_name:
+        return exit_name, ""
+    return true_name, (f"[was labelled `{exit_name}`; it DEGRADED to "
+                       f"`{true_name}` in every pre-B1593 cube - L461]")
+
+
 def load_cube(path: Path, extra_columns: list[str] | None = None) -> pd.DataFrame:
     """Read a cube with the shared conditioning applied exactly once.
 
