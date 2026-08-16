@@ -270,7 +270,7 @@ Surface-level = non-compliant. Every audit must satisfy ALL of:
    every sentence becomes a candidate ticket BEFORE synthesis
    (`feedback_line_by_line_ticket_extraction_before_synthesis`).
 
-## ANCHOR-THE-RULE RULE (B1597 - L464, CHECKLIST #191, mechanically enforced)
+## ANCHOR-THE-RULE RULE (B1597 - L464, CHECKLIST #197, mechanically enforced)
 
 **A rule recorded only in LEARNINGS is a story, not a gate.**
 
@@ -292,7 +292,7 @@ decides whether a rule is enforced, consulted, or merely archived.**
 
 Enforced by `scan_orphan_rule()` in `scripts/verify_turn_compliance.py`.
 
-## POST-FIX RE-CHECK RULE (B1595 - L462, CHECKLIST #190)
+## POST-FIX RE-CHECK RULE (B1595 - L462, CHECKLIST #196)
 
 **A fix can invalidate a conclusion the defect itself left intact.** While the bug
 stood the numbers were self-consistent; correcting it breaks that consistency for

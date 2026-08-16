@@ -6617,7 +6617,9 @@ done until `git status -sb` shows no `[ahead N]`.** Detection signal: `git log o
 non-empty at end of turn. This is the same class as L410 (completion is the ARTIFACT, not the
 percentage): I checked the step I performed rather than the state the owner observes.
 
-### L435 — the OHLCV bulk cache never worked; every backtest silently re-downloaded its universe
+### L435
+
+**the OHLCV bulk cache never worked; every backtest silently re-downloaded its universe**
 
 **B1561.** A profile showed `time.sleep` burning 11.2s across 26 calls. Tracing it reached
 `cache.get_ohlcv_bulk`'s yfinance rate-limit pauses — and the run log confirmed
@@ -6665,7 +6667,9 @@ measurements dominated by Numba JIT compilation**. Steady state is 47.4 ms and 0
 within the same exchange. **Rule: never quote a per-call cost from an unrepeated first call in a
 JIT-compiled path — report cold and steady separately, always.**
 
-### L436 — a start-anchored cache-coverage check is unsatisfiable for anything that listed late
+### L436
+
+**a start-anchored cache-coverage check is unsatisfiable for anything that listed late**
 
 **B1562.** Owner approved "A2" — move `DATA_LOAD_START` from 2021-05-05 to 2021-05-06 to match the
 cache's actual first bar. Measured before shipping: **A2 alone covers 1,707 of 2,122 tickers
@@ -6699,7 +6703,9 @@ have recent bars, so they re-fetch forever and the guard now raises on them. Fix
 index metadata (`fetched_through`) to distinguish "delisted, cache complete" from "cache stale";
 the index today stores only `start`/`end`/`rows`. NOT fixed — ticketed, not silently accepted.
 
-### L437 — demand-driven signal pruning cannot use static analysis; a runtime-built key is invisible
+### L437
+
+**demand-driven signal pruning cannot use static analysis; a runtime-built key is invisible**
 
 **B1563.** Owner approved items 2/3/4 of the runtime plan. Item 2 was "derive the required signal
 keys from the active strategy subset and skip every producer that emits none of them."
@@ -6740,7 +6746,9 @@ generator.
 False, and pinned flag-vs-cache state in BOTH directions so the pair cannot drift again. Populating
 it needs the same PIT audit that measured the sibling `USE_SMC_PANEL_CACHE` UNSAFE at 11.5%.
 
-### L438 — CORRECTION to L435/L436: no live download ever happened; I inferred a network call from a log string
+### L438
+
+**CORRECTION to L435/L436: no live download ever happened; I inferred a network call from a log string**
 
 **B1564 (retraction, same session).** L435 claimed "every backtest silently re-downloaded its
 universe from yfinance", that the data was "not point-in-time", and that every prior cube result
@@ -6776,7 +6784,9 @@ tickers" still produced correct results in 3,696s, and a real 21-ticker yfinance
 sleeps could not have been that cheap. A cost/behaviour inconsistency is a prompt to re-verify the
 mechanism, not to move on.
 
-### L439 — make the optimisation safe to be WRONG, not just correct
+### L439
+
+**make the optimisation safe to be WRONG, not just correct**
 
 **B1565 / S6-B1563c.** L437 blocked demand-driven signal pruning because static key extraction
 cannot see runtime-built keys, and a wrongly-pruned key returns `.get()`'s default instead of
@@ -6815,7 +6825,9 @@ before treating 13.7pct as firm.
 **Scope:** pruning activates ONLY when a strategy subset is active. Full-roster production cube
 runs take the unpruned path unchanged (`feedback_narrow_scope_blast_radius`).
 
-### L440 — 33 producers guarded; pruning removes 95.8pct of compute_all_signals
+### L440
+
+**33 producers guarded; pruning removes 95.8pct of compute_all_signals**
 
 **B1566 / S6-B1565b (part a).** `compute_all_signals` had skip-guards on 3 of its 33 producer
 calls, so the `skip_indicators` mechanism existed at ~9pct of its reach. All 33 are now guarded
@@ -6847,7 +6859,9 @@ no run is faster. The capability is complete and callable —
 `compute_all_signals(df, skip_indicators=...)` with the set from `demand_pruning` — but the
 warmup-record-then-prune integration, gated on `STRATEGY_SUBSET_FILE`, remains.
 
-### L441 — demand-pruning wired; the load-bearing test is that it does NOTHING by default
+### L441
+
+**demand-pruning wired; the load-bearing test is that it does NOTHING by default**
 
 **B1567 / S6-B1565b part (b).** The warmup-record-then-prune state machine is now wired into
 `screen_instrument` at all three points: both `compute_all_signals` call sites (panel and
@@ -6886,7 +6900,9 @@ or (b) loud. Never (c) silently wrong.
 end-to-end run has been timed with pruning armed. S6-B1565d remains open; treat ~13.7pct as
 DERIVED until a run confirms it.
 
-### L442 — demand pruning OBSERVED at 14.6pct with a bit-identical cube; the derivation held
+### L442
+
+**demand pruning OBSERVED at 14.6pct with a bit-identical cube; the derivation held**
 
 **B1568 / S6-B1565d.** Everything in B1565-B1567 rested on a DERIVED number. It is now observed.
 
@@ -6927,7 +6943,9 @@ without tripping the Stage-2 guard.
 The 14.64pct applies to a single-strategy subset run. It does NOT transfer to a full-roster cube
 run, where every producer is read and pruning is inert by design.
 
-### L443 — SMC primitive pruning: 91.5pct of the largest single cost centre
+### L443
+
+**SMC primitive pruning: 91.5pct of the largest single cost centre**
 
 **B1569 / S6-B1565c.** `compute_smc_signals` is 27.2pct of runtime — the biggest single phase after
 the day loop itself. Measured per-primitive (steady-state median of 5, 800-bar AAPL):
@@ -6967,7 +6985,9 @@ Fixed by setting mode first. **A guard that is populated in the wrong order is n
 primitive saving DERIVES ~24.9pct of total runtime, on top of the OBSERVED 14.64pct from B1568.
 That is a derivation, not a measurement — B1568 is the precedent for how to settle it.
 
-### L444 — SMC pruning OBSERVED at 47.9pct; and the baseline itself moved 2.7x between sessions
+### L444
+
+**SMC pruning OBSERVED at 47.9pct; and the baseline itself moved 2.7x between sessions**
 
 **B1569b / B1570.** Second end-to-end A/B, SMC pruning wired:
 ```
@@ -7013,7 +7033,9 @@ the roster narrowed as `run_phase1a.py:60` narrows it; `smc_ote_long` now keeps 
 **Method note:** the hole surfaced only because I tested a DIFFERENT strategy than the one under
 optimisation. Testing the subject you have been staring at confirms what you already believe.
 
-### L445 — "use the artifact, not the roster" does not say use the RIGHT artifact
+### L445
+
+**"use the artifact, not the roster" does not say use the RIGHT artifact**
 
 **B1572.** The runbook rule (L378) said *derive the universe from the BASELINE ARTIFACT, not a
 roster CSV*. I followed it — to `output_audit/r5_universe_381.txt`, which came from
@@ -7045,7 +7067,7 @@ selection is NOT contaminated.** Damage was confined to this session's optimisat
 reconcile it against the artifact other consumers use.* Never infer scope from a filename, a row
 count, or the doc that pointed at it. A filename is a claim by its author, not evidence.
 
-**Made mechanical (CHECKLIST #187, skill ARTIFACT-PROVENANCE RULE):**
+**Made mechanical (CHECKLIST #193, skill ARTIFACT-PROVENANCE RULE):**
 `scripts/verify_universe_artifact.py` fails on alphabetical skew, mega-cap absence, narrow letter
 coverage, and provenance mismatch vs a baseline cube. Retroactively it flags the 381 on **all four**
 (#136 satisfied). The rebuilt 544 universe and its ADV-100 both PASS, and the new top-12 reads
@@ -7054,7 +7076,9 @@ SPY TSLA AAPL AMZN NVDA MSFT AMD GOOGL GOOG MRNA NFLX PYPL — visibly a univers
 **Rule design lesson:** a prose rule that names a SOURCE CATEGORY cannot enforce itself. Rules of
 the form "use X" need a companion check of the form "and here is how you verify this IS X".
 
-### L446 — twelve misses were acknowledged in conversation and never written down
+### L446
+
+**twelve misses were acknowledged in conversation and never written down**
 
 **B1573.** Owner asked directly: *"Have you been updating both docs each turn if mistakes or misses
 as per skill requirements?"* **Audited by grep rather than recall. Answer: NO.**
@@ -7095,9 +7119,11 @@ only miss-capture rules that have held in this repo are the ones a script checks
 Severity is not the filter. Recurrence is what makes a miss expensive, and severity does not
 predict recurrence.
 
-### L447 — the miss-capture gate punished the exact behaviour it was built to require
+### L447
 
-**B1574.** `check_unrecorded_miss()` (B1573, CHECKLIST #188) blocked the very turn that created it.
+**the miss-capture gate punished the exact behaviour it was built to require**
+
+**B1574.** `check_unrecorded_miss()` (B1573, CHECKLIST #194) blocked the very turn that created it.
 
 Not a false alarm about the miss - a defect in the gate. It tested
 `git status --porcelain LEARNINGS.md`, i.e. **working-tree modification only**. But the skill
@@ -7121,7 +7147,9 @@ against one representation of a thing rather than the thing itself.
 **Compliance failure against existing item:** none - #188 is one turn old and this is a defect IN
 it, not a lapse against it. #188's text stands; its implementation was wrong for one commit.
 
-### L448 — archiving the defective artifact exposed three LIVE scripts still reading it
+### L448
+
+**archiving the defective artifact exposed three LIVE scripts still reading it**
 
 **B1575.** Owner approved archiving every superseded run and retaining only `output_r5_merged_1_7`.
 Checking references BEFORE moving (rather than moving and fixing fallout) found that
@@ -7152,7 +7180,9 @@ hard-codes its path, and those consumers are invisible from the file itself.
 is a free audit of every reference to the thing being cleaned up** - worth doing deliberately, not
 only when a move forces it.
 
-### L449 — the miss gate scanned the whole transcript, so it fired forever
+### L449
+
+**the miss gate scanned the whole transcript, so it fired forever**
 
 **B1577.** `scan_unrecorded_miss()` (B1573, #188) blocked a monitor tick that acknowledged nothing.
 The phrases it reported - "caught by preflight", "correction:", "i nearly shipped" - were from
@@ -7182,7 +7212,9 @@ path, and both directions pinned.
 **Compliance failure against existing item:** `feedback_confirm_existing_template_before_replicating`
 - I had the sibling scanner in the same file and did not enumerate what it did differently.
 
-### L450 — I raised a stall alarm from a rate computed between two timestamps I never checked
+### L450
+
+**I raised a stall alarm from a rate computed between two timestamps I never checked**
 
 **B1578.** Reported the B1576 configs as "appearing STALLED": 149 min elapsed with only ~4 sim-days
 of apparent progress since the previous tick, and falling worker RAM.
@@ -7213,7 +7245,9 @@ or use the run's own timing output, never eyeball two log lines.
 **Compliance failure against existing item:** L401 (measurement discipline - two concordant
 measurements before a claim). I had one interval, unmeasured, and still asserted a 100x slowdown.
 
-### L451 — the permission prompts were caused by a `cd` prefix I was told not to use
+### L451
+
+**the permission prompts were caused by a `cd` prefix I was told not to use**
 
 **B1579.** Owner asked - for the SECOND time this session - why I keep requesting approval for bash
 commands despite a standing wildcard approval. The first time I answered without investigating.
@@ -7244,7 +7278,9 @@ not to widen permissions - widening would have granted arbitrary execution to fi
 **Compliance failure against existing item:** the Bash tool contract, which I had in context every
 turn. Also a Phase 5 failure - the owner asked once before and I did not investigate then.
 
-### L452 — guarding the `in` idiom caused infinite recursion, caught on the test's first run
+### L452
+
+**guarding the `in` idiom caused infinite recursion, caught on the test's first run**
 
 **B1581.** Fixed S6-B1580a by overriding `GuardedSignals.__contains__` to call `_check()`. But
 `_check()` itself began `if key not in self ...` - which now dispatched to the overridden
@@ -7268,7 +7304,9 @@ writing the test before believing the fix.
 via `as_of`, with a logged per-call fallback when no date is supplied. `screen_instrument` passes
 `as_of` through. Pinned by asserting 50 calls on ONE day do not exhaust a 2-day warmup.
 
-### L453 — third defect in the miss gate: it checked only HEAD, and turns make several commits
+### L453
+
+**third defect in the miss gate: it checked only HEAD, and turns make several commits**
 
 **B1583.** The gate blocked a turn in which **L452 had been written and committed**. Cause: it
 tested `git status --porcelain` (clean - committed) then `git log -1` (HEAD). L452 landed in the
@@ -7300,7 +7338,9 @@ NOT loosening it: a gate that occasionally over-fires on a compliant turn is tol
 under-fires on a real miss is not. The fix belongs in the end-state check, which is where the
 actual bug was.
 
-### L454 — the grader re-derived fires with default params, silently biasing 40pct of a cube
+### L454
+
+**the grader re-derived fires with default params, silently biasing 40pct of a cube**
 
 **B1585.** cfg2's grid showed 253 fires where its cube held 420. Root cause: `diagnose_fire(df,
 when, swing_length: int = 20, ...)` and the caller NEVER passed `swing_length`. cfg1 ran sw=20 and
@@ -7330,7 +7370,9 @@ Probable cause is the `if i < 250: return None` warmup guard, **UNVERIFIED**. I 
 raise the 2pct tolerance to make the run pass - loosening a threshold until it goes green is how
 this defect stayed hidden in the first place. Ticketed.
 
-### L455 — two defects jointly suppressed a real result, and I reported the suppression as a finding
+### L455
+
+**two defects jointly suppressed a real result, and I reported the suppression as a finding**
 
 **B1586.** Regrading both cubes after fixing the config-blind grader (L454) AND applying the owner's
 Step-1 `MIN_N=10` REVERSED the conclusion:
@@ -7366,7 +7408,9 @@ loss and an unruled MIN_N. The honest output at that moment was "no verdict avai
 at a marginal lower bound is a weak positive, not something to act on. `n_holdout` returned `None`,
 which is itself a reporting gap (S6-B1586c).
 
-### L456 — I published a cause that was cheaper to test than to write
+### L456
+
+**I published a cause that was cheaper to test than to write**
 
 **B1587.** Owner: *"You are not allowed to give hypothesis as findings which you did last turn."*
 Correct, and the specific offence was naming *"probable cause is the `i < 250` warmup guard"* as the
@@ -7386,7 +7430,7 @@ would have sent the next reader to a mechanism that was working fine, while the 
 swept `close_mitigation` variant behaving exactly as designed - went unexamined. It also would have
 been read as fact from a durable artifact by someone who would not re-derive my confidence.
 
-**Made mechanical (CHECKLIST #189, skill NO-UNTESTED-CAUSE RULE):**
+**Made mechanical (CHECKLIST #195, skill NO-UNTESTED-CAUSE RULE):**
 `scan_unverified_cause()` blocks turn-end when cause language appears with no evidence language in
 the same turn. Pinned five ways, including that "the cause is UNKNOWN" passes cleanly - the gate must
 never push me toward inventing a cause to satisfy it.
@@ -7395,14 +7439,16 @@ never push me toward inventing a cause to satisfy it.
 sampled), L438 (a network call inferred from a log string without reading the callee). **Three
 instances this session of the same reflex: explain first, verify later.**
 
-### L457 — my spot-checker flagged 70pct of trades as broken; the checker was wrong
+### L457
+
+**my spot-checker flagged 70pct of trades as broken; the checker was wrong**
 
 **B1588.** A 50-trade adversarial spot check of cfg1 reported **35 of 50 execution failures** on
 `hold_days`. Reported as-is that reads like a serious engine defect.
 
 **It was my checker.** All 35 deltas were NEGATIVE and scaled with holding period (-2 on short
 holds, -9 on a 22-day hold) - the signature of calendar-vs-trading days. **TESTED before naming
-it** (CHECKLIST #189): recorded `hold_days` matched CALENDAR days **20 of 20**. My checker compared
+it** (CHECKLIST #195): recorded `hold_days` matched CALENDAR days **20 of 20**. My checker compared
 TRADING days.
 
 **After the fix, both configs: 100/100 producer agreement, 0 execution failures.**
@@ -7425,7 +7471,9 @@ days is now VERIFIED as the convention, but whether that is CORRECT for the Shar
 counts calendar days, every Sharpe in every grid is scaled wrongly. I am NOT asserting that it is -
 I have not measured it.
 
-### L458 — annualised Sharpe is 17.1pct too low: 252 trading days divided by a CALENDAR-day hold
+### L458
+
+**annualised Sharpe is 17.1pct too low: 252 trading days divided by a CALENDAR-day hold**
 
 **B1589.** S6-B1588c asked whether `hold_days` being CALENDAR days is correct for the Sharpe
 annualisation. **It is not.** `walk_forward_r5_cells._sharpe` (imported by `roster_core`) computes:
@@ -7466,7 +7514,9 @@ without checking the UNITS of the variable feeding it. **A calibration that make
 "look right" can hide a unit error underneath it** - the gate was tuned to the wrong number, so the
 wrong number looked correct.
 
-### L459 — 252-trading units fix lands; and exit selection is directionally right but imprecise
+### L459
+
+**252-trading units fix lands; and exit selection is directionally right but imprecise**
 
 **B1590.** Owner ruled "252 trading". `_sharpe` now converts the CALENDAR hold to TRADING days
 (`avg_hold * 252/365`) before annualising on 252 - algebraically identical to `365/calendar`, but
@@ -7505,7 +7555,9 @@ won. Both belong in the verdict.
 measured selection-noise haircut (the S6-B1467c precedent measured a 0.369 floor). Owner ruling
 needed - this changes what every grid reports.
 
-### L460 — the 26 exit methods are not 26 distinct exits
+### L460
+
+**the 26 exit methods are not 26 distinct exits**
 
 **B1591.** Adversarial review of the cube (owner: find bugs and logic errors). Across all 330 cfg1
 entries, comparing every exit pair's per-trade pnl:
@@ -7541,7 +7593,9 @@ module checklist, then to an FP/FN map. The ask was broader: **find bugs and log
 narrowings dropped scope, and the FP/FN lens alone would not have found this, because identical
 exits are neither a false positive nor a false negative - they are a loss of information.
 
-### L461 — a DEC-516 owner-approved exit had never once executed its own logic
+### L461
+
+**a DEC-516 owner-approved exit had never once executed its own logic**
 
 **B1593.** RCA of L460's identical exits, confirmed at source:
 
@@ -7579,7 +7633,9 @@ rather than reading nearby lines.
 **Generalised rule:** *when wiring a consumer to a producer, assert BOTH ends in the same test.* A
 reader with no writer and a writer with no reader are equally silent, and both look like progress.
 
-### L462 — the regime_flip defect lands on one of the two ROBUST Phase 1B rows
+### L462
+
+**the regime_flip defect lands on one of the two ROBUST Phase 1B rows**
 
 **B1594.** Blast radius of L461 measured rather than estimated.
 
@@ -7609,7 +7665,9 @@ check, and a verdict stated with its denominators. Every check cites the inciden
 (L445, L454, L455, L457, L461), so a future reader sees why it exists rather than treating it as
 ceremony.
 
-### L463 — a rule recorded only in LEARNINGS is a story, not a gate
+### L463
+
+**a rule recorded only in LEARNINGS is a story, not a gate**
 
 **B1595.** Owner asked where the post-fix re-check rule was recorded and whether it was in CHECKLIST
 and LEARNINGS. **Checked rather than claimed: LEARNINGS 1 hit, CHECKLIST 0, SKILL 0.**
@@ -7619,7 +7677,7 @@ CHECKLIST and the skill are read every turn.** A rule that lives only in the nar
 rediscovered by repeating the failure that produced it - which is the exact fate of the rule
 in question, since it exists because a fix silently invalidated a shipped conclusion.
 
-**Now recorded in all three:** CHECKLIST #190, skill POST-FIX RE-CHECK RULE, and L462.
+**Now recorded in all three:** CHECKLIST #196, skill POST-FIX RE-CHECK RULE, and L462.
 
 **Pattern across this session:** the rules that HELD were the ones with a script behind them
 (#182 verdict denominators, #185/#186 monitor cadence, #187 artifact provenance, #188 miss capture,
@@ -7634,7 +7692,9 @@ units/scale, config blindness, provenance - each carrying the incident that prod
 lens alone would have missed this session's largest finding**, since identical exit methods are
 neither a false positive nor a false negative.
 
-### L464 — 75pct of this session's rules were orphans; the one the owner caught was not exceptional
+### L464
+
+**75pct of this session's rules were orphans; the one the owner caught was not exceptional**
 
 **B1596.** Owner asked how many gaps of the LEARNINGS-only class existed this session. **MEASURED,
 not estimated: 31 L-entries, 24 state a generalised rule, and 18 are referenced in NEITHER CHECKLIST
@@ -7668,7 +7728,9 @@ the order of observation.** (2) The heredoc escaping trap bit a third time (`\n`
 newline in an f-string) - the fix each time is to write the patch to a FILE rather than pipe it
 through a shell.
 
-### L465 — the standard covered the middle and neither bookend
+### L465
+
+**the standard covered the middle and neither bookend**
 
 **B1597.** Owner asked whether anything else from this session was missing from the post-config
 standard. **Three things were, and they share a shape: the standard covered the MIDDLE of a config
@@ -7678,7 +7740,7 @@ cycle and neither END.**
   ceiling, and confirming the sweep knobs actually differ. Each costs seconds; each has already
   caught a defect that would have wasted a 3.3 h run.
 - **POST-FIX** (now step 6): if the cycle FIXED anything, grep for shipped conclusions that depended
-  on the old behaviour and measure the overlap (CHECKLIST #190).
+  on the old behaviour and measure the overlap (CHECKLIST #196).
 
 **Why I missed both.** I wrote the standard immediately after finishing an analysis, so I encoded
 the analysis I had just done. **A standard written from one traversal captures that traversal, not
@@ -7693,11 +7755,13 @@ middle is what you remember because it is where the effort was.
 pre-launch as "step 0" of the analysis standard. It belongs in the LAUNCH section (§1.0), which
 already existed - a pre-launch check filed under post-config analysis would be read too late to run.
 
-**Anchored:** CHECKLIST #190 (post-fix), #191 (anchor-the-rule), and the runbook sections above.
+**Anchored:** CHECKLIST #196 (post-fix), #191 (anchor-the-rule), and the runbook sections above.
 
-### L466 — the anchor gate caught me one turn after I wired it, on the entry that created it
+### L466
 
-**B1598.** `scan_orphan_rule()` (CHECKLIST #191, wired B1597) blocked the very next turn, flagging
+**the anchor gate caught me one turn after I wired it, on the entry that created it**
+
+**B1598.** `scan_orphan_rule()` (CHECKLIST #197, wired B1597) blocked the very next turn, flagging
 **L465** as an unanchored rule.
 
 **It was right.** I had claimed L465 was anchored because the entry MENTIONS #190 and #191 - but
@@ -7715,10 +7779,12 @@ CHECKLIST items is still an orphan if its OWN generalised rule has no item. The 
 this entry mention a checklist item" but "if someone reads the checklist, will they encounter this
 rule".
 
-**Anchored:** CHECKLIST #192 cites L465; this entry's rule is anchored by #191, which already
+**Anchored:** CHECKLIST #198 cites L465; this entry's rule is anchored by #191, which already
 requires exactly this and which I violated one turn after writing it.
 
-### L467 — a downstream relabel is undone by the generator that produced it
+### L467
+
+**a downstream relabel is undone by the generator that produced it**
 
 **B1600.** Re-derived the Phase 1B roster on the corrected Sharpe (S6-B1589b). Two outcomes, one
 expected and one not.
@@ -7748,10 +7814,12 @@ free, and picking silently is the failure mode.**
 downstream.* The Sharpe correction and the exit mislabel live at different layers, so one
 regeneration fixed one and reverted the other.
 
-**Anchored:** CHECKLIST #190 (post-fix re-check), which is what surfaced this - the re-check is
+**Anchored:** CHECKLIST #196 (post-fix re-check), which is what surfaced this - the re-check is
 what caught that the fix and the relabel do not compose.
 
-### L468 — "anchored" is not "enforced"; and the fix belongs in the generator
+### L468
+
+**"anchored" is not "enforced"; and the fix belongs in the generator**
 
 **B1602.** Owner asked how the OTHER rules in LEARNINGS are enforced. **Measured across this
 session's 7 CHECKLIST additions: 3 AUTO-GATED, 1 tooled-but-manual, 3 prose-only.**
@@ -7786,3 +7854,39 @@ because the degradation was fixed, not permanent.
 **Generalised rule:** *state the enforcement TIER when adding a rule, and promote it to a gate
 whenever the rule is mechanically decidable.* A rule's home determines whether it is enforced,
 consulted, or archived - and pretending prose is a gate is how 18 rules became orphans.
+
+### L469
+
+**Two gates fired on me, and both were right — plus a numbering collision and a format I invented**
+
+**B1603.** Closing out the gate promotions surfaced four defects in my own work, three of them
+caught by machinery rather than by me.
+
+**1. The #185 launch gate fired when I LAUNCHED NOTHING.** Both launch detectors scanned the whole
+tool-input blob, so **writing a test fixture containing `nohup ... run_phase1a.py` tripped them** -
+the very tests written FOR the #193 universe gate trod on the #185 monitor gate. **Writing about a
+launch is not launching.** Both now require an EXECUTED Bash/PowerShell `command`; real launches
+still block, pinned both ways.
+
+**2. My CHECKLIST numbering COLLIDED.** I appended items #187-#193 without checking the existing
+maximum - **CHECKLIST.md already had a legacy item 192.** Renumbered mine to #193-#199 and updated
+cross-references across six files. **I had been reading the tail of the file, which showed my own
+additions, not the file's true numbering.**
+
+**3. I invented a LEARNINGS heading format.** Legacy convention is a bare `### L434` with the title
+below; I wrote `### L435 - title`. **34 entries were therefore invisible to
+`test_b1486_claude_md_banner_counts_are_fresh`**, which is why the banner check silently passed for
+most of this session while the banner was 34 entries stale. Reformatted all 34.
+
+**4. The banner was stale** - claiming CHECKLIST #1-#186 / L1-L434 against a real #192 / L468.
+
+**Generalised rule:** *before appending to a numbered or formatted collection, derive the current
+maximum and the existing format BY PARSING THE WHOLE FILE - never by reading its tail.* The tail
+shows the most recent additions, which are yours; the collisions and conventions live earlier.
+
+**And the sharper one:** three of these four were caught by tests that already existed. **The
+banner-freshness test had been passing for 30-odd turns not because the docs were synced, but
+because my format made my work invisible to it.** A green check on an unparseable input is not a
+pass - it is a silent skip.
+
+**Anchored:** CHECKLIST #197 (which now carries the enforcement-tier rule) and #199.

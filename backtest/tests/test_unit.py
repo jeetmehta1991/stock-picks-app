@@ -14466,7 +14466,7 @@ def test_b1569_skipped_smc_keys_join_the_guard_set():
 
 
 def test_b1573_unrecorded_miss_gate_both_directions():
-    """CHECKLIST #188: acknowledging a miss without an L-entry must BLOCK.
+    """CHECKLIST #194: acknowledging a miss without an L-entry must BLOCK.
 
     12 misses were admitted in-response and never written down (L446). The big
     findings got entries; the small recurring ones did not - and recurrence,
@@ -14648,7 +14648,7 @@ def test_b1583_miss_gate_passes_all_compliant_shapes():
 
 
 def test_b1587_unverified_cause_gate():
-    """CHECKLIST #189 / L455: naming a CAUSE without testing it must block.
+    """CHECKLIST #195 / L455: naming a CAUSE without testing it must block.
 
     The Truth Standard already required labelling hypotheses. It did not help -
     labelling is a formatting act and the reader still receives a cause. The
@@ -14744,7 +14744,7 @@ def test_b1593_regime_flip_reads_regime_from_signals():
 
 
 def test_b1597_orphan_rule_gate_wired_and_pinned():
-    """CHECKLIST #191 / L464: a rule stated in LEARNINGS must be ANCHORED.
+    """CHECKLIST #197 / L464: a rule stated in LEARNINGS must be ANCHORED.
 
     MEASURED: 24 L-entries stated a rule this session and 18 were referenced in
     neither CHECKLIST nor the skill - a 75pct orphan rate. Every rule that HELD
@@ -14788,8 +14788,13 @@ def test_b1602_postfix_and_universe_gates_pinned():
     assert m.scan_postfix_recheck("B1: fixed", ["EXECUTION_QUEUE.md"]) == []
     assert m.scan_postfix_recheck("B1: add a feature", ["scripts/x.py"]) == []
 
-    A = lambda t: {"type": "assistant",
-                   "message": {"content": [{"type": "tool_use", "input": t}]}}
+    # B1603: the detector now requires an EXECUTED Bash/PowerShell command, so
+    # fixtures must carry the tool NAME and a `command` field. Writing a file
+    # that merely MENTIONS a launch no longer counts (see test_b1603).
+    def A(cmd):
+        return {"type": "assistant",
+                "message": {"content": [{"type": "tool_use", "name": "Bash",
+                                         "input": {"command": cmd}}]}}
     U = lambda t: {"type": "user", "message": {"content": t}}
     # #187 - a launch requires a universe verification the same turn
     assert m.scan_unverified_universe(
@@ -14824,3 +14829,37 @@ def test_b1602_degraded_exit_relabel_survives_regeneration():
            .read_text(encoding="utf-8"))
     assert "truthful_exit_name(pick[" in src, (
         "build_phase_1b_roster must APPLY the relabel, not merely import it")
+
+
+def test_b1603_launch_gates_ignore_text_that_merely_mentions_a_launch():
+    """L469: writing ABOUT a launch is not launching.
+
+    Both launch detectors scanned the whole tool-input blob, so writing a test
+    fixture, a gate implementation, or a doc example containing "nohup ...
+    run_phase1a.py" tripped them. The very tests written FOR the #187 gate
+    trod on the #185 gate. Real launches must still block.
+    """
+    import importlib.util
+    spec = importlib.util.spec_from_file_location(
+        "_vtc8", "scripts/verify_turn_compliance.py")
+    m = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(m)
+
+    U = {"type": "user", "message": {"content": "go"}}
+
+    def tu(name, inp):
+        return {"type": "assistant",
+                "message": {"content": [{"type": "tool_use",
+                                         "name": name, "input": inp}]}}
+
+    real = tu("Bash", {"command":
+                       "nohup python backtest/run_phase1a.py --output-dir o &"})
+    writing = tu("Write", {"file_path": "t.py",
+                           "content": "nohup python backtest/run_phase1a.py"})
+
+    # real launches MUST still block - the fix must not weaken detection
+    assert m.scan_unmonitored_launch([U, real]), "real launch must block"
+    assert m.scan_unverified_universe([U, real]), "real launch must block"
+    # merely WRITING about one must not
+    assert m.scan_unmonitored_launch([U, writing]) == []
+    assert m.scan_unverified_universe([U, writing]) == []

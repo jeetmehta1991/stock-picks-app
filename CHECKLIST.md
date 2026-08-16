@@ -2863,7 +2863,7 @@ launch whose monitor lacks both markers. Pinned BOTH directions by
 *Anti-theatre check (#136):* retroactively catches L392, L424, and the first `4a528196` arming in
 B1546 - all of which passed the existence check while leaving the owner uninformed.
 
-### #187 — ARTIFACT PROVENANCE: characterise the contents, never trust the name (B1572 / L445)
+### #193 — ARTIFACT PROVENANCE: characterise the contents, never trust the name (B1572 / L445)
 
 Before any artifact becomes an input to analysis or a run:
 1. **Open it and characterise its CONTENTS.** Never infer scope from a filename, a
@@ -2882,7 +2882,7 @@ series. **Lineage:** a doc rule said "derive from the BASELINE ARTIFACT" (L378) 
 was followed to an abandoned alphabetical chunk — 380/381 tickers starting A-C, no
 MSFT/NVDA/GOOGL, 248 tickers the real baseline never ran.
 
-### #188 — ACKNOWLEDGED MISS => LEARNINGS ENTRY, SAME TURN (B1573 / L446)
+### #194 — ACKNOWLEDGED MISS => LEARNINGS ENTRY, SAME TURN (B1573 / L446)
 
 **If a response admits an error, it gets an L-entry in that same turn.** Severity is not the filter.
 
@@ -2902,7 +2902,7 @@ the 5th instance of the monitor-cadence class (L420/L424) and the twice-repeated
 shell-quoting error. **Lineage:** big findings got entries, small ones did not - and the small
 recurring ones are precisely what a written record prevents.
 
-### #189 — NO UNTESTED CAUSE: run the probe or say UNKNOWN (B1587 / L455)
+### #195 — NO UNTESTED CAUSE: run the probe or say UNKNOWN (B1587 / L455)
 
 **A hypothesis presented as a finding is a fabrication.** Labelling it "probable" does
 not fix it - the reader still receives a cause.
@@ -2924,7 +2924,7 @@ blocks turn-end on cause language without evidence language in the same turn.
 disproved by one command); L450 (a stall "explained" by falling RAM before CPU was
 sampled); and L438 (a network call inferred from a log string without reading the callee).
 
-### #190 — AFTER A FIX, RE-CHECK WHAT WAS ALREADY DECIDED (B1595 / L462)
+### #196 — AFTER A FIX, RE-CHECK WHAT WAS ALREADY DECIDED (B1595 / L462)
 
 **A fix can invalidate a conclusion the defect itself left intact.** While the bug stood, the
 numbers were self-consistent; correcting it breaks that consistency for anything already shipped.
@@ -2941,7 +2941,7 @@ After ANY defect fix, before moving on:
 (the 17pct Sharpe correction re-scaling every roster Sharpe against a 1.0 gate) and B1562 (the
 end-anchored coverage change altering which tickers any prior run would have served).
 
-### #191 — A RULE RECORDED ONLY IN LEARNINGS IS A STORY, NOT A GATE (B1596 / L464)
+### #197 — A RULE RECORDED ONLY IN LEARNINGS IS A STORY, NOT A GATE (B1596 / L464)
 
 **MEASURED this session: 24 L-entries state a generalised rule; 18 are referenced in
 NEITHER CHECKLIST nor the skill — a 75pct orphan rate.**
@@ -2976,7 +2976,7 @@ L436, L437, L439, L441, L444, L447, L448, L449, L451, L453, L454, L457, L459, L4
 Every rule that HELD this session had a script behind it (#182, #185/#186, #187, #188, #189);
 the ones that decayed were prose.
 
-### #192 — WRITING A STANDARD: WALK THE FULL LIFECYCLE, NOT THE MIDDLE (B1598 / L465)
+### #198 — WRITING A STANDARD: WALK THE FULL LIFECYCLE, NOT THE MIDDLE (B1598 / L465)
 
 **A standard written from one traversal captures that traversal, not the process.**
 
@@ -3000,7 +3000,7 @@ post-config analysis is read too late to run — placement decides whether a che
 bookends AND the adversarial review), and the runbook's original §11 which documented
 rationale without a runnable command sequence (L433).
 
-### #193 — A CORRECTION DOWNSTREAM OF A GENERATOR IS TEMPORARY (B1600 / L467)
+### #199 — A CORRECTION DOWNSTREAM OF A GENERATOR IS TEMPORARY (B1600 / L467)
 
 **Regenerating an artifact from a stale input does not refresh it — it re-imports every
 defect the input still carries, including ones already fixed downstream.**

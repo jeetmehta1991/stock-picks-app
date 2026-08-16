@@ -247,14 +247,23 @@ def scan_unmonitored_launch(entries: list[dict]) -> list[str]:
                     armed = _periodic and _unconditional
                 else:
                     armed = armed or False
-            # a launch: long-running runner AND backgrounded
-            if any(m in blob for m in LAUNCH_MARKERS[:2]) and (
-                    "nohup" in blob or c.get("input", {}).get("run_in_background")):
-                launches.append(blob[:140])
+            # a launch: long-running runner AND backgrounded.
+            # B1603: read the EXECUTED command only. Previously this scanned the
+            # whole tool-input blob, so WRITING a file that MENTIONS a launch -
+            # a test fixture, a gate implementation, a doc example - tripped it.
+            # Writing about a launch is not launching. Restricting to
+            # Bash/PowerShell `command` keeps every real launch detected while
+            # excluding Write payloads and prose.
+            _cmd = ""
+            if name in ("Bash", "PowerShell"):
+                _cmd = str((c.get("input") or {}).get("command", ""))
+            if _cmd and any(m in _cmd for m in LAUNCH_MARKERS[:2]) and (
+                    "nohup" in _cmd or c.get("input", {}).get("run_in_background")):
+                launches.append(_cmd[:140])
     return [] if (armed or not launches) else launches
 
 
-# B1587 / CHECKLIST #189 -- an untested causal claim must not ship as a finding.
+# B1587 / CHECKLIST #195 -- an untested causal claim must not ship as a finding.
 # L455: "probable cause is the i<250 warmup guard" was published as the
 # explanation of a 4pct residual. It was WRONG (the fires sat at bars 799-1158)
 # and one command disproved it. The rule is not "label hypotheses" - the skill
@@ -312,7 +321,7 @@ def scan_unverified_cause(entries):
         return []
     if any(pp in low for pp in PROOF_PHRASES):
         return []
-    return [("TURN-GATE BLOCK (CHECKLIST #189 / L455): this turn states a CAUSE "
+    return [("TURN-GATE BLOCK (CHECKLIST #195 / L455): this turn states a CAUSE "
              f"({sorted(set(causes))[:3]}) with no evidence it was TESTED. "
              "L455: a 'probable cause' shipped as the explanation of a 4pct "
              "residual was wrong, and one command disproved it. Either run the "
@@ -320,7 +329,7 @@ def scan_unverified_cause(entries):
              "hypothesis presented as a finding is a fabrication.")]
 
 
-# B1596 / CHECKLIST #191 -- a rule recorded ONLY in LEARNINGS is a story, not a
+# B1596 / CHECKLIST #197 -- a rule recorded ONLY in LEARNINGS is a story, not a
 # gate. MEASURED this session: 24 L-entries state a generalised rule and 18 are
 # referenced in NEITHER CHECKLIST nor the skill - a 75pct orphan rate. LEARNINGS
 # is read when someone goes looking; CHECKLIST and the skill are read every turn.
@@ -350,7 +359,7 @@ def scan_orphan_rule(learnings_text, checklist_text, skill_text, new_entries):
         orphans.append(ln)
     if not orphans:
         return []
-    return [("TURN-GATE BLOCK (CHECKLIST #191 / L464): these L-entries state a "
+    return [("TURN-GATE BLOCK (CHECKLIST #197 / L464): these L-entries state a "
              "GENERALISED RULE but are referenced in neither CHECKLIST nor the "
              "skill: " + str(orphans) + ". A rule recorded only in LEARNINGS is "
              "a story, not a gate - it gets rediscovered by repeating the "
@@ -384,7 +393,7 @@ def check_orphan_rule() -> str | None:
     return bad[0] if bad else None
 
 
-# B1602 / CHECKLIST #190 -> AUTO-GATED. A fix can invalidate a conclusion the
+# B1602 / CHECKLIST #196 -> AUTO-GATED. A fix can invalidate a conclusion the
 # defect itself left intact: while the bug stood the numbers were
 # self-consistent. L467 - the roster relabel was reverted by the very next
 # regeneration because the fix belonged in the GENERATOR, not the output.
@@ -409,7 +418,7 @@ def scan_postfix_recheck(commit_msg, changed_files):
                if any(a in f for a in DOWNSTREAM_ARTIFACTS)]
     if touched:
         return []
-    return [("TURN-GATE BLOCK (CHECKLIST #190 / L467): this turn commits a FIX "
+    return [("TURN-GATE BLOCK (CHECKLIST #196 / L467): this turn commits a FIX "
              "but touched no downstream artifact and no queue entry. A fix can "
              "invalidate a conclusion the defect left intact - the roster "
              "relabel was reverted by the next regeneration because the fix "
@@ -419,7 +428,7 @@ def scan_postfix_recheck(commit_msg, changed_files):
              "EXECUTION_QUEUE and end the turn again.")]
 
 
-# B1602 / CHECKLIST #187 -> AUTO-GATED. Launching a config against an
+# B1602 / CHECKLIST #193 -> AUTO-GATED. Launching a config against an
 # unverified universe is the B1571 failure: two configs searched an abandoned
 # A-C chunk for 3.3 h each before anyone looked at the ticker list.
 def scan_unverified_universe(entries):
@@ -435,25 +444,29 @@ def scan_unverified_universe(entries):
             last_user = i
     entries = entries[last_user + 1:] if last_user >= 0 else entries
 
-    blob = []
+    # B1603: same discrimination as scan_unmonitored_launch - only an EXECUTED
+    # Bash/PowerShell command counts. My first version scanned all tool input,
+    # so the very test fixtures written FOR this gate tripped it.
+    cmds, allblob = [], []
     for e in entries:
-        msg = (e.get("message") or {})
-        content = msg.get("content")
+        content = ((e.get("message") or {}).get("content"))
         if isinstance(content, list):
             for c in content:
-                if isinstance(c, dict):
-                    blob.append(str(c.get("input", "")) + str(c.get("text", "")))
+                if not isinstance(c, dict):
+                    continue
+                allblob.append(str(c.get("input", "")) + str(c.get("text", "")))
+                if c.get("name") in ("Bash", "PowerShell"):
+                    cmds.append(str((c.get("input") or {}).get("command", "")))
         elif isinstance(content, str):
-            blob.append(content)
-    text = " ".join(blob)
-    low = text.lower()
+            allblob.append(content)
+    low = " ".join(cmds).lower()
     launched = ("run_phase1a.py" in low and
                 ("nohup" in low or "--output-dir" in low))
     if not launched:
         return []
-    if "verify_universe_artifact" in low:
+    if "verify_universe_artifact" in " ".join(allblob).lower():
         return []
-    return [("TURN-GATE BLOCK (CHECKLIST #187 / L445): a config was LAUNCHED "
+    return [("TURN-GATE BLOCK (CHECKLIST #193 / L445): a config was LAUNCHED "
              "without running verify_universe_artifact.py in the same turn. "
              "Two configs once searched an abandoned A-C chunk for 3.3 h each "
              "because nobody looked at the ticker list. Run it against the "
@@ -548,7 +561,7 @@ def get_modified_tracked() -> list[str]:
     return [ln.strip() for ln in result.stdout.splitlines() if ln.strip()]
 
 
-# B1573 / CHECKLIST #188 -- an acknowledged miss must land in LEARNINGS the SAME
+# B1573 / CHECKLIST #194 -- an acknowledged miss must land in LEARNINGS the SAME
 # turn. 12 misses were admitted in-response this session and never written down;
 # the big ones got entries, the small recurring ones did not -- and recurrence,
 # not severity, is what makes a miss expensive. Prose cannot enforce prose.
@@ -607,7 +620,7 @@ def scan_unrecorded_miss(entries, learnings_modified: bool):
     if not hits:
         return []
     uniq = sorted(set(hits))[:4]
-    return [("TURN-GATE BLOCK (CHECKLIST #188 / L446): this turn ACKNOWLEDGED a "
+    return [("TURN-GATE BLOCK (CHECKLIST #194 / L446): this turn ACKNOWLEDGED a "
              f"miss ({uniq}) but LEARNINGS.md was not modified. Severity is not "
              "the filter -- 12 unrecorded misses this session included the 5th "
              "instance of the monitor-cadence class. Add the L-entry (plus a new "
@@ -637,7 +650,7 @@ def main() -> int:
         print(verdict_block, file=sys.stderr)
         return 2
     # B1545: monitor-armed gate (L420 - third unmonitored launch).
-    # B1573 / CHECKLIST #188: an acknowledged miss must land in LEARNINGS the
+    # B1573 / CHECKLIST #194: an acknowledged miss must land in LEARNINGS the
     # SAME turn. Checked BEFORE the monitor gate so a turn that both admits a
     # miss and launches a run reports the miss first.
     cause_block = scan_unverified_cause(_read_entries())

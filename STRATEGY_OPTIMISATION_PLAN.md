@@ -1125,7 +1125,7 @@ Run every lens, every config:
 not ticketed does not exist (#94). Causes go in only when TESTED - otherwise `UNKNOWN - RCA NEEDED`
 (#189).
 
-### 6. POST-FIX RE-CHECK - if this config-run cycle FIXED anything (CHECKLIST #190)
+### 6. POST-FIX RE-CHECK - if this config-run cycle FIXED anything (CHECKLIST #196)
 
 **A fix can invalidate a conclusion the defect itself left intact.** While the bug stood the
 numbers were self-consistent; correcting it breaks that consistency for anything already shipped.
