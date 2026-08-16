@@ -1071,7 +1071,33 @@ Re-derives every producer INDEPENDENTLY from raw parquet under PIT and checks ex
 **Expected: 100pct agreement, 0 execution failures.** Anything less is a finding.
 **If the CHECKER disagrees with the engine, suspect the CHECKER first** (L457).
 
-### 5. Report the verdict WITH its denominators
+### 5. ADVERSARIAL REVIEW - find bugs and logic errors (owner phrasing, verbatim)
+
+> *"Do an adversarial review of the code and map for false positives and false negatives.
+> Identify any or all bugs and add them to the execution queue."*
+> *"It was broader than this - it was also about finding bugs and logic errors."*
+
+**FP/FN is ONE lens, not the scope.** The scope is bugs and logic errors. The FP/FN lens alone
+would have MISSED the largest finding of this session - identical exit methods are neither a false
+positive nor a false negative, they are a LOSS OF INFORMATION.
+
+Run every lens, every config:
+
+| lens | question | example found |
+|---|---|---|
+| **False positive** | a trade/PASS recorded that should not exist? | - |
+| **False negative** | a fire the engine missed, a PASS suppressed? | MIN_N=30 suppressed 5 real passes (L455) |
+| **Silent degradation** | does anything FALL BACK without saying so? | `regime_flip` was a time stop in every cube (L461) |
+| **Duplicate information** | are "distinct" columns byte-identical? | 26 exits -> 23 effective (L460) |
+| **Units / scale** | do the units of every input match the constant? | 252 trading days over a CALENDAR hold (L458) |
+| **Config blindness** | does a re-deriving component get the ORIGINATING params? | grader graded cfg2 at the wrong swing_length (L454) |
+| **Provenance** | is the artifact the one you think it is? | universe was an abandoned A-C chunk (L445) |
+
+**Every finding gets an EXECUTION_QUEUE ticket the same turn.** A finding mentioned in prose and
+not ticketed does not exist (#94). Causes go in only when TESTED - otherwise `UNKNOWN - RCA NEEDED`
+(#189).
+
+### 6. Report the verdict WITH its denominators
 Never a bare PASS count. State: N of M combinations, X of Y producers varied, `exits_effective`
 of 26, and the `ci_lo` of every PASS. **Margin of error is part of the verdict, not a footnote.**
 

@@ -7608,3 +7608,28 @@ sanity, grading with the config's OWN `--swing-length`, a 6-check outlier sweep,
 check, and a verdict stated with its denominators. Every check cites the incident that produced it
 (L445, L454, L455, L457, L461), so a future reader sees why it exists rather than treating it as
 ceremony.
+
+### L463 — a rule recorded only in LEARNINGS is a story, not a gate
+
+**B1595.** Owner asked where the post-fix re-check rule was recorded and whether it was in CHECKLIST
+and LEARNINGS. **Checked rather than claimed: LEARNINGS 1 hit, CHECKLIST 0, SKILL 0.**
+
+I had written the rule into L462's prose and stopped. **LEARNINGS is read when someone goes looking;
+CHECKLIST and the skill are read every turn.** A rule that lives only in the narrative gets
+rediscovered by repeating the failure that produced it - which is the exact fate of the rule
+in question, since it exists because a fix silently invalidated a shipped conclusion.
+
+**Now recorded in all three:** CHECKLIST #190, skill POST-FIX RE-CHECK RULE, and L462.
+
+**Pattern across this session:** the rules that HELD were the ones with a script behind them
+(#182 verdict denominators, #185/#186 monitor cadence, #187 artifact provenance, #188 miss capture,
+#189 untested cause). The rules that decayed were prose. **Placement is not filing - it determines
+whether a rule is enforced, consulted, or merely archived.**
+
+**Also corrected this turn:** the runbook's post-config standard had FIVE steps and omitted the
+adversarial review entirely, despite the owner asking for it repeatedly and correcting my scope
+twice. It is now step 5, quoting the owner's phrasing VERBATIM ("find bugs and logic errors",
+"broader than this"), with a seven-lens table - FP, FN, silent degradation, duplicate information,
+units/scale, config blindness, provenance - each carrying the incident that produced it. **The FP/FN
+lens alone would have missed this session's largest finding**, since identical exit methods are
+neither a false positive nor a false negative.

@@ -2923,3 +2923,20 @@ blocks turn-end on cause language without evidence language in the same turn.
 **Retroactive coverage (#136):** catches L455 (the `i<250` warmup-guard hypothesis,
 disproved by one command); L450 (a stall "explained" by falling RAM before CPU was
 sampled); and L438 (a network call inferred from a log string without reading the callee).
+
+### #190 — AFTER A FIX, RE-CHECK WHAT WAS ALREADY DECIDED (B1595 / L462)
+
+**A fix can invalidate a conclusion the defect itself left intact.** While the bug stood, the
+numbers were self-consistent; correcting it breaks that consistency for anything already shipped.
+
+After ANY defect fix, before moving on:
+1. **Enumerate the SHIPPED conclusions that depended on the old behaviour** — rosters, grids,
+   docs, decisions. Grep for them; do not recall them.
+2. **MEASURE the overlap.** Do not assume a fix is purely additive.
+3. **Ticket every affected conclusion for re-derivation**, or state explicitly why it survives.
+
+**Retroactive coverage (#136):** B1593's `regime_flip` fix landed on Phase 1B roster row 2
+`xs_momentum_with_smart_money_long` — one of only TWO ROBUST cells — whose backtested numbers were
+`time_stop_20d`'s. The fix means deploying it would run logic never measured. Also catches B1589
+(the 17pct Sharpe correction re-scaling every roster Sharpe against a 1.0 gate) and B1562 (the
+end-anchored coverage change altering which tickers any prior run would have served).

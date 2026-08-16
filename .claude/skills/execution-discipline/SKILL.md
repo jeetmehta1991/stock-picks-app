@@ -270,6 +270,20 @@ Surface-level = non-compliant. Every audit must satisfy ALL of:
    every sentence becomes a candidate ticket BEFORE synthesis
    (`feedback_line_by_line_ticket_extraction_before_synthesis`).
 
+## POST-FIX RE-CHECK RULE (B1595 - L462, CHECKLIST #190)
+
+**A fix can invalidate a conclusion the defect itself left intact.** While the bug
+stood the numbers were self-consistent; correcting it breaks that consistency for
+anything already shipped.
+
+After ANY defect fix, before moving on: **enumerate the SHIPPED conclusions that
+depended on the old behaviour by GREPPING for them, MEASURE the overlap, and
+ticket each for re-derivation** or state why it survives. The instinct after a fix
+is to move on; the obligation is to re-check what was already decided.
+
+*Lineage:* B1593's `regime_flip` fix landed on one of only two ROBUST Phase 1B
+roster cells, whose numbers were `time_stop_20d`'s all along.
+
 ## NO-UNTESTED-CAUSE RULE (B1587 - L455, HARD, mechanically enforced)
 
 **A hypothesis presented as a finding is a fabrication.** The Truth Standard already
