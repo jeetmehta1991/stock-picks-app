@@ -119,6 +119,21 @@ def main() -> int:
     ap.add_argument("--limit-tickers", type=int, default=0)
     ap.add_argument("--cube", default="", help="cube to grade against; default R5")
     ap.add_argument("--tickers-file", default="")
+    # S6-B1584a: the grader RE-DERIVES every fire from OHLCV. Re-deriving
+    # with different producer params than the run that made the cube means
+    # fires cannot reproduce and are DROPPED. cfg2 ran sw=10, was graded at
+    # the hardcoded 20, and lost 167 of 420 fires - a biased 60pct
+    # subsample, not a random one.
+    ap.add_argument("--swing-length", type=int, default=20,
+                    help="SMC_SWING_LENGTH the CUBE was generated with")
+    # S6-B1584c (owner ruling 2026-08-15): Step 1 ranks on 100 tickers x 2y,
+    # ~1/5 the ticker-days MIN_N=30 was calibrated for. 30 produced
+    # NO_EXIT_SELECTABLE on 84-92pct of combinations - a sample-size verdict
+    # dressed as an exit-quality one. NEVER changes roster_core.MIN_N.
+    ap.add_argument("--min-n", type=int, default=10,
+                    help="SEARCH-phase min trades (owner: 10)")
+    ap.add_argument("--max-diag-loss", type=float, default=0.02,
+                    help="abort if more than this fraction of fires cannot be re-diagnosed")
     a = ap.parse_args()
 
     cube = rc.load_cube(Path(a.cube) if a.cube else R5_CUBE)
@@ -148,11 +163,30 @@ def main() -> int:
             continue
         for when in fires[fires.ticker == t].entry_date:
             for cm in CLOSE_MITIGATION:
-                d = diagnose_fire(df, pd.Timestamp(when), close_mitigation=cm)
+                d = diagnose_fire(df, pd.Timestamp(when),
+                                  swing_length=a.swing_length,
+                                  close_mitigation=cm)
                 if d:
                     diags[cm][(t, when)] = d
     for cm in CLOSE_MITIGATION:
-        print(f"close_mitigation={cm}: diagnosed {len(diags[cm])} of {len(fires)} fires")
+        n_d, n_f = len(diags[cm]), len(fires)
+        loss = 1.0 - (n_d / n_f) if n_f else 0.0
+        print(f"close_mitigation={cm}: diagnosed {n_d} of {n_f} fires "
+              f"({loss:.1%} lost)")
+        # S6-B1584b: this line ALWAYS printed the shortfall and nothing
+        # ever asserted on it, so a 40pct loss sat in plain sight. A silent
+        # subsample is worse than a crash - it yields plausible metrics on
+        # a biased population.
+        if loss > a.max_diag_loss:
+            raise SystemExit(
+                "FATAL: {:.1%} of fires could not be re-diagnosed (limit {:.1%}). "
+                    "The grader re-derives fires from OHLCV; if "
+                    "--swing-length ({}) does not match the "
+                    "SMC_SWING_LENGTH the cube was RUN with, fires cannot "
+                    "reproduce and would be dropped silently, biasing "
+                    "every metric. Pass the correct --swing-length or "
+                    "raise --max-diag-loss deliberately."
+                    .format(loss, a.max_diag_loss, a.swing_length))
 
     rows = []
     for cm, bmax, amax, tn in itertools.product(
@@ -167,7 +201,7 @@ def main() -> int:
                  for r in g.itertuples()]]
         is_m = rc.in_sample(sub)
         ho_m = rc.holdout(sub)
-        exit_pick, _ = rc.select_exit(is_m)
+        exit_pick, _ = rc.select_exit(is_m, min_n=a.min_n)
         if exit_pick is None:
             rows.append({"close_mitigation": cm, "break_pct_max": bmax,
                          "age_bars_max": amax, "tail_n": tn, "fires": len(keep),
@@ -175,7 +209,8 @@ def main() -> int:
             continue
         hb = ho_m[ho_m.exit_method == exit_pick]
         fp_n = int((sub.exit_method == exit_pick).sum())
-        res = rc.evaluate(hb["pnl_pct"], hb["hold_days"], full_period_n=fp_n)
+        res = rc.evaluate(hb["pnl_pct"], hb["hold_days"],
+                          min_n=a.min_n, full_period_n=fp_n)
         row = {"close_mitigation": cm, "break_pct_max": bmax,
                "age_bars_max": amax, "tail_n": tn,
                "fires": len(keep), "exit": exit_pick,

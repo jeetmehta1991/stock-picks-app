@@ -129,7 +129,8 @@ def holdout(g: pd.DataFrame) -> pd.DataFrame:
     return g[(g.entry_date >= HO_START) & (g.entry_date < HO_END)]
 
 
-def select_exit(g: pd.DataFrame, objective: str = "gates") -> tuple[str | None, dict | None]:
+def select_exit(g: pd.DataFrame, objective: str = "gates",
+                min_n: int | None = None) -> tuple[str | None, dict | None]:
     """Choose ONE exit using IN-SAMPLE data only. Returns (exit_method, its IS stats).
 
     selection-justified: `gates` maximises the promotion criterion itself (owner directive
@@ -143,7 +144,9 @@ def select_exit(g: pd.DataFrame, objective: str = "gates") -> tuple[str | None, 
     isg = in_sample(g)
     best, best_key = None, None
     for ex, ge in isg.groupby("exit_method", observed=True):
-        r = evaluate(ge["pnl_pct"], ge["hold_days"])
+        # S6-B1584c: the SEARCH phase passes its own floor. Default None
+        # keeps MIN_N, so Phase-2 admission is untouched.
+        r = evaluate(ge["pnl_pct"], ge["hold_days"], min_n=min_n)
         if not r:
             continue
         key = ((r["n_gates"], r["sharpe"] or -9) if objective == "gates"

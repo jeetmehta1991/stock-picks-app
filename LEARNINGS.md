@@ -7299,3 +7299,33 @@ CONDITIONAL, not an admission. The matcher is substring-based and context-blind.
 NOT loosening it: a gate that occasionally over-fires on a compliant turn is tolerable; one that
 under-fires on a real miss is not. The fix belongs in the end-state check, which is where the
 actual bug was.
+
+### L454 — the grader re-derived fires with default params, silently biasing 40pct of a cube
+
+**B1585.** cfg2's grid showed 253 fires where its cube held 420. Root cause: `diagnose_fire(df,
+when, swing_length: int = 20, ...)` and the caller NEVER passed `swing_length`. cfg1 ran sw=20 and
+diagnosed 330/330; cfg2 ran sw=10, was graded at 20, and lost 167.
+
+**PROVEN by re-running:** at `--swing-length 10` the same cube diagnoses **403 of 420** - 150 of the
+167 recovered.
+
+**The lost fires were not random.** They are precisely those qualifying at sw=10 but not sw=20, so
+every cfg2 metric was computed on a SYSTEMATICALLY BIASED 60pct subsample. Plausible numbers,
+wrong population. **Across a 20-config sweep only the sw=20 configs would have graded correctly and
+nothing would have said so.**
+
+**Same class as L387** - a parameter the callee accepts that the caller never passes. The producer
+was made configurable; the GRADER that re-derives its output was not.
+
+**Two silent-swallow drops made it invisible** (`if df is None: continue`, `if d:`), and the script
+PRINTED `diagnosed 253 of 420` in output I read and did not act on. **A number printed is not a
+number checked.** It now aborts when loss exceeds `--max-diag-loss`.
+
+**Generalised rule:** *any component that RE-DERIVES a result must be given the same parameters that
+produced it, and must fail loudly when re-derivation does not reproduce the original.* Re-derivation
+is a hidden second implementation; if its config can drift from the first, it will.
+
+**Residual NOT closed:** 4pct (17 fires) still fail to re-diagnose at the correct swing length.
+Probable cause is the `if i < 250: return None` warmup guard, **UNVERIFIED**. I deliberately did NOT
+raise the 2pct tolerance to make the run pass - loosening a threshold until it goes green is how
+this defect stayed hidden in the first place. Ticketed.
