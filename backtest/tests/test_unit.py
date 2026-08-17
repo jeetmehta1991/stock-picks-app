@@ -15125,3 +15125,35 @@ def test_b1616_engine_defaults_are_byte_identical_and_knobs_bite():
                                  close_mitigation=True) is None, (
         "a cache primed at close_mitigation=False must MISS a True lookup")
     _pc.reset_cache()
+
+
+def test_b1618_sweep_builder_reads_the_correct_baseline():
+    """CHECKLIST #199: the correction fixed the OUTPUT and left the GENERATOR wrong.
+
+    `_sweep_100.txt` was correct - rebuilt by hand from the 544 baseline - while
+    `build_sweep_100.py` still read `r5_universe_381.txt`, the abandoned A-C
+    chunk. Re-running the committed builder would have replaced a correct search
+    universe with one sharing 31 of 100 tickers, and the runbook said "Rebuild
+    ONLY if the 381-universe changes", instructing exactly that.
+    """
+    import pathlib as _pl
+    src = _pl.Path("scripts/build_sweep_100.py").read_text(encoding="utf-8")
+    assert 'r5_universe_544.txt' in src, "the builder must read the 544 baseline"
+    assert '"r5_universe_381.txt"' not in src, (
+        "the abandoned A-C chunk must not be an input to anything")
+
+    u544 = _pl.Path("output_audit/r5_universe_544.txt")
+    live = _pl.Path("output_audit/_sweep_100.txt")
+    if not (u544.exists() and live.exists()):
+        import pytest
+        pytest.skip("universe artifacts not present in this tree")
+    base = {x.strip() for x in u544.read_text().split() if x.strip()}
+    picked = [x.strip() for x in live.read_text().split() if x.strip()]
+    assert len(base) == 544, len(base)
+    assert len(picked) == 100, len(picked)
+    assert set(picked) <= base, (
+        "the search universe must be a subset of the 544 baseline")
+    # provenance smell-test: the abandoned chunk was 100pct A-C with no mega-caps
+    ac = sum(1 for x in picked if x[0] <= "C") / len(picked)
+    assert ac < 0.5, f"A-C share {ac:.0%} - this looks like the abandoned chunk"
+    assert {"NVDA", "MSFT", "TSLA"} <= set(picked), "mega-caps must be present"

@@ -552,17 +552,18 @@ on `smc_breaker_block_long`, the first strategy through - the L-number is the in
 | # | gate | why |
 |---|---|---|
 | 10 | **Write `run_manifest.json`, pass `prelaunch_gate.py`.** Pin frozen_sha, isolation, calendar, universe sha256, budget, and enumerate obsolescence risks each with a MECHANICAL gate. | B1335 Rule 1. It caught the P1/P6 blocker before ~14 h was spent. |
-> **B1617 CONTRADICTION - READ BEFORE USING ANY `381` BELOW.** This document states the baseline
-> universe as **381** in 8 places and as **544** in section 10.1. MEASURED this turn:
+> **B1618 - THE BASELINE UNIVERSE IS 544. OWNER RULED 2026-08-17.** This document previously said
+> **381** in eight places and **544** in section 10.1. `381` was the ABANDONED alphabetically-
+> partitioned chunk (`r5_universe_381.txt`: 100pct A-C, zero mega-caps, 248 tickers the real R5
+> never ran) - the artifact L445 was written about. MEASURED:
 > `output_r5_merged_1_7/trade_exit_detail.csv` holds **544 tickers, 25pct A-C, NVDA/MSFT/TSLA/GOOGL
-> all present**. `381` is the count of the ABANDONED alphabetically-partitioned chunk
-> (`output_r5_rung4_chunk1`, ~380 tickers A-C, no mega-caps, 248 tickers the real R5 never ran) -
-> the artifact L445 was written about. The L445 correction fixed `tighten_breaker_block.py` and
-> section 10.1 and **never swept the rest of this file**. Every `381` below is therefore suspect.
-> Lines encoding an OWNER RULING against `381` are NOT rewritten here - they need an explicit
-> ruling (S6-B1617a). Do not derive a universe from any `381` figure until that closes.
+> present**. All references are now 544, with every DERIVED quantity RE-MEASURED rather than
+> find-replaced (the exclusion count was 41-of-381 and is **22 of 544**; the 4-year cost estimate
+> rescaled). **`scripts/build_sweep_100.py` still READ the 381 file** - the live `_sweep_100.txt`
+> was correct only because it had been rebuilt by hand, and re-running the builder would have
+> replaced it with a list sharing **31 of 100** tickers. Generator repointed (L479, CHECKLIST #199).
 
-| 11 | **Derive the universe from the BASELINE ARTIFACT, not a roster CSV.** | L378 - R5 ran **381**; T1a has 503. Substituting the universe breaks comparability exactly as changing holdout dates would. |
+| 11 | **Derive the universe from the BASELINE ARTIFACT, not a roster CSV.** | L378 - R5 ran **544**; T1a has 503. Substituting the universe breaks comparability exactly as changing holdout dates would. |
 | 12 | **Measure the RETENTION RATIO before restricting the universe. Halt below the gates' n-floor.** | L365 - SP50 retained 31 of 352 fires; all 40 combinations returned NO result. |
 | 13 | **ARM THE MONITOR IN THE LAUNCH TURN**: hourly PushNotification while active + a */13 sentinel check + CronDelete on completion. **A run is not launched until its output path to the owner is armed.** | L385 - a sentinel tripped, halted the ladder, and reached no one until the owner asked. |
 | 14 | **Classify each sentinel ERROR (invalidates -> re-run) or FINDING (result valid -> halt for a decision).** | L384 - treating every trip as failure would have discarded a valid rung and re-run it identically. |
@@ -616,9 +617,9 @@ emits a Sharpe-ranked list, excludes `NO_EXIT_SELECTABLE` (no exit with >=10 in-
 trades), and hands the **top 10** forward. Step 1 can never produce a PASS - if it does,
 it is doing Step 2's job (L471).
 
-**Why 100 then 281?** The 281 are DISJOINT from the 100, so validation is genuine out-of-sample
+**Why 100 then 444?** The 444 are DISJOINT from the 100, so validation is genuine out-of-sample
 across the ticker dimension — a combination selected by luck on 100 will not replicate. Appending
-the two reconstructs 381 (valid because `--cube-isolation` bypasses the candidate cap, verified
+the two reconstructs 544 (valid because `--cube-isolation` bypasses the candidate cap, verified
 `backtest.py:1763`; R5's cap bound on 1 of 972 days and isolation ignores it entirely).
 
 **NO separate baseline run (L423).** All 6 gates are ABSOLUTE thresholds, so admission depends on a
@@ -634,7 +635,7 @@ free if it ranks. Scoping a baseline run wasted 7.3 h of plan before this was ca
 per run  =  tickers x sim-days x 0.2613
 100 tickers x  503 days (2y)  ~= 3.65 h      <- Phase 1, per config
 100 tickers x 1003 days (4y)  ~= 7.3 h
-381 tickers x 1003 days (4y)  ~= 27.7 h
+544 tickers x 1003 days (4y)  ~= 39.7 h   <- 7.3 h x (544/100), rescaled B1618
 ```
 
 **ALWAYS set `--screen-pool-workers`.** The default is **0 = SEQUENTIAL** (L407). On a 12-core box
@@ -821,7 +822,8 @@ values across concurrent launches before starting.
 echo "<STRATEGY>" > output_audit/_subset_<STRATEGY>.txt
 
 # THE 100-TICKER SEARCH UNIVERSE IS FIXED AND SHARED BY EVERY STRATEGY.
-# Rebuild ONLY if the 381-universe changes. Owner ruling 2026-08-14.
+# Rebuild ONLY if the 544-universe changes. Owner ruling 2026-08-14,
+    # re-anchored to the CORRECT universe by owner ruling 2026-08-17 (B1618).
 # Builder: scripts/build_sweep_100.py
 ```
 
@@ -836,7 +838,7 @@ cross-strategy comparisons are corrupted too. A fixed list costs statistical pow
 rarely-firing strategies and buys an unbiased, comparable result.
 
 **Why ADV.** The search phase exists to RANK combinations on 100 tickers such that the ranking
-transfers to 381. Liquidity is strategy-neutral, stable, and matches what would actually be traded,
+transfers to 544. Liquidity is strategy-neutral, stable, and matches what would actually be traded,
 so fills and slippage stay realistic.
 
 **Why the WARMUP window (2021-05-06 to 2022-05-05).** It precedes the locked backtest window
@@ -845,10 +847,11 @@ entirely, so universe selection carries no lookahead into the period being measu
 **TWO DISCLOSED BIASES — do not rediscover these later:**
 
 1. **SPY is in the list** (ADV $37.2B, ~2.8x AAPL). It is a Tier-1 ETF and legitimately inside the
-   381, but it is an index, not a single stock, and strategies behave differently on it.
-2. **41 of 381 are excluded** for lacking 100 warmup bars, which means **every ticker that listed
+   544, but it is an index, not a single stock, and strategies behave differently on it.
+2. **22 of 544 are excluded** (MEASURED B1618; the old 41-of-381 was the abandoned chunk's
+   figure, wrong in both halves) for lacking 100 warmup bars, which means **every ticker that listed
    after 2021-05-06 is structurally ineligible** (ACLX, ALAB, AISP, AMLX, ...). Recent IPOs can
-   never enter this SEARCH universe. They remain in the 381 used for Phase-2 VALIDATION, so no
+   never enter this SEARCH universe. They remain in the 544 used for Phase-2 VALIDATION, so no
    combination is ever *admitted* on the biased universe — but its RANKING is derived from one.
 
 **The fixed 100 (ADV-ranked, highest first):**
@@ -957,8 +960,8 @@ PYTHONPATH=. python scripts/producer_variant_table.py \
 Rank all combinations by Sharpe with `min_trades` DISABLED (at 100 tickers the floor rejects on
 sample size, not quality). Take the top 10 — they will span only a few distinct engine configs.
 
-Re-run those configs on the **281 tickers NOT in the search set**, full 4-year window, then append
-to the 100-ticker 4-year runs to reconstruct 381. Valid because `--cube-isolation` bypasses the
+Re-run those configs on the **444 tickers NOT in the search set**, full 4-year window, then append
+to the 100-ticker 4-year runs to reconstruct 544. Valid because `--cube-isolation` bypasses the
 candidate cap (`backtest.py:1763`).
 
 **NO separate baseline run is needed** (L423) — all 6 gates are ABSOLUTE thresholds, so admission

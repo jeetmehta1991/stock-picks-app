@@ -8252,3 +8252,45 @@ nearly reported it as one before measuring. Fixed because it is free, not becaus
 **What this audit could NOT do:** the fresh-eyes cold pass was launched on a different model and
 died on a spend limit. Everything above is a single-model review by the author of the code -
 the precise limitation the FRESH-EYES CADENCE exists to remove (S6-B1617g).
+
+### L479
+
+**the output was correct, the generator still pointed at the abandoned chunk, and the doc told you to re-run it**
+
+**B1618.** Owner ruled the baseline universe is **544**. Sweeping the number surfaced something the
+audit one turn earlier had not: **`scripts/build_sweep_100.py:36` read `r5_universe_381.txt`** -
+the abandoned A-C chunk (100pct A-C, zero mega-caps, 248 tickers the real R5 never ran).
+
+The live `_sweep_100.txt` was CORRECT. It reproduces **exactly, order included**, from the 544
+baseline. It was right because someone rebuilt it by hand; the BUILDER was never repointed.
+MEASURED both ways:
+
+```
+source r5_universe_381.txt : eligible 340, excluded 41, overlap  31/100
+source r5_universe_544.txt : eligible 522, excluded 22, overlap 100/100  (exact, order included)
+```
+
+**Re-running the committed builder would have silently replaced a correct search universe with one
+sharing 31 of 100 tickers** - and the runbook's own instruction read *"Rebuild ONLY if the
+381-universe changes"*, which is precisely the trigger that would have fired it. A correct artifact
+sitting in front of a wrong generator is not safe; it is armed.
+
+**This is a COMPLIANCE failure against CHECKLIST #199** (*a correction downstream of a generator is
+temporary*), not a new class. #199 exists, it is the right rule, and the L445 correction still
+fixed the output and stopped. **A rule can be present, correct, anchored and gated and still not be
+APPLIED at the moment it matters** - which is a different failure from the rule being absent, and
+the remedy is a test, not another rule. Now pinned by
+`test_b1618_sweep_builder_reads_the_correct_baseline`.
+
+**Second lesson, on sweeping a corrected number: a derived quantity must be RE-MEASURED, never
+find-replaced.** The doc said *"41 of 381 excluded for lacking 100 warmup bars"*. Both halves were
+wrong: against 544 it is **22**. Find-replacing 381 to 544 would have produced "41 of 544" - a
+number that never existed, now wearing the authority of a correction. Every derived figure in the
+sweep was recomputed: the exclusion count measured, the 4-year cost estimate rescaled
+(7.3 h x 544/100 = 39.7 h), the disjoint remainder 281 -> 444.
+
+**And the fresh-eyes pass failed again.** A second `fable`-model cold review was launched and
+terminated on the same monthly spend limit. Two consecutive attempts, no findings produced, none
+reported. The B1335 rule-4 cadence is currently UNAVAILABLE, not satisfied - and the two findings
+above were both found by the author re-reading his own work, which is exactly the coverage that
+cadence exists to supplement rather than replace.
