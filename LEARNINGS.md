@@ -8081,3 +8081,51 @@ ANCHOR instead of INERT, and the check still FLAGS the pair when no anchor is de
 cfg2's top 10 still holds **4 distinct fire-sets** (cfg1 improved to 8 of 10), because inside the
 winning region `age_bars_max=180` already removes every high-rank event. De-duplicating the
 ranking is a separate change and remains owner-pending (S6-B1610e).
+
+### L475
+
+**four of six swept parameters could not be executed by the engine, and the search never needed them to be**
+
+**B1612.** Owner: *"Has everything been engine implemented? Is anything wired but not engine
+implemented yet?"* EXECUTED trace of all six:
+
+```
+P1 swing_length      IMPLEMENTED   config.py:2464 env -> screener.py:8723 passes it
+P6 ema span          IMPLEMENTED   config.py:2469     -> screener.py:4309
+P2 close_mitigation  GRADER-ONLY   smc_ict.py:252  _smc.ob(ohlc, swings)  - arg never passed
+P3 tail_n            GRADER-ONLY   smc_ict.py:274  ob_events.tail(20)     - hardcoded literal
+P4 age_bars_max      GRADER-ONLY   breaker loop 273-296 has NO age filter
+P5 break_pct_max     GRADER-ONLY   zero occurrences anywhere in engine code
+```
+
+**The mechanism that hid it is the same one that makes the sweep affordable.** SUBSET-SAFE
+parameters are graded OFFLINE, re-deriving fires from cached OHLCV instead of re-running the
+engine - which is why 4,000 combinations cost 20 engine runs instead of 4,000. But an offline
+grader is free to simulate a filter that exists only inside itself, and **every number it
+produces is internally consistent**, so nothing looks wrong. A winner on P2-P5 would have been
+admitted, and the live strategy would not have reproduced its own backtest.
+
+**This is `regime_flip` (L461) moved one stage earlier** - there, a cube column carried a label
+whose logic never ran; here, an entry gate would carry a value the engine never applies. Both
+are the same defect: **a result named after behaviour that does not exist in the executing path.**
+
+**Two things made it hard to see, and both are now asserted rather than grepped.** First a
+NEAR-MISS NAME: `event_recency_bars=90` sits in the same function and reads exactly like the age
+cap, but it governs `smc_ob_bullish_active` - a different signal - while the breaker loop has no
+age filter at all. Grepping the parameter's *name* finds it and confirms the wrong thing. Second,
+**an absence has no token to grep**: P4's check has to assert that the loop contains no age
+filter, which is a structural claim, not a string match. (L472 said a match count is not evidence
+of presence; this is its mirror - a match is not evidence of the RIGHT presence.)
+
+**The runbook had no exit.** `MANDATORY POST-CONFIG ANALYSIS` ran search -> validate -> admit and
+stopped; a grep for implement/deploy/promote across the whole plan returned ONE prose line in the
+preamble. **A sweep whose winner cannot be executed is a sweep with no exit**, and no step existed
+to notice. Step 7 IMPLEMENT-IN-ENGINE now sits before the verdict.
+
+**Disclosure was present but scattered and unenforced** - the variant table said P5 has "no
+parameter today" and the PVT doc noted `tail N = 20 (hardcoded literal, not an argument)`.
+Honest notes in two documents, no column, no gate, and no consequence at admission. That is the
+ANCHOR-THE-RULE pattern (L464) applied to FACTS rather than rules: **a disclosed fact with no
+gate behind it decays exactly like a prose rule.**
+
+Now `scripts/verify_engine_implemented.py`, CHECKLIST #207, runbook step 7.

@@ -1100,6 +1100,7 @@ diagnosis-loss gate aborts above 2pct.
 | any PASS selecting `regime_flip` | it was a time stop pre-B1593; re-derive before trusting |
 | **every swept LEVEL changes the outcome** | **a level that changes nothing is a wasted dimension (L473)** |
 | **top-N holds N DISTINCT fire-sets** | **cfg2's top 10 was 4 real candidates wearing 10 rows (L473)** |
+| **equivalence-class members keep the SAME FIRES** | a de-dup key of `(fires, exit, sharpe)` could merge different fire-sets that tie; verified 6 of 6 (B1612) |
 
 ```bash
 python scripts/verify_grid_bands.py output_audit/<batch>_cfg<N>_grid.json --anchor tail_n=20
@@ -1159,7 +1160,37 @@ For every defect fixed during this cycle:
 *Lineage:* the `regime_flip` fix landed on one of only TWO ROBUST Phase 1B roster cells, whose
 numbers were `time_stop_20d`'s all along.
 
-### 7. Report the verdict WITH its denominators
+### 7. IMPLEMENT IN ENGINE - a winner the engine cannot apply is not a winner
+
+```bash
+python scripts/verify_engine_implemented.py
+```
+
+**The sweep grades SUBSET-SAFE parameters OFFLINE.** That is what makes 4,000 combinations
+affordable, and it is also why the search space can contain gates **the engine cannot apply** -
+the grader will happily simulate a filter that exists only inside itself.
+
+MEASURED 2026-08-17: **4 of the 6 swept parameters are GRADER-ONLY.**
+
+| | status | evidence |
+|---|---|---|
+| P1 `swing_length` | **IMPLEMENTED** | `config.py:2464` env -> `screener.py:8723` passes it |
+| P6 `ema span` | **IMPLEMENTED** | `config.py:2469` -> `screener.py:4309` |
+| P2 `close_mitigation` | **GRADER-ONLY** | `smc_ict.py:252` calls `_smc.ob(ohlc, swings)` - arg never passed |
+| P3 `tail_n` | **GRADER-ONLY** | `smc_ict.py:274` hardcoded `ob_events.tail(20)` |
+| P4 `age_bars_max` | **GRADER-ONLY** | breaker loop 273-296 has NO age filter (`event_recency_bars` governs a DIFFERENT signal) |
+| P5 `break_pct_max` | **GRADER-ONLY** | zero occurrences in engine code |
+
+**A winner on P2-P5 is NOT DEPLOYABLE as it stands** - the engine keeps firing at its hardcoded
+values, so the live strategy would not reproduce its own backtest. That is the `regime_flip`
+failure (L461) - a number wearing a label whose logic never ran - moved one stage earlier, from
+exits to entry gates.
+
+**Before ADMITTING any combination:** implement its parameters in the engine (owner approval
+required for any engine change), then re-run the config and confirm the cube reproduces the
+graded fire set. **Admission without this step ships a backtest that cannot be executed.**
+
+### 8. Report the verdict WITH its denominators
 Never a bare PASS count. State: N of M combinations, X of Y producers varied, `exits_effective`
 of 26, and the `ci_lo` of every PASS. **Margin of error is part of the verdict, not a footnote.**
 

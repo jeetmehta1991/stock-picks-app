@@ -15005,3 +15005,38 @@ def test_b1611_reband_and_production_anchor():
             "the declared anchor pair must be exempt")
         assert m.analyse(rows, keys)[1], (
             "without --anchor the same pair must still FLAG")
+
+
+def test_b1612_swept_parameters_engine_reachability():
+    """CHECKLIST #207: a swept parameter the engine cannot apply is not a result.
+
+    Offline grading is what makes a 4,000-combination sweep affordable, and it
+    is also why the search space can hold gates the ENGINE cannot apply - the
+    grader will simulate a filter that exists only inside itself and every
+    number it produces will be internally consistent. MEASURED: 4 of 6 swept
+    parameters are grader-only.
+    """
+    import importlib.util
+    import pathlib as _pl
+    spec = importlib.util.spec_from_file_location(
+        "_vei", "scripts/verify_engine_implemented.py")
+    m = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(m)
+
+    assert m.check() == [], (
+        "every grader-only parameter must carry an open implementation ticket")
+
+    impl = {k for k, v in m.PARAMS.items() if v[0]}
+    assert impl == {"P1 swing_length", "P6 ema span"}, impl
+
+    smc = _pl.Path("backtest/signals/smc_ict.py").read_text(encoding="utf-8")
+    # P2: the engine never passes close_mitigation, so production is the
+    # library default (verified False at vendored smc.py `ob` signature).
+    assert "_smc.ob(ohlc, swings)" in smc
+    assert "_smc.ob(ohlc, swings, close_mitigation" not in smc
+    # P3: a hardcoded literal, not a parameter.
+    assert "ob_events.tail(20)" in smc
+    # P4: the near-miss name governs a DIFFERENT signal, so its presence must
+    # never be read as the breaker age cap existing.
+    assert "event_recency_bars" in smc
+    assert "smc_ob_bullish_active" in smc

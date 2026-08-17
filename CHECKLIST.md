@@ -3183,3 +3183,31 @@ Writing a general test against one axis converts it into a special case, silentl
 existing; the `regime_flip` silent degradation (L461), where "does anything fall back without
 saying so" was asked of producers but not of exit methods; the B1119 doc-sweep suspension,
 where the per-turn sweep was applied to code turns but not to CSV-analysis turns.
+
+### #207 - A SWEPT PARAMETER THE ENGINE CANNOT APPLY IS NOT A RESULT (B1612 / L475)
+
+**MECHANICALLY GATED:** `python scripts/verify_engine_implemented.py` - exit 2 when a swept
+parameter is neither engine-reachable nor DECLARED unimplemented with an open ticket.
+
+Offline grading is what makes a 4,000-combination sweep affordable. It is also why the search
+space can contain gates **the engine cannot apply**: the grader will happily simulate a filter
+that exists only inside itself, and every number it produces will be internally consistent.
+
+**MEASURED: 4 of 6 swept parameters were GRADER-ONLY** - `close_mitigation` (never passed to
+`_smc.ob`), `tail_n` (hardcoded `.tail(20)`), `age_bars_max` (the breaker loop has no age filter
+at all), `break_pct_max` (zero engine occurrences). Only `swing_length` and the EMA span reach
+the engine, both through `config` env knobs.
+
+**Two traps this closes.** First, a *near-miss name*: `event_recency_bars=90` exists in the same
+function and looks like the age cap - it governs a DIFFERENT signal (`smc_ob_bullish_active`),
+not the breaker loop. Second, an *absence has no token to grep*, so P4's check asserts the loop
+contains no age filter rather than matching a string.
+
+**Before admitting any swept combination:** implement its parameters in the engine, then re-run
+and confirm the cube reproduces the graded fire set. Otherwise the live strategy does not
+reproduce its own backtest.
+
+**Retroactive coverage (#136):** `regime_flip` (L461) - numbers carrying a label whose logic
+never ran, the same defect one stage later; the "wired means engine-consumed" class where a
+grep for code presence produced ~150 false RESOLVED claims; B1335 rule 2, MECHANISM-EXISTENCE,
+which required evidence a cited mechanism exists but was never pointed at swept parameters.
