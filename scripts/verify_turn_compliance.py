@@ -493,6 +493,69 @@ def check_unverified_universe() -> str | None:
     return bad[0] if bad else None
 
 
+# B1605 / CHECKLIST #201 -- an unmeasured QUANTITATIVE claim is as damaging as an
+# untested cause, and #195 never covered it. "costs nothing - same runtime" was
+# stated about a 3-year window against a 2-year baseline: it cost 50pct more
+# (5.00 h vs 3.33 h per config, 50 h vs 33 h for the sweep). The arithmetic was
+# one multiplication. The recurring shape is substituting a RATE for a TOTAL -
+# same class as quoting a per-call ratio as a wall-clock saving (L432), a spot
+# RAM reading as a ceiling, or a cold JIT timing as steady state.
+QUANT_CLAIMS = (
+    "costs nothing", "cost nothing", "same runtime", "no extra cost",
+    "free", "negligible", "roughly the same", "about the same",
+    "no additional", "without any cost", "at no cost",
+)
+QUANT_PROOF = (
+    "executed", "measured", "computed", "i ran", "re-ran", "benchmark",
+    "elapsed", "sim-day", "per config", "h/config", "derived from",
+)
+
+
+def scan_unmeasured_quantity(entries):
+    """Flag a COST/QUANTITY claim with no evidence it was computed."""
+    entries = list(entries or [])
+    last_user = -1
+    for i, e in enumerate(entries):
+        if (e or {}).get("type") != "user":
+            continue
+        c = ((e.get("message") or {}).get("content"))
+        if isinstance(c, str) or (isinstance(c, list) and any(
+                isinstance(x, dict) and x.get("type") == "text" for x in c)):
+            last_user = i
+    entries = entries[last_user + 1:] if last_user >= 0 else entries
+
+    blob = []
+    for e in entries:
+        if (e or {}).get("type") != "assistant":
+            continue
+        content = ((e.get("message") or {}).get("content"))
+        if isinstance(content, str):
+            blob.append(content)
+        elif isinstance(content, list):
+            blob.extend(c.get("text", "") for c in content
+                        if isinstance(c, dict) and c.get("type") == "text")
+    low = " ".join(blob).lower()
+    if not low:
+        return []
+    hits = [q for q in QUANT_CLAIMS if q in low]
+    if not hits:
+        return []
+    if any(pp in low for pp in QUANT_PROOF):
+        return []
+    return [("TURN-GATE BLOCK (CHECKLIST #201 / L470): this turn makes a COST or "
+             f"QUANTITY claim ({sorted(set(hits))[:3]}) with no evidence it was "
+             "COMPUTED. 'costs nothing - same runtime' was stated about a 3-year "
+             "window against a 2-year baseline; it cost 50pct more, and the "
+             "arithmetic was one multiplication. Do the multiplication and show "
+             "it, or drop the claim.")]
+
+
+def check_unmeasured_quantity() -> str | None:
+    """#201 auto-gate: a cost/quantity claim must be computed, not asserted."""
+    bad = scan_unmeasured_quantity(_read_entries())
+    return bad[0] if bad else None
+
+
 def check_unrecorded_miss() -> str | None:
     """Block a turn that ACKNOWLEDGED a miss without writing it to LEARNINGS."""
     try:
@@ -656,6 +719,11 @@ def main() -> int:
     cause_block = scan_unverified_cause(_read_entries())
     if cause_block:
         print(cause_block[0], file=sys.stderr)
+        return 2
+
+    quant_block = check_unmeasured_quantity()
+    if quant_block:
+        print(quant_block, file=sys.stderr)
         return 2
 
     universe_block = check_unverified_universe()

@@ -3045,3 +3045,26 @@ the test's count CHANGED.
 
 **Retroactive coverage (#136):** catches the #192 collision, the 34 invisible L-entries, and
 the ~30 turns of falsely-green banner checks.
+
+### #201 — COST AND QUANTITY CLAIMS MUST BE COMPUTED, NOT ASSERTED (B1605 / L470)
+
+**Item #195 covers untested CAUSES. It never covered unmeasured NUMBERS — and numbers drive
+decisions at least as directly.**
+
+*"Costs nothing — same runtime"* was stated about a **3-year** window against a **2-year**
+baseline. It cost **50% more**: 5.00 h vs 3.33 h per config, ~50 h vs ~33 h for the sweep.
+**The arithmetic was one multiplication**, and the owner had specified the 2-year window on
+runtime grounds in the first place.
+
+**The recurring shape is substituting a RATE for a TOTAL.** Cost per sim-day was identical
+either way — that part was true — but there were 1.5× as many days. Same class as quoting a
+per-call ratio as a wall-clock saving (L432), a spot RAM reading as a ceiling (three times),
+or a cold JIT timing as steady state.
+
+**Before any claim of the form "costs nothing / same / negligible / free / roughly the same":
+do the arithmetic and SHOW it.** If you cannot, drop the claim.
+
+**Mechanically enforced:** `scan_unmeasured_quantity()` in `scripts/verify_turn_compliance.py`.
+
+**Retroactive coverage (#136):** catches the "costs nothing" claim verbatim, and the three
+rate-for-total substitutions above.

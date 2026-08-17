@@ -130,6 +130,14 @@ def main() -> int:
     # ~1/5 the ticker-days MIN_N=30 was calibrated for. 30 produced
     # NO_EXIT_SELECTABLE on 84-92pct of combinations - a sample-size verdict
     # dressed as an exit-quality one. NEVER changes roster_core.MIN_N.
+    # B1605 (owner ruling 2026-08-16): STEP 1 selects the best exit by
+    # SHARPE alone - it is a cheap RANKING pass. STEP 2 re-ranks ALL 26
+    # exits and takes the one clearing the MOST GATES, which is the
+    # admission criterion. Separating the two removes the need for any
+    # selection-noise haircut: Step 1 never decides admission.
+    ap.add_argument("--objective", choices=("sharpe", "gates"),
+                    default="sharpe",
+                    help="STEP 1 = sharpe (rank). STEP 2 = gates (admit).")
     ap.add_argument("--min-n", type=int, default=10,
                     help="SEARCH-phase min trades (owner: 10)")
     ap.add_argument("--max-diag-loss", type=float, default=0.02,
@@ -217,7 +225,8 @@ def main() -> int:
                  for r in g.itertuples()]]
         is_m = rc.in_sample(sub)
         ho_m = rc.holdout(sub)
-        exit_pick, _ = rc.select_exit(is_m, min_n=a.min_n)
+        exit_pick, _ = rc.select_exit(is_m, objective=a.objective,
+                                      min_n=a.min_n)
         if exit_pick is None:
             rows.append({"close_mitigation": cm, "break_pct_max": bmax,
                          "age_bars_max": amax, "tail_n": tn, "fires": len(keep),

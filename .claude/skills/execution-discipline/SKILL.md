@@ -306,6 +306,30 @@ is to move on; the obligation is to re-check what was already decided.
 *Lineage:* B1593's `regime_flip` fix landed on one of only two ROBUST Phase 1B
 roster cells, whose numbers were `time_stop_20d`'s all along.
 
+## TEST-EVERY-QUANTITY RULE (B1605 - L470, CHECKLIST #201, mechanically enforced)
+
+**Owner directive 2026-08-16: when making any quantitative claim, you are required
+to TEST it.**
+
+The NO-UNTESTED-CAUSE rule below covers CAUSES. It does not cover NUMBERS - and a
+number drives a decision at least as directly. *"Costs nothing - same runtime"* was
+stated about a 3-year window against a 2-year baseline. It cost **50pct more**
+(5.00 h vs 3.33 h per config; ~50 h vs ~33 h for the sweep), and **the arithmetic
+was one multiplication** against a runtime spec the owner had set deliberately.
+
+**The recurring shape is substituting a RATE for a TOTAL.** Per-sim-day cost was
+identical either way - true - but there were 1.5x as many days. Same class as a
+per-call ratio quoted as a wall-clock saving (L432), a spot RAM reading quoted as a
+ceiling (three times), a cold JIT timing quoted as steady state. **The rate is the
+number already in front of you, which is exactly why it gets substituted.**
+
+**Before ANY claim of the form "costs nothing / free / same / negligible / roughly
+the same / about Nx": do the arithmetic and SHOW it.** If you cannot compute it,
+say the quantity is UNMEASURED - and ticket it as `UNKNOWN - RCA NEEDED` if it
+matters. Never assert a magnitude you have not calculated.
+
+Enforced by `scan_unmeasured_quantity()` in `scripts/verify_turn_compliance.py`.
+
 ## NO-UNTESTED-CAUSE RULE (B1587 - L455, HARD, mechanically enforced)
 
 **A hypothesis presented as a finding is a fabrication.** The Truth Standard already

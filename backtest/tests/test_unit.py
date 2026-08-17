@@ -14863,3 +14863,40 @@ def test_b1603_launch_gates_ignore_text_that_merely_mentions_a_launch():
     # merely WRITING about one must not
     assert m.scan_unmonitored_launch([U, writing]) == []
     assert m.scan_unverified_universe([U, writing]) == []
+
+
+def test_b1605_quantity_gate_and_step1_objective():
+    """#201: a cost/quantity claim must be computed (L470).
+
+    #195 covers untested CAUSES; it never covered unmeasured NUMBERS. "costs
+    nothing - same runtime" was stated about a 3-year window against a 2-year
+    baseline and cost 50pct more. The arithmetic was one multiplication.
+    """
+    import importlib.util
+    import inspect
+    spec = importlib.util.spec_from_file_location(
+        "_vtc9", "scripts/verify_turn_compliance.py")
+    m = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(m)
+
+    U = {"type": "user", "message": {"content": "go"}}
+    A = lambda t: {"type": "assistant",
+                   "message": {"content": [{"type": "text", "text": t}]}}
+
+    assert m.scan_unmeasured_quantity([U, A("Costs nothing - same runtime.")]), \
+        "the exact claim that motivated this gate must block"
+    assert m.scan_unmeasured_quantity(
+        [U, A("Costs nothing. EXECUTED: 504 sim-days measured at 3.33 h/config.")]
+    ) == [], "a claim shown with its arithmetic must pass"
+    assert m.scan_unmeasured_quantity([U, A("The run completed.")]) == []
+    # prior-turn claims must not re-fire (L449 windowing)
+    assert m.scan_unmeasured_quantity(
+        [A("costs nothing"), U, A("all fine")]) == []
+    # and it must be WIRED (CHECKLIST #121)
+    assert "check_unmeasured_quantity()" in inspect.getsource(m.main)
+
+    # owner ruling: STEP 1 ranks by SHARPE, STEP 2 admits by GATES
+    src = __import__("pathlib").Path(
+        "scripts/tighten_breaker_block.py").read_text(encoding="utf-8")
+    assert 'default="sharpe"' in src, "Step 1 must default to objective=sharpe"
+    assert "objective=a.objective" in src, "the objective must reach select_exit"

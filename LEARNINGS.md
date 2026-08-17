@@ -7890,3 +7890,36 @@ because my format made my work invisible to it.** A green check on an unparseabl
 pass - it is a silent skip.
 
 **Anchored:** CHECKLIST #197 (which now carries the enforcement-tier rule) and #199.
+
+### L470
+
+**A gate that covers causes does not cover numbers — and Step 1/Step 2 selection, simplified**
+
+**B1605.** Owner asked why the #195 hook did not catch *"costs nothing — same runtime"*.
+**TESTED: it does not fire on that sentence.** #195 matches CAUSAL language ("probable cause",
+"likely because"); mine was a QUANTITATIVE claim. **The gate did not fail — it was never asked.**
+
+That is a real scope hole. **An unmeasured number drives a decision as directly as an untested
+cause**, and here it nearly overturned a runtime spec the owner had set deliberately: I proposed a
+3-year search window as "free" when it costs **50pct more** (5.00 h vs 3.33 h per config; ~50 h vs
+~33 h for the sweep). **The arithmetic was one multiplication.**
+
+**The recurring shape: substituting a RATE for a TOTAL.** Cost per sim-day was identical either way
+- true - but there were 1.5x as many days. Same class as a per-call ratio quoted as a wall-clock
+saving (L432), a spot RAM reading quoted as a ceiling (three times), a cold JIT timing quoted as
+steady state. **I keep reaching for the rate because it is the number already in front of me.**
+
+**The correct fix was to MOVE the window, not extend it:** 2023-05-05 -> 2025-05-05 is still 2
+years (~504 sim-days, 3.33 h/config, unchanged), sits entirely inside the locked IS, and leaves the
+holdout genuinely out-of-sample. I proposed extending before I considered moving.
+
+**Owner's simplification of exit selection, which supersedes the haircut debate entirely:**
+- **STEP 1** selects the best exit by **SHARPE alone** - it is a cheap RANKING pass and never
+  decides admission, so no selection-noise correction is needed.
+- **STEP 2** re-ranks **ALL 26 exits** and takes the one clearing the **MOST GATES** - the
+  admission criterion itself.
+
+`roster_core.select_exit` already supported both objectives; only the Step-1 caller needed
+`objective="sharpe"`. **The mechanism existed and the debate was about which to call where.**
+
+**Anchored:** CHECKLIST #201.
