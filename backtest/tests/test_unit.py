@@ -15376,3 +15376,60 @@ def test_b1621_gates_are_not_themselves_grep_heuristics():
         "cube silently diagnoses against a different price series")
     from backtest.data.cache import _cache_path
     assert _cache_path("BF-B").name == "BF_B.parquet"
+
+
+def test_b1623_degraded_exits_are_measured_not_assumed():
+    """Owner ruled: ACCEPT the cfg1/cfg2 asymmetry, document it.
+
+    Documenting it as PROSE would decay (L464) and documenting it by DATE is
+    bookkeeping that rots the moment someone forgets which side of B1622 a cube
+    falls on. So it is MEASURED from the cube. `truthful_exit_name` took
+    `cube_predates_b1593=True` - an assumption with a default; this replaces it
+    with evidence and works on any cube, past or future.
+
+    The measurement found MORE than the one collapse being documented: 3 pairs,
+    which independently reproduces the known "26 exits -> 23 effective" (L460).
+    """
+    import pandas as _pd
+    import pathlib as _pl
+    import scripts.roster_core as rc
+
+    # synthetic: b duplicates a, c is genuinely different
+    rows = []
+    for i in range(30):
+        for m, off in (("a", 0), ("b", 0), ("c", 3)):
+            rows.append({"ticker": "T", "entry_date": f"2024-01-{i+1:02d}",
+                         "strategy": "s", "exit_method": m,
+                         "exit_date": f"2024-02-{i+1+off:02d}",
+                         "pnl_pct": 1.0 + off})
+    df = _pd.DataFrame(rows)
+    d = rc.measure_degraded_exits(df)
+    assert d == {"b": "a"}, d
+    assert rc.measure_degraded_exits(_pd.DataFrame()) == {}
+
+    # the real cube: the owner-accepted asymmetry must be VISIBLE, not recalled
+    q = _pl.Path("output_cfg2/trade_exit_detail.csv")
+    if not q.exists():
+        import pytest
+        pytest.skip("cfg2 cube unavailable")
+    real = rc.measure_degraded_exits(rc.load_cube(q))
+    assert "time_stop_20d" in real or "regime_flip" in real, (
+        "cfg2 predates B1622, so regime_flip MUST still measure as a duplicate "
+        "of time_stop_20d - if this stops holding the cube was regenerated and "
+        "the documented asymmetry no longer applies")
+    assert len(real) >= 3, (
+        f"expected at least 3 collapsed pairs (26 exits -> 23 effective, L460); "
+        f"measured {real}")
+
+
+def test_b1623_step1_prints_no_gate_verdicts():
+    """CHECKLIST #202: Step 1 RANKS; it can never produce a PASS."""
+    import pathlib as _pl
+    src = _pl.Path("scripts/tighten_breaker_block.py").read_text(encoding="utf-8")
+    i = src.index("STEP 1 = RANKING, no gates")
+    tail = src[i:i + 900]
+    assert "verdict" not in tail, "the Step-1 table must not print a verdict column"
+    assert "gates_passed" not in tail
+    # and a dropped ticker must be COUNTED, not silently skipped
+    assert 'DROPS["no_parquet"].append(t)' in src
+    assert "ABORT: dropped-ticker share" in src

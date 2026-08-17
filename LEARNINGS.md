@@ -8448,3 +8448,50 @@ check.**
 **Consequence to surface, not bury:** every cube built before B1622 has a dead 26th exit. cfg1 and
 cfg2 are in that set, so they are no longer comparable with the 18 configs still to run - either
 re-run them (2 x 3.3 h) or accept and document a 25-vs-26 asymmetry.
+
+### L483
+
+**the accepted asymmetry became a measurement, and the measurement found three collapses, not one**
+
+**B1623.** Owner ruled: ACCEPT the cfg1/cfg2 asymmetry rather than spend 6.6 h re-running them
+after B1622 made `regime_flip` executable. So cubes on both sides of that fix now coexist, and the
+question is how a future reader learns which side a cube falls on.
+
+**Three ways to record it, and only one survives contact.** PROSE decays (L464). A DATE or
+commit-based flag is bookkeeping that rots the moment someone forgets which side a cube is on -
+and `truthful_exit_name(exit_name, cube_predates_b1593=True)` already had that shape: **an
+assumption with a default**. MEASURING it from the cube needs no bookkeeping and works on any cube,
+past or future.
+
+`roster_core.measure_degraded_exits(cube)` pairs every exit method against every other and reports
+those whose exit dates and P&L are identical on >=99pct of shared trades.
+
+**MEASURED on cfg2 - three collapsed pairs, not the one being documented:**
+
+```
+atr_trail_mae_conditional == atr_trail_1x
+reverse_signal            == atr_trail_mae_conditional
+time_stop_20d             == regime_flip
+```
+
+The first two chain, so 26 exits collapse to **23 effective** - which independently reproduces
+L460's figure by a completely different route. **I set out to document one known collapse and the
+measurement handed back the other two for free.** That is the argument for measuring over
+recording: a record contains what someone thought to write down, a measurement contains what is
+there. And all three cubes measure 100pct degraded on `regime_flip` - including
+`output_r5_merged_1_7` at **189,122 paired rows**, the source of the Phase 1B roster.
+
+**Two grader fixes shipped alongside, both of the same family as everything else this week.**
+A ticker with no parquet was a bare `continue` - the run completed, the numbers were
+self-consistent, and they described a subsample nobody chose. It is now counted, named, and
+ABORTS above the loss threshold. And Step 1 no longer PRINTS a PASS/FAIL column: the verdicts stay
+in the payload for Step 2, but printing them is what produced "0 PASS across 400 combinations"
+reported as a Step-1 result, and with 18 configs to come that output would have been read 18 more
+times.
+
+**The through-line of the last several batches: every defect was a component that failed OPEN.** A
+comment satisfying a check, a missing key being skipped, a wrong file being found, a dropped
+ticker vanishing, an exit falling back to a time stop, an assumption with a default. **None of them
+produced an error; all of them produced a number.** The fix each time was to make the unexpected
+input fail loudly rather than be quietly excluded - and where that is not possible, to replace the
+assumption with a measurement.

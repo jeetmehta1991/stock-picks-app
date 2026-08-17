@@ -72,6 +72,54 @@ CUBE_DTYPES = {"strategy": "category", "direction": "category", "exit_method": "
 DEGRADED_EXITS_PRE_B1593 = {"regime_flip": "time_stop_20d"}
 
 
+def measure_degraded_exits(cube, threshold: float = 0.99) -> dict:
+    """Which exit methods are byte-duplicates of another IN THIS CUBE?
+
+    B1623 (owner ruled 2026-08-17: ACCEPT the asymmetry, document it). The
+    owner chose not to re-run cfg1/cfg2 after B1622 made `regime_flip`
+    executable, so cubes on both sides of that fix now coexist. Rather than
+    track which side a cube falls on - a bookkeeping problem that decays the
+    moment someone forgets - MEASURE it from the cube itself.
+
+    `truthful_exit_name` took `cube_predates_b1593=True`, an ASSUMPTION with a
+    default. This replaces the assumption with evidence, and works for any
+    cube, past or future, with no bookkeeping.
+
+    MEASURED 2026-08-17, all three cubes 100pct degraded on `regime_flip`:
+        output_cfg1              330 paired rows
+        output_cfg2              420 paired rows
+        output_r5_merged_1_7 189,122 paired rows   <- the Phase 1B roster source
+
+    Returns {degraded_exit: the_exit_it_duplicates}. Empty when nothing
+    collapses, which is what a post-B1622 cube should produce.
+    """
+    import itertools
+    if cube is None or len(cube) == 0 or "exit_method" not in cube.columns:
+        return {}
+    keys = [c for c in ("ticker", "entry_date", "strategy") if c in cube.columns]
+    cmp_cols = [c for c in ("exit_date", "pnl_pct") if c in cube.columns]
+    if not keys or not cmp_cols:
+        return {}
+    methods = sorted(cube["exit_method"].dropna().unique())
+    out: dict = {}
+    for a, b in itertools.combinations(methods, 2):
+        ra = cube[cube.exit_method == a][keys + cmp_cols]
+        rb = cube[cube.exit_method == b][keys + cmp_cols]
+        m = ra.merge(rb, on=keys, suffixes=("_a", "_b"))
+        if len(m) == 0:
+            continue
+        same = None
+        for c in cmp_cols:
+            col = (m[f"{c}_a"].round(6) == m[f"{c}_b"].round(6)
+                   if m[f"{c}_a"].dtype.kind == "f"
+                   else m[f"{c}_a"] == m[f"{c}_b"])
+            same = col if same is None else (same & col)
+        if float(same.mean()) >= threshold:
+            # report the LATER-named one as the duplicate, deterministically
+            out[b] = a
+    return out
+
+
 def truthful_exit_name(exit_name, cube_predates_b1593=True):
     """Report what an exit ACTUALLY DID, not what it was called.
 

@@ -22,6 +22,7 @@ import contextlib
 import io
 import itertools
 import json
+import sys
 from pathlib import Path
 
 import pandas as pd
@@ -173,6 +174,11 @@ def main() -> int:
                     help="abort if more than this fraction of fires cannot be re-diagnosed")
     a = ap.parse_args()
 
+    # B1623 (S6-B1620c): a dropped ticker used to vanish silently. Counted and
+    # surfaced now, and ABORTED above a threshold - a silent drop is a BIASED
+    # subsample, which is exactly how cfg2 lost 167 of 420 fires and reported
+    # metrics on the survivors as though they were the population (L454).
+    DROPS: dict = {"no_parquet": [], "no_diag": []}
     cube = rc.load_cube(Path(a.cube) if a.cube else R5_CUBE)
     g = cube[cube["strategy"] == STRATEGY].copy()
     # load_cube yields entry_date as datetime.date; roster_core's window
@@ -197,6 +203,11 @@ def main() -> int:
     for t in tickers:
         df = _load_ohlcv(t)
         if df is None:
+            # B1623: was a bare `continue`. A whole ticker vanishing without a
+            # counter is the cfg2 defect wearing a different costume - the run
+            # completes, the numbers look self-consistent, and they describe a
+            # subsample nobody chose.
+            DROPS["no_parquet"].append(t)
             continue
         for when in fires[fires.ticker == t].entry_date:
             for cm in CLOSE_MITIGATION:
@@ -215,6 +226,20 @@ def main() -> int:
     for cm in CLOSE_MITIGATION:
         union |= set(diags[cm].keys())
     n_f = len(fires)
+    # B1623 (S6-B1620c): surface the drops BEFORE any metric is printed, and
+    # abort if they are material. Silence here is what let a biased 60pct
+    # subsample be reported as a result (L454).
+    if DROPS["no_parquet"]:
+        lost = int(fires[fires.ticker.isin(DROPS["no_parquet"])].shape[0])
+        share = lost / n_f if n_f else 0.0
+        print(f"DROPPED {len(DROPS['no_parquet'])} tickers with no parquet "
+              f"({lost} fires, {share:.1%}): {sorted(DROPS['no_parquet'])[:8]}")
+        if share > a.max_diag_loss:
+            print(f"ABORT: dropped-ticker share {share:.1%} exceeds "
+                  f"--max-diag-loss {a.max_diag_loss:.1%}. Metrics computed on "
+                  f"the survivors would describe a subsample nobody chose.",
+                  file=sys.stderr)
+            return 2
     union_loss = 1.0 - (len(union) / n_f) if n_f else 0.0
     for cm in CLOSE_MITIGATION:
         print(f"close_mitigation={cm}: diagnosed {len(diags[cm])} of {n_f} "
@@ -352,14 +377,20 @@ def main() -> int:
          "step1_distinct_outcomes": len(classes),
          "results": rows}, indent=2))
 
-    print(f"\n{'break':>6} {'age':>5} {'tail':>4} {'fires':>6} {'ho_n':>5} "
-          f"{'fp_n':>5} {'sharpe':>7} {'pass':>4}  verdict")
+    # B1623 (S6-B1620d): STEP 1 no longer PRINTS gate verdicts. They stay in the
+    # payload for STEP 2, but printing a PASS/FAIL column here is what produced
+    # "0 PASS across 400 combinations" reported as a Step-1 result - a category
+    # error, since Step 1 can never produce a PASS (L471, CHECKLIST #202). With
+    # 18 configs to come, that output would have been read 18 more times.
+    print(f"\n{'cm':>6} {'break':>6} {'age':>5} {'tail':>4} {'fires':>6} "
+          f"{'ho_n':>5} {'fp_n':>5} {'sharpe':>7}   (STEP 1 = RANKING, no gates)")
     for r in rows[:18]:
-        print(f"{str(r['close_mitigation']):>6} {str(r['age_bars_max']):>5} "
+        print(f"{str(r['close_mitigation']):>6} {str(r['break_pct_max']):>6} "
+              f"{str(r['age_bars_max']):>5} "
               f"{r['tail_n']:>4} {r.get('fires', 0):>6} "
-              f"{r.get('holdout_n', 0):>5} {r.get('full_period_n', 0):>5} "
-              f"{(f'{r.get(chr(115)+chr(104)+chr(97)+chr(114)+chr(112)+chr(101)):.3f}' if r.get('sharpe') is not None else '-'):>7} "
-              f"{str(r.get('gates_passed', '-')):>4}  {r['verdict']}")
+              f"{(r.get('holdout_n') if r.get('holdout_n') is not None else '-'):>5} "
+              f"{r.get('full_period_n', 0):>5} "
+              f"{(f'{r.get(chr(115)+chr(104)+chr(97)+chr(114)+chr(112)+chr(101)):.3f}' if r.get('sharpe') is not None else '-'):>7}")
     print(f"\nwrote {a.out}")
     return 0
 

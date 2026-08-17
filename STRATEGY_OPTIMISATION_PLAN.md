@@ -1113,6 +1113,7 @@ diagnosis-loss gate aborts above 2pct.
 | any PASS selecting `regime_flip` | it was a time stop pre-B1593; re-derive before trusting |
 | **every swept LEVEL changes the outcome** | **a level that changes nothing is a wasted dimension (L473)** |
 | **top-N holds N DISTINCT fire-sets** | **cfg2's top 10 was 4 real candidates wearing 10 rows (L473)** |
+| **measure DEGRADED exits per cube** | `regime_flip` was a time stop in every pre-B1622 cube; measured, not assumed (L483) |
 | **equivalence-class members keep the SAME FIRES** | a de-dup key of `(fires, exit, sharpe)` could merge different fire-sets that tie; verified 6 of 6 (B1612) |
 
 ```bash
@@ -1124,6 +1125,21 @@ was never asked of the PARAMETER axis**, so `tail_n` sat at `[3, 5, 10, 20]` thr
 combinations with `10 -> 20` moving **0 of 50** cfg1 groups. A lens is defined by its QUESTION,
 not by the axis it was first applied to (L474). `--anchor` exempts the production value, which
 is carried for reproducibility, not to discriminate.
+
+**ACCEPTED ASYMMETRY (owner ruling 2026-08-17).** B1622 made `regime_flip` executable. cfg1 and
+cfg2 were NOT re-run, so they carry a `regime_flip` that is a 20-day time stop while the 18
+remaining configs carry a live one. **The owner accepted this rather than spend 6.6 h re-running.**
+It is not tracked by date - `roster_core.measure_degraded_exits(cube)` MEASURES it from any cube:
+
+```bash
+python -c "import sys;sys.path.insert(0,'.');import scripts.roster_core as rc,pathlib; \
+  print(rc.measure_degraded_exits(rc.load_cube(pathlib.Path('output_cfg<N>/trade_exit_detail.csv'))))"
+```
+
+MEASURED 2026-08-17 on cfg2: **3 collapsed pairs**, not one -
+`atr_trail_mae_conditional`==`atr_trail_1x`, `reverse_signal`==`atr_trail_mae_conditional`,
+`time_stop_20d`==`regime_flip`. That independently reproduces the known **26 exits -> 23
+effective** (L460). **Never quote "best of 26" without running this first.**
 
 ### 4. Spot check 50 random trades - EVERY config
 ```bash
