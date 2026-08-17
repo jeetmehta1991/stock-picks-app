@@ -14961,3 +14961,47 @@ def test_b1610_inert_swept_level_is_detected():
         last = [p for p in pairs if p["from"] == 10 and p["to"] == 20][0]
         assert last["changed"] == expect, (
             f"{f}: tail_n 10->20 moved {last['changed']} groups, pinned {expect}")
+
+
+def test_b1611_reband_and_production_anchor():
+    """Owner-approved band [1, 2, 3, 5, 10, 20]; 20 retained as production anchor.
+
+    The old band moved 26pct (cfg1) / 64pct (cfg2) of parameter groups. Re-banded
+    it moves 100pct in BOTH - the added levels do the work (1 -> 2 moves 50 of 50
+    groups in each config). The 10 -> 20 pair stays inert BY DESIGN: an anchor
+    exists so the baseline reproduces, not to discriminate, so `--anchor` reports
+    it ANCHOR and the gate passes. Without that exemption the gate would fire
+    forever on a deliberate retention, and a gate that always fires is a gate
+    nobody reads.
+    """
+    import importlib.util
+    import json
+    import pathlib as _pl
+    spec = importlib.util.spec_from_file_location(
+        "_vgb2", "scripts/verify_grid_bands.py")
+    m = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(m)
+
+    src = _pl.Path("scripts/tighten_breaker_block.py").read_text(encoding="utf-8")
+    assert "TAIL_N = [1, 2, 3, 5, 10, 20]" in src, "owner-approved band must be live"
+    assert "max(TAIL_N)" in src, (
+        "diagnose_fire's tail window must stay derived from the band, so the "
+        "anchor 20 keeps defining how many events are examined")
+
+    keys = list(m.DEFAULT_KEYS)
+    for f in ("output_audit/b1611_cfg1_grid.json",
+              "output_audit/b1611_cfg2_grid.json"):
+        q = _pl.Path(f)
+        if not q.exists():
+            continue
+        rows = json.loads(q.read_text(encoding="utf-8"))["results"]
+        rep = m.marginal_effect(rows, "tail_n", keys)
+        assert rep["levels"] == [1, 2, 3, 5, 10, 20], rep["levels"]
+        assert rep["effect"] == 1.0, f"{f}: tail_n must now move EVERY group"
+        first = [p for p in rep["pairs"] if p["from"] == 1 and p["to"] == 2][0]
+        assert first["changed"] == 50, (
+            f"{f}: 1 -> 2 moved {first['changed']} groups, pinned 50")
+        assert m.analyse(rows, keys, anchors={"tail_n": 20})[1] == [], (
+            "the declared anchor pair must be exempt")
+        assert m.analyse(rows, keys)[1], (
+            "without --anchor the same pair must still FLAG")

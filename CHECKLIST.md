@@ -3131,6 +3131,10 @@ their Sharpe and `ci_lo` were byte-identical.
 **Before reporting a grid:** run the band check. **After any re-band:** re-grade — for a
 SUBSET-SAFE parameter that is offline and **MEASURED at 15.3 s per config**, not an engine run.
 
+**Declare the PRODUCTION ANCHOR** (`--anchor tail_n=20`). An anchor is carried so the baseline
+reproduces, not to discriminate; without a way to say "inert on purpose" the gate fires forever
+on a deliberate retention, and a gate that always fires is a gate nobody reads.
+
 **Retroactive coverage (#136):** B1544 (*"uncapping was a no-op"* — a shipped change with zero
 effect, found only after the fact); S6-B1576b (*"a 20-config sweep could silently run 20
 IDENTICAL configs and nothing would surface it"* — the same class at config level, raised as a
@@ -3161,3 +3165,21 @@ explicitly (`dict.__contains__(self, key)`).
 
 *Not its own item per the anti-theater guard (#136): (b) has ONE instance, so it rides with (a)
 rather than inflating the checklist.*
+
+### #206 - A LENS IS DEFINED BY ITS QUESTION, NOT BY THE AXIS IT FIRST PAID OFF ON (B1611 / L474)
+
+The post-config anomaly sweep already carried a duplicate-collapse lens - *"are 'distinct'
+columns byte-identical?"* - and it had already found **26 exits collapsing to 23 effective**.
+The identical question asked of the PARAMETER axis would have found `tail_n` immediately.
+**It was never asked.** The lens was written against the axis where it was discovered and
+stayed there, so a grid whose levels collapsed 3-into-1 passed an anomaly sweep whose entire
+purpose is catching collapse.
+
+**When a check earns its place, enumerate every axis its question applies to** - exits,
+parameters, tickers, dates, regimes - **and either apply it or record why it does not.**
+Writing a general test against one axis converts it into a special case, silently.
+
+**Retroactive coverage (#136):** `tail_n` 3-of-4 levels inert (L473) despite the exits lens
+existing; the `regime_flip` silent degradation (L461), where "does anything fall back without
+saying so" was asked of producers but not of exit methods; the B1119 doc-sweep suspension,
+where the per-turn sweep was applied to code turns but not to CSV-analysis turns.

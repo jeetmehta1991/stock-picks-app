@@ -46,7 +46,13 @@ R5_CUBE = Path("output_r5_merged_1_7/trade_exit_detail.csv")
 # per L359 - a breaker block is a RETEST, so closer is stricter.
 BREAK_PCT_MAX = [0.01, 0.02, 0.03, 0.05, None]   # None = production (no cap)
 AGE_BARS_MAX = [60, 120, 180, 250, None]         # None = production (no cap)
-TAIL_N = [3, 5, 10, 20]                          # 20 = production
+# B1610/B1611 (owner-approved 2026-08-17). WAS [3, 5, 10, 20] - MEASURED on 420
+# cfg2 fires those admit 39.8/68.8/98.6/100.0pct, i.e. three of four levels sat
+# PAST saturation and 10->20 moved 0 of 50 cfg1 parameter groups. The region that
+# discriminates is 1-3 (tail_n=2 alone cuts 73pct) and it lay BELOW the old floor.
+# The plan's own derivation already said rank 1-4; the band never spanned it (L473).
+# 20 is RETAINED as the production anchor per plan design-rule 7.
+TAIL_N = [1, 2, 3, 5, 10, 20]                    # 20 = production
 # P2 close_mitigation (READ smc.py:380). False = mitigated on high/low (production);
 # True = mitigated only on CLOSE, strictly fewer mitigations => strictly fewer fires.
 CLOSE_MITIGATION = [True, False]                 # False = production

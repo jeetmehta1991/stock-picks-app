@@ -1098,6 +1098,18 @@ diagnosis-loss gate aborts above 2pct.
 | `exits_effective` vs 26 | duplicate exits collapse; "best of 26" is usually fewer (L461) |
 | PASS rows with marginal `ci_lo` | 5 of 200 at `ci_lo` +0.08 is a WEAK positive, not a result |
 | any PASS selecting `regime_flip` | it was a time stop pre-B1593; re-derive before trusting |
+| **every swept LEVEL changes the outcome** | **a level that changes nothing is a wasted dimension (L473)** |
+| **top-N holds N DISTINCT fire-sets** | **cfg2's top 10 was 4 real candidates wearing 10 rows (L473)** |
+
+```bash
+python scripts/verify_grid_bands.py output_audit/<batch>_cfg<N>_grid.json --anchor tail_n=20
+```
+**This is the step that was missing.** The sweep above already carried a duplicate-collapse
+lens - `exits_effective` vs 26 - and it found `26 exits -> 23 effective`. **The same question
+was never asked of the PARAMETER axis**, so `tail_n` sat at `[3, 5, 10, 20]` through 400 graded
+combinations with `10 -> 20` moving **0 of 50** cfg1 groups. A lens is defined by its QUESTION,
+not by the axis it was first applied to (L474). `--anchor` exempts the production value, which
+is carried for reproducibility, not to discriminate.
 
 ### 4. Spot check 50 random trades - EVERY config
 ```bash
@@ -1124,7 +1136,7 @@ Run every lens, every config:
 | **False positive** | a trade/PASS recorded that should not exist? | - |
 | **False negative** | a fire the engine missed, a PASS suppressed? | MIN_N=30 suppressed 5 real passes (L455) |
 | **Silent degradation** | does anything FALL BACK without saying so? | `regime_flip` was a time stop in every cube (L461) |
-| **Duplicate information** | are "distinct" columns byte-identical? | 26 exits -> 23 effective (L460) |
+| **Duplicate information** | are "distinct" columns byte-identical? **Ask this of EVERY axis - exits, parameters, tickers, dates - not only the one where it first paid off.** | 26 exits -> 23 effective (L460); `tail_n` 3 of 4 levels inert (L473) |
 | **Units / scale** | do the units of every input match the constant? | 252 trading days over a CALENDAR hold (L458) |
 | **Config blindness** | does a re-deriving component get the ORIGINATING params? | grader graded cfg2 at the wrong swing_length (L454) |
 | **Provenance** | is the artifact the one you think it is? | universe was an abandoned A-C chunk (L445) |

@@ -8049,3 +8049,35 @@ historical 0-of-50 so a re-band forces re-derivation.
 SUBSET-SAFE, so no engine run is involved. The waste was never wall-clock; it was that the top
 10 handed to Step 2 contained **4 distinct fire-sets**, so Step 2 would validate four candidates
 while believing it validated ten.
+
+### L474
+
+**the duplicate-collapse lens existed, found a real defect, and was never pointed at the second axis**
+
+**B1611.** Owner: *"We did an audit of the results to map anomalies in run results. It was not
+just about grading."* Correct - and the runbook already held that audit. `MANDATORY POST-CONFIG
+ANALYSIS` step 3, *"Outlier + discrepancy sweep - ALL of these, every time"*, carries six checks,
+and step 5's adversarial table carries a **Duplicate information** lens: *"are 'distinct' columns
+byte-identical?"* That lens had already paid off - it found **26 exits collapsing to 23 effective**.
+
+**The same question, asked of the PARAMETER axis, would have found `tail_n` immediately.** It was
+never asked. The lens was written down against the axis where it was discovered - exits - and
+stayed there, so a grid whose levels collapsed 3-into-1 passed an anomaly sweep whose whole
+purpose is catching collapse.
+
+**The general rule: a lens is defined by its QUESTION, not by the axis it first paid off on.**
+When a check earns its place, enumerate every axis the question applies to - exits, parameters,
+tickers, dates, regimes - and either apply it or record why it does not apply. Writing it against
+one axis converts a general test into a special case, silently.
+
+**Also learned: an exemption is what keeps a gate alive.** With the owner-approved band
+`[1, 2, 3, 5, 10, 20]`, `tail_n` moves 100pct of parameter groups in both configs - but `10 -> 20`
+stays inert, because 20 is the PRODUCTION ANCHOR carried so the baseline reproduces (plan
+design-rule 7). A gate with no way to express "inert on purpose" fires forever on a deliberate
+retention, and a gate that always fires is a gate nobody reads. `--anchor tail_n=20` reports
+ANCHOR instead of INERT, and the check still FLAGS the pair when no anchor is declared.
+
+**Honest limit of the fix:** re-banding fixed the band's COVERAGE, not the top-N duplication.
+cfg2's top 10 still holds **4 distinct fire-sets** (cfg1 improved to 8 of 10), because inside the
+winning region `age_bars_max=180` already removes every high-rank event. De-duplicating the
+ranking is a separate change and remains owner-pending (S6-B1610e).

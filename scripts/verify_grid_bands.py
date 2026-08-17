@@ -86,16 +86,26 @@ def duplicate_rate(results, keys) -> tuple[int, int]:
     return len(seen), sum(c - 1 for c in seen.values())
 
 
-def analyse(results, keys, min_effect=DEFAULT_MIN_EFFECT) -> tuple[list, list]:
-    """Return (per-param reports, failures). A failure names an inert level."""
+def analyse(results, keys, min_effect=DEFAULT_MIN_EFFECT, anchors=None) -> tuple[list, list]:
+    """Return (per-param reports, failures). A failure names an inert level.
+
+    `anchors` maps param -> the PRODUCTION value. An anchor is carried so the
+    baseline stays reproducible (plan design-rule 7), not to discriminate, so a
+    pair whose upper level IS the anchor is reported ANCHOR rather than INERT.
+    Without this the gate fires forever on a deliberate retention and gets
+    ignored - which is how a gate dies.
+    """
+    anchors = anchors or {}
     reports, failures = [], []
     for k in keys:
         if len({r.get(k) for r in results}) < 2:
             continue  # not actually swept in this grid
         rep = marginal_effect(results, k, keys)
+        for p in rep["pairs"]:
+            p["anchor"] = (k in anchors and p["to"] == anchors[k])
         reports.append(rep)
         for p in rep["pairs"]:
-            if p["effect"] < min_effect:
+            if p["effect"] < min_effect and not p["anchor"]:
                 failures.append(
                     f"{k}: level {p['from']} -> {p['to']} changed the outcome in "
                     f"{p['changed']}/{p['groups']} parameter groups "
@@ -111,6 +121,10 @@ def main() -> int:
     ap.add_argument("grid", help="grid JSON with a 'results' list")
     ap.add_argument("--keys", default=",".join(DEFAULT_KEYS))
     ap.add_argument("--min-effect", type=float, default=DEFAULT_MIN_EFFECT)
+    ap.add_argument("--anchor", action="append", default=[],
+                    help="param=value production anchor, exempt from the inert "
+                         "check because it exists for reproducibility "
+                         "(repeatable, e.g. --anchor tail_n=20)")
     a = ap.parse_args()
 
     payload = json.loads(Path(a.grid).read_text(encoding="utf-8"))
@@ -126,14 +140,22 @@ def main() -> int:
     print(f"  {len(results)} combinations -> {distinct} DISTINCT outcomes; "
           f"{redundant} redundant ({100 * redundant / len(results):.0f}pct of the search)\n")
 
-    reports, failures = analyse(results, keys, a.min_effect)
+    anchors = {}
+    for spec in a.anchor:
+        k, _, v = spec.partition("=")
+        try:
+            anchors[k.strip()] = int(v)
+        except ValueError:
+            anchors[k.strip()] = None if v.strip() == "None" else v.strip()
+    reports, failures = analyse(results, keys, a.min_effect, anchors)
     print(f"  {'param':<20} {'levels':<28} {'changes outcome':>16}")
     for rep in reports:
         lv = ", ".join(str(x) for x in rep["levels"])
         print(f"  {rep['param']:<20} [{lv:<26}] "
               f"{rep['changed']:>5}/{rep['groups']:<4} ({100 * rep['effect']:>3.0f}pct)")
         for p in rep["pairs"]:
-            mark = "INERT" if p["effect"] < a.min_effect else "ok"
+            mark = ("ANCHOR" if p.get("anchor") else
+                    "INERT" if p["effect"] < a.min_effect else "ok")
             print(f"       {str(p['from']):>6} -> {str(p['to']):<6} "
                   f"{p['changed']:>4}/{p['groups']:<4} ({100 * p['effect']:>3.0f}pct)  {mark}")
 
