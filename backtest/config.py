@@ -2484,6 +2484,39 @@ _v = os.environ.get("SMC_BREAKER_BREAK_PCT_MAX", "").strip()
 SMC_BREAKER_BREAK_PCT_MAX = float(_v) if _v else None
 del _v
 
+# B1619 / S6-B1617b (owner-approved C+D, 2026-08-17). The four knobs above are
+# GLOBAL: MEASURED blast radius is 5 strategies for tail_n/close_mitigation and
+# 2 for the breaker caps. Setting one to tune the LONG leg silently retunes the
+# SHORT leg and both mitigation blocks, whose numbers were measured at the
+# defaults. Invisible under `--cube-isolation`; a real defect at Phase 1B where
+# the whole roster runs together.
+#
+# VARIANTS are the fix. Each entry emits ADDITIONAL suffixed signal keys -
+# `smc_breaker_block_bullish__<suffix>` - leaving the base keys untouched, so a
+# tuned strategy binds to its own signal and every other consumer is unaffected.
+# This is the B574 narrow-scope local-variant precedent (`cpr_narrow_tight`,
+# `supertrend_flip_recent_long_5d`).
+#
+# COST, MEASURED B1619 on a 1,200-bar AAPL slice:
+#   extra variant sharing ob_df ............ 0.368 ms
+#   extra _smc.ob call (differing close_mitigation) ... 4.92 ms
+# So variants differing only in tail/age/break are ~free; the producer groups
+# by close_mitigation and calls _smc.ob at most ONCE per distinct value.
+#
+# Format: {"<suffix>": {"tail_n": int, "age_bars_max": int|null,
+#                       "break_pct_max": float|null, "close_mitigation": bool}}
+# EMPTY BY DEFAULT - no variant keys are emitted and the signal dict is
+# byte-identical to pre-B1619.
+import json as _json
+_raw = os.environ.get("SMC_BREAKER_VARIANTS", "").strip()
+try:
+    SMC_BREAKER_VARIANTS: dict = _json.loads(_raw) if _raw else {}
+except Exception:
+    # A malformed spec must NOT silently fall back to "no variants" - that
+    # would run the sweep at production settings while reporting a variant.
+    raise ValueError(f"SMC_BREAKER_VARIANTS is not valid JSON: {_raw!r}")
+del _raw
+
 # Which EMA span the trend leg reads. compute_ema_sma emits spans 9/20/21/50/200
 # from pairs (9,21),(20,50),(50,200) - so no producer change is needed, only a
 # change of which emitted signal the strategy consumes.

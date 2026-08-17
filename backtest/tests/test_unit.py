@@ -15036,7 +15036,15 @@ def test_b1612_swept_parameters_engine_reachability():
     # P2/P3: what were a defaulted call and a hardcoded literal are parameters.
     assert "_smc.ob(ohlc, swings, close_mitigation=close_mitigation)" in smc
     assert "ob_events.tail(20)" not in smc
-    assert "ob_events.tail(ob_tail_n)" in smc
+    # B1619: the loop moved into `_breaker_scan`, shared by the base path and
+    # every variant so the two cannot drift. What must hold is that the
+    # CONFIGURED value reaches the scan - not where the scan happens to live.
+    assert "ob_events.tail(tail_n)" in smc
+    assert "ob_df, close, current_idx, ob_tail_n," in smc, (
+        "the base call must pass the CONFIGURED tail, not a literal")
+    assert smc.count("_breaker_scan(") >= 3, (
+        "definition + base call + variant call; fewer means variants are not "
+        "parameterised or a second copy of the loop exists")
     # P4: the near-miss name governs a DIFFERENT signal, so its presence must
     # never be read as the breaker age cap existing.
     assert "event_recency_bars" in smc
@@ -15157,3 +15165,118 @@ def test_b1618_sweep_builder_reads_the_correct_baseline():
     ac = sum(1 for x in picked if x[0] <= "C") / len(picked)
     assert ac < 0.5, f"A-C share {ac:.0%} - this looks like the abandoned chunk"
     assert {"NVDA", "MSFT", "TSLA"} <= set(picked), "mega-caps must be present"
+
+
+def test_b1619_breaker_variants_isolate_and_do_not_move_the_base():
+    """S6-B1617b option C (owner-approved): variants must NOT touch base keys.
+
+    The four producer knobs are GLOBAL - MEASURED blast radius 5 strategies.
+    Admitting a tuned combination by moving a global knob would silently retune
+    `smc_breaker_block_short`, both mitigation blocks and `pre_rebalance_long`,
+    whose numbers were measured at the defaults. A variant emits SUFFIXED keys
+    instead, so only a strategy bound to that suffix sees the change.
+    """
+    import pandas as _pd
+    import pathlib as _pl
+    from backtest.signals.smc_ict import compute_smc_signals
+
+    def _load(sym):
+        p = _pl.Path(f"backtest/data/cache/ohlcv/{sym}.parquet")
+        if not p.exists():
+            return None
+        d = _pd.read_parquet(p)
+        if not isinstance(d.index, _pd.DatetimeIndex) and "date" in d.columns:
+            d = d.set_index("date")
+        return d.sort_index()
+
+    BASE = ("smc_breaker_block_bullish", "smc_breaker_block_bearish",
+            "smc_mitigation_block_long", "smc_mitigation_block_short")
+    checked = ident = moved = 0
+    for sym in ("AAPL", "TSLA", "AMD"):
+        d = _load(sym)
+        if d is None or len(d) < 900:
+            continue
+        for i in range(400, 900, 47):
+            sub = d.iloc[:i + 1]
+            base = compute_smc_signals(sub, swing_length=10)
+            # (a) the B1619 refactor + an empty variant map change nothing
+            assert base == compute_smc_signals(
+                sub, swing_length=10, breaker_variants={}), (
+                f"{sym}@{i}: empty-variant path diverged (CHECKLIST #205)")
+            # (b) a variant equal to production reproduces the base exactly
+            idv = compute_smc_signals(sub, swing_length=10, breaker_variants={
+                "identity": {"tail_n": 20, "age_bars_max": None,
+                             "break_pct_max": None, "close_mitigation": False}})
+            for k in BASE:
+                assert idv[k] == idv[f"{k}__identity"], f"{sym}@{i} {k}"
+            ident += 1
+            # (c) a TUNED variant must leave every base key untouched
+            tuned = compute_smc_signals(sub, swing_length=10, breaker_variants={
+                "t2": {"tail_n": 2, "age_bars_max": 180,
+                       "break_pct_max": 0.03, "close_mitigation": False}})
+            for k in BASE:
+                assert tuned[k] == base[k], (
+                    f"{sym}@{i} {k}: a VARIANT moved a BASE key - isolation is "
+                    f"broken and admitting it would retune 5 other strategies")
+            if tuned["smc_breaker_block_bullish__t2"] != base["smc_breaker_block_bullish"]:
+                moved += 1
+            checked += 1
+    if checked == 0:
+        import pytest
+        pytest.skip("no parquet available")
+    assert ident > 0 and moved > 0, (
+        f"variant never differed from base ({moved}) - it is wired in name only")
+
+
+def test_b1619_variant_strategy_binds_to_its_own_signal():
+    """Option D: an admitted combination becomes its OWN registration.
+
+    The factory must read the SUFFIXED key and ignore the base one, and the
+    roster must be UNCHANGED until an owner approves an admission.
+    """
+    from backtest.signals.screener import (
+        ALL_STRATEGIES, BREAKER_VARIANT_STRATEGIES,
+        make_breaker_variant_strategy, assert_variant_strategies_are_configured)
+
+    assert len(ALL_STRATEGIES) == 222, (
+        f"roster is {len(ALL_STRATEGIES)}; the variant factory must not "
+        f"register anything until an admission is owner-approved")
+    assert BREAKER_VARIANT_STRATEGIES == {}
+
+    f = make_breaker_variant_strategy("t2", "long")
+    assert f({"smc_breaker_block_bullish__t2": True,
+              "price_above_ema_200": True})["fires"] is True
+    assert f({"smc_breaker_block_bullish": True,
+              "price_above_ema_200": True})["fires"] is False, (
+        "a variant strategy must NOT fire on the base signal")
+    assert f({"smc_breaker_block_bullish__t2": True})["fires"] is False
+
+    s = make_breaker_variant_strategy("t2", "short")
+    assert s({"smc_breaker_block_bearish__t2": True, "below_ema_200": True,
+              "borrow_ok": True})["fires"] is True
+
+    # the silent-zero guard: registered but unconfigured must RAISE
+    assert_variant_strategies_are_configured()  # empty roster -> fine
+    BREAKER_VARIANT_STRATEGIES["strat_smc_breaker_block_long__ghost"] = f
+    try:
+        import pytest
+        with pytest.raises(RuntimeError, match="fire ZERO times"):
+            assert_variant_strategies_are_configured()
+    finally:
+        BREAKER_VARIANT_STRATEGIES.clear()
+
+
+def test_b1619_ob_primitive_is_not_prunable_so_variants_cannot_silently_vanish():
+    """Demand pruning must never skip `ob`, or variant keys stop being emitted.
+
+    CHECKED, not assumed: SMC_PRIMITIVE_KEYS covers fvg / bos_choch /
+    retracements only. `ob` is absent, so it is never skipped and no suffixed
+    breaker key can silently disappear under pruning.
+    """
+    from backtest.signals import demand_pruning as dp
+    assert "ob" not in dp.SMC_PRIMITIVE_KEYS, (
+        "`ob` became prunable - a pruned run would stop emitting every "
+        "smc_breaker_block_* key, including variants, with no error")
+    assert set(dp.SMC_PRIMITIVE_KEYS) == {"fvg", "bos_choch", "retracements"}
+    joined = set().union(*dp.SMC_PRIMITIVE_KEYS.values())
+    assert not any(k.startswith("smc_breaker_block") for k in joined)

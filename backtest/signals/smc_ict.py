@@ -72,6 +72,68 @@ def _most_recent_event_within(series: pd.Series, current_idx: int,
     return nonzero.iloc[-1]
 
 
+def _breaker_scan(ob_df, close, current_idx, tail_n, age_max, break_max):
+    """Evaluate the breaker/mitigation block signals over an OB frame.
+
+    ONE implementation shared by the production path and every variant. A
+    copy-pasted variant loop would be free to drift from the base, which is
+    precisely the defect class that produced `regime_flip` (L461) and the
+    grader-vs-engine gap (L475).
+
+    Returns (breaker_bull, breaker_bear, mitigation_long, mitigation_short).
+    """
+    import pandas as _pd
+    breaker_bull = breaker_bear = mitigation_long = mitigation_short = False
+    if ob_df is None or "Top" not in getattr(ob_df, "columns", ()) \
+            or "Bottom" not in ob_df.columns:
+        return breaker_bull, breaker_bear, mitigation_long, mitigation_short
+    ob_events = ob_df[ob_df["OB"].fillna(0) != 0]
+    tail = ob_events.tail(tail_n) if not ob_events.empty else ob_df.iloc[0:0]
+    # B1617: the position map is O(len(ob_df)) and is built ONLY when the age
+    # cap is active - 736 us on a 1,255-row index, paid on every bar otherwise.
+    _ob_pos = ({lbl: _p for _p, lbl in enumerate(ob_df.index)}
+               if age_max is not None else None)
+    for idx_pos in range(len(tail)):
+        row = tail.iloc[idx_pos]
+        _row_label = tail.index[idx_pos]
+        ob_val = row.get("OB")
+        if _pd.isna(ob_val) or ob_val == 0:
+            continue
+        top = row.get("Top")
+        bot = row.get("Bottom")
+        mit = row.get("MitigatedIndex")
+        if _pd.isna(top) or _pd.isna(bot):
+            continue
+        is_mitigated = (not _pd.isna(mit) and mit > 0 and int(mit) < current_idx)
+        in_zone = (close >= float(bot)) and (close <= float(top))
+        # Batch 216: a mitigated OB flips role. Bullish OB broken downward ->
+        # resistance (short bias); bearish OB broken upward -> support.
+        if is_mitigated:
+            _age_ok = True
+            if age_max is not None:
+                _age = current_idx - (_ob_pos or {}).get(_row_label, current_idx)
+                _age_ok = _age <= age_max
+            if ob_val == 1 and close < float(bot):
+                _brk_ok = True
+                if break_max is not None:
+                    _brk_ok = (float(bot) - close) / float(bot) <= break_max
+                if _age_ok and _brk_ok:
+                    breaker_bear = True
+            elif ob_val == -1 and close > float(top):
+                _brk_ok = True
+                if break_max is not None:
+                    _brk_ok = (close - float(top)) / float(top) <= break_max
+                if _age_ok and _brk_ok:
+                    breaker_bull = True
+        # price currently inside an UN-mitigated OB zone (mitigating NOW)
+        if not is_mitigated and in_zone:
+            if ob_val == 1:
+                mitigation_long = True
+            elif ob_val == -1:
+                mitigation_short = True
+    return breaker_bull, breaker_bear, mitigation_long, mitigation_short
+
+
 def compute_smc_signals(
     ohlc: pd.DataFrame,
     swing_length: int = 20,
@@ -85,6 +147,7 @@ def compute_smc_signals(
     ob_tail_n: int = 20,
     breaker_age_bars_max: Optional[int] = None,
     breaker_break_pct_max: Optional[float] = None,
+    breaker_variants: Optional[dict] = None,
 ) -> dict:
     """Compute SMC / ICT signals for a single-ticker OHLCV DataFrame.
 
@@ -264,85 +327,50 @@ def compute_smc_signals(
                 out["smc_ob_bullish_active"] = bool(ob_recent_val == 1)
                 out["smc_ob_bearish_active"] = bool(ob_recent_val == -1)
                 if "Top" in ob_df.columns and "Bottom" in ob_df.columns:
-                    breaker_bull = False
-                    breaker_bear = False
-                    mitigation_long = False
-                    mitigation_short = False
-                    # Batch 556 OPT-C Phase 4 producer fix (mirrors Batch 390
-                    # liquidity fix): OB events are SPARSE in the OHLCV-aligned
-                    # DataFrame (empirical: ~2 events per 500 bars on AAPL).
-                    # tail(50) catches 0-1 actual events; filter to non-zero
-                    # OB rows FIRST, then take last 20 ACTUAL events. Keep
-                    # the same "current_idx - swing_safe" PIT slicing implicit
-                    # in iloc bounds (rows beyond current_idx aren't here).
-                    ob_events = ob_df[ob_df["OB"].fillna(0) != 0]
-                    # B1616: was a hardcoded tail(20). The literal is now the
-                    # DEFAULT of a parameter, so the value the sweep selects can
-                    # actually be executed (S6-B1612f).
-                    tail = (ob_events.tail(ob_tail_n) if not ob_events.empty
-                            else ob_df.iloc[0:0])
-                    # Position of each OB row within the frame, so breaker age
-                    # is measured the same way the grader measures it:
-                    # age_bars = current_idx - position_of_the_OB_bar.
-                    # B1617: built ONLY when the age cap is active. On the
-                    # default path this is 736 us per call on a 1,255-row index
-                    # (0.12pct of the 627 ms call) - small, but it is work done
-                    # on every bar of every ticker to support a feature that is
-                    # switched off.
-                    _ob_pos = ({lbl: _p for _p, lbl in enumerate(ob_df.index)}
-                               if breaker_age_bars_max is not None else None)
-                    for idx_pos in range(len(tail)):
-                        row = tail.iloc[idx_pos]
-                        _row_label = tail.index[idx_pos]
-                        ob_val = row.get("OB")
-                        if pd.isna(ob_val) or ob_val == 0:
-                            continue
-                        top = row.get("Top")
-                        bot = row.get("Bottom")
-                        mit = row.get("MitigatedIndex")
-                        if pd.isna(top) or pd.isna(bot):
-                            continue
-                        is_mitigated = (
-                            not pd.isna(mit) and mit > 0 and int(mit) < current_idx
-                        )
-                        in_zone = (close >= float(bot)) and (close <= float(top))
-                        # Batch 216: Breaker block - mitigated OB flips role.
-                        # Bullish OB that's broken downward -> now resistance
-                        # (short bias). Bearish OB broken upward -> support.
-                        if is_mitigated:
-                            # B1616: two caps that did not exist before. Both
-                            # default to None, in which case the tests below
-                            # are skipped and behaviour is byte-identical.
-                            _age_ok = True
-                            if breaker_age_bars_max is not None:
-                                _age = current_idx - (_ob_pos or {}).get(
-                                    _row_label, current_idx)
-                                _age_ok = _age <= breaker_age_bars_max
-                            if ob_val == 1 and close < float(bot):
-                                _brk_ok = True
-                                if breaker_break_pct_max is not None:
-                                    _brk_ok = ((float(bot) - close) / float(bot)
-                                               <= breaker_break_pct_max)
-                                if _age_ok and _brk_ok:
-                                    breaker_bear = True
-                            elif ob_val == -1 and close > float(top):
-                                _brk_ok = True
-                                if breaker_break_pct_max is not None:
-                                    _brk_ok = ((close - float(top)) / float(top)
-                                               <= breaker_break_pct_max)
-                                if _age_ok and _brk_ok:
-                                    breaker_bull = True
-                        # Mitigation block: price currently inside an
-                        # UN-mitigated OB zone (about to be mitigated NOW)
-                        if not is_mitigated and in_zone:
-                            if ob_val == 1:
-                                mitigation_long = True
-                            elif ob_val == -1:
-                                mitigation_short = True
+                    (breaker_bull, breaker_bear, mitigation_long,
+                     mitigation_short) = _breaker_scan(
+                        ob_df, close, current_idx, ob_tail_n,
+                        breaker_age_bars_max, breaker_break_pct_max)
                     out["smc_breaker_block_bullish"]  = breaker_bull
                     out["smc_breaker_block_bearish"]  = breaker_bear
                     out["smc_mitigation_block_long"]  = mitigation_long
                     out["smc_mitigation_block_short"] = mitigation_short
+                    # B1619 (C): additional SUFFIXED keys, one per configured
+                    # variant. The base keys above are untouched, so a tuned
+                    # strategy binds to its own signal and no other consumer
+                    # moves. Variants are grouped by close_mitigation so
+                    # _smc.ob runs at most ONCE per distinct value (4.92 ms
+                    # measured) while the scan itself is 0.368 ms.
+                    if breaker_variants:
+                        _by_cm: dict = {}
+                        for _sfx, _spec in breaker_variants.items():
+                            _by_cm.setdefault(
+                                bool(_spec.get("close_mitigation",
+                                               close_mitigation)),
+                                []).append((_sfx, _spec))
+                        for _cm, _items in _by_cm.items():
+                            if _cm == bool(close_mitigation):
+                                _vob = ob_df
+                            else:
+                                try:
+                                    _vob = _smc.ob(ohlc, swings,
+                                                   close_mitigation=_cm)
+                                except Exception as _e:
+                                    log_silent_failure(
+                                        "smc_ict.variant_ob", _e)
+                                    continue
+                            for _sfx, _spec in _items:
+                                _b, _r, _ml, _ms = _breaker_scan(
+                                    _vob, close, current_idx,
+                                    int(_spec.get("tail_n", ob_tail_n)),
+                                    _spec.get("age_bars_max",
+                                              breaker_age_bars_max),
+                                    _spec.get("break_pct_max",
+                                              breaker_break_pct_max))
+                                out[f"smc_breaker_block_bullish__{_sfx}"] = _b
+                                out[f"smc_breaker_block_bearish__{_sfx}"] = _r
+                                out[f"smc_mitigation_block_long__{_sfx}"] = _ml
+                                out[f"smc_mitigation_block_short__{_sfx}"] = _ms
         except Exception as _e:
             log_silent_failure("smc_ict.order_block_compute", _e)
         # BOS / CHoCH with Level for retest logic

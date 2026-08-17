@@ -53,15 +53,18 @@ PARAMS = {
     "P2 close_mitigation": (
         True, "backtest/signals/smc_ict.py",
         "_smc.ob(ohlc, swings, close_mitigation=close_mitigation)", None),
+    # B1619: the loop moved into `_breaker_scan`, shared by the base path and
+    # every variant so the two cannot drift. The anchors follow it - what must
+    # hold is that the CONFIGURED value reaches the scan, not where the scan lives.
     "P3 tail_n": (
         True, "backtest/signals/smc_ict.py",
-        "ob_events.tail(ob_tail_n)", None),
+        "ob_df, close, current_idx, ob_tail_n,", None),
     "P4 age_bars_max": (
         True, "backtest/signals/smc_ict.py",
-        "breaker_age_bars_max is not None", None),
+        "breaker_age_bars_max, breaker_break_pct_max)", None),
     "P5 break_pct_max": (
         True, "backtest/signals/smc_ict.py",
-        "breaker_break_pct_max is not None", None),
+        "break_max is not None", None),
     "P6 ema span": (
         True, "backtest/signals/screener.py",
         '_ema_key = f"price_above_ema_{_cfg.STRAT_EMA_SPAN}"', None),
@@ -74,12 +77,18 @@ CALL_SITE_TOKENS = (
     'ob_tail_n=getattr(_cfg, "SMC_OB_TAIL_N", 20)',
     'breaker_age_bars_max=getattr(_cfg, "SMC_BREAKER_AGE_BARS_MAX", None)',
     'breaker_break_pct_max=getattr(_cfg, "SMC_BREAKER_BREAK_PCT_MAX", None)',
+    'breaker_variants=getattr(_cfg, "SMC_BREAKER_VARIANTS", None)',
 )
 # The breaker loop must now CONTAIN an age filter. Before B1616 this same
 # region was asserted to contain NONE - the inversion is the shipped change.
-BREAKER_LOOP = (r"ob_events = ob_df\[ob_df\[.OB.\]\.fillna\(0\) != 0\]"
-                r".*?out\[.smc_breaker_block_bullish.\]")
-AGE_FILTER = r"breaker_age_bars_max"
+# The scan body must still CONTAIN an age filter. Anchored on `_breaker_scan`
+# now that the loop lives there; before B1616 this same region was asserted to
+# contain NO age filter, and the inversion is the shipped change.
+# NON-greedy stopped at the EARLY-RETURN guard, before the age filter, and
+# reported a false FAIL. Greedy spans to the function's final return. A gate
+# that cries wolf gets ignored, so the anchor has to be right (L474).
+BREAKER_LOOP = r"def _breaker_scan\(.*return breaker_bull, breaker_bear"
+AGE_FILTER = r"age_max is not None"
 
 
 def check() -> list[str]:
@@ -120,6 +129,17 @@ def check() -> list[str]:
             "P4 age_bars_max: the age filter is GONE from the breaker loop. "
             "The parameter would be accepted and silently ignored - worse than "
             "not having it, because the signature implies it works.")
+
+    # B1619: `_breaker_scan` must be called by the BASE path AND the variant
+    # path. One call site means variants are not actually parameterised; a
+    # second implementation means base and variant can drift.
+    n_scan = len(re.findall(r"_breaker_scan\(", smc))
+    if n_scan < 3:  # def + base call + variant call
+        failures.append(
+            f"_breaker_scan appears {n_scan} times in smc_ict.py; expected the "
+            f"definition plus a BASE call and a VARIANT call. Either variants "
+            f"are not parameterised, or a second copy of the loop exists and "
+            f"can drift from the base (L475).")
 
     # The producer accepting a parameter proves nothing if the engine never
     # passes one. Assert the call site reads config for all four.

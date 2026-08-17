@@ -8294,3 +8294,54 @@ terminated on the same monthly spend limit. Two consecutive attempts, no finding
 reported. The B1335 rule-4 cadence is currently UNAVAILABLE, not satisfied - and the two findings
 above were both found by the author re-reading his own work, which is exactly the coverage that
 cadence exists to supplement rather than replace.
+
+### L480
+
+**a shared helper is the only honest way to add a variant, and the gate caught the refactor twice**
+
+**B1619.** Owner approved C+D for S6-B1617b. The producer knobs are GLOBAL - MEASURED blast radius
+5 strategies - so admitting a tuned combination by moving one would have silently retuned
+`smc_breaker_block_short`, both mitigation blocks and `pre_rebalance_long`, whose numbers were all
+measured at the defaults.
+
+**C: variants emit SUFFIXED keys** (`smc_breaker_block_bullish__t2`) and leave the base keys alone.
+**D: an admitted combination becomes its OWN registration** reading its own key, so the original
+strategy keeps the signal - and the validated numbers - it always had.
+
+**The design decision that mattered: ONE `_breaker_scan` helper, called by the base path and every
+variant.** A copy-pasted variant loop would have been free to drift from the base - which is
+exactly how `regime_flip` (L461) and the grader-vs-engine gap (L475) happened. The gate now asserts
+`_breaker_scan` appears at least three times (definition + base call + variant call): fewer means
+either variants are not parameterised, or a second copy exists that can drift.
+
+**COST, measured BEFORE building** (discharging the prior turn's UNVERIFIED caveat):
+
+```
+extra variant sharing ob_df ......................... 0.368 ms
+extra _smc.ob call (differing close_mitigation) ..... 4.92 ms
+end-to-end: base 107.1 ms | +4 same-cm +3.92 ms | +4 other-cm +9.53 ms
+```
+
+So the producer groups variants by `close_mitigation` and calls `_smc.ob` at most once per distinct
+value. The measurement is why grouping exists, rather than an assumption about cheapness.
+
+**TESTED EXTENSIVELY, and one result is the whole point:** across 3 tickers and every sampled bar,
+a TUNED variant moved a base key **0 times** while differing from the base on 63 bars. Isolation
+holds. Also pinned: empty-variant path byte-identical (112 ticker-bars), an identity variant equals
+the base on all four keys, the `close_mitigation` variant reaches `_smc.ob` on both searched cases,
+the factory fires on its own key and NOT the base, and the roster stays at 222.
+
+**CHECKED, not assumed - demand pruning cannot silence a variant.** `SMC_PRIMITIVE_KEYS` covers
+`fvg`, `bos_choch`, `retracements` only; **`ob` is not prunable**, so no suffixed breaker key can
+vanish under pruning. Pinned, because if `ob` ever became prunable a pruned run would stop emitting
+every breaker key with no error.
+
+**And a silent-zero guard.** A registered variant strategy whose suffix is missing from
+`SMC_BREAKER_VARIANTS` reads a key nobody emits: it fires zero times and reports nothing wrong.
+`assert_variant_strategies_are_configured()` raises instead.
+
+**Twice this turn the engine gate fired on my own refactor** - correctly the first time (the
+anchors genuinely moved into the helper) and FALSELY the second, because my `BREAKER_LOOP` regex
+was non-greedy and stopped at the helper early-return guard, before the age filter. **A gate that
+cries wolf gets ignored**, so a false positive is not a harmless over-trigger - it is the beginning
+of that gate being ignored. Same reasoning as the `--anchor` exemption in L474.

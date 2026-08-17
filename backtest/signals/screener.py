@@ -4317,6 +4317,67 @@ def strat_smc_breaker_block_long(s):
          f"Above {_cfg.STRAT_EMA_SPAN} EMA (regime gate)"])
 
 
+def make_breaker_variant_strategy(suffix: str, direction: str = "long"):
+    """B1619 (D, owner-approved): bind a strategy to a VARIANT breaker signal.
+
+    The optimisation sweep selects producer parameters, but those knobs are
+    GLOBAL - MEASURED blast radius 5 strategies. Admitting a tuned combination
+    by moving the global knob would silently retune `smc_breaker_block_short`,
+    both mitigation blocks and `pre_rebalance_long`, whose numbers were
+    measured at the defaults.
+
+    So an admitted combination becomes its OWN registration reading its OWN
+    suffixed key (`smc_breaker_block_bullish__<suffix>`), while the original
+    strategy keeps the signal - and the validated numbers - it always had.
+
+    NOT WIRED INTO `ALL_STRATEGIES` HERE. A registration is a roster change and
+    needs owner approval per admission, so this factory stays unused until then
+    and `len(ALL_STRATEGIES)` is unchanged. `SMC_BREAKER_VARIANTS` must contain
+    `suffix` at runtime or the signal key is absent and the strategy never
+    fires - asserted by `test_b1619_variant_strategy_binds_to_its_own_signal`.
+    """
+    key = (f"smc_breaker_block_bullish__{suffix}" if direction == "long"
+           else f"smc_breaker_block_bearish__{suffix}")
+
+    def _variant_strategy(s):
+        _ema_key = (f"price_above_ema_{_cfg.STRAT_EMA_SPAN}" if direction == "long"
+                    else "below_ema_200")
+        fires = s.get(key, False) and s.get(_ema_key, False)
+        if direction == "short":
+            fires = fires and not _short_borrow_trap_active(s)
+        return _strat(fires, direction, "smc", [key, _ema_key],
+                      [f"Breaker block ({suffix} variant parameters)",
+                       f"{_ema_key} regime gate"])
+
+    _variant_strategy.__name__ = f"strat_smc_breaker_block_{direction}__{suffix}"
+    _variant_strategy.__doc__ = (
+        f"B1619 variant-bound breaker block ({direction}), reading {key}.")
+    return _variant_strategy
+
+
+# Admitted variant strategies. EMPTY until an owner approves an admission -
+# adding one here changes the roster count and is a Stage-4 decision.
+BREAKER_VARIANT_STRATEGIES: dict = {}
+
+
+def assert_variant_strategies_are_configured() -> None:
+    """A registered variant strategy whose suffix is not in SMC_BREAKER_VARIANTS
+    reads a key that is never emitted, so it fires ZERO times and reports no
+    error - the silent-zero class. Fail loudly at wire time instead.
+    """
+    configured = set(getattr(_cfg, "SMC_BREAKER_VARIANTS", None) or {})
+    missing = []
+    for name in BREAKER_VARIANT_STRATEGIES:
+        sfx = name.rsplit("__", 1)[-1] if "__" in name else None
+        if sfx and sfx not in configured:
+            missing.append((name, sfx))
+    if missing:
+        raise RuntimeError(
+            "variant strategies registered with no matching SMC_BREAKER_VARIANTS "
+            f"entry - they would fire ZERO times silently: {missing}. "
+            f"Configured suffixes: {sorted(configured)}")
+
+
 def strat_smc_mitigation_block_long(s):
     """Batch 216: Price entering an UN-mitigated bullish Order Block
     zone - the institutional zone is being mitigated NOW. Lower-risk
@@ -8727,7 +8788,8 @@ def screen_instrument(
             close_mitigation=getattr(_cfg, "SMC_OB_CLOSE_MITIGATION", False),
             ob_tail_n=getattr(_cfg, "SMC_OB_TAIL_N", 20),
             breaker_age_bars_max=getattr(_cfg, "SMC_BREAKER_AGE_BARS_MAX", None),
-            breaker_break_pct_max=getattr(_cfg, "SMC_BREAKER_BREAK_PCT_MAX", None))
+            breaker_break_pct_max=getattr(_cfg, "SMC_BREAKER_BREAK_PCT_MAX", None),
+            breaker_variants=getattr(_cfg, "SMC_BREAKER_VARIANTS", None))
         if smc_out:
             signals.update(smc_out)
         else:
