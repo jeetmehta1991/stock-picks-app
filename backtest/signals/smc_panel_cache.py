@@ -70,6 +70,7 @@ def prime_ticker_primitives(
     full_ohlc: pd.DataFrame,
     swing_length: int = 20,
     liquidity_range_pct: float = 0.01,
+    close_mitigation: bool = False,
 ) -> None:
     """Compute and cache the 6 SMC primitives for a ticker's full-series
     OHLCV. Idempotent: re-priming with the same swing_length is a no-op."""
@@ -107,7 +108,8 @@ def prime_ticker_primitives(
     if swings is not None:
         # Swing-dependent primitives
         try:
-            primitives["ob"] = _smc.ob(full_ohlc, swings)
+            primitives["ob"] = _smc.ob(full_ohlc, swings,
+                                       close_mitigation=close_mitigation)
         except Exception:
             primitives["ob"] = None
         try:
@@ -124,11 +126,13 @@ def prime_ticker_primitives(
             primitives["retracements"] = _smc.retracements(full_ohlc, swings)
         except Exception:
             primitives["retracements"] = None
+    primitives["close_mitigation"] = close_mitigation
     _FULL_PRIMITIVES_BY_TICKER[ticker] = primitives
 
 
 def get_primitives_at(
     ticker: str, current_idx: int, swing_length: int = 20,
+    close_mitigation: bool = False,
 ) -> Optional[dict]:
     """Return primitives sliced to bars visible at current_idx for PIT
     safety. Returns None when ticker isn't primed; returns empty-ish dict
@@ -146,6 +150,11 @@ def get_primitives_at(
     if p.get("swing_length") != swing_length:
         # Primed with different swing_length -- cache miss, signal caller
         # to fall back to per-call compute (avoid silent semantic drift).
+        return None
+    # B1616: same guard for close_mitigation. It changes which order blocks
+    # are MITIGATED, so a cache primed at one value would silently serve the
+    # other's order blocks - the exact drift the swing_length guard prevents.
+    if bool(p.get("close_mitigation", False)) != bool(close_mitigation):
         return None
     out: dict = {"current_idx": current_idx}
     # FVG has 1-bar lookahead: uses ohlc["low"].shift(-1) and

@@ -7,20 +7,21 @@ combinations affordable. It also means the search space can contain gates the
 ENGINE CANNOT APPLY - and nothing noticed, because the grader is perfectly happy
 to simulate a filter that exists only inside itself.
 
-MEASURED 2026-08-17, four of six swept parameters are grader-only:
+WHEN THIS WAS FIRST RUN (2026-08-17) four of six swept parameters were
+grader-only. B1616 CLOSED that under owner approval, so all six now reach the
+engine; the history is kept because it is what the check exists to prevent:
 
-    P1 swing_length     IMPLEMENTED      config.SMC_SWING_LENGTH -> screener
-    P2 close_mitigation NOT IMPLEMENTED  smc_ict calls _smc.ob(ohlc, swings)
-    P3 tail_n           NOT IMPLEMENTED  smc_ict has a hardcoded .tail(20)
-    P4 age_bars_max     NOT IMPLEMENTED  the breaker loop has no age filter
-    P5 break_pct_max    NOT IMPLEMENTED  no occurrence in engine code at all
-    P6 ema span         IMPLEMENTED      config.STRAT_EMA_SPAN -> screener
+    P2 close_mitigation  WAS  smc_ict calling _smc.ob(ohlc, swings)
+    P3 tail_n            WAS  a hardcoded .tail(20)
+    P4 age_bars_max      WAS  a breaker loop with no age filter at all
+    P5 break_pct_max     WAS  absent from engine code entirely
 
-A winning combination on any of P2-P5 is therefore NOT DEPLOYABLE as it stands:
-the engine would keep firing at its hardcoded values and the live strategy would
-not reproduce its own backtest. That is the `regime_flip` failure again (L461) -
-a number carrying a label whose logic never ran - moved one stage earlier, from
-exits to entry gates.
+A winning combination on any of them would NOT have been DEPLOYABLE: the engine
+would have kept firing at its hardcoded values, and cfg2's graded winner - 68
+fires at Sharpe 2.239 - would have run live as 420 fires at Sharpe 0.789, with a
+different exit method selected on the different fire set. That is the
+`regime_flip` failure (L461), a number carrying a label whose logic never ran,
+moved one stage earlier from exits to entry gates.
 
 This check asserts the ENGINE-side facts against live source, so drift is caught
 in BOTH directions: a parameter silently losing its wiring, and a parameter
@@ -46,27 +47,39 @@ PARAMS = {
     "P1 swing_length": (
         True, "backtest/signals/screener.py",
         "swing_length=_cfg.SMC_SWING_LENGTH", None),
+    # B1616 (S6-B1612f, owner-approved): P2-P5 now REACH the engine. Each token
+    # below is the live expression that carries the value into the producer, so
+    # this check fails if any of them is removed or renamed.
     "P2 close_mitigation": (
-        False, "backtest/signals/smc_ict.py",
-        "_smc.ob(ohlc, swings)", "S6-B1612f"),
+        True, "backtest/signals/smc_ict.py",
+        "_smc.ob(ohlc, swings, close_mitigation=close_mitigation)", None),
     "P3 tail_n": (
-        False, "backtest/signals/smc_ict.py",
-        "ob_events.tail(20)", "S6-B1612f"),
+        True, "backtest/signals/smc_ict.py",
+        "ob_events.tail(ob_tail_n)", None),
     "P4 age_bars_max": (
-        False, "backtest/signals/smc_ict.py",
-        "ob_events.tail(20)", "S6-B1612f"),
+        True, "backtest/signals/smc_ict.py",
+        "breaker_age_bars_max is not None", None),
     "P5 break_pct_max": (
-        False, "backtest/signals/smc_ict.py",
-        "close > float(top)", "S6-B1612f"),
+        True, "backtest/signals/smc_ict.py",
+        "breaker_break_pct_max is not None", None),
     "P6 ema span": (
         True, "backtest/signals/screener.py",
         '_ema_key = f"price_above_ema_{_cfg.STRAT_EMA_SPAN}"', None),
 }
-# P4 has no engine expression at all; its evidence is that the breaker loop
-# applies no age filter. This regex must find NOTHING inside that loop.
+# Reaching the producer's SIGNATURE is not the same as the engine PASSING a
+# value: the call site must read config, or the knobs are dead in production.
+CALL_SITE = "backtest/signals/screener.py"
+CALL_SITE_TOKENS = (
+    'close_mitigation=getattr(_cfg, "SMC_OB_CLOSE_MITIGATION", False)',
+    'ob_tail_n=getattr(_cfg, "SMC_OB_TAIL_N", 20)',
+    'breaker_age_bars_max=getattr(_cfg, "SMC_BREAKER_AGE_BARS_MAX", None)',
+    'breaker_break_pct_max=getattr(_cfg, "SMC_BREAKER_BREAK_PCT_MAX", None)',
+)
+# The breaker loop must now CONTAIN an age filter. Before B1616 this same
+# region was asserted to contain NONE - the inversion is the shipped change.
 BREAKER_LOOP = (r"ob_events = ob_df\[ob_df\[.OB.\]\.fillna\(0\) != 0\]"
                 r".*?out\[.smc_breaker_block_bullish.\]")
-AGE_FILTER = r"age_bars|current_idx - (?:pos|idx)|event_recency_bars"
+AGE_FILTER = r"breaker_age_bars_max"
 
 
 def check() -> list[str]:
@@ -93,7 +106,8 @@ def check() -> list[str]:
                     f"is absent from EXECUTION_QUEUE.md. An unimplemented swept "
                     f"parameter must carry an open implementation ticket.")
 
-    # P4's evidence is an ABSENCE, so assert it directly rather than by token.
+    # P4 is an ABSENCE-turned-PRESENCE: assert the age filter is INSIDE the
+    # breaker loop, not merely somewhere in the file.
     smc = Path("backtest/signals/smc_ict.py").read_text(encoding="utf-8",
                                                         errors="ignore")
     m = re.search(BREAKER_LOOP, smc, re.S)
@@ -101,11 +115,21 @@ def check() -> list[str]:
         failures.append(
             "P4 age_bars_max: could not locate the breaker-block loop in "
             "smc_ict.py - this check has gone stale and must be re-anchored.")
-    elif re.search(AGE_FILTER, m.group(0)):
+    elif not re.search(AGE_FILTER, m.group(0)):
         failures.append(
-            "P4 age_bars_max: the breaker loop now contains an age filter. It "
-            "was swept as a NEW GATE with no engine counterpart; if it has been "
-            "implemented, update this table and close S6-B1612f.")
+            "P4 age_bars_max: the age filter is GONE from the breaker loop. "
+            "The parameter would be accepted and silently ignored - worse than "
+            "not having it, because the signature implies it works.")
+
+    # The producer accepting a parameter proves nothing if the engine never
+    # passes one. Assert the call site reads config for all four.
+    call = Path(CALL_SITE).read_text(encoding="utf-8", errors="ignore")
+    for tok in CALL_SITE_TOKENS:
+        if tok not in call:
+            failures.append(
+                f"call site {CALL_SITE} does not pass `{tok}` - the knob exists "
+                f"in the producer's signature but the engine never sets it, "
+                f"which is 'wired' in name only (L475).")
     return failures
 
 
@@ -116,15 +140,18 @@ def main() -> int:
     print(f"swept parameters: {len(PARAMS)}")
     print(f"  ENGINE-IMPLEMENTED ({len(impl)}): {', '.join(impl)}")
     print(f"  GRADER-ONLY ({len(gap)}): {', '.join(gap)}")
-    print("\n  A winner using a GRADER-ONLY value is NOT DEPLOYABLE until the "
-          "engine\n  can apply it - the live strategy would not reproduce its "
-          "own backtest.")
+    if gap:
+        print("\n  A winner using a GRADER-ONLY value is NOT DEPLOYABLE until "
+              "the engine\n  can apply it - the live strategy would not "
+              "reproduce its own backtest.")
     if failures:
         print("\nFAIL:", file=sys.stderr)
         for f in failures:
             print(f"  - {f}", file=sys.stderr)
         return 2
-    print("\nPASS - every gap is DECLARED and carries an open ticket.")
+    print("\nPASS - " + ("every swept parameter reaches the engine."
+                        if not gap else
+                        "every gap is DECLARED and carries an open ticket."))
     return 0
 
 

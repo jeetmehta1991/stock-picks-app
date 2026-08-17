@@ -276,14 +276,41 @@ def main() -> int:
     # below is what Step 1 hands forward.
     rankable = [r for r in rows if r.get("verdict") != "NO_EXIT_SELECTABLE"
                 and r.get("sharpe") is not None]
-    ranked = sorted(rankable, key=lambda r: -(r.get("sharpe") or -9))
+    # B1615 OPTION D (owner-approved 2026-08-17): rank DISTINCT OUTCOMES and
+    # carry the whole equivalence class forward. Ranking ROWS meant the top 10
+    # held only 4 real candidates on cfg2 - combinations differing solely in a
+    # SATURATED parameter are the SAME FIRE SET, so they occupied slots without
+    # adding evidence and crowded out 6 genuine candidates (L473).
+    #
+    # We do NOT collapse to a member. Which member to deploy is decided ONCE, at
+    # ADMISSION, by taking the PRODUCTION-CLOSEST value - a tie is not evidence
+    # to change production. Collapsing at Step 1 would also destroy real
+    # information: the class is SAMPLE-SPECIFIC, and if it SPLITS on Step 2's
+    # wider universe that split is itself the finding (S6-B1612e).
+    #
+    # Carrying the class is free for a SUBSET-SAFE parameter - MEASURED at
+    # 0.01-0.03 s per extra combination against a 3.5 s fixed diagnosis. It is
+    # NOT free for a FIRE-ADDING one (swing_length, EMA span), where each value
+    # needs its own engine run; those are the sweep's CONFIGS and are never
+    # carried as a class (plan section 6b).
+    classes: dict[tuple, list] = {}
+    for r in sorted(rankable, key=lambda r: -(r.get("sharpe") or -9)):
+        key = (r.get("fires"), r.get("exit"), round(r.get("sharpe"), 9))
+        classes.setdefault(key, []).append(r)
+    ranked = list(classes.values())[:a.top_n]
+    carried = sum(len(c) for c in ranked)
     print(f"\nSTEP-1 RANKING (no gates; {len(rankable)} rankable of {len(rows)}; "
           f"{len(rows) - len(rankable)} excluded as NO_EXIT_SELECTABLE)")
-    print(f"{'#':>3} {'sharpe':>8} {'ci_lo':>8} {'fires':>7}  exit")
-    for i, r in enumerate(ranked[:a.top_n], 1):
+    print(f"{len(classes)} DISTINCT outcomes; top {len(ranked)} carry "
+          f"{carried} combinations to STEP 2")
+    print(f"{'#':>3} {'sharpe':>8} {'ci_lo':>8} {'fires':>7} {'cls':>4}  "
+          f"{'exit':<22} class members (tail_n)")
+    for i, members in enumerate(ranked, 1):
+        r = members[0]
         print(f"{i:>3} {r.get('sharpe'):>8.3f} "
               f"{(r.get('ci_lo') if r.get('ci_lo') is not None else float('nan')):>8.3f} "
-              f"{r.get('fires', 0):>7}  {r.get('exit')}")
+              f"{r.get('fires', 0):>7} {len(members):>4}  {str(r.get('exit')):<22} "
+              f"{sorted(m['tail_n'] for m in members)}")
 
     Path(a.out).parent.mkdir(parents=True, exist_ok=True)
     Path(a.out).write_text(json.dumps(
@@ -291,14 +318,26 @@ def main() -> int:
          # B1517: was len(diags) which, after close_mitigation became the outer
          # key, reported 2 (the number of flag values) instead of the fire count.
          "diagnosed": {str(k): len(v) for k, v in diags.items()},
+         # B1615: one entry per DISTINCT outcome. `members` is the full
+         # equivalence class - every parameter tuple that produces this exact
+         # fire set - and ALL of them are graded in Step 2. `admit` names the
+         # production-closest member, which is the tie-break applied only if
+         # the class survives Step 2 intact.
          "step1_ranking": [
-             {"rank": i, "sharpe": r.get("sharpe"), "ci_lo": r.get("ci_lo"),
-              "fires": r.get("fires"), "exit": r.get("exit"),
-              "close_mitigation": r.get("close_mitigation"),
-              "break_pct_max": r.get("break_pct_max"),
-              "age_bars_max": r.get("age_bars_max"),
-              "tail_n": r.get("tail_n")}
-             for i, r in enumerate(ranked[:a.top_n], 1)],
+             {"rank": i, "sharpe": c[0].get("sharpe"), "ci_lo": c[0].get("ci_lo"),
+              "fires": c[0].get("fires"), "exit": c[0].get("exit"),
+              "class_size": len(c),
+              "admit": max(c, key=lambda m: (m["tail_n"],
+                                             m["age_bars_max"] is None,
+                                             m["break_pct_max"] is None,
+                                             not m["close_mitigation"])),
+              "members": [{"close_mitigation": m.get("close_mitigation"),
+                           "break_pct_max": m.get("break_pct_max"),
+                           "age_bars_max": m.get("age_bars_max"),
+                           "tail_n": m.get("tail_n")} for m in c]}
+             for i, c in enumerate(ranked, 1)],
+         "step1_combinations_carried": sum(len(c) for c in ranked),
+         "step1_distinct_outcomes": len(classes),
          "results": rows}, indent=2))
 
     print(f"\n{'break':>6} {'age':>5} {'tail':>4} {'fires':>6} {'ho_n':>5} "

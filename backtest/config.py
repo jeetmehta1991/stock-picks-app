@@ -2463,6 +2463,27 @@ STAGE2_NO_LIVE_FETCH: bool = os.environ.get("STAGE2_NO_LIVE_FETCH", "1") == "1"
 
 SMC_SWING_LENGTH: int = int(os.environ.get("SMC_SWING_LENGTH", "20"))
 
+# B1616 / S6-B1612f (owner-approved 2026-08-17). The breaker-block optimisation
+# sweep graded FOUR parameters the engine could not apply: they existed only in
+# the offline grader, so a winning combination would NOT have reproduced live
+# (a graded 68 fires / Sharpe 2.239 would have run as 420 fires / Sharpe 0.789,
+# with a different exit method selected on the different fire set). L475.
+#
+# EVERY DEFAULT BELOW REPRODUCES PRE-B1616 BEHAVIOUR EXACTLY:
+#   close_mitigation False  = the vendored `ob` default the engine relied on
+#   tail_n           20     = the hardcoded literal at smc_ict.py:274
+#   age_bars_max     None   = no age filter existed in the breaker loop
+#   break_pct_max    None   = `close > top` was a strict inequality, uncapped
+# `test_b1616_engine_defaults_are_byte_identical` pins that (CHECKLIST #205).
+SMC_OB_CLOSE_MITIGATION: bool = os.environ.get(
+    "SMC_OB_CLOSE_MITIGATION", "0") == "1"
+SMC_OB_TAIL_N: int = int(os.environ.get("SMC_OB_TAIL_N", "20"))
+_v = os.environ.get("SMC_BREAKER_AGE_BARS_MAX", "").strip()
+SMC_BREAKER_AGE_BARS_MAX = int(_v) if _v else None
+_v = os.environ.get("SMC_BREAKER_BREAK_PCT_MAX", "").strip()
+SMC_BREAKER_BREAK_PCT_MAX = float(_v) if _v else None
+del _v
+
 # Which EMA span the trend leg reads. compute_ema_sma emits spans 9/20/21/50/200
 # from pairs (9,21),(20,50),(50,200) - so no producer change is needed, only a
 # change of which emitted signal the strategy consumes.

@@ -8176,3 +8176,37 @@ costs about **0.2 s**. Step 2's real cost is the single engine run that builds i
 independent of the carry because every carried parameter is SUBSET-SAFE. **The calculus inverts
 for FIRE-ADDING parameters** (`swing_length`, EMA span): each distinct value needs its own engine
 run, so those are the sweep's CONFIGS and must never be carried as a class. Runbook section 6b.
+
+### L477
+
+**the gate refused to pass after the fix it asked for, and a knob read dead on one ticker**
+
+**B1615 / B1616.** Both owner approvals shipped. Two things worth keeping.
+
+**1. The engine gate fired on a fix, not a regression.** `verify_engine_implemented.py` was built
+to catch a parameter that LOSES its wiring. When B1616 gave P2-P5 their wiring, it failed just as
+loudly - the table said NOT-IMPLEMENTED and the source said otherwise. **A one-directional check
+would have gone quietly green and left the table lying in the other direction.** That is the whole
+value of asserting a fact rather than asserting an absence of failure: the assertion is wrong when
+reality moves either way. The gate also grew a second clause in the same batch - a producer
+ACCEPTING a parameter proves nothing if the engine never PASSES one, so the call site is now
+asserted too.
+
+**2. `close_mitigation` reads DEAD on a single-ticker probe.** My verification asserted each knob
+must move `smc_breaker_block_bullish`; three did and `close_mitigation` scored **0 of 123 bars** on
+AAPL. The wiring was correct. `_smc.ob` returns **byte-identical frames** for True/False across
+AAPL's first 1000 bars - 0 rows differing in OB and MitigatedIndex - and the parameter moves the
+signal on **44 of 624 ticker-bars across 8 tickers**. **Had I trusted the one-ticker result I would
+have "fixed" working code**, which is the more expensive direction of this error.
+
+**This is CHECKLIST #154's 25-ticker floor earning its place in a context it was not written for.**
+The floor was set for COVERAGE claims; it applies equally to *"does this parameter do anything"*,
+because both are questions about a distribution being sampled. The pinned regression cases
+(TSLA@444, AMD@1038) were found by SEARCHING for a discriminating case, not by assuming one - and
+a test that needs a searched-for case should say so, or the next reader will think the sample was
+arbitrary.
+
+**Also shipped (Option D):** Step 1 ranks DISTINCT OUTCOMES and carries the whole equivalence class,
+with `admit` naming the production-closest member as a tie-break applied only at admission. cfg1's
+top 10 carries 12 combinations, cfg2's carries 21 - and cfg2's top 10, which previously held **4**
+real candidates, now holds 10.

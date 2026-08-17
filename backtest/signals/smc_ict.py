@@ -81,6 +81,10 @@ def compute_smc_signals(
     event_recency_bars: int = 90,
     ticker: Optional[str] = None,
     skip_primitives: Optional[set] = None,
+    close_mitigation: bool = False,
+    ob_tail_n: int = 20,
+    breaker_age_bars_max: Optional[int] = None,
+    breaker_break_pct_max: Optional[float] = None,
 ) -> dict:
     """Compute SMC / ICT signals for a single-ticker OHLCV DataFrame.
 
@@ -155,6 +159,7 @@ def compute_smc_signals(
                 from backtest.signals.smc_panel_cache import get_primitives_at
                 _cached_primitives = get_primitives_at(
                     ticker, current_idx, swing_length=swing_length,
+                    close_mitigation=close_mitigation,
                 )
             except Exception as _e:
                 log_silent_failure("smc_ict.cache_lookup", _e)
@@ -249,7 +254,7 @@ def compute_smc_signals(
             if _cached_primitives is not None and "ob" in _cached_primitives:
                 ob_df = _cached_primitives["ob"]
             else:
-                ob_df = _smc.ob(ohlc, swings)
+                ob_df = _smc.ob(ohlc, swings, close_mitigation=close_mitigation)
             if "OB" in ob_df.columns:
                 # Batch 273: use event_recency_bars instead of fvg_lookback
                 # (OB detection lags by ~swing_length bars, so 5-bar tail
@@ -271,9 +276,18 @@ def compute_smc_signals(
                     # the same "current_idx - swing_safe" PIT slicing implicit
                     # in iloc bounds (rows beyond current_idx aren't here).
                     ob_events = ob_df[ob_df["OB"].fillna(0) != 0]
-                    tail = ob_events.tail(20) if not ob_events.empty else ob_df.iloc[0:0]
+                    # B1616: was a hardcoded tail(20). The literal is now the
+                    # DEFAULT of a parameter, so the value the sweep selects can
+                    # actually be executed (S6-B1612f).
+                    tail = (ob_events.tail(ob_tail_n) if not ob_events.empty
+                            else ob_df.iloc[0:0])
+                    # Position of each OB row within the frame, so breaker age
+                    # is measured the same way the grader measures it:
+                    # age_bars = current_idx - position_of_the_OB_bar.
+                    _ob_pos = {lbl: _p for _p, lbl in enumerate(ob_df.index)}
                     for idx_pos in range(len(tail)):
                         row = tail.iloc[idx_pos]
+                        _row_label = tail.index[idx_pos]
                         ob_val = row.get("OB")
                         if pd.isna(ob_val) or ob_val == 0:
                             continue
@@ -290,10 +304,28 @@ def compute_smc_signals(
                         # Bullish OB that's broken downward -> now resistance
                         # (short bias). Bearish OB broken upward -> support.
                         if is_mitigated:
+                            # B1616: two caps that did not exist before. Both
+                            # default to None, in which case the tests below
+                            # are skipped and behaviour is byte-identical.
+                            _age_ok = True
+                            if breaker_age_bars_max is not None:
+                                _age = current_idx - _ob_pos.get(_row_label,
+                                                                 current_idx)
+                                _age_ok = _age <= breaker_age_bars_max
                             if ob_val == 1 and close < float(bot):
-                                breaker_bear = True
+                                _brk_ok = True
+                                if breaker_break_pct_max is not None:
+                                    _brk_ok = ((float(bot) - close) / float(bot)
+                                               <= breaker_break_pct_max)
+                                if _age_ok and _brk_ok:
+                                    breaker_bear = True
                             elif ob_val == -1 and close > float(top):
-                                breaker_bull = True
+                                _brk_ok = True
+                                if breaker_break_pct_max is not None:
+                                    _brk_ok = ((close - float(top)) / float(top)
+                                               <= breaker_break_pct_max)
+                                if _age_ok and _brk_ok:
+                                    breaker_bull = True
                         # Mitigation block: price currently inside an
                         # UN-mitigated OB zone (about to be mitigated NOW)
                         if not is_mitigated and in_zone:

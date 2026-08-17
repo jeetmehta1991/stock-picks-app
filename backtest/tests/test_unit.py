@@ -15026,17 +15026,102 @@ def test_b1612_swept_parameters_engine_reachability():
     assert m.check() == [], (
         "every grader-only parameter must carry an open implementation ticket")
 
+    # B1616 (S6-B1612f owner-approved): all six now reach the engine. This
+    # assertion is what CAUGHT the change - the gate refused to pass until its
+    # table was updated, which is the drift-in-both-directions property.
     impl = {k for k, v in m.PARAMS.items() if v[0]}
-    assert impl == {"P1 swing_length", "P6 ema span"}, impl
+    assert impl == set(m.PARAMS), impl
 
     smc = _pl.Path("backtest/signals/smc_ict.py").read_text(encoding="utf-8")
-    # P2: the engine never passes close_mitigation, so production is the
-    # library default (verified False at vendored smc.py `ob` signature).
-    assert "_smc.ob(ohlc, swings)" in smc
-    assert "_smc.ob(ohlc, swings, close_mitigation" not in smc
-    # P3: a hardcoded literal, not a parameter.
-    assert "ob_events.tail(20)" in smc
+    # P2/P3: what were a defaulted call and a hardcoded literal are parameters.
+    assert "_smc.ob(ohlc, swings, close_mitigation=close_mitigation)" in smc
+    assert "ob_events.tail(20)" not in smc
+    assert "ob_events.tail(ob_tail_n)" in smc
     # P4: the near-miss name governs a DIFFERENT signal, so its presence must
     # never be read as the breaker age cap existing.
     assert "event_recency_bars" in smc
     assert "smc_ob_bullish_active" in smc
+
+
+def test_b1616_engine_defaults_are_byte_identical_and_knobs_bite():
+    """S6-B1612f: P2-P5 now REACH the engine, and the default path is unchanged.
+
+    Two properties, both required (CHECKLIST #205):
+
+    (a) An UNSET config must be byte-identical to pre-B1616. Four parameters
+        were threaded through a live producer; a single inverted guard would
+        silently change every SMC signal in the project.
+    (b) Each knob must demonstrably move `smc_breaker_block_bullish`, or it is
+        wired in name only - the exact defect this batch exists to close.
+
+    NOTE on (b): `close_mitigation` is a NO-OP on many samples - `_smc.ob`
+    returns byte-identical frames for True/False on AAPL's first 1000 bars -
+    so a single-ticker probe reports it dead. It moves the signal on 44 of 624
+    ticker-bars across 8 tickers. That is why CHECKLIST #154 sets a floor of
+    25 tickers for coverage claims; the cases pinned below were found by
+    searching, not assumed.
+    """
+    import pandas as _pd
+    import pathlib as _pl
+    from backtest.signals.smc_ict import compute_smc_signals
+
+    def _load(sym):
+        p = _pl.Path(f"backtest/data/cache/ohlcv/{sym}.parquet")
+        if not p.exists():
+            return None
+        d = _pd.read_parquet(p)
+        if not isinstance(d.index, _pd.DatetimeIndex) and "date" in d.columns:
+            d = d.set_index("date")
+        return d.sort_index()
+
+    df = _load("AAPL")
+    if df is None or len(df) < 900:
+        import pytest
+        pytest.skip("AAPL parquet unavailable")
+
+    # (a) the unwrapped path is untouched
+    checked = 0
+    for i in range(400, 900, 23):
+        sub = df.iloc[:i + 1]
+        assert compute_smc_signals(sub, swing_length=10) == compute_smc_signals(
+            sub, swing_length=10, close_mitigation=False, ob_tail_n=20,
+            breaker_age_bars_max=None, breaker_break_pct_max=None), (
+            f"DEFAULT PATH DIVERGED at bar {i} - the no-op path must be "
+            f"byte-identical (CHECKLIST #205)")
+        checked += 1
+    assert checked >= 10
+
+    K = "smc_breaker_block_bullish"
+    bites = {"ob_tail_n": 0, "breaker_age_bars_max": 0, "breaker_break_pct_max": 0}
+    for i in range(400, 900, 23):
+        sub = df.iloc[:i + 1]
+        base = compute_smc_signals(sub, swing_length=10).get(K)
+        for kw, val in (("ob_tail_n", 1), ("breaker_age_bars_max", 60),
+                        ("breaker_break_pct_max", 0.01)):
+            if compute_smc_signals(sub, swing_length=10, **{kw: val}).get(K) != base:
+                bites[kw] += 1
+    assert all(v > 0 for v in bites.values()), f"a knob never bit: {bites}"
+
+    # (b) close_mitigation, pinned at cases found by search across tickers
+    for sym, idx in (("TSLA", 444), ("AMD", 1038)):
+        d = _load(sym)
+        if d is None or len(d) <= idx:
+            continue
+        sub = d.iloc[:idx + 1]
+        assert compute_smc_signals(sub, swing_length=10).get(K) is False
+        assert compute_smc_signals(
+            sub, swing_length=10, close_mitigation=True).get(K) is True, (
+            f"{sym}@{idx}: close_mitigation must reach _smc.ob")
+
+    # the panel cache must MISS on a close_mitigation mismatch, exactly as it
+    # already does on swing_length - otherwise it serves the other value's OBs
+    from backtest.signals import smc_panel_cache as _pc
+    _pc.reset_cache()
+    _pc.prime_ticker_primitives("AAPL", df.iloc[:900], swing_length=10,
+                                close_mitigation=False)
+    assert _pc.get_primitives_at("AAPL", 800, swing_length=10,
+                                 close_mitigation=False) is not None
+    assert _pc.get_primitives_at("AAPL", 800, swing_length=10,
+                                 close_mitigation=True) is None, (
+        "a cache primed at close_mitigation=False must MISS a True lookup")
+    _pc.reset_cache()

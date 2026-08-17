@@ -8721,7 +8721,13 @@ def screen_instrument(
         _smc_skip = _dp.smc_skip_primitives()
         smc_out = compute_smc_signals(
             df, ticker=ticker, swing_length=_cfg.SMC_SWING_LENGTH,
-            skip_primitives=_smc_skip)
+            skip_primitives=_smc_skip,
+            # B1616 / S6-B1612f: the breaker-block sweep parameters now REACH
+            # the engine. Defaults reproduce pre-B1616 behaviour exactly.
+            close_mitigation=getattr(_cfg, "SMC_OB_CLOSE_MITIGATION", False),
+            ob_tail_n=getattr(_cfg, "SMC_OB_TAIL_N", 20),
+            breaker_age_bars_max=getattr(_cfg, "SMC_BREAKER_AGE_BARS_MAX", None),
+            breaker_break_pct_max=getattr(_cfg, "SMC_BREAKER_BREAK_PCT_MAX", None))
         if smc_out:
             signals.update(smc_out)
         else:
