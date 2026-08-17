@@ -552,6 +552,16 @@ on `smc_breaker_block_long`, the first strategy through - the L-number is the in
 | # | gate | why |
 |---|---|---|
 | 10 | **Write `run_manifest.json`, pass `prelaunch_gate.py`.** Pin frozen_sha, isolation, calendar, universe sha256, budget, and enumerate obsolescence risks each with a MECHANICAL gate. | B1335 Rule 1. It caught the P1/P6 blocker before ~14 h was spent. |
+> **B1617 CONTRADICTION - READ BEFORE USING ANY `381` BELOW.** This document states the baseline
+> universe as **381** in 8 places and as **544** in section 10.1. MEASURED this turn:
+> `output_r5_merged_1_7/trade_exit_detail.csv` holds **544 tickers, 25pct A-C, NVDA/MSFT/TSLA/GOOGL
+> all present**. `381` is the count of the ABANDONED alphabetically-partitioned chunk
+> (`output_r5_rung4_chunk1`, ~380 tickers A-C, no mega-caps, 248 tickers the real R5 never ran) -
+> the artifact L445 was written about. The L445 correction fixed `tighten_breaker_block.py` and
+> section 10.1 and **never swept the rest of this file**. Every `381` below is therefore suspect.
+> Lines encoding an OWNER RULING against `381` are NOT rewritten here - they need an explicit
+> ruling (S6-B1617a). Do not derive a universe from any `381` figure until that closes.
+
 | 11 | **Derive the universe from the BASELINE ARTIFACT, not a roster CSV.** | L378 - R5 ran **381**; T1a has 503. Substituting the universe breaks comparability exactly as changing holdout dates would. |
 | 12 | **Measure the RETENTION RATIO before restricting the universe. Halt below the gates' n-floor.** | L365 - SP50 retained 31 of 352 fires; all 40 combinations returned NO result. |
 | 13 | **ARM THE MONITOR IN THE LAUNCH TURN**: hourly PushNotification while active + a */13 sentinel check + CronDelete on completion. **A run is not launched until its output path to the owner is armed.** | L385 - a sentinel tripped, halted the ladder, and reached no one until the owner asked. |
@@ -1191,25 +1201,34 @@ python scripts/verify_engine_implemented.py
 affordable, and it is also why the search space can contain gates **the engine cannot apply** -
 the grader will happily simulate a filter that exists only inside itself.
 
-MEASURED 2026-08-17: **4 of the 6 swept parameters are GRADER-ONLY.**
+**STATUS 2026-08-17 (B1617 re-verified): all 6 swept parameters REACH the engine.** When this
+step was written, four did not - the history is kept because it is what the step exists to catch.
 
-| | status | evidence |
+| | status | env knob |
 |---|---|---|
-| P1 `swing_length` | **IMPLEMENTED** | `config.py:2464` env -> `screener.py:8723` passes it |
-| P6 `ema span` | **IMPLEMENTED** | `config.py:2469` -> `screener.py:4309` |
-| P2 `close_mitigation` | **GRADER-ONLY** | `smc_ict.py:252` calls `_smc.ob(ohlc, swings)` - arg never passed |
-| P3 `tail_n` | **GRADER-ONLY** | `smc_ict.py:274` hardcoded `ob_events.tail(20)` |
-| P4 `age_bars_max` | **GRADER-ONLY** | breaker loop 273-296 has NO age filter (`event_recency_bars` governs a DIFFERENT signal) |
-| P5 `break_pct_max` | **GRADER-ONLY** | zero occurrences in engine code |
+| P1 `swing_length` | **IMPLEMENTED** | `SMC_SWING_LENGTH` |
+| P2 `close_mitigation` | **IMPLEMENTED (B1616)** | `SMC_OB_CLOSE_MITIGATION` |
+| P3 `tail_n` | **IMPLEMENTED (B1616)** | `SMC_OB_TAIL_N` |
+| P4 `age_bars_max` | **IMPLEMENTED (B1616)** | `SMC_BREAKER_AGE_BARS_MAX` |
+| P5 `break_pct_max` | **IMPLEMENTED (B1616)** | `SMC_BREAKER_BREAK_PCT_MAX` |
+| P6 `ema span` | **IMPLEMENTED** | `STRAT_EMA_SPAN` |
 
-**A winner on P2-P5 is NOT DEPLOYABLE as it stands** - the engine keeps firing at its hardcoded
-values, so the live strategy would not reproduce its own backtest. That is the `regime_flip`
-failure (L461) - a number wearing a label whose logic never ran - moved one stage earlier, from
-exits to entry gates.
+*Until B1616 the last four existed ONLY in the offline grader. cfg2's graded winner - 68 fires at
+Sharpe 2.239 - would have run live as 420 fires at Sharpe 0.789 with a different exit method,
+because the engine applied neither cap. That is `regime_flip` (L461) moved from exits to entry
+gates.*
 
-**Before ADMITTING any combination:** implement its parameters in the engine (owner approval
-required for any engine change), then re-run the config and confirm the cube reproduces the
-graded fire set. **Admission without this step ships a backtest that cannot be executed.**
+**Because they are now real engine knobs, the remaining admission step is a REPRODUCTION CHECK
+that was previously impossible:** re-run the config with the candidate's env knobs set, and confirm
+the cube reproduces the graded fire set exactly. **Admission without it ships a backtest nobody has
+executed.**
+
+**BLAST RADIUS - set a knob and you move more than one strategy** (MEASURED B1617):
+`SMC_OB_TAIL_N` and `SMC_OB_CLOSE_MITIGATION` reach **5** strategies (both breaker legs, both
+mitigation-block legs, `strat_pre_rebalance_long`), `close_mitigation` also alters `ob_df` and so
+`strat_smc_order_block_bounce`; the two breaker caps reach **2** (LONG and SHORT). Harmless while
+the sweep runs ONE strategy under `--cube-isolation`; at Phase 1B, with the full roster in one run,
+a knob tuned for the long leg would silently retune five other strategies. S6-B1617b.
 
 ### 8. Report the verdict WITH its denominators
 Never a bare PASS count. State: N of M combinations, X of Y producers varied, `exits_effective`

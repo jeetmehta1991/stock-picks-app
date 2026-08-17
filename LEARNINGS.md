@@ -8210,3 +8210,45 @@ arbitrary.
 with `admit` naming the production-closest member as a tie-break applied only at admission. cfg1's
 top 10 carries 12 combinations, cfg2's carries 21 - and cfg2's top 10, which previously held **4**
 real candidates, now holds 10.
+
+### L478
+
+**the correction fixed the script and section 10.1, and left the same wrong number in eight other places**
+
+**B1617, 20-turn audit.** The most consequential finding is not a code defect. The runbook states
+its baseline universe as **381** in eight places and as **544** in section 10.1.
+
+**MEASURED:** `output_r5_merged_1_7/trade_exit_detail.csv` holds **544 tickers, 25pct A-C, with
+NVDA/MSFT/TSLA/GOOGL all present**. `381` is the ABANDONED alphabetically-partitioned chunk -
+~380 tickers A-C, no mega-caps, 248 tickers the real R5 never ran. **It is the exact artifact
+L445 was written about.**
+
+**So the L445 correction fixed `tighten_breaker_block.py`, fixed section 10.1, and never swept
+the rest of the file.** One of the survivors records an OWNER RULING dated 2026-08-14 against the
+381-universe - a decision made about the wrong artifact and still standing.
+
+**The general rule: a provenance correction is a SWEEP, not an edit.** When an artifact turns out
+to be the wrong one, the number identifying it has already propagated - into cost estimates,
+into exclusion counts, into rulings. Fixing the place where it was caught leaves the document
+internally contradictory, which is worse than uniformly wrong: a reader who lands on section 10.1
+gets 544 and a reader who lands on line 814 gets 381, and neither sees a conflict. **Grep the
+number, not the file you were looking at.**
+
+**And a correction cannot silently rewrite a ruling.** Two of the eight are owner decisions. I
+flagged them and left them; re-deriving an owner decision from a corrected number would be
+manufacturing consent for a choice never actually made (S6-B1617a).
+
+**Second finding, same shape one level down:** the runbook's step 7 told readers that four of six
+swept parameters were GRADER-ONLY - **one turn after B1616 implemented all four**. The step was
+written to catch exactly this class and went stale on the batch that resolved it. A status table
+inside a procedure is a claim with a timestamp; it needs the same re-check as any other claim
+(#202).
+
+**Third, measured and honest about size:** B1616 built a `{label: position}` dict over the whole
+OB frame on every call, including when the age cap was None. **736 us on a 1,255-row index -
+0.12pct** of the call. Not the runtime regression it looked like when I first spotted it, and I
+nearly reported it as one before measuring. Fixed because it is free, not because it was urgent.
+
+**What this audit could NOT do:** the fresh-eyes cold pass was launched on a different model and
+died on a spend limit. Everything above is a single-model review by the author of the code -
+the precise limitation the FRESH-EYES CADENCE exists to remove (S6-B1617g).

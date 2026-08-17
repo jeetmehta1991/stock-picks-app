@@ -284,7 +284,13 @@ def compute_smc_signals(
                     # Position of each OB row within the frame, so breaker age
                     # is measured the same way the grader measures it:
                     # age_bars = current_idx - position_of_the_OB_bar.
-                    _ob_pos = {lbl: _p for _p, lbl in enumerate(ob_df.index)}
+                    # B1617: built ONLY when the age cap is active. On the
+                    # default path this is 736 us per call on a 1,255-row index
+                    # (0.12pct of the 627 ms call) - small, but it is work done
+                    # on every bar of every ticker to support a feature that is
+                    # switched off.
+                    _ob_pos = ({lbl: _p for _p, lbl in enumerate(ob_df.index)}
+                               if breaker_age_bars_max is not None else None)
                     for idx_pos in range(len(tail)):
                         row = tail.iloc[idx_pos]
                         _row_label = tail.index[idx_pos]
@@ -309,8 +315,8 @@ def compute_smc_signals(
                             # are skipped and behaviour is byte-identical.
                             _age_ok = True
                             if breaker_age_bars_max is not None:
-                                _age = current_idx - _ob_pos.get(_row_label,
-                                                                 current_idx)
+                                _age = current_idx - (_ob_pos or {}).get(
+                                    _row_label, current_idx)
                                 _age_ok = _age <= breaker_age_bars_max
                             if ob_val == 1 and close < float(bot):
                                 _brk_ok = True
