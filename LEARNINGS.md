@@ -8345,3 +8345,50 @@ anchors genuinely moved into the helper) and FALSELY the second, because my `BRE
 was non-greedy and stopped at the helper early-return guard, before the age filter. **A gate that
 cries wolf gets ignored**, so a false positive is not a harmless over-trigger - it is the beginning
 of that gate being ignored. Same reasoning as the `--anchor` exemption in L474.
+
+### L481
+
+**the fix that raised the alarm never ran, and its test asserted the string**
+
+**B1620, pre-sweep triage.** Before spending ~59 h on 18 configs, I checked the open queue against
+live code rather than against its own statuses. The most consequential finding is that a fix
+already marked shipped has never executed.
+
+**B1593 "fix C" made `exit_regime_flip` recover the regime series from `signals`.** CONFIRMED:
+
+```
+exit_strategies.py:711   regime_series = signals.get("regime_by_date") or None     <- READ
+grep -rn regime_by_date backtest/ scripts/ (excluding the read + its test) -> NOTHING  <- no WRITE
+backtest.py:1474-1476    self._regime_by_date[as_of] = regime   <- collected, never threaded
+```
+
+RUNTIME PROOF: with the signals the engine actually passes, the exit returns
+`regime_flip_max_days_20`; fed a regime series it returns `regime_flip_bull_to_bear`, exiting 11
+days earlier. **The logic is correct and unreachable.** Measured: `regime_flip` is identical to
+`time_stop_20d` on **330/330 cfg1 and 420/420 cfg2** rows - the same 100pct that raised the alarm
+in the first place.
+
+**The pin test asserts `'signals.get("regime_by_date")' in src`.** It checks that the READ was
+written, which is a code-presence grep - the `wired=yes` heuristic this project banned after it
+produced ~150 false RESOLVED claims. **A test that would pass on a fix that does nothing is not a
+regression test, it is a spelling check.** The rule that catches this already exists as L475 (*a
+producer accepting a parameter proves nothing if the engine never passes one*), written three
+turns ago about a different file. **Its sibling defect had been sitting in the exit layer the whole
+time and I did not go looking.**
+
+**The generalisation: when a rule is discovered, sweep for its OTHER instances immediately.** L475
+was recorded, anchored in CHECKLIST #207, and gated with a script - and the script was scoped to
+SWEPT PARAMETERS, so it could never have found this. An anchored rule with a narrow gate feels like
+closure and is not. This is L474 (*a lens is defined by its question, not the axis it first paid
+off on*) recurring at the level of the gate rather than the audit.
+
+**Second finding, same shape:** cubes carry **37 columns and zero config stamp**. Nothing ties a
+cube to the `swing_length` / `ema_span` it was produced with - which is precisely how cfg2 came to
+be graded at the wrong swing length and lose 167 of 420 fires as a biased subsample. It has been
+open as S6-B1580c since B1580. With 18 cubes about to be produced, distinguishable only by
+directory name, it is the highest-probability repeat in the sweep.
+
+**Third, on reading a queue:** 97 of 225 tickets read OPEN by last status, but the queue APPENDS
+resolutions instead of restatusing rows, so the open-count is not a usable signal. Both findings
+above came from checking candidates against LIVE CODE. **A status field that is only ever appended
+to decays into a log**, and a log cannot answer "what is still broken".
