@@ -366,6 +366,37 @@ than to write.
 with no evidence language ("EXECUTED", "confirmed by", "I ran", "probe",
 "ruled out") anywhere in the same turn. Windowed to the current turn.
 
+## SPEC-vs-IMPLEMENTATION RULE (B1608 - L471, CHECKLIST #202)
+
+**Every verification habit in this skill checks code against REALITY - does it run,
+does it reproduce, is the artifact the right one. NONE of them checks code against
+INTENT.** That gap has its own failure, and it is invisible to all of them.
+
+`tighten_breaker_block.py` applied all six admission gates and emitted PASS/FAIL,
+while the plan specifies STEP 1 produces **"ranked combinations"** and STEP 2
+produces **"gate verdicts"**. So **"0 PASS across 400 combinations" was reported as
+a Step-1 result when Step 1 can never produce a PASS.** No artifact was wrong. No
+data was wrong. The ARTIFACT-PROVENANCE RULE below could not have caught it,
+because nothing was wrong with any artifact - the CODE had drifted from the DESIGN,
+and nothing in the repo compares those two.
+
+**Before reporting what any component produced:**
+
+1. **Read what its phase is SPECIFIED to produce** - in the plan document, not from
+   memory or from earlier in the conversation.
+2. **If the output shape does not match the spec, that is a DEFECT** in the code or
+   in the plan. Say which. **Do not report the number** - a result of the wrong
+   KIND is not a good or bad result, it is a category error.
+3. **When a design was decided earlier, RE-READ the decision.** Reconstructing it
+   from conversation produces a worse version: this drifted across ~20 turns, with
+   the window and universe re-argued from scratch while the plan already held the
+   answer. This is CONFIRM-BEFORE-REPLICATING applied to a SPECIFICATION rather
+   than a template.
+
+**The tell:** if you find yourself explaining why a result is surprising, check
+first that it is the right SHAPE of result. "0 PASS" was surprising because it was
+answering a question the phase was never asked.
+
 ## ARTIFACT-PROVENANCE RULE (B1572 — L445, HARD, mechanically enforced)
 
 **"Use the artifact, not the roster" is only half a rule. It does not say use the

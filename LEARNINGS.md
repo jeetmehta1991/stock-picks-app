@@ -7960,3 +7960,32 @@ and the top 10 contains only 4 DISTINCT fire-sets because different subset-safe 
 collapse to the same surviving trades. Both flagged to the owner rather than silently corrected.
 
 **Anchored:** CHECKLIST #202.
+
+### L472
+
+**I answered "is it in the skill" with a grep that matched years, not rules**
+
+**B1609.** Owner asked whether the SPEC-vs-IMPLEMENTATION class was in the skill. My first grep
+returned **12 hits** for `202|L471|SPEC-vs-IMPLEMENT|specified to produce` - which reads like a yes.
+
+**All 12 were false positives: `202` matches inside `2026` and `2020`.** The precise check -
+`"CHECKLIST #202" in s`, `"L471" in s` - returned **False, False, False**. The rule was NOT in the
+skill. Only listing the actual section headings made that visible.
+
+**The near-miss:** had I reported that count, the owner would have been told the rule was covered
+when it was not, and #202 would have joined the 18 orphans (L464) that CHECKLIST #197 exists to
+prevent - one turn after building the anchor gate.
+
+**Generalised rule:** *a bare match count is not evidence of presence; a numeric token especially so.*
+Short numeric needles collide with dates, versions, IDs and counts everywhere in this repo. **Grep
+for the STRUCTURE that would contain the thing - a heading, a full identifier with its prefix - and
+prefer an exact `in` test over a count.** A count answers "how many strings matched", never "is the
+thing there".
+
+**Same family as L469** (a `### #NNN` heading invisible to a `^#?\d+` parser) and L459 (my own print
+statement rounding 0.0039 to 0.00). **Three times this session a formatting or matching artifact has
+stood in for a fact.** The pattern: I reach for the cheapest query that could confirm what I expect,
+and cheap queries are exactly the ones that collide.
+
+**Anchored:** CHECKLIST #200, which already requires checking the parser that consumes a collection -
+this extends it to the parser you write yourself when asking whether something exists.

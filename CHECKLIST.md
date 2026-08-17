@@ -3043,6 +3043,12 @@ regeneration from the pre-B1593 cubes.
 cannot see your work will never fail on it. When adding to a collection a test reads, verify
 the test's count CHANGED.
 
+**And a MATCH COUNT is not evidence of presence (L472).** `grep -c` returned **12** for a
+rule that was ABSENT - `202` matches inside `2026` and `2020`. Short numeric needles collide
+with dates, versions and IDs everywhere in this repo. **Grep for the STRUCTURE that would
+contain the thing** - a heading, a full identifier with its prefix - **and prefer an exact
+`in` test over a count.** A count answers "how many strings matched", never "is it there".
+
 **Retroactive coverage (#136):** catches the #192 collision, the 34 invisible L-entries, and
 the ~30 turns of falsely-green banner checks.
 
