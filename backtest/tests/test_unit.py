@@ -14730,25 +14730,57 @@ def test_b1593_select_exit_collapses_duplicate_exits():
 
 
 def test_b1593_regime_flip_reads_regime_from_signals():
-    """C: exit_regime_flip must recover regime_by_date from `signals`.
-
-    No caller ever passed regime_series, so a DEC-516 owner-approved exit fell
-    back to a time stop on every trade in every cube ever produced. `signals` is
-    already threaded to every exit, so this needs no registry change.
+    """B1622 REWRITE. The previous version asserted that two STRINGS appeared
+    somewhere in source and never that they connected - so it PASSED for the
+    whole life of a fix that never executed. That is the `wired=yes` grep
+    heuristic this project banned (L481). This one runs the exit.
     """
     import inspect
-    from backtest.engine import exit_strategies as ex
-    src = inspect.getsource(ex.exit_regime_flip)
-    assert 'signals.get("regime_by_date")' in src, (
-        "exit_regime_flip must read regime_by_date from signals (B1593 C)")
-    # and the engine must WRITE it - a read with no writer is the
-    # designed-vs-armed failure (CHECKLIST #121)
-    from backtest.engine.backtest import BacktestEngine
-    esrc = inspect.getsource(BacktestEngine._process_day)
-    assert "_regime_by_date[as_of]" in esrc, (
-        "engine must POPULATE _regime_by_date; a reader with no writer is a "
-        "designed-not-armed gate")
+    import pandas as _pd
+    import pathlib as _pl
+    from backtest.engine.exit_strategies import (
+        EXIT_STRATEGIES, run_exit_comparison)
 
+    q = _pl.Path("backtest/data/cache/ohlcv/AAPL.parquet")
+    if not q.exists():
+        import pytest
+        pytest.skip("AAPL parquet unavailable")
+    d = _pd.read_parquet(q)
+    if not isinstance(d.index, _pd.DatetimeIndex) and "date" in d.columns:
+        d = d.set_index("date")
+    d = d.sort_index()
+    entry = d.index[900].date()
+    px = float(d["close"].iloc[900])
+
+    # (a) with no regime map - what the engine used to pass - regime_flip is a
+    #     time stop, byte-for-byte
+    a = EXIT_STRATEGIES["regime_flip"](d, entry, px, "long", 2.0,
+                                       {"regime_at_entry": "bull"})
+    ts = EXIT_STRATEGIES["time_stop_20d"](d, entry, px, "long", 2.0,
+                                          {"regime_at_entry": "bull"})
+    assert a["exit_date"] == ts["exit_date"]
+    assert a["exit_reason"] == "regime_flip_max_days_20"
+
+    # (b) fed a regime map it EXITS ON THE FLIP - different date, different
+    #     reason. This is the assertion the old test could not make.
+    series = {t.date(): ("bull" if k < 3 else "bear")
+              for k, t in enumerate(d.index[901:921])}
+    b = EXIT_STRATEGIES["regime_flip"](d, entry, px, "long", 2.0,
+                                       {"regime_at_entry": "bull",
+                                        "regime_by_date": series})
+    assert b["exit_reason"] == "regime_flip_bull_to_bear", b["exit_reason"]
+    assert b["exit_date"] < a["exit_date"]
+
+    # (c) and the CUBE path must actually deliver it: run_exit_comparison takes
+    #     regime_by_date and injects it, so the cube is no longer produced with
+    #     a dead 26th exit.
+    sig = inspect.signature(run_exit_comparison)
+    assert "regime_by_date" in sig.parameters
+    src = inspect.getsource(run_exit_comparison)
+    assert 'enriched_sig["regime_by_date"] = regime_by_date' in src
+    eng = _pl.Path("backtest/engine/backtest.py").read_text(encoding="utf-8")
+    assert eng.count('getattr(self, "_regime_by_date", None)') == 2, (
+        "both run_exit_comparison call sites must pass the regime map")
 
 def test_b1597_orphan_rule_gate_wired_and_pinned():
     """CHECKLIST #197 / L464: a rule stated in LEARNINGS must be ANCHORED.
@@ -15280,3 +15312,67 @@ def test_b1619_ob_primitive_is_not_prunable_so_variants_cannot_silently_vanish()
     assert set(dp.SMC_PRIMITIVE_KEYS) == {"fvg", "bos_choch", "retracements"}
     joined = set().union(*dp.SMC_PRIMITIVE_KEYS.values())
     assert not any(k.startswith("smc_breaker_block") for k in joined)
+
+
+def test_b1621_gates_are_not_themselves_grep_heuristics():
+    """A cold pass found the guards vulnerable to the class they guard.
+
+    Three CONFIRMED defects, all verified before fixing:
+
+    (1) `verify_engine_implemented.py` matched RAW TEXT, so a token inside a
+        comment or docstring satisfied it -
+        `"break_max is not None" in "# if break_max is not None:  # DISABLED"`
+        is True. A DISABLED parameter would have reported ENGINE-IMPLEMENTED:
+        the `wired=yes` heuristic this project banned, re-implemented inside
+        the guard against exactly that.
+    (2) `verify_grid_bands.py` DROPPED any requested key absent from the grid
+        and still printed an unqualified PASS - answering a narrower question
+        than the one asked, silently.
+    (3) The grader opened `{ticker}.parquet` verbatim while production
+        normalises `-`/`.` to `_`. BF-B landed on correct data only because
+        `BF-B.parquet` happens to duplicate `BF_B.parquet`; `BF.B.parquet` is a
+        DIFFERENT 1,316-row series.
+    """
+    import importlib.util
+    import json as _json
+    import pathlib as _pl
+    import subprocess
+    import sys as _sys
+    import tempfile
+
+    spec = importlib.util.spec_from_file_location(
+        "_vei2", "scripts/verify_engine_implemented.py")
+    m = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(m)
+
+    # (1) comments and docstrings must NOT satisfy an anchor; real code and
+    #     string ARGUMENTS must still satisfy one.
+    tok = "break_max is not None"
+    assert tok not in m._code_only("x = 1  # break_max is not None\n")
+    assert tok not in m._code_only(
+        'def f():\n    """break_max is not None"""\n    return 2\n')
+    assert tok in m._code_only("if break_max is not None:\n    pass\n")
+    arg = 'getattr(_cfg, "SMC_OB_TAIL_N", 20)'
+    assert arg in m._code_only('g = getattr(_cfg, "SMC_OB_TAIL_N", 20)\n'), (
+        "blanking every string would delete the call-site anchors themselves")
+    assert m.check() == [], m.check()
+
+    # (2) a grid missing a requested parameter must FAIL, not narrow silently
+    rows = [{"close_mitigation": c, "break_pct_max": b, "tail_n": n,
+             "fires": n * 10 + int(b * 100), "exit": "x",
+             "sharpe": float(n) + b}
+            for c in (0, 1) for b in (0.01, 0.02) for n in (1, 2, 3)]
+    f = _pl.Path(tempfile.mkdtemp()) / "g.json"
+    f.write_text(_json.dumps({"results": rows}), encoding="utf-8")
+    r = subprocess.run([_sys.executable, "scripts/verify_grid_bands.py", str(f)],
+                       capture_output=True, text=True, timeout=120)
+    assert r.returncode == 2, r.stdout + r.stderr
+    assert "absent from every grid row" in (r.stderr + r.stdout)
+
+    # (3) the grader must resolve a ticker the way production does
+    src = _pl.Path("scripts/tighten_breaker_block.py").read_text(encoding="utf-8")
+    assert 'ticker.replace("-", "_").replace(".", "_")' in src, (
+        "the grader must normalise like cache._cache_path, or a dot-notation "
+        "cube silently diagnoses against a different price series")
+    from backtest.data.cache import _cache_path
+    assert _cache_path("BF-B").name == "BF_B.parquet"

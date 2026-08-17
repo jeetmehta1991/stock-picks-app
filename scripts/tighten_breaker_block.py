@@ -59,7 +59,19 @@ CLOSE_MITIGATION = [True, False]                 # False = production
 
 
 def _load_ohlcv(ticker: str) -> pd.DataFrame | None:
-    for rel in (f"backtest/data/cache/ohlcv/{ticker}.parquet",
+    # B1621: production resolves a ticker to a file via
+    # `cache._cache_path`, which normalises `-` and `.` to `_`
+    # (BF-B -> BF_B.parquet). This opened `{ticker}.parquet` VERBATIM.
+    # Today that lands on correct data only by coincidence - BF-B.parquet is a
+    # byte-identical duplicate of BF_B.parquet (VERIFIED `.equals()` True) -
+    # but BF.B.parquet is a DIFFERENT 1,316-row series (last close 26.44 vs
+    # 26.26), so a cube using dot notation would have been diagnosed against
+    # the wrong prices with no error: a file IS found, so the loss-threshold
+    # abort never trips. Use the production resolver first.
+    _norm = ticker.replace("-", "_").replace(".", "_")
+    for rel in (f"backtest/data/cache/ohlcv/{_norm}.parquet",
+                f"backtest/data/cache/ohlcv/{ticker}.parquet",
+                f"data/cache/ohlcv/{_norm}.parquet",
                 f"data/cache/ohlcv/{ticker}.parquet"):
         p = Path(rel)
         if p.exists():

@@ -1469,8 +1469,12 @@ class BacktestEngine:
         # B1593 (owner-approved C): a DATE-KEYED regime map. `_regime_history`
         # is order-only, so `exit_regime_flip` could never locate the regime for
         # a given bar and fell back to a time stop on EVERY trade in EVERY cube
-        # (L460: identical to time_stop_20d on 330 of 330). Threaded to exits
-        # via `signals_at_entry`, which is already carried on every trade.
+        # (L460: identical to time_stop_20d on 330 of 330).
+        # B1622 CORRECTION: this comment previously said "Threaded to exits via
+        # signals_at_entry" - it was NOT. Nothing wrote the key, so the fix was
+        # inert for its whole life and the exit stayed a time stop. It is now
+        # passed to `run_exit_comparison`, which injects it per trade at replay
+        # (L481). The comment described an intention as though it were done.
         if not hasattr(self, "_regime_by_date"):
             self._regime_by_date = {}
         self._regime_by_date[as_of] = regime   # _process_day(self, as_of)
@@ -3175,7 +3179,8 @@ class BacktestEngine:
                         trades_data_full.append({**t, "df": df_full})
                     if trades_data_full:
                         results.append(
-                            run_exit_comparison(strategy_name, trades_data_full)
+                            run_exit_comparison(strategy_name, trades_data_full,
+                                            getattr(self, "_regime_by_date", None))
                         )
         else:
             # Sequential fallback -- workers can't run; reconstruct df
@@ -3190,7 +3195,8 @@ class BacktestEngine:
                     trades_data_full.append({**t, "df": df_full})
                 if trades_data_full:
                     results.append(
-                        run_exit_comparison(strategy_name, trades_data_full)
+                        run_exit_comparison(strategy_name, trades_data_full,
+                                            getattr(self, "_regime_by_date", None))
                     )
 
         for ec, td in results:

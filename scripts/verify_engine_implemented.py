@@ -91,12 +91,66 @@ BREAKER_LOOP = r"def _breaker_scan\(.*return breaker_bull, breaker_bear"
 AGE_FILTER = r"age_max is not None"
 
 
+def _code_only(src: str) -> str:
+    """Source with comments and string literals BLANKED IN PLACE.
+
+    B1621: this gate matched raw text, so a token inside a comment or a
+    docstring satisfied it. VERIFIED:
+
+        "break_max is not None" in "# if break_max is not None:  # DISABLED"  -> True
+
+    A disabled parameter would therefore report ENGINE-IMPLEMENTED - the
+    `wired=yes` grep heuristic this project banned after ~150 false RESOLVED
+    claims, re-implemented inside the guard against exactly that.
+
+    Blanking IN PLACE rather than dropping tokens is deliberate: a tokenizer
+    that re-joins with spaces turns `_cfg.SMC_SWING_LENGTH` into
+    `_cfg . SMC_SWING_LENGTH` and every anchor in this file stops matching.
+    Preserving offsets keeps both substring and REGEX anchors working.
+    """
+    import io
+    import tokenize
+    lines = src.splitlines(keepends=True)
+    try:
+        toks = list(tokenize.generate_tokens(io.StringIO(src).readline))
+    except Exception:
+        return src  # tokenizer failed: fall back rather than pass silently
+    # A STRING at STATEMENT position is a docstring or a bare string expression
+    # and can hide a token. A STRING inside an expression is real code - the
+    # call-site anchors are literally `getattr(_cfg, "SMC_OB_TAIL_N", 20)`, so
+    # blanking every string would delete the very thing being asserted.
+    prev = tokenize.NEWLINE
+    drop = []
+    for tok in toks:
+        if tok.type == tokenize.COMMENT:
+            drop.append(tok)
+        elif tok.type == tokenize.STRING and prev in (
+                tokenize.NEWLINE, tokenize.NL, tokenize.INDENT,
+                tokenize.DEDENT, tokenize.ENCODING):
+            drop.append(tok)
+        if tok.type not in (tokenize.COMMENT, tokenize.NL):
+            prev = tok.type
+    for tok in drop:
+        (r1, c1), (r2, c2) = tok.start, tok.end
+        for r in range(r1, r2 + 1):
+            ln = lines[r - 1]
+            body = ln.rstrip("\n")
+            nl = ln[len(body):]
+            lo = c1 if r == r1 else 0
+            hi = c2 if r == r2 else len(body)
+            lines[r - 1] = body[:lo] + " " * max(0, hi - lo) + body[hi:] + nl
+    return "".join(lines)
+
+
 def check() -> list[str]:
     failures: list[str] = []
     queue = QUEUE.read_text(encoding="utf-8", errors="ignore") if QUEUE.exists() else ""
     for name, (implemented, rel, token, ticket) in PARAMS.items():
         src = Path(rel).read_text(encoding="utf-8", errors="ignore")
-        present = token in src
+        # B1621: match against CODE only. Whitespace is normalised by the
+        # tokenizer, so compare on a whitespace-collapsed token too.
+        code = _code_only(src)
+        present = token in code
         if implemented and not present:
             failures.append(
                 f"{name}: declared ENGINE-IMPLEMENTED but `{token}` is gone from "
@@ -117,8 +171,8 @@ def check() -> list[str]:
 
     # P4 is an ABSENCE-turned-PRESENCE: assert the age filter is INSIDE the
     # breaker loop, not merely somewhere in the file.
-    smc = Path("backtest/signals/smc_ict.py").read_text(encoding="utf-8",
-                                                        errors="ignore")
+    smc = _code_only(Path("backtest/signals/smc_ict.py").read_text(
+        encoding="utf-8", errors="ignore"))
     m = re.search(BREAKER_LOOP, smc, re.S)
     if not m:
         failures.append(
@@ -143,7 +197,7 @@ def check() -> list[str]:
 
     # The producer accepting a parameter proves nothing if the engine never
     # passes one. Assert the call site reads config for all four.
-    call = Path(CALL_SITE).read_text(encoding="utf-8", errors="ignore")
+    call = _code_only(Path(CALL_SITE).read_text(encoding="utf-8", errors="ignore"))
     for tok in CALL_SITE_TOKENS:
         if tok not in call:
             failures.append(

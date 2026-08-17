@@ -130,9 +130,21 @@ def main() -> int:
     payload = json.loads(Path(a.grid).read_text(encoding="utf-8"))
     results = payload["results"] if isinstance(payload, dict) else payload
     keys = [k.strip() for k in a.keys.split(",") if k.strip()]
+    # B1621: this used to DROP any requested key absent from the rows and then
+    # print an unqualified PASS - so a grid missing `age_bars_max` entirely
+    # (a schema rename, a writer bug, a genuinely inert parameter) reported
+    # "every swept level changes the outcome" having checked 3 of 4. Silently
+    # narrowing the question is worse than failing it.
+    absent = [k for k in keys if not any(k in r for r in results)]
     keys = [k for k in keys if any(k in r for r in results)]
     if not results or not keys:
         print("no results or no swept keys found", file=sys.stderr)
+        return 2
+    if absent:
+        print(f"FAIL - requested parameter(s) absent from every grid row: "
+              f"{absent}. The grid cannot answer whether they earn their place; "
+              f"pass --keys explicitly if the omission is intended.",
+              file=sys.stderr)
         return 2
 
     distinct, redundant = duplicate_rate(results, keys)

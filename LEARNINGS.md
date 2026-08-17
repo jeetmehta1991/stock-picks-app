@@ -8392,3 +8392,59 @@ directory name, it is the highest-probability repeat in the sweep.
 resolutions instead of restatusing rows, so the open-count is not a usable signal. Both findings
 above came from checking candidates against LIVE CODE. **A status field that is only ever appended
 to decays into a log**, and a log cannot answer "what is still broken".
+
+### L482
+
+**the cold pass found my guards were the thing they guard against**
+
+**B1621 / B1622.** A fresh-eyes review (different model) ran **5,360 comparisons - 4 tickers x
+1,340 PIT bars x 4 parameter sets - between the engine and the offline grader and found ZERO
+disagreements.** That is the reassuring half. The other half is that it found three defects in the
+tools I built this week, and I VERIFIED all three myself before believing any of them.
+
+**1. The engine-reachability gate matched raw text, so a COMMENT satisfied it.**
+
+```
+"break_max is not None" in "# if break_max is not None:  # DISABLED"   -> True
+```
+
+A DISABLED parameter would have reported ENGINE-IMPLEMENTED. **This is the `wired=yes` grep
+heuristic the project banned after ~150 false RESOLVED claims - re-implemented inside the guard
+built against exactly that.** Now blanks comments and DOCSTRINGS before matching, in place, so
+layout and every regex anchor survive. A string literal that is a real expression is kept, because
+the call-site anchors are literally `getattr(_cfg, "SMC_OB_TAIL_N", 20)` - blanking every string
+would delete the thing being asserted.
+
+**2. The band gate DROPPED any requested parameter absent from the grid and printed PASS.** A grid
+missing `age_bars_max` entirely - a rename, a writer bug, a genuinely inert knob - reported *"every
+swept level changes the outcome"* having checked 3 of 4. **Silently narrowing the question is worse
+than failing it**, because the output still reads like an answer to the original one.
+
+**3. The grader opened `{ticker}.parquet` verbatim** while production normalises `-`/`.` to `_`.
+`BF-B` landed on correct data only because `BF-B.parquet` happens to be a byte-identical duplicate
+of `BF_B.parquet` (VERIFIED `.equals()` True) - while `BF.B.parquet` is a DIFFERENT 1,316-row
+series, last close 26.44 vs 26.26. A dot-notation cube would have been diagnosed against the wrong
+prices with **no error at all**, because a file IS found and the loss-threshold abort never trips.
+
+**The common shape: every one of these fails OPEN.** A comment satisfies a check, a missing key is
+skipped, a wrong file is found. **A guard that degrades to "pass" when its input is unexpected is
+worse than no guard**, because it also supplies confidence. The fix in all three cases was to make
+the unexpected input FAIL rather than be quietly excluded.
+
+**And then B1622 closed the finding that both the cold pass and I found independently.** B1593's
+`regime_flip` fix read `signals["regime_by_date"]`; nothing ever wrote it; the comment in
+`backtest.py` said *"Threaded to exits via signals_at_entry"* - describing an intention as though
+it were done. The exit had been a 20-day time stop wearing a DEC-516 label for its entire life.
+Fixed by passing the regime map to `run_exit_comparison`, which injects it per trade at replay -
+the same Batch-415 mechanism already used for `ticker`/`strategy_name`, and deliberately NOT into
+the persisted `signals_at_entry`, which would put a copy of the whole regime map on every row.
+
+**Its pin test asserted that two strings appeared somewhere in source, and never that they
+connected - so it passed for the fix's whole inert life.** Rewritten to RUN the exit: without a
+regime map it must equal `time_stop_20d`; with one it must exit on the flip, earlier, with reason
+`regime_flip_bull_to_bear`. **A test that would pass on a fix that does nothing is a spelling
+check.**
+
+**Consequence to surface, not bury:** every cube built before B1622 has a dead 26th exit. cfg1 and
+cfg2 are in that set, so they are no longer comparable with the 18 configs still to run - either
+re-run them (2 x 3.3 h) or accept and document a 25-vs-26 asymmetry.

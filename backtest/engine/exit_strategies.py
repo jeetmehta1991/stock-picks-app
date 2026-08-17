@@ -1655,6 +1655,7 @@ def composite_score(win_rate: float, profit_factor: float,
 def run_exit_comparison(
     strategy_name: str,
     trades_data: list,           # list of dicts: {entry_date, entry_price, direction, atr, signals, df, ticker}
+    regime_by_date: dict | None = None,
 ) -> tuple:
     """
     Run all 12 exit strategies against a list of trade setups.
@@ -1715,6 +1716,18 @@ def run_exit_comparison(
                     "category":      t.get("category",
                                           base_sig.get("category", "momentum")),
                 }
+                # B1622 / S6-B1620a: the SAME Batch-415 mechanism, for the same
+                # reason. B1593 made `exit_regime_flip` read
+                # `signals["regime_by_date"]` and left a comment saying it was
+                # "threaded via signals_at_entry" - nothing ever wrote it, so
+                # the exit kept falling back to a 20-day time stop and measured
+                # IDENTICAL to `time_stop_20d` on 330/330 cfg1 and 420/420 cfg2
+                # rows. A DEC-516 owner-approved exit had never once run its own
+                # logic. Injected here rather than into the persisted
+                # `signals_at_entry` so the trade log does not carry a copy of
+                # the whole regime map on every row.
+                if regime_by_date:
+                    enriched_sig["regime_by_date"] = regime_by_date
                 r = exit_fn(
                     t["df"], t["entry_date"], t["entry_price"],
                     t["direction"], t["atr"], enriched_sig,
