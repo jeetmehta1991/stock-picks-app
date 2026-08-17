@@ -3211,3 +3211,31 @@ reproduce its own backtest.
 never ran, the same defect one stage later; the "wired means engine-consumed" class where a
 grep for code presence produced ~150 false RESOLVED claims; B1335 rule 2, MECHANISM-EXISTENCE,
 which required evidence a cited mechanism exists but was never pointed at swept parameters.
+
+### #208 - AN INDEPENDENT RE-IMPLEMENTATION VALIDATES FIDELITY TO DATA, NEVER TO PRODUCTION (B1614 / L476)
+
+`spot_check_trades.py` states its method as *"deliberately independent of the engine"* and
+re-derives every producer from raw parquet. It reported **100/100 agreement on both configs**
+while **four of six swept parameters did not exist in the engine at all**.
+
+**It could not have found them.** The checker takes `tail_n`, `close_mitigation`, `break_pct_max`
+and `age_bars_max` as ARGUMENTS - exactly as the grader does - so when it agreed, two pieces of
+the same author's code agreed with each other. **The independence that makes it trustworthy for
+one failure class is precisely what makes it blind to another:** it catches transcription errors,
+PIT violations and threshold mistakes; it structurally cannot catch *"production does not do this
+at all."*
+
+**Every audit needs at least one check that CALLS THE PRODUCTION PATH** - not a re-derivation of
+it. Re-derivation answers *"is the computation faithful to the data?"* Only invoking production
+answers *"is this what the system will actually do?"*
+
+**And a citation can be a near-miss name.** P4's evidence field read `smc_ict.py:252
+(event_recency_bars, S6-B1500a)`. Line 252 is `_smc.ob(ohlc, swings)`, which takes no such
+argument, and `event_recency_bars` governs `smc_ob_bullish_active` - a DIFFERENT signal - while
+the breaker loop has no age filter at all. **The citation grep-confirms and means something
+else**, so the table read as though P4 had an engine anchor. Verify a citation by opening the
+line, not by matching the name (L472's mirror: a match is not evidence of the RIGHT presence).
+
+**Retroactive coverage (#136):** the 100/100 spot check while P2-P5 were grader-only; `regime_flip`
+(L461), whose cube column was internally consistent and never compared to what the exit function
+executed; the `wired=yes` grep heuristic that produced ~150 false RESOLVED claims.

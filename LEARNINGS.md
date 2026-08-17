@@ -8129,3 +8129,50 @@ ANCHOR-THE-RULE pattern (L464) applied to FACTS rather than rules: **a disclosed
 gate behind it decays exactly like a prose rule.**
 
 Now `scripts/verify_engine_implemented.py`, CHECKLIST #207, runbook step 7.
+
+### L476
+
+**the spot check agreed 100/100 with itself, and a citation pointed at the wrong signal**
+
+**B1614.** Owner: *"you even audited each producer and how the post processing triggers were
+working correctly. why was this missed??"* Fair, and there are four layers.
+
+**1. The spot check was DESIGNED to be blind to this.** `spot_check_trades.py` opens with
+*"METHOD (deliberately independent of the engine)"* and re-derives P1-P6 from raw parquet,
+taking `tail_n`, `close_mitigation`, `break_pct_max`, `age_bars_max` as ARGUMENTS - exactly as
+the grader does. When it reported **100/100 agreement on both configs**, two pieces of my own
+code agreed with each other. **The independence that makes it trustworthy for one failure class
+is exactly what makes it blind to another.** It catches transcription errors, PIT violations and
+threshold mistakes; it cannot catch *"production does not implement this."*
+
+**2. Every lens in the post-config audit compares the grader to the DATA.** Cube sanity,
+diagnosis loss, verdict distribution, ranking metric, `exits_effective`, spot check - six checks,
+all internal to the grading pipeline. **Not one compared anything to the ENGINE.** There was no
+such lens until step 7 was added yesterday.
+
+**3. A citation that grep-confirms and means something else.** P4's evidence field read
+`smc_ict.py:252 (event_recency_bars, S6-B1500a)`. Line 252 is `_smc.ob(ohlc, swings)` - takes no
+such argument - and `event_recency_bars` (line 257) governs `smc_ob_bullish_active`, a DIFFERENT
+signal, while the breaker loop at 273-296 has no age filter at all. **Both halves of the citation
+are wrong, and both look right when grepped.** P5, by contrast, said plainly *"production has no
+such parameter"* - so one of the four was honestly declared and three read as though they had
+engine anchors.
+
+**4. What I actually verified versus what I claimed.** I verified that the GRADER computed each
+combination faithfully, and then reported the results as though they were deployable. Those are
+different claims needing different evidence. **This is the same shape as the `tail_n` miss one
+day earlier: I audited the machinery and never audited what the machinery was FOR.** Twice in two
+days the defect was not in any computation - it was in the unstated assumption about what the
+computation was answering.
+
+**The rule: every audit needs at least one check that CALLS THE PRODUCTION PATH**, not a
+re-derivation of it. Re-derivation answers "is the computation faithful to the data?" Only
+invoking production answers "is this what the system will do?" CHECKLIST #208.
+
+**Separately - the cost concern is measured and does not apply.** Owner asked whether carrying an
+equivalence class inflates Step 2's runtime. Diagnosis of 420 fires is **3.5 s FIXED and shared by
+every combination**; each additional combination costs **0.01-0.03 s**. Carrying 21 instead of 10
+costs about **0.2 s**. Step 2's real cost is the single engine run that builds its cube, which is
+independent of the carry because every carried parameter is SUBSET-SAFE. **The calculus inverts
+for FIRE-ADDING parameters** (`swing_length`, EMA span): each distinct value needs its own engine
+run, so those are the sweep's CONFIGS and must never be carried as a class. Runbook section 6b.

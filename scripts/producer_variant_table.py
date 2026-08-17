@@ -84,12 +84,14 @@ fires            =  ( breaker_bullish )  AND  ( price_above_ema_200 ) [from P6]"
              "production": 20, "type": "int", "band": [10, 20, 30, 50],
              "derivation": "library default is 50; production overrides to 20. Band brackets both.",
              "subset_safe": False, "status": "UNTESTED",
-             "evidence": "smc.py:137"},
+             "evidence": "smc.py:137",
+             "engine_implemented": True},
             {"id": "P2", "producer": "_smc.ob", "param": "close_mitigation",
              "production": False, "type": "bool", "band": [False, True],
              "derivation": "boolean - both values ARE the band. True = mitigated on CLOSE only.",
              "subset_safe": True, "status": "TESTED",
-             "evidence": "smc.py:380"},
+             "evidence": "smc.py:380",
+             "engine_implemented": False},
             {"id": "P3", "producer": "ob_events.tail(N)", "param": "tail_n",
              "production": 20, "type": "int", "band": [3, 5, 10, 20],
              "derivation": "B1610 DEFECT - this text says the band spans the measured "
@@ -100,12 +102,20 @@ fires            =  ( breaker_bullish )  AND  ( price_above_ema_200 ) [from P6]"
                            "Also COLLINEAR with P4 age_bars_max, Spearman +0.881. "
                            "RE-BAND PROPOSED, OWNER APPROVAL PENDING (S6-B1610b).",
              "subset_safe": True, "status": "BAND-DEFECTIVE",
-             "evidence": "smc_ict.py:266-268"},
+             "evidence": "smc_ict.py:266-268",
+             "engine_implemented": False},
             {"id": "P4", "producer": "recency filter on OB age", "param": "age_bars_max",
              "production": None, "type": "int|None", "band": [60, 120, 180, 250, None],
              "derivation": "measured real retests 45-134 bars, latches 294-469, gap 134-294 (B1501).",
              "subset_safe": True, "status": "TESTED",
-             "evidence": "smc_ict.py:252 (event_recency_bars, S6-B1500a)"},
+             "evidence": "B1614 CORRECTION - the prior citation "
+                         "'smc_ict.py:252 (event_recency_bars)' was WRONG on both "
+                         "counts: line 252 is `_smc.ob(ohlc, swings)` which takes no "
+                         "such argument, and `event_recency_bars` (line 257) governs "
+                         "`smc_ob_bullish_active` - a DIFFERENT signal. The breaker "
+                         "loop (273-296) has NO age filter. P4 is a NEW GATE with no "
+                         "engine counterpart; see S6-B1612f.",
+             "engine_implemented": False},
             {"id": "P5", "producer": "break test (close > top)", "param": "break_pct_max",
              "production": None, "type": "float|None", "band": [0.01, 0.02, 0.03, 0.05, None],
              "derivation": "NEW-GATE, OWNER-APPROVED B1507 (was N/A - production has no such "
@@ -116,7 +126,8 @@ fires            =  ( breaker_bullish )  AND  ( price_above_ema_200 ) [from P6]"
                            "Direction is an UPPER bound (L359: a breaker block is a RETEST, so "
                            "CLOSER is stricter).",
              "subset_safe": True, "status": "PENDING",
-             "evidence": "smc_ict.py:283-284 (no parameter today)"},
+             "evidence": "smc_ict.py:283-284 (no parameter today)",
+             "engine_implemented": False},
             {"id": "P6", "producer": "compute_ema_sma", "param": "span",
              "production": 200, "type": "int", "band": [9, 20, 21, 50, 200],
              "derivation": "ALL spans the producer emits (READ technical.py:750 pairs "

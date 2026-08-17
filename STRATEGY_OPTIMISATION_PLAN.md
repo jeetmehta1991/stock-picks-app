@@ -1160,6 +1160,27 @@ For every defect fixed during this cycle:
 *Lineage:* the `regime_flip` fix landed on one of only TWO ROBUST Phase 1B roster cells, whose
 numbers were `time_stop_20d`'s all along.
 
+### 6b. CARRYING AN EQUIVALENCE CLASS IS FREE - FOR SUBSET-SAFE PARAMETERS ONLY
+
+**MEASURED on the cfg2 cube (420 fires):**
+
+```
+FIXED   diagnosis of 420 fires, shared by ALL combinations : 3.5 s
+MARGINAL per combination graded                            : 0.01 - 0.03 s
+```
+
+So carrying **21** combinations instead of 10 costs **~0.2 s**. The grading cost is dominated
+by the FIXED diagnosis, which scales with FIRES (i.e. tickers), not with combinations. Step 2's
+real cost is the **single ENGINE RUN** that produces its cube - hours - and that is completely
+independent of how many candidates are carried, because every carried parameter is SUBSET-SAFE
+and graded from the SAME cube.
+
+**The calculus INVERTS for a FIRE-ADDING parameter.** `swing_length` (P1) and the EMA span (P6)
+change which bars fire, so each distinct value needs its OWN engine run - hours each, not
+milliseconds. **A fire-adding parameter must never be carried as an equivalence class**; its
+values are the CONFIGS of the sweep, decided before launch and capped by budget. If one is ever
+added to the graded grid, this section stops applying and the carry must be capped explicitly.
+
 ### 7. IMPLEMENT IN ENGINE - a winner the engine cannot apply is not a winner
 
 ```bash
