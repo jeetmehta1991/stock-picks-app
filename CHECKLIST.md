@@ -3068,3 +3068,24 @@ do the arithmetic and SHOW it.** If you cannot, drop the claim.
 
 **Retroactive coverage (#136):** catches the "costs nothing" claim verbatim, and the three
 rate-for-total substitutions above.
+
+### #202 — READ THE SPEC BEFORE REPORTING THE RESULT (B1608 / L471)
+
+**Every verification habit in this repo checks code against REALITY — does it run, does it
+reproduce, is the artifact right. None checks code against INTENT.**
+
+`tighten_breaker_block.py` applied all six admission gates and emitted PASS/FAIL, while
+plan section 10.1 specifies Step 1 produces **"ranked combinations"** and Step 2 produces
+**"gate verdicts"**. "0 PASS across 400 combinations" was reported as a Step-1 result when
+**Step 1 can never produce a PASS**. Not a bad result — a category error.
+
+**Before reporting what any component produced:**
+1. **Read what its phase is SPECIFIED to produce** — in the plan, not from memory.
+2. **If the output shape does not match the spec**, that is a DEFECT in the code or the
+   plan. Say so. Do not report the number.
+3. **When a design was decided earlier, re-read the decision.** Reconstructing it from
+   conversation produces a worse version — this drifted across ~20 turns before the owner
+   caught it.
+
+**Retroactive coverage (#136):** catches the "0 PASS" reports, and the drift where Step 1's
+window and universe were re-argued from scratch while section 10.1 already held the answer.

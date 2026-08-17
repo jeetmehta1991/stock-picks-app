@@ -592,11 +592,19 @@ in order for every strategy. Each numbered gate cites the incident that produced
 |---|---|---|---|---|
 | **0 INVENTORY** | build the SPECS entry | — | — | formula + Table A + factorial |
 | **1 SEARCH** | all fire-adding configs | **2 years** | **100** | ranked combinations |
-| **2 VALIDATE** | top 10 | **4 years** | **281 disjoint + 100 append = 381** | gate verdicts |
-| **3 ADMIT** | best 1 | 4 years | 381 | Phase 1B decision |
+| **2 VALIDATE** | top 10 | **2 years (owner 2026-08-17)** | **444 disjoint of 544** | gate verdicts |
+| **3 ADMIT** | best 1 | 2 years | 544 | Phase 1B decision |
 
-**Why 2 years in Phase 1?** Ranking needs only relative ordering. Grading needs the locked
-IS(3y)+holdout(1y) split, which a 2-year window cannot provide. Search cheap, grade properly.
+**Why 2 years EVERYWHERE (owner ruling 2026-08-17).** The market changed materially with AI
+adoption, so 2022-23 data is not wanted even for exit selection. Both phases run
+2024-05-05 -> 2026-05-05. **Validation is therefore CROSS-SECTIONAL, not temporal**: Step 1
+searches 100 tickers, Step 2 confirms on the 444 DISJOINT tickers over the same period.
+**Accepted limitation:** nothing tests whether an edge survives a regime change.
+
+**STEP 1 PRODUCES A RANKING, NOT VERDICTS.** Gates are STEP 2's admission criteria. Step 1
+emits a Sharpe-ranked list, excludes `NO_EXIT_SELECTABLE` (no exit with >=10 in-sample
+trades), and hands the **top 10** forward. Step 1 can never produce a PASS - if it does,
+it is doing Step 2's job (L471).
 
 **Why 100 then 281?** The 281 are DISJOINT from the 100, so validation is genuine out-of-sample
 across the ticker dimension — a combination selected by luck on 100 will not replicate. Appending

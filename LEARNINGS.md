@@ -7923,3 +7923,40 @@ holdout genuinely out-of-sample. I proposed extending before I considered moving
 `objective="sharpe"`. **The mechanism existed and the debate was about which to call where.**
 
 **Anchored:** CHECKLIST #201.
+
+### L471
+
+**Step 1 was doing Step 2's job, and nothing compares the plan to the implementation**
+
+**B1608.** Owner: *"Step 1 has been doing Step 2's job ... is a big mistake."* Correct.
+`STRATEGY_OPTIMISATION_PLAN.md` section 10.1 has always specified Step 1 produces **"ranked
+combinations"** and Step 2 produces **"gate verdicts"**. `tighten_breaker_block.py` applied all six
+admission gates and emitted PASS/FAIL - so **"0 PASS across 400 combinations" was reported as a
+Step-1 result when Step 1 can never produce a PASS.**
+
+**Why the existing hooks did not catch it.** Owner asked why, given #193 was built for exactly this
+family. **TESTED: #193 checks a DATA ARTIFACT** - alphabetical skew, mega-cap absence, letter
+coverage, provenance against a baseline cube. **No artifact was wrong here. No data was wrong.**
+The CODE diverged from the DOCUMENTED DESIGN, and **nothing in the repo compares those two.**
+
+**That is the new class: SPEC-vs-IMPLEMENTATION drift.** Every verification habit built this session
+checks code against REALITY - does it run, does it reproduce, is the artifact right. **None checks
+code against INTENT.** I read `tighten_breaker_block` correctly, reported exactly what it did, and
+never asked whether that was what it was supposed to do.
+
+**And I compounded it by re-deriving the design from conversation instead of reading section 10.1.**
+The owner had to say *"we have already decided these criteria earlier ... can we refer to the past
+documents"*. **The plan was right; I was reconstructing a worse version of it from memory across
+~20 turns.** That is `feedback_confirm_existing_template_before_replicating` applied to a
+specification rather than a template.
+
+**Generalised rule:** *before reporting what a component produced, read what it was SPECIFIED to
+produce.* A result that does not match the declared output shape of its phase is a defect in the
+code or the plan - never a finding. **"0 PASS" was neither a good nor a bad result; it was a
+category error.**
+
+**Also surfaced by the fix:** ranking by Sharpe alone puts `ci_lo = -0.112` above `ci_lo = +0.210`,
+and the top 10 contains only 4 DISTINCT fire-sets because different subset-safe parameter tuples
+collapse to the same surviving trades. Both flagged to the owner rather than silently corrected.
+
+**Anchored:** CHECKLIST #202.

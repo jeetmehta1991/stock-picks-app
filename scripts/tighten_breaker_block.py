@@ -140,6 +140,17 @@ def main() -> int:
                     help="STEP 1 = sharpe (rank). STEP 2 = gates (admit).")
     ap.add_argument("--min-n", type=int, default=10,
                     help="SEARCH-phase min trades (owner: 10)")
+    # B1608: STEP 1 produces "ranked combinations" per plan section 10.1 -
+    # NOT gate verdicts. The script had been applying all six admission
+    # gates and emitting PASS/FAIL, so "0 PASS across 400 combinations"
+    # was reported as a Step-1 result when Step 1 was never meant to
+    # produce a PASS. Gates belong to STEP 2 (L471).
+    ap.add_argument("--rank-only", action="store_true", default=True,
+                    help="STEP 1: emit a SHARPE-RANKED list, no gate "
+                         "verdicts. Excludes NO_EXIT_SELECTABLE.")
+    ap.add_argument("--top-n", type=int, default=10,
+                    help="how many ranked combinations go to STEP 2 "
+                         "(plan section 10.1: top 10)")
     ap.add_argument("--max-diag-loss", type=float, default=0.02,
                     help="abort if more than this fraction of fires cannot be re-diagnosed")
     a = ap.parse_args()
@@ -253,12 +264,35 @@ def main() -> int:
         rows.append(row)
 
     rows.sort(key=lambda r: (-(r.get("gates_passed") or 0), -(r.get("fires") or 0)))
+    # B1608: STEP-1 DELIVERABLE - a Sharpe-ranked list with NO gates applied,
+    # NO_EXIT_SELECTABLE excluded (owner ruling 2026-08-17). The per-combination
+    # `gates`/`verdict` fields remain in the payload for STEP 2, but the ranking
+    # below is what Step 1 hands forward.
+    rankable = [r for r in rows if r.get("verdict") != "NO_EXIT_SELECTABLE"
+                and r.get("sharpe") is not None]
+    ranked = sorted(rankable, key=lambda r: -(r.get("sharpe") or -9))
+    print(f"\nSTEP-1 RANKING (no gates; {len(rankable)} rankable of {len(rows)}; "
+          f"{len(rows) - len(rankable)} excluded as NO_EXIT_SELECTABLE)")
+    print(f"{'#':>3} {'sharpe':>8} {'ci_lo':>8} {'fires':>7}  exit")
+    for i, r in enumerate(ranked[:a.top_n], 1):
+        print(f"{i:>3} {r.get('sharpe'):>8.3f} "
+              f"{(r.get('ci_lo') if r.get('ci_lo') is not None else float('nan')):>8.3f} "
+              f"{r.get('fires', 0):>7}  {r.get('exit')}")
+
     Path(a.out).parent.mkdir(parents=True, exist_ok=True)
     Path(a.out).write_text(json.dumps(
         {"strategy": STRATEGY, "r5_baseline_fires": len(fires),
          # B1517: was len(diags) which, after close_mitigation became the outer
          # key, reported 2 (the number of flag values) instead of the fire count.
          "diagnosed": {str(k): len(v) for k, v in diags.items()},
+         "step1_ranking": [
+             {"rank": i, "sharpe": r.get("sharpe"), "ci_lo": r.get("ci_lo"),
+              "fires": r.get("fires"), "exit": r.get("exit"),
+              "close_mitigation": r.get("close_mitigation"),
+              "break_pct_max": r.get("break_pct_max"),
+              "age_bars_max": r.get("age_bars_max"),
+              "tail_n": r.get("tail_n")}
+             for i, r in enumerate(ranked[:a.top_n], 1)],
          "results": rows}, indent=2))
 
     print(f"\n{'break':>6} {'age':>5} {'tail':>4} {'fires':>6} {'ho_n':>5} "
