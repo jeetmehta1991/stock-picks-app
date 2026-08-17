@@ -3095,3 +3095,69 @@ plan section 10.1 specifies Step 1 produces **"ranked combinations"** and Step 2
 
 **Retroactive coverage (#136):** catches the "0 PASS" reports, and the drift where Step 1's
 window and universe were re-argued from scratch while section 10.1 already held the answer.
+
+### #203 — A SWEPT LEVEL THAT CHANGES NOTHING IS A WASTED DIMENSION (B1610 / L473)
+
+**MECHANICALLY GATED:** `python scripts/verify_grid_bands.py <grid.json>` — exit 2 on any
+adjacent level pair that moves the outcome in <10pct of parameter groups.
+
+P3 `tail_n` was swept at `[3, 5, 10, 20]` through **400 graded combinations across two
+configs** before the owner asked why three levels returned the same 68 fires.
+
+**MEASURED when the question was finally asked:**
+
+| | cfg1 | cfg2 |
+|---|---|---|
+| `tail_n` 10 -> 20 changes the outcome | **0 of 50 groups** | 2 of 50 groups |
+| 200 combinations -> distinct outcomes | **57** | 79 |
+| redundant | **72pct** | 60pct |
+
+**The band was not broken — it was MISPLACED.** `tail_n` moves fires from 4 to 420 across
+its full range, but the four sampled levels admit 39.8 / 68.8 / **98.6 / 100.0** pct. The
+region that discriminates is **1-3, below the band's floor**; `tail_n=2` alone cuts 73pct.
+
+**Root cause is documentary.** The plan's own derivation for P3 reads *"measured rank of
+qualifying event was 1-4 (B1501); band spans that."* **It does not span that** — its floor
+is 3, the top of the measured range. Nothing compared a band to its own stated derivation,
+and nothing checked afterwards whether each level had done anything.
+
+**Deeper cause: `tail_n` is COLLINEAR with `age_bars_max`** — Spearman **+0.881** between
+event rank and age in bars (median age 49 bars at rank 1, 416 at rank 5, 750 at rank 10).
+Both cap RECENCY, one in events and one in bars. So `age_bars_max=180` had already removed
+every high-rank event and `tail_n` had nothing left to cut. **The three top-ranked
+combinations are not merely equal in count — they are the SAME 68 FIRES**, which is also why
+their Sharpe and `ci_lo` were byte-identical.
+
+**Before reporting a grid:** run the band check. **After any re-band:** re-grade — for a
+SUBSET-SAFE parameter that is offline and **MEASURED at 15.3 s per config**, not an engine run.
+
+**Retroactive coverage (#136):** B1544 (*"uncapping was a no-op"* — a shipped change with zero
+effect, found only after the fact); S6-B1576b (*"a 20-config sweep could silently run 20
+IDENTICAL configs and nothing would surface it"* — the same class at config level, raised as a
+concern and never given a test); B1541 (a cache that existed but was OFF).
+
+### #204 — CHECK THE UNITS ON BOTH SIDES OF A RATIO (B1610 / L458)
+
+`trades_per_year = 252 / avg_hold` divided **252 TRADING days** by a **CALENDAR-day** hold.
+Every annualised Sharpe in the project was **17.1pct too low**; correcting it moved cfg2's best
+from 1.860 to 2.239 and PASS from 5 to 9. The formula was never wrong-looking — both sides are
+"days".
+
+**Whenever a constant meets a measured quantity, name the unit of each out loud before
+dividing.** Calendar vs trading days, bars vs sessions, per-call vs wall-clock, rate vs total.
+The rate-vs-total instance of this class is #201.
+
+### #205 — A WRAPPER OR MECHANICAL REWRITE MUST PIN THE UNWRAPPED PATH (B1610 / L440, L452)
+
+(a) **Rewriting N call sites mechanically ships a test that the NO-OP path is byte-identical.**
+33 producer guards were added at once; a single inverted guard would have silently deleted
+every signal, and the only thing that could catch it is pinning the full key count (512) with
+an empty skip set.
+
+(b) **Overriding a dunder makes every internal use of that operator recursive.** `GuardedSignals`
+overrode `__contains__`, whose own body began `if key not in self` — infinite recursion, caught
+on the test's first run. Inside a class that overrides `in` / `[]` / `len` / `==`, call the base
+explicitly (`dict.__contains__(self, key)`).
+
+*Not its own item per the anti-theater guard (#136): (b) has ONE instance, so it rides with (a)
+rather than inflating the checklist.*

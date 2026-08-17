@@ -92,8 +92,14 @@ fires            =  ( breaker_bullish )  AND  ( price_above_ema_200 ) [from P6]"
              "evidence": "smc.py:380"},
             {"id": "P3", "producer": "ob_events.tail(N)", "param": "tail_n",
              "production": 20, "type": "int", "band": [3, 5, 10, 20],
-             "derivation": "measured rank of qualifying event was 1-4 (B1501); band spans that.",
-             "subset_safe": True, "status": "TESTED",
+             "derivation": "B1610 DEFECT - this text says the band spans the measured "
+                           "rank range 1-4, and it does NOT: its floor is 3, the TOP of "
+                           "that range. MEASURED on 420 cfg2 fires: levels 3/5/10/20 admit "
+                           "39.8/68.8/98.6/100.0pct, so 10->20 moved 0 of 50 cfg1 groups. "
+                           "The discriminating region is 1-3 (tail_n=2 alone cuts 73pct). "
+                           "Also COLLINEAR with P4 age_bars_max, Spearman +0.881. "
+                           "RE-BAND PROPOSED, OWNER APPROVAL PENDING (S6-B1610b).",
+             "subset_safe": True, "status": "BAND-DEFECTIVE",
              "evidence": "smc_ict.py:266-268"},
             {"id": "P4", "producer": "recency filter on OB age", "param": "age_bars_max",
              "production": None, "type": "int|None", "band": [60, 120, 180, 250, None],

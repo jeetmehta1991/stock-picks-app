@@ -543,7 +543,7 @@ on `smc_breaker_block_long`, the first strategy through - the L-number is the in
 | # | gate | why |
 |---|---|---|
 | 6 | **Instrument the QUALIFYING EVENT before tuning.** Record what actually satisfied the signal - age, distance, rank - not just the aggregate fire rate. | L360 - saturation (124/124 bars) was ONE stale order block latching, invisible at the aggregate level. |
-| 7 | **Derive band values from the measured distribution.** Never percentile-by-reflex, never a round number. Anchor level 1 at the production value. | L356 (deciles on an integer count), L369 (P6 band silently narrowed 5 -> 2). |
+| 7 | **Derive band values from the measured distribution.** Never percentile-by-reflex, never a round number. Anchor level 1 at the production value. **Then VERIFY the band against its own derivation text before running, and run `scripts/verify_grid_bands.py` on the grid AFTER — a level that changes nothing is a wasted dimension.** | L356 (deciles on an integer count), L369 (P6 band silently narrowed 5 -> 2), **L473 (P3 `tail_n` claimed to span rank 1-4 with a floor of 3; 10 -> 20 moved 0 of 50 groups and 72pct of cfg1's 200 combinations were redundant)**. |
 | 8 | **State the economic event the signal captures, then check the threshold DIRECTION serves it.** | L359 - a breaker block is a RETEST, so the lever is an UPPER bound; my version selected harder for the noise. |
 | 9 | **Terminate each band where holdout n < 25 or full-period n <= 100.** The gates set the last rung, not taste. | The strict end was untestable on every run - the sample, not the effect, is binding. |
 

@@ -13522,9 +13522,16 @@ def test_b1486_claude_md_banner_counts_are_fresh():
     banner = (repo / "CLAUDE.md").read_text(encoding="utf-8", errors="ignore")
 
     checklist = (repo / "CHECKLIST.md").read_text(encoding="utf-8", errors="ignore")
-    pat = _re.compile(r"^(?:\*{0,2}#?)(\d+)[.\s]")
+    # B1610: this parser saw ONLY the legacy "N. item" form and was blind to
+    # the "### #N - TITLE" form every item since #193 uses. It therefore
+    # reported max=192 and passed GREEN while the checklist actually ran to
+    # #205 - 13 items outside the freshness check it exists to provide.
+    # Same class as L469 (a heading format invisible to its consuming parser)
+    # and #199 (fix the parser, not the artifact it mis-reads).
+    pats = (_re.compile(r"^(?:\*{0,2}#?)(\d+)[.\s]"),
+            _re.compile(r"^###\s+#(\d+)[\s" + chr(0x2014) + "-]"))
     actual_ck = max(int(m.group(1)) for ln in checklist.splitlines()
-                    if (m := pat.match(ln)))
+                    for pat in pats if (m := pat.match(ln)))
 
     learnings = (repo / "LEARNINGS.md").read_text(encoding="utf-8", errors="ignore")
     actual_l = max(int(n) for n in _re.findall(r"^### L(\d+)$", learnings, _re.M))
@@ -14900,3 +14907,57 @@ def test_b1605_quantity_gate_and_step1_objective():
         "scripts/tighten_breaker_block.py").read_text(encoding="utf-8")
     assert 'default="sharpe"' in src, "Step 1 must default to objective=sharpe"
     assert "objective=a.objective" in src, "the objective must reach select_exit"
+
+
+def test_b1610_inert_swept_level_is_detected():
+    """CHECKLIST #203: a swept level that changes nothing must FAIL the grid check.
+
+    P3 `tail_n` was swept at [3, 5, 10, 20] through 400 graded combinations
+    across two configs. MEASURED afterwards: 10 -> 20 changed the outcome in
+    0/50 cfg1 groups and 2/50 cfg2 groups. The band was not broken - tail_n
+    moves fires from 4 to 420 across its full range - it was MISPLACED, sampling
+    only the saturated region while the discriminating region 1-3 sat below its
+    floor. The duplicate rows were PRINTED adjacent in every run and were still
+    not seen, because the table was read for its ranking and never for its
+    structure.
+    """
+    import importlib.util
+    spec = importlib.util.spec_from_file_location(
+        "_vgb", "scripts/verify_grid_bands.py")
+    m = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(m)
+
+    keys = ["a", "b"]
+    # `b` is inert: the outcome never depends on it.
+    inert = [{"a": a, "b": b, "fires": a * 10, "exit": "x", "sharpe": float(a)}
+             for a in (1, 2, 3) for b in (10, 20)]
+    reports, failures = m.analyse(inert, keys)
+    assert failures, "an inert level must FAIL"
+    assert "b: level 10 -> 20" in failures[0]
+    assert m.marginal_effect(inert, "b", keys)["effect"] == 0.0
+    assert m.marginal_effect(inert, "a", keys)["effect"] == 1.0
+
+    # every level earning its place must PASS
+    live = [{"a": a, "b": b, "fires": a * 10 + b, "exit": "x",
+             "sharpe": float(a + b)} for a in (1, 2, 3) for b in (10, 20)]
+    assert m.analyse(live, keys)[1] == [], "a fully live grid must pass"
+
+    # a same-COUNT but different-OUTCOME pair is not a duplicate
+    same_n = [{"a": 1, "b": 10, "fires": 5, "exit": "p", "sharpe": 1.0},
+              {"a": 1, "b": 20, "fires": 5, "exit": "q", "sharpe": 2.0}]
+    assert m.duplicate_rate(same_n, keys) == (2, 0)
+
+    # HISTORICAL PIN - the artifact that motivated the gate. If either grid is
+    # ever re-banded, this pin fails and forces the numbers to be re-derived.
+    import json
+    import pathlib as _pl
+    for f, expect in (("output_audit/b1589_cfg1_grid.json", 0),
+                      ("output_audit/b1608_cfg2_grid.json", 2)):
+        q = _pl.Path(f)
+        if not q.exists():
+            continue
+        rows = json.loads(q.read_text(encoding="utf-8"))["results"]
+        pairs = m.marginal_effect(rows, "tail_n", list(m.DEFAULT_KEYS))["pairs"]
+        last = [p for p in pairs if p["from"] == 10 and p["to"] == 20][0]
+        assert last["changed"] == expect, (
+            f"{f}: tail_n 10->20 moved {last['changed']} groups, pinned {expect}")

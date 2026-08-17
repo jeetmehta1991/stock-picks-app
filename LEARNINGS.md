@@ -7989,3 +7989,63 @@ and cheap queries are exactly the ones that collide.
 
 **Anchored:** CHECKLIST #200, which already requires checking the parser that consumes a collection -
 this extends it to the parser you write yourself when asking whether something exists.
+
+### L473
+
+**Three of four levels of a swept parameter did nothing, and the duplicate rows were printed side by side in every run**
+
+**B1610.** Owner: *"Only tail_n differs - 5, 10, 20 - and all three keep exactly 68 fires. This
+itself is not sounding correct."* Correct. **MEASURED** on the 420 real cfg2 fires:
+
+```
+fires ADMITTED by tail_n      1 -> 4     2 -> 112    3 -> 167
+                              5 -> 289  10 -> 414   20 -> 420   (of 420)
+marginal effect, cfg1          3->5 26pct   5->10 16pct   10->20   0pct  (0 of 50 groups)
+marginal effect, cfg2          3->5 64pct   5->10 20pct   10->20   4pct  (2 of 50 groups)
+200 combinations  ->  cfg1 57 distinct outcomes (72pct redundant) / cfg2 79 (60pct)
+```
+
+**The parameter is NOT broken.** It moves fires from 4 to 420 across its full range - monotone
+and strongly discriminating. **The BAND is misplaced.** `[3, 5, 10, 20]` admits
+39.8 / 68.8 / **98.6 / 100.0** pct: half the levels sit past saturation, and the region that
+separates - 1, 2, 3 - lies BELOW the band's floor. `tail_n=2` alone removes 73pct of fires.
+
+**Documentary root cause.** The plan's own derivation for P3 reads *"measured rank of qualifying
+event was 1-4 (B1501); band spans that."* **It does not.** Its floor is 3 - the TOP of the
+measured range. The band was built to bracket the PRODUCTION anchor (20) while the text claimed
+it bracketed the measurement, and **nothing ever compared a band to its own derivation.**
+
+**Deeper cause - the two knobs measure the same thing.** Spearman between event rank and age in
+bars is **+0.881** (median age 49 bars at rank 1, 416 at rank 5, 750 at rank 10). `tail_n` caps
+recency in EVENTS, `age_bars_max` caps it in BARS. With `age_bars_max=180` active, every
+high-rank event is already gone, so `tail_n` has nothing left to cut. **The owner's three
+combinations are not merely equal in count - they are the SAME 68 FIRES**, which is the answer
+to last turn's separate question about byte-identical entries.
+
+**Why I missed it across 400 combinations and two configs.** The grid prints sorted by fires,
+so the identical rows land ADJACENT:
+
+```
+ False   250   10    221   102   221   0.735    5  FAIL
+ False   250   20    221   102   221   0.735    5  FAIL
+```
+
+Maximally visible, and still invisible - because **I read the table for its ranking and never
+for its structure.** I reported best-Sharpe, gradable counts, PASS counts: all questions about
+which ROW wins, none about whether the DESIGN was sound. A factorial grid carries one mandatory
+question that I never asked: *does every level I swept change anything?*
+
+**The rule already existed and was prose.** Plan design-rule 7 says "derive band values from the
+measured distribution". It was half-applied - anchored at production, not spanned to the
+measurement - and being prose, nothing re-checked it. **This is the ANCHOR-THE-RULE pattern
+(L464) recurring one week later: rules with scripts hold, rules with paragraphs decay.** The
+missing half was never a pre-run rule at all; it is a POST-RUN test, and there was none.
+
+**Now mechanical:** `scripts/verify_grid_bands.py` (exit 2 on any adjacent pair moving <10pct of
+groups), CHECKLIST #203, pin test `test_b1610_inert_swept_level_is_detected` which also PINS the
+historical 0-of-50 so a re-band forces re-derivation.
+
+**Cost of the fix, MEASURED (#201):** a full re-grade is **15.3 s per config** - `tail_n` is
+SUBSET-SAFE, so no engine run is involved. The waste was never wall-clock; it was that the top
+10 handed to Step 2 contained **4 distinct fire-sets**, so Step 2 would validate four candidates
+while believing it validated ten.
