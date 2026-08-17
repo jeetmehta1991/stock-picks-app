@@ -184,16 +184,35 @@ def evaluate(pnl: pd.Series, hold: pd.Series, *, min_n: int | None = None,
         # B1496 (owner-directed split): min_trades is TWO independent requirements and was
         # reported as one gate, understating the gate count and hiding which leg blocks a cell.
         "min_trades_holdout":     n >= PC["min_trades_holdout"],
-        "min_trades_full_period": (full_period_n is None
-                                   or full_period_n > PC["min_trades_full_period"]),
+        # B1624: was `full_period_n is None or full_period_n > BAR`, so a
+        # MISSING value PASSED. MEASURED: full_period_n=None -> True while
+        # full_period_n=1 -> False, i.e. "unknown" scored better than "known
+        # bad". Reachable: every exit-SELECTION caller omits the argument
+        # (build_phase_1b_roster.py:221, roster_core.select_exit:244,
+        # best_exit_by_gates.py, bear_regime_stress_test.py), so this gate
+        # auto-passed for all of them and n_gates read one higher than the
+        # number of gates actually evaluated.
+        #
+        # None is now a THIRD state - NOT EVALUABLE - which is neither pass nor
+        # fail. It cannot be quietly counted as a pass, and the denominator
+        # shrinks so nobody quotes "6 of 6" when 5 were measured.
+        "min_trades_full_period": (None if full_period_n is None
+                                   else full_period_n > PC["min_trades_full_period"]),
     }
+    _evaluable = {k: v for k, v in gates.items() if v is not None}
     return {"n": n, "sharpe": sharpe, "sortino": sortino, "psr": dsr.get("psr"),
             "profit_factor": round(pf, 3), "payoff": round(payoff, 2) if payoff else None,
             "expectancy": round(float(pnl.mean()), 4),
             "win_rate": round(float((pnl > 0).mean()), 3),
             "p": sh.get("p") if sh else None, "ci_lo": sh.get("ci_lo") if sh else None,
-            "gates": gates, "n_gates": sum(1 for v in gates.values() if v),
-            "all_live_gates": all(gates.values())}
+            "gates": gates,
+            "n_gates": sum(1 for v in gates.values() if v is True),
+            # the DENOMINATOR: how many gates this call could actually judge
+            "n_gates_evaluable": len(_evaluable),
+            # a cell with an unevaluable gate is NOT "all gates passed" - it is
+            # a cell nobody finished measuring.
+            "all_live_gates": (len(_evaluable) == len(gates)
+                               and all(_evaluable.values()))}
 
 
 def in_sample(g: pd.DataFrame) -> pd.DataFrame:

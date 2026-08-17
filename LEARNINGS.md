@@ -8495,3 +8495,47 @@ ticker vanishing, an exit falling back to a time stop, an assumption with a defa
 produced an error; all of them produced a number.** The fix each time was to make the unexpected
 input fail loudly rather than be quietly excluded - and where that is not possible, to replace the
 assumption with a measurement.
+
+### L484
+
+**a gate scored "unknown" higher than "known bad", and my own test corrupted global state**
+
+**B1624 / B1625.** The last two pre-sweep items, and the first one is the through-line's purest
+instance yet.
+
+**`min_trades_full_period` read:**
+
+```python
+"min_trades_full_period": (full_period_n is None or full_period_n > BAR)
+```
+
+MEASURED: `full_period_n=None` -> **True**; `full_period_n=1` - obviously failing - -> **False**.
+**A missing measurement scored better than a bad one.** And it was reachable: every exit-SELECTION
+caller omits the argument (`build_phase_1b_roster.py:221`, `roster_core.select_exit`,
+`best_exit_by_gates`, `bear_regime_stress_test`), so that gate auto-passed for all of them and
+`n_gates` read one higher than the number of gates actually judged.
+
+**The fix is not "make None fail" - it is to admit a THIRD state.** None is now NOT-EVALUABLE:
+neither pass nor fail. `n_gates` counts only True, a new `n_gates_evaluable` carries the
+DENOMINATOR so nobody quotes "6 of 6" when 5 were measured, and `all_live_gates` requires that
+every gate was both evaluated and passed. **A cell with an unmeasured gate is not a cell that
+passed; it is a cell nobody finished measuring.**
+
+Blast radius, measured: the GRADING paths always pass `full_period_n`, so the cfg2 grid is
+**unchanged** - step-1 ranking identical, 198 graded rows both sides, max gates_passed 6 -> 6. The
+correction lands only where the phantom pass was.
+
+**B1625 closes the last one: every cube row now carries `cfg_swing_length`, `cfg_ema_span`,
+`cfg_breaker`.** The cube had 37 columns and none identified its own parameters, so a cube could be
+tied to its config only by DIRECTORY NAME - which is precisely how cfg2 came to be graded at the
+wrong swing length. The stamp is read from config at first use (after env overrides) and cached
+per process, since a cube has hundreds of thousands of rows.
+
+**And I broke two unrelated tests writing the test for it.** My first version called
+`importlib.reload(backtest.config)`; a reload builds a NEW module object, anything holding the old
+reference diverges, and `test_bug_30` and `test_bug_232` failed. **A test that corrupts global
+state is a defect even when it passes** - it converts a green suite into a lottery on ordering.
+Rewritten to set attributes directly and restore them in `finally`. Then my repair patch matched an
+earlier anchor and duplicated a block into a SyntaxError, caught at collection. Both are the same
+carelessness: **editing by slice offsets in a 15,000-line file, twice, when the safe move was to
+replace the whole function.**

@@ -15433,3 +15433,83 @@ def test_b1623_step1_prints_no_gate_verdicts():
     # and a dropped ticker must be COUNTED, not silently skipped
     assert 'DROPS["no_parquet"].append(t)' in src
     assert "ABORT: dropped-ticker share" in src
+
+
+def test_b1624_unevaluable_gate_is_not_a_pass():
+    """A gate that could not be evaluated must not read as PASSED.
+
+    MEASURED before the fix: `evaluate(..., full_period_n=None)` returned
+    `min_trades_full_period=True` while `full_period_n=1` - obviously failing -
+    returned False. **"Unknown" scored better than "known bad".** Reachable:
+    every exit-SELECTION caller omits the argument
+    (build_phase_1b_roster.py:221, roster_core.select_exit, best_exit_by_gates,
+    bear_regime_stress_test), so the gate auto-passed for all of them and
+    n_gates read one higher than the number of gates actually evaluated.
+    """
+    import pandas as _pd
+    import scripts.roster_core as rc
+    pnl = _pd.Series([0.5] * 40)
+    hold = _pd.Series([10] * 40)
+
+    unknown = rc.evaluate(pnl, hold, min_n=10, full_period_n=None)
+    bad = rc.evaluate(pnl, hold, min_n=10, full_period_n=1)
+    good = rc.evaluate(pnl, hold, min_n=10, full_period_n=999)
+
+    assert unknown["gates"]["min_trades_full_period"] is None, (
+        "an unevaluable gate must be None - neither pass nor fail")
+    assert bad["gates"]["min_trades_full_period"] is False
+    assert good["gates"]["min_trades_full_period"] is True
+
+    # the DENOMINATOR must shrink, so nobody quotes "6 of 6" when 5 were judged
+    assert unknown["n_gates_evaluable"] == len(unknown["gates"]) - 1
+    assert bad["n_gates_evaluable"] == len(bad["gates"])
+    # n_gates counts TRUE only - a None must never be counted as a pass
+    assert unknown["n_gates"] == sum(
+        1 for v in unknown["gates"].values() if v is True)
+    # and an unfinished measurement is not "all gates passed"
+    assert unknown["all_live_gates"] is False
+
+
+def test_b1625_cube_rows_carry_their_config():
+    """S6-B1620b: a cube must say which parameters produced it.
+
+    Before this, `trade_exit_detail.csv` had 37 columns and ZERO identifying
+    swing_length / ema_span - a cube could be tied to its parameters only by
+    DIRECTORY NAME. That is exactly how cfg2 was graded at the wrong swing
+    length and lost 167 of 420 fires as a biased subsample (L454), and with an
+    18-config sweep it was the highest-probability repeat in the plan.
+    """
+    import inspect
+    from backtest.engine import exit_strategies as ex
+
+    src = inspect.getsource(ex.run_exit_comparison)
+    for col in ("cfg_swing_length", "cfg_ema_span", "cfg_breaker"):
+        assert f'"{col}"' in src, f"{col} missing from the cube row"
+
+    ex._CFG_STAMP = None
+    base = ex._cfg_stamp()
+    assert base["swing_length"] == 20 and base["ema_span"] == 200, base
+
+    # The stamp must follow the CONFIGURED value, or it records a default while
+    # the run used something else - worse than no stamp, because it looks
+    # authoritative. Set attributes directly rather than reloading
+    # backtest.config: a reload creates a NEW module object and anything
+    # holding the old reference silently diverges. My first version DID reload
+    # it and broke two unrelated integration tests (bug_30, bug_232) - a test
+    # that corrupts global state is a defect even when it passes.
+    import backtest.config as _c
+    saved = {k: getattr(_c, k, None) for k in
+             ("SMC_SWING_LENGTH", "STRAT_EMA_SPAN", "SMC_OB_TAIL_N")}
+    try:
+        _c.SMC_SWING_LENGTH = 10
+        _c.STRAT_EMA_SPAN = 50
+        _c.SMC_OB_TAIL_N = 2
+        ex._CFG_STAMP = None
+        got = ex._cfg_stamp()
+        assert got["swing_length"] == 10, got
+        assert got["ema_span"] == 50, got
+        assert "tail=2" in got["breaker"], got
+    finally:
+        for k, v in saved.items():
+            setattr(_c, k, v)
+        ex._CFG_STAMP = None

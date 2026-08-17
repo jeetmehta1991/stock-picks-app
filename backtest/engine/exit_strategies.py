@@ -1652,6 +1652,32 @@ def composite_score(win_rate: float, profit_factor: float,
                  + 0.15 * r_score, 2)
 
 
+def _cfg_stamp() -> dict:
+    """The producer knobs this process is running with, for the cube stamp.
+
+    Cached per process: it is read once per cube ROW otherwise, and a cube has
+    hundreds of thousands of rows. Values are read from config at first call,
+    AFTER any env override has been applied.
+    """
+    global _CFG_STAMP
+    if _CFG_STAMP is None:
+        try:
+            from backtest import config as _c
+            br = (f"cm={int(bool(getattr(_c, 'SMC_OB_CLOSE_MITIGATION', False)))},"
+                  f"tail={getattr(_c, 'SMC_OB_TAIL_N', 20)},"
+                  f"age={getattr(_c, 'SMC_BREAKER_AGE_BARS_MAX', None)},"
+                  f"brk={getattr(_c, 'SMC_BREAKER_BREAK_PCT_MAX', None)}")
+            _CFG_STAMP = {"swing_length": getattr(_c, "SMC_SWING_LENGTH", None),
+                          "ema_span": getattr(_c, "STRAT_EMA_SPAN", None),
+                          "breaker": br}
+        except Exception:
+            _CFG_STAMP = {"swing_length": None, "ema_span": None, "breaker": ""}
+    return _CFG_STAMP
+
+
+_CFG_STAMP = None
+
+
 def run_exit_comparison(
     strategy_name: str,
     trades_data: list,           # list of dicts: {entry_date, entry_price, direction, atr, signals, df, ticker}
@@ -1740,6 +1766,17 @@ def run_exit_comparison(
                 # Per-trade detail row + Pass 53 Day-9-evening Tier 1-4 context
                 # (DEC-594 same-commit; ~25 columns added per owner directive)
                 row = {
+                    # B1625 (S6-B1620b): the CONFIG that produced this row.
+                    # MEASURED before: trade_exit_detail.csv had 37 columns and
+                    # ZERO identifying swing_length / ema_span, so a cube could
+                    # only be tied to its parameters by DIRECTORY NAME. That is
+                    # exactly how cfg2 came to be graded at the wrong swing
+                    # length and lose 167 of 420 fires as a biased subsample
+                    # (L454). With an 18-config sweep it was the highest-
+                    # probability repeat in the whole plan.
+                    "cfg_swing_length": _cfg_stamp()["swing_length"],
+                    "cfg_ema_span":     _cfg_stamp()["ema_span"],
+                    "cfg_breaker":      _cfg_stamp()["breaker"],
                     "ticker":       t.get("ticker", ""),
                     "strategy":     strategy_name,
                     "entry_date":   str(t["entry_date"]),
