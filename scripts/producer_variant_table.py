@@ -129,13 +129,15 @@ fires            =  ( breaker_bullish )  AND  ( price_above_ema_200 ) [from P6]"
              "evidence": "smc_ict.py:283-284 (no parameter today)",
              "engine_implemented": False},
             {"id": "P6", "producer": "compute_ema_sma", "param": "span",
-             "production": 200, "type": "int", "band": [9, 20, 21, 50, 200],
+             "production": 200, "type": "int", "band": [9, 20, 21, 50, 100, 150, 200],
              "derivation": "ALL spans the producer emits (READ technical.py:750 pairs "
                            "(9,21),(20,50),(50,200)). B1507 widened from [50,200] - the "
                            "earlier band silently dropped 9/20/21 with no stated rule "
                            "(#165). 9/20/21 are short-horizon and weak trend filters "
                            "economically, but exclusion must be a MEASURED result, not a "
-                           "pre-judgement. Spans 100/250 do NOT exist -> NEW-GATE, ask owner.",
+                           "pre-judgement. B1686: spans 100 and 150 ADDED to the producer on owner "
+                           "directive 2026-08-18 - they did not exist, which is why P6 could "
+                           "not sweep them (S6-B1507b). Band is now 7 values; 250 still absent.",
              "subset_safe": False, "status": "UNTESTED",
              "evidence": "technical.py:750"},
         ],

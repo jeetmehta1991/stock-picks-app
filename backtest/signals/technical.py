@@ -747,7 +747,11 @@ def compute_ultimate_oscillator(df: pd.DataFrame) -> dict:
 
 def compute_ema_sma(df: pd.DataFrame) -> dict:
     result = {}
-    for fast, slow in [(9,21),(20,50),(50,200)]:
+    # B1686 (owner directive 2026-08-18: "bands 100 and 150 should exist").
+    # NEW GATE by this project's own classification - spans 100/150 did not
+    # exist in the producer, so P6 could not sweep them (S6-B1507b, open
+    # since B1507). Purely ADDITIVE: two new keys, no existing key changes.
+    for fast, slow in [(9,21),(20,50),(50,200),(100,150)]:
         if len(df) < slow + 2:
             continue
         ef  = df["close"].ewm(span=fast, adjust=False).mean()
