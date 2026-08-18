@@ -3155,6 +3155,23 @@ effect, found only after the fact); S6-B1576b (*"a 20-config sweep could silentl
 IDENTICAL configs and nothing would surface it"* — the same class at config level, raised as a
 concern and never given a test); B1541 (a cache that existed but was OFF).
 
+**EXTENSION (B1691 / L495): an ASYMMETRIC band needs a stated reason that is not "I think this
+direction wins".**
+
+`swing_length` was banded `[10, 20, 30, 50]` - **ONE level below production, TWO above** - because
+I believed higher `swing_length` means fewer, more significant swings and less noise, so I sampled
+the direction I expected to win. **A band shaped by a directional hypothesis cannot test that
+hypothesis; it can only confirm it.** If the optimum sits below 10, the band reports "lower was
+worse" having never looked.
+
+`tail_n` above is the same failure with a measured outcome: it floored at 3, was re-banded to
+`[1,2,3,5,10,20]`, and **2 - a level that had not previously existed - won BOTH wave-1 top-10s.**
+I re-banded that parameter and did not ask the same question of its neighbour. Band is now
+`[5, 10, 20, 30, 50]`.
+
+**The test: could this band return an answer you did not expect?** If every level sits on the side
+you predict wins, the search is a confirmation, not a measurement.
+
 ### #204 — CHECK THE UNITS ON BOTH SIDES OF A RATIO (B1610 / L458)
 
 `trades_per_year = 252 / avg_hold` divided **252 TRADING days** by a **CALENDAR-day** hold.
