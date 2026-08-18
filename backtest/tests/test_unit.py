@@ -15569,3 +15569,56 @@ def test_b1626_orphan_gate_fails_closed():
     # the four that slipped through must be anchored NOW
     for n in ("L481", "L482", "L483", "L484"):
         assert re.search(rf"\b{n}\b", C), f"{n} is still orphaned"
+
+
+def test_b1631_spot_check_calls_production_not_only_a_reimplementation():
+    """CHECKLIST #208: an audit needs at least one leg that CALLS production.
+
+    `spot_check_trades.py` re-implemented P1-P6 and compared the
+    re-implementation to the cube. Two legs can only say THAT they disagree,
+    never which is wrong - and a SHARED assumption is invisible to both. It
+    reported 100/100 agreement while four swept parameters did not exist in the
+    engine at all (L476). A third leg that calls `compute_smc_signals` makes it
+    three-way, so any two agreeing localises the third.
+    """
+    import importlib.util
+    import pandas as _pd
+    import pathlib as _pl
+    import sys as _sys
+    _saved = _sys.argv
+    _sys.argv = ["x"]
+    try:
+        spec = importlib.util.spec_from_file_location(
+            "_sc", "scripts/spot_check_trades.py")
+        m = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(m)
+    finally:
+        _sys.argv = _saved
+
+    import inspect
+    src = inspect.getsource(m.rederive_fire)
+    assert "smc_ict.compute_smc_signals(" in src, (
+        "the spot check must CALL production, not only re-implement it")
+    assert "engine_agrees" in src
+
+    q = _pl.Path("backtest/data/cache/ohlcv/AAPL.parquet")
+    if not q.exists():
+        import pytest
+        pytest.skip("AAPL parquet unavailable")
+    d = _pd.read_parquet(q)
+    if not isinstance(d.index, _pd.DatetimeIndex) and "date" in d.columns:
+        d = d.set_index("date")
+    d = d.sort_index()
+
+    agree = tot = fired = 0
+    for i in range(400, 900, 53):
+        r = m.rederive_fire(d, d.index[i], swing_length=10, ema_span=21,
+                            close_mitigation=False, tail_n=20)
+        if not r.get("ok"):
+            continue
+        tot += 1
+        agree += int(r["engine_agrees"])
+        fired += int(r["breaker_bullish"])
+        assert not str(r["engine_breaker_bullish"]).startswith("ERROR:"), r
+    assert tot >= 5 and agree == tot, f"engine vs re-derivation {agree}/{tot}"
+    assert fired > 0, "sample never fired - the check proved nothing"

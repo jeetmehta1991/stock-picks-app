@@ -1079,6 +1079,26 @@ same-row-count. B1568 + B1569b cubes all hash to `615233dbab2756d0` (1,352 x 37)
 - **Do NOT run a pyramid or any other CPU work during a timing A/B.** It inflates the arm in flight
   and biases the saving upward.
 
+## SWEEP EXECUTION MODE - OPTION C (owner ruling 2026-08-17)
+
+**Wave 1 is OWNER-GATED. Waves 2-9 run autonomously, subject to MECHANICAL HALTs.**
+
+Wave 1 is gated because it is the first `--screen-pool-workers 3` measurement; the remaining 8
+waves are re-costed from its ELAPSED before any of them starts. Autonomy after that is safe only
+because the stop conditions are measured, not judged in the moment:
+
+| HALT condition | why it is mechanical |
+|---|---|
+| cube sanity fails: not exactly 1 strategy, not exactly `[26]` exits/entry, or a mega-cap absent | step 1, already scripted |
+| diagnosis loss > `--max-diag-loss`, or ANY ticker dropped | the grader ABORTS (B1623) |
+| spot-check agreement < 100pct on any of the three legs | step 4 |
+| a config's ELAPSED deviates > 2x from wave 1's measured figure | arithmetic on the log |
+| `MemoryError`, or free RAM below one worker's PEAK (3,223 MB) | `Get-CimInstance` in the */15 check |
+| the adversarial review produces a CONFIRMED finding | step 5 |
+
+**On any HALT: stop the sweep, do not start the next wave, notify the owner with the evidence.**
+Waves are never started to "keep the machine busy" - an unexplained result stops the sequence.
+
 ## MANDATORY POST-CONFIG ANALYSIS (owner directive - run after EVERY config, unprompted)
 
 **This runs after every config completes. No prompt required. Skipping a step is a silent miss.**
@@ -1145,9 +1165,27 @@ effective** (L460). **Never quote "best of 26" without running this first.**
 ```bash
 PYTHONPATH=. python scripts/spot_check_trades.py   --cube output_cfg<N>/trade_exit_detail.csv --n 50   --swing-length <SW> --ema-span <SPAN>
 ```
-Re-derives every producer INDEPENDENTLY from raw parquet under PIT and checks execution.
-**Expected: 100pct agreement, 0 execution failures.** Anything less is a finding.
-**If the CHECKER disagrees with the engine, suspect the CHECKER first** (L457).
+**SCOPE, verified against code (B1631):**
+
+| leg | what it does | file |
+|---|---|---|
+| re-derivation | P1-P6 rebuilt from raw parquet under PIT, calling the vendored LIBRARY | `spot_check_trades.py:58` |
+| **engine** | **`compute_smc_signals` called at the same bar with the config's own parameters** | **added B1631** |
+| execution | entry is a real trading day, exit >= entry, `hold_days` matches the calendar distance, `pnl_pct` sign-consistent | `spot_check_trades.py:101` |
+
+**OHLCV-only is CORRECT here, and not by luck.** `smc_breaker_block_long` has exactly two gates -
+`smc_breaker_block_bullish` and `price_above_ema_{span}` - both OHLCV-derived, and under
+`--cube-isolation` `backtest.py:2379-2380` sets `size_pct = CUBE_ISOLATION_SIZE_PCT`, bypassing
+tier sizing. That matters because tier GATES ENTRY otherwise (LOW -> 0.0 size -> the trade is
+SKIPPED, L418/B1544), which would make `smart_money_score` an unchecked entry input.
+**At Phase 1B, with tier sizing live and the full roster running, OHLCV-only coverage is NOT
+sufficient** - the smart-money leg re-enters the entry path and must be checked too.
+
+**Two legs could only say THAT they disagreed.** Adding the engine makes it three-way, so a
+disagreement localises: engine+cube agreeing against the re-derivation means the CHECKER is wrong
+(L457); re-derivation+engine agreeing against the cube means the RUN is wrong.
+
+**Expected: 100pct agreement on all three, 0 execution failures.** Anything less is a finding.
 
 ### 5. ADVERSARIAL REVIEW - find bugs and logic errors (owner phrasing, verbatim)
 
@@ -1169,7 +1207,15 @@ Run every lens, every config:
 | **Duplicate information** | are "distinct" columns byte-identical? **Ask this of EVERY axis - exits, parameters, tickers, dates - not only the one where it first paid off.** | 26 exits -> 23 effective (L460); `tail_n` 3 of 4 levels inert (L473) |
 | **Units / scale** | do the units of every input match the constant? | 252 trading days over a CALENDAR hold (L458) |
 | **Config blindness** | does a re-deriving component get the ORIGINATING params? | grader graded cfg2 at the wrong swing_length (L454) |
-| **Provenance** | is the artifact the one you think it is? | universe was an abandoned A-C chunk (L445) |
+| **Provenance** | is the artifact the one you think it is? | universe was an abandoned A-C chunk (L445); the sweep BUILDER still read it (L479) |
+| **Executability** | can the ENGINE apply what the search selected, or does the knob exist only in the grader? | 4 of 6 swept parameters were grader-only; the graded winner would have run as 420 fires at Sharpe 0.789 instead of 68 at 2.239 (L475) |
+| **Fail-open** | when this component meets unexpected input, does it PASS? Every branch that `continue`s, defaults, or falls back is a candidate | a comment satisfying a code check, a missing key skipped by the band gate, a wrong file found by the grader, a dropped ticker vanishing, an exit falling back to a time stop, a gate scoring "unknown" above "known bad" (L482, L483, L484) |
+| **Self-referential verification** | does this check compare code to REALITY, or to another piece of the same author's code? | the spot check re-implemented the producer and agreed 100/100 while 4 parameters did not exist in the engine; a pin test asserting a STRING passed for the whole inert life of a fix; the orphan gate keyword-matched three phrases and missed 4 of 4 (L476, L481, L485) |
+| **Completion vs artifact** | did the work happen, or did the command merely return? | a smoke reported "PASSED" with no cube written; a killed child reported exit 0 at simulated day 25 of 504 (L486) |
+
+**The 4 lenses below the original 7 were added B1631 from THIS session's actual defects** - every
+example is a defect that the original 7 did not name and that shipped anyway. A lens list that only
+grows after a failure is working as designed; one that never grows is not being used.
 
 **Every finding gets an EXECUTION_QUEUE ticket the same turn.** A finding mentioned in prose and
 not ticketed does not exist (#94). Causes go in only when TESTED - otherwise `UNKNOWN - RCA NEEDED`

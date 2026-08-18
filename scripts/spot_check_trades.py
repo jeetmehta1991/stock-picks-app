@@ -92,8 +92,26 @@ def rederive_fire(df, when, swing_length, ema_span, close_mitigation, tail_n):
             breaker = True
             break
 
+    # B1631 / CHECKLIST #208: a THIRD leg that CALLS PRODUCTION. Until now this
+    # file re-implemented P1-P6 and compared the re-implementation to the cube.
+    # Two legs can only tell you THAT they disagree, never which is wrong - and
+    # a shared assumption is invisible to both. Calling `compute_smc_signals`
+    # with the config's own parameters makes it three-way: re-derivation,
+    # engine producer, and recorded cube. Any two agreeing localises the third.
+    engine_breaker = None
+    try:
+        eng = smc_ict.compute_smc_signals(
+            sub, swing_length=swing_length, close_mitigation=close_mitigation,
+            ob_tail_n=tail_n)
+        engine_breaker = bool(eng.get("smc_breaker_block_bullish", False))
+    except Exception as _e:                     # never silent: reported below
+        engine_breaker = f"ERROR:{type(_e).__name__}"
+
     return {"ok": True, "breaker_bullish": breaker, "above_ema": above_ema,
             "should_fire": bool(breaker and above_ema),
+            # PRODUCTION's answer at the same bar, same parameters
+            "engine_breaker_bullish": engine_breaker,
+            "engine_agrees": (engine_breaker == breaker),
             "bear_obs_examined": n_bear, "close": close, "ema": float(ema),
             "bar_index": i}
 

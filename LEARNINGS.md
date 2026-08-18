@@ -8629,3 +8629,43 @@ the real launch must arm it in the SAME tool invocation, not as a preceding step
 from a wrapper, a PASSED banner from a run with nothing to do, a completion notification for a
 killed child. **None of those are the artifact.** The rule that already covers it is #128 - inspect
 the happy-path OUTPUT, not the exit status - and it needed applying three times in one turn.
+
+### L487
+
+**the spot check was OHLCV-only for a good reason, and engine-blind for no reason at all**
+
+**B1631.** Owner asked what step 4 actually checks - OHLCV, smart-money, the engine - and said to
+verify against CODE. Both halves of the answer surprised me.
+
+**OHLCV-only is CORRECT here, and not by luck.** `smc_breaker_block_long` has exactly two gates,
+`smc_breaker_block_bullish` and `price_above_ema_{span}`, both OHLCV-derived. The reason
+smart-money does not need checking is subtler: **tier GATES ENTRY** - LOW maps to 0.0 size and a
+zero size SKIPS the trade (L418/B1544) - so `smart_money_score` would be an unchecked ENTRY input.
+But `backtest.py:2379-2380` sets `size_pct = CUBE_ISOLATION_SIZE_PCT` under `--cube-isolation`,
+bypassing tier entirely. **The sweep is safe because of a FLAG, not because the strategy is
+simple** - and at Phase 1B, with tier sizing live, OHLCV-only coverage stops being sufficient.
+
+**Engine-blind was just a gap.** The file imports `smc_ict._smc` - the vendored LIBRARY - and
+re-implements P1-P6, then compares the re-implementation to the cube. **Two legs can only tell you
+THAT they disagree, never which is wrong**, and a shared assumption is invisible to both. That is
+exactly how it reported 100/100 while four swept parameters did not exist in the engine (L476).
+
+Added a third leg that CALLS `compute_smc_signals` at the same bar with the config's own
+parameters. VERIFIED: engine and re-derivation agree on 19/19 sampled AAPL bars, 9 of them firing.
+A disagreement now localises - engine+cube against the re-derivation means the CHECKER is wrong
+(L457); re-derivation+engine against the cube means the RUN is wrong.
+
+**And the 7 adversarial lenses were missing this week's dominant failure classes.** I mapped every
+defect found since B1610 against them; four had no lens and shipped anyway:
+
+```
+Executability              the engine cannot apply what the search selected      (L475)
+Fail-open                  unexpected input PASSES instead of erroring           (L482-L484)
+Self-referential verify    the check compares code to the same author's code     (L476, L481, L485)
+Completion vs artifact     the command returned; the work did not happen         (L486)
+```
+
+7 -> 11. **Every added lens is named after a defect that got through the original 7**, which is the
+only honest way to extend a checklist: a lens list that grows after a failure is being used, one
+that never grows is decoration. The generalisation is L474's - **a lens is defined by its question,
+and the question set is only ever complete relative to the failures you have already had.**
