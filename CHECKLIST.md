@@ -3501,3 +3501,27 @@ evidence, and let the owner choose.
 **Retroactive coverage (#136):** this launch; the "3-config ceiling" derived at ~9 GB free that no
 longer held at 6.5 GB (L486-adjacent, B1627); the pool=3 manifest entry that would have put EIGHT
 processes against a 2-process measurement.
+
+### #220 - A TEST MUST ASSERT BEHAVIOUR, NOT SHAPE (B1681 / L493)
+
+Three tests in one session passed while the thing they guarded did not work, each asserting
+something ABOUT the code instead of running it:
+
+| test | asserted | why it passed anyway |
+|---|---|---|
+| B1593 original | two STRINGS appear in source | they did; nothing connected them, and `regime_flip` stayed a time stop for its whole life |
+| B1622 replacement | `count(getattr(self, "_regime_by_date", None)) == 2` | there ARE two - **both fallback branches**, neither necessarily the path that RUNS |
+| `test_b1610` pin | reads two grid JSONs | they were UNTRACKED, so a fresh clone SKIPS and reports green (#218) |
+
+**The progression is the point:** *does the code say the words* -> *does the code have the shape*
+-> still never *does this execute*. Each fix made the assertion more sophisticated and none made it
+BEHAVIOURAL.
+
+**Every pin test must, at minimum, run the thing and assert an OUTPUT that differs when the fix is
+absent.** A count, a presence check, a signature check, a substring - all are proxies, and a proxy
+can be satisfied by code that does nothing. If the behaviour is only observable in an expensive
+artifact, say so in the test and add the cheap end-to-end that *is* affordable; a skipped
+assertion and a passed one are indistinguishable in a summary line.
+
+**Retroactive coverage (#136):** all three rows above - and the only thing that caught the live
+defect was building a cube and reading `exit_reason`.
