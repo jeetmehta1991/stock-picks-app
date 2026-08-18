@@ -8677,3 +8677,43 @@ Completion vs artifact     the command returned; the work did not happen        
 only honest way to extend a checklist: a lens list that grows after a failure is being used, one
 that never grows is decoration. The generalisation is L474's - **a lens is defined by its question,
 and the question set is only ever complete relative to the failures you have already had.**
+
+### L488
+
+**"complete coverage" was a fact about the strategy, and I reported it as a fact about the check**
+
+**B1634.** Owner: *"think more broadly. it's not just about this strategy but subsequent other
+strategies in the roster. So smart_money_score would be an unchecked entry input yes for this
+strategy but not for all other strategies."* Correct, and it inverts what I had just written.
+
+Last turn I established that OHLCV-only coverage is adequate for `smc_breaker_block_long` and
+carefully explained WHY - tier gating, `--cube-isolation`, the two price-derived gates. **All true,
+and all about one strategy.** Step 4 is a STANDARD that will run against every strategy the roster
+promotes. Applied unchanged to a smart-money or news strategy it would re-derive the price leg,
+find agreement, and certify a trade **without ever reading the input that gated it** - producing
+output indistinguishable from a real verification.
+
+**MEASURED, once I asked the question mechanically: 185 of 222 strategies have at least one input
+the spot check cannot verify.** `smc_breaker_block_long` is among the 37 that pass, so this sweep
+is covered - but that is now PROVEN per strategy rather than argued once and generalised.
+
+**The rule: a verification must declare what it CANNOT verify, compare that against what the
+subject actually reads, and refuse to certify the gap.** A check that silently narrows its scope to
+what it happens to handle is worse than one that fails, because the output is identical either way.
+
+**And a note on the classifier.** First pass flagged 193 of 222, but many were keys my prefix map
+simply did not recognise - `near_r1`, `above_prev_high`, `at_support` are price-derived. I widened
+it to 185 **only after reading what each key actually is**. The temptation is to widen a map until
+the flag count looks reasonable; **that is how a fail-closed gate dies**, and the remaining UNKNOWNs
+stay failing on purpose.
+
+**One more substring collision, caught by my own pin test.** `classify("smart_money_score")`
+returned `ohlcv`, because **`sma` matches inside `smart`** - and the loose indicator regex ran
+before the specific families. A smart-money signal would have been classified as price-derived
+and silently certified. **That is L472 again** (a match is not evidence of the RIGHT presence),
+in the very script written to stop coverage being assumed. Fixed by ordering: specific families
+first, catch-all last. **A catch-all that runs first is not a catch-all, it is a shadow.**
+
+**This generalises L487/#213.** There, a check's sufficiency depended on a FLAG. Here it depends on
+the SUBJECT. Same discipline: **sufficiency is a claim about a configuration and a subject, never a
+property of the check alone** - and stating it without both is how "verified" becomes decorative.

@@ -15635,3 +15635,44 @@ def test_b1631_spot_check_calls_production_not_only_a_reimplementation():
         assert not str(r["engine_breaker_bullish"]).startswith("ERROR:"), r
     assert tot >= 5 and agree == tot, f"engine vs re-derivation {agree}/{tot}"
     assert fired > 0, "sample never fired - the check proved nothing"
+
+
+def test_b1634_spotcheck_declares_what_it_cannot_verify():
+    """CHECKLIST #214: a check must refuse to certify inputs it cannot read.
+
+    OHLCV-only coverage is complete for `smc_breaker_block_long` because of the
+    STRATEGY, not the check. MEASURED: 185 of 222 strategies have at least one
+    input the spot check cannot verify - applied unchanged, it would certify
+    them without ever reading the input that gated them.
+    """
+    import importlib.util
+    import sys as _sys
+    _saved = _sys.argv
+    _sys.argv = ["x"]
+    try:
+        spec = importlib.util.spec_from_file_location(
+            "_vsc", "scripts/verify_spotcheck_coverage.py")
+        m = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(m)
+    finally:
+        _sys.argv = _saved
+
+    # fail-CLOSED: an unrecognised key is NOT quietly assumed verifiable
+    assert m.classify("some_brand_new_signal") == "UNKNOWN"
+    assert "UNKNOWN" not in m.VERIFIABLE_FAMILIES
+    assert m.classify("smart_money_score") == "smart_money"
+    assert m.classify("price_above_ema_200") == "ohlcv"
+    assert m.classify("news_sentiment_positive") == "news"
+
+    # the strategy this sweep runs MUST be fully verifiable, or the sweep's
+    # spot check certifies something it cannot read
+    fams, gaps = m.audit("smc_breaker_block_long")
+    assert gaps == [], f"the swept strategy has unverifiable inputs: {gaps}"
+    assert "ohlcv" in fams
+
+    # and a smart-money strategy must FAIL, or the gate is decorative
+    from backtest.signals import screener
+    sm = [n for n in screener.ALL_STRATEGIES if "smart_money" in n]
+    if sm:
+        _, g = m.audit(sm[0])
+        assert g, f"{sm[0]} must report an unverifiable family"

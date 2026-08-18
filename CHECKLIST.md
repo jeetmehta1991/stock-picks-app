@@ -3382,3 +3382,28 @@ conditions is a claim about one run, presented as a property of the check.
 `USE_SMC_PANEL_CACHE=False` keeping an 11.5pct divergence dormant, so every reproduction check
 holds only while the flag is off (B1542); `STRATEGY_SUBSET_FILE` being the gate that enables demand
 pruning, so omitting it loses BOTH savings silently and every timing measurement with it (L432).
+
+### #214 - A CHECK MUST DECLARE WHAT IT CANNOT VERIFY (B1634 / L488)
+
+The 50-trade spot check re-derives producers from OHLCV. For `smc_breaker_block_long` that is
+complete coverage - **because the strategy reads two price-derived signals, not because the check
+is thorough.** Applied unchanged to a smart-money, news, earnings or short-interest strategy, the
+same check would certify a trade **without ever reading the input that gated it**, and the output
+would look identical to a real verification.
+
+**MEASURED: 185 of 222 strategies have at least one input the spot check cannot verify.**
+
+**A verification must declare its own coverage, compare it against what the subject actually
+reads, and REFUSE to certify the gap.** `scripts/verify_spotcheck_coverage.py` does this per
+strategy and is fail-CLOSED (#211): an unclassified key counts as unverifiable, because an
+unrecognised input is exactly the one nobody thought about. **Widening the classifier to silence a
+flag is how a fail-closed gate dies** - each key was added only after reading what it is.
+
+**This generalises #213.** #213 says a check's sufficiency can depend on a FLAG; this says it can
+equally depend on the SUBJECT. Both mean the same discipline: sufficiency is a claim about a
+configuration and a subject, never a property of the check alone.
+
+**Retroactive coverage (#136):** the OHLCV-only spot check reporting 100/100 while four swept
+parameters did not exist in the engine (L476); `--cube-isolation` bypassing tier so smart-money is
+not an entry input HERE but is at Phase 1B (L487); the B1039 producer audits that measured one
+signal family and were quoted as coverage of a strategy.

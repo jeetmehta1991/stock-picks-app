@@ -1187,6 +1187,25 @@ disagreement localises: engine+cube agreeing against the re-derivation means the
 
 **Expected: 100pct agreement on all three, 0 execution failures.** Anything less is a finding.
 
+**FIRST, prove the check can verify the strategy at all (B1634, owner correction):**
+
+```bash
+PYTHONPATH=. python scripts/verify_spotcheck_coverage.py <strategy>
+```
+
+Step 4 is a STANDARD, not a check written for one strategy. OHLCV-only coverage is complete for
+`smc_breaker_block_long` because it reads two price-derived signals - **a property of the STRATEGY,
+not of the check.** The rest of the roster reads smart-money, news, earnings, short-interest,
+index-event and filing signals, and an OHLCV-only re-derivation would certify those **without ever
+reading the input that gates them**, producing output identical to a real verification.
+
+MEASURED across the roster: **185 of 222 strategies have at least one input the spot check cannot
+verify**; `smc_breaker_block_long` is in the 37 that pass, so THIS sweep is covered - proven, not
+assumed. The gate is fail-CLOSED: an unclassified key counts as unverifiable, because an
+unrecognised input is precisely the one nobody thought about.
+
+**Before the spot check certifies any strategy, this must exit 0.**
+
 ### 5. ADVERSARIAL REVIEW - find bugs and logic errors (owner phrasing, verbatim)
 
 > *"Do an adversarial review of the code and map for false positives and false negatives.
