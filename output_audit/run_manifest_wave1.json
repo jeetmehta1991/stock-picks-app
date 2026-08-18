@@ -34,8 +34,8 @@
   "screen_pool_workers": 0,
   "wall_clock_projection_hours": 3.3,
   "wall_clock_projection_note": "3.30 h/config MEASURED at pool=0 (S6-B1576a) - the setting this wave runs at, so this is a like-for-like projection rather than an upper bound. 9 waves x 3.30 h = 29.7 h at N=2.",
-  "sweep_total_projection_hours": 29.7,
-  "sweep_total_note": "9 waves x 3.30 h upper bound at N=2. N=3 would be 19.8 h but needs ~3.5 GB freed: MEASURED free_MB=6847 of 16009 against a PEAK 3223 MB/worker = 2.12 workers.",
+  "sweep_total_projection_hours": 89.4,
+  "sweep_total_note": "RE-COSTED B1691 at wave 1's MEASURED 5.77 h/wave: 31 configs = 15 waves = ~89.4 h. The 29.7 h in this field was computed against a 20-config grid at a 3.30 h projection; both inputs were wrong. OWNER RULING NEEDED on whether this shape is still wanted.",
   "obsolescence_risks": [
     {
       "risk": "universe is the wrong artifact (the L445 abandoned A-C chunk)",
@@ -45,7 +45,7 @@
     {
       "risk": "the sweep grid is mis-enumerated",
       "gate": "enumerated by running the product",
-      "status": "CLEARED - P1[10,20,30,50] x P6[9,20,21,50,200] = 20, minus cfg1(20,200) and cfg2(10,50) = 18 remaining, 9 waves"
+      "status": "RE-ENUMERATED B1691 - was STALE TWICE. P1 [5, 10, 20, 30, 50] x P6 [9, 20, 21, 50, 100, 150, 200] = 35, minus 4 done = 31 remaining = 15 waves. The old text said P1[10,20,30,50] x P6[9,20,21,50,200] = 20/9 waves: it missed the B1686 spans 100/150 AND the B1691 swing_length 5."
     },
     {
       "risk": "a cube cannot be attributed to the config that produced it - the defect that cost cfg2 167 of 420 fires",

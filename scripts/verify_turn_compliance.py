@@ -653,6 +653,31 @@ def check_unverified_structure() -> str | None:
     return bad[0] if bad else None
 
 
+def check_describing_artifact_drift() -> str | None:
+    """#221 auto-gate: a record that describes code must AGREE with that code.
+
+    B1692. Three times in one session a hand-maintained record disagreed with
+    the code it describes - the variant table's `tail_n` band (denying the
+    existence of the level that won both wave-1 top-10s), its
+    `engine_implemented` flags, and the manifest's grid enumeration. Each time
+    the class was named in prose and the INSTANCE was fixed, which the
+    GENERALIZATION MANDATE explicitly calls non-compliant.
+
+    Prose did not hold it. This runs the verifier every turn instead.
+    """
+    import subprocess
+    try:
+        r = subprocess.run([sys.executable, "scripts/verify_describing_artifacts.py",
+                            "--quiet"], capture_output=True, text=True, timeout=180)
+    except Exception as exc:
+        return f"describing-artifact verifier could not run ({exc!r}) - fail CLOSED"
+    if r.returncode == 0:
+        return None
+    tail = (r.stdout or r.stderr or "").strip().splitlines()
+    return ("a hand-maintained record disagrees with the code it describes "
+            "(#221 / L495): " + " | ".join(tail[-4:]))
+
+
 def check_unrecorded_miss() -> str | None:
     """Block a turn that ACKNOWLEDGED a miss without writing it to LEARNINGS."""
     try:
@@ -821,6 +846,11 @@ def main() -> int:
     struct_block = check_unverified_structure()
     if struct_block:
         print(struct_block, file=sys.stderr)
+        return 2
+
+    drift_block = check_describing_artifact_drift()
+    if drift_block:
+        print(drift_block, file=sys.stderr)
         return 2
 
     quant_block = check_unmeasured_quantity()

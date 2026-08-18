@@ -8951,3 +8951,67 @@ the runbook's own launch command specifies. Wave 1 escaped it only by running po
 
 **Two holes, one fix marked DONE.** The count of things I verified was not the count of things
 that had to be true.
+
+### L495
+
+**I built the band around my hypothesis, so it could only ever confirm it**
+
+**B1691.** The owner asked why `swing_length` had **one** level below production and **two** above.
+The honest answer: I believed higher `swing_length` means fewer, more significant swings and less
+noise, so I sampled the direction I expected to win. **A band shaped by a directional hypothesis
+cannot test that hypothesis** - it can only confirm it. If the optimum sits below 10, a band
+flooring at 10 reports "lower was worse" having never looked.
+
+**This session already proved the exact failure once.** `tail_n` floored at 3, was re-banded to
+`[1,2,3,5,10,20]` on owner direction, and **2 - a level that had not previously existed - won BOTH
+wave-1 top-10s.** I re-banded that parameter and did not ask the same question of its neighbour.
+
+**The general rule: a search band must be able to return an answer you did not expect.** Enumerate
+levels on BOTH sides of production, and if the band is asymmetric, the asymmetry needs a stated
+reason that is not "I think this direction wins".
+
+**And the cost of asking late is real.** Adding `swing_length=5` moved the grid from 20 configs to
+**35**; combined with the B1686 spans 100/150 it is **31 remaining = 15 waves = ~89 h** against the
+**29.7 h** the manifest still claimed. Both inputs to that projection were wrong: a stale grid AND
+a 3.30 h/config estimate that measured 5.77 h.
+
+**Three artifacts drifted from the code in one turn** - the variant table's `tail_n` band, its
+`engine_implemented` flags, and the manifest's grid enumeration. Every one described work the code
+had already moved past. **The executing artifact moves; the describing artifact does not, and only
+reading the code catches it.**
+
+### L496
+
+**I named the class three times and fixed three instances**
+
+**B1692, owner catch.** Three times in one session a hand-maintained record disagreed with the code
+it describes - the variant table's `tail_n` band (denying the existence of `tail_n=2`, **the level
+that won BOTH wave-1 top-10s**), the same table's `engine_implemented` flags, and the manifest's
+grid enumeration (**the gate whose whole purpose is catching a mis-enumerated grid, itself
+mis-enumerated**). Each time I wrote the pattern out - *"the executing artifact moves, the
+describing artifact does not"* - and then shipped a fix for that one field.
+
+**The GENERALIZATION MANDATE already covers this exactly**, and has since 2026-07-18:
+
+> fix the CLASS, not the instance ... **a patch that leaves siblings of the same class open is
+> non-compliant.**
+
+So this is not a missing rule. **It is a compliance failure against a HARD rule I had in
+context** - and per Phase 5 that means an L-entry, NOT a new CHECKLIST item, or the item would be
+theater (#136). **Naming a class is not closing it.** I had mistaken articulating the pattern for
+acting on it - the description felt like the work.
+
+**Why prose was never going to hold it, in the skill's own words:** *"Prose rules without an
+executable verifier decay - the only no-silent-miss catches that have worked were programmatic."*
+The mandate is judgment-tier, and I complied with its letter (state the class) while missing its
+purpose (close the class) three times running.
+
+**The class-level fix: `scripts/verify_describing_artifacts.py`**, wired into the turn gate so it
+runs every turn. It holds one invariant - **a record describing code must be DERIVED from that code
+or CHECKED against it mechanically** - across a registry of (record, authority) pairs, fails CLOSED
+when an authority cannot be read, and compares **coverage rather than order**, because all three
+real drifts were a MISSING level and none was a reordering.
+
+**It found a fourth disagreement on its first working run.** That is the argument for the verifier
+in one line: the class was still open at the moment I was writing the sentence claiming I had seen
+it.

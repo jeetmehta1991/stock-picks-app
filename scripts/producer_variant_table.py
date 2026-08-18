@@ -88,7 +88,13 @@ fires            =  ( breaker_bullish )  AND  ( price_above_ema_200 ) [from P6]"
         # quoting this table (#202).
         "params": [
             {"id": "P1", "producer": "_smc.swing_highs_lows", "param": "swing_length",
-             "production": 20, "type": "int", "band": [10, 20, 30, 50],
+             "production": 20, "type": "int", "band": [5, 10, 20, 30, 50],
+             # B1691 owner directive: swing_length=5 ADDED. The band had ONE level
+             # below production and TWO above - built on the hypothesis that higher
+             # swing_length = fewer, cleaner swings = less noise. A band shaped by a
+             # directional hypothesis can only CONFIRM it. This is the tail_n mistake
+             # exactly: that band floored at 3, was re-banded to [1,2,...], and 2 -
+             # a level that had not existed - won BOTH wave-1 top-10s.
              "derivation": "library default is 50; production overrides to 20. Band brackets both.",
              "subset_safe": False, "status": "UNTESTED",
              "evidence": "smc.py:137",

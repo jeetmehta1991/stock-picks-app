@@ -3531,3 +3531,25 @@ defect inside its own fixture.
 
 **Retroactive coverage (#136):** all three rows above - and the only thing that caught the live
 defect was building a cube and reading `exit_reason`.
+
+### #221 - A RECORD THAT DESCRIBES CODE IS CHECKED AGAINST THAT CODE, MECHANICALLY (B1692 / L496)
+
+Not a new rule - **the mechanical half of the GENERALIZATION MANDATE**, added because the prose
+half failed three times in one session while the mandate sat in context.
+
+Any hand-maintained artifact that describes code - a parameter table, a run manifest, a band, a
+capability flag, a count - is registered in `scripts/verify_describing_artifacts.py` with the CODE
+that is its authority. The turn gate runs it. **Adding such an artifact without registering it is
+itself the defect.**
+
+Compare **coverage, not order**: every real drift was a MISSING level, never a reordering. Fail
+**CLOSED** on an unreadable authority - "could not check" has scored above "checked and found bad"
+too many times this session.
+
+**And the rule this serves: naming a failure class is not closing it.** When you write "this is the
+third time X happened", that sentence is the trigger for a class-level gate in the SAME turn - not
+a third instance fix with better commentary.
+
+**Retroactive coverage (#136):** the `tail_n` band that denied the level which won both wave-1
+top-10s; the `engine_implemented` flags stale since B1616; the manifest grid stale through two
+separate band changes.
