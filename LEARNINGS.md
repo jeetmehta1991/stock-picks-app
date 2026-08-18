@@ -8800,3 +8800,32 @@ alive" is the same sentence the failed attempt could have truthfully written.
 `Start-Process` creates an independent Windows process, and Windows does not signal children on
 parent death. The mechanism differs materially - but a mechanism argument is a prediction, and the
 next turn is the measurement.
+
+### L491
+
+**#212 satisfied by measurement, and the hourly report found two pin tests standing on uncommitted evidence**
+
+**B1638, first hourly report.** The detached marker launched last turn at 23:54:17 has **69 ticks**,
+the last at **00:16:57**, written 0.2 minutes before the check. **It survived the turn boundary and
+kept running ~23 minutes across it.** `Start-Process` detachment is now MEASURED, not argued -
+against `nohup ... &`, which died at simulated day 25 of 504 while reporting exit 0. **CHECKLIST
+#212 is satisfied.** Marker stopped; it had made its point.
+
+**The report also caught something I was not looking for.** `git status` showed
+`output_audit/b1589_cfg1_grid.json` and `b1608_cfg2_grid.json` UNTRACKED - and
+`test_b1610_inert_swept_level_is_detected` reads exactly those two as its HISTORICAL PIN, the
+0-of-50 measurement that anchors the whole band-defect finding. The test guards with
+`if not q.exists(): continue`, so **on a fresh clone it would skip silently and report GREEN**.
+
+**A pin test whose evidence is not committed is a pin holding nothing.** It is the fail-open class
+one level up: not a check that passes on bad input, but a check that passes on ABSENT input -
+and skipping is indistinguishable from passing in a summary line. The two grids are now committed.
+
+**The general rule: an artifact a test READS is part of the test.** If a test cites a file, that
+file is committed in the same batch, or the test is documenting an intention. Same reasoning as
+CHECKLIST #124 (a WIRED claim needs a linked evidence artifact) - here the artifact must also
+survive a clone.
+
+**Also measured this report:** free RAM **7,813 MB**, up from 6,847 last turn against a 3,223 MB
+floor - **the ceiling moved again**, which is exactly why #212's sibling rule is to re-measure at
+launch rather than recall. Nothing is running; the sweep has not started.

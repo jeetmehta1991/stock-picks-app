@@ -1,0 +1,1946 @@
+{
+  "strategy": "smc_breaker_block_long",
+  "r5_baseline_fires": 420,
+  "diagnosed": {
+    "True": 253,
+    "False": 242
+  },
+  "results": [
+    {
+      "close_mitigation": true,
+      "break_pct_max": null,
+      "age_bars_max": null,
+      "tail_n": 5,
+      "fires": 187,
+      "exit": "r_multiple_2r",
+      "holdout_n": 74,
+      "full_period_n": 187,
+      "sharpe": 0.711,
+      "sortino": 2.51,
+      "psr": 1.0,
+      "profit_factor": 1.327,
+      "payoff": 1.95,
+      "expectancy": 0.8074,
+      "win_rate": 0.405,
+      "p": 0.15002640251479402,
+      "ci_lo": -0.639,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "gates_passed": 5,
+      "verdict": "FAIL"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": null,
+      "age_bars_max": null,
+      "tail_n": 3,
+      "fires": 128,
+      "exit": "r_multiple_2r",
+      "holdout_n": 56,
+      "full_period_n": 128,
+      "sharpe": 0.918,
+      "sortino": 3.257,
+      "psr": 1.0,
+      "profit_factor": 1.44,
+      "payoff": 1.92,
+      "expectancy": 1.0932,
+      "win_rate": 0.429,
+      "p": 0.12399782118642645,
+      "ci_lo": -0.649,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "gates_passed": 5,
+      "verdict": "FAIL"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": null,
+      "age_bars_max": null,
+      "tail_n": 10,
+      "fires": 253,
+      "exit": "r_multiple_2r",
+      "holdout_n": 106,
+      "full_period_n": 253,
+      "sharpe": 0.326,
+      "sortino": 1.101,
+      "psr": 0.9999,
+      "profit_factor": 1.139,
+      "payoff": 1.88,
+      "expectancy": 0.3373,
+      "win_rate": 0.377,
+      "p": 0.28417520788119793,
+      "ci_lo": -0.794,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": false,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "gates_passed": 4,
+      "verdict": "FAIL"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": null,
+      "age_bars_max": null,
+      "tail_n": 20,
+      "fires": 253,
+      "exit": "r_multiple_2r",
+      "holdout_n": 106,
+      "full_period_n": 253,
+      "sharpe": 0.326,
+      "sortino": 1.101,
+      "psr": 0.9999,
+      "profit_factor": 1.139,
+      "payoff": 1.88,
+      "expectancy": 0.3373,
+      "win_rate": 0.377,
+      "p": 0.28417520788119793,
+      "ci_lo": -0.794,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": false,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "gates_passed": 4,
+      "verdict": "FAIL"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": null,
+      "age_bars_max": null,
+      "tail_n": 10,
+      "fires": 242,
+      "exit": "r_multiple_2r",
+      "holdout_n": 109,
+      "full_period_n": 242,
+      "sharpe": 0.294,
+      "sortino": 1.007,
+      "psr": 0.9998,
+      "profit_factor": 1.125,
+      "payoff": 1.94,
+      "expectancy": 0.3042,
+      "win_rate": 0.367,
+      "p": 0.30060224939666824,
+      "ci_lo": -0.809,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": false,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "gates_passed": 4,
+      "verdict": "FAIL"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": null,
+      "age_bars_max": null,
+      "tail_n": 20,
+      "fires": 242,
+      "exit": "r_multiple_2r",
+      "holdout_n": 109,
+      "full_period_n": 242,
+      "sharpe": 0.294,
+      "sortino": 1.007,
+      "psr": 0.9998,
+      "profit_factor": 1.125,
+      "payoff": 1.94,
+      "expectancy": 0.3042,
+      "win_rate": 0.367,
+      "p": 0.30060224939666824,
+      "ci_lo": -0.809,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": false,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "gates_passed": 4,
+      "verdict": "FAIL"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": null,
+      "age_bars_max": null,
+      "tail_n": 5,
+      "fires": 188,
+      "exit": "r_multiple_2r",
+      "holdout_n": 84,
+      "full_period_n": 188,
+      "sharpe": 0.61,
+      "sortino": 2.176,
+      "psr": 1.0,
+      "profit_factor": 1.277,
+      "payoff": 1.97,
+      "expectancy": 0.6716,
+      "win_rate": 0.393,
+      "p": 0.17060573724104508,
+      "ci_lo": -0.65,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": false,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "gates_passed": 4,
+      "verdict": "FAIL"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": null,
+      "age_bars_max": null,
+      "tail_n": 3,
+      "fires": 131,
+      "exit": "r_multiple_3r",
+      "holdout_n": 63,
+      "full_period_n": 131,
+      "sharpe": 0.405,
+      "sortino": 1.761,
+      "psr": 1.0,
+      "profit_factor": 1.211,
+      "payoff": 2.42,
+      "expectancy": 0.6209,
+      "win_rate": 0.333,
+      "p": 0.27103666497093304,
+      "ci_lo": -0.9,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": false,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "gates_passed": 4,
+      "verdict": "FAIL"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": null,
+      "age_bars_max": 250,
+      "tail_n": 5,
+      "fires": 80,
+      "exit": "hybrid_50pct_target",
+      "holdout_n": 34,
+      "full_period_n": 80,
+      "sharpe": 0.521,
+      "sortino": 999.0,
+      "psr": 1.0,
+      "profit_factor": 1.741,
+      "payoff": 1.08,
+      "expectancy": 2.888,
+      "win_rate": 0.618,
+      "p": 0.10191693849997312,
+      "ci_lo": -0.292,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": false
+      },
+      "gates_passed": 4,
+      "verdict": "FAIL"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": null,
+      "age_bars_max": 250,
+      "tail_n": 10,
+      "fires": 80,
+      "exit": "hybrid_50pct_target",
+      "holdout_n": 34,
+      "full_period_n": 80,
+      "sharpe": 0.521,
+      "sortino": 999.0,
+      "psr": 1.0,
+      "profit_factor": 1.741,
+      "payoff": 1.08,
+      "expectancy": 2.888,
+      "win_rate": 0.618,
+      "p": 0.10191693849997312,
+      "ci_lo": -0.292,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": false
+      },
+      "gates_passed": 4,
+      "verdict": "FAIL"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": null,
+      "age_bars_max": 250,
+      "tail_n": 20,
+      "fires": 80,
+      "exit": "hybrid_50pct_target",
+      "holdout_n": 34,
+      "full_period_n": 80,
+      "sharpe": 0.521,
+      "sortino": 999.0,
+      "psr": 1.0,
+      "profit_factor": 1.741,
+      "payoff": 1.08,
+      "expectancy": 2.888,
+      "win_rate": 0.618,
+      "p": 0.10191693849997312,
+      "ci_lo": -0.292,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": false
+      },
+      "gates_passed": 4,
+      "verdict": "FAIL"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": null,
+      "age_bars_max": 250,
+      "tail_n": 5,
+      "fires": 78,
+      "exit": "hybrid_50pct_target",
+      "holdout_n": 38,
+      "full_period_n": 78,
+      "sharpe": 0.439,
+      "sortino": 999.0,
+      "psr": 0.9998,
+      "profit_factor": 1.643,
+      "payoff": 1.19,
+      "expectancy": 2.7611,
+      "win_rate": 0.579,
+      "p": 0.11069633191756496,
+      "ci_lo": -0.272,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": false
+      },
+      "gates_passed": 4,
+      "verdict": "FAIL"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": null,
+      "age_bars_max": 250,
+      "tail_n": 10,
+      "fires": 78,
+      "exit": "hybrid_50pct_target",
+      "holdout_n": 38,
+      "full_period_n": 78,
+      "sharpe": 0.439,
+      "sortino": 999.0,
+      "psr": 0.9998,
+      "profit_factor": 1.643,
+      "payoff": 1.19,
+      "expectancy": 2.7611,
+      "win_rate": 0.579,
+      "p": 0.11069633191756496,
+      "ci_lo": -0.272,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": false
+      },
+      "gates_passed": 4,
+      "verdict": "FAIL"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": null,
+      "age_bars_max": 250,
+      "tail_n": 20,
+      "fires": 78,
+      "exit": "hybrid_50pct_target",
+      "holdout_n": 38,
+      "full_period_n": 78,
+      "sharpe": 0.439,
+      "sortino": 999.0,
+      "psr": 0.9998,
+      "profit_factor": 1.643,
+      "payoff": 1.19,
+      "expectancy": 2.7611,
+      "win_rate": 0.579,
+      "p": 0.11069633191756496,
+      "ci_lo": -0.272,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": false
+      },
+      "gates_passed": 4,
+      "verdict": "FAIL"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": null,
+      "age_bars_max": 250,
+      "tail_n": 3,
+      "fires": 76,
+      "exit": "hybrid_50pct_target",
+      "holdout_n": 30,
+      "full_period_n": 76,
+      "sharpe": 0.608,
+      "sortino": 999.0,
+      "psr": 1.0,
+      "profit_factor": 1.966,
+      "payoff": 1.14,
+      "expectancy": 3.613,
+      "win_rate": 0.633,
+      "p": 0.07372838622089495,
+      "ci_lo": -0.229,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": false
+      },
+      "gates_passed": 4,
+      "verdict": "FAIL"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": null,
+      "age_bars_max": 250,
+      "tail_n": 3,
+      "fires": 76,
+      "exit": "hybrid_50pct_target",
+      "holdout_n": 36,
+      "full_period_n": 76,
+      "sharpe": 0.482,
+      "sortino": 999.0,
+      "psr": 0.9999,
+      "profit_factor": 1.737,
+      "payoff": 1.24,
+      "expectancy": 3.133,
+      "win_rate": 0.583,
+      "p": 0.09181040550326484,
+      "ci_lo": -0.237,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": false
+      },
+      "gates_passed": 4,
+      "verdict": "FAIL"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": null,
+      "age_bars_max": 180,
+      "tail_n": 3,
+      "fires": 59,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": null,
+      "age_bars_max": 180,
+      "tail_n": 5,
+      "fires": 59,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": null,
+      "age_bars_max": 180,
+      "tail_n": 10,
+      "fires": 59,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": null,
+      "age_bars_max": 180,
+      "tail_n": 20,
+      "fires": 59,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": null,
+      "age_bars_max": 180,
+      "tail_n": 5,
+      "fires": 55,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": null,
+      "age_bars_max": 180,
+      "tail_n": 10,
+      "fires": 55,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": null,
+      "age_bars_max": 180,
+      "tail_n": 20,
+      "fires": 55,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": null,
+      "age_bars_max": 180,
+      "tail_n": 3,
+      "fires": 54,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": 0.05,
+      "age_bars_max": null,
+      "tail_n": 10,
+      "fires": 48,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": 0.05,
+      "age_bars_max": null,
+      "tail_n": 20,
+      "fires": 48,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": 0.05,
+      "age_bars_max": null,
+      "tail_n": 5,
+      "fires": 47,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": 0.05,
+      "age_bars_max": null,
+      "tail_n": 10,
+      "fires": 38,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": 0.05,
+      "age_bars_max": null,
+      "tail_n": 20,
+      "fires": 38,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": null,
+      "age_bars_max": 120,
+      "tail_n": 3,
+      "fires": 38,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": null,
+      "age_bars_max": 120,
+      "tail_n": 5,
+      "fires": 38,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": null,
+      "age_bars_max": 120,
+      "tail_n": 10,
+      "fires": 38,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": null,
+      "age_bars_max": 120,
+      "tail_n": 20,
+      "fires": 38,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": 0.05,
+      "age_bars_max": null,
+      "tail_n": 3,
+      "fires": 37,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": 0.05,
+      "age_bars_max": null,
+      "tail_n": 5,
+      "fires": 36,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": 0.03,
+      "age_bars_max": null,
+      "tail_n": 10,
+      "fires": 35,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": 0.03,
+      "age_bars_max": null,
+      "tail_n": 20,
+      "fires": 35,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": 0.03,
+      "age_bars_max": null,
+      "tail_n": 5,
+      "fires": 34,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": null,
+      "age_bars_max": 120,
+      "tail_n": 3,
+      "fires": 33,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": null,
+      "age_bars_max": 120,
+      "tail_n": 5,
+      "fires": 33,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": null,
+      "age_bars_max": 120,
+      "tail_n": 10,
+      "fires": 33,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": null,
+      "age_bars_max": 120,
+      "tail_n": 20,
+      "fires": 33,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": 0.05,
+      "age_bars_max": 250,
+      "tail_n": 3,
+      "fires": 33,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": 0.05,
+      "age_bars_max": 250,
+      "tail_n": 5,
+      "fires": 33,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": 0.05,
+      "age_bars_max": 250,
+      "tail_n": 10,
+      "fires": 33,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": 0.05,
+      "age_bars_max": 250,
+      "tail_n": 20,
+      "fires": 33,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": 0.05,
+      "age_bars_max": 180,
+      "tail_n": 3,
+      "fires": 29,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": 0.05,
+      "age_bars_max": 180,
+      "tail_n": 5,
+      "fires": 29,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": 0.05,
+      "age_bars_max": 180,
+      "tail_n": 10,
+      "fires": 29,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": 0.05,
+      "age_bars_max": 180,
+      "tail_n": 20,
+      "fires": 29,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": 0.05,
+      "age_bars_max": null,
+      "tail_n": 3,
+      "fires": 28,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": 0.03,
+      "age_bars_max": null,
+      "tail_n": 3,
+      "fires": 27,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": 0.03,
+      "age_bars_max": null,
+      "tail_n": 10,
+      "fires": 25,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": 0.03,
+      "age_bars_max": null,
+      "tail_n": 20,
+      "fires": 25,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": 0.05,
+      "age_bars_max": 250,
+      "tail_n": 3,
+      "fires": 25,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": 0.05,
+      "age_bars_max": 250,
+      "tail_n": 5,
+      "fires": 25,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": 0.05,
+      "age_bars_max": 250,
+      "tail_n": 10,
+      "fires": 25,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": 0.05,
+      "age_bars_max": 250,
+      "tail_n": 20,
+      "fires": 25,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": 0.03,
+      "age_bars_max": null,
+      "tail_n": 5,
+      "fires": 24,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": 0.03,
+      "age_bars_max": 250,
+      "tail_n": 3,
+      "fires": 24,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": 0.03,
+      "age_bars_max": 250,
+      "tail_n": 5,
+      "fires": 24,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": 0.03,
+      "age_bars_max": 250,
+      "tail_n": 10,
+      "fires": 24,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": 0.03,
+      "age_bars_max": 250,
+      "tail_n": 20,
+      "fires": 24,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": 0.02,
+      "age_bars_max": null,
+      "tail_n": 10,
+      "fires": 23,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": 0.02,
+      "age_bars_max": null,
+      "tail_n": 20,
+      "fires": 23,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": 0.05,
+      "age_bars_max": 120,
+      "tail_n": 3,
+      "fires": 23,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": 0.05,
+      "age_bars_max": 120,
+      "tail_n": 5,
+      "fires": 23,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": 0.05,
+      "age_bars_max": 120,
+      "tail_n": 10,
+      "fires": 23,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": 0.05,
+      "age_bars_max": 120,
+      "tail_n": 20,
+      "fires": 23,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": 0.05,
+      "age_bars_max": 180,
+      "tail_n": 3,
+      "fires": 22,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": 0.05,
+      "age_bars_max": 180,
+      "tail_n": 5,
+      "fires": 22,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": 0.05,
+      "age_bars_max": 180,
+      "tail_n": 10,
+      "fires": 22,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": 0.05,
+      "age_bars_max": 180,
+      "tail_n": 20,
+      "fires": 22,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": 0.02,
+      "age_bars_max": null,
+      "tail_n": 5,
+      "fires": 22,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": 0.03,
+      "age_bars_max": 180,
+      "tail_n": 3,
+      "fires": 21,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": 0.03,
+      "age_bars_max": 180,
+      "tail_n": 5,
+      "fires": 21,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": 0.03,
+      "age_bars_max": 180,
+      "tail_n": 10,
+      "fires": 21,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": 0.03,
+      "age_bars_max": 180,
+      "tail_n": 20,
+      "fires": 21,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": null,
+      "age_bars_max": 60,
+      "tail_n": 3,
+      "fires": 19,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": null,
+      "age_bars_max": 60,
+      "tail_n": 5,
+      "fires": 19,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": null,
+      "age_bars_max": 60,
+      "tail_n": 10,
+      "fires": 19,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": null,
+      "age_bars_max": 60,
+      "tail_n": 20,
+      "fires": 19,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": 0.03,
+      "age_bars_max": null,
+      "tail_n": 3,
+      "fires": 18,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": 0.05,
+      "age_bars_max": 120,
+      "tail_n": 3,
+      "fires": 18,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": 0.05,
+      "age_bars_max": 120,
+      "tail_n": 5,
+      "fires": 18,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": 0.05,
+      "age_bars_max": 120,
+      "tail_n": 10,
+      "fires": 18,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": 0.05,
+      "age_bars_max": 120,
+      "tail_n": 20,
+      "fires": 18,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": 0.02,
+      "age_bars_max": null,
+      "tail_n": 3,
+      "fires": 17,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": 0.05,
+      "age_bars_max": 60,
+      "tail_n": 3,
+      "fires": 17,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": 0.05,
+      "age_bars_max": 60,
+      "tail_n": 5,
+      "fires": 17,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": 0.05,
+      "age_bars_max": 60,
+      "tail_n": 10,
+      "fires": 17,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": 0.05,
+      "age_bars_max": 60,
+      "tail_n": 20,
+      "fires": 17,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": 0.03,
+      "age_bars_max": 250,
+      "tail_n": 3,
+      "fires": 16,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": 0.03,
+      "age_bars_max": 250,
+      "tail_n": 5,
+      "fires": 16,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": 0.03,
+      "age_bars_max": 250,
+      "tail_n": 10,
+      "fires": 16,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": 0.03,
+      "age_bars_max": 250,
+      "tail_n": 20,
+      "fires": 16,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": 0.02,
+      "age_bars_max": 250,
+      "tail_n": 3,
+      "fires": 16,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": 0.02,
+      "age_bars_max": 250,
+      "tail_n": 5,
+      "fires": 16,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": 0.02,
+      "age_bars_max": 250,
+      "tail_n": 10,
+      "fires": 16,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": 0.02,
+      "age_bars_max": 250,
+      "tail_n": 20,
+      "fires": 16,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": null,
+      "age_bars_max": 60,
+      "tail_n": 3,
+      "fires": 15,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": null,
+      "age_bars_max": 60,
+      "tail_n": 5,
+      "fires": 15,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": null,
+      "age_bars_max": 60,
+      "tail_n": 10,
+      "fires": 15,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": null,
+      "age_bars_max": 60,
+      "tail_n": 20,
+      "fires": 15,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": 0.02,
+      "age_bars_max": 180,
+      "tail_n": 3,
+      "fires": 15,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": 0.02,
+      "age_bars_max": 180,
+      "tail_n": 5,
+      "fires": 15,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": 0.02,
+      "age_bars_max": 180,
+      "tail_n": 10,
+      "fires": 15,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": 0.02,
+      "age_bars_max": 180,
+      "tail_n": 20,
+      "fires": 15,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": 0.03,
+      "age_bars_max": 120,
+      "tail_n": 3,
+      "fires": 15,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": 0.03,
+      "age_bars_max": 120,
+      "tail_n": 5,
+      "fires": 15,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": 0.03,
+      "age_bars_max": 120,
+      "tail_n": 10,
+      "fires": 15,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": 0.03,
+      "age_bars_max": 120,
+      "tail_n": 20,
+      "fires": 15,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": 0.03,
+      "age_bars_max": 180,
+      "tail_n": 3,
+      "fires": 14,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": 0.03,
+      "age_bars_max": 180,
+      "tail_n": 5,
+      "fires": 14,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": 0.03,
+      "age_bars_max": 180,
+      "tail_n": 10,
+      "fires": 14,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": 0.03,
+      "age_bars_max": 180,
+      "tail_n": 20,
+      "fires": 14,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": 0.02,
+      "age_bars_max": null,
+      "tail_n": 10,
+      "fires": 13,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": 0.02,
+      "age_bars_max": null,
+      "tail_n": 20,
+      "fires": 13,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": 0.05,
+      "age_bars_max": 60,
+      "tail_n": 3,
+      "fires": 13,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": 0.05,
+      "age_bars_max": 60,
+      "tail_n": 5,
+      "fires": 13,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": 0.05,
+      "age_bars_max": 60,
+      "tail_n": 10,
+      "fires": 13,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": 0.05,
+      "age_bars_max": 60,
+      "tail_n": 20,
+      "fires": 13,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": 0.02,
+      "age_bars_max": null,
+      "tail_n": 5,
+      "fires": 12,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": 0.03,
+      "age_bars_max": 60,
+      "tail_n": 3,
+      "fires": 12,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": 0.03,
+      "age_bars_max": 60,
+      "tail_n": 5,
+      "fires": 12,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": 0.03,
+      "age_bars_max": 60,
+      "tail_n": 10,
+      "fires": 12,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": 0.03,
+      "age_bars_max": 60,
+      "tail_n": 20,
+      "fires": 12,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": 0.02,
+      "age_bars_max": 120,
+      "tail_n": 3,
+      "fires": 11,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": 0.02,
+      "age_bars_max": 120,
+      "tail_n": 5,
+      "fires": 11,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": 0.02,
+      "age_bars_max": 120,
+      "tail_n": 10,
+      "fires": 11,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": 0.02,
+      "age_bars_max": 120,
+      "tail_n": 20,
+      "fires": 11,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": 0.03,
+      "age_bars_max": 120,
+      "tail_n": 3,
+      "fires": 10,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": 0.03,
+      "age_bars_max": 120,
+      "tail_n": 5,
+      "fires": 10,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": 0.03,
+      "age_bars_max": 120,
+      "tail_n": 10,
+      "fires": 10,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": 0.03,
+      "age_bars_max": 120,
+      "tail_n": 20,
+      "fires": 10,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": 0.01,
+      "age_bars_max": null,
+      "tail_n": 5,
+      "fires": 10,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": 0.01,
+      "age_bars_max": null,
+      "tail_n": 10,
+      "fires": 10,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": 0.01,
+      "age_bars_max": null,
+      "tail_n": 20,
+      "fires": 10,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": 0.02,
+      "age_bars_max": 60,
+      "tail_n": 3,
+      "fires": 9,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": 0.02,
+      "age_bars_max": 60,
+      "tail_n": 5,
+      "fires": 9,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": 0.02,
+      "age_bars_max": 60,
+      "tail_n": 10,
+      "fires": 9,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": 0.02,
+      "age_bars_max": 60,
+      "tail_n": 20,
+      "fires": 9,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": 0.02,
+      "age_bars_max": 180,
+      "tail_n": 3,
+      "fires": 8,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": 0.02,
+      "age_bars_max": 180,
+      "tail_n": 5,
+      "fires": 8,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": 0.02,
+      "age_bars_max": 180,
+      "tail_n": 10,
+      "fires": 8,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": 0.02,
+      "age_bars_max": 180,
+      "tail_n": 20,
+      "fires": 8,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": 0.02,
+      "age_bars_max": 250,
+      "tail_n": 3,
+      "fires": 8,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": 0.02,
+      "age_bars_max": 250,
+      "tail_n": 5,
+      "fires": 8,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": 0.02,
+      "age_bars_max": 250,
+      "tail_n": 10,
+      "fires": 8,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": 0.02,
+      "age_bars_max": 250,
+      "tail_n": 20,
+      "fires": 8,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": 0.02,
+      "age_bars_max": null,
+      "tail_n": 3,
+      "fires": 8,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": 0.03,
+      "age_bars_max": 60,
+      "tail_n": 3,
+      "fires": 8,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": 0.03,
+      "age_bars_max": 60,
+      "tail_n": 5,
+      "fires": 8,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": 0.03,
+      "age_bars_max": 60,
+      "tail_n": 10,
+      "fires": 8,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": 0.03,
+      "age_bars_max": 60,
+      "tail_n": 20,
+      "fires": 8,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": 0.01,
+      "age_bars_max": null,
+      "tail_n": 3,
+      "fires": 7,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": 0.02,
+      "age_bars_max": 120,
+      "tail_n": 3,
+      "fires": 6,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": 0.02,
+      "age_bars_max": 120,
+      "tail_n": 5,
+      "fires": 6,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": 0.02,
+      "age_bars_max": 120,
+      "tail_n": 10,
+      "fires": 6,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": 0.02,
+      "age_bars_max": 120,
+      "tail_n": 20,
+      "fires": 6,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": 0.01,
+      "age_bars_max": 180,
+      "tail_n": 3,
+      "fires": 6,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": 0.01,
+      "age_bars_max": 180,
+      "tail_n": 5,
+      "fires": 6,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": 0.01,
+      "age_bars_max": 180,
+      "tail_n": 10,
+      "fires": 6,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": 0.01,
+      "age_bars_max": 180,
+      "tail_n": 20,
+      "fires": 6,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": 0.01,
+      "age_bars_max": 250,
+      "tail_n": 3,
+      "fires": 6,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": 0.01,
+      "age_bars_max": 250,
+      "tail_n": 5,
+      "fires": 6,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": 0.01,
+      "age_bars_max": 250,
+      "tail_n": 10,
+      "fires": 6,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": 0.01,
+      "age_bars_max": 250,
+      "tail_n": 20,
+      "fires": 6,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": 0.01,
+      "age_bars_max": null,
+      "tail_n": 5,
+      "fires": 5,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": 0.01,
+      "age_bars_max": null,
+      "tail_n": 10,
+      "fires": 5,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": 0.01,
+      "age_bars_max": null,
+      "tail_n": 20,
+      "fires": 5,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": 0.02,
+      "age_bars_max": 60,
+      "tail_n": 3,
+      "fires": 5,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": 0.02,
+      "age_bars_max": 60,
+      "tail_n": 5,
+      "fires": 5,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": 0.02,
+      "age_bars_max": 60,
+      "tail_n": 10,
+      "fires": 5,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": 0.02,
+      "age_bars_max": 60,
+      "tail_n": 20,
+      "fires": 5,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": 0.01,
+      "age_bars_max": 180,
+      "tail_n": 3,
+      "fires": 3,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": 0.01,
+      "age_bars_max": 180,
+      "tail_n": 5,
+      "fires": 3,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": 0.01,
+      "age_bars_max": 180,
+      "tail_n": 10,
+      "fires": 3,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": 0.01,
+      "age_bars_max": 180,
+      "tail_n": 20,
+      "fires": 3,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": 0.01,
+      "age_bars_max": 250,
+      "tail_n": 3,
+      "fires": 3,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": 0.01,
+      "age_bars_max": 250,
+      "tail_n": 5,
+      "fires": 3,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": 0.01,
+      "age_bars_max": 250,
+      "tail_n": 10,
+      "fires": 3,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": 0.01,
+      "age_bars_max": 250,
+      "tail_n": 20,
+      "fires": 3,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": 0.01,
+      "age_bars_max": null,
+      "tail_n": 3,
+      "fires": 3,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": 0.01,
+      "age_bars_max": 60,
+      "tail_n": 3,
+      "fires": 3,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": 0.01,
+      "age_bars_max": 60,
+      "tail_n": 5,
+      "fires": 3,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": 0.01,
+      "age_bars_max": 60,
+      "tail_n": 10,
+      "fires": 3,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": 0.01,
+      "age_bars_max": 60,
+      "tail_n": 20,
+      "fires": 3,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": 0.01,
+      "age_bars_max": 120,
+      "tail_n": 3,
+      "fires": 3,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": 0.01,
+      "age_bars_max": 120,
+      "tail_n": 5,
+      "fires": 3,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": 0.01,
+      "age_bars_max": 120,
+      "tail_n": 10,
+      "fires": 3,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": false,
+      "break_pct_max": 0.01,
+      "age_bars_max": 120,
+      "tail_n": 20,
+      "fires": 3,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": 0.01,
+      "age_bars_max": 60,
+      "tail_n": 3,
+      "fires": 2,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": 0.01,
+      "age_bars_max": 60,
+      "tail_n": 5,
+      "fires": 2,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": 0.01,
+      "age_bars_max": 60,
+      "tail_n": 10,
+      "fires": 2,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": 0.01,
+      "age_bars_max": 60,
+      "tail_n": 20,
+      "fires": 2,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": 0.01,
+      "age_bars_max": 120,
+      "tail_n": 3,
+      "fires": 2,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": 0.01,
+      "age_bars_max": 120,
+      "tail_n": 5,
+      "fires": 2,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": 0.01,
+      "age_bars_max": 120,
+      "tail_n": 10,
+      "fires": 2,
+      "verdict": "NO_EXIT_SELECTABLE"
+    },
+    {
+      "close_mitigation": true,
+      "break_pct_max": 0.01,
+      "age_bars_max": 120,
+      "tail_n": 20,
+      "fires": 2,
+      "verdict": "NO_EXIT_SELECTABLE"
+    }
+  ]
+}

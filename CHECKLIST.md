@@ -3462,3 +3462,20 @@ work did not happen.**
 **Retroactive coverage (#136):** this instance; the 2-year smoke that reported **exit 0** after its
 child was killed at simulated day 25 of 504 (L486); the `|| true` class that CHECKLIST #122 exists
 for, where a silenced failure becomes a success.
+
+### #218 - AN ARTIFACT A TEST READS IS PART OF THE TEST (B1638 / L491)
+
+`test_b1610_inert_swept_level_is_detected` pins the historical **0-of-50** measurement by reading
+`output_audit/b1589_cfg1_grid.json` and `b1608_cfg2_grid.json`. Both were **UNTRACKED**. The test
+guards with `if not q.exists(): continue`, so **on a fresh clone it would skip and report GREEN** -
+and a skip is indistinguishable from a pass in a summary line.
+
+**A pin test whose evidence is not committed is a pin holding nothing.** This is fail-open one
+level up: not a check that passes on bad input, but one that passes on ABSENT input.
+
+**If a test cites a file, commit that file in the same batch.** Same reasoning as #124 - a claim
+needs a linked evidence artifact - extended: the artifact must survive a clone.
+
+**Retroactive coverage (#136):** these two grids (this instance); the AWS git-hook shims that do
+not travel with a clone and must be installed by hand; `_sweep_100.txt` being correct while its
+BUILDER read the abandoned chunk (L479) - in all three the repo does not carry what the check needs.
