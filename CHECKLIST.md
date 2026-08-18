@@ -3446,3 +3446,19 @@ the kind that gets summarised in prose and lost.
 **Retroactive coverage (#136):** B1634's Q2/Q4 (this instance); B1119's 22-batch doc-sync
 suspension, where work happened and the record did not; the B1248 review whose 9 findings were
 doc-only until #94 was written.
+
+### #217 - A PIPELINE'S EXIT CODE IS THE LAST STAGE'S, NOT THE GATE'S (B1637 / L490)
+
+`python scripts/prelaunch_gate.py ... 2>&1 | tail -12; echo $?` printed **0** while the gate had
+crashed with an `AttributeError`. `$?` was `tail`'s status. The traceback was visible in the output
+and the exit code said PASS - and an automated caller would have seen only the code.
+
+**When you are checking whether a gate PASSED, run it bare and read its own exit code.** No pipe,
+no `tail`, no `head`. If output must be trimmed, capture the status first (`rc=$?`) and trim after.
+
+This is the *Completion-vs-artifact* lens (L486) in its cheapest form: **the command returned, the
+work did not happen.**
+
+**Retroactive coverage (#136):** this instance; the 2-year smoke that reported **exit 0** after its
+child was killed at simulated day 25 of 504 (L486); the `|| true` class that CHECKLIST #122 exists
+for, where a silenced failure becomes a success.

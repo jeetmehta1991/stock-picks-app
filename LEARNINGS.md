@@ -8765,3 +8765,38 @@ restatusing, which is right for an audit ledger and useless for counting. MEASUR
 untouched; the resolver runs at read time. **My own earlier count of "225 tickets, 97 open" was
 itself wrong** - my regex required bold status markers - which is the same lesson twice in one
 session: the number you get depends on the parser, so publish the parser with the number.
+
+### L490
+
+**the prelaunch gate passed every check and then crashed printing its own summary**
+
+**B1637.** Running `prelaunch_gate.py` against the first LOCAL manifest it has ever seen with a
+STRING universe:
+
+```
+PRELAUNCH_GATE: LOCAL mode - skipping S3 tar sidecar and USD budget checks
+Traceback ... line 134
+AttributeError: 'str' object has no attribute 'get'
+```
+
+`check()` only requires `universe` to be TRUTHY, so a manifest naming a ticker file - the natural
+form for a local run - **passed every gate and died in the SUMMARY LINE**, which assumed a dict
+with a `tier` key. The gate that exists to stop a wasted multi-hour run could not report on the
+run it had just approved.
+
+**And my shell hid it.** I piped through `2>&1 | tail -12` and printed `$?`, which is the exit code
+of `tail` - **it said 0 while the gate had crashed.** That is L486 exactly, one turn after I wrote
+it into the runbook as the *Completion-vs-artifact* lens: the command returned, the work did not
+happen. **A pipeline's exit code belongs to the LAST stage; when checking a gate, run it bare.**
+
+**#212 status, stated precisely.** A detached marker launched with PowerShell `Start-Process`
+(not `nohup ... &`, which is what died at simulated day 25 of 504 while reporting exit 0) is
+ticking every 20 s and alive. But **surviving a turn boundary is exactly what cannot be verified
+inside the turn that launches it.** The claim stays UNVERIFIED until the next turn reads the log
+and finds new ticks. Recorded that way rather than as a pass, because "I launched it and it is
+alive" is the same sentence the failed attempt could have truthfully written.
+
+**The distinction that matters:** `nohup ... &` inside the tool's shell dies when that shell exits;
+`Start-Process` creates an independent Windows process, and Windows does not signal children on
+parent death. The mechanism differs materially - but a mechanism argument is a prediction, and the
+next turn is the measurement.

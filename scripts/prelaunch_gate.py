@@ -90,6 +90,22 @@ def check(manifest: dict, ledger: dict, tar_sha: str) -> list[str]:
     return fails
 
 
+def _universe_label(manifest: dict) -> str:
+    """B1637: this line assumed `universe` was a DICT with a `tier` key and
+    crashed on a string. `check()` only requires the field to be TRUTHY, so a
+    LOCAL manifest naming a ticker file - the natural form - passed every gate
+    and then died in the SUMMARY. Worse, the traceback went to stderr while the
+    pipeline reported exit 0 (L486: the command returned, the work did not).
+    """
+    tk = manifest.get("tickers")
+    if tk:
+        return str(len(tk))
+    u = manifest.get("universe")
+    if isinstance(u, dict):
+        return "universe:" + str(u.get("tier", "?"))
+    return "universe:" + (str(u) if u else "?")
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--manifest", required=True)
@@ -131,7 +147,7 @@ def main() -> int:
         return 3
     print(f"PRELAUNCH_GATE_PASS batch={manifest['batch']} "
           f"frozen_sha={str(manifest['frozen_sha'])[:12]} "
-          f"tickers={len(manifest['tickers']) if manifest.get('tickers') else 'universe:' + str((manifest.get('universe') or {}).get('tier', '?'))} "
+          f"tickers={_universe_label(manifest)} "
           f"budget {manifest['spent_usd']}+{manifest['projected_batch_usd']}"
           f"<={manifest['budget_cap_usd']}")
     return 0
