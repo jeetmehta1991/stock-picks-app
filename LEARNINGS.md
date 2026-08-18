@@ -8871,3 +8871,44 @@ evidence rather than being taken on an extrapolation.
 
 **The general rule: a HALT is a decision to STOP ADVANCING, not automatically a decision to
 destroy what is already running.** Conflating the two turns a safety rule into a cost.
+
+### L493
+
+**wave 1 shipped clean and proved my regime_flip fix never ran**
+
+**B1680.** Wave 1 completed: both configs reached 2026-05-05, exited cleanly, cubes written
+(2.8 / 3.0 MB), no MemoryError, **measured elapsed 5 h 46 min**. Post-config steps 1-3 pass -
+sanity 1 strategy / [26] exits / mega-caps present, diagnosis loss **0.0pct** (302/302 and
+320/320), cube-to-grid reconciliation exact, band gate PASS with `tail_n` at 100pct effect.
+
+**B1625's config stamp worked on its first real run** - each cube now carries
+`cfg_swing_length` / `cfg_ema_span` / `cfg_breaker`, so the defect that cost cfg2 167 of 420 fires
+cannot recur silently.
+
+**And step 3 caught the thing no test did: `regime_flip` returned `regime_flip_max_days_20` on
+302 of 302 trades.** 100pct identical to `time_stop_20d`, in a cube built AFTER B1622 wired the
+fix. **The fix I marked DONE never executed.**
+
+**What the RCA established, and what it did not.** The key-type hypothesis is DISPROVEN by
+runtime test - `_process_day(self, as_of: date)` stores a `date`, the exit looks up `ts.date()`,
+also a `date`; the lookup would hit. Reading the call sites showed both places I patched are
+FALLBACK branches - the `except` when the pool fails and the `else` when there is no pool - while
+the PRIMARY path runs cube replay in **subprocess workers** that cannot see a parent instance
+attribute. **But wave 1 ran at pool=0, and the log contains zero pool-failure warnings, so the
+`else` branch ran and the map WAS passed.** The residual cause is therefore still **UNKNOWN**, and
+I am not naming one.
+
+**The lesson is about my test, not the bug.** `test_b1593_regime_flip_reads_regime_from_signals`
+asserted `eng.count('getattr(self, "_regime_by_date", None)') == 2` - and there ARE two. **It
+counted call sites and never asked whether either was the path that RUNS.** That is the same
+defect as the string-matching test it replaced, moved one level along: from "does the code say the
+words" to "does the code have the shape", when the only question that matters is "does this
+execute".
+
+**A test that can be satisfied without running the code under test will eventually be satisfied
+without the code working.** The only thing that caught this was building a cube and reading it.
+
+**And it corrects a ruling made on my information.** The owner accepted a cfg1/cfg2-vs-new-cube
+asymmetry on `regime_flip` (S6-B1622b). MEASURED: all four cubes show the identical collapse,
+`26 exits -> 23 effective`. **The asymmetry does not exist**, because the fix never took effect -
+so cfg2 needs no re-run, and the acceptance was of a difference that was never there.
