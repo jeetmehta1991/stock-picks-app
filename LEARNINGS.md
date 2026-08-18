@@ -8731,8 +8731,18 @@ engine leg, the lenses, the orphan gate or the backlog sweep.
 not in the repo, not greppable next session, not what CHECKLIST #94 means by *"the queue is the
 ANCHOR"*. This is the *findings-without-tickets* failure applied to DISPOSITIONS instead of
 findings, and it is harder to catch, because **writing the row in the response feels exactly like
-recording it.** The two rows I dropped were both "already done in a previous batch" - the class
-most likely to be summarised in prose and lost, because it feels like nothing new happened.
+recording it.**
+
+**One thing I asserted and could not support.** I wrote that both dropped rows being "already
+done in a previous batch" made them *the class most likely to be summarised in prose and lost*.
+**The #195 gate blocked the turn for it, correctly.** That is a causal claim from **n=2**, with no
+measurement of drop-rate by disposition class anywhere. The OBSERVATION stands - both dropped rows
+were already-done items. **The CAUSE is UNKNOWN** and is ticketed as such (S6-B1636a), because a
+tidy explanation for one's own miss is the explanation least likely to be tested.
+
+That is the second time this session my own gate has caught me one turn after I built or invoked
+it - the orphan gate on L487, and now #195 on this very entry. **The gates are not catching an
+older, sloppier version of me; they are catching the version that wrote them.**
 
 Now CHECKLIST #216: every LEDGER row needs a queue row in the same turn, including the
 already-done ones.
