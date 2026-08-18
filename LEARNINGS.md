@@ -8717,3 +8717,41 @@ first, catch-all last. **A catch-all that runs first is not a catch-all, it is a
 **This generalises L487/#213.** There, a check's sufficiency depended on a FLAG. Here it depends on
 the SUBJECT. Same discipline: **sufficiency is a claim about a configuration and a subject, never a
 property of the check alone** - and stating it without both is how "verified" becomes decorative.
+
+### L489
+
+**I wrote the disposition in the response and thought I had recorded it**
+
+**B1635.** Owner: *"you were also supposed to ticket each rec in prev turn Q1 to Q5 but that was
+missed. Why was that?"* VERIFIED: B1634 produced **five** queue rows covering Q1, Q3 and Q5.
+**Q2 and Q4 got a disposition in the RESPONSE table and nowhere else** - no B1634 row mentions the
+engine leg, the lenses, the orphan gate or the backlog sweep.
+
+**Why: I treated the end-of-turn LEDGER as the ledger.** It is not. The response is ephemeral -
+not in the repo, not greppable next session, not what CHECKLIST #94 means by *"the queue is the
+ANCHOR"*. This is the *findings-without-tickets* failure applied to DISPOSITIONS instead of
+findings, and it is harder to catch, because **writing the row in the response feels exactly like
+recording it.** The two rows I dropped were both "already done in a previous batch" - the class
+most likely to be summarised in prose and lost, because it feels like nothing new happened.
+
+Now CHECKLIST #216: every LEDGER row needs a queue row in the same turn, including the
+already-done ones.
+
+**S6-B1634c shipped as the NARROW version of an unenforceable rule.** The skill demands
+code-verification in 4 places and gated it in none. A gate cannot read whether a claim came from
+code - but it CAN refuse a structural claim from a turn that never opened a file.
+`scan_unverified_structure` blocks *wired / not wired / implemented / absent / never called /
+hardcoded / grader-only* when no `Read`/`Grep`/`Bash`/`Glob` ran. **"I don't know" and "UNVERIFIED"
+both pass; only unsupported certainty is blocked.** That is the honest boundary: mechanise the
+checkable half rather than build a gate that pretends to judge the rest.
+
+**And it would have caught me this session.** I claimed 4 of 9 scanners were unwired - wrong, from
+a naive `check_<name>()` substitution rather than reading `main()`.
+
+**S6-B1634d shipped too: `scripts/queue_status.py`.** The queue APPENDS resolutions rather than
+restatusing, which is right for an audit ledger and useless for counting. MEASURED: **293 tickets,
+365 rows, 135 open / 158 closed** by last-row-wins, while a naive row scan reports **201 open -
+66 already superseded**, and **32 tickets carry an open row a later row resolves**. History
+untouched; the resolver runs at read time. **My own earlier count of "225 tickets, 97 open" was
+itself wrong** - my regex required bold status markers - which is the same lesson twice in one
+session: the number you get depends on the parser, so publish the parser with the number.

@@ -589,6 +589,70 @@ def check_unmeasured_quantity() -> str | None:
     return bad[0] if bad else None
 
 
+# B1635 / S6-B1634c / CHECKLIST #215 -- the NARROW, honest version of
+# "verify against code, not docs". A gate cannot read whether a claim came from
+# code. It CAN check that a turn asserting something is WIRED / ABSENT /
+# IMPLEMENTED actually opened a file this turn. The skill states code-
+# verification in 4 places and gated it in none, which is how "wired" survived
+# as a grep result ~150 times.
+STRUCTURAL_CLAIMS = (
+    "is wired", "not wired", "is implemented", "not implemented",
+    "does not exist", "never called", "is absent", "is present in",
+    "exists at", "is unreachable", "is dead code", "engine-implemented",
+    "grader-only", "hardcoded",
+)
+# Any of these in the turn means a file was actually opened or run.
+INSPECTION_TOOLS = ("Read", "Grep", "Bash", "PowerShell", "Glob")
+
+
+def scan_unverified_structure(entries):
+    """Flag a STRUCTURAL claim made in a turn that never opened a file."""
+    entries = list(entries or [])
+    last_user = -1
+    for i, e in enumerate(entries):
+        if (e or {}).get("type") != "user":
+            continue
+        c = ((e.get("message") or {}).get("content"))
+        if isinstance(c, str) or (isinstance(c, list) and any(
+                isinstance(x, dict) and x.get("type") == "text" for x in c)):
+            last_user = i
+    entries = entries[last_user + 1:] if last_user >= 0 else entries
+
+    text, used_tools = [], set()
+    for e in entries:
+        content = ((e.get("message") or {}).get("content"))
+        if isinstance(content, str):
+            text.append(content)
+        elif isinstance(content, list):
+            for c in content:
+                if not isinstance(c, dict):
+                    continue
+                if c.get("type") == "text":
+                    text.append(c.get("text", ""))
+                elif c.get("type") == "tool_use":
+                    used_tools.add(str(c.get("name", "")))
+    low = " ".join(text).lower()
+    if not low:
+        return []
+    hits = [k for k in STRUCTURAL_CLAIMS if k in low]
+    if not hits:
+        return []
+    if used_tools & set(INSPECTION_TOOLS):
+        return []
+    return [("TURN-GATE BLOCK (CHECKLIST #215 / L489): this turn asserts "
+             f"something about CODE STRUCTURE ({sorted(set(hits))[:3]}) without "
+             "having opened a single file. `wired` as a grep result produced "
+             "~150 false RESOLVED claims; `regime_flip` read a key nothing "
+             "wrote for its entire life. Read or run the thing, or say "
+             "UNVERIFIED.")]
+
+
+def check_unverified_structure() -> str | None:
+    """#215 auto-gate: a claim about code structure needs a file opened."""
+    bad = scan_unverified_structure(_read_entries())
+    return bad[0] if bad else None
+
+
 def check_unrecorded_miss() -> str | None:
     """Block a turn that ACKNOWLEDGED a miss without writing it to LEARNINGS."""
     try:
@@ -752,6 +816,11 @@ def main() -> int:
     cause_block = scan_unverified_cause(_read_entries())
     if cause_block:
         print(cause_block[0], file=sys.stderr)
+        return 2
+
+    struct_block = check_unverified_structure()
+    if struct_block:
+        print(struct_block, file=sys.stderr)
         return 2
 
     quant_block = check_unmeasured_quantity()

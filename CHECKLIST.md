@@ -3407,3 +3407,42 @@ configuration and a subject, never a property of the check alone.
 parameters did not exist in the engine (L476); `--cube-isolation` bypassing tier so smart-money is
 not an entry input HERE but is at Phase 1B (L487); the B1039 producer audits that measured one
 signal family and were quoted as coverage of a strategy.
+
+### #215 - A CLAIM ABOUT CODE STRUCTURE REQUIRES OPENING THE CODE (B1635 / L489)
+
+**MECHANICALLY GATED:** `scan_unverified_structure` blocks a turn that asserts something is
+**wired / not wired / implemented / absent / never called / hardcoded / grader-only** without a
+single `Read`, `Grep`, `Bash`, `PowerShell` or `Glob` call in that turn.
+
+This is the NARROW, honest version of *"verify against code, not documentation"*. The skill states
+that rule in **4 places and gated it in none** - which is how `wired=yes` as a grep result produced
+**~150 false RESOLVED claims**, and how `regime_flip` read a key nothing ever wrote for its entire
+life. A gate cannot read whether a claim came from code; it CAN refuse a structural claim from a
+turn that never opened a file.
+
+**"I don't know" and "UNVERIFIED" both pass.** Only unsupported certainty is blocked.
+
+**Retroactive coverage (#136):** the `wired=yes` heuristic (~150 false RESOLVED); B1593's
+`regime_flip` fix asserted "threaded via signals_at_entry" in a comment while nothing wrote the key
+(L481); my own claim that 4 of 9 scanners were unwired, which was wrong and came from a naive
+substitution rather than reading `main()` (L489).
+
+### #216 - THE RESPONSE LEDGER IS NOT THE LEDGER (B1635 / L489)
+
+Owner: *"you were also supposed to ticket each rec in prev turn Q1 to Q5 but that was missed."*
+Correct. B1634 produced **5 queue rows** covering Q1, Q3 and Q5 - **Q2 and Q4 got a disposition in
+the RESPONSE table and nowhere else.** VERIFIED: no B1634 row mentions the engine leg, the lenses,
+the orphan gate or the backlog sweep.
+
+**The response is ephemeral.** It is not in the repo, not greppable next session, and not what
+CHECKLIST #94 means by *"the queue is the ANCHOR"*. A disposition that exists only in chat is the
+*findings-without-tickets* failure applied to dispositions instead of findings - and it is easier
+to miss, because writing the row in the response FEELS like recording it.
+
+**Every row of the end-of-turn LEDGER must have a corresponding EXECUTION_QUEUE row in the same
+turn** - including rows whose disposition is "already done in a previous batch", which is exactly
+the kind that gets summarised in prose and lost.
+
+**Retroactive coverage (#136):** B1634's Q2/Q4 (this instance); B1119's 22-batch doc-sync
+suspension, where work happened and the record did not; the B1248 review whose 9 findings were
+doc-only until #94 was written.
