@@ -8539,3 +8539,51 @@ Rewritten to set attributes directly and restore them in `finally`. Then my repa
 earlier anchor and duplicated a block into a SyntaxError, caught at collection. Both are the same
 carelessness: **editing by slice offsets in a 15,000-line file, twice, when the safe move was to
 replace the whole function.**
+
+### L485
+
+**the gate against unanchored rules was itself failing open, for four turns**
+
+**B1626.** Owner asked whether the two self-inflicted errors of L484 were recorded in CHECKLIST too.
+**They were not** - and checking produced something worse than the answer: **L481, L482, L483 and
+L484 were ALL orphaned**, four consecutive turns of L-entries anchored nowhere.
+
+`scan_orphan_rule` exists precisely to block that. It passed every time. **Its classifier looked for
+three exact phrases** - `generalised rule`, `generalized rule`, `**rule:**` - and treated anything
+worded differently as narrative. All four entries state generalised rules; none happened to use
+those words:
+
+```
+L481  "The generalisation: when a rule is discovered, sweep for its OTHER instances immediately."
+L482  "The common shape: every one of these fails OPEN."
+L483  "a record contains what someone thought to write down; a measurement contains what is there"
+L484  "A test that corrupts global state is a defect even when it passes"
+```
+
+**A gate that only fires when I use its vocabulary fires when I am already thinking in its terms -
+exactly when it is least needed.** The classifier and the author were the same mind, so the gate
+could only catch the cases the author had already framed correctly.
+
+**The default is now inverted: every new L-entry is rule-bearing and must be anchored unless it
+explicitly says `**record-of-fact**`.** The escape is a decision someone writes down, which is
+auditable; a default is not. VERIFIED both directions - a differently-worded unanchored entry now
+FLAGS, an explicitly-declared record is skipped.
+
+**This is the week's own lesson landing on the week's own tooling.** Every defect found since B1610
+was a component that failed OPEN and returned a number instead of an error: a comment satisfying a
+code check, a missing parameter skipped by the band gate, a wrong file found by the grader, a
+dropped ticker vanishing, an exit falling back to a time stop, a gate scoring "unknown" above
+"known bad". **I wrote all of that down while my own compliance gate was doing the same thing**, and
+I only found it because the owner asked a one-line question about where something was recorded.
+
+**The general rule: a classifier in front of a gate is a second gate, and it needs the same
+scrutiny as the first.** Nobody tests the thing that decides whether to test. CHECKLIST #211,
+and #209/#210 for L484's two errors.
+
+**And the gate's own test was asserting the defect.** `test_b1597_orphan_rule_gate_wired_and_pinned`
+contained the line *"narrative with no rule -> pass (must not push toward inventing rules)"* -
+a deliberate, reasoned-looking assertion that a differently-worded entry should be let through.
+**The fail-open behaviour was not an oversight; it was pinned, with a comment explaining why.**
+That is the harder version of this failure class: not a missing test, but a test that encodes
+the wrong contract and then defends it. Inverted, with the reasoning recorded in the test so the
+next reader sees the change was deliberate rather than convenience.

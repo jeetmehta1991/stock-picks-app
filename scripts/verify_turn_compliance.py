@@ -335,7 +335,20 @@ def scan_unverified_cause(entries):
 # is read when someone goes looking; CHECKLIST and the skill are read every turn.
 # Every rule that HELD this session had a script behind it (#182, #185/#186,
 # #187, #188, #189); the ones that decayed were prose.
+# B1626: these three exact phrases WERE the gate. An L-entry stating a rule in
+# any other wording was classified "narrative" and passed. MEASURED: L481-L484
+# all state generalised rules, none contain one of these strings, and all four
+# went unanchored across four consecutive turns while the gate reported clean.
+# A gate that only fires when I use its vocabulary fires when I am ALREADY
+# thinking in its terms - exactly when it is least needed.
+#
+# The default is now INVERTED: every new L-entry is treated as rule-bearing and
+# must be anchored, unless it explicitly opts out. Opting out is a written
+# decision, which is the point - the same fail-CLOSED move applied to my own
+# gate that L482 was about.
 RULE_MARKERS = ("generalised rule", "generalized rule", "**rule:**")
+# An entry that genuinely records only a measurement or an event says so.
+RECORD_ONLY_MARKERS = ("**record-of-fact**", "**no rule**", "(no rule)")
 
 
 def scan_orphan_rule(learnings_text, checklist_text, skill_text, new_entries):
@@ -352,8 +365,10 @@ def scan_orphan_rule(learnings_text, checklist_text, skill_text, new_entries):
         if not m:
             continue
         body = m.group(1).lower()
-        if not any(k in body for k in RULE_MARKERS):
-            continue                      # narrative entry, no rule to anchor
+        # B1626: fail CLOSED. Previously this skipped anything not containing
+        # one of three exact phrases; now only an EXPLICIT opt-out skips.
+        if any(k in body for k in RECORD_ONLY_MARKERS):
+            continue                      # declared a pure record, not a rule
         if ln in checklist_text or ln in skill_text:
             continue                      # anchored
         orphans.append(ln)
@@ -364,7 +379,10 @@ def scan_orphan_rule(learnings_text, checklist_text, skill_text, new_entries):
              "skill: " + str(orphans) + ". A rule recorded only in LEARNINGS is "
              "a story, not a gate - it gets rediscovered by repeating the "
              "failure that produced it. Add a CHECKLIST item (or cite an "
-             "existing one) referencing the L-number, then end the turn again.")]
+             "existing one) referencing the L-number, then end the turn again. "
+             "If an entry genuinely records only a measurement or an event, "
+             "mark it **record-of-fact** and it will be skipped - but that is a "
+             "decision you are writing down, not a default (B1626).")]
 
 
 def check_orphan_rule() -> str | None:

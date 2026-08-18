@@ -14788,6 +14788,11 @@ def test_b1597_orphan_rule_gate_wired_and_pinned():
     MEASURED: 24 L-entries stated a rule this session and 18 were referenced in
     neither CHECKLIST nor the skill - a 75pct orphan rate. Every rule that HELD
     had a script behind it; every rule that decayed was prose.
+
+    B1626: this test's "narrative passes" case was asserting the DEFECT. The
+    gate classified by three exact phrases, so L481-L484 - all rule-bearing,
+    none using those words - went unanchored for four consecutive turns while
+    it reported clean. Contract inverted; the assertion now pins fail-CLOSED.
     """
     import inspect
     import importlib.util
@@ -14798,14 +14803,25 @@ def test_b1597_orphan_rule_gate_wired_and_pinned():
 
     L = "\n### L999 - t\ntext\n**Generalised rule:** always do X.\n"
     N = "\n### L998 - t\njust a narrative.\n"
+    Rec = "\n### L997 - t\n**record-of-fact** a measurement, no rule.\n"
     # rule stated, anchored nowhere -> BLOCK
     assert m.scan_orphan_rule(L, "", "", ["L999"])
     # anchored in CHECKLIST -> pass
     assert m.scan_orphan_rule(L, "per L999", "", ["L999"]) == []
     # anchored in the SKILL -> pass
     assert m.scan_orphan_rule(L, "", "per L999", ["L999"]) == []
-    # narrative with no rule -> pass (must not push toward inventing rules)
-    assert m.scan_orphan_rule(N, "", "", ["L998"]) == []
+    # B1626 CONTRACT CHANGE - this line previously asserted the OPPOSITE, that a
+    # differently-worded entry passes. That assertion PINNED the defect: the
+    # classifier looked for three exact phrases, so L481-L484 all slipped
+    # through unanchored across four consecutive turns while the gate reported
+    # clean. The default is now INVERTED - an entry is rule-bearing unless it
+    # says otherwise, because the classifier and the author are the same mind
+    # and a vocabulary check only catches what was already framed correctly.
+    assert m.scan_orphan_rule(N, "", "", ["L998"]), (
+        "fail CLOSED: an entry with no explicit opt-out must be treated as "
+        "rule-bearing (L485)")
+    # the escape is an explicit written decision, not a default
+    assert m.scan_orphan_rule(Rec, "", "", ["L997"]) == []
     # and it must be WIRED, not merely defined (CHECKLIST #121)
     main_src = inspect.getsource(m.main)
     assert "check_orphan_rule()" in main_src, (
@@ -15513,3 +15529,43 @@ def test_b1625_cube_rows_carry_their_config():
         for k, v in saved.items():
             setattr(_c, k, v)
         ex._CFG_STAMP = None
+
+
+def test_b1626_orphan_gate_fails_closed():
+    """The gate against unanchored rules was itself failing open.
+
+    It classified an L-entry as rule-bearing by looking for THREE EXACT PHRASES
+    (`generalised rule`, `generalized rule`, `**rule:**`). MEASURED: L481, L482,
+    L483 and L484 all state generalised rules, none contain those strings, and
+    all four went unanchored across four consecutive turns while the gate
+    reported clean. A gate that only fires when I use its vocabulary fires when
+    I am already thinking in its terms - exactly when it is least needed.
+    """
+    import importlib.util
+    import pathlib as _pl
+    import re
+    spec = importlib.util.spec_from_file_location(
+        "_vtc10", "scripts/verify_turn_compliance.py")
+    m = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(m)
+
+    C = _pl.Path("CHECKLIST.md").read_text(encoding="utf-8")
+    S = _pl.Path(".claude/skills/execution-discipline/SKILL.md").read_text(
+        encoding="utf-8")
+
+    # an entry that states a rule WITHOUT the magic words must now FLAG
+    unanchored = "\n### L999\n\nsomething worth remembering, phrased normally\n"
+    assert m.scan_orphan_rule(unanchored, C, S, ["L999"]), (
+        "the gate must FAIL CLOSED - an entry is rule-bearing unless it says "
+        "otherwise")
+    # ...and an explicit opt-out must be honoured, so the escape is a written
+    # decision rather than a default
+    rec = "\n### L998\n\n**record-of-fact** a measurement, no rule.\n"
+    assert m.scan_orphan_rule(rec, C, S, ["L998"]) == []
+    # anchoring still silences it
+    anchored = "\n### L484\n\nstates a rule\n"
+    assert m.scan_orphan_rule(anchored, C, S, ["L484"]) == []
+
+    # the four that slipped through must be anchored NOW
+    for n in ("L481", "L482", "L483", "L484"):
+        assert re.search(rf"\b{n}\b", C), f"{n} is still orphaned"

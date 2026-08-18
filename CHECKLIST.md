@@ -3179,6 +3179,8 @@ purpose is catching collapse.
 parameters, tickers, dates, regimes - **and either apply it or record why it does not.**
 Writing a general test against one axis converts it into a special case, silently.
 
+**Extension (L481):** when a rule is discovered, SWEEP for its other instances the same turn. L475 was recorded, anchored in #207 and gated - with the gate scoped to SWEPT PARAMETERS, so it could never have found the identical defect sitting in the exit layer. An anchored rule with a narrow gate feels like closure and is not.
+
 **Retroactive coverage (#136):** `tail_n` 3-of-4 levels inert (L473) despite the exits lens
 existing; the `regime_flip` silent degradation (L461), where "does anything fall back without
 saying so" was asked of producers but not of exit methods; the B1119 doc-sweep suspension,
@@ -3239,3 +3241,61 @@ line, not by matching the name (L472's mirror: a match is not evidence of the RI
 **Retroactive coverage (#136):** the 100/100 spot check while P2-P5 were grader-only; `regime_flip`
 (L461), whose cube column was internally consistent and never compared to what the exit function
 executed; the `wired=yes` grep heuristic that produced ~150 false RESOLVED claims.
+
+### #209 - A TEST THAT CORRUPTS GLOBAL STATE IS A DEFECT EVEN WHEN IT PASSES (B1626 / L484)
+
+My B1625 test called `importlib.reload(backtest.config)` to check that a config stamp follows the
+configured value. A reload builds a **NEW module object**; anything holding a reference to the old
+one silently diverges. `test_bug_30` and `test_bug_232` - unrelated, untouched - failed.
+
+**A test that mutates process-wide state turns a green suite into a lottery on ordering.** It can
+pass in isolation, pass in CI, and fail the day someone adds a file above it alphabetically.
+
+**Set attributes directly and restore them in `finally`.** Never `importlib.reload` a config or
+registry module inside a test. Never leave an env var, a module attribute, a cache, or a
+module-level singleton changed on exit. If a test needs a different global, it owns restoring it.
+
+**Retroactive coverage (#136):** today's reload breaking two unrelated tests; S6-B1601e
+(`test_b1255_turn_gate_verifier` became sensitive to LIVE repo state and failed whenever an
+unanchored L-entry was in flight); L449 (the miss gate scanned the whole transcript and fired on
+compliant turns) - all three are a check coupled to state it does not own.
+
+### #210 - REPLACE THE WHOLE FUNCTION; DO NOT PATCH BY OFFSET (B1626 / L484)
+
+Repairing that same test, my patch computed an `end` offset from `t.index(anchor, start)` - the
+anchor matched an **earlier** occurrence, and the replacement duplicated a block into a
+`SyntaxError` caught at collection.
+
+**In a file of thousands of lines, string-offset surgery is not a safe edit.** Replace a whole
+function or a whole block bounded by its `def`, assert the replaced region is unique, and
+`ast.parse` the result before writing.
+
+**Retroactive coverage (#136):** today's duplicated block; B1614's dropped closing brace in
+`producer_variant_table.py` (a mechanical string replace that broke the module, caught by the
+pyramid); the CHECKLIST numbering collision where #187-#193 were appended while a legacy 192
+already existed.
+
+### #211 - A CLASSIFIER IN FRONT OF A GATE MUST FAIL CLOSED (B1626 / L485, L482, L483, L481)
+
+`scan_orphan_rule` classified an L-entry as rule-bearing by looking for one of **three exact
+phrases** (`generalised rule`, `generalized rule`, `**rule:**`). Anything worded differently was
+"narrative" and skipped. MEASURED: **L481, L482, L483 and L484 all state generalised rules, none
+contain those strings, and all four went unanchored across four consecutive turns while the gate
+reported clean.**
+
+**A gate that only fires when I use its vocabulary fires when I am already thinking in its terms -
+exactly when it is least needed.**
+
+**When a gate must decide whether a thing is in scope, the default answer is YES.** Being excused
+requires an explicit written opt-out (`**record-of-fact**`), because a decision someone had to
+write down is auditable and a default is not.
+
+**This is the same shape as every defect this week** - each was a component that failed OPEN and
+produced a number instead of an error: a comment satisfying a code check (L482), a missing
+parameter skipped by the band gate (L482), a wrong file found by the grader (L482), a dropped
+ticker vanishing (L483), an exit falling back to a time stop (L481), a gate scoring "unknown"
+higher than "known bad" (L484). **Where the open default cannot be removed, replace the assumption
+with a measurement (L483).**
+
+**Retroactive coverage (#136):** this gate missing 4 of 4; `verify_grid_bands` dropping an absent
+parameter and printing PASS; `verify_engine_implemented` matching a token inside a comment.
