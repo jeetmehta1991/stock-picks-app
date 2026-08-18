@@ -12,44 +12,82 @@
   "spent_usd": 0,
   "projected_batch_usd": 0,
   "spend_note": "LOCAL run on the owner's machine. No AWS, no paid API. The scarce resource is WALL CLOCK, not dollars (L333).",
-
-  "window": {"start": "2024-05-05", "end": "2026-05-05", "years": 2,
-             "note": "LOCKED. Owner ruling 2026-08-17: the market changed with AI adoption, so 2022-23 is not wanted even for exit selection."},
-
+  "window": {
+    "start": "2024-05-05",
+    "end": "2026-05-05",
+    "years": 2,
+    "note": "LOCKED. Owner ruling 2026-08-17: the market changed with AI adoption, so 2022-23 is not wanted even for exit selection."
+  },
   "configs": [
-    {"name": "cfg_sw20_span50", "SMC_SWING_LENGTH": 20, "STRAT_EMA_SPAN": 50},
-    {"name": "cfg_sw20_span21", "SMC_SWING_LENGTH": 20, "STRAT_EMA_SPAN": 21}
+    {
+      "name": "cfg_sw20_span50",
+      "SMC_SWING_LENGTH": 20,
+      "STRAT_EMA_SPAN": 50
+    },
+    {
+      "name": "cfg_sw20_span21",
+      "SMC_SWING_LENGTH": 20,
+      "STRAT_EMA_SPAN": 21
+    }
   ],
   "concurrency": 2,
-  "screen_pool_workers": 3,
+  "screen_pool_workers": 0,
   "wall_clock_projection_hours": 3.3,
-  "wall_clock_projection_note": "UPPER BOUND. The 3.30 h/config figure was measured at --screen-pool-workers 0 (SEQUENTIAL, S6-B1576a). Wave 1 runs at pool=3, so each config should finish FASTER; wave 1's ELAPSED is the first pool=3 measurement and the remaining 8 waves are re-costed from it before any of them starts.",
+  "wall_clock_projection_note": "3.30 h/config MEASURED at pool=0 (S6-B1576a) - the setting this wave runs at, so this is a like-for-like projection rather than an upper bound. 9 waves x 3.30 h = 29.7 h at N=2.",
   "sweep_total_projection_hours": 29.7,
   "sweep_total_note": "9 waves x 3.30 h upper bound at N=2. N=3 would be 19.8 h but needs ~3.5 GB freed: MEASURED free_MB=6847 of 16009 against a PEAK 3223 MB/worker = 2.12 workers.",
-
   "obsolescence_risks": [
-    {"risk": "universe is the wrong artifact (the L445 abandoned A-C chunk)",
-     "gate": "scripts/verify_universe_artifact.py", "status": "CLEARED - broad-universe verdict, 100 overlap, 0 outside the cube"},
-    {"risk": "the sweep grid is mis-enumerated",
-     "gate": "enumerated by running the product", "status": "CLEARED - P1[10,20,30,50] x P6[9,20,21,50,200] = 20, minus cfg1(20,200) and cfg2(10,50) = 18 remaining, 9 waves"},
-    {"risk": "a cube cannot be attributed to the config that produced it - the defect that cost cfg2 167 of 420 fires",
-     "gate": "B1625 cfg_swing_length / cfg_ema_span / cfg_breaker columns on every row", "status": "CLEARED"},
-    {"risk": "the engine cannot apply a parameter the search selects",
-     "gate": "scripts/verify_engine_implemented.py", "status": "CLEARED - 6 of 6 reach the engine since B1616"},
-    {"risk": "grading changes under the sweep and invalidates earlier waves",
-     "gate": "B1624 measured: the cfg2 grid is unchanged - ranking identical, 198 graded rows, max gates 6", "status": "CLEARED"},
-    {"risk": "regime_flip is a dead 26th exit",
-     "gate": "B1622 wired it; roster_core.measure_degraded_exits measures degradation per cube", "status": "CLEARED for these waves; cfg1/cfg2 asymmetry ACCEPTED by owner and measured, not recalled"},
-    {"risk": "the spot check certifies a strategy whose inputs it cannot read",
-     "gate": "scripts/verify_spotcheck_coverage.py", "status": "CLEARED for smc_breaker_block_long (gaps []); 190 of 222 strategies would FAIL, which blocks Phase 1B not this sweep"},
-    {"risk": "the launch dies with its parent and reports success - a 2-year smoke was killed at simulated day 25 of 504 with exit code 0",
-     "gate": "CHECKLIST #212: Start-Process detachment + confirm alive from a LATER turn", "status": "IN PROGRESS - detached marker running, turn-boundary confirmation pending"},
-    {"risk": "memory exhaustion mid-sweep",
-     "gate": "hourly monitor halts below 3223 MB free", "status": "CLEARED at N=2 - free 6847 MB measured"},
-    {"risk": "a wave runs unwatched",
-     "gate": "CronCreate 5403417a, hourly, UNCONDITIONAL", "status": "ARMED this turn"}
+    {
+      "risk": "universe is the wrong artifact (the L445 abandoned A-C chunk)",
+      "gate": "scripts/verify_universe_artifact.py",
+      "status": "CLEARED - broad-universe verdict, 100 overlap, 0 outside the cube"
+    },
+    {
+      "risk": "the sweep grid is mis-enumerated",
+      "gate": "enumerated by running the product",
+      "status": "CLEARED - P1[10,20,30,50] x P6[9,20,21,50,200] = 20, minus cfg1(20,200) and cfg2(10,50) = 18 remaining, 9 waves"
+    },
+    {
+      "risk": "a cube cannot be attributed to the config that produced it - the defect that cost cfg2 167 of 420 fires",
+      "gate": "B1625 cfg_swing_length / cfg_ema_span / cfg_breaker columns on every row",
+      "status": "CLEARED"
+    },
+    {
+      "risk": "the engine cannot apply a parameter the search selects",
+      "gate": "scripts/verify_engine_implemented.py",
+      "status": "CLEARED - 6 of 6 reach the engine since B1616"
+    },
+    {
+      "risk": "grading changes under the sweep and invalidates earlier waves",
+      "gate": "B1624 measured: the cfg2 grid is unchanged - ranking identical, 198 graded rows, max gates 6",
+      "status": "CLEARED"
+    },
+    {
+      "risk": "regime_flip is a dead 26th exit",
+      "gate": "B1622 wired it; roster_core.measure_degraded_exits measures degradation per cube",
+      "status": "CLEARED for these waves; cfg1/cfg2 asymmetry ACCEPTED by owner and measured, not recalled"
+    },
+    {
+      "risk": "the spot check certifies a strategy whose inputs it cannot read",
+      "gate": "scripts/verify_spotcheck_coverage.py",
+      "status": "CLEARED for smc_breaker_block_long (gaps []); 190 of 222 strategies would FAIL, which blocks Phase 1B not this sweep"
+    },
+    {
+      "risk": "the launch dies with its parent and reports success - a 2-year smoke was killed at simulated day 25 of 504 with exit code 0",
+      "gate": "CHECKLIST #212: Start-Process detachment + confirm alive from a LATER turn",
+      "status": "IN PROGRESS - detached marker running, turn-boundary confirmation pending"
+    },
+    {
+      "risk": "memory exhaustion mid-sweep",
+      "gate": "hourly monitor halts below 3223 MB free",
+      "status": "CLEARED at N=2 - free 6847 MB measured"
+    },
+    {
+      "risk": "a wave runs unwatched",
+      "gate": "CronCreate 5403417a, hourly, UNCONDITIONAL",
+      "status": "ARMED this turn"
+    }
   ],
-
   "halt_conditions": [
     "cube sanity: not exactly 1 strategy, not exactly [26] exits/entry, or a mega-cap absent",
     "diagnosis loss above --max-diag-loss, or ANY dropped ticker",
@@ -58,5 +96,6 @@
     "MemoryError, or free RAM below one worker's 3223 MB peak",
     "any CONFIRMED finding from the 11-lens adversarial review"
   ],
-  "gating": "Option C (owner ruling 2026-08-17): wave 1 OWNER-GATED, waves 2-9 autonomous under the halt conditions above."
+  "gating": "Option C (owner ruling 2026-08-17): wave 1 OWNER-GATED, waves 2-9 autonomous under the halt conditions above.",
+  "screen_pool_workers_note": "B1646 PRE-FLIGHT CATCH: the manifest said 3, which was never measured. pool=3 means 1 parent + 3 workers per config, so 2 concurrent configs is 8 processes; at the MEASURED PeakWorkingSet64 of 3223 MB that is up to 25,784 MB against 7,705 MB free - it does not fit and would have died with a MemoryError hours in. pool=0 is 2 processes = 6,446 MB worst case and FITS. It is also the exact setting the 3.30 h/config and 3,223 MB figures were measured at (S6-B1576a), so wave 1's elapsed is directly comparable to cfg1/cfg2."
 }

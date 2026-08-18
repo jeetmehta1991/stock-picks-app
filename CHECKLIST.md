@@ -3479,3 +3479,25 @@ needs a linked evidence artifact - extended: the artifact must survive a clone.
 **Retroactive coverage (#136):** these two grids (this instance); the AWS git-hook shims that do
 not travel with a clone and must be installed by hand; `_sweep_100.txt` being correct while its
 BUILDER read the abandoned chunk (L479) - in all three the repo does not carry what the check needs.
+
+### #219 - A CONCURRENCY FIT IS `free - N x peak >= headroom`, NOT `N x peak < free` (B1646 / L492)
+
+Launching wave 1 I checked `2 x 3,223 = 6,446 < 7,705 free` and called it a fit. **That treats the
+workers as the only consumer of the free pool.** MEASURED six minutes later: free **1,920 MB**,
+margin **-1,303** against the floor, with the workers merely at their expected size.
+
+**Free memory is not a budget you may spend to zero.** The OS, its cache, and every resident
+process draw on the same pool, and the figure moves - it read 6,847 / 7,813 / 8,258 / 8,031 /
+7,856 / 7,940 / 7,823 / 7,787 / 7,705 across nine hourly samples.
+
+**Compute `free - (N x peak)` and require an explicit headroom**, then RE-MEASURE after launch
+rather than trusting the projection - the breach here appeared ~2 minutes in and would have been
+invisible to a pre-launch check alone.
+
+**And a HALT is a decision to stop ADVANCING, not automatically to destroy what is running.**
+Killing a live run is irreversible; declare the halt, hold the next unit of work, report the
+evidence, and let the owner choose.
+
+**Retroactive coverage (#136):** this launch; the "3-config ceiling" derived at ~9 GB free that no
+longer held at 6.5 GB (L486-adjacent, B1627); the pool=3 manifest entry that would have put EIGHT
+processes against a 2-process measurement.

@@ -8829,3 +8829,45 @@ survive a clone.
 **Also measured this report:** free RAM **7,813 MB**, up from 6,847 last turn against a 3,223 MB
 floor - **the ceiling moved again**, which is exactly why #212's sibling rule is to re-measure at
 launch rather than recall. Nothing is running; the sweep has not started.
+
+### L492
+
+**a worst-case sum is not a fit: I compared the workers against free RAM and forgot the machine**
+
+**B1646, wave 1 launch.** Two things happened, and the second is the lesson.
+
+**The pre-flight caught a real error before launch.** The manifest said
+`--screen-pool-workers 3`, which **I had written in without ever measuring it**:
+
+```
+pool=3 (manifest)   8 processes  worst-case 25,784 MB   free 7,705 MB   FITS=False
+pool=0 (measured)   2 processes  worst-case  6,446 MB   free 7,705 MB   FITS=True
+```
+
+pool=3 is 1 parent + 3 workers per config, so 2 concurrent configs is EIGHT processes. It would
+have died with a MemoryError hours in. Launched at pool=0 - which is also the exact setting the
+3.30 h/config and 3,223 MB figures were measured at (S6-B1576a), so wave 1's elapsed is
+directly comparable to cfg1/cfg2 instead of being an upper bound.
+
+**And then the floor broke anyway.** MEASURED after launch:
+
+```
+07:37:43  free=3,148  workers 2,482/2,439   margin  -75
+07:38:43  free=2,219  workers 2,955/2,910   margin  -1,004
+07:40:43  free=2,000  workers 3,037/3,031   margin  -1,223
+07:42     free=1,920  workers 3,031/3,037   margin  -1,303
+```
+
+**My arithmetic was `2 x 3,223 = 6,446 < 7,705 free` - and that treats the workers as the only
+consumer of that 7,705.** The OS, its cache, and everything already resident needed it too. **A
+worst-case sum is not a fit; the fit is worst-case PLUS what is already there.** The correct
+pre-flight is `free - (N x peak) >= headroom`, with headroom explicit, not `N x peak < free`.
+
+**What I did NOT do: kill the running configs.** The HALT condition is met and wave 2 will not
+start, but both runs are clean - no MemoryError, no traceback - and the workers have PLATEAUED
+(3,032 -> 3,037 -> 3,031, flat for four minutes) below the 3,223 peak. Killing is irreversible and
+the situation is stable and observable, so the destructive choice goes to the owner with the
+evidence rather than being taken on an extrapolation.
+
+**The general rule: a HALT is a decision to STOP ADVANCING, not automatically a decision to
+destroy what is already running.** Conflating the two turns a safety rule into a cost.
