@@ -3299,3 +3299,21 @@ with a measurement (L483).**
 
 **Retroactive coverage (#136):** this gate missing 4 of 4; `verify_grid_bands` dropping an absent
 parameter and printing PASS; `verify_engine_implemented` matching a token inside a comment.
+
+### #212 - A LONG RUN MUST SURVIVE ITS PARENT, AND BE PROVEN TO (B1627 / L486)
+
+`nohup ... &` from the tool harness does NOT detach: the parent shell exits, the child dies with
+it, the output directory is empty, and the harness reports **exit code 0**. MEASURED: a 2-year
+smoke was killed at **simulated day 25 of 504** and reported success.
+
+**Before any multi-hour launch, DEMONSTRATE the mechanism on a short job:** launch it, let the
+turn end, and confirm from a LATER turn that the process is still alive (`Get-Process`) and the
+log mtime is advancing. A launch mechanism that has not survived a turn boundary in THIS session
+is unproven, regardless of how it worked before.
+
+**Retroactive coverage (#136):** today's day-25 kill; S6-B1535b (a shell-function wrapper turned a
+process kill into EXIT=127); S6-B1529a/S6-B1535a (both concurrency arms produced no valid
+measurement after the launcher died).
+
+**Companion:** the same launch must arm its monitor in the SAME invocation (#185) - not as a
+preceding step, and never retroactively for a job that has already ended.

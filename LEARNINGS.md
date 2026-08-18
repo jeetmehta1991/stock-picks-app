@@ -8587,3 +8587,45 @@ a deliberate, reasoned-looking assertion that a differently-worded entry should 
 That is the harder version of this failure class: not a missing test, but a test that encodes
 the wrong contract and then defends it. Inverted, with the reasoning recorded in the test so the
 next reader sees the change was deliberate rather than convenience.
+
+### L486
+
+**two smoke tests, zero validation: one had nothing to test, the other died at day 25**
+
+**B1627.** Before committing 19.8-29.7 h to the 18-config sweep I tried to smoke-test the
+post-B1626 stack. Neither attempt validated anything, and the way each failed is worth more than
+the test would have been.
+
+**Attempt 1 reported success and produced no artifact.** 2 tickers x 6 months at `sw=30/span=21`:
+
+```
+[OK] Phase 1A PASSED - pipeline clean, ready for full run
+EXIT=0
+```
+
+One trade in the window. `writer.py:239` emits the cube only when the frame is non-empty, so
+**`trade_exit_detail.csv` was never written** - and the cube is the only place B1622's live
+`regime_flip` and B1625's config stamp appear. **A green smoke that skips the artifact under test
+validates the pipeline and nothing else** (CHECKLIST #128). I caught it only because I went to
+read the cube and there was no file.
+
+**Attempt 2 was killed at simulated day 25 of 504.** Relaunched over the full 2-year window with
+`nohup ... &` from the Bash tool; the parent shell exited, the child went with it, the output
+directory is EMPTY, and the harness still reported **exit code 0**. `S6-B1535b` already documents
+this exact class - *"launch long runs so they survive a parent kill"* - **and I used the pattern
+anyway.**
+
+**The operational finding is larger than the smoke:** the launch mechanism itself is unproven in
+this session. A 30-minute job could not be kept alive; the same invocation for an 18-config,
+30-hour sweep would fail the same way, later and more expensively. **The sweep is blocked on a
+demonstrated launch, not just on a concurrency decision.**
+
+**And the turn gate caught a third thing I had not:** the background launch went out with no
+monitor armed at the owner's cadence (CHECKLIST #185 / L420+L424). It fired correctly. I am not
+arming one retroactively for a job that is already dead - that would be compliance theater - but
+the real launch must arm it in the SAME tool invocation, not as a preceding step.
+
+**The pattern across all three: I treated "the command returned" as "the work happened."** Exit 0
+from a wrapper, a PASSED banner from a run with nothing to do, a completion notification for a
+killed child. **None of those are the artifact.** The rule that already covers it is #128 - inspect
+the happy-path OUTPUT, not the exit status - and it needed applying three times in one turn.
