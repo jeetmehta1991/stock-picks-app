@@ -113,8 +113,8 @@ fires            =  ( breaker_bullish )  AND  ( price_above_ema_200 ) [from P6]"
                            "39.8/68.8/98.6/100.0pct, so 10->20 moved 0 of 50 cfg1 groups. "
                            "The discriminating region is 1-3 (tail_n=2 alone cuts 73pct). "
                            "Also COLLINEAR with P4 age_bars_max, Spearman +0.881. "
-                           "RE-BAND PROPOSED, OWNER APPROVAL PENDING (S6-B1610b).",
-             "subset_safe": True, "status": "BAND-DEFECTIVE",
+                           "RE-BAND OWNER-APPROVED AND SHIPPED (B1611): band is now 1,2,3,5,10,20. VINDICATED - tail_n=2, a level that did not exist under the old floor, won BOTH wave-1 top-10s.",
+             "subset_safe": True, "status": "RE-BANDED-AND-TESTED",
              "evidence": "smc_ict.py:266-268",
              "engine_implemented": True},
             {"id": "P4", "producer": "recency filter on OB age", "param": "age_bars_max",

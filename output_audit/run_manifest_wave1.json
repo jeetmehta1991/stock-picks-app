@@ -32,8 +32,8 @@
   ],
   "concurrency": 2,
   "screen_pool_workers": 0,
-  "wall_clock_projection_hours": 3.3,
-  "wall_clock_projection_note": "3.30 h/config MEASURED at pool=0 (S6-B1576a) - the setting this wave runs at, so this is a like-for-like projection rather than an upper bound. 9 waves x 3.30 h = 29.7 h at N=2.",
+  "wall_clock_projection_hours": 5.77,
+  "wall_clock_projection_note": "MEASURED 5.77 h/config on wave 1 at pool=0. The 3.30 h that stood here was a PRE-RUN projection and was never updated after the run measured 1.75x it; the 29.7 h sweep total was built on it. Superseded by sweep_total_note (B1691/B1694).",
   "sweep_total_projection_hours": 89.4,
   "sweep_total_note": "RE-COSTED B1691 at wave 1's MEASURED 5.77 h/wave: 31 configs = 15 waves = ~89.4 h. The 29.7 h in this field was computed against a 20-config grid at a 3.30 h projection; both inputs were wrong. OWNER RULING NEEDED on whether this shape is still wanted.",
   "obsolescence_risks": [
