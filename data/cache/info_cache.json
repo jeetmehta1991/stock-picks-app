@@ -5350,5 +5350,189 @@
     "market_cap": 9411457230.0,
     "exchange": "XNAS",
     "ipo_date": "1972-06-01"
+  },
+  "GOOG": {
+    "name": "Alphabet Inc. (Class C)",
+    "sector": "Communication Services",
+    "industry": "SERVICES-COMPUTER PROGRAMMING, DATA PROCESSING, ETC.",
+    "market_cap": 4787296603011.56,
+    "exchange": "XNAS",
+    "ipo_date": "2004-08-19"
+  },
+  "MRNA": {
+    "name": "Moderna",
+    "sector": "Health Care",
+    "industry": "BIOLOGICAL PRODUCTS, (NO DIAGNOSTIC SUBSTANCES)",
+    "market_cap": 19359201576.61,
+    "exchange": "XNAS",
+    "ipo_date": "2018-12-07"
+  },
+  "MU": {
+    "name": "Micron Technology",
+    "sector": "Information Technology",
+    "industry": "SEMICONDUCTORS & RELATED DEVICES",
+    "market_cap": 751736241056.0901,
+    "exchange": "XNAS",
+    "ipo_date": "1984-06-01"
+  },
+  "QCOM": {
+    "name": "Qualcomm",
+    "sector": "Information Technology",
+    "industry": "RADIO & TV BROADCASTING & COMMUNICATIONS EQUIPMENT",
+    "market_cap": 202968780000.0,
+    "exchange": "XNAS",
+    "ipo_date": "1991-12-13"
+  },
+  "F": {
+    "name": "Ford Motor Company",
+    "sector": "Consumer Discretionary",
+    "industry": "MOTOR VEHICLES & PASSENGER CAR BODIES",
+    "market_cap": 48493709307.1,
+    "exchange": "XNYS",
+    "ipo_date": "1972-06-01"
+  },
+  "T": {
+    "name": "AT&T",
+    "sector": "Communication Services",
+    "industry": "TELEPHONE COMMUNICATIONS (NO RADIOTELEPHONE)",
+    "market_cap": 177669024010.95,
+    "exchange": "XNYS",
+    "ipo_date": "1946-11-01"
+  },
+  "UBER": {
+    "name": "Uber",
+    "sector": "Industrials",
+    "industry": "SERVICES-BUSINESS SERVICES, NEC",
+    "market_cap": 161255424007.86002,
+    "exchange": "XNYS",
+    "ipo_date": "2019-05-10"
+  },
+  "VZ": {
+    "name": "Verizon",
+    "sector": "Communication Services",
+    "industry": "TELEPHONE COMMUNICATIONS (NO RADIOTELEPHONE)",
+    "market_cap": 198088514690.4,
+    "exchange": "XNYS",
+    "ipo_date": "1983-11-21"
+  },
+  "PLTR": {
+    "name": "Palantir Technologies",
+    "sector": "Information Technology",
+    "industry": "SERVICES-PREPACKAGED SOFTWARE",
+    "market_cap": 320736369402.82996,
+    "exchange": "XNAS",
+    "ipo_date": "2020-09-30"
+  },
+  "TXN": {
+    "name": "Texas Instruments",
+    "sector": "Information Technology",
+    "industry": "SEMICONDUCTORS & RELATED DEVICES",
+    "market_cap": 263417257427.04,
+    "exchange": "XNAS",
+    "ipo_date": "1953-10-01"
+  },
+  "TGT": {
+    "name": "Target Corporation",
+    "sector": "Consumer Staples",
+    "industry": "RETAIL-VARIETY STORES",
+    "market_cap": 59129205596.93,
+    "exchange": "XNYS",
+    "ipo_date": "1972-06-01"
+  },
+  "LOW": {
+    "name": "Lowe's",
+    "sector": "Consumer Discretionary",
+    "industry": "RETAIL-LUMBER & OTHER BUILDING MATERIALS DEALERS",
+    "market_cap": 130701877339.41,
+    "exchange": "XNYS",
+    "ipo_date": "1972-06-01"
+  },
+  "INTU": {
+    "name": "Intuit",
+    "sector": "Information Technology",
+    "industry": "SERVICES-PREPACKAGED SOFTWARE",
+    "market_cap": 107453502500.0,
+    "exchange": "XNAS",
+    "ipo_date": "1993-03-12"
+  },
+  "FCX": {
+    "name": "Freeport-McMoRan",
+    "sector": "Materials",
+    "industry": "METAL MINING",
+    "market_cap": 87531244079.44,
+    "exchange": "XNYS",
+    "ipo_date": "1995-08-01"
+  },
+  "NOW": {
+    "name": "ServiceNow",
+    "sector": "Information Technology",
+    "industry": "SERVICES-PREPACKAGED SOFTWARE",
+    "market_cap": 91837977400.0,
+    "exchange": "XNYS",
+    "ipo_date": "2012-06-29"
+  },
+  "DE": {
+    "name": "Deere & Company",
+    "sector": "Industrials",
+    "industry": "FARM MACHINERY & EQUIPMENT",
+    "market_cap": 159806272322.48,
+    "exchange": "XNYS",
+    "ipo_date": "1958-08-04"
+  },
+  "IBM": {
+    "name": "IBM",
+    "sector": "Information Technology",
+    "industry": "COMPUTER & OFFICE EQUIPMENT",
+    "market_cap": 212169703107.2,
+    "exchange": "XNYS",
+    "ipo_date": "1949-01-28"
+  },
+  "SPGI": {
+    "name": "S&P Global",
+    "sector": "Financials",
+    "industry": "SERVICES-CONSUMER CREDIT REPORTING, COLLECTION AGENCIES",
+    "market_cap": 125376720000.0,
+    "exchange": "XNYS",
+    "ipo_date": "1929-02-14"
+  },
+  "MDT": {
+    "name": "Medtronic",
+    "sector": "Health Care",
+    "industry": "ELECTROMEDICAL & ELECTROTHERAPEUTIC APPARATUS",
+    "market_cap": 99629473206.4,
+    "exchange": "XNYS",
+    "ipo_date": "1972-06-01"
+  },
+  "FDX": {
+    "name": "FedEx",
+    "sector": "Industrials",
+    "industry": "AIR COURIER SERVICES",
+    "market_cap": 90000082295.64,
+    "exchange": "XNYS",
+    "ipo_date": "1978-04-12"
+  },
+  "UAL": {
+    "name": "United Airlines Holdings",
+    "sector": "Industrials",
+    "industry": "AIR TRANSPORTATION, SCHEDULED",
+    "market_cap": 32469955589.120003,
+    "exchange": "XNAS",
+    "ipo_date": "1969-08-01"
+  },
+  "DASH": {
+    "name": "DoorDash",
+    "sector": "Consumer Discretionary",
+    "industry": "SERVICES-BUSINESS SERVICES, NEC",
+    "market_cap": 73192320456.42,
+    "exchange": "XNAS",
+    "ipo_date": "2020-12-09"
+  },
+  "LIN": {
+    "name": "Linde plc",
+    "sector": "Materials",
+    "industry": "INDUSTRIAL INORGANIC CHEMICALS",
+    "market_cap": 232038244469.7,
+    "exchange": "XNAS",
+    "ipo_date": "1992-06-01"
   }
 }
