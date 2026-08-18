@@ -79,6 +79,13 @@ fires            =  ( breaker_bullish )  AND  ( price_above_ema_200 ) [from P6]"
         "baseline": {"artifact": "output_r5_merged_1_7", "fires": None,
                      "tickers": 161, "holdout_n": 147,
                      "window": "2022-05-06..2026-05-04"},
+        # B1689: this dict is HAND-MAINTAINED and drifted TWICE - P3 still
+        # carried the pre-B1611 band [3,5,10,20] after the owner-approved
+        # re-band, and engine_implemented stayed False for P2-P5 after B1616
+        # implemented them. The AUTHORITIES are: tighten_breaker_block.py
+        # constants (P2-P5 bands), technical.py + config.py (P1/P6), and
+        # verify_engine_implemented.py (engine status). Cross-check before
+        # quoting this table (#202).
         "params": [
             {"id": "P1", "producer": "_smc.swing_highs_lows", "param": "swing_length",
              "production": 20, "type": "int", "band": [10, 20, 30, 50],
@@ -91,9 +98,9 @@ fires            =  ( breaker_bullish )  AND  ( price_above_ema_200 ) [from P6]"
              "derivation": "boolean - both values ARE the band. True = mitigated on CLOSE only.",
              "subset_safe": True, "status": "TESTED",
              "evidence": "smc.py:380",
-             "engine_implemented": False},
+             "engine_implemented": True},
             {"id": "P3", "producer": "ob_events.tail(N)", "param": "tail_n",
-             "production": 20, "type": "int", "band": [3, 5, 10, 20],
+             "production": 20, "type": "int", "band": [1, 2, 3, 5, 10, 20],
              "derivation": "B1610 DEFECT - this text says the band spans the measured "
                            "rank range 1-4, and it does NOT: its floor is 3, the TOP of "
                            "that range. MEASURED on 420 cfg2 fires: levels 3/5/10/20 admit "
@@ -103,7 +110,7 @@ fires            =  ( breaker_bullish )  AND  ( price_above_ema_200 ) [from P6]"
                            "RE-BAND PROPOSED, OWNER APPROVAL PENDING (S6-B1610b).",
              "subset_safe": True, "status": "BAND-DEFECTIVE",
              "evidence": "smc_ict.py:266-268",
-             "engine_implemented": False},
+             "engine_implemented": True},
             {"id": "P4", "producer": "recency filter on OB age", "param": "age_bars_max",
              "production": None, "type": "int|None", "band": [60, 120, 180, 250, None],
              "derivation": "measured real retests 45-134 bars, latches 294-469, gap 134-294 (B1501).",
@@ -115,7 +122,7 @@ fires            =  ( breaker_bullish )  AND  ( price_above_ema_200 ) [from P6]"
                          "`smc_ob_bullish_active` - a DIFFERENT signal. The breaker "
                          "loop (273-296) has NO age filter. P4 is a NEW GATE with no "
                          "engine counterpart; see S6-B1612f.",
-             "engine_implemented": False},
+             "engine_implemented": True},
             {"id": "P5", "producer": "break test (close > top)", "param": "break_pct_max",
              "production": None, "type": "float|None", "band": [0.01, 0.02, 0.03, 0.05, None],
              "derivation": "NEW-GATE, OWNER-APPROVED B1507 (was N/A - production has no such "
@@ -127,7 +134,7 @@ fires            =  ( breaker_bullish )  AND  ( price_above_ema_200 ) [from P6]"
                            "CLOSER is stricter).",
              "subset_safe": True, "status": "PENDING",
              "evidence": "smc_ict.py:283-284 (no parameter today)",
-             "engine_implemented": False},
+             "engine_implemented": True},
             {"id": "P6", "producer": "compute_ema_sma", "param": "span",
              "production": 200, "type": "int", "band": [9, 20, 21, 50, 100, 150, 200],
              "derivation": "ALL spans the producer emits (READ technical.py:750 pairs "
