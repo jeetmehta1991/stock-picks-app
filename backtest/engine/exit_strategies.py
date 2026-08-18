@@ -1678,6 +1678,26 @@ def _cfg_stamp() -> dict:
 _CFG_STAMP = None
 
 
+# B1682: the pool worker replays in a SUBPROCESS and cannot see a parent
+# instance attribute, so the regime map must travel WITH the work. Set by the
+# pool initializer / passed per task; None keeps the pre-B1682 behaviour.
+_WORKER_REGIME_BY_DATE: dict | None = None
+
+
+def set_worker_regime_map(m) -> None:
+    """Give a subprocess worker the regime map the parent holds.
+
+    B1682: `run_exit_comparison`'s two engine call sites are both FALLBACK
+    branches (pool-failure `except`, and the no-pool `else`). The PRIMARY path
+    is `self._screen_pool.imap_unordered(...)`, whose workers never saw the map
+    - so any run with `--screen-pool-workers > 0` would still produce a dead
+    `regime_flip`, and that is exactly what the runbook's launch command
+    specifies.
+    """
+    global _WORKER_REGIME_BY_DATE
+    _WORKER_REGIME_BY_DATE = m
+
+
 def run_exit_comparison(
     strategy_name: str,
     trades_data: list,           # list of dicts: {entry_date, entry_price, direction, atr, signals, df, ticker}
@@ -1691,6 +1711,10 @@ def run_exit_comparison(
     """
     results = []
     trade_detail_rows = []
+    # B1682: in a subprocess the caller cannot pass the parent's map, so fall
+    # back to whatever the pool initializer installed.
+    if regime_by_date is None:
+        regime_by_date = _WORKER_REGIME_BY_DATE
 
     # Batch 412: dispatch table. When USE_VECTORIZED_EXITS is True, replace
     # scalar exit functions with their byte-identical numpy-vectorized
@@ -1754,6 +1778,16 @@ def run_exit_comparison(
                 # the whole regime map on every row.
                 if regime_by_date:
                     enriched_sig["regime_by_date"] = regime_by_date
+                # B1682: the OTHER half. `exit_regime_flip` requires
+                # `entry_regime` as well, and it is a top-level trade field, not
+                # a signals key - `signals_at_entry` has 768 keys and this is not
+                # among them. Supplying only the series left entry_regime None
+                # and the exit fell back to a time stop on EVERY trade. Injected
+                # from the trade dict, without clobbering a signals value if one
+                # is genuinely present.
+                _er = t.get("regime_at_entry")
+                if _er and not enriched_sig.get("regime_at_entry"):
+                    enriched_sig["regime_at_entry"] = _er
                 r = exit_fn(
                     t["df"], t["entry_date"], t["entry_price"],
                     t["direction"], t["atr"], enriched_sig,

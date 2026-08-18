@@ -3096,6 +3096,14 @@ class BacktestEngine:
                 )
 
                 trades_data_lite.append({
+                    # B1682: the entry REGIME. `exit_regime_flip` needs BOTH a
+                    # regime series AND `entry_regime`; B1622 supplied only the
+                    # series. PROVEN root cause: `signals_at_entry` carries 768
+                    # keys and `regime_at_entry` is NOT one of them - it is a
+                    # top-level trade field - so `entry_regime` resolved to None,
+                    # `if regime_series is not None and entry_regime:` was False,
+                    # and the exit fell back to a time stop on 302 of 302 trades.
+                    "regime_at_entry": row.get("regime_at_entry") or row.get("regime"),
                     "ticker":         ticker,
                     # NOTE: no "df" -- worker reconstructs from _WORKER_OHLCV
                     "entry_date":     entry_date,

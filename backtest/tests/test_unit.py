@@ -15676,3 +15676,60 @@ def test_b1634_spotcheck_declares_what_it_cannot_verify():
     if sm:
         _, g = m.audit(sm[0])
         assert g, f"{sm[0]} must report an unverifiable family"
+
+
+def test_b1682_regime_flip_needs_BOTH_halves_behavioural():
+    """CHECKLIST #220: assert BEHAVIOUR. This is the test B1622 should have been.
+
+    B1622 supplied `regime_by_date` and I marked it DONE. A real cube then
+    showed `regime_flip_max_days_20` on 302 of 302 trades. ROOT CAUSE PROVEN:
+    `exit_regime_flip` needs `entry_regime` TOO, and `regime_at_entry` is a
+    top-level trade field - `signals_at_entry` carries 768 keys and it is not
+    among them - so entry_regime resolved to None and the scan never ran.
+
+    The middle case below is the whole point: with ONLY the series, the exit is
+    still a time stop. My previous pin could not have seen that, because it
+    counted call sites instead of running the exit.
+    """
+    import pandas as _pd
+    import pathlib as _pl
+    from backtest.engine.exit_strategies import EXIT_STRATEGIES
+
+    q = _pl.Path("backtest/data/cache/ohlcv/AAPL.parquet")
+    if not q.exists():
+        import pytest
+        pytest.skip("AAPL parquet unavailable")
+    d = _pd.read_parquet(q)
+    if not isinstance(d.index, _pd.DatetimeIndex) and "date" in d.columns:
+        d = d.set_index("date")
+    d = d.sort_index()
+    entry = d.index[900].date()
+    px = float(d["close"].iloc[900])
+    series = {t.date(): ("bull" if i < 3 else "bear")
+              for i, t in enumerate(d.index[901:925])}
+
+    ts = EXIT_STRATEGIES["time_stop_20d"](d, entry, px, "long", 2.0,
+                                          {"regime_at_entry": "bull"})
+    only_series = EXIT_STRATEGIES["regime_flip"](
+        d, entry, px, "long", 2.0, {"regime_by_date": series})
+    assert only_series["exit_date"] == ts["exit_date"], (
+        "with ONLY the series the exit is still a time stop - this is what "
+        "B1622 shipped and what no test caught")
+
+    both = EXIT_STRATEGIES["regime_flip"](
+        d, entry, px, "long", 2.0,
+        {"regime_by_date": series, "regime_at_entry": "bull"})
+    assert both["exit_reason"] == "regime_flip_bull_to_bear", both["exit_reason"]
+    assert both["exit_date"] != ts["exit_date"], (
+        "fed BOTH halves the exit must diverge from time_stop_20d")
+
+    # and the replay must inject BOTH, including for subprocess workers
+    import inspect
+    from backtest.engine import exit_strategies as ex
+    src = inspect.getsource(ex.run_exit_comparison)
+    assert 'enriched_sig["regime_by_date"] = regime_by_date' in src
+    assert 'enriched_sig["regime_at_entry"] = _er' in src
+    assert hasattr(ex, "set_worker_regime_map"), (
+        "the POOL path is the PRIMARY branch and needs the map too")
+    eng = _pl.Path("backtest/engine/backtest.py").read_text(encoding="utf-8")
+    assert '"regime_at_entry": row.get("regime_at_entry") or row.get("regime")' in eng

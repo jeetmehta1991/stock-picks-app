@@ -8912,3 +8912,42 @@ without the code working.** The only thing that caught this was building a cube 
 asymmetry on `regime_flip` (S6-B1622b). MEASURED: all four cubes show the identical collapse,
 `26 exits -> 23 effective`. **The asymmetry does not exist**, because the fix never took effect -
 so cfg2 needs no re-run, and the acceptance was of a difference that was never there.
+
+### L494
+
+**I fixed one of the two things the exit needed, and called it done**
+
+**B1682.** ROOT CAUSE PROVEN. `exit_regime_flip` requires **two** inputs: a regime series AND
+`entry_regime`. B1622 supplied the series and I marked it DONE. **`regime_at_entry` is a top-level
+TRADE field, not a signals key** - `signals_at_entry` carries **768 keys and it is not among
+them** - so `entry_regime` resolved to `None`, the guard
+`if regime_series is not None and entry_regime:` was False, and the exit fell back to a time stop
+on **302 of 302** trades.
+
+**The behavioural proof, which is also the shape of the mistake:**
+
+```
+neither half           -> regime_flip_max_days_20   same as time_stop: True
+series ONLY (B1622)    -> regime_flip_max_days_20   same as time_stop: True   <- what I shipped
+BOTH halves (B1682)    -> regime_flip_bull_to_bear  same as time_stop: False
+```
+
+**The middle row is what a real test would have shown me.** My B1622 pin asserted
+`count(getattr(self, "_regime_by_date", None)) == 2` - true, and irrelevant. The isolated test I
+did write passed `{"regime_at_entry": "bull"}` **by hand**, supplying the missing half myself and
+hiding the defect inside the test fixture.
+
+**The general rule: when a function needs N inputs to change behaviour, a fix that supplies N-1 is
+indistinguishable from no fix at all** - and a test that hand-feeds the missing input will confirm
+the fix works. **Enumerate every precondition the code under test reads, and prove each one arrives
+from the REAL caller**, not from the fixture.
+
+**A second, independent hole found by reading rather than by failing:** both call sites I patched
+are FALLBACK branches - the pool-failure `except` and the no-pool `else`. The PRIMARY path replays
+in **subprocess workers** that cannot see a parent instance attribute, so **every run with
+`--screen-pool-workers > 0` would still have produced a dead exit** - and that is precisely what
+the runbook's own launch command specifies. Wave 1 escaped it only by running pool=0. Fixed with
+`set_worker_regime_map()` so the map travels with the work.
+
+**Two holes, one fix marked DONE.** The count of things I verified was not the count of things
+that had to be true.

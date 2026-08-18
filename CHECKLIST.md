@@ -3523,5 +3523,11 @@ can be satisfied by code that does nothing. If the behaviour is only observable 
 artifact, say so in the test and add the cheap end-to-end that *is* affordable; a skipped
 assertion and a passed one are indistinguishable in a summary line.
 
+**Extension (L494): enumerate every PRECONDITION, and prove each arrives from the REAL caller.**
+`exit_regime_flip` needs a regime series AND `entry_regime`; B1622 supplied one and the exit stayed
+a time stop on 302 of 302 trades. **A fix that supplies N-1 of N required inputs is
+indistinguishable from no fix** - and the isolated test hand-fed the missing half, hiding the
+defect inside its own fixture.
+
 **Retroactive coverage (#136):** all three rows above - and the only thing that caught the live
 defect was building a cube and reading `exit_reason`.
