@@ -399,6 +399,21 @@ def check_orphan_rule() -> str | None:
                                 capture_output=True, text=True, timeout=15)
             added = r2.stdout or ""
         new_entries = re.findall(r"^\+### (L\d+)", added, re.M)
+        # B1633: this gate was PER-TURN only. An entry that slipped through on
+        # an earlier turn was never looked at again, so orphans accumulated
+        # silently - MEASURED 8 of 53 session entries still unanchored, four of
+        # them (L477-L480) created after the gate existed. A check that only
+        # ever sees the newest item has no memory of what it missed.
+        # BACKLOG SWEEP: also re-examine the most recent entries regardless of
+        # whether they changed this turn.
+        try:
+            _all = re.findall(r"^### (L\d+)", Path("LEARNINGS.md").read_text(
+                encoding="utf-8", errors="ignore"), re.M)
+            _recent = sorted(_all, key=lambda x: int(x[1:]))[-12:]
+            new_entries = sorted(set(new_entries) | set(_recent),
+                                 key=lambda x: int(x[1:]))
+        except Exception:
+            pass
         if not new_entries:
             return None
         L = Path("LEARNINGS.md").read_text(encoding="utf-8", errors="ignore")

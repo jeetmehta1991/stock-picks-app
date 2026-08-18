@@ -6943,6 +6943,8 @@ without tripping the Stage-2 guard.
 The 14.64pct applies to a single-strategy subset run. It does NOT transfer to a full-roster cube
 run, where every producer is read and pruning is inert by design.
 
+**Anchored by CITATION (B1633):** the rule here - a DERIVED saving must be OBSERVED via A/B before it is cited - is CHECKLIST #201 (cost and quantity claims must be computed, not asserted). No new item; #201 covers it exactly.
+
 ### L443
 
 **SMC primitive pruning: 91.5pct of the largest single cost centre**
@@ -6984,6 +6986,8 @@ Fixed by setting mode first. **A guard that is populated in the wrong order is n
 **Unmeasured:** no end-to-end run yet with SMC pruning armed. Against the 27.2pct share a 91.5pct
 primitive saving DERIVES ~24.9pct of total runtime, on top of the OBSERVED 14.64pct from B1568.
 That is a derivation, not a measurement — B1568 is the precedent for how to settle it.
+
+**record-of-fact** (B1633). Per-primitive cost measurements, no generalised rule to anchor. The rule that came OUT of this measurement lives in L473/#203.
 
 ### L444
 
@@ -7439,6 +7443,8 @@ never push me toward inventing a cause to satisfy it.
 sampled), L438 (a network call inferred from a log string without reading the callee). **Three
 instances this session of the same reflex: explain first, verify later.**
 
+**Anchored by CITATION (B1633):** this is the second half of L455 and is enforced by CHECKLIST #195 (NO UNTESTED CAUSE) plus the skill's NO-UNTESTED-CAUSE RULE. The owner's point - the rule is about ORDER, not wording - is stated there.
+
 ### L457
 
 **my spot-checker flagged 70pct of trades as broken; the checker was wrong**
@@ -7691,6 +7697,8 @@ twice. It is now step 5, quoting the owner's phrasing VERBATIM ("find bugs and l
 units/scale, config blindness, provenance - each carrying the incident that produced it. **The FP/FN
 lens alone would have missed this session's largest finding**, since identical exit methods are
 neither a false positive nor a false negative.
+
+**Anchored by CITATION (B1633):** superseded in full by L464, which is anchored as CHECKLIST #197 and the skill's ANCHOR-THE-RULE RULE. L463 is the discovery; L464 is the rule.
 
 ### L464
 

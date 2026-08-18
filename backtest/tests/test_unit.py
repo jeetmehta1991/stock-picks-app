@@ -12609,6 +12609,19 @@ def test_b1255_turn_gate_verifier(tmp_path, monkeypatch):
     spec.loader.exec_module(tg)
     monkeypatch.setattr(tg, "REPO_ROOT", tmp_path)
     monkeypatch.setattr(tg, "get_modified_tracked", lambda: [])
+    # B1633 / CHECKLIST #209: this asserted `main() == 0` against the LIVE repo,
+    # so it failed whenever ANY content gate legitimately fired - an unanchored
+    # L-entry in flight (S6-B1601e), and again when the orphan gate gained a
+    # backlog sweep. A test of the SENTINEL mechanism must not depend on whether
+    # today's repo happens to be clean; that couples an unrelated test to every
+    # content rule in the file. Neutralise the content gates and test what this
+    # test is actually about.
+    for _g in ("check_orphan_rule", "check_unrecorded_miss",
+               "check_unverified_universe", "check_postfix_recheck",
+               "check_unmeasured_quantity", "check_verdict_denominator",
+               "check_monitor_armed", "check_compliance_marker"):
+        if hasattr(tg, _g):
+            monkeypatch.setattr(tg, _g, lambda *a, **k: None)
     assert tg.main() == 0, "clean tree must fast-pass"
     monkeypatch.setattr(tg, "get_modified_tracked",
                         lambda: [" M backtest/mod.py", " M SOME_DOC.md"])

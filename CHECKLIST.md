@@ -2882,6 +2882,14 @@ series. **Lineage:** a doc rule said "derive from the BASELINE ARTIFACT" (L378) 
 was followed to an abandoned alphabetical chunk — 380/381 tickers starting A-C, no
 MSFT/NVDA/GOOGL, 248 tickers the real baseline never ran.
 
+**Extension (L478): a provenance correction is a SWEEP, not an edit.** When an artifact turns out
+to be the wrong one, the number identifying it has already propagated - into cost estimates,
+exclusion counts, and owner rulings. Fixing only where it was caught leaves the document
+INTERNALLY CONTRADICTORY, which is worse than uniformly wrong: one reader gets 544 and another
+gets 381 and neither sees a conflict. **Grep the NUMBER, not the file you were looking at** - and
+RE-MEASURE every derived quantity rather than find-replacing it (41-of-381 was 22-of-544;
+find-replace would have produced '41 of 544', a figure that never existed).
+
 ### #194 — ACKNOWLEDGED MISS => LEARNINGS ENTRY, SAME TURN (B1573 / L446)
 
 **If a response admits an error, it gets an L-entry in that same turn.** Severity is not the filter.
@@ -3021,6 +3029,13 @@ improve the file.
 
 **Retroactive coverage (#136):** catches the B1596 roster relabel, and any future
 regeneration from the pre-B1593 cubes.
+
+**Extension (L479): a CORRECT artifact in front of a WRONG generator is armed, not safe.**
+`_sweep_100.txt` was right - rebuilt by hand from the 544 baseline - while `build_sweep_100.py`
+still READ `r5_universe_381.txt`, the abandoned A-C chunk. Re-running the committed builder
+would have replaced a correct universe with one sharing **31 of 100** tickers, and the runbook
+said *"Rebuild ONLY if the 381-universe changes"* - the very trigger that would have fired it.
+**After correcting an output, open the thing that PRODUCES it in the same turn.**
 
 ### #200 — PARSE THE WHOLE FILE BEFORE APPENDING; A GREEN CHECK ON UNPARSEABLE INPUT IS A SILENT SKIP (B1603 / L469)
 
@@ -3166,6 +3181,12 @@ explicitly (`dict.__contains__(self, key)`).
 *Not its own item per the anti-theater guard (#136): (b) has ONE instance, so it rides with (a)
 rather than inflating the checklist.*
 
+**Extension (L480): a VARIANT must call the same helper as the base.** When adding a
+parameterised variant of existing behaviour, extract ONE function and call it from both paths.
+A copy-pasted variant loop is free to drift from the base - which is how `regime_flip` (L461)
+and the grader-vs-engine gap (L475) happened. Assert the helper is called from BOTH sites, or
+'shared' is an intention rather than a fact.
+
 ### #206 - A LENS IS DEFINED BY ITS QUESTION, NOT BY THE AXIS IT FIRST PAID OFF ON (B1611 / L474)
 
 The post-config anomaly sweep already carried a duplicate-collapse lens - *"are 'distinct'
@@ -3220,6 +3241,16 @@ reproduce its own backtest.
 never ran, the same defect one stage later; the "wired means engine-consumed" class where a
 grep for code presence produced ~150 false RESOLVED claims; B1335 rule 2, MECHANISM-EXISTENCE,
 which required evidence a cited mechanism exists but was never pointed at swept parameters.
+
+**Extension (L477): the gate must fire in BOTH directions, and a one-ticker probe cannot
+judge a parameter.** When B1616 gave P2-P5 their wiring, this check failed just as loudly as
+it would on a regression - the table said NOT-IMPLEMENTED and the source disagreed. A
+one-directional check would have gone quietly green and left the table lying the other way.
+**And `close_mitigation` scored 0 of 123 bars on AAPL** (`_smc.ob` returns byte-identical frames
+for True/False across its first 1,000 bars) while moving the signal on **44 of 624 ticker-bars
+across 8 tickers** - trusting the one-ticker result would have meant 'fixing' working code.
+The 25-ticker sampling floor applies to *"does this knob do anything"*, not only to coverage:
+both are questions about a DISTRIBUTION.
 
 ### #208 - AN INDEPENDENT RE-IMPLEMENTATION VALIDATES FIDELITY TO DATA, NEVER TO PRODUCTION (B1614 / L476)
 
