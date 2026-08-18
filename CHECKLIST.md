@@ -3177,6 +3177,13 @@ purpose is catching collapse.
 
 **When a check earns its place, enumerate every axis its question applies to** - exits,
 parameters, tickers, dates, regimes - **and either apply it or record why it does not.**
+
+**And a lens SET is only ever complete relative to the failures you have already had (L487).**
+After each defect, map it against the existing lenses; if none names it, the set is short by
+one. The adversarial review ran **7** lenses while four of this session's dominant classes -
+Executability, Fail-open, Self-referential verification, Completion-vs-artifact - had no lens
+and shipped anyway. **A lens list that grows after a failure is being used; one that never
+grows is decoration.**
 Writing a general test against one axis converts it into a special case, silently.
 
 **Extension (L481):** when a rule is discovered, SWEEP for its other instances the same turn. L475 was recorded, anchored in #207 and gated - with the gate scoped to SWEPT PARAMETERS, so it could never have found the identical defect sitting in the exit layer. An anchored rule with a narrow gate feels like closure and is not.
@@ -3230,6 +3237,12 @@ at all."*
 **Every audit needs at least one check that CALLS THE PRODUCTION PATH** - not a re-derivation of
 it. Re-derivation answers *"is the computation faithful to the data?"* Only invoking production
 answers *"is this what the system will actually do?"*
+
+**And TWO legs are not enough (L487).** A re-derivation compared against a recorded artifact
+can only report THAT they disagree - never which is wrong - and a shared assumption is
+invisible to both. **Three legs localise:** re-derivation + engine + recorded output. Any two
+agreeing identifies the third as the defect. `spot_check_trades` ran two legs and reported
+**100/100** while four swept parameters did not exist in the engine at all.
 
 **And a citation can be a near-miss name.** P4's evidence field read `smc_ict.py:252
 (event_recency_bars, S6-B1500a)`. Line 252 is `_smc.ob(ohlc, swings)`, which takes no such
@@ -3317,3 +3330,24 @@ measurement after the launcher died).
 
 **Companion:** the same launch must arm its monitor in the SAME invocation (#185) - not as a
 preceding step, and never retroactively for a job that has already ended.
+
+### #213 - A CHECK'S SUFFICIENCY CAN BE A FUNCTION OF A FLAG (B1632 / L487)
+
+Asked what the 50-trade spot check covers, the honest answer turned out to be **"enough, because
+of a flag"**. `smc_breaker_block_long` gates on two OHLCV-derived signals, so OHLCV coverage looks
+complete - but **tier GATES ENTRY** (LOW -> 0.0 size -> the trade is SKIPPED, L418/B1544), which
+would make `smart_money_score` an unchecked ENTRY input. It is not one, solely because
+`backtest.py:2379-2380` sets `size_pct = CUBE_ISOLATION_SIZE_PCT` under `--cube-isolation`.
+
+**Flip that flag and the same check becomes insufficient, silently.** At Phase 1B, with tier
+sizing live and the full roster running, OHLCV-only coverage stops being adequate and nothing in
+the check would say so.
+
+**When a verification is judged sufficient, write down WHICH CONFIGURATION makes it sufficient**,
+and re-open the question whenever that configuration changes. A coverage claim without its
+conditions is a claim about one run, presented as a property of the check.
+
+**Retroactive coverage (#136):** `--cube-isolation` bypassing tier sizing (this instance);
+`USE_SMC_PANEL_CACHE=False` keeping an 11.5pct divergence dormant, so every reproduction check
+holds only while the flag is off (B1542); `STRATEGY_SUBSET_FILE` being the gate that enables demand
+pruning, so omitting it loses BOTH savings silently and every timing measurement with it (L432).
