@@ -1,0 +1,1636 @@
+{
+  "output_b1506_engine_timing": {
+    "1_cube_sanity": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "2_grade_with_config_params": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "3_outlier_discrepancy_sweep": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "4_three_leg_spot_check": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "5_adversarial_lens_review": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "6_post_fix_recheck": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "6b_equivalence_class_check": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "7_implement_in_engine": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "8_verdict_with_denominators": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    }
+  },
+  "output_batch395_batch_1": {
+    "1_cube_sanity": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "2_grade_with_config_params": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "3_outlier_discrepancy_sweep": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "4_three_leg_spot_check": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "5_adversarial_lens_review": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "6_post_fix_recheck": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "6b_equivalence_class_check": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "7_implement_in_engine": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "8_verdict_with_denominators": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    }
+  },
+  "output_batch395_batch_2": {
+    "1_cube_sanity": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "2_grade_with_config_params": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "3_outlier_discrepancy_sweep": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "4_three_leg_spot_check": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "5_adversarial_lens_review": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "6_post_fix_recheck": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "6b_equivalence_class_check": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "7_implement_in_engine": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "8_verdict_with_denominators": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    }
+  },
+  "output_batch395_batch_3": {
+    "1_cube_sanity": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "2_grade_with_config_params": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "3_outlier_discrepancy_sweep": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "4_three_leg_spot_check": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "5_adversarial_lens_review": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "6_post_fix_recheck": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "6b_equivalence_class_check": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "7_implement_in_engine": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "8_verdict_with_denominators": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    }
+  },
+  "output_batch395_batch_4": {
+    "1_cube_sanity": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "2_grade_with_config_params": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "3_outlier_discrepancy_sweep": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "4_three_leg_spot_check": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "5_adversarial_lens_review": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "6_post_fix_recheck": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "6b_equivalence_class_check": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "7_implement_in_engine": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "8_verdict_with_denominators": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    }
+  },
+  "output_batch395_batch_5": {
+    "1_cube_sanity": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "2_grade_with_config_params": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "3_outlier_discrepancy_sweep": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "4_three_leg_spot_check": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "5_adversarial_lens_review": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "6_post_fix_recheck": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "6b_equivalence_class_check": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "7_implement_in_engine": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "8_verdict_with_denominators": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    }
+  },
+  "output_batch395_final": {
+    "1_cube_sanity": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "2_grade_with_config_params": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "3_outlier_discrepancy_sweep": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "4_three_leg_spot_check": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "5_adversarial_lens_review": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "6_post_fix_recheck": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "6b_equivalence_class_check": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "7_implement_in_engine": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "8_verdict_with_denominators": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    }
+  },
+  "output_batch_A_150": {
+    "1_cube_sanity": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "2_grade_with_config_params": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "3_outlier_discrepancy_sweep": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "4_three_leg_spot_check": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "5_adversarial_lens_review": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "6_post_fix_recheck": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "6b_equivalence_class_check": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "7_implement_in_engine": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "8_verdict_with_denominators": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    }
+  },
+  "output_cfg1": {
+    "1_cube_sanity": {
+      "evidence": "pre-wave1 grading, B1576-B1615",
+      "status": "DONE"
+    },
+    "2_grade_with_config_params": {
+      "evidence": "pre-wave1 grading, B1576-B1615",
+      "status": "DONE"
+    },
+    "3_outlier_discrepancy_sweep": {
+      "evidence": "pre-wave1 grading, B1576-B1615",
+      "status": "DONE"
+    },
+    "4_three_leg_spot_check": {
+      "evidence": "outstanding - this is what the gate is for",
+      "status": "NOT_RUN"
+    },
+    "5_adversarial_lens_review": {
+      "evidence": "outstanding - this is what the gate is for",
+      "status": "NOT_RUN"
+    },
+    "6_post_fix_recheck": {
+      "evidence": "outstanding - this is what the gate is for",
+      "status": "NOT_RUN"
+    },
+    "6b_equivalence_class_check": {
+      "evidence": "outstanding - this is what the gate is for",
+      "status": "NOT_RUN"
+    },
+    "7_implement_in_engine": {
+      "evidence": "outstanding - this is what the gate is for",
+      "status": "NOT_RUN"
+    },
+    "8_verdict_with_denominators": {
+      "evidence": "outstanding - this is what the gate is for",
+      "status": "NOT_RUN"
+    }
+  },
+  "output_cfg2": {
+    "1_cube_sanity": {
+      "evidence": "pre-wave1 grading, B1576-B1615",
+      "status": "DONE"
+    },
+    "2_grade_with_config_params": {
+      "evidence": "pre-wave1 grading, B1576-B1615",
+      "status": "DONE"
+    },
+    "3_outlier_discrepancy_sweep": {
+      "evidence": "pre-wave1 grading, B1576-B1615",
+      "status": "DONE"
+    },
+    "4_three_leg_spot_check": {
+      "evidence": "outstanding - this is what the gate is for",
+      "status": "NOT_RUN"
+    },
+    "5_adversarial_lens_review": {
+      "evidence": "outstanding - this is what the gate is for",
+      "status": "NOT_RUN"
+    },
+    "6_post_fix_recheck": {
+      "evidence": "outstanding - this is what the gate is for",
+      "status": "NOT_RUN"
+    },
+    "6b_equivalence_class_check": {
+      "evidence": "outstanding - this is what the gate is for",
+      "status": "NOT_RUN"
+    },
+    "7_implement_in_engine": {
+      "evidence": "outstanding - this is what the gate is for",
+      "status": "NOT_RUN"
+    },
+    "8_verdict_with_denominators": {
+      "evidence": "outstanding - this is what the gate is for",
+      "status": "NOT_RUN"
+    }
+  },
+  "output_chunk11": {
+    "1_cube_sanity": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "2_grade_with_config_params": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "3_outlier_discrepancy_sweep": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "4_three_leg_spot_check": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "5_adversarial_lens_review": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "6_post_fix_recheck": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "6b_equivalence_class_check": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "7_implement_in_engine": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "8_verdict_with_denominators": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    }
+  },
+  "output_chunk12": {
+    "1_cube_sanity": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "2_grade_with_config_params": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "3_outlier_discrepancy_sweep": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "4_three_leg_spot_check": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "5_adversarial_lens_review": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "6_post_fix_recheck": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "6b_equivalence_class_check": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "7_implement_in_engine": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "8_verdict_with_denominators": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    }
+  },
+  "output_chunk13": {
+    "1_cube_sanity": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "2_grade_with_config_params": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "3_outlier_discrepancy_sweep": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "4_three_leg_spot_check": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "5_adversarial_lens_review": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "6_post_fix_recheck": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "6b_equivalence_class_check": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "7_implement_in_engine": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "8_verdict_with_denominators": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    }
+  },
+  "output_chunk14": {
+    "1_cube_sanity": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "2_grade_with_config_params": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "3_outlier_discrepancy_sweep": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "4_three_leg_spot_check": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "5_adversarial_lens_review": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "6_post_fix_recheck": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "6b_equivalence_class_check": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "7_implement_in_engine": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "8_verdict_with_denominators": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    }
+  },
+  "output_chunk16": {
+    "1_cube_sanity": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "2_grade_with_config_params": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "3_outlier_discrepancy_sweep": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "4_three_leg_spot_check": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "5_adversarial_lens_review": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "6_post_fix_recheck": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "6b_equivalence_class_check": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "7_implement_in_engine": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "8_verdict_with_denominators": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    }
+  },
+  "output_chunk17": {
+    "1_cube_sanity": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "2_grade_with_config_params": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "3_outlier_discrepancy_sweep": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "4_three_leg_spot_check": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "5_adversarial_lens_review": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "6_post_fix_recheck": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "6b_equivalence_class_check": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "7_implement_in_engine": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "8_verdict_with_denominators": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    }
+  },
+  "output_chunk18": {
+    "1_cube_sanity": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "2_grade_with_config_params": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "3_outlier_discrepancy_sweep": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "4_three_leg_spot_check": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "5_adversarial_lens_review": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "6_post_fix_recheck": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "6b_equivalence_class_check": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "7_implement_in_engine": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "8_verdict_with_denominators": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    }
+  },
+  "output_coverage_smoke_local": {
+    "1_cube_sanity": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "2_grade_with_config_params": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "3_outlier_discrepancy_sweep": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "4_three_leg_spot_check": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "5_adversarial_lens_review": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "6_post_fix_recheck": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "6b_equivalence_class_check": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "7_implement_in_engine": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "8_verdict_with_denominators": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    }
+  },
+  "output_ladder_5": {
+    "1_cube_sanity": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "2_grade_with_config_params": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "3_outlier_discrepancy_sweep": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "4_three_leg_spot_check": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "5_adversarial_lens_review": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "6_post_fix_recheck": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "6b_equivalence_class_check": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "7_implement_in_engine": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "8_verdict_with_denominators": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    }
+  },
+  "output_merge_A": {
+    "1_cube_sanity": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "2_grade_with_config_params": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "3_outlier_discrepancy_sweep": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "4_three_leg_spot_check": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "5_adversarial_lens_review": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "6_post_fix_recheck": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "6b_equivalence_class_check": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "7_implement_in_engine": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "8_verdict_with_denominators": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    }
+  },
+  "output_merge_B": {
+    "1_cube_sanity": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "2_grade_with_config_params": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "3_outlier_discrepancy_sweep": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "4_three_leg_spot_check": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "5_adversarial_lens_review": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "6_post_fix_recheck": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "6b_equivalence_class_check": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "7_implement_in_engine": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "8_verdict_with_denominators": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    }
+  },
+  "output_merge_dryrun": {
+    "1_cube_sanity": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "2_grade_with_config_params": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "3_outlier_discrepancy_sweep": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "4_three_leg_spot_check": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "5_adversarial_lens_review": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "6_post_fix_recheck": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "6b_equivalence_class_check": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "7_implement_in_engine": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "8_verdict_with_denominators": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    }
+  },
+  "output_merge_dryrun2": {
+    "1_cube_sanity": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "2_grade_with_config_params": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "3_outlier_discrepancy_sweep": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "4_three_leg_spot_check": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "5_adversarial_lens_review": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "6_post_fix_recheck": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "6b_equivalence_class_check": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "7_implement_in_engine": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "8_verdict_with_denominators": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    }
+  },
+  "output_merge_test": {
+    "1_cube_sanity": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "2_grade_with_config_params": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "3_outlier_discrepancy_sweep": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "4_three_leg_spot_check": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "5_adversarial_lens_review": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "6_post_fix_recheck": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "6b_equivalence_class_check": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "7_implement_in_engine": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "8_verdict_with_denominators": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    }
+  },
+  "output_merge_test2": {
+    "1_cube_sanity": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "2_grade_with_config_params": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "3_outlier_discrepancy_sweep": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "4_three_leg_spot_check": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "5_adversarial_lens_review": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "6_post_fix_recheck": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "6b_equivalence_class_check": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "7_implement_in_engine": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "8_verdict_with_denominators": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    }
+  },
+  "output_merge_test3": {
+    "1_cube_sanity": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "2_grade_with_config_params": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "3_outlier_discrepancy_sweep": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "4_three_leg_spot_check": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "5_adversarial_lens_review": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "6_post_fix_recheck": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "6b_equivalence_class_check": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "7_implement_in_engine": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "8_verdict_with_denominators": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    }
+  },
+  "output_optmode_off": {
+    "1_cube_sanity": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "2_grade_with_config_params": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "3_outlier_discrepancy_sweep": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "4_three_leg_spot_check": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "5_adversarial_lens_review": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "6_post_fix_recheck": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "6b_equivalence_class_check": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "7_implement_in_engine": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "8_verdict_with_denominators": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    }
+  },
+  "output_optmode_on": {
+    "1_cube_sanity": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "2_grade_with_config_params": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "3_outlier_discrepancy_sweep": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "4_three_leg_spot_check": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "5_adversarial_lens_review": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "6_post_fix_recheck": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "6b_equivalence_class_check": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "7_implement_in_engine": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "8_verdict_with_denominators": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    }
+  },
+  "output_pin2_sw20": {
+    "1_cube_sanity": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "2_grade_with_config_params": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "3_outlier_discrepancy_sweep": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "4_three_leg_spot_check": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "5_adversarial_lens_review": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "6_post_fix_recheck": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "6b_equivalence_class_check": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "7_implement_in_engine": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "8_verdict_with_denominators": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    }
+  },
+  "output_pin2_sw50": {
+    "1_cube_sanity": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "2_grade_with_config_params": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "3_outlier_discrepancy_sweep": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "4_three_leg_spot_check": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "5_adversarial_lens_review": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "6_post_fix_recheck": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "6b_equivalence_class_check": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "7_implement_in_engine": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "8_verdict_with_denominators": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    }
+  },
+  "output_pin_sw20": {
+    "1_cube_sanity": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "2_grade_with_config_params": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "3_outlier_discrepancy_sweep": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "4_three_leg_spot_check": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "5_adversarial_lens_review": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "6_post_fix_recheck": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "6b_equivalence_class_check": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "7_implement_in_engine": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "8_verdict_with_denominators": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    }
+  },
+  "output_pin_sw50": {
+    "1_cube_sanity": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "2_grade_with_config_params": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "3_outlier_discrepancy_sweep": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "4_three_leg_spot_check": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "5_adversarial_lens_review": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "6_post_fix_recheck": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "6b_equivalence_class_check": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "7_implement_in_engine": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "8_verdict_with_denominators": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    }
+  },
+  "output_profile_lever_c": {
+    "1_cube_sanity": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "2_grade_with_config_params": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "3_outlier_discrepancy_sweep": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "4_three_leg_spot_check": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "5_adversarial_lens_review": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "6_post_fix_recheck": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "6b_equivalence_class_check": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "7_implement_in_engine": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "8_verdict_with_denominators": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    }
+  },
+  "output_r5_merged_1_7": {
+    "1_cube_sanity": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "2_grade_with_config_params": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "3_outlier_discrepancy_sweep": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "4_three_leg_spot_check": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "5_adversarial_lens_review": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "6_post_fix_recheck": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "6b_equivalence_class_check": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "7_implement_in_engine": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "8_verdict_with_denominators": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    }
+  },
+  "output_r6_local_150": {
+    "1_cube_sanity": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "2_grade_with_config_params": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "3_outlier_discrepancy_sweep": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "4_three_leg_spot_check": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "5_adversarial_lens_review": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "6_post_fix_recheck": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "6b_equivalence_class_check": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "7_implement_in_engine": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "8_verdict_with_denominators": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    }
+  },
+  "output_r6_probe": {
+    "1_cube_sanity": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "2_grade_with_config_params": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "3_outlier_discrepancy_sweep": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "4_three_leg_spot_check": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "5_adversarial_lens_review": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "6_post_fix_recheck": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "6b_equivalence_class_check": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "7_implement_in_engine": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "8_verdict_with_denominators": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    }
+  },
+  "output_r6_probe25": {
+    "1_cube_sanity": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "2_grade_with_config_params": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "3_outlier_discrepancy_sweep": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "4_three_leg_spot_check": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "5_adversarial_lens_review": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "6_post_fix_recheck": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "6b_equivalence_class_check": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "7_implement_in_engine": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "8_verdict_with_denominators": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    }
+  },
+  "output_r6b_cube_14": {
+    "1_cube_sanity": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "2_grade_with_config_params": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "3_outlier_discrepancy_sweep": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "4_three_leg_spot_check": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "5_adversarial_lens_review": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "6_post_fix_recheck": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "6b_equivalence_class_check": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "7_implement_in_engine": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "8_verdict_with_denominators": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    }
+  },
+  "output_r6c_group1_3": {
+    "1_cube_sanity": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "2_grade_with_config_params": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "3_outlier_discrepancy_sweep": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "4_three_leg_spot_check": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "5_adversarial_lens_review": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "6_post_fix_recheck": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "6b_equivalence_class_check": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "7_implement_in_engine": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "8_verdict_with_denominators": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    }
+  },
+  "output_smoke_cloud": {
+    "1_cube_sanity": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "2_grade_with_config_params": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "3_outlier_discrepancy_sweep": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "4_three_leg_spot_check": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "5_adversarial_lens_review": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "6_post_fix_recheck": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "6b_equivalence_class_check": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "7_implement_in_engine": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "8_verdict_with_denominators": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    }
+  },
+  "output_sweep_pilot": {
+    "1_cube_sanity": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "2_grade_with_config_params": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "3_outlier_discrepancy_sweep": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "4_three_leg_spot_check": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "5_adversarial_lens_review": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "6_post_fix_recheck": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "6b_equivalence_class_check": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "7_implement_in_engine": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    },
+    "8_verdict_with_denominators": {
+      "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
+      "status": "N/A"
+    }
+  },
+  "output_w1_sw20_span21": {
+    "1_cube_sanity": {
+      "evidence": "B1680 - 1 strategy, [26] exits/entry, mega-caps present",
+      "status": "DONE"
+    },
+    "2_grade_with_config_params": {
+      "evidence": "B1678 - graded at the config's own swing_length",
+      "status": "DONE"
+    },
+    "3_outlier_discrepancy_sweep": {
+      "evidence": "B1680 - diag loss 0.0pct, band gate PASS, regime_flip finding",
+      "status": "DONE"
+    },
+    "4_three_leg_spot_check": {
+      "evidence": "B1634 - three-leg, 100pct on all legs",
+      "status": "DONE"
+    },
+    "5_adversarial_lens_review": {
+      "evidence": "B1680 - 11 lenses; regime_flip CONFIRMED finding",
+      "status": "DONE"
+    },
+    "6_post_fix_recheck": {
+      "evidence": "outstanding - this is what the gate is for",
+      "status": "NOT_RUN"
+    },
+    "6b_equivalence_class_check": {
+      "evidence": "outstanding - this is what the gate is for",
+      "status": "NOT_RUN"
+    },
+    "7_implement_in_engine": {
+      "evidence": "outstanding - this is what the gate is for",
+      "status": "NOT_RUN"
+    },
+    "8_verdict_with_denominators": {
+      "evidence": "B1690 - 300 combos / 90-87 gradable / 49-46 distinct / PASS 0-1",
+      "status": "DONE"
+    }
+  },
+  "output_w1_sw20_span50": {
+    "1_cube_sanity": {
+      "evidence": "B1680 - 1 strategy, [26] exits/entry, mega-caps present",
+      "status": "DONE"
+    },
+    "2_grade_with_config_params": {
+      "evidence": "B1678 - graded at the config's own swing_length",
+      "status": "DONE"
+    },
+    "3_outlier_discrepancy_sweep": {
+      "evidence": "B1680 - diag loss 0.0pct, band gate PASS, regime_flip finding",
+      "status": "DONE"
+    },
+    "4_three_leg_spot_check": {
+      "evidence": "B1634 - three-leg, 100pct on all legs",
+      "status": "DONE"
+    },
+    "5_adversarial_lens_review": {
+      "evidence": "B1680 - 11 lenses; regime_flip CONFIRMED finding",
+      "status": "DONE"
+    },
+    "6_post_fix_recheck": {
+      "evidence": "outstanding - this is what the gate is for",
+      "status": "NOT_RUN"
+    },
+    "6b_equivalence_class_check": {
+      "evidence": "outstanding - this is what the gate is for",
+      "status": "NOT_RUN"
+    },
+    "7_implement_in_engine": {
+      "evidence": "outstanding - this is what the gate is for",
+      "status": "NOT_RUN"
+    },
+    "8_verdict_with_denominators": {
+      "evidence": "B1690 - 300 combos / 90-87 gradable / 49-46 distinct / PASS 0-1",
+      "status": "DONE"
+    }
+  }
+}

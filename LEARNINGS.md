@@ -9050,3 +9050,39 @@ but **not on a reason that turned out to be false.**
 **The generalized rule: an approval inherits the rationale it was given.** When the rationale is
 withdrawn, the approval does not survive it - re-derive and re-ask, because the owner approved an
 argument, not a diff.
+
+### L498
+
+**Ten gates, and not one of them asked whether the work happened**
+
+**B1699, owner catch.** The owner asked why the mechanical hooks were not catching my repeated
+misses. I checked: `verify_turn_compliance.py` has **TEN** gates - verdict denominators, orphan
+rules, unverified claims, artifact drift, the compliance marker - and **every one of them audits
+how work is REPORTED or COMMITTED. Not one asks whether mandatory work RAN.**
+
+A turn could skip the entire post-config sequence and all ten would pass, because each gate reads
+the description of the work rather than its existence. **That is the hole, and it explains why
+"the rule was already there" kept being true while the rule kept not happening.**
+
+**And my ticket was the same failure one level up.** Asked whether the runbook covered post-config
+autonomy, I VERIFIED it did (`STRATEGY_OPTIMISATION_PLAN.md:1102`, *"unprompted ... skipping a
+step is a silent miss"*) and wrote a ticket saying it *"needs mechanical enforcement like #221, not
+another sentence."* **That ticket was another sentence.** Ticketing the need for a gate is not
+building the gate.
+
+**Built: `scripts/verify_postconfig_complete.py` + `output_audit/postconfig_ledger.json`.** Every
+finished cube owes all NINE steps a terminal disposition. Silence is not a disposition; SKIPPED
+with a reason is. Historical pre-runbook cubes are **explicitly** marked N/A rather than filtered
+out of the scan, because an exclusion you cannot see is the same fail-open.
+
+**It blocks on its first run, and I did not make it stop.** MEASURED: `output_w1_*` are 6 of 9,
+missing steps 6 / 6b / 7; cfg1 and cfg2 are 3 of 9. **Seeding those as DONE would have made the
+gate green in one edit** - and that is the move this entire session has been about not making.
+
+**Then a second temptation, and the more dangerous one.** Wiring the gate blocking made
+`test_b1255_turn_gate_verifier` fail: it asserts a clean tree fast-passes, and my gate proves a
+clean tree can still OWE work. Editing that test would have made everything green. **The test is
+not wrong - the outstanding work is real.** So the script and ledger ship and RUN; the blocking
+wire waits until steps 6/6b/7 land, which is a smaller gap than a gate that lies.
+
+**The rule: when a new gate fails, the first hypothesis is that the gate is right.**

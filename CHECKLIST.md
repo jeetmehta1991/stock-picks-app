@@ -3589,3 +3589,26 @@ the one I named had a count of zero.
 
 **Retroactive coverage (#136):** this prune; the `regime_flip` fix that supplied 1 of 2 required
 inputs (L494); the "3-config RAM ceiling" quoted from a measurement taken at different free memory.
+
+### #223 - GATES THAT AUDIT REPORTING DO NOT AUDIT WORK (B1699 / L498)
+
+`verify_turn_compliance.py` had TEN gates and **not one asked whether mandatory work RAN** - they
+all check how it is reported or committed. A turn could skip an entire mandatory sequence and pass
+every gate. **That is why "the rule was already written" kept being true while the rule kept not
+happening.**
+
+For any MANDATORY sequence, the artifact that proves it ran is a **ledger with a terminal
+disposition per step**, checked mechanically. Silence is not a disposition; SKIPPED-with-reason is.
+Items outside scope are marked N/A **in the ledger**, never filtered out of the scan - an exclusion
+you cannot see is a fail-open.
+
+**And: ticketing the need for a gate is not building the gate.** "Needs mechanical enforcement" in
+a queue row is another sentence. Build it in the same turn, or say plainly that you did not.
+
+**When a new gate fails, the first hypothesis is that the GATE IS RIGHT.** Seeding the ledger DONE,
+or editing the pin test it trips, makes everything green in one edit and destroys the only
+mechanism that was working.
+
+**Retroactive coverage (#136):** the post-config sequence skipped four times; the drift class named
+three times and fixed as instances; the GENERALIZATION MANDATE satisfied in letter by stating a
+class while leaving siblings open.
