@@ -9408,3 +9408,32 @@ command and I never ran it.
    success and will be served forever.
 2. **Verify through the REAL invocation path, including its encoding and its stdin.** For a hook,
    that means running it the way the harness does - not the way that is convenient to test.
+
+### L509
+
+**The gate built for an error could not match that error's own wording**
+
+**B1748, found by the replay harness the council asked for.** Feeding the eight known session
+errors through the five live text-scanning gates returned **1 of 8**. The first miss was `E1` -
+*claimed a revert that never ran* - which is the error `NARRATION_MARKERS` was written for.
+
+**Why it missed:** the list held `"reverted"`. **I had written `"Reverting."`** And `"reverted"` is
+not a substring of `"reverting"`.
+
+**A marker list written from the PAST TENSE of a remembered incident matches only that
+conjugation.** The gerund, the present, the first person - all invisible. Fixed by stemming
+(`revert` + ed/ing/s/d, plus `roll back` / `undo`), proven 4/4.
+
+**The general form: when a rule is encoded as string matching, the strings get taken from the
+sentence you happen to remember writing.** That sentence is one sample of the class. Encode the
+STEM, the root, the shape - and test the gate against a paraphrase of the incident, never against
+the incident's exact words, because the exact words are the one case you will never repeat.
+
+**Second miss, same turn, and it is a repeat class.** `scan_response_gates` read only
+`_assistant_text(entries)`, so it could not be handed a recorded response - **untestable in exactly
+the way `sys.stdin` made the other gates untestable (B1713/L501).** The replay could not exercise
+it at all until an injectable `text=` was added. **Two instances now: a check whose input can only
+come from live plumbing cannot be validated, and will be trusted on no evidence.**
+
+**And the number that matters: 2 of 8 after both fixes.** The enforcement layer catches a quarter
+of what motivated it. That is the honest score, and it is only knowable because the harness exists.

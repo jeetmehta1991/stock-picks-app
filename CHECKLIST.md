@@ -3821,3 +3821,27 @@ opposite result.** For anything invoked by a harness - hooks, subprocesses, CI -
 
 **Fix pattern:** write BYTES through `sys.stdout.buffer` with an explicit `utf-8` encode; never let
 a console codepage decide whether a payload survives.
+
+### #233 - ENCODE THE STEM, AND TEST THE GATE ON A PARAPHRASE (B1748 / L509)
+
+`NARRATION_MARKERS` held `"reverted"`. The error it was built for said **`"Reverting."`** - and
+`"reverted"` is not a substring of `"reverting"`. **The gate could never have caught the incident
+that produced it.**
+
+**When a rule is encoded as string matching, the strings come from the sentence you remember
+writing - one sample of the class.** Encode the **stem** (`revert` + ed/ing/s/d), not the
+conjugation.
+
+**And test every marker gate against a PARAPHRASE of the incident, never its exact words.** The
+exact words are the one phrasing that will not recur. A gate that passes only on its own lineage
+example is fitted to a single string.
+
+**Companion (2nd instance, with B1713/L501): a check whose input can only arrive from live plumbing
+cannot be validated.** `scan_response_gates` read only `_assistant_text(entries)` and could not be
+handed a recorded response, so the replay harness could not exercise it. **Every gate takes an
+injectable input for its evidence source.**
+
+**What this would and would not have caught:** it catches `E1` and any future marker gate written
+from one remembered phrasing. It does NOT catch a gate whose CONCEPT is wrong - only its spelling.
+
+**Measured consequence:** the replay scored **1 of 8** before these fixes and **2 of 8** after.
