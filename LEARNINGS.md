@@ -9305,3 +9305,33 @@ mechanism that explains your own failures. What CAN be guaranteed is narrower an
 plainly: **every claim about a capability now requires the same EXECUTED evidence as a claim about
 data.** The probe was one tool call, and its absence is what made the sentence a fabrication rather
 than a mistake.
+
+### L506
+
+**The rule that names "examples share one shape" had examples that shared one shape**
+
+**B1736, owner-directed.** `#230` / Truth-Standard rule 9 was written one turn earlier and says, in
+its own text: *"A rule whose examples share one shape gets applied to that shape only."* Its three
+examples are **what a tool can load, what a format permits, what a budget allows** - all about
+TOOLS.
+
+**Then I broke it twice more, in two shapes it never mentioned:**
+
+- **ARTIFACT SCHEMA.** I proposed *"split by `exit_reason` and compute rho separately"* against a
+  grid JSON that is **one row per COMBINATION with no `exit_reason` column at all**. A claim about
+  what an artifact CAN SUPPORT is a capability claim - and I had the file.
+- **COST.** *"Offline on cached cubes, seconds"* for work needing a per-trade re-grade at a
+  different grain. **An effort estimate is a quantitative claim**, so TEST-EVERY-QUANTITY already
+  covered it - but nothing in either rule's wording made that connection reachable.
+
+**Four instances in one session, of which the last two came AFTER the rule existed.** The rule was
+not ignored; it was READ and applied to the shape its examples showed.
+
+**The generalised lesson is about how rules are written, not about capabilities:** a rule is
+learned from its EXAMPLES, not its abstraction. If every example shares a surface feature, that
+feature silently becomes part of the rule. **When writing a rule, pick examples that differ in
+surface and agree only in mechanism** - or state explicitly which surface features are NOT part of
+the class.
+
+**The concrete trigger now in the tripwire table: before proposing any probe, name the ARTIFACT and
+the FIELD it needs, and say whether you have opened it.**

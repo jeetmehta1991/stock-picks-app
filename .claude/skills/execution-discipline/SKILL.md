@@ -103,6 +103,27 @@ it wins over speed, over completeness, over looking finished.
    capability, or label it UNVERIFIED - the four evidence classes apply
    unchanged.**
 
+   **EXTENSION (B1736 / L506): two more shapes, both of which slipped past the
+   rule ABOVE because its examples were tools, formats and budgets.**
+
+   a) **ARTIFACT SCHEMA - does the file hold the field you are about to use?**
+      I specified a probe as *"split by `exit_reason` and compute rho separately"*
+      against a grid JSON that is **one row per COMBINATION and has no
+      `exit_reason` column at all**. The split lives in the per-trade CSV. **A
+      claim about what an artifact CAN SUPPORT is a capability claim** - open it
+      and check the columns before proposing work that depends on them.
+
+   b) **COST - "seconds", "cheap", "one command", "offline".** I said *"offline
+      on cached cubes, seconds"* for work that needed a per-trade re-grade at a
+      different grain. **An effort estimate is a quantitative claim** and falls
+      under the TEST-EVERY-QUANTITY rule, which its wording never suggested.
+
+   **The rule's own diagnosis applies to itself**: *"a rule whose examples share
+   one shape gets applied to that shape only."* Its three examples were all
+   tools/formats/budgets, and the two shapes above went unrecognised for **four
+   instances in one session**. **Before proposing any probe, name the ARTIFACT
+   and the FIELD it needs, and say whether you have opened it.**
+
 7. **"I don't know" and "this failed" are always compliant answers.**
    Reporting a failed test, an interrupted run, or an unresolved question
    accurately is success; dressing it up is the violation.
@@ -627,6 +648,7 @@ check FIRST. Each row is a real failure that recurred until its check existed.
 | If you are about to... | Tripwire check | Lineage |
 |---|---|---|
 | Cite any count (strategies, tests, docs, coverage) | Re-derive it by running code THIS turn | ~150 false RESOLVED; `feedback_doc_count_drift_must_be_test_pinned` |
+| Propose a probe / say work is "seconds", "cheap", "one command" | OPEN the artifact and name the FIELD it needs; an effort estimate is a quantitative claim | CHECKLIST #230 EXT (B1736 / L506); "split by exit_reason, offline, seconds" against a file with no such column |
 | Relay a sub-agent's finding | Independently verify ≥1 concrete artifact from it | PIVOT #41 fabrication |
 | Claim something is "wired" / "consumed" / "integrated" | Runtime probe on the actual call path, not grep | `feedback_wired_means_engine_consumed` |
 | Claim a monitor/job is armed or running | `Get-Process` (Windows truth) + evidence artifact; check existing PIDs before launching | CHECKLIST #121/#124; `feedback_powershell_authoritative_for_windows_process_truth` |

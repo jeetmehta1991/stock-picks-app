@@ -3763,6 +3763,16 @@ built on it. Invoking the skill delivers all 644.
 that settles it, or label it UNVERIFIED.** The evidence classes apply unchanged; capability claims
 are not a lighter category.
 
+**EXTENSION (B1736 / L506) - TWO MORE SHAPES, AND THE ITEM'S OWN DIAGNOSIS APPLIED TO ITSELF.**
+The three examples above are all about TOOLS. Two further shapes slipped past for that reason:
+**(a) ARTIFACT SCHEMA** - proposing a split by a column an artifact does not have; **(b) COST** -
+"seconds / cheap / one command", which is a quantitative claim already covered by `#201` had the
+connection been reachable. **Four instances in one session, the last two AFTER this item existed.**
+The item was read and applied to the shape its examples showed. **A rule is learned from its
+EXAMPLES, not its abstraction** - so pick examples that differ in surface and agree only in
+mechanism. Trigger: **before proposing any probe, name the ARTIFACT and the FIELD it needs, and say
+whether you have opened it.**
+
 **And this is a COMPLIANCE failure, not a new class** - Truth Standard rule 1 already says an
 UNVERIFIED claim stated as fact is a fabrication. This item exists because the rule's examples all
 pointed at data and I read the scope narrowly. **A rule whose examples share one shape gets applied
