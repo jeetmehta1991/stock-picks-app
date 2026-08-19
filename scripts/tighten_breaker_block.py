@@ -279,8 +279,13 @@ def main() -> int:
                  for r in g.itertuples()]]
         is_m = rc.in_sample(sub)
         ho_m = rc.holdout(sub)
-        exit_pick, _ = rc.select_exit(is_m, objective=a.objective,
-                                      min_n=a.min_n)
+        # B1715 DIAGNOSTIC ONLY - the ranking is untouched. `select_exit`
+        # already computes IN-SAMPLE stats for the chosen exit and the caller
+        # discarded them. Keeping the IS Sharpe lets the P0-2 selection leak be
+        # MEASURED (step-1 ranks 300 combinations by HOLDOUT Sharpe, line ~334)
+        # without changing what step 1 delivers, which would need owner approval.
+        exit_pick, _is_stats = rc.select_exit(is_m, objective=a.objective,
+                                              min_n=a.min_n)
         if exit_pick is None:
             rows.append({"close_mitigation": cm, "break_pct_max": bmax,
                          "age_bars_max": amax, "tail_n": tn, "fires": len(keep),
@@ -293,7 +298,9 @@ def main() -> int:
         row = {"close_mitigation": cm, "break_pct_max": bmax,
                "age_bars_max": amax, "tail_n": tn,
                "fires": len(keep), "exit": exit_pick,
-               "holdout_n": len(hb), "full_period_n": fp_n}
+               "holdout_n": len(hb), "full_period_n": fp_n,
+               # B1715: diagnostic, never ranked on.
+               "is_sharpe": (_is_stats or {}).get("sharpe")}
         if res is None:
             row["verdict"] = "BELOW_POWER_FLOOR"
         else:
