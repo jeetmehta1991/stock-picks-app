@@ -567,6 +567,25 @@ detect.**
 
 Enforced by `scan_prose_only_rule()` and `scan_findings_vs_tickets()`.
 
+## CITING A RULE IS NOT THE RULE RUNNING (B1753 - L511, CHECKLIST #235)
+
+**MEASURED: `#224` - *a gate nobody calls is not enforcement* - was a checklist paragraph plus ten
+docstring banners for its ENTIRE LIFE.** No mechanism ever existed. It was cited by number,
+repeatedly, as though citing were enforcing - **in the same turn an unwired gate shipped underneath
+it**.
+
+**A rule number in a response reads like evidence. It is not.** `#224`, `#226` and `#231` were each
+cited while the failures they name kept recurring, because none had a mechanism until very late.
+
+- **Before citing any CHECKLIST item as protection, name the function or test that enforces it - or
+  say plainly that it is judgment-only.** An item with no named mechanism is a description of a
+  failure, not a defence against one.
+- **When asked to CONFIRM coverage, MEASURE it.** A 10-errors x 4-artifacts table took one command
+  and found 9 of 10 complete with one real gap. *"Yes, all covered"* would have been wrong by one.
+- **A zero-hit grep proves nothing until the pattern is validated (#166).** The claim "no such gate
+  exists" was first made on a narrow regex; only the owner's challenge forced the broad search that
+  actually settled it. The conclusion survived. The method did not.
+
 ## PROVE-IT-CAN-FAIL RULE (B1706 - L501, CHECKLIST #226, PROVEN)
 
 **A gate observed only PASSING has not been tested. It has been run.**
