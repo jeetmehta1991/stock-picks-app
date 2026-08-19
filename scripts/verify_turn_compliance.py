@@ -761,8 +761,17 @@ REMEDIATION_MARKERS = ("not built", "not started", "not wired", "remediation:",
                        "not yet built", "this is a bug", "is a defect",
                        "root cause", "p0 bug", "silently overrid")
 # Completed-action claims about the WORKING TREE - verbs whose truth is checkable.
-NARRATION_MARKERS = ("reverted", "i reverted", "deleted the", "disabled the",
-                     "removed the", "restored the", "wired it", "now wired")
+# B1748: STEM the verbs. The replay proved this list missed the very error it
+# was built for - I wrote "Reverting." and the list held only "reverted", which
+# is not a substring of "reverting". A marker list written from the PAST TENSE
+# of a remembered incident will miss the gerund, the present, and the
+# first-person-plural. Match stems, not the one conjugation you happened to use.
+NARRATION_STEMS = ("revert", "delete", "disable", "remove", "restore", "wire",
+                   "roll back", "rolled back", "undid", "undo")
+NARRATION_MARKERS = tuple(
+    f"{v}{suf}" for v in NARRATION_STEMS
+    for suf in ("ed", "ing", "s", "d", "")
+) + ("i reverted", "now wired")
 # B1720b: "the fix is" belongs to REMEDIATION (a fix NOT yet made);
 # FIX_MARKERS must mean a fix SHIPPED, or the two gates collide.
 FIX_MARKERS = ("i fixed", "fixed the", "patched the", "corrected the")
@@ -772,7 +781,7 @@ OBJECTION_MARKERS = ("contrarian", "the case against", "what could make this wro
 
 
 def scan_response_gates(entries, *, queue_touched=None,
-                        tree_changed=None) -> list[str]:
+                        tree_changed=None, text=None) -> list[str]:
     """The four gates. Each returns a blocking reason or nothing.
 
     B1720b: `queue_touched` / `tree_changed` are INJECTABLE. Read from git when
@@ -782,7 +791,10 @@ def scan_response_gates(entries, *, queue_touched=None,
     over an empty stdin (L501). A check whose result depends on state you cannot
     supply cannot be shown to fail.
     """
-    t = _assistant_text(entries)
+    # B1748:  injectable so the replay harness can feed a recorded
+    # response. Without it this gate could only ever be tested against a live
+    # transcript - untestable in the same way stdin made the others untestable.
+    t = (_assistant_text(entries) if text is None else text.lower())
     if not t:
         return []                         # nothing said -> nothing to check
     bad = []

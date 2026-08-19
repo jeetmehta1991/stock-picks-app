@@ -226,7 +226,8 @@ def exit_fixed_target(df_full, entry_date, entry_price, direction, atr,
 
 
 def exit_next_pivot(df_full, entry_date, entry_price, direction, atr,
-                     signals: dict = None, max_days=252):
+                     signals: dict = None, max_days=252,
+                     allow_fallback: bool = False):
     """Exit at next pivot resistance level above entry."""
     target = None
     if signals:
@@ -246,7 +247,31 @@ def exit_next_pivot(df_full, entry_date, entry_price, direction, atr,
                 target = s2
 
     if target is None:
-        # Fall back to 3x ATR if no pivot available
+        # B1748: THE FALLBACK IS NO LONGER SILENT.
+        #
+        # MEASURED on wave 1 (output_w1_sw20_span50, 302 rows): 124 of 302 =
+        # 41pct of `next_pivot_target` trades took this branch and were really a
+        # 3x-ATR fixed target wearing the pivot exit's name. Worse, that
+        # sub-population is the one that INVERTS out of sample (IS +0.485 ->
+        # OOS -0.288) while the genuine pivot path improves (+0.335 -> +0.801).
+        #
+        # A named exit that is silently two exits survives de-dup (it is
+        # byte-identical to `fixed_target_3atr` on only 41pct of rows) and
+        # corrupts every cell that selects it.
+        #
+        # Raising unconditionally would abort 41pct of trades and break every
+        # run, so the fallback is now EXPLICIT AT THE CALL SITE instead:
+        # callers must opt in. Default False = raise. The behaviour that used to
+        # be hidden inside this function is now a decision someone has to make
+        # and can be seen making.
+        if not allow_fallback:
+            raise ValueError(
+                "exit_next_pivot: no pivot level available above/below entry "
+                f"({direction} @ {entry_price}) and allow_fallback=False. This "
+                "used to SILENTLY become exit_fixed_target(target_mult=3.0) on "
+                "41pct of trades - see B1748. Pass allow_fallback=True to accept "
+                "a 3x-ATR target under this exit's name, or select "
+                "fixed_target_3atr directly.")
         return exit_fixed_target(df_full, entry_date, entry_price,
                                   direction, atr, target_mult=3.0)
 
@@ -1567,7 +1592,11 @@ EXIT_STRATEGIES = {
     # BUG-285 fix 2026-05-13: fixed_3r_2r had 3R/2R = 1.5:1 R:R, BELOW DEC-353 2:1 minimum.
     # Renamed to fixed_4r_2r (4R target / 2R stop = 2.0:1 R:R, meets DEC-353). Per DEC-067.
     "fixed_4r_2r":          lambda df, ed, ep, d, a, s: exit_fixed_target(df, ed, ep, d, a, 4.0, 2.0),
-    "next_pivot_target":    lambda df, ed, ep, d, a, s: exit_next_pivot(df, ed, ep, d, a, s),
+    # B1748: allow_fallback=True is the PRE-EXISTING behaviour, now stated out
+    # loud at the registry level. 41pct of this exit's trades are really a
+    # 3x-ATR target; that is a decision visible here rather than hidden inside
+    # the function. Flip to False to make those trades error instead.
+    "next_pivot_target":    lambda df, ed, ep, d, a, s: exit_next_pivot(df, ed, ep, d, a, s, allow_fallback=True),
     "ma_exit_ema9":         lambda df, ed, ep, d, a, s: exit_ma_cross(df, ed, ep, d, a, 9),
     "time_stop_10d":        lambda df, ed, ep, d, a, s: exit_time_stop(df, ed, ep, d, a, 10),
     "time_stop_20d":        lambda df, ed, ep, d, a, s: exit_time_stop(df, ed, ep, d, a, 20),
