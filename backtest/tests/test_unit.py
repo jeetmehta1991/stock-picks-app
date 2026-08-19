@@ -16138,3 +16138,8 @@ def test_b1739_prose_and_ticket_gates():
     assert fv("not built. not started. this is a bug.", 1)
     assert not fv("not built. not started. this is a bug.", 3)
     assert not fv("the tests passed", 0)
+    # B1741: a finding named ALONGSIDE its ticket id is ticketed. Reporting on
+    # last turn work re-counted findings that already had rows and over-fired.
+    NL = chr(10)
+    assert not fv("S6-B1740a not built" + NL + "S6-B1740b is a bug", 0)
+    assert fv("S6-B1740a not built" + NL + "this is a bug", 0)

@@ -1250,6 +1250,10 @@ def scan_findings_vs_tickets(entries, *, text=None, rows=None) -> list[str]:
     if not t:
         return []
     t = _re.sub(r"`[^`]*`", " ", t)          # B1738 mention-vs-use
+    # B1741: a finding NAMED ALONGSIDE ITS TICKET is ticketed. Drop any line
+    # citing an S6-xxx id before counting - otherwise reporting on last turn work
+    # re-counts findings that already have rows, which is what over-fired here.
+    t = " ".join(l for l in t.splitlines() if "s6-b" not in l)
     MARKERS = ("not built", "not started", "not done", "unknown - rca",
                "is a defect", "this is a bug", "i am flagging", "needs a gate")
     found = len({m for m in MARKERS if m in t})
