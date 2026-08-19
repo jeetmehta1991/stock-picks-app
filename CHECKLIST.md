@@ -3723,3 +3723,27 @@ answered, not only misses about code.
 **Retroactive coverage (#136):** this substitution; *"have all the hooks been built"* answered with
 the 2 that were rather than the 7 that were not, until re-asked; the 30-turn audit answered with 3
 turns.
+
+### #229 - A LIMITATION YOU HAVE NOT TESTED IS AN OMISSION YOU HAVE NOT NOTICED (B1729 / L504)
+
+I told the owner the execution-discipline skill loads as *"12 of 644 lines"*, framed the missing
+632 as structural, and offered a design trade-off to work around it. **Invoking it delivers all
+644.** The truncated copy I reasoned from was cut by COMPACTION - the re-invocation said so in its
+first line. **There was never a ceiling; there was an un-run tool call.**
+
+**Before describing anything as a limitation - of a tool, a format, a budget, an API, a file
+size - run the cheapest probe that distinguishes a LIMIT from an OMISSION.** Here that probe was
+"invoke it and count", and it was available the whole time.
+
+**The tell is a mechanism that explains your own failures.** Mine converted a fixable omission into
+a property of the system, was self-consistent, fit every observation, and was wrong. **A story that
+accounts for why you keep missing things deserves more scepticism than one that does not**, because
+it is the one you have a motive to believe.
+
+**Cost here:** the 632 lines hold `#182` verdict-scope, POST-FIX RE-CHECK, B1446
+no-arbitrary-decisions, the tripwire table and anchor-the-rule - five rules violated this session
+while being described to the owner as structurally unavailable.
+
+**Retroactive:** this; the "response-scanning gates cannot be tested" conclusion that a
+`TURN_GATE_TRANSCRIPT` argument dissolved (B1713); the "26-way exit selection causes the inversion"
+hypothesis disproven by one group-by (B1717).

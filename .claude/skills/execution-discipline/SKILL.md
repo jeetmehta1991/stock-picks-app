@@ -497,6 +497,24 @@ record, and this file is what actually gets read at the start of every turn.
 5. Owner corrections are ALWAYS misses (the system failed to self-catch).
    Six owner catches in Pass 52 is the canonical anti-pattern.
 
+## LOAD-THE-SKILL RULE (B1728/B1729 — L504, CHECKLIST #229, mechanically enforced)
+
+**The hook injects 12 bullets. This file is 644 lines. Invoking it delivers all 644.**
+
+I reported the gap as a structural limit and offered the owner a workaround. It was an un-run tool
+call — the copy I was reasoning from had been truncated by COMPACTION, not by design.
+
+**Any turn that touches the repo invokes `Skill(execution-discipline)` first.** The 632 lines the
+summary omits are not filler: `#182` verdict-scope, POST-FIX RE-CHECK, B1446
+no-arbitrary-decisions, the TRIPWIRE TABLE and ANCHOR-THE-RULE — **all violated in the session
+where only the summary was loaded.**
+
+Enforced by `scan_discipline_not_loaded()` in `scripts/verify_turn_compliance.py`.
+
+**And the general form (#229): before calling anything a limitation, run the cheapest probe that
+separates a LIMIT from an OMISSION.** A mechanism that explains your own repeated failures is the
+one to distrust most — it is the story you have a motive to believe.
+
 ## Phase 6 — END-OF-TURN SWEEP (CHECKLIST #67 — HARD RULE, no exceptions)
 
 1. **Doc-sync sweep**: every forward-looking non-archive doc touched by this

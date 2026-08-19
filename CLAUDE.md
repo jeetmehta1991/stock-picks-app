@@ -13,7 +13,7 @@
   **163 failed / 5,482 passed / 11 errors** (B1490; was 172/5,470), and ZERO of them are GATE tests as of B1490 -
   S6-B1468a CLOSED, the order-dependence is fixed and re-validated in-suite. Tiers are declared in
   `backtest/tests/pyramid_tiers.py`: GATE 2 / QUARANTINE 72 / EXTENDED 357.
-> - CHECKLIST #1-#228, LEARNINGS L1-L503
+> - CHECKLIST #1-#229, LEARNINGS L1-L504
 - **PHASE 1B ROSTER (B1470, source of truth `PHASE_1B_ROSTER.md`):** **2 graded cells / 3 distinct strategies** (B1493: Sharpe gate armed to the canonical 1.0). Status after the S6-B1467c selection-noise haircut: **ROBUST 2 / PROVISIONAL 0** (B1493) - only `xs_momentum_with_smart_money_long` clears the 0.50 Sharpe gate by more than the measured 0.369 selection-noise floor. **Evidenced effective breadth ~2.9, NOT 13** (deployable 7.2, carried by short legs with no holdout evidence). Optimisation backlog **207** strategies (B1494: 222 - 3 roster - 12 disabled). Partitioned by best-cell holdout n: TIGHTENING 41 (n>300) | MID-BAND 58 (100<n<=300) | LOOSENING 108 (45 at n<=100 + 63 with no gradable cell).
 > - Latest batch: B1310 (Council 342); ENG-1 pre-R5 blocker fixed B1260; compliance gates C6-C9 + Stop hook live B1254-B1255
 > - Owner decisions 2026-07-08 (B1259): scope freeze after data-readiness audit; blockers-only R5 gate SUPERSEDES entire-queue gate; R5 phased ladder (dry->small->mid->full, owner-gated rungs); 1B before Stage 3

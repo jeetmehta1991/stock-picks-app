@@ -9244,3 +9244,36 @@ recording it.** That is L499's confession-is-not-remediation, resurfacing one le
 **The rule: before answering, restate the question in your own words and check the answer against
 that restatement, not against the work you happen to have done.** If a response would be equally
 true had the question been different, it is not an answer to this question.
+
+### L504
+
+**I diagnosed a design limit that was my own omission**
+
+**B1729, owner catch.** I reported that the execution-discipline skill loads as *"12 of 644
+lines"* and framed the missing 632 as a structural property - *"the always-on layer carries the
+rule names; the enforcement detail lives in the file that isn't read"* - then offered the owner a
+choice between invoking it manually or promoting selected rules into the injector.
+
+**The owner's reply was that this is an unacceptable assumption, and they were right.** Invoking
+the skill delivers **all 644 lines**. The truncated copy I had been reasoning from was cut by
+**COMPACTION**, and the re-invocation said so explicitly. There was never a ceiling.
+
+**What made it a diagnosis rather than a guess is the shape of the error.** I had two facts -
+the hook emits 12 bullets, and my in-context copy ended in a truncation marker - and I fused them
+into a mechanism. It explained the evidence, it was self-consistent, and it flattered the
+narrative I was already telling about why rules kept being missed. **A story that explains your
+failures is the one to distrust most**, because it converts a fixable omission into a property of
+the system.
+
+**The test I skipped costs one tool call: invoke it and count.** The same probe that answered the
+question in the end was available the entire time, and I offered the owner a design trade-off
+instead of running it.
+
+**And the cost was concrete, not rhetorical.** The 632 lines hold `#182` verdict-scope, the
+POST-FIX RE-CHECK rule, B1446 no-arbitrary-decisions, the tripwire table and anchor-the-rule -
+**five enforcement rules I violated this session while telling the owner they were structurally
+unavailable.**
+
+**The rule: before describing anything as a limitation, run the cheapest probe that would
+distinguish a limitation from an omission.** A constraint you have not tested is a hypothesis
+wearing a constraint's clothes.
