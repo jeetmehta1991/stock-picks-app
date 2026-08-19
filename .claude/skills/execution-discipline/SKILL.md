@@ -444,7 +444,38 @@ it rather than reasoning about it.**
 
 A "miss" = any error, silent skip, stale claim, wrong count, missed scope item,
 or owner correction — found by you, the owner, or an audit. Same turn, no
-deferral:
+deferral.
+
+**A MISS INCLUDES HOW A QUESTION WAS ANSWERED, NOT ONLY WHAT WAS BUILT (B1722 /
+L503 / CHECKLIST #228).** Asked what had been done about a specific root cause, I
+listed nine enforcement hooks. Every one existed and worked — and every one
+caught a SYMPTOM, not the cause. The response was **fully true and completely
+off-target**, which is what makes this class dangerous: no evidence check catches
+it. Every number was measured, every artifact real, so the Truth Standard, the
+pyramid and all ten turn-gates pass a response like that. **The defect is the
+MAPPING from question to answer, not the content.**
+
+- **Before answering, restate the question in your own words**, then check the
+  answer against the restatement — not against the work you happen to have done.
+  If the response would be equally true had the question been different, it is
+  not an answer to this question.
+- **Answer each part of a multi-part request explicitly.** "Learnings, checklist
+  and skill" is three deliverables; producing two and reporting completion is the
+  same substitution one level down. Enumerate the parts, then map each to what
+  landed.
+
+**AND: ACKNOWLEDGING A MISS IN PROSE IS NOT RECORDING IT.** I wrote *"my last
+response wasn't clear because it wasn't true of it"* and moved straight on to
+building — no L-entry, no checklist item, no ticket, until the owner asked why.
+The acknowledgement felt like the accounting. It is the same shape as naming a
+defect class and fixing only instances (L499). **The sentence admitting a miss is
+the TRIGGER for steps 1-4 below, never a substitute for them.**
+
+**The skill is the third artifact and it kept being the one dropped.** Between
+B1704 and B1722 every miss produced a LEARNINGS entry and a CHECKLIST item and
+left this file untouched. When a lesson is about the TURN PROTOCOL itself, it
+belongs here — CHECKLIST is the pre-action gate list, LEARNINGS is the incident
+record, and this file is what actually gets read at the start of every turn.
 
 1. **LEARNINGS.md entry** (next L-number): what happened, root cause, the
    generalized rule, and the detection signal that would have caught it earlier.
