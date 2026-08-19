@@ -9015,3 +9015,38 @@ real drifts were a MISSING level and none was a reordering.
 **It found a fourth disagreement on its first working run.** That is the argument for the verifier
 in one line: the class was still open at the moment I was writing the sentence claiming I had seen
 it.
+
+### L497
+
+**I read the constant and never checked that the caller overrides it**
+
+**B1697/B1698, owner catch.** Asked why so few combinations grade, I reported *"70pct fall below
+MIN_N=30"* - read straight off `roster_core.MIN_N`. The owner's reply was one line: *"min trades
+for step 1 is 10 so why are we considering it against 30?"*
+
+**The floor is 10.** `tighten_breaker_block.py:184` defaults `--min-n` to 10 and passes
+`min_n=a.min_n` into `evaluate()`. The module constant is a DEFAULT, and this caller never uses
+it. **A constant is not a value until you check who passes what.**
+
+**And the mechanism was wrong too, which the split proves:**
+
+```
+NO_EXIT_SELECTABLE   179 of 210  (85pct)   fires 1-37    grading never happened
+FAIL, sharpe None     31 of 210            holdout 16-29
+BELOW_POWER_FLOOR      0 of 210            <- the floor NEVER BOUND
+```
+
+**Zero cells hit the power floor.** The real constraint is **per-EXIT** sample: with 1-37 fires
+spread across 26 exit methods, no single exit is selectable, so the cell exits before `evaluate()`
+is reached. I described a cell-level floor; the binding constraint is 26-way exit fragmentation of
+a ~300-fire pool.
+
+**The cost was nearly a shipped change.** The owner approved a prune of three levels on my
+rationale, and I applied it. **Two independent signals stopped it** - the owner's question, and
+`test_b1611_reband_and_production_anchor` FAILING in the pyramid, the pin test that guards the
+tail_n band against unapproved edits. Reverted; the same three levels may still deserve pruning,
+but **not on a reason that turned out to be false.**
+
+**The generalized rule: an approval inherits the rationale it was given.** When the rationale is
+withdrawn, the approval does not survive it - re-derive and re-ask, because the owner approved an
+argument, not a diff.

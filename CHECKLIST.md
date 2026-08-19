@@ -3570,3 +3570,22 @@ a third instance fix with better commentary.
 **Retroactive coverage (#136):** the `tail_n` band that denied the level which won both wave-1
 top-10s; the `engine_implemented` flags stale since B1616; the manifest grid stale through two
 separate band changes.
+
+### #222 - A CONSTANT IS NOT A VALUE UNTIL YOU CHECK THE CALLER (B1698 / L497)
+
+`roster_core.MIN_N = 30` is a DEFAULT. `tighten_breaker_block` passes `min_n=10`, so the floor that
+applied was 10 and **zero cells ever hit it** - while I explained 70pct of the grid with it.
+
+**Before citing any threshold, gate or limit as the one in force: grep its call sites and read what
+is actually passed.** A module-level constant tells you the default and nothing about the run.
+
+**Corollary - AN APPROVAL INHERITS ITS RATIONALE.** The owner approved a band prune on this wrong
+mechanism. When the rationale is withdrawn the approval does not survive it: revert, re-derive,
+re-ask. The owner approved an argument, not a diff.
+
+**And when a verdict column exists, SPLIT BY IT before explaining an aggregate.** 210 "ungradable"
+was 179 `NO_EXIT_SELECTABLE` + 31 `FAIL` + **0** `BELOW_POWER_FLOOR` - three different causes, and
+the one I named had a count of zero.
+
+**Retroactive coverage (#136):** this prune; the `regime_flip` fix that supplied 1 of 2 required
+inputs (L494); the "3-config RAM ceiling" quoted from a measurement taken at different free memory.

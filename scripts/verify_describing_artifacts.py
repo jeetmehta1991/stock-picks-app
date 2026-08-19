@@ -47,6 +47,11 @@ import sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
+# B1697: the authority modules import each other by bare name (roster_core),
+# so scripts/ must be importable too. Without this the verifier died with an
+# uncaught ModuleNotFoundError and exit 1 - outside its own 0/2/3 contract,
+# which means it failed LOUDLY but not in the shape it promised.
+sys.path.insert(0, str(ROOT / "scripts"))
 
 
 # --------------------------------------------------------------------------
