@@ -16,6 +16,7 @@ prints nothing and exits 0 (a broken hook must never block a turn).
 """
 from __future__ import annotations
 
+import pathlib
 import sys
 
 TIER3 = """\
@@ -52,7 +53,27 @@ def main() -> int:
         # need its content -- the injection is unconditional every turn.
         if not sys.stdin.isatty():
             sys.stdin.read()
-        sys.stdout.write(TIER3)
+        # B1743 OWNER DIRECTIVE: emit the FULL SKILL, not a 12-bullet summary.
+        #
+        # "There is no logic if a turn proceeds without fully invoking it."
+        # Correct. The summary made the full protocol depend on my REMEMBERING to
+        # invoke it - and across this session I forgot on the turns where context
+        # was tightest, which are exactly the turns that most needed it. A gate at
+        # turn-END (#229) blocks too late: the work is already done.
+        #
+        # This hook already runs on EVERY prompt. Emitting the whole file makes
+        # the protocol unconditional and removes the decision entirely.
+        # Falls back to the summary only if the file cannot be read - the skill
+        # missing is not a reason to emit nothing.
+        _skill = (pathlib.Path(__file__).resolve().parent.parent
+                  / ".claude" / "skills" / "execution-discipline" / "SKILL.md")
+        try:
+            body = _skill.read_text(encoding="utf-8")
+            sys.stdout.write("[EXECUTION-DISCIPLINE - FULL SKILL, auto-injected "
+                             "every turn (B1743). Apply UNPROMPTED.]" + chr(10)
+                             + body)
+        except Exception:
+            sys.stdout.write(TIER3)
     except Exception:
         pass  # fail-open: never block a turn
     return 0
