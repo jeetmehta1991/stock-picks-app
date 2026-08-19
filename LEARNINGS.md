@@ -9472,3 +9472,39 @@ written through it or it is not written.
 **And the detection signal that would have caught instance 5 far earlier: count the occurrences of
 every gate's name.** One occurrence means the definition only. That is a one-line check I never
 ran, on a file where I had already recorded that 12 of 16 gates were unwired.
+
+### L511
+
+**The rule saying "presence is not enforcement" was itself never enforced**
+
+**B1752/B1753.** The owner asked why the existing built-but-not-wired gates did not fire on
+`scan_false_skill_status`. **MEASURED: no such gate has ever existed.**
+
+```
+scan_ function for unwired gates .... NEVER EXISTED
+#224 is a CHECKLIST item ............ yes
+#224 names an enforcing function .... NO
+B1704's response to #224 ............ 10 docstring HAND-RUN-ONLY labels
+wiring check ........................ exists only from B1751
+```
+
+**`#224` is the item that says a gate nobody calls is not enforcement.** For its entire life it was
+a checklist paragraph plus ten docstring banners - **exactly the thing it forbids**. And I cited it
+by number, as though citing it were the same as it working, in the same turn I shipped an unwired
+gate underneath it.
+
+**The general shape, and it is the sharpest form of the session's root cause: citing a rule is not
+the rule running.** A rule number in a response reads like evidence. It is not. `#224`, `#226`,
+`#231` were all cited repeatedly while the things they describe kept happening, because none of
+them had a mechanism until very late.
+
+**What the coverage audit was worth.** Asked to CONFIRM rather than assert, I measured all 10
+session errors against LEARNINGS / CHECKLIST / SKILL / tickets: **9 of 10 complete, 1 gap** - E2,
+the inert gate reported as working, which had an L-entry and a checklist item but no skill rule and
+no ticket. **I would have said "yes, all covered" and been wrong by one.** The table took one
+command.
+
+**And the closing note on this entry itself:** it exists because `scan_miss_capture_complete` -
+built one turn earlier - **fired on its own author** for stating a miss with no LEARNINGS entry.
+First firing, and it caught me. That is what a gate is worth compared to the paragraph describing
+it.

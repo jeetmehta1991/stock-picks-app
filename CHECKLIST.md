@@ -3867,3 +3867,21 @@ earlier, on a file where 12-of-16-unwired had already been measured once.
 
 **Phase-5 application:** `scan_miss_capture_complete` requires **LEARNINGS + CHECKLIST-or-explicit-
 citation + queue ticket** on any stated miss, enumerated through the primitive.
+
+### #235 - CITING A RULE IS NOT THE RULE RUNNING (B1753 / L511)
+
+**MEASURED:** `#224` - *a gate nobody calls is not enforcement* - was a checklist paragraph plus
+ten docstring banners **for its entire life**. No `scan_` function for unwired gates ever existed.
+It was cited by number, repeatedly, as though citing it were the same as it working - **in the same
+turn an unwired gate shipped underneath it**.
+
+**A rule number in a response reads like evidence and is not.** `#224`, `#226` and `#231` were all
+cited while the failures they describe kept recurring, because none had a mechanism until late.
+
+**Before citing any CHECKLIST item as protection, name the function or test that enforces it - or
+say explicitly that it is judgment-only.** An item with no named mechanism is a description of a
+failure, not a defence against one.
+
+**Companion, from the same turn:** when asked to CONFIRM coverage, MEASURE it. A 10-errors x
+4-artifacts table took one command and found **9 of 10 complete with one real gap** - which the
+assertion "yes, all covered" would have missed.
