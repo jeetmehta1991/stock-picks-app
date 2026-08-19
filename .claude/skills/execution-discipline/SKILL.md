@@ -546,6 +546,27 @@ Enforced by `scan_discipline_not_loaded()` in `scripts/verify_turn_compliance.py
 separates a LIMIT from an OMISSION.** A mechanism that explains your own repeated failures is the
 one to distrust most — it is the story you have a motive to believe.
 
+## PROSE-IS-NOT-SHIPPED RULE (B1739 — L507, CHECKLIST #231, mechanically enforced)
+
+**Owner directive: prose alone will not suffice. A rule earns its place only when something
+enforces it.**
+
+Three consecutive rules shipped as prose and needed the owner to ask before the mechanism existed —
+B1723, B1725, B1736. **Writing the prose FEELS like closing the loop**, which is why this keeps
+recurring: it is L499's confession-is-not-remediation and L504's naming-a-class-is-not-closing-it,
+one level up each time. **The artifact that RECORDS a rule keeps being mistaken for the artifact
+that ENFORCES it.**
+
+**Any turn editing this file or CHECKLIST.md also touches `verify_turn_compliance.py` or
+`test_unit.py`** — or writes **PROSE-ONLY** with the reason no mechanism is possible.
+
+**Companion, and the subtler half: a gate that checks a CATEGORY was touched does not check that
+every MEMBER was handled.** `#225` fired only on an UNTOUCHED queue, so one ticket satisfied a turn
+carrying several findings. **Whenever a rule says "each" or "every", the gate must COUNT, not merely
+detect.**
+
+Enforced by `scan_prose_only_rule()` and `scan_findings_vs_tickets()`.
+
 ## Phase 6 — END-OF-TURN SWEEP (CHECKLIST #67 — HARD RULE, no exceptions)
 
 1. **Doc-sync sweep**: every forward-looking non-archive doc touched by this

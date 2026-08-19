@@ -16113,3 +16113,28 @@ def test_b1738_mention_vs_use():
     assert not probe("trigger words are " + BT + "costs nothing" + BT + " and others")
     assert not probe("it costs nothing: 2x3.3=6.6h vs 6.6h, I ran the arithmetic")
     assert not probe("the tests passed")
+
+def test_b1739_prose_and_ticket_gates():
+    '''B1739: prose alone is not shipped; and each finding owes its own ticket.
+
+    Owner directive. Three consecutive rules shipped as prose and needed the
+    owner to ask before a gate existed. And #225 fired only on an UNTOUCHED
+    queue, so one ticket satisfied a turn carrying several findings.
+    '''
+    import sys as _s
+    if "scripts" not in _s.path:
+        _s.path.insert(0, "scripts")
+    import verify_turn_compliance as tg
+
+    po = lambda d, c, t: bool(tg.scan_prose_only_rule([], docs_touched=d,
+                                                      code_touched=c, text=t))
+    fv = lambda t, r: bool(tg.scan_findings_vs_tickets([], text=t, rows=r))
+
+    assert po(True, False, "added a rule")
+    assert not po(True, True, "added a rule")
+    assert not po(True, False, "this is PROSE-ONLY because no mechanism exists")
+    assert not po(False, False, "x")
+
+    assert fv("not built. not started. this is a bug.", 1)
+    assert not fv("not built. not started. this is a bug.", 3)
+    assert not fv("the tests passed", 0)

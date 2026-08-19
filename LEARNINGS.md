@@ -9335,3 +9335,38 @@ the class.
 
 **The concrete trigger now in the tripwire table: before proposing any probe, name the ARTIFACT and
 the FIELD it needs, and say whether you have opened it.**
+
+### L507
+
+**Prose alone does not close a loop, and I applied that rule to itself last**
+
+**B1739, owner directive:** *"prose alone wont suffice. Gates and or other enforcement mechanisms
+need to be added to ensure that value is actually derived."*
+
+**THREE consecutive times a rule shipped as prose and the owner had to ask before a mechanism
+existed:**
+
+```
+B1723  skill dropped from a 3-artifact request   -> "what was added to skill?"
+B1725  skills documented, never invoked          -> "are they being invoked?"
+B1736  #230 extension, no hook                   -> "have you added mechanical hooks?"
+```
+
+**Writing the prose FEELS like closing the loop** - the insight is captured, the wording is good,
+the commit is green. It is the same shape as L499's confession-is-not-remediation and L504's
+naming-a-class-is-not-closing-it, arriving one level up each time: **the artifact that records the
+rule keeps being mistaken for the artifact that enforces it.**
+
+**And the second half of the owner's question was sharper than the first:** *"Is the requirement to
+ticket each potential action itself not being enforced and its in prose only?"* **Partly.** The
+`#225` gate fires only when the queue is **UNTOUCHED**, so one ticket for one finding satisfies it
+while three others in the same turn go unrecorded. **Any-vs-each** - the identical gap the per-skill
+invocation gate had at S6-B1729c, in a different gate, unnoticed until asked.
+
+**Two gates built:** one blocks a turn that edits CHECKLIST/SKILL without touching
+`verify_turn_compliance.py` or `test_unit.py` unless it writes **PROSE-ONLY** and says why; the
+other counts distinct finding markers against S6-xxx rows actually added and blocks when findings
+exceed tickets.
+
+**The generalised rule: a gate that checks a category was TOUCHED does not check that every MEMBER
+was handled.** Whenever a rule says "each" or "every", the gate must count, not merely detect.

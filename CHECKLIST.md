@@ -3777,3 +3777,24 @@ whether you have opened it.**
 UNVERIFIED claim stated as fact is a fabrication. This item exists because the rule's examples all
 pointed at data and I read the scope narrowly. **A rule whose examples share one shape gets applied
 to that shape only.**
+
+### #231 - A RULE WITHOUT A MECHANISM IS NOT SHIPPED (B1739 / L507)
+
+**Owner directive: prose alone will not suffice - a rule earns its place only when something
+enforces it.** THREE consecutive rules shipped as prose and needed the owner to ask before a gate
+existed: B1723 (skill dropped from a 3-artifact request), B1725 (skills documented, never invoked),
+B1736 (`#230` extension with no hook).
+
+**Every turn that edits CHECKLIST.md or SKILL.md must also touch
+`scripts/verify_turn_compliance.py` or `backtest/tests/test_unit.py`** - or state **PROSE-ONLY**
+and say why a mechanism is not possible. Enforced by `scan_prose_only_rule()`.
+
+**And the companion: a gate that checks a CATEGORY was touched does not check that every MEMBER was
+handled.** `#225` fired only when the queue was UNTOUCHED, so one ticket satisfied it while other
+findings in the same turn went unrecorded - the same any-vs-each gap the per-skill invocation gate
+had. **Whenever a rule says "each" or "every", the gate must COUNT, not merely detect.** Enforced by
+`scan_findings_vs_tickets()`, which counts distinct finding markers against S6-xxx rows added.
+
+**What this would and would not have caught:** it catches all three prose-only instances above and
+the one-ticket-for-three-findings turns. It does NOT judge whether the ticket written is the RIGHT
+ticket - that stays judgment.

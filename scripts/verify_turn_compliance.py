@@ -1184,6 +1184,86 @@ def scan_uncosted_probe(entries, *, text=None, tool_text=None) -> list[str]:
             'name the FIELD the work needs, or drop the estimate.']
 
 
+def _queue_rows_added() -> int:
+    """S6-xxx rows ADDED to the queue in the working tree + last commit."""
+    import subprocess, re as _re
+    n = 0
+    for cmd in (["git", "diff", "--", "EXECUTION_QUEUE.md"],
+                ["git", "diff", "HEAD~1", "HEAD", "--", "EXECUTION_QUEUE.md"]):
+        try:
+            d = subprocess.run(cmd, capture_output=True, text=True, timeout=20).stdout
+        except Exception:
+            continue
+        n += len(_re.findall(r"^\+\| \*\*S6-", d, _re.M))
+    return n
+
+
+def scan_prose_only_rule(entries, *, docs_touched=None, code_touched=None,
+                         text=None) -> list[str]:
+    """B1739: a rule added to CHECKLIST/SKILL owes a gate, or an explicit reason.
+
+    Owner: *"prose alone wont suffice. Gates and or other enforcement mechanisms
+    need to be added to ensure that value is actually derived."*
+
+    THREE consecutive times a rule shipped as prose and the owner had to ask
+    before the mechanism existed - B1723 (skill dropped from a 3-artifact
+    request), B1725 (skills documented, never invoked), B1736 (#230 extension
+    with no hook). Writing the prose FEELS like closing the loop.
+    """
+    import subprocess
+    def _touched(paths):
+        try:
+            d = subprocess.run(["git", "status", "--porcelain"] + paths,
+                               capture_output=True, text=True, timeout=20).stdout
+            c = subprocess.run(["git", "log", "-1", "--name-only", "--format="],
+                               capture_output=True, text=True, timeout=20).stdout
+        except Exception:
+            return False
+        return bool(d.strip()) or any(pp.split("/")[-1] in (c or "") for pp in paths)
+
+    dt = _touched(["CHECKLIST.md", ".claude/skills/execution-discipline/SKILL.md"])         if docs_touched is None else docs_touched
+    if not dt:
+        return []
+    ct = _touched(["scripts/verify_turn_compliance.py",
+                   "backtest/tests/test_unit.py"]) if code_touched is None else code_touched
+    if ct:
+        return []
+    t = (_assistant_text(entries) if text is None else text.lower())
+    if "prose-only" in t:
+        return []
+    return ["PROSE-ONLY RULE WITH NO GATE (B1739): this turn edits CHECKLIST.md "
+            "or SKILL.md without touching verify_turn_compliance.py or "
+            "test_unit.py. A rule with no mechanism decays - three times running, "
+            "the owner had to ask before the gate existed. Add the gate, or write "
+            "PROSE-ONLY and say why a mechanism is not possible."]
+
+
+def scan_findings_vs_tickets(entries, *, text=None, rows=None) -> list[str]:
+    """B1739: EVERY finding owes a ticket, not just the first one.
+
+    The #225 gate fires only when the queue is UNTOUCHED, so one ticket for one
+    finding satisfies it while other findings in the same turn go unticketed -
+    the same any-vs-each gap the per-skill gate had (S6-B1729c).
+    """
+    import re as _re
+    t = (_assistant_text(entries) if text is None else text.lower())
+    if not t:
+        return []
+    t = _re.sub(r"`[^`]*`", " ", t)          # B1738 mention-vs-use
+    MARKERS = ("not built", "not started", "not done", "unknown - rca",
+               "is a defect", "this is a bug", "i am flagging", "needs a gate")
+    found = len({m for m in MARKERS if m in t})
+    if found == 0:
+        return []
+    n = _queue_rows_added() if rows is None else rows
+    if n >= found:
+        return []
+    return [f"FINDINGS EXCEED TICKETS (B1739): {found} distinct finding markers in "
+            f"the response, {n} S6-xxx rows added to the queue. The #225 gate only "
+            "checks the queue was TOUCHED - one ticket satisfied it while the rest "
+            "went unrecorded. Ticket each, or fold them into one row explicitly."]
+
+
 def check_skill_gates() -> str | None:
     """Skill invocation + the skill half of the miss-capture loop."""
     e = _read_entries()
@@ -1371,6 +1451,12 @@ def main() -> int:
     if drift_block:
         print(drift_block, file=sys.stderr)
         return 2
+
+    for _f in (scan_prose_only_rule, scan_findings_vs_tickets):
+        _b = _f(_read_entries())
+        if _b:
+            print(_b[0], file=sys.stderr)
+            return 2
 
     up_block = scan_uncosted_probe(_read_entries())
     if up_block:
