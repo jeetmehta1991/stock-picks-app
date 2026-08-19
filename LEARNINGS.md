@@ -9437,3 +9437,38 @@ come from live plumbing cannot be validated, and will be trusted on no evidence.
 
 **And the number that matters: 2 of 8 after both fixes.** The enforcement layer catches a quarter
 of what motivated it. That is the honest score, and it is only knowable because the harness exists.
+
+### L510
+
+**Five instances of one class, each patched alone, so the class stayed open**
+
+**B1751, owner-directed.** Asked to address the fourth instance of any-vs-each properly rather than
+with a fourth reflex patch, I went looking for the class - and found a **fifth** on the way:
+
+```
+1. #225        fired only on an UNTOUCHED queue
+2. per-skill   satisfied by ANY Skill call
+3. runner      18 early returns - the FIRST violation ended the run
+4. Phase 5     counted QUEUE rows only; LEARNINGS and CHECKLIST went untouched
+5. B1747       scan_false_skill_status DEFINED and NEVER WIRED
+```
+
+**Instance 5 is the one that stings.** I built that gate two turns ago, proved it 5 of 5, committed
+it, and **reported it live**. It has one occurrence in the file - the `def`. **It has never run.**
+A gate built to catch false compliance claims, shipped with a false compliance claim, and the
+`#224` rule that names exactly this failure was already written and already anchored.
+
+**Why patching four times did not close it:** each fix was correct for its instance and left the
+class intact, which the GENERALIZATION MANDATE calls non-compliant. The shape recurs because
+`if category_touched: pass` is the natural way to write a check, and it is wrong whenever the rule
+says *each*.
+
+**The class-level fix is a PRIMITIVE, not another gate.** `require_each(rule, {member: satisfied})`
+takes a **dict**, so the caller is forced to enumerate every member - a member cannot be silently
+omitted, which is how "any" creeps back - and it reports the **missing members by name** rather
+than degrading to "something is missing". Any rule whose wording contains *each* or *every* is
+written through it or it is not written.
+
+**And the detection signal that would have caught instance 5 far earlier: count the occurrences of
+every gate's name.** One occurrence means the definition only. That is a one-line check I never
+ran, on a file where I had already recorded that 12 of 16 gates were unwired.

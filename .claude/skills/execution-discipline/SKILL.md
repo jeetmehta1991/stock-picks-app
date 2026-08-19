@@ -567,6 +567,24 @@ detect.**
 
 Enforced by `scan_prose_only_rule()` and `scan_findings_vs_tickets()`.
 
+## ANY-VS-EACH PRIMITIVE (B1751 - L510, CHECKLIST #234, mechanically enforced)
+
+**Five instances of one class, each patched alone, so the class stayed open:** `#225` fired on an
+untouched queue; the per-skill gate accepted any Skill call; the runner stopped at the first
+violation; Phase 5 counted queue rows only; and `scan_false_skill_status` was **defined and never
+wired** - built, proven 5/5, committed, reported live, never run.
+
+**`if category_touched: pass` is the natural way to write a check and it is wrong whenever the rule
+says *each*.**
+
+- **Any rule whose wording contains "each" or "every" goes through
+  `require_each(rule, {member: satisfied})`.** It takes a dict so every member must be enumerated,
+  and it names the MISSING members rather than degrading to "something is missing".
+- **Count the occurrences of every gate's name.** One occurrence is the definition only - the gate
+  has never run. One line, and it would have caught instance 5 two turns earlier.
+- **Phase 5 is three artifacts**: LEARNINGS + CHECKLIST-or-explicit-citation + queue ticket.
+  Enforced by `scan_miss_capture_complete`.
+
 ## GATE-CONSTRUCTION RULES (B1748/B1749 - L509, CHECKLIST #233, PROVEN)
 
 **Measured: the replay harness scored 1 of 8 on this session's own errors. The first miss was the

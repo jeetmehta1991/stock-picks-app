@@ -16187,3 +16187,46 @@ def test_b1747_false_skill_status():
     assert not f("SKILLS INVOKED: execution-discipline FULLY LOADED", True)
     assert not f("SKILLS INVOKED: execution-discipline ALWAYS-ON (12-bullet)", False)
     assert not f("the tests passed", True)
+
+def test_b1751_any_vs_each_primitive():
+    """B1751: rules saying EACH go through require_each, and every gate is wired.
+
+    Five instances of one class. The fifth - scan_false_skill_status defined and
+    never wired - was found while looking for the class, after being proven 5/5
+    and reported live. This pins both the primitive and the wiring check, so a
+    gate can never again be defined, proven, committed and left uncalled.
+    """
+    import pathlib as _p
+    import re as _re
+    import sys as _s
+    if "scripts" not in _s.path:
+        _s.path.insert(0, "scripts")
+    import verify_turn_compliance as tg
+
+    # the primitive NAMES the missing members, never "something is missing"
+    out = tg.require_each("R", {"a": True, "b": False, "c": False})
+    assert out and "b" in out[0] and "c" in out[0] and "2 of 3" in out[0]
+    assert not tg.require_each("R", {"a": True, "b": True})
+
+    def _obs(learn, chk, queue):
+        return {
+            "LEARNINGS.md entry": learn,
+            "CHECKLIST.md item or explicit compliance-failure citation": chk,
+            "EXECUTION_QUEUE.md ticket": queue,
+        }
+
+    def _fires(text, obs):
+        return bool(tg.scan_miss_capture_complete([], text=text, observed=obs))
+
+    # the B1748 case: a miss stated, only the queue written
+    assert _fires("i was wrong about that", _obs(False, False, True))
+    assert not _fires("i was wrong about that", _obs(True, True, True))
+    assert _fires("owner caught it", _obs(False, True, True))
+    assert not _fires("the tests passed", _obs(False, False, False))
+
+    # EVERY scan_ gate must appear more than once - a single occurrence is the
+    # definition alone, which is instance 5 of the class.
+    src = _p.Path("scripts/verify_turn_compliance.py").read_text(encoding="utf-8")
+    unwired = sorted(n for n in set(_re.findall(r"def (scan_[a-z_]+)", src))
+                     if src.count(n) < 2)
+    assert not unwired, f"defined but never called: {unwired}"

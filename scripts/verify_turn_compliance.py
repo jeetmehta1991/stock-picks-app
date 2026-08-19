@@ -1327,6 +1327,70 @@ def scan_false_skill_status(entries, *, text=None, injected=None) -> list[str]:
     return []
 
 
+# B1751: THE ANY-VS-EACH PRIMITIVE.
+#
+# Five instances of one class, each found and patched separately:
+#   1. #225      fired only on an UNTOUCHED queue
+#   2. per-skill satisfied by ANY Skill call
+#   3. runner    18 early returns - FIRST violation ended the run
+#   4. Phase 5   counted QUEUE rows only, so LEARNINGS/CHECKLIST went untouched
+#   5. B1747     scan_false_skill_status DEFINED but never wired - I proved it
+#                5/5 and reported it live; it has never run
+#
+# Each was fixed alone; the CLASS stayed open, so instance 6 was always
+# available. A rule whose wording says "each" or "every" must never ask whether
+# a CATEGORY was touched - it enumerates REQUIRED members, observes which are
+# SATISFIED, and names the DIFFERENCE. `require_each` takes a dict so the caller
+# is forced to list every member: a member cannot be silently omitted, which is
+# how "any" creeps back.
+def require_each(rule: str, required: dict, *, why: str = "") -> list[str]:
+    """`required` maps MEMBER NAME -> bool satisfied. Reports missing by name."""
+    missing = [k for k, ok in required.items() if not ok]
+    if not missing:
+        return []
+    have = [k for k, ok in required.items() if ok]
+    return [f"{rule}: {len(missing)} of {len(required)} required member(s) "
+            f"NOT satisfied - {', '.join(missing)}"
+            + (f" (satisfied: {', '.join(have)})" if have else "")
+            + (f". {why}" if why else "")]
+
+
+def _artifact_touched(*paths) -> bool:
+    import subprocess
+    try:
+        d = subprocess.run(["git", "status", "--porcelain"] + list(paths),
+                           capture_output=True, text=True, timeout=20).stdout
+        c = subprocess.run(["git", "log", "-1", "--name-only", "--format="],
+                           capture_output=True, text=True, timeout=20).stdout
+    except Exception:
+        return False
+    return bool(d.strip()) or any(pp.split("/")[-1] in (c or "") for pp in paths)
+
+
+MISS_MARKERS = ("i was wrong", "my mistake", "that was a miss", "i missed",
+                "owner caught", "i failed to", "correction:", "i should have",
+                "this is a compliance failure")
+
+
+def scan_miss_capture_complete(entries, *, text=None, observed=None) -> list[str]:
+    """Phase 5 wants THREE artifacts on a miss, not one (B1751 / #234)."""
+    t = (_assistant_text(entries) if text is None else text.lower())
+    if not t or not any(m in t for m in MISS_MARKERS):
+        return []
+    if observed is None:
+        observed = {
+            "LEARNINGS.md entry": _artifact_touched("LEARNINGS.md"),
+            "CHECKLIST.md item or explicit compliance-failure citation":
+                _artifact_touched("CHECKLIST.md")
+                or "compliance failure against" in t,
+            "EXECUTION_QUEUE.md ticket": _artifact_touched("EXECUTION_QUEUE.md"),
+        }
+    return require_each(
+        "PHASE-5 MISS-CAPTURE INCOMPLETE (B1751 / #234)", observed,
+        why="Say 'compliance failure against item N' if no new checklist item "
+            "is warranted.")
+
+
 def check_skill_gates() -> str | None:
     """Skill invocation + the skill half of the miss-capture loop."""
     e = _read_entries()
@@ -1498,7 +1562,10 @@ def main() -> int:
         if _r:
             _v.append(_r if isinstance(_r, str) else str(_r))
     _e2 = _read_entries()
-    for _sc in (scan_unverified_cause, scan_uncosted_probe):
+    # B1751: scan_false_skill_status (B1747) was DEFINED and never wired - it
+    # is added here alongside the new Phase-5 gate. Instance 5 of any-vs-each.
+    for _sc in (scan_unverified_cause, scan_uncosted_probe,
+                scan_false_skill_status, scan_miss_capture_complete):
         try:
             _r = _sc(_e2)
         except Exception as _e:

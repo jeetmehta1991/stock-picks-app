@@ -3845,3 +3845,25 @@ injectable input for its evidence source.**
 from one remembered phrasing. It does NOT catch a gate whose CONCEPT is wrong - only its spelling.
 
 **Measured consequence:** the replay scored **1 of 8** before these fixes and **2 of 8** after.
+
+### #234 - RULES SAYING "EACH" GO THROUGH require_each (B1751 / L510)
+
+**Five instances of one class, each patched alone:** `#225` on an untouched queue · the per-skill
+gate satisfied by any Skill call · the runner stopping at the first violation · Phase 5 counting
+queue rows only · and `scan_false_skill_status` **defined and never wired**.
+
+**`if category_touched: pass` is the natural way to write a check, and it is wrong whenever the
+rule says *each*.** Patching instances leaves the class open - which the GENERALIZATION MANDATE
+calls non-compliant.
+
+**Any rule whose wording contains "each" or "every" is expressed through
+`require_each(rule, {member: satisfied})`** in `scripts/verify_turn_compliance.py`. It takes a
+**dict** so every member must be enumerated - one cannot be silently omitted - and it names the
+**missing members**, never "something is missing".
+
+**Companion detection signal: count the occurrences of every gate's name.** One occurrence = the
+definition only = never called. That check is one line and would have caught instance 5 two turns
+earlier, on a file where 12-of-16-unwired had already been measured once.
+
+**Phase-5 application:** `scan_miss_capture_complete` requires **LEARNINGS + CHECKLIST-or-explicit-
+citation + queue ticket** on any stated miss, enumerated through the primitive.
