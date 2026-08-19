@@ -16143,3 +16143,14 @@ def test_b1739_prose_and_ticket_gates():
     NL = chr(10)
     assert not fv("S6-B1740a not built" + NL + "S6-B1740b is a bug", 0)
     assert fv("S6-B1740a not built" + NL + "this is a bug", 0)
+
+    # B1742: the Stop hook re-runs after every block and the turn window spans
+    # ALL attempts, so a blocked turn re-counted its own earlier tries and could
+    # never clear. Only the FINAL assistant block is scanned.
+    def _blocks(*txts):
+        return [{"type": "assistant",
+                 "message": {"content": [{"type": "text", "text": z}]}}
+                for z in txts]
+    assert not bool(tg.scan_findings_vs_tickets(
+        _blocks("this is a bug" + NL + "not built", "all fixed now"), rows=0))
+    assert bool(tg.scan_findings_vs_tickets(_blocks("ok", "this is a bug"), rows=0))

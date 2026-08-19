@@ -1246,7 +1246,16 @@ def scan_findings_vs_tickets(entries, *, text=None, rows=None) -> list[str]:
     the same any-vs-each gap the per-skill gate had (S6-B1729c).
     """
     import re as _re
-    t = (_assistant_text(entries) if text is None else text.lower())
+    # B1742: count only the FINAL assistant text block. The Stop hook re-runs
+    # after every block, and the turn window spans all attempts - so a blocked
+    # turn re-counted the markers of its own earlier tries and could never clear,
+    # each retry inheriting the last. Only the response actually being evaluated
+    # should be scanned.
+    if text is None:
+        blocks = _raw_assistant(entries)
+        t = (blocks[-1] if blocks else "").lower()
+    else:
+        t = text.lower()
     if not t:
         return []
     t = _re.sub(r"`[^`]*`", " ", t)          # B1738 mention-vs-use
