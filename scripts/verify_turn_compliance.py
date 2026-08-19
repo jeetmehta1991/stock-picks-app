@@ -99,6 +99,22 @@ def _read_entries() -> list:
     if _ENTRIES_CACHE is not None:
         return _ENTRIES_CACHE
     _ENTRIES_CACHE = []
+    # B1713: allow an explicit transcript so these gates can be TESTED.
+    # Every response-scanning gate here (#201, #215, verdict denominators, and
+    # any future one) reads stdin, which only the Stop hook populates. Run any
+    # other way they see zero entries and return "clean" unconditionally - which
+    # is how the #225 gate called a nonexistent function and still looked green
+    # (L501). A gate that cannot be observed failing has not been tested.
+    # CLI/env override, never used by the Stop hook itself:
+    tpath = os.environ.get("TURN_GATE_TRANSCRIPT")
+    if tpath and os.path.exists(tpath):
+        with open(tpath, encoding="utf-8", errors="ignore") as fh:
+            for line in fh:
+                try:
+                    _ENTRIES_CACHE.append(json.loads(line))
+                except Exception:
+                    continue
+        return _ENTRIES_CACHE
     try:
         payload = json.loads(sys.stdin.read() or "{}")
     except Exception:

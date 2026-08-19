@@ -15745,3 +15745,46 @@ def test_b1682_regime_flip_needs_BOTH_halves_behavioural():
         "the POOL path is the PRIMARY branch and needs the map too")
     eng = _pl.Path("backtest/engine/backtest.py").read_text(encoding="utf-8")
     assert '"regime_at_entry": row.get("regime_at_entry") or row.get("regime")' in eng
+
+
+def test_b1713_gates_are_testable_offline(tmp_path):
+    """B1713 / L501: a response-scanning gate must be observable FAILING.
+
+    Before this, `_read_entries()` read only `sys.stdin`, so outside the Stop
+    hook every such gate saw zero entries and returned "clean" unconditionally.
+    The #225 gate called a function that does not exist and still looked green.
+
+    This asserts the gate SEES a supplied transcript - i.e. that a real input
+    produces a non-empty read. It fails if the override is removed, which is the
+    property #226 demands: prove the check can fail.
+    """
+    import importlib
+    import json as _json
+    import os as _os
+    import sys as _sys
+    _sys.path.insert(0, "scripts")
+    tg = importlib.import_module("verify_turn_compliance")
+
+    tp = tmp_path / "t.jsonl"
+    tp.write_text(
+        _json.dumps({"type": "assistant",
+                     "message": {"content": [{"type": "text",
+                                              "text": "the fix is not built"}]}}) + "\n",
+        encoding="utf-8")
+
+    prev = _os.environ.get("TURN_GATE_TRANSCRIPT")
+    _os.environ["TURN_GATE_TRANSCRIPT"] = str(tp)
+    tg._ENTRIES_CACHE = None
+    try:
+        entries = tg._read_entries()
+    finally:
+        tg._ENTRIES_CACHE = None
+        if prev is None:
+            _os.environ.pop("TURN_GATE_TRANSCRIPT", None)
+        else:
+            _os.environ["TURN_GATE_TRANSCRIPT"] = prev
+
+    assert len(entries) == 1, (
+        "the turn gate could not read a supplied transcript, so every "
+        "response-scanning gate is untestable and returns clean over nothing")
+    assert entries[0]["type"] == "assistant"
