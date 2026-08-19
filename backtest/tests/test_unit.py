@@ -14849,7 +14849,7 @@ def test_b1597_orphan_rule_gate_wired_and_pinned():
     assert m.scan_orphan_rule(Rec, "", "", ["L997"]) == []
     # and it must be WIRED, not merely defined (CHECKLIST #121)
     main_src = inspect.getsource(m.main)
-    assert "check_orphan_rule()" in main_src, (
+    assert 'check_orphan_rule' in main_src, (
         "scan_orphan_rule must be WIRED into main() - a scanner that is defined "
         "but never called is the designed-not-armed failure")
 
@@ -14973,7 +14973,7 @@ def test_b1605_quantity_gate_and_step1_objective():
     assert m.scan_unmeasured_quantity(
         [A("costs nothing"), U, A("all fine")]) == []
     # and it must be WIRED (CHECKLIST #121)
-    assert "check_unmeasured_quantity()" in inspect.getsource(m.main)
+    assert 'check_unmeasured_quantity' in inspect.getsource(m.main)
 
     # owner ruling: STEP 1 ranks by SHARPE, STEP 2 admits by GATES
     src = __import__("pathlib").Path(

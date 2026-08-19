@@ -1426,6 +1426,51 @@ def scan_unrecorded_miss(entries, learnings_modified: bool):
 
 
 def main() -> int:
+    # B1746: RUN EVERY GATE, REPORT EVERY VIOLATION.
+    #
+    # Root cause of the missed fable-mode catch: main() had 18 early `return 2`
+    # points, so the FIRST failing gate ended the run and every later gate was
+    # skipped. Last turn check_compliance_marker returned first, so
+    # check_skill_gates never executed and the un-invoked skill went unreported.
+    #
+    # That is the any-vs-each defect (CHECKLIST #231) at the RUNNER level: the
+    # runner detected *a* violation instead of counting *all* of them. Same shape
+    # as #225 firing only on an untouched queue, and as the per-skill gate that
+    # any Skill call satisfied. A gate suite that stops at the first failure
+    # trains you to fix one thing per turn and never see the rest.
+    _v: list[str] = []
+    for _fn in (check_compliance_marker, check_verdict_denominator, check_unverified_structure, check_describing_artifact_drift, check_skill_gates, check_uninspected_constant, check_response_gates, check_postconfig_complete, check_unmeasured_quantity, check_unverified_universe, check_postfix_recheck, check_orphan_rule, check_unrecorded_miss, check_monitor_armed):
+        try:
+            _r = _fn()
+        except Exception as _e:            # a BROKEN gate is itself a finding
+            _v.append(f"{_fn.__name__} RAISED {_e!r} - this gate is broken")
+            continue
+        if _r:
+            _v.append(_r if isinstance(_r, str) else str(_r))
+    _e2 = _read_entries()
+    for _sc in (scan_unverified_cause, scan_uncosted_probe):
+        try:
+            _r = _sc(_e2)
+        except Exception as _e:
+            _v.append(f"{_sc.__name__} RAISED {_e!r} - this gate is broken")
+            continue
+        if _r:
+            _v.append(_r[0])
+    if _v:
+        print(f"TURN-GATE BLOCK - {len(_v)} violation(s), ALL listed:",
+              file=sys.stderr)
+        for _i, _msg in enumerate(_v, 1):
+            print(f"  [{_i}/{len(_v)}] {_msg}", file=sys.stderr)
+        return 2
+    # B1746b: FALL THROUGH, never return 0 here. The dirty-tree check (Gate B)
+    # and several others live as INLINE logic in the legacy body, not as named
+    # check_ functions - so returning 0 on a clean pre-pass silently DISABLED
+    # them. Caught by test_b1255 asserting a dirty tree blocks; my own change
+    # had turned the most-used gate off. Same silent-fallback class as #232.
+    return _main_legacy()
+
+
+def _main_legacy() -> int:
     sentinel = REPO_ROOT / ".stop_exempt"
     if sentinel.exists():
         try:
