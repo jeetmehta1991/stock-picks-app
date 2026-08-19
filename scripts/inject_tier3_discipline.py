@@ -69,10 +69,28 @@ def main() -> int:
                   / ".claude" / "skills" / "execution-discipline" / "SKILL.md")
         try:
             body = _skill.read_text(encoding="utf-8")
-            sys.stdout.write("[EXECUTION-DISCIPLINE - FULL SKILL, auto-injected "
-                             "every turn (B1743). Apply UNPROMPTED.]" + chr(10)
-                             + body)
+            out = ("[EXECUTION-DISCIPLINE - FULL SKILL, auto-injected every turn "
+                   "(B1744). Apply UNPROMPTED.]" + chr(10) + body)
+            # B1744 ROOT CAUSE. B1743 shipped and SILENTLY did nothing for two
+            # sessions, including across a restart. PROVEN: this hook writes to a
+            # cp1252 stdout on Windows, SKILL.md contains U+2192 and U+2264 and
+            # em-dashes, so  raised UnicodeEncodeError -
+            # "charmap codec cannot encode character u2192 at position 1695" -
+            # and MY OWN except clause swallowed it back to the 12-bullet
+            # summary. The fallback I added "so a missing skill never blocks a
+            # turn" is what hid the failure.
+            #
+            # Write BYTES through the buffer, bypassing the console codec
+            # entirely. Never re-encode to whatever cp the console happens to be.
+            buf = getattr(sys.stdout, "buffer", None)
+            if buf is not None:
+                buf.write(out.encode("utf-8", "replace"))
+                buf.flush()
+            else:
+                sys.stdout.write(out.encode("utf-8", "replace").decode("utf-8"))
         except Exception:
+            # Fallback retained, but it is now a REAL last resort rather than the
+            # everyday path. TIER3 is pure ASCII so it always encodes.
             sys.stdout.write(TIER3)
     except Exception:
         pass  # fail-open: never block a turn

@@ -3798,3 +3798,26 @@ had. **Whenever a rule says "each" or "every", the gate must COUNT, not merely d
 **What this would and would not have caught:** it catches all three prose-only instances above and
 the one-ticket-for-three-findings turns. It does NOT judge whether the ticket written is the RIGHT
 ticket - that stays judgment.
+
+### #232 - A SILENT FALLBACK IS A PERMANENT FAILURE (B1744 / L508)
+
+B1743's hook change shipped green and **did nothing for two sessions including a restart**. PROVEN
+cause: the hook writes to a **cp1252** stdout on Windows; `SKILL.md` holds U+2192 / U+2264 /
+em-dashes; the write raised `UnicodeEncodeError` at position 1695 - and **the `except Exception:`
+I had added served the 12-bullet summary instead**, every turn, silently.
+
+**The fallback written to make it safe is what made the failure invisible.** This is CHECKLIST #122
+(`|| true` needs a paired success-check) at a larger scale, in code written while explicitly
+reasoning about failure modes.
+
+**Any `except` that substitutes a DEGRADED output must announce itself** - log to stderr, or make
+the degraded output visibly say it is degraded. A fallback that looks like success will be served
+forever.
+
+**And verify through the REAL invocation path.** I tested with `input='{}'` through a UTF-8 pipe
+and got 716 lines; the harness uses a cp1252 console and got 9. **Same script, different path,
+opposite result.** For anything invoked by a harness - hooks, subprocesses, CI - reproduce its
+**encoding, its stdin and its working directory**, not the convenient shell equivalent.
+
+**Fix pattern:** write BYTES through `sys.stdout.buffer` with an explicit `utf-8` encode; never let
+a console codepage decide whether a payload survives.

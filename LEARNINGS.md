@@ -9370,3 +9370,41 @@ exceed tickets.
 
 **The generalised rule: a gate that checks a category was TOUCHED does not check that every MEMBER
 was handled.** Whenever a rule says "each" or "every", the gate must count, not merely detect.
+
+### L508
+
+**My own fallback swallowed the error and served the broken path for two sessions**
+
+**B1744, owner-directed RCA.** B1743 changed the hook to emit the full 644-line skill. It shipped
+green, I reported it verified, and it **did nothing** - through two sessions and a restart, the
+injection stayed the 12-bullet summary.
+
+**PROVEN root cause, one command:**
+
+```
+UnicodeEncodeError: 'charmap' codec can't encode character '\u2192'
+                    in position 1695: character maps to <undefined>
+```
+
+The hook writes to a **cp1252** stdout on Windows. `SKILL.md` contains `->` as U+2192, `<=` as
+U+2264, and em-dashes. `sys.stdout.write(body)` raised on the first one - **and the `except
+Exception: sys.stdout.write(TIER3)` I had added caught it and served the summary.** Every turn.
+Silently.
+
+**The fallback I wrote to make the thing safe is what made the failure invisible.** I justified it
+in the commit as *"a missing skill file is not a reason to run a turn with no protocol at all"* -
+sound reasoning, and it converted a loud crash into a silent downgrade. **`|| true` at a larger
+scale** (CHECKLIST #122), in code I wrote while explicitly thinking about failure modes.
+
+**And my verification was the same defect I have been recording all session.** I ran the script
+with `input='{}'` through a UTF-8-capable pipe and counted 716 lines. **The harness runs it with a
+cp1252 console.** I verified a path that was not the path. `< /dev/null` reproduces it in one
+command and I never ran it.
+
+**Two rules, both narrow enough to hold:**
+
+1. **A fallback must be observable.** Any `except` that substitutes a degraded output logs to
+   stderr, or the degraded output announces itself. A silent fallback is indistinguishable from
+   success and will be served forever.
+2. **Verify through the REAL invocation path, including its encoding and its stdin.** For a hook,
+   that means running it the way the harness does - not the way that is convenient to test.

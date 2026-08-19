@@ -567,6 +567,22 @@ detect.**
 
 Enforced by `scan_prose_only_rule()` and `scan_findings_vs_tickets()`.
 
+## SILENT-FALLBACK RULE (B1744 - L508, CHECKLIST #232, PROVEN)
+
+**A fallback that looks like success will be served forever.**
+
+B1743 changed this hook to emit the full skill. It shipped green and did NOTHING for two sessions
+including a restart. Proven cause: the hook writes to a **cp1252** stdout on Windows, this file
+contains U+2192 / U+2264 / em-dashes, the write raised `UnicodeEncodeError` - and the
+`except Exception:` added *"so a missing skill never blocks a turn"* served the 12-bullet summary
+instead. **The safety net was the defect.**
+
+- **Any `except` substituting a DEGRADED output must announce itself** - stderr log, or the output
+  says it is degraded. This is CHECKLIST #122 at a larger scale.
+- **Verify through the REAL invocation path** - its encoding, its stdin, its cwd. I tested with
+  `input='{}'` through a UTF-8 pipe (716 lines) while the harness used a cp1252 console (9 lines).
+  **Same script, opposite result.**
+
 ## Phase 6 — END-OF-TURN SWEEP (CHECKLIST #67 — HARD RULE, no exceptions)
 
 1. **Doc-sync sweep**: every forward-looking non-archive doc touched by this
