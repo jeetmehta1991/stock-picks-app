@@ -9508,3 +9508,29 @@ command.
 built one turn earlier - **fired on its own author** for stating a miss with no LEARNINGS entry.
 First firing, and it caught me. That is what a gate is worth compared to the paragraph describing
 it.
+
+### L512
+
+**The rule was loaded every turn and I still skipped it twice; the gate is what stopped me**
+
+**B1754/B1755.** `scan_skill_not_updated` caught the same omission twice, four batches apart -
+B1750 and B1753 both wrote a LEARNINGS entry and a CHECKLIST item and left `SKILL.md` untouched.
+
+**What makes the repeat worth an entry rather than a shrug:** between those two catches the full
+644-line skill was auto-injected on EVERY turn, containing the ANCHOR-THE-RULE section that says
+exactly this. **The rule was in context, verbatim, and the behaviour did not change.** Only the
+gate changed it.
+
+**That is the cleanest measurement this session produced of prose-versus-mechanism**, and it is
+worth more than the argument: a rule I could recite, loaded in front of me, failed twice; a
+fourteen-line scanner caught both.
+
+**The habit underneath it:** when a lesson is learned, LEARNINGS and CHECKLIST feel like the
+destination - they are where lessons *go*. `SKILL.md` is where lessons are *read*, and it is the
+one that gets skipped, precisely because writing the other two already feels like completion.
+**Three artifacts, and the reflex reaches for two.**
+
+**And the honest counter-note:** the gate catching me twice is not evidence the layer is good. It
+is evidence this ONE failure is now covered. The replay still scores **2 of 8**, and five gate
+catches across a session in which the owner caught two defects the gates could not see is a
+modest result reported as a modest result.
