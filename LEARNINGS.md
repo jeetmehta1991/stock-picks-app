@@ -9219,3 +9219,28 @@ is the cause, and if it stays at -0.8 the hypothesis is wrong.
 
 **The general rule: when comparing two rankings, compute the RANK CORRELATION.** An overlap count
 throws away the direction and the magnitude - the two things that determine what you do next.
+
+### L503
+
+**I answered the question I had work for, not the question asked**
+
+**B1722, owner catch.** Asked what the previous turn did about CONTEXT COMPRESSION specifically, I
+listed the nine enforcement hooks. The hooks are real and they were built - but they catch
+SYMPTOMS: a claim without evidence, a finding without a ticket, a fix without a class sweep, a
+recommendation without an objection. **Not one addresses reading part of a file, or citing a
+constant instead of its call site.** I substituted the question I had a good answer for.
+
+**This is not fabrication and no fact in it was wrong** - every hook I listed exists and works.
+That is what makes it dangerous: the response was fully true and completely off-target, so nothing
+in it could be caught by an evidence check. **A truthful answer to a question nobody asked reads
+exactly like an answer.**
+
+**The owner also caught the second-order failure: I did not log it.** The skill requires a
+LEARNINGS entry and a CHECKLIST or skill improvement from every mistake. I acknowledged the
+substitution in prose - *"my last response wasn't clear because it wasn't true of it"* - and moved
+straight on to building. **Acknowledging a miss inside the same response that commits it is not
+recording it.** That is L499's confession-is-not-remediation, resurfacing one level up.
+
+**The rule: before answering, restate the question in your own words and check the answer against
+that restatement, not against the work you happen to have done.** If a response would be equally
+true had the question been different, it is not an answer to this question.

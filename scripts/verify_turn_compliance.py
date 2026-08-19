@@ -867,6 +867,14 @@ def scan_uninspected_constant(entries, *, tool_text=None) -> list[str]:
     would have shown it, and the grep was the step that got compressed away.
     """
     import re
+    # B1722: scope to THIS TURN. _read_entries parses the WHOLE transcript,
+    # so the first live run scanned every constant named all session and
+    # blocked on four it had legitimately inspected turns ago. Take only
+    # entries after the last user message.
+    last_user = max((i for i, d in enumerate(entries or ())
+                     if isinstance(d, dict) and d.get("type") == "user"),
+                    default=-1)
+    entries = list(entries or ())[last_user + 1:]
     t = _assistant_text(entries)
     if not t:
         return []
@@ -878,7 +886,11 @@ def scan_uninspected_constant(entries, *, tool_text=None) -> list[str]:
     # never match and the gate was silently inert. Exactly the class it was
     # built to catch, in its own source.
     names = set(re.findall(r"\b([A-Z][A-Z0-9]+(?:_[A-Z0-9]+)+)\b", raw))
-    names |= {f for f in re.findall(r"(--[a-z][a-z0-9-]{3,})", raw)}
+    # B1722: CLI-flag matching REMOVED. It matched markdown double-hyphens in
+    # prose and produced pure noise on the first live turn
+    # (--all-41-strategies-snapshot, --cluster-organization-policy). A gate
+    # with false positives gets bypassed, and a bypassed gate is worse than
+    # none. Constants only.
     missing = sorted(n for n in names if n.lower() not in tt)
     if not missing:
         return []

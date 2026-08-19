@@ -3700,3 +3700,26 @@ original standing.
 **Retroactive coverage (#136):** this finding; the "tail_n band moves 0 of 50 groups" reading that
 needed the marginal-effect measure to become actionable; the cfg1-vs-cfg2 top-10 comparison that
 counted shared rows rather than measuring agreement.
+
+### #228 - A TRUE ANSWER TO A DIFFERENT QUESTION IS STILL A MISS (B1722 / L503)
+
+Asked what had been done about CONTEXT COMPRESSION, I listed nine enforcement hooks. Every one
+existed and worked. **Not one addressed the cause** - they catch symptoms. The response was fully
+true and completely off-target.
+
+**That is what makes this class dangerous: no evidence check can catch it.** Every number was
+measured, every artifact real. The defect is the MAPPING from question to answer, not the content -
+which is why the Truth Standard, the pyramid and all ten turn-gates pass a response like this.
+
+**Before answering, restate the question in your own words, then check the answer against the
+restatement rather than against the work you happen to have done.** If the response would be
+equally true had the question been different, it is not an answer to this one.
+
+**Second-order rule, which the owner had to point out separately: acknowledging a substitution
+inside the same response that commits it is NOT recording it.** Every miss owes a LEARNINGS entry
+plus a CHECKLIST or skill change in the SAME turn - including misses about how a question was
+answered, not only misses about code.
+
+**Retroactive coverage (#136):** this substitution; *"have all the hooks been built"* answered with
+the 2 that were rather than the 7 that were not, until re-asked; the 30-turn audit answered with 3
+turns.

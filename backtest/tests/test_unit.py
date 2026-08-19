@@ -15967,7 +15967,10 @@ def test_b1721_uninspected_constant_gate():
 
     assert fires('the floor is OOS_MIN_N=30', 'ls -la')
     assert fires('MIN_N governs admission', 'ls')
-    assert fires('--min-n controls admission', 'cat f.py')
+    # B1722: CLI-flag matching was REMOVED after the gate fired on markdown
+    # double-hyphens in prose on its first live turn. Contract narrowed to
+    # constants only - a gate with false positives gets bypassed, and a
+    # bypassed gate is worse than none.
     assert not fires('the floor is OOS_MIN_N=30', 'grep -n OOS_MIN_N rc.py')
-    assert not fires('--min-n controls admission', 'python x.py --min-n 10')
+
     assert not fires('the tests passed and the tree is clean', 'ls')
