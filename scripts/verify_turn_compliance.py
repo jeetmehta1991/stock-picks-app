@@ -871,8 +871,21 @@ def scan_uninspected_constant(entries, *, tool_text=None) -> list[str]:
     # so the first live run scanned every constant named all session and
     # blocked on four it had legitimately inspected turns ago. Take only
     # entries after the last user message.
-    last_user = max((i for i, d in enumerate(entries or ())
-                     if isinstance(d, dict) and d.get("type") == "user"),
+    # B1724: TOOL RESULTS are typed "user" in the transcript, so the first
+    # version of this window ended at the last tool result and excluded EVERY
+    # tool call in the turn - it then blocked on EXECUTION_QUEUE, which the turn
+    # had in fact touched. A real user turn carries plain string content; a tool
+    # result carries a list of tool_result blocks.
+    def _is_real_user(d):
+        if not isinstance(d, dict) or d.get("type") != "user":
+            return False
+        c = (d.get("message") or {}).get("content")
+        if isinstance(c, str):
+            return True
+        return not any(isinstance(b, dict) and b.get("type") == "tool_result"
+                       for b in (c or ()))
+
+    last_user = max((i for i, d in enumerate(entries or ()) if _is_real_user(d)),
                     default=-1)
     entries = list(entries or ())[last_user + 1:]
     t = _assistant_text(entries)
@@ -891,6 +904,14 @@ def scan_uninspected_constant(entries, *, tool_text=None) -> list[str]:
     # (--all-41-strategies-snapshot, --cluster-organization-policy). A gate
     # with false positives gets bypassed, and a bypassed gate is worse than
     # none. Constants only.
+    # B1724: doc FILENAMES match the constant pattern (EXECUTION_QUEUE,
+    # CHECKLIST, LEARNINGS, PROJECT_PLAN...). Naming a document is not the
+    # failure this gate exists for - citing a CODE constant unread is.
+    _DOC_NAMES = {"EXECUTION_QUEUE", "PROJECT_PLAN", "DETAILED_PROJECT_PLAN",
+                  "CANONICAL_FACTS", "BUG_REGISTER", "AUDIT_INDEX",
+                  "VERIFICATION_MATRIX", "STRATEGY_ROSTER", "MEMORY",
+                  "OPEN_INVESTIGATIONS", "LIMITATIONS_CAVEATS"}
+    names -= _DOC_NAMES
     missing = sorted(n for n in names if n.lower() not in tt)
     if not missing:
         return []
