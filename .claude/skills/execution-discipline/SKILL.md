@@ -567,6 +567,22 @@ detect.**
 
 Enforced by `scan_prose_only_rule()` and `scan_findings_vs_tickets()`.
 
+## PROVE-IT-CAN-FAIL RULE (B1706 - L501, CHECKLIST #226, PROVEN)
+
+**A gate observed only PASSING has not been tested. It has been run.**
+
+`scan_untickcted_remediation` called `_entry_text`, which did not exist, over `_read_entries()`,
+which returned zero entries - so the missing function was never reached, the gate returned `None`,
+and I reported it working. **A check returning "clean" over an empty input is indistinguishable
+from a check that works.**
+
+- **Feed every new gate a case it MUST reject, and watch it reject.** Both directions, always.
+- **Then count its occurrences in the file.** One occurrence is the definition alone - proven and
+  never wired (B1747, instance 5 of any-vs-each).
+- **#224 was PROSE plus docstring labels for its whole life** and could never have fired on the
+  unwired gate underneath it. **The rule naming "presence is not enforcement" was itself
+  present-but-not-enforced** until the B1751 pin test.
+
 ## ANY-VS-EACH PRIMITIVE (B1751 - L510, CHECKLIST #234, mechanically enforced)
 
 **Five instances of one class, each patched alone, so the class stayed open:** `#225` fired on an
