@@ -940,6 +940,93 @@ def check_uninspected_constant() -> str | None:
     return bad[0] if bad else None
 
 
+SKILL_TRIGGERS = ("fable mode", "think like fable", "use the fable",
+                  "work like fable", "council this", "council it",
+                  "run the council", "convene the council", "llm council")
+
+
+def _last_user_text(entries) -> str:
+    """The most recent REAL user message, lowercased."""
+    txt = ""
+    for d in entries or ():
+        if not isinstance(d, dict) or d.get("type") != "user":
+            continue
+        c = (d.get("message") or {}).get("content")
+        if isinstance(c, str):
+            txt = c
+        elif isinstance(c, list) and not any(
+                isinstance(b, dict) and b.get("type") == "tool_result" for b in c):
+            txt = " ".join(b.get("text", "") for b in c if isinstance(b, dict))
+    return txt.lower()
+
+
+def scan_skill_not_invoked(entries, *, user_text=None, tool_text=None) -> list[str]:
+    """A skill TRIGGER in the user's message requires the Skill tool to run.
+
+    B1725, owner catch: *"Is the fable mode and council skills not being invoked
+    if prompted? I am not seeing anything in turn."* Correct - I had been WRITING
+    "fable mode" and applying it from having read the file once, and had invoked
+    `llm-council` exactly once and `fable-mode` never. Saying the name of a skill
+    is not loading it, which is the same shape as naming a class and fixing an
+    instance, or narrating an action instead of performing it.
+    """
+    u = _last_user_text(entries) if user_text is None else user_text.lower()
+    hit = [t for t in SKILL_TRIGGERS if t in u]
+    if not hit:
+        return []
+    tt = (_tool_text(entries) if tool_text is None else tool_text)
+    if '"name": "Skill"' in tt or "'name': 'Skill'" in tt or "SKILL_INVOKED" in tt:
+        return []
+    return [f"SKILL NOT INVOKED: the request contains {hit[0]!r} but no Skill "
+            "tool call ran this turn. Saying the name of a skill is not loading "
+            "it - invoke it, or say plainly that you are applying it from memory "
+            "and why that is sufficient."]
+
+
+def scan_skill_not_updated(entries, *, learnings_touched=None,
+                           skill_touched=None) -> list[str]:
+    """A recorded miss owes the SKILL file, not just LEARNINGS and CHECKLIST.
+
+    B1723 MEASURED: SKILL.md was touched 5 times (B1597-B1704) while LEARNINGS
+    gained 57 entries (L446-L503). The file actually READ at the start of every
+    turn is the one least often updated - so lessons accumulate where they are
+    not loaded. Owner asked for "learnings, checklist and skill" and got two.
+    """
+    import subprocess
+
+    def _touched(path):
+        try:
+            d = subprocess.run(["git", "status", "--porcelain", path],
+                               capture_output=True, text=True, timeout=15).stdout
+            c = subprocess.run(["git", "log", "-1", "--name-only", "--format="],
+                               capture_output=True, text=True, timeout=15).stdout
+        except Exception:
+            return False
+        return bool(d.strip()) or (path.split("/")[-1] in (c or ""))
+
+    lt = _touched("LEARNINGS.md") if learnings_touched is None else learnings_touched
+    if not lt:
+        return []
+    st = (_touched(".claude/skills/execution-discipline/SKILL.md")
+          if skill_touched is None else skill_touched)
+    if st:
+        return []
+    return ["SKILL NOT UPDATED: this turn records a LEARNINGS entry but leaves "
+            "SKILL.md untouched. MEASURED B1723: the skill was edited 5 times "
+            "while LEARNINGS gained 57 entries - lessons accumulate in the file "
+            "that is NOT loaded each turn. Add the rule to the skill, or state "
+            "why the lesson is incident-specific and belongs only in LEARNINGS."]
+
+
+def check_skill_gates() -> str | None:
+    """Skill invocation + the skill half of the miss-capture loop."""
+    e = _read_entries()
+    for bad in (scan_skill_not_invoked(e), scan_skill_not_updated(e)):
+        if bad:
+            return bad[0]
+    return None
+
+
 def check_unrecorded_miss() -> str | None:
     """Block a turn that ACKNOWLEDGED a miss without writing it to LEARNINGS."""
     try:
@@ -1113,6 +1200,11 @@ def main() -> int:
     drift_block = check_describing_artifact_drift()
     if drift_block:
         print(drift_block, file=sys.stderr)
+        return 2
+
+    sk_block = check_skill_gates()
+    if sk_block:
+        print(sk_block, file=sys.stderr)
         return 2
 
     uc_block = check_uninspected_constant()

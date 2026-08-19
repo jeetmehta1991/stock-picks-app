@@ -15974,3 +15974,29 @@ def test_b1721_uninspected_constant_gate():
     assert not fires('the floor is OOS_MIN_N=30', 'grep -n OOS_MIN_N rc.py')
 
     assert not fires('the tests passed and the tree is clean', 'ls')
+
+def test_b1725_skill_gates():
+    '''B1725: saying a skill name is not loading it; a lesson owes the skill file.
+
+    Owner: "Is the fable mode and council skills not being invoked if prompted?
+    I am not seeing anything in turn." Correct - I had been writing "fable mode"
+    and applying it from memory, having invoked llm-council once and fable-mode
+    never. And B1723 MEASURED that SKILL.md was edited 5 times while LEARNINGS
+    gained 57 entries, so lessons accumulate in the file that is not loaded.
+
+    Pinned in both directions per #226.
+    '''
+    import sys as _s
+    if "scripts" not in _s.path:
+        _s.path.insert(0, "scripts")
+    import verify_turn_compliance as tg
+
+    inv = lambda u, t: bool(tg.scan_skill_not_invoked([], user_text=u, tool_text=t))
+    upd = lambda l, k: bool(tg.scan_skill_not_updated([], learnings_touched=l,
+                                                      skill_touched=k))
+    assert inv("fable mode council this", chr(123)+chr(125))
+    assert not inv("fable mode council this", chr(39)+chr(39)+chr(39)+chr(34)+"name"+chr(34)+": "+chr(34)+"Skill"+chr(34)+chr(39)+chr(39)+chr(39))
+    assert not inv("please run the tests", chr(123)+chr(125))
+    assert upd(True, False)
+    assert not upd(True, True)
+    assert not upd(False, False)
