@@ -1114,11 +1114,21 @@ def scan_discipline_not_loaded(entries, *, tool_text=None,
     Substantive = the turn ran a tool that changes or inspects the repo. A pure
     acknowledgement does not owe a 644-line load.
     """
+    # B1733 OWNER CORRECTION: the substantive carve-out is REMOVED. I wrote it,
+    # then used it to justify skipping the load on an hourly-report turn - which
+    # is exactly the choosing the owner said I do not get to do. "The full 644
+    # lines skill has to be invoked every turn! No exception and you dont get to
+    # choose when to invoke it!" The  parameter is retained ONLY so
+    # the pin test can exercise both branches; it defaults to ALWAYS-REQUIRED.
     tt = (_tool_text(entries) if tool_text is None else tool_text)
-    if substantive is None:
-        substantive = any(k in tt for k in ('"command"', '"file_path"',
-                                            '"old_string"', '"pattern"'))
-    if not substantive:
+    if substantive is False:
+        return []
+    # B1733b: fire only when the turn is OBSERVABLE. With zero entries the gate
+    # has no visibility - which is not the same as the skill being absent, and
+    # blocking on it made tg.main() unrunnable outside the Stop hook. This is
+    # NOT the substantive carve-out returning: work TYPE no longer exempts
+    # anything; only total absence of evidence does.
+    if not entries and tool_text is None:
         return []
     if 'execution-discipline' in tt:
         return []

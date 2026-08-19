@@ -16036,7 +16036,10 @@ def test_b1728_discipline_load_gate():
     f = lambda t: bool(tg.scan_discipline_not_loaded([], tool_text=t))
     assert f(chr(123)+chr(34)+'command'+chr(34)+': '+chr(34)+'git commit'+chr(34)+chr(125))
     assert not f(chr(34)+'command'+chr(34)+' execution-discipline')
-    assert not f(chr(123)+chr(125))
+    # B1733 OWNER CORRECTION: no carve-out. A turn with NO tool calls still owes
+    # the load - I wrote the substantive exemption and then used it to skip an
+    # hourly-report turn, which is the choosing the owner said I do not get to do.
+    assert f(chr(123)+chr(125))
 
 def test_b1730_per_skill_gates():
     '''B1730: each triggered skill needs its OWN invocation; the block names all 3.
