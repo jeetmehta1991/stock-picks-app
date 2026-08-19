@@ -9126,3 +9126,35 @@ asserted *"clean tree must fast-pass"*. After #223 that is FALSE BY DESIGN - a t
 while a cube still owes work, because **doing the work and recording it are different things**.
 Updating a test to a superseded contract is legitimate; editing one to hide a failure is not, and
 the difference is whether the property being pinned got MORE true or less.
+
+### L500
+
+**Three turns of findings, zero tickets - because no file changed**
+
+**B1705, owner-directed audit.** Asked whether every finding of the last 30 turns was ticketed, I
+grepped instead of recalling. MEASURED: the queue's newest entry is **B1704**, and the last three
+turns produced **ten findings with no ticket between them** - including `OOS_MIN_N` (0 hits), the
+Step-1 holdout breach, the retracted `2.422`, the `#201` provenance gap, the twelfth lens, and the
+unresolved 400-vs-300.
+
+**The structural cause, and it is the important part: Gate B fires on MODIFIED TRACKED FILES.**
+Those three turns answered questions and changed nothing on disk, so **every mechanical gate
+passed a turn that generated the most serious measurement bug of the session.** The gates are not
+broken; they are watching the wrong signal. **Findings arrive in PROSE, and prose leaves no
+mtime.**
+
+**This is B1119 recurring.** That entry records 22 consecutive batches whose doc-sync silently
+lapsed because the work had shifted to CSV-analysis-only turns that touched no tracked file. The
+skill was extended in prose - *"CSV-analysis-only and investigation-only turns STILL require the
+sweep"* - and prose is exactly what does not survive. **The same hole, six hundred batches later,
+because the fix was a sentence.**
+
+**And the deeper cause I named to the owner: I had been compressing work into fewer tool calls.**
+Reading part of a file instead of all of it, quoting a module constant instead of the call site,
+building `table_c` without grepping the queue where `S6-B1610f` already described the defect I was
+re-introducing. Every error of the last six turns is that one shortcut. **Low remaining context is
+a real pressure and it is not an excuse** - it changes which corners get cut, and the corner that
+got cut was always verification.
+
+**The rule: a turn that produces a FINDING owes a ticket, and file mtime cannot be the trigger.**
+The gate has to read the response, not the working tree.

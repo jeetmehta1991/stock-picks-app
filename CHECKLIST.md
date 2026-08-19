@@ -3634,3 +3634,27 @@ a live failure is not.
 **Retroactive coverage (#136):** `verify_postconfig_complete` (built B1699, wired B1702 only after
 the owner asked); `prelaunch_gate` still unwired; `verify_engine_implemented` / `verify_grid_bands`
 / `verify_spotcheck_coverage`, each built during this sweep and each hand-run only.
+
+### #225 - AN ANALYSIS-ONLY TURN PASSES EVERY GATE AND CAN STILL BE A SILENT MISS (B1705 / L500)
+
+MEASURED: three consecutive turns produced **ten findings and zero tickets**. Every mechanical gate
+passed, because **Gate B triggers on MODIFIED TRACKED FILES** and those turns changed nothing on
+disk. **Findings arrive in prose, and prose leaves no mtime.**
+
+This is **B1119 recurring** - 22 batches of silent doc-sync lapse, for the identical reason, fixed
+at the time with a sentence saying investigation-only turns still require the sweep. The sentence
+did not survive.
+
+**A turn that states a defect, a remediation, a recommendation, or an unknown owes a ticket in that
+same turn - whether or not any file changed.** The trigger must read the RESPONSE, not the working
+tree: scan for remediation language ("not built", "needs", "should be", "remediation:", "the fix
+is") and require a matching queue entry.
+
+**And the upstream cause: compressing work into fewer tool calls.** Reading part of a file, quoting
+a constant instead of its call site, building an artifact without grepping the queue first. When
+context runs short the corner that gets cut is verification - **so the response must say which
+reads were partial**, rather than presenting a partial read as a finding.
+
+**Retroactive coverage (#136):** the `OOS_MIN_N` two-floor bug (untickcted); the Step-1 holdout
+breach (unticketed); `table_c`'s PASS column, re-introduced despite `S6-B1610f` already describing
+it; B1119's original 22-batch lapse.
