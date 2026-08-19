@@ -1579,16 +1579,16 @@
       "status": "DONE"
     },
     "6_post_fix_recheck": {
-      "evidence": "outstanding - this is what the gate is for",
-      "status": "NOT_RUN"
+      "evidence": "B1700 - the B1682 regime_flip fix changes cube GENERATION, not grading. MEASURED: 302/320 rows carry the bare 'regime_flip' label, baked in at run time; re-grading cannot revive it and only a re-RUN can. Blocked on the S6-B1682b owner ruling - SKIPPED with a reason, not silently pending.",
+      "status": "SKIPPED"
     },
     "6b_equivalence_class_check": {
-      "evidence": "outstanding - this is what the gate is for",
-      "status": "NOT_RUN"
+      "evidence": "B1700 - EXECUTED: 10 classes / 16 members per config; every class holds exactly ONE (fires, exit, sharpe) outcome and class_size == len(members). PASS both configs.",
+      "status": "DONE"
     },
     "7_implement_in_engine": {
-      "evidence": "outstanding - this is what the gate is for",
-      "status": "NOT_RUN"
+      "evidence": "B1700 - EXECUTED verify_engine_implemented.py: 6 of 6 reach the engine, 0 grader-only. exit 0.",
+      "status": "DONE"
     },
     "8_verdict_with_denominators": {
       "evidence": "B1690 - 300 combos / 90-87 gradable / 49-46 distinct / PASS 0-1",
@@ -1617,16 +1617,16 @@
       "status": "DONE"
     },
     "6_post_fix_recheck": {
-      "evidence": "outstanding - this is what the gate is for",
-      "status": "NOT_RUN"
+      "evidence": "B1700 - the B1682 regime_flip fix changes cube GENERATION, not grading. MEASURED: 302/320 rows carry the bare 'regime_flip' label, baked in at run time; re-grading cannot revive it and only a re-RUN can. Blocked on the S6-B1682b owner ruling - SKIPPED with a reason, not silently pending.",
+      "status": "SKIPPED"
     },
     "6b_equivalence_class_check": {
-      "evidence": "outstanding - this is what the gate is for",
-      "status": "NOT_RUN"
+      "evidence": "B1700 - EXECUTED: 10 classes / 16 members per config; every class holds exactly ONE (fires, exit, sharpe) outcome and class_size == len(members). PASS both configs.",
+      "status": "DONE"
     },
     "7_implement_in_engine": {
-      "evidence": "outstanding - this is what the gate is for",
-      "status": "NOT_RUN"
+      "evidence": "B1700 - EXECUTED verify_engine_implemented.py: 6 of 6 reach the engine, 0 grader-only. exit 0.",
+      "status": "DONE"
     },
     "8_verdict_with_denominators": {
       "evidence": "B1690 - 300 combos / 90-87 gradable / 49-46 distinct / PASS 0-1",
