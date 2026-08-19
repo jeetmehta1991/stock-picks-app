@@ -1054,7 +1054,12 @@ def scan_skill_block_incomplete(entries, *, text=None) -> list[str]:
     t = (_assistant_text(entries) if text is None else text.lower())
     if not t or "skills invoked" not in t:
         return []                       # absence handled by the other gate
-    tail = t.split("skills invoked", 1)[1][:900]
+    # B1732: split on the FIRST occurrence read only 900 chars after it, so any
+    # EARLIER mention of the phrase - including this gate describing itself -
+    # shifted the window off the real block and fired a false positive on a
+    # response that named all three. Use the LAST occurrence: the confirmation
+    # block is by definition at the end of the turn.
+    tail = t.rsplit("skills invoked", 1)[1][:900]
     absent = [n for n in ALL_SKILLS if n not in tail]
     if not absent:
         return []

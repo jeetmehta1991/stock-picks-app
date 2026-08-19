@@ -16060,5 +16060,9 @@ def test_b1730_per_skill_gates():
     assert not ps("fable mode council this", "fable-mode llm-council")
     assert not ps("run the tests", "ls")
     assert bl("skills invoked: fable-mode, llm-council")
+    # B1732: an EARLIER mention of the phrase must not shift the window off the
+    # real block. The first version split on the FIRST occurrence and fired a
+    # false positive on a response that named all three.
+    assert not bl("skills invoked gates wired. " + "x" * 950 + " skills invoked: " + full)
     assert not bl(full)
     assert not bl("did the work")
