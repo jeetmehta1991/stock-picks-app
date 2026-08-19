@@ -3658,3 +3658,24 @@ reads were partial**, rather than presenting a partial read as a finding.
 **Retroactive coverage (#136):** the `OOS_MIN_N` two-floor bug (untickcted); the Step-1 holdout
 breach (unticketed); `table_c`'s PASS column, re-introduced despite `S6-B1610f` already describing
 it; B1119's original 22-batch lapse.
+
+### #226 - BEFORE TRUSTING A GATE'S PASS, PROVE IT CAN FAIL (B1707 / L501)
+
+The `#225` gate returned `None` and looked green. It called `_entry_text`, **which does not
+exist**, over `_read_entries()`, which returned **zero entries** - so the missing function was never
+reached. **A gate returning "clean" over an empty input is indistinguishable from a gate that
+works.**
+
+**Feed every new gate a case it MUST reject, and watch it reject.** A gate never observed failing
+has not been tested, it has been run. This matters most here because every response-scanning gate
+(`#201`, `#215`, verdict denominators) reads `sys.stdin` via `_read_entries` and sees **nothing**
+outside the Stop hook - they cannot be exercised by an ordinary invocation.
+
+**And the companion rule: VERIFY YOUR OWN CLAIMED ACTIONS.** I wrote *"Reverting."* and did not
+revert; the dead gate was still in the file a turn later. **Narrating an action is not performing
+it** - when a response claims a state change (reverted, deleted, disabled, wired), the next command
+confirms it, because the check costs one line and the false claim costs a commit.
+
+**Retroactive coverage (#136):** this inert gate; the "reverted" prune that WAS run but was only
+confirmed by luck; the `regime_flip` fix declared DONE while supplying 1 of 2 required inputs; the
+post-config gate built and left uninvoked.
