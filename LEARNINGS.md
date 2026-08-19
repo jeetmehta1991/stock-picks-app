@@ -9591,3 +9591,33 @@ in a different gate two batches later. **Fixing one gate's vocabulary does not f
 **The mechanism now built:** `scan_compliance_is_content` requires the compliance statement to cite
 **at least two CHECKLIST items by number** and carry **per-item status**. A block naming nothing is
 a heading, and a heading was passing for a check on every turn of this session.
+
+### L515
+
+**I fixed one marker list and left twelve others in the identical broken shape**
+
+**B1759, owner-caught.** *"Is fail also a keyword that triggers the gate? Fail, failure, etc.
+should also trigger."*
+
+**RAN IT.** Against the actual finding text - *"...which is the failure itself"* -
+`scan_miss_capture_complete` **stayed QUIET**. Zero of nine `MISS_MARKERS` matched, while `fail`
+and `failure` were both present. **A defect stated plainly went unticketed as a miss, which is
+exactly how `S6-B1757c` came to be filed as ANSWERED.**
+
+**This is the THIRD instance of the class L509 named.** L509 said: *encode the stem, not the
+conjugation.* I then fixed **`NARRATION_MARKERS` only** and left every other marker list in the
+same shape - including `MISS_MARKERS`, which guards the miss-capture path itself.
+
+**The retroactive sweep I should have run at L509 and did not** (and which `#237` now requires):
+**18 marker lists, 13 unstemmed.** Some are legitimately literal - `SKILL_TRIGGERS` holds phrases
+the owner types verbatim, `OPEN_EVIDENCE` holds tool names. Several are the same defect:
+`FIX_MARKERS`, `REMEDIATION_MARKERS`, `RECO_MARKERS`, `OBJECTION_MARKERS`, `RETRO_TRIGGERS`.
+
+**The general rule, and it is the one I keep re-learning at a different scale each time: a fix
+applied to the instance you were looking at is not applied to the class.** L509 stated the class
+correctly and I patched one member. **Stating the class is not sweeping it** - which is why `#237`
+had to become a gate rather than a paragraph.
+
+**`MISS_MARKERS` is now built from 16 stems x 7 suffixes = 116 entries** and fires on *the failure
+itself*, *this gate is broken*, *the sweep never ran*, *a gap in coverage* - **all four of which
+were previously invisible.**

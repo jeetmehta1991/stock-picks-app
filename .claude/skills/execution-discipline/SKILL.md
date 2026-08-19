@@ -669,6 +669,23 @@ says *each*.**
 - **Phase 5 is three artifacts**: LEARNINGS + CHECKLIST-or-explicit-citation + queue ticket.
   Enforced by `scan_miss_capture_complete`.
 
+## STEM EVERY MARKER LIST, AND SWEEP THEM ALL (B1759 - L515, CHECKLIST #239)
+
+**MEASURED: `scan_miss_capture_complete` stayed QUIET on the words *"which is the failure
+itself"*.** Zero of nine `MISS_MARKERS` matched while `fail` and `failure` were both present - so a
+plainly-stated defect went unticketed as a miss.
+
+**Third instance of the class L509 named.** L509 said *encode the stem*; I fixed
+`NARRATION_MARKERS` and left twelve other lists in the identical shape, including the one guarding
+miss-capture.
+
+- **A marker list is a claim about how a class will be WORDED.** Stem the root; the conjugations
+  come free. Enumerating remembered phrasings is guessing.
+- **When a marker list is fixed, sweep EVERY other list in the same file that turn.** 18 lists, 13
+  unstemmed - found only when the owner asked a fourth time.
+- **A fix applied to the instance in front of you is not applied to the class. Stating a class is
+  not sweeping it.**
+
 ## GATE-CONSTRUCTION RULES (B1748/B1749 - L509, CHECKLIST #233, PROVEN)
 
 **Measured: the replay harness scored 1 of 8 on this session's own errors. The first miss was the

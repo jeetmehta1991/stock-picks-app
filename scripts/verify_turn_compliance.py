@@ -1367,9 +1367,22 @@ def _artifact_touched(*paths) -> bool:
     return bool(d.strip()) or any(pp.split("/")[-1] in (c or "") for pp in paths)
 
 
-MISS_MARKERS = ("i was wrong", "my mistake", "that was a miss", "i missed",
-                "owner caught", "i failed to", "correction:", "i should have",
-                "this is a compliance failure")
+# B1759: STEMS, not conjugations - owner caught the third instance of the class
+# L509 named. That lesson fixed NARRATION_MARKERS and left this list in the same
+# broken shape. Run against the real finding text - "...which is the failure
+# itself" - this list matched NOTHING while `fail` and `failure` were both
+# present, so a defect stated plainly went unticketed as a miss.
+#
+# A marker list is a claim about how a class will be WORDED. Enumerating the
+# phrasings you happen to remember is guessing; stem the root and the
+# conjugations come free.
+_MISS_STEMS = ("fail", "miss", "wrong", "mistake", "defect", "broken", "bug",
+               "gap", "lapse", "regress", "incorrect", "unenforced",
+               "never ran", "did not fire", "does not fire", "slipped")
+MISS_MARKERS = tuple(
+    f"{st}{suf}" for st in _MISS_STEMS
+    for suf in ("", "s", "ed", "ing", "ure", "ures", "en")
+) + ("owner caught", "correction:", "i should have", "retract")
 
 
 def scan_miss_capture_complete(entries, *, text=None, observed=None) -> list[str]:

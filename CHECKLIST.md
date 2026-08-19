@@ -3921,3 +3921,23 @@ recorded this exact finding tagged **ANSWERED**, with no mechanism and no `JUDGM
 violating `#236` one turn after `#236` was written. The `#236` gate missed it because its trigger
 vocabulary covers MISS markers, not answers. **A gate's trigger vocabulary is narrower than its
 class until proven otherwise - and fixing one gate's vocabulary does not fix the others'.**
+
+### #239 - STEM EVERY MARKER LIST, AND SWEEP THEM ALL AT ONCE (B1759 / L515)
+
+**MEASURED: against the real finding text - *"...which is the failure itself"* -
+`scan_miss_capture_complete` stayed QUIET.** Zero of nine `MISS_MARKERS` matched while `fail` and
+`failure` were both present. The defect went unticketed as a miss.
+
+**Third instance of the class `L509` named.** That lesson said *encode the stem* - and I fixed
+`NARRATION_MARKERS` only.
+
+**A marker list is a CLAIM ABOUT HOW A CLASS WILL BE WORDED.** Enumerating remembered phrasings is
+guessing; stem the root and the conjugations come free.
+
+**Sweep result (18 lists, 13 unstemmed):** legitimately literal - `SKILL_TRIGGERS` (phrases the
+owner types), `OPEN_EVIDENCE` (tool names). **Same defect, ticketed:** `FIX_MARKERS`,
+`REMEDIATION_MARKERS`, `RECO_MARKERS`, `OBJECTION_MARKERS`, `RETRO_TRIGGERS`.
+
+**And the meta-rule: a fix applied to the instance in front of you is not applied to the class.**
+`L509` stated the class correctly and one member got patched. **Stating a class is not sweeping
+it** - which is why `#237` is a gate now and not a paragraph.
