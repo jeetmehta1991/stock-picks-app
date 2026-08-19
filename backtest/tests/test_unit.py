@@ -16069,3 +16069,23 @@ def test_b1730_per_skill_gates():
     assert not bl("skills invoked gates wired. " + "x" * 950 + " skills invoked: " + full)
     assert not bl(full)
     assert not bl("did the work")
+
+def test_b1737_uncosted_probe_gate():
+    '''B1737: #230 EXT mechanised - effort estimates and artifact-schema claims.
+
+    The extension shipped as PROSE only; the owner asked whether a hook existed
+    and the answer was no. Four instances in one session, the last two AFTER the
+    rule was written. Pinned in both directions per #226.
+    '''
+    import sys as _s
+    if "scripts" not in _s.path:
+        _s.path.insert(0, "scripts")
+    import verify_turn_compliance as tg
+
+    f = lambda t, tool: bool(tg.scan_uncosted_probe([], text=t, tool_text=tool))
+    assert f("the split is offline on cached cubes, seconds",
+             chr(123) + chr(34) + "command" + chr(34) + ": " + chr(34) + "git status" + chr(34) + chr(125))
+    assert not f("the split is offline on cached cubes, seconds",
+                 chr(34) + "command" + chr(34) + ": head -5 x.csv")
+    assert not f("one command and it is done", chr(34) + "file_path" + chr(34) + ": a.py")
+    assert not f("the pyramid passed and the tree is clean", "ls")

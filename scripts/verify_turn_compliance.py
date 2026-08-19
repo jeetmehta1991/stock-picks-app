@@ -1141,6 +1141,41 @@ def scan_discipline_not_loaded(entries, *, tool_text=None,
             'Skill(execution-discipline).']
 
 
+COST_WORDS = (' seconds', 'cheap', 'one command', 'trivial', 'offline on',
+              'a minute', 'minutes, not', 'costs nothing', 'no re-run')
+OPEN_EVIDENCE = ('file_path', 'grep', 'head ', 'cat ', 'read_csv', 'columns',
+                 'sed -n', 'json.load')
+
+
+def scan_uncosted_probe(entries, *, text=None, tool_text=None) -> list[str]:
+    """CHECKLIST #230 EXT (B1736/L506) mechanised: cost + schema claims.
+
+    B1737. #230 was extended in PROSE only - the owner asked whether a hook
+    existed and the honest answer was no. Four instances in one session, the
+    last two AFTER the rule was written, because a rule is learned from its
+    examples and its examples were all about tools.
+
+    Fires when the response ESTIMATES EFFORT ("seconds", "cheap", "one
+    command", "offline on cached cubes") and NO tool call this turn opened
+    anything. I specified a probe as "split by exit_reason - offline, seconds"
+    against a grid JSON that has no exit_reason column and never opened it.
+    """
+    t = (_assistant_text(entries) if text is None else text.lower())
+    if not t:
+        return []
+    hits = [w for w in COST_WORDS if w in t]
+    if not hits:
+        return []
+    tt = (_tool_text(entries) if tool_text is None else tool_text).lower()
+    if any(e in tt for e in OPEN_EVIDENCE):
+        return []
+    return [f'UNCOSTED PROBE (#230 EXT / L506): this turn estimates effort '
+            f'({chr(34)}{hits[0].strip()}{chr(34)}) but NO tool call opened an artifact. '
+            'An effort estimate is a quantitative claim, and a claim about what '
+            'a file can support is a capability claim. OPEN the artifact and '
+            'name the FIELD the work needs, or drop the estimate.']
+
+
 def check_skill_gates() -> str | None:
     """Skill invocation + the skill half of the miss-capture loop."""
     e = _read_entries()
@@ -1327,6 +1362,11 @@ def main() -> int:
     drift_block = check_describing_artifact_drift()
     if drift_block:
         print(drift_block, file=sys.stderr)
+        return 2
+
+    up_block = scan_uncosted_probe(_read_entries())
+    if up_block:
+        print(up_block[0], file=sys.stderr)
         return 2
 
     sk_block = check_skill_gates()
