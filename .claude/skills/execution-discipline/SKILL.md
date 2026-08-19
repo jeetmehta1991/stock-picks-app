@@ -567,6 +567,25 @@ detect.**
 
 Enforced by `scan_prose_only_rule()` and `scan_findings_vs_tickets()`.
 
+## GATE-CONSTRUCTION RULES (B1748/B1749 - L509, CHECKLIST #233, PROVEN)
+
+**Measured: the replay harness scored 1 of 8 on this session's own errors. The first miss was the
+error the gate was written for.**
+
+`NARRATION_MARKERS` held `"reverted"`. The incident said **`"Reverting."`** - and `"reverted"` is
+not a substring of `"reverting"`.
+
+- **Encode the STEM, not the conjugation.** A marker list written from the past tense of a
+  remembered incident matches only that tense. `revert` + ed/ing/s/d, not `reverted`.
+- **Test every marker gate on a PARAPHRASE of the incident, never its exact words.** The exact
+  words are the one phrasing that will not recur; a gate passing only on its own lineage example is
+  fitted to a single string.
+- **Every gate takes an INJECTABLE input for its evidence source** (2nd instance with B1713/L501:
+  `sys.stdin`, then `_assistant_text`). A check whose input can only arrive from live plumbing
+  cannot be validated, and will be trusted on no evidence.
+- **A gate suite is fitted to the errors that built it.** The catch-count says nothing about the
+  next error class. Report it with that caveat attached, always.
+
 ## SILENT-FALLBACK RULE (B1744 - L508, CHECKLIST #232, PROVEN)
 
 **A fallback that looks like success will be served forever.**
