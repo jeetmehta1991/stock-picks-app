@@ -15900,3 +15900,44 @@ def test_b1719_synthetic_probes_are_labelled():
         "these files generate numbers from a random source without the word "
         "SYNTHETIC, so a figure quoted from them carries no provenance: "
         + ", ".join(offenders))
+
+
+def test_b1720_response_gates_fire_and_stay_quiet():
+    """B1720: the four response-scanning gates, pinned in BOTH directions.
+
+    A gate observed only passing has not been tested (#226). The first #225
+    attempt returned clean over an empty stdin and looked green; these are
+    exercised against a supplied transcript AND supplied git state, because a
+    check whose verdict depends on ambient state you cannot inject cannot be
+    shown to fail.
+    """
+    import sys as _s
+    if "scripts" not in _s.path:
+        _s.path.insert(0, "scripts")
+    import verify_turn_compliance as tg
+
+    def probe(txt, **kw):
+        e = [{"type": "assistant",
+              "message": {"content": [{"type": "text", "text": txt}]}}]
+        return " | ".join(tg.scan_response_gates(e, **kw))
+
+    on = dict(queue_touched=True, tree_changed=True)
+
+    # each FIRES on its violation
+    assert "#225" in probe("the fix is obvious but it is not built yet",
+                           queue_touched=False, tree_changed=True)
+    assert "NARRATION" in probe("I reverted the change and removed the file",
+                                queue_touched=True, tree_changed=False)
+    assert "RETRO-SWEEP" in probe("I fixed the parser bug in the loader", **on)
+    assert "COUNCIL" in probe("I recommend option A because it is fastest", **on)
+
+    # each STAYS QUIET when the property holds
+    assert probe("the fix is obvious but it is not built yet", **on) == ""
+    assert probe("I reverted the change and removed the file", **on) == ""
+    assert probe("I fixed the parser bug; retroactive sweep found no siblings",
+                 **on) == ""
+    assert probe("I recommend option A; the case against it is cost", **on) == ""
+
+    # silence in, silence out
+    assert probe("", **on) == ""
+

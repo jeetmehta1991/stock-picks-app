@@ -714,6 +714,129 @@ def check_postconfig_complete() -> str | None:
     return ("a finished cube owes post-config steps (#223 / L498): " + " | ".join(tail))
 
 
+# ---------------------------------------------------------------------------
+# B1720: the four remaining response-scanning gates, on ONE shared primitive.
+#
+# The first #225 attempt called `_entry_text`, which did not exist, over
+# `_read_entries()`, which returned zero entries outside the Stop hook - so it
+# returned clean and looked green (L501). The primitive is DEFINED here, once,
+# and every gate below is exercised against a supplied transcript in
+# test_b1720_* before being trusted (#226).
+# ---------------------------------------------------------------------------
+def _assistant_text(entries) -> str:
+    """All assistant prose in this turn, lowercased. The thing the gates read."""
+    out = []
+    for d in entries or ():
+        if not isinstance(d, dict) or d.get("type") != "assistant":
+            continue
+        for blk in (d.get("message") or {}).get("content") or ():
+            if isinstance(blk, dict) and blk.get("type") == "text":
+                out.append(blk.get("text") or "")
+    return " ".join(out).lower()
+
+
+def _queue_touched() -> bool:
+    """EXECUTION_QUEUE.md modified in the tree OR committed in the last commit."""
+    import subprocess
+    try:
+        d = subprocess.run(["git", "status", "--porcelain", "EXECUTION_QUEUE.md"],
+                           capture_output=True, text=True, timeout=15).stdout.strip()
+        c = subprocess.run(["git", "log", "-1", "--name-only", "--format="],
+                           capture_output=True, text=True, timeout=15).stdout
+    except Exception:
+        return False                      # fail CLOSED: unknown is not "touched"
+    return bool(d) or ("EXECUTION_QUEUE.md" in (c or ""))
+
+
+REMEDIATION_MARKERS = ("not built", "not started", "not wired", "remediation:",
+                       "the fix is", "is not enforced", "no mechanical",
+                       "not yet built", "this is a bug", "is a defect",
+                       "root cause", "p0 bug", "silently overrid")
+# Completed-action claims about the WORKING TREE - verbs whose truth is checkable.
+NARRATION_MARKERS = ("reverted", "i reverted", "deleted the", "disabled the",
+                     "removed the", "restored the", "wired it", "now wired")
+# B1720b: "the fix is" belongs to REMEDIATION (a fix NOT yet made);
+# FIX_MARKERS must mean a fix SHIPPED, or the two gates collide.
+FIX_MARKERS = ("i fixed", "fixed the", "patched the", "corrected the")
+RECO_MARKERS = ("recommend", "recommendation:", "i'd recommend", "my recommendation")
+OBJECTION_MARKERS = ("contrarian", "the case against", "what could make this wrong",
+                     "objection", "argues against", "downside", "risk:")
+
+
+def scan_response_gates(entries, *, queue_touched=None,
+                        tree_changed=None) -> list[str]:
+    """The four gates. Each returns a blocking reason or nothing.
+
+    B1720b: `queue_touched` / `tree_changed` are INJECTABLE. Read from git when
+    None, which is what the Stop hook does. The first version read git inside
+    the function, so its verdict depended on ambient repo state and could not be
+    proven to fire - the same untestability that let the #225 gate return clean
+    over an empty stdin (L501). A check whose result depends on state you cannot
+    supply cannot be shown to fail.
+    """
+    t = _assistant_text(entries)
+    if not t:
+        return []                         # nothing said -> nothing to check
+    bad = []
+
+    # #225: a turn that STATES a remediation or defect owes a queue entry.
+    _qt = _queue_touched() if queue_touched is None else queue_touched
+    hits = [m for m in REMEDIATION_MARKERS if m in t]
+    if hits and not _qt:
+        bad.append("#225: this turn states a remediation or defect "
+                   f"({', '.join(sorted(set(hits))[:3])}) but EXECUTION_QUEUE.md was "
+                   "neither modified nor committed. Findings arrive in prose and "
+                   "prose leaves no mtime - which is how ten findings reached zero "
+                   "tickets (L500).")
+
+    # NARRATION (L501): claiming a tree change requires having made one.
+    nh = [m for m in NARRATION_MARKERS if m in t]
+    if nh:
+        if tree_changed is None:
+            import subprocess
+            try:
+                dirty = subprocess.run(["git", "status", "--porcelain"],
+                                       capture_output=True, text=True,
+                                       timeout=15).stdout.strip()
+                last = subprocess.run(["git", "log", "-1", "--name-only",
+                                       "--format="], capture_output=True,
+                                      text=True, timeout=15).stdout
+            except Exception:
+                dirty, last = "", ""
+            _tc = bool(dirty) or bool((last or "").strip())
+        else:
+            _tc = tree_changed
+        if not _tc:
+            bad.append(f"NARRATION (L501): this turn claims a completed action "
+                       f"({', '.join(sorted(set(nh))[:3])}) but NOTHING changed in "
+                       "the tree and nothing was committed. I once wrote "
+                       "'Reverting.' and never ran the command - narrating an "
+                       "action is not performing it.")
+
+    # RETRO-SWEEP (#136 spirit): a turn that ships a FIX re-scans for siblings.
+    if any(m in t for m in FIX_MARKERS) and "retroactive" not in t \
+            and "same class" not in t and "siblings" not in t:
+        bad.append("RETRO-SWEEP: this turn ships a fix but never states what ELSE "
+                   "breaks the same way. The GENERALIZATION MANDATE calls a patch "
+                   "leaving siblings of its class open non-compliant - name the "
+                   "class and its other instances, or say the fix is one-off and "
+                   "why.")
+
+    # COUNCIL: a recommendation carries options AND a written objection.
+    if any(m in t for m in RECO_MARKERS) and not any(m in t for m in OBJECTION_MARKERS):
+        bad.append("COUNCIL: this turn makes a recommendation with no written "
+                   "objection. The repo's own rule is that a council without a "
+                   "Contrarian lens is not a council - write the case AGAINST, "
+                   "even if it feels weak.")
+    return bad
+
+
+def check_response_gates() -> str | None:
+    """#225 / narration / retro-sweep / council, in one pass."""
+    bad = scan_response_gates(_read_entries())
+    return bad[0] if bad else None
+
+
 def check_unrecorded_miss() -> str | None:
     """Block a turn that ACKNOWLEDGED a miss without writing it to LEARNINGS."""
     try:
@@ -887,6 +1010,11 @@ def main() -> int:
     drift_block = check_describing_artifact_drift()
     if drift_block:
         print(drift_block, file=sys.stderr)
+        return 2
+
+    rg_block = check_response_gates()
+    if rg_block:
+        print(rg_block, file=sys.stderr)
         return 2
 
     pc_block = check_postconfig_complete()
