@@ -319,7 +319,9 @@ def main() -> int:
     # `gates`/`verdict` fields remain in the payload for STEP 2, but the ranking
     # below is what Step 1 hands forward.
     rankable = [r for r in rows if r.get("verdict") != "NO_EXIT_SELECTABLE"
-                and r.get("sharpe") is not None]
+                and r.get("sharpe") is not None
+                # B1718: an IS Sharpe is now REQUIRED - it is the ranking key.
+                and r.get("is_sharpe") is not None]
     # B1615 OPTION D (owner-approved 2026-08-17): rank DISTINCT OUTCOMES and
     # carry the whole equivalence class forward. Ranking ROWS meant the top 10
     # held only 4 real candidates on cfg2 - combinations differing solely in a
@@ -338,8 +340,26 @@ def main() -> int:
     # needs its own engine run; those are the sweep's CONFIGS and are never
     # carried as a class (plan section 6b).
     classes: dict[tuple, list] = {}
-    for r in sorted(rankable, key=lambda r: -(r.get("sharpe") or -9)):
-        key = (r.get("fires"), r.get("exit"), round(r.get("sharpe"), 9))
+    # B1718 P0-2 (owner-approved): rank on the IN-SAMPLE Sharpe. Ranking on
+    # `sharpe` - the HOLDOUT Sharpe - meant 300 combinations were ordered by
+    # out-of-sample performance and the top-10 carried forward: best-of-300
+    # selection on the very data reserved to judge it.
+    #
+    # This does NOT make the winners better. MEASURED Spearman between IS and
+    # holdout Sharpe is -0.779 / -0.865, so the IS-ranked top-10 will very
+    # likely score WORSE out of sample than the old holdout-ranked one. That is
+    # the point: the old number was leaked, the new one is honest. Removing a
+    # leak and finding an edge are different jobs, and only the first is a bug
+    # fix.
+    #
+    # `sharpe` remains in every row as the holdout MEASUREMENT of whatever the
+    # in-sample ranking selected - reported, never ranked on.
+    for r in sorted(rankable, key=lambda r: -(r.get("is_sharpe")
+                                              if r.get("is_sharpe") is not None else -9)):
+        # B1718: equivalence collapses on the IS Sharpe too, since that is now
+        # the ranking key - two combos with the same fires/exit/IS-Sharpe are
+        # the same STEP-1 outcome.
+        key = (r.get("fires"), r.get("exit"), round(r.get("is_sharpe"), 9))
         classes.setdefault(key, []).append(r)
     ranked = list(classes.values())[:a.top_n]
     carried = sum(len(c) for c in ranked)
