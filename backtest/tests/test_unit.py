@@ -16000,3 +16000,22 @@ def test_b1725_skill_gates():
     assert upd(True, False)
     assert not upd(True, True)
     assert not upd(False, False)
+
+def test_b1726_skill_confirmation_gate():
+    '''B1726: every turn ends with an explicit skills-invoked confirmation.
+
+    Owner standing directive. Reporting invocation only when it happened lets
+    silence mean either "not triggered" or "triggered and skipped" - which is
+    exactly how fable-mode went un-invoked for a whole session while its name
+    appeared in nearly every response. NONE is a valid and required answer.
+    '''
+    import sys as _s
+    if "scripts" not in _s.path:
+        _s.path.insert(0, "scripts")
+    import verify_turn_compliance as tg
+
+    fires = lambda t: bool(tg.scan_missing_skill_confirmation([], text=t))
+    assert fires("I did the work and it passed")
+    assert not fires("done. SKILLS INVOKED: fable-mode")
+    assert not fires("done. SKILLS INVOKED: none")
+    assert not fires("")

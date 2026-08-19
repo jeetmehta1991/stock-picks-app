@@ -1018,10 +1018,36 @@ def scan_skill_not_updated(entries, *, learnings_touched=None,
             "why the lesson is incident-specific and belongs only in LEARNINGS."]
 
 
+def scan_missing_skill_confirmation(entries, *, text=None) -> list[str]:
+    """EVERY turn ends with an explicit skills-invoked confirmation.
+
+    B1726, owner standing directive: *"In each turn i want a confirmation in the
+    end if the skills have been invoked."* Reporting invocation only when it
+    happened lets silence mean either "not triggered" or "triggered and
+    skipped" - which is precisely how fable-mode went un-invoked for the whole
+    session while the words appeared in every response.
+
+    The line must be present whether or not any skill ran. NONE is a valid and
+    required answer.
+    """
+    t = (_assistant_text(entries) if text is None else text.lower())
+    if not t:
+        return []
+    if 'skills invoked' in t:
+        return []
+    return ['MISSING SKILLS-INVOKED CONFIRMATION: every turn must end with an '
+            'explicit "SKILLS INVOKED:" line naming each skill loaded this turn, '
+            'or NONE. Owner standing directive B1726. Silence cannot distinguish '
+            '"not triggered" from "triggered and skipped" - which is how '
+            'fable-mode went un-invoked all session while its name appeared in '
+            'every response.']
+
+
 def check_skill_gates() -> str | None:
     """Skill invocation + the skill half of the miss-capture loop."""
     e = _read_entries()
-    for bad in (scan_skill_not_invoked(e), scan_skill_not_updated(e)):
+    for bad in (scan_skill_not_invoked(e), scan_skill_not_updated(e),
+                scan_missing_skill_confirmation(e)):
         if bad:
             return bad[0]
     return None
