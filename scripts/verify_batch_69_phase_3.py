@@ -9,6 +9,11 @@ in Phase 1/2:
        REVERT  - no candidate found in engine paths (true positive)
        KEEP    - at least one candidate found (engine consumes)
        UNSURE  - zero candidates extracted (classifier had no signal; manual)
+
+**HAND-RUN-ONLY (B1704).** Nothing invokes this automatically - no Stop hook, no
+pre-commit, no launcher. An audit found 12 of 16 gate scripts in this state, so
+presence is NOT enforcement (CHECKLIST #224). Run it explicitly and read its exit
+code; if you need it to bind, wire it and say where.
 """
 import re
 from pathlib import Path

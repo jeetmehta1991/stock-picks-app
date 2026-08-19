@@ -15,6 +15,11 @@ Checks (all must pass; exit 0 PASS / exit 3 FAIL with reasons):
 Usage:
   python scripts/prelaunch_gate.py --manifest run_manifest.json \
       [--ledger output_batches/batch_ledger.json]
+
+**HAND-RUN-ONLY (B1704).** Nothing invokes this automatically - no Stop hook, no
+pre-commit, no launcher. An audit found 12 of 16 gate scripts in this state, so
+presence is NOT enforcement (CHECKLIST #224). Run it explicitly and read its exit
+code; if you need it to bind, wire it and say where.
 """
 from __future__ import annotations
 

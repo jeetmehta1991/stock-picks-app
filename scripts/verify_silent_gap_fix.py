@@ -48,6 +48,11 @@ artifacts. The reviewer's SUSPICION was correct in principle (silent-gap is
 the SIGNATURE of high unexplained SHORT counts) but specifically wrong on BR-7
 post-B617. The redundancy concern (BR-7/BR-8 firing on the same trade as
 Donchian / 52w retest variants) remains live and is the real explanation.
+
+**HAND-RUN-ONLY (B1704).** Nothing invokes this automatically - no Stop hook, no
+pre-commit, no launcher. An audit found 12 of 16 gate scripts in this state, so
+presence is NOT enforcement (CHECKLIST #224). Run it explicitly and read its exit
+code; if you need it to bind, wire it and say where.
 """
 from __future__ import annotations
 

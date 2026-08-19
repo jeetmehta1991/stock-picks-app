@@ -31,6 +31,11 @@ Usage
     python scripts/verify_grid_bands.py <grid.json> --keys a,b,c --min-effect 0.10
 
 Exit codes: 0 = every level earns its place, 2 = at least one inert level.
+
+**HAND-RUN-ONLY (B1704).** Nothing invokes this automatically - no Stop hook, no
+pre-commit, no launcher. An audit found 12 of 16 gate scripts in this state, so
+presence is NOT enforcement (CHECKLIST #224). Run it explicitly and read its exit
+code; if you need it to bind, wire it and say where.
 """
 from __future__ import annotations
 

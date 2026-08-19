@@ -30,6 +30,11 @@ quietly gaining it without the table being updated.
 Usage:  python scripts/verify_engine_implemented.py
 Exit:   0 = every swept parameter is implemented or DECLARED unimplemented with
             an open ticket; 2 = an undeclared gap, or the table has drifted.
+
+**HAND-RUN-ONLY (B1704).** Nothing invokes this automatically - no Stop hook, no
+pre-commit, no launcher. An audit found 12 of 16 gate scripts in this state, so
+presence is NOT enforcement (CHECKLIST #224). Run it explicitly and read its exit
+code; if you need it to bind, wire it and say where.
 """
 from __future__ import annotations
 

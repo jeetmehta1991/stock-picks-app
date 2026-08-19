@@ -109,8 +109,15 @@ batch-1 traps. Each rule retroactively catches >=2 real past misses (#136).
    universe/ticker list, budget projection**; then answer in writing *"what
    could make this run obsolete?"* — every enumerated risk gets a mechanical
    gate or an explicit owner acceptance. Changing any pinned field mid-sequence
-   restarts the sequence. Enforced by `scripts/prelaunch_gate.py` (launcher-
-   wired; refuses launch without a passing manifest).
+   restarts the sequence. `scripts/prelaunch_gate.py` implements this check.
+   **B1704 CORRECTION - it is HAND-RUN, not launcher-wired.** This text claimed
+   "launcher-wired; refuses launch without a passing manifest"; an audit of every
+   gate in `scripts/` found it has **ZERO automatic callers**, so nothing refuses
+   anything - the launch path is a direct `run_phase1a.py` invocation that never
+   consults it. **Run it explicitly before any cost-bearing launch and paste the
+   exit code.** A capability asserted in the enforcement layer's own description
+   and contradicted by grep is the MECHANISM-EXISTENCE RULE failing against
+   itself (L499 / CHECKLIST #224).
    *Retroactive:* chunk 1 (isolation undecided, calendar unpinned), chunk 2
    (stale SHA), chunk-9 cross-arm (three enumerable confounds) — all blocked.
 
