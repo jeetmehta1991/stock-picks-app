@@ -3679,3 +3679,24 @@ confirms it, because the check costs one line and the false claim costs a commit
 **Retroactive coverage (#136):** this inert gate; the "reverted" prune that WAS run but was only
 confirmed by luck; the `regime_flip` fix declared DONE while supplying 1 of 2 required inputs; the
 post-config gate built and left uninvoked.
+
+### #227 - COMPARING TWO RANKINGS MEANS COMPUTING THE RANK CORRELATION (B1716 / L502)
+
+I compared in-sample and holdout rankings with a **top-10 overlap count**, got **0 of 10**, and
+called it *"the signature of noise"*. The actual Spearman was **-0.779 / -0.865 at p < 0.001**.
+
+**Zero overlap is consistent with rho = 0 AND with rho = -1, and those have opposite remedies.**
+Noise means the search finds nothing; inversion means the pipeline systematically prefers what
+fails. On the wrong reading I recommended ranking on in-sample Sharpe - which at rho = -0.8 selects
+the WORST out-of-sample combinations.
+
+**Compute rho (and its p-value, and the sign-agreement rate) before interpreting any two orderings.**
+An overlap count discards direction and magnitude, which are exactly what decide the next action.
+
+**And a corollary: a HALT declared on a wrong diagnosis is still worth declaring** - stopping was
+right, the reason given was not. Re-state the reason when it changes rather than leaving the
+original standing.
+
+**Retroactive coverage (#136):** this finding; the "tail_n band moves 0 of 50 groups" reading that
+needed the marginal-effect measure to become actionable; the cfg1-vs-cfg2 top-10 comparison that
+counted shared rows rather than measuring agreement.

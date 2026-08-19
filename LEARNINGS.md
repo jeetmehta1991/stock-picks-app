@@ -9188,3 +9188,34 @@ empty in any other invocation.
 
 **The rule: before trusting a gate's PASS, prove it can FAIL.** Feed it a case it must reject. A
 gate never observed rejecting anything has not been tested - it has been run.
+
+### L502
+
+**Zero overlap looked like noise. The correlation was minus 0.8**
+
+**B1716.** I measured the step-1 selection leak and found the holdout-ranked top-10 and the
+IS-ranked top-10 shared **0 of 10** combinations in both configs, with the signs inverting. I
+called that *"the signature of noise"* and declared a HALT on that reading.
+
+**One hour later I computed the actual correlation: Spearman rho = -0.779 and -0.865, both
+p < 0.001.**
+
+**Noise gives rho near ZERO.** A strong NEGATIVE rank correlation is the opposite of no signal - it
+is a systematic inversion, meaning combinations that do well in-sample do reliably badly out of
+sample. **I had a rank-agreement statistic available the whole time and reasoned from a
+top-10 overlap count instead.** Zero overlap is consistent with rho = 0 AND with rho = -1; it
+cannot distinguish them, and those two readings have opposite remedies.
+
+**The cost of the wrong reading was a recommendation that would have made things worse.** I had
+already recommended ranking on IN-SAMPLE Sharpe as "textbook separation". At rho = -0.8, IS Sharpe
+is precisely the overfit quantity - ranking on it selects the WORST out-of-sample combinations.
+Withdrawn.
+
+**The likely mechanism, labelled hypothesis:** the exit is chosen from 26 candidates on in-sample
+data, so a high IS Sharpe means the selector found the exit best fitting in-sample noise, which
+then fails out of sample. Selection-induced regression. **Falsification test that costs seconds:**
+re-grade with the exit FIXED to production instead of selected; if rho moves toward 0 the selector
+is the cause, and if it stays at -0.8 the hypothesis is wrong.
+
+**The general rule: when comparing two rankings, compute the RANK CORRELATION.** An overlap count
+throws away the direction and the magnitude - the two things that determine what you do next.
