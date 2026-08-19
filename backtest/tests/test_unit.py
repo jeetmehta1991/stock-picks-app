@@ -15941,3 +15941,33 @@ def test_b1720_response_gates_fire_and_stay_quiet():
     # silence in, silence out
     assert probe("", **on) == ""
 
+
+def test_b1721_uninspected_constant_gate():
+    """B1721 / #222: naming a constant requires having looked at it.
+
+    This gate targets the CAUSE the owner named - compressing work into fewer
+    tool calls - rather than a symptom. The other gates catch a claim with no
+    evidence; this one catches reasoning from memory of the code. MIN_N=30 was
+    quoted as the floor from the module definition while the caller passed 10.
+
+    It shipped inert THREE times: its regex carried literal backspace characters
+    where the word-boundary escape belonged, mangled by shell escaping, so it
+    could never match and reported quiet - indistinguishable from working. Pinned
+    in both directions because of that.
+    """
+    import sys as _s
+    if 'scripts' not in _s.path:
+        _s.path.insert(0, 'scripts')
+    import verify_turn_compliance as tg
+
+    def fires(txt, tool):
+        e = [{'type': 'assistant',
+              'message': {'content': [{'type': 'text', 'text': txt}]}}]
+        return bool(tg.scan_uninspected_constant(e, tool_text=tool))
+
+    assert fires('the floor is OOS_MIN_N=30', 'ls -la')
+    assert fires('MIN_N governs admission', 'ls')
+    assert fires('--min-n controls admission', 'cat f.py')
+    assert not fires('the floor is OOS_MIN_N=30', 'grep -n OOS_MIN_N rc.py')
+    assert not fires('--min-n controls admission', 'python x.py --min-n 10')
+    assert not fires('the tests passed and the tree is clean', 'ls')

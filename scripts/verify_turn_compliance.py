@@ -837,6 +837,76 @@ def check_response_gates() -> str | None:
     return bad[0] if bad else None
 
 
+def _tool_text(entries) -> str:
+    """Everything this turn actually RAN or READ - the inputs of every tool call.
+
+    B1721: the four B1720 gates catch SYMPTOMS (a claim with no evidence, a
+    finding with no ticket, a fix with no class sweep, a recommendation with no
+    objection). None catches the CAUSE the owner named: compressing work into
+    fewer tool calls - reading part of a file, answering from a module constant
+    instead of its call site. That cause is checkable, because the transcript
+    carries the tool calls: if a turn NAMES a constant it never grepped, it is
+    reasoning from memory of the code rather than the code.
+    """
+    out = []
+    for d in entries or ():
+        if not isinstance(d, dict) or d.get("type") != "assistant":
+            continue
+        for blk in (d.get("message") or {}).get("content") or ():
+            if isinstance(blk, dict) and blk.get("type") == "tool_use":
+                out.append(json.dumps(blk.get("input") or {}))
+    return " ".join(out)
+
+
+def scan_uninspected_constant(entries, *, tool_text=None) -> list[str]:
+    """#222 MECHANISED: naming a constant requires having looked at it.
+
+    Fires when the prose cites an ALL-CAPS identifier or a CLI flag and no tool
+    call this turn mentions it. `MIN_N=30` was quoted as "the floor" from the
+    module definition while the caller passed 10 - one grep of the call site
+    would have shown it, and the grep was the step that got compressed away.
+    """
+    import re
+    t = _assistant_text(entries)
+    if not t:
+        return []
+    tt = (_tool_text(entries) if tool_text is None else tool_text).lower()
+    raw = " ".join(_raw_assistant(entries))
+    # Identifiers that look like code constants, and long-form CLI flags.
+    # B1721b: this line shipped with LITERAL BACKSPACE characters where 
+    # belonged - the escape was mangled at write time, so the pattern could
+    # never match and the gate was silently inert. Exactly the class it was
+    # built to catch, in its own source.
+    names = set(re.findall(r"\b([A-Z][A-Z0-9]+(?:_[A-Z0-9]+)+)\b", raw))
+    names |= {f for f in re.findall(r"(--[a-z][a-z0-9-]{3,})", raw)}
+    missing = sorted(n for n in names if n.lower() not in tt)
+    if not missing:
+        return []
+    return [f"#222 UNINSPECTED CONSTANT: this turn names {', '.join(missing[:4])} "
+            "but no tool call touched it. Naming a constant is not reading it - "
+            "MIN_N=30 was quoted as 'the floor' while the caller passed 10, and "
+            "the grep that would have shown it was the step that got compressed "
+            "away. Grep the identifier, or do not cite it."]
+
+
+def _raw_assistant(entries) -> list:
+    """Assistant prose with case PRESERVED - constants are case-bearing."""
+    out = []
+    for d in entries or ():
+        if not isinstance(d, dict) or d.get("type") != "assistant":
+            continue
+        for blk in (d.get("message") or {}).get("content") or ():
+            if isinstance(blk, dict) and blk.get("type") == "text":
+                out.append(blk.get("text") or "")
+    return out
+
+
+def check_uninspected_constant() -> str | None:
+    """#222 auto-gate: cite a constant only if you looked at it this turn."""
+    bad = scan_uninspected_constant(_read_entries())
+    return bad[0] if bad else None
+
+
 def check_unrecorded_miss() -> str | None:
     """Block a turn that ACKNOWLEDGED a miss without writing it to LEARNINGS."""
     try:
@@ -1010,6 +1080,11 @@ def main() -> int:
     drift_block = check_describing_artifact_drift()
     if drift_block:
         print(drift_block, file=sys.stderr)
+        return 2
+
+    uc_block = check_uninspected_constant()
+    if uc_block:
+        print(uc_block, file=sys.stderr)
         return 2
 
     rg_block = check_response_gates()
