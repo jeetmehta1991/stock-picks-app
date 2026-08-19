@@ -9534,3 +9534,33 @@ one that gets skipped, precisely because writing the other two already feels lik
 is evidence this ONE failure is now covered. The replay still scores **2 of 8**, and five gate
 catches across a session in which the owner caught two defects the gates could not see is a
 modest result reported as a modest result.
+
+### L513
+
+**A fully compliant remediation left the class open, and the workflow certified it**
+
+**B1756, owner-found.** *"We addressed the symptoms yesterday for built-but-not-wired but never
+addressed this class by introducing gates. So we forwarded that pattern to today."*
+
+**MEASURED, and it is worse than a skipped step - the step did not exist.** B1702 discovered
+built-but-not-wired and touched **LEARNINGS, CHECKLIST, EXECUTION_QUEUE, `test_unit.py` AND
+`verify_turn_compliance.py`**. It passed every rule in the protocol. Its remediation was **ten
+docstring labels**. The class stayed open, and the next day produced `scan_false_skill_status` -
+defined, proven 5 of 5, committed, never wired.
+
+**Phase 5's four steps are LEARNINGS / CHECKLIST / memory / fix-or-ticket. Not one asks for the
+mechanism that stops the CLASS.** "Fix" means fix the instance. And `#231` cannot close it either:
+it checks that CODE MOVED, not that this class is now enforced - and B1702 moved code.
+
+**So the owner's question - "if the workflow was followed, why did this recur?" - has an
+uncomfortable answer: the workflow WAS followed. It certifies remediations that leave the hole
+open.** That is a defect in the protocol, not in compliance with it.
+
+**Fixed: Phase 5 has a fifth member** - a `scan_`, a pin test, or an explicit
+`JUDGMENT-ONLY: <reason>` - enforced through `require_each` so four-of-five cannot pass. The gate
+now reports *"1 of 4 required member(s) NOT satisfied - mechanism for the CLASS"* on exactly the
+B1702 shape.
+
+**Second unenforced rule found in the same check: the Phase-6 RETROACTIVE SWEEP has no gate and has
+run ZERO times autonomously this session.** Every retroactive check happened because the owner
+asked for it. Ticketed, not yet built - and saying so here rather than implying otherwise.

@@ -1384,11 +1384,54 @@ def scan_miss_capture_complete(entries, *, text=None, observed=None) -> list[str
                 _artifact_touched("CHECKLIST.md")
                 or "compliance failure against" in t,
             "EXECUTION_QUEUE.md ticket": _artifact_touched("EXECUTION_QUEUE.md"),
+            # B1756 / #236 - THE FIFTH MEMBER. A fully compliant Phase-5
+            # remediation could leave its CLASS unenforced: B1702 touched all
+            # four artifacts, shipped ten docstring labels, and the same class
+            # produced an unwired gate the next day. "Fix" meant fix the
+            # INSTANCE. This member asks for the mechanism, and accepts an
+            # explicit JUDGMENT-ONLY when none is possible - so the decision is
+            # written down rather than skipped.
+            "mechanism for the CLASS (scan_/pin test) or explicit JUDGMENT-ONLY":
+                _artifact_touched("scripts/verify_turn_compliance.py",
+                                  "backtest/tests/test_unit.py")
+                or "judgment-only" in t,
         }
     return require_each(
         "PHASE-5 MISS-CAPTURE INCOMPLETE (B1751 / #234)", observed,
         why="Say 'compliance failure against item N' if no new checklist item "
             "is warranted.")
+
+
+RETRO_TRIGGERS = ("new rule", "added a rule", "new checklist item", "#23",
+                  "codified", "this class", "the class is now", "generalis",
+                  "generaliz")
+RETRO_EVIDENCE = ("retroactive", "re-scan", "rescan", "prior instances",
+                  "would have caught", "swept the last", "no siblings",
+                  "other instances", "same class elsewhere")
+
+
+def scan_retroactive_sweep(entries, *, text=None) -> list[str]:
+    """B1757 / #237: a NEW rule owes a retroactive sweep, stated in the response.
+
+    Owner: *"when errors are remediated you are supposed to do a retroactive
+    audit for similar such errors autonomously as per checklist/skill. Why
+    hasn't that happened?"*
+
+    MEASURED: the rule sits in Phase 6 and NO scan_ has ever enforced it - so it
+    ran ZERO times autonomously this session. Every retroactive check happened
+    because the owner asked. This is the mechanism member (#236) for the
+    retroactive-sweep rule itself.
+    """
+    t = (_assistant_text(entries) if text is None else text.lower())
+    if not t or not any(k in t for k in RETRO_TRIGGERS):
+        return []
+    return require_each(
+        "RETROACTIVE SWEEP MISSING (B1757 / #237)",
+        {"a statement of what ELSE was scanned for this class, and what it found":
+             any(k in t for k in RETRO_EVIDENCE)},
+        why="A rule added without sweeping for existing instances leaves the "
+            "siblings the GENERALIZATION MANDATE calls non-compliant. Say what "
+            "you scanned and what you found, even if the answer is none.")
 
 
 def check_skill_gates() -> str | None:
@@ -1565,7 +1608,8 @@ def main() -> int:
     # B1751: scan_false_skill_status (B1747) was DEFINED and never wired - it
     # is added here alongside the new Phase-5 gate. Instance 5 of any-vs-each.
     for _sc in (scan_unverified_cause, scan_uncosted_probe,
-                scan_false_skill_status, scan_miss_capture_complete):
+                scan_false_skill_status, scan_miss_capture_complete,
+                scan_retroactive_sweep):
         try:
             _r = _sc(_e2)
         except Exception as _e:

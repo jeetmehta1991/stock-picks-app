@@ -3885,3 +3885,23 @@ failure, not a defence against one.
 **Companion, from the same turn:** when asked to CONFIRM coverage, MEASURE it. A 10-errors x
 4-artifacts table took one command and found **9 of 10 complete with one real gap** - which the
 assertion "yes, all covered" would have missed.
+
+### #236 - PHASE 5 IS FIVE MEMBERS; THE FIFTH IS THE MECHANISM (B1756 / L512 / L513)
+
+**A fully compliant Phase-5 remediation can leave its class unenforced.** B1702 touched LEARNINGS,
+CHECKLIST, EXECUTION_QUEUE, `test_unit.py` and `verify_turn_compliance.py` - passed every rule -
+and its remediation was **ten docstring labels**. The next day the same class produced a gate that
+was defined, proven 5/5, committed and never wired.
+
+**Phase 5's four steps never asked for a mechanism.** "Fix" means fix the INSTANCE. `#231` checks
+that code MOVED, not that the CLASS is enforced.
+
+**Fifth member, required: a `scan_`, a pin test, or an explicit `JUDGMENT-ONLY: <reason>`.**
+Enforced via `require_each` so four-of-five cannot pass.
+
+**Evidence it is not optional (L512):** between two catches of the same omission, the full skill -
+containing ANCHOR-THE-RULE, which states the rule - was auto-injected on **every turn**. The
+behaviour did not change. **A 14-line scanner caught both.**
+
+**Companion:** the Phase-6 retroactive sweep has **no gate** and has run **zero times
+autonomously** this session.

@@ -567,6 +567,38 @@ detect.**
 
 Enforced by `scan_prose_only_rule()` and `scan_findings_vs_tickets()`.
 
+## PHASE 5 HAS A FIFTH MEMBER: THE MECHANISM (B1756 - L512/L513, CHECKLIST #236)
+
+**The defect the owner found: a FULLY COMPLIANT Phase-5 remediation can leave its class entirely
+unenforced.**
+
+B1702 discovered built-but-not-wired, and touched **LEARNINGS, CHECKLIST, EXECUTION_QUEUE,
+`test_unit.py` AND `verify_turn_compliance.py`**. It passed every rule we had. Its remediation was
+**ten docstring labels**. The class stayed open, and the next day it produced
+`scan_false_skill_status` - defined, proven 5/5, committed, never wired.
+
+**Phase 5's four steps say LEARNINGS / CHECKLIST / memory / fix-or-ticket. None says "build the
+mechanism that stops this CLASS."** "Fix" means fix the instance. `#231` does not close it either -
+it checks that CODE MOVED, not that THIS class is now enforced, and B1702 moved code.
+
+**So Phase 5 now has FIVE members, enforced through `require_each`:**
+
+1. LEARNINGS entry
+2. CHECKLIST item, or an explicit `compliance failure against item N`
+3. EXECUTION_QUEUE ticket
+4. Fix or ticket for the instance
+5. **A MECHANISM FOR THE CLASS - a `scan_`, a pin test, or an explicit
+   `JUDGMENT-ONLY: <why no mechanism is possible>`**
+
+**And L512's evidence for why member 5 is not optional:** between the two `scan_skill_not_updated`
+catches the **full skill was auto-injected every turn**, containing ANCHOR-THE-RULE, which says
+exactly this. **The rule was in context, verbatim, and the behaviour did not change. A 14-line
+scanner caught both.** That is the measurement, not the argument.
+
+**Retroactive sweep is also unenforced** - the rule exists in Phase 6 and **no `scan_` has ever
+checked it**, so it has run zero times autonomously this session. Every retroactive check happened
+because the owner asked.
+
 ## CITING A RULE IS NOT THE RULE RUNNING (B1753 - L511, CHECKLIST #235)
 
 **MEASURED: `#224` - *a gate nobody calls is not enforcement* - was a checklist paragraph plus ten
