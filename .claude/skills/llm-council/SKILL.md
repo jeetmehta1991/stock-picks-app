@@ -7,9 +7,9 @@ description: "Use when a decision is expensive to get wrong and there is genuine
 
 You ask one AI a question, you get one answer. That answer might be great. It might be mid. You have no way to tell because you only saw one perspective.
 
-The council fixes this. It runs your question through 5 independent advisors, each thinking from a fundamentally different angle. Then they review each other's work. Then a chairman synthesizes everything into a final recommendation that tells you where the advisors agree, where they clash, and what you should actually do.
+The council fixes this. It runs your question through 5 independent advisors, each thinking from a fundamentally different angle. Their answers are then cross-evaluated anonymously, and a chairman synthesis pulls everything into a final recommendation that tells you where the advisors agree, where they clash, and what you should actually do.
 
-This is adapted from Andrej Karpathy's LLM Council. He dispatches queries to multiple models, has them peer-review each other anonymously, then a chairman produces the final answer. We do the same thing inside Claude using sub-agents with different thinking lenses instead of different models.
+This is adapted from Andrej Karpathy's LLM Council. He dispatches queries to multiple models, has them peer-review each other anonymously, then a chairman produces the final answer. We do the same thing inside Claude using sub-agents with different thinking lenses instead of different models - with one deliberate departure: **only the five advisors are spawned.** The anonymized review and the chairman synthesis run inline, because independence is what the ADVISORS need, while review and synthesis are judgment over material already in hand.
 
 ## When to run the council
 
@@ -86,7 +86,7 @@ If the question is too vague ("council this: my business"), ask one clarifying q
 
 Save the framed question for the transcript.
 
-### Step 2: Convene the council (5 sub-agents in parallel)
+### Step 2: Convene the council (5 sub-agents in parallel - the only spawns)
 
 Spawn all 5 advisors simultaneously as sub-agents. Each gets:
 
@@ -114,22 +114,31 @@ Respond from your perspective. Be direct and specific. Don't hedge or try to be 
 Keep your response between 150-300 words. No preamble. Go straight into your analysis.
 ```
 
-### Step 3: Peer review (5 sub-agents in parallel)
+### Step 3: Peer review (inline, anonymized)
 
 This is the step that makes the council more than just "ask 5 times." It's the core of Karpathy's insight.
 
 Collect all 5 advisor responses. Anonymize them as Response A through E (randomize which advisor maps to which letter so there's no positional bias).
 
-Spawn 5 new sub-agents, one for each advisor. Each reviewer sees all 5 anonymized responses and answers three questions:
+**Do this INLINE in the main thread - do not spawn reviewer sub-agents.** Working from the 5
+anonymized responses, answer the three questions below yourself, once, across the whole set.
+
+**Fidelity note, stated honestly:** Karpathy's original has each advisor review the others
+independently, which surfaces disagreement *about the reviews themselves*. One inline pass loses
+that. What it keeps is the mechanism that matters most - **anonymized cross-evaluation**, so a
+response is judged on merit rather than on which lens produced it. Read all five before writing
+anything, so the first response does not anchor the rest.
+
+The three questions:
 
 1. Which response is the strongest and why? (pick one)
 2. Which response has the biggest blind spot and what is it?
 3. What did ALL responses miss that the council should consider?
 
-**Reviewer prompt template:**
+**Reviewer framing (apply to yourself, inline):**
 
 ```
-You are reviewing the outputs of an LLM Council. Five advisors independently answered this question:
+Review the outputs of the council. Five advisors independently answered this question:
 
 ---
 [framed question]
@@ -161,9 +170,11 @@ Answer these three questions. Be specific. Reference responses by letter.
 Keep your review under 200 words. Be direct.
 ```
 
-### Step 4: Chairman synthesis
+### Step 4: Chairman synthesis (inline)
 
-This is the final step. One agent gets everything: the original question, all 5 advisor responses (now de-anonymized so you can see which advisor said what), and all 5 peer reviews.
+**Also INLINE - do not spawn a chairman sub-agent.** You now hold everything: the original
+question, all 5 advisor responses (de-anonymized, so you can see which advisor said what), and
+the peer-review pass.
 
 The chairman's job is to produce the final council output. It follows this structure:
 
@@ -175,10 +186,10 @@ The chairman's job is to produce the final council output. It follows this struc
 - **The recommendation** — a clear, actionable recommendation. Not "it depends." Not "consider both sides." A real answer. The chairman can disagree with the majority if the reasoning supports it.
 - **The one thing you should do first** — a single concrete next step. Not a list of 10 things. One thing.
 
-**Chairman prompt template:**
+**Chairman framing (apply to yourself, inline):**
 
 ```
-You are the Chairman of an LLM Council. Your job is to synthesize the work of 5 advisors and their peer reviews into a final verdict.
+Act as Chairman. Synthesize the work of 5 advisors and their peer reviews into a final verdict.
 
 The question brought to the council:
 ---
@@ -280,7 +291,12 @@ Only save a transcript if the user asks for it or if the question is significant
 
 ## Important notes
 
-- **Always spawn all 5 advisors in parallel.** Sequential spawning wastes time and lets earlier responses bleed into later ones.
+- **Spawn exactly 5 sub-agents - the advisors - and spawn them in parallel.** Sequential spawning
+  wastes time and lets earlier responses bleed into later ones. **The advisors are the only
+  sub-agents this skill spawns.** Peer review (Step 3) and chairman synthesis (Step 4) run inline
+  in the main thread, because independence is what the ADVISORS need - review and synthesis are
+  judgment over material already in hand, and spawning eleven agents for one decision is
+  disproportionate.
 - **Always anonymize for peer review.** If reviewers know which advisor said what, they'll defer to certain thinking styles instead of evaluating on merit.
 - **The chairman can disagree with the majority.** If 4 out of 5 advisors say "do it" but the reasoning of the 1 dissenter is strongest, the chairman should side with the dissenter and explain why.
 - **Don't council trivial questions.** If the user asks something with one right answer, just answer it. The council is for genuine uncertainty where multiple perspectives add value.
