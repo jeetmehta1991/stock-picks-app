@@ -16019,3 +16019,21 @@ def test_b1726_skill_confirmation_gate():
     assert not fires("done. SKILLS INVOKED: fable-mode")
     assert not fires("done. SKILLS INVOKED: none")
     assert not fires("")
+
+def test_b1728_discipline_load_gate():
+    '''B1728: a substantive turn must LOAD the full execution-discipline skill.
+
+    Owner directive: "I want the full 632 lines loaded each turn." The hook
+    injects 12 bullets; invoking the skill delivers all 644. The gap is entirely
+    whether the Skill tool ran - the truncation seen earlier was COMPACTION, not
+    a design limit.
+    '''
+    import sys as _s
+    if "scripts" not in _s.path:
+        _s.path.insert(0, "scripts")
+    import verify_turn_compliance as tg
+
+    f = lambda t: bool(tg.scan_discipline_not_loaded([], tool_text=t))
+    assert f(chr(123)+chr(34)+'command'+chr(34)+': '+chr(34)+'git commit'+chr(34)+chr(125))
+    assert not f(chr(34)+'command'+chr(34)+' execution-discipline')
+    assert not f(chr(123)+chr(125))

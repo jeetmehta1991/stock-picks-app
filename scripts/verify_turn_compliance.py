@@ -1043,11 +1043,48 @@ def scan_missing_skill_confirmation(entries, *, text=None) -> list[str]:
             'every response.']
 
 
+def scan_discipline_not_loaded(entries, *, tool_text=None,
+                              substantive=None) -> list[str]:
+    """A working turn must LOAD the full execution-discipline skill.
+
+    B1728, owner directive: *"I want the full 632 lines loaded each turn!"*
+
+    MEASURED: the UserPromptSubmit hook injects a 12-bullet summary; the full
+    SKILL.md is 644 lines. Invoking the skill DOES deliver all 644 - what I had
+    seen before was a copy truncated by COMPACTION, not a design limit. So the
+    difference between 12 lines and 644 is entirely whether the Skill tool ran.
+
+    The 632 unloaded lines are not filler. They hold #182 verdict-scope, the
+    POST-FIX RE-CHECK rule, B1446 no-arbitrary-decisions, the 20-row tripwire
+    table and the anchor-the-rule rule - every one of which this session
+    violated while the 12-bullet summary sat in context saying otherwise.
+
+    Substantive = the turn ran a tool that changes or inspects the repo. A pure
+    acknowledgement does not owe a 644-line load.
+    """
+    tt = (_tool_text(entries) if tool_text is None else tool_text)
+    if substantive is None:
+        substantive = any(k in tt for k in ('"command"', '"file_path"',
+                                            '"old_string"', '"pattern"'))
+    if not substantive:
+        return []
+    if 'execution-discipline' in tt:
+        return []
+    return ['EXECUTION-DISCIPLINE NOT LOADED: this turn did substantive work '
+            'with only the 12-bullet hook summary in context. The full skill is '
+            '644 lines and invoking it delivers all of them. The 632 lines the '
+            'summary omits hold #182 verdict-scope, the POST-FIX RE-CHECK rule, '
+            'B1446 no-arbitrary-decisions and the tripwire table - all violated '
+            'this session while the summary sat in context. Invoke '
+            'Skill(execution-discipline).']
+
+
 def check_skill_gates() -> str | None:
     """Skill invocation + the skill half of the miss-capture loop."""
     e = _read_entries()
     for bad in (scan_skill_not_invoked(e), scan_skill_not_updated(e),
-                scan_missing_skill_confirmation(e)):
+                scan_missing_skill_confirmation(e),
+                scan_discipline_not_loaded(e)):
         if bad:
             return bad[0]
     return None
