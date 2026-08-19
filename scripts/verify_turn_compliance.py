@@ -584,6 +584,14 @@ def scan_unmeasured_quantity(entries):
             blob.extend(c.get("text", "") for c in content
                         if isinstance(c, dict) and c.get("type") == "text")
     low = " ".join(blob).lower()
+    # B1738: strip BACKTICK-QUOTED spans before matching. A response that
+    # DESCRIBES a gate by listing its trigger vocabulary was firing the gate -
+    # this one blocked a turn whose only "costs nothing" was inside a list of
+    # the new gate's own trigger words. Second instance of the class (the
+    # skills-block gate tripped on its own name), so the fix is a shared
+    # convention: vocabulary shown in backticks is a MENTION, not a USE.
+    import re as _re
+    low = _re.sub(r"`[^`]*`", " ", low)
     if not low:
         return []
     hits = [q for q in QUANT_CLAIMS if q in low]

@@ -16089,3 +16089,27 @@ def test_b1737_uncosted_probe_gate():
                  chr(34) + "command" + chr(34) + ": head -5 x.csv")
     assert not f("one command and it is done", chr(34) + "file_path" + chr(34) + ": a.py")
     assert not f("the pyramid passed and the tree is clean", "ls")
+
+def test_b1738_mention_vs_use():
+    '''B1738: a gate must not fire on text that QUOTES its own trigger vocabulary.
+
+    Describing a new gate by listing its trigger words blocked the turn. Second
+    instance of the class - the skills-block gate tripped on its own name - so
+    the convention is shared: vocabulary in backticks is a MENTION, not a USE.
+    '''
+    import sys as _s
+    if "scripts" not in _s.path:
+        _s.path.insert(0, "scripts")
+    import verify_turn_compliance as tg
+
+    def probe(txt):
+        e = [{"type": "user", "message": {"content": "go"}},
+             {"type": "assistant",
+              "message": {"content": [{"type": "text", "text": txt}]}}]
+        return bool(tg.scan_unmeasured_quantity(e))
+
+    BT = chr(96)
+    assert probe("this change costs nothing")
+    assert not probe("trigger words are " + BT + "costs nothing" + BT + " and others")
+    assert not probe("it costs nothing: 2x3.3=6.6h vs 6.6h, I ran the arithmetic")
+    assert not probe("the tests passed")
