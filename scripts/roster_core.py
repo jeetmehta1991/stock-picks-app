@@ -165,7 +165,10 @@ def evaluate(pnl: pd.Series, hold: pd.Series, *, min_n: int | None = None,
     n = len(pnl)
     if n < min_n:
         return None
-    sh = _sharpe(pnl.values, hold)
+    # B1714 P0-1: pass the CALLER'S floor. Previously this called _sharpe with
+    # no floor, so OOS_MIN_N=30 governed regardless of `min_n` - the owner's
+    # --min-n 10 controlled admission and nothing else.
+    sh = _sharpe(pnl.values, hold, min_n=min_n)
     sharpe = sh["sharpe"] if sh else None
     sortino = _sortino_ratio(pnl, hold)
     dsr = _deflated_sharpe(sharpe or 0.0, n, float(pnl.skew()), float(pnl.kurtosis()))

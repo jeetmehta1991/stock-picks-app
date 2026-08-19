@@ -59,15 +59,28 @@ def _friction(df, args):
     return df
 
 
-def _sharpe(a, hold):
-    """ANNUALIZED per-trade Sharpe, IDENTICAL to backtest/results/metrics.py::_sharpe
-    (B1371 fix): per_trade_sharpe * sqrt(252/avg_hold). The gate threshold 0.7 was
-    calibrated against this annualized number; the prior version returned raw
-    per-trade mean/std, which is ~sqrt(trades/yr) too small and made the 0.7 bar
-    effectively require an annualized Sharpe of ~5 (owner-surfaced, only 10/4758
-    passed)."""
+def _sharpe(a, hold, min_n: int | None = None):
+    """B1714 P0-1: `min_n` is now EXPLICIT and defaults to OOS_MIN_N.
+
+    Owner ruling: *"There should be no over riding my min n=10 command."*
+    `roster_core` imports this function and `evaluate(min_n=...)` accepted a
+    caller floor for ADMISSION - but the Sharpe itself was gated by the module
+    constant OOS_MIN_N=30, a PER-FOLD WALK-FORWARD floor, silently governing a
+    non-walk-forward grading path. MEASURED: n=10/20/29 returned a verdict with
+    `sharpe=None`; n=30 returned a Sharpe. The 16-29 band sat between two floors
+    and the caller could not move the one that bound.
+
+    The constant remains the DEFAULT so every walk-forward caller is unchanged;
+    only callers that pass a floor now get the floor they asked for.
+    """
+    # ANNUALIZED per-trade Sharpe, IDENTICAL to backtest/results/metrics.py::_sharpe
+    # (B1371 fix): per_trade_sharpe * sqrt(252/avg_hold). The gate threshold 0.7
+    # was calibrated against this annualized number; the prior version returned
+    # raw per-trade mean/std, ~sqrt(trades/yr) too small, making the 0.7 bar
+    # effectively require an annualized Sharpe of ~5 (owner-surfaced, only 10/4758
+    # passed).
     n = len(a)
-    if n < OOS_MIN_N:
+    if n < (OOS_MIN_N if min_n is None else min_n):
         return None
     std = a.std(ddof=1) if n > 1 else 0.0
     if std <= 0:
