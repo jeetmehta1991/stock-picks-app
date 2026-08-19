@@ -3727,8 +3727,8 @@ turns.
 ### #229 - A LIMITATION YOU HAVE NOT TESTED IS AN OMISSION YOU HAVE NOT NOTICED (B1729 / L504)
 
 I told the owner the execution-discipline skill loads as *"12 of 644 lines"*, framed the missing
-632 as structural, and offered a design trade-off to work around it. **Invoking it delivers all
-644.** The truncated copy I reasoned from was cut by COMPACTION - the re-invocation said so in its
+the missing 632 as structural, and offered a design trade-off to work around it. **Invoking it delivers all
+all 644.** The truncated copy I reasoned from was cut by COMPACTION - the re-invocation said
 first line. **There was never a ceiling; there was an un-run tool call.**
 
 **Before describing anything as a limitation - of a tool, a format, a budget, an API, a file
@@ -3747,3 +3747,23 @@ while being described to the owner as structurally unavailable.
 **Retroactive:** this; the "response-scanning gates cannot be tested" conclusion that a
 `TURN_GATE_TRANSCRIPT` argument dissolved (B1713); the "26-way exit selection causes the inversion"
 hypothesis disproven by one group-by (B1717).
+
+### #230 - A CLAIM ABOUT A CAPABILITY IS A CLAIM, AND NEEDS THE SAME EVIDENCE (B1731 / L505)
+
+The Truth Standard's four evidence classes are stated in terms of DATA - counts, coverage, fire
+rates, test totals. **Every worked example is a measurement.** So claims about the SYSTEM ITSELF
+slip past: what a tool can load, what a format permits, what a budget allows, what a context window
+holds. They feel like background rather than findings.
+
+**MEASURED consequence:** I would never publish a cell count without running it. I published *"the
+skill loads as 12 of 644 lines"* having run nothing - and offered the owner a design trade-off
+built on it. Invoking the skill delivers all 644.
+
+**Before stating what any tool, format, file, interface or limit CAN or CANNOT do, run the probe
+that settles it, or label it UNVERIFIED.** The evidence classes apply unchanged; capability claims
+are not a lighter category.
+
+**And this is a COMPLIANCE failure, not a new class** - Truth Standard rule 1 already says an
+UNVERIFIED claim stated as fact is a fabrication. This item exists because the rule's examples all
+pointed at data and I read the scope narrowly. **A rule whose examples share one shape gets applied
+to that shape only.**

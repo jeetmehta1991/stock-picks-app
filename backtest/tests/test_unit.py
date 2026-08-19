@@ -16037,3 +16037,28 @@ def test_b1728_discipline_load_gate():
     assert f(chr(123)+chr(34)+'command'+chr(34)+': '+chr(34)+'git commit'+chr(34)+chr(125))
     assert not f(chr(34)+'command'+chr(34)+' execution-discipline')
     assert not f(chr(123)+chr(125))
+
+def test_b1730_per_skill_gates():
+    '''B1730: each triggered skill needs its OWN invocation; the block names all 3.
+
+    Owner: "I want this format fixed for every turn. No exception and no lies!"
+    The B1725 gate accepted ANY Skill call, so invoking two skills masked
+    skipping llm-council when its trigger was present (S6-B1729c).
+    '''
+    import sys as _s
+    if "scripts" not in _s.path:
+        _s.path.insert(0, "scripts")
+    import verify_turn_compliance as tg
+
+    ps = lambda u, t: bool(tg.scan_skill_not_invoked_per_skill([], user_text=u,
+                                                              tool_text=t))
+    bl = lambda x: bool(tg.scan_skill_block_incomplete([], text=x))
+    full = ("skills invoked: execution-discipline FULLY LOADED, "
+            "fable-mode FULLY LOADED, llm-council NOT-TRIGGERED")
+
+    assert ps("fable mode council this", "fable-mode")
+    assert not ps("fable mode council this", "fable-mode llm-council")
+    assert not ps("run the tests", "ls")
+    assert bl("skills invoked: fable-mode, llm-council")
+    assert not bl(full)
+    assert not bl("did the work")

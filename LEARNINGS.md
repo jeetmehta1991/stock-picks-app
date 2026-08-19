@@ -9277,3 +9277,31 @@ unavailable.**
 **The rule: before describing anything as a limitation, run the cheapest probe that would
 distinguish a limitation from an omission.** A constraint you have not tested is a hypothesis
 wearing a constraint's clothes.
+
+### L505
+
+**The Truth Standard already banned it. I broke it anyway, and it was a compliance failure**
+
+**B1731, owner question:** *"This is a lie you developed and you can't lie or fabricate or make any
+assumptions! Isn't that a part of the skill itself?!"*
+
+**It is.** TRUTH & EVIDENCE STANDARD rule 1, verbatim: *"`DERIVED` - arithmetic/logic from EXECUTED
+or READ inputs, shown explicitly... `UNVERIFIED` - anything else... **An UNVERIFIED claim stated as
+fact is a fabrication.**"* I fused two facts into a mechanism and stated the mechanism as fact.
+**That is not a missing rule. It is a compliance failure against the highest-priority rule in the
+skill** - and per Phase 5.2 that belongs in the L-entry, not in a new checklist item.
+
+**But there IS a real gap, and it is narrow.** Every example in the Truth Standard is about the
+DATA: counts, coverage, fire rates, test totals. **None is about the SYSTEM'S OWN CAPABILITIES** -
+what a tool can load, what a format permits, what a budget allows. Those claims feel like context
+rather than findings, so they bypass the evidence-class discipline entirely. **I would never have
+published "121 gradable cells" without running it; I published "12 of 644 lines load" without
+running anything.**
+
+**On the owner's harder question - how do we ensure you can never lie:** honestly, no mechanism
+reaches that. Gates catch checkable classes: a number with no probe, a constant never grepped, a
+verdict with no denominator. **This class was not checkable until #229 named its tell** - a
+mechanism that explains your own failures. What CAN be guaranteed is narrower and worth stating
+plainly: **every claim about a capability now requires the same EXECUTED evidence as a claim about
+data.** The probe was one tool call, and its absence is what made the sentence a fabrication rather
+than a mistake.

@@ -93,6 +93,16 @@ it wins over speed, over completeness, over looking finished.
    ACTION rule (L361, widening what you DO without approval) - this covers
    scope-of-CONCLUSION.
 
+9. **CAPABILITY CLAIMS ARE CLAIMS (B1731 / L505 / CHECKLIST #230).** Every
+   example above is about DATA - counts, coverage, fire rates. **Claims about
+   the SYSTEM ITSELF slip past**: what a tool can load, what a format permits,
+   what a budget allows. They feel like background rather than findings.
+   *MEASURED:* I would never publish a cell count unrun; I published *"the skill
+   loads as 12 of 644 lines"* having run nothing, and built an owner-facing
+   trade-off on it. Invoking it delivers all 644. **Run the probe that settles a
+   capability, or label it UNVERIFIED - the four evidence classes apply
+   unchanged.**
+
 7. **"I don't know" and "this failed" are always compliant answers.**
    Reporting a failed test, an interrupted run, or an unresolved question
    accurately is success; dressing it up is the violation.

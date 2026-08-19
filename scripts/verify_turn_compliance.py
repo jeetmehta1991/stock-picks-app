@@ -1018,6 +1018,53 @@ def scan_skill_not_updated(entries, *, learnings_touched=None,
             "why the lesson is incident-specific and belongs only in LEARNINGS."]
 
 
+# B1730: per-skill trigger map. The B1725 gate accepted ANY Skill call, so
+# invoking execution-discipline + fable-mode masked skipping llm-council when
+# "Council this" was in the message. Each triggered skill now needs ITS OWN
+# invocation, and the confirmation block must name ALL THREE with a status.
+SKILL_TRIGGER_MAP = {
+    "fable-mode": ("fable mode", "think like fable", "use the fable",
+                   "work like fable", "slow down and do this right",
+                   "think this through first"),
+    "llm-council": ("council this", "council it", "run the council",
+                    "convene the council", "llm council",
+                    "get me five perspectives"),
+    "execution-discipline": ("execution discipline", "execution-discipline"),
+}
+ALL_SKILLS = tuple(SKILL_TRIGGER_MAP)
+
+
+def scan_skill_not_invoked_per_skill(entries, *, user_text=None,
+                                     tool_text=None) -> list[str]:
+    """EACH triggered skill requires ITS OWN invocation."""
+    u = _last_user_text(entries) if user_text is None else user_text.lower()
+    tt = (_tool_text(entries) if tool_text is None else tool_text).lower()
+    missing = [name for name, trigs in SKILL_TRIGGER_MAP.items()
+               if any(t in u for t in trigs) and name not in tt]
+    if not missing:
+        return []
+    return [f"SKILL NOT INVOKED (per-skill): {', '.join(missing)} "
+            "triggered by the request but never invoked. Invoking a DIFFERENT "
+            "skill does not satisfy a trigger - that is how llm-council was "
+            "skipped while two others ran (S6-B1729c)."]
+
+
+def scan_skill_block_incomplete(entries, *, text=None) -> list[str]:
+    """The confirmation block must name ALL THREE skills, each with a status."""
+    t = (_assistant_text(entries) if text is None else text.lower())
+    if not t or "skills invoked" not in t:
+        return []                       # absence handled by the other gate
+    tail = t.split("skills invoked", 1)[1][:900]
+    absent = [n for n in ALL_SKILLS if n not in tail]
+    if not absent:
+        return []
+    return [f"SKILLS-INVOKED BLOCK INCOMPLETE: {', '.join(absent)} not named. "
+            "Owner directive B1730: every turn lists ALL THREE skills with an "
+            "explicit status - FULLY LOADED / TRIGGERED-NOT-INVOKED / "
+            "NOT-TRIGGERED / ALWAYS-ON. Omitting one lets silence stand in for "
+            "a status."]
+
+
 def scan_missing_skill_confirmation(entries, *, text=None) -> list[str]:
     """EVERY turn ends with an explicit skills-invoked confirmation.
 
@@ -1084,7 +1131,9 @@ def check_skill_gates() -> str | None:
     e = _read_entries()
     for bad in (scan_skill_not_invoked(e), scan_skill_not_updated(e),
                 scan_missing_skill_confirmation(e),
-                scan_discipline_not_loaded(e)):
+                scan_discipline_not_loaded(e),
+                scan_skill_not_invoked_per_skill(e),
+                scan_skill_block_incomplete(e)):
         if bad:
             return bad[0]
     return None
