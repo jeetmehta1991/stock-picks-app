@@ -1,3 +1,5 @@
+# PROVENANCE: RANDOM-SAMPLING-OF-REAL-DATA - the seed picks WHICH real strategies
+#             to re-run; the numbers themselves are real (CHECKLIST #201, B1719).
 # Source: PATH_TO_PHASE_1B_ALPHA.md Section 13.7 launch gate #14 per CHECKLIST #77.
 """B970 (2026-06-21): Phase P1 batch 30 - Stream V reproducibility verifier.
 

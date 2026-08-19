@@ -1,3 +1,6 @@
+# PROVENANCE: RANDOM-SAMPLING-OF-REAL-DATA - the RNG selects WHICH real tickers
+#             to measure; it does not generate values. Outputs are real
+#             measurements over a random subset (CHECKLIST #201, B1719).
 """scripts/measure_fire_count.py
 
 Fire-count MEASUREMENT pass.

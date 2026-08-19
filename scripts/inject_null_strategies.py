@@ -1,3 +1,6 @@
+# PROVENANCE: SYNTHETIC - null strategies are GENERATED from a seeded RNG by
+#             design; that is the point of a null. Figures from them are not
+#             measurements of the real roster (CHECKLIST #201, B1719).
 # Source: PATH_TO_PHASE_1B_ALPHA.md Section 13.3 row 16 per CHECKLIST #77.
 """B965 (2026-06-20): inject 5 null negative-control strategies into Stream E.
 

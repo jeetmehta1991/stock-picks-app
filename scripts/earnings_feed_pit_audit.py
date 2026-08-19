@@ -1,3 +1,6 @@
+# PROVENANCE: SYNTHETIC - this module GENERATES numbers from a seeded RNG.
+#             Any figure quoted from its output must be labelled SYNTHETIC at
+#             the point of quotation (CHECKLIST #201 provenance half, B1719).
 # Source: external reviewer 2026-06-11 per CHECKLIST #77
 """
 earnings_feed_pit_audit.py
