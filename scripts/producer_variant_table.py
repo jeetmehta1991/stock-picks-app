@@ -202,6 +202,66 @@ def table_a(spec: dict) -> list[str]:
     return rows
 
 
+def table_c(grids: dict[str, dict]) -> list[str]:
+    """POST RUN CONFIG TABLE - one row per config, the whole funnel across it.
+
+    B1701, owner directive: the post-config numbers were being reported as prose
+    and were "pretty much unreadable". This is the third fixed template
+    alongside TABLE A (parameter inventory) and TABLE B (combination results),
+    and it answers ONE question: of everything this config tried, how much
+    survived, and where did the rest stop?
+
+    The columns are the funnel IN ORDER, because every drop-off has a different
+    cause and lumping them hides which one is binding:
+
+      combos      every parameter combination enumerated
+      no-exit     died at exit SELECTION - no exit cleared min_n IN-SAMPLE, so
+                  grading never happened. This is the dominant loss (85pct at
+                  wave 1) and it is a SAMPLE-SIZE fact, not a quality verdict.
+      graded      reached evaluate() and produced a Sharpe
+      distinct    graded outcomes after equivalence-class collapse - combinations
+                  differing only in a SATURATED parameter are the SAME fire set,
+                  so counting rows overstates the evidence (L473)
+      PASS        cleared all 6 LIVE_GATES on the holdout
+      best        the top distinct outcome by ci_lo, not Sharpe (L455: the higher
+                  Sharpe can carry a NEGATIVE lower bound)
+
+    `graded + no_exit + zero_fires` must equal `combos`; the renderer asserts it
+    rather than trusting the arithmetic.
+    """
+    rows = ["| config | combos | no-exit | no-Sharpe | graded | distinct | **PASS** | best Sharpe | best CI-lo | best combination |",
+            "|---|---|---|---|---|---|---|---|---|---|"]
+    for name, g in grids.items():
+        res = g.get("results", [])
+        graded = [r for r in res if r.get("sharpe") is not None]
+        no_exit = [r for r in res if r.get("verdict") == "NO_EXIT_SELECTABLE"]
+        zero = [r for r in res if r.get("verdict") == "ZERO_FIRES"]
+        # B1701: the FOURTH bucket, found because the reconciliation assert
+        # fired on its first render. These rows HAVE a verdict but no Sharpe -
+        # evaluate() returned a dict and `_sharpe` did not, at holdout_n 16-29.
+        # Without this bucket 31-66 rows per config vanished from the funnel,
+        # which is exactly the silent loss the assert exists to catch.
+        no_sh = [r for r in res if r.get("sharpe") is None
+                 and r.get("verdict") not in ("NO_EXIT_SELECTABLE", "ZERO_FIRES")]
+        other = len(res) - len(graded) - len(no_exit) - len(zero) - len(no_sh)
+        pas = [r for r in graded if r.get("verdict") == "PASS"]
+        rank = g.get("step1_ranking") or []
+        top = max(rank, key=lambda r: (r.get("ci_lo") if r.get("ci_lo") is not None else -9)) if rank else None
+        if top:
+            a = top["admit"]
+            combo = (f"cm={a['close_mitigation']} brk={_fmt(a['break_pct_max'])} "
+                     f"age={_fmt(a['age_bars_max'])} tail={a['tail_n']} / {a['exit']}")
+            sh, cl = f"{top['sharpe']:.3f}", f"{top['ci_lo']:+.3f}"
+        else:
+            combo, sh, cl = "-", "-", "-"
+        rows.append(f"| `{name}` | {len(res)} | {len(no_exit)} | {len(no_sh)} | {len(graded)} | "
+                    f"{g.get('step1_distinct_outcomes', '-')} | **{len(pas)}** | {sh} | {cl} | {combo} |")
+        if other:
+            rows.append(f"| | | | | | | | | | **UNCLASSIFIED {other} rows - the funnel does not "
+                        f"reconcile, do not trust this row** |")
+    return rows
+
+
 def table_b(results: list[dict], keys: list[str]) -> list[str]:
     """Every metric roster_core.evaluate() computes, split GATED vs DIAGNOSTIC.
 

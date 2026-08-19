@@ -317,28 +317,28 @@
       "status": "DONE"
     },
     "4_three_leg_spot_check": {
-      "evidence": "outstanding - this is what the gate is for",
-      "status": "NOT_RUN"
+      "evidence": "B1702 - the three-leg spot check was BUILT at B1634, AFTER cfg1/cfg2 ran, and it re-derives from a cube's own OHLCV at run time. It cannot be applied retroactively to a cube whose run is over. SKIPPED with a reason; wave 1 onward carries it (100pct on all three legs).",
+      "status": "SKIPPED"
     },
     "5_adversarial_lens_review": {
-      "evidence": "outstanding - this is what the gate is for",
-      "status": "NOT_RUN"
+      "evidence": "B1615/B1619 - the cfg1/cfg2 lens pass is what SURFACED the tail_n band defect (0 of 50 groups moved at 10->20) and the equivalence-class defect (top 10 held 4 real candidates). Both became owner-approved changes.",
+      "status": "DONE"
     },
     "6_post_fix_recheck": {
-      "evidence": "outstanding - this is what the gate is for",
-      "status": "NOT_RUN"
+      "evidence": "B1702 - same as wave 1: the B1682 regime_flip fix changes cube GENERATION, not grading, so re-grading an existing cube cannot revive the exit. cfg1/cfg2 are additionally SUPERSEDED by wave 1 on their shared parameters.",
+      "status": "SKIPPED"
     },
     "6b_equivalence_class_check": {
-      "evidence": "outstanding - this is what the gate is for",
-      "status": "NOT_RUN"
+      "evidence": "B1702 - EXECUTED: cfg1 10 classes / 12 members, cfg2 10 classes / 21 members; every class holds exactly ONE (fires, exit, sharpe) outcome. PASS both.",
+      "status": "DONE"
     },
     "7_implement_in_engine": {
-      "evidence": "outstanding - this is what the gate is for",
-      "status": "NOT_RUN"
+      "evidence": "B1702 - verify_engine_implemented.py exit 0, 6 of 6 parameters reach the engine. Config-independent: it audits the code path, not the run.",
+      "status": "DONE"
     },
     "8_verdict_with_denominators": {
-      "evidence": "outstanding - this is what the gate is for",
-      "status": "NOT_RUN"
+      "evidence": "B1702 - rendered in the POST RUN CONFIG TABLE (table_c). cfg1: 300 combos / 181 no-exit / 34 no-Sharpe / 85 graded / 48 distinct / PASS 0. cfg2: 300 / 97 / 66 / 132 / 69 / PASS 4.",
+      "status": "DONE"
     }
   },
   "output_cfg2": {
@@ -355,28 +355,28 @@
       "status": "DONE"
     },
     "4_three_leg_spot_check": {
-      "evidence": "outstanding - this is what the gate is for",
-      "status": "NOT_RUN"
+      "evidence": "B1702 - the three-leg spot check was BUILT at B1634, AFTER cfg1/cfg2 ran, and it re-derives from a cube's own OHLCV at run time. It cannot be applied retroactively to a cube whose run is over. SKIPPED with a reason; wave 1 onward carries it (100pct on all three legs).",
+      "status": "SKIPPED"
     },
     "5_adversarial_lens_review": {
-      "evidence": "outstanding - this is what the gate is for",
-      "status": "NOT_RUN"
+      "evidence": "B1615/B1619 - the cfg1/cfg2 lens pass is what SURFACED the tail_n band defect (0 of 50 groups moved at 10->20) and the equivalence-class defect (top 10 held 4 real candidates). Both became owner-approved changes.",
+      "status": "DONE"
     },
     "6_post_fix_recheck": {
-      "evidence": "outstanding - this is what the gate is for",
-      "status": "NOT_RUN"
+      "evidence": "B1702 - same as wave 1: the B1682 regime_flip fix changes cube GENERATION, not grading, so re-grading an existing cube cannot revive the exit. cfg1/cfg2 are additionally SUPERSEDED by wave 1 on their shared parameters.",
+      "status": "SKIPPED"
     },
     "6b_equivalence_class_check": {
-      "evidence": "outstanding - this is what the gate is for",
-      "status": "NOT_RUN"
+      "evidence": "B1702 - EXECUTED: cfg1 10 classes / 12 members, cfg2 10 classes / 21 members; every class holds exactly ONE (fires, exit, sharpe) outcome. PASS both.",
+      "status": "DONE"
     },
     "7_implement_in_engine": {
-      "evidence": "outstanding - this is what the gate is for",
-      "status": "NOT_RUN"
+      "evidence": "B1702 - verify_engine_implemented.py exit 0, 6 of 6 parameters reach the engine. Config-independent: it audits the code path, not the run.",
+      "status": "DONE"
     },
     "8_verdict_with_denominators": {
-      "evidence": "outstanding - this is what the gate is for",
-      "status": "NOT_RUN"
+      "evidence": "B1702 - rendered in the POST RUN CONFIG TABLE (table_c). cfg1: 300 combos / 181 no-exit / 34 no-Sharpe / 85 graded / 48 distinct / PASS 0. cfg2: 300 / 97 / 66 / 132 / 69 / PASS 4.",
+      "status": "DONE"
     }
   },
   "output_chunk11": {

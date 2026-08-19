@@ -3612,3 +3612,25 @@ mechanism that was working.
 **Retroactive coverage (#136):** the post-config sequence skipped four times; the drift class named
 three times and fixed as instances; the GENERALIZATION MANDATE satisfied in letter by stating a
 class while leaving siblings open.
+
+### #224 - A GATE NOBODY CALLS IS DOCUMENTATION WITH AN EXIT CODE (B1702 / L499)
+
+MEASURED: **16 gate scripts, 4 with an automatic caller, 12 built and never wired** - including
+`prelaunch_gate.py`, which the skill describes as *"launcher-wired"* and which nothing invokes.
+
+**Building a gate is half the work; the wire is the other half, and it belongs in the SAME turn.**
+State the invoker explicitly - Stop hook, pre-commit, launcher - or label the script
+**HAND-RUN-ONLY** so nobody mistakes it for enforcement. "It exists and returns the right exit
+code" is not enforcement.
+
+**And confession is not remediation.** Disclosing a gap in prose - "I built it and didn't turn it
+on" - buys the credit of having seen it while leaving it open. The disclosure gets a TICKET and a
+fix in the same turn, or it is not a disclosure, it is a hedge.
+
+**Corollary on pin tests:** when a new gate makes an old assertion false, ask whether the property
+got MORE true or less. Updating a test to a superseded contract is legitimate; editing one to hide
+a live failure is not.
+
+**Retroactive coverage (#136):** `verify_postconfig_complete` (built B1699, wired B1702 only after
+the owner asked); `prelaunch_gate` still unwired; `verify_engine_implemented` / `verify_grid_bands`
+/ `verify_spotcheck_coverage`, each built during this sweep and each hand-run only.

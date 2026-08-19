@@ -12622,7 +12622,19 @@ def test_b1255_turn_gate_verifier(tmp_path, monkeypatch):
                "check_monitor_armed", "check_compliance_marker"):
         if hasattr(tg, _g):
             monkeypatch.setattr(tg, _g, lambda *a, **k: None)
-    assert tg.main() == 0, "clean tree must fast-pass"
+    # B1702 (owner-approved): the CONTRACT CHANGED. Before #223 a clean tree
+    # meant a compliant turn. It no longer does - a tree can be clean while a
+    # finished cube still OWES post-config steps, because doing the work and
+    # recording it are different things. This pins the new property: clean tree
+    # AND no post-config debt => fast-pass. Weakening the gate to keep the old
+    # assertion true was the available shortcut, and is exactly what L499 is about.
+    import subprocess as _sp
+    _pc = _sp.run([sys.executable, "scripts/verify_postconfig_complete.py", "--quiet"],
+                  capture_output=True, text=True, timeout=120)
+    assert _pc.returncode == 0, (
+        "a finished cube owes post-config steps - the turn gate is CORRECT to block; "
+        f"dispose them in the ledger: {_pc.stdout}")
+    assert tg.main() == 0, "clean tree with no post-config debt must fast-pass"
     monkeypatch.setattr(tg, "get_modified_tracked",
                         lambda: [" M backtest/mod.py", " M SOME_DOC.md"])
     assert tg.main() == 2, "dirty tracked tree must block with exit 2"

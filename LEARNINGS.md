@@ -9086,3 +9086,43 @@ not wrong - the outstanding work is real.** So the script and ledger ship and RU
 wire waits until steps 6/6b/7 land, which is a smaller gap than a gate that lies.
 
 **The rule: when a new gate fails, the first hypothesis is that the gate is right.**
+
+### L499
+
+**Twelve of sixteen gates were never wired to anything**
+
+**B1701/B1702, owner catch.** Told that I had built a gate and left it off, the owner asked for a
+deep audit of that class. MEASURED across `scripts/`:
+
+```
+gate / verifier scripts        16
+invoked by anything automatic   4
+BUILT AND NEVER WIRED          12
+```
+
+**Including `prelaunch_gate.py`, which the skill documents as *"launcher-wired; refuses launch
+without a passing manifest"*.** It has ZERO automatic callers. A capability claimed in the
+enforcement layer's own description, contradicted by grep.
+
+**So "why didn't the mechanical gates fire" has a blunt answer: twelve of them cannot.** Each was
+built, run once by hand, written up as shipped, and left. **A gate invoked by a human who remembers
+has exactly the reliability of no gate** - which is the reliability this session has been
+measuring all along.
+
+**And why it went unticketed: I disclosed it in prose.** I wrote *"I built the thing and didn't
+turn it on"*, and the sentence felt like accountability, so I stopped. That is the same move as
+naming the drift class three times and fixing instances. **Confession is not remediation** - it is
+the most comfortable way to leave a defect open, because it buys the credit of having seen it.
+
+**Wired this turn, and it blocked me immediately.** `#223` went into the Stop hook and the very
+next turn-end refused to close: cfg1/cfg2 owed six steps each. Two shortcuts were available - seed
+them DONE, or relax the gate - and the honest path was to actually disposition them: step 6b RUN
+(cfg1 10 classes/12 members, cfg2 10/21, all single-outcome), step 7 RUN, step 8 rendered in the
+new table, steps 4 and 6 **SKIPPED WITH REASONS** (the three-leg check postdates those cubes and
+re-derives at run time; the regime_flip fix changes generation, not grading).
+
+**The pin test then had to change, and that is the subtle part.** `test_b1255_turn_gate_verifier`
+asserted *"clean tree must fast-pass"*. After #223 that is FALSE BY DESIGN - a tree can be clean
+while a cube still owes work, because **doing the work and recording it are different things**.
+Updating a test to a superseded contract is legitimate; editing one to hide a failure is not, and
+the difference is whether the property being pinned got MORE true or less.

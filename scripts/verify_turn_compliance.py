@@ -678,6 +678,26 @@ def check_describing_artifact_drift() -> str | None:
             "(#221 / L495): " + " | ".join(tail[-4:]))
 
 
+def check_postconfig_complete() -> str | None:
+    """#223 auto-gate: a finished cube owes a COMPLETE post-config ledger.
+
+    B1699 built this and B1701 turned it on. Between those two the script
+    existed, ran, returned the right exit code - and was invoked by NOTHING.
+    An audit of every gate in `scripts/` found 12 of 16 in that state, so this
+    was not an oversight but the house style (L499 / #224).
+    """
+    import subprocess
+    try:
+        r = subprocess.run([sys.executable, "scripts/verify_postconfig_complete.py",
+                            "--quiet"], capture_output=True, text=True, timeout=120)
+    except Exception as exc:
+        return f"post-config ledger check could not run ({exc!r}) - fail CLOSED"
+    if r.returncode == 0:
+        return None
+    tail = [l for l in (r.stdout or "").strip().splitlines() if ":" in l][-3:]
+    return ("a finished cube owes post-config steps (#223 / L498): " + " | ".join(tail))
+
+
 def check_unrecorded_miss() -> str | None:
     """Block a turn that ACKNOWLEDGED a miss without writing it to LEARNINGS."""
     try:
@@ -851,6 +871,11 @@ def main() -> int:
     drift_block = check_describing_artifact_drift()
     if drift_block:
         print(drift_block, file=sys.stderr)
+        return 2
+
+    pc_block = check_postconfig_complete()
+    if pc_block:
+        print(pc_block, file=sys.stderr)
         return 2
 
     quant_block = check_unmeasured_quantity()
