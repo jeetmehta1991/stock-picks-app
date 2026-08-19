@@ -1277,6 +1277,44 @@ def scan_findings_vs_tickets(entries, *, text=None, rows=None) -> list[str]:
             "went unrecorded. Ticket each, or fold them into one row explicitly."]
 
 
+def scan_false_skill_status(entries, *, text=None, injected=None) -> list[str]:
+    """B1747: the SKILLS INVOKED line must match what was ACTUALLY injected.
+
+    Owner caught this: since B1744 the hook delivers the FULL 732-line skill on
+    every turn, and I kept reporting "ALWAYS-ON (12-bullet hook summary; full
+    skill not invoked this turn)" - a stale template copied forward without
+    re-checking what arrived.
+
+    That is the session's root cause - reporting a state not observed - inside
+    the very line meant to PROVE compliance. And B1726's confirmation gate
+    checks the line EXISTS, not that it is TRUE, so it passed the false claim
+    every turn. Existence gates cannot catch content lies; this one compares the
+    claim against the observable injection.
+    """
+    t = (_assistant_text(entries) if text is None else text.lower())
+    if not t or "skills invoked" not in t:
+        return []
+    if injected is None:
+        u = _last_user_text(entries)
+        injected = "full skill, auto-injected" in u
+    if not injected:
+        return []
+    tail = t.split("skills invoked", 1)[1][:600]
+    STALE = ("12-bullet", "12 bullet", "hook summary", "not invoked this turn",
+             "always-on")
+    hit = [m for m in STALE if m in tail]
+    if not hit and "execution-discipline" in tail:
+        return []
+    if hit:
+        return [f"FALSE SKILL STATUS (B1747): the injection this turn WAS the "
+                f"full skill, but the SKILLS INVOKED block says "
+                f"{hit[0]!r}. Reporting a state you did not observe - the "
+                "session's root cause, inside the line meant to prove "
+                "compliance. Report execution-discipline as FULLY LOADED "
+                "(auto-injected)."]
+    return []
+
+
 def check_skill_gates() -> str | None:
     """Skill invocation + the skill half of the miss-capture loop."""
     e = _read_entries()

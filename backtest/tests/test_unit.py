@@ -16154,3 +16154,23 @@ def test_b1739_prose_and_ticket_gates():
     assert not bool(tg.scan_findings_vs_tickets(
         _blocks("this is a bug" + NL + "not built", "all fixed now"), rows=0))
     assert bool(tg.scan_findings_vs_tickets(_blocks("ok", "this is a bug"), rows=0))
+
+def test_b1747_false_skill_status():
+    '''B1747: the SKILLS INVOKED line must match what was actually injected.
+
+    Since B1744 the hook delivers the full 732-line skill every turn, and the
+    status line kept saying "12-bullet hook summary; full skill not invoked" -
+    a stale template copied forward. B1726 checks the line EXISTS, not that it
+    is TRUE, so it passed the false claim every turn.
+    '''
+    import sys as _s
+    if "scripts" not in _s.path:
+        _s.path.insert(0, "scripts")
+    import verify_turn_compliance as tg
+
+    f = lambda t, inj: bool(tg.scan_false_skill_status([], text=t, injected=inj))
+    assert f("SKILLS INVOKED: execution-discipline ALWAYS-ON (12-bullet)", True)
+    assert f("SKILLS INVOKED: execution-discipline not invoked this turn", True)
+    assert not f("SKILLS INVOKED: execution-discipline FULLY LOADED", True)
+    assert not f("SKILLS INVOKED: execution-discipline ALWAYS-ON (12-bullet)", False)
+    assert not f("the tests passed", True)
