@@ -3905,3 +3905,19 @@ behaviour did not change. **A 14-line scanner caught both.**
 
 **Companion:** the Phase-6 retroactive sweep has **no gate** and has run **zero times
 autonomously** this session.
+
+### #238 - THE COMPLIANCE STATEMENT MUST CITE ITEMS, NOT EXIST (B1758 / L514)
+
+**`check_compliance_marker` asserted only `commit_made and not marker`** - that a compliance BLOCK
+is present. **It never asked which items were applied.** So a block naming nothing passed on every
+turn, and any checklist item without its own mechanism was enforced solely by remembering to
+consult it - **which is the failure the checklist exists to prevent**.
+
+**The statement must cite at least two CHECKLIST items by number and carry a per-item status.**
+Enforced by `scan_compliance_is_content`.
+
+**And the meta-lesson (L514): a defect phrased as an ANSWER is still a defect.** `S6-B1757c`
+recorded this exact finding tagged **ANSWERED**, with no mechanism and no `JUDGMENT-ONLY` -
+violating `#236` one turn after `#236` was written. The `#236` gate missed it because its trigger
+vocabulary covers MISS markers, not answers. **A gate's trigger vocabulary is narrower than its
+class until proven otherwise - and fixing one gate's vocabulary does not fix the others'.**

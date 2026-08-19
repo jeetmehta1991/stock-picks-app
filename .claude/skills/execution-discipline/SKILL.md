@@ -567,6 +567,23 @@ detect.**
 
 Enforced by `scan_prose_only_rule()` and `scan_findings_vs_tickets()`.
 
+## COMPLIANCE IS CONTENT, AND AN ANSWER CAN BE A DEFECT (B1758 - L514, CHECKLIST #238)
+
+**`check_compliance_marker` asserted only that a compliance BLOCK exists** - never which items were
+applied. A block naming nothing passed on every turn of an entire session, so **any checklist item
+without its own mechanism was enforced solely by remembering to consult it.** That is the answer to
+*"why didn't checklist membership prevent it?"* - **membership was never checked**.
+
+- **The compliance statement cites at least two CHECKLIST items by number, with per-item status.**
+  Enforced by `scan_compliance_is_content`.
+- **A defect phrased as an ANSWER is still a defect.** This finding was ticketed **ANSWERED**, with
+  no mechanism and no `JUDGMENT-ONLY` - violating `#236` one turn after `#236` was written.
+  A question mark in the owner's sentence made it feel like an inquiry to satisfy rather than a
+  finding to fix.
+- **A gate's trigger vocabulary is narrower than its class until proven otherwise.** `#236`'s gate
+  keys on MISS markers and missed a defect written as an answer - L509's marker-stem lesson
+  recurring in a different gate. **Fixing one gate's vocabulary does not fix the others'.**
+
 ## PHASE 5 HAS A FIFTH MEMBER: THE MECHANISM (B1756 - L512/L513, CHECKLIST #236)
 
 **The defect the owner found: a FULLY COMPLIANT Phase-5 remediation can leave its class entirely

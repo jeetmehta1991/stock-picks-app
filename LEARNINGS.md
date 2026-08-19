@@ -9564,3 +9564,30 @@ B1702 shape.
 **Second unenforced rule found in the same check: the Phase-6 RETROACTIVE SWEEP has no gate and has
 run ZERO times autonomously this session.** Every retroactive check happened because the owner
 asked for it. Ticketed, not yet built - and saying so here rather than implying otherwise.
+
+### L514
+
+**I found the deepest defect in the layer and filed it as an ANSWER**
+
+**B1758, owner-caught.** Asked why CHECKLIST membership had not prevented two recurring errors, I
+gave the correct answer - **checklist compliance is itself prose; `check_compliance_marker` asserts
+only that a compliance BLOCK exists, never which items were applied** - ticketed it as
+`S6-B1757c`, tagged it **ANSWERED**, and moved on.
+
+**The ticket names no mechanism and declares no `JUDGMENT-ONLY`. It violates `#236`, the rule I
+built one turn earlier.**
+
+**Answering a question about a defect is not remediating the defect.** L499 recorded that
+confession is not remediation; this is the same shape with a different surface - the response was
+*true, complete and closed the wrong thing*. A question mark at the end of the owner's sentence
+made it feel like an inquiry to satisfy rather than a finding to fix.
+
+**Why the `#236` gate did not catch it, and this is the reusable part:**
+`scan_miss_capture_complete` triggers on MISS markers - *"i was wrong"*, *"owner caught"*,
+*"correction:"*. I phrased a defect as an **answer**, so no marker matched. **A gate's trigger
+vocabulary was narrower than the class it guards** - exactly L509's marker-stem lesson, recurring
+in a different gate two batches later. **Fixing one gate's vocabulary does not fix the others'.**
+
+**The mechanism now built:** `scan_compliance_is_content` requires the compliance statement to cite
+**at least two CHECKLIST items by number** and carry **per-item status**. A block naming nothing is
+a heading, and a heading was passing for a check on every turn of this session.

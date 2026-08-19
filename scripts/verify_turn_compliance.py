@@ -1434,6 +1434,42 @@ def scan_retroactive_sweep(entries, *, text=None) -> list[str]:
             "you scanned and what you found, even if the answer is none.")
 
 
+def scan_compliance_is_content(entries, *, text=None) -> list[str]:
+    """B1758 / #238: the compliance statement must CITE ITEMS, not merely exist.
+
+    Owner: *"if its added in checklist and checklist compliance is mandatory as
+    per skill, why the above two errors?"*
+
+    Because CHECKLIST COMPLIANCE WAS ITSELF PROSE. `check_compliance_marker`
+    asserts only `commit_made and not marker` - that a compliance BLOCK exists.
+    It never asked which items were applied, so a block naming nothing passed,
+    and an item with no mechanism was enforced solely by remembering to consult
+    it. That is the existence-vs-content gap (B1747) at the level of the
+    protocol's own compliance check.
+
+    This requires the statement to name at least two CHECKLIST items by number
+    and carry a per-item status, so "compliance" cannot be satisfied by a
+    heading.
+    """
+    import re
+    t = (_assistant_text(entries) if text is None else text.lower())
+    if not t or "checklist compliance" not in t:
+        return []
+    tail = t.split("checklist compliance", 1)[1][:2500]
+    items = set(re.findall(r"#(\d{2,3})", tail))
+    # B1758b: build the status glyphs from code points - the C1 UNICODE gate
+    # bans literal emoji/arrows in runtime code, and a heredoc had collapsed the
+    # escapes into real characters.
+    _GLYPHS = (chr(0x2705), chr(0x1F534), chr(0x26A0), "n/a", "done", "satisfied")
+    status = sum(tail.count(m) for m in _GLYPHS)
+    return require_each(
+        "COMPLIANCE STATEMENT IS A HEADING, NOT A CHECK (B1758 / #238)",
+        {"cites at least 2 CHECKLIST items by number": len(items) >= 2,
+         "carries a per-item status": status >= 2},
+        why="check_compliance_marker only asserted the block EXISTS. A block "
+            "naming no items is a heading. Cite the items you applied.")
+
+
 def check_skill_gates() -> str | None:
     """Skill invocation + the skill half of the miss-capture loop."""
     e = _read_entries()
@@ -1609,7 +1645,7 @@ def main() -> int:
     # is added here alongside the new Phase-5 gate. Instance 5 of any-vs-each.
     for _sc in (scan_unverified_cause, scan_uncosted_probe,
                 scan_false_skill_status, scan_miss_capture_complete,
-                scan_retroactive_sweep):
+                scan_retroactive_sweep, scan_compliance_is_content):
         try:
             _r = _sc(_e2)
         except Exception as _e:
