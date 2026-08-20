@@ -1215,7 +1215,10 @@ def scan_uncosted_probe(entries, *, text=None, tool_text=None) -> list[str]:
     hits = [w for w in COST_WORDS if w in t]
     if not hits:
         return []
-    tt = (_tool_text(entries) if tool_text is None else tool_text).lower()
+    # B1774: strip AUTHORED payloads first - writing the word "grep"
+    # inside a document is not inspecting anything.
+    tt = _tool_invocations(
+        (_tool_text(entries) if tool_text is None else tool_text)).lower()
     if any(e in tt for e in OPEN_EVIDENCE):
         return []
     return [f'UNCOSTED PROBE (#230 EXT / L506): this turn estimates effort '
@@ -1707,6 +1710,55 @@ def _affirms(text: str, markers, *, window: int = 60) -> list[str]:
         if ok:
             out.append(m)
     return out
+
+
+# B1774: MENTION-VS-USE ON THE EXEMPTION SIDE.
+#
+# MEASURED: `scan_uncosted_probe` exempts a turn when its tool text contains an
+# OPEN_EVIDENCE marker ("grep", "read_csv", "sed -n"...). Those markers were
+# matched against the WHOLE tool payload, so a Write whose CONTENT merely
+# mentions the word satisfied the exemption:
+#
+#   {"name":"Write","input":{"content":"You can grep the cube to check."}}
+#     -> gate EXEMPTED. No data was inspected. Writing about inspection counted
+#        as inspection.
+#
+# B1738 fixed the mention-vs-use class on the RESPONSE side by stripping
+# backticked spans. **The tool side was never stripped**, and per L528 the
+# exemption is the half where looseness passes violations silently.
+#
+# Evidence of inspection lives in what you RAN - a command, a pattern, a path
+# being read - never in a blob you authored.
+_WRITTEN_FIELDS = ("content", "new_string", "old_string", "prompt", "text",
+                   "description", "body", "message")
+
+# B1774b: stripping authored FIELDS was not enough. `file_path` is itself an
+# OPEN_EVIDENCE marker and EVERY Write/Edit carries one, so **writing any file
+# counted as having inspected the data** - a wider hole than the content case
+# that motivated the fix. Evidence of inspection can only come from a tool that
+# READS; mutating calls are dropped whole.
+_MUTATING_TOOLS = ("Write", "Edit", "NotebookEdit", "MultiEdit")
+
+
+def _tool_invocations(tool_text: str) -> str:
+    """Tool text with AUTHORED payloads removed.
+
+    Strips the value of any field whose contents are text this turn WROTE, so
+    an evidence marker can only match something actually executed.
+    """
+    import re as _re
+    t = tool_text or ""
+    for tool in _MUTATING_TOOLS:
+        # drop the whole call object for a mutating tool, balanced-brace-free:
+        # cut from its "name" marker to the start of the next tool call.
+        t = _re.sub(rf'\{{[^{{}}]*"name"\s*:\s*"{tool}".*?(?=\{{[^{{}}]*"name"|$)',
+                    " ", t, flags=_re.S)
+    for f in _WRITTEN_FIELDS:
+        # "field": "....."  (non-greedy, tolerant of escaped quotes)
+        t = _re.sub(rf'"{f}"\s*:\s*"(?:[^"\\]|\\.)*"', f'"{f}":""', t)
+        # 'field': '.....'
+        t = _re.sub(rf"'{f}'\s*:\s*'(?:[^'\\]|\\.)*'", f"'{f}':''", t)
+    return t
 
 def _marker_hits(text: str, markers, *, stems: bool = False) -> list[str]:
     """Return markers present in `text`.

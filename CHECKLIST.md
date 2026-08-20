@@ -4244,3 +4244,24 @@ un-negated within its own clause. Enforced by `test_b1773_exemptions_are_negatio
 declared this defect *"confirmed live"* from a probe whose trigger never fired, then probed
 `PROOF_PHRASES` with two words absent from it. **A test whose input cannot engage the code proves
 nothing, and reads exactly like a pass.**
+
+### #254 - INSPECTION EVIDENCE COMES FROM READS, NEVER FROM WRITES (B1774 / L529)
+
+**MEASURED: writing any file exempted a turn from the uncosted-probe gate.** `file_path` is an
+`OPEN_EVIDENCE` marker and every `Write`/`Edit` carries one, so **no data need ever have been read.**
+A narrower hole preceded it: a `Write` whose CONTENT merely mentioned *grep* also satisfied the
+exemption - **`#B1738` fixed mention-vs-use for the RESPONSE side and left the TOOL side untouched.**
+
+**Before matching any evidence marker against tool text, drop mutating calls whole and blank
+authored payload fields** (`_tool_invocations`). Verify BOTH directions: a real `Read` must still
+exempt, and a `Write` followed by a `Read` must still exempt.
+
+**Companion rule - do not call work manual until you have tested that it is.** `S6-B1773f` claimed
+the remaining match sites *"each need a judgment call; a sweep cannot decide"*. **The control flow
+decides it**: `if <match>: return []` is an EXEMPTION, `if not <match>: return []` is a DETECTION.
+16 sites classified mechanically - 4 and 12. **Asserting that something cannot be automated, without
+trying, is the same armchair claim as asserting a mechanism exists without checking.**
+
+**And check a flagged site before converting it.** `scan_unverified_structure` was flagged purely
+for not calling `_affirms`; it uses a set intersection on tool NAMES - exact matching, no exposure.
+**The absence of a fix is not the presence of a defect.**

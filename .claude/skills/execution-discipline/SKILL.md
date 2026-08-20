@@ -669,6 +669,25 @@ says *each*.**
 - **Phase 5 is three artifacts**: LEARNINGS + CHECKLIST-or-explicit-citation + queue ticket.
   Enforced by `scan_miss_capture_complete`.
 
+## INSPECTION EVIDENCE COMES FROM READS, NEVER FROM WRITES (B1774 - L529, CHECKLIST #254)
+
+**MEASURED: writing any file exempted a turn from the uncosted-probe gate**, because `file_path` is
+an evidence marker and every `Write`/`Edit` carries one. A narrower hole came first - a `Write`
+whose CONTENT mentioned *grep* also satisfied it. **B1738 fixed mention-vs-use for responses and
+left the tool side untouched.**
+
+- **Drop mutating tool calls before matching evidence markers**, and verify both ways: a real read
+  must still exempt; a write followed by a read must still exempt.
+- **Do not call work manual until you have tested that it is.** I ticketed 24 sites as needing
+  individual judgment; **the control flow classified all 16 mechanically** (`if <match>: return []`
+  = exemption, `if not <match>: return []` = detection). **Asserting something cannot be automated,
+  untested, is the same armchair claim as asserting a mechanism exists without checking.**
+- **A tool built to find a defect can contain it.** My classifier's negation test was a flat
+  `UnaryOp` check and misread a negation nested in a `BoolOp` - it would have sent me to harden the
+  wrong side of that gate.
+- **Check a flagged site before converting it.** One flag was purely "does not call `_affirms`" on
+  a set intersection with no exposure. **The absence of a fix is not the presence of a defect.**
+
 ## HARDEN THE EXEMPTION, NOT JUST THE TRIGGER (B1773 - L528, CHECKLIST #253)
 
 **A loose trigger over-fires and gets noticed. A loose EXEMPTION lets violations through silently

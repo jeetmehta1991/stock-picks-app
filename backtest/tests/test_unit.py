@@ -16655,3 +16655,51 @@ def test_b1773_exemptions_are_negation_aware():
     assert not bool(tg.scan_unmeasured_quantity(
         [], text=f"this {trig}. i {marker} it: 3.2s vs 3.1s.")), \
         "genuine proof must exempt a cost claim"
+
+
+def test_b1774_inspection_evidence_comes_from_reads_only():
+    """B1774 (#254): an evidence EXEMPTION must not be satisfied by writing.
+
+    `scan_uncosted_probe` exempts a turn whose tool text carries an
+    OPEN_EVIDENCE marker. Two holes, both measured:
+      - a Write whose CONTENT merely mentions "grep" satisfied it (mention-vs-use
+        on the exemption side; B1738 fixed this class for responses only)
+      - `file_path` is itself an OPEN_EVIDENCE marker and EVERY Write/Edit
+        carries one, so **writing any file counted as inspecting the data**
+
+    Evidence of inspection can only come from a tool that READS.
+    """
+    import importlib.util
+    import pathlib
+
+    root = pathlib.Path(__file__).resolve().parents[2]
+    spec = importlib.util.spec_from_file_location(
+        "vtc_b1774", root / "scripts" / "verify_turn_compliance.py")
+    tg = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(tg)
+
+    claim = ("Split the rows by exit_reason and compute rho separately. "
+             "Offline on cached cubes, seconds.")
+
+    def fires(tt):
+        return bool(tg.scan_uncosted_probe([], text=claim, tool_text=tt))
+
+    none = '{"name":"Bash","input":{"command":"git status"}}'
+    real = '{"name":"Bash","input":{"command":"grep -c pivot out/detail.csv"}}'
+    read = '{"name":"Read","input":{"file_path":"out/trade_exit_detail.csv"}}'
+    wrote = ('{"name":"Write","input":{"file_path":"docs/x.md",'
+             '"content":"You can grep the cube to check."}}')
+    mixed = wrote + " " + read
+
+    assert fires(none), "no inspection at all must fire"
+    assert not fires(real), "a real grep must exempt"
+    assert not fires(read), "a real Read must exempt"
+    assert fires(wrote), "writing a file must NOT count as inspection"
+    assert not fires(mixed), "a Write must not suppress a genuine Read"
+
+    # the stripper itself
+    stripped = tg._tool_invocations(wrote)
+    assert "grep" not in stripped.lower()
+    assert "file_path" not in stripped.lower()
+    assert "file_path" in tg._tool_invocations(read).lower(), \
+        "reads must survive stripping"

@@ -10065,3 +10065,45 @@ test-writing rather than to a gate.
 2. **A flat 60-character window crossed a sentence boundary**, so *"I did not measure the old one. I
    measured this"* read as negated. **A genuine affirmation rejected by its neighbour.**
 Both fixed by clamping to the clause and looking both ways.
+
+### L529
+
+**Writing a file counted as having inspected the data**
+
+**B1774.** `scan_uncosted_probe` exempts a turn whose TOOL TEXT carries an `OPEN_EVIDENCE` marker -
+`grep`, `read_csv`, `sed -n`, `file_path`. **Measured: two holes, the second much wider than the
+first.**
+
+1. **Mention-vs-use.** A `Write` whose CONTENT merely mentioned the word *grep* satisfied the
+   exemption. **B1738 fixed this class for the RESPONSE side by stripping backticked spans; the TOOL
+   side was never stripped.**
+2. **`file_path` is itself an evidence marker, and EVERY `Write`/`Edit` carries one.** So **writing
+   any file at all exempted the turn** - no data need ever be read. I found this only because fix #1
+   did not close the hole and I asked which marker was still matching.
+
+**Evidence of inspection can only come from a tool that READS.** `_tool_invocations()` now drops
+mutating tool calls whole and blanks authored payload fields, before any evidence marker is matched.
+Verified in both directions: a real `Read` still exempts, and a `Write` followed by a `Read` still
+exempts - the strip does not swallow genuine evidence.
+
+**The classification claim I got wrong.** `S6-B1773f` said the remaining match sites *"each need a
+judgment call... a sweep cannot decide that."* **It can.** The CONTROL FLOW decides it:
+
+```
+EXEMPTION   if <match>: return []          -> exits the gate CLEAN
+DETECTION   if not <match>: return []      -> absence is the violation
+```
+
+16 match sites, **4 exemptions and 12 detections**, decided mechanically. **I had described work as
+irreducibly manual without testing whether it was**, which is the mirror of claiming a mechanism
+exists without checking - both are assertions about feasibility made from the armchair.
+
+**And my own classifier had the defect it was built to find.** Its negation test was a flat
+`UnaryOp` check, so `if not t or not any(k in t for k in RETRO_TRIGGERS): return []` - a negation
+nested in a `BoolOp` - read as an EXEMPTION. **It would have sent me to harden the wrong side of
+that gate.** Fixed to walk the tree for any negation over the target list.
+
+**One flagged site was a false positive**, and checking beat converting: `scan_unverified_structure`
+uses `used_tools & set(INSPECTION_TOOLS)` - a set intersection, which is exact matching with no
+substring or negation exposure at all. **My classifier flagged it purely for not calling
+`_affirms`** - the absence of a fix mistaken for the presence of a defect.
