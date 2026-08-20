@@ -9930,3 +9930,49 @@ Simpson's-paradox shape. I had the group label (`exit`) sitting in the same rows
 **Two cautions on my own result.** The small groups are noise - `rho = +1.000` at n=4 means
 nothing, and the weighted mean is carried by `next_pivot_target`. And this is **two configs of one
 strategy**; it is a located lead, not a general law.
+
+### L526
+
+**The -0.8 residual is a data-persistence discontinuity: one exit is two different exits**
+
+**B1771.** L525 localised the residual inversion to `next_pivot_target` (`rho = -0.73` with the
+selector held fixed). **Root cause now MEASURED, across 133 strategies and 8,374 trades:**
+
+```
+signals_at_entry BLANK   early 90.3pct  |  late 0.0pct
+contains 'r1'            early  0.0pct  |  late 92.7pct
+```
+
+**`signals_at_entry` was not persisted for trades entered before 2025-02-06**, so
+`signals.get("r1", 0)` returned 0, `target` stayed `None`, and **every one of 5,050 pre-2025 trades
+took the silent 3x-ATR fallback.** The exit-reason mix is a clean step function:
+
+```
+next_pivot_target   early: stop_loss .618  take_profit .382  pivot_* .000
+                    late : pivot_target .592  pivot_stop .111  stop_loss .175
+```
+
+**So `next_pivot_target` is literally a DIFFERENT EXIT either side of 2025-02-06.** Any IS/OOS
+comparison spanning that date ranks a 3x-ATR fixed target in-sample and grades a pivot exit out of
+sample. **The rank instability is mechanically guaranteed** - it is not selection noise and not a
+market fact. This is the *"what changed in the pipeline between the old data and the new data"*
+question, and the answer is a persistence gap inside a SINGLE run.
+
+**Second defect, same class, found by asking what else reads that field.** `exit_regime_flip` also
+consumes `signals_at_entry` (`regime_by_date`, `regime_at_entry`). Measured: **exit_reason is
+`regime_flip_max_days_20` on 100.0pct of trades in BOTH periods.** It never flips. It is a
+**`time_stop_20d` clone under a different name**, and unlike the pivot exit it is degraded in the
+late period too.
+
+**Third: the remediation advice named a mechanism that does not exist.** B1748's error message tells
+the caller to *"select `fixed_target_3atr` directly"*. **There is no such registered exit** - the
+registry has `fixed_4r_2r` (4.0/2.0). So the 3x-ATR target has no selectable equivalent: the
+fallback is a hidden 27th exit. My own cross-check compared against it and silently matched an
+EMPTY SET, reporting a meaningless 57pct agreement until I checked why every row said False.
+
+**The method lesson: a "0 of N" or "100pct of N" result is a schema question before it is a
+finding.** Both my vacuous cross-check and the real discontinuity presented as suspiciously clean
+numbers, and only one of them was real.
+
+**Methodology note:** `max_days` is emitted by BOTH paths, so it cannot classify a trade. My first
+pass silently assigned it to the fallback; it is now excluded and counted (64 of 8,374).

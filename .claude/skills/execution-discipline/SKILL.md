@@ -669,6 +669,23 @@ says *each*.**
 - **Phase 5 is three artifacts**: LEARNINGS + CHECKLIST-or-explicit-citation + queue ticket.
   Enforced by `scan_miss_capture_complete`.
 
+## A SILENT FALLBACK MAKES ONE NAME INTO TWO EXITS (B1771 - L526, CHECKLIST #251)
+
+**MEASURED: `next_pivot_target` was 100pct silent-fallback for ELEVEN QUARTERS** (5,050 trades)
+because `signals_at_entry` was not persisted before 2025-02-06 - then ~20-40pct after. **The exit
+has a different identity either side of that date**, which mechanically guarantees the IS/OOS rank
+instability that looked like a statistical mystery.
+
+- **Plot a fallback share BY PERIOD, never as one overall rate.** A step function inside the sample
+  window invalidates every cross-period comparison built on it.
+- **Ask what else reads the same field.** `exit_regime_flip` reads `signals_at_entry` too and fires
+  `regime_flip_max_days_20` on **100pct of trades in both periods** - a `time_stop_20d` duplicate
+  that never flips.
+- **Check that remediation advice names a REAL mechanism.** B1748's error text says to select
+  `fixed_target_3atr`; no such exit is registered. My cross-check against it matched an **empty
+  set** and reported a meaningless agreement number.
+- **A "0 of N" or "100pct of N" result is a SCHEMA question before it is a finding.**
+
 ## DECOMPOSE A POOLED CORRELATION WITHIN GROUPS (B1770 - L525, CHECKLIST #250)
 
 **MEASURED: the `-0.8` IS/OOS inversion is TWO defects.** Holding the exit fixed moved rho from

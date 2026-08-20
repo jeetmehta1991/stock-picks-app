@@ -4168,3 +4168,28 @@ the wrong remedy to half the problem.
 
 **MECHANISM: JUDGMENT-ONLY.** No gate can know which columns are group labels for a given analysis;
 this is an analysis habit, not a mechanical check. Recorded as a decision, per `#236`.
+
+### #251 - A SILENT FALLBACK MAKES ONE NAME INTO TWO EXITS; CHECK ITS MIX OVER TIME (B1771 / L526)
+
+**MEASURED: `next_pivot_target` was 100pct silent-fallback for ELEVEN CONSECUTIVE QUARTERS** (5,050
+trades) because `signals_at_entry` was not persisted before 2025-02-06, then dropped to ~20-40pct.
+**The exit is a different exit either side of that date**, so any IS/OOS comparison spanning it
+compares a 3x-ATR fixed target against a pivot exit. **Rank instability is mechanically guaranteed.**
+
+**For every exit or signal consumer with a fallback branch, plot the fallback share BY PERIOD.** A
+stable overall rate hides a step function, and a step function inside the sample window invalidates
+every cross-period comparison that uses it.
+
+**Ask what ELSE reads the same field.** `exit_regime_flip` also consumes `signals_at_entry` and is
+`regime_flip_max_days_20` on **100pct of trades in both periods** - it never flips, and is a
+`time_stop_20d` duplicate under another name.
+
+**And check that remediation advice names a real mechanism.** B1748's error text says to select
+`fixed_target_3atr`; **no such exit is registered.** A cross-check against it matched an EMPTY SET
+and reported a meaningless agreement figure.
+
+**A "0 of N" or "100pct of N" result is a SCHEMA question before it is a finding.**
+
+**MECHANISM: JUDGMENT-ONLY** for the general habit; the concrete instances are ticketed
+(`S6-B1771b`, `S6-B1771c`, `S6-B1771d`) and none is fixed without owner approval, since changing an
+exit is a rule change.

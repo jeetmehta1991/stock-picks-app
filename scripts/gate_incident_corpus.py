@@ -146,6 +146,11 @@ NEUTRAL: dict[str, dict] = {
     # gate doing its job and reports it as a false positive.
     "scan_queue_not_updated": {"rows": ["| **S6-X** | **DONE** | - | x |"]},
     "scan_queue_vocabulary": {"rows": []},
+    # B1771: this gate reads LIVE git state (docs vs code touched). The
+    # control asks "does ordinary prose trip it?", so the repo state must
+    # be neutralised or the control measures the working tree instead of
+    # the text - L517, third time this exact shape has appeared.
+    "scan_prose_only_rule": {"docs_touched": False, "code_touched": False},
     "scan_ungated_addition": {"added_rules": []},
     "scan_shell_substitution": {"tool_text": ""},
 }
