@@ -669,6 +669,22 @@ says *each*.**
 - **Phase 5 is three artifacts**: LEARNINGS + CHECKLIST-or-explicit-citation + queue ticket.
   Enforced by `scan_miss_capture_complete`.
 
+## STEMS AND WHOLE WORDS NEED OPPOSITE MATCHERS (B1767 - L521, CHECKLIST #246)
+
+**A cost gate blocked a clean turn because `QUANT_CLAIMS` held `"free"` and the response said
+"chosen FREELY per row".** L515 said *encode the stem* - correct for `_MISS_STEMS`. **The opposite
+defect is a whole word whose meaning changes inside another word**, and one matcher cannot serve
+both. `STEM_LISTS` is the explicit register; everything else is word-bounded via `_marker_hits`.
+
+- **Boundaries are necessary and NOT sufficient.** Word-bounded `"free"` still fires on "free RAM"
+  and "free tier". **A marker whose bare form is ambiguous needs its CONTEXT in the marker.** The
+  half-fix would have shipped as complete; the negative control is the only reason it did not.
+- **A sweep yields CANDIDATES, not defects.** 64 markers match inside longer words; most are
+  deliberate stems. Same lesson as the 13-of-16 grep one batch earlier.
+- **A seamless gate cannot have its FALSE POSITIVES reproduced either.** Seams were argued for
+  against gates that MISS. **The gate that misfires most needs to be askable** - so corpus entries
+  may carry `must_fire=False` as REGRESSION entries.
+
 ## NEVER PUT A MESSAGE IN A DOUBLE-QUOTED SHELL ARGUMENT (B1765 - L520, CHECKLIST #245)
 
 **THIS RAN.** A commit message written to WARN about destructive commands contained backticked

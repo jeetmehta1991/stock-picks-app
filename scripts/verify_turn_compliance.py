@@ -551,7 +551,12 @@ def check_unverified_universe() -> str | None:
 # RAM reading as a ceiling, or a cold JIT timing as steady state.
 QUANT_CLAIMS = (
     "costs nothing", "cost nothing", "same runtime", "no extra cost",
-    "free", "negligible", "roughly the same", "about the same",
+    # B1767: bare "free" removed. Word boundaries stopped it matching "freely",
+    # but "free RAM", "free tier" and "free of charge to run" are all whole-word
+    # uses that are not cost claims. A marker whose bare form is ambiguous needs
+    # its CONTEXT in the marker, not a tighter matcher.
+    "for free", "is free", "are free", "essentially free", "free of cost",
+    "negligible", "roughly the same", "about the same",
     "no additional", "without any cost", "at no cost",
 )
 QUANT_PROOF = (
@@ -560,8 +565,15 @@ QUANT_PROOF = (
 )
 
 
-def scan_unmeasured_quantity(entries):
-    """Flag a COST/QUANTITY claim with no evidence it was computed."""
+def scan_unmeasured_quantity(entries, *, text=None):
+    """Flag a COST/QUANTITY claim with no evidence it was computed.
+
+    B1767: given a `text=` seam so it can be exercised on fixed input (#241).
+    It had none, so it lived in KNOWN_SEAMLESS and could only be pinned as
+    `gate([]) == []` - and it then blocked a turn on a FALSE POSITIVE ("free"
+    matching inside "freely") that no test could have reproduced.
+    **The gate that misfires is the one that most needs to be askable.**
+    """
     entries = list(entries or [])
     last_user = -1
     for i, e in enumerate(entries):
@@ -583,7 +595,7 @@ def scan_unmeasured_quantity(entries):
         elif isinstance(content, list):
             blob.extend(c.get("text", "") for c in content
                         if isinstance(c, dict) and c.get("type") == "text")
-    low = " ".join(blob).lower()
+    low = (" ".join(blob).lower() if text is None else text.lower())
     # B1738: strip BACKTICK-QUOTED spans before matching. A response that
     # DESCRIBES a gate by listing its trigger vocabulary was firing the gate -
     # this one blocked a turn whose only "costs nothing" was inside a list of
@@ -594,7 +606,7 @@ def scan_unmeasured_quantity(entries):
     low = _re.sub(r"`[^`]*`", " ", low)
     if not low:
         return []
-    hits = [q for q in QUANT_CLAIMS if q in low]
+    hits = _marker_hits(low, QUANT_CLAIMS)  # B1767: word-bounded
     if not hits:
         return []
     if any(pp in low for pp in QUANT_PROOF):
@@ -1469,6 +1481,58 @@ def scan_false_skill_status(entries, *, text=None, injected=None) -> list[str]:
 # SATISFIED, and names the DIFFERENCE. `require_each` takes a dict so the caller
 # is forced to list every member: a member cannot be silently omitted, which is
 # how "any" creeps back.
+# B1767: WHOLE-WORD markers need word boundaries; STEM markers must not have
+# them. The distinction is the whole point and it cannot be inferred.
+#
+# This gate blocked a turn because `QUANT_CLAIMS` contains "free" and the
+# response contained "chosen FREELY per row". `q in low` is a substring test, so
+# a cost-claim gate fired on an adverb about editorial habit.
+#
+# L515 said: encode the STEM, not the conjugation - so `_MISS_STEMS` SHOULD match
+# inside longer words ("fail" -> "failure", "failed"). That is correct by design.
+# The defect is the opposite case: a marker that is a COMPLETE WORD whose meaning
+# changes inside another word ("free" in "freely", "read" in "already").
+#
+# So one rule cannot cover both lists, and applying either rule blindly breaks
+# half of them. STEM_LISTS is the explicit register of which is which; a list
+# absent from it is treated as whole-word, because that is the safe default -
+# an over-tight marker misses a real hit, an over-loose one blocks a clean turn.
+STEM_LISTS = frozenset({
+    "_MISS_STEMS",        # L515: fail -> failure/failed/failing, by design
+    "NARRATION_STEMS",    # L509: wire -> wired/wiring/rewire, by design
+    "RETRO_TRIGGERS",     # generaliz -> generalize/generalization, by design
+    "MECH",               # scan_ / test_b are PREFIXES of identifiers
+    "_DOC_NAMES",         # PROJECT_PLAN matches PROJECT_PLAN.md
+    "INSPECTION_TOOLS",   # tool names appear inside tool-call payloads
+    "OPEN_EVIDENCE",      # ditto
+})
+
+
+def _marker_hits(text: str, markers, *, stems: bool = False) -> list[str]:
+    """Return markers present in `text`.
+
+    `stems=False` (the default) requires WORD BOUNDARIES, so "free" no longer
+    matches "freely". Boundaries are applied only at edges that are word
+    characters, so markers like "correction:" and "**rule:**" still match.
+    """
+    import re as _re
+    if stems:
+        return [m for m in markers if m.lower() in text]
+    out = []
+    for m in markers:
+        ml = m.lower()
+        if not ml:
+            continue
+        pat = _re.escape(ml)
+        if ml[0].isalnum():
+            pat = r"\b" + pat
+        if ml[-1].isalnum():
+            pat = pat + r"\b"
+        if _re.search(pat, text):
+            out.append(m)
+    return out
+
+
 def require_each(rule: str, required: dict, *, why: str = "") -> list[str]:
     """`required` maps MEMBER NAME -> bool satisfied. Reports missing by name."""
     missing = [k for k, ok in required.items() if not ok]

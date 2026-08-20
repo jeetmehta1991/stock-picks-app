@@ -109,12 +109,14 @@ def main() -> int:
             print(f"{name:<38} {'yes':<6} {'NO':<10} NO RECORDED INCIDENT")
             continue
         got = fires(name, fn, INCIDENTS[name][0], INCIDENTS[name][2])
+        want = INCIDENTS[name][1]
         if got is None:
             errored.append(name)
             print(f"{name:<38} {'yes':<6} {'yes':<10} ERROR")
-        elif got:
+        elif got == want:
             ok.append(name)
-            print(f"{name:<38} {'yes':<6} {'yes':<10} FIRES")
+            lbl = "FIRES" if want else "QUIET (regression entry)"
+            print(f"{name:<38} {'yes':<6} {'yes':<10} {lbl}")
         else:
             silent.append(name)
             print(f"{name:<38} {'yes':<6} {'yes':<10} *** SILENT ON ITS OWN INCIDENT")

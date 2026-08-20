@@ -97,6 +97,17 @@ INCIDENTS: dict[str, tuple[str, bool, dict]] = {
                       'destructive commands (`git reset --hard`, `rm -rf`) '
                       'without a prompt."'},
     ),
+    # B1767: a REGRESSION incident. Not every gate is motivated by something it
+    # MISSED - this one blocked a clean turn because "free" matched inside
+    # "freely". The words that motivated the fix are words it must NOT fire on,
+    # so must_fire is False. A corpus that only stores misses cannot pin the
+    # false-positive half of a gate's behaviour.
+    "scan_unmeasured_quantity": (
+        "the status column carries status OR priority OR a headline, "
+        "chosen freely per row.",
+        False,
+        {},
+    ),
     # NEGATIVE control - ordinary reporting prose that must NOT trip anything.
     # Note it is a bare sentence, so gates that legitimately require RESPONSE
     # STRUCTURE (a SKILLS block, a compliance block) are excluded by the sweep

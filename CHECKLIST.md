@@ -4051,3 +4051,32 @@ incident is the verbatim command that ran the reset.
 **Detection note:** the tell was `preflight: checking 1 file(s)` in output I had already scrolled
 past. **A successful commit hash and a clean `git status` were both consistent with the damage** -
 only re-reading the ARTIFACT (`git show --stat`, then the on-disk file) surfaced it.
+
+### #246 - STEM LISTS AND WHOLE-WORD LISTS NEED OPPOSITE MATCHERS (B1767 / L521)
+
+**A cost gate blocked a clean turn because `QUANT_CLAIMS` held `"free"` and the response said
+"chosen FREELY per row".** Plain `q in low` substring matching.
+
+**This is `#239`/L515 with the sign flipped.** L515 said *encode the STEM* - so `_MISS_STEMS`
+matching inside longer words ("fail" -> "failure") is CORRECT. **The opposite defect is a WHOLE
+WORD whose meaning changes inside another word.** One matcher cannot serve both, and applying
+either blindly breaks half the lists.
+
+**`STEM_LISTS` is the explicit register**; anything absent is matched WORD-BOUNDED via
+`_marker_hits`, because that is the safe default - an over-tight marker misses a hit, an over-loose
+one blocks a clean turn.
+
+**Boundaries are necessary and NOT sufficient (the same batch, caught by the negative control):**
+word-bounded `"free"` still fired on *"free RAM above the floor"* and would fire on *"free tier"*.
+**A marker whose bare form is ambiguous needs its CONTEXT in the marker** (`"is free"`,
+`"for free"`), not a tighter matcher. **The half-fix would have shipped as complete.**
+
+**Retroactive sweep: 64 markers across 22 lists match inside longer words - mostly deliberate
+stems.** The sweep yields CANDIDATES, not defects (`#244`'s lesson, one batch later), so remaining
+conversions are ticketed per-list rather than swept.
+
+**Corollary, and it inverts how `#241` was framed:** `scan_unmeasured_quantity` had no `text=` seam,
+so it could only be pinned as `gate([]) == []` - **a seamless gate cannot have its FALSE POSITIVES
+reproduced either.** Seams were argued for as protection against gates that MISS. **The gate that
+misfires is the one that most needs to be askable.** Corpus entries may therefore carry
+`must_fire=False` as REGRESSION entries.

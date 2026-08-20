@@ -9774,3 +9774,62 @@ one commit. **The safe form was already my habit; the defect is that nothing enf
 **And the detection lesson.** I noticed only because I verified the RESULT rather than trusting the
 exit code - `git show --stat` said one file, and the on-disk settings still read 100 entries. **A
 green commit hash and a clean `git status` were both consistent with the damage.**
+
+### L521
+
+**A cost-gate blocked a clean turn because "free" matched inside "freely"**
+
+**B1767, gate-caught (correctly firing, wrongly reasoning).** The Stop hook blocked a turn for
+making an uncosted claim. **The claim was the word "freely" in *"a headline, chosen freely per
+row"*** - an adverb about editorial habit, matched by `QUANT_CLAIMS` containing `"free"` under a
+plain `q in low` substring test.
+
+**This is L515's lesson with its sign flipped, and that is the part worth keeping.** L515 said
+*encode the STEM, not the conjugation* - so `_MISS_STEMS` matching inside longer words ("fail" ->
+"failure") is CORRECT BY DESIGN. **The opposite failure is a WHOLE WORD whose meaning changes
+inside another word.** One rule cannot serve both, and applying either blindly breaks half the
+lists - so `STEM_LISTS` is now an explicit register, with whole-word as the safe default.
+
+**Then the fix's own fix, which the corpus caught and I did not.** Word-bounding `"free"` still
+fired on the negative control's *"free RAM above the floor"* - and would fire on *"free tier"*.
+**Boundaries were necessary and not sufficient: the marker itself was ambiguous.** A marker whose
+bare form has multiple senses needs its CONTEXT in the marker (`"is free"`, `"for free"`), not a
+tighter matcher. **I would have shipped the half-fix as complete** - the negative control is the
+only reason I did not.
+
+**Retroactive sweep (#237): 64 markers across 22 lists match inside longer words.** Most are
+deliberate stems and correct. **The sweep produces CANDIDATES, not defects** - the same lesson as
+B1763's 13-of-16, one batch later, which is why the remaining conversions are ticketed
+per-list rather than swept.
+
+**And the second-order point.** `scan_unmeasured_quantity` had NO `text=` seam, so it lived in
+`KNOWN_SEAMLESS` and could only ever be pinned as `gate([]) == []`. **A gate with no seam cannot
+have its false positives reproduced either** - I had been thinking of seams as protection against
+gates that MISS. **The gate that misfires is the one that most needs to be askable.**
+
+### L522
+
+**The distinction I gave the owner could not be recorded in the queue at all**
+
+**B1766, owner-asked.** *"What are the classes assigned to tickets in execution queue?"*
+
+**MEASURED: 641 rows, 132 distinct leading labels.** 52.3pct are a real disposition; **28.7pct are
+prose headlines** (*"THE TELL"*, *"BIGGEST MISS"*, *"THE SHAPE"*); **19.0pct put a PRIORITY
+(HIGH/MED/CRITICAL) in the status slot.** The column means status OR priority OR a headline, chosen
+per row.
+
+**And the number that matters: 0 of 38 OPEN rows state why they are open.**
+
+One turn earlier I had told the owner that `S6-B1762f` was ticketed *"with no reason attached"* and
+recorded it as a lapse of mine. **It is 38 for 38.** There is no field for a reason and no
+vocabulary separating **blocked / deprioritised / not-started** - so the three-way distinction I
+had just drawn in a response **cannot be expressed in the artifact that is supposed to hold it.**
+
+**The generalisable form: when you explain your own behaviour with a distinction, check the record
+can store it.** I described a nuance to the owner and filed a ticket that flattened it, then
+diagnosed the flattening as carelessness. **It was schema.** A confession about discipline was
+really a missing column, and the confession is what stopped me looking.
+
+**Deliberately NOT codified this turn:** the replacement vocabulary. Choosing it is the owner's
+ruling; writing my own proposal into CHECKLIST before that ruling would be `#242`'s failure in a
+new place - **shipping a rule whose authority I invented.**
