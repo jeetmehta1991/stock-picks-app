@@ -10555,3 +10555,45 @@ rows never named what they built.**
 POTENTIALLY, keep them open"* - puts the burden of proof entirely on promotion. **A row stays OPEN
 by default and must earn EXECUTED**, which is the opposite of how the ledger behaved for 600 rows,
 where DONE was written at the moment of intent and never revisited.
+
+### L540
+
+**138 rows cannot ever be EXECUTED, because their work was never code**
+
+**B1790, owner-directed.** *"148 stay open. Verify them."*
+
+B1788 verified rows by the artifact they NAME, and 148 named nothing. **A row that never named its
+artifact still has a batch, and the batch has a commit whose diff DOES name it** - so this pass
+asked a different question: *which definitions did the row's own batch ADD, and do they survive at
+HEAD?*
+
+```
+rows still flagged OPEN ....... 148
+  DOC_ONLY_BATCH .............. 138   the commit touched no code at all
+  CODE_LANDED_IN_BATCH ..........  7   promoted
+  CODE_BUT_NO_NEW_DEFS ..........  3   code changed, nothing durable added
+```
+
+**Verified by hand on three of the 138, because a number that large deserved a spot-check.**
+`B1512: engine timing COMPLETE (42.9 min)` touched `CLAUDE.md`, `EXECUTION_QUEUE.md`,
+`LEARNINGS.md` - nothing else. **It is a MEASUREMENT turn: its entire output was a number and a
+lesson.** There is no code to verify because none was written.
+
+**So this is not a backlog of unverified work. It is a category error in the ledger.** The owner's
+ruling - *EXECUTED means verified against code, never documentation* - is correct for build rows and
+**unsatisfiable by construction for analysis rows.** 138 rows are now permanently ineligible for the
+only terminal state that fits them.
+
+**The three options, none clean, which is why it is an owner ruling and not my call:**
+- **DROPPED** implies abandonment; the work happened and produced a real result.
+- **OPEN forever** makes OPEN useless as a work queue - 138 rows nobody will ever action.
+- **EXECUTED on doc evidence** reverses the ruling that made the ledger honest.
+
+**What I would not do is quietly pick one.** The six classes were ruled precisely because I had been
+inventing states; inventing a seventh for analysis rows would repeat that exactly, and picking among
+the three silently would hide a structural decision inside a bookkeeping pass.
+
+**The verdict name carries its own limit.** `CODE_LANDED_IN_BATCH` is deliberately not `VERIFIED`:
+a batch carries several rows and up to three changes, so it proves the BATCH produced durable code,
+not that THIS row's claim is that code. **B1777's error was asking a question about the batch and
+reporting it as an answer about the row** - naming the verdict honestly is what stops that recurring.

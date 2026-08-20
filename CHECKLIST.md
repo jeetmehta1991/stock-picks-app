@@ -4509,3 +4509,24 @@ DONE was written at the moment of intent and never revisited.
 
 **Run `scripts/verify_awaiting_rows.py`**; every promoted row carries its evidence and every flagged
 row carries what is missing, so neither verdict is a bare assertion.
+
+### #266 - AN ANALYSIS ROW HAS NO CODE TO VERIFY (B1790 / L540)
+
+**MEASURED: of 148 rows that named no artifact, 138 belong to batches whose commit touched NO CODE
+AT ALL.** Spot-checked by hand: `B1512: engine timing COMPLETE (42.9 min)` changed `CLAUDE.md`,
+`EXECUTION_QUEUE.md` and `LEARNINGS.md` and nothing else. **A measurement turn's output is a number
+and a lesson.**
+
+**`#258`'s ruling - EXECUTED means verified against code, never documentation - is correct for build
+rows and UNSATISFIABLE BY CONSTRUCTION for analysis rows.** 138 rows are permanently ineligible for
+the only terminal state that fits them. **This is a category error in the ledger, not a backlog.**
+
+**AWAITING OWNER RULING (`S6-B1790c`).** The options are `DROPPED` (implies abandonment - the work
+happened), `OPEN` forever (makes OPEN useless as a queue), or `EXECUTED` on the analysis artifact
+(reverses the ruling). **Do not pick one silently** - the six classes exist because states were
+being invented, and choosing here without a ruling repeats that.
+
+**AND NAME A VERDICT TO ITS EVIDENCE.** `CODE_LANDED_IN_BATCH` is deliberately not `VERIFIED`: a
+batch carries several rows, so it proves the BATCH produced durable code, not that THIS row's claim
+is that code. **B1777's error was asking about the batch and reporting it as an answer about the
+row.** Verify via `scripts/verify_open_via_diff.py`.

@@ -669,6 +669,22 @@ says *each*.**
 - **Phase 5 is three artifacts**: LEARNINGS + CHECKLIST-or-explicit-citation + queue ticket.
   Enforced by `scan_miss_capture_complete`.
 
+## AN ANALYSIS ROW HAS NO CODE TO VERIFY (B1790 - L540, CHECKLIST #266)
+
+**MEASURED: of 148 rows naming no artifact, 138 belong to batches whose commit touched NO CODE.**
+Spot-checked: `B1512: engine timing COMPLETE (42.9 min)` changed three .md files and nothing else.
+**A measurement turn's output is a number and a lesson.**
+
+- **"EXECUTED means verified against code" is unsatisfiable BY CONSTRUCTION for analysis rows.**
+  138 are permanently ineligible for the only terminal state that fits them - **a category error in
+  the ledger, not a backlog.**
+- **Do not pick a resolution silently.** DROPPED implies abandonment, OPEN-forever makes the queue
+  useless, EXECUTED-on-docs reverses the ruling. **The six classes exist because states were being
+  invented; choosing here without a ruling repeats that.**
+- **Name a verdict to its evidence.** `CODE_LANDED_IN_BATCH` is not `VERIFIED` - a batch carries
+  several rows, so it proves the batch produced durable code, not that THIS row's claim is it.
+  **B1777's error was asking about the batch and answering about the row.**
+
 ## PROMOTION NEEDS A BATCH-SPECIFIC ARTIFACT (B1788 - L539, CHECKLIST #265)
 
 **A row earns EXECUTED only on a WIRED gate or a `test_bNNN` - artifacts tied to the batch that
