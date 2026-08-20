@@ -3941,3 +3941,37 @@ owner types), `OPEN_EVIDENCE` (tool names). **Same defect, ticketed:** `FIX_MARK
 **And the meta-rule: a fix applied to the instance in front of you is not applied to the class.**
 `L509` stated the class correctly and one member got patched. **Stating a class is not sweeping
 it** - which is why `#237` is a gate now and not a paragraph.
+
+### #240 - A GATE'S PROOF USES THE VERBATIM INCIDENT, NEVER SELF-DERIVED PROBES (B1760 / L516)
+
+**MEASURED: probe strings were built from the marker list of the gate under test.** The test proved
+**the list matches itself** and could never detect the case that matters - a real phrasing the list
+omits. Five gates passed 4/4 and 5/5 this way and stayed silent on the words that caused them.
+
+**`#226` (prove it can fail) is NECESSARY AND NOT SUFFICIENT.** A synthetic negative satisfies it
+while every positive remains self-derived.
+
+**Every gate carries an entry in `scripts/gate_incident_corpus.py`: the VERBATIM text from the turn
+where the failure occurred, plus the STATE that turn was in.** Pinned by
+`test_b1760_gates_fire_on_real_incidents`. **A gate with no corpus entry is unproven regardless of
+how many probes pass.**
+
+**Corollary (B1760, MEASURED):** `scan_uninspected_constant` accepted a `text=` parameter and
+ignored it in two separate places. **A seam that is never exercised is indistinguishable from no
+seam** - which is why the corpus, not the signature, is the proof.
+
+### #241 - A GATE THAT CANNOT BE ASKED A QUESTION IS NOT PROVEN (B1761 / L517)
+
+**MEASURED across 38 gates: 27 have no injectable text; 14 of those are `scan_` gates.** They read
+the live transcript only, so their pin tests can assert nothing but `gate([]) == []` - **which
+passes identically for a correct gate, an inverted gate, and a gate wired to nothing.**
+`scan_false_skill_status` was defined, proven 5/5, reported live, and had never run.
+
+**Every new `scan_` gate takes an injectable `text=` (and any state it reads) so it can be
+exercised on fixed input.** Existing seamless gates are ticketed, not grandfathered.
+
+**And the symmetric error, which is the one that nearly did damage (L517):** a harness that
+supplies a gate LESS state than its incident had **manufactures false failures**. The first sweep
+reported 4 broken gates; **3 were correct and starved.** Before ticketing a gate as silent,
+supply the incident's full text and state - **a harness reporting on itself is the same defect in
+the opposite direction.**

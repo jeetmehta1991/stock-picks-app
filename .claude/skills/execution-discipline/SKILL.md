@@ -669,6 +669,28 @@ says *each*.**
 - **Phase 5 is three artifacts**: LEARNINGS + CHECKLIST-or-explicit-citation + queue ticket.
   Enforced by `scan_miss_capture_complete`.
 
+## PROVE GATES ON THE VERBATIM INCIDENT, AND GIVE THEM A SEAM (B1760/B1761 - L516/L517, CHECKLIST #240/#241)
+
+**MEASURED: my gate probes were built from the marker list of the gate under test - the test proved
+the list matches itself.** Five gates passed 4/4 and 5/5 proofs that way and stayed silent on the
+exact words that caused them. **`#226` (prove it can fail) is necessary and NOT sufficient**: a
+synthetic negative satisfies it while every positive stays self-derived.
+
+**MEASURED across 38 gates: 27 cannot be asked anything** - no injectable text, so their pin tests
+assert only `gate([]) == []`, which passes for a correct gate, an inverted gate, and a gate wired to
+nothing. `scan_false_skill_status` was defined, proven 5/5, reported live, and had never run.
+
+- **Every gate gets an entry in `scripts/gate_incident_corpus.py`** - the VERBATIM text from the
+  turn the failure happened in, plus the STATE that turn was in. No entry = unproven.
+- **Every new `scan_` gate takes injectable `text=` and its state.** A gate with no seam cannot be
+  distinguished from a gate that does nothing.
+- **A seam that is never exercised equals no seam.** `scan_uninspected_constant` accepted `text=`
+  and ignored it in two places.
+- **And the mirror: a harness that STARVES a gate of its incident's state manufactures false
+  failures.** My first sweep called 4 gates broken; **3 were correct.** Before ticketing a gate as
+  silent, give it the full text and state - **reporting on your own harness is the same defect in
+  the opposite direction.**
+
 ## STEM EVERY MARKER LIST, AND SWEEP THEM ALL (B1759 - L515, CHECKLIST #239)
 
 **MEASURED: `scan_miss_capture_complete` stayed QUIET on the words *"which is the failure

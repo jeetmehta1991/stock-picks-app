@@ -878,7 +878,8 @@ def _tool_text(entries) -> str:
     return " ".join(out)
 
 
-def scan_uninspected_constant(entries, *, tool_text=None) -> list[str]:
+def scan_uninspected_constant(entries, *, tool_text=None,
+                              text=None) -> list[str]:
     """#222 MECHANISED: naming a constant requires having looked at it.
 
     Fires when the prose cites an ALL-CAPS identifier or a CLI flag and no tool
@@ -908,11 +909,19 @@ def scan_uninspected_constant(entries, *, tool_text=None) -> list[str]:
     last_user = max((i for i, d in enumerate(entries or ()) if _is_real_user(d)),
                     default=-1)
     entries = list(entries or ())[last_user + 1:]
-    t = _assistant_text(entries)
+    # B1760b: the EARLY RETURN read entries too, so injected text never got
+    # past it. TWO ignored-parameter bugs in one function - both invisible to
+    # a proof that only ever fed it live entries.
+    t = (_assistant_text(entries) if text is None else text.lower())
     if not t:
         return []
     tt = (_tool_text(entries) if tool_text is None else tool_text).lower()
-    raw = " ".join(_raw_assistant(entries))
+    # B1760: honour the injected text. This function accepted `text=` and then
+    # read `_raw_assistant(entries)` for the case-preserved copy, so the
+    # parameter existed and did nothing - the gate could never be exercised on
+    # supplied text. Found by the incident corpus, not by its own 6/6 proof,
+    # because that proof only ever fed it live entries.
+    raw = (" ".join(_raw_assistant(entries)) if text is None else text)
     # Identifiers that look like code constants, and long-form CLI flags.
     # B1721b: this line shipped with LITERAL BACKSPACE characters where 
     # belonged - the escape was mangled at write time, so the pattern could

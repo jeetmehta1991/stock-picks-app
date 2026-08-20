@@ -9621,3 +9621,66 @@ had to become a gate rather than a paragraph.
 **`MISS_MARKERS` is now built from 16 stems x 7 suffixes = 116 entries** and fires on *the failure
 itself*, *this gate is broken*, *the sweep never ran*, *a gap in coverage* - **all four of which
 were previously invisible.**
+
+### L516
+
+**My gate tests were circular: the probes were built from the code's own marker list**
+
+**B1760, owner-caught.** *"Why wasn't the gate that was silent on the exact words tested
+extensively? It didn't fire on the very last statement that prompted it."*
+
+**The cause, and it invalidates every gate proof this session.** The probe strings were derived
+from the marker list of the gate under test:
+
+```
+markers = ("i was wrong", ..., "owner caught", ...)
+probes  = ("i was wrong about that", "owner caught it", ...)
+```
+
+**That proves the list matches itself.** It cannot detect the one failure that matters - a real
+phrasing the list does not cover. Five gates passed 4/4 and 5/5 proofs built this way and still
+missed the words that caused them.
+
+**`#226` said prove a gate can FAIL - and I did, against strings guaranteed to match.** A test
+that CAN fail is not a test that WOULD have failed. **The falsifiability requirement is satisfied
+by a synthetic negative and is still worthless if every positive is self-derived.**
+
+**The fix is a corpus, not a rule:** `scripts/gate_incident_corpus.py` stores the VERBATIM text
+from the turn where each failure occurred. A gate is unproven until it fires on the words that made
+it necessary. **`scan_uninspected_constant` had two ignored-parameter bugs** - it accepted `text=`
+and then read `_raw_assistant(entries)` in one place and `_assistant_text(entries)` in another, so
+the seam existed and did nothing. **Both invisible to a proof that only ever fed it live entries.**
+
+### L517
+
+**The sweep found that most of my gates cannot be asked a question at all**
+
+**B1761, owner-directed retroactive sweep.** *"Identify all classes of gates that miss their own
+incidents and/or gates missing incidents."*
+
+**MEASURED across all 38 gate functions:**
+
+```
+FIRES on own incident ......  8
+SILENT on own incident ....   0   (after fixes)
+NO recorded incident ......   3
+CANNOT BE ASKED (no seam) .  27   <- 14 of these are scan_ gates
+negative control tripped ..   0
+```
+
+**The dominant class is not gates that miss - it is gates that cannot be tested.** 14 `scan_`
+functions take no injectable text, so they read the live transcript and nothing else. **Their pin
+tests can only assert `gate([]) == []`** - which passes identically for a correct gate, a gate
+whose logic is inverted, and a gate wired to nothing. `scan_false_skill_status` was DEFINED,
+proven 5/5, reported live, and had never once run.
+
+**And the mirror-image lesson, which cost me three false accusations.** My first sweep starved
+hybrid gates of the state their incident occurred in and reported four as broken. **Only one was.**
+`scan_response_gates` needs `tree_changed=False`; `scan_false_skill_status` needs the block header
+plus `injected=True`; `scan_prose_only_rule` needs the docs/code flags.
+
+**An incident is not a sentence - it is the text AS THE GATE SEES IT, plus the state it saw.** A
+harness that supplies less manufactures FALSE FAILURES exactly as a circular probe manufactures
+false passes. **Both are the harness reporting on itself instead of on the gate**, and I committed
+one of them one turn after diagnosing the other. **I nearly ticketed three correct gates as
+defects.**

@@ -16230,3 +16230,102 @@ def test_b1751_any_vs_each_primitive():
     unwired = sorted(n for n in set(_re.findall(r"def (scan_[a-z_]+)", src))
                      if src.count(n) < 2)
     assert not unwired, f"defined but never called: {unwired}"
+
+
+def test_b1760_gates_fire_on_real_incidents():
+    """B1760/B1761 (#240/#241): every gate fires on the VERBATIM words that
+    motivated it, and the negative control trips nothing.
+
+    The proofs this replaces were CIRCULAR - probe strings derived from the
+    marker list of the gate under test, which proves only that the list matches
+    itself. Five gates passed 4/4 and 5/5 that way and stayed silent on the real
+    thing.
+    """
+    import importlib.util
+    import inspect
+    import pathlib
+
+    root = pathlib.Path(__file__).resolve().parents[2]
+
+    def _load(stem):
+        spec = importlib.util.spec_from_file_location(
+            stem, root / "scripts" / f"{stem}.py")
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        return mod
+
+    import sys
+    sys.path.insert(0, str(root / "scripts"))
+    tg = _load("verify_turn_compliance")
+    corpus = _load("gate_incident_corpus")
+
+    silent = []
+    for name, (text, must_fire, state) in corpus.INCIDENTS.items():
+        if name.startswith("_"):
+            continue
+        fn = getattr(tg, name, None)
+        assert fn is not None, f"corpus names a gate that does not exist: {name}"
+        params = inspect.signature(fn).parameters
+        assert "text" in params, f"{name} has no injectable text seam (#241)"
+        kw = {"text": text}
+        kw.update({k: v for k, v in state.items() if k in params})
+        if bool(fn([], **kw)) != must_fire:
+            silent.append(name)
+    assert not silent, (
+        f"gates that do NOT fire on their own incident (#240): {silent}")
+
+    # Negative control: ordinary reporting prose trips nothing. Gates that
+    # legitimately require RESPONSE STRUCTURE are excluded by name.
+    STRUCTURE = {"scan_missing_skill_confirmation", "scan_skill_block_incomplete",
+                 "scan_compliance_is_content"}
+    neg = corpus.INCIDENTS["_negative_control"][0]
+    tripped = []
+    for name in corpus.INCIDENTS:
+        if name.startswith("_") or name in STRUCTURE:
+            continue
+        fn = getattr(tg, name)
+        if bool(fn([], text=neg)):
+            tripped.append(name)
+    assert not tripped, f"negative control tripped: {tripped}"
+
+
+def test_b1761_new_scan_gates_have_a_text_seam():
+    """B1761 (#241): a gate with no injectable text can only ever be pinned as
+    `gate([]) == []`, which passes for a gate wired to nothing.
+
+    This pins the KNOWN seamless set so it cannot GROW. Shrinking it is the
+    goal (S6-B1761b); adding to it must be a deliberate act.
+    """
+    import importlib.util
+    import inspect
+    import pathlib
+
+    root = pathlib.Path(__file__).resolve().parents[2]
+    spec = importlib.util.spec_from_file_location(
+        "verify_turn_compliance", root / "scripts" / "verify_turn_compliance.py")
+    tg = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(tg)
+
+    KNOWN_SEAMLESS = {
+        "scan_discipline_not_loaded", "scan_orphan_rule", "scan_postfix_recheck",
+        "scan_skill_not_invoked", "scan_skill_not_invoked_per_skill",
+        "scan_skill_not_updated", "scan_transcript_entries",
+        "scan_unmeasured_quantity", "scan_unmonitored_launch",
+        "scan_unrecorded_miss", "scan_unverified_cause",
+        "scan_unverified_structure", "scan_unverified_universe",
+        "scan_verdict_denominators",
+    }
+    seamless = set()
+    for name, fn in vars(tg).items():
+        if not (name.startswith("scan_") and callable(fn)
+                and hasattr(fn, "__code__") and fn.__module__ == tg.__name__):
+            continue
+        try:
+            if "text" not in inspect.signature(fn).parameters:
+                seamless.add(name)
+        except (TypeError, ValueError):
+            pass
+    new = seamless - KNOWN_SEAMLESS
+    assert not new, (
+        f"NEW scan_ gate(s) with no injectable text seam (#241): {sorted(new)}. "
+        "A gate that cannot be asked a question cannot be proven.")
