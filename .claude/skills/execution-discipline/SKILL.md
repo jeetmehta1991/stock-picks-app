@@ -669,6 +669,21 @@ says *each*.**
 - **Phase 5 is three artifacts**: LEARNINGS + CHECKLIST-or-explicit-citation + queue ticket.
   Enforced by `scan_miss_capture_complete`.
 
+## STOP AT THE SECOND FAILED HAND-CHECK (B1791 - L541, CHECKLIST #267)
+
+**MEASURED: four classifiers, hand-checked samples failing 3-of-4 then 3-of-5.** The rule *two
+failed attempts means the diagnosis is wrong* applied two attempts before I stopped.
+
+- **The wrong assumption was that "nothing pending" is keyword-detectable.** The distinction is
+  grammatical MOOD - *"I measured X"* vs *"measure X"* share every content word.
+- **On the second failed hand-check, STOP and present the options** - hand-verify in batches,
+  accept the population as OPEN, or have the owner accept a sampled error rate. **A fifth regex is
+  momentum, not a plan.**
+- **A verifier must strip its predecessor's annotations.** Rows now lead with ~430 characters of
+  prior verdicts; the first classifier scored those. **Grading your own homework, worse each pass.**
+- **What held: nothing was written.** Four wrong classifiers, zero corrupted rows - dry-run then
+  hand-check before `--write`, every time.
+
 ## AN ANALYSIS ROW HAS NO CODE TO VERIFY (B1790 - L540, CHECKLIST #266)
 
 **MEASURED: of 148 rows naming no artifact, 138 belong to batches whose commit touched NO CODE.**

@@ -4530,3 +4530,25 @@ being invented, and choosing here without a ruling repeats that.
 batch carries several rows, so it proves the BATCH produced durable code, not that THIS row's claim
 is that code. **B1777's error was asking about the batch and reporting it as an answer about the
 row.** Verify via `scripts/verify_open_via_diff.py`.
+
+### #267 - STOP AT THE SECOND FAILED HAND-CHECK (B1791 / L541)
+
+**MEASURED: four classifiers, hand-checked samples failing 3-of-4 then 3-of-5.** Fable's rule -
+*two failed attempts at the same fix means the diagnosis is wrong* - applied two attempts before I
+stopped. **Each patch made the classifier narrower without making it right.**
+
+**The wrong assumption was that "nothing pending" is detectable by keyword.** The distinction is
+grammatical MOOD, not vocabulary: *"I measured X"* and *"measure X"* share every content word.
+
+**When a classifier fails a second hand-check, stop and present the options** - hand-verify in
+batches, accept the population as permanently OPEN, or have the owner accept a sampled error rate.
+**A fifth regex is not an option, it is momentum.**
+
+**COMPANION: A VERIFIER MUST NOT READ ITS PREDECESSOR'S ANNOTATIONS.** Every pass since B1769
+PREPENDED text to these rows, so a row now leads with ~430 characters of prior verdicts before its
+own content. **The first classifier scored that** - grading its own homework, and worsening with
+each pass. Strip prior annotations before classifying (`original_text()` in
+`scripts/verify_analysis_rows_complete.py`).
+
+**AND THE PART THAT HELD: nothing was written.** Four wrong classifiers, zero corrupted rows,
+because every pass was a DRY RUN followed by a hand-check before `--write`.

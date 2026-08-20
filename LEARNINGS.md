@@ -10597,3 +10597,43 @@ the three silently would hide a structural decision inside a bookkeeping pass.
 a batch carries several rows and up to three changes, so it proves the BATCH produced durable code,
 not that THIS row's claim is that code. **B1777's error was asking a question about the batch and
 reporting it as an answer about the row** - naming the verdict honestly is what stops that recurring.
+
+### L541
+
+**Four classifiers, four failed hand-checks - the diagnosis was wrong, not the patch**
+
+**B1791.** The owner ruled the 138 analysis rows may reach EXECUTED, *"but before we do that, I want
+to verify that each has measurements or actions completed and nothing is pending."* Right condition,
+and I could not build achecker that meets it.
+
+```
+v1  57 promoted   scored MY OWN annotations - the row is
+                  "_reason:_ <430 chars of my prose> HIGH | <original>"
+v2  49 promoted   stripped annotations; missed imperatives and conditionals
+v3  41 promoted   caught those; missed leading whitespace and "needs <anything>"
+v4  17 promoted   required the result to LEAD the row; STILL promotes a row
+                  reading "If P1 results later look anomalous, run a per-BAR
+                  set diff across swing_length 20/24/26" - because "20/24/26"
+                  reads as a measurement
+```
+
+**Hand-checked samples failed 3-of-4 and then 3-of-5.** Fable's rule - *two failed attempts at the
+same fix means the diagnosis is wrong* - applied two attempts ago and I kept patching.
+
+**The wrong assumption: that "nothing pending" is detectable by keyword.** These rows are prose I
+wrote across months, and the distinction is grammatical mood, not vocabulary. *"I measured X"* and
+*"measure X"* share every content word. `Recompute the slope at run completion` and
+`400 combinations graded` are both about measurement; only one is finished.
+
+**AND THE CONTAMINATION THAT STARTED IT.** Every pass since B1769 has PREPENDED text to these rows -
+the migration reason, B1788's flag, B1790's verdict - so the row now leads with 430 characters of
+MY OWN prose before its content begins. **My first classifier scored that.** A verifier that reads
+its predecessor's annotations is grading its own homework, and each pass makes the next one worse.
+
+**NOTHING WAS WRITTEN.** The ledger is unchanged at 434 EXECUTED / 247 OPEN. **Four wrong
+classifiers and zero corrupted rows is the only good part of this entry** - the dry-run-then-sample
+discipline held even while the classifier did not.
+
+**What I should have concluded two attempts earlier: this is a judgment task with ~140 instances,
+and the honest options are to hand-verify in batches, accept them as permanently OPEN, or have the
+owner accept a sampled error rate.** Presenting those is the answer; a fifth regex is not.
