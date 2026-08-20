@@ -10432,3 +10432,42 @@ gate built three turns later.
 closed..."` is not a blockquote, because `>` must open a line. The test FAILED, I read the failure
 instead of assuming my intent, and rebuilt the probe with real newlines. **Had I read it as "the fix
 did not work" rather than "the probe is wrong", I would have loosened a correct gate.**
+
+### L537
+
+**I reported seven classes by unioning two rulings whose sets overlapped**
+
+**B1784, owner-caught.** *"You can not say 7 groups while combining the groups of two different sets
+when they are not mutually exclusive. Its very misleading."*
+
+**Exactly right, and the mechanism is worth naming.** B1769 ruled SIX classes with `DONE` terminal.
+B1778 ruled that DONE is not closure and added `CLOSED` - **but nothing retired `DONE`.** The ledger
+then carried two terminal-ish states whose meanings overlapped, and I reported their union as
+though it were a taxonomy. **A classification is not a list of labels in use; it is a partition.**
+
+**The second half of the ruling closes the hole I had left open:** *"Done will be moved to EXECUTED
+after verifying each ticket comprehensively."* There is no resting place for *finished but
+unchecked*. A row is **EXECUTED** (verified against code and the change log) or it is **still work**.
+My `DONE = self-reported, not verified, no longer terminal` was a third state smuggled in under an
+old name - which is why the owner doubted it.
+
+**THE SIX, and every ticket sits in exactly one:**
+
+```
+   390  EXECUTED     verified against code + change log        terminal
+     8  DROPPED      deliberately not doing                    terminal
+     9  BLOCKED      cannot proceed
+     4  DEFERRED     could proceed, chose not to
+   267  OPEN         queued, unstarted, or UNVERIFIED
+     3  RUNNING      in flight
+   ----
+   681  TOTAL        outside the six: none
+```
+
+**228 rows moved DONE -> OPEN.** They were never verified, so they were never finished. **Reporting
+that rise as a regression would be the same category-to-claim error that produced "271 closed"** -
+the number got worse because the definition got honest.
+
+**The reusable rule: when a ruling ADDS a class, name what it RETIRES.** B1778 added `CLOSED` and
+left `DONE` standing, and the overlap survived two turns of me reporting counts off it. **An
+addition that retires nothing is a partition getting quietly coarser.**

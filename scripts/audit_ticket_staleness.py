@@ -100,7 +100,7 @@ def _vocab():
         r"^\|\s*\*\*S6-[A-Za-z0-9-]+\*\*\s*\|\s*\*\*([A-Z-]+)\*\*\s*\|", q, re.M))
     # B1778: CLOSED joined the vocabulary by owner ruling - DONE is
     # self-reported, CLOSED is verified against code.
-    bad = sorted(seen - set(LIVE) - {"DONE", "CLOSED", "DROPPED"})
+    bad = sorted(seen - set(LIVE) - {"EXECUTED", "DROPPED"})
     return len(bad), bad
 
 

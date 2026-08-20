@@ -4431,3 +4431,32 @@ instance patched while its class stayed open (`L519`); one gate's scoping lesson
 gate built three turns later (`L536`); and the ledger counting categories rather than members
 (`L532`). **When a rule is learned, ask what will CARRY it to the next instance - a shared helper, a
 primitive, or a test that pins the set. Prose in LEARNINGS carries nothing.**
+
+### #263 - THE LEDGER HAS SIX MUTUALLY EXCLUSIVE CLASSES (B1784 / L537)
+
+**OWNER RULING 2026-08-20:** *"Lets use those 6 classes itself. Replace DONE with EXECUTED. Done
+will be moved to EXECUTED after verifying each ticket comprehensively. All CLOSED tickets will be
+under EXECUTED. I want mutually exclusive groups."*
+
+```
+EXECUTED   verified against code and the change log     terminal
+DROPPED    deliberately not doing                       terminal
+BLOCKED    cannot proceed
+DEFERRED   could proceed, chose not to
+OPEN       queued, unstarted, or UNVERIFIED
+RUNNING    in flight
+```
+
+**There is no "finished but unverified" state.** A row is EXECUTED or it is still work. A turn may
+never write EXECUTED - only a verification pass may promote into it.
+
+**WHY THIS ITEM EXISTS: I reported SEVEN classes by unioning two rulings.** B1769 ruled six with
+DONE terminal; B1778 added CLOSED and **retired nothing**, so two overlapping terminal-ish states
+coexisted and I reported their union as a taxonomy. **A classification is a PARTITION, not a list of
+labels in use.**
+
+**When a ruling ADDS a class, name what it RETIRES.** An addition that retires nothing makes the
+partition quietly coarser, and the overlap survived two turns of counts being reported off it.
+
+**Enforced by `scan_queue_vocabulary`** against the six, and by
+`test_b1776_ticket_staleness_probes_are_live` which fails on any class outside them.

@@ -16886,7 +16886,7 @@ def test_b1778_unverified_count_gate():
         "a mention with no number is prose, not a reported count"
 
     # CLOSED is now part of the ruled vocabulary, DONE is no longer terminal
-    assert "CLOSED" in tg.QUEUE_CLASSES
+    assert "EXECUTED" in tg.QUEUE_CLASSES
 
 
 def test_b1779_partial_distribution_gate():

@@ -669,6 +669,22 @@ says *each*.**
 - **Phase 5 is three artifacts**: LEARNINGS + CHECKLIST-or-explicit-citation + queue ticket.
   Enforced by `scan_miss_capture_complete`.
 
+## SIX MUTUALLY EXCLUSIVE LEDGER CLASSES (B1784 - L537, CHECKLIST #263)
+
+**Owner ruling 2026-08-20.** `EXECUTED` / `DROPPED` / `BLOCKED` / `DEFERRED` / `OPEN` / `RUNNING`.
+**There is no "finished but unverified" state** - a row is EXECUTED (verified against code and the
+change log) or it is still work. A turn may never write EXECUTED.
+
+- **I had reported SEVEN classes by unioning two rulings.** B1769 ruled six with DONE terminal;
+  B1778 added CLOSED and **retired nothing**. Two overlapping terminal-ish states coexisted and I
+  reported their union as a taxonomy. **A classification is a PARTITION, not a list of labels in
+  use.**
+- **When a ruling ADDS a class, name what it RETIRES.** An addition that retires nothing makes the
+  partition quietly coarser - and the overlap survived two turns of counts reported off it.
+- **228 rows moved DONE -> OPEN.** Never verified means never finished. **The number got worse
+  because the definition got honest**; reporting that as a regression is the category-to-claim error
+  again.
+
 ## CARRY THE RULE, DO NOT RE-LEARN IT (B1783 - L536, CHECKLIST #262)
 
 **MEASURED: of 15 text-reading gates, 13 had NEITHER of the two rules already learned for that

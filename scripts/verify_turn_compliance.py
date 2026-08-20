@@ -1326,7 +1326,11 @@ def scan_shell_substitution(entries, *, tool_text=None) -> list[str]:
 # marked once you have verified their work against the actual code and code log
 # and not on documentation." So DONE is SELF-REPORTED and CLOSED is VERIFIED,
 # and only `promote_verified_closed.py` may write CLOSED - never a turn.
-QUEUE_CLASSES = ("DONE", "CLOSED", "DROPPED", "BLOCKED", "DEFERRED", "OPEN",
+# B1784 owner ruling 2026-08-20: SIX mutually exclusive classes. DONE is
+# replaced by EXECUTED, and CLOSED folds into it. There is no
+# "finished but unverified" resting place: a row is EXECUTED (verified
+# against code and the change log) or it is still work.
+QUEUE_CLASSES = ("EXECUTED", "DROPPED", "BLOCKED", "DEFERRED", "OPEN",
                  "RUNNING")
 QUEUE_NEEDS_REASON = ("DROPPED", "BLOCKED", "DEFERRED", "OPEN")
 # B1769c: "-" and "N/A" REMOVED. They are degenerate markers - matched as
