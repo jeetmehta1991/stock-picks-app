@@ -669,6 +669,22 @@ says *each*.**
 - **Phase 5 is three artifacts**: LEARNINGS + CHECKLIST-or-explicit-citation + queue ticket.
   Enforced by `scan_miss_capture_complete`.
 
+## A DERIVED COUNT MUST NAME AND TEST ITS ASSUMPTION (B1777 - L532, CHECKLIST #257)
+
+**MEASURED: I reported "271 closed in 48h"; the real figure is 13.** I computed
+`created - open = closed`, which is valid only if every ticket starts open - **87pct are written as
+DONE and never transition.**
+
+- **State the assumption under any derived count, and test it.** One query over first-rows would
+  have caught this before the owner did.
+- **Count MEMBERS, not CATEGORIES.** "21 enforcement tickets" - **6 of them hold 62 work items**,
+  one alone holds 22. A ticket is itself a category.
+- **Verify DONE against git, not prose**: `scripts/audit_done_claims.py`. 66pct CODE_BACKED,
+  26pct ANALYSIS_ONLY, 3.4pct UNSUPPORTED, **27 tickets on batches with no commit at all.**
+- **Keep ANALYSIS_ONLY a separate verdict.** An analysis turn produces a number, not a diff.
+  **Calling every doc-only DONE false is the same category-to-claim leap as the 271** - a council
+  advisor read 87pct born-DONE as "87pct fabrication". It is not.
+
 ## RE-DERIVE A TICKET'S NUMBER BEFORE WORKING IT (B1776 - L531, CHECKLIST #256)
 
 **MEASURED: 6 of 21 open enforcement tickets described a world that no longer existed** - and none

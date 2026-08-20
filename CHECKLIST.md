@@ -4302,3 +4302,27 @@ vocabulary**).
 **And do not report stale-ticket closures as progress.** Of the six, two closed because the work
 landed and four because the QUESTION changed shape - their concerns live on in other rows.
 **Closing a stale framing is bookkeeping.**
+
+### #257 - A DERIVED COUNT MUST NAME AND TEST ITS ASSUMPTION (B1777 / L532)
+
+**MEASURED: I reported "271 closed in 48h". The real figure is 13.** The other 268 were WRITTEN as
+DONE - records of work finished in the same turn, which never transitioned. I computed
+`created - open = closed`, **arithmetic valid only if every ticket starts open. 87pct do not.**
+
+**Before reporting any derived count, state the assumption it rests on and test it.** One query over
+first-rows would have caught this.
+
+**And count MEMBERS, not CATEGORIES.** I reported "21 open enforcement tickets"; **6 of those
+tickets hold 62 work items** (one alone holds 22). A ticket is itself a category - **the any-vs-each
+defect at the ledger level.**
+
+**DONE claims are verified against git, never against their own prose:** run
+`scripts/audit_done_claims.py`, which joins ticket -> batch -> commit -> files-changed. Current
+state: **66.0pct CODE_BACKED, 25.9pct ANALYSIS_ONLY, 3.4pct UNSUPPORTED, 4.6pct NO_COMMIT**, with
+**27 tickets on batches that have no commit at all** and 3 rows verified as claiming code that
+shipped in a different batch.
+
+**ANALYSIS_ONLY is legitimate and must stay a separate verdict.** An analysis turn produces a number
+and a lesson, not a diff. **Calling every doc-only DONE a false claim would be the same
+category-to-claim leap as the 271** - one council advisor did exactly that, reading 87pct born-DONE
+as "87pct fabrication".

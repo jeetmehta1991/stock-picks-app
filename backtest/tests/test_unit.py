@@ -16779,3 +16779,46 @@ def test_b1776_ticket_staleness_probes_are_live():
     # and the queue vocabulary must stay closed (the B1769 ruling)
     n_bad, bad = m.PROBES["queue classes outside the ruled vocabulary"]()
     assert n_bad == 0, f"queue classes outside the ruled vocabulary: {bad}"
+
+
+def test_b1777_done_claims_are_git_verifiable():
+    """B1777 (#257): DONE rows are audited against git, never their own prose.
+
+    I reported "271 closed in 48h"; the real figure is 13. The other 268 were
+    WRITTEN as DONE and never transitioned, so `created - open = closed` was
+    arithmetic resting on an untested assumption.
+
+    This pins the auditor's own two defects, both of which would have produced
+    FABRICATED ACCUSATIONS had they shipped:
+      - combined-batch commits ("B1760/B1761: ...") matched only the first
+        number -> 45 false NO_COMMIT
+      - "code" defined as .py only -> a .claude/settings.json change read as prose
+    """
+    import importlib.util
+    import pathlib
+
+    root = pathlib.Path(__file__).resolve().parents[2]
+    spec = importlib.util.spec_from_file_location(
+        "adc", root / "scripts" / "audit_done_claims.py")
+    m = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(m)
+
+    bc = m.batch_commits()
+    assert bc, "no batch commits parsed"
+
+    # combined-batch commits must register EVERY batch they name
+    combined = [n for n in (1760, 1761) if n in bc]
+    assert len(combined) == 2, (
+        f"combined-batch commit not fully parsed: {combined} - this is the "
+        "defect that produced 45 false NO_COMMIT verdicts")
+    assert bc[1760][0] == bc[1761][0], "1760/1761 shipped in one commit"
+
+    # non-.py code must count as code
+    assert ".claude/" in m.CODE_DIRS
+    assert ".json" in m.CODE_EXT and ".py" in m.CODE_EXT
+
+    # ANALYSIS_ONLY must remain a distinct, legitimate verdict - collapsing it
+    # into UNSUPPORTED is the category-to-claim leap #257 forbids
+    assert m.ANALYSIS_VERBS and m.CODE_VERBS
+    assert not (set(m.ANALYSIS_VERBS) & set(m.CODE_VERBS)), \
+        "a verb cannot be both an analysis and a code claim"

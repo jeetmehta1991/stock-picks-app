@@ -10193,3 +10193,58 @@ solved. Two closed because the work genuinely landed (`S6-B1719e`, `S6-B1766a/c`
 because the QUESTION changed shape - the underlying concerns live on in `S6-B1761b`, `S6-B1774e`
 and the B1773 audit. **Closing a stale framing is bookkeeping, not progress**, and reporting it as
 progress would be the more comfortable lie.
+
+### L532
+
+**"271 closed in 48 hours" was 13. The other 268 were written as DONE.**
+
+**B1777, owner-caught.** *"271 closed in 48h? This appears highly inaccurate. There has to be some
+error in how you have reclassified those tickets."* **Correct on both counts.**
+
+```
+tickets created in the window ...................... 320
+  WRITTEN as terminal (first row already DONE) ..... 268
+  genuinely TRANSITIONED open -> terminal ..........  13
+  still open ........................................  40
+whole queue: 567 of 649 born terminal (87pct)
+```
+
+**A ticket whose first row says DONE never transitioned.** It is a RECORD of work finished in the
+same turn, not a work item that closed. I subtracted open-from-created and called the remainder
+"closed" - **arithmetic that is valid only if every ticket starts open, which 87pct do not.**
+
+**The second challenge, also correct.** I reported *"21 open enforcement tickets"*; the owner
+answered that `S6-B1757d` alone holds **22 unbuilt items**. Measured: **6 open tickets hold 62
+enforcement work items** (22 + 14 + 12 + 6 + 5 + 3). **Counting TICKETS counts CATEGORIES; the work
+lives in MEMBERS** - the any-vs-each defect at the ledger level, in the ledger that tracks
+any-vs-each defects. `require_each` exists and was never pointed at row-counting.
+
+**THE AUDIT AGAINST GIT** (`scripts/audit_done_claims.py`; ticket -> batch -> commit -> files):
+
+```
+586 terminal tickets     66.0pct CODE_BACKED   25.9pct ANALYSIS_ONLY
+                          3.4pct UNSUPPORTED    4.6pct NO_COMMIT
+last 48h (288)           69.8pct CODE_BACKED   26.0pct ANALYSIS_ONLY
+                          4.2pct UNSUPPORTED    0pct  NO_COMMIT
+```
+
+**27 tickets belong to batches with NO COMMIT AT ALL** - `B1756` and `B1730` return zero matches in
+`git log`. Their rows claim DONE for work that has no commit under that batch number.
+
+**Three rows claim CODE that did not ship in their batch**, verified individually:
+`S6-B1620b` (cube schema columns - commit touched only `.md`), `S6-B1601b` (`scan_postfix_recheck`
+wired - only `.md` + `.json`), `S6-B1580b` (warmup asof fix - only `EXECUTION_QUEUE.md`). **At
+least two of those capabilities EXIST today**, so the work landed - **in a different batch than the
+row credits.** The ledger's batch attribution is unreliable even where the work is real.
+
+**WHAT I WILL NOT CLAIM, and the council pushed hard the other way.** One advisor called this
+*"a real 87pct fabrication rate."* **It is not.** 66pct of terminal rows are code-backed and 26pct
+are analysis turns that legitimately produce a number rather than a diff. **Born-DONE is the correct
+shape for a workflow where work is decided and completed inside one turn** - the defect was never
+that rows are born DONE, it is that **I counted them as closures**. Converting a structural
+observation into an accusation is the same category-to-claim leap that produced the 271.
+
+**The reusable rule: a subtraction is only as good as the assumption underneath it.** `created -
+open = closed` silently assumes every item starts open. **Before reporting a derived count, state
+the assumption it rests on and test it** - one query over first-rows would have caught this before
+the owner did.
