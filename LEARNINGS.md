@@ -9684,3 +9684,34 @@ harness that supplies less manufactures FALSE FAILURES exactly as a circular pro
 false passes. **Both are the harness reporting on itself instead of on the gate**, and I committed
 one of them one turn after diagnosing the other. **I nearly ticketed three correct gates as
 defects.**
+
+### L518
+
+**I shipped a rule whose central claim had no mechanism, and the anti-prose gate stayed quiet**
+
+**B1762, owner-caught.** *"If added to skill, have the applicable gates been added as per
+requirements? Do we have a requirement in the skill itself that any addition must get gated?"*
+
+**MEASURED, and the answer to the first question is no.** The B1761 skill section asserts *"every
+gate carries an entry in the corpus; no entry = unproven"*. **17 of 25 `scan_` gates had no entry
+and nothing failed.** `test_b1760_gates_fire_on_real_incidents` iterates OVER the corpus, so it
+validates only what is already in it - **it checks gates IN the corpus, never that a gate IS in
+it.** That is any-vs-each **inside the test written to fix circular proofs**, one turn after
+`require_each` was built to close exactly this class and was not used.
+
+**Why `#231`'s gate did not fire, which is the reusable part.** `scan_prose_only_rule` asks whether
+`verify_turn_compliance.py` **or** `test_unit.py` was TOUCHED THIS TURN. **Touching either file for
+ANY reason silences it.** I touched both, so a turn that shipped an ungated rule passed the gate
+whose entire purpose is to catch ungated rules. **Any-vs-each at the FILE level:** a category was
+touched; no member was verified.
+
+**The general rule: a gate keyed on "was any work done in the enforcement layer" cannot answer "did
+THIS rule get enforced".** The unit of enforcement is the RULE, not the file. `scan_ungated_addition`
+enumerates the numbered rules added this turn and requires EACH to name its enforcer in the SAME
+CLAUSE.
+
+**And a defect found while building it, worth as much as the gate.** My first version searched a
++/-220 character window, so **one mechanism mention satisfied every number in a short response** -
+the same any-vs-each defect returning as a PROXIMITY artifact inside the gate written to close
+any-vs-each. It surfaced only because I probed a HALF-gated pair (`#240` enforced, `#241` not) -
+**a case a self-derived probe would never have constructed.**

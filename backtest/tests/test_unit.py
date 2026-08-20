@@ -16284,7 +16284,13 @@ def test_b1760_gates_fire_on_real_incidents():
         if name.startswith("_") or name in STRUCTURE:
             continue
         fn = getattr(tg, name)
-        if bool(fn([], text=neg)):
+        # B1762c: neutralise non-text inputs so the control asks "does ordinary
+        # prose trip this?" rather than "what does the live repo look like?"
+        params = inspect.signature(fn).parameters
+        kw = {"text": neg}
+        kw.update({k: v for k, v in corpus.NEUTRAL.get(name, {}).items()
+                   if k in params})
+        if bool(fn([], **kw)):
             tripped.append(name)
     assert not tripped, f"negative control tripped: {tripped}"
 
@@ -16329,3 +16335,71 @@ def test_b1761_new_scan_gates_have_a_text_seam():
     assert not new, (
         f"NEW scan_ gate(s) with no injectable text seam (#241): {sorted(new)}. "
         "A gate that cannot be asked a question cannot be proven.")
+
+
+def test_b1762_every_scan_gate_has_a_corpus_entry():
+    """B1762 (#243): EVERY scan_ gate carries a corpus entry, or is listed as a
+    documented exemption with a reason.
+
+    `test_b1760` iterates OVER the corpus, so it validates only what is already
+    in it - 17 of 25 gates had no entry and nothing failed. That is any-vs-each
+    inside the test written to fix circular proofs: it checks gates IN the
+    corpus, never that a gate IS in it.
+
+    The exemption dict is the `require_each` shape: a gate cannot be silently
+    omitted, only explicitly excused with a reason that is read at review time.
+    """
+    import importlib.util
+    import inspect
+    import pathlib
+
+    root = pathlib.Path(__file__).resolve().parents[2]
+
+    def _load(stem):
+        spec = importlib.util.spec_from_file_location(
+            stem, root / "scripts" / f"{stem}.py")
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        return mod
+
+    tg = _load("verify_turn_compliance")
+    corpus = _load("gate_incident_corpus")
+
+    # Gates with no recorded incident. Each MUST carry a reason. Shrinking this
+    # dict is the goal (S6-B1761b / S6-B1761c); adding to it is a deliberate act
+    # that shows up in review.
+    EXEMPT = {
+        # no injectable text seam yet - cannot be exercised on fixed input (#241)
+        "scan_discipline_not_loaded": "no seam; S6-B1761b",
+        "scan_orphan_rule": "no seam; S6-B1761b",
+        "scan_postfix_recheck": "no seam; S6-B1761b",
+        "scan_skill_not_invoked": "no seam; S6-B1761b",
+        "scan_skill_not_invoked_per_skill": "no seam; S6-B1761b",
+        "scan_skill_not_updated": "no seam; S6-B1761b",
+        "scan_transcript_entries": "no seam; S6-B1761b",
+        "scan_unmeasured_quantity": "no seam; S6-B1761b",
+        "scan_unmonitored_launch": "no seam; S6-B1761b",
+        "scan_unrecorded_miss": "no seam; S6-B1761b",
+        "scan_unverified_cause": "no seam; S6-B1761b",
+        "scan_unverified_structure": "no seam; S6-B1761b",
+        "scan_unverified_universe": "no seam; S6-B1761b",
+        "scan_verdict_denominators": "no seam; S6-B1761b",
+        # has a seam, but the words that caused it were never kept (#240)
+        "scan_findings_vs_tickets": "incident text not preserved; S6-B1761c",
+        "scan_missing_skill_confirmation": "incident text not preserved; S6-B1761c",
+        "scan_skill_block_incomplete": "incident text not preserved; S6-B1761c",
+    }
+    assert all(EXEMPT.values()), "every exemption needs a reason"
+
+    gates = {n for n, f in vars(tg).items()
+             if n.startswith("scan_") and callable(f) and hasattr(f, "__code__")
+             and f.__module__ == tg.__name__}
+    uncovered = sorted(gates - set(corpus.INCIDENTS) - set(EXEMPT))
+    assert not uncovered, (
+        f"scan_ gate(s) with NO corpus entry and NO documented exemption "
+        f"(#243): {uncovered}. A gate with no recorded incident is unproven - "
+        "add its verbatim incident to gate_incident_corpus.py, or list it in "
+        "EXEMPT with the reason and a ticket.")
+
+    stale = sorted(set(EXEMPT) - gates)
+    assert not stale, f"EXEMPT names gates that no longer exist: {stale}"

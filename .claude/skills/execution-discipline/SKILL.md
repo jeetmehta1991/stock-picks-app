@@ -669,6 +669,28 @@ says *each*.**
 - **Phase 5 is three artifacts**: LEARNINGS + CHECKLIST-or-explicit-citation + queue ticket.
   Enforced by `scan_miss_capture_complete`.
 
+## EVERY RULE YOU ADD SHIPS WITH ITS OWN ENFORCER (B1762 - L518, CHECKLIST #242/#243)
+
+**This is the standing requirement for additions to this file.** Adding a section here, or an item
+to CHECKLIST.md, is not complete until that rule names the function or pin test that enforces it -
+**in the same clause as its number** - or carries an explicit `JUDGMENT-ONLY` / `PROSE-ONLY` waiver
+stating why no mechanism is possible.
+
+**MEASURED, which is why this is a rule and not a preference:** the B1761 section asserts *"every
+gate carries a corpus entry"* and **17 of 25 gates had none, with nothing failing.**
+
+- **`#231`'s gate could not have caught it.** `scan_prose_only_rule` asks whether a CODE FILE was
+  touched this turn; touching it for ANY reason silences it. **Any-vs-each at the FILE level - the
+  unit of enforcement is the RULE, not the file.** Enforced now by `scan_ungated_addition`.
+- **A test that iterates OVER a registry validates only what is in it.** `test_b1760` checked gates
+  IN the corpus, never that a gate IS in it. Enforced now by
+  `test_b1762_every_scan_gate_has_a_corpus_entry`, with exemptions carrying reasons.
+- **Proximity is not attribution.** The first version of `scan_ungated_addition` matched a +/-220
+  character window, so one mechanism mention satisfied every number in a short response. **Scope to
+  the clause.**
+- **Probe the HALF-satisfied case.** Both defects above surfaced from a pair where one member was
+  enforced and one was not - the case a self-derived probe never constructs.
+
 ## PROVE GATES ON THE VERBATIM INCIDENT, AND GIVE THEM A SEAM (B1760/B1761 - L516/L517, CHECKLIST #240/#241)
 
 **MEASURED: my gate probes were built from the marker list of the gate under test - the test proved

@@ -31,7 +31,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import verify_turn_compliance as tg  # noqa: E402
-from gate_incident_corpus import INCIDENTS  # noqa: E402
+from gate_incident_corpus import INCIDENTS, NEUTRAL  # noqa: E402
 
 # Gates whose subject is a STATE of the repo (dirty tree, missing stamp,
 # unpushed commits), not a sentence in the response. Text injection is
@@ -125,7 +125,7 @@ def main() -> int:
     neg = INCIDENTS["_negative_control"][0]
     tripped = [n for n, f in rows
                if n not in STATE_GATES and n not in STRUCTURE_GATES
-               and accepts_text(f) and fires(n, f, neg, {})]
+               and accepts_text(f) and fires(n, f, neg, NEUTRAL.get(n, {}))]
 
     print("\n" + "=" * 78)
     print(f"  FIRES on own incident ......... {len(ok)}")

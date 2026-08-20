@@ -3975,3 +3975,35 @@ supplies a gate LESS state than its incident had **manufactures false failures**
 reported 4 broken gates; **3 were correct and starved.** Before ticketing a gate as silent,
 supply the incident's full text and state - **a harness reporting on itself is the same defect in
 the opposite direction.**
+
+### #242 - EACH NEW NUMBERED RULE NAMES ITS OWN ENFORCER (B1762 / L518)
+
+**MEASURED: `#231`'s gate asks whether a CODE FILE was touched this turn, not whether THIS rule got
+a mechanism.** Touching `verify_turn_compliance.py` or `test_unit.py` for any reason silences it. In
+B1761 both were touched, so a turn shipping an ungated rule passed the gate built to catch ungated
+rules - **any-vs-each at the FILE level: a category was touched, no member verified.**
+
+**The unit of enforcement is the RULE, not the file.** Every CHECKLIST item or SKILL section added
+in a turn must name its enforcing function or pin test **in the same clause as its number**, or
+carry an explicit `JUDGMENT-ONLY` / `PROSE-ONLY` waiver saying why no mechanism is possible.
+
+**Enforced by `scan_ungated_addition`**, wired into the Stop-hook pre-pass and pinned by its corpus
+entry - whose verbatim incident is the line I actually wrote: *"L516 + L517, CHECKLIST #240 + #241,
+SKILL section, 8 queue rows."*
+
+**Construction note (B1762b):** the first version matched within a +/-220 character window, so **one
+mechanism mention satisfied every number in a short response**. Proximity is not attribution -
+**scope the check to the clause.** Found by probing a HALF-gated pair, which a self-derived probe
+would never have constructed.
+
+### #243 - EVERY GATE HAS A CORPUS ENTRY OR A DOCUMENTED EXEMPTION (B1762 / L518)
+
+**MEASURED: 17 of 25 `scan_` gates had no corpus entry and nothing failed.**
+`test_b1760_gates_fire_on_real_incidents` iterates OVER the corpus, so it validates only what is
+already there - **it checks gates IN the corpus, never that a gate IS in it.** Any-vs-each inside
+the test written to fix circular proofs, one turn after `require_each` existed to close that class.
+
+**Enforced by `test_b1762_every_scan_gate_has_a_corpus_entry`:** every `scan_` gate carries a
+verbatim incident, or appears in an `EXEMPT` dict with a REASON and a ticket. The dict is the
+`require_each` shape - **a gate cannot be silently omitted, only explicitly excused**, and the
+exemption is visible at review time. Shrinking it is `S6-B1761b` / `S6-B1761c`.

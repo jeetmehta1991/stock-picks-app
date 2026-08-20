@@ -1219,6 +1219,77 @@ def _queue_rows_added() -> int:
     return n
 
 
+def scan_ungated_addition(entries, *, text=None, added_rules=None) -> list[str]:
+    """B1762 (#242): EACH new numbered rule names its own mechanism.
+
+    Owner: *"If added to skill, have the applicable gates been added as per
+    requirements? Do we have a requirement in the skill itself that any addition
+    must get gated?"*
+
+    MEASURED, and this is the defect: `scan_prose_only_rule` (#231) asks whether
+    `verify_turn_compliance.py` or `test_unit.py` was TOUCHED THIS TURN. Touching
+    either file for ANY reason silences it. In B1761 I touched both - so the gate
+    went quiet while the new section's central claim ("every gate carries a
+    corpus entry") shipped with **no mechanism at all**: 17 of 25 gates had no
+    entry and nothing failed.
+
+    That is any-vs-each at the FILE level - the same class as `#225`, the
+    per-skill check, the runner's early returns and Phase 5's queue-only count.
+    A category was touched; no member was verified. So this gate enumerates the
+    numbered rules ADDED this turn and requires EACH to name its enforcing
+    function, its pin test, or an explicit JUDGMENT-ONLY / PROSE-ONLY waiver.
+
+    `added_rules` is injectable so the gate can be exercised on fixed input
+    (#241); left None it reads the CHECKLIST/SKILL diff.
+    """
+    import re
+    import subprocess
+
+    if added_rules is None:
+        added_rules = []
+        try:
+            for path in ("CHECKLIST.md", ".claude/skills/execution-discipline/SKILL.md"):
+                d = subprocess.run(["git", "diff", "HEAD", "--unified=0", "--", path],
+                                   capture_output=True, text=True, timeout=20).stdout
+                added_rules += re.findall(r"^\+#{2,3} #(\d+)", d or "", re.M)
+        except Exception:
+            return []
+    added_rules = sorted(set(str(r) for r in added_rules))
+    if not added_rules:
+        return []
+
+    t = (_assistant_text(entries) if text is None else text.lower())
+    if not t:
+        return []
+
+    MECH = ("scan_", "test_b", "enforced by", "pinned by", "judgment-only",
+            "prose-only", "gated by")
+    satisfied = {}
+    for num in added_rules:
+        # the rule number must appear WITH a mechanism word near it
+        # B1762b: SAME CLAUSE, not a character window. A +/-220 char window let
+        # ONE mechanism mention satisfy EVERY number in a short response - the
+        # any-vs-each defect returning as a PROXIMITY artifact, inside the gate
+        # written to close any-vs-each. Found by probing a half-gated pair, which
+        # is the case a self-derived probe would never have constructed.
+        near = False
+        for clause in re.split(r"[.;\n]", t):
+            if re.search(r"#" + re.escape(num) + r"\b", clause) and \
+                    any(w in clause for w in MECH):
+                near = True
+                break
+        satisfied[f"#{num} names its mechanism"] = near
+
+    return require_each(
+        "UNGATED ADDITION (B1762/#242)", satisfied,
+        why=("A numbered rule was added this turn without naming the function or "
+             "test that enforces it. #231's gate only asks whether a CODE FILE "
+             "was touched - touching it for any reason silences it, which is how "
+             "B1761 shipped a rule whose central claim had no mechanism (17 of 25 "
+             "gates lacked a corpus entry; nothing failed). Name the enforcer per "
+             "rule, or write JUDGMENT-ONLY / PROSE-ONLY and say why."))
+
+
 def scan_prose_only_rule(entries, *, docs_touched=None, code_touched=None,
                          text=None) -> list[str]:
     """B1739: a rule added to CHECKLIST/SKILL owes a gate, or an explicit reason.
@@ -1667,7 +1738,8 @@ def main() -> int:
     # is added here alongside the new Phase-5 gate. Instance 5 of any-vs-each.
     for _sc in (scan_unverified_cause, scan_uncosted_probe,
                 scan_false_skill_status, scan_miss_capture_complete,
-                scan_retroactive_sweep, scan_compliance_is_content):
+                scan_retroactive_sweep, scan_compliance_is_content,
+                scan_ungated_addition):
         try:
             _r = _sc(_e2)
         except Exception as _e:

@@ -85,6 +85,11 @@ INCIDENTS: dict[str, tuple[str, bool, dict]] = {
         True,
         {},
     ),
+    "scan_ungated_addition": (
+        "L516 + L517, CHECKLIST #240 + #241, SKILL section, 8 queue rows.",
+        True,
+        {"added_rules": ["240", "241"]},
+    ),
     # NEGATIVE control - ordinary reporting prose that must NOT trip anything.
     # Note it is a bare sentence, so gates that legitimately require RESPONSE
     # STRUCTURE (a SKILLS block, a compliance block) are excluded by the sweep
@@ -95,6 +100,19 @@ INCIDENTS: dict[str, tuple[str, bool, dict]] = {
         False,
         {},
     ),
+}
+
+
+# B1762c: state that NEUTRALISES a gate's non-text inputs for the negative
+# control. The control asks "does ordinary prose trip this gate?" - so a gate
+# that also reads the live repo must be told there is nothing there, or it
+# answers a different question and reports a false positive.
+#
+# This is L517 again in the opposite direction: the control run must supply the
+# state that isolates TEXT, exactly as the incident run supplies the state the
+# incident had. A harness that gets either wrong reports on itself.
+NEUTRAL: dict[str, dict] = {
+    "scan_ungated_addition": {"added_rules": []},
 }
 
 
