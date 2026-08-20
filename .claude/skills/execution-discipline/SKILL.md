@@ -669,6 +669,22 @@ says *each*.**
 - **Phase 5 is three artifacts**: LEARNINGS + CHECKLIST-or-explicit-citation + queue ticket.
   Enforced by `scan_miss_capture_complete`.
 
+## MEASURE DEGRADED EXITS; A HAND-MAINTAINED LIST GOES STALE (B1772 - L527, CHECKLIST #252)
+
+**MEASURED on 217,724 trades: 3 of 26 exits fire a reason unrelated to their own name**, 1 shows a
+temporal identity step, and 10 pairs are outcome-duplicates - **`exits_effective ~ 16 of 26`.** The
+runbook's hand-written caveat said `regime_flip` was a time stop *pre-B1593*; **it still is.**
+
+- **Run `scripts/measure_degraded_exits.py <cube>` in every post-config pass.** A hand-maintained
+  list of which exits are broken decays; a per-cube measurement does not.
+- **"Best of N" is only N if the N are distinct.** The 0.369 selection-noise floor was calibrated
+  for best-of-26 against a family that is really ~16.
+- **When building a lens, flag MISMATCH rather than consistency**, and **match on stems** - exact
+  tokens called `atr_trail_1x -> atr_trailing_stop` a mismatch because `trail != trailing`
+  (**`#239`, inside a check written minutes after citing it**).
+- **Substring containment is not word matching.** Third instance this session; raising a match
+  THRESHOLD reduces such a defect without removing it.
+
 ## A SILENT FALLBACK MAKES ONE NAME INTO TWO EXITS (B1771 - L526, CHECKLIST #251)
 
 **MEASURED: `next_pivot_target` was 100pct silent-fallback for ELEVEN QUARTERS** (5,050 trades)

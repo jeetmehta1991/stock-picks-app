@@ -16534,3 +16534,78 @@ def test_b1768_shell_substitution_gate_covers_any_quoted_arg():
     for cmd in must_be_quiet:
         assert not tg.scan_shell_substitution([], tool_text=cmd), \
             f"gate FALSE-POSITIVED on a safe form (#248): {cmd!r}"
+
+
+def test_b1772_word_boundary_matcher():
+    """B1772 (#252): corroboration matches WHOLE WORDS, not substrings.
+
+    `audit_findings_ticketed.py` scored a finding as corroborated when a rare
+    token appeared ANYWHERE in the queue text - so a short token living inside a
+    longer word suppressed the flag. Raising the threshold 1-of-3 -> 2-of-3
+    (B1712c) reduced the defect without removing it.
+
+    Same shape as #246 ("free" inside "freely") and the B1769 placeholder check.
+    """
+    import importlib.util
+    import pathlib
+
+    root = pathlib.Path(__file__).resolve().parents[2]
+    spec = importlib.util.spec_from_file_location(
+        "afa", root / "scripts" / "audit_findings_ticketed.py")
+    m = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(m)
+    w = m._word_in
+
+    assert not w("free", "the sweep runs freely per row"), "#246 case must not match"
+    assert w("free", "the probe is free of cost")
+    assert not w("smc_breaker", "smc_breaker_block_long fires"), \
+        "must not match inside a longer identifier"
+    assert w("smc_breaker", "the smc_breaker producer")
+    assert w("pivot", "next-pivot target")          # hyphen is a boundary
+    assert not w("pivot", "pivotal moment")
+
+
+def test_b1772_degraded_exit_lenses():
+    """B1772 (#252): the degraded-exit lenses flag MISMATCH, not consistency.
+
+    Two construction defects this pins, both found by running it:
+      - v1 flagged `time_stop_20d` firing `time_stop_20d` on 100pct of trades,
+        which is the exit WORKING. A lens that flags 14 of 26 is noise.
+      - v2 used exact token matching, so `atr_trail_1x` -> `atr_trailing_stop`
+        read as a mismatch because `trail` != `trailing`. That is #239 (stem,
+        do not enumerate) inside a check written minutes after citing it.
+    """
+    import importlib.util
+    import pathlib
+
+    import pandas as pd
+
+    root = pathlib.Path(__file__).resolve().parents[2]
+    spec = importlib.util.spec_from_file_location(
+        "mde", root / "scripts" / "measure_degraded_exits.py")
+    m = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(m)
+
+    # stem overlap
+    assert m._stem_overlap({"atr", "trail"}, {"atr", "trailing", "stop"})
+    assert m._stem_overlap({"ma", "exit", "ema9"}, {"ma", "cross"})
+    assert not m._stem_overlap({"reverse", "signal"}, {"atr", "trailing", "stop"})
+
+    rows = []
+    for i in range(40):
+        # correct: a time stop that exits by time stop
+        rows.append(dict(exit_method="time_stop_20d", exit_reason="time_stop_20d",
+                         entry_date=f"2024-01-{i%28+1:02d}", pnl_pct=1.0))
+        # correct: an ATR trail exiting via its trailing stop (conjugated name)
+        rows.append(dict(exit_method="atr_trail_1x", exit_reason="atr_trailing_stop",
+                         entry_date=f"2024-01-{i%28+1:02d}", pnl_pct=1.0))
+        # DEGRADED: named for a flip, always ends on max_days
+        rows.append(dict(exit_method="regime_flip",
+                         exit_reason="regime_flip_max_days_20",
+                         entry_date=f"2024-01-{i%28+1:02d}", pnl_pct=1.0))
+    d = pd.DataFrame(rows)
+    d["_dt"] = pd.to_datetime(d.entry_date)
+    flagged = {e for e, *_ in m.degenerate(d)}
+    assert "regime_flip" in flagged, "must flag the exit that never does its thing"
+    assert "time_stop_20d" not in flagged, "must NOT flag an exit working correctly"
+    assert "atr_trail_1x" not in flagged, "must NOT flag on a conjugated name (#239)"

@@ -102,6 +102,20 @@ def findings(texts: list[str]) -> list[str]:
     return out
 
 
+
+def _word_in(word: str, text: str) -> bool:
+    """True only when `word` appears as a WHOLE WORD in `text`.
+
+    B1772. Substring containment is the recurring matcher defect in this repo:
+    `#246` ("free" matched inside "freely" and blocked a clean turn), the B1769
+    queue-placeholder check ("-" matched any reason containing a hyphen), and
+    this function's own `w in queue`. Underscores count as word characters so
+    `smc_breaker` does not match inside `smc_breaker_block`.
+    """
+    import re as _re
+    return _re.search(rf"(?<![A-Za-z0-9_]){_re.escape(word)}(?![A-Za-z0-9_])",
+                      text) is not None
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--transcript", required=True)
@@ -143,7 +157,13 @@ def main() -> int:
         # token living inside a longer word) was enough to suppress the flag -
         # synthetic nonsense scored 1 of 3 and passed. 2 of 3 separates it from a
         # real finding, which scores 3 of 3.
-        hits = sum(1 for w in rare if w in queue)
+        # B1772: WORD-BOUNDARY, not substring containment. Raising the
+        # threshold from 1-of-3 to 2-of-3 (B1712c) REDUCED this defect without
+        # removing it - two short tokens living inside longer words still
+        # corroborate a finding that the queue never mentions. `w in queue` is
+        # the same shape as #246 ("free" matching inside "freely") and as the
+        # B1769 placeholder check that blocked its own author.
+        hits = sum(1 for w in rare if _word_in(w, queue))
         if hits < 2:
             uncorroborated.append((f"{hits}/3 [{', '.join(rare)}]", f))
 

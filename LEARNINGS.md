@@ -9976,3 +9976,51 @@ numbers, and only one of them was real.
 
 **Methodology note:** `max_days` is emitted by BOTH paths, so it cannot classify a trade. My first
 pass silently assigned it to the fallback; it is now excluded and counted (64 of 8,374).
+
+### L527
+
+**Three of the 26 exits are named after something they never do, and 10 are duplicates**
+
+**B1772.** The runbook's `MANDATORY POST-CONFIG ANALYSIS` step 3 carries the row *"measure DEGRADED
+exits per cube"* and a hand-written caveat that `regime_flip` *"was a time stop **pre-B1593**"*.
+B1771 measured it still firing `regime_flip_max_days_20` on 100pct of trades in a POST-B1593 cube.
+**A hand-maintained list of which exits are broken goes stale silently.** `scripts/measure_degraded_exits.py`
+measures it per cube instead.
+
+**Measured on `output_batch_A_150` (217,724 trades, 133 strategies, 26 exits):**
+
+```
+DEGENERATE - fires a reason unrelated to its own name
+  regime_flip           regime_flip_max_days_20            100.0pct   never flips
+  smart_money_reversal  smart_money_trail_safety_batch487   98.7pct   a safety fallback
+  reverse_signal        atr_trailing_stop                   96.1pct   never reverses
+
+TEMPORAL STEP
+  next_pivot_target     pivot_target  0.0pct -> 47.1pct     (the B1771 persistence gap)
+
+DUPLICATE (identical outcomes on >=90pct of shared trades): 10 pairs
+  regime_flip == time_stop_20d ................ 100.0pct  n=7,319
+  atr_trail_1x == atr_trail_mae_conditional ... 100.0pct  n=7,319
+  exits_effective ~ 16 of 26
+```
+
+**`regime_flip == time_stop_20d` at 100.0pct is B1771 confirmed by an INDEPENDENT method** -
+outcome identity rather than exit-reason labels. That is the cross-check I failed to obtain last
+turn, when my discriminator silently compared against an empty set.
+
+**The consequence is not cosmetic. "Best of 26 exits" is best of ~16**, and the selection-noise
+floor of 0.369 was measured for best-of-26. **A floor calibrated on a family that is 38pct smaller
+than assumed is the wrong floor**, and it gates the Phase 1B roster.
+
+**Two construction defects in my own lenses, both found by RUNNING them:**
+1. v1 flagged `time_stop_20d` firing `time_stop_20d` on 100pct of trades - **that is the exit
+   working.** A lens that flags 14 of 26 including the correct ones is noise, not coverage.
+2. v2 used exact token matching, so `atr_trail_1x` -> `atr_trailing_stop` read as a mismatch
+   because `trail != trailing`. **That is `#239` - encode the stem, not the conjugation - inside a
+   check I wrote minutes after citing it.** The rule keeps recurring because every new matcher is a
+   fresh place to forget it.
+
+**And the same class again in the P0:** `audit_findings_ticketed.py` scored corroboration with
+`w in queue` - substring containment. B1712c had raised the threshold from 1-of-3 to 2-of-3, which
+**reduces a matcher defect without removing it**. Now word-boundary. That is three instances of
+substring-vs-word in this session (`#246` free/freely, the B1769 placeholder, this).

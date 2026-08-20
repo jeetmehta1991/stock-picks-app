@@ -4193,3 +4193,29 @@ and reported a meaningless agreement figure.
 **MECHANISM: JUDGMENT-ONLY** for the general habit; the concrete instances are ticketed
 (`S6-B1771b`, `S6-B1771c`, `S6-B1771d`) and none is fixed without owner approval, since changing an
 exit is a rule change.
+
+### #252 - MEASURE DEGRADED EXITS PER CUBE; NEVER MAINTAIN THE LIST BY HAND (B1772 / L527)
+
+**MEASURED on 217,724 trades: 3 of 26 exits fire a reason unrelated to their own name**
+(`regime_flip` never flips - 100pct `max_days_20`; `smart_money_reversal` is 98.7pct a trail-safety
+fallback; `reverse_signal` is 96.1pct a plain ATR trailing stop), **1 shows a temporal identity
+step**, and **10 pairs are outcome-duplicates - `exits_effective ~ 16 of 26`.**
+
+**The runbook's caveat said `regime_flip` was a time stop *pre-B1593*. It still is.** A
+hand-maintained list of degraded exits goes stale silently, so run
+`scripts/measure_degraded_exits.py <cube>` as part of every post-config pass.
+
+**Consequence: "best of 26" is best of ~16, and the 0.369 selection-noise floor was calibrated for
+best-of-26.** A floor measured on a family 38pct larger than the real one is the wrong floor, and it
+gates the Phase 1B roster.
+
+**Construction rules this cost (both found by RUNNING the lens, not reading it):**
+- **Flag MISMATCH, not consistency.** `time_stop_20d` firing `time_stop_20d` is the exit working; a
+  lens flagging 14 of 26 including correct ones is noise.
+- **Match on STEMS.** Exact tokens called `atr_trail_1x -> atr_trailing_stop` a mismatch because
+  `trail != trailing` - **`#239` again, inside a check written minutes after citing it.**
+
+**Companion (P0, same class): substring containment is not word matching.**
+`audit_findings_ticketed.py` corroborated findings with `w in queue`; raising the threshold 1-of-3
+to 2-of-3 reduced the defect without removing it. **Third instance this session** after `#246`
+(free/freely) and the B1769 placeholder check. Enforced by `test_b1772_word_boundary_matcher`.
