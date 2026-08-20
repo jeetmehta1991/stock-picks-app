@@ -16968,7 +16968,7 @@ def test_b1783_response_gates_inherit_text_scoping():
     # gates that read assistant text but have not yet been converted
     KNOWN_UNCONVERTED = {
         "scan_compliance_is_content", "scan_false_skill_status",
-        "scan_miss_capture_complete", "scan_missing_skill_confirmation",
+        "scan_missing_skill_confirmation",
         "scan_prose_only_rule", "scan_queue_not_updated",
         "scan_response_gates", "scan_retroactive_sweep",
         "scan_skill_block_incomplete", "scan_uncosted_probe",

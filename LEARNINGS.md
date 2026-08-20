@@ -10471,3 +10471,51 @@ the number got worse because the definition got honest.
 **The reusable rule: when a ruling ADDS a class, name what it RETIRES.** B1778 added `CLOSED` and
 left `DONE` standing, and the overlap survived two turns of me reporting counts off it. **An
 addition that retires nothing is a partition getting quietly coarser.**
+
+### L538
+
+**59pct of build claims name nothing that can be checked**
+
+**B1786/B1787, owner-directed.** *"In the last 48 hours a lot of tickets were added that were
+supposed to build something. So do a recheck and verify in depth."*
+
+**MEASURED against the live codebase - not the batch commit, which B1777 showed is the wrong
+entity:**
+
+```
+tickets from the last 48h claiming to BUILD ....... 134
+  LANDED         the named gate/test/script exists ..  54
+  MISSING        genuinely absent ..................    0
+  NOT_CHECKABLE  names no gate, test or script ......  79
+```
+
+**Nothing is missing. 59pct simply cannot be verified**, because the ticket never names what it
+built. That is the honest answer to *verify in depth*: **the limit is not the checking, it is that
+most build claims are unfalsifiable as written.**
+
+**THREE HARNESS BUGS ON THE WAY, each caught because the result looked too clean:**
+1. `re.sub(r"[*_]", "", desc)` stripped markdown emphasis **and every snake_case underscore**, so no
+   artifact could ever match: **0 LANDED / 17 MISSING, all false.**
+2. The inventory globbed `scripts/*.py` only, so `backtest/run_phase1a.py` and
+   `backtest/tests/test_unit.py` read as absent - **4 more false MISSING.**
+3. Test names matched exactly, so a ticket naming `test_b1597` missed `test_b1597_...`.
+
+**Every one of those would have been a fabricated accusation against a real ticket.** `0 LANDED` was
+the tell each time - **a suspiciously clean result is a bug in the harness until proven otherwise**,
+and this is the fourth time this session that a large finding collapsed to nothing on inspection
+(105 symbols, 17 missing, 4 missing, now 1).
+
+**THE COUNTING CORRECTION THE OWNER ALSO MADE.** I reported *"92 awaiting verification"* and
+*"96 work items"* adjacently. **They are different sets and neither contains the other**: 92 is
+TICKETS awaiting verification; 96 is WORK ITEMS held inside 9 of the 57 GENUINELY-OPEN tickets -
+drawn from the other half of the split. Placing them together implied an arithmetic relationship
+that does not exist. **Adjacency asserts a relationship even when no sentence claims one.**
+
+**AND THE GATE DEFECT THAT STARTED THE TURN.** `scan_miss_capture_complete` blocked a pure COUNTING
+answer because the response contained *defect*, *gap*, *gaps* while DESCRIBING tickets. B1759 had
+stemmed `MISS_MARKERS` from 9 entries to 116, of which **112 are generic topic nouns** and several
+are non-words (`brokenure`, `bugure`) produced by mechanical suffixing. **In a session about
+enforcement defects, the gate fires on its own subject.** Markers now need an admission context -
+and narrowing that context immediately broke the corpus incident, **so the over-narrowing was caught
+by the same corpus that caught the under-stemming.** L515 and this entry are the two ends of one
+mistake.

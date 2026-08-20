@@ -4460,3 +4460,29 @@ partition quietly coarser, and the overlap survived two turns of counts being re
 
 **Enforced by `scan_queue_vocabulary`** against the six, and by
 `test_b1776_ticket_staleness_probes_are_live` which fails on any class outside them.
+
+### #264 - A BUILD CLAIM MUST NAME THE ARTIFACT IT BUILT (B1787 / L538)
+
+**MEASURED: of 134 tickets from the last 48h claiming to BUILD something, 54 name a gate, test or
+script that verifiably exists, 0 are genuinely missing, and 79 (59pct) name NOTHING CHECKABLE.**
+
+**The limit is not the verification, it is that most build claims are unfalsifiable as written.** A
+row saying *"the gate is now wired"* cannot be checked; *"`scan_x` wired, pinned by `test_bN_y`"*
+can be, in one command.
+
+**Every ticket claiming to build, wire, add or fix code names the artifact** - a `scan_`/`check_`
+function, a `test_bNNN_` name, or a file path. Verified by
+`scratchpad/verify_build_claims.py`-style joins against the live codebase, never against the batch
+commit (`#257`: a batch carries several rows, so its diff is the wrong entity).
+
+**HARNESS DISCIPLINE, which cost three false findings here.** `0 LANDED` was the tell each time:
+- stripping `_` as markdown emphasis destroyed every snake_case identifier (17 false MISSING)
+- globbing `scripts/*.py` only made `backtest/` artifacts read as absent (4 false MISSING)
+- exact test-name matching missed prefix references (1 false MISSING)
+
+**A suspiciously clean result is a bug in the harness until proven otherwise.** Fourth time this
+session a large finding collapsed on inspection.
+
+**AND: adjacency asserts a relationship.** Reporting *"92 awaiting verification"* beside *"96 work
+items"* implied they were comparable; they are different sets, neither containing the other.
+**Numbers placed together are read as related even when no sentence says so.**

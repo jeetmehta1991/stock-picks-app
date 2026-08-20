@@ -788,6 +788,56 @@ def _response_text(entries, text=None) -> str:
     return t
 
 
+# B1786: MISS MARKERS NEED AN ADMISSION CONTEXT.
+#
+# B1759 stemmed MISS_MARKERS from 9 entries to 116 to fix a real gap (the gate
+# stayed silent on "which is the failure itself"). But 112 of the 116 are
+# GENERIC TOPIC NOUNS - defect, gap, bug, broken, fail - and mechanical suffixing
+# produced non-words like "brokenure" and "bugure" along the way.
+#
+# MEASURED: in a session ABOUT enforcement defects, the gate fired on a pure
+# COUNTING answer because the response contained "defect", "gap" and "gaps"
+# while DESCRIBING existing tickets. **A gate that fires whenever you discuss
+# its subject is not detecting the class, it is detecting the topic.**
+#
+# So: an explicit admission fires alone; a generic word fires only alongside a
+# first-person admission cue in the same clause. Over-stemming is the mirror of
+# L515's under-stemming, and both were found the same way - by running it.
+Q_SP = chr(32)
+Q_I = chr(32)+chr(105)+chr(32)
+Q_MY = chr(32)+chr(109)+chr(121)+chr(32)
+Q_ME = chr(32)+chr(109)+chr(101)+chr(32)
+ADMISSION_CUES = ("i was wrong", "owner caught", "correction:", "i should have",
+                  "retract", "my mistake", "i missed", "i failed", "i had",
+                  "i did not", "i never", "my own", "i shipped", "i reported",
+                  "i wrote", "i built", "caught me", "blocked me", "my first")
+STRONG_MISS = ("i was wrong", "owner caught", "correction:", "i should have",
+               "retract", "my mistake", "i missed", "i failed")
+
+
+def _miss_hits(text: str) -> list[str]:
+    """MISS markers that appear in an ADMISSION context, not merely as topic."""
+    import re as _re
+    t = (text or "").lower()
+    strong = [m for m in STRONG_MISS if m in t]
+    if strong:
+        return strong
+    out = []
+    # B1786b: a FIRST-PERSON PRONOUN is itself an admission context. Without it
+    # the corpus incident stopped firing - "enforced solely by MY remembering to
+    # consult it - which is the failure itself" is a confession, and my first cue
+    # list missed it. **Narrowing a marker set is as easy to over-do as widening
+    # one**, and the corpus is what caught the over-narrowing.
+    first_person = (" i ", " my ", " me ", " mine ")
+    for clause in _re.split(r"[.;:\n]", t):
+        padded = " " + clause + " "
+        if not (any(c in clause for c in ADMISSION_CUES)
+                or any(fp in padded for fp in first_person)):
+            continue
+        out += [m for m in MISS_MARKERS if m in clause]
+    return sorted(set(out))
+
+
 def _queue_touched() -> bool:
     """EXECUTION_QUEUE.md modified in the tree OR committed in the last commit."""
     import subprocess
@@ -1981,8 +2031,13 @@ MISS_MARKERS = tuple(
 
 def scan_miss_capture_complete(entries, *, text=None, observed=None) -> list[str]:
     """Phase 5 wants THREE artifacts on a miss, not one (B1751 / #234)."""
-    t = (_assistant_text(entries) if text is None else text.lower())
-    if not t or not any(m in t for m in MISS_MARKERS):
+    # B1786: read the FINAL block with quotes stripped (#262), and require an
+    # ADMISSION context rather than a bare topic word. This gate fired on a pure
+    # counting answer because the response said "defect" and "gaps" while
+    # DESCRIBING tickets - a gate that fires whenever you discuss its subject is
+    # detecting the topic, not the class.
+    t = _response_text(entries, text)
+    if not t or not _miss_hits(t):
         return []
     if observed is None:
         observed = {

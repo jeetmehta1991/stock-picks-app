@@ -669,6 +669,24 @@ says *each*.**
 - **Phase 5 is three artifacts**: LEARNINGS + CHECKLIST-or-explicit-citation + queue ticket.
   Enforced by `scan_miss_capture_complete`.
 
+## A BUILD CLAIM MUST NAME ITS ARTIFACT (B1787 - L538, CHECKLIST #264)
+
+**MEASURED: of 134 build-claiming tickets in 48h - 54 LANDED, 0 MISSING, 79 NOT_CHECKABLE.**
+Nothing is missing; **59pct simply cannot be verified because the ticket never names what it
+built.** The limit is not the checking, it is that most claims are unfalsifiable as written.
+
+- **Name the artifact**: a `scan_`/`check_` function, a `test_bNNN_`, or a file path. Then
+  verification is one command.
+- **A suspiciously clean result is a HARNESS BUG until proven otherwise.** Three false findings here
+  before the real number: stripping `_` killed every snake_case name (0 LANDED / 17 false MISSING),
+  a `scripts/`-only inventory made `backtest/` artifacts vanish, exact matching missed prefixes.
+  **Fourth time this session a large finding collapsed on inspection.**
+- **Adjacency asserts a relationship.** "92 awaiting verification" beside "96 work items" read as
+  comparable; they are different sets, neither containing the other.
+- **A marker set can be over-widened as easily as under-widened.** `MISS_MARKERS` stemmed 9 -> 116,
+  of which 112 are generic topic nouns - so in a session about defects the gate fired on its own
+  subject. Narrowing it then broke the corpus incident. **The corpus caught both ends.**
+
 ## SIX MUTUALLY EXCLUSIVE LEDGER CLASSES (B1784 - L537, CHECKLIST #263)
 
 **Owner ruling 2026-08-20.** `EXECUTED` / `DROPPED` / `BLOCKED` / `DEFERRED` / `OPEN` / `RUNNING`.
