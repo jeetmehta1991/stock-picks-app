@@ -1386,7 +1386,21 @@ def scan_partial_distribution(entries, *, text=None) -> list[str]:
     classes with counts and also states a TOTAL, the parts must sum to the whole.
     """
     import re as _re
-    t = (_assistant_text(entries) if text is None else text.lower())
+    # B1781: read only the FINAL assistant block, and strip fenced/quoted spans.
+    # Two false positives in two turns, both from reading too much:
+    #   B1780  harvested counts from every table in a long response
+    #   B1781  fired on my own LEARNINGS entry DOCUMENTING the original defect
+    # **Recording a defect must not trip the gate for that defect** - otherwise
+    # the lesson can never be written down. Same scoping B1742 applied to
+    # scan_findings_vs_tickets for the same reason.
+    if text is None:
+        blocks = _raw_assistant(entries)
+        t = (blocks[-1] if blocks else "").lower()
+    else:
+        t = text.lower()
+    t = _re.sub(r"```.*?```", " ", t, flags=_re.S)     # fenced code / tables
+    t = _re.sub(r"^\s*>.*$", " ", t, flags=_re.M)       # block quotes
+    t = _re.sub(r"`[^`]*`", " ", t)                    # inline code (B1738)
     if not t:
         return []
     # B1780: PROXIMITY. On its first live turn this gate collected class counts

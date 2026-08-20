@@ -16933,3 +16933,14 @@ def test_b1779_partial_distribution_gate():
     assert not g([], text=long_response), (
         "must not pair distant class counts with an unrelated total - this is "
         "the live false positive that blocked B1780")
+
+    # B1781: DOCUMENTING a defect must not trip the gate for that defect,
+    # or the lesson can never be written down. The gate fired on the LEARNINGS
+    # entry recording the original 388/149/96-vs-649 error.
+    quoted = ("Last turn I reported this:" + chr(10) +
+              "> 388 closed 149 done 96 open - 261 of 649" + chr(10) +
+              "and every figure was wrong.")
+    assert not g([], text=quoted), "a blockquote recording the defect must pass"
+    fenced = ("The table was:" + chr(10) + "```" + chr(10) +
+              "388 closed 149 done 96 open of 649" + chr(10) + "```")
+    assert not g([], text=fenced), "a fenced block recording the defect must pass"
