@@ -16944,3 +16944,56 @@ def test_b1779_partial_distribution_gate():
     fenced = ("The table was:" + chr(10) + "```" + chr(10) +
               "388 closed 149 done 96 open of 649" + chr(10) + "```")
     assert not g([], text=fenced), "a fenced block recording the defect must pass"
+
+
+def test_b1783_response_gates_inherit_text_scoping():
+    """B1783 (#262): rules learned on one gate must be INHERITED, not re-learned.
+
+    MEASURED: of 15 text-reading gates, 2 had B1742's final-block scoping,
+    2 had B1738's code-span stripping, and 13 had NEITHER. Both rules reached
+    exactly the gate they were learned on - which is L536, and is how B1781
+    came to fire on a LEARNINGS entry that merely RECORDED a defect.
+
+    `_response_text()` now carries both. This test pins the KNOWN-UNCONVERTED
+    set so it cannot GROW: a NEW response-scanning gate must use the helper.
+    Shrinking the set is S6-B1783b.
+    """
+    import ast
+    import pathlib
+
+    root = pathlib.Path(__file__).resolve().parents[2]
+    src = (root / "scripts" / "verify_turn_compliance.py").read_text(encoding="utf-8")
+    tree = ast.parse(src)
+
+    # gates that read assistant text but have not yet been converted
+    KNOWN_UNCONVERTED = {
+        "scan_compliance_is_content", "scan_false_skill_status",
+        "scan_miss_capture_complete", "scan_missing_skill_confirmation",
+        "scan_prose_only_rule", "scan_queue_not_updated",
+        "scan_response_gates", "scan_retroactive_sweep",
+        "scan_skill_block_incomplete", "scan_uncosted_probe",
+        "scan_ungated_addition", "scan_uninspected_constant",
+        "scan_unverified_count",
+    }
+
+    unconverted = set()
+    for fn in ast.walk(tree):
+        if not isinstance(fn, ast.FunctionDef) or not fn.name.startswith("scan_"):
+            continue
+        body = ast.get_source_segment(src, fn) or ""
+        reads = "_assistant_text(" in body or "_raw_assistant(" in body
+        if not reads:
+            continue
+        if "_response_text(" not in body:
+            unconverted.add(fn.name)
+
+    new = unconverted - KNOWN_UNCONVERTED
+    assert not new, (
+        f"NEW response-scanning gate(s) not using _response_text(): {sorted(new)}. "
+        "B1738 (strip code spans) and B1742 (final block only) were each learned "
+        "on ONE gate and stayed there; the helper is what carries them. Use it.")
+
+    stale = KNOWN_UNCONVERTED - unconverted
+    assert not stale, (
+        f"these are now converted - remove them from KNOWN_UNCONVERTED: "
+        f"{sorted(stale)}")

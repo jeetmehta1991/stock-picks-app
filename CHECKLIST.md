@@ -4410,3 +4410,24 @@ total are stated together; anything else is the gate inventing a relationship.
 the next wrong count, which produced a second gate, whose first live act was a wrong count.** When
 the machinery starts reproducing the defect it was built to stop, **the next gate is not the
 answer.**
+
+### #262 - A RULE LEARNED ON ONE GATE MUST BE CARRIED, NOT RE-LEARNED (B1783 / L536)
+
+**MEASURED: of 15 text-reading gates, 2 had B1742's final-block scoping, 2 had B1738's code-span
+stripping, and 13 had NEITHER.** Both rules reached exactly the gate they were learned on. That is
+how B1781 came to fire on a LEARNINGS entry which merely RECORDED a defect.
+
+**`_response_text()` now carries both**, plus fenced-block and blockquote stripping - because
+**documenting a failure must not trip the gate for that failure, or the lesson can never be written
+down.** Every response-scanning gate uses it.
+
+**Enforced by `test_b1783_response_gates_inherit_text_scoping`**, which pins the known-unconverted
+set so it cannot GROW: a NEW gate reading assistant text must call the helper. Shrinking the set is
+`S6-B1783b`.
+
+**The generalised rule, and this session recorded it at FIVE scales:** one marker list stemmed while
+twelve kept the defect (`L515`); one trigger hardened while its exemption stayed loose (`L528`); one
+instance patched while its class stayed open (`L519`); one gate's scoping lesson not reaching the
+gate built three turns later (`L536`); and the ledger counting categories rather than members
+(`L532`). **When a rule is learned, ask what will CARRY it to the next instance - a shared helper, a
+primitive, or a test that pins the set. Prose in LEARNINGS carries nothing.**

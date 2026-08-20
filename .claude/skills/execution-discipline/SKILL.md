@@ -669,6 +669,24 @@ says *each*.**
 - **Phase 5 is three artifacts**: LEARNINGS + CHECKLIST-or-explicit-citation + queue ticket.
   Enforced by `scan_miss_capture_complete`.
 
+## CARRY THE RULE, DO NOT RE-LEARN IT (B1783 - L536, CHECKLIST #262)
+
+**MEASURED: of 15 text-reading gates, 13 had NEITHER of the two rules already learned for that
+class** - B1738 (strip code spans; mention is not use) and B1742 (read only the final assistant
+block). Each reached exactly the gate it was learned on, which is how B1781 fired on a LEARNINGS
+entry that merely RECORDED a defect.
+
+- **When you learn a rule, ask what will CARRY it to the next instance.** A shared helper, a
+  primitive, or a test pinning the set. **Prose in LEARNINGS carries nothing.**
+- **`_response_text()` is that carrier here**; every response-scanning gate uses it, pinned by
+  `test_b1783_response_gates_inherit_text_scoping` so the unconverted set cannot grow.
+- **Documenting a failure must not trip the gate for that failure**, or the lesson cannot be
+  written down.
+- **Five scales this session**: a stemmed marker list while twelve kept the defect (L515), a
+  hardened trigger with a loose exemption (L528), an instance patched with its class left open
+  (L519), a gate's scoping lesson not reaching the next gate (L536), and a ledger counting
+  categories rather than members (L532). **Same shape every time.**
+
 ## PROVE A RESPONSE GATE ON A REALISTIC RESPONSE (B1780 - L535, CHECKLIST #261)
 
 **MEASURED: the gate built to stop bad arithmetic blocked my next turn WITH bad arithmetic.** It

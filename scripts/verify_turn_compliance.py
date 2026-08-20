@@ -757,6 +757,37 @@ def _assistant_text(entries) -> str:
     return " ".join(out).lower()
 
 
+def _response_text(entries, text=None) -> str:
+    """The text a response-scanning gate should read. Use this, not _assistant_text.
+
+    B1783. Two rules were learned on two specific gates and stayed there:
+
+        B1738  strip inline-code spans - MENTION IS NOT USE
+        B1742  read only the FINAL assistant block, because the Stop hook
+               re-runs after every block and a blocked turn otherwise inherits
+               the markers of its own earlier attempts
+
+    MEASURED at B1783: of 15 text-reading gates, **2 had the first, 2 had the
+    second, and 13 had NEITHER.** Both rules reached exactly the gate they were
+    learned on. That is L536 - a rule learned on one gate does not travel to the
+    next unless something carries it - and this function is the something.
+
+    It also strips fenced blocks and blockquotes, because B1781 fired on a
+    LEARNINGS entry that RECORDED a defect: **documenting a failure must not
+    trip the gate for that failure, or the lesson can never be written down.**
+    """
+    import re as _re
+    if text is None:
+        blocks = _raw_assistant(entries)
+        t = (blocks[-1] if blocks else "").lower()
+    else:
+        t = text.lower()
+    t = _re.sub(r"```.*?```", " ", t, flags=_re.S)
+    t = _re.sub(r"^[ \t]*>.*$", " ", t, flags=_re.M)
+    t = _re.sub(r"`[^`]*`", " ", t)
+    return t
+
+
 def _queue_touched() -> bool:
     """EXECUTION_QUEUE.md modified in the tree OR committed in the last commit."""
     import subprocess
@@ -1386,33 +1417,7 @@ def scan_partial_distribution(entries, *, text=None) -> list[str]:
     classes with counts and also states a TOTAL, the parts must sum to the whole.
     """
     import re as _re
-    # B1781: read only the FINAL assistant block, and strip fenced/quoted spans.
-    # Two false positives in two turns, both from reading too much:
-    #   B1780  harvested counts from every table in a long response
-    #   B1781  fired on my own LEARNINGS entry DOCUMENTING the original defect
-    # **Recording a defect must not trip the gate for that defect** - otherwise
-    # the lesson can never be written down. Same scoping B1742 applied to
-    # scan_findings_vs_tickets for the same reason.
-    if text is None:
-        blocks = _raw_assistant(entries)
-        t = (blocks[-1] if blocks else "").lower()
-    else:
-        t = text.lower()
-    t = _re.sub(r"```.*?```", " ", t, flags=_re.S)     # fenced code / tables
-    t = _re.sub(r"^\s*>.*$", " ", t, flags=_re.M)       # block quotes
-    t = _re.sub(r"`[^`]*`", " ", t)                    # inline code (B1738)
-    if not t:
-        return []
-    # B1780: PROXIMITY. On its first live turn this gate collected class counts
-    # from EVERY table across a long response and paired their sum with an
-    # unrelated "of 1937" (the Master universe ticker count), then blocked the
-    # turn. A distribution and its total are stated TOGETHER, so only pairs
-    # within the same neighbourhood as the total may be compared with it.
-    #
-    # I proved this gate on 5 cases, every one a single short sentence. **None
-    # resembled a real response.** The corpus rule (#240) says test on the
-    # verbatim incident - it does not say the incident is the only shape worth
-    # testing, and a one-line probe cannot exercise a windowing bug.
+    t = _response_text(entries, text)
     CLASSES = ("closed", "done", "open", "blocked", "dropped", "deferred",
                "running")
     WINDOW = 240
@@ -1682,11 +1687,9 @@ def scan_findings_vs_tickets(entries, *, text=None, rows=None) -> list[str]:
     # turn re-counted the markers of its own earlier tries and could never clear,
     # each retry inheriting the last. Only the response actually being evaluated
     # should be scanned.
-    if text is None:
-        blocks = _raw_assistant(entries)
-        t = (blocks[-1] if blocks else "").lower()
-    else:
-        t = text.lower()
+    # B1783: routed through the shared helper so B1738 + B1742 are
+    # INHERITED rather than re-implemented per gate.
+    t = _response_text(entries, text)
     if not t:
         return []
     t = _re.sub(r"`[^`]*`", " ", t)          # B1738 mention-vs-use
