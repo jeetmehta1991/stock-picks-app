@@ -4031,3 +4031,23 @@ finding.**
 for the next enforcement batch"* - no blocker, no cap cited, unreadable later as blocked vs
 deprioritised vs forgotten. **And it was the deepest of three items; the two shallow ones shipped
 first.** Depth loses to closability at end of turn unless the ordering is forced.
+
+### #245 - NEVER PASS A MESSAGE THROUGH A DOUBLE-QUOTED SHELL ARGUMENT (B1765 / L520)
+
+**THIS RAN.** A commit message written to WARN about destructive commands contained backticked
+examples; bash substituted them and **`git reset --hard` executed**. `git reflog` records
+`reset: moving to HEAD`; the index was cleared, unstaged tracked files reverted, and the commit
+captured 1 file instead of 2.
+
+**Third instance of the CLAUDE.md git-safety hard rule (L49, L77), and the first that was never
+typed as a command.** Prose about a destructive command is indistinguishable from the command
+inside double quotes.
+
+**Use `git commit -F -` with a QUOTED heredoc (`<<'MSG'`)** - it performs no substitution. Never
+`-m "..."` for any message that could contain a backtick or `$(`. **Enforced by
+`scan_shell_substitution`**, wired into the Stop-hook pre-pass and pinned by its corpus entry, whose
+incident is the verbatim command that ran the reset.
+
+**Detection note:** the tell was `preflight: checking 1 file(s)` in output I had already scrolled
+past. **A successful commit hash and a clean `git status` were both consistent with the damage** -
+only re-reading the ARTIFACT (`git show --stat`, then the on-disk file) surfaced it.

@@ -16266,8 +16266,13 @@ def test_b1760_gates_fire_on_real_incidents():
         fn = getattr(tg, name, None)
         assert fn is not None, f"corpus names a gate that does not exist: {name}"
         params = inspect.signature(fn).parameters
-        assert "text" in params, f"{name} has no injectable text seam (#241)"
-        kw = {"text": text}
+        # B1765: the requirement is "can be exercised on FIXED INPUT", not the
+        # parameter's name. A gate whose subject is the TOOL stream takes
+        # `tool_text=`; that is its seam. Widening the rule to match its intent,
+        # not exempting the gate from it.
+        assert ("text" in params or "tool_text" in params), (
+            f"{name} has no injectable seam - text= or tool_text= (#241)")
+        kw = {"text": text} if "text" in params else {}
         kw.update({k: v for k, v in state.items() if k in params})
         if bool(fn([], **kw)) != must_fire:
             silent.append(name)
@@ -16287,7 +16292,7 @@ def test_b1760_gates_fire_on_real_incidents():
         # B1762c: neutralise non-text inputs so the control asks "does ordinary
         # prose trip this?" rather than "what does the live repo look like?"
         params = inspect.signature(fn).parameters
-        kw = {"text": neg}
+        kw = {"text": neg} if "text" in params else {}
         kw.update({k: v for k, v in corpus.NEUTRAL.get(name, {}).items()
                    if k in params})
         if bool(fn([], **kw)):
@@ -16327,7 +16332,9 @@ def test_b1761_new_scan_gates_have_a_text_seam():
                 and hasattr(fn, "__code__") and fn.__module__ == tg.__name__):
             continue
         try:
-            if "text" not in inspect.signature(fn).parameters:
+            # B1765: text= OR tool_text= - see the note in test_b1760.
+            ps = inspect.signature(fn).parameters
+            if "text" not in ps and "tool_text" not in ps:
                 seamless.add(name)
         except (TypeError, ValueError):
             pass
@@ -16370,11 +16377,14 @@ def test_b1762_every_scan_gate_has_a_corpus_entry():
     # that shows up in review.
     EXEMPT = {
         # no injectable text seam yet - cannot be exercised on fixed input (#241)
-        "scan_discipline_not_loaded": "no seam; S6-B1761b",
+        "scan_discipline_not_loaded":
+            "has a tool_text seam (B1765 widening); incident text not preserved - S6-B1761c",
         "scan_orphan_rule": "no seam; S6-B1761b",
         "scan_postfix_recheck": "no seam; S6-B1761b",
-        "scan_skill_not_invoked": "no seam; S6-B1761b",
-        "scan_skill_not_invoked_per_skill": "no seam; S6-B1761b",
+        "scan_skill_not_invoked":
+            "has a tool_text seam (B1765 widening); incident text not preserved - S6-B1761c",
+        "scan_skill_not_invoked_per_skill":
+            "has a tool_text seam (B1765 widening); incident text not preserved - S6-B1761c",
         "scan_skill_not_updated": "no seam; S6-B1761b",
         "scan_transcript_entries": "no seam; S6-B1761b",
         "scan_unmeasured_quantity": "no seam; S6-B1761b",

@@ -23,6 +23,8 @@
   },
   "permissions": {
     "allow": [
+      "PowerShell(*)",
+      "Bash(*)",
       "Bash(python -c ' *)",
       "Bash(python -m pytest backtest/tests/test_unit.py -q)",
       "Bash(git -C \"c:/Users/jeetm/Github/stock-picks-app\" add .gitignore AUDIT.md AUDIT_INDEX.md CLAUDE.md \"Backtesting universe/historical_membership.csv\" \"Backtesting universe/sp500_tickers.csv\" backtest/data/universe.py backtest/tests/test_unit.py)",

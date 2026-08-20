@@ -9747,3 +9747,30 @@ returns **6**, and inspecting two of them showed the signal is still not homogen
 
 **Three different dispositions behind one grep result.** Had I gated on the first signal I would
 have manufactured ten false findings while congratulating myself on coverage.
+
+### L520
+
+**I wrote `git reset --hard` inside a commit message to warn about it, and bash ran it**
+
+**B1765. Self-caught, and it is the third instance of a CLAUDE.md hard rule (L49, L77).**
+
+Documenting the risk of a blanket `Bash(*)` permission, I wrote a commit message containing
+backticked examples of destructive commands and passed it through `git commit -m "..."`. **Bash
+performs command substitution inside double quotes before git ever runs.** `git reflog` shows
+`reset: moving to HEAD`. The index was cleared and unstaged tracked files reverted -
+`.claude/settings.json` lost the very edit the commit was about, and the commit captured one file
+instead of two (`preflight: checking 1 file(s)` was the tell, and I read past it).
+
+**The first two instances were decisions; this one was never typed as a command at all.** That is
+the new part: **prose ABOUT a destructive command is indistinguishable from the command once it is
+inside double quotes.** No amount of care about *when to run* `git reset --hard` protects against
+*mentioning* it.
+
+**Every earlier commit this session used `git commit -F -` with a QUOTED heredoc (`<<'MSG'`), which
+performs no substitution and would have been completely inert.** I deviated to `-m "..."` for this
+one commit. **The safe form was already my habit; the defect is that nothing enforced it.** Now
+`scan_shell_substitution` does.
+
+**And the detection lesson.** I noticed only because I verified the RESULT rather than trusting the
+exit code - `git show --stat` said one file, and the on-disk settings still read 100 entries. **A
+green commit hash and a clean `git status` were both consistent with the damage.**

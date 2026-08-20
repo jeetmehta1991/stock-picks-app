@@ -669,6 +669,21 @@ says *each*.**
 - **Phase 5 is three artifacts**: LEARNINGS + CHECKLIST-or-explicit-citation + queue ticket.
   Enforced by `scan_miss_capture_complete`.
 
+## NEVER PUT A MESSAGE IN A DOUBLE-QUOTED SHELL ARGUMENT (B1765 - L520, CHECKLIST #245)
+
+**THIS RAN.** A commit message written to WARN about destructive commands contained backticked
+examples of them; bash substituted them and **`git reset --hard` executed**, clearing the index and
+reverting unstaged tracked files. Third instance of the git-safety hard rule (L49, L77) and **the
+first never typed as a command** - prose about a destructive command is indistinguishable from the
+command inside double quotes.
+
+- **`git commit -F -` with a quoted heredoc (`<<'MSG'`).** No substitution. Never `-m "..."` for
+  anything that might contain a backtick or `$(`. Enforced by `scan_shell_substitution`.
+- **The safe form was already the habit; nothing enforced it.** One deviation was enough.
+- **Verify the ARTIFACT, not the exit code.** `preflight: checking 1 file(s)` was the tell, in
+  output already scrolled past. **A green commit hash and a clean `git status` were both consistent
+  with the damage** - `git show --stat` plus re-reading the on-disk file is what found it.
+
 ## AVAILABILITY IS NOT ADOPTION (B1763 - L519, CHECKLIST #244)
 
 **MEASURED: `require_each` existed from B1751 and two fresh any-vs-each defects shipped in the two

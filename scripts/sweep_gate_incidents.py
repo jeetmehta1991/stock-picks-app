@@ -59,7 +59,8 @@ def gates() -> list[tuple[str, object]]:
 
 def accepts_text(fn) -> bool:
     try:
-        return "text" in inspect.signature(fn).parameters
+        ps = inspect.signature(fn).parameters
+        return "text" in ps or "tool_text" in ps
     except (TypeError, ValueError):
         return False
 
@@ -73,7 +74,8 @@ def fires(name, fn, text: str, state: dict | None = None) -> bool | None:
     a circular probe manufactures a false pass.
     """
     params = inspect.signature(fn).parameters
-    kw = {"text": text}
+    # B1765: tool-text-only gates take no `text=`; the seam is `tool_text=`.
+    kw = {"text": text} if "text" in params else {}
     for extra, val in (state or {}).items():
         if extra in params:
             kw[extra] = val

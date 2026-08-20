@@ -1225,6 +1225,46 @@ def _queue_rows_added() -> int:
     return n
 
 
+def scan_shell_substitution(entries, *, tool_text=None) -> list[str]:
+    """B1765 (#245): a shell -c string must not carry live command substitution.
+
+    THIS RAN. Writing a commit message with `git commit -m "... `git reset
+    --hard` ..."` - backticks used to DESCRIBE the danger - made bash execute
+    the thing being described. `git reflog` shows `reset: moving to HEAD`. The
+    index was cleared and unstaged tracked files reverted; `.claude/settings.json`
+    lost its edit and the commit captured one file instead of two.
+
+    It is the third instance of the CLAUDE.md hard rule (L49, L77) and the first
+    that was not a decision at all - the command was never typed as a command.
+    **Prose about a destructive command is indistinguishable from the command
+    once it is inside double quotes.**
+
+    Every earlier commit this session used `git commit -F -` with a QUOTED
+    heredoc (`<<'MSG'`), which performs no substitution and would have been
+    inert. The deviation to `-m "..."` is the entire defect.
+    """
+    import re
+    t = (_tool_text(entries) if tool_text is None else tool_text)
+    if not t:
+        return []
+    hits = []
+    # `...` inside a double-quoted -m/-F argument, or $(...) anywhere in a
+    # commit/tag message. Single-quoted heredocs are the safe form and contain
+    # neither pattern in the command string itself.
+    for m in re.finditer(r"git\s+(?:commit|tag)[^\n]*?-(?:m|F)\s+\"([^\"]*)\"", t):
+        arg = m.group(1)
+        if "`" in arg or "$(" in arg:
+            hits.append(arg[:70])
+    if not hits:
+        return []
+    return [f"SHELL SUBSTITUTION IN A COMMIT MESSAGE (B1765/#245): {hits[0]!r}. "
+            "Backticks and $(...) inside a double-quoted -m argument are "
+            "EXECUTED by bash before git ever runs - this is how `git reset "
+            "--hard` ran accidentally and reverted uncommitted work. Use "
+            "`git commit -F -` with a quoted heredoc (<<'MSG'), which performs "
+            "no substitution."]
+
+
 def scan_ungated_addition(entries, *, text=None, added_rules=None) -> list[str]:
     """B1762 (#242): EACH new numbered rule names its own mechanism.
 
@@ -1745,7 +1785,7 @@ def main() -> int:
     for _sc in (scan_unverified_cause, scan_uncosted_probe,
                 scan_false_skill_status, scan_miss_capture_complete,
                 scan_retroactive_sweep, scan_compliance_is_content,
-                scan_ungated_addition):
+                scan_ungated_addition, scan_shell_substitution):
         try:
             _r = _sc(_e2)
         except Exception as _e:

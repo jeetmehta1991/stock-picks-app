@@ -90,6 +90,13 @@ INCIDENTS: dict[str, tuple[str, bool, dict]] = {
         True,
         {"added_rules": ["240", "241"]},
     ),
+    "scan_shell_substitution": (
+        "",
+        True,
+        {"tool_text": 'git commit -q -m "RISK: a blanket Bash(*) runs '
+                      'destructive commands (`git reset --hard`, `rm -rf`) '
+                      'without a prompt."'},
+    ),
     # NEGATIVE control - ordinary reporting prose that must NOT trip anything.
     # Note it is a bare sentence, so gates that legitimately require RESPONSE
     # STRUCTURE (a SKILLS block, a compliance block) are excluded by the sweep
@@ -113,6 +120,7 @@ INCIDENTS: dict[str, tuple[str, bool, dict]] = {
 # incident had. A harness that gets either wrong reports on itself.
 NEUTRAL: dict[str, dict] = {
     "scan_ungated_addition": {"added_rules": []},
+    "scan_shell_substitution": {"tool_text": ""},
 }
 
 
