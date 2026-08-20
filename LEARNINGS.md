@@ -10519,3 +10519,39 @@ enforcement defects, the gate fires on its own subject.** Markers now need an ad
 and narrowing that context immediately broke the corpus incident, **so the over-narrowing was caught
 by the same corpus that caught the under-stemming.** L515 and this entry are the two ends of one
 mistake.
+
+### L539
+
+**My first verification pass would have promoted 85 rows on the evidence the owner excluded**
+
+**B1788, owner-directed.** *"Lets start verifying them. If verified and no further potential action,
+move them to EXECUTED... As relevant, verify against code vs docs and prose."*
+
+**The pass ran three times, and each tightening cut the promotions:**
+
+```
+v1   85 promoted   accepted LEARNINGS / CHECKLIST references as evidence
+v2   39 promoted   docs demoted to context; file mentions still counted
+v3   20 promoted   file mentions demoted too - they predate the rows naming them
+```
+
+**v1 is the one that matters.** The owner had said *verify against code vs docs and prose*, and my
+first implementation counted `LEARNINGS L393` as proof a ticket's work landed. **A LEARNINGS entry
+IS the prose.** I had encoded the instruction's shape - a verification pass - while inverting its
+content.
+
+**v2 -> v3 is the subtler one.** `technical.py` and `tighten_breaker_block.py` predate most rows
+naming them by months, so *"the file exists"* proves only that the file exists. **Promotion needs a
+BATCH-SPECIFIC artifact**: a wired gate, or a `test_bNNN` whose number ties it to the batch that
+claimed it. Absence keeps its weight - a missing file is still a strong negative - but presence
+does not.
+
+**RESULT: 20 promoted, 148 stay OPEN.** Of the 148, **145 name no wired gate and no `test_bNNN`**,
+so there is nothing to verify against at all. That is `L538`'s 59pct measured again on a different
+population, and it is the same finding: **the ledger's limit is not the checking, it is that most
+rows never named what they built.**
+
+**The asymmetry I want to keep.** The owner's phrasing - *"if anything to be done EVEN
+POTENTIALLY, keep them open"* - puts the burden of proof entirely on promotion. **A row stays OPEN
+by default and must earn EXECUTED**, which is the opposite of how the ledger behaved for 600 rows,
+where DONE was written at the moment of intent and never revisited.

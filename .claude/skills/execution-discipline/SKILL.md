@@ -669,6 +669,19 @@ says *each*.**
 - **Phase 5 is three artifacts**: LEARNINGS + CHECKLIST-or-explicit-citation + queue ticket.
   Enforced by `scan_miss_capture_complete`.
 
+## PROMOTION NEEDS A BATCH-SPECIFIC ARTIFACT (B1788 - L539, CHECKLIST #265)
+
+**A row earns EXECUTED only on a WIRED gate or a `test_bNNN` - artifacts tied to the batch that
+claimed them.** Docs and file mentions do not count.
+
+- **My first pass promoted 85 rows on LEARNINGS/CHECKLIST references** - the prose the owner's
+  ruling explicitly excludes. **I encoded the instruction's shape while inverting its content.**
+- **A file mention is not evidence.** `technical.py` predates most rows naming it. **Absence stays a
+  strong negative; presence is not.** 39 -> 20 promotions on that alone.
+- **MEASURED: 20 promoted, 148 still open, 145 of those naming nothing checkable.**
+- **The burden of proof sits on PROMOTION** - "if anything to be done even potentially, keep them
+  open". A row stays OPEN by default and must earn EXECUTED.
+
 ## A BUILD CLAIM MUST NAME ITS ARTIFACT (B1787 - L538, CHECKLIST #264)
 
 **MEASURED: of 134 build-claiming tickets in 48h - 54 LANDED, 0 MISSING, 79 NOT_CHECKABLE.**

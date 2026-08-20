@@ -4486,3 +4486,26 @@ session a large finding collapsed on inspection.
 **AND: adjacency asserts a relationship.** Reporting *"92 awaiting verification"* beside *"96 work
 items"* implied they were comparable; they are different sets, neither containing the other.
 **Numbers placed together are read as related even when no sentence says so.**
+
+### #265 - PROMOTION NEEDS A BATCH-SPECIFIC CODE ARTIFACT (B1788 / L539)
+
+**A row earns EXECUTED only on evidence tied to the batch that claimed it:**
+- a `scan_`/`check_` gate that is DEFINED and WIRED, or
+- a `test_bNNN` present in a test file (prefix match).
+
+**These do NOT count:**
+- **LEARNINGS or CHECKLIST references** - they are the prose the owner's ruling excludes. My first
+  pass promoted **85 rows** on exactly this before it was caught.
+- **A file mention.** `technical.py` predates most rows naming it by months; *"the file exists"*
+  proves the file exists. **Absence is still a strong negative; presence is not evidence.**
+
+**MEASURED across 168 rows awaiting verification: 20 promoted, 148 stay OPEN, and 145 of those name
+no wired gate and no `test_bNNN` at all** - nothing to verify against. Same shape as `#264`'s 59pct,
+on a different population.
+
+**The burden of proof sits on PROMOTION.** Owner: *"if anything to be done even potentially, keep
+them open."* A row stays OPEN by default and must earn EXECUTED - the opposite of the 600 rows where
+DONE was written at the moment of intent and never revisited.
+
+**Run `scripts/verify_awaiting_rows.py`**; every promoted row carries its evidence and every flagged
+row carries what is missing, so neither verdict is a bare assertion.
