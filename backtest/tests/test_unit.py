@@ -16270,8 +16270,13 @@ def test_b1760_gates_fire_on_real_incidents():
         # parameter's name. A gate whose subject is the TOOL stream takes
         # `tool_text=`; that is its seam. Widening the rule to match its intent,
         # not exempting the gate from it.
-        assert ("text" in params or "tool_text" in params), (
-            f"{name} has no injectable seam - text= or tool_text= (#241)")
+        # B1769: the seam rule is "exercisable on FIXED INPUT" - not a
+        # parameter NAME. Widening it twice by adding names (text, tool_text,
+        # now rows) is whack-a-mole; the real test is whether the gate accepts
+        # ANY keyword-only injectable besides `entries`.
+        inj = [k for k in params if k != "entries"
+               and params[k].kind == inspect.Parameter.KEYWORD_ONLY]
+        assert inj, f"{name} has no injectable seam of any kind (#241)"
         kw = {"text": text} if "text" in params else {}
         kw.update({k: v for k, v in state.items() if k in params})
         if bool(fn([], **kw)) != must_fire:
@@ -16334,7 +16339,8 @@ def test_b1761_new_scan_gates_have_a_text_seam():
         try:
             # B1765: text= OR tool_text= - see the note in test_b1760.
             ps = inspect.signature(fn).parameters
-            if "text" not in ps and "tool_text" not in ps:
+            if not [k for k in ps if k != "entries"
+                    and ps[k].kind == inspect.Parameter.KEYWORD_ONLY]:
                 seamless.add(name)
         except (TypeError, ValueError):
             pass
@@ -16449,6 +16455,9 @@ def test_b1763_universal_rules_use_require_each():
             "single required member (SKILL.md touched) - S6-B1763b",
         "scan_postfix_recheck":
             "members are unknown until runtime (which gates fired) - S6-B1763b",
+        "scan_queue_not_updated":
+            "single member - THIS turn. require_each over a one-element dict "
+            "adds indirection without adding coverage",
         "scan_unverified_universe":
             "universal wording describes the SUBJECT (all tickers), not a set of "
             "required members the gate can enumerate - S6-B1763b",

@@ -4098,10 +4098,11 @@ confession is what stopped me looking.**
    but not remediated*, so one label absorbed both.
 3. **B1766** - 0 of 38 OPEN rows carry a reason; 132 distinct labels across 641 rows.
 
-**MECHANISM: JUDGMENT-ONLY, deliberately.** The natural gate - validate each ticket status against a
-closed vocabulary - **cannot be built until the owner rules on that vocabulary** (`S6-B1766c`,
-open). Building it against my own proposal would be `#242`'s failure with the authority invented.
-**Re-open this item and attach the mechanism the moment the ruling lands.**
+**MECHANISM: `scan_queue_vocabulary` (attached B1769, the turn the ruling landed).** This item
+shipped JUDGMENT-ONLY because the vocabulary was unruled - building a gate against my own unapproved
+proposal would have been `#242`'s failure with the authority invented. **Owner ruled 2026-08-19;
+the promised mechanism is now attached**, which is the behaviour a `JUDGMENT-ONLY` tag is supposed
+to produce rather than a permanent excuse.
 
 ### #248 - THE BACKTICK RULE IS ABOUT SHELL ARGUMENTS, NOT COMMIT MESSAGES (B1768 / L523)
 
@@ -4120,3 +4121,30 @@ use a quoted heredoc (`<<'EOF'`). Enforced by `scan_shell_substitution` (widened
 **Detection note:** this instance was caught by bash itself (`unexpected EOF while looking for
 matching backtick`) and nothing ran. **The B1765 instance was NOT caught - it ran `git reset
 --hard`.** The difference was pure luck about whether the substituted text happened to parse.
+
+### #249 - THE QUEUE IS UPDATED EVERY TURN, AND AN EMPTY TURN IS DECLARED (B1769 / L524)
+
+**Owner directive 2026-08-19, mechanically gated.** Every turn adds the queue row(s) its work
+earned. **Enforced by `scan_queue_not_updated`.**
+
+**The closed vocabulary** is `DONE / DROPPED / BLOCKED / DEFERRED / OPEN / RUNNING`; priority lives
+in its own column as `P0/P1/P2`; **every non-terminal class states WHY**, and a placeholder reason
+(`TBD`, `N/A`, `REASON-NOT-RECORDED`) is REJECTED - **enforced by `scan_queue_vocabulary`**, which
+routes through `require_each` so each offending row is named. A seventh class is a ruling, not a
+convenience: **"any text satisfies the slot" is precisely how 132 distinct labels accumulated
+across the ledger's 688 rows.**
+
+**THE ESCAPE HATCH IS PART OF THE RULE, not a weakness in it.** A mandatory per-turn gate recreates
+the pressure that produced the drift - on a queue-free turn the options become skip, **fabricate a
+row (the one thing CLAUDE.md forbids outright)**, or coin a new quasi-class. So the gate accepts:
+
+    NO-QUEUE-CHANGE: <reason>
+
+which makes an empty turn a **recorded decision** instead of a silent gap or an invented row. It is
+visible in the response and greppable afterwards, so over-use is measurable - the same posture as
+`.stop_exempt`: **a disclosure, not a workaround.**
+
+**Migration note (688 rows, B1769):** 39.4pct of classes were INFERRED from row text and every one
+is tagged; **none is claimed as exact**. The council's proposed blanket `DEFERRED` default was
+rejected on measurement - 71.7pct of prose rows record COMPLETED work, so it would have
+manufactured ~134 fake open items.

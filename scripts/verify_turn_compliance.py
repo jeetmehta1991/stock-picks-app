@@ -1283,6 +1283,131 @@ def scan_shell_substitution(entries, *, tool_text=None) -> list[str]:
             "no substitution."]
 
 
+# B1769: the owner-ruled queue vocabulary (2026-08-19). CLOSED set - a seventh
+# class is exactly how 132 labels happened, so adding one is a ruling, not a
+# convenience.
+QUEUE_CLASSES = ("DONE", "DROPPED", "BLOCKED", "DEFERRED", "OPEN", "RUNNING")
+QUEUE_NEEDS_REASON = ("DROPPED", "BLOCKED", "DEFERRED", "OPEN")
+# B1769c: "-" and "N/A" REMOVED. They are degenerate markers - matched as
+# substrings they flag any reason containing a hyphen, and matched exactly they
+# add nothing the length floor does not already catch. Keeping them cost a
+# live block of this gate's own author on its first run.
+QUEUE_PLACEHOLDERS = ("reason-not-recorded", "tbd", "todo", "unknown",
+                      "see above", "as above", "needs review", "n/a")
+
+
+def _queue_rows_added(diff_text=None) -> list[str]:
+    """Ticket rows ADDED to EXECUTION_QUEUE.md this turn."""
+    import re
+    import subprocess
+    if diff_text is None:
+        try:
+            diff_text = subprocess.run(
+                ["git", "diff", "HEAD", "--unified=0", "--", "EXECUTION_QUEUE.md"],
+                capture_output=True, text=True, timeout=20).stdout or ""
+        except Exception:
+            return []
+    return [ln[1:] for ln in diff_text.splitlines()
+            if re.match(r"^\+\|\s*\*\*S6-", ln)]
+
+
+def scan_queue_vocabulary(entries, *, rows=None, diff_text=None) -> list[str]:
+    """#247 MECHANISED (B1769): every queue row added this turn uses a CLASS from
+    the closed vocabulary, and every non-terminal class carries a real reason.
+
+    `#247` shipped as JUDGMENT-ONLY because the vocabulary was unruled - building
+    a gate against my own unapproved proposal would have been `#242`'s failure
+    with the authority invented. **The owner ruled on 2026-08-19; this is the
+    mechanism that item promised, attached the moment the ruling landed.**
+
+    The reason check REJECTS PLACEHOLDERS. Without that the gate is satisfied by
+    `_reason:_ TBD`, which is the "any text satisfies the slot" defect that
+    produced 132 distinct labels across 688 rows in the first place.
+    """
+    import re
+    import re as _re
+    rows = _queue_rows_added(diff_text) if rows is None else list(rows)
+    if not rows:
+        return []
+    bad = []
+    for r in rows:
+        m = re.match(r"\|\s*\*\*(S6-[A-Za-z0-9-]+)\*\*\s*\|\s*\*\*([A-Z-]+)\*\*", r)
+        if not m:
+            bad.append(f"{r[:60].strip()} - not in `| **id** | **CLASS** |` shape")
+            continue
+        tid, cls = m.group(1), m.group(2)
+        if cls not in QUEUE_CLASSES:
+            bad.append(f"{tid}: class {cls!r} is not one of {list(QUEUE_CLASSES)}")
+            continue
+        if cls in QUEUE_NEEDS_REASON:
+            rm = re.search(r"_reason:_\s*(.+?)\s*(?:\*\*|\|)", r)
+            reason = (rm.group(1) if rm else "").strip()
+            if not reason:
+                bad.append(f"{tid}: {cls} carries NO `_reason:_` - "
+                           "blocked/deprioritised/not-started are different things")
+            # B1769c: EXACT match on the whole reason, not a substring. The
+            # first version used `ph in reason` with "-" and "N/A" in the
+            # placeholder set, so ANY reason containing a hyphen read as a
+            # placeholder - it blocked its own author's rows on the first live
+            # run. **That is #246 (substring vs whole word), in a gate written
+            # one batch after #246 was codified.** A short reason is the real
+            # signal, so length carries the rest.
+            elif (any(reason.lower().lstrip("*_ ").startswith(ph)
+                      for ph in QUEUE_PLACEHOLDERS)
+                  or len(reason.strip()) < 12):
+                bad.append(f"{tid}: {cls} reason is a placeholder ({reason[:32]!r})")
+    # B1769b: route through require_each - #244 caught this gate hand-rolling
+    # the shape one batch after that rule was written. Each ROW is a member.
+    ok = {b.split(":")[0]: False for b in bad}
+    ok.update({f"row {i+1}": True for i in range(len(rows) - len(bad))})
+    return require_each(
+        "QUEUE VOCABULARY (B1769/#247)", ok,
+        why=("; ".join(bad[:4]) +
+             ("" if len(bad) <= 4 else f" (+{len(bad)-4} more)") +
+             ". Owner ruling 2026-08-19: classes are "
+             f"{list(QUEUE_CLASSES)}, and every non-terminal class states WHY. "
+             "A placeholder reason is the same defect as a prose label."))
+
+
+def scan_queue_not_updated(entries, *, rows=None, text=None,
+                           diff_text=None) -> list[str]:
+    """#249 (B1769): the queue is updated EVERY turn - owner directive, gated.
+
+    THE OBJECTION THIS ANSWERS. The council's Contrarian argued that a mandatory
+    per-turn gate recreates the pressure that produced 132 labels: on a turn with
+    no real queue work the options become skip (blocked), invent a row
+    (fabrication - the one thing CLAUDE.md forbids outright), or coin a new
+    quasi-class to slide past honestly. **That is a correct read of how the
+    original drift happened.**
+
+    So the gate accepts an explicit declaration:
+
+        NO-QUEUE-CHANGE: <reason>
+
+    which converts an empty turn from a fabrication incentive into a RECORDED
+    DECISION. The escape is deliberately visible in the response and greppable
+    later, so over-use is measurable rather than invisible - the same posture as
+    the `.stop_exempt` hatch, which is a disclosure, not a workaround.
+    """
+    rows = _queue_rows_added(diff_text) if rows is None else list(rows)
+    if rows:
+        return []
+    t = (_assistant_text(entries) if text is None else text.lower())
+    if "no-queue-change:" in t:
+        after = t.split("no-queue-change:", 1)[1].strip()
+        if len(after) >= 12:
+            return []
+        return ["NO-QUEUE-CHANGE was declared with no reason after the colon "
+                "(B1769/#249). The declaration IS the record - write what made "
+                "this turn queue-free."]
+    return ["QUEUE NOT UPDATED THIS TURN (B1769/#249): owner directive "
+            "2026-08-19 - every turn updates EXECUTION_QUEUE.md. Add the row(s) "
+            "this turn's work earned, or declare `NO-QUEUE-CHANGE: <reason>` "
+            "so an empty turn is a recorded decision instead of a silent gap. "
+            "Do NOT invent a row to satisfy this - that is the fabrication the "
+            "gate exists to avoid."]
+
+
 def scan_ungated_addition(entries, *, text=None, added_rules=None) -> list[str]:
     """B1762 (#242): EACH new numbered rule names its own mechanism.
 
@@ -1855,7 +1980,8 @@ def main() -> int:
     for _sc in (scan_unverified_cause, scan_uncosted_probe,
                 scan_false_skill_status, scan_miss_capture_complete,
                 scan_retroactive_sweep, scan_compliance_is_content,
-                scan_ungated_addition, scan_shell_substitution):
+                scan_ungated_addition, scan_shell_substitution,
+                scan_queue_vocabulary, scan_queue_not_updated):
         try:
             _r = _sc(_e2)
         except Exception as _e:

@@ -9859,3 +9859,35 @@ differed between the two - only whether the text happened to be valid shell.
 **The durable fix is habit, not vigilance:** content with any punctuation goes through the Write
 tool into a file that is then executed. The gate is now widened to match, but the gate is a
 backstop for a habit that should not produce candidates in the first place.
+
+### L524
+
+**The migration would have inverted the ledger, and the council's own plan was the trap**
+
+**B1769, owner-ruled.** Adopt six queue classes, mandatory reasons, priority in its own column,
+migrate every row, gate the per-turn update.
+
+**The council's Executor proposed mapping every unclassifiable row to `DEFERRED`** - clean,
+deterministic, no hand-editing. **Measured before building: 71.7pct of the 187 prose-headline rows
+record COMPLETED work; 0.5pct read as open.** That default would have manufactured **~134 fake open
+items** and made *"what is open"* worse than the 132-label mess it replaced. **A migration that
+changes what the record MEANS is not lossless because git can revert the bytes.**
+
+**Three defects the dry run caught before a byte was written, all invisible to reading the script:**
+1. **34 of 688 rows carry a PLAIN label**, not a bold one - the regex skipped them **silently**.
+2. **`ROW.findall(src)` without `re.M`** anchored to the whole string and returned 0, so the summary
+   printed a confident wrong count.
+3. **One ticket id contains a hyphen** (`S6-B1712c-b`) and fell outside the id pattern.
+
+**And a correction I owe the record: the queue has 688 ticket rows, not the 641 I reported twice.**
+The lower figure came from a regex that required bold labels. **I quoted a parser artifact as a fact
+about the file** - and the number was load-bearing in a recommendation the owner then ruled on.
+
+**60 ticket ids appear on multiple rows.** That is not duplication - it is the append-only update
+pattern, and a dedupe would have destroyed the history the ledger exists to hold.
+
+**On the gate itself, the Contrarian was right and the design absorbed it.** A mandatory per-turn
+queue gate recreates the pressure that produced 132 labels: on a turn with no queue work the options
+are skip, fabricate, or coin a new quasi-class. **So the gate accepts `NO-QUEUE-CHANGE: <reason>`**,
+converting an empty turn from a fabrication incentive into a recorded decision that is greppable and
+therefore measurable.

@@ -108,6 +108,17 @@ INCIDENTS: dict[str, tuple[str, bool, dict]] = {
         False,
         {},
     ),
+    "scan_queue_vocabulary": (
+        "",
+        True,
+        {"rows": ["| **S6-B1757c** | **ANSWERED** | - | a defect filed as an "
+                  "answer, with no mechanism |"]},
+    ),
+    "scan_queue_not_updated": (
+        "an ordinary turn report that records no queue row and declares nothing",
+        True,
+        {"rows": []},
+    ),
     # NEGATIVE control - ordinary reporting prose that must NOT trip anything.
     # Note it is a bare sentence, so gates that legitimately require RESPONSE
     # STRUCTURE (a SKILLS block, a compliance block) are excluded by the sweep
@@ -130,6 +141,11 @@ INCIDENTS: dict[str, tuple[str, bool, dict]] = {
 # state that isolates TEXT, exactly as the incident run supplies the state the
 # incident had. A harness that gets either wrong reports on itself.
 NEUTRAL: dict[str, dict] = {
+    # B1769: the per-turn gate fires on ABSENCE, so the neutral state for a
+    # text-only control must supply a row - otherwise the control measures the
+    # gate doing its job and reports it as a false positive.
+    "scan_queue_not_updated": {"rows": ["| **S6-X** | **DONE** | - | x |"]},
+    "scan_queue_vocabulary": {"rows": []},
     "scan_ungated_addition": {"added_rules": []},
     "scan_shell_substitution": {"tool_text": ""},
 }

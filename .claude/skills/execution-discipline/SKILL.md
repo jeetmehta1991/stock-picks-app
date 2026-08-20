@@ -669,6 +669,25 @@ says *each*.**
 - **Phase 5 is three artifacts**: LEARNINGS + CHECKLIST-or-explicit-citation + queue ticket.
   Enforced by `scan_miss_capture_complete`.
 
+## THE QUEUE HAS A CLOSED VOCABULARY, AND EVERY TURN UPDATES IT (B1769 - L524, CHECKLIST #249)
+
+**Owner ruling 2026-08-19.** Classes: `DONE / DROPPED / BLOCKED / DEFERRED / OPEN / RUNNING`.
+Priority is its own column (`P0/P1/P2`). **Every non-terminal class states WHY, and placeholders are
+rejected** - `scan_queue_vocabulary` (via `require_each`, so each bad row is named) and
+`scan_queue_not_updated`.
+
+- **A seventh class is a ruling, not a convenience.** "Any text satisfies the slot" is how 132
+  labels accumulated across 688 rows.
+- **An empty turn is DECLARED, never invented:** `NO-QUEUE-CHANGE: <reason>`. A mandatory gate
+  otherwise creates fabrication pressure on queue-free turns - the escape converts that into a
+  recorded, greppable decision. **A disclosure, not a workaround.**
+- **Measure before choosing a migration default.** The clean plan was to map every unclassifiable
+  row to `DEFERRED`; **71.7pct of them record COMPLETED work**, so it would have manufactured ~134
+  fake open items. **A migration that changes what the record MEANS is not lossless because git can
+  revert the bytes.**
+- **Report parser output as parser output.** I quoted "641 rows" twice; the file has **688** - the
+  lower number came from a regex requiring bold labels, and it was load-bearing in a recommendation.
+
 ## CHECK THE RECORD CAN STORE THE DISTINCTION YOU DREW (B1766 - L522, CHECKLIST #247)
 
 **When you explain your own behaviour with a distinction, verify the artifact meant to hold it has a
