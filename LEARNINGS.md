@@ -9833,3 +9833,29 @@ really a missing column, and the confession is what stopped me looking.
 **Deliberately NOT codified this turn:** the replacement vocabulary. Choosing it is the owner's
 ruling; writing my own proposal into CHECKLIST before that ruling would be `#242`'s failure in a
 new place - **shipping a rule whose authority I invented.**
+
+### L523
+
+**I wrote the backtick rule one batch ago and broke it immediately, because I named the class wrong**
+
+**B1768, self-caught (by bash, not by me).** `#245` was written last batch after backticks in a
+`git commit -m` string executed `git reset --hard`. **This batch I put backticks inside
+`python -c "..."` and hit the identical class.**
+
+**The rule I wrote said "commit message". The class is "any double-quoted shell argument".** Bash
+substitutes in all of them; `git commit -m` was simply where it first bit. **I fixed the instance
+and named the class after the instance** - the exact under-generalization the GENERALIZATION
+MANDATE forbids, committed against my own rule, one batch after writing it.
+
+**Why it is easy to do and worth a lesson rather than a shrug:** the incident had a vivid detail -
+a destructive git command - and the vivid detail became the category. **The memorable part of a
+failure is rarely the general part.** `git reset --hard` was the CONSEQUENCE; the mechanism was
+double-quote substitution, and the mechanism is what generalises.
+
+**Luck, stated plainly:** this instance was caught because the substituted text failed to parse and
+bash refused the whole command. **B1765's instance parsed, so it ran.** Nothing about my care
+differed between the two - only whether the text happened to be valid shell.
+
+**The durable fix is habit, not vigilance:** content with any punctuation goes through the Write
+tool into a file that is then executed. The gate is now widened to match, but the gate is a
+backstop for a habit that should not produce candidates in the first place.

@@ -669,6 +669,31 @@ says *each*.**
 - **Phase 5 is three artifacts**: LEARNINGS + CHECKLIST-or-explicit-citation + queue ticket.
   Enforced by `scan_miss_capture_complete`.
 
+## CHECK THE RECORD CAN STORE THE DISTINCTION YOU DREW (B1766 - L522, CHECKLIST #247)
+
+**When you explain your own behaviour with a distinction, verify the artifact meant to hold it has a
+field for it.** MEASURED: having told the owner a ticket was filed *"with no reason attached"* and
+recorded that as a lapse, the truth was **38 of 38** - the queue has no reason field and no
+vocabulary separating **blocked / deprioritised / not-started**. **A confession about discipline was
+really a missing column, and the confession is what stopped me looking.**
+
+**JUDGMENT-ONLY for now**: the gate (validate status against a closed vocabulary) cannot exist until
+the owner rules on the vocabulary (`S6-B1766c`). Attach the mechanism when the ruling lands.
+
+## NAME THE CLASS AFTER THE MECHANISM, NOT THE INCIDENT (B1768 - L523, CHECKLIST #248)
+
+**`#245` was written one batch ago and violated immediately.** It said *"commit message"*; the class
+is **any double-quoted shell argument** - bash substitutes in all of them, and `git commit -m` was
+merely where it first bit. Next batch the same defect arrived via `python -c "..."`.
+
+- **The memorable part of a failure is rarely the general part.** `git reset --hard` was the
+  CONSEQUENCE; double-quote substitution was the mechanism, and the mechanism is what generalises.
+- **Content with punctuation goes through the Write tool into a file you then execute** - or a
+  quoted heredoc. The widened `scan_shell_substitution` is a backstop for a habit that should not
+  produce candidates.
+- **State the luck:** this instance failed to parse so nothing ran; B1765's parsed, so it executed
+  `git reset --hard`. **Nothing about my care differed between the two.**
+
 ## STEMS AND WHOLE WORDS NEED OPPOSITE MATCHERS (B1767 - L521, CHECKLIST #246)
 
 **A cost gate blocked a clean turn because `QUANT_CLAIMS` held `"free"` and the response said

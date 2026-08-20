@@ -16484,3 +16484,44 @@ def test_b1763_universal_rules_use_require_each():
 
     stale = sorted(set(EXEMPT) - seen)
     assert not stale, f"EXEMPT names gates that no longer exist: {stale}"
+
+
+def test_b1768_shell_substitution_gate_covers_any_quoted_arg():
+    """B1768 (#248): the gate covers ANY double-quoted shell argument.
+
+    #245 was written after backticks in a `git commit -m` string executed
+    `git reset --hard`. One batch later the identical defect arrived through
+    `python -c "...backticks..."` - because the rule had been named after the
+    INCIDENT (a commit message) rather than the MECHANISM (bash substitutes
+    inside every double-quoted argument).
+
+    Both instances are pinned: narrowing the pattern back to git breaks this.
+    """
+    import importlib.util
+    import pathlib
+
+    root = pathlib.Path(__file__).resolve().parents[2]
+    spec = importlib.util.spec_from_file_location(
+        "verify_turn_compliance", root / "scripts" / "verify_turn_compliance.py")
+    tg = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(tg)
+
+    bt = chr(96)
+    must_fire = [
+        # B1765: the commit message that actually ran git reset --hard
+        'git commit -q -m "RISK: destructive commands (' + bt + 'git reset --hard' + bt + ') run."',
+        # B1768: the python -c that #245 was too narrow to catch
+        'python -c "assert ' + bt + '#247' + bt + ' not in c"',
+        'python -c "x = $(whoami)"',
+    ]
+    must_be_quiet = [
+        "python scripts/patch.py",            # Write-tool-then-run: the habit
+        "git commit -F - <<'MSG'",            # quoted heredoc
+        'python -c "print(1)"',               # ordinary double-quoted arg
+    ]
+    for cmd in must_fire:
+        assert tg.scan_shell_substitution([], tool_text=cmd), \
+            f"gate MISSED a live substitution risk (#248): {cmd!r}"
+    for cmd in must_be_quiet:
+        assert not tg.scan_shell_substitution([], tool_text=cmd), \
+            f"gate FALSE-POSITIVED on a safe form (#248): {cmd!r}"

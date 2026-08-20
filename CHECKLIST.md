@@ -4080,3 +4080,43 @@ so it could only be pinned as `gate([]) == []` - **a seamless gate cannot have i
 reproduced either.** Seams were argued for as protection against gates that MISS. **The gate that
 misfires is the one that most needs to be askable.** Corpus entries may therefore carry
 `must_fire=False` as REGRESSION entries.
+
+### #247 - CHECK THE RECORD CAN STORE THE DISTINCTION YOU JUST DREW (B1766 / L522)
+
+**When you explain your own behaviour with a distinction, verify the artifact that is supposed to
+hold it actually has a field for it.**
+
+**MEASURED:** having told the owner that `S6-B1762f` was ticketed *"with no reason attached"*, I
+recorded it as a lapse of discipline. **It is 38 of 38** - no OPEN row in the queue states why it is
+open, because there is no field for a reason and no vocabulary separating **blocked /
+deprioritised / not-started**. **A confession about discipline was really a missing column, and the
+confession is what stopped me looking.**
+
+**ANTI-AUDIT-THEATER (#136) - retroactively catches:**
+1. **L519 / `S6-B1762f`** - deferral filed with no reason; diagnosed as carelessness, was schema.
+2. **L514 / `S6-B1757c`** - a defect filed as `ANSWERED`; the queue had no way to record *answered
+   but not remediated*, so one label absorbed both.
+3. **B1766** - 0 of 38 OPEN rows carry a reason; 132 distinct labels across 641 rows.
+
+**MECHANISM: JUDGMENT-ONLY, deliberately.** The natural gate - validate each ticket status against a
+closed vocabulary - **cannot be built until the owner rules on that vocabulary** (`S6-B1766c`,
+open). Building it against my own proposal would be `#242`'s failure with the authority invented.
+**Re-open this item and attach the mechanism the moment the ruling lands.**
+
+### #248 - THE BACKTICK RULE IS ABOUT SHELL ARGUMENTS, NOT COMMIT MESSAGES (B1768 / L523)
+
+**`#245` was written one batch ago and I violated it immediately** - not in a commit message, but in
+`python -c "...backticks..."`. Bash performs command substitution in ANY double-quoted argument;
+`git commit -m` was merely where it first bit.
+
+**I fixed the instance and named the class wrong.** That is the GENERALIZATION MANDATE failure the
+skill already forbids, committed against my own rule, one batch after writing it.
+
+**The rule: never put backticks or `$(` inside ANY double-quoted shell argument** - `-m`, `-c`,
+`-F`, `--message`, `echo`, anything. **Write the content with the Write tool and run the file**, or
+use a quoted heredoc (`<<'EOF'`). Enforced by `scan_shell_substitution` (widened from
+`git commit|tag` to any `python -c` / `-m` / `--message` double-quoted argument).
+
+**Detection note:** this instance was caught by bash itself (`unexpected EOF while looking for
+matching backtick`) and nothing ran. **The B1765 instance was NOT caught - it ran `git reset
+--hard`.** The difference was pure luck about whether the substituted text happened to parse.

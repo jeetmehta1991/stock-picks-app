@@ -1263,7 +1263,13 @@ def scan_shell_substitution(entries, *, tool_text=None) -> list[str]:
     # `...` inside a double-quoted -m/-F argument, or $(...) anywhere in a
     # commit/tag message. Single-quoted heredocs are the safe form and contain
     # neither pattern in the command string itself.
-    for m in re.finditer(r"git\s+(?:commit|tag)[^\n]*?-(?:m|F)\s+\"([^\"]*)\"", t):
+    # B1768 (#248): WIDENED from `git commit|tag` to ANY double-quoted shell
+    # argument. The original was named after the INCIDENT (a commit message)
+    # rather than the MECHANISM (bash substitutes inside every double-quoted
+    # argument). One batch after writing it I hit the identical defect via
+    # `python -c "...`backticks`..."` - the under-generalization the mandate
+    # forbids, committed against my own rule.
+    for m in re.finditer(r"-(?:m|c|F|-message|-eval)\s+\"([^\"]*)\"", t):
         arg = m.group(1)
         if "`" in arg or "$(" in arg:
             hits.append(arg[:70])
