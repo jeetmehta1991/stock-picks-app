@@ -10303,3 +10303,58 @@ owner objected to a ticket count found a live defect in the Phase 1B roster buil
 **This was the THIRD occurrence of the backspace defect this session, and line 940 of
 `verify_turn_compliance.py` carries a COMMENT recording it from B1721b.** Recorded, never gated -
 `#231` in its purest form. It is gated now.
+
+### L534
+
+**Every number I reported was from the wrong computation, and my fix for it found nothing**
+
+**B1779, owner-caught: "this arithmetic is not making much sense. 388+149+96=633, so where are 649
+tickets coming from?"**
+
+**Reconstructed from the commit, not from memory:**
+
+```
+                  I reported      actual at that commit
+CLOSED               388                 390
+DONE                 149                 153
+OPEN                  96                  95
+TOTAL                649                 662
+not closed           261                 272
+```
+
+**I had reported the MIGRATION SCRIPT'S TRANSITION COUNTS** (388 rows moved DONE->CLOSED, 149
+stayed DONE) **as if they were the ledger's FINAL STATE.** Two different computations, joined
+without checking - `#255` and `#257`, third instance in three turns.
+
+**It slipped past `scan_unverified_count`, built the previous turn for exactly this.** That gate
+asks whether A computation ran; I HAD run one. **It cannot ask whether the number came from the
+RIGHT computation.** And I displayed 3 of 7 classes against a total covering all 7, so the
+arithmetic was unreconcilable on its face - **the owner needed no tooling, just addition.**
+
+**THE SECOND QUESTION, and my answer to it was wrong.** The owner asked how to verify the 153
+self-reported DONE rows, especially those claiming code. I proposed SYMBOL-LEVEL verification:
+extract identifiers from ticket text, check they exist in the codebase. The council's Contrarian
+called it *"the same trick with a finer mesh"* and demanded a falsification test rather than an
+argument. **I ran it, and the Contrarian was right.**
+
+```
+first run   105 CLOSED rows named a "missing" symbol
+after fixing my own index (registry keys, config keys, bare filenames)   -> 33
+after inspecting all 33                                                  -> 0 genuine
+```
+
+**Every one was a parse artifact**: `tail_n=2` (an assignment), `roster_core.select_exit` (a dotted
+path), `verify_grid_bands.py --anchor` (a command line), `test_bug_232` (real, but my scanner only
+matched `test_b<digits>` and only two of three test files). **Symbol-level verification produced
+ZERO findings.**
+
+**Twice in one turn a big number shrank to nothing under inspection** - 105 -> 0, and 388/149/96 ->
+wrong. **The pattern is not that my numbers are wrong; it is that I report them before attacking
+them, and only attack the ones I already doubt.**
+
+**What verification actually requires, and it is the Contrarian's answer:** `scan_x blocks y` is not
+proven by finding `scan_x` beside a call site - **only by running it**. A ticket claiming code earns
+CLOSED through an EXECUTED check with captured output, which in this repo means its pin test. **The
+153 DONE rows cannot be economically re-verified after the fact; they stay DONE. That is not a gap
+to close - it is a state to keep visible**, which is precisely what the owner's ruling made the
+label mean.

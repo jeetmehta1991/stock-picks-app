@@ -124,6 +124,11 @@ INCIDENTS: dict[str, tuple[str, bool, dict]] = {
         True,
         {"tool_text": "{}"},
     ),
+    "scan_partial_distribution": (
+        "388 closed 149 done 96 open - 261 of 649 are not verified closed",
+        True,
+        {},
+    ),
     # NEGATIVE control - ordinary reporting prose that must NOT trip anything.
     # Note it is a bare sentence, so gates that legitimately require RESPONSE
     # STRUCTURE (a SKILLS block, a compliance block) are excluded by the sweep

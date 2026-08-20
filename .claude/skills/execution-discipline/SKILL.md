@@ -669,6 +669,23 @@ says *each*.**
 - **Phase 5 is three artifacts**: LEARNINGS + CHECKLIST-or-explicit-citation + queue ticket.
   Enforced by `scan_miss_capture_complete`.
 
+## SHOW EVERY CLASS OR CITE NO TOTAL (B1779 - L534, CHECKLIST #260)
+
+**MEASURED: "388 CLOSED / 149 DONE / 96 OPEN ... 261 of 649" - three of SEVEN classes against a
+seven-class total.** The owner caught it by adding: 388+149+96 = 633. **The figures were also wrong,
+taken from the migration's TRANSITION counts rather than the ledger's state** (actual 390/153/95 of
+662).
+
+- **Report a breakdown in FULL, or cite no total** (`scan_partial_distribution`).
+- **Say WHICH computation a number came from.** `scan_unverified_count` passed this, because a
+  computation HAD run - it cannot know it was the wrong one.
+- **Symbol-level verification of ticket claims produced ZERO findings**: 105 -> 33 after fixing my
+  own index -> 0 on inspection, all parse artifacts. **A symbol beside a call site does not prove
+  "X blocks Y" - only running it does.**
+- **Twice in one turn a large number collapsed under inspection.** The problem is not that numbers
+  are wrong; it is **reporting them before attacking them, and only attacking the ones I already
+  doubt.**
+
 ## DONE IS SELF-REPORTED; CLOSED IS VERIFIED AGAINST CODE (B1778 - L533, CHECKLIST #258/#259)
 
 **Owner ruling 2026-08-20.** `DONE` is no longer terminal - it means *reported finished,

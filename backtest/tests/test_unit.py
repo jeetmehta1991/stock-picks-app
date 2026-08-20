@@ -16458,6 +16458,10 @@ def test_b1763_universal_rules_use_require_each():
         "scan_queue_not_updated":
             "single member - THIS turn. require_each over a one-element dict "
             "adds indirection without adding coverage",
+        "scan_partial_distribution":
+            "'every class' is an instruction to the AUTHOR, not a member set the "
+            "check enumerates - the requirement is that the listed counts SUM to "
+            "the cited total, and the message already names each omitted class",
         "scan_unverified_count":
             "the word 'every' QUOTES the defective assumption it explains "
             "(\"assumed every ticket starts open\") - it is not a universal "
@@ -16883,3 +16887,36 @@ def test_b1778_unverified_count_gate():
 
     # CLOSED is now part of the ruled vocabulary, DONE is no longer terminal
     assert "CLOSED" in tg.QUEUE_CLASSES
+
+
+def test_b1779_partial_distribution_gate():
+    """B1779 (#260): a class breakdown is reported in FULL, or with no total.
+
+    "388 CLOSED / 149 DONE / 96 OPEN ... 261 of 649" - three of SEVEN classes
+    against a seven-class total. The owner caught it by adding: 388+149+96=633.
+    The figures were ALSO wrong, taken from the migration's TRANSITION counts
+    rather than the ledger's state (actual 390/153/95 of 662).
+
+    scan_unverified_count could not catch this: it asks whether A computation
+    ran, and one had. It cannot ask whether the number came from the RIGHT one.
+    """
+    import importlib.util
+    import pathlib
+
+    root = pathlib.Path(__file__).resolve().parents[2]
+    spec = importlib.util.spec_from_file_location(
+        "vtc_b1779", root / "scripts" / "verify_turn_compliance.py")
+    tg = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(tg)
+    g = tg.scan_partial_distribution
+
+    incident = "388 closed 149 done 96 open - 261 of 649 are not verified closed"
+    assert g([], text=incident), "must fire on the verbatim incident"
+
+    full = ("390 closed 153 done 95 open 9 blocked 8 dropped 4 deferred "
+            "3 running of 662 total")
+    assert not g([], text=full), "a full, reconciling breakdown must pass"
+    assert not g([], text="390 closed and 153 done this turn."), \
+        "counts with no total cited are fine"
+    assert not g([], text="the sweep found a temporal step in one exit."), \
+        "ordinary prose must not trip it"

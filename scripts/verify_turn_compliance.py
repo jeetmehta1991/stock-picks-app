@@ -1372,6 +1372,46 @@ def scan_unverified_count(entries, *, text=None, tool_text=None) -> list[str]:
             "Compute the count from EXECUTION_QUEUE.md this turn, or drop it."]
 
 
+def scan_partial_distribution(entries, *, text=None) -> list[str]:
+    """#260: report a class breakdown in FULL, or not at all.
+
+    I told the owner "388 CLOSED / 149 DONE / 96 OPEN ... 261 of 649". The
+    owner did the arithmetic: 388+149+96 = 633, not 649. Three of SEVEN classes
+    were shown against a total covering all seven, so the reader could not
+    reconcile it - and the figures were themselves wrong, lifted from the
+    migration script's TRANSITION counts rather than the ledger's final state.
+
+    **The fix needed no verification layer.** Printing every class would have
+    exposed it instantly. This gate asks only that: if a response lists queue
+    classes with counts and also states a TOTAL, the parts must sum to the whole.
+    """
+    import re as _re
+    t = (_assistant_text(entries) if text is None else text.lower())
+    if not t:
+        return []
+    pairs = _re.findall(
+        r"(?:^|[^a-z0-9])([0-9]{1,4})\s+(closed|done|open|blocked|dropped|"
+        r"deferred|running)(?![a-z])", t)
+    if len(pairs) < 2:
+        return []
+    seen = {}
+    for n, cls in pairs:
+        seen.setdefault(cls, int(n))
+    part = sum(seen.values())
+    totals = [int(x) for x in _re.findall(r"of ([0-9]{3,4})\b", t)]
+    for tot in totals:
+        if tot > part:
+            missing = sorted({"closed", "done", "open", "blocked", "dropped",
+                              "deferred", "running"} - set(seen))
+            return [f"PARTIAL DISTRIBUTION (B1779/#260): the response lists "
+                    f"{sorted(seen)} summing to {part}, then cites a total of "
+                    f"{tot}. The reader cannot reconcile {part} against {tot}. "
+                    f"Unlisted class(es): {missing}. '388+149+96 vs 649' is how "
+                    "the owner caught the last one - show every class, or cite "
+                    "no total."]
+    return []
+
+
 def scan_queue_vocabulary(entries, *, rows=None, diff_text=None) -> list[str]:
     """#247 MECHANISED (B1769): every queue row added this turn uses a CLASS from
     the closed vocabulary, and every non-terminal class carries a real reason.
@@ -2159,7 +2199,7 @@ def main() -> int:
                 scan_retroactive_sweep, scan_compliance_is_content,
                 scan_ungated_addition, scan_shell_substitution,
                 scan_queue_vocabulary, scan_queue_not_updated,
-                scan_unverified_count):
+                scan_unverified_count, scan_partial_distribution):
         try:
             _r = _sc(_e2)
         except Exception as _e:

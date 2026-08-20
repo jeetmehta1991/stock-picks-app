@@ -4365,3 +4365,25 @@ After repair it detects **60 dual strategies**.
 `test_b1778_no_control_chars_in_gate_scripts`, which scans every `scripts/*.py` for control bytes
 outside comments. **Line 940 of `verify_turn_compliance.py` has carried a comment recording this
 same defect since B1721b - recorded, never gated.**
+
+### #260 - SHOW EVERY CLASS OR CITE NO TOTAL (B1779 / L534)
+
+**MEASURED: I reported "388 CLOSED / 149 DONE / 96 OPEN ... 261 of 649".** Three of SEVEN classes
+against a total covering all seven. **The owner caught it with addition: 388+149+96 = 633.** And the
+figures were themselves wrong - lifted from the migration script's TRANSITION counts, not the
+ledger's final state (actual: 390 / 153 / 95, total 662).
+
+**A class breakdown is reported in FULL or without a total.** Enforced by
+`scan_partial_distribution`, which sums the listed classes against any cited total and names the
+omitted ones.
+
+**`scan_unverified_count` could not catch this** - it asks whether A computation ran, and one had.
+**It cannot ask whether the number came from the RIGHT computation.** State which computation a
+number came from, not merely that one occurred.
+
+**AND THE VERIFICATION LESSON (L534): symbol-level checking of ticket claims produced ZERO
+findings.** 105 apparent misses became 33 after fixing my own index, then 0 on inspection - all
+parse artifacts (`tail_n=2`, `roster_core.select_exit`, a command line). **A symbol existing beside
+a call site does not prove a claim like "X blocks Y"; only running it does.** A code-claiming ticket
+earns CLOSED through its PIN TEST, executed. Rows that cannot be re-verified after the fact stay
+DONE - **a visible state, not a gap.**
