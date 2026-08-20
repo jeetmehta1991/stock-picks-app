@@ -4387,3 +4387,26 @@ parse artifacts (`tail_n=2`, `roster_core.select_exit`, a command line). **A sym
 a call site does not prove a claim like "X blocks Y"; only running it does.** A code-claiming ticket
 earns CLOSED through its PIN TEST, executed. Rows that cannot be re-verified after the fact stay
 DONE - **a visible state, not a gap.**
+
+### #261 - PROVE A RESPONSE-SCANNING GATE ON A REALISTIC RESPONSE (B1780 / L535)
+
+**MEASURED: `scan_partial_distribution` blocked its own author's next turn with a fabricated
+finding.** It harvested class counts from every table in a long response, summed them into a figure
+no sentence claimed (295), and paired it with `of 1937` - **the Master universe ticker count**. It
+even reported `Unlisted class(es): []`, meaning nothing was partial.
+
+**I proved it on five cases, every one a single short sentence.** `#240` demanded the verbatim
+incident and I supplied it - **but the incident was one line, and a one-line probe cannot exercise a
+WINDOWING bug.** `#240` governs the CONTENT of a probe; this item governs its SHAPE.
+
+**Every response-scanning gate is proven against a multi-paragraph response** containing several
+tables and numbers from unrelated subjects. Pinned for this gate by the `long_response` case in
+`test_b1779_partial_distribution_gate`.
+
+**Companion rule: a gate that pairs two figures must require PROXIMITY.** A distribution and its
+total are stated together; anything else is the gate inventing a relationship.
+
+**And the honest note (L535): in three consecutive turns a wrong count produced a gate, which missed
+the next wrong count, which produced a second gate, whose first live act was a wrong count.** When
+the machinery starts reproducing the defect it was built to stop, **the next gate is not the
+answer.**

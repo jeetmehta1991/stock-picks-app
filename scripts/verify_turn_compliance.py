@@ -1389,11 +1389,46 @@ def scan_partial_distribution(entries, *, text=None) -> list[str]:
     t = (_assistant_text(entries) if text is None else text.lower())
     if not t:
         return []
-    pairs = _re.findall(
-        r"(?:^|[^a-z0-9])([0-9]{1,4})\s+(closed|done|open|blocked|dropped|"
-        r"deferred|running)(?![a-z])", t)
-    if len(pairs) < 2:
-        return []
+    # B1780: PROXIMITY. On its first live turn this gate collected class counts
+    # from EVERY table across a long response and paired their sum with an
+    # unrelated "of 1937" (the Master universe ticker count), then blocked the
+    # turn. A distribution and its total are stated TOGETHER, so only pairs
+    # within the same neighbourhood as the total may be compared with it.
+    #
+    # I proved this gate on 5 cases, every one a single short sentence. **None
+    # resembled a real response.** The corpus rule (#240) says test on the
+    # verbatim incident - it does not say the incident is the only shape worth
+    # testing, and a one-line probe cannot exercise a windowing bug.
+    CLASSES = ("closed", "done", "open", "blocked", "dropped", "deferred",
+               "running")
+    WINDOW = 240
+    for tm in _re.finditer(r"of ([0-9]{3,4})\b", t):
+        tot = int(tm.group(1))
+        lo, hi = max(0, tm.start() - WINDOW), min(len(t), tm.end() + WINDOW)
+        near = t[lo:hi]
+        pairs = _re.findall(
+            r"(?:^|[^a-z0-9])([0-9]{1,4})\s+(" + "|".join(CLASSES) + r")(?![a-z])",
+            near)
+        if len(pairs) < 2:
+            continue
+        seen = {}
+        for n, cls in pairs:
+            seen.setdefault(cls, int(n))
+        part = sum(seen.values())
+        # only a PARTIAL listing is a defect: parts short of a stated whole,
+        # and only when the shortfall is not itself another figure entirely.
+        if part >= tot or part * 3 < tot:
+            continue
+        missing = sorted(set(CLASSES) - set(seen))
+        if not missing:
+            continue          # all classes shown; the total refers elsewhere
+        return [f"PARTIAL DISTRIBUTION (B1779/#260): the response lists "
+                f"{sorted(seen)} summing to {part}, then cites a total of "
+                f"{tot} nearby. The reader cannot reconcile {part} against "
+                f"{tot}. Unlisted class(es): {missing}. '388+149+96 vs 649' is "
+                "how the owner caught the last one - show every class, or cite "
+                "no total."]
+    return []
     seen = {}
     for n, cls in pairs:
         seen.setdefault(cls, int(n))

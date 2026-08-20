@@ -10358,3 +10358,40 @@ CLOSED through an EXECUTED check with captured output, which in this repo means 
 153 DONE rows cannot be economically re-verified after the fact; they stay DONE. That is not a gap
 to close - it is a state to keep visible**, which is precisely what the owner's ruling made the
 label mean.
+
+### L535
+
+**The gate I built to stop bad arithmetic blocked my next turn with bad arithmetic**
+
+**B1780, self-caught by the Stop hook.** `scan_partial_distribution` shipped in B1779 to catch a
+partial class breakdown cited against a full total. On its **first live turn** it blocked me:
+
+```
+lists ['blocked','closed','deferred','done','dropped','open','running'] summing to 295,
+then cites a total of 1937
+```
+
+**Both halves were fabricated by the gate itself.** It scanned the whole turn's assistant text,
+harvested class counts from EVERY table in a long response, summed them into a number no sentence
+ever claimed, and paired that with `of 1937` - **the Master universe ticker count**, which has
+nothing to do with the ledger. It then reported `Unlisted class(es): []`: all seven classes were
+present, so there was no partial listing at all.
+
+**A distribution and its total are stated TOGETHER.** The gate now only compares class counts within
+240 characters of the total, and only fires when a class is genuinely absent.
+
+**WHY THE PROOF DID NOT CATCH IT, and this is the reusable part.** I proved that gate on **five
+cases, every one a single short sentence.** `#240` requires testing on the VERBATIM INCIDENT, and I
+did - the incident WAS one line. **But a one-line probe cannot exercise a WINDOWING bug**, because
+windowing only exists at length. The corpus rule made me test the right CONTENT and said nothing
+about the right SHAPE.
+
+**Every gate that scans a response must be proven against a REALISTIC RESPONSE** - multi-paragraph,
+several tables, numbers from unrelated subjects sitting nearby. That is the environment it runs in;
+a single sentence is not a small version of it, it is a different thing.
+
+**The uncomfortable symmetry, worth stating plainly.** In three consecutive turns I produced a wrong
+count, built a gate for it, produced another wrong count that the gate could not see, built a second
+gate, and the second gate's own first act was to produce a wrong count. **The machinery is
+reproducing the defect it was built to stop** - which is the strongest argument yet that the answer
+here is not another gate.

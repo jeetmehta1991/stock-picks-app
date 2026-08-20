@@ -669,6 +669,21 @@ says *each*.**
 - **Phase 5 is three artifacts**: LEARNINGS + CHECKLIST-or-explicit-citation + queue ticket.
   Enforced by `scan_miss_capture_complete`.
 
+## PROVE A RESPONSE GATE ON A REALISTIC RESPONSE (B1780 - L535, CHECKLIST #261)
+
+**MEASURED: the gate built to stop bad arithmetic blocked my next turn WITH bad arithmetic.** It
+harvested class counts from every table in a long response, summed them into a number no sentence
+claimed, and paired it with an unrelated `of 1937`.
+
+- **`#240` governs a probe's CONTENT; this governs its SHAPE.** I tested five one-line cases and the
+  incident genuinely was one line - **but a one-line probe cannot exercise a windowing bug.**
+- **Prove every response-scanning gate on a multi-paragraph response** with several tables and
+  unrelated numbers nearby. That is the environment it runs in.
+- **A gate pairing two figures must require PROXIMITY** - otherwise it invents the relationship.
+- **When the machinery starts reproducing the defect it was built to stop, the next gate is not the
+  answer.** Three turns: a wrong count bred a gate, which missed the next wrong count, which bred a
+  gate, whose first live act was a wrong count.
+
 ## SHOW EVERY CLASS OR CITE NO TOTAL (B1779 - L534, CHECKLIST #260)
 
 **MEASURED: "388 CLOSED / 149 DONE / 96 OPEN ... 261 of 649" - three of SEVEN classes against a

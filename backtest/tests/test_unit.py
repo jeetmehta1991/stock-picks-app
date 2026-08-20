@@ -16920,3 +16920,16 @@ def test_b1779_partial_distribution_gate():
         "counts with no total cited are fine"
     assert not g([], text="the sweep found a temporal step in one exit."), \
         "ordinary prose must not trip it"
+
+    # B1780: THE LIVE FALSE POSITIVE. On its first real turn this gate collected
+    # class counts from every table in a long response and paired their sum with
+    # an unrelated "of 1937" (the Master universe ticker count), blocking the
+    # turn. Five one-line probes had passed; none resembled a real response.
+    long_response = (
+        "the sweep found 3 degenerate exits. earlier: 390 closed 153 done "
+        "95 open. separately the master universe holds 1937 tickers of 1937 "
+        "unique names. and 9 blocked 8 dropped 4 deferred 3 running were "
+        "listed far away.")
+    assert not g([], text=long_response), (
+        "must not pair distant class counts with an unrelated total - this is "
+        "the live false positive that blocked B1780")
