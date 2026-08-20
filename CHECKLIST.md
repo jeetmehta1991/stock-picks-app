@@ -4007,3 +4007,27 @@ the test written to fix circular proofs, one turn after `require_each` existed t
 verbatim incident, or appears in an `EXEMPT` dict with a REASON and a ticket. The dict is the
 `require_each` shape - **a gate cannot be silently omitted, only explicitly excused**, and the
 exemption is visible at review time. Shrinking it is `S6-B1761b` / `S6-B1761c`.
+
+### #244 - A UNIVERSAL RULE NEEDS AN EACH-SHAPED CHECK (B1763 / L519)
+
+**MEASURED: `require_each` existed from B1751 and two fresh any-vs-each defects shipped in the two
+turns after it.** Availability is not adoption - **a primitive nobody reaches for is a library, not
+a guardrail.**
+
+**If the message a gate EMITS states "each" or "every", the check behind it routes through
+`require_each`** - so every member is enumerated and the missing ones are NAMED - or the gate
+carries an `EXEMPT` entry with a reason. **Enforced by
+`test_b1763_universal_rules_use_require_each`**, which fails on any NEW universally-worded gate that
+hand-rolls the check.
+
+**Signal discipline, which is half the item.** The obvious signal - grep gate bodies for
+`each`/`every` - flags **13 of 16** and is WRONG: marker lists use `any()` correctly, because a
+detector *should* match on any marker. **Gate on the EMITTED MESSAGE, not the body.** That returns 6
+candidates carrying three different dispositions: already-each-shaped (convert), count-based
+(cannot enumerate), single-member (indirection without coverage). **One grep result is not one
+finding.**
+
+**Companion rule (L519): a deferral carries its reason.** `S6-B1762f` was ticketed as *"candidate
+for the next enforcement batch"* - no blocker, no cap cited, unreadable later as blocked vs
+deprioritised vs forgotten. **And it was the deepest of three items; the two shallow ones shipped
+first.** Depth loses to closability at end of turn unless the ordering is forced.

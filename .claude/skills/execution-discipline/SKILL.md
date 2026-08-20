@@ -669,6 +669,24 @@ says *each*.**
 - **Phase 5 is three artifacts**: LEARNINGS + CHECKLIST-or-explicit-citation + queue ticket.
   Enforced by `scan_miss_capture_complete`.
 
+## AVAILABILITY IS NOT ADOPTION (B1763 - L519, CHECKLIST #244)
+
+**MEASURED: `require_each` existed from B1751 and two fresh any-vs-each defects shipped in the two
+turns after it.** A primitive nobody reaches for is a library, not a guardrail - **so the reach is
+what gets gated, not the primitive.**
+
+- **If a rule you write says "each" or "every", the check routes through `require_each`.** Enforced
+  by `test_b1763_universal_rules_use_require_each`; exemptions carry reasons.
+- **Gate on the message a check EMITS, not on its body.** Grepping bodies for `each` flags 13 of 16
+  gates and is wrong - marker lists use `any()` correctly, because a detector *should* match any
+  marker. **One grep result is not one finding**: the 6 real candidates carried three different
+  dispositions.
+- **A deferral carries its reason.** `S6-B1762f` read *"candidate for the next enforcement batch"* -
+  no blocker, no cap cited. A ticket is where a decision is recorded, not a substitute for making
+  one.
+- **Rank by depth, not by closability.** Two shallow gates shipped while the item explaining both
+  was deferred. **At end of turn that ordering is automatic unless it is forced.**
+
 ## EVERY RULE YOU ADD SHIPS WITH ITS OWN ENFORCER (B1762 - L518, CHECKLIST #242/#243)
 
 **This is the standing requirement for additions to this file.** Adding a section here, or an item

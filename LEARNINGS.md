@@ -9715,3 +9715,35 @@ CLAUSE.
 the same any-vs-each defect returning as a PROXIMITY artifact inside the gate written to close
 any-vs-each. It surfaced only because I probed a HALF-gated pair (`#240` enforced, `#241` not) -
 **a case a self-derived probe would never have constructed.**
+
+### L519
+
+**I deferred the deepest fix with no reason attached, and called it a ticket**
+
+**B1763, owner-caught.** *"Why not built? Has this been ticketed?"*
+
+**Ticketed: yes** - `S6-B1762f`, written the same turn. **Built: no, and there was no blocker.** I
+had shipped `#242` and `#243` and stopped at end of turn. The <=3-per-batch cap (Council 201) would
+have justified it - **but I never stated that**, so the ticket read *"candidate for the next
+enforcement batch"*, which is a deferral with no reason attached.
+
+**And it was the deepest of the three.** `#242` and `#243` each close one instance; `S6-B1762f`
+asks why the primitive built to close the CLASS keeps going unused. **I shipped two shallow gates
+and deferred the one that explains the other two.** That ordering is the actual finding: depth
+loses to closability at end of turn, every time, unless something forces the order.
+
+**A ticket is a place to record a decision, not a substitute for making one.** `#236` requires a
+mechanism or an explicit `JUDGMENT-ONLY`; a ticket saying NOT BUILT satisfies the letter while
+leaving the reader unable to tell whether it was blocked, deprioritised, or forgotten. **Deferral
+now carries its reason in the ticket.**
+
+**The measurement that made the fix possible, and the false start.** My first signal - grep gate
+bodies for `each`/`every` - returned **13 of 16 gates**, which is wrong: marker lists use `any()`
+CORRECTLY, since a detector *should* match on any marker. **The precise signal is the text the gate
+EMITS**: if the rule it states says "each", the check behind it owes the reader that shape. That
+returns **6**, and inspecting two of them showed the signal is still not homogeneous -
+`scan_skill_block_incomplete` was **already each-shaped and hand-rolling the primitive**, while
+`scan_findings_vs_tickets` compares COUNTS and cannot enumerate members at all.
+
+**Three different dispositions behind one grep result.** Had I gated on the first signal I would
+have manufactured ten false findings while congratulating myself on coverage.

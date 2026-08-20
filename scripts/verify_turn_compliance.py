@@ -1089,14 +1089,20 @@ def scan_skill_block_incomplete(entries, *, text=None) -> list[str]:
     # response that named all three. Use the LAST occurrence: the confirmation
     # block is by definition at the end of the turn.
     tail = t.rsplit("skills invoked", 1)[1][:900]
-    absent = [n for n in ALL_SKILLS if n not in tail]
-    if not absent:
-        return []
-    return [f"SKILLS-INVOKED BLOCK INCOMPLETE: {', '.join(absent)} not named. "
-            "Owner directive B1730: every turn lists ALL THREE skills with an "
-            "explicit status - FULLY LOADED / TRIGGERED-NOT-INVOKED / "
-            "NOT-TRIGGERED / ALWAYS-ON. Omitting one lets silence stand in for "
-            "a status."]
+    # B1763: route through require_each instead of hand-rolling it. This gate
+    # was ALREADY each-shaped - it computed the absent members and named them -
+    # which is precisely why it is the right first conversion: adopting the
+    # primitive here changes no behaviour and removes the duplicate.
+    #
+    # The wider point (S6-B1762f): `require_each` existed from B1751 and two
+    # fresh any-vs-each defects still shipped, because AVAILABILITY IS NOT
+    # ADOPTION. A primitive nobody reaches for is a library, not a guardrail.
+    return require_each(
+        "SKILLS-INVOKED BLOCK INCOMPLETE", {n: (n in tail) for n in ALL_SKILLS},
+        why=("Owner directive B1730: every turn lists ALL THREE skills with an "
+             "explicit status - FULLY LOADED / TRIGGERED-NOT-INVOKED / "
+             "NOT-TRIGGERED / ALWAYS-ON. Omitting one lets silence stand in "
+             "for a status."))
 
 
 def scan_missing_skill_confirmation(entries, *, text=None) -> list[str]:

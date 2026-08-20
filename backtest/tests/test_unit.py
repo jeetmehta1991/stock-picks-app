@@ -16403,3 +16403,75 @@ def test_b1762_every_scan_gate_has_a_corpus_entry():
 
     stale = sorted(set(EXEMPT) - gates)
     assert not stale, f"EXEMPT names gates that no longer exist: {stale}"
+
+
+def test_b1763_universal_rules_use_require_each():
+    """B1763 (#244): if a gate's MESSAGE states a universal rule, its CHECK must
+    be each-shaped - i.e. route through `require_each`.
+
+    S6-B1762f: `require_each` existed from B1751 and two fresh any-vs-each
+    defects shipped in the two turns after it, because AVAILABILITY IS NOT
+    ADOPTION. A primitive nobody reaches for is a library, not a guardrail.
+
+    The signal is deliberately narrow. Marker lists use `any()` CORRECTLY - a
+    detector should match on any marker - so scanning gate bodies for `any()`
+    manufactures false positives. What cannot be a false positive is the text
+    the gate EMITS: if the rule it states says "each" or "every", the check
+    behind it owes the reader that shape.
+    """
+    import ast
+    import pathlib
+    import re
+
+    root = pathlib.Path(__file__).resolve().parents[2]
+    src = (root / "scripts" / "verify_turn_compliance.py").read_text(encoding="utf-8")
+    tree = ast.parse(src)
+
+    # Gates that state a universal rule but cannot route through require_each.
+    # Each needs a REASON; shrinking this dict is the goal.
+    EXEMPT = {
+        "scan_findings_vs_tickets":
+            "counts findings vs tickets; pairing each finding to its own ticket "
+            "is semantic, not enumerable - S6-B1763b",
+        "scan_missing_skill_confirmation":
+            "single required member (the block itself); require_each would add "
+            "indirection without adding coverage",
+        "scan_skill_not_updated":
+            "single required member (SKILL.md touched) - S6-B1763b",
+        "scan_postfix_recheck":
+            "members are unknown until runtime (which gates fired) - S6-B1763b",
+        "scan_unverified_universe":
+            "universal wording describes the SUBJECT (all tickers), not a set of "
+            "required members the gate can enumerate - S6-B1763b",
+    }
+    assert all(EXEMPT.values()), "every exemption needs a reason"
+
+    offenders = []
+    seen = set()
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.FunctionDef) or not node.name.startswith("scan_"):
+            continue
+        seen.add(node.name)
+        msgs = []
+        for sub in ast.walk(node):
+            if isinstance(sub, ast.Return) and sub.value is not None:
+                for lit in ast.walk(sub.value):
+                    if isinstance(lit, ast.Constant) and isinstance(lit.value, str) \
+                            and len(lit.value) > 25:
+                        msgs.append(lit.value)
+        blob = " ".join(msgs).lower()
+        if not re.search(r"\b(each|every)\b", blob):
+            continue
+        uses = any(isinstance(s, ast.Call) and getattr(s.func, "id", "") == "require_each"
+                   for s in ast.walk(node))
+        if not uses and node.name not in EXEMPT:
+            offenders.append(node.name)
+
+    assert not offenders, (
+        f"gate(s) stating a universal rule without an each-shaped check "
+        f"(#244): {offenders}. The message says 'each'/'every' - route the "
+        "check through require_each so every member is named, or add an "
+        "EXEMPT entry with the reason.")
+
+    stale = sorted(set(EXEMPT) - seen)
+    assert not stale, f"EXEMPT names gates that no longer exist: {stale}"
