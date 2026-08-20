@@ -153,7 +153,7 @@ def is_dual(name: str) -> bool:
         return False
     if _re.search(r"^\s*fs\s*=", src, _re.M):
         return True
-    return bool(_re.search(r"_short\s*=", src)) and bool(_re.search(r"_long\s*=", src))
+    return bool(_re.search(r"_short\b\s*=", src)) and bool(_re.search(r"_long\b\s*=", src))
 
 
 def mirror_status(name: str) -> tuple[str, str | None]:

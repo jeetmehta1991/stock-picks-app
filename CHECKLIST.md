@@ -4326,3 +4326,42 @@ shipped in a different batch.
 and a lesson, not a diff. **Calling every doc-only DONE a false claim would be the same
 category-to-claim leap as the 271** - one council advisor did exactly that, reading 87pct born-DONE
 as "87pct fabrication".
+
+### #258 - DONE IS SELF-REPORTED; CLOSED IS VERIFIED AGAINST CODE (B1778 / L533)
+
+**OWNER RULING 2026-08-20:** *"Done isn't closure. Closed is only to be marked once you have
+verified their work against the actual code and code log and not on documentation which is highly
+likely to be incorrect."*
+
+**`DONE` is no longer terminal.** It means *reported finished, unverified*. **`CLOSED` is written
+only by `scripts/promote_verified_closed.py`**, which reads verdicts from `audit_done_claims.py`
+(ticket -> batch -> commit -> files changed) and never the ticket's own prose. A turn may not write
+`CLOSED`.
+
+Applied to 649 rows: **388 CLOSED, 149 DONE, 96 OPEN, 261 not verified closed.** The open count
+RISING is the ruling working, not a regression.
+
+**`DROPPED` is never promoted.** The dry run tried to promote 4 dropped rows on code evidence from
+their batch - evidence belonging to other rows in the same commit. **That manufactures completion
+for abandoned work.**
+
+**AND A LEDGER COUNT IN A RESPONSE MUST HAVE BEEN COMPUTED THAT TURN.** Enforced by
+`scan_unverified_count`. *"317 created, 271 already closed"* was 13; `created - open = closed`
+assumed every ticket starts open and **87pct are written already-DONE**. **~30 gates scan PROSE for
+marker strings and a number carries no marker**, so none could see it.
+
+### #259 - A LITERAL CONTROL CHARACTER CORRUPTS A REGEX SILENTLY (B1778 / L533)
+
+**MEASURED, third occurrence this session:** `\b` written through a bash heredoc becomes a literal
+**backspace (0x08)**. `scan_unverified_count` returned `[]` on the exact sentence it was built for,
+and - far worse - `scripts/build_phase_1b_roster.py:156` carried `r"_short<BS>\s*="`, so
+**`is_dual()`'s check could never match and the B1454 fix in its own docstring was partially inert.**
+After repair it detects **60 dual strategies**.
+
+**A gate returning clean over a corrupted pattern is indistinguishable from a gate that works** -
+`L501`, arriving through the ENCODING rather than the logic.
+
+**Never write a regex through a bash heredoc; use the Write tool.** Enforced by
+`test_b1778_no_control_chars_in_gate_scripts`, which scans every `scripts/*.py` for control bytes
+outside comments. **Line 940 of `verify_turn_compliance.py` has carried a comment recording this
+same defect since B1721b - recorded, never gated.**

@@ -1291,7 +1291,12 @@ def scan_shell_substitution(entries, *, tool_text=None) -> list[str]:
 # B1769: the owner-ruled queue vocabulary (2026-08-19). CLOSED set - a seventh
 # class is exactly how 132 labels happened, so adding one is a ruling, not a
 # convenience.
-QUEUE_CLASSES = ("DONE", "DROPPED", "BLOCKED", "DEFERRED", "OPEN", "RUNNING")
+# B1778 owner ruling 2026-08-20: "Done isn't closure. CLOSED is only to be
+# marked once you have verified their work against the actual code and code log
+# and not on documentation." So DONE is SELF-REPORTED and CLOSED is VERIFIED,
+# and only `promote_verified_closed.py` may write CLOSED - never a turn.
+QUEUE_CLASSES = ("DONE", "CLOSED", "DROPPED", "BLOCKED", "DEFERRED", "OPEN",
+                 "RUNNING")
 QUEUE_NEEDS_REASON = ("DROPPED", "BLOCKED", "DEFERRED", "OPEN")
 # B1769c: "-" and "N/A" REMOVED. They are degenerate markers - matched as
 # substrings they flag any reason containing a hyphen, and matched exactly they
@@ -1314,6 +1319,57 @@ def _queue_rows_added(diff_text=None) -> list[str]:
             return []
     return [ln[1:] for ln in diff_text.splitlines()
             if re.match(r"^\+\|\s*\*\*S6-", ln)]
+
+
+# B1778 (#258): DERIVED COUNTS. The 30 gates before this one all scan PROSE for
+# marker strings. "271" is not a marker string, so a wrong number sailed through
+# every one of them.
+#
+# The council's Contrarian called the "no gate checks arithmetic" framing
+# self-serving, and was right: the defect is STRUCTURE-BLINDNESS, not arithmetic
+# specifically. Tomorrow it is a bad join or a stale key - equally invisible to
+# a phrase scanner. What IS mechanisable is the narrower, real thing: a turn that
+# reports a LEDGER COUNT must have computed it THIS TURN.
+COUNT_CLAIMS = (
+    "tickets closed", "closed in", "already closed", "were closed",
+    "tickets open", "open tickets", "still open", "were created",
+    "tickets created", "created in the last", "of them are", "of those are",
+)
+COUNT_PROOF = ("execution_queue", "audit_done_claims", "audit_ticket_staleness",
+               "promote_verified_closed", "git log", "csv.dictreader",
+               "value_counts", "collections.counter", "groupby")
+
+
+def scan_unverified_count(entries, *, text=None, tool_text=None) -> list[str]:
+    """#258: a ledger count in the response must have been COMPUTED this turn.
+
+    I told the owner "317 created in the last 48h, 271 already closed". The real
+    figure was 13. I had computed `created - open = closed`, arithmetic valid
+    only if every ticket starts open - and 87pct are written already-DONE.
+
+    **No gate could see it.** Every other gate here matches marker strings in
+    prose; a number carries no marker. And the number was FLATTERING, so the
+    adversarial pass I run on suspect claims never engaged - which is exactly
+    where a favourable figure most needs it.
+    """
+    import re as _re
+    t = (_assistant_text(entries) if text is None else text.lower())
+    if not t:
+        return []
+    hits = [c for c in COUNT_CLAIMS if c in t]
+    if not hits:
+        return []
+    # a bare mention with no digits nearby is prose, not a reported count
+    if not _re.search(r"[0-9]{2,}", t):
+        return []
+    tt = (_tool_text(entries) if tool_text is None else tool_text).lower()
+    if any(p in tt for p in COUNT_PROOF):
+        return []
+    return [f"UNVERIFIED LEDGER COUNT (B1778/#258): this turn reports "
+            f"{hits[0]!r} with a number, and no tool call this turn computed it. "
+            "'271 closed in 48h' was 13 - `created - open = closed` assumed "
+            "every ticket starts open, and 87pct are written already-DONE. "
+            "Compute the count from EXECUTION_QUEUE.md this turn, or drop it."]
 
 
 def scan_queue_vocabulary(entries, *, rows=None, diff_text=None) -> list[str]:
@@ -2102,7 +2158,8 @@ def main() -> int:
                 scan_false_skill_status, scan_miss_capture_complete,
                 scan_retroactive_sweep, scan_compliance_is_content,
                 scan_ungated_addition, scan_shell_substitution,
-                scan_queue_vocabulary, scan_queue_not_updated):
+                scan_queue_vocabulary, scan_queue_not_updated,
+                scan_unverified_count):
         try:
             _r = _sc(_e2)
         except Exception as _e:

@@ -16458,6 +16458,10 @@ def test_b1763_universal_rules_use_require_each():
         "scan_queue_not_updated":
             "single member - THIS turn. require_each over a one-element dict "
             "adds indirection without adding coverage",
+        "scan_unverified_count":
+            "the word 'every' QUOTES the defective assumption it explains "
+            "(\"assumed every ticket starts open\") - it is not a universal "
+            "rule the check enumerates. Single member: this turn's count",
         "scan_unverified_universe":
             "universal wording describes the SUBJECT (all tickers), not a set of "
             "required members the gate can enumerate - S6-B1763b",
@@ -16822,3 +16826,60 @@ def test_b1777_done_claims_are_git_verifiable():
     assert m.ANALYSIS_VERBS and m.CODE_VERBS
     assert not (set(m.ANALYSIS_VERBS) & set(m.CODE_VERBS)), \
         "a verb cannot be both an analysis and a code claim"
+
+
+def test_b1778_no_control_chars_in_gate_scripts():
+    """B1778 (#259): a literal control character in a regex corrupts it SILENTLY.
+
+    `\b` written through a bash heredoc became a literal backspace (0x08), so
+    `_re.search(r"<BS>\d{2,}<BS>", t)` never matched and `scan_unverified_count`
+    returned [] on the very sentence it was built for. **A gate returning clean
+    over a corrupted pattern is indistinguishable from a gate that works** -
+    L501, arriving through the encoding rather than the logic.
+
+    This is a RECURRENCE: line ~940 of verify_turn_compliance.py carries a
+    comment recording the same defect from B1721b. Recorded then, not gated.
+    """
+    import pathlib
+
+    root = pathlib.Path(__file__).resolve().parents[2]
+    offenders = []
+    for p in sorted((root / "scripts").glob("*.py")):
+        for i, line in enumerate(p.read_text(encoding="utf-8").split("\n"), 1):
+            if line.lstrip().startswith("#"):
+                continue                      # comments may describe the bug
+            if any(ch in line for ch in ("\x08", "\x07", "\x0b", "\x0c", "\x00")):
+                offenders.append(f"{p.name}:{i}")
+    assert not offenders, (
+        f"literal control character(s) in code: {offenders}. A heredoc turned "
+        "an escape into a raw byte - rewrite the file with the Write tool.")
+
+
+def test_b1778_unverified_count_gate():
+    """B1778 (#258): a ledger count must have been COMPUTED this turn.
+
+    "317 created in the last 48h, 271 already closed" - the real figure was 13.
+    No prior gate could see it: all ~30 scan PROSE for marker strings, and a
+    number carries no marker.
+    """
+    import importlib.util
+    import pathlib
+
+    root = pathlib.Path(__file__).resolve().parents[2]
+    spec = importlib.util.spec_from_file_location(
+        "vtc_b1778", root / "scripts" / "verify_turn_compliance.py")
+    tg = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(tg)
+
+    incident = "317 tickets created in the last 48h, 271 already closed."
+    assert tg.scan_unverified_count([], text=incident, tool_text="{}"), \
+        "must fire on the verbatim incident sentence"
+    assert not tg.scan_unverified_count(
+        [], text=incident, tool_text="csv.DictReader(open('EXECUTION_QUEUE.md'))"), \
+        "must be quiet when the count was computed this turn"
+    assert not tg.scan_unverified_count(
+        [], text="I will check which tickets are still open.", tool_text="{}"), \
+        "a mention with no number is prose, not a reported count"
+
+    # CLOSED is now part of the ruled vocabulary, DONE is no longer terminal
+    assert "CLOSED" in tg.QUEUE_CLASSES

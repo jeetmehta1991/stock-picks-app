@@ -669,6 +669,21 @@ says *each*.**
 - **Phase 5 is three artifacts**: LEARNINGS + CHECKLIST-or-explicit-citation + queue ticket.
   Enforced by `scan_miss_capture_complete`.
 
+## DONE IS SELF-REPORTED; CLOSED IS VERIFIED AGAINST CODE (B1778 - L533, CHECKLIST #258/#259)
+
+**Owner ruling 2026-08-20.** `DONE` is no longer terminal - it means *reported finished,
+unverified*. **`CLOSED` is written only by `promote_verified_closed.py`** from git evidence; a turn
+may never write it. Ledger today: **388 CLOSED / 149 DONE / 96 OPEN - 261 of 649 not verified.**
+
+- **A ledger count in a response must have been COMPUTED that turn** (`scan_unverified_count`).
+  *"271 closed"* was 13. **~30 gates scan prose for markers; a number carries no marker.**
+- **The check I skip is selected by whether I LIKE the result.** I ran the measure step and skipped
+  the attack-your-own-answer step on a flattering number. No marker gate can fire on that.
+- **Never write a regex through a bash heredoc.** `\b` becomes a literal backspace: it silently
+  killed a gate AND `is_dual()` in the roster builder, whose B1454 fix was inert until repaired
+  (now detects 60 duals). Third occurrence this session; a comment has recorded it since B1721b.
+- **DROPPED is never promoted to CLOSED** - that manufactures completion for abandoned work.
+
 ## A DERIVED COUNT MUST NAME AND TEST ITS ASSUMPTION (B1777 - L532, CHECKLIST #257)
 
 **MEASURED: I reported "271 closed in 48h"; the real figure is 13.** I computed

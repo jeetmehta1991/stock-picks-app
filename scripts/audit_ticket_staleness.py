@@ -98,7 +98,9 @@ def _vocab():
     q = (ROOT / "EXECUTION_QUEUE.md").read_text(encoding="utf-8")
     seen = set(re.findall(
         r"^\|\s*\*\*S6-[A-Za-z0-9-]+\*\*\s*\|\s*\*\*([A-Z-]+)\*\*\s*\|", q, re.M))
-    bad = sorted(seen - set(LIVE) - {"DONE", "DROPPED"})
+    # B1778: CLOSED joined the vocabulary by owner ruling - DONE is
+    # self-reported, CLOSED is verified against code.
+    bad = sorted(seen - set(LIVE) - {"DONE", "CLOSED", "DROPPED"})
     return len(bad), bad
 
 

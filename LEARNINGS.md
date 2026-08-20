@@ -10248,3 +10248,58 @@ observation into an accusation is the same category-to-claim leap that produced 
 open = closed` silently assumes every item starts open. **Before reporting a derived count, state
 the assumption it rests on and test it** - one query over first-rows would have caught this before
 the owner did.
+
+### L533
+
+**Thirty gates read my prose. None read my arithmetic. The wrong number walked past all of them.**
+
+**B1778, owner-caught, and the owner's word for it was the right one: fabrication.**
+
+**WHY IT HAPPENED - three layers, and only the first is comfortable.**
+
+1. **Structural.** Every one of the ~30 gates matches MARKER STRINGS in prose. `271` carries no
+   marker, so no gate could see it. The council's Contrarian called this framing *"technically true
+   and strategically self-serving"* and was right: **the defect is STRUCTURE-BLINDNESS, not
+   arithmetic.** Tomorrow it is a bad join or a stale key - equally invisible to a phrase scanner.
+
+2. **Procedural.** I ran the measure step and skipped the attack-your-own-answer step. **On a
+   number that was flattering.** 271 closed reads as productivity, so it never got interrogated.
+   **The check I skip is selected by whether I like the result** - and no marker-string gate can
+   fire on that, because the trigger would have to be *"audit everything, especially what you like"*.
+
+3. **Ledger-level any-vs-each, the 8th naming.** I reported `21 enforcement tickets` while one
+   ticket held 22 unbuilt items. `require_each` has existed for 27 batches and was never pointed at
+   row-counting. **The enforcement layer audits CODE and has a blind spot for its own OUTPUTS** -
+   which is precisely the artifact the owner uses to trust it.
+
+**THE OWNER'S RULING, now implemented: DONE is self-reported, CLOSED is verified against code.**
+Applying it to 649 rows moved the ledger from a comfortable fiction to a measured state:
+
+```
+   388  CLOSED    code-verified against the batch commit
+   149  DONE      self-reported, analysis-only, NOT code-verified
+    96  OPEN      (was 63; +33 traced NO_COMMIT / UNSUPPORTED)
+     9  BLOCKED    8 DROPPED    4 DEFERRED    3 RUNNING
+   261 of 649 are NOT verified closed
+```
+
+**And the dry run caught me trying to promote 4 DROPPED rows to CLOSED** on code evidence from
+their batch - evidence belonging to OTHER rows in the same commit. **That would have manufactured
+completion for work deliberately abandoned.**
+
+**THE TRACE (owner-approved).** `S6-B1620b` claimed cube-schema columns at B1620; `git log -S` puts
+them at **B1624+B1625**. `S6-B1601b` claimed `scan_postfix_recheck` at B1601; it landed at **B1602**.
+**The rows were written when work was DECIDED, not when it LANDED** - which is the whole of
+"DONE isn't closure" in one sentence. 27 rows across 13 batches point at batch numbers with **no
+commit at all**, 12 of which are never mentioned anywhere in git.
+
+**THE THIRD-ORDER FIND, and it is the one that matters most.** The new control-character gate
+immediately flagged `scripts/build_phase_1b_roster.py:156`: a heredoc had turned `\b` into a
+literal **backspace**, so `is_dual()`'s check `r"_short<BS>\s*="` **could never match.** The
+B1454 dual-detection fix documented in that function's own docstring **has been partially inert
+ever since.** After repair, `is_dual` detects **60 dual strategies**. **A gate built because the
+owner objected to a ticket count found a live defect in the Phase 1B roster builder.**
+
+**This was the THIRD occurrence of the backspace defect this session, and line 940 of
+`verify_turn_compliance.py` carries a COMMENT recording it from B1721b.** Recorded, never gated -
+`#231` in its purest form. It is gated now.
