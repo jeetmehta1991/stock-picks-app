@@ -669,6 +669,20 @@ says *each*.**
 - **Phase 5 is three artifacts**: LEARNINGS + CHECKLIST-or-explicit-citation + queue ticket.
   Enforced by `scan_miss_capture_complete`.
 
+## RE-DERIVE A TICKET'S NUMBER BEFORE WORKING IT (B1776 - L531, CHECKLIST #256)
+
+**MEASURED: 6 of 21 open enforcement tickets described a world that no longer existed** - and none
+was wrong when written. **60 of 69 open tickets carry a number**, and in the queue a past-tense
+measurement reads exactly like a present fact.
+
+- **Run `scripts/audit_ticket_staleness.py` before working or citing a ticket.** Three times now,
+  re-derivation beat trusting: "11 unwired" -> 0, "64 markers" -> 67 with 17 inverting, and six at
+  once here.
+- **A stale number repeated in a response is a Truth-Standard violation with a paper trail that
+  looks like evidence** - worse than no citation.
+- **Do not report stale-ticket closures as progress.** Two of the six closed because work landed;
+  four because the QUESTION changed shape. **Closing a stale framing is bookkeeping.**
+
 ## PRINT THE SAMPLE IDENTIFIER BEFORE JOINING TWO MEASUREMENTS (B1775 - L530, CHECKLIST #255)
 
 **MEASURED: I explained a rho with a defect from a different dataset.** The persistence gap was real

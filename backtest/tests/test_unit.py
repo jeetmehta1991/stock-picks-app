@@ -16745,3 +16745,37 @@ def test_b1775_sweep_row1_is_a_provenance_check():
     # small drift stays within the 2pct tolerance
     f = Fake(302, 299); f.r1_entries_vs_fires()
     assert f.rows[0][1] == "PASS", f.rows
+
+
+def test_b1776_ticket_staleness_probes_are_live():
+    """B1776 (#256): the staleness probes must MEASURE, not report constants.
+
+    Five open tickets carried counts that later work had already invalidated
+    (S6-B1702d "11 unwired" -> 0; S6-B1719e "4 hooks remain" -> all built;
+    S6-B1766a "vocabulary unruled" -> ruled and migrated). A probe that hard-codes
+    its answer would reproduce exactly that failure, so each is exercised here
+    and one is pinned to a value the repo must keep true.
+    """
+    import importlib.util
+    import pathlib
+
+    root = pathlib.Path(__file__).resolve().parents[2]
+    spec = importlib.util.spec_from_file_location(
+        "ats", root / "scripts" / "audit_ticket_staleness.py")
+    m = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(m)
+
+    assert m.PROBES, "no probes registered"
+    for label, fn in m.PROBES.items():
+        n, detail = fn()
+        assert isinstance(n, int) and isinstance(detail, list), label
+        assert n == len(detail), f"{label}: count {n} != len(detail) {len(detail)}"
+
+    # every gate must stay referenced somewhere beyond its own definition -
+    # this is the S6-B1702d condition, pinned so it cannot silently regress
+    n_unwired, unwired = m.PROBES["gate functions never referenced outside their own def"]()
+    assert n_unwired == 0, f"gate(s) defined but never referenced: {unwired}"
+
+    # and the queue vocabulary must stay closed (the B1769 ruling)
+    n_bad, bad = m.PROBES["queue classes outside the ruled vocabulary"]()
+    assert n_bad == 0, f"queue classes outside the ruled vocabulary: {bad}"

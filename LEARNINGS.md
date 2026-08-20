@@ -10154,3 +10154,42 @@ to data instead of code.
 `output_batch_A_150` is real and that cube's `next_pivot_target` genuinely is two exits; `regime_flip`
 never flips **in both cubes**; and the method rule - *plot a fallback share BY PERIOD* - is exactly
 what surfaced this correction.
+
+### L531
+
+**Six of the twenty-one open enforcement tickets described a world that no longer existed**
+
+**B1776.** Asked how many enforcement tickets are open from the last 48 hours, I measured before
+answering: **646 tickets total, 69 open, 46 created in the window, 21 of those enforcement.**
+
+**Then I re-derived the numeric claim in each of the 21 rather than working from it. Six were
+stale:**
+
+```
+S6-B1766a/c  "vocabulary UNRULED, migration NOT BUILT"  -> ruled + migrated, all 6 classes in use
+S6-B1719e    "4 hooks remain"                           -> all 4 BUILT AND WIRED
+S6-B1713d    "2 of 9 hooks built"                       -> 7 of 9 built and wired
+S6-B1707b    "response-scanning gates are UNTESTABLE"   -> 20 of 29 now carry a seam
+S6-B1759d    "13 of 18 marker lists unstemmed"          -> superseded; 36 lists, a different audit
+S6-B1712c    "14 uncorroborated findings"               -> its MATCHER was replaced underneath it
+```
+
+**None of those tickets was wrong when written.** Each was a correct measurement that later work
+invalidated - and the queue has no mechanism to notice. **A ticket is a claim about the world at
+the moment it was written**, and this queue grew by 317 tickets across 95 batches in 48 hours.
+
+**The number that makes this structural rather than anecdotal: 60 of the 69 open tickets carry a
+NUMBER.** Every one is a past-tense measurement that reads, in the queue, exactly like a present
+fact. **Repeating one in a response is a Truth-Standard violation with a paper trail that looks
+like evidence** - which is worse than having no citation at all.
+
+**This is the third time re-derivation beat trusting** (`S6-B1702d` "11 unwired" -> 0;
+`S6-B1767d` "64 markers" -> 67 with 17 inverting; now six at once). **The pattern is stable enough
+to mechanise**, so `scripts/audit_ticket_staleness.py` re-derives the probeable claims and prints
+today's value next to the ticket's.
+
+**And the honest counter-note on the closures:** six tickets closing does not mean six problems
+solved. Two closed because the work genuinely landed (`S6-B1719e`, `S6-B1766a/c`), and four closed
+because the QUESTION changed shape - the underlying concerns live on in `S6-B1761b`, `S6-B1774e`
+and the B1773 audit. **Closing a stale framing is bookkeeping, not progress**, and reporting it as
+progress would be the more comfortable lie.

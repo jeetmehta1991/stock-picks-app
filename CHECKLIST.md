@@ -4281,3 +4281,24 @@ artifacts in one directory, about one strategy and one exit, from different runs
 post-config sweep ran on wave 1 and reported **no temporal step** across a window straddling the
 boundary - contradicting the entry. **A finding and the lesson written from it are the same
 evidence, not two.**
+
+### #256 - A TICKET IS A CLAIM ABOUT A PAST MOMENT; RE-DERIVE BEFORE WORKING IT (B1776 / L531)
+
+**MEASURED: 6 of the 21 open enforcement tickets described a world that no longer existed**
+(`"4 hooks remain"` -> all four built and wired; `"11 gates unwired"` -> 0 of 43; `"vocabulary
+unruled"` -> ruled and migrated; `"14 uncorroborated"` -> its matcher replaced underneath it).
+**None was wrong when written.**
+
+**60 of 69 open tickets carry a NUMBER**, and in the queue a past-tense measurement reads exactly
+like a present fact. **Repeating a stale one in a response is a Truth-Standard violation with a
+paper trail that looks like evidence.**
+
+**Before acting on or citing any ticket, re-derive its number.** Enforced by
+`scripts/audit_ticket_staleness.py`, which prints today's value for each probeable claim, and pinned
+by `test_b1776_ticket_staleness_probes_are_live` - which also holds two conditions the repo must
+keep true (**0 gates defined-but-never-referenced**, **0 queue classes outside the ruled
+vocabulary**).
+
+**And do not report stale-ticket closures as progress.** Of the six, two closed because the work
+landed and four because the QUESTION changed shape - their concerns live on in other rows.
+**Closing a stale framing is bookkeeping.**
