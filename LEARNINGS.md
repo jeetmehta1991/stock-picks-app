@@ -10395,3 +10395,40 @@ count, built a gate for it, produced another wrong count that the gate could not
 gate, and the second gate's own first act was to produce a wrong count. **The machinery is
 reproducing the defect it was built to stop** - which is the strongest argument yet that the answer
 here is not another gate.
+
+### L536
+
+**Writing down the lesson tripped the gate the lesson was about**
+
+**B1781/B1782, self-caught by the Stop hook twice in two turns.**
+
+`scan_partial_distribution` was built in B1779 to catch a partial class breakdown cited against a
+full total. It then produced two false positives of its own:
+
+```
+B1780  harvested class counts from EVERY table in a long response, summed them
+       into 295 - a figure no sentence claimed - and paired it with "of 1937",
+       the Master universe ticker count
+B1781  fired on my own LEARNINGS entry RECORDING the original 388/149/96-vs-649
+       error, treating the write-up as a fresh claim
+```
+
+**Both come from reading too much text**, and B1781 is the sharper one: **documenting a defect must
+not trip the gate for that defect, or the lesson can never be written down.** A repository that
+gates its own prose has to distinguish a claim from a citation of a claim.
+
+**This is a COMPLIANCE FAILURE, not a new class.** B1738 established mention-vs-use and fixed it for
+one gate by stripping backticked spans; B1742 scoped another gate to the FINAL assistant block for
+exactly this reason. **Both rules existed and I applied neither when building the new gate** - the
+knowledge was present, the transfer was not.
+
+**The general shape: a rule learned on one gate does not travel to the next gate unless something
+carries it.** This session has now recorded that at four scales - one marker list fixed while twelve
+kept the defect (L515), one trigger hardened while its exemption stayed loose (L528), one instance
+patched while its class stayed open (L519), and now one gate's text-scoping lesson not reaching the
+gate built three turns later.
+
+**And a smaller one worth keeping.** My first probe for the fix was malformed - `"...showed: > 388
+closed..."` is not a blockquote, because `>` must open a line. The test FAILED, I read the failure
+instead of assuming my intent, and rebuilt the probe with real newlines. **Had I read it as "the fix
+did not work" rather than "the probe is wrong", I would have loosened a correct gate.**
