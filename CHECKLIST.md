@@ -4148,3 +4148,23 @@ visible in the response and greppable afterwards, so over-use is measurable - th
 is tagged; **none is claimed as exact**. The council's proposed blanket `DEFERRED` default was
 rejected on measurement - 71.7pct of prose rows record COMPLETED work, so it would have
 manufactured ~134 fake open items.
+
+### #250 - DECOMPOSE A POOLED CORRELATION WITHIN GROUPS BEFORE THEORISING (B1770 / L525)
+
+**MEASURED:** the `-0.8` IS/OOS rank correlation decomposed to a weighted within-exit `-0.342 /
+-0.419` - **about half of it was the exit selector**, exactly as `L502` hypothesised. The other half
+is **concentrated in a single exit** (`next_pivot_target`, n=68/83, `rho = -0.73`), while other
+exits sit near zero or positive.
+
+**A pooled statistic can be dominated by BETWEEN-group structure that says nothing about the
+within-group relationship** (Simpson's paradox). Before explaining a surprising pooled correlation,
+**split it by every group label already present in the rows** - here the `exit` column was sitting
+in the same records the whole time.
+
+**And the reason this matters beyond statistics: the two readings have different owners.** A
+selection artifact is a METHODOLOGY defect fixed by changing how candidates are picked. A single
+member inverting is a PROPERTY of that member. Acting on the pooled number alone would have applied
+the wrong remedy to half the problem.
+
+**MECHANISM: JUDGMENT-ONLY.** No gate can know which columns are group labels for a given analysis;
+this is an analysis habit, not a mechanical check. Recorded as a decision, per `#236`.

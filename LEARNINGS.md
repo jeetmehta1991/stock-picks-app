@@ -9891,3 +9891,42 @@ queue gate recreates the pressure that produced 132 labels: on a turn with no qu
 are skip, fabricate, or coin a new quasi-class. **So the gate accepts `NO-QUEUE-CHANGE: <reason>`**,
 converting an empty turn from a fabrication incentive into a recorded decision that is greppable and
 therefore measurable.
+
+### L525
+
+**Half the -0.8 inversion was the exit selector; the other half lives in ONE exit**
+
+**B1770.** L502 recorded `rho = -0.779 / -0.865` (p < 0.001) between in-sample and holdout Sharpe
+across step-1 producer combinations, hypothesised **selection-induced regression** (each combination
+picks its exit from ~26 candidates ON IN-SAMPLE DATA), and named the falsification test: *re-grade
+with the exit FIXED; if rho moves toward 0 the selector is the cause.*
+
+**RAN IT, offline on the cached step-1 artifacts - no re-run, no compute:**
+
+```
+                     span21              span50
+pooled              -0.865              -0.779
+within-exit (wtd)   -0.342              -0.419
+shift               +0.523              +0.360
+```
+
+**So the hypothesis is CONFIRMED for roughly half the inversion, and REFUTED as the whole story.**
+
+**The residual is not spread out - it is concentrated in one exit.** `next_pivot_target`, the
+largest group (n=68 / n=83) and **the exit that all ten top-ranked combinations chose**, still
+carries `rho = -0.740 / -0.725` with the selector held fixed. The other exits sit near zero
+(-0.089, -0.082) or positive.
+
+**That is a different defect wearing the same number.** A selection artifact is a methodology
+problem and is fixed by changing how exits are picked. A single exit whose in-sample rank
+systematically inverts out of sample is a **property of that exit** - and `next_pivot_target`
+already has an open owner ruling on a blend fix, which had been tracked as unrelated.
+
+**The method lesson, which generalises past this number: when a POOLED correlation surprises you,
+decompose it WITHIN groups before theorising about it.** Pooled statistics can be dominated by
+between-group structure that has nothing to do with the within-group relationship - the textbook
+Simpson's-paradox shape. I had the group label (`exit`) sitting in the same rows the whole time.
+
+**Two cautions on my own result.** The small groups are noise - `rho = +1.000` at n=4 means
+nothing, and the weighted mean is carried by `next_pivot_target`. And this is **two configs of one
+strategy**; it is a located lead, not a general law.

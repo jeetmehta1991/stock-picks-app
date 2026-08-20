@@ -669,6 +669,20 @@ says *each*.**
 - **Phase 5 is three artifacts**: LEARNINGS + CHECKLIST-or-explicit-citation + queue ticket.
   Enforced by `scan_miss_capture_complete`.
 
+## DECOMPOSE A POOLED CORRELATION WITHIN GROUPS (B1770 - L525, CHECKLIST #250)
+
+**MEASURED: the `-0.8` IS/OOS inversion is TWO defects.** Holding the exit fixed moved rho from
+`-0.865/-0.779` to a weighted `-0.342/-0.419` - about half was the exit selector fitting in-sample
+noise. **The residual is concentrated in ONE exit** (`next_pivot_target`, `rho = -0.73`, the exit
+all ten top-ranked combinations chose); other exits sit near zero or positive.
+
+- **Split a surprising pooled statistic by every group label already in the rows, before theorising
+  about it.** The `exit` column was in the same records the whole time.
+- **The two readings have different owners:** a selection artifact is a METHODOLOGY defect; a single
+  member inverting is a PROPERTY of that member. The pooled number alone would have sent the wrong
+  remedy at half the problem.
+- **JUDGMENT-ONLY** - no gate can know which columns are group labels for a given analysis.
+
 ## THE QUEUE HAS A CLOSED VOCABULARY, AND EVERY TURN UPDATES IT (B1769 - L524, CHECKLIST #249)
 
 **Owner ruling 2026-08-19.** Classes: `DONE / DROPPED / BLOCKED / DEFERRED / OPEN / RUNNING`.
