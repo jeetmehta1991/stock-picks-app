@@ -669,6 +669,23 @@ says *each*.**
 - **Phase 5 is three artifacts**: LEARNINGS + CHECKLIST-or-explicit-citation + queue ticket.
   Enforced by `scan_miss_capture_complete`.
 
+## HARDEN THE EXEMPTION, NOT JUST THE TRIGGER (B1773 - L528, CHECKLIST #253)
+
+**A loose trigger over-fires and gets noticed. A loose EXEMPTION lets violations through silently
+and never does.** B1767 word-bounded the trigger side and left the escape clause on raw `in`;
+**17 markers collide with their own negation**, so a gate demanding proof was satisfied by a
+sentence denying it.
+
+- **Whenever a gate has an escape clause, the escape gets the STRICTER matcher.** `_affirms()`:
+  whole word AND un-negated within its clause.
+- **Word boundaries fix only half.** 5 cases are word-internal (*measured*/*unmeasured*); **12 are
+  phrase-level (*never executed*) and boundaries cannot see them.**
+- **Look both ways and clamp to the clause** - backward-only missed *"was NOT executed"*, and a flat
+  window rejected a genuine affirmation because the previous sentence was negative.
+- **Build probes FROM the live marker list.** Twice in one turn I tested with strings the code could
+  not match - once the trigger never fired, once the phrases were absent from the list. **A test
+  whose input cannot engage the code proves nothing and reads exactly like a pass.**
+
 ## MEASURE DEGRADED EXITS; A HAND-MAINTAINED LIST GOES STALE (B1772 - L527, CHECKLIST #252)
 
 **MEASURED on 217,724 trades: 3 of 26 exits fire a reason unrelated to their own name**, 1 shows a

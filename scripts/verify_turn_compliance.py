@@ -335,7 +335,8 @@ def scan_unverified_cause(entries):
     causes = [c for c in CAUSE_PHRASES if c in low]
     if not causes:
         return []
-    if any(pp in low for pp in PROOF_PHRASES):
+    # B1773: negation-aware. `in low` accepted 'never executed' as proof.
+    if _affirms(low, PROOF_PHRASES):
         return []
     return [("TURN-GATE BLOCK (CHECKLIST #195 / L455): this turn states a CAUSE "
              f"({sorted(set(causes))[:3]}) with no evidence it was TESTED. "
@@ -609,7 +610,8 @@ def scan_unmeasured_quantity(entries, *, text=None):
     hits = _marker_hits(low, QUANT_CLAIMS)  # B1767: word-bounded
     if not hits:
         return []
-    if any(pp in low for pp in QUANT_PROOF):
+    # B1773: negation-aware. `in low` accepted 'unmeasured' as proof.
+    if _affirms(low, QUANT_PROOF):
         return []
     return [("TURN-GATE BLOCK (CHECKLIST #201 / L470): this turn makes a COST or "
              f"QUANTITY claim ({sorted(set(hits))[:3]}) with no evidence it was "
@@ -1638,6 +1640,73 @@ STEM_LISTS = frozenset({
     "OPEN_EVIDENCE",      # ditto
 })
 
+
+
+# B1773: NEGATION-AWARE EXEMPTIONS.
+#
+# MEASURED: `scan_unmeasured_quantity` stayed SILENT on
+#   "That figure is unmeasured and was never executed."
+#   "I have not measured this and did not compute it."
+# Both should FIRE - the gate demands evidence a quantity was COMPUTED, and each
+# sentence explicitly says it was not. **A gate demanding proof was satisfied by
+# the sentence denying the proof.**
+#
+# Two distinct defects produced that, and they need different fixes:
+#   CLASS A  word-internal - "measured" matching inside "unmeasured".
+#            Word boundaries fix it. 5 cases across the marker lists.
+#   CLASS B  phrase negation - "executed" IS a whole word in "never executed",
+#            so boundaries cannot help. 12 cases. This is the worse one.
+#
+# B1767 hardened the TRIGGER side (`_marker_hits`, word-bounded) and left the
+# EXEMPTION side on raw `in`. That asymmetry is the actual bug: a loose trigger
+# only over-fires, while **a loose exemption lets violations through silently.**
+_CLAUSE_SEP = "[.;:" + chr(92) + "n]"   # clause boundary; chr() keeps C1 happy
+NEGATORS = (
+    "not", "no", "never", "without", "lacks", "lacking", "absent", "failed to",
+    "unable to", "didn't", "did not", "wasn't", "was not", "isn't", "is not",
+    "haven't", "have not", "hasn't", "has not", "cannot", "can't", "yet to",
+    "still to", "remains to", "would have", "should have", "instead of",
+)
+
+
+def _affirms(text: str, markers, *, window: int = 60) -> list[str]:
+    """Markers that appear as whole words and are NOT negated.
+
+    A marker counts as evidence only when at least one occurrence is
+    un-negated. `window` chars of preceding context are inspected; a negator
+    inside that span disqualifies THAT occurrence, not the whole marker, so
+    "I did not measure X, then I measured Y" still affirms.
+    """
+    import re as _re
+    t = text.lower()
+    out = []
+    for m in markers:
+        ml = str(m).lower()
+        if not ml:
+            continue
+        lead = r"(?<![a-z0-9_])" if ml[0].isalnum() else ""
+        tail = r"(?![a-z0-9_])" if ml[-1].isalnum() else ""
+        ok = False
+        for hit in _re.finditer(lead + _re.escape(ml) + tail, t):
+            # B1773b: CLAMP TO THE CLAUSE, and look BOTH WAYS. Two defects the
+            # first version had, both found by running it:
+            #   - backward-only missed "the benchmark was NOT executed", where
+            #     the negator follows the marker
+            #   - a flat 60-char window crossed a sentence boundary, so
+            #     "I did not measure the old one. I measured this" was read as
+            #     negated - a genuine affirmation rejected by its neighbour
+            pre = t[max(0, hit.start() - window):hit.start()]
+            pre = _re.split(_CLAUSE_SEP, pre)[-1]
+            post = t[hit.end():hit.end() + 30]
+            post = _re.split(_CLAUSE_SEP, post)[0]
+            span = pre + " " + post
+            if not any(_re.search(rf"(?<![a-z0-9_]){_re.escape(n)}(?![a-z0-9_])", span)
+                       for n in NEGATORS):
+                ok = True
+                break
+        if ok:
+            out.append(m)
+    return out
 
 def _marker_hits(text: str, markers, *, stems: bool = False) -> list[str]:
     """Return markers present in `text`.

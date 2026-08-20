@@ -10024,3 +10024,44 @@ than assumed is the wrong floor**, and it gates the Phase 1B roster.
 `w in queue` - substring containment. B1712c had raised the threshold from 1-of-3 to 2-of-3, which
 **reduces a matcher defect without removing it**. Now word-boundary. That is three instances of
 substring-vs-word in this session (`#246` free/freely, the B1769 placeholder, this).
+
+### L528
+
+**The gate hardened its trigger and left its exemption loose, which is the wrong half**
+
+**B1773.** B1767 made the TRIGGER side word-bounded (`_marker_hits`) after *"free"* matched inside
+*"freely"*. The EXEMPTION side kept raw `in`. **That asymmetry is the actual defect: a loose trigger
+merely over-fires and is noticed immediately, while a loose exemption lets violations through
+SILENTLY and is noticed never.**
+
+**Audited all 33 marker lists / 268 markers against the project's own 12,817-word vocabulary: 67
+markers collide with a real longer word.** Most collisions are harmless or deliberate - `_MISS_STEMS`
+matches *missing* on purpose, which is `#239` working. **The subclass that breaks a gate is a marker
+whose containing text is its own NEGATION**, and there are 17, in two kinds:
+
+```
+CLASS A  word-internal    "measured" inside "unmeasured"        5 cases  (boundaries fix it)
+CLASS B  phrase negation  "executed" inside "never executed"   12 cases  (boundaries CANNOT)
+```
+
+**Class B is the worse one and nothing addressed it.** A gate demanding evidence that a quantity was
+computed was satisfied by a sentence stating it never was. `_affirms()` now requires a marker to
+appear as a whole word AND un-negated within its clause.
+
+**THE CORRECTION I OWE THIS ENTRY.** I first declared the defect *"confirmed live"* from a probe
+where **the trigger never fired at all** - my test sentence contained no `QUANT_CLAIMS` phrase, so
+the gate returned clean over an input it was never engaged by. **I named that exact trap one message
+earlier and then walked into it.** The real defect is real, but the evidence I first offered for it
+proved nothing. `L501`'s rule - *a gate returning clean over empty input is indistinguishable from a
+gate that works* - **applies to my TEST INPUTS, not only to the gate's own reads.**
+
+**Then the same shape a third time:** I probed `PROOF_PHRASES` with the words *reproduced* and
+*verified*, neither of which is in that list. Every result was `[]` and meant nothing. **Fixed by
+building the probe FROM the live list** (`tg.PROOF_PHRASES[0]`), which is `#240` applied to my own
+test-writing rather than to a gate.
+
+**Two defects in `_affirms` itself, both found by running it:**
+1. **Backward-only** - missed *"the benchmark was NOT executed"*, where the negator FOLLOWS.
+2. **A flat 60-character window crossed a sentence boundary**, so *"I did not measure the old one. I
+   measured this"* read as negated. **A genuine affirmation rejected by its neighbour.**
+Both fixed by clamping to the clause and looking both ways.

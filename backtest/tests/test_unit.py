@@ -16609,3 +16609,49 @@ def test_b1772_degraded_exit_lenses():
     assert "regime_flip" in flagged, "must flag the exit that never does its thing"
     assert "time_stop_20d" not in flagged, "must NOT flag an exit working correctly"
     assert "atr_trail_1x" not in flagged, "must NOT flag on a conjugated name (#239)"
+
+
+def test_b1773_exemptions_are_negation_aware():
+    """B1773 (#253): a PROOF exemption must not be satisfied by negated proof.
+
+    B1767 hardened the TRIGGER side (`_marker_hits`, word-bounded) and left the
+    EXEMPTION side on raw `in`. That asymmetry is the bug: a loose trigger only
+    over-fires, while a loose exemption lets violations through silently.
+
+    Markers come from the LIVE lists, never from invented strings (#240) - an
+    earlier probe here compared against phrases absent from the list and proved
+    nothing.
+    """
+    import importlib.util
+    import pathlib
+
+    root = pathlib.Path(__file__).resolve().parents[2]
+    spec = importlib.util.spec_from_file_location(
+        "vtc_b1773", root / "scripts" / "verify_turn_compliance.py")
+    tg = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(tg)
+
+    marker = tg.PROOF_PHRASES[0]
+    assert marker, "PROOF_PHRASES must be non-empty for this test to mean anything"
+
+    assert tg._affirms(f"i {marker} it on the pin test", tg.PROOF_PHRASES) == [marker]
+    assert tg._affirms(f"i never {marker} it", tg.PROOF_PHRASES) == []
+    assert tg._affirms(f"the benchmark was not {marker}", tg.PROOF_PHRASES) == []
+
+    # clause clamping: a negation in a PRIOR sentence must not disqualify a
+    # genuine affirmation in this one
+    assert tg._affirms(f"i did not {marker} the old one. i {marker} this one",
+                       tg.PROOF_PHRASES) == [marker]
+
+    # word-internal collision: "measured" must not be found inside "unmeasured"
+    if "measured" in tg.QUANT_PROOF:
+        assert tg._affirms("the figure is unmeasured", tg.QUANT_PROOF) == []
+
+    # end-to-end on the cost gate, using a REAL trigger from QUANT_CLAIMS
+    trig = tg.QUANT_CLAIMS[0]
+    assert bool(tg.scan_unmeasured_quantity(
+        [], text=f"this {trig}. i never {marker} it.")), \
+        "negated proof must NOT exempt a cost claim"
+    assert not bool(tg.scan_unmeasured_quantity(
+        [], text=f"this {trig}. i {marker} it: 3.2s vs 3.1s.")), \
+        "genuine proof must exempt a cost claim"

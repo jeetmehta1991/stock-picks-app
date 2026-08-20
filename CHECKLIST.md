@@ -4219,3 +4219,28 @@ gates the Phase 1B roster.
 `audit_findings_ticketed.py` corroborated findings with `w in queue`; raising the threshold 1-of-3
 to 2-of-3 reduced the defect without removing it. **Third instance this session** after `#246`
 (free/freely) and the B1769 placeholder check. Enforced by `test_b1772_word_boundary_matcher`.
+
+### #253 - HARDEN THE EXEMPTION, NOT JUST THE TRIGGER (B1773 / L528)
+
+**MEASURED: 67 of 268 markers across 33 lists collide with a real longer word** in the project's own
+vocabulary. Most are harmless or deliberate (`_MISS_STEMS` matching *missing* is `#239` working).
+**17 collide with their own NEGATION**, in two kinds: 5 word-internal (*measured* inside
+*unmeasured*) and **12 phrase-level (*executed* inside *never executed*), which word boundaries
+cannot fix at all.**
+
+**B1767 hardened the TRIGGER (`_marker_hits`) and left the EXEMPTION on raw `in`. That is the wrong
+half.** A loose trigger over-fires and is noticed at once; **a loose exemption lets violations
+through silently.** Whenever a gate has an escape clause, the escape needs the STRICTER matcher.
+
+**Use `_affirms()` for any evidence/proof exemption:** the marker must appear as a whole word AND be
+un-negated within its own clause. Enforced by `test_b1773_exemptions_are_negation_aware`.
+
+**Construction rules this cost, all found by RUNNING the helper:**
+- **Look both ways.** Backward-only missed *"the benchmark was NOT executed"*.
+- **Clamp to the clause.** A flat window crossed a sentence boundary and rejected a genuine
+  affirmation because the PREVIOUS sentence was negative.
+
+**And the testing rule (L528, twice in one turn):** build probes FROM the live marker list. I
+declared this defect *"confirmed live"* from a probe whose trigger never fired, then probed
+`PROOF_PHRASES` with two words absent from it. **A test whose input cannot engage the code proves
+nothing, and reads exactly like a pass.**
