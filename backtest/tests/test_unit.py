@@ -16997,3 +16997,61 @@ def test_b1783_response_gates_inherit_text_scoping():
     assert not stale, (
         f"these are now converted - remove them from KNOWN_UNCONVERTED: "
         f"{sorted(stale)}")
+
+
+def test_b1788_promotion_evidence_hierarchy():
+    """B1788 (#265): only BATCH-SPECIFIC code artifacts may promote a row.
+
+    The owner ruled "verify against code vs docs and prose". My first pass
+    counted LEARNINGS/CHECKLIST references as evidence and would have promoted
+    85 rows on exactly the material the ruling excludes - the instruction's
+    SHAPE encoded while its CONTENT was inverted.
+
+    A second tightening was needed because a file mention is not evidence
+    either: technical.py predates most rows naming it by months, so "the file
+    exists" proves only that the file exists.
+
+    This pins the hierarchy so neither can creep back:
+        PROMOTES    a WIRED scan_/check_ gate; a test_bNNN present in a test file
+        NEVER       LEARNINGS Lnnn, CHECKLIST #nnn, a file that merely exists
+        BLOCKS      an absent gate/test/file, or explicit not-done language
+    """
+    import importlib.util
+    import pathlib
+
+    root = pathlib.Path(__file__).resolve().parents[2]
+    spec = importlib.util.spec_from_file_location(
+        "vaw", root / "scripts" / "verify_awaiting_rows.py")
+    m = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(m)
+    inv = m.inventory()
+    gates, wired, tests, files, ck, ln = inv
+    assert wired, "no wired gates found - inventory is broken, not the ledger"
+
+    def promotable(desc):
+        found, missing, stated_open, _ctx = m.assess(desc, inv)
+        return bool(found) and not missing and not stated_open
+
+    a_gate = sorted(wired)[0]
+    a_test = sorted(t for t in tests if t.startswith("test_b"))[0]
+
+    # PROMOTES - batch-specific code artifacts
+    assert promotable(f"wired {a_gate} this turn"), "a wired gate must promote"
+    assert promotable(f"pinned by {a_test}"), "a test_bNNN must promote"
+
+    # NEVER - the evidence the owner excluded
+    some_l = sorted(ln)[0]
+    some_ck = sorted(ck)[0]
+    assert not promotable(f"recorded in L{some_l}"), \
+        "a LEARNINGS reference is prose and must NOT promote (the 85-row error)"
+    assert not promotable(f"codified as #{some_ck}"), \
+        "a CHECKLIST reference is prose and must NOT promote"
+    a_file = sorted(f for f in files if f.endswith(".py"))[0]
+    assert not promotable(f"the change lives in {a_file}"), \
+        "a file that merely exists is not evidence this row's work landed"
+
+    # BLOCKS - absence and stated-open language both hold a row open
+    assert not promotable("wired scan_this_gate_does_not_exist"), \
+        "an absent gate must block promotion"
+    assert not promotable(f"wired {a_gate} - but the sweep is not built yet"), \
+        "explicit not-done language must block promotion"
