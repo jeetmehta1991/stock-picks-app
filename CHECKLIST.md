@@ -4265,3 +4265,19 @@ trying, is the same armchair claim as asserting a mechanism exists without check
 **And check a flagged site before converting it.** `scan_unverified_structure` was flagged purely
 for not calling `_affirms`; it uses a set intersection on tool NAMES - exact matching, no exposure.
 **The absence of a fix is not the presence of a defect.**
+
+### #255 - PRINT THE SAMPLE IDENTIFIER BEFORE JOINING TWO MEASUREMENTS (B1775 / L530)
+
+**MEASURED: I explained `rho = -0.73` with a defect from a different cube.** The persistence gap was
+real in `output_batch_A_150`; the rho came from the `b1715`/`b1718` grids, whose fire counts
+(302 / 320) identify them as **wave 1** - which carries genuine pivots on both sides of 2025-02-06
+and has **no gap at all**. Both measurements were correct. **The join was assumed.**
+
+**Before combining two results, print the identifier of the sample each came from** - a row count, a
+fire count, a manifest hash. It took one line here. **A shared subject is not a shared sample:** two
+artifacts in one directory, about one strategy and one exit, from different runs.
+
+**And confirm on a SECOND dataset before writing the lesson.** This was caught only because the
+post-config sweep ran on wave 1 and reported **no temporal step** across a window straddling the
+boundary - contradicting the entry. **A finding and the lesson written from it are the same
+evidence, not two.**

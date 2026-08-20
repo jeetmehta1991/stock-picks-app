@@ -669,6 +669,20 @@ says *each*.**
 - **Phase 5 is three artifacts**: LEARNINGS + CHECKLIST-or-explicit-citation + queue ticket.
   Enforced by `scan_miss_capture_complete`.
 
+## PRINT THE SAMPLE IDENTIFIER BEFORE JOINING TWO MEASUREMENTS (B1775 - L530, CHECKLIST #255)
+
+**MEASURED: I explained a rho with a defect from a different dataset.** The persistence gap was real
+in one cube; the rho came from another. **Both measurements were correct and careful. The join was
+assumed** - I never asked which cube produced the numbers I was combining.
+
+- **Print the sample identifier for each measurement before combining them** - row count, fire
+  count, manifest hash. One line. **A shared subject is not a shared sample.**
+- **Confirm on a SECOND dataset before writing the lesson.** The contradiction only appeared when
+  the same check ran on wave 1. **A finding and the lesson written from it are the same evidence,
+  not two.**
+- **Retract the ATTRIBUTION without discarding the measurement.** The gap is still real; what failed
+  was the link. Say which half survives.
+
 ## INSPECTION EVIDENCE COMES FROM READS, NEVER FROM WRITES (B1774 - L529, CHECKLIST #254)
 
 **MEASURED: writing any file exempted a turn from the uncosted-probe gate**, because `file_path` is

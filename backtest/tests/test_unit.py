@@ -16703,3 +16703,45 @@ def test_b1774_inspection_evidence_comes_from_reads_only():
     assert "file_path" not in stripped.lower()
     assert "file_path" in tg._tool_invocations(read).lower(), \
         "reads must survive stripping"
+
+
+def test_b1775_sweep_row1_is_a_provenance_check():
+    """B1775 (#255): a grid graded against a DIFFERENT cube must FAIL row 1.
+
+    I explained rho = -0.73 (measured from the wave-1 grids) using the
+    signals_at_entry persistence gap (measured in output_batch_A_150). Both
+    measurements were correct; the JOIN was assumed. Fire counts identified the
+    grids as wave 1 in one line - 302/320 against that cube's 302/320, versus
+    164 for the same strategy in batch_A_150.
+
+    Row 1 of the post-config sweep is that check, so a mismatched pair cannot
+    pass silently.
+    """
+    import importlib.util
+    import pathlib
+
+    root = pathlib.Path(__file__).resolve().parents[2]
+    spec = importlib.util.spec_from_file_location(
+        "pcs", root / "scripts" / "post_config_sweep.py")
+    m = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(m)
+
+    class Fake(m.Sweep):
+        def __init__(self, entries, fires):
+            self.rows = []
+            self.cube = None
+            self.g = {"results": [{"fires": fires}]}
+            self.res = self.g["results"]
+            self.entries = entries
+
+    # matching pair -> PASS
+    f = Fake(302, 302); f.r1_entries_vs_fires()
+    assert f.rows[0][1] == "PASS", f.rows
+
+    # grid from another cube -> FAIL (302-fire grid vs a 164-entry cube)
+    f = Fake(164, 302); f.r1_entries_vs_fires()
+    assert f.rows[0][1] == "FAIL", f.rows
+
+    # small drift stays within the 2pct tolerance
+    f = Fake(302, 299); f.r1_entries_vs_fires()
+    assert f.rows[0][1] == "PASS", f.rows

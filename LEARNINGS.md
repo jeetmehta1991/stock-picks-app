@@ -9952,6 +9952,12 @@ next_pivot_target   early: stop_loss .618  take_profit .382  pivot_* .000
                     late : pivot_target .592  pivot_stop .111  stop_loss .175
 ```
 
+**RETRACTED IN PART - B1775, see L530.** The persistence gap below is REAL and correctly
+measured in `output_batch_A_150`. **What was wrong is the attribution:** L525's residual
+`rho = -0.73` was computed from the `b1715`/`b1718` grids, and their fire counts (302 / 320)
+identify them as **wave 1**, not this cube - wave 1 carries genuine pivots on both sides of
+2025-02-06 and has no gap. **The residual is unexplained again.**
+
 **So `next_pivot_target` is literally a DIFFERENT EXIT either side of 2025-02-06.** Any IS/OOS
 comparison spanning that date ranks a 3x-ATR fixed target in-sample and grades a pivot exit out of
 sample. **The rank instability is mechanically guaranteed** - it is not selection noise and not a
@@ -10107,3 +10113,44 @@ that gate.** Fixed to walk the tree for any negation over the target list.
 uses `used_tools & set(INSPECTION_TOOLS)` - a set intersection, which is exact matching with no
 substring or negation exposure at all. **My classifier flagged it purely for not calling
 `_affirms`** - the absence of a fix mistaken for the presence of a defect.
+
+### L530
+
+**I explained a number using a defect from a different dataset**
+
+**B1775.** L526 attributed L525's residual `rho = -0.73` to the `signals_at_entry` persistence gap.
+**Both facts are true; the link between them is not.**
+
+```
+persistence gap MEASURED in ... output_batch_A_150   (5,050 pre-2025 trades, 100pct fallback)
+rho = -0.73     MEASURED from ... b1715 / b1718 grids
+grid fire counts ............... 302 and 320
+output_w1_sw20_span50 entries .. 302      <- the grids are WAVE 1
+output_batch_A_150, that strategy 164
+wave 1 genuine-pivot share ..... 54.5pct BEFORE 2025-02-06, 58.4pct after - NO STEP
+```
+
+**Wave 1 persisted `signals_at_entry` throughout, so the cube the rho came from does not have the
+defect I used to explain it.** The `-0.8` chain is now: **half the pooled inversion is the exit
+selector (B1770, holds), and the residual is UNEXPLAINED.**
+
+**How it happened, and it is not carelessness about the data - it is carelessness about
+PROVENANCE.** Both measurements were real, careful and correctly executed. I never asked *which
+cube produced the numbers I am joining*. Two artifacts in the same directory, about the same
+strategy, describing the same exit - and different runs. **A shared subject is not a shared
+sample.**
+
+**What caught it:** running the post-config sweep on wave 1 and noticing it reported **no temporal
+step** on a window that straddles 2025-02-06. That contradicted L526, and the contradiction was
+only visible because the check was run on a SECOND dataset. **A finding confirmed on one dataset
+and a lesson written from it are the same evidence, not two.**
+
+**The rule: before joining two measurements, print the identifier of the sample each came from.**
+Fire counts did it here in one line. **An explanation that spans two datasets needs the join proved,
+not assumed** - the same discipline as `#240`'s "prove the gate fires on the real incident", applied
+to data instead of code.
+
+**Still standing from L526, and worth keeping separate from the retraction:** the persistence gap in
+`output_batch_A_150` is real and that cube's `next_pivot_target` genuinely is two exits; `regime_flip`
+never flips **in both cubes**; and the method rule - *plot a fallback share BY PERIOD* - is exactly
+what surfaced this correction.
