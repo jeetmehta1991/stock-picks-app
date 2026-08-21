@@ -18588,3 +18588,60 @@ def test_b1822_artifact_key_rule_is_in_the_durable_docs():
     assert "def test_b1820_step1_ranking_emits_its_ranking_key" in tests, (
         "the emitter-level mechanism for #277 was removed; the rule would then "
         "be prose only")
+
+
+def test_b1824_exit_names_in_engine_messages_are_registered():
+    """S6-B1771d (B1335 Rule 2): a message must not name an exit that does not exist.
+
+    `exit_next_pivot` told callers to *"select `fixed_target_3atr` directly"*.
+    MEASURED: `EXIT_STRATEGIES` holds 26 and that is not one of them - the
+    nearest names are different mechanisms (`fixed_4r_2r` is R-multiples,
+    `r_multiple_3r` is 3R, `chandelier_3x` trails). **Half the remedy the error
+    offered could not be followed**, and unfollowable advice reads as a
+    supported path.
+
+    Generalised: any `exit_*`-shaped or registry-shaped name quoted inside a
+    raised message in the exit engine must be a registered exit.
+    """
+    import pathlib as _p
+    import re
+    import sys as _sys
+
+    root = _p.Path(__file__).resolve().parents[2]
+    _sys.path.insert(0, str(root))
+    from backtest.engine.exit_strategies import EXIT_STRATEGIES
+
+    src = (root / "backtest" / "engine" / "exit_strategies.py").read_text(
+        encoding="utf-8")
+
+    # names that LOOK like registry entries, quoted in raise-message strings
+    offenders = []
+    for m in re.finditer(r'raise\s+\w*Error\((.*?)\)\n', src, re.S):
+        # COMMENT LINES ARE EXEMPT. The fix's own comment quotes the
+        # phantom name to explain it, and the first version read that as
+        # the defect returning - the THIRD time this session a comment
+        # documenting a defect tripped the check for that defect
+        # (test_b1778 control chars, test_b1811 the injection bypass,
+        # this one). **Any source-scanning check excludes comments**, or
+        # a lesson can never be written down beside the code it is about.
+        blob = "\n".join(ln for ln in m.group(1).splitlines()
+                         if not ln.strip().startswith("#"))
+        for cand in re.findall(r'\b((?:fixed|atr|r_multiple|time_stop|trailing|'
+                               r'chandelier|breakeven|hybrid|regime|reverse|'
+                               r'next_pivot)_[a-z0-9_]+)\b', blob):
+            # strip a leading exit_ prefix used for FUNCTION names
+            if cand.startswith("exit_"):
+                continue
+            if cand in EXIT_STRATEGIES:
+                continue
+            # a function that exists is fine; a REGISTRY name that does not is not
+            if f"def {cand}" in src or f"def exit_{cand}" in src:
+                continue
+            offenders.append(cand)
+
+    assert not offenders, (
+        f"raise-message(s) name exit(s) that are not registered: "
+        f"{sorted(set(offenders))}. EXIT_STRATEGIES holds "
+        f"{len(EXIT_STRATEGIES)}. B1335 Rule 2: a capability named in a message "
+        "carries evidence it exists, or it is labelled PROPOSED-NOT-BUILT. "
+        "Unfollowable advice reads as a supported path.")

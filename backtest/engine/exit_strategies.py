@@ -270,8 +270,18 @@ def exit_next_pivot(df_full, entry_date, entry_price, direction, atr,
                 f"({direction} @ {entry_price}) and allow_fallback=False. This "
                 "used to SILENTLY become exit_fixed_target(target_mult=3.0) on "
                 "41pct of trades - see B1748. Pass allow_fallback=True to accept "
-                "a 3x-ATR target under this exit's name, or select "
-                "fixed_target_3atr directly.")
+                "a 3x-ATR target under this exit's name. "
+                # S6-B1771d/B1824: this used to end "...or select
+                # fixed_target_3atr directly", and NO SUCH EXIT IS REGISTERED -
+                # the 26 in EXIT_STRATEGIES have no 3x-ATR target
+                # (`fixed_4r_2r` is R-multiples, `r_multiple_3r` is 3R,
+                # `chandelier_3x` trails). Advice that cannot be followed is
+                # worse than none: it reads as a supported path.
+                # B1335 Rule 2 - a capability named in a message must exist.
+                "There is NO registered 3x-ATR exit to select instead; making "
+                "one selectable would add a 27th exit and change every cube's "
+                "[26] exits-per-entry invariant, which is an owner decision "
+                "(S6-B1824b).")
         return exit_fixed_target(df_full, entry_date, entry_price,
                                   direction, atr, target_mult=3.0)
 
