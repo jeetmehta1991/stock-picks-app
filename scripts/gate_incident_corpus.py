@@ -150,6 +150,15 @@ INCIDENTS: dict[str, tuple[str, bool, dict]] = {
         True,
         {"tool_text": "pnl = rng.normal(1, 3, 30)"},
     ),
+    # B1803: the incident is the ABSENCE the directive was issued about - a
+    # turn report that ends without any ticket count. Verbatim from the turn
+    # before the directive: a full compliance block, no ledger state anywhere.
+    "scan_ticket_counts_missing": (
+        "Pyramid 1004 passed / 3 skipped. Commit f9cd80c2c, pushed. "
+        "CHECKLIST compliance - #234 all four Phase-5 members satisfied.",
+        True,
+        {},
+    ),
     # NEGATIVE control - ordinary reporting prose that must NOT trip anything.
     # Note it is a bare sentence, so gates that legitimately require RESPONSE
     # STRUCTURE (a SKILLS block, a compliance block) are excluded by the sweep

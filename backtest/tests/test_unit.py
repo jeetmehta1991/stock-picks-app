@@ -16286,9 +16286,35 @@ def test_b1760_gates_fire_on_real_incidents():
 
     # Negative control: ordinary reporting prose trips nothing. Gates that
     # legitimately require RESPONSE STRUCTURE are excluded by name.
-    STRUCTURE = {"scan_missing_skill_confirmation", "scan_skill_block_incomplete",
-                 "scan_compliance_is_content"}
+    # B1803: ONLY absence gates belong here - the ones that fire because a
+    # required block is missing, which bare prose always is.
+    #
+    # MEASURED when the membership claim below was added: `scan_skill_block_
+    # incomplete` and `scan_compliance_is_content` were in this set and did NOT
+    # need to be. Both return [] when their block is absent - they are CONTENT
+    # gates that engage only once it exists. **Excluded without needing it,
+    # their behaviour on bare prose had never been tested.** Removing them puts
+    # two gates under the negative control for the first time.
+    STRUCTURE = {"scan_missing_skill_confirmation", "scan_ticket_counts_missing"}
     neg = corpus.INCIDENTS["_negative_control"][0]
+
+    # B1803 (#253: harden the EXEMPTION): membership in STRUCTURE is a CLAIM -
+    # "this gate fires on bare prose because it demands a block". Assert it,
+    # or the set becomes a place to put any gate that trips the control.
+    for name in STRUCTURE:
+        if name not in corpus.INCIDENTS:
+            continue
+        fn = getattr(tg, name, None)
+        if fn is None:
+            continue
+        params = inspect.signature(fn).parameters
+        kw = {"text": neg} if "text" in params else {}
+        kw.update({k: v for k, v in corpus.NEUTRAL.get(name, {}).items()
+                   if k in params})
+        assert bool(fn([], **kw)), (
+            f"{name} is excluded from the negative control as a STRUCTURE gate, "
+            "but it does NOT fire on bare prose - so it is not an absence gate "
+            "and the exclusion is hiding something else (#253).")
     tripped = []
     for name in corpus.INCIDENTS:
         if name.startswith("_") or name in STRUCTURE:
@@ -17749,3 +17775,48 @@ def test_b1802_negative_arm_rule_is_in_the_durable_docs():
         assert "cannot break what you cannot" in doc, (
             f"{name} lost the reason the rule works. Without it the rule is "
             "advice; with it, it says which arm carries the author's model.")
+
+
+def test_b1803_ticket_counts_block():
+    """#274 (B1803): every turn reports ticket counts across all SIX classes.
+
+    Owner directive 2026-08-21: *"Always provide a count of tickets by groups at
+    the end of the turn. similar to skills invoked."*
+
+    The arm that matters is the third: **naming the six classes without numbers
+    must FAIL.** A presence check on the class names would pass that while the
+    block reports nothing - the "any text satisfies the slot" defect #247 exists
+    for.
+    """
+    import importlib.util
+    import pathlib as _p
+
+    root = _p.Path(__file__).resolve().parents[2]
+    spec = importlib.util.spec_from_file_location(
+        "vtc_b1803", root / "scripts" / "verify_turn_compliance.py")
+    tg = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(tg)
+
+    absent = ("Pyramid 1004 passed / 3 skipped. Commit f9cd80c2c, pushed. "
+              "CHECKLIST compliance - #234 all four members satisfied.")
+    assert tg.scan_ticket_counts_missing([], text=absent),         "a turn with no ticket-count block must fire"
+
+    full = ("TICKET COUNTS - 630 EXECUTED / 8 DROPPED / 10 BLOCKED / "
+            "4 DEFERRED / 103 OPEN / 3 RUNNING = 758 tickets")
+    assert not tg.scan_ticket_counts_missing([], text=full),         "a complete block must clear it"
+
+    unnumbered = ("TICKET COUNTS - executed, dropped, blocked, deferred, "
+                  "open, running")
+    out = tg.scan_ticket_counts_missing([], text=unnumbered)
+    assert out and "6 of 6" in out[0], (
+        "classes named WITHOUT numbers must fail on all six - a block that "
+        "lists the classes and no counts reports nothing")
+
+    partial = "TICKET COUNTS - 630 EXECUTED / 103 OPEN / 3 RUNNING"
+    out = tg.scan_ticket_counts_missing([], text=partial)
+    assert out and "DROPPED" in out[0] and "BLOCKED" in out[0], (
+        "an incomplete block must NAME the missing classes (#234 require_each), "
+        "not merely report failure")
+
+    # the canonical reader exists and is what the rule points at
+    assert (root / "scripts" / "queue_state.py").exists(),         "#274 directs the count through queue_state.py; it must exist"

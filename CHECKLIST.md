@@ -4781,3 +4781,21 @@ Standard like any number.**
 **Any-vs-each, one level up.** `#234` asks whether every MEMBER of a rule was handled; this asks
 whether every DOMAIN of a rule is reachable by its enforcer.
 
+### #274 - EVERY TURN REPORTS THE TICKET COUNTS BY GROUP (B1803, owner directive 2026-08-21)
+
+**Owner:** *"Always provide a count of tickets by groups at the end of the turn. similar to skills
+invoked."*
+
+**Same standing as the SKILLS INVOKED block - every turn, no exceptions**, including analysis-only
+and question-answering turns. The queue is the anchor (`#94`), and its state was invisible between
+turns unless the owner asked.
+
+- **All SIX classes, each with a number:** EXECUTED / DROPPED / BLOCKED / DEFERRED / OPEN / RUNNING.
+  **A class named without a count reports nothing; a class omitted lets silence stand in for zero.**
+- **Derive it with `python scripts/queue_state.py`** - per DISTINCT TICKET, last row wins. The ledger
+  is an APPEND LOG (853 rows for 751 tickets at B1803), so **a row-level count is wrong by an
+  unbounded amount and reads exactly like a right one** (`#271`).
+- **Show the delta when tickets changed state**, so the block reports movement and not only a level.
+- Enforced by `scan_ticket_counts_missing`, which reports WHICH classes are missing via
+  `require_each` (`#234`) rather than a bare pass/fail.
+

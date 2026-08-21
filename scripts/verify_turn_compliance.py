@@ -1715,6 +1715,57 @@ def scan_synthetic_provenance(entries, *, text=None, tool_text=None) -> list[str
             "where the number is quoted, or quote a number from real data."]
 
 
+# B1803: OWNER DIRECTIVE 2026-08-21 - "Always provide a count of tickets by
+# groups at the end of the turn. similar to skills invoked."
+#
+# Same standing as the SKILLS INVOKED block: every turn, no exceptions. The
+# queue is the anchor (#94) and its state was invisible between turns unless the
+# owner asked for it.
+#
+# The count must come from scripts/queue_state.py - per DISTINCT TICKET, last
+# row wins. The ledger is an APPEND LOG (853 rows for 751 tickets at B1803), so
+# a row-level count is wrong by an unbounded amount and reads exactly like a
+# right one (#271).
+TICKET_COUNT_HEADERS = ("ticket counts", "tickets by group", "ticket state")
+
+
+def scan_ticket_counts_missing(entries, *, text=None) -> list[str]:
+    """Every turn ends with a ticket count across all SIX ledger classes.
+
+    Each class name must carry a NUMBER - naming the classes without counts
+    would satisfy a presence check while reporting nothing, which is the
+    "any text satisfies the slot" defect #247 was written for.
+
+    Read from the LAST header occurrence per B1732: an earlier mention - this
+    docstring included - would otherwise shift the window off the real block and
+    fire on a response that got it right.
+    """
+    import re as _re
+    t = _response_text(entries, text)
+    if not t:
+        return []
+    hits = [h for h in TICKET_COUNT_HEADERS if h in t]
+    if not hits:
+        return ["TICKET COUNTS MISSING (B1803): owner directive 2026-08-21 - "
+                "every turn ends with a count of tickets by the six ledger "
+                "groups, same standing as SKILLS INVOKED. Derive it with "
+                "`python scripts/queue_state.py` (per distinct ticket, last row "
+                "wins) - a row-level count is wrong by an unbounded amount "
+                "because the ledger is an append log (#271)."]
+    tail = t.rsplit(hits[-1], 1)[1][:900]
+    observed = {}
+    for cls in QUEUE_CLASSES:
+        c = cls.lower()
+        observed[cls] = bool(
+            _re.search(rf"(?<![a-z0-9_]){c}\D{{0,12}}\d", tail)
+            or _re.search(rf"\d\D{{0,12}}(?<![a-z0-9_]){c}(?![a-z0-9_])", tail))
+    return require_each(
+        "TICKET COUNTS INCOMPLETE (B1803)", observed,
+        why=("Owner directive 2026-08-21: all SIX classes, each with a number. "
+             "A class named without a count reports nothing, and a class "
+             "omitted lets silence stand in for zero."))
+
+
 def scan_partial_read(entries, *, text=None, tool_text=None) -> list[str]:
     """#270: a verdict over a population needs the WHOLE population read.
 
@@ -2578,7 +2629,8 @@ def main() -> int:
                 scan_queue_vocabulary, scan_queue_not_updated,
                 scan_unverified_count, scan_partial_distribution,
                 scan_partial_read, scan_row_vs_ticket,
-                scan_synthetic_provenance):
+                scan_synthetic_provenance,
+                scan_ticket_counts_missing):
         try:
             _r = _sc(_e2)
         except Exception as _e:

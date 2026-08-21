@@ -1314,6 +1314,16 @@ instead. **The safety net was the defect.**
 
 ## Phase 6 — END-OF-TURN SWEEP (CHECKLIST #67 — HARD RULE, no exceptions)
 
+**TICKET COUNTS BY GROUP - EVERY TURN (B1803 - CHECKLIST #274, owner directive 2026-08-21).**
+*"Always provide a count of tickets by groups at the end of the turn. similar to skills invoked."*
+
+- **All SIX classes with a number each** - EXECUTED / DROPPED / BLOCKED / DEFERRED / OPEN / RUNNING.
+  A class named without a count reports nothing; a class omitted lets silence stand in for zero.
+- **`python scripts/queue_state.py`, never a hand count** - per distinct ticket, last row wins. The
+  ledger is an append log, so a row-level figure is wrong by an unbounded amount (`#271`).
+- **Show the delta when anything moved.** A level repeated each turn hides that nothing changed.
+- Enforced by `scan_ticket_counts_missing`.
+
 1. **Doc-sync sweep**: every forward-looking non-archive doc touched by this
    turn's changes is updated AND COMMITTED this turn
    (`feedback_per_turn_doc_sweep_no_exceptions`). Doc commits are DECOUPLED
