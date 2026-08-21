@@ -17194,3 +17194,65 @@ def test_b1795_row_vs_ticket_gate():
     assert not tg.scan_row_vs_ticket(
         [], text="102 OPEN tickets", tool_text="cat README.md"), \
         "must be quiet when the queue was not the source"
+
+
+def test_b1795_no_shadowed_definitions_in_gate_scripts():
+    """B1795: a duplicate top-level `def` silently replaces the earlier one.
+
+    `_queue_rows_added` was defined TWICE in verify_turn_compliance.py. The
+    second definition won, and the one it replaced was the one that also read
+    the LAST COMMIT - so `scan_queue_not_updated` could only see UNCOMMITTED
+    rows and blocked every turn that committed before turn-end. **The fix for
+    the false positive already existed in the file and had been overwritten.**
+
+    Un-blinding it immediately exposed 16 OPEN rows still carrying placeholder
+    reasons that `scan_queue_vocabulary` had never been able to scan. **One dead
+    duplicate was hiding a second gate's entire input.**
+    """
+    import ast
+    import collections
+    import pathlib as _p
+
+    root = _p.Path(__file__).resolve().parents[2]
+    offenders = {}
+    for p in sorted((root / "scripts").glob("*.py")):
+        try:
+            tree = ast.parse(p.read_text(encoding="utf-8"))
+        except SyntaxError:
+            continue
+        names = collections.Counter(
+            n.name for n in tree.body
+            if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef)))
+        dup = {k: v for k, v in names.items() if v > 1}
+        if dup:
+            offenders[p.name] = dup
+    assert not offenders, (
+        f"shadowed top-level definitions: {offenders}. The later one wins "
+        "silently; if it is less capable than the one it replaced, a gate "
+        "loses coverage with no error anywhere.")
+
+
+def test_b1795_queue_rows_dedupe_working_tree_over_commit():
+    """B1795: a row edited after being committed must not be judged twice.
+
+    Reading the working tree AND the last commit means a row added in the
+    commit and CORRECTED in the working tree appears in both. Without dedup the
+    gate reports the stale copy, so a row fixed this turn still fails - which is
+    exactly what happened on the first run of the fix.
+
+    Newest wins, per `#271`.
+    """
+    import importlib.util
+    import pathlib as _p
+
+    root = _p.Path(__file__).resolve().parents[2]
+    spec = importlib.util.spec_from_file_location(
+        "vtc_b1795b", root / "scripts" / "verify_turn_compliance.py")
+    tg = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(tg)
+
+    rows = tg._queue_rows_added()
+    ids = [r.split("**")[1] for r in rows if r.count("**") >= 2]
+    assert len(ids) == len(set(ids)), (
+        f"duplicate ticket ids in the gate's input: "
+        f"{[i for i in set(ids) if ids.count(i) > 1][:5]}")

@@ -1309,20 +1309,6 @@ def scan_uncosted_probe(entries, *, text=None, tool_text=None) -> list[str]:
             'name the FIELD the work needs, or drop the estimate.']
 
 
-def _queue_rows_added() -> int:
-    """S6-xxx rows ADDED to the queue in the working tree + last commit."""
-    import subprocess, re as _re
-    n = 0
-    for cmd in (["git", "diff", "--", "EXECUTION_QUEUE.md"],
-                ["git", "diff", "HEAD~1", "HEAD", "--", "EXECUTION_QUEUE.md"]):
-        try:
-            d = subprocess.run(cmd, capture_output=True, text=True, timeout=20).stdout
-        except Exception:
-            continue
-        n += len(_re.findall(r"^\+\| \*\*S6-", d, _re.M))
-    return n
-
-
 def scan_shell_substitution(entries, *, tool_text=None) -> list[str]:
     """B1765 (#245): a shell -c string must not carry live command substitution.
 
@@ -1392,18 +1378,44 @@ QUEUE_PLACEHOLDERS = ("reason-not-recorded", "tbd", "todo", "unknown",
 
 
 def _queue_rows_added(diff_text=None) -> list[str]:
-    """Ticket rows ADDED to EXECUTION_QUEUE.md this turn."""
+    """Ticket rows ADDED to EXECUTION_QUEUE.md this turn.
+
+    B1795: a SECOND definition of this name shadowed the first, and the one it
+    replaced was the one that also read the last commit. The gate could
+    therefore only see rows still UNCOMMITTED, so any turn that committed
+    before turn-end tripped it - a false positive whose fix already existed in
+    the file and had been silently overwritten.
+
+    Both sources are checked now. `HEAD~1..HEAD` assumes the last commit
+    belongs to this turn, which is the standing per-turn commit convention;
+    a turn that adds no rows and commits nothing still reports none.
+    """
     import re
     import subprocess
-    if diff_text is None:
+    if diff_text is not None:
+        return [ln[1:] for ln in diff_text.splitlines()
+                if re.match(r"^\+\|\s*\*\*S6-", ln)]
+    # Working tree FIRST, then the last commit. A row added in the commit and
+    # then EDITED in the working tree appears in both; the working-tree copy is
+    # newer, so it wins - #271's last-state-wins rule applied to this gate's own
+    # input. Without the dedup the gate reports the stale copy and a row that
+    # was fixed this turn still fails.
+    out: list[str] = []
+    seen: set[str] = set()
+    for cmd in (["git", "diff", "HEAD", "--unified=0", "--", "EXECUTION_QUEUE.md"],
+                ["git", "diff", "HEAD~1", "HEAD", "--unified=0",
+                 "--", "EXECUTION_QUEUE.md"]):
         try:
-            diff_text = subprocess.run(
-                ["git", "diff", "HEAD", "--unified=0", "--", "EXECUTION_QUEUE.md"],
-                capture_output=True, text=True, timeout=20).stdout or ""
+            d = subprocess.run(cmd, capture_output=True, text=True,
+                               timeout=20).stdout or ""
         except Exception:
-            return []
-    return [ln[1:] for ln in diff_text.splitlines()
-            if re.match(r"^\+\|\s*\*\*S6-", ln)]
+            continue
+        for ln in d.splitlines():
+            m = re.match(r"^\+\|\s*\*\*(S6-[A-Za-z0-9-]+)\*\*", ln)
+            if m and m.group(1) not in seen:
+                seen.add(m.group(1))
+                out.append(ln[1:])
+    return out
 
 
 # B1778 (#258): DERIVED COUNTS. The 30 gates before this one all scan PROSE for
