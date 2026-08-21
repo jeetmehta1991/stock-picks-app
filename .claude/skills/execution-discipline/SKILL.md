@@ -741,6 +741,22 @@ gate had just named.**
 - **Compliance failure against `#45` and `#247`, not a new class.** A fifth rule
   restating four that were ignored is `#136` theater.
 
+## CHECKING THE VALUE IS NOT READING THE CODE (B1852 - L565, CHECKLIST #222)
+
+**MEASURED: I recommended raising `DEMAND_PRUNING_WARMUP` from a runbook table
+without opening the module. The table was CORRECT** - the default really is 25.
+**Reading it overturned the recommendation anyway:** the module records that
+warmup now counts DISTINCT SIM-DAYS, so every arm sharing a start date observed
+the same 25 warmup days - and warmup length therefore cannot explain the split I
+was proposing to fix with it.
+
+- **A constant you have not read carries its neighbourhood unread too** - the
+  comment above it, the bug already fixed in it, the units it counts.
+- **The number can be accurate while the recommendation resting on it is
+  nonsense**, and verifying the number would not catch that.
+- `#222`'s recorded rationale is doc-drift; **this is the stronger form**, and
+  the existing `scan_uninspected_constant` caught it with no new gate needed.
+
 ## A MECHANICAL DIRECTIVE TAKES DO-IT OR ASK, NOT AN EXPLANATION (B1850 - L564, #185)
 
 **MEASURED: four long jobs launched, zero monitors armed - and I did not forget.

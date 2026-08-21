@@ -11528,3 +11528,38 @@ difference is whether the escape exists in the system or only in my paragraph.
 are DO IT or ASK. Explaining is a third thing that resembles compliance and is
 not.** **ANCHORED (`#197`):** compliance failure against `CHECKLIST #185`; no new
 item - the rule existed, was mandatory, and named this exact case.
+
+
+### L565
+
+**The documented number was correct, and the recommendation built on it was still wrong**
+
+**B1851/B1852.** Having causally confirmed that demand pruning silently zeroed a
+run, I wrote that the fix was to raise `DEMAND_PRUNING_WARMUP` above its default
+of 25 - **citing a runbook table and never opening the module.** `#222` fired.
+
+**The table was RIGHT.** `WARMUP_BARS_DEFAULT = 25` at `demand_pruning.py:228`,
+consumed at `:271`. **`#222`'s recorded rationale is doc-drift** - `MIN_N=30`
+quoted as the floor while the caller passed 10 - **and that rationale did not
+apply here at all.**
+
+**Reading it overturned the recommendation anyway.** The module records
+`S6-B1580b`: warmup once counted `wrap()` CALLS rather than distinct sim-days,
+and `wrap()` fires once per (ticker, day), so **25 "bars" meant 0.25 SIM-DAYS at
+a 100-ticker universe.** That is fixed - warmup now counts distinct dates. Which
+means **every arm I ran observed the SAME 25 warmup days**, because they share a
+start date. **So warmup length cannot explain the 2-of-33 versus 3-of-33 split,
+and the lever I was about to hand the owner is probably not the operative one.**
+
+**The generalisation.** `#222` is not only a guard against stale numbers. **A
+constant you have not read carries its NEIGHBOURHOOD unread too** - the comment
+above it, the bug already fixed in it, the units it counts. The number can be
+perfectly accurate while the recommendation resting on it is nonsense, and
+verifying the number would not have caught that. **Checking the value is not
+reading the code.**
+
+**Mechanism: none built, and none needed.** `scan_uninspected_constant` already
+covers this class and **fired correctly on the first response that named the
+constant** - the failure was mine, not the gate's. Adding a second gate here
+would be `#136` theater. **ANCHORED (`#197`):** compliance failure against
+`CHECKLIST #222`.
