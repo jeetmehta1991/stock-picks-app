@@ -159,6 +159,38 @@ INCIDENTS: dict[str, tuple[str, bool, dict]] = {
         True,
         {},
     ),
+    # S6-B1761c / B1809. VERBATIM from B1806, this session: the gate reported
+    # "3 of 3 required member(s) NOT satisfied" on a response that listed all
+    # three skills. The block sat at the TOP and the phrase appeared again in
+    # prose below, so the LAST-occurrence window opened past it. must_fire is
+    # FALSE - these are the words it must NOT fire on.
+    "scan_skill_block_incomplete": (
+        "**SKILLS INVOKED** - `execution-discipline` **ALWAYS-ON** - "
+        "`fable-mode` **FULLY LOADED** - `llm-council` **NOT-TRIGGERED**\n\n"
+        "`#274` - every turn reports ticket counts by group, same standing as "
+        "SKILLS INVOKED.",
+        False,
+        {},
+    ),
+    # S6-B1761c / B1809. RECONSTRUCTED - S6-B1740a records the incident but not
+    # the sentence: "B1739 built two gates, edited three docs and committed
+    # without invoking Skill(execution-discipline). Disclosed in the response
+    # but NOT ticketed until the new gate blocked the turn." Two finding
+    # markers, zero queue rows.
+    "scan_findings_vs_tickets": (
+        "The retroactive sweep is not built. The tripwire table has no "
+        "enforcement and that is a defect I am carrying forward.",
+        True,
+        {"rows": 0},
+    ),
+    # S6-B1761c / B1809. VERBATIM tail of a real turn report that ended with no
+    # confirmation block - the shape the B1726 owner directive was issued about.
+    "scan_missing_skill_confirmation": (
+        "Pyramid 1004 passed / 3 skipped. Commit f9cd80c2c, pushed. "
+        "CHECKLIST compliance - #234 all four Phase-5 members satisfied.",
+        True,
+        {},
+    ),
     # NEGATIVE control - ordinary reporting prose that must NOT trip anything.
     # Note it is a bare sentence, so gates that legitimately require RESPONSE
     # STRUCTURE (a SKILLS block, a compliance block) are excluded by the sweep
@@ -185,6 +217,22 @@ INCIDENTS: dict[str, tuple[str, bool, dict]] = {
 # alongside the primary entry. Kept in a separate dict deliberately: INCIDENTS
 # stays a 3-tuple per gate, so the six existing consumers are untouched.
 EXTRA_INCIDENTS: dict[str, list[tuple[str, bool, dict]]] = {
+    "scan_skill_block_incomplete": [
+        # the must-FIRE half: a block naming only two of the three
+        ("**SKILLS INVOKED** - `execution-discipline` **ALWAYS-ON** - "
+         "`fable-mode` **FULLY LOADED**", True, {}),
+    ],
+    "scan_findings_vs_tickets": [
+        # same findings, but ticketed - must be QUIET
+        ("The retroactive sweep is not built. The tripwire table has no "
+         "enforcement and that is a defect I am carrying forward.",
+         False, {"rows": 2}),
+    ],
+    "scan_missing_skill_confirmation": [
+        # the block present - must be QUIET
+        ("SKILLS INVOKED - execution-discipline ALWAYS-ON. Pyramid green.",
+         False, {}),
+    ],
     "scan_response_gates": [
         # the E-STEM PROGRESSIVE branch - silently unmatched before B1804
         ("I am deleting the stale output directory now.", True,

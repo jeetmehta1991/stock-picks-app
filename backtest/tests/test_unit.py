@@ -17919,9 +17919,16 @@ def test_b1805_extra_incident_branches():
     for name, cases in corpus.EXTRA_INCIDENTS.items():
         fn = getattr(tg, name, None)
         assert fn is not None, f"EXTRA_INCIDENTS names a missing gate: {name}"
-        assert any(not must_fire for _, must_fire, _ in cases), (
-            f"{name}'s branch incidents are all must-FIRE. A corpus of only "
-            "must-fire entries cannot detect a gate that fires on everything.")
+        # B1809: the requirement is about the gate's FULL corpus, not the
+        # extras list alone. `scan_skill_block_incomplete`'s must-QUIET case is
+        # its PRIMARY entry - the verbatim B1806 false positive - so checking
+        # extras in isolation failed a corpus that satisfies the rule.
+        # **The assertion's scope was narrower than the rule it encodes.**
+        every = corpus.all_incidents(name)
+        assert any(not must_fire for _, must_fire, _ in every), (
+            f"{name}'s corpus is all must-FIRE across primary AND branch "
+            "entries. A corpus of only must-fire entries cannot detect a gate "
+            "that fires on everything.")
         for text, must_fire, state in cases:
             got = bool(fn([], text=text, **state))
             assert got == must_fire, (
