@@ -11076,3 +11076,40 @@ that claim before working it (`#256`) is what opened the file at all. **If I had
 I would have built a second narration gate beside a broken one**, and the broken one would still be
 passing its sweep.
 
+### L553
+
+**Neither the first nor the last occurrence is the block, and the gate I built could not see a table
+of numbers**
+
+**B1806.** Two gates blocked a turn that had complied with both of them. Both defects were in the
+gates.
+
+**THE WINDOW.** B1732 moved `scan_skill_block_incomplete` from the FIRST occurrence of *"skills
+invoked"* to the LAST, because an EARLIER mention - *the gate describing itself* - shifted the
+window off the real block. The comment it left reads: *"the confirmation block is by definition at
+the end of the turn."*
+
+**It is not.** This turn put the block at the TOP and wrote *"same standing as SKILLS INVOKED"* in
+prose below it. The LAST occurrence opened the window PAST the block. **All three skills were
+listed; all three were reported missing.**
+
+**The lesson is not "use the other end".** B1732 fixed FIRST by choosing LAST and inherited the
+mirror bug, which then sat undetected until the block moved. **The block is wherever the MEMBERS
+are** - `_best_block_window` now tries every occurrence and keeps the window satisfying the most,
+so a passing mention cannot mask the real block from either side. **A positional heuristic encodes
+a habit of formatting, and the moment the formatting changes it silently inverts.**
+
+**THE FENCES.** `scan_ticket_counts_missing`, built ONE TURN EARLIER, reads through
+`_response_text`, which strips fenced blocks so that documenting a defect cannot trip the gate for
+that defect (B1781). **A table of counts belongs in a fence.** The gate reported 5 of 6 classes
+missing while all six were on screen, in the very block it demands.
+
+**And the first fix did not work, which is the part worth keeping.** I added `keep_code=True` and
+re-ran: still failing. **A fence IS backticks**, so the INLINE-span strip consumed it regardless.
+Had I shipped on the reasoning instead of the re-run, the flag would have looked like a fix and
+changed nothing - an inert fix, the class `S6-B1708d` warned about in its own text.
+
+**Both defects share a shape:** a gate that reads a RESPONSE encodes assumptions about how
+responses are WRITTEN - where a block sits, whether numbers are fenced. **Those assumptions are
+invisible until a compliant turn violates them, and then the gate blames the turn.**
+

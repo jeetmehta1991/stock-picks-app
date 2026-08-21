@@ -4816,3 +4816,27 @@ turns unless the owner asked.
 - Enforced by `scan_ticket_counts_missing`, which reports WHICH classes are missing via
   `require_each` (`#234`) rather than a bare pass/fail.
 
+### #275 - A RESPONSE GATE MUST NOT ASSUME HOW THE RESPONSE IS FORMATTED (B1806 / L553)
+
+**Two gates blocked a turn that had complied with both. Both defects were in the gates.**
+
+**POSITION.** B1732 moved a block-locating gate from the FIRST occurrence of its header to the LAST,
+because an earlier mention shifted the window off the real block - and inherited the mirror bug. A
+later prose mention then opened the window PAST a complete block: **all three members listed, all
+three reported missing.**
+
+- **The block is wherever the MEMBERS are.** Use `_best_block_window`: try every occurrence, keep
+  the window satisfying the most. **A positional heuristic encodes a habit of formatting and
+  silently inverts the moment the formatting changes.**
+
+**FENCING.** `_response_text` strips fenced blocks so documenting a defect cannot trip the gate for
+that defect (B1781). **A gate demanding a TABLE OF NUMBERS must pass `keep_code=True`** - a table
+belongs in a fence, and `scan_ticket_counts_missing` reported 5 of 6 classes missing while all six
+were on screen.
+
+- **`keep_code` must skip the INLINE strip too**, because a fence is backticks. The first version
+  guarded only the fenced-block regex and changed nothing - **an inert fix that re-running caught
+  and reasoning would not have.**
+- Mention-vs-use stays the DEFAULT; `keep_code` is opt-in, and safe only where a mention cannot
+  satisfy the gate - here it cannot, because a mention of the class names carries no numbers.
+

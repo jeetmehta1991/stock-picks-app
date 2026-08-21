@@ -783,7 +783,7 @@ def _assistant_text(entries) -> str:
     return " ".join(out).lower()
 
 
-def _response_text(entries, text=None) -> str:
+def _response_text(entries, text=None, *, keep_code: bool = False) -> str:
     """The text a response-scanning gate should read. Use this, not _assistant_text.
 
     B1783. Two rules were learned on two specific gates and stayed there:
@@ -808,9 +808,21 @@ def _response_text(entries, text=None) -> str:
         t = (blocks[-1] if blocks else "").lower()
     else:
         t = text.lower()
-    t = _re.sub(r"```.*?```", " ", t, flags=_re.S)
+    # B1806: fenced blocks are stripped so a response DESCRIBING a gate's
+    # vocabulary cannot trip it (B1738). But a gate that demands a BLOCK OF
+    # NUMBERS must read them, and a table of numbers belongs in a fence -
+    # scan_ticket_counts_missing reported 5 of 6 classes missing while all six
+    # were on screen. Such a gate passes keep_code=True; mention-vs-use is not
+    # a risk for it, because a mention of the class names carries no numbers.
+    if not keep_code:
+        t = _re.sub(r"```.*?```", " ", t, flags=_re.S)
     t = _re.sub(r"^[ \t]*>.*$", " ", t, flags=_re.M)
-    t = _re.sub(r"`[^`]*`", " ", t)
+    if not keep_code:
+        # B1806: this must be guarded too. A fence IS backticks, so the INLINE
+        # span strip consumed the fenced block even with keep_code=True - the
+        # first version of the fix left the gate exactly as blind as before,
+        # and only saying so out loud after re-running it caught that.
+        t = _re.sub(r"`[^`]*`", " ", t)
     return t
 
 
@@ -1245,7 +1257,12 @@ def scan_skill_block_incomplete(entries, *, text=None) -> list[str]:
     # shifted the window off the real block and fired a false positive on a
     # response that named all three. Use the LAST occurrence: the confirmation
     # block is by definition at the end of the turn.
-    tail = t.rsplit("skills invoked", 1)[1][:900]
+    # B1806: was rsplit(..., 1) - the LAST occurrence. B1732 moved it there
+    # because an EARLIER mention shifted the window off the real block; the
+    # mirror is equally true. A LATER prose mention ("same standing as SKILLS
+    # INVOKED") opened the window PAST a complete block and reported all three
+    # skills missing. Neither end is right - the block is wherever the members
+    # are, so try every occurrence.
     # B1763: route through require_each instead of hand-rolling it. This gate
     # was ALREADY each-shaped - it computed the absent members and named them -
     # which is precisely why it is the right first conversion: adopting the
@@ -1255,7 +1272,9 @@ def scan_skill_block_incomplete(entries, *, text=None) -> list[str]:
     # fresh any-vs-each defects still shipped, because AVAILABILITY IS NOT
     # ADOPTION. A primitive nobody reaches for is a library, not a guardrail.
     return require_each(
-        "SKILLS-INVOKED BLOCK INCOMPLETE", {n: (n in tail) for n in ALL_SKILLS},
+        "SKILLS-INVOKED BLOCK INCOMPLETE",
+        _best_block_window(t, ("skills invoked",),
+                           {n: (lambda w, _n=n: _n in w) for n in ALL_SKILLS}),
         why=("Owner directive B1730: every turn lists ALL THREE skills with an "
              "explicit status - FULLY LOADED / TRIGGERED-NOT-INVOKED / "
              "NOT-TRIGGERED / ALWAYS-ON. Omitting one lets silence stand in "
@@ -1765,6 +1784,43 @@ def scan_synthetic_provenance(entries, *, text=None, tool_text=None) -> list[str
 TICKET_COUNT_HEADERS = ("ticket counts", "tickets by group", "ticket state")
 
 
+# B1806: LOCATING A REQUIRED BLOCK. B1732 moved from the FIRST occurrence of a
+# header to the LAST, because an earlier mention shifted the window off the real
+# block. **The mirror is equally true** - a LATER mention shifts it past. This
+# turn listed all three skills and had all three reported missing, because the
+# words "same standing as SKILLS INVOKED" appeared later in prose.
+#
+# Neither end is right: the block is wherever the members are. Try every
+# occurrence and accept the best window.
+def _best_block_window(t: str, headers, members, window: int = 900) -> dict:
+    """members -> satisfied, from whichever occurrence of any header fits best.
+
+    `members` maps a name to a predicate over the window text. Returns the
+    result from the occurrence satisfying the MOST members - so a header
+    mentioned in passing cannot mask the real block, from either side.
+    """
+    best = {k: False for k in members}
+    if not t:
+        return best
+    idx = []
+    for h in headers:
+        start = 0
+        while True:
+            i = t.find(h, start)
+            if i < 0:
+                break
+            idx.append(i + len(h))
+            start = i + 1
+    for i in sorted(idx):
+        tail = t[i:i + window]
+        got = {k: bool(pred(tail)) for k, pred in members.items()}
+        if sum(got.values()) > sum(best.values()):
+            best = got
+        if all(best.values()):
+            break
+    return best
+
+
 def scan_ticket_counts_missing(entries, *, text=None) -> list[str]:
     """Every turn ends with a ticket count across all SIX ledger classes.
 
@@ -1777,7 +1833,9 @@ def scan_ticket_counts_missing(entries, *, text=None) -> list[str]:
     fire on a response that got it right.
     """
     import re as _re
-    t = _response_text(entries, text)
+    # B1806: keep_code=True - the counts belong in a fenced block, and the
+    # default strip made this gate blind to the block it demands.
+    t = _response_text(entries, text, keep_code=True)
     if not t:
         return []
     hits = [h for h in TICKET_COUNT_HEADERS if h in t]
@@ -1788,13 +1846,14 @@ def scan_ticket_counts_missing(entries, *, text=None) -> list[str]:
                 "`python scripts/queue_state.py` (per distinct ticket, last row "
                 "wins) - a row-level count is wrong by an unbounded amount "
                 "because the ledger is an append log (#271)."]
-    tail = t.rsplit(hits[-1], 1)[1][:900]
-    observed = {}
-    for cls in QUEUE_CLASSES:
+    def _has(cls):
         c = cls.lower()
-        observed[cls] = bool(
+        return lambda tail: bool(
             _re.search(rf"(?<![a-z0-9_]){c}\D{{0,12}}\d", tail)
             or _re.search(rf"\d\D{{0,12}}(?<![a-z0-9_]){c}(?![a-z0-9_])", tail))
+
+    observed = _best_block_window(
+        t, TICKET_COUNT_HEADERS, {cls: _has(cls) for cls in QUEUE_CLASSES})
     return require_each(
         "TICKET COUNTS INCOMPLETE (B1803)", observed,
         why=("Owner directive 2026-08-21: all SIX classes, each with a number. "

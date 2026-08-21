@@ -885,6 +885,21 @@ change log) or it is still work. A turn may never write EXECUTED.
   because the definition got honest**; reporting that as a regression is the category-to-claim error
   again.
 
+## A RESPONSE GATE MUST NOT ASSUME HOW THE RESPONSE IS FORMATTED (B1806 - L553, CHECKLIST #275)
+
+**Two gates blocked a turn that had complied with both of them. Both defects were in the gates.**
+
+- **POSITION: the block is wherever the MEMBERS are.** B1732 moved a locator from the FIRST header
+  occurrence to the LAST and inherited the mirror bug; a later prose mention then opened the window
+  PAST a complete block - **all three members listed, all three reported missing.**
+  `_best_block_window` tries every occurrence and keeps the best. **A positional heuristic encodes a
+  habit of formatting and inverts silently when the formatting changes.**
+- **FENCING: a gate demanding a TABLE OF NUMBERS passes `keep_code=True`.** `_response_text` strips
+  fences so documenting a defect cannot trip its own gate (B1781) - but a table belongs in a fence,
+  and the counts gate reported 5 of 6 classes missing with all six on screen.
+- **`keep_code` must skip the INLINE strip too - a fence IS backticks.** The first version guarded
+  only the fenced regex and changed nothing. **Re-running caught it; reasoning would not have.**
+
 ## CARRY THE RULE, DO NOT RE-LEARN IT (B1783 - L536, CHECKLIST #262)
 
 **MEASURED: of 15 text-reading gates, 13 had NEITHER of the two rules already learned for that

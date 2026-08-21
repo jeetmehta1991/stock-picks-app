@@ -17929,3 +17929,85 @@ def test_b1805_extra_incident_branches():
     combined = corpus.all_incidents("scan_response_gates")
     assert len(combined) == 1 + len(corpus.EXTRA_INCIDENTS["scan_response_gates"])
     assert combined[0] == corpus.INCIDENTS["scan_response_gates"]
+
+
+def test_b1806_block_location_and_fenced_counts():
+    """B1806: two block-locating defects, both firing on a COMPLIANT turn.
+
+    THE WINDOW. B1732 moved `scan_skill_block_incomplete` from the FIRST
+    occurrence of its header to the LAST, because an EARLIER mention shifted the
+    window off the real block. **The mirror is equally true.** A turn wrote
+    "same standing as SKILLS INVOKED" in prose AFTER the block, and the LAST
+    occurrence opened the window past it - all three skills listed, all three
+    reported missing. **Neither end is right: the block is wherever the members
+    are.**
+
+    THE FENCES. `scan_ticket_counts_missing` reads through `_response_text`,
+    which strips fenced blocks so a response DESCRIBING a gate's vocabulary
+    cannot trip it (B1738). **A table of counts belongs in a fence**, so the
+    gate could not see the block it demands - 5 of 6 classes reported missing
+    while all six were on screen.
+
+    And the first fix was insufficient in a way only re-running showed: **a
+    fence IS backticks**, so the inline-span strip consumed it even with
+    keep_code=True.
+    """
+    import importlib.util
+    import pathlib as _p
+
+    root = _p.Path(__file__).resolve().parents[2]
+    spec = importlib.util.spec_from_file_location(
+        "vtc_b1806", root / "scripts" / "verify_turn_compliance.py")
+    tg = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(tg)
+
+    fence = "```"
+    resp = "\n".join([
+        "**SKILLS INVOKED** - `execution-discipline` **ALWAYS-ON** - "
+        "`fable-mode` **FULLY LOADED** - `llm-council` **NOT-TRIGGERED**",
+        "",
+        "`#274` - ticket counts by group, same standing as SKILLS INVOKED.",
+        "Filler prose. " * 80,
+        "",
+        "## TICKET COUNTS",
+        "",
+        fence,
+        "EXECUTED  642",
+        "DROPPED     8",
+        "BLOCKED    10",
+        "DEFERRED    4",
+        "OPEN      102",
+        "RUNNING     3",
+        fence,
+        "",
+    ])
+
+    assert not tg.scan_skill_block_incomplete([], text=resp), (
+        "a complete block followed by a later prose MENTION of the header must "
+        "pass - B1732's last-occurrence fix fails in the mirror direction")
+    assert not tg.scan_ticket_counts_missing([], text=resp), (
+        "counts inside a fenced block must be visible to the gate that demands "
+        "them - keep_code must skip the INLINE strip too, because a fence is "
+        "backticks")
+
+    # both must still catch the real thing
+    assert tg.scan_skill_block_incomplete(
+        [], text=resp.replace("`llm-council` **NOT-TRIGGERED**", "")), \
+        "an omitted skill must still fire"
+    assert tg.scan_ticket_counts_missing(
+        [], text=resp.split("## TICKET COUNTS")[0]), \
+        "a missing counts block must still fire"
+    out = tg.scan_ticket_counts_missing([], text=resp.replace("BLOCKED    10", ""))
+    assert out and "BLOCKED" in out[0], \
+        "a dropped class must be NAMED, not merely counted"
+
+    # mention-vs-use protection UNCHANGED for gates that strip code
+    assert not tg.scan_unmeasured_quantity(
+        [], text="the markers are `costs nothing` and `free`"), \
+        "keep_code must be opt-in - the default must still strip inline spans"
+
+    # the locator takes the window satisfying the MOST members, so a bare
+    # mention cannot mask the real block from EITHER side
+    assert not tg.scan_ticket_counts_missing(
+        [], text="ticket counts are important\n\n" + resp), \
+        "an earlier bare mention of the header must not mask a later real block"
