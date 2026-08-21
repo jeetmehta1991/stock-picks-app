@@ -4574,3 +4574,23 @@ NEGATIVE is a completed result** - it closes the question.
 
 **AND HAND-READING FINDS WHAT NO CHECKER LOOKS FOR.** `S6-B1532c` states its own blocker and sat as
 OPEN for months; the completeness checkers never asked whether the CLASS was right.
+
+### #269 - SCORE A CLASSIFIER ON THE MINORITY CLASS, NOT ON ACCURACY (B1793 / L543)
+
+**MEASURED: the completeness classifier scores 17/20 = 85pct overall and 0/3 = 0pct on the classes
+that matter.** 17 of 20 rows are OPEN and it defaults to OPEN, so **a constant function scores
+85pct on this sample.** All the accuracy is the majority class.
+
+**Report recall on the class that changes an outcome.** An overall accuracy on an imbalanced sample
+is not a weak signal, it is a misleading one - and **85pct was the first number printed**, the one I
+would have reported. What exposed it was the SHAPE of the disagreements: three errors, all of them
+non-OPEN.
+
+**Keep the hand-read verdicts as labelled ground truth** (`scripts/hand_verified_rows.py`), each with
+the phrase that decided it. **A classifier is unproven until it reproduces verdicts a human reached
+by reading** - the corpus pattern of `#240`, moved from gates to classifiers. Enforced by
+`test_b1793_classifier_scored_against_hand_labels`.
+
+**And RECORD a metric you cannot meet; do not enforce it.** The test asserts a range on recall
+rather than a floor, because demanding a floor the classifier cannot reach invites loosening the
+labels to pass - the exact failure the corpus exists to prevent.

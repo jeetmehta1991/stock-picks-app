@@ -10678,3 +10678,33 @@ it closes the question.
 hangs, so no Python profiling can run until WMI recovers* - and sat as OPEN. **The hand-read caught
 a misclassification no completeness checker was even looking for**, because it was asking the wrong
 question of the row.
+
+### L543
+
+**The classifier scores 85pct and finds nothing - a constant function scores 85pct**
+
+**B1793.** `#268` says a classifier inherits its author's model of the data. That instruction cannot
+be mechanically verified, **but its output can be kept**: `scripts/hand_verified_rows.py` holds the
+20 rows I read, each verdict with the phrase that decided it. A gate is unproven until it fires on
+the words that motivated it; **a classifier is unproven until it reproduces verdicts a human reached
+by reading.**
+
+**Then scoring the live classifier against those labels produced the number worth keeping:**
+
+```
+overall accuracy .............. 17/20 = 85pct
+minority-class recall .........  0/3  =  0pct
+```
+
+**It gets every non-OPEN row wrong.** 17 of 20 rows are OPEN and the classifier defaults to OPEN, so
+**a constant function scores 85pct on this sample.** All of the apparent accuracy is the majority
+class.
+
+**I would have reported 85pct.** It was the first number the scorer printed and it reads as a decent
+result. The only reason it did not ship that way is that the disagreement list was three rows long
+and every one of them was a non-OPEN row - **the shape of the errors, not their count, is what
+exposed it.**
+
+**So the test records RECALL and asserts only a range.** Demanding a recall floor the classifier
+cannot meet would invite loosening the labels to pass, which is precisely the failure the corpus
+exists to prevent. **A metric you cannot meet honestly should be reported, not enforced.**

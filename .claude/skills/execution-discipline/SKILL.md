@@ -669,6 +669,19 @@ says *each*.**
 - **Phase 5 is three artifacts**: LEARNINGS + CHECKLIST-or-explicit-citation + queue ticket.
   Enforced by `scan_miss_capture_complete`.
 
+## SCORE ON THE MINORITY CLASS, NOT ON ACCURACY (B1793 - L543, CHECKLIST #269)
+
+**MEASURED: 17/20 = 85pct overall, 0/3 = 0pct on the classes that matter.** The classifier defaults
+to the majority class, so **a constant function scores 85pct on this sample.**
+
+- **85pct was the first number printed and the one I would have reported.** What exposed it was the
+  SHAPE of the errors - three disagreements, every one a non-OPEN row.
+- **Keep hand-read verdicts as labelled ground truth** with the phrase that decided each. **A
+  classifier is unproven until it reproduces verdicts a human reached by reading** - `#240`'s corpus
+  pattern moved from gates to classifiers.
+- **Record a metric you cannot meet; do not enforce it.** A floor the classifier cannot reach
+  invites loosening the labels to pass.
+
 ## A CLASSIFIER INHERITS YOUR MODEL OF THE DATA (B1792 - L542, CHECKLIST #268)
 
 **MEASURED: hand-reading 20 rows gave 2 complete, 17 open work, 1 misclassified.** Four classifiers

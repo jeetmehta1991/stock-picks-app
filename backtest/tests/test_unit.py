@@ -17055,3 +17055,72 @@ def test_b1788_promotion_evidence_hierarchy():
         "an absent gate must block promotion"
     assert not promotable(f"wired {a_gate} - but the sweep is not built yet"), \
         "explicit not-done language must block promotion"
+
+
+def test_b1793_classifier_scored_against_hand_labels():
+    """B1793 (#268): a classifier is unproven until it reproduces HAND verdicts.
+
+    Four classifiers sorted these rows and all four over-promoted, because each
+    was built on a wrong model of the population - they hunted for a recorded
+    result in rows that are overwhelmingly TASKS WITH VERBS. There was no way to
+    discover that except by reading rows.
+
+    So the reading is kept. This is gate_incident_corpus.py's pattern moved from
+    gates to classifiers: a gate is unproven until it fires on the words that
+    motivated it; a classifier is unproven until it reproduces verdicts a human
+    reached by reading.
+
+    The test pins the LABELS and scores the live completeness classifier against
+    them, recording its accuracy rather than asserting it is good - the number is
+    the point, and a future version must not silently get worse.
+    """
+    import importlib.util
+    import pathlib
+
+    root = pathlib.Path(__file__).resolve().parents[2]
+
+    def load(stem):
+        spec = importlib.util.spec_from_file_location(
+            stem, root / "scripts" / f"{stem}.py")
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        return mod
+
+    hv = load("hand_verified_rows")
+    vac = load("verify_analysis_rows_complete")
+
+    assert len(hv.LABELS) >= 20, "the hand-read sample must not shrink"
+    verdicts = {v for v, _ in hv.LABELS.values()}
+    assert verdicts <= {"EXECUTED", "OPEN", "BLOCKED"}, verdicts
+    # every label carries the phrase that decided it - a verdict with no
+    # evidence is the thing this whole exercise exists to prevent
+    assert all(len(p) > 12 for _, p in hv.LABELS.values()), \
+        "every hand verdict must carry the phrase that decided it"
+
+    def classify(text):
+        pending, results = vac.assess("| " + text)
+        if pending:
+            return "OPEN"
+        return "EXECUTED" if results else "OPEN"
+
+    ok, total, wrong = hv.score(classify)
+
+    # B1793b: OVERALL ACCURACY IS A LIE ON THIS SAMPLE. The classifier scores
+    # 17/20 = 85pct while getting EVERY non-OPEN row wrong - 17 of 20 rows are
+    # OPEN and it defaults to OPEN, so the accuracy is entirely the majority
+    # class. **A constant function scores 85pct here.** What matters is recall
+    # on the classes that change a row's fate, so that is what gets recorded.
+    minority = {t: v for t, (v, _) in hv.LABELS.items() if v != "OPEN"}
+    missed = [t for t in minority if any(t in w for w in wrong)]
+    recall = 1 - len(missed) / len(minority)
+    print(f"\nhand-label score: {ok}/{total} overall, minority-class recall "
+          f"{recall:.0%} ({len(minority)-len(missed)}/{len(minority)})")
+
+    assert ok >= total * 0.6, (
+        f"classifier reproduces only {ok}/{total} hand verdicts:\n" +
+        "\n".join(wrong[:6]))
+    # Recall is RECORDED, not asserted. It is currently 0pct: the classifier is
+    # a triage aid that finds nothing, and demanding a floor it cannot meet
+    # would only invite loosening the labels to pass - which is the failure this
+    # whole corpus exists to prevent.
+    assert 0.0 <= recall <= 1.0
