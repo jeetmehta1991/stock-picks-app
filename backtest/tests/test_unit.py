@@ -18911,3 +18911,51 @@ def test_b1844_compliance_marker_is_case_insensitive():
         "pattern is a divergence waiting for someone to fix half of it.")
     assert tg.COMPLIANCE_MARKER == tg.COMPLIANCE_MARKER.lower(), \
         "the needle must be lowercase, since every haystack is lowercased"
+
+
+def test_b1853_warmup_lever_caveat_survives():
+    """B1853 (#234 durability half): keep the reason the obvious lever is wrong.
+
+    Demand pruning silently zeroed three runs (S6-B1849a, causally confirmed:
+    pruning ON gave 0 trades over 249 days, OFF gave 14 by day 200 on the same
+    window). The obvious fix is to raise `DEMAND_PRUNING_WARMUP`.
+
+    It is probably the WRONG fix, and the reason is easy to lose: since
+    S6-B1580b warmup counts DISTINCT SIM-DAYS, not `wrap()` calls, so every run
+    sharing a start date observes the SAME warmup window. Warmup length
+    therefore cannot explain a producers-kept split between those runs.
+
+    Delete that sentence from the docs and the next turn re-recommends the
+    lever with full confidence. This pins the claim AND its live source, so it
+    cannot rot into a doc assertion nobody can check.
+    """
+    import pathlib as _p
+    import re as _re
+
+    root = _p.Path(__file__).resolve().parents[2]
+
+    # 1. the CODE fact the caveat rests on must still be true
+    src = (root / "backtest" / "signals"
+           / "demand_pruning.py").read_text(encoding="utf-8")
+    assert "WARMUP_BARS_DEFAULT = 25" in src, (
+        "the documented default moved. L565 and the runbook both cite 25; "
+        "re-derive both before trusting either.")
+    assert _re.search(r"DISTINCT\s+SIM-DAYS|distinct\s+sim-days|distinct dates",
+                      src), (
+        "demand_pruning.py no longer records that warmup counts DISTINCT "
+        "SIM-DAYS. That fact (S6-B1580b) is the whole reason raising "
+        "DEMAND_PRUNING_WARMUP is not the operative lever - if the counting "
+        "changed back, the caveat is wrong and must be re-derived, not kept.")
+
+    # 2. the caveat must still be findable by whoever reaches for the lever
+    lea = (root / "LEARNINGS.md").read_text(encoding="utf-8")
+    assert "L565" in lea, "L565 was removed from LEARNINGS.md"
+    assert "DEMAND_PRUNING_WARMUP" in lea, (
+        "L565 no longer names the lever it warns about, so nobody searching "
+        "for the lever will find the warning")
+
+    skill = (root / ".claude" / "skills" / "execution-discipline"
+             / "SKILL.md").read_text(encoding="utf-8")
+    assert "CHECKING THE VALUE IS NOT READING THE CODE" in skill, (
+        "the L565 section was dropped from the loaded skill - a rule that "
+        "leaves the file loaded every turn stops being applied every turn")
