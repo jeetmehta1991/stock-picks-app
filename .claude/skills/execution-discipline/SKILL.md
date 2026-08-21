@@ -1226,6 +1226,23 @@ gate carries a corpus entry"* and **17 of 25 gates had none, with nothing failin
 - **Probe the HALF-satisfied case.** Both defects above surfaced from a pair where one member was
   enforced and one was not - the case a self-derived probe never constructs.
 
+## MENTION-vs-USE APPLIES TO TOOL TEXT, AND CHECK A TEXT'S SHAPE BEFORE REGEXING IT (B1812/B1813 - L556/L557)
+
+**Writing a marker into a file is not running it.** MEASURED: `rng.normal` appeared 3 times in a
+file a turn WROTE - a fixture and a lesson quoting the generator - and the gate read it as a
+generator having run. **B1738's rule for the RESPONSE had no equivalent for TOOL text.**
+
+- **The transcript carries the tool NAME, so the split is exact:** `Bash`/`PowerShell` `command` is
+  EXECUTED; `Write`/`Edit` `content` is WRITTEN. Use `_executed_text` for any "did X RUN?" question.
+- **In a codebase whose subject is its own enforcement, mention is the NORMAL case** - every lesson
+  quotes the marker it is about and every pin test embeds its trigger.
+- **And check a text's SHAPE before regexing it (L556).** Tool text is ONE line, so an unanchored
+  `[^\n]*` ate the whole corpus after the first `[1/1]` inside a quoted string - 183 chars in,
+  84 out, every tool-text gate blinded by the strip meant to stop one false positive. **A gate
+  report is LINE-ANCHORED; an echo inside a JSON string is not.**
+- **Assert the LOSSLESS case.** A strip is defined as much by what it must NOT remove; the version
+  that shipped without that assertion is the one that broke.
+
 ## A GATE'S OWN DIAGNOSTIC IS NOT EVIDENCE, AND A SEAM MUST TAKE THE LIVE PATH (B1811 - L555, #276)
 
 **MEASURED: the only `rng.` in the transcript was the gate's OWN message**, which quotes

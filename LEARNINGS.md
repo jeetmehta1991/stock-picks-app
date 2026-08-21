@@ -11219,3 +11219,38 @@ reason unrelated to the fix and I nearly read it as a pass. Before, it was `4,86
 commas rather than decimal points. **A probe that omits a precondition returns the answer you were
 hoping for.**
 
+### L557
+
+**Writing `rng.normal` into a file is not running it**
+
+**B1813.** `scan_synthetic_provenance` blocked a turn whose only decimals were real cube
+measurements. **MEASURED: `rng.normal` appears 3 times in `b1812_docs.py`** - a file that turn
+WROTE, holding a test fixture and a lesson that quote the generator in order to explain it.
+
+**B1738 established mention-vs-use for the RESPONSE:** vocabulary shown in backticks is a mention,
+not a use, because a response describing a gate was firing it. **The identical distinction exists in
+TOOL text and had no expression at all** - every gate treated `json.dumps(input)` as one
+undifferentiated blob.
+
+**The transcript carries the tool NAME, so the distinction is exact rather than heuristic:**
+
+```
+Bash / PowerShell   {"command": ...}    EXECUTED - this ran
+Write / Edit        {"content": ...}    WRITTEN  - this is a file's contents
+```
+
+**Note what this means for a session that writes about its own gates.** Every lesson I record about
+a marker quotes that marker; every pin test embeds the trigger text. **A codebase whose subject is
+its own enforcement will mention every trigger it owns, constantly** - so on tool text, mention is
+not the rare case, it is the normal one.
+
+**SCOPED, NOT SWEPT.** Nine gates read tool text and most ask a *did X RUN?* question -
+`scan_uninspected_constant` (was it grepped), `scan_partial_read` (was a file sampled),
+`scan_unverified_count` (was the count computed), `scan_shell_substitution` (does an executed string
+carry substitution). **All would be more correct on executed text.** Converting nine in one batch is
+exactly the change `S6-B1783b` records as breaking several silently, so one converted and the rest
+are measured and ticketed.
+
+**Third gate defect in three consecutive commits, all in the machinery, all found by it firing on
+compliant work.** That is `S6-B1780d`'s question getting louder, not quieter.
+

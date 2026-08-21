@@ -1097,6 +1097,41 @@ def _tool_text(entries, tool_text=None) -> str:
     return _strip_gate_echo(" ".join(out))
 
 
+# B1813: WHAT THE TURN RAN, as distinct from what it WROTE INTO A FILE.
+#
+# `scan_synthetic_provenance` fired on a turn whose only decimals were real cube
+# measurements, because `rng.normal` appeared 3 times in a file the turn WROTE -
+# a test fixture and a lesson that quote the generator to explain it.
+#
+# B1738 established mention-vs-use for the RESPONSE. The same distinction exists
+# in TOOL text and had no expression until now. The transcript carries the tool
+# NAME, so it is exact rather than heuristic:
+#
+#     Bash / PowerShell  {"command": ...}   EXECUTED
+#     Write / Edit       {"content": ...}   WRITTEN, never run
+_EXECUTING_TOOLS = ("bash", "powershell")
+
+
+def _executed_text(entries, tool_text=None) -> str:
+    """Only the commands this turn RAN. Not file contents it wrote.
+
+    Same injection contract as `_tool_text` (B1811): an injected value travels
+    the same scrubbing as the live path.
+    """
+    if tool_text is not None:
+        return _strip_gate_echo(tool_text)
+    out = []
+    for d in entries or ():
+        if not isinstance(d, dict) or d.get("type") != "assistant":
+            continue
+        for blk in (d.get("message") or {}).get("content") or ():
+            if not isinstance(blk, dict) or blk.get("type") != "tool_use":
+                continue
+            if str(blk.get("name") or "").lower() not in _EXECUTING_TOOLS:
+                continue
+            out.append(str((blk.get("input") or {}).get("command") or ""))
+    return _strip_gate_echo(" ".join(out))
+
 def scan_uninspected_constant(entries, *, tool_text=None,
                               text=None) -> list[str]:
     """#222 MECHANISED: naming a constant requires having looked at it.
@@ -1826,7 +1861,10 @@ def scan_synthetic_provenance(entries, *, text=None, tool_text=None) -> list[str
         return []
     if not _affirms(t, QUANT_PROOF):
         return []
-    tt = _tool_text(entries, tool_text).lower()
+    # B1813: EXECUTED text only. Writing `rng.normal` into a test fixture or a
+    # lesson is a MENTION; the question this gate asks is whether a generator
+    # RAN. B1738's rule, one layer down.
+    tt = _executed_text(entries, tool_text).lower()
     src = [m for m in SYNTHETIC_SOURCES if m in tt]
     if not src:
         return []

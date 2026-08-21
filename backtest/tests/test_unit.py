@@ -18327,3 +18327,54 @@ def test_b1812_echo_strip_is_lossless_on_tool_text():
     assert not tg.scan_discipline_not_loaded([], tool_text=tool), \
         "the discipline gate must see SKILL.md in the tool text"
 
+
+def test_b1813_executed_vs_written_tool_text():
+    """B1813: writing a generator into a file is a MENTION, not a run.
+
+    `scan_synthetic_provenance` fired on a turn whose only decimals were real
+    cube measurements. MEASURED: `rng.normal` appeared 3 times in a file that
+    turn WROTE - a test fixture and a lesson quoting the generator to explain
+    it. **No generator ran.**
+
+    B1738 established mention-vs-use for the RESPONSE. The same distinction
+    exists in TOOL text and had no expression. The transcript carries the tool
+    NAME, so it is exact rather than heuristic.
+    """
+    import importlib.util
+    import pathlib as _p
+
+    root = _p.Path(__file__).resolve().parents[2]
+    spec = importlib.util.spec_from_file_location(
+        "vtc_b1813", root / "scripts" / "verify_turn_compliance.py")
+    tg = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(tg)
+
+    def turn(*blocks):
+        return [{"type": "assistant", "message": {"content": list(blocks)}}]
+
+    wrote = turn(
+        {"type": "tool_use", "name": "Write",
+         "input": {"file_path": "docs.py",
+                   "content": "a lesson quoting rng.normal(1,3,30)"}},
+        {"type": "tool_use", "name": "Bash",
+         "input": {"command": "git add LEARNINGS.md"}})
+    ran = turn({"type": "tool_use", "name": "Bash",
+                "input": {"command": "python -c \"x = rng.normal(1,3,30)\""}})
+
+    assert "rng.normal" not in tg._executed_text(wrote), \
+        "file CONTENT is not executed text"
+    assert "git add" in tg._executed_text(wrote), \
+        "the bash command in the same turn must survive"
+    assert "rng.normal" in tg._executed_text(ran), \
+        "a bash command that runs a generator IS executed text"
+
+    real = "The measured jaccard is 0.9993 across the cube."
+    assert not tg.scan_synthetic_provenance(wrote, text=real), \
+        "writing a generator into a file must not be read as running one"
+    assert tg.scan_synthetic_provenance(ran, text=real), \
+        "running a generator must still fire"
+
+    # injection travels the same pipeline (B1811 contract)
+    assert tg._executed_text([], "pnl = rng.normal(1,3,30)") == \
+        "pnl = rng.normal(1,3,30)"
+
