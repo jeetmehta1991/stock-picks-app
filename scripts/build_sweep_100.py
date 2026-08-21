@@ -69,14 +69,41 @@ def main() -> int:
         rows.append((t, float((w["close"] * w["volume"]).mean())))
 
     rows.sort(key=lambda r: -r[1])
-    top = [t for t, _ in rows[:100]]
-    out = REPO / "output_audit" / "_sweep_100.txt"
+    # B1830 (owner ruling 2026-08-21): SIZE IS NOW A PARAMETER. The 2026-08-14
+    # ruling fixed this universe at 100; widening it is the lever that lets
+    # Step 1 move OFF the holdout without halving its sample - a
+    # holdout-respecting window keeps only 50-56pct of entries (MEASURED
+    # B1817), and at the full sample --min-n 10 already leaves 32-60pct of the
+    # grid ungradable.
+    #
+    # Default 100 reproduces the previous file byte-for-byte, and any larger N
+    # is a SUPERSET by construction: both are the top-N of one ADV-sorted list,
+    # so wave-1 results on the 100 remain interpretable as a subset.
+    import argparse
+    ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument("--n", type=int, default=100,
+                    help="universe size; output is _sweep_<n>.txt")
+    a = ap.parse_args()
+    if a.n > len(rows):
+        print(f"REFUSING: asked for {a.n} but only {len(rows)} tickers are "
+              f"eligible. A short universe silently becomes a different "
+              f"experiment.", file=sys.stderr)
+        return 2
+    top = [t for t, _ in rows[:a.n]]
+    out = REPO / "output_audit" / f"_sweep_{a.n}.txt"
     out.write_text("\n".join(top) + "\n")
 
     print(f"universe {len(uni)} | eligible {len(rows)} | excluded {len(skipped)}")
     print(f"excluded sample: {[t for t, _ in skipped[:8]]}")
     print(f"top 5: {[(t, round(a / 1e6)) for t, a in rows[:5]]}  (ADV $M)")
     print(f"wrote {out} ({len(top)} tickers)")
+    if a.n != 100:
+        prev = REPO / "output_audit" / "_sweep_100.txt"
+        if prev.exists():
+            base = set(prev.read_text().split())
+            miss = base - set(top)
+            print(f"superset of _sweep_100: {not miss}"
+                  + (f" MISSING {sorted(miss)[:8]}" if miss else ""))
     return 0
 
 

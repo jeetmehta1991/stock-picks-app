@@ -648,15 +648,27 @@ in order for every strategy. Each numbered gate cites the incident that produced
 | phase | scope | window | universe | produces |
 |---|---|---|---|---|
 | **0 INVENTORY** | build the SPECS entry | — | — | formula + Table A + factorial |
-| **1 SEARCH** | all fire-adding configs | **2 years** | **100** | ranked combinations |
-| **2 VALIDATE** | top 10 | **2 years (owner 2026-08-17)** | **444 disjoint of 544** | gate verdicts |
+| **1 SEARCH** | all fire-adding configs | **1 year, 2024-05..2025-05** | **200** | ranked combinations |
+| **2 VALIDATE** | top 10 | **2 years (owner 2026-08-17)** | **344 disjoint of 544** (was 444; Step 1 now takes 200) | gate verdicts |
 | **3 ADMIT** | best 1 | 2 years | 544 | Phase 1B decision |
 
-**Why 2 years EVERYWHERE (owner ruling 2026-08-17).** The market changed materially with AI
-adoption, so 2022-23 data is not wanted even for exit selection. Both phases run
-2024-05-05 -> 2026-05-05. **Validation is therefore CROSS-SECTIONAL, not temporal**: Step 1
-searches 100 tickers, Step 2 confirms on the 444 DISJOINT tickers over the same period.
-**Accepted limitation:** nothing tests whether an edge survives a regime change.
+**Why no 2022-23 data (owner ruling 2026-08-17).** The market changed materially with AI
+adoption, so 2022-23 is not wanted even for exit selection.
+
+**AMENDED FOR STEP 1 ONLY (owner ruling 2026-08-21).** Step 1 now runs **1 year,
+`2024-05-05 -> 2025-05-05`**, ending exactly at the holdout boundary, because running to
+`2026-05-05` meant ranking on the holdout year Step 2 then judges (`S6-B1605c`). Step 2 is
+unchanged. **Three standing constraints - locked holdout, no 2022-23 data, Step 1 off the holdout -
+have no window that satisfies all three at 100 tickers**, so the UNIVERSE is the lever: 100 -> 200.
+
+**Validation remains CROSS-SECTIONAL, not temporal**: Step 1 searches **200** tickers, Step 2
+confirms on the **344 DISJOINT** tickers (was 444 - the disjoint pool shrinks by exactly what Step 1
+takes). **Accepted limitation:** nothing tests whether an edge survives a regime change.
+
+**COST, stated honestly.** I told the owner this lever costs ~2x runtime. **In ticker-years it is
+approximately NEUTRAL** - 100 tickers x 2 years and 200 tickers x 1 year are both 200 ticker-years.
+**Approximately, not exactly**: warmup and per-run fixed costs are not linear in ticker-days, so the
+first config of the next wave is the measurement that settles it (`S6-B1831b`).
 
 **STEP 1 PRODUCES A RANKING, NOT VERDICTS.** Gates are STEP 2's admission criteria. Step 1
 emits a Sharpe-ranked list, excludes `NO_EXIT_SELECTABLE` (no exit with >=10 in-sample
@@ -867,7 +879,11 @@ values across concurrent launches before starting.
 # ONE strategy only. This is the difference between a 4.6 h run and a 20 min run.
 echo "<STRATEGY>" > output_audit/_subset_<STRATEGY>.txt
 
-# THE 100-TICKER SEARCH UNIVERSE IS FIXED AND SHARED BY EVERY STRATEGY.
+# THE SEARCH UNIVERSE IS SHARED BY EVERY STRATEGY.
+# B1830 (owner ruling 2026-08-21): size is now 200, and the builder takes --n.
+# This SUPERSEDES the 2026-08-14 "fixed at 100" ruling. _sweep_200.txt is a
+# SUPERSET of _sweep_100.txt by construction (both are top-N of one ADV-sorted
+# list), so earlier 100-ticker results stay interpretable as a subset.
 # Rebuild ONLY if the 544-universe changes. Owner ruling 2026-08-14,
     # re-anchored to the CORRECT universe by owner ruling 2026-08-17 (B1618).
 # Builder: scripts/build_sweep_100.py
@@ -935,11 +951,11 @@ STRATEGY_SUBSET_FILE=output_audit/_subset_<STRATEGY>.txt \
 OPTIMIZATION_MODE=1 \
 SMC_SWING_LENGTH=<P1_value> STRAT_EMA_SPAN=<P6_value> \
 PYTHONPATH=. python backtest/run_phase1a.py \
-  --tickers-file output_audit/_sweep_100.txt \
+  --tickers-file output_audit/_sweep_200.txt \
   --phase 1a-beta --cube-isolation \
   --no-agents --no-news --no-git --no-walk-forward \
   --screen-pool-workers 3 \
-  --start 2024-05-05 --end 2026-05-05 \
+  --start 2024-05-05 --end 2025-05-05 \
   --max-run-hours 4.0 \
   --output-dir output_<STRATEGY>_cfg<N>
 ```
@@ -955,7 +971,8 @@ PYTHONPATH=. python backtest/run_phase1a.py \
 | `--cube-isolation` | bypasses ALL cross-strategy gates AND tier sizing (B1545) |
 | `--screen-pool-workers` | **default is 0 = SEQUENTIAL** (L407). Use 0 for a clean timing measurement; ~3 per config when running several concurrently. **Total workers must never exceed 10 physical cores** |
 | `--max-run-hours` | the runner REFUSES to start without it |
-| `--start 2024-05-05` | 2-year SEARCH window; ranking only |
+| `--start 2024-05-05 --end 2025-05-05` | **1-year SEARCH window that ENDS AT THE HOLDOUT BOUNDARY** (owner ruling 2026-08-21). Step 1 previously ran to `2026-05-05` and therefore ranked on the holdout year it is judged against - `S6-B1605c`. |
+| `--tickers-file _sweep_200.txt` | **200 tickers, not 100** (same ruling). Halving the window alone keeps only **50-56pct of entries** (MEASURED B1817) and pushes most of the grid back to `NO_EXIT_SELECTABLE`; widening the universe restores the sample. **Superset of `_sweep_100.txt` by construction**, so wave-1 results stay interpretable. |
 
 ### 1.4 Concurrency
 
