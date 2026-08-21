@@ -670,6 +670,22 @@ cited while the failures they name kept recurring, because none had a mechanism 
   exists" was first made on a narrow regex; only the owner's challenge forced the broad search that
   actually settled it. The conclusion survived. The method did not.
 
+## AN ARTIFACT MUST CARRY THE KEY IT WAS RANKED ON (B1820 - L558, CHECKLIST #277)
+
+**MEASURED: `step1_ranking` emitted the HOLDOUT Sharpe as its first field and omitted `is_sharpe`,
+the key it ranks on** - so the artifact showed exactly what the leak B1718 fixed would have
+produced. **Real separation, unverifiable from its own output.** Load-bearing: `m = 41` versus
+`m = 820` turned on that field.
+
+- **Emit the ordering key FIRST, beside the value it is not.** A measurement kept for information is
+  fine; a measurement sitting where the ranking key belongs is misleading.
+- **The test: could a reader tell this artifact from one the BUG produced?** If not, it is not
+  evidence, however correct the code.
+- **Same shape as a vacuous test.** My AST check for this class walked `ast.Assign` while the
+  declaration was `ast.AnnAssign`, so it examined nothing and passed - **a test with no content and
+  a report with no content fail identically, and neither is visible from the result.** Only running
+  the failure case separates them.
+
 ## PROVE-IT-CAN-FAIL RULE (B1706 - L501, CHECKLIST #226, PROVEN)
 
 **EXTENSION (B1802 - L551): WHEN THE NEGATIVE ARM FAILS, SUSPECT YOUR MODEL FIRST.**

@@ -4902,3 +4902,23 @@ exercised a path production never takes and reported clean for that reason.
 - **A test asserts the bypass cannot return** - `test_b1811_gate_echo_is_not_evidence` greps for the
   old expression.
 
+### #277 - AN ARTIFACT MUST CARRY THE KEY IT WAS RANKED, SELECTED OR FILTERED ON (B1820 / L558)
+
+**MEASURED: `step1_ranking` emitted `sharpe` - the HOLDOUT measurement - as its first field and
+omitted `is_sharpe`, the key it actually ranks on.** So the artifact showed exactly what the defect
+B1718 fixed would have produced. **The separation was real and unverifiable from its own output.**
+
+**It was load-bearing:** the plan sets `m = 41` on that separation being airtight and states a leak
+forces `m = 820`, *"roughly 20x tighter and almost certainly admit nothing"*.
+
+- **Emit the ordering key, first, beside the value it is not.** Keeping the holdout Sharpe as a
+  MEASUREMENT is right; presenting it where the ranking key belongs is not.
+- **Enforced by `test_b1820_step1_ranking_emits_its_ranking_key`:** the emitter carries the key, the
+  sort still uses it, and on a real artifact the rows are ordered by it.
+- **The general test: could a reader tell this artifact from one produced by the bug?** If not, the
+  artifact is not evidence regardless of whether the code is correct.
+- **Retroactive (`#136`):** `S6-B1770e` (regrade artifacts carry neither `is_sharpe` nor `sharpe`,
+  so they graded nothing); `S6-B1580c` (no `swing_length`/`config` column, so a cube cannot be
+  attributed to the run that made it); `S6-B1705j` (a PASS column on a step that has no gates).
+  **Three prior instances, same shape: the output cannot answer the question asked of it.**
+

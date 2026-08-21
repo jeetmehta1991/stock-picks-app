@@ -11254,3 +11254,41 @@ are measured and ticketed.
 **Third gate defect in three consecutive commits, all in the machinery, all found by it firing on
 compliant work.** That is `S6-B1780d`'s question getting louder, not quieter.
 
+### L558
+
+**The artifact emitted the number it did NOT rank on, and my test for it examined nothing**
+
+**B1820/B1821.** Two misses, one turn, and they rhyme: **a thing that looks like evidence while
+containing none of it.**
+
+**FACE 1 - the artifact could not prove its own correctness.** B1718 closed a real leak: Step 1 had
+ranked 300 combinations by HOLDOUT Sharpe, which is best-of-300 selection on the data reserved to
+judge it. The fix ranks on `is_sharpe` instead.
+
+**But `step1_ranking` emitted `sharpe` - the holdout measurement - as its FIRST field and omitted
+`is_sharpe` entirely.** So the artifact showed exactly what the defect would have produced. An
+auditor reading it sees holdout Sharpe, no in-sample Sharpe, and concludes Step 1 ranks on the
+holdout. **The separation was real and unverifiable from its own output**, and that is worse than a
+known gap, because the output positively suggests the bug.
+
+**It was load-bearing.** The plan sets `m = 41` on the separation being airtight and says a leak
+forces `m = 820` - *"roughly 20x tighter and almost certainly admit nothing"*. The evidence for
+which of those applies was the field that was missing.
+
+**FACE 2 - my test for it examined nothing.** The generalised check I wrote - every declared
+`DROPS`/`SKIPS` key must have a write - walked `ast.Assign`. **The declaration is
+`DROPS: dict = {...}`, which is an `ast.AnnAssign`.** So the walk matched zero nodes, found zero
+offenders, and passed. Deleting the write it was built to require still passed.
+
+**`#226`'s fail arm caught it; review had already accepted it.** I read that test, thought it
+correct, and would have shipped it. **A test that examines nothing and a report that measures
+nothing fail the same way - they produce the shape of evidence with none of the content**, and
+neither is visible from the passing result.
+
+**The detection that works in both cases is the same: ask what the thing would look like if it were
+broken.** A vacuous test looks like a passing test. An artifact missing its ranking key looks like an
+artifact ranked on what it does show. **Only running the failure case separates them.**
+
+**Anchored:** FACE 1 is `#277`. FACE 2 is `#226` doing its job and `L551` recurring - the failing arm
+was again diagnostic of my model, this time of Python's AST rather than of the code under test.
+
