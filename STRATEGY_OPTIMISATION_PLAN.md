@@ -1231,10 +1231,24 @@ Run every lens, every config:
 | **Fail-open** | when this component meets unexpected input, does it PASS? Every branch that `continue`s, defaults, or falls back is a candidate | a comment satisfying a code check, a missing key skipped by the band gate, a wrong file found by the grader, a dropped ticker vanishing, an exit falling back to a time stop, a gate scoring "unknown" above "known bad" (L482, L483, L484) |
 | **Self-referential verification** | does this check compare code to REALITY, or to another piece of the same author's code? | the spot check re-implemented the producer and agreed 100/100 while 4 parameters did not exist in the engine; a pin test asserting a STRING passed for the whole inert life of a fix; the orphan gate keyword-matched three phrases and missed 4 of 4 (L476, L481, L485) |
 | **Completion vs artifact** | did the work happen, or did the command merely return? | a smoke reported "PASSED" with no cube written; a killed child reported exit 0 at simulated day 25 of 504 (L486) |
+| **Effective parameter** | a flag that was ACCEPTED - does changing it change the answer? Run it at two values and compare. Enforced by `scripts/verify_flag_binds.py` | `--min-n 10` was accepted and governed admission only, while `OOS_MIN_N=30` in another module decided which cells got a Sharpe - so `--min-n 10` and `--min-n 20` were byte-identical (S6-B1705b, fixed B1714) |
 
 **The 4 lenses below the original 7 were added B1631 from THIS session's actual defects** - every
 example is a defect that the original 7 did not name and that shipped anyway. A lens list that only
 grows after a failure is working as designed; one that never grows is not being used.
+
+**LENS 12 was added B1800 (S6-B1705f, owner-approved) and is the only one with a MECHANISM rather
+than a question.** The other eleven are read and applied by judgment; this one runs:
+`binds(fn, param, a, b, ...)` returns `BINDS` / `INERT ON THIS INPUT` / `RAISED`.
+
+- **It proves BINDING, never CORRECTNESS.** A flag that binds to the wrong thing passes here - that
+  is the EXECUTABILITY lens's question, and the two are deliberately kept apart.
+- **It cannot prove inertness in general, only on the input given**, which is why the verdict says
+  `ON THIS INPUT` and names the fixture. A flag inert on one fixture may bind on another.
+- **Choose an input where the difference is observable.** `min_n` 10 vs 30 agrees for both n<10 and
+  n>=30; only n between the floors measures anything. **A two-value probe on an input where both
+  values must agree is a green result that means nothing** - the same shape as a differential test
+  with n=0 on both sides (L393, S6-B1522a).
 
 **Every finding gets an EXECUTION_QUEUE ticket the same turn.** A finding mentioned in prose and
 not ticketed does not exist (#94). Causes go in only when TESTED - otherwise `UNKNOWN - RCA NEEDED`

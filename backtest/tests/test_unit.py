@@ -17532,3 +17532,64 @@ def test_b1799_shadowing_check_has_no_intent_exemption():
             "exemption may be keyed only on an OBSERVABLE property - a test "
             "sees shape, never intent, so any accidental shadow can claim to "
             "be deliberate (L550).")
+
+
+def test_b1800_lens12_effective_parameter():
+    """S6-B1705f (LENS 12): a flag that was accepted must actually BIND.
+
+    The eleven adversarial lenses all interrogate an OUTPUT. **None asks whether
+    an input that was accepted changed anything.** The owner passed `--min-n 10`;
+    it was accepted, it appeared in the log, and `OOS_MIN_N = 30` in another
+    module decided which cells got a Sharpe - so `--min-n 10` and `--min-n 20`
+    produced identical results. **An inert flag is indistinguishable from an
+    absent one and strictly worse: the absent flag would have raised.**
+
+    Three arms, because a probe that only shows the good case proves nothing
+    (#226): the real callable must BIND, a deliberately-swallowing wrapper must
+    read INERT, and an unknown kwarg must RAISE.
+
+    The fixture is deterministic - no rng - so the test cannot flake and no
+    number here is synthetic-but-quoted (#201 / S6-B1705e).
+    """
+    import importlib.util
+    import pathlib as _p
+    import sys as _sys
+
+    import pandas as pd
+
+    root = _p.Path(__file__).resolve().parents[2]
+    _sys.path.insert(0, str(root / "scripts"))
+    import roster_core as rc
+
+    spec = importlib.util.spec_from_file_location(
+        "vfb_b1800", root / "scripts" / "verify_flag_binds.py")
+    vfb = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(vfb)
+
+    # n = 20 sits BETWEEN the two floors, which is the only place the
+    # difference is observable. n < 10 or n >= 30 would agree for the wrong
+    # reason and the test would pass while measuring nothing.
+    pnl = pd.Series([0.9, -0.4, 1.7, -1.1, 0.3, 2.2, -0.8, 0.5, -0.2, 1.3,
+                     -1.6, 0.7, 0.1, -0.5, 1.9, -0.3, 0.6, -1.2, 0.8, 0.4])
+    hold = pd.Series([3.0, 5.0, 2.0, 8.0, 4.0, 6.0, 3.0, 7.0, 2.0, 5.0,
+                      9.0, 4.0, 3.0, 6.0, 2.0, 5.0, 4.0, 7.0, 3.0, 6.0])
+    assert len(pnl) == 20
+
+    real = vfb.binds(rc.evaluate, "min_n", 10, 30, pnl, hold)
+    assert real["verdict"] == vfb.BINDS, (
+        f"roster_core.evaluate ignores its own min_n: {real}. That is the "
+        "pre-B1714 defect returning - the caller's floor must reach _sharpe.")
+
+    def swallows(pnl, hold, *, min_n=None):
+        return rc.evaluate(pnl, hold, min_n=10)     # accepts and discards
+
+    inert = vfb.binds(swallows, "min_n", 10, 30, pnl, hold)
+    assert inert["verdict"] == vfb.INERT, (
+        "the lens must report a swallowed flag as inert - a probe that cannot "
+        "fail on a deliberately broken input proves nothing (#226)")
+
+    missing = vfb.binds(rc.evaluate, "no_such_param", 1, 2, pnl, hold)
+    assert missing["verdict"] == vfb.RAISED,         "an unknown kwarg is the loudest form of 'does not bind'"
+
+    # the result must SHOW what moved, not merely assert that it did
+    assert real["a"] != real["b"] and real["a"],         "a BINDS verdict must carry both renderings so it can be checked"
