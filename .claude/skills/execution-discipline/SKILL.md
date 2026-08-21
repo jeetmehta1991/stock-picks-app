@@ -687,6 +687,24 @@ queue count quoted this session was row-level while named ticket-level.
 - **Where it happened matters.** Not in the analysis - in the ENFORCEMENT, for the second time
   (`S6-B1780d` is the first, and was already open when the `else` was written).
 
+## NAMING AN ENFORCER IS NOT BEING ENFORCED - CHECK IT COVERS THE SCOPE (B1796 - L547, #273)
+
+**`#242` requires every rule added here to NAME the function or test that enforces it. Nothing
+checked that the named mechanism COVERS the scope the rule declares.**
+
+**MEASURED: `#270` declares *"tickets, documents, or CODE"* and its gate fired on 2 of 10 realistic
+verdict sentences - both tickets, ZERO of eight for code and documents.** The bullet claiming
+enforcement was written in the same turn as the gate that did not deliver it.
+
+- **When a rule names N domains, its pin test carries a case per domain.** Not one example - one per
+  declared domain, so the coverage claim is true by test rather than by assertion.
+- **This is any-vs-each one level up.** `#234` asks whether every MEMBER of a rule was handled;
+  this asks whether every DOMAIN of a rule is reachable by its enforcer.
+- **The prose is the claim.** Writing *"Enforced by X"* is a factual assertion about X's behaviour
+  and is subject to the Truth Standard like any other - **verify it or qualify it.**
+- **Retroactive (`#136`):** `#270` (this instance); `#242` itself, which checks naming and not
+  coverage; `#240`, where *"every gate carries a corpus entry"* was asserted while 17 of 25 had none.
+
 ## NO HALF MEASURES - READ IT END TO END (B1794 - L544, CHECKLIST #270)
 
 **OWNER DIRECTIVE: analyze anything - tickets, documents, or CODE - end to end. No half measures.**
@@ -695,8 +713,16 @@ queue count quoted this session was row-level while named ticket-level.
 SEVEN-FOLD.** The set was SORTED: planning rows first, measurement records after. **A contiguous
 slice of a sorted list is not a sample.**
 
-- **Read every member before stating a verdict over the set.** Enforced by `scan_partial_read` - it
-  fires on a population verdict beside truncation markers (`head -N`, `[:300]`, "batch 1 of").
+- **Read every member before stating a verdict over the set.** Enforced by `scan_partial_read`
+  **across all three declared domains** - it fires on a population verdict beside truncation
+  markers (`head -N`, `[:300]`, "batch 1 of") in the ticket dialect (*"all 138 are complete"*),
+  the code dialect (*"no other call sites"*, *"all 47 gates have a seam"*) and the document
+  dialect (*"no document outside archive/ still references it"*). **B1796: it originally covered
+  only tickets - 2 of 10 cases, 0 of 8 for code and documents - while this bullet already claimed
+  it was enforced.** One case per domain is pinned by
+  `test_b1796_partial_read_covers_every_declared_domain`.
+- **A forward-looking clause is an intention, not a verdict**, and the check is clause-scoped:
+  planning in one clause does not excuse concluding in the next.
 - **Say "end to end" only when it is true.** The gate treats that phrase as the assertion it is.
 - **The contamination is not local.** The ground-truth corpus built from those 20 rows, and used to
   score four classifiers, was right about each row and wrong about the population.

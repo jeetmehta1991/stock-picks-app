@@ -4655,3 +4655,25 @@ is a silent verdict on everything you forgot to think about.**
 **Applies past ticket scripts** - any sweep that assigns a disposition, label, or status across a set:
 migrations, classifiers, bulk edits, roster builders.
 
+### #273 - NAMING AN ENFORCER IS NOT BEING ENFORCED (B1796 / L547)
+
+**`#242` requires an added rule to NAME its mechanism. Nothing checked the mechanism COVERS the
+rule's declared scope.**
+
+**MEASURED: `#270` declares *"tickets, documents, or CODE"*; its gate fired on 2 of 10 realistic
+verdict sentences - both tickets, ZERO of eight for code and documents.** The bullet claiming
+enforcement shipped in the same turn as the gate that did not deliver it.
+
+**When a rule declares N domains, its pin test carries a case PER DOMAIN** - so the coverage claim
+is true by test, not by assertion. For `#270` that is
+`test_b1796_partial_read_covers_every_declared_domain` (11 fire-cases across 3 domains, 5
+quiet-cases).
+
+**MECHANISED FOR THIS INSTANCE; JUDGMENT-ONLY IN GENERAL** (per `#236`): extracting the declared
+domains from arbitrary rule prose and proving reachability is not something a scan can do. The
+durable part is the habit - **"Enforced by X" is a factual claim about X, subject to the Truth
+Standard like any number.**
+
+**Any-vs-each, one level up.** `#234` asks whether every MEMBER of a rule was handled; this asks
+whether every DOMAIN of a rule is reachable by its enforcer.
+

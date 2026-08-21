@@ -1553,6 +1553,25 @@ VERDICT = (
     "stays open", "verdict", "i judge", "classified", "disposition",
 )
 
+# B1796: the ticket dialect above covers ONE THIRD of #270's declared scope.
+# A verdict over CODE or a DOCUMENT is a universal quantifier plus a state verb,
+# or a negative existential. MEASURED before this: 2 of 10 realistic cases fired,
+# 0 of 8 for code and documents.
+_UNIVERSAL = (
+    r"\b(?:all|every|each|none)\s+(?:of\s+)?(?:the\s+)?\d*\s*"
+    r"(?:[\w./-]+\s+){1,5}"
+    r"(?:are|is|was|were|have|has|carry|carries|read|reads|use|uses|name|"
+    r"names|reference|references|contain|contains|sit|sits|live|lives|"
+    r"point|points|call|calls|match|matches)\b")
+# B1796: forward-looking clauses state an INTENTION. "each row needs its own
+# verdict later" is work narration, not a conclusion drawn from a partial read.
+_FUTURE = (r"\b(?:will|later|going to|plan to|next turn|i intend|"
+           r"remains? to be|yet to|about to|then )\b")
+_NEG_EXISTENTIAL = (
+    r"\b(?:no other|none of|nowhere else|not a single)\b|"
+    r"\bno\s+[\w./-]+\s+(?:outside|anywhere|still|remains|exists)\b|"
+    r"\b(?:is|are|remains|remain)\s+unused\b")
+
 
 # B1795 (#271): THE LEDGER IS AN APPEND LOG, NOT A TABLE OF TICKETS.
 # Closing a ticket APPENDS a row instead of editing the old one, so 81 ids
@@ -1616,16 +1635,31 @@ def scan_partial_read(entries, *, text=None, tool_text=None) -> list[str]:
     MARKERS, not comprehension. A turn that reads everything and reasons badly
     passes. It catches the specific shape that recurred - decide from a slice.
     """
+    import re as _re
     t = _response_text(entries, text)
     if not t:
         return []
-    verdicts = [v for v in VERDICT if v in t]
-    if not verdicts:
+    # THREE DIALECTS OF THE SAME CLAIM (B1796):
+    #   ticket    - a disposition word plus a population reference
+    #   code/doc  - a universal quantifier with a state verb, OR a negative
+    #               existential ("no other call sites", "the function is unused")
+    # CLAUSE-SCOPED (B1762: proximity is not attribution). A response may plan
+    # in one clause and conclude in another; only the concluding clause counts,
+    # and a FORWARD-LOOKING clause is an intention rather than a verdict.
+    hit = None
+    for clause in _re.split(r"[;.\n]", t):
+        if not clause.strip() or _re.search(_FUTURE, clause):
+            continue
+        vs = [v for v in VERDICT if v in clause]
+        pop = _re.search(r"\b(?:all|each|every)\b|\b\d+\s+of\s+\d+\b", clause)
+        uni = _re.search(_UNIVERSAL, clause)
+        neg = _re.search(_NEG_EXISTENTIAL, clause)
+        if (vs and pop) or uni or neg:
+            hit = vs[0] if vs else (uni or neg).group(0).strip()
+            break
+    if hit is None:
         return []
-    # a POPULATION claim - "N of M", "all 138", "each of the"
-    import re as _re
-    if not _re.search(r"\b(?:all|each|every)\b|\b\d+\s+of\s+\d+\b", t):
-        return []
+    verdicts = [hit]
     tt = (_tool_text(entries) if tool_text is None else tool_text).lower()
     cuts = [c for c in TRUNCATION if c in tt]
     if not cuts:

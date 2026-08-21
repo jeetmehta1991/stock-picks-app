@@ -10813,3 +10813,45 @@ control flow.
 that the gate-building machinery reproduced the defect it was built to stop. **This is the second
 instance, and the first one was already an open ticket when I wrote the `else`.**
 
+### L547
+
+**The rule named its enforcer, and the enforcer covered one third of the rule**
+
+**B1796, owner-asked:** *"Did you add the previous turn's requirement of reading end to end in
+skill?"*
+
+**Both halves of the directive had landed.** The section is at `SKILL.md:690` and names the full
+scope - *"analyze anything - tickets, documents, or CODE - end to end"*. Additions to the skill are
+gated: `scan_ungated_addition` reads the `SKILL.md` diff, not only `CHECKLIST.md`.
+
+**But the gate enforcing the rule covered only tickets.** MEASURED against ten realistic verdict
+sentences:
+
+```
+tickets ..... 2 of 2 fire
+code ........ 0 of 5 fire
+documents ... 0 of 3 fire
+```
+
+`VERDICT` held `promoted / executed / stays open / disposition` - **the ticket dialect.** A verdict
+over CODE reads *"there are no other call sites"*; over a DOCUMENT, *"no document outside archive/
+still references it"*. Same claim, different grammar, and the gate recognised none of it.
+
+**The bullet asserting coverage was written in the same turn as the gate that did not deliver it.**
+*"Enforced by `scan_partial_read`"* is a factual claim about a function's behaviour, and I wrote it
+without running the function on two of the three domains I had just declared.
+
+**`#242` cannot catch this, and that is the generalisable part.** It requires an added rule to NAME
+its mechanism - which this rule did. **Naming is not covering.** The same shape as `#234`'s
+any-vs-each, one level up: `#234` asks whether every MEMBER of a rule was handled, `#273` asks
+whether every DOMAIN of a rule is reachable by its enforcer.
+
+**Fixed by grammar, not vocabulary.** Adding more disposition words would have chased dialects
+forever. A population verdict has a SHAPE - a universal quantifier with a state verb, or a negative
+existential - and matching the shape covers all three domains at once: **11 of 11 fire, 0 of 7 false
+positives**, including a pre-existing over-fire on future-tense narration that the clause-scoped
+guard removed.
+
+**What made it feel done.** The section named all three domains, so reading the skill back confirmed
+the scope. **The skill was right; the mechanism under it was not, and nothing compared the two.**
+

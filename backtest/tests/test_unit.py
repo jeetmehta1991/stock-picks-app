@@ -17256,3 +17256,66 @@ def test_b1795_queue_rows_dedupe_working_tree_over_commit():
     assert len(ids) == len(set(ids)), (
         f"duplicate ticket ids in the gate's input: "
         f"{[i for i in set(ids) if ids.count(i) > 1][:5]}")
+
+
+def test_b1796_partial_read_covers_every_declared_domain():
+    """B1796 (#273): #270's rule names three domains; its gate covered one.
+
+    The skill section says *"analyze anything - tickets, documents, or CODE -
+    end to end"* and then says *"Enforced by `scan_partial_read`"*. MEASURED
+    before this test existed: **the gate fired on 2 of 10 realistic verdict
+    sentences - both tickets, ZERO of eight code and document cases** - because
+    its VERDICT list held only ticket-disposition vocabulary.
+
+    **A rule that NAMES an enforcer is not a rule that IS enforced.** `#242`
+    checks that an added rule names a mechanism; nothing checked that the
+    mechanism covers the rule's declared SCOPE. This test is that check for
+    `#270`: one case per declared domain, so the coverage claim in the skill is
+    true by test rather than by assertion.
+    """
+    import importlib.util
+    import pathlib as _p
+
+    root = _p.Path(__file__).resolve().parents[2]
+    spec = importlib.util.spec_from_file_location(
+        "vtc_b1796", root / "scripts" / "verify_turn_compliance.py")
+    tg = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(tg)
+
+    TRUNC = "grep -n 'def scan_' scripts/verify_turn_compliance.py | head -20"
+
+    must_fire = {
+        "ticket/disposition": "All 138 rows are complete - nothing pending.",
+        "ticket/verified": "Every one of the 92 tickets is verified.",
+        "code/no-other": "There are no other call sites for this helper anywhere.",
+        "code/universal": "All 47 gate functions have a text seam.",
+        "code/none-of": "None of the 219 strategies reads that producer.",
+        "code/every-is": "Every consumer of naked_poc_count is in volume_profile.py.",
+        "code/unused": "The function is unused across the whole repo.",
+        "doc/universal": "All 46 synced docs already carry the corrected count.",
+        "doc/negative": "No document outside archive/ still references the threshold.",
+        "doc/every-names": "Every LEARNINGS entry from L500 on names its mechanism.",
+        "mixed-clause": ("I will read the rest next turn. All 47 gate functions "
+                         "have a text seam."),
+    }
+    for label, sentence in must_fire.items():
+        assert tg.scan_partial_read([], text=sentence, tool_text=TRUNC), (
+            f"declared domain NOT covered: {label} -> {sentence!r}. The rule "
+            "claims tickets, documents AND code; the gate must fire on each.")
+
+    must_be_quiet = {
+        "escape/end-to-end": ("All 138 rows are complete - I read them end to "
+                              "end.", TRUNC),
+        "escape/in-full": ("None of the 219 strategies reads it; written in "
+                           "full, no truncation.", TRUNC),
+        "no-truncation": ("All 47 gate functions have a text seam.",
+                          "python scripts/sweep_gate_incidents.py"),
+        "future/needs-later": ("Reading the next batch now; each row needs its "
+                               "own verdict later.", TRUNC),
+        "future/plan-to": ("I plan to classify all 110 rows in the next batch.",
+                           TRUNC),
+    }
+    for label, (sentence, tool) in must_be_quiet.items():
+        assert not tg.scan_partial_read([], text=sentence, tool_text=tool), (
+            f"false positive on {label}: {sentence!r}. A forward-looking clause "
+            "is an intention, not a verdict from a partial read.")
