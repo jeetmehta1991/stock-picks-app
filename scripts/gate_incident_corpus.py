@@ -129,6 +129,12 @@ INCIDENTS: dict[str, tuple[str, bool, dict]] = {
         True,
         {},
     ),
+    "scan_partial_read": (
+        "Batch 1 of 20 hand-verified - 2 complete, 17 open. On batch 1's rate "
+        "roughly 12 more of the 138 will prove complete.",
+        True,
+        {"tool_text": "sed -n '1,20p' allrows.txt | head -35"},
+    ),
     # NEGATIVE control - ordinary reporting prose that must NOT trip anything.
     # Note it is a bare sentence, so gates that legitimately require RESPONSE
     # STRUCTURE (a SKILLS block, a compliance block) are excluded by the sweep
@@ -167,6 +173,9 @@ NEUTRAL: dict[str, dict] = {
     "scan_prose_only_rule": {"docs_touched": False, "code_touched": False},
     "scan_ungated_addition": {"added_rules": []},
     "scan_shell_substitution": {"tool_text": ""},
+    # B1794: this gate reads TOOL text for truncation markers, so the
+    # control must supply a clean tool call or it measures the gate working.
+    "scan_partial_read": {"tool_text": ""},
 }
 
 

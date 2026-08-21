@@ -669,6 +669,22 @@ says *each*.**
 - **Phase 5 is three artifacts**: LEARNINGS + CHECKLIST-or-explicit-citation + queue ticket.
   Enforced by `scan_miss_capture_complete`.
 
+## NO HALF MEASURES - READ IT END TO END (B1794 - L544, CHECKLIST #270)
+
+**OWNER DIRECTIVE: analyze anything - tickets, documents, or CODE - end to end. No half measures.**
+
+**MEASURED: I read 20 of 141 rows and projected. Sample 10pct complete, population 72pct - wrong
+SEVEN-FOLD.** The set was SORTED: planning rows first, measurement records after. **A contiguous
+slice of a sorted list is not a sample.**
+
+- **Read every member before stating a verdict over the set.** Enforced by `scan_partial_read` - it
+  fires on a population verdict beside truncation markers (`head -N`, `[:300]`, "batch 1 of").
+- **Say "end to end" only when it is true.** The gate treats that phrase as the assertion it is.
+- **The contamination is not local.** The ground-truth corpus built from those 20 rows, and used to
+  score four classifiers, was right about each row and wrong about the population.
+- **Careful work on a subset reads exactly like careful work.** Every one of the 20 verdicts was
+  correct. **The error was in generalising from a slice**, which care inside the slice cannot see.
+
 ## SCORE ON THE MINORITY CLASS, NOT ON ACCURACY (B1793 - L543, CHECKLIST #269)
 
 **MEASURED: 17/20 = 85pct overall, 0/3 = 0pct on the classes that matter.** The classifier defaults

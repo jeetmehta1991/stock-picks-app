@@ -1520,6 +1520,65 @@ def scan_partial_distribution(entries, *, text=None) -> list[str]:
     return []
 
 
+# B1794 (#270): NO HALF MEASURES. Owner directive 2026-08-20:
+#   "You didnt bother to read all of them end to end. You are in a hurry to make
+#    decisions. ... you are supposed to analyze anything not just tickets by
+#    going through the tickets or documents or even code end to end no half
+#    measures"
+#
+# MEASURED: I read 20 of 141 rows, projected the rate onto the other 121, and
+# reported that projection as guidance. Reading all 138 gave 100 EXECUTED /
+# 38 OPEN - the sample said 10pct complete, the population is 72pct. The first
+# 20 were PLANNING rows; the rest were MEASUREMENT records. **A sample drawn
+# from one end of a sorted population is not a sample.**
+TRUNCATION = (
+    "head -", "| head", "tail -", "[:20]", "[:30]", "[:50]", "[:100]",
+    "[:150]", "[:165]", "[:180]", "[:200]", "[:230]", "[:300]", "--show",
+    "first 20", "sample of", "batch 1 of", "spot-check",
+)
+VERDICT = (
+    "promoted", "verified", "executed", "complete", "nothing pending",
+    "stays open", "verdict", "i judge", "classified", "disposition",
+)
+
+
+def scan_partial_read(entries, *, text=None, tool_text=None) -> list[str]:
+    """#270: a verdict over a population needs the WHOLE population read.
+
+    Fires when a turn states a verdict over a set AND its tool calls show only
+    a truncated view of that set. **The verdict is the trigger, not the
+    truncation** - truncating output to look at it is fine; truncating it and
+    then deciding is the defect.
+
+    This cannot detect every half measure, and says so: it sees TRUNCATION
+    MARKERS, not comprehension. A turn that reads everything and reasons badly
+    passes. It catches the specific shape that recurred - decide from a slice.
+    """
+    t = _response_text(entries, text)
+    if not t:
+        return []
+    verdicts = [v for v in VERDICT if v in t]
+    if not verdicts:
+        return []
+    # a POPULATION claim - "N of M", "all 138", "each of the"
+    import re as _re
+    if not _re.search(r"\b(?:all|each|every)\b|\b\d+\s+of\s+\d+\b", t):
+        return []
+    tt = (_tool_text(entries) if tool_text is None else tool_text).lower()
+    cuts = [c for c in TRUNCATION if c in tt]
+    if not cuts:
+        return []
+    if "end to end" in t or "in full" in t or "no truncation" in t:
+        return []
+    return [f"VERDICT FROM A PARTIAL READ (B1794/#270): this turn states a "
+            f"verdict over a population ({verdicts[0]!r}) while its tool calls "
+            f"show truncation ({cuts[0]!r}). **I read 20 of 141 rows, projected "
+            "the rate, and was wrong by 7x** - the sample said 10pct complete, "
+            "the population is 72pct, because the first 20 were planning rows "
+            "and the rest were measurements. Read the whole set, or say "
+            "explicitly which part you read and do not generalise from it."]
+
+
 def scan_queue_vocabulary(entries, *, rows=None, diff_text=None) -> list[str]:
     """#247 MECHANISED (B1769): every queue row added this turn uses a CLASS from
     the closed vocabulary, and every non-terminal class carries a real reason.
@@ -2310,7 +2369,8 @@ def main() -> int:
                 scan_retroactive_sweep, scan_compliance_is_content,
                 scan_ungated_addition, scan_shell_substitution,
                 scan_queue_vocabulary, scan_queue_not_updated,
-                scan_unverified_count, scan_partial_distribution):
+                scan_unverified_count, scan_partial_distribution,
+                scan_partial_read):
         try:
             _r = _sc(_e2)
         except Exception as _e:

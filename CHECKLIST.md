@@ -4594,3 +4594,25 @@ by reading** - the corpus pattern of `#240`, moved from gates to classifiers. En
 **And RECORD a metric you cannot meet; do not enforce it.** The test asserts a range on recall
 rather than a floor, because demanding a floor the classifier cannot reach invites loosening the
 labels to pass - the exact failure the corpus exists to prevent.
+
+### #270 - NO HALF MEASURES: READ THE WHOLE ARTIFACT BEFORE JUDGING IT (B1794 / L544)
+
+**OWNER DIRECTIVE 2026-08-20:** *"You are supposed to analyze anything - not just tickets, but
+documents or even code - end to end. No half measures."*
+
+**MEASURED: I read 20 of 141 rows and projected the rate. Sample 10pct complete; population 72pct -
+wrong SEVEN-FOLD.** The population is SORTED: `B1503-B1541` are planning rows, `B1576-B1782` are
+measurement records. **A contiguous slice of a sorted list is not a sample.**
+
+**Before stating a verdict over a set, read every member of it.** Enforced by `scan_partial_read`,
+which fires when a turn states a population verdict while its tool calls show truncation
+(`head -N`, `[:300]`, `--show`, *"batch 1 of"*). Say *"end to end"* or *"in full"* only when it is
+true - the gate takes that as the assertion it is.
+
+**THE CONTAMINATION IS NOT LOCAL.** `hand_verified_rows.py`, the labelled ground truth built from
+those 20 rows and used to score four classifiers, is 20 planning rows presented as representative of
+141. **Right about each row, wrong about the population.**
+
+**AND CAREFUL WORK ON A SUBSET READS EXACTLY LIKE CAREFUL WORK.** Each of the 20 verdicts was
+correct; 20 sounds like a respectable sample. **The error was never in a row - it was in
+generalising from a slice**, which no amount of care inside the slice can detect.

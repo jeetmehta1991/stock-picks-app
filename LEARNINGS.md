@@ -10708,3 +10708,39 @@ exposed it.**
 **So the test records RECALL and asserts only a range.** Demanding a recall floor the classifier
 cannot meet would invite loosening the labels to pass, which is precisely the failure the corpus
 exists to prevent. **A metric you cannot meet honestly should be reported, not enforced.**
+
+### L544
+
+**I read 20 of 141, projected the rate, and was wrong by seven-fold**
+
+**B1794, owner-caught.** *"You didnt bother to read all of them end to end. You are in a hurry to
+make decisions."*
+
+**Reading all 138 end to end:**
+
+```
+                       my 20-row sample     the actual population
+complete .............. 2/20 = 10pct        100/138 = 72pct
+still open ............ 17/20                38/138
+```
+
+**I projected 10pct onto the other 118 and reported it as guidance.** The projection was wrong
+seven-fold, and the reason is visible the moment the whole set is read: **the population is SORTED.**
+Rows `B1503-B1541` are early PLANNING rows - *"Run first"*, *"Build the harvester"*, *"needs
+resimulation"*. Rows `B1576-B1782` are MEASUREMENT RECORDS - *"MEASURED ELAPSED 5 h 46 min"*,
+*"400 combinations graded"*, *"rho = -0.779, p < 0.001"*. **My sample was the first 20 of a sorted
+list, which is not a sample at all.**
+
+**And the sampling infected everything built on it.** `hand_verified_rows.py` - the labelled ground
+truth I enshrined one turn earlier and used to score classifiers - is 20 planning rows presented as
+representative of 141. **The corpus was right about each row and wrong about the population**, and
+every classifier scored against it inherited that.
+
+**What made it feel sufficient.** 20 is a respectable-sounding sample, the rows were read carefully
+and in full, and each individual verdict was correct. **The error was not in any row; it was in
+treating a contiguous slice as a sample and then generalising.** Careful work on an unrepresentative
+subset reads exactly like careful work.
+
+**The rule, and the owner stated it more broadly than tickets: go through the tickets, the documents
+OR THE CODE end to end. No half measures.** A verdict about a population requires the population -
+not the first N of it, however carefully those N are read.
