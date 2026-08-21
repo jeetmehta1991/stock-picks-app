@@ -10949,6 +10949,10 @@ read it again during the B1795 end-to-end pass, held it OPEN with the reason *"n
 word-bounds call `#239` describes"* - and was then blocked by the precise thing it predicted.
 **Deferred-with-a-good-reason and unfixed are the same state from the defect's point of view.**
 
+**ANCHORED (`#197`):** the harness faces extend `#241`; the ticket-is-not-a-fix rule extends
+`#244`'s deferral companion. Both also carried into `SKILL.md`, which is the file that loads each
+turn - a rule recorded only here is a story.
+
 **Fixed at the right rung** (`#239`): prefix-guarded, suffix-free -
 `(?<![a-z0-9_])complete` still catches *"completed"*, and no marker can match mid-word. **One of the
 twelve sites closed; eleven remain under `S6-B1774e`**, now with a live incident attached to justify

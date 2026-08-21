@@ -3976,6 +3976,20 @@ reported 4 broken gates; **3 were correct and starved.** Before ticketing a gate
 supply the incident's full text and state - **a harness reporting on itself is the same defect in
 the opposite direction.**
 
+**EXTENSION (B1798 / L549) - TWO MORE FACES OF THE SAME ERROR, BOTH IN ONE TURN:**
+
+- **THE EMPTY PROBE.** A probe whose input never loaded printed `VERDICT words present : []` and
+  `truncation markers : []`. **Every list empty because `entries` was 0** - which renders
+  identically to *"nothing matched, so it is a false positive"*, the conclusion I was already
+  leaning toward. **An empty measurement is not a negative result.** Print the INPUT SIZE beside
+  every marker list; `entries loaded: 0` is the tell and it costs one line.
+- **THE OVER-SUPPLIED STATE.** Testing whether a bare `JUDGMENT-ONLY` satisfies Phase-5 member 5
+  returned PASS in BOTH arms, because `_artifact_touched` was live - **the turn was editing the very
+  files that satisfy that member.** The route under test was unreachable. **When both arms of a
+  probe agree, suspect the probe before believing the result.**
+- **The symmetry, stated once:** STARVING a gate manufactures false failures; OVER-SUPPLYING it
+  manufactures false passes. **Neither is a measurement of the gate.**
+
 ### #242 - EACH NEW NUMBERED RULE NAMES ITS OWN ENFORCER (B1762 / L518)
 
 **MEASURED: `#231`'s gate asks whether a CODE FILE was touched this turn, not whether THIS rule got
@@ -4031,6 +4045,16 @@ finding.**
 for the next enforcement batch"* - no blocker, no cap cited, unreadable later as blocked vs
 deprioritised vs forgotten. **And it was the deepest of three items; the two shallow ones shipped
 first.** Depth loses to closability at end of turn unless the ordering is forced.
+
+**EXTENSION (B1798 / L549) - A TICKET DESCRIBING A DEFECT DOES NOT STOP THE DEFECT.** `S6-B1774e`
+sat OPEN for several batches stating *"12 DETECTION SITES STILL ON RAW `in`"*. It was re-read during
+the B1795 end-to-end pass and deliberately held OPEN with a good reason - *"needs the stems-vs-word-
+bounds call `#239` describes"*. **Then the exact defect it predicted blocked a turn: `'classified'`
+matched inside `'reclassified'`.**
+
+**Deferred-with-a-good-reason and unfixed are the same state from the defect's point of view.** When
+a ticket names a live defect class in machinery you are actively relying on, the deferral is not
+neutral - **it is a decision to accept the next incident**, and it should be written down as that.
 
 ### #245 - NEVER PASS A MESSAGE THROUGH A DOUBLE-QUOTED SHELL ARGUMENT (B1765 / L520)
 

@@ -1186,6 +1186,23 @@ nothing. `scan_false_skill_status` was defined, proven 5/5, reported live, and h
   failures.** My first sweep called 4 gates broken; **3 were correct.** Before ticketing a gate as
   silent, give it the full text and state - **reporting on your own harness is the same defect in
   the opposite direction.**
+- **EXTENSION (B1798 / L549) - starving is one face; there are three, and two showed up in a single
+  turn:**
+
+  | face | symptom | tell |
+  |---|---|---|
+  | starved state | false FAILURE | gate silent on text it should catch |
+  | **empty input** | **false PASS that reads as a clean negative** | **`entries loaded: 0`** |
+  | **over-supplied state** | **false PASS via a route you are not testing** | **both arms agree** |
+
+  **An empty measurement renders identically to a negative result** - print the INPUT SIZE beside
+  every marker list, one line, always. **And when both arms of a probe agree, suspect the probe
+  before believing the result**: mine passed twice because the turn was editing the very files that
+  satisfied the member under test.
+- **A ticket describing a defect does not stop the defect (L549).** `S6-B1774e` named the raw-`in`
+  matching class, stayed OPEN with a good reason, and the defect it predicted then blocked a turn.
+  **Deferred-with-a-reason and unfixed are the same state from the defect's point of view** - when
+  the class is live in machinery you rely on, deferring is a decision to accept the next incident.
 
 ## STEM EVERY MARKER LIST, AND SWEEP THEM ALL (B1759 - L515, CHECKLIST #239)
 
