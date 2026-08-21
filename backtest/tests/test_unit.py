@@ -17717,3 +17717,35 @@ def test_b1801_synthetic_provenance():
         [], text="Version 2.422 of the spec.", tool_text=gen),         "must be quiet without measurement language"
     assert not tg.scan_synthetic_provenance(
         [], text="Wave 1 completed with both cubes written.", tool_text=""),         "ordinary reporting prose must not trip it"
+
+
+def test_b1802_negative_arm_rule_is_in_the_durable_docs():
+    """B1802 (#226 / L551): keep the rule AND its diagnostic, in both docs.
+
+    `S6-B1705d`'s arm 4 failed because I had read the CALLER and not the
+    function: the grader does `is_m = rc.in_sample(sub)`, but `select_exit`
+    slices `in_sample()` itself, so bypassing the caller's filter bypassed
+    nothing. **Only the negative arm makes you name where the mechanism is -
+    you cannot break what you cannot locate - so it tests your MODEL as much as
+    the code.**
+
+    Detection is JUDGMENT-ONLY: no scan can tell whether a test author's mental
+    model of a mechanism is correct. **Durability is not** - a rule written into
+    a doc can be dropped from it later, which is the same disappearance in slow
+    motion (L549).
+    """
+    import pathlib as _p
+
+    root = _p.Path(__file__).resolve().parents[2]
+    skill = (root / ".claude" / "skills" / "execution-discipline"
+             / "SKILL.md").read_text(encoding="utf-8").lower()
+    check = (root / "CHECKLIST.md").read_text(encoding="utf-8").lower()
+
+    for doc, name in ((skill, "SKILL.md"), (check, "CHECKLIST.md")):
+        assert "negative arm" in doc, (
+            f"{name} lost the B1802 rule. A failing prove-it-can-fail arm is "
+            "the cheapest signal that a mechanism is not where you think.")
+        # the DIAGNOSTIC is the usable half: WHY the positive arms cannot help
+        assert "cannot break what you cannot" in doc, (
+            f"{name} lost the reason the rule works. Without it the rule is "
+            "advice; with it, it says which arm carries the author's model.")

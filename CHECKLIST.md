@@ -3681,6 +3681,23 @@ it; B1119's original 22-batch lapse.
 
 ### #226 - BEFORE TRUSTING A GATE'S PASS, PROVE IT CAN FAIL (B1707 / L501)
 
+**EXTENSION (B1802 / L551) - A FAILING NEGATIVE ARM USUALLY MEANS YOUR MODEL IS WRONG.**
+
+**MEASURED: `S6-B1705d`'s arm 4 failed because I had read the CALLER and not the function.** The
+grader does `is_m = rc.in_sample(sub)`, so I concluded that was the enforcement point; in fact
+`select_exit` slices `in_sample()` itself and says so in its docstring. Bypassing the caller's
+filter bypassed nothing.
+
+- **The positive arms cannot catch this.** They exercise the happy path, identical whether the
+  mechanism sits at the call site or one level in. **Only the negative arm makes you NAME where the
+  mechanism is - because you cannot break what you cannot locate.**
+- **Two readings of a failing negative arm, and the second is more likely:** *the code does not do
+  what you thought* / **your model of WHERE it does it is wrong.**
+- **Re-read the function before changing the test.** Weakening the arm until it passes leaves
+  something indistinguishable from never having written one - `#253`/L550's instinct in a new place.
+- **A failing arm is a finding.** Retargeting this one produced a correction to an OPEN ticket:
+  `S6-B1705c`'s *"there is no enforcement"* is true of the RANKING, false of the exit choice.
+
 The `#225` gate returned `None` and looked green. It called `_entry_text`, **which does not
 exist**, over `_read_entries()`, which returned **zero entries** - so the missing function was never
 reached. **A gate returning "clean" over an empty input is indistinguishable from a gate that

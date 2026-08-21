@@ -10991,3 +10991,45 @@ hard as the trigger. This adds **what an exemption may be keyed on** - an observ
 a claim about why the author wrote it. Pinned by `test_b1799_shadowing_check_has_no_intent_exemption`,
 which fails if the allowlist is ever added.
 
+### L551
+
+**The prove-it-can-fail arm failed, and it was my model of the mechanism that was wrong**
+
+**B1802.** Building `S6-B1705d` I wrote four arms, the fourth being `#226`'s prove-it-can-fail:
+*bypass the in-sample filter and the holdout-only frame should select an exit.* **It failed.**
+
+I had read the CALLER - `tighten_breaker_block.py:280`, `is_m = rc.in_sample(sub)` - and concluded
+that was where the separation lived. **It is not.** `select_exit` slices `in_sample()` itself, and
+its docstring says so in as many words: *"enforced here by construction: this function is handed the
+full cell frame and slices `in_sample()` itself."* The caller's filter is belt-and-braces. Passing
+the raw frame bypassed nothing.
+
+**The positive arms could never have caught this.** They exercise the happy path, which behaves
+identically whether the filter sits at the call site or one level in. **Only the negative arm
+required me to say WHERE the mechanism is - because you cannot break something without naming it -
+and that is exactly the claim I had not verified.**
+
+**So a failing prove-it-can-fail arm has two readings, and the second is the more likely one:**
+
+```
+the code does not do what you thought      <- the reading you reach for
+your MODEL of where the code does it is wrong   <- usually this
+```
+
+**Both times this turn, the failure taught me the structure.** Retargeting arm 4 at the internal
+filter made it pass, and produced a correction to an OPEN ticket: `S6-B1705c` says *"there is no
+enforcement"*, which is true of Step 1's RANKING and of the promised file-path mechanism and
+**false of the exit choice.** That distinction existed nowhere until a test failed.
+
+**The rule: when a negative arm fails, re-read the function before changing the test.** The
+temptation is to weaken the arm until it passes - and a weakened negative arm is
+indistinguishable from never having written one. **This is L550's shape in a new place**: there the
+pressure was to exempt my code from a gate, here to soften a probe against my code. Same instinct,
+same remedy - change the thing you are testing your understanding OF, not the test.
+
+**Second, smaller miss the same turn:** I read the 106 ticket rows through `cut -c1-520` when their
+mean length is 668, and started classifying from the truncated text before catching it. **`#270`
+was written one turn earlier and its gate did not fire**, because truncation in a tool call is only
+a defect when paired with a verdict, and I caught it before stating one. **The rule held; the habit
+did not.**
+

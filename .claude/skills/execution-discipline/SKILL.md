@@ -672,6 +672,19 @@ cited while the failures they name kept recurring, because none had a mechanism 
 
 ## PROVE-IT-CAN-FAIL RULE (B1706 - L501, CHECKLIST #226, PROVEN)
 
+**EXTENSION (B1802 - L551): WHEN THE NEGATIVE ARM FAILS, SUSPECT YOUR MODEL FIRST.**
+
+**MEASURED: I read the CALLER and not the function.** The grader does `is_m = rc.in_sample(sub)`, so
+I built the bypass arm against the call site - but `select_exit` slices `in_sample()` itself and its
+docstring says so. **Bypassing the caller's filter bypassed nothing, and the arm failed.**
+
+- **Only the negative arm makes you NAME where the mechanism is.** You cannot break what you cannot
+  locate, so it tests your MODEL as much as the code. The positive arms are identical either way.
+- **Re-read the function before changing the test.** Weakening an arm until it passes leaves
+  something indistinguishable from never having written one - L550's instinct, new location.
+- **A failing arm is a finding, not an obstacle.** This one produced a correction to an open ticket:
+  `S6-B1705c`'s *"there is no enforcement"* is true of the ranking and false of the exit choice.
+
 **A gate observed only PASSING has not been tested. It has been run.**
 
 `scan_untickcted_remediation` called `_entry_text`, which did not exist, over `_read_entries()`,
