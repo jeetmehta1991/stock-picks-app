@@ -11332,3 +11332,57 @@ counts constantly, so that clearance is near-permanent. Recorded as `S6-B1827b`.
 before working it; the same applies to a number you keep telling someone. **Carrying it is how it
 survives - nobody re-checks a figure that has already been said out loud.**
 
+### L560
+
+**Both things I had to retract were consequences I asserted without computing**
+
+**B1833.** Two corrections against myself in one turn, and they are the same shape.
+
+```
+"re-running wave 1 would NOT fix it"   never checked WHICH fix landed WHEN
+"the universe lever costs ~2x runtime" never did the multiplication
+```
+
+**Neither was a measurement I got wrong. Both were CONSEQUENCES I asserted.** The first needed a
+`git log`; the second needed `100 x 2 = 200 x 1`. Each took under a minute once attempted, and
+neither was attempted, because a consequence feels like reasoning rather than a claim.
+
+**And both errors pointed the same way.** *"Re-running won't help"* justified not spending 5.8 h;
+*"~2x runtime"* made the lever I had recommended DEFERRING look expensive. **That is L559's
+direction-of-error rule, and I wrote L559 the turn before.**
+
+**L559 does not cover it, which is the new part.** That rule says a figure you REPEAT is re-derived
+rather than carried. These were **first-time assertions** - carried nothing, repeated nothing, and
+were wrong on first utterance. **A consequence is a claim on the turn it is made**, and needs the
+same evidence as a measurement.
+
+**No gate covered either.** `#201`'s `QUANT_CLAIMS` are cost-is-FREE phrasings - *"costs nothing"*,
+*"no extra cost"* - so *"costs ~2x"* matched none. `#258` covers ledger counts. **Neither claims
+this ground**, so it is a gap rather than a failure.
+
+### L561
+
+**Replacing a proxy exposed three bugs in a row, and each was invisible until run**
+
+**B1832, owner-approved: replace `#201`'s detection mechanism rather than weaken the gate.** The old
+one asked *"did a generator run?"* - a proxy for *"does this number name its input?"* - and was
+wrong on **5 of 7** firings. The replacement asks the requirement directly, of the response.
+
+**Building it produced three defects, all silent, all found only by running the cases:**
+
+1. **The clause splitter split the decimal.** Splitting on every `.` turned `169.347` into `169` and
+   `347` in separate clauses, so **no clause ever contained a decimal** and every must-fire case
+   went quiet - for a reason with nothing to do with provenance.
+2. **The decimal matcher refused a sentence-final number.** `2.422.` failed `(?![\w.])`, so the gate
+   was silent on **the shape of its own recorded incident**.
+3. **The pattern lived at TWO sites and I fixed one.** A whole-text pre-filter rejected the decimal
+   before the corrected loop could see it. **B1812's shape exactly** - there, `keep_code` guarded one
+   strip of two and the second ate what the first preserved.
+
+**All three passed reading. None survived running.** Bugs 1 and 2 make a gate SILENT, which is the
+failure mode that leaves no trace - a quiet gate and a correct one are the same observation.
+
+**Fix 3 is the one worth keeping:** the pattern is now ONE constant used at both sites, and the pin
+test asserts no inline copy reappears beside it. **A duplicated pattern is a divergence waiting for
+someone to fix half of it.**
+

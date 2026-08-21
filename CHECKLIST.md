@@ -4940,3 +4940,22 @@ forces `m = 820`, *"roughly 20x tighter and almost certainly admit nothing"*.
   attributed to the run that made it); `S6-B1705j` (a PASS column on a step that has no gates).
   **Three prior instances, same shape: the output cannot answer the question asked of it.**
 
+### #278 - AN ASSERTED CONSEQUENCE IS A CLAIM. COMPUTE IT. (B1833 / L560)
+
+**MEASURED: both retractions in one turn were consequences I asserted without computing.**
+*"Re-running wave 1 would not fix it"* needed a `git log`; *"the lever costs ~2x runtime"* needed
+`100 x 2 = 200 x 1`. **Each took under a minute once attempted, and neither was attempted** - a
+consequence feels like reasoning rather than a claim.
+
+- **A consequence carries the same evidence burden as a measurement.** *"X follows from Y"* is a
+  claim about X, and the fact that Y is verified does not verify it.
+- **Check which way it points.** Both errors favoured the position I already held - *don't spend the
+  5.8 h*, *the lever is expensive*. `#256`-ext covers a figure you REPEAT; **this covers one you
+  assert for the FIRST time**, which no rule reached.
+- **No gate claims this ground.** `#201`'s `QUANT_CLAIMS` are cost-is-FREE phrasings, `#258` is
+  ledger counts. **Gap, not failure** - and detection is `JUDGMENT-ONLY`, since recognising "this
+  sentence asserts a consequence" is semantic.
+- **Retroactive (`#136`):** the re-run advice (B1814), the ~2x runtime (B1817), the plan's
+  *"enforced mechanically ... a file path"* that never existed (`S6-B1705c`), and B1775's residual
+  attributed to a persistence gap on an assumed join. **Four asserted consequences, four wrong.**
+

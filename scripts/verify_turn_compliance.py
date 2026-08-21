@@ -1851,6 +1851,25 @@ SYNTHETIC_SOURCES = (
     "random.normal", "random.randn", "random.seed", "random.uniform",
     "make_fixture", "fake_", "dummy_",
 )
+# B1832: what counts as NAMING AN INPUT. A source is an artifact, a producer,
+# or an explicit admission that the figure is not a measurement at all.
+# B1832: ONE definition, used by the pre-filter AND the clause loop.
+# They were separate copies and I corrected only the second, so the
+# first kept rejecting sentence-final decimals and the fix never ran
+# (B1812's shape - a guard applied at one site of two).
+_DECIMAL = r"(?<![\w.#])\d+\.\d+(?!\.?\d)"
+FIGURE_SOURCES = (
+    # artifacts
+    ".csv", ".json", ".parquet", ".txt", ".md", "output_", "cache",
+    "cube", "ledger", "artifact", "transcript",
+    # producers
+    ".py", "script", "pytest", "grade", "re-grad", "regrad", "queue_state",
+    "git ", "commit",
+    # explicit non-measurements
+    "synthetic", "fixture", "hand-built", "hand built", "illustrative",
+    "worked example", "not a measurement", "measures nothing", "made-up",
+    "arithmetic", "derived from", "by construction", "ticker-year",
+)
 SYNTHETIC_LABEL = (
     "synthetic", "not a measurement", "measures nothing", "illustrative",
     "hand-built", "toy fixture", "made-up", "fabricated", "deterministic "
@@ -1875,25 +1894,56 @@ def scan_synthetic_provenance(entries, *, text=None, tool_text=None) -> list[str
     if not t:
         return []
     # a NUMBER, not a version or a ticket id
-    if not _re.search(r"(?<![\w.#])\d+\.\d+(?![\w.])", t):
+    if not _re.search(_DECIMAL, t):
         return []
     if not _affirms(t, QUANT_PROOF):
         return []
-    # B1813: EXECUTED text only. Writing `rng.normal` into a test fixture or a
-    # lesson is a MENTION; the question this gate asks is whether a generator
-    # RAN. B1738's rule, one layer down.
-    tt = _executed_text(entries, tool_text).lower()
-    src = [m for m in SYNTHETIC_SOURCES if m in tt]
-    if not src:
-        return []
-    if any(lbl in t for lbl in SYNTHETIC_LABEL):
-        return []
-    return [f"SYNTHETIC NUMBER QUOTED AS MEASURED (S6-B1705e/#201): this turn "
-            f"quotes a decimal in measurement language while its tool calls run "
-            f"a generator ({src[0]!r}). **`2.422` came from `rng.normal(1,3,30)` "
-            "in my own probe and satisfied #201 completely** - 'measured' was "
-            "true of the arithmetic and false of the meaning. Say SYNTHETIC "
-            "where the number is quoted, or quote a number from real data."]
+    # B1832 (owner ruling 2026-08-21): MECHANISM REPLACED, gate not weakened.
+    #
+    # The old check asked "did a generator run in the executed tool text?" - a
+    # PROXY, wrong on 5 of 7 firings, every one because the only executed
+    # segment holding the marker was the command run to SEARCH for it. Four
+    # narrowing passes each ended narrower than the last.
+    #
+    # The requirement (S6-B1705e) is that a quoted number NAMES ITS INPUT. Ask
+    # that directly, of the RESPONSE. Self-reference cannot trigger it -
+    # searching for a marker quotes no number - and it additionally catches
+    # RECALLED and FABRICATED figures, which the generator check never covered:
+    # a number with no source is unverifiable whatever produced it.
+    # B1832: split on SENTENCE punctuation only. The first version cut on
+    # every ".", so 169.347 became "169" and "347" in separate clauses and
+    # no clause ever held a decimal - the gate went silent on every
+    # must-fire case for a reason unrelated to provenance. A sentence
+    # period is one not flanked by digits.
+    for clause in _re.split(r"(?<!\d)[.;](?!\d)|\n", t):
+        if not clause.strip():
+            continue
+        # B1832: allow a decimal that ENDS a sentence ("2.422.") while still
+        # refusing a version ("1.2.3"). They differ by what follows the
+        # trailing dot - a digit continues a version, nothing ends a
+        # sentence. The first version refused both and went silent on its
+        # own incident.
+        if not _re.search(_DECIMAL, clause):
+            continue
+        if not _affirms(clause, QUANT_PROOF):
+            continue
+        # B1834: an ARTIFACT reference is LOCAL to the claim it supports; an
+        # explicit "this is synthetic" is GLOBAL about the turn's figures.
+        # Requiring the admission in the same clause fired on
+        # "...a Sharpe of 2.422. This figure is SYNTHETIC." - which is exactly
+        # how a person writes it.
+        if any(src in clause for src in FIGURE_SOURCES):
+            continue
+        if any(lbl in t for lbl in SYNTHETIC_LABEL):
+            continue
+        return [f"FIGURE WITH NO NAMED SOURCE (S6-B1705e/#201, mechanism "
+                f"replaced B1832): {clause.strip()[:110]!r} states a decimal in "
+                "measurement language and names no input. **`2.422` came from "
+                "`rng.normal(1,3,30)` in my own probe and read as a "
+                "measurement**; `3.637` and `169.347` were hand-built fixtures "
+                "quoted the same way. Name the artifact, script or cube the "
+                "number came from, or label it SYNTHETIC where you quote it."]
+    return []
 
 
 # B1803: OWNER DIRECTIVE 2026-08-21 - "Always provide a count of tickets by
