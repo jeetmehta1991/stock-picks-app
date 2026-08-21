@@ -18789,3 +18789,47 @@ def test_b1838_accepted_asymmetry_stays_documented():
     assert "measure_degraded_exits" in plan, (
         "the plan must point at the MEASUREMENT, not at dates - date-tracking "
         "is the bookkeeping that decays the moment someone forgets")
+
+
+def test_b1843_skill_documents_a_dryrun_that_runs():
+    """B1843: SKILL.md documented a turn-gate dry-run that HANGS.
+
+    `verify_turn_compliance.py` reads stdin, which only the Stop hook fills,
+    so the bare command blocks forever - measured at 300s and 60s with zero
+    bytes out. L563 cited it as the remedy before anyone ran it.
+
+    This pins that the skill keeps documenting the form that WORKS. It is the
+    mechanism for L563: a prose rule telling you to run something is worth
+    nothing if the something does not run.
+    """
+    import pathlib as _p
+    import re as _re
+
+    root = _p.Path(__file__).resolve().parents[2]
+    skill = (root / ".claude" / "skills" / "execution-discipline"
+             / "SKILL.md").read_text(encoding="utf-8")
+
+    assert "TURN_GATE_TRANSCRIPT" in skill, (
+        "SKILL.md no longer documents TURN_GATE_TRANSCRIPT. Without it the "
+        "documented dry-run reads stdin and hangs, so the rule that tells you "
+        "to run the gate cannot be followed.")
+
+    # the env var must appear ON the same line as the script, not merely
+    # somewhere in the file - a reader copies one line
+    lines = [ln for ln in skill.split("\n")
+             if "verify_turn_compliance.py" in ln and "scripts/" in ln]
+    assert lines, "SKILL.md stopped naming the turn-gate script at all"
+    paired = [ln for ln in lines if "TURN_GATE_TRANSCRIPT" in ln]
+    assert paired or any("TURN_GATE_TRANSCRIPT" in skill.split("\n")[i - 1]
+                         or "TURN_GATE_TRANSCRIPT" in skill.split("\n")[i + 1]
+                         for i, ln in enumerate(skill.split("\n"))
+                         if "verify_turn_compliance.py" in ln
+                         and 0 < i < len(skill.split("\n")) - 1), (
+        "TURN_GATE_TRANSCRIPT appears in SKILL.md but not adjacent to the "
+        "command - a reader copies the line, not the file")
+
+    # and the trap must stay documented: </dev/null exits 0 having read nothing
+    assert _re.search(r"dev/null", skill), (
+        "SKILL.md lost the `</dev/null` warning. That form exits 0 while "
+        "reading zero entries, so it reports clean for the wrong reason - "
+        "worse than not running the dry-run at all.")

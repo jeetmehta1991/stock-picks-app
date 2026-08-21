@@ -197,7 +197,14 @@ you work WITH them, not against them:
   once after `git clone`, per AWS_LAUNCH_PLAYBOOK Gate 5. The Stop hook and
   preflight script are committed and need no install.
 - **Manual dry-runs:** `python scripts/preflight.py --staged` (commit gates)
-  and `python scripts/verify_turn_compliance.py` (turn gate).
+  and, for the turn gate, **`TURN_GATE_TRANSCRIPT=<transcript.jsonl> python
+  scripts/verify_turn_compliance.py`**. **B1843 - the bare command HANGS.** It
+  reads stdin, which only the Stop hook populates, so standalone it blocks
+  forever (measured: 300s and 60s, zero bytes out). **And `</dev/null` is a
+  trap** - it exits 0 while the script prints *"0 transcript entries loaded ...
+  this is NOT evidence of compliance"*. **A dry-run that returns clean because
+  it read nothing is worse than no dry-run.** With the env var set it returns
+  every violation at once, in seconds, over a 128k-line transcript.
 - The gates cover the mechanically-checkable rules. Phases below remain
   authoritative for the JUDGMENT surface (truth standard, audit depth,
   recommendation quality) — the Pass 52 class of miss that no script catches.
@@ -722,9 +729,13 @@ statement, then the statement present but ALL-CAPS against a case-sensitive
 matcher, then two OPEN rows with no `_reason:_`. **Each close fixed only what the
 gate had just named.**
 
-- **`python scripts/verify_turn_compliance.py` is documented at line 200 of this
-  file and returns all violations at once.** Running it once before ending would
-  have replaced three round trips with one.
+- **Run `TURN_GATE_TRANSCRIPT=<transcript.jsonl> python
+  scripts/verify_turn_compliance.py`** - it returns all violations at once.
+  Running it once before ending replaces three round trips with one.
+- **B1843: the BARE command hangs** (reads stdin, which only the hook fills) and
+  **`</dev/null` exits 0 having read nothing**. L563 cited the bare form before
+  anyone ran it - **a lesson recommending an unrun mechanism, inside the entry
+  about mechanisms existing but not running.**
 - **The mechanism existing is not the mechanism running** - same shape as
   `require_each`, which had existed for batches before I used it.
 - **Compliance failure against `#45` and `#247`, not a new class.** A fifth rule

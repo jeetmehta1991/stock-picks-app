@@ -11473,4 +11473,20 @@ batch cap.
 
 **The rule: run the turn gate yourself before ending the turn. Treat the Stop hook
 as the backstop it is.** **ANCHORED (`#197`):** compliance failure against `#45`
-and `#247`; remedy documented at `SKILL.md:200`.
+and `#247`.
+
+**CORRECTED SAME TURN (B1843) - the remedy I cited does not run.** `python
+scripts/verify_turn_compliance.py`, as written at `SKILL.md:200` and quoted above,
+**reads stdin and therefore HANGS** when run outside the Stop hook. Measured: 300s
+then 60s, zero bytes out both times. **And `</dev/null` exits 0 while printing "0
+transcript entries loaded ... this is NOT evidence of compliance"** - a dry-run
+returning clean because it read nothing. The working form is
+**`TURN_GATE_TRANSCRIPT=<transcript.jsonl> python
+scripts/verify_turn_compliance.py`**, verified in seconds over 128,924 lines.
+
+**I recommended a mechanism without running it, in the entry about the mechanism
+existing not being the mechanism running.** B1335 rule 2 requires EXECUTED
+evidence that any cited mechanism exists; a docs line is not that evidence. **The
+first thing the working invocation reported was a violation nothing else had
+surfaced** - B1739, that this very edit changed `SKILL.md` with no mechanism
+attached.
