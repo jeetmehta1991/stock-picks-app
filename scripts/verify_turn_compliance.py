@@ -816,6 +816,7 @@ def _response_text(entries, text=None, *, keep_code: bool = False) -> str:
     # a risk for it, because a mention of the class names carries no numbers.
     if not keep_code:
         t = _re.sub(r"```.*?```", " ", t, flags=_re.S)
+    t = _strip_gate_echo(t)          # B1811
     t = _re.sub(r"^[ \t]*>.*$", " ", t, flags=_re.M)
     if not keep_code:
         # B1806: this must be guarded too. A fence IS backticks, so the INLINE
@@ -1026,7 +1027,35 @@ def check_response_gates() -> str | None:
     return bad[0] if bad else None
 
 
-def _tool_text(entries) -> str:
+# B1811: A GATE'S OWN DIAGNOSTIC IS NOT EVIDENCE ABOUT THE TURN.
+#
+# `scan_synthetic_provenance` explains itself by quoting `rng.normal(1,3,30)`.
+# The Stop hook feeds its report back into the transcript and the next turn's
+# tool calls echo it, so the message became the evidence for re-firing - on a
+# turn whose every quoted decimal was a real measurement.
+#
+# Third instance of the shape: B1732 (the skills gate's self-description shifted
+# its own window), B1738 (a response listing trigger words fired the gate), and
+# this. B1738 stripped backtick spans from the RESPONSE, which could not help
+# because the echo arrives through TOOL text.
+def _strip_gate_echo(t: str) -> str:
+    """Remove any previous turn-gate report from `t`.
+
+    A report starts at "TURN-GATE BLOCK" and runs to the end of its numbered
+    list. Everything in it is the gate machinery describing itself, and none of
+    it is evidence about what this turn did.
+    """
+    import re as _re
+    if not t:
+        return t
+    # the runner's own header, plus the per-violation lines it emits
+    t = _re.sub(r"turn-gate block.*?(?=\n\s*\n|\Z)", " ", t,
+                flags=_re.S | _re.I)
+    # a bare violation line quoted on its own (the hook feeds these back singly)
+    t = _re.sub(r"\[\d+/\d+\][^\n]*", " ", t)
+    return t
+
+def _tool_text(entries, tool_text=None) -> str:
     """Everything this turn actually RAN or READ - the inputs of every tool call.
 
     B1721: the four B1720 gates catch SYMPTOMS (a claim with no evidence, a
@@ -1037,6 +1066,14 @@ def _tool_text(entries) -> str:
     carries the tool calls: if a turn NAMES a constant it never grepped, it is
     reasoning from memory of the code rather than the code.
     """
+    # B1811: `tool_text` is the INJECTION SEAM, and it must travel the same
+    # pipeline as the live path. Previously every caller wrote
+    # `_tool_text(entries) if tool_text is None else tool_text`, so an injected
+    # value skipped the scrubbing below - a probe then exercised a path
+    # production never takes, and reported clean for that reason (#241's spirit:
+    # a seam that bypasses the pipeline is not a seam).
+    if tool_text is not None:
+        return _strip_gate_echo(tool_text)
     out = []
     for d in entries or ():
         if not isinstance(d, dict) or d.get("type") != "assistant":
@@ -1044,7 +1081,8 @@ def _tool_text(entries) -> str:
         for blk in (d.get("message") or {}).get("content") or ():
             if isinstance(blk, dict) and blk.get("type") == "tool_use":
                 out.append(json.dumps(blk.get("input") or {}))
-    return " ".join(out)
+    # a previous turn-gate report is not evidence about this turn
+    return _strip_gate_echo(" ".join(out))
 
 
 def scan_uninspected_constant(entries, *, tool_text=None,
@@ -1084,7 +1122,7 @@ def scan_uninspected_constant(entries, *, tool_text=None,
     t = (_assistant_text(entries) if text is None else text.lower())
     if not t:
         return []
-    tt = (_tool_text(entries) if tool_text is None else tool_text).lower()
+    tt = _tool_text(entries, tool_text).lower()
     # B1760: honour the injected text. This function accepted `text=` and then
     # read `_raw_assistant(entries)` for the case-preserved copy, so the
     # parameter existed and did nothing - the gate could never be exercised on
@@ -1172,7 +1210,7 @@ def scan_skill_not_invoked(entries, *, user_text=None, tool_text=None) -> list[s
     hit = [t for t in SKILL_TRIGGERS if t in u]
     if not hit:
         return []
-    tt = (_tool_text(entries) if tool_text is None else tool_text)
+    tt = _tool_text(entries, tool_text)
     if '"name": "Skill"' in tt or "'name': 'Skill'" in tt or "SKILL_INVOKED" in tt:
         return []
     return [f"SKILL NOT INVOKED: the request contains {hit[0]!r} but no Skill "
@@ -1236,7 +1274,7 @@ def scan_skill_not_invoked_per_skill(entries, *, user_text=None,
                                      tool_text=None) -> list[str]:
     """EACH triggered skill requires ITS OWN invocation."""
     u = _last_user_text(entries) if user_text is None else user_text.lower()
-    tt = (_tool_text(entries) if tool_text is None else tool_text).lower()
+    tt = _tool_text(entries, tool_text).lower()
     missing = [name for name, trigs in SKILL_TRIGGER_MAP.items()
                if any(t in u for t in trigs) and name not in tt]
     if not missing:
@@ -1331,7 +1369,7 @@ def scan_discipline_not_loaded(entries, *, tool_text=None,
     # lines skill has to be invoked every turn! No exception and you dont get to
     # choose when to invoke it!" The  parameter is retained ONLY so
     # the pin test can exercise both branches; it defaults to ALWAYS-REQUIRED.
-    tt = (_tool_text(entries) if tool_text is None else tool_text)
+    tt = _tool_text(entries, tool_text)
     if substantive is False:
         return []
     # B1733b: fire only when the turn is OBSERVABLE. With zero entries the gate
@@ -1380,7 +1418,7 @@ def scan_uncosted_probe(entries, *, text=None, tool_text=None) -> list[str]:
     # B1774: strip AUTHORED payloads first - writing the word "grep"
     # inside a document is not inspecting anything.
     tt = _tool_invocations(
-        (_tool_text(entries) if tool_text is None else tool_text)).lower()
+        _tool_text(entries, tool_text)).lower()
     if any(e in tt for e in OPEN_EVIDENCE):
         return []
     return [f'UNCOSTED PROBE (#230 EXT / L506): this turn estimates effort '
@@ -1409,7 +1447,7 @@ def scan_shell_substitution(entries, *, tool_text=None) -> list[str]:
     inert. The deviation to `-m "..."` is the entire defect.
     """
     import re
-    t = (_tool_text(entries) if tool_text is None else tool_text)
+    t = _tool_text(entries, tool_text)
     if not t:
         return []
     hits = []
@@ -1540,7 +1578,7 @@ def scan_unverified_count(entries, *, text=None, tool_text=None) -> list[str]:
     # a bare mention with no digits nearby is prose, not a reported count
     if not _re.search(r"[0-9]{2,}", t):
         return []
-    tt = (_tool_text(entries) if tool_text is None else tool_text).lower()
+    tt = _tool_text(entries, tool_text).lower()
     if any(p in tt for p in COUNT_PROOF):
         return []
     return [f"UNVERIFIED LEDGER COUNT (B1778/#258): this turn reports "
@@ -1720,7 +1758,7 @@ def scan_row_vs_ticket(entries, *, text=None, tool_text=None) -> list[str]:
     t = _response_text(entries, text)
     if not t or not _re.search(_QCOUNT_PAT, t, _re.I):
         return []
-    tt = (_tool_text(entries) if tool_text is None else tool_text).lower()
+    tt = _tool_text(entries, tool_text).lower()
     if "execution_queue" not in tt:
         return []
     if any(d in tt or d in t for d in _QDEDUP):
@@ -1776,7 +1814,7 @@ def scan_synthetic_provenance(entries, *, text=None, tool_text=None) -> list[str
         return []
     if not _affirms(t, QUANT_PROOF):
         return []
-    tt = (_tool_text(entries) if tool_text is None else tool_text).lower()
+    tt = _tool_text(entries, tool_text).lower()
     src = [m for m in SYNTHETIC_SOURCES if m in tt]
     if not src:
         return []
@@ -1918,7 +1956,7 @@ def scan_partial_read(entries, *, text=None, tool_text=None) -> list[str]:
     if hit is None:
         return []
     verdicts = [hit]
-    tt = (_tool_text(entries) if tool_text is None else tool_text).lower()
+    tt = _tool_text(entries, tool_text).lower()
     cuts = _sampling_hits(tt)          # B1807: source truncation, not display
     if not cuts:
         return []

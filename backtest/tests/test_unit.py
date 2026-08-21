@@ -18211,3 +18211,68 @@ def test_b1810_load_cube_chunked_is_identical_and_bounded():
     assert "chunksize=" in src, (
         "compute_pairs must pass chunksize - the whole point of S6-B1548a is "
         "that test_b1463 can run beside an engine run")
+
+
+def test_b1811_gate_echo_is_not_evidence():
+    """B1811: a gate's own diagnostic must not re-fire it.
+
+    `scan_synthetic_provenance` explains itself by quoting `rng.normal(1,3,30)`.
+    The Stop hook feeds its report back into the transcript and the next turn's
+    tool calls echo it, so **the message became the evidence for firing again**
+    - on a turn whose every quoted decimal was a real measurement.
+
+    Third instance of the shape: B1732 (the skills gate's self-description
+    shifted its own window), B1738 (a response listing trigger words fired the
+    gate), and this. B1738 stripped backtick spans from the RESPONSE, which
+    could not help because the echo arrives through TOOL text.
+
+    AND THE SEAM MUST TRAVEL THE SAME PIPELINE. Every caller wrote
+    `_tool_text(entries) if tool_text is None else tool_text`, so an INJECTED
+    value skipped the scrubbing entirely - the first probe of this fix exercised
+    a path production never takes and reported clean for that reason. #241 says
+    a gate that cannot be asked is not proven; the corollary is that **a seam
+    answering a different question proves nothing about the real one.**
+    """
+    import importlib.util
+    import pathlib as _p
+
+    root = _p.Path(__file__).resolve().parents[2]
+    spec = importlib.util.spec_from_file_location(
+        "vtc_b1811", root / "scripts" / "verify_turn_compliance.py")
+    tg = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(tg)
+
+    echo = ("TURN-GATE BLOCK - 1 violation(s), ALL listed:\n"
+            "  [1/1] SYNTHETIC NUMBER QUOTED AS MEASURED (S6-B1705e/#201): "
+            "quotes a decimal while its tool calls run a generator ('rng.'). "
+            "`2.422` came from `rng.normal(1,3,30)`.\n")
+    real = "The measured jaccard is 0.9993 and the peak ratio is 4.81."
+
+    assert not tg.scan_synthetic_provenance([], text=real, tool_text=echo), (
+        "the gate's own report must not be evidence for firing it - firing "
+        "once would otherwise seed the next firing")
+    assert tg.scan_synthetic_provenance(
+        [], text=real, tool_text="pnl = rng.normal(1, 3, 30)"), \
+        "a REAL generator must still fire"
+    assert tg.scan_synthetic_provenance(
+        [], text=real, tool_text=echo + "\npnl = rng.normal(1,3,30)"), \
+        "stripping the echo must not hide a real generator beside it"
+
+    # the seam must travel the SAME pipeline as the live path
+    assert "rng." not in tg._tool_text([], echo), \
+        "an INJECTED tool_text must be scrubbed exactly as the live path is"
+    assert tg._tool_text([], "grep -n rng.normal f.py") == "grep -n rng.normal f.py", \
+        "ordinary tool text must pass through untouched"
+
+    # no caller may reintroduce the bypass
+    # COMMENT LINES ARE EXEMPT. The fix's own comment quotes the old
+    # expression to explain it, and the first version of this assertion read
+    # that as the defect returning - B1738/B1781 again, inside the test written
+    # to close B1811. **Documenting a defect must not trip the check for it.**
+    src = (root / "scripts" / "verify_turn_compliance.py").read_text(encoding="utf-8")
+    live = [ln for ln in src.splitlines() if not ln.lstrip().startswith("#")]
+    assert not [ln for ln in live
+                if "_tool_text(entries) if tool_text is None else tool_text" in ln], (
+        "a caller reintroduced the injection bypass - injected values would "
+        "skip the scrubbing the live path applies")
+

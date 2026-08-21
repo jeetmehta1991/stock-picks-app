@@ -1226,6 +1226,21 @@ gate carries a corpus entry"* and **17 of 25 gates had none, with nothing failin
 - **Probe the HALF-satisfied case.** Both defects above surfaced from a pair where one member was
   enforced and one was not - the case a self-derived probe never constructs.
 
+## A GATE'S OWN DIAGNOSTIC IS NOT EVIDENCE, AND A SEAM MUST TAKE THE LIVE PATH (B1811 - L555, #276)
+
+**MEASURED: the only `rng.` in the transcript was the gate's OWN message**, which quotes
+`rng.normal(1,3,30)` to explain itself. The Stop hook feeds it back and the next turn echoes it, so
+**firing once seeds the next firing.** Third instance: B1732 (self-description shifted its own
+window), B1738 (a response listing trigger words fired the gate), B1811.
+
+- **Strip prior gate reports in the SHARED readers**, not per gate. B1738 guarded the RESPONSE and
+  this arrived through TOOL text - a rule learned on one reader did not travel (L536).
+- **Keep vivid diagnostics; strip the echo.** Quoting the trigger vocabulary is what makes a message
+  useful AND self-triggering.
+- **A seam that answers a different question than the live path proves nothing** - `#241`'s
+  corollary. Ten call sites let an injected `tool_text` skip every scrub, so the first probe of the
+  fix passed against a path production never takes. **Put the override INSIDE the helper.**
+
 ## PROVE GATES ON THE VERBATIM INCIDENT, AND GIVE THEM A SEAM (B1760/B1761 - L516/L517, CHECKLIST #240/#241)
 
 **EXTENSION (B1805 - L552): ONE INCIDENT PROVES ONE PATH.**

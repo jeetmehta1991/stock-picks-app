@@ -4856,3 +4856,34 @@ were on screen.
 - Mention-vs-use stays the DEFAULT; `keep_code` is opt-in, and safe only where a mention cannot
   satisfy the gate - here it cannot, because a mention of the class names carries no numbers.
 
+### #276 - A GATE'S OWN DIAGNOSTIC IS NOT EVIDENCE ABOUT THE TURN (B1811 / L555)
+
+**MEASURED: the only occurrence of `rng.` in the transcript was `scan_synthetic_provenance`'s own
+violation message**, which quotes `rng.normal(1,3,30)` to explain itself. The Stop hook feeds the
+report back, the next turn's tool calls echo it, and **firing once seeds the evidence for firing
+again** - on a turn whose every quoted decimal was a real measurement.
+
+- **Strip prior turn-gate reports from BOTH readers** before scanning (`_strip_gate_echo`, applied
+  in `_tool_text` and `_response_text`). A previous report describes the machinery, never the turn.
+- **Third instance of the shape:** B1732 (self-description shifted the gate's own window), B1738
+  (a response listing trigger words fired the gate), B1811. **B1738's fix guarded the RESPONSE and
+  this echo arrived through TOOL text** - a rule learned on one reader did not travel to the other
+  (L536), so it belongs in the shared helper.
+- **Writing a vivid diagnostic has a cost.** Quoting the trigger vocabulary makes the message clear
+  and makes the gate self-triggering. Keep the vividness; strip the echo.
+
+### #276b - AN INJECTION SEAM MUST TRAVEL THE SAME PIPELINE AS THE LIVE PATH (B1811 / L555)
+
+**`#241` says a gate that cannot be asked is not proven. This is the corollary: a seam that answers
+a DIFFERENT QUESTION than the live path proves nothing about it - and looks exactly like a passing
+test.**
+
+**MEASURED: ten call sites wrote `_tool_text(entries) if tool_text is None else tool_text`**, so an
+injected value skipped every scrub the live path applies. The first probe of the B1811 fix therefore
+exercised a path production never takes and reported clean for that reason.
+
+- **The override belongs INSIDE the helper**, not at the call site: `_tool_text(entries, tool_text)`
+  scrubs either way, exactly as `_response_text(entries, text)` already did.
+- **A test asserts the bypass cannot return** - `test_b1811_gate_echo_is_not_evidence` greps for the
+  old expression.
+

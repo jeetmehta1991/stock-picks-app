@@ -11146,3 +11146,36 @@ the shape it was built for. **The false positives came from the marker list bein
 concept** — `head -` for *"you sampled"* — and the proxy admitted a case the concept excludes. That
 is `#239`'s family again: the marker is not the thing.
 
+### L555
+
+**The gate's own error message became the evidence for firing it again**
+
+**B1811.** `scan_synthetic_provenance` blocked a turn in which every quoted decimal was a real
+measurement - 4,869 MB, 1,012 MB, jaccard 0.9993, all from the live 1.64 GB cube.
+
+**MEASURED: the ONLY occurrence of `rng.` in the transcript is the gate's own violation message**,
+which quotes `rng.normal(1,3,30)` to explain itself. The Stop hook feeds that report back, the next
+turn's tool calls echo it, and the gate reads its own words as proof that a generator ran.
+
+**Third instance of one shape:**
+
+```
+B1732   the skills gate's self-description shifted its own window
+B1738   a response listing a gate's trigger words fired that gate
+B1811   a gate's own diagnostic re-fires it through the transcript
+```
+
+**B1738's fix could not help**, because it strips backtick spans from the RESPONSE and this echo
+arrives through TOOL text. **A rule learned on one reader did not travel to the other** - L536
+again, and the remedy is the same: put it in the shared helper, not in the gate.
+
+**AND THE FIRST PROBE OF THE FIX WAS VACUOUS, TWICE.** The first said *quiet (CORRECT)* because my
+sample text contained `4,869` and `1,012` - **commas, not decimal points**, so there was no decimal
+to flag and the gate was silent for a reason unrelated to the fix. The second, with a real decimal,
+fired - revealing that **injecting `tool_text` BYPASSED the scrubbing entirely**: every caller wrote
+`_tool_text(entries) if tool_text is None else tool_text`, so the seam skipped the pipeline.
+
+**`#241` says a gate that cannot be asked is not proven. The corollary is sharper: a seam that
+answers a DIFFERENT QUESTION than the live path proves nothing about the live path** - and it looks
+exactly like a passing test. Ten call sites carried that bypass.
+
