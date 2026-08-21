@@ -16859,7 +16859,7 @@ def test_b1777_done_claims_are_git_verifiable():
 
 
 def test_b1778_no_control_chars_in_gate_scripts():
-    """B1778 (#259): a literal control character in a regex corrupts it SILENTLY.
+    r"""B1778 (#259): a literal control character in a regex corrupts it SILENTLY.
 
     `\b` written through a bash heredoc became a literal backspace (0x08), so
     `_re.search(r"<BS>\d{2,}<BS>", t)` never matched and `scan_unverified_count`
@@ -16883,6 +16883,76 @@ def test_b1778_no_control_chars_in_gate_scripts():
     assert not offenders, (
         f"literal control character(s) in code: {offenders}. A heredoc turned "
         "an escape into a raw byte - rewrite the file with the Write tool.")
+
+    # ---- B1839: the two axes this gate could not see ----------------------
+    # MEASURED by running the B1838 pin test and reading its one warning: THIS
+    # test's own docstring was non-raw and held `\b`, so `__doc__` carried a
+    # real 0x08. On disk it is two clean bytes, and it lives outside `scripts/`
+    # - so the arm above missed it on BOTH scope and layer.
+    import ast as _ast
+
+    _SKIP = ("__pycache__", ".venv", ".git", "node_modules",
+             "archive", ".archive", "vendored")
+    _BAD = {0x00: "NUL", 0x07: "BEL", 0x08: "BS", 0x0b: "VT", 0x0c: "FF"}
+    _RE_FN = {"search", "match", "fullmatch", "findall", "finditer",
+              "sub", "subn", "split", "compile"}
+
+    def _sources():
+        for base in ("scripts", "backtest"):
+            for q in sorted((root / base).rglob("*.py")):
+                if not any(s in q.parts for s in _SKIP):
+                    yield q
+
+    prose, patterns = [], []
+    for q in _sources():
+        try:
+            tree = _ast.parse(q.read_text(encoding="utf-8", errors="replace"))
+        except SyntaxError:
+            continue
+        # ARM A - PROSE. A docstring never needs a control character, so any
+        # hit is a mangled escape. Deliberate uses (a detector's own `"\x08"`
+        # vocabulary, git's `\x1e` separators, a `\x00PIPE\x00` sentinel)
+        # are not docstrings and are admitted without an allowlist to curate.
+        for n in _ast.walk(tree):
+            if isinstance(n, (_ast.Module, _ast.ClassDef,
+                              _ast.FunctionDef, _ast.AsyncFunctionDef)):
+                d = _ast.get_docstring(n)
+                if d and any(ord(c) in _BAD for c in d):
+                    got = sorted({_BAD[ord(c)] for c in d if ord(c) in _BAD})
+                    # B1839b: `ast.Module` has NO `lineno`. Using it raised
+                    # AttributeError while building this very message, so the
+                    # arm CRASHED on a module docstring - the one shape it was
+                    # built for, and the shape of the real instance fixed this
+                    # turn. Clean docstrings never reach here, which is why the
+                    # repo passed and the arm looked healthy. The fail arm
+                    # found it; reading it would not have.
+                    where = getattr(n, "lineno", 1)
+                    prose.append(f"{q.name}:{where} {','.join(got)}")
+        # ARM B - REGEX. The silent case: no SyntaxWarning fires for `\b`,
+        # because it IS a valid escape. Only the compiled VALUE shows it.
+        # Receiver must be the re module - `text.split("\x1e")` is a plain
+        # string split and is none of this gate's business.
+        for n in _ast.walk(tree):
+            if (isinstance(n, _ast.Call)
+                    and isinstance(n.func, _ast.Attribute)
+                    and n.func.attr in _RE_FN
+                    and isinstance(n.func.value, _ast.Name)
+                    and n.func.value.id in ("re", "_re", "regex")
+                    and n.args):
+                a = n.args[0]
+                if (isinstance(a, _ast.Constant) and isinstance(a.value, str)
+                        and any(ord(c) in _BAD for c in a.value)):
+                    patterns.append(f"{q.name}:{n.lineno} {a.value!r}")
+
+    assert not prose, (
+        f"control character inside a DOCSTRING: {prose}. Prose never needs "
+        "one - a `\\b` or `\\x08` in a non-raw string became a raw byte. "
+        "Make the docstring raw (r\"\"\").")
+    assert not patterns, (
+        f"control character inside a REGEX PATTERN: {patterns}. This is the "
+        "SILENT case - `\\b` is a VALID escape, so no SyntaxWarning fires, "
+        "and the pattern anchors on a backspace instead of a word boundary. "
+        "Use a raw string.")
 
 
 def test_b1778_unverified_count_gate():
@@ -18687,3 +18757,35 @@ def test_b1832_figure_needs_a_named_source():
     assert sum(1 for ln in live if "d+\\.\\d+" in ln and "_DECIMAL" not in ln) == 0, \
         "an inline decimal regex reappeared beside _DECIMAL - that divergence " \
         "is what made the first fix inert"
+
+
+def test_b1838_accepted_asymmetry_stays_documented():
+    """Owner ruling (b) 2026-08-21: the asymmetry is ACCEPTED, so it must stay
+    documented - an accepted risk that disappears from the doc becomes an
+    unknown one.
+
+    All four existing cubes carry `regime_flip` as a 20-day time stop, so their
+    effective exit family is **25, not 26**. Every config run after B1682 carries
+    a live one. **The two are therefore not comparable on that exit.**
+
+    This asserts the plan still NAMES the four cubes and states the consequence.
+    It does not re-measure - `rc.measure_degraded_exits` does that from any cube,
+    which is the point of measuring rather than date-tracking.
+    """
+    import pathlib as _p
+
+    root = _p.Path(__file__).resolve().parents[2]
+    plan = (root / "STRATEGY_OPTIMISATION_PLAN.md").read_text(encoding="utf-8")
+
+    for cube in ("output_cfg1", "output_cfg2",
+                 "output_w1_sw20_span21", "output_w1_sw20_span50"):
+        assert cube in plan, (
+            f"the plan no longer names {cube} among the degraded cubes. An "
+            "ACCEPTED asymmetry that is not documented is an unknown one.")
+
+    assert "25, not 26" in plan, (
+        "the plan lost the consequence of the acceptance - the four cubes have "
+        "an effective exit family of 25, and 'best of 26' is wrong for them")
+    assert "measure_degraded_exits" in plan, (
+        "the plan must point at the MEASUREMENT, not at dates - date-tracking "
+        "is the bookkeeping that decays the moment someone forgets")

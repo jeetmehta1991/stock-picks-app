@@ -1193,7 +1193,7 @@ diagnosis-loss gate aborts above 2pct.
 | rank by `ci_lo`, NOT `sharpe` | the higher Sharpe can have a NEGATIVE lower bound (L455) |
 | `exits_effective` vs 26 | duplicate exits collapse; "best of 26" is usually fewer (L461) |
 | PASS rows with marginal `ci_lo` | 5 of 200 at `ci_lo` +0.08 is a WEAK positive, not a result |
-| any PASS selecting `regime_flip` | it was a time stop pre-B1593; re-derive before trusting |
+| any PASS selecting `regime_flip` | **run `measure_degraded_exits(cube)`** - do not judge by date. It is a time stop in ALL FOUR existing cubes (owner-accepted 2026-08-21) and live in every config run after B1682 |
 | **every swept LEVEL changes the outcome** | **a level that changes nothing is a wasted dimension (L473)** |
 | **top-N holds N DISTINCT fire-sets** | **cfg2's top 10 was 4 real candidates wearing 10 rows (L473)** |
 | **measure DEGRADED exits per cube** | `regime_flip` was a time stop in every pre-B1622 cube; measured, not assumed (L483) |
@@ -1209,10 +1209,37 @@ combinations with `10 -> 20` moving **0 of 50** cfg1 groups. A lens is defined b
 not by the axis it was first applied to (L474). `--anchor` exempts the production value, which
 is carried for reproducibility, not to discriminate.
 
-**ACCEPTED ASYMMETRY (owner ruling 2026-08-17).** B1622 made `regime_flip` executable. cfg1 and
-cfg2 were NOT re-run, so they carry a `regime_flip` that is a 20-day time stop while the 18
-remaining configs carry a live one. **The owner accepted this rather than spend 6.6 h re-running.**
-It is not tracked by date - `roster_core.measure_degraded_exits(cube)` MEASURES it from any cube:
+**ACCEPTED ASYMMETRY - RESTATED 2026-08-21 (owner ruling (b)).** The 2026-08-17 version of this
+note said cfg1/cfg2 were degraded *"while the 18 remaining configs carry a live one"*. **That was
+false, and the correction matters more than the acceptance.**
+
+`exit_regime_flip` needs TWO inputs - `regime_by_date` and `regime_at_entry` - supplied in two
+separate batches. MEASURED via `rc.measure_degraded_exits` on **all four existing cubes**:
+
+```
+output_cfg1              time_stop_20d == regime_flip     written Aug 15
+output_cfg2              time_stop_20d == regime_flip     written Aug 15
+output_w1_sw20_span21    time_stop_20d == regime_flip     written Aug 18 13:21
+output_w1_sw20_span50    time_stop_20d == regime_flip     written Aug 18 13:21
+```
+
+**Wave 1 is degraded too**, because it ran hours BEFORE B1682 - whose own commit title reads
+*"I fixed ONE OF THE TWO things the exit needed, and called it done"*. B1622 supplied the first
+input; B1680 then found the fix had never run.
+
+**OWNER RULING 2026-08-21: accept it.** Not re-running wave 1 (~5.8 h) or cfg1/cfg2 (~6.6 h).
+
+**What this commits us to, stated so nobody re-derives it:**
+
+- **All four existing cubes carry `regime_flip` as a 20-day time stop**, i.e. a duplicate of
+  `time_stop_20d` under another name. Their effective exit family is **25, not 26**.
+- **Every config run from now carries a LIVE `regime_flip`** - both inputs are in the code
+  (`backtest.py:2650` sets the field, `:3106` passes it, `exit_strategies.py` injects both).
+- **Therefore `regime_flip` is NOT comparable between the four existing cubes and any later one.**
+  Rankings are unaffected - no `regime_flip` appears in either wave-1 top-10 - so what is lost is
+  comparability on that one exit, not the identity of the winners.
+- **Never quote "best of 26" for these four.** `roster_core.measure_degraded_exits(cube)` MEASURES
+  it from any cube, so this needs no date bookkeeping:
 
 ```bash
 python -c "import sys;sys.path.insert(0,'.');import scripts.roster_core as rc,pathlib; \

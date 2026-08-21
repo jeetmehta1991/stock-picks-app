@@ -3699,6 +3699,28 @@ the gate went quiet on **the shape of its own recorded incident**.
 - **Retroactive (`#136`):** B1812 (`keep_code`, one of two strips), B1798 (`_verdict_hits` raw `in`
   at one site), B1832 (`_DECIMAL` at two sites). **Three divergences, three half-fixes.**
 
+**EXTENSION (B1840 / L562) - THE PROOF IS ITSELF A PROBE, AND NOTHING WAS CHECKING IT.**
+
+**MEASURED: the fail-arm proof for the control-character gate was defeated by the control-character
+bug it was testing.** The probe was written through a heredoc; the escape collapsed; the file landed
+with a real `0x08`; **the gate's OLD arm caught it and printed `1 failed`** - so the run looked like
+proof while **both new arms sat unexercised**.
+
+- **`#226` says prove a gate can fail. It did not say the proof is above verification.** A probe
+  states a precondition about its own input, and an unstated one is a claim. **Fourth instance of
+  L556** after `4,869` (commas, not decimals), `jaccard 0.9993` (no measurement word), and
+  `observed=` (did not bypass the miss precondition). **Each returned a flattering answer.**
+- **ASSERT WHICH MESSAGE FIRES, NOT THE EXIT STATUS.** `1 failed` was accepted until the assertion
+  TEXT was read, and it named **a different arm's line number**. A fail arm must name the message it
+  expects.
+- **EVERY FAIL ARM NEEDS A SILENT CASE.** A gate that fires on everything also fires on the probe.
+  The must-NOT-fire probes are what proved ARM B keys on an `re` receiver rather than the method
+  name - `t.split("\x1e")` is a plain string split and a first draft would have flagged it.
+- **A GATE THAT RAISES WHILE BUILDING ITS OFFENDER MESSAGE IS SILENT ON EXACTLY ITS TARGET CASE.**
+  ARM A used `n.lineno` on an `ast.Module`, which has none. Clean input never reaches that line,
+  **so the repo passed and the arm looked healthy** - and the real instance fixed that same turn was
+  a MODULE docstring. **Reading it would not have shown this; only the fail arm did.**
+
 **EXTENSION (B1802 / L551) - A FAILING NEGATIVE ARM USUALLY MEANS YOUR MODEL IS WRONG.**
 
 **MEASURED: `S6-B1705d`'s arm 4 failed because I had read the CALLER and not the function.** The

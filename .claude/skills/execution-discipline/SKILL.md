@@ -715,6 +715,20 @@ consequence feels like reasoning rather than a claim.
 - **Retroactive: four asserted consequences, four wrong** - the re-run advice, the ~2x runtime, the
   plan's *"enforced mechanically ... a file path"* that never existed, and B1775's assumed join.
 
+## THE PROOF IS ITSELF A PROBE (B1840 - L562, CHECKLIST #226 ext)
+
+**MEASURED: the fail-arm proof for the control-character gate was defeated by the control-character
+bug it was testing.** The probe went through a heredoc, the escape collapsed, the file landed with a
+real `0x08`, **the gate's OLD arm caught it and printed `1 failed`** - proof-shaped, with both new
+arms unexercised.
+
+- **Assert the probe's own inputs.** Fourth instance of L556; each of the four returned a flattering
+  answer.
+- **Assert WHICH message fires, not the exit status.** `1 failed` named a different arm's line.
+- **Every fail arm needs a must-NOT-fire case**, or a gate that fires on everything looks correct.
+- **A gate that raises while building its offender message is silent on exactly its target case** -
+  `n.lineno` on an `ast.Module`. Clean input never reaches that line, so the repo passes.
+
 ## A SILENT GATE AND A CORRECT ONE ARE THE SAME OBSERVATION (B1836 - L561, CHECKLIST #226 ext)
 
 **MEASURED while replacing `#201`'s mechanism: three bugs, none visible on reading, two of which

@@ -1,4 +1,4 @@
-"""Batch 463 (2026-05-29) -- AU7 unused-config-flags registry.
+r"""Batch 463 (2026-05-29) -- AU7 unused-config-flags registry.
 
 QUEUE FRAMING WAS WRONG (102 vs 18):
   The queue claimed 18 unused config flags in backtest/config.py. A re-scan

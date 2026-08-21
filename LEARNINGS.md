@@ -11360,6 +11360,10 @@ same evidence as a measurement.
 *"no extra cost"* - so *"costs ~2x"* matched none. `#258` covers ledger counts. **Neither claims
 this ground**, so it is a gap rather than a failure.
 
+**ANCHORED (`#197`):** this is `CHECKLIST #278`, carried into `SKILL.md` as *AN ASSERTED CONSEQUENCE
+IS A CLAIM*. Distinct from `#256`-ext, which governs a figure you REPEAT - **this one governs a
+consequence asserted for the FIRST time.**
+
 ### L561
 
 **Replacing a proxy exposed three bugs in a row, and each was invisible until run**
@@ -11386,3 +11390,48 @@ failure mode that leaves no trace - a quiet gate and a correct one are the same 
 test asserts no inline copy reappears beside it. **A duplicated pattern is a divergence waiting for
 someone to fix half of it.**
 
+**ANCHORED (`#197`):** this extends `CHECKLIST #226` - *prove it can fail* - with the reason that arm
+is the only detector: **a gate broken into SILENCE produces exactly the output of a working one.**
+Carried into `SKILL.md`.
+
+
+
+### L562
+
+**The fail-arm proof was defeated by the bug it was testing**
+
+**B1839/B1840.** Running the B1838 pin test printed `1 passed, 1 warning`. The warning was a
+compile-time `SyntaxWarning` - **so `__pycache__` hid it on every run after the first**, and the
+second run showed nothing. Following it found `test_b1778_no_control_chars_in_gate_scripts` - the
+test that exists because `\b` through a heredoc became a literal backspace - **carrying a literal
+backspace in its own docstring at runtime.** Instance 8 of the self-reference family.
+
+**The gate could not see it on TWO axes.** It globs `scripts/*.py`, and **both** real instances live
+under `backtest/tests/`. And it reads ON-DISK BYTES, while `"\b"` is two clean bytes on disk that
+compile to `0x08` - which is why a repo-wide `grep -P '\x08'` returned **one hit, and that hit was a
+comment describing the bug.**
+
+**The dangerous case warns about nothing.** `\d` in a non-raw string raises `SyntaxWarning: invalid
+escape sequence`. **`\b` does not, because it is a VALID escape.** So `re.search("\bword", t)`
+compiles clean, anchors on a backspace, matches nothing, and **no warning fires anywhere** -
+measured at zero SyntaxWarnings for that exact file.
+
+**Then the proof failed the same way.** The fail-arm probe was written through a heredoc, the escape
+collapsed, and the probe landed with a real `0x08`. **The gate's OLD arm caught it and printed
+`1 failed`** - which I accepted until I read the assertion text and saw it name a different arm's
+line. **Both new arms were unexercised at the moment I was about to call them proven.**
+
+**Fourth instance of L556** - `4,869` (commas not decimals), `jaccard 0.9993` (no measurement word),
+`observed=` (did not bypass the precondition), and now this. **A probe that omits a precondition
+returns the answer you were hoping for**, and this one omitted a precondition about the very
+mangling it was built to detect.
+
+**And the fail arm then earned its keep twice over:** with byte preconditions in place, ARM A came
+back SILENT on a module docstring. `ast.Module` has no `lineno`, so the arm raised AttributeError
+**while building its own offender message**. Clean docstrings never reach that line, so the repo
+passed and the arm looked healthy - **and the real instance fixed that same turn was a module
+docstring.**
+
+**The rule: a proof is a probe, so assert its inputs; assert WHICH message fires, not the exit
+status; and give every fail arm a must-NOT-fire case.** **ANCHORED (`#197`):** `CHECKLIST #226`,
+extension B1840. Carried into `SKILL.md`.
