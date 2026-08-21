@@ -135,17 +135,41 @@ def truthful_exit_name(exit_name, cube_predates_b1593=True):
                        f"`{true_name}` in every pre-B1593 cube - L461]")
 
 
-def load_cube(path: Path, extra_columns: list[str] | None = None) -> pd.DataFrame:
+def load_cube(path: Path, extra_columns: list[str] | None = None,
+              chunksize: int | None = None) -> pd.DataFrame:
     """Read a cube with the shared conditioning applied exactly once.
 
     Categorical labels + float32 keep peak RSS ~4x lower, so regenerating does not depend
     on the machine being otherwise idle (B1455b OOM).
+
+    `chunksize` bounds PEAK memory (S6-B1548a). MEASURED on the 1.64 GB R5 cube:
+    the resulting frame is 266 MB deep and 529 MB resident, but `low_memory=False`
+    peaks at **4,869 MB** because pandas buffers the whole file and builds
+    full-width intermediates before the usecols/dtype projection lands. Reading in
+    chunks and concatenating the projected pieces keeps the transient bounded.
+
+    OPT-IN: this is the shared reader for every cube consumer, so changing the
+    DEFAULT is a repo-wide behaviour change and needs owner approval
+    (`feedback_local_changes_default_global_needs_approval`). Callers that must
+    coexist with a running engine pass it explicitly.
     """
     cols = list(CUBE_COLUMNS) + list(extra_columns or [])
     dtypes = dict(CUBE_DTYPES)
     for c in (extra_columns or []):
         dtypes.setdefault(c, "category")
-    df = pd.read_csv(path, usecols=cols, low_memory=False, dtype=dtypes)
+    if chunksize:
+        parts = [c for c in pd.read_csv(path, usecols=cols, dtype=dtypes,
+                                        chunksize=chunksize)]
+        df = pd.concat(parts, ignore_index=True)
+        del parts
+        # chunked reads produce per-chunk categories; unify so downstream
+        # groupby(observed=True) sees ONE category set rather than a union that
+        # differs by chunk boundary.
+        for c, t in dtypes.items():
+            if t == "category" and c in df.columns:
+                df[c] = df[c].astype("category")
+    else:
+        df = pd.read_csv(path, usecols=cols, low_memory=False, dtype=dtypes)
     df["entry_date"] = pd.to_datetime(df["entry_date"]).dt.date
     df["pnl_pct"] = df["pnl_pct"].clip(-WINSORIZE, WINSORIZE) - COST_BPS / 100.0
     return df

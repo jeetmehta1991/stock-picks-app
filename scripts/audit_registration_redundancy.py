@@ -47,7 +47,9 @@ MIN_TRADES = 50          # below this a jaccard is noise, not evidence
 def compute_pairs(cube: str = "output_r5_merged_1_7",
                   min_jaccard: float = REDUNDANT) -> list[dict]:
     """Every (strategy x direction) pair at or above `min_jaccard`. Performance-blind."""
-    df = load_cube(REPO / cube / "trade_exit_detail.csv")
+    # S6-B1548a: chunked so test_b1463 can run beside an engine run (L425).
+    # MEASURED unchunked: 5,036 MB peak for a 266 MB frame.
+    df = load_cube(REPO / cube / "trade_exit_detail.csv", chunksize=500_000)
     # one exit per cell keeps the comparison about the SIGNAL, not the exit: entries are
     # identical across exits by construction (the cube replays exits over the same entries).
     first_exit = df.groupby(["strategy", "direction"], observed=True)["exit_method"].first()

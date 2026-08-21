@@ -18143,3 +18143,71 @@ def test_b1808_duplicate_learning_numbers():
     assert not stale, (
         f"baseline lists {sorted(stale)} as duplicated but they are not any "
         "more - shrink KNOWN_DUPLICATE_L so it stays a record of fact")
+
+
+def test_b1810_load_cube_chunked_is_identical_and_bounded():
+    """S6-B1548a: a chunked read must change PEAK memory and nothing else.
+
+    MEASURED on the 1.64 GB R5 cube, each arm in a CLEAN process:
+
+        unchunked        peak  4,869 MB    37s    7 pairs
+        chunksize=500k   peak  1,012 MB    37s    7 pairs
+
+    **4.8x lower peak, same runtime, identical output** - same 7 pairs, same
+    jaccard to 9 decimal places. The resulting frame is only 266 MB deep;
+    `low_memory=False` buffers the whole file and builds full-width
+    intermediates before the usecols/dtype projection lands, so ~4.6 GB is
+    transient. That is why the pyramid could not run beside an engine run
+    (L425).
+
+    `usecols` was already present (B1455b). The ticket's OTHER suggestion, a
+    chunked read, is the one that was missing.
+
+    This test uses a small fixture: reading the real cube twice costs 74s and
+    the CONTRACT - identical output, chunksize accepted - is what needs pinning.
+    """
+    import pathlib as _p
+    import sys as _sys
+    import tempfile
+
+    import pandas as pd
+
+    root = _p.Path(__file__).resolve().parents[2]
+    _sys.path.insert(0, str(root / "scripts"))
+    import roster_core as rc
+
+    rows = []
+    for i in range(400):
+        rows.append({
+            "ticker": f"T{i % 17}", "strategy": f"strat_{i % 5}",
+            "entry_date": f"2023-0{(i % 9) + 1}-15", "direction": "long",
+            "exit_method": ["atr_trail_1x", "r_multiple_2r"][i % 2],
+            "pnl_pct": (i % 7) - 3.0, "hold_days": float(i % 11 + 1),
+        })
+    tmp = _p.Path(tempfile.mkdtemp()) / "trade_exit_detail.csv"
+    pd.DataFrame(rows).to_csv(tmp, index=False)
+
+    whole = rc.load_cube(tmp)
+    chunked = rc.load_cube(tmp, chunksize=37)      # deliberately not a divisor
+
+    assert len(whole) == len(chunked) == 400
+    assert list(whole.columns) == list(chunked.columns)
+    for col in whole.columns:
+        a = whole[col].astype(str).tolist()
+        b = chunked[col].astype(str).tolist()
+        assert a == b, f"column {col!r} differs between whole and chunked reads"
+
+    # categories must be UNIFIED, not per-chunk: groupby(observed=True)
+    # downstream depends on one category set, and a chunk boundary must not
+    # change it.
+    for col in ("strategy", "direction", "exit_method", "ticker"):
+        assert str(chunked[col].dtype) == "category", f"{col} lost its dtype"
+        assert set(chunked[col].cat.categories) == set(whole[col].cat.categories), \
+            f"{col} categories differ by chunk boundary"
+
+    # and the caller the ticket names actually passes it
+    src = (root / "scripts" / "audit_registration_redundancy.py").read_text(
+        encoding="utf-8")
+    assert "chunksize=" in src, (
+        "compute_pairs must pass chunksize - the whole point of S6-B1548a is "
+        "that test_b1463 can run beside an engine run")
