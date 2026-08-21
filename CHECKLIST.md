@@ -4616,3 +4616,42 @@ those 20 rows and used to score four classifiers, is 20 planning rows presented 
 **AND CAREFUL WORK ON A SUBSET READS EXACTLY LIKE CAREFUL WORK.** Each of the 20 verdicts was
 correct; 20 sounds like a respectable sample. **The error was never in a row - it was in
 generalising from a slice**, which no amount of care inside the slice can detect.
+
+### #271 - COUNT TICKETS, NOT ROWS (B1795 / L545)
+
+**MEASURED: `EXECUTION_QUEUE.md` holds 823 rows for 721 distinct tickets.** Closing a ticket APPENDS
+a row rather than editing the old one, so **81 ids carry 2+ rows and 74 are in contradictory states -
+57 are EXECUTED AND OPEN at once.**
+
+**Every queue count quoted this session was row-level while being called ticket-level.** A row count
+is wrong by an unbounded amount and reads exactly like a right one.
+
+**Count only via `scripts/queue_state.py`** - one reader, last row wins, per distinct id. Enforced by
+`scan_row_vs_ticket`, which fires on a queue-class count whose method names no dedup.
+
+**The invariant is asserted, not assumed:** last-row-wins is sound only while no terminal row is
+followed by a non-terminal one for the same id. `test_b1795_queue_counts_are_per_ticket` checks that
+every run (currently 0 violations). **If it ever fails, every count derived from the ledger is
+wrong**, not just the new one.
+
+**AND EXCLUSIVE LABELS ARE NOT EXCLUSIVE ASSIGNMENT.** The six classes were made mutually exclusive
+as vocabulary while 69 tickets sat in two of them. **Fixing the names did nothing to the data, and
+was reported as though it had.**
+
+### #272 - A CLASSIFIER OVER A POPULATION HAS NO DEFAULT BRANCH (B1795 / L546)
+
+**JUDGMENT-ONLY: no mechanism.** Detecting a semantically-wrong `else` requires knowing which
+members the author actually examined, which is not in the source. Recorded as judgment rather than
+left to look gated - per `#236`.
+
+**MEASURED: an `else` promoted 140 tickets when 36 had been classified.** 104 tickets nobody had
+read were marked EXECUTED by the script enforcing `#270`, the rule against judging a set you have
+not read.
+
+**Every member is named in exactly one list, and the script asserts `named == population` and
+REFUSES TO WRITE on mismatch.** v2 printed `110 == 110` before touching a byte. **A default branch
+is a silent verdict on everything you forgot to think about.**
+
+**Applies past ticket scripts** - any sweep that assigns a disposition, label, or status across a set:
+migrations, classifiers, bulk edits, roster builders.
+

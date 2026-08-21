@@ -1542,6 +1542,56 @@ VERDICT = (
 )
 
 
+# B1795 (#271): THE LEDGER IS AN APPEND LOG, NOT A TABLE OF TICKETS.
+# Closing a ticket APPENDS a row instead of editing the old one, so 81 ids
+# carry 2+ rows and 74 sit in contradictory states - 57 are EXECUTED AND OPEN
+# at once. MEASURED at B1795: 823 rows vs 721 distinct tickets.
+#
+# Every queue count quoted this session counted ROWS while calling them
+# TICKETS. That is the structural cause of the arithmetic the owner caught by
+# addition, and it violates "I want mutually exclusive groups" at the DATA
+# level even after the vocabulary was made exclusive at the LABEL level.
+#
+# A count is fit to quote only if it deduplicates by id, last row wins -
+# which is what scripts/queue_state.py does and why it exists.
+_QCOUNT_PAT = (
+    r"\b(\d{2,4})\s*(?:tickets?|rows?|\w+\s+)?"
+    r"(executed|dropped|blocked|deferred|open|running)\b|"
+    r"\b(executed|dropped|blocked|deferred|open|running)\s*[:=]?\s*(\d{2,4})\b")
+_QDEDUP = ("queue_state", "last row wins", "last-row-wins", "distinct ticket",
+           "per distinct", "deduplicat", "dedupe")
+
+
+def scan_row_vs_ticket(entries, *, text=None, tool_text=None) -> list[str]:
+    """#271: a queue class count must be per TICKET, not per ROW.
+
+    Fires when a turn quotes a queue-class count while its tool calls read
+    EXECUTION_QUEUE.md without any dedup marker. The ledger has 102 more rows
+    than tickets, so a row-level count is wrong by an unbounded amount and
+    reads exactly like a right one.
+
+    It cannot tell a correct count from an incorrect one - it checks that the
+    METHOD names dedup. A turn that dedups without saying so trips it; saying
+    so is cheap and is the point.
+    """
+    import re as _re
+    t = _response_text(entries, text)
+    if not t or not _re.search(_QCOUNT_PAT, t, _re.I):
+        return []
+    tt = (_tool_text(entries) if tool_text is None else tool_text).lower()
+    if "execution_queue" not in tt:
+        return []
+    if any(d in tt or d in t for d in _QDEDUP):
+        return []
+    return ["ROW-vs-TICKET COUNT (B1795/#271): this turn quotes a queue-class "
+            "count and reads EXECUTION_QUEUE.md, but nothing in the method "
+            "deduplicates by ticket id. **The ledger is an APPEND LOG: 823 "
+            "rows for 721 tickets, 81 ids duplicated, 57 EXECUTED AND OPEN at "
+            "once.** Count via scripts/queue_state.py (last row wins), or say "
+            "explicitly that the figure is row-level and why that is what you "
+            "want."]
+
+
 def scan_partial_read(entries, *, text=None, tool_text=None) -> list[str]:
     """#270: a verdict over a population needs the WHOLE population read.
 
@@ -2370,7 +2420,7 @@ def main() -> int:
                 scan_ungated_addition, scan_shell_substitution,
                 scan_queue_vocabulary, scan_queue_not_updated,
                 scan_unverified_count, scan_partial_distribution,
-                scan_partial_read):
+                scan_partial_read, scan_row_vs_ticket):
         try:
             _r = _sc(_e2)
         except Exception as _e:

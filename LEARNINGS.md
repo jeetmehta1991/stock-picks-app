@@ -10744,3 +10744,72 @@ subset reads exactly like careful work.
 **The rule, and the owner stated it more broadly than tickets: go through the tickets, the documents
 OR THE CODE end to end. No half measures.** A verdict about a population requires the population -
 not the first N of it, however carefully those N are read.
+
+### L545
+
+**The ledger is an append log, and I counted its rows as tickets all session**
+
+**B1795.** Closing a ticket does not edit its row - it APPENDS a new one:
+
+```
+| **S6-B1500d** | **OPEN**     | P2 | **MED**    | Reconcile n=356 against 352 FULL-PERIOD fires |
+| **S6-B1500d** | **EXECUTED** | -  | **CLOSED** | Holdout n MEASURED = 147 (full-period 352)    |
+```
+
+**Same ticket. Both rows live. 81 ids like this; 74 in contradictory states; 57 EXECUTED AND OPEN
+at once.** MEASURED: **823 rows, 721 distinct tickets.**
+
+**Every queue figure I quoted this session was a row count wearing a ticket count's name** - 688,
+717, 662, 649. That is a contributing cause of the arithmetic the owner caught by addition
+(*"388+149+96=633, so where are 649 tickets coming from?"*); I attributed it then to reporting
+TRANSITION counts as STATE, which was true and incomplete. **Duplicated rows were the other half,
+and I did not look for it because the first explanation fit.**
+
+**It also silently violated the owner's ruling.** *"I want mutually exclusive groups"* was
+implemented as an exclusive VOCABULARY - six labels, no overlap. The DATA still put 69 tickets in
+two classes at once. **Making the labels exclusive did nothing to make the assignment exclusive**,
+and I reported the vocabulary fix as though it had.
+
+**The fix is one reader, not more care.** `scripts/queue_state.py` is now the only thing that parses
+the ledger: last row wins, per distinct id. The scheme rests on one invariant - a terminal row is
+never followed by a non-terminal one - so the pin test ASSERTS that invariant (currently 0
+violations) rather than trusting it. `scan_row_vs_ticket` (#271) fires on a class count taken from
+the queue without a dedup marker.
+
+**The detection signal I had and ignored:** the same file was already known to have a free-form
+column (*"the status column carries status OR priority OR a headline, chosen freely per row"*, my
+own words, ticketed). **A file loose enough to disagree with itself about what a column means is
+loose enough to hold the same ticket twice.** I ticketed the symptom and never asked what else the
+looseness implied.
+
+### L546
+
+**The script enforcing "read every member" swept 104 members it had never read**
+
+**B1795, same turn as L545.** I wrote `#270` (*read the whole set before judging it*) one turn
+earlier. The script applying that rule to 110 tickets had this shape:
+
+```python
+if tid in PENDING:      ...      # 64 ids I named
+elif tid in SUPERSEDED: ...      # 10 ids I named
+else:                   promote  # <- everything else
+```
+
+**The `else` promoted 140 tickets when I had classified 36.** 104 tickets I had never opened were
+marked EXECUTED by the machinery built to stop exactly that. Caught only because the printed total
+said 214 and I knew the population was 110.
+
+**Two independent errors compounded.** The catch-all disposed of unread members; and the row-level
+match (L545) inflated the population so the catch-all had 104 extra members to sweep. **Either alone
+would have been visible; together the wrong total looked like a different bug.**
+
+**The rule: a classifier over a population has no default branch.** Every member is named in exactly
+one list, and the script asserts `named == population` and REFUSES TO WRITE if not. v2 aborts on
+mismatch; it printed `110 == 110` before touching a byte. **A default branch is a silent verdict on
+everything the author forgot** - which is the whole failure class, expressed as three characters of
+control flow.
+
+**And note where it happened.** Not in analysis, in the ENFORCEMENT. `S6-B1780d` already records
+that the gate-building machinery reproduced the defect it was built to stop. **This is the second
+instance, and the first one was already an open ticket when I wrote the `else`.**
+

@@ -17124,3 +17124,73 @@ def test_b1793_classifier_scored_against_hand_labels():
     # would only invite loosening the labels to pass - which is the failure this
     # whole corpus exists to prevent.
     assert 0.0 <= recall <= 1.0
+
+
+def test_b1795_queue_counts_are_per_ticket():
+    """B1795 (#271): the ledger is an APPEND LOG, so rows != tickets.
+
+    Closing a ticket APPENDS a row rather than editing the old one:
+
+        | **S6-B1500d** | **OPEN**     | P2 | **MED**    | Reconcile n=356 ... |
+        | **S6-B1500d** | **EXECUTED** | -  | **CLOSED** | Holdout n = 147 ... |
+
+    Same ticket, two live rows, contradictory states - 81 ids like this, 57 of
+    them EXECUTED AND OPEN at once. **Every queue count quoted this session
+    counted ROWS while calling them TICKETS** (823 vs 721), which is what made
+    the class totals fail to add up when the owner checked them.
+
+    The whole scheme rests on ONE invariant: a terminal row is never followed
+    by a non-terminal row for the same id. This asserts that invariant rather
+    than trusting it.
+    """
+    import importlib.util
+    import pathlib as _p
+
+    root = _p.Path(__file__).resolve().parents[2]
+    spec = importlib.util.spec_from_file_location(
+        "qs_b1795", root / "scripts" / "queue_state.py")
+    qs = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(qs)
+
+    a = qs.audit()
+    assert a["terminal_not_last"] == 0, (
+        f"{a['terminal_not_last']} ticket(s) have a terminal row that is NOT "
+        "their last row - last-row-wins is unsound and every count derived "
+        "from it is wrong")
+    assert not a["off_vocabulary"], (
+        f"states outside the six classes: {a['off_vocabulary']}")
+    assert a["rows"] > a["tickets"], (
+        "rows == tickets means the duplication this module exists for is gone; "
+        "if that is real, simplify - do not leave a misleading abstraction")
+
+    st = qs.state()
+    assert sum(st.values()) == a["tickets"]
+    assert set(st) <= set(qs.CLASSES)
+
+
+def test_b1795_row_vs_ticket_gate():
+    """B1795 (#271): proven on the verbatim output of the script that erred.
+
+    v1 of the B1795 applier printed "OPEN rows read end to end : 214" while the
+    real figure was 110 tickets, and promoted 104 tickets nobody had read.
+    """
+    import importlib.util
+    import pathlib as _p
+
+    root = _p.Path(__file__).resolve().parents[2]
+    spec = importlib.util.spec_from_file_location(
+        "vtc_b1795", root / "scripts" / "verify_turn_compliance.py")
+    tg = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(tg)
+
+    incident = "OPEN rows read end to end : 214. still OPEN 64, EXECUTED 140."
+    assert tg.scan_row_vs_ticket(
+        [], text=incident, tool_text="python b1795_apply.py EXECUTION_QUEUE.md"), \
+        "must fire on the verbatim row-level output"
+    assert not tg.scan_row_vs_ticket(
+        [], text="102 OPEN tickets",
+        tool_text="python scripts/queue_state.py EXECUTION_QUEUE.md"), \
+        "must be quiet when the count went through the deduplicating reader"
+    assert not tg.scan_row_vs_ticket(
+        [], text="102 OPEN tickets", tool_text="cat README.md"), \
+        "must be quiet when the queue was not the source"

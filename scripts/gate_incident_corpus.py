@@ -135,6 +135,11 @@ INCIDENTS: dict[str, tuple[str, bool, dict]] = {
         True,
         {"tool_text": "sed -n '1,20p' allrows.txt | head -35"},
     ),
+    "scan_row_vs_ticket": (
+        "OPEN rows read end to end : 214. still OPEN 64, EXECUTED 140.",
+        True,
+        {"tool_text": "python b1795_apply.py EXECUTION_QUEUE.md"},
+    ),
     # NEGATIVE control - ordinary reporting prose that must NOT trip anything.
     # Note it is a bare sentence, so gates that legitimately require RESPONSE
     # STRUCTURE (a SKILLS block, a compliance block) are excluded by the sweep
@@ -176,6 +181,9 @@ NEUTRAL: dict[str, dict] = {
     # B1794: this gate reads TOOL text for truncation markers, so the
     # control must supply a clean tool call or it measures the gate working.
     "scan_partial_read": {"tool_text": ""},
+    # B1795: reads TOOL text for the queue path; neutralise it for the
+    # text-only control or it measures the gate working.
+    "scan_row_vs_ticket": {"tool_text": ""},
 }
 
 

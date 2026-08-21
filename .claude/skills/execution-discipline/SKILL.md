@@ -669,6 +669,24 @@ says *each*.**
 - **Phase 5 is three artifacts**: LEARNINGS + CHECKLIST-or-explicit-citation + queue ticket.
   Enforced by `scan_miss_capture_complete`.
 
+## COUNT ENTITIES, NOT ROWS - AND NEVER WRITE A DEFAULT BRANCH (B1795 - L545/L546, #271/#272)
+
+**MEASURED: `EXECUTION_QUEUE.md` is an APPEND LOG - 823 rows, 721 tickets.** Closing a ticket appends
+a row instead of editing it, so 81 ids are duplicated and **57 are EXECUTED AND OPEN at once.** Every
+queue count quoted this session was row-level while named ticket-level.
+
+- **One reader.** `scripts/queue_state.py`, last row wins, per distinct id. `scan_row_vs_ticket`
+  fires on a class count whose method names no dedup.
+- **Assert the invariant the scheme rests on.** Last-row-wins holds only while no terminal row is
+  followed by a non-terminal one. The pin test checks it; if it fails, EVERY derived count is wrong.
+- **Exclusive labels are not exclusive assignment.** The six classes were made non-overlapping as
+  vocabulary while 69 tickets sat in two of them - and the vocabulary fix was reported as the fix.
+- **A classifier over a population has NO `else`.** An `else` promoted 140 tickets when 36 had been
+  classified; 104 unread tickets were marked EXECUTED **by the script enforcing #270.** Name every
+  member in exactly one list, assert `named == population`, and REFUSE TO WRITE on mismatch.
+- **Where it happened matters.** Not in the analysis - in the ENFORCEMENT, for the second time
+  (`S6-B1780d` is the first, and was already open when the `else` was written).
+
 ## NO HALF MEASURES - READ IT END TO END (B1794 - L544, CHECKLIST #270)
 
 **OWNER DIRECTIVE: analyze anything - tickets, documents, or CODE - end to end. No half measures.**
