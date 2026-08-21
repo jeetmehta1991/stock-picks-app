@@ -4692,6 +4692,22 @@ labels to pass - the exact failure the corpus exists to prevent.
 
 ### #270 - NO HALF MEASURES: READ THE WHOLE ARTIFACT BEFORE JUDGING IT (B1794 / L544)
 
+**EXTENSION (B1807 / L554) - TRUNCATION COUNTS ONLY WHERE IT IS APPLIED TO THE SOURCE.**
+
+**MEASURED: three display trims on a compliant turn were read as a partial read** -
+`pytest -q | tail -3`, `grep foo file | head -6`, `sed -n '/def x/,/^def /p' f | tail -22`.
+**Everything after a `|` has already seen the whole input.**
+
+- **Count truncation only in the PRE-PIPE segment.** `sed -n 'N,Mp' file` is the file-sampling
+  idiom and is what the original incident used; a PATTERN range reads a whole region and is not
+  sampling.
+- **Third false positive from this gate.** Fix it rather than live with it: I had started reading
+  its output as noise and reaching for the *"end to end"* escape to clear it. **That escape is an
+  assertion - using it to silence a false positive makes it a lie the next time it matters.**
+- **The gate was never wrong about its own shape.** The false positives came from the marker being
+  a PROXY for the concept - `head -` standing in for *"you sampled"* - and the proxy admitted cases
+  the concept excludes. `#239`'s family: the marker is not the thing.
+
 **OWNER DIRECTIVE 2026-08-20:** *"You are supposed to analyze anything - not just tickets, but
 documents or even code - end to end. No half measures."*
 

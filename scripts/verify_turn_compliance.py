@@ -1625,10 +1625,30 @@ def scan_partial_distribution(entries, *, text=None) -> list[str]:
 # 20 were PLANNING rows; the rest were MEASUREMENT records. **A sample drawn
 # from one end of a sorted population is not a sample.**
 TRUNCATION = (
-    "head -", "| head", "tail -", "[:20]", "[:30]", "[:50]", "[:100]",
+    "head -", "tail -", "[:20]", "[:30]", "[:50]", "[:100]",
     "[:150]", "[:165]", "[:180]", "[:200]", "[:230]", "[:300]", "--show",
     "first 20", "sample of", "batch 1 of", "spot-check",
 )
+
+
+# B1807: truncation counts only where it is applied to the SOURCE. Everything
+# after a `|` has already seen the whole input - `pytest -q | tail -3` trims a
+# computation's OUTPUT and is not sampling. MEASURED: three display trims on a
+# compliant turn were read as a partial read, the third false positive this
+# gate has produced. A gate that cries wolf trains its author to ignore it.
+def _sampling_hits(tool_text: str) -> list[str]:
+    """TRUNCATION markers applied to the SOURCE, not to a command's output."""
+    import re as _re
+    hits = []
+    for line in tool_text.splitlines():
+        head = line.split("|")[0]              # pre-pipe segment only
+        hits += [m for m in TRUNCATION if m in head]
+        # `sed -n 'N,Mp' file` is THE file-sampling idiom and is what the
+        # original incident used. A PATTERN range (`sed -n '/x/,/y/p'`) reads
+        # a whole region and is not sampling.
+        if _re.search(r"sed\s+-n\s*['\"]?\s*\d+\s*,\s*\d+\s*p", head):
+            hits.append("sed line-range")
+    return hits
 VERDICT = (
     "promoted", "verified", "executed", "complete", "nothing pending",
     "stays open", "verdict", "i judge", "classified", "disposition",
@@ -1899,7 +1919,7 @@ def scan_partial_read(entries, *, text=None, tool_text=None) -> list[str]:
         return []
     verdicts = [hit]
     tt = (_tool_text(entries) if tool_text is None else tool_text).lower()
-    cuts = [c for c in TRUNCATION if c in tt]
+    cuts = _sampling_hits(tt)          # B1807: source truncation, not display
     if not cuts:
         return []
     if "end to end" in t or "in full" in t or "no truncation" in t:

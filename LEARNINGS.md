@@ -11113,3 +11113,36 @@ changed nothing - an inert fix, the class `S6-B1708d` warned about in its own te
 responses are WRITTEN - where a block sits, whether numbers are fenced. **Those assumptions are
 invisible until a compliant turn violates them, and then the gate blames the turn.**
 
+### L554
+
+**A gate that cries wolf trains its author to ignore it**
+
+**B1807.** `scan_partial_read` blocked a third compliant turn. It asks whether a verdict came from
+reading PART of a population, and it looked for `head -` / `tail -` anywhere in the tool text.
+
+**MEASURED on the calls it objected to:**
+
+```
+python -m pytest -q | tail -3                    matched 'tail -'
+grep -n EXTRA_INCIDENTS file | head -6           matched 'head -'
+sed -n '/def x/,/^def /p' file | tail -22        matched 'tail -'
+```
+
+**All three trim the OUTPUT of a command that read everything.** The incident the gate was built for
+looks different in exactly one way: `sed -n '1,20p' allrows.txt` samples the FILE, before any pipe.
+
+**Everything after a `|` has already seen the whole input.** Counting only the pre-pipe segment
+separates sampling from display, and it separates them exactly - 6 of 6 cases, with the recorded
+incident still firing.
+
+**The reason to fix it rather than live with it.** I had begun reading this gate's output as noise,
+and reaching for the *"end to end"* escape to clear it. **The escape is an assertion**; using it to
+silence a false positive would make it a lie the next time it mattered. **A gate whose output you
+have learned to dismiss is worse than no gate, because it occupies the slot a working one would
+have** — which is `S6-B1780d`'s open question in a concrete instance.
+
+**Note what the gate was RIGHT about, both times before.** It has never produced a wrong verdict on
+the shape it was built for. **The false positives came from the marker list being a proxy for the
+concept** — `head -` for *"you sampled"* — and the proxy admitted a case the concept excludes. That
+is `#239`'s family again: the marker is not the thing.
+

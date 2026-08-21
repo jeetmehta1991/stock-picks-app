@@ -757,6 +757,12 @@ enforcement was written in the same turn as the gate that did not deliver it.
 
 ## NO HALF MEASURES - READ IT END TO END (B1794 - L544, CHECKLIST #270)
 
+**EXTENSION (B1807 - L554): truncation counts only where it is applied to the SOURCE.** Everything
+after a `|` has already seen the whole input - `pytest -q | tail -3` trims OUTPUT, it does not
+sample. **Third false positive from this gate; fix it rather than learn to ignore it. The
+*"end to end"* escape is an ASSERTION, and using it to silence a false positive makes it a lie the
+next time it matters.**
+
 **OWNER DIRECTIVE: analyze anything - tickets, documents, or CODE - end to end. No half measures.**
 
 **MEASURED: I read 20 of 141 rows and projected. Sample 10pct complete, population 72pct - wrong

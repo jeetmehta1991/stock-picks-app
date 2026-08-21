@@ -17308,7 +17308,11 @@ def test_b1796_partial_read_covers_every_declared_domain():
     tg = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(tg)
 
-    TRUNC = "grep -n 'def scan_' scripts/verify_turn_compliance.py | head -20"
+    # B1807: a SOURCE truncation. The original fixture was
+    # `grep ... | head -20`, which trims a command's OUTPUT - a display trim,
+    # not sampling. **The fixture encoded the marker, not the concept**, so it
+    # would have kept passing while the gate meant something narrower.
+    TRUNC = "sed -n '1,20p' open106.txt"
 
     must_fire = {
         "ticket/disposition": "All 138 rows are complete - nothing pending.",
@@ -18011,3 +18015,59 @@ def test_b1806_block_location_and_fenced_counts():
     assert not tg.scan_ticket_counts_missing(
         [], text="ticket counts are important\n\n" + resp), \
         "an earlier bare mention of the header must not mask a later real block"
+
+
+def test_b1807_sampling_not_display_truncation():
+    """B1807 (#270): truncation that matters is applied to the SOURCE.
+
+    `scan_partial_read` looked for `head -` / `tail -` anywhere in the tool
+    text, so `pytest -q | tail -3` and `grep foo file | head -6` counted as
+    sampling a population. **Everything after a `|` has already seen the whole
+    input** - those trim a computation's OUTPUT.
+
+    Third false positive this gate produced on a compliant turn. **A gate that
+    cries wolf trains its author to ignore it**, which is worse than not having
+    it (S6-B1780d).
+
+    A `sed -n 'N,Mp'` LINE range is sampling and is what the original incident
+    used; a PATTERN range reads a whole region and is not.
+    """
+    import importlib.util
+    import pathlib as _p
+
+    root = _p.Path(__file__).resolve().parents[2]
+    spec = importlib.util.spec_from_file_location(
+        "vtc_b1807", root / "scripts" / "verify_turn_compliance.py")
+    tg = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(tg)
+
+    verdict = "All three were listed and every one of the 6 classes had a number."
+
+    must_fire = {
+        "sed line-range (the incident)": "sed -n '1,20p' allrows.txt | head -35",
+        "direct file head": "head -20 open106.txt",
+        "python slice": "print(rows[:20])",
+    }
+    for label, tool in must_fire.items():
+        assert tg.scan_partial_read([], text=verdict, tool_text=tool), (
+            f"{label} samples the SOURCE and must still fire: {tool!r}")
+
+    must_be_quiet = {
+        "pytest output trim": "python -m pytest -q | tail -3",
+        "grep output trim": "grep -n FOO file.py | head -6",
+        "sed PATTERN range": "sed -n '/def x/,/^def /p' f.py | tail -22",
+    }
+    for label, tool in must_be_quiet.items():
+        assert not tg.scan_partial_read([], text=verdict, tool_text=tool), (
+            f"{label} trims a computation's OUTPUT, which has already read "
+            f"everything - it is not a partial read: {tool!r}")
+
+    # and the recorded incident is unchanged
+    import sys as _sys
+    _sys.path.insert(0, str(root / "scripts"))
+    from importlib import import_module
+    corpus = import_module("gate_incident_corpus")
+    text, must, state = corpus.INCIDENTS["scan_partial_read"]
+    assert bool(tg.scan_partial_read([], text=text, **state)) == must, \
+        "narrowing the trigger must not silence the original incident"
+
