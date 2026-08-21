@@ -10890,3 +10890,20 @@ match the SHAPE (B1796) .. dialects           (disjoint words, one claim)
 references"* share no root. **When two domains state the same claim with disjoint vocabulary, the
 matcher is on the wrong rung, and adding words is motion rather than progress.**
 
+**PHASE-5 CLASS DISPOSITION (the gate caught me leaving this out).** L548 + the `#239` amendment +
+three queue rows recorded the miss and never declared its class - which is `#236`'s exact defect,
+one turn after I cited `#236` approvingly.
+
+- **This is a COMPLIANCE FAILURE against the GENERALIZATION MANDATE**, not a new class. That rule -
+  *fix the CLASS, not the instance* - already covers it, and sits at the top of the very file I
+  edited instance-first. **No new CHECKLIST number is warranted; `#239` was amended instead.**
+- **Class-level detection is `JUDGMENT-ONLY`.** No scan can tell a RULE from an EXAMPLE of one:
+  *"the ticket, code and document dialects"* and *"match the shape, because vocabulary chases
+  dialects forever"* are the same subject in the same prose register. **Declaring that beats
+  shipping a gate that greps for imperatives and calls the problem solved.**
+- **Instance-level durability IS mechanised.** A rule can vanish from the docs later, which is the
+  same disappearance in slow motion. `test_b1797_matcher_rung_rule_is_in_the_durable_docs` asserts
+  all three rungs AND the wrong-rung diagnostic survive in **both** `SKILL.md` and `CHECKLIST.md`.
+  **Without the diagnostic the table is trivia** - the usable part is *two domains, one claim, no
+  shared root.*
+

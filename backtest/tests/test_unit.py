@@ -17319,3 +17319,42 @@ def test_b1796_partial_read_covers_every_declared_domain():
         assert not tg.scan_partial_read([], text=sentence, tool_text=tool), (
             f"false positive on {label}: {sentence!r}. A forward-looking clause "
             "is an intention, not a verdict from a partial read.")
+
+
+def test_b1797_matcher_rung_rule_is_in_the_durable_docs():
+    """B1797: the RULE must live in the docs, not only in the examples.
+
+    B1796 fixed a gate by matching the SHAPE of a population verdict instead of
+    adding vocabulary. **The skill recorded the three dialects and omitted the
+    rule that produced them** - so it taught "these three exist" rather than
+    "match the shape", and a fourth domain would have been uncovered.
+
+    That is the GENERALIZATION MANDATE - fix the CLASS, not the instance -
+    violated inside the file that states it. **Compliance failure against an
+    existing rule, not a new class**, so #239 was amended rather than #274
+    minted.
+
+    Detecting the class in general is JUDGMENT-ONLY: no scan can tell a RULE
+    from an EXAMPLE of one. What IS mechanisable is that the rule, once written,
+    stays written - in both artifacts, with its diagnostic intact.
+    """
+    import pathlib as _p
+
+    root = _p.Path(__file__).resolve().parents[2]
+    skill = (root / ".claude" / "skills" / "execution-discipline"
+             / "SKILL.md").read_text(encoding="utf-8").lower()
+    check = (root / "CHECKLIST.md").read_text(encoding="utf-8").lower()
+
+    # the three rungs, by name - the rule, not the dialect examples
+    for doc, name in ((skill, "SKILL.md"), (check, "CHECKLIST.md")):
+        for rung in ("enumerate", "stem the root", "match the shape"):
+            assert rung in doc, (
+                f"{name} lost the '{rung}' rung. The three-rung rule is what "
+                "makes the next dialect answerable; the three examples are not.")
+
+    # the DIAGNOSTIC - how to know you are on the wrong rung
+    for doc, name in ((skill, "SKILL.md"), (check, "CHECKLIST.md")):
+        assert "disjoint vocabulary" in doc or "disjoint words" in doc, (
+            f"{name} lost the wrong-rung diagnostic. Without it the table is "
+            "trivia: the test is whether two domains state ONE claim with "
+            "words that share no root.")
