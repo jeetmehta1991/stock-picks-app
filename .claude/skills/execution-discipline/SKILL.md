@@ -669,6 +669,21 @@ says *each*.**
 - **Phase 5 is three artifacts**: LEARNINGS + CHECKLIST-or-explicit-citation + queue ticket.
   Enforced by `scan_miss_capture_complete`.
 
+## A CLASSIFIER INHERITS YOUR MODEL OF THE DATA (B1792 - L542, CHECKLIST #268)
+
+**MEASURED: hand-reading 20 rows gave 2 complete, 17 open work, 1 misclassified.** Four classifiers
+had promoted 17-57 of that same population.
+
+- **They failed on the PREMISE, not the pattern.** I had framed these as *analysis whose artifact
+  was documentation*, so each hunted for a recorded result. **They are tasks with verbs** - "Run
+  first", "Build the harvester", "Owner approval required" - written down and never started.
+- **Hand-read a sample and state what the population IS before writing a classifier.** A wrong model
+  of the data cannot be patched by refining the pattern.
+- **A completed analysis row has a shape:** a finding plus its consequence, no verb pointing
+  forward. **A definitive NEGATIVE is a completed result.**
+- **Hand-reading finds what no checker looks for** - one row stated its own blocker and had sat as
+  OPEN; every completeness checker was asking a different question.
+
 ## STOP AT THE SECOND FAILED HAND-CHECK (B1791 - L541, CHECKLIST #267)
 
 **MEASURED: four classifiers, hand-checked samples failing 3-of-4 then 3-of-5.** The rule *two

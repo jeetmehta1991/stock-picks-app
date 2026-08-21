@@ -4552,3 +4552,25 @@ each pass. Strip prior annotations before classifying (`original_text()` in
 
 **AND THE PART THAT HELD: nothing was written.** Four wrong classifiers, zero corrupted rows,
 because every pass was a DRY RUN followed by a hand-check before `--write`.
+
+### #268 - A CLASSIFIER INHERITS ITS AUTHOR'S MODEL OF THE DATA (B1792 / L542)
+
+**MEASURED: hand-reading 20 rows gave 2 complete, 17 open work, 1 misclassified - a 10pct
+completion rate.** Four classifiers had promoted between 17 and 57 of the same population.
+
+**They failed because they were built on the wrong premise.** `#266` framed these rows as *analysis
+whose artifact was documentation*, so every classifier hunted for a recorded result. **The rows are
+actually TASKS WITH VERBS** - *"Run first"*, *"needs resimulation"*, *"Build the harvester"*,
+*"Owner approval required"* - work written down and never started. **Any result-like text a
+classifier found was incidental**: `20/24/26` scored as a measurement inside *"if results look
+anomalous, run a diff"*.
+
+**Before building a classifier, hand-read a sample and state what the population IS.** A wrong model
+of the data cannot be patched by refining the pattern - four attempts proved that (`#267`).
+
+**A COMPLETED ANALYSIS ROW HAS A RECOGNISABLE SHAPE:** a finding plus its consequence, and no verb
+pointing forward. *"Cliff SHARP; band NOT extended; sweep stays 20 engine runs."* **A definitive
+NEGATIVE is a completed result** - it closes the question.
+
+**AND HAND-READING FINDS WHAT NO CHECKER LOOKS FOR.** `S6-B1532c` states its own blocker and sat as
+OPEN for months; the completeness checkers never asked whether the CLASS was right.

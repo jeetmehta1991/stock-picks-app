@@ -10637,3 +10637,44 @@ discipline held even while the classifier did not.
 **What I should have concluded two attempts earlier: this is a judgment task with ~140 instances,
 and the honest options are to hand-verify in batches, accept them as permanently OPEN, or have the
 owner accept a sampled error rate.** Presenting those is the answer; a fifth regex is not.
+
+### L542
+
+**Hand-reading 20 rows overturned the premise of the last three batches**
+
+**B1792.** Owner chose option (a) - hand-verify in batches. **Batch 1 of 20 read one by one:
+2 complete, 17 open work, 1 misclassified.**
+
+**And the 10pct completion rate is the finding, not the throughput.** B1790 framed these 138 as
+*"analysis rows with no code to verify"* - a category error in the ledger. **Reading them shows
+something different: they are overwhelmingly REAL OPEN WORK that was never done.**
+
+```
+S6-B1503a  "Never tested. Run first."
+S6-B1503b  "needs resimulation ~50 s/ticker. Highest-leverage untested knob."
+S6-B1518b  "Pin test: ... Without it 'plumbed' is another grep-level claim."
+S6-B1531b  "Build the harvester"
+S6-B1541a  "Owner approval required to enable."
+```
+
+**None of those is an unverifiable measurement. Each is a task with a verb.** So the population is
+not *"work whose artifact was documentation"*; it is *"work that was written down and never
+started"* - which is a far more ordinary and far more actionable thing than the category error I
+diagnosed.
+
+**Why my four classifiers all over-promoted.** They were built on B1790's premise: that these rows
+RECORD completed analysis, so the job was finding the recorded result. **The population is the
+opposite**, so every classifier was looking for the wrong signal and any evidence it found was
+incidental - `20/24/26` read as a measurement in a row that says *"if results look anomalous, run a
+diff"*. **A classifier inherits its author's model of the data, and mine was wrong before the first
+regex.**
+
+**Two genuinely complete rows, for the record**, and both share a shape: a finding plus its
+consequence, no verb pointing forward. `Cliff SHARP; band NOT extended; sweep stays 20 engine runs.`
+and `R5 wall-clock NOT recoverable from artifacts.` **A definitive negative is a completed result** -
+it closes the question.
+
+**One row was in the wrong class entirely.** `S6-B1532c` states its own blocker - *import pandas
+hangs, so no Python profiling can run until WMI recovers* - and sat as OPEN. **The hand-read caught
+a misclassification no completeness checker was even looking for**, because it was asking the wrong
+question of the row.
