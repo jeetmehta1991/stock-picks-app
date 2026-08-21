@@ -741,6 +741,23 @@ gate had just named.**
 - **Compliance failure against `#45` and `#247`, not a new class.** A fifth rule
   restating four that were ignored is `#136` theater.
 
+## EVERY CHECK PASSED AND THE RUN DID NOTHING (B1854 - L566, CHECKLIST #223)
+
+**MEASURED: a three-arm probe returned 890.7 / 890.6 / 890.6 seconds and the
+verdict NEUTRAL - the answer I expected. All three arms did no work**
+(`0/10 passed` on 751 days, `trades=0`, 1 output file instead of 74).
+
+- **The validation validated the wrong layer.** Exit codes, windows,
+  `universe_size`, checkpoints, CPU, working set - **all true, none of them asks
+  whether the run DID anything.**
+- **The tell was in the numbers first:** three different workloads within 0.1s,
+  and a fitted model saying neither tickers nor years matter. **An idle engine
+  produces very clean arithmetic.**
+- **Naming a gate N/A switches it off.** `#223` step 1 is `cube_sanity` - the
+  one check that opens the cube. I waived it for all four probe dirs with a
+  reason I still think correct. **When you waive a gate, name what the waiver
+  stops detecting.**
+
 ## CHECKING THE VALUE IS NOT READING THE CODE (B1852 - L565, CHECKLIST #222)
 
 **MEASURED: I recommended raising `DEMAND_PRUNING_WARMUP` from a runbook table

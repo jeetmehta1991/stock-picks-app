@@ -11563,3 +11563,48 @@ covers this class and **fired correctly on the first response that named the
 constant** - the failure was mine, not the gate's. Adding a second gate here
 would be `#136` theater. **ANCHORED (`#197`):** compliance failure against
 `CHECKLIST #222`.
+
+
+### L566
+
+**Every check passed, and the run did nothing**
+
+**B1845/B1849/B1853.** I built a three-arm probe to answer whether the universe
+lever is cost-neutral in ticker-years. It returned **890.7 / 890.6 / 890.6
+seconds**, a fitted per-ticker-year cost of **-0.01s**, and the verdict NEUTRAL -
+**the answer the ticket predicted and the answer I expected.** It is void. All
+three arms did no work: `screen_universe 0/10 passed` on every one of 751 days,
+`cumulative_trades=0`, one output file instead of 74. **Causally confirmed
+after: pruning ON gives 0 trades and 1 file; OFF gives 20 trades and 75 files, on
+the identical 249-day window.**
+
+**The validation was thorough and it validated the wrong layer.** I checked exit
+codes (0), windows (A/B 249 days to 2025-05-05, C 500 to 2026-05-05),
+`universe_size` (10/20/10), checkpoint advance, process liveness via
+`Get-Process`, CPU climbing, working set. **Every one of those was TRUE.** They
+establish that the run was CONFIGURED correctly and RAN. **None of them asks
+whether it DID anything**, and that is the layer the claim lived at.
+
+**The tell was in the numbers before any of the diagnosis.** Three different
+workloads - 10 tickers over 1 year, 20 over 1 year, 10 over 2 years - finishing
+within **0.1 seconds** of each other. A fitted model saying runtime is 100 pct
+fixed and **neither tickers nor years matter**. That is not a measurement of an
+engine, it is the shape of an engine that is idle, **and the arithmetic was clean
+enough to publish.**
+
+**The worst part is the waiver.** `#223` asks a finished cube for a 9-step
+post-config ledger, and **step 1 is `1_cube_sanity`** - the one check that opens
+the cube and looks at what is in it. **I dispositioned all four probe dirs `N/A`
+myself**, with a reason I still think is correct: a timing probe is not a graded
+cube and its output is never read for selection. **The reasoning was sound and
+the effect was to switch off the only gate positioned to see `trades=0`.** Same
+shape as L564, one turn later: a defensible argument for why a mechanism does not
+apply today.
+
+**The rule: verifying that a run was configured correctly and completed is not
+verifying that it produced anything. Check the OUTPUT, not the exit code - and
+when you waive a gate as not-applicable, name what that waiver stops
+detecting.** **ANCHORED (`#197`):** `CHECKLIST #223` and the Fable Gate-4 rule
+that a surprisingly clean result is suspect until you can explain why it is
+clean. **Compliance failure against `#223` in spirit** - the ledger entry was
+filed correctly and the check it stands for was never performed.
