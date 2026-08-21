@@ -17593,3 +17593,89 @@ def test_b1800_lens12_effective_parameter():
 
     # the result must SHOW what moved, not merely assert that it did
     assert real["a"] != real["b"] and real["a"],         "a BINDS verdict must carry both renderings so it can be checked"
+
+
+def test_b1800_step1_exit_selection_is_is_only():
+    """S6-B1705d: hand the selector holdout-only dates; it must select NOTHING.
+
+    `STRATEGY_OPTIMISATION_PLAN.md` claimed the IS/holdout separation was
+    *"enforced mechanically, not by intention"* via *"a file path containing IS
+    rows only"*. **There is no such file path** - the grader is handed the full
+    cube and calls `rc.in_sample` / `rc.holdout` itself (S6-B1705c, owner:
+    *"major and unforgivable"*). This test supplies the missing mechanical half
+    for the part that IS separable: **if the exit choice is genuinely in-sample,
+    a frame of holdout-only dates must yield no exit, by construction.**
+
+    SCOPE, STATED HONESTLY. This pins EXIT SELECTION only. Step 1 still RANKS on
+    holdout Sharpe (`tighten_breaker_block.py`, the B1715 comment says so), which
+    is the still-open `S6-B1705c` - **this test does not close it and must not be
+    cited as if it does.**
+
+    Four arms. The two negative arms are the point: a probe asserting "nothing
+    came out" passes trivially if nothing could ever come out (L393 /
+    `S6-B1522a`), so the same fixture is shown to produce a real exit through the
+    in-sample path, and bypassing the filter is shown to defeat it.
+    """
+    import pathlib as _p
+    import sys as _sys
+    from datetime import date
+
+    import pandas as pd
+
+    root = _p.Path(__file__).resolve().parents[2]
+    _sys.path.insert(0, str(root / "scripts"))
+    import roster_core as rc
+
+    def frame(dates, n_each=40):
+        rows = []
+        for d in dates:
+            for i in range(n_each):
+                rows.append({"ticker": f"T{i % 8}", "entry_date": d,
+                             "exit_method": ["atr_trail_1x", "r_multiple_2r"][i % 2],
+                             "pnl_pct": (1.4 if i % 3 else -0.9),
+                             "hold_days": 4.0})
+        return pd.DataFrame(rows)
+
+    # dates chosen INSIDE each declared window, not merely on the far side of
+    # one boundary - a fixture that straddles proves nothing about either.
+    assert rc.IS_START < date(2023, 8, 1) < rc.IS_END
+    assert rc.HO_START < date(2025, 8, 1) < rc.HO_END
+
+    ho_only = frame([date(2025, 8, 1), date(2025, 11, 1), date(2026, 2, 1)])
+    is_only = frame([date(2023, 8, 1), date(2024, 2, 1), date(2024, 9, 1)])
+
+    # 1. the filter removes every holdout row
+    assert len(rc.in_sample(ho_only)) == 0,         "in_sample() let holdout dates through - the split is not real"
+
+    # 2. and the selector therefore chooses nothing
+    pick, _ = rc.select_exit(rc.in_sample(ho_only))
+    assert pick is None, (
+        f"exit {pick!r} was selected from holdout-only data. Step 1's exit "
+        "choice is reading the holdout - the leak S6-B1705d exists to catch.")
+
+    # 3. LIVE CONTROL - the same shape of fixture DOES yield an exit in-sample,
+    #    so arm 2's None is a measurement and not a vacuous pass (L393).
+    live, _ = rc.select_exit(rc.in_sample(is_only))
+    assert live is not None, (
+        "the IS fixture selected nothing either, so arm 2 proves nothing - "
+        "fix the fixture before trusting this test")
+
+    # 4. and the FILTER is what does the work. MEASURED while writing this:
+    #    `select_exit` slices `in_sample()` ITSELF (roster_core.py:241), so the
+    #    caller's filter is belt-and-braces and passing the raw frame changes
+    #    nothing. Neutralise the INTERNAL filter and the holdout-only frame
+    #    does select - which is the regression this test guards.
+    _real = rc.in_sample
+    try:
+        rc.in_sample = lambda g: g                # identity
+        bypassed, _ = rc.select_exit(ho_only)
+    finally:
+        rc.in_sample = _real
+    assert bypassed is not None, (
+        "even with in_sample() neutralised the holdout frame selected nothing, "
+        "so arm 2's None may come from the fixture rather than the filter - "
+        "fix the fixture before trusting this test")
+    assert rc.in_sample is _real, "the monkeypatch leaked out of the test"
+
+    # the reverse filter must be equally real
+    assert len(rc.holdout(is_only)) == 0,         "holdout() let in-sample dates through"
