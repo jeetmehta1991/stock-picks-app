@@ -57,6 +57,18 @@ def split_churn(modified: list[str]) -> tuple[list[str], list[str]]:
     return subst, churn
 
 
+# B1844: ONE PATTERN, ONE DEFINITION (L561). The marker needle lives here and
+# nowhere else, LOWERCASE, and every read of it lowercases its haystack.
+#
+# It was inline and case-SENSITIVE, so a response carrying `## CHECKLIST
+# COMPLIANCE` - the conventional way to write a heading - was BLOCKED with
+# "has NO 'CHECKLIST compliance' statement" while the statement was on screen.
+# The requirement was met and the mechanism could not see it. B1722, in this
+# file: a gate with false positives gets bypassed, and a bypassed gate is worse
+# than none.
+COMPLIANCE_MARKER = "checklist compliance"
+
+
 def scan_transcript_entries(entries: list[dict]) -> tuple[bool, bool]:
     """B1338 compliance-marker check (skill Phase 6 made mechanical).
     Returns (commit_made_this_turn, compliance_marker_present) scanning
@@ -85,7 +97,8 @@ def scan_transcript_entries(entries: list[dict]) -> tuple[bool, bool]:
                 blob = json.dumps(c.get("input", {}))
                 if "git commit" in blob:
                     commit_made = True
-            elif c.get("type") == "text" and "CHECKLIST compliance" in (c.get("text") or ""):
+            elif (c.get("type") == "text"
+                    and COMPLIANCE_MARKER in (c.get("text") or "").lower()):
                 marker = True
     return commit_made, marker
 
@@ -2786,7 +2799,9 @@ def check_compliance_marker() -> str | None:
                 "compliance' statement (skill Phase 6 / CLAUDE.md "
                 "mandatory end-of-response statement). Add the compliance "
                 "statement and end the turn again.")
-    return None
+    # B1844 (S6-B1841c): a duplicated unreachable `return None` sat here. Same
+    # shape as the shadowed-definition class (B1795) - a duplicate makes the
+    # survivor ambiguous to the next reader.
     return None
 
 

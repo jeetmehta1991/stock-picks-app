@@ -741,6 +741,22 @@ gate had just named.**
 - **Compliance failure against `#45` and `#247`, not a new class.** A fifth rule
   restating four that were ignored is `#136` theater.
 
+## A MECHANICAL DIRECTIVE TAKES DO-IT OR ASK, NOT AN EXPLANATION (B1850 - L564, #185)
+
+**MEASURED: four long jobs launched, zero monitors armed - and I did not forget.
+I wrote down why it was unnecessary**, under a DISCLOSED heading, and the
+reasoning was defensible. **The memory says mechanical, not "remember to
+report":** a mechanical rule does not route through my judgement about whether
+today is an exception.
+
+- **Disclosing an exemption you granted yourself is still an exemption you
+  granted yourself.** Writing it in the open makes it feel audited.
+- **`.stop_exempt` is legitimate and this is not** - the difference is whether
+  the escape exists in the system or only in my paragraph.
+- **What it cost:** the run I judged not worth monitoring returned a clean
+  NEUTRAL verdict from three arms that did no work. An hourly report naming
+  `trades_so_far=0` would have caught it at the first fire.
+
 ## THE PROOF IS ITSELF A PROBE (B1840 - L562, CHECKLIST #226 ext)
 
 **MEASURED: the fail-arm proof for the control-character gate was defeated by the control-character

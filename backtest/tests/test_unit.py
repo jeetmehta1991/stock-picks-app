@@ -18833,3 +18833,81 @@ def test_b1843_skill_documents_a_dryrun_that_runs():
         "SKILL.md lost the `</dev/null` warning. That form exits 0 while "
         "reading zero entries, so it reports clean for the wrong reason - "
         "worse than not running the dry-run at all.")
+
+
+def test_b1844_compliance_marker_is_case_insensitive():
+    """B1844 (S6-B1841b): Gate B rejected a statement that was PRESENT.
+
+    A response carrying `## CHECKLIST COMPLIANCE` was blocked with "has NO
+    'CHECKLIST compliance' statement". The matcher was case-sensitive, so the
+    conventional capitalised heading failed while mixed-case passed.
+
+    Three arms, per #226: the casings that must be ACCEPTED, and - the half
+    that matters - the absent case that must still BLOCK. Widening a matcher
+    is only safe if you show it did not stop detecting.
+    """
+    import importlib.util
+    import pathlib as _p
+
+    root = _p.Path(__file__).resolve().parents[2]
+    spec = importlib.util.spec_from_file_location(
+        "vtc_b1844", root / "scripts" / "verify_turn_compliance.py")
+    tg = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(tg)
+
+    def turn(statement):
+        """A user turn, then an assistant commit, then the closing text."""
+        entries = [
+            {"type": "user", "message": {"content": "proceed"}},
+            {"type": "assistant", "message": {"content": [
+                {"type": "tool_use", "name": "Bash",
+                 "input": {"command": "git commit -m 'x'"}}]}},
+        ]
+        if statement is not None:
+            entries.append({"type": "assistant", "message": {"content": [
+                {"type": "text", "text": statement}]}})
+        return entries
+
+    # ---- ACCEPT: every casing a person actually writes -------------------
+    for casing in ("## CHECKLIST COMPLIANCE\n- #45 satisfied",
+                   "## CHECKLIST compliance\n- #45 satisfied",
+                   "## Checklist Compliance\n- #45 satisfied",
+                   "...ending with the checklist compliance block."):
+        commit, marker = tg.scan_transcript_entries(turn(casing))
+        assert commit, "the git commit must still be detected"
+        assert marker, (
+            f"casing {casing.splitlines()[0]!r} was REJECTED. This is the "
+            "B1841b false positive: the statement is present and the gate "
+            "cannot see it, and a gate with false positives gets bypassed.")
+
+    # ---- STILL BLOCK: the gate must not have been weakened ---------------
+    commit, marker = tg.scan_transcript_entries(turn(None))
+    assert commit and not marker, (
+        "a commit with NO closing text must still be caught - widening the "
+        "casing must not turn the gate off")
+
+    commit, marker = tg.scan_transcript_entries(
+        turn("Done. Pushed as abc1234, pyramid green."))
+    assert commit and not marker, (
+        "a closing response that never mentions the statement must still "
+        "block - this is the arm that proves the fix is not a weakening")
+
+    # ---- no commit -> nothing to enforce ---------------------------------
+    commit, marker = tg.scan_transcript_entries([
+        {"type": "user", "message": {"content": "hi"}},
+        {"type": "assistant", "message": {"content": [
+            {"type": "text", "text": "no commit here"}]}}])
+    assert not commit and not marker
+
+    # ---- ONE PATTERN, ONE DEFINITION (L561) ------------------------------
+    src = (root / "scripts" / "verify_turn_compliance.py").read_text(
+        encoding="utf-8")
+    live = [ln for ln in src.splitlines()
+            if not ln.lstrip().startswith("#") and '"""' not in ln]
+    inline = [ln for ln in live if '"CHECKLIST compliance"' in ln]
+    assert not inline, (
+        f"an inline case-sensitive copy of the marker reappeared: {inline}. "
+        "The needle is COMPLIANCE_MARKER and nothing else - a duplicated "
+        "pattern is a divergence waiting for someone to fix half of it.")
+    assert tg.COMPLIANCE_MARKER == tg.COMPLIANCE_MARKER.lower(), \
+        "the needle must be lowercase, since every haystack is lowercased"

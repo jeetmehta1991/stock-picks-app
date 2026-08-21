@@ -972,6 +972,28 @@ PYTHONPATH=. python backtest/run_phase1a.py \
 | `--screen-pool-workers` | **default is 0 = SEQUENTIAL** (L407). Use 0 for a clean timing measurement; ~3 per config when running several concurrently. **Total workers must never exceed 10 physical cores** |
 | `--max-run-hours` | the runner REFUSES to start without it |
 | `--start 2024-05-05 --end 2025-05-05` | **1-year SEARCH window that ENDS AT THE HOLDOUT BOUNDARY** (owner ruling 2026-08-21). Step 1 previously ran to `2026-05-05` and therefore ranked on the holdout year it is judged against - `S6-B1605c`. |
+
+**UNIVERSE ARTIFACT VERIFIED 2026-08-21 (B1846, `#193`).** `verify_universe_artifact.py
+output_audit/_sweep_200.txt --compare-cube output_r5_merged_1_7/trade_exit_detail.csv`:
+
+```
+baseline cube      : output_r5_merged_1_7 (544 tickers)
+overlap            : 200
+in file, NOT cube  : 0            <- no orphan tickers
+in cube, NOT file  : 344
+VERDICT: looks like a broad universe
+```
+
+**This is the check two configs skipped once and paid 3.30 h each for** (`S6-B1576a` measured that
+elapsed; L445) - they searched an abandoned A-C chunk because nobody looked at the ticker list.
+`_sweep_200` is clean on both axes: every ticker exists in the baseline, and the spread is broad
+rather than alphabetically partitioned.
+
+**INTENTIONALLY NARROW (stated here because the verifier asks for it).** `_t10.txt` / `_t20.txt`
+are `head -N` slices of `_sweep_200` used ONLY by the B1845 timing probe, and `_t10` flags
+`SLICE / SUSPECT - 70pct alphabetical skew`. That is what a 10-line head produces and it is fine
+for timing, **but it is a stated LIMITATION of that probe, not a clean bill** - see `S6-B1846c`.
+
 | `--tickers-file _sweep_200.txt` | **200 tickers, not 100** (same ruling). Halving the window alone keeps only **50-56pct of entries** (MEASURED B1817) and pushes most of the grid back to `NO_EXIT_SELECTABLE`; widening the universe restores the sample. **Superset of `_sweep_100.txt` by construction**, so wave-1 results stay interpretable. |
 
 ### 1.4 Concurrency
