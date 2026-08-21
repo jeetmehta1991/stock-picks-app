@@ -92,12 +92,28 @@ def main() -> int:
 
     if not a.quiet:
         print("=== POST-CONFIG LEDGER (B1699) ===")
+        # B1814b: RUN and SKIPPED are reported SEPARATELY. "9 of 9
+        # dispositioned" counted a SKIPPED step toward completion, which is
+        # right for the gate's contract and wrong for the question a reader
+        # actually asks - "did the analysis RUN?". MEASURED when the owner
+        # asked: 4 of 36 step-instances across the sweep configs were SKIPPED,
+        # all of them step 6, and nothing in this output said so.
+        total_skipped = 0
         for c in cubes:
             e = ledger.get(c, {})
-            done = sum(1 for s in STEPS if e.get(s, {}).get("status") in TERMINAL)
+            ran = sum(1 for s in STEPS if e.get(s, {}).get("status") == "DONE")
+            skipped = [s for s in STEPS
+                       if e.get(s, {}).get("status") in ("SKIPPED", "N/A")]
+            total_skipped += len(skipped)
+            done = ran + len(skipped)
             mark = "COMPLETE" if done == len(STEPS) else "INCOMPLETE"
-            print(f"  {mark:10} {c}: {done} of {len(STEPS)} steps dispositioned")
-        print(f"\n  {len(cubes)} cubes | {len(incomplete)} incomplete")
+            tail = f"  [{len(skipped)} SKIPPED: {', '.join(skipped)}]" if skipped else ""
+            print(f"  {mark:10} {c}: {ran} of {len(STEPS)} RUN{tail}")
+        print(f"\n  {len(cubes)} cubes | {len(incomplete)} incomplete | "
+              f"{total_skipped} step(s) SKIPPED with a reason")
+        if total_skipped:
+            print("  NOTE: a SKIPPED step satisfies this gate by design - the "
+                  "runbook accepts SKIPPED-with-a-reason. It did NOT run.")
 
     if incomplete:
         print("\nBLOCK: a finished cube owes a complete post-config ledger. "

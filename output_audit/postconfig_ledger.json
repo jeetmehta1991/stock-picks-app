@@ -318,7 +318,8 @@
     },
     "4_three_leg_spot_check": {
       "evidence": "B1702 - the three-leg spot check was BUILT at B1634, AFTER cfg1/cfg2 ran, and it re-derives from a cube's own OHLCV at run time. It cannot be applied retroactively to a cube whose run is over. SKIPPED with a reason; wave 1 onward carries it (100pct on all three legs).",
-      "status": "SKIPPED"
+      "note": "B1814 - EXECUTED RETROACTIVELY. The B1702 skip reason was WRONG: spot_check_trades.py reads --cube from disk and OHLCV from the persistent cache, so it needs no run-time state. Coverage prerequisite verify_spotcheck_coverage.py smc_breaker_block_long exit 0. At the runbook's mandated n=50: 50 agree / 0 DISAGREE / 0 skipped, 0 execution failures (sw=20 span=200). Artifact: output_audit/b1814_cfg1_spotcheck_n50.json",
+      "status": "DONE"
     },
     "5_adversarial_lens_review": {
       "evidence": "B1615/B1619 - the cfg1/cfg2 lens pass is what SURFACED the tail_n band defect (0 of 50 groups moved at 10->20) and the equivalence-class defect (top 10 held 4 real candidates). Both became owner-approved changes.",
@@ -356,7 +357,8 @@
     },
     "4_three_leg_spot_check": {
       "evidence": "B1702 - the three-leg spot check was BUILT at B1634, AFTER cfg1/cfg2 ran, and it re-derives from a cube's own OHLCV at run time. It cannot be applied retroactively to a cube whose run is over. SKIPPED with a reason; wave 1 onward carries it (100pct on all three legs).",
-      "status": "SKIPPED"
+      "note": "B1814 - EXECUTED RETROACTIVELY. The B1702 skip reason was WRONG: spot_check_trades.py reads --cube from disk and OHLCV from the persistent cache, so it needs no run-time state. Coverage prerequisite verify_spotcheck_coverage.py smc_breaker_block_long exit 0. At the runbook's mandated n=50: 50 agree / 0 DISAGREE / 0 skipped, 0 execution failures (sw=10 span=50). Artifact: output_audit/b1814_cfg2_spotcheck_n50.json",
+      "status": "DONE"
     },
     "5_adversarial_lens_review": {
       "evidence": "B1615/B1619 - the cfg1/cfg2 lens pass is what SURFACED the tail_n band defect (0 of 50 groups moved at 10->20) and the equivalence-class defect (top 10 held 4 real candidates). Both became owner-approved changes.",
