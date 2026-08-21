@@ -27,6 +27,7 @@ nothing).
 from __future__ import annotations
 
 import json
+import re
 import os
 import subprocess
 import sys
@@ -1110,6 +1111,22 @@ def _tool_text(entries, tool_text=None) -> str:
 #     Bash / PowerShell  {"command": ...}   EXECUTED
 #     Write / Edit       {"content": ...}   WRITTEN, never run
 _EXECUTING_TOOLS = ("bash", "powershell")
+# B1815: a command SEGMENT whose job is searching mentions its pattern, it does
+# not run it. MEASURED: the only executed command containing `rng.` on the turn
+# this shipped was the grep run to FIND `rng.`. Fourth instance of the
+# self-reference family (B1732, B1738, B1811, B1815).
+_SEARCH_TOOLS = ("grep", "rg ", "findstr", "select-string", "ripgrep", "ack ")
+
+
+def _drop_search_segments(cmd: str) -> str:
+    """Blank out segments that only SEARCH. Compound commands judged per part."""
+    keep = []
+    for seg in re.split(r"&&|\|\||;|\|", cmd):
+        low = seg.strip().lower()
+        if any(low.startswith(t) or f" {t}" in low[:40] for t in _SEARCH_TOOLS):
+            continue
+        keep.append(seg)
+    return " ".join(keep)
 
 
 def _executed_text(entries, tool_text=None) -> str:
@@ -1129,7 +1146,8 @@ def _executed_text(entries, tool_text=None) -> str:
                 continue
             if str(blk.get("name") or "").lower() not in _EXECUTING_TOOLS:
                 continue
-            out.append(str((blk.get("input") or {}).get("command") or ""))
+            out.append(_drop_search_segments(
+                str((blk.get("input") or {}).get("command") or "")))
     return _strip_gate_echo(" ".join(out))
 
 def scan_uninspected_constant(entries, *, tool_text=None,

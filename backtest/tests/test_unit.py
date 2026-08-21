@@ -18378,3 +18378,56 @@ def test_b1813_executed_vs_written_tool_text():
     assert tg._executed_text([], "pnl = rng.normal(1,3,30)") == \
         "pnl = rng.normal(1,3,30)"
 
+
+def test_b1815_searching_for_a_marker_is_not_running_it():
+    """B1815: a grep FOR a marker is an investigation, not a use.
+
+    MEASURED: the only executed command containing the marker on the turn this
+    shipped was the grep run to FIND it. `_executed_text` (B1813) correctly
+    included it - it really was executed - but searching is not running.
+
+    **Fourth instance of the self-reference family:** B1732 (a gate's
+    self-description shifted its own window), B1738 (a response listing trigger
+    words fired the gate), B1811 (a gate's diagnostic re-fired it through the
+    transcript), B1815. Each fix narrower than the last, which is `S6-B1780d`'s
+    open question surfacing again.
+
+    The compound arm is the one that matters: judging a whole command as
+    "a search" would let `grep x && python -c "rng.normal(...)"` through.
+    """
+    import importlib.util
+    import pathlib as _p
+
+    root = _p.Path(__file__).resolve().parents[2]
+    spec = importlib.util.spec_from_file_location(
+        "vtc_b1815", root / "scripts" / "verify_turn_compliance.py")
+    tg = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(tg)
+
+    def turn(cmd):
+        return [{"type": "assistant", "message": {"content": [
+            {"type": "tool_use", "name": "Bash", "input": {"command": cmd}}]}}]
+
+    real = "The measured jaccard is 0.9993 across the cube."
+
+    assert not tg.scan_synthetic_provenance(
+        turn('grep -o "rng.normal" transcript.jsonl'), text=real), \
+        "searching for the marker must not count as running it"
+    assert tg.scan_synthetic_provenance(
+        turn('python -c "x = rng.normal(1,3,30)"'), text=real), \
+        "actually running a generator must still fire"
+    assert tg.scan_synthetic_provenance(
+        turn('grep rng f.txt && python -c "x=rng.normal(1,3)"'), text=real), \
+        "a compound command must be judged PER SEGMENT - the run half counts"
+    assert not tg.scan_synthetic_provenance(turn("python -m pytest -q"), text=real), \
+        "an ordinary command must be quiet"
+
+    # and the recorded incident is unchanged
+    import sys as _sys
+    _sys.path.insert(0, str(root / "scripts"))
+    from importlib import import_module
+    corpus = import_module("gate_incident_corpus")
+    text, must, state = corpus.INCIDENTS["scan_synthetic_provenance"]
+    assert bool(tg.scan_synthetic_provenance([], text=text, **state)) == must, \
+        "narrowing must not silence the original incident"
+
