@@ -18545,3 +18545,46 @@ def test_b1820_step1_ranking_emits_its_ranking_key():
     assert all("sharpe" in r for r in rows), \
         "the holdout sharpe must remain as a MEASUREMENT of the chosen config"
 
+
+def test_b1822_artifact_key_rule_is_in_the_durable_docs():
+    """#277 (B1820/L558): keep the rule AND the test that makes it usable.
+
+    **Detection is JUDGMENT-ONLY, for a specific reason.** The general rule -
+    an artifact carries the key it was ranked on - requires knowing what an
+    arbitrary artifact WAS ranked on, which the artifact does not record; that
+    absence IS the defect. A file-level AST check does not substitute: before
+    the fix `"is_sharpe"` DID appear as a dict key in
+    `tighten_breaker_block.py`, in the row construction. It was missing only
+    from the EMITTED payload, and telling "a dict written to disk" from "a
+    dict" is the judgment part.
+
+    **Durability is pinned.** `test_b1820` covers the one known emitter; this
+    covers the rule itself, so it cannot be quietly dropped from the docs later
+    (L549 - a rule removed from a doc is the same disappearance in slow motion).
+    """
+    import pathlib as _p
+
+    root = _p.Path(__file__).resolve().parents[2]
+    check = (root / "CHECKLIST.md").read_text(encoding="utf-8").lower()
+    skill = (root / ".claude" / "skills" / "execution-discipline"
+             / "SKILL.md").read_text(encoding="utf-8").lower()
+
+    # B1822: assert on phrases GREPPED from the docs, not remembered. The first
+    # version looked for "ranked on"; CHECKLIST says "RANKED, SELECTED OR
+    # FILTERED ON", and the two files word the diagnostic differently
+    # ("produced by the bug" vs "the BUG produced"). Asserting on recalled
+    # wording is #239's family - the marker is not the text.
+    for doc, name in ((check, "CHECKLIST.md"), (skill, "SKILL.md")):
+        assert "carry the key it was" in doc, (
+            f"{name} lost the #277 rule. An artifact that omits its ordering "
+            "key cannot be told apart from one the bug produced.")
+        # the DIAGNOSTIC is the usable half - the question a reader can apply
+        assert "could a reader tell this artifact" in doc, (
+            f"{name} lost #277's diagnostic. Without that question the rule is "
+            "advice rather than something a reader can apply.")
+
+    # and the instance mechanism must still exist
+    tests = (root / "backtest" / "tests" / "test_unit.py").read_text(encoding="utf-8")
+    assert "def test_b1820_step1_ranking_emits_its_ranking_key" in tests, (
+        "the emitter-level mechanism for #277 was removed; the rule would then "
+        "be prose only")
