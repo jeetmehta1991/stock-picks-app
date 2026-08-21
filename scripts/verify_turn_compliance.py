@@ -1659,6 +1659,62 @@ def scan_row_vs_ticket(entries, *, text=None, tool_text=None) -> list[str]:
             "want."]
 
 
+# S6-B1705e (#201 PROVENANCE HALF): #201 asks whether a quantity was COMPUTED.
+# It never asks what FROM. `2.422` came out of `rng.normal(1, 3, 30)` in my own
+# boundary probe and satisfied #201 completely, because "measured" was true of
+# the arithmetic and false of the meaning. The probe's one real finding was the
+# BOUNDARY (n=29 -> None, n=30 -> a value); the number itself measured nothing.
+#
+# A random generator in the tool calls plus a number in the prose plus
+# measurement language is the exact shape. The escape is one word - SYNTHETIC -
+# said where the number is quoted.
+SYNTHETIC_SOURCES = (
+    "rng.", "np.random", "numpy.random", "default_rng", "random.gauss",
+    "random.normal", "random.randn", "random.seed", "random.uniform",
+    "make_fixture", "fake_", "dummy_",
+)
+SYNTHETIC_LABEL = (
+    "synthetic", "not a measurement", "measures nothing", "illustrative",
+    "hand-built", "toy fixture", "made-up", "fabricated", "deterministic "
+    "fixture", "no rng", "worked example",
+)
+
+
+def scan_synthetic_provenance(entries, *, text=None, tool_text=None) -> list[str]:
+    """#201's provenance half: a quoted number must name its input.
+
+    Fires when a turn states a NUMBER in measurement language while its tool
+    calls show a RANDOM or hand-made generator, and the response never says
+    SYNTHETIC.
+
+    It cannot tell which number came from which call - that is not in the
+    transcript. It asks a cruder and still useful question: **this turn ran a
+    generator and quoted a figure as measured; say which.** Labelling costs one
+    word, and the label is the thing that was missing when `2.422` was retracted.
+    """
+    import re as _re
+    t = _response_text(entries, text)
+    if not t:
+        return []
+    # a NUMBER, not a version or a ticket id
+    if not _re.search(r"(?<![\w.#])\d+\.\d+(?![\w.])", t):
+        return []
+    if not _affirms(t, QUANT_PROOF):
+        return []
+    tt = (_tool_text(entries) if tool_text is None else tool_text).lower()
+    src = [m for m in SYNTHETIC_SOURCES if m in tt]
+    if not src:
+        return []
+    if any(lbl in t for lbl in SYNTHETIC_LABEL):
+        return []
+    return [f"SYNTHETIC NUMBER QUOTED AS MEASURED (S6-B1705e/#201): this turn "
+            f"quotes a decimal in measurement language while its tool calls run "
+            f"a generator ({src[0]!r}). **`2.422` came from `rng.normal(1,3,30)` "
+            "in my own probe and satisfied #201 completely** - 'measured' was "
+            "true of the arithmetic and false of the meaning. Say SYNTHETIC "
+            "where the number is quoted, or quote a number from real data."]
+
+
 def scan_partial_read(entries, *, text=None, tool_text=None) -> list[str]:
     """#270: a verdict over a population needs the WHOLE population read.
 
@@ -2521,7 +2577,8 @@ def main() -> int:
                 scan_ungated_addition, scan_shell_substitution,
                 scan_queue_vocabulary, scan_queue_not_updated,
                 scan_unverified_count, scan_partial_distribution,
-                scan_partial_read, scan_row_vs_ticket):
+                scan_partial_read, scan_row_vs_ticket,
+                scan_synthetic_provenance):
         try:
             _r = _sc(_e2)
         except Exception as _e:

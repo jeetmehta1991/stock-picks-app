@@ -140,6 +140,16 @@ INCIDENTS: dict[str, tuple[str, bool, dict]] = {
         True,
         {"tool_text": "python b1795_apply.py EXECUTION_QUEUE.md"},
     ),
+    # S6-B1705e: RECONSTRUCTED, not verbatim - the original wording was not
+    # kept, which is the same gap S6-B1761c records for three other gates. The
+    # SHAPE is exact and comes from the retraction row (S6-B1705g): a Sharpe
+    # figure quoted as measured that came from `rng.normal(1, 3, 30)`.
+    "scan_synthetic_provenance": (
+        "The boundary probe measured n=29 -> None and n=30 -> a Sharpe of "
+        "2.422, so the floor is real.",
+        True,
+        {"tool_text": "pnl = rng.normal(1, 3, 30)"},
+    ),
     # NEGATIVE control - ordinary reporting prose that must NOT trip anything.
     # Note it is a bare sentence, so gates that legitimately require RESPONSE
     # STRUCTURE (a SKILLS block, a compliance block) are excluded by the sweep
@@ -184,6 +194,8 @@ NEUTRAL: dict[str, dict] = {
     # B1795: reads TOOL text for the queue path; neutralise it for the
     # text-only control or it measures the gate working.
     "scan_row_vs_ticket": {"tool_text": ""},
+    # reads TOOL text for a generator; neutralise for the text-only control
+    "scan_synthetic_provenance": {"tool_text": ""},
 }
 
 

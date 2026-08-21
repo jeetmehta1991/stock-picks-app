@@ -346,6 +346,20 @@ roster cells, whose numbers were `time_stop_20d`'s all along.
 
 ## TEST-EVERY-QUANTITY RULE (B1605 - L470, CHECKLIST #201, mechanically enforced)
 
+**PROVENANCE HALF (S6-B1705e / B1801): COMPUTED FROM WHAT?**
+
+**`#201` asks whether a quantity was computed, never what FROM.** `2.422` came from
+`rng.normal(1, 3, 30)` in my own probe and satisfied it completely - *"measured"* was true of the
+arithmetic and false of the meaning.
+
+- **Label a figure from `rng`/`random`/a hand-made fixture `SYNTHETIC` where you quote it** - not in
+  a footnote, not in the method. Enforced by `scan_synthetic_provenance`; **the escape is one word.**
+- **A synthetic probe can still produce a real finding.** That probe's boundary result (n=29 -> None,
+  n=30 -> a value) was genuine. **Separate the STRUCTURE a fixture demonstrates from the VALUE it
+  produces** - the first can be evidence, the second almost never is.
+- **Prefer a deterministic fixture when the test is about behaviour.** If no number is quoted, no
+  provenance question arises.
+
 **Owner directive 2026-08-16: when making any quantitative claim, you are required
 to TEST it.**
 

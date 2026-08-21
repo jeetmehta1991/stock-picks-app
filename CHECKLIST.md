@@ -3069,6 +3069,26 @@ the ~30 turns of falsely-green banner checks.
 
 ### #201 — COST AND QUANTITY CLAIMS MUST BE COMPUTED, NOT ASSERTED (B1605 / L470)
 
+**PROVENANCE HALF (S6-B1705e / B1801, owner-approved) - COMPUTED FROM WHAT?**
+
+**`#201` asks whether a quantity was computed. It never asks what FROM.** `2.422` came out of
+`rng.normal(1, 3, 30)` inside my own boundary probe and **satisfied `#201` completely**, because
+*"measured"* was true of the arithmetic and false of the meaning. That probe's one real finding was
+the BOUNDARY (n=29 -> None, n=30 -> a value); **the number measured nothing and was quoted as though
+it did.**
+
+- **Any number quoted from a probe names its input.** A figure from `rng`, `random`, or a hand-made
+  fixture is labelled **SYNTHETIC at the point of quotation** - not in a footnote, not in the
+  method, where the number is.
+- Enforced by `scan_synthetic_provenance`: a decimal in measurement language + a generator in the
+  tool calls + no `SYNTHETIC` label. **The escape is one word**, which is the whole point - the
+  label was the only thing missing when `2.422` was retracted.
+- **It cannot tell which number came from which call** and does not pretend to. It asks the cruder
+  question - *this turn ran a generator and quoted a figure as measured; say which.*
+- **A synthetic probe can still produce a real finding.** The boundary was one. **Separate the
+  STRUCTURE a fixture demonstrates from the VALUE it produces** - the first can be evidence, the
+  second almost never is.
+
 **Item #195 covers untested CAUSES. It never covered unmeasured NUMBERS — and numbers drive
 decisions at least as directly.**
 
