@@ -887,12 +887,48 @@ REMEDIATION_MARKERS = ("not built", "not started", "not wired", "remediation:",
 # is not a substring of "reverting". A marker list written from the PAST TENSE
 # of a remembered incident will miss the gerund, the present, and the
 # first-person-plural. Match stems, not the one conjugation you happened to use.
-NARRATION_STEMS = ("revert", "delete", "disable", "remove", "restore", "wire",
-                   "roll back", "rolled back", "undid", "undo")
-NARRATION_MARKERS = tuple(
-    f"{v}{suf}" for v in NARRATION_STEMS
-    for suf in ("ed", "ing", "s", "d", "")
-) + ("i reverted", "now wired")
+NARRATION_STEMS = ("revert", "delete", "disable", "remove", "restore", "wire")
+# B1804: irregular or multi-word - suffixing them produces garbage, so they are
+# written out. `roll back`+`ed` was "roll backed"; `undid`+`ing` was "undiding".
+NARRATION_IRREGULAR = (
+    "roll back", "rolls back", "rolled back", "rolling back",
+    "undo", "undoes", "undid", "undone", "undoing",
+    "i reverted", "now wired",
+)
+
+
+def _conjugate(stem: str) -> set[str]:
+    """English forms of a verb stem, with the E-DROP rule.
+
+    B1804: the previous expansion was `stem + suffix` for every suffix, which
+    yields `deleteing` / `disableing` / `restoreing`. **MEASURED: 5 of 12 tense
+    variants went unmatched** - a gate silently blind to the progressive tense,
+    which is the tense you narrate an in-flight action in.
+    """
+    forms = {stem, stem + "s"}
+    if stem.endswith("e"):
+        forms |= {stem + "d", stem[:-1] + "ing"}
+    else:
+        forms |= {stem + "ed", stem + "ing"}
+    return forms
+
+
+NARRATION_MARKERS = tuple(sorted(
+    {f for st in NARRATION_STEMS for f in _conjugate(st)} | set(NARRATION_IRREGULAR)))
+
+
+def _narration_hits(t: str) -> list[str]:
+    """NARRATION markers present as WORDS.
+
+    B1804 (S6-B1798b): matched with raw `in` until now, so "undocumented" hit
+    `undo`, "hardwired" and "wireless" hit `wire`, "deleterious" hit `delete`.
+    **MEASURED: 5 of 5 innocent sentences tripped.** Bounded on BOTH sides -
+    unlike VERDICT (#246) which is prefix-guarded only, because here every
+    conjugation is enumerated and a trailing suffix would be a different word.
+    """
+    import re as _re
+    return [m for m in NARRATION_MARKERS
+            if _re.search(r"(?<![a-z0-9_])" + _re.escape(m) + r"(?![a-z0-9_])", t)]
 # B1720b: "the fix is" belongs to REMEDIATION (a fix NOT yet made);
 # FIX_MARKERS must mean a fix SHIPPED, or the two gates collide.
 FIX_MARKERS = ("i fixed", "fixed the", "patched the", "corrected the")
@@ -931,7 +967,7 @@ def scan_response_gates(entries, *, queue_touched=None,
                    "tickets (L500).")
 
     # NARRATION (L501): claiming a tree change requires having made one.
-    nh = [m for m in NARRATION_MARKERS if m in t]
+    nh = _narration_hits(t)      # B1804: word-bounded
     if nh:
         if tree_changed is None:
             import subprocess

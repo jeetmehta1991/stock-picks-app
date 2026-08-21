@@ -17820,3 +17820,62 @@ def test_b1803_ticket_counts_block():
 
     # the canonical reader exists and is what the rule points at
     assert (root / "scripts" / "queue_state.py").exists(),         "#274 directs the count through queue_state.py; it must exist"
+
+
+def test_b1804_narration_markers():
+    """S6-B1708d/B1804: the narration gate was broken in BOTH directions.
+
+    The ticket says NOT BUILT. **It was built** - inside `scan_response_gates`,
+    with an injectable `tree_changed` seam and a corpus incident that is itself a
+    deliberate false claim. Re-deriving before working it (#256) found the gate
+    live and WRONG:
+
+    FALSE NEGATIVES. `f"{stem}{suffix}"` gives `delete`+`ing` = `deleteing`, so
+    every stem ending in `e` lost its present participle - **the tense you
+    narrate an in-flight action in.** 5 of 12 variants missed.
+
+    FALSE POSITIVES. Raw `in` matching (S6-B1798b) meant "undocumented" hit
+    `undo`, "hardwired" and "wireless" hit `wire`, "deleterious" hit `delete`.
+
+    Both are #239's class one layer deeper: #239 said ENCODE THE STEM, and the
+    encoding itself was wrong.
+    """
+    import importlib.util
+    import pathlib as _p
+
+    root = _p.Path(__file__).resolve().parents[2]
+    spec = importlib.util.spec_from_file_location(
+        "vtc_b1804", root / "scripts" / "verify_turn_compliance.py")
+    tg = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(tg)
+
+    # every verb the ticket names, in past AND progressive
+    for verb in ("revert", "delete", "remove", "disable", "restore", "wire"):
+        past = "reverted" if verb == "revert" else (
+            verb + "d" if verb.endswith("e") else verb + "ed")
+        prog = (verb[:-1] + "ing") if verb.endswith("e") else verb + "ing"
+        for form in (past, prog):
+            assert tg._narration_hits(f"i {form} the file."), (
+                f"{form!r} is not matched - a narration claim in that tense "
+                "passes unchecked")
+
+    # substrings must NOT match (S6-B1798b)
+    for innocent in ("the behaviour is undocumented",
+                     "the producer is hardwired to the default",
+                     "this is a wireless data feed",
+                     "the deleterious effect is small"):
+        assert not tg._narration_hits(innocent), (
+            f"{innocent!r} tripped the narration gate on a substring")
+
+    # the generated list must contain no malformed forms
+    bad = [m for m in tg.NARRATION_MARKERS
+           if m.endswith(("eed", "eing", "backd", "idd", "od"))]
+    assert not bad, f"naive stem+suffix produced unmatchable markers: {bad}"
+
+    # and the gate still fires on its own recorded incident
+    import sys as _sys
+    _sys.path.insert(0, str(root / "scripts"))
+    from importlib import import_module
+    corpus = import_module("gate_incident_corpus")
+    text, must_fire, state = corpus.INCIDENTS["scan_response_gates"]
+    assert bool(tg.scan_response_gates([], text=text, **state)) == must_fire,         "tightening the matcher must not silence the original incident"
