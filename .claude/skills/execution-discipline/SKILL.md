@@ -607,6 +607,27 @@ it checks that CODE MOVED, not that THIS class is now enforced, and B1702 moved 
 5. **A MECHANISM FOR THE CLASS - a `scan_`, a pin test, or an explicit
    `JUDGMENT-ONLY: <why no mechanism is possible>`**
 
+**EXTENSION (B1797 / L548) - `JUDGMENT-ONLY` IS TWO QUESTIONS, AND THE SECOND IS USUALLY YES:**
+
+| question | for B1797 |
+|---|---|
+| can the CLASS be DETECTED? | **no** - no scan tells a RULE from an EXAMPLE of one |
+| can the FIX be kept from VANISHING? | **yes** - assert it is still in the docs |
+
+**Reaching for `JUDGMENT-ONLY` reads as honest, and it is - about detection. It is also where the
+thinking usually stops.** A rule written into a doc can be dropped from that doc later, which is the
+same disappearance in slow motion, and THAT is mechanisable even when detection is not.
+
+- **So `JUDGMENT-ONLY` is never the whole answer until the durability question has been asked out
+  loud.** State it as *"no DETECTION mechanism; durability pinned by `<test>`"* whenever both halves
+  apply - the two are different claims and collapsing them overstates the first.
+- **Pin the DIAGNOSTIC, not just the rule.** `test_b1797_matcher_rung_rule_is_in_the_durable_docs`
+  asserts the three rungs AND *"disjoint vocabulary"* survive in both files. **Without the
+  diagnostic the table is trivia** - the usable part is *two domains, one claim, no shared root.*
+- **Prove the pin can fail (`#226`).** Deleting the diagnostic from `CHECKLIST.md` must fail the
+  test. A presence-assertion that passes against a gutted file is the inert-gate defect in a new
+  costume.
+
 **And L512's evidence for why member 5 is not optional:** between the two `scan_skill_not_updated`
 catches the **full skill was auto-injected every turn**, containing ANCHOR-THE-RULE, which says
 exactly this. **The rule was in context, verbatim, and the behaviour did not change. A 14-line
