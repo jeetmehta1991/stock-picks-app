@@ -4246,6 +4246,23 @@ to 2-of-3 reduced the defect without removing it. **Third instance this session*
 
 ### #253 - HARDEN THE EXEMPTION, NOT JUST THE TRIGGER (B1773 / L528)
 
+**EXTENSION (B1799 / L550) - AN EXEMPTION KEYED ON INTENT IS KEYED ON NOTHING.**
+
+**MEASURED: I shadowed `_read_entries` three batches after building the test that forbids it**, and
+the tempting fix was to exempt *"deliberate wrappers that alias the original first"* - a real Python
+idiom, an accurate description of what I had written, and **an opening any accidental shadow can
+walk through by adding one alias line.** The test sees the SHAPE; it can never see the INTENT.
+
+- **An exemption may be keyed only on an OBSERVABLE property**, never on a claim about why the
+  author wrote the code.
+- **When your own gate blocks your own fix, change the FIX.** Restructuring took one rename.
+  Weakening the check is faster and is indistinguishable afterwards from never having had it.
+- **If the gate is genuinely wrong, that is a separate finding** with its own evidence and its own
+  turn - not a clause appended to the change it is currently blocking.
+- **The pressure is local and cumulative:** the wrapper was chosen because restructuring looked
+  expensive; the exemption was then attractive because the wrapper was already written. Each step
+  reasonable, the destination a gate disarmed by its own author.
+
 **MEASURED: 67 of 268 markers across 33 lists collide with a real longer word** in the project's own
 vocabulary. Most are harmless or deliberate (`_MISS_STEMS` matching *missing* is `#239` working).
 **17 collide with their own NEGATION**, in two kinds: 5 word-internal (*measured* inside

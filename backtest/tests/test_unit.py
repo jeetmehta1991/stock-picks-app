@@ -17500,3 +17500,35 @@ def test_b1798_empty_transcript_announces_itself():
     assert "NOT evidence of compliance" in captured, (
         "the warning must say what the emptiness does NOT prove, not merely "
         "that it happened")
+
+
+def test_b1799_shadowing_check_has_no_intent_exemption():
+    """B1799 (#253 / L550): the shadowing check must stay unconditional.
+
+    I shadowed `_read_entries` three batches after building
+    `test_b1795_no_shadowed_definitions_in_gate_scripts`, and the attractive fix
+    was to exempt *"deliberate wrappers that alias the original first"* - true of
+    what I had written, a real Python idiom, and **an opening any accidental
+    shadow walks through by adding one alias line.**
+
+    **An exemption keyed on INTENT is keyed on nothing**: a test sees the shape,
+    never why it was written. This fails if that allowlist is ever added.
+    """
+    import pathlib as _p
+
+    root = _p.Path(__file__).resolve().parents[2]
+    src = (root / "backtest" / "tests" / "test_unit.py").read_text(
+        encoding="utf-8")
+    start = src.index("def test_b1795_no_shadowed_definitions_in_gate_scripts")
+    end = src.index("\ndef ", start + 10)
+    body = src[start:end]
+
+    # the assertion must be over ALL offenders, with no carve-out
+    assert "assert not offenders" in body, \
+        "the shadowing check must assert on the full offender set"
+    for word in ("allowlist", "whitelist", "EXEMPT", "exempt_", "deliberate"):
+        assert word not in body, (
+            f"intent-keyed exemption {word!r} added to the shadowing check. An "
+            "exemption may be keyed only on an OBSERVABLE property - a test "
+            "sees shape, never intent, so any accidental shadow can claim to "
+            "be deliberate (L550).")

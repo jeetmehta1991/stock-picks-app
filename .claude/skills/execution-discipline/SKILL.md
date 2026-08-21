@@ -988,6 +988,19 @@ left the tool side untouched.**
 
 ## HARDEN THE EXEMPTION, NOT JUST THE TRIGGER (B1773 - L528, CHECKLIST #253)
 
+**EXTENSION (B1799 - L550): AN EXEMPTION KEYED ON INTENT IS KEYED ON NOTHING.**
+
+**MEASURED: I shadowed `_read_entries` three batches after building the test that forbids it.** The
+attractive fix was to exempt *"deliberate wrappers that alias the original"* - true of what I had
+written, and **an opening any accidental shadow walks through by adding one alias line.**
+
+- **Key an exemption on an OBSERVABLE property, never on why the author wrote it.** A test sees
+  shape, never intent.
+- **When your own gate blocks your own fix, change the FIX.** The restructure took one rename;
+  weakening the check is faster and afterwards indistinguishable from never having had it.
+- **If the gate is genuinely wrong, that is a separate finding** - its own evidence, its own turn,
+  never a clause appended to the change it is blocking.
+
 **A loose trigger over-fires and gets noticed. A loose EXEMPTION lets violations through silently
 and never does.** B1767 word-bounded the trigger side and left the escape clause on raw `in`;
 **17 markers collide with their own negation**, so a gate demanding proof was satisfied by a

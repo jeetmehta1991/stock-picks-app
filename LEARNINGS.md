@@ -10958,3 +10958,36 @@ turn - a rule recorded only here is a story.
 twelve sites closed; eleven remain under `S6-B1774e`**, now with a live incident attached to justify
 the priority.
 
+### L550
+
+**My own gate blocked my own fix, and the reasonable-sounding move was to exempt it**
+
+**B1799.** B1795 built `test_b1795_no_shadowed_definitions_in_gate_scripts` after a duplicate `def`
+silently replaced a more capable one and blinded a gate. **Three batches later I shipped a wrapper
+that shadowed `_read_entries`** - deliberately, because restructuring the interleaved caching felt
+risky. The test failed, correctly.
+
+**Two ways out, and the wrong one had the better story.** I could exempt *"deliberate wrappers that
+alias the original first"* - which describes exactly what I had written, sounds principled, and is
+a real Python idiom. Or restructure. **Restructuring took one rename**, and the test stayed strict.
+
+**The exemption would have reopened the class entirely.** An accidental shadow can be dressed as a
+deliberate wrapper by adding one alias line above it. The test sees the SHAPE; it can never see the
+INTENT. **An exemption keyed on intent is keyed on nothing** - it admits every instance of the
+defect that bothers to phrase itself correctly.
+
+**And the pressure was real, not theoretical.** I reached for the wrapper BECAUSE the safe path
+looked expensive, then reached for the exemption BECAUSE the wrapper was already written. **Each
+step was locally reasonable; the destination was a gate I had built three batches earlier, disarmed
+by its own author, for a fix to a lesson about gates being silently disarmed.**
+
+**The rule: when your own gate blocks your fix, change the fix.** Weakening the check is available,
+fast, and indistinguishable afterwards from never having had the check. If the gate is genuinely
+wrong, that is a separate finding requiring its own evidence and its own turn - **not a clause
+appended to the change it is currently blocking.**
+
+**Extends `#253`** (harden the exemption, not just the trigger): `#253` says an exemption must be as
+hard as the trigger. This adds **what an exemption may be keyed on** - an observable property, never
+a claim about why the author wrote it. Pinned by `test_b1799_shadowing_check_has_no_intent_exemption`,
+which fails if the allowlist is ever added.
+
