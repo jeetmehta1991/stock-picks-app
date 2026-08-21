@@ -17879,3 +17879,53 @@ def test_b1804_narration_markers():
     corpus = import_module("gate_incident_corpus")
     text, must_fire, state = corpus.INCIDENTS["scan_response_gates"]
     assert bool(tg.scan_response_gates([], text=text, **state)) == must_fire,         "tightening the matcher must not silence the original incident"
+
+
+def test_b1805_extra_incident_branches():
+    """B1805 (#240 extension): one incident proves ONE path.
+
+    `scan_response_gates` carried a corpus incident, an injectable seam, and
+    passed the `#240` sweep on every run - **on the single sentence
+    "Reverting.".** Its stem is the one that does not end in `e`, so the naive
+    `stem + "ing"` expansion produced the correct form for exactly that verb.
+    Deleting, removing, disabling, restoring and wiring were all unmatched, and
+    `#240` and `#241` were both satisfied while none of it was visible.
+
+    So a gate whose markers are GENERATED carries an incident per generation
+    BRANCH. `EXTRA_INCIDENTS` holds them; this asserts every one behaves, and
+    that at least one recorded branch is a must-be-QUIET case - **a corpus of
+    only must-fire entries cannot see a gate that fires on everything.**
+    """
+    import importlib.util
+    import pathlib as _p
+    import sys as _sys
+
+    root = _p.Path(__file__).resolve().parents[2]
+    _sys.path.insert(0, str(root / "scripts"))
+    from importlib import import_module
+
+    spec = importlib.util.spec_from_file_location(
+        "vtc_b1805", root / "scripts" / "verify_turn_compliance.py")
+    tg = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(tg)
+    corpus = import_module("gate_incident_corpus")
+
+    assert corpus.EXTRA_INCIDENTS,         "no branch incidents recorded - the mechanism for #240's gap is empty"
+
+    for name, cases in corpus.EXTRA_INCIDENTS.items():
+        fn = getattr(tg, name, None)
+        assert fn is not None, f"EXTRA_INCIDENTS names a missing gate: {name}"
+        assert any(not must_fire for _, must_fire, _ in cases), (
+            f"{name}'s branch incidents are all must-FIRE. A corpus of only "
+            "must-fire entries cannot detect a gate that fires on everything.")
+        for text, must_fire, state in cases:
+            got = bool(fn([], text=text, **state))
+            assert got == must_fire, (
+                f"{name} on branch {text[:50]!r}: expected "
+                f"{'FIRE' if must_fire else 'QUIET'}, got "
+                f"{'FIRE' if got else 'QUIET'}")
+
+    # all_incidents() must include the primary entry, not only the extras
+    combined = corpus.all_incidents("scan_response_gates")
+    assert len(combined) == 1 + len(corpus.EXTRA_INCIDENTS["scan_response_gates"])
+    assert combined[0] == corpus.INCIDENTS["scan_response_gates"]

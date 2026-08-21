@@ -172,6 +172,39 @@ INCIDENTS: dict[str, tuple[str, bool, dict]] = {
 }
 
 
+# B1805: ONE INCIDENT PROVES ONE PATH.
+#
+# `scan_response_gates` carried an incident, an injectable seam, and passed the
+# #240 sweep on every run - on the single sentence "Reverting.". Its stem is the
+# one that does NOT end in `e`, so the naive `stem + "ing"` expansion happened to
+# produce the right form for exactly that verb. **Deleting, removing, disabling,
+# restoring and wiring were all unmatched and nothing could see it.**
+#
+# So a gate whose markers are GENERATED needs an incident per generation branch,
+# not one per gate. These are additional (text, must_fire, state) cases checked
+# alongside the primary entry. Kept in a separate dict deliberately: INCIDENTS
+# stays a 3-tuple per gate, so the six existing consumers are untouched.
+EXTRA_INCIDENTS: dict[str, list[tuple[str, bool, dict]]] = {
+    "scan_response_gates": [
+        # the E-STEM PROGRESSIVE branch - silently unmatched before B1804
+        ("I am deleting the stale output directory now.", True,
+         {"tree_changed": False, "queue_touched": True}),
+        # and the substring branch: this must NOT fire (S6-B1798b)
+        ("The behaviour is undocumented, so I read the source instead.", False,
+         {"tree_changed": False, "queue_touched": True}),
+    ],
+}
+
+
+def all_incidents(name: str) -> list[tuple[str, bool, dict]]:
+    """Primary incident plus every extra branch recorded for `name`."""
+    out = []
+    if name in INCIDENTS:
+        out.append(INCIDENTS[name])
+    out.extend(EXTRA_INCIDENTS.get(name, []))
+    return out
+
+
 # B1762c: state that NEUTRALISES a gate's non-text inputs for the negative
 # control. The control asks "does ordinary prose trip this gate?" - so a gate
 # that also reads the live repo must be told there is nothing there, or it

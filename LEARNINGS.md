@@ -11033,3 +11033,46 @@ was written one turn earlier and its gate did not fire**, because truncation in 
 a defect when paired with a verdict, and I caught it before stating one. **The rule held; the habit
 did not.**
 
+### L552
+
+**One incident proves one path, and the one I recorded was the only verb that worked**
+
+**B1805.** `scan_response_gates` carried a corpus incident, an injectable seam, and passed the
+`#240` sweep on **every run of this session**. Its incident is one sentence:
+
+```
+"I am not shipping it. Reverting."
+```
+
+The marker list was built as `f"{stem}{suffix}"` over six verbs. **`revert` is the only one of the
+six that does not end in `e`**, so it is the only one for which `stem + "ing"` produces a real word.
+`delete`+`ing` gave `deleteing`. **Deleting, removing, disabling, restoring and wiring were all
+unmatched - 5 of 12 tense variants - and 16 of the 52 markers were strings that can never match
+anything.**
+
+**Both `#240` and `#241` were satisfied and neither could see it.** `#240` asks whether the gate
+fires on the words that motivated it; it did. `#241` asks whether the gate has a seam; it has one.
+**Neither asks whether the incident exercises more than one branch of the matcher**, and a
+one-sentence incident exercises exactly one.
+
+**The tense matters, which is what makes this more than a spelling bug.** The missing form is the
+PRESENT PARTICIPLE - *"I am deleting"*, *"I am reverting"* - which is **the tense you narrate an
+in-flight action in.** The gate exists to catch a narrated action that did not happen, and it was
+blind to the grammatical form that narration most naturally takes.
+
+**And it was loose in the other direction at the same time.** Matched with raw `in`, so
+*"undocumented"* hit `undo`, *"hardwired"* and *"wireless"* hit `wire`, *"deleterious"* hit
+`delete` - 4 of 4 innocent sentences tripped. **A gate can be simultaneously too tight and too
+loose, and a single incident shows neither.**
+
+**The mechanism: `EXTRA_INCIDENTS`.** A gate whose markers are GENERATED now carries an incident per
+generation BRANCH, and at least one of them must be a must-be-QUIET case - **a corpus of only
+must-fire entries cannot detect a gate that fires on everything.** Recorded branches for the
+narration matcher: the e-stem progressive (`"I am deleting..."`) and the substring case
+(`"undocumented"`).
+
+**How it surfaced is the part worth keeping.** `S6-B1708d` said the gate was NOT BUILT. Re-deriving
+that claim before working it (`#256`) is what opened the file at all. **If I had trusted the ticket
+I would have built a second narration gate beside a broken one**, and the broken one would still be
+passing its sweep.
+

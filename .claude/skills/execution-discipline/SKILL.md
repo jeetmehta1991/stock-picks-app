@@ -1207,6 +1207,22 @@ gate carries a corpus entry"* and **17 of 25 gates had none, with nothing failin
 
 ## PROVE GATES ON THE VERBATIM INCIDENT, AND GIVE THEM A SEAM (B1760/B1761 - L516/L517, CHECKLIST #240/#241)
 
+**EXTENSION (B1805 - L552): ONE INCIDENT PROVES ONE PATH.**
+
+**MEASURED: `scan_response_gates` passed the sweep every run on one sentence - *"Reverting."* -
+while 5 of 12 tense variants went unmatched.** `revert` is the only one of its six verbs not ending
+in `e`, so the naive `stem + "ing"` produced a real word for that verb and garbage for the rest.
+**The single verb the incident used was the single verb the expansion handled correctly.**
+
+- **Markers that are GENERATED need an incident per generation BRANCH** (`EXTRA_INCIDENTS`), not one
+  per gate.
+- **At least one branch must be must-be-QUIET.** A corpus of only must-fire entries cannot see a
+  gate that fires on everything - and this one also tripped on *"undocumented"* and *"hardwired"*.
+  **Too tight and too loose at once; one incident shows neither.**
+- **The missing form was the PRESENT PARTICIPLE** - the tense you narrate an in-flight action in.
+  The gate existed to catch narrated-but-unperformed actions and was blind to how narration is
+  usually phrased.
+
 **MEASURED: my gate probes were built from the marker list of the gate under test - the test proved
 the list matches itself.** Five gates passed 4/4 and 5/5 proofs that way and stayed silent on the
 exact words that caused them. **`#226` (prove it can fail) is necessary and NOT sufficient**: a

@@ -3981,6 +3981,23 @@ it** - which is why `#237` is a gate now and not a paragraph.
 
 ### #240 - A GATE'S PROOF USES THE VERBATIM INCIDENT, NEVER SELF-DERIVED PROBES (B1760 / L516)
 
+**EXTENSION (B1805 / L552) - ONE INCIDENT PROVES ONE PATH.**
+
+**MEASURED: `scan_response_gates` passed this sweep every run of the session on one sentence -
+*"Reverting."* - while 5 of 12 tense variants went unmatched.** `revert` is the only one of its six
+verbs not ending in `e`, so it is the only one for which the naive `stem + "ing"` produced a real
+word. **The single verb the incident used was the single verb the expansion handled correctly.**
+
+- **A gate whose markers are GENERATED carries an incident per generation BRANCH**, recorded in
+  `EXTRA_INCIDENTS` and asserted by `test_b1805_extra_incident_branches`.
+- **At least one recorded branch must be a must-be-QUIET case.** A corpus of only must-fire entries
+  cannot detect a gate that fires on everything - and this one also tripped on *"undocumented"*,
+  *"hardwired"*, *"wireless"* and *"deleterious"*. **A gate can be too tight and too loose at once,
+  and one incident shows neither.**
+- **`#240` and `#241` were both satisfied here.** One asks whether the gate fires on its motivating
+  words; the other whether it has a seam. **Neither asks whether the incident reaches more than one
+  branch.**
+
 **MEASURED: probe strings were built from the marker list of the gate under test.** The test proved
 **the list matches itself** and could never detect the case that matters - a real phrasing the list
 omits. Five gates passed 4/4 and 5/5 this way and stayed silent on the words that caused them.
