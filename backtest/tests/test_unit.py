@@ -18276,3 +18276,54 @@ def test_b1811_gate_echo_is_not_evidence():
         "a caller reintroduced the injection bypass - injected values would "
         "skip the scrubbing the live path applies")
 
+
+def test_b1812_echo_strip_is_lossless_on_tool_text():
+    """B1812: the B1811 echo-strip was deleting tool text wholesale.
+
+    MEASURED: 183 chars of realistic tool text in, 84 out. **Tool text is ONE
+    line** - `json.dumps(input)` joined by spaces - so the unanchored
+    `\\[\\d+/\\d+\\][^\\n]*` consumed the remainder of the ENTIRE corpus after the
+    first `[1/1]` appearing inside any quoted string.
+
+    That blinded `scan_discipline_not_loaded` on the very turn the strip
+    shipped: `execution-discipline` appears in later git commands and they were
+    erased.
+
+    **A gate report is LINE-ANCHORED; an echo inside a JSON string is not.**
+    """
+    import importlib.util
+    import pathlib as _p
+
+    root = _p.Path(__file__).resolve().parents[2]
+    spec = importlib.util.spec_from_file_location(
+        "vtc_b1812", root / "scripts" / "verify_turn_compliance.py")
+    tg = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(tg)
+
+    # single-line tool text carrying an embedded report quote must be UNTOUCHED
+    tool = ('{"command": "git add .claude/skills/execution-discipline/SKILL.md"} '
+            '{"content": "  [1/1] SYNTHETIC NUMBER QUOTED AS MEASURED ..."} '
+            '{"command": "grep -n rng.normal scripts/gate_incident_corpus.py"}')
+    assert tg._strip_gate_echo(tool) == tool, (
+        "the strip must be LOSSLESS on single-line tool text - an embedded "
+        "quote of a report is not a report")
+
+    # a real, line-anchored report must be removed, and its neighbours kept
+    report = ("TURN-GATE BLOCK - 1 violation(s), ALL listed:\n"
+              "  [1/1] SYNTHETIC NUMBER QUOTED AS MEASURED (S6-B1705e/#201): "
+              "a generator ran - `rng.normal(1,3,30)`.\n"
+              '{"command": "git status"}')
+    out = tg._strip_gate_echo(report)
+    assert "rng." not in out, "a line-anchored gate report must be stripped"
+    assert "git status" in out, "surrounding tool calls must survive the strip"
+
+    # and the behaviour that matters, end to end
+    real = "The measured jaccard is 0.9993 across the cube."
+    assert not tg.scan_synthetic_provenance([], text=real, tool_text=report), \
+        "the gate's own report must not re-fire it"
+    assert tg.scan_synthetic_provenance(
+        [], text=real, tool_text="pnl = rng.normal(1, 3, 30)"), \
+        "a real generator must still fire"
+    assert not tg.scan_discipline_not_loaded([], tool_text=tool), \
+        "the discipline gate must see SKILL.md in the tool text"
+

@@ -1048,12 +1048,24 @@ def _strip_gate_echo(t: str) -> str:
     import re as _re
     if not t:
         return t
-    # the runner's own header, plus the per-violation lines it emits
-    t = _re.sub(r"turn-gate block.*?(?=\n\s*\n|\Z)", " ", t,
-                flags=_re.S | _re.I)
-    # a bare violation line quoted on its own (the hook feeds these back singly)
-    t = _re.sub(r"\[\d+/\d+\][^\n]*", " ", t)
-    return t
+    # B1812: LINE-ANCHORED. The first version used unanchored regexes, and tool
+    # text is ONE line - json.dumps(input) joined by spaces - so `[^\n]*`
+    # consumed the whole corpus after the first "[1/1]" appearing inside any
+    # quoted string. MEASURED: 183 chars in, 84 out, and every tool call after
+    # the quote erased. That blinded `scan_discipline_not_loaded` on the very
+    # turn the strip shipped.
+    #
+    # A gate report is LINE-ANCHORED; an echo inside a JSON string is not. That
+    # distinction is exact, so it is the one to use.
+    out = []
+    for line in t.splitlines():
+        st = line.lstrip()
+        if _re.match(r"turn-gate block\b", st, _re.I):
+            continue
+        if _re.match(r"\[\d+/\d+\]\s", st):
+            continue
+        out.append(line)
+    return "\n".join(out)
 
 def _tool_text(entries, tool_text=None) -> str:
     """Everything this turn actually RAN or READ - the inputs of every tool call.

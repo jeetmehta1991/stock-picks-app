@@ -4858,6 +4858,21 @@ were on screen.
 
 ### #276 - A GATE'S OWN DIAGNOSTIC IS NOT EVIDENCE ABOUT THE TURN (B1811 / L555)
 
+**EXTENSION (B1812 / L556) - CHECK THE SHAPE OF THE TEXT BEFORE REGEXING IT.**
+
+**MEASURED: the B1811 strip turned 183 chars of tool text into 84.** Tool text is ONE line -
+`json.dumps(input)` joined by spaces - so an unanchored `\[\d+/\d+\][^\n]*` consumed the whole
+corpus after the first `[1/1]` inside any quoted string. **The strip written to stop a gate reading
+its own message made every tool-text gate blind instead** - strictly worse, because the false
+positive it fixed was visible and the blindness was not.
+
+- **A gate report is LINE-ANCHORED; an echo inside a JSON string is not.** Strip lines that START
+  with the header or a `[N/M]` marker; touch nothing else.
+- **Assert the lossless case.** `test_b1812` requires `_strip_gate_echo(tool) == tool` for tool text
+  carrying an embedded quote. A strip is defined as much by what it must NOT remove.
+- **A regex applied to text whose shape you have not checked is a claim about that shape.** This one
+  claimed newlines that never existed.
+
 **MEASURED: the only occurrence of `rng.` in the transcript was `scan_synthetic_provenance`'s own
 violation message**, which quotes `rng.normal(1,3,30)` to explain itself. The Stop hook feeds the
 report back, the next turn's tool calls echo it, and **firing once seeds the evidence for firing

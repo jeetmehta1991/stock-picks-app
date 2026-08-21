@@ -11179,3 +11179,43 @@ fired - revealing that **injecting `tool_text` BYPASSED the scrubbing entirely**
 answers a DIFFERENT QUESTION than the live path proves nothing about the live path** - and it looks
 exactly like a passing test. Ten call sites carried that bypass.
 
+### L556
+
+**The fix I shipped one commit earlier was deleting more than half the evidence**
+
+**B1812.** `scan_discipline_not_loaded` blocked a turn, claiming only the 12-bullet summary was in
+context. The hook had injected the full 96 KB skill, and my tool calls named
+`.claude/skills/execution-discipline/SKILL.md` several times.
+
+**MEASURED: `_strip_gate_echo`, added one commit earlier, turned 183 characters of realistic tool
+text into 84.**
+
+```
+turn-gate block.*?(?=\n\s*\n|\Z)     DOTALL
+\[\d+/\d+\][^\n]*
+```
+
+**Tool text is ONE line** - `json.dumps(input)` joined by spaces, no newlines anywhere. So
+`[^\n]*` consumed the remainder of the ENTIRE corpus after the first `[1/1]` appearing inside any
+quoted string, and the DOTALL rule did the same after any `turn-gate block`. **Every tool call after
+the quote vanished.**
+
+**The strip was written to stop a gate reading its own message. It made every tool-text gate blind
+instead** - a strictly worse failure, because the false positive it fixed was visible and the
+blindness it introduced is not. **Only a gate firing for the wrong reason revealed it.**
+
+**The distinction I needed was available and I did not use it: a gate report is LINE-ANCHORED, an
+echo inside a JSON string is not.** That is exact, cheap, and it is what the fix now does - drop
+lines that START with the header or a `[N/M]` marker, touch nothing else. The lossless case is
+asserted, not assumed.
+
+**The pattern under it.** I reached for a regex over the whole blob when the structure -
+line-per-report, blob-per-toolcall - was right there. **A regex applied to text whose shape you have
+not checked is a claim about that shape**, and this one claimed newlines that never existed.
+
+**Third probe error of the same kind in two turns, worth its own line.** Testing this fix, my sample
+text was *"jaccard 0.9993"* - a decimal with no measurement word - so the gate stayed quiet for a
+reason unrelated to the fix and I nearly read it as a pass. Before, it was `4,869` and `1,012`,
+commas rather than decimal points. **A probe that omits a precondition returns the answer you were
+hoping for.**
+
