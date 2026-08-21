@@ -24,6 +24,40 @@ claims in this plan.** Read this before Sections 2.2 / 2.3 / 2.3a, which are mar
 
 **Reporting is now standardised and mechanically enforced — see §6.**
 
+## 0b. STEP-1 WINDOW — THE THREE CONSTRAINTS CANNOT ALL BE MET (B1817, MEASURED)
+
+**`S6-B1605c` withdrew the acceptance of Step 1 reading the holdout and proposed moving Step 1 to
+`2023-05-05 -> 2025-05-05`. That remedy CONTRADICTS the 2026-08-17 ruling** in SS10.1: *"2022-23 data
+is not wanted even for exit selection. Both phases run 2024-05-05 -> 2026-05-05."*
+
+Three standing constraints, and no window satisfies all three:
+
+| constraint | source |
+|---|---|
+| holdout LOCKED to `2025-05-05 -> 2026-05-05` | SS0, owner 2026-08-09 |
+| no 2022-23 data, even for exit selection | SS10.1, owner 2026-08-17 |
+| Step 1 must not rank on the holdout | `S6-B1605c`, owner 2026-08-17 (*"undo"*) |
+
+**The obvious compromise is measurably self-defeating.** A Step-1 window of
+`2024-05-05 -> 2025-05-05` honours all three by construction, but MEASURED on the four existing
+cubes it keeps only **50-56 pct of entries**:
+
+```
+cfg1              330 entries  ->  183 (55.5pct) before the holdout boundary
+cfg2              420          ->  236 (56.2pct)
+w1_sw20_span21    320          ->  167 (52.2pct)
+w1_sw20_span50    302          ->  152 (50.3pct)
+```
+
+**At the FULL sample, `--min-n 10` still leaves 32-60 pct of the grid `NO_EXIT_SELECTABLE`.** Halving
+the sample pushes most of it back to unanswerable, so the window fix destroys the search it is meant
+to make trustworthy.
+
+**Therefore `S6-B1605c` and `S6-B1696c` are ONE decision, not two.** Restoring the sample at a
+holdout-respecting window needs the universe lever - 100 -> ~200 tickers, roughly doubling fires at
+~2x runtime (`S6-B1696c` option (a)). **That is the only path that satisfies every constraint; it
+pays in runtime rather than in correctness or data policy.**
+
 ## 0. HOLDOUT POLICY — SETTLED BY OWNER (2026-08-09)
 
 **RULING: the holdout window is LOCKED to R5's dates. `2025-05-05 -> 2026-05-05`, 1 year, unchanged.**
