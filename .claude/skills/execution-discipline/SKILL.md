@@ -715,6 +715,21 @@ consequence feels like reasoning rather than a claim.
 - **Retroactive: four asserted consequences, four wrong** - the re-run advice, the ~2x runtime, the
   plan's *"enforced mechanically ... a file path"* that never existed, and B1775's assumed join.
 
+## RUN THE TURN GATE YOURSELF; THE STOP HOOK IS THE BACKSTOP (B1842 - L563)
+
+**MEASURED: three Stop-hook blocks in a row at one turn close** - no compliance
+statement, then the statement present but ALL-CAPS against a case-sensitive
+matcher, then two OPEN rows with no `_reason:_`. **Each close fixed only what the
+gate had just named.**
+
+- **`python scripts/verify_turn_compliance.py` is documented at line 200 of this
+  file and returns all violations at once.** Running it once before ending would
+  have replaced three round trips with one.
+- **The mechanism existing is not the mechanism running** - same shape as
+  `require_each`, which had existed for batches before I used it.
+- **Compliance failure against `#45` and `#247`, not a new class.** A fifth rule
+  restating four that were ignored is `#136` theater.
+
 ## THE PROOF IS ITSELF A PROBE (B1840 - L562, CHECKLIST #226 ext)
 
 **MEASURED: the fail-arm proof for the control-character gate was defeated by the control-character

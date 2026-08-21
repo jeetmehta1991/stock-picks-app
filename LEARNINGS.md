@@ -11435,3 +11435,42 @@ docstring.**
 **The rule: a proof is a probe, so assert its inputs; assert WHICH message fires, not the exit
 status; and give every fail arm a must-NOT-fire case.** **ANCHORED (`#197`):** `CHECKLIST #226`,
 extension B1840. Carried into `SKILL.md`.
+
+
+### L563
+
+**Three gate blocks at turn close, and one dry-run would have caught all three**
+
+**B1841/B1842.** The work of the turn was measured, proven and pushed. **The
+CLOSING RITUAL then failed three times in a row:** no `CHECKLIST compliance`
+statement; the statement present but written `## CHECKLIST COMPLIANCE`, which the
+matcher rejects case-sensitively; two OPEN rows carrying no `_reason:_`.
+
+**Each close fixed exactly what the gate had just named and nothing else.** That
+is fix-the-instance-not-the-class - the generalization mandate - applied to my own
+turn-ending, by the same turn that ran a repo-wide scan of 1,012 files rather than
+patch one docstring. **I generalized the code and not the ritual.**
+
+**COMPLIANCE FAILURE, not a new class.** `#45` has mandated the statement since
+Pass 52. `#247` has mandated the reason since the owner ruled on 2026-08-19.
+**And `SKILL.md:200` documents the exact remedy - `python
+scripts/verify_turn_compliance.py`, the same script the Stop hook runs.** Running
+it once before ending would have returned all three violations together, in the
+order the hook returned them one at a time across three round trips.
+
+**Same shape as `S6-B1762f` this session:** `require_each` had existed since B1751
+and I did not use it. **The mechanism existing is not the mechanism running.** A
+gate I own and can invoke is worth nothing while I wait for the hook to invoke it
+for me - the hook is a backstop, and I had been using it as the primary.
+
+**One of the three was the gate's fault, and that distinction matters.** Block 2
+fired on a response that DID carry the statement; `"CHECKLIST compliance" in text`
+is case-sensitive and the heading was capitalised. Verified by running both
+strings through the predicate. **A gate with false positives gets bypassed, and a
+bypassed gate is worse than none** (B1722) - so it is ticketed as `S6-B1841b`,
+left OPEN with a reason rather than patched at turn-end while already over the
+batch cap.
+
+**The rule: run the turn gate yourself before ending the turn. Treat the Stop hook
+as the backstop it is.** **ANCHORED (`#197`):** compliance failure against `#45`
+and `#247`; remedy documented at `SKILL.md:200`.
