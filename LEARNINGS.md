@@ -10907,3 +10907,50 @@ one turn after I cited `#236` approvingly.
   **Without the diagnostic the table is trivia** - the usable part is *two domains, one claim, no
   shared root.*
 
+### L549
+
+**Three probes this turn, and the first two measured my own harness instead of the subject**
+
+**B1798.** Two gate blocks, and getting to the truth of the second one took three attempts. **L517
+said this once already** - *"reporting on your own harness is the same defect in the opposite
+direction"* - and here it arrived wearing two new faces.
+
+**FACE 1 - the empty probe that prints like a finding.** I called `_read_entries()` through a
+guessed helper name, got nothing, and printed:
+
+```
+VERDICT words present : []
+truncation markers    : []
+```
+
+**Every list empty because the input was empty.** Read quickly, that is *"nothing matched, so it is
+a false positive"* - the conclusion I was already leaning toward. **An empty measurement is not a
+negative result, and it renders identically to one.** The tell was there: `entries loaded: 0`, which
+I only printed because the first run looked too clean.
+
+**FACE 2 - the over-supplied state that makes the wrong route live.** Testing whether a bare
+`JUDGMENT-ONLY` satisfies Phase-5 member 5, I got PASS for both the bare and the named case. The
+member was being satisfied by `_artifact_touched("verify_turn_compliance.py", "test_unit.py")` -
+**because that same turn was editing both files.** The text route I was testing was unreachable. The
+fix was a `touched=` seam (`#241`), and the probe only became meaningful once it could say which
+member the violation NAMED, rather than whether the gate fired.
+
+**L517 was the mirror of this: STARVING a gate of state manufactures false failures. Over-supplying
+it manufactures false passes. Both are the harness reporting on itself.**
+
+**AND THE SECOND BLOCK WAS A DEFECT MY OWN OPEN TICKET HAD ALREADY NAMED.** The gate reported the
+verdict word `'classified'`. I never wrote it - I wrote *"disclosed rather than RECLASSIFIED"*, and
+`"classified" in "reclassified"` is True. That is `#246` exactly (B1767: *"free"* matching inside
+*"freely"*), and **`S6-B1774e` has been OPEN for several batches saying `12 DETECTION SITES STILL ON
+RAW in`.** This was one of the twelve.
+
+**A ticket describing a defect does not stop the defect.** I wrote the ticket, kept the ticket open,
+read it again during the B1795 end-to-end pass, held it OPEN with the reason *"needs the stems-vs-
+word-bounds call `#239` describes"* - and was then blocked by the precise thing it predicted.
+**Deferred-with-a-good-reason and unfixed are the same state from the defect's point of view.**
+
+**Fixed at the right rung** (`#239`): prefix-guarded, suffix-free -
+`(?<![a-z0-9_])complete` still catches *"completed"*, and no marker can match mid-word. **One of the
+twelve sites closed; eleven remain under `S6-B1774e`**, now with a live incident attached to justify
+the priority.
+

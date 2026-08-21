@@ -1573,6 +1573,16 @@ _NEG_EXISTENTIAL = (
     r"\b(?:is|are|remains|remain)\s+unused\b")
 
 
+# B1798 (#246 / S6-B1774e): VERDICT was matched with raw `in`, so "classified"
+# matched inside "reclassified" and blocked a compliant turn. Prefix-guarded and
+# suffix-free is the #239 stem shape: "complete" still catches "completed", but
+# a marker cannot match in the middle of a longer word.
+def _verdict_hits(s: str) -> list:
+    """VERDICT markers present as WORDS (suffixes allowed, prefixes not)."""
+    import re as _re
+    return [m for m in VERDICT
+            if _re.search(r"(?<![a-z0-9_])" + _re.escape(m), s)]
+
 # B1795 (#271): THE LEDGER IS AN APPEND LOG, NOT A TABLE OF TICKETS.
 # Closing a ticket APPENDS a row instead of editing the old one, so 81 ids
 # carry 2+ rows and 74 sit in contradictory states - 57 are EXECUTED AND OPEN
@@ -1650,7 +1660,7 @@ def scan_partial_read(entries, *, text=None, tool_text=None) -> list[str]:
     for clause in _re.split(r"[;.\n]", t):
         if not clause.strip() or _re.search(_FUTURE, clause):
             continue
-        vs = [v for v in VERDICT if v in clause]
+        vs = _verdict_hits(clause)
         pop = _re.search(r"\b(?:all|each|every)\b|\b\d+\s+of\s+\d+\b", clause)
         uni = _re.search(_UNIVERSAL, clause)
         neg = _re.search(_NEG_EXISTENTIAL, clause)

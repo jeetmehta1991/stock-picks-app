@@ -17412,3 +17412,48 @@ def test_b1797_judgment_only_must_name_its_half():
     src = (root / "scripts" / "verify_turn_compliance.py").read_text(
         encoding="utf-8")
     assert "_DURABILITY" in src, "the durability marker list is the mechanism"
+
+
+def test_b1798_verdict_markers_are_prefix_guarded():
+    """B1798 (#246 / S6-B1774e): raw `in` matched "classified" in "reclassified".
+
+    The gate blocked a compliant turn on a word I never wrote. **My own OPEN
+    ticket predicted it** - S6-B1774e, *"12 DETECTION SITES STILL ON RAW `in`"* -
+    which is the point: a ticket describing a defect does not stop the defect.
+
+    Prefix-guarded, suffix-free is the `#239` stem shape - "complete" must still
+    catch "completed", while no marker may match mid-word.
+    """
+    import importlib.util
+    import pathlib as _p
+
+    root = _p.Path(__file__).resolve().parents[2]
+    spec = importlib.util.spec_from_file_location(
+        "vtc_b1798", root / "scripts" / "verify_turn_compliance.py")
+    tg = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(tg)
+
+    TRUNC = "grep -n 'def scan_' scripts/verify_turn_compliance.py | head -12"
+
+    # the verbatim sentence that blocked the turn
+    incident = ("Batch cap exceeded: 1 planned change became 4 commits, each "
+                "forced by a gate catching the previous one; split with an "
+                "independent pyramid each, disclosed rather than reclassified.")
+    assert not tg.scan_partial_read([], text=incident, tool_text=TRUNC), (
+        "'classified' must not match inside 'reclassified' - #246, and the "
+        "case S6-B1774e names")
+
+    # suffixes must still be caught (#239: stem the root)
+    assert tg._verdict_hits("all 138 rows are completed"), \
+        "'complete' must still catch 'completed' - prefix-guard only"
+    assert not tg._verdict_hits("disclosed rather than reclassified"), \
+        "no marker may match mid-word"
+
+    # and the gate still fires on its own recorded incident
+    from importlib import import_module
+    import sys as _sys
+    _sys.path.insert(0, str(root / "scripts"))
+    corpus = import_module("gate_incident_corpus")
+    text, must_fire, state = corpus.INCIDENTS["scan_partial_read"]
+    assert bool(tg.scan_partial_read([], text=text, **state)) == must_fire, \
+        "tightening the matcher must not silence the original incident"
