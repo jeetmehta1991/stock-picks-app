@@ -128,3 +128,40 @@ def main() -> int:
 
 if __name__ == "__main__":
     sys.exit(main())
+
+def zero_output_runs(root=None) -> list[str]:
+    """Runs that COMPLETED and produced nothing (B1855 / L566).
+
+    The signature of a silently-pruned run, confirmed causally at S6-B1849a:
+    demand pruning kept 2 of 33 producers, the screener passed 0/10 on every
+    one of 249 days, and the run exited 0 with no error. Same window with
+    `DEMAND_PRUNING=0` produced 20 trades and 75 files.
+
+    This is deliberately INDEPENDENT of the post-config ledger. `#223` accepts
+    `N/A`, and I dispositioned four probe dirs `N/A` myself for a reason I
+    still think correct - which removed the only check positioned to see
+    `trades=0`. A detector that a waiver can switch off is not a detector.
+
+    Returns dir names, never raises: a broken probe must not break a caller.
+    """
+    import json as _json
+    import pathlib as _p
+
+    base = _p.Path(root) if root else ROOT
+    out = []
+    for d in sorted(base.glob("output_*")):
+        st = d / "engine_state.json"
+        if not st.is_file():
+            continue
+        try:
+            js = _json.loads(st.read_text(encoding="utf-8"))
+        except Exception:
+            continue
+        if js.get("status") != "complete":
+            continue                      # still running is not empty
+        trades = js.get("trades_so_far")
+        if trades is None:
+            continue                      # older schema: cannot judge
+        if trades == 0 and not (d / "trade_log.csv").is_file():
+            out.append(d.name)
+    return out

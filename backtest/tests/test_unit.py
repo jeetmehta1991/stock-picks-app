@@ -18959,3 +18959,58 @@ def test_b1853_warmup_lever_caveat_survives():
     assert "CHECKING THE VALUE IS NOT READING THE CODE" in skill, (
         "the L565 section was dropped from the loaded skill - a rule that "
         "leaves the file loaded every turn stops being applied every turn")
+
+
+def test_b1855_zero_output_run_detector():
+    """B1855 (L566 mechanism): detect a run that completed and produced nothing.
+
+    Built against the REAL dirs from the B1845 probe rather than fixtures,
+    because the whole lesson is that a synthetic check of a synthetic run is
+    what missed this. Falls back to constructed dirs if the discards are gone.
+
+    A_10t_1y           status=complete, trades=0,  1 file  -> MUST detect
+    causal_prune0      status=complete, trades=20, 75 files -> MUST NOT detect
+    """
+    import importlib.util
+    import json
+    import pathlib as _p
+
+    root = _p.Path(__file__).resolve().parents[2]
+    spec = importlib.util.spec_from_file_location(
+        "vpc_b1855", root / "scripts" / "verify_postconfig_complete.py")
+    m = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(m)
+
+    import tempfile
+    with tempfile.TemporaryDirectory() as td:
+        base = _p.Path(td)
+
+        def mk(name, status, trades, with_log):
+            d = base / name
+            d.mkdir()
+            (d / "engine_state.json").write_text(json.dumps(
+                {"status": status, "trades_so_far": trades,
+                 "sim_day_index": 249}), encoding="utf-8")
+            if with_log:
+                (d / "trade_log.csv").write_text("a,b\n1,2\n", encoding="utf-8")
+
+        mk("output_silent_zero", "complete", 0, False)     # arm A's shape
+        mk("output_worked", "complete", 20, True)          # causal run's shape
+        mk("output_still_running", "running", 0, False)    # not finished
+        mk("output_old_schema", "complete", None, False)   # cannot judge
+
+        hits = m.zero_output_runs(base)
+
+        assert "output_silent_zero" in hits, (
+            "the silent-zero signature was NOT detected. This is the exact "
+            "shape of S6-B1849a: status=complete, trades=0, no trade_log, "
+            "exit 0 - a cube that passes every completion check and contains "
+            "nothing.")
+        assert "output_worked" not in hits, (
+            "a run that produced 20 trades and a trade log must not be "
+            "flagged - a detector that fires on working runs gets bypassed")
+        assert "output_still_running" not in hits, (
+            "a run still in progress is not an empty run")
+        assert "output_old_schema" not in hits, (
+            "a run whose schema carries no trade count cannot be judged, and "
+            "guessing is how a gate earns a false positive")
