@@ -701,6 +701,32 @@ produced. **Real separation, unverifiable from its own output.** Load-bearing: `
   a report with no content fail identically, and neither is visible from the result.** Only running
   the failure case separates them.
 
+## AN ASSERTED CONSEQUENCE IS A CLAIM - COMPUTE IT (B1833 - L560, CHECKLIST #278)
+
+**MEASURED: both retractions in one turn were consequences asserted without computing.**
+*"Re-running wave 1 would not fix it"* needed a `git log`; *"the lever costs ~2x runtime"* needed
+`100 x 2 = 200 x 1`. **Each took under a minute once attempted, and neither was attempted** - a
+consequence feels like reasoning rather than a claim.
+
+- **A consequence carries a measurement's evidence burden.** *"X follows from Y"* is a claim about
+  X, and Y being verified does not verify it.
+- **Check which way it points.** Both errors favoured the position I already held. `#256`-ext covers
+  a figure you REPEAT; this covers one asserted for the FIRST time, which no rule reached.
+- **Retroactive: four asserted consequences, four wrong** - the re-run advice, the ~2x runtime, the
+  plan's *"enforced mechanically ... a file path"* that never existed, and B1775's assumed join.
+
+## A SILENT GATE AND A CORRECT ONE ARE THE SAME OBSERVATION (B1836 - L561, CHECKLIST #226 ext)
+
+**MEASURED while replacing `#201`'s mechanism: three bugs, none visible on reading, two of which
+made the gate SILENT** - a clause splitter that split `169.347` into `169` and `347`, and a decimal
+matcher that refused a sentence-final number so the gate went quiet on its own incident's shape.
+
+- **That is why the fail arm is not optional.** A gate broken into silence produces exactly the
+  output of a working one. **Only running the case it should catch separates them.**
+- **ONE PATTERN, ONE DEFINITION.** The third bug: the regex lived at two sites and I fixed one.
+  **A duplicated pattern is a divergence waiting for someone to fix half of it** - three instances
+  now (B1812, B1798, B1832).
+
 ## PROVE-IT-CAN-FAIL RULE (B1706 - L501, CHECKLIST #226, PROVEN)
 
 **EXTENSION (B1802 - L551): WHEN THE NEGATIVE ARM FAILS, SUSPECT YOUR MODEL FIRST.**

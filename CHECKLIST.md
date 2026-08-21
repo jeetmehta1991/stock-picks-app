@@ -3681,6 +3681,24 @@ it; B1119's original 22-batch lapse.
 
 ### #226 - BEFORE TRUSTING A GATE'S PASS, PROVE IT CAN FAIL (B1707 / L501)
 
+**EXTENSION (B1836 / L561) - A SILENT GATE AND A CORRECT ONE ARE THE SAME OBSERVATION.**
+
+**MEASURED while replacing `#201`'s mechanism: three bugs, none visible on reading, two of which
+made the gate SILENT.** The clause splitter split on every `.`, so `169.347` became `169` and `347`
+and **no clause ever contained a decimal**. The decimal matcher refused a sentence-final number, so
+the gate went quiet on **the shape of its own recorded incident**.
+
+- **That is why the fail arm is not optional.** A gate that has been broken into silence produces
+  exactly the output of a gate that is working. **No amount of reading separates them** - only
+  running the case it is supposed to catch.
+- **ONE PATTERN, ONE DEFINITION.** The third bug: the decimal regex lived at TWO sites and I
+  corrected one, so a pre-filter kept rejecting what the fixed loop would have caught. **A
+  duplicated pattern is a divergence waiting for someone to fix half of it** - B1812's shape, where
+  `keep_code` guarded one strip of two and the second consumed what the first preserved. Pin that
+  there is exactly one definition.
+- **Retroactive (`#136`):** B1812 (`keep_code`, one of two strips), B1798 (`_verdict_hits` raw `in`
+  at one site), B1832 (`_DECIMAL` at two sites). **Three divergences, three half-fixes.**
+
 **EXTENSION (B1802 / L551) - A FAILING NEGATIVE ARM USUALLY MEANS YOUR MODEL IS WRONG.**
 
 **MEASURED: `S6-B1705d`'s arm 4 failed because I had read the CALLER and not the function.** The
