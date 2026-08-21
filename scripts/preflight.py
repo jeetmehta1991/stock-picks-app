@@ -471,6 +471,54 @@ def check_doc_ticket_ids_in_queue(paths: Iterable[Path]) -> list[str]:
     return violations
 
 
+
+# C12 (S6-B1534a, B1808): an L-number must identify ONE lesson.
+#
+# MEASURED at B1808: FOUR numbers were duplicated - L114 x2, L115 x2, L253 x3,
+# L333 x2 - and each pair is a DISTINCT lesson. A citation of "L253" is
+# therefore ambiguous among three entries, in a system whose entire discipline
+# is built on citing L-numbers.
+#
+# RATCHET, not a hard block. Failing on the existing four would block every
+# commit until they are renumbered, and renumbering means deciding which entry
+# keeps the number and rewriting citations across CHECKLIST, SKILL, the queue
+# and commit history - a judgment about the historical record that belongs to
+# the owner (tracked as S6-B1808b). The baseline below pins the known set so it
+# cannot GROW; removing an entry from it is always allowed.
+KNOWN_DUPLICATE_L = {"114", "115", "253", "333"}
+
+
+def check_duplicate_learning_numbers(paths: Iterable[Path],
+                                     source: Path | None = None) -> list[str]:
+    """C12: no NEW duplicate L-number may be committed.
+
+    Runs only when LEARNINGS.md is staged, which is the only way a duplicate
+    can be introduced.
+
+    `source` is injectable so the check can be exercised on a fixture instead of
+    on the live file (#241: a check with no seam can only be pinned as
+    check([]) == [], which passes for a check wired to nothing).
+    """
+    import collections
+    import re as _re
+
+    if not any(Path(p).name == "LEARNINGS.md" for p in paths):
+        return []
+    src = source if source is not None else REPO_ROOT / "LEARNINGS.md"
+    if not src.exists():
+        return []
+    nums = _re.findall(r"^### L(\d+)", src.read_text(encoding="utf-8"), _re.M)
+    dupes = {n for n, c in collections.Counter(nums).items() if c > 1}
+    new = sorted(dupes - KNOWN_DUPLICATE_L, key=int)
+    if not new:
+        return []
+    return [f"C12 | LEARNINGS.md: duplicate L-number(s) {['L' + n for n in new]}. "
+            "An L-number must identify ONE lesson - CHECKLIST, SKILL.md, the "
+            "queue and commit messages all cite them, and a duplicate makes "
+            "every citation ambiguous. Use the next free number "
+            f"(highest is currently L{max(int(x) for x in nums)})."]
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--staged", action="store_true", help="check git-staged files only")
@@ -513,6 +561,8 @@ def main() -> int:
         all_violations += check_batch_outputs_committed()
         # B1446 (owner: "No arbitrary decisions"): C11 selection-rule gate
         all_violations += check_arbitrary_selection_declared()
+        # C12 (S6-B1534a): no NEW duplicate L-number
+        all_violations += check_duplicate_learning_numbers(files)
 
     if not all_violations:
         print("preflight: PASS - no rule violations found")

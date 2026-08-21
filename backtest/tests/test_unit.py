@@ -18071,3 +18071,68 @@ def test_b1807_sampling_not_display_truncation():
     assert bool(tg.scan_partial_read([], text=text, **state)) == must, \
         "narrowing the trigger must not silence the original incident"
 
+
+def test_b1808_duplicate_learning_numbers():
+    """S6-B1534a (C12): an L-number must identify ONE lesson.
+
+    MEASURED before this check existed: **four numbers were duplicated** -
+    L114 x2, L115 x2, L253 x3, L333 x2 - and each pair is a DISTINCT lesson.
+    A citation of "L253" is ambiguous among three entries, in a system whose
+    entire discipline is built on citing L-numbers.
+
+    RATCHET, not a hard block: failing on the existing four would block every
+    commit until they are renumbered, and renumbering means choosing which entry
+    keeps the number and rewriting citations across CHECKLIST, SKILL, the queue
+    and commit history. That is the owner's call (`S6-B1808b`). The baseline is
+    pinned so the set cannot GROW.
+
+    Exercised on a FIXTURE via the `source=` seam (#241) rather than by mutating
+    the live file - a check that can only be run against the repo's real state
+    cannot be shown to fail without damaging it.
+    """
+    import importlib.util
+    import pathlib as _p
+    import tempfile
+
+    root = _p.Path(__file__).resolve().parents[2]
+    spec = importlib.util.spec_from_file_location(
+        "preflight_b1808", root / "scripts" / "preflight.py")
+    pf = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(pf)
+
+    staged = [_p.Path("LEARNINGS.md")]
+    tmp = _p.Path(tempfile.mkdtemp()) / "L.md"
+
+    tmp.write_text("### L1\n\nfirst\n\n### L1\n\nsecond\n", encoding="utf-8")
+    out = pf.check_duplicate_learning_numbers(staged, source=tmp)
+    assert out and "L1" in out[0], \
+        "a duplicate L-number must block the commit"
+
+    tmp.write_text("### L1\n\nfirst\n\n### L2\n\nsecond\n", encoding="utf-8")
+    assert not pf.check_duplicate_learning_numbers(staged, source=tmp), \
+        "distinct numbers must pass"
+
+    # scoped: no LEARNINGS.md staged means the check is a no-op
+    assert not pf.check_duplicate_learning_numbers(
+        [_p.Path("scripts/preflight.py")], source=tmp), \
+        "the check must only run when LEARNINGS.md is staged"
+
+    # the live file must satisfy the ratchet - if it does not, either a new
+    # duplicate landed or the baseline is stale
+    assert not pf.check_duplicate_learning_numbers(staged), (
+        "LEARNINGS.md has a duplicate outside KNOWN_DUPLICATE_L. Either a new "
+        "one was committed, or one was fixed and the baseline should shrink.")
+
+    # the baseline records real duplicates, not aspirational ones
+    import collections
+    import re
+    nums = re.findall(r"^### L(\d+)",
+                      (root / "LEARNINGS.md").read_text(encoding="utf-8"), re.M)
+    live = {n for n, c in collections.Counter(nums).items() if c > 1}
+    assert pf.KNOWN_DUPLICATE_L >= live, (
+        f"live duplicates {sorted(live - pf.KNOWN_DUPLICATE_L)} are not in the "
+        "baseline")
+    stale = pf.KNOWN_DUPLICATE_L - live
+    assert not stale, (
+        f"baseline lists {sorted(stale)} as duplicated but they are not any "
+        "more - shrink KNOWN_DUPLICATE_L so it stays a record of fact")
