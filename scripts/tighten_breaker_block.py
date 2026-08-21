@@ -407,7 +407,13 @@ def main() -> int:
          # production-closest member, which is the tie-break applied only if
          # the class survives Step 2 intact.
          "step1_ranking": [
-             {"rank": i, "sharpe": c[0].get("sharpe"), "ci_lo": c[0].get("ci_lo"),
+             # S6-B1705c/B1820: emit `is_sharpe` FIRST - it is the key this
+             # list is ranked on (B1718). Without it the artifact showed only
+             # `sharpe`, the HOLDOUT measurement, so an auditor would conclude
+             # Step 1 ranks on the holdout - the exact defect B1718 fixed. The
+             # separation was real and unverifiable from its own output.
+             {"rank": i, "is_sharpe": c[0].get("is_sharpe"),
+              "sharpe": c[0].get("sharpe"), "ci_lo": c[0].get("ci_lo"),
               "fires": c[0].get("fires"), "exit": c[0].get("exit"),
               "class_size": len(c),
               "admit": max(c, key=lambda m: (m["tail_n"],

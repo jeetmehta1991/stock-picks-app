@@ -219,9 +219,21 @@ hypothesis per strategy: *"does this strategy's chosen config have positive edge
 That is <= 41 tests, so m = 41 + 2 incumbents.
 
 **This is only valid if the IS/holdout separation is airtight.** If any holdout information leaks
-into the choice of config, the 820 become real holdout tests and m must be 820. The separation is
-therefore enforced mechanically, not by intention: the Phase-1 optimiser is given a file path
-containing IS rows only and has no reference to the holdout file (Step 1).
+into the choice of config, the 820 become real holdout tests and m must be 820.
+
+**CORRECTED B1820 (`S6-B1705c`, owner: *"major and unforgivable"*).** This paragraph previously
+claimed the separation was *"enforced mechanically ... a file path containing IS rows only and no
+reference to the holdout file"*. **NO SUCH FILE PATH EXISTS** - the grader is handed the full cube
+and slices it itself. **The separation is nonetheless real, by two mechanisms this document never
+named:**
+
+| mechanism | where | verified |
+|---|---|---|
+| `select_exit` slices `in_sample()` ITSELF, so the EXIT choice cannot see the holdout | `roster_core.py:241` | `test_b1800_step1_exit_selection_is_is_only` - a holdout-only frame yields NO exit, with a live control proving the fixture can select |
+| Step 1 ranks on **`is_sharpe`**, not `sharpe`; `rankable` REQUIRES a non-null IS Sharpe | `tighten_breaker_block.py:376` | B1718 P0-2, owner-approved |
+
+**A claimed mechanism that does not exist is worse than an acknowledged gap**, because it stops
+anyone looking. Both real mechanisms are code-level and testable; the promised one was neither.
 
 **The conservative alternative is m = 820**, which would raise the BH threshold roughly 20x tighter
 and almost certainly admit nothing. Both readings are defensible; the choice is owner decision #4.

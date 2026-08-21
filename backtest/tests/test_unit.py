@@ -18495,3 +18495,53 @@ def test_b1819_declared_drop_counters_are_written_to():
         f"{offenders}. A slot nobody fills reads exactly like an instrumented "
         "one - the discard it was meant to count stays silent (#122).")
 
+
+def test_b1820_step1_ranking_emits_its_ranking_key():
+    """S6-B1705c: an artifact must be able to prove what it ranked on.
+
+    Step 1 ranks on `is_sharpe` (B1718 P0-2, closing the leak where 300
+    combinations were ordered by out-of-sample performance). But
+    `step1_ranking` emitted `sharpe` - the HOLDOUT measurement - as its first
+    field and **omitted `is_sharpe` entirely.**
+
+    So an auditor reading the artifact saw holdout Sharpe, no in-sample Sharpe,
+    and would reasonably conclude Step 1 ranks on the holdout - **the exact
+    defect B1718 fixed.** The separation was real and unverifiable from its own
+    output, which is the same shape as `S6-B1770e`.
+
+    That matters beyond tidiness: the plan makes `m = 41` conditional on the
+    separation being airtight and says a leak forces `m = 820`, "roughly 20x
+    tighter and almost certainly admit nothing".
+    """
+    import json
+    import pathlib as _p
+
+    root = _p.Path(__file__).resolve().parents[2]
+
+    # 1. the emitter must carry the key it sorts on
+    src = (root / "scripts" / "tighten_breaker_block.py").read_text(encoding="utf-8")
+    i = src.index('"step1_ranking"')
+    payload = src[i:i + 700]
+    assert '"is_sharpe"' in payload, (
+        "step1_ranking must emit is_sharpe - it is the key the list is ranked "
+        "on, and without it the artifact shows only the HOLDOUT sharpe")
+
+    # 2. and the sort must actually use it
+    assert 'key=lambda r: -(r.get("is_sharpe")' in src, (
+        "the ranking key changed - if Step 1 no longer sorts on is_sharpe the "
+        "B1718 leak fix is gone")
+
+    # 3. on a real artifact, the ranking must be ordered by that key
+    art = root / "output_audit" / "b1820_cfg2_ranked.json"
+    if not art.exists():
+        import pytest
+        pytest.skip(f"{art.name} absent; generated artifact, not repo content")
+    rows = json.loads(art.read_text(encoding="utf-8"))["step1_ranking"]
+    vals = [r.get("is_sharpe") for r in rows]
+    assert all(v is not None for v in vals), \
+        "every ranked row must carry the key it was ranked on"
+    assert all(a >= b - 1e-9 for a, b in zip(vals, vals[1:])), \
+        f"step1_ranking is not ordered by is_sharpe: {vals}"
+    assert all("sharpe" in r for r in rows), \
+        "the holdout sharpe must remain as a MEASUREMENT of the chosen config"
+
