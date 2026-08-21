@@ -670,6 +670,21 @@ cited while the failures they name kept recurring, because none had a mechanism 
   exists" was first made on a narrow regex; only the owner's challenge forced the broad search that
   actually settled it. The conclusion survived. The method did not.
 
+## A FIGURE YOU REPEAT IS RE-DERIVED, NOT CARRIED (B1827 - L559, CHECKLIST #256 ext)
+
+**MEASURED: I told the owner the `#201` gate had produced "roughly six false positives" across
+several turns. It is 5 mechanical false positives and 2 SUBSTANTIVE catches** - it has never been
+wrong about the concern.
+
+- **Check which way the error points.** *"Six false positives"* supported the conclusion I had
+  already stated - *do not patch this again*. The correct figure supports the opposite. **An error
+  that argues for what you already decided is the one you are least likely to re-derive.**
+- **`#256` covers a ticket's number; this covers a number you keep SAYING.** Nobody re-checks a
+  figure that has already been said out loud - that is exactly how it survives.
+- **A deterministic fixture does not FEEL synthetic.** `rng` announces itself; `pd.Series([1.0,
+  2.0, 3.0])` looks like data. Choosing determinism to dodge the provenance question is what made
+  those numbers feel earned (B1801's rule, violated two batches after I wrote it).
+
 ## AN ARTIFACT MUST CARRY THE KEY IT WAS RANKED ON (B1820 - L558, CHECKLIST #277)
 
 **MEASURED: `step1_ranking` emitted the HOLDOUT Sharpe as its first field and omitted `is_sharpe`,

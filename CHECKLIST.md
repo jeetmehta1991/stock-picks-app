@@ -4379,6 +4379,24 @@ evidence, not two.**
 
 ### #256 - A TICKET IS A CLAIM ABOUT A PAST MOMENT; RE-DERIVE BEFORE WORKING IT (B1776 / L531)
 
+**EXTENSION (B1827 / L559) - A FIGURE YOU REPEAT IS RE-DERIVED, NOT CARRIED.**
+
+`#256` says re-derive a TICKET's number before working it. **The same applies to a number you keep
+telling the owner.** MEASURED: I reported the `#201` gate as *"roughly six false positives"* across
+several turns; it is **5 mechanical false positives and 2 SUBSTANTIVE catches**, and the gate has
+never been wrong about the concern.
+
+- **Check which way your error points.** *"Six false positives"* supported the conclusion I had
+  already stated - **do not patch this again**. The corrected figure supports the opposite. **An
+  error that argues for what you already decided is the one you are least likely to re-derive.**
+- **No gate covers this.** `#258` is scoped to LEDGER counts (`tickets closed`, `open tickets`);
+  a repeated non-ledger figure matches none of its claims. **Gap, not failure** - and detecting an
+  arbitrary repeated figure is `JUDGMENT-ONLY`, because tracing a number to the computation that
+  produced it is not recoverable from the transcript.
+- **Retroactive (`#136`):** *"271 closed in 48h"* (was 13), *"641 rows"* (was 688), *"64
+  strategy-optimisation tickets"* (was 66), *"six false positives"* (was 5+2). **Four carried
+  figures, four wrong.**
+
 **MEASURED: 6 of the 21 open enforcement tickets described a world that no longer existed**
 (`"4 hooks remain"` -> all four built and wired; `"11 gates unwired"` -> 0 of 43; `"vocabulary
 unruled"` -> ruled and migrated; `"14 uncorroborated"` -> its matcher replaced underneath it).

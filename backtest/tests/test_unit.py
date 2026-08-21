@@ -18645,3 +18645,44 @@ def test_b1824_exit_names_in_engine_messages_are_registered():
         f"{len(EXIT_STRATEGIES)}. B1335 Rule 2: a capability named in a message "
         "carries evidence it exists, or it is labelled PROPOSED-NOT-BUILT. "
         "Unfollowable advice reads as a supported path.")
+
+
+def test_b1827_repeated_figure_rule_is_in_the_durable_docs():
+    """#256 ext (B1827/L559): a figure you repeat is re-derived, not carried.
+
+    **Detection is JUDGMENT-ONLY.** Tracing an arbitrary repeated figure back to
+    the computation that produced it is not recoverable from the transcript -
+    `#258` covers LEDGER counts only, and its `COUNT_CLAIMS` are ticket
+    phrasings, so *"six false positives"* matched none of them. That is a GAP,
+    not a gate failure.
+
+    **Durability is pinnable, and the DIAGNOSTIC is the half that matters.**
+    The rule alone is advice; *"check which way the error points"* is what makes
+    it usable - three of the four carried figures flattered the conclusion
+    already stated.
+
+    Phrases asserted here were GREPPED from the files, not recalled: B1822's
+    version of this pin failed because it looked for wording I remembered
+    writing rather than wording that was there.
+    """
+    import pathlib as _p
+
+    root = _p.Path(__file__).resolve().parents[2]
+    check = (root / "CHECKLIST.md").read_text(encoding="utf-8").lower()
+    skill = (root / ".claude" / "skills" / "execution-discipline"
+             / "SKILL.md").read_text(encoding="utf-8").lower()
+
+    for doc, name in ((check, "CHECKLIST.md"), (skill, "SKILL.md")):
+        assert "re-derived, not carried" in doc, (
+            f"{name} lost the #256 extension. A number already said out loud is "
+            "the one nobody re-checks, which is how it survives.")
+        # the DIAGNOSTIC - the half that turns the rule into something usable
+        assert "which way" in doc and "error points" in doc, (
+            f"{name} lost the direction-of-error diagnostic. Without it the "
+            "rule is 'be careful with numbers' rather than a check you can run.")
+
+    # the retroactive evidence must survive too - #136 requires it, and a rule
+    # whose evidence is deleted becomes an assertion
+    assert "271 closed" in check and "641 rows" in check, (
+        "CHECKLIST lost #256-ext's retroactive figures. Four carried numbers, "
+        "four wrong, is the evidence that the rule is not hypothetical.")

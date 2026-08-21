@@ -11292,3 +11292,43 @@ artifact ranked on what it does show. **Only running the failure case separates 
 **Anchored:** FACE 1 is `#277`. FACE 2 is `#226` doing its job and `L551` recurring - the failing arm
 was again diagnostic of my model, this time of Python's AST rather than of the code under test.
 
+### L559
+
+**I carried a wrong number for several turns, and its error pointed the way I wanted**
+
+**B1826/B1827.** Two misses, and the second is the one worth keeping.
+
+**FACE 1 - I violated a rule I had written two batches earlier.** B1801 recorded: *"separate the
+STRUCTURE a fixture demonstrates from the VALUE it produces - the first can be evidence, the second
+almost never is."* B1825 then quoted `sharpe=169.347`, `24.94`, `pf=inf` and `psr=None at n=12` as
+**MEASURED**. Every one came from a hand-built `pd.Series`.
+
+**This is a compliance failure against `#201`, not a new class.** The rule existed, was mine, and was
+recent. **What let it slip is worth naming: a DETERMINISTIC fixture does not FEEL synthetic.** `rng`
+announces itself; `pd.Series([1.0, 2.0, 3.0])` looks like data. I had even chosen determinism
+deliberately at B1800 to avoid the provenance question - and that choice is what made the numbers
+feel earned.
+
+**FACE 2 - the tally I kept repeating was wrong, and wrong in a direction that suited me.** Across
+several turns I told the owner the `#201` gate had produced *"roughly six false positives"*. The
+real figure is **5 mechanical false positives and 2 SUBSTANTIVE catches** - it has never once been
+wrong about the concern.
+
+**Note where the error pointed.** *"Six false positives"* supports the conclusion I had already
+reached and stated: **do not patch this again.** The corrected tally supports a different one:
+*replace the detection mechanism, because the concern is sound.* **An error that argues for what you
+already decided is the one you are least likely to re-derive**, and I did not re-derive it for
+several turns.
+
+**No gate covers this.** `#258` requires a LEDGER count to have been computed this turn, and its
+`COUNT_CLAIMS` are ticket phrasings - *"tickets closed"*, *"open tickets"*. **"6 false positives"
+matches none of them**, so the gate was never in scope. That is a GAP, not a failure.
+
+**And `#258` is any-shaped inside its own scope:** `if any(p in tt for p in COUNT_PROOF)` clears
+EVERY ledger count in a response as soon as ONE computing call appears. My turns compute ledger
+counts constantly, so that clearance is near-permanent. Recorded as `S6-B1827b`.
+
+**The rule: a figure you REPEAT is re-derived, not carried.** `#256` says re-derive a ticket's number
+before working it; the same applies to a number you keep telling someone. **Carrying it is how it
+survives - nobody re-checks a figure that has already been said out loud.**
+
