@@ -2184,7 +2184,15 @@ MISS_MARKERS = tuple(
 ) + ("owner caught", "correction:", "i should have", "retract")
 
 
-def scan_miss_capture_complete(entries, *, text=None, observed=None) -> list[str]:
+# B1797d: a JUDGMENT-ONLY disposition must say which HALF it means. Detection
+# may be impossible; durability usually is not. These are the phrasings that
+# show the second question was actually asked.
+_DURABILITY = ("durability pinned", "no detection mechanism", "detection is",
+               "durability: not pinnable", "not pinnable", "cannot be pinned")
+
+
+def scan_miss_capture_complete(entries, *, text=None, observed=None,
+                               touched=None) -> list[str]:
     """Phase 5 wants THREE artifacts on a miss, not one (B1751 / #234)."""
     # B1786: read the FINAL block with quotes stripped (#262), and require an
     # ADMISSION context rather than a bare topic word. This gate fired on a pure
@@ -2208,10 +2216,21 @@ def scan_miss_capture_complete(entries, *, text=None, observed=None) -> list[str
             # INSTANCE. This member asks for the mechanism, and accepts an
             # explicit JUDGMENT-ONLY when none is possible - so the decision is
             # written down rather than skipped.
+            # B1797d (#253 - harden the EXEMPTION, not just the trigger).
+            # A bare "judgment-only" answers the DETECTION half and leaves the
+            # DURABILITY half unasked. MEASURED this turn: I reached for it
+            # while a cheap pin was available - assert the rule and its
+            # diagnostic still survive in both docs. A rule written into a doc
+            # can be dropped from that doc later, which is the same
+            # disappearance in slow motion, and that IS mechanisable even when
+            # detection is not. So the word alone no longer suffices: say which
+            # half applies.
             "mechanism for the CLASS (scan_/pin test) or explicit JUDGMENT-ONLY":
-                _artifact_touched("scripts/verify_turn_compliance.py",
-                                  "backtest/tests/test_unit.py")
-                or "judgment-only" in t,
+                (_artifact_touched("scripts/verify_turn_compliance.py",
+                                   "backtest/tests/test_unit.py")
+                 if touched is None else touched)
+                or ("judgment-only" in t
+                    and any(m in t for m in _DURABILITY)),
         }
     return require_each(
         "PHASE-5 MISS-CAPTURE INCOMPLETE (B1751 / #234)", observed,

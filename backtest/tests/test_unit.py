@@ -17358,3 +17358,57 @@ def test_b1797_matcher_rung_rule_is_in_the_durable_docs():
             f"{name} lost the wrong-rung diagnostic. Without it the table is "
             "trivia: the test is whether two domains state ONE claim with "
             "words that share no root.")
+
+
+def test_b1797_judgment_only_must_name_its_half():
+    """B1797d (#253): harden member 5's EXEMPTION, not just its trigger.
+
+    `JUDGMENT-ONLY` answers whether the class can be DETECTED. It leaves unasked
+    whether the FIX can be kept from VANISHING - and that second question is
+    usually answerable. **MEASURED this turn: I reached for the bare word while
+    a cheap pin was available** (assert the rule and its diagnostic still live
+    in both docs).
+
+    So the word alone no longer satisfies member 5: the disposition must name
+    which half it means.
+    """
+    import importlib.util
+    import pathlib as _p
+
+    root = _p.Path(__file__).resolve().parents[2]
+    spec = importlib.util.spec_from_file_location(
+        "vtc_b1797d", root / "scripts" / "verify_turn_compliance.py")
+    tg = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(tg)
+
+    # the gate only engages once the turn ADMITS a miss - supply that context,
+    # or the probe measures the precondition instead of the exemption.
+    miss = "I was wrong about that, and the owner caught it. "
+
+    bare = miss + "No mechanism for this class is possible - JUDGMENT-ONLY."
+    named = (miss + "JUDGMENT-ONLY for detection: no scan tells a rule from an "
+             "example. Durability pinned by test_b1797_matcher_rung_rule.")
+
+    # Members 1-3 read the LIVE working tree, so isolate member 5 by asking
+    # WHICH member the violation names - not whether the gate fired at all.
+    M5 = "JUDGMENT-ONLY"
+
+    def m5_unsatisfied(text):
+        # touched=False isolates the TEXT path (#241). Without the seam this
+        # turn's own edits to the gate and test files satisfy member 5 via the
+        # artifact route, and the probe measures nothing.
+        out = tg.scan_miss_capture_complete([], text=text, touched=False)
+        if not out:
+            return False
+        msg = out[0].split("(satisfied:")[0]
+        return M5 in msg
+
+    assert m5_unsatisfied(bare), (
+        "a bare JUDGMENT-ONLY must NOT satisfy member 5 - it answers the "
+        "detection half and leaves durability unasked")
+    assert not m5_unsatisfied(named), (
+        "a disposition naming BOTH halves must satisfy member 5")
+
+    src = (root / "scripts" / "verify_turn_compliance.py").read_text(
+        encoding="utf-8")
+    assert "_DURABILITY" in src, "the durability marker list is the mechanism"
