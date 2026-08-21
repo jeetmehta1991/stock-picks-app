@@ -216,6 +216,14 @@ def main() -> int:
                                   close_mitigation=cm)
                 if d:
                     diags[cm][(t, when)] = d
+                else:
+                    # S6-B1584b / #122: the third silent swallow. `DROPS`
+                    # declared this key at the top and NOTHING ever wrote to
+                    # it, so a falsy diagnosis was only ever inferable from a
+                    # shortfall. The UNION gate below already catches a fire no
+                    # branch can diagnose - this makes it COUNTED rather than
+                    # inferred, which is what #122 asks for.
+                    DROPS["no_diag"].append((t, str(when), cm))
     # S6-B1586: the loss gate must apply to the UNION of branches, not each
     # one. close_mitigation is a SWEPT dimension: cm=True is a strictly tighter
     # variant that is SUPPOSED to find fewer order blocks. Checking each branch
@@ -240,6 +248,17 @@ def main() -> int:
                   f"the survivors would describe a subsample nobody chose.",
                   file=sys.stderr)
             return 2
+    # S6-B1584b: report the per-branch falsy diagnoses BEFORE any metric, on
+    # the same footing as the no_parquet drops. A branch-level drop is not
+    # itself a defect - a tighter close_mitigation legitimately finds fewer
+    # order blocks - so this is REPORTED, and the UNION gate below is what
+    # decides whether anything is wrong.
+    if DROPS["no_diag"]:
+        by_branch: dict = {}
+        for _t, _w, _cm in DROPS["no_diag"]:
+            by_branch[_cm] = by_branch.get(_cm, 0) + 1
+        print(f"UNDIAGNOSED (branch-level, not necessarily lost): "
+              f"{len(DROPS['no_diag'])} fire-branch pairs {by_branch}")
     union_loss = 1.0 - (len(union) / n_f) if n_f else 0.0
     for cm in CLOSE_MITIGATION:
         print(f"close_mitigation={cm}: diagnosed {len(diags[cm])} of {n_f} "

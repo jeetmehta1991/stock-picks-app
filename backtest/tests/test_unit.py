@@ -18431,3 +18431,67 @@ def test_b1815_searching_for_a_marker_is_not_running_it():
     assert bool(tg.scan_synthetic_provenance([], text=text, **state)) == must, \
         "narrowing must not silence the original incident"
 
+
+def test_b1819_declared_drop_counters_are_written_to():
+    """S6-B1584b (#122): a counter slot nobody writes to is not a counter.
+
+    `tighten_breaker_block.py` declared `DROPS = {"no_parquet": [], "no_diag": []}`
+    and **nothing ever appended to `no_diag`.** The slot was created in
+    anticipation of counting the third silent swallow - `if d:` discarding a
+    falsy diagnosis - and left empty, so that drop was only ever INFERABLE from
+    an aggregate shortfall.
+
+    MEASURED after filling it: cfg2 reports **17 fire-branch pairs undiagnosed,
+    all on `close_mitigation=True`** - 403 + 17 = 420 - while the UNION stays
+    420 of 420, 0.0pct lost. Nothing was lost; the tighter branch was doing its
+    job, and now that is counted rather than deduced.
+
+    **The generalised check: every key declared in a drop/counter dict must have
+    a write.** A declared-but-unfilled slot reads exactly like an instrumented
+    one, which is the #122 shape - a discard with no explicit counter.
+    """
+    import ast
+    import pathlib as _p
+
+    root = _p.Path(__file__).resolve().parents[2]
+    offenders = []
+    for f in sorted((root / "scripts").glob("*.py")):
+        src = f.read_text(encoding="utf-8")
+        try:
+            tree = ast.parse(src)
+        except SyntaxError:
+            continue
+        for node in ast.walk(tree):
+            # a dict literal assigned to a name that looks like a drop counter.
+            # AnnAssign is included deliberately: the real declaration is
+            # `DROPS: dict = {...}`, and an Assign-only walk examined NOTHING
+            # and passed vacuously - caught by #226's fail arm, not by review.
+            if isinstance(node, ast.AnnAssign):
+                targets = [node.target]
+            elif isinstance(node, ast.Assign):
+                targets = node.targets
+            else:
+                continue
+            if not isinstance(node.value, ast.Dict):
+                continue
+            names = [t.id for t in targets if isinstance(t, ast.Name)]
+            if not any(n.upper() in ("DROPS", "SKIPS", "DROPPED", "COUNTERS")
+                       for n in names):
+                continue
+            for k in node.value.keys:
+                if not isinstance(k, ast.Constant) or not isinstance(k.value, str):
+                    continue
+                key = k.value
+                # is that key ever written to anywhere in the file?
+                written = (f'["{key}"].append' in src
+                           or f"['{key}'].append" in src
+                           or f'["{key}"] +=' in src
+                           or f'["{key}"] =' in src
+                           or f'["{key}"][' in src)
+                if not written:
+                    offenders.append(f"{f.name}: {names[0]}[{key!r}] declared, never written")
+    assert not offenders, (
+        "declared drop-counter slot(s) that nothing writes to: "
+        f"{offenders}. A slot nobody fills reads exactly like an instrumented "
+        "one - the discard it was meant to count stays silent (#122).")
+
