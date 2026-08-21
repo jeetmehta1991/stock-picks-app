@@ -17457,3 +17457,46 @@ def test_b1798_verdict_markers_are_prefix_guarded():
     text, must_fire, state = corpus.INCIDENTS["scan_partial_read"]
     assert bool(tg.scan_partial_read([], text=text, **state)) == must_fire, \
         "tightening the matcher must not silence the original incident"
+
+
+def test_b1798_empty_transcript_announces_itself():
+    """B1798c (L549): an empty measurement must not render as a clean result.
+
+    Every response gate reads the transcript. Run outside the Stop hook they see
+    ZERO entries and return clean for that reason alone - **which is
+    indistinguishable from "no violations"**. A probe of mine printed every
+    marker list empty this turn and the reading it invited was "false positive",
+    the conclusion I already leaned toward.
+
+    `_read_entries`'s own docstring had warned about this since B1713 - *"they
+    see zero entries and return clean unconditionally"* - and that is how the
+    #225 gate once called a nonexistent function and still looked green (L501).
+    **Recorded in a comment, never gated, and it recurred.**
+    """
+    import importlib.util
+    import io
+    import pathlib as _p
+    import sys as _sys
+
+    root = _p.Path(__file__).resolve().parents[2]
+    spec = importlib.util.spec_from_file_location(
+        "vtc_b1798c", root / "scripts" / "verify_turn_compliance.py")
+    tg = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(tg)
+
+    err, _sys.stderr = _sys.stderr, io.StringIO()
+    try:
+        entries = tg._read_entries()
+        captured = _sys.stderr.getvalue()
+    finally:
+        _sys.stderr = err
+
+    assert entries == [], (
+        "this test assumes no transcript is available under pytest; if one is, "
+        "the empty-path assertion below is not being exercised")
+    assert "0 transcript entries" in captured, (
+        "a 0-entry load must announce itself on stderr - otherwise an empty "
+        "measurement is indistinguishable from a clean one")
+    assert "NOT evidence of compliance" in captured, (
+        "the warning must say what the emptiness does NOT prove, not merely "
+        "that it happened")

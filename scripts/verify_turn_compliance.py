@@ -91,7 +91,7 @@ def scan_transcript_entries(entries: list[dict]) -> tuple[bool, bool]:
 _ENTRIES_CACHE: list | None = None
 
 
-def _read_entries() -> list:
+def _read_entries_uncached() -> list:
     """Parse the Stop-hook transcript ONCE. stdin is a single-read stream, so
     every gate must share this cache rather than re-reading it (B1504 defect:
     two gates each calling sys.stdin.read() -> the second always saw '')."""
@@ -129,6 +129,32 @@ def _read_entries() -> list:
             except Exception:
                 continue
     return _ENTRIES_CACHE
+
+
+# B1798c (L549): a 0-entry load must ANNOUNCE itself. Every response gate reads
+# the transcript; run outside the Stop hook they see nothing and return clean
+# unconditionally, so an all-empty result is indistinguishable from "no
+# violations". That killed a probe this turn and, per the docstring above, is
+# how the #225 gate once called a nonexistent function and still looked green.
+#
+# A wrapper, not a restructure: the caching threads through three return paths
+# and rewriting them to add one warning is how a gate breaks silently.
+_EMPTY_WARNED = False
+
+
+def _read_entries() -> list:
+    """`_read_entries_uncached`, but a 0-entry load says so on stderr."""
+    global _EMPTY_WARNED
+    entries = _read_entries_uncached()
+    if not entries and not _EMPTY_WARNED:
+        _EMPTY_WARNED = True
+        print("[turn-gate] WARNING: 0 transcript entries loaded. Every "
+              "response gate will return clean for that reason alone - this "
+              "is NOT evidence of compliance. Set TURN_GATE_TRANSCRIPT=<path> "
+              "or pass text=/tool_text= to probe a gate directly. (L549)",
+              file=sys.stderr)
+    return entries
+
 
 
 # B1504 / CHECKLIST #182 -- VERDICT DENOMINATOR GATE.
