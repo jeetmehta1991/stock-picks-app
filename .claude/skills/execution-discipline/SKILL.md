@@ -698,6 +698,8 @@ enforcement was written in the same turn as the gate that did not deliver it.
 
 - **When a rule names N domains, its pin test carries a case per domain.** Not one example - one per
   declared domain, so the coverage claim is true by test rather than by assertion.
+- **And fix it at the right rung** - see `#239`'s three-rung table. The domains failed here because
+  the matcher enumerated one dialect; **matching the SHAPE covered all three at once.**
 - **This is any-vs-each one level up.** `#234` asks whether every MEMBER of a rule was handled;
   this asks whether every DOMAIN of a rule is reachable by its enforcer.
 - **The prose is the claim.** Writing *"Enforced by X"* is a factual assertion about X's behaviour
@@ -1176,6 +1178,22 @@ miss-capture.
 
 - **A marker list is a claim about how a class will be WORDED.** Stem the root; the conjugations
   come free. Enumerating remembered phrasings is guessing.
+- **EXTENSION (B1796 / L548) - THREE RUNGS, AND ENUMERATION IS THE BOTTOM ONE:**
+
+  | rung | covers | example |
+  |---|---|---|
+  | enumerate phrasings | only what you remembered | `promoted`, `stays open` |
+  | stem the root (`#239`) | **conjugations** | `verif` -> verify / verified / verifying |
+  | match the SHAPE (B1796) | **dialects - the same claim in another domain's words** | quantifier + state verb, or negative existential |
+
+  **MEASURED: `scan_partial_read` held the ticket dialect and fired on 2 of 10 verdict sentences -
+  0 of 8 for code and documents.** *"All 138 are complete"*, *"there are no other call sites"* and
+  *"no document outside archive/ still references it"* are ONE claim in three vocabularies.
+  **Stemming would not have helped - the words are unrelated.** Matching the grammatical shape
+  covered all three at once: **11 of 11 fire, 0 of 7 false positives.**
+- **Ask which rung a matcher is on before adding to it.** Reaching for more words is the reflex, and
+  it is the bottom rung; **if two domains express the same claim with disjoint vocabulary, the
+  matcher is on the wrong rung and no amount of adding fixes it.**
 - **When a marker list is fixed, sweep EVERY other list in the same file that turn.** 18 lists, 13
   unstemmed - found only when the owner asked a fourth time.
 - **A fix applied to the instance in front of you is not applied to the class. Stating a class is

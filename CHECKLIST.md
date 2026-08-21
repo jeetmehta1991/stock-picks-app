@@ -4655,6 +4655,32 @@ is a silent verdict on everything you forgot to think about.**
 **Applies past ticket scripts** - any sweep that assigns a disposition, label, or status across a set:
 migrations, classifiers, bulk edits, roster builders.
 
+### #239 AMENDMENT - MATCH THE SHAPE, NOT THE DIALECT (B1796 / L548)
+
+**`#239` says stem the root so conjugations come free. That covers `verify`/`verified`/`verifying`.
+It does NOT cover the same claim written in another domain's words.**
+
+**MEASURED: `scan_partial_read` fired on 2 of 10 realistic verdict sentences - 0 of 8 for code and
+documents.** *"All 138 rows are complete"*, *"there are no other call sites"* and *"no document
+outside archive/ still references it"* are ONE claim in three vocabularies. **Stemming cannot bridge
+them - the words share no root.**
+
+**Three rungs, and enumeration is the bottom one:**
+
+| rung | covers |
+|---|---|
+| enumerate phrasings | only what you remembered |
+| stem the root (`#239`) | conjugations |
+| match the SHAPE (B1796) | dialects - the same claim in another domain's words |
+
+**Before adding a word to a matcher, ask which rung it is on.** If two domains express the same
+claim with disjoint vocabulary, the matcher is on the wrong rung and adding words will not fix it.
+Matching the grammatical shape - a universal quantifier with a state verb, or a negative existential
+- covered all three domains at once: **11 of 11 fire, 0 of 7 false positives.**
+
+**Amended into `#239` rather than minted as `#274`:** this is the next rung of `#239`'s own ladder,
+not a new class. Precedent - B1599 anchored L466 by amending `#191`.
+
 ### #273 - NAMING AN ENFORCER IS NOT BEING ENFORCED (B1796 / L547)
 
 **`#242` requires an added rule to NAME its mechanism. Nothing checked the mechanism COVERS the

@@ -10855,3 +10855,38 @@ guard removed.
 **What made it feel done.** The section named all three domains, so reading the skill back confirmed
 the scope. **The skill was right; the mechanism under it was not, and nothing compared the two.**
 
+### L548
+
+**I put the three dialects in the skill and left out the rule that produced them**
+
+**B1797, owner-asked:** *"Was this modified in the skill?"* - about the sentence *"adding more
+disposition words would have chased dialects forever; a population verdict has a SHAPE."*
+
+**MEASURED: no.** `SKILL.md:718-720` lists the ticket, code and document dialects as EXAMPLES.
+The design rule that generated them appears in the response and in L547, and **nowhere in the
+skill.** So the skill now teaches *"these three dialects exist"* rather than *"match the shape,
+because a vocabulary list chases dialects forever."* **A fourth domain would not be covered by the
+enumeration; it would be covered by the rule.**
+
+**This is the GENERALIZATION MANDATE applied to my own edit of the file that states it.** That
+mandate - *fix the CLASS, not the instance* - is at the top of the same document. I encoded three
+instances into it and kept the class in prose.
+
+**Why it slipped:** the enumeration is what the FIX looked like. The three dialects are the visible
+output of the work, so writing them down felt like recording the work. **The rule is the invisible
+part - it is what I would need next time, and it is precisely the part a reader cannot reconstruct
+from the examples.**
+
+**Anchored as an amendment to `#239`, not a new number.** `#239` already says *stem the root; the
+conjugations come free.* Dialects are the next rung of that ladder:
+
+```
+enumerate phrasings ...... only what you remembered
+stem the root (#239) ..... conjugations       (verify / verified / verifying)
+match the SHAPE (B1796) .. dialects           (disjoint words, one claim)
+```
+
+**Stemming could never have bridged these** - *"complete"*, *"no other call sites"* and *"still
+references"* share no root. **When two domains state the same claim with disjoint vocabulary, the
+matcher is on the wrong rung, and adding words is motion rather than progress.**
+
