@@ -2794,6 +2794,139 @@ def check_unrecorded_miss() -> str | None:
     return bad[0] if bad else None
 
 
+LAUNCH_MARKERS = ("run_phase1a.py", "run_phase1b.py")
+POOL_FLAG = "--screen-pool-workers"
+STALL_MARKERS = ("stall", "hang", "mtime", "not advanced", "no progress")
+BULK_KILL = ("stop-process -name", "stop-process -force",
+             "| stop-process", "|stop-process", "taskkill /im")
+
+
+def _launch_blobs(entries) -> list[str]:
+    """Tool inputs in THIS turn that start a backtest runner. Pure."""
+    import json as _json
+
+    out = []
+    last_user = -1
+    for i, e in enumerate(entries or ()):
+        if e.get("type") != "user":
+            continue
+        c = (e.get("message") or {}).get("content")
+        if (isinstance(c, str) and c.strip()) or (
+                isinstance(c, list) and any(
+                    isinstance(x, dict) and x.get("type") == "text" for x in c)):
+            last_user = i
+    for e in (entries or ())[last_user + 1:]:
+        if e.get("type") != "assistant":
+            continue
+        for c in (e.get("message") or {}).get("content") or ():
+            if isinstance(c, dict) and c.get("type") == "tool_use":
+                blob = _json.dumps(c.get("input", {}))
+                if any(m in blob for m in LAUNCH_MARKERS):
+                    out.append(blob)
+    return out
+
+
+def scan_launch_missing_pool_workers(entries, *, blobs=None) -> list[str]:
+    """#185 sibling (S6-B1533a): a launch must NAME `--screen-pool-workers`.
+
+    The default is 0 = SEQUENTIAL (L407) and the runbook has said "ALWAYS set
+    it" since B1533 - in prose, enforced by nothing. The silent default cost
+    ~1.5x on every run of that session. Naming it is free; discovering it
+    afterwards is not.
+    """
+    # B1864b: the LAUNCH_MARKERS filter must apply to SUPPLIED blobs too.
+    # It did not, so an injected `pytest` command was judged as a launch -
+    # the injected seam behaved differently from the live path, which is
+    # B1760's defect (a parameter that exists and does something else) and
+    # B1811's rule (the seam travels the same pipeline). The pin's
+    # must-not-fire arm caught it; reading did not.
+    cand = (_launch_blobs(entries) if blobs is None else
+            [b for b in blobs if any(m in b for m in LAUNCH_MARKERS)])
+    if not cand:
+        return []
+    # B1865 (#244): this message says EVERY launch, so the check owes the
+    # reader every launch. The first version reported `bad[0]` and hid the
+    # rest - the any-vs-each defect, in a gate written one batch after citing
+    # S6-B1762f (`require_each` existed since B1751 and I did not use it).
+    return require_each(
+        "LAUNCH WITHOUT AN EXPLICIT --screen-pool-workers (S6-B1533a / L407)",
+        {b[:110]: (POOL_FLAG in b) for b in cand},
+        why=("The default is 0 = SEQUENTIAL and the runbook has said ALWAYS "
+             "SET IT since B1533; the silent default cost ~1.5x on every run "
+             "of that session. Name the flag even when 0 is what you want - "
+             "0 chosen is not 0 defaulted."))
+
+
+def scan_monitor_without_stall_check(entries, *, blobs=None) -> list[str]:
+    """#185 sibling (S6-B1555a): a monitor must be able to see a HANG.
+
+    A monitor that only reports progress cannot distinguish a slow run from a
+    dead one. THREE ticks reported a hung run as healthy because none asked
+    whether the log had advanced. A periodic report that cannot report a stall
+    is a liveness check that never checks liveness.
+    """
+    import json as _json
+
+    arms = []
+    last_user = -1
+    for i, e in enumerate(entries or ()):
+        if e.get("type") != "user":
+            continue
+        c = (e.get("message") or {}).get("content")
+        if (isinstance(c, str) and c.strip()) or (
+                isinstance(c, list) and any(
+                    isinstance(x, dict) and x.get("type") == "text" for x in c)):
+            last_user = i
+    for e in (entries or ())[last_user + 1:]:
+        if e.get("type") != "assistant":
+            continue
+        for c in (e.get("message") or {}).get("content") or ():
+            if isinstance(c, dict) and c.get("type") == "tool_use" and \
+                    "Cron" in str(c.get("name", "")):
+                arms.append(_json.dumps(c.get("input", {})).lower())
+    if blobs is not None:
+        arms = [b.lower() for b in blobs]
+    # B1866 (#246 - substring vs whole word): raw `in` made this INERT.
+    # "hang" is a substring of "changed", and every unconditional monitor
+    # prompt says "do not withhold because nothing changed" - so the most
+    # likely phrase in the corpus silently satisfied the stall requirement.
+    # Caught by the first corpus entry ever added for this gate. B1769c is
+    # the same defect in this same file: a placeholder set containing "-"
+    # made any reason with a hyphen read as a placeholder.
+    import re as _re2
+
+    def _has_stall(a: str) -> bool:
+        return any(_re2.search(r"(?<![a-z0-9_])" + _re2.escape(m)
+                               + r"(?![a-z0-9_])", a) for m in STALL_MARKERS)
+
+    bad = [a for a in arms if not _has_stall(a)]
+    if not bad:
+        return []
+    return ["MONITOR WITH NO STALL CHECK (S6-B1555a / L420): the prompt reports "
+            "progress but cannot report a HANG, so a dead run reads as a slow "
+            "one - THREE ticks called a hung run healthy. Add a stall clause: "
+            "if the log mtime has not advanced while processes live, say so. "
+            "Accepted words: " + ", ".join(STALL_MARKERS)]
+
+
+def scan_bulk_process_kill(entries, *, cmds=None) -> list[str]:
+    """S6-B1534e / L411: kill VERIFIED PIDs, never sweep by name.
+
+    A force-sweep over every python process is a change to machine state, not
+    neutral cleanup - it takes out pytest, other sessions and unrelated work
+    along with the target. Killing by PID after confirming the command line is
+    the same effort and is reversible in intent.
+    """
+    txt = (_executed_text(entries) if cmds is None else " ".join(cmds)).lower()
+    hits = [m for m in BULK_KILL if m in txt]
+    if not hits:
+        return []
+    return ["BULK PROCESS KILL (S6-B1534e / L411): " + ", ".join(hits) +
+            ". A force-sweep by NAME is a change to machine state, not neutral "
+            "cleanup - it takes out pytest, other sessions and unrelated work. "
+            "Get the PID, VERIFY its command line, then Stop-Process -Id."]
+
+
 def check_monitor_armed() -> str | None:
     """Block a turn that launched a long run without arming its reporting path."""
     bad = scan_unmonitored_launch(_read_entries())
@@ -2936,7 +3069,12 @@ def main() -> int:
                 scan_unverified_count, scan_partial_distribution,
                 scan_partial_read, scan_row_vs_ticket,
                 scan_synthetic_provenance,
-                scan_ticket_counts_missing):
+                scan_ticket_counts_missing,
+                # B1864 - WIRED, not merely defined. B1751: scan_false_skill_status
+                # was DEFINED and never wired, and that is instance 5 of any-vs-each.
+                scan_launch_missing_pool_workers,
+                scan_monitor_without_stall_check,
+                scan_bulk_process_kill):
         try:
             _r = _sc(_e2)
         except Exception as _e:

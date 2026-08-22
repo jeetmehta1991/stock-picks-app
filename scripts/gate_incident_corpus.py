@@ -41,6 +41,20 @@ from __future__ import annotations
 # incident produced several sentences, the one chosen is the one that appeared
 # in the response the owner reacted to.
 INCIDENTS: dict[str, tuple[str, bool, dict]] = {
+    # B1865: VERBATIM from this session - the monitor prompt armed for the
+    # B1849 causal test. It promises a periodic unconditional report and has
+    # no stall clause at all, so it could report a hung run as healthy, which
+    # is what three ticks did at B1555.
+    "scan_monitor_without_stall_check": (
+        "PERIODIC UNCONDITIONAL RUN REPORT - B1849 causal test. Report EVERY "
+        "time this fires. Do not withhold the report because nothing changed. "
+        "Silence is correct only when nothing is running.",
+        True,
+        {"blobs": ["PERIODIC UNCONDITIONAL RUN REPORT - B1849 causal test. "
+                   "Report EVERY time this fires. Do not withhold the report "
+                   "because nothing changed. Silence is correct only when "
+                   "nothing is running."]},
+    ),
     "scan_miss_capture_complete": (
         "So a checklist item with no mechanism is enforced solely by my "
         "remembering to consult it - which is the failure itself.",

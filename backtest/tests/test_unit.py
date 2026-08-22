@@ -16420,6 +16420,14 @@ def test_b1762_every_scan_gate_has_a_corpus_entry():
         "scan_skill_not_updated": "no seam; S6-B1761b",
         "scan_transcript_entries": "no seam; S6-B1761b",
         "scan_unmonitored_launch": "no seam; S6-B1761b",
+        # B1865: built from HISTORICAL incidents (L407 / L411) whose verbatim
+        # text was not preserved. An invented corpus entry is worse than none -
+        # it would record a fixture as an incident, which is exactly the
+        # 2.422-from-rng.normal shape. Tickets: S6-B1865a.
+        "scan_launch_missing_pool_workers":
+            "built from L407; verbatim launch text not preserved - S6-B1865a",
+        "scan_bulk_process_kill":
+            "built from L411; verbatim command not preserved - S6-B1865a",
         "scan_unrecorded_miss": "no seam; S6-B1761b",
         "scan_unverified_cause": "no seam; S6-B1761b",
         "scan_unverified_structure": "no seam; S6-B1761b",
@@ -19276,3 +19284,102 @@ def test_b1862_search_cannot_report_a_false_absence():
     # ---- the control must come from the DATA, not be invented ------------
     with pytest.raises(gc.PatternNeverMatched):
         gc.search_with_control(r"[0-9]+/999 passed", LIVE, LIVE)
+
+
+
+def test_b1864_process_rule_gates():
+    """B1864: three process rules that had prose and no enforcement.
+
+    All three are failures committed in the session that built them: a launch
+    that never named --screen-pool-workers, monitors armed with no stall
+    clause, and a bulk kill avoided only because the ticket happened to be
+    open at the time.
+
+    Every gate is asserted in BOTH directions. A gate proven only to fire is
+    half-proven - for a NEW gate the arm that matters is that it stays quiet
+    on correct work, because a gate with false positives gets bypassed (B1722).
+    """
+    import importlib.util
+    import pathlib as _p
+
+    root = _p.Path(__file__).resolve().parents[2]
+    spec = importlib.util.spec_from_file_location(
+        "vtc_b1864", root / "scripts" / "verify_turn_compliance.py")
+    tg = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(tg)
+
+    # ---- S6-B1533a: a launch must NAME the pool-workers flag -------------
+    assert tg.scan_launch_missing_pool_workers([], blobs=[
+        '{"command": "python backtest/run_phase1a.py --tickers-file x.txt"}']), (
+        "a launch with no --screen-pool-workers must fire. L407: the default "
+        "is 0 = SEQUENTIAL, and the silent default cost ~1.5x on every run of "
+        "that session while the runbook already said ALWAYS SET IT.")
+    for good in ('{"command": "python backtest/run_phase1a.py '
+                 '--screen-pool-workers 0"}',
+                 '{"command": "python backtest/run_phase1a.py '
+                 '--screen-pool-workers 3 --start a"}'):
+        assert not tg.scan_launch_missing_pool_workers([], blobs=[good]), (
+            "naming the flag must clear it - including when the value is 0, "
+            "which is the whole point: 0 chosen is not 0 defaulted")
+    assert not tg.scan_launch_missing_pool_workers([], blobs=[]), (
+        "no launch at all means there is nothing to enforce")
+    assert not tg.scan_launch_missing_pool_workers([], blobs=[
+        '{"command": "pytest backtest/tests/test_unit.py -q"}']), (
+        "a non-launch command must not be treated as a launch")
+
+    # ---- S6-B1555a: a monitor must be able to see a HANG -----------------
+    assert tg.scan_monitor_without_stall_check([], blobs=[
+        "SCHEDULED REPORT - report every fire, do not withhold, silence is "
+        "correct only when nothing is running"]), (
+        "a monitor that reports progress but cannot report a HANG must fire. "
+        "Three ticks called a hung run healthy, and this fixture is the exact "
+        "shape of the monitors armed earlier in this session.")
+    for good in ("report a suspected hang if the log mtime has not advanced",
+                 "if there is no progress in 15 minutes, say so",
+                 "check for a STALL each fire"):
+        assert not tg.scan_monitor_without_stall_check([], blobs=[good]), (
+            "a prompt carrying a stall clause must clear: " + repr(good))
+    assert not tg.scan_monitor_without_stall_check([], blobs=[]), (
+        "no monitor armed means there is nothing to enforce here")
+
+    # B1866 (#246): "hang" is a SUBSTRING of "changed", and every
+    # unconditional monitor prompt says "nothing changed" - so raw `in`
+    # made this gate inert on its most likely input. Caught by the first
+    # corpus entry ever added for it.
+    assert tg.scan_monitor_without_stall_check([], blobs=[
+        "report every fire, do not withhold because nothing changed"]), (
+        "'changed' contains 'hang' as a substring - a word-boundary match is "
+        "required, or the most common phrase in a monitor prompt silently "
+        "satisfies the stall requirement (#246, B1769c is the same defect in "
+        "this same file)")
+    for collide in ("nothing changed", "we exchanged notes",
+                    "the shanghai run", "stallion"):
+        assert tg.scan_monitor_without_stall_check([], blobs=[collide]), (
+            "substring collision must not satisfy the gate: " + repr(collide))
+
+    # ---- S6-B1534e: kill verified PIDs, never sweep by name --------------
+    for bad in ("Get-Process python | Stop-Process -Force",
+                "Stop-Process -Name python",
+                "taskkill /IM python.exe"):
+        assert tg.scan_bulk_process_kill([], cmds=[bad]), (
+            "a bulk kill must fire: " + repr(bad) + ". L411 - a force-sweep "
+            "by name is a change to machine state, not neutral cleanup, and "
+            "it takes out pytest and other sessions with the target.")
+    for good in ("Stop-Process -Id 10344 -Force",
+                 "Get-Process python | Select-Object Id, CPU",
+                 "python -m pytest -q"):
+        assert not tg.scan_bulk_process_kill([], cmds=[good]), (
+            "targeted or read-only process work must clear: " + repr(good))
+
+    # ---- WIRED, not merely defined (B1751 / #224) ------------------------
+    src = (root / "scripts"
+           / "verify_turn_compliance.py").read_text(encoding="utf-8")
+    main_src = src[src.index("def main()"):]
+    for name in ("scan_launch_missing_pool_workers",
+                 "scan_monitor_without_stall_check",
+                 "scan_bulk_process_kill"):
+        assert name in main_src, (
+            name + " is DEFINED but not wired into main(). B1751: "
+            "scan_false_skill_status shipped that way and ran never; B1699 "
+            "found 12 of 16 gates in scripts/ invoked by nothing. A gate that "
+            "is never called is prose with a docstring.")
