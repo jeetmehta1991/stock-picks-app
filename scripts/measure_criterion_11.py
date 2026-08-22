@@ -43,6 +43,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from backtest.config import PASSING_CRITERIA as PC          # noqa: E402
 from roster_core import rank_key                            # noqa: E402
+import roster_core as _rc                                   # noqa: E402
 from backtest.results.metrics import _sortino_ratio, _deflated_sharpe  # noqa: E402
 from walk_forward_r5_cells import _sharpe                    # noqa: E402
 
@@ -52,44 +53,32 @@ WINSORIZE, COST_BPS = 300.0, 20.0
 
 
 def gates_pooled(pnl, hold):
-    """The roster's current pooled tier."""
-    n = len(pnl)
-    if n < 30:
+    """B2008 (D1+D2): the canonical POOLED tier - overall bars throughout.
+
+    The fork graded its self-described "pooled tier" with per-regime sharpe
+    (0.5) and sortino (0.7): S6-B1903a's crossed bars, duplicated. Output
+    verdicts CHANGE under the owner-approved D2 bars; the old artifact is
+    superseded, not comparable.
+    """
+    r = _rc.evaluate(pnl, hold, min_n=PC["min_trades"],
+                     pf_bar=PC["min_profit_factor_overall"], tier="pooled")
+    if r is None:
         return None
-    sh = _sharpe(pnl.values, hold)
-    sharpe = sh["sharpe"] if sh else None
-    sortino = _sortino_ratio(pnl, hold)
-    # B1976: an UNMEASURABLE Sharpe must not reach DSR as a MEASURED zero.
-    dsr = (_deflated_sharpe(sharpe, n, float(pnl.skew()), float(pnl.kurtosis()))
-           if sharpe is not None else None)
-    w, l = pnl[pnl > 0], pnl[pnl <= 0]
-    pf = float(w.sum() / abs(l.sum())) if len(l) and l.sum() != 0 else float("inf")
-    return {"n": n, "sharpe": sharpe,
-            "ok": (sharpe is not None and sharpe >= PC["min_sharpe_per_regime"]
-                   and pf >= PC["min_profit_factor_overall"]
-                   and sortino is not None and sortino >= PC["min_sortino_per_regime"]
-                   and dsr.get("psr") is not None and dsr["psr"] >= PC["min_psr"]
-                   and n >= PC["min_trades"])}
+    return {"n": r["n"], "sharpe": r["sharpe"],
+            "ok": bool(r["gates"]["pooled_sharpe"] and r["gates"]["profit_factor"]
+                       and r["gates"]["sortino"] and r["gates"]["psr"]
+                       and r["n"] >= PC["min_trades"])}
 
 
 def gates_per_regime(pnl, hold):
-    """The per-regime tier -- criterion #11's thresholds."""
-    n = len(pnl)
-    if n < PC["min_trades_per_regime"]:
+    """B2008 (D1): the canonical PER-REGIME tier - criterion #11's bars."""
+    r = _rc.evaluate(pnl, hold, tier="per_regime")
+    if r is None:
         return None
-    sh = _sharpe(pnl.values, hold)
-    sharpe = sh["sharpe"] if sh else None
-    sortino = _sortino_ratio(pnl, hold)
-    # B1976: an UNMEASURABLE Sharpe must not reach DSR as a MEASURED zero.
-    dsr = (_deflated_sharpe(sharpe, n, float(pnl.skew()), float(pnl.kurtosis()))
-           if sharpe is not None else None)
-    w, l = pnl[pnl > 0], pnl[pnl <= 0]
-    pf = float(w.sum() / abs(l.sum())) if len(l) and l.sum() != 0 else float("inf")
-    return {"n": n, "sharpe": sharpe, "psr": dsr.get("psr"), "pf": round(pf, 3),
-            "ok": (sharpe is not None and sharpe >= PC["min_sharpe_per_regime"]
-                   and pf >= PC["min_profit_factor"]
-                   and sortino is not None and sortino >= PC["min_sortino_per_regime"]
-                   and dsr.get("psr") is not None and dsr["psr"] >= PC["min_psr"])}
+    return {"n": r["n"], "sharpe": r["sharpe"], "psr": r["psr"],
+            "pf": r["profit_factor"],
+            "ok": bool(r["gates"]["pooled_sharpe"] and r["gates"]["profit_factor"]
+                       and r["gates"]["sortino"] and r["gates"]["psr"])}
 
 
 def main() -> int:
@@ -104,8 +93,11 @@ def main() -> int:
     print(f"  per-regime tier: trades>={PC['min_trades_per_regime']}, "
           f"sharpe>={PC['min_sharpe_per_regime']}, sortino>={PC['min_sortino_per_regime']}, "
           f"pf>={PC['min_profit_factor']}, psr>={PC['min_psr']}")
+    # B2008 (D2): the pooled header now tells the truth - OVERALL bars.
+    # The old line printed per-regime sharpe/sortino for the pooled tier,
+    # matching the crossed-bar arithmetic the tier= change removed.
     print(f"  pooled tier    : trades>={PC['min_trades']}, "
-          f"sharpe>={PC['min_sharpe_per_regime']}, sortino>={PC['min_sortino_per_regime']}, "
+          f"sharpe>={PC['min_sharpe_overall']}, sortino>={PC['min_sortino_overall']}, "
           f"pf>={PC['min_profit_factor_overall']}, psr>={PC['min_psr']}")
     print(f"  min_regimes_passing = {PC['min_regimes_passing']}\n")
 
@@ -178,6 +170,9 @@ def main() -> int:
         "per_regime_tier": {"min_trades_per_regime": PC["min_trades_per_regime"],
                             "min_sharpe_per_regime": PC["min_sharpe_per_regime"],
                             "min_sortino_per_regime": PC["min_sortino_per_regime"],
+                            "pooled_bars_B2008": {
+                                "sharpe": PC["min_sharpe_overall"],
+                                "sortino": PC["min_sortino_overall"]},
                             "min_profit_factor": PC["min_profit_factor"],
                             "min_psr": PC["min_psr"]},
         "min_regimes_passing": PC["min_regimes_passing"],

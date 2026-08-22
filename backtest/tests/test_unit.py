@@ -13260,7 +13260,6 @@ _KNOWN_UNWIRED_CRITERIA = {
     # B1493: min_sharpe_overall REMOVED from this allowlist - it is now WIRED as the
     # live Sharpe gate (owner-approved 0.5 -> 1.0). The allowlist-rot assertion caught
     # it the moment it became live, which is the guard working as designed.
-    "min_trades_per_regime": "S6-B1456a - per-regime count bar; only the pooled tier is wired",
 }
 
 
@@ -13442,7 +13441,11 @@ def test_b1464_live_gate_thresholds_actually_gate():
          (observed["sharpe"] or 0) + 5.0, -99.0),
         ("min_profit_factor_overall", "profit_factor",
          observed["profit_factor"] + 5.0, 0.0),
-        ("min_sortino_per_regime", "sortino",
+        # B2008 (D2, owner-approved): the DEFAULT (pooled) tier's sortino
+        # gate now reads min_sortino_OVERALL; the per-regime key controls
+        # only tier="per_regime". This row previously proved the crossed
+        # bar; it now proves the fixed one.
+        ("min_sortino_overall", "sortino",
          (observed["sortino"] or 0) + 5.0, -99.0),
         ("min_psr", "psr", 1.01, 0.0),
         # B1492: the gate now reads min_trades_holdout (the legacy `min_trades` key no
@@ -22691,3 +22694,86 @@ def test_b2005_document_assertion_is_not_a_measurement():
                           "line 52"), (
         "a READ claim about a constant, honestly worded, keeps clearing - "
         "that half of the split is LEGITIMATE .py evidence")
+
+
+
+def test_b2008_tiers_are_explicit_and_the_forks_are_dead():
+    """B2008 (D1+D2, owner-approved): one grader, two tiers, no crossed bars.
+
+    D2: the pooled verdict mixed bars - pooled_sharpe at 1.0 beside sortino
+    at the per-regime 0.7 (S6-B1903a), inside a function whose docstring
+    promised the tier is never an accident. tier="pooled" now reads OVERALL
+    bars throughout; tier="per_regime" reads per-regime bars and floors.
+
+    D1: the three fork sites (bear stress test, criterion-11, sample-fix
+    variants) re-implemented the gate arithmetic with their own crossed bars
+    and had already missed two owner-directed fixes. They are now thin tier=
+    calls; this pin asserts the arithmetic exists ONCE.
+    """
+    import importlib.util as _iu
+    import pathlib as _p
+    import sys as _sys
+
+    import numpy as _np
+    import pandas as _pd
+
+    root = _p.Path(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    import roster_core as rc
+    from backtest.config import PASSING_CRITERIA as PC
+
+    # SYNTHETIC-STRUCTURE fixture (L470: the STRUCTURE is the evidence, the
+    # values are not quoted anywhere): a deterministic pnl series whose
+    # sortino lands BETWEEN the per-regime bar (0.7) and the overall bar
+    # (1.0), so the two tiers must disagree on the sortino gate.
+    rng = _np.random.default_rng(11)
+    for _ in range(200):
+        pnl = _pd.Series(rng.normal(0.35, 1.6, 120).round(3))
+        hold = _pd.Series([5] * 120)
+        r_pool = rc.evaluate(pnl, hold, tier="pooled")
+        r_reg = rc.evaluate(pnl, hold, min_n=30, tier="per_regime")
+        if r_pool is None or r_reg is None or r_pool["sortino"] is None:
+            continue
+        if PC["min_sortino_per_regime"] <= r_pool["sortino"] < PC["min_sortino_overall"]:
+            assert r_pool["gates"]["sortino"] is False, (
+                "a sortino between 0.7 and 1.0 must FAIL the pooled tier - "
+                "the old code passed it at the per-regime bar (S6-B1903a)")
+            assert r_reg["gates"]["sortino"] is True, (
+                "and PASS the per-regime tier - the split is the point")
+            break
+    else:
+        raise AssertionError("no fixture landed in the discriminating band - "
+                             "widen the search, do not delete the arm")
+
+    # per-regime tier: sharpe bar drops to the per-regime 0.5 as well
+    assert rc.evaluate(pnl, hold, tier="per_regime") is not None
+
+    # the forks are DEAD: none of the three re-implements the gate math.
+    import source_text as st
+    for f in ("bear_regime_stress_test.py", "measure_criterion_11.py",
+              "compare_sample_fix_variants.py"):
+        code = st.code_only(root / "scripts" / f)
+        assert "_deflated_sharpe(" not in code, (
+            f"{f} computes DSR locally again - the fork is growing back")
+    # the bar-respelling blanket applies where DESCRIBING tiers is not the
+    # file's job; measure_criterion_11 legitimately prints both tiers' bars,
+    # and its pooled header must print the OVERALL ones (the D2 truth)
+    for f in ("bear_regime_stress_test.py", "compare_sample_fix_variants.py"):
+        code = st.code_only(root / "scripts" / f)
+        assert 'PC["min_sortino_per_regime"]' not in code, (
+            f"{f} re-spells a tier bar locally - the tier is evaluate's job")
+    m11 = (root / "scripts" / "measure_criterion_11.py").read_text(
+        encoding="utf-8")
+    assert "min_sortino_overall" in m11, (
+        "criterion-11's pooled header must print the OVERALL bars - it "
+        "printed per-regime bars for the pooled tier, matching the crossed "
+        "arithmetic D2 removed")
+
+    # and an unknown tier must refuse loudly, not default silently
+    try:
+        rc.evaluate(pnl, hold, tier="weekly")
+    except AssertionError:
+        pass
+    else:
+        raise AssertionError("an unknown tier fell through silently")

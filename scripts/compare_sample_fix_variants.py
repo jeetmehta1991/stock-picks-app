@@ -41,6 +41,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from backtest.config import PASSING_CRITERIA as PC          # noqa: E402
 from roster_core import rank_key                            # noqa: E402
+import roster_core as _rc                                   # noqa: E402
 from backtest.engine.regime_selector import STRATEGY_REGIME_AFFINITY as AFF  # noqa: E402
 from backtest.results.metrics import _sortino_ratio, _deflated_sharpe  # noqa: E402
 from walk_forward_r5_cells import _sharpe, bh_fdr            # noqa: E402
@@ -50,24 +51,21 @@ HO_START, HO_END = date(2025, 5, 5), date(2026, 5, 5)
 WINSORIZE, COST_BPS, FDR_Q, JACCARD = 300.0, 20.0, 0.05, 0.70
 
 
-def _stats(pnl, hold, min_n, pf_bar):
-    n = len(pnl)
-    if n < min_n:
+def _stats(pnl, hold, min_n, pf_bar, tier="pooled"):
+    """B2008 (D1): canonical grader; the fork's crossed bars are gone.
+
+    The fork used per-regime SHARPE (0.5) and sortino (0.7) for BOTH its
+    tiers, including the pooled one. Verdicts change under the approved bars;
+    prior outputs of this diagnostic are superseded.
+    """
+    r = _rc.evaluate(pnl, hold, min_n=min_n, pf_bar=pf_bar, tier=tier)
+    if r is None:
         return None
-    sh = _sharpe(pnl.values, hold)
-    sharpe = sh["sharpe"] if sh else None
-    sortino = _sortino_ratio(pnl, hold)
-    # B1976: an UNMEASURABLE Sharpe must not reach DSR as a MEASURED zero.
-    dsr = (_deflated_sharpe(sharpe, n, float(pnl.skew()), float(pnl.kurtosis()))
-           if sharpe is not None else None)
-    w, l = pnl[pnl > 0], pnl[pnl <= 0]
-    pf = float(w.sum() / abs(l.sum())) if len(l) and l.sum() != 0 else float("inf")
-    ok = (sharpe is not None and sharpe >= PC["min_sharpe_per_regime"]
-          and pf >= pf_bar
-          and sortino is not None and sortino >= PC["min_sortino_per_regime"]
-          and dsr.get("psr") is not None and dsr["psr"] >= PC["min_psr"]
-          and n >= min_n)
-    return {"n": n, "sharpe": sharpe, "ok": ok, "p": (sh or {}).get("p", 1.0)}
+    return {"n": r["n"], "sharpe": r["sharpe"],
+            "ok": bool(r["gates"]["pooled_sharpe"] and r["gates"]["profit_factor"]
+                       and r["gates"]["sortino"] and r["gates"]["psr"]
+                       and r["n"] >= min_n),
+            "p": r["p"] if r["p"] is not None else 1.0}
 
 
 def pooled(g):
@@ -79,7 +77,8 @@ def per_regime(g):
     best, passing = None, []
     for reg, gr in g.groupby("regime_at_entry", observed=True):
         r = _stats(gr["pnl_pct"], gr["hold_days"],
-                   PC["min_trades_per_regime"], PC["min_profit_factor"])
+                   PC["min_trades_per_regime"], PC["min_profit_factor"],
+                   tier="per_regime")
         if not r:
             continue
         if r["ok"]:

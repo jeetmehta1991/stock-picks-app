@@ -33,7 +33,7 @@
 | 0 | (strategy x direction) cells with a selectable IS exit | 253 |
 | 1 | Holdout-evaluable (n >= 30 at the chosen exit) | 211 |
 | 2 | Clear all 6 live gates on the holdout | 3 |
-| 3 | Survive BH-FDR (q<0.05, threshold p<=0.01185) | 2 |
+| 3 | Survive BH-FDR (q<0.05, threshold p<=0.01280) | 2 |
 | 4 | De-duplicated (Jaccard < 0.7) | **2** |
 
 ### Gate contribution (leave-one-out)
@@ -42,10 +42,10 @@ A pass count hides whether a screen has five independent constraints or one bind
 
 | gate | cells passing if this gate is DROPPED | uniquely rejects |
 |---|---|---|
-| `pooled_sharpe` | 66 | 63 |
+| `pooled_sharpe` | 58 | 55 |
 | `profit_factor` | 3 | 0 **(rejects nothing)** |
 | `sortino` | 3 | 0 **(rejects nothing)** |
-| `psr` | 8 | 5 |
+| `psr` | 10 | 7 |
 | `min_trades_holdout` | 3 | 0 **(rejects nothing)** |
 | `min_trades_full_period` | 3 | 0 **(rejects nothing)** |
 

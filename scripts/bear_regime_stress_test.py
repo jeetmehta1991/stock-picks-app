@@ -52,6 +52,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from backtest.config import PASSING_CRITERIA as PC          # noqa: E402
 from backtest.results.metrics import _sortino_ratio, _deflated_sharpe  # noqa: E402
 from roster_core import rank_key as _rank_key  # noqa: E402
+import roster_core as _rc  # noqa: E402
 from walk_forward_r5_cells import _sharpe                    # noqa: E402
 
 SEL_START, SEL_END = date(2023, 5, 5), date(2026, 5, 5)     # exit chosen here
@@ -63,31 +64,15 @@ LIVE_GATES = ("sharpe_per_regime", "profit_factor", "sortino", "psr", "min_trade
 
 
 def evaluate(pnl: pd.Series, hold: pd.Series) -> dict | None:
-    """The five live gates on one (cell, window). None under the power floor."""
-    n = len(pnl)
-    if n < MIN_N:
-        return None
-    sh = _sharpe(pnl.values, hold)
-    sharpe = sh["sharpe"] if sh else None
-    sortino = _sortino_ratio(pnl, hold)
-    # B1975: an UNMEASURABLE Sharpe must not reach DSR as a MEASURED zero.
-    dsr = (_deflated_sharpe(sharpe, n, float(pnl.skew()), float(pnl.kurtosis()))
-           if sharpe is not None else None)
-    wins, loss = pnl[pnl > 0], pnl[pnl <= 0]
-    pf = float(wins.sum() / abs(loss.sum())) if len(loss) and loss.sum() != 0 else float("inf")
-    gates = {
-        "sharpe_per_regime": sharpe is not None and sharpe >= PC["min_sharpe_per_regime"],
-        "profit_factor":     pf >= PC["min_profit_factor_overall"],
-        "sortino":           sortino is not None and sortino >= PC["min_sortino_per_regime"],
-        "psr":               dsr.get("psr") is not None and dsr["psr"] >= PC["min_psr"],
-        "min_trades":        n >= PC["min_trades"],
-    }
-    return {"n": n, "sharpe": sharpe, "sortino": sortino, "psr": dsr.get("psr"),
-            "profit_factor": round(pf, 3), "expectancy": round(float(pnl.mean()), 4),
-            "win_rate": round(float((pnl > 0).mean()), 3),
-            "gates": gates, "n_gates": sum(1 for v in gates.values() if v),
-            "all_live_gates": all(gates.values())}
+    """B2008 (D1): the canonical grader at the PER-REGIME tier.
 
+    This script grades BEAR-REGIME entry slices, so per-regime bars are the
+    correct tier - what was wrong was the FORK: 23 lines re-implementing the
+    gate math (15 gate keys vs the canonical 20, no min_n, no full_period_n,
+    and it silently missed B1714's --min-n fix and B1492's full-period leg).
+    One call now; the tier is explicit.
+    """
+    return _rc.evaluate(pnl, hold, tier="per_regime")
 
 def main() -> int:
     ap = argparse.ArgumentParser()

@@ -179,14 +179,32 @@ def load_cube(path: Path, extra_columns: list[str] | None = None,
 
 
 def evaluate(pnl: pd.Series, hold: pd.Series, *, min_n: int | None = None,
-             pf_bar: float | None = None, full_period_n: int | None = None) -> dict | None:
+             pf_bar: float | None = None, full_period_n: int | None = None,
+             tier: str = "pooled") -> dict | None:
     """The five live gates on one (cell, window). None below the power floor.
 
     `min_n` / `pf_bar` default to the POOLED tier. Callers measuring the per-regime tier
     (criterion #11) pass min_trades_per_regime / min_profit_factor instead -- the tier is
     always the CALLER's explicit choice, never an accident of which constant was in scope
     (L290: the live gate set silently mixed tiers).
+
+    B2008 (D1+D2, owner-approved 2026-08-22): `tier` makes that promise TRUE.
+    The pooled tier had broken it in its own body - `pooled_sharpe` at
+    min_sharpe_overall (1.0) beside `sortino` at min_sortino_per_regime
+    (0.7), S6-B1903a. tier="pooled" now reads OVERALL bars throughout;
+    tier="per_regime" reads the per-regime bars and floors, replacing three
+    forked re-implementations (bear stress test, criterion-11, sample-fix
+    variants) whose arithmetic had drifted from the canonical criteria.
     """
+    assert tier in ("pooled", "per_regime"), f"unknown tier {tier!r}"
+    _sh_bar = PC["min_sharpe_overall" if tier == "pooled"
+                 else "min_sharpe_per_regime"]
+    _so_bar = PC["min_sortino_overall" if tier == "pooled"
+                 else "min_sortino_per_regime"]
+    if pf_bar is None and tier == "per_regime":
+        pf_bar = PC["min_profit_factor"]
+    if min_n is None and tier == "per_regime":
+        min_n = PC["min_trades_per_regime"]
     min_n = MIN_N if min_n is None else min_n
     pf_bar = PC["min_profit_factor_overall"] if pf_bar is None else pf_bar
     n = len(pnl)
@@ -214,9 +232,9 @@ def evaluate(pnl: pd.Series, hold: pd.Series, *, min_n: int | None = None,
         # ONE POOLED Sharpe over the window, with no regime split anywhere. The old name
         # recorded the config key it used to borrow, not the method, and it propagated a false
         # premise to the owner more than once (L287). Now named for what it computes.
-        "pooled_sharpe":     sharpe is not None and sharpe >= PC["min_sharpe_overall"],
+        "pooled_sharpe":     sharpe is not None and sharpe >= _sh_bar,
         "profit_factor":     pf >= pf_bar,
-        "sortino":           sortino is not None and sortino >= PC["min_sortino_per_regime"],
+        "sortino":           sortino is not None and sortino >= _so_bar,
         "psr":               dsr.get("psr") is not None and dsr["psr"] >= PC["min_psr"],
         # B1496 (owner-directed split): min_trades is TWO independent requirements and was
         # reported as one gate, understating the gate count and hiding which leg blocks a cell.
