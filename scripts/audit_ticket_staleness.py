@@ -211,7 +211,19 @@ def main() -> int:
     live = {k: v for k, v in latest.items() if v[0] in LIVE}
     numeric = {k: v for k, v in live.items() if re.search(r"\b\d+\b", v[2])}
 
-    print(f"\nOPEN tickets: {len(live)} | carrying a NUMBER: {len(numeric)}")
+    # B1929: name the SET, not a member of it. This line read "OPEN tickets:
+    # {len(live)}" while the _open() prober twelve lines up reported the real
+    # OPEN count - 63 against 108, because LIVE is OPEN+BLOCKED+DEFERRED+
+    # RUNNING (63+37+4+4). The count was right and the NOUN was wrong, in the
+    # tool whose next sentence is "Each number below is a claim about a past
+    # moment". #271's third face this session: a row is not a ticket, a BATCH
+    # is not a ticket (B1926), and a LIVE ticket is not an OPEN one.
+    _by = {}
+    for _v in live.values():
+        _by[_v[0]] = _by.get(_v[0], 0) + 1
+    _breakdown = " + ".join(f"{_by[k]} {k}" for k in LIVE if k in _by)
+    print(f"\nLIVE tickets: {len(live)} ({_breakdown}) | "
+          f"carrying a NUMBER: {len(numeric)}")
     print("Each number below is a claim about a past moment. Re-derive before "
           "acting on it.\n")
     if a.all:

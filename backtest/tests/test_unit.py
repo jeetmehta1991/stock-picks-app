@@ -20544,3 +20544,34 @@ def test_b1927_cadence_reads_the_schedule_not_the_sentence():
         _ent("*/11 * * * *", "report only if something breaks")), (
         "L424: the UNCONDITIONAL half is independent of cadence - an "
         "exception-only monitor fails however often it runs")
+
+
+
+def test_b1929_staleness_auditor_names_the_set_it_counted():
+    """B1929: the auditor printed a LIVE total under the noun OPEN.
+
+    `audit_ticket_staleness.py` exists to stop a figure being quoted after it
+    stops being true. Its summary read `OPEN tickets: 108` while its own
+    prober reported `63 OPEN tickets` - because LIVE is OPEN+BLOCKED+DEFERRED+
+    RUNNING. **The count was right and the noun was wrong**, in the tool whose
+    next sentence is "Each number below is a claim about a past moment".
+
+    `#271`'s third face this session: a row is not a ticket, a BATCH is not a
+    ticket (B1926), and a LIVE ticket is not an OPEN one.
+    """
+    import pathlib as _p
+
+    root = _p.Path(__file__).resolve().parents[2]
+    src = (root / "scripts" / "audit_ticket_staleness.py").read_text(
+        encoding="utf-8")
+
+    assert 'f"\\nOPEN tickets: {len(live)}' not in src, (
+        "the LIVE total must not be printed under the noun OPEN - that is the "
+        "defect, and the two figures differ by the BLOCKED, DEFERRED and "
+        "RUNNING classes")
+    assert '"\\nLIVE tickets: {len(live)}' in src or "LIVE tickets:" in src, (
+        "the summary must name the set it counted")
+    # and it must show the breakdown, so the reader can see WHY it exceeds OPEN
+    assert "_breakdown" in src, (
+        "printing 108 without saying it is 63+37+4+4 leaves the reader to "
+        "assume which class it means - which is how the wrong noun survived")
