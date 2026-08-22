@@ -20087,3 +20087,85 @@ def test_b1906b_code_only_blanks_in_place_and_keeps_dotted_names():
     # and on the real file, a dotted name in CODE survives
     code = code_only(root / "scripts" / "tighten_breaker_block.py")
     assert "_measured.fmt" in code
+
+
+
+def test_b1910_novelty_claim_needs_a_named_search():
+    """B1910: a claim that something is NEW must name the search behind it.
+
+    THE INCIDENT (S6-B1909c): I reported `atr_trail_mae_conditional ==
+    atr_trail_1x` as an undocumented third collapse because B1593's CODE
+    COMMENT names only the other two. LEARNINGS carries it three times, at
+    100.0pct over n=7,319. Caught by grepping the record before the report went
+    out - luck dressed as process, because nothing required that grep.
+
+    #201 governs figures, #222 constants, #256 re-derivation. A novelty claim
+    is an assertion about the WHOLE RECORD and had no gate.
+    """
+    import importlib.util as _iu
+    import pathlib as _p
+
+    root = _p.Path(__file__).resolve().parents[2]
+    spec = _iu.spec_from_file_location(
+        "vtc_b1910", root / "scripts" / "verify_turn_compliance.py")
+    tg = _iu.module_from_spec(spec)
+    spec.loader.exec_module(tg)
+    g = tg.scan_novelty_claim_without_search
+
+    # MUST FIRE - the incident, and three other bare claims
+    for t in (
+        "atr_trail_mae_conditional == atr_trail_1x is an undocumented third "
+        "collapse, absent from the B1593 list",
+        "this is a new failure class not covered by existing items",
+        "there is no precedent for this",
+        "I grepped the ledger earlier. This one is undocumented",
+    ):
+        assert g([], text=t), f"must fire on a bare novelty claim: {t!r}"
+
+    # MUST NOT FIRE - the search is named IN THE SAME CLAUSE
+    for t in (
+        "grepped LEARNINGS.md and EXECUTION_QUEUE and the collapse is "
+        "undocumented, 0 matches",
+        "queue_state shows no ticket exists for it",
+    ):
+        assert not g([], text=t), f"a named search must clear it: {t!r}"
+
+    # MUST NOT FIRE - the RETRACTION. Self-reference has hit this file ~13
+    # times; the escape is built in rather than bolted on after the gate
+    # blocks its own incident report.
+    assert not g([], text="I called it undocumented and LEARNINGS already "
+                          "carries it three times"), (
+        "a sentence saying the prior art EXISTS is the honest outcome of the "
+        "check this gate asks for - punishing it teaches the wrong lesson")
+
+    # MUST NOT FIRE - no novelty claim at all
+    assert not g([], text="the three collapses are the same in all four cubes")
+
+    # the claim and search vocabularies must stay DISJOINT, or a phrase like
+    # "not in the record" could satisfy itself on the word `record`
+    overlap = set(tg.NOVELTY_CLAIMS) & set(tg.NOVELTY_SEARCH)
+    assert not overlap, f"claim/search vocabularies overlap: {overlap}"
+
+    # The gate must be DEFINED, WIRED and CORPUS-REGISTERED - and each of
+    # those lives in a DIFFERENT place. B1910c: the first version of this
+    # assertion counted all three in one file and failed on a correctly wired
+    # gate, because the corpus is `gate_incident_corpus.py`. Counting a name
+    # is not checking a structure.
+    src = (root / "scripts" / "verify_turn_compliance.py").read_text(
+        encoding="utf-8")
+    assert "def scan_novelty_claim_without_search(" in src, "not defined"
+    wired = [ln for ln in src.splitlines()
+             if ln.strip() == "scan_novelty_claim_without_search,"]
+    assert wired, (
+        "defined but NOT wired into main()'s gate list - a gate that is only "
+        "defined never runs (B1761 class)")
+
+    cspec = _iu.spec_from_file_location(
+        "corpus_b1910", root / "scripts" / "gate_incident_corpus.py")
+    corpus = _iu.module_from_spec(cspec)
+    cspec.loader.exec_module(corpus)
+    assert "scan_novelty_claim_without_search" in corpus.INCIDENTS, (
+        "every scan gate carries a corpus incident (#240/#243)")
+    assert "scan_novelty_claim_without_search" in corpus.EXTRA_INCIDENTS, (
+        "the QUIET branches need cases too - a gate proven only to fire is "
+        "half-tested")

@@ -741,6 +741,24 @@ gate had just named.**
 - **Compliance failure against `#45` and `#247`, not a new class.** A fifth rule
   restating four that were ignored is `#136` theater.
 
+## A CLAIM OF NOVELTY NEEDS THE SAME VERIFICATION AS A NUMBER (B1910 - L584, CHECKLIST #201)
+
+**I reported a duplicate-exit collapse as an "undocumented third collapse"
+because the code comment beside it names only the other two. LEARNINGS carries
+it three times, at 100.0pct over n=7,319.** It never reached the owner because
+I happened to grep first. **Nothing required that grep.**
+
+- **"Not in the code comment" is not "not documented."** A local artifact's
+  omission is evidence about that artifact, never about the corpus.
+- **`#201` gates figures, `#222` constants, `#256` re-derivation - every
+  quantitative claim had a gate, and the WIDEST claim had none.** "This is new"
+  ranges over every file in the repo.
+- **Name the search or say the prior art exists.** MEASURED on 5,098 real
+  report texts: the gate fires on 0.7pct.
+- **Build the retraction escape FROM THE START.** Self-reference has hit this
+  file ~13 times, always by bolting it on after the gate blocked its own
+  incident report.
+
 ## A FIGURE IN A CODE COMMENT IS AN ASSERTION, NOT A MEASUREMENT (B1908 - L583, CHECKLIST #201)
 
 **I twice quoted a Spearman of -0.779/-0.865 as measured and used it to argue a

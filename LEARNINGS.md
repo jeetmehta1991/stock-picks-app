@@ -12276,3 +12276,42 @@ COMMENT SAYS IT - never `EXECUTED`-class evidence that it is true.** Quote it
 as an assertion with its author, or re-measure it. **ANCHORED (`#197`):**
 compliance failure against `CHECKLIST #201`; the gate-side extension is
 `S6-B1908b` and needs an owner ruling, not a guess. Carried into `SKILL.md`.
+
+
+### L584
+
+**A claim that something is NEW is an assertion about the whole record, and it
+was the only one with no gate**
+
+**B1909c/B1910.** I reported a duplicate-exit collapse -
+`atr_trail_mae_conditional == atr_trail_1x` - as an **undocumented third
+collapse**, because the code comment beside it names only the other two.
+**LEARNINGS carries it three times, at 100.0pct over n=7,319.**
+
+It never reached the owner, because I grepped the record before writing the
+report. **Nothing required that grep.** The catch was habit, and habit is what
+this project has repeatedly proven does not hold - "enforced solely by MY
+remembering to" is the phrase already in this file.
+
+**"Not in the code comment" is not "not documented."** The comment was a
+partial list written for a different purpose; I treated its silence as the
+record's silence. **A local artifact's omission is evidence about that
+artifact, never about the corpus.**
+
+**The gap is structural, not personal.** `#201` gates figures, `#222` gates
+uninspected constants, `#256` gates re-derivation - **every quantitative claim
+has a gate, and the widest claim in the vocabulary had none.** "This is new /
+undocumented / nothing covers it" ranges over every file in the repo, and I was
+making it from memory.
+
+**MECHANISM:** `scan_novelty_claim_without_search` - a clause asserting novelty
+must name the search that established it (grep, the file searched, the count
+returned) or say the prior art exists. **MEASURED on 5,098 real report texts
+from this session's transcript: 38 fire, 0.7pct** - and the retraction
+vocabulary was built in from the start rather than bolted on after the gate
+blocked its own incident report, which is how the previous ~13 self-reference
+instances went.
+
+**The rule: a claim of novelty needs the same verification as a number.**
+**ANCHORED (`#197`):** `CHECKLIST #201`'s class, extended from figures to
+novelty claims. Carried into `SKILL.md`.

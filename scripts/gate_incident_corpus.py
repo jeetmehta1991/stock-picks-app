@@ -185,6 +185,16 @@ INCIDENTS: dict[str, tuple[str, bool, dict]] = {
     # kept, which is the same gap S6-B1761c records for three other gates. The
     # SHAPE is exact and comes from the retraction row (S6-B1705g): a Sharpe
     # figure quoted as measured that came from `rng.normal(1, 3, 30)`.
+    # B1910 (S6-B1909c) - the incident, near-verbatim: a duplicate-exit
+    # collapse reported as undocumented because the CODE COMMENT beside it
+    # names only the other two. LEARNINGS carries it THREE times, at 100.0pct
+    # over n=7,319. Nothing required the grep that caught it.
+    "scan_novelty_claim_without_search": (
+        "atr_trail_mae_conditional == atr_trail_1x is an undocumented third "
+        "collapse, absent from the B1593 list",
+        True,
+        {},
+    ),
     "scan_synthetic_provenance": (
         "The boundary probe measured n=29 -> None and n=30 -> a Sharpe of "
         "2.422, so the floor is real.",
@@ -258,6 +268,18 @@ INCIDENTS: dict[str, tuple[str, bool, dict]] = {
 # alongside the primary entry. Kept in a separate dict deliberately: INCIDENTS
 # stays a 3-tuple per gate, so the six existing consumers are untouched.
 EXTRA_INCIDENTS: dict[str, list[tuple[str, bool, dict]]] = {
+    "scan_novelty_claim_without_search": [
+        # the SAME finding made properly - the search is named in-clause
+        ("grepped LEARNINGS.md and EXECUTION_QUEUE and the collapse is "
+         "undocumented, 0 matches", False, {}),
+        # the RETRACTION must not fire. Self-reference has hit this file ~13
+        # times, so the escape is built in rather than bolted on afterwards.
+        ("I called it undocumented and LEARNINGS already carries it three "
+         "times", False, {}),
+        # a clause-scoped check: a grep named in a DIFFERENT sentence must
+        # NOT cover a bare claim made here
+        ("I grepped the ledger earlier. This one is undocumented", True, {}),
+    ],
     "scan_skill_block_incomplete": [
         # the must-FIRE half: a block naming only two of the three
         ("**SKILLS INVOKED** - `execution-discipline` **ALWAYS-ON** - "

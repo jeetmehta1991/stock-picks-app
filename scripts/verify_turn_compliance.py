@@ -1980,6 +1980,83 @@ SYNTHETIC_LABEL = (
 )
 
 
+# B1910 (S6-B1909c): a NOVELTY claim is a claim.
+#
+# I reported a duplicate-exit collapse as an "undocumented third collapse"
+# because the code comment beside it names only the other two. LEARNINGS
+# carries it THREE times, at 100.0pct over n=7,319. Caught by grepping the
+# record before the report went out - luck dressed as process, because nothing
+# required that grep.
+#
+# #201 governs figures, #222 constants, #256 re-derivation. "this is new /
+# undocumented / nothing covers it" is an assertion about the WHOLE RECORD and
+# had no gate - the widest claim in the vocabulary and the only unguarded one.
+NOVELTY_CLAIMS = (
+    "undocumented", "not documented", "nowhere documented",
+    "no prior", "nothing covers", "not covered", "no existing",
+    "first instance", "unrecorded", "not in the record",
+    "no ticket exists", "not filed", "never been filed",
+    "nothing in the queue", "not in learnings",
+    "no precedent", "unprecedented",
+)
+
+# What turns the claim into a finding: the SEARCH that established it.
+# Deliberately DISJOINT from the claim vocabulary, so "not in the record"
+# cannot satisfy itself on the word `record`.
+NOVELTY_SEARCH = (
+    "grep", "grepped", "searched", "scanned", "queue_state",
+    "learnings.md", "execution_queue", "checklist.md", "git log",
+    "no matches", "0 matches", "zero matches", "returns nothing",
+    "returned nothing", "no hits", "audit_ticket_staleness",
+    "queue_crossref",
+)
+
+# B1910: the retraction vocabulary is built in FROM THE START rather than
+# bolted on after the gate blocks its own incident report - self-reference has
+# hit this file ~13 times. `synthetic` clears #201 for exactly this reason: a
+# sentence saying the prior art EXISTS is the honest outcome of the check this
+# gate asks for, and punishing it would teach the wrong lesson.
+NOVELTY_RETRACTION = (
+    "already filed", "already documented", "already covered", "already known",
+    "already recorded", "already carries", "carries it", "is documented",
+    "was wrong", "turned out", "in fact documented", "prior art exists",
+    "it is filed", "already in learnings", "already in the queue",
+)
+
+
+def scan_novelty_claim_without_search(entries, *, text=None,
+                                      tool_text=None) -> list[str]:
+    """A claim that something is NEW must name the search that established it.
+
+    Fires on a clause asserting novelty that names no search and does not
+    retract. Clause-scoped with the same splitter #201 uses (B1872/B1904), so a
+    grep named three sentences away does not cover a claim made here.
+    """
+    import re as _re
+    t = _response_text(entries, text)
+    if not t:
+        return []
+    low = t.lower()
+    if not _any_word(NOVELTY_CLAIMS, low):
+        return []
+    for clause in _re.split(r"[.;](?!\w)|\n", low):
+        if not _any_word(NOVELTY_CLAIMS, clause):
+            continue
+        if _any_word(NOVELTY_SEARCH, clause):
+            continue
+        if _any_word(NOVELTY_RETRACTION, clause):
+            continue
+        return ["NOVELTY CLAIM WITH NO NAMED SEARCH (S6-B1909c/#201-class): "
+                f"'{clause.strip()[:100]}' asserts something is new, "
+                "undocumented or uncovered and names no search that "
+                "established it. **I reported a duplicate-exit collapse as an "
+                "'undocumented third collapse'; LEARNINGS carried it three "
+                "times at 100.0pct over n=7,319.** Name the grep, the file "
+                "searched or the count it returned - or say the prior art "
+                "exists."]
+    return []
+
+
 def scan_synthetic_provenance(entries, *, text=None, tool_text=None) -> list[str]:
     """#201's provenance half: a quoted number must name its input.
 
@@ -3316,6 +3393,7 @@ def main() -> int:
                 scan_queue_vocabulary, scan_queue_not_updated,
                 scan_unverified_count, scan_partial_distribution,
                 scan_partial_read, scan_row_vs_ticket,
+                scan_novelty_claim_without_search,
                 scan_synthetic_provenance,
                 scan_ticket_counts_missing,
                 # B1864 - WIRED, not merely defined. B1751: scan_false_skill_status
