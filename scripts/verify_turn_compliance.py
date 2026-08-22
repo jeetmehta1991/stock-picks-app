@@ -2109,7 +2109,13 @@ def scan_unverified_count(entries, *, text=None, tool_text=None) -> list[str]:
     # a bare mention with no digits nearby is prose, not a reported count
     if not _re.search(r"[0-9]{2,}", t):
         return []
-    tt = _tool_text(entries, tool_text).lower()
+    # B1981 (S6-B1967c, 3 of 8): EXECUTED text only. This gate's tool text is
+    # COMPLIANCE evidence - "was the count computed" - so a Write whose
+    # content merely MENTIONS `queue_state` satisfied it without the counter
+    # running: B1967's bypass, on the gate that guards numbers. Heredoc
+    # bodies are stripped (B1979) and the collector is turn-sliced (B1980),
+    # so a quoted mention no longer counts either way.
+    tt = _executed_tool_text(entries, tool_text).lower()
     # B1872 (S6-B1827b): this cleared EVERY ledger count in a response as soon
     # as ONE computing call appeared anywhere in the tool stream. `queue_state`
     # runs every turn, so the clearance was PERMANENT - the gate could not fire

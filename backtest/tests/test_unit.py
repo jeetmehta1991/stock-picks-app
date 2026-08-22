@@ -21733,3 +21733,58 @@ def test_b1980_tool_evidence_is_scoped_to_the_turn():
         "tool_result entries are typed 'user' but are not the user; treating "
         "them as turn boundaries would blind the gate to any turn that runs "
         "a command - which is all of them")
+
+
+
+def test_b1981_count_proof_must_have_executed():
+    """B1981 (S6-B1967c, 3 of 8): "was the count computed" reads what RAN.
+
+    `scan_unverified_count` accepted `_tool_text`, which includes Write and
+    Edit inputs - so WRITING a file that mentions `queue_state` satisfied the
+    gate without the counter executing. B1967's bypass on the gate that
+    guards numbers: the one place a faked proof directly launders a figure.
+
+    Constructed entries per #276b; the corpus injects `tool_text` and
+    bypasses the changed path.
+    """
+    import importlib.util as _iu
+    import pathlib as _p
+
+    root = _p.Path(__file__).resolve().parents[2]
+    spec = _iu.spec_from_file_location(
+        "vtc_b1981", root / "scripts" / "verify_turn_compliance.py")
+    tg = _iu.module_from_spec(spec)
+    spec.loader.exec_module(tg)
+
+    CLAIM = "The ledger stands at 70 open tickets of 1220 distinct."
+    USER = {"type": "user", "message": {"content": [
+        {"type": "text", "text": "status?"}]}}
+
+    def turn(tool, inp):
+        return [USER,
+                {"type": "assistant", "message": {"content": [
+                    {"type": "tool_use", "name": tool, "input": inp}]}},
+                {"type": "assistant", "message": {"content": [
+                    {"type": "text", "text": CLAIM}]}}]
+
+    assert not tg.scan_unverified_count(
+        turn("Bash", {"command": "python scripts/queue_state.py"})), (
+        "the canonical counter RAN this turn - the count is computed")
+
+    assert tg.scan_unverified_count(
+        turn("Write", {"file_path": "n.md",
+                       "content": "derive via queue_state per the rule"})), (
+        "queue_state was only WRITTEN into a file - a mention is not a "
+        "computation, and accepting it launders the number (B1967's bypass "
+        "on the gate that guards figures)")
+
+    heredoc_cmd = ("cat >> notes.md <<'EOF'\n"
+                   "derive via queue_state\n"
+                   "EOF")
+    assert tg.scan_unverified_count(turn("Bash", {"command": heredoc_cmd})), (
+        "a heredoc BODY naming the counter is data the command carries, not "
+        "the counter running (B1979)")
+
+    assert tg.scan_unverified_count(
+        turn("Bash", {"command": "echo hello"})), (
+        "an unrelated command computes nothing")
