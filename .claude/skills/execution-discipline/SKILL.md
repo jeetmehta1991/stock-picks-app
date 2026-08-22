@@ -741,6 +741,26 @@ gate had just named.**
 - **Compliance failure against `#45` and `#247`, not a new class.** A fifth rule
   restating four that were ignored is `#136` theater.
 
+## A NEW HELPER STARTS WITHOUT ITS SIBLINGS' LESSONS (B1979 - L608, CHECKLIST #237)
+
+**`scan_partial_read`, freshly converted to executed-text, fired on the very
+turn that shipped the conversion** - the commit message quoted a `sed` line-
+range inside a heredoc, and a heredoc body is DATA the command carries, not a
+command that ran. The scrub for exactly this existed **twice in the same
+file** (B1880, B1925 - "the sibling of B1880's"); the helper was built later
+and inherited neither.
+
+- **A `#237` sweep covers the sites that exist when it runs.** The next site
+  re-introduces the defect - nothing carries a lesson into code that does not
+  exist yet.
+- **Move the lesson to the trunk the first time a second leaf needs it**: fix
+  shared scrubs in the shared helper, never per-consumer.
+- When a gate fires on the turn that shipped it, check for a scrub its
+  siblings have and it lacks, before doubting the conversion.
+
+**Mechanically enforced** by `test_b1979_heredoc_bodies_are_data_not_commands`
+(both directions, both converted consumers).
+
 ## RUN THE CONTROL BEFORE THE EDIT (B1974 - L607, CHECKLIST #226)
 
 **Regenerating `PHASE_1B_ROSTER.md` after a fix showed a changed funnel. The

@@ -21613,3 +21613,64 @@ def test_b1978_partial_read_judges_executed_commands_not_written_text():
     assert not tg.scan_partial_read(
         ent("Bash", {"command": "cat EXECUTION_QUEUE.md"})), (
         "a full read followed by a verdict is the compliant shape")
+
+
+
+def test_b1979_heredoc_bodies_are_data_not_commands():
+    """B1979: a heredoc body is DATA the command carries, not a command.
+
+    `scan_partial_read`, freshly converted to executed-text, fired on the very
+    turn that SHIPPED the conversion - because the commit message quoted
+    `sed -n '100,110p'` inside `git commit -F - <<'MSGEOF'`.
+
+    The scrub already existed in BOTH launch detectors (B1880, B1925 - the
+    second added as "the sibling of B1880's"). `_executed_tool_text` was built
+    later and inherited neither: **a helper built after its siblings learned a
+    lesson starts without the lesson.** Fixed in the helper, so every
+    consumer inherits it once.
+    """
+    import importlib.util as _iu
+    import pathlib as _p
+
+    root = _p.Path(__file__).resolve().parents[2]
+    spec = _iu.spec_from_file_location(
+        "vtc_b1979", root / "scripts" / "verify_turn_compliance.py")
+    tg = _iu.module_from_spec(spec)
+    spec.loader.exec_module(tg)
+
+    VERDICT = "All 141 rows are classified and the disposition is final."
+
+    def ent(cmd):
+        return [
+            {"type": "assistant", "message": {"content": [
+                {"type": "tool_use", "name": "Bash",
+                 "input": {"command": cmd}}]}},
+            {"type": "assistant", "message": {"content": [
+                {"type": "text", "text": VERDICT}]}}]
+
+    QUOTED = ("git commit -F - <<'MSG'\n"
+              "the fix removes sed -n '100,110p' as evidence\n"
+              "MSG")
+    assert not tg.scan_partial_read(ent(QUOTED)), (
+        "a sampler QUOTED in a heredoc body (commit message, file content) "
+        "never ran - firing here punishes writing the incident down, which "
+        "is what B1979's own reporting turn hit")
+
+    assert tg.scan_partial_read(ent("sed -n '100,110p' EXECUTION_QUEUE.md")), (
+        "the directly EXECUTED sampler must still fire - the scrub must not "
+        "swallow real commands (#226)")
+
+    # and the same body-vs-command line holds for the OTHER converted gate
+    CLAIM = "MIN_N = 30 is the floor, so 70pct of the grid sits below it."
+    grep_in_heredoc = ("cat > notes.md <<'EOF'\n"
+                      "we should run grep -n MIN_N scripts/roster_core.py\n"
+                      "EOF")
+    e = [{"type": "assistant", "message": {"content": [
+            {"type": "tool_use", "name": "Bash",
+             "input": {"command": grep_in_heredoc}}]}},
+         {"type": "assistant", "message": {"content": [
+            {"type": "text", "text": CLAIM}]}}]
+    assert tg.scan_uninspected_constant(e), (
+        "a grep QUOTED in a heredoc body is not an executed inspection - "
+        "without the scrub this would count as compliance evidence, the "
+        "B1967 bypass reopened through a heredoc")

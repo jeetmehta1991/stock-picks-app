@@ -1196,7 +1196,17 @@ def _executed_tool_text(entries, tool_text=None) -> str:
             if str(blk.get("name") or "").lower() not in _EXECUTING_TOOLS:
                 continue
             out.append(str((blk.get("input") or {}).get("command", "")))
-    return _strip_gate_echo(" ".join(out).lower())
+    # B1979: strip heredoc BODIES - they are data carried by the command (file
+    # content, commit messages), not commands that ran. Quoting `sed -n
+    # '100,110p'` in a commit message made scan_partial_read fire on the
+    # reporting of the very fix that converted it. The scrub already existed
+    # in both launch detectors (B1880, B1925); this helper was built LATER
+    # and inherited neither - a helper built after its siblings learned a
+    # lesson starts without the lesson.
+    import re as _re9
+    joined = _re9.sub(r"<<\s*'?(\w+)'?.*?^\1", " ", " ".join(out),
+                      flags=_re9.S | _re9.M)
+    return _strip_gate_echo(joined.lower())
 
 
 def _tool_text(entries, tool_text=None) -> str:

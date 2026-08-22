@@ -13316,3 +13316,34 @@ times and exactly 0.0 0 times; OLD-code and NEW-code output **byte-identical**;
 `test_b1974_generated_artifact_is_not_older_than_its_generator`, which compares
 commit timestamps and re-runs nothing - regenerating reads 4.9M rows. Carried
 into `SKILL.md`.
+
+
+### L608
+
+**A helper built after its siblings learned a lesson starts without the
+lesson**
+
+**B1979.** `scan_partial_read`, converted to executed-text in B1978, fired on
+**the very turn that shipped the conversion** - because the commit message
+quoted `sed -n '100,110p'` inside a `git commit -F - <<'MSGEOF'` heredoc. A
+heredoc body is DATA the command carries - file content, a commit message -
+not a command that ran.
+
+**The scrub already existed twice in the same file**: B1880 put it in one
+launch detector, B1925 added it to the second *explicitly calling it "the
+sibling of B1880's"*. `_executed_tool_text` was built in B1967 - later than
+both - and inherited neither.
+
+**This is L603's sweep rule from the other side.** A `#237` sweep covers the
+sites that exist when it runs; **the next site re-introduces the defect**,
+because nothing carries the lesson forward into code that does not exist yet.
+The durable fix is placement: the scrub now lives in the shared helper, so
+every present and FUTURE consumer inherits it once - a lesson in a leaf must
+migrate to the trunk the first time a second leaf needs it.
+
+MEASURED: 3 executed-text scrub sites; 2 had the heredoc strip, the newest had
+none; reproduced with a constructed entry before fixing, and the fix proven in
+both directions for BOTH converted gates (quoted sampler silent / executed
+sampler fires; quoted grep is not compliance evidence). **ANCHORED (`#197`):**
+compliance failure against the B1880/B1925 precedent; mechanism
+`test_b1979_heredoc_bodies_are_data_not_commands`. Carried into `SKILL.md`.
