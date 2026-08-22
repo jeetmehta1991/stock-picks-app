@@ -13136,3 +13136,48 @@ composite `a/b/c` ids (a row shape, not a ticket - `#271`); population
 `#279`; mechanisms are the bold-independent scrub and `queue_state.unparsed()`,
 pinned by `test_b1969_gate_does_not_require_bold` and
 `test_b1969_counter_discloses_what_it_cannot_parse`. Carried into `SKILL.md`.
+
+
+### L604
+
+**The gate demanded a `#237` sweep; the sweep found `#237` does not exist**
+
+**B1971.** Running the retroactive sweep the turn gate kept asking for, I
+checked the CHECKLIST items I had been citing. **Seven are cited 94 times
+across LEARNINGS, EXECUTION_QUEUE, SKILL.md and the gate script, and not one is
+defined anywhere in `CHECKLIST.md`:** `#187`, `#188`, `#189`, `#190`, `#191`,
+`#192`, `#237`. All appear only as references. Line 2980 reads *"#192 and #193
+are judgement rules and stay prose"* and line 4916 *"B1599 anchored L466 by
+amending `#191`"* - written as though both existed.
+
+**`#237` is the sharp one.** The turn gate prints
+`RETROACTIVE SWEEP MISSING (B1757 / #237)` at me every turn, and `#237` is the
+item that sweep was demanded under.
+
+**B1945 built exactly this check - for L-numbers - and stopped.** I had cited a
+non-existent `L611`, wrote the lesson, built the ratchet, and never asked
+whether the same defect lived one namespace over. **Under-generalization, the
+GENERALIZATION MANDATE's named failure**, and the sibling was three lines away.
+
+**The measurement failed first, in the same shape as the thing it was
+measuring.** My extractor read only `### #N` headings and reported 30
+contiguous missing items - because `#185` is defined as
+`**#185 MONITOR-ARMED GATE...**`, bold inline. **A tool that assumes one
+formatting is precisely the `#275` defect B1969 and B1970 had just spent two
+batches removing from the row readers**, reproduced inside the audit of it.
+The tell was implausibility: 30 CONSECUTIVE missing items, each cited dozens of
+times, is a broken extractor, not a broken file. **A contiguous run is a
+measurement smell**, and the pin now asserts that directly.
+
+**COMPLIANCE FAILURE against `#201`** as B1945 extended it - a citation names a
+source, and nothing checked the source EXISTS.
+
+**The fix stops the 8th, it does not invent the 7.** Writing seven checklist
+items is owner content, not a repair I get to make. `_B1971_DANGLING_CHECKLIST`
+freezes them as a shrink-only ratchet with the `#279` reverse check.
+
+MEASURED: 273 items defined of max 280; 7 undefined; 94 citations. **ANCHORED
+(`#197`):** compliance failure against `#201`; mechanism
+`test_b1971_no_new_dangling_checklist_citation`, including a run-length guard
+against the extractor defect that produced the first wrong answer. Carried into
+`SKILL.md`.

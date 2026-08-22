@@ -21176,3 +21176,108 @@ def test_b1970_vocabulary_scan_stays_bold_on_purpose():
     assert "INVENT one" in sec, (
         "and it must carry the reason: those rows have no state, so widening "
         "would fabricate one")
+
+
+
+# B1971: cited but defined nowhere in CHECKLIST.md. Frozen from a live
+# measurement; SHRINK-ONLY. Filling one in deletes its entry here.
+_B1971_DANGLING_CHECKLIST = {187, 188, 189, 190, 191, 192, 237}
+
+
+def _b1971_defined_items(checklist_text):
+    """Item numbers CHECKLIST.md actually DEFINES, across all four shapes.
+
+    The shapes matter more than they look. My first measurement used only
+    `### #N` and reported 30 contiguous missing items - because `#185` is
+    defined as `**#185 MONITOR-ARMED GATE...**`, bold inline. **A gate that
+    assumes one formatting is the exact defect B1969/B1970 spent two batches
+    removing from the row readers** (#275), reproduced in the tool built to
+    audit it.
+    """
+    import re as _re
+
+    out = set()
+    for pat in (r"^### #(\d{1,3})\b",     # ### #280 - TITLE
+                r"^(\d{1,3})\. ",         # 12. TITLE
+                r"^\*\*#(\d{1,3})\b",    # **#185 TITLE.**
+                r"^#+ *#(\d{1,3})\b"):    # any other heading depth
+        out |= {int(m) for m in _re.findall(pat, checklist_text, _re.M)}
+    return out
+
+
+def test_b1971_no_new_dangling_checklist_citation():
+    """B1971 (L604): a CHECKLIST citation must name an item that EXISTS.
+
+    B1945 built this for L-numbers after I cited a non-existent `L611`, and
+    stopped there. The sibling was never built, so **7 items are cited 94
+    times across LEARNINGS, the queue, SKILL.md and the gate script, and none
+    is defined** - `#187`-`#192` and `#237`.
+
+    `#237` is the one that stings: the turn gate prints
+    "RETROACTIVE SWEEP MISSING (B1757 / #237)" at me, and the sweep it
+    demanded is what found the item does not exist.
+
+    This CANNOT invent the missing items - that is owner content. It stops
+    the 8th.
+    """
+    import collections as _c
+    import pathlib as _p
+    import re as _re
+
+    root = _p.Path(__file__).resolve().parents[2]
+    have = _b1971_defined_items(
+        (root / "CHECKLIST.md").read_text(encoding="utf-8"))
+    mx = max(have)
+
+    # the shape-blindness guard: if a whole contiguous run looks missing, the
+    # EXTRACTOR broke, not the file (that is how the first measurement failed)
+    gaps = sorted(n for n in range(1, mx + 1) if n not in have)
+    runs, cur = [], []
+    for n in gaps:
+        if cur and n == cur[-1] + 1:
+            cur.append(n)
+        else:
+            runs.append(cur := [n])
+    assert not any(len(r) >= 10 for r in runs), (
+        f"a contiguous run of >=10 undefined items {runs} means the shape list "
+        "in _b1971_defined_items missed a heading format - measure the tool "
+        "before believing the measurement (#275)")
+
+    live = ["CLAUDE.md", "LEARNINGS.md", "EXECUTION_QUEUE.md",
+            ".claude/skills/execution-discipline/SKILL.md",
+            "scripts/verify_turn_compliance.py",
+            "backtest/tests/test_unit.py"]
+    cited = _c.defaultdict(set)
+    for f in live:
+        t = (root / f).read_text(encoding="utf-8", errors="replace")
+        for m in _re.findall(r"#(\d{2,3})\b", t):
+            if (n := int(m)) <= mx and n not in have:
+                cited[n].add(f)
+
+    # B1971 (#226): PROVE THE DETECTOR CAN FAIL, in-test.
+    #
+    # Every real gap is already frozen, so a passing run proves nothing on its
+    # own - the ratchet excuses all of them. Un-freeze one known dangler and
+    # the detector must name it; if it does not, the detector is dead and the
+    # green is manufactured, which is B1918's self-validating shape.
+    assert cited, ("the detector found no dangling citations at all - the "
+                   "corpus still cites #237, so an empty result means the "
+                   "measurement broke, not that the debt was paid")
+    _probe = _B1971_DANGLING_CHECKLIST - {237}
+    assert sorted(set(cited) - _probe) == [237], (
+        "with #237 un-excused the detector must name it - a gate whose pass "
+        "cannot be turned into a fail is not evidence (#226)")
+
+    new = sorted(set(cited) - _B1971_DANGLING_CHECKLIST)
+    assert not new, (
+        "DANGLING CHECKLIST CITATION(S): " + ", ".join(f"#{n}" for n in new) +
+        ".\nEach names an item CHECKLIST.md does not define. A citation is a "
+        "claim with an ADDRESS, and the address is checkable independently of "
+        "the claim (L595). Define the item, or cite one that exists.")
+
+    # #279 both directions: an entry that got defined must leave this list
+    stale = sorted(_B1971_DANGLING_CHECKLIST - set(cited))
+    assert not stale, (
+        f"these are listed as dangling but are now defined or uncited: "
+        f"{stale}. Delete the entry - an exclusion register that only grows "
+        "claims debt that was already paid (#279/L587).")

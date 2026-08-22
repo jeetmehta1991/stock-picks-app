@@ -741,6 +741,26 @@ gate had just named.**
 - **Compliance failure against `#45` and `#247`, not a new class.** A fifth rule
   restating four that were ignored is `#136` theater.
 
+## A CITED RULE MAY NOT EXIST - CHECK THE ADDRESS (B1971 - L604, CHECKLIST #201)
+
+**Seven CHECKLIST items are cited 94 times across LEARNINGS, the queue, this
+skill and the gate script, and not one is defined:** `#187`-`#192` and `#237`.
+The turn gate prints `RETROACTIVE SWEEP MISSING (B1757 / #237)` every turn -
+and the sweep it demanded is what found `#237` does not exist.
+
+- **A citation is a claim with an ADDRESS**, and the address is checkable
+  independently of the claim (L595). Citing it is not the rule running (`#235`).
+- **B1945 built this for L-numbers and stopped.** The CHECKLIST sibling was
+  three lines away. Ask what OTHER namespace has the same defect.
+- **Measure the measuring tool first.** My extractor read only `### #N` and
+  reported 30 contiguous missing items, because `#185` is `**#185 ...**` bold
+  inline - the `#275` formatting defect, inside the audit of it.
+- **A contiguous run of missing items is a measurement smell**, not a finding.
+
+**Mechanically enforced** by `test_b1971_no_new_dangling_checklist_citation`
+(shrink-only ratchet + `#279` reverse check + a run-length guard against the
+extractor defect that produced the first wrong answer).
+
 ## WHAT A PARSER REJECTS IS THE SET NOBODY AUDITS (B1969 - L603, CHECKLIST #275/#279)
 
 **The queue's row regex required the ticket id to be BOLD.** `queue_state.py`
