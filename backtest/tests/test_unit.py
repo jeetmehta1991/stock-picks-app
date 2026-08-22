@@ -16417,13 +16417,11 @@ def test_b1762_every_scan_gate_has_a_corpus_entry():
             "has a tool_text seam (B1765 widening); incident text not preserved - S6-B1761c",
         "scan_skill_not_updated": "no seam; S6-B1761b",
         "scan_transcript_entries": "no seam; S6-B1761b",
-        "scan_unmonitored_launch": "no seam; S6-B1761b",
         # B1865: built from HISTORICAL incidents (L407 / L411) whose verbatim
         # text was not preserved. An invented corpus entry is worse than none -
         # it would record a fixture as an incident, which is exactly the
         # 2.422-from-rng.normal shape. Tickets: S6-B1865a.
         "scan_unverified_structure": "no seam; S6-B1761b",
-        "scan_unverified_universe": "no seam; S6-B1761b",
         # has a seam, but the words that caused it were never kept (#240)
     }
     assert all(EXEMPT.values()), "every exemption needs a reason"

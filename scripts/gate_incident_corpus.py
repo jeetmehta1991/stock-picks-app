@@ -346,6 +346,52 @@ PURE_INCIDENTS: dict[str, list[tuple[tuple, bool, str]]] = {
          "the OWNER naming an error is not the author acknowledging one - "
          "the distinction the docstring draws, pinned"),
     ],
+    # B1934: both of these were driven by a working `entries` fixture in
+    # B1925's and B1927's own pins, while the register still called them
+    # unseamed. The fifth wrong reason it has carried.
+    "scan_unverified_universe": [
+        (([{"type": "assistant", "message": {"content": [
+            {"type": "tool_use", "name": "Bash", "input": {
+                "command": "python backtest/run_phase1a.py --phase 1a-beta "
+                           "--output-dir output_cfg1"}}]}}],), True,
+         "#193/L445 - a config LAUNCHED with no verify_universe_artifact.py "
+         "run in the same turn. Two configs once searched an abandoned A-C "
+         "chunk for 3.3 h each because nobody looked at the ticker list."),
+        (([{"type": "assistant", "message": {"content": [
+            {"type": "tool_use", "name": "Bash", "input": {
+                "command": "python - <<'PY'\nbase = \"python "
+                           "backtest/run_phase1a.py --output-dir "
+                           "output_cfg1\"\nPY\n"}}]}}],), False,
+         "B1925 - the same command QUOTED inside a heredoc body is data "
+         "handed to an interpreter, not a launch that ran"),
+        (([{"type": "assistant", "message": {"content": [
+            {"type": "tool_use", "name": "Bash", "input": {
+                "command": "python backtest/run_phase1a.py --phase 1a-beta "
+                           "--output-dir output_cfg1"}}]}},
+           {"type": "assistant", "message": {"content": [
+            {"type": "tool_use", "name": "Bash", "input": {
+                "command": "python scripts/verify_universe_artifact.py "
+                           "output_cfg1"}}]}}],), False,
+         "the verification the gate asks for, run in the same turn"),
+    ],
+    "scan_unmonitored_launch": [
+        (([{"type": "assistant", "message": {"content": [
+            {"type": "tool_use", "name": "Bash", "input": {
+                "command": "nohup python backtest/run_phase1a.py "
+                           "--output-dir output_cfg1 &"}}]}}],), True,
+         "L420 - three long runs launched with no monitor, AFTER the rule "
+         "forbidding it was written"),
+        (([{"type": "assistant", "message": {"content": [
+            {"type": "tool_use", "name": "CronCreate", "input": {
+                "cron": "0 * * * *",
+                "prompt": "check and push; do not withhold the report"}}]}},
+           {"type": "assistant", "message": {"content": [
+            {"type": "tool_use", "name": "Bash", "input": {
+                "command": "nohup python backtest/run_phase1a.py "
+                           "--output-dir output_cfg1 &"}}]}}],), False,
+         "an hourly UNCONDITIONAL arm in the same turn - both halves of "
+         "L424, and the gate must not punish the compliance it demands"),
+    ],
     "scan_unverified_cause": [
         (([{"type": "assistant", "message": {"content": [
             {"type": "text",
