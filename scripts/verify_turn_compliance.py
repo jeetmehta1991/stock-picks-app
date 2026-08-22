@@ -1169,6 +1169,36 @@ def _strip_gate_echo(t: str) -> str:
         out.append(line)
     return "\n".join(out)
 
+def _executed_tool_text(entries, tool_text=None) -> str:
+    """Only what this turn RAN - Bash and PowerShell commands, nothing written.
+
+    B1967 (`S6-B1813b`). `_tool_text` collects every tool_use input, **Write
+    and Edit included**, so a gate asking *"did X RUN?"* accepts *"was X
+    TYPED"*: writing a script containing `grep MIN_N` satisfies `#222`'s
+    evidence without the grep ever executing.
+
+    `_EXECUTING_TOOLS` already draws this line for the launch detectors
+    (B1880, B1925); this makes it reusable for the evidence gates.
+
+    The injection seam travels the same pipeline as the live path (`#276b`):
+    an injected `tool_text` is scrubbed identically, because a seam that
+    bypasses the pipeline proves nothing about it.
+    """
+    if tool_text is not None:
+        return _strip_gate_echo(tool_text)
+    out = []
+    for d in entries or ():
+        if not isinstance(d, dict) or d.get("type") != "assistant":
+            continue
+        for blk in (d.get("message") or {}).get("content") or ():
+            if not (isinstance(blk, dict) and blk.get("type") == "tool_use"):
+                continue
+            if str(blk.get("name") or "").lower() not in _EXECUTING_TOOLS:
+                continue
+            out.append(str((blk.get("input") or {}).get("command", "")))
+    return _strip_gate_echo(" ".join(out).lower())
+
+
 def _tool_text(entries, tool_text=None) -> str:
     """Everything this turn actually RAN or READ - the inputs of every tool call.
 
@@ -1378,7 +1408,11 @@ def scan_uninspected_constant(entries, *, tool_text=None,
     t = _response_text(entries, text)
     if not t:
         return []
-    tt = _tool_text(entries, tool_text).lower()
+    # B1967 (S6-B1813b): this gate asks "was the constant GREPPED", so its
+    # evidence must be what RAN. `_tool_text` includes Write and Edit inputs,
+    # so WRITING a script containing `grep MIN_N` satisfied it without the
+    # grep ever executing - the gate accepted "was typed" for "was run".
+    tt = _executed_tool_text(entries, tool_text).lower()
     # B1760: honour the injected text. This function accepted `text=` and then
     # read `_raw_assistant(entries)` for the case-preserved copy, so the
     # parameter existed and did nothing - the gate could never be exercised on

@@ -20923,3 +20923,57 @@ def test_b1966_staleness_auditor_declares_its_scope():
     assert "load-bearing" in src, (
         "the reason must travel with the disclosure: a claim in a closed row "
         "is load-bearing, which is WHY the excluded set is the dangerous one")
+
+
+
+def test_b1967_did_it_run_reads_executed_text_not_written_text():
+    """B1967 (S6-B1813b): a gate asking "did X RUN?" must not accept "X TYPED".
+
+    `scan_uninspected_constant` is `#222` mechanised - naming a constant
+    requires having grepped it - and its evidence was `_tool_text`, which
+    collects every tool_use input **including Write and Edit**. So WRITING a
+    script containing `grep MIN_N` satisfied it without the grep executing.
+
+    **The corpus cannot prove this**: every case injects `tool_text`, which
+    bypasses the entries path - `#276b`'s warning exactly. So the proof is
+    built from constructed ENTRIES.
+    """
+    import importlib.util as _iu
+    import pathlib as _p
+
+    root = _p.Path(__file__).resolve().parents[2]
+    spec = _iu.spec_from_file_location(
+        "vtc_b1967", root / "scripts" / "verify_turn_compliance.py")
+    tg = _iu.module_from_spec(spec)
+    spec.loader.exec_module(tg)
+
+    CLAIM = "MIN_N = 30 is the floor, so 70pct of the grid sits below it."
+    GREP = "grep -n MIN_N scripts/roster_core.py"
+
+    def ent(tool, inp):
+        return [
+            {"type": "assistant", "message": {"content": [
+                {"type": "tool_use", "name": tool, "input": inp}]}},
+            {"type": "assistant", "message": {"content": [
+                {"type": "text", "text": CLAIM}]}}]
+
+    assert not tg.scan_uninspected_constant(ent("Bash", {"command": GREP})), (
+        "the grep RAN - the gate must not punish the inspection it demands")
+
+    assert tg.scan_uninspected_constant(
+        ent("Write", {"file_path": "x.py", "content": GREP})), (
+        "the grep was only WRITTEN into a file and never executed - a gate "
+        "asking 'did X RUN' must not accept 'was X TYPED' (S6-B1813b)")
+
+    assert tg.scan_uninspected_constant(
+        ent("Bash", {"command": "echo hello"})), (
+        "an unrelated command is not evidence about this constant")
+
+    # the helper must exist and filter to executing tools only
+    src = (root / "scripts" / "verify_turn_compliance.py").read_text(
+        encoding="utf-8")
+    assert "def _executed_tool_text(" in src
+    assert src.count("_EXECUTING_TOOLS") >= 3, (
+        "the executing-tools filter is shared by the launch detectors and now "
+        "the evidence gates - if a new reader is added without it, this count "
+        "stops matching and the omission is visible (L592)")
