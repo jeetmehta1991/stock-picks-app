@@ -12505,3 +12505,51 @@ an item indexed by its origin story is an item you will miss in a new
 costume.** **ANCHORED (`#197`):** COMPLIANCE FAILURE against `CHECKLIST #276b`;
 no new item, and `#279` already carries the register half. Carried into
 `SKILL.md`.
+
+
+### L589
+
+**An outcome difference between two runs is not evidence about their content -
+check that the artifacts differ before attributing**
+
+**B1921.** Working two OPEN tickets, the artifacts looked conclusive:
+
+    b1571_par.log   EXIT=127   CUBE_ROWS=ABSENT     both arms
+    b1576_par.log   EXIT=0     8,581 and 10,921     both arms
+
+The obvious reading is that the launcher defect `S6-B1535b` describes was
+fixed between them. **`diff scripts/run_b1571_configs.sh
+scripts/run_b1576_configs.sh` returns TWO LINES, both log PATHS.** Same
+`run_cfg ... &` + `wait` shell-function wrapper, and `nohup|setsid|disown|
+detach` appear **zero times in either script**.
+
+**The later run succeeded because nothing killed it.** The variable was
+external to both scripts, and nothing in either artifact records it.
+
+**This is the mirror of the confound lesson, not a repeat of it.** L-entries
+already cover *"that test varied two things"* - a comparison where the cause is
+one of several changes. **Here NOTHING changed, and the difference was real
+anyway**, so the natural inference - *something must have been fixed* - had no
+candidate at all and I would have invented one.
+
+**Two runs of the same script are not a controlled comparison; they are two
+samples from an environment.** Kills, memory pressure, other load, a machine
+sleeping: none of it appears in the outputs, and all of it moves them.
+
+**The check is one command and it is diffing the inputs.** Before attributing
+an outcome difference to a change, establish that a change EXISTS. I ran it
+only because the two scripts had adjacent batch numbers and I wanted the exact
+line - **the discipline was curiosity, not method**, and that is the part worth
+converting.
+
+**COMPLIANCE FAILURE against `CHECKLIST #275`** for the batch's other miss: the
+durability pin asserted an unwrapped phrase against hard-wrapped prose and
+raised a false alarm. `#275` says *a positional heuristic encodes a habit of
+formatting and silently inverts the moment the formatting changes* - written
+about response GATES, missed here in a doc-reading PIN. **L588, one batch
+later, in the shape L588 predicted.**
+
+**The rule: an artifact difference licenses a claim about artifacts; an outcome
+difference licenses nothing until the inputs are diffed.** **ANCHORED
+(`#197`):** compliance failure against `#275`; the attribution half is carried
+by the durability pin below. Carried into `SKILL.md`.

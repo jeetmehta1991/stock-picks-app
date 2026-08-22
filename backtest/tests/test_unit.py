@@ -20352,7 +20352,15 @@ def test_b1914_l585_l586_rules_and_their_disposition_survive():
     # L588's point is that #276b and #162 were CORRECT, PRESENT and MISSED.
     # If the entries survive while the citations are edited out, the lesson
     # inverts into "two gaps were found" - the opposite of what happened.
-    for cite in ("#276b", "#162"):
+    # B1922: L589 - an outcome difference is not evidence about content
+    assert "### L589" in lm, "L589 dropped from LEARNINGS.md"
+    assert "OUTCOME DIFFERENCE IS NOT EVIDENCE" in sk_raw, (
+        "L589's SKILL section dropped")
+    assert "two samples from an environment" in sk, (
+        "L589's operative image is the whole lesson - two runs of the SAME "
+        "script are not a controlled comparison")
+
+    for cite in ("#276b", "#162", "#275"):
         assert cite in sk, (
             f"L588's citation of {cite} dropped - without it the entry reads "
             "as a discovered gap rather than a rule that existed and was not "

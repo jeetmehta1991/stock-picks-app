@@ -741,6 +741,27 @@ gate had just named.**
 - **Compliance failure against `#45` and `#247`, not a new class.** A fifth rule
   restating four that were ignored is `#136` theater.
 
+## AN OUTCOME DIFFERENCE IS NOT EVIDENCE ABOUT CONTENT (B1921 - L589, CHECKLIST #275)
+
+**`EXIT=127 CUBE_ROWS=ABSENT` on one run, `EXIT=0` with 8,581 and 10,921 rows on
+the next. That reads as a fix. `diff` on the two driver scripts returns TWO
+LINES, both log paths** - same wrapper, and `nohup|setsid|disown|detach` appear
+zero times in either. **The later run succeeded because nothing killed it.**
+
+- **The mirror of the confound lesson, not a repeat.** There the cause was one
+  of several changes; **here NOTHING changed and the difference was real
+  anyway**, so the inference *something was fixed* had no candidate and would
+  have been invented.
+- **Two runs of the same script are two samples from an environment**, not a
+  controlled comparison. Kills, memory pressure, other load - none of it
+  appears in the outputs and all of it moves them.
+- **An artifact difference licenses a claim about artifacts; an outcome
+  difference licenses nothing until the inputs are diffed.** One command.
+
+**Mechanically enforced** as a durability pin in
+`test_b1914_l585_l586_rules_and_their_disposition_survive`; the attribution
+judgment itself is not mechanisable.
+
 ## A CONTROL MUST TAKE THE SAME PATH AS THE CLAIM (B1918 - L588, CHECKLIST #276b)
 
 **Before emptying a 26-entry grandfather list I ran `#226`: inject a synthetic
