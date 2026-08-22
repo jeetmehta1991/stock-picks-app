@@ -22222,3 +22222,95 @@ def test_b1990_one_row_parser_for_both_counting_tools():
     assert "S6-[A-Za-z0-9-]+" not in code, (
         "the audit re-spelled the ticket-row pattern - membership has ONE "
         "definition and it lives in queue_state (#226)")
+
+
+
+def test_b1991_rho_inversion_survives_the_three_classical_causes():
+    """B1991 (S6-B1745f): rho = -0.8 is not a sign error, a label swap, or
+    overlapping windows.
+
+    Two advisors independently: a negative IS/OOS rank correlation is
+    classically one of those three defects, and none had been tested - the
+    session's strongest result rested on an unaudited computation.
+
+    Each cause gets its own arm, at the layer where it would live.
+    """
+    import importlib.util as _iu
+    import pathlib as _p
+    import sys as _sys
+    from datetime import date as _date
+
+    root = _p.Path(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+
+    # ---- CAUSE 1: SIGN ERROR in the spearman implementation ----
+    spec = _iu.spec_from_file_location(
+        "rho_b1991", root / "scripts" / "rho_selector_falsification.py")
+    m = _iu.module_from_spec(spec)
+    spec.loader.exec_module(m)
+
+    up = [1.0, 2.0, 3.0, 4.0, 5.0]
+    r, n = m.spearman(up, up)
+    assert abs(r - 1.0) < 1e-12, "identity must give rho = +1"
+    r, n = m.spearman(up, up[::-1])
+    assert abs(r + 1.0) < 1e-12, (
+        "a perfect reversal must give rho = -1; a dropped minus here would "
+        "flip the session's strongest result into its opposite")
+    # tie handling: [1,2,2,4] vs [1,3,3,4] is monotone -> +1 with avg ranks
+    r, n = m.spearman([1.0, 2.0, 2.0, 4.0], [1.0, 3.0, 3.0, 4.0])
+    assert abs(r - 1.0) < 1e-12, "average-rank ties must not distort sign"
+    # and only ONE implementation exists to be right (#226 ONE PATTERN)
+    import subprocess as _sp
+    # exclude THIS file: the assertion's own needle lives in it - the
+    # self-reference family, and the corpus-exclusion rule (L569) applied
+    # at authoring time instead of after the block
+    hits = _sp.run(["git", "grep", "-l", "def spearman", "--",
+                    "scripts", "backtest", ":!backtest/tests"], cwd=root,
+                   capture_output=True, text=True).stdout.split()
+    assert hits == ["scripts/rho_selector_falsification.py"], (
+        f"spearman implementations: {hits} - two implementations of one "
+        "statistic is a divergence waiting for someone to fix half")
+
+    # ---- CAUSE 2: LABEL SWAP between is_sharpe and holdout sharpe ----
+    import source_text as st
+    gen = st.code_only(root / "scripts" / "tighten_breaker_block.py")
+    assert "is_m = rc.in_sample(sub)" in gen and "ho_m = rc.holdout(sub)" in gen, (
+        "the generator must derive its two frames from the two named windows")
+    assert "rc.select_exit(is_m" in gen, (
+        "is_sharpe comes from select_exit over the IN-SAMPLE frame - if this "
+        "moves to ho_m, the labels have swapped and rho's sign is meaningless")
+    assert "hb = ho_m[ho_m.exit_method == exit_pick]" in gen, (
+        "the graded (holdout) sharpe comes from the HOLDOUT frame at the "
+        "chosen exit")
+
+    # empirical companion: holdout is 1y of a 4y window, so holdout_n must be
+    # a MINORITY of full_period_n for nearly all rows - a swap would invert it
+    import json as _json
+    art = root / "output_audit" / "b1715_leak_span21.json"
+    if art.exists():
+        rows = [r for r in _json.loads(art.read_text())["results"]
+                if isinstance(r, dict) and r.get("holdout_n")
+                and r.get("full_period_n")]
+        smaller = sum(1 for r in rows if r["holdout_n"] < r["full_period_n"])
+        assert rows and smaller / len(rows) > 0.95, (
+            f"holdout_n < full_period_n on only {smaller} of {len(rows)} "
+            "rows - the 1y holdout should be a strict minority of the 4y "
+            "total; anything else suggests the windows are mislabelled")
+
+    # ---- CAUSE 3: OVERLAPPING WINDOWS ----
+    import pandas as _pd
+    import roster_core as rc
+    assert rc.IS_END <= rc.HO_START, (
+        "the in-sample window must end before the holdout begins")
+    # runtime, not just constants: a trade exactly ON the boundary date must
+    # land in EXACTLY ONE window - half-open on both sides guarantees it
+    df = _pd.DataFrame({
+        "entry_date": [rc.IS_END],
+        "pnl_pct": [1.0], "hold_days": [3], "exit_method": ["x"]})
+    in_is = len(rc.in_sample(df))
+    in_ho = len(rc.holdout(df))
+    assert in_is + in_ho == 1, (
+        f"the boundary-date trade appears in {in_is + in_ho} windows - "
+        "overlap (2) manufactures correlation between the samples; a gap (0) "
+        "silently drops trades. Both invalidate the rho")
