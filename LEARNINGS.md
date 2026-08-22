@@ -13181,3 +13181,49 @@ MEASURED: 273 items defined of max 280; 7 undefined; 94 citations. **ANCHORED
 `test_b1971_no_new_dangling_checklist_citation`, including a run-length guard
 against the extractor defect that produced the first wrong answer. Carried into
 `SKILL.md`.
+
+
+### L605
+
+**The ticket named one site, the file had three, and copy-paste had made 28
+across 11 files**
+
+**B1972 / `S6-B1825c`.** The ticket was filed against one line:
+`_deflated_sharpe(sharpe or 0.0, ...)` in `roster_core.py`. B1907b widened it
+to three - the same file's ranking key used `r["sharpe"] or -9`. Fixing all
+three and then sweeping the CODEBASE found **25 more instances of the identical
+pattern in 11 files**, including `backtest/results/writer.py` and
+`build_phase_1b_roster.py`, **the script that produces the owner-facing roster.**
+
+**`x or default` cannot distinguish "no value" from "the value 0", and the two
+failures point opposite ways:**
+
+- **Reporting:** `sharpe or 0.0` sends an UNMEASURABLE Sharpe to DSR as a
+  MEASURED zero. A fabricated input dressed as an observation - and DSR cannot
+  tell it from a strategy that genuinely broke even.
+- **Ordering:** `sharpe or -9` sends a Sharpe of EXACTLY 0.0 to the worst
+  possible key. **The exit that broke even loses the selection to every exit
+  that lost money.** L580's defect in the ordering rather than the reporting.
+
+**MEASURED: 0 live instances** over 104 graded exit-cells - `sharpe` is None 0
+times and exactly 0.0 0 times. So the fix changes no current output, which is
+the point worth keeping: **a latent trap is the one that fires on data nobody
+has seen yet**, and a cube run on a new universe is exactly that data.
+
+**The number that matters is 3-of-28.** The filed ticket, worked as filed,
+would have fixed one line in one file and read as closed. **A pattern that was
+copy-pasted spreads by FILE, and the sweep has to as well** - the class does not
+respect the boundary the ticket was written inside.
+
+**The sweep's own first answer was wrong, again by formatting**: a naive regex
+counted 40 "harmful" hits including `or -1 if all NaN` and
+`Returns 1.0 or 1.5.` - **prose inside docstrings**. Re-running through
+`source_text.code_only` cut it to 25 real ones. Third time this session a
+measurement needed correcting before its finding could be trusted (L603, L604).
+
+MEASURED: 158 benign `or 0` (coalesces to itself, no information lost); 25
+harmful in 11 files; 3 fixed. **ANCHORED (`#197`):** the class is
+falsy-coalescing on a numeric where 0 is a legitimate value; mechanism
+`test_b1972_zero_is_a_value_not_an_absence`, which asserts the ordering
+directly (0.0 must outrank a loser, absent must still sort last) rather than
+describing it. Remaining 25 filed as `S6-B1972b`. Carried into `SKILL.md`.

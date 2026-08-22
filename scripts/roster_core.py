@@ -195,7 +195,14 @@ def evaluate(pnl: pd.Series, hold: pd.Series, *, min_n: int | None = None,
     sh = _sharpe(pnl.values, hold, min_n=min_n)
     sharpe = sh["sharpe"] if sh else None
     sortino = _sortino_ratio(pnl, hold)
-    dsr = _deflated_sharpe(sharpe or 0.0, n, float(pnl.skew()), float(pnl.kurtosis()))
+    # B1972 (S6-B1825c): `sharpe or 0.0` reported an UNMEASURABLE Sharpe to
+    # DSR as a MEASURED zero. DSR then could not distinguish "too few trades
+    # to compute" from "genuinely broke even" - a fabricated input dressed as
+    # an observation. None propagates instead: B1436 already demoted DSR to
+    # DIAGNOSTIC because it returns None for many cells, so None is expected
+    # downstream and 0.0 never was.
+    dsr = (_deflated_sharpe(sharpe, n, float(pnl.skew()), float(pnl.kurtosis()))
+           if sharpe is not None else None)
     w, l = pnl[pnl > 0], pnl[pnl <= 0]
     pf = float(w.sum() / abs(l.sum())) if len(l) and l.sum() != 0 else float("inf")
     payoff = float(w.mean() / abs(l.mean())) if len(w) and len(l) and l.mean() != 0 else None
@@ -290,8 +297,14 @@ def select_exit(g: pd.DataFrame, objective: str = "gates",
         r = evaluate(ge["pnl_pct"], ge["hold_days"], min_n=min_n)
         if not r:
             continue
-        key = ((r["n_gates"], r["sharpe"] or -9) if objective == "gates"
-               else (r["sharpe"] or -9,))
+        # B1972 (S6-B1825c): `or -9` is falsy-coalescing, so a Sharpe of
+        # exactly 0.0 ranked as -9 - the WORST key, below every loser. That is
+        # L580's defect in the ORDERING rather than the reporting: the exit
+        # that broke even loses the selection to one that lost money.
+        # Only an ABSENT Sharpe may take the sentinel.
+        _sh = r["sharpe"]
+        _sh = float("-inf") if _sh is None else _sh
+        key = ((r["n_gates"], _sh) if objective == "gates" else (_sh,))
         if best_key is None or key > best_key:
             best_key, best = key, (str(ex), r)
     # B1593 (A): disclose what was collapsed so a reader can see the TRUE

@@ -741,6 +741,27 @@ gate had just named.**
 - **Compliance failure against `#45` and `#247`, not a new class.** A fifth rule
   restating four that were ignored is `#136` theater.
 
+## A TICKET NAMES A SITE; THE CLASS SPANS FILES (B1972 - L605, CHECKLIST #201)
+
+**`S6-B1825c` named one line. The file had three. The codebase had 28 across
+11 files** - including `backtest/results/writer.py` and
+`build_phase_1b_roster.py`, which produces the owner-facing roster.
+
+- **`x or default` cannot tell "no value" from "the value 0".** Two opposite
+  failures: `sharpe or 0.0` reports an UNMEASURABLE Sharpe as a MEASURED zero;
+  `sharpe or -9` ranks a Sharpe of EXACTLY 0.0 worst, so **the exit that broke
+  even loses to every exit that lost money.**
+- **Work the CLASS, not the ticket's wording.** A copy-pasted pattern spreads
+  by FILE; the ticket was written inside one, and the class is not.
+- **0 live instances is not "no bug".** A latent trap is the one that fires on
+  data nobody has seen yet - a cube on a new universe is exactly that.
+- **Strip docstrings before counting.** The naive sweep returned 40, including
+  `Returns 1.0 or 1.5.` from prose; `source_text.code_only` cut it to 25.
+
+**Mechanically enforced** by `test_b1972_zero_is_a_value_not_an_absence`, which
+asserts the ORDERING (0.0 outranks a loser; absent still sorts last) rather
+than describing it.
+
 ## A CITED RULE MAY NOT EXIST - CHECK THE ADDRESS (B1971 - L604, CHECKLIST #201)
 
 **Seven CHECKLIST items are cited 94 times across LEARNINGS, the queue, this

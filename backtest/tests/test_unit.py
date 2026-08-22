@@ -21281,3 +21281,66 @@ def test_b1971_no_new_dangling_checklist_citation():
         f"these are listed as dangling but are now defined or uncited: "
         f"{stale}. Delete the entry - an exclusion register that only grows "
         "claims debt that was already paid (#279/L587).")
+
+
+
+def test_b1972_zero_is_a_value_not_an_absence():
+    """B1972 (S6-B1825c): `x or default` cannot tell "no value" from "0".
+
+    Three sites in `roster_core.py`, one class. The ranking one is the
+    dangerous half: `r["sharpe"] or -9` sent a Sharpe of **exactly 0.0** to
+    -9, the worst possible key, so **the exit that broke even lost the
+    selection to every exit that lost money** - L580's defect in the ORDERING
+    rather than the reporting.
+
+    B1907b measured 0 live instances over 104 graded cells, so this changes no
+    current output. That is the point: the trap is latent, and a latent trap
+    is the one that fires on data nobody has seen yet.
+    """
+    import importlib.util as _iu
+    import pathlib as _p
+
+    root = _p.Path(__file__).resolve().parents[2]
+    # B1906/L605: read CODE, not raw text. The comment explaining this fix
+    # quotes the pattern it removed, so a raw-source `not in` fails on the
+    # documentation of the very change it is checking. `code_only` blanks
+    # comments and docstrings IN PLACE, so offsets and the code survive.
+    _s = _iu.spec_from_file_location("st_b1972", root / "scripts" / "source_text.py")
+    _st = _iu.module_from_spec(_s)
+    _s.loader.exec_module(_st)
+    src = _st.code_only(root / "scripts" / "roster_core.py")
+    raw = (root / "scripts" / "roster_core.py").read_text(encoding="utf-8")
+
+    # the class must be gone from ALL THREE sites, not just the filed one
+    assert "sharpe or 0.0" not in src, (
+        "an unmeasurable Sharpe must not reach DSR as a measured zero")
+    assert '"sharpe"] or -9' not in src, (
+        "a Sharpe of exactly 0.0 must not take the absent-value sentinel")
+
+    # and the distinction must be explicit, not merely reworded
+    assert "if sharpe is not None else None" in src, (
+        "absence propagates as None - B1436 made DSR a DIAGNOSTIC precisely "
+        "because it returns None for many cells, so None is expected and a "
+        "fabricated 0.0 never was")
+    assert 'float("-inf") if _sh is None else _sh' in src, (
+        "only an ABSENT Sharpe may take the ranking sentinel; a measured 0.0 "
+        "must rank on its own value, above every negative one")
+
+    assert "sharpe or 0.0" in raw, (
+        "the explanatory comment naming the removed pattern must still be "
+        "there - if it is not, this test's code_only guard is vacuous and "
+        "would pass on raw source too (#226)")
+
+    # ordering, proven rather than described: 0.0 must beat a loser
+    _sh = 0.0
+    zero_key = (float("-inf") if _sh is None else _sh,)
+    _sh = -0.4
+    loser_key = (float("-inf") if _sh is None else _sh,)
+    _sh = None
+    absent_key = (float("-inf") if _sh is None else _sh,)
+    assert zero_key > loser_key, (
+        "breaking even must outrank losing money - the old `or -9` inverted "
+        "exactly this pair")
+    assert loser_key > absent_key, (
+        "and an absent Sharpe must still sort last, or the fix has broken "
+        "the behaviour it was preserving")
