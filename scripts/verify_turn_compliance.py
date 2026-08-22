@@ -2639,7 +2639,14 @@ def scan_partial_read(entries, *, text=None, tool_text=None) -> list[str]:
     if hit is None:
         return []
     verdicts = [hit]
-    tt = _tool_text(entries, tool_text).lower()
+    # B1978 (S6-B1967c): EXECUTED text only - the INVERTED case from B1967.
+    # There, tool text was COMPLIANCE evidence and written-not-run text let a
+    # turn fake compliance. Here it is DEFECT evidence, so written-not-run
+    # text created FALSE FIRES: writing a patch script that merely CONTAINS
+    # `sed -n '100,110p'` read as this turn having sampled a source. Both
+    # directions land on one rule: a gate asking "what did this turn DO?"
+    # reads what RAN, whichever way the evidence cuts.
+    tt = _executed_tool_text(entries, tool_text).lower()
     cuts = _sampling_hits(tt)          # B1807: source truncation, not display
     if not cuts:
         return []

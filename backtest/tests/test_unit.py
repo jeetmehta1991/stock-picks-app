@@ -21563,3 +21563,53 @@ def test_b1974_generated_artifact_is_not_older_than_its_generator():
         "memory of what the code used to produce. B1974b: PHASE_1B_ROSTER.md "
         "sat 7 generator-commits stale with a wrong gate-2 count and nothing "
         "noticed, because its headline was unchanged.")
+
+
+
+def test_b1978_partial_read_judges_executed_commands_not_written_text():
+    """B1978 (S6-B1967c): truncation evidence must come from what RAN.
+
+    The INVERTED case from B1967: there, tool text was COMPLIANCE evidence,
+    so written-not-run text faked compliance. Here it is DEFECT evidence, so
+    written-not-run text created FALSE FIRES - writing a patch script that
+    merely CONTAINS `sed -n '100,110p'` read as this turn having sampled a
+    source it judged.
+
+    Both directions land on one rule: a gate asking "what did this turn DO?"
+    reads what RAN, whichever way the evidence cuts. Proof is constructed
+    ENTRIES - the corpus injects `tool_text` and bypasses the path this fix
+    changes (#276b).
+    """
+    import importlib.util as _iu
+    import pathlib as _p
+
+    root = _p.Path(__file__).resolve().parents[2]
+    spec = _iu.spec_from_file_location(
+        "vtc_b1978", root / "scripts" / "verify_turn_compliance.py")
+    tg = _iu.module_from_spec(spec)
+    spec.loader.exec_module(tg)
+
+    VERDICT = "All 141 rows are classified and the disposition is final."
+    SAMPLER = "sed -n '100,110p' EXECUTION_QUEUE.md"
+
+    def ent(tool, inp):
+        return [
+            {"type": "assistant", "message": {"content": [
+                {"type": "tool_use", "name": tool, "input": inp}]}},
+            {"type": "assistant", "message": {"content": [
+                {"type": "text", "text": VERDICT}]}}]
+
+    assert tg.scan_partial_read(ent("Bash", {"command": SAMPLER})), (
+        "a population verdict after an EXECUTED line-range sample is the "
+        "exact incident this gate exists for (B1794: 20 of 141 rows, "
+        "wrong by 7x)")
+
+    assert not tg.scan_partial_read(
+        ent("Write", {"file_path": "x.py", "content": SAMPLER})), (
+        "the sampler was only WRITTEN into a file, never run - firing here "
+        "punishes documenting a command, which is the false-positive class "
+        "B1807/B1978 exist to remove")
+
+    assert not tg.scan_partial_read(
+        ent("Bash", {"command": "cat EXECUTION_QUEUE.md"})), (
+        "a full read followed by a verdict is the compliant shape")
