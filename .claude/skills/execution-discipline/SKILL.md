@@ -741,6 +741,26 @@ gate had just named.**
 - **Compliance failure against `#45` and `#247`, not a new class.** A fifth rule
   restating four that were ignored is `#136` theater.
 
+## TWO NUMBERS FOR ONE NAME - DIFF THE DEFINITIONS, NOT THE ARITHMETIC (B1963 - L600, CHECKLIST #271)
+
+**`#271` surfaced SIX times in one session and every instance had correct
+arithmetic:** a row is not a ticket, a BATCH is not a ticket, a LIVE ticket is
+not an OPEN one, a call SITE is not a mention, a row's STATE is not a ticket's,
+and *"carrying a count"* meaning two different things - **98 of 105 against 88
+of 106, both mine, one batch.**
+
+- **The arithmetic is never the fault**, which is why the class survives
+  `#256`'s re-derivation rule: re-running confirms BOTH numbers and resolves
+  nothing. **Re-deriving is the right instinct aimed one level too low.**
+- **A wrong sum is loud. A right sum over the wrong set passes every check there
+  is**, and the only evidence is a second figure that disagrees.
+- **When two figures for one quantity differ, ask which SET each counted** - read
+  the two definitions side by side. It gets skipped because both arrive verified.
+- **Prefer citing the set with its total** (`#260`).
+
+**Mechanically enforced** by `scan_row_vs_ticket` and `#260`'s
+`scan_partial_distribution`, which is what caught the sixth instance.
+
 ## THE GATES OVER YOUR OWN REPORTING ARE THE LEAST VERIFIED (B1954 - L599, CHECKLIST #226)
 
 **Two consecutive conversions caught defects in what I WRITE, not in what the

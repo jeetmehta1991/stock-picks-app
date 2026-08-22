@@ -12942,3 +12942,45 @@ remain**, and each is a gate whose reading window has never been proven.
 B1747; mechanically enforced by `scan_missing_skill_confirmation` and
 `scan_false_skill_status`, both now routed through `_response_text` with
 `keep_code=True` and both carrying corpus incidents. Carried into `SKILL.md`.
+
+
+### L600
+
+**Two numbers for one name is the signal - and in every instance the arithmetic
+was right**
+
+**`#271`, six times in one session.**
+
+    origin   a ROW is not a TICKET              1,273 rows / 1,164 tickets
+    B1926    a BATCH is not a TICKET            27 tickets / 73 batches
+    B1929    a LIVE ticket is not an OPEN one   108 / 63
+    B1938    a call SITE is not a MENTION       4 occurrences / 2 functions
+    B1962    a row's STATE is not a ticket's    88 duplicated ids, 84 multi-state
+    B1963f   "carrying a count", twice          98 of 105 / 88 of 106
+
+**The last is the one that earns the entry: I produced BOTH halves myself,
+within one batch, and neither was wrong.** `audit_ticket_staleness.py` matches
+`\b\d+\b` so a bare `#5` counts; my probe required two digits. **Two correct
+counts of different sets, reported under the same three words.**
+
+**The arithmetic is never the fault.** That is what makes the class survive
+`#256`'s re-derivation rule - re-running the computation confirms BOTH numbers
+and resolves nothing. Re-deriving is the right instinct aimed one level too low.
+
+**The tell is the disagreement.** When two figures for what sounds like the same
+quantity differ, the question is never *which sum is wrong* but **which SET each
+one counted** - and that is answered by reading the two definitions side by
+side, which is skipped precisely because both figures arrive verified.
+
+**The asymmetry that makes it dangerous:** a wrong sum is loud - it fails a
+check, someone investigates. **A right sum over the wrong set passes every
+check there is**, and the only evidence it was ever wrong is a second figure
+that happens to disagree. **Five of the six were found that way; the sixth
+because a gate demanded the whole distribution.**
+
+**The rule: when you have two numbers for one name, diff the DEFINITIONS, not
+the arithmetic - and prefer citing the set with the total** (`#260`).
+**ANCHORED (`#197`):** compliance failure against `CHECKLIST #271`, sixth
+instance; mechanically enforced by `scan_row_vs_ticket` (`keep_code=True` since
+B1958) and `#260`'s `scan_partial_distribution`, which caught this one. Carried
+into `SKILL.md`.
