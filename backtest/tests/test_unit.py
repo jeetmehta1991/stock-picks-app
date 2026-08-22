@@ -16422,18 +16422,8 @@ def test_b1762_every_scan_gate_has_a_corpus_entry():
         # text was not preserved. An invented corpus entry is worse than none -
         # it would record a fixture as an incident, which is exactly the
         # 2.422-from-rng.normal shape. Tickets: S6-B1865a.
-        # B1930: NOT a seam problem - it is callable and returns [].
-        # The trigger vocabulary is undocumented, and a corpus entry
-        # that does not FIRE proves nothing while looking like coverage.
-        "scan_unrecorded_miss":
-            "seam works, trigger vocabulary undocumented - S6-B1930b",
         "scan_unverified_structure": "no seam; S6-B1761b",
         "scan_unverified_universe": "no seam; S6-B1761b",
-        # B1930: NOT a seam problem - it is callable and returns [].
-        # The trigger vocabulary is undocumented, and a corpus entry
-        # that does not FIRE proves nothing while looking like coverage.
-        "scan_verdict_denominators":
-            "seam works, trigger vocabulary undocumented - S6-B1930b",
         # has a seam, but the words that caused it were never kept (#240)
     }
     assert all(EXEMPT.values()), "every exemption needs a reason"

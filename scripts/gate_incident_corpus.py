@@ -309,6 +309,43 @@ PURE_INCIDENTS: dict[str, list[tuple[tuple, bool, str]]] = {
     # B1930: a gate taking ONLY `entries` is drivable by CONSTRUCTING entries.
     # B1925 and B1927 both did exactly that in their pins without noticing it
     # dissolved this gate's "no seam" exemption.
+    # B1931: VERDICT_PATTERNS is the trigger, not the docstring's prose.
+    # "cannot clear" / "no combination passes" fire; a literal `N of M`
+    # anywhere in the same text block clears them.
+    "scan_verdict_denominators": [
+        (([{"type": "assistant", "message": {"content": [
+            {"type": "text",
+             "text": "The config cannot clear the Sharpe gate at any "
+                     "level."}]}}],), True,
+         "a capability verdict with no scope - the reader cannot tell "
+         "whether it failed everywhere or in one cell"),
+        (([{"type": "assistant", "message": {"content": [
+            {"type": "text",
+             "text": "No combination passes in 0 of 400 "
+                     "combinations."}]}}],), False,
+         "same verdict WITH its denominator - must go quiet"),
+    ],
+    # B1931: MISS_PHRASES, not MISS_MARKERS. The docstring says it plainly -
+    # "the owner pointing out an error is not the trigger; ACKNOWLEDGING it
+    # is" - so the vocabulary is FIRST-PERSON.
+    "scan_unrecorded_miss": [
+        (([{"type": "assistant", "message": {"content": [
+            {"type": "text",
+             "text": "I was wrong about the schema - the artifacts carry "
+                     "an older one."}]}}], False), True,
+         "#194/L446 - a miss ACKNOWLEDGED with LEARNINGS.md untouched"),
+        (([{"type": "assistant", "message": {"content": [
+            {"type": "text",
+             "text": "I was wrong about the schema - the artifacts carry "
+                     "an older one."}]}}], True), False,
+         "the same acknowledgment WITH the L-entry written - must go quiet"),
+        (([{"type": "assistant", "message": {"content": [
+            {"type": "text",
+             "text": "The owner pointed out an error in the row."}]}}],
+          False), False,
+         "the OWNER naming an error is not the author acknowledging one - "
+         "the distinction the docstring draws, pinned"),
+    ],
     "scan_unverified_cause": [
         (([{"type": "assistant", "message": {"content": [
             {"type": "text",
