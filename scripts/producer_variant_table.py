@@ -222,14 +222,37 @@ def table_c(grids: dict[str, dict]) -> list[str]:
       distinct    graded outcomes after equivalence-class collapse - combinations
                   differing only in a SATURATED parameter are the SAME fire set,
                   so counting rows overstates the evidence (L473)
-      PASS        cleared all 6 LIVE_GATES on the holdout
+      bands       distinct VALUES this config actually exercised, summed over
+                  the parameter axes. B1898 (c): a config that tried one band
+                  is not evidence of the same weight as one that tried four,
+                  and the old table could not tell them apart.
       best        the top distinct outcome by ci_lo, not Sharpe (L455: the higher
                   Sharpe can carry a NEGATIVE lower bound)
+
+    B1898 (a): the PASS column is GONE. Step 1 is a ranked list with NO GATES
+    (B1608) - gates belong to Step 2 (L471) - so the column reported 0 forever
+    and read as a verdict on work that had not been judged yet.
+
+    B1898 (b): `no-exit` is renamed `starved-IS`. It is a SAMPLE-SIZE fact -
+    no exit cleared min_n IN-SAMPLE - and "no-exit" reads as a selection
+    failure. The docstring always said so; the HEADER did not, and the header
+    is what gets quoted.
 
     `graded + no_exit + zero_fires` must equal `combos`; the renderer asserts it
     rather than trusting the arithmetic.
     """
-    rows = ["| config | combos | no-exit | no-Sharpe | graded | distinct | **PASS** | best Sharpe | best CI-lo | best combination |",
+    # B1898 (d), owner directive: every presentation of this table defines its
+    # own terms. A reader who meets `graded` or `ci_lo` for the first time in a
+    # pasted table has no way to look them up.
+    rows = ["_`starved-IS` = no exit cleared min_n IN-SAMPLE, a SAMPLE-SIZE fact "
+            "rather than a quality verdict. `graded` = reached `evaluate()` and "
+            "produced a Sharpe. `distinct` = graded outcomes after "
+            "equivalence-class collapse (L473). `bands` = distinct parameter "
+            "VALUES exercised. `ci_lo` = the LOWER bound of the Sharpe "
+            "confidence interval, which is what `best` ranks on - a higher "
+            "Sharpe can carry a NEGATIVE lower bound (L455)._",
+            "",
+            "| config | combos | starved-IS | no-Sharpe | graded | distinct | bands | best Sharpe | best CI-lo | best combination |",
             "|---|---|---|---|---|---|---|---|---|---|"]
     for name, g in grids.items():
         res = g.get("results", [])
@@ -244,7 +267,21 @@ def table_c(grids: dict[str, dict]) -> list[str]:
         no_sh = [r for r in res if r.get("sharpe") is None
                  and r.get("verdict") not in ("NO_EXIT_SELECTABLE", "ZERO_FIRES")]
         other = len(res) - len(graded) - len(no_exit) - len(zero) - len(no_sh)
-        pas = [r for r in graded if r.get("verdict") == "PASS"]
+        # B1898 (c): count the distinct VALUES actually exercised per axis.
+        # Reading them from the enumerated combinations rather than from the
+        # grid spec, because the spec is what was INTENDED and the results are
+        # what ran.
+        axes = {}
+        for r in res:
+            for k, v in (r.get("admit") or {}).items():
+                axes.setdefault(k, set()).add(repr(v))
+        # B1898b: render '-' when the artifact records no `admit` block.
+        # The first version emitted 0, which reads as 'tested nothing'
+        # when the truth is 'not recorded' - the exact rule written one
+        # batch earlier at B1889b, that a value which cannot be measured
+        # must not render as a number.
+        bands = (sum(len(v) for v in axes.values() if len(v) > 1)
+                 if axes else None)
         rank = g.get("step1_ranking") or []
         top = max(rank, key=lambda r: (r.get("ci_lo") if r.get("ci_lo") is not None else -9)) if rank else None
         if top:
@@ -255,7 +292,7 @@ def table_c(grids: dict[str, dict]) -> list[str]:
         else:
             combo, sh, cl = "-", "-", "-"
         rows.append(f"| `{name}` | {len(res)} | {len(no_exit)} | {len(no_sh)} | {len(graded)} | "
-                    f"{g.get('step1_distinct_outcomes', '-')} | **{len(pas)}** | {sh} | {cl} | {combo} |")
+                    f"{g.get('step1_distinct_outcomes', '-')} | {'-' if bands is None else bands} | {sh} | {cl} | {combo} |")
         if other:
             rows.append(f"| | | | | | | | | | **UNCLASSIFIED {other} rows - the funnel does not "
                         f"reconcile, do not trust this row** |")
