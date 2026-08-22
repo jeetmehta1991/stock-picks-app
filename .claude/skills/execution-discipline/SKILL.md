@@ -741,6 +741,29 @@ gate had just named.**
 - **Compliance failure against `#45` and `#247`, not a new class.** A fifth rule
   restating four that were ignored is `#136` theater.
 
+## A GATE CAN BE RIGHT AND NAME THE WRONG CAUSE (B1973 - L606, CHECKLIST #275)
+
+**The gate said a row carried NO reason. It carried one.** My first words were
+"the gate is misfiring" - it was not. The row was missing its terminating `|`,
+so the extractor found no right delimiter and reported *no reason*.
+
+- **When a gate fires on work you believe is correct, the reading order is:
+  reproduce, then locate, then judge.** "The gate is wrong" is a conclusion,
+  not an opening.
+- **A gate that misnames its cause spends its own credibility** - the next
+  true fire reads as the same false alarm.
+- **The real defect was underneath**: the pattern stopped at the first `**`, so
+  a reason that emphasised early was truncated and failed a length test.
+  **Same reason, opposite verdict, decided by emphasis position.**
+- **`#275` three times in one file in three batches.** Every regex reading a
+  formatted document is a candidate - each was written by someone who could
+  see the formatting they had in mind.
+- **Two writers for one artifact, one of them lossy**: 5 malformed rows all
+  came from the Python path, none from the heredoc path.
+
+**Mechanically enforced** by `test_b1973_reason_verdict_is_invariant_to_emphasis`
+and `test_b1973_every_ticket_row_closes_its_cell`.
+
 ## A TICKET NAMES A SITE; THE CLASS SPANS FILES (B1972 - L605, CHECKLIST #201)
 
 **`S6-B1825c` named one line. The file had three. The codebase had 28 across

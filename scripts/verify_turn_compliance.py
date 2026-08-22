@@ -2689,7 +2689,24 @@ def scan_queue_vocabulary(entries, *, rows=None, diff_text=None) -> list[str]:
             bad.append(f"{tid}: class {cls!r} is not one of {list(QUEUE_CLASSES)}")
             continue
         if cls in QUEUE_NEEDS_REASON:
-            rm = re.search(r"_reason:_\s*(.+?)\s*(?:\*\*|\|)", r)
+            # B1973 (#275): read to the END OF THE ROW, not to the first
+            # `**`. The old pattern stopped at the first bold marker, so a
+            # genuine reason that emphasises early was TRUNCATED and then
+            # failed the <12-char placeholder test:
+            #
+            #   "this needs **OWNER CONTENT** and I cannot write it"
+            #        -> 'this needs' -> FIRES as a placeholder
+            #   "this needs owner content and I cannot write **it**"
+            #        -> passes
+            #
+            # Same reason, opposite verdict, decided by where the emphasis
+            # sits - the third #275 instance this session after the row scrub
+            # (B1969) and the row collector (B1970).
+            #
+            # It also read EMPTY when the row was missing its terminating
+            # `|`, which is how this was found: the gate fired on a row that
+            # HAD a reason, and blamed the reason.
+            rm = re.search(r"_reason:_\s*(.*?)\s*\|?\s*$", r)
             reason = (rm.group(1) if rm else "").strip()
             if not reason:
                 bad.append(f"{tid}: {cls} carries NO `_reason:_` - "

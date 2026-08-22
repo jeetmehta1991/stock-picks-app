@@ -21344,3 +21344,71 @@ def test_b1972_zero_is_a_value_not_an_absence():
     assert loser_key > absent_key, (
         "and an absent Sharpe must still sort last, or the fix has broken "
         "the behaviour it was preserving")
+
+
+
+def test_b1973_reason_verdict_is_invariant_to_emphasis():
+    """B1973 (#275): the same reason must not pass or fail on BOLD POSITION.
+
+    `_reason:_\\s*(.+?)\\s*(?:\\*\\*|\\|)` stopped at the first `**`, so a genuine
+    reason that emphasised early was truncated to a fragment and then failed
+    the <12-character placeholder test. Moving the emphasis to the end of the
+    identical sentence made it pass.
+
+    Third `#275` instance this session, after B1969's own-id scrub and
+    B1970's row collector.
+    """
+    import importlib.util as _iu
+    import pathlib as _p
+
+    root = _p.Path(__file__).resolve().parents[2]
+    spec = _iu.spec_from_file_location(
+        "vtc_b1973", root / "scripts" / "verify_turn_compliance.py")
+    tg = _iu.module_from_spec(spec)
+    spec.loader.exec_module(tg)
+    f = tg.scan_queue_vocabulary
+
+    HEAD = "| **S6-B1973a** | **OPEN** | P1 | title | _reason:_ "
+    WHY = "this needs %s and I cannot write it |"
+
+    early = HEAD + WHY % "**OWNER CONTENT**"
+    late = HEAD + WHY % "owner content, which is **not mine**"
+    for lbl, row in (("early bold", early), ("late bold", late)):
+        assert not f([], rows=[row]), (
+            f"a genuine reason with {lbl} must pass - the verdict cannot "
+            "depend on where the emphasis sits (#275)")
+
+    # the placeholder rejection must SURVIVE the widening, both plain & bold
+    for ph in ("TBD", "**TBD**", "todo"):
+        assert f([], rows=[HEAD + ph + " |"]), (
+            f"{ph!r} is a placeholder and must still fire - widening the "
+            "extractor must not soften the check it feeds (#226)")
+
+    # and a genuinely absent reason must still fire
+    assert f([], rows=["| **S6-B1973a** | **OPEN** | P1 | title | no why |"]), (
+        "an OPEN row with no `_reason:_` at all must still fire")
+
+
+def test_b1973_every_ticket_row_closes_its_cell():
+    """B1973: a ticket row missing its terminating `|` is not a table row.
+
+    Five rows written through the Python `fh.write` path lacked it; the
+    heredoc path always closed the pipe. The reason-extractor then found no
+    delimiter and read the reason as EMPTY, so the gate fired on a row that
+    HAD a reason and blamed the reason - a correct fire with a misleading
+    diagnosis, which is worse than a clean miss.
+    """
+    import pathlib as _p
+    import re as _re
+
+    root = _p.Path(__file__).resolve().parents[2]
+    bad = []
+    for n, ln in enumerate(
+            (root / "EXECUTION_QUEUE.md").read_text(encoding="utf-8").splitlines(), 1):
+        if _re.match(r"^\|\s*\*\*(S6-[A-Za-z0-9-]+)\*\*\s*\|\s*\*\*[A-Z-]+\*\*", ln):
+            if not ln.rstrip().endswith("|"):
+                bad.append((n, _re.match(r"^\|\s*\*\*(S6-[A-Za-z0-9-]+)\*\*",
+                                         ln).group(1)))
+    assert not bad, (
+        f"{len(bad)} ticket row(s) do not close their last cell: {bad[:6]}. "
+        "Every cell-reading gate loses its right delimiter on these rows.")

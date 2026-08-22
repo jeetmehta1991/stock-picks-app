@@ -13227,3 +13227,52 @@ falsy-coalescing on a numeric where 0 is a legitimate value; mechanism
 `test_b1972_zero_is_a_value_not_an_absence`, which asserts the ordering
 directly (0.0 must outrank a loser, absent must still sort last) rather than
 describing it. Remaining 25 filed as `S6-B1972b`. Carried into `SKILL.md`.
+
+
+### L606
+
+**A correct fire with the wrong stated cause reads as a false alarm - and I
+said so out loud before checking**
+
+**B1973.** The turn gate reported *"`S6-B1972b`: OPEN carries NO `_reason:_`"*.
+The row carries one. My first written words were **"the gate is misfiring"** -
+and it was not. The row was missing its terminating `|`, so the extractor
+`_reason:_\s*(.+?)\s*(?:\*\*|\|)` found no right delimiter and returned no
+match, which the gate reports as *no reason*.
+
+**The fire was RIGHT and its NAME was wrong**, and a wrong name is what sends
+you to defend the row instead of inspecting it. **A gate that misnames its
+cause spends its own credibility**: the next true fire is read as the same
+false alarm. That cost is paid by the gate, not by the row.
+
+**Underneath sat a real one.** The same pattern stops at the FIRST `**`, so a
+genuine reason that emphasises early is truncated and then fails the 12-char
+placeholder test:
+
+- `"this needs **OWNER CONTENT** and I cannot write it"` -> `'this needs'` ->
+  **FIRES as a placeholder**
+- `"this needs owner content and I cannot write **it**"` -> **passes**
+
+**The same reason, opposite verdicts, decided by where the emphasis sits.**
+That is `#275` for the **third time this session** - after B1969's own-id scrub
+and B1970's row collector. Three instances in one file in three batches says
+the item is not a stale entry: **every regex that reads a formatted document is
+a candidate, and they were all written by someone who could see the formatting
+they had in mind.**
+
+**And 5 of my own rows were malformed** - every one written through the Python
+`fh.write` path, none through the heredoc path, which always closed the pipe.
+**Two ways of doing the same thing, one of them lossy, and no check between
+them.**
+
+**NOT a defect, checked before claiming:** `_reason:_ **TBD**` still fires -
+B1769c's `.lstrip("*_ ")` already handles leading bold. I had it written up as
+a bypass and tested it first.
+
+MEASURED: 5 malformed rows of 1,313; 3 `#275` instances in
+`verify_turn_compliance.py` in 3 batches; the truncation flips the verdict on
+an identical reason. **ANCHORED (`#197`):** compliance failure against `#275`;
+mechanisms `test_b1973_reason_verdict_is_invariant_to_emphasis` (asserts the
+verdict is the same for early and late bold, and that the placeholder check
+survives the widening) and `test_b1973_every_ticket_row_closes_its_cell`.
+Carried into `SKILL.md`.
