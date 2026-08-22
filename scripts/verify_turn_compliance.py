@@ -3181,7 +3181,15 @@ def _affirms(text: str, markers, *, window: int = 60) -> list[str]:
         if not ml:
             continue
         lead = r"(?<![a-z0-9_])" if ml[0].isalnum() else ""
-        tail = r"(?![a-z0-9_])" if ml[-1].isalnum() else ""
+        # B2004 (S6-B1847a/b, owner-approved G1): tolerate the PLURAL. The
+        # trailing guard alone made "0.385 sim-days per second" fail the
+        # proof that "0.385 sim-day per second" passed - identical claims,
+        # opposite verdicts, one letter (reproduced live before fixing).
+        # ONLY (?:s|es) - no verb inflections - per L572: a uniform
+        # transform over a heterogeneous marker list is several different
+        # changes, and only the plural has evidence. Same shape as B1904's
+        # fix to _any_word.
+        tail = r"(?:s|es)?(?![a-z0-9_])" if ml[-1].isalnum() else ""
         ok = False
         for hit in _re.finditer(lead + _re.escape(ml) + tail, t):
             # B1773b: CLAMP TO THE CLAUSE, and look BOTH WAYS. Two defects the

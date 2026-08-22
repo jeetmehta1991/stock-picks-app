@@ -22607,3 +22607,46 @@ def test_b2001_smart_money_score_memo_is_transparent():
     assert (t, d) not in sm._SM_SCORE_CACHE, (
         "an explicit-dict call must bypass the cache in BOTH directions - "
         "neither reading nor writing it")
+
+
+
+def test_b2004_affirms_tolerates_the_plural():
+    """B2004 (G1 / S6-B1847a+b): one letter must not flip a proof verdict.
+
+    Reproduced live before fixing, with the gate ARMED by a cost trigger:
+    "0.385 sim-day per second" cleared scan_unmeasured_quantity while
+    "0.385 sim-days per second" fired - the trailing word-guard rejected the
+    plural of every QUANT_PROOF unit. A gate that goes quiet on a word
+    ending in s is indistinguishable from a gate that approves (L561).
+
+    Owner-approved global change (4 _affirms call sites); plural suffix
+    ONLY, per L572's heterogeneous-list warning.
+    """
+    import importlib.util as _iu
+    import pathlib as _p
+
+    root = _p.Path(__file__).resolve().parents[2]
+    spec = _iu.spec_from_file_location(
+        "vtc_b2004", root / "scripts" / "verify_turn_compliance.py")
+    tg = _iu.module_from_spec(spec)
+    spec.loader.exec_module(tg)
+
+    S = ("that lever costs nothing extra - the engine already does "
+         "0.385 %s per second")
+    assert not tg.scan_unmeasured_quantity([], text=S % "sim-day"), (
+        "the singular unit is proof vocabulary and must keep clearing")
+    assert not tg.scan_unmeasured_quantity([], text=S % "sim-days"), (
+        "the PLURAL of the same unit must clear identically - one letter "
+        "flipped the verdict before this fix (the live reproduction)")
+
+    # the trigger must survive: a cost claim with NO proof still fires
+    assert tg.scan_unmeasured_quantity(
+        [], text="that lever costs nothing extra, trust me"), (
+        "plural tolerance must not soften the gate itself (#226)")
+
+    # negation discipline unchanged: a negated plural is not proof
+    assert not tg._affirms("we never ran the benchmarks", ("benchmark",)), (
+        "a negated plural must not affirm - the negation window applies to "
+        "inflected hits exactly as to exact ones")
+    assert tg._affirms("we ran the benchmarks twice", ("benchmark",)), (
+        "an un-negated plural now affirms - the fix itself")
