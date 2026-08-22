@@ -22371,3 +22371,59 @@ def test_b1991_rho_inversion_survives_the_three_classical_causes():
         f"the boundary-date trade appears in {in_is + in_ho} windows - "
         "overlap (2) manufactures correlation between the samples; a gap (0) "
         "silently drops trades. Both invalidate the rho")
+
+
+
+def test_b1995_smc_swing_length_binds_differentially():
+    """B1995 (S6-B1518b): SMC_SWING_LENGTH must CHANGE the fire set.
+
+    "Plumbed" was a grep-level claim until this: the config constant reaches
+    `compute_smc_signals` (wiring half, asserted on source through
+    `code_only`), AND a non-default value changes the emitted signals on real
+    cached data (behaviour half, the one grep cannot see).
+
+    Probed before pinning: 5 of 28 keys differ between swing_length 20 and 8
+    on AAPL's 1,255 cached bars - including `smc_bos_bullish` and
+    `smc_choch_bullish`, the strategy-facing fires. 0.04s per call.
+    """
+    import importlib.util as _iu
+    import pathlib as _p
+    import sys as _sys
+
+    import pandas as _pd
+    import pytest as _pytest
+
+    root = _p.Path(__file__).resolve().parents[2]
+
+    # wiring half: the engine call site passes the CONFIG constant
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    import source_text as _st
+    code = _st.code_only(root / "backtest" / "signals" / "screener.py")
+    assert "swing_length=_cfg.SMC_SWING_LENGTH" in code, (
+        "the screener must pass the CONFIG constant - a hardcoded 20 here "
+        "would make the env knob decorative (S6-B1518b's grep-level trap)")
+
+    # behaviour half: a non-default value must CHANGE the emitted signals
+    cache = root / "data_prefetch" / "polygon" / "ohlcv_daily" / "AAPL.parquet"
+    if not cache.exists():
+        _pytest.skip("AAPL OHLCV cache absent on this clone - the wiring "
+                     "half above still ran; the differential needs data")
+    from backtest.signals.smc_ict import compute_smc_signals
+    df = _pd.read_parquet(cache)
+    df = df.rename(columns={c: c.lower() for c in df.columns})
+    sub = df[["open", "high", "low", "close",
+              "volume"]].tail(400).reset_index(drop=True)
+
+    a = compute_smc_signals(sub, swing_length=20)
+    b = compute_smc_signals(sub, swing_length=8)
+    diff = [k for k in a if a.get(k) != b.get(k)]
+    assert diff, (
+        "swing_length 20 -> 8 changed NOTHING in the emitted SMC signals on "
+        "400 real bars - the parameter is decorative and every SMC sweep "
+        "over it measured noise")
+    fires = {k for k in diff if k.startswith("smc_") and isinstance(
+        a.get(k), bool) or isinstance(b.get(k), bool)}
+    assert fires, (
+        f"only non-fire fields moved ({diff[:5]}) - the STRATEGY-FACING "
+        "fire set must respond, or strategies cannot feel the knob")
