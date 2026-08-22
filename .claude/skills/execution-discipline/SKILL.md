@@ -741,6 +741,47 @@ gate had just named.**
 - **Compliance failure against `#45` and `#247`, not a new class.** A fifth rule
   restating four that were ignored is `#136` theater.
 
+## A CITATION IS A CLAIM WITH AN ADDRESS (B1945 - L595, CHECKLIST #201)
+
+**`L611` does not exist.** I ran `grep -n` on LEARNINGS.md, read
+`611:A finding only counts as...`, and recorded it as a lesson number. **The
+text is at LINE 611, inside `L126`** - and the mis-citation reached ticket rows,
+a `CHECKLIST #279` amendment, and a section of THIS FILE, loaded every turn.
+
+- **`#201` asks a FIGURE to name its source. Nothing asked whether a named
+  source EXISTS.** The address is checkable independently of the claim.
+- **Nothing was decided on a false premise** - the rule was real and correctly
+  applied. **The damage is that a reader following the citation finds nothing**,
+  and that reader is most likely you, next session.
+- **A label is not a record.** `L594` was cited in two ticket rows and a turn
+  report before the entry was written.
+- **Grep output carries line numbers that look like identifiers.** So do row
+  indices, commit-position counters, and `enumerate` output.
+
+**Mechanically enforced** by `test_b1945_no_new_dangling_learnings_citation`:
+the dangling sets are frozen and shrink-only, scanned with code spans stripped
+so a row DOCUMENTING a mis-citation can still name it.
+
+## A FIRE-ONLY CORPUS NEVER PROVES A GATE CAN STAY QUIET (B1944 - L594, CHECKLIST #226)
+
+**A gate demanded proof of a count and did not recognise `queue_state`, the
+script that produces every count in these reports.** Nobody noticed because its
+corpus was fire-only: one case, must-fire, nothing asserting a compliant turn
+passes. **MEASURED: 20 of 41 gates are fire-only.**
+
+- **A must-FIRE case proves the gate catches the defect. Only a must-QUIET case
+  proves it does not punish the compliant turn.**
+- **B1722 named the consequence for false POSITIVES - a gate that cries wolf
+  gets bypassed. This is the mirror**, and it is harder to see: **a false
+  negative looks like a working gate to everyone except the person doing it
+  right**, whose cheapest response is to reach for whatever token the gate
+  accepts.
+- **A proof-vocabulary that omits the canonical tool teaches the workaround.**
+
+**Mechanically enforced** by `FIRE_ONLY_LEGACY` in
+`test_b1944_fire_only_corpus_is_a_shrinking_set` - frozen at 20, shrink-only,
+and moved to 19 in the batch that created it.
+
 ## PIN THE CODE THAT MEASURED IT, NOT A FRESH IMPLEMENTATION (B1938 - L593, CHECKLIST #271)
 
 **L592 says count the sites and pin the count. I did both and they disagreed:**
