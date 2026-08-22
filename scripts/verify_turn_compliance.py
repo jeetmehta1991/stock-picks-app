@@ -2779,7 +2779,11 @@ def scan_false_skill_status(entries, *, text=None, injected=None) -> list[str]:
     every turn. Existence gates cannot catch content lies; this one compares the
     claim against the observable injection.
     """
-    t = (_assistant_text(entries) if text is None else text.lower())
+    # B1954 (S6-B1783b): ninth gate routed through _response_text, with
+    # keep_code=True for the reason B1953 established - **skill names are
+    # conventionally backticked**, so the default strip would remove the exact
+    # tokens this gate checks, exactly as it broke scan_skill_block_incomplete.
+    t = _response_text(entries, text, keep_code=True)
     if not t or "skills invoked" not in t:
         return []
     if injected is None:
