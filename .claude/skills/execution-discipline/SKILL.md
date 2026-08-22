@@ -741,6 +741,19 @@ gate had just named.**
 - **Compliance failure against `#45` and `#247`, not a new class.** A fifth rule
   restating four that were ignored is `#136` theater.
 
+## A TICKET'S NUMBERS ARE AS PERISHABLE AS A RESPONSE'S (B1890 - L577, CHECKLIST #256)
+
+**MEASURED: a row carried "14 gates with no seam" for batches; the world said
+9.** It was correct when written and went stale while staying open.
+
+- **`#256` covers a figure you REPEAT.** It has no reach into a figure sitting
+  in a ticket, which is read as a PREMISE - **and a premise is what nobody
+  re-derives.** 100 of 109 live tickets carry a number.
+- **Re-derive before working a row**, not after. Mechanism:
+  `python scripts/audit_ticket_staleness.py`, now 9 claim shapes.
+- **A prober that cannot measure must print `n/a`, never a placeholder digit** -
+  a fake number looks like a measurement, which is the failure it exists to catch.
+
 ## VERIFYING A MONITOR'S PLUMBING IS NOT VERIFYING ITS PERCEPTION (B1886 - L576, mechanically enforced)
 
 **MEASURED: a launch-turn gate confirmed the cron's state-file path matched the

@@ -32,6 +32,12 @@ import sys
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
+# B1889b: ROOT itself was never on the path, so `import backtest...`
+# failed whenever this ran AS A SCRIPT - sys.path[0] is the script's
+# own directory, not the cwd. Every prober needing engine code would
+# have reported "unavailable" for a reason that had nothing to do
+# with the thing being measured.
+sys.path.insert(0, str(ROOT))
 
 LIVE = ("OPEN", "BLOCKED", "DEFERRED", "RUNNING")
 ROW = re.compile(
@@ -104,6 +110,76 @@ def _vocab():
     return len(bad), bad
 
 
+@probe("registered strategies")
+def _strategies():
+    """B1889: rows cite strategy counts constantly - "41 tightening-band",
+    "182 strategies", "219 active". The registry is the only authority.
+
+    B1891: returns MEMBERS, not just a count. The contract is
+    count == len(detail) - a bare number cannot be audited (L546).
+    """
+    try:
+        from backtest.signals.screener import ALL_STRATEGIES
+    except Exception as exc:                      # heavy import; never break
+        return None, [f"unavailable: {exc!r}"]    # the audit
+    names = sorted(getattr(s, "__name__", str(s)) for s in ALL_STRATEGIES)
+    return len(names), names
+
+
+@probe("registered exit methods")
+def _exits():
+    """B1889: "26 exits" appears across cube-shape claims, and B1877 showed a
+    cube's EFFECTIVE family can differ from its registered one - so this is
+    the floor, not the story."""
+    try:
+        from backtest.engine.exit_strategies import EXIT_STRATEGIES
+    except Exception as exc:
+        return None, [f"unavailable: {exc!r}"]
+    names = sorted(EXIT_STRATEGIES)
+    return len(names), names
+
+
+@probe("distinct queue tickets (last row wins)")
+def _tickets():
+    """B1889: #271 - the ledger is an APPEND LOG, so a row count is not a
+    ticket count."""
+    try:
+        import queue_state as _qs
+        ids = sorted(_qs.tickets())
+        return len(ids), ids
+    except Exception as exc:
+        return None, [f"unavailable: {exc!r}"]
+
+
+@probe("OPEN tickets")
+def _open():
+    try:
+        import queue_state as _qs
+        ids = sorted(t for t, v in _qs.tickets().items() if v == "OPEN")
+        return len(ids), ids
+    except Exception as exc:
+        return None, [f"unavailable: {exc!r}"]
+
+
+@probe("CHECKLIST items")
+def _checklist():
+    """B1891: was returning the HIGHEST number, which is not a cardinality and
+    broke the count == len(detail) contract. Rows cite both, and the count is
+    the one the contract can check."""
+    import re as _re
+    txt = (ROOT / "CHECKLIST.md").read_text(encoding="utf-8", errors="ignore")
+    nums = sorted({int(m) for m in _re.findall(r"^###\s+#(\d{1,3})\b", txt, _re.M)})
+    return len(nums), [f"#{n}" for n in nums]
+
+
+@probe("LEARNINGS entries")
+def _learnings():
+    import re as _re
+    txt = (ROOT / "LEARNINGS.md").read_text(encoding="utf-8", errors="ignore")
+    nums = sorted({int(m) for m in _re.findall(r"^#{2,3}\s+L(\d{1,4})\b", txt, _re.M)})
+    return len(nums), [f"L{n}" for n in nums]
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--all", action="store_true",
@@ -118,7 +194,11 @@ def main() -> int:
             print(f"  ERROR {label}: {type(exc).__name__}: {exc}")
             continue
         shown = ", ".join(detail[:6]) + (" ..." if len(detail) > 6 else "")
-        print(f"  {n:>4}  {label}")
+        # B1889b: a prober that cannot measure returns None, and it must not
+        # render as a number. Formatting None crashed the whole audit; showing
+        # a placeholder digit would be worse - it would look like a
+        # measurement, which is the failure this script exists to catch.
+        print(f"  {'n/a' if n is None else n:>4}  {label}")
         if detail:
             print(f"        {shown}")
 

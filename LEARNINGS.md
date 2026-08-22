@@ -12009,3 +12009,39 @@ empty when the pattern fails its control.
 **The rule: when a monitor searches, its pattern needs a positive control
 before the monitor is trusted to report silence.** **ANCHORED (`#197`):**
 `CHECKLIST #185` and `#226`; carried into `SKILL.md`.
+
+
+### L577
+
+**A rule governs the figures I state; nothing governed the ones sitting in the ledger**
+
+**B1888/B1889.** `S6-B1761b` had carried *"14 gates whose pin tests can only
+assert `gate([])==[]`"* for batches. **MEASURED: 9.** The row was correct when
+written and went stale while staying open, and I would have worked from it.
+
+**`#256` covers a figure I REPEAT in a response.** It has no reach into a figure
+sitting in a ticket, which is read as a premise rather than quoted as a claim -
+**and a premise is exactly the thing nobody re-derives.** MEASURED across the
+ledger: **100 of 109 live tickets carry a number.**
+
+**The prober for this specific claim already existed.** `audit_ticket_staleness.py`
+carries `_seamless()` - *"scan_ gates with no injectable seam"* - the exact shape
+that went stale, with a HAND-RUN line in its own docstring. **L570's fifth
+instance**, and the cheapest yet: a script in `scripts/` that nobody ran.
+
+**Extending it found two more defects in one run.** My new probers return `None`
+when a measurement is unavailable and `main()` formatted with `{n:>4}`, so the
+audit CRASHED - I added a crash to a working script. And the reason mine
+surfaced was pre-existing: the script put `ROOT/"scripts"` on `sys.path` and
+never `ROOT`, so **`import backtest...` failed whenever it ran AS A SCRIPT**,
+and every engine-dependent prober would have said "unavailable" for a reason
+unrelated to what it measures.
+
+**A prober that cannot measure must not print a number.** Rendering `None` as a
+placeholder digit would look like a measurement, which is the failure the whole
+script exists to catch. It renders `n/a`.
+
+**The rule: a ticket's numbers are as perishable as a response's, and the ledger
+is where perished numbers are trusted most.** Re-derive before working a row, not
+after. **ANCHORED (`#197`):** `CHECKLIST #256`; mechanism is
+`audit_ticket_staleness.py`, extended from 4 shapes to 9.

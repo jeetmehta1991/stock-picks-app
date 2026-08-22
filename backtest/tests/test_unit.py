@@ -19779,3 +19779,50 @@ def test_b1884_raises_arms_use_genuinely_invalid_fixtures():
         f"only {checked} raises-guarded fixtures found; this gate has stopped "
         "matching and is inert (L561: a silent gate and a correct one are the "
         "same observation)")
+
+
+
+def test_b1891_staleness_prober_covers_the_ledger_shapes():
+    """B1891 (L577): the SKILL rule "re-derive a ticket's numbers" has a TOOL
+    and no gate forcing anyone to run it, so the durable half is that the tool
+    keeps covering the shapes rows actually cite.
+
+    MEASURED when this shipped: 100 of 109 live tickets carry a number, and
+    only 4 shapes were auto-derivable. A prober that quietly loses shapes
+    returns to disclosing the risk instead of removing it.
+    """
+    import importlib.util
+    import pathlib as _p
+
+    root = _p.Path(__file__).resolve().parents[2]
+    spec = importlib.util.spec_from_file_location(
+        "ats_b1891", root / "scripts" / "audit_ticket_staleness.py")
+    m = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(m)
+
+    assert len(m.PROBES) >= 9, (
+        f"the staleness prober covers only {len(m.PROBES)} claim shapes; it "
+        "was extended to 9 at B1889 because 100 of 109 live tickets carry a "
+        "number. Losing shapes returns S6-B1776c to 'disclosed, not removed'.")
+
+    # the SKILL rule that points at this tool must survive alongside it
+    skill = (root / ".claude" / "skills" / "execution-discipline"
+             / "SKILL.md").read_text(encoding="utf-8")
+    # B1891b: the B1860 classifier matches the FULL header key (the text
+    # before the parenthesis), so a prefix does not register the section
+    # as pinned. Assert the whole key.
+    assert "A TICKET'S NUMBERS ARE AS PERISHABLE AS A RESPONSE'S" in skill, (
+        "the L577 section left the skill - a rule about stale ledger numbers, "
+        "removed from the file loaded every turn, is the rule going stale")
+    assert "audit_ticket_staleness" in skill, (
+        "the section must NAME the tool, or the rule is an instruction with "
+        "no way to follow it")
+
+    # every prober enumerates its members - a bare count cannot be audited
+    for label, fn in m.PROBES.items():
+        n, detail = fn()
+        if n is None:
+            continue                      # unavailable is a stated outcome
+        assert n == len(detail), (
+            f"{label}: count {n} != len(detail) {len(detail)}. A count that "
+            "does not name its members cannot be audited (L546).")
