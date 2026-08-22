@@ -741,6 +741,22 @@ gate had just named.**
 - **Compliance failure against `#45` and `#247`, not a new class.** A fifth rule
   restating four that were ignored is `#136` theater.
 
+## A LITERAL'S VALUE DEPENDS ON THE PATH IT TRAVELLED (B1884 - L575, CHECKLIST #226)
+
+**MEASURED: I verified a fixture was invalid Python in a bash heredoc, embedded
+it in a `pytest.raises` arm, and the arm failed DID NOT RAISE** - the literal,
+as it exists in the file, parses.
+
+- **The two strings looked identical and were not.** Heredoc copy: bash -> tool
+  layer -> Python. File copy: disk -> parser. `\\` collapses on one and
+  survives on the other.
+- **Read the literal back out of the TARGET file with `ast`.** That settled in
+  one command what two heredoc probes got wrong.
+- **This mangling corrupted a BELIEF, not a file** - no file check catches it,
+  because the file was written exactly as intended.
+- **When a fixture's VALUE carries the meaning of a test, verify it where it
+  lives, not where you drafted it.**
+
 ## BEING RIGHT ABOUT THE CONTENT IS NOT BEING RIGHT ABOUT THE CLAIM (B1882 - L574, CHECKLIST #226)
 
 **MEASURED: a gate blocked three consecutive turns. I checked the match, found

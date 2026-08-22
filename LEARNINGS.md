@@ -11934,3 +11934,41 @@ SCOPE of its claim, not only the content of its match.** A time-scoped claim
 needs a timestamp; a turn-scoped claim needs the turn. **ANCHORED (`#197`):**
 `CHECKLIST #226` - a gate's PASS needs proof it can fail, and a gate's FIRE
 needs proof it is about what it says. Carried into `SKILL.md`.
+
+
+### L575
+
+**A literal's value depends on the path it travelled to get there**
+
+**B1883.** Building the pin for `safe_write_py`, I needed a fixture that is
+INVALID Python. I tested a candidate in a bash heredoc, it raised
+`SyntaxError`, and I embedded it in an arm asserting `pytest.raises`. **The arm
+failed with DID NOT RAISE: the literal, as it exists in the file, parses fine.**
+
+**The two strings looked identical on screen and were not.** The heredoc copy
+travelled bash -> tool layer -> Python; the file copy travelled disk ->
+Python's parser. **`\\` collapses on one journey and survives on the other**,
+so `assert 1, \` + `"a"` + `"b"` became a continuation joining
+`assert 1, "a"` with `"b"` as its own valid statement - which parses.
+
+**The authoritative check is the installed one.** Reading the literal back out
+of the TARGET file with `ast` and evaluating it settled in one command what two
+heredoc probes had got wrong. **Same shape as L568** - an empty grep result is
+indistinguishable from a wrong pattern - here a passing parse is
+indistinguishable from a different string.
+
+**Third mangling of the session, and the first one that reached a claim.** The
+earlier two corrupted a file (caught by `safe_append_py`) and a regex (caught by
+an assert). **This one corrupted my BELIEF about a fixture**, which no file
+check can catch, because the file was written exactly as intended - the
+intention was wrong.
+
+**MECHANISM:** `test_b1884_raises_arms_use_genuinely_invalid_fixtures` reads
+the installed test, extracts every source passed to `safe_write_py` /
+`safe_append_py` under `pytest.raises`, and asserts each one **actually fails
+`ast.parse`**. A fixture that quietly starts parsing turns its arm into a
+tautology, and nothing else would notice.
+
+**The rule: when a fixture's VALUE carries the meaning of a test, verify it
+where it lives, not where you drafted it.** **ANCHORED (`#197`):** `CHECKLIST
+#226`; carried into `SKILL.md`.

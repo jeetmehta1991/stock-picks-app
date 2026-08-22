@@ -19716,3 +19716,66 @@ def test_b1883_safe_write_refuses_invalid_source():
 
         sw.safe_append_py(p, "\nalso_valid = 3\n")
         assert "also_valid" in p.read_text(encoding="utf-8")
+
+
+
+def test_b1884_raises_arms_use_genuinely_invalid_fixtures():
+    """B1884 (L575): a `pytest.raises(WouldNotParse)` arm needs a fixture that
+    actually fails to parse.
+
+    I verified a candidate in a bash heredoc, embedded it, and the arm failed
+    DID NOT RAISE - the literal as it exists in the file parses fine. The two
+    strings looked identical; they travelled different paths. A fixture that
+    quietly starts parsing turns its arm into a tautology and nothing else
+    would notice.
+
+    This reads the INSTALLED literals - the authoritative copy - rather than
+    any draft of them.
+    """
+    import ast as _ast
+    import pathlib as _p
+
+    here = _p.Path(__file__)
+    tree = _ast.parse(here.read_text(encoding="utf-8"))
+
+    targets = {"safe_write_py", "safe_append_py"}
+    checked = 0
+    for fn in _ast.walk(tree):
+        if not isinstance(fn, _ast.FunctionDef):
+            continue
+        for node in _ast.walk(fn):
+            # only arms guarded by pytest.raises
+            if not isinstance(node, _ast.With):
+                continue
+            guarded = any(
+                isinstance(it.context_expr, _ast.Call)
+                and getattr(it.context_expr.func, "attr", "") == "raises"
+                for it in node.items)
+            if not guarded:
+                continue
+            for call in _ast.walk(node):
+                if not (isinstance(call, _ast.Call)
+                        and getattr(call.func, "attr", "") in targets):
+                    continue
+                if len(call.args) < 2:
+                    continue
+                arg = call.args[1]
+                if not (isinstance(arg, _ast.Constant)
+                        and isinstance(arg.value, str)):
+                    continue
+                checked += 1
+                try:
+                    _ast.parse(arg.value)
+                except SyntaxError:
+                    continue
+                raise AssertionError(
+                    f"{fn.name} line {call.lineno}: the fixture passed under "
+                    f"pytest.raises PARSES, so the arm is a tautology. "
+                    f"Literal: {arg.value!r}. A fixture verified in a heredoc "
+                    "is not the fixture in the file - `\\` collapses on one "
+                    "journey and survives on the other (L575).")
+
+    assert checked >= 3, (
+        f"only {checked} raises-guarded fixtures found; this gate has stopped "
+        "matching and is inert (L561: a silent gate and a correct one are the "
+        "same observation)")
