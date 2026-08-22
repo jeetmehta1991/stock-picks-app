@@ -973,6 +973,30 @@ PYTHONPATH=. python backtest/run_phase1a.py \
 | `--max-run-hours` | the runner REFUSES to start without it |
 | `--start 2024-05-05 --end 2025-05-05` | **1-year SEARCH window that ENDS AT THE HOLDOUT BOUNDARY** (owner ruling 2026-08-21). Step 1 previously ran to `2026-05-05` and therefore ranked on the holdout year it is judged against - `S6-B1605c`. |
 
+**DEMAND PRUNING AND UNIVERSE SIZE - MEASURED 2026-08-21 (B1861).** Demand pruning can
+silently produce a ZERO-FIRE run: exit 0, no `SkippedSignalError`, correct windows, and an empty
+cube that passes every completion check. **It is a SMALL-UNIVERSE effect and Step 1 at 200 tickers
+is clear:**
+
+```
+run          universe      demand-pruning ARMED    screen-days   days with >0 candidates
+arm A        10 tickers    2/33 kept, 4 reads      249            0
+fire-check   185 active    3/33 kept, 5 reads       29           29      (7..29 per day)
+```
+
+**Warmup observes what the active strategies READ. A wider universe reads more, so more producers
+survive pruning.** Causally confirmed on the narrow side: same window and tickers with
+`DEMAND_PRUNING=0` gave 20 trades and 75 files against 0 trades and 1 file.
+
+**Consequence for the runbook: never diagnose a strategy on a 10-20 ticker slice.** A zero-fire
+result there is as likely to be pruning as it is to be the strategy. `zero_output_runs()` in
+`scripts/verify_postconfig_complete.py` detects the signature - `status=complete`, `trades=0`, no
+`trade_log.csv` - independently of the post-config ledger.
+
+**Denominator caution (L568):** the screener reports against the **PIT-ACTIVE** universe, not the
+ticker file's line count - `/185`, not `/200`. A monitor grepping the file count matches nothing
+and reads as silence.
+
 **UNIVERSE ARTIFACT VERIFIED 2026-08-21 (B1846, `#193`).** `verify_universe_artifact.py
 output_audit/_sweep_200.txt --compare-cube output_r5_merged_1_7/trade_exit_detail.csv`:
 

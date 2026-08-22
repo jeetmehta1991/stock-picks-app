@@ -11650,3 +11650,41 @@ examined one.**
 EVERY term in it against a case table before editing, and put the table in the
 commit.** **ANCHORED (`#197`):** extends `CHECKLIST #226` alongside its B1836 and
 B1840 extensions. Carried into `SKILL.md`.
+
+
+### L568
+
+**A grep pattern is an assumption about the data, and mine nearly reversed a verdict**
+
+**B1856/B1861.** The launch blocker `S6-B1849b` asked whether the owner-approved
+Step-1 window zeroes at 200 tickers, as it had at 10-20. I watched for it with
+`grep -oE "[0-9]+/200 passed"`, got nothing, and reported *"still in warmup"*
+twice.
+
+**The run was firing the whole time.** The screener's denominator is the
+PIT-ACTIVE universe, not the file's line count: **185, not 200.** Every day had
+candidates - **29 of 29 screen-days, 7 to 29 per day** - while my pattern
+matched none of them.
+
+**The monitor carried the same defect.** Its prompt greps `/200` too, so it
+would have reported *"no fires"* every 11 minutes, unattended, and I would have
+**confirmed the blocker backwards from a pattern error.** A wrong verdict here
+costs a whole wave: the recommendation was to re-scope the approved window.
+
+**What actually caught it** was not the grep but reading a raw log line while
+checking whether the process was alive at all. **The literal evidence was one
+`tail` away the entire time**, and the derived view stood between me and it.
+
+**Two compounding precondition errors in one investigation.** The other: I read
+`demand-pruning ARMED: 3/33` at 22:57 as the fire-check's, when it belonged to a
+**pytest fixture** running `--tickers AAPL` on a 3-day window during my own
+pyramid. **That one also pointed at the flattering answer** - 3/33 is the firing
+configuration. Two probes, both wrong, both leaning the same way as my prior.
+
+**The rule: when a grep returns nothing, prove the pattern matches a KNOWN
+POSITIVE before concluding the thing is absent.** An empty result is
+indistinguishable from a wrong pattern, exactly as a silent gate is
+indistinguishable from a working one (L561). **ANCHORED (`#197`):** this is L556
+- *a probe that omits a precondition returns the answer you were hoping for* -
+in its sharpest form yet, and `CHECKLIST #226`'s prove-it-can-fail applied to a
+SEARCH rather than a gate.
