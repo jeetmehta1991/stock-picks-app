@@ -12298,11 +12298,27 @@ partial list written for a different purpose; I treated its silence as the
 record's silence. **A local artifact's omission is evidence about that
 artifact, never about the corpus.**
 
-**The gap is structural, not personal.** `#201` gates figures, `#222` gates
-uninspected constants, `#256` gates re-derivation - **every quantitative claim
-has a gate, and the widest claim in the vocabulary had none.** "This is new /
-undocumented / nothing covers it" ranges over every file in the repo, and I was
-making it from memory.
+**CORRECTED B1911 - this entry originally claimed the class had no coverage,
+which is the very claim it is about.** `#136`'s retroactive-coverage test found
+the prior art immediately:
+
+- **`CHECKLIST #26` (Assumption Validation) already covers it**, and **L520
+  says so in as many words**: *"Claude proposes new content / new direction /
+  new framework without first grepping the existing project for prior art.
+  CHECKLIST #26 was supposed to catch this."*
+- **L535 records it happening TWICE in one session** - two proposed decisions
+  for gaps already documented, both caught by the owner.
+- **L611 is exact**: *"A finding only counts as 'no prior art' when ALL FOUR
+  sources confirm absence. INDEX is necessary but not sufficient."* **My miss
+  was treating ONE source - a code comment - as sufficient. That is L611's
+  defect verbatim.**
+
+**So the RULE existed and the MECHANISM did not.** `#201` gates figures, `#222`
+uninspected constants, `#256` re-derivation - each of those is a RULE WITH A
+GATE, and `#26` was a rule enforced solely by remembering it. **That is the
+real gap, and it is narrower and more useful than the one I first claimed.**
+This is a **COMPLIANCE FAILURE against `CHECKLIST #26`**, not a new class; a
+redundant item is what `#136` exists to reject.
 
 **MECHANISM:** `scan_novelty_claim_without_search` - a clause asserting novelty
 must name the search that established it (grep, the file searched, the count
@@ -12312,6 +12328,17 @@ vocabulary was built in from the start rather than bolted on after the gate
 blocked its own incident report, which is how the previous ~13 self-reference
 instances went.
 
-**The rule: a claim of novelty needs the same verification as a number.**
-**ANCHORED (`#197`):** `CHECKLIST #201`'s class, extended from figures to
-novelty claims. Carried into `SKILL.md`.
+**The rule: a claim of novelty needs the same verification as a number** -
+and per L611, from ALL the sources, not the nearest one. **ANCHORED (`#197`):**
+COMPLIANCE FAILURE against `CHECKLIST #26`; no new item. The contribution is
+the MECHANISM that makes `#26` enforceable rather than remembered, which is the
+distinction L520 was already pointing at. Carried into `SKILL.md`.
+
+**A closing note on this entry: I nearly widened the new gate to let my own
+report through.** The clause-scoped check blocked my sentence describing the
+incident - self-reference instance ~14 - and the retraction I had built in
+landed one sentence too late. **MEASURED before changing anything: 0 of 39 real
+firings would clear if the window were widened, and 35 carry no retraction at
+all.** The gate was right and my sentence was the outlier. That is B1909b's
+lesson holding one batch later, under a live temptation to reach the opposite
+conclusion.

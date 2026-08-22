@@ -750,9 +750,13 @@ I happened to grep first. **Nothing required that grep.**
 
 - **"Not in the code comment" is not "not documented."** A local artifact's
   omission is evidence about that artifact, never about the corpus.
-- **`#201` gates figures, `#222` constants, `#256` re-derivation - every
-  quantitative claim had a gate, and the WIDEST claim had none.** "This is new"
-  ranges over every file in the repo.
+- **CORRECTED B1911: the RULE existed, the MECHANISM did not.** `CHECKLIST
+  #26` covers it and **L520 says so**; **L611** is exact - *"a finding only
+  counts as no prior art when ALL FOUR sources confirm absence"*. **I treated
+  ONE source, a code comment, as sufficient.** COMPLIANCE FAILURE against
+  `#26`, not a new class.
+- **Check ALL the sources, not the nearest one.** `#201`/`#222`/`#256` are
+  rules WITH gates; `#26` was a rule enforced by remembering it.
 - **Name the search or say the prior art exists.** MEASURED on 5,098 real
   report texts: the gate fires on 0.7pct.
 - **Build the retraction escape FROM THE START.** Self-reference has hit this
