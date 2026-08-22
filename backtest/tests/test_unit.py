@@ -22458,3 +22458,77 @@ def test_b1996_citing_an_item_does_not_arm_the_sweep_gate():
     assert tg.scan_retroactive_sweep([], text=ADDED), (
         "the corpus incident - a rule genuinely being closed as a class - "
         "must still fire without the substring trigger (#226)")
+
+
+
+def test_b1997_smc_breaker_knobs_bind_differentially():
+    """B1997 (S6-B1995b): the three B1616 knobs must CHANGE the fire set.
+
+    Same bar as B1995's swing-length pin: "plumbed" is a grep-level claim
+    until a non-default value changes real output. And the same trap
+    S6-B1522a codifies had to be dodged first: the initial differential
+    returned 0 for ALL THREE knobs - not because they are decorative, but
+    because the 400-bar window held NO breaker/mitigation subject (L393's
+    vacuous pass). Every arm below asserts its SUBJECT OCCURS first.
+    """
+    import importlib.util as _iu
+    import pathlib as _p
+    import sys as _sys
+
+    import pandas as _pd
+    import pytest as _pytest
+
+    root = _p.Path(__file__).resolve().parents[2]
+
+    # wiring half: all three reach the producer FROM CONFIG at the call site
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    import source_text as _st
+    code = _st.code_only(root / "backtest" / "signals" / "screener.py")
+    for frag in ('close_mitigation=getattr(_cfg, "SMC_OB_CLOSE_MITIGATION"',
+                 'breaker_age_bars_max=getattr(_cfg, "SMC_BREAKER_AGE_BARS_MAX"',
+                 'breaker_break_pct_max=getattr(_cfg, "SMC_BREAKER_BREAK_PCT_MAX"'):
+        assert frag in code, f"wiring lost: {frag[:50]}"
+
+    ohlcv = root / "data_prefetch" / "polygon" / "ohlcv_daily"
+    if not (ohlcv / "AAPL.parquet").exists():
+        _pytest.skip("OHLCV cache absent - wiring half above still enforced")
+    from backtest.signals.smc_ict import compute_smc_signals
+
+    def load(t):
+        df = _pd.read_parquet(ohlcv / f"{t}.parquet")
+        df = df.rename(columns={c: c.lower() for c in df.columns})
+        return df[["open", "high", "low", "close",
+                   "volume"]].tail(1255).reset_index(drop=True)
+
+    aapl = load("AAPL")
+    base = compute_smc_signals(aapl)
+    # L393 / S6-B1522a: the differential is vacuous unless the subject fires
+    assert base["smc_breaker_block_bullish"] is True, (
+        "the breaker subject must OCCUR in the baseline window - with no "
+        "subject, 0-diff proves nothing (the first probe of this batch made "
+        "exactly that vacuous comparison on tail-400 and nearly read three "
+        "live knobs as decorative)")
+
+    tight_age = compute_smc_signals(aapl, breaker_age_bars_max=5)
+    assert tight_age["smc_breaker_block_bullish"] is False, (
+        "an age cap of 5 bars must kill the baseline breaker fire - if it "
+        "cannot, the knob does not bind and every sweep over it was noise")
+
+    tight_pct = compute_smc_signals(aapl, breaker_break_pct_max=0.001)
+    assert tight_pct["smc_breaker_block_bullish"] is False, (
+        "a 0.1pct break cap must kill the baseline breaker fire")
+
+    # close_mitigation has no subject on AAPL (no mitigation events) - its
+    # differential lives where its subject does. AAON flips
+    # smc_mitigation_block_short; skip gracefully if that file is absent.
+    if (ohlcv / "AAON.parquet").exists():
+        aaon = load("AAON")
+        a = compute_smc_signals(aaon)
+        b = compute_smc_signals(aaon, close_mitigation=True)
+        diff = [k for k in a if a.get(k) != b.get(k)]
+        assert diff, (
+            "close_mitigation=True changed nothing on AAON, the ticker whose "
+            "cached window carries a mitigation event - the knob is "
+            "decorative or the event vanished from the cache; either way "
+            "this needs eyes, not a green")
