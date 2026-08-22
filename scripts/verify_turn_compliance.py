@@ -2604,6 +2604,32 @@ def scan_synthetic_provenance(entries, *, text=None, tool_text=None) -> list[str
         # B1872: word-bounded - `grade` matched `degrade`, so a figure
         # described as DEGRADED read as one naming a grading source.
         if _any_word(FIGURE_SOURCES, clause):
+            # B2005 (G2, S6-B1908b, owner-approved): a DOCUMENT asserting a
+            # measurement is not the measurement. `.py` in FIGURE_SOURCES
+            # cleared "tighten_breaker_block.py states the measured spearman
+            # as -0.779" - the figure lived in a COMMENT and nobody ran
+            # anything. Fire when a document-assertion verb pairs a doc-file
+            # extension with measurement language and NO run-evidence token
+            # rescues the clause. Kept narrow (B1996): the mandated
+            # reporting style - "measured by this turn's run over X.parquet"
+            # - carries a run token and never enters this branch.
+            if (_re.search(r"\b(states|says|claims|asserts|according to|"
+                           r"docstring|comment)\b", clause)
+                    and _re.search(r"\.(py|md|txt)\b", clause)
+                    and not _re.search(
+                        r"\b(probe|pytest|ran|re-ran|running|output_|cube|"
+                        r"queue_state|regrad|re-grad|benchmark|"
+                        r"transcript)\b|\.(parquet|csv|json)\b", clause)):
+                return ["MEASUREMENT SOURCED TO A DOCUMENT'S ASSERTION "
+                        "(B2005/#201 verb-split, owner-approved G2): "
+                        f"{clause.strip()[:100]!r} quotes a figure in "
+                        "measurement language whose only source is what a "
+                        ".py/.md/.txt SAYS. **A file is evidence for a READ "
+                        "claim ('the constant is 1.0'), never for an "
+                        "EXECUTED one ('it measured -0.779')** - the B1908 "
+                        "spearman lived in a comment and nobody ran "
+                        "anything. Re-measure, or re-word as an assertion "
+                        "with its author ('the comment claims')."]
             continue
         if any(lbl in t for lbl in SYNTHETIC_LABEL):
             continue

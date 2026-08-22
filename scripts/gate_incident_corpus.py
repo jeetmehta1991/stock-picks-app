@@ -455,6 +455,15 @@ PURE_INCIDENTS: dict[str, list[tuple[tuple, bool, str]]] = {
 
 
 EXTRA_INCIDENTS: dict[str, list[tuple[str, bool, dict]]] = {
+    # B2005 (G2, owner-approved): the verbatim B1908 incident - a COMMENT's
+    # number quoted as measured, cleared by `.py` in FIGURE_SOURCES.
+    "scan_synthetic_provenance": [
+        ("tighten_breaker_block.py states the measured spearman as -0.779 "
+         "across the graded rows", True, {}),
+        # the mandated compliant style stays QUIET: a run token is present
+        ("the rho of -0.779 was measured by this turn's probe over "
+         "b1715_leak_span21.json", False, {}),
+    ],
     # B1965 - the incident VERBATIM: S6-B1790d states a count and names none
     # of the 3. Its batch's partition was 148 = 7 + 138 + 3 and only the 7
     # promoted rows are identifiable, because promotion changed their state.

@@ -20696,7 +20696,6 @@ def test_b1944_fire_only_corpus_is_a_shrinking_set():
         'scan_retroactive_sweep',
         'scan_row_vs_ticket',
         'scan_shell_substitution',
-        'scan_synthetic_provenance',
         'scan_ticket_counts_missing',
         'scan_uncosted_probe',
         'scan_ungated_addition',
@@ -22650,3 +22649,45 @@ def test_b2004_affirms_tolerates_the_plural():
         "inflected hits exactly as to exact ones")
     assert tg._affirms("we ran the benchmarks twice", ("benchmark",)), (
         "an un-negated plural now affirms - the fix itself")
+
+
+
+def test_b2005_document_assertion_is_not_a_measurement():
+    """B2005 (G2 / S6-B1908b, owner-approved): the #201 verb-split.
+
+    `.py` in FIGURE_SOURCES cleared "tighten_breaker_block.py states the
+    measured spearman as -0.779" - the figure lived in a COMMENT and nobody
+    ran anything. A file is evidence for a READ claim, never for an EXECUTED
+    one. The branch is deliberately four-condition-narrow (B1996: the
+    mandated reporting style must not fire).
+    """
+    import importlib.util as _iu
+    import pathlib as _p
+
+    root = _p.Path(__file__).resolve().parents[2]
+    spec = _iu.spec_from_file_location(
+        "vtc_b2005", root / "scripts" / "verify_turn_compliance.py")
+    tg = _iu.module_from_spec(spec)
+    spec.loader.exec_module(tg)
+    g = tg.scan_synthetic_provenance
+
+    # the verbatim incident, and its docstring sibling: must FIRE
+    assert g([], text="tighten_breaker_block.py states the measured "
+                      "spearman as -0.779 across the graded rows"), (
+        "the B1908 incident must fire - a comment's number quoted as "
+        "measured, previously cleared by the bare .py token")
+    assert g([], text="the docstring in smc_ict.py says the measured tail "
+                      "cost is 4.92 ms"), (
+        "a docstring's asserted timing is the same class")
+
+    # the three compliant styles: must stay QUIET
+    assert not g([], text="the rho of -0.779 was measured by this turn's "
+                          "probe over b1715_leak_span21.json"), (
+        "a run token rescues the clause - this is the mandated style")
+    assert not g([], text="measured 1.5 h, recorded in the ledger row "
+                          "alongside output_cfg1"), (
+        "self-recording idiom with a run artifact must not fire")
+    assert not g([], text="the constant floor is 1.0 per config.py "
+                          "line 52"), (
+        "a READ claim about a constant, honestly worded, keeps clearing - "
+        "that half of the split is LEGITIMATE .py evidence")
