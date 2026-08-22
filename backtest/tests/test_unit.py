@@ -20650,3 +20650,80 @@ def test_b1938_uninspected_constant_reads_prose_not_mentions():
         f"{case_preserved} gates keep a case-preserved copy, pin says 2. Only "
         "scan_uninspected_constant routes it through _strip_mentions; "
         "scan_unverified_structure does not, and that is the visible sibling")
+
+
+def test_b1944_fire_only_corpus_is_a_shrinking_set():
+    """B1944 (L594): a fire-only corpus proves a gate CAN fire, never that it
+    can stay QUIET.
+
+    `scan_unverified_count` rejected `python scripts/queue_state.py` as proof
+    of a count because `COUNT_PROOF` omitted the project's canonical counter.
+    **Nobody noticed because its corpus was fire-only** - one case, must-fire,
+    and nothing asserting a compliant turn passes.
+
+    `test_b1805` already states the rule - *"a corpus of only must-fire entries
+    cannot detect a gate that fires on everything"* - **but it runs only for
+    gates that have `EXTRA_INCIDENTS`.** MEASURED at B1944: 20 of 41 gates
+    escaped it.
+
+    This set may only SHRINK. Adding a must-QUIET case to a gate means deleting
+    its name here in the same commit; a new fire-only gate fails immediately.
+    """
+    import importlib.util as _iu
+    import pathlib as _p
+
+    root = _p.Path(__file__).resolve().parents[2]
+    spec = _iu.spec_from_file_location(
+        "corpus_b1944", root / "scripts" / "gate_incident_corpus.py")
+    corpus = _iu.module_from_spec(spec)
+    spec.loader.exec_module(corpus)
+
+    FIRE_ONLY_LEGACY = {
+        'scan_bare_python_launch',
+        'scan_compliance_is_content',
+        'scan_false_skill_status',
+        'scan_miss_capture_complete',
+        'scan_monitor_pattern_unverified',
+        'scan_monitor_without_stall_check',
+        'scan_partial_distribution',
+        'scan_partial_read',
+        'scan_prose_only_rule',
+        'scan_queue_not_updated',
+        'scan_queue_vocabulary',
+        'scan_retroactive_sweep',
+        'scan_row_vs_ticket',
+        'scan_shell_substitution',
+        'scan_synthetic_provenance',
+        'scan_ticket_counts_missing',
+        'scan_uncosted_probe',
+        'scan_ungated_addition',
+        'scan_uninspected_constant',
+        # B1944b: scan_unverified_count now has a must-QUIET case -
+        # removed from this shrink-only set in the same commit.
+    }
+
+    names = (set(corpus.INCIDENTS) | set(corpus.EXTRA_INCIDENTS)
+             | set(corpus.PURE_INCIDENTS))
+    fire_only = set()
+    for g in names:
+        fires = []
+        if g in corpus.INCIDENTS:
+            fires.append(corpus.INCIDENTS[g][1])
+        fires += [e[1] for e in corpus.EXTRA_INCIDENTS.get(g, [])]
+        fires += [e[1] for e in corpus.PURE_INCIDENTS.get(g, [])]
+        if fires and all(fires):
+            fire_only.add(g)
+
+    new = sorted(fire_only - FIRE_ONLY_LEGACY)
+    assert not new, (
+        f"these gates have a FIRE-ONLY corpus and are not grandfathered: "
+        f"{new}. A gate proven only to fire is half tested - the QUIET branch "
+        "is where a false positive lives, and where a false NEGATIVE on the "
+        "honest path hides (B1943: COUNT_PROOF omitted queue_state and no "
+        "must-QUIET case existed to catch it). Add a must-QUIET case.")
+
+    stale = sorted(FIRE_ONLY_LEGACY - fire_only)
+    assert not stale, (
+        f"these now have a must-QUIET case - delete them from "
+        f"FIRE_ONLY_LEGACY in the same commit: {stale}. The set may only "
+        "shrink (#279: an exclusion register that is never re-read decays).")

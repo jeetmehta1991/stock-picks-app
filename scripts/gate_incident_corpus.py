@@ -455,6 +455,21 @@ PURE_INCIDENTS: dict[str, list[tuple[tuple, bool, str]]] = {
 
 
 EXTRA_INCIDENTS: dict[str, list[tuple[str, bool, dict]]] = {
+    # B1944b: the must-QUIET case this gate never had - and the one that
+    # would have caught B1943. `COUNT_PROOF` omitted `queue_state`, the
+    # project's canonical counter, so the HONEST path was rejected while
+    # `grep -c` passed. This case fails before that fix and passes after: a
+    # regression test for the defect, not a decoration.
+    "scan_unverified_count": [
+        ("317 tickets created in the last 48h, 271 already closed.", False,
+         {"tool_text": "python scripts/queue_state.py"}),
+        # B1944b: the case TEXT is the gate's INPUT, not a label for it.
+        # This first read "the same claim with an unrelated tool call
+        # must STILL fire" - a description, carrying no count claim, so
+        # the gate correctly stayed quiet and the case failed.
+        ("317 tickets created in the last 48h, 271 already closed.", True,
+         {"tool_text": "cat README.md"}),
+    ],
     # B1936: L591 applied - CALL a gate before believing its exemption reason.
     # All four incidents are preserved VERBATIM in the gates' own docstrings,
     # which is exactly what "incident text not preserved" denied. These take
