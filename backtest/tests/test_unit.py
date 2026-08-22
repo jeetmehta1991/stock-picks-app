@@ -19952,3 +19952,138 @@ def test_b1904_marker_allows_plurals_but_not_prefix_collisions():
     assert tg._any_word(tg.FIGURE_SOURCES, "measured across the four config cubes")
     assert tg._any_word(tg.FIGURE_SOURCES, "measured from output_cfg1 trade detail")
     assert not tg._any_word(tg.FIGURE_SOURCES, "the exit degraded to a time stop")
+
+
+
+def test_b1905_step1_table_prints_the_key_it_ranks_on():
+    """B1905: the Step-1 console table must show `is_sharpe`, its ranking key.
+
+    B1718 moved Step-1 ranking to the IN-SAMPLE Sharpe. B1820 added `is_sharpe`
+    to the JSON artifact because without it "an auditor would conclude Step 1
+    ranks on the holdout". **That fix did not reach the console table**, which
+    renders the same ranked list.
+
+    MEASURED on output_audit/b1820_cfg2_ranked.json: rank 1 carries
+    is_sharpe=3.373 and sharpe=-0.077, and the printed column is not
+    descending - the console showed a list sorted by an invisible key with its
+    worst-looking number on top.
+    """
+    import pathlib as _p
+
+    root = _p.Path(__file__).resolve().parents[2]
+    src = (root / "scripts" / "tighten_breaker_block.py").read_text(
+        encoding="utf-8")
+
+    head = [ln for ln in src.splitlines() if "'is_sharpe':>10" in ln]
+    assert head, (
+        "the STEP-1 table header must carry an is_sharpe column - it is the "
+        "key the list is sorted on (B1718), and printing only the holdout "
+        "sharpe is the exact defect B1820 fixed in the JSON artifact")
+
+    assert "_f(r.get('is_sharpe'))" in src, (
+        "the STEP-1 table body must PRINT is_sharpe, not just head a column")
+
+    # the holdout column must still be shown - it is the measurement - but it
+    # must no longer be the only Sharpe on the row, and must not be labelled
+    # bare `sharpe` as though it were the key
+    assert "'ho_sharpe':>10" in src, (
+        "the holdout Sharpe must remain, labelled as the HOLDOUT measurement")
+    assert "{'sharpe':>8}" not in src, (
+        "a column headed bare `sharpe` re-creates the ambiguity: the reader "
+        "cannot tell the ranking key from the measurement")
+
+    # L580: a value nobody measured must not render as a number.
+    # B1906: read CODE, not prose. This assertion first failed on the COMMENT
+    # explaining the fix - a source-text grep cannot tell the description of a
+    # defect from the defect, which is the self-reference family (~11 now).
+    import sys as _sys
+    _sys.path.insert(0, str(root / "scripts"))
+    from source_text import code_only
+    code = code_only(root / "scripts" / "tighten_breaker_block.py")
+    assert 'float("nan")' not in code and "float('nan')" not in code, (
+        "missing values route through measured.fmt, not a printed nan")
+    # and prove the strip did not just empty the haystack (#226)
+    assert "_measured.fmt" in code, (
+        "code_only must keep the code - an assertion over an empty string "
+        "passes for the wrong reason")
+
+
+
+def test_b1906_code_only_strips_prose_not_code():
+    """B1906: a source assertion about behaviour must not read comments.
+
+    B1905's pin - "the renderer must not print float('nan')" - FAILED on the
+    comment above the fix, which says it no longer does. ~11th instance of a
+    gate firing on its own documentation.
+    """
+    import pathlib as _p
+    import sys as _sys
+
+    root = _p.Path(__file__).resolve().parents[2]
+    _sys.path.insert(0, str(root / "scripts"))
+    from source_text import code_only, raw
+
+    sample = (
+        "# this comment mentions float('nan') and must be stripped\n"
+        '"""a docstring mentioning float(\'nan\') too."""\n'
+        "x = 1\n"
+        "y = 'kept string literal'\n"
+    )
+    out = code_only(sample)
+    assert "float('nan')" not in out, (
+        "a comment or docstring mentioning a banned token must not make the "
+        "assertion fire - that is the self-reference defect")
+    assert "x" in out and "1" in out, "code must survive the strip"
+    assert "kept string literal" in out, (
+        "a string being ASSIGNED is code, not a docstring - stripping it "
+        "would silently weaken every assertion about string literals")
+
+    # the live file: the banned token is present in PROSE and absent from CODE
+    tb = root / "scripts" / "tighten_breaker_block.py"
+    assert 'float("nan")' in raw(tb), (
+        "precondition: the comment explaining the fix still mentions the "
+        "token - if this ever stops being true the test below proves nothing")
+    assert 'float("nan")' not in code_only(tb), (
+        "and the CODE must not contain it")
+
+
+
+def test_b1906b_code_only_blanks_in_place_and_keeps_dotted_names():
+    """B1906b: the strip must not REBUILD the source.
+
+    The first `code_only` returned `" ".join(tok.string ...)`, so
+    `_measured.fmt` came back as `_measured . fmt`. **A `not in` assertion whose
+    haystack has been re-spaced flips to True and PASSES, silently, for the
+    wrong reason** - the failure mode a pin exists to prevent.
+
+    Caught one run after writing it by the `#226` prove-it-can-fail line in the
+    B1905 pin, which asserts the code SURVIVES the strip.
+    """
+    import pathlib as _p
+    import sys as _sys
+
+    root = _p.Path(__file__).resolve().parents[2]
+    _sys.path.insert(0, str(root / "scripts"))
+    from source_text import code_only
+
+    sample = (
+        "# a comment naming obj.method()\n"
+        "import os.path\n"
+        "v = _measured.fmt(x, spec='.3f')\n"
+        "w = a.b.c.d\n"
+    )
+    out = code_only(sample)
+    for dotted in ("_measured.fmt", "os.path", "a.b.c.d", "spec='.3f'"):
+        assert dotted in out, (
+            f"{dotted!r} must survive byte-identical - re-spacing a dotted "
+            "name turns every `not in` assertion True for the wrong reason")
+    assert "obj.method()" not in out, "the comment must still be blanked"
+
+    # offsets preserved: blanking must not move any line
+    assert len(out.splitlines()) == len(sample.splitlines()), (
+        "blanking in place must preserve the line count, so a failure still "
+        "points at the right line")
+
+    # and on the real file, a dotted name in CODE survives
+    code = code_only(root / "scripts" / "tighten_breaker_block.py")
+    assert "_measured.fmt" in code

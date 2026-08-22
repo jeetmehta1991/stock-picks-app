@@ -12202,3 +12202,40 @@ sorted to the top.
 and show the robust statistic beside the fragile one.** **ANCHORED (`#197`):**
 `CHECKLIST #201` - a figure names its source - extended: a RANKING must show
 the statistic that would contradict it. Carried into `SKILL.md`.
+
+
+### L582
+
+**A text transform that REBUILDS its input is a different string, and a
+`not in` assertion cannot tell**
+
+**B1905/B1906.** A pin said the STEP-1 renderer must not print `float("nan")`.
+It failed - **on the comment directly above the fix**, which says the values
+route through `measured.fmt` rather than that. **~11th instance of a gate
+firing on its own documentation:** a source-TEXT assertion cannot tell code
+from prose, because the sentence describing a defect reads exactly like the
+defect.
+
+Rewording the comment closes one instance and leaves the class open, so
+`scripts/source_text.py` blanks comments and docstrings and the assertion reads
+BEHAVIOUR.
+
+**Then the fix had the more dangerous bug.** `code_only` rebuilt the source as
+`" ".join(tok.string ...)`, so **`_measured.fmt` came back as
+`_measured . fmt`**. Every multi-token substring vanishes under that transform
+- and **a `not in` assertion whose haystack no longer contains the token
+PASSES.** Silently. For exactly the wrong reason. **The strip would have made
+every assertion built on it vacuous while turning them all green.**
+
+**What caught it was the `#226` prove-it-can-fail line written into the same
+pin one run earlier** - `assert "_measured.fmt" in code`, there to prove the
+strip had not simply emptied the haystack. It had not emptied it; it had
+re-spaced it, which is the same failure wearing better clothes.
+
+**The rule: a transform applied to an assertion's haystack must be
+NON-DESTRUCTIVE - blank in place, never rebuild** - and every `not in`
+assertion pairs with an `in` assertion proving the haystack still holds what it
+should. **A negative assertion over a mangled string is indistinguishable from
+a negative assertion over a correct one.** **ANCHORED (`#197`):**
+`CHECKLIST #226` - prove it can fail - extended to haystack transforms.
+Carried into `SKILL.md`.

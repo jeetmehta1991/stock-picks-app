@@ -741,6 +741,23 @@ gate had just named.**
 - **Compliance failure against `#45` and `#247`, not a new class.** A fifth rule
   restating four that were ignored is `#136` theater.
 
+## A TRANSFORM ON AN ASSERTION'S HAYSTACK CAN TURN IT GREEN AND VACUOUS (B1906 - L582, CHECKLIST #226)
+
+**A pin said a renderer must not print `float("nan")`. It fired on the COMMENT
+explaining the fix** - ~11th instance of a gate matching its own documentation,
+because a source-text grep cannot tell prose from code.
+
+**The fix then had the worse bug.** The comment-stripper REBUILT the source as
+`" ".join(tokens)`, so `_measured.fmt` became `_measured . fmt`.
+
+- **A `not in` assertion whose haystack has been mangled PASSES** - silently,
+  for the wrong reason. Every assertion built on that strip would have been
+  vacuous and green.
+- **Blank in place; never rebuild.** Overwrite dropped ranges with spaces so
+  offsets, layout and dotted names stay byte-identical.
+- **Pair every `not in` with an `in`** proving the haystack still holds what it
+  should. That `#226` line is what caught this, one run after being written.
+
 ## A RANKING IS A CLAIM ABOUT ORDER, AND ONE ROW CAN INVERT IT (B1902 - L581, CHECKLIST #201)
 
 **MEASURED: a harvester ranked 192 strategies by mean pnl and put one first at

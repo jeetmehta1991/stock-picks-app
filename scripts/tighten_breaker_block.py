@@ -386,12 +386,36 @@ def main() -> int:
           f"{len(rows) - len(rankable)} excluded as NO_EXIT_SELECTABLE)")
     print(f"{len(classes)} DISTINCT outcomes; top {len(ranked)} carry "
           f"{carried} combinations to STEP 2")
-    print(f"{'#':>3} {'sharpe':>8} {'ci_lo':>8} {'fires':>7} {'cls':>4}  "
-          f"{'exit':<22} class members (tail_n)")
+    # B1905: PRINT THE KEY THIS LIST IS RANKED ON.
+    #
+    # B1820 added `is_sharpe` to the JSON artifact and wrote the reason down:
+    # without it "an auditor would conclude Step 1 ranks on the holdout - the
+    # exact defect B1718 fixed. The separation was real and unverifiable from
+    # its own output." **That fix went to the JSON and not to this table**,
+    # which renders the same ranked list.
+    #
+    # MEASURED on output_audit/b1820_cfg2_ranked.json: rank 1 has
+    # is_sharpe=3.373 and sharpe=-0.077, and the printed column is NOT
+    # descending. With the measured IS-vs-holdout Spearman at -0.779/-0.865
+    # that is the EXPECTED shape - so the console showed a list sorted by an
+    # invisible key with its worst-looking number at the top.
+    #
+    # Missing values route through `measured.fmt` rather than `float("nan")`:
+    # a value nobody measured must not render as a number (L580).
+    import measured as _measured
+
+    def _f(v, spec=".3f"):
+        return _measured.fmt(v, spec=spec)
+
+    print(f"{'#':>3} {'is_sharpe':>10} {'ho_sharpe':>10} {'ci_lo':>8} "
+          f"{'fires':>7} {'cls':>4}  {'exit':<22} class members (tail_n)")
+    print("    ranked on is_sharpe (IN-SAMPLE, B1718). ho_sharpe is the "
+          "HOLDOUT measurement of what the in-sample ranking picked - "
+          "reported, NEVER ranked on, and negatively correlated with the key.")
     for i, members in enumerate(ranked, 1):
         r = members[0]
-        print(f"{i:>3} {r.get('sharpe'):>8.3f} "
-              f"{(r.get('ci_lo') if r.get('ci_lo') is not None else float('nan')):>8.3f} "
+        print(f"{i:>3} {_f(r.get('is_sharpe')):>10} {_f(r.get('sharpe')):>10} "
+              f"{_f(r.get('ci_lo')):>8} "
               f"{r.get('fires', 0):>7} {len(members):>4}  {str(r.get('exit')):<22} "
               f"{sorted(m['tail_n'] for m in members)}")
 
