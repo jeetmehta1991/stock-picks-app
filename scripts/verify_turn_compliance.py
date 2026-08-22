@@ -2122,7 +2122,15 @@ def scan_row_vs_ticket(entries, *, text=None, tool_text=None) -> list[str]:
     so is cheap and is the point.
     """
     import re as _re
-    t = _response_text(entries, text)
+    # B1958 (S6-B1957d): keep_code=True. This gate reads QUEUE-CLASS COUNTS,
+    # and counts live in TABLES and FENCED BLOCKS. B1806 already established
+    # the precedent for a sibling - "a gate demanding a TABLE OF NUMBERS must
+    # pass keep_code=True" - after scan_ticket_counts_missing reported 5 of 6
+    # classes missing while all six were on screen.
+    #
+    # Found by the B1957c retroactive sweep: backticking the class names
+    # silenced this gate on its own incident.
+    t = _response_text(entries, text, keep_code=True)
     if not t or not _re.search(_QCOUNT_PAT, t, _re.I):
         return []
     tt = _tool_text(entries, tool_text).lower()
