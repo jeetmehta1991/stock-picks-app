@@ -741,6 +741,22 @@ gate had just named.**
 - **Compliance failure against `#45` and `#247`, not a new class.** A fifth rule
   restating four that were ignored is `#136` theater.
 
+## BEING RIGHT ABOUT THE CONTENT IS NOT BEING RIGHT ABOUT THE CLAIM (B1882 - L574, CHECKLIST #226)
+
+**MEASURED: a gate blocked three consecutive turns. I checked the match, found
+genuine executed code, declared the gate correct - and the command had run
+2026-05-15, three months earlier, at transcript line 471 of 130,622.**
+
+- **The gate's claim was "THIS TURN ran X", not "X exists somewhere."** I
+  verified the half that was true.
+- **Root cause was the shared helper:** `_executed_text` said *this turn* in its
+  docstring and iterated the whole session. **130,655 entries in the file, 46 in
+  the turn.**
+- **The cheap unasked question was "WHICH LINE?"** One grep ended a three-turn
+  block.
+- **When a gate fires on something you believe correct, verify the SCOPE of its
+  claim, not only the content of its match.**
+
 ## A RUN ON THE WRONG INTERPRETER DOES NOT CRASH (B1878 - L573, mechanically enforced)
 
 **MEASURED: I told the owner, as CAUSALLY CONFIRMED, that demand pruning

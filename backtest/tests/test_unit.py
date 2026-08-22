@@ -19609,3 +19609,47 @@ def test_b1878_launch_names_its_interpreter():
              'subprocess.run(["python", "real.py"])'), (
         "a real bare-python launch BESIDE a heredoc must still fire - trading a "
         "false positive for a false negative is not a fix")
+
+
+
+def test_b1882_executed_text_is_scoped_to_this_turn():
+    """B1882 (L574): `_executed_text` must read THIS TURN, not the session.
+
+    Its docstring has always said "Only the commands this turn RAN". The body
+    iterated every entry with no boundary, so gates built on it judged the
+    whole session - one blocked three consecutive turns on a command from
+    2026-05-15 at transcript line 471 of 130,622.
+    """
+    import importlib.util
+    import pathlib as _p
+
+    root = _p.Path(__file__).resolve().parents[2]
+    spec = importlib.util.spec_from_file_location(
+        "vtc_b1882", root / "scripts" / "verify_turn_compliance.py")
+    tg = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(tg)
+
+    def user(txt):
+        return {"type": "user", "message": {"content": txt}}
+
+    def ran(cmd):
+        return {"type": "assistant", "message": {"content": [
+            {"type": "tool_use", "name": "Bash", "input": {"command": cmd}}]}}
+
+    entries = [user("old turn"), ran("echo ANCIENT_MARKER"),
+               user("this turn"), ran("echo CURRENT_MARKER")]
+
+    txt = tg._executed_text(entries)
+    assert "CURRENT_MARKER" in txt, "this turn's command must be read"
+    assert "ANCIENT_MARKER" not in txt, (
+        "a command from a PREVIOUS turn must NOT be read. The docstring says "
+        "'this turn'; before B1881 the body read the whole session, and a "
+        "gate blocked three consecutive turns on a three-month-old command.")
+
+    # the boundary helper must be the ONE definition (L561)
+    assert callable(getattr(tg, "_since_last_user", None)), (
+        "_since_last_user is the single definition of the turn boundary - "
+        "three functions computed it inline and a fourth did not, which is "
+        "how the whole-session read survived")
+    assert len(tg._since_last_user(entries)) == 1, (
+        "exactly one assistant entry follows the last user message")

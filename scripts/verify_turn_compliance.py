@@ -1163,6 +1163,27 @@ def _any_word(markers, text: str) -> bool:
     return False
 
 
+def _since_last_user(entries):
+    """Entries AFTER the last genuine user text message - i.e. THIS TURN.
+
+    B1881. Three functions computed this boundary inline and a fourth,
+    `_executed_text`, did not - so it read the whole session while its
+    docstring said "this turn". ONE definition, per L561: a duplicated pattern
+    is a divergence waiting for someone to fix half of it, and here one copy
+    was simply MISSING - the same defect with the divergence at zero.
+    """
+    last = -1
+    for i, e in enumerate(entries or ()):
+        if not isinstance(e, dict) or e.get("type") != "user":
+            continue
+        c = (e.get("message") or {}).get("content")
+        if (isinstance(c, str) and c.strip()) or (
+                isinstance(c, list) and any(
+                    isinstance(x, dict) and x.get("type") == "text" for x in c)):
+            last = i
+    return list(entries or ())[last + 1:]
+
+
 def _drop_search_segments(cmd: str) -> str:
     """Blank out segments that only SEARCH. Compound commands judged per part."""
     keep = []
@@ -1179,9 +1200,16 @@ def _executed_text(entries, tool_text=None) -> str:
 
     Same injection contract as `_tool_text` (B1811): an injected value travels
     the same scrubbing as the live path.
+
+    B1881: "this turn" is now TRUE. The body iterated every entry with no
+    boundary, so gates built on it judged the whole session -
+    `scan_bare_python_launch` blocked three consecutive turns on a command at
+    transcript line 471 dated 2026-05-15, out of 130,622 lines. The docstring
+    always said this turn; the implementation contradicted it.
     """
     if tool_text is not None:
         return _strip_gate_echo(tool_text)
+    entries = _since_last_user(entries)
     out = []
     for d in entries or ():
         if not isinstance(d, dict) or d.get("type") != "assistant":

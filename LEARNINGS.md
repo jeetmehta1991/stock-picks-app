@@ -11895,3 +11895,42 @@ environment differed and nothing said so".**
 `sys.executable` and on bash command lines, which resolve through `PATH` to the
 venv. **The rule: a launch names its interpreter.** **ANCHORED (`#197`):**
 carried into `SKILL.md`; retraction recorded at `S6-B1877a`.
+
+
+### L574
+
+**Being right about the content is not being right about the claim**
+
+**B1880/B1881.** `scan_bare_python_launch` blocked three consecutive turns. I
+checked the match, found it was a genuine `subprocess.run(['python', ...])` in
+executed text, wrote that *"the gate was RIGHT and is left untouched - that is
+the defect it exists for"*, and moved on.
+
+**The command was real. It ran on 2026-05-15, three months before the turn it
+was blocking, at transcript LINE 471 of 130,622.** The gate's claim is not
+"this text exists somewhere"; it is **"this turn ran a bare-python launch"**,
+and I verified the first half while the second was false.
+
+**The root cause was in the shared helper, not the gate.**
+`_executed_text`'s docstring has always read *"Only the commands THIS TURN
+RAN"*, and its body iterated every entry with **no last-user boundary**.
+`scan_transcript_entries` and `_launch_blobs` both compute that boundary; this
+one never did. **MEASURED after the fix: 130,655 entries in the file, 46 in the
+turn.** Every gate built on that helper had been judging the whole session.
+
+**Why I stopped early.** Finding real executed code felt like confirmation, and
+it was - of the wrong proposition. **The cheap question I did not ask was
+"WHICH LINE?"**, and it is the question that separates *the text exists* from
+*this turn produced it*. One `grep` for the transcript line number ended a
+three-turn block.
+
+**Not a policy change, so no ruling was needed.** The implementation
+contradicted its own documented contract, which is a bug. **I had been treating
+the gate's verdict as the thing to defend or overturn, when the disagreement
+was between the helper's docstring and its body.**
+
+**The rule: when a gate fires on something you believe is correct, verify the
+SCOPE of its claim, not only the content of its match.** A time-scoped claim
+needs a timestamp; a turn-scoped claim needs the turn. **ANCHORED (`#197`):**
+`CHECKLIST #226` - a gate's PASS needs proof it can fail, and a gate's FIRE
+needs proof it is about what it says. Carried into `SKILL.md`.
