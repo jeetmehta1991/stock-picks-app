@@ -848,7 +848,41 @@ def institutional_signal(ticker: str, as_of: date) -> dict:
 # COMPOSITE SMART MONEY SCORE
 # -----------------------------------------------------------------------------
 
+# B2001 (S6-B1541b): the engine calls this once PER CANDIDATE, so one
+# (ticker, as_of) recomputes ~4.6x per ticker-day (3,124 calls / 672
+# screen days in the profiled window). MEASURED: 8.78 ms steady-state per
+# call and repeat-with-identical-args returns an IDENTICAL dict - so the
+# duplicates are ~21.5 s of pure recomputation per profiled window.
+#
+# B1543/B1544 scar respected: SKIPPING this call changed the entry set
+# (tier GATES entry) and was reverted. Caching identical arguments cannot
+# change any result; callers passing explicit cong/ins/inst BYPASS the
+# cache entirely. A copy is returned so a caller mutating its dict cannot
+# poison later hits.
+_SM_SCORE_CACHE: dict = {}
+_SM_SCORE_CACHE_MAX = 8192
+
+
 def smart_money_score(
+    ticker: str, as_of: date,
+    cong: Optional[dict] = None,
+    ins:  Optional[dict] = None,
+    inst: Optional[dict] = None,
+) -> dict:
+    if cong is None and ins is None and inst is None:
+        key = (ticker, as_of)
+        hit = _SM_SCORE_CACHE.get(key)
+        if hit is not None:
+            return dict(hit)
+        out = _smart_money_score_uncached(ticker, as_of)
+        if len(_SM_SCORE_CACHE) >= _SM_SCORE_CACHE_MAX:
+            _SM_SCORE_CACHE.clear()
+        _SM_SCORE_CACHE[key] = dict(out)
+        return out
+    return _smart_money_score_uncached(ticker, as_of, cong, ins, inst)
+
+
+def _smart_money_score_uncached(
     ticker: str, as_of: date,
     cong: Optional[dict] = None,
     ins:  Optional[dict] = None,

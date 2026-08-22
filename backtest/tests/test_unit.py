@@ -22561,3 +22561,49 @@ def test_b1998_ss9_item21_subject_occurrence_survives():
     assert "n=0 on BOTH sides" in plan[i:i + 400], (
         "and its diagnostic: the n=0-both-sides wording is what makes the "
         "trap recognisable when it happens")
+
+
+
+def test_b2001_smart_money_score_memo_is_transparent():
+    """B2001 (S6-B1541b): the memo must be invisible except in call count.
+
+    The engine calls smart_money_score once per CANDIDATE, so one
+    (ticker, as_of) recomputes ~4.6x per ticker-day - measured 8.78 ms per
+    call with identical results on repeat. B1544 proved SKIPPING the call
+    changes entries (tier gates entry); caching identical args must not.
+    """
+    import datetime as _dt
+    import pathlib as _p
+
+    import pytest as _pytest
+
+    root = _p.Path(__file__).resolve().parents[2]
+    if not (root / "data_prefetch" / "quiver").exists():
+        _pytest.skip("quiver cache absent - memo untestable without data")
+
+    import backtest.data.smart_money as sm
+
+    t, d = "AAPL", _dt.date(2025, 3, 14)
+    sm._SM_SCORE_CACHE.clear()
+    a = sm.smart_money_score(t, d)
+    assert (t, d) in sm._SM_SCORE_CACHE, "first call must populate the cache"
+    b = sm.smart_money_score(t, d)
+    assert a == b, "a hit must equal the computed result exactly"
+    assert a is not b, (
+        "a hit must be a COPY - returning the cached object lets a caller's "
+        "mutation poison every later hit")
+
+    # mutation-poisoning arm: corrupt the first result, re-fetch, assert clean
+    a["score"] = -999
+    c = sm.smart_money_score(t, d)
+    assert c.get("score") != -999, (
+        "caller mutation leaked into the cache - the copy discipline broke")
+
+    # explicit-dict callers bypass the cache entirely (the agent-pipeline
+    # path passes precomputed cong/ins/inst and must never read stale memo)
+    sm._SM_SCORE_CACHE.clear()
+    cong = sm.congressional_signal(t, d)
+    out = sm.smart_money_score(t, d, cong=cong)
+    assert (t, d) not in sm._SM_SCORE_CACHE, (
+        "an explicit-dict call must bypass the cache in BOTH directions - "
+        "neither reading nor writing it")
