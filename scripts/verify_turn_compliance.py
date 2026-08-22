@@ -1862,7 +1862,15 @@ COUNT_CLAIMS = (
 )
 COUNT_PROOF = ("execution_queue", "audit_done_claims", "audit_ticket_staleness",
                "promote_verified_closed", "git log", "csv.dictreader",
-               "value_counts", "collections.counter", "groupby")
+               "value_counts", "collections.counter", "groupby",
+               # B1943b: the project's CANONICAL counter was missing.
+               # queue_state.py IS collections.Counter (lines 60-62), is run
+               # every batch to produce the ticket counts, and is imported BY
+               # audit_ticket_staleness which was already listed. MEASURED:
+               # `python scripts/queue_state.py` did NOT clear the gate while
+               # `grep -c` did - so the vocabulary rewarded a grep that
+               # satisfies the gate over the script that answers the question.
+               "queue_state")
 
 
 def scan_unverified_count(entries, *, text=None, tool_text=None) -> list[str]:
@@ -1878,7 +1886,14 @@ def scan_unverified_count(entries, *, text=None, tool_text=None) -> list[str]:
     where a favourable figure most needs it.
     """
     import re as _re
-    t = (_assistant_text(entries) if text is None else text.lower())
+    # B1943 (S6-B1783b): fourth gate routed through _response_text.
+    #
+    # This one guards COUNTS, and four were mis-stated this session -
+    # S6-B1757d's 22-that-was-7, S6-B1777d's tickets-vs-batches, B1929's
+    # LIVE-vs-OPEN, B1938's gates-vs-occurrences. B1738 means a count shown in
+    # backticks as a TOKEN stops reading as a claim, while one asserted in
+    # prose still does.
+    t = _response_text(entries, text)
     if not t:
         return []
     hits = [c for c in COUNT_CLAIMS if c in t]
