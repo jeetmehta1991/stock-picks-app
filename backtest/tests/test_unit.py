@@ -19461,3 +19461,46 @@ def test_b1869_authored_then_violated_ledger():
         "the L570 section left the skill - a lesson about rules not being "
         "applied, removed from the file loaded every turn, is the joke "
         "writing itself")
+
+
+def test_b1871_false_claim_stays_flagged():
+    """B1871 (L571): a false claim in a CLOSED row must stay visible.
+
+    S6-B1769b is marked EXECUTED and claims the migration tagged every
+    inferred class. Measured at the migration commit itself, the tag appears
+    once - in the prose describing it. Two end-to-end verification passes ran
+    afterwards and neither found it, because both were scoped to OPEN rows.
+
+    DETECTION is JUDGMENT-ONLY - parsing arbitrary prose claims out of 800
+    closed rows is not a scan. DURABILITY is this: the finding keeps naming
+    the row, the claim and the commit, so it cannot quietly become a closed
+    ticket about a false claim.
+    """
+    import pathlib as _p
+
+    root = _p.Path(__file__).resolve().parents[2]
+    q = (root / "EXECUTION_QUEUE.md").read_text(encoding="utf-8")
+
+    # B1871b: anchor on the ROW, not on a MENTION. `q.index("S6-B1870a")`
+    # first matched char 2011625 - inside ANOTHER row's closure note reading
+    # "see `S6-B1870a`" - while the row itself sits at 2215484. The ledger is
+    # full of cross-references by design, so the bare id is the wrong anchor.
+    # Mention-vs-use (B1738) in my own pin, one batch after L569.
+    marker = "| **S6-B1870a** |"
+    assert marker in q, (
+        "the false-claim finding ROW was removed from the queue (a mention of "
+        "the id elsewhere is not the row)")
+    i = q.index(marker)
+    row = q[i:i + 1800]
+    for anchor in ("S6-B1769b", "49493c67f"):
+        assert anchor in row, (
+            f"S6-B1870a no longer names {anchor}. The finding's value is that "
+            "it points at a SPECIFIC closed row and the SPECIFIC commit where "
+            "the claim can be checked - without both, it is an opinion about "
+            "the ledger rather than a measurement of it.")
+
+    lea = (root / "LEARNINGS.md").read_text(encoding="utf-8")
+    assert "### L571" in lea, "L571 was removed from LEARNINGS.md"
+    entry = lea[lea.index("### L571"):][:3500]
+    assert "JUDGMENT-ONLY" in entry, (
+        "L571 must keep saying which half is unmechanisable (#253)")

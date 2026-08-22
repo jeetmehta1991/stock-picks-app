@@ -11761,3 +11761,46 @@ quietly stop growing - the next instance has to be added rather than absorbed.
 not as evidence of compliance. Apply it to the edit in front of you before
 quoting it about the edit behind you.** **ANCHORED (`#197`):** `CHECKLIST #226`
 and `#244`; carried into `SKILL.md`.
+
+
+### L571
+
+**An audit scoped to OPEN rows cannot find a false claim in a CLOSED one**
+
+**B1870/B1871.** `S6-B1769b` is marked EXECUTED and says the vocabulary
+migration tagged every inferred class - *"39.4pct of classes INFERRED from row
+text, **every one tagged, none claimed exact**"*. **MEASURED at the migration
+commit `49493c67f` itself: the file held ONE occurrence of `[inferred]`,
+identical to today, and that one is the prose describing the tag.**
+`git log -S` across all history returns exactly one commit touching the string.
+**The tags were never written.**
+
+**Two end-to-end verification passes ran after that row and neither found it.**
+B1794 read 138 rows, B1795 read 110, each recording a stated evidence gap per
+row. **Both were scoped to rows that were still OPEN**, and the false claim sat
+in a row already marked done.
+
+**That scoping is backwards for this failure.** A claim in an OPEN row is a
+promise nobody has acted on yet. **A claim in a CLOSED row is load-bearing** -
+other work has already been built on it, and here `S6-B1769j` sat OPEN for
+batches with a remedy nobody could execute, because the artifact it depended on
+did not exist. **The cost of a false claim rises when it is marked done, and
+that is exactly when it stops being audited.**
+
+**What found it was refusing to close a ticket on its own description.** The
+row said the tag made the population findable; I grepped for the tag before
+sampling it, found one hit, and did not conclude "drift" - I checked the
+migration commit. **Two probes, and the second is the one that turned a puzzle
+into a measurement.**
+
+**MECHANISM - say which half applies (`#253`). DETECTION is JUDGMENT-ONLY:**
+parsing arbitrary prose claims out of 800 closed rows and deciding which are
+mechanically checkable is not a scan, and a gate that guessed would flood the
+turn. **DURABILITY is taken:** `test_b1871_false_claim_stays_flagged` pins that
+`S6-B1870a` keeps naming the row, the claim and the commit, so a false claim in
+a CLOSED row cannot quietly become a closed ticket about a false claim.
+
+**The rule: when a verification pass enumerates its population, say whether
+CLOSED rows are in it - and if they are not, say so out loud.** **ANCHORED
+(`#197`):** `CHECKLIST #264`-adjacent (unverifiable-row class) and carried into
+`SKILL.md`.

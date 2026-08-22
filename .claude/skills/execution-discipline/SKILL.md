@@ -741,6 +741,22 @@ gate had just named.**
 - **Compliance failure against `#45` and `#247`, not a new class.** A fifth rule
   restating four that were ignored is `#136` theater.
 
+## AN AUDIT SCOPED TO OPEN ROWS CANNOT FIND A FALSE CLAIM IN A CLOSED ONE (B1871 - L571)
+
+**MEASURED: a row marked EXECUTED claims the migration tagged every inferred
+class. At the migration commit itself the tag appears ONCE - in the prose
+describing it.** The tags were never written. **Two end-to-end passes ran after
+that row and neither found it; both were scoped to rows still OPEN.**
+
+- **A claim in an OPEN row is a promise. A claim in a CLOSED row is
+  load-bearing** - other work is already built on it.
+- **The cost of a false claim rises when it is marked done, and that is exactly
+  when it stops being audited.**
+- **When a verification pass enumerates its population, say whether CLOSED rows
+  are in it** - and if they are not, say so out loud.
+- **JUDGMENT-ONLY for detection** (arbitrary prose claims across 800 closed
+  rows are not a scan); durability pinned by `test_b1871_false_claim_stays_flagged`.
+
 ## AUTHORING A RULE FEELS LIKE INSTALLING IT (B1869 - L570, CHECKLIST #226/#244)
 
 **MEASURED: twice in one session I broke a rule I had just written or cited.**
