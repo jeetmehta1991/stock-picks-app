@@ -759,9 +759,28 @@ reported from that counter excluded them silently; the true population is
 - **Disclose, do not admit.** Widening the regex would INVENT a state those
   rows do not have. `unparsed()` names all 48 under a SCOPE line.
 
+**And when you fix it, sweep the CLASS - the site you were chasing is rarely
+the worst one (B1970).** B1969 fixed the one gate whose false positive was in
+front of me; the `#237` sweep then found **the row COLLECTOR had the same bold
+requirement** - and every row-reading gate draws its input from it, so dropping
+the asterisks bypassed the whole row-gate layer at once. **Fixing the site you
+happened to be chasing is availability, not a sweep.**
+
+- Sweep by SEARCH (`grep -nF '\*\*'` found all 5 sites), never by recall.
+- Fix the FEEDER before the consumers - a defect in the collector is every
+  downstream gate's defect simultaneously.
+- **A site deliberately left unchanged gets a comment AND a pin** - an
+  undocumented survivor of a class sweep is indistinguishable from one that
+  was missed. (Extends `#279`, which requires both directions for exclusion
+  REGISTERS, to the survivors of a code sweep. Named search: the phrase has
+  one occurrence in LEARNINGS - L603's own B1970 amendment - so this rule is
+  new there, not duplicated.)
+
 **Mechanically enforced** by `queue_state.unparsed()` and the bold-independent
-own-id scrub, pinned by `test_b1969_gate_does_not_require_bold` and
-`test_b1969_counter_discloses_what_it_cannot_parse`.
+own-id scrub, pinned by `test_b1969_gate_does_not_require_bold`,
+`test_b1969_counter_discloses_what_it_cannot_parse`,
+`test_b1970_row_collector_does_not_require_bold` and
+`test_b1970_vocabulary_scan_stays_bold_on_purpose` (the pinned survivor).
 
 ## AN EVIDENCE VOCABULARY'S MISSING KIND IS INVISIBLE (B1968 - L602, CHECKLIST #162)
 
