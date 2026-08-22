@@ -12786,3 +12786,39 @@ worked for `KNOWN_UNCONVERTED`, `FIRE_ONLY_LEGACY` and the gate exemptions. New
 dangling citations fail; the legacy set may only shrink. **ANCHORED (`#197`):**
 `CHECKLIST #201`'s class, extended from a figure's source to a citation's
 address. Carried into `SKILL.md`.
+
+
+### L596
+
+**Mention-vs-use reached every TRIGGER and no ESCAPE, and the escape is the
+side that lets a turn through**
+
+**B1947/B1948.** `scan_prose_only_rule` fires when a turn edits CHECKLIST or
+SKILL without touching the gate script - **unless the response says
+`PROSE-ONLY`.** It read text raw, so **a `PROSE-ONLY` shown as an EXAMPLE
+inside a code fence granted the exemption.**
+
+B1738's convention - *vocabulary in backticks is a MENTION, not a USE* - has
+been applied across this file for a year of batches, to gate TRIGGERS. **No
+gate's ESCAPE had it.**
+
+MEASURED across the three escape vocabularies:
+
+    scan_prose_only_rule        `PROSE-ONLY`          fixed at B1947
+    scan_synthetic_provenance   `SYNTHETIC`           already routed
+    scan_orphan_rule            `**record-of-fact**`  VULNERABLE
+
+**A gate hardened against false positives on its trigger stayed soft on its
+exemption.** The asymmetry is not accidental: a trigger that fires wrongly is
+LOUD - it blocks a turn and someone investigates. **An escape that clears
+wrongly is silent, and the turn simply proceeds.** So the half that gets
+attention is the half that complains.
+
+**And the vulnerable direction is the one that matters.** A trigger false
+positive costs a re-word; **an escape false positive costs the rule.**
+
+**MECHANISM:** fences and code spans stripped before the escape check in
+`scan_orphan_rule`, pinned by `test_b1948_escape_markers_obey_mention_vs_use`
+which also holds B1947's fix in place. **ANCHORED (`#197`):** COMPLIANCE
+FAILURE against `CHECKLIST #226`'s ONE PATTERN clause via L592 - *the unit of
+the change was smaller than the unit of the defect.* Carried into `SKILL.md`.

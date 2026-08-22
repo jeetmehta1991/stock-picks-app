@@ -475,6 +475,18 @@ def scan_orphan_rule(learnings_text, checklist_text, skill_text, new_entries):
         if not m:
             continue
         body = m.group(1).lower()
+        # B1948 (L596): strip fences before reading the ESCAPE. B1738's
+        # convention - vocabulary in backticks is a MENTION, not a USE - had
+        # been applied to every gate TRIGGER in this file and to no gate's
+        # EXEMPTION. MEASURED: a `**record-of-fact**` shown as an EXAMPLE
+        # inside a fence granted the escape, exactly as a fenced `PROSE-ONLY`
+        # did until B1947.
+        #
+        # An entry SHOWING the marker is not an entry DECLARING itself a
+        # record of fact - and the exemption is the side that lets a turn
+        # through, so it is the side worth hardening.
+        body = re.sub(r"```.*?```", " ", body, flags=re.S)
+        body = re.sub(r"`[^`]*`", " ", body)
         # B1626: fail CLOSED. Previously this skipped anything not containing
         # one of three exact phrases; now only an EXPLICIT opt-out skips.
         if any(k in body for k in RECORD_ONLY_MARKERS):

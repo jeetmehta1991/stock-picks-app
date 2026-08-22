@@ -741,6 +741,24 @@ gate had just named.**
 - **Compliance failure against `#45` and `#247`, not a new class.** A fifth rule
   restating four that were ignored is `#136` theater.
 
+## THE ESCAPE IS THE SIDE THAT LETS A TURN THROUGH (B1948 - L596, CHECKLIST #226)
+
+**A gate granted its exemption to a `PROSE-ONLY` shown as an EXAMPLE inside a
+code fence.** B1738's convention - vocabulary in backticks is a MENTION, not a
+USE - had been applied to every gate TRIGGER in the file and to **no gate's
+ESCAPE.**
+
+- **MEASURED across three escape vocabularies:** `PROSE-ONLY` fixed at B1947,
+  `SYNTHETIC` already routed, **`record-of-fact` vulnerable** until B1948.
+- **The asymmetry is not accidental.** A trigger that fires wrongly is LOUD - it
+  blocks a turn and someone investigates. **An escape that clears wrongly is
+  silent, and the turn simply proceeds.**
+- **A trigger false positive costs a re-word. An escape false positive costs
+  the rule.**
+
+**Mechanically enforced** by `test_b1948_escape_markers_obey_mention_vs_use`,
+which holds both gates' fixes in place.
+
 ## A CITATION IS A CLAIM WITH AN ADDRESS (B1945 - L595, CHECKLIST #201)
 
 **`L611` does not exist.** I ran `grep -n` on LEARNINGS.md, read

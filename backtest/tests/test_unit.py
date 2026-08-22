@@ -20797,3 +20797,53 @@ def test_b1945_no_new_dangling_learnings_citation():
         assert not stale, (
             f"{name}: these are no longer dangling - remove them from LEGACY "
             f"in the same commit: {stale}. The set may only shrink (#279).")
+
+
+
+def test_b1948_escape_markers_obey_mention_vs_use():
+    """B1948 (L596): an escape SHOWN in a fence is an example, not a declaration.
+
+    B1738's convention - vocabulary in backticks is a MENTION, not a USE - was
+    applied to every gate TRIGGER in the file and to no gate's ESCAPE.
+    MEASURED: `scan_prose_only_rule` granted its exemption to a fenced
+    `PROSE-ONLY` until B1947, and `scan_orphan_rule` did the same for
+    `**record-of-fact**`.
+
+    **The exemption is the side that lets a turn through**, so it is the side
+    worth hardening.
+    """
+    import importlib.util as _iu
+    import pathlib as _p
+
+    root = _p.Path(__file__).resolve().parents[2]
+    spec = _iu.spec_from_file_location(
+        "vtc_b1948", root / "scripts" / "verify_turn_compliance.py")
+    tg = _iu.module_from_spec(spec)
+    spec.loader.exec_module(tg)
+
+    RULE = "\n### L900\n\nA generalised rule: always verify X before Y.\n"
+
+    # the escape, DECLARED - must be honoured
+    declared = ("\n### L900\n\nThis is a **record-of-fact** measurement "
+                "only.\n")
+    assert not tg.scan_orphan_rule(declared, "", "", ["L900"]), (
+        "an explicit record-of-fact declaration must still skip the entry")
+
+    # the escape, SHOWN in a fence - must NOT be honoured
+    shown = ("\n### L900\n\n```\n**record-of-fact**\n```\n"
+             "A generalised rule: always verify X before Y.\n")
+    assert tg.scan_orphan_rule(shown, "", "", ["L900"]), (
+        "a record-of-fact marker shown as an EXAMPLE inside a fence must not "
+        "grant the escape - B1738: mention is not use, and the exemption is "
+        "the side that lets a turn through")
+
+    # and an ordinary unanchored rule still fires
+    assert tg.scan_orphan_rule(RULE, "", "", ["L900"])
+
+    # the sibling gate, fixed at B1947, must stay fixed
+    assert tg.scan_prose_only_rule([], text="```\nPROSE-ONLY: example\n```",
+                                   docs_touched=True, code_touched=False), (
+        "B1947: a fenced PROSE-ONLY is an example, not a declaration")
+    assert not tg.scan_prose_only_rule(
+        [], text="PROSE-ONLY: no scan can judge this.",
+        docs_touched=True, code_touched=False)
