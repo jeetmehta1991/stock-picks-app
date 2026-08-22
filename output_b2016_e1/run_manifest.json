@@ -1,0 +1,115 @@
+{
+ "sequence": "E1_P1_swing_sweep_SP50",
+ "batch": "B2016",
+ "execution": "LOCAL",
+ "frozen_sha": "b94d377fa55412505b017d12da789fc00286ff0c",
+ "isolation": true,
+ "calendar": "nyse_mcal",
+ "tickers": [
+  "NVDA",
+  "GOOGL",
+  "AAPL",
+  "MSFT",
+  "AMZN",
+  "AVGO",
+  "META",
+  "TSLA",
+  "WMT",
+  "BRK-B",
+  "JPM",
+  "LLY",
+  "XOM",
+  "V",
+  "INTC",
+  "JNJ",
+  "ORCL",
+  "MA",
+  "AMD",
+  "COST",
+  "BAC",
+  "CAT",
+  "NFLX",
+  "LRCX",
+  "CVX",
+  "CSCO",
+  "ABBV",
+  "HD",
+  "AMAT",
+  "PG",
+  "KO",
+  "GE",
+  "MS",
+  "UNH",
+  "MRK",
+  "GS",
+  "RTX",
+  "WFC",
+  "AXP",
+  "MCD",
+  "C",
+  "PEP",
+  "TMUS",
+  "ADI",
+  "TMO",
+  "NEE",
+  "DIS",
+  "ANET",
+  "BA",
+  "AMGN"
+ ],
+ "strategy_subset": "output_audit/_subset_one.txt (smc_breaker_block_long)",
+ "window": {
+  "start": "2024-05-05",
+  "end": "2025-05-05",
+  "basis": "owner ruling 2026-08-21: 1y search window ending AT the holdout boundary"
+ },
+ "arms": [
+  {
+   "id": "sw10",
+   "SMC_SWING_LENGTH": 10,
+   "STRAT_EMA_SPAN": 200
+  },
+  {
+   "id": "sw20",
+   "SMC_SWING_LENGTH": 20,
+   "STRAT_EMA_SPAN": 200,
+   "note": "in-shape baseline (production values); R5 numbers NOT comparable per L376/L382"
+  },
+  {
+   "id": "sw30",
+   "SMC_SWING_LENGTH": 30,
+   "STRAT_EMA_SPAN": 200
+  },
+  {
+   "id": "sw50",
+   "SMC_SWING_LENGTH": 50,
+   "STRAT_EMA_SPAN": 200
+  }
+ ],
+ "arms_deferred": "span-50 arm AFTER the P1 optimum (E2 option c, P1-first)",
+ "concurrency": "N=2 processes (E5 ruling, RAM-measured), --screen-pool-workers 3 each (<=10 cores total)",
+ "budget_cap_usd": 0,
+ "spent_usd": 0,
+ "projected_batch_usd": 0,
+ "wall_clock_projection_hours": 4.0,
+ "wall_clock_projection_basis": "UPPER BOUND, single-point (L-rule: not a two-point projection): full-roster rate 0.2613 s/ticker-day x 50t x 251d = 0.91 h/arm; subset+pruned runs do strictly less work. 4 arms at N=2 ~= 2 h expected; per-arm kill cap --max-run-hours 4.0",
+ "retention_precheck": "output_audit/b2016_e1_retention_precheck.json - 49 fires / 21 tickers in-window (floor 10: PASS)",
+ "obsolescence_risks": [
+  {
+   "risk": "universe contested: S6-B1817e says window+universe are ONE decision and prefers ~200 tickers; owner's E1 ruling names SP50",
+   "gate": "arms are internally comparable (same universe); if owner orders 200t, loss bounded to ~2h local; the S6-B2006b council carries the 200t recommendation"
+  },
+  {
+   "risk": "engine code drift mid-sequence",
+   "gate": "frozen_sha pinned; verify git diff --quiet <frozen_sha> -- backtest/ before each later arm launch"
+  },
+  {
+   "risk": "zero-fire arm on narrow universe misread as strategy verdict (S6-B1861d advisory class)",
+   "gate": "precheck expects ~49 baseline fires; any zero-fire arm reruns with DEMAND_PRUNING=0 before ANY conclusion"
+  },
+  {
+   "risk": "bare-python interpreter resolves to system python, 2/33 producers (B1877)",
+   "gate": "explicit .venv/Scripts/python.exe in every launch command"
+  }
+ ]
+}

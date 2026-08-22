@@ -1,0 +1,17 @@
+{
+ "strategy": "smc_breaker_block_long",
+ "window": "2024-05-05..2025-05-05 (owner ruling 2026-08-21)",
+ "fires_total_r5": 948,
+ "fires_in_window": 345,
+ "fires_in_window_sweep200": 148,
+ "sweep200_tickers_firing": 71,
+ "search_min_n_floor": 10,
+ "sp50_persisted_list": [
+  "output_audit\\b1505_sp50_grid.json",
+  "output_audit\\sp50_subset.txt"
+ ],
+ "fires_in_window_sp50": 49,
+ "sp50_tickers_firing": 21,
+ "sp50_list_size": 50,
+ "verdict": "SP50 at the ruled window retains 49 fires - above the search floor of 10 TOTAL, and combinations TIGHTEN from there; the historical 40/40 NO_EXIT_SELECTABLE (L365) was at 4x this window. _sweep_200 retains 148 fires across 71 tickers."
+}
