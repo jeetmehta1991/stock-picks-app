@@ -553,6 +553,11 @@ flavoured — acceptable for tuning, not for a verdict (S6-B1504a/b).
 
 ## 8. OPEN OWNER DECISIONS (live as of B1510)
 
+> **2026-08-22 (B2016): the A-I owner ruling set resolved this table's live members.** E1 approved -
+> the P1 swing sweep {10,20,30,50} runs on SP50 at the ruled 1y search window (arms in flight,
+> `output_b2016_e1/run_manifest.json`); F1 `EMA_PAIRS` plumb SHIPPED (B2016); F2 spans 100/250
+> NOT approved yet; E5 concurrency cap N=2. Ledger rows under S6-B1505b / S6-B1518a are canonical.
+
 | ticket | decision |
 |---|---|
 | **S6-B1508a** | 10-ticker timed run to establish the multi-ticker slope (~6 min). **Removes the last unknown from the cost model.** |
