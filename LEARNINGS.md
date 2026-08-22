@@ -12163,3 +12163,42 @@ got this wrong.
 "measured zero" from "never measured".** **ANCHORED (`#197`):** `CHECKLIST
 #201` - name the source of a figure - of which this is the degenerate case,
 a figure with no source at all. Carried into `SKILL.md`.
+
+
+### L581
+
+**A ranking is a claim about ORDER, and one row can invert it**
+
+**B1900/B1901.** The new harvester ranked 192 strategies by mean pnl and put
+`donchian_breakout_retest_long` first at **+944.752pct**. **Three rows of 547
+produce that number** - all SBNY, entered at **$0.001** and $0.0801 after
+Signature Bank failed in March 2023. The same cell's **median is +0.399pct**.
+
+**The whole top-five was artifact**, and a top-five is exactly the shape that
+gets quoted into a decision.
+
+**MEASURED SCOPE: 4,095 of 4,917,172 rows carry `|pnl_pct| > 100` - 0.083pct -
+and 141 strategies carry at least one.** Tiny contamination, total distortion.
+**That is an outlier signature, not a bias**, and it means the fix is
+statistical rather than a ticker exclusion: excluding SBNY would leave the
+other 1,852 extreme rows and the same failure shape.
+
+**What made it visible was ranking.** A per-strategy table forces every
+strategy to be looked at, and an absurd number at the top of a sorted list is
+loud. **The same defect sitting in an unranked column would have read as
+noise** - and it had been in that cube through every prior read of it.
+
+**A mean answers "what happened on average"; a ranking answers "which is
+best".** The second is a much stronger claim and is far more fragile to a
+single row, because order is discontinuous - one value moves a strategy from
+last to first, where a mean would only shift.
+
+**MECHANISM:** `harvest_strategy_metrics.py` now ranks on the **MEDIAN**,
+reports mean beside it, and sets `outlier_flag` where they diverge - so a cell
+whose mean is not supported by its median is labelled rather than silently
+sorted to the top.
+
+**The rule: never rank on a statistic that a single observation can dominate,
+and show the robust statistic beside the fragile one.** **ANCHORED (`#197`):**
+`CHECKLIST #201` - a figure names its source - extended: a RANKING must show
+the statistic that would contradict it. Carried into `SKILL.md`.

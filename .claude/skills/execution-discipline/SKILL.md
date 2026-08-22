@@ -741,6 +741,21 @@ gate had just named.**
 - **Compliance failure against `#45` and `#247`, not a new class.** A fifth rule
   restating four that were ignored is `#136` theater.
 
+## A RANKING IS A CLAIM ABOUT ORDER, AND ONE ROW CAN INVERT IT (B1902 - L581, CHECKLIST #201)
+
+**MEASURED: a harvester ranked 192 strategies by mean pnl and put one first at
++944.752pct. THREE rows of 547 produce that number** - SBNY at $0.001 entry
+after the bank failed. That cell's median is +0.399pct, and the whole top-five
+was artifact.
+
+- **0.083pct of rows carried `|pnl_pct| > 100` and 141 strategies touched one.**
+  Tiny contamination, total distortion - an OUTLIER signature, not a bias.
+- **A mean answers "what happened on average"; a ranking answers "which is
+  best".** Order is discontinuous, so one value moves a strategy from last to
+  first where a mean would only shift.
+- **Never rank on a statistic one observation can dominate, and show the robust
+  statistic beside the fragile one.**
+
 ## A MISSING MEASUREMENT AND A MEASURED ZERO ARE DIFFERENT FACTS (B1899 - L580, CHECKLIST #201)
 
 **MEASURED: a renderer crashed on `None`, I fixed it to print `n/a` and wrote

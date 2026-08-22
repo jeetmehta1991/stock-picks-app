@@ -24,6 +24,7 @@ import collections
 import csv
 import json
 import pathlib
+import statistics
 import sys
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
@@ -76,17 +77,30 @@ def harvest(cube_dir, limit: int | None = None, min_trades: int = 10) -> dict:
             if len(pnls) < min_trades:
                 continue
             wins = [p for p in pnls if p > 0]
+            mean = sum(pnls) / len(pnls)
+            med = statistics.median(pnls)
+            # B1902 (L581): report MEDIAN beside MEAN and flag divergence.
+            # MEASURED: ranking 192 strategies by mean put
+            # donchian_breakout_retest_long first at +944.752pct, driven by
+            # THREE SBNY rows entered at $0.001 after the bank failed. That
+            # cell's median is +0.399. A ranking is a claim about ORDER, and
+            # one row inverted it.
+            spread = abs(mean - med)
             rows.append({
                 "exit": exit_name,
                 "n": len(pnls),
-                "mean_pnl_pct": round(sum(pnls) / len(pnls), 4),
+                "mean_pnl_pct": round(mean, 4),
+                "median_pnl_pct": round(med, 4),
+                "outlier_flag": spread > max(1.0, 3 * abs(med)),
+                "mean_median_spread": round(spread, 4),
                 "win_rate": round(len(wins) / len(pnls), 4),
                 "total_pnl_pct": round(sum(pnls), 3),
             })
         if not rows:
             starved.append(strat)
             continue
-        rows.sort(key=lambda r: -r["mean_pnl_pct"])
+        # B1902: rank on MEDIAN. The mean ordering was entirely artifact.
+        rows.sort(key=lambda r: -r["median_pnl_pct"])
         out[strat] = {"exits_graded": len(rows),
                       "exits_present": len(by_strategy[strat]),
                       "best": rows[0], "all": rows}
@@ -120,8 +134,10 @@ def main() -> int:
           "strategy with no gradeable exit are different facts")
     for s, d in list(res["results"].items())[:8]:
         b = d["best"]
+        flag = "  OUTLIER-SKEWED" if b.get("outlier_flag") else ""
         print(f"   {s:44} best={b['exit']:22} n={b['n']:5} "
-              f"mean={b['mean_pnl_pct']:+7.3f}% win={b['win_rate']:.2f}")
+              f"med={b['median_pnl_pct']:+7.3f}% mean={b['mean_pnl_pct']:+9.3f}% "
+              f"win={b['win_rate']:.2f}{flag}")
     if a.out:
         pathlib.Path(a.out).write_text(json.dumps(res, indent=1),
                                        encoding="utf-8")
