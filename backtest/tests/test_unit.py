@@ -22092,3 +22092,45 @@ def test_b1986_row_vs_ticket_reads_executed_text():
         turn("Bash", {"command": "echo hello"})), (
         "a turn that never touched the queue is out of this gate's scope - "
         "a Write mentioning the filename must not make it eligible")
+
+
+
+def test_b1987_no_gate_reads_raw_tool_text():
+    """B1987 (L612): the 8-gate conversion must not reopen by habit.
+
+    The natural way to write a new gate is `tt = _tool_text(entries)` - the
+    older, shorter name. The arc (B1967-B1986) converted all 8 readers to
+    evidence matched on PROVENANCE, WINDOW and KIND; this pin holds the
+    count of raw gate call sites at ZERO so the ninth gate cannot quietly
+    start the arc again.
+    """
+    import pathlib as _p
+    import re as _re
+
+    root = _p.Path(__file__).resolve().parents[2]
+    src = (root / "scripts" / "verify_turn_compliance.py").read_text(
+        encoding="utf-8")
+
+    # call sites of the raw collector, excluding its definition and comments
+    raw = []
+    for i, ln in enumerate(src.splitlines(), 1):
+        code = ln.split("#")[0]
+        if "_tool_text(entries" not in code:
+            continue
+        if ("def _tool_text" in code or "_executed_tool_text(" in code
+                or "_inspecting_tool_text(" in code):
+            continue
+        raw.append(i)
+    assert not raw, (
+        f"raw `_tool_text(entries` gate call site(s) at line(s) {raw}. The "
+        "B1967-B1986 arc converted all 8 readers; a new one must choose its "
+        "evidence on PROVENANCE (ran vs typed), WINDOW (turn vs session) and "
+        "KIND (command/read/skill-context) - L612, and the older name is "
+        "exactly the habit this pin exists to catch")
+
+    # and the trunk helpers the arc built must all still exist
+    for helper in ("_executed_tool_text", "_turn_entries",
+                   "_skill_context_text", "_inspecting_tool_text"):
+        assert f"def {helper}(" in src, (
+            f"{helper} is one of the four trunk carriers the arc built - "
+            "its absence means an axis lost its owner")

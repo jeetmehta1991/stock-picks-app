@@ -13417,3 +13417,45 @@ MEASURED: 2 more consumers share the straddle shape (`scan_skill_not_invoked`,
 helper, one per batch. **ANCHORED (`#197`):** compliance failure against
 `#196`; mechanism `test_b1983_skill_gate_window_is_session_since_compaction`.
 Carried into `SKILL.md`.
+
+
+### L612
+
+**A gate's evidence has three independent axes, and each was learned on one
+gate and had to be carried to the rest**
+
+*(L611 is intentionally never assigned. It was cited before it existed - the
+B1945 incident - and the stale citations in append-log queue rows cannot be
+edited. Assigning new content to L611 would re-point those rows at a lesson
+they never meant, which is worse than leaving them dangling. The number is
+retired; the B1945 ratchet keeps it in the legacy set forever, by design.)*
+
+**B1967-B1986, the `S6-B1813b` arc, closed.** Eight gates read `_tool_text` as
+evidence, and converting them surfaced that "the right evidence" decomposes
+into three separate questions, each of which failed independently somewhere in
+the arc:
+
+| axis | question | learned on | failed silently on |
+|---|---|---|---|
+| **PROVENANCE** | ran vs typed | B1967 `uninspected_constant` | 7 siblings, both directions (bypass AND false fire) |
+| **WINDOW** | turn / session-since-compaction | B1980/B1983 | the skill gates, which STRADDLE the turn boundary |
+| **KIND** | command / read / skill-context | B1985 `uncosted_probe` | a bare swap would have dropped Read evidence |
+
+**The arc's shape is the lesson.** Every axis was discovered by one gate
+misbehaving, fixed there, and then found missing in siblings - L536's
+carry-the-rule, measured three more times. **COMPLIANCE FAILURE against
+`#262`**: the carrier each time was a TRUNK change (`_executed_tool_text`, the
+heredoc scrub, `_turn_entries`, `_skill_context_text`,
+`_inspecting_tool_text`), and the axes only stopped regressing when the trunk
+owned them.
+
+**And the closure itself needs a pin, or the class reopens by habit**: the
+natural way to write a new gate is `tt = _tool_text(entries)` - it is the
+older, shorter name. `test_b1987_no_gate_reads_raw_tool_text` asserts zero
+gate call sites of the raw collector, so the ninth gate cannot quietly start
+the arc again.
+
+MEASURED: 8 gates converted across 7 batches; 0 raw `_tool_text(entries` gate
+call sites remain (executed sweep); 2 documented residues (`#279`); 4 trunk
+helpers gained. **ANCHORED (`#197`):** compliance failure against `#262`;
+mechanism `test_b1987_no_gate_reads_raw_tool_text`. Carried into `SKILL.md`.

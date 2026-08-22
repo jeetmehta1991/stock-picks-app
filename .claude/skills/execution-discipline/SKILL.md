@@ -741,6 +741,26 @@ gate had just named.**
 - **Compliance failure against `#45` and `#247`, not a new class.** A fifth rule
   restating four that were ignored is `#136` theater.
 
+## GATE EVIDENCE HAS THREE AXES: PROVENANCE, WINDOW, KIND (B1987 - L612, CHECKLIST #262)
+
+**The 8-gate conversion arc (B1967-B1986) closed, and its shape is the
+lesson.** "The right evidence" decomposes into three separate questions, each
+learned on ONE gate and then found missing in siblings:
+
+- **PROVENANCE** - ran vs typed (`_executed_tool_text`; Write/Edit content is
+  authored, a heredoc body is data).
+- **WINDOW** - turn vs session-since-compaction (`_turn_entries`;
+  `_skill_context_text` for anything that STRADDLES the boundary).
+- **KIND** - command vs read vs skill-context (`_inspecting_tool_text`; a
+  Read's file_path is opening, a shell command is executing).
+
+**Ask all three before wiring any new gate's evidence.** The axes only stopped
+regressing when the TRUNK owned them - and the closure is pinned, because the
+natural way to write gate nine is the older, shorter `_tool_text` name.
+
+**Mechanically enforced** by `test_b1987_no_gate_reads_raw_tool_text` (zero
+raw call sites, shrink-only at zero).
+
 ## EACH GATE'S QUESTION NAMES ITS OWN WINDOW (B1983 - L610, CHECKLIST #196)
 
 **B1980's turn-scoping was right for the collectors and wrong for one
