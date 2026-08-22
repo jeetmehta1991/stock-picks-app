@@ -18578,7 +18578,10 @@ def test_b1820_step1_ranking_emits_its_ranking_key():
         "on, and without it the artifact shows only the HOLDOUT sharpe")
 
     # 2. and the sort must actually use it
-    assert 'key=lambda r: -(r.get("is_sharpe")' in src, (
+    # B2010 (D4): the ranking key evolved to IS ci_lo primary with IS sharpe
+    # tiebreak - still entirely inside the selection window, which is the
+    # PROPERTY this pin protects (B1718: never rank on the holdout).
+    assert '(-_rk(r.get("is_ci_lo")),' in src and '-_rk(r.get("is_sharpe"))' in src, (
         "the ranking key changed - if Step 1 no longer sorts on is_sharpe the "
         "B1718 leak fix is gone")
 
@@ -22822,3 +22825,45 @@ def test_b2009_noise_floor_is_derived_from_the_artifact():
     assert 'margin = (h["sharpe"] or 0) - PC["min_sharpe_overall"]' in code, (
         "the ROBUST margin must be measured against the bar the cell "
         "actually cleared - the crossed-bar class inside the roster builder")
+
+
+
+def test_b2010_step1_ranks_on_is_ci_lo():
+    """B2010 (D4 / S6-B1775c): a point estimate whose interval includes zero
+    must not outrank a solid cell.
+
+    Step-1 now ranks on the IS ci_lo with IS sharpe as tiebreak - still
+    entirely inside the selection window (B1718's holdout discipline), with
+    absent values strictly last via rank_key. The artifact carries the key
+    first-class (#277).
+    """
+    import pathlib as _p
+    import sys as _sys
+
+    root = _p.Path(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    from roster_core import rank_key as rk
+
+    rows = [
+        {"id": "lucky_thin",  "is_ci_lo": -0.20, "is_sharpe": 2.10},
+        {"id": "solid",       "is_ci_lo": 0.45,  "is_sharpe": 1.30},
+        {"id": "decent",      "is_ci_lo": 0.10,  "is_sharpe": 1.30},
+        {"id": "no_interval", "is_ci_lo": None,  "is_sharpe": 3.00},
+    ]
+    got = [r["id"] for r in sorted(
+        rows, key=lambda r: (-rk(r.get("is_ci_lo")), -rk(r.get("is_sharpe"))))]
+    assert got == ["solid", "decent", "lucky_thin", "no_interval"], (
+        f"order {got}: the 2.10-sharpe cell whose interval includes zero "
+        "must rank BELOW both solid cells (L455), and a missing interval "
+        "sorts strictly last - under the old is_sharpe key this list "
+        "inverted (lucky_thin and no_interval led)")
+
+    # the shipped ranker uses exactly these keys, and emits is_ci_lo
+    import source_text as st
+    code = st.code_only(root / "scripts" / "tighten_breaker_block.py")
+    assert '"is_ci_lo": (_is_stats or {}).get("ci_lo")' in code, (
+        "the artifact must CARRY the ranking key (#277)")
+    assert '(-_rk(r.get("is_ci_lo")),' in code, (
+        "the ranker must sort on the ci_lo primary - re-spelling it away "
+        "reopens L455")

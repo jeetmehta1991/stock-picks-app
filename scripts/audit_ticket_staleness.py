@@ -121,9 +121,13 @@ def _lists():
 
 @probe("queue classes outside the ruled vocabulary")
 def _vocab():
-    q = (ROOT / "EXECUTION_QUEUE.md").read_text(encoding="utf-8")
-    seen = set(re.findall(
-        r"^\|\s*\*\*S6-[A-Za-z0-9-]+\*\*\s*\|\s*\*\*([A-Z-]+)\*\*\s*\|", q, re.M))
+    # B2011: derive from the CANONICAL parser (B1990's rule). This prober
+    # carried its own bold-requiring regex all along - the sweep's "no second
+    # regex survives" assertion had been passing over a haystack the OLD
+    # code_only bug had blanked (a string after an open paren + newline was
+    # misread as a docstring): L582's vacuous not-in, live. The depth fix in
+    # source_text exposed it on its first pyramid run.
+    seen = {st for _, _, st in _qs_rows.rows()}
     # B1778: CLOSED joined the vocabulary by owner ruling - DONE is
     # self-reported, CLOSED is verified against code.
     bad = sorted(seen - set(LIVE) - {"EXECUTED", "DROPPED"})

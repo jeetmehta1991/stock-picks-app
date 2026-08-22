@@ -319,6 +319,11 @@ def main() -> int:
                "fires": len(keep), "exit": exit_pick,
                "holdout_n": len(hb), "full_period_n": fp_n,
                # B1715: diagnostic, never ranked on.
+               # B2010 (D4): the RANKING KEY, emitted first-class. ci_lo of
+               # the IS Sharpe - a point estimate whose interval includes
+               # zero must not outrank a solid cell (L455, live in span50's
+               # old top-5).
+               "is_ci_lo": (_is_stats or {}).get("ci_lo"),
                "is_sharpe": (_is_stats or {}).get("sharpe")}
         if res is None:
             row["verdict"] = "BELOW_POWER_FLOOR"
@@ -373,12 +378,20 @@ def main() -> int:
     #
     # `sharpe` remains in every row as the holdout MEASUREMENT of whatever the
     # in-sample ranking selected - reported, never ranked on.
-    for r in sorted(rankable, key=lambda r: -(r.get("is_sharpe")
-                                              if r.get("is_sharpe") is not None else -9)):
-        # B1718: equivalence collapses on the IS Sharpe too, since that is now
-        # the ranking key - two combos with the same fires/exit/IS-Sharpe are
-        # the same STEP-1 outcome.
-        key = (r.get("fires"), r.get("exit"), round(r.get("is_sharpe"), 9))
+    # B2010 (D4, owner-approved): PRIMARY key is the IS ci_lo - the lower
+    # confidence bound of the in-sample Sharpe - so a lucky thin-n point
+    # estimate cannot outrank a solid cell (L455: 4 of span50's old top-5
+    # had intervals including zero). IS sharpe breaks ties. Still entirely
+    # inside the selection window: B1718's holdout discipline is untouched,
+    # and `rank_key` sorts absent values strictly last (S6-B1972b).
+    from roster_core import rank_key as _rk
+    for r in sorted(rankable, key=lambda r: (-_rk(r.get("is_ci_lo")),
+                                             -_rk(r.get("is_sharpe")))):
+        # B1718: equivalence collapses on the ranking keys - two combos with
+        # the same fires/exit/ci_lo/IS-Sharpe are the same STEP-1 outcome.
+        key = (r.get("fires"), r.get("exit"),
+               None if r.get("is_ci_lo") is None else round(r.get("is_ci_lo"), 9),
+               round(r.get("is_sharpe"), 9))
         classes.setdefault(key, []).append(r)
     ranked = list(classes.values())[:a.top_n]
     carried = sum(len(c) for c in ranked)

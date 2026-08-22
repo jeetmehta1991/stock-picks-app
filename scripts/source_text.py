@@ -59,10 +59,21 @@ def code_only(path_or_src) -> str:
 
     lines = src.splitlines(keepends=True)
     buf = [list(ln) for ln in lines]
-    prev = None
+    # B2011: a docstring exists only at PAREN DEPTH 0. Without depth tracking,
+    # a string following a comment INSIDE a dict/call was blanked as a
+    # docstring - `"is_ci_lo": ...` after an inline comment vanished from the
+    # haystack, failing a true `in` assertion loudly here and, worse, letting
+    # any `not in` over such a region pass vacuously (L582's class).
+    prev, depth = None, 0
     for tok in toks:
+        if tok.type == tokenize.OP:
+            if tok.string in "([{":
+                depth += 1
+            elif tok.string in ")]}":
+                depth = max(0, depth - 1)
         drop = (tok.type == tokenize.COMMENT
-                or (tok.type == tokenize.STRING and prev in _STMT_BOUNDARY))
+                or (tok.type == tokenize.STRING and depth == 0
+                    and prev in _STMT_BOUNDARY))
         if drop:
             (sr, sc), (er, ec) = tok.start, tok.end
             for row in range(sr, min(er, len(buf)) + 1):
