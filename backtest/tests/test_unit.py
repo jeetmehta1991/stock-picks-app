@@ -21412,3 +21412,109 @@ def test_b1973_every_ticket_row_closes_its_cell():
     assert not bad, (
         f"{len(bad)} ticket row(s) do not close their last cell: {bad[:6]}. "
         "Every cell-reading gate loses its right delimiter on these rows.")
+
+
+
+def test_b1974_roster_builder_ranks_break_even_above_losers():
+    """B1974 (S6-B1972b): the roster builder's ranking key, all three sites.
+
+    Two are decision-bearing - which exit is picked per strategy (line 227)
+    and which duplicate is canonical (line 262). `or -9` sent a Sharpe of
+    EXACTLY 0.0 to the worst key, so **the cell that broke even lost to every
+    cell that lost money.**
+
+    Measured 0 live instances over 6,578 evaluated exit-cells across all three
+    cubes, so the fix is output-preserving on today's data. That is the
+    property being pinned, not an excuse for skipping it: the trap fires on
+    the first cube where a cell prices out flat.
+    """
+    import importlib.util as _iu
+    import pathlib as _p
+
+    root = _p.Path(__file__).resolve().parents[2]
+    spec = _iu.spec_from_file_location(
+        "bpr_b1974", root / "scripts" / "build_phase_1b_roster.py")
+    m = _iu.module_from_spec(spec)
+    spec.loader.exec_module(m)
+
+    assert m._rank(0.0) > m._rank(-0.4), (
+        "breaking even must outrank losing money - `or -9` inverted this")
+    assert m._rank(-0.4) > m._rank(None), (
+        "an absent Sharpe must still sort strictly last")
+    assert m._rank(1.2) > m._rank(0.0) and m._rank(0.0) == 0.0, (
+        "a measured value must rank on itself, unmodified")
+
+    # ONE definition, not three copies (#226 / ONE PATTERN ONE DEFINITION)
+    src = (root / "scripts" / "build_phase_1b_roster.py").read_text(
+        encoding="utf-8")
+    assert '"sharpe"] or -9' not in src and '"is_sharpe"] or -9' not in src, (
+        "no call site may keep the falsy-coalescing form")
+    assert src.count("_rank(") >= 4, (
+        "all three call sites plus the definition - if a fourth ranking site "
+        "is added later it must reuse this, not re-spell it")
+
+
+
+# B1974b: artifact -> the scripts that generate it. A committed artifact older
+# than its generator is a MEMORY, not a measurement.
+_B1974_GENERATED = {
+    "PHASE_1B_ROSTER.md": ("scripts/build_phase_1b_roster.py",
+                           "scripts/roster_core.py"),
+}
+
+
+def test_b1974_generated_artifact_is_not_older_than_its_generator():
+    """B1974b: a generated artifact is stale the moment its generator changes.
+
+    Found while proving B1974 output-preserving: regenerating
+    `PHASE_1B_ROSTER.md` changed it, and the OLD code produced the SAME new
+    output - so the change was not the fix. **The committed doc had been stale
+    for 7 commits to its own generator**, and its gate-2 row read 4 where the
+    generator produces 3.
+
+    The headline (2 roster cells) was unchanged, so nothing looked wrong.
+    **That is the whole failure mode: a stale artifact does not announce
+    itself, it quietly stops being a measurement and becomes a memory.**
+
+    Cheap by construction - this compares commit timestamps and re-runs
+    nothing. Regenerating the roster reads 4.9M rows.
+    """
+    import subprocess as _sp
+    import pathlib as _p
+
+    root = _p.Path(__file__).resolve().parents[2]
+
+    def last_commit(path):
+        out = _sp.run(["git", "log", "-1", "--format=%ct", "--", path],
+                      cwd=root, capture_output=True, text=True)
+        v = out.stdout.strip()
+        return int(v) if v else None
+
+    # B1974c: an artifact with UNCOMMITTED changes is being regenerated right
+    # now, so it is fresh by definition. Without this the check can never be
+    # green in the pre-commit pyramid that ships the regeneration - the gate
+    # would block the only action that satisfies it, which is a gate that
+    # cannot be obeyed rather than one that cannot fail.
+    dirty = set(_sp.run(["git", "diff", "--name-only", "HEAD"],
+                        cwd=root, capture_output=True, text=True
+                        ).stdout.split())
+
+    stale = []
+    for art, gens in sorted(_B1974_GENERATED.items()):
+        if art in dirty:
+            continue          # regenerated in the working tree this turn
+        a = last_commit(art)
+        if a is None:
+            continue          # not committed yet; nothing to be stale against
+        for g in gens:
+            t = last_commit(g)
+            if t is not None and t > a:
+                stale.append(f"{art} (committed {a}) is older than {g} ({t})")
+
+    assert not stale, (
+        "GENERATED ARTIFACT OLDER THAN ITS GENERATOR:\n  " +
+        "\n  ".join(stale) +
+        "\nRe-run the generator and commit the result, or the artifact is a "
+        "memory of what the code used to produce. B1974b: PHASE_1B_ROSTER.md "
+        "sat 7 generator-commits stale with a wrong gate-2 count and nothing "
+        "noticed, because its headline was unchanged.")

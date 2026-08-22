@@ -32,8 +32,8 @@
 |---|---|---|
 | 0 | (strategy x direction) cells with a selectable IS exit | 253 |
 | 1 | Holdout-evaluable (n >= 30 at the chosen exit) | 211 |
-| 2 | Clear all 6 live gates on the holdout | 4 |
-| 3 | Survive BH-FDR (q<0.05, threshold p<=0.01256) | 2 |
+| 2 | Clear all 6 live gates on the holdout | 3 |
+| 3 | Survive BH-FDR (q<0.05, threshold p<=0.01185) | 2 |
 | 4 | De-duplicated (Jaccard < 0.7) | **2** |
 
 ### Gate contribution (leave-one-out)
@@ -42,12 +42,12 @@ A pass count hides whether a screen has five independent constraints or one bind
 
 | gate | cells passing if this gate is DROPPED | uniquely rejects |
 |---|---|---|
-| `pooled_sharpe` | 75 | 71 |
-| `profit_factor` | 4 | 0 **(rejects nothing)** |
-| `sortino` | 4 | 0 **(rejects nothing)** |
-| `psr` | 4 | 0 **(rejects nothing)** |
-| `min_trades_holdout` | 4 | 0 **(rejects nothing)** |
-| `min_trades_full_period` | 4 | 0 **(rejects nothing)** |
+| `pooled_sharpe` | 66 | 63 |
+| `profit_factor` | 3 | 0 **(rejects nothing)** |
+| `sortino` | 3 | 0 **(rejects nothing)** |
+| `psr` | 8 | 5 |
+| `min_trades_holdout` | 3 | 0 **(rejects nothing)** |
+| `min_trades_full_period` | 3 | 0 **(rejects nothing)** |
 
 ### Effective breadth - READ THIS BEFORE SIZING
 
@@ -64,19 +64,8 @@ The cell count is NOT the number of independent bets. De-dup compares (ticker, e
 
 | # | Strategy | Dir | Status | Cube | Tkrs | Exit | IS Shrp | HO Shrp | margin | HO n | Exp | WR | PF | Payoff | Mirror |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 1 | `xs_momentum_top_decile` | long | ROBUST | R5 | 544 | `time_stop_10d` |   0.67 |   1.35 | +0.849 | 50 |   2.23 | 0.660 |   2.34 |   1.20 | `xs_momentum_bottom_decile_short` |
-| 2 | `xs_momentum_with_smart_money_long` | long | ROBUST | R5 | 544 | `time_stop_20d` |   0.58 |   1.00 | +0.504 | 162 |   5.63 | 0.593 |   2.94 |   2.02 | `xs_momentum_bottom_decile_short` |
-
-> **B1596 EXIT RELABEL (owner-approved 2026-08-16).** Row 2
-> `xs_momentum_with_smart_money_long` was recorded as regime-flip. It was NEVER
-> that: no caller passed `regime_series`, so the exit fell back to a 20-day time
-> stop on every trade in every cube (L461 - measured identical to `time_stop_20d`
-> on 330 of 330). The row's METRICS are correct and UNCHANGED; they are
-> `time_stop_20d`'s metrics. Only the LABEL was wrong. **No re-derivation is
-> required by this relabel.** B1593 fix C means regime-flip now runs its real
-> logic, never measured - so deploying under the old label would have run
-> unmeasured behaviour.
-
+| 1 | `xs_momentum_top_decile` | long | ROBUST | R5 | 544 | `time_stop_10d` |   0.81 |   1.62 | +1.124 | 50 |   2.23 | 0.660 |   2.34 |   1.20 | `xs_momentum_bottom_decile_short` |
+| 2 | `xs_momentum_with_smart_money_long` | long | ROBUST | R5 | 544 | `time_stop_20d` |   0.69 |   1.21 | +0.709 | 162 |   5.63 | 0.593 |   2.94 |   2.02 | `xs_momentum_bottom_decile_short` |
 
 **Status (S6-B1467c, owner-approved).** ROBUST **2** / PROVISIONAL **0**. A cell is ROBUST only if it clears the 0.5 Sharpe gate by more than the measured selection-noise floor of 0.369. That floor is the holdout-Sharpe gap observed between duplicate strategies with ~identical entries whose exits were chosen independently (B1467) -- i.e. the amount of a cell's margin that the exit choice alone can account for. PROVISIONAL does NOT mean the cell failed: it cleared every live gate. It means its margin is smaller than the pipeline's own decision noise, so PASS overstates the certainty.
 

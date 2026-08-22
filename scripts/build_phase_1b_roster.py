@@ -71,6 +71,21 @@ from roster_core import (                                    # noqa: E402
     LIVE_GATES, DEMOTED, evaluate, select_exit, truthful_exit_name,
 )
 
+def _rank(sharpe):
+    """Ranking key for a possibly-ABSENT Sharpe. B1974 (`S6-B1972b`).
+
+    `sharpe or -9` could not tell "no value" from "the value 0", so a measured
+    Sharpe of exactly 0.0 sorted below every loser. Only None takes the
+    sentinel, and it sorts strictly last.
+
+    ONE definition for all three call sites (`#226`): the previous code
+    repeated the expression three times, which is how two of them ended up
+    decision-bearing and the third cosmetic with nothing marking the
+    difference.
+    """
+    return float("-inf") if sharpe is None else sharpe
+
+
 CUBES = [("R5", "output_r5_merged_1_7"),
          ("R6b", "output_r6b_cube_14"),
          ("Group1", "output_r6c_group1_3")]
@@ -224,7 +239,13 @@ def main() -> int:
                     cands.append(r)
             if not cands:
                 continue
-            pick = max(cands, key=lambda c: (c["n_gates"], c["sharpe"] or -9))
+            # B1974 (S6-B1972b): only an ABSENT Sharpe may take the
+            # sentinel. `or -9` is falsy-coalescing, so a Sharpe of EXACTLY
+            # 0.0 took the worst key and the exit that BROKE EVEN lost this
+            # pick to every exit that LOST MONEY. Measured 0 live instances
+            # over 6,578 cells in all three cubes, so this changes no current
+            # output - it removes a trap that fires on data not yet run.
+            pick = max(cands, key=lambda c: (c["n_gates"], _rank(c["sharpe"])))
             hog = g[(g.entry_date >= HO_START) & (g.entry_date < HO_END)
                     & (g.exit_method == pick["exit"])]
             graded = evaluate(hog["pnl_pct"], hog["hold_days"],
@@ -259,7 +280,9 @@ def main() -> int:
     # retracted at B1452 (2 near-identical candidates, not 26) but the same class, so it is
     # fixed rather than excused. IS Sharpe keeps every selection decision inside the
     # selection window (CHECKLIST #165 + the B1452 window discipline).
-    passed.sort(key=lambda r: -(r["is_sharpe"] or -9))
+    # B1974: same class - a break-even cell must not lose canonical status
+    # to a losing twin because 0.0 is falsy.
+    passed.sort(key=lambda r: -_rank(r["is_sharpe"]))
     dup_of, kept = {}, []
     for r in passed:
         red = None
@@ -410,7 +433,10 @@ def main() -> int:
     A("")
     A("| # | Strategy | Dir | Status | Cube | Tkrs | Exit | IS Shrp | HO Shrp | margin | HO n | Exp | WR | PF | Payoff | Mirror |")
     A("|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|")
-    for i, r in enumerate(sorted(kept, key=lambda x: -(x["holdout"]["sharpe"] or -9)), 1):
+    # B1974: display sort - same class, no decision rides on it, fixed
+    # anyway so the file has ONE definition of the ranking key (#226).
+    for i, r in enumerate(sorted(kept,
+                                 key=lambda x: -_rank(x["holdout"]["sharpe"])), 1):
         h = r["holdout"]
         # B1455b: render every status the classifier can emit. This previously fell through
         # to "**NEEDS CREATION**" for anything that was not REGISTERED or LONG-ONLY-DATA, so

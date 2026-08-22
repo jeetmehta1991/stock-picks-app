@@ -13276,3 +13276,43 @@ mechanisms `test_b1973_reason_verdict_is_invariant_to_emphasis` (asserts the
 verdict is the same for early and late bold, and that the placeholder check
 survives the widening) and `test_b1973_every_ticket_row_closes_its_cell`.
 Carried into `SKILL.md`.
+
+
+### L607
+
+**A generated artifact is stale the moment its generator changes, and its
+headline is what hides it**
+
+**B1974.** Proving the `S6-B1972b` roster fix output-preserving, I regenerated
+`PHASE_1B_ROSTER.md` and **it changed** - gate-2 from 4 to 3, the BH-FDR
+threshold from 0.01256 to 0.01185.
+
+**The control I had skipped is what saved the conclusion.** I had run the
+generator only AFTER the edit, so the diff looked like my change. Stashing the
+edit and re-running produced **the same new output from the OLD code**: the
+committed doc had been stale for **7 commits to its own generator** since
+2026-08-16, including `B1714` *"the owner's --min-n now binds; wave 1
+re-graded"* - a change that moves exactly this funnel.
+
+**The headline is what hid it.** The roster still says 2 cells, which is the
+number anyone reads and the number CLAUDE.md carries. Only the intermediate
+funnel rows were wrong. **A stale artifact does not announce itself - it stops
+being a measurement and becomes a memory, and it keeps the shape of a
+measurement while doing so.**
+
+**Two rules, and the second is the one I nearly missed:**
+
+1. **A generated artifact older than its generator is stale**, full stop. No
+   judgement about whether the change "should" have mattered - `B1714`'s
+   `--min-n` fix did not look like a funnel change either.
+2. **Run the control BEFORE the edit, not after.** A single post-change run
+   cannot separate *my diff* from *drift that was already there*, and it reads
+   as though it can. I would have reported a behaviour change that was not
+   mine, in a file that produces the owner-facing roster.
+
+MEASURED: 6,578 evaluated exit-cells across all three cubes, `sharpe` None 0
+times and exactly 0.0 0 times; OLD-code and NEW-code output **byte-identical**;
+7 generator commits since the doc's last. **ANCHORED (`#197`):** mechanism
+`test_b1974_generated_artifact_is_not_older_than_its_generator`, which compares
+commit timestamps and re-runs nothing - regenerating reads 4.9M rows. Carried
+into `SKILL.md`.

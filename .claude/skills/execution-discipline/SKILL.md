@@ -741,6 +741,28 @@ gate had just named.**
 - **Compliance failure against `#45` and `#247`, not a new class.** A fifth rule
   restating four that were ignored is `#136` theater.
 
+## RUN THE CONTROL BEFORE THE EDIT (B1974 - L607, CHECKLIST #226)
+
+**Regenerating `PHASE_1B_ROSTER.md` after a fix showed a changed funnel. The
+change was not mine** - stashing the edit and re-running produced the SAME new
+output from the OLD code. The committed doc had been stale for **7 commits to
+its own generator.**
+
+- **A single post-change run cannot separate your diff from drift already
+  there** - and it reads exactly as though it can. Capture the baseline by
+  RUNNING the old code, not by trusting the committed artifact.
+- **A generated artifact older than its generator is stale, full stop.** No
+  judgement about whether the change "should" have mattered.
+- **The headline hides it.** The roster's 2-cell conclusion was unchanged;
+  only intermediate rows were wrong. A stale artifact keeps the SHAPE of a
+  measurement while being a memory.
+- Prove output-preservation by **regeneration and diff**, not by arguing from
+  a frequency measurement - though measure first, so you know what to expect.
+
+**Mechanically enforced** by
+`test_b1974_generated_artifact_is_not_older_than_its_generator` (compares
+commit timestamps; re-runs nothing, because regenerating reads 4.9M rows).
+
 ## A GATE CAN BE RIGHT AND NAME THE WRONG CAUSE (B1973 - L606, CHECKLIST #275)
 
 **The gate said a row carried NO reason. It carried one.** My first words were
