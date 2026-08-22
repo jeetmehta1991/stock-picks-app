@@ -17076,7 +17076,9 @@ def test_b1783_response_gates_inherit_text_scoping():
         "scan_prose_only_rule", "scan_queue_not_updated",
         "scan_response_gates", "scan_retroactive_sweep",
         "scan_skill_block_incomplete", "scan_uncosted_probe",
-        "scan_ungated_addition", "scan_uninspected_constant",
+        # B1938: scan_uninspected_constant CONVERTED - removed from this
+        # shrink-only set in the same commit as the conversion.
+        "scan_ungated_addition",
         "scan_unverified_count",
         "scan_transcript_entries", "scan_verdict_denominators",
     }
@@ -20576,3 +20578,67 @@ def test_b1929_staleness_auditor_names_the_set_it_counted():
     assert "_breakdown" in src, (
         "printing 108 without saying it is 63+37+4+4 leaves the reader to "
         "assume which class it means - which is how the wrong noun survived")
+
+
+
+def test_b1938_uninspected_constant_reads_prose_not_mentions():
+    """B1938 (S6-B1783b): ONE gate converted to `_response_text`, re-proven.
+
+    `scan_uninspected_constant` is `#222` mechanised and read text RAW, so it
+    carried none of B1738 (inline spans are MENTIONS), B1742 (final block only)
+    or B1781 (fenced blocks stripped).
+
+    **Converting `t` was not enough.** The gate searches a CASE-PRESERVED copy
+    for ALL-CAPS identifiers, and that copy bypassed the strip - a backticked
+    `MIN_N` still fired. L592 inside a single function, one batch after L592.
+    """
+    import importlib.util as _iu
+    import pathlib as _p
+    import re as _re
+
+    root = _p.Path(__file__).resolve().parents[2]
+    spec = _iu.spec_from_file_location(
+        "vtc_b1938", root / "scripts" / "verify_turn_compliance.py")
+    tg = _iu.module_from_spec(spec)
+    spec.loader.exec_module(tg)
+    f = tg.scan_uninspected_constant
+
+    # the corpus incident must still fire
+    assert f([], text="MIN_N = 30 is the floor, so 70pct of the grid sits "
+                      "below it.", tool_text="{}"), (
+        "the B1698 incident must still fire - a conversion that silences the "
+        "gate's own incident is a regression wearing a refactor")
+
+    # and the three mention-vs-use branches must go quiet
+    assert not f([], text="`MIN_N` = 30 is the floor.", tool_text="{}"), (
+        "B1738 - a constant in BACKTICKS is a mention, not a claim")
+    assert not f([], text="```\nMIN_N = 30\n```", tool_text="{}"), (
+        "B1781 - a constant inside a FENCE is being shown, not asserted")
+    assert not f([], text="MIN_N = 30 is the floor.",
+                 tool_text="grep MIN_N scripts/roster_core.py"), (
+        "inspected this turn - the gate must not punish the grep it demands")
+
+    src = (root / "scripts" / "verify_turn_compliance.py").read_text(
+        encoding="utf-8")
+
+    # L592's remedy: COUNT the sites and PIN the count, so the unconverted
+    # siblings are visible rather than remembered.
+    raw_readers = src.count(
+        "t = (_assistant_text(entries) if text is None else text.lower())")
+    assert raw_readers == 11, (
+        f"{raw_readers} gates still read text raw, pin says 11. If a gate was "
+        "converted, LOWER this number in the same commit (S6-B1783b); if one "
+        "was added, it needs _response_text instead")
+
+    # B1938e: this first counted OCCURRENCES of the regex (4 - the
+    # definition line and two comment mentions inflate it) while the
+    # measurement behind the claim counted GATES (2). #271's class, and
+    # B1929's exactly: a correct count under a noun naming a different
+    # set. Caught by this pin one run after it was written.
+    _fns = _re.split(r"\ndef (scan_[a-z_]+)", src)
+    case_preserved = len([_fns[i] for i in range(1, len(_fns), 2)
+                          if "_raw_assistant" in _fns[i + 1]])
+    assert case_preserved == 2, (
+        f"{case_preserved} sites keep a case-preserved copy, pin says 2. Only "
+        "scan_uninspected_constant routes it through _strip_mentions; "
+        "scan_unverified_structure does not, and that is the visible sibling")

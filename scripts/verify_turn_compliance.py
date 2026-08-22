@@ -1341,7 +1341,22 @@ def scan_uninspected_constant(entries, *, tool_text=None,
     # B1760b: the EARLY RETURN read entries too, so injected text never got
     # past it. TWO ignored-parameter bugs in one function - both invisible to
     # a proof that only ever fed it live entries.
-    t = (_assistant_text(entries) if text is None else text.lower())
+    # B1938 (S6-B1783b): route through _response_text, ONE gate at a time.
+    # This gate is #222 mechanised and read text RAW, so it carried none of
+    # the three rules the helper holds: B1738 inline-code spans are MENTIONS,
+    # B1742 read only the FINAL assistant block, B1781 strip fenced blocks so
+    # documenting a defect cannot trip the gate for that defect.
+    #
+    # keep_code=False is deliberate and not obvious. This gate hunts ALL-CAPS
+    # identifiers and CLI flags, which are routinely written in backticks -
+    # stripping code spans makes it read only constants named in PROSE, which
+    # is exactly #222's target: a constant QUOTED AS A FACT, not shown as a
+    # token.
+    #
+    # The 11 remaining raw readers are NOT converted here. The identical line
+    # appears 12 times, and S6-B1783b says converting them together is the
+    # change that breaks several silently.
+    t = _response_text(entries, text)
     if not t:
         return []
     tt = _tool_text(entries, tool_text).lower()
@@ -1350,7 +1365,19 @@ def scan_uninspected_constant(entries, *, tool_text=None,
     # parameter existed and did nothing - the gate could never be exercised on
     # supplied text. Found by the incident corpus, not by its own 6/6 proof,
     # because that proof only ever fed it live entries.
-    raw = (" ".join(_raw_assistant(entries)) if text is None else text)
+    # B1938c: the CASE-PRESERVED copy needs the mention strip too. Converting
+    # `t` to _response_text left this line reading unstripped text, so a
+    # backticked `MIN_N` still fired - L592 inside one function, one batch
+    # after L592 was written. The comment above records B1760 fixing the
+    # INJECTION path for this same variable; the MENTION-vs-USE strip never
+    # reached it.
+    #
+    # MEASURED: 2 gates keep a case-preserved copy - this one and
+    # scan_unverified_structure. Only this one is converted (S6-B1783b:
+    # converting together is the change that breaks several silently), and
+    # test_b1938 pins the count so the sibling stays visible.
+    raw = _strip_mentions(
+        " ".join(_raw_assistant(entries)) if text is None else text)
     # Identifiers that look like code constants, and long-form CLI flags.
     # B1721b: this line shipped with LITERAL BACKSPACE characters where 
     # belonged - the escape was mangled at write time, so the pattern could
@@ -1378,6 +1405,24 @@ def scan_uninspected_constant(entries, *, tool_text=None,
             "MIN_N=30 was quoted as 'the floor' while the caller passed 10, and "
             "the grep that would have shown it was the step that got compressed "
             "away. Grep the identifier, or do not cite it."]
+
+
+def _strip_mentions(text: str) -> str:
+    """B1738/B1781's strips WITHOUT lowercasing, for gates that need case.
+
+    B1938c: `scan_uninspected_constant` searches a CASE-PRESERVED copy for
+    ALL-CAPS identifiers, so it cannot use `_response_text` (which lowercases)
+    and was reading unstripped text. A backticked `MIN_N` fired as though it
+    had been quoted as a fact.
+
+    **Mention-vs-use is orthogonal to case**, and separating them is what lets
+    a case-sensitive gate have both.
+    """
+    import re as _rm
+
+    t = _rm.sub(r"```.*?```", " ", text, flags=_rm.S)   # B1781 fenced blocks
+    t = _rm.sub(r"^[ \t]*>.*$", " ", t, flags=_rm.M)    # blockquotes
+    return _rm.sub(r"`[^`]*`", " ", t)                  # B1738 inline spans
 
 
 def _raw_assistant(entries) -> list:
