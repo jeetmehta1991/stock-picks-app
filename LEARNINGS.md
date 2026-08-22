@@ -12342,3 +12342,77 @@ firings would clear if the window were widened, and 35 carry no retraction at
 all.** The gate was right and my sentence was the outlier. That is B1909b's
 lesson holding one batch later, under a live temptation to reach the opposite
 conclusion.
+
+
+### L585
+
+**`#162` is not an RCA rule, it is a MEASUREMENT rule - and a metric that
+counts the wrong thing carries the authority of having been run**
+
+**B1912.** Deciding whether to add quote-stripping to a gate, I measured how
+many of its firings sat inside a quoted span and got **11 of 41, 27pct**. I
+wrote that figure into the code comment justifying the change. **The real
+effect, measured after shipping, is 41 -> 37: four.**
+
+My probe counted quote marks **within a character window of the clause**.
+**Proximity is not containment.** In a report as quote-dense as mine, almost
+any clause has a quote mark somewhere near it, so the metric was close to
+measuring "is this a report" rather than "is this claim a quotation".
+
+**This is the harder kind of wrong.** An unmeasured number can be challenged on
+sight. A number that was genuinely computed, from real data, by a script that
+ran without error, arrives pre-armoured - and I quoted it as the justification
+for a change to a gate.
+
+**COMPLIANCE FAILURE against `CHECKLIST #162`**, the counter-semantics trap:
+*before any count anchors a conclusion, verify its measurement point - what
+stage, what pass, what does it actually count?* **I had applied `#162` to RCA
+counters and never to my own probes**, because the item was written after an
+RCA and I filed it mentally under RCA. **The rule is about MEASUREMENT, and a
+gate-design probe is a measurement.**
+
+The detection signal that would have caught it earlier: **the probe and the
+change it justified could both be run, and their answers compared.** I could
+have applied the strip and re-counted BEFORE writing the comment - which is the
+same before/after discipline the clause-splitter fix used at B1872, and I
+simply did not repeat it here.
+
+**The rule: name the quantity, then prove the probe computes THAT quantity -
+ideally by running the change and re-measuring.** **ANCHORED (`#197`):**
+compliance failure against `CHECKLIST #162`, scope corrected from RCA counters
+to all probes. Carried into `SKILL.md`.
+
+### L586
+
+**A gate with a chilling effect on the record is worse than the gap it closes**
+
+**B1912d.** `L584` carried an unsourced novelty claim and no gate saw it,
+because the novelty gate reads the RESPONSE and I had written the claim into
+`LEARNINGS.md`. The obvious fix is to run the newest L-entry through the same
+check.
+
+**I built it. It fails on `L584` itself** - because the entry that RECORDS an
+incident must narrate the wrong claim in order to correct it. Every future
+lesson about a novelty miss would trip the same pin.
+
+That is `B1781` verbatim: *the gate fired on my own LEARNINGS entry recording
+the defect*. What is new is not the firing - it is the **decision**.
+
+**A gate that blocks writing a lesson does not merely inconvenience the author;
+it makes the cheapest path the one where the lesson is worded around the gate,
+or not written.** This project's entire error-correction loop runs through that
+file. **A mechanism that taxes the loop it is meant to protect is a net
+negative even when the gap it closes is real.**
+
+**So it was built, measured, and REMOVED**, with the reasoning left in the pin
+where the next reader will find it, and the question filed for the owner rather
+than guessed at a third time. The alternatives - exempt the newest entry,
+require an in-entry retraction marker, scan only the RULE paragraph - are
+choices about how a lesson may be WORDED, and that is not a call to make
+silently.
+
+**The rule: before gating an artifact, ask what behaviour the gate makes
+cheapest. If the cheapest response is to write less down, do not ship it.**
+**ANCHORED (`#197`):** `CHECKLIST #136`'s anti-theater guard has a sibling - an
+addition can fail not by being useless but by being COSTLY IN THE WRONG PLACE.
+Carried into `SKILL.md`.

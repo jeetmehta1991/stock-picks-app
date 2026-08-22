@@ -741,6 +741,52 @@ gate had just named.**
 - **Compliance failure against `#45` and `#247`, not a new class.** A fifth rule
   restating four that were ignored is `#136` theater.
 
+## A METRIC THAT COUNTS THE WRONG THING ARRIVES PRE-ARMOURED (B1912 - L585, CHECKLIST #162)
+
+**Deciding whether to add a rule to a gate, I measured "11 of 41 firings, 27pct"
+and wrote it into the comment justifying the change. The real effect is four.**
+My probe counted quote marks within a character WINDOW of the clause -
+**proximity is not containment** - so it was closer to measuring "is this a
+report" than "is this a quotation".
+
+- **An unmeasured number can be challenged on sight. A number that was
+  genuinely computed, from real data, by a script that ran clean, cannot.**
+- **COMPLIANCE FAILURE against `#162`** - the counter-semantics trap. I had
+  filed `#162` under RCA because it was written after one. **It is a
+  MEASUREMENT rule, and a gate-design probe is a measurement.**
+- **Name the quantity, then prove the probe computes THAT quantity** - ideally
+  by making the change and re-measuring, the before/after discipline B1872 used
+  and this batch skipped.
+
+**PROSE-ONLY, and here is why no gate is possible.** This rule is a claim about
+CORRESPONDENCE between a name and a computation. My probe ran clean, on real
+data, and returned a number; what was wrong is that *"quote marks within 40
+characters of the clause"* is not *"the clause is a quotation"* - a difference
+only a reader who knows the intent can see. **No text scan evaluates whether a
+computation means what its author called it**, and a presence-pin asserting
+this section still exists would be enforcement theatre, which `#136` rejects.
+
+**The gateable slice already exists and is `#201`** - a figure must name its
+source - and it passed here, because the figure DID name its source. **That is
+precisely the limit worth knowing: `#201` proves a number came from somewhere,
+never that the somewhere measured the right thing.**
+
+## A GATE WITH A CHILLING EFFECT ON THE RECORD IS WORSE THAN THE GAP IT CLOSES (B1912 - L586, CHECKLIST #136)
+
+**An unsourced claim in `LEARNINGS.md` escaped the novelty gate, which reads the
+response. The obvious fix - scan the newest L-entry - was built, and it fails on
+that entry itself**, because an entry recording an incident must narrate the
+wrong claim to correct it.
+
+- **Every future lesson about a novelty miss would trip the same pin.** The
+  cheapest response becomes wording around the gate, or not writing it.
+- **This project's error-correction loop runs through that file.** A mechanism
+  that taxes the loop it protects is a net negative even when the gap is real.
+- **Before gating an artifact, ask what behaviour the gate makes cheapest. If
+  the cheapest response is to write less down, do not ship it.**
+- `#136` has a sibling: **an addition can fail not by being useless but by
+  being COSTLY IN THE WRONG PLACE.**
+
 ## A CLAIM OF NOVELTY NEEDS THE SAME VERIFICATION AS A NUMBER (B1910 - L584, CHECKLIST #201)
 
 **I reported a duplicate-exit collapse as an "undocumented third collapse"
