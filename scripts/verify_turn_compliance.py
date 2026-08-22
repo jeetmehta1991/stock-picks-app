@@ -2570,7 +2570,11 @@ def scan_queue_not_updated(entries, *, rows=None, text=None,
     rows = _queue_rows_added(diff_text) if rows is None else list(rows)
     if rows:
         return []
-    t = (_assistant_text(entries) if text is None else text.lower())
+    # B1949 (S6-B1783b): sixth gate routed through _response_text - and this
+    # one's ONLY text read is the ESCAPE, so the conversion is L596 applied
+    # BEFORE a defect rather than after: a fenced `no-queue-change:` is an
+    # example, not a declaration.
+    t = _response_text(entries, text)
     if "no-queue-change:" in t:
         after = t.split("no-queue-change:", 1)[1].strip()
         if len(after) >= 12:
