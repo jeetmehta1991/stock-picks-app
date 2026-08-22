@@ -22427,3 +22427,34 @@ def test_b1995_smc_swing_length_binds_differentially():
     assert fires, (
         f"only non-fire fields moved ({diff[:5]}) - the STRATEGY-FACING "
         "fire set must respond, or strategies cannot feel the knob")
+
+
+
+def test_b1996_citing_an_item_does_not_arm_the_sweep_gate():
+    """B1996: the sweep gate fires on rules ADDED, not rules CITED.
+
+    RETRO_TRIGGERS held the bare substring "#23", which matches every
+    citation of items #230-#239 - so the MANDATED compliance block armed the
+    gate on every closing turn, and four consecutive turn-gate blocks
+    demanded sweep statements from reports that added nothing. A gate armed
+    by the compliance it demands is a treadmill.
+    """
+    import importlib.util as _iu
+    import pathlib as _p
+
+    root = _p.Path(__file__).resolve().parents[2]
+    spec = _iu.spec_from_file_location(
+        "vtc_b1996", root / "scripts" / "verify_turn_compliance.py")
+    tg = _iu.module_from_spec(spec)
+    spec.loader.exec_module(tg)
+
+    COMPLIANCE = ("Satisfied: item 234 four members present, item 237 sweep "
+                  "stated, #234 and #237 and #230 all applied and green.")
+    assert not tg.scan_retroactive_sweep([], text=COMPLIANCE), (
+        "a compliance statement CITING #23x items adds no rule - firing here "
+        "made the mandated block arm the gate every single turn")
+
+    ADDED = "Fixed by stemming the verbs. This class is now closed."
+    assert tg.scan_retroactive_sweep([], text=ADDED), (
+        "the corpus incident - a rule genuinely being closed as a class - "
+        "must still fire without the substring trigger (#226)")

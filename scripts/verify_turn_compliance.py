@@ -3374,7 +3374,13 @@ def scan_miss_capture_complete(entries, *, text=None, observed=None,
             "is warranted.")
 
 
-RETRO_TRIGGERS = ("new rule", "added a rule", "new checklist item", "#23",
+# B1996: "#23" REMOVED - it was a SUBSTRING matching every citation of items
+# #230-#239, so the mandated compliance block (which cites #234/#237 by rule)
+# armed this gate on EVERY closing turn: four consecutive blocks demanded a
+# sweep from reports that added no rule. A trigger for "a rule was ADDED"
+# must not fire on "a rule was CITED" - citing is what compliance REQUIRES
+# (B1872's substring class, in a trigger; L586's treadmill, in a demand).
+RETRO_TRIGGERS = ("new rule", "added a rule", "new checklist item",
                   "codified", "this class", "the class is now", "generalis",
                   "generaliz")
 RETRO_EVIDENCE = ("retroactive", "re-scan", "rescan", "prior instances",
