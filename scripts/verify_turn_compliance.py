@@ -2910,6 +2910,8 @@ def scan_monitor_without_stall_check(entries, *, blobs=None) -> list[str]:
 
 
 def scan_bulk_process_kill(entries, *, cmds=None) -> list[str]:
+    import re as _re
+
     """S6-B1534e / L411: kill VERIFIED PIDs, never sweep by name.
 
     A force-sweep over every python process is a change to machine state, not
@@ -2917,7 +2919,20 @@ def scan_bulk_process_kill(entries, *, cmds=None) -> list[str]:
     along with the target. Killing by PID after confirming the command line is
     the same effort and is reversible in intent.
     """
-    txt = (_executed_text(entries) if cmds is None else " ".join(cmds)).lower()
+    raw = _executed_text(entries) if cmds is None else " ".join(cmds)
+    # B1867: a HEREDOC BODY is data handed to an interpreter, not a command
+    # that ran. This gate blocked the very turn that shipped it, on the probe
+    # `cmds=["Get-Process python | Stop-Process -Force"]` written inside a
+    # `python - <<'PY'` block - while the only process actually killed that
+    # turn went by verified PID. Instance 10 of the self-reference family:
+    # the fixtures that PROVE a text-scanning gate works are, by
+    # construction, the exact text it detects.
+    #
+    # NARROW BY INTENT. The general question - "heredoc-written fixtures read
+    # as Bash execution" - is S6-B1817g and is BLOCKED on an owner ruling.
+    # This strips heredoc bodies for THIS gate only.
+    txt = _re.sub(r"<<\s*'?(\w+)'?.*?^\1", " ", raw,
+                  flags=_re.S | _re.M).lower()
     hits = [m for m in BULK_KILL if m in txt]
     if not hits:
         return []

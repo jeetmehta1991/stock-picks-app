@@ -19371,6 +19371,27 @@ def test_b1864_process_rule_gates():
         assert not tg.scan_bulk_process_kill([], cmds=[good]), (
             "targeted or read-only process work must clear: " + repr(good))
 
+    # B1867: a HEREDOC BODY is data, not a command that ran. This gate
+    # blocked the turn that shipped it, on the probe that proves it works -
+    # instance 10 of the self-reference family. The fixtures that prove a
+    # text-scanning gate works ARE the text it detects.
+    heredoc = ("""python - <<'PY'\n"""
+               """print(m.scan_bulk_process_kill([], """
+               """cmds=["Get-Process python | Stop-Process -Force"]))\n"""
+               """PY""")
+    assert not tg.scan_bulk_process_kill([], cmds=[heredoc]), (
+        "a bulk-kill string inside a HEREDOC BODY is a fixture, not a kill - "
+        "this exact text blocked the turn that shipped the gate, while the "
+        "only process actually killed went by verified PID")
+
+    # and a REAL kill outside a heredoc must still fire, including when a
+    # heredoc appears elsewhere in the same command
+    mixed = ("python - <<'PY'\nprint(1)\nPY\n"
+             "Get-Process python | Stop-Process -Force")
+    assert tg.scan_bulk_process_kill([], cmds=[mixed]), (
+        "stripping heredoc bodies must not blind the gate to a real kill "
+        "beside one - that would trade a false positive for a false negative")
+
     # ---- WIRED, not merely defined (B1751 / #224) ------------------------
     src = (root / "scripts"
            / "verify_turn_compliance.py").read_text(encoding="utf-8")

@@ -741,6 +741,20 @@ gate had just named.**
 - **Compliance failure against `#45` and `#247`, not a new class.** A fifth rule
   restating four that were ignored is `#136` theater.
 
+## A TEXT-SCANNING GATE TRIPS ON ITS OWN PROOF (B1867 - L569, CHECKLIST #246 ext)
+
+**MEASURED: `scan_bulk_process_kill` blocked the very turn that shipped it**, on
+my own probe `cmds=["Get-Process python | Stop-Process -Force"]` inside a
+heredoc - while the only process actually killed went by verified PID.
+
+- **Structural, not bad luck.** A gate that scans executed text is proven by
+  fixtures containing exactly what it detects, written through the stream it
+  reads. **Instance 10 of the self-reference family.**
+- **Give it a fixture-exclusion in the SAME batch**, or it blocks its author
+  first. A heredoc body is data handed to an interpreter.
+- **Assert the opposite arm too:** a real kill BESIDE a heredoc must still
+  fire, or you have traded a false positive for a false negative.
+
 ## AN EMPTY SEARCH RESULT PROVES NOTHING UNTIL THE PATTERN IS PROVEN (B1862 - L568, CHECKLIST #226 ext)
 
 **MEASURED: I watched a 200-ticker run for fires with `[0-9]+/200 passed`, got

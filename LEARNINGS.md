@@ -11688,3 +11688,34 @@ indistinguishable from a working one (L561). **ANCHORED (`#197`):** this is L556
 - *a probe that omits a precondition returns the answer you were hoping for* -
 in its sharpest form yet, and `CHECKLIST #226`'s prove-it-can-fail applied to a
 SEARCH rather than a gate.
+
+
+### L569
+
+**The fixtures that prove a text-scanning gate works ARE the text it detects**
+
+**B1864/B1867.** `scan_bulk_process_kill` shipped, was wired, passed its arms -
+and **blocked the very turn that shipped it.** The offending text was my own
+probe, `cmds=["Get-Process python | Stop-Process -Force"]`, written inside a
+`python - <<'PY'` heredoc. **The only process I actually killed that turn went
+by verified PID, with the command line checked first.**
+
+**This is not bad luck; it is structural.** A gate that scans executed text is
+proven by fixtures containing exactly what it detects, and those fixtures are
+written through the tool stream it reads. **Every text-scanning gate trips on
+its own proof unless something excludes fixture context.** Instance 10 of the
+self-reference family - B1732, B1738, B1811, B1815, B1832, B1839, B1859, the
+`#201` corpus, B1721b, this.
+
+**The general fix is owner-blocked and the narrow one is not.** `S6-B1817g`
+asks whether heredoc-written fixtures should count as `Bash` execution at all,
+which is a ruling about the EXECUTED/WRITTEN split across every gate. **What
+needs no ruling is that a heredoc BODY is data handed to an interpreter**, so
+this gate strips them - and the pin asserts a real kill BESIDE a heredoc still
+fires, because trading a false positive for a false negative is not a fix.
+
+**The rule: when you build a gate that scans executed text, write its arms
+knowing the arms themselves will be scanned. Give it a fixture-exclusion in the
+same batch, or it will block its own author first.** **ANCHORED (`#197`):**
+`CHECKLIST #246`-adjacent and carried into `SKILL.md`; the unresolved general
+half is `S6-B1817g`, BLOCKED on the owner.
