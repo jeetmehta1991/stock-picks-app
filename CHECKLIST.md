@@ -3701,6 +3701,22 @@ the gate went quiet on **the shape of its own recorded incident**.
 
 **EXTENSION (B1840 / L562) - THE PROOF IS ITSELF A PROBE, AND NOTHING WAS CHECKING IT.**
 
+**EXTENSION (B1862 / L568) - PROVE-IT-CAN-FAIL APPLIES TO A SEARCH, NOT JUST A GATE.**
+
+**MEASURED: watching a 200-ticker run for fires with `[0-9]+/200 passed` returned nothing, and I
+reported "still in warmup" TWICE.** The screener's denominator is the PIT-ACTIVE universe - **185,
+not the file's 200** - so the run had been firing on every one of 29 screen-days. **The monitor
+carried the same pattern and would have reported "no fires" every 11 minutes, unattended,
+confirming a launch blocker backwards.**
+
+- **An empty result is indistinguishable from a wrong pattern**, exactly as a silent gate is
+  indistinguishable from a working one (L561). **Only a POSITIVE CONTROL separates them.**
+- **Mechanism: `scripts/grep_control.py`.** `search_with_control(pattern, haystack, control)`
+  RAISES rather than returning `[]` when the pattern fails a control taken from the real data.
+- **Retroactive (`#136`):** the `/200` denominator (B1861), `4,869` matched as a decimal when it
+  carried commas (L556), and B1832's decimal matcher refusing a sentence-final number. **Three
+  searches whose emptiness was read as absence.**
+
 **EXTENSION (B1859 / L567) - A TICKET NAMES ONE GUARD; THE EXPRESSION HAS TWO.**
 
 **MEASURED: `S6-B1847a` reported one defect in `(?<!\d)[.;](?!\d)` - the trailing guard split

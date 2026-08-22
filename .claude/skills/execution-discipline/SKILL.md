@@ -741,6 +741,21 @@ gate had just named.**
 - **Compliance failure against `#45` and `#247`, not a new class.** A fifth rule
   restating four that were ignored is `#136` theater.
 
+## AN EMPTY SEARCH RESULT PROVES NOTHING UNTIL THE PATTERN IS PROVEN (B1862 - L568, CHECKLIST #226 ext)
+
+**MEASURED: I watched a 200-ticker run for fires with `[0-9]+/200 passed`, got
+nothing, and reported "still in warmup" TWICE.** The denominator is the
+PIT-ACTIVE **185**, not the file's 200 - the run was firing on all 29
+screen-days, **and the monitor carried the same pattern**, so it would have
+reported "no fires" unattended and confirmed a launch blocker backwards.
+
+- **An empty result is indistinguishable from a wrong pattern.** Before
+  concluding absence, make the pattern match a KNOWN POSITIVE from the real data.
+- **Mechanism: `scripts/grep_control.py`** - `search_with_control` RAISES
+  instead of returning `[]` when the pattern fails its control.
+- **What caught it was reading a raw log line**, not the derived view. A grep is
+  a claim about the data's shape.
+
 ## A TICKET NAMES ONE GUARD; THE EXPRESSION HAS TWO (B1859 - L567, CHECKLIST #226 ext)
 
 **MEASURED: a ticket reported one defect in `(?<!\d)[.;](?!\d)`. I fixed the

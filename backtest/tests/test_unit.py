@@ -19227,3 +19227,52 @@ def test_b1860_skill_additions_are_gated():
         f"only {len(cls)} SKILL.md sections parsed; the header regex has "
         "stopped matching and this gate is inert (L561: a silent gate and a "
         "correct one are the same observation)")
+
+
+def test_b1862_search_cannot_report_a_false_absence():
+    """B1862 (L568): an empty search result must prove its pattern works.
+
+    THE REAL INCIDENT, replayed. Watching a 200-ticker run for fires with
+    `[0-9]+/200 passed` returned nothing and I reported "still in warmup"
+    twice. The denominator is the PIT-ACTIVE 185, not the file's 200 - the run
+    was firing on every one of 29 screen-days. The monitor carried the same
+    pattern and would have reported "no fires" unattended, confirming a launch
+    blocker backwards.
+    """
+    import importlib.util
+    import pathlib as _p
+
+    import pytest
+
+    root = _p.Path(__file__).resolve().parents[2]
+    spec = importlib.util.spec_from_file_location(
+        "gc_b1862", root / "scripts" / "grep_control.py")
+    gc = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(gc)
+
+    # a real line from the live log, verbatim
+    LIVE = ("2026-08-21 23:00:02,391 [INFO] backtest.signals.screener: "
+            "screen_universe [2024-06-13] regime=bull: 21/185 passed "
+            "(incl. 0 lead-lag)")
+
+    # ---- the incident: the WRONG pattern must RAISE, never return [] -----
+    with pytest.raises(gc.PatternNeverMatched):
+        gc.search_with_control(r"[0-9]+/200 passed", LIVE, LIVE)
+    with pytest.raises(gc.PatternNeverMatched):
+        gc.absent(r"[0-9]+/200 passed", LIVE, LIVE)
+
+    # ---- the RIGHT pattern works and finds the fires ---------------------
+    hits = gc.search_with_control(r"[0-9]+/185 passed", LIVE, LIVE)
+    assert hits == ["21/185 passed"], hits
+    assert not gc.absent(r"[0-9]+/185 passed", LIVE, LIVE)
+
+    # ---- a TRUE absence is still reportable, once the pattern is proven --
+    other = "screen_universe [2024-06-14] regime=bull: 0/185 passed"
+    assert gc.absent(r"[1-9][0-9]*/185 passed", other, LIVE), (
+        "a pattern proven against the control, finding nothing in a haystack "
+        "that genuinely lacks it, must report absence - the helper must not "
+        "refuse every negative answer, only unproven ones")
+
+    # ---- the control must come from the DATA, not be invented ------------
+    with pytest.raises(gc.PatternNeverMatched):
+        gc.search_with_control(r"[0-9]+/999 passed", LIVE, LIVE)
