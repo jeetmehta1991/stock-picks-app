@@ -23039,3 +23039,73 @@ def test_b2014_npt_identity_boundary_binds_in_every_selector():
             f"{f} selects INLINE and must consult the shared helper - the "
             "first D7 landing wired only select_exit and all 7 spanning "
             "cells survived")
+
+
+
+def test_b2016_ema_pairs_config_plumb():
+    """B2016 (F1 / S6-B1518a second half, owner-approved 2026-08-22).
+
+    The producer's EMA/SMA pair list moves from a hardcoded literal in
+    compute_ema_sma to config.EMA_PAIRS. Three claims, each the class that
+    broke before: (a) defaults reproduce production EXACTLY (an unset env is
+    a no-op - B1519's clause c); (b) the env override reaches a fresh
+    process; (c) BEHAVIOURAL, not grep-found (L387): changing the config
+    value changes the producer's OUTPUT KEYS in-process.
+    """
+    import os as _os
+    import subprocess as _sp
+    import sys as _sys
+    from pathlib import Path as _P
+
+    import numpy as _np
+    import pandas as _pd
+
+    from backtest import config as _cfg
+    from backtest.signals.technical import compute_ema_sma
+
+    root = _P(__file__).resolve().parents[2]
+
+    # (a) defaults are the exact pre-B2016 hardcoded list
+    assert _cfg._parse_ema_pairs("9:21,20:50,50:200,100:150") ==         ((9, 21), (20, 50), (50, 200), (100, 150))
+    env_free = {k: v for k, v in _os.environ.items() if k != "EMA_PAIRS"}
+    env_free["PYTHONPATH"] = str(root)
+    out = _sp.check_output(
+        [_sys.executable, "-c",
+         "import backtest.config as c; print(c.EMA_PAIRS)"],
+        env=env_free, cwd=str(root), text=True).strip()
+    assert out == "((9, 21), (20, 50), (50, 200), (100, 150))", (
+        f"unset env must reproduce production exactly: got {out}")
+
+    # (b) the override reaches a fresh process
+    env_over = dict(env_free, EMA_PAIRS="10:30")
+    out = _sp.check_output(
+        [_sys.executable, "-c",
+         "import backtest.config as c; print(c.EMA_PAIRS)"],
+        env=env_over, cwd=str(root), text=True).strip()
+    assert out == "((10, 30),)", f"override did not take effect: {out}"
+
+    # (c) behavioural: a changed value changes producer output keys
+    _rng = _np.random.RandomState(7)
+    close = 100 + _np.cumsum(_rng.normal(0, 1, 300))
+    df = _pd.DataFrame({"close": close})
+    base = compute_ema_sma(df)
+    assert "ema_9_21_bullish" in base and "ema_50_200_bullish" in base
+
+    orig = _cfg.EMA_PAIRS
+    try:
+        _cfg.EMA_PAIRS = ((10, 30),)
+        swept = compute_ema_sma(df)
+    finally:
+        _cfg.EMA_PAIRS = orig
+    assert "ema_10_30_bullish" in swept, (
+        "producer did not read the changed config - the knob does not reach "
+        "the signal layer (L387 class)")
+    assert "ema_9_21_bullish" not in swept, (
+        "old pairs still present under override - the literal list survives "
+        "somewhere")
+
+    # malformed values fail loudly, never silently
+    import pytest as _pt
+    for bad in ("21:9", "", "9"):
+        with _pt.raises((ValueError, Exception)):
+            _cfg._parse_ema_pairs(bad)

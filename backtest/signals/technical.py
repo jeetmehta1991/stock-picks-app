@@ -26,7 +26,12 @@ All computations are pure  -  no I/O. df must be pre-sliced to as_of date.
 import logging
 import warnings
 import numpy as np
+
 import pandas as pd
+
+# B2016: module alias (B1519 pattern) so a test/sweep changing
+# _cfg.EMA_PAIRS is seen at call time, not frozen at import.
+from backtest import config as _cfg
 
 warnings.filterwarnings("ignore", category=FutureWarning)
 logger = logging.getLogger(__name__)
@@ -751,7 +756,9 @@ def compute_ema_sma(df: pd.DataFrame) -> dict:
     # NEW GATE by this project's own classification - spans 100/150 did not
     # exist in the producer, so P6 could not sweep them (S6-B1507b, open
     # since B1507). Purely ADDITIVE: two new keys, no existing key changes.
-    for fast, slow in [(9,21),(20,50),(50,200),(100,150)]:
+    # B2016 / S6-B1518a: pairs come from config (env EMA_PAIRS); the default
+    # tuple IS the list that was hardcoded here, so unset env = identical output.
+    for fast, slow in _cfg.EMA_PAIRS:
         if len(df) < slow + 2:
             continue
         ef  = df["close"].ewm(span=fast, adjust=False).mean()

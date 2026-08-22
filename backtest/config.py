@@ -2463,6 +2463,30 @@ STAGE2_NO_LIVE_FETCH: bool = os.environ.get("STAGE2_NO_LIVE_FETCH", "1") == "1"
 
 SMC_SWING_LENGTH: int = int(os.environ.get("SMC_SWING_LENGTH", "20"))
 
+# B2016 / S6-B1518a second half (owner-approved 2026-08-22 F1, "approve all
+# your recs" with E1). The producer's EMA/SMA pair list, env-overridable so a
+# P6 sweep can change spans without editing technical.py. The DEFAULT is the
+# exact hardcoded list compute_ema_sma carried (B1686 added 100:150) - an
+# unset env is a no-op, byte-identical signals. Format "fast:slow,fast:slow".
+# EMA 100/250 spans were NOT approved (F2 ruling) and are NOT added here.
+def _parse_ema_pairs(raw: str) -> tuple:
+    pairs = []
+    for tok in raw.split(","):
+        tok = tok.strip()
+        if not tok:
+            continue
+        fast_s, slow_s = tok.split(":")
+        fast, slow = int(fast_s), int(slow_s)
+        if fast >= slow:
+            raise ValueError(f"EMA_PAIRS pair {tok!r}: fast must be < slow")
+        pairs.append((fast, slow))
+    if not pairs:
+        raise ValueError("EMA_PAIRS resolved to zero pairs")
+    return tuple(pairs)
+
+EMA_PAIRS: tuple = _parse_ema_pairs(
+    os.environ.get("EMA_PAIRS", "9:21,20:50,50:200,100:150"))
+
 # B1616 / S6-B1612f (owner-approved 2026-08-17). The breaker-block optimisation
 # sweep graded FOUR parameters the engine could not apply: they existed only in
 # the offline grader, so a winning combination would NOT have reproduced live
