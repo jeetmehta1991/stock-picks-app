@@ -741,6 +741,27 @@ gate had just named.**
 - **Compliance failure against `#45` and `#247`, not a new class.** A fifth rule
   restating four that were ignored is `#136` theater.
 
+## A REVIEW'S EXISTENCE MATRIX CANNOT SEE CONTENT DEFECTS (B1992 - L614, CHECKLIST #276b/#281)
+
+**The owner-directed review of 26 addressal commits: every promised artifact
+existed - 24/24 pins, 11/11 L-entries, every mechanism present - and the two
+real misses were CONTENT, both the reviewer's own:**
+
+- **A pin case passing through the WRONG BRANCH** (trigger-absence instead of
+  the escape it claims to prove). A hedge inside an assert message - *"wait,
+  it must also..."* - is a finding you noticed and filed nowhere.
+- **13 new citations of an item proved undefined in the same session.** A
+  number-frozen ratchet is not shrink-only if frozen members can be cited
+  indefinitely - freeze the per-file COUNTS, and measure the baseline LAST,
+  after every edit of the batch (the freeze's own message quotes the number).
+- **The L-entry batch re-exam (B1446 rule 5) is a separate question from
+  per-instance citations** - ten of eleven were covered; the eleventh became
+  `#281`.
+
+**Mechanically enforced** by the corrected B1986 case, the per-file citation
+count-freeze in `test_b1971_no_new_dangling_checklist_citation`, and `#281`'s
+`test_b1974_generated_artifact_is_not_older_than_its_generator`.
+
 ## GATE EVIDENCE HAS THREE AXES: PROVENANCE, WINDOW, KIND (B1987 - L612, CHECKLIST #262)
 
 **The 8-gate conversion arc (B1967-B1986) closed, and its shape is the
@@ -781,7 +802,7 @@ successful load.
 **Mechanically enforced** by
 `test_b1983_skill_gate_window_is_session_since_compaction`.
 
-## A TURN GATE READS THIS TURN - ON EVERY COLLECTOR (B1980 - L609, CHECKLIST #237)
+## A TURN GATE READS THIS TURN - ON EVERY COLLECTOR (B1980 - L609, CHECKLIST #262)
 
 **`scan_partial_read` fired two turns running, both false: the verdict came
 from this turn's final block, the truncation evidence from 122 `head -` lines
@@ -798,7 +819,7 @@ learned on the response collector and never carried to the tool collectors.
 
 **Mechanically enforced** by `test_b1980_tool_evidence_is_scoped_to_the_turn`.
 
-## A NEW HELPER STARTS WITHOUT ITS SIBLINGS' LESSONS (B1979 - L608, CHECKLIST #237)
+## A NEW HELPER STARTS WITHOUT ITS SIBLINGS' LESSONS (B1979 - L608, CHECKLIST #262)
 
 **`scan_partial_read`, freshly converted to executed-text, fired on the very
 turn that shipped the conversion** - the commit message quoted a `sed` line-

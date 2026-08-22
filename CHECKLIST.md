@@ -5131,3 +5131,25 @@ per queue_state` is complete; `3 ROWS: their batch changed code` is not.
   (145 rows), `S6-B1788e` (3 rows), `S6-B1790d` (3 rows), `S6-B1794d` (38
   rows), `S6-B1901a` (3 rows). **Prevention is one gate; the retro-fit is seven
   fresh classifications.**
+
+
+### #281 - A GENERATED ARTIFACT OLDER THAN ITS GENERATOR IS A MEMORY (B1974 / L607)
+
+A committed artifact produced by a script is STALE the moment any of its
+generators changes - no judgement about whether the change "should" have
+mattered. `PHASE_1B_ROSTER.md` sat 7 generator-commits stale with a wrong
+gate-2 count, and nothing noticed **because its headline was unchanged**: a
+stale artifact keeps the SHAPE of a measurement while being a memory.
+
+- Before citing any generated artifact, compare its last commit against its
+  generators' - or check its freshness stamp.
+- When editing a generator, run the control BEFORE the edit: a single
+  post-change regeneration cannot separate your diff from drift already there.
+- An output-preserving generator change leaves the artifact byte-identical
+  and never re-committed; a freshness STAMP (sha256 of the generator sources
+  the run executed) is the exit that is not a no-op commit.
+
+**Enforced by** `test_b1974_generated_artifact_is_not_older_than_its_generator`
+(register `_B1974_GENERATED`; grow it as artifacts gain generators).
+**Batch re-exam lineage (B1446 rule 5):** the one genuinely new class in the
+L602-L613 batch; the other ten are covered by the items their entries cite.

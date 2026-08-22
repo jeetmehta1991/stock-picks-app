@@ -13498,3 +13498,49 @@ compliance failure against `#279`; mechanism
 `test_b1988_l522_section_names_its_landed_mechanism`, which also asserts the
 named gate EXISTS (`#235`). Carried into `SKILL.md` (the corrected section is
 itself the carrier).
+
+
+### L614
+
+**The deep review found the reviewer's own fingerprints: a pin proving the
+wrong branch, and 13 citations of an item I had proved undefined**
+
+**B1992, owner-directed session review of B1969-B1991.** The existence matrix
+came back clean - 24/24 pins, 11/11 L-entries, 10/10 SKILL sections, every
+named mechanism present, all sections classifier-`mechanism`. The misses were
+in the CONTENT, both mine, both invisible to every existence check:
+
+1. **B1986's pin case 1 passed through the trigger-absence branch.** The
+   command `python scripts/queue_state.py` does not contain
+   `execution_queue`, so the gate returned early and **the dedup escape the
+   case claims to prove was never exercised** - L588's control-path defect,
+   and I had shipped a *"wait, it must also touch..."* hedge INSIDE the
+   assert message. **A hedge in an assert message is a finding you noticed
+   and filed nowhere.** COMPLIANCE FAILURE against `#276b`.
+
+2. **13 new `#237` citations were added in the very session after B1971
+   proved `#237` undefined.** The ratchet froze NUMBERS, so every new
+   citation of a frozen number rode the legacy excuse silently - a
+   shrink-only set is not shrink-only if its members can be cited
+   indefinitely. Per-file COUNTS are now frozen too; the two ANCHOR uses
+   (SKILL section headers for L608/L609) re-anchored to `#262`, whose class
+   both lessons are. **And the count-freeze's own first run failed on
+   itself**: the baseline was measured before inserting the mechanism whose
+   message quotes `#237` - L562's probe-defeated-by-its-own-input, so the
+   baseline is measured LAST, after every edit of the batch.
+
+3. **The B1446-rule-5 ratchet condition had gone unexamined: 11 L-entries,
+   0 CHECKLIST items.** The batch re-exam verdict: ten are covered by the
+   items their entries cite; **L607 (a generated artifact older than its
+   generator) was a genuinely new class** already carrying its mechanism -
+   now `#281`. Per-instance compliance citations were each correct; the
+   BATCH question - "do these entries share an uncovered class?" - is a
+   different question and nobody had asked it.
+
+MEASURED: 26 addressal commits reviewed; 24/24 pins present; 2 content
+defects, both mine; 13 excess citations; 1 new item from 11 entries.
+**ANCHORED (`#197`):** compliance failures against `#276b` (finding 1) and
+`#279` (finding 2); new item `#281` (finding 3); mechanisms: the corrected
+B1986 case, the per-file citation count-freeze in `test_b1971`, and
+`test_b1974_generated_artifact_is_not_older_than_its_generator` behind
+`#281`. Carried into `SKILL.md`.

@@ -21278,6 +21278,24 @@ def test_b1971_no_new_dangling_checklist_citation():
         "claim with an ADDRESS, and the address is checkable independently of "
         "the claim (L595). Define the item, or cite one that exists.")
 
+    # B1992 (review finding 2): the ratchet froze NUMBERS, not counts - so
+    # 13 NEW `#237` citations were added in the very session after B1971
+    # proved the item undefined, each riding the legacy excuse silently.
+    # Per-file COUNTS are now frozen too (measured post-cleanup); a citation
+    # of an undefined item may be REMOVED or left alone, never added. Update
+    # a baseline DOWNWARD when you clean one up; growth is the defect.
+    _BASELINE = {'CLAUDE.md': {}, 'LEARNINGS.md': {187: 8, 188: 7, 189: 4, 190: 4, 191: 8, 192: 6, 237: 14}, 'EXECUTION_QUEUE.md': {187: 8, 188: 4, 189: 6, 190: 8, 191: 13, 192: 10, 237: 26}, '.claude/skills/execution-discipline/SKILL.md': {187: 2, 188: 1, 189: 1, 192: 1, 237: 5}, 'scripts/verify_turn_compliance.py': {187: 2, 188: 1, 189: 1, 190: 1, 191: 1, 237: 2}, 'backtest/tests/test_unit.py': {187: 4, 190: 2, 192: 1, 237: 7}}
+    for f, per in _BASELINE.items():
+        txt = (root / f).read_text(encoding="utf-8", errors="replace")
+        for num, cap in per.items():
+            got = len(_re.findall(rf"#{num}\b", txt))
+            assert got <= cap, (
+                f"{f}: {got} citations of undefined item #{num} exceeds the "
+                f"frozen baseline {cap}. B1992: 13 new #237 citations rode "
+                "the number-freeze in one session - a NEW citation of a "
+                "known-undefined item deepens the debt it documents. Cite a "
+                "DEFINED item, or write the item (owner content, S6-B1971b).")
+
     # #279 both directions: an entry that got defined must leave this list
     stale = sorted(_B1971_DANGLING_CHECKLIST - set(cited))
     assert not stale, (
@@ -22073,11 +22091,22 @@ def test_b1986_row_vs_ticket_reads_executed_text():
             {"type": "text", "text": CLAIM}]}})
         return e
 
+    # B1992 (review finding 1): the first version of this case used only
+    # "python scripts/queue_state.py", which does not contain
+    # "execution_queue" - so it passed through the TRIGGER-ABSENCE branch and
+    # the dedup escape was never exercised (L588: a control must take the
+    # same path as the claim). The command now touches the queue AND runs
+    # the counter, so only the escape can clear it.
+    assert not tg.scan_row_vs_ticket(
+        turn("Bash", {"command": "python scripts/queue_state.py && "
+                                 "grep -n OPEN EXECUTION_QUEUE.md"})), (
+        "the queue was READ and the canonical counter RAN - the dedup escape "
+        "must clear this, and this case reaches it because the trigger is lit")
+
     assert not tg.scan_row_vs_ticket(
         turn("Bash", {"command": "python scripts/queue_state.py"})), (
-        "queue_state RAN - the method names dedup; wait, it must also touch "
-        "execution_queue... the counter's own path mentions it via the "
-        "script; if this fires the trigger/escape interplay broke")
+        "trigger-absence case, labeled as such: the command never touches "
+        "EXECUTION_QUEUE, so the gate is out of scope regardless of dedup")
 
     assert tg.scan_row_vs_ticket(
         turn("Bash", {"command": "grep -c OPEN EXECUTION_QUEUE.md"})), (
