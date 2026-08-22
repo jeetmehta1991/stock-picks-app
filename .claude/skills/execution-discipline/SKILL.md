@@ -929,7 +929,7 @@ I happened to grep first. **Nothing required that grep.**
 - **"Not in the code comment" is not "not documented."** A local artifact's
   omission is evidence about that artifact, never about the corpus.
 - **CORRECTED B1911: the RULE existed, the MECHANISM did not.** `CHECKLIST
-  #26` covers it and **L520 says so**; **L611** is exact - *"a finding only
+  #26` covers it and **L520 says so**; **L126** is exact - *"a finding only
   counts as no prior art when ALL FOUR sources confirm absence"*. **I treated
   ONE source, a code comment, as sufficient.** COMPLIANCE FAILURE against
   `#26`, not a new class.

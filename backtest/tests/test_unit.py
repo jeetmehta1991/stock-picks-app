@@ -20727,3 +20727,72 @@ def test_b1944_fire_only_corpus_is_a_shrinking_set():
         f"these now have a must-QUIET case - delete them from "
         f"FIRE_ONLY_LEGACY in the same commit: {stale}. The set may only "
         "shrink (#279: an exclusion register that is never re-read decays).")
+
+
+def test_b1945_no_new_dangling_learnings_citation():
+    """B1945 (L595): a citation is a claim with an ADDRESS, and the address is
+    checkable independently of the claim.
+
+    `L611` does not exist. I read `611:` from a `grep -n` on LEARNINGS.md and
+    recorded it as a lesson number; the text is at LINE 611, inside `L126`. It
+    propagated into ticket rows, a `CHECKLIST #279` amendment and a `SKILL.md`
+    section **loaded into context every turn**.
+
+    **`#201` asks a FIGURE to name its source. Nothing asked whether a named
+    source EXISTS.**
+
+    The legacy sets below are frozen from a live measurement and may only
+    SHRINK. A NEW dangling citation fails here.
+    """
+    import pathlib as _p
+    import re as _re
+
+    root = _p.Path(__file__).resolve().parents[2]
+
+    LEGACY = {
+        'EXECUTION_QUEUE.md': {
+            'L81',
+            'L611',
+        },
+        'CHECKLIST.md': {
+            'L137',
+            'L138',
+            'L139',
+            'L140',
+            'L141',
+        },
+        '.claude/skills/execution-discipline/SKILL.md': {
+        },
+        'CLAUDE.md': {
+        },
+    }
+
+    lm = (root / "LEARNINGS.md").read_text(encoding="utf-8")
+    exist = set(_re.findall(r"^#{2,3} (L\d+)", lm, _re.M))
+    assert len(exist) > 300, (
+        f"only {len(exist)} L-entries parsed - the heading regex has drifted "
+        "and this test would pass by seeing nothing")
+
+    for name, legacy in LEGACY.items():
+        p = root / name
+        if not p.is_file():
+            continue
+        # B1945c: strip inline-code spans first. B1738's convention -
+        # vocabulary in backticks is a MENTION, not a USE - and the rows that
+        # DOCUMENT a mis-citation must be able to name it. This ratchet fired
+        # on `S6-B1945a`, the row explaining the L611 defect.
+        _txt = _re.sub(r"`[^`]*`", " ", p.read_text(encoding="utf-8"))
+        cited = {f"L{c}" for c in _re.findall(r"\bL(\d{2,3})\b", _txt)
+                  if 80 <= int(c) <= 700}
+        dangling = cited - exist
+        new = sorted(dangling - set(legacy), key=lambda x: int(x[1:]))
+        assert not new, (
+            f"{name} cites L-entries that do NOT exist: {new}. A citation is "
+            "a claim with an address - `L611` was a grep LINE NUMBER read as a "
+            "lesson id and it reached three canonical docs. Cite the entry "
+            "that holds the rule, or write the entry.")
+
+        stale = sorted(set(legacy) - dangling, key=lambda x: int(x[1:]))
+        assert not stale, (
+            f"{name}: these are no longer dangling - remove them from LEGACY "
+            f"in the same commit: {stale}. The set may only shrink (#279).")

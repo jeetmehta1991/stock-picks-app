@@ -12308,9 +12308,9 @@ the prior art immediately:
   CHECKLIST #26 was supposed to catch this."*
 - **L535 records it happening TWICE in one session** - two proposed decisions
   for gaps already documented, both caught by the owner.
-- **L611 is exact**: *"A finding only counts as 'no prior art' when ALL FOUR
+- **L126 is exact**: *"A finding only counts as 'no prior art' when ALL FOUR
   sources confirm absence. INDEX is necessary but not sufficient."* **My miss
-  was treating ONE source - a code comment - as sufficient. That is L611's
+  was treating ONE source - a code comment - as sufficient. That is L126's
   defect verbatim.**
 
 **So the RULE existed and the MECHANISM did not.** `#201` gates figures, `#222`
@@ -12329,7 +12329,7 @@ blocked its own incident report, which is how the previous ~13 self-reference
 instances went.
 
 **The rule: a claim of novelty needs the same verification as a number** -
-and per L611, from ALL the sources, not the nearest one. **ANCHORED (`#197`):**
+and per L126, from ALL the sources, not the nearest one. **ANCHORED (`#197`):**
 COMPLIANCE FAILURE against `CHECKLIST #26`; no new item. The contribution is
 the MECHANISM that makes `#26` enforceable rather than remembered, which is the
 distinction L520 was already pointing at. Carried into `SKILL.md`.
@@ -12716,3 +12716,73 @@ function.** Never re-implement a count you already ran. **ANCHORED (`#197`):**
 compliance failure against `CHECKLIST #271` (denominator) and `#226`'s ONE
 PATTERN clause (two implementations). No new item - both exist and both were
 broken. Carried into `SKILL.md`.
+
+
+### L594
+
+**A fire-only corpus proves a gate CAN fire, never that it can stay quiet - and
+half the layer is fire-only**
+
+**B1943/B1944.** `scan_unverified_count` rejected `python
+scripts/queue_state.py` as proof of a count, because `COUNT_PROOF` listed
+`audit_ticket_staleness` and `collections.counter` **and not the project's own
+canonical counter** - which IS `collections.Counter`, is run every batch, and
+is imported BY a tool already on the list.
+
+**The reason nobody noticed: its corpus was FIRE-ONLY.** One case, must-fire,
+and nothing asserting a compliant turn passes.
+
+**MEASURED: 20 of 41 gates are fire-only.** `test_b1805` already carries the
+rule - *"a corpus of only must-fire entries cannot detect a gate that fires on
+everything"* - **and runs it only for gates that have `EXTRA_INCIDENTS`.**
+
+**A must-FIRE case proves the gate catches the defect. Only a must-QUIET case
+proves it does not punish the compliant turn.** B1722 named the consequence for
+false POSITIVES - a gate that cries wolf gets bypassed. This is the mirror, and
+it is harder to see, because **a false negative looks like a working gate to
+everyone except the person doing it right**, and their cheapest response is to
+reach for whatever token the gate accepts.
+
+**MECHANISM:** `FIRE_ONLY_LEGACY`, frozen at 20 and shrink-only, moved to 19 in
+the batch that created it. **ANCHORED (`#197`):** `CHECKLIST #226`'s must-QUIET
+half. Carried into `SKILL.md`.
+
+### L595
+
+**I cited a grep LINE NUMBER as a lesson number, eight times, in three
+canonical documents**
+
+**B1945.** Chasing a dangling `L594` reference found a worse one: **`L611` does
+not exist.** The highest entry is L593. I had cited it all session as *"a
+finding only counts as 'no prior art' when ALL FOUR sources confirm absence"* -
+in ticket rows, in a `CHECKLIST #279` amendment, and in a `SKILL.md` section
+**loaded into context every turn.**
+
+**The rule is real; the number is grep's prefix.** I ran `grep -n` on
+LEARNINGS.md, read `611:A finding only counts as...`, and recorded `L611`. The
+text sits at LINE 611, inside **`L126`**.
+
+**Nothing was decided on a false premise.** The rule is correct and I applied it
+correctly and repeatedly - including in the batch that then mis-cited it. **The
+damage is that a reader following the citation finds nothing**, and the reader
+most likely to follow it is me, next session, from a file I put it in.
+
+**A citation is a claim with an address**, and the address is checkable
+independently of the claim. `#201` asks a FIGURE to name its source. **Nothing
+asked whether a named source EXISTS.**
+
+**CORRECTED B1945c - my first count of the damage was itself mis-measured.**
+The probe used `^### (L\\d+)`; LEARNINGS also uses `## L###`, so it **missed 89
+entries** and inflated every dangling figure. Published: 59 / 56 / 6 / 4 against
+411 defined. **TRUE: 2 / 5 / 0 / 0 against 502 defined**, scanning with code
+spans stripped per B1738.
+
+**Third measurement error in three batches, all the same shape (L585): a probe
+that ran clean and measured the wrong set - and every one was a regex whose
+anchor was narrower than the data.**
+
+**MECHANISM:** a shrink-only ratchet over dangling citations - the pattern that
+worked for `KNOWN_UNCONVERTED`, `FIRE_ONLY_LEGACY` and the gate exemptions. New
+dangling citations fail; the legacy set may only shrink. **ANCHORED (`#197`):**
+`CHECKLIST #201`'s class, extended from a figure's source to a citation's
+address. Carried into `SKILL.md`.
