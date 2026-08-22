@@ -16422,10 +16422,6 @@ def test_b1762_every_scan_gate_has_a_corpus_entry():
         # text was not preserved. An invented corpus entry is worse than none -
         # it would record a fixture as an incident, which is exactly the
         # 2.422-from-rng.normal shape. Tickets: S6-B1865a.
-        "scan_launch_missing_pool_workers":
-            "built from L407; verbatim launch text not preserved - S6-B1865a",
-        "scan_bulk_process_kill":
-            "built from L411; verbatim command not preserved - S6-B1865a",
         "scan_unrecorded_miss": "no seam; S6-B1761b",
         "scan_unverified_cause": "no seam; S6-B1761b",
         "scan_unverified_structure": "no seam; S6-B1761b",
@@ -18021,7 +18017,21 @@ def test_b1805_extra_incident_branches():
             "entries. A corpus of only must-fire entries cannot detect a gate "
             "that fires on everything.")
         for text, must_fire, state in cases:
-            got = bool(fn([], text=text, **state))
+            # B1924b: pass `text` only when the gate HAS that parameter.
+            # scan_bulk_process_kill reads `cmds`, scan_launch_missing_pool_
+            # workers reads `blobs`; neither takes `text`, so the hardcoded
+            # keyword raised TypeError and a QUIET branch could not be written
+            # for them at all.
+            #
+            # B1916's finding, a second time: INCIDENTS assumed
+            # fn(entries, **state) and could not EXPRESS a positional gate,
+            # which was recorded as "no seam". **A corpus is a vocabulary, and
+            # every gate it cannot describe becomes a gate nobody tests.**
+            import inspect as _inspect
+            _kw = dict(state)
+            if "text" in _inspect.signature(fn).parameters:
+                _kw["text"] = text
+            got = bool(fn([], **_kw))
             assert got == must_fire, (
                 f"{name} on branch {text[:50]!r}: expected "
                 f"{'FIRE' if must_fire else 'QUIET'}, got "

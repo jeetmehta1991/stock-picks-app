@@ -195,6 +195,31 @@ INCIDENTS: dict[str, tuple[str, bool, dict]] = {
         True,
         {},
     ),
+    # B1924 - VERBATIM, recovered from L411: "my repeated `Get-Process
+    # python | Stop-Process -Force` sweeps this turn". That command wedged the
+    # Windows WMI service and blocked every pandas import on the box, pyramid
+    # included. S6-B1865a exempted this gate for want of the verbatim text;
+    # the lesson had preserved it.
+    "scan_bulk_process_kill": (
+        "Get-Process python | Stop-Process -Force",
+        True,
+        {"cmds": ["Get-Process python | Stop-Process -Force"]},
+    ),
+    # B1924 - DERIVED, and labelled so. L407 records the defect (a launch that
+    # never named --screen-pool-workers ran SEQUENTIAL on a 12-core box; pool=10
+    # measured 1.53x) but quotes no command. This is the REAL b1576 invocation
+    # with the flag removed. **A derived fixture labelled as derived is evidence
+    # about the gate; the same fixture labelled as an incident is what
+    # S6-B1865a correctly refused to write.**
+    "scan_launch_missing_pool_workers": (
+        "DERIVED FIXTURE (not verbatim): the real b1576 launch, flag removed",
+        True,
+        {"blobs": ["PYTHONPATH=. python backtest/run_phase1a.py "
+                   "--tickers-file output_audit/_sweep_100.txt --phase 1a-beta "
+                   "--cube-isolation --no-agents --no-news --no-git "
+                   "--no-walk-forward --start 2024-05-05 --end 2026-05-05 "
+                   "--max-run-hours 6.0 --output-dir output_cfg1"]},
+    ),
     "scan_synthetic_provenance": (
         "The boundary probe measured n=29 -> None and n=30 -> a Sharpe of "
         "2.422, so the floor is real.",
@@ -309,6 +334,20 @@ PURE_INCIDENTS: dict[str, list[tuple[tuple, bool, str]]] = {
 
 
 EXTRA_INCIDENTS: dict[str, list[tuple[str, bool, dict]]] = {
+    "scan_bulk_process_kill": [
+        # a TARGETED kill is the correct form and must stay quiet - the defect
+        # is killing every python on the box, not stopping a known process
+        ("targeted", False, {"cmds": ["Stop-Process -Id 12345 -Force"]}),
+        ("read-only", False, {"cmds": ["Get-Process python"]}),
+    ],
+    "scan_launch_missing_pool_workers": [
+        # the same launch WITH the flag - must go quiet, or the gate would
+        # punish the compliance it asks for
+        ("flag present", False,
+         {"blobs": ["PYTHONPATH=. python backtest/run_phase1a.py "
+                    "--tickers-file output_audit/_sweep_100.txt "
+                    "--screen-pool-workers 0 --output-dir output_cfg1"]}),
+    ],
     "scan_novelty_claim_without_search": [
         # the SAME finding made properly - the search is named in-clause
         ("grepped LEARNINGS.md and EXECUTION_QUEUE and the collapse is "
