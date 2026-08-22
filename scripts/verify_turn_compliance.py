@@ -2842,8 +2842,11 @@ BULK_KILL = ("stop-process -name", "stop-process -force",
 
 
 def _launch_blobs(entries) -> list[str]:
-    """Tool inputs in THIS turn that start a backtest runner. Pure."""
-    import json as _json
+    """Commands in THIS turn that START a backtest runner. Pure.
+
+    B1880: a launch is a COMMAND, not any tool input mentioning a runner.
+    """
+    import re as _re2
 
     out = []
     last_user = -1
@@ -2859,10 +2862,22 @@ def _launch_blobs(entries) -> list[str]:
         if e.get("type") != "assistant":
             continue
         for c in (e.get("message") or {}).get("content") or ():
-            if isinstance(c, dict) and c.get("type") == "tool_use":
-                blob = _json.dumps(c.get("input", {}))
-                if any(m in blob for m in LAUNCH_MARKERS):
-                    out.append(blob)
+            if not (isinstance(c, dict) and c.get("type") == "tool_use"):
+                continue
+            # B1880: a LAUNCH is a COMMAND that ran. The first version read
+            # `json.dumps` of EVERY tool input, so WRITING a script containing
+            # `run_phase1a.py` counted as launching one - and a Write tool call
+            # is not a command. Read only executing tools, and only their
+            # `command` field.
+            if str(c.get("name") or "").lower() not in _EXECUTING_TOOLS:
+                continue
+            cmd = str((c.get("input") or {}).get("command") or "")
+            # a heredoc BODY is data handed to an interpreter, not a command
+            # that ran (L569) - applied here up front rather than after it bites
+            cmd = _re2.sub(r"<<\s*'?(\w+)'?.*?^\1", " ", cmd,
+                           flags=_re2.S | _re2.M)
+            if any(m in cmd for m in LAUNCH_MARKERS):
+                out.append(cmd)
     return out
 
 
@@ -2921,8 +2936,11 @@ def scan_monitor_without_stall_check(entries, *, blobs=None) -> list[str]:
         if e.get("type") != "assistant":
             continue
         for c in (e.get("message") or {}).get("content") or ():
+            # B1880: only an ARMING call carries a prompt. `CronDelete` and
+            # `CronList` carry an id or nothing, so judging them as monitors
+            # with no stall clause is a guaranteed false positive.
             if isinstance(c, dict) and c.get("type") == "tool_use" and \
-                    "Cron" in str(c.get("name", "")):
+                    "croncreate" in str(c.get("name", "")).lower():
                 arms.append(_json.dumps(c.get("input", {})).lower())
     if blobs is not None:
         arms = [b.lower() for b in blobs]
