@@ -741,6 +741,29 @@ gate had just named.**
 - **Compliance failure against `#45` and `#247`, not a new class.** A fifth rule
   restating four that were ignored is `#136` theater.
 
+## A CONTROL MUST TAKE THE SAME PATH AS THE CLAIM (B1918 - L588, CHECKLIST #276b)
+
+**Before emptying a 26-entry grandfather list I ran `#226`: inject a synthetic
+ungated section, confirm the classifier flags it. It passed. It proved
+nothing.** The claim was *"the existing 26 are stale"*; the control asked *"can
+it see a NEW one?"* - and the existing sections were classified by a path the
+injected one never touched.
+
+- **`#276b` is exactly this rule** and I did not reach for it, because it was
+  written about an injection seam in a GATE and I was running a manual probe.
+- **Second time in three batches.** L585 was a compliance failure against
+  `#162`, which I had filed under RCA because the item was written after one.
+- **A rule's ANCHOR is not its SCOPE.** The retroactive line records where an
+  item came FROM and reads like where it APPLIES.
+- **Say both paths out loud before trusting a control.** One sentence -
+  *"the injected section is not in the literal; the existing ones are"* - would
+  have shown it.
+
+**Mechanically enforced** for the register half by the redundancy assertion in
+`test_b1762_every_scan_gate_has_a_corpus_entry` and the both-direction
+assertions in `test_b1860_skill_additions_are_gated`; the control-path half is
+judgment.
+
 ## AN EXCLUSION REGISTER DECAYS IN THE SAFE-LOOKING DIRECTION (B1916 - L587, CHECKLIST #279)
 
 **A gate-exemption dict carried three entries excused as "incident text not

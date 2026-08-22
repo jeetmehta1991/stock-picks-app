@@ -12461,3 +12461,47 @@ claim about the world at the moment it was written, and the world moves.
 needs BOTH checks. Nothing uncovered, AND nothing excused that no longer needs
 it.** **ANCHORED (`#197`):** `CHECKLIST #279`, mechanically enforced by the
 redundancy assertion in `test_b1762`. Carried into `SKILL.md`.
+
+
+### L588
+
+**A rule gets filed under the situation it was written in, and stops being
+consulted anywhere else**
+
+**B1918.** Before emptying a 26-entry grandfather list I ran `#226` - prove it
+can fail - by injecting a synthetic ungated section into SKILL.md and
+confirming the classifier flagged it. **It passed. It proved nothing.**
+
+The claim was *"the 26 existing entries are stale"*. The control asked *"can the
+classifier see a NEW section?"* **Those are different questions, and the
+existing sections were being classified by a path the injected one never
+touched** - their names sat inside the exemption literal, and `key in tu_text`
+counted that as a test pin.
+
+**`CHECKLIST #276b` is this exact rule**: *a seam that answers a DIFFERENT
+QUESTION than the live path proves nothing about it - and looks exactly like a
+passing test.* **COMPLIANCE FAILURE against `#276b`.** I did not reach for it,
+because `#276b` was written about an INJECTION SEAM IN A GATE and I was running
+a manual probe.
+
+**This is the second time in three batches.** L585 was a compliance failure
+against `#162` - the counter-semantics trap - which I had filed under RCA
+because the item was written after an RCA, and never applied to my own probes.
+**Same shape: the rule was correct, present, and indexed in my head under the
+circumstance that produced it.**
+
+**A rule's ANCHOR is not its SCOPE.** `#162` was written after an RCA and is
+about measurement. `#276b` was written about a gate seam and is about controls.
+The retroactive-coverage line every CHECKLIST item carries records where it
+came FROM, and reads to a later author like where it APPLIES.
+
+**The detection signal: when reaching for a control, ask what path the control
+takes and what path the claim takes, and say both out loud.** Mine were
+different and one sentence would have shown it - *"the injected section is not
+in the literal; the existing ones are"*.
+
+**The rule: before citing an item as N/A or not-reaching-for-it, re-read it -
+an item indexed by its origin story is an item you will miss in a new
+costume.** **ANCHORED (`#197`):** COMPLIANCE FAILURE against `CHECKLIST #276b`;
+no new item, and `#279` already carries the register half. Carried into
+`SKILL.md`.
