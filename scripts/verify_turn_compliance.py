@@ -1929,6 +1929,24 @@ def scan_count_without_members(entries, *, rows=None) -> list[str]:
         body = low.replace(own.group(1), " ") if own else low
         if any(e in body for e in MEMBER_EVIDENCE):
             continue
+        # B1968: a row that ENUMERATES two or more distinct identifiers has
+        # named its members, whatever KIND they are.
+        #
+        # MEMBER_EVIDENCE listed only ticket ids and query tools, so a row
+        # naming eight GATES - "8 remain: scan_discipline_not_loaded,
+        # scan_partial_read, ..." - satisfied the rule and failed the gate.
+        # **L597 one batch after writing it**: every instance I had when
+        # building #280 counted TICKETS, so "member" silently meant "ticket id".
+        #
+        # Structural, not another vocabulary list: the test is enumeration,
+        # and it does not need to know the type.
+        _idents = set(_re.findall(r"\b[a-z][a-z0-9_]{6,}(?:\.py)?\b", body))
+        _idents -= {"execution", "measured", "verified", "remaining", "changed",
+                    "definition", "durable", "cannot", "because", "tickets",
+                    "batches", "sections", "entries"}
+        if len(_idents) >= 2 and any("_" in i or i.endswith(".py")
+                                     for i in _idents):
+            continue
         return ["COUNT WITHOUT MEMBERS (#280 / L601): a row added this turn "
                 f"says {m.group(0)!r} and names no member id and no query that "
                 "selects them. **A count is not a set** - `S6-B1790d` says "

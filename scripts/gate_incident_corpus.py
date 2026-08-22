@@ -473,6 +473,14 @@ EXTRA_INCIDENTS: dict[str, list[tuple[str, bool, dict]]] = {
         ("a row stating no count at all", False,
          {"rows": ["| **S6-B1900a** | **EXECUTED** | P0 | **the harvester "
                    "ranks on median now** |"]}),
+        # B1968: a row naming GATE members must go quiet. MEMBER_EVIDENCE
+        # listed only ticket ids and query tools, so this FIRED - the gate
+        # counted "member" as "ticket id" because every instance in front of
+        # me when #280 was built counted tickets (L597).
+        ("a row naming GATE members, not ticket ids", False,
+         {"rows": ["| **S6-B1967d** | **EXECUTED** | P0 | **10 gates read "
+                   "tool text. 8 remain: scan_partial_read, "
+                   "scan_row_vs_ticket, scan_uncosted_probe** |"]}),
     ],
     # B1944b: the must-QUIET case this gate never had - and the one that
     # would have caught B1943. `COUNT_PROOF` omitted `queue_state`, the
