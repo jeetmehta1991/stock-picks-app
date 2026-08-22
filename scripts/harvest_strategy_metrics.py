@@ -104,6 +104,8 @@ def harvest(cube_dir, limit: int | None = None, min_trades: int = 10) -> dict:
         out[strat] = {"exits_graded": len(rows),
                       "exits_present": len(by_strategy[strat]),
                       "best": rows[0], "all": rows}
+        # B1994 (S6-B1966d / L454-class): when --limit binds, the output
+        # must carry the scope, or a debug subset reads as the population.
         if limit and len(out) >= limit:
             break
 
@@ -122,6 +124,10 @@ def main() -> int:
     a = ap.parse_args()
 
     res = harvest(a.cube, limit=a.limit, min_trades=a.min_trades)
+    if a.limit:
+        res["SCOPE"] = (f"LIMITED harvest: first {a.limit} strategies only "
+                        "(--limit debug flag). NOT the full cube population.")
+        print(res["SCOPE"])
     if "error" in res:
         print("ERROR:", res["error"])
         return 2

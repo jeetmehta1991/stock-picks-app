@@ -245,6 +245,13 @@ def main():
         md.append("|---|---:|---|---|---|")
         for f in all_static[:200]:
             md.append(f"| `{f['file']}` | {f['line']} | {f['severity']} | {f['pattern']} | `{f['snippet'][:80]}` |")
+        # B1994 (L571): a capped table must SAY it is capped - past 200
+        # findings the report silently read complete.
+        if len(all_static) > 200:
+            md.append("")
+            md.append(f"**SCOPE: showing 200 of {len(all_static)} static "
+                      "findings - the detail table is capped; every finding "
+                      "IS counted in the totals above.**")
         md.append("")
     else:
         md.append("**No static look-ahead-bias patterns found.**")

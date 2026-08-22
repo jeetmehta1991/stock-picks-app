@@ -51,6 +51,10 @@ REASONS = {
 }
 
 
+# B1994: what the promoter DECLINES to examine, counted for the SCOPE line
+SKIPPED: dict[str, int] = {}
+
+
 def load_audit():
     spec = importlib.util.spec_from_file_location(
         "adc", ROOT / "scripts" / "audit_done_claims.py")
@@ -122,6 +126,9 @@ def main() -> int:
         # in the same commit. Promoting them would have manufactured completion
         # for work deliberately abandoned.
         if cls in LIVE or cls == "DROPPED" or v is None:
+            _k = ("live" if cls in LIVE
+                  else "dropped" if cls == "DROPPED" else "unverdicted")
+            SKIPPED[_k] = SKIPPED.get(_k, 0) + 1
             out.append(line)
             continue
         if v == "CODE_BACKED":
@@ -139,6 +146,12 @@ def main() -> int:
     for k, n in sorted(moved.items(), key=lambda kv: -kv[1]):
         print(f"  {n:>4}  {k}")
     print(f"\n  {sum(moved.values())} terminal rows rewritten")
+    # B1994 (L571): say what was CONSIDERED and skipped, not only what moved -
+    # the reclassifier's silence about LIVE/DROPPED rows read as full coverage.
+    print("  SCOPE: skipped as out of scope for promotion - "
+          + (", ".join(f"{v} {k}" for k, v in sorted(SKIPPED.items()))
+             or "none")
+          + ". These were NOT examined (B1994/L571).")
     print("\n  DONE now means SELF-REPORTED AND UNVERIFIED, so the open count")
     print("  RISES. That is the ruling working, not a regression.")
 
