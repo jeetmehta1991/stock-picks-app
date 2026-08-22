@@ -222,10 +222,31 @@ def main() -> int:
     for _v in live.values():
         _by[_v[0]] = _by.get(_v[0], 0) + 1
     _breakdown = " + ".join(f"{_by[k]} {k}" for k in LIVE if k in _by)
+    # B1966 (L571): SAY WHAT IS NOT IN SCOPE.
+    #
+    # L571: "when a verification pass enumerates its population, say whether
+    # CLOSED rows are in it - and if they are not, say so out loud." This tool
+    # filters to LIVE and reported only that, so every closed row was excluded
+    # silently - **L571's defect inside the tool built to audit stale claims.**
+    #
+    # L571's own point is that a claim in a CLOSED row is LOAD-BEARING, because
+    # other work is already built on it, so the excluded population is the more
+    # dangerous one. The fix is not to audit 1,065 closed rows; it is to stop
+    # implying they were covered.
+    _closed = {k: v for k, v in latest.items() if v[0] not in LIVE}
+    _cby = {}
+    for _v in _closed.values():
+        _cby[_v[0]] = _cby.get(_v[0], 0) + 1
+    _cbreak = " + ".join(f"{_cby[k]} {k}" for k in sorted(_cby))
+
     print(f"\nLIVE tickets: {len(live)} ({_breakdown}) | "
           f"carrying a NUMBER: {len(numeric)}")
     print("Each number below is a claim about a past moment. Re-derive before "
-          "acting on it.\n")
+          "acting on it.")
+    print(f"SCOPE: this audit covers LIVE tickets ONLY. {len(_closed)} closed "
+          f"rows ({_cbreak}) are NOT examined - and L571 is that a claim in a "
+          "CLOSED row is the load-bearing one, because other work is already "
+          "built on it.\n")
     if a.all:
         for tid, (c, p, d) in sorted(numeric.items()):
             nums = re.findall(r"\b\d+\b", d)[:6]

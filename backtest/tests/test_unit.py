@@ -20895,3 +20895,31 @@ def test_b1960_narrow_universe_advisory():
     assert isinstance(pg.advisories(manifest), list), (
         "advisories returns a list and check() decides blocking - keeping the "
         "channels separate is what makes a warning possible at all")
+
+
+
+def test_b1966_staleness_auditor_declares_its_scope():
+    """B1966 (L571): a verification pass says whether CLOSED rows are in it.
+
+    `audit_ticket_staleness.py` filters to LIVE and reported only that, so
+    every closed row was excluded silently - **L571's defect inside the tool
+    built to audit stale claims.** L571's point is that a claim in a CLOSED row
+    is LOAD-BEARING, because other work is already built on it.
+
+    The fix is not to audit the closed rows; it is to stop implying they were
+    covered.
+    """
+    import pathlib as _p
+
+    root = _p.Path(__file__).resolve().parents[2]
+    src = (root / "scripts" / "audit_ticket_staleness.py").read_text(
+        encoding="utf-8")
+
+    assert "SCOPE: this audit covers LIVE tickets ONLY" in src, (
+        "the auditor must declare that closed rows are out of scope - L571")
+    assert "_closed" in src and "not in LIVE" in src, (
+        "it must COUNT the excluded population, not just mention it - a scope "
+        "statement without a number is the same silence in nicer words")
+    assert "load-bearing" in src, (
+        "the reason must travel with the disclosure: a claim in a closed row "
+        "is load-bearing, which is WHY the excluded set is the dangerous one")
