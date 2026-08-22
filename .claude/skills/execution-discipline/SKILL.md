@@ -741,6 +741,27 @@ gate had just named.**
 - **Compliance failure against `#45` and `#247`, not a new class.** A fifth rule
   restating four that were ignored is `#136` theater.
 
+## AN ENUMERATION PATTERN ENCODES THE EXAMPLES IN FRONT OF YOU (B1950 - L597, CHECKLIST #162)
+
+**Four times in one session a probe ran clean, returned a plausible number, and
+enumerated the wrong set:** occurrences counted where the claim was about
+functions (4 vs 2); a corpus dict omitted; `^### L` matched while the file also
+uses `## L` (89 of 502 missed); gate escapes enumerated by one syntactic shape
+(6 of at least 9, **missing three fixed in the two preceding batches**).
+
+- **The tell is identical.** Each regex was written while reading one example,
+  and it inherited every accident of that example.
+- **Worse than an unmeasured guess** - it arrives with the authority of having
+  been run, and **the quantity is right while only the POPULATION is short**, so
+  nothing in the output says so.
+- **Control from OUTSIDE the sample that produced the pattern:** name a member
+  you know exists and did not look at, then assert the enumeration finds it.
+- **Prefer a STRUCTURAL bound to a syntactic one** - the escapes were
+  unenumerable by regex and perfectly bounded by *every text-reading gate*.
+
+**Mechanically enforced** where it can be: `count_text_readers` is the single
+definition both the measurement and the pin call (L593).
+
 ## THE ESCAPE IS THE SIDE THAT LETS A TURN THROUGH (B1948 - L596, CHECKLIST #226)
 
 **A gate granted its exemption to a `PROSE-ONLY` shown as an EXAMPLE inside a

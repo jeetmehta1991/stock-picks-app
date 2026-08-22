@@ -3699,6 +3699,22 @@ the gate went quiet on **the shape of its own recorded incident**.
 - **Retroactive (`#136`):** B1812 (`keep_code`, one of two strips), B1798 (`_verdict_hits` raw `in`
   at one site), B1832 (`_DECIMAL` at two sites). **Three divergences, three half-fixes.**
 
+**AMENDED B1951 (L597) - AN ENUMERATION NEEDS A CONTROL FROM OUTSIDE ITS OWN
+SAMPLE.** A pattern written to enumerate a population encodes the examples that
+were visible when it was written. **Four instances in one session, every one
+running clean and returning a plausible number:** B1938 (occurrences vs
+functions, 4 against 2), B1944 (a corpus dict omitted), B1945d (`^### L` while
+the file also uses `## L`, missing 89 of 502), B1950 (escapes by one syntactic
+shape, 6 of at least 9 - **missing three fixed in the two preceding batches**).
+
+- **The quantity is right and only the POPULATION is short**, so nothing in the
+  output says so - worse than an unmeasured guess, which at least looks like one.
+- **Name a member you know exists and did NOT look at while writing the
+  pattern, then assert the enumeration finds it.** B1950 would have failed
+  instantly against `record-of-fact`.
+- **Prefer a STRUCTURAL bound to a syntactic one.** B1950's escapes were
+  unenumerable by regex and perfectly bounded by "every text-reading gate".
+
 **AMENDED B1937 (L592) - IT IS NOT ONLY DUPLICATED PATTERNS. A GUARD COUNTS TOO.**
 `safe_write_py` parses a candidate before writing, so a syntax error leaves the
 file untouched. B1936 routed `test_unit.py` through it and wrote

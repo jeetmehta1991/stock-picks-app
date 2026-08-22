@@ -12822,3 +12822,43 @@ positive costs a re-word; **an escape false positive costs the rule.**
 which also holds B1947's fix in place. **ANCHORED (`#197`):** COMPLIANCE
 FAILURE against `CHECKLIST #226`'s ONE PATTERN clause via L592 - *the unit of
 the change was smaller than the unit of the defect.* Carried into `SKILL.md`.
+
+
+### L597
+
+**An enumeration pattern encodes the examples you had in front of you when you
+wrote it**
+
+**B1938/B1944/B1945/B1950.** Four times this session a probe ran clean,
+returned a plausible number, and enumerated the wrong set:
+
+    B1938   counted OCCURRENCES of `_raw_assistant(entries)`; the claim was
+            about FUNCTIONS - 4 against 2
+    B1944   omitted `PURE_INCIDENTS` and reported a covered gate as having
+            zero cases
+    B1945d  matched `^### L`; LEARNINGS also uses `## L` - missed 89 of 502
+    B1950   enumerated gate ESCAPES by one syntactic shape - found 6 of at
+            least 9, **missing three I had personally fixed in the two
+            preceding batches**
+
+**The tell is identical in all four.** B1945d's regex was written while I was
+reading a `### L594` heading. B1950's was written while I was looking at
+`if "prose-only" in t`. **The pattern is a generalisation from a sample of one,
+and it inherits every accident of that sample.**
+
+**It is worse than an unmeasured guess**, because it arrives with the authority
+of having been run - and worse than L585's wrong-quantity error, because the
+quantity is right and only the POPULATION is short. Nothing in the output says
+so.
+
+**The remedy is a control drawn from OUTSIDE the sample that produced the
+pattern**: name a member you know exists, did NOT look at while writing the
+pattern, and assert the enumeration finds it. **B1950 would have failed
+instantly against `record-of-fact`** - a marker I had hardened one batch
+earlier and could have named without looking.
+
+**The rule: an enumeration is a claim about a POPULATION, so test it against a
+member you did not use to build it.** **ANCHORED (`#197`):** COMPLIANCE FAILURE
+against `CHECKLIST #162`, fourth instance; `#226` amended with the
+enumeration-control clause rather than adding a redundant item. Carried into
+`SKILL.md`.
