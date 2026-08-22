@@ -12083,3 +12083,45 @@ it guards can occur, and check the detector covers each.**
 verify the second.** **ANCHORED (`#197`):** `CHECKLIST #226` - proving a gate
 can fail shows it works on the case you thought of; this asks which cases you
 did not. Carried into `SKILL.md`.
+
+
+### L579
+
+**I write the ledger in a style that defeats the tools I would read it with**
+
+**B1894.** L578's instance was found by holding two rows on one subject side by
+side, so I built the index that does it at scale. **Four attempts; three
+failed, and every failure returned a plausible number rather than an error.**
+
+```
+1. token overlap                  530 "contradictions"  <- the B1794/B1795 stamp
+2. token overlap, stamp stripped  146                   <- a SECOND stamp layer
+3. identifier regex with caps     GATES, OWNER, LEDGER  <- my own emphasis style
+4. true identifiers only          14 clean clusters
+```
+
+**Both defeats are self-inflicted and both are deliberate choices.** The stamp -
+*"self-reported and never verified against code; READ END-TO-END B1794"* - was
+right to add: it records provenance on every row. The bold-caps emphasis makes
+a dense row skimmable. **Each is useful to a human reader and hostile to a
+machine one**, and I had never needed the machine reader until the ledger
+outgrew reading.
+
+**The failures were expensive because they were plausible.** 530 is a shocking
+number and I nearly wrote it down; 146 looked like a refinement converging on
+something. **A probe that returns zero is obviously broken. A probe that
+returns a number is only obviously broken if you check what it counted** -
+L556, four times inside one investigation.
+
+**What finally worked was demanding structure the prose cannot fake:** an
+identifier must carry an underscore or a `.py`. English emphasis cannot satisfy
+that, and the stamp's vocabulary cannot either.
+
+**MECHANISM:** `scripts/queue_crossref.py`, with all three failed probes
+recorded in its docstring so the next reader does not re-run them - **a
+negative result is only durable if it is written where the next attempt starts.**
+
+**The rule: when a corpus is written for humans, expect its most useful
+conventions to be exactly what breaks a tool over it - and check what a probe
+counted before believing what it returned.** **ANCHORED (`#197`):**
+`CHECKLIST #226` and L556; carried into `SKILL.md`.

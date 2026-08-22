@@ -741,6 +741,23 @@ gate had just named.**
 - **Compliance failure against `#45` and `#247`, not a new class.** A fifth rule
   restating four that were ignored is `#136` theater.
 
+## A CORPUS WRITTEN FOR HUMANS BREAKS TOOLS OVER IT (B1895 - L579, CHECKLIST #226)
+
+**MEASURED: four attempts to index the ledger, three failed, each returning a
+PLAUSIBLE NUMBER** - 530 "contradictions" that were the stamp every row
+carries, then 146 from a second stamp layer, then `GATES`/`OWNER`/`LEDGER`
+matched as identifiers because the ledger is written in emphatic ALL-CAPS.
+
+- **Both defeats are self-inflicted and both are good choices for a reader.**
+  The provenance stamp and the bold-caps emphasis each help a human and each
+  break a tool.
+- **A probe returning ZERO is obviously broken. A probe returning a NUMBER is
+  only obviously broken if you check what it counted.**
+- **Demand structure the prose cannot fake** - an identifier must carry an
+  underscore or a `.py`; emphasis cannot satisfy that.
+- **Record failed probes where the next attempt starts** -
+  `scripts/queue_crossref.py` carries all three in its docstring.
+
 ## A GUARD'S PROMISE IS ONLY AS WIDE AS ITS DETECTOR (B1893 - L578, CHECKLIST #226)
 
 **MEASURED: a pin whose docstring says the set "cannot GROW" tested two of the
