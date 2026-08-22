@@ -741,6 +741,49 @@ gate had just named.**
 - **Compliance failure against `#45` and `#247`, not a new class.** A fifth rule
   restating four that were ignored is `#136` theater.
 
+## WHAT A PARSER REJECTS IS THE SET NOBODY AUDITS (B1969 - L603, CHECKLIST #275/#279)
+
+**The queue's row regex required the ticket id to be BOLD.** `queue_state.py`
+and every other reader agreed on that - **and 48 real tickets sit in an older
+schema with an unbolded id, so nothing has ever counted them.** Every total
+reported from that counter excluded them silently; the true population is
+**1,245, not 1,197**, and those rows have no state column, so their OPEN-ness is
+**UNKNOWN, not zero.**
+
+- **A reject pile is invisible by construction.** A non-matching row produces
+  no row, no error and no count - it produces a total that looks complete.
+- **Consistency across readers made it WORSE.** All five agreed, so no
+  cross-check could disagree, and the agreement read as corroboration.
+- **Ask what a parser DROPS, not only what it takes** (`#279`, both
+  directions). Never let a gate depend on formatting (`#275`).
+- **Disclose, do not admit.** Widening the regex would INVENT a state those
+  rows do not have. `unparsed()` names all 48 under a SCOPE line.
+
+**Mechanically enforced** by `queue_state.unparsed()` and the bold-independent
+own-id scrub, pinned by `test_b1969_gate_does_not_require_bold` and
+`test_b1969_counter_discloses_what_it_cannot_parse`.
+
+## AN EVIDENCE VOCABULARY'S MISSING KIND IS INVISIBLE (B1968 - L602, CHECKLIST #162)
+
+**Two lists of *what counts as proof* were each missing an obvious kind, and
+each was found only when the gate refused CORRECT work.** `COUNT_PROOF` omitted
+`queue_state` - the canonical counter, which the already-listed
+`audit_ticket_staleness` imports. `MEMBER_EVIDENCE` omitted gate names, so a row
+naming eight `scan_*` members failed the rule it satisfied.
+
+- **Neither ever failed a test.** A missing kind produces no error - it produces
+  **a turn that did the right thing and was told it did not.**
+- **The cheap response is to reach for a token the list accepts** rather than
+  the tool that answers the question. B1722's bypass, via a false NEGATIVE.
+- **The fix is not a longer list.** Where the recognised thing has an OPEN set
+  of kinds, **test the STRUCTURE** - two or more distinct identifiers IS an
+  enumeration, and the test need not know the type.
+- **9 evidence vocabularies exist here; 2 have been bitten.**
+
+**Mechanically enforced** by the structural enumeration test in
+`scan_count_without_members`, pinned by
+`test_b1969_member_detection_is_structural`.
+
 ## A COUNT IS NOT A SET (B1965 - L601, CHECKLIST #280)
 
 **A row said *"3 ROWS: their batch changed code but added no durable

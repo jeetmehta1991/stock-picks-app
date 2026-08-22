@@ -19171,7 +19171,6 @@ _B1860_UNGATED_LEGACY = {
     'A BUILD CLAIM MUST NAME ITS ARTIFACT',
     'A CLASSIFIER INHERITS YOUR MODEL OF THE DATA',
     'A DERIVED COUNT MUST NAME AND TEST ITS ASSUMPTION',
-    'A RESPONSE GATE MUST NOT ASSUME HOW THE RESPONSE IS FORMATTED',
     'A SILENT FALLBACK MAKES ONE NAME INTO TWO EXITS',
     'AN ANALYSIS ROW HAS NO CODE TO VERIFY',
     'AN ARTIFACT MUST CARRY THE KEY IT WAS RANKED ON',
@@ -20977,3 +20976,140 @@ def test_b1967_did_it_run_reads_executed_text_not_written_text():
         "the executing-tools filter is shared by the launch detectors and now "
         "the evidence gates - if a new reader is added without it, this count "
         "stops matching and the omission is visible (L592)")
+
+
+
+def test_b1969_member_detection_is_structural():
+    """B1969 (L602): `#280` must recognise members of ANY kind, not ticket ids.
+
+    `MEMBER_EVIDENCE` listed ticket ids and query tools, so a row naming eight
+    `scan_*` members - satisfying `#280` exactly - **failed the gate that
+    enforces it.** Adding `scan_` would have left files, DECs and strategy
+    names out: the same trap one turn later.
+
+    The test is ENUMERATION, and it does not need to know the type.
+    """
+    import importlib.util as _iu
+    import pathlib as _p
+
+    root = _p.Path(__file__).resolve().parents[2]
+    spec = _iu.spec_from_file_location(
+        "vtc_b1969", root / "scripts" / "verify_turn_compliance.py")
+    tg = _iu.module_from_spec(spec)
+    spec.loader.exec_module(tg)
+    f = tg.scan_count_without_members
+
+    # the row id must NOT be a prefix of the member ids: the gate scrubs its
+    # own id by substring, so a row labelled `S6-B1` would eat `S6-B1589c`
+    R = "| **S6-B1969a** | **OPEN** | P1 | **%s** |"
+
+    # members of THREE different kinds must all clear
+    for kind, row in (
+        ("gates", "8 gates remain: scan_partial_read, scan_row_vs_ticket"),
+        ("tickets", "7 tickets remain: S6-B1589c, S6-B1636a"),
+        # deliberately NOT queue_state.py - that is already in MEMBER_EVIDENCE,
+        # so it would clear by vocabulary and prove nothing about structure
+        ("files", "3 rows remain: roster_core.py, prelaunch_gate.py"),
+    ):
+        assert not f([], rows=[R % row]), (
+            f"a row naming {kind} has named its members - #280 asks for the "
+            "members, not for a particular KIND of member")
+
+    # and a bare count must still fire, or the fix is a loosening
+    assert f([], rows=[R % "3 ROWS: their batch changed code but added "
+                            "no durable definition"]), (
+        "a count with no members must still fire - S6-B1790d's incident")
+
+
+
+def test_b1969_gate_does_not_require_bold():
+    """B1969 (L603 / `#275`): the `#280` own-id scrub must ignore formatting.
+
+    The scrub exists so a row cannot cite ITSELF as a member. It required
+    `**`, so for the 59 rows with a plain `| S6-xxx |` cell it never fired,
+    the id stayed in the body, and `"s6-b"` in `MEMBER_EVIDENCE` made the gate
+    **pass on exactly the rows its own comment says must fail.**
+
+    Measured before the fix: identical content, bold FIRES, plain SILENT.
+    """
+    import importlib.util as _iu
+    import pathlib as _p
+
+    root = _p.Path(__file__).resolve().parents[2]
+    spec = _iu.spec_from_file_location(
+        "vtc_b1969b", root / "scripts" / "verify_turn_compliance.py")
+    tg = _iu.module_from_spec(spec)
+    spec.loader.exec_module(tg)
+    f = tg.scan_count_without_members
+
+    BARE = "**3 ROWS: their batch changed code but added no durable definition**"
+    NAMED = "**7 tickets remain: S6-B1589c, S6-B1636a**"
+
+    for style, row in (("bold", "| **S6-B1969a** | **OPEN** | P1 | %s |"),
+                       ("plain", "| S6-B1969a | OPEN | P1 | %s |")):
+        # both directions, or the fix is only half-checked (#279)
+        assert f([], rows=[row % BARE]), (
+            f"a bare count must fire whether the id is {style} or not - the "
+            "row's OWN id is not a member, and formatting must not decide "
+            "that (#275)")
+        assert not f([], rows=[row % NAMED]), (
+            f"a row that NAMES its members must stay silent when the id is "
+            f"{style} - the fix must not become a blanket fire")
+
+
+def test_b1969_counter_discloses_what_it_cannot_parse():
+    """B1969 (L603 / `#279`): the counter names the rows it drops.
+
+    `_ROW` requires a bold id, and **48 real tickets sit in an older schema
+    that has none** - so nothing ever counted them, and every reported total
+    was computed on a denominator that silently excluded them.
+
+    Widening `_ROW` is the WRONG fix: those rows have no state column, so
+    admitting them would invent one. The requirement is disclosure.
+    """
+    import importlib.util as _iu
+    import pathlib as _p
+
+    root = _p.Path(__file__).resolve().parents[2]
+    spec = _iu.spec_from_file_location(
+        "qs_b1969", root / "scripts" / "queue_state.py")
+    qs = _iu.module_from_spec(spec)
+    spec.loader.exec_module(qs)
+
+    up = qs.unparsed()
+    known = set(qs.tickets())
+
+    assert up, "the older-schema rows are still in the file; dropping to zero "\
+               "means the pattern broke, not that the backlog was converted"
+    assert not (set(up) & known), (
+        "unparsed() must report only what the canonical count MISSES - "
+        "overlap means it is double-counting, not disclosing")
+    assert not any("/" in t for t in up), (
+        "a composite id like S6-B1503a/b/c is a ROW SHAPE, not a ticket, and "
+        "its members are counted individually (#271)")
+    assert "S6-B1248-LEAD-LAG-ORPHAN" in up, (
+        "the named-id legacy block is the bulk of the exclusion - if it stops "
+        "appearing, the loose pattern has silently narrowed")
+
+    # assert on what the tool PRINTS, not on its source: a disclosure nobody
+    # sees is the same silence, and a source grep cannot tell the difference
+    # (#276b - check the live path)
+    import contextlib as _cl
+    import io as _io
+
+    buf = _io.StringIO()
+    with _cl.redirect_stdout(buf):
+        qs.main()
+    out = buf.getvalue()
+
+    assert "SCOPE:" in out and "EXCLUDES them" in out, (
+        "the exclusion must be PRINTED, not merely computable (L571)")
+    assert "UNKNOWN, not zero" in out, (
+        "those rows have no state column, so their OPEN-ness is unknown; "
+        "reporting them as closed would invent the state the fix avoids")
+    assert str(len(up)) in out, (
+        "the printed scope line must carry the COUNT of what was dropped")
+    for t in list(up)[:3]:
+        assert t in out, (
+            f"{t} is excluded and not named - #280, a count is not a set: the "
+            "scope line must name the members, not just tally them")

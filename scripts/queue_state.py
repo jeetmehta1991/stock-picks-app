@@ -36,6 +36,42 @@ TERMINAL = ("EXECUTED", "DROPPED")
 
 _ROW = re.compile(r"^\|\s*\*\*(S6-[A-Za-z0-9-]+)\*\*\s*\|\s*\*\*([A-Z-]+)\*\*")
 
+# B1969: what `_ROW` REJECTS, so the exclusion is DISCLOSED rather than silent.
+#
+# `_ROW` requires the id AND the state to be bold. The queue also contains an
+# older schema - a plain `| S6-xxx |` first cell, and a second column that is a
+# PRIORITY, not a state. Those rows carry real tickets, and no counter has ever
+# included them: every total reported from this module has been computed on a
+# denominator that silently omits 48 of them.
+#
+# This is NOT widened into `_ROW`. Those rows have no state to read, so
+# admitting them would INVENT one. The fix is to SAY they are excluded (L571) -
+# a count whose scope is unstated is the defect, not the count itself.
+_LOOSE = re.compile(r"^\|\s*\*{0,2}(S6-[A-Za-z0-9./-]+?)\*{0,2}\s*\|")
+
+
+def unparsed(path=None) -> dict:
+    """Ticket ids in a first cell that `_ROW` rejects -> first line seen.
+
+    These are tickets the canonical count does NOT include. Composite ids
+    (`S6-B1503a/b/c` - one row addressing three tickets) are dropped: that is
+    a ROW SHAPE, not a ticket, and its members are counted individually
+    (`#271`, a row is not a ticket).
+    """
+    q = pathlib.Path(path) if path else QUEUE
+    known = set(tickets(path))
+    out = {}
+    with q.open(encoding="utf-8") as fh:
+        for n, ln in enumerate(fh, 1):
+            m = _LOOSE.match(ln)
+            if not m:
+                continue
+            tid = m.group(1)
+            if tid in known or "/" in tid or tid in out:
+                continue
+            out[tid] = n
+    return out
+
 
 def rows(path: pathlib.Path | str | None = None) -> list[tuple[int, str, str]]:
     """Every ledger row as (line_no, ticket_id, state) in file order."""
@@ -99,6 +135,16 @@ def main() -> int:
     for k in CLASSES:
         print(f"   {st.get(k, 0):>4}  {k}")
     print(f"   {sum(st.values()):>4}  TOTAL distinct tickets")
+    up = unparsed()
+    if up:
+        print()
+        print(f"SCOPE: {len(up)} further ticket ids appear in a row this "
+              "counter does NOT parse - an older schema whose id is unbolded "
+              "and whose 2nd column is a PRIORITY, not a state. They are real "
+              "tickets with NO state to read, so their OPEN-ness is UNKNOWN, "
+              "not zero. Every total above EXCLUDES them.")
+        for tid, n in sorted(up.items(), key=lambda kv: kv[1]):
+            print(f"   line {n:>6}  {tid}")
     return 0
 
 

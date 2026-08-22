@@ -1925,8 +1925,18 @@ def scan_count_without_members(entries, *, rows=None) -> list[str]:
         if not m:
             continue
         # the row's OWN id does not count as naming a member
-        own = _re.match(r"\|\s*\*\*(s6-[a-z0-9-]+)\*\*", low)
-        body = low.replace(own.group(1), " ") if own else low
+        # B1969 (#275): the id may or may not be BOLD - 59 of the queue's
+        # 1,365 rows use a plain `| S6-xxx |` first cell. The old pattern
+        # required `**`, so for those rows `own` was None, `body` kept the
+        # row's own id, and "s6-b" in MEMBER_EVIDENCE made the gate PASS on
+        # exactly the rows the comment above says must not pass. Measured:
+        # identical content, bold id FIRES, plain id SILENT.
+        #
+        # The replacement is right-bounded too: a bare substring replace lets
+        # a shorter id eat a longer one (`s6-b1` would blank `s6-b1589c`).
+        own = _re.match(r"\|\s*\*{0,2}(s6-[a-z0-9-]+?)\*{0,2}\s*\|", low)
+        body = (_re.sub(_re.escape(own.group(1)) + r"(?![a-z0-9])", " ", low)
+                if own else low)
         if any(e in body for e in MEMBER_EVIDENCE):
             continue
         # B1968: a row that ENUMERATES two or more distinct identifiers has

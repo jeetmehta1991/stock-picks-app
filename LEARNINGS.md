@@ -13021,3 +13021,93 @@ branches proven: the incident fires, a row naming ids goes quiet, a row naming
 gate; the retro-fit is seven fresh classifications.**
 
 **ANCHORED (`#197`):** `CHECKLIST #280`. Carried into `SKILL.md`.
+
+
+### L602
+
+**An evidence vocabulary's missing KIND is invisible, because the honest path
+merely looks non-compliant**
+
+**B1943/B1968.** Two lists of *what counts as proof* were each missing an
+obvious kind, and each was found only when the gate refused correct work:
+
+- **`COUNT_PROOF` omitted `queue_state`** - the script run every batch to
+  produce these ticket counts, which IS `collections.Counter`, and which
+  `audit_ticket_staleness` (already on the list) **imports**. A count backed by
+  the canonical counter was rejected while `grep -c` passed.
+- **`MEMBER_EVIDENCE` omitted gate names**, so a row naming eight `scan_*`
+  members - satisfying `#280` exactly - **failed the gate that enforces it.**
+
+**Neither ever failed a test.** That is the whole difficulty. A missing kind
+produces no error and no alarm; it produces **a turn that did the right thing
+and was told it did not** - and the cheapest response is to reach for a token
+the list accepts rather than the tool that answers the question. **That is
+B1722's bypass arriving through a false NEGATIVE**, and L596's asymmetry once
+more: the permissive direction is loud, the restrictive one only annoys.
+
+**COMPLIANCE FAILURE against `CHECKLIST #162`** via L597 - the vocabulary
+encoded the kinds its author had in view. Every `#280` instance in front of me
+counted TICKETS, so *member* silently meant *ticket id*.
+
+**The fix is not a longer list.** Adding `scan_` would have left files, DECs and
+strategy names out, which is the same trap one turn later. **Where the thing
+being recognised has an OPEN set of kinds, test the STRUCTURE**: two or more
+distinct identifiers IS an enumeration, and the test does not need to know the
+type.
+
+MEASURED: **9 evidence vocabularies exist in the gate script and 2 have been
+bitten** - `COUNT_PROOF`, `MEMBER_EVIDENCE`, `NOVELTY_SEARCH`, `_SEARCH_TOOLS`,
+`_EXECUTING_TOOLS`, `FIGURE_SOURCES`, `SYNTHETIC_SOURCES`,
+`DOWNSTREAM_ARTIFACTS`, `_WRITTEN_FIELDS`. **ANCHORED (`#197`):** compliance
+failure against `#162`; mechanism is the structural enumeration test in
+`scan_count_without_members`, pinned by
+`test_b1969_member_detection_is_structural`. Carried into `SKILL.md`.
+
+
+### L603
+
+**What a parser REJECTS is the set nobody will ever audit - 48 tickets, and I
+reported totals over them all session**
+
+**B1969.** Chasing a `#280` false positive, the row regex turned out to require
+the ticket id to be **bold**. Two consequences, both measured:
+
+1. **The gate.** `scan_count_without_members` scrubs a row's own id so the row
+   cannot cite ITSELF as a member. The scrub pattern required `**`, so for the
+   **59 rows with a plain `| S6-xxx |` cell** it never fired, the id stayed in
+   the body, and `"s6-b"` in `MEMBER_EVIDENCE` made the gate PASS on exactly
+   the rows its own comment says must fail. Proven: identical content, **bold
+   FIRES, plain SILENT.**
+2. **The counter.** `queue_state.py::_ROW` requires bold too - and so does
+   every other reader, consistently. **48 real tickets live in an older schema**
+   (unbolded id, 2nd column a PRIORITY not a state): the `S6-B1248-*` /
+   `S6-B1250-*` / `S6-B1253-*` / `S6-B1259-*` / `S6-B1262-*` named-id block,
+   plus `S6-B1501d`, `S6-B1511a`, `S6-B1521a`, `S6-B1523a`, `S6-B1524a`.
+   **Nothing has ever counted them.** Every total I have reported - "1,197
+   distinct", "66 OPEN" - was computed on a denominator that silently excludes
+   them. The true population is **1,245**, and because those rows have no state
+   column, their OPEN-ness is **UNKNOWN, not zero.**
+
+**A parser's reject pile is invisible by construction.** A row that does not
+match produces no row, no error and no count - it produces a total that looks
+complete. Nothing downstream can notice, because downstream only ever sees what
+matched. **Consistency across readers made it worse, not better:** all five
+readers agreed, so no cross-check could ever disagree, and the agreement read
+as corroboration.
+
+**COMPLIANCE FAILURE against `#275`** (a gate must not assume formatting) for
+the gate, and **against `#279`** (an exclusion register needs both directions)
+for the counter - I had registered what the counter INCLUDES and never once
+asked what it drops.
+
+**The fix is disclosure, not admission.** Widening `_ROW` to swallow those rows
+would INVENT a state they do not have. `unparsed()` names all 48 and `main()`
+prints them under a SCOPE line - the same shape as B1966. **A count whose scope
+is unstated is the defect; the count itself was fine.**
+
+MEASURED: 59 plain-id rows of 1,365; 48 uncounted tickets after removing 2
+composite `a/b/c` ids (a row shape, not a ticket - `#271`); population
+1,197 -> **1,245**. **ANCHORED (`#197`):** compliance failure against `#275` and
+`#279`; mechanisms are the bold-independent scrub and `queue_state.unparsed()`,
+pinned by `test_b1969_gate_does_not_require_bold` and
+`test_b1969_counter_discloses_what_it_cannot_parse`. Carried into `SKILL.md`.
