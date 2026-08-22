@@ -13571,7 +13571,11 @@ takes - and a freeze on the detector's own home taxes its maintenance**
    message** (L562's shape, recurring because the freeze's home is inside its
    own measurement). Scope such freezes to the DOCS where anchors live;
    L586's sibling rule - **a mechanism that taxes its own maintenance loop is
-   costly in the wrong place** - decided it.
+   costly in the wrong place** - decided it. **It tripped a THIRD time, one
+   file over, before the scope was right**: the queue is an append-only
+   incident RECORD, so freezing its count made every future documentation row
+   a violation. Final scope: the two ANCHOR docs (CLAUDE.md, SKILL.md), where
+   a citation is load-bearing; records may document freely.
 
 MEASURED: 30+ odd-backtick lines enumerated in the live queue; the freeze
 self-tripped 2 of 2 times on machinery files and 0 times on docs. **ANCHORED
