@@ -19108,3 +19108,122 @@ def test_b1858_gate_message_says_where_to_put_the_citation():
     assert "B1738" in msg or "stripped" in msg, (
         "the message must say WHY plain text - that code spans are stripped "
         "as mentions - or the instruction reads as arbitrary")
+
+
+# B1860 - owner directive 2026-08-21: "all additions to execution discipline
+# skill needs to be gated. Test extensively. No silent misses."
+#
+# The 26 below are LEGACY prose sections that predate the directive. They are
+# RATCHETED, not retrofitted: this list may SHRINK and must never GROW.
+# Converting 26 sections in one batch is the bundling B1839 showed produces
+# defects, and the directive is about ADDITIONS.
+_B1860_UNGATED_LEGACY = {
+    'A BUILD CLAIM MUST NAME ITS ARTIFACT',
+    'A CLASSIFIER INHERITS YOUR MODEL OF THE DATA',
+    'A DERIVED COUNT MUST NAME AND TEST ITS ASSUMPTION',
+    'A RESPONSE GATE MUST NOT ASSUME HOW THE RESPONSE IS FORMATTED',
+    'A SILENT FALLBACK MAKES ONE NAME INTO TWO EXITS',
+    'AN ANALYSIS ROW HAS NO CODE TO VERIFY',
+    'AN ARTIFACT MUST CARRY THE KEY IT WAS RANKED ON',
+    'AN ASSERTED CONSEQUENCE IS A CLAIM - COMPUTE IT',
+    'Failure modes this skill exists to prevent',
+    'GATE-CONSTRUCTION RULES',
+    'INSPECTION EVIDENCE COMES FROM READS, NEVER FROM WRITES',
+    "MENTION-vs-USE APPLIES TO TOOL TEXT, AND CHECK A TEXT'S SHAPE BEFORE REGEXING IT",
+    'PRINT THE SAMPLE IDENTIFIER BEFORE JOINING TWO MEASUREMENTS',
+    'PROMOTION NEEDS A BATCH-SPECIFIC ARTIFACT',
+    'PROVE A RESPONSE GATE ON A REALISTIC RESPONSE',
+    'Phase 0 — RECALL',
+    'Phase 1 — SCOPE LEDGER',
+    'Phase 2 — PRE-FLIGHT',
+    'Phase 3 — EXECUTE with the TEST PYRAMID GATE',
+    'Phase 4 — AUDIT DEPTH STANDARD',
+    "RE-DERIVE A TICKET'S NUMBER BEFORE WORKING IT",
+    'SCORE ON THE MINORITY CLASS, NOT ON ACCURACY',
+    'SIX MUTUALLY EXCLUSIVE LEDGER CLASSES',
+    'SPEC-vs-IMPLEMENTATION RULE',
+    'STOP AT THE SECOND FAILED HAND-CHECK',
+    'Standing activation',
+}
+
+
+def _b1860_classify(sk_text, tu_text, vt_text):
+    """Each `## ` section of SKILL.md -> how it is enforced.
+
+    mechanism               the section itself names a scan_ gate
+    test_pinned             a test asserts the section survives
+    declared_unmechanisable an explicit JUDGMENT-ONLY / PROSE-ONLY
+    checklist_scan          cites a CHECKLIST # that the gate script knows
+    UNGATED                 prose with no enforcement of any kind
+    """
+    import re as _re
+
+    body = sk_text.split("\n")
+    heads = [(i, m.group(1)) for i, l in enumerate(body)
+             if (m := _re.match(r"^## (.+)$", l))]
+    out = {}
+    for n, (i, h) in enumerate(heads):
+        j = heads[n + 1][0] if n + 1 < len(heads) else len(body)
+        sec = "\n".join(body[i:j])
+        key = h.split("(")[0].strip()
+        nums = set(_re.findall(r"#(\d{2,3})", sec))
+        if "mechanically enforced" in sec.lower():
+            c = "mechanism"
+        elif key and key in tu_text:
+            c = "test_pinned"
+        elif _re.search(r"JUDGMENT-ONLY|PROSE-ONLY", sec):
+            c = "declared_unmechanisable"
+        elif nums and any(f"#{x}" in vt_text for x in nums):
+            c = "checklist_scan"
+        else:
+            c = "UNGATED"
+        out[key] = c
+    return out
+
+
+def test_b1860_skill_additions_are_gated():
+    """Owner directive 2026-08-21: every ADDITION to the skill is gated.
+
+    A rule added to SKILL.md with no enforcement is prose that gets loaded
+    every turn and applied when convenient - which is #231's PROSE-IS-NOT-
+    SHIPPED finding, one level up. Measured when this shipped: 75 sections,
+    8 mechanism / 34 checklist-scan / 2 test-pinned / 5 declared / 26 ungated.
+
+    The 26 are legacy and RATCHETED. Any NEW section must arrive with one of:
+      - a named scan_ gate ("mechanically enforced" in the section), or
+      - a test asserting it survives, or
+      - a CHECKLIST # the gate script already enforces, or
+      - an explicit JUDGMENT-ONLY / PROSE-ONLY saying why none is possible.
+    """
+    import pathlib as _p
+
+    root = _p.Path(__file__).resolve().parents[2]
+    sk = (root / ".claude" / "skills" / "execution-discipline"
+          / "SKILL.md").read_text(encoding="utf-8")
+    tu = (root / "backtest" / "tests"
+          / "test_unit.py").read_text(encoding="utf-8")
+    vt = (root / "scripts"
+          / "verify_turn_compliance.py").read_text(encoding="utf-8")
+
+    cls = _b1860_classify(sk, tu, vt)
+    ungated = {k for k, v in cls.items() if v == "UNGATED"}
+
+    new = sorted(ungated - _B1860_UNGATED_LEGACY)
+    assert not new, (
+        "UNGATED ADDITION(S) TO SKILL.md: " + ", ".join(new) + ".\n"
+        "Owner directive 2026-08-21: every addition to the execution-"
+        "discipline skill must be gated. Give the section a scan_ gate, a "
+        "test that asserts it survives, a CHECKLIST # the gate script "
+        "enforces, or an explicit JUDGMENT-ONLY / PROSE-ONLY saying why none "
+        "is possible. A rule with no enforcement is prose loaded every turn "
+        "and applied when convenient - #231, one level up.")
+
+    # the legacy list may SHRINK, never GROW
+    assert ungated <= _B1860_UNGATED_LEGACY, (
+        "the legacy ungated set grew - see the assertion above")
+
+    # and the gate must be looking at something real
+    assert len(cls) >= 70, (
+        f"only {len(cls)} SKILL.md sections parsed; the header regex has "
+        "stopped matching and this gate is inert (L561: a silent gate and a "
+        "correct one are the same observation)")

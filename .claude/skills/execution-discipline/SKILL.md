@@ -741,6 +741,20 @@ gate had just named.**
 - **Compliance failure against `#45` and `#247`, not a new class.** A fifth rule
   restating four that were ignored is `#136` theater.
 
+## A TICKET NAMES ONE GUARD; THE EXPRESSION HAS TWO (B1859 - L567, CHECKLIST #226 ext)
+
+**MEASURED: a ticket reported one defect in `(?<!\d)[.;](?!\d)`. I fixed the
+guard it named and shipped a regex whose OTHER guard was also broken, and
+older** - it refused to split a sentence ending in a decimal, so a figure
+inherited a source from the next sentence. Deleting it fixed both.
+
+- **A ticket describes the symptom someone NOTICED.** A compound predicate has
+  as many failure modes as it has terms.
+- **Evaluate every term against a case table BEFORE editing, and put the table
+  in the commit.** Mine showed the first fix still failing 1 of 6.
+- **Not a compliance failure** - the `#226` fail arm caught it. The lesson is
+  about where to look, not about a skipped step.
+
 ## EVERY CHECK PASSED AND THE RUN DID NOTHING (B1854 - L566, CHECKLIST #223)
 
 **MEASURED: a three-arm probe returned 890.7 / 890.6 / 890.6 seconds and the

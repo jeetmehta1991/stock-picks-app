@@ -3701,6 +3701,21 @@ the gate went quiet on **the shape of its own recorded incident**.
 
 **EXTENSION (B1840 / L562) - THE PROOF IS ITSELF A PROBE, AND NOTHING WAS CHECKING IT.**
 
+**EXTENSION (B1859 / L567) - A TICKET NAMES ONE GUARD; THE EXPRESSION HAS TWO.**
+
+**MEASURED: `S6-B1847a` reported one defect in `(?<!\d)[.;](?!\d)` - the trailing guard split
+file extensions. I fixed that guard and shipped a regex whose OTHER guard was also broken, and
+older:** `(?<!\d)` refused to split a sentence ENDING in a decimal, so a figure inherited a source
+from the next sentence. **Deleting it fixed both** - `(?!\w)` had made it redundant.
+
+- **A ticket describes the symptom someone NOTICED.** A compound predicate has as many failure
+  modes as it has terms. **Evaluate EVERY term against a case table before editing, and put the
+  table in the commit** - the 6-case table here was computed BEFORE the edit, and it is what showed
+  the first fix still failing 1 of 6.
+- **Retroactive (`#136`):** B1812 (`keep_code` guarded one strip of two), B1798 (`_verdict_hits`
+  raw `in` at one site), B1858 (this). **L561 names the duplication half - one pattern in two
+  places. This is its inverse: two guards in one place, of which I examined one.**
+
 **MEASURED: the fail-arm proof for the control-character gate was defeated by the control-character
 bug it was testing.** The probe was written through a heredoc; the escape collapsed; the file landed
 with a real `0x08`; **the gate's OLD arm caught it and printed `1 failed`** - so the run looked like

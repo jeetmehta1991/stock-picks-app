@@ -11608,3 +11608,45 @@ detecting.** **ANCHORED (`#197`):** `CHECKLIST #223` and the Fable Gate-4 rule
 that a surprisingly clean result is suspect until you can explain why it is
 clean. **Compliance failure against `#223` in spirit** - the ledger entry was
 filed correctly and the check it stands for was never performed.
+
+
+### L567
+
+**A ticket names one guard; the expression has two**
+
+**B1858.** `S6-B1847a` reported a single defect: the clause splitter treated the
+dot in a file extension as a boundary, so `.csv .json .parquet .txt .md .py`
+could never match and **naming a FILE was the one citation the gate rejected.**
+The expression was `(?<!\d)[.;](?!\d)`. I changed the guard the ticket named -
+the trailing `(?!\d)` - and left the leading `(?<!\d)` untouched because
+nothing had complained about it.
+
+**It was also broken, and older.** `(?<!\d)` refuses to split after a digit, so a
+sentence ENDING in a decimal never separates from the next one: *"measured
+2.422. output_cfg1 is unrelated"* stayed ONE clause and **the figure inherited a
+source from the following sentence.** A leniency defect, live for as long as the
+guard existed, and invisible while the loud defect next to it held attention.
+
+**Deleting it fixed both.** `(?!\w)` already protects `1.2.3` and `2.422` -
+their dots are followed by digits - so the lookbehind was doing no protective
+work at all. **The 6-case table shows the old form failing 2, my first fix
+failing 1, and the final form passing all 6**, and I computed it BEFORE the edit
+rather than asserting it after.
+
+**This is not a compliance failure.** `#226`'s fail arm caught it, which is the
+system working. **The lesson is about where to look:** a ticket describes the
+symptom someone NOTICED, and a compound predicate has as many failure modes as
+it has guards. **Fixing the named one and shipping is how a bug report becomes a
+bug report's worth of fix.**
+
+**Retroactive (`#136`):** B1812 (`keep_code` guarded one strip of two, and the
+second consumed what the first preserved), B1798 (`_verdict_hits` raw `in` fixed
+at one site), B1858 (this). **Three compound expressions, three partial fixes** -
+and L561 already names the duplication half of this shape. **This is its
+inverse: not one pattern in two places, but two guards in one place, of which I
+examined one.**
+
+**The rule: when a ticket names a defect inside a compound expression, evaluate
+EVERY term in it against a case table before editing, and put the table in the
+commit.** **ANCHORED (`#197`):** extends `CHECKLIST #226` alongside its B1836 and
+B1840 extensions. Carried into `SKILL.md`.
