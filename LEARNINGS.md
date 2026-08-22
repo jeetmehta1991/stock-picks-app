@@ -13544,3 +13544,38 @@ defects, both mine; 13 excess citations; 1 new item from 11 entries.
 B1986 case, the per-file citation count-freeze in `test_b1971`, and
 `test_b1974_generated_artifact_is_not_older_than_its_generator` behind
 `#281`. Carried into `SKILL.md`.
+
+
+### L615
+
+**A detector over a corpus you also write inherits every liberty the corpus
+takes - and a freeze on the detector's own home taxes its maintenance**
+
+**B1993.** Two discoveries while extending the citation count-freeze:
+
+1. **The B1945 detector's whole-file backtick strip was `#275` by
+   construction.** The append-log carries dozens of odd-backtick lines -
+   apostrophes typed as backticks, fences, wrapped rows - so cumulative
+   parity flips span-pairing for everything downstream, and **my correctly
+   backticked row leaked its members out bare.** The detector had worked by
+   LUCK: every prior row happened to sit after even parity. **Strip per
+   LINE** - inline code never crosses lines, so each historical oddity is
+   contained to its own line. COMPLIANCE FAILURE against `#275`; the
+   regression test is `test_b1945` itself passing over the live queue, which
+   HOLDS odd-parity lines upstream of backticked members.
+
+2. **Freezing citation counts on the machinery files was a self-bump
+   treadmill.** The gate script and the pin file QUOTE the incidents they
+   enforce, so every batch touching the mechanism legitimately mentions the
+   number - the freeze tripped twice in two batches, **both times on its own
+   message** (L562's shape, recurring because the freeze's home is inside its
+   own measurement). Scope such freezes to the DOCS where anchors live;
+   L586's sibling rule - **a mechanism that taxes its own maintenance loop is
+   costly in the wrong place** - decided it.
+
+MEASURED: 30+ odd-backtick lines enumerated in the live queue; the freeze
+self-tripped 2 of 2 times on machinery files and 0 times on docs. **ANCHORED
+(`#197`):** compliance failures against `#275` (the strip) and the `#136`
+sibling via L586 (the treadmill); mechanisms: the per-line strip inside
+`test_b1945` and the doc-scoped `_BASELINE` with its reason in-line. Carried
+into `SKILL.md`.

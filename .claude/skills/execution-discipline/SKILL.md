@@ -758,6 +758,14 @@ real misses were CONTENT, both the reviewer's own:**
   per-instance citations** - ten of eleven were covered; the eleventh became
   `#281`.
 
+**And two second-order rules from applying the fixes (B1993 - L615):** a
+detector over a corpus you also write must not assume the corpus's formatting
+discipline - the append-log's odd backticks flipped a whole-file strip's
+parity, so scrub PER LINE (`#275`); and a count-freeze whose home is inside
+its own measurement taxes every edit of the mechanism - scope freezes to the
+DOCS where anchors live, never to the machinery quoting the incidents (L586's
+costly-in-the-wrong-place sibling).
+
 **Mechanically enforced** by the corrected B1986 case, the per-file citation
 count-freeze in `test_b1971_no_new_dangling_checklist_citation`, and `#281`'s
 `test_b1974_generated_artifact_is_not_older_than_its_generator`.
