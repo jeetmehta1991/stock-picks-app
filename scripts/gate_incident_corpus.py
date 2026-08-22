@@ -267,6 +267,47 @@ INCIDENTS: dict[str, tuple[str, bool, dict]] = {
 # not one per gate. These are additional (text, must_fire, state) cases checked
 # alongside the primary entry. Kept in a separate dict deliberately: INCIDENTS
 # stays a 3-tuple per gate, so the six existing consumers are untouched.
+# B1916 (S6-B1865a / S6-B1761b): gates that take POSITIONAL arguments.
+#
+# `INCIDENTS` assumes one calling convention - fn(entries, **state) - so a gate
+# with a different signature could not be expressed in it, and "cannot be
+# expressed here" was recorded in test_b1762's EXEMPT dict as **"no seam"**.
+#
+# MEASURED: `scan_postfix_recheck` and `scan_orphan_rule` are PURE FUNCTIONS OF
+# PLAIN ARGUMENTS - the most testable shape in the file. Calling them directly
+# fires them, and flipping one argument silences them. The obstacle was the
+# vocabulary, not the gates: **a corpus that cannot express a case makes it
+# invisible rather than absent.**
+#
+# name -> (args, should_fire, what the case is)
+PURE_INCIDENTS: dict[str, list[tuple[tuple, bool, str]]] = {
+    "scan_orphan_rule": [
+        (("\n### L900\n\nA generalised rule: always verify X before Y.\n",
+          "", "", ["L900"]), True,
+         "L464/#197 - an L-entry stating a RULE, referenced in neither "
+         "CHECKLIST nor the skill. A rule recorded only in LEARNINGS is a "
+         "story, not a gate."),
+        (("\n### L900\n\nA generalised rule: always verify X before Y.\n",
+          "see L900", "", ["L900"]), False,
+         "anchored in CHECKLIST - must go quiet, or the gate would punish "
+         "the very anchoring it asks for"),
+        (("\n### L901\n\nThis is a **record-of-fact** measurement only.\n",
+          "", "", ["L901"]), False,
+         "B1626 explicit opt-out - an entry that records a measurement rather "
+         "than a rule"),
+    ],
+    "scan_postfix_recheck": [
+        (("B1: fixed the thing", ["scripts/verify_turn_compliance.py"]), True,
+         "L467/#196 - a FIX commit touching no downstream artifact and no "
+         "queue entry. The roster relabel was reverted by the next "
+         "regeneration because the fix belonged in the GENERATOR."),
+        (("B1: fixed the thing",
+          ["scripts/verify_turn_compliance.py", "EXECUTION_QUEUE.md"]), False,
+         "the queue entry IS the disclosure the gate asks for - must go quiet"),
+    ],
+}
+
+
 EXTRA_INCIDENTS: dict[str, list[tuple[str, bool, dict]]] = {
     "scan_novelty_claim_without_search": [
         # the SAME finding made properly - the search is named in-clause

@@ -16411,8 +16411,6 @@ def test_b1762_every_scan_gate_has_a_corpus_entry():
         # no injectable text seam yet - cannot be exercised on fixed input (#241)
         "scan_discipline_not_loaded":
             "has a tool_text seam (B1765 widening); incident text not preserved - S6-B1761c",
-        "scan_orphan_rule": "no seam; S6-B1761b",
-        "scan_postfix_recheck": "no seam; S6-B1761b",
         "scan_skill_not_invoked":
             "has a tool_text seam (B1765 widening); incident text not preserved - S6-B1761c",
         "scan_skill_not_invoked_per_skill":
@@ -16434,21 +16432,33 @@ def test_b1762_every_scan_gate_has_a_corpus_entry():
         "scan_unverified_universe": "no seam; S6-B1761b",
         "scan_verdict_denominators": "no seam; S6-B1761b",
         # has a seam, but the words that caused it were never kept (#240)
-        "scan_findings_vs_tickets": "incident text not preserved; S6-B1761c",
-        "scan_missing_skill_confirmation": "incident text not preserved; S6-B1761c",
-        "scan_skill_block_incomplete": "incident text not preserved; S6-B1761c",
     }
     assert all(EXEMPT.values()), "every exemption needs a reason"
 
     gates = {n for n, f in vars(tg).items()
              if n.startswith("scan_") and callable(f) and hasattr(f, "__code__")
              and f.__module__ == tg.__name__}
-    uncovered = sorted(gates - set(corpus.INCIDENTS) - set(EXEMPT))
+    # B1916: coverage is EVERY corpus shape, not just INCIDENTS.
+    # `PURE_INCIDENTS` holds gates taking positional arguments - they could not
+    # be EXPRESSED in INCIDENTS' fn(entries, **state) convention, and that was
+    # recorded in EXEMPT as "no seam" when the gates are pure functions.
+    _covered = (set(corpus.INCIDENTS)
+                | set(getattr(corpus, "EXTRA_INCIDENTS", {}))
+                | set(getattr(corpus, "PURE_INCIDENTS", {})))
+    uncovered = sorted(gates - _covered - set(EXEMPT))
     assert not uncovered, (
         f"scan_ gate(s) with NO corpus entry and NO documented exemption "
         f"(#243): {uncovered}. A gate with no recorded incident is unproven - "
         "add its verbatim incident to gate_incident_corpus.py, or list it in "
         "EXEMPT with the reason and a ticket.")
+
+    # B1916: the exemption list may only SHRINK. An entry for a gate that IS
+    # covered is an exemption that outlived its reason - which is how "no seam"
+    # survived on two PURE FUNCTIONS until someone tried calling them.
+    redundant = sorted(set(EXEMPT) & _covered)
+    assert not redundant, (
+        f"EXEMPT still excuses gates that now HAVE a corpus incident: "
+        f"{redundant}. The list may only shrink - delete the entry.")
 
     stale = sorted(set(EXEMPT) - gates)
     assert not stale, f"EXEMPT names gates that no longer exist: {stale}"
@@ -20271,3 +20281,57 @@ def test_b1914_l585_l586_rules_and_their_disposition_survive():
         assert phrase in sk.lower(), (
             f"L586's operative test dropped: {phrase!r} - the rule without it "
             "is a slogan, not something a reader can act on")
+
+
+
+def test_b1916_pure_gates_have_incidents_and_are_no_longer_exempt():
+    """B1916: two gates excused as "no seam" are pure functions.
+
+    `test_b1762`'s EXEMPT dict said **"no seam; S6-B1761b"** for
+    `scan_orphan_rule` and `scan_postfix_recheck`. Both are PURE FUNCTIONS OF
+    PLAIN ARGUMENTS - the most testable shape in the file. The obstacle was that
+    `INCIDENTS` assumes `fn(entries, **state)`, so a positional gate could not
+    be EXPRESSED in the corpus, and that was recorded as untestable.
+
+    **A corpus that cannot express a case makes it invisible rather than
+    absent.**
+    """
+    import importlib.util as _iu
+    import pathlib as _p
+
+    root = _p.Path(__file__).resolve().parents[2]
+
+    def _load(stem):
+        sp = _iu.spec_from_file_location(stem, root / "scripts" / f"{stem}.py")
+        m = _iu.module_from_spec(sp)
+        sp.loader.exec_module(m)
+        return m
+
+    tg = _load("verify_turn_compliance")
+    corpus = _load("gate_incident_corpus")
+
+    assert corpus.PURE_INCIDENTS, "PURE_INCIDENTS is empty"
+    for name, cases in corpus.PURE_INCIDENTS.items():
+        fn = getattr(tg, name, None)
+        assert fn is not None, f"PURE_INCIDENTS names a missing gate: {name}"
+        fires = [c for c in cases if c[1]]
+        quiets = [c for c in cases if not c[1]]
+        assert fires, f"{name}: no must-FIRE case - an untriggered gate is unproven (#226)"
+        assert quiets, (
+            f"{name}: no must-QUIET case - a gate proven only to fire is half "
+            "tested, and the quiet branch is where a false positive lives")
+        for args, should_fire, why in cases:
+            got = bool(fn(*args))
+            assert got == should_fire, (
+                f"{name} {'should fire' if should_fire else 'should stay quiet'} "
+                f"on: {why}")
+
+    # The redundancy check lives in test_b1762, on the EXEMPT dict itself.
+    # B1916b: it was HERE as a grep of this file for the exemption string - and
+    # the assertion contained that string as a literal, so it fired on itself.
+    # Self-reference ~17. `code_only` does not help: it deliberately KEEPS
+    # string literals, which is correct and makes this a different sub-shape.
+    #
+    # **A file-grep assertion about the file's own content is structurally
+    # fragile. Assert on the DATA STRUCTURE** - EXEMPT is a dict, and
+    # test_b1762 now asserts no EXEMPT entry names a covered gate.
