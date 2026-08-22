@@ -5108,3 +5108,26 @@ seam"* while drivable, 2 excused as *"undocumented trigger"* while importable,
   true**, and the two look identical in review.
 - **Before writing "cannot be tested / no seam / not available", CALL IT.**
   `#222`'s rule, applied to an exclusion instead of a threshold.
+
+
+### #280 - A COUNT IS NOT A SET: NAME THE MEMBERS OR THE QUERY (B1965 / L601)
+
+A row recording **how many** without recording **which** cannot be completed -
+only re-measured. And `#271`/L600 says the re-measurement is a different set
+under the same name, with no original list to check against.
+
+**Every row stating a count of rows / tickets / gates / batches must carry
+either a member id or the query that selects them.** `46 of 60 OPEN tickets,
+per queue_state` is complete; `3 ROWS: their batch changed code` is not.
+
+- **An anonymous count is not WRONG, it is UNUSABLE.** 3 rows really did change
+  code without adding a definition. No amount of re-checking recovers which 3.
+- **Distinguish from a stale count** (`#256`): stale is wrong and re-deriving
+  fixes it; anonymous is right and re-deriving replaces it.
+- **Mechanically enforced** by `scan_count_without_members`, which reads rows
+  ADDED this turn.
+- **Retroactive (`#136`):** MEASURED over 62 OPEN rows - **13 state a count, 7
+  name no member**: `S6-B1589c` (7 gates), `S6-B1636a` (195 gates), `S6-B1788d`
+  (145 rows), `S6-B1788e` (3 rows), `S6-B1790d` (3 rows), `S6-B1794d` (38
+  rows), `S6-B1901a` (3 rows). **Prevention is one gate; the retro-fit is seven
+  fresh classifications.**

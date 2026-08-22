@@ -741,6 +741,25 @@ gate had just named.**
 - **Compliance failure against `#45` and `#247`, not a new class.** A fifth rule
   restating four that were ignored is `#136` theater.
 
+## A COUNT IS NOT A SET (B1965 - L601, CHECKLIST #280)
+
+**A row said *"3 ROWS: their batch changed code but added no durable
+definition"* and named none of the 3.** Its partition was complete - 148 = 7 +
+138 + 3 - and only the 7 promoted rows are identifiable, because promotion
+changed their state. **MEASURED: 13 of 62 OPEN rows state a count; 7 name no
+member.**
+
+- **The row reads as actionable and is not.** The only thing to do with it is
+  measure again, and L600 says that yields a different set under the same name.
+- **An anonymous count is not WRONG, it is UNUSABLE.** Re-checking never
+  recovers which 3.
+- **Distinguish from a STALE count:** stale is wrong and re-deriving fixes it;
+  anonymous is right and re-deriving replaces it.
+- **Name a member id, or the query.** *46 of 60, per `queue_state`* is complete.
+
+**Mechanically enforced** by `scan_count_without_members` on rows added this
+turn.
+
 ## TWO NUMBERS FOR ONE NAME - DIFF THE DEFINITIONS, NOT THE ARITHMETIC (B1963 - L600, CHECKLIST #271)
 
 **`#271` surfaced SIX times in one session and every instance had correct

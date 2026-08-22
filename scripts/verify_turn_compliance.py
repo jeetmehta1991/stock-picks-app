@@ -1849,6 +1849,62 @@ QUEUE_PLACEHOLDERS = ("reason-not-recorded", "tbd", "todo", "unknown",
                       "see above", "as above", "needs review", "n/a")
 
 
+# B1965 (#280 / L601): a COUNT of things is not a set of things.
+#
+# `S6-B1790d` says "3 ROWS: their batch changed code but added no durable
+# definition" and names none of the 3. The partition it came from is complete -
+# 148 = 7 + 138 + 3 - and only the 7 PROMOTED rows are identifiable, because
+# promotion changed their state. MEASURED: 13 of 62 OPEN rows state a count and
+# 7 name no member.
+#
+# Such a row cannot be COMPLETED, only RE-MEASURED, and L600 says the
+# re-measurement is a different set under the same name.
+COUNTED_THINGS = ("rows", "row", "tickets", "ticket", "gates", "gate",
+                  "batches", "batch", "entries", "sections", "claims")
+
+# what turns a count into a set: a member id, or the query that selects them
+MEMBER_EVIDENCE = ("s6-b", "queue_state", "grep", "count_text_readers",
+                   "audit_ticket_staleness", "select", "listed below",
+                   "enumerated", "namely", "specifically:")
+
+
+def scan_count_without_members(entries, *, rows=None) -> list[str]:
+    """A queue row stating a COUNT must name a member or the selecting query.
+
+    B1965 / `#280`. Fires on a row ADDED this turn that says "N rows" (or
+    tickets / gates / batches) and gives no way to recover WHICH ones.
+
+    **A count is not a set.** The row reads as actionable and is not: the only
+    thing anyone can do with it is measure again, and that produces a different
+    set under the same name (L600).
+    """
+    import re as _re
+
+    added = _queue_rows_added() if rows is None else list(rows)
+    if not added:
+        return []
+    pat = _re.compile(r"\b(\d{1,3})\s+(" + "|".join(COUNTED_THINGS) + r")\b",
+                      _re.I)
+    for row in added:
+        low = row.lower()
+        m = pat.search(low)
+        if not m:
+            continue
+        # the row's OWN id does not count as naming a member
+        own = _re.match(r"\|\s*\*\*(s6-[a-z0-9-]+)\*\*", low)
+        body = low.replace(own.group(1), " ") if own else low
+        if any(e in body for e in MEMBER_EVIDENCE):
+            continue
+        return ["COUNT WITHOUT MEMBERS (#280 / L601): a row added this turn "
+                f"says {m.group(0)!r} and names no member id and no query that "
+                "selects them. **A count is not a set** - `S6-B1790d` says "
+                "'3 ROWS' and none of its batch's four rows names the 3, so it "
+                "can only be RE-MEASURED, and L600 says that yields a "
+                "different set under the same name. Name a member, or the "
+                "query."]
+    return []
+
+
 def _queue_rows_added(diff_text=None) -> list[str]:
     """Ticket rows ADDED to EXECUTION_QUEUE.md this turn.
 
@@ -3662,6 +3718,7 @@ def main() -> int:
                 scan_queue_vocabulary, scan_queue_not_updated,
                 scan_unverified_count, scan_partial_distribution,
                 scan_partial_read, scan_row_vs_ticket,
+                scan_count_without_members,
                 scan_novelty_claim_without_search,
                 scan_synthetic_provenance,
                 scan_ticket_counts_missing,

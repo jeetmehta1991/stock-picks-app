@@ -12984,3 +12984,40 @@ the arithmetic - and prefer citing the set with the total** (`#260`).
 instance; mechanically enforced by `scan_row_vs_ticket` (`keep_code=True` since
 B1958) and `#260`'s `scan_partial_distribution`, which caught this one. Carried
 into `SKILL.md`.
+
+
+### L601
+
+**A count is not a set - a row that records how many can only be re-measured,
+never completed**
+
+**B1790/B1964.** `S6-B1790d` reads *"3 ROWS: their batch changed code but added
+no durable definition... would need per-row diff reading."* **None of B1790's
+four rows names the 3.**
+
+Its partition is complete and internally consistent - **148 verified = 7
+promoted + 138 doc-only + 3 code-but-no-artifact** - and **only the 7 are
+identifiable, because promotion changed their state.** The 138 and the 3 exist
+only as integers.
+
+**MEASURED across all 62 OPEN rows: 13 state a count of rows, tickets, gates or
+batches, and 7 of those name no member.**
+
+**The row reads as actionable and is not.** The only thing anyone can do with it
+is measure again - and **L600 says the re-measurement is a different set under
+the same name**, with no original list to check it against. So the work it
+directs cannot be finished; it can only be replaced by a similar-sounding
+finding.
+
+**What makes this different from an ordinary stale count:** a stale count is
+wrong and re-deriving fixes it. **An anonymous count is not wrong** - 3 rows
+really did change code without adding a definition - **it is simply unusable**,
+and no amount of re-checking recovers which 3.
+
+**MECHANISM:** `scan_count_without_members` - a queue row added this turn that
+states a count must name a member id or the query that selects them. Four
+branches proven: the incident fires, a row naming ids goes quiet, a row naming
+`queue_state` goes quiet, a row with no count goes quiet. **Prevention is one
+gate; the retro-fit is seven fresh classifications.**
+
+**ANCHORED (`#197`):** `CHECKLIST #280`. Carried into `SKILL.md`.

@@ -455,6 +455,25 @@ PURE_INCIDENTS: dict[str, list[tuple[tuple, bool, str]]] = {
 
 
 EXTRA_INCIDENTS: dict[str, list[tuple[str, bool, dict]]] = {
+    # B1965 - the incident VERBATIM: S6-B1790d states a count and names none
+    # of the 3. Its batch's partition was 148 = 7 + 138 + 3 and only the 7
+    # promoted rows are identifiable, because promotion changed their state.
+    "scan_count_without_members": [
+        ("| **S6-B1790d** | **OPEN** | P2 | **3 ROWS: their batch changed "
+         "code but added no durable definition** |", True,
+         {"rows": ["| **S6-B1790d** | **OPEN** | P2 | **3 ROWS: their batch "
+                   "changed code but added no durable definition** |"]}),
+        ("a row naming its members must go quiet", False,
+         {"rows": ["| **S6-B1964f** | **OPEN** | P1 | **7 OPEN tickets state "
+                   "a count: S6-B1589c, S6-B1636a, S6-B1788d** |"]}),
+        ("a row naming the SELECTING QUERY must go quiet - the set is "
+         "recoverable even without the ids", False,
+         {"rows": ["| **S6-B1963c** | **EXECUTED** | P0 | **46 of 60 OPEN "
+                   "tickets carry a count, per queue_state** |"]}),
+        ("a row stating no count at all", False,
+         {"rows": ["| **S6-B1900a** | **EXECUTED** | P0 | **the harvester "
+                   "ranks on median now** |"]}),
+    ],
     # B1944b: the must-QUIET case this gate never had - and the one that
     # would have caught B1943. `COUNT_PROOF` omitted `queue_state`, the
     # project's canonical counter, so the HONEST path was rejected while
