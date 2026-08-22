@@ -1,5 +1,31 @@
 #!/usr/bin/env python
-"""B1793: the hand-read verdicts, as LABELLED GROUND TRUTH for any classifier.
+"""B1793: the hand-read verdicts for the PLANNING-ROW slice (relabelled B1961).
+
+**SCOPE WARNING - READ THIS BEFORE SCORING ANYTHING AGAINST IT.**
+
+This was headed *"LABELLED GROUND TRUTH for any classifier"*. It is not. It is
+**20 CONTIGUOUS rows, S6-B1503a to S6-B1541a**, drawn from the sorted head of a
+population running to S6-B1960d.
+
+MEASURED against the live ledger (B1961):
+
+    class      population   this sample   delta
+    EXECUTED       89.8pct       20.0pct  -69.8pp
+    OPEN            5.3pct       55.0pct  +49.7pp
+    BLOCKED         3.2pct       25.0pct  +21.8pp
+
+**OPEN is over-represented TENFOLD; EXECUTED is 90pct of the population and a
+fifth of the sample.** A classifier scored here is tuned on a population that
+barely exists, and its score says nothing about how it behaves on the 90pct.
+
+**The rows themselves are sound** - each verdict was reached by reading the
+row's original text - and they remain useful as what they ARE: the planning-row
+slice, where a task-with-a-verb is common. **The header was the defect, not the
+data.**
+
+A representative corpus needs a RANDOM sample hand-read the same way; that is
+`S6-B1794c`, still open, and it is real work rather than a rename.
+
 
 `#268` says a classifier inherits its author's model of the data, and that the
 cure is to hand-read a sample first. **That instruction cannot be mechanically
