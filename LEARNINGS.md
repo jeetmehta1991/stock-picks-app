@@ -11804,3 +11804,43 @@ a CLOSED row cannot quietly become a closed ticket about a false claim.
 CLOSED rows are in it - and if they are not, say so out loud.** **ANCHORED
 (`#197`):** `CHECKLIST #264`-adjacent (unverifiable-row class) and carried into
 `SKILL.md`.
+
+
+### L572
+
+**A "stricter" rule is a DIFFERENT rule for the members it was not about**
+
+**B1872.** Three markers matched their own negation - `grade` inside `degrade`,
+`fixed` inside `unfixed`, `corrected` inside `uncorrected` - so a figure
+described as DEGRADED read as one naming a grading source. The fix was word
+boundaries, and I applied them to whole marker lists.
+
+**Word-bounding is strictly stricter for a PLAIN WORD. For `output_` it is not
+stricter, it is WRONG.** `_` is a word character, and `output_` exists to match
+`output_cfg1`, `output_w1_sw20_span21` and every cube directory - the trailing
+boundary refused the one thing the marker is for. `.csv` is the same shape, and
+so is `not a measurement`: **each is deliberately partial**, and anchoring a
+deliberately-partial marker is not a tightening, it is a different rule.
+
+**The tell I walked past.** The lists are heterogeneous by construction - plain
+words, prefixes, extensions and phrases sitting in one tuple - and I applied a
+single transformation across all of them. **A uniform change to a heterogeneous
+collection is several different changes**, and only one of them was the one I
+had evidence for.
+
+**Related but not the same as L567.** L567 is *a ticket names one guard; the
+expression has two* - about under-examining. **This is over-applying:** I
+examined the fix carefully and pushed it past the members it was derived from.
+The two failure modes are opposite and both produce a defect that reads as
+diligence.
+
+**MECHANISM.** `test_b1872_any_word_marker_shapes` pins all four shapes - plain
+word (anchored, negation rejected), prefix, extension, phrase - so the next
+change to that helper has to state which shapes it is for. **The must-CLEAR arm
+of `test_b1858` caught this one**, and it existed only because naming a file
+used to be the citation form the gate rejected.
+
+**The rule: before applying one transformation across a collection, ask whether
+its members are the same KIND of thing. If they are not, the change is several
+changes and each needs its own evidence.** **ANCHORED (`#197`):** `CHECKLIST
+#246` and `#226`; carried into `SKILL.md`.

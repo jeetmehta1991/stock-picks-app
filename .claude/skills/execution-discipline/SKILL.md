@@ -741,6 +741,22 @@ gate had just named.**
 - **Compliance failure against `#45` and `#247`, not a new class.** A fifth rule
   restating four that were ignored is `#136` theater.
 
+## A "STRICTER" RULE IS A DIFFERENT RULE FOR MEMBERS IT WAS NOT ABOUT (B1873 - L572, CHECKLIST #246)
+
+**MEASURED: fixing 3 markers that matched their own negation, I word-bounded
+whole marker lists. That is strictly stricter for a PLAIN WORD and WRONG for
+`output_`** - `_` is a word character, and the marker exists to match
+`output_cfg1`.
+
+- **The lists are heterogeneous by construction** - plain words, prefixes,
+  extensions and phrases in one tuple. **A uniform change to a heterogeneous
+  collection is several different changes**, and only one had evidence.
+- **Opposite of L567 and equally costly.** L567 is under-examining; this is
+  over-applying a fix past the members it was derived from. Both read as
+  diligence.
+- **Before transforming a collection, ask whether its members are the same KIND
+  of thing.** If not, each change needs its own evidence.
+
 ## AN AUDIT SCOPED TO OPEN ROWS CANNOT FIND A FALSE CLAIM IN A CLOSED ONE (B1871 - L571)
 
 **MEASURED: a row marked EXECUTED claims the migration tagged every inferred
