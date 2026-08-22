@@ -17070,6 +17070,12 @@ def test_b1783_response_gates_inherit_text_scoping():
     tree = ast.parse(src)
 
     # gates that read assistant text but have not yet been converted
+    #
+    # B1892: the last two are PRE-EXISTING, not new. The detector below used
+    # to look only for `_assistant_text(` / `_raw_assistant(`, so a gate
+    # reading `c.get("text")` INLINE was invisible to it - and this test's own
+    # docstring promises the set "cannot GROW". It could, in that shape,
+    # silently. Widening the detector is what surfaced them.
     KNOWN_UNCONVERTED = {
         "scan_compliance_is_content", "scan_false_skill_status",
         "scan_missing_skill_confirmation",
@@ -17078,6 +17084,7 @@ def test_b1783_response_gates_inherit_text_scoping():
         "scan_skill_block_incomplete", "scan_uncosted_probe",
         "scan_ungated_addition", "scan_uninspected_constant",
         "scan_unverified_count",
+        "scan_transcript_entries", "scan_verdict_denominators",
     }
 
     unconverted = set()
@@ -17085,7 +17092,11 @@ def test_b1783_response_gates_inherit_text_scoping():
         if not isinstance(fn, ast.FunctionDef) or not fn.name.startswith("scan_"):
             continue
         body = ast.get_source_segment(src, fn) or ""
-        reads = "_assistant_text(" in body or "_raw_assistant(" in body
+        # B1892: `c.get("text")` is the third way a gate reads assistant text,
+        # and the detector could not see it - so two gates sat outside a pin
+        # whose docstring says the set cannot grow.
+        reads = ("_assistant_text(" in body or "_raw_assistant(" in body
+                 or 'c.get("text")' in body)
         if not reads:
             continue
         if "_response_text(" not in body:
