@@ -1715,7 +1715,10 @@ def scan_uncosted_probe(entries, *, text=None, tool_text=None) -> list[str]:
     anything. I specified a probe as "split by exit_reason - offline, seconds"
     against a grid JSON that has no exit_reason column and never opened it.
     """
-    t = (_assistant_text(entries) if text is None else text.lower())
+    # B1942 (S6-B1783b): third gate routed through _response_text. Still ONE
+    # at a time - 9 sites remain and S6-B1783b calls converting them together
+    # the change that breaks several silently.
+    t = _response_text(entries, text)
     if not t:
         return []
     hits = [w for w in COST_WORDS if w in t]
