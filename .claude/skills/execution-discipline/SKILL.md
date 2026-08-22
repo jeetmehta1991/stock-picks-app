@@ -741,6 +741,24 @@ gate had just named.**
 - **Compliance failure against `#45` and `#247`, not a new class.** A fifth rule
   restating four that were ignored is `#136` theater.
 
+## A DOCSTRING IS DOCUMENTATION; THE MARKER LIST IS THE PROGRAM (B1931 - L590, CHECKLIST #222)
+
+**Two gates needed corpus incidents. I read their docstrings, guessed
+triggering text, neither fired - and I filed a ticket saying their trigger
+vocabulary was undocumented.** It was importable the whole time; one `print()`
+closed the question.
+
+- **The guesses were not near misses.** *"COMPLETE and handles every shape"* for
+  a gate matching *"cannot clear"*; third-person *"the gate failed"* for one
+  requiring first-person acknowledgment - **a distinction that gate's own
+  docstring states.**
+- **COMPLIANCE FAILURE against `#222`**, written about a THRESHOLD and
+  identical for a TRIGGER. L588's shape, two batches after L588.
+- **The cost was the TICKET, not the guess.** A failed probe became a filed
+  claim about the codebase that a later reader would take as established.
+- **A non-firing probe is evidence about the PROBE until the trigger has been
+  read.**
+
 ## AN OUTCOME DIFFERENCE IS NOT EVIDENCE ABOUT CONTENT (B1921 - L589, CHECKLIST #275)
 
 **`EXIT=127 CUBE_ROWS=ABSENT` on one run, `EXIT=0` with 8,581 and 10,921 rows on

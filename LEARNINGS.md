@@ -12553,3 +12553,42 @@ later, in the shape L588 predicted.**
 difference licenses nothing until the inputs are diffed.** **ANCHORED
 (`#197`):** compliance failure against `#275`; the attribution half is carried
 by the durability pin below. Carried into `SKILL.md`.
+
+
+### L590
+
+**A docstring is documentation; the marker list is the program - and I filed a
+ticket asserting a gap that one `print()` would have closed**
+
+**B1930/B1931.** Two gates needed corpus incidents. I read their docstrings,
+constructed what looked like triggering text, and neither fired. **I concluded
+their trigger vocabulary was undocumented and filed `S6-B1930b` saying so.**
+
+The vocabulary was importable the whole time:
+
+    scan_verdict_denominators   VERDICT_PATTERNS + DENOMINATOR_RE
+    scan_unrecorded_miss        MISS_PHRASES  (NOT MISS_MARKERS)
+
+**One `print(v.VERDICT_PATTERNS)` closed the question.** My guesses were not
+near misses - I wrote *"COMPLETE and handles every shape"* for a gate matching
+*"cannot clear"*, and a third-person *"the gate failed"* for one requiring
+first-person acknowledgment. **The second gate's own docstring states the
+distinction I violated**, so even the prose I did read, I read past.
+
+**COMPLIANCE FAILURE against `CHECKLIST #222`** - *before citing any threshold,
+gate or limit as the one in force, grep its call sites and read what is
+actually passed; a module-level constant tells you the default and nothing
+about the run.* `#222` was written about a THRESHOLD (`MIN_N`) and applies
+identically to a TRIGGER. **That is L588's shape again - a rule indexed under
+the situation that produced it - and L588 was written two batches ago.**
+
+**The cost was not the wrong guess; it was the TICKET.** A failed probe became
+a filed claim about the codebase - *"trigger vocabulary undocumented"* - which
+a later reader would have taken as established. **A ticket asserting an absence
+is a claim, and it needs the same search a novelty claim needs.**
+
+**The rule: when a probe fails to trigger something, read the definition before
+concluding anything about it.** A non-firing probe is evidence about the probe
+until the trigger has been read. **ANCHORED (`#197`):** compliance failure
+against `CHECKLIST #222`, scope corrected from thresholds to any executable
+definition. Carried into `SKILL.md`.
