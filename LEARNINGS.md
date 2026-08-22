@@ -11719,3 +11719,45 @@ knowing the arms themselves will be scanned. Give it a fixture-exclusion in the
 same batch, or it will block its own author first.** **ANCHORED (`#197`):**
 `CHECKLIST #246`-adjacent and carried into `SKILL.md`; the unresolved general
 half is `S6-B1817g`, BLOCKED on the owner.
+
+
+### L570
+
+**Authoring a rule feels like installing it**
+
+**B1865/B1868.** Twice in one session I broke a rule I had just written or just
+cited, in the same turn as citing it.
+
+**Instance 1 (`#244`).** I wrote a gate whose message said *"every launch"* and
+whose check reported only `bad[0]` - the any-vs-each defect. **The batch note
+CITED `S6-B1762f`**, the ticket that exists to record that *`require_each` had
+existed since B1751 and I did not use it*. I quoted the lesson about not using
+the primitive while not using the primitive.
+
+**Instance 2 (`#226`/L567).** I wrote L567 - *a ticket names one guard; the
+expression has two* - and **two batches later** stripped heredoc bodies from a
+gate so its fixtures would stop tripping it, shipped, and it fired again the
+next turn on `python -c`. **The sibling delivery form went unexamined by the
+author of the rule about unexamined siblings.**
+
+**What is actually going on.** Writing a lesson down is a fluent, satisfying
+act that produces the FEELING of having absorbed it, and that feeling is what
+gets carried into the next edit instead of the check. **The rule was not
+forgotten in either case - it was recalled, quoted, and not applied.** So
+"re-read the lesson" is not the remedy; the lesson was read.
+
+**What worked both times was the gate, not the memory.** `#244` caught the
+first; the Stop hook caught the second. **Neither was caught by me, in a
+session where I was writing the very rules in question.**
+
+**MECHANISM - say which half applies (`#253`).** **DETECTION is JUDGMENT-ONLY:**
+no scan can tell whether an author internalised a rule, and a gate that fires
+whenever a turn cites an L-number would fire on every compliant turn. **The
+DURABILITY half IS mechanisable** and is taken: `test_b1869_authored_then_
+violated_ledger` pins this entry and its two instances, so the count cannot
+quietly stop growing - the next instance has to be added rather than absorbed.
+
+**The rule: when a turn CITES a rule, treat the citation as a checklist item,
+not as evidence of compliance. Apply it to the edit in front of you before
+quoting it about the edit behind you.** **ANCHORED (`#197`):** `CHECKLIST #226`
+and `#244`; carried into `SKILL.md`.

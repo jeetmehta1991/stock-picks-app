@@ -19426,3 +19426,38 @@ def test_b1864_process_rule_gates():
             "scan_false_skill_status shipped that way and ran never; B1699 "
             "found 12 of 16 gates in scripts/ invoked by nothing. A gate that "
             "is never called is prose with a docstring.")
+
+
+def test_b1869_authored_then_violated_ledger():
+    """B1869 (L570): the authored-then-violated count must not quietly stop.
+
+    DETECTION is JUDGMENT-ONLY - no scan can tell whether an author
+    internalised a rule, and a gate firing whenever a turn cites an L-number
+    would fire on every compliant turn. The DURABILITY half is this: the
+    entry and its instances stay findable, so the next instance has to be
+    ADDED rather than absorbed.
+    """
+    import pathlib as _p
+
+    root = _p.Path(__file__).resolve().parents[2]
+    lea = (root / "LEARNINGS.md").read_text(encoding="utf-8")
+    assert "### L570" in lea, "L570 was removed from LEARNINGS.md"
+
+    i = lea.index("### L570")
+    entry = lea[i:i + 4000]
+    for instance in ("S6-B1762f", "L567"):
+        assert instance in entry, (
+            f"L570 no longer names {instance}. The entry's whole value is the "
+            "COUNT of times a rule was cited and not applied - an instance "
+            "dropped from it is the pattern going quiet, which is the failure "
+            "the entry describes.")
+    assert "JUDGMENT-ONLY" in entry, (
+        "L570 must keep saying WHICH half is unmechanisable (#253) - a bare "
+        "claim of judgment answers detection and leaves durability unasked")
+
+    skill = (root / ".claude" / "skills" / "execution-discipline"
+             / "SKILL.md").read_text(encoding="utf-8")
+    assert "AUTHORING A RULE FEELS LIKE INSTALLING IT" in skill, (
+        "the L570 section left the skill - a lesson about rules not being "
+        "applied, removed from the file loaded every turn, is the joke "
+        "writing itself")

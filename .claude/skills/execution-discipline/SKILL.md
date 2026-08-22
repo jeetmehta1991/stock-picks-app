@@ -741,6 +741,24 @@ gate had just named.**
 - **Compliance failure against `#45` and `#247`, not a new class.** A fifth rule
   restating four that were ignored is `#136` theater.
 
+## AUTHORING A RULE FEELS LIKE INSTALLING IT (B1869 - L570, CHECKLIST #226/#244)
+
+**MEASURED: twice in one session I broke a rule I had just written or cited.**
+I cited `S6-B1762f` - *require_each existed and I did not use it* - in the batch
+where I did not use `require_each`. I wrote L567 - *a ticket names one guard;
+the expression has two* - and two batches later fixed one delivery form and
+left its sibling.
+
+- **The rule was not forgotten. It was recalled, quoted, and not applied**, so
+  "re-read the lesson" is not the remedy.
+- **The gate caught both; I caught neither** - in a session where I was writing
+  the rules in question.
+- **When a turn CITES a rule, treat the citation as a checklist item, not as
+  evidence of compliance.** Apply it to the edit in front of you before quoting
+  it about the edit behind you.
+- **JUDGMENT-ONLY for detection** (no scan can read internalisation); the
+  durability half is pinned by `test_b1869_authored_then_violated_ledger`.
+
 ## A TEXT-SCANNING GATE TRIPS ON ITS OWN PROOF (B1867 - L569, CHECKLIST #246 ext)
 
 **MEASURED: `scan_bulk_process_kill` blocked the very turn that shipped it**, on
