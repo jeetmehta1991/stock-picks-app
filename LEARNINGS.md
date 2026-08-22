@@ -12632,3 +12632,47 @@ instances of it**, which is what makes the count worth stating.
 **ANCHORED (`#197`):** compliance failure against `#222`; `CHECKLIST #279`
 amended with the wrong-when-written half rather than adding a redundant item.
 Carried into `SKILL.md`.
+
+
+### L592
+
+**A guard reaches the sites you route through it, and one edit wrote two files**
+
+**B1936.** The batch wrote `test_unit.py` through `safe_write_py` - which
+parses the candidate before writing, so a syntax error leaves the file
+untouched - and wrote `gate_incident_corpus.py` with a plain `write_text`.
+**The corpus got a SyntaxError, stopped importing, and 8 tests failed at
+collection.**
+
+The guard was one call away, in the same script, already imported, **used on
+the other file three lines earlier.**
+
+**This is `#226`'s ONE PATTERN, ONE DEFINITION clause**, whose own retroactive
+line reads *"B1812 (`keep_code`, one of two strips), B1798, B1832 - three
+divergences, three half-fixes."* **COMPLIANCE FAILURE against `#226`.** Mine
+adds a fourth shape: not a duplicated pattern diverging, but **a GUARD applied
+at fewer sites than the action it guards.**
+
+**The session has four instances of the wider class, all found by the
+enforcement layer firing on legitimate work:**
+
+    B1904   word-bounded BOTH sides on evidence for ONE
+    B1905   B1820 fixed the JSON artifact, not the table rendering it
+    B1925   B1880's heredoc strip in one launch detector, not its sibling
+    B1936   safe_write_py on one file of the two that edit wrote
+
+**What they share is not carelessness - each fix was correct where it landed.**
+The failure is that **the unit of the change was smaller than the unit of the
+defect**, and nothing in the act of making the fix asks how many sites it
+governs.
+
+**The detection signal is cheap and I have used it twice since B1925: after
+writing a fix, grep for its own distinguishing token and count the hits.**
+B1925's pin asserts the heredoc-strip expression appears **at least twice**;
+that assertion is the whole remedy, and it exists because the sibling was found
+by accident rather than by looking.
+
+**The rule: when a fix, guard or helper is applied, count the sites it governs
+BEFORE the batch ends - and pin the count.** **ANCHORED (`#197`):** compliance
+failure against `CHECKLIST #226`'s ONE PATTERN clause, amended in place with
+the guard-coverage shape. Carried into `SKILL.md`.

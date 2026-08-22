@@ -741,6 +741,23 @@ gate had just named.**
 - **Compliance failure against `#45` and `#247`, not a new class.** A fifth rule
   restating four that were ignored is `#136` theater.
 
+## THE UNIT OF THE CHANGE WAS SMALLER THAN THE UNIT OF THE DEFECT (B1936 - L592, CHECKLIST #226)
+
+**One edit wrote two files. `safe_write_py` - which parses before writing -
+guarded one of them.** The other got a SyntaxError, stopped importing, and 8
+tests failed at collection. The guard was already imported, used three lines
+earlier.
+
+- **Four instances this session, every one surfaced by a gate firing on
+  legitimate work:** B1904 word-bounded both sides on evidence for one; B1905
+  B1820 fixed the JSON and not the table rendering it; B1925 B1880's heredoc
+  strip in one launch detector and not its sibling; B1936 the guard on one file
+  of two.
+- **Each fix was CORRECT where it landed.** Nothing in the act of fixing asks
+  how many sites the fix governs.
+- **Count the sites and PIN the count.** B1925's pin asserts its strip
+  expression appears at least TWICE - that assertion is the remedy.
+
 ## AN EXEMPTION'S REASON IS A CLAIM ABOUT CODE (B1934 - L591, CHECKLIST #279)
 
 **A gate-exemption register went 15 -> 6 in one session and NOT ONE removal was

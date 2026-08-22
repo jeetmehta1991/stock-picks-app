@@ -3699,6 +3699,24 @@ the gate went quiet on **the shape of its own recorded incident**.
 - **Retroactive (`#136`):** B1812 (`keep_code`, one of two strips), B1798 (`_verdict_hits` raw `in`
   at one site), B1832 (`_DECIMAL` at two sites). **Three divergences, three half-fixes.**
 
+**AMENDED B1937 (L592) - IT IS NOT ONLY DUPLICATED PATTERNS. A GUARD COUNTS TOO.**
+`safe_write_py` parses a candidate before writing, so a syntax error leaves the
+file untouched. B1936 routed `test_unit.py` through it and wrote
+`gate_incident_corpus.py` with a plain `write_text` **three lines earlier in the
+same script** - SyntaxError, module stopped importing, **8 tests failed at
+collection.**
+
+- **Four instances this session, every one found by the enforcement layer firing
+  on legitimate work:** B1904 (word-bounded both sides on evidence for one),
+  B1905 (B1820 fixed the JSON artifact, not the table rendering it), B1925
+  (B1880's heredoc strip in one launch detector, not its sibling), B1936
+  (`safe_write_py` on one file of two).
+- **Each fix was CORRECT where it landed.** The failure is that **the unit of
+  the change was smaller than the unit of the defect**, and nothing in making a
+  fix asks how many sites it governs.
+- **Count the sites and PIN the count.** B1925's pin asserts the strip
+  expression appears **at least twice** - that assertion is the whole remedy.
+
 **EXTENSION (B1840 / L562) - THE PROOF IS ITSELF A PROBE, AND NOTHING WAS CHECKING IT.**
 
 **EXTENSION (B1862 / L568) - PROVE-IT-CAN-FAIL APPLIES TO A SEARCH, NOT JUST A GATE.**
