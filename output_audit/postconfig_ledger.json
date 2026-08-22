@@ -2178,7 +2178,7 @@
   },
   "3_outlier_discrepancy_sweep": {
    "status": "DONE",
-   "evidence": "B2018: cube entries == grid max fires (172==172). Verdicts of 300 rows: {166 NO_EXIT_SELECTABLE / 79 BELOW_POWER_FLOOR / 55 ZERO_FIRES} - ZERO combinations carried; NO_EXIT_SELECTABLE is a SAMPLE-SIZE verdict, so SP50@1y lacks within-arm tightening power (S6-B1817e's universe concern, measured; cross-arm P1 comparison is unaffected - same universe every arm). verify_grid_bands --anchor tail_n=20: PASS, every swept level moves some group. measure_degraded_exits: 3 collapsed pairs (atr_trail_mae_conditional==atr_trail_1x, reverse_signal==atr_trail_mae_conditional, time_stop_20d==regime_flip) - effective exits 23 of 26, and the regime_flip collapse is on a POST-B1682 cube -> S6-B2018a P0."
+   "evidence": "B2018: cube entries == grid max fires (172==172). Verdicts of 300 rows: {166 NO_EXIT_SELECTABLE / 79 BELOW_POWER_FLOOR / 55 ZERO_FIRES} - ZERO combinations carried; NO_EXIT_SELECTABLE is a SAMPLE-SIZE verdict, so SP50@1y lacks within-arm tightening power (S6-B1817e's universe concern, measured; cross-arm P1 comparison is unaffected - same universe every arm). verify_grid_bands --anchor tail_n=20: PASS, every swept level moves some group. measure_degraded_exits: 3 collapsed pairs (atr_trail_mae_conditional==atr_trail_1x, reverse_signal==atr_trail_mae_conditional, time_stop_20d==regime_flip) - effective exits 23 of 26, and the regime_flip collapse is on a POST-B1682 cube -> S6-B2018a P0. CORRECTED B2019 (visible retraction, Truth Standard 6): the earlier claim that 0-carried reflects 'SP50@1y within-arm tightening power' was a PARTIAL misattribution. MEASURED across all 4 arms: every row has holdout_n=0 because the owner-ruled window ENDS AT the holdout boundary (HO 2025-05-05..2026-05-05 per roster_core.py:17), and the rankable filter at tighten_breaker_block.py:354 still requires the HOLDOUT sharpe to be non-None - so 0 rows are rankable BY CONSTRUCTION, independent of universe power. The NO_EXIT_SELECTABLE dominance IS in-sample sample-size; the 0-carried headline is the filter clause. S6-B2018c (BLOCKED, owner ruling)."
   },
   "4_three_leg_spot_check": {
    "status": "DONE",
@@ -2202,7 +2202,7 @@
   },
   "8_verdict_with_denominators": {
    "status": "DONE",
-   "evidence": "B2018 verdict: sw10 produced 172 fires on 50 tickers / 1y (precheck floor 10: passed at 49 baseline fires / 21 tickers). Within-arm tightening NOT GRADABLE at SP50@1y (0 of 300 combos carried). Effective exit family 23 of 26 (3 collapses, one on a post-B1682 cube). Cross-arm P1 verdict DEFERRED until all 4 arms complete."
+   "evidence": "B2018 verdict: sw10 produced 172 fires on 50 tickers / 1y (precheck floor 10: passed at 49 baseline fires / 21 tickers). Within-arm tightening NOT GRADABLE at SP50@1y (0 of 300 combos carried). Effective exit family 23 of 26 (3 collapses, one on a post-B1682 cube). Cross-arm P1 verdict DEFERRED until all 4 arms complete. CORRECTED B2019 (visible retraction, Truth Standard 6): the earlier claim that 0-carried reflects 'SP50@1y within-arm tightening power' was a PARTIAL misattribution. MEASURED across all 4 arms: every row has holdout_n=0 because the owner-ruled window ENDS AT the holdout boundary (HO 2025-05-05..2026-05-05 per roster_core.py:17), and the rankable filter at tighten_breaker_block.py:354 still requires the HOLDOUT sharpe to be non-None - so 0 rows are rankable BY CONSTRUCTION, independent of universe power. The NO_EXIT_SELECTABLE dominance IS in-sample sample-size; the 0-carried headline is the filter clause. S6-B2018c (BLOCKED, owner ruling)."
   }
  },
  "output_b2016_e1_sw20": {
@@ -2216,7 +2216,7 @@
   },
   "3_outlier_discrepancy_sweep": {
    "status": "DONE",
-   "evidence": "B2018: cube entries == grid max fires (105==105). Verdicts of 300 rows: {208 NO_EXIT_SELECTABLE / 45 BELOW_POWER_FLOOR / 47 ZERO_FIRES} - ZERO combinations carried; NO_EXIT_SELECTABLE is a SAMPLE-SIZE verdict, so SP50@1y lacks within-arm tightening power (S6-B1817e's universe concern, measured; cross-arm P1 comparison is unaffected - same universe every arm). verify_grid_bands --anchor tail_n=20: PASS, every swept level moves some group. measure_degraded_exits: 3 collapsed pairs (atr_trail_mae_conditional==atr_trail_1x, reverse_signal==atr_trail_mae_conditional, time_stop_20d==regime_flip) - effective exits 23 of 26, and the regime_flip collapse is on a POST-B1682 cube -> S6-B2018a P0."
+   "evidence": "B2018: cube entries == grid max fires (105==105). Verdicts of 300 rows: {208 NO_EXIT_SELECTABLE / 45 BELOW_POWER_FLOOR / 47 ZERO_FIRES} - ZERO combinations carried; NO_EXIT_SELECTABLE is a SAMPLE-SIZE verdict, so SP50@1y lacks within-arm tightening power (S6-B1817e's universe concern, measured; cross-arm P1 comparison is unaffected - same universe every arm). verify_grid_bands --anchor tail_n=20: PASS, every swept level moves some group. measure_degraded_exits: 3 collapsed pairs (atr_trail_mae_conditional==atr_trail_1x, reverse_signal==atr_trail_mae_conditional, time_stop_20d==regime_flip) - effective exits 23 of 26, and the regime_flip collapse is on a POST-B1682 cube -> S6-B2018a P0. CORRECTED B2019 (visible retraction, Truth Standard 6): the earlier claim that 0-carried reflects 'SP50@1y within-arm tightening power' was a PARTIAL misattribution. MEASURED across all 4 arms: every row has holdout_n=0 because the owner-ruled window ENDS AT the holdout boundary (HO 2025-05-05..2026-05-05 per roster_core.py:17), and the rankable filter at tighten_breaker_block.py:354 still requires the HOLDOUT sharpe to be non-None - so 0 rows are rankable BY CONSTRUCTION, independent of universe power. The NO_EXIT_SELECTABLE dominance IS in-sample sample-size; the 0-carried headline is the filter clause. S6-B2018c (BLOCKED, owner ruling)."
   },
   "4_three_leg_spot_check": {
    "status": "DONE",
@@ -2240,7 +2240,83 @@
   },
   "8_verdict_with_denominators": {
    "status": "DONE",
-   "evidence": "B2018 verdict: sw20 produced 105 fires on 50 tickers / 1y (precheck floor 10: passed at 49 baseline fires / 21 tickers). Within-arm tightening NOT GRADABLE at SP50@1y (0 of 300 combos carried). Effective exit family 23 of 26 (3 collapses, one on a post-B1682 cube). Cross-arm P1 verdict DEFERRED until all 4 arms complete."
+   "evidence": "B2018 verdict: sw20 produced 105 fires on 50 tickers / 1y (precheck floor 10: passed at 49 baseline fires / 21 tickers). Within-arm tightening NOT GRADABLE at SP50@1y (0 of 300 combos carried). Effective exit family 23 of 26 (3 collapses, one on a post-B1682 cube). Cross-arm P1 verdict DEFERRED until all 4 arms complete. CORRECTED B2019 (visible retraction, Truth Standard 6): the earlier claim that 0-carried reflects 'SP50@1y within-arm tightening power' was a PARTIAL misattribution. MEASURED across all 4 arms: every row has holdout_n=0 because the owner-ruled window ENDS AT the holdout boundary (HO 2025-05-05..2026-05-05 per roster_core.py:17), and the rankable filter at tighten_breaker_block.py:354 still requires the HOLDOUT sharpe to be non-None - so 0 rows are rankable BY CONSTRUCTION, independent of universe power. The NO_EXIT_SELECTABLE dominance IS in-sample sample-size; the 0-carried headline is the filter clause. S6-B2018c (BLOCKED, owner ruling)."
+  }
+ },
+ "output_b2016_e1_sw30": {
+  "1_cube_sanity": {
+   "status": "DONE",
+   "evidence": "B2019: 1 strategy, exits/entry [26], 83 entries, cfg stamp 30/200 verified in-cube. MSFT+TSLA present; NVDA ABSENT-BY-ZERO-FIRES (same disclosure as sw20: tickers-file verified 50/50 vs R5 baseline at B2017; sw10 from the same file has NVDA entries)."
+  },
+  "2_grade_with_config_params": {
+   "status": "DONE",
+   "evidence": "B2019: tighten_breaker_block.py --swing-length 30 --min-n 10 -> output_audit/b2018_e1_sw30_grid.json. Union diagnosis loss 0pct (83/83)."
+  },
+  "3_outlier_discrepancy_sweep": {
+   "status": "DONE",
+   "evidence": "B2019: cube entries == grid max fires (83==83). Verdicts of 300: {210 NO_EXIT_SELECTABLE / 30 BELOW_POWER_FLOOR / 60 ZERO_FIRES}. verify_grid_bands exit 0 with DISCLOSED INERT level: tail_n 5->10 moved 2/50 groups (L473 lens; at 83 fires the upper tail bands saturate). measure_degraded_exits: same 3 collapsed pairs as sw10/sw20 - effective exits 23 of 26; regime_flip cap-branch on 83/83 rows (S6-B2018a P0, now measured on ALL FOUR arms). CRITICAL STRUCTURAL FACT (S6-B2018c): holdout_n=0 on every row - the ruled window ends AT the holdout boundary, and the rankable filter (tighten_breaker_block.py:354) requires holdout sharpe non-None, so 0 of 300 combinations are rankable BY CONSTRUCTION in every arm."
+  },
+  "4_three_leg_spot_check": {
+   "status": "DONE",
+   "evidence": "B2019: coverage gate exit 0 (prior run this batch); spot_check_trades.py --n 50 --swing-length 30 --ema-span 200: 50 agree / 0 DISAGREE / 0 skipped, 0 execution failures. Artifact output_audit/b2018_sw30_spotcheck_n50.json."
+  },
+  "5_adversarial_lens_review": {
+   "status": "DONE",
+   "evidence": "B2019 all lenses: (spec-vs-implementation, B1608 class) the grader's rankable clause demands a holdout measurement the owner-ruled search window can never produce - B1718/D4 moved the RANKING KEY to IS stats but left the ELIGIBILITY filter on holdout sharpe; filed S6-B2018c BLOCKED on owner ruling. (silent degradation) regime_flip cap-branch 100pct - extends S6-B2018a. (config blindness) NONE: cfg stamp 30/200 correct. (provenance) NVDA absence explained by measurement. Baseline-config IS stats (production shape, cm=F/no bands/tail=20): is_sharpe 0.441, is_ci_lo -0.216, exit breakeven_plus_trail."
+  },
+  "6_post_fix_recheck": {
+   "status": "N/A",
+   "evidence": "B2019: no fix shipped against this cube's pipeline this batch (the B2018 grader loader fix predates these grades and ran green through them)."
+  },
+  "6b_equivalence_class_check": {
+   "status": "N/A",
+   "evidence": "B2019: no ranked top-N exists - 0 combinations rankable (holdout_n=0 by construction, S6-B2018c). Re-arms when any grid carries candidates."
+  },
+  "7_implement_in_engine": {
+   "status": "N/A",
+   "evidence": "B2019: nothing admitted; span-50 arm and any Step-1 re-rank are BLOCKED on owner rulings (S6-B1505b / S6-B2018c)."
+  },
+  "8_verdict_with_denominators": {
+   "status": "DONE",
+   "evidence": "B2019 verdict: sw30 produced 83 fires on 50 tickers / 1y. 0 of 300 combinations rankable - BY CONSTRUCTION (holdout_n=0 under the ruled window + the grader's holdout-requiring eligibility clause), NOT a universe-power verdict. Cross-arm baseline comparison (all 4 arms, IS keys per D4): sw10 is_ci_lo -0.081 / is_sharpe 0.691 / 172 fires ranks FIRST of 4; sw30 is_ci_lo -0.216 / is_sharpe 0.441 / 83 fires. All 4 arms' IS ci_lo < 0 - no arm demonstrates a solid positive at the baseline config."
+  }
+ },
+ "output_b2016_e1_sw50": {
+  "1_cube_sanity": {
+   "status": "DONE",
+   "evidence": "B2019: 1 strategy, exits/entry [26], 53 entries, cfg stamp 50/200 verified in-cube. MSFT+TSLA present; NVDA ABSENT-BY-ZERO-FIRES (same disclosure as sw20: tickers-file verified 50/50 vs R5 baseline at B2017; sw10 from the same file has NVDA entries)."
+  },
+  "2_grade_with_config_params": {
+   "status": "DONE",
+   "evidence": "B2019: tighten_breaker_block.py --swing-length 50 --min-n 10 -> output_audit/b2018_e1_sw50_grid.json. Union diagnosis loss 0pct (53/53)."
+  },
+  "3_outlier_discrepancy_sweep": {
+   "status": "DONE",
+   "evidence": "B2019: cube entries == grid max fires (53==53). Verdicts of 300: {179 NO_EXIT_SELECTABLE / 25 BELOW_POWER_FLOOR / 96 ZERO_FIRES}. verify_grid_bands exit 0 with DISCLOSED INERT level: tail_n 5->10 moved 0/50 groups (L473 lens; at 53 fires the upper tail bands saturate). measure_degraded_exits: same 3 collapsed pairs as sw10/sw20 - effective exits 23 of 26; regime_flip cap-branch on 53/53 rows (S6-B2018a P0, now measured on ALL FOUR arms). CRITICAL STRUCTURAL FACT (S6-B2018c): holdout_n=0 on every row - the ruled window ends AT the holdout boundary, and the rankable filter (tighten_breaker_block.py:354) requires holdout sharpe non-None, so 0 of 300 combinations are rankable BY CONSTRUCTION in every arm."
+  },
+  "4_three_leg_spot_check": {
+   "status": "DONE",
+   "evidence": "B2019: coverage gate exit 0 (prior run this batch); spot_check_trades.py --n 50 --swing-length 50 --ema-span 200: 50 agree / 0 DISAGREE / 0 skipped, 0 execution failures. Artifact output_audit/b2018_sw50_spotcheck_n50.json."
+  },
+  "5_adversarial_lens_review": {
+   "status": "DONE",
+   "evidence": "B2019 all lenses: (spec-vs-implementation, B1608 class) the grader's rankable clause demands a holdout measurement the owner-ruled search window can never produce - B1718/D4 moved the RANKING KEY to IS stats but left the ELIGIBILITY filter on holdout sharpe; filed S6-B2018c BLOCKED on owner ruling. (silent degradation) regime_flip cap-branch 100pct - extends S6-B2018a. (config blindness) NONE: cfg stamp 50/200 correct. (provenance) NVDA absence explained by measurement. Baseline-config IS stats (production shape, cm=F/no bands/tail=20): is_sharpe 0.53, is_ci_lo -0.803, exit chandelier_3x."
+  },
+  "6_post_fix_recheck": {
+   "status": "N/A",
+   "evidence": "B2019: no fix shipped against this cube's pipeline this batch (the B2018 grader loader fix predates these grades and ran green through them)."
+  },
+  "6b_equivalence_class_check": {
+   "status": "N/A",
+   "evidence": "B2019: no ranked top-N exists - 0 combinations rankable (holdout_n=0 by construction, S6-B2018c). Re-arms when any grid carries candidates."
+  },
+  "7_implement_in_engine": {
+   "status": "N/A",
+   "evidence": "B2019: nothing admitted; span-50 arm and any Step-1 re-rank are BLOCKED on owner rulings (S6-B1505b / S6-B2018c)."
+  },
+  "8_verdict_with_denominators": {
+   "status": "DONE",
+   "evidence": "B2019 verdict: sw50 produced 53 fires on 50 tickers / 1y. 0 of 300 combinations rankable - BY CONSTRUCTION (holdout_n=0 under the ruled window + the grader's holdout-requiring eligibility clause), NOT a universe-power verdict. Cross-arm baseline comparison (all 4 arms, IS keys per D4): sw10 is_ci_lo -0.081 / is_sharpe 0.691 / 172 fires ranks FIRST of 4; sw50 is_ci_lo -0.803 / is_sharpe 0.53 / 53 fires. All 4 arms' IS ci_lo < 0 - no arm demonstrates a solid positive at the baseline config."
   }
  }
 }
