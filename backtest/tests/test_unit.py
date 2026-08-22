@@ -15505,7 +15505,11 @@ def test_b1624_unevaluable_gate_is_not_a_pass():
     """
     import pandas as _pd
     import scripts.roster_core as rc
-    pnl = _pd.Series([0.5] * 40)
+    # B2012: one loss in the fixture. The original all-winners series now
+    # ALSO makes the PF gate None (D5's zero-loss three-state), which is not
+    # this test's subject - it isolates the full_period gate, so the sample
+    # must keep every OTHER gate evaluable.
+    pnl = _pd.Series([0.5] * 39 + [-0.2])
     hold = _pd.Series([10] * 40)
 
     unknown = rc.evaluate(pnl, hold, min_n=10, full_period_n=None)
@@ -22867,3 +22871,46 @@ def test_b2010_step1_ranks_on_is_ci_lo():
     assert '(-_rk(r.get("is_ci_lo")),' in code, (
         "the ranker must sort on the ci_lo primary - re-spelling it away "
         "reopens L455")
+
+
+
+def test_b2012_zero_loss_pf_gate_is_not_evaluable():
+    """B2012 (D5 / S6-B1825a, owner-approved): inf must not pass a gate.
+
+    An all-winners cell had pf = inf and `inf >= bar` is True - a zero-loss
+    sample says nothing about the loss side. The gate now returns None (the
+    B1624 three-state), so the cell cannot claim all_live_gates and the
+    evaluable denominator shrinks honestly.
+    """
+    import pathlib as _p
+    import sys as _sys
+
+    import pandas as _pd
+
+    root = _p.Path(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    import roster_core as rc
+
+    # SYNTHETIC-STRUCTURE fixtures: only the STRUCTURE (zero losses vs one
+    # loss) is the evidence; no value here is quoted as a measurement.
+    win = _pd.Series([2.0] * 40)
+    hold = _pd.Series([5] * 40)
+    r = rc.evaluate(win, hold, min_n=30)
+    assert r is not None
+    assert r["gates"]["profit_factor"] is None, (
+        "an all-winners cell's PF gate must be NOT EVALUABLE - inf passed "
+        "it before, at any bar")
+    assert r["all_live_gates"] is False, (
+        "a cell with an unevaluable gate is not 'all gates passed'")
+    assert r["profit_factor"] == float("inf"), (
+        "the VALUE stays inf for reporting - only the verdict changes")
+
+    one_loss = _pd.Series([2.0] * 39 + [-0.5])
+    r2 = rc.evaluate(one_loss, hold, min_n=30)
+    assert isinstance(r2["gates"]["profit_factor"], bool), (
+        "one loss makes the gate evaluable again - the fix must not widen "
+        "past the zero-loss case")
+    assert r2["gates"]["profit_factor"] is True, (
+        "39 wins vs one -0.5 loss is far above any bar - the evaluable "
+        "verdict must still be a pass here")

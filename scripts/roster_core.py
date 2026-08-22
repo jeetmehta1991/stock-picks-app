@@ -233,7 +233,14 @@ def evaluate(pnl: pd.Series, hold: pd.Series, *, min_n: int | None = None,
         # recorded the config key it used to borrow, not the method, and it propagated a false
         # premise to the owner more than once (L287). Now named for what it computes.
         "pooled_sharpe":     sharpe is not None and sharpe >= _sh_bar,
-        "profit_factor":     pf >= pf_bar,
+        # B2012 (D5, owner-approved): an all-winners cell has pf = inf, and
+        # inf >= bar is True - a zero-loss sample says nothing about the
+        # loss side, so the gate is NOT EVALUABLE rather than passed. Same
+        # three-state mechanism as min_trades_full_period (B1624): None is
+        # neither pass nor fail, the denominator shrinks, and all_live_gates
+        # cannot be claimed off a cell nobody finished measuring. The pf
+        # VALUE stays inf for reporting.
+        "profit_factor":     (None if not len(l) else pf >= pf_bar),
         "sortino":           sortino is not None and sortino >= _so_bar,
         "psr":               dsr.get("psr") is not None and dsr["psr"] >= PC["min_psr"],
         # B1496 (owner-directed split): min_trades is TWO independent requirements and was
