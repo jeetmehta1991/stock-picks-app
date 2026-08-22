@@ -13577,6 +13577,15 @@ takes - and a freeze on the detector's own home taxes its maintenance**
    a violation. Final scope: the two ANCHOR docs (CLAUDE.md, SKILL.md), where
    a citation is load-bearing; records may document freely.
 
+**Third rule, from closing the arc (B1993d): a failed edit must BLOCK its
+commit.** `0fb6fa8`'s message claimed an amendment that had not landed - the
+edit script asserted and FAILED, but the commit was a sibling
+newline-separated command and proceeded. **Chain edit-then-commit with `&&`,
+never as siblings.** Compliance failure against `#45`; JUDGMENT-ONLY for
+detection (no scan reads shell chaining) - the visible retraction in
+`999e23d` is the precedent, and the sweep found 1 proceeding of 3 candidates
+(the two guarded paths blocked correctly).
+
 MEASURED: 30+ odd-backtick lines enumerated in the live queue; the freeze
 self-tripped 2 of 2 times on machinery files and 0 times on docs. **ANCHORED
 (`#197`):** compliance failures against `#275` (the strip) and the `#136`

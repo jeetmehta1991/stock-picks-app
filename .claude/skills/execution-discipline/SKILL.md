@@ -764,7 +764,11 @@ discipline - the append-log's odd backticks flipped a whole-file strip's
 parity, so scrub PER LINE (`#275`); and a count-freeze whose home is inside
 its own measurement taxes every edit of the mechanism - scope freezes to the
 DOCS where anchors live, never to the machinery quoting the incidents (L586's
-costly-in-the-wrong-place sibling).
+costly-in-the-wrong-place sibling). **And a failed edit must BLOCK its commit** - chain
+edit-then-commit with `&&`, never as sibling commands; a sibling chain
+proceeded past a failed assertion and produced a commit message claiming an
+edit that never landed (B1993d, JUDGMENT-ONLY: no scan reads shell chaining;
+the `999e23d` retraction is the precedent).
 
 **Mechanically enforced** by the corrected B1986 case, the per-file citation
 count-freeze in `test_b1971_no_new_dangling_checklist_citation`, and `#281`'s
