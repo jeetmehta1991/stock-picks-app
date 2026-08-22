@@ -741,6 +741,28 @@ gate had just named.**
 - **Compliance failure against `#45` and `#247`, not a new class.** A fifth rule
   restating four that were ignored is `#136` theater.
 
+## THE GATES OVER YOUR OWN REPORTING ARE THE LEAST VERIFIED (B1954 - L599, CHECKLIST #226)
+
+**Two consecutive conversions caught defects in what I WRITE, not in what the
+code does.** One gate had been passing while the required block was absent -
+**102 of 3,519 reports carried one, 2.9pct.** The next says my block's status is
+FALSE: `ALWAYS-ON` is stale when the skill was auto-injected, and the honest
+status is **FULLY LOADED (auto-injected)**.
+
+- **A gate over CODE is exercised by every code change** - it fires, someone
+  investigates, it gets fixed.
+- **A gate over REPORTING is exercised every turn and independently checked by
+  nobody**, because *its subject is the same text that would report its
+  failure.*
+- **A blind reporting gate produces exactly the transcript of a working one:**
+  compliant-looking prose and no alarm.
+- **So the layer asserting you are compliant has the least verification in the
+  system.** Read those gates first.
+
+**Mechanically enforced** by `scan_missing_skill_confirmation` and
+`scan_false_skill_status`, both routed through `_response_text` with
+`keep_code=True` and both carrying corpus incidents.
+
 ## A GATE READING THE WRONG WINDOW DOES NOT FAIL LOUDLY - IT PASSES (B1952 - L598, CHECKLIST #226)
 
 **Routing one gate through `_response_text` made it fire on the very next

@@ -12902,3 +12902,43 @@ proven to be the right one.
 **ANCHORED (`#197`):** compliance failure against owner directive B1726;
 mechanism is the `S6-B1783b` conversion backlog, pinned at 5 by
 `count_text_readers`. Carried into `SKILL.md`.
+
+
+### L599
+
+**The gates that check my REPORTING were the blind ones, and their subject is
+the text that would have reported the failure**
+
+**B1952/B1954.** Two consecutive conversions caught defects in what I write
+rather than in what the code does:
+
+- **`scan_missing_skill_confirmation` had been PASSING while the required block
+  was absent.** MEASURED: 102 of 3,519 substantive reports this session carried
+  one - 2.9pct - against 32pct carrying a CHECKLIST compliance statement.
+- **`scan_false_skill_status` says my block's status is FALSE.** `ALWAYS-ON` is
+  a STALE marker when the skill was auto-injected; the honest status is
+  **FULLY LOADED (auto-injected)**, because ALWAYS-ON describes a standing
+  arrangement rather than what happened.
+
+**COMPLIANCE FAILURE against owner directives B1726 and B1747.**
+
+**The pattern is structural.** A gate over CODE is exercised by every code
+change - it fires, someone investigates, it gets fixed, and this session fixed
+a dozen that way. **A gate over REPORTING is exercised by every turn and
+independently checked by nobody**, because *its subject is the same text that
+would report its failure.* A reporting gate that goes blind produces exactly
+the transcript of a reporting gate that is working: compliant-looking prose,
+no alarm.
+
+**So the layer asserting I was compliant had the least verification of any
+layer in the system**, and the only reason it surfaced is that `S6-B1783b` -
+which looked like housekeeping - made me read each one.
+
+**Five of nine conversions found a defect invisible beforehand**, and the two
+most recent were about my own reporting rather than the code. **3 raw readers
+remain**, and each is a gate whose reading window has never been proven.
+
+**ANCHORED (`#197`):** compliance failure against owner directives B1726 and
+B1747; mechanically enforced by `scan_missing_skill_confirmation` and
+`scan_false_skill_status`, both now routed through `_response_text` with
+`keep_code=True` and both carrying corpus incidents. Carried into `SKILL.md`.
