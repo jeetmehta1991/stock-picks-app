@@ -16409,12 +16409,18 @@ def test_b1762_every_scan_gate_has_a_corpus_entry():
     # that shows up in review.
     EXEMPT = {
         # no injectable text seam yet - cannot be exercised on fixed input (#241)
-        "scan_transcript_entries": "no seam; S6-B1761b",
+        # B1940: NOT a seam problem. This returns a TUPLE of two booleans
+        # -> (commit_made, marker_present) - not a violation list, and
+        # `bool((False, True))` is TRUE because a non-empty tuple always
+        # is. The corpus contract `bool(fn(...)) == should_fire` would
+        # therefore pass for EVERY input: coverage that asserts nothing.
+        # Covered instead by its own predicate tests.
+        "scan_transcript_entries":
+            "returns (bool, bool), not a violation list - the corpus fire/quiet contract cannot express it (B1940)",
         # B1865: built from HISTORICAL incidents (L407 / L411) whose verbatim
         # text was not preserved. An invented corpus entry is worse than none -
         # it would record a fixture as an incident, which is exactly the
         # 2.422-from-rng.normal shape. Tickets: S6-B1865a.
-        "scan_unverified_structure": "no seam; S6-B1761b",
         # has a seam, but the words that caused it were never kept (#240)
     }
     assert all(EXEMPT.values()), "every exemption needs a reason"

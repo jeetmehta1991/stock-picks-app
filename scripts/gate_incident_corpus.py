@@ -392,6 +392,27 @@ PURE_INCIDENTS: dict[str, list[tuple[tuple, bool, str]]] = {
          "an hourly UNCONDITIONAL arm in the same turn - both halves of "
          "L424, and the gate must not punish the compliance it demands"),
     ],
+    # B1940: excused as unseamed and 3/3 drivable on STRUCTURAL_CLAIMS.
+    # Sixth false reason this register has carried.
+    "scan_unverified_structure": [
+        (([{"type": "assistant", "message": {"content": [
+            {"type": "text",
+             "text": "The producer is wired into the engine."}]}}],), True,
+         "#215/L489 - a claim about CODE STRUCTURE in a turn that never "
+         "opened a file"),
+        (([{"type": "assistant", "message": {"content": [
+            {"type": "tool_use", "name": "Read",
+             "input": {"file_path": "backtest/signals/screener.py"}}]}},
+           {"type": "assistant", "message": {"content": [
+            {"type": "text",
+             "text": "The producer is wired into the engine."}]}}],), False,
+         "the same claim after a Read - the gate must not punish the "
+         "inspection it demands"),
+        (([{"type": "assistant", "message": {"content": [
+            {"type": "text",
+             "text": "The run took 198 minutes."}]}}],), False,
+         "a measurement, not a structural claim"),
+    ],
     "scan_unverified_cause": [
         (([{"type": "assistant", "message": {"content": [
             {"type": "text",
