@@ -13105,6 +13105,31 @@ would INVENT a state they do not have. `unparsed()` names all 48 and `main()`
 prints them under a SCOPE line - the same shape as B1966. **A count whose scope
 is unstated is the defect; the count itself was fine.**
 
+**RETROACTIVE SWEEP (`#237`) - B1970.** Scanned every regex in
+`verify_turn_compliance.py` that requires a literal `**` (`grep -nF`), plus
+`queue_state.py`. **Five sites, all reported:**
+
+| site | what it does | disposition |
+|---|---|---|
+| `scan_count_without_members:1928` | own-id scrub | **FIXED** B1969 |
+| `_queue_rows_added:1977` | collects rows added this turn | **FIXED** B1970 |
+| `_queue_rows_added:1994` | extracts the id from one | **FIXED** B1970 |
+| `scan_queue_vocabulary:2660` | reads the STATE cell | **KEPT bold-only, on purpose** |
+| `queue_state._ROW` | the canonical counter | **KEPT, exclusion disclosed** |
+
+**The collector was the worse defect, and B1969 missed it.** Every row-reading
+gate draws its input from `_queue_rows_added`, so requiring `**` there let a row
+that merely omitted the asterisks bypass **all of them at once** - not one gate,
+the whole row-gate layer, for two keystrokes that look like a typo (B1722's
+cheap path). B1969 fixed the gate whose false positive I happened to be
+chasing, which is availability, not a sweep.
+
+**The two KEPT sites read a STATE cell the legacy rows do not have**, so
+widening would INVENT one. Both now carry that reason in a comment and a pin
+(`test_b1970_vocabulary_scan_stays_bold_on_purpose`), because **an undocumented
+survivor of a class sweep is indistinguishable from one that was missed**
+(`#279`, both directions).
+
 MEASURED: 59 plain-id rows of 1,365; 48 uncounted tickets after removing 2
 composite `a/b/c` ids (a row shape, not a ticket - `#271`); population
 1,197 -> **1,245**. **ANCHORED (`#197`):** compliance failure against `#275` and

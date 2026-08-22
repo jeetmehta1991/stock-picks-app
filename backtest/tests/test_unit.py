@@ -21113,3 +21113,66 @@ def test_b1969_counter_discloses_what_it_cannot_parse():
         assert t in out, (
             f"{t} is excluded and not named - #280, a count is not a set: the "
             "scope line must name the members, not just tally them")
+
+
+
+def test_b1970_row_collector_does_not_require_bold():
+    """B1970 (L603 / `#275`): dropping `**` must not exempt a row from gates.
+
+    **Every** row-reading gate draws its input from `_queue_rows_added`. It
+    required the ticket id to be bold, so a row that merely omitted the
+    asterisks was invisible to all of them at once - not one gate bypassed,
+    the whole row-gate layer, for two keystrokes that look like a typo.
+
+    This is the sibling B1969 left open: it fixed the `#280` gate's own scrub
+    and not the collector feeding every gate.
+    """
+    import importlib.util as _iu
+    import pathlib as _p
+
+    root = _p.Path(__file__).resolve().parents[2]
+    spec = _iu.spec_from_file_location(
+        "vtc_b1970", root / "scripts" / "verify_turn_compliance.py")
+    tg = _iu.module_from_spec(spec)
+    spec.loader.exec_module(tg)
+
+    BODY = "3 ROWS: their batch added no durable definition"
+    bold = "+| **S6-B1970a** | **OPEN** | P1 | " + BODY + " |"
+    plain = "+| S6-B1970a | OPEN | P1 | " + BODY + " |"
+
+    for style, diff in (("bold", bold), ("plain", plain)):
+        got = tg._queue_rows_added(diff_text=diff)
+        assert len(got) == 1, (
+            f"a {style} row must be COLLECTED - if it is not, every row gate "
+            "is blind to it at once, which is a bypass, not a formatting nit")
+
+    # and the collected row must still reach the gates that read it
+    assert tg.scan_count_without_members([], rows=[plain.lstrip("+")]), (
+        "collection without enforcement is half the fix: the plain row must "
+        "fire the same bare-count gate the bold one does")
+
+
+def test_b1970_vocabulary_scan_stays_bold_on_purpose():
+    """B1970: the one site the class sweep deliberately did NOT change.
+
+    `scan_queue_vocabulary` reads the STATE cell, and the 48 legacy rows have
+    no state - widening it would INVENT one, the mistake `queue_state._ROW`
+    declined to make. Left bold-only on purpose.
+
+    Pinned because an undocumented survivor of a class sweep is
+    indistinguishable from one that was missed (#279, both directions).
+    """
+    import pathlib as _p
+
+    root = _p.Path(__file__).resolve().parents[2]
+    src = (root / "scripts" / "verify_turn_compliance.py").read_text(
+        encoding="utf-8")
+
+    i = src.index("def scan_queue_vocabulary")
+    sec = src[i:i + 1600]
+    assert "DELIBERATELY still bold-only" in sec, (
+        "the exception must SAY it is an exception - otherwise the next class "
+        "sweep cannot tell 'considered and kept' from 'missed'")
+    assert "INVENT one" in sec, (
+        "and it must carry the reason: those rows have no state, so widening "
+        "would fabricate one")

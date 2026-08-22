@@ -1984,7 +1984,11 @@ def _queue_rows_added(diff_text=None) -> list[str]:
     import subprocess
     if diff_text is not None:
         return [ln[1:] for ln in diff_text.splitlines()
-                if re.match(r"^\+\|\s*\*\*S6-", ln)]
+                # B1970 (#275): the id need not be BOLD. Every row-reading
+                # gate draws its input from here, so requiring `**` let a row
+                # that merely omitted the asterisks bypass ALL of them at once
+                # - two keystrokes, indistinguishable from a typo (B1722).
+                if re.match(r"^\+\|\s*\*{0,2}S6-", ln)]
     # Working tree FIRST, then the last commit. A row added in the commit and
     # then EDITED in the working tree appears in both; the working-tree copy is
     # newer, so it wins - #271's last-state-wins rule applied to this gate's own
@@ -2001,7 +2005,10 @@ def _queue_rows_added(diff_text=None) -> list[str]:
         except Exception:
             continue
         for ln in d.splitlines():
-            m = re.match(r"^\+\|\s*\*\*(S6-[A-Za-z0-9-]+)\*\*", ln)
+            # B1970: same widening as the collector above - the two must
+            # agree, or a row is collected and then has no id (#226).
+            m = re.match(r"^\+\|\s*\*{0,2}(S6-[A-Za-z0-9-]+?)\*{0,2}\s*\|",
+                         ln)
             if m and m.group(1) not in seen:
                 seen.add(m.group(1))
                 out.append(ln[1:])
@@ -2667,6 +2674,12 @@ def scan_queue_vocabulary(entries, *, rows=None, diff_text=None) -> list[str]:
         return []
     bad = []
     for r in rows:
+        # B1970: DELIBERATELY still bold-only, unlike the collector above.
+        # This reads the STATE cell, and the 48 legacy rows have no state to
+        # read - widening would INVENT one, the mistake B1969 declined to make
+        # in `queue_state._ROW`. Their exclusion is disclosed by
+        # `queue_state.unparsed()`, not hidden. Left as-is ON PURPOSE, recorded
+        # so a later sweep can tell "considered and kept" from "missed".
         m = re.match(r"\|\s*\*\*(S6-[A-Za-z0-9-]+)\*\*\s*\|\s*\*\*([A-Z-]+)\*\*", r)
         if not m:
             bad.append(f"{r[:60].strip()} - not in `| **id** | **CLASS** |` shape")
