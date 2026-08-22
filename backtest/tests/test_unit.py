@@ -17089,7 +17089,7 @@ def test_b1783_response_gates_inherit_text_scoping():
         # B1953: scan_skill_block_incomplete CONVERTED - same commit.
         # B1938: scan_uninspected_constant CONVERTED - removed from this
         # shrink-only set in the same commit as the conversion.
-        "scan_ungated_addition",
+        # B1957: scan_ungated_addition CONVERTED - same commit.
         # B1943: scan_unverified_count CONVERTED - removed in the same commit.
         "scan_transcript_entries", "scan_verdict_denominators",
     }
@@ -20639,11 +20639,11 @@ def test_b1938_uninspected_constant_reads_prose_not_mentions():
     # the other functions. One definition, one answer.
     raw, routed, case_preserved = tg.count_text_readers(src)
 
-    assert raw == 2, (
-        f"{raw} gates still read text raw, pin says 2. If a gate was "
+    assert raw == 1, (
+        f"{raw} gates still read text raw, pin says 1. If a gate was "
         "converted, LOWER this in the same commit (S6-B1783b); if one was "
         "added reading raw, it needs _response_text instead")
-    assert routed >= 19, (
+    assert routed >= 20, (
         f"only {routed} gates route through _response_text - the count may "
         "not fall, converting is one-way")
     assert case_preserved == 2, (

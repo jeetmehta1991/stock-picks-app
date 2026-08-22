@@ -2654,7 +2654,15 @@ def scan_ungated_addition(entries, *, text=None, added_rules=None) -> list[str]:
     if not added_rules:
         return []
 
-    t = (_assistant_text(entries) if text is None else text.lower())
+    # B1957 (S6-B1783b): eleventh gate routed through _response_text, with
+    # keep_code=True.
+    #
+    # This gate looks for `#NNN` beside a MECHANISM NAME, and mechanism names
+    # are `scan_*` functions and test ids - **conventionally backticked in
+    # every report this project writes.** The default strip would delete the
+    # exact evidence it searches for, as it did to scan_skill_block_incomplete
+    # at B1953.
+    t = _response_text(entries, text, keep_code=True)
     if not t:
         return []
 
