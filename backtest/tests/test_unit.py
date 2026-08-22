@@ -21788,3 +21788,51 @@ def test_b1981_count_proof_must_have_executed():
     assert tg.scan_unverified_count(
         turn("Bash", {"command": "echo hello"})), (
         "an unrelated command computes nothing")
+
+
+
+def test_b1982_substitution_judged_on_executed_commands_only():
+    """B1982 (S6-B1967c, 4 of 8): substitution danger lives in what RAN.
+
+    `scan_shell_substitution` read `_tool_text`, which includes Write/Edit
+    content - so a written file QUOTING the dangerous form (documentation, a
+    fixture) read as this turn having executed it. The gate's own incident
+    was prose becoming a command; its false-positive mode was the same shape
+    one level up.
+
+    Constructed entries per #276b. DOCUMENTED NON-COVERAGE: unquoted-heredoc
+    substitution was never covered by this gate's regex before or after -
+    stated here so the survivor is distinguishable from a miss (#279).
+    """
+    import importlib.util as _iu
+    import pathlib as _p
+
+    root = _p.Path(__file__).resolve().parents[2]
+    spec = _iu.spec_from_file_location(
+        "vtc_b1982", root / "scripts" / "verify_turn_compliance.py")
+    tg = _iu.module_from_spec(spec)
+    spec.loader.exec_module(tg)
+
+    DANGER = 'git commit -m "fix: never run `git reset --hard` blindly"'
+    USER = {"type": "user", "message": {"content": [
+        {"type": "text", "text": "go"}]}}
+
+    def turn(tool, inp):
+        return [USER,
+                {"type": "assistant", "message": {"content": [
+                    {"type": "tool_use", "name": tool, "input": inp}]}}]
+
+    assert tg.scan_shell_substitution(
+        turn("Bash", {"command": DANGER})), (
+        "an EXECUTED -m string carrying a backtick is the verbatim B1765 "
+        "incident - bash substitutes it, and once it ran git reset --hard")
+
+    assert not tg.scan_shell_substitution(
+        turn("Write", {"file_path": "doc.md", "content": DANGER})), (
+        "the dangerous form was only WRITTEN into a file - documentation of "
+        "the incident must not read as the incident (mention vs use, L556)")
+
+    assert not tg.scan_shell_substitution(
+        turn("Bash", {"command": "git commit -F - <<'MSG'\nsafe prose\nMSG"})), (
+        "the quoted-heredoc form performs no substitution and is the safe "
+        "path this gate exists to steer toward - it must never fire")

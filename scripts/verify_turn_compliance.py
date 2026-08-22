@@ -1872,7 +1872,12 @@ def scan_shell_substitution(entries, *, tool_text=None) -> list[str]:
     inert. The deviation to `-m "..."` is the entire defect.
     """
     import re
-    t = _tool_text(entries, tool_text)
+    # B1982 (S6-B1967c): EXECUTED text only. Substitution is dangerous in a
+    # command a SHELL runs; a Write whose content QUOTES the dangerous form -
+    # documentation, a pin test's fixture - read as this turn running it.
+    # The gate's own incident was prose-about-a-command becoming the command;
+    # its false-positive mode was the same shape one level up.
+    t = _executed_tool_text(entries, tool_text)
     if not t:
         return []
     hits = []
