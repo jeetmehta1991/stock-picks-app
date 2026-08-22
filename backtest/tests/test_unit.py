@@ -22532,3 +22532,32 @@ def test_b1997_smc_breaker_knobs_bind_differentially():
             "cached window carries a mitigation event - the knob is "
             "decorative or the event vanished from the cache; either way "
             "this needs eyes, not a green")
+
+
+
+def test_b1998_ss9_item21_subject_occurrence_survives():
+    """B1998 (S6-B1522a): plan SS9 item 21 is load-bearing - pin its survival.
+
+    The carried row directed "add to plan SS9 as item 21"; the item was
+    already there, verbatim with its L393 incident - the row predated the
+    addition and was never re-verified. This pin is the missing half: the
+    rule is USED (B1997's probe would have misread three live knobs as
+    decorative without it), so its disappearance from the plan would be the
+    L587 slow-motion loss.
+    """
+    import pathlib as _p
+
+    root = _p.Path(__file__).resolve().parents[2]
+    plan = (root / "STRATEGY_OPTIMISATION_PLAN.md").read_text(encoding="utf-8")
+
+    i = plan.find("| 21 | **Before any differential test, assert the SUBJECT OCCURS")
+    assert i >= 0, (
+        "SS9 item 21 (subject-occurrence before differentials) left the "
+        "plan - B1997 measured what its absence costs: a 0-diff on three "
+        "LIVE knobs, one vacuous window away from calling them decorative")
+    assert "L393" in plan[i:i + 400], (
+        "the item must keep its incident - a rule without its lineage reads "
+        "as optional style")
+    assert "n=0 on BOTH sides" in plan[i:i + 400], (
+        "and its diagnostic: the n=0-both-sides wording is what makes the "
+        "trap recognisable when it happens")
