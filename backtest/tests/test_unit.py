@@ -19147,6 +19147,16 @@ def test_b1858_gate_message_says_where_to_put_the_citation():
 # Converting 26 sections in one batch is the bundling B1839 showed produces
 # defects, and the directive is about ADDITIONS.
 _B1860_UNGATED_LEGACY = {
+    # B1918d: the TRUE ungated set, 24 entries, measured with the register's
+    # own text excluded from the classifier's haystack.
+    #
+    # RETRACTS B1918c's "0 of 95 UNGATED - the directive is fully satisfied".
+    # That reading came from the circularity above: these section names sat in
+    # THIS literal, and `key in tu_text` counted that as a test pin. The
+    # original 26-entry list was substantially right; my probe was not.
+    #
+    # The set may SHRINK and may not GROW, and #279's reverse check now also
+    # requires it to shrink when a section GAINS a gate.
     'A BUILD CLAIM MUST NAME ITS ARTIFACT',
     'A CLASSIFIER INHERITS YOUR MODEL OF THE DATA',
     'A DERIVED COUNT MUST NAME AND TEST ITS ASSUMPTION',
@@ -19154,7 +19164,6 @@ _B1860_UNGATED_LEGACY = {
     'A SILENT FALLBACK MAKES ONE NAME INTO TWO EXITS',
     'AN ANALYSIS ROW HAS NO CODE TO VERIFY',
     'AN ARTIFACT MUST CARRY THE KEY IT WAS RANKED ON',
-    'AN ASSERTED CONSEQUENCE IS A CLAIM - COMPUTE IT',
     'Failure modes this skill exists to prevent',
     'GATE-CONSTRUCTION RULES',
     'INSPECTION EVIDENCE COMES FROM READS, NEVER FROM WRITES',
@@ -19167,7 +19176,6 @@ _B1860_UNGATED_LEGACY = {
     'Phase 2 — PRE-FLIGHT',
     'Phase 3 — EXECUTE with the TEST PYRAMID GATE',
     'Phase 4 — AUDIT DEPTH STANDARD',
-    "RE-DERIVE A TICKET'S NUMBER BEFORE WORKING IT",
     'SCORE ON THE MINORITY CLASS, NOT ON ACCURACY',
     'SIX MUTUALLY EXCLUSIVE LEDGER CLASSES',
     'SPEC-vs-IMPLEMENTATION RULE',
@@ -19186,6 +19194,25 @@ def _b1860_classify(sk_text, tu_text, vt_text):
     UNGATED                 prose with no enforcement of any kind
     """
     import re as _re
+
+    # B1918d: THE EXEMPTION REGISTER IS NOT EVIDENCE FOR ITSELF.
+    #
+    # `test_pinned` is decided by `key in tu_text` - a bare substring search of
+    # test_unit.py - and `_B1860_UNGATED_LEGACY` holds those very keys as
+    # string literals. **Every grandfathered section classified as test_pinned
+    # BECAUSE IT WAS GRANDFATHERED.**
+    #
+    # MEASURED by removing the literal: test_pinned 30 -> 4, UNGATED 0 -> 24.
+    # 26 sections were reported enforced on evidence the exemption list
+    # manufactured, and the gate built from the owner's directive was reporting
+    # a compliance it had invented.
+    #
+    # Stripping the literal is what lets the register hold its own members
+    # without changing their classification - without this, restoring an entry
+    # re-fakes its status and the #279 reverse check then calls it stale.
+    tu_text = _re.sub(
+        r"_B1860_UNGATED_LEGACY[^=\n]*=\s*(?:set\(\)|\{.*?\n\})",
+        " ", tu_text, flags=_re.S)
 
     body = sk_text.split("\n")
     heads = [(i, m.group(1)) for i, l in enumerate(body)
@@ -19250,6 +19277,20 @@ def test_b1860_skill_additions_are_gated():
     # the legacy list may SHRINK, never GROW
     assert ungated <= _B1860_UNGATED_LEGACY, (
         "the legacy ungated set grew - see the assertion above")
+
+    # B1918 (#279): and it MUST shrink when it can. The assertion above is the
+    # "nothing uncovered" half; this is the "nothing excused that no longer
+    # needs it" half, which is the one that usually goes missing.
+    #
+    # A legacy section given a gate tomorrow would leave its entry sitting here
+    # forever, claiming ungated debt that no longer exists - and nothing would
+    # fail, which is exactly why the drift survives (L587). B1916 found three
+    # dead entries in the gate corpus the first time this direction was asked.
+    stale_legacy = sorted(_B1860_UNGATED_LEGACY - ungated)
+    assert not stale_legacy, (
+        "these SKILL.md sections are listed as ungated LEGACY but are now "
+        f"GATED: {stale_legacy}. Delete the entry - an exclusion register that "
+        "only ever grows stale claims debt that was already paid (#279/L587).")
 
     # and the gate must be looking at something real
     assert len(cls) >= 70, (
