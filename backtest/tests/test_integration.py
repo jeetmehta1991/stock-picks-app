@@ -718,15 +718,18 @@ def test_bug_022_023_strategy_count_references_are_current():
     CANONICAL_FACTS.md F-002" in run_phase1a.py:147 and screener.py:7+.
     Sister bugs share single fix.
     """
+    # B2017 SUPERSESSION: this pin originally asserted the "~108-133 per
+    # F-002" text was PRESENT - freezing a hand-maintained range that went
+    # stale when B1003 corrected F-002 (live count 222). The pin was
+    # enforcing the wrong side of a record-vs-code disagreement (#221).
+    # Its regression intent (no stale "60 strategies") is kept; the count
+    # in the banner now DERIVES from len(ALL_STRATEGIES).
     from pathlib import Path
     runner_src = Path("backtest/run_phase1a.py").read_text(encoding="utf-8")
     screener_src = Path("backtest/signals/screener.py").read_text(encoding="utf-8")
-    assert "Layer 1 baseline" in runner_src
-    assert "108-133" in runner_src
-    assert "108-133" in screener_src
-    # Stale text explicitly NOT present in either file's docstring/print
+    assert 'print(f"{len(ALL_STRATEGIES)} strategy classes' in runner_src, (
+        "banner count must derive from code")
     assert 'print(f"60 strategies"' not in runner_src
-    # screener.py header explicitly says "no longer references stale 60"
     assert "no longer references stale" in screener_src
 
 

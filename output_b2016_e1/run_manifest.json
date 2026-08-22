@@ -111,5 +111,8 @@
    "risk": "bare-python interpreter resolves to system python, 2/33 producers (B1877)",
    "gate": "explicit .venv/Scripts/python.exe in every launch command"
   }
- ]
+ ],
+ "wall_clock_projection_revised_hours": 2.4,
+ "wall_clock_projection_revision_basis": "OBSERVED at launch (B2017 correction): ~33 s/sim-day per arm ex-day-1 over days 2-7 of 250, two arms concurrent at pool=3 -> ~2.3-2.4 h/arm, under the 4.0 h kill cap. The original 0.91 h figure was MISLABELED an upper bound: it applied the pool=10 rate to a pool=3 x 2-concurrent shape - the single-point-extrapolation class the manifest itself cited. Original field preserved above.",
+ "frozen_sha_note": "B2017 (same turn, post-launch) edited backtest/run_phase1a.py PRINT ONLY - the hand-maintained '~108-133' banner range replaced with a derived count (#221 gate). git diff vs frozen_sha scoped to backtest/ shows only that print block + its comment; no simulation semantics touched. Arms sw10/sw20 run the frozen code; sw30/sw50 launch from the B2017 commit with the diff re-verified at launch."
 }

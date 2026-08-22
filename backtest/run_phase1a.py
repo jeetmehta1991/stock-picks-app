@@ -417,7 +417,9 @@ def main():
     print("="*70)
     print(f"STAGE 2 BACKTESTING ENGINE v2 - Phase {args.phase.upper()}")
     print(f"Started: {datetime.utcnow().strftime('%Y-%m-%d %H:%M UTC')}")
-    print(f"{len(ALL_STRATEGIES)} strategy classes (Layer 1 baseline; full layered roster ~108-133 per CANONICAL_FACTS.md F-002) | Trailing stop exits | Circuit breakers | Long + Short")
+    # B2017: the parenthetical here carried a hand-maintained roster range,
+    # stale since B1003 corrected F-002 - counts in output must be DERIVED (#221).
+    print(f"{len(ALL_STRATEGIES)} strategy classes active this run | Trailing stop exits | Circuit breakers | Long + Short")
     print("="*70)
 
     # Batch 270 (Tier 2.3 of T1A_COMPREHENSIVE_REVIEW_2026_05_20):

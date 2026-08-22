@@ -1128,9 +1128,9 @@ def bonferroni_adjusted_threshold(
     """
     Compute Bonferroni-corrected significance thresholds.
 
-    With N strategies tested (N = baseline 60 in Layer 1  -  see CANONICAL_FACTS.md F-002 for
-    layered roster expansion to ~108-133 classes), the probability of at least one false
-    positive at p=0.05 is 1-(0.95)^N. We need stricter thresholds. The `n_strategies`
+    With N strategies tested (N = the live roster size - the caller passes
+    len(ALL_STRATEGIES); see CANONICAL_FACTS.md F-002), the probability of at least one
+    false positive at p=0.05 is 1-(0.95)^N. We need stricter thresholds. The `n_strategies`
     parameter is parameterized  -  caller passes len(ALL_STRATEGIES).
 
     Returns adjusted thresholds for win rate and minimum trades required.

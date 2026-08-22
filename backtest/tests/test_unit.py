@@ -23109,3 +23109,20 @@ def test_b2016_ema_pairs_config_plumb():
     for bad in ("21:9", "", "9"):
         with _pt.raises((ValueError, Exception)):
             _cfg._parse_ema_pairs(bad)
+
+
+
+def test_b2017_engine_banner_carries_no_hand_maintained_count():
+    """B2017 (#221 / L495): the engine startup banner printed a hand-written
+    "~108-133" roster range while len(ALL_STRATEGIES) is 222 - a
+    hand-maintained record disagreeing with the code around it, shipped into
+    every run log. Counts in output derive from code or do not appear.
+    """
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    for rel in ("backtest/run_phase1a.py", "backtest/signals/screener.py",
+                "backtest/engine/improvements.py"):
+        src = (root / rel).read_text(encoding="utf-8", errors="ignore")
+        assert "108-133" not in src, (
+            f"the stale hand-maintained roster range is back in {rel} - "
+            "counts derive from len(ALL_STRATEGIES) or do not appear")

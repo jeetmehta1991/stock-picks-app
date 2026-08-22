@@ -4,7 +4,7 @@ signals/screener.py - All Layer 1 baseline 60 strategy classes (per CANONICAL_FA
 Note: This file implements the Layer 1 baseline. Layer 2 (Phase 0.D ICT/Earnings/Calendar),
 Layer 2D (form-derived ICT), Layer 3 (Pass 52 RESOLVED chart-pattern + categories), and
 Layer 4 (PENDING strategy-additive) are scheduled per AUDIT_INDEX DEC-045/259/355-362/367-371.
-Full layered roster: ~108-133 classes per CANONICAL_FACTS.md F-002.
+Full layered roster: len(ALL_STRATEGIES) is the count; see CANONICAL_FACTS.md F-002.
 
 BUG-23 SUPERSEDED-BY-CANONICAL_FACTS-F-002 Pass 53 v8h+1 cross-reference 2026-05-10:
 the "60 baseline classes" count is canonically correct per F-002 Layer 1; the bug
@@ -3537,7 +3537,7 @@ def strat_break_retest_confluence(s):
 
 # -----------------------------------------------------------------------------
 # STRATEGY REGISTRY  -  Layer 1 baseline 60 + currently-implemented dedicated shorts
-# (full layered roster ~108-133 classes per CANONICAL_FACTS.md F-002; layered
+# (full layered roster: len(ALL_STRATEGIES) per CANONICAL_FACTS.md F-002; layered
 #  roster: Layer 1 baseline 60 + Layer 2 Phase 0.D ICT/Earnings/Calendar + Layer 2D
 #  form-derived ICT + Layer 3 Pass 52 RESOLVED chart-pattern/categories + Layer 4
 #  PENDING strategy-additive). Run `len(ALL_STRATEGIES)` for current count.
