@@ -22026,3 +22026,69 @@ def test_b1985_open_evidence_is_executed_or_inspecting():
     assert tg.scan_uncosted_probe(
         turn("Bash", {"command": "echo hello"})), (
         "an unrelated command opens nothing - the true positive survives")
+
+
+
+def test_b1986_row_vs_ticket_reads_executed_text():
+    """B1986 (S6-B1967c, 8 of 8): both directions of one gate, one swap.
+
+    The trigger ("did this turn read EXECUTION_QUEUE?") could be lit by a
+    Write whose content mentions the filename; the escape ("does the method
+    name dedup?") could be satisfied by a WRITTEN mention of `queue_state`
+    with the counter never running - B1967's bypass on the compliance side
+    and a false-eligibility on the defect side, in the same gate.
+    """
+    import importlib.util as _iu
+    import pathlib as _p
+    import re as _re
+
+    root = _p.Path(__file__).resolve().parents[2]
+    spec = _iu.spec_from_file_location(
+        "vtc_b1986", root / "scripts" / "verify_turn_compliance.py")
+    tg = _iu.module_from_spec(spec)
+    spec.loader.exec_module(tg)
+
+    CLAIM = "The queue stands at 70 OPEN tickets and 1225 total."
+    # #226 guard on the fixture itself: if the trigger pattern stops matching
+    # this claim, every assertion below is vacuous and green
+    assert _re.search(tg._QCOUNT_PAT, CLAIM, _re.I), (
+        "the fixture must engage the gate's trigger - if _QCOUNT_PAT no "
+        "longer matches it, this test proves nothing (L562)")
+
+    USER = {"type": "user", "message": {"content": [
+        {"type": "text", "text": "status?"}]}}
+
+    def turn(tool, inp, extra=None):
+        e = [USER,
+             {"type": "assistant", "message": {"content": [
+                 {"type": "tool_use", "name": tool, "input": inp}]}}]
+        if extra:
+            e.append({"type": "assistant", "message": {"content": [
+                {"type": "tool_use", "name": extra[0],
+                 "input": extra[1]}]}})
+        e.append({"type": "assistant", "message": {"content": [
+            {"type": "text", "text": CLAIM}]}})
+        return e
+
+    assert not tg.scan_row_vs_ticket(
+        turn("Bash", {"command": "python scripts/queue_state.py"})), (
+        "queue_state RAN - the method names dedup; wait, it must also touch "
+        "execution_queue... the counter's own path mentions it via the "
+        "script; if this fires the trigger/escape interplay broke")
+
+    assert tg.scan_row_vs_ticket(
+        turn("Bash", {"command": "grep -c OPEN EXECUTION_QUEUE.md"})), (
+        "an executed row-level count over the queue with no dedup named is "
+        "the B1795 incident - the true positive must survive")
+
+    assert tg.scan_row_vs_ticket(
+        turn("Bash", {"command": "grep -c OPEN EXECUTION_QUEUE.md"},
+             extra=("Write", {"file_path": "n.md",
+                              "content": "counted via queue_state"}))), (
+        "queue_state only WRITTEN into a doc - a mention is not the counter "
+        "running, and accepting it reopens B1967's bypass")
+
+    assert not tg.scan_row_vs_ticket(
+        turn("Bash", {"command": "echo hello"})), (
+        "a turn that never touched the queue is out of this gate's scope - "
+        "a Write mentioning the filename must not make it eligible")

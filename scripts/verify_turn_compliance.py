@@ -2416,7 +2416,14 @@ def scan_row_vs_ticket(entries, *, text=None, tool_text=None) -> list[str]:
     t = _response_text(entries, text, keep_code=True)
     if not t or not _re.search(_QCOUNT_PAT, t, _re.I):
         return []
-    tt = _tool_text(entries, tool_text).lower()
+    # B1986 (S6-B1967c, last of 8): EXECUTED text for BOTH directions this
+    # gate reads - the queue-touch trigger (a Write mentioning the filename
+    # made unrelated turns eligible) and the dedup escape (a WRITTEN mention
+    # of `queue_state` satisfied it without the counter running). The
+    # queue-append idiom keeps its command line after the heredoc strip, so
+    # appending rows still counts as touching the queue while the row bodies
+    # no longer satisfy either side.
+    tt = _executed_tool_text(entries, tool_text).lower()
     if "execution_queue" not in tt:
         return []
     if any(d in tt or d in t for d in _QDEDUP):
