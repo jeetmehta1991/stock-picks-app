@@ -5030,3 +5030,34 @@ consequence feels like reasoning rather than a claim.
   *"enforced mechanically ... a file path"* that never existed (`S6-B1705c`), and B1775's residual
   attributed to a persistence gap on an assumed join. **Four asserted consequences, four wrong.**
 
+
+
+### #279 - AN EXCLUSION REGISTER NEEDS A CHECK IN BOTH DIRECTIONS (B1916 / L587)
+
+Any list of things deliberately left out - **disabled, exempt, deferred,
+waived, quarantined** - is a claim about the world at the moment it was
+written. **The world moves; the list does not.**
+
+**Both assertions are required:**
+
+1. **Nothing uncovered** - every member of the population is either handled or
+   explicitly excused with a reason. (`require_each`; this half usually exists.)
+2. **Nothing excused that no longer needs it** - no entry names something that
+   is now handled. **This half is usually missing**, because a stale exemption
+   never fails anything: the work runs, the tests pass, and the register
+   quietly claims a gap that already closed. **The recorded state drifts
+   PESSIMISTIC while everything stays green.**
+
+**Mechanically enforced** for the gate corpus by the redundancy assertion in
+`test_b1762_every_scan_gate_has_a_corpus_entry`.
+
+- **Retroactive (`#136`):** **B1916** - three `EXEMPT` entries excused as
+  *"incident text not preserved"* while all three carried cases in
+  `EXTRA_INCIDENTS`, found the first time the reverse check ran. **B1035** -
+  `B975`/`B984` strategy disablements REVERSED after runtime probes confirmed
+  both producers exist and emit non-zero values. **B1494** - six de-dup
+  disables reverted. **Three registers, three instances, one decay.**
+- **Also watch the excuse itself, not just its age.** Two entries said *"no
+  seam"* about **pure functions** - the corpus could not EXPRESS a positional
+  signature, and that limit was recorded as a property of the gates. **An
+  exemption's reason can be wrong on the day it is written.**

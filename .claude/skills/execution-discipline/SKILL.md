@@ -741,6 +741,26 @@ gate had just named.**
 - **Compliance failure against `#45` and `#247`, not a new class.** A fifth rule
   restating four that were ignored is `#136` theater.
 
+## AN EXCLUSION REGISTER DECAYS IN THE SAFE-LOOKING DIRECTION (B1916 - L587, CHECKLIST #279)
+
+**A gate-exemption dict carried three entries excused as "incident text not
+preserved" while all three had incidents. The reverse check found them the
+first time it ran.**
+
+- **A stale exemption never fails anything.** The work runs, the tests pass,
+  and the register claims a gap that already closed - **the recorded state
+  drifts PESSIMISTIC while everything stays green**, which is why it survives.
+- **Both assertions, always: nothing uncovered, AND nothing excused that no
+  longer needs it.** The first half usually exists; the second usually does not.
+- **The excuse can be wrong on the day it is written.** Two gates were excused
+  as *"no seam"* and are PURE FUNCTIONS - the corpus could not EXPRESS a
+  positional signature, and that limit was recorded as a property of the gates.
+- **Same decay in `STRATEGIES_DISABLED_*`:** B1035 reversed two disablements
+  after probes found the producers alive; B1494 reverted six more.
+
+**Mechanically enforced** by the redundancy assertion in
+`test_b1762_every_scan_gate_has_a_corpus_entry`.
+
 ## A METRIC THAT COUNTS THE WRONG THING ARRIVES PRE-ARMOURED (B1912 - L585, CHECKLIST #162)
 
 **Deciding whether to add a rule to a gate, I measured "11 of 41 firings, 27pct"

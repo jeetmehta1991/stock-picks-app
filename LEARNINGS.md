@@ -12416,3 +12416,48 @@ cheapest. If the cheapest response is to write less down, do not ship it.**
 **ANCHORED (`#197`):** `CHECKLIST #136`'s anti-theater guard has a sibling - an
 addition can fail not by being useless but by being COSTLY IN THE WRONG PLACE.
 Carried into `SKILL.md`.
+
+
+### L587
+
+**A declared-exemption register decays in the SAFE-LOOKING direction, so it
+needs a check in BOTH directions**
+
+**B1916.** `test_b1762` carries an `EXEMPT` dict: every `scan_` gate with no
+corpus incident must name a reason. It is the `require_each` shape and it
+worked - each entry was explicit and reviewable. **Nothing ever re-read the
+reasons.**
+
+Adding the reverse assertion - *an EXEMPT entry naming a gate that IS covered* -
+found **three dead entries on its first run**: `scan_findings_vs_tickets`,
+`scan_missing_skill_confirmation` and `scan_skill_block_incomplete`, all
+excused as *"incident text not preserved"* while all three carry cases in
+`EXTRA_INCIDENTS`. **The text was preserved. The exemption outlived its
+reason.**
+
+**A stale exemption never fails anything.** The gate runs, the corpus covers
+it, every test passes, and the register quietly claims a gap that already
+closed. **The recorded state of the enforcement layer drifts PESSIMISTIC while
+everything stays green** - which is why it survives: nothing hurts.
+
+Two more entries were wrong in a different way. `scan_orphan_rule` and
+`scan_postfix_recheck` were excused as **"no seam"** and are **pure functions
+of plain arguments** - the most testable shape in the file. `INCIDENTS` assumes
+`fn(entries, **state)`, so a positional gate could not be EXPRESSED in the
+corpus, and **"cannot be expressed here" was recorded as "cannot be tested".**
+A vocabulary that cannot say something makes it invisible rather than absent.
+
+**Honest recount: 15 "uncovered" gates was 2 mislabelled + 3 already dead + 10
+genuinely unseamed. The headline overstated the real gap by half** - and I was
+the one who published the headline, one batch after L585.
+
+**This is not new to gates.** `B1035` REVERSED the `B975`/`B984` strategy
+disablements after runtime probes confirmed both producers exist and emit
+non-zero values; `B1494` reverted six de-dup disables. **Three registers
+(`STRATEGIES_DISABLED_*`, `EXEMPT`), the same decay** - an exclusion list is a
+claim about the world at the moment it was written, and the world moves.
+
+**The rule: any register of exclusions - disabled, exempt, deferred, waived -
+needs BOTH checks. Nothing uncovered, AND nothing excused that no longer needs
+it.** **ANCHORED (`#197`):** `CHECKLIST #279`, mechanically enforced by the
+redundancy assertion in `test_b1762`. Carried into `SKILL.md`.
