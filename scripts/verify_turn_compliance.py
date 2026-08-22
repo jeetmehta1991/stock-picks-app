@@ -2919,7 +2919,34 @@ def scan_bulk_process_kill(entries, *, cmds=None) -> list[str]:
     along with the target. Killing by PID after confirming the command line is
     the same effort and is reversible in intent.
     """
-    raw = _executed_text(entries) if cmds is None else " ".join(cmds)
+    # B1868 (THE CLASS FIX): B1867 stripped heredoc bodies and the gate fired
+    # again next turn on `python -c "...Stop-Process -Force..."` - a `-c`
+    # ARGUMENT, not a heredoc. That is L567 - a ticket names one guard; the
+    # expression has two - written by me two batches earlier.
+    #
+    # Stop asking "is this text quoted?" and ask "could this command have run
+    # at all?". `Stop-Process` is a PowerShell CMDLET and cannot run from
+    # bash, so it only counts in a PowerShell tool call. Every fixture is
+    # written through Bash; the real kill at B1861 went through PowerShell.
+    # `taskkill` runs from either shell and keeps the any-tool treatment.
+    if cmds is None:
+        ps, anysh = [], []
+        for d in entries or ():
+            if not isinstance(d, dict) or d.get("type") != "assistant":
+                continue
+            for blk in (d.get("message") or {}).get("content") or ():
+                if not isinstance(blk, dict) or blk.get("type") != "tool_use":
+                    continue
+                nm = str(blk.get("name") or "").lower()
+                cmd = str((blk.get("input") or {}).get("command") or "")
+                if "powershell" in nm:
+                    ps.append(cmd)
+                if nm in _EXECUTING_TOOLS:
+                    anysh.append(cmd)
+        raw = " ".join(ps)
+        anyshell = " ".join(anysh)
+    else:
+        raw = anyshell = " ".join(cmds)
     # B1867: a HEREDOC BODY is data handed to an interpreter, not a command
     # that ran. This gate blocked the very turn that shipped it, on the probe
     # `cmds=["Get-Process python | Stop-Process -Force"]` written inside a
@@ -2931,9 +2958,14 @@ def scan_bulk_process_kill(entries, *, cmds=None) -> list[str]:
     # NARROW BY INTENT. The general question - "heredoc-written fixtures read
     # as Bash execution" - is S6-B1817g and is BLOCKED on an owner ruling.
     # This strips heredoc bodies for THIS gate only.
-    txt = _re.sub(r"<<\s*'?(\w+)'?.*?^\1", " ", raw,
-                  flags=_re.S | _re.M).lower()
-    hits = [m for m in BULK_KILL if m in txt]
+    def _strip_heredocs(x: str) -> str:
+        return _re.sub(r"<<\s*'?(\w+)'?.*?^\1", " ", x, flags=_re.S | _re.M)
+
+    txt = _strip_heredocs(raw).lower()
+    txt_any = _strip_heredocs(anyshell).lower()
+    hits = [m for m in BULK_KILL if m != "taskkill /im" and m in txt]
+    if "taskkill /im" in txt_any:
+        hits.append("taskkill /im")
     if not hits:
         return []
     return ["BULK PROCESS KILL (S6-B1534e / L411): " + ", ".join(hits) +

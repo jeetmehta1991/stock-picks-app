@@ -19392,6 +19392,28 @@ def test_b1864_process_rule_gates():
         "stripping heredoc bodies must not blind the gate to a real kill "
         "beside one - that would trade a false positive for a false negative")
 
+    # B1868: the LIVE path is scoped by TOOL, because Stop-Process is a
+    # PowerShell cmdlet and cannot run from bash. B1867 stripped heredocs and
+    # the gate fired again on `python -c "...Stop-Process -Force..."` - L567,
+    # a ticket names one guard and the expression has two.
+    def _turn(tool, cmd):
+        return [{"type": "assistant", "message": {"content": [
+            {"type": "tool_use", "name": tool, "input": {"command": cmd}}]}}]
+
+    assert not tg.scan_bulk_process_kill(_turn(
+        "Bash", 'python -c "x = [\'Get-Process python | Stop-Process -Force\']"')), (
+        "a bulk-kill string in a BASH command is a fixture - Stop-Process is "
+        "a PowerShell cmdlet and cannot run from bash, so it could not have "
+        "killed anything")
+    assert tg.scan_bulk_process_kill(_turn(
+        "PowerShell", "Get-Process python | Stop-Process -Force")), (
+        "the same string in a POWERSHELL call is a real kill and must fire")
+    assert not tg.scan_bulk_process_kill(_turn(
+        "PowerShell", "Stop-Process -Id 10344 -Force")), (
+        "a targeted kill by PID must clear even in PowerShell")
+    assert tg.scan_bulk_process_kill(_turn("Bash", "taskkill /IM python.exe")), (
+        "taskkill runs from either shell, so it keeps the any-tool treatment")
+
     # ---- WIRED, not merely defined (B1751 / #224) ------------------------
     src = (root / "scripts"
            / "verify_turn_compliance.py").read_text(encoding="utf-8")
