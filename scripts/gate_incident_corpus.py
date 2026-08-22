@@ -306,6 +306,23 @@ INCIDENTS: dict[str, tuple[str, bool, dict]] = {
 #
 # name -> (args, should_fire, what the case is)
 PURE_INCIDENTS: dict[str, list[tuple[tuple, bool, str]]] = {
+    # B1930: a gate taking ONLY `entries` is drivable by CONSTRUCTING entries.
+    # B1925 and B1927 both did exactly that in their pins without noticing it
+    # dissolved this gate's "no seam" exemption.
+    "scan_unverified_cause": [
+        (([{"type": "assistant", "message": {"content": [
+            {"type": "text",
+             "text": "The probable cause is the pool teardown wedging on "
+                     "exit."}]}}],), True,
+         "B1335 rule 3 - a CAUSE stated with no proof language anywhere in "
+         "the turn. DERIVED causal claims must be worded 'hypothesis'."),
+        (([{"type": "assistant", "message": {"content": [
+            {"type": "text",
+             "text": "The probable cause is the pool teardown; MEASURED by "
+                     "rerunning it, exit code 127."}]}}],), False,
+         "the same claim WITH proof language - must go quiet, or the gate "
+         "punishes the evidence it asks for"),
+    ],
     "scan_orphan_rule": [
         (("\n### L900\n\nA generalised rule: always verify X before Y.\n",
           "", "", ["L900"]), True,
