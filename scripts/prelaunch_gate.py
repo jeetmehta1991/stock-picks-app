@@ -43,6 +43,41 @@ def s3_tar_sha() -> str:
     return obj["Body"].read().decode().strip()
 
 
+NARROW_UNIVERSE_TICKERS = 50
+
+
+def advisories(manifest: dict) -> list[str]:
+    """NON-BLOCKING notes. A narrow run is legitimate; misreading it is not.
+
+    B1960 (S6-B1861d). L-note: *a zero-fire result on a narrow universe is as
+    likely to be demand pruning as it is to be the strategy.* That was runbook
+    prose, and `zero_output_runs()` catches the artifact only AFTER the run -
+    so nothing warned before a narrow diagnostic was launched and misread.
+
+    **Advisory, not failure.** `--limit-tickers` probes and single-strategy
+    spot checks are exactly what a narrow universe is for; blocking them would
+    be a false positive on the honest path - B1722's bypass risk, and the
+    direction L596 calls the expensive one.
+    """
+    out = []
+    tk = manifest.get("tickers")
+    n = len(tk) if isinstance(tk, (list, tuple)) else None
+    subset = manifest.get("strategy_subset") or manifest.get(
+        "STRATEGY_SUBSET_FILE")
+    if n is not None and n < NARROW_UNIVERSE_TICKERS:
+        msg = (f"ADVISORY: narrow universe ({n} tickers < "
+               f"{NARROW_UNIVERSE_TICKERS}). A ZERO-FIRE result here is as "
+               "likely to be demand pruning or a thin sample as it is to be "
+               "the strategy - do not diagnose a strategy from this run "
+               "(S6-B1861d).")
+        if subset:
+            msg += (" A strategy subset is ALSO set, which is the exact shape "
+                    "that produced the misread: one strategy, few tickers, "
+                    "zero fires, and no way to tell which cause.")
+        out.append(msg)
+    return out
+
+
 def check(manifest: dict, ledger: dict, tar_sha: str) -> list[str]:
     fails = []
     local_run = str(manifest.get("execution", "")).upper() == "LOCAL"
@@ -121,6 +156,10 @@ def main() -> int:
     except Exception as exc:
         print(f"PRELAUNCH_GATE_FAIL: manifest unreadable: {exc}")
         return 3
+    # B1960: advisories are printed for EVERY launch and never block one.
+    for _a in advisories(manifest):
+        print(_a)
+
     ledger = {"batches": []}
     lp = Path(args.ledger)
     if lp.exists():

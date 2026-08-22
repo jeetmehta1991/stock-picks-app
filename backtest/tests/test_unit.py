@@ -20847,3 +20847,51 @@ def test_b1948_escape_markers_obey_mention_vs_use():
     assert not tg.scan_prose_only_rule(
         [], text="PROSE-ONLY: no scan can judge this.",
         docs_touched=True, code_touched=False)
+
+
+
+def test_b1960_narrow_universe_advisory():
+    """B1960 (S6-B1861d): warn BEFORE a narrow diagnostic run, never block it.
+
+    *A zero-fire result on a narrow universe is as likely to be demand pruning
+    as it is to be the strategy.* That was runbook prose; `zero_output_runs()`
+    catches the artifact only after the fact.
+
+    **Advisory, not failure** - `--limit-tickers` probes and single-strategy
+    spot checks are legitimate, and blocking them is the false positive B1722
+    says gets a gate bypassed.
+    """
+    import importlib.util as _iu
+    import pathlib as _p
+
+    root = _p.Path(__file__).resolve().parents[2]
+    spec = _iu.spec_from_file_location(
+        "pg_b1960", root / "scripts" / "prelaunch_gate.py")
+    pg = _iu.module_from_spec(spec)
+    spec.loader.exec_module(pg)
+
+    wide = {"tickers": [f"T{i}" for i in range(200)]}
+    assert not pg.advisories(wide), "a full universe must produce no advisory"
+
+    narrow = {"tickers": [f"T{i}" for i in range(12)]}
+    got = pg.advisories(narrow)
+    assert got and "narrow universe" in got[0].lower(), (
+        "12 tickers must raise the narrow-universe advisory")
+    assert "demand pruning" in got[0].lower(), (
+        "the advisory must name the CONFOUND, not just the size - the point "
+        "is that zero fires has two causes here and the run cannot separate "
+        "them")
+
+    both = {"tickers": [f"T{i}" for i in range(12)],
+            "strategy_subset": "output_audit/_subset_one.txt"}
+    got2 = pg.advisories(both)
+    assert "strategy subset is also set" in got2[0].lower(), (
+        "narrow universe PLUS a single-strategy subset is the exact shape "
+        "that produced the misread, and the advisory must say so")
+
+    # it is an ADVISORY: the blocking contract must not have gained a member
+    assert "advisories" not in pg.check.__doc__ if pg.check.__doc__ else True
+    manifest = {"tickers": [f"T{i}" for i in range(12)]}
+    assert isinstance(pg.advisories(manifest), list), (
+        "advisories returns a list and check() decides blocking - keeping the "
+        "channels separate is what makes a warning possible at all")
