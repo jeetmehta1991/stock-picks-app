@@ -20784,10 +20784,32 @@ def test_b1945_no_new_dangling_learnings_citation():
         # vocabulary in backticks is a MENTION, not a USE - and the rows that
         # DOCUMENT a mis-citation must be able to name it. This ratchet fired
         # on `S6-B1945a`, the row explaining the L611 defect.
-        _txt = _re.sub(r"`[^`]*`", " ", p.read_text(encoding="utf-8"))
+        # B1993b (#275): strip PER LINE, never whole-file. The append-log
+        # carries decades of odd backtick counts (apostrophes typed as
+        # backticks, fences, wrapped rows); cumulative parity then flips the
+        # pairing for everything downstream, and a correctly-backticked
+        # mention leaks out bare. Inline code never crosses lines here, so
+        # per-line stripping contains each historical oddity to its own line.
+        _txt = "\n".join(_re.sub(r"`[^`]*`", " ", _ln)
+                         for _ln in p.read_text(encoding="utf-8").splitlines())
         cited = {f"L{c}" for c in _re.findall(r"\bL(\d{2,3})\b", _txt)
                   if 80 <= int(c) <= 700}
         dangling = cited - exist
+        # B1993: COUNTS frozen too, not only identities. B1992 measured 13
+        # new #237 citations riding the number-freeze in one session; this
+        # register had the identical gap - a 14th L611 citation would have
+        # passed silently. Baseline measured LAST, after every edit of the
+        # batch that wrote it (L562). Update DOWNWARD when cleaning one up.
+        _LBASE = {'EXECUTION_QUEUE.md': {'L81': 3, 'L611': 13}, 'CHECKLIST.md': {'L137': 1, 'L138': 2, 'L139': 6, 'L140': 2, 'L141': 2}}
+        for _n, _cap in _LBASE.get(name, {}).items():
+            _got = len(_re.findall(rf"\b{_n}\b",
+                                   p.read_text(encoding="utf-8",
+                                               errors="replace")))
+            assert _got <= _cap, (
+                f"{name}: {_got} citations of retired {_n} exceeds frozen "
+                f"baseline {_cap} - a new citation of a known-dangling "
+                "L-number deepens the debt (B1993; L611 is RETIRED and must "
+                "never gain content or citations)")
         new = sorted(dangling - set(legacy), key=lambda x: int(x[1:]))
         assert not new, (
             f"{name} cites L-entries that do NOT exist: {new}. A citation is "
@@ -21284,7 +21306,13 @@ def test_b1971_no_new_dangling_checklist_citation():
     # Per-file COUNTS are now frozen too (measured post-cleanup); a citation
     # of an undefined item may be REMOVED or left alone, never added. Update
     # a baseline DOWNWARD when you clean one up; growth is the defect.
-    _BASELINE = {'CLAUDE.md': {}, 'LEARNINGS.md': {187: 8, 188: 7, 189: 4, 190: 4, 191: 8, 192: 6, 237: 14}, 'EXECUTION_QUEUE.md': {187: 8, 188: 4, 189: 6, 190: 8, 191: 13, 192: 10, 237: 26}, '.claude/skills/execution-discipline/SKILL.md': {187: 2, 188: 1, 189: 1, 192: 1, 237: 5}, 'scripts/verify_turn_compliance.py': {187: 2, 188: 1, 189: 1, 190: 1, 191: 1, 237: 2}, 'backtest/tests/test_unit.py': {187: 4, 190: 2, 192: 1, 237: 7}}
+    # B1993b: DOCS only. The two machinery files (this test, the gate
+    # script) QUOTE the incidents they enforce, so every future batch
+    # touching the mechanism legitimately mentions the number - freezing
+    # them created an every-edit self-bump treadmill (it tripped twice
+    # in two batches, both times on its own message). Anchors live in
+    # docs; the docs stay frozen.
+    _BASELINE = {'CLAUDE.md': {}, 'LEARNINGS.md': {187: 8, 188: 7, 189: 4, 190: 4, 191: 8, 192: 6, 237: 14}, 'EXECUTION_QUEUE.md': {187: 8, 188: 4, 189: 6, 190: 8, 191: 13, 192: 10, 237: 26}, '.claude/skills/execution-discipline/SKILL.md': {187: 2, 188: 1, 189: 1, 192: 1, 237: 5}}
     for f, per in _BASELINE.items():
         txt = (root / f).read_text(encoding="utf-8", errors="replace")
         for num, cap in per.items():
