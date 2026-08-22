@@ -13592,3 +13592,29 @@ self-tripped 2 of 2 times on machinery files and 0 times on docs. **ANCHORED
 sibling via L586 (the treadmill); mechanisms: the per-line strip inside
 `test_b1945` and the doc-scoped `_BASELINE` with its reason in-line. Carried
 into `SKILL.md`.
+
+
+### L616
+
+**A gate's trigger must never match the compliance it demands**
+
+**B1996.** `RETRO_TRIGGERS` held the bare substring `#23`, which matches every
+citation of items `#230`-`#239` - so the MANDATED compliance block, which must
+cite `#234`/`#237` by rule, armed the sweep gate on **every closing turn**.
+Four consecutive turn-gate blocks demanded sweep statements from reports that
+added no rule.
+
+**COMPLIANCE FAILURE against `#246`** - stems and whole words need opposite
+matchers, and a bare numeric prefix is the substring defect in a TRIGGER
+rather than an escape. The compounding half is L586's: **when the text a gate
+fires on is text the protocol REQUIRES every turn, the gate is a treadmill** -
+each firing extracts boilerplate, and boilerplate is what teaches bypass
+(B1722). The test for any new trigger: *would the mandated closing statement
+of a fully compliant turn contain this string?* If yes, the trigger is wrong,
+whatever it was meant to catch.
+
+MEASURED: 4 consecutive treadmill blocks; grep across every marker tuple in
+the gate script found exactly 1 bare hash-digit entry, 0 siblings. **ANCHORED
+(`#197`):** compliance failure against `#246`; mechanism
+`test_b1996_citing_an_item_does_not_arm_the_sweep_gate`, both directions.
+Carried into `SKILL.md`.

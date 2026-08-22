@@ -758,6 +758,16 @@ real misses were CONTENT, both the reviewer's own:**
   per-instance citations** - ten of eleven were covered; the eleventh became
   `#281`.
 
+**A gate's trigger must never match the compliance it demands (B1996 - L616,
+CHECKLIST #246):** a bare `#23` substring in a trigger list armed the sweep
+gate on every mandated compliance block citing the miss-capture and
+retroactive-sweep items - four consecutive treadmill firings. (Numbers in
+L616; this bullet avoids them because the citation count-freeze on anchor
+docs is itself one of this arc's mechanisms, and it just fired here.) Before adding any trigger, ask: *would a fully
+compliant turn's REQUIRED closing statement contain this string?* If yes, the
+trigger is wrong. Enforced by
+`test_b1996_citing_an_item_does_not_arm_the_sweep_gate`.
+
 **And two second-order rules from applying the fixes (B1993 - L615):** a
 detector over a corpus you also write must not assume the corpus's formatting
 discipline - the append-log's odd backticks flipped a whole-file strip's
