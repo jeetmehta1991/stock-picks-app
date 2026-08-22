@@ -3004,6 +3004,56 @@ def scan_monitor_without_stall_check(entries, *, blobs=None) -> list[str]:
             "Accepted words: " + ", ".join(STALL_MARKERS)]
 
 
+PATTERN_CUES = ("grep", "grep -o", "grep -c", "findstr", "re.search",
+                "regex", "pattern")
+CONTROL_CUES = ("grep_control", "search_with_control", "known positive",
+                "positive control", "verify the pattern", "control line",
+                "sample line", "matches a real line")
+
+
+def scan_monitor_pattern_unverified(entries, *, blobs=None) -> list[str]:
+    """L576: a monitor that SEARCHES must prove its pattern can match.
+
+    `S6-B1527a` is a launch-turn gate on the state-file PATH, and at the B1856
+    launch the path matched, so it passed. **The monitor was blind anyway:**
+    its fire-count grep used `/200` while the screener reports against the
+    PIT-ACTIVE 185, so it would have reported "no fires" every 11 minutes on a
+    run firing on 29 of 29 screen-days.
+
+    Verifying PLUMBING is not verifying PERCEPTION. An empty grep result is
+    indistinguishable from a wrong pattern (L568), and a monitor reports that
+    emptiness unattended, on a schedule, as though it were news.
+    """
+    import json as _json
+
+    arms = []
+    for e in _since_last_user(entries):
+        if not isinstance(e, dict) or e.get("type") != "assistant":
+            continue
+        for c in (e.get("message") or {}).get("content") or ():
+            if (isinstance(c, dict) and c.get("type") == "tool_use"
+                    and "croncreate" in str(c.get("name", "")).lower()):
+                arms.append(_json.dumps(c.get("input", {})).lower())
+    if blobs is not None:
+        arms = [b.lower() for b in blobs]
+    searching = [a for a in arms if any(cue in a for cue in PATTERN_CUES)]
+    if not searching:
+        return []
+    # B1887 (#244): this message states a universal rule, so the check owes
+    # the reader every offending monitor. Third time this pair has fired on a
+    # gate of mine; B1865 fixed the same two on scan_launch_missing_pool_workers.
+    return require_each(
+        "MONITOR SEARCHES WITHOUT A POSITIVE CONTROL (L576 / S6-B1527a)",
+        {a[:110]: any(cue in a for cue in CONTROL_CUES) for a in searching},
+        why=("A monitor that greps must say how it knows the pattern can "
+             "match. MEASURED: one grepped `/200` while the screener reports "
+             "against the PIT-ACTIVE 185, and would have reported 'no fires' "
+             "on a run firing on 29 of 29 screen-days. Verifying the "
+             "state-file PATH is not verifying PERCEPTION. Name a known "
+             "positive - a real line the pattern must match - or use "
+             "`scripts/grep_control.py`."))
+
+
 def scan_bare_python_launch(entries, *, cmds=None) -> list[str]:
     """B1877 / L573: a launch must name its INTERPRETER, never a bare `python`.
 
@@ -3258,7 +3308,8 @@ def main() -> int:
                 scan_launch_missing_pool_workers,
                 scan_monitor_without_stall_check,
                 scan_bulk_process_kill,
-                scan_bare_python_launch):
+                scan_bare_python_launch,
+                scan_monitor_pattern_unverified):
         try:
             _r = _sc(_e2)
         except Exception as _e:

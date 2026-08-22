@@ -11972,3 +11972,40 @@ tautology, and nothing else would notice.
 **The rule: when a fixture's VALUE carries the meaning of a test, verify it
 where it lives, not where you drafted it.** **ANCHORED (`#197`):** `CHECKLIST
 #226`; carried into `SKILL.md`.
+
+
+### L576
+
+**Verifying a monitor's plumbing is not verifying its perception**
+
+**B1856/B1885.** `S6-B1527a` is a launch-turn gate: *"verify the cron's
+state-file path matches the runner's actual output"*. At the B1856 launch it
+matched - the cron read `output_b1856_firecheck_200t_DISCARD/engine_state.json`
+and the runner wrote exactly there. **The gate passed, correctly.**
+
+**The monitor was blind anyway.** Its fire-count grep used `/200`, while the
+screener reports against the **PIT-ACTIVE 185**. It would have reported *"no
+fires"* every 11 minutes, unattended, on a run that fired on **29 of 29
+screen-days** - and the decision rule I had written into that prompt would then
+have **confirmed a launch blocker backwards**, recommending we re-scope an
+approved window.
+
+**The gate asked the wrong question, and asked it well.** *Is it pointed at the
+right file?* is checkable, cheap and satisfying. *Can its pattern match
+anything?* is the question whose failure was live. **A monitor is plumbing plus
+perception, and only the plumbing had a gate.**
+
+**Why this compounds.** A one-off wrong grep costs one look. **A monitor's wrong
+grep is scheduled**: it reports the same false silence every interval, and each
+report raises confidence rather than lowering it. **Repetition reads as
+corroboration when the mechanism is shared.**
+
+**MECHANISM:** `scan_monitor_pattern_unverified` fires when a `CronCreate`
+prompt greps for something and never says how it knows the pattern can match.
+The remedy is L568's: **name a known positive - a real line the pattern must
+match - or use `scripts/grep_control.py`**, which raises rather than returning
+empty when the pattern fails its control.
+
+**The rule: when a monitor searches, its pattern needs a positive control
+before the monitor is trusted to report silence.** **ANCHORED (`#197`):**
+`CHECKLIST #185` and `#226`; carried into `SKILL.md`.

@@ -741,6 +741,22 @@ gate had just named.**
 - **Compliance failure against `#45` and `#247`, not a new class.** A fifth rule
   restating four that were ignored is `#136` theater.
 
+## VERIFYING A MONITOR'S PLUMBING IS NOT VERIFYING ITS PERCEPTION (B1886 - L576, mechanically enforced)
+
+**MEASURED: a launch-turn gate confirmed the cron's state-file path matched the
+runner's output, and passed. The monitor was blind anyway** - its grep used
+`/200` while the screener reports against the PIT-ACTIVE 185, so it would have
+said "no fires" every 11 minutes on a run firing on 29 of 29 screen-days.
+
+- **The gate asked "is it pointed at the right file?"** - checkable, cheap, and
+  not the question whose failure was live.
+- **A monitor's wrong grep is SCHEDULED.** It reports the same false silence
+  every interval, and **repetition reads as corroboration when the mechanism is
+  shared.**
+- **When a monitor searches, its pattern needs a POSITIVE CONTROL** - a real
+  line it must match - before the monitor is trusted to report silence.
+  Enforced by `scan_monitor_pattern_unverified`; helper is `grep_control.py`.
+
 ## A LITERAL'S VALUE DEPENDS ON THE PATH IT TRAVELLED (B1884 - L575, CHECKLIST #226)
 
 **MEASURED: I verified a fixture was invalid Python in a bash heredoc, embedded

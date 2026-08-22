@@ -41,6 +41,20 @@ from __future__ import annotations
 # incident produced several sentences, the one chosen is the one that appeared
 # in the response the owner reacted to.
 INCIDENTS: dict[str, tuple[str, bool, dict]] = {
+    # B1887: VERBATIM from the B1856 monitor prompt. It greps for the fire
+    # count using the ticker-FILE size, 200, while the screener reports
+    # against the PIT-ACTIVE universe, 185. It would have reported "no fires"
+    # every 11 minutes on a run that fired on 29 of 29 screen-days, and its
+    # own decision rule would then have confirmed a launch blocker backwards.
+    "scan_monitor_pattern_unverified": (
+        "awk '/^2026-08-21 2[0-9]:/' backtest_v2.log | grep -oE "
+        '"[0-9]+/200 passed" | sort | uniq -c | tail -5 - any non-zero N/200 '
+        "means the approved window FIRES at 200 tickers and the blocker clears",
+        True,
+        {"blobs": ["grep -oE \"[0-9]+/200 passed\" backtest_v2.log - any "
+                   "non-zero N/200 means the window fires and the blocker "
+                   "clears"]},
+    ),
     # B1879: VERBATIM from b1845_timing.py, the script whose three arms all
     # fired ZERO and produced a NEUTRAL verdict I nearly published. The launch
     # line named no interpreter, so it ran under the SYSTEM python: 2 of 33
