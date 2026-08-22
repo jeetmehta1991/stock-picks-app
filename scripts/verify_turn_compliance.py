@@ -3107,7 +3107,16 @@ def scan_retroactive_sweep(entries, *, text=None) -> list[str]:
     because the owner asked. This is the mechanism member (#236) for the
     retroactive-sweep rule itself.
     """
-    t = (_assistant_text(entries) if text is None else text.lower())
+    # B1956 (S6-B1783b): tenth gate routed through _response_text.
+    #
+    # keep_code=False (the default) is correct here and it is NOT the answer
+    # the last two conversions needed. This gate's triggers are prose VERBS -
+    # "codified", "generalis", "this class is now" - so a turn showing
+    # `generalise` inside a code span is quoting a token, not claiming a
+    # sweep. The skills-block gates needed keep_code=True because the names
+    # they count ARE conventionally backticked. **Third distinct answer in
+    # four conversions: the question is per-gate.**
+    t = _response_text(entries, text)
     if not t or not any(k in t for k in RETRO_TRIGGERS):
         return []
     return require_each(
