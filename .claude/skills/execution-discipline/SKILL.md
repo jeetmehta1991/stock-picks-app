@@ -741,6 +741,27 @@ gate had just named.**
 - **Compliance failure against `#45` and `#247`, not a new class.** A fifth rule
   restating four that were ignored is `#136` theater.
 
+## A GATE READING THE WRONG WINDOW DOES NOT FAIL LOUDLY - IT PASSES (B1952 - L598, CHECKLIST #226)
+
+**Routing one gate through `_response_text` made it fire on the very next
+turn.** It had been reading a wider window, finding its marker somewhere in it,
+and passing while the required block was absent. **MEASURED: 3,519 substantive
+reports this session, 102 with a SKILLS INVOKED block - 2.9pct - against 1,134
+with a CHECKLIST compliance statement.**
+
+- **COMPLIANCE FAILURE against owner directive B1726**, whose own reason is the
+  diagnosis: *silence cannot distinguish "not triggered" from "triggered and
+  skipped".*
+- **A gate reading too NARROW a window fires on compliant turns and gets fixed
+  within a batch.** A gate reading too WIDE returns clean, and the only signal
+  is an alarm that was never going to sound.
+- **Whenever a check has a permissive direction, that is where the rot is** -
+  L596's asymmetry, one level up, and the direction nobody is prompted to test.
+
+**Mechanically enforced** by the `S6-B1783b` conversion backlog, pinned at 5 by
+`count_text_readers`: each remaining raw reader is a gate whose window has
+never been proven.
+
 ## AN ENUMERATION PATTERN ENCODES THE EXAMPLES IN FRONT OF YOU (B1950 - L597, CHECKLIST #162)
 
 **Four times in one session a probe ran clean, returned a plausible number, and

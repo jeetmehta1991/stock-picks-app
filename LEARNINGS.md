@@ -12862,3 +12862,43 @@ member you did not use to build it.** **ANCHORED (`#197`):** COMPLIANCE FAILURE
 against `CHECKLIST #162`, fourth instance; `#226` amended with the
 enumeration-control clause rather than adding a redundant item. Carried into
 `SKILL.md`.
+
+
+### L598
+
+**A gate reading the wrong window does not fail loudly - it passes**
+
+**B1950/B1952.** Routing `scan_missing_skill_confirmation` through
+`_response_text` - which reads only the FINAL assistant block (B1742) - made it
+fire on the very next turn. It had been reading a wider window through
+`_assistant_text`, finding the phrase somewhere in it, and **passing while the
+block was absent.**
+
+MEASURED over this session's transcript: **3,519 substantive reports, 102
+containing a SKILLS INVOKED block (2.9pct)**, against **1,134 containing
+"CHECKLIST compliance" (32pct)**. I had been ending turns with one and not the
+other.
+
+**COMPLIANCE FAILURE against owner directive B1726**, whose stated reason is
+the diagnosis: *"silence cannot distinguish 'not triggered' from 'triggered and
+skipped' - which is how fable-mode went un-invoked all session while its name
+appeared in every response."*
+
+**The failure mode is the quiet one.** A gate that reads too NARROW a window
+fires on compliant turns, someone investigates, and it gets fixed within a
+batch - this session fixed a dozen. **A gate that reads too WIDE finds its
+marker somewhere and returns clean**, and the only signal is the absence of an
+alarm that was never going to sound.
+
+**That asymmetry is L596's, one level up.** There the ESCAPE was the soft side
+because it clears silently; here the WINDOW is, for the same reason. **Whenever
+a check has a permissive direction, that direction is where the rot is**, and
+it is the direction nobody is prompted to test.
+
+**The conversion backlog is the remedy, and this is the argument for finishing
+it**: 5 gates still read raw, and each one is a gate whose window has never been
+proven to be the right one.
+
+**ANCHORED (`#197`):** compliance failure against owner directive B1726;
+mechanism is the `S6-B1783b` conversion backlog, pinned at 5 by
+`count_text_readers`. Carried into `SKILL.md`.
