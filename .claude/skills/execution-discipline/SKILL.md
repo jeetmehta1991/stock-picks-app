@@ -2143,7 +2143,9 @@ with placeholder rejection. **This paragraph said "JUDGMENT-ONLY until the owner
 mechanism when the ruling lands" for THREE DAYS after both had happened** (B1988): a standing
 attach-later instruction has no owner once its trigger fires, which is `#279`'s decay arriving
 through a TODO instead of a register. A JUDGMENT-ONLY that names a future un-blocker needs a
-mechanism watching for the un-blocker, or it outlives its own justification silently.
+mechanism watching for the un-blocker - or the batch clearing the blocker sweeps for waivers
+naming it (L613; anchored to `#279`, whose decay this is, arriving through a TODO instead of
+a register).
 
 ## NAME THE CLASS AFTER THE MECHANISM, NOT THE INCIDENT (B1768 - L523, CHECKLIST #248)
 
