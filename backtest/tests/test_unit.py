@@ -19906,3 +19906,49 @@ def test_b1899_missing_measurement_never_renders_as_a_number():
         "the inline placeholder logic came back. One definition, one place "
         "(L561) - a duplicated pattern is a divergence waiting for someone to "
         "fix half of it.")
+
+
+
+def test_b1904_marker_allows_plurals_but_not_prefix_collisions():
+    """B1904: a LEFT boundary blocks the collision; a plural suffix must pass.
+
+    B1872 fixed three markers matching their own NEGATION - grade/degrade,
+    fixed/unfixed, corrected/uncorrected - all PREFIX collisions where letters
+    on the LEFT invert the meaning. Anchoring both sides also blocked SUFFIX
+    inflection, so `cubes` stopped naming a source and the gate refused
+    "measured 15.4 across the four config cubes".
+
+        grade in degrade   LEFT  collision, meaning INVERTED -> block
+        cube  in cubes     RIGHT inflection, meaning SAME    -> allow
+    """
+    import importlib.util
+    import pathlib as _p
+
+    root = _p.Path(__file__).resolve().parents[2]
+    spec = importlib.util.spec_from_file_location(
+        "vtc_b1904", root / "scripts" / "verify_turn_compliance.py")
+    tg = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(tg)
+    W = tg._any_word
+
+    # PREFIX collisions must still be blocked - this is B1872's whole point
+    assert not W(("grade",), "the exit degraded to a time stop"), (
+        "a marker must not match its own negation - `degrade` means the "
+        "opposite of `grade`")
+    assert not W(("fixed",), "this is unfixed")
+    assert not W(("corrected",), "this is uncorrected")
+
+    # SUFFIX inflection must be ALLOWED - same word, not its opposite
+    for singular, plural in (("cube", "the four config cubes"),
+                             ("script", "the scripts run this turn"),
+                             ("artifact", "the artifacts on disk"),
+                             ("ledger", "the queue ledgers")):
+        assert W((singular,), plural), (
+            f"`{singular}` must match its plural in {plural!r} - a plural is "
+            "the same word, and blocking it stopped real source names from "
+            "clearing #201")
+
+    # and the live list must clear a real sourced sentence, plural or not
+    assert tg._any_word(tg.FIGURE_SOURCES, "measured across the four config cubes")
+    assert tg._any_word(tg.FIGURE_SOURCES, "measured from output_cfg1 trade detail")
+    assert not tg._any_word(tg.FIGURE_SOURCES, "the exit degraded to a time stop")

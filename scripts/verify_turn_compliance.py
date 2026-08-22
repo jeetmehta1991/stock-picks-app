@@ -1158,7 +1158,22 @@ def _any_word(markers, text: str) -> bool:
             if ml in text:
                 return True
             continue
-        if re.search(r"(?<![a-z0-9_])" + re.escape(ml) + r"(?![a-z0-9_])", text):
+        # B1904: LEFT boundary only, plus an optional plural on the right.
+        #
+        # The three defects B1872 fixed were all PREFIX collisions - `grade`
+        # inside `degrade`, `fixed` inside `unfixed`, `corrected` inside
+        # `uncorrected` - where extra letters on the LEFT invert the meaning.
+        # Anchoring BOTH sides also blocked SUFFIX inflection, and `cubes` is
+        # the same word as `cube`, not its opposite. The gate then refused
+        # "measured 15.4 across the four config cubes", which names its source.
+        #
+        #     grade in degrade   LEFT  collision, meaning INVERTED -> block
+        #     cube  in cubes     RIGHT inflection, meaning SAME    -> allow
+        #
+        # 14 FIGURE_SOURCES members are plain words that pluralise; every one
+        # was broken by the two-sided anchor.
+        if re.search(r"(?<![a-z0-9_])" + re.escape(ml) + r"(?:s|es)?(?![a-z0-9_])",
+                     text):
             return True
     return False
 
