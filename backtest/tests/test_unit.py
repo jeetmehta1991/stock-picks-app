@@ -21900,3 +21900,69 @@ def test_b1983_skill_gate_window_is_session_since_compaction():
         "a re-invocation AFTER compaction restores the skill - the body "
         "arriving as user text is the load, whether or not the tool call "
         "is visible")
+
+
+
+def test_b1984_skill_gates_read_the_session_window():
+    """B1984 (S6-B1967c, 5+6 of 8): both skill gates survive the straddle.
+
+    A Skill call's body arrives as a USER-role message, resetting the turn
+    slice - so both gates, reading turn-sliced `_tool_text`, fired on the
+    turn following every successful invocation (B1983's class, the two named
+    consumers). Both now read `_skill_context_text`.
+    """
+    import importlib.util as _iu
+    import pathlib as _p
+
+    root = _p.Path(__file__).resolve().parents[2]
+    spec = _iu.spec_from_file_location(
+        "vtc_b1984", root / "scripts" / "verify_turn_compliance.py")
+    tg = _iu.module_from_spec(spec)
+    spec.loader.exec_module(tg)
+
+    def call(skill):
+        return {"type": "assistant", "message": {"content": [
+            {"type": "tool_use", "name": "Skill",
+             "input": {"skill": skill}}]}}
+
+    def body(skill):
+        return {"type": "user", "message": {"content": [
+            {"type": "text",
+             "text": f"Base directory for this skill: x/{skill}"}]}}
+
+    ASK = {"type": "user", "message": {"content": [
+        {"type": "text", "text": "use fable mode for this"}]}}
+    WORK = {"type": "assistant", "message": {"content": [
+        {"type": "tool_use", "name": "Bash",
+         "input": {"command": "git status"}}]}}
+    COMPACT = {"type": "user", "message": {"content": [
+        {"type": "text",
+         "text": "This session is being continued from a previous "
+                 "conversation that ran out of context."}]}}
+
+    # invoked, body delivered, then the trigger repeats in a later message:
+    # the skill is IN CONTEXT and neither gate may fire (the straddle case)
+    entries = [call("fable-mode"), body("fable-mode"), ASK, WORK]
+    assert not tg.scan_skill_not_invoked(entries), (
+        "generic gate: a skill loaded earlier in the session is in context")
+    assert not tg.scan_skill_not_invoked_per_skill(entries), (
+        "per-skill gate: same - the fable-mode trigger is satisfied by the "
+        "fable-mode load, not by any-skill evidence")
+
+    # never invoked -> both fire (#226, the true positive survives)
+    bare = [ASK, WORK]
+    assert tg.scan_skill_not_invoked(bare), "generic true positive"
+    assert tg.scan_skill_not_invoked_per_skill(bare), "per-skill true positive"
+
+    # a DIFFERENT skill in context does not satisfy the per-skill gate -
+    # B1730's whole point, and the widening must not reopen it
+    wrong = [call("execution-discipline"), body("execution-discipline"),
+             ASK, WORK]
+    assert tg.scan_skill_not_invoked_per_skill(wrong), (
+        "invoking a DIFFERENT skill does not satisfy a fable-mode trigger - "
+        "the session window must not resurrect the any-skill defect (B1730)")
+
+    # compaction after the load drops it -> per-skill fires again
+    dropped = [call("fable-mode"), body("fable-mode"), COMPACT, ASK, WORK]
+    assert tg.scan_skill_not_invoked_per_skill(dropped), (
+        "a compaction empties the context; the load before it is gone")

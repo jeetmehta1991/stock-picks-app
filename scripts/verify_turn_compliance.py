@@ -1598,8 +1598,21 @@ def scan_skill_not_invoked(entries, *, user_text=None, tool_text=None) -> list[s
     hit = [t for t in SKILL_TRIGGERS if t in u]
     if not hit:
         return []
-    tt = _tool_text(entries, tool_text)
-    if '"name": "Skill"' in tt or "'name': 'Skill'" in tt or "SKILL_INVOKED" in tt:
+    # B1984: session-since-compaction, not the turn slice - a Skill call
+    # STRADDLES the turn boundary (the body arrives as a user-role message),
+    # so a turn-scoped read can never see the invocation it demands (B1983).
+    # The collector emits the call's INPUT json, not the transcript's outer
+    # {"name": "Skill"} wrapper, so the old needle could never match it; any
+    # collected skill-context evidence is a Skill call or a delivered body,
+    # which is exactly this gate's ANY-skill semantics (per-skill strictness
+    # is the sibling gate's job, B1730).
+    tt = (_strip_gate_echo(tool_text) if tool_text is not None
+          else _skill_context_text(entries))
+    if tool_text is not None:
+        if ('"name": "Skill"' in tt or "'name': 'Skill'" in tt
+                or "SKILL_INVOKED" in tt):
+            return []
+    elif tt.strip():
         return []
     return [f"SKILL NOT INVOKED: the request contains {hit[0]!r} but no Skill "
             "tool call ran this turn. Saying the name of a skill is not loading "
@@ -1662,7 +1675,12 @@ def scan_skill_not_invoked_per_skill(entries, *, user_text=None,
                                      tool_text=None) -> list[str]:
     """EACH triggered skill requires ITS OWN invocation."""
     u = _last_user_text(entries) if user_text is None else user_text.lower()
-    tt = _tool_text(entries, tool_text).lower()
+    # B1984: same session window as the generic gate above (B1983's straddle).
+    # A skill's NAME appears in both evidence shapes the collector gathers -
+    # a call's input json and a body's base-directory line - so the per-skill
+    # needle survives the collector change unchanged.
+    tt = (_strip_gate_echo(tool_text).lower() if tool_text is not None
+          else _skill_context_text(entries).lower())
     missing = [name for name, trigs in SKILL_TRIGGER_MAP.items()
                if any(t in u for t in trigs) and name not in tt]
     if not missing:
