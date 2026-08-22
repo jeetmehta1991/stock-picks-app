@@ -247,6 +247,48 @@ def check_verdict_denominator() -> str | None:
 # forbids it. A rule applied only when remembered is not a control, so this
 # reads the transcript and BLOCKS the turn when a long-running launch happened
 # without an arming call in the SAME turn.
+def _cron_at_least_hourly(expr: str) -> bool:
+    """True when a 5-field cron fires AT LEAST once every hour.
+
+    B1927 (S6-B1857b): `#185`'s cadence half matched PROSE only, so `*/11 * * *
+    *` - five reports an hour - was rejected for not containing the word
+    "hourly". **B1722, this same file: a gate with false positives gets
+    bypassed**, and a rule that punishes over-compliance teaches the author to
+    write the magic word instead of scheduling the report.
+
+    The SCHEDULE is the machine-readable fact, so read it:
+
+        */N * * * *   every N minutes       -> at least hourly when N <= 60
+        M   * * * *   minute M of each hour -> hourly
+        *   * * * *   every minute          -> yes
+        0 */N * * *   every N hours         -> only when N == 1
+
+    Anything whose HOUR field restricts to specific hours fires less often than
+    hourly and is NOT accepted. Unparseable input returns False - a cadence
+    that cannot be read is not a cadence that was proven.
+    """
+    import re as _rc
+
+    parts = str(expr or "").strip().split()
+    if len(parts) != 5:
+        return False
+    minute, hour = parts[0], parts[1]
+
+    # the hour field must not restrict which hours fire
+    if hour != "*":
+        m = _rc.fullmatch(r"\*/(\d+)", hour)
+        if not (m and int(m.group(1)) == 1):
+            return False
+
+    if minute == "*":
+        return True
+    m = _rc.fullmatch(r"\*/(\d+)", minute)
+    if m:
+        return 1 <= int(m.group(1)) <= 60
+    # a fixed minute, or a list of them, fires at least once per hour
+    return bool(_rc.fullmatch(r"\d+(?:,\d+)*", minute))
+
+
 LAUNCH_MARKERS = (
     "run_phase1a.py",
     "universe_ladder_run.py",
@@ -293,8 +335,19 @@ def scan_unmonitored_launch(entries: list[dict]) -> list[str]:
                 # and I armed exception-only FOUR times. So the arming call must
                 # ALSO promise an unconditional periodic report.
                 _low = blob.lower()
+                # B1927 (S6-B1857b): the SCHEDULE counts, not the sentence.
+                # `*/11 * * * *` is five reports an hour and was rejected for
+                # not saying "hourly". Prose markers stay - a PushNotification
+                # arm has no cron to read - but a cron proven <= hourly now
+                # satisfies the cadence on its own.
+                _cron = ""
+                import re as _rx
+                _cm = _rx.search(r'"cron"\s*:\s*"([^"]+)"', blob)
+                if _cm:
+                    _cron = _cm.group(1)
                 _periodic = ("every hour" in _low or "hourly" in _low
-                             or "scheduled report" in _low)
+                             or "scheduled report" in _low
+                             or _cron_at_least_hourly(_cron))
                 _unconditional = ("do not withhold" in _low
                                   or "unconditional" in _low
                                   or "silence is correct only" in _low

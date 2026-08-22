@@ -20485,3 +20485,62 @@ def test_b1925_launch_gate_ignores_heredoc_bodies():
     assert src.count("<<\\s*'?(\\w+)'?.*?^\\1") >= 2, (
         "both launch detectors must strip heredoc bodies - B1880 applied it "
         "to one and the other blocked a turn on a quoted fixture")
+
+
+
+def test_b1927_cadence_reads_the_schedule_not_the_sentence():
+    """B1927 (S6-B1857b): `#185` rejected a monitor that EXCEEDED its requirement.
+
+    The cadence half matched PROSE - "every hour", "hourly", "scheduled
+    report". A `CronCreate` carrying `*/11 * * * *` fires FIVE times an hour and
+    was rejected for not containing the word.
+
+    **B1722, same file: a gate with false positives gets bypassed.** A rule that
+    punishes over-compliance teaches the author to write the magic word rather
+    than to schedule the report.
+    """
+    import importlib.util as _iu
+    import pathlib as _p
+
+    root = _p.Path(__file__).resolve().parents[2]
+    spec = _iu.spec_from_file_location(
+        "vtc_b1927", root / "scripts" / "verify_turn_compliance.py")
+    tg = _iu.module_from_spec(spec)
+    spec.loader.exec_module(tg)
+    f = tg._cron_at_least_hourly
+
+    # fires at least hourly
+    for expr in ("*/11 * * * *", "*/15 * * * *", "0 * * * *", "30 * * * *",
+                 "0,30 * * * *", "* * * * *", "0 */1 * * *"):
+        assert f(expr), f"{expr!r} fires at least hourly and must be accepted"
+
+    # does NOT - the gate must not be weakened into accepting anything
+    for expr in ("0 */4 * * *", "0 9 * * *", "*/90 * * * *", "", "garbage",
+                 "0 0 * * 0"):
+        assert not f(expr), (
+            f"{expr!r} fires LESS often than hourly (or cannot be parsed) and "
+            "must not satisfy the cadence - a cadence that cannot be read is "
+            "not a cadence that was proven")
+
+    # end-to-end through the gate, including the branch that must NOT relax
+    def _ent(cron, prompt):
+        return [
+            {"type": "assistant", "message": {"content": [
+                {"type": "tool_use", "name": "CronCreate",
+                 "input": {"cron": cron, "prompt": prompt}}]}},
+            {"type": "assistant", "message": {"content": [
+                {"type": "tool_use", "name": "Bash", "input": {
+                    "command": "nohup python backtest/run_phase1a.py "
+                               "--output-dir output_x &"}}]}}]
+
+    UNC = "check and push; do not withhold the report"
+    assert not tg.scan_unmonitored_launch(_ent("*/11 * * * *", UNC)), (
+        "THE INCIDENT: */11 is five reports an hour and must arm without the "
+        "word 'hourly' appearing anywhere")
+    assert tg.scan_unmonitored_launch(_ent("0 */4 * * *", UNC)), (
+        "every four hours is LESS than the required cadence and must still be "
+        "rejected - reading the schedule must not become accepting any schedule")
+    assert tg.scan_unmonitored_launch(
+        _ent("*/11 * * * *", "report only if something breaks")), (
+        "L424: the UNCONDITIONAL half is independent of cadence - an "
+        "exception-only monitor fails however often it runs")
