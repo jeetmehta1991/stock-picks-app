@@ -17077,7 +17077,9 @@ def test_b1783_response_gates_inherit_text_scoping():
     # docstring promises the set "cannot GROW". It could, in that shape,
     # silently. Widening the detector is what surfaced them.
     KNOWN_UNCONVERTED = {
-        "scan_compliance_is_content", "scan_false_skill_status",
+        # B1941: scan_compliance_is_content CONVERTED - removed from this
+        # shrink-only set in the same commit as the conversion.
+        "scan_false_skill_status",
         "scan_missing_skill_confirmation",
         "scan_prose_only_rule", "scan_queue_not_updated",
         "scan_response_gates", "scan_retroactive_sweep",
@@ -20629,22 +20631,21 @@ def test_b1938_uninspected_constant_reads_prose_not_mentions():
 
     # L592's remedy: COUNT the sites and PIN the count, so the unconverted
     # siblings are visible rather than remembered.
-    raw_readers = src.count(
-        "t = (_assistant_text(entries) if text is None else text.lower())")
-    assert raw_readers == 11, (
-        f"{raw_readers} gates still read text raw, pin says 11. If a gate was "
-        "converted, LOWER this number in the same commit (S6-B1783b); if one "
-        "was added, it needs _response_text instead")
+    #
+    # B1941b / L593: the count comes from `count_text_readers`, the SAME
+    # function any measurement calls. B1938's version re-implemented it here
+    # and reported 4 where the measurement said 2 - one counting occurrences,
+    # the other functions. One definition, one answer.
+    raw, routed, case_preserved = tg.count_text_readers(src)
 
-    # B1938e: this first counted OCCURRENCES of the regex (4 - the
-    # definition line and two comment mentions inflate it) while the
-    # measurement behind the claim counted GATES (2). #271's class, and
-    # B1929's exactly: a correct count under a noun naming a different
-    # set. Caught by this pin one run after it was written.
-    _fns = _re.split(r"\ndef (scan_[a-z_]+)", src)
-    case_preserved = len([_fns[i] for i in range(1, len(_fns), 2)
-                          if "_raw_assistant" in _fns[i + 1]])
+    assert raw == 10, (
+        f"{raw} gates still read text raw, pin says 10. If a gate was "
+        "converted, LOWER this in the same commit (S6-B1783b); if one was "
+        "added reading raw, it needs _response_text instead")
+    assert routed >= 11, (
+        f"only {routed} gates route through _response_text - the count may "
+        "not fall, converting is one-way")
     assert case_preserved == 2, (
-        f"{case_preserved} sites keep a case-preserved copy, pin says 2. Only "
+        f"{case_preserved} gates keep a case-preserved copy, pin says 2. Only "
         "scan_uninspected_constant routes it through _strip_mentions; "
         "scan_unverified_structure does not, and that is the visible sibling")

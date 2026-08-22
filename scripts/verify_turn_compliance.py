@@ -1407,6 +1407,36 @@ def scan_uninspected_constant(entries, *, tool_text=None,
             "away. Grep the identifier, or do not cite it."]
 
 
+def count_text_readers(src: str) -> tuple:
+    """(raw, routed, case_preserved) - text-reading gates, counted as FUNCTIONS.
+
+    B1941b / L593: *put the measuring code IN the pin, or derive both from one
+    function.* B1938 measured GATES (2) and pinned OCCURRENCES (4) because the
+    count was written twice - `re.findall` counted a definition line and two
+    comment mentions that a per-function split does not.
+
+    One pass, one definition, three numbers. The pin calls this; any future
+    measurement calls this; **they cannot disagree.**
+
+    `raw` is the S6-B1783b backlog: gates still reading `_assistant_text`
+    instead of `_response_text`, so they carry none of B1738 (mentions),
+    B1742 (final block) or B1781 (fences).
+    """
+    import re as _rc
+
+    parts = _rc.split(r"\ndef (scan_[a-z_]+)", src)
+    raw = routed = case_preserved = 0
+    for i in range(1, len(parts), 2):
+        body = parts[i + 1]
+        if "_response_text" in body:
+            routed += 1
+        elif "_assistant_text" in body:
+            raw += 1
+        if "_raw_assistant" in body:
+            case_preserved += 1
+    return raw, routed, case_preserved
+
+
 def _strip_mentions(text: str) -> str:
     """B1738/B1781's strips WITHOUT lowercasing, for gates that need case.
 
@@ -3042,7 +3072,11 @@ def scan_compliance_is_content(entries, *, text=None) -> list[str]:
     heading.
     """
     import re
-    t = (_assistant_text(entries) if text is None else text.lower())
+    # B1941 (S6-B1783b): second gate routed through _response_text, again
+    # ONE at a time - the identical line still appears at 10 other sites and
+    # converting them together is the change S6-B1783b calls the one that
+    # breaks several silently.
+    t = _response_text(entries, text)
     if not t or "checklist compliance" not in t:
         return []
     tail = t.split("checklist compliance", 1)[1][:2500]
