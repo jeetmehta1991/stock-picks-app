@@ -20293,16 +20293,27 @@ def test_b1914_l585_l586_rules_and_their_disposition_survive():
     import pathlib as _p
 
     root = _p.Path(__file__).resolve().parents[2]
+    import re as _re
+
     lm = (root / "LEARNINGS.md").read_text(encoding="utf-8")
-    sk = (root / ".claude" / "skills" / "execution-discipline"
-          / "SKILL.md").read_text(encoding="utf-8")
+    sk_raw = (root / ".claude" / "skills" / "execution-discipline"
+              / "SKILL.md").read_text(encoding="utf-8")
+    # B1920b: COLLAPSE whitespace. These docs are hard-wrapped, so a phrase
+    # assertion fails on a line break rather than on the content - which is a
+    # false alarm that teaches nothing and erodes trust in the pin.
+    #
+    # Safe in the way L582's transform was NOT: collapsing runs of whitespace
+    # to one space loses no token and JOINS none, where `" ".join(tokens)`
+    # inserted separators that were never there. **A haystack transform is
+    # sound when it is information-losing in neither direction.**
+    sk = _re.sub(r"\s+", " ", sk_raw)
 
     # L585 - the measurement rule, in BOTH docs
     assert "### L585" in lm, "L585 dropped from LEARNINGS.md"
     assert "proximity is not containment" in lm.lower(), (
         "L585's diagnostic phrase is the part that makes the rule usable - a "
         "reader who keeps the headline and loses this cannot apply it")
-    assert "COUNTS THE WRONG THING" in sk, "L585's SKILL section dropped"
+    assert "COUNTS THE WRONG THING" in sk_raw, "L585's SKILL section dropped"
 
     # and its PROSE-ONLY disposition must remain EXPLICIT, with its reason.
     # An unexplained PROSE-ONLY is indistinguishable from an ungated addition
@@ -20317,11 +20328,35 @@ def test_b1914_l585_l586_rules_and_their_disposition_survive():
 
     # L586 - the chilling-effect rule, in BOTH docs
     assert "### L586" in lm, "L586 dropped from LEARNINGS.md"
-    assert "CHILLING EFFECT" in sk, "L586's SKILL section dropped"
+    assert "CHILLING EFFECT" in sk_raw, "L586's SKILL section dropped"
     for phrase in ("costly in the wrong place", "write less down"):
         assert phrase in sk.lower(), (
             f"L586's operative test dropped: {phrase!r} - the rule without it "
             "is a slogan, not something a reader can act on")
+
+    # B1920: L587 - an exclusion register decays in the safe-looking direction
+    assert "### L587" in lm, "L587 dropped from LEARNINGS.md"
+    assert "EXCLUSION REGISTER" in sk_raw, "L587's SKILL section dropped"
+    assert "nothing excused that no longer needs it" in sk.lower(), (
+        "L587's second half is the whole lesson - the first half "
+        "(nothing uncovered) is the one that already existed everywhere")
+
+    # B1920: L588 - a control must take the same path as the claim
+    assert "### L588" in lm, "L588 dropped from LEARNINGS.md"
+    assert "SAME PATH AS THE CLAIM" in sk_raw, "L588's SKILL section dropped"
+    assert "anchor is not its scope" in sk.lower(), (
+        "L588's diagnosis is that a rule gets indexed by its origin story - "
+        "without that line the entry reads as a one-off control mistake")
+
+    # The COMPLIANCE-FAILURE citations are load-bearing, not decoration.
+    # L588's point is that #276b and #162 were CORRECT, PRESENT and MISSED.
+    # If the entries survive while the citations are edited out, the lesson
+    # inverts into "two gaps were found" - the opposite of what happened.
+    for cite in ("#276b", "#162"):
+        assert cite in sk, (
+            f"L588's citation of {cite} dropped - without it the entry reads "
+            "as a discovered gap rather than a rule that existed and was not "
+            "consulted, which reverses the lesson")
 
 
 
