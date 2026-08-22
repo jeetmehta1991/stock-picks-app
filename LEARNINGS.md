@@ -13459,3 +13459,42 @@ MEASURED: 8 gates converted across 7 batches; 0 raw `_tool_text(entries` gate
 call sites remain (executed sweep); 2 documented residues (`#279`); 4 trunk
 helpers gained. **ANCHORED (`#197`):** compliance failure against `#262`;
 mechanism `test_b1987_no_gate_reads_raw_tool_text`. Carried into `SKILL.md`.
+
+
+### L613
+
+**A JUDGMENT-ONLY that names its future un-blocker outlives it silently**
+
+**B1988 / `S6-B1960d`.** The L522 SKILL section said *"JUDGMENT-ONLY for now:
+the gate cannot exist until the owner rules on the vocabulary. Attach the
+mechanism when the ruling lands."* **The ruling landed 2026-08-19; the gate
+(`scan_queue_vocabulary`) shipped the same day at B1769; the section still
+said it three days later** - because a standing attach-later instruction has
+no owner once its trigger fires. B1769 built the gate looking forward and
+never looked back at the waiver that had promised it.
+
+**This is `#279`'s decay arriving through a TODO instead of a register.** A
+stale exemption at least sits in a list a reverse-check can sweep; a stale
+waiver sits in prose, reads as a considered judgement, and hides an ENFORCED
+rule as an unenforceable one - the pessimistic direction, which is why it
+survives (L587).
+
+**Dispositioning the whole ticket found the pattern was the majority case:**
+of the "5 prose-only advisory candidates", **3 already had wired mechanisms**
+(`scan_compliance_is_content`, `scan_ungated_addition`,
+`scan_queue_vocabulary` - verified defined+wired by grep this batch), 1 was
+built at B1966, and only 1 (`L585`) is genuinely prose-only with the
+impossibility argued. **The keyword screen had classified enforced rules as
+prose-only - L597 exactly, and the ticket's own `_reason:_` predicted it.**
+
+**Rule: a `JUDGMENT-ONLY` naming a future un-blocker needs a mechanism
+watching for the un-blocker** - or, cheaper, the batch that clears the blocker
+must sweep for waivers naming it (grep the ticket id). **COMPLIANCE FAILURE
+against `#279`.**
+
+MEASURED: 5 candidates -> 1 built + 3 already-mechanised + 1 argued-prose-only;
+the stale waiver stood 3 days past its trigger. **ANCHORED (`#197`):**
+compliance failure against `#279`; mechanism
+`test_b1988_l522_section_names_its_landed_mechanism`, which also asserts the
+named gate EXISTS (`#235`). Carried into `SKILL.md` (the corrected section is
+itself the carrier).

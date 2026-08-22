@@ -22134,3 +22134,35 @@ def test_b1987_no_gate_reads_raw_tool_text():
         assert f"def {helper}(" in src, (
             f"{helper} is one of the four trunk carriers the arc built - "
             "its absence means an axis lost its owner")
+
+
+
+def test_b1988_l522_section_names_its_landed_mechanism():
+    """B1988 (S6-B1960d): a JUDGMENT-ONLY expires when its blocker clears.
+
+    The L522 SKILL section said "JUDGMENT-ONLY until the owner rules on the
+    vocabulary - attach the mechanism when the ruling lands". The ruling
+    landed 2026-08-19 and `scan_queue_vocabulary` shipped at B1769; the
+    section still said it three days later. A standing attach-later
+    instruction has no owner once its trigger fires (#279, via a TODO).
+    """
+    import pathlib as _p
+
+    root = _p.Path(__file__).resolve().parents[2]
+    sk = (root / ".claude" / "skills" / "execution-discipline"
+          / "SKILL.md").read_text(encoding="utf-8")
+    i = sk.index("CHECK THE RECORD CAN STORE THE DISTINCTION")
+    sec = sk[i:i + 1800]
+
+    assert "scan_queue_vocabulary" in sec, (
+        "the section must name the mechanism that now enforces it - the "
+        "ruling landed and the gate shipped; a stale JUDGMENT-ONLY hides "
+        "an enforced rule as an unenforceable one")
+    assert "JUDGMENT-ONLY for now" not in sec, (
+        "the expired waiver must be gone, not merely contradicted below")
+
+    src = (root / "scripts" / "verify_turn_compliance.py").read_text(
+        encoding="utf-8")
+    assert "def scan_queue_vocabulary" in src, (
+        "and the named mechanism must exist - naming is not enforcement "
+        "(#235); if this fails the section is right to be judgment-only")

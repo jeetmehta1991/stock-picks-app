@@ -2137,8 +2137,13 @@ recorded that as a lapse, the truth was **38 of 38** - the queue has no reason f
 vocabulary separating **blocked / deprioritised / not-started**. **A confession about discipline was
 really a missing column, and the confession is what stopped me looking.**
 
-**JUDGMENT-ONLY for now**: the gate (validate status against a closed vocabulary) cannot exist until
-the owner rules on the vocabulary (`S6-B1766c`). Attach the mechanism when the ruling lands.
+**Mechanically enforced** since B1769: the owner ruled on 2026-08-19 (six classes, `_reason:_`
+required on every non-terminal row) and `scan_queue_vocabulary` validates both, via `require_each`
+with placeholder rejection. **This paragraph said "JUDGMENT-ONLY until the owner rules - attach the
+mechanism when the ruling lands" for THREE DAYS after both had happened** (B1988): a standing
+attach-later instruction has no owner once its trigger fires, which is `#279`'s decay arriving
+through a TODO instead of a register. A JUDGMENT-ONLY that names a future un-blocker needs a
+mechanism watching for the un-blocker, or it outlives its own justification silently.
 
 ## NAME THE CLASS AFTER THE MECHANISM, NOT THE INCIDENT (B1768 - L523, CHECKLIST #248)
 
