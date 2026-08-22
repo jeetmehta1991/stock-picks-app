@@ -2037,6 +2037,30 @@ def scan_novelty_claim_without_search(entries, *, text=None,
     if not t:
         return []
     low = t.lower()
+    # B1912: a QUOTED rule is a MENTION, not a claim. This gate fired on a
+    # quotation of L611 - "a finding only counts as no prior art when ALL FOUR
+    # sources confirm absence" - which is a rule being cited, not a claim being
+    # made. B1738 established the convention for backticks ("vocabulary shown
+    # in backticks is a MENTION, not a USE"); quotation marks are where a cited
+    # RULE actually lives.
+    #
+    # MEASURED on the session transcript, AFTER shipping: 41 firings -> 37, so
+    # this clears 4. My pre-ship probe said 11 by counting quote marks within a
+    # character WINDOW of the clause - proximity is not containment, and in a
+    # report this quote-dense almost any clause has a quote mark near it. The
+    # number was measured and it measured the wrong thing (L556).
+    #
+    # 4 of 41 still discriminates from the retraction-window widening REJECTED
+    # at B1911, which would have cleared 0 of 39 - and it includes the firing
+    # that blocked the turn. Both proposals felt equally reasonable as
+    # arguments; only the measurement separated them.
+    #
+    # Spans are LENGTH-BOUNDED so one stray quote cannot swallow the response
+    # and silence the gate - an unbounded strip is how a check goes quietly
+    # vacuous (L582).
+    low = _re.sub(r"`[^`]*`", " ", low)
+    low = _re.sub(r'"[^"]{0,400}"', " ", low)
+    low = _re.sub(r"\u201c[^\u201d]{0,400}\u201d", " ", low)
     if not _any_word(NOVELTY_CLAIMS, low):
         return []
     for clause in _re.split(r"[.;](?!\w)|\n", low):

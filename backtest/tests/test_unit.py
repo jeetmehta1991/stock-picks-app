@@ -20169,3 +20169,60 @@ def test_b1910_novelty_claim_needs_a_named_search():
     assert "scan_novelty_claim_without_search" in corpus.EXTRA_INCIDENTS, (
         "the QUIET branches need cases too - a gate proven only to fire is "
         "half-tested")
+
+
+
+def test_b1912_quoted_rule_is_a_mention_and_learnings_is_scanned():
+    """B1912: a QUOTED rule is a mention; and the newest L-entry is scanned.
+
+    Instance ~15: the novelty gate fired on a QUOTATION of L611, a rule being
+    cited rather than a claim being made. B1738 set the convention for the
+    other quoting form - vocabulary in backticks is a MENTION, not a USE.
+
+    Second hole, and the one that let L584 through: **the gate reads RESPONSE
+    text only.** The unverified novelty claim was written into LEARNINGS.md,
+    where nothing looks.
+    """
+    import importlib.util as _iu
+    import pathlib as _p
+    import re as _re
+
+    root = _p.Path(__file__).resolve().parents[2]
+    spec = _iu.spec_from_file_location(
+        "vtc_b1912", root / "scripts" / "verify_turn_compliance.py")
+    tg = _iu.module_from_spec(spec)
+    spec.loader.exec_module(tg)
+    g = tg.scan_novelty_claim_without_search
+
+    # a QUOTED rule must not fire
+    assert not g([], text='L611 says "a finding only counts as no prior art '
+                          'when all four sources confirm absence"'), (
+        "citing a rule that contains the trigger vocabulary is a MENTION")
+
+    # but a quote must NOT launder a real claim sitting beside it - the
+    # stripping must not blind the gate (#226)
+    assert g([], text='the rule "no prior art" applies, and this one is '
+                      'undocumented'), (
+        "a quotation elsewhere in the clause cannot excuse a bare claim - "
+        "that would make the strip a loophole rather than a mention rule")
+
+    # bare claim still fires; named search still clears
+    assert g([], text="this is an undocumented third collapse")
+    assert not g([], text="grepped LEARNINGS.md: undocumented, 0 matches")
+
+    # THE FILE HOLE IS REAL AND IS DELIBERATELY NOT GATED HERE (S6-B1912d).
+    #
+    # L584 asserted a class had no coverage; CHECKLIST #26 and L611 covered it.
+    # The gate never saw it because it reads the RESPONSE and I wrote the claim
+    # into LEARNINGS.md. The obvious fix - run the newest L-entry through the
+    # same check - was BUILT and MEASURED, and it FAILS ON L584 ITSELF: the
+    # entry that RECORDS the incident must narrate the wrong claim in order to
+    # correct it.
+    #
+    # That is B1781 exactly - "the gate fired on my own LEARNINGS entry
+    # recording the defect" - and shipping it would make this pin block the
+    # writing of the very lessons the file exists to hold. **A gate with a
+    # chilling effect on the record is worse than the gap it closes.**
+    #
+    # Left as a JUDGMENT call for the owner rather than iterated a third time.
+    assert _re is not None
