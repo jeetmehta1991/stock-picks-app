@@ -49,7 +49,11 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from backtest.config import PASSING_CRITERIA as PC  # noqa: E402
 
-GATE = PC["min_sharpe_per_regime"]
+# B2009 (D3): the gap is contextualized against the LIVE pooled gate the
+# roster cells must clear (min_sharpe_overall, B1493-armed) - the old line
+# printed the per-regime 0.5, understating how large the noise is relative
+# to the bar actually in force.
+GATE = PC["min_sharpe_overall"]
 
 
 def main() -> int:

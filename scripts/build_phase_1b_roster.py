@@ -64,7 +64,14 @@ from backtest.config import (STRATEGIES_DISABLED_DATA_SCARCITY,  # noqa: E402
 # cannot be distinguished from one that cleared it on exit luck, so it is reported
 # PROVISIONAL rather than PASS. This changes no gate and drops no cell: it labels how
 # much of the margin is decision-grade.
-SELECTION_NOISE_FLOOR = 0.369
+# B2009 (D3, owner-approved): RE-MEASURED on the post-D2 roster. Mean of the
+# disagreeing near-identical twin gaps {0.450, 0.216} = 0.333 (same statistic
+# as the old 0.369; max 0.450; n=2 of 7 pairs), from
+# output_audit/b1467_exit_selection_noise.json. The S6-B1772b family worry is
+# answered by the picks themselves: neither disagreeing pair chose
+# outcome-duplicate exits (duplicate map: measure_degraded_exits, effective
+# ~17 of 26), so the empirical floor already ranges over the effective family.
+SELECTION_NOISE_FLOOR = 0.333
 
 from roster_core import (                                    # noqa: E402
     IS_START, IS_END, HO_START, HO_END, WINSORIZE, COST_BPS, MIN_N, FDR_Q, JACCARD,
@@ -432,7 +439,10 @@ def main() -> int:
                "DUAL-SELF": "DUAL (own short leg)",
                "NEEDS-CREATION": "**NEEDS CREATION**"}.get(
                    r["mirror_status"], f"**UNCLASSIFIED: {r['mirror_status']}**")
-        margin = (h["sharpe"] or 0) - PC["min_sharpe_per_regime"]
+        # B2009: margin against the bar the cell actually had to clear - the
+        # LIVE pooled gate (min_sharpe_overall, B1493-armed), not the
+        # per-regime 0.5. The crossed-bar class, inside the roster builder.
+        margin = (h["sharpe"] or 0) - PC["min_sharpe_overall"]
         status = "ROBUST" if margin >= SELECTION_NOISE_FLOOR else "**PROVISIONAL**"
         r["margin"], r["status"] = round(margin, 3), status.strip("*")
         A(f"| {i} | `{r['strategy']}` | {r['direction']} | {status} | {r['cube']} | {r['n_tickers']} | "
@@ -444,7 +454,7 @@ def main() -> int:
     _prov = [r for r in kept if r.get("status") == "PROVISIONAL"]
     A(f"**Status (S6-B1467c, owner-approved).** ROBUST **{len(_rob)}** / "
       f"PROVISIONAL **{len(_prov)}**. A cell is ROBUST only if it clears the "
-      f"{PC['min_sharpe_per_regime']} Sharpe gate by more than the measured "
+      f"{PC['min_sharpe_overall']} Sharpe gate by more than the measured "
       f"selection-noise floor of {SELECTION_NOISE_FLOOR}. That floor is the holdout-Sharpe gap "
       "observed between duplicate strategies with ~identical entries whose exits were chosen "
       "independently (B1467) -- i.e. the amount of a cell's margin that the exit choice alone "

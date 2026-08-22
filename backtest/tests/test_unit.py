@@ -22777,3 +22777,48 @@ def test_b2008_tiers_are_explicit_and_the_forks_are_dead():
         pass
     else:
         raise AssertionError("an unknown tier fell through silently")
+
+
+
+def test_b2009_noise_floor_is_derived_from_the_artifact():
+    """B2009 (D3 / S6-B1772b): the floor is the artifact's number, not prose.
+
+    0.369 sat as a literal while its input artifact was regenerated under
+    D2 grading - the floor is now pinned EQUAL to the statistic recomputed
+    from the artifact (mean |dSharpe| of disagreeing near-identical pairs),
+    so a regeneration that moves the gaps fails this test instead of
+    leaving a stale literal in the owner-facing roster.
+    """
+    import importlib.util as _iu
+    import json as _json
+    import pathlib as _p
+    import sys as _sys
+
+    root = _p.Path(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    spec = _iu.spec_from_file_location(
+        "bpr_b2009", root / "scripts" / "build_phase_1b_roster.py")
+    m = _iu.module_from_spec(spec)
+    spec.loader.exec_module(m)
+
+    art = root / "output_audit" / "b1467_exit_selection_noise.json"
+    d = _json.loads(art.read_text(encoding="utf-8"))
+    tier = next(v for k, v in d["tiers"].items() if "NEAR" in k.upper())
+    gaps = [abs(p["d_sharpe"]) for p in tier
+            if isinstance(p, dict) and p.get("exit_a") != p.get("exit_b")]
+    assert gaps, ("no disagreeing pairs in the artifact - the floor has no "
+                  "basis and the literal is untestable; investigate before "
+                  "trusting either")
+    expect = round(sum(gaps) / len(gaps), 3)
+    assert abs(m.SELECTION_NOISE_FLOOR - expect) < 1e-9, (
+        f"SELECTION_NOISE_FLOOR={m.SELECTION_NOISE_FLOOR} but the artifact "
+        f"derives {expect} from gaps {sorted(gaps)} - the literal went stale "
+        "against its own input (the 0.369 incident, pinned)")
+
+    # the margin bar is the LIVE overall gate, not the per-regime 0.5
+    import source_text as st
+    code = st.code_only(root / "scripts" / "build_phase_1b_roster.py")
+    assert 'margin = (h["sharpe"] or 0) - PC["min_sharpe_overall"]' in code, (
+        "the ROBUST margin must be measured against the bar the cell "
+        "actually cleared - the crossed-bar class inside the roster builder")

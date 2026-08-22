@@ -2114,7 +2114,7 @@ runbook's hand-written caveat said `regime_flip` was a time stop *pre-B1593*; **
 
 - **Run `scripts/measure_degraded_exits.py <cube>` in every post-config pass.** A hand-maintained
   list of which exits are broken decays; a per-cube measurement does not.
-- **"Best of N" is only N if the N are distinct.** The 0.369 selection-noise floor was calibrated
+- **"Best of N" is only N if the N are distinct.** The selection-noise floor (0.369 then; re-measured 0.333 at B2009, and the family question answered by the picks themselves) was calibrated
   for best-of-26 against a family that is really ~16.
 - **When building a lens, flag MISMATCH rather than consistency**, and **match on stems** - exact
   tokens called `atr_trail_1x -> atr_trailing_stop` a mismatch because `trail != trailing`

@@ -80,7 +80,7 @@
       "mirror": "xs_momentum_bottom_decile_short",
       "asym_signals": [],
       "mirror_registered": true,
-      "margin": 1.124,
+      "margin": 0.624,
       "status": "ROBUST"
     },
     {
@@ -120,8 +120,8 @@
       "mirror": "xs_momentum_bottom_decile_short",
       "asym_signals": [],
       "mirror_registered": true,
-      "margin": 0.709,
-      "status": "ROBUST"
+      "margin": 0.209,
+      "status": "PROVISIONAL"
     }
   ],
   "all_rows": [
@@ -6988,7 +6988,7 @@
       "mirror": "xs_momentum_bottom_decile_short",
       "asym_signals": [],
       "mirror_registered": true,
-      "margin": 1.124,
+      "margin": 0.624,
       "status": "ROBUST"
     },
     {
@@ -7028,8 +7028,8 @@
       "mirror": "xs_momentum_bottom_decile_short",
       "asym_signals": [],
       "mirror_registered": true,
-      "margin": 0.709,
-      "status": "ROBUST"
+      "margin": 0.209,
+      "status": "PROVISIONAL"
     },
     {
       "cube": "R5",
