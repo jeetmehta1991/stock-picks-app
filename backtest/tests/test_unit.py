@@ -21836,3 +21836,67 @@ def test_b1982_substitution_judged_on_executed_commands_only():
         turn("Bash", {"command": "git commit -F - <<'MSG'\nsafe prose\nMSG"})), (
         "the quoted-heredoc form performs no substitution and is the safe "
         "path this gate exists to steer toward - it must never fire")
+
+
+
+def test_b1983_skill_gate_window_is_session_since_compaction():
+    """B1983: a Skill invocation STRADDLES the turn boundary by construction.
+
+    The tool call lands, then the skill content arrives as a USER-role
+    message, which resets the turn slice - so after B1980 turn-scoped the
+    collectors, `scan_discipline_not_loaded` fired on the very turn FOLLOWING
+    a successful invocation, and always would have.
+
+    COMPLIANCE FAILURE against the POST-FIX RE-CHECK rule (#196): B1980
+    enumerated the collectors' consumers but not each consumer's SEMANTIC
+    window under the new boundary.
+
+    The correct window is session-since-last-compaction: a loaded skill stays
+    in context exactly that long, and the ORIGINAL incident was a compaction
+    dropping it.
+    """
+    import importlib.util as _iu
+    import pathlib as _p
+
+    root = _p.Path(__file__).resolve().parents[2]
+    spec = _iu.spec_from_file_location(
+        "vtc_b1983", root / "scripts" / "verify_turn_compliance.py")
+    tg = _iu.module_from_spec(spec)
+    spec.loader.exec_module(tg)
+    f = tg.scan_discipline_not_loaded
+
+    SKILL_CALL = {"type": "assistant", "message": {"content": [
+        {"type": "tool_use", "name": "Skill",
+         "input": {"skill": "execution-discipline"}}]}}
+    SKILL_BODY = {"type": "user", "message": {"content": [
+        {"type": "text",
+         "text": "(Re-invocation of /execution-discipline)\n"
+                 "Base directory for this skill: x/execution-discipline"}]}}
+    OWNER = {"type": "user", "message": {"content": [
+        {"type": "text", "text": "next ticket please"}]}}
+    WORK = {"type": "assistant", "message": {"content": [
+        {"type": "tool_use", "name": "Bash",
+         "input": {"command": "git status"}}]}}
+    COMPACT = {"type": "user", "message": {"content": [
+        {"type": "text",
+         "text": "This session is being continued from a previous "
+                 "conversation that ran out of context."}]}}
+
+    assert not f([SKILL_CALL, SKILL_BODY, OWNER, WORK]), (
+        "the skill was invoked and its body delivered BEFORE the last user "
+        "message - it is still in context, and firing here blocks the turn "
+        "that follows every successful invocation (the B1983 false fire)")
+
+    assert f([OWNER, WORK]), (
+        "no invocation anywhere - the gate's true positive must survive the "
+        "re-windowing (#226)")
+
+    assert f([SKILL_CALL, SKILL_BODY, COMPACT, OWNER, WORK]), (
+        "a compaction AFTER the load drops the skill from context - this is "
+        "the ORIGINAL B1728 incident, and the session-wide read that "
+        "preceded B1980 would have missed it")
+
+    assert not f([COMPACT, SKILL_BODY, OWNER, WORK]), (
+        "a re-invocation AFTER compaction restores the skill - the body "
+        "arriving as user text is the load, whether or not the tool call "
+        "is visible")

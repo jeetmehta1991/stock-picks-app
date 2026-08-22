@@ -741,6 +741,26 @@ gate had just named.**
 - **Compliance failure against `#45` and `#247`, not a new class.** A fifth rule
   restating four that were ignored is `#136` theater.
 
+## EACH GATE'S QUESTION NAMES ITS OWN WINDOW (B1983 - L610, CHECKLIST #196)
+
+**B1980's turn-scoping was right for the collectors and wrong for one
+consumer.** A `Skill` invocation STRADDLES the turn boundary by construction -
+the tool call lands, then the skill body arrives as a USER-role message, which
+resets the slice - so the discipline gate fired on the turn FOLLOWING every
+successful load.
+
+- **A post-fix re-check that enumerates call sites is not done**: ask, per
+  consumer, what WINDOW its question needs. "Did this turn sample a source?"
+  is turn-scoped; "is the skill in context?" is session-since-last-compaction.
+- **Both wrong windows fail differently**: session-wide missed the compaction
+  drop (the original incident); turn-wide misses every load.
+- **Prove a re-windowed gate in both failure directions AND on the live
+  transcript** - the constructed cases show the boundary; only the live run
+  shows the gate is quiet on genuine compliance.
+
+**Mechanically enforced** by
+`test_b1983_skill_gate_window_is_session_since_compaction`.
+
 ## A TURN GATE READS THIS TURN - ON EVERY COLLECTOR (B1980 - L609, CHECKLIST #237)
 
 **`scan_partial_read` fired two turns running, both false: the verdict came

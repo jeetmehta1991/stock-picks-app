@@ -13383,3 +13383,37 @@ gate SILENT on the live transcript after the fix; 3/3 constructed-entry
 boundary cases. **ANCHORED (`#197`):** compliance failure against the B1742
 precedent; mechanism `test_b1980_tool_evidence_is_scoped_to_the_turn`.
 Carried into `SKILL.md`.
+
+
+### L610
+
+**A fix's re-check must cover each consumer's SEMANTICS, not just its call
+sites**
+
+**B1983.** B1980 turn-scoped the tool-text collectors and swept their
+consumers as a list of call sites. One batch later `scan_discipline_not_loaded`
+fired on the turn FOLLOWING a successful skill invocation - **and always would
+have**, because a `Skill` call STRADDLES the turn boundary by construction: the
+tool call lands, then the skill body arrives as a USER-role message, which
+resets the slice. **The evidence that gate wants can never be inside the
+window it was just given.**
+
+**COMPLIANCE FAILURE against the POST-FIX RE-CHECK rule (`#196`)** - and the
+rule's own wording says why the sweep missed it: I enumerated the consumers
+(which functions call the collector) and never asked, per consumer, **what
+WINDOW its question needs.** "Did this turn truncate a source?" is turn-scoped.
+"Is the skill in context?" is **session-since-last-compaction** - a loaded
+skill persists exactly until compaction drops it, which was the original B1728
+incident. Neither the old session-wide read nor the new turn read was right
+for it: **too wide missed the compaction drop; too narrow misses every load.**
+
+The fix is a dedicated collector, `_skill_context_text`: Skill tool_use inputs
+plus user-role messages carrying skill bodies, reset at each compaction
+marker. Proven 4/4 constructed cases including both failure directions, and
+SILENT on the live transcript where the skill was genuinely loaded.
+
+MEASURED: 2 more consumers share the straddle shape (`scan_skill_not_invoked`,
+`_per_skill`) - they are the remaining `S6-B1967c` conversions and get the same
+helper, one per batch. **ANCHORED (`#197`):** compliance failure against
+`#196`; mechanism `test_b1983_skill_gate_window_is_session_since_compaction`.
+Carried into `SKILL.md`.

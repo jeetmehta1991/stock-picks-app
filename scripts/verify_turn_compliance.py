@@ -1757,6 +1757,51 @@ def scan_missing_skill_confirmation(entries, *, text=None) -> list[str]:
             'every response.']
 
 
+_COMPACTION_MARKER = "this session is being continued from a previous conversation"
+
+
+def _skill_context_text(entries) -> str:
+    """Evidence that a skill is IN CONTEXT: everything since the last compaction.
+
+    B1983. A `Skill` invocation STRADDLES the turn boundary by construction -
+    the tool call lands, then the skill content arrives as a USER-role
+    message, which resets the turn slice. So a turn-scoped reader can never
+    see the invocation it demands, and after B1980 the discipline gate fired
+    on the very turn FOLLOWING a successful load.
+
+    A loaded skill stays in context until COMPACTION drops it - which was the
+    original B1728 incident. So the window is session-since-last-compaction:
+    collect Skill tool_use inputs AND user-role messages that carry skill
+    content (a re-invocation delivers the body as user text), resetting the
+    collection at each compaction marker.
+    """
+    out = []
+    for e in entries or ():
+        if not isinstance(e, dict):
+            continue
+        content = (e.get("message") or {}).get("content")
+        if e.get("type") == "user":
+            texts = []
+            if isinstance(content, str):
+                texts = [content]
+            elif isinstance(content, list):
+                texts = [c.get("text") or "" for c in content
+                         if isinstance(c, dict) and c.get("type") == "text"]
+            for t in texts:
+                if _COMPACTION_MARKER in t.lower():
+                    out = []          # context reset: prior loads are gone
+                elif ("base directory for this skill" in t.lower()
+                      or "re-invocation of /" in t.lower()):
+                    out.append(t.lower())
+        elif e.get("type") == "assistant" and isinstance(content, list):
+            for blk in content:
+                if (isinstance(blk, dict) and blk.get("type") == "tool_use"
+                        and str(blk.get("name") or "").lower() == "skill"):
+                    import json as _j
+                    out.append(_j.dumps(blk.get("input") or {}).lower())
+    return " ".join(out)
+
+
 def scan_discipline_not_loaded(entries, *, tool_text=None,
                               substantive=None) -> list[str]:
     """A working turn must LOAD the full execution-discipline skill.
@@ -1791,7 +1836,14 @@ def scan_discipline_not_loaded(entries, *, tool_text=None,
     # lines skill has to be invoked every turn! No exception and you dont get to
     # choose when to invoke it!" The  parameter is retained ONLY so
     # the pin test can exercise both branches; it defaults to ALWAYS-REQUIRED.
-    tt = _tool_text(entries, tool_text)
+    # B1983: NOT the turn slice. A Skill call precedes the user-role message
+    # that delivers the skill body, so it is never inside the turn it serves -
+    # after B1980's (correct) turn-scoping of _tool_text, this gate fired on
+    # the turn FOLLOWING every successful invocation. The right window is
+    # session-since-last-compaction, because a loaded skill stays in context
+    # exactly that long (the original incident WAS a compaction dropping it).
+    tt = (_strip_gate_echo(tool_text) if tool_text is not None
+          else _skill_context_text(entries))
     if substantive is False:
         return []
     # B1733b: fire only when the turn is OBSERVABLE. With zero entries the gate
