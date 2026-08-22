@@ -1488,6 +1488,15 @@ def scan_discipline_not_loaded(entries, *, tool_text=None,
 
     B1728, owner directive: *"I want the full 632 lines loaded each turn!"*
 
+    B1883 (S6-B1813d): THE RATIONALE BELOW IS STALE AND THE CHECK IS NOT.
+    Since B1744 the hook injects the FULL SKILL BODY - see
+    `inject_tier3_discipline.py:72` emitting "FULL SKILL, auto-injected
+    every turn", with SKILL.md at ~119 KB. **A stale rationale is worse
+    than a wrong check: the reader believes the reason and stops asking.**
+    The check still earns its place - loading the body is not invoking
+    the skill, and the gate fires on the ABSENCE of invocation.
+
+    ORIGINAL, PRESERVED FOR LINEAGE AND KNOWN STALE:
     MEASURED: the UserPromptSubmit hook injects a 12-bullet summary; the full
     SKILL.md is 644 lines. Invoking the skill DOES deliver all 644 - what I had
     seen before was a copy truncated by COMPACTION, not a design limit. So the

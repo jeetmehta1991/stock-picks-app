@@ -19653,3 +19653,66 @@ def test_b1882_executed_text_is_scoped_to_this_turn():
         "how the whole-session read survived")
     assert len(tg._since_last_user(entries)) == 1, (
         "exactly one assistant entry follows the last user message")
+
+
+
+def test_b1883_safe_write_refuses_invalid_source():
+    """B1883 (S6-B1864d): validate the CANDIDATE, never the aftermath.
+
+    A patch script called `write_text()` and THEN `ast.parse()`. The source
+    had a backslash-continuation followed by implicit string concatenation - a
+    syntax error - so it landed in `test_unit.py` and pytest collection failed
+    for the ENTIRE suite. The validator existed; it was positioned after the
+    damage.
+
+    The helper then caught this same class on its own installation: the patch
+    adding THIS test first went through a bash heredoc, the escapes mangled,
+    and `safe_append_py` refused to write.
+    """
+    import importlib.util
+    import pathlib as _p
+    import tempfile
+
+    import pytest
+
+    root = _p.Path(__file__).resolve().parents[2]
+    spec = importlib.util.spec_from_file_location(
+        "sw_b1883", root / "scripts" / "safe_write.py")
+    sw = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(sw)
+
+    with tempfile.TemporaryDirectory() as td:
+        p = _p.Path(td) / "m.py"
+        original = "original = 1\n"
+        p.write_text(original, encoding="utf-8")
+
+        # an unterminated string - the shape the heredoc produced
+        with pytest.raises(sw.WouldNotParse):
+            sw.safe_write_py(p, 'x = "unterminated\n')
+        assert p.read_text(encoding="utf-8") == original, (
+            "the file must be UNTOUCHED when the candidate does not parse - a "
+            "check that runs after the mutation reports a fact you can no "
+            "longer act on")
+
+        # B1883f: the first version of this arm used a continuation followed
+        # by implicit concat and it PARSES - the continuation joins
+        # `assert 1, "a"` and `"b"` is a valid statement. A heredoc probe said
+        # otherwise because the heredoc mangled the escapes; reading the
+        # INSTALLED literal through `ast` is authoritative. This candidate was
+        # verified INVALID through that path BEFORE being embedded, which is
+        # the lesson of the helper under test: validate the candidate.
+        with pytest.raises(sw.WouldNotParse):
+            sw.safe_write_py(p, 'def f():\n    x = 1\n        y = 2\n')
+        assert p.read_text(encoding="utf-8") == original
+
+        # valid source goes through
+        sw.safe_write_py(p, "valid = 2\n")
+        assert p.read_text(encoding="utf-8") == "valid = 2\n"
+
+        # append requires the RESULT to parse
+        with pytest.raises(sw.WouldNotParse):
+            sw.safe_append_py(p, "\ndef broken(:\n")
+        assert p.read_text(encoding="utf-8") == "valid = 2\n"
+
+        sw.safe_append_py(p, "\nalso_valid = 3\n")
+        assert "also_valid" in p.read_text(encoding="utf-8")
