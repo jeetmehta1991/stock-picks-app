@@ -2675,7 +2675,9 @@ def scan_prose_only_rule(entries, *, docs_touched=None, code_touched=None,
                    "backtest/tests/test_unit.py"]) if code_touched is None else code_touched
     if ct:
         return []
-    t = (_assistant_text(entries) if text is None else text.lower())
+    # B1947 (S6-B1783b): fifth gate routed through _response_text. Still ONE
+    # at a time - 7 sites remain after this one.
+    t = _response_text(entries, text)
     if "prose-only" in t:
         return []
     return ["PROSE-ONLY RULE WITH NO GATE (B1739): this turn edits CHECKLIST.md "
