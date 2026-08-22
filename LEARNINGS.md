@@ -12125,3 +12125,41 @@ negative result is only durable if it is written where the next attempt starts.*
 conventions to be exactly what breaks a tool over it - and check what a probe
 counted before believing what it returned.** **ANCHORED (`#197`):**
 `CHECKLIST #226` and L556; carried into `SKILL.md`.
+
+
+### L580
+
+**A missing measurement and a measured zero are different facts, and only one is evidence**
+
+**B1889b/B1898.** Extending the staleness prober, `main()` formatted `None`
+with `{n:>4}` and crashed. I fixed it to print `n/a` and wrote the rule down: a
+prober that cannot measure must not print something that looks like a
+measurement.
+
+**The next batch I broke it in a different renderer.** `table_c()` gained a
+`bands` column and printed **`0`** for artifacts that carry no `admit` block.
+**`0 bands` reads as "this config tested nothing"; the truth was "the artifact
+does not record it".**
+
+**The crash was the lucky one.** It stopped and demanded attention. **The `0`
+rendered cleanly into a table meant for quoting**, and the only reason it was
+caught is that I ran the renderer on real artifacts instead of a fixture.
+
+**L536 already names the mechanism of the failure:** a rule learned on one site
+does not travel to the next unless something CARRIES it. I had written the rule
+into a comment in one file, which carries nothing. **L570's sixth instance, and
+the shortest gap yet - one batch.**
+
+**The distinction the carrier encodes:** `None` means NOT MEASURED and renders
+`-`; a real `0` renders `0`, **because a measured zero IS evidence and must not
+hide behind the same token as an absence.** Collapsing them would trade one
+silent falsehood for another.
+
+**MECHANISM:** `scripts/measured.py` - `fmt(value)` - is the single place that
+decides how an unmeasured value is shown, used by both renderers that have now
+got this wrong.
+
+**The rule: when a number reaches a reader, it must be possible to tell
+"measured zero" from "never measured".** **ANCHORED (`#197`):** `CHECKLIST
+#201` - name the source of a figure - of which this is the degenerate case,
+a figure with no source at all. Carried into `SKILL.md`.

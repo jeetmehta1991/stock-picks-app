@@ -19861,3 +19861,48 @@ def test_b1893_b1783_detector_covers_all_read_shapes():
             "not test for grows the set silently, which is exactly how "
             "scan_transcript_entries and scan_verdict_denominators sat "
             "outside it (L578).")
+
+
+
+def test_b1899_missing_measurement_never_renders_as_a_number():
+    """B1899 (L580): a missing measurement and a measured zero are different
+    facts, and only one is evidence.
+
+    B1889b: a renderer formatted None and CRASHED; fixed to print n/a.
+    B1898, one batch later: a DIFFERENT renderer printed `0` for a value the
+    artifact does not record. The crash was the lucky one - it stopped. The
+    `0` rendered cleanly into a table meant for quoting.
+
+    A rule written into a comment carries nothing (L536), so this pins the
+    carrier AND that the renderer uses it.
+    """
+    import importlib.util
+    import pathlib as _p
+
+    root = _p.Path(__file__).resolve().parents[2]
+    spec = importlib.util.spec_from_file_location(
+        "measured_b1899", root / "scripts" / "measured.py")
+    m = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(m)
+
+    assert m.fmt(None) == "-", (
+        "an unmeasured value must render as a placeholder, never as a number")
+    assert m.fmt(0) == "0", (
+        "a MEASURED ZERO must survive. Collapsing it into the placeholder "
+        "trades one silent falsehood for another - a measured zero IS "
+        "evidence.")
+    assert m.fmt(0.0) == "0.0", "a measured float zero also survives"
+    assert m.fmt(7) == "7"
+    assert m.fmt(None, missing="n/a") == "n/a", "the placeholder is caller-set"
+
+    # the renderer that got this wrong must USE the carrier, not re-implement it
+    src = (root / "scripts"
+           / "producer_variant_table.py").read_text(encoding="utf-8")
+    assert "measured.py" in src, (
+        "producer_variant_table.py no longer loads the carrier. It printed "
+        "`0` for an unrecorded `bands` value one batch after the rule was "
+        "written into a comment elsewhere - a comment carries nothing (L536).")
+    assert "'-' if bands is None else bands" not in src, (
+        "the inline placeholder logic came back. One definition, one place "
+        "(L561) - a duplicated pattern is a divergence waiting for someone to "
+        "fix half of it.")

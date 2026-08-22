@@ -202,6 +202,23 @@ def table_a(spec: dict) -> list[str]:
     return rows
 
 
+def _measured_fmt(value):
+    """B1899 (L580): one carrier for "this was never measured".
+
+    Learned at B1889b when a renderer crashed on None, then broken at B1898
+    when THIS renderer printed `0` for an unrecorded value. L536 - a rule
+    learned on one site does not travel unless something carries it.
+    """
+    import importlib.util
+    import pathlib as _p
+
+    spec = importlib.util.spec_from_file_location(
+        "measured_pvt", _p.Path(__file__).resolve().parent / "measured.py")
+    m = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(m)
+    return m.fmt(value)
+
+
 def table_c(grids: dict[str, dict]) -> list[str]:
     """POST RUN CONFIG TABLE - one row per config, the whole funnel across it.
 
@@ -292,7 +309,7 @@ def table_c(grids: dict[str, dict]) -> list[str]:
         else:
             combo, sh, cl = "-", "-", "-"
         rows.append(f"| `{name}` | {len(res)} | {len(no_exit)} | {len(no_sh)} | {len(graded)} | "
-                    f"{g.get('step1_distinct_outcomes', '-')} | {'-' if bands is None else bands} | {sh} | {cl} | {combo} |")
+                    f"{g.get('step1_distinct_outcomes', '-')} | {_measured_fmt(bands)} | {sh} | {cl} | {combo} |")
         if other:
             rows.append(f"| | | | | | | | | | **UNCLASSIFIED {other} rows - the funnel does not "
                         f"reconcile, do not trust this row** |")

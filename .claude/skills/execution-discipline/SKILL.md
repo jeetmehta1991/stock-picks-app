@@ -741,6 +741,20 @@ gate had just named.**
 - **Compliance failure against `#45` and `#247`, not a new class.** A fifth rule
   restating four that were ignored is `#136` theater.
 
+## A MISSING MEASUREMENT AND A MEASURED ZERO ARE DIFFERENT FACTS (B1899 - L580, CHECKLIST #201)
+
+**MEASURED: a renderer crashed on `None`, I fixed it to print `n/a` and wrote
+the rule down - and broke it in a DIFFERENT renderer one batch later**, printing
+`0` for a value the artifact does not record.
+
+- **The crash was the lucky one.** It stopped. **The `0` rendered cleanly into a
+  table meant for quoting**, and was caught only because I ran the renderer on
+  real artifacts rather than a fixture.
+- **`None` = not measured, renders `-`. A real `0` renders `0`** - a measured
+  zero IS evidence and must not hide behind the same token as an absence.
+- **A rule in a comment carries nothing** (L536). The carrier is
+  `scripts/measured.py`.
+
 ## A CORPUS WRITTEN FOR HUMANS BREAKS TOOLS OVER IT (B1895 - L579, CHECKLIST #226)
 
 **MEASURED: four attempts to index the ledger, three failed, each returning a
