@@ -23126,3 +23126,32 @@ def test_b2017_engine_banner_carries_no_hand_maintained_count():
         assert "108-133" not in src, (
             f"the stale hand-maintained roster range is back in {rel} - "
             "counts derive from len(ALL_STRATEGIES) or do not appear")
+
+
+def test_b2018_grader_ohlcv_loader_coerces_string_dates():
+    """B2018: META.parquet (rewritten 2026-05-20, unlike the May-06 cohort)
+    stores its date column as str. The engine normalizes at cache.py:335, but
+    the grader's _load_ohlcv did not - get_indexer(Timestamp, method="pad")
+    then raises TypeError on exactly that one file, killing the whole grade.
+    Any loader that feeds Timestamp lookups must return a DatetimeIndex.
+    """
+    import importlib.util
+    from pathlib import Path as _P
+    import pandas as _pd
+    root = _P(__file__).resolve().parents[2]
+    spec = importlib.util.spec_from_file_location(
+        "tbb_b2018", root / "scripts" / "tighten_breaker_block.py")
+    sys.path.insert(0, str(root / "scripts"))
+    try:
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+    finally:
+        sys.path.remove(str(root / "scripts"))
+    df = mod._load_ohlcv("META")
+    if df is None:
+        import pytest as _pt
+        _pt.skip("META.parquet not in local cache")
+    assert isinstance(df.index, _pd.DatetimeIndex), (
+        "grader loader must coerce string-dated cache files to DatetimeIndex")
+    locs = df.index.get_indexer([_pd.Timestamp("2024-06-03")], method="pad")
+    assert int(locs[0]) >= 0

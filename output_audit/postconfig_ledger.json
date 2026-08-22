@@ -2166,5 +2166,81 @@
    "evidence": "B1690 - 300 combos / 90-87 gradable / 49-46 distinct / PASS 0-1",
    "status": "DONE"
   }
+ },
+ "output_b2016_e1_sw10": {
+  "1_cube_sanity": {
+   "status": "DONE",
+   "evidence": "B2018: 1 strategy, exits/entry [26], 172 entries, run at frozen_sha b94d377fa (B2016). Mega-caps NVDA+MSFT+TSLA present."
+  },
+  "2_grade_with_config_params": {
+   "status": "DONE",
+   "evidence": "B2018: tighten_breaker_block.py --swing-length 10 --min-n 10 -> output_audit/b2018_e1_sw10_grid.json. Union diagnosis loss 0pct (172/172). REQUIRED A FIX FIRST: grader crashed on META.parquet's str-dated index (TypeError in get_indexer) - _load_ohlcv now coerces to DatetimeIndex mirroring cache.py:335; pin test_b2018_grader_ohlcv_loader_coerces_string_dates."
+  },
+  "3_outlier_discrepancy_sweep": {
+   "status": "DONE",
+   "evidence": "B2018: cube entries == grid max fires (172==172). Verdicts of 300 rows: {166 NO_EXIT_SELECTABLE / 79 BELOW_POWER_FLOOR / 55 ZERO_FIRES} - ZERO combinations carried; NO_EXIT_SELECTABLE is a SAMPLE-SIZE verdict, so SP50@1y lacks within-arm tightening power (S6-B1817e's universe concern, measured; cross-arm P1 comparison is unaffected - same universe every arm). verify_grid_bands --anchor tail_n=20: PASS, every swept level moves some group. measure_degraded_exits: 3 collapsed pairs (atr_trail_mae_conditional==atr_trail_1x, reverse_signal==atr_trail_mae_conditional, time_stop_20d==regime_flip) - effective exits 23 of 26, and the regime_flip collapse is on a POST-B1682 cube -> S6-B2018a P0."
+  },
+  "4_three_leg_spot_check": {
+   "status": "DONE",
+   "evidence": "B2018: verify_spotcheck_coverage.py smc_breaker_block_long exit 0; spot_check_trades.py --n 50 --swing-length 10 --ema-span 200: 50 agree / 0 DISAGREE / 0 skipped, 0 execution failures. Artifact output_audit/b2018_sw10_spotcheck_n50.json."
+  },
+  "5_adversarial_lens_review": {
+   "status": "DONE",
+   "evidence": "B2018 all lenses: (fail-crash) grader loader vs string-dated cache file - FIXED+pinned this batch; family enumerated (5 more un-coerced set_index('date') loaders in scripts/) + META.parquet itself non-uniform (str dates, rewritten May 20 vs the May 6 cohort) -> S6-B2018b, parquet normalization AFTER E1 completes, never while arms are reading the cache. (silent degradation) regime_changed_during_hold=='no' on ALL rows while 27 of 172 sw10 holds span one of the 6 observed in-window regime transitions; regime_flip fired its cap branch on every trade (exit_reason regime_flip_max_days_20) - the runbook's 'LIVE from now' claim fails its first runtime measurement -> S6-B2018a P0. (sample size) 0 of 300 combos carried, both arms. (provenance) sw20 NVDA absence explained by measurement, not assumed."
+  },
+  "6_post_fix_recheck": {
+   "status": "DONE",
+   "evidence": "B2018: the one fix this config surfaced (grader loader) re-ran through the FULL grade of both cubes - successful completion at 0pct diagnosis loss is the recheck - plus the pin test green."
+  },
+  "6b_equivalence_class_check": {
+   "status": "N/A",
+   "evidence": "B2018: no ranked top-N exists to de-duplicate - 0 combinations carried in this arm. The check has no object; it re-arms the moment any grid carries candidates."
+  },
+  "7_implement_in_engine": {
+   "status": "N/A",
+   "evidence": "B2018: nothing admitted - the E1 P1 verdict is CROSS-ARM and waits for sw30+sw50 (L376/L382); within-arm tightening carried 0 combos."
+  },
+  "8_verdict_with_denominators": {
+   "status": "DONE",
+   "evidence": "B2018 verdict: sw10 produced 172 fires on 50 tickers / 1y (precheck floor 10: passed at 49 baseline fires / 21 tickers). Within-arm tightening NOT GRADABLE at SP50@1y (0 of 300 combos carried). Effective exit family 23 of 26 (3 collapses, one on a post-B1682 cube). Cross-arm P1 verdict DEFERRED until all 4 arms complete."
+  }
+ },
+ "output_b2016_e1_sw20": {
+  "1_cube_sanity": {
+   "status": "DONE",
+   "evidence": "B2018: 1 strategy, exits/entry [26], 105 entries, run at frozen_sha b94d377fa (B2016). MSFT+TSLA present; NVDA ABSENT-BY-ZERO-FIRES: the same tickers-file produced NVDA entries in sw10, and the file itself verified 50/50 in-cube vs the R5 baseline (B2017), so this is a sw=20 fire count of zero on NVDA, not the L445 universe defect."
+  },
+  "2_grade_with_config_params": {
+   "status": "DONE",
+   "evidence": "B2018: tighten_breaker_block.py --swing-length 20 --min-n 10 -> output_audit/b2018_e1_sw20_grid.json. Union diagnosis loss 0pct (105/105). REQUIRED A FIX FIRST: grader crashed on META.parquet's str-dated index (TypeError in get_indexer) - _load_ohlcv now coerces to DatetimeIndex mirroring cache.py:335; pin test_b2018_grader_ohlcv_loader_coerces_string_dates."
+  },
+  "3_outlier_discrepancy_sweep": {
+   "status": "DONE",
+   "evidence": "B2018: cube entries == grid max fires (105==105). Verdicts of 300 rows: {208 NO_EXIT_SELECTABLE / 45 BELOW_POWER_FLOOR / 47 ZERO_FIRES} - ZERO combinations carried; NO_EXIT_SELECTABLE is a SAMPLE-SIZE verdict, so SP50@1y lacks within-arm tightening power (S6-B1817e's universe concern, measured; cross-arm P1 comparison is unaffected - same universe every arm). verify_grid_bands --anchor tail_n=20: PASS, every swept level moves some group. measure_degraded_exits: 3 collapsed pairs (atr_trail_mae_conditional==atr_trail_1x, reverse_signal==atr_trail_mae_conditional, time_stop_20d==regime_flip) - effective exits 23 of 26, and the regime_flip collapse is on a POST-B1682 cube -> S6-B2018a P0."
+  },
+  "4_three_leg_spot_check": {
+   "status": "DONE",
+   "evidence": "B2018: verify_spotcheck_coverage.py smc_breaker_block_long exit 0; spot_check_trades.py --n 50 --swing-length 20 --ema-span 200: 50 agree / 0 DISAGREE / 0 skipped, 0 execution failures. Artifact output_audit/b2018_sw20_spotcheck_n50.json."
+  },
+  "5_adversarial_lens_review": {
+   "status": "DONE",
+   "evidence": "B2018 all lenses: (fail-crash) grader loader vs string-dated cache file - FIXED+pinned this batch; family enumerated (5 more un-coerced set_index('date') loaders in scripts/) + META.parquet itself non-uniform (str dates, rewritten May 20 vs the May 6 cohort) -> S6-B2018b, parquet normalization AFTER E1 completes, never while arms are reading the cache. (silent degradation) regime_changed_during_hold=='no' on ALL rows while 27 of 172 sw10 holds span one of the 6 observed in-window regime transitions; regime_flip fired its cap branch on every trade (exit_reason regime_flip_max_days_20) - the runbook's 'LIVE from now' claim fails its first runtime measurement -> S6-B2018a P0. (sample size) 0 of 300 combos carried, both arms. (provenance) sw20 NVDA absence explained by measurement, not assumed."
+  },
+  "6_post_fix_recheck": {
+   "status": "DONE",
+   "evidence": "B2018: the one fix this config surfaced (grader loader) re-ran through the FULL grade of both cubes - successful completion at 0pct diagnosis loss is the recheck - plus the pin test green."
+  },
+  "6b_equivalence_class_check": {
+   "status": "N/A",
+   "evidence": "B2018: no ranked top-N exists to de-duplicate - 0 combinations carried in this arm. The check has no object; it re-arms the moment any grid carries candidates."
+  },
+  "7_implement_in_engine": {
+   "status": "N/A",
+   "evidence": "B2018: nothing admitted - the E1 P1 verdict is CROSS-ARM and waits for sw30+sw50 (L376/L382); within-arm tightening carried 0 combos."
+  },
+  "8_verdict_with_denominators": {
+   "status": "DONE",
+   "evidence": "B2018 verdict: sw20 produced 105 fires on 50 tickers / 1y (precheck floor 10: passed at 49 baseline fires / 21 tickers). Within-arm tightening NOT GRADABLE at SP50@1y (0 of 300 combos carried). Effective exit family 23 of 26 (3 collapses, one on a post-B1682 cube). Cross-arm P1 verdict DEFERRED until all 4 arms complete."
+  }
  }
 }

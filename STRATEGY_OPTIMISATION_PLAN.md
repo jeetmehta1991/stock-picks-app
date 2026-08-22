@@ -1334,6 +1334,13 @@ input; B1680 then found the fix had never run.
   `time_stop_20d` under another name. Their effective exit family is **25, not 26**.
 - **Every config run from now carries a LIVE `regime_flip`** - both inputs are in the code
   (`backtest.py:2650` sets the field, `:3106` passes it, `exit_strategies.py` injects both).
+  **FALSIFIED AT FIRST MEASUREMENT 2026-08-22 (B2018, S6-B2018a P0).** The two first
+  post-B1682 cubes (`output_b2016_e1_sw10`/`sw20`) STILL collapse `time_stop_20d ==
+  regime_flip`: every regime_flip row exits via the cap branch (`regime_flip_max_days_20`),
+  and `regime_changed_during_hold` is `'no'` on all 4,472 sw10 rows while 27 of 172 holds
+  span one of the 6 in-window regime transitions. "Both inputs are in the code" was a
+  code-presence claim; the runtime says the flip is never seen. Not fixed mid-E1 (frozen
+  code keeps arms comparable; the collapse is identical in every arm).
 - **Therefore `regime_flip` is NOT comparable between the four existing cubes and any later one.**
   Rankings are unaffected - no `regime_flip` appears in either wave-1 top-10 - so what is lost is
   comparability on that one exit, not the identity of the winners.

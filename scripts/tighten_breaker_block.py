@@ -79,6 +79,13 @@ def _load_ohlcv(ticker: str) -> pd.DataFrame | None:
             df = pd.read_parquet(p)
             if not isinstance(df.index, pd.DatetimeIndex) and "date" in df.columns:
                 df = df.set_index("date")
+            if not isinstance(df.index, pd.DatetimeIndex):
+                # Not every cache file is datetime-indexed: META.parquet
+                # (rewritten 2026-05-20) stores str dates. The engine
+                # normalizes at cache.py:335; a reader that skips this
+                # crashes in get_indexer(Timestamp) on that one file (B2018).
+                idx = pd.to_datetime(df.index)
+                df.index = idx.tz_localize(None) if idx.tz is not None else idx
             return df.sort_index()
     return None
 
