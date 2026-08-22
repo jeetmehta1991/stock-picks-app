@@ -1640,7 +1640,13 @@ def scan_missing_skill_confirmation(entries, *, text=None) -> list[str]:
     The line must be present whether or not any skill ran. NONE is a valid and
     required answer.
     """
-    t = (_assistant_text(entries) if text is None else text.lower())
+    # B1950 (S6-B1783b): seventh gate routed through _response_text.
+    #
+    # Its escape is the presence of a SKILLS INVOKED block, and the block is
+    # the kind of thing a turn quotes while DESCRIBING the requirement - so
+    # fencing matters here exactly as it did for PROSE-ONLY (B1947),
+    # record-of-fact (B1948) and no-queue-change (B1949).
+    t = _response_text(entries, text)
     if not t:
         return []
     if 'skills invoked' in t:
