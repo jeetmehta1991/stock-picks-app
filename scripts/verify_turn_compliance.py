@@ -1778,6 +1778,32 @@ def scan_missing_skill_confirmation(entries, *, text=None) -> list[str]:
 _COMPACTION_MARKER = "this session is being continued from a previous conversation"
 
 
+_INSPECTING_TOOLS = ("read", "grep", "glob")
+
+
+def _inspecting_tool_text(entries) -> str:
+    """Inputs of tools whose USE is opening something - Read, Grep, Glob.
+
+    B1985. `scan_uncosted_probe` needs "did this turn OPEN an artifact", and
+    neither existing collector answers it: `_executed_tool_text` carries only
+    shell commands (a Read tool's `file_path` vanishes), `_tool_text` carries
+    Write/Edit payloads (authoring the word `grep` reads as inspection). The
+    union of THIS and the executed text is the gate's evidence.
+    """
+    import json as _j
+    out = []
+    for d in _turn_entries(entries):
+        if not isinstance(d, dict) or d.get("type") != "assistant":
+            continue
+        for blk in (d.get("message") or {}).get("content") or ():
+            if not (isinstance(blk, dict) and blk.get("type") == "tool_use"):
+                continue
+            if str(blk.get("name") or "").lower() not in _INSPECTING_TOOLS:
+                continue
+            out.append(_j.dumps(blk.get("input") or {}))
+    return _strip_gate_echo(" ".join(out).lower())
+
+
 def _skill_context_text(entries) -> str:
     """Evidence that a skill is IN CONTEXT: everything since the last compaction.
 
@@ -1910,10 +1936,16 @@ def scan_uncosted_probe(entries, *, text=None, tool_text=None) -> list[str]:
     hits = [w for w in COST_WORDS if w in t]
     if not hits:
         return []
-    # B1774: strip AUTHORED payloads first - writing the word "grep"
-    # inside a document is not inspecting anything.
-    tt = _tool_invocations(
-        _tool_text(entries, tool_text)).lower()
+    # B1985 (S6-B1967c): UNION evidence - executed commands (heredoc-stripped,
+    # so a body saying "grep the columns" is prose, not inspection) plus
+    # inspecting-tool inputs (a Read's file_path IS opening; a bare
+    # executed-text swap would have dropped it). Write/Edit stay excluded -
+    # B1774's rule, now by construction rather than by stripping.
+    if tool_text is not None:
+        tt = _tool_invocations(_strip_gate_echo(tool_text)).lower()
+    else:
+        tt = (_executed_tool_text(entries) + " "
+              + _inspecting_tool_text(entries)).lower()
     if any(e in tt for e in OPEN_EVIDENCE):
         return []
     return [f'UNCOSTED PROBE (#230 EXT / L506): this turn estimates effort '

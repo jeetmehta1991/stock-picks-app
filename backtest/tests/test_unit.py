@@ -21966,3 +21966,63 @@ def test_b1984_skill_gates_read_the_session_window():
     dropped = [call("fable-mode"), body("fable-mode"), COMPACT, ASK, WORK]
     assert tg.scan_skill_not_invoked_per_skill(dropped), (
         "a compaction empties the context; the load before it is gone")
+
+
+
+def test_b1985_open_evidence_is_executed_or_inspecting():
+    """B1985 (S6-B1967c, 7 of 8): "did this turn OPEN an artifact" - union.
+
+    A bare executed-text swap would BREAK this gate (a Read's file_path is
+    legitimate OPEN evidence and carries no shell command); keeping raw
+    `_tool_text` left the heredoc hole (a body saying "grep the columns"
+    cleared it). The union of executed commands and inspecting-tool inputs
+    is the evidence that matches the question.
+    """
+    import importlib.util as _iu
+    import pathlib as _p
+
+    root = _p.Path(__file__).resolve().parents[2]
+    spec = _iu.spec_from_file_location(
+        "vtc_b1985", root / "scripts" / "verify_turn_compliance.py")
+    tg = _iu.module_from_spec(spec)
+    spec.loader.exec_module(tg)
+
+    CLAIM = "That probe is cheap - one command over the cached cube."
+    USER = {"type": "user", "message": {"content": [
+        {"type": "text", "text": "how costly?"}]}}
+
+    def turn(tool, inp):
+        return [USER,
+                {"type": "assistant", "message": {"content": [
+                    {"type": "tool_use", "name": tool, "input": inp}]}},
+                {"type": "assistant", "message": {"content": [
+                    {"type": "text", "text": CLAIM}]}}]
+
+    assert not tg.scan_uncosted_probe(
+        turn("Bash", {"command": "head -5 output_cfg1/trade_log.csv"})), (
+        "an executed head over the artifact IS opening it")
+
+    assert not tg.scan_uncosted_probe(
+        turn("Read", {"file_path": "output_cfg1/trade_log.csv"})), (
+        "a Read tool call IS opening - the executed-text swap that would "
+        "drop this is why the bare conversion was wrong for this gate")
+
+    # tee, not `cat >>`: `cat ` is itself an OPEN_EVIDENCE marker, and
+    # cat-with-redirect is a WRITE that still matches it - a separate,
+    # narrower residue documented in S6-B1985a per #279, not silently
+    # mixed into this proof.
+    heredoc = ("tee -a notes.md <<'EOF'\n"
+               "remember to grep the columns via read_csv\n"
+               "EOF")
+    assert tg.scan_uncosted_probe(turn("Bash", {"command": heredoc})), (
+        "a heredoc BODY naming grep/columns/read_csv is authored prose "
+        "riding the command field - it opened nothing, and it cleared the "
+        "old gate because _WRITTEN_FIELDS never blanks `command`")
+
+    assert tg.scan_uncosted_probe(
+        turn("Write", {"file_path": "n.md", "content": "grep it later"})), (
+        "Write stays excluded - B1774's rule, now by construction")
+
+    assert tg.scan_uncosted_probe(
+        turn("Bash", {"command": "echo hello"})), (
+        "an unrelated command opens nothing - the true positive survives")
