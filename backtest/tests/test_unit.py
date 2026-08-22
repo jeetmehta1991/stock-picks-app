@@ -20429,3 +20429,59 @@ def test_b1916_pure_gates_have_incidents_and_are_no_longer_exempt():
     # **A file-grep assertion about the file's own content is structurally
     # fragile. Assert on the DATA STRUCTURE** - EXEMPT is a dict, and
     # test_b1762 now asserts no EXEMPT entry names a covered gate.
+
+
+
+def test_b1925_launch_gate_ignores_heredoc_bodies():
+    """B1925: a launch command quoted inside a heredoc is DATA, not a launch.
+
+    `#193` blocked a turn claiming a config was launched. Nothing was: a probe
+    ran `python - <<'PY'` with a launch command as a string literal inside it.
+
+    **The remedy was already in this file** - B1880 put it in the OTHER launch
+    detector with the reason written out (L569). The sibling never got it, and
+    it bit. Same shape as B1905, where B1820's fix reached the JSON artifact
+    and not the console table rendering the same list.
+
+    MEASURED over the session transcript: of 73 executed Bash commands matching
+    `run_phase1a.py` + `--output-dir`, 65 survive the strip and 8 exist only
+    inside a heredoc body.
+    """
+    import importlib.util as _iu
+    import pathlib as _p
+
+    root = _p.Path(__file__).resolve().parents[2]
+    spec = _iu.spec_from_file_location(
+        "vtc_b1925", root / "scripts" / "verify_turn_compliance.py")
+    tg = _iu.module_from_spec(spec)
+    spec.loader.exec_module(tg)
+
+    def _entries(cmd):
+        return [{"type": "assistant",
+                 "message": {"content": [
+                     {"type": "tool_use", "name": "Bash",
+                      "input": {"command": cmd}}]}}]
+
+    REAL = ("python backtest/run_phase1a.py --phase 1a-beta "
+            "--output-dir output_cfg1")
+    assert tg.scan_unverified_universe(_entries(REAL)), (
+        "a REAL launch must still fire - stripping heredocs must not blind "
+        "the gate (#226)")
+
+    QUOTED = ("python - <<'PY'\n"
+              "base = \"python backtest/run_phase1a.py --output-dir output_cfg1\"\n"
+              "print(base)\n"
+              "PY\n")
+    assert not tg.scan_unverified_universe(_entries(QUOTED)), (
+        "a launch command quoted inside a heredoc body is DATA handed to an "
+        "interpreter, not a command that ran (L569) - B1880 already applies "
+        "this in the other launch detector")
+
+    # and the two launch detectors must agree: neither may treat a heredoc
+    # body as a command. This is the sibling-site check that would have caught
+    # B1925 when B1880 shipped.
+    src = (root / "scripts" / "verify_turn_compliance.py").read_text(
+        encoding="utf-8")
+    assert src.count("<<\\s*'?(\\w+)'?.*?^\\1") >= 2, (
+        "both launch detectors must strip heredoc bodies - B1880 applied it "
+        "to one and the other blocked a turn on a quoted fixture")

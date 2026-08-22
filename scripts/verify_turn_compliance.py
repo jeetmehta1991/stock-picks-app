@@ -549,7 +549,23 @@ def scan_unverified_universe(entries):
                     cmds.append(str((c.get("input") or {}).get("command", "")))
         elif isinstance(content, str):
             allblob.append(content)
-    low = " ".join(cmds).lower()
+    # B1925: strip heredoc BODIES before deciding a launch happened.
+    #
+    # B1880 already put this in the OTHER launch detector, reason and all: "a
+    # heredoc BODY is data handed to an interpreter, not a command that ran
+    # (L569)". **This sibling never got it**, and it blocked a turn whose only
+    # `run_phase1a.py --output-dir` was a string literal inside `python - <<PY`
+    # - a fixture for testing another gate.
+    #
+    # MEASURED over the session transcript: 73 executed Bash commands match
+    # `run_phase1a.py` + `--output-dir`; **65 survive the strip and are real
+    # launches, 8 exist only inside a heredoc body** (all of them
+    # `git add ... && git commit` with `--output-dir` in the message). Every
+    # real launch still fires.
+    import re as _re3
+    _cmds = [_re3.sub(r"<<\s*'?(\w+)'?.*?^\1", " ", c,
+                      flags=_re3.S | _re3.M) for c in cmds]
+    low = " ".join(_cmds).lower()
     launched = ("run_phase1a.py" in low and
                 ("nohup" in low or "--output-dir" in low))
     if not launched:
