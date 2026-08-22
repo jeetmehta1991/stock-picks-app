@@ -17084,7 +17084,7 @@ def test_b1783_response_gates_inherit_text_scoping():
         # B1947: scan_prose_only_rule CONVERTED - removed in the same commit.
         # B1949: scan_queue_not_updated CONVERTED - removed in the same commit.
         # B1956: scan_retroactive_sweep CONVERTED - same commit.
-        "scan_response_gates",
+        # B1959: scan_response_gates CONVERTED - the LAST one.
         # B1942: scan_uncosted_probe CONVERTED - removed in the same commit.
         # B1953: scan_skill_block_incomplete CONVERTED - same commit.
         # B1938: scan_uninspected_constant CONVERTED - removed from this
@@ -20639,11 +20639,12 @@ def test_b1938_uninspected_constant_reads_prose_not_mentions():
     # the other functions. One definition, one answer.
     raw, routed, case_preserved = tg.count_text_readers(src)
 
-    assert raw == 1, (
-        f"{raw} gates still read text raw, pin says 1. If a gate was "
+    assert raw == 0, (
+        f"{raw} gates still read text raw, pin says 0 - the S6-B1783b "
+        f"backlog is CLOSED. If a gate was "
         "converted, LOWER this in the same commit (S6-B1783b); if one was "
         "added reading raw, it needs _response_text instead")
-    assert routed >= 20, (
+    assert routed >= 21, (
         f"only {routed} gates route through _response_text - the count may "
         "not fall, converting is one-way")
     assert case_preserved == 2, (

@@ -1059,7 +1059,14 @@ def scan_response_gates(entries, *, queue_touched=None,
     # B1748:  injectable so the replay harness can feed a recorded
     # response. Without it this gate could only ever be tested against a live
     # transcript - untestable in the same way stdin made the others untestable.
-    t = (_assistant_text(entries) if text is None else text.lower())
+    # B1959 (S6-B1783b): the LAST raw reader, closing the backlog at 12 of 12.
+    #
+    # keep_code=False. This gate's markers are plain-English declarations of
+    # INTENT - "reverting", "not shipping" - never identifiers, so a turn
+    # showing `revert` in a code span is quoting a command rather than
+    # declaring an intent. Same reasoning as scan_retroactive_sweep (B1956),
+    # and the opposite of the skills-block gates whose names ARE the evidence.
+    t = _response_text(entries, text)
     if not t:
         return []                         # nothing said -> nothing to check
     bad = []
