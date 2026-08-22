@@ -1169,6 +1169,34 @@ def _strip_gate_echo(t: str) -> str:
         out.append(line)
     return "\n".join(out)
 
+def _turn_entries(entries):
+    """Entries AFTER the last genuine user text message - THIS turn only.
+
+    B1980. `_response_text` has been turn-scoped since B1742; the tool
+    collectors never were, so a gate could pair THIS turn's words with
+    commands run weeks ago - measured on the live transcript: 122 pre-pipe
+    `head -` lines of session history counted as this turn's truncation
+    evidence, firing `scan_partial_read` on every turn whose final block
+    contained a verdict word.
+
+    Same last-user logic as the two in-file precedents (`scan_transcript_
+    entries`, the Phase-5 slicer): a "user" entry counts only if it carries
+    genuine TEXT - tool_result blocks are typed "user" but are not the user.
+    """
+    last_user = -1
+    for i, e in enumerate(entries or ()):
+        if not isinstance(e, dict) or e.get("type") != "user":
+            continue
+        content = (e.get("message") or {}).get("content")
+        if isinstance(content, str) and content.strip():
+            last_user = i
+        elif isinstance(content, list) and any(
+                isinstance(c, dict) and c.get("type") == "text"
+                for c in content):
+            last_user = i
+    return list(entries or ())[last_user + 1:]
+
+
 def _executed_tool_text(entries, tool_text=None) -> str:
     """Only what this turn RAN - Bash and PowerShell commands, nothing written.
 
@@ -1187,7 +1215,7 @@ def _executed_tool_text(entries, tool_text=None) -> str:
     if tool_text is not None:
         return _strip_gate_echo(tool_text)
     out = []
-    for d in entries or ():
+    for d in _turn_entries(entries):    # B1980: THIS turn, not the session
         if not isinstance(d, dict) or d.get("type") != "assistant":
             continue
         for blk in (d.get("message") or {}).get("content") or ():
@@ -1229,7 +1257,7 @@ def _tool_text(entries, tool_text=None) -> str:
     if tool_text is not None:
         return _strip_gate_echo(tool_text)
     out = []
-    for d in entries or ():
+    for d in _turn_entries(entries):    # B1980: THIS turn, not the session
         if not isinstance(d, dict) or d.get("type") != "assistant":
             continue
         for blk in (d.get("message") or {}).get("content") or ():

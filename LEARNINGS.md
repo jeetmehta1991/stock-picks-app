@@ -13347,3 +13347,39 @@ both directions for BOTH converted gates (quoted sampler silent / executed
 sampler fires; quoted grep is not compliance evidence). **ANCHORED (`#197`):**
 compliance failure against the B1880/B1925 precedent; mechanism
 `test_b1979_heredoc_bodies_are_data_not_commands`. Carried into `SKILL.md`.
+
+
+### L609
+
+**The turn gate judged this turn's words against the whole session's commands**
+
+**B1980.** `scan_partial_read` fired two turns in a row, both false, both
+citing `'head -'`. Debugging against the LIVE transcript (136,026 entries)
+instead of guessing found the scope mismatch: `_response_text` has been
+turn-scoped since B1742 - it reads the final assistant block of THIS turn -
+but `_tool_text` and `_executed_tool_text` iterate EVERY entry. **The verdict
+came from this turn; the truncation evidence came from 122 pre-pipe `head -`
+lines spread over the session's whole history.** Any turn whose final block
+contained a verdict word fired.
+
+**L608's class, one seam over, found one batch after writing L608.** B1742's
+rule - "a turn gate reads THIS TURN" - was learned on the response collector
+and never carried to its tool-side siblings. The carrier is the same as
+B1979's: fix the TRUNK. `_turn_entries` now slices in the collectors, so
+every consumer - present and future - inherits the boundary once.
+
+**Two details that made the pin honest:**
+- A `tool_result` entry is typed `"user"` but is NOT the user; treating it as
+  a turn boundary would reset the turn at every tool call and blind the gate
+  to any turn that runs a command - which is all of them. The in-file
+  precedents (lines 75, 201) already encoded this; the pin asserts it.
+- **Debug against the live artifact, not a mental model** (Gate 2). Two turns
+  of guessing named plausible causes - heredoc bodies, quoting - and each was
+  A defect but not THE defect. One run against the real transcript named the
+  actual one in a minute: session-scope, not content.
+
+MEASURED: 122 pre-pipe truncation lines session-wide vs 0 in the turn slice;
+gate SILENT on the live transcript after the fix; 3/3 constructed-entry
+boundary cases. **ANCHORED (`#197`):** compliance failure against the B1742
+precedent; mechanism `test_b1980_tool_evidence_is_scoped_to_the_turn`.
+Carried into `SKILL.md`.

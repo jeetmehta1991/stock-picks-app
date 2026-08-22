@@ -741,6 +741,23 @@ gate had just named.**
 - **Compliance failure against `#45` and `#247`, not a new class.** A fifth rule
   restating four that were ignored is `#136` theater.
 
+## A TURN GATE READS THIS TURN - ON EVERY COLLECTOR (B1980 - L609, CHECKLIST #237)
+
+**`scan_partial_read` fired two turns running, both false: the verdict came
+from this turn's final block, the truncation evidence from 122 `head -` lines
+across the session's whole history.** The turn-scoping rule (B1742) was
+learned on the response collector and never carried to the tool collectors.
+
+- **Evidence and claim must share a scope.** A gate pairing this turn's words
+  with last month's commands is comparing two different turns.
+- **`tool_result` entries are typed "user" but are not the user** - a turn
+  boundary drawn there resets at every tool call.
+- **Debug against the live artifact, not a mental model.** Two turns of
+  plausible-cause guessing each found A defect; one run against the real
+  transcript found THE defect.
+
+**Mechanically enforced** by `test_b1980_tool_evidence_is_scoped_to_the_turn`.
+
 ## A NEW HELPER STARTS WITHOUT ITS SIBLINGS' LESSONS (B1979 - L608, CHECKLIST #237)
 
 **`scan_partial_read`, freshly converted to executed-text, fired on the very

@@ -21674,3 +21674,62 @@ def test_b1979_heredoc_bodies_are_data_not_commands():
         "a grep QUOTED in a heredoc body is not an executed inspection - "
         "without the scrub this would count as compliance evidence, the "
         "B1967 bypass reopened through a heredoc")
+
+
+
+def test_b1980_tool_evidence_is_scoped_to_the_turn():
+    """B1980: a TURN gate pairs this turn's words with THIS TURN's commands.
+
+    `_response_text` has been turn-scoped since B1742; the tool collectors
+    never were. Measured on the live transcript (136,026 entries): 122
+    pre-pipe `head -` lines from the session's whole history counted as this
+    turn's truncation evidence, so `scan_partial_read` fired on every turn
+    whose final block contained a verdict word - two turns in a row, both
+    false.
+
+    L608's class one seam over: B1742's rule reached the response collector
+    and not its siblings. Fixed in the collectors, so every consumer -
+    present and future - inherits the turn boundary once.
+    """
+    import importlib.util as _iu
+    import pathlib as _p
+
+    root = _p.Path(__file__).resolve().parents[2]
+    spec = _iu.spec_from_file_location(
+        "vtc_b1980", root / "scripts" / "verify_turn_compliance.py")
+    tg = _iu.module_from_spec(spec)
+    spec.loader.exec_module(tg)
+
+    VERDICT = "All 141 rows are classified and the disposition is final."
+    SAMPLER = "sed -n '100,110p' EXECUTION_QUEUE.md"
+
+    def bash(cmd):
+        return {"type": "assistant", "message": {"content": [
+            {"type": "tool_use", "name": "Bash", "input": {"command": cmd}}]}}
+
+    def say(t):
+        return {"type": "assistant", "message": {"content": [
+            {"type": "text", "text": t}]}}
+
+    USER = {"type": "user", "message": {"content": [
+        {"type": "text", "text": "next task please"}]}}
+    TOOL_RESULT = {"type": "user", "message": {"content": [
+        {"type": "tool_result", "content": "ok"}]}}
+
+    # sampler ran LAST TURN, verdict stated THIS turn -> not this turn's act
+    assert not tg.scan_partial_read([bash(SAMPLER), USER, say(VERDICT)]), (
+        "a command run BEFORE the last user message belongs to a previous "
+        "turn - pairing it with this turn's words fired the gate twice on "
+        "live turns, both false")
+
+    # same sampler THIS turn -> fires exactly as before
+    assert tg.scan_partial_read([USER, bash(SAMPLER), say(VERDICT)]), (
+        "the turn boundary must not swallow the true positive (#226)")
+
+    # a tool_result entry is typed "user" but is NOT the user - it must not
+    # start a new turn, or every tool call would reset the boundary
+    assert tg.scan_partial_read(
+        [USER, bash(SAMPLER), TOOL_RESULT, say(VERDICT)]), (
+        "tool_result entries are typed 'user' but are not the user; treating "
+        "them as turn boundaries would blind the gate to any turn that runs "
+        "a command - which is all of them")
