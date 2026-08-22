@@ -741,6 +741,21 @@ gate had just named.**
 - **Compliance failure against `#45` and `#247`, not a new class.** A fifth rule
   restating four that were ignored is `#136` theater.
 
+## AN EXEMPTION'S REASON IS A CLAIM ABOUT CODE (B1934 - L591, CHECKLIST #279)
+
+**A gate-exemption register went 15 -> 6 in one session and NOT ONE removal was
+because the work got done.** Every one was the register wrong about itself: 3
+stale, 3 excused as *"no seam"* while drivable, 2 as *"undocumented trigger"*
+while importable, 2 as unseamed **while a passing test in the same repo drove
+them.**
+
+- **`#279` says a register DECAYS. This one was never right.** The disproof of
+  four of five reasons was **already committed** when each reason was written.
+- **`require_each` proves an entry HAS a reason, never that the reason is
+  TRUE** - and the two are indistinguishable in review.
+- **Before writing "cannot be tested / no seam / not available", CALL IT.**
+  `#222` applied to an exclusion instead of a threshold.
+
 ## A DOCSTRING IS DOCUMENTATION; THE MARKER LIST IS THE PROGRAM (B1931 - L590, CHECKLIST #222)
 
 **Two gates needed corpus incidents. I read their docstrings, guessed

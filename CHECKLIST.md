@@ -5061,3 +5061,16 @@ written. **The world moves; the list does not.**
   seam"* about **pure functions** - the corpus could not EXPRESS a positional
   signature, and that limit was recorded as a property of the gates. **An
   exemption's reason can be wrong on the day it is written.**
+
+**AMENDED B1935 (L591) - THE REASON IS A TESTABLE CLAIM, SO TEST IT.** Decay is
+the mild case. Measured over one session this register went **15 -> 6 and NOT
+ONE removal was because the work got done**: 3 entries stale, 3 excused as *"no
+seam"* while drivable, 2 excused as *"undocumented trigger"* while importable,
+2 excused as unseamed **while a PASSING TEST in the same repo drove them**.
+
+- **The disproof of four of the five reasons was already committed** at the
+  moment each reason was written. That is not decay; it is an unverified claim.
+- **`require_each` proves an entry HAS a reason. It cannot prove the reason is
+  true**, and the two look identical in review.
+- **Before writing "cannot be tested / no seam / not available", CALL IT.**
+  `#222`'s rule, applied to an exclusion instead of a threshold.

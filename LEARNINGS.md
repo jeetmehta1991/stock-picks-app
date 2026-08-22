@@ -12592,3 +12592,43 @@ concluding anything about it.** A non-firing probe is evidence about the probe
 until the trigger has been read. **ANCHORED (`#197`):** compliance failure
 against `CHECKLIST #222`, scope corrected from thresholds to any executable
 definition. Carried into `SKILL.md`.
+
+
+### L591
+
+**An exemption's REASON is a claim about code. Mine were never run, and four of
+five were contradicted by tests already committed**
+
+**B1916-B1934.** `test_b1762`'s `EXEMPT` dict excuses `scan_` gates that carry
+no corpus incident. Each entry names a reason, which is the `require_each`
+shape working as designed - **and nothing ever executed the reasons.**
+
+Across this session the register went **15 -> 6**, and the five removals split:
+
+    3   STALE                     gates that already had incidents
+    3   "no seam", FALSE          2 pure functions + 1 entries-only, all drivable
+    2   "undocumented trigger"    VERDICT_PATTERNS / MISS_PHRASES, both importable
+    2   "no seam", FALSE          driven by a PASSING TEST in this repo (B1925/B1927)
+
+**Not one removal was because the underlying work got done.** Every one was the
+register being wrong about itself.
+
+**`#279` says an exclusion register DECAYS. This one was never right.** Decay
+implies a true entry going stale; here the disproof of four of the five reasons
+was **already committed to the repository at the moment each reason was
+written** - `scan_orphan_rule` was a pure function the day it was excused as
+unseamed, and `scan_unmonitored_launch` was being driven by a passing pin two
+batches before I called it undrivable.
+
+**COMPLIANCE FAILURE against `CHECKLIST #222`** - *before citing any threshold,
+gate or limit as the one in force, grep its call sites and read what is
+actually passed.* An exemption reason is exactly such a citation: *"this gate
+cannot be exercised"* is a claim about the gate, **and the check is one call.**
+L590 named this class last batch; **the register held five pre-existing
+instances of it**, which is what makes the count worth stating.
+
+**The rule: a reason recorded next to an exclusion is a testable claim, and
+`require_each` proves an entry HAS a reason, never that the reason is true.**
+**ANCHORED (`#197`):** compliance failure against `#222`; `CHECKLIST #279`
+amended with the wrong-when-written half rather than adding a redundant item.
+Carried into `SKILL.md`.
