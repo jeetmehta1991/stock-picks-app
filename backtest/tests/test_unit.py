@@ -21458,10 +21458,18 @@ def test_b1974_roster_builder_ranks_break_even_above_losers():
         "the roster builder must IMPORT the shared key, not re-spell it - a "
         "pattern spelled again is a pattern that can drift again")
 
+    # B1977: the converted set grew - every file here is DONE and must not
+    # regress. The four still carrying the pattern are named in S6-B1972b
+    # with their blockers (signature change / archive-class), not silently
+    # excused here.
     for f in ("build_phase_1b_roster.py", "best_exit_by_gates.py",
-              "bear_regime_stress_test.py", "roster_core.py"):
+              "bear_regime_stress_test.py", "roster_core.py",
+              "compare_sample_fix_variants.py", "measure_criterion_11.py",
+              "walk_forward_r5_cells.py", "canonical_criteria_check.py",
+              "grade_r6_predictions.py"):
         code = _st.code_only(root / "scripts" / f)
-        assert '"sharpe"] or -9' not in code and "sharpe or 0.0" not in code, (
+        assert ('"sharpe"] or -9' not in code and "sharpe or 0.0" not in code
+                and 'd_exp"] or -99' not in code), (
             f"{f} still carries the falsy-coalescing form")
 
 

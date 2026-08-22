@@ -103,7 +103,9 @@ def main() -> int:
         mdd = _max_drawdown(pnl)
         sortino = _sortino_ratio(pnl, hold)
         calmar = _calmar(pnl, hold)
-        dsr = _deflated_sharpe(sharpe or 0.0, n, float(pnl.skew()), float(pnl.kurtosis()))
+        # B1977: an UNMEASURABLE Sharpe must not reach DSR as a MEASURED zero.
+        dsr = (_deflated_sharpe(sharpe, n, float(pnl.skew()), float(pnl.kurtosis()))
+               if sharpe is not None else None)
         cs = _cost_sensitivity_sharpe(pnl, hold)
         chow = _chow_test(eq)
         adf = _adf_test(eq)

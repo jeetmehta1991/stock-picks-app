@@ -35,6 +35,13 @@ from pathlib import Path
 import pandas as pd
 
 REPO = Path(__file__).resolve().parent.parent
+
+# B1977: direct execution puts scripts/ on sys.path automatically; an import
+# from another cwd does not. Same two-line setup as the sibling scripts.
+import sys                                                   # noqa: E402
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+from roster_core import rank_key                             # noqa: E402
 IS_START, IS_END = date(2022, 5, 5), date(2025, 5, 5)
 OOS_END = date(2026, 5, 5)
 WINSORIZE, COST_BPS = 300.0, 20.0
@@ -160,7 +167,12 @@ def main() -> int:
 
     print(f"\n{'strategy':<42}{'kinds':<12}{'hold n':>7}{'fires x':>9}"
           f"{'d_exp':>9}{'d_wr':>8}  verdict")
-    for g in sorted(grades, key=lambda x: (x["verdict"], -(x["holdout"]["d_exp"] or -99))):
+    # B1977: `or -99` is the same falsy-coalescing class as the Sharpe
+    # sentinel (S6-B1972b) on a different metric - a d_exp of EXACTLY 0.0
+    # (no expectancy change, a legitimate grade) sorted below every
+    # NEGATIVE delta. Display order only, fixed for one-definition parity.
+    for g in sorted(grades, key=lambda x: (x["verdict"],
+                                           -rank_key(x["holdout"]["d_exp"]))):
         h = g["holdout"]
         fr = f"{h['fires_ratio']:.2f}" if h["fires_ratio"] is not None else "  -"
         de = f"{h['d_exp']:+.2f}" if h["d_exp"] is not None else "   -"
