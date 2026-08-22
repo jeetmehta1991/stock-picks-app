@@ -741,6 +741,24 @@ gate had just named.**
 - **Compliance failure against `#45` and `#247`, not a new class.** A fifth rule
   restating four that were ignored is `#136` theater.
 
+## A FIGURE IN A CODE COMMENT IS AN ASSERTION, NOT A MEASUREMENT (B1908 - L583, CHECKLIST #201)
+
+**I twice quoted a Spearman of -0.779/-0.865 as measured and used it to argue a
+result was "the expected shape". It lives in a comment.** I never ran it. The
+turn gate caught it - a COMPLIANCE FAILURE against `#201`, not a gap in it.
+
+- **`#201` asks a figure to NAME its source. It does not ask whether that
+  source is itself evidence.** `.py` is a valid source token, so naming the
+  file clears the gate - MEASURED.
+- **A `.py` is evidence for a READ claim** ("the constant is 1.0") **and not
+  for an EXECUTED one** ("it measured 4.92 ms"). The gate cannot tell them
+  apart, and which verbs separate them is a POLICY CALL, not a guess.
+- **A number read from a comment is READ-class evidence that the comment says
+  it.** Quote it as an assertion with its author, or re-measure it.
+- **A measurement on a SELECTED subset does not refute one on the population** -
+  range restriction attenuates correlation; -0.382 on an is_sharpe-selected
+  top-10 is consistent with -0.779 on all 300.
+
 ## A TRANSFORM ON AN ASSERTION'S HAYSTACK CAN TURN IT GREEN AND VACUOUS (B1906 - L582, CHECKLIST #226)
 
 **A pin said a renderer must not print `float("nan")`. It fired on the COMMENT

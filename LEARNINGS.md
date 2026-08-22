@@ -12239,3 +12239,40 @@ should. **A negative assertion over a mangled string is indistinguishable from
 a negative assertion over a correct one.** **ANCHORED (`#197`):**
 `CHECKLIST #226` - prove it can fail - extended to haystack transforms.
 Carried into `SKILL.md`.
+
+
+### L583
+
+**A figure inside a code comment is a previous author's assertion, not a
+measurement - and naming the file satisfies the provenance gate anyway**
+
+**B1905/B1908.** Twice in one report I wrote that the measured IS-vs-holdout
+Spearman is **-0.779/-0.865**, and used it to argue that a negative holdout
+Sharpe at rank 1 was *"the expected shape"*. **I never measured it.** The number
+lives in a comment in `tighten_breaker_block.py`, written at B1718. The turn
+gate caught it - **a COMPLIANCE FAILURE against `#201`**, not a new gap in it.
+
+**What I could measure came out at -0.382** on `output_audit/b1820_cfg2_ranked.json`,
+the only artifact on disk carrying both keys. **That is NOT a refutation.** It
+is n=10, and those ten are the TOP-10 selected ON `is_sharpe`; range
+restriction attenuates a correlation, so -0.382 on a selected slice and -0.779
+on the full 300 are consistent. **The direction is confirmed; the magnitude is
+untestable from anything on disk**, because 16 of the 17 step-1 artifacts
+predate the key being emitted at all (`S6-B1905b`).
+
+**The general hole: `#201` asks a figure to NAME its source. It does not ask
+whether that source is itself evidence.** `.py` is a member of `FIGURE_SOURCES`,
+so *"tighten_breaker_block.py states the measured spearman as -0.779"* CLEARS
+the gate - MEASURED, it returns no violation. A `.py` file is legitimate
+evidence for a READ claim ("the constant is 1.0") and is NOT evidence for an
+EXECUTED one ("it measured 4.92 ms"), and the gate cannot tell those apart.
+
+**Real instances beyond mine:** `smc_ict.py` carries *"4.92 ms measured"* and
+*"the scan itself is 0.368 ms"*; both are load-bearing performance claims that
+no artifact on disk verifies.
+
+**The rule: a number read from a comment is `READ`-class evidence that THE
+COMMENT SAYS IT - never `EXECUTED`-class evidence that it is true.** Quote it
+as an assertion with its author, or re-measure it. **ANCHORED (`#197`):**
+compliance failure against `CHECKLIST #201`; the gate-side extension is
+`S6-B1908b` and needs an owner ruling, not a guess. Carried into `SKILL.md`.
