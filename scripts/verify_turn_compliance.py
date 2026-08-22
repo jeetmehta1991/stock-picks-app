@@ -1596,7 +1596,26 @@ def scan_skill_not_invoked_per_skill(entries, *, user_text=None,
 
 def scan_skill_block_incomplete(entries, *, text=None) -> list[str]:
     """The confirmation block must name ALL THREE skills, each with a status."""
-    t = (_assistant_text(entries) if text is None else text.lower())
+    # B1953 (S6-B1783b): eighth gate routed through _response_text.
+    #
+    # Sibling of the gate B1952 found PASSING BLIND: it shares the
+    # `skills invoked` escape, and a wide window means it can validate a block
+    # from an EARLIER attempt of the same turn (B1742) - reporting a complete
+    # block while the final one is absent or partial.
+    # B1953b: keep_code=True. The FIRST conversion used the default and broke
+    # the gate two ways at once - it stopped firing on its own corpus incident
+    # (#240) and reported "3 of 3 missing" on a COMPLETE block.
+    #
+    # Cause: _response_text strips inline-code spans, and **the skill names in
+    # a SKILLS INVOKED block are conventionally written in backticks** - so the
+    # strip removed the exact tokens this gate counts. The docstring names this
+    # case: "a gate demanding a TABLE OF NUMBERS must pass keep_code=True".
+    #
+    # **Conversion is not mechanical.** scan_uninspected_constant needed
+    # keep_code=False (a constant in backticks is a MENTION); this one needs
+    # the opposite (a skill name in backticks IS the block). The question is
+    # whether the gate's TARGET is conventionally written as code.
+    t = _response_text(entries, text, keep_code=True)
     if not t or "skills invoked" not in t:
         return []                       # absence handled by the other gate
     # B1732: split on the FIRST occurrence read only 900 chars after it, so any

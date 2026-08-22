@@ -17085,7 +17085,7 @@ def test_b1783_response_gates_inherit_text_scoping():
         # B1949: scan_queue_not_updated CONVERTED - removed in the same commit.
         "scan_response_gates", "scan_retroactive_sweep",
         # B1942: scan_uncosted_probe CONVERTED - removed in the same commit.
-        "scan_skill_block_incomplete",
+        # B1953: scan_skill_block_incomplete CONVERTED - same commit.
         # B1938: scan_uninspected_constant CONVERTED - removed from this
         # shrink-only set in the same commit as the conversion.
         "scan_ungated_addition",
@@ -19180,13 +19180,11 @@ _B1860_UNGATED_LEGACY = {
     "MENTION-vs-USE APPLIES TO TOOL TEXT, AND CHECK A TEXT'S SHAPE BEFORE REGEXING IT",
     'PRINT THE SAMPLE IDENTIFIER BEFORE JOINING TWO MEASUREMENTS',
     'PROMOTION NEEDS A BATCH-SPECIFIC ARTIFACT',
-    'PROVE A RESPONSE GATE ON A REALISTIC RESPONSE',
     'Phase 0 — RECALL',
     'Phase 1 — SCOPE LEDGER',
     'Phase 2 — PRE-FLIGHT',
     'Phase 3 — EXECUTE with the TEST PYRAMID GATE',
     'Phase 4 — AUDIT DEPTH STANDARD',
-    'SCORE ON THE MINORITY CLASS, NOT ON ACCURACY',
     'SIX MUTUALLY EXCLUSIVE LEDGER CLASSES',
     'SPEC-vs-IMPLEMENTATION RULE',
     'STOP AT THE SECOND FAILED HAND-CHECK',
@@ -20640,11 +20638,11 @@ def test_b1938_uninspected_constant_reads_prose_not_mentions():
     # the other functions. One definition, one answer.
     raw, routed, case_preserved = tg.count_text_readers(src)
 
-    assert raw == 5, (
-        f"{raw} gates still read text raw, pin says 5. If a gate was "
+    assert raw == 4, (
+        f"{raw} gates still read text raw, pin says 4. If a gate was "
         "converted, LOWER this in the same commit (S6-B1783b); if one was "
         "added reading raw, it needs _response_text instead")
-    assert routed >= 16, (
+    assert routed >= 17, (
         f"only {routed} gates route through _response_text - the count may "
         "not fall, converting is one-way")
     assert case_preserved == 2, (
