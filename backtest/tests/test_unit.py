@@ -19014,3 +19014,97 @@ def test_b1855_zero_output_run_detector():
         assert "output_old_schema" not in hits, (
             "a run whose schema carries no trade count cannot be judged, and "
             "guessing is how a gate earns a false positive")
+
+
+def test_b1858_file_extension_is_not_a_clause_boundary():
+    """B1858 (S6-B1847a): naming a FILE was the one citation #201 rejected.
+
+    `(?!\\d)` guarded decimals only, so the dot in an extension split the
+    clause and carried the source token out of the fragment holding the
+    number. Six FIGURE_SOURCES entries - csv, json, parquet, txt, md, py -
+    were therefore dead by construction.
+
+    Ten arms: every extension must now clear, the no-source case must still
+    FIRE, and - the arm that matters - a source in a genuinely DIFFERENT
+    sentence must still FIRE, proving the fix did not merge real clauses.
+    """
+    import importlib.util
+    import pathlib as _p
+
+    root = _p.Path(__file__).resolve().parents[2]
+    spec = importlib.util.spec_from_file_location(
+        "vtc_b1858", root / "scripts" / "verify_turn_compliance.py")
+    tg = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(tg)
+
+    def fires(txt):
+        return bool(tg.scan_synthetic_provenance([], text=txt))
+
+    # ---- MUST CLEAR: the source is a filename in the same clause ----------
+    for ext in ("csv", "json", "parquet", "txt", "md", "py"):
+        claim = f"I measured 1.5 h, recorded in EXECUTION_QUEUE.{ext} row 7"
+        assert not fires(claim), (
+            f"a source named as a .{ext} file still fires. That extension is "
+            "in FIGURE_SOURCES and must be reachable - naming a file is the "
+            "most natural citation there is.")
+
+    # non-file sources that already worked must keep working
+    assert not fires("I measured 1.5 h, recorded in the queue ledger")
+    assert not fires("I measured 1.5 h from output_cfg1 trade detail")
+
+    # ---- MUST STILL FIRE: no source anywhere ------------------------------
+    assert fires("I measured a Sharpe of 2.422 and it is a good number"), \
+        "a figure in measurement language with no source must still fire"
+
+    # B1832's own incident: a SENTENCE-FINAL decimal
+    assert fires("The probe measured a Sharpe of 2.422."), \
+        "the sentence-final decimal is the shape the gate went silent on at "\
+        "B1832 - it must not go silent again"
+
+    # ---- THE ARM THAT MATTERS: real sentences must still SPLIT ------------
+    assert fires("I measured a Sharpe of 2.422. output_cfg1 is unrelated"), \
+        ("a source in a DIFFERENT sentence must not clear the figure - if "
+         "this passes, the fix merged clauses it should have kept apart and "
+         "the gate now accepts any source anywhere in the response")
+
+    # ---- the splitter itself, asserted directly ---------------------------
+    import re as _re
+    pat = r"(?<!\d)[.;](?!\w)|\n"
+    assert len(_re.split(pat, "EXECUTION_QUEUE.md")) == 1, \
+        "an extension must not split"
+    assert len(_re.split(pat, "value 2.422 here")) == 1, \
+        "a decimal must not split (B1832)"
+    assert len(_re.split(pat, "one. two")) == 2, \
+        "a real sentence boundary must still split"
+    assert len(_re.split(pat, "trailing.")) == 2, \
+        "a sentence-final period must still split"
+
+
+def test_b1858_gate_message_says_where_to_put_the_citation():
+    """B1858 (S6-B1848b): the message asked for a source and not for its FORM.
+
+    I named the source inside backticks; `_response_text` strips inline-code
+    spans as B1738 mentions before the check runs, so the message described a
+    requirement I had already met in a form it could not see. Two blocks in
+    one turn came from that gap, not from a missing source.
+    """
+    import importlib.util
+    import pathlib as _p
+
+    root = _p.Path(__file__).resolve().parents[2]
+    spec = importlib.util.spec_from_file_location(
+        "vtc_b1858b", root / "scripts" / "verify_turn_compliance.py")
+    tg = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(tg)
+
+    out = tg.scan_synthetic_provenance(
+        [], text="I measured a Sharpe of 2.422 and it is a good number")
+    assert out, "precondition: this text must fire, or the message is untested"
+    msg = out[0]
+    assert "PLAIN TEXT" in msg, (
+        "the message must say WHERE to put the citation. Asking for a source "
+        "without saying it cannot be in backticks is what produced two blocks "
+        "in one turn.")
+    assert "B1738" in msg or "stripped" in msg, (
+        "the message must say WHY plain text - that code spans are stripped "
+        "as mentions - or the instruction reads as arbitrary")

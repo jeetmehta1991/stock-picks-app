@@ -1928,7 +1928,24 @@ def scan_synthetic_provenance(entries, *, text=None, tool_text=None) -> list[str
     # no clause ever held a decimal - the gate went silent on every
     # must-fire case for a reason unrelated to provenance. A sentence
     # period is one not flanked by digits.
-    for clause in _re.split(r"(?<!\d)[.;](?!\d)|\n", t):
+    # B1858 (S6-B1847a): `(?!\d)` guarded DECIMALS and nothing else, so the
+    # dot in a file EXTENSION split the clause and carried the source token
+    # out of the fragment holding the number. REPRODUCED: "measured 1.5 h,
+    # recorded in EXECUTION_QUEUE.md row 7" FIRED while "...in the queue
+    # ledger" passed - so naming a FILE, the most natural citation there
+    # is, was the one form the gate rejected, and `.csv .json .parquet
+    # .txt .md .py` were dead entries in FIGURE_SOURCES. `(?!\w)` is
+    # strictly stronger: a sentence boundary is followed by space or
+    # end-of-text, never by a word character.
+    # B1858b: the `(?<!\d)` lookbehind is REDUNDANT and HARMFUL.
+    # REDUNDANT because `(?!\w)` already protects `1.2.3` and `2.422` -
+    # their dots are followed by digits. HARMFUL because it refused to
+    # split a sentence ENDING in a decimal, so "measured 2.422.
+    # output_cfg1 is unrelated" stayed ONE clause and the figure
+    # inherited a source from the NEXT sentence. Proven on 6 cases: the
+    # old form failed 2, the first fix failed 1, this passes all 6.
+    # Found by the fail arm; reading it would not have shown this.
+    for clause in _re.split(r"[.;](?!\w)|\n", t):
         if not clause.strip():
             continue
         # B1832: allow a decimal that ENDS a sentence ("2.422.") while still
@@ -1955,7 +1972,10 @@ def scan_synthetic_provenance(entries, *, text=None, tool_text=None) -> list[str
                 "`rng.normal(1,3,30)` in my own probe and read as a "
                 "measurement**; `3.637` and `169.347` were hand-built fixtures "
                 "quoted the same way. Name the artifact, script or cube the "
-                "number came from, or label it SYNTHETIC where you quote it."]
+                "number came from IN PLAIN TEXT - inline-code spans are "
+                "stripped as mentions (B1738) before this gate reads the "
+                "text, so a source in backticks is invisible to it - or "
+                "label it SYNTHETIC where you quote it."]
     return []
 
 
