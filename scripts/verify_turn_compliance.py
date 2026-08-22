@@ -502,7 +502,7 @@ def scan_postfix_recheck(commit_msg, changed_files):
     EXECUTION_QUEUE entry saying "self-contained" satisfies it.
     """
     low = (commit_msg or "").lower()
-    if not any(w in low for w in FIX_WORDS):
+    if not _any_word(FIX_WORDS, low):
         return []
     touched = [f for f in (changed_files or [])
                if any(a in f for a in DOWNSTREAM_ARTIFACTS)]
@@ -1131,6 +1131,38 @@ _EXECUTING_TOOLS = ("bash", "powershell")
 _SEARCH_TOOLS = ("grep", "rg ", "findstr", "select-string", "ripgrep", "ack ")
 
 
+def _any_word(markers, text: str) -> bool:
+    """Substring scan that will not match a marker inside a LONGER word.
+
+    B1872. MEASURED across 53 marker lists: 3 markers match their own
+    NEGATION in real prose - `grade` inside `degrade`, `fixed` inside
+    `unfixed`, `corrected` inside `uncorrected`. **A marker matching its own
+    negation is the worst shape available: the text says the opposite of what
+    the gate concludes.** `STALL_MARKERS` was the demonstrably live one
+    ("hang" inside "changed"), fixed at B1866.
+
+    Multi-word phrases keep plain `in` - a phrase cannot hide inside a single
+    word, and anchoring it would break on punctuation.
+    """
+    for m in markers:
+        ml = str(m).lower()
+        if not ml:
+            continue
+        # B1872b: anchor only PLAIN WORDS. A marker carrying `_`, `.`, `-`
+        # or a space is a prefix (`output_`), an extension (`.csv`) or a
+        # phrase (`not a measurement`) - each DELIBERATELY partial, so
+        # anchoring is a different rule rather than a stricter one.
+        # `output_` exists to match `output_cfg1`, and the trailing `_` is a
+        # word character, so the boundary refused the one thing it is for.
+        if not ml.isalpha():
+            if ml in text:
+                return True
+            continue
+        if re.search(r"(?<![a-z0-9_])" + re.escape(ml) + r"(?![a-z0-9_])", text):
+            return True
+    return False
+
+
 def _drop_search_segments(cmd: str) -> str:
     """Blank out segments that only SEARCH. Compound commands judged per part."""
     keep = []
@@ -1657,7 +1689,13 @@ def scan_unverified_count(entries, *, text=None, tool_text=None) -> list[str]:
     if not _re.search(r"[0-9]{2,}", t):
         return []
     tt = _tool_text(entries, tool_text).lower()
-    if any(p in tt for p in COUNT_PROOF):
+    # B1872 (S6-B1827b): this cleared EVERY ledger count in a response as soon
+    # as ONE computing call appeared anywhere in the tool stream. `queue_state`
+    # runs every turn, so the clearance was PERMANENT - the gate could not fire
+    # again for the rest of the session. Require the proof to be word-bounded
+    # so `queue_state` does not clear via a substring, and keep the any-match
+    # semantics that are correct for "was a count computed at all".
+    if _any_word(COUNT_PROOF, tt):
         return []
     return [f"UNVERIFIED LEDGER COUNT (B1778/#258): this turn reports "
             f"{hits[0]!r} with a number, and no tool call this turn computed it. "
@@ -1962,7 +2000,9 @@ def scan_synthetic_provenance(entries, *, text=None, tool_text=None) -> list[str
         # Requiring the admission in the same clause fired on
         # "...a Sharpe of 2.422. This figure is SYNTHETIC." - which is exactly
         # how a person writes it.
-        if any(src in clause for src in FIGURE_SOURCES):
+        # B1872: word-bounded - `grade` matched `degrade`, so a figure
+        # described as DEGRADED read as one naming a grading source.
+        if _any_word(FIGURE_SOURCES, clause):
             continue
         if any(lbl in t for lbl in SYNTHETIC_LABEL):
             continue

@@ -19504,3 +19504,59 @@ def test_b1871_false_claim_stays_flagged():
     entry = lea[lea.index("### L571"):][:3500]
     assert "JUDGMENT-ONLY" in entry, (
         "L571 must keep saying which half is unmechanisable (#253)")
+
+
+
+def test_b1872_any_word_marker_shapes():
+    """B1872: a marker must not match its own NEGATION, and a PREFIX must still
+    match what it is a prefix of.
+
+    MEASURED across 53 marker lists: 17 are raw substring scans, and 3 markers
+    match their own negation - `grade` in `degrade`, `fixed` in `unfixed`,
+    `corrected` in `uncorrected`. In each case the text says the OPPOSITE of
+    what the gate concludes.
+
+    The first fix anchored EVERY marker and broke `output_`, which exists to
+    match `output_cfg1`. Word-boundary logic only applies to a PLAIN WORD; a
+    marker carrying `_`, `.`, `-` or a space is deliberately partial.
+    """
+    import importlib.util
+    import pathlib as _p
+
+    root = _p.Path(__file__).resolve().parents[2]
+    spec = importlib.util.spec_from_file_location(
+        "vtc_b1872", root / "scripts" / "verify_turn_compliance.py")
+    tg = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(tg)
+
+    W = tg._any_word
+
+    # PLAIN WORD - anchored, so a negation must NOT match
+    assert W(("fixed",), "this is fixed"), "a plain word must match itself"
+    assert not W(("fixed",), "this is unfixed"), (
+        "a marker must not match its own negation - the text says the "
+        "opposite of what the gate would conclude")
+    assert not W(("grade",), "the exit degraded to a time stop"), (
+        "'grade' inside 'degrade' made a DEGRADED figure read as one naming "
+        "a grading source")
+    assert not W(("hang",), "nothing changed"), (
+        "'hang' inside 'changed' - the B1866 defect, which made the stall "
+        "gate inert on its single most likely input")
+
+    # PREFIX - deliberately partial, must still match
+    assert W(("output_",), "measured from output_cfg1 trade detail"), (
+        "`output_` exists to match `output_cfg1`; `_` is a word character, so "
+        "anchoring it refused the one thing the marker is for")
+
+    # EXTENSION - deliberately partial
+    assert W((".csv",), "read from trade_exit_detail.csv"), \
+        "an extension marker must still match"
+
+    # PHRASE - cannot hide inside one word, so plain `in` is correct
+    assert W(("not a measurement",), "this figure is not a measurement"), \
+        "a multi-word phrase must still match"
+
+    # and the real lists must keep working end to end
+    assert W(tg.FIGURE_SOURCES, "measured 1.5 h from output_cfg1 trade detail")
+    assert W(tg.FIGURE_SOURCES, "measured 1.5 h in the queue ledger")
+    assert not W(tg.FIGURE_SOURCES, "the exit degraded to a time stop")
