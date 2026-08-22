@@ -11844,3 +11844,54 @@ used to be the citation form the gate rejected.
 its members are the same KIND of thing. If they are not, the change is several
 changes and each needs its own evidence.** **ANCHORED (`#197`):** `CHECKLIST
 #246` and `#226`; carried into `SKILL.md`.
+
+
+### L573
+
+**A run on the wrong interpreter does not crash - it produces a clean, empty, exit-0 cube**
+
+**B1849/B1877.** I reported to the owner, as CAUSALLY CONFIRMED, that demand
+pruning silently zeroed backtest runs: *"pruning ON = 0 trades / 1 file;
+pruning OFF = 20 trades / 75 files"*. **That test varied two things.** The
+zero-fire arm ran through `subprocess.run(["python", ...])`; the comparison ran
+through a bash command line. **Those resolve to different interpreters.**
+
+**One-variable tests, run after the owner had already been told:**
+
+```
+venv python, DEMAND_PRUNING=1  -> 10 trades
+venv python, DEMAND_PRUNING=0  -> 10 trades        pruning changes NOTHING
+
+subprocess + sys.executable (venv)  -> 3/33 producers kept, 10 trades
+subprocess + bare "python" (system) -> 2/33 producers kept,  0 trades
+```
+
+Same env, same flags, same cwd, deterministic. **`subprocess.run(["python",
+...])` from inside a venv resolves to the SYSTEM interpreter**, because venv
+activation lives in `PATH` and a child process does not inherit the venv's
+`Scripts` directory ahead of it.
+
+**Why it was so convincing.** The wrong interpreter does not raise. It imports
+the engine, runs every simulated day, writes `engine_state.json`, exits 0 - and
+produces a cube with nothing in it. **Every liveness signal I checked was
+green** (L566), and the one number that differed - 2 of 33 producers kept
+against 3 - looked exactly like a pruning result, because it IS one: pruning
+recorded fewer reads under an interpreter where some producer behaved
+differently.
+
+**The confound was available and cheap.** The two arms were launched by
+different mechanisms - one a Python script, one a shell line - and I never
+asked whether that difference could reach the result. **A one-variable test is
+not "I changed one flag"; it is "one thing differs", and the launch path is a
+thing.**
+
+**Retroactive (`#136`):** this is the L207-L209 class - a silent
+cross-environment fallback fixed as a one-off instead of gated - which is the
+reason the GENERALIZATION MANDATE exists. **Third appearance of "the
+environment differed and nothing said so".**
+
+**MECHANISM:** `scan_bare_python_launch` fires on `subprocess.run(["python",
+...])` and friends - the shape that HIDES the interpreter - and stays quiet on
+`sys.executable` and on bash command lines, which resolve through `PATH` to the
+venv. **The rule: a launch names its interpreter.** **ANCHORED (`#197`):**
+carried into `SKILL.md`; retraction recorded at `S6-B1877a`.

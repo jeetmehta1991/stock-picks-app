@@ -19560,3 +19560,52 @@ def test_b1872_any_word_marker_shapes():
     assert W(tg.FIGURE_SOURCES, "measured 1.5 h from output_cfg1 trade detail")
     assert W(tg.FIGURE_SOURCES, "measured 1.5 h in the queue ledger")
     assert not W(tg.FIGURE_SOURCES, "the exit degraded to a time stop")
+
+
+
+def test_b1878_launch_names_its_interpreter():
+    """B1878 (L573): a subprocess launch must name its interpreter.
+
+    MEASURED: subprocess + sys.executable keeps 3 of 33 producers and fires 10
+    trades; subprocess + bare "python" keeps 2 of 33 and fires ZERO - same env,
+    same flags, same cwd. The wrong interpreter does not crash; it produces a
+    clean, empty, exit-0 cube, which is why it was mistaken for a demand-pruning
+    defect and reported to the owner as causally confirmed.
+    """
+    import importlib.util
+    import pathlib as _p
+
+    root = _p.Path(__file__).resolve().parents[2]
+    spec = importlib.util.spec_from_file_location(
+        "vtc_b1878", root / "scripts" / "verify_turn_compliance.py")
+    tg = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(tg)
+
+    F = lambda c: bool(tg.scan_bare_python_launch([], cmds=[c]))
+
+    # MUST FIRE - the shape that hides the interpreter
+    assert F('subprocess.run(["python", "backtest/run_phase1a.py"])'), (
+        "bare `python` in a subprocess resolves to the SYSTEM interpreter and "
+        "produces a zero-fire, exit-0 cube")
+    assert F('subprocess.Popen(["python", "x.py"])'), "Popen is the same defect"
+
+    # MUST STAY QUIET
+    assert not F('subprocess.run([sys.executable, "backtest/run_phase1a.py"])'), (
+        "sys.executable is the fix - it must not fire")
+    assert not F("python backtest/run_phase1a.py --start a"), (
+        "a bash command line resolves `python` through PATH and gets the venv, "
+        "so it is not this defect - firing here would make the gate useless")
+
+    # FIXTURE EXCLUSION applied up front (L569), not after it blocks its author
+    heredoc = ("python - <<'PY'\n"
+               'print(subprocess.run(["python", "x.py"]))\n'
+               "PY")
+    assert not F(heredoc), (
+        "a bare-python string inside a HEREDOC BODY is a fixture, not a launch. "
+        "L569: a text-scanning gate is proven by fixtures containing exactly "
+        "what it detects, so it blocks its own author unless this is excluded - "
+        "applied in the SAME batch this time rather than after being bitten.")
+    assert F("python - <<'PY'\nprint(1)\nPY\n"
+             'subprocess.run(["python", "real.py"])'), (
+        "a real bare-python launch BESIDE a heredoc must still fire - trading a "
+        "false positive for a false negative is not a fix")

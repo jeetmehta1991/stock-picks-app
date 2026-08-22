@@ -973,6 +973,27 @@ PYTHONPATH=. python backtest/run_phase1a.py \
 | `--max-run-hours` | the runner REFUSES to start without it |
 | `--start 2024-05-05 --end 2025-05-05` | **1-year SEARCH window that ENDS AT THE HOLDOUT BOUNDARY** (owner ruling 2026-08-21). Step 1 previously ran to `2026-05-05` and therefore ranked on the holdout year it is judged against - `S6-B1605c`. |
 
+**RETRACTED 2026-08-22 (B1877) - THE SECTION BELOW BLAMED THE WRONG THING.** The note said demand
+pruning can silently produce a zero-fire run. **It cannot.** MEASURED with one variable changed:
+
+```
+venv python, DEMAND_PRUNING=1  -> 10 trades
+venv python, DEMAND_PRUNING=0  -> 10 trades       pruning changes NOTHING
+
+subprocess + sys.executable (venv)  -> 3/33 producers kept, 10 trades
+subprocess + bare "python" (system) -> 2/33 producers kept,  0 trades
+```
+
+**The cause is the INTERPRETER.** `subprocess.run(["python", ...])` from inside the venv resolves
+to the SYSTEM python, which keeps 2 of 33 producers and fires nothing. The B1849 "causal test"
+varied pruning AND the launch path at once and attributed the whole difference to pruning.
+
+**What survives:** the Step-1 window at 200 tickers FIRES (29 of 29 screen-days) - that run went
+through bash, i.e. the venv. **What does not:** every claim below about pruning zeroing a run.
+**ALWAYS launch with an explicit interpreter path**, never a bare `python`, from any script.
+
+**ORIGINAL NOTE, PRESERVED FOR LINEAGE AND KNOWN WRONG ON ITS CENTRAL CLAIM:**
+
 **DEMAND PRUNING AND UNIVERSE SIZE - MEASURED 2026-08-21 (B1861).** Demand pruning can
 silently produce a ZERO-FIRE run: exit 0, no `SkippedSignalError`, correct windows, and an empty
 cube that passes every completion check. **It is a SMALL-UNIVERSE effect and Step 1 at 200 tickers

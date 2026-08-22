@@ -41,6 +41,19 @@ from __future__ import annotations
 # incident produced several sentences, the one chosen is the one that appeared
 # in the response the owner reacted to.
 INCIDENTS: dict[str, tuple[str, bool, dict]] = {
+    # B1879: VERBATIM from b1845_timing.py, the script whose three arms all
+    # fired ZERO and produced a NEUTRAL verdict I nearly published. The launch
+    # line named no interpreter, so it ran under the SYSTEM python: 2 of 33
+    # producers kept, 0 trades. `sys.executable` on the identical config keeps
+    # 3 of 33 and fires 10.
+    "scan_bare_python_launch": (
+        'p = subprocess.run(cmd, cwd=R, env=env, capture_output=True) with '
+        'cmd = ["python", "backtest/run_phase1a.py", "--tickers-file", '
+        '"output_audit/_t10.txt", "--screen-pool-workers", "0"]',
+        True,
+        {"cmds": ['subprocess.run(["python", "backtest/run_phase1a.py", '
+                  '"--tickers-file", "output_audit/_t10.txt"])']},
+    ),
     # B1865: VERBATIM from this session - the monitor prompt armed for the
     # B1849 causal test. It promises a periodic unconditional report and has
     # no stall clause at all, so it could report a hung run as healthy, which

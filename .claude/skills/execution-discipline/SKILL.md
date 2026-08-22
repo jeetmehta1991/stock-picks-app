@@ -741,6 +741,22 @@ gate had just named.**
 - **Compliance failure against `#45` and `#247`, not a new class.** A fifth rule
   restating four that were ignored is `#136` theater.
 
+## A RUN ON THE WRONG INTERPRETER DOES NOT CRASH (B1878 - L573, mechanically enforced)
+
+**MEASURED: I told the owner, as CAUSALLY CONFIRMED, that demand pruning
+silently zeroed runs. It does not** - venv python gives 10 trades with pruning
+ON and 10 with it OFF. **The zero-fire arm had run through
+`subprocess.run(["python", ...])`, which resolves to the SYSTEM interpreter.**
+
+- **The wrong interpreter does not raise.** It imports the engine, runs every
+  day, writes `engine_state.json`, exits 0, and produces an empty cube. Every
+  liveness signal is green (L566).
+- **A one-variable test is not "I changed one flag" - it is "one thing
+  differs", and THE LAUNCH PATH IS A THING.** My two arms used different launch
+  mechanisms and I never asked whether that could reach the result.
+- **A launch names its interpreter.** `sys.executable`, never a bare `python`.
+  Enforced by `scan_bare_python_launch`.
+
 ## A "STRICTER" RULE IS A DIFFERENT RULE FOR MEMBERS IT WAS NOT ABOUT (B1873 - L572, CHECKLIST #246)
 
 **MEASURED: fixing 3 markers that matched their own negation, I word-bounded

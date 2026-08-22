@@ -2949,6 +2949,47 @@ def scan_monitor_without_stall_check(entries, *, blobs=None) -> list[str]:
             "Accepted words: " + ", ".join(STALL_MARKERS)]
 
 
+def scan_bare_python_launch(entries, *, cmds=None) -> list[str]:
+    """B1877 / L573: a launch must name its INTERPRETER, never a bare `python`.
+
+    MEASURED with one variable changed: `subprocess.run(["python", ...])` from
+    inside the venv resolves to the SYSTEM interpreter, keeps 2 of 33
+    producers and fires ZERO trades, while `sys.executable` keeps 3 of 33 and
+    fires 10. Same env, same flags, same cwd, deterministic.
+
+    That confound produced a P0 conclusion reported as causally confirmed -
+    that demand pruning silently zeroed runs - which one-variable tests then
+    refuted. **A run on the wrong interpreter does not crash; it produces a
+    clean, empty, exit-0 cube.**
+
+    Fires only on a SUBPROCESS launch written in a script, which is the shape
+    that hides the interpreter. A bash command line resolves `python` through
+    PATH and gets the venv, so it is not this defect.
+    """
+    import re as _re
+
+    raw = _executed_text(entries) if cmds is None else " ".join(cmds)
+    # B1878: applying L569 BEFORE it bites. A gate that scans executed text is
+    # proven by fixtures containing exactly what it detects, so it blocks its
+    # own author unless fixture context is excluded. A heredoc BODY is data
+    # handed to an interpreter, not a command that ran - same remedy as
+    # scan_bulk_process_kill. L570: a cited rule is not an applied one.
+    txt = _re.sub(r"<<\s*'?(\w+)'?.*?^\1", " ", raw, flags=_re.S | _re.M)
+    bad = []
+    for m in _re.finditer(r"""subprocess\.(?:run|Popen|check_output|call)\(\s*\[?\s*["']python["']""",
+                          txt):
+        bad.append(txt[max(0, m.start() - 20):m.start() + 60])
+    if not bad:
+        return []
+    return ["BARE `python` IN A SUBPROCESS LAUNCH (S6-B1877 / L573): this "
+            "resolves to the SYSTEM interpreter, not the venv. MEASURED: "
+            "2 of 33 producers kept and ZERO trades, against 3 of 33 and 10 "
+            "trades under `sys.executable` - same env, same flags, same cwd. "
+            "A run on the wrong interpreter does not crash, it produces a "
+            "clean empty exit-0 cube. Use `sys.executable`. Offending: "
+            + bad[0][:120]]
+
+
 def scan_bulk_process_kill(entries, *, cmds=None) -> list[str]:
     import re as _re
 
@@ -3161,7 +3202,8 @@ def main() -> int:
                 # was DEFINED and never wired, and that is instance 5 of any-vs-each.
                 scan_launch_missing_pool_workers,
                 scan_monitor_without_stall_check,
-                scan_bulk_process_kill):
+                scan_bulk_process_kill,
+                scan_bare_python_launch):
         try:
             _r = _sc(_e2)
         except Exception as _e:

@@ -1,0 +1,23 @@
+{
+ "swing20": {
+  "swing_length": "20",
+  "exit": 0,
+  "elapsed_s": 152.7,
+  "trades": 0,
+  "fires": []
+ },
+ "swing50": {
+  "swing_length": "50",
+  "exit": 0,
+  "elapsed_s": 153.3,
+  "trades": 0,
+  "fires": []
+ },
+ "VERDICT": {
+  "trades_20": 0,
+  "trades_50": 0,
+  "fire_sets_identical": true,
+  "subject_occurred": false,
+  "conclusion": "VACUOUS - both arms fired ZERO. A differential with n=0 on both sides proves nothing (L393). NOT a pass."
+ }
+}
