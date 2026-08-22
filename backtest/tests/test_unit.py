@@ -22169,3 +22169,56 @@ def test_b1988_l522_section_names_its_landed_mechanism():
     assert "def scan_queue_vocabulary" in src, (
         "and the named mechanism must exist - naming is not enforcement "
         "(#235); if this fails the section is right to be judgment-only")
+
+
+
+def test_b1990_one_row_parser_for_both_counting_tools():
+    """B1990 (S6-B1964d): the audit's membership IS queue_state's.
+
+    The audit kept its own row regex demanding a THIRD column that
+    `queue_state._ROW` does not - so a two-column row would be counted by
+    the canonical counter and silently missed by the staleness audit: two
+    correct counts of different sets under one name (L600/#271), pinned
+    here BEFORE it ever produced two numbers.
+    """
+    import importlib.util as _iu
+    import pathlib as _p
+    import sys as _sys
+
+    root = _p.Path(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    spec = _iu.spec_from_file_location(
+        "ats_b1990", root / "scripts" / "audit_ticket_staleness.py")
+    ats = _iu.module_from_spec(spec)
+    spec.loader.exec_module(ats)
+    import queue_state as qs
+
+    # identity, not a matching spelling (#226 / B1975's precedent)
+    assert ats._qs_rows._ROW is qs._ROW, (
+        "the audit must parse membership with the SAME object the canonical "
+        "counter uses - a second regex is a divergence waiting for a row "
+        "shape one of them does not expect")
+
+    # the divergence case: a row WITHOUT the third column. queue_state counts
+    # it; the audit must too, with priority degraded rather than the row lost
+    two_col = "| **S6-B1990x** | **OPEN** | just a body, no priority cell |"
+    assert qs._ROW.match(two_col), "canonical parser takes the two-column row"
+    r = ats._parse_row(two_col)
+    assert r is not None and r[0] == "S6-B1990x" and r[1] == "OPEN", (
+        "the audit dropped a row the canonical counter counts - the exact "
+        "latent #271 this pin exists to prevent")
+
+    # and the normal three-column row still yields its priority
+    three_col = "| **S6-B1990y** | **OPEN** | P1 | body text |"
+    r3 = ats._parse_row(three_col)
+    assert r3 is not None and r3[2] == "P1", (
+        "the tolerant extractor must not cost the well-formed rows their "
+        "priority column")
+
+    # no second row-shape regex may survive in the audit (ONE PATTERN)
+    import source_text as st
+    code = st.code_only(root / "scripts" / "audit_ticket_staleness.py")
+    assert "S6-[A-Za-z0-9-]+" not in code, (
+        "the audit re-spelled the ticket-row pattern - membership has ONE "
+        "definition and it lives in queue_state (#226)")

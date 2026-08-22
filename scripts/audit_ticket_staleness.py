@@ -40,8 +40,28 @@ sys.path.insert(0, str(ROOT / "scripts"))
 sys.path.insert(0, str(ROOT))
 
 LIVE = ("OPEN", "BLOCKED", "DEFERRED", "RUNNING")
-ROW = re.compile(
-    r"^\|\s*\*\*(S6-[A-Za-z0-9-]+)\*\*\s*\|\s*\*\*([A-Z-]+)\*\*\s*\|\s*(\S*)\s*\|(.*)$")
+
+# B1990 (S6-B1964d): MEMBERSHIP comes from queue_state._ROW, the ledger's one
+# authority - this file previously kept its own regex demanding a THIRD
+# column, so a two-column row would be counted by the canonical counter and
+# silently missed here: two correct counts of different sets under one name
+# (L600/#271), caught before it happened. The extra columns this audit wants
+# (priority, body) are extracted TOLERANTLY from the remainder, so a
+# malformed row degrades its priority to "" instead of vanishing.
+import queue_state as _qs_rows
+
+_EXTRA = re.compile(r"^\s*\|?\s*\**(\S*?)\**\s*\|(.*)$")
+
+
+def _parse_row(line):
+    """(tid, state, priority, body) via the canonical id/state parser."""
+    m = _qs_rows._ROW.match(line)
+    if not m:
+        return None
+    rest = line[m.end():]
+    e = _EXTRA.match(rest)
+    pri, body = (e.group(1), e.group(2)) if e else ("", rest)
+    return m.group(1), m.group(2), pri, body
 
 # claims we can re-derive automatically, as (regex, prober-name)
 PROBES: dict[str, callable] = {}
@@ -205,9 +225,9 @@ def main() -> int:
     q = (ROOT / "EXECUTION_QUEUE.md").read_text(encoding="utf-8")
     latest = {}
     for line in q.splitlines():
-        m = ROW.match(line)
-        if m:
-            latest[m.group(1)] = (m.group(2), m.group(3), m.group(4))
+        r = _parse_row(line)
+        if r:
+            latest[r[0]] = (r[1], r[2], r[3])
     live = {k: v for k, v in latest.items() if v[0] in LIVE}
     numeric = {k: v for k, v in live.items() if re.search(r"\b\d+\b", v[2])}
 
