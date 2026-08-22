@@ -578,10 +578,10 @@
   "SO": {
     "name": "Southern Company",
     "sector": "Utilities",
-    "industry": "Unknown",
-    "market_cap": 0,
-    "exchange": "",
-    "ipo_date": null
+    "industry": "ELECTRIC SERVICES",
+    "market_cap": 105413925673.98001,
+    "exchange": "XNYS",
+    "ipo_date": "1949-10-04"
   },
   "BRK.B": {
     "name": "BRK.B",
@@ -5534,5 +5534,429 @@
     "market_cap": 232038244469.7,
     "exchange": "XNAS",
     "ipo_date": "1992-06-01"
+  },
+  "DAL": {
+    "name": "Delta Air Lines",
+    "sector": "Industrials",
+    "industry": "AIR TRANSPORTATION, SCHEDULED",
+    "market_cap": 48183964895.6,
+    "exchange": "XNYS",
+    "ipo_date": "1967-07-03"
+  },
+  "GILD": {
+    "name": "Gilead Sciences",
+    "sector": "Health Care",
+    "industry": "BIOLOGICAL PRODUCTS, (NO DIAGNOSTIC SUBSTANCES)",
+    "market_cap": 169176069216.80002,
+    "exchange": "XNAS",
+    "ipo_date": "1992-01-22"
+  },
+  "PM": {
+    "name": "Philip Morris International",
+    "sector": "Consumer Staples",
+    "industry": "CIGARETTES",
+    "market_cap": 265781040008.38,
+    "exchange": "XNYS",
+    "ipo_date": "2008-03-31"
+  },
+  "NXPI": {
+    "name": "NXP Semiconductors",
+    "sector": "Information Technology",
+    "industry": "SEMICONDUCTORS & RELATED DEVICES",
+    "market_cap": 76637596030.45,
+    "exchange": "XNAS",
+    "ipo_date": "2010-08-06"
+  },
+  "DDOG": {
+    "name": "Datadog",
+    "sector": "Information Technology",
+    "industry": "SERVICES-PREPACKAGED SOFTWARE",
+    "market_cap": 51152456867.33,
+    "exchange": "XNAS",
+    "ipo_date": "2019-09-19"
+  },
+  "REGN": {
+    "name": "Regeneron Pharmaceuticals",
+    "sector": "Health Care",
+    "industry": "PHARMACEUTICAL PREPARATIONS",
+    "market_cap": 75594184023.59999,
+    "exchange": "XNAS",
+    "ipo_date": "1991-04-02"
+  },
+  "TTD": {
+    "name": "Trade Desk (The)",
+    "sector": "Communication Services",
+    "industry": "SERVICES-COMPUTER PROGRAMMING, DATA PROCESSING, ETC.",
+    "market_cap": 11287047433.69,
+    "exchange": "XNAS",
+    "ipo_date": "2016-09-21"
+  },
+  "ENPH": {
+    "name": "Enphase Energy",
+    "sector": "Information Technology",
+    "industry": "SEMICONDUCTORS & RELATED DEVICES",
+    "market_cap": 4718376276.0,
+    "exchange": "XNAS",
+    "ipo_date": "2012-03-30"
+  },
+  "WDAY": {
+    "name": "Workday, Inc.",
+    "sector": "Information Technology",
+    "industry": "SERVICES-COMPUTER PROCESSING & DATA PREPARATION",
+    "market_cap": 30618939119.129997,
+    "exchange": "XNAS",
+    "ipo_date": "2012-10-12"
+  },
+  "SLB": {
+    "name": "Schlumberger",
+    "sector": "Energy",
+    "industry": "OIL & GAS FIELD SERVICES, NEC",
+    "market_cap": 82467380580.76,
+    "exchange": "XNYS",
+    "ipo_date": "1962-02-02"
+  },
+  "MDLZ": {
+    "name": "Mondelez International",
+    "sector": "Consumer Staples",
+    "industry": "FOOD AND KINDRED PRODUCTS",
+    "market_cap": 79419411022.42,
+    "exchange": "XNAS",
+    "ipo_date": "2001-06-13"
+  },
+  "NEM": {
+    "name": "Newmont",
+    "sector": "Materials",
+    "industry": "GOLD AND SILVER ORES",
+    "market_cap": 122875323136.4,
+    "exchange": "XNYS",
+    "ipo_date": "1951-12-21"
+  },
+  "KLAC": {
+    "name": "KLA Corporation",
+    "sector": "Information Technology",
+    "industry": "OPTICAL INSTRUMENTS & LENSES",
+    "market_cap": 237257460117.09,
+    "exchange": "XNAS",
+    "ipo_date": "1980-10-08"
+  },
+  "PXD": {
+    "name": NaN,
+    "sector": "Energy",
+    "industry": "Unknown",
+    "market_cap": 0,
+    "exchange": "",
+    "ipo_date": null
+  },
+  "FIS": {
+    "name": "Fidelity National Information Services",
+    "sector": "Financials",
+    "industry": "SERVICES-BUSINESS SERVICES, NEC",
+    "market_cap": 23760476158.63,
+    "exchange": "XNYS",
+    "ipo_date": "2001-06-20"
+  },
+  "NCLH": {
+    "name": "Norwegian Cruise Line Holdings",
+    "sector": "Consumer Discretionary",
+    "industry": "WATER TRANSPORTATION",
+    "market_cap": 8149204985.0,
+    "exchange": "XNYS",
+    "ipo_date": "2013-01-18"
+  },
+  "LULU": {
+    "name": "Lululemon Athletica",
+    "sector": "Consumer Discretionary",
+    "industry": "APPAREL & OTHER FINISHD PRODS OF FABRICS & SIMILAR MATL",
+    "market_cap": 15263643369.279999,
+    "exchange": "XNAS",
+    "ipo_date": "2007-07-27"
+  },
+  "MPC": {
+    "name": "Marathon Petroleum",
+    "sector": "Energy",
+    "industry": "PETROLEUM REFINING",
+    "market_cap": 71752186150.3,
+    "exchange": "XNYS",
+    "ipo_date": "2011-06-23"
+  },
+  "FISV": {
+    "name": "Fiserv",
+    "sector": "Financials",
+    "industry": "SERVICES-BUSINESS SERVICES, NEC",
+    "market_cap": 29920881154.46,
+    "exchange": "XNAS",
+    "ipo_date": "1986-09-25"
+  },
+  "EOG": {
+    "name": "EOG Resources",
+    "sector": "Energy",
+    "industry": "CRUDE PETROLEUM & NATURAL GAS",
+    "market_cap": 71739736705.7,
+    "exchange": "XNYS",
+    "ipo_date": "1989-10-04"
+  },
+  "MTCH": {
+    "name": "Match Group",
+    "sector": "Information Technology",
+    "industry": "SERVICES-COMPUTER PROGRAMMING, DATA PROCESSING, ETC.",
+    "market_cap": 8864127988.0,
+    "exchange": "XNAS",
+    "ipo_date": "1992-12-28"
+  },
+  "HUM": {
+    "name": "Humana",
+    "sector": "Health Care",
+    "industry": "HOSPITAL & MEDICAL SERVICE PLANS",
+    "market_cap": 29574749295.0,
+    "exchange": "XNYS",
+    "ipo_date": "1971-05-18"
+  },
+  "EL": {
+    "name": "Est\u00e9e Lauder Companies (The)",
+    "sector": "Consumer Staples",
+    "industry": "PERFUMES, COSMETICS & OTHER TOILET PREPARATIONS",
+    "market_cap": 31356765283.05,
+    "exchange": "XNYS",
+    "ipo_date": "1995-11-17"
+  },
+  "NUE": {
+    "name": "Nucor",
+    "sector": "Materials",
+    "industry": "STEEL WORKS, BLAST FURNACES & ROLLING MILLS (COKE OVENS)",
+    "market_cap": 53340242537.68,
+    "exchange": "XNYS",
+    "ipo_date": "1972-07-12"
+  },
+  "DG": {
+    "name": "Dollar General",
+    "sector": "Consumer Staples",
+    "industry": "RETAIL-VARIETY STORES",
+    "market_cap": 25627736858.4,
+    "exchange": "XNYS",
+    "ipo_date": "2009-11-13"
+  },
+  "EQIX": {
+    "name": "Equinix",
+    "sector": "Real Estate",
+    "industry": "REAL ESTATE INVESTMENT TRUSTS",
+    "market_cap": 107299236854.08,
+    "exchange": "XNAS",
+    "ipo_date": "2000-08-11"
+  },
+  "SHW": {
+    "name": "Sherwin-Williams",
+    "sector": "Materials",
+    "industry": "RETAIL-BUILDING MATERIALS, HARDWARE, GARDEN SUPPLY",
+    "market_cap": 79818686024.23,
+    "exchange": "XNYS",
+    "ipo_date": "1964-02-11"
+  },
+  "ZTS": {
+    "name": "Zoetis",
+    "sector": "Health Care",
+    "industry": "PHARMACEUTICAL PREPARATIONS",
+    "market_cap": 46769922650.34,
+    "exchange": "XNYS",
+    "ipo_date": "2013-02-01"
+  },
+  "LUV": {
+    "name": "Southwest Airlines",
+    "sector": "Industrials",
+    "industry": "AIR TRANSPORTATION, SCHEDULED",
+    "market_cap": 20284109089.5,
+    "exchange": "XNYS",
+    "ipo_date": "1973-01-02"
+  },
+  "PNC": {
+    "name": "PNC Financial Services",
+    "sector": "Financials",
+    "industry": "NATIONAL COMMERCIAL BANKS",
+    "market_cap": 89316005449.44,
+    "exchange": "XNYS",
+    "ipo_date": "1975-02-18"
+  },
+  "USB": {
+    "name": "U.S. Bancorp",
+    "sector": "Financials",
+    "industry": "NATIONAL COMMERCIAL BANKS",
+    "market_cap": 87177153679.2,
+    "exchange": "XNYS",
+    "ipo_date": "1973-01-02"
+  },
+  "LVS": {
+    "name": "Las Vegas Sands",
+    "sector": "Consumer Discretionary",
+    "industry": "HOTELS & MOTELS",
+    "market_cap": 35265558436.5,
+    "exchange": "XNYS",
+    "ipo_date": "2004-12-15"
+  },
+  "GPN": {
+    "name": "Global Payments",
+    "sector": "Financials",
+    "industry": "SERVICES-BUSINESS SERVICES, NEC",
+    "market_cap": 19036621342.53,
+    "exchange": "XNYS",
+    "ipo_date": "2001-01-26"
+  },
+  "DXCM": {
+    "name": "Dexcom",
+    "sector": "Health Care",
+    "industry": "SURGICAL & MEDICAL INSTRUMENTS & APPARATUS",
+    "market_cap": 23291292891.72,
+    "exchange": "XNAS",
+    "ipo_date": "2005-04-14"
+  },
+  "SYK": {
+    "name": "Stryker Corporation",
+    "sector": "Health Care",
+    "industry": "SURGICAL & MEDICAL INSTRUMENTS & APPARATUS",
+    "market_cap": 111957786679.48999,
+    "exchange": "XNYS",
+    "ipo_date": "1979-05-02"
+  },
+  "VLO": {
+    "name": "Valero Energy",
+    "sector": "Energy",
+    "industry": "PETROLEUM REFINING",
+    "market_cap": 70281020171.58,
+    "exchange": "XNYS",
+    "ipo_date": "1997-08-01"
+  },
+  "ILMN": {
+    "name": "Illumina",
+    "sector": "Health Care",
+    "industry": "LABORATORY ANALYTICAL INSTRUMENTS",
+    "market_cap": 21572354000.0,
+    "exchange": "XNAS",
+    "ipo_date": "2000-07-28"
+  },
+  "WYNN": {
+    "name": "Wynn Resorts",
+    "sector": "Consumer Discretionary",
+    "industry": "HOTELS & MOTELS",
+    "market_cap": 11191427890.74,
+    "exchange": "XNAS",
+    "ipo_date": "2002-10-25"
+  },
+  "EA": {
+    "name": "Electronic Arts",
+    "sector": "Communication Services",
+    "industry": "SERVICES-PREPACKAGED SOFTWARE",
+    "market_cap": 50248443033.27,
+    "exchange": "XNAS",
+    "ipo_date": "1989-09-20"
+  },
+  "RCL": {
+    "name": "Royal Caribbean Group",
+    "sector": "Consumer Discretionary",
+    "industry": "WATER TRANSPORTATION",
+    "market_cap": 76993414284.23999,
+    "exchange": "XNYS",
+    "ipo_date": "1993-04-27"
+  },
+  "ON": {
+    "name": "ON Semiconductor",
+    "sector": "Information Technology",
+    "industry": "SEMICONDUCTORS & RELATED DEVICES",
+    "market_cap": 41451600512.07,
+    "exchange": "XNAS",
+    "ipo_date": "2000-04-28"
+  },
+  "MRO": {
+    "name": NaN,
+    "sector": "Energy",
+    "industry": "Unknown",
+    "market_cap": 0,
+    "exchange": "",
+    "ipo_date": null
+  },
+  "MCHP": {
+    "name": "Microchip Technology",
+    "sector": "Information Technology",
+    "industry": "SEMICONDUCTORS & RELATED DEVICES",
+    "market_cap": 55693661337.36,
+    "exchange": "XNAS",
+    "ipo_date": "1993-03-26"
+  },
+  "DOW": {
+    "name": "Dow Inc.",
+    "sector": "Materials",
+    "industry": "PLASTIC MATERIALS, SYNTH RESINS & NONVULCAN ELASTOMERS",
+    "market_cap": 27748545363.0,
+    "exchange": "XNYS",
+    "ipo_date": "2019-03-20"
+  },
+  "ICE": {
+    "name": "Intercontinental Exchange",
+    "sector": "Financials",
+    "industry": "SECURITY & COMMODITY BROKERS, DEALERS, EXCHANGES & SERVICES",
+    "market_cap": 86749616733.0,
+    "exchange": "XNYS",
+    "ipo_date": "2005-11-16"
+  },
+  "HLT": {
+    "name": "Hilton Worldwide",
+    "sector": "Consumer Discretionary",
+    "industry": "HOTELS & MOTELS",
+    "market_cap": 73191228081.72,
+    "exchange": "XNYS",
+    "ipo_date": "2013-12-12"
+  },
+  "ORLY": {
+    "name": "O\u2019Reilly Automotive",
+    "sector": "Consumer Discretionary",
+    "industry": "RETAIL-AUTO & HOME SUPPLY STORES",
+    "market_cap": 78884703622.48,
+    "exchange": "XNAS",
+    "ipo_date": "1993-04-22"
+  },
+  "DUK": {
+    "name": "Duke Energy",
+    "sector": "Utilities",
+    "industry": "ELECTRIC & OTHER SERVICES COMBINED",
+    "market_cap": 97870509082.18001,
+    "exchange": "XNYS",
+    "ipo_date": "1964-06-16"
+  },
+  "WBA": {
+    "name": "Walgreens Boots Alliance",
+    "sector": "Consumer Staples",
+    "industry": "Unknown",
+    "market_cap": 0,
+    "exchange": "",
+    "ipo_date": null
+  },
+  "SPG": {
+    "name": "Simon Property Group",
+    "sector": "Real Estate",
+    "industry": "REAL ESTATE INVESTMENT TRUSTS",
+    "market_cap": 66759550704.86,
+    "exchange": "XNYS",
+    "ipo_date": "1993-12-14"
+  },
+  "MET": {
+    "name": "MetLife",
+    "sector": "Financials",
+    "industry": "LIFE INSURANCE",
+    "market_cap": 51718039139.04,
+    "exchange": "XNYS",
+    "ipo_date": "2000-04-05"
+  },
+  "INFO": {
+    "name": NaN,
+    "sector": "Industrials",
+    "industry": "Unknown",
+    "market_cap": 0,
+    "exchange": "XNYS",
+    "ipo_date": "2024-10-09"
+  },
+  "PSX": {
+    "name": "Phillips 66",
+    "sector": "Energy",
+    "industry": "PETROLEUM REFINING",
+    "market_cap": 68848561634.4,
+    "exchange": "XNYS",
+    "ipo_date": "2012-04-12"
   }
 }

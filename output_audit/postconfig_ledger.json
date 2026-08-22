@@ -265,6 +265,44 @@
    "status": "N/A"
   }
  },
+ "output_b1856_firecheck_200t_DISCARD": {
+  "1_cube_sanity": {
+   "evidence": "FIRE-CHECK for S6-B1849b, deliberately BOUNDED and not a graded cube. Answers one question: does the owner-approved Step-1 window (2024-05-05 -> 2025-05-05) prune to a zero-fire state at 200 tickers, as it did at 10-20? Stopped once the demand-pruning ARMED line and the first screen results are visible. WAIVER NAMES WHAT IT STOPS DETECTING (L566): it waives cube grading, NOT the zero-output check - zero_output_runs() from B1855 is independent of this ledger by design.",
+   "status": "N/A"
+  },
+  "2_grade_with_config_params": {
+   "evidence": "FIRE-CHECK for S6-B1849b, deliberately BOUNDED and not a graded cube. Answers one question: does the owner-approved Step-1 window (2024-05-05 -> 2025-05-05) prune to a zero-fire state at 200 tickers, as it did at 10-20? Stopped once the demand-pruning ARMED line and the first screen results are visible. WAIVER NAMES WHAT IT STOPS DETECTING (L566): it waives cube grading, NOT the zero-output check - zero_output_runs() from B1855 is independent of this ledger by design.",
+   "status": "N/A"
+  },
+  "3_outlier_discrepancy_sweep": {
+   "evidence": "FIRE-CHECK for S6-B1849b, deliberately BOUNDED and not a graded cube. Answers one question: does the owner-approved Step-1 window (2024-05-05 -> 2025-05-05) prune to a zero-fire state at 200 tickers, as it did at 10-20? Stopped once the demand-pruning ARMED line and the first screen results are visible. WAIVER NAMES WHAT IT STOPS DETECTING (L566): it waives cube grading, NOT the zero-output check - zero_output_runs() from B1855 is independent of this ledger by design.",
+   "status": "N/A"
+  },
+  "4_three_leg_spot_check": {
+   "evidence": "FIRE-CHECK for S6-B1849b, deliberately BOUNDED and not a graded cube. Answers one question: does the owner-approved Step-1 window (2024-05-05 -> 2025-05-05) prune to a zero-fire state at 200 tickers, as it did at 10-20? Stopped once the demand-pruning ARMED line and the first screen results are visible. WAIVER NAMES WHAT IT STOPS DETECTING (L566): it waives cube grading, NOT the zero-output check - zero_output_runs() from B1855 is independent of this ledger by design.",
+   "status": "N/A"
+  },
+  "5_adversarial_lens_review": {
+   "evidence": "FIRE-CHECK for S6-B1849b, deliberately BOUNDED and not a graded cube. Answers one question: does the owner-approved Step-1 window (2024-05-05 -> 2025-05-05) prune to a zero-fire state at 200 tickers, as it did at 10-20? Stopped once the demand-pruning ARMED line and the first screen results are visible. WAIVER NAMES WHAT IT STOPS DETECTING (L566): it waives cube grading, NOT the zero-output check - zero_output_runs() from B1855 is independent of this ledger by design.",
+   "status": "N/A"
+  },
+  "6_post_fix_recheck": {
+   "evidence": "FIRE-CHECK for S6-B1849b, deliberately BOUNDED and not a graded cube. Answers one question: does the owner-approved Step-1 window (2024-05-05 -> 2025-05-05) prune to a zero-fire state at 200 tickers, as it did at 10-20? Stopped once the demand-pruning ARMED line and the first screen results are visible. WAIVER NAMES WHAT IT STOPS DETECTING (L566): it waives cube grading, NOT the zero-output check - zero_output_runs() from B1855 is independent of this ledger by design.",
+   "status": "N/A"
+  },
+  "6b_equivalence_class_check": {
+   "evidence": "FIRE-CHECK for S6-B1849b, deliberately BOUNDED and not a graded cube. Answers one question: does the owner-approved Step-1 window (2024-05-05 -> 2025-05-05) prune to a zero-fire state at 200 tickers, as it did at 10-20? Stopped once the demand-pruning ARMED line and the first screen results are visible. WAIVER NAMES WHAT IT STOPS DETECTING (L566): it waives cube grading, NOT the zero-output check - zero_output_runs() from B1855 is independent of this ledger by design.",
+   "status": "N/A"
+  },
+  "7_implement_in_engine": {
+   "evidence": "FIRE-CHECK for S6-B1849b, deliberately BOUNDED and not a graded cube. Answers one question: does the owner-approved Step-1 window (2024-05-05 -> 2025-05-05) prune to a zero-fire state at 200 tickers, as it did at 10-20? Stopped once the demand-pruning ARMED line and the first screen results are visible. WAIVER NAMES WHAT IT STOPS DETECTING (L566): it waives cube grading, NOT the zero-output check - zero_output_runs() from B1855 is independent of this ledger by design.",
+   "status": "N/A"
+  },
+  "8_verdict_with_denominators": {
+   "evidence": "FIRE-CHECK for S6-B1849b, deliberately BOUNDED and not a graded cube. Answers one question: does the owner-approved Step-1 window (2024-05-05 -> 2025-05-05) prune to a zero-fire state at 200 tickers, as it did at 10-20? Stopped once the demand-pruning ARMED line and the first screen results are visible. WAIVER NAMES WHAT IT STOPS DETECTING (L566): it waives cube grading, NOT the zero-output check - zero_output_runs() from B1855 is independent of this ledger by design.",
+   "status": "N/A"
+  }
+ },
  "output_batch395_batch_1": {
   "1_cube_sanity": {
    "evidence": "PRE-RUNBOOK cube (historical batch/chunk/smoke); the MANDATORY POST-CONFIG sequence postdates it",
