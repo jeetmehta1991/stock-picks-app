@@ -434,6 +434,54 @@ PURE_INCIDENTS: dict[str, list[tuple[tuple, bool, str]]] = {
 
 
 EXTRA_INCIDENTS: dict[str, list[tuple[str, bool, dict]]] = {
+    # B1936: L591 applied - CALL a gate before believing its exemption reason.
+    # All four incidents are preserved VERBATIM in the gates' own docstrings,
+    # which is exactly what "incident text not preserved" denied. These take
+    # KWARGS, so they live here rather than in PURE_INCIDENTS; B1924b's
+    # signature-aware call is what lets a gate with no `text` parameter run.
+    #
+    # The Skill blobs are SINGLE-quoted literals: they contain double quotes,
+    # and B1936b produced a SyntaxError by interpolating one into a
+    # double-quoted string.
+    "scan_skill_not_updated": [
+        ("B1723 - a LEARNINGS entry with SKILL.md left untouched. MEASURED: "
+         "SKILL.md was touched 5 times (B1597-B1704) while LEARNINGS ran far "
+         "ahead.", True,
+         {"learnings_touched": True, "skill_touched": False}),
+        ("both files touched - must go quiet", False,
+         {"learnings_touched": True, "skill_touched": True}),
+        ("no miss recorded at all - must go quiet", False,
+         {"learnings_touched": False, "skill_touched": False}),
+    ],
+    "scan_discipline_not_loaded": [
+        ("B1728, owner: 'I want the full 632 lines loaded each turn!' - a "
+         "substantive turn that never loaded the skill", True,
+         {"tool_text": "", "substantive": True}),
+        ("the skill loaded - must go quiet", False,
+         {"tool_text": "Skill execution-discipline", "substantive": True}),
+        ("a non-substantive turn - must go quiet", False,
+         {"tool_text": "", "substantive": False}),
+    ],
+    "scan_skill_not_invoked": [
+        ("B1725, owner: 'Is the fable mode and council skills not being "
+         "invoked if prompted? I am not seeing anything in turn.'", True,
+         {"user_text": "please use fable mode here", "tool_text": ""}),
+        ("a Skill tool_use blob present - must go quiet", False,
+         {"user_text": "please use fable mode here",
+          "tool_text": '{"name": "Skill", "input": {"skill": "fable-mode"}}'}),
+        ("no trigger in the request - must go quiet", False,
+         {"user_text": "just do the thing", "tool_text": ""}),
+    ],
+    "scan_skill_not_invoked_per_skill": [
+        ("S6-B1729c - two skills triggered, ONE invoked. Invoking a DIFFERENT "
+         "skill does not satisfy a trigger.", True,
+         {"user_text": "fable mode and council this",
+          "tool_text": '{"name": "Skill", "input": {"skill": "fable-mode"}}'}),
+        ("both invoked - must go quiet", False,
+         {"user_text": "fable mode and council this",
+          "tool_text": '{"name": "Skill", "input": {"skill": "fable-mode"}} '
+                       '{"name": "Skill", "input": {"skill": "llm-council"}}'}),
+    ],
     "scan_bulk_process_kill": [
         # a TARGETED kill is the correct form and must stay quiet - the defect
         # is killing every python on the box, not stopping a known process

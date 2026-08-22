@@ -16409,13 +16409,6 @@ def test_b1762_every_scan_gate_has_a_corpus_entry():
     # that shows up in review.
     EXEMPT = {
         # no injectable text seam yet - cannot be exercised on fixed input (#241)
-        "scan_discipline_not_loaded":
-            "has a tool_text seam (B1765 widening); incident text not preserved - S6-B1761c",
-        "scan_skill_not_invoked":
-            "has a tool_text seam (B1765 widening); incident text not preserved - S6-B1761c",
-        "scan_skill_not_invoked_per_skill":
-            "has a tool_text seam (B1765 widening); incident text not preserved - S6-B1761c",
-        "scan_skill_not_updated": "no seam; S6-B1761b",
         "scan_transcript_entries": "no seam; S6-B1761b",
         # B1865: built from HISTORICAL incidents (L407 / L411) whose verbatim
         # text was not preserved. An invented corpus entry is worse than none -
