@@ -64,15 +64,17 @@ def _auth_tighten(const: str):
 
 
 def _auth_ema_spans():
-    """The spans compute_ema_sma actually EMITS, from the producer's pair list."""
-    import re
-    src = (ROOT / "backtest" / "signals" / "technical.py").read_text(encoding="utf-8")
-    m = re.search(r"for fast, slow in \[([^\]]+)\]", src)
-    if not m:
-        raise LookupError("compute_ema_sma span pair-list not found in technical.py")
+    """The spans compute_ema_sma actually EMITS.
+
+    B2018: since B2016 (F1) the producer reads `_cfg.EMA_PAIRS` at call time -
+    the hardcoded pair list this used to regex out of technical.py no longer
+    exists, which left this authority UNREADABLE (fail-closed, correctly).
+    Read the config value the producer consumes, not the source text.
+    """
+    from backtest import config as _cfg
     spans = set()
-    for a, b in re.findall(r"\((\d+)\s*,\s*(\d+)\)", m.group(1)):
-        spans.update((int(a), int(b)))
+    for fast, slow in _cfg.EMA_PAIRS:
+        spans.update((int(fast), int(slow)))
     return sorted(spans)
 
 
