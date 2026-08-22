@@ -32,6 +32,13 @@ sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "scripts"))
 
 NEEDED = ("strategy", "exit_method", "pnl_pct", "hold_days", "entry_date")
+# B2013 (D6, owner-approved): L226 winsorization + collapse-price exclusion.
+# SBNY rows entered at $0.001 after the bank failed carried pnl_pct=264,900
+# and put one strategy first at +944.752pct mean. Winsorize at the pipeline's
+# canonical +/-300 and EXCLUDE sub-$0.10 entries - a collapse price is not a
+# tradeable fill. Both effects are DISCLOSED in the output, never silent.
+WINSORIZE_PCT = 300.0
+MIN_ENTRY_PRICE = 0.10
 
 
 def harvest(cube_dir, limit: int | None = None, min_trades: int = 10) -> dict:
@@ -59,11 +66,23 @@ def harvest(cube_dir, limit: int | None = None, min_trades: int = 10) -> dict:
         missing = [c for c in NEEDED if c not in seen_cols]
         if missing:
             return {"error": f"cube lacks columns {missing}"}
+        excluded_subprice = 0
+        winsorized = 0
         for row in rd:
             try:
                 pnl = float(row["pnl_pct"])
             except (TypeError, ValueError):
                 continue
+            # B2013 (D6): a sub-$0.10 entry is a collapse print, not a fill
+            try:
+                if float(row.get("entry_price") or 0) < MIN_ENTRY_PRICE:
+                    excluded_subprice += 1
+                    continue
+            except (TypeError, ValueError):
+                pass
+            if abs(pnl) > WINSORIZE_PCT:
+                pnl = WINSORIZE_PCT if pnl > 0 else -WINSORIZE_PCT
+                winsorized += 1
             acc[(row["strategy"], row["exit_method"])].append(pnl)
 
     by_strategy: dict[str, dict] = collections.defaultdict(dict)
@@ -109,7 +128,12 @@ def harvest(cube_dir, limit: int | None = None, min_trades: int = 10) -> dict:
         if limit and len(out) >= limit:
             break
 
-    return {"cube": str(path), "strategies_present": len(by_strategy),
+    return {"cube": str(path),
+            "SCOPE_B2013": {"winsorize_pct": WINSORIZE_PCT,
+                            "rows_winsorized": winsorized,
+                            "min_entry_price": MIN_ENTRY_PRICE,
+                            "rows_excluded_subprice": excluded_subprice},
+            "strategies_present": len(by_strategy),
             "strategies_graded": len(out),
             "strategies_starved": len(starved), "starved": sorted(starved),
             "min_trades": min_trades, "results": out}

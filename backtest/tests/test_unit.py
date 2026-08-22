@@ -22914,3 +22914,55 @@ def test_b2012_zero_loss_pf_gate_is_not_evaluable():
     assert r2["gates"]["profit_factor"] is True, (
         "39 wins vs one -0.5 loss is far above any bar - the evaluable "
         "verdict must still be a pass here")
+
+
+
+def test_b2013_harvester_excludes_collapse_prints_and_discloses():
+    """B2013 (D6 / S6-B1901a, owner-approved): the SBNY class is closed.
+
+    Three $0.001 rows of 547 put a strategy first at +944.752pct mean on the
+    R5 cube. The harvester now EXCLUDES sub-$0.10 entries (a collapse print
+    is not a tradeable fill), winsorizes at the pipeline's +/-300, and
+    DISCLOSES both counts - demonstrated live on the R5 cube this batch:
+    max mean fell to +2.11pct with 3,926 excluded / 386 winsorized.
+
+    SYNTHETIC-STRUCTURE micro-cube: the rows are hand-built; only the
+    STRUCTURE (exclusion, clipping, disclosure) is asserted.
+    """
+    import importlib.util as _iu
+    import pathlib as _p
+    import sys as _sys
+    import tempfile as _tf
+
+    root = _p.Path(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    spec = _iu.spec_from_file_location(
+        "hv_b2013", root / "scripts" / "harvest_strategy_metrics.py")
+    h = _iu.module_from_spec(spec)
+    spec.loader.exec_module(h)
+
+    d = _p.Path(_tf.mkdtemp())
+    rows = ["strategy,exit_method,pnl_pct,hold_days,entry_date,entry_price"]
+    for i in range(12):
+        rows.append(f"s1,exit_a,1.0,5,2025-01-{i+1:02d},50.0")
+    rows.append("s1,exit_a,264900.0,5,2025-02-01,0.001")   # the SBNY shape
+    rows.append("s1,exit_a,450.0,5,2025-02-02,20.0")       # winsorize target
+    (d / "trade_exit_detail.csv").write_text("\n".join(rows), encoding="utf-8")
+
+    res = h.harvest(str(d), min_trades=10)
+    sc = res["SCOPE_B2013"]
+    assert sc["rows_excluded_subprice"] == 1, (
+        "the $0.001 collapse print must be EXCLUDED, not averaged - three "
+        "such rows once put a strategy first at +944.752pct")
+    assert sc["rows_winsorized"] == 1, (
+        "the +450pct row must be clipped to +/-300 and counted")
+    best = res["results"]["s1"]["best"]
+    assert best["n"] == 13, "12 normals + the clipped row; the print is gone"
+    assert best["mean_pnl_pct"] < 30, (
+        f"mean {best['mean_pnl_pct']} - with the print excluded and the "
+        "tail clipped, the mean must be earth-bound (12x1.0 + 300)/13 ~ 24")
+    # disclosure must be in the OUTPUT, not only computable
+    assert "SCOPE_B2013" in res and "min_entry_price" in sc, (
+        "silent filtering is the L571 defect - the exclusion travels with "
+        "the artifact")
