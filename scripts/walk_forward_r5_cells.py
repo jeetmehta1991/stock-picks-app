@@ -28,9 +28,29 @@ import argparse
 import json
 import math
 from datetime import date
+import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
 import pandas as pd
+
+
+def rank_key(sharpe):
+    """Sort key for a possibly-ABSENT Sharpe. B1976 (`S6-B1972b`).
+
+    `sharpe or -9` could not tell "no value" from "the value 0", so a measured
+    Sharpe of exactly 0.0 sorted below every loser. Only None takes the
+    sentinel, and it sorts strictly last.
+
+    **Defined HERE, not in `roster_core`, because `roster_core` imports
+    `_sharpe` from this module** - the dependency runs upward, so a
+    `from roster_core import rank_key` here is a circular import. Importing it
+    the wrong way round raised `partially initialized module`, which is the
+    honest signal that this file is the LOWER one. `roster_core` re-exports it
+    so every consumer keeps one name (`#226`).
+    """
+    return float("-inf") if sharpe is None else sharpe
 
 REPO = Path(__file__).resolve().parent.parent
 
@@ -383,7 +403,11 @@ def main() -> int:
 
     pass1 = [r for r in results if r["n_folds_ge_0.7"] >= 1]
     pass2 = [r for r in results if r["n_folds_ge_0.7"] >= 2]
-    results.sort(key=lambda r: (r["best_oos_sharpe"] is None, -(r["best_oos_sharpe"] or -9)))
+    # B1976: `or -9` sent a Sharpe of EXACTLY 0.0 to -(-9)=9, sorting the
+    # break-even cell LAST among measured ones. None is already segregated
+    # by the tuple's first element, so only the 0.0 case was ever wrong.
+    results.sort(key=lambda r: (r["best_oos_sharpe"] is None,
+                                -rank_key(r["best_oos_sharpe"])))
     out.write_text(json.dumps({"gate_threshold": GATE_SHARPE, "oos_min_n": OOS_MIN_N,
                                "mode": "all_cells" if args.all_cells else "shortlist",
                                "n_cells_evaluated": len(results),

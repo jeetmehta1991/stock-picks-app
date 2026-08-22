@@ -43,7 +43,10 @@ if str(Path(__file__).resolve().parent) not in sys.path:
 
 from backtest.config import PASSING_CRITERIA as PC          # noqa: E402
 from backtest.results.metrics import _sortino_ratio, _deflated_sharpe  # noqa: E402
-from walk_forward_r5_cells import _sharpe                    # noqa: E402
+# B1976: `rank_key` is DEFINED in walk_forward_r5_cells, which also owns
+# `_sharpe`. The dependency runs upward - defining it here and importing it
+# there is a circular import. Re-exported so every consumer keeps one name.
+from walk_forward_r5_cells import _sharpe, rank_key          # noqa: E402
 
 # ---- the window discipline: ONE definition -------------------------------------------
 IS_START, IS_END = date(2022, 5, 5), date(2025, 5, 5)
@@ -173,22 +176,6 @@ def load_cube(path: Path, extra_columns: list[str] | None = None,
     df["entry_date"] = pd.to_datetime(df["entry_date"]).dt.date
     df["pnl_pct"] = df["pnl_pct"].clip(-WINSORIZE, WINSORIZE) - COST_BPS / 100.0
     return df
-
-
-def rank_key(sharpe):
-    """Sort key for a possibly-ABSENT Sharpe. B1975 (`S6-B1972b`).
-
-    `sharpe or -9` could not tell "no value" from "the value 0", so a measured
-    Sharpe of exactly 0.0 sorted below every loser - the exit that broke even
-    lost the selection to one that lost money. Only None takes the sentinel,
-    and it sorts strictly last.
-
-    **Lives here, imported by every consumer.** B1974 defined this per-file,
-    which is the habit that put the raw expression in 11 files: a pattern
-    spelled again is a pattern that can drift again. ONE PATTERN ONE
-    DEFINITION (`#226`).
-    """
-    return float("-inf") if sharpe is None else sharpe
 
 
 def evaluate(pnl: pd.Series, hold: pd.Series, *, min_n: int | None = None,

@@ -546,6 +546,19 @@ def main() -> int:
           f"BH-FDR {len(passed)} -> de-duped {len(kept)}")
     print(f"[MIRRORS] registered {len(mirrors_reg)} | dual-self {len(mirrors_dual)} | "
           f"long-only-excused {len(mirrors_asym)} | needs-creation {len(mirrors_new)}")
+    # B1976: freshness stamp - sha256 of the generator sources this run
+    # actually executed. The staleness gate accepts a matching stamp as
+    # freshness, because an OUTPUT-PRESERVING generator change leaves the
+    # artifact byte-identical and never re-committed, and a commit-timestamp
+    # comparison then fires forever with no satisfying action except a
+    # no-op commit.
+    import hashlib as _hl
+    _stamp = {f: _hl.sha256((REPO / f).read_bytes()).hexdigest()
+              for f in ("scripts/build_phase_1b_roster.py",
+                        "scripts/roster_core.py",
+                        "scripts/walk_forward_r5_cells.py")}
+    (REPO / "output_audit" / "phase_1b_roster_freshness.json").write_text(
+        json.dumps(_stamp, indent=1), encoding="utf-8")
     print(f"[OK] wrote {args.output} + {args.json}")
     return 0
 

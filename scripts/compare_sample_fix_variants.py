@@ -40,6 +40,7 @@ sys.path.insert(0, str(REPO))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from backtest.config import PASSING_CRITERIA as PC          # noqa: E402
+from roster_core import rank_key                            # noqa: E402
 from backtest.engine.regime_selector import STRATEGY_REGIME_AFFINITY as AFF  # noqa: E402
 from backtest.results.metrics import _sortino_ratio, _deflated_sharpe  # noqa: E402
 from walk_forward_r5_cells import _sharpe, bh_fdr            # noqa: E402
@@ -56,7 +57,9 @@ def _stats(pnl, hold, min_n, pf_bar):
     sh = _sharpe(pnl.values, hold)
     sharpe = sh["sharpe"] if sh else None
     sortino = _sortino_ratio(pnl, hold)
-    dsr = _deflated_sharpe(sharpe or 0.0, n, float(pnl.skew()), float(pnl.kurtosis()))
+    # B1976: an UNMEASURABLE Sharpe must not reach DSR as a MEASURED zero.
+    dsr = (_deflated_sharpe(sharpe, n, float(pnl.skew()), float(pnl.kurtosis()))
+           if sharpe is not None else None)
     w, l = pnl[pnl > 0], pnl[pnl <= 0]
     pf = float(w.sum() / abs(l.sum())) if len(l) and l.sum() != 0 else float("inf")
     ok = (sharpe is not None and sharpe >= PC["min_sharpe_per_regime"]
@@ -81,7 +84,7 @@ def per_regime(g):
             continue
         if r["ok"]:
             passing.append(str(reg))
-        if best is None or (r["sharpe"] or -9) > (best["sharpe"] or -9):
+        if best is None or rank_key(r["sharpe"]) > rank_key(best["sharpe"]):
             best = r
     if best is None:
         return None
@@ -126,7 +129,7 @@ def main() -> int:
             r = pooled(ge)
             if not r:
                 continue
-            k = (1 if r["ok"] else 0, r["sharpe"] or -9)
+            k = (1 if r["ok"] else 0, rank_key(r["sharpe"]))
             if k > key:
                 key, pick = k, str(ex)
         if pick is None:
@@ -147,7 +150,7 @@ def main() -> int:
             return ev, 0, 0, 0, []
         rej, _ = bh_fdr([r["p"] for r in passed], q=FDR_Q)
         surv = [r for r, k in zip(passed, rej) if k]
-        surv.sort(key=lambda r: -(r["sharpe"] or -9))
+        surv.sort(key=lambda r: -rank_key(r["sharpe"]))
         kept, seen = [], []
         for r in surv:
             A = set(map(tuple, r["_trades"][["ticker", "entry_date"]].drop_duplicates().values))

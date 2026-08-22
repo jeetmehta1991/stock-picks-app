@@ -42,6 +42,7 @@ sys.path.insert(0, str(REPO))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from backtest.config import PASSING_CRITERIA as PC          # noqa: E402
+from roster_core import rank_key                            # noqa: E402
 from backtest.results.metrics import _sortino_ratio, _deflated_sharpe  # noqa: E402
 from walk_forward_r5_cells import _sharpe                    # noqa: E402
 
@@ -58,7 +59,9 @@ def gates_pooled(pnl, hold):
     sh = _sharpe(pnl.values, hold)
     sharpe = sh["sharpe"] if sh else None
     sortino = _sortino_ratio(pnl, hold)
-    dsr = _deflated_sharpe(sharpe or 0.0, n, float(pnl.skew()), float(pnl.kurtosis()))
+    # B1976: an UNMEASURABLE Sharpe must not reach DSR as a MEASURED zero.
+    dsr = (_deflated_sharpe(sharpe, n, float(pnl.skew()), float(pnl.kurtosis()))
+           if sharpe is not None else None)
     w, l = pnl[pnl > 0], pnl[pnl <= 0]
     pf = float(w.sum() / abs(l.sum())) if len(l) and l.sum() != 0 else float("inf")
     return {"n": n, "sharpe": sharpe,
@@ -77,7 +80,9 @@ def gates_per_regime(pnl, hold):
     sh = _sharpe(pnl.values, hold)
     sharpe = sh["sharpe"] if sh else None
     sortino = _sortino_ratio(pnl, hold)
-    dsr = _deflated_sharpe(sharpe or 0.0, n, float(pnl.skew()), float(pnl.kurtosis()))
+    # B1976: an UNMEASURABLE Sharpe must not reach DSR as a MEASURED zero.
+    dsr = (_deflated_sharpe(sharpe, n, float(pnl.skew()), float(pnl.kurtosis()))
+           if sharpe is not None else None)
     w, l = pnl[pnl > 0], pnl[pnl <= 0]
     pf = float(w.sum() / abs(l.sum())) if len(l) and l.sum() != 0 else float("inf")
     return {"n": n, "sharpe": sharpe, "psr": dsr.get("psr"), "pf": round(pf, 3),
@@ -123,7 +128,7 @@ def main() -> int:
             r = gates_pooled(ge["pnl_pct"], ge["hold_days"])
             if not r:
                 continue
-            k = (1 if r["ok"] else 0, r["sharpe"] or -9)
+            k = (1 if r["ok"] else 0, rank_key(r["sharpe"]))
             if k > best_key:
                 best_key, best = k, ex
         if best is None:

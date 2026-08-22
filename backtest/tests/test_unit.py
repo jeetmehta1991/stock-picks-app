@@ -21470,7 +21470,11 @@ def test_b1974_roster_builder_ranks_break_even_above_losers():
 # than its generator is a MEMORY, not a measurement.
 _B1974_GENERATED = {
     "PHASE_1B_ROSTER.md": ("scripts/build_phase_1b_roster.py",
-                           "scripts/roster_core.py"),
+                           "scripts/roster_core.py",
+                           # B1976: roster_core imports _sharpe AND rank_key
+                           # from here - a generator dependency, surfaced when
+                           # the circular import forced the definition down
+                           "scripts/walk_forward_r5_cells.py"),
 }
 
 
@@ -21510,10 +21514,32 @@ def test_b1974_generated_artifact_is_not_older_than_its_generator():
                         cwd=root, capture_output=True, text=True
                         ).stdout.split())
 
+    # B1976: a freshness STAMP beats timestamps. An output-preserving
+    # generator change leaves the artifact byte-identical - never dirty,
+    # never re-committed - so the timestamp comparison fires forever with no
+    # satisfying action except a no-op commit. The builder writes the sha256
+    # of each generator source it executed; a matching stamp IS freshness.
+    import hashlib as _hl
+    import json as _json
+
+    def stamped_fresh(gens):
+        sp = root / "output_audit" / "phase_1b_roster_freshness.json"
+        if not sp.exists():
+            return False
+        try:
+            stamp = _json.loads(sp.read_text(encoding="utf-8"))
+        except ValueError:
+            return False
+        return all(
+            stamp.get(g) == _hl.sha256((root / g).read_bytes()).hexdigest()
+            for g in gens)
+
     stale = []
     for art, gens in sorted(_B1974_GENERATED.items()):
         if art in dirty:
             continue          # regenerated in the working tree this turn
+        if stamped_fresh(gens):
+            continue          # generator contents match the last actual run
         a = last_commit(art)
         if a is None:
             continue          # not committed yet; nothing to be stale against
