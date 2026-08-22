@@ -866,20 +866,12 @@ def check_postconfig_complete() -> str | None:
 # and every gate below is exercised against a supplied transcript in
 # test_b1720_* before being trusted (#226).
 # ---------------------------------------------------------------------------
-def _assistant_text(entries) -> str:
-    """All assistant prose in this turn, lowercased. The thing the gates read."""
-    out = []
-    for d in entries or ():
-        if not isinstance(d, dict) or d.get("type") != "assistant":
-            continue
-        for blk in (d.get("message") or {}).get("content") or ():
-            if isinstance(blk, dict) and blk.get("type") == "text":
-                out.append(blk.get("text") or "")
-    return " ".join(out).lower()
-
-
 def _response_text(entries, text=None, *, keep_code: bool = False) -> str:
-    """The text a response-scanning gate should read. Use this, not _assistant_text.
+    """The text a response-scanning gate should read - the ONLY response collector.
+
+    (Its raw predecessor `_assistant_text` was removed in B1989 after reaching zero
+    callers; `_tool_text` went the same way, its seam contract
+    moving to `_executed_tool_text`.)
 
     B1783. Two rules were learned on two specific gates and stayed there:
 
@@ -1197,6 +1189,15 @@ def _turn_entries(entries):
     return list(entries or ())[last_user + 1:]
 
 
+# B1989: these two constants survived their neighbours' deletion - the
+# def-to-def slice that removed the dead collectors also swallowed the
+# module-level names between them; the pyramid caught it as a NameError
+# in 12 tests, exactly the layered defence working (safe_write_py can
+# only refuse what does not PARSE).
+_EXECUTING_TOOLS = ("bash", "powershell")
+_SEARCH_TOOLS = ("grep", "rg ", "findstr", "select-string", "ripgrep", "ack ")
+
+
 def _executed_tool_text(entries, tool_text=None) -> str:
     """Only what this turn RAN - Bash and PowerShell commands, nothing written.
 
@@ -1235,56 +1236,6 @@ def _executed_tool_text(entries, tool_text=None) -> str:
     joined = _re9.sub(r"<<\s*'?(\w+)'?.*?^\1", " ", " ".join(out),
                       flags=_re9.S | _re9.M)
     return _strip_gate_echo(joined.lower())
-
-
-def _tool_text(entries, tool_text=None) -> str:
-    """Everything this turn actually RAN or READ - the inputs of every tool call.
-
-    B1721: the four B1720 gates catch SYMPTOMS (a claim with no evidence, a
-    finding with no ticket, a fix with no class sweep, a recommendation with no
-    objection). None catches the CAUSE the owner named: compressing work into
-    fewer tool calls - reading part of a file, answering from a module constant
-    instead of its call site. That cause is checkable, because the transcript
-    carries the tool calls: if a turn NAMES a constant it never grepped, it is
-    reasoning from memory of the code rather than the code.
-    """
-    # B1811: `tool_text` is the INJECTION SEAM, and it must travel the same
-    # pipeline as the live path. Previously every caller wrote
-    # `_tool_text(entries) if tool_text is None else tool_text`, so an injected
-    # value skipped the scrubbing below - a probe then exercised a path
-    # production never takes, and reported clean for that reason (#241's spirit:
-    # a seam that bypasses the pipeline is not a seam).
-    if tool_text is not None:
-        return _strip_gate_echo(tool_text)
-    out = []
-    for d in _turn_entries(entries):    # B1980: THIS turn, not the session
-        if not isinstance(d, dict) or d.get("type") != "assistant":
-            continue
-        for blk in (d.get("message") or {}).get("content") or ():
-            if isinstance(blk, dict) and blk.get("type") == "tool_use":
-                out.append(json.dumps(blk.get("input") or {}))
-    # a previous turn-gate report is not evidence about this turn
-    return _strip_gate_echo(" ".join(out))
-
-
-# B1813: WHAT THE TURN RAN, as distinct from what it WROTE INTO A FILE.
-#
-# `scan_synthetic_provenance` fired on a turn whose only decimals were real cube
-# measurements, because `rng.normal` appeared 3 times in a file the turn WROTE -
-# a test fixture and a lesson that quote the generator to explain it.
-#
-# B1738 established mention-vs-use for the RESPONSE. The same distinction exists
-# in TOOL text and had no expression until now. The transcript carries the tool
-# NAME, so it is exact rather than heuristic:
-#
-#     Bash / PowerShell  {"command": ...}   EXECUTED
-#     Write / Edit       {"content": ...}   WRITTEN, never run
-_EXECUTING_TOOLS = ("bash", "powershell")
-# B1815: a command SEGMENT whose job is searching mentions its pattern, it does
-# not run it. MEASURED: the only executed command containing `rng.` on the turn
-# this shipped was the grep run to FIND `rng.`. Fourth instance of the
-# self-reference family (B1732, B1738, B1811, B1815).
-_SEARCH_TOOLS = ("grep", "rg ", "findstr", "select-string", "ripgrep", "ack ")
 
 
 def _any_word(markers, text: str) -> bool:

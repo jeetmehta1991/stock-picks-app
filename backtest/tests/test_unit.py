@@ -18347,8 +18347,11 @@ def test_b1811_gate_echo_is_not_evidence():
     assert "rng.normal" in tg._strip_gate_echo("pnl = rng.normal(1, 3, 30)"), \
         "an ordinary command must pass through untouched"
 
-    # the injection seam must travel the SAME pipeline as the live path
-    assert "rng." not in tg._tool_text([], echo), \
+    # the injection seam must travel the SAME pipeline as the live path.
+    # B1989: retargeted from `_tool_text`, deleted at zero callers - the seam
+    # contract (B1811: override INSIDE the helper) lives in the executed-text
+    # collector now, and the assertion is unchanged because the contract is.
+    assert "rng." not in tg._executed_tool_text([], echo), \
         "an INJECTED tool_text must be scrubbed exactly as the live path is"
     src = (root / "scripts" / "verify_turn_compliance.py").read_text(encoding="utf-8")
     live = [ln for ln in src.splitlines() if not ln.lstrip().startswith("#")]
