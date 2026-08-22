@@ -741,6 +741,24 @@ gate had just named.**
 - **Compliance failure against `#45` and `#247`, not a new class.** A fifth rule
   restating four that were ignored is `#136` theater.
 
+## PIN THE CODE THAT MEASURED IT, NOT A FRESH IMPLEMENTATION (B1938 - L593, CHECKLIST #271)
+
+**L592 says count the sites and pin the count. I did both and they disagreed:**
+the measurement split on `def scan_` and counted FUNCTIONS (2); the pin used
+`re.findall` and counted OCCURRENCES (4).
+
+- **Both are correct counts of different things.** `#271`'s fourth face - a row
+  is not a ticket, a batch is not a ticket, a LIVE ticket is not an OPEN one,
+  **a call site is not a mention** - and I wrote B1929 about this class then did
+  it again in a pin.
+- **`#226`'s ONE PATTERN clause too:** two implementations of one count,
+  minutes apart, diverging immediately. **The rewrite was the easy version, the
+  one a regex reaches for.**
+- **The pin is what survives.** The measurement scrolls away; the assertion runs
+  forever. **A pin counting a different set than its claim passes while the
+  claim rots.**
+- **Put the measuring code IN the pin, or derive both from one function.**
+
 ## THE UNIT OF THE CHANGE WAS SMALLER THAN THE UNIT OF THE DEFECT (B1936 - L592, CHECKLIST #226)
 
 **One edit wrote two files. `safe_write_py` - which parses before writing -

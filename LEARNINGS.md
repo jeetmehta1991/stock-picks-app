@@ -12676,3 +12676,43 @@ by accident rather than by looking.
 BEFORE the batch ends - and pin the count.** **ANCHORED (`#197`):** compliance
 failure against `CHECKLIST #226`'s ONE PATTERN clause, amended in place with
 the guard-coverage shape. Carried into `SKILL.md`.
+
+
+### L593
+
+**When you pin a number you measured, pin the CODE that measured it - a second
+implementation is a second answer**
+
+**B1938.** L592's remedy is *count the sites a fix governs and pin the count*,
+so I did both. **They disagreed.**
+
+The measurement split the source on `def scan_` and counted FUNCTIONS
+containing `_raw_assistant`: **2**. The pin called
+`re.findall(r"_raw_assistant\(entries\)")` and counted OCCURRENCES: **4** -
+the definition line and two comment mentions inflate it.
+
+**Both are correct counts of different things**, which is `#271`'s class -
+a row is not a ticket, a batch is not a ticket (B1926), a LIVE ticket is not an
+OPEN one (B1929), **and now a call site is not a mention.** Fourth face, and
+**I wrote B1929 about this exact class and then did it again in a pin.**
+
+It is also `#226`'s ONE PATTERN, ONE DEFINITION clause: **two implementations
+of one count, written minutes apart, diverging immediately.** The measurement
+existed and was correct; I did not reuse it, I re-wrote it - and the rewrite
+was the easy version, the one a regex reaches for.
+
+**What makes this worth a rule rather than a shrug: the pin is the thing that
+survives.** The measurement scrolls away; the assertion runs forever. **A pin
+that counts a different set than the claim it guards will pass while the claim
+rots**, and nothing distinguishes it from a correct pin except reading both.
+
+**The detection signal is the disagreement itself, and it is free** - the pin
+failed on its first run, one command after the measurement. **A pin that agrees
+with its measurement on the first try has told you nothing yet; a pin that
+disagrees has already earned its cost.**
+
+**The rule: put the measuring code IN the pin, or derive both from one
+function.** Never re-implement a count you already ran. **ANCHORED (`#197`):**
+compliance failure against `CHECKLIST #271` (denominator) and `#226`'s ONE
+PATTERN clause (two implementations). No new item - both exist and both were
+broken. Carried into `SKILL.md`.
