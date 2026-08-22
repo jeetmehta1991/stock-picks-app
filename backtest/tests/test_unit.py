@@ -20367,7 +20367,20 @@ def test_b1914_l585_l586_rules_and_their_disposition_survive():
         "L589's operative image is the whole lesson - two runs of the SAME "
         "script are not a controlled comparison")
 
-    for cite in ("#276b", "#162", "#275"):
+    # B1933: L590 - a docstring is documentation, the marker list is the program
+    assert "### L590" in lm, "L590 dropped from LEARNINGS.md"
+    assert "MARKER LIST IS THE PROGRAM" in sk_raw, "L590's SKILL section dropped"
+    # B1933b: `sk` is whitespace-collapsed but NOT lowercased, and the text
+    # says "PROBE" in caps. The assertion two lines below already used
+    # .lower(); this one did not - an inconsistency inside a single edit.
+    assert "evidence about the probe" in sk.lower(), (
+        "L590's operative test is the whole lesson - a non-firing probe is "
+        "evidence about the PROBE until the trigger has been read")
+    assert "the ticket, not the guess" in sk.lower(), (
+        "L590's cost analysis must survive: a wrong guess costs one probe, a "
+        "TICKET asserting an absence becomes a claim a later reader inherits")
+
+    for cite in ("#276b", "#162", "#275", "#222"):
         assert cite in sk, (
             f"L588's citation of {cite} dropped - without it the entry reads "
             "as a discovered gap rather than a rule that existed and was not "
