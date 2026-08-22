@@ -1,0 +1,64 @@
+{
+ "open_tickets": 66,
+ "identifiers_shared": 14,
+ "clusters": {
+  "swing_length": [
+   "S6-B1503b",
+   "S6-B1528a",
+   "S6-B1580c"
+  ],
+  "roster_core": [
+   "S6-B1531b",
+   "S6-B1580e"
+  ],
+  "run_manifest": [
+   "S6-B1580c",
+   "S6-B1627d"
+  ],
+  "regime_flip": [
+   "S6-B1627d",
+   "S6-B1734b"
+  ],
+  "ci_lo": [
+   "S6-B1705j",
+   "S6-B1775c"
+  ],
+  "next_pivot_target": [
+   "S6-B1717c",
+   "S6-B1734b",
+   "S6-B1770b"
+  ],
+  "scan_postfix_recheck": [
+   "S6-B1761b",
+   "S6-B1763b"
+  ],
+  "scan_skill_not_updated": [
+   "S6-B1761b",
+   "S6-B1763b"
+  ],
+  "scan_transcript_entries": [
+   "S6-B1761b",
+   "S6-B1783b"
+  ],
+  "scan_unverified_universe": [
+   "S6-B1761b",
+   "S6-B1763b"
+  ],
+  "scan_verdict_denominators": [
+   "S6-B1761b",
+   "S6-B1783b"
+  ],
+  "scan_uninspected_constant": [
+   "S6-B1813b",
+   "S6-B1844c"
+  ],
+  "scan_unverified_count": [
+   "S6-B1813b",
+   "S6-B1844c"
+  ],
+  "feedback_local_changes_default_global_needs_approval": [
+   "S6-B1844c",
+   "S6-B1847b"
+  ]
+ }
+}
