@@ -20226,3 +20226,48 @@ def test_b1912_quoted_rule_is_a_mention_and_learnings_is_scanned():
     #
     # Left as a JUDGMENT call for the owner rather than iterated a third time.
     assert _re is not None
+
+
+
+def test_b1914_l585_l586_rules_and_their_disposition_survive():
+    """B1914: the DURABILITY half of #234's mechanism member.
+
+    B1797d: a bare "judgment-only" answers DETECTION and leaves DURABILITY
+    unasked. L585 is PROSE-ONLY for a real reason - no scan can check whether a
+    computation means what its author called it - but **the marker and the
+    rules are text in two files, and nothing notices if they go.**
+
+    Detection is impossible; disappearance is not.
+    """
+    import pathlib as _p
+
+    root = _p.Path(__file__).resolve().parents[2]
+    lm = (root / "LEARNINGS.md").read_text(encoding="utf-8")
+    sk = (root / ".claude" / "skills" / "execution-discipline"
+          / "SKILL.md").read_text(encoding="utf-8")
+
+    # L585 - the measurement rule, in BOTH docs
+    assert "### L585" in lm, "L585 dropped from LEARNINGS.md"
+    assert "proximity is not containment" in lm.lower(), (
+        "L585's diagnostic phrase is the part that makes the rule usable - a "
+        "reader who keeps the headline and loses this cannot apply it")
+    assert "COUNTS THE WRONG THING" in sk, "L585's SKILL section dropped"
+
+    # and its PROSE-ONLY disposition must remain EXPLICIT, with its reason.
+    # An unexplained PROSE-ONLY is indistinguishable from an ungated addition
+    # that slipped through - which is what the B1860 gate exists to catch.
+    assert "PROSE-ONLY" in sk, (
+        "L585's disposition marker dropped - without it the section reads as "
+        "an ungated addition, the exact thing B1860 gates")
+    assert "correspondence" in sk.lower(), (
+        "the REASON must survive with the marker: the rule is a claim about "
+        "correspondence between a name and a computation, and no text scan "
+        "evaluates that. A bare PROSE-ONLY is an assertion of exemption")
+
+    # L586 - the chilling-effect rule, in BOTH docs
+    assert "### L586" in lm, "L586 dropped from LEARNINGS.md"
+    assert "CHILLING EFFECT" in sk, "L586's SKILL section dropped"
+    for phrase in ("costly in the wrong place", "write less down"):
+        assert phrase in sk.lower(), (
+            f"L586's operative test dropped: {phrase!r} - the rule without it "
+            "is a slogan, not something a reader can act on")

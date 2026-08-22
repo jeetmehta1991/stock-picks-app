@@ -1124,6 +1124,33 @@ Values below were read from `backtest/config.py` at cite time, not from memory.
 | `SMC_SWING_LENGTH` | `20` | sweep knob | Swing length for SMC primitives. FIRE-ADDING — each value needs its own engine run. |
 | `STRAT_EMA_SPAN` | `200` | sweep knob | Which EMA span the trend leg reads. FIRE-ADDING. Built into the key at RUNTIME (`f"price_above_ema_{span}"`) — see the L437 trap below. |
 | `STAGE2_NO_LIVE_FETCH` | `1` (on) | **ALWAYS-ON** | Raises on any OHLCV cache miss instead of degrading silently. Set `0` ONLY for prefetch/setup, never a backtest. |
+
+#### Config assignments as RUN (S6-B1537b, recovered B1915)
+
+The table above gives the sweep knobs and their DEFAULTS. It never recorded
+which value each config actually ran, which is the fact `S6-B1537b` says must
+never be re-asked. **Recovered from the run's own record,
+`output_audit/b1576_par.log`** — not from a plan, a note, or memory:
+
+| config | `SMC_SWING_LENGTH` | `STRAT_EMA_SPAN` | exit | cube rows | wall |
+|---|---|---|---|---|---|
+| `output_cfg1` | `20` | `200` | 0 | 8,581 | 11,891 s (198.2 min) |
+| `output_cfg2` | `10` | `50` | 0 | 10,921 | 11,973 s (199.6 min) |
+
+**`cfg1` is the production anchor** — both knobs at their defaults — so cfg1 vs
+cfg2 moves BOTH knobs at once and is not a single-variable comparison. Two
+later cubes, `output_w1_sw20_span21` and `output_w1_sw20_span50`, vary the span
+alone against `sw=20`.
+
+**Timing measured B1915 from `b1576_cfg1.log` / `b1576_cfg2.log`:** end-to-end
+198.1 / 199.5 min, of which the day loop is 195.9 / 197.3 and post-processing
+is **2.2 / 2.1 min — 1.1%**. Post-processing is NOT on the slow path, and
+re-costing the 20-config sweep on end-to-end rather than day-loop moves it
+**32.9 h → 33.3 h (1.2%)**. That costing assumes the **measured** 2-way
+concurrency; **3-way and above is unvalidated pending the peak-RSS measurement
+(`S6-B1552a`)** — a wall-clock that divides by N says nothing about N copies
+fitting in RAM.
+
 | `ENGINE_OUTPUT_DIR` | unset | infra | Output directory override. |
 
 **Config flags (not env), current live values:**
