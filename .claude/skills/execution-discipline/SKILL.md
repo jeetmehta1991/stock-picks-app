@@ -741,6 +741,21 @@ gate had just named.**
 - **Compliance failure against `#45` and `#247`, not a new class.** A fifth rule
   restating four that were ignored is `#136` theater.
 
+## A GUARD'S PROMISE IS ONLY AS WIDE AS ITS DETECTOR (B1893 - L578, CHECKLIST #226)
+
+**MEASURED: a pin whose docstring says the set "cannot GROW" tested two of the
+three ways a gate reads assistant text.** Two gates using the third sat outside
+it for batches, and a new gate in that style would have grown the set silently.
+
+- **Not a broken gate.** L561 is a gate gone SILENT; this one works perfectly on
+  the shapes it tests. **The defect is the gap between docstring and coverage**,
+  and only the docstring is load-bearing for a reader.
+- **The tell was two of my own tickets disagreeing** - one said 13, one said 14.
+  **A disagreement between your own rows is free evidence one is wrong**, and it
+  went unread because each was written in a different batch.
+- **When a guard's docstring makes a universal claim, enumerate the ways the
+  thing it guards can occur and check the detector covers each.**
+
 ## A TICKET'S NUMBERS ARE AS PERISHABLE AS A RESPONSE'S (B1890 - L577, CHECKLIST #256)
 
 **MEASURED: a row carried "14 gates with no seam" for batches; the world said

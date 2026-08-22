@@ -19837,3 +19837,27 @@ def test_b1891_staleness_prober_covers_the_ledger_shapes():
         assert n == len(detail), (
             f"{label}: count {n} != len(detail) {len(detail)}. A count that "
             "does not name its members cannot be audited (L546).")
+
+
+
+def test_b1893_b1783_detector_covers_all_read_shapes():
+    """B1893 (L578): the B1783 pin promises the set cannot GROW, so its
+    detector must test EVERY way a gate reads assistant text.
+
+    It tested `_assistant_text(` and `_raw_assistant(` and not `c.get("text")`
+    inline, so two gates sat outside the set for batches. A guard's promise is
+    only as wide as its detector, and the promise is what people read.
+    """
+    import pathlib as _p
+
+    here = _p.Path(__file__).read_text(encoding="utf-8")
+    i = here.index("def test_b1783_response_gates_inherit_text_scoping")
+    body = here[i:i + 3000]
+
+    for shape in ("_assistant_text(", "_raw_assistant(", 'c.get("text")'):
+        assert shape in body, (
+            f"the B1783 detector no longer tests for {shape!r}. Its docstring "
+            "promises the KNOWN-UNCONVERTED set cannot GROW; a shape it does "
+            "not test for grows the set silently, which is exactly how "
+            "scan_transcript_entries and scan_verdict_denominators sat "
+            "outside it (L578).")

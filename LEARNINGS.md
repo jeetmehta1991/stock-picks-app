@@ -12045,3 +12045,41 @@ script exists to catch. It renders `n/a`.
 is where perished numbers are trusted most.** Re-derive before working a row, not
 after. **ANCHORED (`#197`):** `CHECKLIST #256`; mechanism is
 `audit_ticket_staleness.py`, extended from 4 shapes to 9.
+
+
+### L578
+
+**A guard's promise is only as wide as its detector, and the promise is what people read**
+
+**B1892.** `test_b1783`'s docstring says it *"pins the KNOWN-UNCONVERTED set so
+it cannot GROW: a NEW response-scanning gate must use the helper."* That
+sentence is why nobody re-checked the set for batches - **it reads as a
+closed question.**
+
+**Its detector tested for two of the three ways a gate reads assistant text.**
+`_assistant_text(` and `_raw_assistant(` were covered; `c.get("text")` inline
+was not. **Two gates sat outside the set the whole time**, and a new gate
+written in that style would have grown it silently, past a pin that promises
+it cannot.
+
+**This is not a broken gate.** L561's shape is a gate that has gone SILENT -
+indistinguishable from a working one. This one works perfectly, on the shapes
+it tests. **The defect is the gap between what the docstring claims and what
+the code covers**, and only the docstring is load-bearing for a reader.
+
+**The tell was a mismatch nobody was looking for.** Two rows disagreed -
+`S6-B1783b` said 13, `S6-B1844c` said 14 - and both had been sitting open. **A
+disagreement between two of my own tickets is free evidence that at least one
+is wrong**, and it went unread because each was written in a different batch
+about a different thing.
+
+**MECHANISM:** the detector now tests all three shapes, both gates are recorded
+as PRE-EXISTING rather than new, and the fail arm proves a fresh
+inline-reading gate is named. **The general remedy is cheaper than it sounds:
+when a guard's docstring makes a universal claim, enumerate the ways the thing
+it guards can occur, and check the detector covers each.**
+
+**The rule: read a guard's promise and its detector as two separate claims, and
+verify the second.** **ANCHORED (`#197`):** `CHECKLIST #226` - proving a gate
+can fail shows it works on the case you thought of; this asks which cases you
+did not. Carried into `SKILL.md`.
