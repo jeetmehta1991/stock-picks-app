@@ -21432,26 +21432,37 @@ def test_b1974_roster_builder_ranks_break_even_above_losers():
     import pathlib as _p
 
     root = _p.Path(__file__).resolve().parents[2]
+    import sys as _sys
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    _ss = _iu.spec_from_file_location("st_b1975", root / "scripts" / "source_text.py")
+    _st = _iu.module_from_spec(_ss)
+    _ss.loader.exec_module(_st)
     spec = _iu.spec_from_file_location(
         "bpr_b1974", root / "scripts" / "build_phase_1b_roster.py")
     m = _iu.module_from_spec(spec)
     spec.loader.exec_module(m)
 
-    assert m._rank(0.0) > m._rank(-0.4), (
+    # B1975: the definition moved to roster_core and is IMPORTED here. A
+    # per-file copy is the habit that put the raw expression in 11 files.
+    assert m.rank_key(0.0) > m.rank_key(-0.4), (
         "breaking even must outrank losing money - `or -9` inverted this")
-    assert m._rank(-0.4) > m._rank(None), (
+    assert m.rank_key(-0.4) > m.rank_key(None), (
         "an absent Sharpe must still sort strictly last")
-    assert m._rank(1.2) > m._rank(0.0) and m._rank(0.0) == 0.0, (
+    assert m.rank_key(1.2) > m.rank_key(0.0) and m.rank_key(0.0) == 0.0, (
         "a measured value must rank on itself, unmodified")
 
-    # ONE definition, not three copies (#226 / ONE PATTERN ONE DEFINITION)
-    src = (root / "scripts" / "build_phase_1b_roster.py").read_text(
-        encoding="utf-8")
-    assert '"sharpe"] or -9' not in src and '"is_sharpe"] or -9' not in src, (
-        "no call site may keep the falsy-coalescing form")
-    assert src.count("_rank(") >= 4, (
-        "all three call sites plus the definition - if a fourth ranking site "
-        "is added later it must reuse this, not re-spell it")
+    # ONE definition for every consumer (#226), not one per file
+    import roster_core as _rc
+    assert m.rank_key is _rc.rank_key, (
+        "the roster builder must IMPORT the shared key, not re-spell it - a "
+        "pattern spelled again is a pattern that can drift again")
+
+    for f in ("build_phase_1b_roster.py", "best_exit_by_gates.py",
+              "bear_regime_stress_test.py", "roster_core.py"):
+        code = _st.code_only(root / "scripts" / f)
+        assert '"sharpe"] or -9' not in code and "sharpe or 0.0" not in code, (
+            f"{f} still carries the falsy-coalescing form")
 
 
 

@@ -175,6 +175,22 @@ def load_cube(path: Path, extra_columns: list[str] | None = None,
     return df
 
 
+def rank_key(sharpe):
+    """Sort key for a possibly-ABSENT Sharpe. B1975 (`S6-B1972b`).
+
+    `sharpe or -9` could not tell "no value" from "the value 0", so a measured
+    Sharpe of exactly 0.0 sorted below every loser - the exit that broke even
+    lost the selection to one that lost money. Only None takes the sentinel,
+    and it sorts strictly last.
+
+    **Lives here, imported by every consumer.** B1974 defined this per-file,
+    which is the habit that put the raw expression in 11 files: a pattern
+    spelled again is a pattern that can drift again. ONE PATTERN ONE
+    DEFINITION (`#226`).
+    """
+    return float("-inf") if sharpe is None else sharpe
+
+
 def evaluate(pnl: pd.Series, hold: pd.Series, *, min_n: int | None = None,
              pf_bar: float | None = None, full_period_n: int | None = None) -> dict | None:
     """The five live gates on one (cell, window). None below the power floor.

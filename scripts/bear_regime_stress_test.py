@@ -51,6 +51,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from backtest.config import PASSING_CRITERIA as PC          # noqa: E402
 from backtest.results.metrics import _sortino_ratio, _deflated_sharpe  # noqa: E402
+from roster_core import rank_key as _rank_key  # noqa: E402
 from walk_forward_r5_cells import _sharpe                    # noqa: E402
 
 SEL_START, SEL_END = date(2023, 5, 5), date(2026, 5, 5)     # exit chosen here
@@ -69,7 +70,9 @@ def evaluate(pnl: pd.Series, hold: pd.Series) -> dict | None:
     sh = _sharpe(pnl.values, hold)
     sharpe = sh["sharpe"] if sh else None
     sortino = _sortino_ratio(pnl, hold)
-    dsr = _deflated_sharpe(sharpe or 0.0, n, float(pnl.skew()), float(pnl.kurtosis()))
+    # B1975: an UNMEASURABLE Sharpe must not reach DSR as a MEASURED zero.
+    dsr = (_deflated_sharpe(sharpe, n, float(pnl.skew()), float(pnl.kurtosis()))
+           if sharpe is not None else None)
     wins, loss = pnl[pnl > 0], pnl[pnl <= 0]
     pf = float(wins.sum() / abs(loss.sum())) if len(loss) and loss.sum() != 0 else float("inf")
     gates = {
@@ -121,7 +124,7 @@ def main() -> int:
         # selection-justified: gates-cleared is the promotion objective (owner directive
         # 2026-08-04), IS Sharpe breaks ties. Chosen on the SELECT fold only -- the bear
         # fold is never searched over. CHECKLIST #165.
-        pick = max(cands, key=lambda c: (c["n_gates"], c["sharpe"] or -9))
+        pick = max(cands, key=lambda c: (c["n_gates"], _rank_key(c["sharpe"])))
         be = bear[bear.exit_method == pick["exit"]]
         graded = evaluate(be["pnl_pct"], be["hold_days"])
         rows.append({
@@ -145,7 +148,7 @@ def main() -> int:
                   f"({100*pos/len(ev):.0f}%)")
 
     shorts = sorted([r for r in rows if r["direction"] == "short" and not r["bear_uneval"]],
-                    key=lambda x: -(x["bear"]["sharpe"] or -9))
+                    key=lambda x: -_rank_key(x["bear"]["sharpe"]))
     print(f"\n  TOP SHORTS IN BEAR (by bear Sharpe):")
     print(f"  {'strategy':<44}{'exit':<22}{'bearShrp':>9}{'bearPF':>8}{'n':>7}{'gates':>7}")
     for r in shorts[:15]:

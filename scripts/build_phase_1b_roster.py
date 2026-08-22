@@ -68,23 +68,8 @@ SELECTION_NOISE_FLOOR = 0.369
 
 from roster_core import (                                    # noqa: E402
     IS_START, IS_END, HO_START, HO_END, WINSORIZE, COST_BPS, MIN_N, FDR_Q, JACCARD,
-    LIVE_GATES, DEMOTED, evaluate, select_exit, truthful_exit_name,
+    LIVE_GATES, DEMOTED, evaluate, rank_key, select_exit, truthful_exit_name,
 )
-
-def _rank(sharpe):
-    """Ranking key for a possibly-ABSENT Sharpe. B1974 (`S6-B1972b`).
-
-    `sharpe or -9` could not tell "no value" from "the value 0", so a measured
-    Sharpe of exactly 0.0 sorted below every loser. Only None takes the
-    sentinel, and it sorts strictly last.
-
-    ONE definition for all three call sites (`#226`): the previous code
-    repeated the expression three times, which is how two of them ended up
-    decision-bearing and the third cosmetic with nothing marking the
-    difference.
-    """
-    return float("-inf") if sharpe is None else sharpe
-
 
 CUBES = [("R5", "output_r5_merged_1_7"),
          ("R6b", "output_r6b_cube_14"),
@@ -245,7 +230,7 @@ def main() -> int:
             # pick to every exit that LOST MONEY. Measured 0 live instances
             # over 6,578 cells in all three cubes, so this changes no current
             # output - it removes a trap that fires on data not yet run.
-            pick = max(cands, key=lambda c: (c["n_gates"], _rank(c["sharpe"])))
+            pick = max(cands, key=lambda c: (c["n_gates"], rank_key(c["sharpe"])))
             hog = g[(g.entry_date >= HO_START) & (g.entry_date < HO_END)
                     & (g.exit_method == pick["exit"])]
             graded = evaluate(hog["pnl_pct"], hog["hold_days"],
@@ -282,7 +267,7 @@ def main() -> int:
     # selection window (CHECKLIST #165 + the B1452 window discipline).
     # B1974: same class - a break-even cell must not lose canonical status
     # to a losing twin because 0.0 is falsy.
-    passed.sort(key=lambda r: -_rank(r["is_sharpe"]))
+    passed.sort(key=lambda r: -rank_key(r["is_sharpe"]))
     dup_of, kept = {}, []
     for r in passed:
         red = None
@@ -436,7 +421,7 @@ def main() -> int:
     # B1974: display sort - same class, no decision rides on it, fixed
     # anyway so the file has ONE definition of the ranking key (#226).
     for i, r in enumerate(sorted(kept,
-                                 key=lambda x: -_rank(x["holdout"]["sharpe"])), 1):
+                                 key=lambda x: -rank_key(x["holdout"]["sharpe"])), 1):
         h = r["holdout"]
         # B1455b: render every status the classifier can emit. This previously fell through
         # to "**NEEDS CREATION**" for anything that was not REGISTERED or LONG-ONLY-DATA, so

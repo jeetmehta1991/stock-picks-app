@@ -50,7 +50,7 @@ from walk_forward_r5_cells import _sharpe                    # noqa: E402
 # `objective=` switch ("gates" here, the owner's 2026-08-04 directive).
 from roster_core import (                                    # noqa: E402
     IS_START, IS_END, HO_START, HO_END, WINSORIZE, COST_BPS, MIN_N, LIVE_GATES,
-    evaluate as _core_evaluate,
+    evaluate as _core_evaluate, rank_key,
 )
 
 
@@ -91,8 +91,10 @@ def main() -> int:
         # selection-justified: gates-cleared IS the promotion criterion (owner directive), so
         # maximising it is the objective itself; IS Sharpe breaks ties because among equally
         # compliant exits the better risk-adjusted one is preferable. IS ONLY - CHECKLIST #165.
-        pick = max(cands, key=lambda c: (c["n_gates"], c["sharpe"] or -9))
-        by_sharpe = max(cands, key=lambda c: (c["sharpe"] or -9))   # what the generator picks
+        # B1975: rank_key, not `or -9` - 0.0 is a VALUE, and only an ABSENT
+        # Sharpe may take the sentinel. Shared definition in roster_core.
+        pick = max(cands, key=lambda c: (c["n_gates"], rank_key(c["sharpe"])))
+        by_sharpe = max(cands, key=lambda c: (rank_key(c["sharpe"]),))   # what the generator picks
 
         he = ho_g[ho_g.exit_method == pick["exit"]]
         graded = evaluate(he["pnl_pct"], he["hold_days"])
@@ -119,7 +121,7 @@ def main() -> int:
           f"choosing among 26 exits on the graded window itself)\n")
 
     print(f"  {'strategy':<42}{'dir':<7}{'exit':<22}{'IS shrp':>8}{'HO shrp':>8}{'HO n':>6}")
-    for r in sorted(passing, key=lambda x: -(x["holdout"]["sharpe"] or -9)):
+    for r in sorted(passing, key=lambda x: -rank_key(x["holdout"]["sharpe"])):
         print(f"  {r['strategy']:<42}{r['direction']:<7}{r['exit']:<22}"
               f"{(r['is_sharpe'] or 0):>8.2f}{(r['holdout']['sharpe'] or 0):>8.2f}{r['holdout']['n']:>6}")
 
