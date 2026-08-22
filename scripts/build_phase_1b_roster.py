@@ -75,7 +75,8 @@ SELECTION_NOISE_FLOOR = 0.333
 
 from roster_core import (                                    # noqa: E402
     IS_START, IS_END, HO_START, HO_END, WINSORIZE, COST_BPS, MIN_N, FDR_Q, JACCARD,
-    LIVE_GATES, DEMOTED, evaluate, rank_key, select_exit, truthful_exit_name,
+    LIVE_GATES, DEMOTED, evaluate, npt_spanning_exclusion, rank_key,
+    select_exit, truthful_exit_name,
 )
 
 CUBES = [("R5", "output_r5_merged_1_7"),
@@ -224,7 +225,13 @@ def main() -> int:
         for (strat, direction), g in df.groupby(["strategy", "direction"]):
             isg = g[(g.entry_date >= IS_START) & (g.entry_date < IS_END)]
             cands = []
+            # B2014 (D7): the identity-boundary refusal, via the ONE shared
+            # helper - this inline selector never calls select_exit, which
+            # is how the first landing missed all 7 spanning npt cells.
+            _npt_out = npt_spanning_exclusion(g)
             for ex, ge in isg.groupby("exit_method"):
+                if _npt_out and str(ex) == "next_pivot_target":
+                    continue
                 r = evaluate(ge["pnl_pct"], ge["hold_days"])
                 if r:
                     r["exit"] = ex

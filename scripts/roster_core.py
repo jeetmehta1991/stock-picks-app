@@ -49,6 +49,10 @@ from backtest.results.metrics import _sortino_ratio, _deflated_sharpe  # noqa: E
 from walk_forward_r5_cells import _sharpe, rank_key          # noqa: E402
 
 # ---- the window discipline: ONE definition -------------------------------------------
+# B2014 (D7): the date signals_at_entry began persisting - next_pivot_target
+# has a different identity on each side (L526).
+NPT_IDENTITY_BOUNDARY = date(2025, 2, 6)
+
 IS_START, IS_END = date(2022, 5, 5), date(2025, 5, 5)
 HO_START, HO_END = date(2025, 5, 5), date(2026, 5, 5)
 WINSORIZE, COST_BPS, MIN_N, FDR_Q, JACCARD = 300.0, 20.0, 30, 0.05, 0.70
@@ -285,6 +289,22 @@ def holdout(g: pd.DataFrame) -> pd.DataFrame:
     return g[(g.entry_date >= HO_START) & (g.entry_date < HO_END)]
 
 
+def npt_spanning_exclusion(g: pd.DataFrame) -> bool:
+    """True when next_pivot_target must be REFUSED for this cell (B2014/D7).
+
+    L526: the exit's identity changes at NPT_IDENTITY_BOUNDARY (silent
+    fallback 100pct before, 20-40pct after), so a cell whose data SPANS the
+    date is choosing between two exits wearing one name. ONE definition -
+    the roster builder and best_exit_by_gates select INLINE and never call
+    select_exit, which is how D7's first landing missed all 7 spanning
+    cells while the constructed probe passed.
+    """
+    if not len(g):
+        return False
+    dmin, dmax = g["entry_date"].min(), g["entry_date"].max()
+    return bool(dmin < NPT_IDENTITY_BOUNDARY <= dmax)
+
+
 def select_exit(g: pd.DataFrame, objective: str = "gates",
                 min_n: int | None = None) -> tuple[str | None, dict | None]:
     """Choose ONE exit using IN-SAMPLE data only. Returns (exit_method, its IS stats).
@@ -298,6 +318,19 @@ def select_exit(g: pd.DataFrame, objective: str = "gates",
     if objective not in ("gates", "sharpe"):
         raise ValueError(f"unknown objective {objective!r}; use 'gates' or 'sharpe'")
     isg = in_sample(g)
+    # B2014 (D7, owner-approved): next_pivot_target's IDENTITY changes at
+    # 2025-02-06 (L526: silent fallback on 100pct of trades for eleven
+    # quarters before, 20-40pct after - signals_at_entry was not persisted).
+    # A cell whose data SPANS that date is choosing between two different
+    # exits wearing one name, and IS/OOS ranks through it are mechanically
+    # unstable (the B1770/B1991 residual, within-exit rho -0.740). The
+    # selector refuses it for spanning cells - DISCLOSED on the returned
+    # stats - and keeps it for cells entirely on one side (one identity).
+    _npt_excluded = False
+    if npt_spanning_exclusion(g) and \
+            "next_pivot_target" in set(isg["exit_method"].unique()):
+        isg = isg[isg.exit_method != "next_pivot_target"]
+        _npt_excluded = True
     # B1593 (owner-approved B): COLLAPSE exits that are byte-identical on this
     # cell before selecting. Several "distinct" exits are documented FALLBACKS -
     # regime_flip degrades to time_stop_20d when no regime series is supplied,
@@ -339,5 +372,11 @@ def select_exit(g: pd.DataFrame, objective: str = "gates",
     # breadth the selection ran over, rather than assuming 26.
     if best and _dupes:
         best[1]["exits_collapsed"] = len(_dupes)
+    if best:
+        # B2014b repair: this line predates the npt insert and was swallowed
+        # into the npt branch by it - L592's unit-of-change, in an insert.
         best[1]["exits_effective"] = len(_seen)
+    if best and _npt_excluded:
+        # B2014: the refusal travels with the result (L571 - no silent scope)
+        best[1]["npt_excluded_identity_boundary"] = True
     return best if best else (None, None)

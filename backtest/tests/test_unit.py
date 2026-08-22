@@ -22966,3 +22966,76 @@ def test_b2013_harvester_excludes_collapse_prints_and_discloses():
     assert "SCOPE_B2013" in res and "min_entry_price" in sc, (
         "silent filtering is the L571 defect - the exclusion travels with "
         "the artifact")
+
+
+
+def test_b2014_npt_identity_boundary_binds_in_every_selector():
+    """B2014 (D7, owner-approved): one rule, three selectors, all wired.
+
+    next_pivot_target's identity changes at 2025-02-06 (L526); a cell
+    spanning the date chooses between two exits wearing one name. The first
+    landing wired only select_exit - and the roster builder selects INLINE,
+    so all 7 spanning npt cells survived while the constructed probe passed
+    (L588's control-path lesson, again). The rule now lives in ONE helper;
+    this pin drives the helper, the select_exit path, and asserts by
+    code_only that both inline selectors consult it.
+    """
+    import datetime as _dt
+    import importlib.util as _iu
+    import pathlib as _p
+    import sys as _sys
+
+    import pandas as _pd
+
+    root = _p.Path(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    import roster_core as rc
+
+    def frame(dates):
+        recs = []
+        for i, dt in enumerate(dates):
+            # jittered, non-degenerate pnl: the first fixture used constant
+            # values, sharpe collapsed, and npt lost on its own - proving
+            # nothing about the exclusion (a control must be able to WIN)
+            recs.append({"ticker": "T", "entry_date": dt,
+                         "exit_method": "next_pivot_target",
+                         # one loss per cycle keeps the PF gate EVALUABLE
+                         # under D5's zero-loss three-state - the first
+                         # fixture was all-positive and npt lost on n_gates
+                         # before the boundary logic was ever reached
+                         "pnl_pct": (-0.6 if i % 12 == 0
+                                     else 2.5 + 0.4 * ((i % 5) - 2)),
+                         "hold_days": 5})
+            recs.append({"ticker": "T", "entry_date": dt,
+                         "exit_method": "trailing_10pct",
+                         "pnl_pct": 0.3 + 0.4 * ((i % 5) - 2),
+                         "hold_days": 5})
+        return _pd.DataFrame(recs)
+
+    pre = frame([_dt.date(2023, 1, 1) + _dt.timedelta(days=7 * i)
+                 for i in range(60)])
+    span = frame([_dt.date(2024, 6, 1) + _dt.timedelta(days=7 * i)
+                  for i in range(60)])
+
+    ex_pre, _ = rc.select_exit(pre, min_n=10)
+    assert ex_pre == "next_pivot_target", (
+        "pre-boundary the exit has ONE identity and must stay eligible - "
+        "and this arm proves the fixture lets it WIN, so the spanning arm's "
+        "refusal is the exclusion and not the exit losing on its own")
+
+    ex_span, st = rc.select_exit(span, min_n=10)
+    assert ex_span != "next_pivot_target", "spanning cells must refuse it"
+    assert st.get("npt_excluded_identity_boundary") is True, (
+        "the refusal must travel with the result - silent scope is L571")
+
+    assert rc.npt_spanning_exclusion(span) and not rc.npt_spanning_exclusion(pre)
+
+    # all three selectors consult the ONE helper (the first landing's miss)
+    import source_text as st_mod
+    for f in ("build_phase_1b_roster.py", "best_exit_by_gates.py"):
+        code = st_mod.code_only(root / "scripts" / f)
+        assert "npt_spanning_exclusion(" in code, (
+            f"{f} selects INLINE and must consult the shared helper - the "
+            "first D7 landing wired only select_exit and all 7 spanning "
+            "cells survived")

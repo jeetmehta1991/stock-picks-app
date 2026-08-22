@@ -50,7 +50,7 @@ from walk_forward_r5_cells import _sharpe                    # noqa: E402
 # `objective=` switch ("gates" here, the owner's 2026-08-04 directive).
 from roster_core import (                                    # noqa: E402
     IS_START, IS_END, HO_START, HO_END, WINSORIZE, COST_BPS, MIN_N, LIVE_GATES,
-    evaluate as _core_evaluate, rank_key,
+    evaluate as _core_evaluate, npt_spanning_exclusion, rank_key,
 )
 
 
@@ -81,7 +81,11 @@ def main() -> int:
         is_g = g[(g.entry_date >= IS_START) & (g.entry_date < IS_END)]
         ho_g = g[(g.entry_date >= HO_START) & (g.entry_date < HO_END)]
         cands = []
+        # B2014 (D7): shared identity-boundary refusal (see roster_core)
+        _npt_out = npt_spanning_exclusion(g)
         for ex, ge in is_g.groupby("exit_method"):
+            if _npt_out and str(ex) == "next_pivot_target":
+                continue
             r = evaluate(ge["pnl_pct"], ge["hold_days"])
             if r:
                 r["exit"] = ex
