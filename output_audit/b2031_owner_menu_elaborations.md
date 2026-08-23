@@ -116,3 +116,24 @@ nothing ships without your word.
 program's TIGHTENING/LOOSENING partitions and gets graded by the same cube machinery — so
 approvals are cheap to absorb incrementally, and the highest-leverage rulings are #1, #5, #9,
 and #12-tranche-A.
+
+## Addendum (B2038) — the universe ladder as a COST table, measured rates
+
+Per-config engine cost at the canonical 0.2613 s/ticker-day (B2021 re-confirmed 0.257–0.282
+end-to-end at a different concurrency shape):
+
+| shape | ticker-years | per-config hours |
+|---|---|---|
+| SP50 × 1y (E1 shape) | 50 | 0.91 |
+| sweep-100 × 1y | 100 | 1.82 |
+| sweep-200 × 1y (ruled Step-1 shape) | 200 | 3.64 |
+| 100 × 2y (old Step-1) | 200 | 3.64 |
+| **344 disjoint × 2y (STEP-2 VALIDATE)** | **688** | **12.53** |
+| 544 × 2y | 1088 | 19.82 |
+| 544 × 4y (full R5 shape) | 2176 | 39.64 |
+
+Two consequences: (1) the ruled 200t×1y Step-1 shape and the old 100t×2y are the SAME
+ticker-years — the S6-B1831b neutrality, now visible in the arithmetic (nonlinearity term
+still owed one empirical config); (2) **STEP-2 for the complete E1 candidate set is ONE
+engine run** — every carried combination is subset-safe and grades offline from the single
+344×2y cube — so the decision is 12.5 h local at $0, or an AWS quote under the E4 ruling.
