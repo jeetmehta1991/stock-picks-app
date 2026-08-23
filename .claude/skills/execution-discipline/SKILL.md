@@ -2450,6 +2450,11 @@ instead. **The safety net was the defect.**
   ledger is an append log, so a row-level figure is wrong by an unbounded amount (`#271`).
 - **Show the delta when anything moved.** A level repeated each turn hides that nothing changed.
 - Enforced by `scan_ticket_counts_missing`.
+- **B2039 (L618, CHECKLIST #282): the counts are a TABLE - six classes x (count, delta) -
+  plus the turn's ticket OUTCOMES, and the skills block names FULLY INVOKED vs not.
+  An owner FORMATTING directive is a SPEC with a gate, encoded the same turn - half-encoding
+  passes as compliant until the owner asks why (six-number prose satisfied the old gate for
+  two days). Mechanism: the `tabular with a delta column` require_each member of the same scan.
 
 1. **Doc-sync sweep**: every forward-looking non-archive doc touched by this
    turn's changes is updated AND COMMITTED this turn
