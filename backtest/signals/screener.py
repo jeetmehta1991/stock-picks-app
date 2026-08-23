@@ -2649,6 +2649,11 @@ def strat_rsi_volume_200ema(s):
 
 
 def strat_macd_ichimoku(s):
+    """NAME NOTE (B2084, S6-B1248-STALE-NAME-SWEEP, owner-approved
+    annotate-not-rename 2026-08-23): the name claims MACD x ICHIMOKU
+    confluence; since B1139 dropped the cloud-position gates the live
+    gate is a pure MACD 12/26/9 crossover dual. Name kept for cube/CSV
+    continuity."""
     # B1139 (2026-07-03 Council 253 LOOSEN per Turn 8 finding): 5 fires
     # in Batch A. 2-way EVENT+STATE AND with cloud position - MACD crossover
     # already carries direction. Drop cloud position filter per same pattern
@@ -3812,6 +3817,9 @@ def strat_xs_quality_top_quintile_long(s):
 
     B1193 (2026-07-06 Council 278 owner-approved): widened top_quintile ->
     top_tercile per DEC-321 quintile-to-tercile scaling.
+
+    NAME NOTE (B2084, annotate-not-rename): the name says top_QUINTILE;
+    the live gate is top_TERCILE since B1193.
     """
     fires = (
         s.get("xs_quality_top_tercile", False)  # B1193: was xs_quality_top_quintile
@@ -6825,6 +6833,10 @@ def strat_vol_spike_2x_below_ema_50_short(s):
     money cluster (no smart-money data dependency).
 
     Regime affinity: NO ENTRY -> B291 SHORT default {bear, crisis, neutral}.
+
+    NAME NOTE (B2084, annotate-not-rename): the name says vol_spike_2x;
+    the live gate is vol_spike_15x = 1.5x since B1200 (and per the
+    standing convention 15x IS 1.5x - decimal-shifted, not a multiplier).
     """
     # B1200 (2026-07-06 Council 278 owner-approved): widen vol_spike_2x ->
     # vol_spike_15x (2x -> 1.5x) per B1178 gap_dn_2pct -> gap_dn_1_5pct precedent.
@@ -7866,6 +7878,11 @@ def strat_52w_high_breakout_with_smart_money_vol_below_long(s):
     EXCEPT vol_spike_12x is replaced by vol_below_avg. Cube replay will
     surface the empirical verdict per (strategy x exit) cell. Walker may
     deprecate one twin post-cube based on the result.
+
+    NAME NOTE (B2084, annotate-not-rename; the B2033 audit finding): the
+    name claims smart_money AND vol_below; since B1194 the live gate is
+    EITHER (vol_below_avg OR institutional_buy) alongside the 52w-high
+    structure gates.
     """
     # B1194 (2026-07-06 Council 278 owner-approved): change vol_below_avg AND
     # smart_money AND to (vol_below_avg OR institutional_buy) per rec
@@ -7921,7 +7938,12 @@ def strat_squeeze_breakout_with_smart_money_long(s):
 
 def strat_xs_momentum_with_smart_money_long(s):
     """Cross-sectional momentum (top-decile) + smart-money buy. Jegadeesh-
-    Titman 12-1 momentum with smart-money corroboration."""
+    Titman 12-1 momentum with smart-money corroboration.
+
+    NAME NOTE (B2084, annotate-not-rename): the name claims a smart-money
+    AND-gate; B1194 dropped it - the live gate is pure J-T top-decile
+    momentum + the 200-EMA regime gate.
+    """
     # B1194 (2026-07-06 Council 278 owner-approved): drop smart_money AND
     # requirement per rec "isolate J-T 12-1 top-decile pure thesis".
     fires = (
