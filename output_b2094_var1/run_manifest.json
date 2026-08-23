@@ -1,0 +1,52 @@
+{
+ "sequence": "B1535a_5t_variance_pair",
+ "batch": "B2094",
+ "execution": "LOCAL",
+ "frozen_sha": "e32af58f604b7d7086137932bed784f88ec982e1",
+ "isolation": true,
+ "calendar": "nyse_mcal",
+ "tickers": {
+  "file": "output_audit/_var5.txt",
+  "n": 5,
+  "sha256": "dbdd4b643963b1f7c8cc6033febd57d705de25b7c65029af39382152dafb4dca",
+  "note": "top-5 ADV of the verified _sweep_100 (itself a subset of the verified _sweep_200)"
+ },
+ "strategy_subset": "output_audit/_subset_one.txt (smc_breaker_block_long)",
+ "window": {
+  "start": "2024-05-05",
+  "end": "2025-05-05"
+ },
+ "arms": [
+  {
+   "tag": "var1",
+   "SMC_SWING_LENGTH": 20,
+   "STRAT_EMA_SPAN": 200
+  },
+  {
+   "tag": "var2",
+   "SMC_SWING_LENGTH": 20,
+   "STRAT_EMA_SPAN": 200,
+   "note": "IDENTICAL config - the pair measures run-to-run variance, nothing else"
+  }
+ ],
+ "concurrency": "SEQUENTIAL solo pair - concurrent load would pollute the variance measurement",
+ "budget_cap_usd": 0,
+ "spent_usd": 0,
+ "projected_batch_usd": 0,
+ "wall_clock_projection_hours": 0.5,
+ "wall_clock_projection_basis": "0.2613 s/ticker-day x 5t x 251d = 5.5 min/run; x2 warmup overhead x2 runs ~ 25 min; kill cap 1.0h per run",
+ "obsolescence_risks": [
+  {
+   "risk": "arity-crash class recurrence at save",
+   "status": "GATED - fixed B2092 with the AST pin; this pair runs the FIXED code"
+  },
+  {
+   "risk": "identical-arms assumption violated",
+   "status": "GATED - both arms env-set identically in one script; the manifest records both"
+  },
+  {
+   "risk": "concurrent load polluting variance",
+   "status": "GATED - sequential solo; no other engine run live (B2070 completed)"
+  }
+ ]
+}
