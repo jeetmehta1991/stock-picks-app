@@ -5165,6 +5165,15 @@ Any list of things deliberately left out - **disabled, exempt, deferred,
 waived, quarantined** - is a claim about the world at the moment it was
 written. **The world moves; the list does not.**
 
+**L619 extension (B2071): "decision-gated" / "needs owner approval" is itself
+an exemption reason and carries this item's burden.** Before presenting an
+item as blocked on the owner, verify it against the approval-requiring
+classes (rule/threshold/parameter changes, paid runs, launches, strategy
+changes) - an offline analysis on cached artifacts belongs to none of them.
+B2067 halted a whole goal partly on such a mislabel; the one-sentence re-read
+disproved it. Detection is JUDGMENT-ONLY (no scan classifies gatedness);
+durability is this citation plus the L619 entry.
+
 **Both assertions are required:**
 
 1. **Nothing uncovered** - every member of the population is either handled or
