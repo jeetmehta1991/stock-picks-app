@@ -21541,6 +21541,15 @@ _B1974_GENERATED = {
                            # from here - a generator dependency, surfaced when
                            # the circular import forced the definition down
                            "scripts/walk_forward_r5_cells.py"),
+    # B2023 (S6-B1974c): members added only after MEASURING artifact >=
+    # generator on commit timestamps - a stale candidate is a FINDING to
+    # ticket, never a silent register entry (dashboard_stage_2/index.html
+    # measured STALE and is ticketed, not listed).
+    "STRATEGY_ROSTER.md": ("scripts/build_strategy_roster.py",),
+    "VERIFICATION_MATRIX.md": ("scripts/build_verification_matrix.py",),
+    "PASSED_STRATEGY_EXIT_LIST.md": ("scripts/build_passed_strategy_exit_list.py",),
+    "output_audit/PRODUCER_COVERAGE_COMPREHENSIVE_REPORT.md":
+        ("scripts/measure_producer_coverage.py",),
 }
 
 
