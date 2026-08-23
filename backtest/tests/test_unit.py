@@ -23634,3 +23634,26 @@ def test_b2054_status_prose_must_be_anchored():
         "a batch- or date-anchored status line is reviewable, not a failure")
     clean = m.status_prose_findings("the band spans 2..20; nothing else.\n")
     assert clean == []
+
+
+def test_b2055_staleness_join_rederives_ticket_claims():
+    """B2055 (S6-B1963d): the auditor now re-derives the DERIVABLE slice per
+    ticket - a claim matching a prober's subject gets an AGREE/STALE verdict
+    against the fresh value. Must-fire and must-agree arms (L594: a fire-only
+    corpus never proves a gate can stay quiet - and vice versa)."""
+    import importlib.util
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    spec = importlib.util.spec_from_file_location(
+        "ats_b2055", root / "scripts" / "audit_ticket_staleness.py")
+    m = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(m)
+    fresh = {"registered strategies": 222, "OPEN tickets": 24}
+    stale = m.join_row("still shows 220 registered strategies", fresh)
+    assert stale == [("registered strategies", 220, 222, False)], (
+        "a stale derivable claim must join and read STALE")
+    agree = m.join_row("222 registered strategies as of today", fresh)
+    assert agree and agree[0][3] is True
+    residue = m.join_row("the 4.6x duplicate lookups were memoized", fresh)
+    assert residue == [], (
+        "a prose-specific number matches no shape - the disclaimed residue")

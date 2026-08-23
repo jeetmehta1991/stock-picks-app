@@ -66,6 +66,32 @@ def _parse_row(line):
 # claims we can re-derive automatically, as (regex, prober-name)
 PROBES: dict[str, callable] = {}
 
+# B2055 (S6-B1963d): the per-TICKET join. Each shape pairs a subject regex
+# (claimed number in a row) with the prober whose fresh value refutes or
+# confirms it. Rows matching no shape stay in the disclaimed bucket - the
+# underivable residue, disclosed, exactly as the ticket diagnosed.
+JOIN_SHAPES = (
+    (r"(\d+)\s+registered\s+strateg", "registered strategies"),
+    (r"(\d+)\s+(?:registered\s+)?exit\s+method", "registered exit methods"),
+    (r"(\d+)\s+open\s+ticket", "OPEN tickets"),
+    (r"(\d+)\s+distinct\s+(?:queue\s+)?ticket", "distinct queue tickets (last row wins)"),
+    (r"(\d+)\s+all-caps\s+marker", "ALL-CAPS marker lists"),
+    (r"(\d+)\s+scan_\s*gates?\s+with\s+no\s+injectable", "scan_ gates with no injectable seam"),
+)
+
+
+def join_row(body: str, fresh: dict) -> list:
+    """(shape-label, claimed, measured, agrees) for every derivable claim."""
+    out = []
+    low = body.lower()
+    for rx, label in JOIN_SHAPES:
+        m = re.search(rx, low)
+        if not m or label not in fresh or fresh[label] is None:
+            continue
+        claimed = int(m.group(1))
+        out.append((label, claimed, fresh[label], claimed == fresh[label]))
+    return out
+
 
 def probe(name):
     def deco(fn):
@@ -279,6 +305,29 @@ def main() -> int:
             print(f"      {txt[:110]}")
     else:
         print("  (pass --all to list them)")
+
+    # B2055 (S6-B1963d): re-derive the derivable slice PER TICKET - a joined
+    # AGREE/STALE verdict wherever a live row's claim matches a prober's
+    # subject. Everything else remains the disclaimed residue above.
+    fresh = {}
+    for label, fn in PROBES.items():
+        try:
+            fresh[label], _ = fn()
+        except Exception:
+            fresh[label] = None
+    joined = stale = 0
+    lines_out = []
+    for tid, (c, p, d) in sorted(numeric.items()):
+        for label, claimed, measured, agrees in join_row(d, fresh):
+            joined += 1
+            if not agrees:
+                stale += 1
+                lines_out.append(f"  STALE  {tid}: claims {claimed} "
+                                 f"'{label}', world says {measured}")
+    print(f"\nJOINED RE-DERIVATION: {joined} derivable claim(s) across live "
+          f"rows checked against fresh probes; {stale} STALE")
+    for ln in lines_out:
+        print(ln)
     return 0
 
 
