@@ -20,7 +20,25 @@ from __future__ import annotations
 from datetime import date, timedelta
 from pathlib import Path
 
+import logging
+
 import pandas as pd
+
+_logger = logging.getLogger(__name__)
+# B2032 (S6-B1250-PRODUCER-SWALLOW-VERIFY, #122): every except that
+# swallows into an empty result is counted per site and warned once -
+# a corrupt parquet or schema drift was previously indistinguishable
+# from a ticker with no congressional data.
+SWALLOW_COUNTS: dict = {}
+
+
+def _swallow(site: str, exc: Exception) -> None:
+    n = SWALLOW_COUNTS.get(site, 0) + 1
+    SWALLOW_COUNTS[site] = n
+    if n == 1:
+        _logger.warning(
+            "congressional_alt_data %s swallowed %r - emitting empty; "
+            "further hits counted silently in SWALLOW_COUNTS", site, exc)
 
 
 _HOUSETRADING_DIR = (
@@ -107,7 +125,8 @@ def _load_ticker_parquet(
         df = pd.read_parquet(path)
         cache[safe_ticker] = df
         return df
-    except Exception:
+    except Exception as _exc:
+        _swallow("ticker_parquet_load", _exc)
         cache[safe_ticker] = pd.DataFrame()
         return cache[safe_ticker]
 
@@ -119,7 +138,8 @@ def _load_patent_global() -> pd.DataFrame | None:
             return None
         try:
             _PATENT_DF_CACHE = pd.read_parquet(_PATENTMOMENTUM_PATH)
-        except Exception:
+        except Exception as _exc:
+            _swallow("patent_global_load", _exc)
             return None
     return _PATENT_DF_CACHE
 
@@ -150,7 +170,8 @@ def _patent_for_ticker(ticker: str) -> pd.DataFrame | None:
                 for k, v in tmp.groupby("_TKR", sort=False)
             }
             _PATENT_INDEXED_FROM = df
-        except Exception:
+        except Exception as _exc:
+            _swallow("patent_index_build", _exc)
             _PATENT_BY_TICKER = {}
             _PATENT_INDEXED_FROM = df
             return None
@@ -164,7 +185,8 @@ def _load_donors_global() -> pd.DataFrame | None:
             return None
         try:
             _DONORS_DF_CACHE = pd.read_parquet(_CORPORATEDONORS_PATH)
-        except Exception:
+        except Exception as _exc:
+            _swallow("donors_global_load", _exc)
             return None
     return _DONORS_DF_CACHE
 
@@ -189,7 +211,8 @@ def _donors_for_ticker(ticker: str) -> pd.DataFrame | None:
                 for k, v in tmp.groupby("_TKR", sort=False)
             }
             _DONORS_INDEXED_FROM = df
-        except Exception:
+        except Exception as _exc:
+            _swallow("donors_index_build", _exc)
             _DONORS_BY_TICKER = {}
             _DONORS_INDEXED_FROM = df
             return None
@@ -223,7 +246,8 @@ def compute_housetrading_signals(
         df = df[df["d"] <= as_of]
         window_start = as_of - timedelta(days=lookback_days)
         recent = df[df["d"] >= window_start]
-    except Exception:
+    except Exception as _exc:
+        _swallow("housetrading_parse", _exc)
         return {}
     if recent.empty:
         return {
@@ -276,7 +300,8 @@ def compute_gov_contracts_signals(ticker: str, as_of: date) -> dict:
         df["qtr_key"] = df["Year"] * 10 + df["Qtr"]
         cutoff_key = as_of.year * 10 + as_of_qtr
         df = df[df["qtr_key"] <= cutoff_key].sort_values("qtr_key")
-    except Exception:
+    except Exception as _exc:
+        _swallow("gov_contracts_parse", _exc)
         return {}
     if df.empty:
         return {}
@@ -323,7 +348,8 @@ def compute_lobbying_signals(
         df["Amount"] = pd.to_numeric(df["Amount"], errors="coerce").fillna(0)
         df = df.dropna(subset=["d"])
         df = df[df["d"] <= as_of]
-    except Exception:
+    except Exception as _exc:
+        _swallow("lobbying_parse", _exc)
         return {}
     if df.empty:
         return {}
@@ -380,7 +406,8 @@ def compute_patentmomentum_signals(
         sub["momentum"] = pd.to_numeric(sub["momentum"], errors="coerce")
         sub = sub.dropna(subset=["d", "momentum"])
         sub = sub[sub["d"] <= as_of].sort_values("d")
-    except Exception:
+    except Exception as _exc:
+        _swallow("patentmomentum_parse", _exc)
         return {}
     if sub.empty:
         return {}
@@ -434,7 +461,8 @@ def compute_offexchange_signals(
         df["d"] = pd.to_datetime(df["Date"], errors="coerce").dt.date
         df = df.dropna(subset=["d"])
         df = df[df["d"] <= as_of].sort_values("d")
-    except Exception:
+    except Exception as _exc:
+        _swallow("offexchange_parse", _exc)
         return {}
     if df.empty:
         return {}
@@ -497,7 +525,8 @@ def compute_corporatedonors_signals(
         sub = sub.dropna(subset=["d"])
         window_start = as_of - timedelta(days=lookback_days)
         sub = sub[(sub["d"] <= as_of) & (sub["d"] >= window_start)]
-    except Exception:
+    except Exception as _exc:
+        _swallow("corporatedonors_parse", _exc)
         return {}
     if sub.empty:
         return {}

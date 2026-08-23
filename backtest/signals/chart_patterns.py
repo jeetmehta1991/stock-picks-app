@@ -37,8 +37,16 @@ from __future__ import annotations
 
 from typing import Optional
 
+import logging
+
 import numpy as np
 import pandas as pd
+
+_logger = logging.getLogger(__name__)
+# B2032: per-detector count of swallowed exceptions in
+# compute_all_chart_patterns - a dropped detector is otherwise
+# indistinguishable from a detector that found nothing.
+DETECTOR_FAIL_COUNTS: dict = {}
 
 
 def _find_swings(close: pd.Series, window: int = 5) -> tuple[list[int], list[int]]:
@@ -409,46 +417,39 @@ def compute_all_chart_patterns(df: pd.DataFrame) -> dict:
     if df is None or df.empty:
         return {}
     out: dict = {}
-    try:
-        # B1208 (2026-07-07 Council 279 Fix #10): explicit kwargs preserving
-        # B1196 loosening for the 2 target strategies (head_and_shoulders_
-        # bottom_long, head_and_shoulders_top_short) without changing the
-        # function default (narrow-scope per feedback_narrow_scope_blast_radius).
-        out.update(detect_head_and_shoulders(df, shoulder_tol=0.04, head_min=0.015))
-    except Exception:
-        pass
-    try:
-        out.update(detect_double_top_bottom(df))
-    except Exception:
-        pass
-    try:
-        out.update(detect_cup_and_handle(df))
-    except Exception:
-        pass
-    try:
-        out.update(detect_inverted_cup_and_handle(df))  # B686 Class 7 NEW
-    except Exception:
-        pass
-    try:
-        out.update(detect_flag(df))
-    except Exception:
-        pass
-    try:
-        out.update(detect_triangle(df))
-    except Exception:
-        pass
-    try:
-        out.update(compute_flag_break_retest_signals(df))  # B607 F1
-    except Exception:
-        pass
-    try:
-        out.update(compute_triangle_apex_break_retest_signals(df))  # B685 (CP-8 fix)
-    except Exception:
-        pass
-    try:
-        out.update(compute_cup_handle_neckline_break_retest_signals(df))  # B685 (CP-9 fix)
-    except Exception:
-        pass
+    # B2032 (S6-B1250-PRODUCER-SWALLOW-VERIFY, #122): the nine per-detector
+    # swallows dropped a raising detector's whole signal family silently -
+    # MEASURED dormant (0 raises in 10,998 calls over 25 tickers x monthly
+    # PIT slices), but a schema drift would have zeroed strategies with no
+    # trace. Each drop is now counted per detector and warned once.
+    # B1208 kwargs on head_and_shoulders preserved (narrow-scope B1196
+    # loosening for the 2 target strategies).
+    detectors = (
+        (lambda d: detect_head_and_shoulders(d, shoulder_tol=0.04,
+                                             head_min=0.015),
+         "detect_head_and_shoulders"),
+        (detect_double_top_bottom, "detect_double_top_bottom"),
+        (detect_cup_and_handle, "detect_cup_and_handle"),
+        (detect_inverted_cup_and_handle, "detect_inverted_cup_and_handle"),
+        (detect_flag, "detect_flag"),
+        (detect_triangle, "detect_triangle"),
+        (compute_flag_break_retest_signals, "compute_flag_break_retest"),
+        (compute_triangle_apex_break_retest_signals,
+         "compute_triangle_apex_break_retest"),
+        (compute_cup_handle_neckline_break_retest_signals,
+         "compute_cup_handle_neckline_break_retest"),
+    )
+    for fn, name in detectors:
+        try:
+            out.update(fn(df))
+        except Exception as exc:
+            n = DETECTOR_FAIL_COUNTS.get(name, 0) + 1
+            DETECTOR_FAIL_COUNTS[name] = n
+            if n == 1:
+                _logger.warning(
+                    "chart-pattern detector %s raised (%r) - its signals are "
+                    "DROPPED for this bar; further failures counted silently "
+                    "in DETECTOR_FAIL_COUNTS", name, exc)
     return out
 
 

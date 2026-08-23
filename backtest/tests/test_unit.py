@@ -23297,3 +23297,54 @@ def test_b2029_step1_rankable_does_not_require_holdout_stats():
         "re-creates the 300/300-unrankable defect")
     assert rows[1] in out
     assert rows[2] not in out and rows[3] not in out
+
+
+def test_b2032_chart_pattern_detector_failure_is_counted_and_warned(monkeypatch, caplog):
+    """B2032 (S6-B1250-PRODUCER-SWALLOW-VERIFY): a raising detector's signals
+    are dropped - that drop must be counted and warned once, and the OTHER
+    detectors must still merge (the swallow protects the aggregate, not the
+    silence)."""
+    import pandas as _pd
+    import numpy as _np
+    from backtest.signals import chart_patterns as cp
+    idx = _pd.date_range("2023-01-02", periods=120, freq="B")
+    base = 100 + _np.linspace(0, 10, 120)
+    df = _pd.DataFrame({"open": base, "high": base + 1, "low": base - 1,
+                        "close": base, "volume": 1e6}, index=idx)
+
+    def _boom(*a, **k):
+        raise RuntimeError("boom-b2032")
+    monkeypatch.setattr(cp, "detect_flag", _boom)
+    monkeypatch.setattr(cp, "DETECTOR_FAIL_COUNTS", {})
+    with caplog.at_level("WARNING", logger=cp._logger.name):
+        out = cp.compute_all_chart_patterns(df)
+    assert cp.DETECTOR_FAIL_COUNTS.get("detect_flag") == 1, (
+        "the dropped detector must be counted")
+    assert any("DROPPED" in r.getMessage() for r in caplog.records)
+    assert isinstance(out, dict) and any(
+        k.startswith("triangle_") for k in out), (
+        "other detectors must still merge when one raises")
+
+
+def test_b2032_congressional_swallow_is_counted_and_warned(
+        monkeypatch, caplog, tmp_path):
+    """B2032: a parquet-load failure previously became a permanently-cached
+    EMPTY frame - indistinguishable from a ticker with no congressional data.
+    The swallow now counts per site and warns once. The fixture file must
+    EXIST: the not-exists miss path returns before the except and is the
+    DESIGNED absence guard, not the swallow under test."""
+    import pandas as _pd
+    from backtest.signals import congressional_alt_data as ca
+
+    (tmp_path / "FAKE_B2032.parquet").write_bytes(b"not a parquet")
+
+    def _boom(path):
+        raise RuntimeError("corrupt-parquet-b2032")
+    monkeypatch.setattr(ca.pd, "read_parquet", _boom)
+    monkeypatch.setattr(ca, "SWALLOW_COUNTS", {})
+    cache: dict = {}
+    with caplog.at_level("WARNING", logger=ca._logger.name):
+        out = ca._load_ticker_parquet(cache, tmp_path, "FAKE_B2032")
+    assert isinstance(out, _pd.DataFrame) and out.empty
+    assert ca.SWALLOW_COUNTS.get("ticker_parquet_load") == 1
+    assert any("swallowed" in r.getMessage() for r in caplog.records)
