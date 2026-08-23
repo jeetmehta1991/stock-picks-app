@@ -1857,6 +1857,18 @@ def run_exit_comparison(
                     "ticker":       t.get("ticker", ""),
                     "strategy":     strategy_name,
                     "entry_date":   str(t["entry_date"]),
+                    # B2087 (ENG9, owner-approved 2026-08-23 at b2031 rec 4):
+                    # the FILL date - the first bar of the exits' own
+                    # df.index.date > entry_date slice, i.e. the next-bar
+                    # open where the position actually opens. entry_date is
+                    # the SIGNAL date, so signal->fill gaps (3 days over
+                    # weekends) inflate hold_days. ADDITIVE ONLY: hold_days
+                    # semantics unchanged this batch - re-anchoring consumers
+                    # is a grading change that rides a cube iteration.
+                    "fill_date":    (lambda _f: str(_f.index[0].date())
+                                     if len(_f) else None)(
+                                     t["df"][t["df"].index.date
+                                             > t["entry_date"]]),
                     "direction":    t["direction"],
                     "entry_price":  t["entry_price"],
                     "exit_method":  exit_name,

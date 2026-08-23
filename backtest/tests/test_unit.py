@@ -24055,3 +24055,32 @@ def test_b2083_breakeven_trigger_buffered_past_the_touch():
     r2 = exit_break_even_at_1r(frame(specs2), entry_date, entry_price, "long", atr)
     assert r2["exit_reason"] == "be_trail_stop" and \
         abs(r2["exit_price"] - entry_price) < 1e-9, r2
+
+
+def test_b2087_detail_rows_carry_the_fill_date():
+    """B2087 (ENG9, owner-approved): every cube detail row carries fill_date
+    = the first bar of the exits' own next-bar slice. Fixture enters on a
+    FRIDAY so the signal->fill gap the field exists to expose is the
+    weekend (3 calendar days); hold_days stays SIGNAL-anchored this batch
+    (additive schema only - the writer-reader contract this pin freezes)."""
+    import pandas as _pd
+
+    from backtest.engine.exit_strategies import run_exit_comparison
+
+    idx = _pd.date_range("2024-06-03", periods=30, freq="B")
+    base = [100.0 + i for i in range(30)]
+    df = _pd.DataFrame({"open": base, "high": [b + 1 for b in base],
+                        "low": [b - 1 for b in base], "close": base,
+                        "volume": 1e6}, index=idx)
+    friday = idx[4].date()
+    assert friday.weekday() == 4, "fixture must enter on a Friday"
+    trade = {"ticker": "TST", "entry_date": friday, "entry_price": 104.0,
+             "direction": "long", "atr": 1.0, "signals": {},
+             "regime_at_entry": "bull", "df": df}
+    _, detail = run_exit_comparison("synthetic_b2087", [trade], None)
+    assert "fill_date" in detail.columns, "the schema field is the contract"
+    fills = set(detail["fill_date"])
+    assert fills == {str(idx[5].date())}, (
+        "fill must be the following MONDAY on every row", fills)
+    assert (_pd.to_datetime(list(fills)[0]).date() - friday).days == 3, (
+        "the weekend gap is exactly what the field exposes")
