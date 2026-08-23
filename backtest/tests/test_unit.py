@@ -23959,3 +23959,45 @@ def test_b2080_block_floor_sees_the_correlation_iid_cannot():
     top = max(bf)
     assert bf[top] > ff[top], "full-pool block floor must exceed the iid floor"
     assert art["block_unique_days"] > 0 and "required_n_block" in art
+
+
+def test_b2082_launch_sweep_refuses_without_a_passing_gate():
+    """B2082 (S6-B1704c option c): the wrapper is the ONE launch path and the
+    gate is structurally unskippable through it. Both directions via the
+    --engine-cmd seam: a failing manifest REFUSES (engine never invoked,
+    sentinel absent, exit 2); the proven-passing B2070 manifest LAUNCHES
+    (sentinel written, ELAPSED + CUBE_ROWS recorded)."""
+    import subprocess
+    import sys as _sys
+    import tempfile
+    from pathlib import Path as _P
+
+    root = _P(__file__).resolve().parents[2]
+    with tempfile.TemporaryDirectory() as td:
+        td = _P(td)
+        fake_engine = td / "fake_engine.py"
+        sentinel = td / "engine_ran.txt"
+        fake_engine.write_text(
+            "import pathlib; pathlib.Path(r'%s').write_text('ran')\n"
+            % str(sentinel), encoding="utf-8")
+
+        bad = td / "bad_manifest.json"
+        bad.write_text("{}", encoding="utf-8")
+        r = subprocess.run(
+            [_sys.executable, str(root / "scripts" / "launch_sweep.py"),
+             "--manifest", str(bad), "--output-dir", str(td / "out"),
+             "--engine-cmd", str(fake_engine)],
+            cwd=str(root), capture_output=True, text=True)
+        assert r.returncode == 2, r.stdout + r.stderr
+        assert not sentinel.exists(), "engine invoked despite a failing gate"
+
+        good = str(root / "output_b1831b_200t" / "run_manifest.json")
+        r = subprocess.run(
+            [_sys.executable, str(root / "scripts" / "launch_sweep.py"),
+             "--manifest", good, "--output-dir", str(td / "out"),
+             "--tag", "pin", "--engine-cmd", str(fake_engine)],
+            cwd=str(root), capture_output=True, text=True)
+        assert r.returncode == 0, r.stdout + r.stderr
+        assert sentinel.exists(), "engine not invoked despite a passing gate"
+        log = (td / "out" / "launch_summary.log").read_text(encoding="utf-8")
+        assert "CFG=pin EXIT=0 ELAPSED=" in log and "CUBE_ROWS=ABSENT" in log
