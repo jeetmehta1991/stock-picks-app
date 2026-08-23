@@ -467,6 +467,27 @@ EXTRA_INCIDENTS: dict[str, list[tuple[str, bool, dict]]] = {
     # B1965 - the incident VERBATIM: S6-B1790d states a count and names none
     # of the 3. Its batch's partition was 148 = 7 + 138 + 3 and only the 7
     # promoted rows are identifiable, because promotion changed their state.
+    "scan_ticket_claim_without_pin": [
+        # the verbatim S6-B1562a incident: EXECUTED, "A2 shipped", pyramid
+        # green - and NOTHING checkable named. The B1788 review could only
+        # mark such rows NOT_CHECKABLE forever.
+        ("EXECUTED row claims shipped code, names no artifact", True,
+         {"rows": ["| **S6-B1562a** | **EXECUTED** | - | **DONE** | A2 "
+                   "shipped (DATA_LOAD_START 2021-05-05 -> 2021-05-06) PLUS "
+                   "end-anchored coverage. 20-ticker run universe: 0/20 -> "
+                   "18/20 cache hits. Pyramid 907/2 GREEN. L436. |"]}),
+        ("a code row naming its pin must go quiet", False,
+         {"rows": ["| **S6-B2033a** | **EXECUTED** | P1 | **B2075: THE SWEEP "
+                   "LEG IS REQUIRED AGAIN (owner C12, pin "
+                   "test_b2075_sweep_leg_is_required_again)** | gate fixed. |"]}),
+        ("an EXECUTED analysis row with no code claim must go quiet", False,
+         {"rows": ["| **S6-B2080x** | **EXECUTED** | P1 | **THE FLOOR "
+                   "MEASURED - 0.2245 at the full pool** | bootstrap record. |"]}),
+        ("an OPEN row with a code marker must go quiet - the rule binds "
+         "EXECUTED only", False,
+         {"rows": ["| **S6-B1779x** | **OPEN** | P2 | _reason:_ the fix will "
+                   "be implemented next batch. |"]}),
+    ],
     "scan_count_without_members": [
         ("| **S6-B1790d** | **OPEN** | P2 | **3 ROWS: their batch changed "
          "code but added no durable definition** |", True,

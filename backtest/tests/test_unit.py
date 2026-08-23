@@ -24182,3 +24182,29 @@ def test_b2089_level_held_qualifier_truth_table():
     r = strat_avwap_50_reclaim(
         {**lbase, "avwap_50low_reclaim_held_2d": True})
     assert r["fires"] is True and r["direction"] == "long"
+
+
+def test_b2091_ticket_code_claims_name_their_pin():
+    """B2091 (S6-B1779e, owner-adopted): every corpus arm of the new gate,
+    driven through the rows seam - the verbatim S6-B1562a incident FIRES;
+    a pinned code row, an analysis row, and an OPEN row all stay quiet."""
+    import importlib.util
+    from pathlib import Path as _P
+
+    root = _P(__file__).resolve().parents[2]
+    spec = importlib.util.spec_from_file_location(
+        "vtc_b2091", root / "scripts" / "verify_turn_compliance.py")
+    tg = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(tg)
+    spec2 = importlib.util.spec_from_file_location(
+        "gic_b2091", root / "scripts" / "gate_incident_corpus.py")
+    gic = importlib.util.module_from_spec(spec2)
+    spec2.loader.exec_module(gic)
+
+    # the entry lives in EXTRA_INCIDENTS - the per-branch corpus dict
+    # (B1805: markers with branches need an incident per branch)
+    cases = gic.EXTRA_INCIDENTS["scan_ticket_claim_without_pin"]
+    assert len(cases) >= 4
+    for label, must_fire, kw in cases:
+        out = tg.scan_ticket_claim_without_pin([], **kw)
+        assert bool(out) == must_fire, (label, out)

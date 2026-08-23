@@ -2092,6 +2092,47 @@ def scan_count_without_members(entries, *, rows=None) -> list[str]:
     return []
 
 
+def scan_ticket_claim_without_pin(entries, *, rows=None) -> list[str]:
+    """An EXECUTED row claiming CODE must name its verification artifact.
+
+    B2091 / S6-B1779e (owner-adopted 2026-08-23). B1788 measured the class:
+    promotion on prose - 145 of 148 open rows named nothing checkable - and
+    the A1-ruling vocabulary made EXECUTED mean VERIFIED. A row that says
+    code shipped and names neither a pin test, a scan_, nor a .py path is a
+    claim with no address (L595): the #264 checker reports it NOT_CHECKABLE
+    forever and nothing can ever falsify it. Anchored at #264/#265 - this
+    gate is their front door: the naming is demanded when the row is
+    WRITTEN, not discovered missing at audit time.
+
+    Fires on rows ADDED this turn in state EXECUTED carrying a code-claim
+    marker and no artifact token. Analysis/measurement rows carry no
+    code-claim marker and pass untouched.
+    """
+    added = _queue_rows_added() if rows is None else list(rows)
+    if not added:
+        return []
+    code_claim = ("shipped", "implemented", " wired", "fix landed",
+                  "code landed", "gate swapped")
+    artifact = ("test_b", "scan_", ".py", "pin test", "pinned by",
+                "contract pin")
+    for row in added:
+        low = row.lower()
+        cells = low.split("|")
+        state = cells[2].strip(" *") if len(cells) > 3 else ""
+        if state != "executed":
+            continue
+        if not any(m in low for m in code_claim):
+            continue
+        if any(a in low for a in artifact):
+            continue
+        return ["TICKET CLAIMS CODE, NAMES NO PIN (S6-B1779e / #264): an "
+                "EXECUTED row added this turn says code shipped and names no "
+                "test_bNNN, scan_, or .py artifact - a claim with no address "
+                "(L595). S6-B1562a carried 'A2 shipped ... Pyramid GREEN' for "
+                "months with nothing checkable. Name the pin in the row."]
+    return []
+
+
 def _queue_rows_added(diff_text=None) -> list[str]:
     """Ticket rows ADDED to EXECUTION_QUEUE.md this turn.
 
@@ -4062,6 +4103,7 @@ def main() -> int:
                 scan_unverified_count, scan_partial_distribution,
                 scan_partial_read, scan_row_vs_ticket,
                 scan_count_without_members,
+                scan_ticket_claim_without_pin,
                 scan_novelty_claim_without_search,
                 scan_synthetic_provenance,
                 scan_ticket_counts_missing,
