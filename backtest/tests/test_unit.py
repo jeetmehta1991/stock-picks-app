@@ -21596,6 +21596,10 @@ _B1974_GENERATED = {
     "PASSED_STRATEGY_EXIT_LIST.md": ("scripts/build_passed_strategy_exit_list.py",),
     "output_audit/PRODUCER_COVERAGE_COMPREHENSIVE_REPORT.md":
         ("scripts/measure_producer_coverage.py",),
+    # B2037 (S6-B1918b): the strategy->key->producer map regenerates from its
+    # builder; registered at birth so it can never silently outlive it.
+    "output_audit/strategy_producer_map.csv":
+        ("scripts/build_strategy_producer_map.py",),
 }
 
 
@@ -23395,3 +23399,22 @@ def test_b2035_exit_collapse_key_includes_hold_days():
         "identical pnl with DIFFERENT hold_days must NOT share a signature - "
         "evaluate() grades them differently (S6-B1907a)")
     assert pick_dup is not None
+
+
+def test_b2037_strategy_producer_map_carries_its_controls():
+    """B2037 (S6-B1918b): the machine-readable strategy->key->producer map
+    must keep both calibration controls: the two known consumed-never-produced
+    candle arms (ENG7) read UNRESOLVED, and the worked example's SMC key
+    resolves to its runtime-observed producer. A map without its controls is
+    indistinguishable from a stale or miswired one."""
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    txt = (root / "output_audit" / "strategy_producer_map.csv").read_text(
+        encoding="utf-8")
+    assert "shooting_star_short,hanging_man,UNRESOLVED," in txt, (
+        "the known dead candle arm must read UNRESOLVED - if it resolved, a "
+        "producer appeared (close ENG7) or the map is guessing")
+    assert ("smc_breaker_block_long,smc_breaker_block_bullish,T2_smc,"
+            "compute_smc_signals" in txt)
+    header = txt.splitlines()[0]
+    assert header == "strategy,key,tier,producer"
