@@ -957,6 +957,15 @@ Exception-only alerting does NOT satisfy it — that was armed wrongly four time
 
 ### 1.3 Launch one config
 
+**LAUNCH MECHANISM (S6-B1535b, anchored B2051): one INDEPENDENT DETACHED invocation per
+arm - never a shared shell-function wrapper.** The b1571 wrapper turned one process kill
+into EXIT=127 for every remaining arm (L589's sibling); independent invocations bound a
+kill's blast radius to its own arm. EVIDENCE the pattern holds: the six B2016-B2030 E1
+launches each ran as a separate detached command (separate process trees, per-arm logs);
+killing any one could not have produced exit codes in the others. RESIDUAL, stated: survival
+across a HARNESS death is untested (testing it costs a deliberate session kill); the per-15-min
+monitor contract bounds the loss either way.
+
 ```bash
 STRATEGY_SUBSET_FILE=output_audit/_subset_<STRATEGY>.txt \
 OPTIMIZATION_MODE=1 \
