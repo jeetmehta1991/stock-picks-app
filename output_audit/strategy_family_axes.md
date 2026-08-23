@@ -6,16 +6,16 @@ B1519-pattern config plumb (owner-approved) before it is sweepable.
 
 | producer family | members | axis status |
 |---|---|---|
-| compute_ema_sma | 114 | EMA_PAIRS (B2016) + STRAT_EMA_SPAN consumer key |
-| compute_volume | 67 | UNPLUMBED (producer literals) |
+| compute_ema_sma | 105 | EMA_PAIRS (B2016) + STRAT_EMA_SPAN consumer key |
+| compute_volume | 66 | UNPLUMBED (producer literals) |
 | compute_pivots | 58 | UNPLUMBED (producer literals) |
-| compute_rsi | 34 | UNPLUMBED (producer literals) |
-| compute_macd | 22 | UNPLUMBED (producer literals) |
+| compute_rsi | 33 | UNPLUMBED (producer literals) |
 | compute_smc_signals | 22 | SMC_SWING_LENGTH (+ SMC_OB_CLOSE_MITIGATION, SMC_OB_TAIL_N, SMC_BREAKER_AGE_BARS_MAX, SMC_BREAKER_BREAK_PCT_MAX - B1616/B1519) |
+| compute_macd | 21 | UNPLUMBED (producer literals) |
 | compute_candles | 19 | UNPLUMBED (producer literals) |
 | compute_vwap | 15 | UNPLUMBED (producer literals) |
 | compute_adx | 9 | UNPLUMBED (producer literals) |
-| compute_break_retest_signals | 8 | UNPLUMBED (producer literals) |
+| compute_break_retest_signals | 7 | UNPLUMBED (producer literals) |
 | compute_donchian | 7 | UNPLUMBED (producer literals) |
 | compute_bollinger | 6 | UNPLUMBED (producer literals) |
 | compute_squeeze | 4 | UNPLUMBED (producer literals) |

@@ -102,9 +102,9 @@ EXPLORATORY_STRATEGIES = frozenset({
     "52w_high_breakout_with_smart_money_vol_below_long",  # OVERLAP per B991 audit; B779 variant
     "52w_low_breakdown",  # OVERLAP per B991 audit; 3-signal confluence rare
     "bollinger_tight_with_smart_money_long",  # OVERLAP per B991 audit; BB squeeze + smart-money rare
-    "classification_change_breakout_long",  # sector reclass (Russell/S&P) genuinely rare event
-    "classification_change_from_tech_short",  # tech reclass structural rarity
-    "classification_change_momentum_long",  # sector reclass + MACD/EMA confluence rare
+    # B2098 (F23): the 3 classification_change register entries removed with
+    # their strategies - the family consolidated to the (unregistered here)
+    # base survivor per the owner-approved 10->1.
     # B1035 (2026-06-27) Council 129 Option-6 owner-approved per directive
     # 'Approve all recs council this'. F3 sub-agent reconcile of B984 vs
     # B748d: producer EXISTS-RELIABLE at sec_edgar_extractor.py:239-344

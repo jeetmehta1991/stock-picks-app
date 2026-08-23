@@ -1284,16 +1284,13 @@ STRATEGIES_DISABLED_MISSING_PRODUCER: set[str] = set()
 # Naming the real cause is the fix.
 #
 # RE-ENABLE when sector_history.csv is extended past 2023-03-17 (S6-B1434b).
+# B2098 (owner-approved F23 2026-08-23): the family consolidated 10 -> 1; the
+# eight deleted variants left this register with their registrations. The
+# SURVIVOR stays disabled here - the 14-events-on-one-date data scarcity is a
+# property of sector_history.csv, not of which variants exist. RE-ENABLE
+# condition unchanged (S6-B1434b: extend sector_history.csv past 2023-03-17).
 STRATEGIES_DISABLED_DATA_SCARCITY: set[str] = {
-    "classification_change_breakout_long",
-    "classification_change_from_tech_short",
-    "classification_change_momentum_long",
-    "classification_change_oversold_long",
     "classification_change_recent_long",
-    "classification_change_to_tech_long",
-    "classification_change_volume_long",
-    "classification_change_with_insider_long",
-    "classification_change_with_institutional_long",
 }
 
 

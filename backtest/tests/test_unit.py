@@ -10630,9 +10630,14 @@ def test_batch373_e1_doc_count_pin_against_code():
     # 219 -> 222 via 3 Class 7 NEW symmetric SHORT mirrors of promoted longs
     # (news_sentiment_short / poc_magnet_short / xs_combined_momentum_high_ivol_short).
     # All 3 tagged EXPLORATORY - zero short rows cleared the B1378 true holdout.
-    assert len(ALL_STRATEGIES) == 222, (
-        f"F-002 drift: ALL_STRATEGIES expected 222 post-B1382 (3 mirror shorts "
-        f"wired; was 219 post-B1189); got {len(ALL_STRATEGIES)}. "
+    # B2098 (2026-08-23 owner-approved F23 at b2031 rec 13): 222 -> 213 via
+    # the classification_change 10 -> 1 consolidation - the producer emits
+    # every destination key in the SAME return dict as changed_recent=True
+    # (one emission site), so the 9 deleted variants are deterministic
+    # subsets reconstructable offline from the survivor's cube fires.
+    assert len(ALL_STRATEGIES) == 213, (
+        f"F-002 drift: ALL_STRATEGIES expected 213 post-B2098 (F23 10->1 "
+        f"consolidation; was 222 post-B1382); got {len(ALL_STRATEGIES)}. "
         f"Update doc count references in the same commit."
     )
     assert len(DEPRECATED_STRATEGIES) == 0, (
@@ -10658,10 +10663,11 @@ def test_batch373_e1_doc_count_pin_against_code():
     active = len(ALL_STRATEGIES) - len(
         DEPRECATED_STRATEGIES | STRATEGIES_DISABLED_MISSING_PRODUCER
     )
-    # B1189: dxy_headwind DELETED -> 220 registered - 1 = 219 registered / 219 active.
-    assert active == 222, (
-        f"F-002 drift: active strategy count expected 222 (222 registered "
-        f"post-B1382 mirror-short wires); got {active}."
+    # B2098: 213 registered; this leg's "active" excludes only DEPRECATED +
+    # MISSING_PRODUCER (both empty), so it tracks the registration count.
+    assert active == 213, (
+        f"F-002 drift: active strategy count expected 213 (213 registered "
+        f"post-B2098 F23 consolidation); got {active}."
     )
 
     # F-004 exit method count
@@ -10671,11 +10677,11 @@ def test_batch373_e1_doc_count_pin_against_code():
         f"{len(EXIT_STRATEGIES)}. Update doc count references."
     )
 
-    # Cube cells = active strategies x exits (B1189: 219 active x 26 = 5694)
-    expected_cells = 222 * 26
-    assert expected_cells == 5772, (
-        f"Phase 1A-beta cube cells: expected 5,772 (222 active x 26 exits "
-        f"post-B1382 mirror-short wires); got {expected_cells}."
+    # Cube cells = active strategies x exits (B2098: 213 x 26 = 5,538)
+    expected_cells = 213 * 26
+    assert expected_cells == 5538, (
+        f"Phase 1A-beta cube cells: expected 5,538 (213 active x 26 exits "
+        f"post-B2098 F23 consolidation); got {expected_cells}."
     )
 
 
@@ -13218,7 +13224,10 @@ def test_b1441_data_scarcity_retirement_is_wired_and_semantically_separate():
     from backtest.signals import screener
     from backtest.signals.screener import ALL_STRATEGIES
 
-    assert len(DS) == 9, f"expected the 9 classification_change strategies; got {len(DS)}"
+    # B2098 (F23 consolidation): 9 -> 1; the eight deleted variants left
+    # the register with their registrations, the SURVIVOR stays disabled
+    # (the scarcity is a property of sector_history.csv, not the roster).
+    assert len(DS) == 1, f"expected the surviving classification_change strategy; got {len(DS)}"
     assert all(n.startswith("classification_change_") for n in DS), (
         "the data-scarcity set is scoped to the classification_change cluster; "
         "adding an unrelated strategy needs its own documented cause"
@@ -13238,7 +13247,9 @@ def test_b1441_data_scarcity_retirement_is_wired_and_semantically_separate():
         "producer removed - retirement was supposed to be reversible when "
         "sector_history.csv is extended (S6-B1434b)"
     )
-    assert len(set(ALL_STRATEGIES) - DS - MP - DEP) == 213, "active count drifted from 213"
+    assert len(set(ALL_STRATEGIES) - DS - MP - DEP) == 212, (
+        "active count drifted from 212 (213 registered post-B2098 minus the "
+        "data-scarce survivor)")
 
 
 # ---------------------------------------------------------------------------
@@ -15341,7 +15352,7 @@ def test_b1619_variant_strategy_binds_to_its_own_signal():
         ALL_STRATEGIES, BREAKER_VARIANT_STRATEGIES,
         make_breaker_variant_strategy, assert_variant_strategies_are_configured)
 
-    assert len(ALL_STRATEGIES) == 222, (
+    assert len(ALL_STRATEGIES) == 213, (
         f"roster is {len(ALL_STRATEGIES)}; the variant factory must not "
         f"register anything until an admission is owner-approved")
     assert BREAKER_VARIANT_STRATEGIES == {}
