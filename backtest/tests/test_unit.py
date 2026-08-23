@@ -23525,3 +23525,24 @@ def test_b2043_exit_regime_placeholder_no_longer_fabricates_no():
     assert _regime_changed_during_hold("bull", _exit_regime(row)) == "unknown"
     row2 = _pd.Series({"regime": "bull", "exit_regime": "bear"})
     assert _regime_changed_during_hold("bull", _exit_regime(row2)) == "yes"
+
+
+def test_b2044_build_claim_test_citations_match_by_prefix():
+    """B2044 (S6-B1787d program): rows cite tests as test_bNNN prefixes; the
+    checker's exact-membership test called 14 real citations MISSING. Both
+    directions: a prefix of a defined test matches; an undefined one does not."""
+    import importlib.util
+    import sys as _sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    src = (root / "scripts" / "verify_build_claims.py").read_text(
+        encoding="utf-8")
+    ns = {}
+    start = src.index("def match_test")
+    end = src.index("tests = set()")
+    exec(src[start:end], ns)
+    defined = {"test_b1820_step1_ranking_emits_its_ranking_key"}
+    assert ns["match_test"]("test_b1820", defined)
+    assert ns["match_test"]("test_b1820_step1_ranking_emits_its_ranking_key",
+                            defined)
+    assert not ns["match_test"]("test_b9999", defined)

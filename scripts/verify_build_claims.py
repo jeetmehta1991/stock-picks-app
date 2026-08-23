@@ -48,13 +48,24 @@ for line in log.splitlines():
             bd[n] = w
 if not bd:
     raise SystemExit("no batch commits parsed")
-cutoff = max(bd.values()) - dt.timedelta(hours=48)
+import argparse
+_ap = argparse.ArgumentParser()
+_ap.add_argument("--window-hours", type=float, default=48.0,
+                 help="hours before the NEWEST batch commit to include "
+                      "(B2044: was hardcoded 48, silently ignoring wider asks)")
+_args = _ap.parse_args()
+cutoff = max(bd.values()) - dt.timedelta(hours=_args.window_hours)
 recent = {n for n, w in bd.items() if w >= cutoff}
 
 # the live artifact inventory
 vtc = (ROOT / "scripts" / "verify_turn_compliance.py").read_text(encoding="utf-8")
 gates = set(re.findall(r"def (scan_\w+|check_\w+)", vtc))
 wired = {g for g in gates if len(re.findall(rf"\b{re.escape(g)}\b", vtc)) > 1}
+def match_test(name: str, defined: set) -> bool:
+    """A cited test matches exactly OR as a prefix of a defined test name."""
+    return name in defined or any(d.startswith(name) for d in defined)
+
+
 tests = set()
 for tf in (ROOT / "backtest" / "tests").glob("test_*.py"):
     tests |= set(re.findall(r"def (test_\w+)", tf.read_text(encoding="utf-8",
@@ -89,6 +100,11 @@ for tid, (cls, prio, desc) in sorted(latest.items()):
         continue
     named_gates = set(re.findall(r"\b((?:scan|check)_[a-z0-9_]+)", low))
     named_tests = set(re.findall(r"\b(test_b\w+)", low))
+    # B2044: "test_bNNN" appearing VERBATIM is the A1-ruling template's
+    # placeholder ("names no WIRED GATE and no test_bNNN") - prose about a
+    # test's ABSENCE, not a citation (mention-vs-use, B1738 class). 74
+    # boilerplate rows read as MISSING through it on the first wide run.
+    named_tests.discard("test_bnnn")
     named_scripts = set(re.findall(r"\b([a-z0-9_]+\.py)\b", low))
     checks, missing = [], []
     for g in named_gates:
@@ -96,7 +112,11 @@ for tid, (cls, prio, desc) in sorted(latest.items()):
         if g in gates and g not in wired:
             missing.append(f"gate-not-wired:{g}")
     for t in named_tests:
-        (checks if t in tests else missing).append(f"test:{t}")
+        # B2044 (S6-B1787d program): rows cite tests by their canonical
+        # test_bNNN PREFIX; exact membership called every such citation
+        # MISSING while the test existed (S6-B1822a and 13 siblings, all
+        # false). A prefix that matches a defined test's start is LANDED.
+        (checks if match_test(t, tests) else missing).append(f"test:{t}")
     for sc in named_scripts:
         (checks if sc in scripts else missing).append(f"script:{sc}")
     if not checks and not missing:
