@@ -21277,7 +21277,9 @@ def test_b1970_vocabulary_scan_stays_bold_on_purpose():
 
 # B1971: cited but defined nowhere in CHECKLIST.md. Frozen from a live
 # measurement; SHRINK-ONLY. Filling one in deletes its entry here.
-_B1971_DANGLING_CHECKLIST = {187, 188, 189, 190, 191, 192, 237}
+# B2030: emptied when the owner approved and merged all seven items - the
+# ratchet reached its designed terminal state. It may never grow again.
+_B1971_DANGLING_CHECKLIST: set[int] = set()
 
 
 def _b1971_defined_items(checklist_text):
@@ -21350,19 +21352,22 @@ def test_b1971_no_new_dangling_checklist_citation():
             if (n := int(m)) <= mx and n not in have:
                 cited[n].add(f)
 
-    # B1971 (#226): PROVE THE DETECTOR CAN FAIL, in-test.
-    #
-    # Every real gap is already frozen, so a passing run proves nothing on its
-    # own - the ratchet excuses all of them. Un-freeze one known dangler and
-    # the detector must name it; if it does not, the detector is dead and the
-    # green is manufactured, which is B1918's self-validating shape.
-    assert cited, ("the detector found no dangling citations at all - the "
-                   "corpus still cites #237, so an empty result means the "
-                   "measurement broke, not that the debt was paid")
-    _probe = _B1971_DANGLING_CHECKLIST - {237}
-    assert sorted(set(cited) - _probe) == [237], (
-        "with #237 un-excused the detector must name it - a gate whose pass "
-        "cannot be turned into a fail is not evidence (#226)")
+    # B2030: the debt is PAID - the owner approved and merged all seven items
+    # (#187-#192 + #237), so zero dangling citations is the TRUE state, and
+    # the old liveness control ("the corpus still cites #237") expired with
+    # its premise - the same conversion the B1969 pin needed when the B1
+    # program emptied the unparsed set. Liveness is now proven on a SYNTHETIC
+    # dangler through the same detection expression (#226: the control takes
+    # the path the claim takes).
+    def _detect(text, defined, mxx):
+        found = set()
+        for mm in _re.findall(r"#(\d{2,3})\b", text):
+            if (nn := int(mm)) <= mxx and nn not in defined:
+                found.add(nn)
+        return found
+    assert _detect("per rule #187 and the imaginary #186", {187}, 200) == {186}, (
+        "the detector must name a citation of an undefined item - if it "
+        "cannot, the empty live result below is manufactured (#226)")
 
     new = sorted(set(cited) - _B1971_DANGLING_CHECKLIST)
     assert not new, (
@@ -21371,31 +21376,10 @@ def test_b1971_no_new_dangling_checklist_citation():
         "claim with an ADDRESS, and the address is checkable independently of "
         "the claim (L595). Define the item, or cite one that exists.")
 
-    # B1992 (review finding 2): the ratchet froze NUMBERS, not counts - so
-    # 13 NEW `#237` citations were added in the very session after B1971
-    # proved the item undefined, each riding the legacy excuse silently.
-    # Per-file COUNTS are now frozen too (measured post-cleanup); a citation
-    # of an undefined item may be REMOVED or left alone, never added. Update
-    # a baseline DOWNWARD when you clean one up; growth is the defect.
-    # B1993c: ANCHOR DOCS only - CLAUDE.md and SKILL.md, the two files
-    # loaded every turn where a citation is load-bearing. The queue and
-    # LEARNINGS are APPEND-ONLY INCIDENT RECORDS: rows documenting the
-    # #237 saga are the record working, and freezing their counts made
-    # every future documentation row a violation - the treadmill's
-    # third self-trip, one file over from the second (L615).
-    _BASELINE = {'CLAUDE.md': {}, '.claude/skills/execution-discipline/SKILL.md': {187: 2, 188: 1, 189: 1, 192: 1, 237: 5}}
-    for f, per in _BASELINE.items():
-        txt = (root / f).read_text(encoding="utf-8", errors="replace")
-        for num, cap in per.items():
-            got = len(_re.findall(rf"#{num}\b", txt))
-            assert got <= cap, (
-                f"{f}: {got} citations of undefined item #{num} exceeds the "
-                f"frozen baseline {cap}. B1992: 13 new #237 citations rode "
-                "the number-freeze in one session - a NEW citation of a "
-                "known-undefined item deepens the debt it documents. Cite a "
-                "DEFINED item, or write the item (owner content, S6-B1971b).")
-
-    # #279 both directions: an entry that got defined must leave this list
+    # #279 both directions: an entry that got defined must leave the frozen
+    # set - it emptied at B2030 when the seven merged, the ratchet's designed
+    # terminal state. Any REAPPEARANCE of a dangler is caught by `new` above
+    # with an empty excuse set: from here, every citation must have an address.
     stale = sorted(_B1971_DANGLING_CHECKLIST - set(cited))
     assert not stale, (
         f"these are listed as dangling but are now defined or uncited: "

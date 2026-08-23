@@ -2863,6 +2863,85 @@ launch whose monitor lacks both markers. Pinned BOTH directions by
 *Anti-theatre check (#136):* retroactively catches L392, L424, and the first `4a528196` arming in
 B1546 - all of which passed the existence check while leaving the owner uninformed.
 
+The six items below were cited 94 times before being defined - drafted from
+their LIVE gates (B2023) and merged on owner approval 2026-08-23 (B2030).
+### #187 — UNIVERSE ARTIFACT VERIFIED AT LAUNCH (B1602 / L445)
+
+**A config launch without a verified universe once cost 3.3 h × 2 searching an abandoned
+A–C chunk** — 380 of 381 tickers started with A, B or C and nobody had looked at the list.
+
+Any `run_phase1a.py` launch requires `verify_universe_artifact.py <tickers-file>
+--compare-cube <baseline cube>` run **in the same turn**, exit 0, with the verdict pasted.
+A deliberately narrow file (a timing slice) is permitted only with its narrowness stated
+in writing where the run is recorded.
+
+*Enforced by:* `scan_unverified_universe` (`verify_turn_compliance.py:589`), blocking.
+*Lineage:* L445; `r5_universe_381.txt`; the B2018 Stop-hook fire on the sw30/sw50 launch.
+
+### #188 — A MISS ACKNOWLEDGED IS A MISS RECORDED (B1573 / L-Phase-5 arc)
+
+**Acknowledging a miss in prose is not recording it.** A response that admits an error,
+a stale claim, or a skipped step and moves on leaves the miss with no durable artifact —
+the exact failure Phase 5 exists to prevent.
+
+Any turn whose response acknowledges a miss must, in the same turn, carry the Phase-5
+artifacts: LEARNINGS entry + CHECKLIST item or explicit "compliance failure against item
+N" + EXECUTION_QUEUE ticket + fix-or-ticket (+ mechanism per #236).
+
+*Enforced by:* `scan_unrecorded_miss` (`verify_turn_compliance.py:3883`), blocking.
+*Lineage:* B1577 (the gate's first catch: a monitor tick acknowledging nothing).
+
+### #189 — NO UNTESTED CAUSE (B1587 / L455)
+
+**A hypothesis presented as a finding is a fabrication, and a wrong cause is worse than
+no cause — it closes the investigation.** L455's "probable cause is the warmup guard" was
+disproven by one command; the affected rows sat at bars 799–1158.
+
+If a cause can be tested with a command you already know how to run, RUN IT before naming
+the cause. If it cannot be tested cheaply, the cause is **UNKNOWN — RCA NEEDED**, ticketed.
+A causal claim never enters a durable artifact without EXECUTED evidence beside it.
+
+*Enforced by:* `scan_unverified_cause` (`verify_turn_compliance.py:393`), blocking on
+cause-language with no run-evidence language in the same turn.
+*Lineage:* L455; the B2019 misattribution (L617) is the newest instance of the class.
+
+### #190 — A FIX TOUCHES ITS DOWNSTREAM ARTIFACT (B1602)
+
+**A commit whose message says FIX / DEFECT / RCA and touches no downstream artifact is
+either self-contained or an unrecorded invalidation — and the reader cannot tell which.**
+
+Any FIX-class commit must touch a downstream artifact or a queue entry; a genuinely
+self-contained fix states "self-contained" in its queue row, which satisfies the gate.
+(Companion of #196, which governs re-checking conclusions the fix invalidates.)
+
+*Enforced by:* the FIX-commit scan (`verify_turn_compliance.py:563`), blocking.
+
+### #191 — ANCHOR THE RULE (B1597 / L464)
+
+**A rule recorded only in LEARNINGS is a story, not a gate.** Measured: 24 L-entries
+stated a generalized rule; 18 were referenced in neither CHECKLIST nor the skill — a
+75 % orphan rate — and every orphaned rule decayed while every scripted rule held.
+
+Every L-entry stating a generalized rule MUST, in the same turn, be anchored by a NEW
+CHECKLIST item citing the L-number, or an explicit citation of an EXISTING item that
+already covers it.
+
+*Enforced by:* `scan_orphan_rule` (`verify_turn_compliance.py:464`), blocking.
+*Lineage:* L464; carried in SKILL.md ("ANCHOR-THE-RULE RULE").
+
+### #192 — AN ANCHOR IS A HOME, NOT A MENTION (B1599 / L466)
+
+**Claiming a rule is anchored because an entry MENTIONS an item number is the anchoring
+defect one level up.** L465 was called anchored because it mentioned #190 and #191;
+neither item stated its rule — the mention pointed at a house with nobody home.
+
+When citing an existing item as a rule's anchor, the cited item must actually STATE the
+rule (or be amended in the same turn so it does). A number in prose is not an anchor.
+
+*Tier:* judgment (prose) — no scan can tell a home from a mention. *Durability backstop:*
+`test_b1971_no_new_dangling_checklist_citation` (shrink-only ratchet: a citation of an
+undefined item can never be newly introduced).
+
 ### #193 — ARTIFACT PROVENANCE: characterise the contents, never trust the name (B1572 / L445)
 
 Before any artifact becomes an input to analysis or a run:
@@ -4047,6 +4126,20 @@ behaviour did not change. **A 14-line scanner caught both.**
 
 **Companion:** the Phase-6 retroactive sweep has **no gate** and has run **zero times
 autonomously** this session.
+
+### #237 — RETROACTIVE SWEEP ON EVERY NEW RULE AND EVERY CLASS FIX (B1757 / L512-arc)
+
+**A rule added without sweeping for existing instances leaves the siblings the
+GENERALIZATION MANDATE calls non-compliant; a class fixed at one site leaves the site you
+were not chasing.** The sweep that found these seven items missing was itself a #237 sweep.
+
+Any turn that adds or tightens a rule, or fixes an instance of a defect class, states in
+the response **what ELSE was scanned for this class, and what it found** — naming the
+search executed, with a zero-findings answer stated as such (a zero is a finding).
+
+*Enforced by:* the retro-sweep scan (`verify_turn_compliance.py:3426`), blocking.
+*Lineage:* B1970 (the collector had the same bold-requirement as the gate being fixed);
+B1971 (the sweep that found this item undefined); L603/L605.
 
 ### #238 - THE COMPLIANCE STATEMENT MUST CITE ITEMS, NOT EXIST (B1758 / L514)
 

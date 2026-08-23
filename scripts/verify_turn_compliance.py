@@ -637,7 +637,7 @@ def scan_unverified_universe(entries):
         return []
     if "verify_universe_artifact" in " ".join(allblob).lower():
         return []
-    return [("TURN-GATE BLOCK (CHECKLIST #193 / L445): a config was LAUNCHED "
+    return [("TURN-GATE BLOCK (CHECKLIST #187 / L445): a config was LAUNCHED "
              "without running verify_universe_artifact.py in the same turn. "
              "Two configs once searched an abandoned A-C chunk for 3.3 h each "
              "because nobody looked at the ticker list. Run it against the "

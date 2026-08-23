@@ -1,5 +1,6 @@
 # DRAFT — CHECKLIST items #187–#192 + #237 (B2023, per the C1 ruling 2026-08-22)
 
+**STATUS: APPROVED AND MERGED (owner ruling 2026-08-23 item 3; B2030). Collision resolved per option (a): the launch gate message now cites #187. Retained for lineage.** Original banner:
 **STATUS: DRAFT — OWNER APPROVAL REQUIRED. Not merged into CHECKLIST.md; drafts are not
 self-merging (C1: "I DRAFT the 7 unwritten CHECKLIST items from their live gates and
 citations; OWNER APPROVES the batch before merge").**

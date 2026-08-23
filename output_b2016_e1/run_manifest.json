@@ -84,9 +84,15 @@
    "id": "sw50",
    "SMC_SWING_LENGTH": 50,
    "STRAT_EMA_SPAN": 200
+  },
+  {
+   "id": "sw10_span50",
+   "SMC_SWING_LENGTH": 10,
+   "STRAT_EMA_SPAN": 50,
+   "note": "E2 option c span arm AT the P1 optimum (owner ruling 2026-08-23 item 1: 'launch at the sw10 optimum per E2-option-c'). Launched from 1151d777d0b1, NOT the original frozen_sha: drift vs b94d377fa scoped to backtest/ = improvements.py+run_phase1a.py print/doc-only (B2017), screener.py B2025 worker-drop counter (non-semantic logging) + one gate fix in strat_avwap_20high_rejection_short (NOT in the subset - STRATEGY_SUBSET_FILE keeps only smc_breaker_block_long), test files (off-path). Simulation semantics for the swept strategy UNCHANGED - cross-arm comparable with the four P1 arms. Zero-fire clause applies: the span-50 trend leg changes the fire set; a 0-trade cube reruns with DEMAND_PRUNING=0 before any conclusion."
   }
  ],
- "arms_deferred": "span-50 arm AFTER the P1 optimum (E2 option c, P1-first)",
+ "arms_deferred": "NONE - the span-50 arm (deferred at launch) is now launched per the 2026-08-23 ruling",
  "concurrency": "N=2 processes (E5 ruling, RAM-measured), --screen-pool-workers 3 each (<=10 cores total)",
  "budget_cap_usd": 0,
  "spent_usd": 0,
