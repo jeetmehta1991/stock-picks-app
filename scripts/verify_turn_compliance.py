@@ -630,12 +630,37 @@ def scan_unverified_universe(entries):
     import re as _re3
     _cmds = [_re3.sub(r"<<\s*'?(\w+)'?.*?^\1", " ", c,
                       flags=_re3.S | _re3.M) for c in cmds]
+    # B2052: quoted arguments are data (the B2028b lesson, applied to this
+    # sibling in the same sweep) - a commit message naming the runner must
+    # not read as a launch.
+    _cmds = [_re3.sub(r'"[^"\n]*"|\'[^\'\n]*\'', " ", c) for c in _cmds]
     low = " ".join(_cmds).lower()
     launched = ("run_phase1a.py" in low and
                 ("nohup" in low or "--output-dir" in low))
     if not launched:
         return []
-    if "verify_universe_artifact" in " ".join(allblob).lower():
+    blob = " ".join(allblob).lower()
+    # B2052 (S6-B1763b): converted to require_each over the PER-LAUNCH
+    # tickers-files. The blob-level check passed a turn where launch A's file
+    # was verified and launch B's was not - the any-vs-each hole, live in the
+    # gate that exists because two configs once searched an abandoned chunk.
+    files = {f.rsplit("/", 1)[-1].rsplit("\\", 1)[-1]
+             for f in _re3.findall(r"--tickers-file\s+(\S+)", low)}
+    if files:
+        # the file must appear in a VERIFY invocation - the launch command
+        # itself names the file, so a blob-wide containment check would
+        # satisfy every member trivially (caught by this gate's own pin).
+        verify_cmds = " ".join(c for c in _cmds
+                               if "verify_universe_artifact" in c.lower()).lower()
+        return require_each(
+            "TURN-GATE BLOCK (CHECKLIST #187 / L445): a config was LAUNCHED "
+            "without verify_universe_artifact.py on ITS tickers-file this turn",
+            {f: (f in verify_cmds) for f in sorted(files)},
+            why=("Two configs once searched an abandoned A-C chunk for 3.3 h "
+                 "each because nobody looked at the ticker list. Verify EVERY "
+                 "launched file against the baseline cube, then end the turn "
+                 "again."))
+    if "verify_universe_artifact" in blob:
         return []
     return [("TURN-GATE BLOCK (CHECKLIST #187 / L445): a config was LAUNCHED "
              "without running verify_universe_artifact.py in the same turn. "

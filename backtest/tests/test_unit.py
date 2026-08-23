@@ -16523,9 +16523,6 @@ def test_b1763_universal_rules_use_require_each():
             "the word 'every' QUOTES the defective assumption it explains "
             "(\"assumed every ticket starts open\") - it is not a universal "
             "rule the check enumerates. Single member: this turn's count",
-        "scan_unverified_universe":
-            "universal wording describes the SUBJECT (all tickers), not a set of "
-            "required members the gate can enumerate - S6-B1763b",
     }
     assert all(EXEMPT.values()), "every exemption needs a reason"
 
@@ -23572,3 +23569,46 @@ def test_b2046_sub_five_trade_strategies_keep_their_detail_rows():
         "a single-trade strategy must keep its per-exit detail rows - "
         "one row per registered exit, not zero")
     assert set(detail["strategy"]) == {"synthetic_b2046"}
+
+
+def test_b2052_universe_gate_is_per_launched_file(monkeypatch):
+    """B2052 (S6-B1763b): scan_unverified_universe converted to require_each
+    over the per-launch tickers-files - the blob-level check passed a turn
+    where one launch's file was verified and another's was not. Three arms:
+    the unverified file is NAMED; both verified is quiet; a quoted mention
+    is not a launch."""
+    import importlib.util
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    spec = importlib.util.spec_from_file_location(
+        "vtc_b2052", root / "scripts" / "verify_turn_compliance.py")
+    tg = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(tg)
+
+    def turn(cmds, extra_text=""):
+        content = [{"type": "tool_use", "name": "Bash",
+                    "input": {"command": c}} for c in cmds]
+        if extra_text:
+            content.append({"type": "text", "text": extra_text,
+                            "input": ""})
+        return [{"type": "assistant", "message": {"content": content}}]
+
+    launch_a = ("python backtest/run_phase1a.py --tickers-file "
+                "output_audit/a_file.txt --output-dir out_a")
+    launch_b = ("python backtest/run_phase1a.py --tickers-file "
+                "output_audit/b_file.txt --output-dir out_b")
+    verify_a = ("python scripts/verify_universe_artifact.py "
+                "output_audit/a_file.txt --compare-cube base.csv")
+    out = tg.scan_unverified_universe(turn([launch_a, launch_b, verify_a]))
+    assert out and "b_file.txt" in out[0] and "a_file.txt" not in out[0].split(
+        "NOT satisfied")[1].split("(satisfied")[0], (
+        "the launch whose file was NOT verified must be named; the verified "
+        "one must not be in the missing set")
+    verify_b = verify_a.replace("a_file", "b_file")
+    assert not tg.scan_unverified_universe(
+        turn([launch_a, launch_b, verify_a, verify_b])), (
+        "every launched file verified must clear the gate")
+    quoted = 'git commit -m "fix: run_phase1a.py --output-dir note"'
+    assert not tg.scan_unverified_universe(turn([quoted])), (
+        "a quoted mention is data the command carries, not a launch (B2028b "
+        "class, applied to this sibling)")
