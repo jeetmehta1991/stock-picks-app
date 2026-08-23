@@ -342,8 +342,15 @@ def select_exit(g: pd.DataFrame, objective: str = "gates",
     _seen: dict[tuple, str] = {}
     _dupes: dict[str, str] = {}
     for _ex, _ge in isg.groupby("exit_method", observed=True):
-        _sig = tuple(_ge.sort_values(["ticker", "entry_date"])["pnl_pct"]
-                     .round(6).tolist())
+        # B2035 (S6-B1907a): evaluate() consumes hold_days as well as pnl_pct,
+        # so two exits identical on P&L but different on holding period grade
+        # DIFFERENTLY and must not collapse as one. Measured latent before the
+        # fix (12 collapsed pairs across 4 cubes, 0 differing on hold_days) -
+        # today's collapses are byte-identically unchanged; the trap no longer
+        # waits for the first cube where they diverge.
+        _gs = _ge.sort_values(["ticker", "entry_date"])
+        _sig = tuple(zip(_gs["pnl_pct"].round(6).tolist(),
+                         _gs["hold_days"].tolist()))
         if _sig in _seen:
             _dupes[str(_ex)] = _seen[_sig]
         else:
