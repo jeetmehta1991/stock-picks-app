@@ -681,6 +681,10 @@ S6-B2107-OWNER-RULINGS-3 and in the session memory):**
 2. **PROGRAM TARGET: Phase 1B entry with >= 20 LONG + >= 20 logically-symmetric MIRROR SHORT
    strategies.** The A1 admission funnel aims at this 40-strategy roster, not at "some breadth";
    the mirror-shorts-by-default standing directive covers the S side.
+3. **TOTAL PROGRAM COMPUTE BUDGET: $100 ACROSS ALL STRATEGIES, not per-strategy or per-run**
+   (owner ruling 2026-08-23, second message, B2109). Every venue quote, wave plan, and Step-2
+   projection counts against this ONE envelope; the ledger of spend lives with the venue
+   ticket S6-B2107a.
 
 **Validation remains CROSS-SECTIONAL, not temporal**: Step 1 searches **200** tickers, Step 2
 confirms on the **344 DISJOINT** tickers (was 444 - the disjoint pool shrinks by exactly what Step 1
