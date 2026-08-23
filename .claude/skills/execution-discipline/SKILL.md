@@ -1250,6 +1250,13 @@ them.**
   TRUE** - and the two are indistinguishable in review.
 - **Before writing "cannot be tested / no seam / not available", CALL IT.**
   `#222` applied to an exclusion instead of a threshold.
+- **EXTENSION (B2072 - L619): "decision-gated" / "needs owner approval" is such
+  a reason.** Verify the item against the approval-requiring classes
+  (rule/threshold/parameter changes, paid runs, launches, strategy changes)
+  before presenting it as blocked on the owner - an offline analysis on cached
+  artifacts belongs to none of them, and B2067 halted a whole goal partly on
+  that mislabel. JUDGMENT-ONLY: no scan classifies gatedness; anchored at
+  `#279`'s L619 extension, durability via the anchor-doc citation freeze.
 
 ## A DOCSTRING IS DOCUMENTATION; THE MARKER LIST IS THE PROGRAM (B1931 - L590, CHECKLIST #222)
 
