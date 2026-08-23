@@ -137,7 +137,8 @@ batch-1 traps. Each rule retroactively catches >=2 real past misses (#136).
 
 1. **PRE-SPEND OBSOLESCENCE GATE.** Before any cost-bearing or multi-hour run:
    write a `run_manifest.json` pinning **code SHA, isolation mode, calendar,
-   universe/ticker list, budget projection**; then answer in writing *"what
+   universe/ticker list, budget projection** (the wall-clock projection field exists because
+   a manifest shipped without one - L333); then answer in writing *"what
    could make this run obsolete?"* — every enumerated risk gets a mechanical
    gate or an explicit owner acceptance. Changing any pinned field mid-sequence
    restarts the sequence. `scripts/prelaunch_gate.py` implements this check.
@@ -424,6 +425,14 @@ than to write.
 ("probable cause", "likely because", "I suspect", "most likely", ...) appears
 with no evidence language ("EXECUTED", "confirmed by", "I ran", "probe",
 "ruled out") anywhere in the same turn. Windowed to the current turn.
+
+**EXTENSION (B2019 - L617): a verdict about WHY a population is EMPTY is a causal claim.**
+"0 carried because the universe lacks power" shipped into a committed ledger while every
+excluded row carried holdout_n=0 from a filter clause - the disproof was ONE row read.
+Before naming a power/sample cause for an empty result set, READ the excluded rows' fields;
+an all-None column across a whole verdict population means CHECK THE FILTER CLAUSE first.
+Mechanism: the existing scan_unverified_cause class - the phrasing carried no cause-marker,
+the L509 marker-stem limit, already recorded.
 
 ## SPEC-vs-IMPLEMENTATION RULE (B1608 - L471, CHECKLIST #202)
 

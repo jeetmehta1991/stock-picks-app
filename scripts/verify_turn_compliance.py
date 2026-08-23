@@ -3578,9 +3578,38 @@ def _launch_blobs(entries) -> list[str]:
             # that ran (L569) - applied here up front rather than after it bites
             cmd = _re2.sub(r"<<\s*'?(\w+)'?.*?^\1", " ", cmd,
                            flags=_re2.S | _re2.M)
-            if any(m in cmd for m in LAUNCH_MARKERS):
+            if _segment_is_launch(cmd):
                 out.append(cmd)
     return out
+
+
+# B2028: pure-reader commands whose ARGUMENTS routinely name the runner file.
+# B1880 established a launch is a COMMAND that ran, not a Write mentioning the
+# runner; this is the same defect one level deeper - `grep -n "x"
+# backtest/run_phase1a.py` carries the marker as a FILE ARGUMENT and fired the
+# gate three times in one turn. A known read-only head cannot launch anything;
+# any other head (python, a wrapper script, an exe) still counts, fail-closed.
+_READER_HEADS = {"grep", "rg", "sed", "cat", "head", "tail", "ls", "echo",
+                 "wc", "awk", "cut", "sort", "uniq", "find", "diff", "stat"}
+
+
+def _segment_is_launch(cmd: str) -> bool:
+    """True when some shell SEGMENT executes a runner, not merely names one."""
+    import re as _re3
+    # corpus/pin blobs arrive JSON-wrapped ('{"command": "..."}'); the live
+    # path passes the bare command. Strip the wrapper so the seam travels the
+    # same pipeline (B1811) instead of misreading the head token.
+    cmd = _re3.sub(r'^\s*\{\s*"command"\s*:\s*"', "", cmd)
+    for seg in _re3.split(r"&&|\|\||[;|\n]", cmd):
+        toks = seg.split()
+        if not toks:
+            continue
+        head = toks[0].rsplit("/", 1)[-1].rsplit("\\", 1)[-1].lower()
+        if head in _READER_HEADS:
+            continue
+        if any(m in t for m in LAUNCH_MARKERS for t in toks):
+            return True
+    return False
 
 
 def scan_launch_missing_pool_workers(entries, *, blobs=None) -> list[str]:
@@ -3597,8 +3626,12 @@ def scan_launch_missing_pool_workers(entries, *, blobs=None) -> list[str]:
     # B1760's defect (a parameter that exists and does something else) and
     # B1811's rule (the seam travels the same pipeline). The pin's
     # must-not-fire arm caught it; reading did not.
+    # B2028: supplied blobs route through the SAME classifier as the live
+    # path (B1811) - the raw substring filter judged a grep that NAMES
+    # backtest/run_phase1a.py as a file argument to be a launch, three times
+    # in one turn.
     cand = (_launch_blobs(entries) if blobs is None else
-            [b for b in blobs if any(m in b for m in LAUNCH_MARKERS)])
+            [b for b in blobs if _segment_is_launch(b)])
     if not cand:
         return []
     # B1865 (#244): this message says EVERY launch, so the check owes the

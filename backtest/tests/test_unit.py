@@ -19414,6 +19414,18 @@ def test_b1864_process_rule_gates():
     assert not tg.scan_launch_missing_pool_workers([], blobs=[
         '{"command": "pytest backtest/tests/test_unit.py -q"}']), (
         "a non-launch command must not be treated as a launch")
+    # B2028: a READER command whose ARGUMENT names the runner file is a
+    # mention, not a launch - `grep -n x backtest/run_phase1a.py` fired this
+    # gate three times in one turn (B1880's rule, one level deeper).
+    assert not tg.scan_launch_missing_pool_workers([], blobs=[
+        '{"command": "grep -n \\"ENG8\\" backtest/engine/backtest.py '
+        'backtest/run_phase1a.py | head -3"}']), (
+        "a grep naming run_phase1a.py as a file argument is not a launch")
+    assert tg.scan_launch_missing_pool_workers([], blobs=[
+        '{"command": "grep -n x y.py; python backtest/run_phase1a.py '
+        '--start a"}']), (
+        "a real launch BESIDE a reader segment must still fire - the "
+        "exemption is per-segment, not per-command")
 
     # ---- S6-B1555a: a monitor must be able to see a HANG -----------------
     assert tg.scan_monitor_without_stall_check([], blobs=[
