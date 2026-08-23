@@ -223,37 +223,26 @@ def main() -> int:
         ntick = df.ticker.nunique()
         print(f"[INFO] {label:<7} {cube:<24} rows={len(df):>8} tickers={ntick:>4}")
         for (strat, direction), g in df.groupby(["strategy", "direction"]):
-            isg = g[(g.entry_date >= IS_START) & (g.entry_date < IS_END)]
-            cands = []
-            # B2014 (D7): the identity-boundary refusal, via the ONE shared
-            # helper - this inline selector never calls select_exit, which
-            # is how the first landing missed all 7 spanning npt cells.
-            _npt_out = npt_spanning_exclusion(g)
-            for ex, ge in isg.groupby("exit_method"):
-                if _npt_out and str(ex) == "next_pivot_target":
-                    continue
-                r = evaluate(ge["pnl_pct"], ge["hold_days"])
-                if r:
-                    r["exit"] = ex
-                    cands.append(r)
-            if not cands:
+            # B2078 (S6-B2014a, owner-approved 2026-08-23): selection routes
+            # through roster_core.select_exit - the ONE selector. The inline
+            # loop it replaces carried the D7 npt refusal but NEVER the B1593
+            # duplicate collapse, so its "best of 26" argmax ran over
+            # byte-identical fallback columns the canonical selector
+            # collapses; the two paths could disagree exactly where the
+            # n_gates tie-break fell between duplicates. Control-before-edit
+            # diff recorded in the S6-B2014a closing row (L607 method).
+            ex_pick, pick = select_exit(g, objective="gates")
+            if pick is None:
                 continue
-            # B1974 (S6-B1972b): only an ABSENT Sharpe may take the
-            # sentinel. `or -9` is falsy-coalescing, so a Sharpe of EXACTLY
-            # 0.0 took the worst key and the exit that BROKE EVEN lost this
-            # pick to every exit that LOST MONEY. Measured 0 live instances
-            # over 6,578 cells in all three cubes, so this changes no current
-            # output - it removes a trap that fires on data not yet run.
-            pick = max(cands, key=lambda c: (c["n_gates"], rank_key(c["sharpe"])))
             hog = g[(g.entry_date >= HO_START) & (g.entry_date < HO_END)
-                    & (g.exit_method == pick["exit"])]
+                    & (g.exit_method == ex_pick)]
             graded = evaluate(hog["pnl_pct"], hog["hold_days"],
                          # B1492: the full-period leg. `g` is the WHOLE cell across all
                          # four years at the chosen exit, so len(g) is the period total
                          # the new gate needs. Without this the 4y leg silently no-ops.
-                         full_period_n=len(g[g.exit_method == pick["exit"]]))
+                         full_period_n=len(g[g.exit_method == ex_pick]))
             rows.append({"cube": label, "n_tickers": ntick, "strategy": strat,
-                         "direction": direction, "exit": truthful_exit_name(pick["exit"])[0],
+                         "direction": direction, "exit": truthful_exit_name(ex_pick)[0],
                          "is_sharpe": pick["sharpe"], "is_n_gates": pick["n_gates"],
                          "holdout": graded,
                          "trades": set(map(tuple, hog[["ticker", "entry_date"]].values))})
@@ -576,13 +565,20 @@ def main() -> int:
     # artifact byte-identical and never re-committed, and a commit-timestamp
     # comparison then fires forever with no satisfying action except a
     # no-op commit.
+    # B2078: READ-THEN-UPDATE, never overwrite - the stamp file is SHARED
+    # (build_strategy_producer_map.py stamps itself here too, B2058), and
+    # this writer's fresh-dict form silently DELETED the other generator's
+    # entry on every roster run, resurrecting the timestamp gate for an
+    # artifact that was provably fresh. Two writers for one artifact, one
+    # of them lossy - the L603 class, inside the freshness machinery.
     import hashlib as _hl
-    _stamp = {f: _hl.sha256((REPO / f).read_bytes()).hexdigest()
-              for f in ("scripts/build_phase_1b_roster.py",
-                        "scripts/roster_core.py",
-                        "scripts/walk_forward_r5_cells.py")}
-    (REPO / "output_audit" / "phase_1b_roster_freshness.json").write_text(
-        json.dumps(_stamp, indent=1), encoding="utf-8")
+    _sp = REPO / "output_audit" / "phase_1b_roster_freshness.json"
+    _stamp = json.loads(_sp.read_text(encoding="utf-8")) if _sp.exists() else {}
+    _stamp.update({f: _hl.sha256((REPO / f).read_bytes()).hexdigest()
+                   for f in ("scripts/build_phase_1b_roster.py",
+                             "scripts/roster_core.py",
+                             "scripts/walk_forward_r5_cells.py")})
+    _sp.write_text(json.dumps(_stamp, indent=1), encoding="utf-8")
     print(f"[OK] wrote {args.output} + {args.json}")
     return 0
 

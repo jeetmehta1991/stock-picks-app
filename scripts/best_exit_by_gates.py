@@ -50,7 +50,7 @@ from walk_forward_r5_cells import _sharpe                    # noqa: E402
 # `objective=` switch ("gates" here, the owner's 2026-08-04 directive).
 from roster_core import (                                    # noqa: E402
     IS_START, IS_END, HO_START, HO_END, WINSORIZE, COST_BPS, MIN_N, LIVE_GATES,
-    evaluate as _core_evaluate, npt_spanning_exclusion, rank_key,
+    evaluate as _core_evaluate, rank_key, select_exit,
 )
 
 
@@ -68,9 +68,12 @@ def main() -> int:
     print(f"[INFO] GRADE  the chosen exit on HOLDOUT {HO_START}..{HO_END} - never selected on")
     print(f"[INFO] live gates ({len(LIVE_GATES)}): {', '.join(LIVE_GATES)}")
 
+    # B2078: "ticker" joined usecols - select_exit's B1593 duplicate collapse
+    # sorts each exit's trades by (ticker, entry_date) to build the identity
+    # signature, so the column is now load-bearing here.
     df = pd.read_csv(REPO / args.cube / "trade_exit_detail.csv",
                      usecols=["strategy", "direction", "exit_method", "entry_date",
-                              "pnl_pct", "hold_days"], low_memory=False)
+                              "ticker", "pnl_pct", "hold_days"], low_memory=False)
     df["entry_date"] = pd.to_datetime(df["entry_date"]).dt.date
     df["pnl_pct"] = df["pnl_pct"].clip(-WINSORIZE, WINSORIZE) - COST_BPS / 100.0
 
@@ -78,35 +81,24 @@ def main() -> int:
     # group by (strategy, DIRECTION, exit): a dual strategy's legs have independent edges;
     # pooling them drags a passing leg below the bar with its failing twin (B1451 fix).
     for (strat, direction), g in df.groupby(["strategy", "direction"]):
-        is_g = g[(g.entry_date >= IS_START) & (g.entry_date < IS_END)]
         ho_g = g[(g.entry_date >= HO_START) & (g.entry_date < HO_END)]
-        cands = []
-        # B2014 (D7): shared identity-boundary refusal (see roster_core)
-        _npt_out = npt_spanning_exclusion(g)
-        for ex, ge in is_g.groupby("exit_method"):
-            if _npt_out and str(ex) == "next_pivot_target":
-                continue
-            r = evaluate(ge["pnl_pct"], ge["hold_days"])
-            if r:
-                r["exit"] = ex
-                cands.append(r)
-        if not cands:
+        # B2078 (S6-B2014a, owner-approved 2026-08-23): both objectives route
+        # through roster_core.select_exit - the ONE selector, carrying the D7
+        # npt refusal AND the B1593 duplicate collapse this inline loop never
+        # had. The objective difference that justified this script is the
+        # `objective=` switch it was always meant to be (per the import note).
+        ex_pick, pick = select_exit(g, objective="gates")
+        if pick is None:
             continue
-        # selection-justified: gates-cleared IS the promotion criterion (owner directive), so
-        # maximising it is the objective itself; IS Sharpe breaks ties because among equally
-        # compliant exits the better risk-adjusted one is preferable. IS ONLY - CHECKLIST #165.
-        # B1975: rank_key, not `or -9` - 0.0 is a VALUE, and only an ABSENT
-        # Sharpe may take the sentinel. Shared definition in roster_core.
-        pick = max(cands, key=lambda c: (c["n_gates"], rank_key(c["sharpe"])))
-        by_sharpe = max(cands, key=lambda c: (rank_key(c["sharpe"]),))   # what the generator picks
+        ex_sh, _ = select_exit(g, objective="sharpe")   # what the generator picks
 
-        he = ho_g[ho_g.exit_method == pick["exit"]]
+        he = ho_g[ho_g.exit_method == ex_pick]
         graded = evaluate(he["pnl_pct"], he["hold_days"])
         rows.append({
-            "strategy": strat, "direction": direction, "exit": pick["exit"],
+            "strategy": strat, "direction": direction, "exit": ex_pick,
             "is_n_gates": pick["n_gates"], "is_sharpe": pick["sharpe"], "is_n": pick["n"],
-            "generator_would_pick": by_sharpe["exit"],
-            "objective_disagrees": pick["exit"] != by_sharpe["exit"],
+            "generator_would_pick": ex_sh,
+            "objective_disagrees": ex_pick != ex_sh,
             "holdout": graded,
             "holdout_all_gates": bool(graded and graded["all_live_gates"]),
             "holdout_n_gates": graded["n_gates"] if graded else None,

@@ -14925,10 +14925,12 @@ def test_b1602_degraded_exit_relabel_survives_regeneration():
     assert rc.truthful_exit_name("regime_flip", False) == ("regime_flip", "")
     # an undegraded exit is untouched in both cases
     assert rc.truthful_exit_name("time_stop_10d", True)[0] == "time_stop_10d"
-    # and the generator must actually USE it (CHECKLIST #121)
+    # and the generator must actually USE it (CHECKLIST #121). B2078: the
+    # inline pick dict became select_exit's (ex_pick, stats) return - the
+    # relabel now applies to ex_pick; the guarded property is unchanged.
     src = (__import__("pathlib").Path("scripts/build_phase_1b_roster.py")
            .read_text(encoding="utf-8"))
-    assert "truthful_exit_name(pick[" in src, (
+    assert "truthful_exit_name(ex_pick)" in src, (
         "build_phase_1b_roster must APPLY the relabel, not merely import it")
 
 
@@ -23092,14 +23094,18 @@ def test_b2014_npt_identity_boundary_binds_in_every_selector():
 
     assert rc.npt_spanning_exclusion(span) and not rc.npt_spanning_exclusion(pre)
 
-    # all three selectors consult the ONE helper (the first landing's miss)
+    # B2078 (S6-B2014a): the consumers no longer select INLINE - both route
+    # through select_exit, so the refusal binds at the ONE selector and the
+    # first landing's miss (inline paths skipping the helper) is closed at
+    # the architecture level, not per-file. The guarded property is now:
+    # selection goes through select_exit (which this test proved refuses
+    # spanning npt above), and no consumer rebuilds an inline path.
     import source_text as st_mod
     for f in ("build_phase_1b_roster.py", "best_exit_by_gates.py"):
         code = st_mod.code_only(root / "scripts" / f)
-        assert "npt_spanning_exclusion(" in code, (
-            f"{f} selects INLINE and must consult the shared helper - the "
-            "first D7 landing wired only select_exit and all 7 spanning "
-            "cells survived")
+        assert "select_exit(g" in code, (
+            f"{f} must route selection through select_exit - an inline "
+            "selector is how the first D7 landing missed all 7 spanning cells")
 
 
 
@@ -23891,3 +23897,28 @@ def test_b2076_gates_consume_the_event_keys():
         {"smc_ob_bearish_tap_recent_5d": True, "rsi_14": 60,
          "below_ema_200": True, "borrow_ok": True})
     assert r["fires"] is True and r["direction"] == "short"
+
+
+def test_b2078_selection_routes_through_the_one_selector():
+    """B2078 (S6-B2014a, owner-approved): build_phase_1b_roster.py and
+    best_exit_by_gates.py must SELECT via roster_core.select_exit - the
+    inline per-exit argmax loops they carried were the fork through which
+    D7's first landing missed all 7 spanning npt cells, and they never ran
+    the B1593 duplicate collapse. Control-before-edit proved consolidation
+    output-preserving (roster 253/253, gates 229/229, 0 changes)."""
+    import sys as _sys
+    from pathlib import Path as _P
+
+    root = _P(__file__).resolve().parents[2]
+    _sys.path.insert(0, str(root / "scripts"))
+    from source_text import code_only
+
+    for name in ("scripts/build_phase_1b_roster.py",
+                 "scripts/best_exit_by_gates.py"):
+        src = code_only(root / name)
+        assert "select_exit(g" in src, f"{name} no longer calls select_exit"
+        # the inline-selection signature: a per-exit evaluate loop feeding a
+        # local argmax. Its two load-bearing lines must both be gone.
+        assert 'r["exit"] = ex' not in src, f"{name} rebuilt the inline selector"
+        assert 'max(cands, key=lambda c: (c["n_gates"]' not in src, (
+            f"{name} rebuilt the inline argmax")
