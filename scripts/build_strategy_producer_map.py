@@ -117,5 +117,52 @@ def main() -> int:
     return 0
 
 
+
+
+
+# B2057 (S6-B1531c): the FAMILY-AXES view - one orthogonal sweep per shared
+# producer serves every consumer, rather than each strategy buying its own
+# grid. PLUMBED = the axis reaches the engine via a config/env knob today
+# (B1519/B1616/B2016 lineage); UNPLUMBED = producer literals, tunable only
+# after an owner-approved plumb of the same pattern.
+PLUMBED_AXES = {
+    "compute_smc_signals": "SMC_SWING_LENGTH (+ SMC_OB_CLOSE_MITIGATION, "
+                           "SMC_OB_TAIL_N, SMC_BREAKER_AGE_BARS_MAX, "
+                           "SMC_BREAKER_BREAK_PCT_MAX - B1616/B1519)",
+    "compute_ema_sma": "EMA_PAIRS (B2016) + STRAT_EMA_SPAN consumer key",
+}
+
+
+def write_family_axes(out_path):
+    import collections
+    import csv as _csv
+    fam = collections.defaultdict(set)
+    with OUT.open(encoding="utf-8") as f:
+        for r in _csv.DictReader(f):
+            if r["tier"] != "UNRESOLVED":
+                fam[r["producer"]].add(r["strategy"])
+    lines = [
+        "# Strategy family axes (generated - B2057, S6-B1531c)",
+        "",
+        "Derived from strategy_producer_map.csv. One orthogonal sweep of a",
+        "family's axis serves EVERY member; an UNPLUMBED axis needs a",
+        "B1519-pattern config plumb (owner-approved) before it is sweepable.",
+        "",
+        "| producer family | members | axis status |",
+        "|---|---|---|",
+    ]
+    for p, members in sorted(fam.items(), key=lambda x: -len(x[1])):
+        ax = PLUMBED_AXES.get(p, "UNPLUMBED (producer literals)")
+        lines.append(f"| {p} | {len(members)} | {ax} |")
+    out_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    print(f"wrote {out_path}")
+
+
 if __name__ == "__main__":
+    # B2057: `--families` renders the family-axes view from the existing CSV
+    # (defined below); anything else rebuilds the map. The first landing put
+    # the dispatch AFTER this exit - dead code, caught by the missing file.
+    if "--families" in sys.argv:
+        write_family_axes(ROOT / "output_audit" / "strategy_family_axes.md")
+        sys.exit(0)
     sys.exit(main())

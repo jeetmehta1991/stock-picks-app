@@ -21624,6 +21624,8 @@ _B1974_GENERATED = {
     # builder; registered at birth so it can never silently outlive it.
     "output_audit/strategy_producer_map.csv":
         ("scripts/build_strategy_producer_map.py",),
+    "output_audit/strategy_family_axes.md":
+        ("scripts/build_strategy_producer_map.py",),
 }
 
 
@@ -23669,3 +23671,22 @@ def test_b2056_depth_first_rule_is_in_the_skill():
         "the ordering rule decayed out of the skill's Phase-1 block")
     assert "decision-gated skips excepted" in skill, (
         "the exception that keeps the rule honest must survive with it")
+
+
+def test_b2057_family_axes_artifact_carries_the_economics():
+    """B2057 (S6-B1531c): the family-axes view must keep its load-bearing
+    rows - the EMA family (one plumbed sweep serves 100+ strategies) and the
+    SMC family with its plumbed knob set."""
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    txt = (root / "output_audit" / "strategy_family_axes.md").read_text(
+        encoding="utf-8")
+    import re as _re
+    m = _re.search(r"\| compute_ema_sma \| (\d+) \|", txt)
+    assert m and int(m.group(1)) >= 100, (
+        "the EMA family's one-sweep-serves-100+ economics is the artifact's "
+        "point - its row decayed or the family collapsed")
+    assert "SMC_SWING_LENGTH" in txt, (
+        "the SMC family's plumbed axis must be named")
+    assert "UNPLUMBED" in txt, (
+        "unplumbed families must be labeled, not omitted")
