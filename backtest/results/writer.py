@@ -232,9 +232,18 @@ def write_all_outputs(
         logger.info("Wrote regime_performance.csv")
 
     # -- Exit comparison --
+    # B2100 (S6-B1531a run crash): `best` was assigned INSIDE this block and
+    # CONSUMED in the detail block below - B2046 made empty-summary +
+    # non-empty-detail REACHABLE (sub-5-trade strategies keep their detail
+    # rows) and this cross-block dependency then crashed the save on the
+    # first such run (AttributeError on a stale list). The L620 class,
+    # summary-vs-detail flavor: `best` now lives and writes entirely inside
+    # the block that defines it.
     if not exit_compare.empty:
         exit_compare.to_csv(output_dir / "exit_strategy_comparison.csv", index=False)
         best = exit_compare[exit_compare.get("recommended", False) == True].copy()
+        best.to_csv(output_dir / "exit_strategy_best.csv", index=False)
+        logger.info("Wrote exit_strategy_comparison.csv + exit_strategy_best.csv")
 
     if trade_exit_detail is not None and not trade_exit_detail.empty:
         trade_exit_detail.to_csv(output_dir / "trade_exit_detail.csv", index=False)
@@ -242,8 +251,6 @@ def write_all_outputs(
                     len(trade_exit_detail),
                     trade_exit_detail["ticker"].count() if "ticker" in trade_exit_detail.columns else 0,
                     len(trade_exit_detail.columns))
-        best.to_csv(output_dir / "exit_strategy_best.csv", index=False)
-        logger.info("Wrote exit_strategy_comparison.csv + exit_strategy_best.csv")
 
         # Pass 53 Day-9-evening v2 owner reframe: per-EXIT conditional analysis
         # (not per-dim universal best). Output 3 deliverables:

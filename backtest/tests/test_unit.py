@@ -24261,3 +24261,36 @@ def test_b2092_task_tuple_arity_agrees_across_all_consumers():
     assert not bad, (
         f"strategy_tasks appends {append_arity}-tuples but these for-loops "
         f"unpack differently: {bad} - the S6-B2070 crash class")
+
+
+def test_b2100_writer_survives_empty_summary_with_detail_rows():
+    """B2100 (the S6-B1531a obb-arm crash): B2046 made empty-summary +
+    non-empty-detail REACHABLE and the writer's cross-block `best` use then
+    crashed the save on the first such run - a stale loop list from line
+    ~189 leaked into the detail block. `best` now writes only inside the
+    block that defines it. SYNTHETIC minimal frames drive write_all_outputs
+    end to end: no raise, the detail csv lands, and no best csv appears."""
+    import tempfile
+    from pathlib import Path as _P
+
+    import pandas as _pd
+
+    from backtest.results.writer import write_all_outputs
+
+    detail = _pd.DataFrame([{"ticker": "TST", "strategy": "synthetic_b2100",
+                             "entry_date": "2024-06-04", "direction": "long",
+                             "exit_method": "atr_trail_1x", "pnl_pct": 1.0,
+                             "win": True, "hold_days": 3.0}])
+    with tempfile.TemporaryDirectory() as td:
+        out = _P(td)
+        # empty-but-typed frames: the crash under test lived PAST the early
+        # sections, so the fixture must satisfy their column expectations
+        empty_trades = _pd.DataFrame(columns=["pnl_pct", "win", "regime",
+                                              "strategy", "entry_date",
+                                              "ticker", "exit_reason"])
+        write_all_outputs(
+            df_trades=empty_trades, metrics=_pd.DataFrame(), skipped=[],
+            cb_log=[], exit_compare=_pd.DataFrame(), trade_exit_detail=detail,
+            output_dir=out)
+        assert (out / "trade_exit_detail.csv").exists()
+        assert not (out / "exit_strategy_best.csv").exists()

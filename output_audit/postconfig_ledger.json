@@ -2660,5 +2660,81 @@
    "status": "SKIPPED",
    "evidence": "concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it"
   }
+ },
+ "output_b2099_iso2": {
+  "1_cube_sanity": {
+   "status": "SKIPPED",
+   "evidence": "isolation-instrument cube (B2099, S6-B1531a): deliverable was the per-strategy content equality vs the singles' union, recorded in the verdict row; PASSED exact"
+  },
+  "2_grade_with_config_params": {
+   "status": "SKIPPED",
+   "evidence": "isolation-instrument cube (B2099, S6-B1531a): deliverable was the per-strategy content equality vs the singles' union, recorded in the verdict row; PASSED exact"
+  },
+  "3_outlier_discrepancy_sweep": {
+   "status": "SKIPPED",
+   "evidence": "isolation-instrument cube (B2099, S6-B1531a): deliverable was the per-strategy content equality vs the singles' union, recorded in the verdict row; PASSED exact"
+  },
+  "4_three_leg_spot_check": {
+   "status": "SKIPPED",
+   "evidence": "isolation-instrument cube (B2099, S6-B1531a): deliverable was the per-strategy content equality vs the singles' union, recorded in the verdict row; PASSED exact"
+  },
+  "5_adversarial_lens_review": {
+   "status": "SKIPPED",
+   "evidence": "isolation-instrument cube (B2099, S6-B1531a): deliverable was the per-strategy content equality vs the singles' union, recorded in the verdict row; PASSED exact"
+  },
+  "6_post_fix_recheck": {
+   "status": "SKIPPED",
+   "evidence": "isolation-instrument cube (B2099, S6-B1531a): deliverable was the per-strategy content equality vs the singles' union, recorded in the verdict row; PASSED exact"
+  },
+  "6b_equivalence_class_check": {
+   "status": "SKIPPED",
+   "evidence": "isolation-instrument cube (B2099, S6-B1531a): deliverable was the per-strategy content equality vs the singles' union, recorded in the verdict row; PASSED exact"
+  },
+  "7_implement_in_engine": {
+   "status": "SKIPPED",
+   "evidence": "isolation-instrument cube (B2099, S6-B1531a): deliverable was the per-strategy content equality vs the singles' union, recorded in the verdict row; PASSED exact"
+  },
+  "8_verdict_with_denominators": {
+   "status": "SKIPPED",
+   "evidence": "isolation-instrument cube (B2099, S6-B1531a): deliverable was the per-strategy content equality vs the singles' union, recorded in the verdict row; PASSED exact"
+  }
+ },
+ "output_b2099_obb": {
+  "1_cube_sanity": {
+   "status": "SKIPPED",
+   "evidence": "isolation-instrument cube (B2099): the obb single arm; cube written pre-crash (the B2100 writer defect, fixed+pinned same batch); content consumed by the isolation verdict only"
+  },
+  "2_grade_with_config_params": {
+   "status": "SKIPPED",
+   "evidence": "isolation-instrument cube (B2099): the obb single arm; cube written pre-crash (the B2100 writer defect, fixed+pinned same batch); content consumed by the isolation verdict only"
+  },
+  "3_outlier_discrepancy_sweep": {
+   "status": "SKIPPED",
+   "evidence": "isolation-instrument cube (B2099): the obb single arm; cube written pre-crash (the B2100 writer defect, fixed+pinned same batch); content consumed by the isolation verdict only"
+  },
+  "4_three_leg_spot_check": {
+   "status": "SKIPPED",
+   "evidence": "isolation-instrument cube (B2099): the obb single arm; cube written pre-crash (the B2100 writer defect, fixed+pinned same batch); content consumed by the isolation verdict only"
+  },
+  "5_adversarial_lens_review": {
+   "status": "SKIPPED",
+   "evidence": "isolation-instrument cube (B2099): the obb single arm; cube written pre-crash (the B2100 writer defect, fixed+pinned same batch); content consumed by the isolation verdict only"
+  },
+  "6_post_fix_recheck": {
+   "status": "SKIPPED",
+   "evidence": "isolation-instrument cube (B2099): the obb single arm; cube written pre-crash (the B2100 writer defect, fixed+pinned same batch); content consumed by the isolation verdict only"
+  },
+  "6b_equivalence_class_check": {
+   "status": "SKIPPED",
+   "evidence": "isolation-instrument cube (B2099): the obb single arm; cube written pre-crash (the B2100 writer defect, fixed+pinned same batch); content consumed by the isolation verdict only"
+  },
+  "7_implement_in_engine": {
+   "status": "SKIPPED",
+   "evidence": "isolation-instrument cube (B2099): the obb single arm; cube written pre-crash (the B2100 writer defect, fixed+pinned same batch); content consumed by the isolation verdict only"
+  },
+  "8_verdict_with_denominators": {
+   "status": "SKIPPED",
+   "evidence": "isolation-instrument cube (B2099): the obb single arm; cube written pre-crash (the B2100 writer defect, fixed+pinned same batch); content consumed by the isolation verdict only"
+  }
  }
 }

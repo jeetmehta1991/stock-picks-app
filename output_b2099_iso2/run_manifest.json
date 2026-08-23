@@ -1,0 +1,45 @@
+{
+ "sequence": "B1531a_isolation_check_preWA",
+ "batch": "B2099",
+ "execution": "LOCAL",
+ "frozen_sha": "b95a1506c3dae399ccaa5ea7250f7b0aeff01beb",
+ "isolation": true,
+ "calendar": "nyse_mcal",
+ "tickers": {
+  "file": "output_audit/_var5.txt",
+  "n": 5,
+  "sha256": "dbdd4b643963b1f7c8cc6033febd57d705de25b7c65029af39382152dafb4dca",
+  "note": "the same verified 5t shape as B2094/B2096"
+ },
+ "strategy_subset": "iso2 = {smc_breaker_block_long, smc_order_block_bounce}; obb = {smc_order_block_bounce}",
+ "window": {
+  "start": "2024-05-05",
+  "end": "2025-05-05"
+ },
+ "arms": [
+  {
+   "tag": "iso2",
+   "subset": "output_audit/_subset_iso2.txt"
+  },
+  {
+   "tag": "obb",
+   "subset": "output_audit/_subset_obb.txt"
+  }
+ ],
+ "concurrency": "SEQUENTIAL solo - content is the deliverable; determinism proven at this sha family (8/8 cubes one sha), so single runs suffice",
+ "budget_cap_usd": 0,
+ "spent_usd": 0,
+ "projected_batch_usd": 0,
+ "wall_clock_projection_hours": 0.4,
+ "wall_clock_projection_basis": "287s warm solo per arm (B2094 measured) + the 2-strategy arm slightly more; kill cap 1.0h/arm",
+ "obsolescence_risks": [
+  {
+   "risk": "cross-strategy interaction under --cube-isolation (the thing being tested)",
+   "status": "THE MEASUREMENT - iso2's per-strategy trade sets must equal the singles' union exactly"
+  },
+  {
+   "risk": "concurrent load",
+   "status": "GATED - sequential, nothing else heavy runs (L621 hold discipline)"
+  }
+ ]
+}
