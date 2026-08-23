@@ -19224,7 +19224,6 @@ _B1860_UNGATED_LEGACY = {
     'PRINT THE SAMPLE IDENTIFIER BEFORE JOINING TWO MEASUREMENTS',
     'PROMOTION NEEDS A BATCH-SPECIFIC ARTIFACT',
     'Phase 0 — RECALL',
-    'Phase 1 — SCOPE LEDGER',
     'Phase 2 — PRE-FLIGHT',
     'Phase 3 — EXECUTE with the TEST PYRAMID GATE',
     'Phase 4 — AUDIT DEPTH STANDARD',
@@ -23657,3 +23656,16 @@ def test_b2055_staleness_join_rederives_ticket_claims():
     residue = m.join_row("the 4.6x duplicate lookups were memoized", fresh)
     assert residue == [], (
         "a prose-specific number matches no shape - the disclaimed residue")
+
+
+def test_b2056_depth_first_rule_is_in_the_skill():
+    """B2056 (S6-B1763e): the depth-first ordering rule is judgment-only for
+    detection; durability is this pin (L548's second question)."""
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    skill = (root / ".claude/skills/execution-discipline/SKILL.md").read_text(
+        encoding="utf-8")
+    assert "DEPTH-FIRST ORDERING" in skill and "S6-B1763e" in skill, (
+        "the ordering rule decayed out of the skill's Phase-1 block")
+    assert "decision-gated skips excepted" in skill, (
+        "the exception that keeps the rule honest must survive with it")

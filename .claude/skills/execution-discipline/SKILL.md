@@ -250,6 +250,13 @@ Rules:
   heading so the owner sees them — burying them in prose is a silent miss.
 - Counts must reconcile: items-in x = DONE + DEFERRED + N/A + BLOCKED. State
   the arithmetic explicitly.
+- **DEPTH-FIRST ORDERING (B2056 - S6-B1763e, L519's rank-by-depth half):** among
+  EXECUTABLE items, the deepest/highest-priority ledger row is worked FIRST -
+  P0 before P1 before P2, decision-gated skips excepted. "Two shallow gates
+  shipped while the item explaining both was deferred" is the failure; at end
+  of turn the shallow-first ordering is automatic unless forced. JUDGMENT-ONLY
+  for detection (executability is a judgment no scan can read); durability
+  pinned by test_b2056_depth_first_rule_is_in_the_skill.
 
 ## Phase 2 — PRE-FLIGHT (before EVERY recommendation)
 
