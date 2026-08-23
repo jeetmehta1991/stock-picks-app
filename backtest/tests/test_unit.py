@@ -21172,17 +21172,25 @@ def test_b1969_counter_discloses_what_it_cannot_parse():
         qs.main()
     out = buf.getvalue()
 
-    assert "SCOPE:" in out and "EXCLUDES them" in out, (
-        "the exclusion must be PRINTED, not merely computable (L571)")
-    assert "UNKNOWN, not zero" in out, (
-        "those rows have no state column, so their OPEN-ness is unknown; "
-        "reporting them as closed would invent the state the fix avoids")
-    assert str(len(up)) in out, (
-        "the printed scope line must carry the COUNT of what was dropped")
-    for t in list(up)[:3]:
-        assert t in out, (
-            f"{t} is excluded and not named - #280, a count is not a set: the "
-            "scope line must name the members, not just tally them")
+    if up:
+        assert "SCOPE:" in out and "EXCLUDES them" in out, (
+            "the exclusion must be PRINTED, not merely computable (L571)")
+        assert "UNKNOWN, not zero" in out, (
+            "those rows have no state column, so their OPEN-ness is unknown; "
+            "reporting them as closed would invent the state the fix avoids")
+        assert str(len(up)) in out, (
+            "the printed scope line must carry the COUNT of what was dropped")
+        for t in list(up)[:3]:
+            assert t in out, (
+                f"{t} is excluded and not named - #280, a count is not a set: "
+                "the scope line must name the members, not just tally them")
+    else:
+        # B2026: the B1 program converted the whole backlog - with nothing
+        # excluded, a SCOPE disclosure would be noise claiming an exclusion
+        # that no longer exists. Correct behavior is silence about it.
+        assert "SCOPE:" not in out, (
+            "unparsed() is empty but a SCOPE exclusion still prints - the "
+            "disclosure has outlived the thing it disclosed (#279 decay)")
 
 
 
