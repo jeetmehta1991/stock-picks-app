@@ -3600,6 +3600,13 @@ def _segment_is_launch(cmd: str) -> bool:
     # path passes the bare command. Strip the wrapper so the seam travels the
     # same pipeline (B1811) instead of misreading the head token.
     cmd = _re3.sub(r'^\s*\{\s*"command"\s*:\s*"', "", cmd)
+    # B2028b: a QUOTED argument is data the command carries, not a token it
+    # executes - a `git commit -m "... run_phase1a.py ..."` message fired this
+    # gate the very batch after the reader-head fix. Blank quoted spans in
+    # place (B1906: never rebuild a haystack) before tokenizing. Residual
+    # accepted: a runner invoked THROUGH a quoted path would be missed here;
+    # no launch in this repo's history is written that way.
+    cmd = _re3.sub(r'"[^"\n]*"|\'[^\'\n]*\'', " ", cmd)
     for seg in _re3.split(r"&&|\|\||[;|\n]", cmd):
         toks = seg.split()
         if not toks:

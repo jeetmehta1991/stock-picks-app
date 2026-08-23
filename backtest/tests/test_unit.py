@@ -19426,6 +19426,12 @@ def test_b1864_process_rule_gates():
         '--start a"}']), (
         "a real launch BESIDE a reader segment must still fire - the "
         "exemption is per-segment, not per-command")
+    # B2028b: a QUOTED argument is data - a commit MESSAGE naming the runner
+    # fired the gate the very batch after the reader-head fix.
+    assert not tg.scan_launch_missing_pool_workers([], blobs=[
+        'git commit -m "fix: grep naming run_phase1a.py is not a launch"']), (
+        "a runner filename inside a quoted argument is prose the command "
+        "carries, not a launch")
 
     # ---- S6-B1555a: a monitor must be able to see a HANG -----------------
     assert tg.scan_monitor_without_stall_check([], blobs=[
