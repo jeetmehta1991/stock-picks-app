@@ -120,6 +120,16 @@ EXPLORATORY_STRATEGIES = frozenset({
     # precedent (cube measurement only, no production deployment
     # regardless of verdict until SM-4 feasibility re-evaluated).
     "m_and_a_target_long",
+    # B2085 (2026-08-23, owner-approved F24 at b2031 rec 13: "re-scope
+    # EXPLORATORY"): both pairs legs execute ONE side of a cointegrated-pair
+    # thesis with no hedge leg - the Gatev-Goetzmann-Rouwenhorst edge is the
+    # dollar-neutral SPREAD, and single-leg execution carries directional
+    # exposure the thesis never priced. Dollar-neutral execution is Stage-3+
+    # machinery (the alternative F24 half, explicitly not built inside
+    # Stage 2). Cube keeps measuring single-leg expectancy; deployment
+    # waits on the hedge leg existing.
+    "pairs_mean_reversion_long",
+    "pairs_mean_reversion_short",
 })
 
 

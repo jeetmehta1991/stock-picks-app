@@ -7288,7 +7288,14 @@ def strat_gold_silver_risk_off_long(s):
 def strat_pairs_mean_reversion_long(s):
     """Batch 253: cointegrated-pair mean-reversion long. Krauss 2024 +
     Gatev-Goetzmann-Rouwenhorst 2006. Entry: z<-2 (ticker underpriced
-    vs peer) + half-life >= 5 (post-HFT survival)."""
+    vs peer) + half-life >= 5 (post-HFT survival).
+
+    STATUS: EXPLORATORY (B2085, owner-approved F24 re-scope 2026-08-23,
+    registered in EXPLORATORY_STRATEGIES): fires the LONG leg only - the
+    pairs edge is the dollar-neutral spread and the hedge leg does not
+    exist in Stage 2. Cube measures single-leg expectancy; no deployment
+    until the hedge leg is built (Stage 3+).
+    """
     fires = (
         s.get("pair_count_active", 0) > 0
         and s.get("pair_zscore_signed", 0.0) < -2.0
@@ -7307,7 +7314,11 @@ def strat_pairs_mean_reversion_long(s):
 
 
 def strat_pairs_mean_reversion_short(s):
-    """Batch 253: cointegrated-pair mean-reversion short. Symmetric pair."""
+    """Batch 253: cointegrated-pair mean-reversion short. Symmetric pair.
+
+    STATUS: EXPLORATORY (B2085, owner-approved F24 re-scope; see the
+    long leg's note - same hedge-leg absence, short side).
+    """
     fires = (
         s.get("pair_count_active", 0) > 0
         and s.get("pair_zscore_signed", 0.0) > 2.0
