@@ -21113,17 +21113,48 @@ def test_b1969_counter_discloses_what_it_cannot_parse():
     up = qs.unparsed()
     known = set(qs.tickets())
 
-    assert up, "the older-schema rows are still in the file; dropping to zero "\
-               "means the pattern broke, not that the backlog was converted"
+    # B2024: the B1 program (owner ruling 2026-08-22) converts these rows by
+    # appending canonical closing rows, so membership legitimately SHRINKS -
+    # the original canary ("LEAD-LAG-ORPHAN must be present") broke on the
+    # first converted batch. The conversion-aware property: unparsed is a
+    # SUBSET of the frozen legacy-48 (members may leave via conversion, never
+    # join - a new join means the loose pattern widened or a new unparseable
+    # schema appeared), and an EMPTY set is the program's completion, allowed.
+    _B1969_LEGACY_48 = {
+        "S6-B1248-COMPOSITE-EXPECTANCY-REWEIGHT", "S6-B1248-EARNINGS-BLACKOUT-MAXHOLD",
+        "S6-B1248-SHORT-REGIME-AFFINITY", "S6-B1248-SUPERTREND-SHORT-STATE-EVENT",
+        "S6-B1248-LEAD-LAG-ORPHAN", "S6-B1248-MAE-CONDITIONAL-NOOP",
+        "S6-B1248-REGIME-FLIP-DEGENERACY", "S6-B1248-BREAKEVEN-1R-BUFFER",
+        "S6-B1248-HNS-NECKLINE-GATE", "S6-B1248-STALE-NAME-SWEEP",
+        "S6-B1248-OR-ARM-ATTRIBUTION", "S6-B1248-ICHI-BREAKDOWN-ASYMMETRY",
+        "S6-B1250-ENG1-SIGNALS-ROUNDTRIP", "S6-B1250-ENG2-ATR-FALLBACK-GUARD",
+        "S6-B1250-ENG3-PARQUET-ASSERT", "S6-B1250-ENG4-LEADLAG-REGISTRY",
+        "S6-B1250-ENG5-POOL-WORKER-LOG", "S6-B1250-ENG6-AVWAP-BANNED-PATTERN",
+        "S6-B1250-ENG7-DEAD-CANDLE-ARMS", "S6-B1250-ENG8-RELATIVE-PATHS",
+        "S6-B1250-ENG9-FILL-DATE", "S6-B1250-ENG10-CHECKPOINT-EXCEPT-LOG",
+        "S6-B1250-ENG11-POOL-PANEL-PERF", "S6-B1248-LEVER3-STATE-EVENT-SWEEP",
+        "S6-B1248-LEVER4-GATE-BUDGET", "S6-B1248-LEVER5-PRODUCER-TOLERANCE",
+        "S6-B1248-LEVER6-RETEST-INTEGRITY", "S6-B1248-LEVER7-OR-ARM-GREP-SWEEP",
+        "S6-B1248-LEVER9-EXIT-SUITE", "S6-B1248-LEVER10-MAE-FITTED-STOPS",
+        "S6-B1248-NEW-STRATEGIES-M1-M15", "S6-B1248-F23-F24-DECISIONS",
+        "S6-B1250-PRODUCER-SWALLOW-VERIFY", "S6-B1250-UNIVERSE-METRICS-DEPTH",
+        "S6-B1253-GATE-A1-PYRAMID-STAMP", "S6-B1253-GATE-A2-BANNED-PATTERN-DIFF",
+        "S6-B1253-GATE-A3-QUEUE-ENTRY", "S6-B1253-GATE-A4-DOC-QUEUE-XCHECK",
+        "S6-B1253-GATE-B-STOP-HOOK", "S6-B1259-DATA-READINESS-AUDIT",
+        "S6-B1259-R5-PHASE-LADDER", "S6-B1262-STRATEGIES-CSV-CATEGORY",
+        "S6-B1262-L-REF-INTEGRITY-CHECK", "S6-B1501d", "S6-B1511a",
+        "S6-B1521a", "S6-B1523a", "S6-B1524a",
+    }
+    assert set(up) <= _B1969_LEGACY_48, (
+        "unparsed() reports ids OUTSIDE the frozen legacy-48 - either the "
+        "loose pattern widened or a NEW unparseable schema entered the file: "
+        f"{sorted(set(up) - _B1969_LEGACY_48)[:5]}")
     assert not (set(up) & known), (
         "unparsed() must report only what the canonical count MISSES - "
         "overlap means it is double-counting, not disclosing")
     assert not any("/" in t for t in up), (
         "a composite id like S6-B1503a/b/c is a ROW SHAPE, not a ticket, and "
         "its members are counted individually (#271)")
-    assert "S6-B1248-LEAD-LAG-ORPHAN" in up, (
-        "the named-id legacy block is the bulk of the exclusion - if it stops "
-        "appearing, the loose pattern has silently narrowed")
 
     # assert on what the tool PRINTS, not on its source: a disclosure nobody
     # sees is the same silence, and a source grep cannot tell the difference
