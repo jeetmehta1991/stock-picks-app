@@ -2318,5 +2318,43 @@
    "status": "DONE",
    "evidence": "B2019 verdict: sw50 produced 53 fires on 50 tickers / 1y. 0 of 300 combinations rankable - BY CONSTRUCTION (holdout_n=0 under the ruled window + the grader's holdout-requiring eligibility clause), NOT a universe-power verdict. Cross-arm baseline comparison (all 4 arms, IS keys per D4): sw10 is_ci_lo -0.081 / is_sharpe 0.691 / 172 fires ranks FIRST of 4; sw50 is_ci_lo -0.803 / is_sharpe 0.53 / 53 fires. All 4 arms' IS ci_lo < 0 - no arm demonstrates a solid positive at the baseline config."
   }
+ },
+ "output_b2016_e1_sw10_span50": {
+  "1_cube_sanity": {
+   "status": "DONE",
+   "evidence": "B2034: 1 strategy, exits/entry [26], 138 entries, mega-caps NVDA+MSFT+TSLA present, cfg stamp 10/50 verified in-cube. Launched from 1151d777d with the manifest drift disclosure (simulation semantics for the swept strategy unchanged vs frozen sha)."
+  },
+  "2_grade_with_config_params": {
+   "status": "DONE",
+   "evidence": "B2034: tighten_breaker_block.py --swing-length 10 --min-n 10 -> output_audit/b2034_e1_sw10_span50_grid.json (post-S6-B2018c grader). Union diagnosis loss 0pct (138/138); cm=True variant 135/138."
+  },
+  "3_outlier_discrepancy_sweep": {
+   "status": "DONE",
+   "evidence": "B2034: entries==grid max (138==138). Verdicts of 300: {184 NO_EXIT_SELECTABLE / 101 BELOW_POWER_FLOOR / 15 ZERO_FIRES}; rankable 101, carried 17, distinct 45. verify_grid_bands --anchor tail_n=20: PASS. measure_degraded_exits: same 3 collapsed pairs; regime_flip cap-branch 138/138 (S6-B2018a now measured on FIVE arms). RANK-1 IS THE SEQUENCE'S FIRST POSITIVE LOWER BOUND: is_ci_lo +0.025, is_sharpe 2.965, 18 of 138 fires, exit r_multiple_2r - thin n, carried to STEP 2 where the disjoint universe grows the sample."
+  },
+  "4_three_leg_spot_check": {
+   "status": "DONE",
+   "evidence": "B2034: spot_check_trades.py --n 50 --swing-length 10 --ema-span 50: 50 agree / 0 DISAGREE / 0 skipped, 0 execution failures. Artifact output_audit/b2034_sw10_span50_spotcheck_n50.json."
+  },
+  "5_adversarial_lens_review": {
+   "status": "DONE",
+   "evidence": "B2034 lenses: (silent degradation) regime_flip cap-branch 100pct - extends S6-B2018a, unchanged by design (frozen engine for comparability). (duplicate info) 26 exits -> 23 effective, same 3 pairs. (thin-n) the rank-1 positive ci_lo sits at n=18 - reported WITH its interval and below the STEP-2 admission floors by design; the D4 key already prices the n. (provenance) same verified SP50 file as all arms. (config blindness) grader ran at the cube's own sw=10; stamp verified. No new defect classes."
+  },
+  "6_post_fix_recheck": {
+   "status": "N/A",
+   "evidence": "B2034: no fix shipped against this arm's pipeline this batch (the S6-B2018c grader fix predates this grade and is what it ran on)."
+  },
+  "6b_equivalence_class_check": {
+   "status": "DONE",
+   "evidence": "B2034: top-10 carries 17 combinations across 10 DISTINCT outcome classes (45 distinct among 101 rankable) - the B1615 class-carry is active; no two carried classes share (fires, exit, is_ci_lo, is_sharpe)."
+  },
+  "7_implement_in_engine": {
+   "status": "N/A",
+   "evidence": "B2034: nothing admitted - admission is STEP 4 after the STEP-2 disjoint-ticker validation, which is the next owner gate (compute approval needed: ~344t x 2y local ~12.5h, or AWS per E4 quote-first)."
+  },
+  "8_verdict_with_denominators": {
+   "status": "DONE",
+   "evidence": "B2034 verdict: sw10_span50 produced 138 fires on 50 tickers / 1y. CROSS-ARM (sw10 pair, cross-arm only per L376/L382): baseline span200 is_ci_lo -0.081 / is_sharpe 0.691 / 172 fires vs span50 -0.286 / 0.878 / 138 - span200 baseline better-bounded, span50 higher point estimate with a wider interval. Ranked tops: span50 +0.025 (n=18) vs span200 -0.002 (n=163) - the sequence's ONLY positive lower bound is a span50 tightened combo at thin n. 101 of 300 combinations rankable; 17 carried. The E2-option-c grid (4 P1 arms + 1 span arm at the P1 optimum) is COMPLETE."
+  }
  }
 }
