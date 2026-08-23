@@ -23765,3 +23765,45 @@ def test_b2068_family_pooled_noise_floor_structure_and_artifact():
     assert art["pooled_n"] == ns[-1] and art["median_cell_n"] in ns
     for name, n_req in art["required_n"].items():
         assert n_req is None or n_req in ns, (name, n_req)
+
+
+def test_b2075_sweep_leg_is_required_again():
+    """B2075 (S6-B2033a, owner C12): B1202's OR let smc_bos_bullish alone
+    satisfy BOTH clauses of strat_smc_liquidity_sweep_reversal - a strategy
+    named for the sweep firing with the sweep absent. The sweep is REQUIRED
+    again; BOS stays valid only as the clause-two confirmation."""
+    from backtest.signals.screener import strat_smc_liquidity_sweep_reversal as f
+
+    # the recorded bypass: BOS alone, no sweep - must NOT fire (either side)
+    assert f({"smc_bos_bullish": True})["fires"] is False
+    assert f({"smc_bos_bearish": True, "borrow_ok": True})["fires"] is False
+    # sweep + CHoCH confirmation fires long
+    r = f({"smc_liquidity_swept_dn": True, "smc_choch_bullish": True})
+    assert r["fires"] is True and r["direction"] == "long"
+    # sweep + BOS confirmation still fires (B1202's confirmation intent kept)
+    r = f({"smc_liquidity_swept_dn": True, "smc_bos_bullish": True})
+    assert r["fires"] is True and r["direction"] == "long"
+    # sweep alone with no confirmation must NOT fire
+    assert f({"smc_liquidity_swept_dn": True})["fires"] is False
+    # short side symmetric: sweep-up + bearish CHoCH fires short
+    r = f({"smc_liquidity_swept_up": True, "smc_choch_bearish": True,
+           "borrow_ok": True})
+    assert r["fires"] is True and r["direction"] == "short"
+
+
+def test_b2075_supertrend_short_is_event_anchored():
+    """B2075 (S6-B1248-SUPERTREND-SHORT-STATE-EVENT, owner at b2031 rec 9):
+    the standalone short swapped STATE supertrend_bearish (99.19pct True per
+    the B655 audit) for EVENT supertrend_flip_recent_short_5d. The old STATE
+    key alone must no longer fire; the EVENT key must; adx>20 is unchanged."""
+    from backtest.signals.screener import strat_supertrend_macd_short as f
+
+    base = {"macd_12_26_9_bearish": True, "adx": 25, "borrow_ok": True}
+    # the pre-B2075 gate shape: STATE key set, EVENT key absent - must NOT fire
+    assert f({**base, "supertrend_bearish": True})["fires"] is False
+    # the EVENT-anchored gate fires
+    r = f({**base, "supertrend_flip_recent_short_5d": True})
+    assert r["fires"] is True and r["direction"] == "short"
+    # adx gate survived the swap (approved rec was the swap ONLY)
+    assert f({**base, "supertrend_flip_recent_short_5d": True,
+              "adx": 15})["fires"] is False

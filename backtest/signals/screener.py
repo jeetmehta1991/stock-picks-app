@@ -1534,11 +1534,11 @@ def strat_supertrend_macd(s):
       (2) macd_12_26_9_bullish -- MACD has confirmed momentum positive
           within the window
       (3) adx > 20 -- trend-strength filter unchanged
-    SHORT does NOT mirror this (B2047, S6-B2024a): strat_supertrend_macd_short
-    still gates on STATE supertrend_bearish (measured 99.19pct True, B655
-    audit) - the EVENT conversion reached only this long leg. The swap to
-    flip_recent_short_5d is owner-gated (S6-B1248-SUPERTREND-SHORT-STATE-EVENT
-    on the decision menu); this line previously CLAIMED the mirror existed.
+    SHORT mirrors this since B2075 (owner-approved 2026-08-23): the standalone
+    strat_supertrend_macd_short swapped STATE supertrend_bearish -> EVENT
+    supertrend_flip_recent_short_5d, completing the B655 conversion the pair
+    had half-received (S6-B2024a drift closed; its adx>20 gate is unchanged -
+    the B1139 adx drop here is this dual's own lineage, not the standalone's).
 
     Thesis: the supertrend flip is the bar-of-fire EVENT (genuine
     timing alpha); the 5-bar window allows MACD/ADX confirmation to
@@ -2877,12 +2877,18 @@ def strat_death_cross_50_200_volume(s):
 def strat_supertrend_macd_short(s):
     # B630 sweep: double F1 - supertrend_bullish -> supertrend_bearish
     # (B630 producer) + macd_12_26_9_bullish -> macd_12_26_9_bearish.
-    fires = (s.get("supertrend_bearish") and
+    # B2075 (S6-B1248-SUPERTREND-SHORT-STATE-EVENT, owner-approved 2026-08-23
+    # at b2031 rec 9): STATE supertrend_bearish (measured 99.19pct True, B655
+    # audit - a near-no-op gate) -> EVENT supertrend_flip_recent_short_5d,
+    # completing the B655 conversion the pair half-received. adx>20 kept
+    # UNCHANGED - the approved rec covered only the STATE->EVENT swap
+    # (narrow blast radius; the dual's B1139 adx drop is a separate lineage).
+    fires = (s.get("supertrend_flip_recent_short_5d") and
              s.get("macd_12_26_9_bearish") and
              s.get("adx", 0) > 20 and not _short_borrow_trap_active(s))
     return _strat(fires, "short", "trend",
-        ["supertrend_bearish", "macd_12_26_9_bearish", "adx>20", "borrow_ok"],
-        ["Supertrend indicator bearish  -  trend confirmed downward",
+        ["supertrend_flip_recent_short_5d", "macd_12_26_9_bearish", "adx>20", "borrow_ok"],
+        ["Supertrend flip-down within last 5 bars (B2075 EVENT-anchored; pre-B2075 used always-on supertrend_bearish)",
          "MACD histogram negative  -  momentum aligned bearish",
          "ADX above 20  -  trend has real strength, not a sideways drift"])
 
@@ -4630,20 +4636,25 @@ def strat_smc_liquidity_sweep_reversal(s):
     # Add smc_bos_bullish/bearish as OR-alternative to smc_liquidity_swept_dn/up
     # per B1186 SPY probe (BOS fires when library treats price action as
     # break-of-structure not sweep; increases fire count).
+    # B2075 (S6-B2033a, owner-approved 2026-08-23 C12): the sweep leg is
+    # REQUIRED again - B1202's OR let smc_bos_bullish alone satisfy BOTH
+    # clauses, so the strategy named "liquidity sweep reversal" fired on a
+    # plain break-of-structure with no sweep at all. BOS stays valid as the
+    # REVERSAL CONFIRMATION (clause two), preserving B1202's intent there.
     fl = (
-        (s.get("smc_liquidity_swept_dn", False) or s.get("smc_bos_bullish", False))
+        s.get("smc_liquidity_swept_dn", False)
         and (s.get("smc_choch_bullish", False) or s.get("smc_bos_bullish", False))
     )
     fs = (
-        (s.get("smc_liquidity_swept_up", False) or s.get("smc_bos_bearish", False))
+        s.get("smc_liquidity_swept_up", False)
         and (s.get("smc_choch_bearish", False) or s.get("smc_bos_bearish", False))
      and not _short_borrow_trap_active(s))
     return _strat3(fl, fs, "smc",
-        ["(smc_liquidity_swept_dn OR smc_bos_bullish)", "smc_choch_or_bos_bullish"],
-        ["(smc_liquidity_swept_up OR smc_bos_bearish)", "smc_choch_or_bos_bearish", "borrow_ok"],
-        ["Liquidity sweep down OR bullish BOS (B1202 add per B1186 probe)",
+        ["smc_liquidity_swept_dn", "smc_choch_or_bos_bullish"],
+        ["smc_liquidity_swept_up", "smc_choch_or_bos_bearish", "borrow_ok"],
+        ["Liquidity sweep down REQUIRED (B2075 restored; B1202 had made it bypassable)",
          "Followed by bullish CHoCH/BOS - reversal confirmed"],
-        ["Liquidity sweep up OR bearish BOS (B1202 add per B1186 probe)",
+        ["Liquidity sweep up REQUIRED (B2075 restored; B1202 had made it bypassable)",
          "Followed by bearish CHoCH/BOS - reversal confirmed"])
 
 
