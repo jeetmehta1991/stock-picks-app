@@ -672,6 +672,16 @@ adoption, so 2022-23 is not wanted even for exit selection.
 unchanged. **Three standing constraints - locked holdout, no 2022-23 data, Step 1 off the holdout -
 have no window that satisfies all three at 100 tickers**, so the UNIVERSE is the lever: 100 -> 200.
 
+**TWO MORE STANDING CONSTRAINTS (owner ruling 2026-08-23, B2107 - recorded verbatim in queue row
+S6-B2107-OWNER-RULINGS-3 and in the session memory):**
+1. **NO LOCAL RUN OVER 3 HOURS.** The ruled 200t x 1y config is 3.64 h at the canonical rate, so
+   every Step-1-shape local launch is barred as a single piece; the COMPUTE VENUE decision
+   (local vs AWS vs Hetzner, ticket S6-B2107a) precedes any such launch. A resume-chunked local
+   run (two sub-3h legs on the checkpoint infra) is a candidate to PRESENT, never to assume.
+2. **PROGRAM TARGET: Phase 1B entry with >= 20 LONG + >= 20 logically-symmetric MIRROR SHORT
+   strategies.** The A1 admission funnel aims at this 40-strategy roster, not at "some breadth";
+   the mirror-shorts-by-default standing directive covers the S side.
+
 **Validation remains CROSS-SECTIONAL, not temporal**: Step 1 searches **200** tickers, Step 2
 confirms on the **344 DISJOINT** tickers (was 444 - the disjoint pool shrinks by exactly what Step 1
 takes). **Accepted limitation:** nothing tests whether an edge survives a regime change.
