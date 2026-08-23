@@ -9234,9 +9234,11 @@ def test_batch208_avwap_50_reclaim_requires_200ema_regime():
     EVENT signal fires only on FRESH reclaim bar.
     """
     from backtest.signals.screener import strat_avwap_50_reclaim
-    # B790 EVENT-form: requires avwap_50low_reclaim_recent_3d (fresh reclaim event)
+    # B790 EVENT-form; B2089 (LEVER6) tightened the entry key to the
+    # LEVEL-HELD variant - this pin guards the 200-EMA REGIME gate, which
+    # is unchanged, so it drives the current entry key.
     s = {
-        "avwap_50low_reclaim_recent_3d": True,
+        "avwap_50low_reclaim_held_2d": True,
         "macd_12_26_9_bullish": True,
         "price_above_ema_200": False,  # bear regime -> should NOT fire LONG
     }
@@ -24122,3 +24124,61 @@ def test_b2088_hns_gate_requires_the_neckline_break():
         {**base, "head_shoulders_top_detected": True,
          "head_shoulders_top_neckline_break": True})
     assert r["fires"] is True and r["direction"] == "short"
+
+
+def test_b2089_level_held_qualifier_truth_table():
+    """B2089 (LEVER6, owner-approved for the 2 worst-PF retest cells): the
+    held qualifier fires only when the reclaim PERSISTED. SYNTHETIC series
+    pin the pure helper's truth table, the 52w producer's held key both
+    ways, and both gate swaps."""
+    import numpy as np
+    import pandas as pd
+
+    from backtest.signals.technical import (
+        _reclaim_held,
+        compute_52w_break_retest_signals,
+    )
+
+    lv = pd.Series([100.0] * 6)
+    held = pd.Series([99.0, 99.0, 99.0, 98.0, 101.0, 102.0])   # 2 closes above
+    fresh = pd.Series([99.0, 99.0, 99.0, 98.0, 99.5, 101.0])   # only 1 above
+    never = pd.Series([101.0, 102.0, 103.0, 104.0, 105.0, 106.0])  # no reclaim
+    assert _reclaim_held(held, lv) is True
+    assert _reclaim_held(fresh, lv) is False, "one print is not a hold"
+    assert _reclaim_held(never, lv) is False, "no prior below = no reclaim"
+
+    # 52w producer: 300-bar SYNTHETIC frame - year low ~90 broken at bar -5
+    # (close 88), retest high back to ~90, then either TWO closes below
+    # (held) or a last close popping back above (not held).
+    def frame(last_two):
+        base = list(np.linspace(120, 91, 295))
+        closes = base + [88.0, 89.0, 89.5] + last_two
+        highs = [c + 1.0 for c in closes]
+        highs[-2] = 90.5   # the retest touch toward the broken level
+        lows = [c - 1.0 for c in closes]
+        idx = pd.date_range("2023-01-02", periods=len(closes), freq="B")
+        return pd.DataFrame({"close": closes, "high": highs, "low": lows},
+                            index=idx)
+
+    out_held = compute_52w_break_retest_signals(frame([88.5, 88.0]))
+    assert out_held["year_low_break_retest_short"] is True, out_held
+    assert out_held["year_low_break_retest_short_held"] is True, out_held
+
+    from backtest.signals.screener import (
+        strat_52wl_break_retest_short,
+        strat_avwap_50_reclaim,
+    )
+    base = {"near_52w_low": True, "below_ema_200": True,
+            "close_below_open": True, "close_in_bottom_40pct_of_range": True,
+            "borrow_ok": True}
+    assert strat_52wl_break_retest_short(
+        {**base, "year_low_break_retest_short": True})["fires"] is False
+    assert strat_52wl_break_retest_short(
+        {**base, "year_low_break_retest_short_held": True})["fires"] is True
+
+    lbase = {"macd_12_26_9_bullish": True, "price_above_ema_200": True}
+    assert strat_avwap_50_reclaim(
+        {**lbase, "avwap_50low_reclaim_recent_3d": True})["fires"] is False
+    r = strat_avwap_50_reclaim(
+        {**lbase, "avwap_50low_reclaim_held_2d": True})
+    assert r["fires"] is True and r["direction"] == "long"

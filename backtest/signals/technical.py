@@ -467,9 +467,16 @@ def compute_vwap(df: pd.DataFrame) -> dict:
             else:
                 out[f"avwap_{key}_reclaim_recent_3d"] = False
                 out[f"avwap_{key}_loss_recent_3d"]    = False
+            # B2089 (S6-B1248-LEVER6, owner-approved 2026-08-23 at b2031
+            # rec 6): the LEVEL-HELD qualifier - the reclaim must have
+            # PERSISTED for 2 closes, not merely printed once. Shared pure
+            # helper so the truth table is directly pinned.
+            out[f"avwap_{key}_reclaim_held_2d"] = _reclaim_held(
+                post["close"], avwap_s, held_win=2, lookback=n_lookback)
         except Exception:
             out[f"avwap_{key}_reclaim_recent_3d"] = False
             out[f"avwap_{key}_loss_recent_3d"]    = False
+            out[f"avwap_{key}_reclaim_held_2d"]   = False
         # B793 #46 (2026-06-15 owner-approved B779) producer-additive ATR-
         # scaled AVWAP proximity per B766 reviewer rec. FIXED percent proximity
         # (e.g., 1.5%) means different things on 15%-vol name vs 60%-vol name.
@@ -2191,6 +2198,21 @@ def compute_break_retest_signals(df: pd.DataFrame) -> dict:
     }
 
 
+def _reclaim_held(close_s, level_s, held_win: int = 2, lookback: int = 3) -> bool:
+    """B2089 (LEVER6): True when the last `held_win` closes ALL sit above
+    their level AND some earlier bar within `lookback` before them closed
+    below - a reclaim that HELD, not one that merely printed. Pure so the
+    truth table pins directly."""
+    n = held_win + lookback
+    c = close_s.iloc[-n:]
+    lv = level_s.iloc[-n:]
+    if len(c) < held_win + 1 or len(c) != len(lv):
+        return False
+    last_above = bool((c.iloc[-held_win:].values > lv.iloc[-held_win:].values).all())
+    earlier_below = bool((c.iloc[:-held_win].values < lv.iloc[:-held_win].values).any())
+    return last_above and earlier_below
+
+
 def compute_52w_break_retest_signals(df: pd.DataFrame) -> dict:
     """Batch 605 (2026-06-06 owner-directed F1 bug fix in 52wh_break_retest
     walk): 52-WEEK-HIGH (or LOW) break-and-retest primitive. Same retest
@@ -2224,6 +2246,12 @@ def compute_52w_break_retest_signals(df: pd.DataFrame) -> dict:
     out = {
         "year_high_break_retest_long":  False,
         "year_low_break_retest_short": False,
+        # B2089 (LEVER6, owner-approved): the LEVEL-HELD variants - the
+        # retest must have closed on the thesis side for 2 consecutive
+        # bars. Emitted symmetrically; only the approved worst-PF short
+        # consumes one so far.
+        "year_high_break_retest_long_held": False,
+        "year_low_break_retest_short_held": False,
     }
     if len(df) < 252 + 9:  # need 252-day window + max 8-bar lag + today
         return out
@@ -2262,6 +2290,9 @@ def compute_52w_break_retest_signals(df: pd.DataFrame) -> dict:
             if any(l <= year_high_at_break + tolerance for l in low[idx + 1:]):
                 if close[-1] >= year_high_at_break:  # today still above year_high
                     resistance_long = True
+                    # B2089: symmetric held emission (no consumer yet)
+                    out["year_high_break_retest_long_held"] = bool(
+                        n >= 2 and close[-2] >= year_high_at_break)
                     break
 
     support_short = False
@@ -2277,6 +2308,9 @@ def compute_52w_break_retest_signals(df: pd.DataFrame) -> dict:
             if any(h >= year_low_at_break - tolerance for h in high[idx + 1:]):
                 if close[-1] <= year_low_at_break:
                     support_short = True
+                    # B2089: held = the last TWO closes below the level
+                    out["year_low_break_retest_short_held"] = bool(
+                        n >= 2 and close[-2] <= year_low_at_break)
                     break
 
     out["year_high_break_retest_long"]  = resistance_long

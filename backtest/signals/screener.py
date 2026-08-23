@@ -3382,17 +3382,22 @@ def strat_52wl_break_retest_short(s):
     # signals per feedback_never_use_NOT_s_get_pattern. Behavior
     # preserved (default=True was functionally safe; this hardens it
     # against future producer edits).
-    fs = (s.get("year_low_break_retest_short")
+    # B2089 (S6-B1248-LEVER6, owner-approved 2026-08-23 at b2031 rec 6):
+    # the worst-PF retest cell (0.188, n=58, R5 IS at atr_trail_1x) now
+    # requires the LEVEL-HELD variant - the last TWO closes below the
+    # broken 52w low, not a single print. Base key untouched for the
+    # long twin.
+    fs = (s.get("year_low_break_retest_short_held")
           and s.get("near_52w_low")
           and s.get("below_ema_200", False)
           and s.get("close_below_open")
           and s.get("close_in_bottom_40pct_of_range") and not _short_borrow_trap_active(s))
     return _strat(fs, "short", "breakout",
-        ["year_low_break_retest_short", "near_52w_low",
+        ["year_low_break_retest_short_held", "near_52w_low",
          "below_ema_200", "close_below_open",
          "close_in_bottom_40pct_of_range", "vol_below_avg",
          "below_avwap_20high", "borrow_ok"],
-        ["52-week low broken 2-8 bars ago + retested within 1.5*ATR + still below",
+        ["52-week low broken 2-8 bars ago + retested + HELD below for 2 closes (B2089)",
          "Today's close within 2% of 52-week low",
          "Below 200-day EMA (bearish trend filter)",
          "Bearish bar (close below open)",
@@ -5401,7 +5406,11 @@ def strat_avwap_50_reclaim(s):
     with the 50-day momentum window.
     """
     # B790 #47 EVENT-on-reclaim: fire on FRESH reclaim event, not STATE retention.
-    reclaim_event_long = s.get("avwap_50low_reclaim_recent_3d", False)
+    # B2089 (LEVER6, owner-approved): second worst-PF retest cell (0.251,
+    # n=1071) - the LONG leg requires the reclaim to have HELD for 2
+    # closes; the short LOSS leg is outside the approved scope and
+    # unchanged.
+    reclaim_event_long = s.get("avwap_50low_reclaim_held_2d", False)
     loss_event_short = s.get("avwap_50low_loss_recent_3d", False)
     macd_bull = s.get("macd_12_26_9_bullish", False)
     # Long: just reclaimed AVWAP-50 + MACD turning bullish
