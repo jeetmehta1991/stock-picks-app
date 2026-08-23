@@ -5303,7 +5303,8 @@ before cascade approval, and I wrote a manifest that skipped it because the doll
 from a timed smoke, never from intuition -- the smoke is cheap and the alternative is discovering
 infeasibility hours in.**
 
-### L333
+### L333b
+*(B2027, H ruling 2026-08-22: duplicate L-number annotated in place - this entry was the SECOND written as L333; the first keeps the bare number so existing citations stay valid. L221b precedent.)*
 **I nearly spent a multi-day run on a regeneration whose value I never quantified, and the owner
 stopped it with one question.** I recommended S6-B1465c for two turns on the grounds that "every
 roster number is one generation stale" because B1465 disabled three duplicate strategies. Owner:
