@@ -120,11 +120,33 @@ def _filter_pit(df: pd.DataFrame, as_of: date) -> pd.DataFrame:
     as_of_ts = pd.Timestamp(as_of)
     added = pd.to_datetime(df["added_date"], errors="coerce")
     removed = pd.to_datetime(df["removed_date"], errors="coerce")
+    # B2058 (S6-B1250-UNIVERSE-METRICS-DEPTH): a NON-NULL date that COERCES
+    # to NaT is garbage, and under the NULL-passes rule it silently became a
+    # PERMANENT member - fail-open path resolution for data. Measured clean
+    # on the real T1a file today (0 of 109 added / 0 of 111 removed), so
+    # excluding garbage rows is a zero-live-change hardening; each exclusion
+    # is logged (#122 pairing).
+    # an empty/whitespace cell is the CSV's NULL convention (the DEC-477 pins
+    # encode it as ""), NOT garbage - only a non-blank unparseable value is.
+    def _nonblank(col):
+        return df[col].notna() & (df[col].astype(str).str.strip() != "")
+    garbage = (added.isna() & _nonblank("added_date")) | \
+              (removed.isna() & _nonblank("removed_date"))
+    if bool(garbage.any()):
+        logger.warning(
+            "PIT filter EXCLUDING %d row(s) with unparseable dates "
+            "(fail-closed; a garbage date must not read as always-active): %s",
+            int(garbage.sum()),
+            df.loc[garbage, "Symbol"].tolist()[:5] if "Symbol" in df.columns
+            else "<no Symbol col>")
     # NULL added_date -> "in index prior to mapping window" -> always passes left side
     # NULL removed_date -> "currently active" -> always passes right side
+    # Boundary convention, MEASURED B2058 (AGN removed 2020-05-12): a ticker
+    # is OUT on its removal date itself - `removed > as_of` matches the S&P
+    # effective-prior-to-open convention.
     left_ok = added.isna() | (added <= as_of_ts)
     right_ok = removed.isna() | (removed > as_of_ts)
-    return df[left_ok & right_ok]
+    return df[left_ok & right_ok & ~garbage]
 
 
 def get_t1a_master_set() -> set:

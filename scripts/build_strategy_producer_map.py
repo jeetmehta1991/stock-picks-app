@@ -114,7 +114,22 @@ def main() -> int:
     for k, n in sorted(unresolved_counts.items(), key=lambda x: -x[1])[:15]:
         print(f"  {k}: consumed by {n} strategies")
     print(f"wrote {OUT}")
+    _write_freshness_stamp()
     return 0
+
+
+def _write_freshness_stamp():
+    """B2058: record this generator's content hash in the shared freshness
+    stamp, so an OUTPUT-PRESERVING generator edit (proven by regeneration)
+    does not read as staleness under the B1974 timestamp rule - the same
+    contract build_phase_1b_roster.py uses."""
+    import hashlib
+    import json
+    sp = ROOT / "output_audit" / "phase_1b_roster_freshness.json"
+    stamp = json.loads(sp.read_text(encoding="utf-8")) if sp.exists() else {}
+    me = "scripts/build_strategy_producer_map.py"
+    stamp[me] = hashlib.sha256((ROOT / me).read_bytes()).hexdigest()
+    sp.write_text(json.dumps(stamp, indent=1), encoding="utf-8")
 
 
 

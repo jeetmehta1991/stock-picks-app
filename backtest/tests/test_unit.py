@@ -23690,3 +23690,34 @@ def test_b2057_family_axes_artifact_carries_the_economics():
         "the SMC family's plumbed axis must be named")
     assert "UNPLUMBED" in txt, (
         "unplumbed families must be labeled, not omitted")
+
+
+def test_b2058_pit_filter_garbage_dates_fail_closed(caplog):
+    """B2058 (S6-B1250-UNIVERSE-METRICS-DEPTH): a NON-NULL date coercing to
+    NaT read as NULL -> always-active, so a garbage row became a permanent
+    index member silently. Garbage now excludes with a warning; genuine NULL
+    keeps its designed always-passes semantics; the boundary convention is
+    pinned as measured (OUT on the removal date itself)."""
+    from datetime import date as _date
+    import pandas as _pd
+    from backtest.data import universe as u
+    df = _pd.DataFrame({
+        "Symbol": ["GOOD", "BAD", "OPEN_ENDED"],
+        "added_date": ["2024-01-02", "not-a-date", None],
+        "removed_date": [None, None, None],
+    })
+    import logging as _lg
+    with caplog.at_level(_lg.WARNING, logger=u.logger.name):
+        out = u._filter_pit(df, _date(2023, 6, 1))
+    assert "BAD" not in set(out["Symbol"]), (
+        "a garbage date must not read as always-active (fail-open)")
+    assert "OPEN_ENDED" in set(out["Symbol"]), (
+        "genuine NULL keeps its designed always-passes semantics")
+    assert any("unparseable" in r.getMessage() for r in caplog.records)
+    # removal-boundary convention, as measured on AGN (removed 2020-05-12)
+    df2 = _pd.DataFrame({"Symbol": ["X"], "added_date": ["2019-01-02"],
+                         "removed_date": ["2020-05-12"]})
+    assert "X" in set(u._filter_pit(df2, _date(2020, 5, 11))["Symbol"])
+    assert "X" not in set(u._filter_pit(df2, _date(2020, 5, 12))["Symbol"]), (
+        "OUT on the removal date itself - the S&P effective-prior-to-open "
+        "convention, measured B2058")
