@@ -9258,6 +9258,11 @@ def test_batch208_avwap_20high_rejection_short_requires_bear_regime():
     from backtest.signals.screener import strat_avwap_20high_rejection_short
     s = {
         "above_avwap_20high": False,
+        # B2025 (S6-B1250-ENG6): gate converted to the positive
+        # below_avwap_20high (the one site B612 missed). The producer
+        # co-emits both keys on every path, so a realistic bar carries
+        # the complement pair - the fixture now does too.
+        "below_avwap_20high": True,
         "pct_from_avwap_20high": 0.5,
         "shooting_star": True,
         "bearish_engulfing": False,
@@ -23195,3 +23200,53 @@ def test_b2018_grader_ohlcv_loader_coerces_string_dates():
         "grader loader must coerce string-dated cache files to DatetimeIndex")
     locs = df.index.get_indexer([_pd.Timestamp("2024-06-03")], method="pad")
     assert int(locs[0]) >= 0
+
+
+def test_b2025_avwap_rejection_short_positive_gate_and_labels():
+    """B2025 (S6-B1250-ENG6): the one `not s.get(..., True)` site the B612
+    sweep missed, in strat_avwap_20high_rejection_short - plus labels claiming
+    1pct / 15x / 1.5x against a gate reading 2.0 / vol_spike_12x (=1.2x).
+    The producer co-emits above/below on every path (technical.py), so the
+    positive gate is the exact B612-class replacement.
+    """
+    import inspect
+    from backtest.signals import screener as sc
+    src = inspect.getsource(sc.strat_avwap_20high_rejection_short)
+    assert 'not s.get("above_avwap_20high"' not in src, (
+        "the banned NOT-s.get pattern is back in the one site B612 missed")
+    assert '"vol_spike_15x"' not in src and "Volume 1.5x" not in src, (
+        "label/prose must match the gate: vol_spike_12x is 1.2x ADV")
+    base = {"below_avwap_20high": True, "pct_from_avwap_20high": 1.0,
+            "shooting_star": True, "vol_spike_12x": True,
+            "below_ema_200": True}
+    assert sc.strat_avwap_20high_rejection_short(base)["fires"], (
+        "positive gate must fire on the canonical setup")
+    assert not sc.strat_avwap_20high_rejection_short(
+        {**base, "below_avwap_20high": False})["fires"], (
+        "absent/False below_avwap must not fire - the old pattern's "
+        "missing-key behavior is preserved")
+
+
+def test_b2025_worker_drop_is_counted_and_logged(monkeypatch, caplog):
+    """B2025 (S6-B1250-ENG5): a worker exception in _worker_screen_ticker
+    silently DROPPED the ticker for the day - no log, no counter. The drop is
+    now counted per process and the first one warns."""
+    import pandas as _pd
+    from backtest.signals import screener as sc
+    idx = _pd.date_range("2024-01-01", periods=30, freq="B")
+    df = _pd.DataFrame({"open": 1.0, "high": 1.0, "low": 1.0, "close": 1.0,
+                        "volume": 100.0}, index=idx)
+    monkeypatch.setattr(sc, "_WORKER_OHLCV", {"TST": df})
+    monkeypatch.setattr(sc, "_WORKER_INFO", {"TST": {"ticker": "TST"}})
+    monkeypatch.setattr(sc, "_WORKER_DROP_COUNT", 0)
+
+    def _boom(*a, **k):
+        raise RuntimeError("boom-b2025")
+    monkeypatch.setattr(sc, "screen_instrument", _boom)
+    with caplog.at_level("WARNING", logger=sc.logger.name):
+        out = sc._worker_screen_ticker(
+            ("TST", idx[-1].date(), "bull", 15.0, None, {}))
+    assert out is None
+    assert sc._WORKER_DROP_COUNT == 1, "the drop must be counted"
+    assert any("DROPPED" in r.getMessage() for r in caplog.records), (
+        "the first drop per process must warn")

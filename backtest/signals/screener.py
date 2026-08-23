@@ -5401,20 +5401,24 @@ def strat_avwap_20high_rejection_short(s):
     (high-quality short setup per Anchored VWAP discipline)."""
     pct_from_20h = s.get("pct_from_avwap_20high", 0.0)
     fires = (
-        not s.get("above_avwap_20high", True)  # below 20-high AVWAP
+        # B2025 (S6-B1250-ENG6): the one site the B612 sweep missed - the
+        # producer co-emits above/below on every path (technical.py:426+444),
+        # so this positive gate is the exact replacement for the old negated
+        # default-True form (missing-key behavior preserved: no fire).
+        s.get("below_avwap_20high", False)
         and abs(pct_from_20h) < 2.0
         and (s.get("shooting_star") or s.get("bearish_engulfing"))
         and s.get("vol_spike_12x", False)
         and s.get("below_ema_200", False)  # B630 sweep
      and not _short_borrow_trap_active(s))
     return _strat(fires, "short", "vwap",
-        ["below_avwap_20high", "near_avwap_20high<1pct",
-         "shooting_star_or_bearish_engulfing", "vol_spike_15x",
+        ["below_avwap_20high", "near_avwap_20high<2pct",
+         "shooting_star_or_bearish_engulfing", "vol_spike_12x",
          "below_ema_200", "borrow_ok"],
         ["Price tested Anchored VWAP from 20d high and rejected",
-         "Within 1% of AVWAP inflection",
+         "Within 2% of AVWAP inflection",
          "Bearish reversal candle confirms sellers",
-         "Volume 1.5x ADV(20)",
+         "Volume 1.2x ADV(20)",
          "Below 200 EMA (bear regime confirmation)"])
 
 
@@ -9176,6 +9180,10 @@ def screen_instrument(
 # remains the only call site.
 # ---------------------------------------------------------------------------
 _WORKER_OHLCV: dict | None = None
+# B2025 (S6-B1250-ENG5): per-process count of tickers dropped by a worker
+# exception in _worker_screen_ticker - a drop is otherwise indistinguishable
+# from a clean no-signal screen.
+_WORKER_DROP_COUNT: int = 0
 _WORKER_INFO: dict | None = None
 
 
@@ -9297,7 +9305,19 @@ def _worker_screen_ticker(args):
             vix_value=vix_value, vix_history=vix_history,
             xs_features=xs_features,
         )
-    except Exception:
+    except Exception as _exc:
+        # B2025 (S6-B1250-ENG5): a worker exception here silently DROPPED the
+        # ticker for the day - no log, no counter, indistinguishable from a
+        # clean no-signal screen. Count every drop; warn on the first per
+        # process (workers are separate processes, so one line per worker
+        # worst-case, not one per ticker-day).
+        global _WORKER_DROP_COUNT
+        _WORKER_DROP_COUNT += 1
+        if _WORKER_DROP_COUNT == 1:
+            logger.warning(
+                "pool worker screen_instrument raised (ticker=%s as_of=%s): %r"
+                " - ticker DROPPED for the day; further drops counted "
+                "silently in _WORKER_DROP_COUNT", ticker, as_of, _exc)
         return None
 
 
