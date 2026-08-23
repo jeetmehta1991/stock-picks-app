@@ -14827,7 +14827,12 @@ def test_b1593_regime_flip_reads_regime_from_signals():
     src = inspect.getsource(run_exit_comparison)
     assert 'enriched_sig["regime_by_date"] = regime_by_date' in src
     eng = _pl.Path("backtest/engine/backtest.py").read_text(encoding="utf-8")
-    assert eng.count('getattr(self, "_regime_by_date", None)') == 2, (
+    # B2092: both non-pool call sites now consume the PAYLOAD's regime map
+    # (`_rbd or None`) - the same map the pool worker sees - instead of the
+    # getattr form. The guarded property is unchanged: both call sites pass
+    # the map; the arity contract itself is pinned by test_b2092.
+    assert eng.count("run_exit_comparison(strategy_name, trades_data_full,") == 2
+    assert eng.count("_rbd or None") == 2, (
         "both run_exit_comparison call sites must pass the regime map")
 
 def test_b1597_orphan_rule_gate_wired_and_pinned():
@@ -24208,3 +24213,40 @@ def test_b2091_ticket_code_claims_name_their_pin():
     for label, must_fire, kw in cases:
         out = tg.scan_ticket_claim_without_pin([], **kw)
         assert bool(out) == must_fire, (label, out)
+
+
+def test_b2092_task_tuple_arity_agrees_across_all_consumers():
+    """B2092 (S6-B2070 crash): B2043 grew the strategy_tasks payload to a
+    3-tuple for the pool worker and left BOTH non-pool consumers unpacking
+    2 - the run crashed at save after a completed 3-hour day loop
+    (ValueError, cube ABSENT). The unit of the change was smaller than the
+    unit of the defect (L592). This pin walks backtest.py's AST: the arity
+    of every `for ... in strategy_tasks` target must equal the arity of the
+    tuple appended to strategy_tasks."""
+    import ast
+    from pathlib import Path as _P
+
+    src = (_P(__file__).resolve().parents[2] / "backtest" / "engine" /
+           "backtest.py").read_text(encoding="utf-8")
+    tree = ast.parse(src)
+    append_arity = None
+    unpack_arities = []
+    for node in ast.walk(tree):
+        if (isinstance(node, ast.Call)
+                and isinstance(node.func, ast.Attribute)
+                and node.func.attr == "append"
+                and isinstance(node.func.value, ast.Name)
+                and node.func.value.id == "strategy_tasks"
+                and node.args and isinstance(node.args[0], ast.Tuple)):
+            append_arity = len(node.args[0].elts)
+        if (isinstance(node, ast.For)
+                and isinstance(node.iter, ast.Name)
+                and node.iter.id == "strategy_tasks"
+                and isinstance(node.target, ast.Tuple)):
+            unpack_arities.append((node.lineno, len(node.target.elts)))
+    assert append_arity is not None, "the append site vanished - re-anchor"
+    assert unpack_arities, "no unpack sites found - re-anchor"
+    bad = [(ln, a) for ln, a in unpack_arities if a != append_arity]
+    assert not bad, (
+        f"strategy_tasks appends {append_arity}-tuples but these for-loops "
+        f"unpack differently: {bad} - the S6-B2070 crash class")

@@ -3192,7 +3192,13 @@ class BacktestEngine:
                 )
                 from backtest.engine.exit_strategies import run_exit_comparison
                 results = []
-                for strategy_name, trades_data_lite in strategy_tasks:
+                # B2092: the payload is a 3-TUPLE since B2043 (regime map
+                # rides the task). Both non-pool branches kept 2-tuple
+                # unpacks and crashed the S6-B2070 save after a completed
+                # 3-hour day loop (L592 - the unit of the change was
+                # smaller than the unit of the defect). The payload's own
+                # map is authoritative here, same as the pool worker sees.
+                for strategy_name, trades_data_lite, _rbd in strategy_tasks:
                     trades_data_full = []
                     for t in trades_data_lite:
                         df_full = self.ohlcv_dict.get(t["ticker"])
@@ -3202,13 +3208,14 @@ class BacktestEngine:
                     if trades_data_full:
                         results.append(
                             run_exit_comparison(strategy_name, trades_data_full,
-                                            getattr(self, "_regime_by_date", None))
+                                            _rbd or None)
                         )
         else:
             # Sequential fallback -- workers can't run; reconstruct df
             # inline since _WORKER_OHLCV is not set in main process.
             results = []
-            for strategy_name, trades_data_lite in strategy_tasks:
+            # B2092: same 3-tuple unpack as the pool-failure branch above.
+            for strategy_name, trades_data_lite, _rbd in strategy_tasks:
                 trades_data_full = []
                 for t in trades_data_lite:
                     df_full = self.ohlcv_dict.get(t["ticker"])
@@ -3218,7 +3225,7 @@ class BacktestEngine:
                 if trades_data_full:
                     results.append(
                         run_exit_comparison(strategy_name, trades_data_full,
-                                            getattr(self, "_regime_by_date", None))
+                                            _rbd or None)
                     )
 
         for ec, td in results:
