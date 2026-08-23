@@ -23922,3 +23922,40 @@ def test_b2078_selection_routes_through_the_one_selector():
         assert 'r["exit"] = ex' not in src, f"{name} rebuilt the inline selector"
         assert 'max(cands, key=lambda c: (c["n_gates"]' not in src, (
             f"{name} rebuilt the inline argmax")
+
+
+def test_b2080_block_floor_sees_the_correlation_iid_cannot():
+    """B2080 (design gate 4): entry-day block resampling preserves the
+    within-day cross-strategy correlation that iid trade resampling
+    destroys - so on data with a strong common day shock the block floor
+    must EXCEED the iid floor. SYNTHETIC fixture: 200 days x 30 trades
+    sharing a day-level shock (L470: the structure is the evidence)."""
+    import numpy as np
+
+    from measure_family_pooled_noise_floor import (
+        block_replication_floor,
+        replication_floor,
+    )
+
+    rng = np.random.default_rng(11)   # SYNTHETIC
+    n_days, per_day = 200, 30
+    day_shock = rng.normal(0, 3.0, n_days)
+    pnl = np.repeat(day_shock, per_day) + rng.normal(0, 0.5, n_days * per_day)
+    hold = np.full(n_days * per_day, 6.0)
+    day_idx = [np.arange(i * per_day, (i + 1) * per_day) for i in range(n_days)]
+
+    iid = replication_floor(pnl, hold, 3000, np.random.default_rng(1), r_pairs=60)
+    blk = block_replication_floor(pnl, hold, day_idx, 100,
+                                  np.random.default_rng(2), r_pairs=60)
+    assert blk > iid, (blk, iid)
+
+    # and the real artifact carries the block layer with the same property
+    import json
+    from pathlib import Path as _P
+    art = json.loads((_P(__file__).resolve().parents[2] / "output_audit" /
+                      "b2068_family_pooled_noise_floor.json").read_text(encoding="utf-8"))
+    bf = {int(k): v for k, v in art["block_replication_floor_by_n"].items()}
+    ff = {int(k): v for k, v in art["replication_floor_by_n"].items()}
+    top = max(bf)
+    assert bf[top] > ff[top], "full-pool block floor must exceed the iid floor"
+    assert art["block_unique_days"] > 0 and "required_n_block" in art

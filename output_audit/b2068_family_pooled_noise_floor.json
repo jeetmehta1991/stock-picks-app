@@ -60,6 +60,25 @@
    "20": 0.1685
   }
  },
+ "block_replication_floor_by_n": {
+  "50": 2.178,
+  "100": 2.33,
+  "300": 2.258,
+  "328": 2.1535,
+  "1000": 1.6915,
+  "3000": 1.11,
+  "10000": 0.4745,
+  "30000": 0.262,
+  "62064": 0.2245
+ },
+ "block_unique_days": 751,
+ "block_mean_trades_per_day": 82.64,
+ "required_n_block": {
+  "cell_grain_floor_b2009": 30000,
+  "roster_margin_52w_high_b2014": 30000,
+  "roster_margin_xs_momentum_b2014": 10000,
+  "ten_pct_of_sharpe_gate": null
+ },
  "references": {
   "cell_grain_floor_b2009": 0.333,
   "roster_margin_52w_high_b2014": 0.281,

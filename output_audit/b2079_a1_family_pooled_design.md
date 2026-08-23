@@ -36,11 +36,15 @@ level that helps the pool by hurting a minority is visible. Ranking key: pooled 
   interaction grades offline from the same cubes. The question is answered at Step-2 scale
   for whatever W-B carries forward — not dropped, not bought as a 127.4 h per-strategy grid.
 - **(b) The 1.75× projection-overrun factor** — applied to every wall-clock cell above.
-- **(c) The correlation-aware noise floor.** The b2068 floor is iid bootstrap — an idealized
-  bound; family members share entry days, so effective N < 62,064. BEFORE any admission
-  decision: recompute the floor with an entry-date BLOCK bootstrap (resample days, not
-  trades) from the same cube, $0 offline. If the block floor at pooled N exceeds the
-  candidate margins, the design returns here before Step 2 spends anything.
+- **(c) The correlation-aware noise floor — MEASURED B2080, gate PASSED with thin
+  headroom.** Entry-day block bootstrap on the same cube (751 unique IS days, mean 82.6
+  pooled trades/day; b2068 artifact, block layer): full-pool block floor **0.2245** vs the
+  iid 0.088 — within-day cross-strategy correlation costs ~2.5×. Verdict against the named
+  references: 0.2245 clears the 0.281 roster margin and the 0.333 cell-grain floor (~20%
+  headroom), so W-A remains viable; the 10%-of-gate reference (0.1) is UNREACHABLE at this
+  pool. Required pooled N at the block floor: ≥30,000 trades. **NEW OBLIGATION SURFACED:
+  the measurement is EMA-family only — W-B (SMC, 22 consumers) must have its own pool count
+  and block floor measured, $0 offline, before W-B is claimed viable.**
 - **(d) A2 plumb sequencing** — by family size: volume (67) → pivots (58) → RSI (34) →
   MACD (22). One B1519-pattern config plumb each, its own batch with pins, byte-identical
   defaults. Each joins the wave queue as W-C…W-F when its plumb lands.

@@ -119,6 +119,30 @@ def required_n(floors: dict[int, float], bar: float) -> int | None:
     return None
 
 
+def block_replication_floor(pnl: np.ndarray, hold: np.ndarray,
+                            day_idx: list[np.ndarray], n_days: int,
+                            rng: np.random.Generator,
+                            r_pairs: int = R_PAIRS) -> float:
+    """B2080 (design gate 4): the CORRELATION-AWARE floor. Family members
+    share entry days, so iid trade-resampling overstates effective N; this
+    resamples ENTRY DAYS with replacement (each day carries ALL its trades
+    together), preserving the within-day cross-strategy correlation. The
+    median |dSharpe| between paired independent day-resamples of `n_days`
+    days is the replication floor at that day-count."""
+    gaps = []
+    n = len(day_idx)
+    for _ in range(r_pairs):
+        pair = []
+        for _arm in range(2):
+            take = rng.integers(0, n, n_days)
+            idx = np.concatenate([day_idx[i] for i in take])
+            s = _sharpe(pnl[idx], hold[idx], min_n=10)
+            pair.append(None if s is None else s["sharpe"])
+        if pair[0] is not None and pair[1] is not None:
+            gaps.append(abs(pair[0] - pair[1]))
+    return float(np.median(gaps)) if gaps else float("nan")
+
+
 def main() -> int:
     import pandas as pd
     fam = family_members()
@@ -163,6 +187,27 @@ def main() -> int:
     for name, bar in REFERENCES.items():
         print(f"  {name} ({bar}): N >= {req[name]}")
 
+    # B2080 (design gate 4): the correlation-aware floors, same ladder,
+    # expressed in DAYS carrying ~the ladder's trade counts on average.
+    dser = df.groupby("entry_date", observed=True).indices
+    days = sorted(dser)
+    day_idx = [np.asarray(dser[d], dtype=np.int64) for d in days]
+    tpd = n_pool / len(day_idx)
+    print(f"\nBLOCK bootstrap (entry-day resampling): {len(day_idx)} unique "
+          f"IS entry-days, mean {tpd:.1f} pooled trades/day")
+    block = {}
+    for n in ladder:
+        nd = max(5, int(round(n / tpd)))
+        if nd > len(day_idx):
+            nd = len(day_idx)
+        block[n] = round(block_replication_floor(pnl, hold, day_idx, nd, rng), 4)
+        print(f"{n:>8} trades ~ {nd:>4} days | block floor {block[n]:>7} "
+              f"(iid was {floors[n]})")
+    req_block = {name: required_n(block, bar) for name, bar in REFERENCES.items()}
+    print("required pooled N (BLOCK floor) per reference:")
+    for name, bar in REFERENCES.items():
+        print(f"  {name} ({bar}): N >= {req_block[name]}")
+
     OUT.write_text(json.dumps({
         "cube": str(CUBE.relative_to(ROOT)), "exit": EXIT, "seed": SEED,
         "is_window": [str(IS_START), str(IS_END)],
@@ -171,6 +216,10 @@ def main() -> int:
         "pooled_sharpe": pop["sharpe"] if pop else None,
         "replication_floor_by_n": floors,
         "selection_lift_by_n_k": {str(n): sel[n] for n in ladder},
+        "block_replication_floor_by_n": block,
+        "block_unique_days": len(day_idx),
+        "block_mean_trades_per_day": round(tpd, 2),
+        "required_n_block": req_block,
         "references": REFERENCES, "required_n": req,
         "r_pairs": R_PAIRS, "r_sel": R_SEL,
     }, indent=1), encoding="utf-8")
