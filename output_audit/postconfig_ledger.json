@@ -2356,5 +2356,195 @@
    "status": "DONE",
    "evidence": "B2034 verdict: sw10_span50 produced 138 fires on 50 tickers / 1y. CROSS-ARM (sw10 pair, cross-arm only per L376/L382): baseline span200 is_ci_lo -0.081 / is_sharpe 0.691 / 172 fires vs span50 -0.286 / 0.878 / 138 - span200 baseline better-bounded, span50 higher point estimate with a wider interval. Ranked tops: span50 +0.025 (n=18) vs span200 -0.002 (n=163) - the sequence's ONLY positive lower bound is a span50 tightened combo at thin n. 101 of 300 combinations rankable; 17 carried. The E2-option-c grid (4 P1 arms + 1 span arm at the P1 optimum) is COMPLETE."
   }
+ },
+ "output_b2094_var1": {
+  "1_cube_sanity": {
+   "status": "SKIPPED",
+   "evidence": "determinism-instrument cube (B2094, S6-B1535a): the deliverable was the sorted-trade-column content hash, recorded in the S6-B1535a verdict row (byte-identical pair, sha 4c62b31df6eb919d); no grading or admission consumed it"
+  },
+  "2_grade_with_config_params": {
+   "status": "SKIPPED",
+   "evidence": "determinism-instrument cube (B2094, S6-B1535a): the deliverable was the sorted-trade-column content hash, recorded in the S6-B1535a verdict row (byte-identical pair, sha 4c62b31df6eb919d); no grading or admission consumed it"
+  },
+  "3_outlier_discrepancy_sweep": {
+   "status": "SKIPPED",
+   "evidence": "determinism-instrument cube (B2094, S6-B1535a): the deliverable was the sorted-trade-column content hash, recorded in the S6-B1535a verdict row (byte-identical pair, sha 4c62b31df6eb919d); no grading or admission consumed it"
+  },
+  "4_three_leg_spot_check": {
+   "status": "SKIPPED",
+   "evidence": "determinism-instrument cube (B2094, S6-B1535a): the deliverable was the sorted-trade-column content hash, recorded in the S6-B1535a verdict row (byte-identical pair, sha 4c62b31df6eb919d); no grading or admission consumed it"
+  },
+  "5_adversarial_lens_review": {
+   "status": "SKIPPED",
+   "evidence": "determinism-instrument cube (B2094, S6-B1535a): the deliverable was the sorted-trade-column content hash, recorded in the S6-B1535a verdict row (byte-identical pair, sha 4c62b31df6eb919d); no grading or admission consumed it"
+  },
+  "6_post_fix_recheck": {
+   "status": "SKIPPED",
+   "evidence": "determinism-instrument cube (B2094, S6-B1535a): the deliverable was the sorted-trade-column content hash, recorded in the S6-B1535a verdict row (byte-identical pair, sha 4c62b31df6eb919d); no grading or admission consumed it"
+  },
+  "6b_equivalence_class_check": {
+   "status": "SKIPPED",
+   "evidence": "determinism-instrument cube (B2094, S6-B1535a): the deliverable was the sorted-trade-column content hash, recorded in the S6-B1535a verdict row (byte-identical pair, sha 4c62b31df6eb919d); no grading or admission consumed it"
+  },
+  "7_implement_in_engine": {
+   "status": "SKIPPED",
+   "evidence": "determinism-instrument cube (B2094, S6-B1535a): the deliverable was the sorted-trade-column content hash, recorded in the S6-B1535a verdict row (byte-identical pair, sha 4c62b31df6eb919d); no grading or admission consumed it"
+  },
+  "8_verdict_with_denominators": {
+   "status": "SKIPPED",
+   "evidence": "determinism-instrument cube (B2094, S6-B1535a): the deliverable was the sorted-trade-column content hash, recorded in the S6-B1535a verdict row (byte-identical pair, sha 4c62b31df6eb919d); no grading or admission consumed it"
+  }
+ },
+ "output_b2094_var2": {
+  "1_cube_sanity": {
+   "status": "SKIPPED",
+   "evidence": "determinism-instrument cube (B2094, S6-B1535a): the deliverable was the sorted-trade-column content hash, recorded in the S6-B1535a verdict row (byte-identical pair, sha 4c62b31df6eb919d); no grading or admission consumed it"
+  },
+  "2_grade_with_config_params": {
+   "status": "SKIPPED",
+   "evidence": "determinism-instrument cube (B2094, S6-B1535a): the deliverable was the sorted-trade-column content hash, recorded in the S6-B1535a verdict row (byte-identical pair, sha 4c62b31df6eb919d); no grading or admission consumed it"
+  },
+  "3_outlier_discrepancy_sweep": {
+   "status": "SKIPPED",
+   "evidence": "determinism-instrument cube (B2094, S6-B1535a): the deliverable was the sorted-trade-column content hash, recorded in the S6-B1535a verdict row (byte-identical pair, sha 4c62b31df6eb919d); no grading or admission consumed it"
+  },
+  "4_three_leg_spot_check": {
+   "status": "SKIPPED",
+   "evidence": "determinism-instrument cube (B2094, S6-B1535a): the deliverable was the sorted-trade-column content hash, recorded in the S6-B1535a verdict row (byte-identical pair, sha 4c62b31df6eb919d); no grading or admission consumed it"
+  },
+  "5_adversarial_lens_review": {
+   "status": "SKIPPED",
+   "evidence": "determinism-instrument cube (B2094, S6-B1535a): the deliverable was the sorted-trade-column content hash, recorded in the S6-B1535a verdict row (byte-identical pair, sha 4c62b31df6eb919d); no grading or admission consumed it"
+  },
+  "6_post_fix_recheck": {
+   "status": "SKIPPED",
+   "evidence": "determinism-instrument cube (B2094, S6-B1535a): the deliverable was the sorted-trade-column content hash, recorded in the S6-B1535a verdict row (byte-identical pair, sha 4c62b31df6eb919d); no grading or admission consumed it"
+  },
+  "6b_equivalence_class_check": {
+   "status": "SKIPPED",
+   "evidence": "determinism-instrument cube (B2094, S6-B1535a): the deliverable was the sorted-trade-column content hash, recorded in the S6-B1535a verdict row (byte-identical pair, sha 4c62b31df6eb919d); no grading or admission consumed it"
+  },
+  "7_implement_in_engine": {
+   "status": "SKIPPED",
+   "evidence": "determinism-instrument cube (B2094, S6-B1535a): the deliverable was the sorted-trade-column content hash, recorded in the S6-B1535a verdict row (byte-identical pair, sha 4c62b31df6eb919d); no grading or admission consumed it"
+  },
+  "8_verdict_with_denominators": {
+   "status": "SKIPPED",
+   "evidence": "determinism-instrument cube (B2094, S6-B1535a): the deliverable was the sorted-trade-column content hash, recorded in the S6-B1535a verdict row (byte-identical pair, sha 4c62b31df6eb919d); no grading or admission consumed it"
+  }
+ },
+ "output_b2095_c1": {
+  "1_cube_sanity": {
+   "status": "SKIPPED",
+   "evidence": "concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it"
+  },
+  "2_grade_with_config_params": {
+   "status": "SKIPPED",
+   "evidence": "concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it"
+  },
+  "3_outlier_discrepancy_sweep": {
+   "status": "SKIPPED",
+   "evidence": "concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it"
+  },
+  "4_three_leg_spot_check": {
+   "status": "SKIPPED",
+   "evidence": "concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it"
+  },
+  "5_adversarial_lens_review": {
+   "status": "SKIPPED",
+   "evidence": "concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it"
+  },
+  "6_post_fix_recheck": {
+   "status": "SKIPPED",
+   "evidence": "concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it"
+  },
+  "6b_equivalence_class_check": {
+   "status": "SKIPPED",
+   "evidence": "concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it"
+  },
+  "7_implement_in_engine": {
+   "status": "SKIPPED",
+   "evidence": "concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it"
+  },
+  "8_verdict_with_denominators": {
+   "status": "SKIPPED",
+   "evidence": "concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it"
+  }
+ },
+ "output_b2095_c2": {
+  "1_cube_sanity": {
+   "status": "SKIPPED",
+   "evidence": "concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it"
+  },
+  "2_grade_with_config_params": {
+   "status": "SKIPPED",
+   "evidence": "concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it"
+  },
+  "3_outlier_discrepancy_sweep": {
+   "status": "SKIPPED",
+   "evidence": "concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it"
+  },
+  "4_three_leg_spot_check": {
+   "status": "SKIPPED",
+   "evidence": "concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it"
+  },
+  "5_adversarial_lens_review": {
+   "status": "SKIPPED",
+   "evidence": "concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it"
+  },
+  "6_post_fix_recheck": {
+   "status": "SKIPPED",
+   "evidence": "concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it"
+  },
+  "6b_equivalence_class_check": {
+   "status": "SKIPPED",
+   "evidence": "concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it"
+  },
+  "7_implement_in_engine": {
+   "status": "SKIPPED",
+   "evidence": "concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it"
+  },
+  "8_verdict_with_denominators": {
+   "status": "SKIPPED",
+   "evidence": "concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it"
+  }
+ },
+ "output_b2095_c3": {
+  "1_cube_sanity": {
+   "status": "SKIPPED",
+   "evidence": "concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it"
+  },
+  "2_grade_with_config_params": {
+   "status": "SKIPPED",
+   "evidence": "concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it"
+  },
+  "3_outlier_discrepancy_sweep": {
+   "status": "SKIPPED",
+   "evidence": "concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it"
+  },
+  "4_three_leg_spot_check": {
+   "status": "SKIPPED",
+   "evidence": "concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it"
+  },
+  "5_adversarial_lens_review": {
+   "status": "SKIPPED",
+   "evidence": "concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it"
+  },
+  "6_post_fix_recheck": {
+   "status": "SKIPPED",
+   "evidence": "concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it"
+  },
+  "6b_equivalence_class_check": {
+   "status": "SKIPPED",
+   "evidence": "concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it"
+  },
+  "7_implement_in_engine": {
+   "status": "SKIPPED",
+   "evidence": "concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it"
+  },
+  "8_verdict_with_denominators": {
+   "status": "SKIPPED",
+   "evidence": "concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it"
+  }
  }
 }
