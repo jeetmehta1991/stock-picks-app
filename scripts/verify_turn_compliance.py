@@ -556,7 +556,11 @@ FIX_WORDS = ("fix:", "fixed", "bugfix", "defect", "root cause", "rca",
              "corrected", "correction")
 # Artifacts whose conclusions are DOWNSTREAM of engine/grading behaviour.
 DOWNSTREAM_ARTIFACTS = ("PHASE_1B_ROSTER.md", "PASSED_STRATEGY_EXIT_LIST.md",
-                        "STRATEGY_OPTIMISATION_PLAN.md", "EXECUTION_QUEUE.md")
+                        "STRATEGY_OPTIMISATION_PLAN.md", "EXECUTION_QUEUE.md",
+                        # B2053 (S6-B1968d): a fix's downstream footprint
+                        # routinely IS the miss-capture trio - excluding them
+                        # punished compliant Phase-5 commits.
+                        "LEARNINGS.md", "CHECKLIST.md", "CLAUDE.md")
 
 
 def scan_postfix_recheck(commit_msg, changed_files):
@@ -2426,6 +2430,10 @@ SYNTHETIC_SOURCES = (
     "rng.", "np.random", "numpy.random", "default_rng", "random.gauss",
     "random.normal", "random.randn", "random.seed", "random.uniform",
     "make_fixture", "fake_", "dummy_",
+    # B2053 (S6-B1968d, the B1827 lesson): a DETERMINISTIC fixture does not
+    # feel synthetic - a figure sourced to "a 5-trade fixture" is synthetic
+    # provenance and must read as labeled, same as rng.
+    "fixture",
 )
 # B1832: what counts as NAMING AN INPUT. A source is an artifact, a producer,
 # or an explicit admission that the figure is not a measurement at all.
@@ -2441,6 +2449,10 @@ FIGURE_SOURCES = (
     # producers
     ".py", "script", "pytest", "grade", "re-grad", "regrad", "queue_state",
     "git ", "commit",
+    # B2053 (S6-B1968d): run LOGS are figure sources - wall-clocks and
+    # sim-day rates are routinely read from them, and "backtest_v2.log"
+    # carried no recognised marker.
+    ".log",
     # explicit non-measurements
     "synthetic", "fixture", "hand-built", "hand built", "illustrative",
     "worked example", "not a measurement", "measures nothing", "made-up",
@@ -3297,7 +3309,10 @@ def _affirms(text: str, markers, *, window: int = 60) -> list[str]:
 # Evidence of inspection lives in what you RAN - a command, a pattern, a path
 # being read - never in a blob you authored.
 _WRITTEN_FIELDS = ("content", "new_string", "old_string", "prompt", "text",
-                   "description", "body", "message")
+                   "description", "body", "message",
+                   # B2053 (S6-B1968d): Skill args and file captions are
+                   # authored content too.
+                   "args", "caption")
 
 # B1774b: stripping authored FIELDS was not enough. `file_path` is itself an
 # OPEN_EVIDENCE marker and EVERY Write/Edit carries one, so **writing any file
