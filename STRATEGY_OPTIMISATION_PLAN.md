@@ -553,6 +553,12 @@ flavoured — acceptable for tuning, not for a verdict (S6-B1504a/b).
 
 ## 8. OPEN OWNER DECISIONS (live as of B1510)
 
+> **2026-08-23 (B2042): E1 DROPPED as a roster path (owner ruling).** The five-arm pilot
+> closes as measurement only; Phase-1B admission runs ONLY through this document's
+> 0->1->2->3 protocol at its ruled shapes, and noise-elimination verification happens in
+> the protocol's own Step 2 on the remaining Tier-1a tickers - not via ad-hoc validation.
+> Canonical rows: S6-B1505b (closure) / S6-B2018a (unblocked).
+>
 > **2026-08-22 (B2016): the A-I owner ruling set resolved this table's live members.** E1 approved -
 > the P1 swing sweep {10,20,30,50} runs on SP50 at the ruled 1y search window (arms in flight,
 > `output_b2016_e1/run_manifest.json`); F1 `EMA_PAIRS` plumb SHIPPED (B2016); F2 spans 100/250
