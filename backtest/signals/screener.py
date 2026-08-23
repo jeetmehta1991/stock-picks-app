@@ -5514,14 +5514,22 @@ def strat_head_and_shoulders_top_short(s):
     Symmetric 2-gate structure with CP-3 (mirror of bottom-long).
     B671 borrow-trap gate applies (SHORT-direction via _strat).
     """
+    # B2088 (S6-B1248-HNS-NECKLINE-GATE, owner-approved 2026-08-23 at b2031
+    # rec 5): pattern-detected != pattern-completed. The gate now requires
+    # the neckline BREAK (close below the neckline the producer measured) -
+    # the canonical completion per Edwards-Magee 1948, and the condition
+    # Bulkowski's ~74pct WR statistic is conditioned on. Fewer fires on an
+    # already-thin strategy - the stated tradeoff of the approved rec.
     fires = (
         s.get("head_shoulders_top_detected", False)
+        and s.get("head_shoulders_top_neckline_break", False)  # B2088
         and s.get("below_ema_200", False)  # B630 producer-additive (positive symmetric)
      and not _short_borrow_trap_active(s))
     return _strat(fires, "short", "chart_pattern",
-        ["head_shoulders_top_detected", "below_ema_200", "borrow_ok"],
+        ["head_shoulders_top_detected", "head_shoulders_top_neckline_break",
+         "below_ema_200", "borrow_ok"],
         ["Head-and-shoulders top pattern detected (3 peaks; middle = head)",
-         "Edwards-Magee 1948 / Bulkowski 2005 canonical bearish reversal",
+         "Close BROKE the neckline (B2088 - the pattern COMPLETED, the condition the Bulkowski stats require)",
          "Below 200 EMA (bear regime)"])
 
 

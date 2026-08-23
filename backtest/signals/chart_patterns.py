@@ -100,7 +100,14 @@ def detect_head_and_shoulders(
     close = win["close"]
     highs, lows = _find_swings(close, window=window)
     out = {"head_shoulders_top_detected": False,
-           "head_shoulders_bottom_detected": False}
+           "head_shoulders_bottom_detected": False,
+           # B2088 (owner-approved HNS gate, b2031 rec 5): the pattern-
+           # COMPLETED events - Edwards-Magee 1948: detection is the
+           # shape, completion is the neckline BREAK. Emitted for both
+           # directions (producers are symmetric data); only the
+           # approved TOP-short consumes a break key so far.
+           "head_shoulders_top_neckline_break": False,
+           "head_shoulders_bottom_neckline_break": False}
     # Need at least 3 swing highs for top, 3 lows for bottom
     if len(highs) >= 3:
         # Check the most recent 3 highs
@@ -118,6 +125,8 @@ def detect_head_and_shoulders(
                     neckline = float(close.iloc[lows_between].mean())
                     out["head_shoulders_top_detected"] = True
                     out["head_shoulders_top_neckline"] = round(neckline, 4)
+                    out["head_shoulders_top_neckline_break"] = bool(
+                        float(close.iloc[-1]) < neckline)
                     out["head_shoulders_magnitude_pct"] = round(head_height, 4)
     if len(lows) >= 3:
         l1, l2, l3 = lows[-3], lows[-2], lows[-1]
@@ -131,6 +140,8 @@ def detect_head_and_shoulders(
                     neckline = float(close.iloc[highs_between].mean())
                     out["head_shoulders_bottom_detected"] = True
                     out["head_shoulders_bottom_neckline"] = round(neckline, 4)
+                    out["head_shoulders_bottom_neckline_break"] = bool(
+                        float(close.iloc[-1]) > neckline)
                     if "head_shoulders_magnitude_pct" not in out:
                         out["head_shoulders_magnitude_pct"] = round(head_depth, 4)
     return out

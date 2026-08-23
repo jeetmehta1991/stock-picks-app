@@ -24084,3 +24084,41 @@ def test_b2087_detail_rows_carry_the_fill_date():
         "fill must be the following MONDAY on every row", fills)
     assert (_pd.to_datetime(list(fills)[0]).date() - friday).days == 3, (
         "the weekend gap is exactly what the field exposes")
+
+
+def test_b2088_hns_gate_requires_the_neckline_break():
+    """B2088 (owner-approved b2031 rec 5): detection is the SHAPE, completion
+    is the neckline BREAK. Producer: a SYNTHETIC 60-bar H&S top (shoulders
+    100/100, head 110, neckline ~90) emits detected=True with break=False
+    while price holds above the neckline, and break=True once the last close
+    is under it. Gate: detected alone no longer fires the short."""
+    import numpy as np
+    import pandas as pd
+
+    from backtest.signals.chart_patterns import detect_head_and_shoulders
+    from backtest.signals.screener import strat_head_and_shoulders_top_short
+
+    def hns_series(final_close):
+        # SYNTHETIC: base 90, shoulder 100 @15, dip 90, head 110 @30,
+        # dip 90, shoulder 100 @45, then drift to final_close.
+        pts = {0: 90, 15: 100, 22: 90, 30: 110, 38: 90, 45: 100, 59: final_close}
+        ks = sorted(pts)
+        vals = np.interp(range(60), ks, [pts[k] for k in ks])
+        idx = pd.date_range("2024-01-02", periods=60, freq="B")
+        return pd.DataFrame({"close": vals}, index=idx)
+
+    held = detect_head_and_shoulders(hns_series(95.0))
+    assert held.get("head_shoulders_top_detected") is True, held
+    assert held.get("head_shoulders_top_neckline_break") is False, held
+
+    broke = detect_head_and_shoulders(hns_series(85.0))
+    assert broke.get("head_shoulders_top_detected") is True, broke
+    assert broke.get("head_shoulders_top_neckline_break") is True, broke
+
+    base = {"below_ema_200": True, "borrow_ok": True}
+    assert strat_head_and_shoulders_top_short(
+        {**base, "head_shoulders_top_detected": True})["fires"] is False
+    r = strat_head_and_shoulders_top_short(
+        {**base, "head_shoulders_top_detected": True,
+         "head_shoulders_top_neckline_break": True})
+    assert r["fires"] is True and r["direction"] == "short"
