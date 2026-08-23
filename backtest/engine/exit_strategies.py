@@ -1720,21 +1720,13 @@ _CFG_STAMP = None
 # B1682: the pool worker replays in a SUBPROCESS and cannot see a parent
 # instance attribute, so the regime map must travel WITH the work. Set by the
 # pool initializer / passed per task; None keeps the pre-B1682 behaviour.
-_WORKER_REGIME_BY_DATE: dict | None = None
-
-
-def set_worker_regime_map(m) -> None:
-    """Give a subprocess worker the regime map the parent holds.
-
-    B1682: `run_exit_comparison`'s two engine call sites are both FALLBACK
-    branches (pool-failure `except`, and the no-pool `else`). The PRIMARY path
-    is `self._screen_pool.imap_unordered(...)`, whose workers never saw the map
-    - so any run with `--screen-pool-workers > 0` would still produce a dead
-    `regime_flip`, and that is exactly what the runbook's launch command
-    specifies.
-    """
-    global _WORKER_REGIME_BY_DATE
-    _WORKER_REGIME_BY_DATE = m
+# B2043 (S6-B2018a): `_WORKER_REGIME_BY_DATE` + `set_worker_regime_map` are
+# DELETED. The setter was defined at B1682 to hand pool workers the regime map
+# and was never called from anywhere - one occurrence in the codebase, its own
+# definition - the defined-never-wired class (B1751 instance-5 shape), in the
+# engine. The map now rides in the pool task payload and every call path
+# passes it explicitly; a module global with no writer was the defect's
+# hiding place, not a fallback.
 
 
 def run_exit_comparison(
@@ -1750,10 +1742,9 @@ def run_exit_comparison(
     """
     results = []
     trade_detail_rows = []
-    # B1682: in a subprocess the caller cannot pass the parent's map, so fall
-    # back to whatever the pool initializer installed.
-    if regime_by_date is None:
-        regime_by_date = _WORKER_REGIME_BY_DATE
+    # B2043: no global fallback - the map arrives explicitly from every call
+    # path (pool payload, pool-failure branch, no-pool branch) or is honestly
+    # absent. The B1682 fallback read a global nothing ever wrote.
 
     # Batch 412: dispatch table. When USE_VECTORIZED_EXITS is True, replace
     # scalar exit functions with their byte-identical numpy-vectorized
@@ -1862,6 +1853,13 @@ def run_exit_comparison(
                     "exit_price":   round(r.get("exit_price", t["entry_price"]), 4),
                     "exit_date":    str(r.get("exit_date", "")),
                     "exit_reason":  r.get("exit_reason", ""),
+                    # B2043 (S6-B2018a): the EXIT-day regime, recorded so
+                    # regime_changed_during_hold can be computed from data
+                    # instead of exit_context's placeholder (which returned
+                    # the ENTRY regime and made "changed" structurally "no"
+                    # on every row of every cube).
+                    "exit_regime":  (regime_by_date.get(r.get("exit_date"))
+                                     if regime_by_date else None),
                 }
                 # Propagate entry_context (Tiers 1-4)  -  see exit_context.py
                 ctx = t.get("entry_context")
@@ -1950,7 +1948,8 @@ def run_exit_comparison(
 # `save_all_outputs` returns (Batch 394), so the same long-lived spawn
 # pool services both screen + cube replay.
 # ---------------------------------------------------------------------------
-def _pool_cube_replay_worker(strategy_name, trades_data_lite):
+def _pool_cube_replay_worker(strategy_name, trades_data_lite,
+                             regime_by_date=None):
     """Worker called by multiprocessing.Pool.starmap.
 
     Args:
@@ -1984,4 +1983,6 @@ def _pool_cube_replay_worker(strategy_name, trades_data_lite):
 
     if not trades_data_full:
         return pd.DataFrame(), pd.DataFrame()
-    return run_exit_comparison(strategy_name, trades_data_full)
+    # B2043 (S6-B2018a): forward the payload-carried regime map - the missing
+    # link that kept regime_flip a time stop in every pooled cube ever run.
+    return run_exit_comparison(strategy_name, trades_data_full, regime_by_date)

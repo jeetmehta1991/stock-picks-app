@@ -3121,7 +3121,16 @@ class BacktestEngine:
                     "category":       row.get("category", "momentum"),
                 })
             if trades_data_lite:
-                strategy_tasks.append((strategy, trades_data_lite))
+                # B2043 (S6-B2018a): the regime map rides IN THE TASK PAYLOAD.
+                # `set_worker_regime_map` was defined at B1682 to hand workers
+                # the map and had exactly ONE occurrence in the codebase - its
+                # own definition - so every pooled replay ran with no regime
+                # series and regime_flip fired its cap branch on 549/549 E1
+                # rows. The pool initializer cannot carry it (the pool exists
+                # before the sim fills the map), so the payload does (~251
+                # entries per task - trivial IPC).
+                strategy_tasks.append((strategy, trades_data_lite,
+                                       dict(getattr(self, "_regime_by_date", {}) or {})))
 
         # B1261 (S6-B1250-ENG2): emit the ATR-proxy fallback rate; escalate
         # to WARNING above the 5% threshold (pre-ENG-1-fix Batch A was 100%).

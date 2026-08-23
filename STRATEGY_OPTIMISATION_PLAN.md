@@ -1347,6 +1347,12 @@ input; B1680 then found the fix had never run.
   span one of the 6 in-window regime transitions. "Both inputs are in the code" was a
   code-presence claim; the runtime says the flip is never seen. Not fixed mid-E1 (frozen
   code keeps arms comparable; the collapse is identical in every arm).
+  **FIXED 2026-08-23 (B2043, S6-B2018a)** after the drop-E1 ruling dissolved the hold: the map
+  now rides in the pool task payload (the never-called setter and its orphan global are
+  DELETED), the flip branch is pin-proven end-to-end through run_exit_comparison, detail rows
+  record a real `exit_regime`, and exit_context no longer fabricates "no" for
+  regime_changed_during_hold (absent reads "unknown"). Every pre-B2043 cube remains cap-only;
+  cubes from now carry a LIVE flip branch - the comparability note above still governs.
 - **Therefore `regime_flip` is NOT comparable between the four existing cubes and any later one.**
   Rankings are unaffected - no `regime_flip` appears in either wave-1 top-10 - so what is lost is
   comparability on that one exit, not the identity of the winners.

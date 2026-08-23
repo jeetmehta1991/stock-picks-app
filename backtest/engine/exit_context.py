@@ -417,8 +417,15 @@ def _parse_date(v: Any) -> Optional[date]:
 
 def _exit_regime(row: pd.Series) -> Optional[str]:
     """Exit regime from row if recorded; else None.
-    Trade log doesn't currently record exit regime — placeholder defaults to entry regime."""
-    return row.get("exit_regime") or row.get("regime")
+
+    B2043 (S6-B2018a): the old fallback returned the ENTRY regime when no
+    exit regime was recorded, which made regime_changed_during_hold
+    structurally "no" on every row of every cube - a fabricated negative
+    dressed as a measurement. Absent now reads absent: the column says
+    "unknown", and rows written post-B2043 carry a real `exit_regime` from
+    the replay's regime map.
+    """
+    return row.get("exit_regime") or None
 
 
 # Public list of all context column names for downstream consumers

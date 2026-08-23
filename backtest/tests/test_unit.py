@@ -15766,10 +15766,21 @@ def test_b1682_regime_flip_needs_BOTH_halves_behavioural():
     src = inspect.getsource(ex.run_exit_comparison)
     assert 'enriched_sig["regime_by_date"] = regime_by_date' in src
     assert 'enriched_sig["regime_at_entry"] = _er' in src
-    assert hasattr(ex, "set_worker_regime_map"), (
-        "the POOL path is the PRIMARY branch and needs the map too")
+    # B2043: the old assertion here checked that `set_worker_regime_map`
+    # EXISTS - a presence pin that stayed green for the function's entire
+    # never-called life (grep: one occurrence, its own definition), which is
+    # exactly how five E1 arms ran with a dead flip branch. The REAL pool
+    # property: the map rides in the task payload - the worker ACCEPTS it and
+    # the engine SENDS it.
+    import inspect as _ins
+    sig = _ins.signature(ex._pool_cube_replay_worker)
+    assert "regime_by_date" in sig.parameters, (
+        "the pool worker must accept the regime map from the task payload")
     eng = _pl.Path("backtest/engine/backtest.py").read_text(encoding="utf-8")
     assert '"regime_at_entry": row.get("regime_at_entry") or row.get("regime")' in eng
+    assert 'dict(getattr(self, "_regime_by_date", {}) or {})' in eng, (
+        "the engine must put the regime map INTO the pool task payload - "
+        "an accepted parameter nobody sends is the same dead branch")
 
 
 def test_b1713_gates_are_testable_offline(tmp_path):
@@ -23455,3 +23466,62 @@ def test_b2040_reporting_contract_survives_in_the_durable_docs():
     assert "### #282" in ck, "#282 was removed from CHECKLIST.md"
     assert "L618" in skill, (
         "the skill's Phase-6 block no longer cites L618 - the anchor decayed")
+
+
+def test_b2043_regime_flip_fires_on_a_real_flip_through_replay():
+    """B2043 (S6-B2018a): the flip branch was dead on five of five E1 arms -
+    the map never reached pool workers (setter defined, never called) and the
+    exit capped every trade. With the map in the call, a mid-hold flip must
+    exit on the FLIP branch, the detail row must carry the exit-day regime,
+    and an absent map must still cap (both directions)."""
+    import pandas as _pd
+    from datetime import date as _date, timedelta as _td
+    from backtest.engine.exit_strategies import run_exit_comparison
+
+    idx = _pd.date_range("2024-06-03", periods=30, freq="B")
+    base = [100.0 + i for i in range(30)]
+    df = _pd.DataFrame({"open": base, "high": [b + 1 for b in base],
+                        "low": [b - 1 for b in base], "close": base,
+                        "volume": 1e6}, index=idx)
+    regime_map = {ts.date(): ("bull" if i < 8 else "bear")
+                  for i, ts in enumerate(idx)}
+    # FIVE trades: run_exit_comparison's summary path drops strategies with
+    # fewer than 5 trades AND its empty-summary early-return DISCARDS the
+    # populated detail rows with them (found building this pin; ticketed
+    # S6-B2043a) - the fixture stays above that floor.
+    trades = [{"ticker": "TST", "entry_date": idx[i].date(),
+               "entry_price": 100.0 + i, "direction": "long", "atr": 1.0,
+               "signals": {}, "regime_at_entry": "bull", "df": df}
+              for i in range(1, 6)]
+
+    _, detail = run_exit_comparison("synthetic_b2043", trades, regime_map)
+    rf = detail[detail.exit_method == "regime_flip"]
+    assert len(rf) == 5
+    assert all(r.startswith("regime_flip_bull_to_bear")
+               for r in rf["exit_reason"]), (
+        "a mid-hold flip must exit on the FLIP branch - the cap branch here "
+        "is the five-arm defect reproduced")
+    assert set(rf["exit_regime"]) == {"bear"}, (
+        "the detail row must record the exit-day regime so "
+        "regime_changed_during_hold computes from data")
+
+    _, detail_nomap = run_exit_comparison("synthetic_b2043", trades, None)
+    rf2 = detail_nomap[detail_nomap.exit_method == "regime_flip"]
+    assert all(r.startswith("regime_flip_max_days")
+               for r in rf2["exit_reason"]), (
+        "no map must still fall back to the cap - honest absence, not a crash")
+
+
+def test_b2043_exit_regime_placeholder_no_longer_fabricates_no():
+    """B2043: exit_context's _exit_regime returned the ENTRY regime when no
+    exit regime was recorded, making regime_changed_during_hold structurally
+    'no'. Absent must now read absent -> 'unknown'."""
+    import pandas as _pd
+    from backtest.engine.exit_context import (_exit_regime,
+                                              _regime_changed_during_hold)
+    row = _pd.Series({"regime": "bull"})
+    assert _exit_regime(row) is None, (
+        "entry regime must not masquerade as exit regime")
+    assert _regime_changed_during_hold("bull", _exit_regime(row)) == "unknown"
+    row2 = _pd.Series({"regime": "bull", "exit_regime": "bear"})
+    assert _regime_changed_during_hold("bull", _exit_regime(row2)) == "yes"
