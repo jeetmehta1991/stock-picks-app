@@ -23807,3 +23807,87 @@ def test_b2075_supertrend_short_is_event_anchored():
     # adx gate survived the swap (approved rec was the swap ONLY)
     assert f({**base, "supertrend_flip_recent_short_5d": True,
               "adx": 15})["fires"] is False
+
+
+def test_b2076_risk_off_cross_is_onset_not_state():
+    """B2076 (LEVER3): the EVENT key fires at the regime's ONSET (threshold
+    crossed within 5 sessions) and NOT deep inside a long-standing regime -
+    the exact distinction the STATE flag cannot make. SYNTHETIC deterministic
+    ratio fixtures; the structure, not the values, is the evidence (L470)."""
+    import pandas as pd
+
+    from backtest.signals.cross_asset import _cross_recent
+
+    # ratio flat at 1.0 for 40 bars, then jumps 10pct 3 bars from the end:
+    # the 20d pct-change crosses +5pct inside the 5-bar window -> True
+    onset = pd.Series([1.0] * 40 + [1.1] * 3)
+    assert _cross_recent(onset, window=20, thresh=0.05, tap_window=5) is True
+    # ratio jumped 30 bars ago and stayed high: STATE would still be True,
+    # but no cross happened within the window -> False
+    stale = pd.Series([1.0] * 20 + [1.1] * 30)
+    assert _cross_recent(stale, window=20, thresh=0.05, tap_window=5) is False
+    # never crossed -> False
+    flat = pd.Series([1.0] * 50)
+    assert _cross_recent(flat, window=20, thresh=0.05, tap_window=5) is False
+
+
+def test_b2076_ob_tap_is_price_return_not_existence():
+    """B2076 (LEVER3): the tap key fires when a bar within the last 5
+    sessions overlaps the OB zone, not merely because an OB exists - and a
+    zone mitigated BEFORE the window is spent. SYNTHETIC frames."""
+    import numpy as np
+    import pandas as pd
+
+    from backtest.signals.smc_ict import _ob_tap_scan
+
+    n = 60
+    ob = pd.DataFrame({"OB": [np.nan] * n, "Top": [np.nan] * n,
+                       "Bottom": [np.nan] * n, "MitigatedIndex": [np.nan] * n})
+    ob.loc[30, ["OB", "Top", "Bottom"]] = [1, 105.0, 100.0]
+
+    def frame(last5_low, last5_high):
+        return pd.DataFrame({
+            "low": [110.0] * (n - 5) + [last5_low] * 5,
+            "high": [112.0] * (n - 5) + [last5_high] * 5})
+
+    # price dips into the zone within the window -> tap fires
+    bull, bear = _ob_tap_scan(ob, frame(104.0, 111.0), n - 1, 90)
+    assert bull is True and bear is False
+    # OB exists but price never returns -> no tap (the STATE key would latch)
+    bull, _ = _ob_tap_scan(ob, frame(110.0, 112.0), n - 1, 90)
+    assert bull is False
+    # zone mitigated long before the window -> spent, no tap
+    ob2 = ob.copy()
+    ob2.loc[30, "MitigatedIndex"] = 40
+    bull, _ = _ob_tap_scan(ob2, frame(104.0, 111.0), n - 1, 90)
+    assert bull is False
+
+
+def test_b2076_gates_consume_the_event_keys():
+    """B2076: both converted gates fire on the EVENT keys and no longer on
+    the STATE keys alone."""
+    from backtest.signals.screener import (
+        strat_risk_off_bond_equity_short,
+        strat_smc_order_block_bounce,
+    )
+
+    # risk-off short: STATE-only no longer fires; the cross key does
+    assert strat_risk_off_bond_equity_short(
+        {"risk_off_regime_bond_signal_strong": True,
+         "borrow_ok": True})["fires"] is False
+    r = strat_risk_off_bond_equity_short(
+        {"risk_off_bond_signal_strong_cross_recent_5d": True,
+         "borrow_ok": True})
+    assert r["fires"] is True and r["direction"] == "short"
+
+    # OB bounce: STATE-only no longer fires; the tap key does
+    base_l = {"rsi_14": 40, "price_above_ema_200": True}
+    assert strat_smc_order_block_bounce(
+        {**base_l, "smc_ob_bullish_active": True})["fires"] is False
+    r = strat_smc_order_block_bounce(
+        {**base_l, "smc_ob_bullish_tap_recent_5d": True})
+    assert r["fires"] is True and r["direction"] == "long"
+    r = strat_smc_order_block_bounce(
+        {"smc_ob_bearish_tap_recent_5d": True, "rsi_14": 60,
+         "below_ema_200": True, "borrow_ok": True})
+    assert r["fires"] is True and r["direction"] == "short"

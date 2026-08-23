@@ -72,6 +72,42 @@ def _most_recent_event_within(series: pd.Series, current_idx: int,
     return nonzero.iloc[-1]
 
 
+def _ob_tap_scan(ob_df, ohlc, current_idx, recency_bars, tap_window=5):
+    """B2076 (S6-B1248-LEVER3, owner-approved 2026-08-23): EVENT keys for
+    the order-block bounce. The STATE keys (`smc_ob_*_active`) latch True
+    for ~90 bars once an OB exists; the strategy's alpha moment is PRICE
+    RETURNING to the zone. A tap = a bar within the last `tap_window`
+    sessions overlapping the most-recent OB's [Bottom, Top] zone, provided
+    that OB was not already mitigated BEFORE the window (the first touch is
+    allowed to be the mitigating touch - that touch IS the bounce entry).
+    Returns (tap_bull, tap_bear). B655/B643 lookback-window semantics.
+    """
+    tap_bull = tap_bear = False
+    if not {"OB", "Top", "Bottom"}.issubset(ob_df.columns):
+        return tap_bull, tap_bear
+    lows = ohlc["low"].iloc[-tap_window:]
+    highs = ohlc["high"].iloc[-tap_window:]
+    win_start = current_idx - tap_window + 1
+    for direction in (1, -1):
+        dser = ob_df["OB"].where(ob_df["OB"] == direction)
+        idx = _most_recent_event_within(dser, current_idx, recency_bars)
+        if idx is None:
+            continue
+        i = dser[dser.notna()].index[-1]
+        top, bottom = ob_df["Top"][i], ob_df["Bottom"][i]
+        if pd.isna(top) or pd.isna(bottom):
+            continue
+        m = ob_df["MitigatedIndex"][i] if "MitigatedIndex" in ob_df.columns else None
+        if m is not None and not pd.isna(m) and m != 0 and m < win_start:
+            continue  # mitigated before the window - zone already spent
+        touched = bool(((lows <= float(top)) & (highs >= float(bottom))).any())
+        if direction == 1:
+            tap_bull = touched
+        else:
+            tap_bear = touched
+    return tap_bull, tap_bear
+
+
 def _breaker_scan(ob_df, close, current_idx, tail_n, age_max, break_max):
     """Evaluate the breaker/mitigation block signals over an OB frame.
 
@@ -326,6 +362,13 @@ def compute_smc_signals(
                     ob_df["OB"], current_idx, event_recency_bars)
                 out["smc_ob_bullish_active"] = bool(ob_recent_val == 1)
                 out["smc_ob_bearish_active"] = bool(ob_recent_val == -1)
+                # B2076 (LEVER3): EVENT keys - price tapped the zone within
+                # the last 5 sessions. Producer-additive; the STATE keys
+                # above are untouched for their other consumers.
+                _tap_bull, _tap_bear = _ob_tap_scan(
+                    ob_df, ohlc, current_idx, event_recency_bars)
+                out["smc_ob_bullish_tap_recent_5d"] = _tap_bull
+                out["smc_ob_bearish_tap_recent_5d"] = _tap_bear
                 if "Top" in ob_df.columns and "Bottom" in ob_df.columns:
                     (breaker_bull, breaker_bear, mitigation_long,
                      mitigation_short) = _breaker_scan(

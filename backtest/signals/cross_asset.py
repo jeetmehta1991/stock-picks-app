@@ -169,7 +169,24 @@ def _ratio_trend_signal(
         # other consumers of bare trend_up/trend_down unchanged.
         "trend_up_strong":      pct_change > 0.05,
         "trend_down_strong":    pct_change < -0.05,
+        # B2076 (S6-B1248-LEVER3, owner-approved 2026-08-23): EVENT key -
+        # the strong flag CROSSED False->True within the last 5 sessions.
+        # The STATE flag is True for entire regimes (B724 measured the loose
+        # variant at state-flag rates); the cross is the regime's onset, the
+        # only bar-of-fire with timing content. B655/B643 window semantics.
+        "trend_up_strong_cross_recent_5d": _cross_recent(
+            ratio, window, 0.05, 5),
     }
+
+
+def _cross_recent(ratio: pd.Series, window: int, thresh: float,
+                  tap_window: int) -> bool:
+    """True if `ratio`'s `window`-period pct-change crossed above `thresh`
+    (False->True transition) within the last `tap_window` sessions."""
+    pct = ratio / ratio.shift(window) - 1
+    strong = pct > thresh
+    cross = strong & ~strong.shift(1).fillna(False)
+    return bool(cross.iloc[-tap_window:].any())
 
 
 def compute_bond_equity_signals(as_of: date, window: int = 20) -> dict:
@@ -188,6 +205,11 @@ def compute_bond_equity_signals(as_of: date, window: int = 20) -> dict:
         # B724: narrow-scope strong variants (>5% vs 2%) for ceiling-fix.
         "risk_off_regime_bond_signal_strong": res["trend_up_strong"],
         "risk_on_regime_bond_signal_strong":  res["trend_down_strong"],
+        # B2076 (LEVER3): EVENT onset key; sole approved consumer is
+        # strat_risk_off_bond_equity_short (narrow blast radius - the
+        # risk-on mirror waits for a consumer of its own).
+        "risk_off_bond_signal_strong_cross_recent_5d":
+            res["trend_up_strong_cross_recent_5d"],
     }
 
 

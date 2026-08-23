@@ -4608,22 +4608,28 @@ def strat_smc_order_block_bounce(s):
     """Batch 210: Order block bounce. Bullish OB = last opposing
     (bearish) candle before an impulse up; price returning to this zone
     acts as institutional support. Symmetric for bearish OB."""
+    # B2076 (S6-B1248-LEVER3, owner-approved 2026-08-23): STATE -> EVENT.
+    # smc_ob_*_active latches True for ~90 bars once an OB exists (Batch 273
+    # recency window) - a volume-bleeder with no timing content. The new
+    # producer-additive smc_ob_*_tap_recent_5d fires only when price RETURNS
+    # to the zone within the last 5 sessions - the bounce the strategy is
+    # named for. STATE keys untouched for their other consumers.
     fl = (
-        s.get("smc_ob_bullish_active", False)
+        s.get("smc_ob_bullish_tap_recent_5d", False)
         and s.get("rsi_14", 50) < 45  # pullback context
         and s.get("price_above_ema_200", False)
     )
     fs = (
-        s.get("smc_ob_bearish_active", False)
+        s.get("smc_ob_bearish_tap_recent_5d", False)
         and s.get("rsi_14", 50) > 55
         and s.get("below_ema_200", False)  # B630 sweep
      and not _short_borrow_trap_active(s))
     return _strat3(fl, fs, "smc",
-        ["smc_ob_bullish_active", "rsi_14<45", "price_above_ema_200"],
-        ["smc_ob_bearish_active", "rsi_14>55", "below_ema_200", "borrow_ok"],
-        ["Bullish Order Block active - institutional support zone",
+        ["smc_ob_bullish_tap_recent_5d", "rsi_14<45", "price_above_ema_200"],
+        ["smc_ob_bearish_tap_recent_5d", "rsi_14>55", "below_ema_200", "borrow_ok"],
+        ["Price tapped a bullish Order Block zone within 5 bars (B2076 EVENT-anchored; pre-B2076 used ~90-bar STATE latch)",
          "RSI pullback context", "Above 200 EMA"],
-        ["Bearish Order Block active - institutional resistance zone",
+        ["Price tapped a bearish Order Block zone within 5 bars (B2076 EVENT-anchored)",
          "RSI rally context", "Below 200 EMA"])
 
 
@@ -7197,10 +7203,17 @@ def strat_risk_off_bond_equity_short(s):
     every mild trend bias. Other consumers of bare signal unchanged
     per `feedback_narrow_scope_blast_radius`.
     """
-    fires = s.get("risk_off_regime_bond_signal_strong", False) and not _short_borrow_trap_active(s)
+    # B2076 (S6-B1248-LEVER3, owner-approved 2026-08-23): STATE -> EVENT.
+    # The strong STATE flag is True for entire risk-off regimes (B724
+    # measured the loose variant at 14,185/yr = state-flag rate); the new
+    # producer-additive cross key fires only at the regime's ONSET (the
+    # >5pct threshold crossed within the last 5 sessions) - the bar with
+    # timing content. STATE flag untouched for any other consumer.
+    fires = (s.get("risk_off_bond_signal_strong_cross_recent_5d", False)
+             and not _short_borrow_trap_active(s))
     return _strat(fires, "short", "cross_asset",
-        ["risk_off_regime_bond_signal_strong", "borrow_ok"],
-        ["TLT/SPY ratio rising STRONG (>5% 20d; B724 narrow-scope tighten)",
+        ["risk_off_bond_signal_strong_cross_recent_5d", "borrow_ok"],
+        ["TLT/SPY 20d change crossed above +5% within last 5 bars (B2076 EVENT onset; pre-B2076 used the always-on regime STATE)",
          "Asness 2003 / Connolly-Stivers-Sun 2005"])
 
 
