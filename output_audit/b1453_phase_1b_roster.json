@@ -36,13 +36,12 @@
   "dup_of": {},
   "mirrors": {
     "registered": [
+      "52w_low_breakdown_pullback_short",
       "xs_momentum_bottom_decile_short"
     ],
     "long_only_data": [],
     "dual_self": [],
-    "needs_creation": [
-      "52w_high_breakout_pullback_long"
-    ]
+    "needs_creation": []
   },
   "roster": [
     {
@@ -158,10 +157,10 @@
       },
       "bh": true,
       "verdict": "PASS",
-      "mirror_status": "NEEDS-CREATION",
-      "mirror": null,
+      "mirror_status": "REGISTERED",
+      "mirror": "52w_low_breakdown_pullback_short",
       "asym_signals": [],
-      "mirror_registered": false,
+      "mirror_registered": true,
       "margin": 0.281,
       "status": "PROVISIONAL"
     }
@@ -200,10 +199,10 @@
       },
       "bh": true,
       "verdict": "PASS",
-      "mirror_status": "NEEDS-CREATION",
-      "mirror": null,
+      "mirror_status": "REGISTERED",
+      "mirror": "52w_low_breakdown_pullback_short",
       "asym_signals": [],
-      "mirror_registered": false,
+      "mirror_registered": true,
       "margin": 0.281,
       "status": "PROVISIONAL"
     },

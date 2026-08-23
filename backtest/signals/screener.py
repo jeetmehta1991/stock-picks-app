@@ -2150,7 +2150,13 @@ def strat_52w_low_breakdown_pullback_short(s):
     """Batch 586 inverse of strat_52w_high_breakout_pullback_long
     per feedback_long_short_inverse_audit. Stock broke prior_year_low
     in last 10 days; retests it as resistance with low-volume
-    rejection + bearish bar."""
+    rejection + bearish bar.
+
+    EXACT MIRROR of strat_52w_high_breakout_pullback_long (B2050,
+    S6-B2014b: the pair predates the B1453 annotation convention the
+    roster's mirror classifier reads, so the roster printed NEEDS
+    CREATION for a mirror Batch 586 had already wired - the semantic
+    inverse is LOW-breakdown, which token matching cannot bridge)."""
     fires = s.get("near_52w_low_retest_short", False) and not _short_borrow_trap_active(s)
     return _strat(fires, "short", "breakout",
         ["near_52w_low_retest_short", "borrow_ok"],
