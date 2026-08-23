@@ -4,7 +4,7 @@
 > **CLAUDE.md is source-of-truth per L143.** Line 95 strategy count already updated B1205 (220 -> 219 post-B1189). This banner is here for consistency with the 46 other synced docs.
 >
 > Current canonical values as of 2026-07-18 (B1263, owner-approved banner sync):
-> - **217 strategies REGISTERED / 213 ACTIVE post-B2102** (B2098 owner-approved F23: classification_change 10 -> 1, 222 -> 213; B2101+B2102 tranche-A pairs 1-2: +4 EXPLORATORY M-strategies -> 217; `len(ALL_STRATEGIES) = 217`; disabled 4 = 1 DATA_SCARCITY survivor + 3 DUPLICATE) (prior line preserved: 222 REGISTERED / 210 ACTIVE, 12 disabled, B1494 reverted the 6 de-dup disables: 9 STRATEGIES_DISABLED_DATA_SCARCITY
+> - **219 strategies REGISTERED / 215 ACTIVE post-B2103** (B2098 owner-approved F23: classification_change 10 -> 1, 222 -> 213; B2101-B2103 tranche A COMPLETE: +6 EXPLORATORY M-strategies -> 219; `len(ALL_STRATEGIES) = 219`; disabled 4 = 1 DATA_SCARCITY survivor + 3 DUPLICATE) (prior line preserved: 222 REGISTERED / 210 ACTIVE, 12 disabled, B1494 reverted the 6 de-dup disables: 9 STRATEGIES_DISABLED_DATA_SCARCITY
   classification_change + 3 STRATEGIES_DISABLED_DUPLICATE added B1465 - macd_crossover_short,
   macd_ichimoku, squeeze_breakout_with_smart_money_long, each firing on gates identical to a
   surviving registration after a loosening batch removed their differentiator) (B1382 2026-07-25 owner standing directive 'mirror shorts by default': 219 -> 222 via 3 Class 7 NEW symmetric SHORT mirrors (news_sentiment_short + poc_magnet_short + xs_combined_momentum_high_ivol_short), all tagged EXPLORATORY (zero short rows cleared the B1378 true holdout; L229)); STRATEGIES_DISABLED_MISSING_PRODUCER empty

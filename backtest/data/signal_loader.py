@@ -445,3 +445,125 @@ def inject_institutional_signals(
     except Exception as _e:
         _log_silent_producer_failure("institutional_signal", _e)
     return signals
+
+
+# B2103 (M1, owner-approved tranche A 2026-08-23 at b2031 rec 12): the
+# sector -> sector-ETF map, derived FROM the Tier 1 ETFs CSV (CSV-first rule;
+# Category == "Sector" rows only, so broad-market funds never claim a sector).
+_SECTOR_ETF_MAP: dict[str, str] | None = None
+
+
+def _sector_etf_map() -> dict[str, str]:
+    global _SECTOR_ETF_MAP
+    if _SECTOR_ETF_MAP is None:
+        import csv
+        from pathlib import Path
+        path = (Path(__file__).resolve().parents[2] / "Backtesting universe" /
+                "Tier 1 ETFs Universe_Sector and Broad-Market ETFs_May 2026.csv")
+        m: dict[str, str] = {}
+        with path.open(encoding="utf-8") as f:
+            rows = (r for r in f if not r.startswith("#"))
+            for rec in csv.DictReader(rows):
+                if (rec.get("Category") or "").strip() == "Sector":
+                    m[(rec.get("Sector") or "").strip()] = rec["Symbol"].strip()
+        _SECTOR_ETF_MAP = m
+    return _SECTOR_ETF_MAP
+
+
+def inject_rs_line_signals(
+    signals: dict[str, Any],
+    ticker: str,
+    df,
+    as_of: date,
+) -> dict[str, Any]:
+    """B2103 (M1, tranche A): Mansfield/IBD relative-strength line vs the
+    ticker's OWN SECTOR ETF. Emits:
+
+        rs_line_new_60d_high           bool - RS (close/ETF close) at its
+                                       60-session high today
+        rs_new_high_price_not_at_high  bool - the M1 thesis key: RS leads
+                                       while PRICE is still below 98pct of
+                                       its 252d high (leadership BEFORE the
+                                       price 52w high, the institutional
+                                       tell the review cites)
+
+    Positive keys only (never a NOT-gate); absent on any failure or when
+    history is short - the strategy's s.get defaults handle absence.
+    """
+    try:
+        from backtest.data.universe import get_sector_pit
+        from backtest.signals.cross_asset import _load_close_series
+        sector = get_sector_pit(ticker, as_of)
+        etf = _sector_etf_map().get(sector or "")
+        if not etf or df is None or len(df) < 253:
+            return signals
+        etf_close = _load_close_series(etf, as_of, lookback_days=140)
+        if etf_close is None or len(etf_close) < 61:
+            return signals
+        close = df["close"].astype(float)
+        close.index = close.index.normalize()
+        etf_close = etf_close.copy()
+        etf_close.index = __import__("pandas").to_datetime(etf_close.index).normalize()
+        joined = close.to_frame("c").join(etf_close.rename("e"), how="inner").dropna()
+        if len(joined) < 61 or (joined["e"] <= 0).any():
+            return signals
+        rs = (joined["c"] / joined["e"]).iloc[-61:]
+        rs_high = bool(rs.iloc[-1] >= rs.max())
+        price_off_high = bool(close.iloc[-1] < 0.98 * float(close.iloc[-252:].max()))
+        signals["rs_line_new_60d_high"] = rs_high
+        signals["rs_new_high_price_not_at_high"] = bool(rs_high and price_off_high)
+    except Exception as _e:
+        _log_silent_producer_failure("rs_line", _e)
+    return signals
+
+
+def inject_earnings_avwap_signals(
+    signals: dict[str, Any],
+    ticker: str,
+    df,
+    as_of: date,
+) -> dict[str, Any]:
+    """B2103 (M2, tranche A): AVWAP anchored at the LAST EARNINGS DATE
+    (Shannon 2023) - institutional cost basis since the last report. Emits:
+
+        earnings_avwap_above              bool STATE (context)
+        earnings_avwap_reclaim_recent_3d  bool EVENT - close crossed back
+                                          above the earnings AVWAP within
+                                          the last 3 sessions (the B790
+                                          reclaim pattern at a NEW anchor;
+                                          the F11 gap the review names)
+
+    PIT: fetch_earnings_dates(as_of=...) applies the B1009 filter, so the
+    anchor can never be a future report.
+    """
+    try:
+        import pandas as _pd
+        from backtest.data.fetcher import fetch_earnings_dates
+        if df is None or len(df) < 10:
+            return signals
+        df_e = fetch_earnings_dates(ticker, as_of=as_of)
+        if df_e is None or df_e.empty:
+            return signals
+        edates = _pd.to_datetime(df_e["earnings_date"]).dt.date.tolist()
+        past = [d for d in edates if d <= as_of]
+        if not past:
+            return signals
+        anchor = max(past)
+        dfx = df[df.index.date >= anchor]
+        if len(dfx) < 4:
+            return signals
+        typ = (dfx["high"].astype(float) + dfx["low"].astype(float)
+               + dfx["close"].astype(float)) / 3.0
+        vol = dfx["volume"].astype(float).clip(lower=0)
+        cum_v = vol.cumsum()
+        if float(cum_v.iloc[-1]) <= 0:
+            return signals
+        avwap = (typ * vol).cumsum() / cum_v
+        close = dfx["close"].astype(float)
+        above = close.values > avwap.values
+        signals["earnings_avwap_above"] = bool(above[-1])
+        signals["earnings_avwap_reclaim_recent_3d"] = bool(
+            above[-1] and (~above[-4:-1]).any())
+    except Exception as _e:
+        _log_silent_producer_failure("earnings_avwap", _e)
+    return signals

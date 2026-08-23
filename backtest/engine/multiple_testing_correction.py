@@ -137,6 +137,8 @@ EXPLORATORY_STRATEGIES = frozenset({
     "consec_downdays_quality_long",
     "gap_and_go_long",            # B2102 tranche A pair 2
     "failed_breakout_2b_short",   # B2102 tranche A pair 2
+    "rs_line_sector_leader_long",   # B2103 tranche A pair 3
+    "earnings_avwap_reclaim_long",  # B2103 tranche A pair 3
 })
 
 

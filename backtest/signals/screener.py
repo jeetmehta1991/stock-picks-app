@@ -6270,6 +6270,47 @@ def strat_classification_change_recent_long(s):
          "Above 200 EMA (filter out deterioration cases)"])
 
 
+def strat_rs_line_sector_leader_long(s):
+    """B2103 (M1, owner-approved tranche A, Class 7 wiring): Mansfield /
+    IBD relative-strength line vs the ticker's OWN sector ETF at a
+    60-session high while PRICE is still under 98pct of its 252d high -
+    leadership BEFORE the breakout, the single most-used institutional
+    momentum refinement per the review (the roster ranks momentum
+    cross-sectionally but never vs own sector).
+
+    STATUS: EXPLORATORY (registered in EXPLORATORY_STRATEGIES) - tranche-A
+    cube-measurement-only scope.
+    """
+    fires = (
+        s.get("rs_new_high_price_not_at_high", False)
+        and s.get("price_above_ema_50", False)
+    )
+    return _strat(fires, "long", "momentum",
+        ["rs_new_high_price_not_at_high", "price_above_ema_50"],
+        ["RS line vs own sector ETF at a 60d high while price is NOT at its 52w high - leadership precedes the move",
+         "Above 50 EMA - trend context"])
+
+
+def strat_earnings_avwap_reclaim_long(s):
+    """B2103 (M2, owner-approved tranche A, Class 7 wiring): reclaim of the
+    AVWAP anchored at the LAST EARNINGS date (Shannon, "Maximum Trading
+    Gains with Anchored VWAP" 2023) - holders since the report are back in
+    profit, cost-basis support underneath. The roster's AVWAP anchors were
+    highs/lows only (the review's F11 gap).
+
+    STATUS: EXPLORATORY (registered in EXPLORATORY_STRATEGIES) - tranche-A
+    cube-measurement-only scope.
+    """
+    fires = (
+        s.get("earnings_avwap_reclaim_recent_3d", False)
+        and s.get("price_above_ema_200", False)
+    )
+    return _strat(fires, "long", "vwap",
+        ["earnings_avwap_reclaim_recent_3d", "price_above_ema_200"],
+        ["Close crossed back above the earnings-anchored AVWAP within 3 sessions - post-report holders back in profit",
+         "Above 200 EMA - regime gate"])
+
+
 def strat_gap_and_go_long(s):
     """B2102 (M5, owner-approved tranche A, Class 7 wiring): gap-and-go
     continuation - an up-gap of 2 percent-plus that HELD above its open at
@@ -8204,6 +8245,9 @@ ALL_STRATEGIES = {
     # B2102 (tranche A pair 2): both EXPLORATORY.
     "gap_and_go_long":              strat_gap_and_go_long,
     "failed_breakout_2b_short":     strat_failed_breakout_2b_short,
+    # B2103 (tranche A pair 3): both EXPLORATORY.
+    "rs_line_sector_leader_long":   strat_rs_line_sector_leader_long,
+    "earnings_avwap_reclaim_long":  strat_earnings_avwap_reclaim_long,
     # Wave 3 persistence (Batch 333 2026-05-25 Path C): 3 strategies using
     # the Batch 330 producer's institutional_increased / institutional_new_positions
     # counts. Single-quarter persistence proxies; true multi-quarter
@@ -8621,6 +8665,15 @@ def screen_instrument(
     # carried forward from B921/B923 (parity tests confirm byte-identical).
     from backtest.data.signal_loader import inject_classification_change_signals
     inject_classification_change_signals(signals, ticker, as_of)
+
+    # B2103 (owner-approved M1-M15 tranche A, pair 3): sector-relative RS
+    # line + earnings-anchored AVWAP.
+    from backtest.data.signal_loader import (
+        inject_earnings_avwap_signals,
+        inject_rs_line_signals,
+    )
+    inject_rs_line_signals(signals, ticker, df, as_of)
+    inject_earnings_avwap_signals(signals, ticker, df, as_of)
     # Batch 330 (2026-05-25 owner-approved Path C Wave 3): inject
     # institutional 13F signal into the per-ticker signals dict so
     # screener strategies can gate on it as the PRIMARY trigger.

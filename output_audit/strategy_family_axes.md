@@ -6,7 +6,7 @@ B1519-pattern config plumb (owner-approved) before it is sweepable.
 
 | producer family | members | axis status |
 |---|---|---|
-| compute_ema_sma | 105 | EMA_PAIRS (B2016) + STRAT_EMA_SPAN consumer key |
+| compute_ema_sma | 109 | EMA_PAIRS (B2016) + STRAT_EMA_SPAN consumer key |
 | compute_volume | 66 | UNPLUMBED (producer literals) |
 | compute_pivots | 58 | UNPLUMBED (producer literals) |
 | compute_rsi | 33 | UNPLUMBED (producer literals) |
@@ -30,10 +30,14 @@ B1519-pattern config plumb (owner-approved) before it is sweepable.
 | compute_parabolic_sar | 2 | UNPLUMBED (producer literals) |
 | compute_stochrsi | 2 | UNPLUMBED (producer literals) |
 | compute_williams_r | 2 | UNPLUMBED (producer literals) |
+| compute_consecutive_downdays | 1 | UNPLUMBED (producer literals) |
+| compute_failed_breakout_2b | 1 | UNPLUMBED (producer literals) |
+| compute_gap_and_go | 1 | UNPLUMBED (producer literals) |
 | compute_hull_ma | 1 | UNPLUMBED (producer literals) |
 | compute_keltner | 1 | UNPLUMBED (producer literals) |
 | compute_blowoff_lookback | 1 | UNPLUMBED (producer literals) |
 | compute_capitulation_lookback | 1 | UNPLUMBED (producer literals) |
+| compute_pocket_pivot | 1 | UNPLUMBED (producer literals) |
 | compute_pivot_break_retest_signals | 1 | UNPLUMBED (producer literals) |
 | compute_roc | 1 | UNPLUMBED (producer literals) |
 | compute_dema_tema | 1 | UNPLUMBED (producer literals) |

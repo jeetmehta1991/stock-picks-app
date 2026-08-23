@@ -10637,8 +10637,8 @@ def test_batch373_e1_doc_count_pin_against_code():
     # subsets reconstructable offline from the survivor's cube fires.
     # B2101 (tranche A pair 1 of 3): +2 EXPLORATORY (pocket_pivot_long +
     # consec_downdays_quality_long) per the owner-approved M1-M15 rec.
-    assert len(ALL_STRATEGIES) == 217, (
-        f"F-002 drift: ALL_STRATEGIES expected 217 post-B2102 (tranche A "
+    assert len(ALL_STRATEGIES) == 219, (
+        f"F-002 drift: ALL_STRATEGIES expected 219 post-B2103 (tranche A "
         f"pair 1; 213 post-B2098); got {len(ALL_STRATEGIES)}. "
         f"Update doc count references in the same commit."
     )
@@ -10667,9 +10667,9 @@ def test_batch373_e1_doc_count_pin_against_code():
     )
     # B2098: 213 registered; this leg's "active" excludes only DEPRECATED +
     # MISSING_PRODUCER (both empty), so it tracks the registration count.
-    assert active == 217, (
-        f"F-002 drift: active strategy count expected 217 (217 registered "
-        f"post-B2102 tranche-A pair 2); got {active}."
+    assert active == 219, (
+        f"F-002 drift: active strategy count expected 219 (219 registered "
+        f"post-B2103 tranche-A complete); got {active}."
     )
 
     # F-004 exit method count
@@ -10680,10 +10680,10 @@ def test_batch373_e1_doc_count_pin_against_code():
     )
 
     # Cube cells = active strategies x exits (B2098: 213 x 26 = 5,538)
-    expected_cells = 217 * 26
-    assert expected_cells == 5642, (
-        f"Phase 1A-beta cube cells: expected 5,642 (217 active x 26 exits "
-        f"post-B2102 tranche-A pair 2); got {expected_cells}."
+    expected_cells = 219 * 26
+    assert expected_cells == 5694, (
+        f"Phase 1A-beta cube cells: expected 5,694 (219 active x 26 exits "
+        f"post-B2103 tranche-A complete); got {expected_cells}."
     )
 
 
@@ -13249,8 +13249,8 @@ def test_b1441_data_scarcity_retirement_is_wired_and_semantically_separate():
         "producer removed - retirement was supposed to be reversible when "
         "sector_history.csv is extended (S6-B1434b)"
     )
-    assert len(set(ALL_STRATEGIES) - DS - MP - DEP) == 216, (
-        "active count drifted from 216 (217 registered post-B2102 minus the "
+    assert len(set(ALL_STRATEGIES) - DS - MP - DEP) == 218, (
+        "active count drifted from 218 (219 registered post-B2103 minus the "
         "data-scarce survivor)")
 
 
@@ -15354,7 +15354,7 @@ def test_b1619_variant_strategy_binds_to_its_own_signal():
         ALL_STRATEGIES, BREAKER_VARIANT_STRATEGIES,
         make_breaker_variant_strategy, assert_variant_strategies_are_configured)
 
-    assert len(ALL_STRATEGIES) == 217, (
+    assert len(ALL_STRATEGIES) == 219, (
         f"roster is {len(ALL_STRATEGIES)}; the variant factory must not "
         f"register anything until an admission is owner-approved")
     assert BREAKER_VARIANT_STRATEGIES == {}
@@ -24400,3 +24400,66 @@ def test_b2102_tranche_a_pair2_producers_and_gates():
     r = strat_failed_breakout_2b_short(
         {"failed_breakout_2b_short": True, "borrow_ok": True})
     assert r["fires"] is True and r["direction"] == "short"
+
+
+def test_b2103_tranche_a_pair3_injectors_and_gates():
+    """B2103 (M1 + M2): the sector-ETF map derives from the ETFs CSV
+    (Category=='Sector' rows only, so broad-market funds never claim a
+    sector); the earnings-AVWAP injector's math is pinned on a SYNTHETIC
+    frame with a hand-computable anchor; both gates consume the keys."""
+    import numpy as np
+    import pandas as pd
+
+    from backtest.data.signal_loader import (
+        _sector_etf_map,
+        inject_earnings_avwap_signals,
+    )
+
+    m = _sector_etf_map()
+    assert m.get("Information Technology") == "XLK", m
+    assert m.get("Financials") == "XLF"
+    assert "Broad Market" not in m, "broad-market funds must not claim a sector"
+
+    # earnings-AVWAP: anchor mid-frame, flat 100s before, then a dip under
+    # the AVWAP and a reclaim on the last bar -> EVENT True.
+    idx = pd.date_range("2024-03-01", periods=20, freq="B")
+    close = np.array([100.0] * 10 + [100, 101, 102, 101, 100, 99, 98, 97, 96, 103])
+    df = pd.DataFrame({"open": close, "high": close + 1, "low": close - 1,
+                       "close": close, "volume": 1e6}, index=idx)
+    anchor = idx[10].date()
+
+    import backtest.data.signal_loader as sl
+
+    def fake_earnings(ticker, as_of=None):
+        return pd.DataFrame({"earnings_date": [pd.Timestamp(anchor)]})
+
+    import backtest.data.fetcher as fetcher
+    orig = fetcher.fetch_earnings_dates
+    fetcher.fetch_earnings_dates = fake_earnings
+    try:
+        sig = {}
+        sl.inject_earnings_avwap_signals(sig, "TST", df, idx[-1].date())
+    finally:
+        fetcher.fetch_earnings_dates = orig
+    assert sig.get("earnings_avwap_above") is True, sig
+    assert sig.get("earnings_avwap_reclaim_recent_3d") is True, sig
+
+    from backtest.signals.screener import (
+        strat_earnings_avwap_reclaim_long,
+        strat_rs_line_sector_leader_long,
+    )
+    assert strat_rs_line_sector_leader_long(
+        {"rs_new_high_price_not_at_high": True,
+         "price_above_ema_50": True})["fires"] is True
+    assert strat_rs_line_sector_leader_long(
+        {"rs_line_new_60d_high": True,
+         "price_above_ema_50": True})["fires"] is False, (
+        "the RS high alone must not fire - the thesis key requires price "
+        "NOT at its 52w high")
+    assert strat_earnings_avwap_reclaim_long(
+        {"earnings_avwap_reclaim_recent_3d": True,
+         "price_above_ema_200": True})["fires"] is True
+    assert strat_earnings_avwap_reclaim_long(
+        {"earnings_avwap_above": True,
+         "price_above_ema_200": True})["fires"] is False, (
+        "the STATE key alone must not fire - the gate is the EVENT")
