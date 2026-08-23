@@ -58,6 +58,11 @@ from roster_core import COST_BPS, IS_END, IS_START, WINSORIZE, _sharpe  # noqa: 
 CUBE = ROOT / "output_r5_merged_1_7" / "trade_exit_detail.csv"
 FAMILY_MAP = ROOT / "output_audit" / "strategy_producer_map.csv"
 OUT = ROOT / "output_audit" / "b2068_family_pooled_noise_floor.json"
+# B2081: the design gate generalizes per family - one producer name selects
+# the family; the EMA default keeps the committed b2068 artifact canonical.
+FAMILY_PRODUCERS = {"ema": "compute_ema_sma", "smc": "compute_smc_signals"}
+FAMILY_OUT = {"ema": OUT,
+              "smc": ROOT / "output_audit" / "b2081_smc_family_noise_floor.json"}
 EXIT = "atr_trail_1x"
 SEED = 2068
 LADDER = (50, 100, 300, 1000, 3000, 10000, 30000)
@@ -73,10 +78,10 @@ REFERENCES = {
 }
 
 
-def family_members() -> list[str]:
+def family_members(producer: str = "compute_ema_sma") -> list[str]:
     with FAMILY_MAP.open(encoding="utf-8") as f:
         return sorted({r["strategy"] for r in csv.DictReader(f)
-                       if r["producer"] == "compute_ema_sma"})
+                       if r["producer"] == producer})
 
 
 def _boot_sharpe(pnl: np.ndarray, hold: np.ndarray, idx: np.ndarray) -> float | None:
@@ -144,9 +149,15 @@ def block_replication_floor(pnl: np.ndarray, hold: np.ndarray,
 
 
 def main() -> int:
+    import argparse
     import pandas as pd
-    fam = family_members()
-    print(f"EMA family: {len(fam)} strategies (producer compute_ema_sma, "
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--family", choices=sorted(FAMILY_PRODUCERS), default="ema")
+    a = ap.parse_args()
+    prod = FAMILY_PRODUCERS[a.family]
+    out_path = FAMILY_OUT[a.family]
+    fam = family_members(prod)
+    print(f"{a.family.upper()} family: {len(fam)} strategies (producer {prod}, "
           f"per {FAMILY_MAP.name})")
     df = pd.read_csv(CUBE, usecols=["strategy", "direction", "exit_method",
                                     "entry_date", "pnl_pct", "hold_days"],
@@ -208,8 +219,9 @@ def main() -> int:
     for name, bar in REFERENCES.items():
         print(f"  {name} ({bar}): N >= {req_block[name]}")
 
-    OUT.write_text(json.dumps({
+    out_path.write_text(json.dumps({
         "cube": str(CUBE.relative_to(ROOT)), "exit": EXIT, "seed": SEED,
+        "family": a.family, "family_producer": prod,
         "is_window": [str(IS_START), str(IS_END)],
         "family_size": len(fam), "strategies_with_fires": int(cell_n.shape[0]),
         "pooled_n": n_pool, "median_cell_n": med_cell,
@@ -223,7 +235,7 @@ def main() -> int:
         "references": REFERENCES, "required_n": req,
         "r_pairs": R_PAIRS, "r_sel": R_SEL,
     }, indent=1), encoding="utf-8")
-    print(f"\n[OK] wrote {OUT}")
+    print(f"\n[OK] wrote {out_path}")
     return 0
 
 

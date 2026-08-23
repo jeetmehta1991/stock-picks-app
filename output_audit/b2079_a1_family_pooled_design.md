@@ -42,9 +42,14 @@ level that helps the pool by hurting a minority is visible. Ranking key: pooled 
   iid 0.088 — within-day cross-strategy correlation costs ~2.5×. Verdict against the named
   references: 0.2245 clears the 0.281 roster margin and the 0.333 cell-grain floor (~20%
   headroom), so W-A remains viable; the 10%-of-gate reference (0.1) is UNREACHABLE at this
-  pool. Required pooled N at the block floor: ≥30,000 trades. **NEW OBLIGATION SURFACED:
-  the measurement is EMA-family only — W-B (SMC, 22 consumers) must have its own pool count
-  and block floor measured, $0 offline, before W-B is claimed viable.**
+  pool. Required pooled N at the block floor: ≥30,000 trades.
+  **W-B MEASURED (B2081, output_audit/b2081_smc_family_noise_floor.json):** the SMC family
+  pools only 10,862 IS trades (22 consumers), full-pool block floor **0.3115** — it clears
+  the 0.333 cell-grain floor but CANNOT see the 0.281 roster margin (required N: none at
+  this pool). **W-B verdict: viable only for effects ≥ ~0.33 at Step-1 scale**; a
+  0.28-class effect on the SMC axis is only measurable at Step-2's larger pool. W-B stays
+  in the plan with that stated sensitivity limit — its Step-1 job narrows to ranking axis
+  levels for large effects and feeding Step-2, not to seeing roster-margin-sized ones.
 - **(d) A2 plumb sequencing** — by family size: volume (67) → pivots (58) → RSI (34) →
   MACD (22). One B1519-pattern config plumb each, its own batch with pins, byte-identical
   defaults. Each joins the wave queue as W-C…W-F when its plumb lands.

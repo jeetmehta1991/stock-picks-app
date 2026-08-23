@@ -1,0 +1,92 @@
+{
+ "cube": "output_r5_merged_1_7\\trade_exit_detail.csv",
+ "exit": "atr_trail_1x",
+ "seed": 2068,
+ "family": "smc",
+ "family_producer": "compute_smc_signals",
+ "is_window": [
+  "2022-05-05",
+  "2025-05-05"
+ ],
+ "family_size": 22,
+ "strategies_with_fires": 22,
+ "pooled_n": 10862,
+ "median_cell_n": 257,
+ "pooled_sharpe": -1.759,
+ "replication_floor_by_n": {
+  "50": 2.106,
+  "100": 1.403,
+  "257": 0.8885,
+  "300": 0.7485,
+  "1000": 0.42,
+  "3000": 0.299,
+  "10000": 0.1495,
+  "10862": 0.154
+ },
+ "selection_lift_by_n_k": {
+  "50": {
+   "5": 0.8804,
+   "20": 1.7672
+  },
+  "100": {
+   "5": 0.7335,
+   "20": 1.3742
+  },
+  "257": {
+   "5": 0.5785,
+   "20": 1.0716
+  },
+  "300": {
+   "5": 0.5514,
+   "20": 1.0408
+  },
+  "1000": {
+   "5": 0.3848,
+   "20": 0.7104
+  },
+  "3000": {
+   "5": 0.2678,
+   "20": 0.4595
+  },
+  "10000": {
+   "5": 0.1758,
+   "20": 0.2589
+  },
+  "10862": {
+   "5": 0.1586,
+   "20": 0.2595
+  }
+ },
+ "block_replication_floor_by_n": {
+  "50": 3.281,
+  "100": 2.639,
+  "257": 1.832,
+  "300": 1.63,
+  "1000": 0.9505,
+  "3000": 0.6065,
+  "10000": 0.3295,
+  "10862": 0.3115
+ },
+ "block_unique_days": 750,
+ "block_mean_trades_per_day": 14.48,
+ "required_n_block": {
+  "cell_grain_floor_b2009": 10000,
+  "roster_margin_52w_high_b2014": null,
+  "roster_margin_xs_momentum_b2014": 3000,
+  "ten_pct_of_sharpe_gate": null
+ },
+ "references": {
+  "cell_grain_floor_b2009": 0.333,
+  "roster_margin_52w_high_b2014": 0.281,
+  "roster_margin_xs_momentum_b2014": 0.624,
+  "ten_pct_of_sharpe_gate": 0.1
+ },
+ "required_n": {
+  "cell_grain_floor_b2009": 3000,
+  "roster_margin_52w_high_b2014": 10000,
+  "roster_margin_xs_momentum_b2014": 1000,
+  "ten_pct_of_sharpe_gate": null
+ },
+ "r_pairs": 400,
+ "r_sel": 200
+}

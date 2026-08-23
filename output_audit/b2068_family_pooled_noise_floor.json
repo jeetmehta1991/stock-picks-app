@@ -2,6 +2,8 @@
  "cube": "output_r5_merged_1_7\\trade_exit_detail.csv",
  "exit": "atr_trail_1x",
  "seed": 2068,
+ "family": "ema",
+ "family_producer": "compute_ema_sma",
  "is_window": [
   "2022-05-05",
   "2025-05-05"
