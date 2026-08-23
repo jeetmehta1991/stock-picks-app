@@ -1235,6 +1235,15 @@ earlier.
   how many sites the fix governs.
 - **Count the sites and PIN the count.** B1925's pin asserts its strip
   expression appears at least TWICE - that assertion is the remedy.
+- **FIFTH INSTANCE, AT FULL PRICE (B2092 - L620):** B2043 grew a task payload
+  to a 3-tuple, fixed the pool worker, pinned through the replay path - and
+  BOTH non-pool consumers kept 2-tuple unpacks. The first run to traverse
+  the sequential branch completed its entire 3-hour day loop and crashed at
+  save with the cube unwritten. **A payload's arity is a contract with every
+  consumer, and a pin through one path proves one path.** The durable form
+  of count-and-pin here is STRUCTURAL: test_b2092 walks the AST and asserts
+  the append arity equals EVERY for-unpack arity, so a future consumer
+  inherits the check unwritten.
 
 ## AN EXEMPTION'S REASON IS A CLAIM ABOUT CODE (B1934 - L591, CHECKLIST #279)
 
