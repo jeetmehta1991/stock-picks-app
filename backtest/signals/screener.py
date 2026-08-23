@@ -2905,13 +2905,21 @@ def strat_ichimoku_cloud_breakdown(s):
     # starves. Drop adx_trending - EVENT-based ichi_tk_cross_dn already implies
     # momentum. borrow_ok gate retained (B1132 audit: 23.5% mean blocking OK).
     # Pattern S SHORT caveat + Turn 1 borrow_ok suspect finding.
-    fires = (s.get("ichi_below_cloud") and
+    # B2105 (S6-B1248-ICHI-BREAKDOWN-ASYMMETRY, owner-approved 2026-08-23 at
+    # b2031 rec 10, folded with the rec-9 supertrend pair-symmetry ruling):
+    # the PAIR had inverted STATE/EVENT mixes - the dual T8 anchors on the
+    # cloud-break EVENT (ichi_*_cloud_break_recent_5d, B725) while this
+    # standalone anchored on the cloud STATE. Harmonized the same way the
+    # supertrend standalone was (B2075): the ANCHOR goes EVENT; the
+    # tk_cross_dn EVENT confirm stays - so the standalone remains distinct
+    # from the dual's short leg (which confirms via tk STATE + weekly Kumo).
+    fires = (s.get("ichi_below_cloud_break_recent_5d") and
              s.get("ichi_tk_cross_dn") and
              # B1134 dropped: adx_trending (redundant with tk_cross EVENT)
              not _short_borrow_trap_active(s))
     return _strat(fires, "short", "trend",
-        ["ichi_below_cloud", "ichi_tk_cross_dn", "borrow_ok"],
-        ["Price broke below Ichimoku Cloud  -  full bearish structure",
+        ["ichi_below_cloud_break_recent_5d", "ichi_tk_cross_dn", "borrow_ok"],
+        ["Price BROKE below the Ichimoku Cloud within 5 bars (B2105 EVENT-anchored; pre-B2105 used the always-on cloud STATE)",
          "Tenkan crossed below Kijun  -  short-term momentum confirming (B1134 self-sufficient)"])
 
 

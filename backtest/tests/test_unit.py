@@ -24499,3 +24499,19 @@ def test_b2104_symmetric_triangle_branch_is_alive_and_guarded():
     asc = detect_triangle(frame(-0.00005, +0.0015))
     assert asc["triangle_ascending_detected"] is True, asc
     assert asc["triangle_symmetric_detected"] is False
+
+
+def test_b2105_ichi_breakdown_is_event_anchored():
+    """B2105 (owner-approved rec 10): the standalone breakdown anchors on
+    the cloud-break EVENT like its dual sibling - the STATE key alone no
+    longer fires; the EVENT key does; the tk_cross confirm survives."""
+    from backtest.signals.screener import strat_ichimoku_cloud_breakdown as f
+
+    base = {"ichi_tk_cross_dn": True, "borrow_ok": True}
+    assert f({**base, "ichi_below_cloud": True})["fires"] is False, (
+        "the pre-B2105 STATE shape must no longer fire")
+    r = f({**base, "ichi_below_cloud_break_recent_5d": True})
+    assert r["fires"] is True and r["direction"] == "short"
+    assert f({"ichi_below_cloud_break_recent_5d": True,
+              "borrow_ok": True})["fires"] is False, (
+        "the tk_cross confirm survived the swap")
