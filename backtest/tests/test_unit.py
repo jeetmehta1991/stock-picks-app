@@ -19200,28 +19200,11 @@ def test_b1858_gate_message_says_where_to_put_the_citation():
 # RATCHETED, not retrofitted: this list may SHRINK and must never GROW.
 # Converting 26 sections in one batch is the bundling B1839 showed produces
 # defects, and the directive is about ADDITIONS.
-_B1860_UNGATED_LEGACY = {
-    # B1918d: the TRUE ungated set, 24 entries, measured with the register's
-    # own text excluded from the classifier's haystack.
-    #
-    # RETRACTS B1918c's "0 of 95 UNGATED - the directive is fully satisfied".
-    # That reading came from the circularity above: these section names sat in
-    # THIS literal, and `key in tu_text` counted that as a test pin. The
-    # original 26-entry list was substantially right; my probe was not.
-    #
-    # The set may SHRINK and may not GROW, and #279's reverse check now also
-    # requires it to shrink when a section GAINS a gate.
-    'A CLASSIFIER INHERITS YOUR MODEL OF THE DATA',
-    'AN ANALYSIS ROW HAS NO CODE TO VERIFY',
-    'Failure modes this skill exists to prevent',
-    'PRINT THE SAMPLE IDENTIFIER BEFORE JOINING TWO MEASUREMENTS',
-    'Phase 0 — RECALL',
-    'Phase 2 — PRE-FLIGHT',
-    'Phase 4 — AUDIT DEPTH STANDARD',
-    'SPEC-vs-IMPLEMENTATION RULE',
-    'STOP AT THE SECOND FAILED HAND-CHECK',
-    'Standing activation',
-}
+_B1860_UNGATED_LEGACY: set = set()
+# B2063b: EMPTIED - every legacy section now cites a mechanism or
+# declares JUDGMENT-ONLY/PROSE-ONLY with its reason. The set may
+# never grow again; a new ungated section fails the assertion below
+# directly.
 
 
 def _b1860_classify(sk_text, tu_text, vt_text):

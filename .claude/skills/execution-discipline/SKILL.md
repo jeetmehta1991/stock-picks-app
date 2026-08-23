@@ -22,6 +22,8 @@ suggestions. A skipped phase makes the turn non-compliant.**
 - The Truth & Evidence Standard below is **cross-cutting and absolute**: it
   binds every phase, every sentence, every number in every response.
 
+**Mechanically enforced** by the B1744 auto-injection hook and scan_discipline_not_loaded (a substantive turn without the full skill in context is blocked).
+
 ## GENERALIZATION MANDATE (owner directive 2026-07-18 — Council 341, HARD)
 
 Two mandatory requirements, owner-set after L207→L208→L209 (a silent
@@ -227,6 +229,8 @@ you work WITH them, not against them:
    `feedback_pyramid_no_exceptions`, `feedback_mandatory_council_per_turn`.
 4. **State the scope ledger** (Phase 1) before doing any work.
 
+JUDGMENT-ONLY: whether the checklists and learnings were actually READ is unobservable to any scan; the compensating mechanism is the B1744 auto-injection (this file arrives in context every turn) plus the anchor rules that keep lessons in the loaded files.
+
 ## Phase 1 — SCOPE LEDGER (the no-silent-miss mechanism)
 
 At turn start, enumerate EVERY item in scope as an explicit ledger:
@@ -273,6 +277,8 @@ Per the Pass 52 standing rule in `CLAUDE.md`:
 - Owner approval gates: ALL rule/threshold/parameter changes, ALL paid API
   runs (small test → review → approval → scale), Batch B launch
   (`feedback_no_auto_launch_batch_b` — explicit typed instruction only).
+
+**Mechanically enforced** in part by scan_compliance_is_content (#238: the compliance statement must cite items with per-item status); the per-recommendation pre-flight ordering itself is JUDGMENT-ONLY - no scan can see whether verification happened BEFORE a recommendation was drafted.
 
 ## Phase 3 — EXECUTE with the TEST PYRAMID GATE
 
@@ -324,6 +330,8 @@ Surface-level = non-compliant. Every audit must satisfy ALL of:
 7. **Line-by-line ticket extraction** when reviewing feedback or prior turns:
    every sentence becomes a candidate ticket BEFORE synthesis
    (`feedback_line_by_line_ticket_extraction_before_synthesis`).
+
+JUDGMENT-ONLY: audit depth (happy-path artifacts opened, representative sampling, consumer paths traced) is a property of how work was done, not of the text that reports it; the evidence-artifact requirements (#124) and the executed-check vocabularies are the gateable slices and are gated where they appear.
 
 ## ANCHOR-THE-RULE RULE (B1597 - L464, CHECKLIST #197, mechanically enforced)
 
@@ -473,6 +481,8 @@ and nothing in the repo compares those two.
 **The tell:** if you find yourself explaining why a result is surprising, check
 first that it is the right SHAPE of result. "0 PASS" was surprising because it was
 answering a question the phase was never asked.
+
+JUDGMENT-ONLY for detection: no scan compares code output-shape to the PLAN's specified deliverable (the drift lives between two documents' meanings). The values-vs-claims halves that ARE derivable got mechanisms: verify_describing_artifacts.py record-vs-code checks plus the B2054 status-prose anchor gate.
 
 ## ARTIFACT-PROVENANCE RULE (B1572 — L445, HARD, mechanically enforced)
 
@@ -1875,6 +1885,8 @@ had promoted 17-57 of that same population.
 - **Hand-reading finds what no checker looks for** - one row stated its own blocker and had sat as
   OPEN; every completeness checker was asking a different question.
 
+**Mechanically enforced** by the kept hand-read corpus in scripts/hand_verified_rows.py (LABELS + RANDOM_SAMPLE_LABELS with reproduce_random_sample, B2022): a classifier is scored against verdicts a human reached by reading, never against its author's expectations.
+
 ## STOP AT THE SECOND FAILED HAND-CHECK (B1791 - L541, CHECKLIST #267)
 
 **MEASURED: four classifiers, hand-checked samples failing 3-of-4 then 3-of-5.** The rule *two
@@ -1889,6 +1901,8 @@ failed attempts means the diagnosis is wrong* applied two attempts before I stop
   prior verdicts; the first classifier scored those. **Grading your own homework, worse each pass.**
 - **What held: nothing was written.** Four wrong classifiers, zero corrupted rows - dry-run then
   hand-check before `--write`, every time.
+
+JUDGMENT-ONLY: an iteration-stopping rule for the author's own debugging loop - no scan counts failed hand-checks. Durability: the incident and rule are anchored at #267.
 
 ## AN ANALYSIS ROW HAS NO CODE TO VERIFY (B1790 - L540, CHECKLIST #266)
 
@@ -1905,6 +1919,8 @@ Spot-checked: `B1512: engine timing COMPLETE (42.9 min)` changed three .md files
 - **Name a verdict to its evidence.** `CODE_LANDED_IN_BATCH` is not `VERIFIED` - a batch carries
   several rows, so it proves the batch produced durable code, not that THIS row's claim is it.
   **B1777's error was asking about the batch and answering about the row.**
+
+JUDGMENT-ONLY: the category call (analysis-output vs build-claim) is semantic; the enforceable halves live in the six-class vocabulary gates (scan_queue_vocabulary) and the #264 build-claim checker, both cited in their own sections.
 
 ## PROMOTION NEEDS A BATCH-SPECIFIC ARTIFACT (B1788 - L539, CHECKLIST #265)
 
@@ -2084,6 +2100,8 @@ assumed** - I never asked which cube produced the numbers I was combining.
   not two.**
 - **Retract the ATTRIBUTION without discarding the measurement.** The gap is still real; what failed
   was the link. Say which half survives.
+
+JUDGMENT-ONLY: no scan knows which two measurements a sentence is joining; the rule is applied at write time, and #255 anchors it.
 
 ## INSPECTION EVIDENCE COMES FROM READS, NEVER FROM WRITES (B1774 - L529, CHECKLIST #254)
 
@@ -2627,3 +2645,5 @@ check FIRST. Each row is a real failure that recurred until its check existed.
 - **Pass 52 six consecutive owner catches** — Phase 2 pre-flight before, not after.
 - **Council 197 "eight layers is the smell"** — Phase 5.2 anti-theater guard: fix compliance, don't stack redundant checklist items.
 - **"Silent misses acknowledged (documented but not remediated)"** — Phase 1 DEFERRED-requires-ticket + Phase 5.4.
+
+PROSE-ONLY: an INDEX of historical failures - each entry's enforcement lives with its own rule; gating the index would gate a table of contents.
