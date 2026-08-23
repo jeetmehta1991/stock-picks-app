@@ -64,6 +64,11 @@ def load(ticker: str):
             df = pd.read_parquet(p)
             if not isinstance(df.index, pd.DatetimeIndex) and "date" in df.columns:
                 df = df.set_index("date")
+            if not isinstance(df.index, pd.DatetimeIndex):
+                # B2047 (S6-B2018b): META.parquet stores str dates; coerce as
+                # the engine does (cache.py:335) or Timestamp lookups explode.
+                _i = pd.to_datetime(df.index)
+                df.index = _i.tz_localize(None) if _i.tz is not None else _i
             return df.sort_index()
     return None
 

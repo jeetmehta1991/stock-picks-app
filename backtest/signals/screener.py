@@ -1534,7 +1534,11 @@ def strat_supertrend_macd(s):
       (2) macd_12_26_9_bullish -- MACD has confirmed momentum positive
           within the window
       (3) adx > 20 -- trend-strength filter unchanged
-    SHORT mirrors with flip_recent_short + macd_bearish + adx > 20.
+    SHORT does NOT mirror this (B2047, S6-B2024a): strat_supertrend_macd_short
+    still gates on STATE supertrend_bearish (measured 99.19pct True, B655
+    audit) - the EVENT conversion reached only this long leg. The swap to
+    flip_recent_short_5d is owner-gated (S6-B1248-SUPERTREND-SHORT-STATE-EVENT
+    on the decision menu); this line previously CLAIMED the mirror existed.
 
     Thesis: the supertrend flip is the bar-of-fire EVENT (genuine
     timing alpha); the 5-bar window allows MACD/ADX confirmation to

@@ -1402,10 +1402,15 @@ class BacktestEngine:
             if not hasattr(self, "_bear_indicator_cache"):
                 from pathlib import Path
                 _cache = {}
-                _yc_path = Path("data_prefetch/fred/observations/T10Y2Y.parquet")
+                # B2047 (S6-B1250-ENG8): anchored to the repo root - the bare
+                # relative form silently found NOTHING from any other cwd and
+                # the .exists() guards turned that into an empty cache with no
+                # symptom (fail-open path resolution).
+                _root = Path(__file__).resolve().parents[2]
+                _yc_path = _root / "data_prefetch/fred/observations/T10Y2Y.parquet"
                 if _yc_path.exists():
                     _cache["yc"] = pd.read_parquet(_yc_path)
-                _aaii_path = Path("data_prefetch/aaii/weekly_sentiment.parquet")
+                _aaii_path = _root / "data_prefetch/aaii/weekly_sentiment.parquet"
                 if _aaii_path.exists():
                     _cache["aaii"] = pd.read_parquet(_aaii_path)
                 # Sector ETF dict (already in self.ohlcv_dict)
