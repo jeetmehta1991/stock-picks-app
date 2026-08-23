@@ -75,7 +75,7 @@
     {
       "risk": "the launch dies with its parent and reports success - a 2-year smoke was killed at simulated day 25 of 504 with exit code 0",
       "gate": "CHECKLIST #212: Start-Process detachment + confirm alive from a LATER turn",
-      "status": "IN PROGRESS - detached marker running, turn-boundary confirmation pending"
+      "status": "RESOLVED B1646 (2026-08-18): wave-1 arms confirmed alive from a later turn (S6-B1646b - both PIDs alive, logs advancing); the 2026-08-23 anchor rule (B2054) found this line still saying IN PROGRESS five days after the confirmation happened"
     },
     {
       "risk": "memory exhaustion mid-sweep",

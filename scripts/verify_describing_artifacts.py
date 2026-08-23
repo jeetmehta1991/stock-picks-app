@@ -143,6 +143,32 @@ def _manifest_grid():
     raise LookupError("grid-enumeration risk row not found in the manifest")
 
 
+# B2054 (S6-B1694c): the B1694 drift lived in STATUS PROSE beside agreeing
+# values - approval-state sentences describing a superseded world. Truth for
+# arbitrary prose is not derivable, but the DECAY VECTOR is: status language
+# with NO batch/date anchor can never be checked against anything later.
+# Anchored status prose is listed for review; UNANCHORED fails closed.
+STATUS_WORDS = ("pending", "awaiting", "not approved", "in flight",
+                "not yet approved", "proposed-not-built")
+STATUS_FILES = (
+    ROOT / "output_audit" / "PRODUCER_VARIANT_TABLE_smc_breaker_block_long.md",
+    ROOT / "output_audit" / "run_manifest_wave1.json",
+    ROOT / "output_b2016_e1" / "run_manifest.json",
+)
+
+
+def status_prose_findings(text: str) -> list:
+    """(line_no, word, anchored) for every approval-state phrase in text."""
+    import re as _re
+    out = []
+    for i, line in enumerate(text.lower().splitlines(), 1):
+        for w in STATUS_WORDS:
+            if w in line:
+                anchored = bool(_re.search(r"b\d{3,4}|20\d\d-\d\d-\d\d", line))
+                out.append((i, w, anchored))
+    return out
+
+
 REGISTRY = [
     # (label, record-reader, authority-reader)
     ("variant table: tail_n band",        _pvt_band("tail_n"),           lambda: _auth_tighten("TAIL_N")),
@@ -208,6 +234,24 @@ def main() -> int:
         for label, why in unreadable:
             print(f"  UNREADABLE {label}: {why}")
         print(f"\n  {len(ok)} agree | {len(drift)} DRIFTED | {len(unreadable)} unreadable")
+
+    # B2054 (S6-B1694c): status-prose staleness check on the covered files.
+    unanchored = []
+    for f in STATUS_FILES:
+        if not f.exists():
+            continue
+        for ln, w, anch in status_prose_findings(
+                f.read_text(encoding="utf-8", errors="replace")):
+            if not a.quiet:
+                print(f"  STATUS-PROSE {'ok        ' if anch else 'UNANCHORED'}"
+                      f" {f.name}:{ln} ({w!r})")
+            if not anch:
+                unanchored.append(f"{f.name}:{ln} ({w})")
+    if unanchored:
+        print("\nFAIL-CLOSED: approval-state prose with no batch/date anchor "
+              "can never be checked against a later ruling - anchor it: "
+              + "; ".join(unanchored))
+        return 4
 
     if unreadable:
         print("\nFAIL-CLOSED: an authority that cannot be read proves nothing.")

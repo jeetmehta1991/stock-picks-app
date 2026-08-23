@@ -23612,3 +23612,25 @@ def test_b2052_universe_gate_is_per_launched_file(monkeypatch):
     assert not tg.scan_unverified_universe(turn([quoted])), (
         "a quoted mention is data the command carries, not a launch (B2028b "
         "class, applied to this sibling)")
+
+
+def test_b2054_status_prose_must_be_anchored():
+    """B2054 (S6-B1694c): the B1694 drift lived in status PROSE beside
+    agreeing values. Unanchored approval-state language fails closed; anchored
+    language is listed for review. Both directions on the helper."""
+    import importlib.util
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    spec = importlib.util.spec_from_file_location(
+        "vda_b2054", root / "scripts" / "verify_describing_artifacts.py")
+    m = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(m)
+    bad = m.status_prose_findings("approval pending for the span arm\n")
+    assert bad == [(1, "pending", False)], (
+        "status prose with no batch/date anchor must read UNANCHORED")
+    good = m.status_prose_findings(
+        "approval pending per the 2026-08-23 ruling (B2042)\n")
+    assert good and good[0][2] is True, (
+        "a batch- or date-anchored status line is reviewable, not a failure")
+    clean = m.status_prose_findings("the band spans 2..20; nothing else.\n")
+    assert clean == []
