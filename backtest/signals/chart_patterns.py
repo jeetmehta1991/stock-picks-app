@@ -402,8 +402,31 @@ def detect_triangle(
     # = 0.00151 (90%ile 0.00302) - old tol 0.001 excluded 90%+ of consolidation
     # windows. Widen to Bulkowski 2005 canonical ~2% drift range: flat<0.002,
     # slope>0.001. SPY 4y detection: 0 -> 17 (matches Bulkowski 5-15/yr).
+    # B2104 (S6-B2059a, owner-approved 2026-08-23 C13): the symmetric branch
+    # was DEAD - 0 of 976 real observations (B2059 measured; siblings 92/76)
+    # - because the B1126 flat-tol widening let the ascending/descending
+    # elifs EAT its region: a symmetric window needed BOTH slopes past 0.002
+    # to reach the third elif. The revival: symmetric is tested FIRST, with
+    # a balanced-convergence guard (slope magnitudes within 2x of each
+    # other, Bulkowski 2005 - comparable trendlines) so it cannot steal
+    # genuinely one-sided windows from its siblings.
+    # B2104 measurement before the threshold was chosen (the no-untested-
+    # cause rule, applied twice - the first candidate tolerance was probed
+    # at a 20-bar grain and the function fits 30): at the function's OWN
+    # 30-bar grain the +-0.001 joint region is EMPTY (0 of 1,022 windows,
+    # 25 tickers x monthly) and +-0.0005 balanced is ALSO empty. The widest
+    # living config is +-0.0002 with the balance guard: 2 of 1,022.
+    # DISCLOSED: the symmetric geometry is structurally rare at daily
+    # 30-bar fits - the branch is REVIVED, not made common (~0.2pct of
+    # monthly windows), and its three consumers remain fire-starved
+    # (the W5/cup_and_handle class) until a cube measures them.
+    _sym = (slope_high_norm < -0.0002 and slope_low_norm > 0.0002
+            and 0.5 <= abs(slope_high_norm) / slope_low_norm <= 2.0)
+    if _sym:
+        out["triangle_symmetric_detected"] = True
+        out["triangle_apex_pct"] = round(abs(slope_high_norm) + slope_low_norm, 4)
     # Ascending: slope_high ~ 0, slope_low > 0
-    if abs(slope_high_norm) < 0.002 and slope_low_norm > 0.001:
+    elif abs(slope_high_norm) < 0.002 and slope_low_norm > 0.001:
         out["triangle_ascending_detected"] = True
         out["triangle_resistance_level"] = round(float(highs_arr.mean()), 4)
         out["triangle_breakout_pct"] = round(slope_low_norm * lookback, 4)
@@ -412,10 +435,6 @@ def detect_triangle(
         out["triangle_descending_detected"] = True
         out["triangle_support_level"] = round(float(lows_arr.mean()), 4)
         out["triangle_breakdown_pct"] = round(slope_high_norm * lookback, 4)
-    # Symmetric: both converging
-    elif slope_high_norm < -0.001 and slope_low_norm > 0.001:
-        out["triangle_symmetric_detected"] = True
-        out["triangle_apex_pct"] = round(abs(slope_high_norm) + slope_low_norm, 4)
     return out
 
 

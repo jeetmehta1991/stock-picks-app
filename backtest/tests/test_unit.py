@@ -24463,3 +24463,39 @@ def test_b2103_tranche_a_pair3_injectors_and_gates():
         {"earnings_avwap_above": True,
          "price_above_ema_200": True})["fires"] is False, (
         "the STATE key alone must not fire - the gate is the EVENT")
+
+
+def test_b2104_symmetric_triangle_branch_is_alive_and_guarded():
+    """B2104 (S6-B2059a): the symmetric branch fires on balanced convergence
+    at the measured living tolerance, does NOT steal one-sided windows from
+    its siblings, and the siblings still fire. SYNTHETIC 30-bar frames with
+    hand-set slopes."""
+    import numpy as np
+    import pandas as pd
+
+    from backtest.signals.chart_patterns import detect_triangle
+
+    def frame(high_slope_norm, low_slope_norm, base=100.0, n=35):
+        x = np.arange(n, dtype=float)
+        highs = base * (1.02 + high_slope_norm * x)
+        lows = base * (0.98 + low_slope_norm * x)
+        close = (highs + lows) / 2
+        idx = pd.date_range("2024-01-02", periods=n, freq="B")
+        return pd.DataFrame({"open": close, "high": highs, "low": lows,
+                             "close": close, "volume": 1e6}, index=idx)
+
+    sym = detect_triangle(frame(-0.0003, +0.0003))
+    assert sym["triangle_symmetric_detected"] is True, sym
+    assert sym["triangle_ascending_detected"] is False
+    assert sym["triangle_descending_detected"] is False
+
+    # steep-high / barely-rising-low: UNBALANCED (ratio 5x) - the guard must
+    # route it to DESCENDING, not symmetric
+    onesided = detect_triangle(frame(-0.0015, +0.0003))
+    assert onesided["triangle_symmetric_detected"] is False, onesided
+    assert onesided["triangle_descending_detected"] is True, onesided
+
+    # flat top + rising lows: ASCENDING, untouched by the revival
+    asc = detect_triangle(frame(-0.00005, +0.0015))
+    assert asc["triangle_ascending_detected"] is True, asc
+    assert asc["triangle_symmetric_detected"] is False
