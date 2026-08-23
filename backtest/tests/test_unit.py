@@ -23726,3 +23726,42 @@ def test_b2062_structural_claim_gate_is_exercised_both_ways():
     assert not tg.scan_unverified_structure(
         turn("the run finished in 54 minutes")), (
         "no structural claim, no fire")
+
+
+def test_b2068_family_pooled_noise_floor_structure_and_artifact():
+    """B2068 (council S6-B2006b step d): the family-pooled noise-floor
+    measurement. STRUCTURE on a SYNTHETIC fixture (seeded normal returns -
+    values are synthetic, only the shape is evidence, L470): replication
+    noise shrinks with N and best-of-K optimism is positive. ARTIFACT: the
+    committed b2068 JSON's floors span the ladder in the measured direction
+    (endpoint ratio, not strict monotonicity - bootstrap wiggle at adjacent
+    N is expected) and the required-N answers name ladder members."""
+    import importlib.util
+    import json
+    from pathlib import Path as _P
+
+    import numpy as np
+
+    root = _P(__file__).resolve().parents[2]
+    spec = importlib.util.spec_from_file_location(
+        "mfnf_b2068", root / "scripts" / "measure_family_pooled_noise_floor.py")
+    m = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(m)
+
+    rng = np.random.default_rng(7)
+    pnl = rng.normal(0.1, 3.0, 5000)   # SYNTHETIC
+    hold = np.full(5000, 6.0)
+    f_small = m.replication_floor(pnl, hold, 100, np.random.default_rng(1), r_pairs=60)
+    f_big = m.replication_floor(pnl, hold, 2000, np.random.default_rng(2), r_pairs=60)
+    assert f_big < f_small, (f_small, f_big)
+    lift = m.selection_lift(pnl, hold, 200, 8, np.random.default_rng(3), r_sel=40)
+    assert lift > 0, lift
+
+    art = json.loads((root / "output_audit" / "b2068_family_pooled_noise_floor.json")
+                     .read_text(encoding="utf-8"))
+    floors = {int(k): v for k, v in art["replication_floor_by_n"].items()}
+    ns = sorted(floors)
+    assert floors[ns[0]] / floors[ns[-1]] >= 5, floors
+    assert art["pooled_n"] == ns[-1] and art["median_cell_n"] in ns
+    for name, n_req in art["required_n"].items():
+        assert n_req is None or n_req in ns, (name, n_req)
