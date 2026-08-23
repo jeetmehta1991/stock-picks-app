@@ -23276,3 +23276,40 @@ def test_b2025_worker_drop_is_counted_and_logged(monkeypatch, caplog):
     assert sc._WORKER_DROP_COUNT == 1, "the drop must be counted"
     assert any("DROPPED" in r.getMessage() for r in caplog.records), (
         "the first drop per process must warn")
+
+
+def test_b2029_step1_rankable_does_not_require_holdout_stats():
+    """B2029 (S6-B2018c, owner-approved 2026-08-22): Step-1 eligibility must
+    not demand a holdout measurement the ruled window cannot contain. The old
+    clause excluded every row of every E1 arm (holdout_n=0 by construction ->
+    sharpe None -> 300/300 unrankable). Eligibility = IS Sharpe exists and an
+    exit was selectable; holdout stats stay reported, never gating.
+    """
+    import importlib.util
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    spec = importlib.util.spec_from_file_location(
+        "tbb_b2029", root / "scripts" / "tighten_breaker_block.py")
+    sys.path.insert(0, str(root / "scripts"))
+    try:
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+    finally:
+        sys.path.remove(str(root / "scripts"))
+    rows = [
+        # the E1 shape: exit selected, IS stats present, holdout EMPTY
+        {"verdict": "BELOW_POWER_FLOOR", "sharpe": None,
+         "is_sharpe": 0.69, "is_ci_lo": -0.08},
+        # holdout present too (a 2y Step-2 style cube) - still rankable
+        {"verdict": "FAIL", "sharpe": 0.4, "is_sharpe": 0.5, "is_ci_lo": 0.1},
+        # no exit selectable - never rankable
+        {"verdict": "NO_EXIT_SELECTABLE", "is_sharpe": 0.9},
+        # no IS stats at all (ZERO_FIRES shape) - never rankable
+        {"verdict": "ZERO_FIRES"},
+    ]
+    out = mod.step1_rankable(rows)
+    assert rows[0] in out, (
+        "a holdout-empty row with IS stats must be rankable - excluding it "
+        "re-creates the 300/300-unrankable defect")
+    assert rows[1] in out
+    assert rows[2] not in out and rows[3] not in out

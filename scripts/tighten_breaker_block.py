@@ -90,6 +90,23 @@ def _load_ohlcv(ticker: str) -> pd.DataFrame | None:
     return None
 
 
+def step1_rankable(rows: list[dict]) -> list[dict]:
+    """Step-1 ranking eligibility (owner-approved fix 2026-08-22, S6-B2018c).
+
+    B1718 made the IS Sharpe the ranking key; this predicate carried an EXTRA
+    clause requiring the HOLDOUT sharpe to be non-None - a leftover of the
+    pre-B1718 ranking key. Under the 2026-08-21 window ruling the search
+    window ENDS AT the holdout boundary, so a Step-1 cube contains ZERO
+    holdout trades and that clause excluded every row: 300/300 unrankable in
+    all four E1 arms, BY CONSTRUCTION (measured B2019). Eligibility is now
+    exactly what D4 ranks on: an IS Sharpe exists and the combination could
+    select an exit. Holdout stats, where a cube has them, remain REPORTED
+    fields - never eligibility.
+    """
+    return [r for r in rows if r.get("verdict") != "NO_EXIT_SELECTABLE"
+            and r.get("is_sharpe") is not None]
+
+
 def diagnose_fire(df: pd.DataFrame, when: pd.Timestamp,
                   swing_length: int = 20,
                   close_mitigation: bool = False) -> dict | None:
@@ -349,10 +366,7 @@ def main() -> int:
     # NO_EXIT_SELECTABLE excluded (owner ruling 2026-08-17). The per-combination
     # `gates`/`verdict` fields remain in the payload for STEP 2, but the ranking
     # below is what Step 1 hands forward.
-    rankable = [r for r in rows if r.get("verdict") != "NO_EXIT_SELECTABLE"
-                and r.get("sharpe") is not None
-                # B1718: an IS Sharpe is now REQUIRED - it is the ranking key.
-                and r.get("is_sharpe") is not None]
+    rankable = step1_rankable(rows)
     # B1615 OPTION D (owner-approved 2026-08-17): rank DISTINCT OUTCOMES and
     # carry the whole equivalence class forward. Ranking ROWS meant the top 10
     # held only 4 real candidates on cfg2 - combinations differing solely in a
