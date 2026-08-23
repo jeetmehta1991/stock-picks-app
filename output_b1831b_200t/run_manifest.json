@@ -1,0 +1,56 @@
+{
+ "sequence": "B1831b_200t_1y_timing_config",
+ "batch": "B2070",
+ "execution": "LOCAL",
+ "frozen_sha": "8f448d3e176e84c598a733e4d017c99652dc6d54",
+ "isolation": true,
+ "calendar": "nyse_mcal",
+ "tickers": {
+  "file": "output_audit/_sweep_200.txt",
+  "n": 200,
+  "sha256": "7978d8cfa42ac9832d98e7d6e9d06f18f526092840c0967d8d61dc54f5a538f6",
+  "verified": "verify_universe_artifact vs output_r5_merged_1_7 this turn: overlap 200, in-file-not-cube 0; superset of _sweep_100.txt True"
+ },
+ "strategy_subset": "output_audit/_subset_one.txt (smc_breaker_block_long)",
+ "window": {
+  "start": "2024-05-05",
+  "end": "2025-05-05",
+  "note": "ruled Step-1 window - ends AT the holdout boundary; holdout untouched"
+ },
+ "arms": [
+  {
+   "cfg": 1,
+   "SMC_SWING_LENGTH": 20,
+   "STRAT_EMA_SPAN": 200,
+   "note": "production baseline - the comparable to the 3.30h 100t x 2y cfg1 (b1576_par.log)"
+  }
+ ],
+ "concurrency": "SOLO (N=1) so ELAPSED is clean - this run IS the measurement",
+ "budget_cap_usd": 0,
+ "spent_usd": 0,
+ "projected_batch_usd": 0,
+ "wall_clock_projection_hours": 3.9,
+ "wall_clock_projection_basis": "0.2613 s/ticker-day x 200t x 251d = 3.64 h (B2021 bracket 0.257-0.282 end-to-end); +7pct headroom -> 3.9 h; kill cap --max-run-hours 6.0",
+ "obsolescence_risks": [
+  {
+   "risk": "mis-enumerated universe",
+   "status": "GATED - artifact verified this turn (overlap 200/200, 0 phantom)"
+  },
+  {
+   "risk": "family-pooled A1 ruling reshapes Step-1 measurements",
+   "status": "ACCEPTED - this run measures TIMING (s/ticker-day at 200t), which is shape-independent; owner approved the launch AFTER ruling A1"
+  },
+  {
+   "risk": "engine code drift mid-sequence",
+   "status": "GATED - frozen_sha pinned; solo run, no sequence to restart"
+  },
+  {
+   "risk": "wrong interpreter (L573)",
+   "status": "GATED - launched via ./.venv/Scripts/python.exe explicitly"
+  },
+  {
+   "risk": "idle-engine false completion (L566)",
+   "status": "GATED - completion check requires trade_exit_detail.csv rows > 0 AND fires in the log, not exit code alone"
+  }
+ ]
+}
