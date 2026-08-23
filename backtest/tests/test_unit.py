@@ -23721,3 +23721,35 @@ def test_b2058_pit_filter_garbage_dates_fail_closed(caplog):
     assert "X" not in set(u._filter_pit(df2, _date(2020, 5, 12))["Symbol"]), (
         "OUT on the removal date itself - the S&P effective-prior-to-open "
         "convention, measured B2058")
+
+
+def test_b2062_structural_claim_gate_is_exercised_both_ways():
+    """B2062 (S6-B1916c): scan_unverified_structure had ZERO test call-sites -
+    the one genuinely unexercised gate of the nine the seamless probe listed
+    (the other eight are entries-drivable with 4-12 call-sites each, the B1934
+    call-it-before-claiming rule applied). Both directions through the live
+    entries shape."""
+    import importlib.util
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    spec = importlib.util.spec_from_file_location(
+        "vtc_b2062", root / "scripts" / "verify_turn_compliance.py")
+    tg = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(tg)
+
+    def turn(text, tools=()):
+        content = [{"type": "text", "text": text}]
+        content += [{"type": "tool_use", "name": t, "input": {}}
+                    for t in tools]
+        return [{"type": "assistant", "message": {"content": content}}]
+
+    claim = "the setter is never called and the flip branch is dead code"
+    out = tg.scan_unverified_structure(turn(claim))
+    assert out and "#215" in out[0], (
+        "a structural claim with no file opened must fire")
+    tool = sorted(tg.INSPECTION_TOOLS)[0]
+    assert not tg.scan_unverified_structure(turn(claim, tools=(tool,))), (
+        "the same claim WITH an inspection tool used must clear")
+    assert not tg.scan_unverified_structure(
+        turn("the run finished in 54 minutes")), (
+        "no structural claim, no fire")
