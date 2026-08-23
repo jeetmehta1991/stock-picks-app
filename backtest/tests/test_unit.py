@@ -24001,3 +24001,57 @@ def test_b2082_launch_sweep_refuses_without_a_passing_gate():
         assert sentinel.exists(), "engine not invoked despite a passing gate"
         log = (td / "out" / "launch_summary.log").read_text(encoding="utf-8")
         assert "CFG=pin EXIT=0 ELAPSED=" in log and "CUBE_ROWS=ABSENT" in log
+
+
+def test_b2083_breakeven_trigger_buffered_past_the_touch():
+    """B2083 (owner-approved +0.25R): a bar that touches exactly +1.0R no
+    longer arms the breakeven stop (the 8.4pct-WR failure was arming AT the
+    excursion peak); +1.25R does. SYNTHETIC frames - the structure is the
+    evidence."""
+    import numpy as np
+    import pandas as pd
+
+    from backtest.engine.exit_strategies import exit_break_even_at_1r
+
+    entry_price, atr = 100.0, 2.0     # 1R = 1x ATR stop distance family
+    from backtest.engine.exit_strategies import _stop_distance
+    sd = _stop_distance(entry_price, atr, "long")
+
+    def frame(day_specs):
+        idx = pd.date_range("2024-01-02", periods=len(day_specs), freq="B")
+        return pd.DataFrame(
+            {"open": [o for o, h, l, c in day_specs],
+             "high": [h for o, h, l, c in day_specs],
+             "low": [l for o, h, l, c in day_specs],
+             "close": [c for o, h, l, c in day_specs]}, index=idx)
+
+    entry_date = pd.Timestamp("2024-01-02").date()
+    touch_1r = entry_price + 1.0 * sd
+    # day 1: touch exactly +1.0R then close back at entry; day 2: retrace to
+    # just under entry (would tag an entry-price BE stop); day 3: rally.
+    # row 0 is the ENTRY-DAY bar - the exit slices index.date > entry_date,
+    # so the first row is structurally excluded (found when case 1 passed
+    # vacuously: the touch bar sat on the entry date and never entered the
+    # loop). day-3 low stays ABOVE entry: the engine checks stops against
+    # the whole bar range, so a low touching entry would fill the just-armed
+    # BE stop intrabar - a fixture artifact, not the behavior under test.
+    specs = [(100, 100.5, 99.8, 100.0),
+             (100, touch_1r, 99.5, 100.0),
+             (100, 100.5, 99.0, 100.2),
+             (100.2, 108.0, 100.6, 107.5)]
+    r = exit_break_even_at_1r(frame(specs), entry_date, entry_price, "long", atr)
+    # pre-B2083 the day-1 touch armed BE and day-2's low 99.0 < entry hit the
+    # entry stop for ~0. Now BE stays unarmed (1.25R never reached before
+    # day 3) and the trade survives into the rally.
+    assert r["exit_reason"] != "be_trail_stop" or r["exit_price"] > entry_price
+    assert r["exit_price"] > entry_price, r
+
+    # and +1.25R DOES arm it: touch 1.25R, then retrace through entry ->
+    # BE stop at entry fills, pnl ~0 rather than -1R.
+    touch_125 = entry_price + 1.25 * sd
+    specs2 = [(100, 100.5, 99.8, 100.0),
+              (100, touch_125, 99.5, 100.0),
+              (100, 100.2, 98.0, 98.5)]
+    r2 = exit_break_even_at_1r(frame(specs2), entry_date, entry_price, "long", atr)
+    assert r2["exit_reason"] == "be_trail_stop" and \
+        abs(r2["exit_price"] - entry_price) < 1e-9, r2

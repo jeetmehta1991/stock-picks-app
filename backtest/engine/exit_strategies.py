@@ -859,15 +859,28 @@ def _exit_r_multiple_impl(df_full, entry_date, entry_price, direction, atr,
 
 
 def exit_break_even_at_1r(df_full, entry_date, entry_price, direction, atr,
-                            signals=None, trail_pct: float = 0.10):
-    """DEC-517 #20: Move stop to break-even at +1R, then trail at trail_pct.
+                            signals=None, trail_pct: float = 0.10,
+                            be_trigger_r: float = 1.25):
+    """DEC-517 #20: Move stop to break-even once price reaches +be_trigger_r
+    R, then trail at trail_pct.
 
-    Phase 1 (entry -> +1R): stop fixed at -1R from entry.
-    Phase 2 (after +1R hit): stop moves to entry (break-even); trails by trail_pct
-    on subsequent highs (longs) / lows (shorts).
+    B2083 (S6-B1248-BREAKEVEN-1R-BUFFER, owner-approved 2026-08-23 at the
+    b2031 rec 1 +0.25R): the trigger moved from exactly +1.0R to +1.25R.
+    Measured 8.4pct median win rate at the exact-1R trigger - it armed the
+    breakeven stop precisely at the excursion peak, so the normal retrace
+    tagged the entry-price stop (protection arriving at the worst moment).
+    The +0.25R buffer trades slightly LATER protection for surviving the
+    ordinary post-touch retrace. NAME NOTE (annotate-not-rename policy):
+    the registered name stays break_even_at_1r for cube/CSV continuity;
+    "1r" now names the FAMILY, the trigger is be_trigger_r.
+
+    Phase 1 (entry -> trigger): stop fixed at -1R from entry.
+    Phase 2 (after trigger hit): stop moves to entry (break-even); trails by
+    trail_pct on subsequent highs (longs) / lows (shorts).
     """
     sd = _stop_distance(entry_price, atr, direction)
-    one_r = entry_price + sd if direction == "long" else entry_price - sd
+    one_r = (entry_price + be_trigger_r * sd if direction == "long"
+             else entry_price - be_trigger_r * sd)
     stop = entry_price - sd if direction == "long" else entry_price + sd
     be_hit = False
     best = entry_price
