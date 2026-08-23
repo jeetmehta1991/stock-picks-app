@@ -23546,3 +23546,26 @@ def test_b2044_build_claim_test_citations_match_by_prefix():
     assert ns["match_test"]("test_b1820_step1_ranking_emits_its_ranking_key",
                             defined)
     assert not ns["match_test"]("test_b9999", defined)
+
+
+def test_b2046_sub_five_trade_strategies_keep_their_detail_rows():
+    """B2046 (S6-B2043a): the empty-summary early return discarded populated
+    detail rows - a 1-4 trade strategy contributed ZERO rows to
+    trade_exit_detail.csv while its trades existed in the trade log. Detail
+    survives; the summary floor is untouched (still empty below 5)."""
+    import pandas as _pd
+    from backtest.engine.exit_strategies import run_exit_comparison
+    idx = _pd.date_range("2024-06-03", periods=30, freq="B")
+    base = [100.0 + i for i in range(30)]
+    df = _pd.DataFrame({"open": base, "high": [b + 1 for b in base],
+                        "low": [b - 1 for b in base], "close": base,
+                        "volume": 1e6}, index=idx)
+    trade = {"ticker": "TST", "entry_date": idx[1].date(),
+             "entry_price": 101.0, "direction": "long", "atr": 1.0,
+             "signals": {}, "regime_at_entry": "bull", "df": df}
+    summary, detail = run_exit_comparison("synthetic_b2046", [trade], None)
+    assert summary.empty, "the 5-trade summary floor must be unchanged"
+    assert len(detail) >= 20, (
+        "a single-trade strategy must keep its per-exit detail rows - "
+        "one row per registered exit, not zero")
+    assert set(detail["strategy"]) == {"synthetic_b2046"}
