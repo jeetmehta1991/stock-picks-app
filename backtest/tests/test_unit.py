@@ -23435,3 +23435,23 @@ def test_b2037_strategy_producer_map_carries_its_controls():
             "compute_smc_signals" in txt)
     header = txt.splitlines()[0]
     assert header == "strategy,key,tier,producer"
+
+
+def test_b2040_reporting_contract_survives_in_the_durable_docs():
+    """B2040 (L618 / #282): the per-turn reporting contract lives in three
+    places - the gate member (detection), CHECKLIST #282 and the SKILL Phase-6
+    block (the copies read every turn). No scan can detect a DOC dropping a
+    rule it once carried, so durability is pinned (L548: detection and
+    durability are different questions; this is the second)."""
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    skill = (root / ".claude/skills/execution-discipline/SKILL.md").read_text(
+        encoding="utf-8")
+    ck = (root / "CHECKLIST.md").read_text(encoding="utf-8")
+    for doc, name in ((skill, "SKILL.md"), (ck, "CHECKLIST.md")):
+        assert "tabular with a delta column" in doc, (
+            f"{name} no longer names the enforcing member - the contract's "
+            "durable copy decayed (L618)")
+    assert "### #282" in ck, "#282 was removed from CHECKLIST.md"
+    assert "L618" in skill, (
+        "the skill's Phase-6 block no longer cites L618 - the anchor decayed")
