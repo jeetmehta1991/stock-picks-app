@@ -6270,6 +6270,47 @@ def strat_classification_change_recent_long(s):
          "Above 200 EMA (filter out deterioration cases)"])
 
 
+def strat_pocket_pivot_long(s):
+    """B2101 (M4, owner-approved tranche A 2026-08-23 at b2031 rec 12,
+    Class 7 wiring): pocket pivot per O'Neil / Morales "Trade Like an
+    O'Neil Disciple" (2010) - an up day whose volume exceeds the largest
+    down-day volume of the prior 10 sessions, inside a constructive base
+    (proxied by the 50-EMA trend gate). The accumulation tell BEFORE the
+    breakout; complements the roster's breakout-day-biased book.
+
+    STATUS: EXPLORATORY (registered in EXPLORATORY_STRATEGIES) - tranche-A
+    wiring is cube-measurement-only per the approved rec; no deployment
+    before the program's edge answer.
+    """
+    fires = (
+        s.get("pocket_pivot", False)
+        and s.get("price_above_ema_50", False)
+    )
+    return _strat(fires, "long", "momentum",
+        ["pocket_pivot", "price_above_ema_50"],
+        ["Up-day volume exceeds max down-day volume of last 10 sessions (O'Neil/Morales pocket pivot)",
+         "Above 50 EMA - constructive-base proxy"])
+
+
+def strat_consec_downdays_quality_long(s):
+    """B2101 (M15, owner-approved tranche A, Class 7 wiring): 4+ consecutive
+    red closes on a QUALITY name - the canonical institutional dip-buy
+    (review citation: RenTec-documented 3-5d reversal horizon; quality per
+    Novy-Marx gross profitability, the xs_quality_top_tercile key).
+
+    STATUS: EXPLORATORY (registered in EXPLORATORY_STRATEGIES) - same
+    tranche-A cube-measurement-only scope.
+    """
+    fires = (
+        s.get("consec_down_4plus", False)
+        and s.get("xs_quality_top_tercile", False)
+    )
+    return _strat(fires, "long", "mean_reversion",
+        ["consec_down_4plus", "xs_quality_top_tercile"],
+        ["4+ consecutive red closes - capitulation-grade selling pressure",
+         "Top-tercile gross profitability - quality name worth catching"])
+
+
 # B2098 (S6-B1248-F23, owner-approved 2026-08-23 at b2031 rec 13):
 # 9 classification_change variants CONSOLIDATED into
 # strat_classification_change_recent_long above. PROVEN deterministic
@@ -8119,6 +8160,9 @@ ALL_STRATEGIES = {
     # Wave 3 classification_change (Batch 332): B2098 consolidated 10 -> 1
     # per owner-approved F23 (see the consolidation note at the survivor).
     "classification_change_recent_long":         strat_classification_change_recent_long,
+    # B2101 (owner-approved M1-M15 tranche A, first pair): both EXPLORATORY.
+    "pocket_pivot_long":            strat_pocket_pivot_long,
+    "consec_downdays_quality_long": strat_consec_downdays_quality_long,
     # Wave 3 persistence (Batch 333 2026-05-25 Path C): 3 strategies using
     # the Batch 330 producer's institutional_increased / institutional_new_positions
     # counts. Single-quarter persistence proxies; true multi-quarter

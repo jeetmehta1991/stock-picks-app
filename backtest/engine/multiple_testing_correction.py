@@ -130,6 +130,11 @@ EXPLORATORY_STRATEGIES = frozenset({
     # waits on the hedge leg existing.
     "pairs_mean_reversion_long",
     "pairs_mean_reversion_short",
+    # B2101 (owner-approved M1-M15 tranche A at b2031 rec 12): wired
+    # EXPLORATORY by construction - cube-measurement-only until the
+    # optimisation program answers whether existing edges are recoverable.
+    "pocket_pivot_long",
+    "consec_downdays_quality_long",
 })
 
 

@@ -10635,9 +10635,11 @@ def test_batch373_e1_doc_count_pin_against_code():
     # every destination key in the SAME return dict as changed_recent=True
     # (one emission site), so the 9 deleted variants are deterministic
     # subsets reconstructable offline from the survivor's cube fires.
-    assert len(ALL_STRATEGIES) == 213, (
-        f"F-002 drift: ALL_STRATEGIES expected 213 post-B2098 (F23 10->1 "
-        f"consolidation; was 222 post-B1382); got {len(ALL_STRATEGIES)}. "
+    # B2101 (tranche A pair 1 of 3): +2 EXPLORATORY (pocket_pivot_long +
+    # consec_downdays_quality_long) per the owner-approved M1-M15 rec.
+    assert len(ALL_STRATEGIES) == 215, (
+        f"F-002 drift: ALL_STRATEGIES expected 215 post-B2101 (tranche A "
+        f"pair 1; 213 post-B2098); got {len(ALL_STRATEGIES)}. "
         f"Update doc count references in the same commit."
     )
     assert len(DEPRECATED_STRATEGIES) == 0, (
@@ -10665,9 +10667,9 @@ def test_batch373_e1_doc_count_pin_against_code():
     )
     # B2098: 213 registered; this leg's "active" excludes only DEPRECATED +
     # MISSING_PRODUCER (both empty), so it tracks the registration count.
-    assert active == 213, (
-        f"F-002 drift: active strategy count expected 213 (213 registered "
-        f"post-B2098 F23 consolidation); got {active}."
+    assert active == 215, (
+        f"F-002 drift: active strategy count expected 215 (215 registered "
+        f"post-B2101 tranche-A pair 1); got {active}."
     )
 
     # F-004 exit method count
@@ -10678,10 +10680,10 @@ def test_batch373_e1_doc_count_pin_against_code():
     )
 
     # Cube cells = active strategies x exits (B2098: 213 x 26 = 5,538)
-    expected_cells = 213 * 26
-    assert expected_cells == 5538, (
-        f"Phase 1A-beta cube cells: expected 5,538 (213 active x 26 exits "
-        f"post-B2098 F23 consolidation); got {expected_cells}."
+    expected_cells = 215 * 26
+    assert expected_cells == 5590, (
+        f"Phase 1A-beta cube cells: expected 5,590 (215 active x 26 exits "
+        f"post-B2101 tranche-A pair 1); got {expected_cells}."
     )
 
 
@@ -13247,8 +13249,8 @@ def test_b1441_data_scarcity_retirement_is_wired_and_semantically_separate():
         "producer removed - retirement was supposed to be reversible when "
         "sector_history.csv is extended (S6-B1434b)"
     )
-    assert len(set(ALL_STRATEGIES) - DS - MP - DEP) == 212, (
-        "active count drifted from 212 (213 registered post-B2098 minus the "
+    assert len(set(ALL_STRATEGIES) - DS - MP - DEP) == 214, (
+        "active count drifted from 214 (215 registered post-B2101 minus the "
         "data-scarce survivor)")
 
 
@@ -15352,7 +15354,7 @@ def test_b1619_variant_strategy_binds_to_its_own_signal():
         ALL_STRATEGIES, BREAKER_VARIANT_STRATEGIES,
         make_breaker_variant_strategy, assert_variant_strategies_are_configured)
 
-    assert len(ALL_STRATEGIES) == 213, (
+    assert len(ALL_STRATEGIES) == 215, (
         f"roster is {len(ALL_STRATEGIES)}; the variant factory must not "
         f"register anything until an admission is owner-approved")
     assert BREAKER_VARIANT_STRATEGIES == {}
@@ -24294,3 +24296,53 @@ def test_b2100_writer_survives_empty_summary_with_detail_rows():
             output_dir=out)
         assert (out / "trade_exit_detail.csv").exists()
         assert not (out / "exit_strategy_best.csv").exists()
+
+
+def test_b2101_tranche_a_pair_producers_and_gates():
+    """B2101 (M4 + M15, owner-approved tranche A): producer truth tables on
+    SYNTHETIC frames (both ways each) + both gates consume the keys +
+    runtime emission through compute_all_signals on a real-shaped frame."""
+    import numpy as np
+    import pandas as pd
+
+    from backtest.signals.technical import (
+        compute_consecutive_downdays,
+        compute_pocket_pivot,
+    )
+
+    def frame(closes, vols):
+        idx = pd.date_range("2024-01-02", periods=len(closes), freq="B")
+        c = np.asarray(closes, dtype=float)
+        return pd.DataFrame({"open": c, "high": c + 1, "low": c - 1,
+                             "close": c, "volume": vols}, index=idx)
+
+    # pocket pivot: up day, volume 900 > max down-day vol (500) -> True
+    closes = [100, 99, 100, 98, 99, 100, 99, 100, 101, 100, 99, 100]
+    vols =   [100, 500, 100, 400, 100, 100, 300, 100, 100, 100, 450, 900]
+    assert compute_pocket_pivot(frame(closes, vols))["pocket_pivot"] is True
+    # same day but volume below the max down-day vol -> False
+    vols2 = vols[:-1] + [400]
+    assert compute_pocket_pivot(frame(closes, vols2))["pocket_pivot"] is False
+    # DOWN day with huge volume -> False (must be an up day)
+    closes3 = closes[:-1] + [98]
+    assert compute_pocket_pivot(frame(closes3, vols))["pocket_pivot"] is False
+
+    # consecutive down-days: 5 red closes (101 -> 96) -> True; 3 -> False
+    r = compute_consecutive_downdays(frame([100, 101, 100, 99, 98, 97, 96],
+                                           [1] * 7))
+    assert r["consec_down_days"] == 5 and r["consec_down_4plus"] is True
+    r = compute_consecutive_downdays(frame([100, 101, 102, 103, 100, 99, 98],
+                                           [1] * 7))
+    assert r["consec_down_days"] == 3 and r["consec_down_4plus"] is False
+
+    from backtest.signals.screener import (
+        strat_consec_downdays_quality_long,
+        strat_pocket_pivot_long,
+    )
+    assert strat_pocket_pivot_long(
+        {"pocket_pivot": True, "price_above_ema_50": True})["fires"] is True
+    assert strat_pocket_pivot_long({"pocket_pivot": True})["fires"] is False
+    assert strat_consec_downdays_quality_long(
+        {"consec_down_4plus": True, "xs_quality_top_tercile": True})["fires"] is True
+    assert strat_consec_downdays_quality_long(
+        {"consec_down_4plus": True})["fires"] is False

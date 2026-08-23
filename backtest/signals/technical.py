@@ -2526,7 +2526,53 @@ def compute_all_signals(df: pd.DataFrame,
         signals.update(compute_pivot_break_retest_signals(df))  # B606 F1 - R1/S1-anchored retest
     if not _producer_skipped("compute_simple_returns", skip):
         signals.update(compute_simple_returns(df))        # Batch 467 P10
+    if not _producer_skipped("compute_pocket_pivot", skip):
+        signals.update(compute_pocket_pivot(df))          # B2101 M4
+    if not _producer_skipped("compute_consecutive_downdays", skip):
+        signals.update(compute_consecutive_downdays(df))  # B2101 M15
     return {k: v for k, v in signals.items() if v is not None}
+
+
+def compute_pocket_pivot(df: pd.DataFrame, lookback: int = 10) -> dict:
+    """B2101 (M4, owner-approved tranche A 2026-08-23 at b2031 rec 12):
+    pocket pivot per O'Neil/Morales - an UP day whose volume exceeds the
+    LARGEST down-day volume of the prior `lookback` sessions. The
+    accumulation tell BEFORE a breakout, complementing the roster's
+    breakout-day-biased book. Vacuous windows (no down day in the prior
+    10 sessions) emit False - with nothing to exceed, the tell is empty.
+    """
+    if df is None or df.empty or len(df) < lookback + 2:
+        return {}
+    close = df["close"].astype(float)
+    vol = df["volume"].astype(float) if "volume" in df.columns else None
+    if vol is None:
+        return {}
+    up_today = bool(close.iloc[-1] > close.iloc[-2])
+    win_close = close.iloc[-(lookback + 1):-1]
+    win_prior = close.iloc[-(lookback + 2):-2]
+    down_mask = win_close.values < win_prior.values
+    down_vols = vol.iloc[-(lookback + 1):-1].values[down_mask]
+    if len(down_vols) == 0:
+        return {"pocket_pivot": False}
+    return {"pocket_pivot": bool(up_today
+                                 and float(vol.iloc[-1]) > float(down_vols.max()))}
+
+
+def compute_consecutive_downdays(df: pd.DataFrame) -> dict:
+    """B2101 (M15, owner-approved tranche A): consecutive strictly-red
+    closes ending today. `consec_down_4plus` is the canonical
+    institutional dip-buy trigger band (4-6 red closes; RenTec-documented
+    3-5d reversal horizon per the review's citation)."""
+    if df is None or df.empty or len(df) < 7:
+        return {}
+    close = df["close"].astype(float).values
+    n = 0
+    for i in range(len(close) - 1, 0, -1):
+        if close[i] < close[i - 1]:
+            n += 1
+        else:
+            break
+    return {"consec_down_days": n, "consec_down_4plus": bool(n >= 4)}
 
 
 def compute_simple_returns(df: pd.DataFrame) -> dict:
