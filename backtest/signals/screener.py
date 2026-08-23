@@ -6270,6 +6270,44 @@ def strat_classification_change_recent_long(s):
          "Above 200 EMA (filter out deterioration cases)"])
 
 
+def strat_gap_and_go_long(s):
+    """B2102 (M5, owner-approved tranche A, Class 7 wiring): gap-and-go
+    continuation - an up-gap of 2 percent-plus that HELD above its open at
+    the close, in an uptrend. Institutional repricing per the review; the
+    roster's gap book previously only FADED gaps, and its own F10 finding
+    was that fades lose on exactly these bars.
+
+    STATUS: EXPLORATORY (registered in EXPLORATORY_STRATEGIES) - tranche-A
+    cube-measurement-only scope.
+    """
+    fires = (
+        s.get("gap_up_2pct_held", False)
+        and s.get("price_above_ema_50", False)
+    )
+    return _strat(fires, "long", "momentum",
+        ["gap_up_2pct_held", "price_above_ema_50"],
+        ["Up-gap >= 2pct held above the open at the close - repricing, not exhaustion",
+         "Above 50 EMA - uptrend context per the M5 spec"])
+
+
+def strat_failed_breakout_2b_short(s):
+    """B2102 (M14, owner-approved tranche A, Class 7 wiring): Sperandeo 2B -
+    a break of the 20-day high within the last 2 bars that closed back
+    inside the range. The breakout FAILED; trapped longs are the fuel. The
+    review names it the short book's missing technical catalyst; no trend
+    gate by design (its edge is cited in choppy regimes).
+
+    STATUS: EXPLORATORY (registered in EXPLORATORY_STRATEGIES) - tranche-A
+    cube-measurement-only scope.
+    """
+    fires = (s.get("failed_breakout_2b_short", False)
+             and not _short_borrow_trap_active(s))
+    return _strat(fires, "short", "breakout",
+        ["failed_breakout_2b_short", "borrow_ok"],
+        ["20d-high break within last 2 bars closed back INSIDE the range (Sperandeo 2B)",
+         "Trapped-breakout fuel - the failure is the catalyst"])
+
+
 def strat_pocket_pivot_long(s):
     """B2101 (M4, owner-approved tranche A 2026-08-23 at b2031 rec 12,
     Class 7 wiring): pocket pivot per O'Neil / Morales "Trade Like an
@@ -8163,6 +8201,9 @@ ALL_STRATEGIES = {
     # B2101 (owner-approved M1-M15 tranche A, first pair): both EXPLORATORY.
     "pocket_pivot_long":            strat_pocket_pivot_long,
     "consec_downdays_quality_long": strat_consec_downdays_quality_long,
+    # B2102 (tranche A pair 2): both EXPLORATORY.
+    "gap_and_go_long":              strat_gap_and_go_long,
+    "failed_breakout_2b_short":     strat_failed_breakout_2b_short,
     # Wave 3 persistence (Batch 333 2026-05-25 Path C): 3 strategies using
     # the Batch 330 producer's institutional_increased / institutional_new_positions
     # counts. Single-quarter persistence proxies; true multi-quarter

@@ -135,6 +135,8 @@ EXPLORATORY_STRATEGIES = frozenset({
     # optimisation program answers whether existing edges are recoverable.
     "pocket_pivot_long",
     "consec_downdays_quality_long",
+    "gap_and_go_long",            # B2102 tranche A pair 2
+    "failed_breakout_2b_short",   # B2102 tranche A pair 2
 })
 
 

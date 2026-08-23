@@ -10637,8 +10637,8 @@ def test_batch373_e1_doc_count_pin_against_code():
     # subsets reconstructable offline from the survivor's cube fires.
     # B2101 (tranche A pair 1 of 3): +2 EXPLORATORY (pocket_pivot_long +
     # consec_downdays_quality_long) per the owner-approved M1-M15 rec.
-    assert len(ALL_STRATEGIES) == 215, (
-        f"F-002 drift: ALL_STRATEGIES expected 215 post-B2101 (tranche A "
+    assert len(ALL_STRATEGIES) == 217, (
+        f"F-002 drift: ALL_STRATEGIES expected 217 post-B2102 (tranche A "
         f"pair 1; 213 post-B2098); got {len(ALL_STRATEGIES)}. "
         f"Update doc count references in the same commit."
     )
@@ -10667,9 +10667,9 @@ def test_batch373_e1_doc_count_pin_against_code():
     )
     # B2098: 213 registered; this leg's "active" excludes only DEPRECATED +
     # MISSING_PRODUCER (both empty), so it tracks the registration count.
-    assert active == 215, (
-        f"F-002 drift: active strategy count expected 215 (215 registered "
-        f"post-B2101 tranche-A pair 1); got {active}."
+    assert active == 217, (
+        f"F-002 drift: active strategy count expected 217 (217 registered "
+        f"post-B2102 tranche-A pair 2); got {active}."
     )
 
     # F-004 exit method count
@@ -10680,10 +10680,10 @@ def test_batch373_e1_doc_count_pin_against_code():
     )
 
     # Cube cells = active strategies x exits (B2098: 213 x 26 = 5,538)
-    expected_cells = 215 * 26
-    assert expected_cells == 5590, (
-        f"Phase 1A-beta cube cells: expected 5,590 (215 active x 26 exits "
-        f"post-B2101 tranche-A pair 1); got {expected_cells}."
+    expected_cells = 217 * 26
+    assert expected_cells == 5642, (
+        f"Phase 1A-beta cube cells: expected 5,642 (217 active x 26 exits "
+        f"post-B2102 tranche-A pair 2); got {expected_cells}."
     )
 
 
@@ -13249,8 +13249,8 @@ def test_b1441_data_scarcity_retirement_is_wired_and_semantically_separate():
         "producer removed - retirement was supposed to be reversible when "
         "sector_history.csv is extended (S6-B1434b)"
     )
-    assert len(set(ALL_STRATEGIES) - DS - MP - DEP) == 214, (
-        "active count drifted from 214 (215 registered post-B2101 minus the "
+    assert len(set(ALL_STRATEGIES) - DS - MP - DEP) == 216, (
+        "active count drifted from 216 (217 registered post-B2102 minus the "
         "data-scarce survivor)")
 
 
@@ -15354,7 +15354,7 @@ def test_b1619_variant_strategy_binds_to_its_own_signal():
         ALL_STRATEGIES, BREAKER_VARIANT_STRATEGIES,
         make_breaker_variant_strategy, assert_variant_strategies_are_configured)
 
-    assert len(ALL_STRATEGIES) == 215, (
+    assert len(ALL_STRATEGIES) == 217, (
         f"roster is {len(ALL_STRATEGIES)}; the variant factory must not "
         f"register anything until an admission is owner-approved")
     assert BREAKER_VARIANT_STRATEGIES == {}
@@ -24346,3 +24346,57 @@ def test_b2101_tranche_a_pair_producers_and_gates():
         {"consec_down_4plus": True, "xs_quality_top_tercile": True})["fires"] is True
     assert strat_consec_downdays_quality_long(
         {"consec_down_4plus": True})["fires"] is False
+
+
+def test_b2102_tranche_a_pair2_producers_and_gates():
+    """B2102 (M5 + M14): producer truth tables on SYNTHETIC frames, both
+    directions each, plus both gates."""
+    import numpy as np
+    import pandas as pd
+
+    from backtest.signals.technical import (
+        compute_failed_breakout_2b,
+        compute_gap_and_go,
+    )
+
+    def frame(rows):
+        idx = pd.date_range("2024-01-02", periods=len(rows), freq="B")
+        return pd.DataFrame(
+            {"open": [r[0] for r in rows], "high": [r[1] for r in rows],
+             "low": [r[2] for r in rows], "close": [r[3] for r in rows],
+             "volume": 1e6}, index=idx)
+
+    # gap-and-go: prior close 100, open 103 (+3pct), close 104 >= open -> True
+    assert compute_gap_and_go(frame([(99, 101, 98, 100),
+                                     (103, 105, 102, 104)]))["gap_up_2pct_held"] is True
+    # gap that FADED below its open -> False (that bar belongs to the fade book)
+    assert compute_gap_and_go(frame([(99, 101, 98, 100),
+                                     (103, 104, 100, 101)]))["gap_up_2pct_held"] is False
+    # no gap -> False
+    assert compute_gap_and_go(frame([(99, 101, 98, 100),
+                                     (100.5, 103, 100, 102)]))["gap_up_2pct_held"] is False
+
+    # failed breakout 2B: 21 base bars capped at high 110 (the producer needs
+    # level_lookback + break_window + 1 = 23 rows); yesterday broke to 112;
+    # today closes 108 back INSIDE -> True
+    base = [(100, 110, 95, 105)] * 21
+    broke_failed = base + [(105, 112, 104, 111), (110, 111, 107, 108)]
+    r = compute_failed_breakout_2b(frame(broke_failed))
+    assert r["failed_breakout_2b_short"] is True, r
+    # the break HELD (close above the level) -> False
+    broke_held = base + [(105, 112, 104, 111), (111, 113, 110, 112)]
+    assert compute_failed_breakout_2b(frame(broke_held))["failed_breakout_2b_short"] is False
+    # never broke -> False
+    no_break = base + [(105, 109, 104, 108), (108, 109, 106, 107)]
+    assert compute_failed_breakout_2b(frame(no_break))["failed_breakout_2b_short"] is False
+
+    from backtest.signals.screener import (
+        strat_failed_breakout_2b_short,
+        strat_gap_and_go_long,
+    )
+    assert strat_gap_and_go_long(
+        {"gap_up_2pct_held": True, "price_above_ema_50": True})["fires"] is True
+    assert strat_gap_and_go_long({"gap_up_2pct_held": True})["fires"] is False
+    r = strat_failed_breakout_2b_short(
+        {"failed_breakout_2b_short": True, "borrow_ok": True})
+    assert r["fires"] is True and r["direction"] == "short"

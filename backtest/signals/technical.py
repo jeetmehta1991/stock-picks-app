@@ -2530,6 +2530,10 @@ def compute_all_signals(df: pd.DataFrame,
         signals.update(compute_pocket_pivot(df))          # B2101 M4
     if not _producer_skipped("compute_consecutive_downdays", skip):
         signals.update(compute_consecutive_downdays(df))  # B2101 M15
+    if not _producer_skipped("compute_gap_and_go", skip):
+        signals.update(compute_gap_and_go(df))            # B2102 M5
+    if not _producer_skipped("compute_failed_breakout_2b", skip):
+        signals.update(compute_failed_breakout_2b(df))    # B2102 M14
     return {k: v for k, v in signals.items() if v is not None}
 
 
@@ -2573,6 +2577,41 @@ def compute_consecutive_downdays(df: pd.DataFrame) -> dict:
         else:
             break
     return {"consec_down_days": n, "consec_down_4plus": bool(n >= 4)}
+
+
+def compute_gap_and_go(df: pd.DataFrame, gap_pct: float = 0.02) -> dict:
+    """B2102 (M5, owner-approved tranche A): gap-and-go CONTINUATION - the
+    open gapped up >= gap_pct vs the prior close AND the close held at or
+    above the open (institutional repricing, not exhaustion). Distinct from
+    the roster's gap-FILL fades by construction; the F10 finding was that
+    fades LOSE on exactly these bars."""
+    if df is None or df.empty or len(df) < 2 or "open" not in df.columns:
+        return {}
+    prior_close = float(df["close"].iloc[-2])
+    o = float(df["open"].iloc[-1])
+    c = float(df["close"].iloc[-1])
+    if prior_close <= 0:
+        return {}
+    gapped = (o - prior_close) / prior_close >= gap_pct
+    return {"gap_up_2pct_held": bool(gapped and c >= o)}
+
+
+def compute_failed_breakout_2b(df: pd.DataFrame, level_lookback: int = 20,
+                               break_window: int = 2) -> dict:
+    """B2102 (M14, owner-approved tranche A): Sperandeo 2B failed breakout -
+    a bar within the last `break_window` sessions traded ABOVE the prior
+    `level_lookback`-day high and today closes back INSIDE the range. The
+    roster trades breakouts and retests; this is the FAILURE, the short
+    book's missing technical catalyst."""
+    need = level_lookback + break_window + 1
+    if df is None or df.empty or len(df) < need:
+        return {}
+    high = df["high"].astype(float)
+    close = df["close"].astype(float)
+    level = float(high.iloc[-(level_lookback + break_window):-break_window].max())
+    broke = bool(float(high.iloc[-break_window:].max()) > level)
+    failed = bool(broke and float(close.iloc[-1]) < level)
+    return {"failed_breakout_2b_short": failed}
 
 
 def compute_simple_returns(df: pd.DataFrame) -> dict:
