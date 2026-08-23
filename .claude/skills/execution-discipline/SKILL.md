@@ -297,6 +297,8 @@ migration) and EVERY commit — **no doc/data carve-outs**
    (`feedback_doc_count_drift_must_be_test_pinned`), e.g.:
    `python -c "from backtest.signals.screener import ALL_STRATEGIES; print(len(ALL_STRATEGIES))"`
 
+**Mechanically enforced** by the C6 pyramid stamp in scripts/preflight.py (a *.py commit without a fresh green .pyramid_stamp is blocked - it fired on this very program at B2025).
+
 ## Phase 4 — AUDIT DEPTH STANDARD (for any audit / review / verification task)
 
 Surface-level = non-compliant. Every audit must satisfy ALL of:
@@ -723,6 +725,8 @@ produced. **Real separation, unverifiable from its own output.** Load-bearing: `
   declaration was `ast.AnnAssign`, so it examined nothing and passed - **a test with no content and
   a report with no content fail identically, and neither is visible from the result.** Only running
   the failure case separates them.
+
+**Mechanically enforced** by test_b1820_step1_ranking_emits_its_ranking_key.
 
 ## AN ASSERTED CONSEQUENCE IS A CLAIM - COMPUTE IT (B1833 - L560, CHECKLIST #278)
 
@@ -1915,6 +1919,8 @@ claimed them.** Docs and file mentions do not count.
 - **The burden of proof sits on PROMOTION** - "if anything to be done even potentially, keep them
   open". A row stays OPEN by default and must earn EXECUTED.
 
+**Mechanically enforced** by scripts/verify_build_claims.py (LANDED requires the named artifact to exist) and the A1-ruling vocabulary gates.
+
 ## A BUILD CLAIM MUST NAME ITS ARTIFACT (B1787 - L538, CHECKLIST #264)
 
 **MEASURED: of 134 build-claiming tickets in 48h - 54 LANDED, 0 MISSING, 79 NOT_CHECKABLE.**
@@ -1933,6 +1939,8 @@ built.** The limit is not the checking, it is that most claims are unfalsifiable
   of which 112 are generic topic nouns - so in a session about defects the gate fired on its own
   subject. Narrowing it then broke the corpus incident. **The corpus caught both ends.**
 
+**Mechanically enforced** by scripts/verify_build_claims.py (the #264 checker, harness-fixed B2044, pin test_b2044_build_claim_test_citations_match_by_prefix).
+
 ## SIX MUTUALLY EXCLUSIVE LEDGER CLASSES (B1784 - L537, CHECKLIST #263)
 
 **Owner ruling 2026-08-20.** `EXECUTED` / `DROPPED` / `BLOCKED` / `DEFERRED` / `OPEN` / `RUNNING`.
@@ -1948,6 +1956,8 @@ change log) or it is still work. A turn may never write EXECUTED.
 - **228 rows moved DONE -> OPEN.** Never verified means never finished. **The number got worse
   because the definition got honest**; reporting that as a regression is the category-to-claim error
   again.
+
+**Mechanically enforced** by scan_queue_vocabulary, the queue_state.py audit invariants (terminal-not-last), and the test_b1969 parser pins.
 
 ## A RESPONSE GATE MUST NOT ASSUME HOW THE RESPONSE IS FORMATTED (B1806 - L553, CHECKLIST #275)
 
@@ -2045,6 +2055,8 @@ DONE and never transition.**
   **Calling every doc-only DONE false is the same category-to-claim leap as the 271** - a council
   advisor read 87pct born-DONE as "87pct fabrication". It is not.
 
+**Mechanically enforced** by scripts/audit_done_claims.py plus the per-ticket joined re-derivation in scripts/audit_ticket_staleness.py (B2055, pin test_b2055_staleness_join_rederives_ticket_claims).
+
 ## RE-DERIVE A TICKET'S NUMBER BEFORE WORKING IT (B1776 - L531, CHECKLIST #256)
 
 **MEASURED: 6 of 21 open enforcement tickets described a world that no longer existed** - and none
@@ -2091,6 +2103,8 @@ left the tool side untouched.**
   wrong side of that gate.
 - **Check a flagged site before converting it.** One flag was purely "does not call `_affirms`" on
   a set intersection with no exposure. **The absence of a fix is not the presence of a defect.**
+
+**Mechanically enforced** by the _WRITTEN_FIELDS strip in the tool-text collectors and the trunk pin test_b1987_no_gate_reads_raw_tool_text.
 
 ## HARDEN THE EXEMPTION, NOT JUST THE TRIGGER (B1773 - L528, CHECKLIST #253)
 
@@ -2154,6 +2168,8 @@ instability that looked like a statistical mystery.
   `fixed_target_3atr`; no such exit is registered. My cross-check against it matched an **empty
   set** and reported a meaningless agreement number.
 - **A "0 of N" or "100pct of N" result is a SCHEMA question before it is a finding.**
+
+**Mechanically enforced** by roster_core.measure_degraded_exits run per cube (#252) and the live flip-branch pin test_b2043_regime_flip_fires_on_a_real_flip_through_replay (B2043 closed the fallback itself).
 
 ## DECOMPOSE A POOLED CORRELATION WITHIN GROUPS (B1770 - L525, CHECKLIST #250)
 
@@ -2308,6 +2324,8 @@ generator having run. **B1738's rule for the RESPONSE had no equivalent for TOOL
 - **Assert the LOSSLESS case.** A strip is defined as much by what it must NOT remove; the version
   that shipped without that assertion is the one that broke.
 
+**Mechanically enforced** by the shared heredoc/data strips in the executed-text collectors, pinned by test_b1979_heredoc_bodies_are_data_not_commands.
+
 ## A GATE'S OWN DIAGNOSTIC IS NOT EVIDENCE, AND A SEAM MUST TAKE THE LIVE PATH (B1811 - L555, #276)
 
 **MEASURED: the only `rng.` in the transcript was the gate's OWN message**, which quotes
@@ -2429,6 +2447,8 @@ not a substring of `"reverting"`.
   cannot be validated, and will be trusted on no evidence.
 - **A gate suite is fitted to the errors that built it.** The catch-count says nothing about the
   next error class. Report it with that caveat attached, always.
+
+**Mechanically enforced** by scripts/gate_incident_corpus.py and test_b1762_every_scan_gate_has_a_corpus_entry.
 
 ## SILENT-FALLBACK RULE (B1744 - L508, CHECKLIST #232, PROVEN)
 
