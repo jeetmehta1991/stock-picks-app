@@ -2546,5 +2546,119 @@
    "status": "SKIPPED",
    "evidence": "concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it"
   }
+ },
+ "output_b2096_d1": {
+  "1_cube_sanity": {
+   "status": "SKIPPED",
+   "evidence": "concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it"
+  },
+  "2_grade_with_config_params": {
+   "status": "SKIPPED",
+   "evidence": "concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it"
+  },
+  "3_outlier_discrepancy_sweep": {
+   "status": "SKIPPED",
+   "evidence": "concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it"
+  },
+  "4_three_leg_spot_check": {
+   "status": "SKIPPED",
+   "evidence": "concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it"
+  },
+  "5_adversarial_lens_review": {
+   "status": "SKIPPED",
+   "evidence": "concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it"
+  },
+  "6_post_fix_recheck": {
+   "status": "SKIPPED",
+   "evidence": "concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it"
+  },
+  "6b_equivalence_class_check": {
+   "status": "SKIPPED",
+   "evidence": "concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it"
+  },
+  "7_implement_in_engine": {
+   "status": "SKIPPED",
+   "evidence": "concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it"
+  },
+  "8_verdict_with_denominators": {
+   "status": "SKIPPED",
+   "evidence": "concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it"
+  }
+ },
+ "output_b2096_d2": {
+  "1_cube_sanity": {
+   "status": "SKIPPED",
+   "evidence": "concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it"
+  },
+  "2_grade_with_config_params": {
+   "status": "SKIPPED",
+   "evidence": "concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it"
+  },
+  "3_outlier_discrepancy_sweep": {
+   "status": "SKIPPED",
+   "evidence": "concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it"
+  },
+  "4_three_leg_spot_check": {
+   "status": "SKIPPED",
+   "evidence": "concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it"
+  },
+  "5_adversarial_lens_review": {
+   "status": "SKIPPED",
+   "evidence": "concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it"
+  },
+  "6_post_fix_recheck": {
+   "status": "SKIPPED",
+   "evidence": "concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it"
+  },
+  "6b_equivalence_class_check": {
+   "status": "SKIPPED",
+   "evidence": "concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it"
+  },
+  "7_implement_in_engine": {
+   "status": "SKIPPED",
+   "evidence": "concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it"
+  },
+  "8_verdict_with_denominators": {
+   "status": "SKIPPED",
+   "evidence": "concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it"
+  }
+ },
+ "output_b2096_d3": {
+  "1_cube_sanity": {
+   "status": "SKIPPED",
+   "evidence": "concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it"
+  },
+  "2_grade_with_config_params": {
+   "status": "SKIPPED",
+   "evidence": "concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it"
+  },
+  "3_outlier_discrepancy_sweep": {
+   "status": "SKIPPED",
+   "evidence": "concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it"
+  },
+  "4_three_leg_spot_check": {
+   "status": "SKIPPED",
+   "evidence": "concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it"
+  },
+  "5_adversarial_lens_review": {
+   "status": "SKIPPED",
+   "evidence": "concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it"
+  },
+  "6_post_fix_recheck": {
+   "status": "SKIPPED",
+   "evidence": "concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it"
+  },
+  "6b_equivalence_class_check": {
+   "status": "SKIPPED",
+   "evidence": "concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it"
+  },
+  "7_implement_in_engine": {
+   "status": "SKIPPED",
+   "evidence": "concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it"
+  },
+  "8_verdict_with_denominators": {
+   "status": "SKIPPED",
+   "evidence": "concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it"
+  }
  }
 }

@@ -2628,6 +2628,7 @@ check FIRST. Each row is a real failure that recurred until its check existed.
 | Write `\|\| true` or swallow an exception | Pair with an explicit success-check | CHECKLIST #122 |
 | Change a writer OR a reader of shared schema | Pin test on the writer-reader contract | PIVOT #37; `feedback_writer_reader_schema_contract_pin_test` |
 | Bundle >3 fixes into one batch | STOP — split into sequenced batches | Council 201 (44 PIVOTs/session) |
+| Run a TIMING measurement (concurrency point, wall-clock A/B, ELAPSED comparison) | HOLD every CPU-heavy process - including your own pyramid - until the completion line; name the load risk in the manifest (JUDGMENT-ONLY detection; the manifest risk row + cadence hold clause are the mechanism) | B2095/L621 (the pyramid contaminated the N=3 trio; 2.93x became an upper bound and a rerun was owed) |
 | Launch anything long-running / costly | Small test → manual review → owner approval → scale; resume infra armed; NEVER auto-launch Batch B | L86/L95 ($150 lost); `feedback_no_auto_launch_batch_b` |
 | Add a new audit layer / checklist item after a miss | #136 anti-theater guard: would it have caught the last 3 misses retroactively? | Council 197 "eight layers is the smell" |
 | Run `git reset --hard` or any destructive git op | `git status` FIRST, always | L49, L77 (data destroyed twice) |

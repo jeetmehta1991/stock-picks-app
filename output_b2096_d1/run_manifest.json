@@ -1,0 +1,56 @@
+{
+ "sequence": "B1552a_concurrency_trio_N3_CLEAN_RERUN",
+ "batch": "B2096",
+ "execution": "LOCAL",
+ "frozen_sha": "5324e8a9b543afe0e543264717b0dc8ffc3145fd",
+ "isolation": true,
+ "calendar": "nyse_mcal",
+ "tickers": {
+  "file": "output_audit/_var5.txt",
+  "n": 5,
+  "sha256": "dbdd4b643963b1f7c8cc6033febd57d705de25b7c65029af39382152dafb4dca",
+  "note": "same verified 5t shape the B2094 solo baseline (287s warm) just measured"
+ },
+ "strategy_subset": "output_audit/_subset_one.txt (smc_breaker_block_long)",
+ "window": {
+  "start": "2024-05-05",
+  "end": "2025-05-05"
+ },
+ "arms": [
+  {
+   "tag": "d1",
+   "SMC_SWING_LENGTH": 20,
+   "STRAT_EMA_SPAN": 200
+  },
+  {
+   "tag": "d2",
+   "SMC_SWING_LENGTH": 20,
+   "STRAT_EMA_SPAN": 200
+  },
+  {
+   "tag": "d3",
+   "SMC_SWING_LENGTH": 20,
+   "STRAT_EMA_SPAN": 200
+  }
+ ],
+ "concurrency": "N=3 CONCURRENT - the point S6-B1552a exists to measure; per-arm ELAPSED vs the 287s warm solo baseline gives the N=3 penalty",
+ "budget_cap_usd": 0,
+ "spent_usd": 0,
+ "projected_batch_usd": 0,
+ "wall_clock_projection_hours": 0.4,
+ "wall_clock_projection_basis": "solo warm 287s (B2094 measured); N=3 penalty unknown - that IS the measurement; kill cap 1.0h/arm",
+ "obsolescence_risks": [
+  {
+   "risk": "cache state asymmetry across arms",
+   "status": "ACCEPTED-DISCLOSED - all three start warm (the B2094 pair just ran this exact shape), so arms share cache state"
+  },
+  {
+   "risk": "determinism assumption",
+   "status": "GATED - measured ZERO content variance at this sha (B2094); content equality across the trio is a free cross-check"
+  },
+  {
+   "risk": "concurrent CPU load poisoning the timing (the c-trio's defect)",
+   "status": "GATED - nothing else launches during this window; the turn holds all heavy work until TRIO DONE"
+  }
+ ]
+}
