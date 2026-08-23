@@ -449,7 +449,14 @@ def main() -> int:
         # B2009: margin against the bar the cell actually had to clear - the
         # LIVE pooled gate (min_sharpe_overall, B1493-armed), not the
         # per-regime 0.5. The crossed-bar class, inside the roster builder.
-        margin = (h["sharpe"] or 0) - PC["min_sharpe_overall"]
+        # B2048 (S6-B1972b): a kept cell passed the Sharpe gate, so an absent
+        # holdout Sharpe here is a broken contract - it must FAIL LOUD, not
+        # coalesce to 0 and silently print margin -1.0 as PROVISIONAL.
+        if h["sharpe"] is None:
+            raise ValueError(
+                f"gate-passing cell {r['strategy']}|{r['direction']} carries "
+                "no holdout sharpe - the kept-population contract broke")
+        margin = h["sharpe"] - PC["min_sharpe_overall"]
         status = "ROBUST" if margin >= SELECTION_NOISE_FLOOR else "**PROVISIONAL**"
         r["margin"], r["status"] = round(margin, 3), status.strip("*")
         A(f"| {i} | `{r['strategy']}` | {r['direction']} | {status} | {r['cube']} | {r['n_tickers']} | "

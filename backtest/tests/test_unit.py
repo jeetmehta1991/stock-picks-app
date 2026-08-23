@@ -22913,7 +22913,10 @@ def test_b2009_noise_floor_is_derived_from_the_artifact():
     # the margin bar is the LIVE overall gate, not the per-regime 0.5
     import source_text as st
     code = st.code_only(root / "scripts" / "build_phase_1b_roster.py")
-    assert 'margin = (h["sharpe"] or 0) - PC["min_sharpe_overall"]' in code, (
+    # B2048: the pinned line dropped its coalescing (S6-B1972b - an
+    # absent sharpe now fails loud instead of printing margin -1.0);
+    # the property this pin protects is the BAR, unchanged.
+    assert 'margin = h["sharpe"] - PC["min_sharpe_overall"]' in code, (
         "the ROBUST margin must be measured against the bar the cell "
         "actually cleared - the crossed-bar class inside the roster builder")
 

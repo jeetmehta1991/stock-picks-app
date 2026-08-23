@@ -438,10 +438,19 @@ def write_all_outputs(
             for _, m in metrics.iterrows():
                 strat = str(m.get("strategy", ""))
                 haircut = categorize_crowding(strat)
+                # B2048 (S6-B1972b): `or 0.0` turned an ABSENT metric (None)
+                # into a MEASURED zero in edge_decay_metrics.csv - L580's
+                # absence-vs-zero defect at the report face. Absence now
+                # passes through as NaN (renders empty in CSV); a real 0.0
+                # is a value and survives untouched.
+                def _num(key):
+                    v = m.get(key)
+                    return float(v) if v is not None and pd.notna(v) \
+                        else float("nan")
                 adj = adjusted_metrics(
-                    sharpe_raw=float(m.get("sharpe", 0.0) or 0.0),
-                    win_rate_raw=float(m.get("win_rate", 0.0) or 0.0),
-                    profit_factor_raw=float(m.get("profit_factor", 0.0) or 0.0),
+                    sharpe_raw=_num("sharpe"),
+                    win_rate_raw=_num("win_rate"),
+                    profit_factor_raw=_num("profit_factor"),
                     haircut_pct=haircut,
                 )
                 ed_rows.append({"strategy": strat, **adj})
