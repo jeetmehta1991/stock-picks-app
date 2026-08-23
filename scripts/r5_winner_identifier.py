@@ -26,6 +26,13 @@ B895 SHIP STATUS: scaffold + soft-score formula + AUTO-FAIL screen wrappers.
 DEFER to B896 (post-R5): Best-of-26 collapse fill-in (needs actual cube data);
 priority-tier quantile thresholds (needs distribution); AGENT-CANDIDATE tagging.
 """
+
+# B2049 SURVIVOR NOTE (S6-B1972b / B1970 rule): this file is a B895 SCAFFOLD
+# (Council 19), imported by NOTHING (grep-verified 2026-08-23), superseded by
+# the live admission path (roster_core gates + BH-FDR + build_phase_1b_roster).
+# Its soft_score() carries EIGHT `or 0.0` sites of the absence-vs-zero class
+# (L580/B1972) - deliberately left unfixed because no code consumes them. DO
+# NOT wire this scoring into anything without fixing that class first.
 # Source: PATH_TO_PHASE_1B_ALPHA.md sections 2.2+2.3+3 + Council 15 corrections (B889) +
 #         backtest/config.py PASSING_CRITERIA + MEAN_REVERSION_STRATEGIES (B890) +
 #         backtest/results/metrics.py _eval_cost_sensitivity_gate / _eval_chow_gate /
