@@ -5246,3 +5246,26 @@ stale artifact keeps the SHAPE of a measurement while being a memory.
 (register `_B1974_GENERATED`; grow it as artifacts gain generators).
 **Batch re-exam lineage (B1446 rule 5):** the one genuinely new class in the
 L602-L613 batch; the other ten are covered by the items their entries cite.
+
+### #282 - THE PER-TURN REPORTING CONTRACT IS OWNER-SPECIFIED, TABULAR, AND GATED (B2039 / L618)
+
+Owner directives 2026-08-21 + 2026-08-23, combined: every turn's close reports
+
+1. **Ticket counts as a TABLE** - all six ledger classes, each with a number, a
+   per-class DELTA since the previous report, and the turn's ticket OUTCOMES
+   (which ids moved, to what state) - derived from `scripts/queue_state.py`
+   (per distinct ticket, last row wins), never a row count and never prose.
+2. **Skills status naming FULLY INVOKED vs not** - all three project skills,
+   each with an explicit status (FULLY LOADED / TRIGGERED-NOT-INVOKED /
+   NOT-TRIGGERED); silence cannot distinguish "not triggered" from "skipped".
+3. **CHECKLIST compliance with per-item status** - at least two items cited by
+   number, each with its own state, per #238.
+
+A format directive from the owner is a SPEC for every future response, not a
+suggestion for the next one - encode it as a gate the same turn (the B2039
+lesson: the six-numbers rule was gated while the tabular half lived only in
+the directive's wording, and prose counts passed for two days).
+
+*Enforced by:* the `tabular with a delta column` member of
+`scan_ticket_counts_missing` (verify_turn_compliance.py, require_each) plus
+the existing `scan_missing_skill_confirmation` and `scan_compliance_is_content`.

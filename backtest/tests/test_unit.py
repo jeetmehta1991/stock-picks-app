@@ -17905,16 +17905,29 @@ def test_b1803_ticket_counts_block():
               "CHECKLIST compliance - #234 all four members satisfied.")
     assert tg.scan_ticket_counts_missing([], text=absent),         "a turn with no ticket-count block must fire"
 
-    full = ("TICKET COUNTS - 630 EXECUTED / 8 DROPPED / 10 BLOCKED / "
-            "4 DEFERRED / 103 OPEN / 3 RUNNING = 758 tickets")
-    assert not tg.scan_ticket_counts_missing([], text=full),         "a complete block must clear it"
+    # B2039 (owner directive 2026-08-23): prose counts no longer suffice -
+    # the block must be a TABLE with a delta column.
+    prose_only = ("TICKET COUNTS - 630 EXECUTED / 8 DROPPED / 10 BLOCKED / "
+                  "4 DEFERRED / 103 OPEN / 3 RUNNING = 758 tickets")
+    out = tg.scan_ticket_counts_missing([], text=prose_only)
+    assert out and "tabular" in out[0], (
+        "six numbers in prose must fire the tabular member - the owner asked "
+        "for a table with deltas, not a sentence")
+    full = ("TICKET COUNTS\n"
+            "| class | n | delta |\n"
+            "|---|---|---|\n"
+            "| EXECUTED | 630 | +2 |\n| DROPPED | 8 | 0 |\n"
+            "| BLOCKED | 10 | 0 |\n| DEFERRED | 4 | 0 |\n"
+            "| OPEN | 103 | -2 |\n| RUNNING | 3 | 0 |\n")
+    assert not tg.scan_ticket_counts_missing([], text=full),         "a complete tabular block with deltas must clear it"
 
     unnumbered = ("TICKET COUNTS - executed, dropped, blocked, deferred, "
                   "open, running")
     out = tg.scan_ticket_counts_missing([], text=unnumbered)
-    assert out and "6 of 6" in out[0], (
-        "classes named WITHOUT numbers must fail on all six - a block that "
-        "lists the classes and no counts reports nothing")
+    assert out and "7 of 7" in out[0], (
+        "classes named WITHOUT numbers must fail on all six PLUS the B2039 "
+        "tabular member - a block that lists the classes and no counts "
+        "reports nothing")
 
     partial = "TICKET COUNTS - 630 EXECUTED / 103 OPEN / 3 RUNNING"
     out = tg.scan_ticket_counts_missing([], text=partial)
@@ -18097,12 +18110,16 @@ def test_b1806_block_location_and_fenced_counts():
         "## TICKET COUNTS",
         "",
         fence,
-        "EXECUTED  642",
-        "DROPPED     8",
-        "BLOCKED    10",
-        "DEFERRED    4",
-        "OPEN      102",
-        "RUNNING     3",
+        # B2039: the contract is now tabular-with-delta, so the fence-
+        # visibility property is proven on a COMPLIANT block.
+        "| class    | n   | delta |",
+        "|----------|-----|-------|",
+        "| EXECUTED | 642 | +2    |",
+        "| DROPPED  | 8   | 0     |",
+        "| BLOCKED  | 10  | 0     |",
+        "| DEFERRED | 4   | 0     |",
+        "| OPEN     | 102 | -2    |",
+        "| RUNNING  | 3   | 0     |",
         fence,
         "",
     ])
@@ -18122,7 +18139,7 @@ def test_b1806_block_location_and_fenced_counts():
     assert tg.scan_ticket_counts_missing(
         [], text=resp.split("## TICKET COUNTS")[0]), \
         "a missing counts block must still fire"
-    out = tg.scan_ticket_counts_missing([], text=resp.replace("BLOCKED    10", ""))
+    out = tg.scan_ticket_counts_missing([], text=resp.replace("| BLOCKED  | 10  | 0     |", ""))
     assert out and "BLOCKED" in out[0], \
         "a dropped class must be NAMED, not merely counted"
 

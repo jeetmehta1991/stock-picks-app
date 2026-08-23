@@ -2730,11 +2730,26 @@ def scan_ticket_counts_missing(entries, *, text=None) -> list[str]:
 
     observed = _best_block_window(
         t, TICKET_COUNT_HEADERS, {cls: _has(cls) for cls in QUEUE_CLASSES})
+    # B2039 (owner directive 2026-08-23, verbatim: "display all ticket groups
+    # in a tabular format with deltas after each ticket is done along with
+    # the outcome"): the six numbers must sit in a pipe TABLE carrying a
+    # delta column - prose counts satisfied the six-class check while
+    # dropping the movement the owner asked to see.
+    # _response_text lowercases (measured B2039 - the first regex demanded
+    # uppercase class names and failed its own fixture), so match lowercased -
+    # which also turns a capital delta header into the small letter (0x394 ->
+    # 0x3b4); both are matched via chr() per the C1 ASCII rule.
+    _delta = "(?:%s|%s|delta)" % (chr(0x394), chr(0x3B4))
+    observed["tabular with a delta column"] = bool(
+        _re.search(r"(?m)^\s*\|[^\n]*(open|executed)[^\n]*\|", t)
+        and _re.search(r"\|[^\n]*" + _delta + r"[^\n]*\|", t))
     return require_each(
         "TICKET COUNTS INCOMPLETE (B1803)", observed,
-        why=("Owner directive 2026-08-21: all SIX classes, each with a number. "
-             "A class named without a count reports nothing, and a class "
-             "omitted lets silence stand in for zero."))
+        why=("Owner directive 2026-08-21: all SIX classes, each with a number; "
+             "owner directive 2026-08-23: as a TABLE with a per-class DELTA "
+             "and the turn's ticket outcomes. A class named without a count "
+             "reports nothing, and a class omitted lets silence stand in for "
+             "zero."))
 
 
 def scan_partial_read(entries, *, text=None, tool_text=None) -> list[str]:
