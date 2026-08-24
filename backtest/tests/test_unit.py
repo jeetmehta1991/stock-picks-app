@@ -7752,7 +7752,9 @@ def test_batch227b_multi_tier_partial_registered():
     new exit method (multi_tier_partial) bringing roster 24 -> 25."""
     from backtest.engine.exit_strategies import EXIT_STRATEGIES
     assert "multi_tier_partial" in EXIT_STRATEGIES
-    assert len(EXIT_STRATEGIES) >= 25
+    # B2110: the >= 25 floor predated the LEVER9 deprecations (26 -> 24);
+    # the exact count is pinned at the F-004 leg, this pin guards presence.
+    assert len(EXIT_STRATEGIES) >= 24
 
 
 def test_batch227b_multi_tier_hits_1r_then_2r_then_trail():
@@ -7912,11 +7914,16 @@ def test_batch226_new_exits_registered():
     mfe_lockin_trail, atr_trail_mae_conditional) bringing roster from
     17 to 21."""
     from backtest.engine.exit_strategies import EXIT_STRATEGIES
-    for name in (
-        "chandelier_3x", "atr_trail_vix_conditional",
-        "mfe_lockin_trail", "atr_trail_mae_conditional",
-    ):
+    # B2110 (LEVER9 option (a), owner-approved): atr_trail_mae_conditional
+    # DEPRECATED from the registry - never selected in 482 cell-selections
+    # AND 100pct outcome-identical to the surviving atr_trail_1x. Its
+    # function remains for old-cube replay; the pin now guards the three
+    # survivors plus the deliberate absence.
+    for name in ("chandelier_3x", "atr_trail_vix_conditional",
+                 "mfe_lockin_trail"):
         assert name in EXIT_STRATEGIES, f"Batch 226: {name} must be registered"
+    assert "atr_trail_mae_conditional" not in EXIT_STRATEGIES, (
+        "B2110 deprecated it - re-registration needs a new owner ruling")
     assert len(EXIT_STRATEGIES) >= 21
 
 
@@ -10252,8 +10259,10 @@ def test_batch375_dec433_exit_method_rename_map_documented():
                 f"DEC-433 rename: '{spec_name}' should be present as "
                 f"'{ln}' in EXIT_STRATEGIES; missing"
             )
-    # Total count: 26 after Batch 487 SM2 (added smart_money_reversal).
-    assert len(EXIT_STRATEGIES) == 26
+    # Total count: 24 after B2110 (LEVER9 option (a) owner-approved:
+    # smart_money_reversal + atr_trail_mae_conditional deprecated - never
+    # selected AND outcome-duplicates of the surviving atr_trail_1x).
+    assert len(EXIT_STRATEGIES) == 24
 
 
 def test_batch375_dec246_cube_sharpe_trade_frequency_annualization():
@@ -10673,17 +10682,17 @@ def test_batch373_e1_doc_count_pin_against_code():
     )
 
     # F-004 exit method count
-    assert len(EXIT_STRATEGIES) == 26, (
-        f"F-004 drift: EXIT_STRATEGIES expected 26 (CANONICAL_FACTS F-004 / "
-        f"CLAUDE.md; Batch 487 SM2 added smart_money_reversal); got "
+    assert len(EXIT_STRATEGIES) == 24, (
+        f"F-004 drift: EXIT_STRATEGIES expected 24 post-B2110 (LEVER9 (a): "
+        f"2 never-selected outcome-duplicates deprecated; was 26); got "
         f"{len(EXIT_STRATEGIES)}. Update doc count references."
     )
 
     # Cube cells = active strategies x exits (B2098: 213 x 26 = 5,538)
-    expected_cells = 219 * 26
-    assert expected_cells == 5694, (
-        f"Phase 1A-beta cube cells: expected 5,694 (219 active x 26 exits "
-        f"post-B2103 tranche-A complete); got {expected_cells}."
+    expected_cells = 219 * 24
+    assert expected_cells == 5256, (
+        f"Phase 1A-beta cube cells: expected 5,256 (219 active x 24 exits "
+        f"post-B2110 LEVER9 deprecations); got {expected_cells}."
     )
 
 

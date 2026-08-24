@@ -1592,7 +1592,13 @@ EXIT_STRATEGIES = {
     # Batch 487 (2026-05-30 owner-approved SM2): smart-money reversal exit.
     # Exit LONG on bearish smart-money flip (cluster_sell / concentrated_sell);
     # SHORT symmetric. Roster grows 25 -> 26.
-    "smart_money_reversal":   lambda df, ed, ep, d, a, s: exit_smart_money_reversal(df, ed, ep, d, a, s),
+    # B2110 (S6-B1248-LEVER9 option (a), owner-approved 2026-08-23):
+    # smart_money_reversal DEPRECATED from the registry - never selected in
+    # any of 482 cell-selections (B2084 derivation) AND 99.3pct outcome-
+    # identical to the surviving atr_trail_1x on 52,700 shared trades
+    # (roster_core.measure_degraded_exits on the R5 cube, run B2110); it
+    # also carried a 98.5pct-degenerate reason. Function kept for old-cube
+    # replay compatibility; only the registration is removed.
     # Batch 227b (2026-05-18 owner-approved): multi-tier partial-fill exit
     # (1/3 at 1R, 1/3 at 2R, 1/3 trails). Roster grows 24 -> 25.
     "multi_tier_partial":     lambda df, ed, ep, d, a, s: exit_multi_tier_partial(df, ed, ep, d, a, s),
@@ -1606,7 +1612,9 @@ EXIT_STRATEGIES = {
     "chandelier_3x":              lambda df, ed, ep, d, a, s: exit_chandelier(df, ed, ep, d, a, period=22, atr_mult=3.0),
     "atr_trail_vix_conditional":  lambda df, ed, ep, d, a, s: exit_atr_trail_vix_conditional(df, ed, ep, d, a, s),
     "mfe_lockin_trail":           lambda df, ed, ep, d, a, s: exit_mfe_lockin_trail(df, ed, ep, d, a),
-    "atr_trail_mae_conditional":  lambda df, ed, ep, d, a, s: exit_atr_trail_mae_conditional(df, ed, ep, d, a, s),
+    # B2110 (same derivation): atr_trail_mae_conditional DEPRECATED -
+    # never selected AND 100.0pct outcome-identical to the surviving
+    # production default atr_trail_1x. Function kept; registration removed.
     "trailing_10pct":       lambda df, ed, ep, d, a, s: exit_trailing_pct(df, ed, ep, d, a, 0.10),
     "trailing_5pct":        lambda df, ed, ep, d, a, s: exit_trailing_pct(df, ed, ep, d, a, 0.05),
     "trailing_15pct":       lambda df, ed, ep, d, a, s: exit_trailing_pct(df, ed, ep, d, a, 0.15),

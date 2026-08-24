@@ -121,7 +121,7 @@ backtest/
     smart_money.py       # congressional, insider, 13F
   signals/
     technical.py         # ~220 technical signal fields (Category 1); see CANONICAL_FACTS.md F-003 for ~270-280 total signals across 6 categories
-    screener.py          # 219 strategy classes registered live `len(ALL_STRATEGIES)` 2026-07-06 (B1189 Council 278 DELETE dxy_headwind_multinational_short: 220 -> 219). 0 in DEPRECATED_STRATEGIES (Batch 316a empty). **0** in STRATEGIES_DISABLED_MISSING_PRODUCER (B1189 emptied set; dxy_headwind eliminated rather than waiting for foreign_rev_pct producer). 219 active for Phase 1A-β cube; Batch 487 SM2 added 26th exit method `smart_money_reversal`; cube cells 219 × 26 = 5,694.
+    screener.py          # 219 strategy classes registered live `len(ALL_STRATEGIES)` 2026-07-06 (B1189 Council 278 DELETE dxy_headwind_multinational_short: 220 -> 219). 0 in DEPRECATED_STRATEGIES (Batch 316a empty). **0** in STRATEGIES_DISABLED_MISSING_PRODUCER (B1189 emptied set; dxy_headwind eliminated rather than waiting for foreign_rev_pct producer). 219 active for Phase 1A-β cube; Batch 487 SM2 added 26th exit method `smart_money_reversal`; cube cells 219 x 24 = 5,256 post-B2110 (LEVER9 deprecated 2 duplicate exits).
   engine/
     backtest.py          # main loop, incremental checkpoints every 100 days
     exit_manager.py      # trailing stop + 5 circuit breakers
