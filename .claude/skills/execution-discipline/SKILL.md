@@ -1832,6 +1832,15 @@ docstring says so. **Bypassing the caller's filter bypassed nothing, and the arm
 
 **A gate observed only PASSING has not been tested. It has been run.**
 
+**AND ITS PRECONDITION BINDS THE OPERATION, NOT THE MODULE (B2132 / L632).** My drift gate
+refused a launch whenever engine paths were dirty - correct for a real run, and it made the
+test suite unrunnable during development, because dirty is what development LOOKS like. I had
+scoped it to the SCRIPT, so every path inherited a precondition only one path needs. **Before
+shipping a gate, enumerate the paths through its module and ask which the precondition is
+actually about; a test seam is by definition not the guarded operation.** The tell was WHICH
+tests broke - two unrelated launcher tests, never the gate's own - so **run the FULL suite
+before believing a new gate is scoped right.**
+
 `scan_untickcted_remediation` called `_entry_text`, which did not exist, over `_read_entries()`,
 which returned zero entries - so the missing function was never reached, the gate returned `None`,
 and I reported it working. **A check returning "clean" over an empty input is indistinguishable
