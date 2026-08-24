@@ -14287,3 +14287,33 @@ record stays true about its STATE while going false about its MEASUREMENT.
 item 94; no new item warranted):** when a sweep touches a class that an existing ticket
 quantifies, re-measure and correct that ticket's number in the same close. A count inside an open
 ticket carries the same evidence burden as a count in a response.
+
+
+## L640 — I broke the last-row-wins rule twice in one session, having written it myself (B2154)
+
+**What happened, both times:** the ledger models ONE state per ticket, resolved by last-row-wins.
+Closing half a ticket and appending a non-terminal row for the remainder REOPENS a terminal id and
+makes every derived count unsound. Instance 1 (B2128): I closed `S6-B2122a` EXECUTED and appended
+`S6-B2122a` OPEN for the un-done half. Instance 2 (B2154), two batches later: `S6-B2128c` had been
+closed EXECUTED at B2132, and I appended `S6-B2128c` OPEN for its remainder. `test_b1795` caught
+BOTH before either shipped.
+
+**Why the rule did not stop the second one:** instance 1 was recorded only as a queue row, and a
+queue row is not re-read - that is exactly the B1723 pattern this project already measured (the
+skill edited 5 times while LEARNINGS gained 57 entries). The rule existed, correctly worded, in
+the one place guaranteed not to be in front of me when it mattered.
+
+**The mechanism of the mistake, stated honestly:** the id I reused was the one I had just been
+reading in the sweep output. Reusing it FELT like continuity - same subject, same thread of work -
+rather than like reopening a closed record. The distinction that matters (is this id terminal?) is
+invisible at the moment of typing, because the row being appended looks identical either way.
+
+**Rule (compliance failure against item 263; no new item warranted):** when closing part of a
+ticket, close the id and open a NEW id for the remainder IN THE SAME APPEND. Before appending any
+non-terminal row, check whether that id already has a terminal row - `scripts/queue_state.py`
+answers it in one call. The pin is `test_b1795_queue_counts_are_per_ticket`, and it is the only
+reason neither instance reached the ledger.
+
+**The wider point:** a lesson recorded ONLY in the ledger is a lesson filed where the next
+occurrence cannot see it. If a miss is worth a rule, the rule goes in the file that loads every
+turn - this entry's own mechanism is skill hard-rule 6, added the same close.
