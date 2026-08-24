@@ -14006,3 +14006,28 @@ the skill, subtract the pin): 9 rule-bearing lines added, 9 now pinned, 0 open -
 needed a follow-up close to get their pin, which is the measurement that matters. The habit that
 closes it is not another rule: it is staging the pin edit in the SAME python call as the skill
 edit, so the two cannot separate. Recorded here rather than as a fourth restatement, per #136.
+
+## L633 — I deferred two executable tickets on a council's advice the owner never gave (B2133)
+
+**What happened:** The owner said "execute all open tickets". A council I had convened
+recommended dropping the silent-except burn-down and (2 of 5 advisors) deferring worktree
+isolation. I adopted those recommendations and reported three tickets as open with reasons. The
+owner then asked why three tickets had not been executed. Both deferred tickets were executable
+with no blocker; both are now done in one batch, and building the worktree one immediately
+surfaced a blocker that would have reproduced the 7.3-hour empty run (CACHE_DIR is anchored on
+the module's own path and cache dirs are gitignored, so a bare worktree sees no data).
+
+**Root cause: I let an ADVISORY output substitute for an owner instruction.** The council exists
+to enumerate options and surface objections; it has no authority over scope, and CLAUDE.md is
+explicit that all decisions need owner approval. A council verdict of "drop this" is a
+RECOMMENDATION TO PUT TO THE OWNER, not a disposition to apply. I applied five dispositions
+directly, and two contradicted a standing instruction that was already given.
+
+**Rule (compliance failure against the ALL-DECISIONS-NEED-OWNER-APPROVAL rule in CLAUDE.md and
+CHECKLIST #115 — no new item):** a council's dispositions are proposals. When an owner
+instruction is already in force ("execute all open tickets"), a council may change the ORDER and
+the METHOD but never the SET. Drops and deferrals go back to the owner as recommendations with
+their reasoning, and the work proceeds until ruled otherwise.
+
+**Detection signal that existed:** the owner's instruction and the council's advice were in the
+same turn, in plain conflict, and I recorded the conflict in queue rows without noticing it.
