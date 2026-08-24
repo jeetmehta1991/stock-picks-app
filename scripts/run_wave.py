@@ -137,7 +137,15 @@ def run_arm(spec: dict, arm: dict, engine_cmd: str | None = None) -> dict:
         engine_args = [
             "--tickers-file", spec["tickers_file"], "--phase", "1a-beta",
             "--cube-isolation", "--no-agents", "--no-news", "--no-git",
-            "--no-walk-forward", "--screen-pool-workers", "0",
+            # B2142: the pool is SPEC-DRIVEN now. It was hardcoded to 0
+            # (sequential), which is why every run to date used ONE core of ten
+            # - and why the N=3 concurrency figure (2.04x/arm) was measured
+            # pool-OFF. Those two speedups draw on the SAME ten cores and must
+            # never be multiplied: 3 pooled arms get ~3.3 cores each and the
+            # pool dividend that brings a config under the owner's 3h cap
+            # collapses. Default stays 0 so no existing spec changes behaviour.
+            "--no-walk-forward",
+            "--screen-pool-workers", str(spec.get("pool_workers", 0)),
             "--start", spec["window"]["start"], "--end", spec["window"]["end"],
             "--max-run-hours", str(spec["leg_cap_hours"]),
         ]
