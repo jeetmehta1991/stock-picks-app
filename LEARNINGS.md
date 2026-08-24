@@ -13871,3 +13871,27 @@ worth keeping: a rule promoted into the always-loaded skill needs its pin IN THE
 the promotion itself becomes an unaddressed claim - which is the same disappearance-in-slow-
 motion that #234's mechanism member exists to prevent, arriving through a queue row instead of
 a doc edit.
+
+## L629 — I violated the sibling-chain rule hours after authoring it, and the commit shipped the lie (B2129)
+
+**What happened:** A scripted edit to SKILL.md raised AssertionError (I reconstructed the
+anchor with an ASCII hyphen where the file has an em dash), so nothing was written. The very
+next command in the same shell call was `git add EXECUTION_QUEUE.md && git commit`, separated
+from the edit by a NEWLINE rather than `&&` - so the commit ran past the failed edit and
+shipped a queue row asserting a skill change that does not exist (commit 64cc3c134). Retracted
+and corrected at a2bdb80a2.
+
+**Root cause: the rule was authored by me THIS SESSION and not applied.** L623 states it; the
+skill's B1993d bullet states it; I quoted it in two separate closes. What I did NOT do is apply
+it to the shape in front of me, because the failing step was an EDIT and the guarded step was a
+COMMIT, and I only chain when I am thinking about the commit. The trigger is the FAILURE MODE
+(any step whose failure invalidates a later step), not the tool.
+
+**Rule (compliance failure against the B1993d rule and #215 — no new item):** in any multi-step
+shell call, every step whose failure would invalidate a later step is joined to that step with
+`&&`. Newline separation means "run regardless". Prefer one edit per call when the edit's
+success is load-bearing for a commit message.
+
+**Detection signal that existed:** the AssertionError printed in the same output as the commit
+hash. Two lines apart, on screen, and I read past it to the push confirmation - the same
+read-past-the-tell that L520 (verify the ARTIFACT, not the exit code) exists to stop.
