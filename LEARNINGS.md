@@ -13756,3 +13756,13 @@ and confirming the probe reports it.
 **Detection signal that existed:** the all-clear itself. A sweep that finds zero siblings
 immediately after a real instance was found is the case #166 was written for, and the flag
 here was that the clean answer arrived one command after the dirty one.
+
+**L625 addendum (B2128e): the class sweep, recorded in the entry itself.** All 22 committed
+`verify_*` / `audit_*` scripts were enumerated and the corpus construction of the four making
+ENFORCEMENT claims was read. Result: ZERO other live instances. `audit_criteria_enforcement.py`
+already excludes its own producer (line 63 filters `p.name != "config.py"` before calling a
+criterion unread, and its docstring names the exclusion); `verify_engine_implemented` and
+`verify_build_claims` scan named consumer files rather than a directory that could contain the
+writer; `verify_describing_artifacts` compares records against code. The offending probe was
+ad-hoc, never committed, which is why no shipped mechanism regressed. Rule anchored in the
+always-loaded skill at B1335 rule 3 (an ALL-CLEAR is the same claim as a zero-hit).
