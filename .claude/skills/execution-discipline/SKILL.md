@@ -1439,6 +1439,14 @@ turn gate caught it - a COMPLIANCE FAILURE against `#201`, not a gap in it.
   apart, and which verbs separate them is a POLICY CALL, not a guess.
 - **A number read from a comment is READ-class evidence that the comment says
   it.** Quote it as an assertion with its author, or re-measure it.
+- **ASSERT THE ANCHOR BEFORE YOU REPLACE IT (B2128 / L627 addendum).** Every
+  scripted edit asserts its anchor matches exactly once BEFORE writing. This is
+  what makes a wrong anchor harmless: reconstructing a file's wording from
+  memory instead of reading it is a substitution you will make, and the assert
+  turns it into a failed edit at authoring time rather than a silent no-op or a
+  mangled file. MEASURED in one session: 9 scripted edits, all asserted, one
+  anchor wrong, zero bad edits shipped. Sibling of the `&&` chaining rule
+  (B1993d) - both convert a silent wrong outcome into a loud stop.
 - **EXTENSION (B2128 / L627) - NAME THE FILE YOU READ IT IN, NOT THE FILE THAT
   OUGHT TO HOLD IT.** Re-wording a figure to satisfy this very rule, I sourced
   it to the script that exists BECAUSE of the incident it describes; a grep of
