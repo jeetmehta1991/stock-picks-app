@@ -13828,3 +13828,11 @@ source, once on a file's contents. The habit that closes both is identical and c
 thing, then write the sentence. The assert is what made the second instance harmless, which is
 the argument for asserting anchors in every scripted edit rather than trusting a replace to
 have matched.
+
+**L627 second addendum (B2128p): the skill rule now has an address.** The assert-before-replace
+rule was added to the always-loaded skill and, in the same batch, pinned by
+test_b2123_session_rules_survive_in_the_always_read_skills (fragment "ASSERT THE ANCHOR BEFORE
+YOU REPLACE IT", gutted-arm count raised 9 -> 10, both arms green, full pyramid 1149 passed +
+3 skipped). Recorded because a rule added to a doc without a durability pin is the same
+disappearance in slow motion that #234's mechanism member exists to prevent, and because a
+queue row claiming a shipped rule with no checkable artifact is exactly the #264 class.
