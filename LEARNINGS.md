@@ -14100,3 +14100,35 @@ about the holdout finding is that it spans a whole config SET, not that the shap
 
 **Detection signal that existed:** my own ticket text cited "the B1820/L558 class" while my prose
 called the finding new. The two sentences contradicted each other in the same turn.
+
+## L636 — The two results that looked best were the two that were contaminated (B2136)
+
+**What happened:** Four completed config runs had rankings computed from the HOLDOUT rather than
+in-sample data. Two reported a best holdout ci_lo above the 0.333 selection-noise floor
+(span21 +0.607, span50 +0.439) and read as the program's only positive evidence. Re-grading all
+four offline at the in-sample grain — the cubes survived, so no engine time — gives rank-1
+is_ci_lo of cfg1 +0.129, cfg2 +0.094, span21 **-0.140**, span50 +0.259. **0 of 4 clear the floor,
+and the two that looked best are the two that look worst honestly.**
+
+**The reasoning that predicted it, before any re-grade ran:** peeking is a BEST-CASE procedure —
+it hands the search the answer sheet. So a run that peeked and still came out bad is strong
+evidence there is nothing there, and nearly free. A run that peeked and came out GOOD has told
+you almost nothing, because a good result is precisely what peeking manufactures. **The
+instinct is to protect the winners and shrug off the failures; the correct move is the exact
+reverse.**
+
+**And re-grading does not un-peek.** The artifact is fixed; the fact that the holdout was read
+four times for this strategy is not. These rankings are CANDIDATES, never verdicts, and this
+strategy's holdout is spent until the boundary is re-cut.
+
+**Rule (compliance failure against the D4/B2010 rank-on-IS rule — no new item):** when a
+selection is found to have touched the holdout, re-derive it in-sample AND state that the
+holdout is spent for that object. Report the re-graded numbers as candidates. And when two of N
+contaminated results look good, treat those two as the LEAST informative, not the most.
+
+**Two second-order findings from the same batch.** The renderer that EXPOSED the contamination
+was itself ranking on the holdout key, so it reported a holdout-selected pick as "best" even
+after the re-grade — the L558 test ("could a reader tell this artifact from one the bug
+produced?") applies to renderers, not just artifacts. And the consistency check I added for a
+2-row ledger contradiction found 5 MORE rows I did not know about — after I first appended it
+AFTER the print loop, where it computed and displayed nothing.
