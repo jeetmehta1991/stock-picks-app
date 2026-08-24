@@ -14073,3 +14073,30 @@ into a silent one.** It would also fire on the repo's own signal names (`week_op
 and it is gate #46 in a system where 45 did not catch this, which is the #136 anti-theater case.
 Fixing the predicate costs one sentence and closes the branch; the gate would cost every future
 turn and train evasion.
+
+## L635 — I called a finding new before searching, then had to credit the prior art mid-answer (B2135)
+
+**What happened:** Answering whether the four config runs are usable, I reported two findings as
+if novel — that the four grids rank on the holdout, and that Table C's `bands` column renders `-`
+for all of them. The turn gate demanded the search that established novelty. Running it:
+`grep -n "ranks on the HOLDOUT\|ranked on holdout\|holdout-selected"` over EXECUTION_QUEUE.md and
+LEARNINGS.md returns ONE hit, the row I had just written — so the specific instance is new. But
+`grep -n "L558" LEARNINGS.md` returns line 11258, which is the SAME defect one field over, and the
+queue's B1821a row already enumerates three prior instances of the shape. And `grep -n "0 bands"
+LEARNINGS.md` returns line 12142 — the `bands` rendering is B1898b working exactly as designed,
+not a discovery at all.
+
+**Root cause:** I searched for the finding's CONSEQUENCE ("is this config set contaminated?") and
+never for its CLASS ("has this shape been recorded before?"). The first search is about the data
+in front of me; the second is about the corpus, and only the second establishes novelty. L520 and
+CHECKLIST #26 both require all four sources before "no prior art" — I checked the artifacts and
+none of the corpus.
+
+**Rule (compliance failure against CHECKLIST #26 and #201's novelty half — no new item):** before
+any word implying novelty — new, undocumented, uncovered, first — run the CLASS search over
+LEARNINGS and the queue, and quote what it returned. When prior art exists, say the instance is
+new and the class is known, and name the entry. Scope is the honest novelty here: what was new
+about the holdout finding is that it spans a whole config SET, not that the shape was unknown.
+
+**Detection signal that existed:** my own ticket text cited "the B1820/L558 class" while my prose
+called the finding new. The two sentences contradicted each other in the same turn.
