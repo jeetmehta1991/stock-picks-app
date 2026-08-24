@@ -78,8 +78,10 @@ def main() -> int:
     ap.add_argument("--tickers", default="", help="comma list; default from R5 universe")
     ap.add_argument("--n-tickers", type=int, default=25)   # CHECKLIST #154 floor
     ap.add_argument("--n-dates", type=int, default=8)      # >=4, spanning >=12 months
-    ap.add_argument("--out", default="output_audit/b1542_cache_divergence.json")
+    ap.add_argument("--out", default=None, help="default: derived from sample size; a fixed bNNN default clobbers historical artifacts (S6-B2118e)")
     a = ap.parse_args()
+    if a.out is None:
+        a.out = f"output_audit/cache_divergence_{a.n_tickers}t_{a.n_dates}d.json"
 
     import backtest.config as cfg
     from backtest.signals import smc_ict

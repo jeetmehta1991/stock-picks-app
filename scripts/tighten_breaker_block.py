@@ -158,7 +158,7 @@ def survives(diag: dict, break_max, age_max, tail_n) -> bool:
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--out", default="output_audit/b1502_tightening_grid.json")
+    ap.add_argument("--out", default=None, help="default: derived from the cube dir (or _r5 for the R5 default); a fixed bNNN default clobbers historical artifacts (S6-B2118e)")
     ap.add_argument("--limit-tickers", type=int, default=0)
     ap.add_argument("--cube", default="", help="cube to grade against; default R5")
     ap.add_argument("--tickers-file", default="")
@@ -197,6 +197,10 @@ def main() -> int:
     ap.add_argument("--max-diag-loss", type=float, default=0.02,
                     help="abort if more than this fraction of fires cannot be re-diagnosed")
     a = ap.parse_args()
+    if a.out is None:
+        import pathlib as _pl
+        _tag = _pl.Path(a.cube).parent.name if a.cube else "_r5"
+        a.out = f"output_audit/tightening_grid_{_tag}.json"
 
     # B1623 (S6-B1620c): a dropped ticker used to vanish silently. Counted and
     # surfaced now, and ABORTED above a threshold - a silent drop is a BIASED

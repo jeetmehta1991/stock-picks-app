@@ -101,8 +101,10 @@ def main() -> int:
     ap.add_argument("--end", default="2025-05-05")  # IS window; holdout LOCKED
     ap.add_argument("--recency", default="90", help="comma list")
     ap.add_argument("--swing", default="20", help="comma list")
-    ap.add_argument("--out", default="output_audit/b1500_sandbox.json")
+    ap.add_argument("--out", default=None, help="default: derived from --ticker; a fixed bNNN default clobbers historical artifacts (S6-B2118e)")
     a = ap.parse_args()
+    if a.out is None:
+        a.out = f"output_audit/sandbox_{a.ticker}.json"
 
     df = _load_ohlcv(a.ticker)
     print(f"{a.ticker}: {len(df)} bars {df.index[0].date()}..{df.index[-1].date()}")

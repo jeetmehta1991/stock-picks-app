@@ -128,8 +128,10 @@ def main() -> int:
     ap.add_argument("--ticker", required=True)
     ap.add_argument("--start", default="2022-05-05")
     ap.add_argument("--end", default="2025-05-05")
-    ap.add_argument("--out", default="output_audit/b1501_breaker_instrumented.json")
+    ap.add_argument("--out", default=None, help="default: derived from --ticker; a fixed bNNN default clobbers historical artifacts (S6-B2118e)")
     a = ap.parse_args()
+    if a.out is None:
+        a.out = f"output_audit/breaker_instrumented_{a.ticker}.json"
 
     df = _load(a.ticker)
     rows = instrument(df, a.start, a.end)

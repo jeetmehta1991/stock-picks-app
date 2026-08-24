@@ -13638,3 +13638,28 @@ L619 addendum (B2071): **ANCHORED (#197)** - cited at CHECKLIST #279 (the L619 e
 **A timing measurement's environment is part of its instrument, and my own toolchain is part of the environment.** The first N=3 concurrency trio ran while I launched the full pyramid twice inside its window - a fourth CPU consumer for roughly 477 of the trio's 840 seconds - so the measured 2.93x per-arm penalty is an upper bound, not the N=3 point, and one pyramid round produced a contention-shaped test failure plus a vanished skip. Compliance failure against the standing feedback_no_parallel_pyramid_runs rule, whose scope this confirms is wider than its name: ANY CPU-heavy run beside a TIMING measurement poisons the measurement - the pyramid was never special, it was just the heavy thing most often at hand. Detection is JUDGMENT-ONLY (no scan sees process concurrency); the durable half is mechanical where launches are: the B2096 rerun manifest carries the contamination as a named obsolescence risk with a hold clause, and the cadence cron's prompt forbids heavy work until the completion line - the PRE-SPEND gate's risk enumeration is exactly where this class gets caught before it costs a rerun. Anchored (#197) at the skill's tripwire table row added B2097.
 
 L620 addendum (B2100): **SIXTH INSTANCE, same class, new pair.** B2046 fixed run_exit_comparison's empty-summary return (the PRODUCER of the pair) and the writer's cross-block `best` dependency (the CONSUMER) crashed the first real run that reached it - a stale loop list from an earlier section leaked into the detail block when exit_compare was empty. The B2092 lesson's wording transfers verbatim: a fix through one half of a producer-consumer pair proves one half. Pin test_b2100_writer_survives_empty_summary_with_detail_rows drives write_all_outputs end to end on the empty-summary + non-empty-detail shape; compliance failure against #226/L592/L620, cited not re-minted.
+
+## L622 — A staged-search proposal must compute the cheap stage's discriminating power (B2119)
+
+**What happened:** Answering the owner's "can we reduce combinations?", I recommended
+successive halving — all 5 arms at 50t x 1y, carry the top 2 to full shape — with
+"carrying 2 (not 1) is the mitigation" for misranking risk. The owner asked "if we run
+half, won't we be carrying results on noise?" — and the measurement, already sitting in
+output_audit/b2118_ref_grid.json (the 50t x 1y reference cube's own grid), settles it:
+rank-1 CI half-width 0.624 vs a rank1-to-rank5 spread of 0.191. Arm differences at that
+grain are ~3x smaller than one estimate's uncertainty; the cheap stage ranks noise, and
+carrying 2 halves a coin flip. The recommendation was withdrawn.
+
+**Root cause:** "carry 2 mitigates misranking" was an ASSERTED CONSEQUENCE, never
+computed — the #278 class (an asserted consequence carries a measurement's evidence
+burden), caught by the owner instead of by me. The computation took one script over an
+artifact already read that turn.
+
+**Rule (compliance failure against CHECKLIST #278 + #201 — no new item):** any staged /
+early-stopping search proposal states the cheap stage's CI width AND the expected
+between-arm spread, from measured artifacts, before proposing. If width >> spread at the
+ranking grain, the staging is noise-carrying and must not be proposed. Family-pooled
+grains re-run the same check on pooled n, never inherit the single-strategy verdict.
+
+**Detection signal that existed:** the E1 pilot's own result (best combos within +-0.03
+of zero across 1,500 graded rows) already showed sub-noise differences at small shapes.
