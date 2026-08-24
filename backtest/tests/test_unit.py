@@ -13739,6 +13739,15 @@ def test_b1510_producer_artifact_standard():
     assert 'sh = f"HOLDOUT' in src_c, (
         "a pre-B2010 artifact with no in-sample key must be MARKED as holdout-"
         "selected, not silently reported as 'best'")
+    # B2137: the Parameters-tested block and the bands source
+    assert "**Parameters tested**" in src_c, (
+        "TABLE C must carry the Parameters-tested block naming the P1..P6 bands "
+        "each config exercised - a bands COUNT says how many, not which")
+    assert "for k in AXIS_KEYS:" in src_c, (
+        "bands must read the result rows' own parameter keys; reading r['admit'] "
+        "made it render '-' for every config ever graded")
+    assert "not recorded" in src_c, (
+        "an axis absent from the artifact must read 'not recorded', never 1")
     assert "PASS" not in header_c, (
         "B1898(a): step 1 is a ranked list with NO gates, so a PASS column "
         "reports 0 forever and reads as a verdict on unjudged work")

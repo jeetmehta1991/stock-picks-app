@@ -219,6 +219,12 @@ def _measured_fmt(value):
     return m.fmt(value)
 
 
+# B2137: the P-id <-> parameter-name map, from the SPEC inventory (Table A).
+P_AXES = (("P1", "swing_length"), ("P2", "close_mitigation"), ("P3", "tail_n"),
+          ("P4", "age_bars_max"), ("P5", "break_pct_max"), ("P6", "span"))
+AXIS_KEYS = tuple(nm for _, nm in P_AXES)
+
+
 def table_c(grids: dict[str, dict]) -> list[str]:
     """POST RUN CONFIG TABLE - one row per config, the whole funnel across it.
 
@@ -261,6 +267,7 @@ def table_c(grids: dict[str, dict]) -> list[str]:
     # B1898 (d), owner directive: every presentation of this table defines its
     # own terms. A reader who meets `graded` or `ci_lo` for the first time in a
     # pasted table has no way to look them up.
+    per_config_axes: dict = {}
     rows = ["_`starved-IS` = no exit cleared min_n IN-SAMPLE, a SAMPLE-SIZE fact "
             "rather than a quality verdict. `graded` = reached `evaluate()` and "
             "produced a Sharpe. `distinct` = graded outcomes after "
@@ -288,10 +295,16 @@ def table_c(grids: dict[str, dict]) -> list[str]:
         # Reading them from the enumerated combinations rather than from the
         # grid spec, because the spec is what was INTENDED and the results are
         # what ran.
+        # B2137 (S6-B2135c): read the axes from the result rows' OWN top-level
+        # parameter keys. This looked in `r["admit"]`, which exists only on the
+        # carried top-10 ranking rows - so `bands` rendered `-` for every config
+        # ever graded, and the evidence-weight question B1898(c) added the
+        # column to answer had no answer for any of them.
         axes = {}
         for r in res:
-            for k, v in (r.get("admit") or {}).items():
-                axes.setdefault(k, set()).add(repr(v))
+            for k in AXIS_KEYS:
+                if k in r:
+                    axes.setdefault(k, set()).add(repr(r[k]))
         # B1898b: render '-' when the artifact records no `admit` block.
         # The first version emitted 0, which reads as 'tested nothing'
         # when the truth is 'not recorded' - the exact rule written one
@@ -327,6 +340,42 @@ def table_c(grids: dict[str, dict]) -> list[str]:
         if other:
             rows.append(f"| | | | | | | | | | **UNCLASSIFIED {other} rows - the funnel does not "
                         f"reconcile, do not trust this row** |")
+        per_config_axes[name] = axes
+
+    # B2137, owner directive: PARAMETERS TESTED - the P1..P6 bands each config
+    # actually exercised, by P-id, so a reader can see WHICH axes carried the
+    # search and which sat at one value. A `bands` COUNT says how many; this
+    # says which, and an axis pinned at a single value is a dimension that
+    # bought nothing.
+    rows += ["", "**Parameters tested** - distinct values each config exercised per axis, read "
+             "from the result rows themselves. `1 value` = the axis was PINNED and contributed "
+             "no search; an axis absent from the artifact reads `not recorded`, never `1`. "
+             "**P1 `swing_length` and P6 `span` are the CROSS-CONFIG axes** - they define which "
+             "config a cube IS, are held fixed within it, and are NOT written into the grid "
+             "artifact (S6-B2136: the grader defaults swing_length to 20, so a cube run at 10 "
+             "re-grades wrong unless the value is recovered from the run log).", "",
+             "| config | " + " | ".join(f"{pid} {nm}" for pid, nm in P_AXES) + " |",
+             "|---|" + "---|" * len(P_AXES)]
+    for name, axes in per_config_axes.items():
+        cells = []
+        for pid, nm in P_AXES:
+            vals = axes.get(nm)
+            if not vals:
+                cells.append("not recorded")
+            else:
+                # B2137: sort NUMERICALLY where the values are numbers - a
+                # string sort renders tail_n as "1, 10, 2, 20, 3, 5", which
+                # reads as a jumbled band and hides whether the axis is ordered.
+                def _key(x):
+                    if x == "None":
+                        return (2, 0.0)
+                    try:
+                        return (0, float(x))
+                    except ValueError:
+                        return (1, 0.0) if x == "False" else (1, 1.0)
+                shown = sorted(vals, key=_key)
+                cells.append(f"{len(vals)}: " + ", ".join(v.replace("'", "") for v in shown))
+        rows.append(f"| `{name}` | " + " | ".join(cells) + " |")
     return rows
 
 

@@ -474,9 +474,30 @@ overstates the evidence (L473); `bands` = distinct parameter VALUES actually exe
 the enumerated combinations rather than the grid spec — the spec is what was INTENDED, the
 results are what ran.
 
-**Two properties that make it honest.** `best` ranks on **`ci_lo`, never Sharpe** — the higher
-Sharpe can carry a NEGATIVE lower bound (L455). And the renderer **asserts** that
+**Two properties that make it honest.** `best` ranks on **`is_ci_lo` — the IN-SAMPLE lower
+bound — never Sharpe and never the holdout** (L455 for the Sharpe half; B2136 for the holdout
+half, where the renderer itself was found ranking on the holdout key and reporting a
+holdout-selected pick as "best" even for honestly-graded inputs). An artifact with no in-sample
+key — every pre-B2010 grid — renders its values prefixed `HOLDOUT` so a reader cannot mistake
+one for the other. And the renderer **asserts** that
 `graded + starved-IS + no-Sharpe + zero-fires == combos` rather than trusting the arithmetic.
+
+**PARAMETERS TESTED (added B2137, owner directive).** Beneath the funnel, a second block names
+the P1..P6 bands each config actually exercised, read from the result rows' own parameter keys:
+
+| config | P1 swing_length | P2 close_mitigation | P3 tail_n | P4 age_bars_max | P5 break_pct_max | P6 span |
+|---|---|---|---|---|---|---|
+| `cfg1` | not recorded | 2: False, True | 6: 1, 2, 3, 5, 10, 20 | 5: 60, 120, 180, 250, None | 5: 0.01, 0.02, 0.03, 0.05, None | not recorded |
+
+A `bands` COUNT says how many values were exercised; this block says WHICH, and an axis pinned
+at a single value is a dimension that bought nothing. Values sort numerically — a string sort
+renders `tail_n` as "1, 10, 2, 20, 3, 5" and hides whether the axis is ordered. An axis absent
+from the artifact reads **`not recorded`**, never `1` (B1898b/L580: an unmeasured value must
+never render as a number). **P1 and P6 are the CROSS-CONFIG axes** — they define which config a
+cube IS, are held fixed within it, and are NOT written into the grid artifact, which is why they
+read `not recorded` for every config graded to date; S6-B2136 records the consequence, that the
+grader defaults `swing_length` to 20 and re-grades a swing-10 cube wrongly unless the value is
+recovered from the run log.
 
 **Format locked B1898 on owner review** (ticket S6-B1705j), four corrections: **(a)** the `PASS`
 column REMOVED — Step 1 is a ranked list with NO gates (B1608; gates belong to Step 2, L471), so
