@@ -13818,3 +13818,13 @@ prior-turn blocks and my own earlier prose are all sources that must be named as
 and could recall its content — 381 tickers, 380 starting A-C, 133 overlap — none of which is a
 duration. Recall of a document's actual contents contradicted the attribution at the moment I
 wrote it.
+
+**L627 addendum (B2128m): the same substitution recurred inside the fix for it.** Anchoring
+this very rule in the skill, my first edit asserted a two-line anchor I had reconstructed from
+memory of the section rather than read; the assert failed and nothing shipped. Reading lines
+1440-1441 of the skill showed the real wording wraps differently. So the class - the plausible
+version standing in for the read version - bit twice within one batch: once on a figure's
+source, once on a file's contents. The habit that closes both is identical and cheap: open the
+thing, then write the sentence. The assert is what made the second instance harmless, which is
+the argument for asserting anchors in every scripted edit rather than trusting a replace to
+have matched.
