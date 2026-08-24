@@ -14160,3 +14160,28 @@ from the new Parameters-tested block (they are the cross-config axes, and their 
 artifact is the same blocker that would have re-graded a swing-10 cube at swing 20), and values
 sorted as STRINGS, printing `tail_n` as "1, 10, 2, 20, 3, 5". Rendering a thing and READING it is
 what caught both — neither was visible in the code.
+
+## L638 — My own summaries kept a dead finding alive until it nearly deleted a working exit (B2139)
+
+**What happened:** The owner directed "retire regime_flip completely", premised on it being one of
+three defunct exits. MEASURED before acting: pre-fix cubes are 100pct fallback exactly as recorded
+(output_cfg1 330/330 and output_w1_sw20_span21 320/320 rows carrying `regime_flip_max_days_20`),
+but the post-fix cube generated at the current sha shows 95 regime_flip rows of which **42 are
+REAL regime changes** and only 53 are the fallback. `measure_degraded_exits` no longer lists it;
+the B2043 pin driving a real flip passes. **The finding expired at B2043 and I kept quoting it.**
+
+**Root cause: I propagated the finding, not its date.** In this session alone I cited "the
+regime_flip finding" three times while summarising wave-1 ledger steps, each time from the
+LEDGER TEXT rather than from a current measurement. The ledger entry is correct and permanent -
+it records what was true at B1680. What I omitted every time was that a later batch fixed it.
+A finding quoted without its expiry reads as current, and the owner reasonably acted on it.
+
+**Rule (compliance failure against CHECKLIST #256 — a figure you repeat is re-derived, not
+carried — no new item):** before repeating any RECORDED defect as a live fact, check whether a
+later batch closed it. The ledger is an append log: an entry is evidence about its own date and
+nothing later. When summarising historical step results, say which findings have since been
+fixed, or the summary manufactures a present-tense problem out of a past one.
+
+**What saved it:** the owner's standing instruction to correct him when he is very much wrong,
+plus Gate 2 - opening the post-fix cube rather than acting on the recorded text. One command
+separated "retire a dead exit" from "delete a working one".
