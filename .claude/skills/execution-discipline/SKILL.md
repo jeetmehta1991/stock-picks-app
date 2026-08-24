@@ -830,7 +830,13 @@ edit that never landed (B1993d, JUDGMENT-ONLY: no scan reads shell chaining;
 the `999e23d` retraction is the precedent; second instance L623/B2122 - a
 zero-hit VERIFICATION grep sibling-chained before its dependent commit, so a
 false claim shipped: the rule covers checks, not only edits, and a
-presence-grep must assert its match count to be able to fail).
+presence-grep must assert its match count to be able to fail; **THIRD instance
+L629/B2129** - an anchor assert failed and the newline-separated commit shipped
+a row claiming a skill edit that never landed, hours after I authored this very
+rule. **The trigger is the FAILURE MODE, not the tool**: any step whose failure
+would invalidate a LATER step is joined to it with `&&`. I chain when thinking
+about commits, and twice now the failing step was an EDIT or a CHECK. Prefer one
+edit per shell call when its success is load-bearing for a commit message).
 
 **Mechanically enforced** by the corrected B1986 case, the per-file citation
 count-freeze in `test_b1971_no_new_dangling_checklist_citation`, and `#281`'s
