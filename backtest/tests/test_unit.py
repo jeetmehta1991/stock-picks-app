@@ -24859,6 +24859,8 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
          "L624: a skill named as the subject is still triggered"),
         ("ASSERT THE ANCHOR BEFORE YOU REPLACE IT",
          "L627 addendum: a scripted edit asserts its anchor before writing"),
+        ("RUNNING IT YOURSELF IS MANDATORY, NOT",
+         "L628: the run-the-gate rule must carry its trigger, not just the tool"),
     ):
         if frag not in discipline_text:
             missing.append(f"execution-discipline lost [{why}]: {frag!r}")
@@ -24881,7 +24883,7 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     assert _b2123_skill_rules_present(fable, disc) == []
     # #226 prove-it-can-fail: a gutted file must be REPORTED, not pass
     gutted = _b2123_skill_rules_present("# The Fable Method\n", "# Discipline\n")
-    assert len(gutted) == 10, gutted
+    assert len(gutted) == 11, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
