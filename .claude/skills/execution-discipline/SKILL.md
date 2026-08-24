@@ -1439,6 +1439,14 @@ turn gate caught it - a COMPLIANCE FAILURE against `#201`, not a gap in it.
   apart, and which verbs separate them is a POLICY CALL, not a guess.
 - **A number read from a comment is READ-class evidence that the comment says
   it.** Quote it as an assertion with its author, or re-measure it.
+- **EXTENSION (B2128 / L627) - NAME THE FILE YOU READ IT IN, NOT THE FILE THAT
+  OUGHT TO HOLD IT.** Re-wording a figure to satisfy this very rule, I sourced
+  it to the script that exists BECAUSE of the incident it describes; a grep of
+  that file returns ZERO hits, and the figure actually came from a turn-gate
+  message read minutes earlier. **Grep the named file for the figure before
+  naming it** - an attribution is a claim with an address (L595), and
+  plausibility is not evidence. Gate text, prior-turn blocks and your own
+  earlier prose are sources that must be named as themselves.
 - **A measurement on a SELECTED subset does not refute one on the population** -
   range restriction attenuates correlation; -0.382 on an is_sharpe-selected
   top-10 is consistent with -0.779 on all 300.
