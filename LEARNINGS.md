@@ -14132,3 +14132,31 @@ after the re-grade — the L558 test ("could a reader tell this artifact from on
 produced?") applies to renderers, not just artifacts. And the consistency check I added for a
 2-row ledger contradiction found 5 MORE rows I did not know about — after I first appended it
 AFTER the print loop, where it computed and displayed nothing.
+
+## L637 — A column that renders "-" for every row is broken, not empty (B2137)
+
+**What happened:** Table C's `bands` column rendered `-` for all four configs. I ticketed that as
+a limitation of the ARTIFACTS ("the four legacy configs predate band recording") and a council
+advisor predicted fresh artifacts would fix it for free. Both readings were wrong. The column
+read `r["admit"]`, which exists ONLY on the carried top-10 ranking rows and never on result rows
+— while the parameters sit right there as top-level keys (`close_mitigation`, `tail_n`,
+`age_bars_max`, `break_pct_max`). Reading those returns 18 for every config. **The column had
+never worked, for any config, since the day it was added at B1898(c).**
+
+**Root cause:** a value that renders as "not recorded" is indistinguishable from a value that is
+not being LOOKED FOR correctly. B1898b's rule — an unmeasured value must render `-` and never `0`
+— is right, and it made this failure look like honest reporting for as long as it survived. The
+tell I had and ignored: `-` for EVERY config across four different runs and two different
+generations of grader. A property that is universally absent is usually a reader bug, not a
+universal data gap.
+
+**Rule (compliance failure against CHECKLIST #44b — investigate default-empty returns, never
+assume them benign — no new item):** when a field is empty/absent for 100pct of a population,
+check the READER before concluding the data is missing. Open one row and look for the value under
+another name or another level before writing "not recorded" into a ticket.
+
+**Two defects caught in my own first render, before locking the format:** P1 and P6 were absent
+from the new Parameters-tested block (they are the cross-config axes, and their absence from the
+artifact is the same blocker that would have re-graded a swing-10 cube at swing 20), and values
+sorted as STRINGS, printing `tail_n` as "1, 10, 2, 20, 3, 5". Rendering a thing and READING it is
+what caught both — neither was visible in the code.
