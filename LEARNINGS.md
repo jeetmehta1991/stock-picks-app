@@ -13996,3 +13996,13 @@ suite before believing a new gate is scoped right - two unrelated tests failing 
 **Detection signal that existed:** the gate blocked its own author within one batch, on work that
 was correct. B1948 already says an escape that clears wrongly is silent while a trigger that
 fires wrongly is loud; this is the loud kind, and I still shipped it a batch before noticing.
+
+**L632 addendum (B2132d): the skill-then-pin split recurred a THIRD time in one day.** Adding
+the precondition-scope clause to the skill, I again shipped the doc edit without its test and
+the #231 gate caught it a close later - the same shape as B2130b (Phase-5 member 6's own
+introducing commit) and B2129c. Three instances in one session, all mine, all with the rule
+already written down. SWEEP of every skill edit made today, checked from the guarded side (diff
+the skill, subtract the pin): 9 rule-bearing lines added, 9 now pinned, 0 open - but 3 of the 9
+needed a follow-up close to get their pin, which is the measurement that matters. The habit that
+closes it is not another rule: it is staging the pin edit in the SAME python call as the skill
+edit, so the two cannot separate. Recorded here rather than as a fourth restatement, per #136.
