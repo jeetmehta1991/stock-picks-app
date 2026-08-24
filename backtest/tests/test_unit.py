@@ -24924,6 +24924,8 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
          "L635: only the corpus search establishes novelty"),
         ("Peeking is a BEST-CASE procedure",
          "L636: a contaminated result that looks good is least informative"),
+        ("is a READER bug until proven otherwise",
+         "L637: a field empty for 100pct of a population"),
     ):
         if frag not in discipline_text:
             missing.append(f"execution-discipline lost [{why}]: {frag!r}")
@@ -24946,7 +24948,7 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     assert _b2123_skill_rules_present(fable, disc) == []
     # #226 prove-it-can-fail: a gutted file must be REPORTED, not pass
     gutted = _b2123_skill_rules_present("# The Fable Method\n", "# Discipline\n")
-    assert len(gutted) == 24, gutted
+    assert len(gutted) == 25, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 

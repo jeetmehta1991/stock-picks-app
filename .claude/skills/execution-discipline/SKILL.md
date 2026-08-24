@@ -336,7 +336,16 @@ Surface-level = non-compliant. Every audit must satisfy ALL of:
 5. **Evidence artifact required** for any WIRED / ARMED / VERIFIED status —
    a linked file or command output, not an assertion (CHECKLIST #124).
 6. **Default-empty returns investigated**, never assumed benign
-   (CHECKLIST #106 / #44(b)); temporal coverage checked across the full
+   (CHECKLIST #106 / #44(b)). **EXTENSION (B2137 / L637): a field empty for
+   100pct of a population is a READER bug until proven otherwise.** A funnel
+   column rendered `-` for every config across four runs and two grader
+   generations; I ticketed it as an artifact limitation and an advisor predicted
+   fresh artifacts would fix it. Both wrong - it read `admit`, present only on
+   carried ranking rows, while the values sat as top-level keys on every result
+   row. **Open ONE row and look for the value under another name or another
+   level before writing "not recorded" into a ticket** - and note that the
+   honest-rendering rule (an unmeasured value shows `-`, never `0`) is exactly
+   what let this look like good reporting for as long as it survived; temporal coverage checked across the full
    backtest window, not one date (CHECKLIST #156 / L201).
 7. **Line-by-line ticket extraction** when reviewing feedback or prior turns:
    every sentence becomes a candidate ticket BEFORE synthesis
