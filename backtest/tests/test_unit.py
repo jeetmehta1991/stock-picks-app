@@ -24033,7 +24033,20 @@ def test_b2082_launch_sweep_refuses_without_a_passing_gate():
         assert r.returncode == 2, r.stdout + r.stderr
         assert not sentinel.exists(), "engine invoked despite a failing gate"
 
-        good = str(root / "output_b1831b_200t" / "run_manifest.json")
+        # B2127: this pin's happy path reused a HISTORICAL manifest, whose
+        # frozen_sha is by definition stale - and the new drift refusal
+        # (S6-B2122a) correctly rejects it. The pin's intent is "gate passes
+        # -> engine IS invoked", so re-stamp the copy at the CURRENT HEAD and
+        # keep everything else. (This is the fixtures-rot class: the fixture
+        # drifted from the live path while the assertion kept passing.)
+        import json as _bj
+        _head = subprocess.run(["git", "rev-parse", "HEAD"], cwd=str(root),
+                               capture_output=True, text=True).stdout.strip()
+        _m = _bj.loads((root / "output_b1831b_200t" / "run_manifest.json"
+                        ).read_text(encoding="utf-8"))
+        _m["frozen_sha"] = _head
+        good = str(td / "good_manifest.json")
+        (td / "good_manifest.json").write_text(_bj.dumps(_m), encoding="utf-8")
         r = subprocess.run(
             [_sys.executable, str(root / "scripts" / "launch_sweep.py"),
              "--manifest", good, "--output-dir", str(td / "out"),
@@ -24936,3 +24949,71 @@ def test_b2126_wall_time_kill_writes_both_halves_of_the_resume_contract():
     assert regressed and regressed["writes_trade_log"]
     assert not regressed["writes_engine_state"], (
         "the fail arm did not reproduce the bug - the assertion is vacuous")
+
+
+def test_b2127_launch_refuses_when_the_engine_drifted_from_the_manifest(tmp_path):
+    """B2127 (S6-B2122a, detection half): the manifest's `isolation: true`
+    was an UNENFORCED FIELD - the engine runs from the live working tree, so
+    a commit landing mid-wave split the B2118 pilot across two shas with
+    nothing objecting. launch_sweep now REFUSES (exit 2, engine never
+    invoked) when HEAD has moved off frozen_sha, and the waiver is explicit.
+    """
+    import importlib.util
+    import json as _json
+    import sys as _sys
+    from pathlib import Path as _P
+
+    root = _P(__file__).resolve().parents[2]
+    spec = importlib.util.spec_from_file_location(
+        "launch_sweep_b2127", root / "scripts" / "launch_sweep.py")
+    ls = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(ls)
+
+    drifted = tmp_path / "drifted.json"
+    drifted.write_text(_json.dumps(
+        {"frozen_sha": "0" * 40, "isolation": True}), encoding="utf-8")
+    reasons = ls.drift_check(str(drifted))
+    assert reasons, "a manifest pinned to a nonexistent sha must be refused"
+    assert any("frozen_sha" in r for r in reasons), reasons
+
+    # must-be-QUIET arm: the live HEAD is not drift (B1944 - a fire-only
+    # corpus never proves a gate can stay silent on compliant work)
+    head = ls._git("rev-parse", "HEAD")
+    current = tmp_path / "current.json"
+    current.write_text(_json.dumps({"frozen_sha": head}), encoding="utf-8")
+    sha_reasons = [r for r in ls.drift_check(str(current)) if "frozen_sha" in r]
+    assert sha_reasons == [], f"HEAD must not read as drift: {sha_reasons}"
+
+    # explicit waiver is honoured and recorded in the manifest itself
+    waived = tmp_path / "waived.json"
+    waived.write_text(_json.dumps(
+        {"frozen_sha": "0" * 40, "allow_engine_drift": True}), encoding="utf-8")
+    assert ls.drift_check(str(waived)) == []
+
+
+def test_b2127_arm_reprojects_from_its_own_leg_not_a_global_constant():
+    """B2127 (S6-B2125b): one canonical rate cannot cover an arm set.
+
+    MEASURED on the B2118 pilot: sw5 ran 73 sim-days in 9,339s (128 s/day)
+    and sw10 ran 113 in 9,658s (85.5 s/day) - a 1.5x spread on the swept
+    axis itself, against a single 3.64h projection for both.
+    """
+    import importlib.util
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    spec = importlib.util.spec_from_file_location(
+        "run_wave_b2127", root / "scripts" / "run_wave.py")
+    rw = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(rw)
+
+    sw5 = rw.project_from_leg(9339, 73, 251, 2.5)
+    sw10 = rw.project_from_leg(9658, 113, 251, 2.5)
+    assert sw5["s_per_sim_day"] == 127.93 and sw10["s_per_sim_day"] == 85.47
+    # the two arms must NOT project the same remaining work
+    assert sw5["projected_remaining_hours"] > sw10["projected_remaining_hours"]
+    # sw5: 178 days left at 127.93s = 6.33h -> 3 more legs at a 2.5h cap
+    assert sw5["legs_still_needed_at_cap"] == 3, sw5
+    assert sw10["legs_still_needed_at_cap"] == 2, sw10
+    # a leg that produced no sim-days must say so, never emit a fake number
+    dead = rw.project_from_leg(600, 0, 251, 2.5)
+    assert dead["measured"] is False and "s_per_sim_day" not in dead

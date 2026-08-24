@@ -29,6 +29,7 @@ callers never pass it.
 from __future__ import annotations
 
 import argparse
+import json
 import subprocess
 import sys
 import time
@@ -41,6 +42,43 @@ def gate_passes(manifest: str) -> bool:
     r = subprocess.run([sys.executable, str(ROOT / "scripts" / "prelaunch_gate.py"),
                         "--manifest", manifest], cwd=str(ROOT))
     return r.returncode == 0
+
+
+# B2127 (S6-B2122a, cheap half): the manifest's `isolation: true` was an
+# UNENFORCED FIELD - the engine has always run from the live working tree, so
+# a commit landing mid-wave silently split a wave across engine versions. Real
+# isolation (a worktree pinned at the frozen sha) is the full fix; this is the
+# DETECTION half, which ships today: refuse to launch when HEAD has moved off
+# the manifest's frozen_sha, or when an engine-consumed path is dirty.
+ENGINE_PATHS = ("backtest/engine", "backtest/signals", "backtest/data",
+                "backtest/config.py", "backtest/run_phase1a.py")
+
+
+def _git(*args: str) -> str:
+    return subprocess.run(["git", *args], cwd=str(ROOT),
+                          capture_output=True, text=True).stdout.strip()
+
+
+def drift_check(manifest: str) -> list[str]:
+    """Return the reasons this launch is NOT reproducible. Empty = clean."""
+    reasons = []
+    try:
+        m = json.loads(Path(manifest).read_text(encoding="utf-8"))
+    except (OSError, ValueError) as exc:
+        return [f"manifest unreadable: {exc!r}"]
+    if m.get("allow_engine_drift"):
+        return []                      # explicit, recorded waiver
+    frozen = (m.get("frozen_sha") or "").strip()
+    head = _git("rev-parse", "HEAD")
+    if frozen and head and not head.startswith(frozen[:12])             and not frozen.startswith(head[:12]):
+        reasons.append(f"HEAD {head[:12]} != manifest frozen_sha {frozen[:12]} "
+                       "- a commit landed since this wave's manifest was written")
+    dirty = [ln for ln in _git("status", "--porcelain").splitlines()
+             if any(p in ln.replace("\\", "/") for p in ENGINE_PATHS)]
+    if dirty:
+        reasons.append("engine-consumed paths are dirty: "
+                       + "; ".join(d.strip() for d in dirty[:5]))
+    return reasons
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -57,6 +95,18 @@ def main(argv: list[str] | None = None) -> int:
     if not gate_passes(a.manifest):
         print(f"LAUNCH REFUSED: prelaunch_gate failed for {a.manifest} - "
               "fix the manifest; the engine was NOT invoked.")
+        return 2
+
+    drift = drift_check(a.manifest)
+    if drift:
+        print("LAUNCH REFUSED (B2127 engine drift): the engine runs from the "
+              "LIVE WORKING TREE, so this launch would not reproduce the "
+              "manifest's pinned code. The engine was NOT invoked.")
+        for r in drift:
+            print(f"  - {r}")
+        print("  Fix: commit/stash the engine change and regenerate the "
+              "manifest, or set allow_engine_drift=true in the manifest to "
+              "record the exception deliberately.")
         return 2
 
     out_dir = Path(a.output_dir)

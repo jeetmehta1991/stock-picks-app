@@ -58,6 +58,30 @@ ROOT = Path(__file__).resolve().parent.parent
 RATE_S_PER_TICKER_DAY = 0.2613   # canonical, B2021-bracketed end to end
 
 
+def project_from_leg(elapsed_s: float, sim_day: int, total_days: int,
+                     leg_cap_hours: float) -> dict:
+    """B2127 (S6-B2125b): re-project THIS arm from THIS arm's own first leg.
+
+    The canonical 0.2613 s/ticker-day under-projected the B2118 pilot by
+    1.6-2.4x, and the per-day cost varies with the parameter being swept
+    (measured: swing 5 cost ~1.5x per sim-day what swing 10 did), so ONE
+    projection cannot cover an arm set. After a leg checkpoints out, its
+    own days-per-second is the only honest estimator for its remaining legs.
+    """
+    if sim_day <= 0 or elapsed_s <= 0:
+        return {"measured": False,
+                "note": "leg produced no sim-days; cannot re-project"}
+    s_per_day = elapsed_s / sim_day
+    remaining = max(0, total_days - sim_day)
+    remaining_h = s_per_day * remaining / 3600.0
+    legs_needed = int(-(-remaining_h // leg_cap_hours)) if leg_cap_hours else 0
+    return {"measured": True,
+            "s_per_sim_day": round(s_per_day, 2),
+            "days_done": sim_day, "days_remaining": remaining,
+            "projected_remaining_hours": round(remaining_h, 2),
+            "legs_still_needed_at_cap": legs_needed}
+
+
 def build_manifest(spec: dict, arm: dict, out_dir: Path, sha: str) -> Path:
     tickers = (ROOT / spec["tickers_file"]).read_text().split()
     days = 251 * max(1, (int(spec["window"]["end"][:4])
@@ -105,9 +129,11 @@ def run_arm(spec: dict, arm: dict, engine_cmd: str | None = None) -> dict:
     # will drop, read from the engine's own state file. run_wave is the
     # only layer that sees leg boundaries, so the counter lives here.
     boundary_drops = []
+    rates = []   # B2127 per-leg measured rates
     t0 = time.time()
     while legs < int(spec.get("max_legs", 4)):
         legs += 1
+        leg_t0 = time.time()
         engine_args = [
             "--tickers-file", spec["tickers_file"], "--phase", "1a-beta",
             "--cube-isolation", "--no-agents", "--no-news", "--no-git",
@@ -141,6 +167,20 @@ def run_arm(spec: dict, arm: dict, engine_cmd: str | None = None) -> dict:
             boundary_drops.append({
                 "leg": legs, "sim_date": st.get("sim_date"),
                 "open_trades_dropped": st.get("open_trades")})
+            # B2127: re-project the rest of THIS arm from THIS leg.
+            total_days = 251 * max(1, (int(spec["window"]["end"][:4])
+                                       - int(spec["window"]["start"][:4])))
+            rate = project_from_leg(
+                time.time() - leg_t0, int(st.get("simulated_day") or 0),
+                total_days, float(spec["leg_cap_hours"]))
+            rates.append({"leg": legs, **rate})
+            print(f"[B2127 rate] arm={arm['tag']} leg={legs}: {rate}")
+            if rate.get("measured") and rate["legs_still_needed_at_cap"] > (
+                    int(spec.get("max_legs", 4)) - legs):
+                print(f"[B2127 WARN] arm={arm['tag']} needs "
+                      f"{rate['legs_still_needed_at_cap']} more legs but only "
+                      f"{int(spec.get('max_legs', 4)) - legs} remain under "
+                      "max_legs - this arm will NOT finish as specced")
         except (OSError, ValueError) as exc:
             print(f"[WARN] M6: could not read {state_p} at leg {legs} "
                   f"boundary: {exc!r} - drop count UNMEASURED for this leg")
@@ -183,7 +223,7 @@ def run_arm(spec: dict, arm: dict, engine_cmd: str | None = None) -> dict:
         + (["--step1-cube"] if spec.get("step1_cube", True) else []),
         cwd=str(ROOT))
     return {"arm": arm["tag"], "status": status, "legs": legs,
-            "boundary_drops": boundary_drops,
+            "boundary_drops": boundary_drops, "measured_rates": rates,
             "cube_rows": rows, "elapsed_s": int(time.time() - t0),
             "postconfig_exit": pc.returncode}
 
