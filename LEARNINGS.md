@@ -14268,3 +14268,22 @@ two contexts is worse than a verbose one that behaves the same everywhere.
 
 **Cost:** four attempts, three tool routes, on a patch whose content was settled from the first
 attempt. The content was never the problem; the transport was.
+
+
+## L639 — A ticket's count decays silently while the ticket stays open (B2153)
+
+**What happened:** S6-B2128c recorded "4 manifest fields declared but read by no gate". Sweeping
+that class this close - all 17 fields of a real manifest against both gate scripts - the true
+number is **2**: `window` and `wall_clock_projection_basis` had since been wired by other batches
+(B2132's manifest-contradiction check and B2149's leg-cap parser), and nobody told the ticket.
+
+**Why it matters more than it looks:** an OPEN ticket is read as current. Its status was
+accurate - the work is genuinely unfinished - so nothing flagged the row, and its *number* was
+quotable and wrong by 2x. This is the same shape as the stale-evidence refusal earlier in the
+session, where a retirement was requested on a finding that four batches had already fixed: a
+record stays true about its STATE while going false about its MEASUREMENT.
+
+**Rule (compliance failure against item 256 - re-derive a stale figure before quoting it - and
+item 94; no new item warranted):** when a sweep touches a class that an existing ticket
+quantifies, re-measure and correct that ticket's number in the same close. A count inside an open
+ticket carries the same evidence burden as a count in a response.
