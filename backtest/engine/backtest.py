@@ -54,6 +54,7 @@ from backtest.signals.screener import screen_universe, validate_entry_zone, ALL_
 from backtest.data.fetcher import days_to_next_earnings
 
 logger = logging.getLogger(__name__)
+_OFFICER_MOD_WARNED = False  # B2120 one-shot
 
 
 # Council 233 Bug A fix (2026-07-02): module-level wrapper for pool.imap_unordered.
@@ -2242,8 +2243,16 @@ class BacktestEngine:
                     preliminary_tier = tier_modifier_officer_change_5_02(
                         ticker, as_of, preliminary_tier,
                     )
-                except Exception:
-                    pass
+                except Exception as _mod_exc:
+                    # B2120 (#122): a silent pass here disabled the 5.02
+                    # officer-change tier modifier with no trace (the B832
+                    # SPOF class). One-shot warning per process.
+                    global _OFFICER_MOD_WARNED
+                    if not _OFFICER_MOD_WARNED:
+                        _OFFICER_MOD_WARNED = True
+                        logger.warning(
+                            "officer-change 5.02 tier modifier failed (%r) - "
+                            "tiers proceed unmodified (B2120 #122)", _mod_exc)
 
                 # Earnings proximity  -  context for agents, not a blocker
                 earn_days = days_to_next_earnings(ticker, as_of)

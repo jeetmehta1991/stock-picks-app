@@ -24767,3 +24767,50 @@ def test_b2118_run_postconfig_checks_catch_the_planted_defects(tmp_path):
     # step1 NOT declared -> the touch check must SKIP, not FAIL
     res3 = {n: (st, ev) for n, st, ev in rp.checks(write_cube(dirty), step1=False)}
     assert res3["M4_holdout_touch"][0] == "SKIP"
+
+
+def test_b2120_time_stop_exception_logs_and_keeps_trade(monkeypatch, caplog):
+    """B2120 (S6-B2118a tranche 1, #122): an exception inside the hard
+    time-stop check must LOG a warning and keep the trade in still_open -
+    the pre-B2120 shape swallowed it silently, disabling the stop with no
+    trace. Forced by making STRATEGY_EXIT_OVERRIDE.get raise."""
+    import logging
+    from datetime import date as _d
+    import backtest.config as _cfg
+    from backtest.engine import exit_manager as em
+
+    # Force ONLY the guarded batch282 path: a real override arms the hard
+    # time-stop for this strategy, and the slippage helper it then calls
+    # raises. (A raising .get() was too broad - it detonated first in
+    # update_trailing_stop's UNGUARDED consumer at exit_manager.py:486,
+    # which is a separate S6-B2118a tranche-2 observation.)
+    import backtest.engine.improvements as _imp
+
+    def _boom(*_a, **_k):
+        raise RuntimeError("forced by test_b2120")
+
+    monkeypatch.setitem(_cfg.STRATEGY_EXIT_OVERRIDE, "b2120_strat",
+                        {"time_stop_days": 1})
+    monkeypatch.setattr(_imp, "apply_exit_slippage", _boom)
+    em._TIME_STOP_EXC_SEEN.clear()
+    trade = em.OpenTrade(
+        ticker="AAPL", entry_date=_d(2024, 1, 2), entry_price=100.0,
+        direction="long", strategy="b2120_strat", category="test",
+        sector="Tech", initial_stop=50.0, trailing_stop=50.0,
+        highest_close=101.0, regime_at_entry="bull",
+    )
+    bar = {"open": 100.0, "high": 101.0, "low": 99.5, "close": 100.5}
+    with caplog.at_level(logging.WARNING, logger="backtest.engine.exit_manager"):
+        closed, still_open = em.process_day_exits(
+            [trade], {"AAPL": bar}, _d(2024, 1, 10), 20.0, "bull", {}, [])
+    assert len(still_open) == 1 and still_open[0].ticker == "AAPL", (
+        "the trade must survive a failed time-stop check")
+    warn = [r for r in caplog.records if "time-stop check failed" in r.message]
+    assert warn, "the failure must be LOGGED, never silently passed (B2120)"
+    # one-shot dedup: a second day must not log the same strategy again
+    n_before = len([r for r in caplog.records if "time-stop check failed" in r.message])
+    with caplog.at_level(logging.WARNING, logger="backtest.engine.exit_manager"):
+        em.process_day_exits(
+            still_open, {"AAPL": bar}, _d(2024, 1, 11), 20.0, "bull", {}, [])
+    n_after = len([r for r in caplog.records if "time-stop check failed" in r.message])
+    assert n_after == n_before, "warning must be one-shot per strategy"

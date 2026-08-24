@@ -28,6 +28,10 @@ from backtest.config import CIRCUIT_BREAKERS, TRAILING_STOP
 
 logger = logging.getLogger(__name__)
 
+# B2120 (#122): one-shot dedup for time-stop exception warnings - a silent
+# skip disabled the stop with no trace; a per-trade log would flood.
+_TIME_STOP_EXC_SEEN: set = set()
+
 
 def make_trade_id(ticker: str, entry_date: date, strategy: str,
                     direction: str = "long", seq: int = 0) -> str:
@@ -929,8 +933,13 @@ def process_day_exits(
                         0.0, 0.0,
                     ))
                     continue
-        except Exception:
-            pass
+        except Exception as _ts_exc:
+            if ("b282", trade.strategy) not in _TIME_STOP_EXC_SEEN:
+                _TIME_STOP_EXC_SEEN.add(("b282", trade.strategy))
+                logger.warning(
+                    "hard time-stop check failed for %s/%s: %r - trade stays "
+                    "open (B2120 #122; was a silent pass)",
+                    trade.strategy, trade.ticker, _ts_exc)
 
         # -- Step 4: Time-stop discipline (Batch 213 2026-05-17 owner-approved
         # research review) - Lars Kestner "Quantitative Trading Strategies"
@@ -963,8 +972,13 @@ def process_day_exits(
                     0.0, 0.0,
                 ))
                 continue
-        except Exception:
-            pass
+        except Exception as _ts_exc:
+            if ("b213", trade.strategy) not in _TIME_STOP_EXC_SEEN:
+                _TIME_STOP_EXC_SEEN.add(("b213", trade.strategy))
+                logger.warning(
+                    "MFE time-stop check failed for %s/%s: %r - trade stays "
+                    "open (B2120 #122; was a silent pass)",
+                    trade.strategy, trade.ticker, _ts_exc)
 
         still_open.append(trade)
 
