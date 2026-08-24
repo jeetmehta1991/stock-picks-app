@@ -25258,3 +25258,55 @@ def test_b2133_worktree_refuses_when_the_data_dirs_are_not_visible(tmp_path):
     # a non-git dir: worktree creation fails and the caller is told to refuse
     wt2, probs2 = ls.materialise_worktree("deadbeefdead", tmp_path / "nogit")
     assert wt2 is None and probs2, "a failed worktree must produce a refusal"
+
+
+
+def _b2145_loop_gated_writers() -> list[str]:
+    """Sites in backtest.py's day loop whose firing depends on reaching a day
+    boundary: milestone modulos, the day-50 literal, and the shared checkpoint
+    flag. B2144 measured SEVEN; none can fire while one iteration runs long."""
+    from pathlib import Path
+    src = (Path(__file__).resolve().parents[1] / "engine" / "backtest.py"
+           ).read_text(encoding="utf-8").splitlines()
+    out = []
+    for n, ln in enumerate(src, 1):
+        s = ln.strip()
+        if not (800 <= n <= 1100) or s.startswith("#"):
+            continue          # a comment is not a site
+        # Two explicit shape checks, no clever alternation (B2145: the
+        # regex form matched in a direct probe and not here; removing the
+        # cleverness was worth more than debugging it). A milestone modulo
+        # or the shared checkpoint flag - both reachable only at a day
+        # boundary, which is the L637 defect.
+        if s.startswith("if ") and (("% " in s and "== 0" in s)
+                                    or "_should_checkpoint" in s):
+            out.append(f"{n}:{s[:70]}")
+    return out
+
+
+_B2145_LOOP_GATED_CEILING = 6
+
+
+def test_b2145_no_new_loop_gated_writer_without_a_supervisor():
+    """B2145 (S6-B2143a/b mechanism, L637): the engine has SEVEN writers that
+    can only fire at a day boundary, so a pathological iteration silences all
+    of them at once - measured live when a 2.5h cap ran to 2.9h with no kill,
+    no warn and no checkpoint. Until a supervisor exists OUTSIDE the loop,
+    freeze the count: an eighth loop-gated writer is another sibling of a
+    defect already ticketed, and must not be added silently.
+    """
+    sites = _b2145_loop_gated_writers()
+    assert len(sites) <= _B2145_LOOP_GATED_CEILING, (
+        f"{len(sites)} loop-gated sites > frozen {_B2145_LOOP_GATED_CEILING}. "
+        "A new writer that only fires at a day boundary inherits the L637 "
+        f"defect. Build the supervisor (S6-B2143a) instead. Sites: {sites}")
+    # #226: the counter must not be vacuously empty
+    assert len(sites) >= 4, f"the scan found only {sites} - the pattern broke"
+    # the wall-time cap is the SEVENTH loop-gated guard; it is not a writer, so
+    # it is asserted separately rather than folded into the ceiling
+    from pathlib import Path as _P2
+    _src = (_P2(__file__).resolve().parents[1] / "engine" / "backtest.py"
+            ).read_text(encoding="utf-8")
+    assert "if (self.max_run_hours is not None" in _src, (
+        "the wall-time cap moved; re-derive whether it still shares the day "
+        "loop's control flow (L637)")

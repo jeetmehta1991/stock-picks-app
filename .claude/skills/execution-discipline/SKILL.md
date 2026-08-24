@@ -185,7 +185,15 @@ batch-1 traps. Each rule retroactively catches >=2 real past misses (#136).
    it could be observed.** So: a wall-clock cap needs a watchdog outside the
    guarded flow (thread, supervisor, or signal); a long run writes a heartbeat
    from its FIRST iteration, never from a milestone; and the durable channel is a
-   file any session can read, never a session-held pipe.
+   file any session can read, never a session-held pipe. **B2144 SWEEP: this is
+   not one guard's bug.** The engine has SEVEN loop-gated writers - milestone
+   telemetry, the progress log, a 50-day site, three paired checkpoint writers,
+   and the wall-time cap - and ALL SEVEN sit inside the day loop, so NOTHING in
+   the runtime path reaches disk independently of it. Even a 30-minute
+   time-trigger, added precisely so progress would survive, is evaluated once per
+   simulated day and so is a 30-minute save only while days are short. When you
+   find a guard sharing its subject's control flow, sweep for its siblings before
+   fixing it: the fix is one supervisor outside the loop, not seven patches.
 
 5. **FRESH-EYES REVIEW CADENCE (standing).** Before every batch-size
    escalation (or every ~10 batches of a sequence), an adversarial review of
