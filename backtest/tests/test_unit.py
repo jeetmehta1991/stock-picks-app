@@ -24869,3 +24869,70 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     assert len(gutted) == 9, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
+
+
+def _b2126_kill_block_writes(src: str) -> dict:
+    """B2126: what the wall-time kill block writes, read from the AST.
+
+    Structural rather than string-matching: find the `if ... max_run_hours
+    ... >= ...` guard inside run(), then collect every artifact filename
+    mentioned in its body and every expression used as a trade count.
+    """
+    import ast
+    tree = ast.parse(src)
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.If):
+            continue
+        test_src = ast.unparse(node.test)
+        if "max_run_hours" not in test_src or ">=" not in test_src:
+            continue
+        body = "\n".join(ast.unparse(b) for b in node.body)
+        if "WALL-TIME KILL" not in body:
+            continue
+        return {
+            "writes_trade_log": "trade_log_checkpoint.csv" in body,
+            "writes_engine_state": "engine_state.json" in body,
+            "atomic_replace": "os.replace" in body.replace("_kos.", "os."),
+            "trade_count_exprs": sorted(set(
+                m for m in ("len(self.closed_trades)",)
+                if m in body)),
+            "exits": "sys.exit" in body,
+        }
+    return {}
+
+
+def test_b2126_wall_time_kill_writes_both_halves_of_the_resume_contract():
+    """B2126 (S6-B2125a): the kill path must write BOTH checkpoint files.
+
+    THE BUG: it wrote only trade_log_checkpoint.csv, so engine_state.json
+    kept the last PERIODIC checkpoint's trade count and the B1076 resume
+    guard refused every resume - measured on the B2118 pilot as
+    `row_count=35 != trades_so_far=32`, which abandoned 2 of 2 arms after
+    ~2.6h each. `--max-run-hours` and `--resume-from-checkpoint` were
+    therefore mutually incompatible, which is the exact pairing the 3h
+    local cap forces.
+    """
+    from pathlib import Path
+    src = (Path(__file__).resolve().parents[1] / "engine" / "backtest.py"
+           ).read_text(encoding="utf-8")
+    found = _b2126_kill_block_writes(src)
+    assert found, "the wall-time kill block was not located - did it move?"
+    assert found["writes_trade_log"], "kill path must flush the trade log"
+    assert found["writes_engine_state"], (
+        "kill path must ALSO write engine_state.json or every resume is "
+        "refused (the B2118 pilot failure)")
+    assert found["atomic_replace"], "state write must be atomic (.tmp + replace)"
+    assert found["trade_count_exprs"] == ["len(self.closed_trades)"], (
+        "both writers must take the trade count from the SAME expression, "
+        f"else the pair can disagree again: {found['trade_count_exprs']}")
+
+    # #226 prove-it-can-fail: the pre-B2126 shape must be REPORTED, not pass.
+    pre_b2126 = src
+    for frag in ('_kpath = self.output_dir / "engine_state.json"',
+                 '_ktmp = self.output_dir / "engine_state.json.tmp"'):
+        assert frag in pre_b2126
+        pre_b2126 = pre_b2126.replace(frag, "pass  # removed for the fail arm")
+    regressed = _b2126_kill_block_writes(pre_b2126)
+    assert regressed and regressed["writes_trade_log"]
+    assert not regressed["writes_engine_state"], (
+        "the fail arm did not reproduce the bug - the assertion is vacuous")

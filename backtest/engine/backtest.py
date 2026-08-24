@@ -869,6 +869,54 @@ class BacktestEngine:
                             "Batch 394 final-checkpoint flush failed: %s",
                             _exc,
                         )
+                    # B2126 (S6-B2125a): write engine_state.json BESIDE the CSV,
+                    # from the SAME closed-trade count, in the same instant.
+                    # Before this, the kill path wrote only the CSV while
+                    # engine_state.json still held the last PERIODIC checkpoint's
+                    # number - so the B1076 resume contract was inconsistent BY
+                    # CONSTRUCTION on every wall-time kill, and every resume was
+                    # refused (measured: sw10 csv 35 rows vs state 32). That made
+                    # --max-run-hours and --resume-from-checkpoint mutually
+                    # incompatible, which is exactly the pairing the owner's 3h
+                    # local cap forces. Same dict + atomic .tmp/os.replace as the
+                    # periodic emitter, so both writers stay one schema.
+                    try:
+                        import json as _kjson
+                        import os as _kos
+                        import time as _ktime
+                        _ktrades = len(self.closed_trades)
+                        _kopen = len(getattr(self, "open_positions", []) or [])
+                        _kstate = {
+                            "simulated_day": i,
+                            "cells_completed": _ktrades,
+                            "status": "wall_time_kill",
+                            "sim_date": str(as_of),
+                            "sim_day_index": i,
+                            "tickers_processed": len(
+                                getattr(self, "_last_universe", []) or []),
+                            "trades_so_far": _ktrades,
+                            "open_trades": _kopen,
+                            "timestamp": _ktime.strftime(
+                                "%Y-%m-%dT%H:%M:%SZ", _ktime.gmtime()),
+                            "pid": _kos.getpid(),
+                        }
+                        _kpath = self.output_dir / "engine_state.json"
+                        _ktmp = self.output_dir / "engine_state.json.tmp"
+                        _ktmp.write_text(_kjson.dumps(_kstate, indent=2))
+                        _kos.replace(_ktmp, _kpath)
+                        logger.error(
+                            "B2126 kill-path engine_state written: day=%d "
+                            "trades=%d open=%d - resume contract intact",
+                            i, _ktrades, _kopen,
+                        )
+                    except Exception as _kexc:
+                        # #122 paired success-check: a failed state write here
+                        # means the NEXT resume will refuse. Say so loudly.
+                        logger.error(
+                            "B2126 kill-path engine_state write FAILED: %s - "
+                            "this run is NOT resumable; re-run from scratch",
+                            _kexc,
+                        )
                     # sys.exit(1) -- caller treats as fatal; monitor
                     # watchdog backs this up at +5min if engine hangs.
                     sys.exit(1)
