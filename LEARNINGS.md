@@ -14196,3 +14196,34 @@ records, it was in my SUMMARY quoting one of them present-tense without its era.
 is closed at the source now, since plan section 6.5 states the rule those six entries are read
 under. Corollary worth keeping: when a class sweep finds instances that are all CORRECT, the fix
 belongs upstream of the records - in how they are quoted - not in the records themselves.
+
+## L637 — A cap checked at loop boundaries cannot bound a loop whose iteration never ends (B2143)
+
+**What happened:** W-B arm 1 ran 2.9 h against a 2.5 h leg cap with NO kill, NO warn line and NO
+checkpoint. The owner asked why no fail-loud gate tripped. Three separate mechanisms were in
+place and all three were structurally unable to fire:
+
+1. **The wall-time kill is evaluated at the TOP of each sim-day iteration.** B2132 had already
+   hoisted it out of `if i % 20 == 0` so it runs every day, and `_run_start_time` is set before
+   the loop at backtest.py:778 — both verified by reading the source this turn. The check is
+   correct and was still unreachable, because the process never returned to a day boundary.
+   **A guard that lives at the top of a loop bounds the number of iterations, not the wall-clock,
+   and those differ exactly when one iteration goes pathological — which is the case the cap
+   exists for.**
+2. **The first periodic checkpoint is gated at sim-day 50.** Below that the run writes nothing,
+   so a run that stalls early leaves no recoverable state at all. 2.9 h of compute was
+   unrecoverable, and the run's own progress was unknowable from the filesystem.
+3. **Observability was session-scoped.** The Monitor watcher and the hourly cron both died with
+   the session; the stdout capture was torn down at 15:31 and the engine computed blind for
+   2 h 34 m while still burning 93pct of a core.
+
+**Rule (compliance failure against CHECKLIST #122 and #185 — no new item):** a wall-clock cap
+needs a watchdog that does not share the guarded work's control flow — a separate thread, an
+external supervisor, or a signal — and a run must write a heartbeat artifact from its FIRST
+iteration, not from a milestone. Session-held monitors are a convenience layer only; the
+durable channel is a file the run writes and any session can read.
+
+**The deeper shape:** all three failures are one failure — every safety mechanism depended on the
+thing it was watching to reach a point where it could be observed. The engine was healthy by
+every measure I could take from outside (CPU delta 18.6 s over 20 s wall) and mute by every
+measure that mattered.
