@@ -14227,3 +14227,20 @@ durable channel is a file the run writes and any session can read.
 thing it was watching to reach a point where it could be observed. The engine was healthy by
 every measure I could take from outside (CPU delta 18.6 s over 20 s wall) and mute by every
 measure that mattered.
+
+**CORRECTION + SWEEP (same session, B2144).** I first explained the missing checkpoint as "the
+first emit is gated at sim-day 50". Reading backtest.py:966-970 afterwards, that was INCOMPLETE
+and the truth is worse: there are TWO triggers — the day-50/every-100 cadence AND a 30-minute
+TIME trigger added on the owner's own directive ("progress and data to be saved every 30
+minutes"), either of which fires the paired writer. The run therefore had ~5 chances to
+checkpoint in 2.9 h and took none — **because both triggers are evaluated INSIDE the day loop**,
+so a process that never reaches a day boundary never evaluates the time trigger either. A
+30-minute save checked once per simulated day is a 30-minute save only while days are short.
+
+SWEEP of the class across the engine loop (every modulo form, the day-50 literal, the shared
+flag): SIX milestone-gated writers — 100-day telemetry (:813), progress log (:830), a 50-day
+site (:934), and the three paired checkpoint writers (:973, :1037, :1092) governed by the flag at
+:970 — plus the wall-time cap at :843 makes seven. **All seven are inside the day loop and all
+inherit the identical defect.** There is NO writer in the engine's runtime path that reaches disk
+independently of the loop. So the fix cannot be special-cased to the cap: one supervisor outside
+the loop must both bound wall-clock and emit the heartbeat, or six siblings stay open.
