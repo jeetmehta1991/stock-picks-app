@@ -220,7 +220,18 @@ batch-1 traps. Each rule retroactively catches >=2 real past misses (#136).
    Detection is JUDGMENT-ONLY: no scan distinguishes a stale count from a current
    one without re-running the measurement it summarises.
 
-7. **FRESH-EYES REVIEW CADENCE (standing).** Before every batch-size
+7. **CLOSING HALF A TICKET NEEDS A NEW ID (L640/B2154).** The ledger holds ONE
+   state per ticket by last-row-wins, so appending a non-terminal row for the
+   remainder REOPENS a terminal id and makes every derived count unsound. This
+   happened TWICE in one session, the second time two batches after I wrote the
+   rule - because instance 1 was filed only as a queue row, where the next
+   occurrence cannot see it. **Close the id and open a NEW id for the remainder
+   in the same append**, and before appending any non-terminal row check whether
+   that id is already terminal (`scripts/queue_state.py`, one call). The reused
+   id will FEEL like continuity - same subject, same thread - and terminality is
+   invisible at the moment of typing. Pin: test_b1795_queue_counts_are_per_ticket.
+
+8. **FRESH-EYES REVIEW CADENCE (standing).** Before every batch-size
    escalation (or every ~10 batches of a sequence), an adversarial review of
    the accumulated work runs with fresh eyes — a different model or a cold
    pass that re-derives claims from code/data rather than summaries. The
