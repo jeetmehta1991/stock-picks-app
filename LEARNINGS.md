@@ -469,26 +469,26 @@ Common pattern: Claude defaults to "implement what's stated" without questioning
 **Why:** Pricing changes. Six months from now, IBKR rates may shift, GPT costs may drop, TSX commission caps may revise. Without sourcing + dating, future Claude sessions or owner reviews cannot tell which figures are stale.
 **Rule:** Cost figures without source+date are treated as untrustworthy. Future audits should flag undated cost claims for re-verification.
 
-### L114 — When decision queue exceeds ~50, queue management itself becomes the bottleneck [critical/process/scalability]
+### L114 (a of 2 - DUPLICATED NUMBER, see the second L114 below; B2112 annotation per the owner-approved accept+annotate ruling, citations preserved) — When decision queue exceeds ~50, queue management itself becomes the bottleneck [critical/process/scalability]
 **Observation (Pass 47, April 2026):** Decision count grew 116 → 185 → 200 → 206 → 253 → 257 → 294 across audit passes. At 227 PENDING decisions, owner cannot reasonably approve one-by-one — the management of the queue overwhelms the substance of the decisions.
 **Failure mode:** Decisions accumulate faster than they resolve. Each new sweep adds 30-50 findings while resolution rate is ~2-5/turn. Queue grows monotonically. Eventually queue management dominates project work.
 **Rule:** When PENDING decision queue exceeds 50, switch from per-decision approval to BATCH approvals by impact/cost theme. Use the triage matrix to enable "approve all in this band" workflows. Don't keep adding to a queue that nobody can process.
 **Mechanism:** Triage matrix (impact/cost ratio) + bulk-approve-by-band + delegation of low-stakes decisions (defaults Claude can apply autonomously per CHECKLIST exception).
 **Captured as:** DECISION-291 (triage-based bulk approval).
 
-### L115 — Adversarial sweeps must be scheduled, not on-demand [critical/process/cadence]
+### L115 (a of 2 - DUPLICATED NUMBER, see the second L115 below; B2112 annotation) — Adversarial sweeps must be scheduled, not on-demand [critical/process/cadence]
 **Observation (Pass 47):** Each comprehensive adversarial sweep yields 30-50 new findings. Three sweeps in a month yields 90-150 new decisions, far exceeding the resolution rate.
 **Rule:** Schedule comprehensive sweeps quarterly (or per phase transition), NOT at every owner request. Between sweeps, only specific-trigger reviews (new bug, phase transition, owner question) — these produce ≤5 new decisions per pass.
 **Why:** Continuous adversarial mode is structurally infeasible because the decision-resolution rate is much slower than the decision-discovery rate. Bounded cadence keeps the system tractable.
 **Pre-conditions for next adversarial sweep:** Current PENDING queue triaged + bulk-approved down to <50 PENDING. Without that, additional findings only worsen the queue.
 
-### L114 — Per-response CHECKLIST compliance must be visible, not just internalized [critical/process]
+### L114 (b of 2 - DUPLICATED NUMBER, see the first L114 above; B2112 annotation) — Per-response CHECKLIST compliance must be visible, not just internalized [critical/process]
 **Mistake:** During Round 1 audit work (Pass 52 Groups α + β), CHECKLIST.md was read once at session start and not restated per response. CHECKLIST.md line 4 explicitly requires: "State compliance visibly: 'Checklist: ✅ [each item]'". I treated this as a one-time gate rather than a per-response gate. Owner had to explicitly remind mid-session ("I hope you're referring to the checklist in all your responses").
 **Why this matters:** The act of restating compliance forces a re-read, which catches mistakes earlier. Silent compliance ≠ verified compliance — the same pattern that produced 203 bugs (read-not-run testing). For doc-edit work specifically, the relevant items (CHECKLIST #1 thoroughness, #4 actually-helps, #5 what-can-go-wrong, #15 verify-by-running, #25 contradict-when-needed, #26 verify-assumptions, #27 stay-on-question, #28 retroactive-learning, #32 strict-approval) all silently went unchecked across multiple responses.
 **Fix:** Every substantive response must include a visible CHECKLIST compliance block listing the items relevant to that response. For trivial responses (acknowledgments, clarifications), one-line check sufficient. For decision-resolution or code-edit responses, full list of applicable items with checkmarks.
 **Rule:** No multi-step or impactful response is complete without a visible CHECKLIST compliance statement. The format is verifiable by the owner — not "I checked everything" but "Checklist: ✅ #1 thoroughness, ✅ #5 risk flagged, ✅ #15 verified-by-running."
 
-### L115 — Inherited bugs in working files must be flagged the moment they surface, not silently fixed [critical/process]
+### L115 (b of 2 - DUPLICATED NUMBER, see the first L115 above; B2112 annotation) — Inherited bugs in working files must be flagged the moment they surface, not silently fixed [critical/process]
 **Mistake:** During Group β TRIAGE edits, I discovered the count headers were inflated by 11 (TRIAGE claimed 274 PENDING when AUDIT_INDEX.md had 263). The drift existed on origin/main before this session. I fixed the math, noted it in the commit message, and moved on — but did not (a) immediately add to LEARNINGS or CHECKLIST, (b) suggest a rule to prevent recurrence, or (c) check if the same drift pattern existed in other count fields elsewhere in the project.
 **Why this matters:** Inherited bugs that go unflagged compound. The TRIAGE count drift had been propagating across multiple Sonnet sessions undetected. Without an explicit LEARNINGS entry, the next session that touches TRIAGE will inherit my partial fix and possibly drift again. Per CHECKLIST #28 (Retroactive Learning Application): "When mistakes are identified... Add to LEARNINGS.md... Add to CHECKLIST.md if recurring failure mode... Re-audit current conversation for other instances... Surface explicitly to the owner."
 **Fix:** Added L115 + L116 to LEARNINGS, plus CHECKLIST #34 (count-derived-fields-must-regenerate-from-source-of-truth).
