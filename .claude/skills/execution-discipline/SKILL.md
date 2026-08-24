@@ -767,6 +767,14 @@ gate had just named.**
 - **Run `TURN_GATE_TRANSCRIPT=<transcript.jsonl> python
   scripts/verify_turn_compliance.py`** - it returns all violations at once.
   Running it once before ending replaces three round trips with one.
+- **B2129 / L628 - AFTER THE FIRST BLOCK, RUNNING IT YOURSELF IS MANDATORY, NOT
+  ADVISORY.** This bullet said "run it" and named no trigger, so I fixed one
+  named violation per close **twelve consecutive times**. Every blocked close is
+  a NEW turn-end that must re-emit the SKILLS INVOKED line and the six-class
+  ticket table, so the owner saw a zero-delta table twelve times and asked why.
+  **The retry loop, not the work, is what reaches the owner.** One self-run over
+  a 21MB transcript returned the whole list in seconds. Trigger: any turn that
+  shipped code, or any turn already blocked once.
 - **B1843: the BARE command hangs** (reads stdin, which only the hook fills) and
   **`</dev/null` exits 0 having read nothing**. L563 cited the bare form before
   anyone ran it - **a lesson recommending an unrun mechanism, inside the entry
