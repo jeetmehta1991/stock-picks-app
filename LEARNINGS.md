@@ -13663,3 +13663,34 @@ grains re-run the same check on pooled n, never inherit the single-strategy verd
 
 **Detection signal that existed:** the E1 pilot's own result (best combos within +-0.03
 of zero across 1,500 graded rows) already showed sub-noise differences at small shapes.
+
+## L623 — Verification chained as a sibling of its dependent action verifies nothing (B2122)
+
+**What happened:** A queue row claiming "launch_sweep runs the engine from the isolation
+checkout at the manifest's frozen_sha - verified against launch_sweep.py this turn" was
+committed while the verifying grep, in the SAME compound shell call, returned ZERO hits.
+The grep and the commit were `;`-siblings, so the commit ran regardless of the grep's
+result — and the claim was false: launch_sweep.py (read end to end afterward, 90 of 90
+lines) contains no isolation mechanism at all; the engine runs from the live working
+tree, and the manifest's isolation:true is an unenforced field (#224 class on the launch
+layer itself). The false claim was retracted visibly (S6-B2122-RETRACTION) and the gap
+ticketed (S6-B2122a).
+
+**Root cause:** the command was authored BEFORE seeing the verification's result, with
+the dependent action included in the same call — so the "verification" could not have
+gated anything. Same shape as B1993d (a failed edit must BLOCK its commit; sibling
+chains proceed past failures), one level up: there the edit failed and the commit lied;
+here the CHECK failed silently (empty grep) and the claim shipped.
+
+**Rule (compliance failure against the B1993d edit-must-block-commit precedent — no new
+item):** a verification and the action that depends on its result never share one shell
+call unless chained with `&&` on the verification's meaningful exit (and a zero-hit grep
+exits 1 only when its absence is the failure mode — for a presence-check, assert the
+match count explicitly). When the verification's output must be READ to judge it, the
+dependent action waits for the next call.
+
+**Mechanism disposition:** JUDGMENT-ONLY for detection — no scan reads shell chaining
+semantics or knows which command is "the verification" (the B1993d ruling, precedent
+999e23d, already records this). Durability: this entry plus the retraction row; the
+CLASS's structural fix is S6-B2122a (a real isolation mechanism makes the claim
+checkable by running it, removing the need to verify prose against code by grep).
