@@ -527,8 +527,13 @@ def get_sector_map(tickers: list[str], info_dict: dict[str, dict] = None) -> dic
         df = pd.read_csv(csv_path, comment='#')
         df = df.drop_duplicates(subset=["Symbol"])
         sector_map = dict(zip(df["Symbol"], df["Sector"]))
-    except Exception:
-        pass
+    except Exception as _exc:
+        # B2133 (#122): silently returning an EMPTY sector map makes every
+        # sector-conditioned gate and concentration check behave as if no
+        # ticker has a sector - a RESULTS change that reads as a modelling
+        # choice. Say it loudly; the caller still degrades.
+        logger.warning("sector map load FAILED for %s (%r) - sector-conditioned "
+                       "logic will see NO sectors this run", csv_path, _exc)
 
     # ETF sector labels
     etf_sectors = {

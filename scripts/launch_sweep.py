@@ -105,6 +105,59 @@ def window_matches(manifest: str, engine_args: list[str]) -> list[str]:
     return bad
 
 
+# B2133 (S6-B2122b): the data dirs the engine reads are anchored on the MODULE's
+# own location (backtest/data/cache.py line 31: CACHE_DIR = Path(__file__).parent
+# .parent / "data" / "cache" / "ohlcv") and are gitignored - so a bare worktree
+# sees an EMPTY cache and the run completes having done nothing, which is exactly
+# the 7.3-hour failure the B2118 pilot already paid for. Every linked dir is
+# therefore VERIFIED non-empty before the engine is allowed to start.
+LINKED_DATA_DIRS = ("backtest/data/cache", "data_prefetch")
+
+
+def materialise_worktree(sha: str, root: Path) -> tuple[Path | None, list[str]]:
+    """Create (or reuse) a detached worktree at `sha` with data dirs linked.
+
+    Returns (worktree_path, problems). A non-empty problems list means the
+    caller MUST refuse to launch - never fall back to the live tree silently.
+    """
+    if not sha:
+        return None, ["manifest has no frozen_sha to pin a worktree to"]
+    if not root.is_dir():
+        # B2133: found by its own pin - passing a missing dir as cwd RAISES
+        # instead of refusing, and a launcher that raises where it should
+        # refuse is a launcher whose failure path nobody has run.
+        return None, [f"repo root does not exist: {root}"]
+    wt = root / ".worktrees" / sha[:12]
+    problems: list[str] = []
+    if not wt.exists():
+        r = subprocess.run(["git", "worktree", "add", "--detach",
+                            str(wt), sha], cwd=str(root),
+                           capture_output=True, text=True)
+        if r.returncode != 0:
+            return None, [f"git worktree add failed: {r.stderr.strip()[:200]}"]
+    for rel in LINKED_DATA_DIRS:
+        src, dst = root / rel, wt / rel
+        if not src.exists():
+            problems.append(f"source data dir missing in the main tree: {rel}")
+            continue
+        if not dst.exists():
+            dst.parent.mkdir(parents=True, exist_ok=True)
+            # Windows directory junction: no admin rights needed, unlike symlinks
+            j = subprocess.run(["cmd", "/c", "mklink", "/J", str(dst), str(src)],
+                               capture_output=True, text=True)
+            if j.returncode != 0 and not dst.exists():
+                problems.append(f"could not link {rel}: {j.stderr.strip()[:120]}")
+                continue
+        # the check that matters: is the data actually VISIBLE from the worktree?
+        try:
+            if not any(dst.iterdir()):
+                problems.append(f"{rel} is EMPTY as seen from the worktree - the "
+                                "engine would run on no data and produce nothing")
+        except OSError as exc:
+            problems.append(f"{rel} unreadable from the worktree: {exc!r}")
+    return wt, problems
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--manifest", required=True)

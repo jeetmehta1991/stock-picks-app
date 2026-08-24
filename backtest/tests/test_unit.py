@@ -25072,7 +25072,7 @@ def _b2128_silent_except_sites() -> list[str]:
 # B2128 frozen baseline, MEASURED 2026-08-24 (census artifact
 # output_audit/b2118_except_pass_census.txt). SHRINK-ONLY: this number may
 # go DOWN as S6-B2118a burns the backlog down, never up.
-_B2128_SILENT_EXCEPT_CEILING = 134
+_B2128_SILENT_EXCEPT_CEILING = 128   # B2133: 134 -> 128, shrink-only
 
 
 def test_b2128_silent_except_pass_is_a_shrinking_set():
@@ -25160,3 +25160,33 @@ def test_b2132_launch_refuses_when_the_window_contradicts_the_manifest(tmp_path)
     empty = tmp_path / "e.json"
     empty.write_text("{}", encoding="utf-8")
     assert ls.window_matches(str(empty), ["--start", "2024-05-05"]) == []
+
+
+def test_b2133_worktree_refuses_when_the_data_dirs_are_not_visible(tmp_path):
+    """B2133 (S6-B2122b): a worktree with an EMPTY cache must REFUSE, never
+    fall back to the live tree silently.
+
+    THE TRAP THIS CLOSES: the engine anchors CACHE_DIR on its own module path
+    (backtest/data/cache.py:31) and cache dirs are gitignored, so a bare
+    worktree sees zero cached OHLCV - the run then completes having done
+    nothing, which is the 7.3-hour B2118 pilot failure in a new costume.
+    """
+    import importlib.util
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    spec = importlib.util.spec_from_file_location(
+        "launch_sweep_b2133", root / "scripts" / "launch_sweep.py")
+    ls = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(ls)
+
+    # no sha: refuse with a reason, never a bare None
+    wt, probs = ls.materialise_worktree("", tmp_path)
+    assert wt is None and probs and "frozen_sha" in probs[0]
+
+    # the data dirs the engine actually needs are named, not guessed
+    assert "backtest/data/cache" in ls.LINKED_DATA_DIRS
+    assert "data_prefetch" in ls.LINKED_DATA_DIRS
+
+    # a non-git dir: worktree creation fails and the caller is told to refuse
+    wt2, probs2 = ls.materialise_worktree("deadbeefdead", tmp_path / "nogit")
+    assert wt2 is None and probs2, "a failed worktree must produce a refusal"

@@ -25,7 +25,11 @@ Outputs winner schema (used by scripts/extract_phase_1a_beta_winners.py):
 """
 from __future__ import annotations
 
+import logging
 from typing import Iterable, Optional
+
+logger = logging.getLogger(__name__)
+_TIER_WARNED: set = set()   # B2133 one-shot per tier
 
 import numpy as np
 import pandas as pd
@@ -241,16 +245,22 @@ def compute_cell_metrics(trades: pd.DataFrame) -> dict:
     # lacks an expected column (e.g. old trade_log without `regime`)
     # doesn't crash cell-metric emission; downstream consumers s.get()
     # with defaults.
-    try:
-        from backtest.results.cube_metrics_tier_b import compute_tier_b_metrics
-        out.update(compute_tier_b_metrics(trades))
-    except Exception:
-        pass
-    try:
-        from backtest.results.cube_metrics_tier_cde import compute_tier_cde_metrics
-        out.update(compute_tier_cde_metrics(trades))
-    except Exception:
-        pass
+    for _tier, _mod, _fn in (
+            ("B", "backtest.results.cube_metrics_tier_b", "compute_tier_b_metrics"),
+            ("CDE", "backtest.results.cube_metrics_tier_cde",
+             "compute_tier_cde_metrics")):
+        try:
+            import importlib
+            out.update(getattr(importlib.import_module(_mod), _fn)(trades))
+        except Exception as _exc:
+            # B2133 (#122): a silent pass here drops a whole METRIC TIER from
+            # every cell in the cube while the artifact still looks complete -
+            # a reader cannot tell an absent tier from a tier of zeros.
+            if _tier not in _TIER_WARNED:
+                _TIER_WARNED.add(_tier)
+                logger.warning(
+                    "cube tier-%s metrics FAILED (%r) - those columns are "
+                    "ABSENT from every cell in this run, not zero", _tier, _exc)
 
     return out
 
