@@ -13694,3 +13694,10 @@ semantics or knows which command is "the verification" (the B1993d ruling, prece
 999e23d, already records this). Durability: this entry plus the retraction row; the
 CLASS's structural fix is S6-B2122a (a real isolation mechanism makes the claim
 checkable by running it, removing the need to verify prose against code by grep).
+
+**L623 addendum (B2122d):** retroactive sweep result recorded in-entry: the turn's
+executed compound commands were reviewed for the sibling-chained verification class -
+one instance found (the retracted B2121-correction call); every other staging/commit
+pair in the turn used `&&` chaining. Mechanism ruling restated where the entry lives:
+JUDGMENT-ONLY - no scan reads shell-chaining semantics (B1993d); durability = the
+skill's B1993d bullet + this entry.
