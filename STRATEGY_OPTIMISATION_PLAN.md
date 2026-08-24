@@ -514,14 +514,44 @@ travels without its source file. B1898b: a value the artifact does not record re
 fixed in CODE since B1898 and was absent from this plan entirely, so a reader working from the
 plan could not know it existed.
 
-### 6.5 Computed, never hand-written
+### 6.5 The exit registry, and why a cube's exit COUNT is a dated fact
+
+**`len(EXIT_STRATEGIES)` is 24 today** - derived by running the code, never recalled. B2110
+deprecated two on the owner-approved LEVER9 option (a) intersection - never-selected in 482 cell
+selections AND outcome-duplicate of a survivor: `atr_trail_mae_conditional` (100.0pct identical
+to `atr_trail_1x` over 52,700 shared trades) and `smart_money_reversal` (99.3pct). Their
+functions are kept for old-cube replay; only the registry shrank, 26 -> 24.
+
+**So "26 exits per entry" in a post-config ledger entry is not an error - it is a DATED FACT.**
+A cube generated before B2110 legitimately carries 26, and the step-1 sanity check judges every
+cube against the registry AT ITS OWN SHA (B2117c). Quoting that 26 in a present-tense summary
+without saying which era it belongs to is the ambiguity B2140 corrects.
+
+**`regime_flip` is NOT a third deprecation - it was FIXED, and the difference is measurable per
+cube.** The recorded defect (L526 / S6-B1771) is real and permanent for the cubes it describes:
+
+| cube | era | regime_flip rows | real flips | fallback `regime_flip_max_days_20` |
+|---|---|---|---|---|
+| `output_cfg1` | pre-B2043 | 330 | **0** | 330 (100pct) |
+| `output_w1_sw20_span21` | pre-B2043 | 320 | **0** | 320 (100pct) |
+| `output_b2114_ref` | post-B2043 | 95 | **42** | 53 (56pct) |
+
+B2043 root-caused it: `set_worker_regime_map` was defined and NEVER CALLED (one occurrence in
+the codebase - its own definition), beside a placeholder that fabricated a "no" answer. Both
+fixed; the flip branch went live. `roster_core.measure_degraded_exits` confirms it per cube -
+the four pre-fix cubes still collapse the `time_stop_20d`/`regime_flip` pair, and the post-fix
+reference cube lists only `reverse_signal` -> `atr_trail_1x`. **This is why the runbook measures
+degeneracy per cube (#252) instead of maintaining a list: a hand-kept list of broken exits goes
+stale the moment one is repaired, and a stale list nearly retired a working exit at B2139.**
+
+### 6.6 Computed, never hand-written
 
 The generator derives and prints: the **CHECKLIST #182 denominator** ("N of M combinations passed,
 across X of Y applicable producers"), **FULL FACTORIAL**, combinations run, **percent covered**, and
 the **free-vs-resim split**. Hand-counting reintroduced the exact error #182 exists to prevent
 (L368: my "3 of 6" was really "3 of 5").
 
-### 6.6 Drift guard
+### 6.7 Drift guard
 
 `validate_spec()` **blocks generation** when a `Pn` appears in Section 1 but has no Table A row, or
 vice versa, and rejects any SPEC lacking a formula. Section 1 and Table A are two views of one
@@ -1407,7 +1437,7 @@ diagnosis-loss gate aborts above 2pct.
 | cube entries == grid max fires | catches silent diagnosis loss (L454) |
 | verdict distribution | `NO_EXIT_SELECTABLE` is a SAMPLE-SIZE verdict, not exit quality |
 | rank by `ci_lo`, NOT `sharpe` | the higher Sharpe can have a NEGATIVE lower bound (L455) |
-| `exits_effective` vs 26 | duplicate exits collapse; "best of 26" is usually fewer (L461) |
+| `exits_effective` vs the LIVE registry | duplicate exits collapse; "best of N" is usually fewer (L461). **Derive N live - it is 24, not 26 (B2140)** |
 | PASS rows with marginal `ci_lo` | 5 of 200 at `ci_lo` +0.08 is a WEAK positive, not a result |
 | any PASS selecting `regime_flip` | **run `measure_degraded_exits(cube)`** - do not judge by date. It is a time stop in ALL FOUR existing cubes (owner-accepted 2026-08-21) and live in every config run after B1682 |
 | **every swept LEVEL changes the outcome** | **a level that changes nothing is a wasted dimension (L473)** |

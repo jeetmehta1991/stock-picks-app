@@ -765,6 +765,13 @@ wrong about the concern.
   that argues for what you already decided is the one you are least likely to re-derive.**
 - **`#256` covers a ticket's number; this covers a number you keep SAYING.** Nobody re-checks a
   figure that has already been said out loud - that is exactly how it survives.
+- **A RECORDED DEFECT HAS AN EXPIRY, AND THE LEDGER NEVER SHOWS IT (B2139 / L638).** I quoted a
+  recorded exit defect three times in one session from the LEDGER TEXT; a later batch had fixed
+  it, and the owner reasonably ordered the exit retired. **An append-log entry is evidence about
+  ITS OWN DATE and nothing later** - both the defect and its fix are true entries. Before
+  repeating a recorded defect as a LIVE fact, re-derive it (here: one per-cube measurement showed
+  42 real flips where the record said zero), and when summarising historical step results say
+  which findings have since been closed.
 - **A deterministic fixture does not FEEL synthetic.** `rng` announces itself; `pd.Series([1.0,
   2.0, 3.0])` looks like data. Choosing determinism to dodge the provenance question is what made
   those numbers feel earned (B1801's rule, violated two batches after I wrote it).
