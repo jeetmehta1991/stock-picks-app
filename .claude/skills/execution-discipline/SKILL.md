@@ -172,7 +172,22 @@ batch-1 traps. Each rule retroactively catches >=2 real past misses (#136).
    pre-confirmation, default-permissive gate); "calendar contaminates ~25pct"
    (L209).
 
-4. **FRESH-EYES REVIEW CADENCE (standing).** Before every batch-size
+4. **A GUARD MUST NOT SHARE THE CONTROL FLOW IT GUARDS (L637/B2143).** A limit
+   evaluated at the top of a loop bounds ITERATIONS, not wall-clock — and those
+   differ exactly when one iteration goes pathological, which is the case the
+   limit exists for. MEASURED: a 2.5h cap ran to 2.9h with no kill and no warn,
+   while the code was correct and the clock was set before the loop; the process
+   simply never returned to a day boundary. Same failure, three ways, in one run:
+   the cap could not fire, the first checkpoint was gated at sim-day 50 so
+   nothing was recoverable, and the monitor plus its cron were session-scoped and
+   died with the session, leaving a healthy process computing blind for 2h34m.
+   **Every safety mechanism depended on the watched thing reaching a point where
+   it could be observed.** So: a wall-clock cap needs a watchdog outside the
+   guarded flow (thread, supervisor, or signal); a long run writes a heartbeat
+   from its FIRST iteration, never from a milestone; and the durable channel is a
+   file any session can read, never a session-held pipe.
+
+5. **FRESH-EYES REVIEW CADENCE (standing).** Before every batch-size
    escalation (or every ~10 batches of a sequence), an adversarial review of
    the accumulated work runs with fresh eyes — a different model or a cold
    pass that re-derives claims from code/data rather than summaries. The

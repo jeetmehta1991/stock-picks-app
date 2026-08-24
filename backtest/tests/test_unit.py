@@ -24935,6 +24935,8 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
          "L633 owner-corrected: surface the conflict, both directions"),
         ("every turn that ANSWERS A QUESTION",
          "L634: the predicate excluded the turn type that generates findings"),
+        ("A GUARD MUST NOT SHARE THE CONTROL FLOW IT GUARDS",
+         "L637: a loop-top cap bounds iterations, not wall-clock"),
         ("SEARCH THE CLASS, NOT THE CONSEQUENCE",
          "L635: only the corpus search establishes novelty"),
         ("Peeking is a BEST-CASE procedure",
@@ -24967,7 +24969,7 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     assert _b2123_skill_rules_present(fable, disc) == []
     # #226 prove-it-can-fail: a gutted file must be REPORTED, not pass
     gutted = _b2123_skill_rules_present("# The Fable Method\n", "# Discipline\n")
-    assert len(gutted) == 27, gutted
+    assert len(gutted) == 28, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
