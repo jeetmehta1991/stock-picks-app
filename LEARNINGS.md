@@ -14023,11 +14023,17 @@ explicit that all decisions need owner approval. A council verdict of "drop this
 RECOMMENDATION TO PUT TO THE OWNER, not a disposition to apply. I applied five dispositions
 directly, and two contradicted a standing instruction that was already given.
 
-**Rule (compliance failure against the ALL-DECISIONS-NEED-OWNER-APPROVAL rule in CLAUDE.md and
-CHECKLIST #115 — no new item):** a council's dispositions are proposals. When an owner
-instruction is already in force ("execute all open tickets"), a council may change the ORDER and
-the METHOD but never the SET. Drops and deferrals go back to the owner as recommendations with
-their reasoning, and the work proceeds until ruled otherwise.
+**Rule (OWNER-CORRECTED 2026-08-24; compliance failure against the
+ALL-DECISIONS-NEED-OWNER-APPROVAL rule in CLAUDE.md and CHECKLIST #115 — no new item):** my
+first draft of this rule said a council "may never change the SET". The owner corrected it:
+*"this isnt necessarily true. if i am very much wrong, its yours and councils job to correct
+me"* — and he is right, because that phrasing licenses the MIRROR failure, silently executing
+an instruction I believe is mistaken. **Both halves are the same defect: resolving an
+advice-versus-instruction conflict SILENTLY.** The error here was not that I disagreed with the
+instruction; it was that I neither executed nor said a word about the council's contrary advice,
+so the owner had to ask why three tickets were untouched. **The rule: state the conflict, give
+the reasoning and a recommendation, and proceed as instructed unless the owner rules otherwise.
+Disagreement is owed out loud; the decision stays the owner's.**
 
 **Detection signal that existed:** the owner's instruction and the council's advice were in the
 same turn, in plain conflict, and I recorded the conflict in queue rows without noticing it.

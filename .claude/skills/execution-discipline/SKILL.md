@@ -274,6 +274,17 @@ Per the Pass 52 standing rule in `CLAUDE.md`:
 - Any 🔴 → HALT. Report the failure; do not state the recommendation.
 - Council-style enumerate + recommend (`feedback_council_enumerate_plus_recommend`,
   CHECKLIST #115): list options, then recommend one with reasoning.
+- **NEVER RESOLVE AN ADVICE-VS-INSTRUCTION CONFLICT SILENTLY - IN EITHER
+  DIRECTION (B2133 / L633, owner-corrected 2026-08-24).** I applied 5 council
+  dispositions directly; 2 were scope cuts against a standing "execute all open
+  tickets", and I said nothing - the owner had to ask why 3 tickets were
+  untouched. **The error was the SILENCE, not the disagreement.** Owner,
+  verbatim: *"if i am very much wrong, its yours and councils job to correct
+  me"* - so silently COMPLYING with an instruction you believe is mistaken is
+  the same defect wearing the opposite coat, and is equally forbidden. **When
+  advice and instruction conflict: state the conflict, give the reasoning and a
+  recommendation, and proceed as instructed unless the owner rules otherwise.**
+  Disagreement is owed out loud; the decision stays the owner's.
 - Owner approval gates: ALL rule/threshold/parameter changes, ALL paid API
   runs (small test → review → approval → scale), Batch B launch
   (`feedback_no_auto_launch_batch_b` — explicit typed instruction only).
