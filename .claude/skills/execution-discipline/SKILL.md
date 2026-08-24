@@ -1533,6 +1533,24 @@ because a source-text grep cannot tell prose from code.
 - **Pair every `not in` with an `in`** proving the haystack still holds what it
   should. That `#226` line is what caught this, one run after being written.
 
+## A CONTAMINATED RESULT THAT LOOKS GOOD IS THE LEAST INFORMATIVE ONE (B2136 - L636, CHECKLIST #201)
+
+**MEASURED: four config runs were ranked on the HOLDOUT. The two whose holdout numbers cleared
+the noise floor (+0.607, +0.439) are the two whose honest in-sample numbers are worst (-0.140,
++0.259). 0 of 4 clear the floor once re-graded in-sample.**
+
+- **Peeking is a BEST-CASE procedure** - it hands the search the answer sheet. A run that peeked
+  and still FAILED is strong evidence there is nothing there, and nearly free. A run that peeked
+  and WON has told you almost nothing, because winning is what peeking manufactures.
+- **The instinct is to protect the winners and discard the failures. Reverse it.** Say which
+  results are the contaminated ones OUT LOUD before re-deriving, or you will keep whichever
+  version flatters them.
+- **Re-grading fixes the ARTIFACT, not the leak.** The holdout stays spent for that object until
+  the boundary is re-cut; re-derived rankings are CANDIDATES, never verdicts.
+- **The renderer that exposes a contamination can carry it.** Ours ranked `best` on the holdout
+  key even for honestly-graded inputs. Apply the L558 test to VIEWS, not only artifacts: could a
+  reader tell this output from one the bug produced?
+
 ## A RANKING IS A CLAIM ABOUT ORDER, AND ONE ROW CAN INVERT IT (B1902 - L581, CHECKLIST #201)
 
 **MEASURED: a harvester ranked 192 strategies by mean pnl and put one first at
