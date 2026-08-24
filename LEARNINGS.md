@@ -13727,3 +13727,32 @@ independent evidence that the edit landed.
 **Detection signal that existed:** the gate fired within one turn. The pre-existing
 per-skill rule (S6-B1729c, owner directive B1730) already said invoking a DIFFERENT skill
 does not satisfy a trigger; I extended that leniency to invoking NO skill on a technicality.
+
+## L625 — A "consumed" probe that reads the WRITER counts mentions, not enforcement (B2128)
+
+**What happened:** After fixing the unenforced `isolation: true` manifest field (S6-B2122a),
+the GENERALIZATION MANDATE owed a sweep: what other declared fields does no gate read? My
+first probe concatenated prelaunch_gate.py + launch_sweep.py + run_wave.py and asked
+whether each field name appeared. It reported 17 of 17 consumed, zero siblings — a clean
+result that would have closed the sweep. It was wrong: run_wave is the script that WRITES
+manifests, so every field name necessarily appears in it. Re-run as an AST string-literal
+scan over the CONSUMERS only, the answer is 13 of 17 read and 4 unread — `window`, `arms`,
+`concurrency`, `wall_clock_projection_basis` — with `window` load-bearing in exactly the way
+`isolation` was (a manifest can declare one date range while the engine runs another).
+Filed S6-B2128c.
+
+**Root cause:** the probe's population included the producer of the artifact it was auditing.
+"Does this name appear in the codebase" and "does a consumer act on it" are different
+questions, and the first is the one a grep answers by default. Same shape as L597 (an
+enumeration pattern encodes the examples in front of you) and as #224 itself, one level up:
+I was auditing for presence-without-enforcement using a probe that measured presence.
+
+**Rule (compliance failure against CHECKLIST #166 — a zero-hit/all-clear result proves nothing
+until the pattern is validated — no new item):** when auditing whether a declared thing is
+ENFORCED, the probe's corpus must exclude the thing's PRODUCER, and must match a consumption
+site (an access, a call, a branch), never a name. Validate by planting a known-unread field
+and confirming the probe reports it.
+
+**Detection signal that existed:** the all-clear itself. A sweep that finds zero siblings
+immediately after a real instance was found is the case #166 was written for, and the flag
+here was that the clean answer arrived one command after the dirty one.
