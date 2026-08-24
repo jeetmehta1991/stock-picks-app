@@ -13925,3 +13925,14 @@ every violation in a single pass rather than one per close.
 
 **Detection signal that existed:** the alternation itself. Two gates trading places across
 closes means the artifacts are being split, not that the requirements are unclear.
+
+**L630 addendum (B2130b): the rule's first application caught its own sibling.** The commit that
+added Phase-5 member 6 (all members in ONE commit) itself shipped two skill rules with no pin -
+the #231 class - because "all members" had not yet been read to INCLUDE the mechanism member for
+rules added to the skill itself. Fixed in one commit: both clauses are now asserted by
+test_b2123 (fragments "LAND ALL FIVE MEMBERS IN ONE COMMIT" and "the FAILURE MODE, not the tool",
+fail arm 11 -> 13, pyramid 1149 passed + 3 skipped). SWEEP of every skill rule added today: 4
+were added (the L624 object-of-the-request trigger, the L627 provenance extension, the L628
+run-the-gate trigger, and these two from L629/L630) and ALL are now pinned in test_b2123's
+fragment list - 13 fragments, each naming the lesson it guards. No unpinned skill rule remains
+from today's work.
