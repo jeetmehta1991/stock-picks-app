@@ -454,14 +454,51 @@ the original three-way claim is half-closed.
 `ci_lo` is **-0.034** — its 95% Sharpe lower bound sits below zero. Omitting cheap metrics is not
 brevity, it is suppressing the interval around the headline.
 
-### 6.4 Computed, never hand-written
+### 6.4 Section 4 — TABLE C, the post-config funnel
+
+Rendered by `scripts/producer_variant_table.py`; header pinned by
+`test_b1510_producer_artifact_standard` alongside Tables A and B. It answers ONE question:
+of everything this config tried, how much survived, and where did the rest stop?
+
+| config | combos | starved-IS | no-Sharpe | graded | distinct | bands | best Sharpe | best CI-lo | best combination |
+
+The columns are the funnel **in order**, because every drop-off has a different cause and
+lumping them hides which one is binding: `combos` = every parameter combination enumerated;
+`starved-IS` = no exit cleared `min_n` IN-SAMPLE, so grading never happened (the dominant loss,
+85pct at wave 1) — a SAMPLE-SIZE fact, not a quality verdict; `no-Sharpe` = has a verdict but
+`evaluate()` returned no Sharpe (the fourth bucket, found only because the reconciliation assert
+fired — without it 31-66 rows per config vanished silently); `graded` = reached `evaluate()` and
+produced a Sharpe; `distinct` = graded outcomes after equivalence-class collapse, because
+combinations differing only in a SATURATED parameter are the same fire set and counting rows
+overstates the evidence (L473); `bands` = distinct parameter VALUES actually exercised, read from
+the enumerated combinations rather than the grid spec — the spec is what was INTENDED, the
+results are what ran.
+
+**Two properties that make it honest.** `best` ranks on **`ci_lo`, never Sharpe** — the higher
+Sharpe can carry a NEGATIVE lower bound (L455). And the renderer **asserts** that
+`graded + starved-IS + no-Sharpe + zero-fires == combos` rather than trusting the arithmetic.
+
+**Format locked B1898 on owner review** (ticket S6-B1705j), four corrections: **(a)** the `PASS`
+column REMOVED — Step 1 is a ranked list with NO gates (B1608; gates belong to Step 2, L471), so
+it reported 0 forever and read as a verdict on unjudged work; **(b)** `no-exit` renamed
+`starved-IS` — the docstring always said sample-size and the HEADER said selection-failure, and
+the header is what gets quoted; **(c)** `bands` added; **(d)** a definition line above EVERY
+render for `starved-IS`, `graded`, `distinct`, `bands` and `ci_lo`, because a pasted table
+travels without its source file. B1898b: a value the artifact does not record renders `-`, never
+`0` — "0 bands" reads as *tested nothing* when the truth is *not recorded* (L580).
+
+**Documented B2134**, after the owner asked whether Table C's format was fixed: it had been
+fixed in CODE since B1898 and was absent from this plan entirely, so a reader working from the
+plan could not know it existed.
+
+### 6.5 Computed, never hand-written
 
 The generator derives and prints: the **CHECKLIST #182 denominator** ("N of M combinations passed,
 across X of Y applicable producers"), **FULL FACTORIAL**, combinations run, **percent covered**, and
 the **free-vs-resim split**. Hand-counting reintroduced the exact error #182 exists to prevent
 (L368: my "3 of 6" was really "3 of 5").
 
-### 6.5 Drift guard
+### 6.6 Drift guard
 
 `validate_spec()` **blocks generation** when a `Pn` appears in Section 1 but has no Table A row, or
 vice versa, and rejects any SPEC lacking a formula. Section 1 and Table A are two views of one

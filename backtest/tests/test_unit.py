@@ -13715,6 +13715,26 @@ def test_b1510_producer_artifact_standard():
     s2["formula"] = s2["formula"] + "\n\nP98  foo = bar( baz = 1 )"
     assert any("P98" in e for e in _m.validate_spec(s2)), "extra formula step must be caught"
 
+    # B2134 (S6-B2134a): TABLE C - the post-config funnel - is the THIRD locked
+    # template and was pinned by NOTHING while A and B were pinned here. Its
+    # format was fixed at B1898 on owner review (PASS column dropped, `no-exit`
+    # renamed `starved-IS`, `bands` added, definitions inline); an unpinned
+    # locked format drifts silently.
+    src_c = (_P(__file__).resolve().parents[2] / "scripts"
+             / "producer_variant_table.py").read_text(encoding="utf-8")
+    header_c = ("| config | combos | starved-IS | no-Sharpe | graded | distinct "
+                "| bands | best Sharpe | best CI-lo | best combination |")
+    assert header_c in src_c, (
+        "TABLE C header drifted from the locked B1898 column set. The columns "
+        "are the funnel IN ORDER; renaming or reordering changes what a pasted "
+        "table means to a reader who never opens this file.")
+    assert "starved-IS" in src_c and "no exit cleared min_n" in src_c, (
+        "the starved-IS definition line is gone - B1898(b): the header is what "
+        "gets quoted, so the term must define itself where it is rendered")
+    assert "PASS" not in header_c, (
+        "B1898(a): step 1 is a ranked list with NO gates, so a PASS column "
+        "reports 0 forever and reads as a verdict on unjudged work")
+
 
 def test_b1519_optimisation_knobs_reach_the_engine():
     """S6-B1518b / L387: REGRESSION GUARD on the P1/P6 engine plumbing.
@@ -24881,6 +24901,8 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
          "L632 addendum: doc edit and pin edit staged together"),
         ("NEVER RESOLVE AN ADVICE-VS-INSTRUCTION CONFLICT SILENTLY",
          "L633 owner-corrected: surface the conflict, both directions"),
+        ("every turn that ANSWERS A QUESTION",
+         "L634: the predicate excluded the turn type that generates findings"),
     ):
         if frag not in discipline_text:
             missing.append(f"execution-discipline lost [{why}]: {frag!r}")
@@ -24903,7 +24925,7 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     assert _b2123_skill_rules_present(fable, disc) == []
     # #226 prove-it-can-fail: a gutted file must be REPORTED, not pass
     gutted = _b2123_skill_rules_present("# The Fable Method\n", "# Discipline\n")
-    assert len(gutted) == 21, gutted
+    assert len(gutted) == 22, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 

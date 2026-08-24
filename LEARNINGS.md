@@ -14037,3 +14037,39 @@ Disagreement is owed out loud; the decision stays the owner's.**
 
 **Detection signal that existed:** the owner's instruction and the council's advice were in the
 same turn, in plain conflict, and I recorded the conflict in queue rows without noticing it.
+
+## L634 — The findings-need-tickets rule was unreachable on the turn type that generates findings (B2134)
+
+**What happened:** The owner asked a factual question ("is Table C's format fixed?"). Answering
+it, I surfaced two genuine findings in prose and ticketed NEITHER: (1) the plan documents Tables
+A and B and never mentions Table C, which exists and is used — a doc gap needing work; (2) "treat
+this as unverified beyond test_unit.py until those two files are read" — a disclosed-partial
+audit scope, which Phase 6.2 names VERBATIM as a finding class. The owner caught both: *"these
+are all essentially new tickets ... resolve this class of errors."*
+
+**Root cause, found by the council's Contrarian and it is not disobedience:** the skill's own
+activation predicate self-scopes to *"any turn that produces a recommendation, code change,
+audit, review, or doc update"*. **A factual question matches none of those five.** So Phase 6.2 —
+findings without tickets don't exist — was UNREACHABLE by the protocol's own predicate on
+question-answering turns. Dead code, not defiance. The rule had been in context every turn for
+months and could not fire on the branch it was most needed.
+
+**Why this turn type matters most (the Expansionist's half):** owner questions are the
+highest-yield audit surface in the program. They cost nothing to run, they are aimed by someone
+with full context at precisely where he suspects docs have drifted from reality, and BOTH
+findings this turn were real. Excluding that branch from the protocol excluded the cheapest audit
+channel there is.
+
+**Rule (compliance failure against CHECKLIST #94 and Phase 6.2 — no new item):** the activation
+predicate now names question-answering turns explicitly. A turn that ANSWERS a question runs the
+same Phase 6 sweep as a turn that builds something: findings become tickets before the answer
+ships.
+
+**What was rejected, and why it matters:** the obvious fix — a turn-end gate scanning the
+response for finding-language ("is absent", "not pinned", "unverified until") — was rejected 4-1
+by the council as Goodhart-fatal. It trains the euphemism: *"the plan covers Tables A and B"*
+carries the same information, trips no trigger, and files no ticket — **converting a loud miss
+into a silent one.** It would also fire on the repo's own signal names (`week_opening_gap_fill`),
+and it is gate #46 in a system where 45 did not catch this, which is the #136 anti-theater case.
+Fixing the predicate costs one sentence and closes the branch; the gate would cost every future
+turn and train evasion.
