@@ -14317,3 +14317,34 @@ reason neither instance reached the ledger.
 **The wider point:** a lesson recorded ONLY in the ledger is a lesson filed where the next
 occurrence cannot see it. If a miss is worth a rule, the rule goes in the file that loads every
 turn - this entry's own mechanism is skill hard-rule 6, added the same close.
+
+
+## L641 — A killed run's launcher log is indistinguishable from a running one (B2157)
+
+**What happened:** sweeping for watchers armed against dead jobs, I checked all five run summary
+logs by comparing LAUNCH lines against CFG completion lines. Two are unfinished:
+`b2118_pilot_summary.log` at 9 launches / 8 completions, and `b2142_wb_cal_summary.log` at
+1 / 0. Both are runs I killed deliberately - the pilot on the owner's ruling, the W-B arm at the
+cap - so the missing completion lines are honest artifacts. But **nothing in the log says so.**
+
+**The defect:** `launch_sweep.py` writes its `CFG=... EXIT=... ELAPSED=... CUBE_ROWS=...` line
+only after the engine subprocess returns. Kill the launcher itself and no line is written, so the
+log of a killed run is byte-identical in shape to the log of a run still in flight. A reader
+cannot tell "died 3 hours ago" from "still going" without a process check - and the process check
+is exactly what is unavailable once the session that held it is gone.
+
+**This is the same shape as the defect fixed one batch earlier, one layer out.** Inside the
+engine, every progress writer sat in the day loop and went silent together (L637); the supervisor
+thread fixed that with a heartbeat. The LAUNCHER has the identical hole and no heartbeat - the
+fix there did not generalise outward because the sweep that found the engine's seven sites was
+scoped to the engine.
+
+**Rule (compliance failure against item 185 and item 224; no new item warranted):** a launcher
+that records an ENDING only on the success path records nothing about the ending that matters.
+Either write the terminal line from a path a kill cannot skip, or - since SIGKILL skips every
+path - make the READER authoritative: classify a summary log as COMPLETE / DEAD-WITHOUT-ENDING /
+RUNNING by combining the log with a live process check, so "no completion line" is never read as
+"still working".
+
+**Scope of what I checked:** 5 summary logs, all of them, by line-count comparison; 2 unfinished;
+both explained by kills I performed and confirmed dead by Get-Process this close.
