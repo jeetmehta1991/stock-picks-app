@@ -2603,6 +2603,15 @@ Owner, verbatim: **"No arbitrary decisions. That's an absolute red flag."** and
    reporting an absence, prove the pattern CAN match - run it against a known-present
    instance or invert it. "0 hits" from an unvalidated pattern is UNVERIFIED, never
    "it is not there".
+   **EXTENSION (B2128 / L625) - AN ALL-CLEAR IS THE SAME CLAIM AS A ZERO-HIT.** Auditing
+   whether a declared thing is ENFORCED, my probe reported 17 of 17 manifest fields
+   consumed - because its corpus included `run_wave`, the script that WRITES manifests, so
+   every field name necessarily appeared. The corrected AST read-scan over CONSUMERS ONLY
+   found 4 unread, one of them load-bearing. **An enforcement audit must exclude the
+   artifact's PRODUCER and match a consumption SITE (an access, a call, a branch), never a
+   name** - a grep answers "does this name appear", which is the question you are not
+   asking. Validate by planting a known-unread member and confirming the probe reports it.
+   The tell: a clean all-clear arriving one command after a real instance was found.
    *Lineage:* B1444 grepped `"LOOSEN / STARVED"` against a file writing `LOOSEN/STARVED`;
    the false absence was reported to the owner, written to LEARNINGS and committed.
 
