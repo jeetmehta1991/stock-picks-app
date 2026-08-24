@@ -208,7 +208,19 @@ batch-1 traps. Each rule retroactively catches >=2 real past misses (#136).
    **When the transport keeps failing, the content is not the problem — stop
    re-sending it and change how it travels.**
 
-6. **FRESH-EYES REVIEW CADENCE (standing).** Before every batch-size
+6. **A NUMBER INSIDE AN OPEN TICKET DECAYS SILENTLY (L639/B2153).** A ticket's
+   STATUS and its MEASUREMENT rot at different rates. MEASURED: a row recorded
+   "4 manifest fields read by no gate"; the true count was 2, because two had
+   been wired by later batches and nothing told the row. Its status was still
+   correct - the work is genuinely unfinished - so no staleness check fired,
+   while its number stayed quotable and wrong by 2x. Same shape as a retirement
+   requested on evidence four batches out of date. **When a sweep touches a class
+   an existing ticket quantifies, re-measure and correct that ticket in the same
+   close** - a count inside an open ticket carries a response's evidence burden.
+   Detection is JUDGMENT-ONLY: no scan distinguishes a stale count from a current
+   one without re-running the measurement it summarises.
+
+7. **FRESH-EYES REVIEW CADENCE (standing).** Before every batch-size
    escalation (or every ~10 batches of a sequence), an adversarial review of
    the accumulated work runs with fresh eyes — a different model or a cold
    pass that re-derives claims from code/data rather than summaries. The

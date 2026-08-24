@@ -24939,6 +24939,8 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
          "L637: a loop-top cap bounds iterations, not wall-clock"),
         ("AFTER ONE FAILED EXACT-MATCH EDIT, CHANGE ROUTE",
          "L638: the transport failed, not the content"),
+        ("A NUMBER INSIDE AN OPEN TICKET DECAYS SILENTLY",
+         "L639: status and measurement rot at different rates"),
         ("SEARCH THE CLASS, NOT THE CONSEQUENCE",
          "L635: only the corpus search establishes novelty"),
         ("Peeking is a BEST-CASE procedure",
@@ -24971,7 +24973,7 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     assert _b2123_skill_rules_present(fable, disc) == []
     # #226 prove-it-can-fail: a gutted file must be REPORTED, not pass
     gutted = _b2123_skill_rules_present("# The Fable Method\n", "# Discipline\n")
-    assert len(gutted) == 29, gutted
+    assert len(gutted) == 30, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
