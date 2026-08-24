@@ -808,7 +808,10 @@ costly-in-the-wrong-place sibling). **And a failed edit must BLOCK its commit** 
 edit-then-commit with `&&`, never as sibling commands; a sibling chain
 proceeded past a failed assertion and produced a commit message claiming an
 edit that never landed (B1993d, JUDGMENT-ONLY: no scan reads shell chaining;
-the `999e23d` retraction is the precedent).
+the `999e23d` retraction is the precedent; second instance L623/B2122 - a
+zero-hit VERIFICATION grep sibling-chained before its dependent commit, so a
+false claim shipped: the rule covers checks, not only edits, and a
+presence-grep must assert its match count to be able to fail).
 
 **Mechanically enforced** by the corrected B1986 case, the per-file citation
 count-freeze in `test_b1971_no_new_dangling_checklist_citation`, and `#281`'s
