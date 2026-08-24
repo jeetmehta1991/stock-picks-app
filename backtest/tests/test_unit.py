@@ -24875,6 +24875,8 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
          "L625: an enforcement audit must exclude the producer"),
         ("B2128 CORRECTION: this row claimed",
          "B2128: the C7 scan never covered except:pass"),
+        ("ITS PRECONDITION BINDS THE OPERATION, NOT THE MODULE",
+         "L632: a gate's precondition binds what it guards, not its host"),
     ):
         if frag not in discipline_text:
             missing.append(f"execution-discipline lost [{why}]: {frag!r}")
@@ -24897,7 +24899,7 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     assert _b2123_skill_rules_present(fable, disc) == []
     # #226 prove-it-can-fail: a gutted file must be REPORTED, not pass
     gutted = _b2123_skill_rules_present("# The Fable Method\n", "# Discipline\n")
-    assert len(gutted) == 18, gutted
+    assert len(gutted) == 19, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
