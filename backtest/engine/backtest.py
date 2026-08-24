@@ -816,110 +816,118 @@ class BacktestEngine:
                     as_of=as_of,
                 )
 
+            # B2132 (S6-B2128b): elapsed + the wall-time KILL used to sit
+            # INSIDE `if i % 20 == 0`, so the owner's hard cap was only
+            # evaluated every 20 sim-days - an overshoot of up to 20x the
+            # per-day cost (MEASURED: 5.6x over a 0.05h cap on a 50-ticker
+            # probe; 5-11 min over 2.5h caps on the B2118 pilot). On a heavy
+            # config that let a 2.5h cap run past 5h while APPEARING to
+            # honour it. Now evaluated EVERY day; only the progress LOG line
+            # keeps the 20-day cadence.
+            elapsed_s = (time.time() - self._run_start_time
+                         if self._run_start_time else 0.0)
+            elapsed_h = elapsed_s / 3600.0
             if i % 20 == 0:
                 # Batch 394: emit elapsed_hours in the progress line so the
                 # external monitor (W1/W12) can grep wall-time without
                 # needing to compute from start-of-log.
-                elapsed_s = (time.time() - self._run_start_time
-                             if self._run_start_time else 0.0)
-                elapsed_h = elapsed_s / 3600.0
                 logger.info(
                     "Progress: %d/%d [%s] open=%d closed=%d elapsed_hours=%.2f",
                     i, len(trading_days), as_of,
                     len(self.open_trades), len(self.closed_trades),
                     elapsed_h,
                 )
-                # WARN once at warn_run_hours threshold.
-                if (self.warn_run_hours is not None
-                        and elapsed_h >= self.warn_run_hours
-                        and not self._warn_fired):
-                    logger.warning(
-                        "Batch 394 WALL-TIME WARN: elapsed_hours=%.2f >= "
-                        "warn_run_hours=%s; run will hard-exit at "
-                        "max_run_hours=%s if still running",
-                        elapsed_h, self.warn_run_hours, self.max_run_hours,
-                    )
-                    self._warn_fired = True
-                # HARD-KILL at max_run_hours threshold.  Flush a final
-                # checkpoint first so partial cube is salvageable.
-                if (self.max_run_hours is not None
-                        and elapsed_h >= self.max_run_hours):
+            # WARN once at warn_run_hours threshold.
+            if (self.warn_run_hours is not None
+                    and elapsed_h >= self.warn_run_hours
+                    and not self._warn_fired):
+                logger.warning(
+                    "Batch 394 WALL-TIME WARN: elapsed_hours=%.2f >= "
+                    "warn_run_hours=%s; run will hard-exit at "
+                    "max_run_hours=%s if still running",
+                    elapsed_h, self.warn_run_hours, self.max_run_hours,
+                )
+                self._warn_fired = True
+            # HARD-KILL at max_run_hours threshold.  Flush a final
+            # checkpoint first so partial cube is salvageable.
+            if (self.max_run_hours is not None
+                    and elapsed_h >= self.max_run_hours):
+                logger.error(
+                    "Batch 394 WALL-TIME KILL: elapsed_hours=%.2f >= "
+                    "max_run_hours=%s; flushing final checkpoint and "
+                    "exiting with code 1",
+                    elapsed_h, self.max_run_hours,
+                )
+                try:
+                    if self.closed_trades:
+                        import pandas as _pd
+                        _pd.DataFrame(
+                            [vars(t) for t in self.closed_trades]
+                        ).to_csv(
+                            self.output_dir / "trade_log_checkpoint.csv",
+                            index=False,
+                        )
+                        logger.error(
+                            "Batch 394 final-checkpoint flushed: %d "
+                            "closed trades to trade_log_checkpoint.csv",
+                            len(self.closed_trades),
+                        )
+                except Exception as _exc:
                     logger.error(
-                        "Batch 394 WALL-TIME KILL: elapsed_hours=%.2f >= "
-                        "max_run_hours=%s; flushing final checkpoint and "
-                        "exiting with code 1",
-                        elapsed_h, self.max_run_hours,
+                        "Batch 394 final-checkpoint flush failed: %s",
+                        _exc,
                     )
-                    try:
-                        if self.closed_trades:
-                            import pandas as _pd
-                            _pd.DataFrame(
-                                [vars(t) for t in self.closed_trades]
-                            ).to_csv(
-                                self.output_dir / "trade_log_checkpoint.csv",
-                                index=False,
-                            )
-                            logger.error(
-                                "Batch 394 final-checkpoint flushed: %d "
-                                "closed trades to trade_log_checkpoint.csv",
-                                len(self.closed_trades),
-                            )
-                    except Exception as _exc:
-                        logger.error(
-                            "Batch 394 final-checkpoint flush failed: %s",
-                            _exc,
-                        )
-                    # B2126 (S6-B2125a): write engine_state.json BESIDE the CSV,
-                    # from the SAME closed-trade count, in the same instant.
-                    # Before this, the kill path wrote only the CSV while
-                    # engine_state.json still held the last PERIODIC checkpoint's
-                    # number - so the B1076 resume contract was inconsistent BY
-                    # CONSTRUCTION on every wall-time kill, and every resume was
-                    # refused (measured: sw10 csv 35 rows vs state 32). That made
-                    # --max-run-hours and --resume-from-checkpoint mutually
-                    # incompatible, which is exactly the pairing the owner's 3h
-                    # local cap forces. Same dict + atomic .tmp/os.replace as the
-                    # periodic emitter, so both writers stay one schema.
-                    try:
-                        import json as _kjson
-                        import os as _kos
-                        import time as _ktime
-                        _ktrades = len(self.closed_trades)
-                        _kopen = len(getattr(self, "open_positions", []) or [])
-                        _kstate = {
-                            "simulated_day": i,
-                            "cells_completed": _ktrades,
-                            "status": "wall_time_kill",
-                            "sim_date": str(as_of),
-                            "sim_day_index": i,
-                            "tickers_processed": len(
-                                getattr(self, "_last_universe", []) or []),
-                            "trades_so_far": _ktrades,
-                            "open_trades": _kopen,
-                            "timestamp": _ktime.strftime(
-                                "%Y-%m-%dT%H:%M:%SZ", _ktime.gmtime()),
-                            "pid": _kos.getpid(),
-                        }
-                        _kpath = self.output_dir / "engine_state.json"
-                        _ktmp = self.output_dir / "engine_state.json.tmp"
-                        _ktmp.write_text(_kjson.dumps(_kstate, indent=2))
-                        _kos.replace(_ktmp, _kpath)
-                        logger.error(
-                            "B2126 kill-path engine_state written: day=%d "
-                            "trades=%d open=%d - resume contract intact",
-                            i, _ktrades, _kopen,
-                        )
-                    except Exception as _kexc:
-                        # #122 paired success-check: a failed state write here
-                        # means the NEXT resume will refuse. Say so loudly.
-                        logger.error(
-                            "B2126 kill-path engine_state write FAILED: %s - "
-                            "this run is NOT resumable; re-run from scratch",
-                            _kexc,
-                        )
-                    # sys.exit(1) -- caller treats as fatal; monitor
-                    # watchdog backs this up at +5min if engine hangs.
-                    sys.exit(1)
+                # B2126 (S6-B2125a): write engine_state.json BESIDE the CSV,
+                # from the SAME closed-trade count, in the same instant.
+                # Before this, the kill path wrote only the CSV while
+                # engine_state.json still held the last PERIODIC checkpoint's
+                # number - so the B1076 resume contract was inconsistent BY
+                # CONSTRUCTION on every wall-time kill, and every resume was
+                # refused (measured: sw10 csv 35 rows vs state 32). That made
+                # --max-run-hours and --resume-from-checkpoint mutually
+                # incompatible, which is exactly the pairing the owner's 3h
+                # local cap forces. Same dict + atomic .tmp/os.replace as the
+                # periodic emitter, so both writers stay one schema.
+                try:
+                    import json as _kjson
+                    import os as _kos
+                    import time as _ktime
+                    _ktrades = len(self.closed_trades)
+                    _kopen = len(getattr(self, "open_positions", []) or [])
+                    _kstate = {
+                        "simulated_day": i,
+                        "cells_completed": _ktrades,
+                        "status": "wall_time_kill",
+                        "sim_date": str(as_of),
+                        "sim_day_index": i,
+                        "tickers_processed": len(
+                            getattr(self, "_last_universe", []) or []),
+                        "trades_so_far": _ktrades,
+                        "open_trades": _kopen,
+                        "timestamp": _ktime.strftime(
+                            "%Y-%m-%dT%H:%M:%SZ", _ktime.gmtime()),
+                        "pid": _kos.getpid(),
+                    }
+                    _kpath = self.output_dir / "engine_state.json"
+                    _ktmp = self.output_dir / "engine_state.json.tmp"
+                    _ktmp.write_text(_kjson.dumps(_kstate, indent=2))
+                    _kos.replace(_ktmp, _kpath)
+                    logger.error(
+                        "B2126 kill-path engine_state written: day=%d "
+                        "trades=%d open=%d - resume contract intact",
+                        i, _ktrades, _kopen,
+                    )
+                except Exception as _kexc:
+                    # #122 paired success-check: a failed state write here
+                    # means the NEXT resume will refuse. Say so loudly.
+                    logger.error(
+                        "B2126 kill-path engine_state write FAILED: %s - "
+                        "this run is NOT resumable; re-run from scratch",
+                        _kexc,
+                    )
+                # sys.exit(1) -- caller treats as fatal; monitor
+                # watchdog backs this up at +5min if engine hangs.
+                sys.exit(1)
             # DEC-179 Batch 83: periodic memory check every 50 days; warn
             # on cap breach. Does not abort -- caller may opt to terminate
             # by inspecting return-value note in finalize log.

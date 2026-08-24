@@ -24865,6 +24865,16 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
          "L630: Phase-5 members are one deliverable, not a queue"),
         ("the FAILURE MODE, not the tool",
          "L629: the sibling-chain rule's trigger, not its instance list"),
+        ("ARRIVE THROUGH A QUEUE ROW",
+         "L628: an unaddressed claim can arrive via a ticket row"),
+        ("NAME THE FILE YOU READ IT IN",
+         "L627: attribute a figure to the file you opened"),
+        ("Launch the engine AT ALL",
+         "L626: no duration exemption for launch gates"),
+        ("AN ALL-CLEAR IS THE SAME CLAIM AS A ZERO-HIT",
+         "L625: an enforcement audit must exclude the producer"),
+        ("B2128 CORRECTION: this row claimed",
+         "B2128: the C7 scan never covered except:pass"),
     ):
         if frag not in discipline_text:
             missing.append(f"execution-discipline lost [{why}]: {frag!r}")
@@ -24887,7 +24897,7 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     assert _b2123_skill_rules_present(fable, disc) == []
     # #226 prove-it-can-fail: a gutted file must be REPORTED, not pass
     gutted = _b2123_skill_rules_present("# The Fable Method\n", "# Discipline\n")
-    assert len(gutted) == 13, gutted
+    assert len(gutted) == 18, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -25082,3 +25092,67 @@ def test_b2128_silent_except_pass_is_a_shrinking_set():
     # counter is not vacuously zero (#226 - a ratchet that measures nothing
     # passes forever)
     assert len(sites) > 0, "the census found nothing - the counter is broken"
+
+
+def test_b2132_wall_time_cap_is_checked_every_day_not_every_20():
+    """B2132 (S6-B2128b): the owner's hard 3h cap must be evaluated EVERY
+    sim-day. It used to sit inside `if i % 20 == 0`, so a run could only
+    notice its cap at day 0, 20, 40 - an overshoot of up to 20x the per-day
+    cost (measured 5.6x over a 0.05h cap on a 50-ticker probe). On a heavy
+    config that lets a 2.5h cap run past 5h while APPEARING to honour it.
+    """
+    import ast
+    from pathlib import Path
+    src = (Path(__file__).resolve().parents[1] / "engine" / "backtest.py"
+           ).read_text(encoding="utf-8")
+    tree = ast.parse(src)
+
+    def modulo_guarded(node) -> bool:
+        """Is this node inside an `if <x> % <n> == 0` guard?"""
+        t = ast.unparse(node.test) if isinstance(node, ast.If) else ""
+        return "% 20" in t or "% 100" in t or "% 50" in t
+
+    kill_nodes, guarded = [], []
+    for parent in ast.walk(tree):
+        for child in ast.iter_child_nodes(parent):
+            if isinstance(child, ast.If) and "max_run_hours" in ast.unparse(child.test) \
+                    and ">=" in ast.unparse(child.test):
+                kill_nodes.append(child)
+                if isinstance(parent, ast.If) and modulo_guarded(parent):
+                    guarded.append(child)
+    assert kill_nodes, "the wall-time kill check was not found - did it move?"
+    assert not guarded, (
+        "the wall-time KILL is nested under a modulo guard, so the cap is "
+        "only checked every N sim-days - the B2128b bug. Hoist it out; the "
+        "progress LOG line may stay on the 20-day cadence.")
+    # the elapsed value it reads must also be computed outside that guard
+    assert "elapsed_h = elapsed_s / 3600.0" in src
+    kill_line = min(n.lineno for n in kill_nodes)
+    elapsed_line = src[:src.index("elapsed_h = elapsed_s / 3600.0")].count("\n") + 1
+    assert elapsed_line < kill_line, "elapsed must be computed before the check"
+
+
+def test_b2132_launch_refuses_when_the_window_contradicts_the_manifest(tmp_path):
+    """B2132 (S6-B2128c): `window` was DECLARED in every manifest and read by
+    no gate, so a run could measure a period its own manifest denies."""
+    import importlib.util
+    import json as _json
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    spec = importlib.util.spec_from_file_location(
+        "launch_sweep_b2132", root / "scripts" / "launch_sweep.py")
+    ls = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(ls)
+
+    m = tmp_path / "m.json"
+    m.write_text(_json.dumps(
+        {"window": {"start": "2024-05-05", "end": "2025-05-05"}}), encoding="utf-8")
+    bad = ls.window_matches(str(m), ["--start", "2022-01-01",
+                                     "--end", "2025-05-05"])
+    assert bad and "start" in bad[0], bad
+    # must-be-QUIET arms (B1944): matching window, and a manifest with none
+    assert ls.window_matches(str(m), ["--start", "2024-05-05",
+                                      "--end", "2025-05-05"]) == []
+    empty = tmp_path / "e.json"
+    empty.write_text("{}", encoding="utf-8")
+    assert ls.window_matches(str(empty), ["--start", "2024-05-05"]) == []

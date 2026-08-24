@@ -81,6 +81,30 @@ def drift_check(manifest: str) -> list[str]:
     return reasons
 
 
+def window_matches(manifest: str, engine_args: list[str]) -> list[str]:
+    """B2132 (S6-B2128c): the manifest DECLARES a window; nothing read it.
+
+    A run could be launched with --start/--end that contradict the manifest
+    and no gate objected - the same unenforced-field class as `isolation`,
+    but worse, because the artifact then measures a period its own manifest
+    denies and the discrepancy is invisible downstream.
+    """
+    try:
+        w = (json.loads(Path(manifest).read_text(encoding="utf-8")) or {}).get("window")
+    except (OSError, ValueError):
+        return []                       # unreadable manifest is the gate's job
+    if not isinstance(w, dict):
+        return []                       # no declared window: nothing to enforce
+    got = {}
+    for flag in ("--start", "--end"):
+        if flag in engine_args:
+            got[flag[2:]] = engine_args[engine_args.index(flag) + 1]
+    bad = [f"manifest window {k}={w[k]} but launched {k}={got[k]}"
+           for k in ("start", "end")
+           if k in w and k in got and str(w[k]) != str(got[k])]
+    return bad
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--manifest", required=True)
@@ -97,7 +121,12 @@ def main(argv: list[str] | None = None) -> int:
               "fix the manifest; the engine was NOT invoked.")
         return 2
 
-    drift = drift_check(a.manifest)
+    # B2132: the drift check guards a REAL engine launch. Under the test seam
+    # (--engine-cmd) no engine runs, so engine-code reproducibility is moot -
+    # and requiring a clean tree there made the suite unrunnable during
+    # development, which is when it is most needed. drift_check stays unit-
+    # tested directly (test_b2127), so the gate keeps its coverage.
+    drift = [] if a.engine_cmd else drift_check(a.manifest)
     if drift:
         print("LAUNCH REFUSED (B2127 engine drift): the engine runs from the "
               "LIVE WORKING TREE, so this launch would not reproduce the "
@@ -107,6 +136,14 @@ def main(argv: list[str] | None = None) -> int:
         print("  Fix: commit/stash the engine change and regenerate the "
               "manifest, or set allow_engine_drift=true in the manifest to "
               "record the exception deliberately.")
+        return 2
+
+    win = window_matches(a.manifest, list(a.engine_args))
+    if win:
+        print("LAUNCH REFUSED (B2132 window mismatch): the engine would measure "
+              "a period this manifest denies. The engine was NOT invoked.")
+        for r in win:
+            print(f"  - {r}")
         return 2
 
     out_dir = Path(a.output_dir)
