@@ -173,7 +173,23 @@ def main() -> int:
         results.append(("M9_universe_artifact", "SKIP",
                         f"no manifest tickers file resolvable ({tf!r})"))
 
-    fails = [x for x in results if x[1] == "FAIL"]
+    # B2136 (S6-B2135b): a status must never contradict its own evidence. The
+    # ledger carried `DONE` on a step whose evidence ended "...SKIPPED", so a
+    # reader trusting the status believed a check ran that never did and never
+    # can. This is the same class as the holdout-ranked artifacts: STATUS
+    # ASSERTED rather than DERIVED from what the evidence says.
+    _CONTRA = ("SKIPPED", "CANNOT BE APPLIED", "NEVER RAN", "NOT RUN")
+    lp_chk = ROOT / "output_audit" / "postconfig_ledger.json"
+    if lp_chk.exists():
+        _led = json.loads(lp_chk.read_text(encoding="utf-8"))
+        bad = [f"{c}/{n}" for c, steps in _led.items() for n, v in steps.items()
+               if isinstance(v, dict) and v.get("status") == "DONE"
+               and any(t in (v.get("evidence") or "").upper() for t in _CONTRA)]
+        results.append(("ledger_status_matches_evidence",
+                        "PASS" if not bad else "FAIL",
+                        f"{len(bad)} row(s) claim DONE with contradicting evidence"
+                        + (f": {bad[:4]}" if bad else "")))
+
     for name, st, ev in results:
         print(f"  {st:<5} {name}: {ev}")
     print("\nJUDGMENT PROMPTS (never auto-marked): 5_adversarial_lens_review, "
@@ -184,6 +200,8 @@ def main() -> int:
     print(f"  PYTHONPATH=. python scripts/spot_check_trades.py --cube "
           f"{a.cube}/trade_exit_detail.csv --n 50 --swing-length <SW> --ema-span <SPAN>")
 
+
+    fails = [x for x in results if x[1] == "FAIL"]
     if a.write_ledger and not fails:
         lp = ROOT / "output_audit" / "postconfig_ledger.json"
         ledger = json.loads(lp.read_text(encoding="utf-8")) if lp.exists() else {}

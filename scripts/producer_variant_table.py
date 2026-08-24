@@ -269,7 +269,7 @@ def table_c(grids: dict[str, dict]) -> list[str]:
             "confidence interval, which is what `best` ranks on - a higher "
             "Sharpe can carry a NEGATIVE lower bound (L455)._",
             "",
-            "| config | combos | starved-IS | no-Sharpe | graded | distinct | bands | best Sharpe | best CI-lo | best combination |",
+            "| config | combos | starved-IS | no-Sharpe | graded | distinct | bands | best IS-Sharpe | best IS-CI-lo | best combination |",
             "|---|---|---|---|---|---|---|---|---|---|"]
     for name, g in grids.items():
         res = g.get("results", [])
@@ -300,12 +300,26 @@ def table_c(grids: dict[str, dict]) -> list[str]:
         bands = (sum(len(v) for v in axes.values() if len(v) > 1)
                  if axes else None)
         rank = g.get("step1_ranking") or []
-        top = max(rank, key=lambda r: (r.get("ci_lo") if r.get("ci_lo") is not None else -9)) if rank else None
+        # B2136 (S6-B2135a): rank on the IN-SAMPLE key when the artifact carries
+        # it. This selected on `ci_lo`, which is HOLDOUT-derived - so the table
+        # reported a holdout-selected pick as "best" even for artifacts that
+        # ranked honestly, perpetuating the contamination it was built to
+        # expose. Pre-B2010 artifacts have no is_ci_lo; they fall back to the
+        # holdout key AND are marked, because a reader cannot otherwise tell a
+        # holdout-selected row from an in-sample one (the L558 test).
+        _has_is = any(r.get("is_ci_lo") is not None for r in rank)
+        _key = "is_ci_lo" if _has_is else "ci_lo"
+        top = max(rank, key=lambda r: (r.get(_key) if r.get(_key) is not None
+                                       else -9)) if rank else None
         if top:
             a = top["admit"]
             combo = (f"cm={a['close_mitigation']} brk={_fmt(a['break_pct_max'])} "
                      f"age={_fmt(a['age_bars_max'])} tail={a['tail_n']} / {a['exit']}")
-            sh, cl = f"{top['sharpe']:.3f}", f"{top['ci_lo']:+.3f}"
+            if _has_is:
+                sh, cl = _measured_fmt(top.get("is_sharpe")), _measured_fmt(top.get("is_ci_lo"))
+            else:
+                sh = f"HOLDOUT {_measured_fmt(top.get('sharpe'))}"
+                cl = f"HOLDOUT {_measured_fmt(top.get('ci_lo'))}"
         else:
             combo, sh, cl = "-", "-", "-"
         rows.append(f"| `{name}` | {len(res)} | {len(no_exit)} | {len(no_sh)} | {len(graded)} | "

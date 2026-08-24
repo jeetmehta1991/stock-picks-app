@@ -13723,7 +13723,7 @@ def test_b1510_producer_artifact_standard():
     src_c = (_P(__file__).resolve().parents[2] / "scripts"
              / "producer_variant_table.py").read_text(encoding="utf-8")
     header_c = ("| config | combos | starved-IS | no-Sharpe | graded | distinct "
-                "| bands | best Sharpe | best CI-lo | best combination |")
+                "| bands | best IS-Sharpe | best IS-CI-lo | best combination |")
     assert header_c in src_c, (
         "TABLE C header drifted from the locked B1898 column set. The columns "
         "are the funnel IN ORDER; renaming or reordering changes what a pasted "
@@ -13731,6 +13731,14 @@ def test_b1510_producer_artifact_standard():
     assert "starved-IS" in src_c and "no exit cleared min_n" in src_c, (
         "the starved-IS definition line is gone - B1898(b): the header is what "
         "gets quoted, so the term must define itself where it is rendered")
+    # B2136: `best` must rank on the IN-SAMPLE key when present - selecting on
+    # ci_lo made the table report a holdout-selected pick as "best".
+    assert '_key = "is_ci_lo" if _has_is else "ci_lo"' in src_c, (
+        "TABLE C must rank on is_ci_lo when the artifact carries it; ranking on "
+        "the holdout key is the contamination this table exists to expose")
+    assert 'sh = f"HOLDOUT' in src_c, (
+        "a pre-B2010 artifact with no in-sample key must be MARKED as holdout-"
+        "selected, not silently reported as 'best'")
     assert "PASS" not in header_c, (
         "B1898(a): step 1 is a ranked list with NO gates, so a PASS column "
         "reports 0 forever and reads as a verdict on unjudged work")
