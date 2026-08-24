@@ -13747,6 +13747,14 @@ def test_b1510_producer_artifact_standard():
         "TABLE C must read P1/P6 from the artifact's own config block - they "
         "were written nowhere before B2138, which is why a swing-10 cube could "
         "be re-graded as swing-20")
+    # B2141 (owner directive): the in-row P1-P6 cell carries the band VALUES,
+    # comma-separated - a COUNT cannot distinguish two configs that searched
+    # different grids of the same width.
+    assert "def _band_str(" in src_c and '",".join(' in src_c, (
+        "the P1-P6 column must render comma-separated band VALUES, not counts")
+    assert "def _band_key(" in src_c and src_c.count("_band_key") >= 2, (
+        "ONE sort definition must serve both the in-row column and the block "
+        "(L593: two sorts of the same values diverge on the first edit)")
     assert "**Parameters tested**" in src_c, (
         "TABLE C must carry the Parameters-tested block naming the P1..P6 bands "
         "each config exercised - a bands COUNT says how many, not which")

@@ -225,6 +225,30 @@ P_AXES = (("P1", "swing_length"), ("P2", "close_mitigation"), ("P3", "tail_n"),
 AXIS_KEYS = tuple(nm for _, nm in P_AXES)
 
 
+def _band_key(x: str):
+    """Order band values NUMERICALLY, with None last and booleans False<True.
+
+    ONE definition, used by both the in-row P1-P6 column and the
+    Parameters-tested block - two sorts of the same values diverge the moment
+    someone edits one (L593).
+    """
+    if x == "None":
+        return (2, 0.0)
+    try:
+        return (0, float(x))
+    except ValueError:
+        return (1, 0.0) if x == "False" else (1, 1.0)
+
+
+def _band_str(vals) -> str:
+    """The band as COMMA-SEPARATED VALUES - owner directive B2141.
+
+    A COUNT says how wide the search was; the VALUES say which grid it was,
+    and two configs with the same count can be different searches entirely.
+    """
+    return ",".join(v.replace("'", "") for v in sorted(vals, key=_band_key))
+
+
 def table_c(grids: dict[str, dict]) -> list[str]:
     """POST RUN CONFIG TABLE - one row per config, the whole funnel across it.
 
@@ -348,10 +372,13 @@ def table_c(grids: dict[str, dict]) -> list[str]:
             elif pid == "P6":
                 v = cfg.get("P6_span")
             else:
-                v = len(axes.get(nm, ())) or None
+                v = _band_str(axes[nm]) if axes.get(nm) else None
             p_cells.append(f"{pid}={v if v is not None else '?'}"
                            + ("(fixed)" if pid in ("P1", "P6") and v is not None else ""))
-        p_col = " ".join(p_cells)
+        # B2141: a PIPE separator splits the cell into six columns and destroys
+        # the table - caught by rendering it. Semicolon is safe inside a
+        # markdown cell.
+        p_col = "; ".join(p_cells)
         rows.append(f"| `{name}` | {len(res)} | {len(no_exit)} | {len(no_sh)} | {len(graded)} | "
                     f"{g.get('step1_distinct_outcomes', '-')} | {_measured_fmt(bands)} | {p_col} | "
                     f"{sh} | {cl} | {combo} |")
@@ -393,15 +420,7 @@ def table_c(grids: dict[str, dict]) -> list[str]:
                 # B2137: sort NUMERICALLY where the values are numbers - a
                 # string sort renders tail_n as "1, 10, 2, 20, 3, 5", which
                 # reads as a jumbled band and hides whether the axis is ordered.
-                def _key(x):
-                    if x == "None":
-                        return (2, 0.0)
-                    try:
-                        return (0, float(x))
-                    except ValueError:
-                        return (1, 0.0) if x == "False" else (1, 1.0)
-                shown = sorted(vals, key=_key)
-                cells.append(f"{len(vals)}: " + ", ".join(v.replace("'", "") for v in shown))
+                cells.append(f"{len(vals)}: " + _band_str(vals))
         rows.append(f"| `{name}` | " + " | ".join(cells) + " |")
     return rows
 
