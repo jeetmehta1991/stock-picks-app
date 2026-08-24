@@ -13792,3 +13792,29 @@ yourself.
 **Detection signal that existed:** the pilot wave one hour earlier had both gates armed. A
 rule applied to the big job and dropped for the small one is the tell that a duration
 exemption was invented.
+
+## L627 — I misattributed a figure to the file most likely to contain it (B2128)
+
+**What happened:** Re-wording a figure under the #201 verb-split, I wrote that the "3.3 hours
+per config" A-C-chunk loss came from the docstring of scripts/verify_universe_artifact.py.
+Grepping that file for the string returns nothing. The figure's actual source is the turn
+gate's own #187 message text inside scripts/verify_turn_compliance.py, which is where I had
+just read it — in a Stop-hook block, not in the verifier. Retracted in the same turn.
+
+**Root cause:** the attribution was PLAUSIBLE rather than checked. verify_universe_artifact.py
+is the script that exists because of that incident, so it is where such a figure WOULD live;
+I substituted the file that ought to hold it for the file I actually read it in. This is the
+same substitution as L625 one hour earlier (auditing a manifest field, I reached for a corpus
+that felt right and it included the writer) — both are "the plausible source" standing in for
+"the source I opened".
+
+**Rule (compliance failure against CHECKLIST #201 — the provenance half already requires
+naming the input; no new item):** when re-wording a figure to name its source, grep the named
+file for the figure BEFORE naming it. A source attribution is itself a claim with an address
+(L595), and the file that ought to contain a number is not evidence that it does. Gate text,
+prior-turn blocks and my own earlier prose are all sources that must be named as themselves.
+
+**Detection signal that existed:** I had read the verifier's docstring earlier in the session
+and could recall its content — 381 tickers, 380 starting A-C, 133 overlap — none of which is a
+duration. Recall of a document's actual contents contradicted the attribution at the moment I
+wrote it.
