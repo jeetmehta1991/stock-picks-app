@@ -584,6 +584,11 @@ record, and this file is what actually gets read at the start of every turn.
    every retry re-emitted the mandatory blocks to the owner, who asked why the
    same table kept printing. **The remediation's SHAPE is what reaches the
    owner, not its content.** One commit, all members, then close once.
+   **AND WHEN THE ARTIFACT EDITED IS THIS FILE, "all members" INCLUDES THE PIN
+   (B2130 / L630 addendum).** The commit that added THIS member shipped two new
+   skill rules with no test - `#231` - because the mechanism member reads as
+   being about the FIX, and a rule added to the skill IS the fix. A skill edit
+   and its `test_b2123` fragment go in the same commit, always.
 
 ## LOAD-THE-SKILL RULE (B1728/B1729 — L504, CHECKLIST #229, mechanically enforced)
 

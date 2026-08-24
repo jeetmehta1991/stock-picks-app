@@ -13936,3 +13936,13 @@ were added (the L624 object-of-the-request trigger, the L627 provenance extensio
 run-the-gate trigger, and these two from L629/L630) and ALL are now pinned in test_b2123's
 fragment list - 13 fragments, each naming the lesson it guards. No unpinned skill rule remains
 from today's work.
+
+**L630 second addendum (B2130c): a count stated from memory inside the fix for stating things
+from memory.** The queue row recording the pin-coverage sweep said "4 of 4 skill rules added
+today are pinned". The executed parse of test_b2123's fragment list returns FIVE, because L627
+contributed two distinct rules (the provenance extension and the assert-the-anchor addendum)
+and I collapsed them while writing the row from recall. The substantive claim held - every
+skill rule added today is pinned, none unguarded - but the count did not, which is exactly
+#256's shape: a figure repeated rather than re-derived. Corrected in the same message it was
+noticed. The habit that closes it is L593's: put the measuring code IN the artifact that states
+the number, rather than writing the number beside a separate probe.
