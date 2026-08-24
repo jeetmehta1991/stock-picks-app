@@ -591,6 +591,11 @@ where only the summary was loaded.**
 
 Enforced by `scan_discipline_not_loaded()` in `scripts/verify_turn_compliance.py`.
 
+**A skill is triggered when it is the OBJECT of the request, not only when it is the method
+(L624/B2124).** "Update fable mode" triggers fable-mode; editing, reviewing or reasoning ABOUT a
+skill is the strongest case for loading it, because the loaded file is independent evidence the
+edit landed. "It was the subject, not the method" is not an exemption.
+
 **And the general form (#229): before calling anything a limitation, run the cheapest probe that
 separates a LIMIT from an OMISSION.** A mechanism that explains your own repeated failures is the
 one to distrust most — it is the story you have a motive to believe.

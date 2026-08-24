@@ -24842,6 +24842,8 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         ("second instance L623/B2122", "the B1993d bullet must name both instances"),
         ("presence-grep must assert its match count",
          "the check-shaped variant of the sibling-chain rule"),
+        ("OBJECT of the request",
+         "L624: a skill named as the subject is still triggered"),
     ):
         if frag not in discipline_text:
             missing.append(f"execution-discipline lost [{why}]: {frag!r}")
@@ -24864,6 +24866,6 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     assert _b2123_skill_rules_present(fable, disc) == []
     # #226 prove-it-can-fail: a gutted file must be REPORTED, not pass
     gutted = _b2123_skill_rules_present("# The Fable Method\n", "# Discipline\n")
-    assert len(gutted) == 8, gutted
+    assert len(gutted) == 9, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)

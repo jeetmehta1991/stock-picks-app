@@ -13701,3 +13701,29 @@ one instance found (the retracted B2121-correction call); every other staging/co
 pair in the turn used `&&` chaining. Mechanism ruling restated where the entry lives:
 JUDGMENT-ONLY - no scan reads shell-chaining semantics (B1993d); durability = the
 skill's B1993d bullet + this entry.
+
+## L624 — A skill is triggered when it is the OBJECT of the request, not only when it is the method (B2124)
+
+**What happened:** The owner said "Update fable mode". I read the skill file, edited it,
+pinned it — and reported `fable-mode — NOT-TRIGGERED as a working method this turn (it was
+the *subject* of the edit, not applied as a loop)`. The skill's own description lists
+"fable mode" as a verbatim trigger phrase. The turn gate caught it: SKILL NOT INVOKED
+(per-skill). Invoking it immediately produced value the reasoning had missed — the loaded
+copy is independent evidence that the six additions actually landed in the user copy on
+disk (Gate 4's "use evidence you didn't generate"), which no amount of trusting my own
+`cp` could supply.
+
+**Root cause:** I split "triggered" into method-use vs subject-of-edit and let the second
+suppress invocation. That distinction exists nowhere in the trigger rule — and it is
+exactly backwards: editing a method skill is the case where running its own method on the
+edit matters most.
+
+**Rule (compliance failure against CHECKLIST #229, the LOAD-THE-SKILL rule — no new item):**
+a named skill is invoked whenever the request names it, INCLUDING when the request is to
+change, review, or reason about the skill itself. "It was the object, not the method" is
+not an exemption; it is the strongest case for loading it, because the loaded file is the
+independent evidence that the edit landed.
+
+**Detection signal that existed:** the gate fired within one turn. The pre-existing
+per-skill rule (S6-B1729c, owner directive B1730) already said invoking a DIFFERENT skill
+does not satisfy a trigger; I extended that leniency to invoking NO skill on a technicality.
