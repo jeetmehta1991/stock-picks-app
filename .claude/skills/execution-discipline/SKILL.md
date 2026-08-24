@@ -576,6 +576,14 @@ record, and this file is what actually gets read at the start of every turn.
    of the two.
 5. Owner corrections are ALWAYS misses (the system failed to self-catch).
    Six owner catches in Pass 52 is the canonical anti-pattern.
+6. **LAND ALL FIVE MEMBERS IN ONE COMMIT (B2129 / L630).** LEARNINGS + the
+   CHECKLIST citation + the queue row + the fix + the mechanism/pin go in a
+   SINGLE commit, not across successive closes. **MEASURED: splitting them
+   produced a 20-close gate storm** - each close touched LEARNINGS without
+   SKILL.md, or SKILL.md without a pin, so the Phase-5 gates alternated and
+   every retry re-emitted the mandatory blocks to the owner, who asked why the
+   same table kept printing. **The remediation's SHAPE is what reaches the
+   owner, not its content.** One commit, all members, then close once.
 
 ## LOAD-THE-SKILL RULE (B1728/B1729 — L504, CHECKLIST #229, mechanically enforced)
 

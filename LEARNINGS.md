@@ -13904,3 +13904,24 @@ failure would invalidate a LATER step. That is now the bullet's wording, with th
 diagnosis attached (I chain when thinking about the COMMIT, and both prior instances failed at
 an earlier step I was not thinking about). Anchor read from the live file before editing and
 the edit &&-chained to its commit, so the fix could not repeat the failure it fixes.
+
+## L630 — Splitting a miss's remediation across closes is what the owner actually sees (B2129)
+
+**What happened:** The owner asked why ticket tables kept printing while nothing ran. The
+answer was a gate storm, and its mechanism was not the gates - it was that I landed Phase-5
+members one per close. A close touching LEARNINGS without SKILL.md fires the skill gate; the
+next close touching SKILL.md without a LEARNINGS entry fires the miss-capture gate; each
+blocked close is a fresh turn-end that must re-emit the SKILLS INVOKED line and the six-class
+table. ~20 closes, alternating, zero delta each time.
+
+**Root cause:** I treated Phase 5's members as a checklist to satisfy sequentially rather than
+a single atomic deliverable. Each individual close was compliant with the item it addressed
+and non-compliant overall, which is why no single fix ended the loop.
+
+**Rule (Phase 5 member 6, now in the skill — compliance failure against #234's spirit, no new
+checklist item):** LEARNINGS + citation + queue row + fix + mechanism land in ONE commit. Then
+close once. If a gate fires after that, run the turn gate against the transcript (L628) and fix
+every violation in a single pass rather than one per close.
+
+**Detection signal that existed:** the alternation itself. Two gates trading places across
+closes means the artifacts are being split, not that the requirements are unclear.
