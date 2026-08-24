@@ -24943,6 +24943,8 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
          "L639: status and measurement rot at different rates"),
         ("CLOSING HALF A TICKET NEEDS A NEW ID",
          "L640: broken twice; instance 1 was filed only in the ledger"),
+        ("SILENCE IS NEVER EVIDENCE OF WORK IN PROGRESS",
+         "L641: a killed run log looks identical to a live one"),
         ("SEARCH THE CLASS, NOT THE CONSEQUENCE",
          "L635: only the corpus search establishes novelty"),
         ("Peeking is a BEST-CASE procedure",
@@ -24975,7 +24977,7 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     assert _b2123_skill_rules_present(fable, disc) == []
     # #226 prove-it-can-fail: a gutted file must be REPORTED, not pass
     gutted = _b2123_skill_rules_present("# The Fable Method\n", "# Discipline\n")
-    assert len(gutted) == 31, gutted
+    assert len(gutted) == 32, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -25430,3 +25432,47 @@ def test_b2149_prerun_gate_refuses_without_the_supervisor(tmp_path, monkeypatch)
     probs = g.check_supervisor_and_cap({"leg_cap_hours": 2.5})
     assert any("NO out-of-loop supervisor" in p for p in probs), probs
     assert any("no run_heartbeat.json" in p for p in probs), probs
+
+
+def test_b2158_a_log_without_an_ending_is_dead_not_running(tmp_path):
+    """B2158 (S6-B2157a, L641): silence is never evidence of work.
+
+    launch_sweep writes its completion line only after the engine
+    returns, so a killed launcher leaves a log shape-identical to a live
+    run - MEASURED on 2 of 8 real summary logs, both from kills, neither
+    able to say so. A kill skips every writer, so the READER must be
+    authoritative and one-directional."""
+    import importlib.util as _ilu
+    from pathlib import Path as _P
+
+    root = _P(__file__).resolve().parents[2]
+    spec = _ilu.spec_from_file_location(
+        "classify_run_log_b2158", root / "scripts" / "classify_run_log.py")
+    m = _ilu.module_from_spec(spec)
+    spec.loader.exec_module(m)
+
+    lg = tmp_path / "w_summary.log"
+
+    # every launch ended -> COMPLETE, whatever the process table says
+    lg.write_text("LAUNCH tag=a t0=1 sha=x manifest=m" + chr(10)
+                  + "CFG=a EXIT=0 ELAPSED=10 CUBE_ROWS=5" + chr(10),
+                  encoding="utf-8")
+    assert m.classify(lg, pids=set())["status"] == "COMPLETE"
+
+    # THE ASSERTION THAT MATTERS: unfinished + no live process = DEAD
+    lg.write_text("LAUNCH tag=a t0=1 sha=x manifest=m" + chr(10),
+                  encoding="utf-8")
+    r = m.classify(lg, pids=set())
+    assert r["status"] == "DEAD_WITHOUT_ENDING", r
+    assert "killed or crashed" in r["note"]
+
+    # the SAME log with a live pid is RUNNING - so it is not simply
+    # calling everything dead (the must-be-quiet direction, B1944)
+    assert m.classify(lg, pids={4242})["status"] == "RUNNING"
+
+    # and the real population still classifies without crashing
+    real = sorted((root / "output_audit").glob("*_summary.log"))
+    assert real, "no summary logs - the fixture population is gone"
+    for lgf in real:
+        assert m.classify(lgf, pids=set())["status"] in (
+            "COMPLETE", "DEAD_WITHOUT_ENDING", "EMPTY")

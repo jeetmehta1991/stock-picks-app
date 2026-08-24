@@ -231,7 +231,19 @@ batch-1 traps. Each rule retroactively catches >=2 real past misses (#136).
    id will FEEL like continuity - same subject, same thread - and terminality is
    invisible at the moment of typing. Pin: test_b1795_queue_counts_are_per_ticket.
 
-8. **FRESH-EYES REVIEW CADENCE (standing).** Before every batch-size
+8. **SILENCE IS NEVER EVIDENCE OF WORK IN PROGRESS (L641/B2158).** A record
+   that logs an ENDING only on the success path says nothing about the endings
+   that matter. MEASURED: a launcher writes its completion line after the
+   engine returns, so a killed run leaves a log SHAPE-IDENTICAL to a live one -
+   2 of 8 real logs were in that state, both from kills, neither able to say
+   so. A kill signal skips every write path the writer could use, so the fix is
+   never a better writer: **make the READER authoritative and one-directional**
+   - absence of a completion record reads as DEAD unless a live process proves
+   otherwise. Ask of any status surface: *if this job died right now, would this
+   artifact look different?* Pin:
+   test_b2158_a_log_without_an_ending_is_dead_not_running.
+
+9. **FRESH-EYES REVIEW CADENCE (standing).** Before every batch-size
    escalation (or every ~10 batches of a sequence), an adversarial review of
    the accumulated work runs with fresh eyes — a different model or a cold
    pass that re-derives claims from code/data rather than summaries. The
