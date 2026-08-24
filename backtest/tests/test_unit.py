@@ -24670,7 +24670,7 @@ with log.open('a', encoding='utf-8') as f:
     f.write(json.dumps(sys.argv[1:]) + chr(10))
 n = len(log.read_text().splitlines())
 if n == 1:
-    (out / 'engine_state.json').write_text('{{}}')
+    (out / 'engine_state.json').write_text('{{"open_trades": 7, "sim_date": "2024-11-01"}}')
     sys.exit(1)
 (out / 'trade_exit_detail.csv').write_text(chr(10).join(['h1,h2', 'a,1', 'b,2', '']))
 """, encoding="utf-8")
@@ -24707,6 +24707,10 @@ if n == 1:
         # and its exit recorded (the junk 2-column fake cube fails checks -
         # a nonzero recorded exit is the proof of invocation, not a pass)
         assert res.get("postconfig_exit") not in (None, 0), res
+        # B2121 (M6): the leg-1 checkpoint's 7 open trades must be recorded
+        # as dropped at the boundary - the B1076 caveat, quantified.
+        assert res["boundary_drops"] == [
+            {"leg": 1, "sim_date": "2024-11-01", "open_trades_dropped": 7}], res
         ledger = _json.loads((root / "output_audit" /
                               "postconfig_ledger.json").read_text())
         ent = ledger[f"output_{wave}_armx"]

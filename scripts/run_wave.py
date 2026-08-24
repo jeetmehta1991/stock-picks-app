@@ -100,6 +100,11 @@ def run_arm(spec: dict, arm: dict, engine_cmd: str | None = None) -> dict:
     summary = ROOT / "output_audit" / f"{spec['wave']}_summary.log"
     cube = out_dir / "trade_exit_detail.csv"
     legs = 0
+    # M6 (B2121, S6-B2118b): quantify the B1076 open-trade-drop caveat -
+    # each checkpoint boundary records how many open trades the resume
+    # will drop, read from the engine's own state file. run_wave is the
+    # only layer that sees leg boundaries, so the counter lives here.
+    boundary_drops = []
     t0 = time.time()
     while legs < int(spec.get("max_legs", 4)):
         legs += 1
@@ -127,9 +132,20 @@ def run_arm(spec: dict, arm: dict, engine_cmd: str | None = None) -> dict:
             return {"arm": arm["tag"], "status": "GATE_REFUSED", "legs": legs}
         if cube.exists():
             break
-        if not (out_dir / "engine_state.json").exists():
+        state_p = out_dir / "engine_state.json"
+        if not state_p.exists():
             return {"arm": arm["tag"], "status": "FAILED_NO_CHECKPOINT",
                     "legs": legs, "exit": rc}
+        try:
+            st = json.loads(state_p.read_text(encoding="utf-8"))
+            boundary_drops.append({
+                "leg": legs, "sim_date": st.get("sim_date"),
+                "open_trades_dropped": st.get("open_trades")})
+        except (OSError, ValueError) as exc:
+            print(f"[WARN] M6: could not read {state_p} at leg {legs} "
+                  f"boundary: {exc!r} - drop count UNMEASURED for this leg")
+            boundary_drops.append({
+                "leg": legs, "sim_date": None, "open_trades_dropped": None})
     if not cube.exists():
         return {"arm": arm["tag"], "status": "INCOMPLETE_MAX_LEGS",
                 "legs": legs}
@@ -151,8 +167,8 @@ def run_arm(spec: dict, arm: dict, engine_cmd: str | None = None) -> dict:
     entry["1_cube_sanity"] = {
         "status": "DONE",
         "evidence": f"run_wave verified {rows} cube rows across {legs} "
-                    f"leg(s); open-trade-drop caveat applies at "
-                    f"{legs - 1} boundary(ies)"}
+                    f"leg(s); M6 boundary drops (B1076 caveat, measured): "
+                    f"{boundary_drops if boundary_drops else 'none - single leg'}"}
     ledger[out_dir.name] = entry
     lp.write_text(json.dumps(ledger, indent=1), encoding="utf-8")
     # B2118 (S6-B2117b): the mechanical post-config battery runs HERE, at
@@ -167,6 +183,7 @@ def run_arm(spec: dict, arm: dict, engine_cmd: str | None = None) -> dict:
         + (["--step1-cube"] if spec.get("step1_cube", True) else []),
         cwd=str(ROOT))
     return {"arm": arm["tag"], "status": status, "legs": legs,
+            "boundary_drops": boundary_drops,
             "cube_rows": rows, "elapsed_s": int(time.time() - t0),
             "postconfig_exit": pc.returncode}
 
