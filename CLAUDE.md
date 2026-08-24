@@ -3,7 +3,7 @@
 <!-- COUNCIL 278-287 SYNC BANNER (B1236 2026-07-07) — CLAUDE.md is the master status doc; body already partially synced (line 95 updated B1205) -->
 > **CLAUDE.md is source-of-truth per L143.** Line 95 strategy count already updated B1205 (220 -> 219 post-B1189). This banner is here for consistency with the 46 other synced docs.
 >
-> **B2107 owner ruling 2026-08-23: NO LOCAL RUN OVER 3 HOURS (hard cap; venue decision S6-B2107a precedes Step-1 launches) + PROGRAM TARGET: Phase 1B with >= 20 long + >= 20 mirror-short strategies + TOTAL COMPUTE BUDGET $100 ACROSS ALL STRATEGIES (B2109, not per-run).** Recorded: queue rows S6-B2107-OWNER-RULINGS-3 + S6-B2109-BUDGET + plan section 10.1 + session memory.
+> **B2107 owner ruling 2026-08-23: NO LOCAL RUN OVER 3 HOURS (hard cap; venue decision S6-B2107a precedes Step-1 launches) + PROGRAM TARGET: Phase 1B with >= 20 long + >= 20 mirror-short strategies + TOTAL COMPUTE BUDGET $100 ACROSS ALL STRATEGIES (B2109, not per-run) + VENUE = HETZNER AUCTION gated on the local one-strategy pilot + codified automation (B2115).** Recorded: queue rows S6-B2107-OWNER-RULINGS-3 + S6-B2109-BUDGET + plan section 10.1 + session memory.
 >
 > Current canonical values as of 2026-07-18 (B1263, owner-approved banner sync):
 > - **219 strategies REGISTERED / 215 ACTIVE post-B2103** (B2098 owner-approved F23: classification_change 10 -> 1, 222 -> 213; B2101-B2103 tranche A COMPLETE: +6 EXPLORATORY M-strategies -> 219; `len(ALL_STRATEGIES) = 219`; disabled 4 = 1 DATA_SCARCITY survivor + 3 DUPLICATE) (prior line preserved: 222 REGISTERED / 210 ACTIVE, 12 disabled, B1494 reverted the 6 de-dup disables: 9 STRATEGIES_DISABLED_DATA_SCARCITY

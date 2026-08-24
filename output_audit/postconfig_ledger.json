@@ -2736,5 +2736,43 @@
    "status": "SKIPPED",
    "evidence": "isolation-instrument cube (B2099): the obb single arm; cube written pre-crash (the B2100 writer defect, fixed+pinned same batch); content consumed by the isolation verdict only"
   }
+ },
+ "output_b2114_ref": {
+  "1_cube_sanity": {
+   "status": "DONE",
+   "evidence": "run_postconfig: cube_exists=PASS(2280 rows); one_strategy=PASS(1 strategies); M2_exits_per_entry_vs_registry=PASS(cube [24] vs registry-now 24 (a differing single value = an ); megacaps_present=PASS(MSFT, TSLA, AAPL); M1_content_sha=PASS(da30bf6268c882a6); M3_fill_date=PASS(0 fills before entry); M4_window=PASS(entries 2024-05-06 .. 2025-05-02); M4_holdout_touch=PASS(0 entries at/after HO_START 2025-05-05 in a STEP-1 cube); M5_pnl_integrity=PASS(0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS); M7_degraded_exits=PASS(degraded map (B1623 measure-not-assume): {'reverse_signal': ); step7_engine_implemented=PASS(exit 0); M9_universe_artifact=PASS(exit 0 on output_audit/_ref50.txt (verifier is non-blocking )"
+  },
+  "2_grade_with_config_params": {
+   "status": "DONE",
+   "evidence": "b2118_ref_grid.json: swing-length 20 (the run's own), min-n 10; 10 ranking rows, best is_ci_lo -0.077 (is_sharpe 0.547, 93 fires, breakeven_plus_trail); baseline_fires 95, combos carried 19, distinct outcomes 27"
+  },
+  "3_outlier_discrepancy_sweep": {
+   "status": "DONE",
+   "evidence": "grader's built-in union diagnosis-loss gate did not abort; ranking led by is_ci_lo (post-B2117a artifact emits the key); battery M5 0 NaN/inf + 0 beyond winsorize; M7 degraded map {reverse_signal: atr_trail_1x} disclosed; diagnosed field True 93 / False 95"
+  },
+  "4_three_leg_spot_check": {
+   "status": "DONE",
+   "evidence": "b2118_ref_spot_check.json: 50/50 producer re-derivation agree (100.0pct), 0 trades with failed execution checks (swing 20 / span 200)"
+  },
+  "5_adversarial_lens_review": {
+   "status": "DONE",
+   "evidence": "reviewed this batch: every graded cell is_ci_lo NEGATIVE (best -0.077), all far below the 0.333 noise floor - the STATE gate produces no rankable edge on 50t x 1y; reverse_signal degeneracy is cube-local (single strategy, reverse never fired); no defect found in the cube itself - comparator status only"
+  },
+  "6_post_fix_recheck": {
+   "status": "SKIPPED",
+   "evidence": "no fix arose from step 5 - nothing to recheck"
+  },
+  "6b_equivalence_class_check": {
+   "status": "DONE",
+   "evidence": "grader collapses identical outcomes: 19 combos -> 27 distinct outcome rows across exits; ranking rows carry class_size (max 4; rank-1 class_size 2 = two combos byte-identical)"
+  },
+  "7_implement_in_engine": {
+   "status": "SKIPPED",
+   "evidence": "comparator cube - nothing selected for implementation; the conversion itself is B2114, already shipped with its own pin"
+  },
+  "8_verdict_with_denominators": {
+   "status": "DONE",
+   "evidence": "VERDICT: the STATE-gate reference best cell reaches is_ci_lo -0.077 across 10 graded ranking rows (19 combos, 27 distinct outcomes) from 95 baseline fires on 50 tickers x 1y - 0 of 10 rows clear the 0.333 selection-noise floor; the cube stands as the B2114 STATE-vs-EVENT comparator, judged at the pilot's sw20 arm"
+  }
  }
 }

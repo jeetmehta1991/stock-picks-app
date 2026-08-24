@@ -108,7 +108,8 @@ def _ob_tap_scan(ob_df, ohlc, current_idx, recency_bars, tap_window=5):
     return tap_bull, tap_bear
 
 
-def _breaker_scan(ob_df, close, current_idx, tail_n, age_max, break_max):
+def _breaker_scan(ob_df, close, current_idx, tail_n, age_max, break_max,
+                  ohlc=None, tap_window=5, retest_out=None):
     """Evaluate the breaker/mitigation block signals over an OB frame.
 
     ONE implementation shared by the production path and every variant. A
@@ -117,6 +118,14 @@ def _breaker_scan(ob_df, close, current_idx, tail_n, age_max, break_max):
     grader-vs-engine gap (L475).
 
     Returns (breaker_bull, breaker_bear, mitigation_long, mitigation_short).
+
+    B2114 (LEVER3 breaker legs, owner-approved via the A1 design section 4):
+    when `ohlc` and `retest_out` are supplied, ALSO records the retest
+    EVENTS - a bar within the last `tap_window` sessions overlapping a
+    QUALIFYING breaker's zone (the B2076 tap pattern applied to the flipped
+    zone). The return arity is UNCHANGED and the accumulator is optional,
+    so the variant loop and every other call site are untouched by
+    construction (the L620 arity class avoided, not survived).
     """
     import pandas as _pd
     breaker_bull = breaker_bear = mitigation_long = mitigation_short = False
@@ -155,12 +164,22 @@ def _breaker_scan(ob_df, close, current_idx, tail_n, age_max, break_max):
                     _brk_ok = (float(bot) - close) / float(bot) <= break_max
                 if _age_ok and _brk_ok:
                     breaker_bear = True
+                    if retest_out is not None and ohlc is not None:
+                        _lo = ohlc["low"].iloc[-tap_window:]
+                        _hi = ohlc["high"].iloc[-tap_window:]
+                        if bool(((_lo <= float(top)) & (_hi >= float(bot))).any()):
+                            retest_out["bear"] = True
             elif ob_val == -1 and close > float(top):
                 _brk_ok = True
                 if break_max is not None:
                     _brk_ok = (close - float(top)) / float(top) <= break_max
                 if _age_ok and _brk_ok:
                     breaker_bull = True
+                    if retest_out is not None and ohlc is not None:
+                        _lo = ohlc["low"].iloc[-tap_window:]
+                        _hi = ohlc["high"].iloc[-tap_window:]
+                        if bool(((_lo <= float(top)) & (_hi >= float(bot))).any()):
+                            retest_out["bull"] = True
         # price currently inside an UN-mitigated OB zone (mitigating NOW)
         if not is_mitigated and in_zone:
             if ob_val == 1:
@@ -370,12 +389,18 @@ def compute_smc_signals(
                 out["smc_ob_bullish_tap_recent_5d"] = _tap_bull
                 out["smc_ob_bearish_tap_recent_5d"] = _tap_bear
                 if "Top" in ob_df.columns and "Bottom" in ob_df.columns:
+                    _retests = {}
                     (breaker_bull, breaker_bear, mitigation_long,
                      mitigation_short) = _breaker_scan(
                         ob_df, close, current_idx, ob_tail_n,
-                        breaker_age_bars_max, breaker_break_pct_max)
+                        breaker_age_bars_max, breaker_break_pct_max,
+                        ohlc=ohlc, retest_out=_retests)
                     out["smc_breaker_block_bullish"]  = breaker_bull
                     out["smc_breaker_block_bearish"]  = breaker_bear
+                    # B2114: the retest EVENTS - the base keys above stay
+                    # for every other consumer.
+                    out["smc_breaker_block_bullish_retest_recent_5d"] =                         _retests.get("bull", False)
+                    out["smc_breaker_block_bearish_retest_recent_5d"] =                         _retests.get("bear", False)
                     out["smc_mitigation_block_long"]  = mitigation_long
                     out["smc_mitigation_block_short"] = mitigation_short
                     # B1619 (C): additional SUFFIXED keys, one per configured

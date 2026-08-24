@@ -1,0 +1,16 @@
+{
+ "wave": "b2118_pilot",
+ "tickers_file": "output_audit/_sweep_200.txt",
+ "strategy_subset": "output_audit/_subset_one.txt",
+ "window": {"start": "2024-05-05", "end": "2025-05-05"},
+ "leg_cap_hours": 2.5,
+ "max_legs": 4,
+ "step1_cube": true,
+ "arms": [
+  {"tag": "sw5",  "env": {"SMC_SWING_LENGTH": "5",  "STRAT_EMA_SPAN": "200"}},
+  {"tag": "sw10", "env": {"SMC_SWING_LENGTH": "10", "STRAT_EMA_SPAN": "200"}},
+  {"tag": "sw20", "env": {"SMC_SWING_LENGTH": "20", "STRAT_EMA_SPAN": "200"}},
+  {"tag": "sw30", "env": {"SMC_SWING_LENGTH": "30", "STRAT_EMA_SPAN": "200"}},
+  {"tag": "sw50", "env": {"SMC_SWING_LENGTH": "50", "STRAT_EMA_SPAN": "200"}}
+ ]
+}

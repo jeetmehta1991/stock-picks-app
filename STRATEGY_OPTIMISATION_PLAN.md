@@ -285,7 +285,7 @@ combinations free inside each. Costing by combinations would have overstated the
 - Every number in the report carries its funnel stage (L295).
 - Sensitivity curve published for any threshold that ends up chosen (L288 / #175).
 - Effective breadth (`N_eff`) reported for the resulting roster, not just the count (#175).
-- PROVISIONAL/ROBUST status applied against the measured selection-noise floor (S6-B1467c).
+- PROVISIONAL/ROBUST status applied against the measured selection-noise floor (S6-B1467c; 0.333 at the per-cell twin grain, B2009). **Family-pooled grains measured B2068/B2080: iid floor 0.088 and entry-day BLOCK floor 0.2245 at the 62,064-trade EMA pool; SMC pool 10,862 trades, block floor 0.3115 (b2068/b2081 artifacts)** - the A1 design's instrument basis; the 0.333 remains the PER-CELL yardstick.
 - Any strategy whose tightened config differs from its shipped gates is a **strategy change** and
   needs owner approval before it is written to `screener.py`.
 
@@ -438,14 +438,17 @@ down without exposing that it has no basis.
 never a wishlist:**
 
 - **GATED (6) — decide PASS/FAIL:** `pooled_sharpe` >= 1.0, `profit_factor` >= 1.3,
-  `sortino` >= 0.7, `psr` >= 0.95, `min_trades_holdout` >= 25, `min_trades_full_period` > 100
+  `sortino` >= 1.0 (B2008 tier fix: the pooled tier reads `min_sortino_overall`; the 0.7 this
+  line used to quote was the per-regime bar bleeding in - S6-B1903a), `psr` >= 0.95,
+  `min_trades_holdout` >= 25, `min_trades_full_period` > 100 (both verified vs config B2117c)
 - **DIAGNOSTIC (5) — reported, not gated:** `win_rate` (demoted B1387), `payoff`, `expectancy`,
   `p` (one-sided, H0: SR<=0), `ci_lo` (Sharpe CI lower bound)
 - **CONTEXT (4):** fires, holdout n, full-period n, exit chosen IN-SAMPLE
 
-**Known gap (S6-B1509a):** `max_drawdown`, `calmar` and `deflated_sharpe` were demoted to
-DIAGNOSTIC at B1436/B1437, but `roster_core.evaluate()` computes none of them — so "diagnostic" has
-meant ABSENT rather than reported-not-gated. `metrics.py` has all three (L374).
+**Known gap (S6-B1509a, re-verified B2117c):** `max_drawdown` and `calmar` remain ABSENT from
+`roster_core.evaluate()` ("diagnostic" = absent for those two; `metrics.py` has both, L374).
+`deflated_sharpe` IS computed since the B1972-era None-propagation work (roster_core.py:229) -
+the original three-way claim is half-closed.
 
 **Why all 15 and not just Sharpe (L373):** reporting Sharpe alone hid that the worked example's
 `ci_lo` is **-0.034** — its 95% Sharpe lower bound sits below zero. Omitting cheap metrics is not
@@ -468,6 +471,13 @@ directions, per the B1504 lesson that a gate exercised one way may block everyth
 ---
 
 ## 7. WORKED EXAMPLE — `smc_breaker_block_long` (B1500-B1510)
+
+> **B2117c ANNOTATION:** this worked example was built against the STATE breaker gate
+> (`smc_breaker_block_bullish`). **B2114 (owner-approved via the A1 design section 4)
+> converted both breaker legs to the retest-EVENT keys
+> (`smc_breaker_block_*_retest_recent_5d`)** - the STATE reference cube
+> (`output_b2114_ref`) is the comparator. The example's METHOD stands; its gate
+> expressions describe the retired anchor.
 
 The first strategy taken end-to-end. Recorded because the method's failure modes only became
 visible by running it.
@@ -681,6 +691,10 @@ S6-B2107-OWNER-RULINGS-3 and in the session memory):**
 2. **PROGRAM TARGET: Phase 1B entry with >= 20 LONG + >= 20 logically-symmetric MIRROR SHORT
    strategies.** The A1 admission funnel aims at this 40-strategy roster, not at "some breadth";
    the mirror-shorts-by-default standing directive covers the S side.
+2b. **VENUE (owner ruling 2026-08-23 evening, B2115): HETZNER AUCTION, gated on (A) one
+   strategy completed end-to-end locally (S6-B2115a) and (B) all workflows codified as
+   automation (S6-B2115b, scripts/run_wave.py).** Local pilot legs stay under the 3h cap via
+   resume chunking at the ruled shape.
 3. **TOTAL PROGRAM COMPUTE BUDGET: $100 ACROSS ALL STRATEGIES, not per-strategy or per-run**
    (owner ruling 2026-08-23, second message, B2109). Every venue quote, wave plan, and Step-2
    projection counts against this ONE envelope; the ledger of spend lives with the venue
@@ -868,7 +882,7 @@ This BLOCKS if the formula and Table A disagree, and prints the factorial + engi
 
 ---
 
-## STEP 1 — SEARCH: all fire-adding configs, 100 tickers, 2 years
+## STEP 1 — SEARCH: all fire-adding configs (RULED SHAPE per 10.1: 200 tickers x 1 year 2024-05-05 -> 2025-05-05; this heading's original '100 tickers, 2 years' is the pre-2026-08-21 shape, kept in the lineage note below - B2117c)
 
 ### 1.0 PRE-LAUNCH GATE - run BEFORE building anything
 
@@ -1294,6 +1308,17 @@ Waves are never started to "keep the machine busy" - an unexplained result stops
 
 **This runs after every config completes. No prompt required. Skipping a step is a silent miss.**
 
+> **AUTOMATED since B2118 (S6-B2117b):** `PYTHONPATH=".;scripts" python
+> scripts/run_postconfig.py --cube output_<dir> [--step1-cube] [--write-ledger]`
+> executes step 1 + step 7 + the M-checks (M1 content-sha, M2 exits-vs-live-registry,
+> M3 fill_date, M4 window + holdout-touch FAIL on Step-1 cubes, M5 NaN/inf/winsorize,
+> M7 degraded-exits, M9 universe-artifact via the cube's own manifest) and prints
+> steps 2/4 as parameterized commands. `run_wave.py` invokes it at every arm
+> completion (`postconfig_exit` recorded per arm). Steps 5/6/8 remain judgment.
+> M6 (boundary-drop counter) + M8 (borrow rate) are NOT yet in the battery
+> (S6-B2118b). The manual blocks below remain canonical for legacy cubes and
+> for understanding what each check means.
+
 ### 1. Cube sanity - BEFORE trusting any number
 ```bash
 python -c "
@@ -1302,8 +1327,11 @@ ex=d.groupby(['ticker','entry_date']).exit_method.nunique()
 print('strategies',d.strategy.nunique(),'| exits/entry',sorted(ex.unique()),'| entries',len(ex))
 print('mega-caps',[t for t in ['NVDA','MSFT','TSLA'] if t in set(d.ticker)])"
 ```
-PASS requires: exactly **1** strategy, exactly **[26]** exits/entry, mega-caps PRESENT
-(their absence means the archived A-C chunk universe, L445).
+PASS requires: exactly **1** strategy, exits/entry exactly **[len(EXIT_STRATEGIES)]** -
+**derive it live** (`python -c "from backtest.engine.exit_strategies import EXIT_STRATEGIES;
+print(len(EXIT_STRATEGIES))"` -> **24 post-B2110**; the four legacy cubes and every pre-B2110
+cube carry [26] - judge each cube against the registry AT ITS OWN SHA, B2117c) - and mega-caps
+PRESENT (their absence means the archived A-C chunk universe, L445).
 
 ### 2. Grade - with the CONFIG'S OWN parameters
 ```bash

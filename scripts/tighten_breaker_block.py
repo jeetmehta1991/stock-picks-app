@@ -470,7 +470,12 @@ def main() -> int:
              # `sharpe`, the HOLDOUT measurement, so an auditor would conclude
              # Step 1 ranks on the holdout - the exact defect B1718 fixed. The
              # separation was real and unverifiable from its own output.
-             {"rank": i, "is_sharpe": c[0].get("is_sharpe"),
+             # B2118 (S6-B2117a): the B1820 lesson repeated one field over -
+             # B2010 moved the PRIMARY sort key to the IS ci_lo and the
+             # emission never followed, so the artifact omitted the key it
+             # is ranked on. `is_ci_lo` now leads, beside the tie-break.
+             {"rank": i, "is_ci_lo": c[0].get("is_ci_lo"),
+              "is_sharpe": c[0].get("is_sharpe"),
               "sharpe": c[0].get("sharpe"), "ci_lo": c[0].get("ci_lo"),
               "fires": c[0].get("fires"), "exit": c[0].get("exit"),
               "class_size": len(c),

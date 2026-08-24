@@ -158,8 +158,13 @@ def main() -> int:
     ap.add_argument("--tail-n", type=int, default=20)
     ap.add_argument("--start", default="2024-05-05")
     ap.add_argument("--end", default="2026-05-05")
-    ap.add_argument("--out", default="output_audit/b1588_spot_check.json")
+    ap.add_argument("--out", default=None, help="default: derived from the cube dir name - a FIXED default silently overwrote the b1588 artifact (B2118)")
     a = ap.parse_args()
+    if a.out is None:
+
+        import pathlib as _pl
+
+        a.out = 'output_audit/' + _pl.Path(a.cube).parent.name + '_spot_check.json'
 
     import datetime as _dt
     start = _dt.date.fromisoformat(a.start)

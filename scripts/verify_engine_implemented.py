@@ -56,8 +56,12 @@ PARAMS = {
     # below is the live expression that carries the value into the producer, so
     # this check fails if any of them is removed or renamed.
     "P2 close_mitigation": (
+        # B2114 sweep: the SIBLING of the P4 brittleness fixed the same turn -
+        # this token also ended at a call's closing paren, so any future
+        # kwarg on the _smc.ob call would break the anchor while the wiring
+        # stayed true. The kwarg expression alone IS the fact being asserted.
         True, "backtest/signals/smc_ict.py",
-        "_smc.ob(ohlc, swings, close_mitigation=close_mitigation)", None),
+        "close_mitigation=close_mitigation", None),
     # B1619: the loop moved into `_breaker_scan`, shared by the base path and
     # every variant so the two cannot drift. The anchors follow it - what must
     # hold is that the CONFIGURED value reaches the scan, not where the scan lives.
@@ -65,8 +69,13 @@ PARAMS = {
         True, "backtest/signals/smc_ict.py",
         "ob_df, close, current_idx, ob_tail_n,", None),
     "P4 age_bars_max": (
+        # B2114: the base call grew optional kwargs (ohlc/retest_out for the
+        # retest events), so the old anchor's trailing `)` stopped matching
+        # while the WIRING stayed true - the #275 format-brittleness class.
+        # The anchor now ends at the comma: the configured values still reach
+        # the scan whatever follows them in the call.
         True, "backtest/signals/smc_ict.py",
-        "breaker_age_bars_max, breaker_break_pct_max)", None),
+        "breaker_age_bars_max, breaker_break_pct_max,", None),
     "P5 break_pct_max": (
         True, "backtest/signals/smc_ict.py",
         "break_max is not None", None),

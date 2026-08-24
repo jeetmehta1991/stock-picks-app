@@ -4327,13 +4327,17 @@ def strat_smc_breaker_block_short(s):
     """Batch 216: Breaker block short - bullish OB that was mitigated +
     price now below bottom -> the OB flips role and becomes resistance.
     Classic ICT 'breaker block' reversal setup."""
+    # B2114 (LEVER3 breaker legs, owner-approved via A1 design section 4):
+    # STATE position-flag -> the RETEST EVENT (price tapped the flipped zone
+    # within 5 sessions - the ICT entry, the B2076 tap pattern). Base STATE
+    # key untouched for the variant machinery and other consumers.
     fires = (
-        s.get("smc_breaker_block_bearish", False)
+        s.get("smc_breaker_block_bearish_retest_recent_5d", False)
         and s.get("below_ema_200", False)  # B630 sweep
      and not _short_borrow_trap_active(s))
     return _strat(fires, "short", "smc",
-        ["smc_breaker_block_bearish", "below_ema_200", "borrow_ok"],
-        ["Bullish Order Block mitigated + price below - role flipped to resistance",
+        ["smc_breaker_block_bearish_retest_recent_5d", "below_ema_200", "borrow_ok"],
+        ["Price RETESTED the flipped resistance zone within 5 bars (B2114 EVENT-anchored; pre-B2114 used the position STATE)",
          "Below 200 EMA (bear regime)"])
 
 
@@ -4344,13 +4348,14 @@ def strat_smc_breaker_block_long(s):
     # production exactly; the sweep varies it across the emitted spans
     # 9/20/21/50/200 without touching the producer.
     _ema_key = f"price_above_ema_{_cfg.STRAT_EMA_SPAN}"
+    # B2114: same conversion as the short leg - the retest EVENT anchors.
     fires = (
-        s.get("smc_breaker_block_bullish", False)
+        s.get("smc_breaker_block_bullish_retest_recent_5d", False)
         and s.get(_ema_key, False)
     )
     return _strat(fires, "long", "smc",
-        ["smc_breaker_block_bullish", _ema_key],
-        ["Bearish Order Block mitigated + price above - role flipped to support",
+        ["smc_breaker_block_bullish_retest_recent_5d", _ema_key],
+        ["Price RETESTED the flipped support zone within 5 bars (B2114 EVENT-anchored)",
          f"Above {_cfg.STRAT_EMA_SPAN} EMA (regime gate)"])
 
 

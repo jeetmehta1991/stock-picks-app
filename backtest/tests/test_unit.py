@@ -14116,7 +14116,10 @@ def test_b1563_dynamic_signal_keys_block_static_pruning():
         "static, re-evaluate whether static pruning became safe")
     assert not any(k.startswith("price_above_ema_") for k in literal_keys), (
         "EMA key is now a literal -- static extraction would see it")
-    assert "smc_breaker_block_bullish" in literal_keys
+    # B2118: B2114 swapped the literal gate STATE -> retest EVENT; the
+    # pinned PROPERTY (dynamic EMA key invisible to static scans) is
+    # unchanged - only the example literal moved with the ruled conversion.
+    assert "smc_breaker_block_bullish_retest_recent_5d" in literal_keys
     # The invisible-key hazard in one assertion: a static scan under-counts.
     assert len(literal_keys) == 1, (
         f"static scan sees {literal_keys}; the strategy actually ALSO reads a "
@@ -14237,12 +14240,15 @@ def test_b1565_recorder_captures_runtime_built_key():
 
     sl = _b1565_sample_df()
     full = T.compute_all_signals(sl)
-    full["smc_breaker_block_bullish"] = True
+    # B2118: plant the retest-EVENT key (the B2114 gate) so the strategy
+    # passes its first gate and reaches the runtime-built EMA read - the
+    # old STATE key stopped exercising the path when the gate moved.
+    full["smc_breaker_block_bullish_retest_recent_5d"] = True
 
     read = set()
     ALL_STRATEGIES["smc_breaker_block_long"](DP.RecordingSignals(full, read))
 
-    assert "smc_breaker_block_bullish" in read
+    assert "smc_breaker_block_bullish_retest_recent_5d" in read
     ema = [k for k in read if k.startswith("price_above_ema_")]
     assert ema, (
         "recorder missed the runtime-built EMA key -- this is the exact key "
@@ -14265,7 +14271,7 @@ def test_b1565_guard_raises_instead_of_silently_defaulting():
     sl = _b1565_sample_df()
     km = DP.build_producer_key_map(sl)
     full = T.compute_all_signals(sl)
-    full["smc_breaker_block_bullish"] = True
+    full["smc_breaker_block_bullish_retest_recent_5d"] = True  # B2118: the B2114 gate
     fn = ALL_STRATEGIES["smc_breaker_block_long"]
 
     static = set(re.findall(r's\.get\(\s*["\']([a-zA-Z0-9_]+)',
@@ -14287,7 +14293,7 @@ def test_b1565_correct_pruning_preserves_strategy_verdict():
     sl = _b1565_sample_df()
     km = DP.build_producer_key_map(sl)
     full = T.compute_all_signals(sl)
-    full["smc_breaker_block_bullish"] = True
+    full["smc_breaker_block_bullish_retest_recent_5d"] = True  # B2118: the B2114 gate
     fn = ALL_STRATEGIES["smc_breaker_block_long"]
 
     baseline = fn(dict(full))
@@ -18637,10 +18643,17 @@ def test_b1820_step1_ranking_emits_its_ranking_key():
     # 1. the emitter must carry the key it sorts on
     src = (root / "scripts" / "tighten_breaker_block.py").read_text(encoding="utf-8")
     i = src.index('"step1_ranking"')
-    payload = src[i:i + 700]
+    payload = src[i:i + 1100]
     assert '"is_sharpe"' in payload, (
         "step1_ranking must emit is_sharpe - it is the key the list is ranked "
         "on, and without it the artifact shows only the HOLDOUT sharpe")
+    # B2118 (S6-B2117a): the lesson repeated one field over - B2010 moved the
+    # PRIMARY key to the IS ci_lo and the emission never followed, so every
+    # E1-era grid omitted the key it was ranked on. The pin now demands the
+    # CURRENT primary key in the payload too.
+    assert '"is_ci_lo"' in payload, (
+        "step1_ranking must emit is_ci_lo - the B2010 PRIMARY ranking key; "
+        "omitting it is the B1820 defect on the field that superseded it")
 
     # 2. and the sort must actually use it
     # B2010 (D4): the ranking key evolved to IS ci_lo primary with IS sharpe
@@ -24573,3 +24586,184 @@ def test_b2111_eng7_candle_arms_come_alive():
     assert r5["fires"] is True and r5["direction"] == "short"
     assert strat_shooting_star_short(ctx)["fires"] is False, (
         "context without any reversal pattern must not fire")
+
+
+def test_b2114_breaker_legs_are_retest_event_anchored():
+    """B2114 (LEVER3 final pair, A1 section 4): the retest accumulator fires
+    only when a bar within the window taps a QUALIFYING breaker's zone
+    (SYNTHETIC ob/ohlc frames both ways); the return arity is unchanged;
+    both gates consume the EVENT keys and refuse the STATE keys alone."""
+    import numpy as np
+    import pandas as pd
+
+    from backtest.signals.smc_ict import _breaker_scan
+
+    n = 60
+    ob = pd.DataFrame({"OB": [np.nan] * n, "Top": [np.nan] * n,
+                       "Bottom": [np.nan] * n, "MitigatedIndex": [np.nan] * n})
+    # bullish breaker: a BEARISH OB (val -1) at idx 30, zone [100, 105],
+    # mitigated at 40; close above the top -> flipped support qualifies
+    ob.loc[30, ["OB", "Top", "Bottom", "MitigatedIndex"]] = [-1, 105.0, 100.0, 40]
+
+    def frame(last5_low):
+        return pd.DataFrame({"low": [110.0] * (n - 5) + [last5_low] * 5,
+                             "high": [112.0] * n})
+
+    acc = {}
+    res = _breaker_scan(ob, 108.0, n - 1, 20, None, None,
+                        ohlc=frame(104.0), retest_out=acc)
+    assert len(res) == 4, "return arity must be unchanged"
+    assert res[0] is True, "the breaker STATE must qualify"
+    assert acc.get("bull") is True, "the tap into [100,105] is the retest"
+
+    acc2 = {}
+    _breaker_scan(ob, 108.0, n - 1, 20, None, None,
+                  ohlc=frame(107.0), retest_out=acc2)
+    assert "bull" not in acc2, "no tap -> no retest event"
+
+    # legacy call shape (no accumulator) still works - the variant loop's path
+    res3 = _breaker_scan(ob, 108.0, n - 1, 20, None, None)
+    assert len(res3) == 4 and res3[0] is True
+
+    from backtest.signals.screener import (
+        strat_smc_breaker_block_long,
+        strat_smc_breaker_block_short,
+    )
+    assert strat_smc_breaker_block_long(
+        {"smc_breaker_block_bullish": True,
+         "price_above_ema_200": True})["fires"] is False
+    assert strat_smc_breaker_block_long(
+        {"smc_breaker_block_bullish_retest_recent_5d": True,
+         "price_above_ema_200": True})["fires"] is True
+    assert strat_smc_breaker_block_short(
+        {"smc_breaker_block_bearish": True, "below_ema_200": True,
+         "borrow_ok": True})["fires"] is False
+    r = strat_smc_breaker_block_short(
+        {"smc_breaker_block_bearish_retest_recent_5d": True,
+         "below_ema_200": True, "borrow_ok": True})
+    assert r["fires"] is True and r["direction"] == "short"
+
+
+def test_b2116_run_wave_resume_loop_both_ways(tmp_path):
+    """B2116 (S6-B2115b): the orchestrator's leg/resume loop, seam-driven.
+    Leg 1's fake engine checkpoints out (writes engine_state.json, no cube)
+    - the orchestrator MUST relaunch with --resume-from-checkpoint; leg 2
+    writes the cube - COMPLETE with rows verified and the mechanical ledger
+    entry written. A no-checkpoint failure aborts loudly."""
+    import importlib.util
+    import json as _json
+    import sys as _sys
+    from pathlib import Path as _P
+
+    root = _P(__file__).resolve().parents[2]
+    spec_dir = tmp_path
+    wave = "b2116test"
+    out_dir = root / f"output_{wave}_armx"
+    argv_log = spec_dir / "argv.jsonl"
+    fake = spec_dir / "fake_engine.py"
+    fake.write_text(f"""
+import json, pathlib, sys
+out = pathlib.Path(r'{out_dir}')
+out.mkdir(parents=True, exist_ok=True)
+log = pathlib.Path(r'{argv_log}')
+with log.open('a', encoding='utf-8') as f:
+    f.write(json.dumps(sys.argv[1:]) + chr(10))
+n = len(log.read_text().splitlines())
+if n == 1:
+    (out / 'engine_state.json').write_text('{{}}')
+    sys.exit(1)
+(out / 'trade_exit_detail.csv').write_text(chr(10).join(['h1,h2', 'a,1', 'b,2', '']))
+""", encoding="utf-8")
+    tick = spec_dir / "t.txt"
+    tick.write_text("AAA\nBBB\n", encoding="utf-8")
+    sub = spec_dir / "s.txt"
+    sub.write_text("some_strategy\n", encoding="utf-8")
+    spec = {"wave": wave, "tickers_file": str(tick),
+            "strategy_subset": str(sub),
+            "window": {"start": "2024-05-05", "end": "2025-05-05"},
+            "leg_cap_hours": 0.1, "max_legs": 3,
+            "arms": [{"tag": "armx", "env": {"SMC_SWING_LENGTH": "20"}}]}
+
+    import shutil
+    import subprocess as _sp
+    try:
+        spec_p = spec_dir / "spec.json"
+        spec_p.write_text(_json.dumps(spec), encoding="utf-8")
+        r = _sp.run([_sys.executable, str(root / "scripts" / "run_wave.py"),
+                     "--spec", str(spec_p), "--engine-cmd", str(fake)],
+                    cwd=str(root), capture_output=True, text=True)
+        assert r.returncode == 0, r.stdout + r.stderr
+        argvs = [_json.loads(x) for x in argv_log.read_text().splitlines()]
+        assert len(argvs) == 2, "exactly two legs"
+        assert "--resume-from-checkpoint" not in argvs[0]
+        assert "--resume-from-checkpoint" in argvs[1], (
+            "leg 2 must resume from the checkpoint dir")
+        summary = _json.loads((root / "output_audit" /
+                               f"{wave}_wave_summary.json").read_text())
+        res = summary["results"][0]
+        assert res["status"] == "COMPLETE" and res["legs"] == 2
+        assert res["cube_rows"] == 2
+        # B2118: the post-config battery must be INVOKED at wave completion
+        # and its exit recorded (the junk 2-column fake cube fails checks -
+        # a nonzero recorded exit is the proof of invocation, not a pass)
+        assert res.get("postconfig_exit") not in (None, 0), res
+        ledger = _json.loads((root / "output_audit" /
+                              "postconfig_ledger.json").read_text())
+        ent = ledger[f"output_{wave}_armx"]
+        assert ent["1_cube_sanity"]["status"] == "DONE"
+        assert "PENDING-WAVE-REVIEW" in ent["5_adversarial_lens_review"]["evidence"]
+    finally:
+        shutil.rmtree(out_dir, ignore_errors=True)
+        (root / "output_audit" / f"{wave}_wave_summary.json").unlink(missing_ok=True)
+        (root / "output_audit" / f"{wave}_summary.log").unlink(missing_ok=True)
+        led_p = root / "output_audit" / "postconfig_ledger.json"
+        led = _json.loads(led_p.read_text())
+        led.pop(f"output_{wave}_armx", None)
+        led_p.write_text(_json.dumps(led, indent=1), encoding="utf-8")
+
+
+def test_b2118_run_postconfig_checks_catch_the_planted_defects(tmp_path):
+    """B2118 (S6-B2117b): the automated post-config battery. A synthetic
+    cube with a holdout-touching entry and a NaN pnl must FAIL M4 (when
+    the cube is declared Step-1) and M5; the same cube cleaned must pass
+    both. M2 must compare against the LIVE registry, never a constant."""
+    import importlib.util
+    import sys as _sys
+    from pathlib import Path as _P
+
+    root = _P(__file__).resolve().parents[2]
+    spec = importlib.util.spec_from_file_location(
+        "run_postconfig_b2118", root / "scripts" / "run_postconfig.py")
+    rp = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(rp)
+
+    from backtest.engine.exit_strategies import EXIT_STRATEGIES
+    reg = len(EXIT_STRATEGIES)
+    exits = list(EXIT_STRATEGIES)[:reg]
+    header = "strategy,direction,exit_method,entry_date,fill_date,ticker,pnl_pct,hold_days"
+
+    def write_cube(rows):
+        d = tmp_path / "cube"
+        d.mkdir(exist_ok=True)
+        (d / "trade_exit_detail.csv").write_text(
+            "\n".join([header] + rows) + "\n", encoding="utf-8")
+        return d
+
+    dirty = []
+    for ex in exits:
+        dirty.append(f"s1,long,{ex},2024-06-03,2024-06-04,NVDA,1.5,3")
+        dirty.append(f"s1,long,{ex},2025-06-02,2025-06-03,NVDA,,4")
+    res = {n: (st, ev) for n, st, ev in rp.checks(write_cube(dirty), step1=True)}
+    assert res["M4_holdout_touch"][0] == "FAIL", res["M4_holdout_touch"]
+    assert res["M5_pnl_integrity"][0] == "FAIL", res["M5_pnl_integrity"]
+    assert res["M2_exits_per_entry_vs_registry"][0] == "PASS"
+    assert str(reg) in res["M2_exits_per_entry_vs_registry"][1]
+
+    clean = [f"s1,long,{ex},2024-06-03,2024-06-04,NVDA,1.5,3" for ex in exits]
+    res2 = {n: (st, ev) for n, st, ev in rp.checks(write_cube(clean), step1=True)}
+    assert res2["M4_holdout_touch"][0] == "PASS"
+    assert res2["M5_pnl_integrity"][0] == "PASS"
+    assert res2["M3_fill_date"][0] == "PASS"
+    # step1 NOT declared -> the touch check must SKIP, not FAIL
+    res3 = {n: (st, ev) for n, st, ev in rp.checks(write_cube(dirty), step1=False)}
+    assert res3["M4_holdout_touch"][0] == "SKIP"

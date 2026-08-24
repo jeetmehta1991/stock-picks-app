@@ -1,0 +1,135 @@
+134 silent except:pass sites (body == [pass]; non-archive, non-test)
+  backtest\agents\pipeline.py:303: except Exception: pass
+  backtest\agents\toolkits\our_fundamentals_toolkit.py:85: except Exception: pass
+  backtest\data\smart_money.py:952: except Exception: pass
+  backtest\data\smart_money.py:1167: except (TypeError, ValueError): pass
+  backtest\data\universe.py:530: except Exception: pass
+  backtest\diagnostics\section_09b_pre_cube_evidence.py:121: except Exception: pass
+  backtest\engine\backtest.py:80: except (TypeError, ValueError): pass
+  backtest\engine\backtest.py:2245: except Exception: pass
+  backtest\engine\exit_context.py:85: except (TypeError, ValueError): pass
+  backtest\engine\exit_context.py:395: except (TypeError, ValueError): pass
+  backtest\engine\exit_manager.py:932: except Exception: pass
+  backtest\engine\exit_manager.py:966: except Exception: pass
+  backtest\engine\improvements.py:885: except ImportError: pass
+  backtest\engine\improvements.py:736: except Exception: pass
+  backtest\engine\improvements.py:762: except Exception: pass
+  backtest\results\cpcv.py:310: except Exception: pass
+  backtest\results\cube_populator.py:247: except Exception: pass
+  backtest\results\cube_populator.py:252: except Exception: pass
+  backtest\results\writer.py:112: except Exception: pass
+  backtest\run_phase1a.py:212: except (ValueError, AttributeError): pass
+  backtest\run_phase1a.py:206: except Exception: pass
+  backtest\signals\cross_asset.py:237: except (TypeError, ValueError, IndexError): pass
+  backtest\signals\cross_sectional.py:300: except Exception: pass
+  backtest\signals\cross_sectional.py:142: except Exception: pass
+  backtest\signals\cross_sectional.py:223: except Exception: pass
+  backtest\signals\cross_sectional.py:258: except Exception: pass
+  backtest\signals\cross_sectional.py:286: except Exception: pass
+  backtest\signals\pead.py:254: except Exception: pass
+  backtest\signals\screener.py:9175: except Exception: pass
+  backtest\signals\screener.py:9180: except Exception: pass
+  backtest\signals\screener.py:9206: except Exception: pass
+  backtest\signals\screener.py:9213: except Exception: pass
+  backtest\signals\screener.py:9452: except ValueError: pass
+  backtest\signals\screener.py:9204: except Exception: pass
+  backtest\signals\sec_edgar_extractor.py:328: except Exception: pass
+  backtest\signals\sec_edgar_extractor.py:333: except Exception: pass
+  backtest\signals\sec_edgar_extractor.py:338: except Exception: pass
+  backtest\signals\sec_edgar_extractor.py:342: except Exception: pass
+  backtest\signals\sec_edgar_extractor.py:150: except (ValueError, TypeError): pass
+  backtest\signals\technical.py:1038: except (ValueError, TypeError, IndexError): pass
+  backtest\signals\technical.py:498: except Exception: pass
+  backtest\signals\technical.py:569: except Exception: pass
+  backtest\signals\technical.py:1066: except Exception: pass
+  backtest\signals\technical.py:1381: except Exception: pass
+  backtest\signals\technical.py:840: except (ValueError, TypeError, IndexError): pass
+  backtest\util\holdout_guard.py:77: except Exception: pass
+  backtest\util\signals_serde.py:102: except (ValueError, TypeError): pass
+  backtest\util\signals_serde.py:107: except (ValueError, SyntaxError, TypeError, MemoryError, RecursionError): pass
+  backtest\util\signals_serde.py:116: except (ValueError, SyntaxError, TypeError, MemoryError, RecursionError): pass
+  backtest\util\structured_logger.py:118: except Exception: pass
+  scripts\audit_decs_for_artifacts.py:172: except Exception: pass
+  scripts\audit_producer_emit.py:40: except Exception: pass
+  scripts\audit_tier2_producer_caches.py:202: except Exception: pass
+  scripts\audit_tier2_producer_caches.py:336: except Exception: pass
+  scripts\aws_b660_merge.py:48: except ValueError: pass
+  scripts\b1019_phase_1_runtime_monitor.py:54: except AttributeError: pass
+  scripts\b748c_extended_data_quality.py:103: except Exception: pass
+  scripts\b748e_incremental_sc13d_decoder.py:49: except Exception: pass
+  scripts\build_dashboard_phase_1a.py:371: except Exception: pass
+  scripts\build_dashboard_phase_1a.py:379: except Exception: pass
+  scripts\build_dashboard_phase_1a.py:387: except Exception: pass
+  scripts\build_dashboard_sprint0a.py:165: except Exception: pass
+  scripts\build_dashboard_sprint0a.py:313: except Exception: pass
+  scripts\build_dashboard_sprint0a.py:1004: except Exception: pass
+  scripts\build_dashboard_sprint0a.py:432: except Exception: pass
+  scripts\build_dashboard_stage_2.py:966: except Exception: pass
+  scripts\build_strategy_roster.py:326: except Exception: pass
+  scripts\build_strategy_roster.py:435: except Exception: pass
+  scripts\build_strategy_roster.py:471: except Exception: pass
+  scripts\build_tier2_screener.py:48: except ImportError: pass
+  scripts\build_tier2_screener_full.py:46: except ImportError: pass
+  scripts\build_tier3_screener.py:49: except ImportError: pass
+  scripts\build_wiring_catalog.py:74: except Exception: pass
+  scripts\build_wiring_catalog.py:85: except Exception: pass
+  scripts\classify_deferred_140.py:76: except Exception: pass
+  scripts\coverage_smoke.py:153: except Exception: pass
+  scripts\diagnose_zero_fires.py:88: except Exception: pass
+  scripts\diagnose_zero_fires.py:167: except Exception: pass
+  scripts\env_fingerprint.py:109: except Exception: pass
+  scripts\extract_proposed_changes.py:140: except Exception: pass
+  scripts\fix_change_from_original_and_gate_structure.py:142: except Exception: pass
+  scripts\fix_change_from_original_and_gate_structure.py:159: except Exception: pass
+  scripts\fix_change_from_original_and_gate_structure.py:191: except Exception: pass
+  scripts\fix_meta_ticker_corruption.py:42: except ImportError: pass
+  scripts\harvest_strategy_metrics.py:81: except (TypeError, ValueError): pass
+  scripts\inject_tier3_discipline.py:95: except Exception: pass
+  scripts\measure_clause_admission.py:286: except Exception: pass
+  scripts\measure_clause_admission.py:309: except Exception: pass
+  scripts\measure_fire_count.py:125: except (AttributeError, io.UnsupportedOperation, ValueError): pass
+  scripts\measure_fire_count.py:1169: except Exception: pass
+  scripts\measure_fire_count.py:114: except Exception: pass
+  scripts\merge_batch_outputs.py:142: except Exception: pass
+  scripts\migrate_string_dates.py:54: except Exception: pass
+  scripts\monitor_phase_1a_beta_health.py:547: except ValueError: pass
+  scripts\pre_launch_validation.py:399: except Exception: pass
+  scripts\pre_launch_validation.py:409: except Exception: pass
+  scripts\prefetch_alphavantage_news.py:168: except Exception: pass
+  scripts\prefetch_alphavantage_news.py:181: except Exception: pass
+  scripts\prefetch_fred_metadata.py:41: except ImportError: pass
+  scripts\prefetch_polygon_corp_actions.py:31: except ImportError: pass
+  scripts\prefetch_polygon_grouped_daily.py:31: except ImportError: pass
+  scripts\prefetch_polygon_indicators.py:170: except Exception: pass
+  scripts\prefetch_polygon_indices.py:126: except Exception: pass
+  scripts\prefetch_polygon_news.py:32: except ImportError: pass
+  scripts\prefetch_polygon_ohlcv_daily.py:36: except ImportError: pass
+  scripts\prefetch_polygon_ohlcv_master.py:40: except ImportError: pass
+  scripts\prefetch_polygon_prev_related.py:26: except ImportError: pass
+  scripts\prefetch_polygon_reference.py:35: except ImportError: pass
+  scripts\prefetch_polygon_statics.py:38: except ImportError: pass
+  scripts\prefetch_sec_edgar.py:52: except ImportError: pass
+  scripts\prefetch_sec_edgar.py:118: except Exception: pass
+  scripts\preflight.py:430: except Exception: pass
+  scripts\preflight_cross_sweep.py:108: except Exception: pass
+  scripts\preflight_cross_sweep.py:95: except Exception: pass
+  scripts\preflight_cross_sweep.py:101: except Exception: pass
+  scripts\prepopulate_cache_index.py:49: except Exception: pass
+  scripts\remediate_spec_without_build.py:39: except Exception: pass
+  scripts\remediate_test_signal_unverified.py:47: except Exception: pass
+  scripts\run_live_end_of_day.py:249: except Exception: pass
+  scripts\run_live_morning.py:183: except Exception: pass
+  scripts\run_paper_end_of_day.py:88: except Exception: pass
+  scripts\run_t0_close_out.py:196: except Exception: pass
+  scripts\run_t0_close_out.py:203: except Exception: pass
+  scripts\smoke_test_polygon.py:31: except ImportError: pass
+  scripts\strategy_wiring_audit.py:123: except Exception: pass
+  scripts\strategy_wiring_audit.py:131: except Exception: pass
+  scripts\strategy_wiring_audit.py:139: except Exception: pass
+  scripts\strategy_wiring_audit.py:325: except Exception: pass
+  scripts\validate_sec_edgar_decoded_completeness.py:209: except Exception: pass
+  scripts\validate_sec_edgar_decoded_completeness.py:230: except Exception: pass
+  scripts\verify_batch_69_phase_3.py:120: except Exception: pass
+  scripts\verify_flag_binds.py:57: except Exception: pass
+  scripts\verify_turn_compliance.py:537: except Exception: pass
+  scripts\verify_turn_compliance.py:4146: except Exception: pass
