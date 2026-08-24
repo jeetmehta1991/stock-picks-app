@@ -13972,3 +13972,27 @@ about exclusion registers and what I did not carry to pins.
 **Detection signal that existed:** the fragment count itself. I had just corrected 4-to-5 on
 that same list one message earlier, which proves I was reasoning about the guard rather than
 the population - and a count that needs correcting is a count whose set was never defined.
+
+## L632 — A gate whose precondition is "the repo is clean" fights the loop it protects (B2132)
+
+**What happened:** The B2127 drift gate refuses a launch when engine paths are dirty. Correct
+for a real run - a wave must not straddle two code states. But the full pyramid then failed two
+launcher tests, because engine paths are dirty exactly when someone is DEVELOPING, which is when
+the suite matters most. The gate was right and its SCOPE was wrong. Fixed by skipping drift when
+the test seam (--engine-cmd) is used, where no engine runs and engine-code reproducibility is
+moot; drift_check keeps direct unit coverage, so nothing was weakened.
+
+**Root cause:** I scoped the gate to the SCRIPT (launch_sweep) rather than to the OPERATION it
+guards (an actual engine invocation). Every path through that script inherited a precondition
+that only one path needs. The tell was which tests broke: not the drift test, but two unrelated
+launcher tests that merely drive the same entry point.
+
+**Rule (compliance failure against #241's seam requirement and #226 — no new item):** a gate's
+precondition binds the OPERATION it protects, never the module that hosts it. When adding one,
+enumerate the paths through that module and ask which of them the precondition is actually about;
+if a test seam exists, the seam is by definition not the guarded operation. And run the full
+suite before believing a new gate is scoped right - two unrelated tests failing is the signal.
+
+**Detection signal that existed:** the gate blocked its own author within one batch, on work that
+was correct. B1948 already says an escape that clears wrongly is silent while a trigger that
+fires wrongly is loud; this is the loud kind, and I still shipped it a batch before noticing.
