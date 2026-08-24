@@ -13836,3 +13836,27 @@ YOU REPLACE IT", gutted-arm count raised 9 -> 10, both arms green, full pyramid 
 3 skipped). Recorded because a rule added to a doc without a durability pin is the same
 disappearance in slow motion that #234's mechanism member exists to prevent, and because a
 queue row claiming a shipped rule with no checkable artifact is exactly the #264 class.
+
+## L628 — Fixing gate violations one at a time turned a turn-end into twelve (B2129)
+
+**What happened:** The owner asked why ticket counts were being printed over and over while
+nothing was running. Cause, measured: the Stop hook blocked my turn-end ~12 consecutive times,
+and every blocked close is a NEW turn-end, which the standing directives require to carry both
+the SKILLS INVOKED line and the six-class ticket table. So the table printed ~12 times with a
+zero delta each time. The work was done; the noise was the retry loop.
+
+**Root cause: I fixed one violation per close instead of running the gate myself.** The skill
+I load every turn documents the fix (L563/B1842): with TURN_GATE_TRANSCRIPT set to the session
+transcript, verify_turn_compliance.py returns EVERY violation at once, in seconds, over a
+21MB transcript. Run once this batch, it returned 2 violations and exit 0. Twelve reactive
+round trips could have been one. L563's own words are "run it once before ending replaces
+three round trips with one" - it was in context the whole time.
+
+**Rule (compliance failure against L563 / #247 — no new item):** run the turn gate against the
+transcript BEFORE emitting a closing message, whenever a close is expected to be scrutinised
+(any turn that shipped code, or any turn already blocked once). Never fix a gate violation
+reactively when the full list is one command away — the reactive path multiplies owner-visible
+noise by the number of gates, and each retry re-emits every mandatory block.
+
+**Detection signal that existed:** the second consecutive block. One block is a miss; two is a
+pattern, and the pattern's remedy is documented in the file that arrives every turn.
