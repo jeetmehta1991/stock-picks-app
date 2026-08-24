@@ -589,6 +589,11 @@ record, and this file is what actually gets read at the start of every turn.
    skill rules with no test - `#231` - because the mechanism member reads as
    being about the FIX, and a rule added to the skill IS the fix. A skill edit
    and its `test_b2123` fragment go in the same commit, always.
+   **AND IN THE SAME SCRIPTED CALL (B2132 / L632 addendum).** "Same commit" was
+   not enough - the split recurred THREE times in one day (B2129c, B2130b,
+   B2132d), each time with this rule already written. Staging the doc edit and
+   the pin edit in ONE python call makes them inseparable by construction; a
+   habit that depends on remembering, after three failures, is not a habit.
 
 ## LOAD-THE-SKILL RULE (B1728/B1729 — L504, CHECKLIST #229, mechanically enforced)
 
