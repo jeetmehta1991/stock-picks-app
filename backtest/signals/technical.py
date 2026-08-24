@@ -2052,6 +2052,23 @@ def compute_candles(df: pd.DataFrame) -> dict:
         result["bullish_pin_bar"] = result["bearish_pin_bar"] = False
         result["marubozu_bull"] = result["marubozu_bear"] = False
 
+    # B2111 (S6-B1250-ENG7, owner-approved ADD 2026-08-23): the two
+    # consumed-never-produced keys come alive per Nison 1991.
+    # hanging_man = the HAMMER's shape appearing AFTER AN ADVANCE (the
+    # context is what makes it bearish); advance proxied by the close five
+    # bars back sitting below the prior bar's close.
+    if rng > 0 and n >= 6:
+        result["hanging_man"] = bool(
+            lwk > 2 * body and uwk < body and body > 0 and c[-2] > c[-6])
+    else:
+        result["hanging_man"] = False
+    # dark_cloud_cover = bullish bar, then a bar OPENING above its high and
+    # CLOSING below the midpoint of its body (yet above its open) - the
+    # bearish mirror of the piercing line.
+    result["dark_cloud_cover"] = bool(
+        c[-2] > o[-2] and o[-1] > h[-2]
+        and c[-1] < (o[-2] + c[-2]) / 2 and c[-1] > o[-2])
+
     # -- Two-bar patterns --
     result["bullish_engulfing"] = (
         c[-2]<o[-2] and c[-1]>o[-1] and c[-1]>o[-2] and o[-1]<c[-2])

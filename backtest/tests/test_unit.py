@@ -24524,3 +24524,52 @@ def test_b2105_ichi_breakdown_is_event_anchored():
     assert f({"ichi_below_cloud_break_recent_5d": True,
               "borrow_ok": True})["fires"] is False, (
         "the tk_cross confirm survived the swap")
+
+
+def test_b2111_eng7_candle_arms_come_alive():
+    """B2111 (ENG7, owner-approved ADD): hanging_man and dark_cloud_cover
+    are PRODUCED per Nison 1991 - truth tables both ways on SYNTHETIC
+    frames - and the consumer's formerly-dead OR-arms now fire."""
+    import pandas as pd
+
+    from backtest.signals.technical import compute_candles
+
+    def frame(rows):
+        idx = pd.date_range("2024-01-02", periods=len(rows), freq="B")
+        return pd.DataFrame({"open": [r[0] for r in rows],
+                             "high": [r[1] for r in rows],
+                             "low": [r[2] for r in rows],
+                             "close": [r[3] for r in rows]}, index=idx)
+
+    # hanging man: five rising bars then a hammer-shaped bar - True
+    rise = [(100, 101, 99.5, 100.5), (100.5, 101.5, 100, 101),
+            (101, 102, 100.5, 101.5), (101.5, 102.5, 101, 102),
+            (102, 103, 101.5, 102.5)]
+    hm_bar = (102.5, 102.55, 100.2, 102.4)  # tiny body+upper wick, long lower wick
+    r = compute_candles(frame(rise + [hm_bar]))
+    assert r["hanging_man"] is True, r
+    # the same shape after a DECLINE is a hammer context, not a hanging man
+    fall = [(103, 103.5, 102, 102.5), (102.5, 103, 101.5, 102),
+            (102, 102.5, 101, 101.5), (101.5, 102, 100.5, 101),
+            (101, 101.5, 100, 100.5)]
+    r2 = compute_candles(frame(fall + [hm_bar]))
+    assert r2["hanging_man"] is False, r2
+
+    # dark cloud cover: bullish bar then open above its high, close below
+    # the body midpoint yet above its open - True
+    dcc = [(100, 101, 99, 100)] * 4 + [(100, 104, 99.5, 103.5),
+                                       (104.5, 105, 101, 101.2)]
+    r3 = compute_candles(frame(dcc))
+    assert r3["dark_cloud_cover"] is True, r3
+    # close BELOW the prior open = full engulfing territory, not DCC
+    dcc_deep = dcc[:-1] + [(104.5, 105, 99, 99.5)]
+    assert compute_candles(frame(dcc_deep))["dark_cloud_cover"] is False
+
+    from backtest.signals.screener import strat_shooting_star_short
+    ctx = {"near_r1": True, "rsi_14": 70, "borrow_ok": True}
+    r4 = strat_shooting_star_short({**ctx, "hanging_man": True})
+    assert r4["fires"] is True and r4["direction"] == "short"
+    r5 = strat_shooting_star_short({**ctx, "dark_cloud_cover": True})
+    assert r5["fires"] is True and r5["direction"] == "short"
+    assert strat_shooting_star_short(ctx)["fires"] is False, (
+        "context without any reversal pattern must not fire")
