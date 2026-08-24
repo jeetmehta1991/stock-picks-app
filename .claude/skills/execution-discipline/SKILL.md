@@ -614,6 +614,12 @@ that ENFORCES it.**
 **Any turn editing this file or CHECKLIST.md also touches `verify_turn_compliance.py` or
 `test_unit.py`** — or writes **PROSE-ONLY** with the reason no mechanism is possible.
 
+**B2129 / L628 — THE UNADDRESSED CLAIM CAN ARRIVE THROUGH A QUEUE ROW, NOT ONLY A DOC EDIT.**
+I promoted a rule into this file and recorded it in a ticket row naming no pin. `#231`'s own
+check PASSED (the pin landed in the same batch), while the ROW still claimed a rule with no
+address - `#264`, caught a close later. **Pin the promotion in the same batch AND name the pin
+in the row.** `test_b2123` asserts the clause survives, so a promotion is checkable, not asserted.
+
 **Companion, and the subtler half: a gate that checks a CATEGORY was touched does not check that
 every MEMBER was handled.** `#225` fired only on an UNTOUCHED queue, so one ticket satisfied a turn
 carrying several findings. **Whenever a rule says "each" or "every", the gate must COUNT, not merely
