@@ -13860,3 +13860,14 @@ noise by the number of gates, and each retry re-emits every mandatory block.
 
 **Detection signal that existed:** the second consecutive block. One block is a miss; two is a
 pattern, and the pattern's remedy is documented in the file that arrives every turn.
+
+**L628 addendum (B2129c): the trigger clause is pinned, and the #264 sub-miss it produced.**
+The skill edit that gave the run-the-gate rule its trigger was first recorded in a queue row
+that claimed shipped code and named no checkable artifact - the #264 class, caught by the gate
+one close later. Now addressed: the clause is asserted present by
+test_b2123_session_rules_survive_in_the_always_read_skills (fragment "RUNNING IT YOURSELF IS
+MANDATORY, NOT", gutted-arm count 10 -> 11, full pyramid 1149 passed + 3 skipped). The pattern
+worth keeping: a rule promoted into the always-loaded skill needs its pin IN THE SAME batch, or
+the promotion itself becomes an unaddressed claim - which is the same disappearance-in-slow-
+motion that #234's mechanism member exists to prevent, arriving through a queue row instead of
+a doc edit.
