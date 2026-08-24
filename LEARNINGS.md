@@ -13895,3 +13895,12 @@ success is load-bearing for a commit message.
 **Detection signal that existed:** the AssertionError printed in the same output as the commit
 hash. Two lines apart, on screen, and I read past it to the push confirmation - the same
 read-past-the-tell that L520 (verify the ARTIFACT, not the exit code) exists to stop.
+
+**L629 addendum (B2129h): the bullet's trigger was the defect, not its instance list.** The
+skill's B1993d bullet already carried two instances when I broke it a third time, so adding a
+third would have been bookkeeping. What it LACKED was the trigger: it framed the rule around
+edits and checks - the two shapes that had bitten - while the real condition is any step whose
+failure would invalidate a LATER step. That is now the bullet's wording, with the recurrence
+diagnosis attached (I chain when thinking about the COMMIT, and both prior instances failed at
+an earlier step I was not thinking about). Anchor read from the live file before editing and
+the edit &&-chained to its commit, so the fix could not repeat the failure it fixes.
