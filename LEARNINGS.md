@@ -14244,3 +14244,27 @@ site (:934), and the three paired checkpoint writers (:973, :1037, :1092) govern
 inherit the identical defect.** There is NO writer in the engine's runtime path that reaches disk
 independently of the loop. So the fix cannot be special-cased to the cap: one supervisor outside
 the loop must both bound wall-clock and emit the heartbeat, or six siblings stay open.
+
+
+## L638 — Three exact-match edit routes failed on one patch; address by line instead (B2145)
+
+**What happened:** Editing one helper in `test_unit.py` took four attempts. A shell heredoc
+collapsed `\s` to `s` in a regex TWICE (the S6-B1523a escape class). The Edit tool then refused
+the same text three times — "String to replace not found" — because the file is CRLF while the
+Read view presents LF. The patch only landed when written as a scratchpad script that located the
+helper by its `def` line and replaced a LINE RANGE.
+
+**And the thing being patched had its own version of the same trap:** a regex alternation
+(`if\s+(i\s*[><=%]|_should_checkpoint)`) matched all seven sites in a direct probe and only three
+of them from inside the test. Rather than debug it, I replaced it with two explicit substring
+checks. The pattern was cleverness worth less than its debugging cost.
+
+**Rule (compliance failure against L509 and the S6-B1523a escape class — no new item):**
+after ONE failed exact-match edit, switch route rather than retry: locate by a stable anchor
+(a `def` line, a unique identifier) and replace by line range from a script file. Never pass
+regexes or backslash-bearing code through a shell heredoc. And in test helpers that scan source,
+prefer explicit substring checks over regex alternations — a scanner that behaves differently in
+two contexts is worse than a verbose one that behaves the same everywhere.
+
+**Cost:** four attempts, three tool routes, on a patch whose content was settled from the first
+attempt. The content was never the problem; the transport was.
