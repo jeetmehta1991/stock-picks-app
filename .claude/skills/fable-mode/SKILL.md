@@ -31,6 +31,7 @@ Never design from memory of what a file, API, or dataset "probably" looks like. 
 - Attack the load-bearing unknowns first, with the cheapest probe. A 30-second read of the real data beats an hour of building on a guess.
 - Prefer a thin end-to-end pass over a complete first stage. Get one item through the whole pipeline and verify it before scaling to all items.
 - Keep a live plan for anything with 3+ steps. Slice by dependency, not by category: each step's output feeds the next. The plan is a hypothesis, not a contract.
+- A field, flag, or doc line claiming a property is a claim, not the property. `isolation: true` in a config, a docstring saying "enforced", a filename saying "final" - find the code that reads it and acts on it, or treat the property as absent. Measured: a run manifest declared isolation for months while the launcher ran from the live working tree; nothing anywhere consumed the field.
 
 ### Gate 3 — Reason adversarially
 
@@ -41,6 +42,7 @@ Before committing to an answer, switch roles and try to kill it.
 - Steelman the existing thing before changing it. Assume it was built that way for a reason and name the reason; if a plausible one exists, respect it.
 - When reviewing, finding nothing wrong is a legitimate result. "Already solid" beats an invented problem; never manufacture findings to look thorough.
 - Re-decide after every result. Each tool result either confirms the plan or changes it; ask which, every time. The failure mode is momentum: executing step 4 of a plan that step 2's output already invalidated.
+- A consequence you assert is a claim, and it carries a measurement's burden. "Carrying two instead of one mitigates that risk", "this costs nothing", "re-running wouldn't have helped" - each is quantitative reasoning wearing prose's clothes. Compute it before it reaches the report, usually from a file you already have open. Check which way the error would point: the consequence that supports what you already decided is the one you are least likely to test.
 - Two failed attempts at the same fix means the diagnosis is wrong. Stop patching, find the assumption underneath both attempts, and test that assumption directly.
 
 ### Gate 4 — Verify before declaring done
@@ -51,6 +53,8 @@ Before committing to an answer, switch roles and try to kill it.
 - Use evidence you didn't generate. Re-open the file you wrote. Run the code. Screenshot the page and read the screenshot. Diff before against after. Count the things you claimed to count.
 - Re-check against the original request and the standing rules from Gate 1. Did you build what was asked, and did you follow the rules you loaded?
 - Sample the tails, not just the middle: first item, last item, weirdest item. Happy-path spot checks hide the failures that matter.
+- A check that cannot stop the thing it checks is decoration. If a verification and the action depending on it run in one breath - same command, no branch on the result - the action was never gated. Read the result first, or chain so a failure blocks it. A presence-check needs to assert its match count, because "found nothing" and "looked wrong" exit identically.
+- Fixtures rot toward passing. A test that plants its own inputs keeps passing after the real path stops producing them - it now tests nothing, in green. When a code path changes, re-check what its tests actually feed it, not just that they still pass.
 - Treat good news as suspect. A test that passes too easily or an all-clean sweep means the verification is broken until you can explain why the result is real.
 - Zero-context test for anything user-facing: would someone with none of this session's context understand it and be able to act on it?
 
@@ -73,6 +77,7 @@ The report is part of the work, not an afterthought.
 - Sort actions by reversibility. Reversible and in scope: just do it. Irreversible, outward-facing (sending, posting, deleting, paying), or a scope change: stop and confirm.
 - Unblock yourself before escalating: read more, search more, try another route. Escalate only for decisions the user genuinely owns, and bundle the questions.
 - Mechanical work repeating 3+ times gets a script, not per-instance reasoning. Reasoning is for judgment; scripts are for repetition.
+- A running process holds the code it loaded at launch. Editing a file changes the next run, not the one in flight - and within a running job only the parts loaded fresh (a subprocess, a re-import) pick up the change. Before claiming a fix reaches something already running, say which layer loads when.
 - Preserve by default. When editing something that exists, touch only what the task requires; deleting substantive content needs explicit approval.
 
 ## Smells that mean a gate got skipped
@@ -83,6 +88,8 @@ The report is part of the work, not an afterthought.
 - Your last three actions came from the original plan with no check against intermediate results. (Gate 3)
 - You're about to report done and the evidence is your intention, not an observation. (Gate 4)
 - A result came back surprisingly clean and you moved on without asking why. (Gate 4)
+- You're about to state a consequence - "that would cost X", "this mitigates Y" - and the arithmetic isn't done. (Gate 3)
+- Your verification and the action it was supposed to gate ran in the same breath. (Gate 4)
 - You can't say in one sentence what done looks like. (Gate 1)
 
 Any one of these: stop, go back to that gate.

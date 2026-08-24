@@ -24818,3 +24818,52 @@ def test_b2120_time_stop_exception_logs_and_keeps_trade(monkeypatch, caplog):
             still_open, {"AAPL": bar}, _d(2024, 1, 11), 20.0, "bull", {}, [])
     n_after = len([r for r in caplog.records if "time-stop check failed" in r.message])
     assert n_after == n_before, "warning must be one-shot per strategy"
+
+
+def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[str]:
+    """B2123: the diagnostics that must survive in the two always-read skills.
+
+    Pinning the RULE alone is trivia (L548) - each entry names the DIAGNOSTIC
+    a future reader needs, so a doc edit that keeps the heading and drops the
+    substance still fails.
+    """
+    missing = []
+    for frag, why in (
+        ("carries a measurement's burden", "L622: asserted consequence is a claim"),
+        ("cannot stop the thing it checks", "L623: ungated verification"),
+        ("assert its match count", "L623: a zero-hit grep exits like a wrong grep"),
+        ("Fixtures rot toward passing", "B2114: planted-key fixtures went vacuous"),
+        ("code it loaded at launch", "B2121: mid-flight edit does not reach a running job"),
+        ("treat the property as absent", "B2122: isolation:true with no enforcer"),
+    ):
+        if frag not in fable_text:
+            missing.append(f"fable-mode lost [{why}]: {frag!r}")
+    for frag, why in (
+        ("second instance L623/B2122", "the B1993d bullet must name both instances"),
+        ("presence-grep must assert its match count",
+         "the check-shaped variant of the sibling-chain rule"),
+    ):
+        if frag not in discipline_text:
+            missing.append(f"execution-discipline lost [{why}]: {frag!r}")
+    return missing
+
+
+def test_b2123_session_rules_survive_in_the_always_read_skills():
+    """B2123 (#231 mechanism for the B2122e/fable-mode edits): durability.
+
+    JUDGMENT-ONLY for DETECTION (no scan knows whether a method rule is being
+    FOLLOWED); this pins the other half - that the rules cannot silently
+    vanish from the files that are read every turn (L548's two questions).
+    """
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[2]
+    fable = (root / ".claude" / "skills" / "fable-mode" / "SKILL.md").read_text(
+        encoding="utf-8")
+    disc = (root / ".claude" / "skills" / "execution-discipline" / "SKILL.md").read_text(
+        encoding="utf-8")
+    assert _b2123_skill_rules_present(fable, disc) == []
+    # #226 prove-it-can-fail: a gutted file must be REPORTED, not pass
+    gutted = _b2123_skill_rules_present("# The Fable Method\n", "# Discipline\n")
+    assert len(gutted) == 8, gutted
+    assert any("fable-mode lost" in m for m in gutted)
+    assert any("execution-discipline lost" in m for m in gutted)
