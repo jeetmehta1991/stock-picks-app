@@ -2584,6 +2584,12 @@ miss-capture.
   matcher is on the wrong rung and no amount of adding fixes it.**
 - **When a marker list is fixed, sweep EVERY other list in the same file that turn.** 18 lists, 13
   unstemmed - found only when the owner asked a fourth time.
+- **WHEN A SWEEP FINDS EVERY INSTANCE CORRECT, THE FIX BELONGS UPSTREAM (B2140 / L638).** I swept
+  a dated fact ("26 exits per entry") across the queue and the ledger: 6 occurrences, ALL
+  legitimate historical records of pre-deprecation cubes. The instinct is to report "no siblings,
+  nothing to do" and stop. **But something WAS wrong** - my present-tense SUMMARY of one of them,
+  which is upstream of every record. A clean sweep does not mean a clean class; it relocates the
+  defect from the artifacts to how they are QUOTED, and that is where the fix goes.
 - **A fix applied to the instance in front of you is not applied to the class. Stating a class is
   not sweeping it.**
 
