@@ -13946,3 +13946,29 @@ skill rule added today is pinned, none unguarded - but the count did not, which 
 #256's shape: a figure repeated rather than re-derived. Corrected in the same message it was
 noticed. The habit that closes it is L593's: put the measuring code IN the artifact that states
 the number, rather than writing the number beside a separate probe.
+
+## L631 — I claimed pin coverage from the pin's side and never diffed what I had added (B2130)
+
+**What happened:** I reported "every skill rule added today is pinned, none unguarded" after
+parsing test_b2123's fragment list (5 fragments) and cross-checking it against my RECALL of
+what I had added. A diff of today's actual SKILL.md changes shows 8 rule-bearing added lines
+and 3 of 8 covered. Five are unpinned: the #231 queue-row failure mode, the L627 provenance
+extension, the launch-the-engine tripwire row, the L625 all-clear extension, and the C7
+correction row. Retracted the moment the diff ran.
+
+**Root cause: I enumerated the WRONG SIDE of the pairing.** Reading the pin tells you what is
+covered; it cannot tell you what EXISTS to cover. The population lives in the artifact being
+guarded, not in the guard - so coverage must be computed as "added rules MINUS pinned
+fragments", and I computed "pinned fragments, do they look complete". Same shape as L625, where
+an enforcement audit's corpus included the writer instead of the consumers: both times I took
+the enumeration from the side that was convenient rather than the side that defines the set.
+
+**Rule (compliance failure against #279's both-directions requirement and #270 — no new item):**
+a coverage claim enumerates the GUARDED population first, from its own artifact (here: the diff
+of what was added), then subtracts the guard's members. Never assert coverage from the guard's
+list alone. The reverse check is the one that finds the gap, which is exactly what #279 says
+about exclusion registers and what I did not carry to pins.
+
+**Detection signal that existed:** the fragment count itself. I had just corrected 4-to-5 on
+that same list one message earlier, which proves I was reasoning about the guard rather than
+the population - and a count that needs correcting is a count whose set was never defined.
