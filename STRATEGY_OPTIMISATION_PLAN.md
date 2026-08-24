@@ -460,7 +460,9 @@ Rendered by `scripts/producer_variant_table.py`; header pinned by
 `test_b1510_producer_artifact_standard` alongside Tables A and B. It answers ONE question:
 of everything this config tried, how much survived, and where did the rest stop?
 
-| config | combos | starved-IS | no-Sharpe | graded | distinct | bands | best Sharpe | best CI-lo | best combination |
+| config | combos | starved-IS | no-Sharpe | graded | distinct | bands | P1-P6 bands tested | best IS-Sharpe | best IS-CI-lo | best combination |
+
+**P1-P6 IN THE ROW (B2138, owner directive).** The funnel row itself carries `P1=20(fixed) P2=2 P3=6 P4=5 P5=5 P6=200(fixed)` - a count for each SEARCHED axis and the fixed VALUE for the two cross-config axes - so a pasted row says which axes carried the search without a second table. P1 and P6 are read from the artifact's own `config` block, which `tighten_breaker_block.py` has recorded since B2138; before that they were written NOWHERE, which is why a swing-10 cube could be re-graded as swing-20 (S6-B2136) and why pre-B2138 artifacts read `?` there.
 
 The columns are the funnel **in order**, because every drop-off has a different cause and
 lumping them hides which one is binding: `combos` = every parameter combination enumerated;

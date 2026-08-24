@@ -276,8 +276,8 @@ def table_c(grids: dict[str, dict]) -> list[str]:
             "confidence interval, which is what `best` ranks on - a higher "
             "Sharpe can carry a NEGATIVE lower bound (L455)._",
             "",
-            "| config | combos | starved-IS | no-Sharpe | graded | distinct | bands | best IS-Sharpe | best IS-CI-lo | best combination |",
-            "|---|---|---|---|---|---|---|---|---|---|"]
+            "| config | combos | starved-IS | no-Sharpe | graded | distinct | bands | P1-P6 bands tested | best IS-Sharpe | best IS-CI-lo | best combination |",
+            "|---|---|---|---|---|---|---|---|---|---|---|"]
     for name, g in grids.items():
         res = g.get("results", [])
         graded = [r for r in res if r.get("sharpe") is not None]
@@ -335,12 +335,30 @@ def table_c(grids: dict[str, dict]) -> list[str]:
                 cl = f"HOLDOUT {_measured_fmt(top.get('ci_lo'))}"
         else:
             combo, sh, cl = "-", "-", "-"
+        # B2138, owner directive: P1..P6 IN the table itself, one cell, so a
+        # pasted row carries which axes were searched. P1/P6 come from the
+        # artifact's own `config` block (recorded since B2138); an artifact
+        # without it reads `?` for those two rather than a number, because the
+        # cross-config axes were written nowhere before that (S6-B2136).
+        cfg = g.get("config") or {}
+        p_cells = []
+        for pid, nm in P_AXES:
+            if pid == "P1":
+                v = cfg.get("P1_swing_length")
+            elif pid == "P6":
+                v = cfg.get("P6_span")
+            else:
+                v = len(axes.get(nm, ())) or None
+            p_cells.append(f"{pid}={v if v is not None else '?'}"
+                           + ("(fixed)" if pid in ("P1", "P6") and v is not None else ""))
+        p_col = " ".join(p_cells)
         rows.append(f"| `{name}` | {len(res)} | {len(no_exit)} | {len(no_sh)} | {len(graded)} | "
-                    f"{g.get('step1_distinct_outcomes', '-')} | {_measured_fmt(bands)} | {sh} | {cl} | {combo} |")
+                    f"{g.get('step1_distinct_outcomes', '-')} | {_measured_fmt(bands)} | {p_col} | "
+                    f"{sh} | {cl} | {combo} |")
         if other:
-            rows.append(f"| | | | | | | | | | **UNCLASSIFIED {other} rows - the funnel does not "
+            rows.append(f"| | | | | | | | | | | **UNCLASSIFIED {other} rows - the funnel does not "
                         f"reconcile, do not trust this row** |")
-        per_config_axes[name] = axes
+        per_config_axes[name] = (axes, cfg)
 
     # B2137, owner directive: PARAMETERS TESTED - the P1..P6 bands each config
     # actually exercised, by P-id, so a reader can see WHICH axes carried the
@@ -351,14 +369,23 @@ def table_c(grids: dict[str, dict]) -> list[str]:
              "from the result rows themselves. `1 value` = the axis was PINNED and contributed "
              "no search; an axis absent from the artifact reads `not recorded`, never `1`. "
              "**P1 `swing_length` and P6 `span` are the CROSS-CONFIG axes** - they define which "
-             "config a cube IS, are held fixed within it, and are NOT written into the grid "
-             "artifact (S6-B2136: the grader defaults swing_length to 20, so a cube run at 10 "
-             "re-grades wrong unless the value is recovered from the run log).", "",
+             "config a cube IS and are held FIXED within it, so they show a value rather than "
+             "a count. Recorded in the artifact since B2138; anything graded before that reads "
+             "`not recorded`, which is what let a swing-10 cube be re-graded as swing-20 "
+             "(S6-B2136).", "",
              "| config | " + " | ".join(f"{pid} {nm}" for pid, nm in P_AXES) + " |",
              "|---|" + "---|" * len(P_AXES)]
-    for name, axes in per_config_axes.items():
+    for name, (axes, cfg) in per_config_axes.items():
         cells = []
         for pid, nm in P_AXES:
+            # B2138: P1/P6 come from the artifact's config block - the SAME
+            # source the in-table column uses. Reading them from `axes` made
+            # the block print "not recorded" while the column printed the
+            # value, so one render contradicted itself.
+            if pid in ("P1", "P6"):
+                cv = cfg.get("P1_swing_length" if pid == "P1" else "P6_span")
+                cells.append(f"FIXED at {cv}" if cv is not None else "not recorded")
+                continue
             vals = axes.get(nm)
             if not vals:
                 cells.append("not recorded")

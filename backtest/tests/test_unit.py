@@ -13723,7 +13723,8 @@ def test_b1510_producer_artifact_standard():
     src_c = (_P(__file__).resolve().parents[2] / "scripts"
              / "producer_variant_table.py").read_text(encoding="utf-8")
     header_c = ("| config | combos | starved-IS | no-Sharpe | graded | distinct "
-                "| bands | best IS-Sharpe | best IS-CI-lo | best combination |")
+                "| bands | P1-P6 bands tested | best IS-Sharpe | best IS-CI-lo "
+                "| best combination |")
     assert header_c in src_c, (
         "TABLE C header drifted from the locked B1898 column set. The columns "
         "are the funnel IN ORDER; renaming or reordering changes what a pasted "
@@ -13740,6 +13741,12 @@ def test_b1510_producer_artifact_standard():
         "a pre-B2010 artifact with no in-sample key must be MARKED as holdout-"
         "selected, not silently reported as 'best'")
     # B2137: the Parameters-tested block and the bands source
+    # B2138: P1..P6 live IN the table row, sourced from the artifact's config
+    # block for the cross-config axes.
+    assert 'cfg.get("P1_swing_length")' in src_c and 'cfg.get("P6_span")' in src_c, (
+        "TABLE C must read P1/P6 from the artifact's own config block - they "
+        "were written nowhere before B2138, which is why a swing-10 cube could "
+        "be re-graded as swing-20")
     assert "**Parameters tested**" in src_c, (
         "TABLE C must carry the Parameters-tested block naming the P1..P6 bands "
         "each config exercised - a bands COUNT says how many, not which")

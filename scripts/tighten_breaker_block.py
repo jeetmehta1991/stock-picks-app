@@ -167,6 +167,12 @@ def main() -> int:
     # fires cannot reproduce and are DROPPED. cfg2 ran sw=10, was graded at
     # the hardcoded 20, and lost 167 of 420 fires - a biased 60pct
     # subsample, not a random one.
+    ap.add_argument("--span", type=int, default=None,
+                    help="STRAT_EMA_SPAN the CUBE was generated with (P6). "
+                         "RECORDED into the artifact, not used to re-derive - "
+                         "B2138: P1/P6 are the CROSS-CONFIG axes and were "
+                         "absent from every grid, so a re-grade could not know "
+                         "which config it was grading (S6-B2136).")
     ap.add_argument("--swing-length", type=int, default=20,
                     help="SMC_SWING_LENGTH the CUBE was generated with")
     # S6-B1584c (owner ruling 2026-08-15): Step 1 ranks on 100 tickers x 2y,
@@ -460,6 +466,12 @@ def main() -> int:
     Path(a.out).parent.mkdir(parents=True, exist_ok=True)
     Path(a.out).write_text(json.dumps(
         {"strategy": STRATEGY, "r5_baseline_fires": len(fires),
+         # B2138 (S6-B2136 / owner directive): record the CROSS-CONFIG axes in
+         # the artifact itself. P1 swing_length and P6 span define WHICH config
+         # a cube is; they were written nowhere, so every grid was ambiguous
+         # about its own identity and the grader's swing default of 20 silently
+         # re-graded a swing-10 cube as if it were swing-20.
+         "config": {"P1_swing_length": a.swing_length, "P6_span": a.span},
          # B1517: was len(diags) which, after close_mitigation became the outer
          # key, reported 2 (the number of flag values) instead of the fire count.
          "diagnosed": {str(k): len(v) for k, v in diags.items()},
