@@ -195,7 +195,20 @@ batch-1 traps. Each rule retroactively catches >=2 real past misses (#136).
    find a guard sharing its subject's control flow, sweep for its siblings before
    fixing it: the fix is one supervisor outside the loop, not seven patches.
 
-5. **FRESH-EYES REVIEW CADENCE (standing).** Before every batch-size
+5. **AFTER ONE FAILED EXACT-MATCH EDIT, CHANGE ROUTE (L638/B2145).** A patch
+   whose content is settled can still cost four attempts to land. MEASURED in one
+   session: a shell heredoc collapsed regex escapes TWICE, then the Edit tool
+   refused the identical text THREE times because the file is CRLF while the Read
+   view renders LF. It landed only as a scratchpad script that located the target
+   by its `def` line and replaced a LINE RANGE. So: never pass backslash-bearing
+   code through a heredoc; after ONE failed exact match, stop matching and address
+   by anchor plus line range from a script file; and in source-scanning helpers
+   prefer explicit substring checks to regex alternations — the alternation in
+   that same patch matched 7 sites in a direct probe and 3 from inside the test.
+   **When the transport keeps failing, the content is not the problem — stop
+   re-sending it and change how it travels.**
+
+6. **FRESH-EYES REVIEW CADENCE (standing).** Before every batch-size
    escalation (or every ~10 batches of a sequence), an adversarial review of
    the accumulated work runs with fresh eyes — a different model or a cold
    pass that re-derives claims from code/data rather than summaries. The

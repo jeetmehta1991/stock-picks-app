@@ -600,6 +600,120 @@ class BacktestEngine:
         kwargs = {k: v for k, v in kwargs.items() if k in valid_fields}
         return ClosedTrade(**kwargs)
 
+    def _start_run_supervisor(self) -> None:
+        """B2148 (S6-B2143a/b, L637): a watchdog that shares NO control flow
+        with the day loop.
+
+        THE DEFECT IT CLOSES, measured: a 2.5h cap ran to 2.9h with no kill,
+        no warn and no checkpoint, because every guard and every writer in
+        this engine is evaluated at the top of a sim-day iteration - seven of
+        them - and one long iteration silences all seven at once. Even the
+        30-minute checkpoint trigger, added so progress would survive, is
+        read once per simulated day.
+
+        This thread samples wall-clock on its own schedule. It writes a
+        HEARTBEAT every interval so any session (or none) can read progress
+        from disk, and it hard-exits when max_run_hours is exceeded no matter
+        where the main loop is. Daemon=True so it can never hold the process
+        open.
+        """
+        import json as _sj
+        import os as _so
+        import threading as _st
+        import time as _stime
+
+        if self.max_run_hours is None and not self.output_dir:
+            return
+        interval = float(getattr(self, "supervisor_interval_s", 30.0))
+        hb_path = Path(self.output_dir) / "run_heartbeat.json"
+
+        def _supervise() -> None:
+            while True:
+                _stime.sleep(interval)
+                try:
+                    elapsed_h = ((_stime.time() - self._run_start_time) / 3600.0
+                                 if self._run_start_time else 0.0)
+                    beat = {
+                        "elapsed_hours": round(elapsed_h, 4),
+                        "sim_day_index": getattr(self, "_last_sim_day_index", -1),
+                        "sim_date": str(getattr(self, "_last_sim_date", "")),
+                        "closed_trades": len(self.closed_trades),
+                        "open_trades": len(self.open_trades),
+                        "max_run_hours": self.max_run_hours,
+                        "pid": _so.getpid(),
+                        "timestamp": _stime.strftime("%Y-%m-%dT%H:%M:%SZ",
+                                                     _stime.gmtime()),
+                        "source": "supervisor_thread",
+                    }
+                    tmp = hb_path.with_suffix(".json.tmp")
+                    tmp.write_text(_sj.dumps(beat, indent=1))
+                    _so.replace(tmp, hb_path)
+                except Exception as _hb_exc:      # never kill the watchdog
+                    logger.warning("B2148 heartbeat write failed: %r", _hb_exc)
+                try:
+                    if (self.max_run_hours is not None
+                            and self._run_start_time
+                            and (_stime.time() - self._run_start_time)
+                            >= self.max_run_hours * 3600.0):
+                        logger.error(
+                            "B2148 SUPERVISOR KILL: elapsed_hours=%.2f >= "
+                            "max_run_hours=%s - the day loop did not reach a "
+                            "boundary, so the in-loop cap could not fire. "
+                            "Flushing state and hard-exiting.",
+                            (_stime.time() - self._run_start_time) / 3600.0,
+                            self.max_run_hours,
+                        )
+                        self._emit_kill_state("supervisor_wall_time_kill")
+                        _so._exit(1)
+                except Exception as _k_exc:
+                    logger.error("B2148 supervisor kill path failed: %r", _k_exc)
+
+        t = _st.Thread(target=_supervise, name="b2148_run_supervisor",
+                       daemon=True)
+        t.start()
+        self._supervisor_thread = t
+        logger.info(
+            "B2148 supervisor armed: interval=%.0fs cap=%s heartbeat=%s "
+            "(shares no control flow with the day loop)",
+            interval, self.max_run_hours, hb_path,
+        )
+
+    def _emit_kill_state(self, status: str) -> None:
+        """Write engine_state.json from OUTSIDE the day loop (B2148).
+
+        The in-loop writers cannot run when an iteration is long; this one is
+        callable from the supervisor thread at any moment.
+        """
+        import json as _ej
+        import os as _eo
+        import time as _et
+        try:
+            state = {
+                "simulated_day": getattr(self, "_last_sim_day_index", -1),
+                "cells_completed": len(self.closed_trades),
+                "status": status,
+                "sim_date": str(getattr(self, "_last_sim_date", "")),
+                "sim_day_index": getattr(self, "_last_sim_day_index", -1),
+                "tickers_processed": len(getattr(self, "_last_universe", []) or []),
+                "trades_so_far": len(self.closed_trades),
+                "open_trades": len(self.open_trades),
+                "timestamp": _et.strftime("%Y-%m-%dT%H:%M:%SZ", _et.gmtime()),
+                "pid": _eo.getpid(),
+            }
+            d = Path(self.output_dir)
+            tmp, final = d / "engine_state.json.tmp", d / "engine_state.json"
+            tmp.write_text(_ej.dumps(state, indent=2))
+            _eo.replace(tmp, final)
+            if self.closed_trades:
+                import pandas as _epd
+                _epd.DataFrame([vars(t) for t in self.closed_trades]).to_csv(
+                    d / "trade_log_checkpoint.csv", index=False)
+            logger.error("B2148 %s state flushed: day=%s trades=%d",
+                         status, state["sim_day_index"], state["trades_so_far"])
+        except Exception as _exc:
+            logger.error("B2148 kill-state flush FAILED: %r - this run is NOT "
+                         "resumable", _exc)
+
     def _load_resume_checkpoint(self):
         """B1076 Council 191 Option 1: load engine_state.json +
         trade_log_checkpoint.csv from self.resume_from_checkpoint dir.
@@ -791,6 +905,10 @@ class BacktestEngine:
         # caveat; documented in CLI help). HALT on schema mismatch.
         if self.resume_from_checkpoint:
             self._load_resume_checkpoint()
+
+        # B2148: arm the out-of-loop supervisor BEFORE the
+        # first iteration, so a pathological day 0 is still bounded.
+        self._start_run_supervisor()
 
         for i, as_of in enumerate(trading_days):
             # B1076 Council 191 Option 1: skip iterations already completed

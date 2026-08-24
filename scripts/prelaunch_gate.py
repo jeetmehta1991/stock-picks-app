@@ -80,6 +80,7 @@ def advisories(manifest: dict) -> list[str]:
 
 def check(manifest: dict, ledger: dict, tar_sha: str) -> list[str]:
     fails = []
+    fails += check_supervisor_and_cap(manifest)   # B2149 run-safety checks
     local_run = str(manifest.get("execution", "")).upper() == "LOCAL"
     for k in REQUIRED:
         # B1488: a LOCAL run selects its universe through the tier loader rather than an
@@ -144,6 +145,50 @@ def _universe_label(manifest: dict) -> str:
     if isinstance(u, dict):
         return "universe:" + str(u.get("tier", "?"))
     return "universe:" + (str(u) if u else "?")
+
+
+OWNER_LOCAL_CAP_HOURS = 5.0   # owner ruling 2026-08-24 (was 3.0)
+
+
+def check_supervisor_and_cap(manifest: dict) -> list[str]:
+    """B2149 (owner directive): the run-safety checks, evaluated BEFORE launch.
+
+    These exist because a run went 2.9h against a 2.5h cap with no kill, no
+    warning and no checkpoint - every guard in the engine was evaluated at a
+    day boundary the loop never reached (L637). A gate that runs before the
+    launch is the only place these can be checked while it is still cheap.
+    """
+    import re as _re
+    probs = []
+    eng = Path(__file__).resolve().parent.parent / "backtest" / "engine" / "backtest.py"
+    src = eng.read_text(encoding="utf-8", errors="replace")
+
+    # (a) the engine must carry the out-of-loop supervisor (B2148). Without it
+    #     the cap is only as good as the loop's willingness to reach a boundary.
+    if "_start_run_supervisor" not in src or "b2148_run_supervisor" not in src:
+        probs.append(
+            "engine has NO out-of-loop supervisor (B2148): the wall-clock cap "
+            "and the heartbeat would both depend on the day loop reaching a "
+            "boundary, which is the L637 defect. Refusing to launch.")
+
+    # (b) the heartbeat must be written from the supervisor, not a milestone
+    if "run_heartbeat.json" not in src:
+        probs.append(
+            "engine writes no run_heartbeat.json: progress would be visible "
+            "only through a session-held watcher, which dies with the session "
+            "(S6-B2143b). Refusing to launch.")
+
+    # (c) the declared leg cap must respect the owner's standing local cap
+    cap = manifest.get("leg_cap_hours") or manifest.get("max_run_hours")
+    if cap is None:
+        basis = str(manifest.get("wall_clock_projection_basis", ""))
+        m = _re.search(r"chunked at ([\d.]+)h legs", basis)
+        cap = float(m.group(1)) if m else None
+    if cap is not None and float(cap) > OWNER_LOCAL_CAP_HOURS:
+        probs.append(
+            f"leg cap {cap}h exceeds the owner's standing local cap of "
+            f"{OWNER_LOCAL_CAP_HOURS}h (ruling 2026-08-24). Refusing to launch.")
+    return probs
 
 
 def main() -> int:

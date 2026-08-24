@@ -24937,6 +24937,8 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
          "L634: the predicate excluded the turn type that generates findings"),
         ("A GUARD MUST NOT SHARE THE CONTROL FLOW IT GUARDS",
          "L637: a loop-top cap bounds iterations, not wall-clock"),
+        ("AFTER ONE FAILED EXACT-MATCH EDIT, CHANGE ROUTE",
+         "L638: the transport failed, not the content"),
         ("SEARCH THE CLASS, NOT THE CONSEQUENCE",
          "L635: only the corpus search establishes novelty"),
         ("Peeking is a BEST-CASE procedure",
@@ -24969,7 +24971,7 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     assert _b2123_skill_rules_present(fable, disc) == []
     # #226 prove-it-can-fail: a gutted file must be REPORTED, not pass
     gutted = _b2123_skill_rules_present("# The Fable Method\n", "# Discipline\n")
-    assert len(gutted) == 28, gutted
+    assert len(gutted) == 29, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -25199,9 +25201,19 @@ def test_b2132_wall_time_cap_is_checked_every_day_not_every_20():
         "progress LOG line may stay on the 20-day cadence.")
     # the elapsed value it reads must also be computed outside that guard
     assert "elapsed_h = elapsed_s / 3600.0" in src
-    kill_line = min(n.lineno for n in kill_nodes)
-    elapsed_line = src[:src.index("elapsed_h = elapsed_s / 3600.0")].count("\n") + 1
-    assert elapsed_line < kill_line, "elapsed must be computed before the check"
+    # B2151: scope to the DAY LOOP. B2148 added a SECOND kill site - the
+    # out-of-loop supervisor - which appears EARLIER in the file, so a
+    # min-lineno comparison now reads the wrong pair. The property pinned
+    # here concerns the IN-LOOP check.
+    loop_elapsed = src.index("elapsed_s = (time.time() - self._run_start_time")
+    loop_kill = src.index("Batch 394 WALL-TIME KILL")
+    assert loop_elapsed < loop_kill, (
+        "in the day loop, elapsed must be computed before the kill check")
+    # and the out-of-loop supervisor kill must EXIST (B2148/L637): the
+    # in-loop cap alone cannot bound a run whose day never ends.
+    assert "B2148 SUPERVISOR KILL" in src, (
+        "the out-of-loop supervisor kill is gone - the in-loop cap alone "
+        "cannot bound a run whose sim-day never returns (L637)")
 
 
 def test_b2132_launch_refuses_when_the_window_contradicts_the_manifest(tmp_path):
@@ -25310,3 +25322,107 @@ def test_b2145_no_new_loop_gated_writer_without_a_supervisor():
     assert "if (self.max_run_hours is not None" in _src, (
         "the wall-time cap moved; re-derive whether it still shares the day "
         "loop's control flow (L637)")
+
+
+def test_b2148_supervisor_kills_a_run_whose_day_never_ends(tmp_path):
+    """B2148 (S6-B2143a/b, L637): the watchdog shares no control flow with
+    the day loop, so it bounds wall-clock even when an iteration hangs.
+
+    THE MEASURED DEFECT: a 2.5h cap ran to 2.9h with no kill, no warn and no
+    checkpoint, because all seven guards/writers in this engine are evaluated
+    at the top of a sim-day iteration. This drives that exact shape - a
+    "day" that never returns - in a subprocess, and asserts the supervisor
+    (a) writes a heartbeat any session can read and (b) hard-exits at the cap.
+    """
+    import json as _j
+    import subprocess as _sp
+    import sys as _sys
+    import textwrap as _tw
+    from pathlib import Path as _P
+
+    root = _P(__file__).resolve().parents[2]
+    out = tmp_path / "supervised"
+    out.mkdir()
+    prog = _tw.dedent(f"""
+        import sys, time, types
+        sys.path.insert(0, r"{root}")
+        from backtest.engine.backtest import BacktestEngine
+        eng = BacktestEngine.__new__(BacktestEngine)
+        eng.max_run_hours = 3.0 / 3600.0        # 3 seconds
+        eng.output_dir = r"{out}"
+        eng.closed_trades, eng.open_trades = [], []
+        eng._run_start_time = time.time()
+        eng._last_sim_day_index, eng._last_sim_date = 7, "2024-06-03"
+        eng._last_universe = ["AAA", "BBB"]
+        eng.supervisor_interval_s = 0.5
+        eng._start_run_supervisor()
+        # THE PATHOLOGICAL DAY: never returns to a loop boundary, so the
+        # in-loop cap can never be evaluated. Pre-B2148 this ran forever.
+        time.sleep(60)
+        print("NOT_KILLED")
+    """)
+    r = _sp.run([_sys.executable, "-c", prog], capture_output=True, text=True,
+                timeout=90)
+    assert "NOT_KILLED" not in r.stdout, (
+        "the supervisor did not stop a run whose day never ends - this is the "
+        "pre-B2148 shape that ran 2.9h against a 2.5h cap")
+    assert r.returncode == 1, f"expected hard-exit 1, got {r.returncode}"
+
+    hb = out / "run_heartbeat.json"
+    assert hb.exists(), "no heartbeat written - observability must not depend "\
+                        "on a session-held watcher (S6-B2143b)"
+    beat = _j.loads(hb.read_text())
+    assert beat["source"] == "supervisor_thread"
+    assert beat["sim_day_index"] == 7 and beat["elapsed_hours"] >= 0
+
+    st = out / "engine_state.json"
+    assert st.exists(), "the kill must leave resumable state on disk"
+    state = _j.loads(st.read_text())
+    assert state["status"] == "supervisor_wall_time_kill"
+    assert state["sim_day_index"] == 7
+
+
+def test_b2149_prerun_gate_refuses_without_the_supervisor(tmp_path, monkeypatch):
+    """B2149 (owner directive 2026-08-24): the run-safety checks live in the
+    PRE-RUN gate, which is where they are still cheap.
+
+    Owner: "It should be loaded before each run and we should have these
+    checks as a part of the pre-run checklist." The checklist already existed
+    (CHECKLIST #158/#160/#161, executable as prelaunch_gate.py, wired into
+    launch_sweep since B2082), so the checks went there. Three arms: engine
+    WITH the supervisor is quiet (B1944 must-be-quiet), an engine source
+    lacking it REFUSES, and a leg cap above the owner's standing local cap
+    REFUSES.
+    """
+    import importlib.util as _ilu
+    from pathlib import Path as _P
+
+    root = _P(__file__).resolve().parents[2]
+    spec = _ilu.spec_from_file_location(
+        "prelaunch_gate_b2149", root / "scripts" / "prelaunch_gate.py")
+    g = _ilu.module_from_spec(spec)
+    spec.loader.exec_module(g)
+
+    # the owner's standing local cap, raised 3.0 -> 5.0 on 2026-08-24
+    assert g.OWNER_LOCAL_CAP_HOURS == 5.0
+
+    # (1) must-be-QUIET: the live engine carries the supervisor
+    assert g.check_supervisor_and_cap({"leg_cap_hours": 2.5}) == []
+
+    # (2) a cap above the owner's ruling must REFUSE
+    over = g.check_supervisor_and_cap({"leg_cap_hours": 6.0})
+    assert any("exceeds the owner" in p for p in over), over
+
+    # (3) #226 prove-it-can-fail: an engine source with no supervisor must
+    #     REFUSE both on the watchdog and on the heartbeat.
+    eng = root / "backtest" / "engine" / "backtest.py"
+    real = eng.read_text(encoding="utf-8")
+    gutted = real.replace("_start_run_supervisor", "_removed_for_the_fail_arm")
+    gutted = gutted.replace("run_heartbeat.json", "removed.json")
+    tmp_eng = tmp_path / "backtest" / "engine"
+    tmp_eng.mkdir(parents=True)
+    (tmp_eng / "backtest.py").write_text(gutted, encoding="utf-8")
+    monkeypatch.setattr(g, "__file__", str(tmp_path / "scripts" / "prelaunch_gate.py"))
+    probs = g.check_supervisor_and_cap({"leg_cap_hours": 2.5})
+    assert any("NO out-of-loop supervisor" in p for p in probs), probs
+    assert any("no run_heartbeat.json" in p for p in probs), probs
