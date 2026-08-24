@@ -14185,3 +14185,14 @@ fixed, or the summary manufactures a present-tense problem out of a past one.
 **What saved it:** the owner's standing instruction to correct him when he is very much wrong,
 plus Gate 2 - opening the post-fix cube rather than acting on the recorded text. One command
 separated "retire a dead exit" from "delete a working one".
+
+**L638 addendum (B2140): the sweep, and why none of the siblings needed fixing.** The class is a
+DATED fact quoted in present tense. Swept for the pattern "26 exits per entry" across the queue
+and the post-config ledger: 6 occurrences, 1 in EXECUTION_QUEUE.md and 5 in
+postconfig_ledger.json. All 6 are LEGITIMATE historical records - they describe cubes generated
+when the registry held 26, and the step-1 sanity check is defined to judge each cube against the
+registry at its own sha (B2117c). So no sibling needed remediation: the defect was never in the
+records, it was in my SUMMARY quoting one of them present-tense without its era. That ambiguity
+is closed at the source now, since plan section 6.5 states the rule those six entries are read
+under. Corollary worth keeping: when a class sweep finds instances that are all CORRECT, the fix
+belongs upstream of the records - in how they are quoted - not in the records themselves.
