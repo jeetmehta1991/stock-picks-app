@@ -25017,3 +25017,60 @@ def test_b2127_arm_reprojects_from_its_own_leg_not_a_global_constant():
     # a leg that produced no sim-days must say so, never emit a fake number
     dead = rw.project_from_leg(600, 0, 251, 2.5)
     assert dead["measured"] is False and "s_per_sim_day" not in dead
+
+
+def _b2128_silent_except_sites() -> list[str]:
+    """B2128: every `except ...: pass` whose body is EXACTLY pass.
+
+    Non-archive, non-test, backtest/ + scripts/. This is the census the
+    B2118 audit produced; it lives in the pin so the measurement and the
+    ratchet are ONE definition (L593 - a pin that re-implements its own
+    measurement counts a different set than the claim).
+    """
+    import ast
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[2]
+    hits = []
+    for sub in ("backtest", "scripts"):
+        for p in sorted((root / sub).rglob("*.py")):
+            s = str(p).replace("\\", "/")
+            if "/archive/" in s or "/tests/" in s:
+                continue
+            try:
+                tree = ast.parse(p.read_text(encoding="utf-8", errors="replace"))
+            except SyntaxError:
+                continue
+            for n in ast.walk(tree):
+                if (isinstance(n, ast.ExceptHandler) and len(n.body) == 1
+                        and isinstance(n.body[0], ast.Pass)):
+                    hits.append(f"{p.relative_to(root)}:{n.lineno}")
+    return hits
+
+
+# B2128 frozen baseline, MEASURED 2026-08-24 (census artifact
+# output_audit/b2118_except_pass_census.txt). SHRINK-ONLY: this number may
+# go DOWN as S6-B2118a burns the backlog down, never up.
+_B2128_SILENT_EXCEPT_CEILING = 134
+
+
+def test_b2128_silent_except_pass_is_a_shrinking_set():
+    """B2128 (S6-B2118a, prevention half): no NEW silent `except: pass`.
+
+    THE CORRECTION THIS SHIPS WITH: the execution-discipline skill's
+    enforcement table claimed the C7 banned-pattern scan blocks "unlogged
+    `except: pass`". It does not - C7 has exactly three patterns (NOT-S-GET,
+    DEFAULT-TRUE-GATE, RELATIVE-PREFETCH-PATH), read this batch. The rule was
+    real and the mechanism was absent: #224, inside the enforcement table
+    itself. A line-scan cannot see the multi-line form anyway, so the
+    mechanism is this AST ratchet rather than a fourth regex.
+    """
+    sites = _b2128_silent_except_sites()
+    assert len(sites) <= _B2128_SILENT_EXCEPT_CEILING, (
+        f"{len(sites)} silent except:pass sites > frozen ceiling "
+        f"{_B2128_SILENT_EXCEPT_CEILING}. A NEW one was added: pair it with a "
+        "logged success-check (#122), or waive it on the line with a reason. "
+        f"New/changed sites include: {sites[-5:]}")
+    # must-be-QUIET direction is the assertion above; this arm proves the
+    # counter is not vacuously zero (#226 - a ratchet that measures nothing
+    # passes forever)
+    assert len(sites) > 0, "the census found nothing - the counter is broken"

@@ -189,7 +189,7 @@ you work WITH them, not against them:
 | Gate | Where it fires | What it blocks |
 |---|---|---|
 | C6 pyramid stamp | every `git commit` staging `*.py` (pre-commit hook) | commit without a fresh GREEN full pyramid (`.pyramid_stamp` written only by a both-tiers pytest session) |
-| C7 banned-pattern diff scan | every commit | ADDED lines with `not s.get(`, default-True strategy gates, relative `data_prefetch` paths, unlogged `except: pass` (waiver: same-line `# preflight-allow: <rule>`) |
+| C7 banned-pattern diff scan | every commit | ADDED lines with `not s.get(`, default-True strategy gates, relative `data_prefetch` paths (waiver: same-line `# preflight-allow: <rule>`). **B2128 CORRECTION: this row claimed `except: pass` too - it never did.** C7 has exactly three patterns, and a line-scan cannot see the multi-line form; silent excepts are now held by the AST ratchet `test_b2128_silent_except_pass_is_a_shrinking_set` (frozen at 134, shrink-only). `#224` inside the enforcement table itself. |
 | C8 queue-entry gate | every commit | commits not staging EXECUTION_QUEUE.md (escape: `GIT_QUEUE_EXEMPT=1`, logged to `.queue_exempt_log`) |
 | C9 doc→queue cross-check | every commit | `output_audit/*.md` referencing ticket IDs absent from the queue |
 | #182 verdict-denominator | every turn-end (Stop hook) | a response stating a verdict with no "N of M" denominator naming the tested scope (B1504) |
