@@ -1470,6 +1470,14 @@ I happened to grep first. **Nothing required that grep.**
   rules WITH gates; `#26` was a rule enforced by remembering it.
 - **Name the search or say the prior art exists.** MEASURED on 5,098 real
   report texts: the gate fires on 0.7pct.
+- **SEARCH THE CLASS, NOT THE CONSEQUENCE (B2135 / L635).** I searched whether a
+  config set was contaminated (the data in front of me) and never whether the
+  SHAPE had been recorded before (the corpus) - so I called two findings new
+  while my own ticket cited `L558` for one and the other was a documented
+  renderer behaving as designed. **The consequence search is about your data;
+  only the CLASS search establishes novelty.** When prior art exists, the honest
+  form is *"the instance is new, the class is known, see <entry>"* - and often
+  the real novelty is SCOPE (a whole config set, not one field).
 - **Build the retraction escape FROM THE START.** Self-reference has hit this
   file ~13 times, always by bolting it on after the gate blocked its own
   incident report.
