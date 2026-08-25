@@ -29,6 +29,7 @@ callers never pass it.
 from __future__ import annotations
 
 import argparse
+import os
 import json
 import subprocess
 import sys
@@ -78,6 +79,48 @@ def drift_check(manifest: str) -> list[str]:
     if dirty:
         reasons.append("engine-consumed paths are dirty: "
                        + "; ".join(d.strip() for d in dirty[:5]))
+    return reasons
+
+
+def arm_env_matches(manifest_path: str, environ) -> list[str]:
+    """B2168 (S6-B2153a): the manifest's `arms` declared config-defining env
+    values (SMC_SWING_LENGTH is P1, STRAT_EMA_SPAN is P6) and NOTHING read
+    them - the field survived the B2128c sweep unread. A stale shell var, or
+    an UNSET one (which silently means the engine default), makes the
+    manifest lie about which config a cube is: the exact class that nearly
+    re-graded a swing-10 cube as swing-20 (S6-B2136). Fail CLOSED both ways.
+
+    Arms declare env two ways: modern specs carry arm["env"] = {K: V}; the
+    b2070/b2114-era manifests carry UPPERCASE keys flat on the arm. Both are
+    enforced. `concurrency` is prose and deliberately NOT enforced (L643: a
+    FEATURE field, not a bound).
+    """
+    import json as _j
+    from pathlib import Path as _P
+    try:
+        m = _j.loads(_P(manifest_path).read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return []                       # unreadable manifest is the gate's job
+    reasons = []
+    for arm in (m.get("arms") or []):
+        declared = dict(arm.get("env") or {})
+        for k, v in arm.items():        # flat legacy style
+            if k.isupper():
+                declared[k] = v
+        for k, v in declared.items():
+            live = environ.get(k)
+            if live is None:
+                reasons.append(
+                    f"arm '{arm.get('tag', '?')}' declares {k}={v} but the "
+                    f"variable is UNSET - the engine would run its DEFAULT "
+                    f"and the manifest would lie about which config this is "
+                    f"(the S6-B2136 class)")
+            elif str(live) != str(v):
+                reasons.append(
+                    f"arm '{arm.get('tag', '?')}' declares {k}={v} but the "
+                    f"live environment carries {k}={live} - a stale or "
+                    f"mismatched variable; the cube would not be the config "
+                    f"the manifest names")
     return reasons
 
 
@@ -179,6 +222,18 @@ def main(argv: list[str] | None = None) -> int:
     # and requiring a clean tree there made the suite unrunnable during
     # development, which is when it is most needed. drift_check stays unit-
     # tested directly (test_b2127), so the gate keeps its coverage.
+    # B2168: same seam rule as drift - the fake-engine test path skips the
+    # environment check (production callers never pass --engine-cmd); the
+    # pure function is pinned directly by test_b2168.
+    env_probs = [] if a.engine_cmd else arm_env_matches(a.manifest, os.environ)
+    if env_probs:
+        print("LAUNCH REFUSED (B2168 arm-env mismatch): the manifest's arms "
+              "declare config-defining env values the live environment does "
+              "not carry. The engine was NOT invoked.")
+        for r in env_probs:
+            print(f"  - {r}")
+        return 2
+
     drift = [] if a.engine_cmd else drift_check(a.manifest)
     if drift:
         print("LAUNCH REFUSED (B2127 engine drift): the engine runs from the "

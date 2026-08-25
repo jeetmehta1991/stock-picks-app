@@ -25598,3 +25598,37 @@ def test_b2167_no_phantom_getattr_names_in_the_engine():
         f"state file ever written)")
     # the sweep must be looking at something (#226)
     assert len(names) >= 8, f"the getattr scan found only {names}"
+
+
+def test_b2168_arm_env_mismatch_refuses(tmp_path):
+    """B2168 (S6-B2153a): manifest arms declare P1/P6 env values; nothing
+    read them. UNSET must refuse (engine would run its default while the
+    manifest names another config - the S6-B2136 class), a MISMATCH must
+    refuse, and a matching environment must stay QUIET (B1944)."""
+    import importlib.util as _ilu
+    import json as _json
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    spec = _ilu.spec_from_file_location(
+        "launch_sweep_b2168", root / "scripts" / "launch_sweep.py")
+    ls = _ilu.module_from_spec(spec)
+    spec.loader.exec_module(ls)
+
+    mf = tmp_path / "m.json"
+    mf.write_text(_json.dumps({"arms": [
+        {"tag": "a1", "env": {"SMC_SWING_LENGTH": "10"}},
+        {"tag": "a2", "SMC_SWING_LENGTH": 20},
+    ]}), encoding="utf-8")
+
+    # a1 matches, a2 (flat legacy style) mismatches -> exactly one refusal
+    r = ls.arm_env_matches(str(mf), {"SMC_SWING_LENGTH": "10"})
+    assert len(r) == 1 and "a2" in r[0], r
+    # UNSET refuses BOTH arms and names the silent-default hazard
+    r2 = ls.arm_env_matches(str(mf), {})
+    assert len(r2) == 2 and all("UNSET" in x for x in r2), r2
+    # fully matching environment is quiet
+    mf2 = tmp_path / "m2.json"
+    mf2.write_text(_json.dumps({"arms": [
+        {"tag": "a1", "env": {"SMC_SWING_LENGTH": "10"}}]}),
+        encoding="utf-8")
+    assert ls.arm_env_matches(str(mf2), {"SMC_SWING_LENGTH": "10"}) == []
