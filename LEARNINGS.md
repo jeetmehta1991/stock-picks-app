@@ -14607,3 +14607,27 @@ rule already covers this; the mechanism is the existing #230 scan, which fired a
 JUDGMENT-ONLY residue: whether a "cheap" claim doubles as a safety claim is not scannable —
 before quoting any recovery/resume/rollback as trivial, open the config that the recovery
 command would read and verify it points where the prose says.
+
+
+## L647 — A wording sweep is not a class sweep, and only judgment closes the gap (B2186)
+
+**What happened:** the L646 retroactive sweep grepped two literal phrasings ("one command",
+"single-command") across three files and found one live sibling — in the plan's four-entry
+standing-decisions list, the highest-traffic surface it could occupy — which was corrected. The
+mandated case-against then stated the limitation honestly: the CLASS is "any recovery quoted as
+cheap without its config opened," and its phrasing surface ("just resume", "recoverable",
+"picks up where it left off", ...) is unbounded, so no grep closes it.
+
+**The general point, worth one entry because #237 rows recur every batch:** a #237 sweep over
+WORDINGS certifies only the wordings searched. Its honest report form is "the known phrasings
+have zero (or N) live siblings," never "the class is clean." Growing the synonym list is the
+theater item 136 exists to refuse; the durable guards for an unbounded-phrasing class are the
+mechanical scan on the wording family (#230 here, fired four times this session, each a real
+catch) plus the always-loaded skill rule teaching the check before the claim (rule 9 c2).
+
+**Rule (compliance failure against item 237 — no new checklist item):** every future sweep
+statement names which of the two it delivered — a WORDING sweep (list the phrasings) or a CLASS
+sweep (enumerate the population by structure, as the phantom-getattr sweep did with its 12
+names). **MECHANISM: JUDGMENT-ONLY** — whether a class's phrasing surface is bounded is not
+scannable; the compensating mechanics are the #230 scan and the pinned skill rule, both already
+standing.
