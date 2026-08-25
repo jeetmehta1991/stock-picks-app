@@ -103,6 +103,12 @@ def build_manifest(spec: dict, arm: dict, out_dir: Path, sha: str) -> Path:
             f"{RATE_S_PER_TICKER_DAY} s/ticker-day x {len(tickers)}t x "
             f"{days}d; chunked at {spec['leg_cap_hours']}h legs under the "
             "owner's 3h local cap"),
+        # B2174: spec passthrough for the drift waiver. Hourly owner updates
+        # are commits, commits move HEAD, and the sha half of drift_check
+        # would refuse every resume leg after the first report. The waiver is
+        # explicit and recorded HERE, in the manifest the receipt hashes; the
+        # no-engine-commits-mid-wave discipline carries the real safety.
+        "allow_engine_drift": bool(spec.get("allow_engine_drift", False)),
         "obsolescence_risks": [
             {"risk": "open trades dropped at chunk boundaries (B1076)",
              "status": "DISCLOSED - leg count recorded per arm; the auction "
