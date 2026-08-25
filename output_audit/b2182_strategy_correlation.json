@@ -1,0 +1,81 @@
+{
+ "source": "output_r5_merged_1_7/trade_log.parquet (production exits)",
+ "window": "IS only: exit_date < 2025-05-05 (holdout untouched)",
+ "strategies_analyzed": 183,
+ "trades_analyzed": 136622,
+ "avg_pairwise_rho": 0.0866,
+ "sharpe_cross_section": {
+  "grand_mean_annualized": -2.4373,
+  "median": -1.9703,
+  "top5_shrunk": {
+   "vix_backwardation_long": 0.51,
+   "donchian_breakout_long": 0.482,
+   "pead_with_smart_money_long": 0.447,
+   "htf_aligned_breakout_long": 0.22,
+   "totm_long": 0.161
+  }
+ },
+ "portfolio_scenarios": {
+  "N=10": {
+   "s_bar_all_shrunk": -2.4373,
+   "rho_bar_all": 0.0866,
+   "implied_portfolio_sharpe": -5.777
+  },
+  "N=20": {
+   "s_bar_all_shrunk": -2.4373,
+   "rho_bar_all": 0.0866,
+   "implied_portfolio_sharpe": -6.7
+  },
+  "N=40": {
+   "s_bar_all_shrunk": -2.4373,
+   "rho_bar_all": 0.0866,
+   "implied_portfolio_sharpe": -7.366
+  },
+  "greedy_subset": {
+   "n": 20,
+   "s_bar_shrunk": -0.165,
+   "rho_bar": 0.1835,
+   "implied_portfolio_sharpe": -0.348,
+   "members": [
+    "vix_backwardation_long",
+    "donchian_breakout_long",
+    "pead_with_smart_money_long",
+    "totm_long",
+    "htf_aligned_breakout_long",
+    "xs_momentum_quality_combined",
+    "xs_momentum_top_decile",
+    "pead_long_high_yoy_growth_only",
+    "pead_long",
+    "m_and_a_target_long",
+    "week_opening_gap_fill_up",
+    "value_area_breakout_long",
+    "mfi_oversold_with_smart_money_long",
+    "rsi9_extreme",
+    "pre_holiday_long",
+    "flag_bull_long",
+    "xs_quality_top_quintile_long",
+    "institutional_volume_confirmation_long",
+    "cup_and_handle_retest_long",
+    "bollinger_tight"
+   ]
+  },
+  "positive_only_subset": {
+   "n": 5,
+   "members": [
+    "vix_backwardation_long",
+    "donchian_breakout_long",
+    "pead_with_smart_money_long",
+    "htf_aligned_breakout_long",
+    "totm_long"
+   ],
+   "s_bar_shrunk": 0.364,
+   "rho_bar": 0.1763,
+   "implied_portfolio_sharpe": 0.623
+  }
+ },
+ "caveats": [
+  "IS-only estimates of mostly UNVALIDATED strategies - winner's curse compounds at portfolio level (S6-B2178c carries this)",
+  "pairwise rho is regime-unstable; the crisis rho is the one that matters and one window cannot measure it",
+  "zero-filled non-exit days deflate single-strategy vol; correct grain for combination arithmetic, wrong grain for standalone Sharpe claims"
+ ]
+}

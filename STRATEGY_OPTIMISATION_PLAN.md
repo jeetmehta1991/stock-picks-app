@@ -460,7 +460,7 @@ Rendered by `scripts/producer_variant_table.py`; header pinned by
 `test_b1510_producer_artifact_standard` alongside Tables A and B. It answers ONE question:
 of everything this config tried, how much survived, and where did the rest stop?
 
-| config | combos | starved-IS | no-Sharpe | graded | distinct | bands | P1-P6 bands tested | best IS-Sharpe | best IS-CI-lo | best combination |
+| config | combos | starved-IS | no-Sharpe | graded | distinct | bands | P1-P6 bands tested | median IS-Sharpe | best IS-Sharpe | best IS-CI-lo | best combination |
 
 **P1-P6 IN THE ROW (B2138/B2141, owner directive).** The funnel row itself carries the BAND VALUES, comma-separated and semicolon-delimited: `P1=20(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=200(fixed)` - the values for each SEARCHED axis and the fixed VALUE for the two cross-config axes. B2141 replaced counts with values because two configs that searched DIFFERENT grids of the same width are indistinguishable by count alone. The delimiter is a SEMICOLON: a pipe splits the cell into six columns and destroys the table, which is what the first render showed. Values sort numerically through ONE shared helper used by both this column and the block below (L593: two sorts of the same values diverge on the first edit) - so a pasted row says which axes carried the search without a second table. P1 and P6 are read from the artifact's own `config` block, which `tighten_breaker_block.py` has recorded since B2138; before that they were written NOWHERE, which is why a swing-10 cube could be re-graded as swing-20 (S6-B2136) and why pre-B2138 artifacts read `?` there.
 
@@ -1486,6 +1486,32 @@ Step-1 sanity + M1 content-sha, M2 exits-vs-live-registry, M3 fill_date, M4 wind
 holdout-touch, M5 pnl integrity, M7 degraded exits, M9 universe artifact, **M10 gate
 receipt** — with M6 (boundary drops; meaningful only post-B2167) recorded by run_wave and
 M8 (short borrow-rate) pending a short cube (S6-B2118b trigger).
+
+### Correlation / effective-breadth measurement (B2182 — zero engine runs)
+
+`scripts/build_strategy_return_correlation.py` answers the portfolio-reframe question from the
+R5 production trade log (IS window only, holdout untouched): **avg pairwise rho 0.087** across
+183 strategies / 136,622 trades — diversification exists — but the cross-sectional annualized
+Sharpe is **mean −2.44 / median −1.97**, so combination amplifies a negative and N=40 implies
+portfolio Sharpe −7.4. The positive-only shrunk subset has **n=5, implying 0.62** — under the
+1.0 bar. Verdict recorded in output_audit/b2182_gate_philosophy_decision.md: keep the
+per-strategy gate; the binding constraint is candidate quality, not gate philosophy; re-run at
+selected-exit grain once ~20 strategies carry graded cells. Caveats stamped in the artifact
+(production-exit grain, 2022-23 bear in-window, winner's curse both ways).
+
+### Design principle for NEW producers (B2182, external item 10 adopted)
+
+Prefer parameter-free formulations at design time: ensemble across lengths (mean of signs ->
+one continuous score, one threshold), cross-sectional ranks over absolute thresholds,
+vol-normalized triggers over fixed ones. Every parameter deleted is a selection-bias dimension
+that never needs correcting — and EVENT triggers carry fewer tunables than STATE definitions.
+Applies FORWARD (new producers / Class 7 wires); retrofits are per-strategy owner-approval work.
+
+### SPP median column (B2182, external item 7 adopted)
+
+TABLE C's funnel row now carries **median IS-Sharpe beside best** — the median across graded
+combos is a nearly unbiased live-expectancy estimate; max minus median is the selection
+artifact, visible in every render.
 
 ### Standing open decisions this section feeds (owner)
 

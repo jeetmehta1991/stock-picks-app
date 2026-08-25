@@ -1082,7 +1082,12 @@ class BacktestEngine:
             # BOTH writers succeed (atomic-pair semantics per Council 214).
             import time as _time_chkpt
             _now_chkpt = _time_chkpt.time()
-            _sim_day_trigger = (i > 0 and (i == 50 or i % 100 == 0))
+            # B2181 (S6-B2175a): day 5 joins the trigger. The first
+            # checkpoint used to be day 50 / 30 minutes, whichever came
+            # first - so the sw10 crash at 19 minutes lost EVERYTHING and
+            # sw50 at ~30 was saved by seconds. An early crash now costs
+            # minutes of compute, not the whole leg.
+            _sim_day_trigger = (i > 0 and (i == 5 or i == 50 or i % 100 == 0))
             _time_trigger = (i > 0 and (_now_chkpt - self._last_checkpoint_time)
                              >= self._checkpoint_interval_seconds)
             _should_checkpoint = _sim_day_trigger or _time_trigger

@@ -300,11 +300,19 @@ def table_c(grids: dict[str, dict]) -> list[str]:
             "confidence interval, which is what `best` ranks on - a higher "
             "Sharpe can carry a NEGATIVE lower bound (L455)._",
             "",
-            "| config | combos | starved-IS | no-Sharpe | graded | distinct | bands | P1-P6 bands tested | best IS-Sharpe | best IS-CI-lo | best combination |",
-            "|---|---|---|---|---|---|---|---|---|---|---|"]
+            "| config | combos | starved-IS | no-Sharpe | graded | distinct | bands | P1-P6 bands tested | median IS-Sharpe | best IS-Sharpe | best IS-CI-lo | best combination |",
+            "|---|---|---|---|---|---|---|---|---|---|---|---|"]
     for name, g in grids.items():
         res = g.get("results", [])
-        graded = [r for r in res if r.get("sharpe") is not None]
+        # B2181 (S6-B2176b): a pure Step-1 grid populates ONLY the IS fields
+        # (holdout untouched by design post-B2136), so bucketing on the
+        # holdout `sharpe` rendered graded=0 beside 89 real distinct
+        # outcomes. An IS-only artifact buckets on is_sharpe instead;
+        # detection is from the artifact itself: any row carrying a
+        # non-None holdout sharpe marks a mixed/legacy grid.
+        is_only = not any(r.get("sharpe") is not None for r in res)
+        _sk = "is_sharpe" if is_only else "sharpe"
+        graded = [r for r in res if r.get(_sk) is not None]
         no_exit = [r for r in res if r.get("verdict") == "NO_EXIT_SELECTABLE"]
         zero = [r for r in res if r.get("verdict") == "ZERO_FIRES"]
         # B1701: the FOURTH bucket, found because the reconciliation assert
@@ -312,7 +320,7 @@ def table_c(grids: dict[str, dict]) -> list[str]:
         # evaluate() returned a dict and `_sharpe` did not, at holdout_n 16-29.
         # Without this bucket 31-66 rows per config vanished from the funnel,
         # which is exactly the silent loss the assert exists to catch.
-        no_sh = [r for r in res if r.get("sharpe") is None
+        no_sh = [r for r in res if r.get(_sk) is None
                  and r.get("verdict") not in ("NO_EXIT_SELECTABLE", "ZERO_FIRES")]
         other = len(res) - len(graded) - len(no_exit) - len(zero) - len(no_sh)
         # B1898 (c): count the distinct VALUES actually exercised per axis.
@@ -364,6 +372,14 @@ def table_c(grids: dict[str, dict]) -> list[str]:
         # artifact's own `config` block (recorded since B2138); an artifact
         # without it reads `?` for those two rather than a number, because the
         # cross-config axes were written nowhere before that (S6-B2136).
+        # B2182 (S6-B2178b, SPP per Walton): the MEDIAN Sharpe across all
+        # graded combos is a nearly unbiased estimate of live expectancy;
+        # the max is biased by exactly the selection performed. max - median
+        # = the selection artifact, printed beside each other so the reader
+        # sees both every time.
+        import statistics as _st
+        _med_vals = [r.get(_sk) for r in graded if r.get(_sk) is not None]
+        med = round(_st.median(_med_vals), 3) if _med_vals else None
         cfg = g.get("config") or {}
         p_cells = []
         for pid, nm in P_AXES:
@@ -381,9 +397,9 @@ def table_c(grids: dict[str, dict]) -> list[str]:
         p_col = "; ".join(p_cells)
         rows.append(f"| `{name}` | {len(res)} | {len(no_exit)} | {len(no_sh)} | {len(graded)} | "
                     f"{g.get('step1_distinct_outcomes', '-')} | {_measured_fmt(bands)} | {p_col} | "
-                    f"{sh} | {cl} | {combo} |")
+                    f"{_measured_fmt(med)} | {sh} | {cl} | {combo} |")
         if other:
-            rows.append(f"| | | | | | | | | | | **UNCLASSIFIED {other} rows - the funnel does not "
+            rows.append(f"| | | | | | | | | | | | **UNCLASSIFIED {other} rows - the funnel does not "
                         f"reconcile, do not trust this row** |")
         per_config_axes[name] = (axes, cfg)
 

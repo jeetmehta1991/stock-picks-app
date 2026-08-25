@@ -155,7 +155,13 @@ def run_arm(spec: dict, arm: dict, engine_cmd: str | None = None) -> dict:
             "--start", spec["window"]["start"], "--end", spec["window"]["end"],
             "--max-run-hours", str(spec["leg_cap_hours"]),
         ]
-        if legs > 1:
+        # B2181: a spec declaring "resume": true continues from the dir's
+        # existing checkpoint ON LEG 1 - the owner-directed sw50 relaunch
+        # path. Without it, leg 1 omits the flag and the engine RESTARTS
+        # from day 0, clobbering the checkpoint it was meant to continue
+        # (the exact hazard the B2179 costing exposed).
+        if legs > 1 or (legs == 1 and spec.get("resume")
+                        and (out_dir / "engine_state.json").exists()):
             engine_args += ["--resume-from-checkpoint", str(out_dir)]
         cmd = [sys.executable, str(ROOT / "scripts" / "launch_sweep.py"),
                "--manifest", str(manifest), "--output-dir", str(out_dir),

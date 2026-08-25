@@ -13723,8 +13723,8 @@ def test_b1510_producer_artifact_standard():
     src_c = (_P(__file__).resolve().parents[2] / "scripts"
              / "producer_variant_table.py").read_text(encoding="utf-8")
     header_c = ("| config | combos | starved-IS | no-Sharpe | graded | distinct "
-                "| bands | P1-P6 bands tested | best IS-Sharpe | best IS-CI-lo "
-                "| best combination |")
+                "| bands | P1-P6 bands tested | median IS-Sharpe | best IS-Sharpe "
+                "| best IS-CI-lo | best combination |")
     assert header_c in src_c, (
         "TABLE C header drifted from the locked B1898 column set. The columns "
         "are the funnel IN ORDER; renaming or reordering changes what a pasted "
@@ -25763,3 +25763,49 @@ def test_b2180_skill_gate_escape_clause_is_implemented():
     assert m.scan_skill_not_updated(entries("anything"),
                                     learnings_touched=False,
                                     skill_touched=False) == []
+
+
+def test_b2181_early_checkpoint_and_resume_and_isonly_buckets(tmp_path):
+    """B2181 pre-relaunch batch, three pins in one walk:
+    (1) day 5 is in the engine's sim-day checkpoint trigger - the first
+    checkpoint used to be day 50/30min, so the sw10 crash at 19 min lost
+    everything; (2) run_wave honors spec resume:true on LEG 1 so the
+    owner-directed sw50 relaunch CONTINUES from day 50 instead of
+    clobbering it; (3) table_c buckets IS-only grids on is_sharpe."""
+    import importlib.util as _ilu
+    import re
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+
+    # (1) structural: day 5 in the trigger expression
+    src = (root / "backtest" / "engine" / "backtest.py").read_text(
+        encoding="utf-8")
+    m = re.search(r"_sim_day_trigger = \(i > 0 and \(([^)]+)\)\)", src)
+    assert m and "i == 5" in m.group(1), (
+        f"day-5 early checkpoint missing from trigger: {m and m.group(1)}")
+
+    # (2) run_wave leg-1 resume: source-structural on the guard
+    rw = (root / "scripts" / "run_wave.py").read_text(encoding="utf-8")
+    assert 'spec.get("resume")' in rw and "legs == 1" in rw, (
+        "run_wave must honor resume:true on leg 1")
+
+    # (3) table_c IS-only bucketing, behavioral on a synthetic grid
+    spec = _ilu.spec_from_file_location(
+        "pvt_b2181", root / "scripts" / "producer_variant_table.py")
+    pv = _ilu.module_from_spec(spec)
+    spec.loader.exec_module(pv)
+    grid = {"results": [
+        {"is_sharpe": 0.5, "sharpe": None, "verdict": "FAIL",
+         "close_mitigation": False, "tail_n": 2},
+        {"is_sharpe": None, "sharpe": None, "verdict": "BELOW_POWER_FLOOR",
+         "close_mitigation": True, "tail_n": 5},
+        {"is_sharpe": None, "sharpe": None, "verdict": "NO_EXIT_SELECTABLE",
+         "close_mitigation": True, "tail_n": 1},
+    ], "step1_ranking": [], "config": {"P1_swing_length": 20, "P6_span": 200}}
+    rows = pv.table_c({"t": grid})
+    row = [r for r in rows if r.startswith("| `t` |")][0]
+    cells = [c.strip() for c in row.split("|")]
+    # header: config combos starved-IS no-Sharpe graded ... -> graded = cells[5]
+    assert cells[5] == "1", (
+        f"IS-only grid must count 1 graded (is_sharpe bucket), got {cells[5]!r} "
+        f"in {row!r}")
