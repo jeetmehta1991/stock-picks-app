@@ -24911,6 +24911,8 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         ("second instance L623/B2122", "the B1993d bullet must name both instances"),
         ("presence-grep must assert its match count",
          "the check-shaped variant of the sibling-chain rule"),
+        ("recovery would read and verify it points where the prose says",
+         "L646: a recovery estimate is a capability claim that can destroy state"),
         ("wearing a critic's coat",
          "L645: an objection carries a recommendation's evidence burden"),
         ("OBJECT of the request",
@@ -24997,7 +24999,7 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     assert _b2123_skill_rules_present(fable, disc) == []
     # #226 prove-it-can-fail: a gutted file must be REPORTED, not pass
     gutted = _b2123_skill_rules_present("# The Fable Method\n", "# Discipline\n")
-    assert len(gutted) == 39, gutted
+    assert len(gutted) == 40, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 

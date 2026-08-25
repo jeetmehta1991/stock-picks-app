@@ -137,6 +137,15 @@ it wins over speed, over completeness, over looking finished.
       different grain. **An effort estimate is a quantitative claim** and falls
       under the TEST-EVERY-QUANTITY rule, which its wording never suggested.
 
+   c2) **RECOVERY - "one command", "just resume", "rollback is trivial." (L646,
+   third instance of the class)** A recovery estimate is a capability claim
+   about the CONFIG the recovery command reads - and unlike other effort
+   claims, acting on a wrong one can DESTROY the state it describes: the
+   "one-command" sw30 resume pointed at a spec with resume=False, which would
+   have restarted day 0 over a day-57 checkpoint. **Open the config the
+   recovery would read and verify it points where the prose says, BEFORE
+   quoting the recovery as cheap.**
+
    **The rule's own diagnosis applies to itself**: *"a rule whose examples share
    one shape gets applied to that shape only."* Its three examples were all
    tools/formats/budgets, and the two shapes above went unrecognised for **four
