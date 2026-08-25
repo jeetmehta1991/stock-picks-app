@@ -25569,3 +25569,32 @@ def test_b2159_known_bad_manifests_are_each_refused():
         assert fails, f"gate did NOT refuse: {name}"
         assert any(expect in f for f in fails), (
             f"{name}: refused, but no reason mentioned {expect!r}: {fails}")
+
+
+def test_b2167_no_phantom_getattr_names_in_the_engine():
+    """B2167 (PIVOT #34 class, found reviewing B2126/B2148): a getattr
+    fallback referencing a name that is NEVER assigned reads as defensive
+    and is a constant in disguise. MEASURED: every engine_state.json ever
+    written recorded open_trades: 0 and tickers_processed: 0, because the
+    emitters counted getattr(self, "open_positions") and _last_universe -
+    neither assigned anywhere - so the M6 boundary-drop measurement was
+    silently measuring zero. Every getattr(self, NAME) must reference a
+    name assigned somewhere in the class, or sit on the whitelist of
+    deliberate external seams."""
+    import re
+    from pathlib import Path
+    src = (Path(__file__).resolve().parents[1] / "engine" / "backtest.py"
+           ).read_text(encoding="utf-8")
+    names = set(re.findall(r"getattr\(self,\s*\"(\w+)\"", src))
+    # supervisor_interval_s is a deliberate seam: tests set it on the
+    # instance to shrink the watchdog interval (test_b2148).
+    seams = {"supervisor_interval_s"}
+    phantoms = {n for n in names - seams
+                if not re.search(rf"self\.{n}\s*=", src)}
+    assert not phantoms, (
+        f"getattr(self, ...) references names never assigned: "
+        f"{sorted(phantoms)} - a phantom fallback is a constant in "
+        f"disguise (PIVOT #34; B2167 measured open_trades==0 in every "
+        f"state file ever written)")
+    # the sweep must be looking at something (#226)
+    assert len(names) >= 8, f"the getattr scan found only {names}"

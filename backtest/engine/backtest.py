@@ -694,7 +694,7 @@ class BacktestEngine:
                 "status": status,
                 "sim_date": str(getattr(self, "_last_sim_date", "")),
                 "sim_day_index": getattr(self, "_last_sim_day_index", -1),
-                "tickers_processed": len(getattr(self, "_last_universe", []) or []),
+                "tickers_processed": len(getattr(self, "liquid_universe", []) or []),
                 "trades_so_far": len(self.closed_trades),
                 "open_trades": len(self.open_trades),
                 "timestamp": _et.strftime("%Y-%m-%dT%H:%M:%SZ", _et.gmtime()),
@@ -1011,7 +1011,7 @@ class BacktestEngine:
                     import os as _kos
                     import time as _ktime
                     _ktrades = len(self.closed_trades)
-                    _kopen = len(getattr(self, "open_positions", []) or [])
+                    _kopen = len(self.open_trades)
                     _kstate = {
                         "simulated_day": i,
                         "cells_completed": _ktrades,
@@ -1019,7 +1019,7 @@ class BacktestEngine:
                         "sim_date": str(as_of),
                         "sim_day_index": i,
                         "tickers_processed": len(
-                            getattr(self, "_last_universe", []) or []),
+                            getattr(self, "liquid_universe", []) or []),
                         "trades_so_far": _ktrades,
                         "open_trades": _kopen,
                         "timestamp": _ktime.strftime(
@@ -1158,7 +1158,7 @@ class BacktestEngine:
                     import os as _os
                     import time as _time
                     _trades = len(self.closed_trades)
-                    _open = len(getattr(self, "open_positions", []) or [])
+                    _open = len(self.open_trades)
                     state = {
                         # B1043 F-01 monitor-expected keys:
                         "simulated_day": i,
@@ -1167,7 +1167,7 @@ class BacktestEngine:
                         # Backwards-compat + debugging fields:
                         "sim_date": str(as_of),
                         "sim_day_index": i,
-                        "tickers_processed": len(getattr(self, "_last_universe", []) or []),
+                        "tickers_processed": len(getattr(self, "liquid_universe", []) or []),
                         "trades_so_far": _trades,
                         "open_trades": _open,
                         "timestamp": _time.strftime("%Y-%m-%dT%H:%M:%SZ", _time.gmtime()),
@@ -1278,7 +1278,7 @@ class BacktestEngine:
                 "status": "complete",
                 "sim_date": str(getattr(self, "_last_sim_date", "")),
                 "sim_day_index": int(getattr(self, "_last_sim_day_index", 0)),
-                "tickers_processed": int(len(getattr(self, "_last_universe", []) or [])),
+                "tickers_processed": int(len(getattr(self, "liquid_universe", []) or [])),
                 "trades_so_far": int(len(self.closed_trades)),
                 "open_trades": int(len(self.open_trades)),
                 "timestamp": _time_b1070.strftime("%Y-%m-%dT%H:%M:%SZ", _time_b1070.gmtime()),
