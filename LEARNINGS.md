@@ -14625,6 +14625,12 @@ theater item 136 exists to refuse; the durable guards for an unbounded-phrasing 
 mechanical scan on the wording family (#230 here, fired four times this session, each a real
 catch) plus the always-loaded skill rule teaching the check before the claim (rule 9 c2).
 
+**SKILL-PROMOTION RULING (B2187): this entry is deliberately NOT promoted to the skill.**
+The rule is enforced at its exact trigger point by the #237 gate, which demands a sweep
+statement on every rule-adding turn; a skill line would duplicate a live mechanical enforcer
+while taxing every future turn's context (five promotions already this session). Re-open the
+promotion only if the #237 gate's wording loses that bite.
+
 **Rule (compliance failure against item 237 — no new checklist item):** every future sweep
 statement names which of the two it delivered — a WORDING sweep (list the phrasings) or a CLASS
 sweep (enumerate the population by structure, as the phantom-getattr sweep did with its 12
