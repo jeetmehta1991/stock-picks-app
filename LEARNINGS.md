@@ -14407,3 +14407,34 @@ sweep's value here was proving the blast radius was ONE, not seven.
 **Cross-reference:** this is the counterpart to L639 - there a ticket's number decayed while its
 status stayed true; here a pattern's count is true while its meaning varies per instance. Both
 say the same thing: a number without its per-instance reading is not yet evidence.
+
+
+## L644 — A detector's own output needs the treatment the detector demands (B2162)
+
+**What happened, minutes after writing L643:** L643 says a sweep must CLASSIFY, not count. To
+satisfy the sweep requirement for that very rule, I wrote a keyword classifier over the ledger
+and reported **68 sweep-rows, 11 classified, 57 count-only**. Then I read five of the 57. **All
+five were misclassified.** One (S6-B2107) merely lists "the six sweep sign-offs" inside an owner
+ruling and is not a sweep at all; the other four each state their classification in words the
+regex did not anticipate - "3 instances, all mine", "4 of 4 pinned", "nothing reaches disk
+independently of the day loop", "0 references, referenced by ticket instead".
+
+**So the number was wrong in the direction that flattered the finding** - it made the problem
+look large and my new rule look necessary. I retracted it in the same close and asserted no
+corrected figure, because deriving one from a five-row sample would repeat the error one level
+down.
+
+**The shape:** a detector built for a class is not exempt from the class. A keyword matcher for
+"unclassified sweeps" produced an unclassified sweep. The same is true of every scan_ gate, every
+census script, every ratchet in this repo: **the output of a measuring instrument is a
+measurement, and it carries the same evidence burden as any other.**
+
+**Rule (compliance failure against item 237 and item 256; no new item warranted):** before
+quoting a new detector's headline number, hand-read a sample of what it flagged and report the
+sample's error rate beside the count. If the sample disagrees with the detector, the detector's
+number is not yet evidence - say so and keep the script rather than the figure. A first run of a
+new scan is a HYPOTHESIS about a population, not a finding.
+
+**Why it matters beyond bookkeeping:** the flattering direction is the dangerous one. A detector
+that over-reports makes its own existence look justified, and nothing in the workflow re-checks a
+number that confirms the thing you just built.
