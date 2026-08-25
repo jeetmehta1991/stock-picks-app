@@ -273,7 +273,20 @@ batch-1 traps. Each rule retroactively catches >=2 real past misses (#136).
     blast radius is one, not seven. Pairs with rule 6: a number without its
     per-instance reading is not yet evidence.
 
-11. **FRESH-EYES REVIEW CADENCE (standing).** Before every batch-size
+11. **A NEW DETECTOR'S FIRST NUMBER IS A HYPOTHESIS (L644/B2162).** The
+    output of a measuring instrument is itself a measurement and carries the
+    same evidence burden. MEASURED: minutes after writing that a sweep must
+    classify rather than count, I quoted a keyword matcher's 68-row split,
+    then hand-read 5 of the rows it flagged and found 5 misclassifications -
+    **and the error ran in the direction that made my new rule look
+    necessary.** A detector built for a class is not exempt from that class.
+    Before quoting a NEW scan's headline, hand-read a sample of what it
+    flagged and report the sample error rate beside the count; if the sample
+    disagrees, keep the script and drop the figure. Nothing in the workflow
+    re-checks a number that confirms the thing you just built - that is why
+    this one is JUDGMENT-ONLY and cannot be scanned for.
+
+12. **FRESH-EYES REVIEW CADENCE (standing).** Before every batch-size
    escalation (or every ~10 batches of a sequence), an adversarial review of
    the accumulated work runs with fresh eyes — a different model or a cold
    pass that re-derives claims from code/data rather than summaries. The
