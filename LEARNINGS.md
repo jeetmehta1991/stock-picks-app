@@ -14542,3 +14542,32 @@ S6-B2175a ticket carries the fix decision (first-checkpoint-at-day-1 vs accept-a
 the owner; the WINDOW disclosure belongs in build_manifest the day the fix lands. Detection of
 the crash itself was already mechanical (classify_run_log DEAD + the wave summary) - what was
 missing was only the loss-bound statement, which is JUDGMENT-ONLY until the manifest carries it.
+
+
+## L645 — An objection is a claim: cost it before filing it (B2178/B2179)
+
+**What happened:** the mandated case-against for the B2178 dispositions claimed a
+signals-shifted MCPT variant "died uncosted with the expensive version." The #230 gate
+demanded the costing, and opening the cube's 42 columns
+(output_b2174_sw20_sw20/trade_exit_detail.csv) settled it AGAINST the objection: no cube
+carries a signal series, so every signal-shift permutation re-runs the engine per
+permutation - the refused version's exact budget wall - and the cube-possible
+outcome-shuffle family is already implemented as the block-bootstrap noise floors
+(0.333 / 0.2245 / 0.3115). Objection withdrawn in-message with the evidence.
+
+**The class:** an objection carries the same evidence burden as a recommendation.
+"This alternative was never costed" is itself an uncosted claim about the alternative's
+cost - the #278 asserted-consequence shape wearing a critic's coat; L622's halving miss
+was the identical shape from the advocate's side. The costing took one file-open.
+
+**Rule (compliance failure against item 230 and item 278 — no new checklist item):**
+before filing a case-against that names a cheaper alternative, open the artifact the
+alternative would run on and name the field it needs — or file the objection as a
+QUESTION. MECHANISM: the #230 scan fires on uncosted effort language and is what caught
+this instance; distinguishing an objection's claims from a proposal's stays JUDGMENT-ONLY.
+
+**Recording note:** this entry was first written in a close that died with exit 45 while
+the box sat at 1.76GB free physical memory under the 2-parallel launch — the same
+pressure that produced OpenBLAS allocation failures inside the turn-gate verifier. The
+lesson survived because the message text did; the files did not. Records written under
+memory pressure need their commit verified, not assumed.
