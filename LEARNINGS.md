@@ -14523,6 +14523,17 @@ Compliance failure against item 226 (the fail arm never covered a native death i
 window) and item 128 (the happy-path artifact set was checked; the no-artifact path was not) -
 no new checklist item warranted.
 
+**CORRECTION FROM THE #237 SWEEP (same batch):** the window is NOT day-50 alone. Reading
+backtest.py:1085-1088 shows a `_time_trigger` sibling - a 30-minute timer
+(self._checkpoint_interval_seconds = 1800, backtest.py:232, owner-set B1089) that fires the
+checkpoint independently of the sim-day gate, whichever comes first. So the true loss window is
+min(day-50, 30 minutes) ~= 30 minutes; sw10 died at 19 minutes elapsed (1193s in the launch
+line), INSIDE both bounds, which is why nothing was written - the facts stand, the class
+statement above overstated the window. The sweep found no OTHER first-emission gating (the only
+day-50 references are line 1085 and its own comment at 1144). A day-1 first checkpoint would
+shrink the early bound to one sim-day's cost - measured 0.46 min/day from sw20's live heartbeat
+(1.0755h / 140 days, read this close) - versus the ~19 minutes actually lost.
+
 **Rule:** recovery cadence is a COVERAGE claim, not a frequency choice. State the largest
 window in which a hard death loses everything, as a number, in the manifest's obsolescence
 risks; if that window exceeds the cost of re-running it, it is acceptable AND SAID - otherwise

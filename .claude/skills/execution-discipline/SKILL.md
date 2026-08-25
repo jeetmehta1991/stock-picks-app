@@ -95,6 +95,14 @@ it wins over speed, over completeness, over looking finished.
    ACTION rule (L361, widening what you DO without approval) - this covers
    scope-of-CONCLUSION.
 
+8b. **RECOVERY CADENCE IS A COVERAGE CLAIM (L644/B2175).** Any long-running
+   process's checkpoint/heartbeat cadence implies a LARGEST WINDOW a hard death
+   can lose - state it as a number (min of every trigger: sim-day gates AND
+   timers), never as a frequency. sw10 died at 19 minutes with a day-50 gate
+   and a 30-minute timer both unfired: the window was real, enumerable from
+   two constants, and nobody had multiplied them out. The manifest's
+   obsolescence risks is where the number lives.
+
 9. **CAPABILITY CLAIMS ARE CLAIMS (B1731 / L505 / CHECKLIST #230).** Every
    example above is about DATA - counts, coverage, fire rates. **Claims about
    the SYSTEM ITSELF slip past**: what a tool can load, what a format permits,
