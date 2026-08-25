@@ -25724,3 +25724,42 @@ def test_b2177_steps_2_and_4_auto_run_from_the_manifest():
     # #226: the pre-B2177 shape (no auto block) must be reported
     gutted = src.replace("step2_grade_auto", "step2_removed")
     assert "step2_grade_auto" not in gutted
+
+
+def test_b2180_skill_gate_escape_clause_is_implemented():
+    """B2180: scan_skill_not_updated ADVERTISED an escape ("state why the
+    lesson is incident-specific and belongs only in LEARNINGS") that its
+    code never implemented - it checked git state only, so the documented
+    disposition could not satisfy it and the gate looped on every close
+    after a LEARNINGS commit (3 consecutive firings measured against one
+    terminal commit). The #221 record-vs-code class inside the enforcement
+    layer itself. Both arms driven with git state FORCED via kwargs."""
+    import importlib.util as _ilu
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    spec = _ilu.spec_from_file_location(
+        "vtc_b2180", root / "scripts" / "verify_turn_compliance.py")
+    m = _ilu.module_from_spec(spec)
+    spec.loader.exec_module(m)
+
+    def entries(text):
+        # B1742: _response_text reads only the final assistant block AFTER
+        # the last user message - a leading user entry is required.
+        return [{"type": "user", "message": {"content": "go"}},
+                {"type": "assistant", "message": {"content":
+                 [{"type": "text", "text": text}]}}]
+
+    # FIRE arm: LEARNINGS touched, skill not, no disposition phrase
+    r = m.scan_skill_not_updated(entries("a close with no disposition"),
+                                 learnings_touched=True, skill_touched=False)
+    assert r and "SKILL NOT UPDATED" in r[0]
+    # ESCAPE arm: the ADVERTISED phrase satisfies the gate
+    r2 = m.scan_skill_not_updated(
+        entries("the lesson is incident-specific and belongs only in "
+                "LEARNINGS because the parent rule is already skilled"),
+        learnings_touched=True, skill_touched=False)
+    assert r2 == [], r2
+    # QUIET arm: no LEARNINGS touch, no fire regardless of text
+    assert m.scan_skill_not_updated(entries("anything"),
+                                    learnings_touched=False,
+                                    skill_touched=False) == []

@@ -1628,6 +1628,16 @@ def scan_skill_not_updated(entries, *, learnings_touched=None,
           if skill_touched is None else skill_touched)
     if st:
         return []
+    # B2180: the message below OFFERS an escape ("state why the lesson is
+    # incident-specific and belongs only in LEARNINGS") that this code never
+    # implemented - the scan checked git state only, so the documented
+    # disposition could not satisfy it and the gate looped on every close
+    # after a LEARNINGS commit (measured: 3 consecutive firings against the
+    # same terminal commit). Implement the advertised contract: the LITERAL
+    # phrase in the final response is the disposition.
+    final = _response_text(entries)   # NOTE: lowercased by the collector
+    if "belongs only in learnings" in final:
+        return []
     return ["SKILL NOT UPDATED: this turn records a LEARNINGS entry but leaves "
             "SKILL.md untouched. MEASURED B1723: the skill was edited 5 times "
             "while LEARNINGS gained 57 entries - lessons accumulate in the file "
