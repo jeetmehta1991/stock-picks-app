@@ -14464,3 +14464,38 @@ value was narrowing 1,390 tickets to 14 rows a human could read in a minute; the
 from the reading. **A detector's job is to shrink the population, not to state the result** - and
 reporting its raw count as though it were the result is how a screening tool gets mistaken for a
 measurement.
+
+
+## L645 — A faithful copy of an existing emitter reproduced its phantom (B2167)
+
+**What happened:** the owner directed a review of the session's work. Sweeping every
+`getattr(self, NAME)` in the engine for whether NAME is ever assigned found 12 names: 9
+assigned, 1 deliberate test seam (`supervisor_interval_s`, set externally by test_b2148), and
+**2 phantoms** — `open_positions` (the real attribute is `open_trades`, 22 uses) and
+`_last_universe` (the real attribute is `liquid_universe`). The periodic state emitter has
+counted both phantoms since the B1043 era, so **every engine_state.json ever written records
+`open_trades: 0` and `tickers_processed: 0`** — including the b1831b state file quoted earlier
+this session, whose zeros I read as data. M6's boundary-drop measurement reads state
+open_trades and has therefore been measuring a constant.
+
+**How my own code inherited it:** the B2126 kill-path emitter was written as "the same dict +
+atomic write as the periodic emitter, so both writers stay one schema" — a deliberate
+consistency choice that faithfully copied the bug. **Copying an existing block preserves its
+defects with the same fidelity as its behaviour**, and the consistency rationale actively
+suppressed the question "is the source block correct?"
+
+**Why the b2148/b2126 pins missed it:** both asserted the trade COUNT sourced from
+`len(self.closed_trades)` and the file landing atomically — nobody asserted the OPEN count
+against a run that actually had open trades. A field that is always 0 passes every test whose
+fixture also has 0 of the thing.
+
+**Rule (compliance failure against the PIVOT #34 memory rule
+feedback_phantom_name_fixes_hide_as_partial_success and CHECKLIST item 226; no new item
+warranted):** when copying an existing code block, audit its attribute references against the
+class as part of the copy — the copy is a fresh shipment of old code and deserves a fresh
+read. And when pinning an emitter, assert at least one field against a fixture that has a
+NON-ZERO value of that field; zeros prove nothing (the same lesson as L580's rendered-0).
+
+**Mechanism:** test_b2167_no_phantom_getattr_names_in_the_engine — every getattr-self name
+must be assigned somewhere or sit on the explicit seam whitelist, engine-wide, so the class
+cannot re-enter regardless of who copies what.
