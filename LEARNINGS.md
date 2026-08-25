@@ -14499,3 +14499,35 @@ NON-ZERO value of that field; zeros prove nothing (the same lesson as L580's ren
 **Mechanism:** test_b2167_no_phantom_getattr_names_in_the_engine — every getattr-self name
 must be assigned somewhere or sit on the explicit seam whitelist, engine-wide, so the class
 cannot re-enter regardless of who copies what.
+
+
+## L644 — A native fault before the first checkpoint loses everything, and no gate saw the window (B2175)
+
+**What happened:** sw10's engine died of a Windows access violation (exit 3221225477 =
+0xC0000005, launch line in output_audit/b2174_sw10_summary.log) at simulated day 5. No
+engine_state.json existed, so run_wave returned FAILED_NO_CHECKPOINT (scripts/run_wave.py:177)
+and correctly ended the wave - nothing was resumable because nothing had been written.
+
+**The class, named:** the periodic checkpoint first fires at sim-day 50 (the B1043-era `i == 50`
+gating); the supervisor's kill-path emitter writes state only on a CAP kill. Between day 0 and
+day 50, a NATIVE fault - which runs no Python handler - leaves ZERO recovery artifacts. Every
+run in the program spends its first ~20-40 minutes inside that window. The B2118 pilot's arms
+burned 2.6h each partly because their resume attempts had only late checkpoints; this crash is
+the same shape at the other end of the run.
+
+**Why no gate saw it:** the run-safety review (B2148-B2159) hardened the CAP path - kill,
+heartbeat, resume contract - and every proof exercised a run that had already passed day 50 or
+was killed by the supervisor (which writes state itself). The crash-before-first-checkpoint
+combination was enumerable from the two gating constants alone and nobody multiplied them out.
+Compliance failure against item 226 (the fail arm never covered a native death in the early
+window) and item 128 (the happy-path artifact set was checked; the no-artifact path was not) -
+no new checklist item warranted.
+
+**Rule:** recovery cadence is a COVERAGE claim, not a frequency choice. State the largest
+window in which a hard death loses everything, as a number, in the manifest's obsolescence
+risks; if that window exceeds the cost of re-running it, it is acceptable AND SAID - otherwise
+checkpoint earlier (a day-1 first checkpoint bounds the loss to minutes). MECHANISM: the
+S6-B2175a ticket carries the fix decision (first-checkpoint-at-day-1 vs accept-and-declare) for
+the owner; the WINDOW disclosure belongs in build_manifest the day the fix lands. Detection of
+the crash itself was already mechanical (classify_run_log DEAD + the wave summary) - what was
+missing was only the loss-bound statement, which is JUDGMENT-ONLY until the manifest carries it.
