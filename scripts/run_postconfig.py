@@ -124,6 +124,36 @@ def checks(cube_dir: Path, step1: bool = False):
     except Exception as exc:
         out.append(("M7_degraded_exits", "SKIP", f"lens unavailable: {exc!r}"))
 
+    # M10 gate receipt (B2169, S6-B2159b): the cube's dir must carry the
+    # receipt the gate wrote at launch, and its manifest hash must match the
+    # manifest sitting beside the cube. A cube with no receipt was launched
+    # around the gate; a hash mismatch means the manifest changed after the
+    # gate read it. Legacy cubes (pre-B2169) SKIP with the reason stated.
+    import hashlib as _hl10
+    rp = cube_dir / "gate_receipt.json"
+    mp10 = cube_dir / "run_manifest.json"
+    if not rp.exists():
+        out.append(("M10_gate_receipt", "SKIP",
+                        "no gate_receipt.json - cube predates B2169 or was "
+                        "launched AROUND the gate; post-B2169 launches always "
+                        "write one, so treat SKIP on a NEW cube as a finding"))
+    elif not mp10.exists():
+        out.append(("M10_gate_receipt", "FAIL",
+                        "receipt present but run_manifest.json missing - the "
+                        "receipt cannot be verified against anything"))
+    else:
+        rec = json.loads(rp.read_text(encoding="utf-8"))
+        actual = _hl10.sha256(mp10.read_bytes()).hexdigest()
+        if rec.get("manifest_sha256") == actual:
+            out.append(("M10_gate_receipt", "PASS",
+                            f"receipt matches manifest sha {actual[:12]}"))
+        else:
+            out.append(("M10_gate_receipt", "FAIL",
+                            "receipt manifest_sha256 != the manifest beside "
+                            "the cube - the manifest CHANGED after the gate "
+                            "read it (the rebind hole the council named)"))
+
+
     return out
 
 

@@ -256,6 +256,26 @@ def main(argv: list[str] | None = None) -> int:
 
     out_dir = Path(a.output_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
+
+    # B2169 (S6-B2159b): a gate PASS leaves a RECEIPT in the run's own output.
+    # Before this, PASS printed to stdout and exited - no artifact could later
+    # say which results were gated, and a kill erased even the stdout. The
+    # receipt binds the gated manifest (by hash) to the launched argv, and
+    # run_postconfig FAILS any cube whose dir lacks a matching receipt.
+    import hashlib as _hl
+    import json as _json2
+    import time as _t2
+    _man_bytes = Path(a.manifest).read_bytes()
+    receipt = {
+        "manifest_path": str(a.manifest),
+        "manifest_sha256": _hl.sha256(_man_bytes).hexdigest(),
+        "gate": "prelaunch_gate PASS + drift/window/arm-env checks",
+        "tag": a.tag,
+        "engine_argv": list(a.engine_args),
+        "timestamp": _t2.strftime("%Y-%m-%dT%H:%M:%SZ", _t2.gmtime()),
+    }
+    (out_dir / "gate_receipt.json").write_text(
+        _json2.dumps(receipt, indent=1), encoding="utf-8")
     summary = Path(a.summary_log) if a.summary_log else out_dir / "launch_summary.log"
     sha = subprocess.run(["git", "rev-parse", "--short", "HEAD"], cwd=str(ROOT),
                          capture_output=True, text=True).stdout.strip()

@@ -25632,3 +25632,48 @@ def test_b2168_arm_env_mismatch_refuses(tmp_path):
         {"tag": "a1", "env": {"SMC_SWING_LENGTH": "10"}}]}),
         encoding="utf-8")
     assert ls.arm_env_matches(str(mf2), {"SMC_SWING_LENGTH": "10"}) == []
+
+
+def test_b2169_gate_receipt_binds_manifest_to_launch(tmp_path):
+    """B2169 (S6-B2159b receipt half): a gate PASS must leave an artifact
+    in the run output binding the gated manifest (by hash) to the argv,
+    and the battery must FAIL a cube whose manifest changed after gating
+    and SKIP-with-warning a cube with no receipt at all."""
+    import hashlib
+    import importlib.util as _ilu
+    import json as _json
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    spec = _ilu.spec_from_file_location(
+        "run_postconfig_b2169", root / "scripts" / "run_postconfig.py")
+    rp = _ilu.module_from_spec(spec)
+    spec.loader.exec_module(rp)
+
+    from backtest.engine.exit_strategies import EXIT_STRATEGIES
+    header = ("strategy,direction,exit_method,entry_date,fill_date,"
+              "ticker,pnl_pct,hold_days")
+    rows = [f"s1,long,{ex},2024-06-03,2024-06-04,NVDA,1.5,3"
+            for ex in EXIT_STRATEGIES]
+    d = tmp_path / "cube"; d.mkdir()
+    (d / "trade_exit_detail.csv").write_text(
+        chr(10).join([header] + rows) + chr(10), encoding="utf-8")
+    man = d / "run_manifest.json"
+    man.write_text(_json.dumps({"batch": "T"}), encoding="utf-8")
+
+    def m10(res):
+        return {n: (st, ev) for n, st, ev in res}["M10_gate_receipt"]
+
+    # no receipt -> SKIP with the launched-around-the-gate warning
+    st, ev = m10(rp.checks(d, step1=False))
+    assert st == "SKIP" and "AROUND the gate" in ev
+    # matching receipt -> PASS
+    (d / "gate_receipt.json").write_text(_json.dumps(
+        {"manifest_sha256": hashlib.sha256(man.read_bytes()).hexdigest()}),
+        encoding="utf-8")
+    st, ev = m10(rp.checks(d, step1=False))
+    assert st == "PASS", (st, ev)
+    # manifest changed AFTER gating -> FAIL naming the rebind hole
+    man.write_text(_json.dumps({"batch": "T", "tampered": 1}),
+                   encoding="utf-8")
+    st, ev = m10(rp.checks(d, step1=False))
+    assert st == "FAIL" and "CHANGED after the gate" in ev
