@@ -24939,6 +24939,10 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
          "L633 owner-corrected: surface the conflict, both directions"),
         ("every turn that ANSWERS A QUESTION",
          "L634: the predicate excluded the turn type that generates findings"),
+        ("RECOVERY CADENCE IS A COVERAGE CLAIM",
+         "L644/B2175: state the largest hard-death loss window as a number "
+         "from ALL triggers (sim-day gates AND timers) - sw10 died at 19 min "
+         "inside both a day-50 gate and a 30-min timer"),
         ("A GUARD MUST NOT SHARE THE CONTROL FLOW IT GUARDS",
          "L637: a loop-top cap bounds iterations, not wall-clock"),
         ("AFTER ONE FAILED EXACT-MATCH EDIT, CHANGE ROUTE",
@@ -24991,7 +24995,7 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     assert _b2123_skill_rules_present(fable, disc) == []
     # #226 prove-it-can-fail: a gutted file must be REPORTED, not pass
     gutted = _b2123_skill_rules_present("# The Fable Method\n", "# Discipline\n")
-    assert len(gutted) == 37, gutted
+    assert len(gutted) == 38, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
