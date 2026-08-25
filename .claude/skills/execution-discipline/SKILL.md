@@ -243,7 +243,23 @@ batch-1 traps. Each rule retroactively catches >=2 real past misses (#136).
    artifact look different?* Pin:
    test_b2158_a_log_without_an_ending_is_dead_not_running.
 
-9. **FRESH-EYES REVIEW CADENCE (standing).** Before every batch-size
+9. **A GUARD MUST FAIL CLOSED ON THE ABSENT INPUT (L642/B2159).** A check
+   conditioned on the presence of the thing it guards is not defensive - it
+   converts UNDECLARED into APPROVED. MEASURED, on a check I had shipped that
+   same day: `if cap is not None and cap > LIMIT: refuse` meant a manifest
+   that simply omitted the field skipped the check, so an owner HARD CAP went
+   unenforced against exactly the manifests least likely to declare a bound.
+   Write `if X is None: refuse` BEFORE `if X > limit: refuse`. **The absent
+   case is not the safe case; it is the case the guard exists for.**
+   And a check nobody has watched FAIL is indistinguishable from a check that
+   does not exist: keep a known-bad corpus proving each check fires with a
+   reason naming the defect, plus a reachability assertion that every defined
+   check is reached from the entry point - this session shipped one wired to
+   call ITSELF, which ran zero times and was caught by reading, not by a test.
+   Pins: test_b2159_known_bad_manifests_are_each_refused,
+   test_b2159_every_gate_check_is_reachable.
+
+10. **FRESH-EYES REVIEW CADENCE (standing).** Before every batch-size
    escalation (or every ~10 batches of a sequence), an adversarial review of
    the accumulated work runs with fresh eyes — a different model or a cold
    pass that re-derives claims from code/data rather than summaries. The

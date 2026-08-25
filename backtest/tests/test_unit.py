@@ -24949,6 +24949,8 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
          "L640: broken twice; instance 1 was filed only in the ledger"),
         ("SILENCE IS NEVER EVIDENCE OF WORK IN PROGRESS",
          "L641: a killed run log looks identical to a live one"),
+        ("A GUARD MUST FAIL CLOSED ON THE ABSENT INPUT",
+         "L642: a check gated on its own input approves the undeclared"),
         ("SEARCH THE CLASS, NOT THE CONSEQUENCE",
          "L635: only the corpus search establishes novelty"),
         ("Peeking is a BEST-CASE procedure",
@@ -24981,7 +24983,7 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     assert _b2123_skill_rules_present(fable, disc) == []
     # #226 prove-it-can-fail: a gutted file must be REPORTED, not pass
     gutted = _b2123_skill_rules_present("# The Fable Method\n", "# Discipline\n")
-    assert len(gutted) == 32, gutted
+    assert len(gutted) == 33, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
