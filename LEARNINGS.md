@@ -14377,3 +14377,33 @@ a check nobody has watched FAIL is indistinguishable from a check that does not 
 known-bad corpus that proves each check fires, plus a reachability assertion that every defined
 check is reached from the entry point - this session shipped a check wired to call ITSELF, which
 ran zero times and was caught by reading rather than by any test.
+
+
+## L643 — The fail-open pattern is only a bug when the missing value is a BOUND (B2160)
+
+**What the sweep found:** after L642 (a cap check that approved every manifest omitting the
+field), I swept `if X is not None and <condition>` across the whole safety path - the pre-run
+gate, both launchers, and the engine. **Seven instances. All seven correct.** The gate's line-70
+instance is an ADVISORY that prints and never blocks, so failing open is precisely its intended
+behaviour; the six in the engine read optional DATA - an ATR value, a VIX frame, a year
+rollover, days-to-event, the firing-strategy set - where absence means a feature is unavailable,
+not that a limit went undeclared.
+
+**So the pattern is not the defect.** Had I burned the pattern down on sight I would have
+"fixed" seven correct call sites and changed engine behaviour on optional-data paths, which is a
+worse outcome than the bug I started from. The discriminator is what the missing value MEANS:
+
+- **A BOUND** (a cap, a quota, a deadline, a required declaration): absence must REFUSE. The
+  absent case is the case the guard exists for.
+- **A FEATURE** (optional data, an enrichment, a diagnostic): absence must SKIP. Refusing would
+  break every run that legitimately lacks it.
+
+**Rule (compliance failure against item 237 - a sweep must classify, not just count; no new item
+warranted):** when sweeping a pattern class, read each instance and classify it before acting.
+Report the population AND the classification, because "N instances of the bad pattern" is a
+count that invites a mass edit, while "N instances, M of which mean a bound" is a finding. The
+sweep's value here was proving the blast radius was ONE, not seven.
+
+**Cross-reference:** this is the counterpart to L639 - there a ticket's number decayed while its
+status stayed true; here a pattern's count is true while its meaning varies per instance. Both
+say the same thing: a number without its per-instance reading is not yet evidence.
