@@ -1394,6 +1394,112 @@ because the stop conditions are measured, not judged in the moment:
 **On any HALT: stop the sweep, do not start the next wave, notify the owner with the evidence.**
 Waves are never started to "keep the machine busy" - an unexplained result stops the sequence.
 
+## RUN-SAFETY ARCHITECTURE (B2142-B2169, 2026-08-24/25) — the launch stack as it actually is
+
+Built after one W-B arm ran 2.9h against a 2.5h cap with no kill, no warning and no
+checkpoint, computing blind for 2h34m. Every mechanism below exists because a specific
+failure was measured, and every one carries a pin.
+
+### Throughput, measured (the numbers that drive venue and cap decisions)
+
+- **Every run in program history until 2026-08-24 was single-threaded**: `run_wave.py`
+  hardcoded `--screen-pool-workers 0` (1 of 10 cores; confirmed live at 97pct of one core
+  via Get-Process). The N=3 concurrency figure (2.04x/arm, S6-B1552a) was measured in that
+  pool-OFF regime — **the pool dividend and the N-way dividend draw on the same 10 cores
+  and must never be multiplied** (council-verified, B2142).
+- Pool ON at 50 tickers: 3.21x screening, 2.33x end-to-end (the b2128 probe pair).
+- Pool ON at 200 tickers: **60.7 s/sim-day** (11 PHASE_TIMING screen_done timestamps,
+  b7xxzzhf9 capture, 15:09-15:31) vs sequential 127.9 (sw5) / 85.5 (sw10) — so the pool
+  buys ~1.4-2.1x at full width, **the speedup decays with universe size**. DERIVED
+  config cost: 60.7 x 250 days ≈ **4.2h** — fails the old 3h cap, fits the 5h cap
+  un-chunked (~19pct headroom). Memory: one pooled arm ≈ 5.3GB of 15.6GB (main 311MB +
+  10 workers at 468-584MB), so N=2 pooled would fit RAM but split the same cores.
+- `pool_workers` is spec-driven in run_wave since B2142 (default 0 — no legacy spec
+  changes behaviour).
+
+### The cap (owner ruling 2026-08-24: 5 hours)
+
+- Raised 3h -> 5h after the 4.2h measurement. Recorded in CLAUDE.md banner, memory, the
+  queue — and as the executable constant `OWNER_LOCAL_CAP_HOURS = 5.0` in
+  `scripts/prelaunch_gate.py`, which **fails CLOSED**: a manifest declaring NO leg cap is
+  refused (L642 — the check was briefly `if cap is not None`, which converted
+  "undeclared" into "approved"; caught by council review the same day it shipped).
+- Enforcement inside the engine is TWO-LAYER: the in-loop per-day check (B2132), plus the
+  **B2148 supervisor** — a daemon thread armed before the first iteration that samples
+  wall-clock on its own schedule and hard-exits at the cap wherever the loop is. L637:
+  the engine had SEVEN loop-gated guards/writers (telemetry :813, progress :830, 50-day
+  :934, kill :843, checkpoint writers :973/:1037/:1092) and one long sim-day silenced all
+  seven at once; a guard must not share the control flow it guards. B2145 freezes the
+  loop-gated writer count at 6+cap so an eighth cannot join silently.
+
+### Observability (session-agnostic by construction)
+
+- The supervisor writes **`run_heartbeat.json`** every ~30s (atomic tmp+replace):
+  elapsed_hours, sim_day_index, sim_date, closed/open trades, cap, pid, timestamp.
+  Progress lives in the filesystem — any session, or none, can read it. Session-held
+  monitors and crons are convenience only (they died with a session restart on 2026-08-24
+  and the run computed blind; L637/S6-B2143b).
+- A killed run's launcher log is shape-identical to a live one (L641): the CFG completion
+  line is written only on normal exit. **`scripts/classify_run_log.py`** is the
+  authoritative reader — COMPLETE / DEAD_WITHOUT_ENDING / RUNNING, one-directional: no
+  ending + no live pid = DEAD, never RUNNING (pin test_b2158).
+- On a wall-time kill the supervisor flushes `engine_state.json` + trade_log checkpoint
+  through an out-of-loop emitter, so a killed run stays resumable (B2126 proved
+  kill-then-resume live; B2148 proved it for a hung sim-day).
+- **B2167 caveat on historical data**: every engine_state.json written before B2167
+  records `open_trades: 0` and `tickers_processed: 0` — two getattr names
+  (`open_positions`, `_last_universe`) were never assigned (PIVOT #34 phantom class), so
+  M6 boundary-drop numbers from before B2167 are vacuous. Fixed at 6 sites; pin
+  test_b2167 bans phantom getattr-self names engine-wide.
+
+### The pre-run gate (CHECKLIST #158/#160/#161 — wired, hardened B2149-B2169)
+
+`scripts/prelaunch_gate.py`, invoked by `scripts/launch_sweep.py` (refuses on non-zero;
+the HAND-RUN-ONLY docstring era ended at B2082 and the header now says so). Checks:
+manifest completeness, isolation, calendar, obsolescence answer, wall-clock projection,
+S3 sha + ticker disjointness + budget (AWS mode), **plus B2149 run-safety**: engine must
+carry the supervisor, must write the heartbeat, and the declared leg cap must respect
+OWNER_LOCAL_CAP_HOURS (fail-closed). launch_sweep separately refuses on: git drift (HEAD
+vs frozen_sha, dirty engine paths — B2127), window contradiction (B2132), and **arm-env
+mismatch (B2168)**: every env value the manifest's arms declare (SMC_SWING_LENGTH = P1,
+STRAT_EMA_SPAN = P6) must be present AND equal in the live environment — unset would
+silently run engine defaults while the manifest names another config (the S6-B2136
+class).
+
+- **Gate credibility is tested, not assumed**: a known-bad corpus of 6 single-mutation
+  manifests must each be REFUSED with a reason naming the defect, and a reachability pin
+  asserts every `check_*` function is called from the entry point (one was briefly wired
+  to call itself and ran zero times — test_b2159 both).
+- **A PASS leaves a receipt** (B2169): `gate_receipt.json` in the run output binds the
+  gated manifest's sha256 to the launched argv; post-config check M10 FAILS a cube whose
+  manifest no longer hashes to its receipt (the gate-time/launch-time rebind hole) and
+  flags a receipt-less new cube as launched AROUND the gate.
+- **Known remaining holes, owner-gated (S6-B2159b remainder)**: the engine can still be
+  invoked directly without the gate (closing it means the engine refuses without a
+  receipt, which breaks every direct invocation by design); the supervisor checks are
+  source-text greps; LOCAL mode still waives the ticker-list requirement when `universe`
+  is present.
+
+### Post-config battery (run_postconfig.py — invoked by run_wave at every arm end)
+
+Step-1 sanity + M1 content-sha, M2 exits-vs-live-registry, M3 fill_date, M4 window +
+holdout-touch, M5 pnl integrity, M7 degraded exits, M9 universe artifact, **M10 gate
+receipt** — with M6 (boundary drops; meaningful only post-B2167) recorded by run_wave and
+M8 (short borrow-rate) pending a short cube (S6-B2118b trigger).
+
+### Standing open decisions this section feeds (owner)
+
+1. **Venue** (S6-B2107a): local pilot FAILED its gate at the old cap on measured
+   evidence; at 5h a config fits un-chunked. Hetzner auction remains ruled, gated on a
+   completed local strategy.
+2. **W-B relaunch**: no run is in flight; relaunch is one command but is NOT taken
+   without the owner's word (feedback_ask_before_relaunching_corrected_version).
+3. **regime_flip retirement** (S6-B2139a): refused on stale evidence — 42 of 95 rows in
+   the post-fix reference cube are REAL flips.
+4. **Wave methodology**: four completed configs = ONE grid under four cross-config
+   settings, zero above the 0.333 noise floor; the council's falsification/breadth
+   alternatives are on record (B2142 council).
+
 ## MANDATORY POST-CONFIG ANALYSIS (owner directive - run after EVERY config, unprompted)
 
 **This runs after every config completes. No prompt required. Skipping a step is a silent miss.**
