@@ -231,11 +231,64 @@ def main() -> int:
           f"{a.cube}/trade_exit_detail.csv --n 50 --swing-length <SW> --ema-span <SPAN>")
 
 
+    # B2177 (owner question 2026-08-25: "why hasn't the mandatory post config
+    # run been triggered automatically?"): steps 2 and 4 WERE excluded because
+    # they need the config's own swing/span - true at B2118, expired at B2138
+    # when the manifest began carrying them. Read them from the cube's own
+    # manifest and run both; a pre-B2138 cube (no arms env) keeps the prompts.
+    auto_notes = []
+    mf2 = cube_dir / "run_manifest.json"
+    env2 = {}
+    if mf2.exists():
+        try:
+            arms = json.loads(mf2.read_text(encoding="utf-8")).get("arms") or []
+            env2 = dict((arms[0] or {}).get("env") or {}) if arms else {}
+        except (OSError, ValueError):
+            env2 = {}
+    swing2, span2 = env2.get("SMC_SWING_LENGTH"), env2.get("STRAT_EMA_SPAN")
+    if swing2 and span2:
+        grid_out = ROOT / "output_audit" / f"{cube_dir.name}_grid_auto.json"
+        g = subprocess.run(
+            [sys.executable, str(ROOT / "scripts" / "tighten_breaker_block.py"),
+             "--cube", str(cube_dir / "trade_exit_detail.csv"),
+             "--swing-length", str(swing2), "--span", str(span2),
+             "--min-n", "10", "--out", str(grid_out)],
+            capture_output=True, text=True, cwd=str(ROOT),
+            env={**__import__("os").environ, "PYTHONPATH": ".;scripts"})
+        results.append(("step2_grade_auto",
+                        "PASS" if g.returncode == 0 and grid_out.exists()
+                        else "FAIL",
+                        f"exit {g.returncode}; swing={swing2} span={span2} "
+                        f"-> {grid_out.name}"))
+        sc = subprocess.run(
+            [sys.executable, str(ROOT / "scripts" / "spot_check_trades.py"),
+             "--cube", str(cube_dir / "trade_exit_detail.csv"),
+             "--n", "50", "--swing-length", str(swing2),
+             "--ema-span", str(span2)],
+            capture_output=True, text=True, cwd=str(ROOT),
+            env={**__import__("os").environ, "PYTHONPATH": "."})
+        tail = "; ".join((sc.stdout or "").strip().splitlines()[-2:])
+        results.append(("step4_spot_check_auto",
+                        "PASS" if sc.returncode == 0 else "FAIL",
+                        f"exit {sc.returncode}; {tail[:180]}"))
+        auto_notes = [("2_grade_with_config_params",
+                       f"AUTO (B2177): graded at manifest swing={swing2} "
+                       f"span={span2} -> {grid_out.name}"),
+                      ("4_three_leg_spot_check",
+                       f"AUTO (B2177): spot_check_trades --n 50 at manifest "
+                       f"params; {tail[:140]}")]
+    else:
+        results.append(("step2_step4_auto", "SKIP",
+                        "manifest carries no arms env (pre-B2138 cube) - "
+                        "steps 2/4 remain manual prompts below"))
+
     fails = [x for x in results if x[1] == "FAIL"]
     if a.write_ledger and not fails:
         lp = ROOT / "output_audit" / "postconfig_ledger.json"
         ledger = json.loads(lp.read_text(encoding="utf-8")) if lp.exists() else {}
         entry = ledger.get(cube_dir.name, {})
+        for step_name, ev in auto_notes:
+            entry[step_name] = {"status": "DONE", "evidence": ev}
         entry["1_cube_sanity"] = {
             "status": "DONE",
             "evidence": "run_postconfig: " + "; ".join(

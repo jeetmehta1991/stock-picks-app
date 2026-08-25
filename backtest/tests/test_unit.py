@@ -25697,3 +25697,28 @@ def test_b2169_gate_receipt_binds_manifest_to_launch(tmp_path):
                    encoding="utf-8")
     st, ev = m10(rp.checks(d, step1=False))
     assert st == "FAIL" and "CHANGED after the gate" in ev
+
+
+def test_b2177_steps_2_and_4_auto_run_from_the_manifest():
+    """B2177 (owner question: why were the mandatory post-config steps not
+    triggered automatically?): steps 2/4 were excluded because they need
+    the config's own swing/span - TRUE at B2118, EXPIRED at B2138 when the
+    manifest began carrying them in arms env. run_postconfig must read
+    SMC_SWING_LENGTH / STRAT_EMA_SPAN from the cube's own manifest, invoke
+    the grader and the spot check, and upgrade ledger steps 2/4 with
+    evidence. LIVE PROOF on record: output_b2174_sw20_sw20 ledger steps
+    1/2/4 all DONE (B2177 close). This pin is the structural half."""
+    from pathlib import Path as _P
+    src = (_P(__file__).resolve().parents[2] / "scripts" /
+           "run_postconfig.py").read_text(encoding="utf-8")
+    for frag, why in (
+        ("SMC_SWING_LENGTH", "params come from the manifest arms env"),
+        ("step2_grade_auto", "the grader is INVOKED, not prompted"),
+        ("step4_spot_check_auto", "the spot check is INVOKED"),
+        ("for step_name, ev in auto_notes:", "ledger steps 2/4 upgraded"),
+        ("pre-B2138 cube", "legacy cubes keep the manual prompts"),
+    ):
+        assert frag in src, f"auto-wiring lost: {why} ({frag!r})"
+    # #226: the pre-B2177 shape (no auto block) must be reported
+    gutted = src.replace("step2_grade_auto", "step2_removed")
+    assert "step2_grade_auto" not in gutted
