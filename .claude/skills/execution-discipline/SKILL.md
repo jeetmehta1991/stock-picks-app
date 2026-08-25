@@ -286,7 +286,18 @@ batch-1 traps. Each rule retroactively catches >=2 real past misses (#136).
     re-checks a number that confirms the thing you just built - that is why
     this one is JUDGMENT-ONLY and cannot be scanned for.
 
-12. **FRESH-EYES REVIEW CADENCE (standing).** Before every batch-size
+12. **A DETECTOR SHRINKS THE POPULATION; THE READING STATES THE RESULT
+    (L644 addendum/B2165).** Quoting a screening tool's raw count as the
+    finding is how a filter gets mistaken for a measurement. MEASURED: a
+    regex flagged 14 live tickets as "quoting a count"; hand-reading all 14
+    gave a precision near 9 of 14 - the misses were a DATE fragment, an
+    owner-item number, a CHECKLIST reference and two process IDs, none of
+    which a digit matcher can tell from a measurement. **The same reading
+    found a real stale figure the count alone would never have surfaced.**
+    So: report what you READ, cite the detector only as the thing that made
+    the reading affordable - here, 1,391 tickets narrowed to 14 in a minute.
+
+13. **FRESH-EYES REVIEW CADENCE (standing).** Before every batch-size
    escalation (or every ~10 batches of a sequence), an adversarial review of
    the accumulated work runs with fresh eyes — a different model or a cold
    pass that re-derives claims from code/data rather than summaries. The
