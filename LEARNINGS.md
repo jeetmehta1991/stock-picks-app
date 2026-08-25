@@ -14583,3 +14583,27 @@ file. **Compliance failure against item 256 (re-derive a figure at cite time, ne
 — no new checklist item; the mechanism is the assert-before-write script pattern itself, and
 detection of a stale MEMORY (as opposed to a stale document) is JUDGMENT-ONLY.** The habit the
 instance reinforces: grep the current value first, then write the edit against it.
+
+
+## L646 — "One command" was two, and the second command was the safety (B2185)
+
+**What happened:** reporting the preserved checkpoints, I wrote that each dead wave was "one
+command from continuing." The #230 gate demanded the artifacts; opening them showed sw50's spec
+carries resume=True (one command, true) while **sw30's spec carries resume=False** — so the
+"one command" for sw30 would have RESTARTED it from day 0 and clobbered its day-57 checkpoint,
+the exact hazard the resume key exists to prevent. The claim was corrected in-message with the
+field that disproves it (b2183_sw30_spec.json resume field vs output_b2183_sw30_sw30/
+engine_state.json simulated_day 57).
+
+**The class, third instance this session:** an effort/capability estimate stated without
+opening the artifact it depends on — L622 (the halving consequence), L645 (the MCPT objection),
+now the resume command. The three share one shape: the claim FELT like bookkeeping, not like a
+quantitative assertion, which is exactly why the #230 gate reads effort language mechanically.
+The new wrinkle here: the uncosted claim was not merely wrong about EFFORT — acting on it would
+have DESTROYED the state it described. A wrong cost estimate can be a wrong safety claim.
+
+**Rule (compliance failure against item 230 — no new checklist item warranted):** the standing
+rule already covers this; the mechanism is the existing #230 scan, which fired and caught it.
+JUDGMENT-ONLY residue: whether a "cheap" claim doubles as a safety claim is not scannable —
+before quoting any recovery/resume/rollback as trivial, open the config that the recovery
+command would read and verify it points where the prose says.
