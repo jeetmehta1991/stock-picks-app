@@ -24957,6 +24957,8 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
          "L644: the detector for a class was an instance of it"),
         ("A DETECTOR SHRINKS THE POPULATION; THE READING STATES THE RESULT",
          "L644 addendum: precision 9 of 14; the reading found the real one"),
+        ("A COPY IS A FRESH SHIPMENT OF OLD CODE",
+         "L645: the copied emitter reproduced the phantom; zero fixtures hid it"),
         ("SEARCH THE CLASS, NOT THE CONSEQUENCE",
          "L635: only the corpus search establishes novelty"),
         ("Peeking is a BEST-CASE procedure",
@@ -24989,7 +24991,7 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     assert _b2123_skill_rules_present(fable, disc) == []
     # #226 prove-it-can-fail: a gutted file must be REPORTED, not pass
     gutted = _b2123_skill_rules_present("# The Fable Method\n", "# Discipline\n")
-    assert len(gutted) == 36, gutted
+    assert len(gutted) == 37, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -25368,7 +25370,17 @@ def test_b2148_supervisor_kills_a_run_whose_day_never_ends(tmp_path):
         eng = BacktestEngine.__new__(BacktestEngine)
         eng.max_run_hours = 3.0 / 3600.0        # 3 seconds
         eng.output_dir = r"{out}"
-        eng.closed_trades, eng.open_trades = [], []
+        from backtest.engine.exit_manager import OpenTrade
+        from datetime import date as _d
+        # B2172 (L645): the fixture MUST hold a non-zero open count - the
+        # phantom that recorded open_trades: 0 in every state file passed
+        # this very pin because the fixture also had 0 open trades.
+        eng.closed_trades = []
+        eng.open_trades = [OpenTrade(
+            ticker="AAA", entry_date=_d(2024, 6, 3), entry_price=100.0,
+            direction="long", strategy="s", category="c", sector="t",
+            initial_stop=90.0, trailing_stop=90.0, highest_close=101.0,
+            regime_at_entry="bull")]
         eng._run_start_time = time.time()
         eng._last_sim_day_index, eng._last_sim_date = 7, "2024-06-03"
         eng._last_universe = ["AAA", "BBB"]
@@ -25391,6 +25403,9 @@ def test_b2148_supervisor_kills_a_run_whose_day_never_ends(tmp_path):
                         "on a session-held watcher (S6-B2143b)"
     beat = _j.loads(hb.read_text())
     assert beat["source"] == "supervisor_thread"
+    assert beat["open_trades"] == 1, (
+        "the open count must reflect the REAL open trade - a 0 here "
+        "is the L645 phantom passing through a zero fixture")
     assert beat["sim_day_index"] == 7 and beat["elapsed_hours"] >= 0
 
     st = out / "engine_state.json"
@@ -25398,6 +25413,7 @@ def test_b2148_supervisor_kills_a_run_whose_day_never_ends(tmp_path):
     state = _j.loads(st.read_text())
     assert state["status"] == "supervisor_wall_time_kill"
     assert state["sim_day_index"] == 7
+    assert state["open_trades"] == 1
 
 
 def test_b2149_prerun_gate_refuses_without_the_supervisor(tmp_path, monkeypatch):

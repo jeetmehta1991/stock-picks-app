@@ -297,7 +297,21 @@ batch-1 traps. Each rule retroactively catches >=2 real past misses (#136).
     So: report what you READ, cite the detector only as the thing that made
     the reading affordable - here, 1,391 tickets narrowed to 14 in a minute.
 
-13. **FRESH-EYES REVIEW CADENCE (standing).** Before every batch-size
+13. **A COPY IS A FRESH SHIPMENT OF OLD CODE (L645/B2167).** Copying an
+    existing block preserves its defects with the same fidelity as its
+    behaviour, and the consistency rationale (same dict, one schema) actively
+    suppresses the question of whether the source block is correct. MEASURED:
+    a kill-path emitter faithfully copied the periodic emitter - including a
+    phantom getattr name never assigned anywhere - so every state file ever
+    written recorded open_trades: 0, and M6 measured a constant. The pins
+    missed it because NO FIXTURE HELD A NON-ZERO OPEN COUNT: a field that is
+    always 0 passes every test whose fixture also has 0 of the thing. So:
+    audit a copied block's attribute references against the class as part of
+    the copy, and pin an emitter with at least one fixture holding a NON-ZERO
+    value of each asserted field. Pins: test_b2167 (phantom names banned
+    engine-wide), test_b2148 (fixture now carries a real open trade).
+
+14. **FRESH-EYES REVIEW CADENCE (standing).** Before every batch-size
    escalation (or every ~10 batches of a sequence), an adversarial review of
    the accumulated work runs with fresh eyes — a different model or a cold
    pass that re-derives claims from code/data rather than summaries. The
