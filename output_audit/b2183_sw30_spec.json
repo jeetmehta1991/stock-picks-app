@@ -1,0 +1,23 @@
+{
+ "wave": "b2183_sw30",
+ "tickers_file": "output_audit/_sweep_200.txt",
+ "strategy_subset": "output_audit/_subset_one.txt",
+ "window": {
+  "start": "2024-05-05",
+  "end": "2025-05-05"
+ },
+ "leg_cap_hours": 4.5,
+ "max_legs": 3,
+ "step1_cube": true,
+ "pool_workers": 5,
+ "allow_engine_drift": true,
+ "arms": [
+  {
+   "tag": "sw30",
+   "env": {
+    "SMC_SWING_LENGTH": "30",
+    "STRAT_EMA_SPAN": "200"
+   }
+  }
+ ]
+}
