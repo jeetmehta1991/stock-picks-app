@@ -259,7 +259,21 @@ batch-1 traps. Each rule retroactively catches >=2 real past misses (#136).
    Pins: test_b2159_known_bad_manifests_are_each_refused,
    test_b2159_every_gate_check_is_reachable.
 
-10. **FRESH-EYES REVIEW CADENCE (standing).** Before every batch-size
+10. **A SWEEP MUST CLASSIFY, NOT COUNT (L643/B2161).** "N instances of the
+    bad pattern" invites a mass edit; "N instances, M of which mean a bound"
+    is a finding. MEASURED: after fixing a cap check that approved every
+    manifest omitting the field, the same pattern swept across the safety path
+    returned SEVEN instances - and all seven were correct. One was an advisory
+    that must never block; six read optional DATA where absence means the
+    feature is unavailable. **Burning the pattern down on sight would have
+    'fixed' seven correct call sites and changed engine behaviour.** The
+    discriminator: absence of a BOUND (cap, quota, required declaration) must
+    REFUSE, absence of a FEATURE must SKIP. Read every instance and report the
+    population WITH its classification - the sweep's value is often proving the
+    blast radius is one, not seven. Pairs with rule 6: a number without its
+    per-instance reading is not yet evidence.
+
+11. **FRESH-EYES REVIEW CADENCE (standing).** Before every batch-size
    escalation (or every ~10 batches of a sequence), an adversarial review of
    the accumulated work runs with fresh eyes — a different model or a cold
    pass that re-derives claims from code/data rather than summaries. The
