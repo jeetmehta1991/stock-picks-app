@@ -16,10 +16,13 @@ Usage:
   python scripts/prelaunch_gate.py --manifest run_manifest.json \
       [--ledger output_batches/batch_ledger.json]
 
-**HAND-RUN-ONLY (B1704).** Nothing invokes this automatically - no Stop hook, no
-pre-commit, no launcher. An audit found 12 of 16 gate scripts in this state, so
-presence is NOT enforcement (CHECKLIST #224). Run it explicitly and read its exit
-code; if you need it to bind, wire it and say where.
+**WIRED SINCE B2082 (header corrected B2159).** This block used to read
+"HAND-RUN-ONLY ... nothing invokes this automatically", which was true when
+written and false since B2082: `scripts/launch_sweep.py` runs this gate and
+REFUSES the launch (exit 2, engine never invoked) on any non-zero exit. The
+stale header taught every reader that the gate was decorative - #224 inside the
+gate's own docstring. Direct `run_phase1a.py` invocation still bypasses it;
+that hole is ticketed, not closed.
 """
 from __future__ import annotations
 
@@ -184,7 +187,17 @@ def check_supervisor_and_cap(manifest: dict) -> list[str]:
         basis = str(manifest.get("wall_clock_projection_basis", ""))
         m = _re.search(r"chunked at ([\d.]+)h legs", basis)
         cap = float(m.group(1)) if m else None
-    if cap is not None and float(cap) > OWNER_LOCAL_CAP_HOURS:
+    # B2159: FAIL CLOSED. This read `if cap is not None`, so a manifest that
+    # simply omitted the field skipped the check and the owner cap was never
+    # evaluated - the check written to enforce a hard ruling was opt-in. An
+    # undeclared cap is now a refusal, because "no declared bound" is exactly
+    # the state that produced a 2.9h run against a 2.5h cap.
+    if cap is None:
+        probs.append(
+            "manifest declares NO leg cap (leg_cap_hours / max_run_hours) - "
+            f"the owner cap of {OWNER_LOCAL_CAP_HOURS}h cannot be enforced "
+            "against an undeclared bound. Refusing to launch.")
+    elif float(cap) > OWNER_LOCAL_CAP_HOURS:
         probs.append(
             f"leg cap {cap}h exceeds the owner's standing local cap of "
             f"{OWNER_LOCAL_CAP_HOURS}h (ruling 2026-08-24). Refusing to launch.")

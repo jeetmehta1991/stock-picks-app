@@ -14348,3 +14348,32 @@ RUNNING by combining the log with a live process check, so "no completion line" 
 
 **Scope of what I checked:** 5 summary logs, all of them, by line-count comparison; 2 unfinished;
 both explained by kills I performed and confirmed dead by Get-Process this close.
+
+
+## L642 — The check written to enforce a hard ruling was opt-in (B2159)
+
+**What happened:** the owner asked how the pre-run checklist could fail. A council read the gate
+source and found four defects I had not, the worst being one I had SHIPPED THAT DAY: the cap
+check read `if cap is not None`, and neither `leg_cap_hours` nor `max_run_hours` is in the
+gate's REQUIRED tuple. **A manifest that simply omitted the field skipped the check entirely**,
+so the owner 5-hour hard cap - the rule the whole batch existed to enforce - was unenforced
+against exactly the manifests least likely to declare a bound.
+
+**The shape:** a guard conditioned on the presence of the thing it guards. `if X is not None:
+check(X)` reads as defensive and is the opposite - it converts "undeclared" into "approved". The
+absent case is not the safe case; it is the case the guard exists for. Verified live: reverting
+the fix made a capless manifest pass silently, and the corrected gate then refused a REAL
+historical manifest (the b2082 fixture) that had passed an hour earlier.
+
+**Three more from the same read, all confirmed in source:** the gate's own docstring still said
+"HAND-RUN-ONLY - nothing invokes this automatically" while launch_sweep has invoked it since
+B2082, teaching every reader the gate was decorative (#224 inside the gate's header); the
+supervisor checks are source-TEXT greps, so a comment or a flag-disabled supervisor passes; and
+a PASS writes no receipt anywhere, so no artifact can later say which run was gated.
+
+**Rule (compliance failure against item 224 and item 226; no new item warranted):** a guard must
+fail CLOSED on the absent input - write `if X is None: refuse` before `if X > limit: refuse`. And
+a check nobody has watched FAIL is indistinguishable from a check that does not exist: keep a
+known-bad corpus that proves each check fires, plus a reachability assertion that every defined
+check is reached from the entry point - this session shipped a check wired to call ITSELF, which
+ran zero times and was caught by reading rather than by any test.

@@ -24097,6 +24097,10 @@ def test_b2082_launch_sweep_refuses_without_a_passing_gate():
         _m = _bj.loads((root / "output_b1831b_200t" / "run_manifest.json"
                         ).read_text(encoding="utf-8"))
         _m["frozen_sha"] = _head
+        # B2159: the gate now FAILS CLOSED on an undeclared leg cap, and
+        # this historical manifest predates the field. The pin firing here
+        # is the new rule working - this manifest passed an hour ago.
+        _m["leg_cap_hours"] = 2.5
         good = str(td / "good_manifest.json")
         (td / "good_manifest.json").write_text(_bj.dumps(_m), encoding="utf-8")
         r = subprocess.run(
@@ -25476,3 +25480,84 @@ def test_b2158_a_log_without_an_ending_is_dead_not_running(tmp_path):
     for lgf in real:
         assert m.classify(lgf, pids=set())["status"] in (
             "COMPLETE", "DEAD_WITHOUT_ENDING", "EMPTY")
+
+
+def _b2159_gate():
+    import importlib.util as _ilu
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    spec = _ilu.spec_from_file_location(
+        "prelaunch_gate_b2159", root / "scripts" / "prelaunch_gate.py")
+    m = _ilu.module_from_spec(spec)
+    spec.loader.exec_module(m)
+    return m
+
+
+def _b2159_ok_manifest():
+    """A manifest that PASSES - the baseline every bad one mutates."""
+    return {
+        "sequence": "s", "batch": "B", "frozen_sha": "abc123",
+        "isolation": True, "calendar": "nyse_mcal",
+        "tickers": {"file": "f.txt", "n": 3}, "budget_cap_usd": 0,
+        "spent_usd": 0, "projected_batch_usd": 0, "execution": "LOCAL",
+        "obsolescence_risks": [{"risk": "r", "status": "s"}],
+        "wall_clock_projection_hours": 1.0, "leg_cap_hours": 2.5,
+    }
+
+
+def test_b2159_every_gate_check_is_reachable():
+    """B2159: a check DEFINED but never CALLED is a check that does not
+    exist. This session shipped exactly that - a new check function whose
+    call was inserted inside its own body (a recursive call), so it ran
+    zero times against the real path and was caught by reading, not by a
+    test. Assert every check_* in the module is reached from check().
+    """
+    import inspect
+    m = _b2159_gate()
+    defined = {n for n, f in vars(m).items()
+               if n.startswith("check_") and inspect.isfunction(f)}
+    assert defined, "no check_* functions found - did they move?"
+    entry_src = inspect.getsource(m.check)
+    unreached = {n for n in defined if n + "(" not in entry_src}
+    assert not unreached, (
+        f"check functions defined but never called from check(): "
+        f"{sorted(unreached)}. A check nobody calls is indistinguishable "
+        f"from a check that does not exist (B2149 shipped one)."
+    )
+
+
+def test_b2159_known_bad_manifests_are_each_refused():
+    """B2159: a gate nobody has watched FAIL has never been seen working.
+
+    Each entry mutates the passing baseline ONE way and asserts the gate
+    objects. The cap case is the one that matters most: it used to read
+    `if cap is not None`, so omitting the field SKIPPED the check and the
+    owner hard cap was silently unenforced.
+    """
+    m = _b2159_gate()
+
+    # must-be-QUIET: the baseline passes, so the corpus proves refusals
+    # rather than a gate that rejects everything (B1944).
+    assert m.check_supervisor_and_cap(_b2159_ok_manifest()) == []
+    assert m.check(_b2159_ok_manifest(), {}, None) == []
+
+    bad = {}
+    b = _b2159_ok_manifest(); b.pop("leg_cap_hours")
+    b.pop("wall_clock_projection_basis", None)
+    bad["no cap declared at all"] = (b, "NO leg cap")
+    b = _b2159_ok_manifest(); b["leg_cap_hours"] = 9.0
+    bad["cap above the owner ruling"] = (b, "exceeds the owner")
+    b = _b2159_ok_manifest(); b["isolation"] = False
+    bad["isolation off"] = (b, "isolation")
+    b = _b2159_ok_manifest(); b["calendar"] = "guessed"
+    bad["wrong calendar"] = (b, "calendar")
+    b = _b2159_ok_manifest(); b.pop("frozen_sha")
+    bad["no frozen sha"] = (b, "frozen_sha")
+    b = _b2159_ok_manifest(); b.pop("obsolescence_risks")
+    bad["no obsolescence answer"] = (b, "obsolescence")
+
+    for name, (manifest, expect) in bad.items():
+        fails = m.check(manifest, {}, None)
+        assert fails, f"gate did NOT refuse: {name}"
+        assert any(expect in f for f in fails), (
+            f"{name}: refused, but no reason mentioned {expect!r}: {fails}")
