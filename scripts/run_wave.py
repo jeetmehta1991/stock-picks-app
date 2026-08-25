@@ -171,6 +171,16 @@ def run_arm(spec: dict, arm: dict, engine_cmd: str | None = None) -> dict:
             cmd += ["--engine-cmd", engine_cmd]
         cmd += ["--"] + engine_args
         env = {**os.environ,
+               # B2185: cap native thread pools per process. Windows Event
+               # 2004 diagnosed 22 low-VIRTUAL-memory conditions in 30h with
+               # python.exe at ~5.5GB virtual EACH - OpenBLAS/OMP per-thread
+               # buffers multiplied across 12+ spawn processes exhaust
+               # COMMIT, and failed native allocations are the 0xC0000005
+               # crash mechanism. Parallelism here is the PROCESS pool;
+               # BLAS threads buy nothing and reserve gigabytes.
+               "OPENBLAS_NUM_THREADS": "1",
+               "OMP_NUM_THREADS": "1",
+               "MKL_NUM_THREADS": "1",
                "STRATEGY_SUBSET_FILE": spec["strategy_subset"],
                **{k: str(v) for k, v in arm.get("env", {}).items()}}
         rc = subprocess.run(cmd, cwd=str(ROOT), env=env).returncode

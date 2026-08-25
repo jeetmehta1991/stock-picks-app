@@ -25809,3 +25809,21 @@ def test_b2181_early_checkpoint_and_resume_and_isonly_buckets(tmp_path):
     assert cells[5] == "1", (
         f"IS-only grid must count 1 graded (is_sharpe bucket), got {cells[5]!r} "
         f"in {row!r}")
+
+
+def test_b2185_blas_thread_caps_in_the_launch_env():
+    """B2185: every wave-launched engine must carry BLAS thread caps.
+    Windows Event 2004 (System log, read at B2185) diagnosed 22 low-
+    virtual-memory conditions in 30h with python.exe at ~5.5GB VIRTUAL
+    each - per-thread native buffers multiplied across spawn processes
+    exhaust commit, and failed native allocations die 0xC0000005 (three
+    engine crashes, all under 2-parallel). The process pool is the
+    parallelism; BLAS threads only reserve gigabytes."""
+    from pathlib import Path as _P
+    src = (_P(__file__).resolve().parents[2] / "scripts" / "run_wave.py"
+           ).read_text(encoding="utf-8")
+    for var in ("OPENBLAS_NUM_THREADS", "OMP_NUM_THREADS",
+                "MKL_NUM_THREADS"):
+        assert f'"{var}": "1"' in src, (
+            f"{var} cap missing from the wave launch env - the commit-"
+            f"exhaustion crash mechanism (Event 2004) is unmitigated")
