@@ -2774,5 +2774,43 @@
    "status": "DONE",
    "evidence": "VERDICT: the STATE-gate reference best cell reaches is_ci_lo -0.077 across 10 graded ranking rows (19 combos, 27 distinct outcomes) from 95 baseline fires on 50 tickers x 1y - 0 of 10 rows clear the 0.333 selection-noise floor; the cube stands as the B2114 STATE-vs-EVENT comparator, judged at the pilot's sw20 arm"
   }
+ },
+ "output_b2174_sw20_sw20": {
+  "1_cube_sanity": {
+   "status": "DONE",
+   "evidence": "run_postconfig: cube_exists=PASS(2712 rows); one_strategy=PASS(1 strategies); M2_exits_per_entry_vs_registry=PASS(cube [24] vs registry-now 24 (a differing single value = an ); megacaps_present=PASS(TSLA, AAPL); M1_content_sha=PASS(bb3984d740f34536); M3_fill_date=PASS(0 fills before entry); M4_window=PASS(entries 2024-05-06 .. 2025-04-22); M4_holdout_touch=PASS(0 entries at/after HO_START 2025-05-05 in a STEP-1 cube); M5_pnl_integrity=PASS(0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS); M7_degraded_exits=PASS(degraded map (B1623 measure-not-assume): {'reverse_signal': ); M10_gate_receipt=PASS(receipt matches manifest sha 619049ff06b5); step7_engine_implemented=PASS(exit 0); M9_universe_artifact=PASS(exit 0 on output_audit/_sweep_200.txt (verifier is non-block); ledger_status_matches_evidence=PASS(0 row(s) claim DONE with contradicting evidence)"
+  },
+  "2_grade_with_config_params": {
+   "status": "SKIPPED",
+   "evidence": "PENDING-WAVE-REVIEW (b2174_sw20): the wave-level review batch performs this step across all arms together"
+  },
+  "3_outlier_discrepancy_sweep": {
+   "status": "SKIPPED",
+   "evidence": "PENDING-WAVE-REVIEW (b2174_sw20): the wave-level review batch performs this step across all arms together"
+  },
+  "4_three_leg_spot_check": {
+   "status": "SKIPPED",
+   "evidence": "PENDING-WAVE-REVIEW (b2174_sw20): the wave-level review batch performs this step across all arms together"
+  },
+  "5_adversarial_lens_review": {
+   "status": "SKIPPED",
+   "evidence": "PENDING-WAVE-REVIEW (b2174_sw20): the wave-level review batch performs this step across all arms together"
+  },
+  "6_post_fix_recheck": {
+   "status": "SKIPPED",
+   "evidence": "PENDING-WAVE-REVIEW (b2174_sw20): the wave-level review batch performs this step across all arms together"
+  },
+  "6b_equivalence_class_check": {
+   "status": "SKIPPED",
+   "evidence": "PENDING-WAVE-REVIEW (b2174_sw20): the wave-level review batch performs this step across all arms together"
+  },
+  "7_implement_in_engine": {
+   "status": "SKIPPED",
+   "evidence": "PENDING-WAVE-REVIEW (b2174_sw20): the wave-level review batch performs this step across all arms together"
+  },
+  "8_verdict_with_denominators": {
+   "status": "SKIPPED",
+   "evidence": "PENDING-WAVE-REVIEW (b2174_sw20): the wave-level review batch performs this step across all arms together"
+  }
  }
 }
