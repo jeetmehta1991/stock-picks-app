@@ -113,6 +113,15 @@ it wins over speed, over completeness, over looking finished.
    capability, or label it UNVERIFIED - the four evidence classes apply
    unchanged.**
 
+   **THIRD SHAPE (B2179 / L645): the OBJECTION.** A case-against carries the same
+   evidence burden as a recommendation. *"The cheaper alternative was never costed"*
+   is itself an uncosted claim about that alternative's cost — the asserted-consequence
+   shape wearing a critic's coat (L622 was the same shape from the advocate's side).
+   MEASURED: the mandated Contrarian objection claimed a signals-shifted MCPT variant
+   died uncosted; one file-open showed no cube carries a signal series, so the variant
+   re-runs the engine per permutation and the refusal it attacked was correct. Cost an
+   objection before filing it, or file it as a QUESTION.
+
    **EXTENSION (B1736 / L506): two more shapes, both of which slipped past the
    rule ABOVE because its examples were tools, formats and budgets.**
 
