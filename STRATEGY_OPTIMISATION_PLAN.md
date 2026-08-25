@@ -1518,7 +1518,7 @@ artifact, visible in every render.
 1. **Venue** (S6-B2107a): local pilot FAILED its gate at the old cap on measured
    evidence; at 5h a config fits un-chunked. Hetzner auction remains ruled, gated on a
    completed local strategy.
-2. **W-B relaunch**: no run is in flight; relaunch is one command but is NOT taken
+2. **W-B relaunch**: no run is in flight; sw50's resume is one command (its spec carries resume=true), sw30's requires the one-line spec edit FIRST (resume=false as written - L646: a recovery quoted as cheap must have its config opened, because this one would have restarted day 0 over a day-57 checkpoint); neither is taken
    without the owner's word (feedback_ask_before_relaunching_corrected_version).
 3. **regime_flip retirement** (S6-B2139a): refused on stale evidence — 42 of 95 rows in
    the post-fix reference cube are REAL flips.
