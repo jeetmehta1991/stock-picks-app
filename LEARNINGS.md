@@ -14571,3 +14571,15 @@ the box sat at 1.76GB free physical memory under the 2-parallel launch — the s
 pressure that produced OpenBLAS allocation failures inside the turn-gate verifier. The
 lesson survived because the message text did; the files did not. Records written under
 memory pressure need their commit verified, not assumed.
+
+
+### L645b — Addendum (B2179c): the stale remembered count, caught by the fail-closed script
+
+Extending L645's incident family with the micro-instance from its own pinning: I asserted a
+REMEMBERED gutted-count of 22 against the pin's actual 38 (test_b2123's fail arm had grown 16
+fragments since my memory formed), and the edit script FAILED CLOSED before writing - assert
+before write, the L642 pattern working in tooling. The re-apply used the value read from the
+file. **Compliance failure against item 256 (re-derive a figure at cite time, never recall it)
+— no new checklist item; the mechanism is the assert-before-write script pattern itself, and
+detection of a stale MEMORY (as opposed to a stale document) is JUDGMENT-ONLY.** The habit the
+instance reinforces: grep the current value first, then write the edit against it.
