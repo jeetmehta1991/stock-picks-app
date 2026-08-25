@@ -63,3 +63,29 @@ TPE/Bayesian search, NSGA-II, MCPT, and the vectorbt rebuild — refusal reasons
 S6-B2178-FEEDBACK-EXTRACTION. DSR stays a diagnostic column per your B1436 demotion. The SPP
 median-vs-max column ships in Table C (B2182); delete-the-parameter is now a standing design
 principle for new producers (plan §6.7).
+
+
+## OWNER RULING 2026-08-25 (B2188): Decision 1 DEFERRED as premature; Decision 3 regime_flip KEEP
+
+Verbatim: "I agree with given the low sample size and the high margin of error it may be too
+premature to decide. But elaborate on the two options in a simple way."
+
+### The two options, simply
+
+**Option A — the current gate (per-strategy):** every strategy must individually prove it makes
+money well (Sharpe at least 1.0 plus the other gates) before it gets real capital. Like hiring
+only people who ace every interview: high confidence in each hire, but you reject many decent
+people, and so far only 3 of 219 have passed.
+
+**Option B — the portfolio gate:** accept individually mediocre strategies (Sharpe around
+0.4-0.7) as long as they make money in DIFFERENT ways (low correlation), because a team of
+twenty differently-mediocre players can beat a team of three stars — diversification does the
+work the individual quality can't. The risk: our measurement says the average registered
+strategy currently LOSES money in-sample, and a team of money-losers is just a bigger
+money-loser; also, picking twenty "different-looking" losers out of 219 noisy candidates makes
+it easy to fool yourself.
+
+**What would make Option B real:** roughly 20 strategies with graded, selected-exit results
+(not production defaults), re-run the correlation analysis on those, and see whether the
+implied portfolio Sharpe clears 1.0. Until then Option A stands - which is exactly the owner's
+premature-to-decide ruling.

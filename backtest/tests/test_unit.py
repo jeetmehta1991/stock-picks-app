@@ -25829,3 +25829,24 @@ def test_b2185_blas_thread_caps_in_the_launch_env():
         assert f'"{var}": "1"' in src, (
             f"{var} cap missing from the wave launch env - the commit-"
             f"exhaustion crash mechanism (Event 2004) is unmitigated")
+
+
+def test_b2188_detached_launcher_uses_battery_allowed_registration():
+    """B2188 (S6-B2184a): detached launches must register via PowerShell
+    with battery-allowed settings. MEASURED at B2188: schtasks-CLI tasks
+    default to start-only-on-AC, so on this laptop they register, /run
+    reports SUCCESS, and the task sits Queued forever - the selftest
+    failed on that path and passed in 8s with -AllowStartIfOnBatteries.
+    The live proof is `python scripts/launch_detached.py --selftest`
+    (executed PASS at B2188); this pin holds the structure."""
+    from pathlib import Path as _P
+    src = (_P(__file__).resolve().parents[2] / "scripts" /
+           "launch_detached.py").read_text(encoding="utf-8")
+    for frag, why in (
+        ("AllowStartIfOnBatteries", "the laptop trap: AC-only default"),
+        ("DontStopIfGoingOnBatteries", "a battery transition must not kill a leg"),
+        ("Register-ScheduledTask", "PS registration, not schtasks CLI"),
+        ("StartWhenAvailable", "a missed start fires when possible"),
+        ("def selftest", "the executed end-to-end proof stays runnable"),
+    ):
+        assert frag in src, f"detached launcher lost: {why} ({frag!r})"
