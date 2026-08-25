@@ -14438,3 +14438,29 @@ new scan is a HYPOTHESIS about a population, not a finding.
 **Why it matters beyond bookkeeping:** the flattering direction is the dangerous one. A detector
 that over-reports makes its own existence look justified, and nothing in the workflow re-checks a
 number that confirms the thing you just built.
+
+
+### L644 addendum — the last uncalibrated detector, now hand-read in full (B2165)
+
+L644 said a new detector's first number is a hypothesis. Two detectors from this session were
+still uncalibrated: the L644 classifier (retracted at B2162) and the **L639 open-ticket count
+scan**, whose "13 of 16 live tickets quote a count" I had flagged as unverified twice without
+acting. Rather than flag it a third time, I hand-read **all 14 rows it flags** (the population is
+small enough that sampling was unnecessary).
+
+**Precision is roughly 9 of 14.** Five flags are not measurements at all: `08`/`17`/`18` are
+fragments of the date 2026-08-23 and of owner-item numbers in three LEVER rows; `187` in
+S6-B2159b is a CHECKLIST item reference; the five-digit values in S6-B2115a are process IDs from
+a run that is long dead. A digit-matching regex cannot tell a measurement from a date, an item
+number, or a PID.
+
+**And the hand-read found a real one the count alone would never have surfaced:** S6-B2118b
+records "1144 passed + 3 skipped" as its pyramid figure. The pyramid is now **1158**. That is
+exactly the L639 decay it was built to detect - a number true when written, quotable, and wrong
+now - sitting inside an OPEN ticket, found only by reading rather than by counting.
+
+**What this settles:** the detector is worth keeping and its headline is not worth quoting. Its
+value was narrowing 1,390 tickets to 14 rows a human could read in a minute; the finding came
+from the reading. **A detector's job is to shrink the population, not to state the result** - and
+reporting its raw count as though it were the result is how a screening tool gets mistaken for a
+measurement.
