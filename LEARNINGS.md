@@ -14637,3 +14637,22 @@ sweep (enumerate the population by structure, as the phantom-getattr sweep did w
 names). **MECHANISM: JUDGMENT-ONLY** — whether a class's phrasing surface is bounded is not
 scannable; the compensating mechanics are the #230 scan and the pinned skill rule, both already
 standing.
+
+
+## L648 — A spec is read once: mid-wave retunes are relaunches, not edits (B2189)
+
+**What happened:** during the sw30 paging slowdown I told the owner the worker pool could be
+retuned "at the next leg boundary for free." Wrong: run_wave loads its spec ONCE at wave start,
+and every resume leg rebuilds engine args from that in-memory spec — a spec-file edit changes
+nothing for the running wave. The fourth instance of the uncosted-recovery-claim class (L622,
+L645, L646, now L648), corrected in-message when the artifact-level truth surfaced.
+
+**The class refinement this adds:** the previous instances were claims about STATIC configs
+(a spec field, a cube column). This one was a claim about a RUNNING PROCESS's relationship to
+its config - the L-series already holds the general form ("a running process holds the code it
+loaded at launch", the fable-mode standing habit promoted at B2123), and this instance shows it
+applies to CONFIG as much as code. A retune of a live wave is always kill-checkpoint-relaunch.
+
+**Rule (compliance failure against item 230 — no new checklist item):** the standing #230 scan
+is the mechanism and fired again; the skill's rule 9 c2 (recovery claims) and the B2123
+loaded-at-launch habit jointly cover the class. JUDGMENT-ONLY residue unchanged.
