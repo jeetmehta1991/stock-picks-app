@@ -2822,6 +2822,15 @@ the exact file readers poll for its outcome.
 **Mechanically enforced** by run_wave.py archive_stale_summary() at launch,
 pinned by test_b2193_stale_wave_summary_is_archived_at_launch.
 
+## A DIRECTIVE'S 'ALL' IS ENUMERATED FROM THE PLAN, NOT FROM THE ACTIVE SUBSET (B2197 - L650, compliance failure against #164)
+
+**MEASURED: the standing all-configs directive was satisfied on the 5-config W-B band while
+the plan's own factorial enumerated 35 engine configs; the 30 others were unticketed and the
+owner had to ask.** When a directive quantifies over ALL of a class, run the enumeration the
+plan already carries (the factorial's ENGINE RUNS line), ticket the full set, and let a
+completed subset close its ticket - never the directive. JUDGMENT-ONLY for detection;
+durability pinned by test_b2123.
+
 ## Phase 6 — END-OF-TURN SWEEP (CHECKLIST #67 — HARD RULE, no exceptions)
 
 **TICKET COUNTS BY GROUP - EVERY TURN (B1803 - CHECKLIST #274, owner directive 2026-08-21).**

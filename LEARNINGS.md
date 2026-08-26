@@ -14673,3 +14673,22 @@ artifact is older than the RUN it claims to describe. Detection signal: a reader
 terminal verdict about a process whose heartbeat is minutes old. Mechanism: run_wave.py
 archive_stale_summary() at main() start; pin test_b2193_stale_wave_summary_is_archived_at_launch.
 CHECKLIST #283 anchors this entry.
+
+## L650
+**A standing 'all X' directive satisfied on the active subset is a silent scope cut (B2196/B2197).**
+The owner's standing directive (2026-08-25) says ALL configs launch autonomously in serial.
+The plan's own factorial (producer_variant_table.py --factorial, run at B2197) enumerates
+35 engine configs for smc_breaker_block_long (5 swing x 7 span fire-adding bands). The W-B
+band covered 5 of 35 (the span-200 column); at CHAIN DONE I reported the band complete,
+deleted the reporting cron, and listed 'decisions pending' - with 30 enumerable configs
+unticketed and unlaunched. The owner had to ask 'how many configs still left?' (rule 5:
+an owner catch is always a miss). The hourly-update gap was the same miss's shadow: the
+cron was correctly per-run, but the reason no run was active was the scope cut itself.
+**Rule: when a directive quantifies over ALL of a class, enumerate the class from the
+plan's own artifact AT DIRECTIVE-RECEIPT TIME (here: the factorial's ENGINE RUNS line),
+route the full set into tickets (CHECKLIST #164), and treat a completed subset as closing
+ITS ticket - never the directive.** COMPLIANCE FAILURE against CHECKLIST #164 (routed
+work becomes tickets - the 35-config program was never per-set ticketed) and the Phase-1
+scope-ledger rule; no new item. Detection JUDGMENT-ONLY (no scan reads a directive's
+quantifier against a plan factorial); durability: the B2197 queue rows + the skill line
+pinned by test_b2123.

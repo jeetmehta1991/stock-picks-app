@@ -89,3 +89,15 @@ it easy to fool yourself.
 (not production defaults), re-run the correlation analysis on those, and see whether the
 implied portfolio Sharpe clears 1.0. Until then Option A stands - which is exactly the owner's
 premature-to-decide ruling.
+
+
+## OWNER RULINGS 2026-08-26 (B2197)
+
+Verbatim: "1 later after all configs are run / 2 too premature to decide now / 3 later we decide"
+
+1. **sw30 Step-2 treatment: DEFERRED until all configs are run.** The plan's factorial
+   enumerates 35 engine configs (5 swing x 7 span); 5 complete (span-200 column), 30
+   launched at B2197 via the autonomous chain.
+2. **Kill rule (S6-B2178c): remains BLOCKED - too premature to decide now.**
+3. **Venue: deferred - "later we decide."** The ruling-4 precondition evidence
+   (b2196_table_c_wb_band_all5.md) stands ready.
