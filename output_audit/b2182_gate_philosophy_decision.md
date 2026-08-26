@@ -126,3 +126,17 @@ Hetzner auction price + benchmark one config in hour 1; revisit BUYING only afte
 consecutive months of real rental invoices prove sustained demand. First-Principles
 headline stands: 1,800 graded combos -> one 11-trade above-floor cell says the binding
 constraint is candidate quality, not compute speed.
+
+
+## OWNER RULINGS 2026-08-26 (B2203): budget + venue revised for hardware purchase
+
+Verbatim: "a $500 box supersedes it - correct" and "buying re-rules it to owned-local -
+correct. But i will only buy after the current local run is addressed."
+
+1. **B2109 BUDGET REVISED:** the $100 total-compute ruling is explicitly superseded by an
+   approved hardware purchase up to ~$500 CAD. Recorded as an owner revision, not a
+   route-around.
+2. **VENUE RE-RULED (S6-B2107a):** owned-local hardware replaces Hetzner-auction as the
+   ruled venue, GATED on the current local run being addressed first - the 30-config B2197
+   program completes (or is otherwise dispositioned) BEFORE purchase.
+3. Detached-task hardening (S6-B2202a class) ordered built NOW (B2203a).
