@@ -2883,6 +2883,24 @@ the output never appeared for THREE landings until the owner asked.**
 - **"X now does Y" is a claim about the PROCESS, not the file.** Verify it by finding
   Y's output in the process's actual output, or label it UNVERIFIED.
 
+## A STATUS IS NOT A FINDING (B2211 - L655, compliance failure vs #284)
+
+**MEASURED: a report rendered 14 integrity checks, a 50-trade re-derivation and a
+300-combination funnel as nine rows reading "DONE". The owner's verdict was
+"absolutely horrible and inadequate. It just says done!"**
+
+- **Print the MEASURED VALUE beside WHAT WOULD HAVE BEEN ALARMING.** A row the
+  reader cannot disagree with carries no evidentiary weight, and DONE is
+  undisagreeable.
+- **Report the check set's FALSIFIABILITY.** 140 checks with 0 failures ever
+  makes green WEAK evidence; say so rather than implying earned confidence.
+- **Organise by how the numbers could be wrong**, not by pipeline step order -
+  step names are the pipeline's structure, not the reader's decision structure.
+
+**Mechanically enforced** by scripts/postconfig_doc.py, pinned by
+test_b2211_single_doc_reports_findings_not_status (asserts values, alarm
+conditions, and the ABSENCE of status-only rows).
+
 ## Phase 6 — END-OF-TURN SWEEP (CHECKLIST #67 — HARD RULE, no exceptions)
 
 **TICKET COUNTS BY GROUP - EVERY TURN (B1803 - CHECKLIST #274, owner directive 2026-08-21).**

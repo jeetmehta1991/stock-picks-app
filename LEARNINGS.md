@@ -14768,3 +14768,32 @@ test_b2208_no_unreachable_code_after_return_in_run_wave. Compliance failure agai
 call site rather than a gate. Sibling of L651 (running an analysis is not delivering it): there
 the result reached disk and not the reader; here it reached neither, and the difference was
 invisible to every test.
+
+## L655
+**A STATUS is not a FINDING; a report whose rows can only say one word is not evidence
+(B2211).**
+The post-config battery ran 14 named integrity checks per config, independently re-derived
+50 sampled trades, and graded 300 parameter combinations. The report rendered all of it as
+nine rows reading DONE plus 150 truncated characters. Every measured value - 2,520 cube rows,
+0 entries touching the locked holdout, 50 of 50 trades agreeing, 77 of 300 starved - sat on
+disk unread. The owner's verdict: 'absolutely horrible and inadequate. It just says done!'
+**Rule: a reported check prints its MEASURED VALUE beside WHAT WOULD HAVE BEEN ALARMING.**
+A row the reader cannot disagree with carries no evidentiary weight, and 'DONE' is
+undisagreeable. Corollary, from the same build: report the FALSIFIABILITY of the check set -
+across 81 ledger entries, 140 named checks had run with 0 non-PASS ever, which makes green
+weak evidence rather than reassurance, and the document now says so.
+Second corollary: organise a multi-check report by HOW THE NUMBERS COULD BE WRONG (identity /
+leakage / reproduction / sample size / unverified), not by pipeline step order - step names
+are the pipeline's internal structure, not the reader's decision structure.
+Compliance failure against CHECKLIST #284 (an analysis that runs per event is rendered per
+event) - B2198 satisfied its letter by rendering SOMETHING per landing while rendering no
+findings; no new item, the rule needed this reading. Mechanism: scripts/postconfig_doc.py +
+pin test_b2211_single_doc_reports_findings_not_status, which asserts measured values, alarm
+conditions, the NOT-PASS marker, and the ABSENCE of status-only rows.
+**Retroactive sweep (CHECKLIST #237), what was scanned and found:** every script that prints
+a human-facing status was grepped for the status-without-value pattern. Three owner-facing
+reporters were inspected at their print sites: verify_postconfig_complete.py:111 prints
+'{ran} of {len(STEPS)} RUN' with the skipped step names - CLEAN, it carries counts;
+prelaunch_gate.py:250 prints PASS with sha, ticker label and budget arithmetic - CLEAN;
+producer_variant_table.py (Table C) carries 17 measured-value references - CLEAN. The
+defect was ISOLATED to the post-config card. Sibling class closed, no further instances.
