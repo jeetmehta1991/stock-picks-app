@@ -14728,3 +14728,24 @@ delivering it) - there the result never left disk, here it left disk lossily.
 Mechanism: scripts/show_table_c.py prints every graded config through the locked renderer;
 pin test_b2199_table_c_is_printed_with_every_locked_column asserts the 12-column header and
 that no-artifacts yields no rows. CHECKLIST #285 anchors this.
+
+## L653
+**A measured constant silently changes GRAIN when the architecture under it changes (B2204b).**
+The plan's 3,223 MB memory figure (STRATEGY_OPTIMISATION_PLAN.md:997) was measured per
+PROCESS when one process WAS one config (the pre-pool sweep architecture). B2142 moved
+configs to 10-worker pools; the figure kept being quoted as per-config, and I built the
+owner-facing server-sizing table on it - claiming 64GB supports ~16 parallel configs. A
+live measurement of the running config's process tree (18 python processes, PeakWorkingSet64
+sum 12.04 GB) showed the true per-config peak is ~12 GB, an upper bound: the honest ceiling
+at 64GB is ~4 configs, not 16. Retracted visibly same close.
+**COMPLIANCE FAILURE against item 256** (re-derive a ticket's/doc's number before working
+from it) - no new checklist item: the rule existed and quoting the plan figure without
+re-deriving it at the CURRENT architecture is exactly its violation. The new facet worth
+the entry: the number was not stale in TIME (nothing newer contradicted it) - it was stale
+in GRAIN, because the unit it implicitly carried (per-process == per-config) stopped being
+true when the architecture changed. Detection signal: any constant whose unit names an
+architecture-dependent thing (per worker, per process, per run) must be re-measured when
+that thing's definition changes. Mechanism: JUDGMENT-ONLY for detection (no scan knows a
+constant's implicit unit); the compensating practice is the live process-tree measurement
+used here (sum WorkingSet64/PeakWorkingSet64 over the running tree), now recorded in the
+S6-B2204b row as the standard probe for per-config memory claims.
