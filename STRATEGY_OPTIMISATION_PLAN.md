@@ -994,7 +994,13 @@ powershell -c "$os=Get-CimInstance Win32_OperatingSystem; \
   'free_MB={0} total_MB={1}' -f [math]::Round($os.FreePhysicalMemory/1KB), \
   [math]::Round($os.TotalVisibleMemorySize/1KB)"
 ```
-**PEAK per worker measured at 3,223 MB** (`PeakWorkingSet64`, NOT a spot reading - spot
+**PEAK per worker measured at 3,223 MB** **[GRAIN-STALE - B2204b/L653: this was
+measured when one PROCESS was one CONFIG (pre-B2142 pools). At pool-10 the live
+per-CONFIG peak-sum is 12.04 GB (18-process tree, PeakWorkingSet64, measured
+2026-08-26); per-process peaks now run ~1.0-1.2 GB. Corrected concurrency
+ceilings: 64GB ~4 configs, 128GB ~10 - cores bind first at 128GB. The '3
+concurrent configs' conclusion below and the line-1391 monitor threshold carry
+the old grain; the monitor errs conservative (fires early), left as-is.]** (`PeakWorkingSet64`, NOT a spot reading - spot
 readings understated it three times). Non-python baseline ~6.4 GB of 15.6 GB, so
 **3 concurrent configs**, not 5-6. Exceeding it risks MemoryError mid-sweep.
 
