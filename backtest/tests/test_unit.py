@@ -25003,6 +25003,9 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         ("A NAME YOU COINED IS STILL AN UNVERIFIED CLAIM",
          "L657: label an invented identifier PROPOSED-NOT-BUILT at the moment "
          "of invention - its absence is often the finding"),
+        ("KILLING BY NAME IS A MACHINE-WIDE ACTION",
+         "L658: get the PID, verify its command line, then Stop-Process -Id - "
+         "an unidentified target is not a target"),
     ):
         if frag not in discipline_text:
             missing.append(f"execution-discipline lost [{why}]: {frag!r}")
@@ -25025,7 +25028,7 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     assert _b2123_skill_rules_present(fable, disc) == []
     # #226 prove-it-can-fail: a gutted file must be REPORTED, not pass
     gutted = _b2123_skill_rules_present("# The Fable Method\n", "# Discipline\n")
-    assert len(gutted) == 48, gutted
+    assert len(gutted) == 49, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -26092,6 +26095,47 @@ def test_b2211_single_doc_reports_findings_not_status(tmp_path, monkeypatch):
     assert "incomplete by design" in body, "outstanding judgment steps must be stated"
     # the retired card's failure mode must not return
     assert "| DONE |" not in body, "status-only rows are what the owner rejected"
+
+def test_b2214_kill_wave_tree_targets_by_identity_not_name(tmp_path, monkeypatch):
+    """B2214 (L658, compliance failure vs L411): the kill helper must target
+    VERIFIED identities and must refuse an unidentified target.
+
+    (a) it REFUSES when the wave heartbeat is absent - no pid, no kill;
+    (b) it selects only processes whose command line names the wave dir, or
+        whose parent does - never every process sharing a name;
+    (c) it DEFAULTS TO DRY RUN, so the safety tool cannot become the hazard.
+    """
+    import importlib.util as _ilu
+    from pathlib import Path as _P
+    _root = _P(__file__).resolve().parents[2]
+    _spec = _ilu.spec_from_file_location(
+        "kill_wave_tree_b2214", _root / "scripts" / "kill_wave_tree.py")
+    kwt = _ilu.module_from_spec(_spec)
+    _spec.loader.exec_module(kwt)
+
+    # (b) selection is by command line / parent chain, not by name
+    fake = (
+        "100|4|C:\\py.exe scripts/run_phase1a.py --output-dir output_TARGET",
+        "101|100|C:\\py.exe -c from multiprocessing.spawn import spawn_main",
+        "200|9|C:\\py.exe -m pytest backtest/tests/test_unit.py",
+        "201|9|C:\\py.exe some_other_session.py",
+    )
+    monkeypatch.setattr(kwt, "_ps", lambda cmd: chr(10).join(fake))
+    keep = kwt.candidates("output_TARGET")
+    pids = sorted(p for p, _, _ in keep)
+    assert pids == [100, 101], pids
+    assert 200 not in pids, "a pytest run must never be swept up"
+    assert 201 not in pids, "another session must never be swept up"
+
+    # (a) refuses without the heartbeat, and (c) dry run is the default
+    monkeypatch.setattr(kwt, "ROOT", tmp_path)
+    import sys as _sys
+    monkeypatch.setattr(_sys, "argv",
+                        ["kill_wave_tree.py", "--out-dir", "output_MISSING"])
+    assert kwt.main() == 2, "missing heartbeat must REFUSE, not proceed"
+    src = (_root / "scripts" / "kill_wave_tree.py").read_text(encoding="utf-8")
+    assert "--execute" in src and "DRY RUN" in src
+    assert "-Name" not in src, "the helper must never kill by name"
 
 def test_b2199_table_c_is_printed_with_every_locked_column(tmp_path, monkeypatch):
     """B2199 (L652, CHECKLIST #285): the locked Table C is PRINTED, never retyped.

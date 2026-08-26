@@ -2931,6 +2931,22 @@ same breath.
 - Mechanism: the #222 scan is the enforcement and it fires; telling a proposal from an
   assertion is JUDGMENT-ONLY, since no scan reads intent.
 
+## KILLING BY NAME IS A MACHINE-WIDE ACTION (B2214 - L658, compliance failure vs L411)
+
+**MEASURED: executing a restart, I ran `Get-Process python | Stop-Process -Force` twice.**
+That force-kills every python on the box - pytest, other sessions, unrelated work. It was
+survivable only because nothing else was running, and I cannot prove after the fact that
+nothing else died.
+
+- **Get the PID, VERIFY its command line, then `Stop-Process -Id`.** Never `-Name`, never a
+  pipeline sweep.
+- **An unidentified target is not a target** - if you cannot name what you are killing and
+  why it is yours, stop.
+- Use `scripts/kill_wave_tree.py --out-dir <dir>` (dry-run by default, refuses without the
+  wave's heartbeat).
+- These rules bind hardest **while executing an owner instruction under time pressure**,
+  which is precisely when they get skipped.
+
 ## Phase 6 — END-OF-TURN SWEEP (CHECKLIST #67 — HARD RULE, no exceptions)
 
 **TICKET COUNTS BY GROUP - EVERY TURN (B1803 - CHECKLIST #274, owner directive 2026-08-21).**
