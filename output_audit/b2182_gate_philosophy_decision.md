@@ -101,3 +101,28 @@ Verbatim: "1 later after all configs are run / 2 too premature to decide now / 3
 2. **Kill rule (S6-B2178c): remains BLOCKED - too premature to decide now.**
 3. **Venue: deferred - "later we decide."** The ruling-4 precondition evidence
    (b2196_table_c_wb_band_all5.md) stands ready.
+
+
+## COUNCIL 2026-08-26 (B2201): buy a <$500 CAD refurb server vs rent Hetzner
+
+Owner question: buy from deltaserverstore.com (verified Toronto refurb dealer; homepage lists
+Dell/HP/IBM/SuperMicro categories, prices unlisted) instead of renting (~$150 CAD owner
+estimate), to run all strategies + Phase 1B + live EOD.
+
+**Verdict 4-1 DON'T BUY NOW** (Expansionist dissents on break-even-by-month-4 economics).
+Convergent reasons: the laptop's measured failure is RAM at 2-parallel (not cores; solo
+stable); E5 v2/v3 per-core is slower than the laptop so a refurb box wins only on
+parallelism, which the cancellable rental also provides; $500 capex + ~$250-300/yr
+electricity vs the $100 total-compute ruling (B2109) - revise the ruling in daylight if
+compute need grows, never route around it via capex; live EOD needs one email cycle a day,
+not a loud always-on home server; nothing is blocked today (30 configs running at $0).
+Review-pass catches: the rental price argued against is UNVERIFIED (get the live auction
+price first); a one-config benchmark settles per-core speed for ~one cloud-hour; a
+modern-mini-PC middle option was unexamined.
+
+**Recommendation adopted into the venue thread (S6-B2107a, owner ruling 3 'later we
+decide')**: finish the 30 configs on the laptop; on Step-2 greenlight, pull the live
+Hetzner auction price + benchmark one config in hour 1; revisit BUYING only after two
+consecutive months of real rental invoices prove sustained demand. First-Principles
+headline stands: 1,800 graded combos -> one 11-trade above-floor cell says the binding
+constraint is candidate quality, not compute speed.
