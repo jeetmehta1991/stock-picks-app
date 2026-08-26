@@ -25967,6 +25967,13 @@ def test_b2198_battery_result_is_rendered_not_only_written(tmp_path, monkeypatch
         assert step in body, f"report card omitted {step}"
     assert "0.123" in body and "is_sharpe 0.6" in body
 
+    # B2200: the program-level view - one row per recorded config, so a
+    # 35-config program is readable without joining 35 cards by hand.
+    assert pcr.all_cube_dirs() == ["output_x"]
+    summ = chr(10).join(pcr.summary_table(pcr.all_cube_dirs()))
+    assert "output_x" in summ and "5/5 DONE" in summ and "0.123" in summ
+    assert "below" in summ, "a sub-floor cell must say so in the summary row"
+
     # the ABSENT direction: an unrecorded config must be reported as such
     missing = pcr.report("output_never_ran")
     assert missing["ledger_present"] is False

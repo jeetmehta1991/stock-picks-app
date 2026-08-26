@@ -116,11 +116,60 @@ def render(rep: dict, md: bool = False) -> list[str]:
     return lines
 
 
+def all_cube_dirs() -> list[str]:
+    """Every config the battery has recorded, oldest ledger entry first.
+
+    B2200: the ledger is the battery's own record, so its key set IS the
+    population of processed configs - no glob heuristic, no guessing.
+    """
+    ledger = json.loads(LEDGER.read_text(encoding="utf-8"))
+    return list(ledger)
+
+
+def summary_table(cube_dirs: list[str]) -> list[str]:
+    """One row per config: the battery's verdict at a glance.
+
+    B2200 (owner: "where can I see the results for the last 4 configs?"):
+    per-config cards answer one config at a time; a program spanning 35 runs
+    needs the whole set in one view or the reader is left doing the joining.
+    """
+    rows = ["| config | AUTO steps | judgment steps | best IS-CI-lo | vs 0.333 floor | best exit |",
+            "|---|---|---|---|---|---|"]
+    for cd in cube_dirs:
+        r = report(cd)
+        auto = (f"{sum(1 for v in r['auto'].values() if v['status'] == 'DONE')}"
+                f"/{len(AUTO_STEPS)} DONE")
+        jud = (f"{sum(1 for v in r['judgment'].values() if v['status'] == 'SKIPPED')}"
+               f"/{len(JUDGMENT_STEPS)} pending review")
+        b = r.get("best") or {}
+        cl = b.get("is_ci_lo")
+        floor = "-" if cl is None else ("ABOVE" if r.get("above_floor") else "below")
+        rows.append(f"| {cd} | {auto} | {jud} | {'-' if cl is None else cl} | "
+                    f"{floor} | {b.get('exit', '-')} |")
+    return rows
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--cube-dir", required=True)
+    ap.add_argument("--cube-dir", default="")
+    ap.add_argument("--all", action="store_true",
+                    help="one summary row per config the battery has recorded")
+    ap.add_argument("--last", type=int, default=0,
+                    help="with --all: only the N most recent configs")
     ap.add_argument("--md", action="store_true")
     a = ap.parse_args()
+    if a.all:
+        dirs = all_cube_dirs()
+        if a.last:
+            dirs = dirs[-a.last:]
+        print(f"# POST-CONFIG BATTERY - {len(dirs)} config(s)")
+        print("")
+        for line in summary_table(dirs):
+            print(line)
+        return 0
+    if not a.cube_dir:
+        print("--cube-dir required (or --all)")
+        return 2
     for line in render(report(a.cube_dir), md=a.md):
         print(line)
     return 0
