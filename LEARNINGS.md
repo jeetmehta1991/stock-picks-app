@@ -14797,3 +14797,31 @@ reporters were inspected at their print sites: verify_postconfig_complete.py:111
 prelaunch_gate.py:250 prints PASS with sha, ticker label and budget arithmetic - CLEAN;
 producer_variant_table.py (Table C) carries 17 measured-value references - CLEAN. The
 defect was ISOLATED to the post-config card. Sibling class closed, no further instances.
+
+## L656
+**A LIVENESS metric written by a DIFFERENT thread than the work is not a liveness metric
+(B2212).**
+config 4's process pool died at 19:37:49Z on a Python 3.14 multiprocessing IPC failure
+(connection.py _get_more_data, assert left > 0). The hourly monitor reported it 'alive and
+cruising' 51 minutes later, because its stall clause tested HEARTBEAT AGE and the heartbeat
+was 0.0 minutes old. run_heartbeat.json is written by the B2148 supervisor DAEMON THREAD,
+which keeps writing - carrying a STALE sim_day_index - long after the day loop it describes
+has stopped. The monitor was structurally incapable of seeing the failure it existed to catch.
+The evidence was already in my own reports and I did not compare them: day 114 at 19:58Z and
+day 114 at 20:28Z. The owner caught it by asking why there was no update.
+**Rule: a liveness check must read a counter that only the WORK can advance, and must compare
+it ACROSS TWO OBSERVATIONS.** Freshness of a file written by a watchdog proves the watchdog
+lives, never the worker. Where the work publishes a progress counter (sim_day_index,
+rows_written, cells_completed), diff it between firings; an unchanged counter with a fresh
+timestamp IS the stall signature, not a contradiction of it.
+Confirmation procedure that settled it in one minute, worth reusing: two CPU samples ~45s
+apart of the parent and two workers - frozen worker CPU beside a parent burning ~98pct of one
+core is the dead-pool signature - then grep the run's own log for Traceback / AssertionError /
+BrokenPipe.
+Compliance failure against CHECKLIST #121 (a designed monitor is not an armed monitor) - this
+is that rule one level deeper: the monitor WAS armed and firing, and its METRIC could not
+express the failure. No new item; #121 needed this reading. Mechanism: the cron contract now
+mandates the sim-day diff (JUDGMENT-ONLY for the session-held monitor, since no scan can read
+a cron prompt), plus S6-B2212b tickets a progress watchdog inside the supervisor itself so the
+durable half does not depend on a prompt. Sibling of L641 (absence is dead, not pending): here
+PRESENCE was dead and read as alive.

@@ -2901,6 +2901,22 @@ the output never appeared for THREE landings until the owner asked.**
 test_b2211_single_doc_reports_findings_not_status (asserts values, alarm
 conditions, and the ABSENCE of status-only rows).
 
+## A HEARTBEAT WRITTEN BY A WATCHDOG PROVES THE WATCHDOG (B2212 - L656, compliance failure vs #121)
+
+**MEASURED: a process pool died at 19:37:49Z and the monitor called the run "alive and
+cruising" 51 minutes later off a 0.0-minute-old heartbeat.** The heartbeat came from a
+supervisor DAEMON THREAD still writing a STALE progress counter.
+
+- **Read a counter only the WORK can advance** (sim_day_index, rows written, cells done),
+  and **diff it across two observations**. An unchanged counter beside a fresh timestamp
+  IS the stall signature.
+- File freshness proves the writer lives, never the worker.
+- **Dead-pool confirmation in one minute:** two CPU samples ~45s apart of parent and two
+  workers - frozen workers beside a parent at ~98% of one core - then grep the run's log
+  for Traceback / AssertionError / BrokenPipe.
+- The evidence is often already in your own prior reports; compare consecutive readings
+  before trusting either.
+
 ## Phase 6 — END-OF-TURN SWEEP (CHECKLIST #67 — HARD RULE, no exceptions)
 
 **TICKET COUNTS BY GROUP - EVERY TURN (B1803 - CHECKLIST #274, owner directive 2026-08-21).**
