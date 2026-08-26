@@ -24984,6 +24984,10 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
          "L650: a standing all-X directive is enumerated from the plan's own "
          "factorial at receipt time, and a completed subset closes its ticket, "
          "never the directive"),
+        ("RUNNING AN ANALYSIS IS NOT DELIVERING IT",
+         "L651: a per-event analysis needs a per-event RENDER shipped with the "
+         "runner - verifying it RAN answers a different question than the "
+         "reader is asking"),
     ):
         if frag not in discipline_text:
             missing.append(f"execution-discipline lost [{why}]: {frag!r}")
@@ -25006,7 +25010,7 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     assert _b2123_skill_rules_present(fable, disc) == []
     # #226 prove-it-can-fail: a gutted file must be REPORTED, not pass
     gutted = _b2123_skill_rules_present("# The Fable Method\n", "# Discipline\n")
-    assert len(gutted) == 42, gutted
+    assert len(gutted) == 43, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 

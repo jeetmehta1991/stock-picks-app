@@ -2831,6 +2831,28 @@ plan already carries (the factorial's ENGINE RUNS line), ticket the full set, an
 completed subset close its ticket - never the directive. JUDGMENT-ONLY for detection;
 durability pinned by test_b2123.
 
+## RUNNING AN ANALYSIS IS NOT DELIVERING IT (B2198 - L651, CHECKLIST #284)
+
+**MEASURED: the mandatory post-config battery auto-ran on every landing - exit 0
+three times, ledger steps DONE with evidence, grid written - and the owner asked
+why they had never seen a result for any config.** Every report of mine verified
+that it RAN (a boolean) and quoted one headline number; the analysis itself sat
+in a JSON file nobody was reading.
+
+- **A directive that an analysis runs per event is a directive about a DELIVERED
+  analysis.** The artifact is the medium, not the deliverable.
+- **"Did it run?" and "what did it say?" are different questions**, and the
+  verification habit answers only the first - which reads as diligence while the
+  reader learns nothing.
+- **Ship the RENDERER with the runner, and have the runner invoke it at the
+  moment it announces completion**, so delivery cannot depend on the reporter
+  remembering. Sibling of L641 (silence is not evidence of work in progress):
+  there the work was absent, here the work was real and the reporting was silent.
+
+**Mechanically enforced** by scripts/postconfig_report.py invoked from
+run_wave.py at arm completion, pinned by
+test_b2198_battery_result_is_rendered_not_only_written.
+
 ## Phase 6 — END-OF-TURN SWEEP (CHECKLIST #67 — HARD RULE, no exceptions)
 
 **TICKET COUNTS BY GROUP - EVERY TURN (B1803 - CHECKLIST #274, owner directive 2026-08-21).**
