@@ -2853,6 +2853,23 @@ in a JSON file nobody was reading.
 run_wave.py at arm completion, pinned by
 test_b2198_battery_result_is_rendered_not_only_written.
 
+## A LOCKED FORMAT BINDS THE WRITER, NOT THE QUOTER (B2199 - L652, CHECKLIST #285)
+
+**MEASURED: Table C is locked at 12 columns across four batches; I retyped a
+9-column version into chat three times**, dropping `P1-P6 bands tested` - the
+column that separates a config which searched 18 parameter values from one that
+searched 2 - until the owner asked whether the format was locked.
+
+- **Retyping a locked artifact is a second, unreviewed renderer**, and its
+  omissions look like editorial trimming rather than data loss.
+- **Print it.** Ship the command that emits the locked form and quote that
+  command's output: `scripts/show_table_c.py` for Table C.
+- Sibling of L651: there the result never left disk; here it left disk lossily.
+  **Both are the reporting layer undoing work the mechanism did correctly.**
+
+**Mechanically enforced** by scripts/show_table_c.py, pinned by
+test_b2199_table_c_is_printed_with_every_locked_column.
+
 ## Phase 6 — END-OF-TURN SWEEP (CHECKLIST #67 — HARD RULE, no exceptions)
 
 **TICKET COUNTS BY GROUP - EVERY TURN (B1803 - CHECKLIST #274, owner directive 2026-08-21).**

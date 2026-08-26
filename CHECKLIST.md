@@ -5305,3 +5305,16 @@ the runner, and have the runner invoke it at the same moment it announces comple
 
 *Enforced by:* scripts/postconfig_report.py invoked from run_wave.py at arm completion,
 pinned by test_b2198_battery_result_is_rendered_not_only_written (both directions).
+
+### #285 - A LOCKED FORMAT IS PRINTED, NEVER RETYPED (B2199 / L652)
+
+When an artifact's format is declared LOCKED, every presentation of it comes from the
+command that renders it - not from retyping into a response. Retyping is a second,
+unreviewed renderer, and its omissions read as editorial trimming rather than as data
+loss. Measured: Table C is locked at 12 columns and was quoted three times as 9,
+dropping `P1-P6 bands tested` - the column separating a config that searched 18
+parameter values from one that searched 2. Applies to Table A/B/C, the roster, the
+post-config report card, and any format a batch declares locked.
+
+*Enforced by:* scripts/show_table_c.py (prints the locked table from the graded
+artifacts), pinned by test_b2199_table_c_is_printed_with_every_locked_column.

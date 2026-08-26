@@ -14710,3 +14710,21 @@ place as the landing; pin test_b2198 asserts both directions (rendered in full, 
 unrecorded config reported as ABSENT rather than as a clean card). CHECKLIST #284 anchors this.
 Sibling of L641 (silence is never evidence of work in progress) - here the work was real and
 the silence was in the reporting layer.
+
+## L652
+**A locked format binds the WRITER; the QUOTER silently unlocks it (B2199).**
+Table C has been locked at 12 columns across four batches (B1701 funnel, B1898 bands +
+starved-IS rename, B2137 axes-from-rows, B2181 IS-only buckets + median). The renderer emits
+all 12 and the committed artifact carries all 12. Quoting it into chat, I retyped an
+abbreviated 9-column version THREE times and dropped `no-Sharpe`, `bands` and - the one that
+matters - `P1-P6 bands tested`, the column that distinguishes a config which searched 18
+parameter values from one that searched 2. The owner caught it: 'Table c is missing a column
+... hasn't the format been locked in?' Nothing in the lock reached the act of quoting, because
+every mechanism guarded generation.
+**Rule: a locked artifact is PRINTED, never retyped.** When a format is declared locked, ship
+the command that emits it and use that command in reports; retyping is an unreviewed second
+renderer whose omissions look like editing. Same family as L651 (running an analysis is not
+delivering it) - there the result never left disk, here it left disk lossily.
+Mechanism: scripts/show_table_c.py prints every graded config through the locked renderer;
+pin test_b2199_table_c_is_printed_with_every_locked_column asserts the 12-column header and
+that no-artifacts yields no rows. CHECKLIST #285 anchors this.
