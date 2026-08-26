@@ -25979,6 +25979,39 @@ def test_b2198_battery_result_is_rendered_not_only_written(tmp_path, monkeypatch
     assert missing["ledger_present"] is False
     assert "NO LEDGER ENTRY" in "\n".join(pcr.render(missing))
 
+def test_b2208_no_unreachable_code_after_return_in_run_wave():
+    """B2208: THE PIN THAT WOULD HAVE CAUGHT IT.
+
+    B2198 inserted the report-card print AFTER run_arm's return statement.
+    The file parsed, the pin for the RENDERER passed, and the card never
+    printed for three landings - a call site that is never reached is not
+    wired (#224). This walks every function in run_wave.py and asserts no
+    statement follows a top-level return in its body, so the class cannot
+    recur silently. Also asserts the report call is present and reachable.
+    """
+    import ast as _ast
+    from pathlib import Path as _P
+    _root = _P(__file__).resolve().parents[2]
+    src = (_root / "scripts" / "run_wave.py").read_text(encoding="utf-8")
+    tree = _ast.parse(src)
+    dead = []
+    for node in _ast.walk(tree):
+        if not isinstance(node, _ast.FunctionDef):
+            continue
+        for i, stmt in enumerate(node.body[:-1]):
+            if isinstance(stmt, _ast.Return):
+                nxt_stmt = node.body[i + 1]
+                dead.append((node.name, nxt_stmt.lineno))
+    assert dead == [], f"unreachable code after return: {dead}"
+    # and the report card call must EXIST (wired, not merely defined)
+    assert "postconfig_report" in src, "run_wave must render the battery card"
+    fn = next(n for n in _ast.walk(tree)
+              if isinstance(n, _ast.FunctionDef) and n.name == "run_arm")
+    body_src = _ast.unparse(fn)
+    ri = body_src.index("postconfig_report")
+    reti = body_src.rindex("return {")
+    assert ri < reti, "the card must render BEFORE run_arm returns"
+
 def test_b2199_table_c_is_printed_with_every_locked_column(tmp_path, monkeypatch):
     """B2199 (L652, CHECKLIST #285): the locked Table C is PRINTED, never retyped.
 

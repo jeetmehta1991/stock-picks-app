@@ -85,7 +85,14 @@ def report(cube_dir: str) -> dict:
 
 
 def render(rep: dict, md: bool = False) -> list[str]:
-    lines = [f"# POST-CONFIG BATTERY REPORT - {rep['cube_dir']}", ""]
+    # B2210: the rendered card is itself a committed artifact, so it declares
+    # its own source (C3 canonical-source gate) - the provenance travels with
+    # the file rather than living only in the generator.
+    lines = [f"# POST-CONFIG BATTERY REPORT - {rep['cube_dir']}", "",
+             "Source: output_audit/postconfig_ledger.json + "
+             f"output_audit/{rep['cube_dir']}_grid_auto.json "
+             "(written by scripts/run_postconfig.py); rendered by "
+             "scripts/postconfig_report.py; per CHECKLIST #77.", ""]
     if not rep["ledger_present"]:
         lines.append("**NO LEDGER ENTRY** - the battery did not record this "
                      "config. Absence is DEAD, not in-progress (L641).")

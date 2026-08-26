@@ -257,21 +257,25 @@ def run_arm(spec: dict, arm: dict, engine_cmd: str | None = None) -> dict:
          "--cube", out_dir.name, "--write-ledger"]
         + (["--step1-cube"] if spec.get("step1_cube", True) else []),
         cwd=str(ROOT))
+    # B2198 (L651) + B2208 FIX: the battery's result is RENDERED, not only
+    # written. B2198 placed this block AFTER the return - dead code, which is
+    # why the owner saw nothing print for three landings. It now runs BEFORE
+    # the return, and ALSO writes a durable per-config artifact so the result
+    # is a file you can open rather than a needle in a 9,000-line engine log.
+    try:
+        import postconfig_report as _pcr
+        _card = _pcr.render(_pcr.report(out_dir.name))
+        for _line in _card:
+            print(_line)
+        _md = ROOT / "output_audit" / f"{out_dir.name}_battery_report.md"
+        _md.write_text("\n".join(_card) + "\n", encoding="utf-8")
+        print(f"[OK] battery report card written to {_md.name}")
+    except Exception as _exc:               # never let reporting kill a landing
+        print(f"[WARN] post-config report card unavailable: {_exc!r}")
     return {"arm": arm["tag"], "status": status, "legs": legs,
             "boundary_drops": boundary_drops, "measured_rates": rates,
             "cube_rows": rows, "elapsed_s": int(time.time() - t0),
             "postconfig_exit": pc.returncode}
-    # B2198 (L651): the battery's result is RENDERED, not only written. Running
-    # the analysis and leaving it on disk is not delivering it - the owner asked
-    # why they never saw a per-config result for runs the battery had verifiably
-    # processed. This prints the report card into the wave log at the moment of
-    # landing, so the analysis exists in the same place the landing is announced.
-    try:
-        import postconfig_report as _pcr
-        for _line in _pcr.render(_pcr.report(out_dir.name)):
-            print(_line)
-    except Exception as _exc:               # never let reporting kill a landing
-        print(f"[WARN] post-config report card unavailable: {_exc!r}")
 
 
 def archive_stale_summary(wave: str):
