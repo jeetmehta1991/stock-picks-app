@@ -2917,6 +2917,20 @@ supervisor DAEMON THREAD still writing a STALE progress counter.
 - The evidence is often already in your own prior reports; compare consecutive readings
   before trusting either.
 
+## A NAME YOU COINED IS STILL AN UNVERIFIED CLAIM (B2213 - L657, compliance failure vs #222)
+
+**MEASURED: I proposed a status value, then wrote it in later sentences as if the system
+had it. Grep returned exit 1 - it does not exist.** The mechanism-existence rule's examples
+are all things SOMEONE ELSE might have built, so it never fired on a name invented in the
+same breath.
+
+- **Label an invented identifier PROPOSED-NOT-BUILT at the moment of invention**, and keep
+  the label on every later mention in the same response.
+- **The absence is often the finding.** That no status value could express "censored trade
+  population" is precisely why the measured drop count gated nothing.
+- Mechanism: the #222 scan is the enforcement and it fires; telling a proposal from an
+  assertion is JUDGMENT-ONLY, since no scan reads intent.
+
 ## Phase 6 — END-OF-TURN SWEEP (CHECKLIST #67 — HARD RULE, no exceptions)
 
 **TICKET COUNTS BY GROUP - EVERY TURN (B1803 - CHECKLIST #274, owner directive 2026-08-21).**

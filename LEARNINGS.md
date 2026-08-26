@@ -14825,3 +14825,28 @@ mandates the sim-day diff (JUDGMENT-ONLY for the session-held monitor, since no 
 a cron prompt), plus S6-B2212b tickets a progress watchdog inside the supervisor itself so the
 durable half does not depend on a prompt. Sibling of L641 (absence is dead, not pending): here
 PRESENCE was dead and read as alive.
+
+## L657
+**A name you COINED one paragraph ago is still an unverified capability claim (B2213).**
+Proposing a status value INVALID_CENSORED, I then wrote it in later sentences as though it
+were part of the system's vocabulary. It does not exist: grep across scripts/ returns exit 1,
+and the real vocabulary is three values at run_wave.py lines 220 and 224 -
+INCOMPLETE_MAX_LEGS, COMPLETE, FAILED_EMPTY_CUBE. The mechanism-existence rule already covers
+cited capabilities, but every example it carries is something SOMEONE ELSE might have built -
+a flag, a script, a gate - so it did not fire on a name I invented in the same breath.
+**Rule: label an invented identifier PROPOSED-NOT-BUILT at the moment of invention, and keep
+the label on every later mention in the same response.** The absence is often the FINDING:
+here, that no status value can express 'this cube's trade population was censored' is exactly
+why the measured drop count gates nothing.
+Compliance failure against CHECKLIST #222 (naming a constant is not reading it) - no new item;
+#222 covers it and its scan caught it. Mechanism for the class: the #222 turn-gate scan is the
+enforcement, and it fired here; distinguishing a proposal from an assertion is JUDGMENT-ONLY,
+since no scan can read intent. Durability: this entry plus the skill section pinned by
+test_b2123.
+**Retroactive sweep (CHECKLIST #237), what was scanned and found:** the three tickets committed
+at 9a7997252 were checked for the same class. S6-B2213 uses INVALID_CENSORED under a clause
+headed PROPOSED (council chairman, needs owner approval) - correctly labelled. S6-B2213a names
+open_trades_checkpoint.csv inside a Design clause - correctly labelled. S6-B2213b cites
+boundary_drops, which EXISTS and was read this turn at run_wave.py lines 197-199. No mislabelled
+instance in the committed record; the slip was confined to chat prose, the same scope the L655
+and #238 sweeps found.
