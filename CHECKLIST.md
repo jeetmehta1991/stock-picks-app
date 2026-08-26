@@ -5278,3 +5278,17 @@ the directive's wording, and prose counts passed for two days).
 *Enforced by:* the `tabular with a delta column` member of
 `scan_ticket_counts_missing` (verify_turn_compliance.py, require_each) plus
 the existing `scan_missing_skill_confirmation` and `scan_compliance_is_content`.
+
+### #283 - A NAME-KEYED TERMINAL ARTIFACT ON DISK AT LAUNCH IS THE PRIOR ATTEMPT'S (B2193 / L649)
+
+Before launching (or waiting on) any run whose status artifact is keyed by a reused name
+(wave summary, completion sentinel, verdict file): an existing terminal artifact under that
+name was written by a PRIOR attempt and will shadow the live run for every reader polling it.
+The launcher archives it (evidence preserved, path cleared) at launch; a reader about to act
+on a terminal verdict checks the artifact is YOUNGER than the run it describes (heartbeat
+comparison). Measured: the B2192 chain halted on sw50's killed-parallel-era
+INCOMPLETE_MAX_LEGS summary while the live resumed run was at sim day 110. Sibling of #281
+(artifact older than its generator); here the artifact is older than its RUN.
+
+*Enforced by:* run_wave.py archive_stale_summary() at launch, pinned by
+test_b2193_stale_wave_summary_is_archived_at_launch.

@@ -258,6 +258,23 @@ def run_arm(spec: dict, arm: dict, engine_cmd: str | None = None) -> dict:
             "postconfig_exit": pc.returncode}
 
 
+def archive_stale_summary(wave: str):
+    """B2193 (L649): a resume-in-place wave inherits its predecessor's TERMINAL
+    wave summary, and any reader waiting on the NEW run's summary reads the old
+    verdict instead (measured: the B2192 chain runner halted on sw50's
+    parallel-era INCOMPLETE_MAX_LEGS summary while the live resumed run was at
+    sim day 110). A summary on disk at launch time describes a PRIOR attempt by
+    construction - archive it so no reader can see a summary older than the run
+    it claims to describe. Returns the archive path, or None if none existed.
+    """
+    p = ROOT / "output_audit" / f"{wave}_wave_summary.json"
+    if not p.exists():
+        return None
+    dest = p.with_name(f"{wave}_wave_summary_STALE_{int(time.time())}.json")
+    p.rename(dest)
+    return dest
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--spec", required=True)
@@ -265,6 +282,9 @@ def main() -> int:
                     help="TEST SEAM ONLY - forwarded to launch_sweep.py")
     a = ap.parse_args()
     spec = json.loads(Path(a.spec).read_text(encoding="utf-8"))
+    stale = archive_stale_summary(spec["wave"])
+    if stale:
+        print(f"[STALE] prior wave summary archived -> {stale.name}")
     results = [run_arm(spec, arm, engine_cmd=a.engine_cmd)
                for arm in spec["arms"]]
     out = ROOT / "output_audit" / f"{spec['wave']}_wave_summary.json"

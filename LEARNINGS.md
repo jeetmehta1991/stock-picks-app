@@ -14656,3 +14656,20 @@ applies to CONFIG as much as code. A retune of a live wave is always kill-checkp
 **Rule (compliance failure against item 230 — no new checklist item):** the standing #230 scan
 is the mechanism and fired again; the skill's rule 9 c2 (recovery claims) and the B2123
 loaded-at-launch habit jointly cover the class. JUDGMENT-ONLY residue unchanged.
+
+## L649
+**A terminal artifact from a prior attempt shadows the live run that reuses its name (B2192/B2193).**
+The B2192 autonomous chain runner, on its first start, read output_audit/b2177_sw50_wave_summary.json,
+found INCOMPLETE_MAX_LEGS, and correctly HALTed - but that summary was written by the KILLED
+parallel-era attempt (B2179); the live resumed sw50 run (sim day 110 at that moment) had not
+finished and its future summary was shadowed by its predecessor's terminal verdict. Root cause:
+resume-in-place reuses the wave name to keep the checkpoint dir, so the wave inherits every
+name-keyed artifact of the failed attempt, including the one readers poll for. The fail-closed
+halt was CORRECT behaviour - the defect was upstream, in launch not clearing the stale artifact.
+**Rule: at launch, any name-keyed terminal artifact already on disk describes a PRIOR attempt by
+construction - archive it (preserve evidence, clear the path) before any reader can poll it.**
+Same family as #281 (a generated artifact older than its generator is a memory): here the
+artifact is older than the RUN it claims to describe. Detection signal: a reader reaching a
+terminal verdict about a process whose heartbeat is minutes old. Mechanism: run_wave.py
+archive_stale_summary() at main() start; pin test_b2193_stale_wave_summary_is_archived_at_launch.
+CHECKLIST #283 anchors this entry.

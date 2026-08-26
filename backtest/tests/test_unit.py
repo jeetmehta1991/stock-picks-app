@@ -25886,3 +25886,28 @@ def test_b2192_serial_chain_skips_complete_and_halts_on_failure(tmp_path, monkey
     (tmp_path / "output_audit" / "bad_wave_wave_summary.json").write_text(
         "not json", encoding="utf-8")
     assert rc.summary_status({"wave": "bad_wave"}) == "UNREADABLE"
+
+
+def test_b2193_stale_wave_summary_is_archived_at_launch(tmp_path, monkeypatch):
+    """B2193 (L649, CHECKLIST #283): a wave summary on disk at launch describes
+    a PRIOR attempt; run_wave archives it so a chain waiting on the new run
+    cannot read the old verdict (the B2192 halt on sw50's parallel-era summary).
+    """
+    import importlib.util as _ilu
+    from pathlib import Path as _P
+    _root = _P(__file__).resolve().parents[2]
+    _spec = _ilu.spec_from_file_location(
+        "run_wave_b2193", _root / "scripts" / "run_wave.py")
+    rw = _ilu.module_from_spec(_spec)
+    _spec.loader.exec_module(rw)
+    monkeypatch.setattr(rw, "ROOT", tmp_path)
+    (tmp_path / "output_audit").mkdir()
+    stale = tmp_path / "output_audit" / "wX_wave_summary.json"
+    payload = '{"results": [{"arm": "a", "status": "INCOMPLETE_MAX_LEGS"}]}'
+    stale.write_text(payload, encoding="utf-8")
+    dest = rw.archive_stale_summary("wX")
+    assert dest is not None and dest.exists(), 'stale summary must be archived'
+    assert not stale.exists(), 'original path must be clear for the new run'
+    assert dest.read_text(encoding="utf-8") == payload, "evidence preserved verbatim"
+    assert "STALE" in dest.name
+    assert rw.archive_stale_summary("wX") is None, "no summary -> no-op, not an error"
