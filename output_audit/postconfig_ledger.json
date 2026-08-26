@@ -2823,8 +2823,8 @@
    "evidence": "AUTO (B2177): graded at manifest swing=30 span=200 -> output_b2183_sw30_sw30_grid_auto.json"
   },
   "3_outlier_discrepancy_sweep": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2183_sw30): the wave-level review batch performs this step across all arms together"
+   "status": "DONE",
+   "evidence": "AUTO (B2192): mechanical core executed by the battery (M2 exits-vs-registry, M5 NaN/inf/winsorize, M7 degraded exits) + the grader's union diagnosis-loss gate and ci_lo-led ranking; judgment residue rides the wave review"
   },
   "4_three_leg_spot_check": {
    "status": "DONE",
@@ -2839,8 +2839,8 @@
    "evidence": "PENDING-WAVE-REVIEW (b2183_sw30): the wave-level review batch performs this step across all arms together"
   },
   "6b_equivalence_class_check": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2183_sw30): the wave-level review batch performs this step across all arms together"
+   "status": "DONE",
+   "evidence": "AUTO (B2192): the grader collapses identical outcomes - 46 combos carried across 61 distinct outcome classes in output_b2183_sw30_sw30_grid_auto.json"
   },
   "7_implement_in_engine": {
    "status": "SKIPPED",

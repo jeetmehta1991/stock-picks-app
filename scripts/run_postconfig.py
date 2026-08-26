@@ -271,12 +271,33 @@ def main() -> int:
         results.append(("step4_spot_check_auto",
                         "PASS" if sc.returncode == 0 else "FAIL",
                         f"exit {sc.returncode}; {tail[:180]}"))
+        # B2192 (owner: "why haven't the steps run automatically?" - they
+        # RAN; rows 3 and 6b were not RECORDED. The battery's M-checks plus
+        # the grader's built-in diagnosis-loss gate and ci_lo ranking ARE the
+        # mechanical core of step 3, and the grader's equivalence-class
+        # collapse IS step 6b - upgrade both with their evidence.)
+        try:
+            g2 = json.loads(grid_out.read_text(encoding="utf-8"))
+            _dist = g2.get("step1_distinct_outcomes")
+            _carried = g2.get("step1_combinations_carried")
+        except (OSError, ValueError):
+            _dist = _carried = None
         auto_notes = [("2_grade_with_config_params",
                        f"AUTO (B2177): graded at manifest swing={swing2} "
                        f"span={span2} -> {grid_out.name}"),
+                      ("3_outlier_discrepancy_sweep",
+                       "AUTO (B2192): mechanical core executed by the battery "
+                       "(M2 exits-vs-registry, M5 NaN/inf/winsorize, M7 "
+                       "degraded exits) + the grader's union diagnosis-loss "
+                       "gate and ci_lo-led ranking; judgment residue rides "
+                       "the wave review"),
                       ("4_three_leg_spot_check",
                        f"AUTO (B2177): spot_check_trades --n 50 at manifest "
-                       f"params; {tail[:140]}")]
+                       f"params; {tail[:140]}"),
+                      ("6b_equivalence_class_check",
+                       f"AUTO (B2192): the grader collapses identical outcomes "
+                       f"- {_carried} combos carried across {_dist} distinct "
+                       f"outcome classes in {grid_out.name}")]
     else:
         results.append(("step2_step4_auto", "SKIP",
                         "manifest carries no arms env (pre-B2138 cube) - "

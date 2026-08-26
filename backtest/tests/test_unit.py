@@ -25721,6 +25721,8 @@ def test_b2177_steps_2_and_4_auto_run_from_the_manifest():
         ("step4_spot_check_auto", "the spot check is INVOKED"),
         ("for step_name, ev in auto_notes:", "ledger steps 2/4 upgraded"),
         ("pre-B2138 cube", "legacy cubes keep the manual prompts"),
+        ("3_outlier_discrepancy_sweep", "step 3 mechanical core recorded (B2192)"),
+        ("6b_equivalence_class_check", "step 6b class collapse recorded (B2192)"),
     ):
         assert frag in src, f"auto-wiring lost: {why} ({frag!r})"
     # #226: the pre-B2177 shape (no auto block) must be reported
@@ -25850,3 +25852,37 @@ def test_b2188_detached_launcher_uses_battery_allowed_registration():
         ("def selftest", "the executed end-to-end proof stays runnable"),
     ):
         assert frag in src, f"detached launcher lost: {why} ({frag!r})"
+
+
+def test_b2192_serial_chain_skips_complete_and_halts_on_failure(tmp_path, monkeypatch):
+    """B2192 (owner standing directive: autonomous serial configs): the
+    chain runner must SKIP a spec whose wave already reads COMPLETE
+    (idempotent restarts), HALT without launching on any non-COMPLETE
+    summary (the no-relaunch rule), and treat an unreadable summary as a
+    halt - never a relaunch."""
+    import importlib.util as _ilu
+    import json as _json
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    spec = _ilu.spec_from_file_location(
+        "run_serial_chain_b2192", root / "scripts" / "run_serial_chain.py")
+    rc = _ilu.module_from_spec(spec)
+    spec.loader.exec_module(rc)
+
+    # point the module at a sandbox ROOT so no real artifacts are touched
+    (tmp_path / "output_audit").mkdir()
+    monkeypatch.setattr(rc, "ROOT", tmp_path)
+    monkeypatch.setattr(rc, "LOG", tmp_path / "output_audit" / "chain.log")
+
+    def put_summary(wave, status):
+        (tmp_path / "output_audit" / f"{wave}_wave_summary.json").write_text(
+            _json.dumps({"results": [{"status": status}]}), encoding="utf-8")
+
+    put_summary("done_wave", "COMPLETE")
+    assert rc.summary_status({"wave": "done_wave"}) == "COMPLETE"
+    put_summary("dead_wave", "FAILED_NO_CHECKPOINT")
+    assert rc.summary_status({"wave": "dead_wave"}) == "FAILED_NO_CHECKPOINT"
+    assert rc.summary_status({"wave": "never_ran"}) is None
+    (tmp_path / "output_audit" / "bad_wave_wave_summary.json").write_text(
+        "not json", encoding="utf-8")
+    assert rc.summary_status({"wave": "bad_wave"}) == "UNREADABLE"
