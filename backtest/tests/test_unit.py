@@ -26026,3 +26026,35 @@ def test_b2199_table_c_is_printed_with_every_locked_column(tmp_path, monkeypatch
                 "best IS-Sharpe", "best IS-CI-lo", "best combination"):
         assert col in header, f"locked column missing from Table C: {col}"
     assert header.count("|") == 13, "locked Table C is 12 columns"
+
+def test_b2203a_hardened_registration_uses_system_principal(monkeypatch):
+    """B2203a (S6-B2202a class): the hardened detached launch must register
+    under the SYSTEM principal (session 0), so a console-control event in
+    the user session cannot kill the tree - the 0xC000013A incident killed
+    the b2197 chain mid-config. Both directions: hardened embeds the
+    principal; default does NOT (interactive registration stays available).
+    """
+    import importlib.util as _ilu
+    from pathlib import Path as _P
+    _root = _P(__file__).resolve().parents[2]
+    _spec = _ilu.spec_from_file_location(
+        "launch_detached_b2203a", _root / "scripts" / "launch_detached.py")
+    ld = _ilu.module_from_spec(_spec)
+    _spec.loader.exec_module(ld)
+    captured = {}
+    def fake_run_ps(script):
+        captured["script"] = script
+        class R:
+            returncode = 0
+            stdout = "registered_and_started x last_result=0"
+            stderr = ""
+        return R()
+    monkeypatch.setattr(ld, "_run_ps", fake_run_ps)
+    ld._register_and_start("t", "cmd.exe", "/c echo x", hardened=True)
+    hs = captured["script"]
+    assert "New-ScheduledTaskPrincipal" in hs and "SYSTEM" in hs
+    assert "ServiceAccount" in hs, "session-0 logon type is the immunity"
+    assert "-Principal $principal" in hs
+    ld._register_and_start("t", "cmd.exe", "/c echo x", hardened=False)
+    ds = captured["script"]
+    assert "New-ScheduledTaskPrincipal" not in ds, "default stays interactive"
