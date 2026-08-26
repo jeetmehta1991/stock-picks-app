@@ -2870,6 +2870,19 @@ searched 2 - until the owner asked whether the format was locked.
 **Mechanically enforced** by scripts/show_table_c.py, pinned by
 test_b2199_table_c_is_printed_with_every_locked_column.
 
+## A PIN ON THE CALLEE IS NOT A PIN ON THE WIRING (B2208 - L654, compliance failure vs #224)
+
+**MEASURED: I inserted a print call AFTER a function's `return` - dead code. The file
+parsed, the pyramid was green, the pin (which called the renderer directly) passed, and
+the output never appeared for THREE landings until the owner asked.**
+
+- Wiring a call into an existing function? **The pin must assert the call site is
+  REACHABLE**, not merely that the callee works.
+- Cheap general form: AST-walk the edited module asserting no statement follows a
+  `return` in any function, plus assert the new call precedes that return.
+- **"X now does Y" is a claim about the PROCESS, not the file.** Verify it by finding
+  Y's output in the process's actual output, or label it UNVERIFIED.
+
 ## Phase 6 — END-OF-TURN SWEEP (CHECKLIST #67 — HARD RULE, no exceptions)
 
 **TICKET COUNTS BY GROUP - EVERY TURN (B1803 - CHECKLIST #274, owner directive 2026-08-21).**

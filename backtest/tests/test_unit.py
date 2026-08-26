@@ -24991,6 +24991,9 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         ("A LOCKED FORMAT BINDS THE WRITER, NOT THE QUOTER",
          "L652: a locked artifact is PRINTED, never retyped - retyping is an "
          "unreviewed second renderer whose omissions look like trimming"),
+        ("A PIN ON THE CALLEE IS NOT A PIN ON THE WIRING",
+         "L654: wiring a call needs a REACHABILITY assert at the call site - "
+         "code after a return parses, passes, and never runs"),
     ):
         if frag not in discipline_text:
             missing.append(f"execution-discipline lost [{why}]: {frag!r}")
@@ -25013,7 +25016,7 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     assert _b2123_skill_rules_present(fable, disc) == []
     # #226 prove-it-can-fail: a gutted file must be REPORTED, not pass
     gutted = _b2123_skill_rules_present("# The Fable Method\n", "# Discipline\n")
-    assert len(gutted) == 44, gutted
+    assert len(gutted) == 45, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 

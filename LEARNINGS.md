@@ -14749,3 +14749,22 @@ that thing's definition changes. Mechanism: JUDGMENT-ONLY for detection (no scan
 constant's implicit unit); the compensating practice is the live process-tree measurement
 used here (sum WorkingSet64/PeakWorkingSet64 over the running tree), now recorded in the
 S6-B2204b row as the standard probe for per-config memory claims.
+
+## L654
+**A pin on the RENDERER is not a pin on the WIRING; unreachable code passes every test that
+never calls it (B2208).**
+B2198 shipped "run_wave prints the battery report card at arm completion" with a green pyramid
+and a passing pin. The pin exercised postconfig_report.render() and report() DIRECTLY. The
+insertion itself went in AFTER run_arm's `return` statement - dead code. Python does not warn,
+the file parses, the pin passes, and the card never printed for THREE landings until the owner
+asked "where can I view the results as nothing is getting printed". The claim "run_wave now
+prints the card" was true of the file and false of the process.
+**Rule: when wiring a call into an existing function, the pin must assert REACHABILITY at the
+call site, not just correctness of the callee.** Cheapest general form: an AST walk asserting no
+statement follows a `return` in any function of the edited module, plus an ordering assert that
+the new call precedes the function's return. Both are in
+test_b2208_no_unreachable_code_after_return_in_run_wave. Compliance failure against CHECKLIST
+#224 (a gate nobody calls is not enforcement) - no new item; this is that rule applied to a
+call site rather than a gate. Sibling of L651 (running an analysis is not delivering it): there
+the result reached disk and not the reader; here it reached neither, and the difference was
+invisible to every test.
