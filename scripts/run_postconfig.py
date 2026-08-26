@@ -305,17 +305,20 @@ def main() -> int:
 
     fails = [x for x in results if x[1] == "FAIL"]
     if a.write_ledger and not fails:
-        lp = ROOT / "output_audit" / "postconfig_ledger.json"
-        ledger = json.loads(lp.read_text(encoding="utf-8")) if lp.exists() else {}
-        entry = ledger.get(cube_dir.name, {})
-        for step_name, ev in auto_notes:
-            entry[step_name] = {"status": "DONE", "evidence": ev}
-        entry["1_cube_sanity"] = {
-            "status": "DONE",
-            "evidence": "run_postconfig: " + "; ".join(
-                f"{n}={st}({ev[:60]})" for n, st, ev in results)}
-        ledger[cube_dir.name] = entry
-        lp.write_text(json.dumps(ledger, indent=1), encoding="utf-8")
+        # B2207 (S6-B2205a): locked + atomic - see scripts/ledger_lock.py.
+        from ledger_lock import locked_ledger_update
+
+        def _upgrade(ledger: dict) -> dict:
+            entry = ledger.get(cube_dir.name, {})
+            for step_name, ev in auto_notes:
+                entry[step_name] = {"status": "DONE", "evidence": ev}
+            entry["1_cube_sanity"] = {
+                "status": "DONE",
+                "evidence": "run_postconfig: " + "; ".join(
+                    f"{n}={st}({ev[:60]})" for n, st, ev in results)}
+            ledger[cube_dir.name] = entry
+            return ledger
+        locked_ledger_update(_upgrade)
         print(f"[OK] ledger step 1 recorded for {cube_dir.name}")
     return 2 if fails else 0
 

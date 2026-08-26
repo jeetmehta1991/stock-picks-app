@@ -223,8 +223,9 @@ def run_arm(spec: dict, arm: dict, engine_cmd: str | None = None) -> dict:
         rows = sum(1 for _ in f) - 1
     status = "COMPLETE" if rows > 1 else "FAILED_EMPTY_CUBE"
     # mechanical ledger entries: what the orchestrator itself verified
-    lp = ROOT / "output_audit" / "postconfig_ledger.json"
-    ledger = json.loads(lp.read_text(encoding="utf-8")) if lp.exists() else {}
+    # B2207 (S6-B2205a): the ledger write is LOCKED + atomic via
+    # ledger_lock.locked_ledger_update - two configs landing simultaneously
+    # serialize instead of losing an entry. The parallel-program prerequisite.
     steps = ["1_cube_sanity", "2_grade_with_config_params",
              "3_outlier_discrepancy_sweep", "4_three_leg_spot_check",
              "5_adversarial_lens_review", "6_post_fix_recheck",
@@ -239,8 +240,12 @@ def run_arm(spec: dict, arm: dict, engine_cmd: str | None = None) -> dict:
         "evidence": f"run_wave verified {rows} cube rows across {legs} "
                     f"leg(s); M6 boundary drops (B1076 caveat, measured): "
                     f"{boundary_drops if boundary_drops else 'none - single leg'}"}
-    ledger[out_dir.name] = entry
-    lp.write_text(json.dumps(ledger, indent=1), encoding="utf-8")
+    from ledger_lock import locked_ledger_update
+
+    def _put(ledger: dict) -> dict:
+        ledger[out_dir.name] = entry
+        return ledger
+    locked_ledger_update(_put)
     # B2118 (S6-B2117b): the mechanical post-config battery runs HERE, at
     # wave completion, not by hand. --write-ledger upgrades 1_cube_sanity
     # with the M-check evidence when all checks pass; a non-zero exit is

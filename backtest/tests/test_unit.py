@@ -26058,3 +26058,61 @@ def test_b2203a_hardened_registration_uses_system_principal(monkeypatch):
     ld._register_and_start("t", "cmd.exe", "/c echo x", hardened=False)
     ds = captured["script"]
     assert "New-ScheduledTaskPrincipal" not in ds, "default stays interactive"
+
+def _b2207_worker(args):
+    """Top-level worker (spawn-picklable): one locked add of its own key."""
+    import importlib.util as _ilu
+    from pathlib import Path as _P
+    ledger_path, key = args
+    _root = _P(__file__).resolve().parents[2]
+    _spec = _ilu.spec_from_file_location(
+        "ledger_lock_b2207w", _root / "scripts" / "ledger_lock.py")
+    ll = _ilu.module_from_spec(_spec)
+    _spec.loader.exec_module(ll)
+    def _add(ledger):
+        ledger[key] = {"1_cube_sanity": {"status": "DONE", "evidence": key}}
+        return ledger
+    ll.locked_ledger_update(_add, ledger_path=_P(ledger_path))
+    return key
+
+
+def test_b2207_ledger_lock_serializes_concurrent_landings(tmp_path):
+    """B2207 (S6-B2205a): the parallel-program prerequisite.
+
+    (a) MUST-WORK: 8 processes concurrently read-modify-write one ledger;
+    every key survives (the unlocked writer loses entries here) and the
+    file parses. (b) MUST-FAIL: with the lock already held, the helper
+    times out loudly instead of proceeding - proving the lock is real,
+    not decorative. (c) writes are atomic (os.replace in the helper).
+    """
+    import importlib.util as _ilu
+    import json as _json
+    import multiprocessing as _mp
+    from pathlib import Path as _P
+    _root = _P(__file__).resolve().parents[2]
+    _spec = _ilu.spec_from_file_location(
+        "ledger_lock_b2207", _root / "scripts" / "ledger_lock.py")
+    ll = _ilu.module_from_spec(_spec)
+    _spec.loader.exec_module(ll)
+
+    lp = tmp_path / "ledger.json"
+    keys = [f"output_cfg_{i}" for i in range(8)]
+    with _mp.get_context("spawn").Pool(4) as pool:
+        done = pool.map(_b2207_worker, [(str(lp), k) for k in keys])
+    assert sorted(done) == sorted(keys)
+    final = _json.loads(lp.read_text(encoding="utf-8"))
+    assert sorted(final) == sorted(keys), (
+        f"lost update: {sorted(set(keys) - set(final))} missing")
+
+    # (b) the lock must actually exclude: hold it, expect a loud timeout
+    import filelock as _fl
+    import pytest as _pt
+    outer = _fl.FileLock(str(lp) + ".lock")
+    with outer.acquire(timeout=5):
+        with _pt.raises(_fl.Timeout):
+            ll.locked_ledger_update(lambda d: d, ledger_path=lp,
+                                    timeout_s=0.5)
+
+    # (c) atomicity is structural: the helper writes via os.replace
+    src = (_root / "scripts" / "ledger_lock.py").read_text(encoding="utf-8")
+    assert "os.replace" in src and "mkstemp" in src
