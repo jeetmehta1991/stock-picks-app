@@ -9,7 +9,7 @@
  "leg_cap_hours": 4.5,
  "max_legs": 3,
  "step1_cube": true,
- "pool_workers": 5,
+ "pool_workers": 10,
  "allow_engine_drift": true,
  "arms": [
   {
