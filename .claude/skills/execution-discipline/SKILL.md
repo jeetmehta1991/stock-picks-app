@@ -2795,6 +2795,33 @@ instead. **The safety net was the defect.**
   `input='{}'` through a UTF-8 pipe (716 lines) while the harness used a cp1252 console (9 lines).
   **Same script, opposite result.**
 
+## A REUSED NAME'S TERMINAL ARTIFACT SHADOWS THE LIVE RUN (B2193 - L649, CHECKLIST #283)
+
+**MEASURED: the B2192 autonomous chain, on its first start, read sw50's wave
+summary, found INCOMPLETE_MAX_LEGS, and correctly HALTed - while the live
+resumed sw50 run was at sim day 110.** The summary was the KILLED parallel-era
+attempt's; resume-in-place reuses the wave name to keep its checkpoint dir, so
+the wave inherits every name-keyed artifact of the failed attempt, including
+the exact file readers poll for its outcome.
+
+- **A terminal artifact on disk at launch describes a PRIOR attempt by
+  construction** - it is older than the RUN it claims to describe (#281's
+  sibling: there the artifact was older than its GENERATOR). The launcher
+  archives it - evidence preserved, path cleared - before any reader can act
+  on it.
+- **The fail-closed reader was CORRECT and still misled.** A reader about to
+  act on a terminal verdict checks the artifact is younger than the run it
+  describes (heartbeat comparison) - a verdict minutes older than a live
+  heartbeat is the tell.
+- **Scope, measured not assumed:** the repo has exactly ONE wave-summary
+  writer (run_wave.py main()) and the archive guard runs in that same main()
+  before it - so the guard covers 1 of 1 writer; other name-keyed sentinels
+  (completion flags, verdict files) get the same check at their own launch
+  sites when created.
+
+**Mechanically enforced** by run_wave.py archive_stale_summary() at launch,
+pinned by test_b2193_stale_wave_summary_is_archived_at_launch.
+
 ## Phase 6 — END-OF-TURN SWEEP (CHECKLIST #67 — HARD RULE, no exceptions)
 
 **TICKET COUNTS BY GROUP - EVERY TURN (B1803 - CHECKLIST #274, owner directive 2026-08-21).**

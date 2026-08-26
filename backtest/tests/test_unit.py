@@ -24977,6 +24977,9 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
          "L638: an append-log entry is evidence about its own date"),
         ("THE FIX BELONGS UPSTREAM",
          "L638 addendum: a clean sweep relocates the defect, not closes it"),
+        ("older than the RUN it claims to describe",
+         "L649: a reused name's terminal artifact shadows the live run - "
+         "archive it at launch, and a reader checks verdict age vs heartbeat"),
     ):
         if frag not in discipline_text:
             missing.append(f"execution-discipline lost [{why}]: {frag!r}")
@@ -24999,7 +25002,7 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     assert _b2123_skill_rules_present(fable, disc) == []
     # #226 prove-it-can-fail: a gutted file must be REPORTED, not pass
     gutted = _b2123_skill_rules_present("# The Fable Method\n", "# Discipline\n")
-    assert len(gutted) == 40, gutted
+    assert len(gutted) == 41, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
