@@ -26007,13 +26007,82 @@ def test_b2208_no_unreachable_code_after_return_in_run_wave():
                 dead.append((node.name, nxt_stmt.lineno))
     assert dead == [], f"unreachable code after return: {dead}"
     # and the report card call must EXIST (wired, not merely defined)
-    assert "postconfig_report" in src, "run_wave must render the battery card"
+    assert "postconfig_doc" in src, "run_wave must regenerate the findings doc"
     fn = next(n for n in _ast.walk(tree)
               if isinstance(n, _ast.FunctionDef) and n.name == "run_arm")
     body_src = _ast.unparse(fn)
-    ri = body_src.index("postconfig_report")
+    ri = body_src.index("postconfig_doc")
     reti = body_src.rindex("return {")
-    assert ri < reti, "the card must render BEFORE run_arm returns"
+    assert ri < reti, "the doc must regenerate BEFORE run_arm returns"
+
+def test_b2211_single_doc_reports_findings_not_status(tmp_path, monkeypatch):
+    """B2211 (owner 2026-08-26: "It just says done! I want to know the findings
+    of each step!"): the post-config document must carry MEASURED VALUES and
+    what would have been alarming - not a status column.
+
+    Three properties, each of which the retired per-config card failed:
+    (a) the packed step-1 evidence string is SPLIT into its named checks, so a
+        14-check step renders 14 rows instead of 150 truncated characters;
+    (b) each rendered check carries its measured value AND its alarm condition;
+    (c) the falsifiability line is present and honest - if no check has ever
+        returned non-PASS, the document says green is weak evidence.
+    """
+    import importlib.util as _ilu
+    import json as _json
+    from pathlib import Path as _P
+    _root = _P(__file__).resolve().parents[2]
+    _spec = _ilu.spec_from_file_location(
+        "postconfig_doc_b2211", _root / "scripts" / "postconfig_doc.py")
+    pcd = _ilu.module_from_spec(_spec)
+    _spec.loader.exec_module(pcd)
+
+    # (a) the parser recovers every named check from one packed string
+    packed = ("run_postconfig: cube_exists=PASS(2520 rows); "
+              "one_strategy=PASS(1 strategies); "
+              "M4_holdout_touch=PASS(0 entries at/after HO_START); "
+              "M3_fill_date=FAIL(7 fills before entry)")
+    got = pcd.parse_checks(packed)
+    assert len(got) == 4, got
+    names = [n for n, _, _ in got]
+    assert "M4_holdout_touch" in names and "M3_fill_date" in names
+    assert ("M3_fill_date", "FAIL", "7 fills before entry") in got
+
+    # falsifiability counts a real failure when one exists
+    bad, total = pcd.falsifiability({"cube_x": {"1_cube_sanity": {"evidence": packed}}})
+    assert (bad, total) == (1, 4), (bad, total)
+
+    # (b) + (c) render a full section and assert findings, not statuses
+    audit = tmp_path / "output_audit"
+    audit.mkdir()
+    monkeypatch.setattr(pcd, "AUDIT", audit)
+    entry = {"1_cube_sanity": {"status": "DONE", "evidence": packed},
+             "5_adversarial_lens_review": {"status": "SKIPPED", "evidence": "x"}}
+    grid = {"config": {"P1_swing_length": 20},
+            "step1_combinations_carried": 17, "step1_distinct_outcomes": 97,
+            "step1_ranking": [{"rank": 1, "is_ci_lo": 0.107, "is_sharpe": 0.551,
+                               "fires": 88, "exit": "e", "class_size": 3,
+                               "admit": {"close_mitigation": False,
+                                         "break_pct_max": 0.05,
+                                         "age_bars_max": None, "tail_n": 5}}],
+            "results": [{"verdict": "NO_EXIT_SELECTABLE"}] * 77
+                       + [{"verdict": "BELOW_POWER_FLOOR"}] * 223}
+    spot = {"agree": 50, "disagree": 0, "skipped": 0, "execution_failures": [],
+            "seed": 1, "swing_length": 20, "ema_span": 21,
+            "close_mitigation": False, "tail_n": 5}
+    (audit / "cube_x_grid_auto.json").write_text(_json.dumps(grid), encoding="utf-8")
+    (audit / "cube_x_spot_check.json").write_text(_json.dumps(spot), encoding="utf-8")
+    body = chr(10).join(pcd.config_section("cube_x", entry, pcd.load_artifacts("cube_x")))
+
+    assert "2520 rows" in body, "measured value missing - this is the whole point"
+    assert "0 entries at/after HO_START" in body
+    assert "the holdout was contaminated" in body, "alarm condition missing"
+    assert "NOT PASS" in body, "a failing check must be marked, not blended in"
+    assert "50 of 50 sampled trades" in body, "step 4 findings missing"
+    assert "77 (26%) STARVED" in body, "the funnel's headline loss is missing"
+    assert "5 of 9 steps ran" not in body  # this fixture has 2 steps, not 9
+    assert "incomplete by design" in body, "outstanding judgment steps must be stated"
+    # the retired card's failure mode must not return
+    assert "| DONE |" not in body, "status-only rows are what the owner rejected"
 
 def test_b2199_table_c_is_printed_with_every_locked_column(tmp_path, monkeypatch):
     """B2199 (L652, CHECKLIST #285): the locked Table C is PRINTED, never retyped.

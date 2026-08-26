@@ -263,13 +263,13 @@ def run_arm(spec: dict, arm: dict, engine_cmd: str | None = None) -> dict:
     # the return, and ALSO writes a durable per-config artifact so the result
     # is a file you can open rather than a needle in a 9,000-line engine log.
     try:
-        import postconfig_report as _pcr
-        _card = _pcr.render(_pcr.report(out_dir.name))
-        for _line in _card:
-            print(_line)
-        _md = ROOT / "output_audit" / f"{out_dir.name}_battery_report.md"
-        _md.write_text("\n".join(_card) + "\n", encoding="utf-8")
-        print(f"[OK] battery report card written to {_md.name}")
+        # B2211: ONE document, regenerated whole (owner: "I want a single
+        # document and not multiple"). Per-config cards are retired; this
+        # doc carries every step's FINDINGS, not its status.
+        import postconfig_doc as _pcd
+        _doc = ROOT / "output_audit" / "POSTCONFIG_REPORT.md"
+        _doc.write_text(_pcd.build(), encoding="utf-8")
+        print(f"[OK] {_doc.name} regenerated including this config")
     except Exception as _exc:               # never let reporting kill a landing
         print(f"[WARN] post-config report card unavailable: {_exc!r}")
     return {"arm": arm["tag"], "status": status, "legs": legs,
