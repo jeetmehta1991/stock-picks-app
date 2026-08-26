@@ -256,6 +256,17 @@ def run_arm(spec: dict, arm: dict, engine_cmd: str | None = None) -> dict:
             "boundary_drops": boundary_drops, "measured_rates": rates,
             "cube_rows": rows, "elapsed_s": int(time.time() - t0),
             "postconfig_exit": pc.returncode}
+    # B2198 (L651): the battery's result is RENDERED, not only written. Running
+    # the analysis and leaving it on disk is not delivering it - the owner asked
+    # why they never saw a per-config result for runs the battery had verifiably
+    # processed. This prints the report card into the wave log at the moment of
+    # landing, so the analysis exists in the same place the landing is announced.
+    try:
+        import postconfig_report as _pcr
+        for _line in _pcr.render(_pcr.report(out_dir.name)):
+            print(_line)
+    except Exception as _exc:               # never let reporting kill a landing
+        print(f"[WARN] post-config report card unavailable: {_exc!r}")
 
 
 def archive_stale_summary(wave: str):

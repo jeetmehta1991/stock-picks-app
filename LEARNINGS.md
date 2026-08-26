@@ -14692,3 +14692,21 @@ work becomes tickets - the 35-config program was never per-set ticketed) and the
 scope-ledger rule; no new item. Detection JUDGMENT-ONLY (no scan reads a directive's
 quantifier against a plan factorial); durability: the B2197 queue rows + the skill line
 pinned by test_b2123.
+
+## L651
+**RUNNING an analysis is not DELIVERING it; a result on disk was never reported (B2198).**
+The mandatory post-config battery has auto-run at every landing since B2177 - postconfig_exit 0
+on all three unattended band landings, ledger steps 1/2/3/4/6b DONE with evidence, auto grid
+written. The owner still asked: 'if they were triggered, why didn't I see the result for each
+config run?' They were right. Every hourly report VERIFIED the battery (a boolean: did it run)
+and quoted ONE headline number; the battery's actual per-step output went to the ledger file and
+nowhere else. An owner directive to RUN an analysis per landing is a directive about a delivered
+analysis - the artifact is the medium, not the deliverable.
+**Rule: when a directive says an analysis runs per event, the per-event RENDER is part of the
+mechanism, not of the reporter's memory.** Verification answers 'did it run'; the reader needs
+'what did it say'. Mechanism: scripts/postconfig_report.py renders every step with its evidence
+plus the headline cell, invoked by run_wave at arm completion so the analysis lands in the same
+place as the landing; pin test_b2198 asserts both directions (rendered in full, and an
+unrecorded config reported as ABSENT rather than as a clean card). CHECKLIST #284 anchors this.
+Sibling of L641 (silence is never evidence of work in progress) - here the work was real and
+the silence was in the reporting layer.

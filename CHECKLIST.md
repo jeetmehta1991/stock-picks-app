@@ -5292,3 +5292,16 @@ INCOMPLETE_MAX_LEGS summary while the live resumed run was at sim day 110. Sibli
 
 *Enforced by:* run_wave.py archive_stale_summary() at launch, pinned by
 test_b2193_stale_wave_summary_is_archived_at_launch.
+
+### #284 - AN ANALYSIS THAT RUNS PER EVENT IS RENDERED PER EVENT (B2198 / L651)
+
+When a directive requires an analysis after every occurrence of an event (per config, per
+landing, per batch), the per-event RENDER of that analysis is part of the mechanism - not
+something the reporter remembers to write. Checking that the analysis RAN is a boolean and
+answers a different question than the reader is asking. Measured: the post-config battery
+auto-ran on every landing with its steps recorded, and the owner never saw a per-config
+result because every report verified the run and quoted one number. Ship the renderer with
+the runner, and have the runner invoke it at the same moment it announces completion.
+
+*Enforced by:* scripts/postconfig_report.py invoked from run_wave.py at arm completion,
+pinned by test_b2198_battery_result_is_rendered_not_only_written (both directions).

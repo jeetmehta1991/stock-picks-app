@@ -25918,3 +25918,49 @@ def test_b2193_stale_wave_summary_is_archived_at_launch(tmp_path, monkeypatch):
     assert dest.read_text(encoding="utf-8") == payload, "evidence preserved verbatim"
     assert "STALE" in dest.name
     assert rw.archive_stale_summary("wX") is None, "no summary -> no-op, not an error"
+
+def test_b2198_battery_result_is_rendered_not_only_written(tmp_path, monkeypatch):
+    """B2198 (L651, CHECKLIST #284): the post-config battery's result must be
+    RENDERED per landing - a ledger row on disk is not a delivered analysis.
+
+    Both directions: a healthy landing renders every step WITH its headline
+    cell, and a config the battery never recorded must say so rather than
+    render an empty-looking clean card (L641: absence is DEAD, not pending).
+    """
+    import importlib.util as _ilu
+    import json as _json
+    from pathlib import Path as _P
+    _root = _P(__file__).resolve().parents[2]
+    _spec = _ilu.spec_from_file_location(
+        "postconfig_report_b2198", _root / "scripts" / "postconfig_report.py")
+    pcr = _ilu.module_from_spec(_spec)
+    _spec.loader.exec_module(pcr)
+
+    (tmp_path / "output_audit").mkdir()
+    monkeypatch.setattr(pcr, "ROOT", tmp_path)
+    monkeypatch.setattr(pcr, "LEDGER", tmp_path / "output_audit" / "led.json")
+    entry = {k: {"status": "DONE", "evidence": f"auto {k}"}
+             for k in pcr.AUTO_STEPS}
+    entry.update({k: {"status": "SKIPPED", "evidence": "PENDING-WAVE-REVIEW"}
+                  for k in pcr.JUDGMENT_STEPS})
+    pcr.LEDGER.write_text(_json.dumps({"output_x": entry}), encoding="utf-8")
+    (tmp_path / "output_audit" / "output_x_grid_auto.json").write_text(
+        _json.dumps({"config": {"P1_swing_length": 5}, "results": [],
+                     "step1_combinations_carried": 20,
+                     "step1_distinct_outcomes": 132,
+                     "step1_ranking": [{"is_ci_lo": 0.123, "is_sharpe": 0.6,
+                                        "fires": 74, "exit": "e",
+                                        "admit": {"verdict": "V"}}]}),
+        encoding="utf-8")
+    rep = pcr.report("output_x")
+    assert rep["all_auto_done"] is True
+    assert rep["above_floor"] is False, "0.123 is below the 0.333 floor"
+    body = "\n".join(pcr.render(rep))
+    for step in pcr.AUTO_STEPS + pcr.JUDGMENT_STEPS:
+        assert step in body, f"report card omitted {step}"
+    assert "0.123" in body and "is_sharpe 0.6" in body
+
+    # the ABSENT direction: an unrecorded config must be reported as such
+    missing = pcr.report("output_never_ran")
+    assert missing["ledger_present"] is False
+    assert "NO LEDGER ENTRY" in "\n".join(pcr.render(missing))
