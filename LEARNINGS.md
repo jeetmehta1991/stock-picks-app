@@ -15369,3 +15369,39 @@ wave-orchestration path is better covered than I assumed. The commit-based RAM w
 genuinely absent, and now says so with its search named. The exit-delegation detector
 (S6-B2217): grep for audit_identical_exits returns 0 - also genuinely absent. **1 of 3
 claimed-absent mechanisms already existed**, and it is the one I filed a ticket to build.
+
+## L673
+**A closing SUMMARY that restates findings RE-ARMS every gate those findings originally armed -
+because to a text scanner, summarising work is indistinguishable from doing it again (B2231).**
+L668 recorded that a blocked close re-emits the mandatory blocks and that the re-emitted text is
+itself scanned. This is the sharper half, and it is what actually drove the count up: **the
+gates fired hardest on my WRAP-UP paragraphs**, the ones recapping the session's findings for
+the owner. Naming a code structure in a recap armed the code-structure scan; quoting a ticket
+count in a recap armed the ledger-count scan; repeating an absence armed the novelty scan.
+Every one of those claims had been properly evidenced when first made, and the evidence does not
+travel with the sentence into the summary.
+**Rule: a recap of evidenced work carries the evidence obligations of the work, every time it is
+restated.** The scanner has no memory of the turn where the file was opened. So either re-run
+the cheap probe in the same turn as the recap, or write the recap WITHOUT the load-bearing
+nouns - and prefer the first, because the second degrades the report the owner actually reads.
+**The perverse incentive is the thing to name:** the cheapest way to pass is to say LESS in the
+summary, and the summary is the only part the owner reads closely. A discipline layer that taxes
+reporting more heavily than working will, left alone, produce quieter reports rather than better
+work - which is L586's costly-in-the-wrong-place lesson arriving at the reporting layer instead
+of the LEARNINGS layer.
+Compliance failure against CHECKLIST item 215 and item 258 in their restated form - the
+structure claim and the count were both properly established earlier in the session and both
+were repeated in a recap without re-running their probes. No new item; both name their class,
+and the fix is to re-run rather than to re-word.
+Mechanism: MECHANICALLY ENFORCED, and working as designed rather than misfiring - the scans are
+correct that a restated claim carries no evidence. The residue is JUDGMENT-ONLY: no scan can
+distinguish a recap of evidenced work from a fresh unevidenced assertion, because they are the
+same sentence. Durability held by the anchor-doc citation freeze over this rule in SKILL.md.
+Both halves stated separately per L548.
+**Retroactive sweep (CHECKLIST #237), what was scanned and found:** counted how many distinct
+gates fired across this session's close attempts and grouped them by what they read. The
+code-structure, ledger-count, novelty, partial-read and uncosted-probe scans ALL fired at least
+once on recap text rather than on working text - **5 of the 5 content gates that fired on me
+were armed by a summary at least once**, while the two purely structural gates (skills-invoked,
+ticket-counts) fired only on genuine omissions. The split is clean and it is the evidence for
+the rule: content gates are recap-sensitive by construction, structural gates are not.

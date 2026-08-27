@@ -3056,6 +3056,14 @@ own description; the freeze never reached it.
 - **The rule was AUTO-INJECTED and I read past it.** L570's authoring-feels-like-installing, with
   the twist that I did not even author this one. **A rule in context is not a rule applied**, and
   the guard is to re-read the section when you are about to invoke a freeze, not to trust recall.
+- **A RECAP CARRIES THE EVIDENCE OBLIGATIONS OF THE WORK IT RECAPS (L673).** MEASURED: the gates
+  fired hardest on my WRAP-UP paragraphs - naming a code structure in a recap armed the
+  code-structure scan, quoting a count armed the ledger scan, repeating an absence armed the
+  novelty scan. **Each claim was properly evidenced when first made, and the evidence does not
+  travel with the sentence.** Re-run the cheap probe in the same turn as the recap, rather than
+  re-wording the recap. **Name the perverse incentive out loud:** the cheapest way to pass is to
+  say less in the summary, and the summary is the part the owner actually reads - L586's
+  costly-in-the-wrong-place, arriving at the reporting layer.
 - **"THIS DOES NOT EXIST" IS A NOVELTY CLAIM, AND A TICKET OPENED TO FILL THE GAP IS WHERE IT
   HIDES (L672).** MEASURED: I filed a ticket to build a must-FIRE test that was already in the
   suite - one grep, 1 hit, line 24781. **Opening a ticket FEELS like diligence** because it records
