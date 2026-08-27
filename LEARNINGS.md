@@ -15689,3 +15689,41 @@ owed rather than implied: I have not audited whether the numbers those seven pro
 this session were validated before I quoted them. queue_state's counts are re-derived every turn
 by rule and so are the best-covered; the others were quoted from single runs. That audit is the
 natural follow-on and is not claimed here.
+
+## L680
+**I ranked the privilege ticket LEAST URGENT because capacity was the visible constraint - and
+privilege killed the chain ninety minutes later (B2250).**
+Asked which open tickets needed owner decisions, I put S6-B2203b (elevated launches) last with
+the reasoning: *the least urgent of the blocked set, because capacity, not privilege, is what
+stops the program.* Capacity WAS the visible constraint - commit charge at 98pct, three prior
+commit-exhaustion deaths, a measured 42.63 GB per config. Every symptom I had pointed one way.
+Then config 17 died at sim_day 230 with the whole chain, and the log reads
+`PermissionError: [WinError 5] Access is denied` inside multiprocessing/reduction.py at
+`_winapi.DuplicateHandle(... DUPLICATE_CLOSE_SOURCE)` - a worker-spawn privilege failure, the
+exact class S6-B2203b describes.
+**Rule: a priority ordering is an asserted consequence and carries a measurement's burden.**
+*This one matters more than that one* is a claim about which failure will occur, and I ranked
+five tickets on a mechanism I had observed rather than on the space of mechanisms that could
+fire. **The evidence I had was about the failure mode I had already seen; it said nothing about
+the one I had not.**
+**The specific trap: an abundance of evidence for one cause reads as evidence AGAINST others.**
+Four commit measurements, three prior deaths and a documented 6.93x ratio made capacity feel not
+just likely but established - and 'established' quietly became 'therefore not privilege'. Those
+are independent failure modes on the same box, and evidence for one is evidence for neither
+against nor for the other.
+WHAT WOULD HAVE CAUGHT IT, and it is cheap: a launch-time probe that spawns one pool worker and
+asserts it survives. The failure is deterministic, immediate and visible in a log line - it does
+not need the run to reach sim_day 230 to appear.
+Compliance failure against CHECKLIST item 278 - an asserted consequence is a claim, compute it.
+No new item; 278 names this and its own lineage records four asserted consequences, four wrong.
+Mechanism: MECHANISABLE and NOT YET BUILT - a pre-launch pool-spawn probe, ticketed in S6-B2250,
+which converts a privilege failure from a 1.7-hour loss into a launch-time refusal. The residue
+(ranking tickets by which unseen mechanism will fire) is JUDGMENT-ONLY, since no scan enumerates
+the failure modes a system has not yet exhibited. Both halves stated separately per L548.
+**Retroactive sweep (CHECKLIST #237), what was scanned and found:** re-read every priority
+ordering I gave the owner this session. The four-decisions ranking put S6-B2225 first (the
+program result) - sound, it was the largest open question and remains so. It put S6-B2237 second
+(the pyramid window) - sound, four tickets rode on it. It put S6-B2207a third as impossible-on-
+this-box - the owner overruled that and was right. It put S6-B2203b LAST - wrong, and fatally.
+**2 of 4 rankings were wrong and both errors were about the SAME ticket class: things I had
+judged by the constraint I could see rather than the one I had not tested.**

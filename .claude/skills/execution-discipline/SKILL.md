@@ -3085,6 +3085,14 @@ own description; the freeze never reached it.
   the same debt. Address a read with file:line, a measurement with its re-runnable command, an
   enumeration with its query. **A build leaves an artifact someone trips over; a read leaves
   nothing** - and a finding nobody can locate is one nobody can correct.
+- **A PRIORITY ORDERING IS AN ASSERTED CONSEQUENCE (L680).** MEASURED: I ranked the elevated-launch
+  ticket LEAST urgent because *capacity, not privilege, is what stops the program* - and ninety
+  minutes later a worker-spawn `PermissionError: [WinError 5]` killed the whole chain. **An
+  abundance of evidence for ONE cause reads as evidence AGAINST others**: four commit measurements
+  and three prior memory deaths made capacity feel established, and established quietly became
+  *therefore not privilege*. They are independent failure modes on one box. **The evidence you have
+  is about the failure mode you have already seen; it says nothing about the one you have not.**
+
 - **HEARTBEAT AGE CARRIES NO SIGNAL IN EITHER DIRECTION (L656 addendum).** L656 said a FRESH
   heartbeat cannot prove liveness. **A STALE one cannot prove death either.** MEASURED across 9
   waves: final-reading heartbeat age runs 0.5 to 47.8 minutes, median 8.1, and the four stalest -
