@@ -25012,6 +25012,9 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         ("READ THE DIRECTORY NOT THE LOG",
          "L660: when a landing is expected, the cube directory is the work's "
          "own output; the chain log is stale until the summary is written"),
+        ("A FREEZE AS LONG AS THE QUEUE MAKES THE MONITOR UNFIXABLE",
+         "L661: ask which SIDE of the freeze boundary the fix needs - "
+         "detection rarely needs to live inside the thing detected"),
     ):
         if frag not in discipline_text:
             missing.append(f"execution-discipline lost [{why}]: {frag!r}")
@@ -25034,7 +25037,7 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     assert _b2123_skill_rules_present(fable, disc) == []
     # #226 prove-it-can-fail: a gutted file must be REPORTED, not pass
     gutted = _b2123_skill_rules_present("# The Fable Method\n", "# Discipline\n")
-    assert len(gutted) == 51, gutted
+    assert len(gutted) == 52, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 

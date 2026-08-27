@@ -2977,6 +2977,19 @@ caught it in one turn - the mechanism worked, the reading did not.
 - A documented lesson RECURRING is worse than a novel miss - search LEARNINGS before
   calling anything new.
 
+## A FREEZE AS LONG AS THE QUEUE MAKES THE MONITOR UNFIXABLE (B2219 - L661, compliance failure vs #121)
+
+**MEASURED: the stall watchdog was deferred because the supervisor is engine code and a wave
+was running. 21 configs x 2h means the moratorium's length EQUALS the queue's length** - the
+monitor could not be fixed until after the run it protects. I called that correct sequencing
+for several turns.
+
+- **When a freeze blocks a fix, ask which SIDE of the boundary the fix needs to live on.**
+  Detection almost never needs to live inside the thing detected.
+- The frozen component usually already PUBLISHES what a reader needs; diff it from outside.
+- Sweep the other freeze-deferred tickets for the same question - some are genuine, some are
+  self-sealing, and only reading them apart tells you which.
+
 ## Phase 6 — END-OF-TURN SWEEP (CHECKLIST #67 — HARD RULE, no exceptions)
 
 **TICKET COUNTS BY GROUP - EVERY TURN (B1803 - CHECKLIST #274, owner directive 2026-08-21).**

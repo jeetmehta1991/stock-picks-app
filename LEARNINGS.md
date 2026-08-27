@@ -14933,3 +14933,35 @@ fired correctly. Mechanism: the #223 Stop-hook gate is the enforcement; knowing 
 the directory instead of the log is JUDGMENT-ONLY, since no scan can read intent to check.
 Sibling of L656 (a heartbeat written by a watchdog proves the watchdog): both are cases of
 reading a SECONDARY record and believing it about the PRIMARY work.
+
+## L661
+**A code-freeze whose length equals the queue's length makes the monitor unfixable by
+construction - and the fix usually does not need to be inside the frozen code (B2219).**
+The L656 progress watchdog was deferred because the supervisor lives in
+backtest/engine/backtest.py (lines 603/628/911, verified this turn) and the
+no-engine-edits-while-a-wave-runs rule bars touching it. With 21 configs at ~2h each, the
+moratorium's length EQUALS the queue's length: the monitor could not be fixed until after the
+run it exists to protect. I accepted that for several turns and called it correct sequencing.
+It was a self-sealing trap, and the council's Outsider broke it with one question - is the
+monitor part of the frozen code, or a separate reader?
+**Rule: when a freeze blocks a fix, ask which SIDE of the boundary the fix actually needs to
+live on.** Detection almost never needs to live inside the thing detected. The supervisor
+already PUBLISHES the progress counter; a reader can diff it against its own previous sample
+and answer the same question from outside, with zero contact with the running path.
+Mechanism: scripts/watch_run_progress.py (exit 0 advancing / 1 refuses-to-judge with no
+heartbeat / 2 stalled), pinned by test_b2219_stall_detector_reads_progress_not_freshness whose
+decisive assertion is that a FRESH heartbeat must NOT rescue a frozen counter. Run live on the
+active config: ADVANCING, exit 0.
+Compliance failure against CHECKLIST #121 (a designed monitor is not an armed monitor) - the
+deferral left the program with no working stall detection for the whole queue; no new item,
+#121 covers it. Detection of the trap itself is JUDGMENT-ONLY: no scan can notice that a
+deferral's duration equals the thing it defers past.
+**Retroactive sweep (CHECKLIST #237), what was scanned and found:** every OPEN ticket deferred
+with the reason 'edits engine/grader code while a wave runs' was re-examined for the same
+boundary question. S6-B2215 (carry exit disclosures into the artifact) and S6-B2216 (raise
+byte-identical exit pairs) BOTH edit the grader, which runs at landing INSIDE the wave - so
+their deferral is genuine, not self-sealing. S6-B2213a (open-position checkpoint) edits the
+engine resume path - genuine. S6-B2217's detector half is READ-ONLY over on-disk cubes and can
+be built now, which the council's Executor also proposed independently. So: 1 of 5 engine-freeze
+deferrals was self-sealing (this one, now closed), 1 more has a buildable read-only half, and 3
+are correctly deferred.
