@@ -15059,3 +15059,37 @@ Mechanism for the class: MECHANICALLY ENFORCED and already working - `scan_unins
 blocked the turn that cited the plan without touching it. The durability half is also already in
 place: the [GRAIN-STALE] marker sits at the constant's definition site, so any reader who opens
 the file meets the correction first. No new gate is warranted; the gates caught it.
+
+## L665
+**I wrote the self-sealing blocker into a ticket THREE HOURS after L661 named it, and cited it
+twice more before the full skill reloaded and showed me the section (B2227c).**
+S6-B2227 says the RAM watchdog cannot be built because *"the fix is NEW MONITORING CODE and no
+code lands while a wave runs"*. L661 - written this same session, about this same chain, and
+sitting in SKILL.md - says: **when a freeze blocks a fix, ask which SIDE of the boundary the fix
+needs to live on. Detection almost never needs to live inside the thing detected.** The watchdog
+I proposed is READER-SIDE by its own description: sample free RAM at each firing, keep a state
+file, escalate on N consecutive readings. That is watch_run_progress.py's exact shape, and
+watch_run_progress.py EXISTS precisely because L661 was learned. **The freeze does not touch it.**
+**Rule: a blocker you state is a claim, and "the freeze forbids it" is the claim least likely to
+be checked**, because it sounds like discipline. Before deferring behind a moratorium, name the
+boundary and say which side the fix lands on. The honest constraint here was much narrower and
+much weaker - the pyramid needs RAM headroom I do not currently have - and it blocks the PIN,
+not the watchdog.
+WHAT MAKES THIS ONE SHARP: the rule was not merely available, it was AUTO-INJECTED, and I read
+past it. It surfaced only when the turn gate forced a full skill reload for an unrelated reason.
+That is L570 exactly - authoring a rule feels like installing it - with the twist that I did not
+even have to author it: L661 was three hours old and about this very run.
+Compliance failure against CHECKLIST item 121 as extended by L661 - no new item; L661 states the
+rule in the form that would have caught this, in the file loaded every turn.
+Mechanism: JUDGMENT-ONLY for DETECTION - no scan reads whether a stated blocker is the real one,
+since the sentence is well-formed either way. Durability is already pinned: L661 lives in
+SKILL.md under its own heading and is covered by the anchor-doc citation freeze, so the rule
+cannot silently vanish. Both halves stated per L548 rather than collapsing them into one.
+**Retroactive sweep (CHECKLIST #237), what was scanned and found:** re-read every currently-OPEN
+deferral of mine on this chain for the same shape - a fix deferred behind the wave freeze that
+does not actually live inside the frozen component. S6-B2215 (carry exit disclosures) touches
+the grader's caller and IS inside the freeze - correctly deferred. S6-B2213a (open-position
+checkpoint) is engine code - correctly deferred. S6-B2217's read-only half was ALREADY flagged
+buildable now, so it was correct. S6-B2207a is gated on RAM, not on the freeze - correctly
+stated. **1 of 5 deferrals carried the wrong blocker, and it is the one filed today.** The
+sweep's value here is proving the blast radius is one rather than five.
