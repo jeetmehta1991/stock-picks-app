@@ -26143,6 +26143,66 @@ def test_b2214_kill_wave_tree_targets_by_identity_not_name(tmp_path, monkeypatch
     assert "--execute" in src and "DRY RUN" in src
     assert "-Name" not in src, "the helper must never kill by name"
 
+def test_b2219_stall_detector_reads_progress_not_freshness(tmp_path, monkeypatch):
+    """B2219 (L656 reader-side): a stall is a FROZEN COUNTER beside a FRESH
+    heartbeat - the exact state that fooled the monitor for 51 minutes.
+
+    (a) a fresh heartbeat whose counter ADVANCES reports advancing;
+    (b) the SAME fresh heartbeat, unchanged across consecutive reads,
+        escalates to STALLED (exit 2) - freshness must not rescue it;
+    (c) one unchanged reading is NOT a stall (slow day vs stopped);
+    (d) a missing heartbeat refuses to judge rather than reporting healthy.
+    """
+    import importlib.util as _ilu
+    import json as _json
+    import time as _time
+    from pathlib import Path as _P
+    _root = _P(__file__).resolve().parents[2]
+    _spec = _ilu.spec_from_file_location(
+        "watch_run_progress_b2219", _root / "scripts" / "watch_run_progress.py")
+    w = _ilu.module_from_spec(_spec)
+    _spec.loader.exec_module(w)
+
+    audit = tmp_path / "output_audit"
+    audit.mkdir()
+    wave = tmp_path / "output_W"
+    wave.mkdir()
+    monkeypatch.setattr(w, "ROOT", tmp_path)
+    monkeypatch.setattr(w, "AUDIT", audit)
+
+    def _write(day, closed):
+        # timestamp is ALWAYS fresh - freshness must never rescue a frozen counter
+        ts = _time.strftime("%Y-%m-%dT%H:%M:%SZ", _time.gmtime())
+        (wave / "run_heartbeat.json").write_text(_json.dumps(
+            {"sim_day_index": day, "closed_trades": closed,
+             "elapsed_hours": 1.0, "timestamp": ts, "pid": 4242}),
+            encoding="utf-8")
+
+    # (d) no heartbeat -> refuse to judge, never 'healthy'
+    code, msg = w.check("output_W")
+    assert code == 1 and "NO HEARTBEAT" in msg
+
+    # (a) advancing counter
+    _write(10, 2)
+    code, msg = w.check("output_W")
+    assert code == 0, msg
+    _write(25, 5)
+    code, msg = w.check("output_W")
+    assert code == 0 and "ADVANCING" in msg, msg
+
+    # (c) one unchanged reading is not yet a stall
+    _write(25, 5)
+    code, msg = w.check("output_W")
+    assert code == 0, "a single unchanged read is a slow day, not a stall"
+    assert "UNCHANGED once" in msg, msg
+
+    # (b) frozen counter + FRESH heartbeat -> STALLED
+    _write(25, 5)
+    code, msg = w.check("output_W")
+    assert code == 2, "frozen counter must escalate even with a fresh heartbeat"
+    assert "STALLED" in msg and "supervisor THREAD lives" in msg, msg
+    assert "DO NOT relaunch" in msg, "the no-relaunch rule must travel with the alert"
+
 def test_b2199_table_c_is_printed_with_every_locked_column(tmp_path, monkeypatch):
     """B2199 (L652, CHECKLIST #285): the locked Table C is PRINTED, never retyped.
 
