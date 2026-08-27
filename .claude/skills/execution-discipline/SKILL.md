@@ -3056,6 +3056,12 @@ own description; the freeze never reached it.
 - **The rule was AUTO-INJECTED and I read past it.** L570's authoring-feels-like-installing, with
   the twist that I did not even author this one. **A rule in context is not a rule applied**, and
   the guard is to re-read the section when you are about to invoke a freeze, not to trust recall.
+- **"THIS DOES NOT EXIST" IS A NOVELTY CLAIM, AND A TICKET OPENED TO FILL THE GAP IS WHERE IT
+  HIDES (L672).** MEASURED: I filed a ticket to build a must-FIRE test that was already in the
+  suite - one grep, 1 hit, line 24781. **Opening a ticket FEELS like diligence** because it records
+  the gap rather than ignoring it, which is exactly why the absence behind it goes unchecked. A
+  ticket asserting a gap is a claim about the repo and carries a data claim's burden. Grep first,
+  with a positive control (`#166`), then file.
 - **A FINDING THAT SHIPS NO CODE STILL OWES AN ADDRESS (L671).** MEASURED: three rows in one batch
   - a code read, a live measurement and a council - shipped with nothing a reader could open.
   `#264` is worded around code, so the habit it builds is *name the pin*, and **a pin only exists

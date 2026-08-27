@@ -15331,3 +15331,41 @@ without line numbers until B2229c added them - PARTIAL. S6-B2229a named the desi
 existing artifact, correctly, because the test does not exist yet - sound. S6-B2229b named no
 query until B2229c - MISSING. **2 of 4 rows were under-addressed and both were the ones making
 claims about my own prior errors**, which is the worst place for an unlocatable claim.
+
+## L672
+**I filed a ticket to BUILD a test that already existed, one turn after writing that a finding
+owes an address - and the gate that caught it is the same one that caught the last two
+(B2229e).**
+S6-B2229a said the boundary-drop detector's only remaining validation was synthetic, and
+specified a must-FIRE arm driving run_arm with a stub. **That arm is already in the suite.** A
+grep of backtest/tests/test_unit.py for boundary_drops returns 1 hit, at line 24781, inside a
+B2121/M6 test that runs scripts/run_wave.py against a fake engine, forces two legs, and asserts
+exactly `res['boundary_drops'] == [{'leg': 1, 'sim_date': '2024-11-01',
+'open_trades_dropped': 7}]`. Positive control for the search, per #166: the same grep style
+returns 1 for test_b2219, a name I knew to be present.
+**So the detector HAS been shown able to fire, and S6-B2229a is a duplicate of coverage that
+shipped batches ago.** What survives from S6-B2213b is the narrower and still-correct half: at
+legs=1 the append site is unreachable, so the fifteen live configs' empty lists are
+structurally guaranteed and say nothing. What is FALSIFIED is my stronger phrasing - *a detector
+never shown able to fire*. It was shown, in a test, on a synthetic two-leg run.
+**Rule: 'this does not exist' is a novelty claim and needs its search, and the cheapest place to
+make that mistake is a ticket you are opening to fill the gap.** Opening a ticket FEELS like
+diligence - it records the gap rather than ignoring it - which is exactly why the absence behind
+it goes unchecked. A ticket asserting a gap is a claim about the repo and carries the same
+burden as a claim about the data.
+THIRD INSTANCE THIS SESSION OF ONE GATE CATCHING ME, and the pattern in the misses is tighter
+than the pattern in the gate: L664 quoted a constant from a ticket instead of the file, L671
+shipped findings with no addresses, and now a gap asserted without a search. **All three are
+the same act - stating something about the repo without reading the repo** - and all three
+happened in a stretch where I was reading a great deal and writing quickly.
+Compliance failure against CHECKLIST item 26 - a finding counts as novel only when the sources
+confirm absence - read together with L584. No new item; 26 names the class exactly.
+Mechanism: MECHANICALLY ENFORCED and it fired - the novelty-claim scan blocked the turn that
+asserted the test did not exist, which is why the grep ran at all. Durability held by the
+anchor-doc citation freeze over this rule in SKILL.md. Both halves per L548.
+**Retroactive sweep (CHECKLIST #237), what was scanned and found:** grepped test_unit.py for the
+OTHER mechanisms I have called unbuilt this session. `run_arm` returns 3 hits, so the
+wave-orchestration path is better covered than I assumed. The commit-based RAM watchdog (S6-B2227): grep for FreeVirtualMemory across scripts and tests returns 0 - that one is
+genuinely absent, and now says so with its search named. The exit-delegation detector
+(S6-B2217): grep for audit_identical_exits returns 0 - also genuinely absent. **1 of 3
+claimed-absent mechanisms already existed**, and it is the one I filed a ticket to build.
