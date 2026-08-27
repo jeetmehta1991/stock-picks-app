@@ -3056,6 +3056,13 @@ own description; the freeze never reached it.
 - **The rule was AUTO-INJECTED and I read past it.** L570's authoring-feels-like-installing, with
   the twist that I did not even author this one. **A rule in context is not a rule applied**, and
   the guard is to re-read the section when you are about to invoke a freeze, not to trust recall.
+- **When a block cites your CLOSING TEXT rather than your work, stop editing prose and self-run the
+  gate (L668).** MEASURED: naming a plan file inside a compliance line armed the constant scan;
+  stating a preference inside a summary armed the council scan; quoting a gate's trigger while
+  explaining it armed that gate. **Each blocked close re-emits the closing blocks, and the
+  re-emitted text is itself scanned - a close can arm the gate that blocks the next close.** That
+  feedback loop, not a run of independent failures, is what takes a block-loop to a dozen
+  iterations. One self-run over the transcript returns the whole list in seconds.
 - **A retraction retires the METHOD; it must not silently retire the CONCLUSION (L667).** MEASURED:
   I withdrew a P0 because the comparison was a unit mismatch - correct - and wrote it as *"nothing
   was breached"*, a claim about the world resting on one reading of a moving number. Ninety minutes

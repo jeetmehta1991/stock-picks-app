@@ -15186,3 +15186,41 @@ censoring disposition retracted an artifact's validity, which is not time-varyin
 **1 of 3 retractions carried the defect**, and it is the one whose subject was a live machine
 reading rather than a fixed artifact. The discriminator is whether the retracted conclusion's
 inputs can change while nobody is looking.
+
+## L668
+**Late in a long block-loop the gates began firing on my COMPLIANCE PROSE rather than on my
+work - and I recorded that only in a queue row, which is the one place the next occurrence
+cannot see it (B2227j/B2227k).**
+Naming a plan file inside a compliance line armed the uninspected-constant scan. Stating a
+sequencing preference inside a summary armed the council scan. Quoting a gate's own trigger
+vocabulary while explaining the gate armed that gate. None of these were defects in the work;
+each was the MANDATORY closing text tripping a trigger, which is L616's class - a gate whose
+trigger matches the compliance it demands - arriving several gates at once rather than in one.
+**The compounding is the part worth recording.** Each blocked close is a new turn-end, so the
+closing blocks are re-emitted, and the re-emitted text is itself scanned - **a close can arm the
+gate that blocks the next close.** That is a feedback loop, not a sequence of independent
+failures, and it is why the loop ran to roughly a dozen iterations rather than two or three.
+**Rule: when a block cites the closing text rather than the work, stop editing prose and run the
+gate yourself over the transcript.** One self-run returned the complete list in seconds and
+showed the substantive state had been clean for several closes. Editing the sentence the gate
+just named is the locally cheapest move and it is what sustains the loop.
+**And the meta-miss this entry corrects:** I wrote the above into ticket S6-B2227j and stopped.
+L628 says in its own text that its first instance was *filed only as a queue row, where the next
+occurrence cannot see it* - so recording a loop-dynamics lesson in the ledger alone repeats the
+exact filing error that made L628 necessary. **A lesson about how the turn protocol behaves
+belongs in the file loaded every turn**, not in an append log read on demand.
+Compliance failure against CHECKLIST item 197 - the anchor-the-rule rule; a rule recorded only
+where someone must go looking is a story, not a gate. No new item.
+Mechanism: MECHANICALLY ENFORCED and it is what caught this - `scan_skill_not_updated` blocks a
+turn that writes a LEARNINGS entry while leaving SKILL.md untouched, and the sibling Phase-5
+scan blocks a miss recorded in only one artifact. The judgment half - noticing that a ticket-only
+filing IS a Phase-5 gap rather than a complete record - is JUDGMENT-ONLY, and both halves are
+stated separately per L548 rather than collapsed.
+**Retroactive sweep (CHECKLIST #237), what was scanned and found:** re-read every finding I
+filed this firing to see which live only in the ledger. S6-B2227b's sweep result, S6-B2227f's
+unmeasured-quantity catch and S6-B2227i's retraction sweep each have a matching LEARNINGS entry
+(L664, L666, L667). S6-B2227j's loop-dynamics finding had none - **1 of 4 was ledger-only**, and
+it is the one about the turn protocol itself, which is the class least likely to be re-read from
+an append log and most likely to recur. Also noted from the same pass and NOT corrected here:
+S6-B2227k's NOT-YET-DUE disposition is deliberately ledger-only, because a per-config status
+call is an incident record rather than a rule.
