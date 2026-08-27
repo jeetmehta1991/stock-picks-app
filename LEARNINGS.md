@@ -15150,3 +15150,39 @@ separately per L548 rather than collapsed into one JUDGMENT-ONLY.
 this also returned `.queue_exempt_log` at 224 logged C8 exemptions and `.stop_exempt_log`
 ABSENT. Different class - whether the stop-hook escape is logged at all - and recorded rather
 than chased, since chasing it would widen this turn past the finding that produced it.
+
+## L667
+**My retraction retracted the ARITHMETIC and quietly also retired the CONCLUSION - and the
+conclusion was about a quantity that moves (B2227h).**
+B2227a withdrew a P0 because comparing a live free-RAM reading against a per-worker constant
+from a superseded grain was a unit mismatch. That was correct and still is. But I wrote the
+withdrawal as *"nothing was breached"* - a statement about the WORLD, resting on one reading of
+a number that had already moved twice that hour. Ninety minutes later the same command returned
+0.91 GB, below the present-grain per-process peak, and the conclusion was false while the
+method-retraction remained true.
+**Rule: when retracting, say which half you are retracting - the METHOD or the CONCLUSION - and
+if the conclusion rests on a time-varying measurement, do not retire it, RE-DATE it.** *"The
+comparison was invalid"* and *"there is no problem"* are different claims with different
+lifetimes, and collapsing them is how a correction manufactures false comfort. A retraction is
+one of the few moves that FEELS like maximum rigour, which is exactly why an unearned conclusion
+rides out on it unexamined.
+**The tell I had and ignored:** my own ticket text said one reading cannot distinguish steady
+state from transient, and that was the stated reason the proposed watchdog samples across
+firings. I wrote that sentence and then drew a steady-state conclusion from one reading in the
+same document.
+Compliance failure against CHECKLIST item 256 - a figure you repeat is re-derived, not carried -
+read at its conclusion-level: I carried a VERDICT built on a stale reading rather than the
+reading itself. No new item; #256 names the class and its extension covers repeated figures.
+Mechanism: JUDGMENT-ONLY for detection - no scan knows which of a response's claims rest on a
+time-varying quantity, since the sentence is identical either way. Durability is held by the
+anchor-doc citation freeze over this rule's text in SKILL.md, and practically by the hourly
+cadence itself, which re-measures and would surface the drift again. Both halves stated
+separately per L548.
+**Retroactive sweep (CHECKLIST #237), what was scanned and found:** re-read every retraction I
+have issued this session for the same method-versus-conclusion collapse. B2226a (the band-change
+reversal) retracted a RECOMMENDATION, not a measurement, and its conclusion was explicitly
+deferred behind queued rows rather than retired - correct. B2227a is this instance. B2213d's
+censoring disposition retracted an artifact's validity, which is not time-varying - correct.
+**1 of 3 retractions carried the defect**, and it is the one whose subject was a live machine
+reading rather than a fixed artifact. The discriminator is whether the retracted conclusion's
+inputs can change while nobody is looking.

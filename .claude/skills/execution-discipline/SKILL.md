@@ -3056,6 +3056,12 @@ own description; the freeze never reached it.
 - **The rule was AUTO-INJECTED and I read past it.** L570's authoring-feels-like-installing, with
   the twist that I did not even author this one. **A rule in context is not a rule applied**, and
   the guard is to re-read the section when you are about to invoke a freeze, not to trust recall.
+- **A retraction retires the METHOD; it must not silently retire the CONCLUSION (L667).** MEASURED:
+  I withdrew a P0 because the comparison was a unit mismatch - correct - and wrote it as *"nothing
+  was breached"*, a claim about the world resting on one reading of a moving number. Ninety minutes
+  later the same command disproved it. **If the conclusion rests on a time-varying measurement,
+  RE-DATE it rather than retire it.** A retraction feels like maximum rigour, which is exactly why
+  an unearned conclusion rides out on one unexamined.
 - **An exemption's reason carries a recommendation's quantitative burden, and the gate cannot see
   it (L666).** `scan_unmeasured_quantity` reads the RESPONSE; a number written into a TICKET passes
   under it untouched. MEASURED: my own deviation rested on an unmeasured *"a pyramid adds ~0.5-1
