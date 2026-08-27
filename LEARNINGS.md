@@ -16194,3 +16194,35 @@ value firing is on prose ABOUT the rule, which is the context where self-review 
 quantity-discipline rule, asking whether the row itself names its sets - S6-B2279 (denominator
 correction) names 25 and the spec file that holds it, SOUND; S6-B2263 (18 fire-only gates) names
 the register and six members by name, SOUND; S6-B2284 named none, THE INSTANCE. **1 of 3.**
+
+## L694
+**A COMPLETE READ OF ONE FIELD DOES NOT LICENSE A CLAIM ABOUT A DIFFERENT FIELD (B2287).**
+Asked whether the day's config runs were usable, I read the holdout flag and battery count for
+ALL TWELVE configs - a genuinely complete read - then opened the nine-step status breakdown for
+ONE (sw10sp9) and explained the four SKIPPED steps as if I had seen them everywhere. **The
+complete read on field A made the partial read on field B feel covered.** Re-run across the
+population, all 12 share a single identical signature, so the answer was right; the basis was one
+twelfth of it.
+This is why #270 keeps firing on turns that contain a complete read: the gate sees truncation
+somewhere in the turn and cannot know which CLAIM it attaches to - and neither, it turns out, do
+I, because a table that took real work reads as evidence for whatever is said next.
+**Rule: attach the denominator to the FIELD, not to the turn.** 'I read all 12 rows' is not a
+credential; it is a statement about the columns actually opened. Before generalising a per-member
+detail, ask which COLUMN it lives in and whether that column was read for every member.
+Compliance failure against CHECKLIST item 270. **Also, separately: item 258 for the fourth time
+this session** - I wrote 'executed this turn' beside ticket counts without running the counter,
+and the freshness arm caught it again (S6-B2273 holds that class; no new ticket per #136).
+Mechanism: JUDGMENT-ONLY for the field-vs-turn distinction. A scan can see that a turn contains
+both a truncated read and a population verdict - #270 already does exactly that, which is how this
+was caught - but it cannot tell whether the verdict rests on the truncated read or on a complete
+one elsewhere in the same turn. That mapping is semantic. What IS mechanised is the prompt to
+check, and this session it worked: the gate fired, and re-reading the population confirmed the
+claim rather than overturning it.
+**Retroactive sweep (#237) - every population claim I made this turn, checked against which
+column was actually read for every member:** (1) holdout-clean 12 of 12 - the loop opened the
+M4 evidence string for each, SOUND; (2) battery-count 5 of 9 for 12 of 12 - the loop counted steps
+per config, SOUND; (3) the nine-step SKIPPED explanation - opened for 1 of 12, THE INSTANCE, now
+re-run complete; (4) live python processes - Win32_Process listed all 8 with command lines, SOUND;
+(5) chain SKIP count of 11 - grep counted every matching line, SOUND; (6) the 31 scan citations in
+SKILL.md - all 31 compared against the defined set, and the 3 flagged were each hand-read, SOUND.
+**1 of 6 population claims rested on a single member.**

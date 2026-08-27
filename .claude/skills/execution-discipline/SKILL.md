@@ -3131,6 +3131,14 @@ own description; the freeze never reached it.
   identifier with NO structure assumed and read the line it lands on. A zero-hit search and a
   wrong-shaped search exit identically.
 
+- **ATTACH THE DENOMINATOR TO THE FIELD, NOT THE TURN (L694).** A complete read of one COLUMN does
+  not license a claim about a different column. MEASURED: I read the holdout flag for all 12 configs
+  (complete), then opened the nine-step status breakdown for ONE and explained it as though seen
+  everywhere - the real read on field A made the partial read on field B feel covered. This is why
+  #270 fires on turns that DO contain a complete read: the gate sees truncation and cannot know
+  which claim it attaches to. Before generalising a per-member detail, name the column and ask
+  whether it was opened for every member.
+
 - **APPLY THE RULE TO THE SENTENCE THAT STATES IT (L693).** A row documenting an error class can
   commit that class in its own text: S6-B2284, whose subject is unmeasured quantities, said "all 7
   open tickets" and named none. Writing a lesson puts attention on the narrative, not on the
