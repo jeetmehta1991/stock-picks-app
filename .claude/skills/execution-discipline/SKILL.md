@@ -3041,6 +3041,24 @@ mismatch.** The number was real, the reading was real, the comparison was meanin
   was right. Leading with the arithmetic you can compute, while skipping the probe that settles
   the question, is the shape to catch in yourself.
 
+## THE BLOCKER YOU STATE IS ITSELF A CLAIM (B2227c - L665, compliance failure vs #121/L661)
+
+**MEASURED: I wrote "the fix is NEW MONITORING CODE and no code lands while a wave runs" into a
+ticket THREE HOURS after L661 said the opposite, about this same chain - and cited it twice more
+before a forced skill reload showed me the section.** The proposed watchdog was reader-side by its
+own description; the freeze never reached it.
+
+- **"The freeze forbids it" is the claim least likely to be checked, because it sounds like
+  discipline.** Before deferring behind a moratorium, name the boundary and say which side the fix
+  lands on.
+- **The real constraint is usually narrower and weaker than the one you reach for.** Here it was
+  RAM headroom for the PIN, not the freeze on engine code - a different sequencing entirely.
+- **The rule was AUTO-INJECTED and I read past it.** L570's authoring-feels-like-installing, with
+  the twist that I did not even author this one. **A rule in context is not a rule applied**, and
+  the guard is to re-read the section when you are about to invoke a freeze, not to trust recall.
+- **Sweep the sibling deferrals whenever you find one wrong blocker.** Of 5 open deferrals on this
+  chain, 1 carried it - proving blast radius one, which is as useful as finding five.
+
 ## Phase 6 — END-OF-TURN SWEEP (CHECKLIST #67 — HARD RULE, no exceptions)
 
 **TICKET COUNTS BY GROUP - EVERY TURN (B1803 - CHECKLIST #274, owner directive 2026-08-21).**
