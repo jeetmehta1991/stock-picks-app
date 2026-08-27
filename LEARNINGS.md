@@ -15112,3 +15112,41 @@ someone else could act on - S6-B2227d records the fragment text itself so the pi
 session ending.
 **And the gap is dated, not assumed-covered:** until that pin lands, this rule sits in SKILL.md
 UNPINNED, which is a worse state than pinned and a better one than unrecorded.
+
+## L666
+**The number that justified my exemption was the one number in it I never measured - and #201's
+gate could not see it, because it was written into a TICKET rather than a response (B2227f).**
+S6-B2227d justified skipping the pyramid on two grounds. One was measured: free RAM at 1.57 GB
+from PowerShell Get-CimInstance Win32_OperatingSystem, 18 python processes holding 5.55 GB of
+working set from PowerShell Get-Process. The other was not: *"a pyramid adds ~0.5-1 GB"*. **That
+is an estimate standing exactly where the load-bearing quantity belongs.** The danger is
+measured; the MARGIN - the only part the decision actually turns on - is a guess. I do not know
+whether a pyramid needs 0.4 GB or 1.2 GB, and those two answers give opposite verdicts.
+**The mechanism gap is precise and worth naming: `scan_unmeasured_quantity` reads the RESPONSE.**
+A quantitative claim written into a ledger row never passes under it. So the rule that exists
+specifically to catch *"costs nothing / negligible / about Nx"* was structurally blind to the
+place I put the claim. L577 already found the ticket-versus-response asymmetry from the
+STALENESS side - a ticket's numbers are as perishable as a response's - and this is its
+UNMEASURED sibling: a ticket is read as a premise, and a premise is what nobody attacks.
+**Rule: an exemption's reason gets the same quantitative burden as a recommendation.** The
+repo's own record on this is brutal and I found it by sweeping rather than by memory - 51 rows
+name a deviation or exemption, and the last twelve include L591 (*an exemption reason is a claim
+about code and mine were never run*), B1936a (*four of the last six exemptions were false*),
+B1930c (*wrong three ways*), B1917b (*wrong on the day it is written*). **My row is the newest
+member of a class with a 4-of-6 false rate, and the sweep is what told me so.**
+What I am deliberately NOT doing: measuring the pyramid's footprint by running one against the
+live wave. That is the experiment whose downside is the thing being avoided, and running it to
+settle the argument would be the L621 mistake (a pyramid contaminating the measurement it was
+meant to inform) with a worse blast radius.
+Compliance failure against CHECKLIST item 201 - no new item; #201 names this class exactly and
+the defect is its gate's SCOPE, not its rule.
+Mechanism for the class: the existing `scan_unmeasured_quantity` is the enforcement and it is
+RESPONSE-SCOPED; extending it to ledger rows added in the same turn is the class fix, ticketed
+under S6-B2227d to land in the same pyramid window as the owed pin. Durability meanwhile is held
+by `scripts/audit_ticket_staleness.py`, which already re-derives ticket claims per row, and by
+the anchor-doc citation freeze covering this entry's rule in SKILL.md. Both halves stated
+separately per L548 rather than collapsed into one JUDGMENT-ONLY.
+**Retroactive sweep (CHECKLIST #237), what was scanned and found:** the same grep that surfaced
+this also returned `.queue_exempt_log` at 224 logged C8 exemptions and `.stop_exempt_log`
+ABSENT. Different class - whether the stop-hook escape is logged at all - and recorded rather
+than chased, since chasing it would widen this turn past the finding that produced it.

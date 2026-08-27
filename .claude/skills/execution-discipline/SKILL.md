@@ -3056,6 +3056,12 @@ own description; the freeze never reached it.
 - **The rule was AUTO-INJECTED and I read past it.** L570's authoring-feels-like-installing, with
   the twist that I did not even author this one. **A rule in context is not a rule applied**, and
   the guard is to re-read the section when you are about to invoke a freeze, not to trust recall.
+- **An exemption's reason carries a recommendation's quantitative burden, and the gate cannot see
+  it (L666).** `scan_unmeasured_quantity` reads the RESPONSE; a number written into a TICKET passes
+  under it untouched. MEASURED: my own deviation rested on an unmeasured *"a pyramid adds ~0.5-1
+  GB"* beside two properly measured RAM readings - **the danger was measured and the MARGIN, the
+  only part the decision turned on, was a guess.** L577's ticket-versus-response asymmetry, arriving
+  from the unmeasured side instead of the stale side.
 - **When a process rule collides with an irreversible work loss, the irreversible loss wins - and
   the deviation is STATED, TICKETED and given a NAMED TRIGGER, never explained away.** A defensible
   paragraph about why a mechanical rule did not apply today IS how an exemption gets granted
