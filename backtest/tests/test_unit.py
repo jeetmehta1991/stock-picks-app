@@ -26613,3 +26613,57 @@ def test_b2216_identical_exit_pair_is_announced_not_filed_silently():
     # the collapse itself must survive - this pin is about disclosure, not removal
     assert "isin(_dupes.keys())" in src, (
         "the ranking-side collapse must remain; only the silence changes")
+
+def test_b2260_expected_events_refuses_the_run_that_measured_nothing():
+    """S6-B2260 (L685): a probe that GENERATES its own events must expect several.
+
+    The B2207a smoke ran both arms to completion and produced ZERO trades, so no
+    cube, no battery, and no ledger write - the concurrent contention it existed
+    to create was never created. The arithmetic was one line and available before
+    launch: 85 fires per 200 ticker-years, times 1.25 ticker-years bought, is
+    0.53 expected. Zero was the modal outcome.
+
+    BEHAVIOURAL, not substring (L684): every assertion below CALLS the code, so
+    prose in the module cannot satisfy it.
+
+    (a) the exact run I made is REFUSED, with the real numbers;
+    (b) the resized run PASSES - the check is not simply always-refuse, which is
+        the must-QUIET arm without which an always-refusing gate would pass (a);
+    (c) the refusal message says what a null would and would not prove, because
+        "too small" without that is a number the reader cannot act on;
+    (d) an unusable base exposure REFUSES TO JUDGE rather than returning a
+        verdict - exit 1, never a silent pass.
+    """
+    import sys as _sys
+    from pathlib import Path as _P
+    _scripts = str(_P(__file__).resolve().parents[2] / "scripts")
+    if _scripts not in _sys.path:
+        _sys.path.insert(0, _scripts)
+    import expected_events as ee
+
+    # (a) the run that measured nothing must be refused
+    code, msg = ee.check(base_events=85, base_exposure=200,
+                         probe_exposure=ee.ticker_years(5, 3))
+    assert code == 2, f"the 5-ticker 3-month smoke must be refused, got {msg}"
+    assert "0.53" in msg, f"the refusal must show the real expectation: {msg}"
+
+    # (b) must-QUIET arm: the resize passes. Without this, a gate that refuses
+    # everything would satisfy (a) and be useless.
+    code, msg = ee.check(base_events=85, base_exposure=200,
+                         probe_exposure=ee.ticker_years(40, 6))
+    assert code == 0, f"the resized smoke must pass, got {msg}"
+    assert "8.50" in msg, msg
+
+    # (c) the refusal explains what a null proves - a bare number is unactionable
+    code, msg = ee.check(base_events=85, base_exposure=200, probe_exposure=1.25)
+    assert code == 2
+    assert "cannot distinguish" in msg, (
+        "the refusal must say what a null result would fail to establish")
+
+    # (d) unusable input refuses to judge rather than passing
+    code, msg = ee.check(base_events=85, base_exposure=0, probe_exposure=20)
+    assert code == 1 and "CANNOT JUDGE" in msg, msg
+
+    # the scaling itself, checked directly rather than through the verdict
+    assert ee.expected_events(85, 200, 200) == 85
+    assert ee.ticker_years(40, 6) == 20.0
