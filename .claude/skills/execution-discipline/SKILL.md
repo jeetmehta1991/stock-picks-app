@@ -3085,6 +3085,15 @@ own description; the freeze never reached it.
   the same debt. Address a read with file:line, a measurement with its re-runnable command, an
   enumeration with its query. **A build leaves an artifact someone trips over; a read leaves
   nothing** - and a finding nobody can locate is one nobody can correct.
+- **A PROBE MEASURING YOUR OWN COMPLIANCE GETS MORE VALIDATION, NOT LESS (L679).** MEASURED: of six
+  count-producing probes in one session, four were validated before quoting and two were not - and
+  **both failures were the two whose subject was my own compliance rather than the program's
+  data.** Two reasons, the second being the dangerous one: you are the interested party, so a
+  flattering error will not feel wrong; and **nothing else in the system cross-checks a
+  self-measurement** - a wrong claim about a cube collides with the cube, a wrong claim about your
+  own discipline collides with nothing. The repo carries at least seven such tools (queue_state,
+  verify_turn_compliance, verify_postconfig_complete, audit_ticket_staleness, verify_build_claims,
+  audit_done_claims, gate_incident_corpus), and every one produces a number that gets quoted.
 - **AUTHORING A MEASUREMENT RULE DOES NOT PROTECT YOU FROM BREAKING IT WITH THE INSTRUMENT BUILT TO
   ENFORCE IT (L678 addendum).** MEASURED: one turn after writing that a count needs its scan scope,
   I built a keyword detector for that rule, ran it over 98 rows, and quoted "34 of 97" without

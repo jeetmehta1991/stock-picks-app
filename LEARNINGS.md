@@ -15627,3 +15627,43 @@ The correction runs in the direction that FLATTERS me - 34 sounded like a seriou
 and 7 is a modest one - which is precisely why it is stated rather than quietly revised (L559:
 check which way the error points).
 
+## L679
+**MY VALIDATION DISCIPLINE WEAKENS EXACTLY WHERE THE MEASUREMENT IS ABOUT ME (B2247a).**
+Six count-producing probes were built this session. Four were validated before any headline was
+quoted: the exit-delegation detector was hand-read first and the reading caught its own
+same-stem blind spot; the ci_lo recovery script was checked against plausibility bounds on the
+holds it recovered; the decomposition was checked for internal consistency; the
+search-distribution reader disclosed that it reads carried rows rather than all combinations.
+Two were not: the L-fragment pin sweep, whose figure went 14 and then 122 as the scope widened
+twice, and the scope-word detector, whose 34 proved four-of-five false positive on sampling.
+**Both failures are the two probes whose SUBJECT was my own compliance rather than the
+program's data.** Measuring cubes, exits and confidence intervals, I validated. Measuring how
+well I had followed my own rules, I quoted raw output - twice, in consecutive turns, having just
+authored the rule against it.
+**Rule: a probe that measures YOUR OWN compliance gets MORE validation than one measuring the
+system, not less.** Two reasons, and the second is the dangerous one. First, you are the
+interested party, so a flattering error will not feel wrong. Second, and this is what makes the
+class self-concealing: **nothing else in the system cross-checks a self-measurement.** A wrong
+claim about a cube collides with the cube; a wrong claim about my own discipline collides with
+nothing, because no artifact independently records it.
+**Scope of the exposure, measured rather than asserted:** the repo carries at least SEVEN tools
+whose subject is my own compliance - queue_state (ledger hygiene), verify_turn_compliance
+(per-turn gates), verify_postconfig_complete (post-config discipline), audit_ticket_staleness
+(my numbers), verify_build_claims (my artifacts), audit_done_claims (my status vocabulary) and
+gate_incident_corpus (my enforcement layer). All seven exist in scripts/. **Every one produces a
+number I habitually quote to the owner, and every one falls in the category where this entry
+says my validation is weakest.**
+Compliance failure against CHECKLIST item 162 read with L644 - a metric that counts the wrong
+thing arrives pre-armoured, and a new detector's first number is a hypothesis. No new item; both
+name the class, and applying L644's hand-read is what exposed this one.
+Mechanism: MECHANICALLY ENFORCED for the general class - L644's hand-read requirement - with the
+specific residue JUDGMENT-ONLY: no scan can tell whether a probe's SUBJECT is the system or its
+author, since that is a semantic property of what the probe measures. Durability held by this
+rule's text in SKILL.md under the anchor-doc citation freeze. Both halves stated separately per
+L548.
+**Retroactive sweep (CHECKLIST #237), what was scanned and found:** enumerated the repo's
+self-measuring tools, listed above - 7 named, 7 present, 0 absent. NOT YET DONE and stated as
+owed rather than implied: I have not audited whether the numbers those seven produced earlier in
+this session were validated before I quoted them. queue_state's counts are re-derived every turn
+by rule and so are the best-covered; the others were quoted from single runs. That audit is the
+natural follow-on and is not claimed here.
