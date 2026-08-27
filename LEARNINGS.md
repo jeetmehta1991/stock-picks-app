@@ -16174,3 +16174,23 @@ the actual scheduled-task export - PREMISE SOUND, and two candidate senders were
 unmeasured load-bearing claim, and the one that did not is the one where I had opened the artifact
 first.** That is the whole discriminator: briefs built from a file I read are sound, briefs built
 from what I remembered are not.
+
+## L693
+**A ROW DOCUMENTING AN ERROR CLASS COMMITTED THAT CLASS IN ITS OWN TEXT (B2284a).**
+S6-B2284 exists to record that a council brief stated a quantity nobody had measured. Its own
+prose then said 'all 7 open tickets' and named none of them - the #280 defect, inside the row
+whose subject is unchecked quantities. **Documenting a rule is not applying it**, and the moment
+of writing a lesson is exactly when attention is on the NARRATIVE rather than on the sentence.
+The fix took one line: name the seven ids and the query that selects them. The cost of not
+noticing would have been a row that can only be re-measured, which L600 says returns a different
+set under the same name - so the ticket recording a measurement failure would itself have decayed
+into one.
+Compliance failure against CHECKLIST item 280 (a count is not a set).
+**Mechanism: THE SCAN ALREADY EXISTS and it is what caught this** - scan_count_without_members in
+scripts/verify_turn_compliance.py, which blocked the turn and named the defect. No new mechanism
+is warranted; the gate worked. What this entry adds is the observation that the gate's highest-
+value firing is on prose ABOUT the rule, which is the context where self-review is weakest (L679).
+**Retroactive sweep (#237):** re-read every row written this session whose subject is a
+quantity-discipline rule, asking whether the row itself names its sets - S6-B2279 (denominator
+correction) names 25 and the spec file that holds it, SOUND; S6-B2263 (18 fire-only gates) names
+the register and six members by name, SOUND; S6-B2284 named none, THE INSTANCE. **1 of 3.**

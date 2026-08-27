@@ -3130,6 +3130,12 @@ own description; the freeze never reached it.
   identifier with NO structure assumed and read the line it lands on. A zero-hit search and a
   wrong-shaped search exit identically.
 
+- **APPLY THE RULE TO THE SENTENCE THAT STATES IT (L693).** A row documenting an error class can
+  commit that class in its own text: S6-B2284, whose subject is unmeasured quantities, said "all 7
+  open tickets" and named none. Writing a lesson puts attention on the narrative, not on the
+  sentence. Before committing any row about quantity discipline, read it back as data rather than
+  as prose. Mechanism exists: scan_count_without_members caught this one.
+
 - **A COUNCIL BRIEF IS A PUBLISHED CLAIM SET (L692).** Every load-bearing quantity in a council
   framing gets an EXECUTED probe BEFORE the spawn - not during, not after. A brief feels like
   context-setting rather than assertion, which is why it escapes the re-derive rule whose examples
