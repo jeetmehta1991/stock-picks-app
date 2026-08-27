@@ -15026,3 +15026,36 @@ on swing-20 data at n=88 - the row with the LARGEST samples, so it is sound. The
 above-floor pattern is explicitly labelled thin (11-22 fires) in every report that carries it.
 This band proposal was the only claim resting on the thin row alone. 1 of 3 parameter claims
 affected, now deferred behind the swing-5 and swing-10 rows already queued in the chain.
+
+## L664
+**I cited a constant from an EXECUTION_QUEUE row instead of the file, and inherited BOTH a wrong
+line number and a superseded unit - then built an owner-facing P0 on it (B2227a).**
+I quoted "the 3,223 MB monitor floor at STRATEGY_OPTIMISATION_PLAN.md:1391" and computed that a
+live 1.69 GB free-RAM reading sat 46pct below it. Grepping the file - which CHECKLIST #222 forced,
+correctly - showed the constant is at line 1397, and that line 997 carries an explicit
+**[GRAIN-STALE - B2204b/L653]** marker: 3,223 MB was a PER-WORKER peak from when one process was
+one config, and at pool-10 per-process peaks run ~1.0-1.2 GB. So 1.69 GB free is ABOVE the
+present-grain peak and nothing was breached. **The alarm was produced entirely by a unit
+mismatch.** The number was real, the reading was real, and the comparison between them was
+meaningless.
+**Rule: a constant quoted from a ticket, a summary or a prior report is UNVERIFIED until read at
+its definition site.** Secondary records preserve the digits and drop the grain, the caveat and
+the line number - which is precisely the payload that decides whether a comparison is valid.
+THIRD RECURRENCE OF ONE CLASS: L660 (read the directory, not the log), L656 (a heartbeat written
+by a watchdog proves the watchdog), and now a constant read from a ticket rather than its source.
+Every one is **trusting a secondary record about a primary fact**, and this instance is the worst
+of the three because the primary file had ALREADY been annotated with the exact correction that
+would have stopped me - L548's durability half working as designed, defeated only by my not
+opening the file.
+**What survived, and why the ticket stays open:** the same grep showed line 1397 names the
+monitor's mechanism as "Get-CimInstance in the */15 check", and `CronList` returns exactly one
+cron - the hourly report - with no */15 check anywhere. So the threshold names a caller that does
+not exist (L499 / CHECKLIST #224). **The half I asserted was wrong; the half I had not checked was
+right.** That ordering is the lesson's sting: I led with the arithmetic I could compute and
+skipped the probe that would have settled the actual question.
+Compliance failure against CHECKLIST #222 (naming a constant is not reading it) - no new item;
+#222 names this class precisely and its Stop-hook scan fired on this very turn.
+Mechanism for the class: MECHANICALLY ENFORCED and already working - `scan_uninspected_constant`
+blocked the turn that cited the plan without touching it. The durability half is also already in
+place: the [GRAIN-STALE] marker sits at the constant's definition site, so any reader who opens
+the file meets the correction first. No new gate is warranted; the gates caught it.
