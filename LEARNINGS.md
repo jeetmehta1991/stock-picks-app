@@ -15764,3 +15764,41 @@ measured per-config elapsed from 12 landed configs - sound. 'Roughly 24 hours to
 completion' assumed zero further deaths - this instance. **1 of 3 estimates carried the defect,
 and it is the only one whose horizon was long enough for reliability to matter** - the two sound
 ones both projected under two hours, where assuming nothing breaks is reasonable.
+
+## L682
+**I counted my own misses by how often I was CAUGHT, not by how often I did it (B2253).**
+Reporting the uncosted-consequence class, I wrote 'twice this session' - once for ranking
+privilege last, once for costing a wait on the nominal schedule. Both were instances the turn
+gate had surfaced. Sweeping all 107 of this session's ticket rows found 45 that assert a
+consequence and roughly 17 that name no measurement behind it. **The two I reported are the two
+that happened to be checked, not the population.**
+**Rule: a miss count derived from what a gate flagged is a count of DETECTIONS, not of
+OCCURRENCES, and the two differ by the gate's coverage.** Reporting the first as the second
+silently credits the enforcement layer with completeness it has never claimed. The correct form
+names the source: 'two instances caught by the turn gate' or 'seventeen flagged by a sweep of my
+own rows' - never a bare 'twice'.
+**Why this one is worse than an ordinary scope error.** L678's instances were counts about data
+and about the repo. This is a count about MY OWN failure rate, reported to the owner, and it ran
+in the direction that made my discipline look better - two lapses rather than a class present in
+a third of the relevant rows. It is also the third distinct place this scope failure has landed
+in one session: a data claim, a repo claim, and now the accounting of my own errors.
+**The self-measurement link is exact.** L679 recorded that my validation weakens where the
+measurement is about me, and offered nothing else in the system as a cross-check. This is that
+prediction coming true within hours: the miss count was a self-measurement, it went unvalidated,
+and it was wrong in my favour.
+Compliance failure against CHECKLIST item 271 read with L678 - two numbers for one name, where
+the arithmetic is right and only the set differs. No new item; 271 names it and L678 records the
+scope half.
+Mechanism: JUDGMENT-ONLY for detection - no scan can tell a detection count from an occurrence
+count, since both are integers attached to the same noun and the difference lives in how they
+were obtained. Durability held by this rule's text in SKILL.md under the anchor-doc citation
+freeze, and practically by S6-B2253, which records the sweep so the population figure exists
+rather than needing re-derivation. Both halves stated separately per L548.
+**Retroactive sweep (CHECKLIST #237), what was scanned and found:** re-read every miss COUNT I
+gave the owner this session. 'Three misses this session, one act' (L672) counted gate-caught
+instances and said so implicitly by naming each - partially sound. 'Third scope failure' (L678)
+named its three instances explicitly - sound. 'Twice this session' for the consequence class -
+this instance, and the only one stated as a bare number without naming which instances or how
+they were found. **1 of 3 miss counts carried the defect, and it is the only one that did not
+enumerate its members** - which is exactly the discriminator CHECKLIST item 280 already names
+for counts generally, arriving here in the miss-accounting.

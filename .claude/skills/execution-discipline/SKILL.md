@@ -3085,6 +3085,15 @@ own description; the freeze never reached it.
   the same debt. Address a read with file:line, a measurement with its re-runnable command, an
   enumeration with its query. **A build leaves an artifact someone trips over; a read leaves
   nothing** - and a finding nobody can locate is one nobody can correct.
+- **A MISS COUNT FROM WHAT A GATE FLAGGED IS A COUNT OF DETECTIONS, NOT OCCURRENCES (L682).**
+  MEASURED: I reported the uncosted-consequence class as *twice this session* - both instances the
+  turn gate had surfaced. A sweep of all 107 session rows found 45 consequence claims and roughly
+  17 naming no measurement. **Reporting detections as occurrences silently credits the enforcement
+  layer with completeness it has never claimed.** Name the source - *two caught by the gate*,
+  *seventeen flagged by a sweep* - never a bare count. **And note where it landed: this is a
+  self-measurement, and it erred in my favour, which is L679's prediction coming true within
+  hours.**
+
 - **COSTING A WAIT USES OBSERVED RELIABILITY, NOT THE NOMINAL SCHEDULE (L681).** MEASURED: I told
   the owner that waiting for a natural pyramid window meant *18 configs x 1.7h, so roughly 24
   hours* - on a chain with FOUR recorded deaths. The window arrived in under two hours, because the
