@@ -3056,6 +3056,13 @@ own description; the freeze never reached it.
 - **The rule was AUTO-INJECTED and I read past it.** L570's authoring-feels-like-installing, with
   the twist that I did not even author this one. **A rule in context is not a rule applied**, and
   the guard is to re-read the section when you are about to invoke a freeze, not to trust recall.
+- **A FINDING THAT SHIPS NO CODE STILL OWES AN ADDRESS (L671).** MEASURED: three rows in one batch
+  - a code read, a live measurement and a council - shipped with nothing a reader could open.
+  `#264` is worded around code, so the habit it builds is *name the pin*, and **a pin only exists
+  when you built something**; a turn that only READ and MEASURED sails past the habit while owing
+  the same debt. Address a read with file:line, a measurement with its re-runnable command, an
+  enumeration with its query. **A build leaves an artifact someone trips over; a read leaves
+  nothing** - and a finding nobody can locate is one nobody can correct.
 - **MEASURE THE QUANTITY THAT FAILS, NOT THE ONE THAT IS EASY TO READ (L670).** MEASURED: free
   physical RAM read a comfortable 2.11 GB in the same instant the box had 1.28 GB of COMMIT left,
   97.8pct used - and commit is what the failing allocation asks for. The python tree held 42.63 GB

@@ -15295,3 +15295,39 @@ a given failure mode, and both readings are legitimate measurements. The durable
 specified in S6-B2229: every RAM monitor and every capacity figure in the plan switches to
 commit, and the watchdog proposed in S6-B2227 samples FreeVirtualMemory rather than
 FreePhysicalMemory. Both halves stated separately per L548.
+
+## L671
+**Three rows in one batch stated findings and NONE named an address - because all three were
+READS and MEASUREMENTS rather than builds, and the address habit is attached to building
+(B2229c).**
+The batch shipped a code read (boundary_drops is unreachable at legs=1), a live measurement
+(commit charge at 97.8pct against a comfortable-looking physical reading) and a council over ten
+tickets. Every one is checkable and every one shipped without saying HOW: the read needed
+scripts/run_wave.py lines 189-217, the measurement needed its two PowerShell commands plus the
+plan line that gives 12.04 GB its PeakWorkingSet64 provenance, the council needed the
+queue_state call that produced the list of ten.
+**Rule: a finding that ships NO code still owes an address.** #264 is worded around code because
+the failure that produced it was a code claim - a row saying something shipped with nothing
+checkable. **The habit that rule builds is 'name the pin', and a pin only exists when you
+built something**, so a turn that only READ and MEASURED sails past the habit while owing
+exactly the same debt. The address for a read is file:line; for a measurement it is the command,
+re-runnable in one line; for an enumeration it is the query.
+**Why this matters more for findings than for builds:** a build leaves an artifact someone will
+trip over. A read leaves nothing at all - if the file:line is missing, the next reader cannot
+even locate the claim to disagree with it, and a finding nobody can attack is a finding nobody
+can correct. Both of this batch's findings CORRECTED earlier claims of mine, which is precisely
+the kind of statement that must stay falsifiable.
+Compliance failure against CHECKLIST item 264 as read together with L595 - a citation is a claim
+with an ADDRESS, and the address is checkable independently of the claim. No new item; 264 names
+the class and its scan fired on this turn.
+Mechanism: MECHANICALLY ENFORCED and it worked - the #264 scan blocked the turn that shipped the
+three addressless rows, which is why S6-B2229c exists. The residue is JUDGMENT-ONLY: no scan can
+tell a row that OUGHT to carry a file:line from one whose claim is genuinely self-contained.
+Both halves stated separately per L548.
+**Retroactive sweep (CHECKLIST #237), what was scanned and found:** re-read every row this batch
+appended, asking whether each names something a reader could open. S6-B2229 named its two
+PowerShell commands and the plan line - addressed. S6-B2213b named run_wave.py but only in prose
+without line numbers until B2229c added them - PARTIAL. S6-B2229a named the design but no
+existing artifact, correctly, because the test does not exist yet - sound. S6-B2229b named no
+query until B2229c - MISSING. **2 of 4 rows were under-addressed and both were the ones making
+claims about my own prior errors**, which is the worst place for an unlocatable claim.
