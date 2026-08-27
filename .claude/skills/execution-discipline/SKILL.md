@@ -3131,6 +3131,15 @@ own description; the freeze never reached it.
   identifier with NO structure assumed and read the line it lands on. A zero-hit search and a
   wrong-shaped search exit identically.
 
+- **AN EVIDENCE LABEL INSIDE BOILERPLATE IS ASSERTED BY DEFAULT (L695).** Any recurring block that
+  contains its own provenance claim - "executed this turn", "GREEN", "FULLY LOADED" - emits that
+  claim by being reproduced, not by being earned, so it is the one place a fabrication needs no
+  intent. MEASURED: five failures in one session on the same label, each acknowledged, the fifth
+  after calling it a pattern - acknowledgement is not a corrective. **The fix is ORDER: run the
+  command that backs a boilerplate claim as the FIRST action of the close, before any response text
+  exists,** so the evidence cannot be outrun by the template. Sweep your own close blocks: 1 of 4
+  were failing and 2 more are latent.
+
 - **ATTACH THE DENOMINATOR TO THE FIELD, NOT THE TURN (L694).** A complete read of one COLUMN does
   not license a claim about a different column. MEASURED: I read the holdout flag for all 12 configs
   (complete), then opened the nine-step status breakdown for ONE and explained it as though seen
