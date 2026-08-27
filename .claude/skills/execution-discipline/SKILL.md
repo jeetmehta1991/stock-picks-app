@@ -2947,6 +2947,22 @@ nothing else died.
 - These rules bind hardest **while executing an owner instruction under time pressure**,
   which is precisely when they get skipped.
 
+## A DISCLOSURE DIES AT THE CALLER (B2215 - L659, compliance failure vs #284)
+
+**MEASURED: a selector records three disclosures about how many candidates it truly ranked
+over; the caller copies two unrelated keys and drops all three.** The committed artifact
+therefore cannot answer "were all of them analysed?" - the exact question the disclosure
+was built for.
+
+- **When a producer emits a disclosure, check the CALLER carries it to the artifact.**
+  Writing it is half the fix; the reporting boundary is where it dies.
+- A field set on a returned dict is a **claim about what a reader will see** and needs the
+  same executed check as any other claim.
+- **Third instance of one class in a day** (L651 result never left disk, L655 status where a
+  finding belonged, L659 disclosure dropped in transit): information the system
+  deliberately produced not surviving the reporting boundary. Each was invisible until
+  someone asked a question the artifact could not answer.
+
 ## Phase 6 — END-OF-TURN SWEEP (CHECKLIST #67 — HARD RULE, no exceptions)
 
 **TICKET COUNTS BY GROUP - EVERY TURN (B1803 - CHECKLIST #274, owner directive 2026-08-21).**

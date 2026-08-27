@@ -14874,3 +14874,37 @@ test_b2214_kill_wave_tree_targets_by_identity_not_name.
 for name-based process termination - patterns Stop-Process -Name, taskkill /IM, pkill, and
 killall. RESULT RECORDED IN THE B2214 TICKET. The sweep matters because a helper that kills by
 name is the same defect committed rather than typed.
+
+## L659
+**A producer's DISCLOSURE dies at the caller unless the caller is checked too (B2215).**
+roster_core.select_exit deliberately records three disclosures on the stats dict it returns -
+exits_effective (how many distinct exits the selection actually ranked over), exits_collapsed
+(byte-identical duplicates removed), and npt_excluded_identity_boundary - with a source comment
+saying they exist 'so a reader can see the TRUE breadth the selection ran over, rather than
+assuming 26'. The caller in tighten_breaker_block copies exactly two keys out of that dict
+(ci_lo and sharpe) and drops all three. Confirmed absent from the committed grid artifact at
+both the ranking row and the admit dict. So Table C names a winning exit and NOTHING records
+whether it beat 24 candidates, 6, or 2 - which is the precise number B1593 built the
+disclosure to stop a reader assuming. The owner asked 'are all exits being analyzed across all
+combinations?' and no artifact in the program could answer it.
+**Rule: when a producer emits a disclosure, verify the CALLER carries it to the artifact.**
+Writing the disclosure is half the fix; the reporting boundary is where it dies. A field set
+on a returned dict is a claim about what a reader will see, and that claim needs the same
+executed check as any other.
+THIRD INSTANCE OF ONE CLASS TODAY: L651 (an analysis ran and its result never left disk), L655
+(a status printed where a finding belonged), and now a disclosure computed and dropped in
+transit. The unifying defect is that information the system deliberately produced does not
+survive the reporting boundary - and each instance was invisible until someone asked a
+question the artifact could not answer.
+Compliance failure against CHECKLIST #284 (an analysis that runs per event is rendered per
+event) - no new item; #284 covers rendering and this is its caller-side half.
+Mechanism: JUDGMENT-ONLY for detection - no scan can know which returned keys a caller OUGHT
+to carry - with the fix specified in S6-B2215 (carry the three fields into the row, surface
+effective breadth in Table C beside the chosen exit) and its pin to ship with it.
+**Retroactive sweep (CHECKLIST #237), what was scanned and found:** grepped roster_core for
+every field set on a returned dict after the value was computed - the pattern that produces a
+droppable disclosure. Matches at lines 381, 385 and 388 are the three exit-breadth fields
+already named in this entry. The only other dict-write hits are the gate booleans at line 249
+and the local scoring keys at 373-375, which the caller DOES consume (they become the ranking
+and the gates map). No fourth droppable disclosure exists in that file; the defect is the
+three fields, not a family of them.
