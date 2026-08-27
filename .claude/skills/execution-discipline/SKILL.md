@@ -3085,6 +3085,12 @@ own description; the freeze never reached it.
   the same debt. Address a read with file:line, a measurement with its re-runnable command, an
   enumeration with its query. **A build leaves an artifact someone trips over; a read leaves
   nothing** - and a finding nobody can locate is one nobody can correct.
+- **WHEN YOUR OWN NEW MONITOR FIRES ON YOUR OWN IN-FLIGHT WORK, THAT IS THE SIGNAL IT WAS BUILT
+  FOR (L675).** MEASURED: a commit watchdog written and pinned this turn escalated to BREACH within
+  minutes - on the pyramid *it exists to gate*, which I had just judged safe. **Knowing why the
+  number moved is exactly what makes it tempting to reason past.** Report the firing, state the
+  judgment out loud as a judgment, and say what is at risk on both sides. A monitor whose first
+  firing catches its author is worth more than one that only ever confirms the environment.
 - **MEASURE THE QUANTITY THAT FAILS, NOT THE ONE THAT IS EASY TO READ (L670).** MEASURED: free
   physical RAM read a comfortable 2.11 GB in the same instant the box had 1.28 GB of COMMIT left,
   97.8pct used - and commit is what the failing allocation asks for. The python tree held 42.63 GB

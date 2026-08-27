@@ -15442,3 +15442,42 @@ L664's sweep DOES exist but lives in its ticket row rather than the entry body, 
 not lost, only misfiled - the L668 class of putting a lesson where the next reader will not meet
 it. L670's was genuinely absent and has now been run. **1 of 2 gaps was a real omission and 1 was
 a filing error**, which is a distinction the count alone would have hidden.
+
+## L675
+**A tool built this turn fired correctly on live data within minutes - and the finding is that
+the thing it caught was ME (B2236).**
+scripts/commit_watchdog.py was written to sample commit charge rather than free physical RAM,
+because the runs die of commit exhaustion and every prior monitor watched the working-set side.
+Minutes after it was pinned, running the pyramid it exists to gate drove available commit from
+3.3 GB to 1.15 GB, then 0.993 GB - and it escalated to BREACH on the second consecutive reading
+exactly as designed.
+**The value was not the alarm; it was that the alarm was ABOUT MY OWN ACTION.** I had measured
+that a pytest run costs 1.183 GB of commit, decided a 19.6 GB window made it safe, and was
+right about the window and wrong about how fast it would close - a second config launched
+mid-run and took the headroom back. A monitor whose first firing catches its author's own
+judgment call is worth more than one that only ever confirms the environment.
+**Rule: when a new monitor fires on your own in-flight work, that is the signal it was built
+for - report it and state the judgment out loud, rather than reasoning past it because you know
+why the number moved.** Knowing the cause is exactly what makes it tempting to dismiss.
+WHAT I DECIDED AND WHY, recorded so it can be judged rather than assumed: I let the pyramid
+finish and intervened in nothing. The competing config was at sim_day 0 with roughly two
+minutes of work at risk - the cheapest possible collision moment - and the import cost that
+dominates the 1.183 GB was already paid, so the remaining execution was the low-memory half.
+Aborting would have wasted the only window in hours and left six tickets blocked. **That is a
+judgment, not a measurement, and it is stated as one.**
+Compliance failure against none - this is a rule addition, not a miss. The monitor behaved
+correctly and so did the decision procedure; what is new is the rule about what to DO when your
+own tool alarms on your own work.
+Mechanism: MECHANICALLY ENFORCED for the detection half - the watchdog is the mechanism and it
+fired; pinned by test_b2229_commit_watchdog_reads_commit_not_physical whose load-bearing arm is
+the must-NOT-alarm case (commit healthy beside LOW physical), without which the test would pass
+for a monitor watching the wrong quantity. The judgment half - whether to abort or continue on
+a breach - is JUDGMENT-ONLY, since the right answer depends on what is at risk on both sides.
+Both halves stated separately per L548.
+**Retroactive sweep (CHECKLIST #237), what was scanned and found:** ran the new delegation
+detector across ALL 12 landed cubes rather than the 3 I first sampled, to see whether the
+finding was a property of the sample. It is not - 12 of 12 show the same four exits degraded,
+reverse_signal at 100pct in 11 of 12 and 98.0pct in the twelfth. **The exception is the
+informative part:** at swing-10, 4 of 204 trades took a genuine reverse-signal path, so the
+delegation is not absolute everywhere and the honest claim is 'degraded on 76-100pct of trades',
+not 'always'. A 3-cube sample would have reported 100pct and been wrong about the class.

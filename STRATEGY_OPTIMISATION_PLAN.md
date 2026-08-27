@@ -1004,6 +1004,25 @@ the old grain; the monitor errs conservative (fires early), left as-is.]** (`Pea
 readings understated it three times). Non-python baseline ~6.4 GB of 15.6 GB, so
 **3 concurrent configs**, not 5-6. Exceeding it risks MemoryError mid-sweep.
 
+> **[WRONG-QUANTITY - B2229/L670, measured 2026-08-27. This whole section sizes on
+> WORKING SET; the runs die of COMMIT EXHAUSTION, and the two were measured 6.93x
+> apart on the live box.]** Live 18-process pool: python tree held **42.63 GB of
+> private commit against 6.16 GB of working set**; individual workers showed 4.11 GB
+> of commit behind 0.55 GB of working set. At the same instant free PHYSICAL memory
+> read a comfortable 2.11 GB while available COMMIT was 1.28 GB, **97.8pct used**.
+> Working set is RESIDENT pages; commit is reserved address space backed by RAM plus
+> pagefile, and **the allocation that FAILS is a commit**. So the "3 concurrent
+> configs" conclusion above, and the corrected 64GB/128GB ceilings, are derived from
+> a quantity that does not govern the failure mode.
+> **AND THE LIMIT IS NOT FIXED:** the commit limit read 58.49, then 61.517, then
+> 45.27, then 48.3 GB across one session as Windows resized the system-managed
+> pagefile - so any ceiling quoting a fixed limit quotes a moving number.
+> **Calibration for the sizing decision (S6-B2107a):** a single pytest invocation
+> costs a MEASURED 1.183 GB of commit (import-dominated, B2229c).
+> Figures ANNOTATED rather than replaced - changing the concurrency conclusion is an
+> owner call, and this note gives that call the right quantity to make it on.
+> Live monitor: `python scripts/commit_watchdog.py` (samples commit, never physical).
+
 **(c) CONFIRM THE SWEEP KNOBS DIFFER.** The engine does NOT log `SMC_SWING_LENGTH` /
 `STRAT_EMA_SPAN` (S6-B1576b), so a sweep can silently run N identical configs. Assert distinct
 values across concurrent launches before starting.
