@@ -3085,6 +3085,16 @@ own description; the freeze never reached it.
   the same debt. Address a read with file:line, a measurement with its re-runnable command, an
   enumeration with its query. **A build leaves an artifact someone trips over; a read leaves
   nothing** - and a finding nobody can locate is one nobody can correct.
+- **CHOOSE THE MUTATION THAT WOULD MAKE A BROKEN MECHANISM LOOK CORRECT (L686).** L684 says the
+  mutation you pick is the hypothesis you test; this is how to pick. **The tempting mutation
+  attacks the arm you are confident in** - change the input, watch the alarm fire - and it is what
+  let a prose-satisfiable pin pass its own fail-proof. Instead ask what a USELESS version of this
+  mechanism would do, and mutate toward that: a detector that fires on everything, a monitor that
+  always reports healthy, a selector that always picks the first candidate. **A gate that refuses
+  everything satisfies every must-FIRE test ever written for it** - only the must-QUIET arm catches
+  it. MEASURED: raising an expected-events floor so nothing passes broke the pin, proving that arm
+  load-bearing.
+
 - **A TEST HAS TWO SIZE CONSTRAINTS AND THEY PULL OPPOSITE WAYS (L685).** Small enough to be safe,
   **large enough to produce the event it measures.** MEASURED: I wrote the scale objection against
   my own smoke, then ran it at 5 tickers for 3 months - expected fires 0.53 from a measured rate of

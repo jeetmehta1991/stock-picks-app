@@ -15929,3 +15929,45 @@ sound. The delegation detector reads existing cubes, so the events already exist
 events rather than observe existing ones.** That is the discriminator worth carrying: a probe
 that must CREATE the thing it measures needs its expectation costed; one that reads what already
 happened does not.
+
+## L686
+**L684 said the mutation you pick IS the hypothesis you test. It did not say how to pick one -
+and the answer is: attack the arm you would most like to be true (B2261).**
+Building the expected-events gate, the tempting mutation was the obvious one: change the
+expected count and watch the refusal appear. That tests the arm I was confident in and is what I
+did for the three earlier pins - which is exactly how test_b2216_identical passed a fail-proof
+while remaining prose-satisfiable.
+Instead I raised the floor to 1000 so that NOTHING passes. That attacks the must-QUIET arm - the
+assertion that a correctly-sized probe is ACCEPTED - and it is the arm whose failure is silent.
+**A gate that refuses everything satisfies every must-FIRE test ever written for it.** The pin
+failed under that mutation, so the must-QUIET arm is load-bearing and an always-refusing gate
+cannot masquerade as a working one.
+**Rule: choose the mutation that would make a BROKEN mechanism look CORRECT, not the one that
+makes a correct mechanism look broken.** The second is easy to imagine and proves little; the
+first requires asking what a useless version of this gate would do and whether the test would
+notice. For a detector the useless version fires on everything; for a monitor it reports healthy
+always; for a selector it picks the first candidate.
+**This is the constructive half of a session-long arc that has otherwise been all diagnosis.**
+L501 said a gate observed only passing has been run, not tested. L683 said writing a pin feels
+like compliance. L684 said one mutation samples one point. **None of the three says which point
+to sample**, and the answer turns out to be derivable rather than a matter of care: enumerate
+how the mechanism could be USELESS, then mutate toward that.
+Compliance failure against none - this is a rule addition, not a miss. The prove-it-can-fail step
+was run correctly and the pin is sound; what is new is a way of choosing the mutation that does
+not depend on guessing well.
+Mechanism: JUDGMENT-ONLY for detection - no scan can tell which mutation a fail-proof used, and
+certainly not whether it was the informative one, since the mutation is transient and leaves no
+artifact. Durability held by this rule's text in SKILL.md under the anchor-doc citation freeze,
+and practically by the pins themselves: each of this session's behavioural pins now carries an
+explicit must-QUIET arm whose purpose is documented in its own docstring, so the next reader
+meets the reasoning rather than having to reconstruct it. Both halves stated separately per
+L548.
+**Retroactive sweep (CHECKLIST #237), what was scanned and found:** re-read the fail-proof
+mutation used on each of this session's pins, asking whether it attacked the confident arm or
+the silent one. The commit-watchdog pin's must-NOT-alarm arm (healthy commit beside low physical)
+was written deliberately as the arm a wrong-quantity monitor would fail - sound. The delegation
+detector's mutation disabled FALLBACK_MARKERS, attacking the arm that finds the SUBTLER shape -
+sound. The single-leg and disclosure pins were mutated on their obvious subject - adequate, and
+the disclosure one needed a second pass precisely because the first mutation was the easy one.
+test_b2216_identical was mutated on its obvious subject and PASSED while staying weak - the
+instance. **2 of 6 fail-proofs attacked the silent arm; 1 of 6 was actively misleading.**
