@@ -26349,3 +26349,129 @@ def test_b2207_ledger_lock_serializes_concurrent_landings(tmp_path):
     # (c) atomicity is structural: the helper writes via os.replace
     src = (_root / "scripts" / "ledger_lock.py").read_text(encoding="utf-8")
     assert "os.replace" in src and "mkstemp" in src
+
+def test_b2229_commit_watchdog_reads_commit_not_physical(tmp_path, monkeypatch):
+    """S6-B2227 / L670: the watchdog must sample COMMIT, never free physical RAM.
+
+    MEASURED, and this is why the test exists: free physical memory read a
+    comfortable 2.11 GB in the same instant the box had 1.28 GB of COMMIT left,
+    97.8pct used. The python tree held 42.63 GB of commit against 6.16 GB of
+    working set - a 6.93x gap. Every prior monitor here sampled the working-set
+    side, which reports health right up to the failure.
+
+    (a) a healthy commit reading passes even when PHYSICAL is low - the exact
+        combination that must NOT alarm, and the one a physical-memory monitor
+        would get backwards;
+    (b) one reading under the floor is a transient, not a breach (L667);
+    (c) two consecutive readings under the floor escalate to exit 2;
+    (d) an unreadable OS returns 1 and REFUSES to judge rather than reporting
+        healthy - the no-silent-healthy rule.
+    """
+    import importlib.util as _ilu
+    from pathlib import Path as _P
+    _root = _P(__file__).resolve().parents[2]
+    _spec = _ilu.spec_from_file_location(
+        "commit_watchdog_b2229", _root / "scripts" / "commit_watchdog.py")
+    w = _ilu.module_from_spec(_spec)
+    _spec.loader.exec_module(w)
+
+    audit = tmp_path / "output_audit"
+    audit.mkdir()
+    monkeypatch.setattr(w, "AUDIT", audit)
+
+    def _fake(limit, avail, phys):
+        return lambda: {"commit_limit_gb": limit, "commit_avail_gb": avail,
+                        "phys_free_gb": phys,
+                        "commit_used_pct": round(100 * (limit - avail) / limit, 1),
+                        "read_at": 0.0}
+
+    # (d) unreadable -> refuse to judge, never "healthy"
+    monkeypatch.setattr(w, "read_commit", lambda: None)
+    code, msg = w.check()
+    assert code == 1 and "CANNOT READ" in msg
+
+    # (a) commit healthy while PHYSICAL is low -> must NOT alarm.
+    monkeypatch.setattr(w, "read_commit", _fake(58.0, 20.0, 0.31))
+    code, msg = w.check(floor_gb=1.5)
+    assert code == 0 and "HEALTHY" in msg, msg
+
+    # (b) one reading under the floor is a transient
+    monkeypatch.setattr(w, "read_commit", _fake(58.0, 1.0, 2.11))
+    code, msg = w.check(floor_gb=1.5)
+    assert code == 0, "a single under-floor reading is a transient, not a state"
+    assert "UNDER FLOOR once" in msg, msg
+
+    # (c) two consecutive -> breach
+    code, msg = w.check(floor_gb=1.5)
+    assert code == 2, "two consecutive under-floor readings must escalate"
+    assert "COMMIT BREACH" in msg and "1.183GB" in msg, msg
+    assert "physical reading is NOT the signal" in msg, (
+        "the alert must carry the reason a physical monitor misses this")
+
+
+def test_b2217_exit_delegation_detector_sees_both_shapes(tmp_path):
+    """S6-B2217/S6-B2216: catch CROSS-STEM delegation AND SAME-STEM fallback.
+
+    The second shape is the one a byte-identical collapse detector structurally
+    cannot see, and the one my own first version missed. MEASURED on real cubes:
+    `reverse_signal` emits `atr_trailing_stop` on 100pct of trades (cross-stem,
+    caught immediately), while `smc_mitigation_zone` emits
+    `smc_trail_safety_batch227a` on 87pct - same stem, so the cross-stem test
+    called it characteristic and stayed silent. exit_strategies.py's own
+    docstring says "On in-between bars we trail-stop via vanilla 1xATR as
+    safety", so 87pct of that exit's trades closed on a vanilla ATR trail.
+
+    Also pinned: GENERIC terminal reasons (stop_loss, take_profit, end_of_data)
+    must NOT be flagged - the naive version produced 15 flags of which 14 were
+    legitimate, which is a wall of noise rather than a finding.
+    """
+    import csv as _csv
+    import importlib.util as _ilu
+    from pathlib import Path as _P
+    _root = _P(__file__).resolve().parents[2]
+    _spec = _ilu.spec_from_file_location(
+        "audit_exit_delegation_b2217", _root / "scripts" / "audit_exit_delegation.py")
+    a = _ilu.module_from_spec(_spec)
+    _spec.loader.exec_module(a)
+
+    cube = tmp_path / "trade_exit_detail.csv"
+    rows = []
+    # cross-stem: reverse_signal wearing an atr_trail reason, every trade
+    for i in range(10):
+        rows.append({"exit_method": "reverse_signal", "exit_reason": "atr_trailing_stop"})
+        rows.append({"exit_method": "atr_trail_1x", "exit_reason": "atr_trailing_stop"})
+    # same-stem fallback: 8 of 10 on the safety path
+    for i in range(8):
+        rows.append({"exit_method": "smc_mitigation_zone",
+                     "exit_reason": "smc_trail_safety_batch227a"})
+    for i in range(2):
+        rows.append({"exit_method": "smc_mitigation_zone",
+                     "exit_reason": "smc_mitigation_batch227a"})
+    # generic terminal reasons on an honest exit - MUST NOT fire
+    for r in ("stop_loss", "take_profit", "end_of_data", "max_days"):
+        rows.append({"exit_method": "fixed_4r_2r", "exit_reason": r})
+    with cube.open("w", newline="", encoding="utf-8") as f:
+        wr = _csv.DictWriter(f, fieldnames=["exit_method", "exit_reason"])
+        wr.writeheader()
+        wr.writerows(rows)
+
+    found = a.audit(cube)
+    kinds = {(d["exit_method"], d["kind"]): d for d in found}
+
+    # (a) cross-stem delegation, at 100pct
+    k = kinds.get(("reverse_signal", "CROSS-STEM"))
+    assert k is not None, f"cross-stem delegation missed: {found}"
+    assert k["share_pct"] == 100.0, k
+
+    # (b) same-stem fallback - the shape the collapse detector cannot see
+    k = kinds.get(("smc_mitigation_zone", "SAME-STEM-FALLBACK"))
+    assert k is not None, f"same-stem fallback missed: {found}"
+    assert k["share_pct"] == 80.0, k
+
+    # (c) the honest exit that emits ONLY generic terminal reasons is silent -
+    # without this arm the detector could flag everything and still pass (a)+(b)
+    assert not [d for d in found if d["exit_method"] == "fixed_4r_2r"], (
+        "generic terminal reasons must not be reported as delegation")
+
+    # (d) atr_trail_1x owns atr_trailing_stop, so it must not flag itself
+    assert not [d for d in found if d["exit_method"] == "atr_trail_1x"], found
