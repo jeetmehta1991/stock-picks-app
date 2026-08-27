@@ -3085,6 +3085,15 @@ own description; the freeze never reached it.
   the same debt. Address a read with file:line, a measurement with its re-runnable command, an
   enumeration with its query. **A build leaves an artifact someone trips over; a read leaves
   nothing** - and a finding nobody can locate is one nobody can correct.
+- **ENUMERATE WRITERS ACROSS THE WHOLE REPO, TESTS INCLUDED (L689).** MEASURED: chasing a ledger
+  that read 91 in one artifact and 90 in another, I grepped `scripts/`, concluded **0 of 3 modules
+  contain any delete path**, and filed the cause as UNKNOWN while pointing at an innocent lock. The
+  repo-wide search returns 8 files and one is `test_unit.py`, which writes a real entry to the
+  PRODUCTION ledger and pops it in `finally` - both observations were my own pyramid runs. **A test
+  that drives production code IS production code for the duration of the run**; the directory says
+  what a file is FOR, never what it TOUCHES. Compliance failure against `#270` in its code dialect -
+  *"no other call sites"* is the same claim as *"no delete path exists"*.
+
 - **FIND THE BRANCH THAT EMITS A STRING BEFORE FILING IT AS WRONG (L688).** A message's audience
   is not everyone who sees the tool fire - it is whoever reached the line that prints it, and those
   differ exactly when the emitter sits behind a branch. **Advice text is branch-specific by nature.**

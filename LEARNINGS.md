@@ -16035,3 +16035,37 @@ kill-message was read as a claim about MY turn and is one - session-scoped, conf
 the collector. The doc's *'(91 entries)'* was judged against the ledger and the emitter was checked
 (`postconfig_doc.py:245-262`). This one was judged on the string alone. **1 of 3 skipped the
 emitter check, and it is the one that produced a wrong draft.**
+
+### L689
+**I SEARCHED FOR WRITERS WHERE WRITERS LIVE, AND THE WRITER WAS A TEST (B2269).**
+MEASURED: chasing a ledger that read 91 in one artifact and 90 in another, I ran
+`grep -rln postconfig_ledger scripts/` and concluded **0 of 3 modules contain any key-delete path**,
+then reported the cause UNKNOWN and raised the unproven B2207 lock as the expensive reading. The
+repo-wide search returns **8 files, and one of them is `backtest/tests/test_unit.py`** - which runs
+a real wave that writes a 91st entry to the PRODUCTION ledger, and whose `finally` block does
+`led.pop(...)` and rewrites the file (test_unit.py:24792-24795). `run_wave` regenerates the findings
+doc during that window (pinned at test_unit.py:26037), so the doc is written at 91 and the ledger
+restored to 90. **Both observations were my own pyramid runs.**
+**The verdict was stated over a population I had not enumerated.** Compliance failure against
+`#270` - read it end to end - in its CODE dialect: *'no other call sites'* is the same claim as
+*'no delete path exists'*, and `scan_partial_read` exists for exactly that sentence.
+**Why the scope felt complete.** `scripts/` is where writers live, so searching it felt like
+searching everywhere. A test that drives production code IS production code for the duration of the
+run - the directory says what a file is FOR, never what it TOUCHES.
+**What the wrong framing cost, which is the part that matters.** I did not merely fail to find a
+cause; I filed a ticket pointing at the B2207 lock, and that ticket would have sent the next reader
+to audit a mechanism with nothing wrong with it. **A wrong cause closes an investigation** (L455),
+and mine was wrapped in an honest UNKNOWN, which made it read as careful rather than as unfinished.
+**Rule: when hunting what WROTE something, enumerate writers across the WHOLE repo before any
+verdict about the population - tests included.** Grep the bare filename with no directory scope.
+Mechanism: **JUDGMENT-ONLY for detection** - no scan knows which directory a search should have
+covered. Durability via the SKILL.md bullet under the anchor-doc citation freeze. A consistency pin
+(the doc's claimed entry count must equal the ledger's key count) would have caught the ARTIFACT
+mismatch on sight and is **PROPOSED-NOT-BUILT** - stated as a proposal because it would fail
+whenever the wave test leaves the doc dirty, which is order-dependent and is the B1468a class.
+**Retroactive sweep (CHECKLIST #237):** the three population verdicts stated this turn. *0 of 3
+modules have a delete path* - WRONG, scoped to `scripts/`. *2 of the file's gates are turn-scoped* -
+correct, the search was over the one file that defines them. *The hatch covers Gate B and the
+marker check* - correct, control flow read end to end. **1 of 3 was scoped to a directory rather
+than to the question, and it is the one that produced a false cause.**
+
