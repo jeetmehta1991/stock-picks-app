@@ -3085,6 +3085,16 @@ own description; the freeze never reached it.
   the same debt. Address a read with file:line, a measurement with its re-runnable command, an
   enumeration with its query. **A build leaves an artifact someone trips over; a read leaves
   nothing** - and a finding nobody can locate is one nobody can correct.
+- **A TEST HAS TWO SIZE CONSTRAINTS AND THEY PULL OPPOSITE WAYS (L685).** Small enough to be safe,
+  **large enough to produce the event it measures.** MEASURED: I wrote the scale objection against
+  my own smoke, then ran it at 5 tickers for 3 months - expected fires 0.53 from a measured rate of
+  85 per 200 ticker-years - and got ZERO trades, so no cube, no battery, and the ledger lock it
+  existed to test was never exercised. **My scrutiny addressed CONFIDENCE (what a result would
+  license) while the binding constraint was EXISTENCE (whether a result would occur).** Before any
+  probe that must GENERATE its own events, compute the expected count from a measured rate and
+  require it to be several. A probe that only READS existing events needs no such costing - that is
+  the discriminator.
+
 - **PROVE-IT-CAN-FAIL PROVES A PIN *CAN* FAIL, NOT THAT IT FAILS FOR THE RIGHT REASON (L684).**
   MEASURED: a pin passed `#226` an hour before a classification found it prose-satisfiable. It
   passed because of the mutation I CHOSE - I deleted the phrase from the print, and the comment

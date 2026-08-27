@@ -15881,3 +15881,51 @@ walk its AST), 1 substring-only. The 5 sound ones share a property worth naming:
 INVOKES the subject (probe_pool_spawn, w.check, a.audit) or reads it through ast, so prose in
 the target file cannot reach them. **The discriminator is not care taken - it is whether the
 assertion touches CODE or touches TEXT.**
+
+## L685
+**I raised the SCALE objection myself, then sized the run below the SIGNAL FLOOR anyway - and
+the two are not the same axis (B2259).**
+Before running the 2-parallel smoke I wrote the case against it: a green result at 5 tickers
+cannot license confidence about parallelism at 200, so report it as 'the lock works at 5
+tickers', never as 'parallel runs are safe'. That objection was correct and it was about the
+wrong quantity. Both arms ran to completion and produced ZERO TRADES - no cube, therefore no
+post-config battery, therefore **no ledger write at all**, therefore the concurrent-write
+contention the smoke exists to create was never created. Verified: zero b2207a entries among the
+90 in postconfig_ledger.json.
+**The arithmetic was available before launch and takes one line.** smc_breaker_block_long fires
+85 times over 200 ticker-years in the measured sw30sp150 cube. The smoke bought 5 tickers x 3
+months = 1.25 ticker-years. DERIVED expected fires = 85 x 1.25/200 = 0.53. **Zero is the modal
+outcome**, and I chose that exposure for speed without ever asking whether it would produce a
+trade.
+**Rule: a test has TWO size constraints and they pull in opposite directions - small enough to
+be safe, LARGE ENOUGH TO PRODUCE THE EVENT IT MEASURES.** Costing only the first is how a run
+gets sized into uselessness while every safety check passes. Before any smoke: compute the
+expected count of the thing being observed, from a measured rate, and require it to be several -
+not one, and certainly not a fraction.
+**Why this is sharper than L566 rather than a repeat.** There, a run did nothing and the
+validation layer could not see it. Here **I had already written the objection about scale**, so
+the failure is not that I skipped scrutiny - it is that my scrutiny addressed CONFIDENCE (what a
+result would license) while the binding constraint was EXISTENCE (whether a result would occur).
+Two different questions about size, and answering the first felt like answering both.
+**What the run DID establish, kept because discarding it would be its own error:** two full
+engine runs executed concurrently to completion, 6 processes, commit drawing ~7.4 GB for the
+pair (21.2 -> 13.8 GB available), no crash and no interference. The INFRASTRUCTURE ran in
+parallel. Only the lock went untested.
+Compliance failure against CHECKLIST item 223 as extended by L566, read with item 201 - the
+expected-fire count is a quantity and I asserted a design without computing it. No new item;
+both name the class.
+Mechanism: MECHANISABLE and specified, not built - a spec-time check that computes expected
+events from a measured rate and refuses a smoke whose expectation is below a threshold, which is
+the same shape as the fire-count gate the repo already applies to strategies before cube
+admission. Until built, JUDGMENT-ONLY: no scan knows which measured rate is the right basis for
+a given probe. Durability held by this rule's text in SKILL.md under the anchor-doc citation
+freeze. Both halves stated separately per L548.
+**Retroactive sweep (CHECKLIST #237), what was scanned and found:** re-read every probe or smoke
+I sized this session, asking whether its expected-event count was computed before running. The
+pytest cost measurement ran 3 tests and observed a real 1.183 GB delta - the event was certain,
+no expectation needed. The spawn probe asks for exactly one spawn and gets it deterministically -
+sound. The delegation detector reads existing cubes, so the events already exist - sound. **1 of
+4 needed an expected-count computation and it is the only one that had to GENERATE its own
+events rather than observe existing ones.** That is the discriminator worth carrying: a probe
+that must CREATE the thing it measures needs its expectation costed; one that reads what already
+happened does not.
