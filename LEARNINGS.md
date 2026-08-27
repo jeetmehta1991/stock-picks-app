@@ -14826,6 +14826,28 @@ a cron prompt), plus S6-B2212b tickets a progress watchdog inside the supervisor
 durable half does not depend on a prompt. Sibling of L641 (absence is dead, not pending): here
 PRESENCE was dead and read as alive.
 
+**ADDENDUM (B2249) - AND THE CONVERSE IS EQUALLY TRUE: A STALE HEARTBEAT PROVES NOTHING ABOUT A
+STALL.** L656 established that a FRESH heartbeat says nothing about the day loop. I then treated
+a 6.8-minute-old heartbeat as a reading to watch, which quietly assumed the reverse direction
+carried signal. It does not. MEASURED across all 9 waves holding a stall-detector state file:
+the heartbeat age at the final reading runs 0.5 to 47.8 minutes, median 8.1. Four waves went far
+staler than 6.8 - 47.8, 46.0, 27.6 and 27.2 minutes - and **all four landed COMPLETE.** The
+reason is visible in the same data: every one sits at sim_day 249, the last day, where the engine
+has stopped advancing the counter and is writing its cube, so the supervisor has nothing new to
+report.
+**Rule: heartbeat age carries no signal in EITHER direction - only the counter does.** Freshness
+cannot prove liveness and staleness cannot prove death, and the natural quiet period at the end
+of a run makes the second error the easier one: a run about to succeed looks exactly like a run
+that has stopped, if age is what you read.
+This corrects an over-caution rather than an error of fact - I flagged the reading as worth
+watching rather than calling a stall - but an over-caution stated to the owner is still a claim
+about the system, and this one was wrong.
+Mechanism: MECHANICALLY ENFORCED and already correct - scripts/watch_run_progress.py reads the
+COUNTER and reports age only as context, which is why it returned ADVANCING throughout and never
+shared my doubt. The tool was right and the reader was not, which is the same shape as L660 (the
+mechanism worked; my reading did not). No new mechanism is warranted.
+
+
 ## L657
 **A name you COINED one paragraph ago is still an unverified capability claim (B2213).**
 Proposing a status value INVALID_CENSORED, I then wrote it in later sentences as though it

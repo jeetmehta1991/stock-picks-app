@@ -3085,6 +3085,12 @@ own description; the freeze never reached it.
   the same debt. Address a read with file:line, a measurement with its re-runnable command, an
   enumeration with its query. **A build leaves an artifact someone trips over; a read leaves
   nothing** - and a finding nobody can locate is one nobody can correct.
+- **HEARTBEAT AGE CARRIES NO SIGNAL IN EITHER DIRECTION (L656 addendum).** L656 said a FRESH
+  heartbeat cannot prove liveness. **A STALE one cannot prove death either.** MEASURED across 9
+  waves: final-reading heartbeat age runs 0.5 to 47.8 minutes, median 8.1, and the four stalest -
+  47.8, 46.0, 27.6, 27.2 - all landed COMPLETE, because a run at its last sim-day has stopped
+  advancing the counter and is writing its cube. **A run about to succeed looks exactly like a run
+  that has stopped, if age is what you read.** Only the counter carries signal.
 - **A PROBE MEASURING YOUR OWN COMPLIANCE GETS MORE VALIDATION, NOT LESS (L679).** MEASURED: of six
   count-producing probes in one session, four were validated before quoting and two were not - and
   **both failures were the two whose subject was my own compliance rather than the program's
