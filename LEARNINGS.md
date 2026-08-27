@@ -15224,3 +15224,74 @@ it is the one about the turn protocol itself, which is the class least likely to
 an append log and most likely to recur. Also noted from the same pass and NOT corrected here:
 S6-B2227k's NOT-YET-DUE disposition is deliberately ledger-only, because a per-config status
 call is an incident record rather than a rule.
+
+## L669
+**The REMEDY a council objection proposes inherits the objection's evidence burden - and I
+costed mine without opening the artifact it would read (B2228b).**
+The objection to my own sample-size reading was sound: I could not call swing-30 an artifact
+without checking the interval construction. But it closed by naming a test and calling it
+buildable offline on cached grid artifacts. Opening one grid artifact shows its ranking rows
+carry exactly admit, ci_lo, class_size, exit, fires, is_ci_lo, is_sharpe, members, rank and
+sharpe. **There is no avg_hold field**, so the annualisation half of the test cannot run against
+the grid at all - it needs the per-trade CSV. The code-read half was genuinely offline; the half
+I was most confident about was not.
+**Rule: an objection's proposed remedy is a claim about an artifact and carries the same burden
+as a recommendation's.** L645 established that an objection's case AGAINST must be costed; this
+is its second face - **the FIX an objection proposes is as unverified as the criticism it
+accompanies**, and it arrives wearing the credibility the objection just earned. Writing a good
+objection creates exactly the wrong conditions for scrutinising its remedy.
+**And the part worth keeping for its own sake: opening the primary source answered a question I
+had not asked.** The construction reads ci_lo = sharpe - 1.96 * se_ann with se_ann = sqrt((1 +
+0.5 * sr_pt^2)/n) * ann, so BOTH the estimate and its interval are multiplied by ann =
+sqrt(trades_per_year). A row whose winning exit holds fewer days has its ci_lo scaled up
+mechanically, independent of edge quality - a LARGER confound than the sample size I set out to
+test, invisible from every artifact, unreachable by reasoning about the numbers.
+Compliance failure against CHECKLIST item 230 as extended by L506 - name the ARTIFACT and the
+FIELD before proposing work that depends on them. No new item; its scan fired on this turn.
+Mechanism: MECHANICALLY ENFORCED and it worked - the uncosted-probe scan blocked the turn that
+made the claim, which is why the artifact got opened at all. Durability held by the anchor-doc
+citation freeze over this rule's text in SKILL.md. Both halves stated separately per L548.
+**Retroactive sweep (CHECKLIST #237):** re-read every remedy proposed in an objection or ticket
+this firing. S6-B2227's RAM watchdog names PowerShell output I had run - sound. S6-B2228a's
+interval test named the grid unopened - this instance. B2228b's bootstrap fix is labelled NOT
+BUILT rather than costed - sound. **1 of 3 carried the defect**, and it is the one that arrived
+inside an objection.
+
+## L670
+**THE WHOLE MEMORY ANALYSIS MEASURED THE WRONG QUANTITY. The runs die of COMMIT EXHAUSTION and
+every figure in the plan is WORKING SET - measured 6.93x apart on the live box (B2229).**
+Checking whether a pyramid would fit, I read commit charge for the first time in this program.
+MEASURED via PowerShell Get-CimInstance Win32_OperatingSystem and Get-Process on the live
+18-process pool: commit limit 58.49 GB, commit AVAILABLE 1.28 GB, 97.8pct used, while free
+PHYSICAL memory read a comfortable-looking 2.11 GB. The python tree holds **42.63 GB of private
+commit against 6.16 GB of working set - a ratio of 6.93** - and individual workers show 4.11 GB
+of commit behind 0.55 GB of working set.
+**The plan's per-config memory figure is 12.04 GB and it is explicitly PeakWorkingSet64** (read
+at STRATEGY_OPTIMISATION_PLAN.md line 997). Working set is RESIDENT pages; commit is reserved
+address space backed by RAM plus pagefile. **The allocation that FAILS is a commit, not a
+working-set page** - so every ceiling in the plan, including the corrected concurrency numbers
+of roughly 4 configs at 64GB and 10 at 128GB, is derived from a quantity that does not govern
+the failure mode.
+**Rule: measure the quantity that FAILS, not the quantity that is easy to read.** Free physical
+RAM is the number Task Manager shows first and the number every monitor in this repo samples;
+it looked healthy at 2.11 GB in the same instant the machine had 1.28 GB of commit left. **A
+monitor watching the wrong quantity reports health right up to the failure**, which is exactly
+the behaviour observed across three deaths.
+HYPOTHESIS, NOT YET CONFIRMED, and worded as one per the no-untested-cause rule: that commit
+exhaustion is the mechanism of those three deaths. It fits - the deaths were named
+commit-exhaustion at the time - but I have not traced a single death to a recorded commit
+failure, and doing so needs the event log rather than a live reading.
+**Consequence that reaches beyond this repo's monitoring: the owner is choosing a server.**
+Sizing a box on a 12.04 GB per-config figure when the live per-config commit is 42.63 GB is a
+3.5x understatement of the binding resource. The comparison is not exact - 12.04 is a PEAK
+working set and 42.63 is a CURRENT commit, so the honest statement is that the two numbers
+measure different things and only one of them governs - but the direction is not in doubt, and
+a purchase decision resting on the smaller number is resting on the wrong one.
+Compliance failure against CHECKLIST item 162 - the counter-semantics trap: a metric that counts
+the wrong thing arrives pre-armoured, because it was genuinely measured, by a real command, and
+returns a clean number. No new item; #162 names this exactly.
+Mechanism: JUDGMENT-ONLY for detection - no scan knows which of several real quantities governs
+a given failure mode, and both readings are legitimate measurements. The durable half is
+specified in S6-B2229: every RAM monitor and every capacity figure in the plan switches to
+commit, and the watchdog proposed in S6-B2227 samples FreeVirtualMemory rather than
+FreePhysicalMemory. Both halves stated separately per L548.

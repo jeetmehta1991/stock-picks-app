@@ -3056,6 +3056,18 @@ own description; the freeze never reached it.
 - **The rule was AUTO-INJECTED and I read past it.** L570's authoring-feels-like-installing, with
   the twist that I did not even author this one. **A rule in context is not a rule applied**, and
   the guard is to re-read the section when you are about to invoke a freeze, not to trust recall.
+- **MEASURE THE QUANTITY THAT FAILS, NOT THE ONE THAT IS EASY TO READ (L670).** MEASURED: free
+  physical RAM read a comfortable 2.11 GB in the same instant the box had 1.28 GB of COMMIT left,
+  97.8pct used - and commit is what the failing allocation asks for. The python tree held 42.63 GB
+  of commit against 6.16 GB of working set, a **6.93x** gap, while every monitor here samples the
+  working-set side. **A monitor watching the wrong quantity reports health right up to the
+  failure.** Before trusting any resource ceiling, ask which number the failing operation actually
+  consumes - and note that the wrong one is usually the one the OS surfaces first.
+- **An objection's proposed REMEDY inherits the objection's evidence burden (L669).** MEASURED: my
+  case-against named a test and called it offline on cached grid artifacts; the grid has no
+  avg_hold field, so half that test cannot run there at all. **L645 says the case AGAINST must be
+  costed; this is its second face - the FIX is as unverified as the criticism, and it arrives
+  wearing the credibility the objection just earned.**
 - **When a block cites your CLOSING TEXT rather than your work, stop editing prose and self-run the
   gate (L668).** MEASURED: naming a plan file inside a compliance line armed the constant scan;
   stating a preference inside a summary armed the council scan; quoting a gate's trigger while
