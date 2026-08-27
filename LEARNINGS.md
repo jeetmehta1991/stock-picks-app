@@ -15609,3 +15609,21 @@ ticket-class counts come from queue_state over the whole ledger and say so - sou
 reported counts omitted its scope, and it is the only one I produced from memory before scanning
 anything.** That is the tell worth carrying: the count that starts as a recollection is the one
 that never acquires a stated scope.
+
+**ADDENDUM (B2247) - AND THEN I QUOTED MY OWN DETECTOR'S 34 WITHOUT HAND-READING IT.**
+One turn after writing the rule above, I built a keyword detector for it, ran it over all 98 of
+this session's ticket rows, and reported '34 of 97 counts lack a stated scope' to the owner.
+Hand-reading five of those 34 afterwards found FOUR false positives: two flagged DATES
+(2026-08-27), one flagged a FILE CITATION (lines 189-217), and one - S6-B2229 - actually states
+its scope in wording my keyword list did not recognise ('one of only 2 of this session's 10
+L-entries', '29 occurrences across 9 files'). Only one of the five was a genuine bare
+measurement. **True prevalence is nearer a fifth of what I reported.**
+**This is L644 exactly, committed while writing about L644's sibling class.** The rule I had just
+authored says a count needs its scope; the detector I built to enforce it produced a count I
+quoted without validating - and the validation is the same hand-read L644 mandates for any new
+instrument. **Authoring a rule about measurement discipline provides no protection against
+violating it with the very instrument built to enforce it.**
+The correction runs in the direction that FLATTERS me - 34 sounded like a serious systemic gap
+and 7 is a modest one - which is precisely why it is stated rather than quietly revised (L559:
+check which way the error points).
+
