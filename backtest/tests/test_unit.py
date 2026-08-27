@@ -26602,17 +26602,74 @@ def test_b2216_identical_exit_pair_is_announced_not_filed_silently():
     REVERSE_SIGNAL_EVALUATORS - so a registered exit was never tested, and the
     dedup filed it as routine. The collapse stays (it is correct for ranking);
     what changes is that it announces itself.
+
+    HARDENED B2273 (S6-B2257 / L684): this pin was three SUBSTRING assertions
+    over the raw source, so a COMMENT mentioning the marker satisfied it - the
+    L582 defect, and it had already PASSED prove-it-can-fail because the
+    mutation I happened to pick removed the string entirely. Substring
+    assertions are prose-satisfiable by construction; structural ones are not.
+
+    Now it asserts STRUCTURE:
+      (a) the announcement is an argument to a real print CALL found by AST -
+          a comment cannot be a Call node;
+      (b) the tool name rides in that same executed announcement, not merely
+          somewhere in the file;
+      (c) the collapse survives in CODE, with comments and docstrings stripped;
+      (d) each arm carries a permanent must-QUIET counterpart, so a version of
+          this check that could not fail is itself caught (L686).
     """
+    import ast
+    import sys as _sys
     from pathlib import Path as _P
-    src = (_P(__file__).resolve().parents[2] / "scripts" / "roster_core.py").read_text(
-        encoding="utf-8")
-    assert "S6-B2216 IDENTICAL-EXIT" in src, (
-        "the collapse must announce each identical pair")
-    assert "audit_exit_delegation" in src, (
-        "the announcement must point at the tool that answers the question")
-    # the collapse itself must survive - this pin is about disclosure, not removal
-    assert "isin(_dupes.keys())" in src, (
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    import source_text
+
+    src = (root / "scripts" / "roster_core.py").read_text(encoding="utf-8")
+    tree = ast.parse(src)
+
+    def printed_strings(node_tree):
+        """Every literal fragment passed to a print() call, joined per call."""
+        out = []
+        for n in ast.walk(node_tree):
+            if not (isinstance(n, ast.Call) and isinstance(n.func, ast.Name)
+                    and n.func.id == "print"):
+                continue
+            parts = []
+            for arg in n.args:
+                for sub in ast.walk(arg):
+                    if isinstance(sub, ast.Constant) and isinstance(sub.value, str):
+                        parts.append(sub.value)
+            out.append(" ".join(parts))
+        return out
+
+    printed = printed_strings(tree)
+
+    # (a) the marker must be ANNOUNCED, i.e. inside an executed print call
+    assert any("S6-B2216 IDENTICAL-EXIT" in p for p in printed), (
+        "the collapse must announce each identical pair from a real print call, "
+        "not from a comment: " + repr(printed[:5]))
+
+    # (b) the announcement must name the tool that answers the question
+    assert any("S6-B2216 IDENTICAL-EXIT" in p and "audit_exit_delegation" in p
+               for p in printed), (
+        "the announcement itself must point at audit_exit_delegation, so the "
+        "reader is told what to run")
+
+    # (c) the ranking-side collapse must survive, in CODE not in prose
+    code = source_text.code_only(root / "scripts" / "roster_core.py")
+    assert "isin(_dupes.keys())" in code, (
         "the ranking-side collapse must remain; only the silence changes")
+
+    # (d) permanent must-QUIET arms. Without these, a check that can never fail
+    # passes every must-FIRE case ever written for it (L686).
+    gutted = ast.parse(src.replace("S6-B2216 IDENTICAL-EXIT", "xx"))
+    assert not any("S6-B2216 IDENTICAL-EXIT" in p
+                   for p in printed_strings(gutted)), (
+        "arm (a) passes even with the announcement gone - it asserts nothing")
+    assert "isin(_dupes.keys())" not in code.replace("isin(_dupes.keys())", ""), (
+        "arm (c) passes even with the collapse gone - it asserts nothing")
 
 def test_b2260_expected_events_refuses_the_run_that_measured_nothing():
     """S6-B2260 (L685): a probe that GENERATES its own events must expect several.
