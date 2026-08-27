@@ -15882,6 +15882,17 @@ INVOKES the subject (probe_pool_spawn, w.check, a.audit) or reads it through ast
 the target file cannot reach them. **The discriminator is not care taken - it is whether the
 assertion touches CODE or touches TEXT.**
 
+**RESOLVED B2273 (S6-B2257), and the resolution is part of the lesson.** The weak pin this entry
+describes - `test_b2216_identical` - is now STRUCTURAL rather than substring: it locates the marker
+as an argument to a real `print` CALL by AST walk, requires the tool name to ride in that SAME
+executed announcement, checks the collapse survives in code with comments stripped (reusing
+`source_text.code_only` rather than a second stripper, per L593), and carries two PERMANENT
+must-QUIET arms so a version that could not fail is itself caught.
+**Proven against the exact case the old pin accepted, not against a convenient mutation:** moving
+the marker OUT of the print and INTO a comment leaves it present in the raw text - the old
+assertion passes - while the AST scan finds ZERO printed occurrences. **That is the difference this
+entry is about**, demonstrated rather than asserted: the ASSERTION KIND is checkable, so hardening
+never depended on guessing a good mutation the second time either.
 ## L685
 **I raised the SCALE objection myself, then sized the run below the SIGNAL FLOOR anyway - and
 the two are not the same axis (B2259).**
