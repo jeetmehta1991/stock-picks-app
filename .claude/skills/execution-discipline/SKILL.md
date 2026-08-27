@@ -3131,6 +3131,15 @@ own description; the freeze never reached it.
   identifier with NO structure assumed and read the line it lands on. A zero-hit search and a
   wrong-shaped search exit identically.
 
+- **WHEN A CORRECTED NUMBER KEEPS COMING BACK, FIND THE ARTIFACT THAT RE-SUPPLIES IT (L696).**
+  Four owner corrections failed to remove a 0.333 threshold from my reports because each fixed the
+  sentence, not the source: `postconfig_report.py` defines its own NOISE_FLOOR and prints it under
+  the word **VERDICT** in a step whose deliverable is, by owner ruling, a ranked list with NO gates.
+  A misconception with a generator regenerates. **Before re-resolving to remember a correction, grep
+  for the number and read every definition** - and check the GRAIN it belongs to, since the same
+  constant can be legitimate at one grain (Phase-1B per-cell) and nonsense at another (Step-1
+  admission).
+
 - **AN EVIDENCE LABEL INSIDE BOILERPLATE IS ASSERTED BY DEFAULT (L695).** Any recurring block that
   contains its own provenance claim - "executed this turn", "GREEN", "FULLY LOADED" - emits that
   claim by being reproduced, not by being earned, so it is the one place a fabrication needs no

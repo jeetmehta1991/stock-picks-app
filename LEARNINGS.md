@@ -16258,3 +16258,39 @@ run - LATENT RISK, sound today but the same shape; (3) 'SKILLS INVOKED ... FULLY
 capability claim about my own context, and the one time it was false a gate had to tell me;
 (4) 'NO KILL COMMAND THIS TURN' - verifiable against the turn's own tool calls, SOUND. **1 of 4
 failing, 2 of 4 latent, and all four share the defect that the claim is pre-written.**
+
+## L696
+**I READ A REPORT'S FRAMING AS THE CRITERION, FOUR TIMES, BECAUSE THE REPORT PRINTS THE WORD
+'VERDICT' IN A STEP THAT HAS NO VERDICTS (B2297).**
+The owner corrected me repeatedly that Step-1 admission is min-trades >= 10 plus a RANKED LIST,
+and I kept re-introducing a 0.333 threshold. Traced to code this turn, the fault is not only
+mine:
+- `tighten_breaker_block.py:383` states the rule in its own comment - 'STEP-1 DELIVERABLE - a
+  Sharpe-ranked list with NO gates applied (owner ruling 2026-08-17)' - and `is_ci_lo` is
+  labelled 'the RANKING KEY'. The grader contains NO 0.333 and NO ci_lo comparison at all.
+- In a Step-1 cube the holdout slice is EMPTY BY DESIGN (holdout_n 0 or None on 300 of 300), so
+  `roster_core.evaluate` returns None and every cell is labelled **BELOW_POWER_FLOOR** - including
+  194 cells whose full_period_n is 11..85, comfortably above the floor of 10. **The label names a
+  sample-size failure that did not happen.**
+- With no PASS/FAIL available, `postconfig_report.py` substitutes its own NOISE_FLOOR = 0.333 and
+  emits '**VERDICT:** best cell is_ci_lo ... BELOW the 0.333 selection-noise yardstick'.
+**A yardstick printed under the word VERDICT becomes the criterion for whoever reads the report
+next - and the reader was me, at every landing.** The 0.333 is real but belongs to a DIFFERENT
+grain: it is the Phase-1B per-cell selection-noise floor (B2009), defined in
+`build_phase_1b_roster.py`, not a Step-1 admission bar.
+**Rule: when a number keeps reappearing after correction, do not re-resolve to correct it - find
+the ARTIFACT that re-supplies it.** A misconception with a generator will regenerate; four
+corrections failed because each fixed the sentence, not the source.
+Compliance failure against CHECKLIST item 271 (re-derive before citing) and item 182 (a verdict
+must name its denominator - here the verdict named a floor from another grain entirely).
+Mechanism: the DEFECTS are ticketed and fixable (S6-B2298 mislabel, S6-B2299 the VERDICT wording),
+so this is NOT judgment-only; the durable fix is in those two artifacts, and the LEARNINGS half is
+only the reading habit.
+**Retroactive sweep (#237), what was scanned and found:** every occurrence of 0.333 in the repo's
+code - 10 hits across 6 files. `build_phase_1b_roster.py` (SELECTION_NOISE_FLOOR, the CORRECT
+home, Phase-1B grain) and `measure_family_pooled_noise_floor.py` (measuring it, correct) are
+SOUND. `postconfig_report.py` and `postconfig_doc.py` each define NOISE_FLOOR = 0.333 and print it
+as a Step-1 VERDICT - **2 of 6 files are the defect**. `test_batch756` and `test_unit.py:26000`
+are test fixtures, correct. **And CLAUDE.md line 19 carries 'Floor 0.333 (B2009)' inside the
+PHASE 1B ROSTER banner with no statement that it is Phase-1B-grain only** - a third propagation
+path, ticketed with the others.
