@@ -5306,6 +5306,17 @@ the runner, and have the runner invoke it at the same moment it announces comple
 *Enforced by:* scripts/postconfig_report.py invoked from run_wave.py at arm completion,
 pinned by test_b2198_battery_result_is_rendered_not_only_written (both directions).
 
+### #286 - FIND THE BRANCH THAT EMITS A STRING BEFORE FILING IT AS WRONG (B2266 / L688)
+
+A message's audience is not everyone who sees the tool fire - it is whoever reached the line that
+prints it, and those differ exactly when the emitter sits behind a branch. Advice text is
+branch-specific by nature, so judging it on the string alone manufactures defects out of accurate
+parts. MEASURED: a gate's *'create .stop_exempt'* line was drafted as misleading advice on a
+correct reading of the control flow; the line is emitted only from `_main_legacy`, the one path
+where the hatch works. Locate the enclosing function first - one command. Sibling of #276b, which
+asks the same path question about injection seams rather than about text.
+JUDGMENT-ONLY for detection (the artifact is identical whether or not the branch was checked);
+durability via this item and the L688 SKILL.md bullet.
 ### #285 - A LOCKED FORMAT IS PRINTED, NEVER RETYPED (B2199 / L652)
 
 When an artifact's format is declared LOCKED, every presentation of it comes from the

@@ -16005,3 +16005,33 @@ zero ledger entries was checked against 90 entries present (positive control). T
 grep carried an explicit proven positive control. The smoke's trades_so_far: 0 was cross-checked by
 the absence of a cube. **3 of 4 carried a control; the one that did not is this one - and it is the
 only one where the instrument was written in the same breath as the question.**
+
+### L688
+**A STRING'S CORRECTNESS IS A PROPERTY OF THE PATH THAT EMITS IT (B2266).**
+MEASURED: I had a defect drafted and nearly filed - the turn gate prints *'Intentional
+work-in-progress? create .stop_exempt'*, and I had just proven by reading the control flow that the
+sentinel CANNOT release a scan-gate block. Misleading advice, apparently. **One awk for the
+enclosing `def` killed it**: line 4270 sits inside `_main_legacy` (which begins at 4148), the only
+path where the hatch works. The message is correct everywhere it is actually printed.
+**Why the string alone is not enough to judge.** A message read out of context carries an implied
+audience of *everyone who sees the gate fire*; its real audience is *whoever reached the line that
+prints it*. Those two differ exactly when the emitter is behind a branch - which is the normal case
+for advice text, because advice is branch-specific by nature.
+**Rule: before filing an emitted string as wrong, find the branch that emits it and ask whether the
+claim is true THERE.** The probe is one command - locate the enclosing function - and it is the
+same question `#276b` asks about injection seams, arriving at TEXT rather than at a test seam.
+**The near-miss matters more than the catch.** Nothing in the workflow would have stopped this: the
+draft was evidenced, the control-flow reading behind it was correct, and the conclusion followed
+from a true premise about a DIFFERENT path. **A manufactured finding assembled from accurate parts
+passes every evidence check there is** - `#136`'s anti-theater rule names the cost, and the only
+guard is asking which branch you are standing in.
+Compliance failure against none - the check that caught it is the one I ran. What is new is the
+trigger: **file a message as a defect only after locating its emitter.**
+Mechanism: **JUDGMENT-ONLY for detection** - no scan can tell whether a critique of a string was
+written with its branch in view, because the artifact is identical either way. Durability held by
+`#286` and the SKILL.md bullet under the anchor-doc citation freeze.
+**Retroactive sweep (CHECKLIST #237):** the three strings I judged this session. The gate's own
+kill-message was read as a claim about MY turn and is one - session-scoped, confirmed by reading
+the collector. The doc's *'(91 entries)'* was judged against the ledger and the emitter was checked
+(`postconfig_doc.py:245-262`). This one was judged on the string alone. **1 of 3 skipped the
+emitter check, and it is the one that produced a wrong draft.**

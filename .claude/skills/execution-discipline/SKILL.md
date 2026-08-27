@@ -3085,6 +3085,15 @@ own description; the freeze never reached it.
   the same debt. Address a read with file:line, a measurement with its re-runnable command, an
   enumeration with its query. **A build leaves an artifact someone trips over; a read leaves
   nothing** - and a finding nobody can locate is one nobody can correct.
+- **FIND THE BRANCH THAT EMITS A STRING BEFORE FILING IT AS WRONG (L688).** A message's audience
+  is not everyone who sees the tool fire - it is whoever reached the line that prints it, and those
+  differ exactly when the emitter sits behind a branch. **Advice text is branch-specific by nature.**
+  MEASURED: I had a defect drafted against a gate's *"create .stop_exempt"* line, on a CORRECT
+  reading that the hatch cannot release a scan-gate block; one command for the enclosing `def`
+  showed the line is emitted only from `_main_legacy`, the one path where it works. **A manufactured
+  finding assembled from accurate parts passes every evidence check there is** - locate the emitter
+  first. Sibling of #276b, asking the same path question about TEXT rather than a test seam.
+
 - **A ZERO FROM A PATTERN YOU WROTE THIS TURN IS NOT A RESULT (L687).** L644 covers a new
   detector's first number; its instance was NON-ZERO. **Zero gets the least scrutiny because it does
   not look like an answer - it looks like nothing to see**, and the natural next sentence is "clean,
