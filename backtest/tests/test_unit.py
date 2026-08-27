@@ -27107,3 +27107,59 @@ def test_b2286_every_scan_cited_as_a_live_mechanism_exists():
         ' neither test-name fragments nor marked RETIRED: '
         + '; '.join('%s -> %s' % (n, c) for n, c in phantoms))
 
+def test_b2300_step1_has_no_sharpe_ci_lo_gate():
+    """S6-B2300 (L696): Step-1 admission is min-trades + a RANKED LIST, no ci_lo gate.
+
+    OWNER RULING 2026-08-17 (B1608), stated in the grader's own comment:
+    'STEP-1 DELIVERABLE - a Sharpe-ranked list with NO gates applied'. is_ci_lo is
+    the RANKING KEY (B2010 D4), never a threshold.
+
+    WHY THIS PIN EXISTS. The owner corrected a 0.333 threshold out of my reports
+    FOUR times and it kept returning, because postconfig_report.py defines its own
+    NOISE_FLOOR and prints it under the word VERDICT. Each correction fixed a
+    sentence; none touched a generator. This pin fixes the criterion in code so the
+    drift is caught by the suite instead of by the owner.
+
+    SCOPE (#182), stated because it is narrow: this asserts no SHARPE ci_lo
+    THRESHOLD in the step-1/2 grading path. It deliberately permits:
+      - ci_lo as a sorted/ranked FIELD (that is the design), and
+      - the two WIN-RATE ci_lo comparisons in backtest/results/metrics.py, which
+        are a different statistic on a gate the owner demoted to diagnostic
+        (B1387) - measured at authoring: 2 of 932 .py files, both there.
+    """
+    import re
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+
+    graders = ['tighten_breaker_block.py', 'roster_core.py', 'run_postconfig.py']
+    seen = 0
+    for name in graders:
+        p = root / 'scripts' / name
+        if not p.exists():
+            continue
+        seen += 1
+        src = p.read_text(encoding='utf-8')
+        # a THRESHOLD is a comparison of a ci_lo-ish name against a number
+        bad = re.findall(r'\bis_ci_lo\s*(?:>=|<=|>|<)\s*[0-9]', src)
+        bad += re.findall(r'\bci_lo\s*(?:>=|<=|>|<)\s*[0-9]', src)
+        assert not bad, (
+            '%s introduces a Sharpe ci_lo THRESHOLD: %r. Step-1 admission is'
+            ' min-trades plus a ranked list (owner ruling 2026-08-17 / B1608);'
+            ' is_ci_lo is the ranking key, not a gate.' % (name, bad))
+        assert '0.333' not in src, (
+            '%s contains 0.333. That constant is the PHASE-1B per-cell'
+            ' selection-noise floor (B2009, build_phase_1b_roster.py), a'
+            ' different grain from Step-1 admission.' % name)
+    # positive control: if the files vanish or are renamed, fail loudly rather
+    # than pass over an empty loop (L613 - a check over nothing is clean).
+    assert seen >= 2, (
+        'only %d of the %d grading-path files were found - this test would'
+        ' otherwise pass by checking nothing' % (seen, len(graders)))
+
+    # the must-QUIET half (L686): the ranking-key DESIGN must remain legal.
+    # If this fired, the pin would be demanding the removal of ci_lo itself.
+    tb = (root / 'scripts' / 'tighten_breaker_block.py').read_text(encoding='utf-8')
+    assert 'is_ci_lo' in tb, (
+        'is_ci_lo vanished from the grader - it is the RANKING KEY (B2010 D4)'
+        ' and must remain present as a field')
+
