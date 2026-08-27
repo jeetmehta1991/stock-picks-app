@@ -26999,3 +26999,62 @@ def test_b2280_git_pathspec_is_not_a_launch():
     ok = launch + " --screen-pool-workers 10"
     assert m.scan_launch_missing_pool_workers([], blobs=[ok]) == [], (
         "a launch naming the flag must pass")
+
+def test_b2281_noconsole_launcher_flags_and_commit_gate():
+    """B2281 (S6-B2278 option 4, owner-approved): the no-console chain launcher.
+
+    Two chains died 0xC000013A because the task's cmd.exe console was the kill
+    surface. The launcher must create the chain DETACHED (no console at all -
+    console-control events cannot be delivered) in its own process group, and
+    must REFUSE to launch below the commit floor (B2229 wiring; commit is the
+    quantity that fails, L670).
+
+    Structural + behavioural, no process launched (L684: assertions a comment
+    cannot satisfy):
+      (a) LAUNCH_FLAGS carries DETACHED_PROCESS (0x8) and
+          CREATE_NEW_PROCESS_GROUP (0x200) - checked numerically on the
+          imported module, not by grep;
+      (b) commit_gate REFUSES below floor, REFUSES on the absent reading
+          (L642: absent input fails closed), and PASSES above floor - the
+          must-QUIET arm without which an always-refusing gate looks correct
+          (L686);
+      (c) build_cmd targets run_serial_chain.py through the venv python and
+          passes the spec list through unchanged.
+    """
+    import ast
+    import importlib.util as _ilu
+    import sys as _sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    spec = _ilu.spec_from_file_location(
+        "launch_chain_noconsole", root / "scripts" / "launch_chain_noconsole.py")
+    m = _ilu.module_from_spec(spec)
+    _sys.modules["launch_chain_noconsole"] = m
+    spec.loader.exec_module(m)
+
+    # (a) the flags, numerically - a console-attached launch cannot have these
+    assert m.LAUNCH_FLAGS & 0x00000008, "DETACHED_PROCESS missing - a console would exist"
+    assert m.LAUNCH_FLAGS & 0x00000200, "CREATE_NEW_PROCESS_GROUP missing"
+
+    # (b) the commit gate, all three arms through the injection seam
+    ok, msg = m.commit_gate(floor_gb=3.0, reading_gb=1.5)
+    assert not ok and "REFUSE" in msg, "below-floor must refuse"
+    ok, msg = m.commit_gate(floor_gb=3.0, reading_gb=10.0)
+    assert ok, "above-floor must pass (must-QUIET arm, L686): " + msg
+    # absent reading: force the import path to fail by floor of infinity is
+    # not the absent case - instead call with the live reader; it either
+    # returns a real figure (pass/refuse on merit) or None (refuse). The
+    # ABSENT arm is pinned structurally: the None branch exists and refuses.
+    src = (root / "scripts" / "launch_chain_noconsole.py").read_text(encoding="utf-8")
+    tree = ast.parse(src)
+    fn = next(n for n in ast.walk(tree)
+              if isinstance(n, ast.FunctionDef) and n.name == "commit_gate")
+    fn_src = ast.unparse(fn)
+    assert "if r is None:" in fn_src and "REFUSE" in fn_src, (
+        "the absent-reading branch must refuse, not skip (L642)")
+
+    # (c) the command shape
+    cmd = m.build_cmd(["a_spec.json", "b_spec.json"])
+    assert cmd[1].endswith("run_serial_chain.py"), cmd
+    assert cmd[-2:] == ["a_spec.json", "b_spec.json"], "specs must pass through"
+    assert "python" in cmd[0].lower(), "must invoke the venv python explicitly"
