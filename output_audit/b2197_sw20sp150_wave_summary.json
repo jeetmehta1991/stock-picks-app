@@ -1,0 +1,37 @@
+{
+ "spec": {
+  "wave": "b2197_sw20sp150",
+  "tickers_file": "output_audit/_sweep_200.txt",
+  "strategy_subset": "output_audit/_subset_one.txt",
+  "window": {
+   "start": "2024-05-05",
+   "end": "2025-05-05"
+  },
+  "leg_cap_hours": 4.5,
+  "max_legs": 3,
+  "step1_cube": true,
+  "pool_workers": 10,
+  "allow_engine_drift": true,
+  "arms": [
+   {
+    "tag": "sw20sp150",
+    "env": {
+     "SMC_SWING_LENGTH": "20",
+     "STRAT_EMA_SPAN": "150"
+    }
+   }
+  ]
+ },
+ "results": [
+  {
+   "arm": "sw20sp150",
+   "status": "COMPLETE",
+   "legs": 1,
+   "boundary_drops": [],
+   "measured_rates": [],
+   "cube_rows": 2640,
+   "elapsed_s": 4803,
+   "postconfig_exit": 0
+  }
+ ]
+}

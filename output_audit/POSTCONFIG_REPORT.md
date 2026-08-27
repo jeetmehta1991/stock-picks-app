@@ -6,14 +6,15 @@ REGENERATED WHOLE at every config landing. Replaces the per-config report cards 
 
 ## How much confidence these checks earn
 
-**Across the entire ledger (83 entries), 172 named checks have run and 0 have ever returned non-PASS.**
+**Across the entire ledger (84 entries), 188 named checks have run and 0 have ever returned non-PASS.**
 
 **Read that as a caution, not a reassurance.** A check that has never failed has not been shown capable of failing, so an all-green battery is WEAK evidence. The checks that would carry real weight are ones with a demonstrated failure mode - a deliberately corrupted cube proving they trip. Until then, green means 'nothing obviously wrong was detected', never 'this cube is correct'.
 
-## Index - 10 graded config(s), newest first
+## Index - 11 graded config(s), newest first
 
 | config | best is_ci_lo | vs floor | fires | starved | steps run |
 |---|---|---|---|---|---|
+| output_b2197_sw20sp150_sw20sp150 | -0.114 | below | 80 | 77/300 | 5/9 |
 | output_b2197_sw20sp100_sw20sp100 | -0.036 | below | 66 | 77/300 | 5/9 |
 | output_b2197_sw20sp50_sw20sp50 | 0.025 | below | 62 | 77/300 | 5/9 |
 | output_b2197_sw20sp21_sw20sp21 | 0.107 | below | 88 | 77/300 | 5/9 |
@@ -26,6 +27,67 @@ REGENERATED WHOLE at every config landing. Replaces the per-config report cards 
 | output_b2174_sw20_sw20 | -0.196 | below | 79 | 82/300 | 3/9 |
 
 ## Per-config findings
+
+### output_b2197_sw20sp150_sw20sp150
+
+**Configuration:** P1_swing_length=20, P6_span=150
+
+**VERDICT: best cell is_ci_lo -0.114 BELOW the 0.333 selection-noise yardstick** (is_sharpe 0.357, 80 fires, exit hybrid_50pct_target). Its height is explainable by the search itself.
+
+**Completeness: 5 of 9 steps ran.** The 4 judgment steps (5_adversarial_lens_review, 6_post_fix_recheck, 7_implement_in_engine, 8_verdict_with_denominators) are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
+
+**Is this the right data?**
+
+| check | measured | outcome | what would have been alarming |
+|---|---|---|---|
+| cube produced rows | 2640 rows | PASS | zero rows = the config ran and emitted nothing |
+| exactly one strategy in the cube | 1 strategies | PASS | more than 1 = the strategy-subset filter leaked |
+| mega-caps present in the universe | TSLA, AAPL | PASS | absent = the abandoned A-C chunk universe (L445) |
+| universe artifact verified | exit 0 on output_audit/_sweep_200.txt (verifier is non-block | PASS | FAIL = the ticker list is not what was intended |
+| cube content hash | 7e9b5bc0140ae6f2 | PASS | a repeat across configs = two configs produced identical cubes, so one knob did nothing |
+| entry-date span actually simulated | entries 2024-05-06 .. 2025-04-22 | PASS | a short span = the run did not cover its window |
+| every entry carries one row per registered exit | cube [24] vs registry-now 24 (a differing single value = an | PASS | a shortfall = exits silently dropped from the cube |
+
+**Did anything leak from the future?**
+
+| check | measured | outcome | what would have been alarming |
+|---|---|---|---|
+| entries at or after the LOCKED holdout start | 0 entries at/after HO_START 2025-05-05 in a STEP-1 cube | PASS | any non-zero = the holdout was contaminated and the run is void |
+| fills that preceded their own entry | 0 fills before entry | PASS | any non-zero = look-ahead in execution |
+| pre-launch receipt matches the run manifest | receipt matches manifest sha dee210fdae5c | PASS | mismatch = this run is not the run that was gated |
+
+**Does the arithmetic reproduce?**
+
+| check | measured | outcome | what would have been alarming |
+|---|---|---|---|
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| engine-side implementation check exit code | exit 0 | PASS | non-zero = the wiring is absent |
+
+**Independent re-derivation of sampled trades (step 4)**
+
+- 50 of 50 sampled trades re-derived to the SAME fire/no-fire decision as the engine; 0 disagreed; 0 execution failures.
+- Sampled with seed 20260816 at this config's own parameters (swing 20, span 150, close_mitigation False, tail_n 20).
+- CAVEAT worth stating: the re-derivation uses the SAME parameter set as the engine, so it catches wiring and data faults, NOT a wrong parameter choice. Full per-trade rows: output_audit/output_b2197_sw20sp150_sw20sp150_spot_check.json.
+
+**Is the sample large enough to mean anything? (step 2 funnel)**
+
+- 300 parameter combinations enumerated.
+- **77 (26%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
+- 223 graded and ranked; 18 carried across 92 distinct outcome classes after equivalence collapse (combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473).
+
+| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+|---|---|---|---|---|---|---|
+| 1 | -0.114 | 0.357 | 80 | hybrid_50pct_target | 3 | cm=False brk=None age=250 tail=20 |
+| 2 | -0.117 | 0.349 | 77 | hybrid_50pct_target | 1 | cm=False brk=None age=None tail=2 |
+| 3 | -0.12 | 0.31 | 95 | hybrid_50pct_target | 1 | cm=False brk=0.05 age=None tail=5 |
+| 4 | -0.123 | 0.35 | 79 | hybrid_50pct_target | 1 | cm=False brk=None age=250 tail=3 |
+| 5 | -0.128 | 0.366 | 68 | hybrid_50pct_target | 1 | cm=False brk=0.05 age=None tail=2 |
+
+_Top 5 of the ranking; the full list is in output_audit/output_b2197_sw20sp150_sw20sp150_grid_auto.json._
 
 ### output_b2197_sw20sp100_sw20sp100
 
