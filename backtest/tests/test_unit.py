@@ -26913,6 +26913,22 @@ def test_b2276_phase5_mechanism_member_accepts_a_named_enforcer():
 
     MEMBER = "mechanism for the CLASS (scan_/pin test) or explicit JUDGMENT-ONLY"
 
+    def member_missing(out):
+        """True when MEMBER is named in the MISSING segment of a violation.
+
+        B2280b: the first version checked `MEMBER in v` against the whole
+        string - and the violation text embeds every member name inside its
+        "(satisfied: ...)" clause, so a SATISFIED member still matched (the
+        L582 shape: substring against text that quotes the vocabulary). Parse
+        the missing segment only, which also makes the pin independent of the
+        live git state the OTHER members read.
+        """
+        for v in out:
+            miss = v.split("NOT satisfied - ", 1)[-1].split("(satisfied:", 1)[0]
+            if MEMBER in miss:
+                return True
+        return False
+
     base = ("compliance failure against item 201 - i carried the counts and "
             "my label was wrong. ticket filed. ")
 
@@ -26921,20 +26937,65 @@ def test_b2276_phase5_mechanism_member_accepts_a_named_enforcer():
                    "enforced by scan_ticket_counts_missing, which caught it "
                    "both times.")
     out = m.scan_miss_capture_complete([], text=good, touched=False)
-    assert not any(MEMBER in v for v in out), (
+    assert not member_missing(out), (
         "naming the enforcing gate in an enforcement clause must satisfy "
         "the mechanism member: " + repr(out))
 
     # (b) no enforcer named, no judgment-only, nothing touched -> member fails
     bare = base + "the class needs thought."
     out = m.scan_miss_capture_complete([], text=bare, touched=False)
-    assert any(MEMBER in v for v in out), (
+    assert member_missing(out), (
         "with no mechanism evidence at all the member must still fail")
 
     # (c) mention without enforcement context does not satisfy
     mention = base + ("earlier this session scan_partial_read produced an "
                       "interesting false positive. the class needs thought.")
     out = m.scan_miss_capture_complete([], text=mention, touched=False)
-    assert any(MEMBER in v for v in out), (
+    assert member_missing(out), (
         "a gate name in an unrelated clause is a mention, not a cited "
         "enforcer (B1738)")
+
+def test_b2280_git_pathspec_is_not_a_launch():
+    """B2280: a runner filename in a git PATHSPEC is data, not an invocation.
+
+    The launch gate fired on `git log --oneline --since=... --
+    backtest/run_phase1a.py` - a read-only history query - because `git` was
+    absent from _READER_HEADS. B2028 fixed the grep instance of this class and
+    the sweep stopped at greps (L592). Both arms, verbatim incident first:
+
+      (a) must-QUIET: the exact git log command that fired;
+      (b) must-QUIET: a git commit whose staged paths name the runner;
+      (c) must-FIRE unchanged: a real launch without the flag still fires,
+          so this is a narrowing of the TRIGGER, not of the RULE.
+    """
+    import importlib.util as _ilu
+    import sys as _sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    spec = _ilu.spec_from_file_location(
+        "verify_turn_compliance", root / "scripts" / "verify_turn_compliance.py")
+    m = _ilu.module_from_spec(spec)
+    _sys.modules["verify_turn_compliance"] = m
+    spec.loader.exec_module(m)
+
+    # (a) the verbatim incident - a read-only query naming the runner
+    git_log = ('git log --oneline --since="2026-08-26 00:00" -- '
+               "backtest/engine backtest/signals backtest/run_phase1a.py "
+               "backtest/config.py | head -5")
+    assert m.scan_launch_missing_pool_workers([], blobs=[git_log]) == [], (
+        "a git pathspec naming run_phase1a.py is data, not a launch")
+
+    # (b) the sibling shape - git add/commit touching the runner's path
+    git_add = "git add backtest/run_phase1a.py && git commit -q -F msg.txt"
+    assert m.scan_launch_missing_pool_workers([], blobs=[git_add]) == [], (
+        "staging the runner's file is not launching it")
+
+    # (c) the rule itself is untouched: a real launch still fires
+    launch = ("python backtest/run_phase1a.py --tickers-file t.txt "
+              "--phase 1a-beta --start 2024-05-05 --end 2025-05-05")
+    fired = m.scan_launch_missing_pool_workers([], blobs=[launch])
+    assert fired, "a real launch without the flag must still fire"
+    # and naming the flag stays sufficient
+    ok = launch + " --screen-pool-workers 10"
+    assert m.scan_launch_missing_pool_workers([], blobs=[ok]) == [], (
+        "a launch naming the flag must pass")

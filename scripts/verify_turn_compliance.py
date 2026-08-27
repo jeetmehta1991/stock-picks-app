@@ -3735,8 +3735,15 @@ def _launch_blobs(entries) -> list[str]:
 # backtest/run_phase1a.py` carries the marker as a FILE ARGUMENT and fired the
 # gate three times in one turn. A known read-only head cannot launch anything;
 # any other head (python, a wrapper script, an exe) still counts, fail-closed.
+# B2280: `git` added after a `git log -- ... run_phase1a.py` pathspec fired
+# the launch gate - git never executes a python runner; its arguments are
+# always data. B2028 fixed the grep instance of this exact class and the
+# sweep stopped at greps (L592: the unit of the change was smaller than the
+# unit of the defect - the class is "commands whose arguments are paths,
+# never invocations").
 _READER_HEADS = {"grep", "rg", "sed", "cat", "head", "tail", "ls", "echo",
-                 "wc", "awk", "cut", "sort", "uniq", "find", "diff", "stat"}
+                 "wc", "awk", "cut", "sort", "uniq", "find", "diff", "stat",
+                 "git"}
 
 
 def _segment_is_launch(cmd: str) -> bool:
