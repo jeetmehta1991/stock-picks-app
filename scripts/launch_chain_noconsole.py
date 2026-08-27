@@ -95,12 +95,29 @@ def launch(specs: list[str]) -> int:
         return 2
     log = open(LOG, "ab")
     env = dict(__import__("os").environ, PYTHONPATH=".")
-    proc = subprocess.Popen(
-        build_cmd(specs), cwd=str(ROOT), env=env,
-        stdout=log, stderr=subprocess.STDOUT,
-        creationflags=LAUNCH_FLAGS,
-        close_fds=False,
-    )
+    # B2281b: DETACHED removes the CONSOLE, not JOB membership - a launch
+    # from a sandboxed tool shell died silently mid-load with no WER event,
+    # no traceback and 10.8 GB free commit, which is the external-kill
+    # signature of a job-object close. Attempt breakaway; a job that denies
+    # it raises, and the fallback keeps the launch usable from contexts
+    # with no job at all.
+    CREATE_BREAKAWAY_FROM_JOB = 0x01000000
+    try:
+        proc = subprocess.Popen(
+            build_cmd(specs), cwd=str(ROOT), env=env,
+            stdout=log, stderr=subprocess.STDOUT,
+            creationflags=LAUNCH_FLAGS | CREATE_BREAKAWAY_FROM_JOB,
+            close_fds=False,
+        )
+        print("[B2281b] breakaway from job: GRANTED")
+    except OSError as exc:
+        print(f"[B2281b] breakaway refused ({exc}); launching inside the job")
+        proc = subprocess.Popen(
+            build_cmd(specs), cwd=str(ROOT), env=env,
+            stdout=log, stderr=subprocess.STDOUT,
+            creationflags=LAUNCH_FLAGS,
+            close_fds=False,
+        )
     PID_FILE.write_text(json.dumps({
         "pid": proc.pid,
         "launched_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
