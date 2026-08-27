@@ -14908,3 +14908,28 @@ already named in this entry. The only other dict-write hits are the gate boolean
 and the local scoring keys at 373-375, which the caller DOES consume (they become the ranking
 and the gates map). No fourth droppable disclosure exists in that file; the defect is the
 three fields, not a family of them.
+
+## L660
+**RECURRENCE of L498's class: I reported a run's state from the CHAIN LOG while the cube sat
+finished on disk (B2218).**
+The engine writes its full output set MINUTES before run_wave writes the wave summary, and the
+chain log still shows the old LAUNCH line for that whole window. Reading the log, I told the
+owner across several turns that config 8 was 'still running' and 'should have landed', while
+its directory already held a complete output set at 00:50Z. The #223 gate caught it within one
+turn - the mechanism worked; my reading did not.
+PRIOR ART EXISTS AND I FOUND IT BY SEARCH, not by memory: grep of LEARNINGS.md for '#223' and
+'finished cube owes' returns L498 at line 9055, which already states that a finished cube owes
+all nine steps a terminal disposition and that silence is not a disposition. So this is a
+documented lesson recurring, which is a worse result than a novel miss and is why it earns its
+own entry rather than a footnote on L498.
+**Rule: when a landing is EXPECTED, read the CUBE DIRECTORY, not the chain log.** The log is an
+event record written by the orchestrator at its own pace; the directory is the work's own
+output. Between engine-finish and summary-write they disagree, and the log is the stale one.
+Full-population check that settled the state: scripts/verify_postconfig_complete.py scanned 75
+cubes and reported 0 incomplete with 567 steps skipped-with-a-reason - the whole set, not a
+sample.
+Compliance failure against CHECKLIST #223 - no new item; #223 names the class and its gate
+fired correctly. Mechanism: the #223 Stop-hook gate is the enforcement; knowing WHEN to look at
+the directory instead of the log is JUDGMENT-ONLY, since no scan can read intent to check.
+Sibling of L656 (a heartbeat written by a watchdog proves the watchdog): both are cases of
+reading a SECONDARY record and believing it about the PRIMARY work.

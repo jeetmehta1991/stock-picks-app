@@ -2963,6 +2963,20 @@ was built for.
   deliberately produced not surviving the reporting boundary. Each was invisible until
   someone asked a question the artifact could not answer.
 
+## WHEN A LANDING IS EXPECTED, READ THE DIRECTORY NOT THE LOG (B2218 - L660, recurrence of L498)
+
+**MEASURED: the engine wrote its full output set at 00:50Z; the chain log still showed the
+old LAUNCH line, and I told the owner "still running" for several turns.** The #223 gate
+caught it in one turn - the mechanism worked, the reading did not.
+
+- The **log is an event record written by the orchestrator at its own pace**; the
+  **directory is the work's own output**. Between engine-finish and summary-write they
+  disagree, and the log is the stale one.
+- Sibling of L656: both are **reading a SECONDARY record and believing it about the PRIMARY
+  work**.
+- A documented lesson RECURRING is worse than a novel miss - search LEARNINGS before
+  calling anything new.
+
 ## Phase 6 — END-OF-TURN SWEEP (CHECKLIST #67 — HARD RULE, no exceptions)
 
 **TICKET COUNTS BY GROUP - EVERY TURN (B1803 - CHECKLIST #274, owner directive 2026-08-21).**
