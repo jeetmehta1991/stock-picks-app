@@ -3005,6 +3005,19 @@ results.
 - JUDGMENT-ONLY: no scan detects a self-serving frame. The Contrarian lens is the guard,
   which is why a council without one is not a council.
 
+## CHECK THE EFFECT IN THE ROWS WITH ENOUGH DATA (B2226 - L663, compliance failure vs #115)
+
+**MEASURED: three spans returned an identical top cell at the swing where samples were
+THINNEST (12 fires), and I proposed a band change on it. The same three spans at the
+well-sampled swing did NOT collapse.**
+
+- **A degeneracy measured only where n is smallest is a SAMPLE-SIZE hypothesis wearing a
+  parameter hypothesis's clothes.** Check the rows with enough data to show the effect.
+- **Watch the metric too**: counting rows that agree on value AND count treats two starved
+  cells as agreeing - agreement about nothing.
+- **Write the objection BEFORE the recommendation.** Here it did not decorate the answer,
+  it reversed it.
+
 ## Phase 6 — END-OF-TURN SWEEP (CHECKLIST #67 — HARD RULE, no exceptions)
 
 **TICKET COUNTS BY GROUP - EVERY TURN (B1803 - CHECKLIST #274, owner directive 2026-08-21).**

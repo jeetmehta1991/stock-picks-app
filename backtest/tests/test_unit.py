@@ -25018,6 +25018,9 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         ("STATE THE READING THAT COSTS YOU MOST, FIRST",
          "L662: when reporting your own work, write the sentence a hostile "
          "reviewer would write and lead with it if it is truer"),
+        ("CHECK THE EFFECT IN THE ROWS WITH ENOUGH DATA",
+         "L663: a degeneracy seen only where n is smallest is a sample-size "
+         "hypothesis wearing a parameter hypothesis's clothes"),
     ):
         if frag not in discipline_text:
             missing.append(f"execution-discipline lost [{why}]: {frag!r}")
@@ -25040,7 +25043,7 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     assert _b2123_skill_rules_present(fable, disc) == []
     # #226 prove-it-can-fail: a gutted file must be REPORTED, not pass
     gutted = _b2123_skill_rules_present("# The Fable Method\n", "# Discipline\n")
-    assert len(gutted) == 53, gutted
+    assert len(gutted) == 54, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 

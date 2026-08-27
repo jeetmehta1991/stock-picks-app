@@ -14995,3 +14995,34 @@ the easiest possible test to pass (corrected in-turn when the delegation class s
 'the process working' here. One instance ran the other way and stands: the config-8 landing was
 reported with its resume-seam caveat before its clean result. So 2 self-serving frames found in
 this session, both corrected, 1 counter-example.
+
+## L663
+**I proposed a BAND CHANGE on evidence from the one row where the samples were thinnest
+(B2226).**
+Three spans at swing 30 returned an identical top cell and shared 179-243 of 300 rows, and I
+recommended collapsing the span band's middle - citing the span-21 precedent. The turn gate
+demanded the written objection, and writing it changed the recommendation:
+(a) THE SAME THREE SPANS AT SWING 20 DID NOT COLLAPSE - they produced +0.107, +0.025 and
+-0.036, visibly distinct. So the collapse may be a property of THIN SAMPLES rather than of the
+span parameter: at 12 fires, many settings select the same twelve trades and identical top
+cells follow trivially.
+(b) MY OVERLAP METRIC FLATTERED THE FINDING - counting rows that share value AND trade count
+counts two starved cells as agreeing, and roughly a quarter of rows in any config are starved,
+so part of that overlap is agreement about NOTHING.
+(c) THE PRECEDENT WAS WEAKER THAN I IMPLIED - span 20 vs 21 were ADJACENT and shared 275 of
+300; these span a 2.5x-5x range and share less. I equated them in one sentence.
+**Rule: before proposing a parameter or band change, check whether the effect appears in the
+rows with ENOUGH DATA to show it, not only in the row where it is cheapest to see.** A
+degeneracy measured only where n is smallest is a sample-size hypothesis wearing a parameter
+hypothesis's clothes.
+Compliance failure against CHECKLIST #115 (a council enumerates AND recommends) read together
+with the repo's own rule that a council without a Contrarian lens is not a council - I gave the
+recommendation without the objection, and the objection was load-bearing. No new item.
+Mechanism: the turn gate's council-objection scan caught it and is the standing enforcement;
+noticing that an effect sits only in the low-n row is JUDGMENT-ONLY.
+**Retroactive sweep (CHECKLIST #237), what was scanned and found:** every parameter-level claim
+I have made this program was re-checked for the same low-n-only shape. The span-21 drop rests
+on swing-20 data at n=88 - the row with the LARGEST samples, so it is sound. The swing-30
+above-floor pattern is explicitly labelled thin (11-22 fires) in every report that carries it.
+This band proposal was the only claim resting on the thin row alone. 1 of 3 parameter claims
+affected, now deferred behind the swing-5 and swing-10 rows already queued in the chain.
