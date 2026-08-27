@@ -3085,6 +3085,16 @@ own description; the freeze never reached it.
   the same debt. Address a read with file:line, a measurement with its re-runnable command, an
   enumeration with its query. **A build leaves an artifact someone trips over; a read leaves
   nothing** - and a finding nobody can locate is one nobody can correct.
+- **COSTING A WAIT USES OBSERVED RELIABILITY, NOT THE NOMINAL SCHEDULE (L681).** MEASURED: I told
+  the owner that waiting for a natural pyramid window meant *18 configs x 1.7h, so roughly 24
+  hours* - on a chain with FOUR recorded deaths. The window arrived in under two hours, because the
+  chain died again. **The nominal figure is the duration if nothing goes wrong; the honest figure
+  is a distribution whose left tail is "it breaks and you get the window for free."** And note what
+  the framing did: presented as *pause deliberately or lose 24 hours*, the decision looks like a
+  trade against program time; presented honestly it may not be worth escalating at all. Sibling of
+  L680 one turn earlier - both reason from how the system is SUPPOSED to behave while holding
+  measurements of how it ACTUALLY behaves.
+
 - **A PRIORITY ORDERING IS AN ASSERTED CONSEQUENCE (L680).** MEASURED: I ranked the elevated-launch
   ticket LEAST urgent because *capacity, not privilege, is what stops the program* - and ninety
   minutes later a worker-spawn `PermissionError: [WinError 5]` killed the whole chain. **An

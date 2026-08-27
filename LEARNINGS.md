@@ -15727,3 +15727,40 @@ program result) - sound, it was the largest open question and remains so. It put
 this-box - the owner overruled that and was right. It put S6-B2203b LAST - wrong, and fatally.
 **2 of 4 rankings were wrong and both errors were about the SAME ticket class: things I had
 judged by the constraint I could see rather than the one I had not tested.**
+
+## L681
+**I costed 'wait for a window' at 24 hours by assuming the chain would RUN TO COMPLETION - on a
+chain with four recorded deaths (B2251).**
+The pyramid-window council offered the owner three options, and option (c) was 'defer all code
+until the 30-config chain completes - roughly 18 configs at 1.7h, so on the order of 24 hours'.
+That arithmetic is right and its premise was never examined. **The chain had died four times
+already in this program.** A fourth-plus death was not a remote possibility; it was the modal
+recent behaviour. The window arrived in under two hours, from the chain dying, and the pyramid
+then ran clean in 5 minutes 49 seconds with 27.3 GB of commit available.
+**Rule: when costing a WAIT, the estimate must use the observed reliability of the thing being
+waited on, not its nominal schedule.** '18 configs times 1.7 hours' is the duration if nothing
+goes wrong; the honest figure is a distribution whose left tail is 'it dies and you get the
+window for free'. I had every input needed - the death count was in my own tickets - and I
+multiplied the nominal instead.
+**Why this matters beyond arithmetic: the framing changed what the owner was asked.** Presented
+as 'pause deliberately or wait 24 hours', the decision looks like a trade against program time.
+Presented honestly - 'the chain dies about daily; a window is likely within hours either way' -
+the question becomes much smaller, and possibly not worth escalating at all.
+**Sibling of L680, one turn apart, and the same root.** There I ranked privilege last because
+capacity was the visible constraint; here I costed a wait on the nominal schedule because
+completion was the nominal behaviour. **Both times I reasoned from how the system is SUPPOSED to
+behave while holding measurements of how it ACTUALLY behaves.**
+Compliance failure against CHECKLIST item 278 - an asserted consequence is a claim, compute it.
+No new item; this is 278's second instance in two turns, which is itself the finding.
+Mechanism: JUDGMENT-ONLY for detection - no scan can tell that a duration estimate assumed
+reliability, because the arithmetic is correct and only the premise is unstated. The durable
+half is the reliability figure itself: the chain's death count now sits in S6-B2250 and this
+entry, so a future wait-cost estimate has the number to hand rather than needing to recall it.
+Both halves stated separately per L548.
+**Retroactive sweep (CHECKLIST #237), what was scanned and found:** re-read every duration or
+wait estimate I gave the owner this session. 'Config 17 lands in ~24 minutes' was computed from
+the live heartbeat rate and was accurate - sound. 'A restart re-runs sw10sp20 at ~1.7h' uses the
+measured per-config elapsed from 12 landed configs - sound. 'Roughly 24 hours to chain
+completion' assumed zero further deaths - this instance. **1 of 3 estimates carried the defect,
+and it is the only one whose horizon was long enough for reliability to matter** - the two sound
+ones both projected under two hours, where assuming nothing breaks is reasonable.
