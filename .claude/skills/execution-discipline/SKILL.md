@@ -3056,6 +3056,14 @@ own description; the freeze never reached it.
 - **The rule was AUTO-INJECTED and I read past it.** L570's authoring-feels-like-installing, with
   the twist that I did not even author this one. **A rule in context is not a rule applied**, and
   the guard is to re-read the section when you are about to invoke a freeze, not to trust recall.
+- **THE SWEEP DROPS PREFERENTIALLY FROM THE MOST CONSEQUENTIAL FINDING (L674).** MEASURED: 8 of 10
+  entries in one session carried a retroactive sweep; the two without included **the single most
+  important finding of the session**. Urgency and the impulse to skip generalisation are the same
+  impulse. **When that sweep was finally run it changed the verdict** - zero live consumers, so the
+  ticket fell from P0 to P1; the skipped step was what would have said how worried to be. And note
+  the gate's own limit: **`#237` is TURN-scoped, not ENTRY-scoped**, so a turn sweeping one class
+  passes while an entry it produced carries none - `#234`'s any-vs-each defect living inside the
+  sweep gate.
 - **A RECAP CARRIES THE EVIDENCE OBLIGATIONS OF THE WORK IT RECAPS (L673).** MEASURED: the gates
   fired hardest on my WRAP-UP paragraphs - naming a code structure in a recap armed the
   code-structure scan, quoting a count armed the ledger scan, repeating an absence armed the

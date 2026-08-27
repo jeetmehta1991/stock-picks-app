@@ -15405,3 +15405,40 @@ once on recap text rather than on working text - **5 of the 5 content gates that
 were armed by a summary at least once**, while the two purely structural gates (skills-invoked,
 ticket-counts) fired only on genuine omissions. The split is clean and it is the evidence for
 the rule: content gates are recap-sensitive by construction, structural gates are not.
+
+## L674
+**The sweep is the Phase-5 member most likely to be dropped, and it drops PREFERENTIALLY from
+the most consequential finding - because urgency is exactly what makes you skip the
+generalisation step (B2232).**
+Auditing my own ten entries this session found 8 of 10 carrying a retroactive sweep. The two
+without are L664 and L670 - and **L670 is the single most consequential entry of the session**,
+the discovery that the whole memory analysis measures working set while the runs die of commit
+exhaustion. The entry that most needed its siblings enumerated is the one that shipped without
+them, and I wrote it in the moment I was most certain it mattered.
+**When I finally ran that sweep it materially IMPROVED the finding**: FreePhysicalMemory and
+WorkingSet64 return ZERO hits in scripts/, so nothing live reads the wrong quantity and the
+entire exposure is prose plus an unbuilt watchdog. The ticket dropped from P0 to P1 on that
+result. **The skipped step was not bookkeeping; it was the step that would have told me how
+worried to be.**
+**Rule: the more urgent a finding feels, the more deliberately its sweep must be run**, because
+urgency and the impulse to skip generalisation are the same impulse. A finding that seems to
+demand immediate action is exactly the one whose blast radius you have not yet measured.
+**THE MECHANISM GAP, which is the durable part: `#237`'s gate is TURN-scoped, not ENTRY-scoped.**
+A turn satisfies it by sweeping ONE class, while an L-entry written in that same turn can carry
+no sweep of its own and nothing notices. That is `#234`'s any-vs-each defect (L510) living inside
+the sweep gate itself - the gate asks whether the TURN swept, never whether EVERY entry the turn
+produced did. My two gaps both landed on turns that were otherwise compliant.
+Compliance failure against CHECKLIST item 237 - a rule added without sweeping for existing
+instances leaves its siblings open. No new item; 237 names the class, and the defect is its
+gate's SCOPE rather than its rule, exactly as `#201`'s was in L666.
+Mechanism for the class: the fix is an ENTRY-scoped check - for each L-heading added this turn,
+assert its own body carries a sweep - filed as S6-B2233 and gated on the pyramid window that
+S6-B2229 shows is closed. Until it ships, detection is JUDGMENT-ONLY, and the durability half is
+held by this rule's text in SKILL.md under the anchor-doc citation freeze. Both halves stated
+separately per L548.
+**Retroactive sweep (CHECKLIST #237), what was scanned and found - run for THIS entry rather
+than promised:** re-read both gap entries to see whether the omission cost anything beyond L670.
+L664's sweep DOES exist but lives in its ticket row rather than the entry body, so the content is
+not lost, only misfiled - the L668 class of putting a lesson where the next reader will not meet
+it. L670's was genuinely absent and has now been run. **1 of 2 gaps was a real omission and 1 was
+a filing error**, which is a distinction the count alone would have hidden.
