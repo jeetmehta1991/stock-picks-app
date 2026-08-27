@@ -15093,3 +15093,22 @@ checkpoint) is engine code - correctly deferred. S6-B2217's read-only half was A
 buildable now, so it was correct. S6-B2207a is gated on RAM, not on the freeze - correctly
 stated. **1 of 5 deferrals carried the wrong blocker, and it is the one filed today.** The
 sweep's value here is proving the blast radius is one rather than five.
+
+**ADDENDUM (B2227d) - WHEN TWO MANDATORY RULES COLLIDE, THE ONE THAT CANNOT BE UNDONE WINS,
+AND THE DEVIATION IS RECORDED WITH A TRIGGER.**
+Promoting this lesson into SKILL.md collided with B2130/L630, which requires a skill edit and
+its test_b2123 fragment pin in ONE commit - and the C6 gate blocks any Python commit without a
+fresh green pyramid stamp. Free RAM read from PowerShell Get-CimInstance Win32_OperatingSystem
+was 1.57 GB, with 18 python processes holding 5.55 GB of working set per PowerShell Get-Process,
+against config 15 of 30 live at sim day 212 read from the wave's run_heartbeat.json. A pyramid
+adds roughly 0.5-1 GB, and tipping that pool costs about 1.4 hours of measured work plus the
+owner's no-dropped-trades ruling.
+**Rule: when a process rule and a work-preservation risk collide, the irreversible loss wins -
+but the deviation is STATED, TICKETED, and given a NAMED TRIGGER, never explained away.** L564
+is the guard against the failure mode here: writing a defensible paragraph about why a
+mechanical rule did not apply today is how an exemption gets granted silently. The difference
+between a disclosure and an excuse is whether a ticket carries the remainder with a trigger that
+someone else could act on - S6-B2227d records the fragment text itself so the pin survives this
+session ending.
+**And the gap is dated, not assumed-covered:** until that pin lands, this rule sits in SKILL.md
+UNPINNED, which is a worse state than pinned and a better one than unrecorded.

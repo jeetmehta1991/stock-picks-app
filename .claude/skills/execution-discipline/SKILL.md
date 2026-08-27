@@ -3056,6 +3056,11 @@ own description; the freeze never reached it.
 - **The rule was AUTO-INJECTED and I read past it.** L570's authoring-feels-like-installing, with
   the twist that I did not even author this one. **A rule in context is not a rule applied**, and
   the guard is to re-read the section when you are about to invoke a freeze, not to trust recall.
+- **When a process rule collides with an irreversible work loss, the irreversible loss wins - and
+  the deviation is STATED, TICKETED and given a NAMED TRIGGER, never explained away.** A defensible
+  paragraph about why a mechanical rule did not apply today IS how an exemption gets granted
+  silently (L564). The difference between a disclosure and an excuse is whether a ticket carries
+  the remainder with a trigger someone else could act on.
 - **Sweep the sibling deferrals whenever you find one wrong blocker.** Of 5 open deferrals on this
   chain, 1 carried it - proving blast radius one, which is as useful as finding five.
 
