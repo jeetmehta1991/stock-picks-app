@@ -3018,6 +3018,29 @@ well-sampled swing did NOT collapse.**
 - **Write the objection BEFORE the recommendation.** Here it did not decorate the answer,
   it reversed it.
 
+## A CONSTANT QUOTED FROM A TICKET IS UNVERIFIED (B2227a - L664, compliance failure vs #222)
+
+**MEASURED: I quoted "the 3,223 MB floor at plan line 1391" from an EXECUTION_QUEUE row, computed
+that a live 1.69 GB reading sat 46pct below it, and filed a P0.** Opening the file showed the
+constant is at line 1397, and that its definition site carries an explicit **[GRAIN-STALE]**
+marker: 3,223 MB was PER-WORKER from when one process was one config; at pool-10 per-process
+peaks run ~1.0-1.2 GB. **1.69 GB was ABOVE the present-grain peak. The alarm was a unit
+mismatch.** The number was real, the reading was real, the comparison was meaningless.
+
+- **Secondary records preserve the DIGITS and drop the GRAIN, the CAVEAT and the LINE NUMBER** -
+  exactly the payload that decides whether a comparison is valid. Read the constant at its
+  definition site, or do not cite it.
+- **Watch for sibling floors at other grains.** The same sweep found 0.333 is the PER-CELL
+  yardstick while iid (0.088), entry-day block (0.2245) and SMC block (0.3115) floors exist
+  beside it. Quoting the right number at the wrong grain is this failure's most common shape.
+- **Third recurrence of one class** (L656 heartbeat-proves-the-watchdog, L660 read-the-directory-
+  not-the-log, L664 read-the-file-not-the-ticket): **trusting a SECONDARY record about a PRIMARY
+  fact.** L664 is the worst of the three - the primary file already carried the exact correction
+  that would have stopped me.
+- **The ordering is the lesson:** the half I asserted was wrong and the half I had not checked
+  was right. Leading with the arithmetic you can compute, while skipping the probe that settles
+  the question, is the shape to catch in yourself.
+
 ## Phase 6 — END-OF-TURN SWEEP (CHECKLIST #67 — HARD RULE, no exceptions)
 
 **TICKET COUNTS BY GROUP - EVERY TURN (B1803 - CHECKLIST #274, owner directive 2026-08-21).**
