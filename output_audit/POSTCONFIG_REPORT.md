@@ -6,7 +6,7 @@ REGENERATED WHOLE at every config landing. Replaces the per-config report cards 
 
 ## How much confidence these checks earn
 
-**Across the entire ledger (88 entries), 252 named checks have run and 0 have ever returned non-PASS.**
+**Across the entire ledger (89 entries), 252 named checks have run and 0 have ever returned non-PASS.**
 
 **Read that as a caution, not a reassurance.** A check that has never failed has not been shown capable of failing, so an all-green battery is WEAK evidence. The checks that would carry real weight are ones with a demonstrated failure mode - a deliberately corrupted cube proving they trip. Until then, green means 'nothing obviously wrong was detected', never 'this cube is correct'.
 
