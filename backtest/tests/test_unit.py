@@ -26667,3 +26667,43 @@ def test_b2260_expected_events_refuses_the_run_that_measured_nothing():
     # the scaling itself, checked directly rather than through the verdict
     assert ee.expected_events(85, 200, 200) == 85
     assert ee.ticker_years(40, 6) == 20.0
+
+def test_b2267_l688_emitter_rule_survives_in_both_anchor_docs():
+    """S6-B2267 (L688 / #286): the DURABILITY half, with its own fail-proof built in.
+
+    L688's detection half is JUDGMENT-ONLY - no scan can tell whether a critique
+    of a string was written with its emitting branch in view, because the
+    artifact is identical either way. What IS mechanisable is that the rule and
+    its DIAGNOSTIC keep existing in the two files read every turn (L548: pin the
+    diagnostic, not just the rule - without it the entry is trivia).
+
+    The fail-proof is PERMANENT rather than a one-off mutation (L684: the
+    mutation you pick is the hypothesis you test, and one mutation samples one
+    point). Each assertion below is paired with its own must-QUIET arm: the same
+    predicate applied to the text with the phrase REMOVED must be False. A
+    presence-assertion that still passes against a gutted file is the inert-gate
+    defect in a new costume (L582), and this shape cannot have it.
+    """
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+
+    def holds(text, phrase):
+        return phrase in text
+
+    checks = [
+        ("CHECKLIST.md", "FIND THE BRANCH THAT EMITS A STRING BEFORE FILING IT AS WRONG"),
+        ("CHECKLIST.md", "_main_legacy"),
+        (".claude/skills/execution-discipline/SKILL.md",
+         "FIND THE BRANCH THAT EMITS A STRING BEFORE FILING IT AS WRONG"),
+        (".claude/skills/execution-discipline/SKILL.md",
+         "assembled from accurate parts"),
+    ]
+    for rel, phrase in checks:
+        src = (root / rel).read_text(encoding="utf-8", errors="ignore")
+        # must-FIRE: the rule is present where every turn will meet it
+        assert holds(src, phrase), f"{rel} no longer carries {phrase!r} (L688 dropped)"
+        # must-QUIET: the same predicate MUST fail once the phrase is gone,
+        # so this assertion cannot pass against a gutted document
+        assert not holds(src.replace(phrase, ""), phrase), (
+            f"the check for {phrase!r} in {rel} passes even with the phrase "
+            f"removed - it is asserting nothing")
