@@ -27058,3 +27058,56 @@ def test_b2281_noconsole_launcher_flags_and_commit_gate():
     assert cmd[1].endswith("run_serial_chain.py"), cmd
     assert cmd[-2:] == ["a_spec.json", "b_spec.json"], "specs must pass through"
     assert "python" in cmd[0].lower(), "must invoke the venv python explicitly"
+
+def test_b2286_every_scan_cited_as_a_live_mechanism_exists():
+    """S6-B2286 (L499/L693): a mechanism the skill NAMES must actually be defined.
+
+    SKILL.md routes the reader to gates by name. A cited gate that does not
+    exist is the L499 shape - a capability asserted in the enforcement layer's
+    own description and contradicted by grep - and it is silent, because prose
+    naming a phantom gate reads exactly like prose naming a real one.
+
+    SCOPE, stated because it is narrow (#182): this checks names cited as LIVE
+    mechanisms. Two other shapes appear legitimately and are excluded by
+    CONSTRUCTION rather than by an allowlist:
+      - a scan_* substring inside a real TEST name, e.g.
+        test_b1762_every_scan_gate_has_a_corpus_entry, and
+      - a name marked RETIRED on the same line.
+    MEASURED at authoring: a greedy scan_[a-z_]+ regex reported 3 phantoms and
+    hand-reading found 0 - two were test-name fragments, one was retired
+    history. The two discriminators below ARE that hand-read, made mechanical
+    (L644: a detector's first number is a hypothesis, not a finding).
+    """
+    import re
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    sk = (root / '.claude' / 'skills' / 'execution-discipline' / 'SKILL.md').read_text(
+        encoding='utf-8')
+    vt = (root / 'scripts' / 'verify_turn_compliance.py').read_text(encoding='utf-8')
+
+    defined = set(re.findall(r'def (scan_[a-z_]+)', vt))
+    # positive control: if the extractor breaks, this test must fail loudly
+    # rather than pass over an empty set (L613 - a check over nothing is clean)
+    assert len(defined) > 30, (
+        'only %d scans parsed from verify_turn_compliance.py - the extractor is'
+        ' broken, and an empty defined-set would make every citation a phantom'
+        % len(defined))
+    test_names = set(re.findall(r'(test_[a-z0-9_]+)', sk))
+
+    sk_lines = sk.splitlines()
+    phantoms = []
+    for line in sk_lines:
+        for name in re.findall(r'scan_[a-z_]+', line):
+            if name in defined:
+                continue
+            if any(name in tn for tn in test_names):
+                continue
+            if 'RETIRED' in line:
+                continue
+            phantoms.append((name, line.strip()[:100]))
+
+    assert not phantoms, (
+        'SKILL.md cites gate(s) not defined in verify_turn_compliance.py, and'
+        ' neither test-name fragments nor marked RETIRED: '
+        + '; '.join('%s -> %s' % (n, c) for n, c in phantoms))
+

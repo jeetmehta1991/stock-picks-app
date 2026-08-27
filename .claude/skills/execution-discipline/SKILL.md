@@ -2064,7 +2064,8 @@ actually about; a test seam is by definition not the guarded operation.** The te
 tests broke - two unrelated launcher tests, never the gate's own - so **run the FULL suite
 before believing a new gate is scoped right.**
 
-`scan_untickcted_remediation` called `_entry_text`, which did not exist, over `_read_entries()`,
+`scan_unticketed_remediation` (RETIRED - no longer defined; kept here as history) called
+`_entry_text`, which did not exist, over `_read_entries()`,
 which returned zero entries - so the missing function was never reached, the gate returned `None`,
 and I reported it working. **A check returning "clean" over an empty input is indistinguishable
 from a check that works.**
