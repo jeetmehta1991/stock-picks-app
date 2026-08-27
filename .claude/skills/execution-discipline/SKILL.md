@@ -3085,6 +3085,15 @@ own description; the freeze never reached it.
   the same debt. Address a read with file:line, a measurement with its re-runnable command, an
   enumeration with its query. **A build leaves an artifact someone trips over; a read leaves
   nothing** - and a finding nobody can locate is one nobody can correct.
+- **A ZERO FROM A PATTERN YOU WROTE THIS TURN IS NOT A RESULT (L687).** L644 covers a new
+  detector's first number; its instance was NON-ZERO. **Zero gets the least scrutiny because it does
+  not look like an answer - it looks like nothing to see**, and the natural next sentence is "clean,
+  moving on". MEASURED: a search for the repo's FIRE_ONLY_LEGACY register returned "0 gates" because
+  the pattern assumed module-level definition; the register sits inside a test function and holds 18
+  names - every one a gate enforcing my own compliance. Before quoting a zero, grep the bare
+  identifier with NO structure assumed and read the line it lands on. A zero-hit search and a
+  wrong-shaped search exit identically.
+
 - **CHOOSE THE MUTATION THAT WOULD MAKE A BROKEN MECHANISM LOOK CORRECT (L686).** L684 says the
   mutation you pick is the hypothesis you test; this is how to pick. **The tempting mutation
   attacks the arm you are confident in** - change the input, watch the alarm fire - and it is what

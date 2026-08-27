@@ -15971,3 +15971,37 @@ sound. The single-leg and disclosure pins were mutated on their obvious subject 
 the disclosure one needed a second pass precisely because the first mutation was the easy one.
 test_b2216_identical was mutated on its obvious subject and PASSED while staying weak - the
 instance. **2 of 6 fail-proofs attacked the silent arm; 1 of 6 was actively misleading.**
+
+### L687
+**L644 said a new detector's first number is a hypothesis. Its instance was a NON-ZERO number.
+Zero is the reading that gets the least scrutiny, because it does not look like an answer - it
+looks like nothing to see (B2263).**
+MEASURED: sweeping for the L686 class, I searched test_unit.py for the FIRE_ONLY_LEGACY register -
+the repo's own list of gates carrying no must-QUIET case - and got **0 gates**. The pattern assumed
+the register was defined at module level. It is defined INSIDE a test function and holds **18
+names**, every one of them a gate that has been enforcing my compliance this session.
+**Why zero is the dangerous reading.** A wrong non-zero number invites a check: it is a claim, it
+has a shape, a reader asks where it came from. A zero CLOSES the question - there is nothing to
+attribute, nothing to reconcile, and the natural next sentence is 'clean, moving on'. L644's
+instance was a 68-row split I distrusted precisely because it was specific. I distrusted this zero
+only because a register that exists to track known debt being empty was implausible on its face.
+**That was luck about the subject, not application of the rule.** Had the register plausibly been
+empty, the zero would have gone into the response as a finding.
+**Rule: a zero from a pattern written this turn is not a result until one structural fact confirms
+the pattern could have matched.** Cheapest form: grep the bare identifier with no structure
+assumed, and read the line it lands on. A zero-hit search and a wrong-shaped search exit
+identically, which is the same asymmetry Gate 4 names for presence-checks - the difference is that
+here the instrument is one I wrote sixty seconds earlier.
+Compliance failure against CHECKLIST item 166, applied to my own instrument rather than to data -
+no new item is warranted, #166 already says a zero-hit proves nothing until the pattern is
+validated, and I simply never read it as covering my own probes.
+Mechanism: **JUDGMENT-ONLY**, and not as a formality. A validated zero and a guessed zero leave
+byte-identical artifacts - a query and a 0 - so no scan can separate them without re-running the
+measurement, which is the detector the scan would need to be. Durability is this text plus the
+SKILL.md bullet under the anchor-doc freeze.
+**Retroactive sweep (CHECKLIST #237), reconstructed from this session's record rather than
+re-executed, and labelled so:** four zero-results were acted on this session. The b2207a smoke's
+zero ledger entries was checked against 90 entries present (positive control). The chain-death
+grep carried an explicit proven positive control. The smoke's trades_so_far: 0 was cross-checked by
+the absence of a cube. **3 of 4 carried a control; the one that did not is this one - and it is the
+only one where the instrument was written in the same breath as the question.**
