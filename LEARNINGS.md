@@ -15481,3 +15481,46 @@ reverse_signal at 100pct in 11 of 12 and 98.0pct in the twelfth. **The exception
 informative part:** at swing-10, 4 of 204 trades took a genuine reverse-signal path, so the
 delegation is not absolute everywhere and the honest claim is 'degraded on 76-100pct of trades',
 not 'always'. A 3-cube sample would have reported 100pct and been wrong about the class.
+
+## L676
+**I briefed five advisors on a premise I had never measured, and the measurement I took while
+they worked overturned the question all five were answering (B2238).**
+The council was framed as a scheduling problem: how to fit a pytest run alongside a chain of
+configs on one box. Every option, every constraint, every number in that briefing assumed the
+contention was CAUSED by adding the pyramid. Three commit samples taken after the advisors were
+spawned - with only the chain running and no pytest anywhere - read 0.51 GB, 0.35 GB and 1.19 GB
+available, **97.8 to 99.3 pct used by the chain alone**. The 19.6 GB window I had found at a
+landing was the GAP BETWEEN CONFIGS, not spare capacity.
+So the honest question was never 'how do I schedule two workloads', it was 'this box has no
+headroom at a concurrency of one'. Five advisors produced five confident, well-reasoned answers
+to a problem whose premise was wrong, and the peer-review step could not catch it because they
+had all been given the same bad frame.
+**Rule: a council's FRAMING carries the same evidence burden as a recommendation, and it carries
+it BEFORE the spawn.** The skill's own instructions say to enrich the framing with context;
+nothing in them says to VERIFY the framing's load-bearing premise, and enrichment feels like
+diligence while leaving the premise untested. Ask, before spawning: which single claim in this
+brief, if false, makes every answer worthless? Then measure that claim.
+**Why this class is worse than an ordinary unverified claim:** a wrong premise stated to one
+reader produces one wrong answer, and the reader can push back. A wrong premise stated to five
+independent advisors produces five CONVERGENT wrong answers, and convergence reads as
+corroboration. **The council's central mechanism - independence - actively hides a framing
+error**, because independence is about the reasoning, never about the inputs.
+WHAT SURVIVED ANYWAY, and it is why the exercise was not wasted: the advisors' verdicts on the
+OTHER premises held up - that the no-dropped-trades ruling was being stretched from data
+integrity into uptime, that a scheduled-task disable sidesteps the code-needs-a-pyramid circle,
+and that the remaining configs may be low-value. The framing error narrowed the question rather
+than corrupting those.
+Compliance failure against CHECKLIST item 230 as extended by L506 - a claim about what the
+SYSTEM can support is a capability claim needing a probe. No new item; 230 names it, and the
+extension is that a claim inside a QUESTION binds as tightly as one inside an answer.
+Mechanism: JUDGMENT-ONLY for detection - no scan can identify which premise in a framing is
+load-bearing, since that is a semantic property of the question. Durability is held by this
+rule's text in SKILL.md under the anchor-doc citation freeze. Both halves stated separately per
+L548.
+**Retroactive sweep (CHECKLIST #237), what was scanned and found:** re-read every council I have
+framed this session for an unverified load-bearing premise. The B2228a exit-interval council
+rested on 'ci_lo is inadequate at n=11', which I then VERIFIED by reading the construction -
+sound. The B2229b ten-ticket council rested on the ticket enumeration, which came from
+queue_state - sound. This one rested on an unmeasured attribution of cause. **1 of 3 councils
+carried the defect, and it is the only one whose premise was about the MACHINE rather than about
+the code** - machine state is the premise class I habitually assert rather than sample.

@@ -3085,6 +3085,14 @@ own description; the freeze never reached it.
   the same debt. Address a read with file:line, a measurement with its re-runnable command, an
   enumeration with its query. **A build leaves an artifact someone trips over; a read leaves
   nothing** - and a finding nobody can locate is one nobody can correct.
+- **A COUNCIL'S FRAMING CARRIES A RECOMMENDATION'S EVIDENCE BURDEN, AND CARRIES IT BEFORE THE
+  SPAWN (L676).** MEASURED: I briefed five advisors that a pytest run was causing contention with a
+  live chain; samples taken while they worked showed the chain ALONE held 97.8-99.3pct of commit,
+  so the premise was false and the question was the wrong one. **A wrong premise given to one
+  reader yields one wrong answer they can push back on; given to five independent advisors it
+  yields five CONVERGENT wrong answers, and convergence reads as corroboration.** Independence
+  protects the reasoning, never the inputs. Before spawning, ask: *which single claim here, if
+  false, makes every answer worthless?* - then measure that claim.
 - **WHEN YOUR OWN NEW MONITOR FIRES ON YOUR OWN IN-FLIGHT WORK, THAT IS THE SIGNAL IT WAS BUILT
   FOR (L675).** MEASURED: a commit watchdog written and pinned this turn escalated to BREACH within
   minutes - on the pyramid *it exists to gate*, which I had just judged safe. **Knowing why the
