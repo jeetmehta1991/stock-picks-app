@@ -3085,6 +3085,16 @@ own description; the freeze never reached it.
   the same debt. Address a read with file:line, a measurement with its re-runnable command, an
   enumeration with its query. **A build leaves an artifact someone trips over; a read leaves
   nothing** - and a finding nobody can locate is one nobody can correct.
+- **A CONFIRMING DATAPOINT MUST NOT END THE ANALYSIS (L677).** MEASURED: a swing-10 config landed
+  at n=68 with ci_lo -0.014, fitting my sample-size hypothesis exactly, and I reported the question
+  settled. The decomposition that overturned it needed NO new data - the artifact over-determines
+  the formula, so the raw per-trade Sharpe was recoverable from files already on disk, and it reads
+  3-4x higher at swing-30. **A disconfirming result forces more work by its nature; a confirming
+  one feels like a stopping condition.** And keep the two defects apart: a WIDE INTERVAL says
+  collect more data, an INFLATED ESTIMATE says the effect is absent - I had the first and reported
+  the second. **A conclusion that resolves the question in front of you deserves MORE scrutiny than
+  one that leaves it open.** The discriminator: a conclusion settled by a MECHANISM you read is
+  durable; one settled by a NUMBER that merely fits is not.
 - **A COUNCIL'S FRAMING CARRIES A RECOMMENDATION'S EVIDENCE BURDEN, AND CARRIES IT BEFORE THE
   SPAWN (L676).** MEASURED: I briefed five advisors that a pytest run was causing contention with a
   live chain; samples taken while they worked showed the chain ALONE held 97.8-99.3pct of commit,

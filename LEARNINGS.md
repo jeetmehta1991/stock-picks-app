@@ -15524,3 +15524,47 @@ sound. The B2229b ten-ticket council rested on the ticket enumeration, which cam
 queue_state - sound. This one rested on an unmeasured attribution of cause. **1 of 3 councils
 carried the defect, and it is the only one whose premise was about the MACHINE rather than about
 the code** - machine state is the premise class I habitually assert rather than sample.
+
+## L677
+**A CONFIRMING datapoint ended my analysis one step early, and I collapsed 'the estimate is
+unreliable' into 'the level is artifactual' - two different claims (B2241).**
+I had a sample-size hypothesis: swing-30's above-floor cells were thin-sample noise. Config 16
+landed at swing-10 with n=68 and is_ci_lo -0.014, which fit perfectly, and I reported the
+question SETTLED. The decomposition that overturns it needed no new data and no new run - the
+artifact stores sharpe, ci_lo and n, which over-determines a two-unknown formula, so the raw
+per-trade Sharpe was recoverable from files already on disk. Recovered, it reads 0.776-0.954
+across every swing-30 cell against 0.131-0.290 everywhere else. **The level is real; only the
+estimate is untrustworthy.**
+**Rule: a datapoint that CONFIRMS your hypothesis is the one that must not end the analysis.**
+A disconfirming result forces more work by its nature. A confirming one feels like a stopping
+condition, and the step it stops you taking is usually the decomposition that would separate two
+explanations the headline number cannot distinguish.
+**The specific conflation is worth naming because it recurs:** wide interval and inflated point
+estimate are DIFFERENT defects with different remedies. A wide interval says collect more data.
+An inflated estimate says the effect is not there. I had evidence of the first and reported the
+second, and the recommendation that followed - abandon the row - was the opposite of what the
+data supports, which is to re-run it at higher n.
+**What made the error cheap to make and expensive to keep:** the owner had asked whether the
+remaining 18 configs were worth running. 'The effect is an artifact' answers that question
+decisively and 'the estimate is noisy' does not, so the stronger claim was the more USEFUL one
+to be able to make. **A conclusion that resolves the question in front of you deserves more
+scrutiny than one that leaves it open, not less.**
+Compliance failure against CHECKLIST item 162 - a metric that counts the wrong thing arrives
+pre-armoured. Here the metric (ci_lo) was measuring signal, turnover AND sample size at once,
+and I attributed all of its movement to the third. No new item; 162 names the class.
+Mechanism: JUDGMENT-ONLY for detection - no scan can tell a conclusion that stopped one step
+early from one that went far enough, since both are well-formed and the missing step is defined
+only by what it would have found. Durability is held by this rule's text in SKILL.md under the
+anchor-doc citation freeze, and practically by the recovery script pattern now recorded in the
+B2241 row, which any future reader can re-run against a grid artifact. Both halves stated
+separately per L548.
+**Retroactive sweep (CHECKLIST #237), what was scanned and found:** re-read every conclusion I
+have called SETTLED or DECISIVE this session, checking whether a confirming datapoint ended it.
+The B2213b boundary-drop finding was settled by reading code that made the alternative
+impossible, not by a confirming observation - sound. The L670 commit-versus-working-set finding
+rested on a 6.93x measured ratio with no competing hypothesis to decompose - sound. The B2216
+reverse_signal delegation was confirmed at 100pct across 12 cubes AND traced to the source line
+that causes it - sound, because the mechanism was read rather than inferred. **1 of 4 'settled'
+conclusions was premature, and it is the only one where a NUMBER rather than a MECHANISM did the
+settling.** That is the discriminator worth carrying: a conclusion settled by a mechanism you
+read is durable; one settled by a number that merely fits is not.
