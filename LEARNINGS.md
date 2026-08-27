@@ -15568,3 +15568,44 @@ that causes it - sound, because the mechanism was read rather than inferred. **1
 conclusions was premature, and it is the only one where a NUMBER rather than a MECHANISM did the
 settling.** That is the discriminator worth carrying: a conclusion settled by a mechanism you
 read is durable; one settled by a number that merely fits is not.
+
+## L678
+**I reported the same backlog as 3, then 14, then 122 in three consecutive turns - each
+revision came from WIDENING THE SCAN, and every earlier number had been stated as a total
+(B2245).**
+The quantity was 'rules in SKILL.md with no fragment pin'. First I said three, from memory of
+the entries I had recently promoted. Then a scan of this session's L664-L677 said fourteen. Then
+a scan of every L-number cited anywhere in the skill said 122 unpinned of 193 cited, 108 of them
+predating this session and reaching back to L126. **None of the three was arithmetically wrong.
+Each counted a DIFFERENT POPULATION, and each was reported as though it were the whole.**
+**Rule: a count is meaningless without the SCOPE OF THE SCAN THAT PRODUCED IT, and a
+scope-limited count reads as a total unless the scope is said out loud.** Not 'fourteen pins
+owed' but 'fourteen owed among the entries written this session' - which invites the obvious
+next question and would have surfaced the 108 immediately.
+**The direction of the error is the part that should worry a reader.** Every widening made the
+picture worse for me: three was a small tidy debt, fourteen was a session's debt from a closed
+window, 122 is a long-standing gap the window barely touches. **A sequence of revisions that
+consistently moves against your own framing is evidence the framing, not the arithmetic, was
+doing the work.**
+This is the THIRD scope failure of the session and they share one shape: L676 briefed a council
+on an unverified premise, L677 stopped an analysis at a confirming datapoint, and this one
+reported a scoped count as a total. **All three are cases where the CONTAINER of a claim - its
+premise, its stopping point, its population - was left unstated while the claim itself was
+carefully evidenced.**
+Compliance failure against CHECKLIST item 271 - two numbers for one name, where the arithmetic
+is right and only the set differs. No new item; 271 names this exactly, and its own lineage
+records six instances in one session.
+Mechanism: MECHANICALLY ENFORCED for the reporting half - CHECKLIST item 260's
+`scan_partial_distribution` already blocks a total cited without its full breakdown, and item
+271's `scan_row_vs_ticket` blocks a class count whose method names no dedup. Neither fires on a
+count whose SCAN SCOPE is narrower than its noun, which is the residue and is JUDGMENT-ONLY: no
+scan knows which population a human meant. Durability held by this rule's text in SKILL.md under
+the anchor-doc citation freeze. Both halves stated separately per L548.
+**Retroactive sweep (CHECKLIST #237), what was scanned and found:** re-read every count I have
+reported to the owner this session, asking whether its scan scope was stated. The 12-of-30
+graded figure names its denominator - sound. The 12-of-12 cube delegation result names the
+population scanned - sound. The 17-config RCA states 'all five wave families' - sound. The
+ticket-class counts come from queue_state over the whole ledger and say so - sound. **1 of 5
+reported counts omitted its scope, and it is the only one I produced from memory before scanning
+anything.** That is the tell worth carrying: the count that starts as a recollection is the one
+that never acquires a stated scope.

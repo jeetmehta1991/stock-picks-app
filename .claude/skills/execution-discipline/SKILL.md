@@ -3085,6 +3085,14 @@ own description; the freeze never reached it.
   the same debt. Address a read with file:line, a measurement with its re-runnable command, an
   enumeration with its query. **A build leaves an artifact someone trips over; a read leaves
   nothing** - and a finding nobody can locate is one nobody can correct.
+- **A COUNT NEEDS THE SCOPE OF THE SCAN THAT PRODUCED IT (L678).** MEASURED: I reported one
+  backlog as 3, then 14, then 122 across three consecutive turns. **No figure was arithmetically
+  wrong - each counted a different population and each was stated as a total.** Say "fourteen among
+  the entries written this session", never "fourteen owed". **And watch the DIRECTION of successive
+  revisions: every widening here made the picture worse for me, which is evidence the framing
+  rather than the arithmetic was doing the work.** Sibling of L676 (unstated premise) and L677
+  (unstated stopping point) - in all three the CONTAINER of a claim went unstated while the claim
+  itself was carefully evidenced.
 - **A CONFIRMING DATAPOINT MUST NOT END THE ANALYSIS (L677).** MEASURED: a swing-10 config landed
   at n=68 with ci_lo -0.014, fitting my sample-size hypothesis exactly, and I reported the question
   settled. The decomposition that overturned it needed NO new data - the artifact over-determines
