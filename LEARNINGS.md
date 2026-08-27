@@ -16069,3 +16069,31 @@ correct, the search was over the one file that defines them. *The hatch covers G
 marker check* - correct, control flow read end to end. **1 of 3 was scoped to a directory rather
 than to the question, and it is the one that produced a false cause.**
 
+### L690
+**AN API AFFORDANCE IS NOT A CALL-CHAIN AFFORDANCE (B2269, refinement of L669 - NOT a new law).**
+L669 already says an objection's proposed REMEDY inherits the objection's evidence burden. I obeyed
+it and still got the answer wrong, because I checked the remedy at the wrong LAYER.
+MEASURED: recommending that a test be pointed at a temp ledger, I read the leaf's signature -
+`locked_ledger_update(mutate, ledger_path=None, ...)` at ledger_lock.py:44-46 - and concluded no
+production code need change. **Both live callers invoke it with no path** (run_wave.py:268,
+run_postconfig.py:321), and the test drives `run_wave`, not the leaf. So the remedy needs **2 of 2**
+live call sites changed: precisely the concession I said it avoided.
+**The discriminator, which is the part worth carrying:** *'can this function accept X?'* and *'can
+the path my caller actually takes carry X?'* are different questions, and the first is the one with
+a cheap, satisfying answer. A signature is an affordance of the FUNCTION; what a remedy costs is a
+property of the CHAIN. **The dedicated tests pass `ledger_path` because they call the leaf
+DIRECTLY** - which is exactly why the argument looked sufficient, and is a warning that
+existing-usage evidence can come from a path your case does not travel (`#276b`).
+**Rule: when a remedy's cost turns on an API accepting something, grep the LIVE CALL SITES before
+quoting the cost - not the definition.**
+Compliance failure against `#230` (a capability claim is settled by opening the path, not by
+reading the declaration) - no new checklist item warranted, and this entry is filed as an INSTANCE
+refining L669 rather than as a new class, per the `#136` anti-theater guard.
+Mechanism: **JUDGMENT-ONLY** - there is **no detection mechanism** for a cost checked at the wrong
+layer, since reading a signature and reading a call chain leave identical artifacts. **Durability
+pinned** by the SKILL.md bullet under the anchor-doc citation freeze.
+**Retroactive sweep (CHECKLIST #237):** the three remedies I costed across this arc. The doc
+regeneration (run `postconfig_doc.py`) - live path, verified by running it. The banner sync - live
+path, verified by the pyramid failing then passing. The `ledger_path` redirect - **signature only**.
+**1 of 3 was costed at the declaration layer, and it is the one that was wrong.**
+

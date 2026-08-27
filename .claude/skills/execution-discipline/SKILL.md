@@ -3085,6 +3085,14 @@ own description; the freeze never reached it.
   the same debt. Address a read with file:line, a measurement with its re-runnable command, an
   enumeration with its query. **A build leaves an artifact someone trips over; a read leaves
   nothing** - and a finding nobody can locate is one nobody can correct.
+- **AN API AFFORDANCE IS NOT A CALL-CHAIN AFFORDANCE (L690, refining L669).** *"Can this function
+  accept X?"* and *"can the path my caller actually takes carry X?"* are different questions, and
+  the first has the cheap, satisfying answer. MEASURED: I read `locked_ledger_update(mutate,
+  ledger_path=None)` and called a remedy free of production change; **both live callers pass no
+  path**, so it needs 2 of 2 call sites changed. The dedicated tests pass the argument because they
+  call the LEAF directly - existing-usage evidence from a path your case does not travel (#276b).
+  **Grep the live call sites, not the definition, before quoting a remedy's cost.**
+
 - **ENUMERATE WRITERS ACROSS THE WHOLE REPO, TESTS INCLUDED (L689).** MEASURED: chasing a ledger
   that read 91 in one artifact and 90 in another, I grepped `scripts/`, concluded **0 of 3 modules
   contain any delete path**, and filed the cause as UNKNOWN while pointing at an innocent lock. The
