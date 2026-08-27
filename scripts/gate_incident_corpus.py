@@ -455,6 +455,42 @@ PURE_INCIDENTS: dict[str, list[tuple[tuple, bool, str]]] = {
 
 
 EXTRA_INCIDENTS: dict[str, list[tuple[str, bool, dict]]] = {
+    # ---- S6-B2263 batch 1 (B2291): must-QUIET cases for FIRE_ONLY_LEGACY gates.
+    # A gate that refuses EVERYTHING satisfies every must-FIRE case ever written
+    # for it (L686), so the accept-path is the only arm that proves the gate
+    # DISCRIMINATES. Each case below is a VALID input the gate must let through,
+    # written against that gate's own signature - the four take different state,
+    # so no generic fixture exists and none is faked.
+    "scan_shell_substitution": [
+        # the SAME shape as the must-FIRE incident with the substitution removed:
+        # a commit message describing the danger in plain words. If this fires,
+        # the gate is refusing all -c strings rather than live substitution.
+        ("", False,
+         {"tool_text": 'git commit -q -m "RISK: a blanket Bash(*) runs '
+                       'destructive commands without a prompt."'}),
+    ],
+    "scan_bare_python_launch": [
+        # the venv interpreter named EXPLICITLY - the compliant form the gate
+        # exists to require. Firing here would make the rule unsatisfiable.
+        ("launch names its interpreter", False,
+         {"cmds": ['subprocess.run([str(VENV_PY), "backtest/run_phase1a.py", '
+                   '"--tickers-file", "output_audit/_t10.txt"])']}),
+    ],
+    "scan_uninspected_constant": [
+        # the must-FIRE incident's prose, but with a tool call that ACTUALLY
+        # opened the constant. Quiet here is the whole point of #222: the rule
+        # is "look before you cite", not "never cite".
+        ("MIN_N = 30 is the floor, so 70pct of the grid sits below it.", False,
+         {"tool_text": 'grep -n "MIN_N" backtest/config.py'}),
+    ],
+    "scan_queue_vocabulary": [
+        # a terminal class from the closed vocabulary. The must-FIRE case uses
+        # ANSWERED, which is off-vocabulary; EXECUTED is the sanctioned form.
+        ("", False,
+         {"rows": ["| **S6-B2291** | **EXECUTED** | P2 | **a row using a "
+                   "sanctioned class** | shipped with its pyramid |"]}),
+    ],
+
     # B2273/B2275 (L691): the FRESHNESS arm of the counts gate, added after it
     # caught its own author TWICE within three turns. The block below is
     # verbatim-shaped compliant output - six classes, a delta column, the

@@ -20808,8 +20808,7 @@ def test_b1944_fire_only_corpus_is_a_shrinking_set():
     spec.loader.exec_module(corpus)
 
     FIRE_ONLY_LEGACY = {
-        'scan_bare_python_launch',
-        'scan_compliance_is_content',
+                'scan_compliance_is_content',
         'scan_false_skill_status',
         'scan_miss_capture_complete',
         'scan_monitor_pattern_unverified',
@@ -20818,14 +20817,11 @@ def test_b1944_fire_only_corpus_is_a_shrinking_set():
         'scan_partial_read',
         'scan_prose_only_rule',
         'scan_queue_not_updated',
-        'scan_queue_vocabulary',
-        'scan_retroactive_sweep',
+                'scan_retroactive_sweep',
         'scan_row_vs_ticket',
-        'scan_shell_substitution',
-            'scan_uncosted_probe',
+                    'scan_uncosted_probe',
         'scan_ungated_addition',
-        'scan_uninspected_constant',
-        # B1944b: scan_unverified_count now has a must-QUIET case -
+                # B1944b: scan_unverified_count now has a must-QUIET case -
         # removed from this shrink-only set in the same commit.
     }
 
