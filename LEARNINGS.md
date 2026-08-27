@@ -16145,3 +16145,32 @@ confirmation`, `scan_false_skill_status`). CHECKLIST compliance - presence and C
 **not** gated until now. **1 of 3 mandatory blocks had a freshness hole, and it is the only one
 of the three whose content is a set of numbers.**
 
+## L692
+**A COUNCIL BRIEF IS A PUBLISHED CLAIM SET, AND MINE HAS NOW BEEN WRONG THREE TIMES (B2284).**
+L676 recorded briefing a council on an unverified premise once. It has now happened three times in
+one session, and the third time I did it while the advisors were already running.
+I told five advisors that ALL SEVEN open tickets were self-generated this session. DATED BY COMMIT
+SUBJECT: four originated today (B2245/B2248/B2253/B2263), three predate it (B2118 on 08-23, B2207
+and B2213 on 08-26). **4 of 7, not 7 of 7.**
+**Why this shape keeps recurring: a brief FEELS like context-setting rather than assertion.** Every
+number inside it carries a response's full evidence burden, because five advisors reason from it and
+return conclusions built on it - an error in the brief is amplified five times and comes back wearing
+the authority of independent agreement. The verdict here survived (the four newest ARE the
+self-referential ones, which sharpens rather than overturns it), but that is luck, not method.
+**Rule: every load-bearing quantity in a council brief gets an executed probe BEFORE the spawn,**
+not during and not after. The probe is cheap - dating seven tickets took one git command - and the
+spawn is the point of no return, because advisors cannot check a premise they were handed.
+Compliance failure against CHECKLIST item 271 (re-derive before citing), applied to a brief rather
+than to a response - which is exactly the gap: #271's examples are all response-facing.
+Mechanism: JUDGMENT-ONLY. A brief is transient prompt text that leaves no artifact a scan could
+compare against a measurement, and the numbers inside it are prose, not fields. Durability is this
+rule in SKILL.md plus the habit of running the dating probe as part of framing.
+**Retroactive sweep (#237) - what was scanned and what it found:** every council convened this
+session, three in total. (1) The pyramid-window council was briefed that pytest contention was the
+binding constraint; measured afterwards, the chain alone held 97.8-99.3pct of commit - PREMISE
+WRONG (L676, instance 1). (2) The S6-B2278 launcher council was briefed on task settings read from
+the actual scheduled-task export - PREMISE SOUND, and two candidate senders were disproven from it.
+(3) This one - PREMISE WRONG on 3 of 7 tickets. **2 of 3 council briefs this session carried an
+unmeasured load-bearing claim, and the one that did not is the one where I had opened the artifact
+first.** That is the whole discriminator: briefs built from a file I read are sound, briefs built
+from what I remembered are not.

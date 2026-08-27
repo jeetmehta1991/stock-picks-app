@@ -3130,6 +3130,14 @@ own description; the freeze never reached it.
   identifier with NO structure assumed and read the line it lands on. A zero-hit search and a
   wrong-shaped search exit identically.
 
+- **A COUNCIL BRIEF IS A PUBLISHED CLAIM SET (L692).** Every load-bearing quantity in a council
+  framing gets an EXECUTED probe BEFORE the spawn - not during, not after. A brief feels like
+  context-setting rather than assertion, which is why it escapes the re-derive rule whose examples
+  are all response-facing. Five advisors reason FROM the brief and cannot check it, so one wrong
+  number returns amplified, wearing the authority of independent agreement. MEASURED: 2 of 3
+  council briefs this session carried an unmeasured claim; the sound one was the only brief built
+  from a file I had actually opened.
+
 - **CHOOSE THE MUTATION THAT WOULD MAKE A BROKEN MECHANISM LOOK CORRECT (L686).** L684 says the
   mutation you pick is the hypothesis you test; this is how to pick. **The tempting mutation
   attacks the arm you are confident in** - change the input, watch the alarm fire - and it is what
