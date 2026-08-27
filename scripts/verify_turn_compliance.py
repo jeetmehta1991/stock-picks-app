@@ -2785,7 +2785,8 @@ def _best_block_window(t: str, headers, members, window: int = 900) -> dict:
     return best
 
 
-def scan_ticket_counts_missing(entries, *, text=None) -> list[str]:
+def scan_ticket_counts_missing(entries, *, text=None,
+                              tool_text=None) -> list[str]:
     """Every turn ends with a ticket count across all SIX ledger classes.
 
     Each class name must carry a NUMBER - naming the classes without counts
@@ -2831,6 +2832,25 @@ def scan_ticket_counts_missing(entries, *, text=None) -> list[str]:
     observed["tabular with a delta column"] = bool(
         _re.search(r"(?m)^\s*\|[^\n]*(open|executed)[^\n]*\|", t)
         and _re.search(r"\|[^\n]*" + _delta + r"[^\n]*\|", t))
+    # B2272 (L691): the block was checked for EXISTENCE and FORMAT, never for
+    # FRESHNESS - so a turn could carry last turn's numbers under the label
+    # "computed this turn" and pass. MEASURED: I did exactly that, in a turn
+    # with no tool calls at all. scan_unverified_count could not catch it -
+    # its COUNT_CLAIMS are PROSE phrases ("open tickets", "tickets closed")
+    # and the mandatory block is a TABLE, so the two gates left a seam between
+    # them. This is L599's shape: the layer reporting my own compliance is the
+    # least verified in the system, because its subject is the same text that
+    # would report its failure.
+    # B2272b (L632): the first cut of this member bound EVERY caller, so two
+    # existing pins injecting text= for a FORMAT check failed a FRESHNESS
+    # question they never asked - and the full suite is what showed it, not
+    # the gate's own tests. A precondition belongs to the OPERATION, not the
+    # module: ask about freshness only on the LIVE path (real entries) or when
+    # a caller supplies tool_text deliberately.
+    if entries or tool_text is not None:
+        _tt = _executed_tool_text(entries, tool_text).lower()
+        observed["computed THIS turn (queue_state actually run)"] = bool(
+            _re.search(r"(?<![a-z0-9_])queue_state(?![a-z0-9_])", _tt))
     return require_each(
         "TICKET COUNTS INCOMPLETE (B1803)", observed,
         why=("Owner directive 2026-08-21: all SIX classes, each with a number; "

@@ -26707,3 +26707,59 @@ def test_b2267_l688_emitter_rule_survives_in_both_anchor_docs():
         assert not holds(src.replace(phrase, ""), phrase), (
             f"the check for {phrase!r} in {rel} passes even with the phrase "
             f"removed - it is asserting nothing")
+
+def test_b2272_counts_block_must_be_computed_this_turn_not_carried():
+    """B2272 (L691): the mandatory ticket-count block must be FRESH, not carried.
+
+    The block was checked for EXISTENCE and FORMAT and never for FRESHNESS, so a
+    turn could restate last turn's numbers under the label "computed this turn"
+    and pass every gate. MEASURED: I did that in a turn with no tool calls at
+    all. scan_unverified_count could not catch it - its COUNT_CLAIMS are PROSE
+    phrases and the mandatory block is a TABLE - so the two gates left a seam
+    between them. L599's shape: the layer that reports my own compliance is the
+    least verified in the system.
+
+    Both arms, per #226 and L594. A must-FIRE case proves the gate catches the
+    defect; only the must-QUIET case proves it does not punish the compliant
+    turn, without which a gate refusing every counts block would still pass.
+    Driven through the injection seam (#241) so the gate is asked, not assumed.
+
+    The block is assembled with chr(10) rather than escapes: this pin's first
+    draft went through a shell heredoc, the escapes collapsed into real
+    newlines, and the file stopped parsing (L638 - after one failed transport,
+    change route).
+    """
+    import importlib.util as _ilu
+    import sys as _sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    spec = _ilu.spec_from_file_location(
+        "verify_turn_compliance", root / "scripts" / "verify_turn_compliance.py")
+    m = _ilu.module_from_spec(spec)
+    _sys.modules["verify_turn_compliance"] = m
+    spec.loader.exec_module(m)
+
+    block = chr(10).join([
+        "Ticket counts (scripts/queue_state.py, executed this turn):",
+        "",
+        "| Class | Count | Delta |",
+        "|---|---|---|",
+        "| EXECUTED | 1477 | 0 |",
+        "| DROPPED | 24 | 0 |",
+        "| BLOCKED | 5 | 0 |",
+        "| DEFERRED | 11 | 0 |",
+        "| OPEN | 15 | 0 |",
+        "| RUNNING | 1 | 0 |",
+        "",
+    ])
+
+    # must-FIRE: block present and correctly formatted, but the counter never
+    # ran this turn - the carried-number defect this pin exists for.
+    fired = m.scan_ticket_counts_missing([], text=block, tool_text="git status")
+    assert fired, "a carried counts block with no queue_state run must be caught"
+    assert any("computed" in f.lower() for f in fired), fired
+
+    # must-QUIET: the same block WITH the counter run must pass.
+    quiet = m.scan_ticket_counts_missing(
+        [], text=block, tool_text="python scripts/queue_state.py")
+    assert quiet == [], "a compliant turn must not be punished: " + repr(quiet)

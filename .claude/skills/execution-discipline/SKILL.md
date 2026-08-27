@@ -3085,6 +3085,16 @@ own description; the freeze never reached it.
   the same debt. Address a read with file:line, a measurement with its re-runnable command, an
   enumeration with its query. **A build leaves an artifact someone trips over; a read leaves
   nothing** - and a finding nobody can locate is one nobody can correct.
+- **TWO GATES CAN LEAVE A SEAM NEITHER IS WRONG ABOUT (L691).** MEASURED: I labelled the mandatory
+  ticket-count table *"computed this turn"* in a turn with NO tool calls; the numbers were carried.
+  `scan_ticket_counts_missing` asks presence and format; `scan_unverified_count` asks whether a count
+  was computed but triggers on PROSE phrases, and the block is a TABLE. **Each gate correct about its
+  own question, the defect in the gap between them** - and two gates over one artifact FEEL like
+  redundancy while being two narrow beams with a dark band between. **Name each gate's QUESTION and
+  check the questions compose**: presence + format + freshness is three questions. And note the
+  carried figure is the one nobody re-derives *because* it did not change - "unchanged from the
+  reading above" is a reason to skip, not a justification.
+
 - **AN API AFFORDANCE IS NOT A CALL-CHAIN AFFORDANCE (L690, refining L669).** *"Can this function
   accept X?"* and *"can the path my caller actually takes carry X?"* are different questions, and
   the first has the cheap, satisfying answer. MEASURED: I read `locked_ledger_update(mutate,

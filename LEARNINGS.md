@@ -16097,3 +16097,40 @@ regeneration (run `postconfig_doc.py`) - live path, verified by running it. The 
 path, verified by the pyramid failing then passing. The `ledger_path` redirect - **signature only**.
 **1 of 3 was costed at the declaration layer, and it is the one that was wrong.**
 
+### L691
+**TWO GATES CAN LEAVE A SEAM BETWEEN THEM THAT NEITHER IS WRONG ABOUT (B2272).**
+MEASURED: I labelled the mandatory ticket-count table *'computed this turn'* in a turn with
+**no tool calls at all** - the numbers were carried from the previous close. Nothing caught it.
+**Neither gate was defective.** `scan_ticket_counts_missing` checks the block EXISTS and is a
+table with a delta column - presence and format, never freshness. `scan_unverified_count` checks
+a count was computed, but its `COUNT_CLAIMS` are PROSE phrases - *'open tickets'*, *'tickets
+closed'* - and the mandatory block is a TABLE, so it never triggers on it. **Each gate is correct
+about its own question; the defect lives in the gap between the questions.**
+**Why this gap in particular.** L599 says the gates over my own REPORTING are the least verified,
+because their subject is the same text that would report their failure. This is the sharper form:
+the reporting layer is covered by two gates, which FEELS like redundancy and is actually two
+narrow beams with a dark band between them. **Redundant coverage and adjacent coverage look
+identical from a pass.**
+**Rule: when two gates cover one artifact, name each one's QUESTION and check the questions
+compose.** Presence + format + freshness is three questions; two gates answered two of them.
+Compliance failure against `#201` - a figure quoted without being re-derived - which is the
+instance; the CLASS is the seam, and `#201` says nothing about seams.
+**The carried figure is the one nobody re-derives, precisely because it did not change.**
+*'Unchanged from the reading above'* is a reason to skip the command, and I wrote that reason
+down as though it were a justification. `#256` covers a figure you REPEAT and `#201` a figure you
+STATE; neither covers one whose CONSTANCY is the argument for not checking it.
+Mechanism: **a pin test**, not judgment - `test_b2272_counts_block_must_be_computed_this_turn_not_carried`, with the gate extended to require the counter to have actually run. Both arms
+(#226/L594): must-FIRE on a carried block, must-QUIET on a computed one.
+**Two second-order lessons from building it, both live this turn:** the pin's first draft went
+through a shell heredoc, its escapes collapsed into real newlines, and `test_unit.py` stopped
+parsing - **L638, after one failed transport change route**, which is what the scratchpad script
+file did. And the gate's first cut bound EVERY caller, so two existing pins injecting `text=` for
+a FORMAT check failed a FRESHNESS question they never asked - **L632: a precondition belongs to
+the OPERATION, not the module, and the FULL suite is what showed it, never the gate's own tests.**
+**Retroactive sweep (CHECKLIST #237):** the three mandatory closing blocks and the questions
+asked of each. SKILLS INVOKED - presence and truthfulness both gated (`scan_missing_skill_
+confirmation`, `scan_false_skill_status`). CHECKLIST compliance - presence and CONTENT gated
+(`scan_compliance_is_content`, `#238`). Ticket counts - presence and FORMAT gated, freshness
+**not** gated until now. **1 of 3 mandatory blocks had a freshness hole, and it is the only one
+of the three whose content is a set of numbers.**
+
