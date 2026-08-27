@@ -183,6 +183,26 @@ def run_arm(spec: dict, arm: dict, engine_cmd: str | None = None) -> dict:
                "MKL_NUM_THREADS": "1",
                "STRATEGY_SUBSET_FILE": spec["strategy_subset"],
                **{k: str(v) for k, v in arm.get("env", {}).items()}}
+        # S6-B2250a (L680): PROVE THE POOL CAN SPAWN BEFORE SPENDING HOURS.
+        # b2197_sw10sp20 ran to sim_day 230 - about 1.3 hours - and then died
+        # on `PermissionError: [WinError 5]` raised by _winapi.DuplicateHandle
+        # inside multiprocessing/reduction.py while spawning a worker. That
+        # failure is DETERMINISTIC and available at second zero: the process
+        # either has the privilege to duplicate a handle into a child or it
+        # does not. Paying 1.3 hours to discover it is pure waste.
+        #
+        # Deliberately narrow: this proves ONE spawn worked ONCE, at launch. It
+        # does NOT prove spawning survives 230 sim-days, since a failure driven
+        # by handle exhaustion or a transient token state would pass here - so
+        # the message says what it proved, not that the run is safe.
+        if legs == 1:
+            ok, why = probe_pool_spawn()
+            if not ok:
+                print(f"[B2250a REFUSED] pool spawn failed at launch: {why}")
+                return {"arm": arm["tag"], "status": "SPAWN_REFUSED",
+                        "legs": 0, "spawn_error": why}
+            print("[B2250a] pool spawn probe OK (one worker, at launch - "
+                  "does not prove spawning survives the whole run)")
         rc = subprocess.run(cmd, cwd=str(ROOT), env=env).returncode
         if rc == 2:
             return {"arm": arm["tag"], "status": "GATE_REFUSED", "legs": legs}
@@ -272,10 +292,47 @@ def run_arm(spec: dict, arm: dict, engine_cmd: str | None = None) -> dict:
         print(f"[OK] {_doc.name} regenerated including this config")
     except Exception as _exc:               # never let reporting kill a landing
         print(f"[WARN] post-config report card unavailable: {_exc!r}")
+    # S6-B2230 (L580 applied to a LIST): at legs=1 the append sites for BOTH
+    # accumulators sit after the `if cube.exists(): break`, so neither is
+    # reachable and an empty list is STRUCTURALLY GUARANTEED rather than
+    # measured. Reporting `[]` invites a reader to take it for a clean result -
+    # and I did exactly that for 15 configs, calling them "zero boundary drops"
+    # when no boundary had existed. An unmeasured value renders as its own
+    # token, never as the value that means "measured, and it was nothing".
+    _na = "NOT-APPLICABLE-SINGLE-LEG"
     return {"arm": arm["tag"], "status": status, "legs": legs,
-            "boundary_drops": boundary_drops, "measured_rates": rates,
+            "boundary_drops": boundary_drops if legs > 1 else _na,
+            "measured_rates": rates if legs > 1 else _na,
             "cube_rows": rows, "elapsed_s": int(time.time() - t0),
             "postconfig_exit": pc.returncode}
+
+
+def _spawn_probe_worker(x):
+    """Module-level so it is picklable by the spawn start method."""
+    return x * 2
+
+
+def probe_pool_spawn(timeout_s: float = 60.0) -> tuple[bool, str]:
+    """S6-B2250a: can this process actually spawn a pool worker?
+
+    Returns (ok, reason). The failure this exists for is
+    `PermissionError: [WinError 5] Access is denied` from
+    `_winapi.DuplicateHandle(..., DUPLICATE_CLOSE_SOURCE)` during spawn, which
+    killed b2197_sw10sp20 after ~1.3 hours of work. One worker is enough to
+    settle it: the privilege is present or it is not.
+    """
+    import multiprocessing as _mp
+    try:
+        ctx = _mp.get_context("spawn")
+        with ctx.Pool(processes=1) as pool:
+            got = pool.apply_async(_spawn_probe_worker, (21,)).get(timeout_s)
+        if got != 42:
+            return False, f"worker returned {got!r}, expected 42"
+        return True, "one worker spawned and returned"
+    except Exception as exc:                      # noqa: BLE001 - report ANY
+        # Deliberately broad: the point is to surface whatever spawn raises,
+        # named, rather than to enumerate the failure modes in advance.
+        return False, f"{type(exc).__name__}: {exc}"
 
 
 def archive_stale_summary(wave: str):

@@ -356,6 +356,21 @@ def select_exit(g: pd.DataFrame, objective: str = "gates",
         else:
             _seen[_sig] = str(_ex)
     if _dupes:
+        # S6-B2216: the collapse is CORRECT and it was DELETING THE EVIDENCE OF
+        # A COVERAGE HOLE. Measured on real cubes: reverse_signal and
+        # atr_trail_1x agree on 100pct of trades not because two rules happened
+        # to coincide, but because exit_reverse_signal RETURNS exit_atr_trail
+        # when the strategy is absent from REVERSE_SIGNAL_EVALUATORS - so one of
+        # the registered exits was never actually tested for that strategy, and
+        # the dedup filed it as housekeeping. A byte-identical pair is a
+        # QUESTION (delegation, or two rules that genuinely coincide here?), and
+        # a question that is never asked reads as an answer.
+        for _dup, _kept in sorted(_dupes.items()):
+            print(f"[S6-B2216 IDENTICAL-EXIT] {_dup} is byte-identical to "
+                  f"{_kept} on this cell - collapsed for ranking, but this "
+                  f"needs an explanation: silent DELEGATION (one exit calling "
+                  f"the other under a data-conditional guard) or genuine "
+                  f"coincidence? See scripts/audit_exit_delegation.py")
         isg = isg[~isg["exit_method"].astype(str).isin(_dupes.keys())]
 
     best, best_key = None, None

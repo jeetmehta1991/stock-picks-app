@@ -358,7 +358,19 @@ def main() -> int:
                # zero must not outrank a solid cell (L455, live in span50's
                # old top-5).
                "is_ci_lo": (_is_stats or {}).get("ci_lo"),
-               "is_sharpe": (_is_stats or {}).get("sharpe")}
+               "is_sharpe": (_is_stats or {}).get("sharpe"),
+               # S6-B2215 (L659): roster_core.select_exit RECORDS how many
+               # distinct exits the selection actually ranked over, and this
+               # caller used to copy only ci_lo and sharpe - so every artifact
+               # named a winning exit while nothing recorded whether it beat 24
+               # candidates or 2. The owner asked "are all exits being analyzed
+               # across all combinations?" and no file in the program could
+               # answer. These three are the answer; they cost nothing to carry
+               # and the disclosure is worthless if it dies at the boundary.
+               "exits_effective": (_is_stats or {}).get("exits_effective"),
+               "exits_collapsed": (_is_stats or {}).get("exits_collapsed"),
+               "npt_excluded_identity_boundary":
+                   (_is_stats or {}).get("npt_excluded_identity_boundary")}
         if res is None:
             row["verdict"] = "BELOW_POWER_FLOOR"
         else:

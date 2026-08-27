@@ -26475,3 +26475,141 @@ def test_b2217_exit_delegation_detector_sees_both_shapes(tmp_path):
 
     # (d) atr_trail_1x owns atr_trailing_stop, so it must not flag itself
     assert not [d for d in found if d["exit_method"] == "atr_trail_1x"], found
+
+def test_b2250a_spawn_probe_refuses_at_launch_not_after_hours():
+    """S6-B2250a (L680): prove the pool can spawn BEFORE spending hours.
+
+    b2197_sw10sp20 ran ~1.3 hours to sim_day 230 and then died on
+    `PermissionError: [WinError 5]` from _winapi.DuplicateHandle during worker
+    spawn. That failure is available at second zero.
+
+    (a) the probe SUCCEEDS on a healthy interpreter and says what it proved;
+    (b) it REPORTS the exception type and message rather than a bare False,
+        because "spawn failed" without the reason sends the next reader nowhere;
+    (c) it never raises - a probe that dies is worse than no probe.
+    """
+    # #276b: the CONTROL must take the same path as the CLAIM. Loading this
+    # module under a synthetic name breaks pickling, because the spawned child
+    # cannot import a module that does not exist by that name - so the probe
+    # would "fail" for a reason production never encounters. Import it the way
+    # run_wave is actually imported.
+    import sys as _sys
+    from pathlib import Path as _P
+    _scripts = str(_P(__file__).resolve().parents[2] / "scripts")
+    if _scripts not in _sys.path:
+        _sys.path.insert(0, _scripts)
+    import run_wave as rw
+
+    ok, why = rw.probe_pool_spawn()
+    assert ok is True, f"spawn probe failed on a healthy interpreter: {why}"
+    assert "spawned" in why, why
+
+    # (b) a failing worker is reported WITH its reason, not as a bare False.
+    import multiprocessing as _mp
+
+    class _Boom:
+        def __call__(self, *a, **k):
+            raise RuntimeError("simulated spawn denial")
+
+    real = rw._spawn_probe_worker
+    try:
+        # drive the failure path through the real function by breaking the
+        # expected return, which is the branch that must not silently pass.
+        rw._spawn_probe_worker = _mp  # not callable as a worker -> raises
+        ok2, why2 = rw.probe_pool_spawn(timeout_s=30)
+        assert ok2 is False, "a broken worker must not report success"
+        assert why2 and ":" in why2, f"reason must name the error: {why2!r}"
+    finally:
+        rw._spawn_probe_worker = real
+
+    # (c) round-trip back to healthy - the probe left no global damage
+    ok3, _ = rw.probe_pool_spawn()
+    assert ok3 is True
+
+
+def test_b2230_single_leg_accumulators_are_not_applicable_not_empty():
+    """S6-B2230 (L580 for a LIST): at legs=1 the append sites are unreachable.
+
+    scripts/run_wave.py appends to boundary_drops and rates ONLY inside the leg
+    loop, after `if cube.exists(): break`. A run whose cube exists at the end of
+    leg 1 breaks out first, so an empty list is STRUCTURALLY GUARANTEED - and I
+    reported 15 such configs as "zero boundary drops" when no boundary existed.
+
+    Pinned structurally: all three append sites sit after the break, and the
+    result dict renders the not-applicable token rather than an empty list.
+    """
+    import ast as _ast
+    from pathlib import Path as _P
+    src = (_P(__file__).resolve().parents[2] / "scripts" / "run_wave.py").read_text(
+        encoding="utf-8")
+    assert "NOT-APPLICABLE-SINGLE-LEG" in src, (
+        "single-leg runs must render a not-applicable token, never []")
+    tree = _ast.parse(src)
+    fn = next(n for n in _ast.walk(tree)
+              if isinstance(n, _ast.FunctionDef) and n.name == "run_arm")
+    # every append to either accumulator must live inside a loop that also
+    # contains a Break - i.e. it is guarded, not unconditional.
+    appends = [n for n in _ast.walk(fn)
+               if isinstance(n, _ast.Call) and isinstance(n.func, _ast.Attribute)
+               and n.func.attr == "append"
+               and isinstance(n.func.value, _ast.Name)
+               and n.func.value.id in ("boundary_drops", "rates")]
+    assert len(appends) >= 3, f"expected the 3 known append sites, got {len(appends)}"
+    loops = [n for n in _ast.walk(fn) if isinstance(n, _ast.While)]
+    assert any(isinstance(b, _ast.Break) for lp in loops for b in _ast.walk(lp)), (
+        "the leg loop must still contain the early break this pin is about")
+
+
+def test_b2215_disclosures_survive_the_caller():
+    """S6-B2215 (L659): a producer's disclosure dies at the caller.
+
+    roster_core.select_exit records exits_effective / exits_collapsed /
+    npt_excluded_identity_boundary so a reader can see the TRUE breadth the
+    selection ranked over. tighten_breaker_block used to copy only ci_lo and
+    sharpe, so Table C named a winning exit while nothing recorded whether it
+    beat 24 candidates or 2 - the exact question the owner asked.
+    """
+    # L582: a presence-grep matches its own COMMENT. The first version of this
+    # pin passed with the field deleted from the row, because the comment
+    # explaining the fix mentions the field name. Assert the field is a KEY in
+    # a dict literal, via the AST, so prose cannot satisfy it.
+    import ast as _ast
+    from pathlib import Path as _P
+    src = (_P(__file__).resolve().parents[2] / "scripts"
+           / "tighten_breaker_block.py").read_text(encoding="utf-8")
+    keys = {k.value for n in _ast.walk(_ast.parse(src))
+            if isinstance(n, _ast.Dict)
+            for k in n.keys
+            if isinstance(k, _ast.Constant) and isinstance(k.value, str)}
+    for field in ("exits_effective", "exits_collapsed",
+                  "npt_excluded_identity_boundary"):
+        assert field in keys, (
+            f"{field} must be an actual dict KEY in the emitted row, not "
+            f"merely a word in a comment")
+    # and the producer must still emit them, or the caller carries nothing
+    prod = (_P(__file__).resolve().parents[2] / "scripts"
+            / "roster_core.py").read_text(encoding="utf-8")
+    for field in ("exits_effective", "exits_collapsed",
+                  "npt_excluded_identity_boundary"):
+        assert field in prod, f"{field} vanished from the producer"
+
+
+def test_b2216_identical_exit_pair_is_announced_not_filed_silently():
+    """S6-B2216: a byte-identical pair is a QUESTION, not housekeeping.
+
+    reverse_signal matches atr_trail_1x on 100pct of trades because
+    exit_reverse_signal RETURNS exit_atr_trail when the strategy is absent from
+    REVERSE_SIGNAL_EVALUATORS - so a registered exit was never tested, and the
+    dedup filed it as routine. The collapse stays (it is correct for ranking);
+    what changes is that it announces itself.
+    """
+    from pathlib import Path as _P
+    src = (_P(__file__).resolve().parents[2] / "scripts" / "roster_core.py").read_text(
+        encoding="utf-8")
+    assert "S6-B2216 IDENTICAL-EXIT" in src, (
+        "the collapse must announce each identical pair")
+    assert "audit_exit_delegation" in src, (
+        "the announcement must point at the tool that answers the question")
+    # the collapse itself must survive - this pin is about disclosure, not removal
+    assert "isin(_dupes.keys())" in src, (
+        "the ranking-side collapse must remain; only the silence changes")

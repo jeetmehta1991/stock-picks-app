@@ -96,7 +96,7 @@ Owner standing directive: *promoted longs carry short mirrors by default* - the 
    Shorts clear nothing in the bear market they exist for, and are outperformed by longs *inside that same bear*. **This is a stress test, not a promotion verdict** - it selects on later data and grades on earlier data, so it is temporally backwards and not walk-forward valid; the chosen exit is fitted to post-bear conditions. Per owner directive the mirrors are **retained irrespective**. This sizes the exposure taken on structural-symmetry grounds; it does not validate it.
 2. **Levels are conditioned on the incumbent exit's trade set (S6-B1434c).** The cube replays all 26 exits over trades the ASSIGNED exit generated; ranking transfers, absolute magnitudes do not.
 3. **`min_trades` will tighten in deployment.** Longer-hold exits plus same-strategy dedup reduce live fire counts below these cube figures.
-4. **Blocked strategies excluded upstream:** 9 (9 data-scarcity, 0 missing-producer, 0 deprecated).
+4. **Blocked strategies excluded upstream:** 1 (1 data-scarcity, 0 missing-producer, 0 deprecated).
 
 ## Reproduce
 
