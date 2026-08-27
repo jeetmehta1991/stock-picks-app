@@ -2990,6 +2990,21 @@ for several turns.
 - Sweep the other freeze-deferred tickets for the same question - some are genuine, some are
   self-sealing, and only reading them apart tells you which.
 
+## STATE THE READING THAT COSTS YOU MOST, FIRST (B2220 - L662)
+
+**MEASURED: asked why a ticket count had not fallen, I was about to answer "the process
+working" - a framing that grades the sweep on effort rather than on what it found.** The
+truer accounting: I closed the cheapest ticket and opened the two that reach the owner's
+results.
+
+- **When reporting on your OWN work, lead with the reading that costs you most.**
+- Mechanical test: **write the sentence a hostile reviewer would write**; if it is truer
+  than yours, lead with theirs.
+- A comfortable self-assessment buries the headline - here, that a degeneracy finding
+  invalidates the denominator behind every multiple-testing correction.
+- JUDGMENT-ONLY: no scan detects a self-serving frame. The Contrarian lens is the guard,
+  which is why a council without one is not a council.
+
 ## Phase 6 — END-OF-TURN SWEEP (CHECKLIST #67 — HARD RULE, no exceptions)
 
 **TICKET COUNTS BY GROUP - EVERY TURN (B1803 - CHECKLIST #274, owner directive 2026-08-21).**

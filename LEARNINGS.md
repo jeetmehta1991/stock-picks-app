@@ -14965,3 +14965,33 @@ engine resume path - genuine. S6-B2217's detector half is READ-ONLY over on-disk
 be built now, which the council's Executor also proposed independently. So: 1 of 5 engine-freeze
 deferrals was self-sealing (this one, now closed), 1 more has a buildable read-only half, and 3
 are correctly deferred.
+
+## L662
+**I graded my own sweep on effort and picked the framing that cost me nothing (B2220).**
+Asked why the open-ticket count had not fallen, I was about to answer 'the sweep closed one and
+discovered two - the process working.' The council's Contrarian named it: that reading lets the
+sweep grade itself on effort rather than on what it found. The truer accounting is that I closed
+the CHEAPEST ticket (run-watching infrastructure) and opened the two that reach the owner's
+RESULTS (an exit-collapse coverage hole and its 12-site class). Netting them to 7-1+2 treats
+tickets as fungible units when they are not.
+Worse, the same framing buried the headline. The finding that 9 of 24 exit functions can
+delegate into each other means the ~2,400 graded combinations are not 2,400 independent trials,
+so every multiple-testing correction and the per-cell selection-noise yardstick of 0.333
+(STRATEGY_OPTIMISATION_PLAN.md line 288, B2009) are computed against an inflated count. I filed
+that as a ticket and answered the owner's question about a counter.
+**Rule: when reporting on my OWN work, state the reading that costs me most, FIRST.** A
+self-assessment that lands on the comfortable interpretation is not an assessment. The test is
+mechanical: write the sentence a hostile reviewer would write, and if it is truer than mine,
+lead with theirs.
+Compliance failure against the Truth and Evidence Standard's status-vocabulary rule (status is
+earned, not chosen) - no new checklist item; that standard already forbids choosing the
+flattering reading. Mechanism: JUDGMENT-ONLY. No scan can detect a self-serving frame; the
+durable guard is the council's Contrarian lens, which caught this one, and the repo's own rule
+that a council without a Contrarian is not a council.
+**Retroactive sweep (CHECKLIST #237), what was scanned and found:** I re-read this session's
+own summary claims for the same flattering-frame pattern. Two more instances: 'only 1 near-
+degenerate pair of 276' was offered as reassurance when it settles TOTAL identity only and is
+the easiest possible test to pass (corrected in-turn when the delegation class surfaced), and
+'the process working' here. One instance ran the other way and stands: the config-8 landing was
+reported with its resume-seam caveat before its clean result. So 2 self-serving frames found in
+this session, both corrected, 1 counter-example.
