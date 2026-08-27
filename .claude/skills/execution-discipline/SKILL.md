@@ -3085,6 +3085,15 @@ own description; the freeze never reached it.
   the same debt. Address a read with file:line, a measurement with its re-runnable command, an
   enumeration with its query. **A build leaves an artifact someone trips over; a read leaves
   nothing** - and a finding nobody can locate is one nobody can correct.
+- **AUTHORING A MEASUREMENT RULE DOES NOT PROTECT YOU FROM BREAKING IT WITH THE INSTRUMENT BUILT TO
+  ENFORCE IT (L678 addendum).** MEASURED: one turn after writing that a count needs its scan scope,
+  I built a keyword detector for that rule, ran it over 98 rows, and quoted "34 of 97" without
+  hand-reading. Four of five sampled were false positives - two DATES, a FILE CITATION, and a row
+  that stated its scope in wording the keyword list did not recognise. **True prevalence was nearer
+  a fifth of what I reported, and the error ran in the direction that made my new rule look more
+  necessary** (L644's own warning, and L559: check which way the error points). Hand-read a sample
+  of what a new detector flags BEFORE quoting its headline - most of all when the detector is
+  enforcing a rule you just wrote.
 - **A COUNT NEEDS THE SCOPE OF THE SCAN THAT PRODUCED IT (L678).** MEASURED: I reported one
   backlog as 3, then 14, then 122 across three consecutive turns. **No figure was arithmetically
   wrong - each counted a different population and each was stated as a total.** Say "fourteen among
