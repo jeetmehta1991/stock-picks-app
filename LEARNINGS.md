@@ -15840,3 +15840,44 @@ finding vanish). Of the four written this batch, the single-leg pin and the iden
 failed correctly when their subjects were removed. **2 of 6 session pins were defective on first
 write, and both are from the batch where I was writing four at once** - which is the rate worth
 carrying, since the two written singly were sound.
+
+## L684
+**PROVE-IT-CAN-FAIL proves a pin CAN fail. It does not prove the pin fails for the RIGHT REASON,
+or against any deletion but the one you tried (B2257).**
+I ran CHECKLIST item 226's prove-it-can-fail against four new pins, found one not load-bearing,
+hardened it, re-proved it, and reported all four sound. A later classification of all six
+session pins by whether each asserts a STRUCTURAL property or merely a SUBSTRING found a third
+weak one - test_b2216_identical - which had PASSED the prove-it-can-fail step an hour earlier.
+**It passed because of how I chose the mutation.** The check deleted the announcement phrase
+from the PRINT statement; the explanatory comment in the same file did not happen to contain
+that exact string; so the test went red and I recorded it as load-bearing. Delete the print but
+leave a comment quoting the phrase - which is what a future refactor would plausibly do - and
+the pin passes over a removed feature.
+**Rule: item 226 is necessary and NOT sufficient, and its insufficiency has a specific shape -
+the mutation you pick is the hypothesis you test.** A single mutation samples one point in the
+space of ways the subject can disappear. The pin's ASSERTION KIND is the general property:
+a structural or behavioural assertion cannot be satisfied by prose, a substring assertion can,
+and that is checkable without guessing mutations at all.
+**This is the fourth layer of the same session-long shape.** L501: a gate observed only passing
+has been run, not tested. L683: writing a pin feels like compliance and suppresses scrutiny.
+L682: I counted the misses the gate caught rather than the ones present. And now: **the
+prove-it-can-fail step ITSELF produces a count of what one chosen mutation caught, not of what
+is weak.** Every layer is the same error one level further into the enforcement machinery.
+**And it corrects L683's own figure.** That entry says 2 of 6 session pins were defective on
+first write; it is at least 3. I reported the number my check produced, which is exactly what
+L682 had just told me not to do.
+Compliance failure against L582 read with CHECKLIST item 226 - a presence assertion satisfied by
+documentation, and a fail-proof that sampled one mutation. No new item; both are documented and
+the insufficiency of 226 is the finding rather than a gap in it.
+Mechanism: MECHANISABLE and specified, not yet built - classify each pin's assertion kind
+(structural/behavioural versus substring) and flag the substring ones, which is what found this
+instance and needs no mutation guessing. Specified in S6-B2257 for the one known instance; the
+general classifier is the durable form and would have to run over the pin corpus. The residue is
+JUDGMENT-ONLY: no scan knows which comments in a target file might satisfy a given substring.
+Both halves stated separately per L548.
+**Retroactive sweep (CHECKLIST #237), what was scanned and found:** classified all 6 pins added
+this session by assertion kind - 5 structural or behavioural (they call the code under test, or
+walk its AST), 1 substring-only. The 5 sound ones share a property worth naming: each either
+INVOKES the subject (probe_pool_spawn, w.check, a.audit) or reads it through ast, so prose in
+the target file cannot reach them. **The discriminator is not care taken - it is whether the
+assertion touches CODE or touches TEXT.**

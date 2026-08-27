@@ -3085,6 +3085,16 @@ own description; the freeze never reached it.
   the same debt. Address a read with file:line, a measurement with its re-runnable command, an
   enumeration with its query. **A build leaves an artifact someone trips over; a read leaves
   nothing** - and a finding nobody can locate is one nobody can correct.
+- **PROVE-IT-CAN-FAIL PROVES A PIN *CAN* FAIL, NOT THAT IT FAILS FOR THE RIGHT REASON (L684).**
+  MEASURED: a pin passed `#226` an hour before a classification found it prose-satisfiable. It
+  passed because of the mutation I CHOSE - I deleted the phrase from the print, and the comment
+  quoting that phrase did not contain the exact string. **The mutation you pick is the hypothesis
+  you test, and one mutation samples one point in the space of ways a subject can vanish.** The
+  general property is the ASSERTION KIND: **structural or behavioural assertions cannot be
+  satisfied by prose; substring assertions can** - checkable without guessing mutations. Fourth
+  layer of one shape (L501, L683, L682, this): each is the same error one level further into the
+  enforcement machinery.
+
 - **THE PIN IS WHERE THE REPO'S OWN RULES GET BROKEN MOST (L683).** MEASURED: four pins written in
   one batch, TWO defective, each breaking a DIFFERENT documented rule - one loaded its module under
   a synthetic name so pickling failed for a reason production never hits (`#276b`), one asserted
