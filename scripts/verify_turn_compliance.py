@@ -3526,7 +3526,27 @@ def scan_miss_capture_complete(entries, *, text=None, observed=None,
                                    "backtest/tests/test_unit.py")
                  if touched is None else touched)
                 or ("judgment-only" in t
-                    and any(m in t for m in _DURABILITY)),
+                    and any(m in t for m in _DURABILITY))
+                # B2276 (S6-B2271, owner-approved 2026-08-27): a class whose
+                # mechanism ALREADY EXISTS fits neither accepted answer -
+                # JUDGMENT-ONLY would be FALSE (detection exists and fired)
+                # and no .py needs touching. L602's missing-kind defect,
+                # hit from the compliance side: the honest answer named the
+                # two gates that caught the miss and was not recognised.
+                # Structural, clause-scoped (L515 rung 3, B1762 proximity):
+                # a scan_/test_ identifier in the SAME clause as an
+                # enforcement stem, either order. An identifier alone
+                # anywhere does NOT satisfy - responses name gates all the
+                # time when merely discussing them.
+                or bool(re.search(
+                    r"(?:mechanis|enforc|already gated|caught (?:it|this|"
+                    r"the miss|me|both times) by)[^.;\n]{0,160}?"
+                    r"(?<![a-z0-9_])(?:scan_[a-z0-9_]+|test_b\d[a-z0-9_]*)",
+                    t))
+                or bool(re.search(
+                    r"(?<![a-z0-9_])(?:scan_[a-z0-9_]+|test_b\d[a-z0-9_]*)"
+                    r"[^.;\n]{0,160}?(?:mechanis|enforc|is the gate|"
+                    r"already carr)", t)),
         }
     return require_each(
         "PHASE-5 MISS-CAPTURE INCOMPLETE (B1751 / #234)", observed,
@@ -3947,8 +3967,18 @@ def scan_bulk_process_kill(entries, *, cmds=None) -> list[str]:
     # written through Bash; the real kill at B1861 went through PowerShell.
     # `taskkill` runs from either shell and keeps the any-tool treatment.
     if cmds is None:
+        # B2275 (S6-B2266, owner-approved 2026-08-27): TURN-scoped, matching
+        # the file's other two tool collectors (B1980 - each gate's question
+        # names its own window). Session scope made the gate unsatisfiable BY
+        # CONSTRUCTION once a kill sat in append-only history: the 91e6299a6
+        # kill blocked EVERY subsequent close of the session, no behaviour
+        # could clear it, and the .stop_exempt hatch does not reach scan
+        # gates. A gate whose trigger no future turn can avoid teaches the
+        # reader to ignore it (L586/B1722). The kill EVENT stays recorded -
+        # ticket S6-B2214 and L658 are the durable record; the gate's job is
+        # to catch the NEXT kill on the turn it happens.
         ps, anysh = [], []
-        for d in entries or ():
+        for d in _turn_entries(entries):
             if not isinstance(d, dict) or d.get("type") != "assistant":
                 continue
             for blk in (d.get("message") or {}).get("content") or ():

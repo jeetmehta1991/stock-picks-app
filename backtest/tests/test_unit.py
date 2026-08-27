@@ -20822,8 +20822,7 @@ def test_b1944_fire_only_corpus_is_a_shrinking_set():
         'scan_retroactive_sweep',
         'scan_row_vs_ticket',
         'scan_shell_substitution',
-        'scan_ticket_counts_missing',
-        'scan_uncosted_probe',
+            'scan_uncosted_probe',
         'scan_ungated_addition',
         'scan_uninspected_constant',
         # B1944b: scan_unverified_count now has a must-QUIET case -
@@ -24728,6 +24727,15 @@ def test_b2116_run_wave_resume_loop_both_ways(tmp_path):
     spec_dir = tmp_path
     wave = "b2116test"
     out_dir = root / f"output_{wave}_armx"
+    # B2277 (S6-B2269, owner-approved option b): this test drives run_wave
+    # against the PRODUCTION ledger, and run_arm regenerates the findings doc
+    # from the transient 91-entry state before the finally below restores the
+    # ledger - stranding POSTCONFIG_REPORT.md dirty after every green suite
+    # (observed three times on 2026-08-27). Snapshot the doc and restore it
+    # in the same finally. MITIGATION, not a fix: a test still writes a
+    # production artifact, which is the ticket's remaining defect.
+    doc_p = root / "output_audit" / "POSTCONFIG_REPORT.md"
+    doc_before = doc_p.read_bytes() if doc_p.exists() else None
     argv_log = spec_dir / "argv.jsonl"
     fake = spec_dir / "fake_engine.py"
     fake.write_text(f"""
@@ -24793,6 +24801,8 @@ if n == 1:
         led = _json.loads(led_p.read_text())
         led.pop(f"output_{wave}_armx", None)
         led_p.write_text(_json.dumps(led, indent=1), encoding="utf-8")
+        if doc_before is not None:
+            doc_p.write_bytes(doc_before)
 
 
 def test_b2118_run_postconfig_checks_catch_the_planted_defects(tmp_path):
@@ -26820,3 +26830,111 @@ def test_b2272_counts_block_must_be_computed_this_turn_not_carried():
     quiet = m.scan_ticket_counts_missing(
         [], text=block, tool_text="python scripts/queue_state.py")
     assert quiet == [], "a compliant turn must not be punished: " + repr(quiet)
+
+def test_b2275_kill_gate_reads_this_turn_not_the_session():
+    """S6-B2266 (owner-approved 2026-08-27): the kill gate is TURN-scoped.
+
+    Session scope made it unsatisfiable by construction: a kill in append-only
+    transcript history blocked every subsequent close, no behaviour could
+    clear it, and the .stop_exempt hatch does not reach scan gates. This is
+    L609/B1980's class - the turn-scoping rule was learned on the response
+    collector and never carried to this tool collector.
+
+    Three arms:
+      (a) must-QUIET: a name-sweep kill in a PRIOR turn (before the last real
+          user message) does not fire - the event is history, ticketed at
+          S6-B2214, not this turn's behaviour;
+      (b) must-FIRE: the same kill AFTER the last user message fires;
+      (c) the cmds= injection seam still fires, so the corpus keeps working.
+    """
+    import importlib.util as _ilu
+    import sys as _sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    spec = _ilu.spec_from_file_location(
+        "verify_turn_compliance", root / "scripts" / "verify_turn_compliance.py")
+    m = _ilu.module_from_spec(spec)
+    _sys.modules["verify_turn_compliance"] = m
+    spec.loader.exec_module(m)
+
+    def kill_entry():
+        return {"type": "assistant", "message": {"content": [
+            {"type": "tool_use", "name": "PowerShell",
+             "input": {"command": "Get-Process python | Stop-Process -Force"}}]}}
+
+    def user_entry(text):
+        return {"type": "user", "message": {"content": text}}
+
+    # (a) kill BEFORE the last user message: history, must be QUIET
+    prior = [kill_entry(), user_entry("please report status")]
+    assert m.scan_bulk_process_kill(prior) == [], (
+        "a kill in a PRIOR turn is history (S6-B2214), not this turn's "
+        "behaviour - session scope made the gate unsatisfiable")
+
+    # (b) kill AFTER the last user message: this turn, must FIRE
+    current = [user_entry("please report status"), kill_entry()]
+    assert m.scan_bulk_process_kill(current), (
+        "a name-sweep kill THIS turn must still fire")
+
+    # (c) the injection seam is unchanged
+    assert m.scan_bulk_process_kill(
+        [], cmds=["taskkill /im python.exe /f"]), (
+        "the cmds= seam must keep firing so the corpus can ask the gate")
+
+def test_b2276_phase5_mechanism_member_accepts_a_named_enforcer():
+    """S6-B2271 (owner-approved 2026-08-27): naming the gate that ALREADY
+    enforces a class satisfies the Phase-5 mechanism member.
+
+    The member accepted only a touched .py or the literal "judgment-only" plus
+    a durability marker. A class whose mechanism already exists fits neither:
+    JUDGMENT-ONLY would be FALSE (detection exists and fired), and no code
+    needs touching. L602's missing-kind defect from the compliance side - the
+    honest answer named the two gates that caught the miss and was refused.
+
+    Structural and clause-scoped: the identifier must share a clause with an
+    enforcement stem. Three arms:
+      (a) must-QUIET on the mechanism member: a miss admission whose text says
+          the class is already enforced BY a named scan_ satisfies it;
+      (b) must-FIRE: the same admission with no named enforcer, no
+          judgment-only and no touched .py still fails the member;
+      (c) an identifier merely MENTIONED in an unrelated clause does not
+          satisfy - discussing a gate is not citing an enforcer (B1738
+          mention-vs-use).
+    """
+    import importlib.util as _ilu
+    import sys as _sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    spec = _ilu.spec_from_file_location(
+        "verify_turn_compliance", root / "scripts" / "verify_turn_compliance.py")
+    m = _ilu.module_from_spec(spec)
+    _sys.modules["verify_turn_compliance"] = m
+    spec.loader.exec_module(m)
+
+    MEMBER = "mechanism for the CLASS (scan_/pin test) or explicit JUDGMENT-ONLY"
+
+    base = ("compliance failure against item 201 - i carried the counts and "
+            "my label was wrong. ticket filed. ")
+
+    # (a) named enforcer in an enforcement clause -> member satisfied
+    good = base + ("no new mechanism is needed: the class is already "
+                   "enforced by scan_ticket_counts_missing, which caught it "
+                   "both times.")
+    out = m.scan_miss_capture_complete([], text=good, touched=False)
+    assert not any(MEMBER in v for v in out), (
+        "naming the enforcing gate in an enforcement clause must satisfy "
+        "the mechanism member: " + repr(out))
+
+    # (b) no enforcer named, no judgment-only, nothing touched -> member fails
+    bare = base + "the class needs thought."
+    out = m.scan_miss_capture_complete([], text=bare, touched=False)
+    assert any(MEMBER in v for v in out), (
+        "with no mechanism evidence at all the member must still fail")
+
+    # (c) mention without enforcement context does not satisfy
+    mention = base + ("earlier this session scan_partial_read produced an "
+                      "interesting false positive. the class needs thought.")
+    out = m.scan_miss_capture_complete([], text=mention, touched=False)
+    assert any(MEMBER in v for v in out), (
+        "a gate name in an unrelated clause is a mention, not a cited "
+        "enforcer (B1738)")

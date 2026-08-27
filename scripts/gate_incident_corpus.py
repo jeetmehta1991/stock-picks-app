@@ -455,6 +455,30 @@ PURE_INCIDENTS: dict[str, list[tuple[tuple, bool, str]]] = {
 
 
 EXTRA_INCIDENTS: dict[str, list[tuple[str, bool, dict]]] = {
+    # B2273/B2275 (L691): the FRESHNESS arm of the counts gate, added after it
+    # caught its own author TWICE within three turns. The block below is
+    # verbatim-shaped compliant output - six classes, a delta column, the
+    # correct numbers - and it is a DEFECT because the counter never ran that
+    # turn, so the figures were carried from the previous close. Presence and
+    # format were always gated; freshness was not, and the two gates covering
+    # this artifact left a seam neither was wrong about.
+    "scan_ticket_counts_missing": [
+        ("Ticket counts (scripts/queue_state.py, executed this turn):\n\n"
+         "| Class | Count | Delta |\n|---|---|---|\n"
+         "| EXECUTED | 1481 | 0 |\n| DROPPED | 24 | 0 |\n"
+         "| BLOCKED | 5 | 0 |\n| DEFERRED | 11 | 0 |\n"
+         "| OPEN | 14 | 0 |\n| RUNNING | 1 | 0 |\n",
+         True, {"tool_text": "git status --porcelain"}),
+        # the must-QUIET arm: the SAME block with the counter actually run.
+        # Without it, a gate that refused every counts block would satisfy the
+        # entry above and look correct (L594/L686).
+        ("Ticket counts (scripts/queue_state.py, executed this turn):\n\n"
+         "| Class | Count | Delta |\n|---|---|---|\n"
+         "| EXECUTED | 1481 | 0 |\n| DROPPED | 24 | 0 |\n"
+         "| BLOCKED | 5 | 0 |\n| DEFERRED | 11 | 0 |\n"
+         "| OPEN | 14 | 0 |\n| RUNNING | 1 | 0 |\n",
+         False, {"tool_text": "python scripts/queue_state.py"}),
+    ],
     # B2005 (G2, owner-approved): the verbatim B1908 incident - a COMMENT's
     # number quoted as measured, cleared by `.py` in FIGURE_SOURCES.
     "scan_synthetic_provenance": [
