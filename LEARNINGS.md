@@ -15802,3 +15802,41 @@ this instance, and the only one stated as a bare number without naming which ins
 they were found. **1 of 3 miss counts carried the defect, and it is the only one that did not
 enumerate its members** - which is exactly the discriminator CHECKLIST item 280 already names
 for counts generally, arriving here in the miss-accounting.
+
+## L683
+**I wrote four pins in one batch and TWO were defective - each breaking a DIFFERENT rule the
+repo already had, both while enforcing other rules (B2255).**
+The spawn-probe pin loaded run_wave under a synthetic module name, which breaks pickling because
+the spawned child cannot import a module that does not exist by that name. It reported the probe
+as failing on a healthy interpreter - **a control taking a path production never takes**, which
+is #276b verbatim. The disclosure pin asserted `field in src` and PASSED with the field deleted
+from the row, because **the comment explaining the fix mentions the field name** - L582's
+presence-grep-matches-its-own-documentation, in the pin for a disclosure.
+Both were caught by running the prove-it-can-fail step, not by review. Neither would have been
+caught by the pyramid, since both were GREEN in their defective state - the first would have
+been red and blamed on the code, the second green and trusted.
+**Rule: the pin is where the repo's own rules get broken most, because writing one feels like
+compliance rather than like code.** A pin is a test like any other and inherits every trap tests
+have; the sense of doing the disciplined thing is exactly what suppresses the question of
+whether the disciplined thing was done correctly.
+**And the two defects fail in opposite directions, which is why both arms matter.** A pin that
+wrongly FAILS is loud and gets investigated. A pin that wrongly PASSES is silent and gets
+trusted - it is a gate that has been run rather than tested (L501). One of mine was each, in the
+same batch.
+Compliance failure against CHECKLIST item 276b (a control must take the same path as the claim)
+and against L582 (a transform or grep matching its own documentation). No new item; both are
+documented, both were available, and both were broken anyway - which is L570's
+authoring-feels-like-installing, one level down into the enforcement layer.
+Mechanism: MECHANICALLY ENFORCED and it worked - CHECKLIST item 226's prove-it-can-fail step is
+the mechanism, and applying it to all four pins is what surfaced both defects. The residue is
+JUDGMENT-ONLY: no scan can tell a pin that tests the real path from one that tests a synthetic
+one, since both are valid imports. Durability held by this rule's text in SKILL.md under the
+anchor-doc citation freeze. Both halves stated separately per L548.
+**Retroactive sweep (CHECKLIST #237), what was scanned and found:** re-ran the prove-it-can-fail
+step against every pin written in this session, not only the two suspected. The two committed
+earlier - the commit-watchdog pin and the exit-delegation pin - were both already proved
+load-bearing when written (the delegation pin by disabling FALLBACK_MARKERS, which made its
+finding vanish). Of the four written this batch, the single-leg pin and the identical-pair pin
+failed correctly when their subjects were removed. **2 of 6 session pins were defective on first
+write, and both are from the batch where I was writing four at once** - which is the rate worth
+carrying, since the two written singly were sound.

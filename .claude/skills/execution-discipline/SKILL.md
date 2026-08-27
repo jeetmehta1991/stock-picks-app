@@ -3085,6 +3085,15 @@ own description; the freeze never reached it.
   the same debt. Address a read with file:line, a measurement with its re-runnable command, an
   enumeration with its query. **A build leaves an artifact someone trips over; a read leaves
   nothing** - and a finding nobody can locate is one nobody can correct.
+- **THE PIN IS WHERE THE REPO'S OWN RULES GET BROKEN MOST (L683).** MEASURED: four pins written in
+  one batch, TWO defective, each breaking a DIFFERENT documented rule - one loaded its module under
+  a synthetic name so pickling failed for a reason production never hits (`#276b`), one asserted
+  `field in src` and passed with the field deleted because the COMMENT mentions the field name
+  (L582). **Writing a pin feels like compliance rather than like code, and that feeling suppresses
+  the question of whether it was done correctly.** Note they fail in opposite directions: a pin
+  that wrongly FAILS is loud and gets investigated; one that wrongly PASSES is silent and gets
+  trusted. Run `#226`'s prove-it-can-fail on EVERY pin - it is what caught both.
+
 - **A MISS COUNT FROM WHAT A GATE FLAGGED IS A COUNT OF DETECTIONS, NOT OCCURRENCES (L682).**
   MEASURED: I reported the uncosted-consequence class as *twice this session* - both instances the
   turn gate had surfaced. A sweep of all 107 session rows found 45 consequence claims and roughly
