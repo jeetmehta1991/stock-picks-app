@@ -16431,3 +16431,42 @@ carried from a prior turn and stale by one, corrected on challenge, and no rulin
 110 cells cleared; retracted in S6-B2295, and the owner's ruling survived because it had been made
 on process grounds rather than on my number. **4 of 4 reported figures needed correction; 2 had
 already reached the owner.** That rate is the finding, not the individual errors.
+
+## L701
+**THE DEFINING SOURCE CAN HAVE SEVERAL FORMS, AND MATCHING ONE OF THEM IS STILL A PROXY
+(B2321).**
+L697 says derive an expected set from the defining source. I did - and was wrong twice in one
+ticket, because I treated ONE SYNTACTIC FORM as the source. My extractor matched
+`- **RULE (LNNN).**` bullets and reported **141 of 143 rules have no defining text**. Hand-reading
+six showed rules also live as `## HEADINGS` (L411, L498) and as NUMBERED items
+(`8b. **RECOVERY CADENCE IS A COVERAGE CLAIM (L644/B2175).**`). Re-measured across all three:
+**114 pinnable, 30 cited-only** - not 3 and 141. The same error had already produced the previous
+turn's claim that L664 and L665 had no defining text; they are headings.
+**A proxy is not only a different QUESTION (L697's case) - it can be the right question asked in
+one dialect of the answer.** Both failures felt like derivation, because a regex over the real
+file is exactly what deriving looks like.
+**Rule: before trusting an extractor over a human-written corpus, enumerate the FORMS the corpus
+uses and confirm the pattern covers each.** Cheapest test: sample the MISSES by hand. Six samples
+found two unmatched forms here, and the sample cost under a minute against a 14-hour estimate
+built on the wrong number.
+Compliance failure against CHECKLIST item 182 read with L697; no new item - #182 already demands a
+verdict name its denominator, and 'of 143' was the denominator that was wrong.
+**What went right, and it is the reusable part: I sampled the misses rather than the hits.** A
+sample of matched rules would have looked perfect. The population that carries the defect is
+always the one the detector EXCLUDED, and that is the cheap check.
+Mechanism: JUDGMENT-ONLY for the extractor habit - **no detection mechanism** can know which
+dialects a human-written file uses, and a pattern that misses a form looks identical to a
+population that lacks it. Durability pinned by this rule in SKILL.md, and the specific coverage
+figure is checkable through the gutted-fragment assertion in
+test_b2123_session_rules_survive_in_the_always_read_skills.
+**Retroactive sweep (#237) - every extractor I have written this session, re-asked as 'does it
+cover the forms the corpus actually uses?':** (1) the rule-bullet extractor - **THE INSTANCE**,
+one form of three; (2) the FIRE_ONLY_LEGACY reader - parses a Python set literal, ONE form exists
+in the language, SOUND; (3) the `def scan_*` extractor in test_b2286 - Python has one function-def
+form, SOUND; (4) the verdict-string extractor in test_b2299b - it matched dict-literal AND
+assignment forms and STILL missed the ternary, which is why PASS/FAIL were absent, so it was **the
+same defect caught earlier by the pin itself**; (5) the queue-row parser - reads one bolded table
+shape and MISSED 72 legacy named-suffix rows, discovered during the B2248 reconciliation. **3 of 5
+extractors matched fewer forms than the corpus uses; 2 were sound because their corpus is machine
+-generated.** The discriminator is clean: extractors over PYTHON are safe, extractors over
+HUMAN-WRITTEN MARKDOWN are not.

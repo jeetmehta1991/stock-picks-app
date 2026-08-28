@@ -3136,6 +3136,15 @@ own description; the freeze never reached it.
   identifier with NO structure assumed and read the line it lands on. A zero-hit search and a
   wrong-shaped search exit identically.
 
+- **THE DEFINING SOURCE CAN HAVE SEVERAL FORMS (L701, sharpening L697).** Matching one of them is
+  still a proxy. MEASURED: an extractor matching `- **RULE (LNNN).**` bullets reported 141 of 143
+  rules as having no defining text; rules also live as `## HEADINGS` and as numbered items, and the
+  real split was 114 pinnable / 30 cited-only. **Sample the MISSES, not the hits** - a sample of
+  matched items always looks perfect, and the population carrying the defect is the one the detector
+  EXCLUDED. Six hand-read misses cost under a minute and overturned a 14-hour estimate. Sweep: 3 of
+  5 extractors this session matched fewer forms than their corpus used; the sound two both ran over
+  PYTHON, not over human-written markdown.
+
 - **A NUMBER YOU HAND THE OWNER CAN COME BACK AS AN INSTRUCTION (L700).** Before reporting a
   figure, ask what happens if the owner ACTS on it - and if the answer is a scope, re-derive it from
   the DEFINING source first, not from whichever proxy is nearest. MEASURED: I reported 102 unpinned
