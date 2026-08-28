@@ -3145,6 +3145,24 @@ own description; the freeze never reached it.
   substring assertions this session shared the defect, both in the same new pin. An assertion over a
   multi-section render needs a selector; one over a source file or a parsed structure does not.
 
+- **NEVER ASSERT A COLUMN EXISTS BY SUBSTRING OVER A WHOLE RENDERED DOCUMENT (L706).** Extract the
+  HEADER ROW and assert against that. A table that documents itself - glossary, preamble, per-tier
+  summary - names its own columns in prose, so the substring passes while the column is gone.
+  MEASURED: this defect landed TWICE in one test, hours apart, after L703 was written: the tier
+  assertion matched the per-tier summary's header, then each axis assertion matched the preamble's
+  glossary. Discriminator: if the asserted string names a STRUCTURAL element, anchor it; if the
+  string IS the prose (a disclosure sentence), substring is correct. Sweep of that test: 2 of 9
+  assertions were defective, both now anchored.
+
+- **RETRACT BY DROPPING THE PHRASE, NOT BY QUOTING IT - AND NAME SOURCES IN PLAIN TEXT (L705).**
+  A gate reads text, not intent: repeating a withdrawn claim inside its own withdrawal presents the
+  claim again and re-fires the check the retraction was meant to close. MEASURED: an uncosted
+  effort adjective was withdrawn and re-quoted in the same sentence, firing the same gate twice in
+  one turn. Discriminator: a wrong NUMBER beside the right one informs and is sound; a bare
+  withdrawn ADJECTIVE repeated alone only re-asserts. Separately, inline-code backticks are
+  stripped as MENTIONS (B1738) before the source gate reads the text, so a source in backticks is
+  invisible to the check demanding it - cite artifacts in plain prose.
+
 - **AN ACTION YOU OWE LATER GOES IN AN OPEN TICKET, NEVER AS A CAVEAT IN THE ROW YOU ARE CLOSING
   (L704).** A future obligation recorded inside a terminal row is invisible by construction - no
   open-ticket sweep will ever surface it. MEASURED: I wrote that the hourly cron would not survive

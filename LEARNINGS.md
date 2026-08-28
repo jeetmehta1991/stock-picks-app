@@ -16621,3 +16621,43 @@ two separate files and assert per-file, so a match in one cannot satisfy the oth
 **2 of 5 shared the defect, both in the same new pin, both fixed.** The discriminator: an
 assertion over a MULTI-SECTION RENDER needs a selector; one over a source file or a parsed
 structure does not.
+
+## L706
+**THE SAME HOLLOW-ASSERTION DEFECT TWICE IN ONE ARTIFACT, HOURS APART, AFTER I WROTE THE RULE
+AGAINST IT (B2334).**
+L703 says an assertion can pass for the wrong reason. I wrote it, then committed the defect
+TWICE in the same test - test_b2330, the Table D pin - within one working session.
+**Instance 1:** `'| tier |' in out` was satisfied by the PER-TIER SUMMARY's header, so deleting
+tier from the MAIN table passed. Caught by the fail-proof, fixed by anchoring to the main
+header row.
+**Instance 2, hours later in the same function:** `axis in pout` for each of the six parameter
+axes was satisfied by the PREAMBLE's prose, which names every axis in its glossary sentence - so
+renaming a COLUMN HEADER passed. Fixed the same way, anchoring to the header row.
+**Both had the identical shape and I applied the fix to the first without generalising it to the
+second, which I then wrote minutes afterwards.** The first fix was reasoned about as a property
+of `tier`; it is a property of every substring assertion over a rendered document that also
+contains PROSE ABOUT ITSELF.
+**Rule: in a renderer whose output contains a glossary, a preamble, or a summary, NEVER assert a
+column exists by substring over the whole output.** Extract the header row first and assert
+against that. The richer the document's self-documentation, the more places a column name
+appears without the column existing - the very quality that makes these tables readable is what
+makes substring assertions vacuous.
+Compliance failure against CHECKLIST item 226 read with L703 - the fail-proof was RUN both times
+and both times reported the truth; what failed was generalising instance 1 before writing
+instance 2. No new checklist item: #226 already mandates the fail-proof, and it worked.
+Mechanism: **JUDGMENT-ONLY for detection.** A scan cannot distinguish a substring assertion that
+is sound (the string appears only where it should) from one that is vacuous (the string also
+appears in prose) without rendering the document and testing both - which is exactly what the
+fail-proof does, and the fail-proof is already mandatory. The gap was never mechanism; it was
+applying a just-learned lesson to the next line of the same file. Durability by this rule in
+SKILL.md and by both assertions in test_b2330 now carrying the anchoring comment inline, so the
+next reader meets the reasoning at the site.
+**Retroactive sweep (#237): every assertion in test_b2330 checked for the same shape.** 9
+assertions: 2 were substring-over-whole-output on a column name - **both instances above, both
+now anchored**; 3 assert on CONTENT that appears nowhere else (`deep_exit`, `1 of 2`, `2 of 2`)
+- **SOUND**, a fabricated exit name and a dup marker have no prose home; 2 assert on the first
+DATA row extracted structurally - **SOUND by construction**; 2 assert disclosure sentences
+(`SHARPE alone`, `Best within each depth tier`) which are PROSE BY INTENT, so substring is the
+correct form - **SOUND**. So 2 of 9 were defective and both are fixed; the discriminator is
+whether the asserted string names a STRUCTURAL element (anchor it) or is itself the prose
+(substring is right).
