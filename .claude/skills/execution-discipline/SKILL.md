@@ -3131,6 +3131,14 @@ own description; the freeze never reached it.
   identifier with NO structure assumed and read the line it lands on. A zero-hit search and a
   wrong-shaped search exit identically.
 
+- **A TEST THAT PINS A POPULATION MUST DERIVE ITS EXPECTED SET FROM THE DEFINING SOURCE (L697).**
+  Never from a sample of what the system has produced so far - a run that has not exercised a branch
+  is not evidence the branch does not exist. MEASURED: a verdict-name sweep pin seeded from OBSERVED
+  step-1 grids omitted PASS and FAIL, which the grader emits in a branch step-1 never reaches, so
+  the pin failed against a correct codebase. That is L694 (denominator attaches to the COLUMN)
+  recurring inside the mechanism built to prevent a related error. Sweep of this session's
+  population-pinning tests: 1 of 3 took its set from the wrong column.
+
 - **WHEN A CORRECTED NUMBER KEEPS COMING BACK, FIND THE ARTIFACT THAT RE-SUPPLIES IT (L696).**
   Four owner corrections failed to remove a 0.333 threshold from my reports because each fixed the
   sentence, not the source: `postconfig_report.py` defines its own NOISE_FLOOR and prints it under

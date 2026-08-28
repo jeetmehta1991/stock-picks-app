@@ -16294,3 +16294,35 @@ as a Step-1 VERDICT - **2 of 6 files are the defect**. `test_batch756` and `test
 are test fixtures, correct. **And CLAUDE.md line 19 carries 'Floor 0.333 (B2009)' inside the
 PHASE 1B ROSTER banner with no statement that it is Phase-1B-grain only** - a third propagation
 path, ticketed with the others.
+
+## L697
+**A PIN I WAS WRITING CAUGHT THE L694 DEFECT IN ITSELF - I BUILT ITS EXPECTED-SET FROM THE
+OUTPUT COLUMN INSTEAD OF THE CODE COLUMN (B2302).**
+Writing the verdict-name sweep pin, I seeded its `known` set with the verdict strings I had
+OBSERVED in step-1 grids - ZERO_FIRES, NO_EXIT_SELECTABLE, BELOW_POWER_FLOOR. The pin then failed
+against a correct codebase, because `tighten_breaker_block.py` also emits **PASS** and **FAIL**
+at line 383, in a branch step-1 grids never reach.
+**The observed population and the defined population are different columns**, and I took the
+expected-set from the one that happened to be in front of me - which is L694 exactly, three turns
+after writing it, inside the mechanism built to stop a related error.
+What makes this worth an entry rather than a shrug: **the pin caught it, not the owner.** Every
+prior instance in this session was caught by a gate firing on my prose or by the owner reading a
+number. This one was caught by test collection, before the claim reached anybody. That is the
+first time this class was intercepted by the artifact rather than by a reader.
+**Rule: when a test asserts a POPULATION, derive the expected set from the DEFINING source (the
+code that emits, the schema that declares), never from a sample of what the system has produced
+so far.** A run that has not exercised a branch is not evidence the branch does not exist.
+Compliance failure against CHECKLIST item 270 read with L694; no new item - the rule already
+exists and this is its third instance, which is itself the finding.
+Mechanism: the pin IS the mechanism and it worked - `test_b2299b_verdict_names_do_not_imply_a_magnitude_they_do_not_measure` now derives from the
+code's own emission sites and carries the correction in a comment, so the next reader meets the
+reasoning rather than the bare set. Detection of the general habit stays JUDGMENT-ONLY: no scan
+can tell whether a literal set in a test was typed from a sample or from a definition.
+**Retroactive sweep (#237) - every test written this session that pins a POPULATION, checked for
+where its expected-set came from:** (1) test_b2299b verdict names - seeded from OBSERVED grids,
+**THE INSTANCE**, now derived from code; (2) test_b2300 grading-path files - the list of three
+grader filenames is a DEFINITION (the files that grade), and it carries a >=2-of-3 positive
+control so a rename fails loudly, SOUND; (3) test_b2286 scan citations - derived by parsing
+`def scan_*` from the enforcement module itself, i.e. the defining source, SOUND; (4) test_b2260
+expected-events - no population, a scalar computation, N/A. **1 of 3 population-pinning tests took
+its set from the wrong column.**
