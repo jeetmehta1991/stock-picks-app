@@ -25021,6 +25021,23 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         ("CHECK THE EFFECT IN THE ROWS WITH ENOUGH DATA",
          "L663: a degeneracy seen only where n is smallest is a sample-size "
          "hypothesis wearing a parameter hypothesis's clothes"),
+        # ---- S6-B2317 batch 2 (B2319): SIX HAND-AUTHORED fragments.
+        # Auto-selection was TRIED AND REJECTED: it yielded 88 candidates
+        # that passed presence and uniqueness but failed the SUBSTANCE bar
+        # (one began mid-filename, another was an incidental clause) - a doc
+        # edit could rewrite the rule and leave them intact. That is the
+        # padding the council warned this very test exists to catch, so the
+        # remaining 108 are hand-authored in later batches, not generated.
+        ("ran vs typed",
+         "L612: gate evidence has three axes: provenance (ran vs typed), window, and kind"),
+        ("STRADDLES the turn boundary by construction",
+         "L610: each gate's question names its own window - a Skill load spans the boundary"),
+        ("learned on the response collector and never carried to the tool collectors",
+         "L609: a turn gate must read THIS turn on every collector, not just the one where the rule was learned"),
+        ("a heredoc body is DATA the command carries",
+         "L608: a new helper starts without its siblings' lessons - the scrub existed twice in the same file"),
+        ("A `#237` sweep covers the sites that exist when it runs",
+         "L618: a sweep is a snapshot; sites added later are not covered by it"),
         # ---- S6-B2245 batch 1 (B2316): the 34 rules from this session that
         # HAVE a defining bullet. Owner ruling 2026-08-27: pin the unpinned.
         # Council sequencing: these first, because I wrote them and can quote
@@ -25124,7 +25141,7 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # B2316: 54 -> 88 with the S6-B2245 batch-1 fragments. This number is the
     # pin's own must-FIRE arm - if a doc edit silently drops fragments, the
     # gutted count falls and this assertion catches the shrinkage.
-    assert len(gutted) == 88, gutted
+    assert len(gutted) == 93, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
