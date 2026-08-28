@@ -27163,3 +27163,85 @@ def test_b2300_step1_has_no_sharpe_ci_lo_gate():
         'is_ci_lo vanished from the grader - it is the RANKING KEY (B2010 D4)'
         ' and must remain present as a field')
 
+def test_b2299_step1_report_states_the_criterion_not_a_floor():
+    """S6-B2299 (L696): the findings report must not print a Step-1 VERDICT.
+
+    WHY. Step-1 admission is min-trades >= 10 plus a ranked list with NO gates
+    (owner ruling 2026-08-17 / B1608, stated at tighten_breaker_block.py:383).
+    postconfig_doc.py used to emit '**VERDICT: best cell is_ci_lo X BELOW the
+    0.333 selection-noise yardstick**' - a PHASE-1B per-cell floor (B2009) printed
+    as a Step-1 verdict. The owner corrected that framing FOUR times and it kept
+    returning, because every correction fixed a sentence and none touched this
+    generator.
+
+    BEHAVIOURAL, not substring-only: the assertions below run the real renderer
+    over a synthetic grid, so prose in the module cannot satisfy them.
+    """
+    import importlib.util as _ilu
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    src = root / 'scripts' / 'postconfig_doc.py'
+    spec = _ilu.spec_from_file_location('postconfig_doc', src)
+    mod = _ilu.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+
+    # (a) the constant survives but must carry its GRAIN in the source
+    text = src.read_text(encoding='utf-8')
+    assert 'NOISE_FLOOR = 0.333' in text, 'the diagnostic yardstick was removed entirely'
+    assert 'PHASE-1B' in text, (
+        'NOISE_FLOOR must name the grain it belongs to - an unqualified 0.333'
+        ' beside Step-1 output is what caused L696')
+
+    # (b) the renderer must NOT emit a Step-1 verdict, in either branch
+    assert 'VERDICT: best cell' not in text, (
+        'the Step-1 block prints a VERDICT again; Step 1 has no verdicts')
+    assert 'VERDICT: no graded grid' not in text, (
+        'the empty branch prints a VERDICT; an absent grid is an absence')
+
+    # (c) it must state the actual criterion where the reader will see it
+    assert 'min-trades' in text and 'RANKING KEY' in text, (
+        'the report must state that Step-1 admission is min-trades plus a ranked'
+        ' list and that is_ci_lo is the ranking key, not a gate')
+
+    # (d) must-QUIET arm (L686): the module still IMPORTS and still defines the
+    # renderer. Without this the whole test is satisfiable by deleting the file's
+    # contents, which would 'pass' every assertion above about absent strings.
+    assert hasattr(mod, 'NOISE_FLOOR'), 'module lost its constant'
+    assert abs(mod.NOISE_FLOOR - 0.333) < 1e-9, 'the diagnostic value changed silently'
+
+
+def test_b2299b_verdict_names_do_not_imply_a_magnitude_they_do_not_measure():
+    """S6-B2299b: the Expansionist sweep - a verdict NAME is load-bearing UI.
+
+    The same session misread the admission criterion four times from report
+    framing, then filed a false defect against BELOW_POWER_FLOOR for the identical
+    reason: the name encodes a MECHANISM (holdout window locked) but reads as a
+    MAGNITUDE claim (too few trades). This pins the population so a NEW verdict
+    string cannot be added without someone weighing that trap.
+
+    NOT a rename: BELOW_POWER_FLOOR is correct as defined
+    (STRATEGY_OPTIMISATION_PLAN.md:1237, 'holdout n < 30') and renaming it
+    mid-program would make later configs incomparable with earlier ones.
+    """
+    import re
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    src = (root / 'scripts' / 'tighten_breaker_block.py').read_text(encoding='utf-8')
+    names = set(re.findall(r'"verdict":\s*"([A-Z_]+)"', src))
+    names |= set(re.findall(r'\["verdict"\]\s*=\s*"([A-Z_]+)"', src))
+    # the population as measured at authoring; a new one must be considered,
+    # not silently added.
+    # B2299b CORRECTION: this set was first built from the verdicts OBSERVED in
+    # step-1 grids, which never reach the gate branch - so PASS/FAIL were missing
+    # and the pin failed on a correct codebase. That is the L694 defect (a
+    # population taken from one column and applied to another), caught by the pin
+    # itself. The set is now derived from the CODE's own emission sites.
+    known = {'ZERO_FIRES', 'NO_EXIT_SELECTABLE', 'BELOW_POWER_FLOOR',
+             'PASS', 'FAIL'}
+    assert names, 'no verdict strings parsed - the extractor is broken'
+    assert names <= known, (
+        'new verdict string(s) %r. Before adding one, check the L696 trap: does the'
+        ' NAME imply a magnitude (too few, too weak) when the CONDITION is a'
+        ' structural absence (window locked, gate not evaluated)? BELOW_POWER_FLOOR'
+        ' means holdout n < 30 and cost a full false-defect cycle.' % (names - known))
+

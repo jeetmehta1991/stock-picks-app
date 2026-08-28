@@ -40,7 +40,7 @@ REGENERATED WHOLE at every config landing. Replaces the per-config report cards 
 
 **Configuration:** P1_swing_length=10, P6_span=50
 
-**VERDICT: best cell is_ci_lo -0.042 BELOW the 0.333 selection-noise yardstick** (is_sharpe 0.422, 156 fires, exit breakeven_plus_trail). Its height is explainable by the search itself.
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.042** (is_sharpe 0.422, 156 fires, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. DIAGNOSTIC ONLY: that value is below the 0.333 PHASE-1B per-cell selection-noise floor (B2009), a DIFFERENT GRAIN. Its height is explainable by the search itself.
 
 **Completeness: 5 of 9 steps ran.** The 4 judgment steps (5_adversarial_lens_review, 6_post_fix_recheck, 7_implement_in_engine, 8_verdict_with_denominators) are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
 
@@ -101,7 +101,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw10sp50_sw
 
 **Configuration:** P1_swing_length=10, P6_span=20
 
-**VERDICT: best cell is_ci_lo -0.07 BELOW the 0.333 selection-noise yardstick** (is_sharpe 0.47, 110 fires, exit breakeven_plus_trail). Its height is explainable by the search itself.
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.07** (is_sharpe 0.47, 110 fires, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. DIAGNOSTIC ONLY: that value is below the 0.333 PHASE-1B per-cell selection-noise floor (B2009), a DIFFERENT GRAIN. Its height is explainable by the search itself.
 
 **Completeness: 5 of 9 steps ran.** The 4 judgment steps (5_adversarial_lens_review, 6_post_fix_recheck, 7_implement_in_engine, 8_verdict_with_denominators) are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
 
@@ -162,7 +162,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw10sp20_sw
 
 **Configuration:** P1_swing_length=10, P6_span=9
 
-**VERDICT: best cell is_ci_lo -0.014 BELOW the 0.333 selection-noise yardstick** (is_sharpe 0.714, 68 fires, exit class_time_stop). Its height is explainable by the search itself.
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.014** (is_sharpe 0.714, 68 fires, exit class_time_stop). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. DIAGNOSTIC ONLY: that value is below the 0.333 PHASE-1B per-cell selection-noise floor (B2009), a DIFFERENT GRAIN. Its height is explainable by the search itself.
 
 **Completeness: 5 of 9 steps ran.** The 4 judgment steps (5_adversarial_lens_review, 6_post_fix_recheck, 7_implement_in_engine, 8_verdict_with_denominators) are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
 
@@ -223,7 +223,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw10sp9_sw1
 
 **Configuration:** P1_swing_length=30, P6_span=150
 
-**VERDICT: best cell is_ci_lo 1.214 ABOVE the 0.333 selection-noise yardstick** (is_sharpe 4.807, 11 fires, exit time_stop_10d). A cell above the yardstick is a CANDIDATE for Step-2 validation, not a validated edge.
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 1.214** (is_sharpe 4.807, 11 fires, exit time_stop_10d). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. DIAGNOSTIC ONLY: that value is above the 0.333 PHASE-1B per-cell selection-noise floor (B2009), a DIFFERENT GRAIN. A cell above the yardstick is a CANDIDATE for Step-2 validation, not a validated edge.
 
 **Completeness: 5 of 9 steps ran.** The 4 judgment steps (5_adversarial_lens_review, 6_post_fix_recheck, 7_implement_in_engine, 8_verdict_with_denominators) are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
 
@@ -284,7 +284,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw30sp150_s
 
 **Configuration:** P1_swing_length=30, P6_span=100
 
-**VERDICT: best cell is_ci_lo 0.816 ABOVE the 0.333 selection-noise yardstick** (is_sharpe 4.103, 12 fires, exit time_stop_10d). A cell above the yardstick is a CANDIDATE for Step-2 validation, not a validated edge.
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.816** (is_sharpe 4.103, 12 fires, exit time_stop_10d). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. DIAGNOSTIC ONLY: that value is above the 0.333 PHASE-1B per-cell selection-noise floor (B2009), a DIFFERENT GRAIN. A cell above the yardstick is a CANDIDATE for Step-2 validation, not a validated edge.
 
 **Completeness: 5 of 9 steps ran.** The 4 judgment steps (5_adversarial_lens_review, 6_post_fix_recheck, 7_implement_in_engine, 8_verdict_with_denominators) are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
 
@@ -345,7 +345,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw30sp100_s
 
 **Configuration:** P1_swing_length=30, P6_span=50
 
-**VERDICT: best cell is_ci_lo 0.816 ABOVE the 0.333 selection-noise yardstick** (is_sharpe 4.103, 12 fires, exit time_stop_10d). A cell above the yardstick is a CANDIDATE for Step-2 validation, not a validated edge.
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.816** (is_sharpe 4.103, 12 fires, exit time_stop_10d). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. DIAGNOSTIC ONLY: that value is above the 0.333 PHASE-1B per-cell selection-noise floor (B2009), a DIFFERENT GRAIN. A cell above the yardstick is a CANDIDATE for Step-2 validation, not a validated edge.
 
 **Completeness: 5 of 9 steps ran.** The 4 judgment steps (5_adversarial_lens_review, 6_post_fix_recheck, 7_implement_in_engine, 8_verdict_with_denominators) are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
 
@@ -406,7 +406,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw30sp50_sw
 
 **Configuration:** P1_swing_length=30, P6_span=20
 
-**VERDICT: best cell is_ci_lo 0.816 ABOVE the 0.333 selection-noise yardstick** (is_sharpe 4.103, 12 fires, exit time_stop_10d). A cell above the yardstick is a CANDIDATE for Step-2 validation, not a validated edge.
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.816** (is_sharpe 4.103, 12 fires, exit time_stop_10d). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. DIAGNOSTIC ONLY: that value is above the 0.333 PHASE-1B per-cell selection-noise floor (B2009), a DIFFERENT GRAIN. A cell above the yardstick is a CANDIDATE for Step-2 validation, not a validated edge.
 
 **Completeness: 5 of 9 steps ran.** The 4 judgment steps (5_adversarial_lens_review, 6_post_fix_recheck, 7_implement_in_engine, 8_verdict_with_denominators) are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
 
@@ -467,7 +467,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw30sp20_sw
 
 **Configuration:** P1_swing_length=30, P6_span=9
 
-**VERDICT: best cell is_ci_lo 0.687 ABOVE the 0.333 selection-noise yardstick** (is_sharpe 1.684, 22 fires, exit earnings_blackout). A cell above the yardstick is a CANDIDATE for Step-2 validation, not a validated edge.
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.687** (is_sharpe 1.684, 22 fires, exit earnings_blackout). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. DIAGNOSTIC ONLY: that value is above the 0.333 PHASE-1B per-cell selection-noise floor (B2009), a DIFFERENT GRAIN. A cell above the yardstick is a CANDIDATE for Step-2 validation, not a validated edge.
 
 **Completeness: 5 of 9 steps ran.** The 4 judgment steps (5_adversarial_lens_review, 6_post_fix_recheck, 7_implement_in_engine, 8_verdict_with_denominators) are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
 
@@ -528,7 +528,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw30sp9_sw3
 
 **Configuration:** P1_swing_length=20, P6_span=150
 
-**VERDICT: best cell is_ci_lo -0.114 BELOW the 0.333 selection-noise yardstick** (is_sharpe 0.357, 80 fires, exit hybrid_50pct_target). Its height is explainable by the search itself.
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.114** (is_sharpe 0.357, 80 fires, exit hybrid_50pct_target). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. DIAGNOSTIC ONLY: that value is below the 0.333 PHASE-1B per-cell selection-noise floor (B2009), a DIFFERENT GRAIN. Its height is explainable by the search itself.
 
 **Completeness: 5 of 9 steps ran.** The 4 judgment steps (5_adversarial_lens_review, 6_post_fix_recheck, 7_implement_in_engine, 8_verdict_with_denominators) are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
 
@@ -589,7 +589,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw20sp150_s
 
 **Configuration:** P1_swing_length=20, P6_span=100
 
-**VERDICT: best cell is_ci_lo -0.036 BELOW the 0.333 selection-noise yardstick** (is_sharpe 0.465, 66 fires, exit hybrid_50pct_target). Its height is explainable by the search itself.
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.036** (is_sharpe 0.465, 66 fires, exit hybrid_50pct_target). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. DIAGNOSTIC ONLY: that value is below the 0.333 PHASE-1B per-cell selection-noise floor (B2009), a DIFFERENT GRAIN. Its height is explainable by the search itself.
 
 **Completeness: 5 of 9 steps ran.** The 4 judgment steps (5_adversarial_lens_review, 6_post_fix_recheck, 7_implement_in_engine, 8_verdict_with_denominators) are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
 
@@ -650,7 +650,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw20sp100_s
 
 **Configuration:** P1_swing_length=20, P6_span=50
 
-**VERDICT: best cell is_ci_lo 0.025 BELOW the 0.333 selection-noise yardstick** (is_sharpe 0.535, 62 fires, exit hybrid_50pct_target). Its height is explainable by the search itself.
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.025** (is_sharpe 0.535, 62 fires, exit hybrid_50pct_target). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. DIAGNOSTIC ONLY: that value is below the 0.333 PHASE-1B per-cell selection-noise floor (B2009), a DIFFERENT GRAIN. Its height is explainable by the search itself.
 
 **Completeness: 5 of 9 steps ran.** The 4 judgment steps (5_adversarial_lens_review, 6_post_fix_recheck, 7_implement_in_engine, 8_verdict_with_denominators) are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
 
@@ -711,7 +711,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw20sp50_sw
 
 **Configuration:** P1_swing_length=20, P6_span=21
 
-**VERDICT: best cell is_ci_lo 0.107 BELOW the 0.333 selection-noise yardstick** (is_sharpe 0.551, 88 fires, exit hybrid_50pct_target). Its height is explainable by the search itself.
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.107** (is_sharpe 0.551, 88 fires, exit hybrid_50pct_target). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. DIAGNOSTIC ONLY: that value is below the 0.333 PHASE-1B per-cell selection-noise floor (B2009), a DIFFERENT GRAIN. Its height is explainable by the search itself.
 
 **Completeness: 5 of 9 steps ran.** The 4 judgment steps (5_adversarial_lens_review, 6_post_fix_recheck, 7_implement_in_engine, 8_verdict_with_denominators) are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
 
@@ -772,7 +772,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw20sp21_sw
 
 **Configuration:** P1_swing_length=20, P6_span=20
 
-**VERDICT: best cell is_ci_lo 0.107 BELOW the 0.333 selection-noise yardstick** (is_sharpe 0.551, 88 fires, exit hybrid_50pct_target). Its height is explainable by the search itself.
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.107** (is_sharpe 0.551, 88 fires, exit hybrid_50pct_target). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. DIAGNOSTIC ONLY: that value is below the 0.333 PHASE-1B per-cell selection-noise floor (B2009), a DIFFERENT GRAIN. Its height is explainable by the search itself.
 
 **Completeness: 5 of 9 steps ran.** The 4 judgment steps (5_adversarial_lens_review, 6_post_fix_recheck, 7_implement_in_engine, 8_verdict_with_denominators) are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
 
@@ -833,7 +833,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw20sp20_sw
 
 **Configuration:** P1_swing_length=20, P6_span=9
 
-**VERDICT: best cell is_ci_lo 0.044 BELOW the 0.333 selection-noise yardstick** (is_sharpe 1.576, 71 fires, exit r_multiple_2r). Its height is explainable by the search itself.
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.044** (is_sharpe 1.576, 71 fires, exit r_multiple_2r). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. DIAGNOSTIC ONLY: that value is below the 0.333 PHASE-1B per-cell selection-noise floor (B2009), a DIFFERENT GRAIN. Its height is explainable by the search itself.
 
 **Completeness: 5 of 9 steps ran.** The 4 judgment steps (5_adversarial_lens_review, 6_post_fix_recheck, 7_implement_in_engine, 8_verdict_with_denominators) are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
 
@@ -894,7 +894,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw20sp9_sw2
 
 **Configuration:** P1_swing_length=5, P6_span=200
 
-**VERDICT: best cell is_ci_lo 0.123 BELOW the 0.333 selection-noise yardstick** (is_sharpe 0.625, 74 fires, exit earnings_blackout). Its height is explainable by the search itself.
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.123** (is_sharpe 0.625, 74 fires, exit earnings_blackout). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. DIAGNOSTIC ONLY: that value is below the 0.333 PHASE-1B per-cell selection-noise floor (B2009), a DIFFERENT GRAIN. Its height is explainable by the search itself.
 
 **Completeness: 5 of 9 steps ran.** The 4 judgment steps (5_adversarial_lens_review, 6_post_fix_recheck, 7_implement_in_engine, 8_verdict_with_denominators) are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
 
@@ -955,7 +955,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2190_sw5_sw5_gri
 
 **Configuration:** P1_swing_length=10, P6_span=200
 
-**VERDICT: best cell is_ci_lo -0.091 BELOW the 0.333 selection-noise yardstick** (is_sharpe 0.746, 92 fires, exit fixed_4r_2r). Its height is explainable by the search itself.
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.091** (is_sharpe 0.746, 92 fires, exit fixed_4r_2r). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. DIAGNOSTIC ONLY: that value is below the 0.333 PHASE-1B per-cell selection-noise floor (B2009), a DIFFERENT GRAIN. Its height is explainable by the search itself.
 
 **Completeness: 5 of 9 steps ran.** The 4 judgment steps (5_adversarial_lens_review, 6_post_fix_recheck, 7_implement_in_engine, 8_verdict_with_denominators) are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
 
@@ -1016,7 +1016,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2190_sw10_sw10_g
 
 **Configuration:** P1_swing_length=50, P6_span=200
 
-**VERDICT: best cell is_ci_lo -0.508 BELOW the 0.333 selection-noise yardstick** (is_sharpe 0.889, 33 fires, exit chandelier_3x). Its height is explainable by the search itself.
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.508** (is_sharpe 0.889, 33 fires, exit chandelier_3x). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. DIAGNOSTIC ONLY: that value is below the 0.333 PHASE-1B per-cell selection-noise floor (B2009), a DIFFERENT GRAIN. Its height is explainable by the search itself.
 
 **Completeness: 5 of 9 steps ran.** The 4 judgment steps (5_adversarial_lens_review, 6_post_fix_recheck, 7_implement_in_engine, 8_verdict_with_denominators) are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
 
@@ -1077,7 +1077,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2177_sw50_sw50_g
 
 **Configuration:** P1_swing_length=30, P6_span=200
 
-**VERDICT: best cell is_ci_lo 0.362 ABOVE the 0.333 selection-noise yardstick** (is_sharpe 2.757, 11 fires, exit time_stop_20d). A cell above the yardstick is a CANDIDATE for Step-2 validation, not a validated edge.
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.362** (is_sharpe 2.757, 11 fires, exit time_stop_20d). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. DIAGNOSTIC ONLY: that value is above the 0.333 PHASE-1B per-cell selection-noise floor (B2009), a DIFFERENT GRAIN. A cell above the yardstick is a CANDIDATE for Step-2 validation, not a validated edge.
 
 **Completeness: 5 of 9 steps ran.** The 4 judgment steps (5_adversarial_lens_review, 6_post_fix_recheck, 7_implement_in_engine, 8_verdict_with_denominators) are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
 
@@ -1138,7 +1138,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2183_sw30_sw30_g
 
 **Configuration:** P1_swing_length=20, P6_span=200
 
-**VERDICT: best cell is_ci_lo -0.196 BELOW the 0.333 selection-noise yardstick** (is_sharpe 0.282, 79 fires, exit hybrid_50pct_target). Its height is explainable by the search itself.
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.196** (is_sharpe 0.282, 79 fires, exit hybrid_50pct_target). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. DIAGNOSTIC ONLY: that value is below the 0.333 PHASE-1B per-cell selection-noise floor (B2009), a DIFFERENT GRAIN. Its height is explainable by the search itself.
 
 **Completeness: 3 of 9 steps ran.** The 6 judgment steps (3_outlier_discrepancy_sweep, 5_adversarial_lens_review, 6_post_fix_recheck, 6b_equivalence_class_check, 7_implement_in_engine, 8_verdict_with_denominators) are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
 

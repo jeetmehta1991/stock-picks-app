@@ -41,7 +41,12 @@ ROOT = Path(__file__).resolve().parent.parent
 AUDIT = ROOT / "output_audit"
 LEDGER = AUDIT / "postconfig_ledger.json"
 DOC = AUDIT / "POSTCONFIG_REPORT.md"
-NOISE_FLOOR = 0.333          # B2009 per-cell selection-noise yardstick
+NOISE_FLOOR = 0.333          # B2009 PHASE-1B per-cell selection-noise floor.
+# S6-B2299 / L696: this is a DIFFERENT GRAIN from Step-1 admission, which is
+# min-trades >= 10 plus a ranked list with NO gates (owner ruling 2026-08-17,
+# B1608; tighten_breaker_block.py:383). Printing it as a Step-1 VERDICT made
+# four separate reports state a threshold the grader does not apply. Report it
+# as a DIAGNOSTIC and always name its grain.
 
 # What each named check MEANS and what would have been alarming. A measured
 # value without its expectation is undecidable by the reader, so this mapping
@@ -154,13 +159,17 @@ def config_section(cube: str, entry: dict, art: dict) -> list[str]:
                 "validation, not a validated edge."
                 if above else
                 "Its height is explainable by the search itself.")
-        lines += [f"**VERDICT: best cell is_ci_lo {cl} "
-                  f"{'ABOVE' if above else 'BELOW'} the {NOISE_FLOOR} "
-                  f"selection-noise yardstick** (is_sharpe "
+        lines += [f"**STEP-1 RANKING (no gates applied - owner ruling B1608): "
+                  f"best cell is_ci_lo {cl}** (is_sharpe "
                   f"{top.get('is_sharpe')}, {top.get('fires')} fires, exit "
-                  f"{top.get('exit')}). {tail}", ""]
+                  f"{top.get('exit')}). Step-1 admission is min-trades >= 10 "
+                  f"plus this ranked list; is_ci_lo is the RANKING KEY, not a "
+                  f"gate. DIAGNOSTIC ONLY: that value is "
+                  f"{'above' if above else 'below'} the {NOISE_FLOOR} "
+                  f"PHASE-1B per-cell selection-noise floor (B2009), a "
+                  f"DIFFERENT GRAIN. {tail}", ""]
     else:
-        lines += ["**VERDICT: no graded grid** - step 2 produced no artifact.", ""]
+        lines += ["**NO GRADED GRID** - step 2 produced no artifact.", ""]
 
     skipped = sorted(k for k, v in entry.items() if v.get("status") == "SKIPPED")
     done = [k for k, v in entry.items() if v.get("status") == "DONE"]
