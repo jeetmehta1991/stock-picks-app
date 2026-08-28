@@ -27575,3 +27575,84 @@ def test_b2330_table_d_ranks_without_gating_and_shows_depth():
     assert 'cfgA' in d1_first and 'cfgA' in d2_first, (
         'D-1 and D-2 row 1 must be the SAME row - the # column is the join')
 
+def _b2337_header_substring_asserts(src: str) -> list[str]:
+    """L706 mechanised: header-like literals asserted against WHOLE output.
+
+    A column header contains a pipe. Asserting one with `in <whole output>`
+    is the defect L706 records: a table that documents itself names its own
+    columns in prose, so the substring passes while the column is gone.
+
+    NARROW BY DESIGN. It flags ONLY pipe-bearing literals - a disclosure
+    sentence asserted by substring is CORRECT and must stay quiet, which is
+    7 of the 9 assertions in test_b2330. A gate with false positives gets
+    bypassed (B1722), and this one would be bypassed within a day if it
+    flagged every substring assertion in a table pin.
+    """
+    import ast
+    import re as _re
+    out = []
+    for node in ast.walk(ast.parse(src)):
+        if not isinstance(node, ast.FunctionDef):
+            continue
+        body = ast.get_source_segment(src, node) or ''
+        if not _re.search(r'table_[abcd]|producer_variant_table', body):
+            continue
+        # B2337a: skip THIS detector's own test. Its must-FIRE arm embeds the
+        # exact defect as a synthetic fixture, so scanning it reports the
+        # fixture as a real instance - the detector finding its own bait. The
+        # exclusion is by NAME and narrow: any other pin is still scanned.
+        if node.name.startswith('test_b2337'):
+            continue
+        for m in _re.finditer(
+                r"assert\s+'([^']*\|[^']*)'\s+in\s+(out|pout|txt|rendered)\b",
+                body):
+            out.append(f'{node.name}: header-like {m.group(1)[:30]!r} asserted '
+                       f'against whole output {m.group(2)!r}')
+    return out
+
+
+def test_b2337_no_header_asserted_by_substring_over_whole_output():
+    """S6-B2337 (L706 MECHANISED): the rule I filed as JUDGMENT-ONLY.
+
+    L698 applies to its own author: *no mechanism is possible* is a claim
+    about the SEARCH SPACE, and I filed L706 that way without searching. The
+    sweep I then ran to satisfy #237 turned out to BE the detector - it
+    already distinguished substring from anchored assertions across every
+    table-renderer pin. So the honest disposition changed from JUDGMENT-ONLY
+    to mechanised, and this is that mechanism.
+
+    It GUARDS rather than fixes: measured 0 instances at authoring, because
+    both real defects were repaired first. A pin that would fire today is a
+    bug report; one that fires tomorrow is a regression test.
+    """
+    from pathlib import Path as _P
+    src = (_P(__file__).resolve().parents[2] / 'backtest' / 'tests'
+           / 'test_unit.py').read_text(encoding='utf-8')
+
+    # (a) must-QUIET: the live corpus is clean
+    found = _b2337_header_substring_asserts(src)
+    assert found == [], (
+        'header-like literal asserted against whole output - anchor to the '
+        'header row instead (L706): ' + '; '.join(found))
+
+    # (b) must-FIRE: the exact defect L706 records, twice over
+    bad = ("def test_fake_table_d():\n"
+           "    out = table_d(grids)\n"
+           "    assert '| tier |' in out\n"
+           "    assert '| # | config |' in out\n")
+    hits = _b2337_header_substring_asserts(bad)
+    assert len(hits) == 2, (
+        'the detector must catch a header-like literal asserted against whole '
+        f'output; got {hits}')
+
+    # (c) must-QUIET on the CORRECT form: a disclosure sentence carries no
+    # pipe, so substring is right and must not be flagged. Without this arm
+    # the detector could flag everything and still pass (b) - L686.
+    good = ("def test_fake_table_e():\n"
+            "    out = table_d(grids)\n"
+            "    assert 'SHARPE alone' in out\n"
+            "    hdr = [l for l in out.splitlines() if l.startswith('| # |')]\n"
+            "    assert '| tier |' in hdr[0]\n")
+    assert _b2337_header_substring_asserts(good) == [], (
+        'a prose disclosure and an ANCHORED header check must both stay quiet')
+
