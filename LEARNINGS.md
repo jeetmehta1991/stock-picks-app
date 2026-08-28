@@ -16547,3 +16547,41 @@ must-FIRE twins, **SOUND**; batch 3's seven were built from GUARDS rather than f
 incident, and **2 of those 7 were hollow**. **The discriminator is clean: a case derived from a
 known-firing incident is live by construction; a case invented from the gate's guards is not, and
 needs the strip test.** 2 of 17 defective, both in the only batch not anchored to a real incident.
+
+## L704
+**A RECORDED PREDICTION IS NOT A MITIGATION - I WROTE THE FAILURE DOWN AND THEN LET IT HAPPEN
+FOR 13 HOURS (B2327).**
+At the reboot I recorded in S6-B2282, verbatim: the hourly monitor cron is session-bound and
+will NOT survive - re-arm it in the next session. The prediction was exactly right. The cron
+died with the process, and **I never re-armed it** - across roughly twenty turns, while writing
+four LEARNINGS entries about measurement discipline. The owner asked why there had been no
+hourly update; `CronList` returned *No scheduled jobs.*
+MEASURED: **8 landings across ~13 hours went unreported** (21:53Z 2026-08-27 through 10:39Z
+2026-08-28). Nothing was LOST - 20 cubes, 20 ledger entries, 0 mismatches, because the
+per-landing battery commits and pushes on its own, which is the fallback I had named. But the
+owner had no report, which is the thing the directive exists to provide.
+**Why writing it down felt like handling it: the note was in a CLOSING ticket.** S6-B2282 was
+marked EXECUTED in the same append - so the caveat rode out of the queue attached to a terminal
+row, where no open-ticket sweep would ever surface it. **A future obligation recorded inside a
+row being closed is invisible by construction.**
+**Rule: an action I owe LATER goes in an OPEN ticket of its own, never as a caveat inside the row
+I am closing.** If the obligation cannot survive its own ticket's closure, it is a note, not a
+plan.
+Compliance failure against CHECKLIST item 185 (monitor must be ARMED, not designed) read with
+L640 - which already says closing half a ticket needs a new id, and this is that rule's shape
+applied to an OBLIGATION rather than to remaining work.
+Mechanism: JUDGMENT-ONLY for the habit. **No detection mechanism** can tell a caveat that names a
+future action from one that merely records context - both are prose inside a terminal row, and a
+scan that flagged every forward-looking sentence in a closing ticket would fire on most of them.
+Durability pinned by this rule in SKILL.md and by S6-B2327 existing as an OPEN ticket for the
+re-arm obligation itself, which is the rule applied to its own instance.
+**Retroactive sweep (#237) - every forward obligation I recorded inside a CLOSING row this
+session, checked for whether it was ever acted on:** (1) S6-B2282's re-arm-the-cron note -
+**THE INSTANCE**, 13 hours unmonitored; (2) S6-B2282's note that the logon task should be
+UNREGISTERED at program completion - **STILL PENDING and equally invisible**, sitting in the same
+terminal row, so it is carried into S6-B2327 rather than left there; (3) S6-B2308's note that
+postconfig_doc.py:287 still renders below in the index column - carried into an OPEN row
+(S6-B2299 was open at the time), **SOUND**; (4) S6-B2295's caveat that the final ranked list must
+show n per cell - recorded in a terminal row and **NOT yet in any open ticket**, so also carried
+into S6-B2327. **3 of 4 forward obligations were buried in closing rows; 1 was placed in an open
+one.**

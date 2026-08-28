@@ -3136,6 +3136,14 @@ own description; the freeze never reached it.
   identifier with NO structure assumed and read the line it lands on. A zero-hit search and a
   wrong-shaped search exit identically.
 
+- **AN ACTION YOU OWE LATER GOES IN AN OPEN TICKET, NEVER AS A CAVEAT IN THE ROW YOU ARE CLOSING
+  (L704).** A future obligation recorded inside a terminal row is invisible by construction - no
+  open-ticket sweep will ever surface it. MEASURED: I wrote that the hourly cron would not survive
+  the reboot and should be re-armed next session, put it in a ticket marked EXECUTED in the same
+  append, then went 13 hours and ~20 turns without re-arming it while the owner had no reports; 8
+  landings passed unmonitored. Sweep: 3 of 4 forward obligations this session were buried in closing
+  rows. If the obligation cannot survive its own ticket's closure, it is a note, not a plan.
+
 - **A MUST-QUIET CASE MUST FIRE WHEN ITS COMPLIANT FEATURE IS REMOVED (L703, extending L686).**
   L686 catches a broken GATE; this catches a broken CASE. A case quiet WITH the feature and quiet
   WITHOUT it never reached the gate, and looks exactly like a pass. MEASURED: 2 of 7 accept-cases
