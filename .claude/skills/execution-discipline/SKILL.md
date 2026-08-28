@@ -3136,6 +3136,15 @@ own description; the freeze never reached it.
   identifier with NO structure assumed and read the line it lands on. A zero-hit search and a
   wrong-shaped search exit identically.
 
+- **AN ASSERTION OVER RENDERED OUTPUT MUST SELECT ITS TARGET LINE FIRST (L705).** A whole-document
+  `substring in output` check has no grain: it asks *does this exist anywhere* when the question was
+  *does this exist in THIS row*. MEASURED: a pin asserting `'| tier |' in out` still passed after
+  `tier` was deleted from the main header, because the same render also emits a per-tier summary
+  whose header contains the word. Select the line (`[l for l in out.splitlines() if
+  l.startswith(...)]`), assert the selector is non-empty, then assert within it. Sweep: 2 of 5
+  substring assertions this session shared the defect, both in the same new pin. An assertion over a
+  multi-section render needs a selector; one over a source file or a parsed structure does not.
+
 - **AN ACTION YOU OWE LATER GOES IN AN OPEN TICKET, NEVER AS A CAVEAT IN THE ROW YOU ARE CLOSING
   (L704).** A future obligation recorded inside a terminal row is invisible by construction - no
   open-ticket sweep will ever surface it. MEASURED: I wrote that the hourly cron would not survive

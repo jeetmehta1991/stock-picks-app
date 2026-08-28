@@ -16585,3 +16585,39 @@ postconfig_doc.py:287 still renders below in the index column - carried into an 
 show n per cell - recorded in a terminal row and **NOT yet in any open ticket**, so also carried
 into S6-B2327. **3 of 4 forward obligations were buried in closing rows; 1 was placed in an open
 one.**
+
+## L705
+**AN ASSERTION OVER RENDERED OUTPUT MUST ANCHOR TO THE SECTION IT MEANS - A TABLE'S OWN SUMMARY
+CAN SATISFY A CHECK WRITTEN FOR ITS HEADER (B2330).**
+Table D's pin asserted `'| tier |' in out` to guarantee the depth column sits beside the sort
+key. The fail-proof deleted `tier` from the MAIN header row and **the pin still passed** - because
+the table also emits a per-tier summary whose own header reads `| tier | best is_ci_lo | at n |
+rows |`. The substring was present; the thing it was meant to guarantee was gone.
+**A whole-document `in` check has no grain.** It answers *does this string exist anywhere in the
+render* when the question was *does this column exist in THIS row*. On a renderer that emits
+several tables, those are different questions with the same syntax - which is why it read as a
+sound assertion while testing nothing.
+**Rule: an assertion about rendered output selects its target line first, then asserts within it.**
+`[l for l in out.splitlines() if l.startswith('| # | config |')]` and then check that line. If the
+selector finds nothing, that is its own failure and must be asserted too - otherwise deleting the
+row makes the check vacuous rather than red.
+Compliance failure against CHECKLIST item 226, and #226 is what CAUGHT it: the third mutation
+existed only because the rule says prove it can fail, and running all three rather than stopping
+at the two that failed is what exposed the hollow one. **The gap was in my assertion, not in the
+rule.**
+Mechanism: the FIX is shipped and pinned - the assertion now anchors to the main header row and
+asserts the selector is non-empty, and the tier-deletion mutation fails as it should. Detection of
+the general habit stays JUDGMENT-ONLY: **no detection mechanism** distinguishes a substring check
+that happens to be well-targeted from one satisfied by an unrelated section, since both are the
+same expression over the same string. Durability pinned by this rule in SKILL.md.
+**Retroactive sweep (#237) - every assertion I wrote this session that checks a SUBSTRING against
+a whole rendered document, re-asked as 'could another section satisfy this?':** (1) test_b2330's
+tier check - **THE INSTANCE**, satisfied by the per-tier summary; (2) test_b2330's `'| n |'`
+check - same expression, same document, and it was fixed in the same edit because it shared the
+defect; (3) test_b2299's checks on postconfig_doc.py - they read the module SOURCE, not a render,
+and assert on strings that appear once, **SOUND**; (4) test_b2310's anchor-doc checks - they read
+two separate files and assert per-file, so a match in one cannot satisfy the other, **SOUND**;
+(5) test_b2286's scan-citation check - parses identifiers rather than matching prose, **SOUND**.
+**2 of 5 shared the defect, both in the same new pin, both fixed.** The discriminator: an
+assertion over a MULTI-SECTION RENDER needs a selector; one over a source file or a parsed
+structure does not.
