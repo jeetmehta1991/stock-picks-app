@@ -16272,12 +16272,19 @@ mine:
   `roster_core.evaluate` returns None and every cell is labelled **BELOW_POWER_FLOOR** - including
   194 cells whose full_period_n is 11..85, comfortably above the floor of 10. **The label names a
   sample-size failure that did not happen.**
-- With no PASS/FAIL available, `postconfig_report.py` substitutes its own NOISE_FLOOR = 0.333 and
+- With no PASS/FAIL available, the report generator substitutes its own NOISE_FLOOR = 0.333 and
   emits '**VERDICT:** best cell is_ci_lo ... BELOW the 0.333 selection-noise yardstick'.
 **A yardstick printed under the word VERDICT becomes the criterion for whoever reads the report
 next - and the reader was me, at every landing.** The 0.333 is real but belongs to a DIFFERENT
 grain: it is the Phase-1B per-cell selection-noise floor (B2009), defined in
 `build_phase_1b_roster.py`, not a Step-1 admission bar.
+**CORRECTION (B2309), made by the retro-sweep this rule demanded:** the sentence above first
+named `postconfig_report.py` as the generator. **That file contains ZERO occurrences of
+'VERDICT'.** The live generator is `postconfig_doc.py` - the one `run_wave.py:289` actually
+imports, and the one B2299 fixed. The fix went to the right file because I grepped for the
+SENTENCE; the attribution was wrong because I reasoned from the file NAME. **Two files whose
+names differ by one word, only one of them wired, is exactly the shape this rule is about -
+and I fell into it while writing the rule.**
 **Rule: when a number keeps reappearing after correction, do not re-resolve to correct it - find
 the ARTIFACT that re-supplies it.** A misconception with a generator will regenerate; four
 corrections failed because each fixed the sentence, not the source.

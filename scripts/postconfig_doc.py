@@ -149,7 +149,8 @@ def config_section(cube: str, entry: dict, art: dict) -> list[str]:
     ident = ", ".join(f"{k}={v}" for k, v in cfg.items()) or "parameters not recorded"
     lines = [f"### {cube}", "", f"**Configuration:** {ident}", ""]
 
-    # VERDICT FIRST - measured against the run's own bar.
+    # STEP-1 RANKING FIRST. (Was 'VERDICT FIRST' until B2299: Step 1 has no
+    # verdicts - it hands forward a ranked list with no gates applied.)
     rank = (grid or {}).get("step1_ranking") or []
     if rank:
         top = rank[0]
