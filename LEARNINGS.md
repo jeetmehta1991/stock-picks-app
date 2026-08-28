@@ -16691,3 +16691,39 @@ the rate figure - **THE RECURRENCE**. So the rule has been tested twice since au
 failed once, a 1-of-2 rate that is far too high for a rule whose whole content is one sentence.
 The discriminator recorded here - corrected value FIRST - is what the next application needs,
 because *drop the phrase* proved insufficient when an exemption existed alongside it.
+
+## L708
+**COUNTING OVER A RANKED LIST MEASURES THE SELECTOR, NOT THE POPULATION - AND THE OWNER CAUGHT
+IT BECAUSE THE RESULT WAS ABSURD ON ITS FACE (B2342).**
+I reported *16 of 24 exit methods never win a single cell, including every trailing variant*. The
+owner replied that this looked illogical at cell level and asked for a root-cause analysis. It
+was illogical: I had counted over `step1_ranking`, which holds the TOP 10 ROWS PER CONFIG - 230
+rows, **by construction the best cells** - and stated the result as a fact about the exit roster.
+MEASURED over the real population of 6,900 result cells: **18 of 24 exits win at least one**, and
+every trailing variant wins some. The true never-winner count is 4, not 16.
+**Why the artifact invited it: both fields live side by side in the same JSON.** `results` is the
+population and `step1_ranking` is a view of it, and nothing in either name says which is which -
+`step1_ranking` reads like the answer, and it IS the answer to a different question (what ranks
+highest), so it is the natural thing to iterate.
+**Rule: before counting anything over a collection, ask whether that collection was PRODUCED BY A
+SELECTION.** A ranked list, a top-N, a filtered view, a passing set - counting members over any
+of them measures the selection criterion. The population is the unfiltered field, and if you
+cannot name which field is unfiltered, you cannot make a population claim.
+**This is L694 one level up.** L694 says attach the denominator to the FIELD rather than the
+turn; this says check whether the field is itself a SAMPLE. A complete read of a selected
+collection is still a selected result - completeness of reading does not repair selectivity of
+membership, and my read WAS complete, which is exactly why it felt sound.
+Compliance failure against CHECKLIST item 270 read with L694; no new item - #270 already governs
+population verdicts and this is its subtler form.
+Mechanism: **PINNED by test_b2342_ranking_is_a_slice_not_the_population**, which asserts the
+structural relationship the artifact never states - step1_ranking is bounded at 10 while results
+runs to hundreds - so a future reader meets the fact that one is a view of the other. Detection
+of the REASONING error stays JUDGMENT-ONLY: no detection mechanism can tell which collection a
+count was taken over, since both are ordinary iterations.
+**Retroactive sweep (#237): every population claim I have made from a grid artifact this
+session.** Four. (1) The exit-roster count - **THE INSTANCE**, taken over step1_ranking. (2) The
+family-best table - taken over step1_ranking[0] per config, which is CORRECT because *best per
+config* is exactly what that field holds. (3) Table D's rows - built from step1_ranking
+deliberately, and its preamble says so. (4) The 110-cells-clear-the-floor count from S6-B2295 -
+**taken over `results`, the right field**. So 1 of 4 was wrong, and the three sound ones were
+sound because the question matched the field's selection, not because I checked.

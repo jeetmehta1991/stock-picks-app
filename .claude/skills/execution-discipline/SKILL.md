@@ -3154,6 +3154,15 @@ own description; the freeze never reached it.
   string IS the prose (a disclosure sentence), substring is correct. Sweep of that test: 2 of 9
   assertions were defective, both now anchored.
 
+- **BEFORE COUNTING OVER A COLLECTION, ASK WHETHER IT WAS PRODUCED BY A SELECTION (L708).**
+  Counting members over a ranked list, a top-N, a filtered view or a passing set measures the
+  SELECTION CRITERION, not the population. MEASURED: I reported "16 of 24 exits never win, including
+  every trailing variant" from step1_ranking, which holds the top 10 rows per config; over the real
+  6,900 cells the figure is 18 of 24 win at least one, and every trailing variant wins some. The
+  owner caught it because the result was absurd on its face. This is L694 one level up - a COMPLETE
+  read of a SELECTED collection is still a selected result, and completeness is what makes it feel
+  sound. If you cannot name which field is unfiltered, you cannot make a population claim.
+
 - **WHEN A FIGURE IS WITHDRAWN, THE CORRECTED VALUE GOES FIRST (L707, sharpening L705).** If the
   withdrawn figure leads the sentence, it is being re-asserted no matter what follows. L705 said
   "drop the phrase" and FAILED ON ITS NEXT APPLICATION, because its own sweep carved an exemption -

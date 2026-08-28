@@ -27667,3 +27667,50 @@ def test_b2337_no_header_asserted_by_substring_over_whole_output():
     assert _b2337_header_substring_asserts(good) == [], (
         'a prose disclosure and an ANCHORED header check must both stay quiet')
 
+def test_b2342_ranking_is_a_slice_not_the_population():
+    """S6-B2342 (L708): step1_ranking is a VIEW; results is the population.
+
+    THE MISS THIS PINS. I reported 16 of 24 exit methods never win a cell,
+    including every trailing variant, having counted over step1_ranking -
+    the TOP 10 ROWS PER CONFIG, by construction the best cells. Over the real
+    population the figure is 18 of 24 winning at least one cell, and every
+    trailing variant wins some. The owner caught it because the result was
+    absurd on its face.
+
+    The artifact invites the error: both fields sit side by side in the same
+    JSON, and step1_ranking reads like the answer. It IS the answer, to a
+    different question. This asserts the structural relationship the artifact
+    never states, over EVERY graded grid on disk rather than a sample.
+    """
+    import json
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    grids = sorted((root / 'output_audit').glob('output_*_grid_auto.json'))
+    if not grids:
+        import pytest
+        pytest.skip('no graded grids on disk')
+
+    checked = 0
+    for p in grids:
+        g = json.loads(p.read_text(encoding='utf-8'))
+        rank, res = g.get('step1_ranking'), g.get('results')
+        if not rank or not res:
+            continue
+        checked += 1
+        # (a) the ranking is BOUNDED and small; the population is not
+        assert len(rank) <= 10, (
+            f'{p.name}: step1_ranking holds {len(rank)} rows - it is a top-N '
+            'view and the bound is what makes counting over it a selection')
+        assert len(res) > len(rank), (
+            f'{p.name}: results ({len(res)}) must exceed the ranking '
+            f'({len(rank)}) - if they were equal the view would BE the '
+            'population and the distinction this pins would not exist')
+        # (b) the population carries strictly more distinct exits than the
+        # view - the exact asymmetry that produced the wrong claim
+        r_ex = {r.get('exit') for r in rank if r.get('exit')}
+        p_ex = {r.get('exit') for r in res if r.get('exit')}
+        assert r_ex <= p_ex, (
+            f'{p.name}: the ranking names an exit absent from results - the '
+            'view must be a SUBSET of the population')
+    assert checked > 0, 'no grid carried both fields - the pin asserted nothing'
+
