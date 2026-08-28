@@ -16368,3 +16368,29 @@ half - **THE INSTANCE**, refuted by scan_synthetic_provenance. (4) L692's counci
 declared JUDGMENT-ONLY because a brief is transient prompt text; the same cruder-question test
 applies and I have NOT re-examined it, so it is **UNRESOLVED, not sound**, and carried into
 S6-B2306. **1 of 4 refuted, 1 of 4 unresolved, 2 sound.**
+
+## L699
+**FINDING A SITE AND ATTRIBUTING IT ARE TWO ACTS, AND ONLY THE FIRST WAS EVIDENCED (B2311).**
+Promoted from the B2309 correction because the lesson is not incident-specific: L696 named
+`postconfig_report.py` as the generator of a VERDICT string it does not contain. The FIX landed
+correctly because I grepped the sentence; the ATTRIBUTION was wrong because I then reasoned from
+the file NAME. **Two near-identical filenames where only one is wired is the trap** -
+`run_wave.py:289` imports `postconfig_doc`, and a repo-wide search finds no invoker of
+`postconfig_report` at all.
+**Rule: before naming a file in a finding, confirm the symptom is IN that file and that something
+CALLS it.** Both halves - presence and reachability - because a file containing the defect but
+wired to nothing is a different finding from one that ships it.
+Compliance failure against CHECKLIST item 224 (L499's mechanism-existence rule), applied to my
+own prose rather than to the repo's - which is the gap: #224's examples are all about the code's
+claims, not about a finding's citation of the code.
+Mechanism: JUDGMENT-ONLY for the attribution habit - a file name in prose is indistinguishable
+from a verified one, and no scan can re-run the grep I did not do. But the CONSEQUENCE half is
+mechanised where it matters: S6-B2310 records the same defect in two anchor docs, and that one is
+checkable by grep because it asserts an invocation path.
+**Retroactive sweep (#237) - every file citation in the tickets I filed this session, checked
+against what the commits actually touched:** S6-B2299's terminal row cites `postconfig_doc.py`
+and commit 5909cc918 changed exactly that file - **SOUND**; S6-B2297 cites
+`tighten_breaker_block.py:383` and I read that line directly - **SOUND**; S6-B2300 cites the
+three grading-path files and the pin imports them by name - **SOUND**. **The misattribution was
+confined to L696's prose; 0 of 3 ticket citations were wrong.** The discriminator is that ticket
+rows were written after grepping, while the LEARNINGS sentence was written from recall.

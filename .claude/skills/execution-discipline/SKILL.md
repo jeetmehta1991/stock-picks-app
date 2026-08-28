@@ -3131,6 +3131,15 @@ own description; the freeze never reached it.
   identifier with NO structure assumed and read the line it lands on. A zero-hit search and a
   wrong-shaped search exit identically.
 
+- **ATTRIBUTE A DEFECT TO THE FILE YOU GREPPED, NOT THE ONE WHOSE NAME MATCHES (L699).** Finding a
+  site by searching for the SYMPTOM and then crediting it to a plausibly-named file are two
+  different acts, and the second needs its own check. MEASURED: L696 blamed `postconfig_report.py`
+  for a VERDICT string; that file has **zero** occurrences of it, the live generator is
+  `postconfig_doc.py`, and the fix had gone to the right place only because I grepped the sentence.
+  **Near-identical filenames where only one is wired are the trap** - `run_wave.py` imports one of
+  them and nothing invokes the other. Before naming a file in a finding, confirm the symptom is IN
+  that file and that something CALLS it.
+
 - **"NO MECHANISM IS POSSIBLE" IS A CLAIM ABOUT THE SEARCH SPACE (L698).** Name the search before
   declaring PROSE-ONLY or JUDGMENT-ONLY, and look first at whether an existing gate already solves
   the ADJACENT case. MEASURED: I declared expected-set provenance unmechanisable; the search then
