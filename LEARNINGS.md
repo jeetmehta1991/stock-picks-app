@@ -16394,3 +16394,40 @@ and commit 5909cc918 changed exactly that file - **SOUND**; S6-B2297 cites
 three grading-path files and the pin imports them by name - **SOUND**. **The misattribution was
 confined to L696's prose; 0 of 3 ticket citations were wrong.** The discriminator is that ticket
 rows were written after grepping, while the LEARNINGS sentence was written from recall.
+
+## L700
+**A NUMBER I HAND THE OWNER CAN COME BACK AS AN INSTRUCTION, SO ITS DENOMINATOR MUST BE THE
+DEFINING ONE, NOT A CONVENIENT PROXY (B2316).**
+I reported that 102 rules were unpinned. The owner ruled *'pin all 102 unpinned rules'*. Measured
+before building, against the DEFINING source - the AST of `_b2123_skill_rules_present`, where
+'pinned' actually means holding a fragment - the real gap was **177**. My 102 had counted
+L-numbers with no MENTION anywhere in test_unit.py, which is a different question with a
+different answer.
+**This is L697's proxy-vs-definition error with a consequence L697 does not carry: the number
+left my hands and became a directive.** A wrong figure I use is a wrong step I can retract; a
+wrong figure the owner rules on is a wrong SCOPE, and correcting it afterwards costs the owner a
+second decision they should never have been asked for.
+**Rule: before a number goes to the owner, ask what would happen if they acted on it - and if the
+answer is a scope, re-derive it from the defining source first.** The cost is one AST parse; the
+cost of not doing it is an instruction built on the wrong denominator.
+What went right, recorded because the sequence is the point: the correction happened BEFORE any
+work, was reported in the first line of the response, and the ruling's INTENT was honoured on the
+corrected number rather than executed on the stale one.
+Compliance failure against CHECKLIST item 182 (a verdict must name its denominator), applied to a
+figure REPORTED rather than to a conclusion drawn - which is the gap: #182's examples are all
+about my own verdicts, none about a number handed onward.
+Mechanism: PARTLY MECHANISED and this is the useful half - the coverage figure is now checkable,
+because `test_b2123_session_rules_survive_in_the_always_read_skills` asserts the gutted-fragment
+count exactly (54 -> 88 this batch). A future claim about pin coverage can be checked against that
+assertion instead of re-measured by whatever proxy is nearest. Detection of the general habit -
+did this reported number come from the defining source - stays JUDGMENT-ONLY: no scan can tell
+which of two correct measurements answers the question actually asked.
+**Retroactive sweep (#237) - every number I handed the owner this session that could have become
+a scope, re-checked against its defining source:** (1) '102 unpinned' - **THE INSTANCE**, corrected
+to 177 before work began; (2) '18 gates in FIRE_ONLY_LEGACY' - the register held **17**, corrected
+before that council spawned, and the owner had not yet ruled on it; (3) '13 of 25 configs' -
+carried from a prior turn and stale by one, corrected on challenge, and no ruling rested on it;
+(4) 'best is_ci_lo -0.07, no cell clears the floor' - **WRONG and it DID reach a decision**, since
+110 cells cleared; retracted in S6-B2295, and the owner's ruling survived because it had been made
+on process grounds rather than on my number. **4 of 4 reported figures needed correction; 2 had
+already reached the owner.** That rate is the finding, not the individual errors.

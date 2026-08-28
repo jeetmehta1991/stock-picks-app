@@ -3136,6 +3136,14 @@ own description; the freeze never reached it.
   identifier with NO structure assumed and read the line it lands on. A zero-hit search and a
   wrong-shaped search exit identically.
 
+- **A NUMBER YOU HAND THE OWNER CAN COME BACK AS AN INSTRUCTION (L700).** Before reporting a
+  figure, ask what happens if the owner ACTS on it - and if the answer is a scope, re-derive it from
+  the DEFINING source first, not from whichever proxy is nearest. MEASURED: I reported 102 unpinned
+  rules; the owner ruled "pin all 102"; the true gap against the helper's own AST was 177. A wrong
+  figure you use is a step you can retract - a wrong figure the owner rules on is a wrong SCOPE, and
+  fixing it costs them a second decision they should never have been asked for. Sweep of figures
+  handed onward this session: 4 of 4 needed correction, 2 had already reached the owner.
+
 - **ATTRIBUTE A DEFECT TO THE FILE YOU GREPPED, NOT THE ONE WHOSE NAME MATCHES (L699).** Finding a
   site by searching for the SYMPTOM and then crediting it to a plausibly-named file are two
   different acts, and the second needs its own check. MEASURED: L696 blamed `postconfig_report.py`
