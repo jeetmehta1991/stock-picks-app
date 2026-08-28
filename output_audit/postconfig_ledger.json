@@ -3534,5 +3534,195 @@
    "status": "SKIPPED",
    "evidence": "PENDING-WAVE-REVIEW (b2197_sw10sp100): the wave-level review batch performs this step across all arms together"
   }
+ },
+ "output_b2197_sw10sp150_sw10sp150": {
+  "1_cube_sanity": {
+   "status": "DONE",
+   "evidence": "run_postconfig: cube_exists=PASS(4464 rows); one_strategy=PASS(1 strategies); M2_exits_per_entry_vs_registry=PASS(cube [24] vs registry-now 24 (a differing single value = an ); megacaps_present=PASS(MSFT, TSLA); M1_content_sha=PASS(9175944a65014673); M3_fill_date=PASS(0 fills before entry); M4_window=PASS(entries 2024-05-06 .. 2025-05-02); M4_holdout_touch=PASS(0 entries at/after HO_START 2025-05-05 in a STEP-1 cube); M5_pnl_integrity=PASS(0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS); M7_degraded_exits=PASS(degraded map (B1623 measure-not-assume): {'reverse_signal': ); M10_gate_receipt=PASS(receipt matches manifest sha 8d3036a6aa90); step7_engine_implemented=PASS(exit 0); M9_universe_artifact=PASS(exit 0 on output_audit/_sweep_200.txt (verifier is non-block); ledger_status_matches_evidence=PASS(0 row(s) claim DONE with contradicting evidence); step2_grade_auto=PASS(exit 0; swing=10 span=150 -> output_b2197_sw10sp150_sw10sp15); step4_spot_check_auto=PASS(exit 0; ; wrote output_audit/output_b2197_sw10sp150_sw10sp15)"
+  },
+  "2_grade_with_config_params": {
+   "status": "DONE",
+   "evidence": "AUTO (B2177): graded at manifest swing=10 span=150 -> output_b2197_sw10sp150_sw10sp150_grid_auto.json"
+  },
+  "3_outlier_discrepancy_sweep": {
+   "status": "DONE",
+   "evidence": "AUTO (B2192): mechanical core executed by the battery (M2 exits-vs-registry, M5 NaN/inf/winsorize, M7 degraded exits) + the grader's union diagnosis-loss gate and ci_lo-led ranking; judgment residue rides the wave review"
+  },
+  "4_three_leg_spot_check": {
+   "status": "DONE",
+   "evidence": "AUTO (B2177): spot_check_trades --n 50 at manifest params; ; wrote output_audit/output_b2197_sw10sp150_sw10sp150_spot_check.json"
+  },
+  "5_adversarial_lens_review": {
+   "status": "SKIPPED",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw10sp150): the wave-level review batch performs this step across all arms together"
+  },
+  "6_post_fix_recheck": {
+   "status": "SKIPPED",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw10sp150): the wave-level review batch performs this step across all arms together"
+  },
+  "6b_equivalence_class_check": {
+   "status": "DONE",
+   "evidence": "AUTO (B2192): the grader collapses identical outcomes - 20 combos carried across 131 distinct outcome classes in output_b2197_sw10sp150_sw10sp150_grid_auto.json"
+  },
+  "7_implement_in_engine": {
+   "status": "SKIPPED",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw10sp150): the wave-level review batch performs this step across all arms together"
+  },
+  "8_verdict_with_denominators": {
+   "status": "SKIPPED",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw10sp150): the wave-level review batch performs this step across all arms together"
+  }
+ },
+ "output_b2197_sw5sp9_sw5sp9": {
+  "1_cube_sanity": {
+   "status": "DONE",
+   "evidence": "run_postconfig: cube_exists=PASS(7296 rows); one_strategy=PASS(1 strategies); M2_exits_per_entry_vs_registry=PASS(cube [24] vs registry-now 24 (a differing single value = an ); megacaps_present=PASS(NVDA, MSFT, TSLA, AAPL); M1_content_sha=PASS(e140fe36dbb34674); M3_fill_date=PASS(0 fills before entry); M4_window=PASS(entries 2024-05-06 .. 2025-05-02); M4_holdout_touch=PASS(0 entries at/after HO_START 2025-05-05 in a STEP-1 cube); M5_pnl_integrity=PASS(0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS); M7_degraded_exits=PASS(degraded map (B1623 measure-not-assume): {'reverse_signal': ); M10_gate_receipt=PASS(receipt matches manifest sha f7a7412523b4); step7_engine_implemented=PASS(exit 0); M9_universe_artifact=PASS(exit 0 on output_audit/_sweep_200.txt (verifier is non-block); ledger_status_matches_evidence=PASS(0 row(s) claim DONE with contradicting evidence); step2_grade_auto=PASS(exit 0; swing=5 span=9 -> output_b2197_sw5sp9_sw5sp9_grid_au); step4_spot_check_auto=PASS(exit 0; ; wrote output_audit/output_b2197_sw5sp9_sw5sp9_spot)"
+  },
+  "2_grade_with_config_params": {
+   "status": "DONE",
+   "evidence": "AUTO (B2177): graded at manifest swing=5 span=9 -> output_b2197_sw5sp9_sw5sp9_grid_auto.json"
+  },
+  "3_outlier_discrepancy_sweep": {
+   "status": "DONE",
+   "evidence": "AUTO (B2192): mechanical core executed by the battery (M2 exits-vs-registry, M5 NaN/inf/winsorize, M7 degraded exits) + the grader's union diagnosis-loss gate and ci_lo-led ranking; judgment residue rides the wave review"
+  },
+  "4_three_leg_spot_check": {
+   "status": "DONE",
+   "evidence": "AUTO (B2177): spot_check_trades --n 50 at manifest params; ; wrote output_audit/output_b2197_sw5sp9_sw5sp9_spot_check.json"
+  },
+  "5_adversarial_lens_review": {
+   "status": "SKIPPED",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw5sp9): the wave-level review batch performs this step across all arms together"
+  },
+  "6_post_fix_recheck": {
+   "status": "SKIPPED",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw5sp9): the wave-level review batch performs this step across all arms together"
+  },
+  "6b_equivalence_class_check": {
+   "status": "DONE",
+   "evidence": "AUTO (B2192): the grader collapses identical outcomes - 20 combos carried across 126 distinct outcome classes in output_b2197_sw5sp9_sw5sp9_grid_auto.json"
+  },
+  "7_implement_in_engine": {
+   "status": "SKIPPED",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw5sp9): the wave-level review batch performs this step across all arms together"
+  },
+  "8_verdict_with_denominators": {
+   "status": "SKIPPED",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw5sp9): the wave-level review batch performs this step across all arms together"
+  }
+ },
+ "output_b2197_sw5sp20_sw5sp20": {
+  "1_cube_sanity": {
+   "status": "DONE",
+   "evidence": "run_postconfig: cube_exists=PASS(6888 rows); one_strategy=PASS(1 strategies); M2_exits_per_entry_vs_registry=PASS(cube [24] vs registry-now 24 (a differing single value = an ); megacaps_present=PASS(NVDA, MSFT, TSLA, AAPL); M1_content_sha=PASS(d002e6ebcff52e16); M3_fill_date=PASS(0 fills before entry); M4_window=PASS(entries 2024-05-06 .. 2025-05-02); M4_holdout_touch=PASS(0 entries at/after HO_START 2025-05-05 in a STEP-1 cube); M5_pnl_integrity=PASS(0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS); M7_degraded_exits=PASS(degraded map (B1623 measure-not-assume): {'reverse_signal': ); M10_gate_receipt=PASS(receipt matches manifest sha 088d72a9e041); step7_engine_implemented=PASS(exit 0); M9_universe_artifact=PASS(exit 0 on output_audit/_sweep_200.txt (verifier is non-block); ledger_status_matches_evidence=PASS(0 row(s) claim DONE with contradicting evidence); step2_grade_auto=PASS(exit 0; swing=5 span=20 -> output_b2197_sw5sp20_sw5sp20_grid); step4_spot_check_auto=PASS(exit 0; ; wrote output_audit/output_b2197_sw5sp20_sw5sp20_sp)"
+  },
+  "2_grade_with_config_params": {
+   "status": "DONE",
+   "evidence": "AUTO (B2177): graded at manifest swing=5 span=20 -> output_b2197_sw5sp20_sw5sp20_grid_auto.json"
+  },
+  "3_outlier_discrepancy_sweep": {
+   "status": "DONE",
+   "evidence": "AUTO (B2192): mechanical core executed by the battery (M2 exits-vs-registry, M5 NaN/inf/winsorize, M7 degraded exits) + the grader's union diagnosis-loss gate and ci_lo-led ranking; judgment residue rides the wave review"
+  },
+  "4_three_leg_spot_check": {
+   "status": "DONE",
+   "evidence": "AUTO (B2177): spot_check_trades --n 50 at manifest params; ; wrote output_audit/output_b2197_sw5sp20_sw5sp20_spot_check.json"
+  },
+  "5_adversarial_lens_review": {
+   "status": "SKIPPED",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw5sp20): the wave-level review batch performs this step across all arms together"
+  },
+  "6_post_fix_recheck": {
+   "status": "SKIPPED",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw5sp20): the wave-level review batch performs this step across all arms together"
+  },
+  "6b_equivalence_class_check": {
+   "status": "DONE",
+   "evidence": "AUTO (B2192): the grader collapses identical outcomes - 27 combos carried across 125 distinct outcome classes in output_b2197_sw5sp20_sw5sp20_grid_auto.json"
+  },
+  "7_implement_in_engine": {
+   "status": "SKIPPED",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw5sp20): the wave-level review batch performs this step across all arms together"
+  },
+  "8_verdict_with_denominators": {
+   "status": "SKIPPED",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw5sp20): the wave-level review batch performs this step across all arms together"
+  }
+ },
+ "output_b2197_sw5sp50_sw5sp50": {
+  "1_cube_sanity": {
+   "status": "DONE",
+   "evidence": "run_postconfig: cube_exists=PASS(6696 rows); one_strategy=PASS(1 strategies); M2_exits_per_entry_vs_registry=PASS(cube [24] vs registry-now 24 (a differing single value = an ); megacaps_present=PASS(NVDA, MSFT, TSLA, AAPL); M1_content_sha=PASS(8e833d65ab04ee56); M3_fill_date=PASS(0 fills before entry); M4_window=PASS(entries 2024-05-06 .. 2025-05-02); M4_holdout_touch=PASS(0 entries at/after HO_START 2025-05-05 in a STEP-1 cube); M5_pnl_integrity=PASS(0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS); M7_degraded_exits=PASS(degraded map (B1623 measure-not-assume): {'reverse_signal': ); M10_gate_receipt=PASS(receipt matches manifest sha cff52504e875); step7_engine_implemented=PASS(exit 0); M9_universe_artifact=PASS(exit 0 on output_audit/_sweep_200.txt (verifier is non-block); ledger_status_matches_evidence=PASS(0 row(s) claim DONE with contradicting evidence); step2_grade_auto=PASS(exit 0; swing=5 span=50 -> output_b2197_sw5sp50_sw5sp50_grid); step4_spot_check_auto=PASS(exit 0; ; wrote output_audit/output_b2197_sw5sp50_sw5sp50_sp)"
+  },
+  "2_grade_with_config_params": {
+   "status": "DONE",
+   "evidence": "AUTO (B2177): graded at manifest swing=5 span=50 -> output_b2197_sw5sp50_sw5sp50_grid_auto.json"
+  },
+  "3_outlier_discrepancy_sweep": {
+   "status": "DONE",
+   "evidence": "AUTO (B2192): mechanical core executed by the battery (M2 exits-vs-registry, M5 NaN/inf/winsorize, M7 degraded exits) + the grader's union diagnosis-loss gate and ci_lo-led ranking; judgment residue rides the wave review"
+  },
+  "4_three_leg_spot_check": {
+   "status": "DONE",
+   "evidence": "AUTO (B2177): spot_check_trades --n 50 at manifest params; ; wrote output_audit/output_b2197_sw5sp50_sw5sp50_spot_check.json"
+  },
+  "5_adversarial_lens_review": {
+   "status": "SKIPPED",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw5sp50): the wave-level review batch performs this step across all arms together"
+  },
+  "6_post_fix_recheck": {
+   "status": "SKIPPED",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw5sp50): the wave-level review batch performs this step across all arms together"
+  },
+  "6b_equivalence_class_check": {
+   "status": "DONE",
+   "evidence": "AUTO (B2192): the grader collapses identical outcomes - 20 combos carried across 124 distinct outcome classes in output_b2197_sw5sp50_sw5sp50_grid_auto.json"
+  },
+  "7_implement_in_engine": {
+   "status": "SKIPPED",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw5sp50): the wave-level review batch performs this step across all arms together"
+  },
+  "8_verdict_with_denominators": {
+   "status": "SKIPPED",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw5sp50): the wave-level review batch performs this step across all arms together"
+  }
+ },
+ "output_b2197_sw5sp100_sw5sp100": {
+  "1_cube_sanity": {
+   "status": "DONE",
+   "evidence": "run_postconfig: cube_exists=PASS(6576 rows); one_strategy=PASS(1 strategies); M2_exits_per_entry_vs_registry=PASS(cube [24] vs registry-now 24 (a differing single value = an ); megacaps_present=PASS(NVDA, MSFT, TSLA, AAPL); M1_content_sha=PASS(39ef288d4e4b7204); M3_fill_date=PASS(0 fills before entry); M4_window=PASS(entries 2024-05-06 .. 2025-05-02); M4_holdout_touch=PASS(0 entries at/after HO_START 2025-05-05 in a STEP-1 cube); M5_pnl_integrity=PASS(0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS); M7_degraded_exits=PASS(degraded map (B1623 measure-not-assume): {'reverse_signal': ); M10_gate_receipt=PASS(receipt matches manifest sha 0c3543bd532e); step7_engine_implemented=PASS(exit 0); M9_universe_artifact=PASS(exit 0 on output_audit/_sweep_200.txt (verifier is non-block); ledger_status_matches_evidence=PASS(0 row(s) claim DONE with contradicting evidence); step2_grade_auto=PASS(exit 0; swing=5 span=100 -> output_b2197_sw5sp100_sw5sp100_g); step4_spot_check_auto=PASS(exit 0; ; wrote output_audit/output_b2197_sw5sp100_sw5sp100_)"
+  },
+  "2_grade_with_config_params": {
+   "status": "DONE",
+   "evidence": "AUTO (B2177): graded at manifest swing=5 span=100 -> output_b2197_sw5sp100_sw5sp100_grid_auto.json"
+  },
+  "3_outlier_discrepancy_sweep": {
+   "status": "DONE",
+   "evidence": "AUTO (B2192): mechanical core executed by the battery (M2 exits-vs-registry, M5 NaN/inf/winsorize, M7 degraded exits) + the grader's union diagnosis-loss gate and ci_lo-led ranking; judgment residue rides the wave review"
+  },
+  "4_three_leg_spot_check": {
+   "status": "DONE",
+   "evidence": "AUTO (B2177): spot_check_trades --n 50 at manifest params; ; wrote output_audit/output_b2197_sw5sp100_sw5sp100_spot_check.json"
+  },
+  "5_adversarial_lens_review": {
+   "status": "SKIPPED",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw5sp100): the wave-level review batch performs this step across all arms together"
+  },
+  "6_post_fix_recheck": {
+   "status": "SKIPPED",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw5sp100): the wave-level review batch performs this step across all arms together"
+  },
+  "6b_equivalence_class_check": {
+   "status": "DONE",
+   "evidence": "AUTO (B2192): the grader collapses identical outcomes - 24 combos carried across 132 distinct outcome classes in output_b2197_sw5sp100_sw5sp100_grid_auto.json"
+  },
+  "7_implement_in_engine": {
+   "status": "SKIPPED",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw5sp100): the wave-level review batch performs this step across all arms together"
+  },
+  "8_verdict_with_denominators": {
+   "status": "SKIPPED",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw5sp100): the wave-level review batch performs this step across all arms together"
+  }
  }
 }
