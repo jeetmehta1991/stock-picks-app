@@ -25110,6 +25110,17 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
          "L698: 'no mechanism is possible' needs a named search"),
         ("NOT THE ONE WHOSE NAME MATCHES",
          "L699: attribute to the file you grepped"),
+        # ---- S6-B2340: the three rules authored AFTER the B2316 batch.
+        # Each had a SKILL.md bullet and NO fragment pin, so the
+        # 'durability pinned' half I kept citing was not mechanised -
+        # a doc edit could have removed any of them silently. Verified
+        # present in SKILL.md by script before being written here (L699).
+        ("invisible to the check demanding it",
+         "L705: a source in backticks is stripped as a mention before the gate reads it"),
+        ("names its own columns in prose",
+         "L706: a self-documenting table makes substring assertions vacuous"),
+        ("it is being re-asserted no matter what follows",
+         "L707: a withdrawn figure that LEADS is re-asserted; corrected value first"),
     ):
         if frag not in discipline_text:
             missing.append(f"execution-discipline lost [{why}]: {frag!r}")
@@ -25135,7 +25146,7 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # B2316: 54 -> 88 with the S6-B2245 batch-1 fragments. This number is the
     # pin's own must-FIRE arm - if a doc edit silently drops fragments, the
     # gutted count falls and this assertion catches the shrinkage.
-    assert len(gutted) == 93, gutted
+    assert len(gutted) == 96, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
