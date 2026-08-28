@@ -6,7 +6,7 @@ REGENERATED WHOLE at every config landing. Replaces the per-config report cards 
 
 ## How much confidence these checks earn
 
-**Across the entire ledger (102 entries), 476 named checks have run and 0 have ever returned non-PASS.**
+**Across the entire ledger (103 entries), 492 named checks have run and 0 have ever returned non-PASS.**
 
 ## TABLE D - STEP-1 RANKED LIST (top 20)
 
@@ -39,15 +39,15 @@ _Step-1 ranked list. `is_ci_lo` is the RANKING KEY, not a gate - Step-1 admissio
 | 19 | b2197_sw30sp50_sw30sp50 | 30 | 50 | earnings_blackout | +0.644 | 16 | THIN | 1 of 2 | 1.830 | 5 | 0 | 16 | BELOW_POWER_FLOOR |
 | 20 | b2197_sw30sp100_sw30sp100 | 30 | 100 | earnings_blackout | +0.644 | 16 | THIN | 2 of 2 | 1.830 | 5 | 0 | 16 | BELOW_POWER_FLOOR |
 
-_290 ranked outcomes across 29 graded configs; 267 distinct signatures._
+_300 ranked outcomes across 30 graded configs; 277 distinct signatures._
 
 **Best within each depth tier** (the comparison a rank order hides):
 
 | tier | best is_ci_lo | at n | rows |
 |---|---|---|---|
 | DEEP | +0.098 | 128 | 97 |
-| MID | +0.656 | 33 | 129 |
-| THIN | +1.250 | 14 | 64 |
+| MID | +0.656 | 33 | 132 |
+| THIN | +1.250 | 14 | 71 |
 
 ### TABLE D-2 - THE SIX SWEPT AXES
 
@@ -78,10 +78,11 @@ _The SIX swept axes for the same rows, same order - join on `#`. P1 swing_length
 
 **Read that as a caution, not a reassurance.** A check that has never failed has not been shown capable of failing, so an all-green battery is WEAK evidence. The checks that would carry real weight are ones with a demonstrated failure mode - a deliberately corrupted cube proving they trip. Until then, green means 'nothing obviously wrong was detected', never 'this cube is correct'.
 
-## Index - 29 graded config(s), newest first
+## Index - 30 graded config(s), newest first
 
 | config | best is_ci_lo | vs floor | fires | starved | steps run |
 |---|---|---|---|---|---|
+| output_b2197_sw50sp100_sw50sp100 | -0.023 | below | 25 | 200/300 | 5/9 |
 | output_b2197_sw50sp50_sw50sp50 | 1.25 | ABOVE | 14 | 200/300 | 5/9 |
 | output_b2197_sw50sp20_sw50sp20 | 0.93 | ABOVE | 14 | 200/300 | 5/9 |
 | output_b2197_sw50sp9_sw50sp9 | 0.724 | ABOVE | 25 | 200/300 | 5/9 |
@@ -113,6 +114,67 @@ _The SIX swept axes for the same rows, same order - join on `#`. P1 swing_length
 | output_b2174_sw20_sw20 | -0.196 | below | 79 | 82/300 | 3/9 |
 
 ## Per-config findings
+
+### output_b2197_sw50sp100_sw50sp100
+
+**Configuration:** P1_swing_length=50, P6_span=100
+
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.023** (is_sharpe 2.292, 25 fires, exit r_multiple_3r). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. DIAGNOSTIC ONLY: that value is below the 0.333 PHASE-1B per-cell selection-noise floor (B2009), a DIFFERENT GRAIN. Its height is explainable by the search itself.
+
+**Completeness: 5 of 9 steps ran.** The 4 judgment steps (5_adversarial_lens_review, 6_post_fix_recheck, 7_implement_in_engine, 8_verdict_with_denominators) are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
+
+**Is this the right data?**
+
+| check | measured | outcome | what would have been alarming |
+|---|---|---|---|
+| cube produced rows | 1224 rows | PASS | zero rows = the config ran and emitted nothing |
+| exactly one strategy in the cube | 1 strategies | PASS | more than 1 = the strategy-subset filter leaked |
+| mega-caps present in the universe | TSLA, AAPL | PASS | absent = the abandoned A-C chunk universe (L445) |
+| universe artifact verified | exit 0 on output_audit/_sweep_200.txt (verifier is non-block | PASS | FAIL = the ticker list is not what was intended |
+| cube content hash | 23e1c38815d3ce10 | PASS | a repeat across configs = two configs produced identical cubes, so one knob did nothing |
+| entry-date span actually simulated | entries 2024-05-06 .. 2025-04-11 | PASS | a short span = the run did not cover its window |
+| every entry carries one row per registered exit | cube [24] vs registry-now 24 (a differing single value = an | PASS | a shortfall = exits silently dropped from the cube |
+
+**Did anything leak from the future?**
+
+| check | measured | outcome | what would have been alarming |
+|---|---|---|---|
+| entries at or after the LOCKED holdout start | 0 entries at/after HO_START 2025-05-05 in a STEP-1 cube | PASS | any non-zero = the holdout was contaminated and the run is void |
+| fills that preceded their own entry | 0 fills before entry | PASS | any non-zero = look-ahead in execution |
+| pre-launch receipt matches the run manifest | receipt matches manifest sha 36f18508655c | PASS | mismatch = this run is not the run that was gated |
+
+**Does the arithmetic reproduce?**
+
+| check | measured | outcome | what would have been alarming |
+|---|---|---|---|
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| engine-side implementation check exit code | exit 0 | PASS | non-zero = the wiring is absent |
+
+**Independent re-derivation of sampled trades (step 4)**
+
+- 50 of 50 sampled trades re-derived to the SAME fire/no-fire decision as the engine; 0 disagreed; 0 execution failures.
+- Sampled with seed 20260816 at this config's own parameters (swing 50, span 100, close_mitigation False, tail_n 20).
+- CAVEAT worth stating: the re-derivation uses the SAME parameter set as the engine, so it catches wiring and data faults, NOT a wrong parameter choice. Full per-trade rows: output_audit/output_b2197_sw50sp100_sw50sp100_spot_check.json.
+
+**Is the sample large enough to mean anything? (step 2 funnel)**
+
+- 300 parameter combinations enumerated.
+- **200 (67%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
+- 100 graded and ranked; 14 carried across 42 distinct outcome classes after equivalence collapse (combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473).
+
+| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+|---|---|---|---|---|---|---|
+| 1 | -0.023 | 2.292 | 25 | r_multiple_3r | 1 | cm=False brk=0.02 age=None tail=2 |
+| 2 | -0.032 | 2.49 | 21 | r_multiple_3r | 1 | cm=True brk=0.02 age=None tail=2 |
+| 3 | -0.058 | 2.087 | 28 | r_multiple_3r | 1 | cm=False brk=0.03 age=None tail=2 |
+| 4 | -0.077 | 2.229 | 24 | r_multiple_3r | 1 | cm=True brk=0.03 age=None tail=2 |
+| 5 | -0.083 | 2.269 | 24 | r_multiple_3r | 1 | cm=True brk=0.02 age=None tail=3 |
+
+_Top 5 of the ranking; the full list is in output_audit/output_b2197_sw50sp100_sw50sp100_grid_auto.json._
 
 ### output_b2197_sw50sp50_sw50sp50
 
