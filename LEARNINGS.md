@@ -16507,3 +16507,43 @@ being absorbed, **SOUND**; (4) test_b2312's noise-guard arms - added as new case
 expectation was loosened, **SOUND**. **1 of 4 adjustments was a symptom fix.** The discriminator:
 an adjustment that ADDS coverage is sound, one that ENLARGES an expected set to admit a value the
 mechanism failed to find is the suspect.
+
+## L703
+**A MUST-QUIET CASE CAN BE QUIET BECAUSE IT NEVER REACHED THE GATE, AND THAT IS INDISTINGUISHABLE
+FROM PASSING (B2324).**
+L686 says mutate toward the useless version - a gate that fires on everything. That catches a
+broken GATE. It does not catch a broken CASE. Writing the last 7 must-QUIET cases, **2 of 7 were
+HOLLOW**: quiet whether or not their compliant feature was present, because the input never
+tripped the gate's entry condition at all. Both looked exactly like passes.
+The two, and both were MINE rather than the gates':
+- `scan_false_skill_status` - I stripped `injected`, but `if not injected: return []` is an EARLY
+  RETURN BY DESIGN, so the stripped case was quiet for a reason unrelated to the claim. The
+  compliant feature is the ACCURATE CLAIM, not the injection.
+- `scan_miss_capture_complete` - my text never tripped `_miss_hits`, so the gate was never
+  entered; the four-member `observed` dict I was 'testing' was never read.
+**Rule: a must-QUIET case is only evidence if removing ONLY its compliant feature makes the gate
+FIRE.** Quiet-with-the-feature and quiet-without-it is a green check over an unexercised gate -
+the precise thing S6-B2304 existed to eliminate, reproduced inside the fix for it.
+Compliance failure against CHECKLIST item 226 (prove-it-can-fail), extended: #226 asks whether the
+MECHANISM can fail, and this asks whether the CASE is live. A corpus of 17 unexercised accept-cases
+would satisfy #226 completely while proving nothing.
+**What made the difference was an outside lens, and that is worth recording plainly.** The council's
+Contrarian named this exact failure before I wrote a line - *'if they get the accept-input wrong in
+the direction that happens to also be rejected, the test passes and you've added a green check that
+proves nothing'* - so I built the strip-one-feature check because I had been told to expect it. **I
+did not derive this from my own rules; I was handed it.**
+Mechanism: JUDGMENT-ONLY for detection. **No detection mechanism** can tell a case that is quiet
+because it complies from one quiet because it never arrived - both are an empty list from the same
+call. A general gate would need every accept-case to carry its stripped twin, which the corpus's
+(text, must_fire, state) shape cannot express. Durability pinned by the method being recorded
+INLINE in gate_incident_corpus.py above the 7 cases, where the next author of an accept-case meets
+it, and by this rule in SKILL.md.
+**Retroactive sweep (#237) - every must-QUIET case shipped this session, re-checked by the
+strip-one-feature test:** batch 1's four (scan_shell_substitution, scan_bare_python_launch,
+scan_uninspected_constant, scan_queue_vocabulary) were each built by taking the gate's OWN
+must-FIRE incident and removing exactly the defect - so the stripped form IS the recorded incident
+and is known to fire, **SOUND by construction**; batch 2's six were built the same way from their
+must-FIRE twins, **SOUND**; batch 3's seven were built from GUARDS rather than from an existing
+incident, and **2 of those 7 were hollow**. **The discriminator is clean: a case derived from a
+known-firing incident is live by construction; a case invented from the gate's guards is not, and
+needs the strip test.** 2 of 17 defective, both in the only batch not anchored to a real incident.

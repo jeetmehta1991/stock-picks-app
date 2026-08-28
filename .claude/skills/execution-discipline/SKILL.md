@@ -3136,6 +3136,15 @@ own description; the freeze never reached it.
   identifier with NO structure assumed and read the line it lands on. A zero-hit search and a
   wrong-shaped search exit identically.
 
+- **A MUST-QUIET CASE MUST FIRE WHEN ITS COMPLIANT FEATURE IS REMOVED (L703, extending L686).**
+  L686 catches a broken GATE; this catches a broken CASE. A case quiet WITH the feature and quiet
+  WITHOUT it never reached the gate, and looks exactly like a pass. MEASURED: 2 of 7 accept-cases
+  were hollow - one stripped a variable whose absence is an early return BY DESIGN, one never
+  tripped the gate's entry condition so the state dict under test was never read. **A case derived
+  from a known-firing incident is live by construction; a case invented from the gate's guards is
+  not and needs the strip test** - 2 of 17 defective this session, both in the only batch not
+  anchored to a real incident.
+
 - **WIDENING WHAT A PIN EXPECTS MAY BELONG IN WHAT IT EXTRACTS (L702).** An assertion and its
   extractor fail identically - both show a missing value - and only one repair fixes the mechanism.
   MEASURED: a pin failed because PASS/FAIL were absent from its expected set; widening the set was
