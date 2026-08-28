@@ -27286,3 +27286,44 @@ def test_b2312_blamed_file_must_have_been_opened():
     assert f([], text='The floor is MIN_N = 30 and it governs the run.',
              tool_text='{}'), 'the constant arm regressed'
 
+def test_b2310_anchor_docs_name_the_generator_that_is_actually_imported():
+    """S6-B2310 (L499 / #224): an asserted enforcement path must exist.
+
+    SKILL.md and CHECKLIST.md both said 'scripts/postconfig_report.py invoked
+    from run_wave.py at arm completion'. MEASURED: run_wave.py imports
+    postconfig_doc, and nothing invokes postconfig_report at all - it is a
+    hand-run CLI. That is a capability asserted in the enforcement layer's own
+    description and contradicted by grep, the same shape as prelaunch_gate.py
+    describing itself as launcher-wired with zero callers.
+
+    A doc correction with no pin is revertible in silence, which is why #264
+    requires an address for a shipped claim - even a documentation one.
+    """
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    rw = (root / 'scripts' / 'run_wave.py').read_text(encoding='utf-8')
+
+    # (a) ground truth: which generator does run_wave ACTUALLY import?
+    assert 'import postconfig_doc' in rw, (
+        'run_wave.py no longer imports postconfig_doc - re-derive the anchor'
+        ' docs before trusting them')
+    assert 'import postconfig_report' not in rw, (
+        'run_wave.py now imports postconfig_report - the docs this pin guards'
+        ' would need updating in the OTHER direction')
+
+    # (b) the anchor docs must name the imported generator, in the same
+    # sentence as the run_wave attribution.
+    for rel in ('.claude/skills/execution-discipline/SKILL.md', 'CHECKLIST.md'):
+        txt = (root / rel).read_text(encoding='utf-8')
+        assert 'postconfig_doc.py' in txt and 'run_wave.py:289' in txt, (
+            '%s must name postconfig_doc.py with its import site' % rel)
+
+    # (c) must-QUIET arm: the SUPERSEDED text is deliberately kept for lineage
+    # (L548). If this fired, the pin would be demanding the history be erased,
+    # and a correction that hides what it corrected teaches nothing.
+    sk = (root / '.claude' / 'skills' / 'execution-discipline'
+          / 'SKILL.md').read_text(encoding='utf-8')
+    assert 'S6-B2310 CORRECTION' in sk, (
+        'the correction note was removed - the superseded claim must stay'
+        ' visible beside its replacement')
+
