@@ -20807,17 +20807,11 @@ def test_b1944_fire_only_corpus_is_a_shrinking_set():
     corpus = _iu.module_from_spec(spec)
     spec.loader.exec_module(corpus)
 
-    FIRE_ONLY_LEGACY = {
-                        'scan_false_skill_status',
-        'scan_miss_capture_complete',
-        'scan_monitor_pattern_unverified',
-        'scan_monitor_without_stall_check',
-                'scan_partial_read',
-                                        'scan_row_vs_ticket',
-                    'scan_uncosted_probe',
-                        # B1944b: scan_unverified_count now has a must-QUIET case -
-        # removed from this shrink-only set in the same commit.
-    }
+    # S6-B2304 CLOSED (B2324): all 17 gates now carry a must-QUIET case.
+    # `set()` NOT `{}` - an empty brace literal is a DICT, which is how
+    # emptying this set first broke test_b1944 with a TypeError. The
+    # shrink-only invariant below still holds and still guards regrowth.
+    FIRE_ONLY_LEGACY = set()
 
     names = (set(corpus.INCIDENTS) | set(corpus.EXTRA_INCIDENTS)
              | set(corpus.PURE_INCIDENTS))

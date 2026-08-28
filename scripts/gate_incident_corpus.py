@@ -465,6 +465,65 @@ EXTRA_INCIDENTS: dict[str, list[tuple[str, bool, dict]]] = {
     # Same rule as batch 1: written per-gate against each signature, because the
     # six take different state (text / rows / docs_touched+code_touched /
     # added_rules / tool_text). No generic fixture exists and none is faked.
+    # ---- S6-B2304 FINAL batch (B2324): the last 7 FIRE_ONLY_LEGACY gates.
+    # These are the HARDER half - four take multi-field state - and each case was
+    # built from the gate's OWN early-return guards read this turn, not from the
+    # pattern of the previous 10.
+    #
+    # THE COUNCIL'S TEST, which caught two defects in my own cases: a must-QUIET
+    # case must be quiet BECAUSE OF THE COMPLIANT FEATURE, not because it never
+    # reached the gate's logic. Verified for all 7 by removing only that feature
+    # and requiring the gate to FIRE. Two failed that check first time - both MY
+    # errors, not gate defects: for scan_false_skill_status I stripped `injected`
+    # (an early return by design) instead of falsifying the CLAIM, and for
+    # scan_miss_capture_complete my text never tripped `_miss_hits`, so the gate
+    # was never entered at all. Both corrected; a case quiet for the wrong reason
+    # is a green check proving nothing, which is what this ticket exists to close.
+    "scan_uncosted_probe": [
+        ("The probe costs seconds - artifact "
+         "output_b2197_sw10sp100/run_heartbeat.json, field st_mtime.", False,
+         {"tool_text": "cat output_b2197_sw10sp100/run_heartbeat.json"}),
+    ],
+    "scan_row_vs_ticket": [
+        ("Ticket counts: 1525 EXECUTED, 25 DROPPED, 6 OPEN.", False,
+         {"tool_text": "python scripts/queue_state.py  # EXECUTION_QUEUE.md "
+                       "per-ticket dedup"}),
+    ],
+    "scan_partial_read": [
+        ("All 25 spec lines read; 15 of 25 configs landed.", False,
+         {"tool_text": "python -c \"open('output_audit/"
+                       "b2197_chain_specs_v2_no_sp21.txt').readlines()\""}),
+    ],
+    "scan_false_skill_status": [
+        # quiet only because the claim MATCHES reality; the stale-marker form
+        # still fires (verified).
+        ("SKILLS INVOKED: execution-discipline - FULLY LOADED "
+         "(auto-injected this turn).", False, {"injected": True}),
+    ],
+    "scan_monitor_pattern_unverified": [
+        ("monitor armed", False,
+         {"blobs": ["grep -c 'AssertionError' run.log  # POSITIVE CONTROL "
+                    "verified: line 10582 reads exactly AssertionError, "
+                    "grep -c returns 1"]}),
+    ],
+    "scan_monitor_without_stall_check": [
+        ("monitor armed", False,
+         {"blobs": ["PERIODIC REPORT. MANDATORY STALL CHECK: compare "
+                    "sim_day_index against the previous firing - unchanged "
+                    "across two firings is a STALL regardless of heartbeat "
+                    "freshness."]}),
+    ],
+    "scan_miss_capture_complete": [
+        ("I made a MISS this turn: compliance failure against item 258. "
+         "LEARNINGS L695 written; mechanism JUDGMENT-ONLY, no detection "
+         "mechanism, durability pinned; ticket S6-B2273.", False,
+         {"observed": {"LEARNINGS.md entry": True,
+                       "CHECKLIST.md item or explicit compliance-failure "
+                       "citation": True,
+                       "EXECUTION_QUEUE.md ticket": True,
+                       "mechanism for the CLASS (scan_/pin test) or explicit "
+                       "JUDGMENT-ONLY": True}}),
+    ],
     "scan_prose_only_rule": [
         # the compliant shape: a doc rule shipped WITH its mechanism in the same
         # turn. If this fired, the rule would be unsatisfiable - every doc edit
