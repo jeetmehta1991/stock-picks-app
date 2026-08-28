@@ -25021,6 +25021,84 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         ("CHECK THE EFFECT IN THE ROWS WITH ENOUGH DATA",
          "L663: a degeneracy seen only where n is smallest is a sample-size "
          "hypothesis wearing a parameter hypothesis's clothes"),
+        # ---- S6-B2245 batch 1 (B2316): the 34 rules from this session that
+        # HAVE a defining bullet. Owner ruling 2026-08-27: pin the unpinned.
+        # Council sequencing: these first, because I wrote them and can quote
+        # their diagnostics accurately NOW - that accuracy has a half-life
+        # measured in context turns, while the older rules are stable text.
+        # EVERY fragment below was VERIFIED PRESENT in SKILL.md by a script
+        # before being written here (L699: read, do not recall) - one
+        # candidate failed that check and was corrected against the file.
+        # Fragments are mid-rule SUBSTANCE, never the bolded heading, because
+        # the docstring above is explicit that pinning the label is trivia.
+        ("a pyramid adds ~0",
+         "L666: an exemption's reason carries a recommendation's quantitative burden"),
+        ("retires the METHOD",
+         "L667: a retraction must not silently retire the CONCLUSION"),
+        ("stop editing prose a",
+         "L668: a block citing closing text means fix the work, not the wording"),
+        ("inherits the objection's evidence burden",
+         "L669: a proposed remedy is itself a claim"),
+        ("free\n  physical RAM read a comfortable",
+         "L670: measure the quantity that FAILS, not the readable one"),
+        ("shipped with nothing a reader could open",
+         "L671: a finding that ships no code still owes an address"),
+        ("already in the\n  suite - one grep",
+         "L672: 'this does not exist' is a novelty claim"),
+        ("EVIDENCE OBLIGATIONS OF THE WORK IT RECAPS",
+         "L673: a recap carries the burden of what it recaps"),
+        ("at least two CHECKLIST items by number",
+         "L674: the compliance block must cite items, not exist"),
+        ("OWN NEW MONITOR FIRES ON YOUR OWN IN-FLIGHT WORK",
+         "L675: your own monitor firing on you is the signal"),
+        ("samples taken while they worked sh",
+         "L676: a council framing carries the burden BEFORE the spawn"),
+        ("A CONFIRMING DATAPOINT MUST NOT END THE ANALYSIS",
+         "L677: agreement is not a stopping condition"),
+        ("BREAKING IT WITH THE INST",
+         "L678: authoring a rule does not protect you from breaking it"),
+        ("MORE VALIDATION, NOT LESS",
+         "L679: self-measurement is where discipline weakens"),
+        ("A PRIORITY ORDERING IS AN ASSERTED CONSEQUENCE",
+         "L680: ranking urgency is a claim that can be wrong"),
+        ("OBSERVED RELIABILITY, NOT THE NOMINAL SCHEDULE",
+         "L681: cost a wait on deaths observed, not the timetable"),
+        ("twice this session",
+         "L682: a miss count from gate flags counts detections, not occurrences"),
+        ("RULES GET BROKEN MOST",
+         "L683: the pin is where the repo's own rules break most"),
+        ("prose-satisfiable",
+         "L684: prove-it-can-fail does not prove it fails for the right reason"),
+        ("expected fires 0",
+         "L685: a test must be large enough to produce the event it measures"),
+        ("proving that arm\n  load-bearing",
+         "L686: mutate toward the useless version, not the obvious one"),
+        ("A ZERO FROM A PATTERN YOU WROTE THIS TURN",
+         "L687: a fresh pattern's zero is not a result"),
+        ("FIND THE BRANCH THAT EMITS A STRING",
+         "L688: locate the emitter before filing the string as wrong"),
+        ("ENUMERATE WRITERS ACROSS THE WHOLE REPO",
+         "L689: tests write too - enumerate them"),
+        ("NOT A CALL-CHAIN AFFORDANCE",
+         "L690: an API affordance is not reachability"),
+        ("TWO GATES CAN LEAVE A SEAM",
+         "L691: adjacent gates can both be right and still leave a gap"),
+        ("cannot check it, so one wrong",
+         "L692: a brief is a claim set advisors cannot verify"),
+        ("APPLY THE RULE TO THE SENTENCE THAT STATES IT",
+         "L693: a row can commit the class it documents"),
+        ("ATTACH THE DENOMINATOR TO THE FIELD",
+         "L694: a complete read of one column licenses nothing about another"),
+        ("acknowledgem",
+         "L695: a boilerplate evidence label is asserted by default"),
+        ("FIND THE ARTIFACT THAT RE-SUPPLIES IT",
+         "L696: a corrected number that returns has a generator"),
+        ("DERIVE ITS EXPECTED SET FROM THE DEFINING SOU",
+         "L697: expected sets come from definitions, not samples"),
+        ("IS A CLAIM ABOUT THE SEARCH SPACE",
+         "L698: 'no mechanism is possible' needs a named search"),
+        ("NOT THE ONE WHOSE NAME MATCHES",
+         "L699: attribute to the file you grepped"),
     ):
         if frag not in discipline_text:
             missing.append(f"execution-discipline lost [{why}]: {frag!r}")
@@ -25043,7 +25121,10 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     assert _b2123_skill_rules_present(fable, disc) == []
     # #226 prove-it-can-fail: a gutted file must be REPORTED, not pass
     gutted = _b2123_skill_rules_present("# The Fable Method\n", "# Discipline\n")
-    assert len(gutted) == 54, gutted
+    # B2316: 54 -> 88 with the S6-B2245 batch-1 fragments. This number is the
+    # pin's own must-FIRE arm - if a doc edit silently drops fragments, the
+    # gutted count falls and this assertion catches the shrinkage.
+    assert len(gutted) == 88, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
