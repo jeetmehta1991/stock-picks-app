@@ -260,6 +260,25 @@ def build(cubes: list[str] | None = None) -> str:
     graded.sort(key=lambda c: (AUDIT / (c + "_grid_auto.json")).stat().st_mtime,
                 reverse=True)
 
+    # S6-B2330 (owner directive 2026-08-28): TABLE D, the Step-1 ranked list,
+    # regenerated here because this function already runs at EVERY landing via
+    # run_wave.py:289 - the auto-update the owner asked for needs no new watcher
+    # and no cron. Rendered through producer_variant_table.table_d, which owns
+    # the columns: Table C's docstring records that hand-retyping a locked table
+    # dropped four columns three times, so the renderer is the only source.
+    try:
+        import sys as _sys
+        _sys.path.insert(0, str(ROOT / "scripts"))
+        from producer_variant_table import table_d as _table_d
+        _grids = {}
+        for _p in sorted(AUDIT.glob("output_*_grid_auto.json"),
+                         key=lambda x: x.stat().st_mtime):
+            _n = _p.name[len("output_"):-len("_grid_auto.json")]
+            _grids[_n] = json.loads(_p.read_text(encoding="utf-8"))
+        _td = _table_d(_grids) if _grids else ["_no graded grids yet_"]
+    except Exception as _e:  # never let the ranked list break the whole report
+        _td = [f"_TABLE D unavailable: {type(_e).__name__}: {_e}_"]
+
     out = ["# POST-CONFIG ANALYSIS - all configs, all findings", "",
            "Source: output_audit/postconfig_ledger.json plus each config's "
            "_grid_auto.json and _spot_check.json (written by "
@@ -271,6 +290,7 @@ def build(cubes: list[str] | None = None) -> str:
            "## How much confidence these checks earn", "",
            f"**Across the entire ledger ({len(ledger)} entries), {total} named "
            f"checks have run and {bad} have ever returned non-PASS.**"]
+    out += ["", "## TABLE D - STEP-1 RANKED LIST (top 20)", ""] + _td
     if bad == 0:
         out += ["", "**Read that as a caution, not a reassurance.** A check "
                 "that has never failed has not been shown capable of failing, "

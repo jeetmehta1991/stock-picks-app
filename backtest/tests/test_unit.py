@@ -27463,3 +27463,85 @@ def test_b2310_anchor_docs_name_the_generator_that_is_actually_imported():
         'the correction note was removed - the superseded claim must stay'
         ' visible beside its replacement')
 
+def test_b2330_table_d_ranks_without_gating_and_shows_depth():
+    """S6-B2330 (owner directive 2026-08-28): the Step-1 ranked list.
+
+    Table D answers a different question from Table C - across every config,
+    which outcomes rank highest - so it is a sibling renderer, not more
+    columns on C.
+
+    THE THREE THINGS THAT MUST HOLD, each measured when it was built:
+      (a) NO GATE. Step-1 admission is min-trades >= 10 plus a ranked list
+          with no gates (owner ruling B1608). Every row given to the
+          renderer must appear if it is inside the top slice - nothing is
+          filtered on ci_lo, verdict, or n.
+      (b) n BESIDE THE SORT KEY. Measured: of a naive top-20, 0 rows had
+          n >= 100, and the best per depth band ran +0.098 at n=128,
+          +0.179 at n=40, +1.214 at n=11 - rank improving as evidence
+          thins. The tier column and the per-tier summary exist so that is
+          visible without arithmetic.
+      (c) DUPLICATES LABELLED, NOT DROPPED. Measured: 210 rows carried 187
+          distinct signatures and 7 of a naive top-20 were restatements.
+          Dropping them would be a gate in a step ruled to have none.
+    """
+    import importlib.util as _ilu
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    spec = _ilu.spec_from_file_location(
+        'producer_variant_table', root / 'scripts' / 'producer_variant_table.py')
+    mod = _ilu.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+
+    def _grid(sw, sp, rows):
+        return {'config': {'P1_swing_length': sw, 'P6_span': sp},
+                'step1_ranking': rows}
+
+    def _row(ci, n, exit_, sh=1.0):
+        return {'is_ci_lo': ci, 'is_sharpe': sh, 'fires': n, 'exit': exit_,
+                'class_size': 1,
+                'admit': {'holdout_n': 0, 'full_period_n': n,
+                          'verdict': 'BELOW_POWER_FLOOR'}}
+
+    grids = {
+        'cfgA': _grid(30, 20, [_row(0.816, 12, 'time_stop_10d', 4.103),
+                               _row(-0.500, 200, 'deep_exit', 0.2)]),
+        'cfgB': _grid(30, 50, [_row(0.816, 12, 'time_stop_10d', 4.103)]),
+        'cfgC': _grid(5, 9, [_row(0.098, 128, 'breakeven_plus_trail', 0.6)]),
+    }
+    out = '\n'.join(mod.table_d(grids))
+
+    # (a) NO GATE - even the strongly NEGATIVE deep row must be present
+    assert 'deep_exit' in out, (
+        'a negative-ci_lo row was dropped; Step 1 applies NO gates (B1608)')
+    assert 'BELOW_POWER_FLOOR' in out, (
+        'the verdict is a DISPLAY column here, never a filter')
+
+    # (b) n and its tier must be present, and the per-tier summary too
+    # B2330a: the first version asserted `'| tier |' in out`, which the
+    # PER-TIER SUMMARY's own header satisfies - so deleting tier from the MAIN
+    # table passed the pin. Caught by the fail-proof, and it is L703's shape:
+    # an assertion true for the wrong reason. Anchor on the main header row.
+    main_hdr = [l for l in out.splitlines() if l.startswith('| # | config |')]
+    assert main_hdr, 'the main ranked-list header row is missing'
+    assert '| n |' in main_hdr[0] and '| tier |' in main_hdr[0], (
+        'n and tier must sit in the MAIN table beside the sort key - the whole'
+        ' point is the reader seeing 12 fires outrank 200 without arithmetic;'
+        ' header was: %r' % main_hdr[0])
+    assert 'THIN' in out and 'DEEP' in out, 'depth tiers must be named'
+    assert 'Best within each depth tier' in out, (
+        'the per-tier summary is the comparison a rank order hides')
+
+    # (c) the two identical cells must BOTH appear, and be marked as one
+    assert out.count('time_stop_10d') >= 2, (
+        'identical cells from different configs were collapsed; suppressing',
+        ' them is a gate in a step ruled to have none')
+    assert '1 of 2' in out and '2 of 2' in out, (
+        'duplicate signatures must be LABELLED so three swing-lengths do not',
+        ' read as three independent confirmations')
+
+    # sort order: the highest ci_lo leads, regardless of n
+    body = [l for l in out.splitlines() if l.startswith('| 1 |')]
+    assert body and '0.816' in body[0], (
+        'the top row must be the highest is_ci_lo - sorting on Sharpe was',
+        ' rejected because a higher Sharpe can carry a negative lower bound')
+

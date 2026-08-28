@@ -8,6 +8,45 @@ REGENERATED WHOLE at every config landing. Replaces the per-config report cards 
 
 **Across the entire ledger (99 entries), 428 named checks have run and 0 have ever returned non-PASS.**
 
+## TABLE D - STEP-1 RANKED LIST (top 20)
+
+_Step-1 ranked list. `is_ci_lo` is the RANKING KEY, not a gate - Step-1 admission is min-trades >= 10 plus this list, with NO gates applied (owner ruling B1608). `n` = fires in-sample, placed beside the sort key on purpose. `tier` = DEEP n>=100 / MID 30-99 / THIN 10-29. `dup` = this row's (ci_lo, sharpe, n, exit) signature appears in more than one config - one discovery, several parameter pairs, NOT independent confirmations. `cls` = equivalence-class size. Nothing here is filtered._
+
+**RANK IS NOT TRUSTWORTHINESS.** A conservative lower bound still favours a tight small sample over a noisy deep one; read `n` and `tier` beside every rank.
+
+| # | config | sw | sp | exit | is_ci_lo | n | tier | dup | is_sharpe | cls | holdout_n | full_period_n | verdict |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 1 | b2197_sw30sp150_sw30sp150 | 30 | 150 | time_stop_10d | +1.214 | 11 | THIN | - | 4.807 | 5 | 0 | 11 | BELOW_POWER_FLOOR |
+| 2 | b2197_sw30sp20_sw30sp20 | 30 | 20 | time_stop_10d | +0.816 | 12 | THIN | 1 of 3 | 4.103 | 5 | 0 | 12 | BELOW_POWER_FLOOR |
+| 3 | b2197_sw30sp50_sw30sp50 | 30 | 50 | time_stop_10d | +0.816 | 12 | THIN | 2 of 3 | 4.103 | 5 | 0 | 12 | BELOW_POWER_FLOOR |
+| 4 | b2197_sw30sp100_sw30sp100 | 30 | 100 | time_stop_10d | +0.816 | 12 | THIN | 3 of 3 | 4.103 | 5 | 0 | 12 | BELOW_POWER_FLOOR |
+| 5 | b2197_sw30sp20_sw30sp20 | 30 | 20 | earnings_blackout | +0.701 | 22 | THIN | - | 1.702 | 5 | 0 | 22 | BELOW_POWER_FLOOR |
+| 6 | b2197_sw30sp9_sw30sp9 | 30 | 9 | earnings_blackout | +0.687 | 22 | THIN | - | 1.684 | 5 | 0 | 22 | BELOW_POWER_FLOOR |
+| 7 | b2197_sw30sp150_sw30sp150 | 30 | 150 | earnings_blackout | +0.671 | 14 | THIN | - | 1.990 | 5 | 0 | 14 | BELOW_POWER_FLOOR |
+| 8 | b2197_sw30sp50_sw30sp50 | 30 | 50 | earnings_blackout | +0.644 | 16 | THIN | 1 of 2 | 1.830 | 5 | 0 | 16 | BELOW_POWER_FLOOR |
+| 9 | b2197_sw30sp100_sw30sp100 | 30 | 100 | earnings_blackout | +0.644 | 16 | THIN | 2 of 2 | 1.830 | 5 | 0 | 16 | BELOW_POWER_FLOOR |
+| 10 | b2197_sw30sp20_sw30sp20 | 30 | 20 | earnings_blackout | +0.604 | 15 | THIN | 1 of 3 | 1.849 | 5 | 0 | 15 | BELOW_POWER_FLOOR |
+| 11 | b2197_sw30sp50_sw30sp50 | 30 | 50 | earnings_blackout | +0.604 | 15 | THIN | 2 of 3 | 1.849 | 5 | 0 | 15 | BELOW_POWER_FLOOR |
+| 12 | b2197_sw30sp100_sw30sp100 | 30 | 100 | earnings_blackout | +0.604 | 15 | THIN | 3 of 3 | 1.849 | 5 | 0 | 15 | BELOW_POWER_FLOOR |
+| 13 | b2197_sw30sp20_sw30sp20 | 30 | 20 | earnings_blackout | +0.504 | 15 | THIN | - | 1.706 | 5 | 0 | 15 | BELOW_POWER_FLOOR |
+| 14 | b2197_sw30sp9_sw30sp9 | 30 | 9 | earnings_blackout | +0.493 | 15 | THIN | - | 1.714 | 5 | 0 | 15 | BELOW_POWER_FLOOR |
+| 15 | b2197_sw30sp9_sw30sp9 | 30 | 9 | time_stop_10d | +0.469 | 11 | THIN | - | 3.846 | 5 | 0 | 11 | BELOW_POWER_FLOOR |
+| 16 | b2197_sw30sp9_sw30sp9 | 30 | 9 | earnings_blackout | +0.444 | 14 | THIN | - | 1.706 | 5 | 0 | 14 | BELOW_POWER_FLOOR |
+| 17 | b2197_sw30sp20_sw30sp20 | 30 | 20 | earnings_blackout | +0.431 | 11 | THIN | 1 of 3 | 1.875 | 5 | 0 | 11 | BELOW_POWER_FLOOR |
+| 18 | b2197_sw30sp50_sw30sp50 | 30 | 50 | earnings_blackout | +0.431 | 11 | THIN | 2 of 3 | 1.875 | 5 | 0 | 11 | BELOW_POWER_FLOOR |
+| 19 | b2197_sw30sp100_sw30sp100 | 30 | 100 | earnings_blackout | +0.431 | 11 | THIN | 3 of 3 | 1.875 | 5 | 0 | 11 | BELOW_POWER_FLOOR |
+| 20 | b2197_sw30sp20_sw30sp20 | 30 | 20 | earnings_blackout | +0.398 | 14 | THIN | 1 of 3 | 1.653 | 5 | 0 | 14 | BELOW_POWER_FLOOR |
+
+_260 ranked outcomes across 26 graded configs; 237 distinct signatures._
+
+**Best within each depth tier** (the comparison a rank order hides):
+
+| tier | best is_ci_lo | at n | rows |
+|---|---|---|---|
+| DEEP | +0.098 | 128 | 97 |
+| MID | +0.179 | 40 | 117 |
+| THIN | +1.214 | 11 | 46 |
+
 **Read that as a caution, not a reassurance.** A check that has never failed has not been shown capable of failing, so an all-green battery is WEAK evidence. The checks that would carry real weight are ones with a demonstrated failure mode - a deliberately corrupted cube proving they trip. Until then, green means 'nothing obviously wrong was detected', never 'this cube is correct'.
 
 ## Index - 26 graded config(s), newest first

@@ -249,6 +249,122 @@ def _band_str(vals) -> str:
     return ",".join(v.replace("'", "") for v in sorted(vals, key=_band_key))
 
 
+DEPTH_TIERS = ((100, None, "DEEP"), (30, 100, "MID"), (0, 30, "THIN"))
+
+
+def _d_tier(n) -> str:
+    """The depth band a row's sample sits in. Named, not a raw number, because
+    the reader needs to compare rows at a glance and 128-vs-40 is not a
+    comparison anyone makes correctly while scanning a rank order."""
+    if n is None:
+        return "?"
+    for lo, hi, name in DEPTH_TIERS:
+        if n >= lo and (hi is None or n < hi):
+            return name
+    return "?"
+
+
+def table_d(grids: dict[str, dict], top: int = 20) -> list[str]:
+    """STEP-1 RANKED LIST - one row per (config x exit) outcome, top N.
+
+    Owner directive 2026-08-28. Table C answers "what happened inside one
+    config"; this answers "across every config, which outcomes rank highest".
+    Different grain, so a different table rather than more columns on C.
+
+    SORT: `is_ci_lo` descending, and nothing else. Step-1 admission is
+    min-trades >= 10 plus a ranked list with NO GATES (owner ruling B1608), so
+    this table FILTERS NOTHING - every column below is displayed, never applied.
+    Sorting on Sharpe was rejected: L455 records that the higher Sharpe can
+    carry a NEGATIVE lower bound.
+
+    `n` SITS BESIDE THE SORT KEY, DELIBERATELY. Measured when this table was
+    built: of a naive top-20, **0 rows had n >= 100** and the best result in
+    each depth band was +0.098 at n=128, +0.179 at n=40, +1.214 at n=11 -
+    rank improving monotonically as evidence thins. A conservative lower bound
+    still favours a tight small sample over a noisy deep one, so rank must not
+    be read as trustworthiness. The `tier` column exists so that is visible
+    without arithmetic.
+
+    DUPLICATES ARE LABELLED, NOT DROPPED. Measured: 210 ranked rows carry 187
+    distinct (ci_lo, sharpe, n, exit) signatures; 18 signatures repeat, and
+    **7 of a naive top-20 were restatements of an earlier row** - three
+    swing-30 configs produced byte-identical best cells. Suppressing them would
+    be a gate in a step the owner ruled has none, and showing them unmarked
+    would read as three independent confirmations. So `dup` reads `2 of 3` and
+    the reader sees one discovery wearing three swing-lengths.
+
+    The renderer is the only source. Table C's docstring records that hand-
+    retyping a locked table dropped four columns three times before the owner
+    caught it; `scripts/show_table_d.py` prints this, and nothing else should.
+    """
+    from collections import Counter
+
+    rows = []
+    for name, g in grids.items():
+        cfg = g.get("config") or {}
+        for r in (g.get("step1_ranking") or []):
+            a = r.get("admit") or {}
+            rows.append({
+                "config": name, "sw": cfg.get("P1_swing_length"),
+                "sp": cfg.get("P6_span"), "exit": r.get("exit"),
+                "ci": r.get("is_ci_lo"), "n": r.get("fires"),
+                "sh": r.get("is_sharpe"), "cls": r.get("class_size"),
+                "ho": a.get("holdout_n"), "fp": a.get("full_period_n"),
+                "verdict": a.get("verdict"),
+            })
+
+    sig = lambda r: (round(r["ci"], 3) if r["ci"] is not None else None,
+                     round(r["sh"], 3) if r["sh"] is not None else None,
+                     r["n"], r["exit"])
+    counts = Counter(sig(r) for r in rows)
+    rows.sort(key=lambda r: (-(r["ci"] if r["ci"] is not None else -9e9),
+                             -(r["n"] or 0)))
+    seen = Counter()
+
+    out = [
+        "_Step-1 ranked list. `is_ci_lo` is the RANKING KEY, not a gate - Step-1 "
+        "admission is min-trades >= 10 plus this list, with NO gates applied "
+        "(owner ruling B1608). `n` = fires in-sample, placed beside the sort key "
+        "on purpose. `tier` = DEEP n>=100 / MID 30-99 / THIN 10-29. `dup` = this "
+        "row's (ci_lo, sharpe, n, exit) signature appears in more than one "
+        "config - one discovery, several parameter pairs, NOT independent "
+        "confirmations. `cls` = equivalence-class size. Nothing here is "
+        "filtered._",
+        "",
+        "**RANK IS NOT TRUSTWORTHINESS.** A conservative lower bound still "
+        "favours a tight small sample over a noisy deep one; read `n` and `tier` "
+        "beside every rank.",
+        "",
+        "| # | config | sw | sp | exit | is_ci_lo | n | tier | dup | is_sharpe "
+        "| cls | holdout_n | full_period_n | verdict |",
+        "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|",
+    ]
+    for i, r in enumerate(rows[:top], 1):
+        k = sig(r)
+        seen[k] += 1
+        dup = f"{seen[k]} of {counts[k]}" if counts[k] > 1 else "-"
+        ci = f"{r['ci']:+.3f}" if r["ci"] is not None else "n/a"
+        sh = f"{r['sh']:.3f}" if r["sh"] is not None else "n/a"
+        out.append(
+            f"| {i} | {r['config']} | {r['sw']} | {r['sp']} | {r['exit']} | "
+            f"{ci} | {r['n']} | {_d_tier(r['n'])} | {dup} | {sh} | {r['cls']} | "
+            f"{r['ho']} | {r['fp']} | {r['verdict']} |")
+
+    out += ["", f"_{len(rows)} ranked outcomes across {len(grids)} graded "
+                f"configs; {len(counts)} distinct signatures._"]
+
+    # per-tier best - the comparison the rank order actively hides
+    out += ["", "**Best within each depth tier** (the comparison a rank order hides):",
+            "", "| tier | best is_ci_lo | at n | rows |", "|---|---|---|---|"]
+    for lo, hi, name in DEPTH_TIERS:
+        sub = [r for r in rows if r["ci"] is not None and r["n"] is not None
+               and r["n"] >= lo and (hi is None or r["n"] < hi)]
+        if sub:
+            b = max(sub, key=lambda r: r["ci"])
+            out.append(f"| {name} | {b['ci']:+.3f} | {b['n']} | {len(sub)} |")
+    return out
+
+
 def table_c(grids: dict[str, dict]) -> list[str]:
     """POST RUN CONFIG TABLE - one row per config, the whole funnel across it.
 
