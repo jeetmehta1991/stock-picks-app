@@ -27542,6 +27542,36 @@ def test_b2330_table_d_ranks_without_gating_and_shows_depth():
     # sort order: the highest ci_lo leads, regardless of n
     body = [l for l in out.splitlines() if l.startswith('| 1 |')]
     assert body and '0.816' in body[0], (
-        'the top row must be the highest is_ci_lo - sorting on Sharpe was',
+        'the top row must be the highest is_ci_lo - sorting on Sharpe was'
         ' rejected because a higher Sharpe can carry a negative lower bound')
+
+    # S6-B2334 (owner Q1): the table must disclose WHICH RULER picked `exit`.
+    # Step 1 selects per-cell exit by SHARPE (B1605) while the table ranks by
+    # is_ci_lo - two objectives, and a reader who does not know that will read
+    # the exit column as "best by the sort key". It is not.
+    assert 'SHARPE alone' in out and 'is_ci_lo' in out, (
+        'the exit-selection ruler must be stated on the table itself')
+    assert '24' in out and '22' in out, (
+        'the registered-vs-effective exit counts must be disclosed: 24 - 1 npt'
+        ' - 1 collapsed = 22, so a reader is not told all 24 competed')
+
+    # S6-B2334 (owner Q3): all six axes, in a joined second table
+    pout = '\n'.join(mod.table_d_params(grids))
+    # B2334a: the first version asserted each axis was somewhere in the output,
+    # which the PREAMBLE's own prose satisfies - so renaming a column header
+    # passed the pin. Second instance of L703's shape in this table's pins
+    # (the first was `| tier |` matching the per-tier summary), so anchor to the
+    # HEADER ROW, which is the structure a reader actually scans.
+    p_hdr = [l for l in pout.splitlines() if l.startswith('| # | config |')]
+    assert p_hdr, 'Table D-2 header row is missing'
+    for axis in ('P1 swing', 'P2 close_mit', 'P3 tail_n', 'P4 age_bars',
+                 'P5 break_pct', 'P6 span'):
+        assert axis in p_hdr[0], (
+            'axis %r missing from the Table D-2 HEADER; header was: %r'
+            % (axis, p_hdr[0]))
+    # same rank order, so `#` is a valid join key
+    d1_first = [l for l in out.splitlines() if l.startswith('| 1 |')][0]
+    d2_first = [l for l in pout.splitlines() if l.startswith('| 1 |')][0]
+    assert 'cfgA' in d1_first and 'cfgA' in d2_first, (
+        'D-1 and D-2 row 1 must be the SAME row - the # column is the join')
 

@@ -269,13 +269,15 @@ def build(cubes: list[str] | None = None) -> str:
     try:
         import sys as _sys
         _sys.path.insert(0, str(ROOT / "scripts"))
-        from producer_variant_table import table_d as _table_d
+        from producer_variant_table import (table_d as _table_d,
+                                            table_d_params as _table_dp)
         _grids = {}
         for _p in sorted(AUDIT.glob("output_*_grid_auto.json"),
                          key=lambda x: x.stat().st_mtime):
             _n = _p.name[len("output_"):-len("_grid_auto.json")]
             _grids[_n] = json.loads(_p.read_text(encoding="utf-8"))
-        _td = _table_d(_grids) if _grids else ["_no graded grids yet_"]
+        _td = (_table_d(_grids) + ["", "### TABLE D-2 - THE SIX SWEPT AXES", ""]
+               + _table_dp(_grids)) if _grids else ["_no graded grids yet_"]
     except Exception as _e:  # never let the ranked list break the whole report
         _td = [f"_TABLE D unavailable: {type(_e).__name__}: {_e}_"]
 

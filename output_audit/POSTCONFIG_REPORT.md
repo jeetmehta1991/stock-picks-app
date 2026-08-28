@@ -14,6 +14,8 @@ _Step-1 ranked list. `is_ci_lo` is the RANKING KEY, not a gate - Step-1 admissio
 
 **RANK IS NOT TRUSTWORTHINESS.** A conservative lower bound still favours a tight small sample over a noisy deep one; read `n` and `tier` beside every rank.
 
+**HOW `exit` WAS CHOSEN, AND BY WHICH RULER.** Step 1 picks each cell's exit by SHARPE alone - a cheap ranking pass (owner ruling B1605) - while this table RANKS by is_ci_lo. Two different objectives, disclosed because a row can lead on is_ci_lo while carrying the exit that won on Sharpe. Step 2 re-ranks ALL exits by gates passed and is the admission criterion; it has not run. **24 exit methods are registered; 22 are effective per cell** - next_pivot_target is refused on boundary-spanning cells (B2014, flagged by npt_excluded_identity_boundary) and 1 more is collapsed as byte-identical to a survivor (B1593). 24 - 1 - 1 = 22.
+
 | # | config | sw | sp | exit | is_ci_lo | n | tier | dup | is_sharpe | cls | holdout_n | full_period_n | verdict |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | 1 | b2197_sw30sp150_sw30sp150 | 30 | 150 | time_stop_10d | +1.214 | 11 | THIN | - | 4.807 | 5 | 0 | 11 | BELOW_POWER_FLOOR |
@@ -46,6 +48,33 @@ _270 ranked outcomes across 27 graded configs; 247 distinct signatures._
 | DEEP | +0.098 | 128 | 97 |
 | MID | +0.656 | 33 | 122 |
 | THIN | +1.214 | 11 | 51 |
+
+### TABLE D-2 - THE SIX SWEPT AXES
+
+_The SIX swept axes for the same rows, same order - join on `#`. P1 swing_length, P2 close_mitigation (False = production, mitigate on high/low), P3 tail_n, P4 age_bars_max (None = production, no cap), P5 break_pct_max (None = production, no cap), P6 span. `npt_excl` = next_pivot_target was refused on this cell as boundary-spanning (B2014), which is one of the two exits missing from 24._
+
+| # | config | P1 swing | P2 close_mit | P3 tail_n | P4 age_bars | P5 break_pct | P6 span | npt_excl |
+|---|---|---|---|---|---|---|---|---|
+| 1 | b2197_sw30sp150_sw30sp150 | 30 | False | 20 | 250 | 0.01 | 150 | None |
+| 2 | b2197_sw30sp20_sw30sp20 | 30 | False | 20 | 250 | 0.01 | 20 | None |
+| 3 | b2197_sw30sp50_sw30sp50 | 30 | False | 20 | 250 | 0.01 | 50 | None |
+| 4 | b2197_sw30sp100_sw30sp100 | 30 | False | 20 | 250 | 0.01 | 100 | None |
+| 5 | b2197_sw50sp9_sw50sp9 | 50 | True | 3 | None | 0.02 | 9 | True |
+| 6 | b2197_sw30sp20_sw30sp20 | 30 | False | 20 | 250 | 0.02 | 20 | None |
+| 7 | b2197_sw30sp9_sw30sp9 | 30 | False | 20 | 250 | 0.02 | 9 | None |
+| 8 | b2197_sw30sp150_sw30sp150 | 30 | True | 20 | 120 | 0.03 | 150 | None |
+| 9 | b2197_sw50sp9_sw50sp9 | 50 | True | 20 | None | 0.02 | 9 | True |
+| 10 | b2197_sw50sp9_sw50sp9 | 50 | False | 3 | None | 0.02 | 9 | True |
+| 11 | b2197_sw30sp50_sw30sp50 | 30 | True | 20 | 250 | 0.02 | 50 | None |
+| 12 | b2197_sw30sp100_sw30sp100 | 30 | True | 20 | 250 | 0.02 | 100 | None |
+| 13 | b2197_sw30sp20_sw30sp20 | 30 | True | 20 | 120 | 0.03 | 20 | None |
+| 14 | b2197_sw30sp50_sw30sp50 | 30 | True | 20 | 120 | 0.03 | 50 | None |
+| 15 | b2197_sw30sp100_sw30sp100 | 30 | True | 20 | 120 | 0.03 | 100 | None |
+| 16 | b2197_sw50sp9_sw50sp9 | 50 | False | 20 | None | 0.02 | 9 | True |
+| 17 | b2197_sw30sp20_sw30sp20 | 30 | True | 20 | 250 | 0.02 | 20 | None |
+| 18 | b2197_sw30sp9_sw30sp9 | 30 | False | 20 | 180 | 0.02 | 9 | None |
+| 19 | b2197_sw50sp9_sw50sp9 | 50 | False | 3 | None | 0.03 | 9 | True |
+| 20 | b2197_sw30sp9_sw30sp9 | 30 | False | 20 | 250 | 0.01 | 9 | None |
 
 **Read that as a caution, not a reassurance.** A check that has never failed has not been shown capable of failing, so an all-green battery is WEAK evidence. The checks that would carry real weight are ones with a demonstrated failure mode - a deliberately corrupted cube proving they trip. Until then, green means 'nothing obviously wrong was detected', never 'this cube is correct'.
 

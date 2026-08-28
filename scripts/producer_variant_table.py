@@ -335,6 +335,16 @@ def table_d(grids: dict[str, dict], top: int = 20) -> list[str]:
         "favours a tight small sample over a noisy deep one; read `n` and `tier` "
         "beside every rank.",
         "",
+        "**HOW `exit` WAS CHOSEN, AND BY WHICH RULER.** Step 1 picks each cell's "
+        "exit by SHARPE alone - a cheap ranking pass (owner ruling B1605) - while "
+        "this table RANKS by is_ci_lo. Two different objectives, disclosed because "
+        "a row can lead on is_ci_lo while carrying the exit that won on Sharpe. "
+        "Step 2 re-ranks ALL exits by gates passed and is the admission criterion; "
+        "it has not run. **24 exit methods are registered; 22 are effective per "
+        "cell** - next_pivot_target is refused on boundary-spanning cells (B2014, "
+        "flagged by npt_excluded_identity_boundary) and 1 more is collapsed as "
+        "byte-identical to a survivor (B1593). 24 - 1 - 1 = 22.",
+        "",
         "| # | config | sw | sp | exit | is_ci_lo | n | tier | dup | is_sharpe "
         "| cls | holdout_n | full_period_n | verdict |",
         "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|",
@@ -362,6 +372,58 @@ def table_d(grids: dict[str, dict], top: int = 20) -> list[str]:
         if sub:
             b = max(sub, key=lambda r: r["ci"])
             out.append(f"| {name} | {b['ci']:+.3f} | {b['n']} | {len(sub)} |")
+    return out
+
+
+def table_d_params(grids: dict[str, dict], top: int = 20) -> list[str]:
+    """TABLE D-2 - the SIX swept axes for the same top-N rows as table_d.
+
+    Owner directive 2026-08-28: show all of P1-P6, not just swing and span.
+
+    WHY A SECOND TABLE RATHER THAN FOUR MORE COLUMNS. D-1 is already 14 columns;
+    at 18 a markdown table wraps in a terminal and becomes unreadable, which is
+    how Table C lost four columns three times. So the axes get their own table
+    in the SAME rank order, with the `#` column as the visual join - row 7 here
+    is row 7 there.
+
+    WHERE THE VALUES COME FROM. P1 and P6 are in the grid's `config`; P2-P5 were
+    already recorded in every ranked row's `admit` dict and simply never
+    displayed. Nothing new is computed - the data was always there, which is why
+    hiding four of six swept axes was a display defect rather than a gap.
+    """
+    rows = []
+    for name, g in grids.items():
+        cfg = g.get("config") or {}
+        for r in (g.get("step1_ranking") or []):
+            a = r.get("admit") or {}
+            rows.append({
+                "config": name, "ci": r.get("is_ci_lo"), "n": r.get("fires"),
+                "P1": cfg.get("P1_swing_length"),
+                "P2": a.get("close_mitigation"),
+                "P3": a.get("tail_n"),
+                "P4": a.get("age_bars_max"),
+                "P5": a.get("break_pct_max"),
+                "P6": cfg.get("P6_span"),
+                "npt": a.get("npt_excluded_identity_boundary"),
+            })
+    rows.sort(key=lambda r: (-(r["ci"] if r["ci"] is not None else -9e9),
+                             -(r["n"] or 0)))
+    out = [
+        "_The SIX swept axes for the same rows, same order - join on `#`. "
+        "P1 swing_length, P2 close_mitigation (False = production, mitigate on "
+        "high/low), P3 tail_n, P4 age_bars_max (None = production, no cap), "
+        "P5 break_pct_max (None = production, no cap), P6 span. `npt_excl` = "
+        "next_pivot_target was refused on this cell as boundary-spanning "
+        "(B2014), which is one of the two exits missing from 24._",
+        "",
+        "| # | config | P1 swing | P2 close_mit | P3 tail_n | P4 age_bars | "
+        "P5 break_pct | P6 span | npt_excl |",
+        "|---|---|---|---|---|---|---|---|---|",
+    ]
+    for i, r in enumerate(rows[:top], 1):
+        out.append(
+            f"| {i} | {r['config']} | {r['P1']} | {r['P2']} | {r['P3']} | "
+            f"{r['P4']} | {r['P5']} | {r['P6']} | {r['npt']} |")
     return out
 
 

@@ -59,7 +59,7 @@ def main() -> int:
     ap.add_argument("--only", default="",
                     help="comma-separated config names to include")
     a = ap.parse_args()
-    from producer_variant_table import table_d
+    from producer_variant_table import table_d, table_d_params
 
     grids = discover()
     if a.only:
@@ -70,6 +70,12 @@ def main() -> int:
         print("no graded grids found - nothing to rank")
         return 1
     for line in table_d(grids, top=a.top):
+        print(line)
+    # S6-B2334: the six axes follow in the SAME order, joined on `#`
+    print()
+    print("### TABLE D-2 - THE SIX SWEPT AXES")
+    print()
+    for line in table_d_params(grids, top=a.top):
         print(line)
     return 0
 
