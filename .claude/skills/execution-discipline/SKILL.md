@@ -3131,6 +3131,14 @@ own description; the freeze never reached it.
   identifier with NO structure assumed and read the line it lands on. A zero-hit search and a
   wrong-shaped search exit identically.
 
+- **"NO MECHANISM IS POSSIBLE" IS A CLAIM ABOUT THE SEARCH SPACE (L698).** Name the search before
+  declaring PROSE-ONLY or JUDGMENT-ONLY, and look first at whether an existing gate already solves
+  the ADJACENT case. MEASURED: I declared expected-set provenance unmechanisable; the search then
+  found `scan_synthetic_provenance` doing exactly that job for numbers, its docstring stating that
+  the precise question is undetectable but **"it asks a cruder and still useful question."** The
+  impossibility argument was aimed at the precise question when a cruder one was available. A
+  PROSE-ONLY declaration closes an avenue, so it is expensive to get wrong.
+
 - **A TEST THAT PINS A POPULATION MUST DERIVE ITS EXPECTED SET FROM THE DEFINING SOURCE (L697).**
   Never from a sample of what the system has produced so far - a run that has not exercised a branch
   is not evidence the branch does not exist. MEASURED: a verdict-name sweep pin seeded from OBSERVED

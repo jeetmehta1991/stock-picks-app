@@ -16326,3 +16326,38 @@ control so a rename fails loudly, SOUND; (3) test_b2286 scan citations - derived
 `def scan_*` from the enforcement module itself, i.e. the defining source, SOUND; (4) test_b2260
 expected-events - no population, a scalar computation, N/A. **1 of 3 population-pinning tests took
 its set from the wrong column.**
+
+## L698
+**I DECLARED A RULE UNMECHANISABLE AND THE REPO HAD ALREADY MECHANISED ITS TWIN (B2305).**
+I wrote that L697's habit half is PROSE-ONLY because 'a literal set typed from a definition and
+one typed from a sample are byte-identical and differ only in unrecorded provenance'. The
+novelty gate asked which search established that. **The search I then ran refuted me**:
+`scan_synthetic_provenance` at verify_turn_compliance.py:2620 - 1 of 43 gates - already does the
+analogous job for NUMBERS, firing when a turn states a figure in measurement language while its
+tool calls show a generator.
+Its docstring anticipates my exact objection and answers it: *'It cannot tell which number came
+from which call - that is not in the transcript. **It asks a cruder and still useful question.**'*
+**So the impossibility argument was aimed at the PRECISE question when a CRUDER one was
+available** - and the repo had already found that door once, for the same shape, in the same
+file I was writing a gate into.
+**Rule: 'no mechanism is possible' is a claim about the SEARCH SPACE, so it needs a named search
+before it is stated** - and the first place to look is whether an existing gate solves the
+adjacent case. A PROSE-ONLY declaration is cheap to write and expensive to be wrong about,
+because it closes an avenue rather than leaving it open.
+Compliance failure against CHECKLIST item 201's novelty half (a claim that something is
+uncovered names the search that established it); no new item - #201 already covers it and the
+gate caught this correctly.
+Mechanism: a cruder gate IS available and is now ticketed (S6-B2306) rather than asserted
+impossible - require a test asserting a LITERAL expected-set to either derive it in-code or name
+its defining source in a comment. Not built this turn, and not built silently: it is a new
+enforcement mechanism and the standing finding is that this apparatus over-produces work about
+itself, so it goes to the owner as a decision.
+**Retroactive sweep (#237) - every PROSE-ONLY or JUDGMENT-ONLY declaration I made this session,
+re-checked against the question 'is a CRUDER gate available?':** (1) L695, ordering of the close
+- ordering leaves no trace in the artifact, and no cruder proxy exists because the response text
+is identical either way; **SOUND**. (2) L696's reading habit - I did NOT declare it prose-only, I
+ticketed the two generating artifacts and both shipped as S6-B2299; **SOUND**. (3) L697's habit
+half - **THE INSTANCE**, refuted by scan_synthetic_provenance. (4) L692's council-brief rule -
+declared JUDGMENT-ONLY because a brief is transient prompt text; the same cruder-question test
+applies and I have NOT re-examined it, so it is **UNRESOLVED, not sound**, and carried into
+S6-B2306. **1 of 4 refuted, 1 of 4 unresolved, 2 sound.**
