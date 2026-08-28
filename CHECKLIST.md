@@ -5303,7 +5303,9 @@ auto-ran on every landing with its steps recorded, and the owner never saw a per
 result because every report verified the run and quoted one number. Ship the renderer with
 the runner, and have the runner invoke it at the same moment it announces completion.
 
-*Enforced by:* scripts/postconfig_report.py invoked from run_wave.py at arm completion,
+*Enforced by:* scripts/postconfig_doc.py, imported by run_wave.py:289 at arm completion,
+(S6-B2310 CORRECTION: previously named `postconfig_report.py invoked from run_wave.py` -
+MEASURED, nothing invokes that file; it is a hand-run CLI. L499/#224.)
 pinned by test_b2198_battery_result_is_rendered_not_only_written (both directions).
 
 ### #286 - FIND THE BRANCH THAT EMITS A STRING BEFORE FILING IT AS WRONG (B2266 / L688)
@@ -5329,3 +5331,14 @@ post-config report card, and any format a batch declares locked.
 
 *Enforced by:* scripts/show_table_c.py (prints the locked table from the graded
 artifacts), pinned by test_b2199_table_c_is_printed_with_every_locked_column.
+
+
+### #188 - A TEST'S LITERAL EXPECTED-SET CITES ITS DERIVATION (S6-B2306, council-chosen remedy 2026-08-27)
+
+When a test asserts a hardcoded set/list of expected values, it must either BUILD that set from a defining source in-code (parse, import, glob) or carry a comment naming where the set came from.
+
+*Why:* a pin's expected set was seeded from OBSERVED output - verdict strings seen in step-1 grids - which never exercised the gate branch, so `PASS` and `FAIL` were missing and the pin failed against a CORRECT codebase (L697). The observed population and the DEFINED population are different columns.
+
+*Why this is a checklist line and NOT a gate:* the council was 0 of 5 in favour of building one. First Principles: *'each hardcodes the literal shape of one caught bug into infra that runs every turn forever'*; the Executor: *'a checklist line catches this at write-time, forever, for free - a gate catches it at commit-time at the cost of another gate a future agent has to reason about, corpus-maintain, and debug when it false-positives.'* The detection question (was this literal typed from a definition or from a sample) is undetectable - both compile to the same tuple.
+
+*Enforced by:* authored practice at pin-writing time. **NOT mechanised, deliberately.**

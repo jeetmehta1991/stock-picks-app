@@ -1468,7 +1468,41 @@ def scan_uninspected_constant(entries, *, tool_text=None,
                   "VERIFICATION_MATRIX", "STRATEGY_ROSTER", "MEMORY",
                   "OPEN_INVESTIGATIONS", "LIMITATIONS_CAVEATS"}
     names -= _DOC_NAMES
+    # S6-B2312 / L699: the same question, asked of a SOURCE FILE. Naming a
+    # constant unread and BLAMING a file unopened are one failure - I credited a
+    # VERDICT string to postconfig_report.py, which does not contain it, while
+    # the live generator was postconfig_doc.py. Two filenames differing by one
+    # word, only one wired.
+    #
+    # DELIBERATELY NARROW, per B1722: CLI-flag matching was removed from this
+    # gate because it fired on markdown double-hyphens and produced pure noise,
+    # and "a gate with false positives gets bypassed". So this arm does NOT fire
+    # on any .py mention - only where the prose ATTRIBUTES something to the file
+    # within the same clause. Merely discussing a file, or listing it, stays
+    # quiet. The precise question (was the name verified or recalled) is
+    # undetectable; this asks the cruder one (did anything open it).
+    _ATTRIB = (r"(?:defect|bug|fault|culprit|blame[sd]?|generator|caused by|"
+               r"comes from|lives in|is in|the site|responsible)")
+    _pyfile = r"([A-Za-z0-9_]+\.py)"
+    blamed = set()
+    for m in re.finditer(_ATTRIB + r"[^.;\n]{0,90}?" + _pyfile, raw, re.I):
+        blamed.add(m.group(1))
+    for m in re.finditer(_pyfile + r"[^.;\n]{0,90}?" + _ATTRIB, raw, re.I):
+        blamed.add(m.group(1))
+    # a file this turn actually opened is fine - that is the whole point
+    unopened = sorted(f for f in blamed if f.lower() not in tt)
     missing = sorted(n for n in names if n.lower() not in tt)
+    if unopened and not missing:
+        return require_each(
+            "FILE BLAMED BUT NEVER OPENED (S6-B2312 / L699)",
+            {"every source file this turn ATTRIBUTES a defect to was opened by a "
+             "tool call": False},
+            why=("blamed without opening: " + ", ".join(unopened) +
+                 ". Naming a file in a finding is a claim about that file. "
+                 "Confirm the symptom is IN it and that something CALLS it - "
+                 "two near-identical filenames where only one is wired is the "
+                 "trap L699 records."))
+    missing = missing + [f"{f} (blamed, never opened)" for f in unopened]
     if not missing:
         return []
     return [f"#222 UNINSPECTED CONSTANT: this turn names {', '.join(missing[:4])} "

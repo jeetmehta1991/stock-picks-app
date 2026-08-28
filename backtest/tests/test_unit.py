@@ -27239,3 +27239,50 @@ def test_b2299b_verdict_names_do_not_imply_a_magnitude_they_do_not_measure():
         ' structural absence (window locked, gate not evaluated)? BELOW_POWER_FLOOR'
         ' means holdout n < 30 and cost a full false-defect cycle.' % (names - known))
 
+def test_b2312_blamed_file_must_have_been_opened():
+    """S6-B2312 (L699): blaming a source file is a claim about that file.
+
+    THE INCIDENT: L696 credited a VERDICT string to postconfig_report.py,
+    which contains zero occurrences of it; the live generator was
+    postconfig_doc.py. The fix landed correctly because I grepped the
+    SENTENCE - the attribution was wrong because I reasoned from the NAME.
+
+    EXTENDS an existing gate rather than adding a 44th, per the council:
+    naming a constant unread and blaming a file unopened are one failure.
+
+    DELIBERATELY NARROW (B1722): this gate lost its CLI-flag arm for firing
+    on markdown hyphens, because a gate with false positives gets bypassed.
+    So the arm requires an ATTRIBUTION stem near the filename - the two
+    must-QUIET cases below are the noise guards, and they are the point.
+    """
+    import importlib.util as _ilu
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    spec = _ilu.spec_from_file_location(
+        'verify_turn_compliance', root / 'scripts' / 'verify_turn_compliance.py')
+    vtc = _ilu.module_from_spec(spec)
+    spec.loader.exec_module(vtc)
+    f = vtc.scan_uninspected_constant
+
+    blame = 'The defect lives in scripts/postconfig_report.py and it is the generator.'
+
+    # (a) must FIRE: blamed, never opened
+    assert f([], text=blame, tool_text='{}'), (
+        'blaming a file no tool call opened must fire')
+
+    # (b) must QUIET: blamed, and the turn opened it. Without this arm the
+    # gate could refuse every turn that names a file and still pass (a).
+    assert not f([], text=blame,
+                 tool_text='grep -n VERDICT scripts/postconfig_report.py'), (
+        'a file the turn actually opened must not fire')
+
+    # (c) must QUIET: a MENTION is not an attribution (B1722 noise guard)
+    assert not f([], text='I also ran scripts/queue_state.py this turn.',
+                 tool_text='{}'), (
+        'merely naming a file must not fire - that is the noise that got the'
+        ' CLI-flag arm removed from this same gate')
+
+    # (d) the ORIGINAL constant behaviour must survive the extension
+    assert f([], text='The floor is MIN_N = 30 and it governs the run.',
+             tool_text='{}'), 'the constant arm regressed'
+

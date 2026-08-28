@@ -2850,7 +2850,12 @@ in a JSON file nobody was reading.
   remembering. Sibling of L641 (silence is not evidence of work in progress):
   there the work was absent, here the work was real and the reporting was silent.
 
-**Mechanically enforced** by scripts/postconfig_report.py invoked from
+**Mechanically enforced** by scripts/postconfig_doc.py, which run_wave.py:289 imports at
+arm completion. (S6-B2310 CORRECTION: this line previously named `postconfig_report.py`
+"invoked from run_wave.py" - MEASURED, nothing invokes that file at all; it is a HAND-RUN
+CLI, `python scripts/postconfig_report.py --cube-dir <dir>`. An enforcement path asserted
+and contradicted by grep is L499/#224 in the enforcement layer's own description.)
+Superseded text, kept for lineage: postconfig_report.py invoked from
 run_wave.py at arm completion, pinned by
 test_b2198_battery_result_is_rendered_not_only_written.
 

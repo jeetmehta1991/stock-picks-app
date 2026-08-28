@@ -527,6 +527,20 @@ EXTRA_INCIDENTS: dict[str, list[tuple[str, bool, dict]]] = {
                    '"--tickers-file", "output_audit/_t10.txt"])']}),
     ],
     "scan_uninspected_constant": [
+        # ---- S6-B2312 / L699: the .py ATTRIBUTION arm.
+        # THE INCIDENT, verbatim in shape: L696 blamed postconfig_report.py for
+        # a VERDICT string that file does not contain; the live generator was
+        # postconfig_doc.py. Two filenames differing by one word, only one wired.
+        ("The defect lives in scripts/postconfig_report.py and it is the generator.",
+         True, {"tool_text": "{}"}),
+        # must-QUIET: the same sentence when the turn ACTUALLY opened the file.
+        ("The defect lives in scripts/postconfig_report.py and it is the generator.",
+         False, {"tool_text": "grep -n VERDICT scripts/postconfig_report.py"}),
+        # must-QUIET, B1722 noise guard: a MENTION is not an attribution. This
+        # gate lost its CLI-flag arm for firing on markdown hyphens, and "a gate
+        # with false positives gets bypassed" - so listing files stays quiet.
+        ("I also ran scripts/queue_state.py and scripts/postconfig_doc.py this turn.",
+         False, {"tool_text": "{}"}),
         # the must-FIRE incident's prose, but with a tool call that ACTUALLY
         # opened the constant. Quiet here is the whole point of #222: the rule
         # is "look before you cite", not "never cite".
