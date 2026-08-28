@@ -27302,6 +27302,26 @@ def test_b2299_step1_report_states_the_criterion_not_a_floor():
     assert abs(mod.NOISE_FLOOR - 0.333) < 1e-9, 'the diagnostic value changed silently'
 
 
+
+def _b2322_strings(node) -> set:
+    """Every string constant an expression can evaluate to (L701).
+
+    Handles the literal, the ternary (both branches - this is the one the old
+    regex missed), and boolean operators. Anything else yields nothing, which
+    is honest: a verdict computed at runtime is not a literal this pin can pin.
+    """
+    import ast as _ast
+    out = set()
+    if isinstance(node, _ast.Constant) and isinstance(node.value, str):
+        out.add(node.value)
+    elif isinstance(node, _ast.IfExp):
+        out |= _b2322_strings(node.body)
+        out |= _b2322_strings(node.orelse)
+    elif isinstance(node, _ast.BoolOp):
+        for v in node.values:
+            out |= _b2322_strings(v)
+    return {s for s in out if s.isupper() and s.replace("_", "").isalpha()}
+
 def test_b2299b_verdict_names_do_not_imply_a_magnitude_they_do_not_measure():
     """S6-B2299b: the Expansionist sweep - a verdict NAME is load-bearing UI.
 
@@ -27319,8 +27339,32 @@ def test_b2299b_verdict_names_do_not_imply_a_magnitude_they_do_not_measure():
     from pathlib import Path as _P
     root = _P(__file__).resolve().parents[2]
     src = (root / 'scripts' / 'tighten_breaker_block.py').read_text(encoding='utf-8')
-    names = set(re.findall(r'"verdict":\s*"([A-Z_]+)"', src))
-    names |= set(re.findall(r'\["verdict"\]\s*=\s*"([A-Z_]+)"', src))
+    # B2322 / L701: this used two REGEX forms - a dict literal and a subscript
+    # assignment - and so never saw FAIL, which is reachable only through the
+    # ternary's else-branch (`"PASS" if all(...) else "FAIL"`). The pin passed
+    # anyway because its expected set had been widened by hand, which is the
+    # defect wearing a green tick: the EXTRACTOR was blind, not the assertion.
+    #
+    # The remedy is L701's own: parse the AST. Every syntactic form that can
+    # produce a verdict string - literal, assignment, ternary, and any future
+    # shape - reduces to a string constant bound to the key or attribute, so
+    # covering the forms by CONSTRUCTION beats enumerating dialects.
+    import ast as _ast
+    names = set()
+    _tree = _ast.parse(src)
+    for _n in _ast.walk(_tree):
+        # dict literal: {"verdict": <expr>}
+        if isinstance(_n, _ast.Dict):
+            for _k, _v in zip(_n.keys, _n.values):
+                if isinstance(_k, _ast.Constant) and _k.value == "verdict":
+                    names |= _b2322_strings(_v)
+        # subscript assignment: row["verdict"] = <expr>
+        if isinstance(_n, _ast.Assign):
+            for _t in _n.targets:
+                if (isinstance(_t, _ast.Subscript)
+                        and isinstance(_t.slice, _ast.Constant)
+                        and _t.slice.value == "verdict"):
+                    names |= _b2322_strings(_n.value)
     # the population as measured at authoring; a new one must be considered,
     # not silently added.
     # B2299b CORRECTION: this set was first built from the verdicts OBSERVED in
