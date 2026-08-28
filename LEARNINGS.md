@@ -16470,3 +16470,40 @@ shape and MISSED 72 legacy named-suffix rows, discovered during the B2248 reconc
 extractors matched fewer forms than the corpus uses; 2 were sound because their corpus is machine
 -generated.** The discriminator is clean: extractors over PYTHON are safe, extractors over
 HUMAN-WRITTEN MARKDOWN are not.
+
+## L702
+**WIDENING AN EXPECTED SET TO MAKE A PIN PASS IS A CORRECT FIX THAT STOPS ONE QUESTION SHORT
+(B2322).**
+In B2302 `test_b2299b` failed against a CORRECT codebase because `PASS` and `FAIL` were absent
+from its expected set. I diagnosed that correctly - the set had been seeded from observed grids
+rather than from the code - and widened it. **That fix was right and it was not enough.** The
+question I never asked was *why did the EXTRACTOR not produce those values?* The answer, found
+only when a later sweep went looking: the extractor matched two regex forms and the grader emits
+`"verdict": "PASS" if all(...) else "FAIL"`, so **FAIL was reachable only through the
+else-branch and was never extracted at all**.
+**The pin then passed for two batches while its extractor was blind** - a green tick over a
+mechanism that could not see the thing it was pinning. A new verdict added through an
+else-branch would have shipped unnoticed.
+**Rule: when a pin fails and the fix is to widen what it EXPECTS, check whether the fix belongs in
+what it EXTRACTS instead.** An assertion and its extractor fail identically - both show a missing
+value - and only one of the two repairs the mechanism. The tell is direction: if the value exists
+in the source and the extractor did not yield it, the extractor is the defect.
+Compliance failure against CHECKLIST item 226 (prove-it-can-fail): the B2302 fail-proof mutated
+the SOURCE and watched the pin fire, which proves the assertion is wired - it says nothing about
+whether the extractor sees every form the source can use. **A fail-proof exercises the path the
+mutation takes**, and mine took the one form the extractor already handled.
+Mechanism: the fix IS the mechanism and it is shipped - the extractor is now AST-based via
+`_b2322_strings`, covering literal, ternary and boolean-operator forms by construction, and
+test_b2299b now fails when a verdict is added through the previously-blind else-branch. Detection
+of the general habit stays JUDGMENT-ONLY: **no detection mechanism** distinguishes a pin widened
+correctly from one widened to paper over a blind extractor, since both leave a passing test and a
+larger literal. Durability pinned by this rule in SKILL.md.
+**Retroactive sweep (#237) - every pin I widened or adjusted this session rather than fixing its
+mechanism:** (1) test_b2299b's known-set - **THE INSTANCE**, widened in B2302, extractor fixed in
+B2322; (2) test_b2123's gutted count 54 -> 88 -> 93 - the number tracks a deliberate addition of
+fragments, not a repair, and the count itself is the must-FIRE arm, **SOUND**; (3) test_b2300's
+grading-path file list - carries a >=2-of-3 positive control so a rename fails loudly rather than
+being absorbed, **SOUND**; (4) test_b2312's noise-guard arms - added as new cases, no existing
+expectation was loosened, **SOUND**. **1 of 4 adjustments was a symptom fix.** The discriminator:
+an adjustment that ADDS coverage is sound, one that ENLARGES an expected set to admit a value the
+mechanism failed to find is the suspect.

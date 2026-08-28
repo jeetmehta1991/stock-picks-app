@@ -3136,6 +3136,15 @@ own description; the freeze never reached it.
   identifier with NO structure assumed and read the line it lands on. A zero-hit search and a
   wrong-shaped search exit identically.
 
+- **WIDENING WHAT A PIN EXPECTS MAY BELONG IN WHAT IT EXTRACTS (L702).** An assertion and its
+  extractor fail identically - both show a missing value - and only one repair fixes the mechanism.
+  MEASURED: a pin failed because PASS/FAIL were absent from its expected set; widening the set was
+  correct and stopped one question short, because the extractor matched two regex forms while the
+  source emitted FAIL through a ternary else-branch. **The pin then passed for two batches while its
+  extractor was blind.** The tell is direction: if the value EXISTS in the source and the extractor
+  did not yield it, the extractor is the defect. Note a fail-proof does not catch this - it
+  exercises only the path its own mutation takes.
+
 - **THE DEFINING SOURCE CAN HAVE SEVERAL FORMS (L701, sharpening L697).** Matching one of them is
   still a proxy. MEASURED: an extractor matching `- **RULE (LNNN).**` bullets reported 141 of 143
   rules as having no defining text; rules also live as `## HEADINGS` and as numbered items, and the
