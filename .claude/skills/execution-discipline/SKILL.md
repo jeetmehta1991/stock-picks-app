@@ -3154,6 +3154,13 @@ own description; the freeze never reached it.
   string IS the prose (a disclosure sentence), substring is correct. Sweep of that test: 2 of 9
   assertions were defective, both now anchored.
 
+- **WHEN A FIGURE IS WITHDRAWN, THE CORRECTED VALUE GOES FIRST (L707, sharpening L705).** If the
+  withdrawn figure leads the sentence, it is being re-asserted no matter what follows. L705 said
+  "drop the phrase" and FAILED ON ITS NEXT APPLICATION, because its own sweep carved an exemption -
+  a wrong NUMBER beside the right one is sound, since the contrast is the content - and the
+  exemption is what I remembered. That exemption holds only when both values appear together AS a
+  comparison. MEASURED: 2 retractions since L705 was authored, 1 correct, 1 recurrence.
+
 - **RETRACT BY DROPPING THE PHRASE, NOT BY QUOTING IT - AND NAME SOURCES IN PLAIN TEXT (L705).**
   A gate reads text, not intent: repeating a withdrawn claim inside its own withdrawal presents the
   claim again and re-fires the check the retraction was meant to close. MEASURED: an uncosted

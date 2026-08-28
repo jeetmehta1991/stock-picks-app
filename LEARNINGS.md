@@ -16661,3 +16661,33 @@ DATA row extracted structurally - **SOUND by construction**; 2 assert disclosure
 correct form - **SOUND**. So 2 of 9 were defective and both are fixed; the discriminator is
 whether the asserted string names a STRUCTURAL element (anchor it) or is itself the prose
 (substring is right).
+
+## L707
+**L705 FAILED ON ITS VERY NEXT APPLICATION - I RE-QUOTED A WITHDRAWN FIGURE INSIDE ITS OWN
+RETRACTION, ONE TURN AFTER WRITING THE RULE AGAINST DOING EXACTLY THAT (B2339).**
+L705 says: retract by DROPPING the phrase, never by repeating it, because a gate reads text and
+not intent. The next turn I opened a retraction by naming the withdrawn rate figure verbatim, and
+the source gate fired on the retraction itself.
+**Why the rule did not fire in my head: L705's own examples were about ADJECTIVES** - an uncosted
+*cheap* or *costs nothing*. This instance was a NUMBER, and L705's own sweep had concluded that
+re-quoting a wrong NUMBER beside the right one is SOUND because the contrast is the content. So I
+had a recorded exemption that seemed to cover it. **It did not: the exemption applies when both
+numbers appear together as a comparison, and here the withdrawn figure led the sentence with the
+measured one arriving later.** A rule with an exemption is harder to apply than one without,
+because the exemption is what gets remembered.
+**Rule: when a figure is withdrawn, the corrected value goes FIRST and the withdrawn one appears
+only if the comparison is doing work in that same sentence.** If the withdrawn figure leads, it
+is being re-asserted regardless of what follows.
+Compliance failure against CHECKLIST item 201 read with L705 - no new checklist item, because
+#201 already demands a named source and it is what caught this.
+Mechanism: **ALREADY EXISTS and fired** - the #201 source gate caught the re-quote on the
+retraction, twice in two turns, which is the third accepted disposition (B2276): not
+JUDGMENT-ONLY, because detection demonstrably works, and not a new mechanism, because the
+existing one needs no change. What failed was the author, not the gate. Durability pinned by
+L705 and this entry both sitting in SKILL.md under the anchor-doc freeze.
+**Retroactive sweep (#237): every retraction I have issued since L705 was written.** Two. (1)
+The uncosted-effort retraction that produced L705 itself - the founding instance. (2) This one,
+the rate figure - **THE RECURRENCE**. So the rule has been tested twice since authoring and
+failed once, a 1-of-2 rate that is far too high for a rule whose whole content is one sentence.
+The discriminator recorded here - corrected value FIRST - is what the next application needs,
+because *drop the phrase* proved insufficient when an exemption existed alongside it.
