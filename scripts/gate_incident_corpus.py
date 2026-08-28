@@ -461,6 +461,56 @@ EXTRA_INCIDENTS: dict[str, list[tuple[str, bool, dict]]] = {
     # DISCRIMINATES. Each case below is a VALID input the gate must let through,
     # written against that gate's own signature - the four take different state,
     # so no generic fixture exists and none is faked.
+    # ---- S6-B2292 batch 2 (B2303): must-QUIET cases, six more gates.
+    # Same rule as batch 1: written per-gate against each signature, because the
+    # six take different state (text / rows / docs_touched+code_touched /
+    # added_rules / tool_text). No generic fixture exists and none is faked.
+    "scan_prose_only_rule": [
+        # the compliant shape: a doc rule shipped WITH its mechanism in the same
+        # turn. If this fired, the rule would be unsatisfiable - every doc edit
+        # would be a violation regardless of whether a gate accompanied it.
+        ("Remediation: #201 needs a provenance half. Shipped with its pin.", False,
+         {"docs_touched": True, "code_touched": True}),
+    ],
+    "scan_queue_not_updated": [
+        # a turn that DID record a queue row. The must-FIRE case passes rows=[];
+        # quiet here is the whole point, otherwise every turn is non-compliant.
+        ("a turn report that records its queue row", False,
+         {"rows": ["| **S6-B2303** | **EXECUTED** | P2 | **batch 2** | shipped |"]}),
+    ],
+    "scan_ungated_addition": [
+        # rules added WITH a named mechanism. The must-FIRE case lists rule
+        # numbers with nothing enforcing them.
+        ("L516 + L517, CHECKLIST #240 + #241, pinned by "
+         "test_b1762_every_scan_gate_has_a_corpus_entry.", False,
+         {"added_rules": []}),
+    ],
+    "scan_compliance_is_content": [
+        # a compliance block that NAMES items and statuses, which is what #238
+        # requires. The must-FIRE case is the content-free version.
+        # B2303 CORRECTION: the first version of this case named three items
+        # but carried ZERO status markers, so the gate correctly FIRED. #238
+        # requires BOTH halves - items cited AND a per-item status - and I had
+        # read only the first half of its own docstring. The gate was right.
+        ("CHECKLIST compliance statement: #69 PYRAMID satisfied, green 1193/3; "
+         "#258 LEDGER COUNT satisfied, executed this turn; #270 complete read "
+         "done, 19 of 19 blocks.", False,
+         {}),
+    ],
+    "scan_partial_distribution": [
+        # a distribution whose parts are stated against a named total, rather
+        # than a residual left implicit.
+        ("Verdicts across all 4,200 cells: 3,094 BELOW_POWER_FLOOR, 1,091 "
+         "NO_EXIT_SELECTABLE, 15 ZERO_FIRES - 4,200 of 4,200 accounted for.",
+         False, {}),
+    ],
+    "scan_retroactive_sweep": [
+        # a class closed WITH a sweep stated. The must-FIRE case declares a class
+        # closed with no statement of what else was scanned.
+        ("Fixed by stemming the verbs. Retroactive sweep: scanned all 6 sibling "
+         "call sites, 1 shared the defect and is fixed, 5 were already correct.",
+         False, {}),
+    ],
     "scan_shell_substitution": [
         # the SAME shape as the must-FIRE incident with the substitution removed:
         # a commit message describing the danger in plain words. If this fires,
