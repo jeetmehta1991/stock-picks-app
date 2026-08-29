@@ -3154,6 +3154,14 @@ own description; the freeze never reached it.
   string IS the prose (a disclosure sentence), substring is correct. Sweep of that test: 2 of 9
   assertions were defective, both now anchored.
 
+- **A GATE'S WINDOW IS PART OF THE GATE - RE-DERIVE ONE WHEN THE OTHER CHANGES (L711).** A threshold and the window it is
+  measured over are ONE object: a number sized for four years does not survive being applied to two.
+  MEASURED: I specified Step 2 as 544 tickers x 2 years while that day's ruling set
+  min_trades_full_period > 75 over the FULL 4-year period, so the gate would have failed cells on a
+  truncated count and the failure would have read as a quality verdict. The owner caught it; no scan
+  can, because the proposed window is prose until a spec exists. Sweep: 2 of 4 window claims that
+  session were defective, both the same shape - a window carried across a ruling that changed it.
+
 - **THE SECOND INSTANCE OF A CLASS IS A COUNT, NOT A THIRD FIX (L710).** Fixing the same class twice without sweeping means you have measured nothing about it.
   One instance is a defect; a second instance of the SAME class is evidence of a POPULATION, and the
   correct response is to measure it. MEASURED: I added fragment pins for L705-L707, then again for

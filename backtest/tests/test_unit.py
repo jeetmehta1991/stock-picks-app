@@ -25132,6 +25132,8 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         # unpinned would have made the lesson an instance of itself.
         ("Fixing the same class twice without sweeping means you have measured nothing about it",
          "L710: a second instance of a class is a count, not a third fix"),
+        ("A GATE'S WINDOW IS PART OF THE GATE",
+         "L711: a threshold and its window are one object"),
     ):
         if frag not in discipline_text:
             missing.append(f"execution-discipline lost [{why}]: {frag!r}")
@@ -25157,7 +25159,7 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # B2316: 54 -> 88 with the S6-B2245 batch-1 fragments. This number is the
     # pin's own must-FIRE arm - if a doc edit silently drops fragments, the
     # gutted count falls and this assertion catches the shrinkage.
-    assert len(gutted) == 98, gutted
+    assert len(gutted) == 99, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 

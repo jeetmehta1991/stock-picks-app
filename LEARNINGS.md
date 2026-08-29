@@ -16811,3 +16811,43 @@ then swept at S6-B2337 across all 5 table-renderer pins and found 0 further sibl
 because the sweep happened**. (3) The uncosted-effort class (#230 EXT) - flagged six times and
 **NEVER SWEPT**; I corrected each instance in prose and never counted the population. **So 2 of 3
 repeatedly-closed classes went unswept, and the third is only sound because the gate forced it.**
+
+## L711
+**A GATE'S WINDOW IS PART OF THE GATE - I HALVED THE RUN SPAN AND SILENTLY BROKE A THRESHOLD THE
+OWNER HAD JUST SET (B2357).**
+I specified Step 2 as *544 tickers x 2 years* while the owner's own ruling that same day set
+`min_trades_full_period > 75` measured over the FULL period. MEASURED from roster_core's
+constants when the owner challenged it: IS 2022-05-05 -> 2025-05-05 is 3.00 years, HO
+2025-05-05 -> 2026-05-05 is 1.00, **FULL = 4.00**. A 2-year cube cannot supply that gate - it
+would fail cells on a TRUNCATED COUNT and the failure would read as a quality verdict.
+**The owner caught it, not me, and not the gate**: no scan compares a proposed run window against
+the windows the thresholds are defined over, because the window lives in a spec I was about to
+write and the threshold lives in config.py.
+**Why I did not see it: I inherited '2 years' from the plan's VALIDATE row and carried it across
+a ruling that changed what the gates measure.** The row was written when Step 2 graded 344
+disjoint tickers with the full-period leg unreachable; the 2026-08-29 ruling made that leg
+binding and I updated the UNIVERSE in the same edit without re-checking the SPAN.
+**Rule: when a threshold changes, re-derive every window it is measured over - and when a window
+changes, re-check every threshold measured over it.** They are one object. A number sized for
+four years is not a number that survives being applied to two.
+**The arithmetic correction the owner also needed:** the span is 4 years, not 5. The holdout is
+the LAST YEAR OF the full period, so IS and HO overlap rather than stack - a distinction worth
+stating because *3-year IS + 1-year HO* reads like 4 and *4-year full + 1-year holdout* reads
+like 5, and both describe the same window.
+Compliance failure against CHECKLIST item 201 read with L700 - a figure carried across a ruling
+that invalidated it. No new item: #201 already demands a figure be re-derived rather than
+inherited, and this is that rule applied to a WINDOW rather than to a count.
+Mechanism: **JUDGMENT-ONLY.** No detection mechanism exists or is buildable here: the proposed
+window is prose in a response until a spec file is written, so nothing structural can compare it
+against config.py's thresholds at the moment the claim is made. Durability pinned by this rule
+in SKILL.md and by the runbook now stating the 4-year span beside the floors it feeds.
+**Retroactive sweep (#237): every window I have specified or quoted this session, checked against
+the thresholds measured over it.** Four. (1) Step 2 at *2 years* - **THE INSTANCE**, breaks the
+75-trade full-period gate. (2) Step 1 at *1 year, 200 tickers* - **SOUND**, it is the owner's
+2026-08-21 ruling and Step 1 applies min-trades 10 only, a gate with no multi-year leg. (3) The
+holdout at *1 year* for the 15-trade floor - **SOUND**, floor and window were ruled together on
+2026-08-29. (4) The projection *holdout n ~ 1.72x IS n* against the 344-ticker pool - **STALE
+RATHER THAN WRONG**: the same 2026-08-29 ruling moved Step 2 to all 544 tickers, so the correct
+multiplier is 2.72x, and I used 1.72x in the slate projection one turn before the ruling landed.
+**2 of 4 window claims were defective, and both defects are the same shape - a window carried
+across a ruling that changed it.**
