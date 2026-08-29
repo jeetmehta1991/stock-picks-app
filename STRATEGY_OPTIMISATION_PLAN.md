@@ -1314,7 +1314,14 @@ Per combination this: filters the cube to surviving fires, selects the best exit
 grades the holdout on all 6 gates via `roster_core` (identical bar to the Phase 1B roster), and
 records all 15 metrics.
 
-**Verdicts:** `PASS` · `FAIL` · `BELOW_POWER_FLOOR` (holdout n < 15, owner ruling 2026-08-29; config.py min_trades_holdout - the doc previously said 30 while the config held 25, S6-B2353) ·
+**Verdicts:** `PASS` · `FAIL` · `BELOW_POWER_FLOOR` (**holdout n < `--min-n`** - the CLI floor, default 10, and Step 1 ran
+at 10. **This is NOT `min_trades_holdout`**, which S6-B2353 and its own correction both got wrong: the
+power floor is the EARLY RETURN at `roster_core.py:215` (`if n < min_n: return None`), taken
+BEFORE any gate is computed, while `min_trades_holdout >= 15` is one of the six LIVE_GATES
+evaluated only for cells that already cleared it. **EXECUTED probe at `--min-n 10`:** n=8 ->
+None; n=10 and n=12 -> GRADED with `min_trades_holdout=False`; n=15 -> GRADED with it True.
+So a cell with 10-14 holdout trades IS graded and FAILS the holdout gate; below 10 it is never
+graded at all. Two cuts, two numbers, both live) ·
 `NO_EXIT_SELECTABLE` (too few IS trades to rank 26 exits) · `ZERO_FIRES`
 
 **Generate the locked artifact:**

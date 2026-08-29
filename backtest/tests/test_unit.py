@@ -27775,3 +27775,64 @@ def test_b2361_runbook_summary_table_agrees_with_the_section_that_defines_it():
         f"VALIDATE row's window is stale - the 2026-08-29 ruling allows 2022-23, "
         f"making Step 2 a 4-year span: {row}"
     )
+
+
+def test_b2362_power_floor_is_min_n_not_the_holdout_gate():
+    """S6-B2362: the runbook twice named the wrong mechanism for BELOW_POWER_FLOOR.
+
+    It said n < 30, then my correction said n < 15 citing min_trades_holdout.
+    Both wrong: the power floor is the early return `if n < min_n` at
+    roster_core.py:215, taken BEFORE any gate is computed, and min_n comes from
+    --min-n (default 10). min_trades_holdout is a LIVE GATE evaluated only for
+    cells that already cleared the floor. This pins the DISTINCTION - a cell
+    between the two numbers must come back graded-and-failing, not None.
+    """
+    import sys
+    from pathlib import Path
+    import numpy as np
+    import pandas as pd
+
+    root = Path(__file__).resolve().parents[2]
+    sys.path.insert(0, str(root / "scripts"))
+    import roster_core as rc
+
+    from backtest.config import PASSING_CRITERIA as PC
+    ho_bar = PC["min_trades_holdout"]
+
+    def cell(n):
+        rng = np.random.default_rng(7)
+        return (pd.Series(rng.normal(0.4, 3.0, n)),
+                pd.Series(rng.integers(3, 12, n)))
+
+    # below the CLI floor: not graded at all
+    pnl, hold = cell(8)
+    assert rc.evaluate(pnl, hold, min_n=10, full_period_n=200) is None, (
+        "n=8 at --min-n 10 must be BELOW_POWER_FLOOR"
+    )
+
+    # BETWEEN the two numbers: graded, and failing the holdout gate. This is the
+    # case that proves they are different mechanisms.
+    between = ho_bar - 3
+    assert 10 <= between < ho_bar, f"no gap between min_n=10 and {ho_bar}"
+    pnl, hold = cell(between)
+    res = rc.evaluate(pnl, hold, min_n=10, full_period_n=200)
+    assert res is not None, (
+        f"n={between} clears --min-n 10 and must be GRADED, not None - "
+        f"the power floor is min_n, not min_trades_holdout"
+    )
+    assert res["gates"]["min_trades_holdout"] is False, (
+        f"n={between} is below min_trades_holdout={ho_bar} and must FAIL that gate"
+    )
+
+    # at the gate: graded and passing it
+    pnl, hold = cell(ho_bar)
+    res = rc.evaluate(pnl, hold, min_n=10, full_period_n=200)
+    assert res is not None and res["gates"]["min_trades_holdout"] is True
+
+    # and the runbook must not re-attach the wrong mechanism
+    text = (root / "STRATEGY_OPTIMISATION_PLAN.md").read_text(encoding="utf-8")
+    lines = [ln for ln in text.splitlines() if "`BELOW_POWER_FLOOR`" in ln]
+    assert len(lines) == 1, f"expected one BELOW_POWER_FLOOR definition, found {len(lines)}"
+    assert "--min-n" in lines[0], (
+        f"BELOW_POWER_FLOOR must be defined by --min-n, not by a gate: {lines[0]}"
+    )
