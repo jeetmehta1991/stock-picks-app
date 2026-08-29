@@ -27835,10 +27835,78 @@ def test_b2362_power_floor_is_min_n_not_the_holdout_gate():
     res = rc.evaluate(pnl, hold, min_n=10, full_period_n=200)
     assert res is not None and res["gates"]["min_trades_holdout"] is True
 
-    # and the runbook must not re-attach the wrong mechanism
+    # and the runbook's VERDICT DEFINITION must not re-attach the wrong mechanism.
+    #
+    # B2371: this selected by SUBSTRING over the whole document and broke the
+    # moment the waterfall section MENTIONED the verdict name in prose - L706's
+    # exact defect, in a pin written to enforce a neighbouring rule. The term is
+    # discussed in several places; only ONE line DEFINES it, and that is the
+    # line this assertion means. Anchor on the definition line's own marker.
     text = (root / "STRATEGY_OPTIMISATION_PLAN.md").read_text(encoding="utf-8")
-    lines = [ln for ln in text.splitlines() if "`BELOW_POWER_FLOOR`" in ln]
-    assert len(lines) == 1, f"expected one BELOW_POWER_FLOOR definition, found {len(lines)}"
-    assert "--min-n" in lines[0], (
-        f"BELOW_POWER_FLOOR must be defined by --min-n, not by a gate: {lines[0]}"
+    defs = [ln for ln in text.splitlines()
+            if ln.startswith("**Verdicts:**") and "BELOW_POWER_FLOOR" in ln]
+    assert len(defs) == 1, (
+        f"expected exactly one '**Verdicts:**' line defining BELOW_POWER_FLOOR, "
+        f"found {len(defs)}"
+    )
+    assert "--min-n" in defs[0], (
+        f"BELOW_POWER_FLOOR must be defined by --min-n, not by a gate: {defs[0]}"
+    )
+    # and the term must still be DISCUSSED elsewhere - if this drops to the
+    # definition alone, the waterfall section has lost its mechanism paragraph
+    mentions = [ln for ln in text.splitlines() if "BELOW_POWER_FLOOR" in ln]
+    assert len(mentions) >= 2, (
+        f"BELOW_POWER_FLOOR is defined but discussed nowhere: {len(mentions)} line(s)"
+    )
+
+
+def test_b2370_waterfall_order_agrees_with_the_mechanical_slate():
+    """S6-B2370: the waterfall names its configs in a numbered list, and the
+    mechanical top-3 section names the same three. Two statements of one slate
+    can drift, and only the reader notices - the same defect B2361 pinned for
+    the slate SIZE, now for its MEMBERS and their ORDER.
+
+    Anchored on the numbered rule lines, not on substrings of the whole
+    document (L703/L705/L706): the config names also appear in the cost table,
+    the pre-triage table and the applied-slate sentence, so a substring check
+    would pass against a waterfall that had lost its list entirely.
+    """
+    from pathlib import Path
+    import re
+
+    plan = Path(__file__).resolve().parents[2] / "STRATEGY_OPTIMISATION_PLAN.md"
+    text = plan.read_text(encoding="utf-8")
+
+    head = "### STEP 2 EXECUTION - THE WATERFALL"
+    assert text.count(head) == 1, f"expected one waterfall heading, found {text.count(head)}"
+    body = text.split(head, 1)[1].split("###", 1)[0]
+
+    # the numbered rule lines, in document order
+    steps = [ln for ln in body.splitlines()
+             if re.match(r"^\d\. \*\*Config \d|^\d\. Otherwise", ln)]
+    assert len(steps) == 3, f"waterfall must state 3 ordered steps, found {len(steps)}: {steps}"
+
+    order = []
+    for ln in steps:
+        m = re.search(r"(sw\d+sp\d+)", ln)
+        assert m, f"waterfall step names no config: {ln}"
+        order.append(m.group(1))
+
+    # the mechanical section's applied slate, read from ITS OWN sentence
+    applied = [ln for ln in text.splitlines()
+               if ln.startswith("Applied to the completed b2197 program")]
+    assert len(applied) == 1, f"expected one applied-slate line, found {len(applied)}"
+    tail = text.split(applied[0], 1)[1][:400]
+    slate = re.findall(r"(sw\d+sp\d+)", applied[0] + tail)
+    # first three DISTINCT names in the applied sentence are the advancing slate
+    seen, mech = set(), []
+    for c in slate:
+        if c not in seen:
+            seen.add(c); mech.append(c)
+        if len(mech) == 3:
+            break
+
+    assert order == mech, (
+        f"waterfall order and the mechanical slate disagree: "
+        f"waterfall={order}, mechanical={mech}"
     )

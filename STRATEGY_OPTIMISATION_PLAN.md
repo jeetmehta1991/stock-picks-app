@@ -839,47 +839,147 @@ sw30sp100 collapse into it) and sw50sp9 (+0.724); both are recorded here so a la
 widening does not have to re-derive them.
 
 **TRADE FLOORS (owner rulings 2026-08-29):** `min_trades_holdout >= 15` in the 1-year holdout
-and `min_trades_full_period > 60` across all 544 tickers (config.py; was 25/100 at B1492, then
-15/75 earlier the same day). Owner logic: 25 fires per year forced ~2 per month - HFT territory
-for a swing library and illogical across bear/consolidation regimes; and 60 rather than 75
-because the in-sample leg is 3 years, not 4.
+and `min_trades_full_period > 75` across all 544 tickers over the FULL 4-year span (config.py;
+history 100 at B1492 -> 75 -> 60 -> **75**). Owner logic on the holdout floor: 25 fires per year
+forced ~2 per month - HFT territory for a swing library and illogical across bear/consolidation
+regimes. The full-period floor moved to 60 on a 3-year reading and **back to 75** once the grain
+was surfaced.
 
-**GRAIN CAVEAT, recorded rather than silently resolved:** the full-period gate COUNTS over the
-whole cube span - `tighten_breaker_block.py:348` sums the entire frame, which is **4 years**
-(IS 3.00 + HO 1.00 per roster_core's constants), not the 3-year IS leg alone. 60 is applied
-exactly as ruled. If the intent was an IS-ONLY count, the COUNTER must change too and not just
-the bar - lowering a threshold does not narrow the window it reads.
+**GRAIN FLAG - RAISED, THEN RESOLVED BY THE OWNER (2026-08-29, third ruling set).** The
+full-period gate COUNTS over the whole cube span: `tighten_breaker_block.py:348` sums the entire
+frame, which is **4 years** (IS 3.00 + HO 1.00 per roster_core.py:56-57), not the 3-year IS leg.
+The 60 had been sized for a 3-year count the code does not perform. Told this, the owner ruled
+**"in that case revert back to 75"** - keeping the COUNTER and restoring the 4-year-sized BAR,
+rather than re-cutting the counter to IS-only. **This is the resolution L711 asks for: a
+threshold and the window it is measured over are ONE object, and the pair is now consistent.**
 
 **WINDOW (owner ruling 2026-08-29): 2022-23 data is ALLOWED for Step 2.** This supersedes, for
 Step 2 only, the 2026-08-17 *no 2022-23 even for exit selection* ruling, and it resolves the
 three-way conflict recorded at S6-B2358. Step 2 therefore runs the FULL 4-year span
 `2022-05-05 -> 2026-05-05`, which is what the full-period gate is measured over.
 
-### STEP 2 PRE-TRIAGE - MEASURE FIRES BEFORE SPENDING CUBE HOURS (owner-approved 2026-08-29)
+### STEP 2 EXECUTION - THE WATERFALL (owner ruling 2026-08-29, third set)
 
-**MANDATORY before any Step-2 cube is generated.** A 544-ticker 4-year cube costs ~18h; a fire-count
-measurement costs minutes. Run it first and drop any config whose measured fires cannot reach the
-`min_trades_full_period` bar - a cube whose verdict is predictable from arithmetic is a cube not
-worth generating.
+**Owner, verbatim:** *"Lets do a waterfall method. If any of the 300 combinations from config 1
+qualify for phase 1B after clearing all gates we do not run the next two configs else we continue to
+config 2 then 3 then terminate."*
 
-```bash
-# ONE INVOCATION PER CONFIG - the config axes are ENV, not CLI flags (verified:
-# config.py:2465 reads SMC_SWING_LENGTH from os.environ; a runtime probe returns
-# 50 with the env set and the default 20 without).
-SMC_SWING_LENGTH=50 SMC_SPAN=50 \
-python scripts/measure_fire_count.py --strategies smc_breaker_block_long \
-  --start 2022-05-05 --end 2026-05-05 \
-  --output output_audit/pretriage_<CONFIG>.json
-```
+**THE RULE.** Configs run SEQUENTIALLY in the mechanical rank order. After each config's cube is
+graded, evaluate its 300 combinations:
 
-**KNOWN LIMITATION, stated so the result is not over-read:** `measure_fire_count.py` measures
-ENTRY FIRES at the strategy's registered gates. It does NOT sweep the four inner axes
-(`close_mitigation`, `tail_n`, `age_bars_max`, `break_pct_max`), and fires are an UPPER BOUND on
-graded trades - a fire that never selects an exit does not become a row. So the pre-triage
-**excludes** configs that cannot clear the bar; it does not certify that survivors will.
+1. **Config 1 = sw50sp50.** If any combination qualifies -> **STOP. Configs 2 and 3 are not run.**
+2. Otherwise **config 2 = sw30sp150.** If any qualifies -> STOP.
+3. Otherwise **config 3 = sw50sp20.** If any qualifies -> admit it; otherwise **TERMINATE** -
+   `smc_breaker_block_long` does not enter Phase 1B and its optimisation-backlog entry closes NEGATIVE.
 
-**Decision rule:** if `n_fires_long` over the 4-year span is below `min_trades_full_period`, the
-config cannot produce a passing cell and is dropped before cube generation.
+**WHAT "QUALIFY" MEANS, IN CODE - not paraphrased.** `tighten_breaker_block.py:373-383`: a row gets
+`verdict = "PASS"` iff `all(gates.values())` over the six `LIVE_GATES` (`roster_core.py:60-61`:
+pooled_sharpe, profit_factor, sortino, psr, min_trades_holdout, min_trades_full_period). Anything that
+returns `None` from `evaluate` never reaches the gate branch at all and is `BELOW_POWER_FLOOR`.
+`build_phase_1b_roster.py:449` then labels an admitted cell **ROBUST** if its margin clears the 0.333
+selection-noise floor and **PROVISIONAL** otherwise - and the roster's own text is explicit that
+*"PROVISIONAL does NOT mean the cell failed: it cleared every live gate."* **So admission == PASS;
+ROBUST/PROVISIONAL is a quality LABEL applied after admission, not a further gate.**
+
+**COST PROFILE.** Best case 18.7h (config 1 qualifies). Then 36.0h. Worst case 80.0h (all three run
+and none qualifies). The waterfall is therefore **never more expensive than the flat top-3 slate and
+usually cheaper** - and the rank order happens to be cost-favourable, because the 43.9h config sorts
+LAST, so it is only paid for if the two cheap ones both fail.
+
+**WHAT THIS SUPERSEDES, stated rather than applied silently (L633).** The 2026-08-29 ruling recorded
+at S6-B2242 was *"We decide based on over all ranked list. That itself is the goal of step 2."* The
+waterfall is a **first-success stopping rule**, not a ranked comparison: under it, if config 1
+qualifies, configs 2 and 3 are never measured and no cross-config ranking exists. That is a coherent
+goal ("find one that clears") but it is a DIFFERENT goal from the earlier ruling ("pick the best").
+The waterfall governs; the earlier ruling is superseded for Step 2 only.
+
+**FOUR THINGS THE WATERFALL MAKES LOAD-BEARING THAT THE RANKED LIST DID NOT.** Under a ranked list a
+marginal winner is one row among many the reader judges; under first-success-wins it ENDS the
+program. See the DECISIONS PENDING block below - none of these is resolved here.
+
+### DECISIONS PENDING - THE WATERFALL RAISES SIX (S6-B2370)
+
+**None is resolved here.** Each is recorded with what the code does TODAY, so a non-answer has a
+defined default rather than a silent one.
+
+**D1 - Does a PROVISIONAL qualifier stop the waterfall, or only a ROBUST one?** *Today:* PASS is
+admission; ROBUST/PROVISIONAL is a label applied after. So a PROVISIONAL qualifier STOPS the
+waterfall by default. *The concern:* PROVISIONAL means the margin above the Sharpe gate is smaller
+than the 0.333 gap between near-identical twins that chose different exits - i.e. **it cannot be
+distinguished from exit-selection luck**. Stopping there ends the program on a result the roster's own
+machinery declines to call decision-grade. *Recommendation:* **stop on ROBUST; on PROVISIONAL, record
+it and CONTINUE**, then compare at the end. Cost of continuing is bounded by the remaining configs.
+
+**D2 - Apply BH-FDR across each config's 300 combinations before declaring a qualifier?** *Today:*
+**NO.** `FDR_Q` is defined at `roster_core.py:58` and used ONLY in `build_phase_1b_roster.py:252`,
+across the roster's holdout family. `tighten_breaker_block.py` applies no multiplicity correction at
+all - grep returns zero hits. *The concern:* under a ranked list, 300 uncorrected tests were tolerable
+because a human read the whole list. **Under first-success-wins, the FIRST combination to clear four
+statistical gates ends the program**, and with 300 correlated draws that first clear is exactly what
+multiplicity control exists to discipline. *Recommendation:* **apply BH-FDR across the config's
+gradable combinations before a PASS counts as a qualifier.** This is a code change and needs approval.
+
+**D3 - If several combinations in one config qualify, which advances?** *Today:* undefined - the
+waterfall says "any". *Recommendation:* the existing admission convention at B1615 - **the
+PRODUCTION-CLOSEST parameter value among those clearing** (a tie is not evidence to change
+production), with the equivalence-class collapse already removing duplicates.
+
+**D4 - Confirm the waterfall supersedes the ranked-list goal.** The 2026-08-29 ruling at S6-B2242 was
+*"We decide based on over all ranked list."* Under the waterfall, a config-1 qualifier means configs 2
+and 3 are never measured, so **no cross-config ranked list will exist**. *Recommendation:* confirm the
+supersession explicitly; it is already written into the runbook as governing.
+
+**D5 - Order of the three.** *Today:* mechanical rank order - sw50sp50, sw30sp150, sw50sp20.
+*Note:* this is also cost-favourable, because the 43.9h config sorts LAST and is paid for only if both
+cheap ones fail. Cheapest-first would reorder to sw30sp150, sw50sp50, sw50sp20 for a marginal saving.
+*Recommendation:* **keep rank order** - it is the ruled mechanical order and already cost-favourable.
+
+**D6 - What does TERMINATE mean if all three fail?** *Today:* written as
+`smc_breaker_block_long` closing NEGATIVE for Phase 1B. *The open half:* whether that terminates only
+this strategy's optimisation (and the program moves to the next of the 207-strategy backlog) or
+pauses the Step-1/Step-2 method itself pending review. *Recommendation:* **close the strategy, keep
+the method**, and record the negative result as evidence about this strategy rather than the process.
+
+### STEP 2 PRE-TRIAGE - EXECUTED, AND THE METHOD CHANGED (S6-B2369)
+
+**MANDATORY before any Step-2 cube. It has now been RUN, and the answer is recorded here.**
+
+**THE METHOD CHANGED, and this supersedes the `measure_fire_count.py` step approved earlier the same
+day.** That tool sweeps only 2 of the 6 config axes and counts ENTRY FIRES, an upper bound. The
+Step-1 grids already on disk carry `full_period_n` **per combination, for the exit each combination
+actually selected, across all 6 axes** - a strictly better instrument requiring no engine run. Two
+findings made this possible and are worth recording:
+
+- **Every Step-1 `holdout_n` is EXACTLY 0 - all 5,354 gradable rows across all 26 grids.** Step 1
+  runs `2024-05-05 -> 2025-05-05`, ending exactly at `HO_START`, so `roster_core.holdout()` returns an
+  empty frame BY CONSTRUCTION. **Therefore `PASS: 0, FAIL: 0` across all 7,800 Step-1 combinations is
+  a STRUCTURAL fact about the window, not a quality verdict** - the gate branch has never executed in
+  this program, and no Step-1 artifact says anything about whether a combination can clear a gate.
+- `full_period_n` IS populated at Step 1 (over its 200 ticker-years), so it projects.
+
+**THE PROJECTION.** Step-1 scope 200 ticker-years; Step-2 full period 544 x 4 = 2,176 (**10.88x**) and
+Step-2 holdout 544 x 1 = 544 (**2.72x**). A combination needs Step-1 `full_period_n` > 6.9 for the
+75 bar and > 5.5 for the 15 bar, so **the full-period bar binds**.
+
+| config | gradable of 300 | worst `full_period_n` | projects to full / holdout | clear BOTH floors |
+|---|---|---|---|---|
+| sw50sp50 | 100 | 10 | 109 / 27 | **100 of 100** |
+| sw30sp150 | 194 | 11 | 120 / 30 | **194 of 194** |
+| sw50sp20 | 100 | 10 | 109 / 27 | **100 of 100** |
+
+**RESULT: 394 of 394 gradable combinations across all three configs project past both trade floors,
+the WORST by a 45% margin.** The pre-triage excludes nothing. **Its real value is the inversion it
+delivers: the trade floors will NOT be what stops these configs - the four STATISTICAL gates
+(pooled_sharpe, profit_factor, sortino, psr) will decide, one way or the other.** This contradicts
+the earlier expectation, recorded here so it is not repeated, that the thin-n leaders were the ones at
+risk of failing the trade floors.
+
+**LIMITATION, stated so the projection is not over-read:** it assumes the measured 2024-25 fire rate
+holds across 2022-2026. **No Step-1 config ran a single day of 2022-23** - that era was excluded until
+this same day's ruling admitted it - so the rate in the added two years is UNMEASURED, and 2022 in
+particular was a distinct regime. If the rate there is materially lower the projection falls; the
+worst margin is 45%, so the rate would have to be roughly a third of the 2024-25 rate in the added
+years before the floor binds.
 
 **STEP-1 UNIVERSE, PINNED BY NAME:** the exact 200 tickers Step 1 searched are recorded in
 APPENDIX S1-200 at the end of this document (source: output_audit/_sweep_200.txt, the tickers_file
