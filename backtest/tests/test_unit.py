@@ -19644,7 +19644,7 @@ def test_b1869_authored_then_violated_ledger():
 
     i = lea.index("### L570")
     entry = lea[i:i + 8000]   # B2372: widened - instance 3 appends past 4000
-    for instance in ("S6-B1762f", "L567", "B2372"):
+    for instance in ("S6-B1762f", "L567", "B2372", "B2395"):
         assert instance in entry, (
             f"L570 no longer names {instance}. The entry's whole value is the "
             "COUNT of times a rule was cited and not applied - an instance "
@@ -25176,6 +25176,8 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
          "L715: anchor a source scan to structure, not a line range"),
         ("ROUND FOR DISPLAY AND COMPARE ON THE SAME VALUE, OR THE LABEL CONTRADICTS THE NUMBER",
          "L716: the reported value and the compared value must be one"),
+        ("NEVER GIT COMMIT -m AT ALL; ALWAYS -F WITH A QUOTED HEREDOC",
+         "L570 instance 4 (B2395): a bright line, no judgment call"),
     ):
         if frag not in discipline_text:
             missing.append(f"execution-discipline lost [{why}]: {frag!r}")
@@ -25201,7 +25203,7 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # B2316: 54 -> 88 with the S6-B2245 batch-1 fragments. This number is the
     # pin's own must-FIRE arm - if a doc edit silently drops fragments, the
     # gutted count falls and this assertion catches the shrinkage.
-    assert len(gutted) == 114, gutted
+    assert len(gutted) == 115, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 

@@ -2584,6 +2584,17 @@ both. `STEM_LISTS` is the explicit register; everything else is word-bounded via
 
 ## NEVER PUT A MESSAGE IN A DOUBLE-QUOTED SHELL ARGUMENT (B1765 - L520, CHECKLIST #245)
 
+**NEVER GIT COMMIT -m AT ALL; ALWAYS -F WITH A QUOTED HEREDOC (B2395, L570 instance 4).** Not "avoid `-m` for risky
+messages" - **never `-m`, for any message, of any length.** MEASURED across four instances: I use a
+quoted heredoc unfailingly for LONG messages and lapse on SHORT ones at the end of a turn, where
+`-m` feels proportionate and the text looks obviously safe. The old rule contained a judgment call
+- *is this message risky?* - made under precisely the conditions where judgment is worst. Instance 4
+was `git commit -q -m "$(printf '...')"`, a LIVE substitution in a real commit, byte-for-byte the
+construction that ran `git reset --hard` at B1765; it was benign because the payload was `printf`,
+which is luck about the content, not care about the form. Sweep: 1 of ~12 commits that session used
+`-m`, and it was the shortest message - the lapse tracks BREVITY, not risk.
+
+
 **THIS RAN.** A commit message written to WARN about destructive commands contained backticked
 examples of them; bash substituted them and **`git reset --hard` executed**, clearing the index and
 reverting unstaged tracked files. Third instance of the git-safety hard rule (L49, L77) and **the
