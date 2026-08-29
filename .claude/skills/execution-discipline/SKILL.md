@@ -3363,6 +3363,15 @@ own description; the freeze never reached it.
   constant can be legitimate at one grain (Phase-1B per-cell) and nonsense at another (Step-1
   admission).
 
+- **AN UPDATE COMPUTED FROM A STALE BASE PASSES EVERY CHECK YOU WOULD THINK TO RUN (L695 addendum, B2397).** A figure carried as
+  previous-value-plus-delta hides its staleness in the half you do not check: the DELTA is verified
+  and the BASE is assumed. MEASURED: I labelled the ticket table *computed this turn*, having
+  incremented a stale base by a delta I knew exactly - arithmetic right, operand stale, off by one on
+  both figures. **Computing an update feels like deriving rather than asserting**, and every
+  self-check aimed at the computation confirms it. Applies to any maintained count - test totals,
+  register sizes, backlog figures. The remedy is ORDER, not diligence: run the backing command as the
+  FIRST action of the close, so there is no base to inherit.
+
 - **AN EVIDENCE LABEL INSIDE BOILERPLATE IS ASSERTED BY DEFAULT (L695).** Any recurring block that
   contains its own provenance claim - "executed this turn", "GREEN", "FULLY LOADED" - emits that
   claim by being reproduced, not by being earned, so it is the one place a fabrication needs no
