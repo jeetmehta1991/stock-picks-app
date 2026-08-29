@@ -16752,6 +16752,23 @@ config* is exactly what that field holds. (3) Table D's rows - built from step1_
 deliberately, and its preamble says so. (4) The 110-cells-clear-the-floor count from S6-B2295 -
 **taken over `results`, the right field**. So 1 of 4 was wrong, and the three sound ones were
 sound because the question matched the field's selection, not because I checked.
+**ADDENDUM (B2365, same session): INSTANCE 2 - AND IT IS NOT A COUNT, IT IS A COST.** I projected the
+top-3 Step-2 slate at ~55h by scaling the POPULATION MEDIAN Step-1 duration (1.68h over 26 configs).
+Per-config scaling gives **~80h**: sw50sp50 18.7h + sw30sp150 17.3h + **sw50sp20 43.9h**, because the
+third-ranked config is the SLOWEST of the 26 - 4.04h against a 1.32h minimum, a **3.1x spread at
+IDENTICAL ticker-years**, which is itself the evidence that runtime is not ticker-year-driven.
+**Selection on `is_ci_lo` is not independent of runtime, and nothing warned me, because the median was
+correctly computed over the right population** - the whole defect is in APPLYING it to a subset chosen
+by a different criterion.
+**Why this widens the rule rather than merely instancing it:** the entry above says *counting members*
+over a selected collection. **A median is not a count**, so the wording let the identical error through
+in a COSTING. Any statistic - count, median, rate, cost - computed over a population and then applied
+to a selected subset inherits the selection. The SKILL bullet is widened from *counting* to *any
+statistic* in the same call as this addendum.
+**Owner-facing consequence, which is why S6-B2364 is P1 and not pedantry:** the top-3 ruling was made
+to cut a ~92h timeline, priced against my ~55h. The true saving is ~12h, not ~37h - the decision was
+taken on a number that overstated its own benefit roughly threefold.
+Per L710 this is counted here rather than minted as a new lesson.
 
 ## L709
 **A CONSTANT CITED INCIDENTALLY IN A DISPLAY TURN GETS THE SAME GREP AS ONE CITED IN AN

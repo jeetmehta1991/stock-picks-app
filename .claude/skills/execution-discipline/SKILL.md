@@ -3189,8 +3189,13 @@ own description; the freeze never reached it.
   one in a caption.
 
 - **BEFORE COUNTING OVER A COLLECTION, ASK WHETHER IT WAS PRODUCED BY A SELECTION (L708).**
-  Counting members over a ranked list, a top-N, a filtered view or a passing set measures the
-  SELECTION CRITERION, not the population. MEASURED: I reported "16 of 24 exits never win, including
+  ANY STATISTIC - a count, a median, a rate, a cost - computed over a ranked list, a top-N, a
+  filtered view or a passing set, OR computed over a population and then APPLIED to one, measures
+  the SELECTION CRITERION rather than the thing you meant. B2365 widened this from *counting*:
+  a top-3 slate was costed from the population MEDIAN runtime and understated by 25h, because the
+  third pick is the slowest config in the program - selection on ci_lo is not independent of
+  runtime, and the median was correctly computed over the right population, which is exactly why
+  nothing warned me. MEASURED: I reported "16 of 24 exits never win, including
   every trailing variant" from step1_ranking, which holds the top 10 rows per config; over the real
   6,900 cells the figure is 18 of 24 win at least one, and every trailing variant wins some. The
   owner caught it because the result was absurd on its face. This is L694 one level up - a COMPLETE
