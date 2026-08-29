@@ -27912,3 +27912,54 @@ def test_b2370_waterfall_order_agrees_with_the_mechanical_slate():
         f"waterfall order and the mechanical slate disagree: "
         f"waterfall={order}, mechanical={mech}"
     )
+
+
+def test_b2373_claude_md_criteria_table_matches_the_live_gate_thresholds():
+    """S6-B2373: CLAUDE.md stated the OVERALL profit-factor bar as >1.5 while
+    config.py has held 1.3 since Batch 186 - a threshold the owner asked about
+    directly, wrong in the doc they would read first.
+
+    Pins the AGREEMENT between the criteria table and PASSING_CRITERIA for the
+    three numeric live gates the table carries, so a future threshold ruling
+    has to move both. Anchored on the table ROWS (L706), never on substrings of
+    the whole file: every one of these numbers appears elsewhere in the prose.
+    """
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parents[2]
+    text = (root / "CLAUDE.md").read_text(encoding="utf-8")
+    from backtest.config import PASSING_CRITERIA as PC
+
+    def threshold_cell(prefix):
+        """The OVERALL-threshold cell of a criteria row, not the whole row.
+
+        B2374: the first cut asserted `str(bar) in row` and was HOLLOW - each
+        row carries a HISTORY note (100 -> 75 -> 60 -> 75), so the retired and
+        the live value both appear and mutating the live cell left the pin
+        green. L706 exactly, in a pin written to stop a doc-code drift.
+        """
+        rows = [ln for ln in text.splitlines() if ln.startswith(prefix)]
+        assert len(rows) == 1, f"expected one row starting {prefix!r}, found {len(rows)}"
+        cells = rows[0].split("|")
+        assert len(cells) >= 6, f"row has too few cells to carry a threshold: {rows[0][:120]}"
+        return cells[4].strip(), rows[0]
+
+    pf_cell, pf_row = threshold_cell("| 2 | Profit factor |")
+    want = str(PC["min_profit_factor_overall"])
+    assert want in pf_cell, (
+        f"CLAUDE.md row 2's OVERALL cell does not carry the live profit-factor "
+        f"bar {want}. cell={pf_cell!r}")
+
+    ho_cell, _ = threshold_cell("| 9a |")
+    fp_cell, _ = threshold_cell("| 9b |")
+    assert str(PC["min_trades_holdout"]) in ho_cell, (
+        f"row 9a's threshold cell does not carry "
+        f"min_trades_holdout={PC['min_trades_holdout']}: {ho_cell!r}")
+    assert str(PC["min_trades_full_period"]) in fp_cell, (
+        f"row 9b's threshold cell does not carry "
+        f"min_trades_full_period={PC['min_trades_full_period']}: {fp_cell!r}")
+
+    _, mt_row = threshold_cell("| 9 | Min trades |")
+    assert "NOT one of the six LIVE_GATES" in mt_row, (
+        "row 9 no longer says min_trades is not a live gate - without that, "
+        "9a/9b read as duplicates rather than as the gated legs")

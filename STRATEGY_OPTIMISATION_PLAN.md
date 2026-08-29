@@ -867,9 +867,9 @@ config 2 then 3 then terminate."*
 **THE RULE.** Configs run SEQUENTIALLY in the mechanical rank order. After each config's cube is
 graded, evaluate its 300 combinations:
 
-1. **Config 1 = sw50sp50.** If any combination qualifies -> **STOP. Configs 2 and 3 are not run.**
-2. Otherwise **config 2 = sw30sp150.** If any qualifies -> STOP.
-3. Otherwise **config 3 = sw50sp20.** If any qualifies -> admit it; otherwise **TERMINATE** -
+1. **Config 1 = sw50sp50.** Run the config **IN ITS ENTIRETY** - all 300 combinations graded; the waterfall never stops mid-config. Then: if any combination qualifies **AND is ROBUST** -> **STOP. Configs 2 and 3 are not run.**
+2. Otherwise **config 2 = sw30sp150**, again in its entirety. If any qualifies AND is ROBUST -> STOP.
+3. Otherwise **config 3 = sw50sp20**, in its entirety. If any qualifies AND is ROBUST -> admit it; otherwise **TERMINATE** - `smc_breaker_block_long` closes NEGATIVE for Phase 1B and the program moves to the next of the 207-strategy optimisation backlog.
    `smc_breaker_block_long` does not enter Phase 1B and its optimisation-backlog entry closes NEGATIVE.
 
 **WHAT "QUALIFY" MEANS, IN CODE - not paraphrased.** `tighten_breaker_block.py:373-383`: a row gets
@@ -897,48 +897,50 @@ The waterfall governs; the earlier ruling is superseded for Step 2 only.
 marginal winner is one row among many the reader judges; under first-success-wins it ENDS the
 program. See the DECISIONS PENDING block below - none of these is resolved here.
 
-### DECISIONS PENDING - THE WATERFALL RAISES SIX (S6-B2370)
+### DECISIONS RULED - ALL SIX (owner, 2026-08-29, S6-B2375)
 
-**None is resolved here.** Each is recorded with what the code does TODAY, so a non-answer has a
-defined default rather than a silent one.
+**D1 - RULED: ROBUST.** *"D1 robust that said the config runs to be run in its entirety."* Two
+things: the stop condition is **ROBUST, not bare PASS** - a qualifier whose holdout-Sharpe margin is
+below the 0.333 selection-noise floor is PROVISIONAL and does **not** stop the waterfall; and **a
+config always runs to completion** - all 300 combinations are graded before the stop test, so the
+waterfall never halts mid-config. This is STRICTER than admission: a cell can clear all six gates and
+still not stop the run.
 
-**D1 - Does a PROVISIONAL qualifier stop the waterfall, or only a ROBUST one?** *Today:* PASS is
-admission; ROBUST/PROVISIONAL is a label applied after. So a PROVISIONAL qualifier STOPS the
-waterfall by default. *The concern:* PROVISIONAL means the margin above the Sharpe gate is smaller
-than the 0.333 gap between near-identical twins that chose different exits - i.e. **it cannot be
-distinguished from exit-selection luck**. Stopping there ends the program on a result the roster's own
-machinery declines to call decision-grade. *Recommendation:* **stop on ROBUST; on PROVISIONAL, record
-it and CONTINUE**, then compare at the end. Cost of continuing is bounded by the remaining configs.
+> **STATED CONSEQUENCE, flagged not resolved.** If a config yields a PROVISIONAL qualifier and the
+> two after it yield nothing, the program terminates NEGATIVE **while holding a cell that cleared
+> every live gate.** That is the ruling working as intended - the margin cannot be told from exit
+> luck - but the disposition of such a cell is not written anywhere. It should be RECORDED in the
+> Step-2 output rather than discarded, so a later re-run has it. **Not resolved here.**
 
-**D2 - Apply BH-FDR across each config's 300 combinations before declaring a qualifier?** *Today:*
-**NO.** `FDR_Q` is defined at `roster_core.py:58` and used ONLY in `build_phase_1b_roster.py:252`,
-across the roster's holdout family. `tighten_breaker_block.py` applies no multiplicity correction at
-all - grep returns zero hits. *The concern:* under a ranked list, 300 uncorrected tests were tolerable
-because a human read the whole list. **Under first-success-wins, the FIRST combination to clear four
-statistical gates ends the program**, and with 300 correlated draws that first clear is exactly what
-multiplicity control exists to discipline. *Recommendation:* **apply BH-FDR across the config's
-gradable combinations before a PASS counts as a qualifier.** This is a code change and needs approval.
+**D2 - RULED: no BH-FDR.** *"this doesn't apply. Apply config runs we will analyze the 300
+combinations and select the one that passes all gates. If its multiple combinations, we select the
+one with the best sharpe. No bh fdr needed here."* No multiplicity correction is applied across a
+config's 300 combinations. **My recommendation was the opposite and is recorded as overruled** (L633:
+the disagreement is stated once, then the ruling governs). **Two things weigh in the ruling's
+favour and are worth recording**, since they were not part of my original framing: the D1 ROBUST
+requirement is itself a substantial hurdle beyond bare gate-clearing, and `psr >= 0.95` is already a
+significance-style gate on the Sharpe estimate - so the procedure is not uncontrolled, it simply
+controls selection by MARGIN rather than by family-wise error rate.
 
-**D3 - If several combinations in one config qualify, which advances?** *Today:* undefined - the
-waterfall says "any". *Recommendation:* the existing admission convention at B1615 - **the
-PRODUCTION-CLOSEST parameter value among those clearing** (a tie is not evidence to change
-production), with the equivalence-class collapse already removing duplicates.
+**D3 - RULED: best Sharpe.** Where several combinations qualify, **the highest Sharpe advances**.
+This supersedes the production-closest convention I recommended. *Reading made explicit:* "Sharpe"
+here is the **holdout pooled Sharpe** - the gated quantity at `roster_core.py` `pooled_sharpe`, not
+the in-sample `is_sharpe` Step 1 ranked on. **Note this is coherent with D1 rather than in tension
+with it:** ROBUST is defined BY the Sharpe margin, so the best-Sharpe qualifier is also the one most
+likely to be ROBUST.
 
-**D4 - Confirm the waterfall supersedes the ranked-list goal.** The 2026-08-29 ruling at S6-B2242 was
-*"We decide based on over all ranked list."* Under the waterfall, a config-1 qualifier means configs 2
-and 3 are never measured, so **no cross-config ranked list will exist**. *Recommendation:* confirm the
-supersession explicitly; it is already written into the runbook as governing.
+**D4 - RULED: confirmed.** The waterfall supersedes the ranked-list goal recorded at S6-B2242. Under
+it, a config-1 stop means configs 2 and 3 are never measured and **no cross-config ranking will
+exist**. Accepted.
 
-**D5 - Order of the three.** *Today:* mechanical rank order - sw50sp50, sw30sp150, sw50sp20.
-*Note:* this is also cost-favourable, because the 43.9h config sorts LAST and is paid for only if both
-cheap ones fail. Cheapest-first would reorder to sw30sp150, sw50sp50, sw50sp20 for a marginal saving.
-*Recommendation:* **keep rank order** - it is the ruled mechanical order and already cost-favourable.
+**D5 - RULED: approved.** Order stays the mechanical rank order - sw50sp50, sw30sp150, sw50sp20 -
+which is also cost-favourable, since the 43.9h config sorts last and is paid for only if both cheap
+ones fail.
 
-**D6 - What does TERMINATE mean if all three fail?** *Today:* written as
-`smc_breaker_block_long` closing NEGATIVE for Phase 1B. *The open half:* whether that terminates only
-this strategy's optimisation (and the program moves to the next of the 207-strategy backlog) or
-pauses the Step-1/Step-2 method itself pending review. *Recommendation:* **close the strategy, keep
-the method**, and record the negative result as evidence about this strategy rather than the process.
+**D6 - RULED: closes this strategy.** If all three fail, `smc_breaker_block_long` closes NEGATIVE and
+the program moves to the next of the 207-strategy optimisation backlog. **The METHOD is not on
+trial** - the negative result is evidence about this strategy.
+
 
 ### STEP 2 PRE-TRIAGE - EXECUTED, AND THE METHOD CHANGED (S6-B2369)
 
