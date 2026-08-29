@@ -17078,3 +17078,45 @@ line-range-anchored one - **1 of 1 defective, and it fired**. Every other helper
 name, by a literal marker, or by AST walk, all of which survive insertion. **Blast radius one, and
 the fix generalises the survivor rather than patching it** - which is as useful a sweep result as
 finding a population would have been (L643).
+
+## L716
+**ROUND FOR DISPLAY AND COMPARE ON THE SAME VALUE, OR THE LABEL CONTRADICTS THE NUMBER (B2394).**
+I wrote a classifier returning `(round(margin, 3), 'ROBUST' if margin >= floor else
+'PROVISIONAL')` - **rounding the value it REPORTS while deciding on the value it does NOT.** At
+the boundary those disagree: `gate + floor - gate` is a hair BELOW `floor` in binary float, so a
+cell whose margin PRINTS as exactly the floor is labelled PROVISIONAL. **The artifact then shows
+a number and a verdict that contradict each other, and every reader who checks the arithmetic
+concludes the code is broken - correctly.**
+**Why this is worse than an ordinary off-by-epsilon.** The two values are the same quantity, so
+nothing in the code LOOKS inconsistent; the rounding reads as a display concern and the
+comparison as a logic concern, and they are written on one line. The defect exists only in the
+GAP between what is shown and what is decided - which is invisible unless you test the boundary
+exactly.
+**Load-bearing here, not cosmetic:** this classifier is the waterfall's STOP CONDITION. A cell
+mislabelled PROVISIONAL does not stop the run, so the program spends another config - or
+terminates NEGATIVE holding a qualifier - on a rounding artifact.
+**Rule: decide on the value you display.** Round once, then compare the rounded value; or report
+the raw one. Never round in the return and compare in the condition. And **test the boundary at
+equality, not near it** - `>=` at exactly the threshold is the only case that separates them.
+**What caught it:** the pin, on its first run, because it asserted `floor` exactly rather than
+`floor + 0.01`. A test written one hundredth above the boundary would have passed forever.
+Compliance failure against CHECKLIST item 226 read with L580 - the fail-proof is what found it,
+and the discipline of testing AT the boundary rather than near it is what made the fail-proof
+informative. No new item: #226 already mandates the arm that fired.
+Mechanism: **DETECTION is JUDGMENT-ONLY** - no scan can tell a deliberate display-rounding from
+an accidental decision-rounding, since both are one expression over one variable. **Durability IS
+taken**: this rule is in SKILL.md with its own fragment pin, and the boundary case is asserted at
+equality in test_b2379_robust_status_is_one_shared_definition.
+**Retroactive sweep (#237): every place this session's code rounds a value it also compares.**
+Three. (1) `robust_status` - **THE INSTANCE**, fixed. (2) `borrow_trap_rate` rounds `rate_all`
+and `rate_measured` to 4dp and compares NOTHING - **SOUND**, they are reported only. (3) The
+pre-triage projection rounds for display and compares the RAW product against the trade floors -
+**SOUND, and deliberately so**: the floors are integers and the projection is an estimate, so
+rounding the comparison would manufacture false precision at the bar. **1 of 3 defective, and the
+two sound ones are sound for OPPOSITE reasons** - one never compares, one must not round.
+**A SECOND MISS, in the enumeration I ran to check the first.** Verifying that every call site
+passes the now-required `floor`, my AST scan matched the bare name `robust_status` and returned
+5 sites - **missing `build_phase_1b_roster.py:452`, which imports it as `_robust_status`.** An
+alias is invisible to a name matcher. Resolving `ImportFrom ... asname` first gives the true 6.
+**Instance of L597** (an enumeration pattern encodes the examples in front of you), counted here
+per L710 rather than minted; the tell was that grep showed a site the AST walk did not.

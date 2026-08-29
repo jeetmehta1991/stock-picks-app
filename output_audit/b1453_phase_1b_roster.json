@@ -4453,9 +4453,9 @@
           "sortino": false,
           "psr": false,
           "min_trades_holdout": true,
-          "min_trades_full_period": false
+          "min_trades_full_period": true
         },
-        "n_gates": 1,
+        "n_gates": 2,
         "n_gates_evaluable": 6,
         "all_live_gates": false
       },

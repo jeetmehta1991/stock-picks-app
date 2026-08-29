@@ -3289,6 +3289,16 @@ own description; the freeze never reached it.
   STRUCTURE - a def name, a loop header, a literal marker - never to a line range. Sibling of L713:
   there the detector could not see the FORM its rule prescribed, here not the REGION it governs.
 
+- **ROUND FOR DISPLAY AND COMPARE ON THE SAME VALUE, OR THE LABEL CONTRADICTS THE NUMBER (L716).**
+  Rounding the value you RETURN while comparing the value you do NOT means the two disagree at the
+  boundary, and the artifact shows a number contradicting its own verdict. MEASURED: a classifier
+  returned `round(margin, 3)` beside `margin >= floor`; `gate + floor - gate` is a hair below floor
+  in binary float, so a cell PRINTING exactly the floor was labelled the failing status - and that
+  classifier is a run's STOP CONDITION, so the mislabel costs a whole config. The defect lives only
+  in the gap between what is shown and what is decided, which nothing in the code looks inconsistent
+  about. **Decide on the value you display, and test the boundary AT equality, not near it** - a pin
+  written one hundredth above would have passed forever.
+
 - **A DETECTOR'S READING UNIT MUST SPAN THE RULE'S PRESCRIBED FORM (L713).** Before building a detector for a
   rule, read the rule's own MANDATED form and check it fits inside the unit the detector reads.
   MEASURED: L548 prescribes `Mechanism: JUDGMENT-ONLY. <reason>` - reason in the NEXT SENTENCE - and
