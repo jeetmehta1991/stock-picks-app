@@ -801,8 +801,9 @@ selected by this mechanical process - no judgement calls, reproducible from the 
 2. Rank configs descending on that value.
 3. **Duplicate-signature collapse:** if a config's best row carries the same
    (is_ci_lo, is_sharpe, fires, exit) signature as a HIGHER-ranked config's best row (Table D's
-   `dup` column), it is the same discovery - skip it and continue down the list. **Tied
-   signatures resolve to the LOWEST-span config** (deterministic; without this the holder is
+   `dup` column), it is the same discovery - skip it and continue down the list. **ALL ordering ties -
+   equal ci_lo across different signatures at step 2, or tied signatures here - resolve to
+   the LOWEST-span config** (deterministic; without this the holder is
    sort-order-dependent, which the verification run caught before this section shipped).
 4. Take the first 5 survivors.
 

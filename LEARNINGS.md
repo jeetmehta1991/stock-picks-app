@@ -16334,6 +16334,18 @@ control so a rename fails loudly, SOUND; (3) test_b2286 scan citations - derived
 expected-events - no population, a scalar computation, N/A. **1 of 3 population-pinning tests took
 its set from the wrong column.**
 
+**ADDENDUM (B2356, 2026-08-29): INSTANCE 2 OF THIS CLASS, IN PROSE FORM.** The mechanical
+top-5 config rule was drafted with its expected slate written from INTENT while the code that
+executes the rule ordered ties differently - the doc said sw30sp20 held the triplicate, the
+code picked sw30sp100, because no tie-break was stated. Caught by EXECUTING the rule against
+the artifacts before the section shipped, exactly as this lesson demands for pins. The class
+generalises: **any documented procedure whose output the doc also states IS a pin**, and its
+expected output must come from running the procedure, not from writing what it should be.
+Per L710 this is counted here rather than minted as a new lesson. Sweep of the rule's four
+steps for further order-dependence: step 2's rank sort can tie on equal ci_lo across DIFFERENT
+signatures too - the code resolves every tie lowest-span-first, and the doc's tie-break
+sentence has been broadened to say ALL ordering ties, not only signature ties.
+
 ## L698
 **I DECLARED A RULE UNMECHANISABLE AND THE REPO HAD ALREADY MECHANISED ITS TWIN (B2305).**
 I wrote that L697's habit half is PROSE-ONLY because 'a literal set typed from a definition and
