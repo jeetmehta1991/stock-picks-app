@@ -16234,7 +16234,7 @@ detail, ask which COLUMN it lives in and whether that column was read for every 
 Compliance failure against CHECKLIST item 270. **Also, separately: item 258 for the fourth time
 this session** - I wrote 'executed this turn' beside ticket counts without running the counter,
 and the freshness arm caught it again (S6-B2273 holds that class; no new ticket per #136).
-Mechanism: JUDGMENT-ONLY for the field-vs-turn distinction. A scan can see that a turn contains
+Mechanism: **DETECTION is JUDGMENT-ONLY** for the field-vs-turn distinction - no scan can read which COLUMN a generalisation attaches to, since a complete read and a partial one produce identical tool traces. **The DURABILITY half IS taken** (L548: the second question is usually yes): `scan_partial_read` still fires on a population verdict beside truncation markers, so the turn-level half of this class stays gated even though the field-level half cannot be. Corrected at B2378 - this was the ONE genuinely bare declaration among 37 candidate entries, found by hand-reading rather than by either classifier. A scan can see that a turn contains
 both a truncated read and a population verdict - #270 already does exactly that, which is how this
 was caught - but it cannot tell whether the verdict rests on the truncated read or on a complete
 one elsewhere in the same turn. That mapping is semantic. What IS mechanised is the prompt to
