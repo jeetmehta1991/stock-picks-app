@@ -2022,8 +2022,14 @@ def scan_shell_substitution(entries, *, tool_text=None) -> list[str]:
             hits.append(arg[:70])
     if not hits:
         return []
-    return [f"SHELL SUBSTITUTION IN A COMMIT MESSAGE (B1765/#245): {hits[0]!r}. "
-            "Backticks and $(...) inside a double-quoted -m argument are "
+    return [f"SHELL SUBSTITUTION IN A DOUBLE-QUOTED ARGUMENT (B1765/#245, B2363): "
+            f"{hits[0]!r}. NOTE THE SCOPE - B1768 widened this from commit "
+            "messages to ANY double-quoted -m/-c/-F/--message/--eval argument, "
+            "because bash substitutes inside a double-quoted argument "
+            "regardless of which flag precedes it; the headline said COMMIT "
+            "MESSAGE until B2363 and cost its reader a wrong first search "
+            "(the real hit was a grep pattern). "
+            "Backticks and $(...) inside a double-quoted argument are "
             "EXECUTED by bash before git ever runs - this is how `git reset "
             "--hard` ran accidentally and reverted uncommitted work. Use "
             "`git commit -F -` with a quoted heredoc (<<'MSG'), which performs "

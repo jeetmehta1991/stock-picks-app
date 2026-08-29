@@ -25134,6 +25134,8 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
          "L710: a second instance of a class is a count, not a third fix"),
         ("A GATE'S WINDOW IS PART OF THE GATE",
          "L711: a threshold and its window are one object"),
+        ("A CORRECTION CARRIES A HIGHER EVIDENCE BURDEN THAN THE CLAIM IT REPLACES",
+         "L712: a correction that names the wrong mechanism is worse than the claim"),
     ):
         if frag not in discipline_text:
             missing.append(f"execution-discipline lost [{why}]: {frag!r}")
@@ -25159,7 +25161,7 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # B2316: 54 -> 88 with the S6-B2245 batch-1 fragments. This number is the
     # pin's own must-FIRE arm - if a doc edit silently drops fragments, the
     # gutted count falls and this assertion catches the shrinkage.
-    assert len(gutted) == 99, gutted
+    assert len(gutted) == 100, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 

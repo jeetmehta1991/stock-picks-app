@@ -3154,6 +3154,16 @@ own description; the freeze never reached it.
   string IS the prose (a disclosure sentence), substring is correct. Sweep of that test: 2 of 9
   assertions were defective, both now anchored.
 
+- **A CORRECTION CARRIES A HIGHER EVIDENCE BURDEN THAN THE CLAIM IT REPLACES (L712).** A stale number invites doubt; a stale number with a named source closes the
+  question - so a correction that names the wrong mechanism is worse than the claim it replaced.
+  MEASURED: I changed a runbook floor from n<30 to n<15 citing a config key, having never opened the
+  code that produces the verdict. It is an EARLY RETURN reading --min-n (default 10); the config key
+  is a separate later gate. Two cuts, two numbers, both live, collapsed into one. Had the floor
+  defaulted to 30 the owner's ruled 15 would have been ENTIRELY INERT, and only running the code
+  could say. **Before changing a VALUE, open the code path that produces it** - a value fix that
+  cannot name its producer is a guess wearing a citation. Sweep: 2 of 5 corrections that session were
+  defective, in two different shapes - wrong about WHAT it fixed, or about WHERE.
+
 - **A GATE'S WINDOW IS PART OF THE GATE - RE-DERIVE ONE WHEN THE OTHER CHANGES (L711).** A threshold and the window it is
   measured over are ONE object: a number sized for four years does not survive being applied to two.
   MEASURED: I specified Step 2 as 544 tickers x 2 years while that day's ruling set

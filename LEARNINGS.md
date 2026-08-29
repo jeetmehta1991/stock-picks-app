@@ -16851,3 +16851,43 @@ RATHER THAN WRONG**: the same 2026-08-29 ruling moved Step 2 to all 544 tickers,
 multiplier is 2.72x, and I used 1.72x in the slate projection one turn before the ruling landed.
 **2 of 4 window claims were defective, and both defects are the same shape - a window carried
 across a ruling that changed it.**
+
+## L712
+**A CORRECTION CARRIES A HIGHER EVIDENCE BURDEN THAN THE CLAIM IT REPLACES - I 'FIXED' A NUMBER WITHOUT OPENING THE CODE THAT PRODUCES IT, AND SHIPPED A MORE
+CONFIDENT WRONG STATEMENT THAN THE ONE I REPLACED (B2362).**
+The runbook defined `BELOW_POWER_FLOOR` as *holdout n < 30*. I corrected it to *holdout n < 15,
+config.py min_trades_holdout* - right that 30 was stale, wrong about WHAT PRODUCES the verdict, and
+the correction was worse than the original **because it arrived with a citation**. A stale number
+invites doubt; a stale number with a named source closes the question.
+MEASURED, by reading and then executing: the power floor is an EARLY RETURN at
+`roster_core.py:215` - `if n < min_n: return None` - taken BEFORE any gate is computed, reading
+`--min-n` (`tighten_breaker_block.py:190`, default 10). `min_trades_holdout` is one of six
+`LIVE_GATES` reached only by cells that already cleared the floor. Probe at `--min-n 10`: n=8 ->
+None; n=10 and n=12 -> GRADED with the holdout gate False; n=15 -> GRADED, True.
+**Two cuts, two numbers, both live - and I had collapsed them into one.**
+**Why the burden is HIGHER on a correction, not equal:** the original claim's provenance was
+visible as absent - nobody had said where 30 came from. My replacement supplied a file and a key,
+so the next reader has no reason to look. **A correction removes the doubt that would have caught
+it.** So: before changing a VALUE, identify the MECHANISM that produces it and open that code path.
+A value fix that cannot name its producer is a guess wearing a citation.
+**The consequence was not cosmetic.** Had the floor actually been `min_trades_holdout`, the owner's
+ruling of 15 would have been the only cut and cells between 10 and 14 would have vanished as
+unmeasurable. Had the floor defaulted to `MIN_N = 30`, the ruled 15 would have been **entirely
+inert** - every cell from 15 to 29 dropped before any gate ran, and the ruling would have changed
+nothing while appearing to. **Which of those was true was decidable only by running the code**, and
+the correction I shipped asserted an answer without running it.
+Compliance failure against CHECKLIST item 222 (a constant quoted without opening it) read with
+#201. No new item: #222 already demands the constant be opened, and this is that rule applied at
+the moment of CORRECTING rather than of first stating - the moment it feels least necessary.
+Mechanism: `test_b2362_power_floor_is_min_n_not_the_holdout_gate` pins the DISTINCTION
+behaviourally - a cell between the two numbers must come back graded-and-failing rather than None -
+so collapsing them again fails in-suite rather than in prose.
+**Retroactive sweep (#237): every CORRECTION I issued this session, checked for whether I opened
+the mechanism before changing the value.** Five. (1) *n<30 -> n<15* - **THE INSTANCE**, mechanism
+never opened. (2) *16 of 24 exits never win* -> 18 of 24 - **SOUND**, re-measured over the
+population rather than the ranked view (L708). (3) *Step 2 is 2 years* -> 4 - **SOUND**, re-derived
+from roster_core's fold constants (L711). (4) the owner's *5 years* -> 4 - **SOUND**, same
+derivation, IS and HO overlap rather than stack. (5) *top 5 -> top 3* - **DEFECTIVE IN SCOPE**: the
+value was right and five other sites kept the old one (B2361). **2 of 5 corrections were defective,
+and the two defects are different shapes** - one changed a value without its mechanism, one changed
+a value at one site of six. A correction can be wrong about WHAT it fixes or about WHERE.
