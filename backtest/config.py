@@ -624,8 +624,12 @@ PASSING_CRITERIA = {
     # whichever window evaluate() received, and the BINDING call is the holdout - so it
     # demanded 100 trades in ONE year of a FOUR-year window, roughly a 4x harsher bar
     # than "100 trades" reads. Split into two explicit legs.
-    "min_trades_full_period":  100,   # > 100 over the whole 4y window
-    "min_trades_holdout":      25,    # >= 25 in the 1y holdout    # minimum 100 trades for statistical validity
+    "min_trades_full_period":  75,    # > 75 across all 544 tickers over the full
+                                      # period (owner ruling 2026-08-29, was 100 - B1492)
+    "min_trades_holdout":      15,    # >= 15 in the 1y holdout (owner ruling
+                                      # 2026-08-29, was 25 - B1492; owner: 25/yr forces
+                                      # ~2 fires/month, illogical across bear/consolidation
+                                      # regimes for swing strategies)
     "min_deflated_sharpe":     0.95,   # NEW Batch 186: DSR-based stat significance (multi-testing-corrected PSR)
     # B983 (2026-06-21) Council 86 Option-7 owner-approved 2026-06-21 per
     # directive 'Approve your recommendation. Proceed council this.':

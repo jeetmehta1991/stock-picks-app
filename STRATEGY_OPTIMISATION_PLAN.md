@@ -760,7 +760,7 @@ in order for every strategy. Each numbered gate cites the incident that produced
 |---|---|---|---|---|
 | **0 INVENTORY** | build the SPECS entry | — | — | formula + Table A + factorial |
 | **1 SEARCH** | all fire-adding configs | **1 year, 2024-05..2025-05** | **200** | ranked combinations |
-| **2 VALIDATE** | top 10 | **2 years (owner 2026-08-17)** | **344 disjoint of 544** (was 444; Step 1 now takes 200) | gate verdicts |
+| **2 VALIDATE** | **top 5 CONFIGS (owner 2026-08-29; was top 10 combinations)** | **2 years (owner 2026-08-17)** | **ALL 544 (owner 2026-08-29; was 344 disjoint)** | gate verdicts |
 | **3 ADMIT** | best 1 | 2 years | 544 | Phase 1B decision |
 
 **Why no 2022-23 data (owner ruling 2026-08-17).** The market changed materially with AI
@@ -790,9 +790,43 @@ S6-B2107-OWNER-RULINGS-3 and in the session memory):**
    projection counts against this ONE envelope; the ledger of spend lives with the venue
    ticket S6-B2107a.
 
-**Validation remains CROSS-SECTIONAL, not temporal**: Step 1 searches **200** tickers, Step 2
-confirms on the **344 DISJOINT** tickers (was 444 - the disjoint pool shrinks by exactly what Step 1
-takes). **Accepted limitation:** nothing tests whether an edge survives a regime change.
+## STEP 2 ENTRY - THE MECHANICAL TOP-5 CONFIG SELECTION (owner ruling 2026-08-29)
+
+Step 2's unit of execution is the CONFIG (one holdout cube per config); its unit of evidence is the
+combination. The plan's top-10-combinations spec is superseded: **the top 5 CONFIGS advance**,
+selected by this mechanical process - no judgement calls, reproducible from the grid artifacts:
+
+1. For every graded config, take `step1_ranking[0].is_ci_lo` - the best distinct combination the
+   config produced (the ranking is already equivalence-class collapsed).
+2. Rank configs descending on that value.
+3. **Duplicate-signature collapse:** if a config's best row carries the same
+   (is_ci_lo, is_sharpe, fires, exit) signature as a HIGHER-ranked config's best row (Table D's
+   `dup` column), it is the same discovery - skip it and continue down the list. **Tied
+   signatures resolve to the LOWEST-span config** (deterministic; without this the holder is
+   sort-order-dependent, which the verification run caught before this section shipped).
+4. Take the first 5 survivors.
+
+Applied to the completed b2197 program this yields, in order: **sw50sp50 (+1.250), sw30sp150
+(+1.214), sw50sp20 (+0.930), sw30sp20 (+0.816, first holder of the triplicate signature - sw30sp50
+and sw30sp100 collapse into it), sw50sp9 (+0.724)**.
+
+**TRADE FLOORS (owner ruling 2026-08-29):** `min_trades_holdout >= 15` in the 1-year holdout and
+`min_trades_full_period > 75` across all 544 tickers over the full window (config.py; was 25/100
+per B1492). The owner's stated logic: 25 fires per year forced ~2 per month - high-frequency
+territory for a swing library, and illogical across bear/consolidation regimes.
+
+**STEP-1 UNIVERSE, PINNED BY NAME:** the exact 200 tickers Step 1 searched are recorded in
+APPENDIX S1-200 at the end of this document (source: output_audit/_sweep_200.txt, the tickers_file
+every b2197 spec references). A ticker list referenced only by path is one file-move from being
+unreconstructable.
+
+**STEP 2 UNIVERSE (owner ruling 2026-08-29): ALL 544 tickers, graded and analysed across the
+FULL in-sample AND holdout window.** This supersedes the 344-disjoint design. **Stated
+consequence, flagged once and accepted by the ruling:** the 544 include the 200 tickers Step 1
+selected on, so Step 2 is no longer cross-sectionally disjoint - its out-of-sample content is
+the LOCKED HOLDOUT YEAR (never read by Step 1) plus the 344 tickers Step 1 never saw. The
+deeper 544-ticker base is what makes the 75/15 trade floors meaningful. **Accepted
+limitation (unchanged):** nothing tests whether an edge survives a regime change.
 
 **COST, stated honestly.** I told the owner this lever costs ~2x runtime. **In ticker-years it is
 approximately NEUTRAL** - 100 tickers x 2 years and 200 tickers x 1 year are both 200 ticker-years.
@@ -1234,7 +1268,7 @@ Per combination this: filters the cube to surviving fires, selects the best exit
 grades the holdout on all 6 gates via `roster_core` (identical bar to the Phase 1B roster), and
 records all 15 metrics.
 
-**Verdicts:** `PASS` · `FAIL` · `BELOW_POWER_FLOOR` (holdout n < 30) ·
+**Verdicts:** `PASS` · `FAIL` · `BELOW_POWER_FLOOR` (holdout n < 15, owner ruling 2026-08-29; config.py min_trades_holdout - the doc previously said 30 while the config held 25, S6-B2353) ·
 `NO_EXIT_SELECTABLE` (too few IS trades to rank 26 exits) · `ZERO_FIRES`
 
 **Generate the locked artifact:**
@@ -1849,3 +1883,31 @@ of 26, and the `ci_lo` of every PASS. **Margin of error is part of the verdict, 
 | run completes, no cube | post-processing died; percentage lied | L410 |
 | `MemoryError` in cube replay | cube too large; use the subset filter | B1552 |
 | pyramid OOMs mid-run | an engine run holds RAM; commit BEFORE launching | L425 |
+
+---
+
+## APPENDIX S1-200 - THE 200 STEP-1 TICKERS (owner ruling 2026-08-29)
+
+Source: output_audit/_sweep_200.txt (the `tickers_file` in every b2197 spec), 200 names,
+recorded here verbatim so the Step-1 universe is reconstructable from this document alone.
+
+`SPY` `TSLA` `AAPL` `AMZN` `NVDA` `MSFT` `AMD` `GOOGL` `GOOG` `MRNA`
+`NFLX` `PYPL` `BA` `BAC` `JPM` `V` `XOM` `DIS` `MU` `PFE`
+`CVX` `INTC` `CRM` `MA` `ADBE` `QCOM` `C` `F` `BRK-B` `WFC`
+`UNH` `HD` `T` `JNJ` `TWTR` `COIN` `PG` `WMT` `UBER` `AVGO`
+`VZ` `CSCO` `ABNB` `COST` `AMAT` `GS` `MRK` `CMCSA` `NKE` `GM`
+`KO` `PLTR` `MS` `ABBV` `CRWD` `TXN` `ORCL` `OXY` `BKNG` `TGT`
+`TMO` `LRCX` `LOW` `INTU` `BMY` `FCX` `NOW` `CCL` `SBUX` `PEP`
+`CAT` `DHR` `GE` `LLY` `CHTR` `ACN` `ATVI` `UNP` `ABT` `AAL`
+`PANW` `MCD` `DE` `IBM` `SPGI` `NEE` `AXP` `LMT` `AMGN` `ADI`
+`TMUS` `HON` `MDT` `COP` `FDX` `UAL` `UPS` `DASH` `LIN` `CVS`
+`SCHW` `DAL` `ISRG` `ETSY` `BLK` `GILD` `PM` `RTX` `BX` `NXPI`
+`DDOG` `DVN` `HOOD` `CVNA` `MMM` `REGN` `EBAY` `AMT` `EXPE` `TJX`
+`TTD` `COF` `ENPH` `WDAY` `SLB` `MDLZ` `NEM` `KLAC` `PXD` `CMG`
+`FIS` `NCLH` `LULU` `CSX` `MPC` `FISV` `AON` `CI` `EOG` `BIIB`
+`MTCH` `HUM` `VRTX` `EL` `NUE` `ADSK` `DG` `MO` `EQIX` `ALGN`
+`PLD` `SHW` `HPQ` `ZTS` `LUV` `PNC` `CL` `USB` `DLTR` `HCA`
+`LVS` `GPN` `ADP` `DXCM` `BDX` `MAR` `CB` `NSC` `FTNT` `KR`
+`SYK` `TFC` `VLO` `ILMN` `BSX` `WYNN` `NOC` `EA` `RCL` `ON`
+`MRO` `MCHP` `DOW` `ICE` `SO` `CME` `EXC` `HLT` `CCI` `ORLY`
+`DUK` `WBA` `APD` `SPG` `EPAM` `MET` `INFO` `BBY` `PENN` `PSX`
