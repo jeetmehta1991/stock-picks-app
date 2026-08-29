@@ -17042,3 +17042,39 @@ collapse disclosure is present in 14 of 26 grids* - **SOUND**, every grid opened
 gradable row scanned. **2 of 4 read element zero, and the two sound ones are sound because I
 happened to want a distribution rather than a yes/no.** The shape to catch is the YES/NO question:
 it is what makes `[0]` feel sufficient.
+
+## L715
+**A SCAN ANCHORED TO ABSOLUTE LINE NUMBERS GOES BLIND WHEN CODE IS INSERTED ABOVE IT - AND BLINDNESS RENDERS
+IDENTICALLY TO COMPLIANCE (B2389).**
+Implementing S6-B2213a I inserted ~100 lines ABOVE the engine's day loop. That shifted the loop
+out of `_b2145_loop_gated_writers`'s hardcoded window - `if not (800 <= n <= 1100): continue` -
+and the scan returned **2 sites instead of 6**. Its frozen ceiling is 6, so `len(sites) <= 6`
+would have passed **VACUOUSLY**, and an eighth loop-gated writer could have been added later with
+nothing objecting. **The guard was not wrong. It was BLIND**, and a blind guard produces exactly
+the output of a working one.
+**What caught it was the guard's own emptiness floor:** `assert len(sites) >= 4, "the scan found
+only ... the pattern broke"` - CHECKLIST item 226's must-not-be-vacuously-empty check, written by
+the guard's author against precisely this. **This is the strongest evidence I have seen for that
+floor.** Without it the failure was undetectable by construction: the ceiling assertion cannot
+distinguish *no violations* from *no vision*, because both are a small number.
+**The class: a detector's WINDOW is part of the detector, and an absolute line range couples it to
+every edit made anywhere above.** The coupling is invisible - my change had nothing to do with the
+day loop, touched no writer, added no gate, and still silenced the check. Anchor a source scan to
+STRUCTURE (a `def` name, a loop header, a literal marker), never to a line range. The corrected
+scan locates `for i, as_of in enumerate(` and stops at the next method `def`.
+**Sibling of L713, one level over.** There a detector could not see the form its rule prescribed;
+here a detector could not see the region its rule governs. **Both fail by looking in the wrong
+place while reporting cleanly**, and in both cases only a floor - a must-fire or must-not-be-empty
+assertion - separated blindness from health.
+Compliance failure against CHECKLIST item 226; no new item - the floor #226 mandates is what
+caught this, and the lesson is where to anchor, not that a floor is needed.
+Mechanism: **DETECTION is JUDGMENT-ONLY** - no scan reads whether another scan's window still
+covers its subject, since both are ordinary integer comparisons. **Durability IS taken**: this
+rule is in SKILL.md with its own fragment pin, and the corrected scan is itself structural, so it
+cannot regress the same way.
+**Retroactive sweep (#237): every source-scanning helper in the test suite, checked for whether it
+locates its target by POSITION or by STRUCTURE.** `_b2145_loop_gated_writers` was the **only**
+line-range-anchored one - **1 of 1 defective, and it fired**. Every other helper locates by `def`
+name, by a literal marker, or by AST walk, all of which survive insertion. **Blast radius one, and
+the fix generalises the survivor rather than patching it** - which is as useful a sweep result as
+finding a population would have been (L643).

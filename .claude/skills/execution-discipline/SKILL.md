@@ -3278,6 +3278,17 @@ own description; the freeze never reached it.
   every row across every artifact and state the denominator.** Watch for the YES/NO question - it is
   what makes `[0]` feel sufficient. Sweep: 2 of 4 existence questions that session read element zero.
 
+- **A SCAN ANCHORED TO ABSOLUTE LINE NUMBERS GOES BLIND WHEN CODE IS INSERTED ABOVE IT (L715).**
+  An absolute line range couples a detector to every edit made anywhere above it, invisibly.
+  MEASURED: inserting ~100 lines above the engine's day loop shifted it out of a guard's hardcoded
+  `800 <= n <= 1100` window; the scan returned 2 sites instead of 6, so its frozen ceiling of 6 would
+  have passed VACUOUSLY and an eighth loop-gated writer could have landed unopposed. My edit touched
+  no writer and added no gate, and still silenced the check. **Caught only by the guard's own
+  `>= 4` emptiness floor** - the strongest case yet for #226's must-not-be-vacuously-empty rule,
+  since a ceiling assertion cannot tell *no violations* from *no vision*. Anchor a source scan to
+  STRUCTURE - a def name, a loop header, a literal marker - never to a line range. Sibling of L713:
+  there the detector could not see the FORM its rule prescribed, here not the REGION it governs.
+
 - **A DETECTOR'S READING UNIT MUST SPAN THE RULE'S PRESCRIBED FORM (L713).** Before building a detector for a
   rule, read the rule's own MANDATED form and check it fits inside the unit the detector reads.
   MEASURED: L548 prescribes `Mechanism: JUDGMENT-ONLY. <reason>` - reason in the NEXT SENTENCE - and
