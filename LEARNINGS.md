@@ -16969,3 +16969,34 @@ work-to-do rather than as evidence.
 LAYER rather than about data, and L599 already records that layer as the least verified in the
 system, because its subject is the same text that would report its failure.
 Per L710 this is counted here rather than minted as a new lesson.
+
+## L713
+**A DETECTOR'S READING UNIT MUST SPAN THE RULE'S PRESCRIBED FORM - I BUILT A SENTENCE-SPLITTING
+CLASSIFIER FOR A RULE WHOSE COMPLIANT FORM SPANS TWO SENTENCES (B2384).**
+S6-B2338 claimed 10 of 33 JUDGMENT-ONLY declarations were asserted bare. Re-measuring, my own
+classifier returned **10, then 4, then 7** across three iterations. **Hand-reading 15 of 15
+flagged candidates in full found ONE** (L694, now fixed): 13 were reasoned and 2 were NEGATIONS
+(*this is NOT judgment-only*) matched as declarations by every detector, mine included.
+**ROOT CAUSE, and it is structural rather than a tuning miss:** L548 mandates the form
+`Mechanism: JUDGMENT-ONLY. <reason>`, with the reason in the NEXT SENTENCE. My splitter cut at
+the first period. **So the detector could not see compliance with the rule it was built to
+check** - every correctly-written entry looked bare to it, and the more precisely an author
+followed L548 the more certainly they were flagged.
+**Why this is not just L644 again.** L644 says a new detector's first number is a hypothesis;
+that is about VALIDATION AFTER. This is about DESIGN BEFORE: the failure was decided the moment
+I chose the reading unit, and no amount of hand-checking the output would have suggested the
+fix - only reading the RULE's prescribed form does. **Ask what a COMPLIANT instance looks like,
+and whether the matcher's unit can contain it, before writing the matcher.**
+**A clean-looking count from a detector blind to compliance is worse than no count**, because it
+arrives with the authority of measurement and points at the most careful authors.
+Compliance failure against CHECKLIST item 644 read with item 528. No new item: #644 already
+demands hand-validation and it is what eventually caught this, three iterations late.
+Mechanism: **DETECTION is JUDGMENT-ONLY** - no scan reads whether a matcher's unit fits the form
+a rule prescribes, since both are prose in different files. **Durability IS taken**: this rule
+is in SKILL.md with its own fragment pin.
+**Retroactive sweep (#237): every marker-matching detector I wrote this session, checked for
+whether it excludes negations and whether its unit spans the compliant form.** Three, and **3 of
+3 were defective on negation** - the JUDGMENT-ONLY classifier, the reason-classifier built to
+correct it, and the bare-count re-measure. **All three were throwaway measurement scripts, so
+blast radius in committed code is ZERO** - the repo's shipped gates already carry `_affirms()`
+for exactly this (L528). The finding is about my measurement habit, not the codebase.

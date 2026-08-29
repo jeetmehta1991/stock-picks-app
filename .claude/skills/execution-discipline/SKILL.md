@@ -3269,6 +3269,17 @@ own description; the freeze never reached it.
   5 extractors this session matched fewer forms than their corpus used; the sound two both ran over
   PYTHON, not over human-written markdown.
 
+- **A DETECTOR'S READING UNIT MUST SPAN THE RULE'S PRESCRIBED FORM (L713).** Before building a detector for a
+  rule, read the rule's own MANDATED form and check it fits inside the unit the detector reads.
+  MEASURED: L548 prescribes `Mechanism: JUDGMENT-ONLY. <reason>` - reason in the NEXT SENTENCE - and
+  I built a sentence-splitting classifier for it, so the detector was **structurally blind to the
+  exact form the rule requires**. It returned 10, then 4, then 7 bare declarations across three
+  iterations; hand-reading 15 of 15 flagged candidates found **1**. Every version also matched
+  *"this is NOT judgment-only"* as a declaration (L528's negation class, three detectors in one
+  turn). **A clean-looking count from a detector that cannot see compliance is worse than no count**,
+  because it arrives measured. Ask: what does a COMPLIANT instance look like, and would my matcher
+  see it?
+
 - **A NUMBER YOU HAND THE OWNER CAN COME BACK AS AN INSTRUCTION (L700).** Before reporting a
   figure, ask what happens if the owner ACTS on it - and if the answer is a scope, re-derive it from
   the DEFINING source first, not from whichever proxy is nearest. MEASURED: I reported 102 unpinned
