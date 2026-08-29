@@ -27727,3 +27727,51 @@ def test_b2342_ranking_is_a_slice_not_the_population():
             'view must be a SUBSET of the population')
     assert checked > 0, 'no grid carried both fields - the pin asserted nothing'
 
+
+def test_b2361_runbook_summary_table_agrees_with_the_section_that_defines_it():
+    """S6-B2361: a ruling was applied at ONE site and five others kept the old value.
+
+    The VALIDATE row is a SUMMARY of the STEP 2 ENTRY section below it, so the two
+    can drift and only the reader notices. MEASURED: after the 2026-08-29 second
+    ruling the section's step 4 said 3 survivors while the table row, the section
+    HEADING and its topic sentence all still said 5, and the row's window column
+    still said 2 years after the ruling that made it 4. This pins the agreement
+    rather than the values, so a future ruling moves both or fails here.
+    """
+    from pathlib import Path
+    import re
+
+    plan = Path(__file__).resolve().parents[2] / "STRATEGY_OPTIMISATION_PLAN.md"
+    text = plan.read_text(encoding="utf-8")
+
+    # anchor on the ROW, not on a substring of the whole document (L703/L705)
+    rows = [ln for ln in text.splitlines() if ln.startswith("| **2 VALIDATE**")]
+    assert len(rows) == 1, f"expected one VALIDATE row, found {len(rows)}"
+    row = rows[0]
+
+    heads = [ln for ln in text.splitlines() if ln.startswith("## STEP 2 ENTRY")]
+    assert len(heads) == 1, f"expected one STEP 2 ENTRY heading, found {len(heads)}"
+    head = heads[0]
+
+    body = text.split(head, 1)[1]
+    step4 = [ln for ln in body.splitlines() if ln.lstrip().startswith("4. Take the first")]
+    assert step4, "STEP 2 ENTRY has no step-4 'Take the first N survivors' line"
+
+    def n_of(s, pat):
+        m = re.search(pat, s)
+        assert m, f"no {pat!r} in {s[:110]!r}"
+        return int(m.group(1))
+
+    n_row = n_of(row, r"top (\d+) CONFIGS")
+    n_head = n_of(head, r"TOP-(\d+) CONFIG SELECTION")
+    n_step = n_of(step4[0], r"first \*\*(\d+)\*\* survivors")
+    assert n_row == n_head == n_step, (
+        f"runbook states the Step-2 slate size three ways and they disagree: "
+        f"table row={n_row}, heading={n_head}, rule step 4={n_step}"
+    )
+
+    # the window column must not still say 2 years now that 2022-23 is allowed
+    assert "2022-05-05" in row and "4 years" in row, (
+        f"VALIDATE row's window is stale - the 2026-08-29 ruling allows 2022-23, "
+        f"making Step 2 a 4-year span: {row}"
+    )

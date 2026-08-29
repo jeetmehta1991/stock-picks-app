@@ -760,11 +760,14 @@ in order for every strategy. Each numbered gate cites the incident that produced
 |---|---|---|---|---|
 | **0 INVENTORY** | build the SPECS entry | — | — | formula + Table A + factorial |
 | **1 SEARCH** | all fire-adding configs | **1 year, 2024-05..2025-05** | **200** | ranked combinations |
-| **2 VALIDATE** | **top 5 CONFIGS (owner 2026-08-29; was top 10 combinations)** | **2 years (owner 2026-08-17)** | **ALL 544 (owner 2026-08-29; was 344 disjoint)** | gate verdicts |
-| **3 ADMIT** | best 1 | 2 years | 544 | Phase 1B decision |
+| **2 VALIDATE** | **top 3 CONFIGS (owner 2026-08-29 second set; was top 5 same day, top 10 combinations before)** | **4 years, `2022-05-05 -> 2026-05-05` (owner 2026-08-29: 2022-23 allowed for Step 2)** | **ALL 544 (owner 2026-08-29; was 344 disjoint)** | gate verdicts |
+| **3 ADMIT** | best 1 | 4 years (as Step 2) | 544 | Phase 1B decision |
 
 **Why no 2022-23 data (owner ruling 2026-08-17).** The market changed materially with AI
 adoption, so 2022-23 is not wanted even for exit selection.
+**SUPERSEDED FOR STEP 2 ONLY (owner ruling 2026-08-29): 2022-23 IS allowed for Step 2**, whose
+`min_trades_full_period` gate is measured over the full 4-year span - see STEP 2 ENTRY below.
+The 2026-08-17 ruling still governs Step 1 and everything else.
 
 **AMENDED FOR STEP 1 ONLY (owner ruling 2026-08-21).** Step 1 now runs **1 year,
 `2024-05-05 -> 2025-05-05`**, ending exactly at the holdout boundary, because running to
@@ -790,10 +793,10 @@ S6-B2107-OWNER-RULINGS-3 and in the session memory):**
    projection counts against this ONE envelope; the ledger of spend lives with the venue
    ticket S6-B2107a.
 
-## STEP 2 ENTRY - THE MECHANICAL TOP-5 CONFIG SELECTION (owner ruling 2026-08-29)
+## STEP 2 ENTRY - THE MECHANICAL TOP-3 CONFIG SELECTION (owner ruling 2026-08-29)
 
 Step 2's unit of execution is the CONFIG (one holdout cube per config); its unit of evidence is the
-combination. The plan's top-10-combinations spec is superseded: **the top 5 CONFIGS advance**,
+combination. The plan's top-10-combinations spec is superseded: **the top 3 CONFIGS advance**,
 selected by this mechanical process - no judgement calls, reproducible from the grid artifacts:
 
 1. For every graded config, take `step1_ranking[0].is_ci_lo` - the best distinct combination the
