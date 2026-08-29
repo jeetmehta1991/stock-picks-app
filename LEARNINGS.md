@@ -16908,3 +16908,20 @@ derivation, IS and HO overlap rather than stack. (5) *top 5 -> top 3* - **DEFECT
 value was right and five other sites kept the old one (B2361). **2 of 5 corrections were defective,
 and the two defects are different shapes** - one changed a value without its mechanism, one changed
 a value at one site of six. A correction can be wrong about WHAT it fixes or about WHERE.
+**ADDENDUM (B2367, same session): INSTANCE 3, AND THE DISPROOF WAS AN OPEN TICKET I HAD WRITTEN.**
+Having widened L708's SKILL bullet, I recorded in its queue row that *the fragment pin is unaffected -
+it pins the bullet's header clause, which is unchanged*. **There is no such pin.** L708 has never
+carried one, and it is NAMED in S6-B2350's own list of unpinned rules - a ticket that was OPEN,
+authored by me, and quotable at the moment I wrote the opposite. Caught by the B1739 gate, which
+fires on a SKILL edit touching no test file; **my reflex answer was that the pin already existed**,
+and the grep that settled it took one command.
+**What this sharpens:** the entry above is about correcting a VALUE. Instance 3 is a claim about a
+MECHANISM'S EXISTENCE, and its distinctive feature is WHERE the disproof lived - not in code I had
+not opened, but in the LEDGER, in a row I had authored. **Before asserting a mechanism exists, grep
+the ledger as well as the code**: an open ticket enumerating what is MISSING is the cheapest
+possible disproof of a presence claim, and the least consulted, because a ticket reads as
+work-to-do rather than as evidence.
+**Why one session produced three:** all three assertions were about the STATE OF THE ENFORCEMENT
+LAYER rather than about data, and L599 already records that layer as the least verified in the
+system, because its subject is the same text that would report its failure.
+Per L710 this is counted here rather than minted as a new lesson.

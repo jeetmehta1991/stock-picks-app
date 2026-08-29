@@ -3161,7 +3161,11 @@ own description; the freeze never reached it.
   is a separate later gate. Two cuts, two numbers, both live, collapsed into one. Had the floor
   defaulted to 30 the owner's ruled 15 would have been ENTIRELY INERT, and only running the code
   could say. **Before changing a VALUE, open the code path that produces it** - a value fix that
-  cannot name its producer is a guess wearing a citation. Sweep: 2 of 5 corrections that session were
+  cannot name its producer is a guess wearing a citation. **And for a claim that a MECHANISM
+  exists - a pin, a gate, a test - GREP THE LEDGER, NOT ONLY THE CODE: an open ticket
+  enumerating what is MISSING is the cheapest disproof of a presence claim, and the least
+  consulted, because a ticket reads as work-to-do rather than as evidence. B2367: I wrote *the
+  fragment pin is unaffected* while my own open ticket named that rule as unpinned.** Sweep: 2 of 5 corrections that session were
   defective, in two different shapes - wrong about WHAT it fixed, or about WHERE.
 
 - **A GATE'S WINDOW IS PART OF THE GATE - RE-DERIVE ONE WHEN THE OTHER CHANGES (L711).** A threshold and the window it is
