@@ -16695,6 +16695,28 @@ DATA row extracted structurally - **SOUND by construction**; 2 assert disclosure
 correct form - **SOUND**. So 2 of 9 were defective and both are fixed; the discriminator is
 whether the asserted string names a STRUCTURAL element (anchor it) or is itself the prose
 (substring is right).
+**ADDENDUM (B2377): INSTANCE 3, AND IT ADDS A THIRD CASE THE DISCRIMINATOR DOES NOT COVER -
+ASSERTING A VALUE.** I pinned CLAUDE.md's criteria table against config.py with `str(bar) in
+row`. Hollow, and hollow for a reason neither earlier instance had: **the row I wrote carries its
+own HISTORY NOTE** - *owner rulings 2026-08-29: 100 -> 75 -> 60 -> 75*. Mutating the THRESHOLD
+CELL from 75 to 60 left the pin GREEN, because `"75"` still appeared, in the history.
+**A row documenting its own revisions holds the retired value beside the live one BY DESIGN**, so
+a substring check over it passes for either - and **the better-documented the row, the more
+reliably the pin is hollow.** Good documentation and a bad haystack are the same property here.
+**The discriminator above is binary and this is neither branch:** the asserted string is not a
+structural element and is not prose - it is a VALUE. Third rule: **assert a value against the
+CELL that holds it** (`row.split("|")[k]`), never against the row, wherever the row can carry
+provenance, history or rationale.
+**Only `#226` could have caught it.** The pin passed, the code was correct, and nothing about
+READING the assertion reveals that its haystack contains the answer it exists to reject - which
+is why prove-it-can-fail is not a formality on a doc-agreement pin, it is the entire test.
+**Transport note, because it is the fourth this session and the second of one sub-shape:** this
+addendum's first attempt asserted an anchor taken from SKILL.md's wording of L706 while writing
+to LEARNINGS.md, where the same rule carries a DIFFERENT heading and closing. The B2367 attempt
+failed identically. **A rule that lives in two files has two wordings; read the anchor from the
+file you are about to write.** Both attempts were caught by the assert and wrote nothing.
+Per L710 this is counted into L706 rather than minted as a new lesson.
+
 
 ## L707
 **L705 FAILED ON ITS VERY NEXT APPLICATION - I RE-QUOTED A WITHDRAWN FIGURE INSIDE ITS OWN

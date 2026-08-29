@@ -25142,6 +25142,8 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
          "L712 instance 3 (B2367): a presence claim about a mechanism"),
         ("EDITING A GATE'S MESSAGE IS THE MOST SEDUCTIVE FORM OF AUTHORING",
          "L570 instance 3 (B2372): editing a gate's message is authoring"),
+        ("A ROW THAT RECORDS ITS OWN HISTORY CONTAINS THE WRONG ANSWER ON PURPOSE",
+         "L706 instance 3 (B2377): assert a value against its cell"),
     ):
         if frag not in discipline_text:
             missing.append(f"execution-discipline lost [{why}]: {frag!r}")
@@ -25167,7 +25169,7 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # B2316: 54 -> 88 with the S6-B2245 batch-1 fragments. This number is the
     # pin's own must-FIRE arm - if a doc edit silently drops fragments, the
     # gutted count falls and this assertion catches the shrinkage.
-    assert len(gutted) == 103, gutted
+    assert len(gutted) == 104, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 

@@ -3158,7 +3158,13 @@ own description; the freeze never reached it.
   assertion matched the per-tier summary's header, then each axis assertion matched the preamble's
   glossary. Discriminator: if the asserted string names a STRUCTURAL element, anchor it; if the
   string IS the prose (a disclosure sentence), substring is correct. Sweep of that test: 2 of 9
-  assertions were defective, both now anchored.
+  assertions were defective, both now anchored. **B2377 adds a THIRD case the discriminator
+  does not cover - asserting a VALUE. A ROW THAT RECORDS ITS OWN HISTORY CONTAINS THE WRONG ANSWER ON PURPOSE: a row
+  documenting its own revisions (*100 -> 75 -> 60 -> 75*) holds the retired value beside the
+  live one BY DESIGN, so `str(bar) in row` passes for either, and the better-documented the
+  row the more reliably the pin is hollow. Assert a value against the CELL that holds it,
+  never the row. Only prove-it-can-fail catches this: the pin passes, the code is correct, and
+  reading the assertion reveals nothing.**
 
 - **A CORRECTION CARRIES A HIGHER EVIDENCE BURDEN THAN THE CLAIM IT REPLACES (L712).** A stale number invites doubt; a stale number with a named source closes the
   question - so a correction that names the wrong mechanism is worse than the claim it replaced.
