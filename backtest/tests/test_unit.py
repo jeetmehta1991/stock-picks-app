@@ -25127,6 +25127,11 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         # occur EXACTLY ONCE in SKILL.md before being written here (L699).
         ("a casual gloss reads as MORE authoritative",
          "L709: #222 fires on DISPLAY turns; a caption gloss is still a claim"),
+        # S6-B2351: L710's own pin, added in the SAME batch as the entry -
+        # the entry records that I habitually do NOT do this, so writing it
+        # unpinned would have made the lesson an instance of itself.
+        ("Fixing the same class twice without sweeping means you have measured nothing about it",
+         "L710: a second instance of a class is a count, not a third fix"),
     ):
         if frag not in discipline_text:
             missing.append(f"execution-discipline lost [{why}]: {frag!r}")
@@ -25152,7 +25157,7 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # B2316: 54 -> 88 with the S6-B2245 batch-1 fragments. This number is the
     # pin's own must-FIRE arm - if a doc edit silently drops fragments, the
     # gutted count falls and this assertion catches the shrinkage.
-    assert len(gutted) == 97, gutted
+    assert len(gutted) == 98, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 

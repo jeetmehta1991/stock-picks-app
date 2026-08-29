@@ -3154,6 +3154,14 @@ own description; the freeze never reached it.
   string IS the prose (a disclosure sentence), substring is correct. Sweep of that test: 2 of 9
   assertions were defective, both now anchored.
 
+- **THE SECOND INSTANCE OF A CLASS IS A COUNT, NOT A THIRD FIX (L710).** Fixing the same class twice without sweeping means you have measured nothing about it.
+  One instance is a defect; a second instance of the SAME class is evidence of a POPULATION, and the
+  correct response is to measure it. MEASURED: I added fragment pins for L705-L707, then again for
+  L709, each feeling like closure - while 7 of 41 bulleted rules were unpinned and FIVE of them were
+  my own from that same session. Note the enforcement limit: B1739 fires only on a SKILL.md edit
+  touching NO test file, so entries landing beside unrelated test work are invisible to it - a gate
+  scoped to a co-occurrence cannot see accidental co-occurrence.
+
 - **A CONSTANT CITED IN A CAPTION GETS THE SAME GREP AS ONE CITED IN AN ARGUMENT (L709).** #222
   fires on DISPLAY turns too. When the whole purpose is showing the owner an artifact, a constant
   named in a parenthetical gloss feels like scaffolding rather than a claim - but the reader cannot

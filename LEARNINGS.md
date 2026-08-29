@@ -16754,3 +16754,35 @@ INSTANCE**, glossed without a grep), NO_EXIT_SELECTABLE and ZERO_FIRES (both cit
 S6-B2342 exit RCA, where I HAD read the emitting code - **SOUND**), and MIN_N (cited in the
 run_postconfig verification with its line number - **SOUND**). **1 of 4 was uninspected, and it
 is the one that appeared in a caption rather than in an argument.**
+
+## L710
+**I CLOSED THE SAME CLASS TWICE AS AN INSTANCE AND NEVER SWEPT IT - SO BOTH FIXES WERE
+SYMPTOM-LEVEL AND FIVE OF MY OWN RULES SAT UNPINNED THROUGHOUT (B2350).**
+S6-B2340 added fragment pins for L705, L706 and L707. S6-B2349 added one for L709. Each felt
+like closure. Neither was, because I never asked how many OTHER bulleted rules lacked a pin.
+MEASURED when I finally did: **41 L-numbers carry their own SKILL.md bullet, 34 are pinned, 7
+are not** - and **five of the seven (L700, L701, L702, L703, L708) I had authored myself in this
+same session**, before and between the two fixes.
+**The rule this sharpens: fixing the same class twice without sweeping means you have measured
+nothing about it.** One instance is a defect. A second instance of the SAME class is evidence of
+a POPULATION, and the correct response to the second is not a third fix - it is a count. I
+treated the recurrence as bad luck rather than as the data point it was.
+**Why the enforcement could not save me, stated because it is a real limit and not an excuse:**
+B1739 fires only on a SKILL.md edit that touches NO test file. Those five entries landed in
+batches that edited test_unit.py for unrelated reasons, so the gate was structurally blind to
+them. **A gate scoped to a co-occurrence cannot see the cases where the co-occurrence happens
+accidentally.**
+Compliance failure against CHECKLIST item 237 - the retroactive sweep is mandatory ON THE FIRST
+fix, and I skipped it twice. No new item; #237 already says exactly this.
+Mechanism: **pinned by this fragment in test_b2123 IN THE SAME BATCH as the entry**, which is
+the behaviour the finding says I lack - written this way deliberately, so the entry recording
+the gap is not itself an instance of it. Detection of the missing-sweep habit stays
+JUDGMENT-ONLY: **no detection mechanism** can tell a fix that followed a sweep from one that did
+not, since both produce the same diff.
+**Retroactive sweep (#237), done properly this time - every class I have 'closed' more than once
+this session:** three. (1) The fragment-pin gap - **THE INSTANCE**, closed twice, swept only on
+the third prompt, 7 members found. (2) The hollow-assertion class (L703/L706) - closed twice,
+then swept at S6-B2337 across all 5 table-renderer pins and found 0 further siblings - **SOUND,
+because the sweep happened**. (3) The uncosted-effort class (#230 EXT) - flagged six times and
+**NEVER SWEPT**; I corrected each instance in prose and never counted the population. **So 2 of 3
+repeatedly-closed classes went unswept, and the third is only sound because the gate forced it.**
