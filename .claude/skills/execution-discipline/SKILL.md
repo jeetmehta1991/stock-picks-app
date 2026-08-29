@@ -3269,6 +3269,15 @@ own description; the freeze never reached it.
   5 extractors this session matched fewer forms than their corpus used; the sound two both ran over
   PYTHON, not over human-written markdown.
 
+- **ELEMENT ZERO IS THE MOST SEDUCTIVE PARTIAL READ (L714).** It leaves no truncation marker - no
+  `head`, no slice - so it escapes the partial-read reflex the other forms trigger, and in a RANKED
+  collection it is not a sample at all but the top-ranked member (L708). MEASURED: I claimed the
+  ranked view carried no disclosure fields *in any of them* having opened row 0 of 3 grids out of 26;
+  the re-read gave 0 of 260 rows across 26 of 26 - TRUE, which is the uncomfortable part, since a true
+  claim from an unearned read looks exactly like a false one. **To answer whether a FIELD EXISTS, scan
+  every row across every artifact and state the denominator.** Watch for the YES/NO question - it is
+  what makes `[0]` feel sufficient. Sweep: 2 of 4 existence questions that session read element zero.
+
 - **A DETECTOR'S READING UNIT MUST SPAN THE RULE'S PRESCRIBED FORM (L713).** Before building a detector for a
   rule, read the rule's own MANDATED form and check it fits inside the unit the detector reads.
   MEASURED: L548 prescribes `Mechanism: JUDGMENT-ONLY. <reason>` - reason in the NEXT SENTENCE - and

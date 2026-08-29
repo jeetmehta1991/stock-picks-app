@@ -17000,3 +17000,45 @@ whether it excludes negations and whether its unit spans the compliant form.** T
 correct it, and the bare-count re-measure. **All three were throwaway measurement scripts, so
 blast radius in committed code is ZERO** - the repo's shipped gates already carry `_affirms()`
 for exactly this (L528). The finding is about my measurement habit, not the codebase.
+
+## L714
+**ELEMENT ZERO IS THE MOST SEDUCTIVE PARTIAL READ - AND A SCHEMA QUESTION ANSWERED ON IT
+ASSUMES A HOMOGENEITY YOU HAVE NOT CHECKED (B2386).**
+I reported that the ranked view *carries none of the disclosure fields in any of them* after
+opening **three** of twenty-six grids and, in each, only `step1_ranking[0]`. The turn gate caught
+it; I did not. Re-read properly: **0 of 260 rows across 26 of 26 grids** - the claim was TRUE, and
+that is the uncomfortable part, because a true claim from an unearned read is indistinguishable
+from a false one until somebody checks.
+**TWO truncations compounded, and I noticed neither.** DEPTH: one row per grid. BREADTH: three
+grids of twenty-six. Either alone would have been a partial read; together they made a
+three-datapoint basis for a 260-row assertion.
+**Why `[0]` specifically.** It is one keystroke, it returns real data, and inspecting it FEELS
+like looking at the artifact rather than sampling it - there is no `head`, no slice, no visible
+truncation marker to notice. **That is exactly why it escapes the partial-read reflex**: the other
+forms announce themselves.
+**The sharper half - `[0]` is usually not a sample at all.** In a RANKED collection element zero
+is the top-ranked member, so it is a SELECTED element (L708), and a schema question asked of it
+inherits that selection. Here the rows happen to be written by one uniform emitter, so row 0 was
+representative - **but I did not know that when I made the claim, and nothing in the read told
+me.** A heterogeneous emitter (an optional field, a schema migration mid-run, a carried legacy
+row) would have made the same probe silently wrong.
+**Rule: to answer whether a FIELD EXISTS, scan every row - `any(k in r for r in rows)` over the
+whole collection, across every artifact - and say the denominator.** It costs one comprehension
+instead of one index, and it converts an assumption about homogeneity into a measurement.
+Compliance failure against CHECKLIST item 270 read with L708. No new item: #270 already forbids a
+population verdict from a truncated view, and this is that rule reaching a truncation form the
+gate's own examples (`head -`, `[:300]`, *batch 1 of*) do not name.
+Mechanism: **DETECTION is JUDGMENT-ONLY** - `scan_partial_read` keys on truncation MARKERS, and
+`[0]` leaves none; a gate firing on every subscript would fire on all correct code. **Durability
+IS taken**: this rule is in SKILL.md with its own fragment pin, and the gate caught the instance
+through the response's *none of* wording rather than through the tool text, which is the arm that
+did work.
+**Retroactive sweep (#237): every schema/existence question I answered this session, checked for
+whether it read one element or the population.** Four. (1) *the ranked view carries no disclosure
+fields* - **THE INSTANCE**, row 0 of 3 grids. (2) *step1_ranking rows carry class_size and
+members* - **SAME DEFECT, row 0 again**, though never used for a population claim. (3) *results
+rows carry exits_effective* - **SOUND**, read via a Counter over all 100 gradable rows. (4) *the
+collapse disclosure is present in 14 of 26 grids* - **SOUND**, every grid opened and every
+gradable row scanned. **2 of 4 read element zero, and the two sound ones are sound because I
+happened to want a distribution rather than a yes/no.** The shape to catch is the YES/NO question:
+it is what makes `[0]` feel sufficient.
