@@ -25494,10 +25494,21 @@ def _b2145_loop_gated_writers() -> list[str]:
     from pathlib import Path
     src = (Path(__file__).resolve().parents[1] / "engine" / "backtest.py"
            ).read_text(encoding="utf-8").splitlines()
+    # S6-B2213a/B2388: the window was HARDCODED as 800..1100. Inserting ~100
+    # lines ABOVE the day loop shifted it out entirely and the scan returned 2
+    # sites instead of 6 - a guard silently blinded by an unrelated edit. Only
+    # the `>= 4` floor below (#226, must-not-be-vacuously-empty) caught it.
+    # Anchored to the loop STRUCTURALLY now, so an insertion anywhere above
+    # cannot move the window.
+    _lo = next((k for k, ln in enumerate(src, 1)
+                if ln.strip().startswith("for i, as_of in enumerate(")), None)
+    assert _lo, "the day loop's `for i, as_of in enumerate(` header moved"
+    _hi = next((k for k, ln in enumerate(src, 1)
+                if k > _lo and ln.startswith("    def ")), len(src))
     out = []
     for n, ln in enumerate(src, 1):
         s = ln.strip()
-        if not (800 <= n <= 1100) or s.startswith("#"):
+        if not (_lo <= n <= _hi) or s.startswith("#"):
             continue          # a comment is not a site
         # Two explicit shape checks, no clever alternation (B2145: the
         # regex form matched in a direct probe and not here; removing the
@@ -27981,3 +27992,232 @@ def test_b2373_claude_md_criteria_table_matches_the_live_gate_thresholds():
     assert "NOT one of the six LIVE_GATES" in mt_row, (
         "row 9 no longer says min_trades is not a live gate - without that, "
         "9a/9b read as duplicates rather than as the gated legs")
+
+
+def _b2213a_fixture_open_trade():
+    """An OpenTrade with a NON-ZERO, NON-EMPTY value in every field the pin
+    asserts - L645/B2167: a field that is always 0 passes every test whose
+    fixture is also 0, which is how a phantom attribute survived every pin.
+    """
+    from datetime import date
+    from backtest.engine.exit_manager import OpenTrade
+
+    return OpenTrade(
+        ticker="NVDA",
+        entry_date=date(2024, 3, 14),
+        entry_price=87.5,
+        direction="long",
+        strategy="smc_breaker_block_long",
+        category="smart_money",
+        sector="Information Technology",
+        initial_stop=82.25,
+        trailing_stop=84.75,
+        highest_close=91.3,
+        regime_at_entry="bull",
+        trade_id="NVDA-2024-03-14-smc",
+        signals_at_entry={"rsi_14": 61.5, "breaker_ok": True, "atr": 3.25},
+        context_bullets=["breaker retest", "volume expansion"],
+        agent_reasoning={"trader": "size up", "risk": "within band"},
+        confidence_tier="HIGH",
+        smart_money_score=7,
+        macro_score=3,
+        sentiment_score=2,
+        max_adverse_excursion=-1.8,
+        max_favourable_excursion=4.4,
+        days_to_earnings=12,
+    )
+
+
+def test_b2213a_open_trade_survives_the_checkpoint_round_trip():
+    """S6-B2213a: open positions must survive checkpoint -> resume.
+
+    PIVOT #37 / the writer-reader schema contract: this pin is authored
+    BEFORE the writer and reader exist, so the code is written to satisfy a
+    pre-specified contract rather than the assertion being retrofitted to
+    whatever the code happens to do.
+
+    The existing engine checkpoints CLOSED trades and records only a COUNT of
+    open ones, then logs that they are DROPPED on resume. This asserts the
+    round trip for the OPEN book, field for field, through the same CSV
+    coercion the closed-trade path uses (vars() -> CSV -> dict -> dataclass),
+    including the three nested fields (signals_at_entry, context_bullets,
+    agent_reasoning) that B1260 proved are where this class of round trip
+    silently loses data.
+    """
+    import dataclasses
+    import pandas as pd
+
+    from backtest.engine.backtest import BacktestEngine
+
+    assert hasattr(BacktestEngine, "_csv_row_to_open_trade"), (
+        "S6-B2213a: BacktestEngine needs a _csv_row_to_open_trade reader, "
+        "mirroring _csv_row_to_closed_trade (B1079 PIVOT #43)"
+    )
+
+    original = _b2213a_fixture_open_trade()
+
+    # WRITER side: exactly the coercion the closed-trade checkpoint applies
+    row = pd.DataFrame([vars(original)]).to_dict("records")[0]
+
+    # READER side
+    restored = BacktestEngine._csv_row_to_open_trade(row)
+
+    assert type(restored) is type(original), (
+        f"reader returned {type(restored).__name__}, not OpenTrade - the "
+        f"engine consumes open_trades as dataclass instances, and a plain "
+        f"dict is exactly the PIVOT #43 defect one class over"
+    )
+
+    # every field the fixture set must survive, by name, with its value
+    for f in dataclasses.fields(original):
+        want = getattr(original, f.name)
+        got = getattr(restored, f.name)
+        assert got == want, (
+            f"S6-B2213a round trip LOST {f.name}: wrote {want!r}, read {got!r}"
+        )
+
+    # and the nested ones specifically, since these are the B1260 class
+    assert restored.signals_at_entry["breaker_ok"] is True, (
+        "signals_at_entry lost a BOOLEAN through the round trip - B1260's "
+        "exact defect (JSON booleans vs python reprs)"
+    )
+    assert restored.signals_at_entry["rsi_14"] == 61.5
+    assert restored.context_bullets == ["breaker retest", "volume expansion"]
+    assert restored.agent_reasoning["trader"] == "size up"
+
+
+def test_b2213a_resume_restores_the_open_book_or_halts():
+    """S6-B2213a: resume must RESTORE open positions, never silently drop.
+
+    The pre-B2213a engine logged 'RESUME open-trades DROPPED count=%d' and
+    continued with a fresh portfolio. That is a silent correctness loss
+    dressed as a warning. After this ticket the resume path must either
+    restore the book or HALT - never continue with a partial one.
+    """
+    import inspect
+
+    from backtest.engine.backtest import BacktestEngine
+
+    src = inspect.getsource(BacktestEngine._load_resume_checkpoint)
+
+    assert "open_trades_checkpoint.csv" in src, (
+        "S6-B2213a: _load_resume_checkpoint must READ the open-position "
+        "checkpoint, not just the closed-trade one"
+    )
+    # the drop-and-continue branch must no longer be the only outcome
+    assert "_csv_row_to_open_trade" in src, (
+        "S6-B2213a: resume must reconstruct open trades via the reader"
+    )
+
+
+def _b2213a_engine_for_resume(tmp_path, open_count, write_open_csv, n_rows=None):
+    """Build a resume directory and an engine pointed at it.
+
+    Deliberately drives _load_resume_checkpoint DIRECTLY rather than through a
+    full run: the guard under test is in that method, and #276b says a control
+    must take the same path as the claim - the claim here is about the resume
+    reader, not about a whole backtest.
+    """
+    import json
+    import pandas as pd
+
+    from backtest.engine.backtest import BacktestEngine
+
+    d = tmp_path
+    (d / "engine_state.json").write_text(json.dumps({
+        "simulated_day": 40, "sim_day_index": 40, "status": "interrupted",
+        "trades_so_far": 2, "open_trades": open_count,
+    }))
+    pd.DataFrame([
+        vars(t_) for t_ in ()
+    ] or [{"ticker": "AAPL", "entry_date": "2024-01-02", "exit_date": "2024-01-09",
+           "direction": "long", "strategy": "s", "pnl_pct": 1.0},
+          {"ticker": "MSFT", "entry_date": "2024-01-03", "exit_date": "2024-01-10",
+           "direction": "long", "strategy": "s", "pnl_pct": -0.5}]
+    ).to_csv(d / "trade_log_checkpoint.csv", index=False)
+
+    if write_open_csv:
+        rows = []
+        for k in range(n_rows if n_rows is not None else open_count):
+            ot = _b2213a_fixture_open_trade()
+            ot.ticker = f"T{k}"
+            r = dict(vars(ot))
+            from backtest.util.signals_serde import dumps_signals
+            for kk, vv in r.items():
+                if isinstance(vv, (dict, list)):
+                    r[kk] = dumps_signals(vv)
+            rows.append(r)
+        pd.DataFrame(rows).to_csv(d / "open_trades_checkpoint.csv", index=False)
+
+    eng = BacktestEngine.__new__(BacktestEngine)
+    eng.resume_from_checkpoint = str(d)
+    eng.open_trades = []
+    eng.closed_trades = []
+    return eng
+
+
+def test_b2213a_resume_halts_when_the_open_book_is_missing(tmp_path):
+    """A checkpoint declaring open trades with no open-book file must HALT.
+
+    This is the pre-B2213a checkpoint shape: engine_state.json carries an
+    open_trades COUNT and nothing carries the positions. Continuing would
+    trade a partial portfolio silently, which is what the old warning did.
+    """
+    import pytest
+
+    eng = _b2213a_engine_for_resume(tmp_path, open_count=3, write_open_csv=False)
+    with pytest.raises(RuntimeError, match="RESUME HALT"):
+        eng._load_resume_checkpoint()
+
+
+def test_b2213a_resume_halts_on_open_book_count_mismatch(tmp_path):
+    """State says N open, the book holds M != N -> HALT, never continue."""
+    import pytest
+
+    eng = _b2213a_engine_for_resume(tmp_path, open_count=3,
+                                    write_open_csv=True, n_rows=2)
+    with pytest.raises(RuntimeError, match="count mismatch"):
+        eng._load_resume_checkpoint()
+
+
+def test_b2213a_resume_restores_a_matching_open_book(tmp_path):
+    """The must-QUIET arm: a consistent checkpoint restores and does NOT halt.
+
+    L703/L686 - a corpus of only must-FIRE cases cannot tell a correct guard
+    from one that refuses everything. A guard that HALTs on every resume would
+    pass both tests above and be useless.
+    """
+    eng = _b2213a_engine_for_resume(tmp_path, open_count=2, write_open_csv=True)
+    eng._load_resume_checkpoint()
+    assert len(eng.open_trades) == 2, (
+        f"a consistent checkpoint must RESTORE, not halt - got "
+        f"{len(eng.open_trades)} open trades")
+    assert {t.ticker for t in eng.open_trades} == {"T0", "T1"}
+    # and the nested field survived the real file round trip, not just the
+    # in-memory one the schema pin exercises
+    assert eng.open_trades[0].signals_at_entry["breaker_ok"] is True
+
+
+def test_b2213a_zero_open_trades_still_writes_a_header_only_book(tmp_path):
+    """An EMPTY book is a measured fact, distinguishable from never-written.
+
+    L580: a missing measurement and a measured zero are different facts. If
+    the writer skipped empty books, a resume could not tell "no positions
+    were open" from "this engine version never wrote one", and the HALT above
+    would fire on a perfectly clean checkpoint.
+    """
+    import pandas as pd
+
+    from backtest.engine.backtest import BacktestEngine
+
+    eng = BacktestEngine.__new__(BacktestEngine)
+    eng.open_trades = []
+    eng._flush_open_trades_checkpoint(tmp_path)
+
+    p = tmp_path / "open_trades_checkpoint.csv"
+    assert p.exists(), "an empty open book must still write the file"
+    df = pd.read_csv(p)
+    assert len(df) == 0
+    assert "ticker" in df.columns and "signals_at_entry" in df.columns, (
+        "the header-only file must carry the full schema so a reader can "
+        "tell it apart from a truncated write")

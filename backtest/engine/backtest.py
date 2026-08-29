@@ -459,6 +459,110 @@ class BacktestEngine:
 
     # ----------------------------------------------------------------------
     # B1076 RESUME-FROM-CHECKPOINT (Council 191 Option 1 MVP)
+    # S6-B2213a: _csv_row_to_open_trade - the OPEN-book half of the resume
+    # contract. Deliberately TYPE-DISPATCHED off the dataclass rather than
+    # hand-enumerated like its closed-trade sibling: OpenTrade has 34 fields,
+    # a hand list goes stale the first time one is added, and L620/B2092 is
+    # exactly that failure (a payload's arity is a contract with every
+    # consumer). Dispatching means a new field is handled unwritten.
+    # ----------------------------------------------------------------------
+
+    def _flush_open_trades_checkpoint(self, out_dir):
+        """S6-B2213a: write open_trades_checkpoint.csv beside the closed one.
+
+        Called from ALL THREE checkpoint sites (periodic, wall-time kill, final
+        flush) rather than one - L620/B2092: a payload's contract binds every
+        writer, and a fix through one path proves one path. Uses the
+        signals_serde contract for dict/list fields, matching the periodic
+        closed-trade writer's post-B1260 form rather than the older raw vars().
+        Atomic via .tmp + replace, matching B1046 F-11.
+        """
+        import os as _os
+        from pathlib import Path as _P
+
+        import pandas as _pd
+
+        from backtest.util.signals_serde import dumps_signals as _dumps
+
+        d = _P(out_dir)
+        path = d / "open_trades_checkpoint.csv"
+        tmp = d / "open_trades_checkpoint.csv.tmp"
+        rows = []
+        for t in (self.open_trades or []):
+            r = dict(vars(t))
+            for k, v in r.items():
+                if isinstance(v, (dict, list)):
+                    r[k] = _dumps(v)
+            rows.append(r)
+        if not rows:
+            # An EMPTY book is a MEASURED fact and must be distinguishable from
+            # "never written" (L580: a missing measurement and a measured zero
+            # are different facts). Write the header-only file.
+            from backtest.engine.exit_manager import OpenTrade as _OT
+            from dataclasses import fields as _f
+            _pd.DataFrame(columns=[x.name for x in _f(_OT)]).to_csv(tmp, index=False)
+        else:
+            _pd.DataFrame(rows).to_csv(tmp, index=False)
+        _os.replace(tmp, path)
+
+    @staticmethod
+    def _csv_row_to_open_trade(row: dict) -> "OpenTrade":
+        """Reconstruct an OpenTrade from a checkpoint CSV row.
+
+        Mirrors _csv_row_to_closed_trade's coercion inverse (B1079 PIVOT #43)
+        and reuses the same signals_serde contract for nested fields (B1260),
+        which is where this class of round trip silently loses data. Missing
+        columns fall back to the dataclass default, so a schema addition is
+        forward-compatible rather than a KeyError.
+        """
+        import math as _math
+        from dataclasses import MISSING as _MISSING, fields as _fields
+        from datetime import date as _date
+
+        from backtest.engine.exit_manager import OpenTrade as _OT
+        from backtest.util.signals_serde import loads_signals as _loads
+
+        def _nan(v):
+            try:
+                return isinstance(v, float) and _math.isnan(v)
+            except Exception:
+                return False
+
+        def _default(f):
+            if f.default is not _MISSING:
+                return f.default
+            if f.default_factory is not _MISSING:      # type: ignore[misc]
+                return f.default_factory()             # type: ignore[misc]
+            return None
+
+        kwargs = {}
+        for f in _fields(_OT):
+            raw = row.get(f.name, _MISSING)
+            dflt = _default(f)
+            if raw is _MISSING or raw is None or _nan(raw):
+                kwargs[f.name] = dflt
+                continue
+            ann = str(f.type)
+            try:
+                if "dict" in ann.lower() or "list" in ann.lower():
+                    kwargs[f.name] = _loads(raw, dflt if dflt is not None
+                                            else ({} if "dict" in ann.lower() else []))
+                elif "date" in ann.lower():
+                    kwargs[f.name] = (raw if isinstance(raw, _date)
+                                      else _date.fromisoformat(str(raw).split(" ")[0]))
+                elif "bool" in ann.lower():
+                    kwargs[f.name] = (raw if isinstance(raw, bool)
+                                      else str(raw).strip().lower() in ("true", "1", "yes"))
+                elif "int" in ann.lower():
+                    kwargs[f.name] = int(float(raw))
+                elif "float" in ann.lower():
+                    kwargs[f.name] = float(raw)
+                else:
+                    kwargs[f.name] = str(raw)
+            except (TypeError, ValueError):
+                kwargs[f.name] = dflt
+        return _OT(**kwargs)
+
     # B1079 PIVOT #43 fix (Council 196 Option 4): _csv_row_to_closed_trade
     # ----------------------------------------------------------------------
 
@@ -708,6 +812,7 @@ class BacktestEngine:
                 import pandas as _epd
                 _epd.DataFrame([vars(t) for t in self.closed_trades]).to_csv(
                     d / "trade_log_checkpoint.csv", index=False)
+            self._flush_open_trades_checkpoint(d)   # S6-B2213a
             logger.error("B2148 %s state flushed: day=%s trades=%d",
                          status, state["sim_day_index"], state["trades_so_far"])
         except Exception as _exc:
@@ -804,18 +909,53 @@ class BacktestEngine:
         # self._resume_sim_day = N - 1.
         self._resume_sim_day = resume_sim_day  # skip i <= this index
         self._resumed_closed_trades_count = trades_so_far
-        # B1076 open-trades caveat (acknowledged):
+        # S6-B2213a: RESTORE the open book. Pre-B2213a this logged
+        # "open-trades DROPPED" and continued with a fresh portfolio - a
+        # silent correctness loss dressed as a warning (L641: a record that
+        # only reports the success path says nothing about the endings that
+        # matter). The engine now restores, or HALTS. Never partial.
         open_at_resume = int(state.get("open_trades", 0))
-        if open_at_resume > 0:
-            logger.warning(
-                "B1076 RESUME open-trades DROPPED count=%d at resume_sim_day=%d. "
-                "Open positions from prior interrupted run are NOT restored; "
-                "engine starts fresh portfolio at resume point. This is the "
-                "acknowledged MVP caveat (Council 191 Option 1). To handle "
-                "open trades, implement full state pickle (deferred Council "
-                "follow-up). For B1075 (0 open trades), this is no-op.",
-                open_at_resume, resume_sim_day,
+        open_path = resume_dir / "open_trades_checkpoint.csv"
+        if open_at_resume > 0 and not open_path.exists():
+            raise RuntimeError(
+                f"S6-B2213a RESUME HALT: engine_state.json declares "
+                f"open_trades={open_at_resume} but {open_path} is absent. "
+                f"That checkpoint predates the open-book writer, so the book "
+                f"CANNOT be restored and continuing would silently trade a "
+                f"partial portfolio. Re-run from scratch, or resume from a "
+                f"checkpoint written by this engine version."
             )
+        if open_path.exists():
+            import pandas as _opd
+            _odf = _opd.read_csv(open_path)
+            restored = [self._csv_row_to_open_trade(r)
+                        for r in _odf.to_dict("records")]
+            if len(restored) != open_at_resume:
+                raise RuntimeError(
+                    f"S6-B2213a RESUME HALT: open-book count mismatch - "
+                    f"engine_state.json says {open_at_resume}, "
+                    f"{open_path.name} holds {len(restored)}. A partial book "
+                    f"is a correctness defect, not a warning."
+                )
+            self.open_trades = restored
+            # SCOPE BOUNDARY, measured rather than assumed. The design said
+            # "open positions are the entire missing state". THEY ARE NOT:
+            # self.portfolio is constructed fresh in __init__ and never
+            # restored, so cash and positions reset - and OpenTrade carries NO
+            # size field, so portfolio.add_position(ticker, sector, direction,
+            # entry_price, size_pct, entry_date) cannot be reconstructed from
+            # the open book alone. Restoring open_trades is therefore CORRECT
+            # AND SUFFICIENT for the EXIT path (exit logic reads OpenTrade
+            # fields only) and for cube runs, where cube_isolation bypasses all
+            # portfolio gates by design. It does NOT restore portfolio
+            # ACCOUNTING, which matters for portfolio-sim; ticketed separately.
+            # An earlier draft called a non-existent self.position_sizer inside
+            # a bare try/except, which would have swallowed an AttributeError
+            # on every resume and reported success - CHECKLIST #122 exactly.
+            logger.info(
+                "S6-B2213a RESUME: restored %d open position(s) at "
+                "resume_sim_day=%d (exit path only; portfolio accounting is "
+                "NOT restored - see S6-B2387)", len(restored), resume_sim_day)
         logger.info(
             "B1076 RESUME: resume_sim_day=%d closed_trades=%d (from %s)",
             resume_sim_day, trades_so_far, resume_dir,
@@ -985,6 +1125,8 @@ class BacktestEngine:
                             self.output_dir / "trade_log_checkpoint.csv",
                             index=False,
                         )
+                        self._flush_open_trades_checkpoint(
+                            self.output_dir)   # S6-B2213a
                         logger.error(
                             "Batch 394 final-checkpoint flushed: %d "
                             "closed trades to trade_log_checkpoint.csv",
@@ -1158,6 +1300,16 @@ class BacktestEngine:
             # as paired-writer CSV block above. Either sim_day OR 30-min
             # time trigger fires both writers.
             if _should_checkpoint:
+                # S6-B2213a: the OPEN book is flushed HERE, not inside the
+                # closed-trade block above, because that block is gated on
+                # `self.closed_trades` - so a run holding open positions with
+                # NONE closed yet wrote nothing, which is the worst case and
+                # not an edge one: it is early in every run, exactly when a
+                # kill loses the most. This block is unconditional on the
+                # checkpoint trigger and writes engine_state.json, so pairing
+                # the book with it makes the count and the positions ALWAYS
+                # consistent - which is what the resume HALT relies on.
+                self._flush_open_trades_checkpoint(self.output_dir)
                 try:
                     import json as _json
                     import os as _os
