@@ -16691,6 +16691,19 @@ the rate figure - **THE RECURRENCE**. So the rule has been tested twice since au
 failed once, a 1-of-2 rate that is far too high for a rule whose whole content is one sentence.
 The discriminator recorded here - corrected value FIRST - is what the next application needs,
 because *drop the phrase* proved insufficient when an exemption existed alongside it.
+**ADDENDUM (B2354, same session):** the class count this entry summarised is stale - L639 says a
+number inside an open ticket decays silently, and the same is true inside a LESSON. The
+uncosted-effort class (#230 EXT) now stands at **FIVE firings this session**, every one in
+RETROSPECTIVE or side-comment prose and none in a costed proposal - the pattern is consistent
+and the rule unchanged: no effort adjectives; state the number or nothing. Swept concretely
+this time rather than recalled: a grep for effort adjectives (cheap, trivial, seconds, costs
+nothing, one command) over the **235 session queue rows** found **14 hits: 12 are quotes of a
+firing or a council's words, 2 are live-form claims** - both sitting in EARLY rows of tickets
+whose later rows supersede them under last-row-wins, so no CURRENT row carries an uncosted
+claim. **My first draft of this very addendum said 'zero live', generalised from a 6-row tail
+sample - L708's error, caught by running the full sweep before the commit landed.** The class
+otherwise lives in response prose, which is why the response-scanning gate is the right
+mechanism.
 
 ## L708
 **COUNTING OVER A RANKED LIST MEASURES THE SELECTOR, NOT THE POPULATION - AND THE OWNER CAUGHT
