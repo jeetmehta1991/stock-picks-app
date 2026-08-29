@@ -3154,6 +3154,14 @@ own description; the freeze never reached it.
   string IS the prose (a disclosure sentence), substring is correct. Sweep of that test: 2 of 9
   assertions were defective, both now anchored.
 
+- **A CONSTANT CITED IN A CAPTION GETS THE SAME GREP AS ONE CITED IN AN ARGUMENT (L709).** #222
+  fires on DISPLAY turns too. When the whole purpose is showing the owner an artifact, a constant
+  named in a parenthetical gloss feels like scaffolding rather than a claim - but the reader cannot
+  tell, and a casual gloss reads as MORE authoritative, not less. MEASURED: the gloss turned out to
+  be CORRECT, and the gate fired anyway, because the rule is about provenance and not correctness.
+  Sweep of this session's display turns: 1 of 4 constant citations was uninspected, and it was the
+  one in a caption.
+
 - **BEFORE COUNTING OVER A COLLECTION, ASK WHETHER IT WAS PRODUCED BY A SELECTION (L708).**
   Counting members over a ranked list, a top-N, a filtered view or a passing set measures the
   SELECTION CRITERION, not the population. MEASURED: I reported "16 of 24 exits never win, including

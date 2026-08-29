@@ -16727,3 +16727,30 @@ config* is exactly what that field holds. (3) Table D's rows - built from step1_
 deliberately, and its preamble says so. (4) The 110-cells-clear-the-floor count from S6-B2295 -
 **taken over `results`, the right field**. So 1 of 4 was wrong, and the three sound ones were
 sound because the question matched the field's selection, not because I checked.
+
+## L709
+**A CONSTANT CITED INCIDENTALLY IN A DISPLAY TURN GETS THE SAME GREP AS ONE CITED IN AN
+ARGUMENT (B2348).**
+#222 fired on a turn whose whole purpose was to SHOW the owner a table. The constant
+BELOW_POWER_FLOOR appeared not as a claim I was arguing but as a parenthetical explaining a
+column - and that is exactly why the grep felt unnecessary. In an analysis turn the constant is
+load-bearing and I reach for the file; in a display turn it is scaffolding around someone else's
+output and the reflex does not fire.
+**The reader cannot tell the difference.** A parenthetical gloss on a table column is read as
+authoritative precisely because it is offered casually - it reads as background knowledge rather
+than as a claim under test.
+MEASURED when I did grep it: the definition at STRATEGY_OPTIMISATION_PLAN.md line 1237 reads
+*BELOW_POWER_FLOOR (holdout n < 30)* and it is set at tighten_breaker_block.py line 375. My gloss
+was correct - which is the uncomfortable part. **The gate fired on a true statement, because the
+rule is about PROVENANCE and not about correctness**, and a true claim made without checking is
+the same behaviour as a false one that happened to land.
+Compliance failure against CHECKLIST item 222; no new item - #222 already demands the grep and
+its scope was never limited to arguments.
+Mechanism: **already gated by scan_uninspected_constant**, which caught this unprompted; nothing
+needs building. Durability pinned by this entry in SKILL.md.
+**Retroactive sweep (#237): every constant or verdict name I cited across this session's DISPLAY
+turns - the Table D and Table C renders.** Four names appear: BELOW_POWER_FLOOR (**THE
+INSTANCE**, glossed without a grep), NO_EXIT_SELECTABLE and ZERO_FIRES (both cited during the
+S6-B2342 exit RCA, where I HAD read the emitting code - **SOUND**), and MIN_N (cited in the
+run_postconfig verification with its line number - **SOUND**). **1 of 4 was uninspected, and it
+is the one that appeared in a caption rather than in an argument.**
