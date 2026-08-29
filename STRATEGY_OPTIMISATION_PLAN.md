@@ -805,16 +805,58 @@ selected by this mechanical process - no judgement calls, reproducible from the 
    equal ci_lo across different signatures at step 2, or tied signatures here - resolve to
    the LOWEST-span config** (deterministic; without this the holder is
    sort-order-dependent, which the verification run caught before this section shipped).
-4. Take the first 5 survivors.
+4. Take the first **3** survivors (owner ruling 2026-08-29 second set, was 5 - a 5-config
+   slate projected ~92h serial at the 4-year span, judged too long for the execution
+   timeline).
 
 Applied to the completed b2197 program this yields, in order: **sw50sp50 (+1.250), sw30sp150
-(+1.214), sw50sp20 (+0.930), sw30sp20 (+0.816, first holder of the triplicate signature - sw30sp50
-and sw30sp100 collapse into it), sw50sp9 (+0.724)**.
+(+1.214), sw50sp20 (+0.930)** - the top 3 that advance. The next two under the old
+5-slate rule were sw30sp20 (+0.816, first holder of the triplicate signature; sw30sp50 and
+sw30sp100 collapse into it) and sw50sp9 (+0.724); both are recorded here so a later
+widening does not have to re-derive them.
 
-**TRADE FLOORS (owner ruling 2026-08-29):** `min_trades_holdout >= 15` in the 1-year holdout and
-`min_trades_full_period > 75` across all 544 tickers over the full window (config.py; was 25/100
-per B1492). The owner's stated logic: 25 fires per year forced ~2 per month - high-frequency
-territory for a swing library, and illogical across bear/consolidation regimes.
+**TRADE FLOORS (owner rulings 2026-08-29):** `min_trades_holdout >= 15` in the 1-year holdout
+and `min_trades_full_period > 60` across all 544 tickers (config.py; was 25/100 at B1492, then
+15/75 earlier the same day). Owner logic: 25 fires per year forced ~2 per month - HFT territory
+for a swing library and illogical across bear/consolidation regimes; and 60 rather than 75
+because the in-sample leg is 3 years, not 4.
+
+**GRAIN CAVEAT, recorded rather than silently resolved:** the full-period gate COUNTS over the
+whole cube span - `tighten_breaker_block.py:348` sums the entire frame, which is **4 years**
+(IS 3.00 + HO 1.00 per roster_core's constants), not the 3-year IS leg alone. 60 is applied
+exactly as ruled. If the intent was an IS-ONLY count, the COUNTER must change too and not just
+the bar - lowering a threshold does not narrow the window it reads.
+
+**WINDOW (owner ruling 2026-08-29): 2022-23 data is ALLOWED for Step 2.** This supersedes, for
+Step 2 only, the 2026-08-17 *no 2022-23 even for exit selection* ruling, and it resolves the
+three-way conflict recorded at S6-B2358. Step 2 therefore runs the FULL 4-year span
+`2022-05-05 -> 2026-05-05`, which is what the full-period gate is measured over.
+
+### STEP 2 PRE-TRIAGE - MEASURE FIRES BEFORE SPENDING CUBE HOURS (owner-approved 2026-08-29)
+
+**MANDATORY before any Step-2 cube is generated.** A 544-ticker 4-year cube costs ~18h; a fire-count
+measurement costs minutes. Run it first and drop any config whose measured fires cannot reach the
+`min_trades_full_period` bar - a cube whose verdict is predictable from arithmetic is a cube not
+worth generating.
+
+```bash
+# ONE INVOCATION PER CONFIG - the config axes are ENV, not CLI flags (verified:
+# config.py:2465 reads SMC_SWING_LENGTH from os.environ; a runtime probe returns
+# 50 with the env set and the default 20 without).
+SMC_SWING_LENGTH=50 SMC_SPAN=50 \
+python scripts/measure_fire_count.py --strategies smc_breaker_block_long \
+  --start 2022-05-05 --end 2026-05-05 \
+  --output output_audit/pretriage_<CONFIG>.json
+```
+
+**KNOWN LIMITATION, stated so the result is not over-read:** `measure_fire_count.py` measures
+ENTRY FIRES at the strategy's registered gates. It does NOT sweep the four inner axes
+(`close_mitigation`, `tail_n`, `age_bars_max`, `break_pct_max`), and fires are an UPPER BOUND on
+graded trades - a fire that never selects an exit does not become a row. So the pre-triage
+**excludes** configs that cannot clear the bar; it does not certify that survivors will.
+
+**Decision rule:** if `n_fires_long` over the 4-year span is below `min_trades_full_period`, the
+config cannot produce a passing cell and is dropped before cube generation.
 
 **STEP-1 UNIVERSE, PINNED BY NAME:** the exact 200 tickers Step 1 searched are recorded in
 APPENDIX S1-200 at the end of this document (source: output_audit/_sweep_200.txt, the tickers_file

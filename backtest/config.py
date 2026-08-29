@@ -624,8 +624,15 @@ PASSING_CRITERIA = {
     # whichever window evaluate() received, and the BINDING call is the holdout - so it
     # demanded 100 trades in ONE year of a FOUR-year window, roughly a 4x harsher bar
     # than "100 trades" reads. Split into two explicit legs.
-    "min_trades_full_period":  75,    # > 75 across all 544 tickers over the full
-                                      # period (owner ruling 2026-08-29, was 100 - B1492)
+    "min_trades_full_period":  60,    # > 60 across all 544 tickers (owner ruling
+                                      # 2026-08-29 second set, was 75 same day, 100 at
+                                      # B1492). Owner reasoning: "3 years of IS and not
+                                      # 4 years". NOTE THE GRAIN, flagged not silently
+                                      # resolved: the gate COUNTS over the full cube span
+                                      # (tighten_breaker_block.py:348 sums the whole frame,
+                                      # 4y = IS 3 + HO 1), not over IS alone. 60 is applied
+                                      # as ruled; if the intent was an IS-ONLY count the
+                                      # COUNTER needs changing too, not just the bar.
     "min_trades_holdout":      15,    # >= 15 in the 1y holdout (owner ruling
                                       # 2026-08-29, was 25 - B1492; owner: 25/yr forces
                                       # ~2 fires/month, illogical across bear/consolidation
