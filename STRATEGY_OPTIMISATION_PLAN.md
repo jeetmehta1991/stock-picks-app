@@ -812,6 +812,26 @@ selected by this mechanical process - no judgement calls, reproducible from the 
    slate projected ~92h serial at the 4-year span, judged too long for the execution
    timeline).
 
+**COST, PROJECTED PER CONFIG - NOT FROM THE MEDIAN (S6-B2364).** Source:
+output_audit/serial_chain.log, 26 START/DONE timestamp pairs. Step-1 durations at identical
+ticker-years range 1.32h (sw30sp50) to 4.04h (sw50sp20), median 1.68h - so runtime is NOT
+purely ticker-year-driven and a median-scaled figure is wrong for a SELECTED slate. Scaling
+each config by ITS OWN base at 544x4y over 200x1y = 10.88x:
+
+| config | step-1 | step-2 projected | 5h legs |
+|---|---|---|---|
+| sw50sp50 | 1.71h | **18.7h** | 4 |
+| sw30sp150 | 1.59h | **17.3h** | 4 |
+| sw50sp20 | 4.04h | **43.9h** | 9 |
+| **top-3 serial** | | **~80h (3.3 days)** | |
+| top-2, dropping sw50sp20 | | ~36h (1.5 days) | |
+
+**The median-based figure said ~55h and understated by ~25h**, because the third-ranked
+config is also the SLOWEST of the 26 - selection on `is_ci_lo` is not independent of runtime.
+Same shape as L708: a statistic computed over a population and applied to a selected subset.
+**Still an ESTIMATE** - linearity in ticker-years is assumed, and the 1.32-4.04h spread at
+constant ticker-years is direct evidence that assumption is imperfect. The first cube settles it.
+
 Applied to the completed b2197 program this yields, in order: **sw50sp50 (+1.250), sw30sp150
 (+1.214), sw50sp20 (+0.930)** - the top 3 that advance. The next two under the old
 5-slate rule were sw30sp20 (+0.816, first holder of the triplicate signature; sw30sp50 and
