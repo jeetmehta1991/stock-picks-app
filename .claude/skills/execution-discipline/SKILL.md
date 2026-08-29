@@ -1905,6 +1905,12 @@ that row and neither found it; both were scoped to rows still OPEN.**
 ## AUTHORING A RULE FEELS LIKE INSTALLING IT (B1869 - L570, CHECKLIST #226/#244)
 
 **MEASURED: twice in one session I broke a rule I had just written or cited.**
+**And a third time (B2372), in the worst shape: EDITING A GATE'S MESSAGE IS THE MOST SEDUCTIVE FORM OF AUTHORING.** I
+rewrote the shell-substitution gate's headline so it named the MECHANISM rather than the
+incident, then two turns later put escaped backticks inside a double-quoted `-c` argument and
+was blocked by that same gate. Diagnosing that a warning misdirects its reader, and rewriting
+it, feels like TEACHING the rule - and nothing about rewriting a warning installs a habit in
+the person rewriting it. The escape held and nothing ran, which is luck, not care.
 I cited `S6-B1762f` - *require_each existed and I did not use it* - in the batch
 where I did not use `require_each`. I wrote L567 - *a ticket names one guard;
 the expression has two* - and two batches later fixed one delivery form and

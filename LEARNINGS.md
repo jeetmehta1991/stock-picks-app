@@ -11758,6 +11758,28 @@ DURABILITY half IS mechanisable** and is taken: `test_b1869_authored_then_
 violated_ledger` pins this entry and its two instances, so the count cannot
 quietly stop growing - the next instance has to be added rather than absorbed.
 
+**ADDENDUM (B2372): INSTANCE 3, AND IT IS THE WORST SHAPE YET - I EDITED THE GATE'S OWN MESSAGE,
+THEN COMMITTED THE CLASS THAT GATE NAMES.** At B2363 I corrected `scan_shell_substitution`'s
+headline, which had said COMMIT MESSAGE while B1768 had widened the mechanism to ANY
+double-quoted `-m/-c/-F/--message/--eval` argument - I wrote the words *because bash substitutes
+inside a double-quoted argument regardless of which flag precedes it*. **Two turns later I ran
+`python -c "..."` with escaped backticks inside the double-quoted argument**, in a mutation
+probe, and the same gate blocked me on it.
+**Why this shape is worse than instances 1 and 2.** Those were rules I had CITED or WRITTEN.
+This one I had EDITED FOR CLARITY - I diagnosed that the message misdirected its reader, and
+rewrote it so the next reader would understand the mechanism rather than the incident.
+**Improving how a rule is COMMUNICATED feels like more than authoring it; it feels like teaching
+it.** That feeling is the failure mode, because nothing about rewriting a warning installs a
+habit in the person rewriting it.
+**The escape saved me and that is not a defence.** The backticks were backslash-escaped, so bash
+did not substitute and nothing ran - the same luck L520 records, where one instance failed to
+parse and the other executed `git reset --hard`. **Nothing about my care differed between the
+two, which is exactly why the habit and not the outcome is the thing to fix:** content carrying
+punctuation goes into a FILE that is then executed, never into a double-quoted `-c` (L523).
+**What worked, for the third time, was the gate and not the memory.** I had the rule in context,
+in a file I had personally edited, and the Stop hook caught me.
+
+
 **The rule: when a turn CITES a rule, treat the citation as a checklist item,
 not as evidence of compliance. Apply it to the edit in front of you before
 quoting it about the edit behind you.** **ANCHORED (`#197`):** `CHECKLIST #226`
