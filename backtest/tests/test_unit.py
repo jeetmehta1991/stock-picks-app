@@ -22966,9 +22966,21 @@ def test_b2009_noise_floor_is_derived_from_the_artifact():
     # B2048: the pinned line dropped its coalescing (S6-B1972b - an
     # absent sharpe now fails loud instead of printing margin -1.0);
     # the property this pin protects is the BAR, unchanged.
-    assert 'margin = h["sharpe"] - PC["min_sharpe_overall"]' in code, (
-        "the ROBUST margin must be measured against the bar the cell "
-        "actually cleared - the crossed-bar class inside the roster builder")
+    # S6-B2391: the formula MOVED to roster_core.robust_status so the grid
+    # producer could label a qualifier without a fourth hand-copy. This pin
+    # asserted its literal TEXT in this file; re-anchored onto the ARITHMETIC
+    # wherever it lives, which is what the assertion always meant - the margin
+    # must be measured against the bar the cell actually cleared.
+    import inspect as _insp2
+    import roster_core as _rc9
+    _fsrc = _insp2.getsource(_rc9.robust_status)
+    assert 'PC["min_sharpe_overall"]' in _fsrc, (
+        "the ROBUST margin must be measured against the LIVE pooled gate the "
+        "cell actually cleared - the crossed-bar class (B2009)")
+    _bpr_src = (root / "scripts" / "build_phase_1b_roster.py").read_text(
+        encoding="utf-8")
+    assert "robust_status" in _bpr_src, (
+        "the roster builder must CALL the shared formula, not re-derive it")
 
 
 
@@ -26732,7 +26744,8 @@ def test_b2215_disclosures_survive_the_caller():
     from pathlib import Path as _P
     src = (_P(__file__).resolve().parents[2] / "scripts"
            / "tighten_breaker_block.py").read_text(encoding="utf-8")
-    keys = {k.value for n in _ast.walk(_ast.parse(src))
+    tree = _ast.parse(src)
+    keys = {k.value for n in _ast.walk(tree)
             if isinstance(n, _ast.Dict)
             for k in n.keys
             if isinstance(k, _ast.Constant) and isinstance(k.value, str)}
@@ -26741,6 +26754,36 @@ def test_b2215_disclosures_survive_the_caller():
         assert field in keys, (
             f"{field} must be an actual dict KEY in the emitted row, not "
             f"merely a word in a comment")
+
+    # S6-B2383/B2390: the check ABOVE walks EVERY Dict in the file, so the
+    # `results` row satisfied it while `step1_ranking` carried none of the
+    # three - MEASURED as 0 of 260 ranking rows across 26 of 26 grids, and
+    # this pin was GREEN throughout. "Somewhere in the file" is not the
+    # claim; the claim is that the VIEW A READER CONSULTS carries them.
+    # Anchor on the step1_ranking literal specifically (L706: select the
+    # element, do not substring the document).
+    _rank_elt = None
+    for n in _ast.walk(tree):
+        if not isinstance(n, _ast.Dict):
+            continue
+        for k, v in zip(n.keys, n.values):
+            if (isinstance(k, _ast.Constant) and k.value == "step1_ranking"
+                    and isinstance(v, _ast.ListComp)
+                    and isinstance(v.elt, _ast.Dict)):
+                _rank_elt = v.elt
+    assert _rank_elt is not None, (
+        "could not locate the step1_ranking list-comprehension's row dict - "
+        "the emission shape changed and this pin must be re-anchored, not "
+        "deleted")
+    _rank_keys = {k.value for k in _rank_elt.keys
+                  if isinstance(k, _ast.Constant) and isinstance(k.value, str)}
+    for field in ("exits_effective", "exits_collapsed",
+                  "npt_excluded_identity_boundary"):
+        assert field in _rank_keys, (
+            f"{field} is missing from the step1_ranking ROW - it may exist on "
+            f"`results`, but the ranked view is what a reader opens, and a "
+            f"disclosure that dies at the view is L659 one level up. "
+            f"ranking keys: {sorted(_rank_keys)}")
     # and the producer must still emit them, or the caller carries nothing
     prod = (_P(__file__).resolve().parents[2] / "scripts"
             / "roster_core.py").read_text(encoding="utf-8")
@@ -28223,3 +28266,164 @@ def test_b2213a_zero_open_trades_still_writes_a_header_only_book(tmp_path):
     assert "ticker" in df.columns and "signals_at_entry" in df.columns, (
         "the header-only file must carry the full schema so a reader can "
         "tell it apart from a truncated write")
+
+
+def test_b2379_robust_status_is_one_shared_definition():
+    """S6-B2379: the ROBUST/PROVISIONAL call must have ONE definition.
+
+    It lived only in build_phase_1b_roster.py, so the grid producer could not
+    label a qualifier at all - and under the waterfall's ROBUST-only stopping
+    rule that label decides whether the program stops or keeps spending. A
+    hand-copy into the producer would have been a fourth duplicate that drifts
+    at the next floor change.
+    """
+    import sys
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parents[2]
+    sys.path.insert(0, str(root / "scripts"))
+    import roster_core as rc
+
+    from backtest.config import PASSING_CRITERIA as PC
+
+    gate = PC["min_sharpe_overall"]
+    # the floor comes from its CANONICAL HOME - roster_core deliberately does
+    # not carry it, because Step 1 imports that module and the floor is the
+    # Phase-1B per-cell grain (test_b2300 guards exactly this)
+    import importlib.util as _iu
+    _spec = _iu.spec_from_file_location(
+        "bpr_b2379", root / "scripts" / "build_phase_1b_roster.py")
+    _bpr = _iu.module_from_spec(_spec)
+    _spec.loader.exec_module(_bpr)
+    floor = _bpr.SELECTION_NOISE_FLOOR
+
+    # the floor is REQUIRED, so no caller can inherit a grain it did not choose
+    import pytest as _pytest
+    with _pytest.raises(TypeError):
+        rc.robust_status(1.5)
+
+    # an UNMEASURED Sharpe must not be labelled - L580, a missing measurement
+    # and a measured shortfall are different facts
+    assert rc.robust_status(None, floor=floor) == (None, None)
+
+    # just under the floor -> PROVISIONAL; at the floor -> ROBUST
+    m, s = rc.robust_status(gate + floor - 0.01, floor=floor)
+    assert s == "PROVISIONAL", f"margin {m} below {floor} must be PROVISIONAL"
+    m, s = rc.robust_status(gate + floor, floor=floor)
+    assert s == "ROBUST", f"margin {m} at {floor} must be ROBUST"
+
+    # and the roster builder must CALL it rather than re-deriving
+    src = (root / "scripts" / "build_phase_1b_roster.py").read_text(encoding="utf-8")
+    assert "robust_status" in src, (
+        "build_phase_1b_roster must call the shared robust_status, not "
+        "re-implement the margin formula")
+
+
+def test_b2379_pass_rows_carry_status_and_provisionals_are_collected():
+    """S6-B2379: a PROVISIONAL qualifier must be RECORDED, not lost.
+
+    Under the waterfall a PROVISIONAL qualifier does not stop the run, so the
+    program can terminate NEGATIVE while holding a cell that cleared every
+    live gate. Nothing recorded that cell before this ticket.
+
+    Anchored on the PASS-row assignment and the emitted KEY specifically -
+    test_b2215 walked every dict in the file and was green for months while
+    the view it cared about carried nothing (S6-B2390).
+    """
+    import ast as _ast
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parents[2]
+    src = (root / "scripts" / "tighten_breaker_block.py").read_text(encoding="utf-8")
+    tree = _ast.parse(src)
+
+    # the PASS branch must assign margin AND status onto the row
+    assigns = set()
+    for n in _ast.walk(tree):
+        if isinstance(n, _ast.Assign):
+            for tgt in n.targets:
+                if (isinstance(tgt, _ast.Subscript)
+                        and isinstance(tgt.slice, _ast.Constant)):
+                    assigns.add(tgt.slice.value)
+        if isinstance(n, _ast.Tuple):
+            for e in n.elts:
+                if (isinstance(e, _ast.Subscript)
+                        and isinstance(e.slice, _ast.Constant)):
+                    assigns.add(e.slice.value)
+    for field in ("margin", "status"):
+        assert field in assigns, (
+            f"the PASS branch must attach {field!r} to the row - without it a "
+            f"qualifier cannot be told ROBUST from PROVISIONAL, which is the "
+            f"waterfall's entire stop condition. found: {sorted(assigns)}")
+
+    # and the emitted payload must carry the sibling key
+    top_keys = set()
+    for n in _ast.walk(tree):
+        if isinstance(n, _ast.Dict):
+            for k in n.keys:
+                if isinstance(k, _ast.Constant) and isinstance(k.value, str):
+                    top_keys.add(k.value)
+    assert "provisional_qualifiers" in top_keys, (
+        "the grid payload must carry provisional_qualifiers, or a cell that "
+        "cleared every gate is buried among 300 rows and lost to a re-run")
+
+
+def test_b2118b_borrow_trap_counter_measures_the_blocking_rate():
+    """S6-B2118b: the borrow-trap gate had no counter, so its blocking rate
+    against the 23.5pct baseline was unmeasured for ~10 ticket touches.
+
+    The blocker recorded on the ticket was "no short cube to check against".
+    That was a claim about the DATA when the gate is a claim about the CODE:
+    it already executes on every signal computation regardless of direction,
+    so the rate is measurable without any graded short cube.
+
+    Instrumented at the DEFINITION rather than the six call sites - a counter
+    per site is six places to drift and six for the next site to be added
+    without one (L620/B2092).
+    """
+    from backtest.signals import screener as sc
+
+    sc.reset_borrow_trap_counter()
+    for dtc in (7.0, 2.0, 9.5, None, 0.0, 6.1):
+        sc._short_borrow_trap_active({"days_to_cover": dtc})
+
+    r = sc.borrow_trap_rate()
+    assert r["consulted"] == 6, r
+    assert r["blocked"] == 3, f"7.0, 9.5 and 6.1 all exceed 5.0: {r}"
+    assert r["no_dtc_data"] == 1, f"the None must be counted apart: {r}"
+
+    # the two denominators must DIFFER when the field is sparse - quoting the
+    # wrong one against a 23.5pct baseline compares different populations
+    assert r["rate_all"] == 0.5, r
+    assert r["rate_measured"] == 0.6, r
+    assert r["rate_all"] != r["rate_measured"], (
+        "with a sparse days_to_cover the two rates must differ; if they are "
+        "equal the no-data population is not being separated")
+
+    # a rate over an empty population is UNMEASURED, never zero (L580)
+    sc.reset_borrow_trap_counter()
+    empty = sc.borrow_trap_rate()
+    assert empty["consulted"] == 0
+    assert empty["rate_all"] is None and empty["rate_measured"] is None, (
+        f"a rate over zero consults must be None, not 0.0 - a measured zero "
+        f"and an absent measurement are different facts: {empty}")
+
+
+def test_b2118b_counter_lives_at_the_definition_not_the_call_sites():
+    """S6-B2118b: one counter reached by every consumer, present and future.
+
+    Asserts the increment is inside _short_borrow_trap_active itself, so a
+    seventh call site added later is instrumented unwritten.
+    """
+    import ast as _ast
+    import inspect
+
+    from backtest.signals import screener as sc
+
+    src = inspect.getsource(sc._short_borrow_trap_active)
+    tree = _ast.parse(src.lstrip())
+    names = {n.value.id for n in _ast.walk(tree)
+             if isinstance(n, _ast.Subscript) and isinstance(n.value, _ast.Name)}
+    assert "_BORROW_TRAP_COUNTER" in names, (
+        "the counter must increment INSIDE the gate function, so every call "
+        "site - including ones not yet written - is measured")

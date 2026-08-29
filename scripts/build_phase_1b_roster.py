@@ -445,8 +445,13 @@ def main() -> int:
             raise ValueError(
                 f"gate-passing cell {r['strategy']}|{r['direction']} carries "
                 "no holdout sharpe - the kept-population contract broke")
-        margin = h["sharpe"] - PC["min_sharpe_overall"]
-        status = "ROBUST" if margin >= SELECTION_NOISE_FLOOR else "**PROVISIONAL**"
+        # S6-B2379: one definition, in roster_core. The formula used to live
+        # only here, so the grid producer could not label a qualifier - and
+        # the waterfall's stop condition IS that label.
+        from roster_core import robust_status as _robust_status
+        margin, _st = _robust_status(h["sharpe"],
+                                     floor=SELECTION_NOISE_FLOOR)
+        status = "ROBUST" if _st == "ROBUST" else "**PROVISIONAL**"
         r["margin"], r["status"] = round(margin, 3), status.strip("*")
         A(f"| {i} | `{r['strategy']}` | {r['direction']} | {status} | {r['cube']} | {r['n_tickers']} | "
           f"`{r['exit']}` | {fmt(r['is_sharpe'])} | {fmt(h['sharpe'])} | {margin:+.3f} | {h['n']} | "

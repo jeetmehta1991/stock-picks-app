@@ -136,6 +136,11 @@ def _log_silent_producer_empty(producer_name: str) -> None:
 # STRATEGY HELPERS
 # -----------------------------------------------------------------------------
 
+# S6-B2118b: module-level so every consumer of the gate increments the
+# same one. Reset per arm via reset_borrow_trap_counter().
+_BORROW_TRAP_COUNTER = {"consulted": 0, "blocked": 0, "no_dtc_data": 0}
+
+
 def _short_borrow_trap_active(s) -> bool:
     """B671 Round 2 Q5 + Q6 + B718a (2026-06-12 owner-approved): SM-5
     borrow-trap consult helper.
@@ -162,8 +167,60 @@ def _short_borrow_trap_active(s) -> bool:
     emission is unaffected by this gate. Only direction="short" strategies
     are blocked; direction="long" and direction="avoid" are unaffected.
     """
+    # S6-B2118b: INSTRUMENTED AT THE DEFINITION, not at the six call sites.
+    # A counter per call site is six places to drift and six places for the
+    # next site to be added without one (L620/B2092: a contract binds every
+    # consumer). One counter here is reached by every consumer, present and
+    # future, unwritten.
+    #
+    # Why this is a counter and not a cube: the gate ALREADY EXECUTES on every
+    # signal computation regardless of direction, so the blocking rate is
+    # measurable NOW - it does not wait on a graded SHORT cube. That was the
+    # blocker the ticket carried for ~10 touches, and it was a claim about the
+    # gate rather than about the data.
     dtc = s.get("days_to_cover", 0.0) or 0.0
-    return dtc > 5.0
+    blocked = dtc > 5.0
+    _BORROW_TRAP_COUNTER["consulted"] += 1
+    if blocked:
+        _BORROW_TRAP_COUNTER["blocked"] += 1
+    else:
+        # An absent days_to_cover is NOT a measured "not blocked" - it is an
+        # unmeasured one, and conflating them would make the denominator lie
+        # (L580). Counted separately so the rate can be quoted over the
+        # population that actually carried the field.
+        if s.get("days_to_cover") is None:
+            _BORROW_TRAP_COUNTER["no_dtc_data"] += 1
+    return blocked
+
+
+def borrow_trap_rate() -> dict:
+    """S6-B2118b: the blocking rate, with its denominators named.
+
+    Returns consulted / blocked / no_dtc_data plus two rates: `rate_all` over
+    every consult, and `rate_measured` over consults that actually carried a
+    days_to_cover value. They differ exactly when the field is sparse, and
+    quoting the wrong one is how a 23.5pct baseline gets compared against a
+    number computed over a different population (L678: a count needs the scope
+    of the scan that produced it).
+
+    Rates are None when the denominator is zero - a rate over nothing is not
+    zero, it is unmeasured (L580).
+    """
+    c = dict(_BORROW_TRAP_COUNTER)
+    measured = c["consulted"] - c["no_dtc_data"]
+    c["rate_all"] = (round(c["blocked"] / c["consulted"], 4)
+                     if c["consulted"] else None)
+    c["rate_measured"] = (round(c["blocked"] / measured, 4)
+                          if measured else None)
+    c["baseline_23_5pct"] = 0.235
+    return c
+
+
+def reset_borrow_trap_counter() -> None:
+    """Fresh per arm. B2121's own retracted lesson: a counter carried across
+    arms reports the wrong run's number and nothing says so."""
+    for k in ("consulted", "blocked", "no_dtc_data"):
+        _BORROW_TRAP_COUNTER[k] = 0
 
 
 def _strat(fires, direction, category, signals_used, context_bullets):

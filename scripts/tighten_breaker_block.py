@@ -378,9 +378,25 @@ def main() -> int:
             row.update({k: res.get(k) for k in
                         ("sharpe", "sortino", "psr", "profit_factor", "payoff",
                          "expectancy", "win_rate", "p", "ci_lo")})
+            _verdict = "PASS" if all(gates.values()) else "FAIL"
             row.update({"gates": gates,
                         "gates_passed": sum(gates.values()),
-                        "verdict": "PASS" if all(gates.values()) else "FAIL"})
+                        "verdict": _verdict})
+            if _verdict == "PASS":
+                # S6-B2379: label every qualifier ROBUST or PROVISIONAL HERE.
+                # Under the waterfall only a ROBUST cell stops the run, so a
+                # PROVISIONAL qualifier lets the program continue and, if the
+                # remaining configs yield nothing, TERMINATE NEGATIVE while a
+                # cell that cleared all six gates sits in the artifacts. It
+                # must be recorded, or that cell is lost to a later re-run.
+                # The floor is imported from its CANONICAL HOME rather
+                # than re-declared, and named at the call site so the grain is
+                # explicit: this is the Phase-1B PER-CELL yardstick, applied to
+                # a Step-2 qualifier, which is the same grain. It is NOT a
+                # Step-1 admission bar (owner ruling B1608).
+                from build_phase_1b_roster import SELECTION_NOISE_FLOOR as _NF
+                _m, _s = rc.robust_status(res.get("sharpe"), floor=_NF)
+                row["margin"], row["status"] = _m, _s
         rows.append(row)
 
     rows.sort(key=lambda r: (-(r.get("gates_passed") or 0), -(r.get("fires") or 0)))
@@ -507,6 +523,20 @@ def main() -> int:
               "sharpe": c[0].get("sharpe"), "ci_lo": c[0].get("ci_lo"),
               "fires": c[0].get("fires"), "exit": c[0].get("exit"),
               "class_size": len(c),
+              # S6-B2383 (L659 at the VIEW, not the caller): the three
+              # disclosures were on `results` rows and on ZERO of 260
+              # step1_ranking rows across 26 grids - so the view a reader
+              # actually consults could not answer "how many DISTINCT exits
+              # did this selection range over?", which is the question they
+              # exist to answer. None renders as "-" downstream via measured.
+              # fmt; it is never coerced to 0, because a missing disclosure
+              # and a measured zero are different facts (L580). The 12 of 26
+              # older grids predate the producer and stay None: there is
+              # nothing to backfill, and recomputing means a new engine run.
+              "exits_effective": c[0].get("exits_effective"),
+              "exits_collapsed": c[0].get("exits_collapsed"),
+              "npt_excluded_identity_boundary":
+                  c[0].get("npt_excluded_identity_boundary"),
               "admit": max(c, key=lambda m: (m["tail_n"],
                                              m["age_bars_max"] is None,
                                              m["break_pct_max"] is None,
@@ -516,6 +546,12 @@ def main() -> int:
                            "age_bars_max": m.get("age_bars_max"),
                            "tail_n": m.get("tail_n")} for m in c]}
              for i, c in enumerate(ranked, 1)],
+         # S6-B2379: a sibling key so a PROVISIONAL qualifier is findable
+         # rather than buried among 300 rows. Empty list when there are none,
+         # which is a MEASURED absence and distinguishable from the key being
+         # missing entirely on an older grid (L580).
+         "provisional_qualifiers": [r for r in rows
+                                    if r.get("status") == "PROVISIONAL"],
          "step1_combinations_carried": sum(len(c) for c in ranked),
          "step1_distinct_outcomes": len(classes),
          "results": rows}, indent=2))
