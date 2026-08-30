@@ -28495,6 +28495,38 @@ def test_b2416_uninspected_constant_sees_grep_and_read_tools():
         "S6-B2412 blindness is back (second face)")
 
 
+def test_b2417_admission_mirror_is_counted_in_the_rollup():
+    """S6-B2417 (closes S6-B2414): the Step-2 admission's registered mirror
+    must appear in the mirrors roll-up AND in the deployable total.
+
+    The roll-up read only `kept`, so the admitted strategy's mirror rendered
+    in its own row while the list and the total silently excluded it - a
+    reader could take the roll-up as exhaustive. Artifact-level per
+    L705/L706: target LINES selected before asserting within them, against
+    the committed regenerated roster.
+    """
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[2]
+    doc = (root / "PHASE_1B_ROSTER.md").read_text(encoding="utf-8")
+
+    adm_lines = [l for l in doc.splitlines()
+                 if l.startswith("- **REGISTERED and retained, Step-2 admissions")]
+    assert len(adm_lines) == 1, adm_lines
+    assert "smc_breaker_block_short" in adm_lines[0], adm_lines[0]
+    assert "(1)" in adm_lines[0], adm_lines[0]
+
+    tot = [l for l in doc.splitlines() if l.startswith("**Deployable total:")]
+    assert len(tot) == 1, tot
+    assert "Step-2 admissions" in tot[0] and "admission mirrors" in tot[0], tot[0]
+    assert "= 7 distinct strategies" in tot[0], tot[0]
+
+    # reachability (B2208): the generator derives the roll-up from the
+    # admissions record, not from a hand count
+    src = (root / "scripts" / "build_phase_1b_roster.py").read_text(encoding="utf-8")
+    assert "adm_mirrors_reg" in src and "load_admissions()" in src, (
+        "the roll-up no longer derives admission mirrors from load_admissions")
+
+
 def test_b2118b_borrow_trap_counter_measures_the_blocking_rate():
     """S6-B2118b: the borrow-trap gate had no counter, so its blocking rate
     against the 23.5pct baseline was unmeasured for ~10 ticket touches.

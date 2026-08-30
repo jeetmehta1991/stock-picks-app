@@ -187,6 +187,19 @@ def mirror_status(name: str) -> tuple[str, str | None]:
     return "NEEDS-CREATION", None
 
 
+def load_admissions(admissions_path=None) -> list[dict]:
+    """S6-B2413/S6-B2417: the owner-ruled Step-2 admissions record.
+
+    An absent file is the feature being absent - nothing ruled yet - and
+    returns [] (absence of DATA, not of a bound; L643's discriminator).
+    """
+    p = Path(admissions_path) if admissions_path else (
+        REPO / "output_audit" / "phase_1b_step2_admissions.json")
+    if not p.exists():
+        return []
+    return json.loads(p.read_text(encoding="utf-8")).get("admissions") or []
+
+
 def step2_admissions_section(A, admissions_path=None) -> None:
     """S6-B2413 (owner instruction 2026-08-30): render owner-ruled Step-2
     admissions into the roster document.
@@ -203,12 +216,7 @@ def step2_admissions_section(A, admissions_path=None) -> None:
     def _fmt(v, w=6, d=2):
         return f"{v:>{w}.{d}f}" if isinstance(v, (int, float)) else f"{'-':>{w}}"
 
-    p = Path(admissions_path) if admissions_path else (
-        REPO / "output_audit" / "phase_1b_step2_admissions.json")
-    if not p.exists():
-        return
-    doc = json.loads(p.read_text(encoding="utf-8"))
-    adms = doc.get("admissions") or []
+    adms = load_admissions(admissions_path)
     if not adms:
         return
     A("## Step-2 admissions (owner-ruled)")
@@ -544,8 +552,21 @@ def main() -> int:
       "SOURCE** (13F / insider / congressional / buyback), where a mechanical inverse is "
       "economically false rather than merely untested (B611 reversal).")
     A("")
-    A(f"- **REGISTERED and retained ({len(mirrors_reg)}):** " +
+    # S6-B2417 (owner instruction 2026-08-30, closing S6-B2414): Step-2
+    # admission mirrors are COUNTED here too. The roll-up read only `kept`,
+    # so the admitted strategy's registered mirror rendered in its own row
+    # while this list and the deployable total silently excluded it.
+    _adms = load_admissions()
+    adm_mirrors_reg = []
+    for _a in _adms:
+        _ms, _mn = mirror_status(_a["strategy"])
+        if (_ms == "REGISTERED" and _mn and _mn not in mirrors_reg
+                and _mn not in adm_mirrors_reg):
+            adm_mirrors_reg.append(_mn)
+    A(f"- **REGISTERED and retained, funnel cells ({len(mirrors_reg)}):** " +
       (", ".join(f"`{m}`" for m in mirrors_reg) if mirrors_reg else "none"))
+    A(f"- **REGISTERED and retained, Step-2 admissions ({len(adm_mirrors_reg)}):** " +
+      (", ".join(f"`{m}`" for m in adm_mirrors_reg) if adm_mirrors_reg else "none"))
     A(f"- **LONG-ONLY DATA, mirror excused ({len(mirrors_asym)}):**")
     if mirrors_asym:
         _ev = {r["strategy"]: r.get("asym_signals") or [] for r in kept}
@@ -563,8 +584,10 @@ def main() -> int:
     A(f"- **NEEDS CREATION ({len(mirrors_new)}):** " +
       (", ".join(f"`{m}`" for m in mirrors_new) if mirrors_new else "none"))
     A("")
-    A(f"**Deployable total: {len(kept)} graded cells + {len(mirrors_reg)} registered mirrors "
-      f"+ {len(mirrors_dual)} dual self-mirrors = {len(kept) + len(mirrors_reg)}** "
+    A(f"**Deployable total: {len(kept)} graded cells + {len(mirrors_reg)} funnel mirrors "
+      f"+ {len(mirrors_dual)} dual self-mirrors + {len(_adms)} Step-2 admissions "
+      f"+ {len(adm_mirrors_reg)} admission mirrors = "
+      f"{len(kept) + len(mirrors_reg) + len(_adms) + len(adm_mirrors_reg)} distinct strategies** "
       f"(dual mirrors are already counted in their parent cell), plus "
       f"{len(mirrors_new)} mirrors to create.")
     A("")

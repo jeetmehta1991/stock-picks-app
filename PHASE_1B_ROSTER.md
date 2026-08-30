@@ -86,13 +86,14 @@ Cells admitted by explicit owner ruling from the STRATEGY_OPTIMISATION_PLAN Step
 
 Owner standing directive: *promoted longs carry short mirrors by default* - the mirror is retained irrespective of its own cube result. The single excuse is a **long-only DATA SOURCE** (13F / insider / congressional / buyback), where a mechanical inverse is economically false rather than merely untested (B611 reversal).
 
-- **REGISTERED and retained (2):** `52w_low_breakdown_pullback_short`, `xs_momentum_bottom_decile_short`
+- **REGISTERED and retained, funnel cells (2):** `52w_low_breakdown_pullback_short`, `xs_momentum_bottom_decile_short`
+- **REGISTERED and retained, Step-2 admissions (1):** `smc_breaker_block_short`
 - **LONG-ONLY DATA, mirror excused (0):**
     - none
 - **DUAL - own short branch is the mirror, nothing to create (0):** none
 - **NEEDS CREATION (0):** none
 
-**Deployable total: 3 graded cells + 2 registered mirrors + 0 dual self-mirrors = 5** (dual mirrors are already counted in their parent cell), plus 0 mirrors to create.
+**Deployable total: 3 graded cells + 2 funnel mirrors + 0 dual self-mirrors + 1 Step-2 admissions + 1 admission mirrors = 7 distinct strategies** (dual mirrors are already counted in their parent cell), plus 0 mirrors to create.
 
 ## What this roster does NOT establish
 
