@@ -554,9 +554,10 @@
  "budget_cap_usd": 100.0,
  "spent_usd": 0.0,
  "projected_batch_usd": 0.0,
- "wall_clock_projection_hours": 18.7,
- "wall_clock_projection_basis": "sw50sp50's OWN Step-1 elapsed 1.71h at 200 tickers x 1y = 200 ticker-years (output_audit/serial_chain.log START/DONE pair), scaled to 544 x 4y = 2176 ticker-years, a factor of 10.88. ESTIMATE: assumes runtime is linear in ticker-years, and the 1.32-4.04h spread across configs at IDENTICAL ticker-years is direct evidence that assumption is imperfect. 5 legs of 4.5h = 22.5h capacity, under the owner's 5h-per-run hard cap.",
+ "wall_clock_projection_hours": 37.3,
+ "wall_clock_projection_basis": "REVISED after the first attempt was stopped on owner ruling (option b). MEASURED on that attempt from output_b2399_step2_sw50sp50_step2_sw50sp50/run_heartbeat.json, two readings 4 min apart, UNCONTENDED: sim_day 6 -> 9 across elapsed 0.2668 -> 0.3335h = 3 days in 4.00 min = 1.333 min/day at pool_workers 10. Trading days from nyse_mcal for this window = 1003, so 22.4h at 10 workers. At 6 workers, scaling throughput linearly in workers gives 22.4 x 10/6 = 37.3h. LINEARITY IN WORKERS IS AN ASSUMPTION and is probably PESSIMISTIC: the 1.333 min/day was itself measured while the box was paging (memory load 93-96%, pagefile avail 2-3 GB), so fewer workers may run FASTER per day by not thrashing. 10 legs x 4.5h = 45h capacity either way.",
  "obsolescence_risks": [
+  "FIRST ATTEMPT STOPPED ON COMMIT EXHAUSTION (owner ruling, option b). At pool_workers 10 the box reached its commit limit: PowerShell could not start (Windows 0x5AF, 'The paging file is too small for this operation to complete'), a plain file read raised MemoryError, and GlobalMemoryStatusEx read 2.08 GB pagefile available at 93% load. After the stop it read 46.49 GB available at 50%. This relaunch runs 6 workers. MITIGATION: the hourly monitor reads pagefile availability via GlobalMemoryStatusEx rather than PowerShell counters, so it keeps working under pressure.",
   "CODE SHA MOVES MID-RUN: the engine loads code at launch, so an edit lands on the NEXT leg, not this one. MITIGATION: no engine commits while this wave runs; frozen_sha pinned here and re-checked at each resume.",
   "TICKER FILE CHANGES: r5_universe_544.txt is pinned by content here (all 544 names inlined), so a file swap is detectable by diff rather than by trust. VERIFIED at launch via verify_universe_artifact.py: 26 letters, 27% top-3 share, 18/18 mega-caps, and 0 tickers present in the Step-1 cube but absent from this file.",
   "THE 2022-23 FIRE RATE IS UNMEASURED. No Step-1 config ran a single day of 2022-23 (that era was excluded until the owner's 2026-08-29 ruling), so the projection assumes the measured 2024-25 rate holds across the added two years. If it is materially lower the run is SLOWER, not wrong; if the trade counts fall the full-period floor could bind where the pre-triage says it will not. ACCEPTED, and the first cube measures it.",
@@ -566,5 +567,6 @@
  ],
  "notes": "STEP 2 config 1 of 3 under the owner's waterfall ruling. Runs IN ITS ENTIRETY - all 300 combinations x all exits re-evaluated - and stops the waterfall only on a qualifier that clears all six gates AND is ROBUST. step1_cube:false DELIBERATELY - it arms the holdout-touch FAIL, which is correct for a Step-1 search and wrong for a Step-2 validation wave that grades ON the holdout by design. LEG CAP DECLARED IN THE MANIFEST, not only the spec: the gate reads the manifest, and it refused the first attempt because an undeclared bound cannot be enforced against the owner's 5h cap (L642 fail-closed).",
  "leg_cap_hours": 4.5,
- "max_legs": 5
+ "max_legs": 10,
+ "pool_workers": 6
 }

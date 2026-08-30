@@ -1457,14 +1457,147 @@ PYTHONPATH=. python scripts/producer_variant_table.py \
 
 ---
 
-## STEP 3 — VALIDATE the top 10 (4 years, disjoint tickers)
+## STEP 3 - VALIDATE: the WATERFALL over the top 3 configs (4 years, ALL 544 tickers)
 
-Rank all combinations by Sharpe with `min_trades` DISABLED (at 100 tickers the floor rejects on
-sample size, not quality). Take the top 10 — they will span only a few distinct engine configs.
+> **THIS SECTION WAS REWRITTEN AT B2402.** Every sentence of the previous version was superseded by
+> the owner rulings of 2026-08-29 and had been left standing beside them - the doc-drift class this
+> runbook records against itself. The old text said *top 10*, *disjoint tickers*, *the 444 NOT in
+> the search set*, and *100 tickers*. **All four are now wrong.** Lineage: top 10 -> **top 3**;
+> 444 disjoint -> **all 544**; 100 -> **200** for Step 1.
 
-Re-run those configs on the **444 tickers NOT in the search set**, full 4-year window, then append
-to the 100-ticker 4-year runs to reconstruct 544. Valid because `--cube-isolation` bypasses the
-candidate cap (`backtest.py:1763`).
+**UNIT OF EXECUTION: the CONFIG. UNIT OF EVIDENCE: the combination.** Step 2 runs one cube per
+config, and each cube re-evaluates **all 300 parameter combinations x all registered exits**.
+
+**THE THREE CONFIGS**, from the mechanical rule in STEP 2 ENTRY, re-derived over 26 of 26 Step-1
+grids on step1_ranking[0].is_ci_lo:
+
+| order | config | is_ci_lo | is_sharpe | fires | exit chosen |
+|---|---|---|---|---|---|
+| 1 | **sw50sp50** | +1.250 | 4.301 | 14 | time_stop_10d |
+| 2 | **sw30sp150** | +1.214 | 4.807 | 11 | time_stop_10d |
+| 3 | **sw50sp20** | +0.930 | 3.915 | 14 | time_stop_10d |
+
+Recorded so a later widening need not re-derive them: sw30sp20 (+0.816, first holder of a
+triplicate signature - sw30sp50 and sw30sp100 collapse into it) and sw50sp9 (+0.724).
+
+**THE STOPPING RULE (owner, D1).** Each config runs **IN ITS ENTIRETY** - all 300 combinations
+graded; the waterfall never halts mid-config. Then, and only then: if any combination **clears all
+six gates AND is ROBUST**, STOP - the remaining configs are not run. A **PROVISIONAL** qualifier
+does NOT stop the run. If none of the three yields a ROBUST qualifier, **TERMINATE**:
+smc_breaker_block_long closes NEGATIVE for Phase 1B and the program moves to the next of the
+207-strategy backlog (owner, D6 - the METHOD is not on trial).
+
+**ROBUST vs PROVISIONAL** is computed by roster_core.robust_status(holdout_sharpe, floor=...), the
+ONE definition (S6-B2379; it previously lived only in the roster builder, so the grid producer
+could not label a qualifier at all). margin = holdout_sharpe minus min_sharpe_overall; ROBUST iff
+margin >= 0.333. **The floor is a REQUIRED argument with no default**, deliberately: 0.333 is the
+Phase-1B PER-CELL selection-noise grain, Step 1 imports roster_core, and a constant at the wrong
+grain is quotable at the wrong grain (L664). **roster_core does not carry the constant** -
+test_b2300 forbids it - so each caller names its own floor.
+
+**WHY 0.333, and what it is not.** It is the mean holdout-Sharpe gap between near-identical twins
+that independently chose DIFFERENT exits, from output_audit/b1467_exit_selection_noise.json (B2009;
+the disagreeing pairs were 0.450 and 0.216). A cell clearing the gate by less than that cannot be
+distinguished from one that cleared it on exit-selection luck. It is **NOT** a Step-1 admission bar
+(owner ruling B1608).
+
+**NO separate baseline run is needed** (L423) - all six gates are ABSOLUTE thresholds, so admission
+depends on a candidate's own metrics. Valid on the appended universe because `--cube-isolation`
+bypasses the candidate cap (backtest.py:1763).
+
+### STEP 3.1 - THE PRE-LAUNCH GATES, in order, every one of them
+
+Run these IN THE LAUNCH TURN. The tripwire table admits **no duration exemption** - probe, smoke or
+wave, all of them apply.
+
+1. **Characterise the tickers file** (#187 / L445 - never infer scope from a filename):
+   `python scripts/verify_universe_artifact.py output_audit/r5_universe_544.txt --compare-cube
+   <a Step-1 cube's trade_exit_detail.csv>`. **Expect a PROVENANCE MISMATCH finding, and expect it
+   to be correct**: Step 1 ran 200 tickers and Step 2 runs 544, so ~500 names are in the file and
+   not in the Step-1 cube. **The check that matters is `in cube, NOT file: 0`** - no Step-1 ticker
+   may be missing. The tool's own guidance is that a deliberate scope must be stated in the
+   consuming doc; it is stated here. Measured for r5_universe_544.txt: 544 tickers, 26 distinct
+   letters, top-3 letter share 27 percent, mega-caps 18 of 18, in-cube-not-file **0**.
+2. **Write run_manifest.json** pinning code SHA, isolation, calendar, the ticker list BY VALUE, and
+   the wall-clock projection. LOCAL runs additionally REQUIRE `obsolescence_risks` and
+   `wall_clock_projection_hours` - and, learned the hard way, **`leg_cap_hours` must be declared in
+   the MANIFEST, not only the spec.** The gate reads the manifest and refuses an undeclared bound,
+   because a cap that is not declared cannot be enforced (L642, fail-closed).
+3. **Run the gate and paste the exit code**: `python scripts/prelaunch_gate.py --manifest
+   output_audit/<batch>_run_manifest.json`. It is HAND-RUN - nothing calls it automatically (B1704).
+   A pass prints PRELAUNCH_GATE_PASS.
+4. **Arm the cadence monitor BEFORE the launch, in the same turn** (#185).
+5. **Confirm zero pre-existing engine processes**, or two runs share an output path and corrupt both.
+
+### STEP 3.2 - THE SPEC, and the one field that is easy to get wrong
+
+```json
+{"wave": "b2399_step2_sw50sp50",
+ "tickers_file": "output_audit/r5_universe_544.txt",
+ "strategy_subset": "output_audit/_subset_one.txt",
+ "window": {"start": "2022-05-05", "end": "2026-05-05"},
+ "leg_cap_hours": 4.5, "max_legs": 10,
+ "step1_cube": false,
+ "pool_workers": 6,
+ "allow_engine_drift": true,
+ "arms": [{"tag": "step2_sw50sp50",
+           "env": {"SMC_SWING_LENGTH": "50", "STRAT_EMA_SPAN": "50"}}]}
+```
+
+- **`step1_cube: false` - THE ONE THAT IS EASY TO GET WRONG.** It arms the **holdout-touch FAIL**
+  in run_postconfig. Correct for a Step-1 search, which must not touch the holdout, and **WRONG for
+  Step 2, which grades ON the holdout by design.** Copying the Step-1 template arms a check
+  guaranteed to fail. run_wave defaults it to TRUE, so it must be set explicitly.
+- **The config axes are ENV, not CLI flags** - config.py:2472 reads SMC_SWING_LENGTH from the
+  environment, and run_wave.py:39 passes each arm's env dict.
+- **The window runs the FULL 4 years.** 2022-23 is allowed for Step 2 (owner, 2026-08-29),
+  superseding the 2026-08-17 exclusion for this phase only.
+- **leg_cap_hours x max_legs is the capacity** and must exceed the projection; the leg cap itself
+  stays under the owner's 5h hard cap.
+
+### STEP 3.3 - MEASURED RUNTIME, and the memory ceiling that stopped the first attempt
+
+**Measured on the b2399 attempt from two readings of the wave's run_heartbeat.json four minutes
+apart, uncontended:** sim_day_index 6 -> 9 across elapsed_hours 0.2668 -> 0.3335, i.e. **3 sim-days
+in 4.00 minutes = 1.333 min/day at pool_workers 10.** Trading days for this window computed from
+nyse_mcal = **1,003**, giving **22.4h** - against a manifest projection of 18.7h scaled from
+Step-1's 200-ticker rate, which proved **about 20 percent optimistic**. That is the linearity
+caveat the manifest itself recorded, then measured.
+
+**THE FIRST ATTEMPT WAS STOPPED ON COMMIT EXHAUSTION (owner ruling, option b).** At pool_workers 10
+the box reached its commit limit: PowerShell could not start (Windows 0x5AF, which FormatMessageW
+renders as *The paging file is too small for this operation to complete*), a plain file read raised
+MemoryError, and GlobalMemoryStatusEx read **2.08 GB pagefile available at 93 percent load**. After
+the stop it read **46.49 GB at 50 percent**. Relaunched at pool_workers 6, max_legs 10.
+
+**Three rules this produced, each of which cost something to learn:**
+
+- **A pyramid alongside a live wave is not free.** Engine alone ran 48-58 GB committed of 63.63;
+  engine **plus** a pytest run hit 62.03 GB with **1.61 GB free** - the exhaustion class S6-B2237
+  records as having killed three prior runs. Do not run the full suite against a live wave; defer
+  the commit to a leg boundary.
+- **Editing the spec does NOT affect a running wave.** run_wave.py reads the spec ONCE at startup
+  (line 361) and the leg loop reads max_legs from that in-memory dict (line 140). Raising max_legs
+  mid-flight changes nothing. A running process holds what it loaded.
+- **Killing the engine is not killing the wave.** run_wave is the parent and its leg loop RESPAWNS
+  the engine - measured: the tree came back within seconds. **Kill the run_wave root and its
+  descendants, parent-first.** Note scripts/kill_wave_tree.py matches on the OUT-DIR name, which
+  run_wave's own command line does not contain (it carries the SPEC path), so run_wave is **not**
+  in its target list; it also does not exclude its own pid and kills via PowerShell, which is
+  exactly what fails under commit exhaustion.
+
+### STEP 3.4 - MONITORING a Step-2 wave
+
+- **Decide alive-or-dead by the sim_day_index DIFF between firings, never by heartbeat age.** The
+  heartbeat is written by a SUPERVISOR THREAD, so it stays fresh while workers are frozen (L656) -
+  and a STALE heartbeat does not prove death either, since a run at its final sim-day has stopped
+  advancing while it writes its cube (L656 addendum). **Both directions are uninformative; only the
+  counter carries signal.**
+- **The diff interval must exceed the expected per-unit time.** At roughly 1.3-2.0 min/day, a
+  60-second window showing no movement is normal, not a stall.
+- **Read pagefile availability via GlobalMemoryStatusEx, not PowerShell counters.** Under commit
+  exhaustion PowerShell cannot start, so a monitor built on it goes blind exactly when it matters.
+  Report FREE COMMIT, never physical RAM (L670).
 
 **NO separate baseline run is needed** (L423) — all 6 gates are ABSOLUTE thresholds, so admission
 depends on a candidate's own 4-year metrics.
@@ -1473,9 +1606,59 @@ depends on a candidate's own 4-year metrics.
 
 ## STEP 4 — ADMIT
 
-A combination enters Phase 1B only if it passes **all 6 gates on the 4-year holdout**:
-`pooled_sharpe >= 1.0` · `profit_factor >= 1.3` · `sortino >= 0.7` · `psr >= 0.95` ·
-`min_trades_holdout >= 25` · `min_trades_full_period > 100`
+> **THE GATE TABLE BELOW WAS STALE ON 3 OF 6 THRESHOLDS UNTIL B2402**, in the section that
+> DEFINES admission. It read `sortino >= 0.7`, `min_trades_holdout >= 25`,
+> `min_trades_full_period > 100`. The live values, re-derived from PASSING_CRITERIA at B2402, are
+> **1.0**, **15** and **75**. It also said *on the 4-year holdout*, which conflates two different
+> windows - see the note under the table.
+
+A combination enters Phase 1B only if it clears **all six LIVE_GATES** (roster_core.py:60-61).
+Thresholds re-derived from backtest/config.py PASSING_CRITERIA, tier `pooled`:
+
+| # | gate | bar | config key |
+|---|---|---|---|
+| 1 | `pooled_sharpe` | **>= 1.0** | min_sharpe_overall |
+| 2 | `profit_factor` | **>= 1.3** | min_profit_factor_overall |
+| 3 | `sortino` | **>= 1.0** | min_sortino_overall |
+| 4 | `psr` | **>= 0.95** | min_psr |
+| 5 | `min_trades_holdout` | **>= 15** | min_trades_holdout |
+| 6 | `min_trades_full_period` | **> 75** | min_trades_full_period |
+
+**THE TWO WINDOWS DIFFER, and the old wording hid it.** Gates 1-5 are computed on the **1-year
+holdout** (HO_START..HO_END = 2025-05-05 -> 2026-05-05). Gate 6 counts over the **FULL 4-year
+span**: tighten_breaker_block.py:348 sums the entire frame, IS 3.00y + HO 1.00y. The owner was
+shown this grain when ruling the floor and chose to keep the COUNTER and restore the 4-year-sized
+BAR - *"in that case revert back to 75"* - rather than re-cut the counter to IS-only.
+
+**TWO GATES ARE THREE-STATE, not two.** `profit_factor` is **NOT EVALUABLE** when a cell has zero
+losing trades: an all-winners cell has pf = inf and `inf >= bar` is True, but a zero-loss sample
+says nothing about the loss side (B2012). `min_trades_full_period` is NOT EVALUABLE when the count
+is absent, because before B1624 a MISSING value PASSED - *unknown* scored better than *known bad*.
+None is neither pass nor fail; it shrinks the denominator so nobody quotes "6 of 6" when 5 were
+measured.
+
+**THE POWER FLOOR IS NOT A GATE, AND IS NOT min_trades_holdout.** roster_core.py:215 is an EARLY
+RETURN - `if n < min_n: return None` - taken **before any gate is computed**, and min_n comes from
+`--min-n` (tighten_breaker_block.py:190, default 10). A cell below it is BELOW_POWER_FLOOR and
+never reaches the gates. **Two cuts, two numbers, both live**: at --min-n 10 a cell with 10-14
+holdout trades IS graded and FAILS gate 5; below 10 it is not graded at all. Measured probe: n=8 ->
+None; n=10 and n=12 -> graded with gate 5 False; n=15 -> graded, True.
+
+**FOUR CRITERIA ARE DEMOTED to diagnostics and are NOT gates** (roster_core.DEMOTED):
+max_drawdown, calmar, deflated_sharpe, win_rate. Each is computed and reported. Note that
+CLAUDE.md's claim *multiple-testing control remains via BH-FDR + PSR* is TRUE at the ROSTER stage
+and **FALSE at the GRID stage**: BH-FDR runs only at build_phase_1b_roster.py:252 across a family
+of DIFFERENT STRATEGIES, and tighten_breaker_block.py applies **no multiplicity correction across a
+config's 300 combinations** (owner ruling D2, 2026-08-29: none is required - *select the one that
+passes all gates; if multiple, the best Sharpe*).
+
+**A PROVISIONAL QUALIFIER IS RECORDED, NOT DISCARDED** (S6-B2379). Every PASS row carries `margin`
+and `status`, and the grid emits a `provisional_qualifiers` sibling key. Without it, a run
+terminating NEGATIVE could do so while holding a cell that cleared every live gate, with nothing
+recording it. **Its disposition is an open owner question.**
+
+**WHICH COMBINATION ADVANCES when several qualify: the highest HOLDOUT POOLED SHARPE** (owner, D3)
+- the gated quantity, not the in-sample is_sharpe that Step 1 ranked on.
 
 **Report the verdict WITH its denominator** (#182): *"N of M combinations passed, across X of Y
 applicable producers"* — computed by the table generator, never hand-counted.

@@ -7,9 +7,9 @@
   "end": "2026-05-05"
  },
  "leg_cap_hours": 4.5,
- "max_legs": 5,
+ "max_legs": 10,
  "step1_cube": false,
- "pool_workers": 10,
+ "pool_workers": 6,
  "allow_engine_drift": true,
  "arms": [
   {

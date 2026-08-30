@@ -17188,3 +17188,40 @@ passes the now-required `floor`, my AST scan matched the bare name `robust_statu
 alias is invisible to a name matcher. Resolving `ImportFrom ... asname` first gives the true 6.
 **Instance of L597** (an enumeration pattern encodes the examples in front of you), counted here
 per L710 rather than minted; the tell was that grep showed a site the AST walk did not.
+
+## L717
+**A CODE CLAIM AND AN ARTIFACT CLAIM HAVE DIFFERENT DENOMINATORS - MERGING THEM PRODUCES A SENTENCE
+NEITHER SUPPORTS (B2400).**
+Confirming the owner's scope note I wrote *300 combinations x all exits is what the producer
+already does*, resting it on two different things at once: a CODE reading (`select_exit` is called
+once per combination on one path) and an ARTIFACT measurement (`exits_effective` = 21-23 of 24).
+**Measured over the full population - 26 of 26 grids, 5,354 gradable rows - the artifact records
+that on 2,769 rows and records NOTHING on 2,585**, because 12 of the 26 grids predate the
+disclosure field. So the artifact supports the claim for 52pct of rows and the code supports it
+for 100pct of combinations, **and my sentence claimed the artifact's specificity with the code's
+reach.**
+**Why the merge is seductive rather than careless.** Both halves are TRUE and both are about the
+same subject, so nothing feels like a leap; the code half licenses *every* and the artifact half
+licenses *21-23 of 24*, and the combined sentence quietly takes the quantifier from one and the
+precision from the other. **Neither source, alone, would have let me write it.**
+**The discriminator: a code claim is UNIVERSAL and IMPRECISE - it says every execution takes this
+path, and says nothing about what any run produced. An artifact claim is PRECISE and PARTIAL - it
+says exactly what happened, on exactly the rows that recorded it.** When both are in hand, state
+them separately with their own denominators. The moment they share one sentence, ask which half
+each clause is resting on.
+**Not the same as #182's verdict-scope rule**, which is about a conclusion reaching past what was
+TESTED. Here everything was tested; the defect is that two evidence bases with different reach
+were spliced, and the splice is invisible because both halves are sound.
+Compliance failure against CHECKLIST item 270 read with item 182. No new item - #270 already
+forbids generalising past what was read, and its gate is what caught this; the lesson is the
+SHAPE, which its examples (a truncated read of one source) do not name.
+Mechanism: **DETECTION is JUDGMENT-ONLY** - no scan can tell which clause of a sentence rests on
+which evidence base, since both were legitimately gathered in the same turn. **Durability IS
+taken**: this rule is in SKILL.md with its own fragment pin.
+**Retroactive sweep (#237): every claim this turn resting on more than one evidence base.**
+Three. (1) *300 x all exits* - **THE INSTANCE**, code reach spliced onto artifact precision.
+(2) *the 4-year window is honoured* - rests on the LOG alone (PIT S&P 500 loaded at 2023, 2024,
+2025, 2026) and is stated as such - **SOUND**. (3) *517 of 544 pass the liquidity filter* - one
+log line, one number, one source - **SOUND**. **1 of 3, and the two sound ones are sound because
+they never left a single source** - which is the cheap discriminator: a claim citing one artifact
+cannot make this mistake.

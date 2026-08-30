@@ -3310,6 +3310,16 @@ own description; the freeze never reached it.
   about. **Decide on the value you display, and test the boundary AT equality, not near it** - a pin
   written one hundredth above would have passed forever.
 
+- **A CODE CLAIM AND AN ARTIFACT CLAIM HAVE DIFFERENT DENOMINATORS (L717).** A CODE claim is universal and
+  imprecise - every execution takes this path, and it says nothing about what any run produced. An
+  ARTIFACT claim is precise and partial - exactly what happened, on exactly the rows that recorded
+  it. **Splice them and the sentence takes the quantifier from one and the precision from the other,
+  which neither source alone would license.** MEASURED: I wrote *300 combinations x all exits is what
+  the producer does*, resting on a code path (100% of combinations) and a disclosure field that 12 of
+  26 grids do not carry (2,769 of 5,354 rows). Both halves true; the sentence supported by neither.
+  State them separately with their own denominators, and when both share a sentence, ask which half
+  each clause rests on. Cheap discriminator: a claim citing ONE source cannot make this mistake.
+
 - **A DETECTOR'S READING UNIT MUST SPAN THE RULE'S PRESCRIBED FORM (L713).** Before building a detector for a
   rule, read the rule's own MANDATED form and check it fits inside the unit the detector reads.
   MEASURED: L548 prescribes `Mechanism: JUDGMENT-ONLY. <reason>` - reason in the NEXT SENTENCE - and
