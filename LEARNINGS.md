@@ -17254,3 +17254,35 @@ Three. (1) *300 x all exits* - **THE INSTANCE**, code reach spliced onto artifac
 log line, one number, one source - **SOUND**. **1 of 3, and the two sound ones are sound because
 they never left a single source** - which is the cheap discriminator: a claim citing one artifact
 cannot make this mistake.
+
+## L718
+**A METRIC'S LEG LABEL CARRIES THE SAME EVIDENCE BURDEN AS ITS VALUE (B2413).**
+The B2409-close Contrarian objection stated the retained qualifier's evidence as *"in-sample
+Sharpe 0.445 with ci_lo -0.415"*. Opening the artifact for the B2413 render showed the row
+carries TWO ci_lo-like fields: `is_ci_lo` -0.385 (the in-sample leg) and `ci_lo` -0.415 (the
+HOLDOUT leg). **The value was real and the leg attribution was wrong**, inherited from the
+S6-B2399 queue row's ambiguous phrasing (*"against in-sample sharpe 0.445 and ci_lo -0.415"* -
+one qualifier stretched over two figures from two legs) and repeated without opening the row.
+**Why no check fired: every re-derivation reflex targets the FIGURE.** #201 saw a sourced number;
+#256 would have re-derived the same digits; the substantive point (both lower bounds below zero)
+survived either reading, so nothing felt wrong. **A label is the part of a quantity that no
+numeric check touches** - the value can be re-derived to full precision while the claim stays
+false, which is L664's shape (secondary records preserve the DIGITS and drop the GRAIN) with the
+dropped grain being WHICH LEG.
+**The rule: when quoting a metric with a leg/window/population qualifier (IS vs holdout,
+per-regime vs pooled, per-cell vs family), re-derive the QUALIFIER from the artifact's own field
+names, never from a secondary record's sentence.** The tell that a bare name is ambiguous: the
+row holds sibling fields differing only in prefix (`is_ci_lo` beside `ci_lo`) - a prose mention
+stripped of the prefix is undecidable on its face.
+Compliance failure against CHECKLIST item 222 read with L664. No new item (#136) - the class is
+already anchored there; this entry records the leg-label instance and its tell.
+Mechanism: **prose-side DETECTION is JUDGMENT-ONLY** - no scan can know which leg a bare "ci_lo"
+in a sentence intends. **Durability IS taken where the number now lives**: the B2413 roster
+section renders both bounds under explicit IS/HO column headers re-derived from the artifact at
+render time, pinned by test_b2413; the correction itself is recorded in the S6-B2413 queue row
+and the B2413 commit message.
+**Retroactive sweep (#237): every leg-qualified figure quoted in the B2409-B2413 arc.** Three:
+(1) this instance - WRONG label; (2) the roster table's IS Shrp / HO Shrp columns - SOUND, labels
+come from distinct artifact fields per column; (3) the S6-B2410 queue row's "holdout sharpe
+1.152, profit factor 1.937, sortino 1.925" - SOUND, all three read from the holdout-leg fields
+of the qualifier row.
