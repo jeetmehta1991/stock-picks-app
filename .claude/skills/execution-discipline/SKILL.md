@@ -221,6 +221,8 @@ batch-1 traps. Each rule retroactively catches >=2 real past misses (#136).
    find a guard sharing its subject's control flow, sweep for its siblings before
    fixing it: the fix is one supervisor outside the loop, not seven patches.
 
+5. **BISECT THE PAYLOAD BEFORE CHANGING ROUTE - A TRANSPORT FAILURE MAY BE CONTENT (L638 addendum, B2404).** Changing route after a repeated failure is right only once you know WHICH layer failed. MEASURED: a queue append failed twice via shell heredoc, so I switched to a scratchpad script, which failed three more times on an unrelated hook timeout - five failures, none diagnostic. Retrying the ORIGINAL route with ONE short row landed immediately, proving the transport sound and the multi-row payload at fault; the full set then landed in three batches on the route I had abandoned. **A route that fails twice FEELS broken, and a second route failing for a third unrelated reason makes that look confirmed.** Bisect the payload on the same route first: one minimal case costs one call and separates the two causes, which no route change can.
+
 5. **AFTER ONE FAILED EXACT-MATCH EDIT, CHANGE ROUTE (L638/B2145).** A patch
    whose content is settled can still cost four attempts to land. MEASURED in one
    session: a shell heredoc collapsed regex escapes TWICE, then the Edit tool

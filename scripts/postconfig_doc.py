@@ -41,12 +41,12 @@ ROOT = Path(__file__).resolve().parent.parent
 AUDIT = ROOT / "output_audit"
 LEDGER = AUDIT / "postconfig_ledger.json"
 DOC = AUDIT / "POSTCONFIG_REPORT.md"
-NOISE_FLOOR = 0.333          # B2009 PHASE-1B per-cell selection-noise floor.
-# S6-B2299 / L696: this is a DIFFERENT GRAIN from Step-1 admission, which is
-# min-trades >= 10 plus a ranked list with NO gates (owner ruling 2026-08-17,
-# B1608; tighten_breaker_block.py:383). Printing it as a Step-1 VERDICT made
-# four separate reports state a threshold the grader does not apply. Report it
-# as a DIAGNOSTIC and always name its grain.
+# S6-B2409 (owner ruling 2026-08-30): the selection-noise floor is RETIRED IN
+# ITS ENTIRETY - this renderer no longer frames any value against it, not even
+# as a diagnostic. (Its L696 history: the constant kept re-entering Step-1
+# reports as a verdict because a generator carried it; the generator now
+# carries nothing to re-supply.) Step-1 admission remains min-trades >= 10
+# plus a ranked list with NO gates (owner ruling 2026-08-17, B1608).
 
 # What each named check MEANS and what would have been alarming. A measured
 # value without its expectation is undecidable by the reader, so this mapping
@@ -155,20 +155,15 @@ def config_section(cube: str, entry: dict, art: dict) -> list[str]:
     if rank:
         top = rank[0]
         cl = top.get("is_ci_lo")
-        above = cl is not None and cl > NOISE_FLOOR
-        tail = ("A cell above the yardstick is a CANDIDATE for Step-2 "
-                "validation, not a validated edge."
-                if above else
-                "Its height is explainable by the search itself.")
         lines += [f"**STEP-1 RANKING (no gates applied - owner ruling B1608): "
                   f"best cell is_ci_lo {cl}** (is_sharpe "
                   f"{top.get('is_sharpe')}, {top.get('fires')} fires, exit "
                   f"{top.get('exit')}). Step-1 admission is min-trades >= 10 "
                   f"plus this ranked list; is_ci_lo is the RANKING KEY, not a "
-                  f"gate. DIAGNOSTIC ONLY: that value is "
-                  f"{'above' if above else 'below'} the {NOISE_FLOOR} "
-                  f"PHASE-1B per-cell selection-noise floor (B2009), a "
-                  f"DIFFERENT GRAIN. {tail}", ""]
+                  f"gate. A ranked cell is a CANDIDATE for Step-2 validation, "
+                  f"not a validated edge - its height is partly the search "
+                  f"itself. (S6-B2409: the former selection-noise-floor "
+                  f"framing is retired.)", ""]
     else:
         lines += ["**NO GRADED GRID** - step 2 produced no artifact.", ""]
 
@@ -302,8 +297,8 @@ def build(cubes: list[str] | None = None) -> str:
                 "then, green means 'nothing obviously wrong was detected', "
                 "never 'this cube is correct'."]
     out += ["", f"## Index - {len(graded)} graded config(s), newest first", "",
-            "| config | best is_ci_lo | vs floor | fires | starved | steps run |",
-            "|---|---|---|---|---|---|"]
+            "| config | best is_ci_lo | fires | starved | steps run |",
+            "|---|---|---|---|---|"]
     for c in graded:
         grid = json.loads((AUDIT / (c + "_grid_auto.json")).read_text(encoding="utf-8"))
         rank = grid.get("step1_ranking") or []
@@ -316,7 +311,6 @@ def build(cubes: list[str] | None = None) -> str:
         steps = sum(1 for v in entry.values()
                     if v.get("status") in ("DONE", "SKIPPED"))
         out.append(f"| {c} | {cl if cl is not None else '-'} | "
-                   f"{'ABOVE' if (cl is not None and cl > NOISE_FLOOR) else 'below'} | "
                    f"{top.get('fires', '-')} | {starved}/{len(res)} | "
                    f"{done}/{steps} |")
     out += ["", "## Per-config findings", ""]

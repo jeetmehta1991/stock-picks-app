@@ -14316,6 +14316,35 @@ the same text three times — "String to replace not found" — because the file
 Read view presents LF. The patch only landed when written as a scratchpad script that located the
 helper by its `def` line and replaced a LINE RANGE.
 
+**ADDENDUM (B2404): BISECT THE PAYLOAD BEFORE CHANGING ROUTE - A TRANSPORT FAILURE MAY BE CONTENT.**
+L638 says change route after ONE failed exact match. Applied literally that is right and it
+skips a cheaper question: **is the failure in the TRANSPORT or in the PAYLOAD?** MEASURED: a
+queue append failed twice through a quoted shell heredoc, so I changed route to a scratchpad
+script via the Write tool - which failed three more times on an unrelated PreToolUse hook
+timeout. **Five failures, none of them diagnostic.** The step that resolved it was returning to
+the ORIGINAL route with ONE short row: it landed immediately, proving the transport was fine and
+the fault lay in some character of the multi-row payload. The full set then landed in three small
+batches on the route I had abandoned.
+**Why the wrong inference is the natural one:** a route that fails twice FEELS broken, and
+L638 itself supplies the licence to abandon it. But two failures of one route on one payload
+cannot separate the two causes - and the second route failing for a THIRD, unrelated reason made
+the transport hypothesis look confirmed when it had never been tested.
+**The rule: on a repeated failure, bisect the PAYLOAD on the SAME route before changing route.**
+One minimal case costs a single call and answers the question the route change cannot. If the
+minimal case succeeds the content is at fault and a new route inherits the same defect; if it
+fails the transport is at fault and L638 applies as written.
+Compliance failure against CHECKLIST item 267 read with L638 - the stop-at-the-second-failed-
+attempt rule is what should have fired, and stopping means DIAGNOSE, not merely try elsewhere.
+No new item: 267 already covers it.
+Mechanism: **DETECTION is JUDGMENT-ONLY** - no scan can tell a payload fault from a transport
+fault, since both present as a failed tool call. **Durability IS taken**: this rule is in
+SKILL.md beside L638 with its own fragment pin.
+**Retroactive sweep (#237): every repeated tool failure this session.** Two. (1) This one -
+**THE INSTANCE**, five failures before a one-call bisect. (2) The earlier CRLF Edit refusals at
+B2145, where the payload WAS constant across routes and the transport genuinely was the fault -
+**SOUND**, and the contrast is the discriminator: there the same text failed on two DIFFERENT
+transports, which is evidence a bisect would have confirmed rather than overturned.
+
 **And the thing being patched had its own version of the same trap:** a regex alternation
 (`if\s+(i\s*[><=%]|_should_checkpoint)`) matched all seven sites in a direct probe and only three
 of them from inside the test. Rather than debug it, I replaced it with two explicit substring

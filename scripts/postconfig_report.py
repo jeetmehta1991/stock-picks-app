@@ -38,7 +38,8 @@ AUTO_STEPS = ("1_cube_sanity", "2_grade_with_config_params",
               "6b_equivalence_class_check")
 JUDGMENT_STEPS = ("5_adversarial_lens_review", "6_post_fix_recheck",
                   "7_implement_in_engine", "8_verdict_with_denominators")
-NOISE_FLOOR = 0.333   # B2009 selection-noise floor, per-cell
+# S6-B2409 (owner ruling 2026-08-30): the selection-noise floor is retired in
+# its entirety - no value is framed against it, here or anywhere.
 
 
 def grid_path(cube_dir: str) -> Path:
@@ -77,10 +78,6 @@ def report(cube_dir: str) -> dict:
                            "is_sharpe": r.get("is_sharpe"),
                            "fires": r.get("fires"), "exit": r.get("exit"),
                            "verdict": (r.get("admit") or {}).get("verdict")}
-            # An unmeasured value renders as None here and as "-" below; a real
-            # 0.0 renders as 0.0 (L580 - a measured zero is evidence).
-            cl = r.get("is_ci_lo")
-            out["above_floor"] = None if cl is None else cl > NOISE_FLOOR
     return out
 
 
@@ -109,13 +106,12 @@ def render(rep: dict, md: bool = False) -> list[str]:
     if rep["grid_present"]:
         b = rep.get("best") or {}
         cl = b.get("is_ci_lo")
-        floor = ("-" if cl is None else
-                 ("ABOVE" if rep.get("above_floor") else "below"))
+        # An unmeasured value renders as "-" (L580 - a measured zero is
+        # evidence; a missing measurement is not a zero).
         lines += [f"**Grid** {rep.get('config')} - carried "
                   f"{rep.get('carried')} / distinct {rep.get('distinct')}",
                   f"**Best cell** is_ci_lo "
-                  f"{'-' if cl is None else cl} ({floor} the "
-                  f"{NOISE_FLOOR} noise floor) | is_sharpe "
+                  f"{'-' if cl is None else cl} | is_sharpe "
                   f"{b.get('is_sharpe', '-')} | fires {b.get('fires', '-')} | "
                   f"exit {b.get('exit', '-')} | verdict {b.get('verdict', '-')}"]
     else:
@@ -140,8 +136,8 @@ def summary_table(cube_dirs: list[str]) -> list[str]:
     per-config cards answer one config at a time; a program spanning 35 runs
     needs the whole set in one view or the reader is left doing the joining.
     """
-    rows = ["| config | AUTO steps | judgment steps | best IS-CI-lo | vs 0.333 floor | best exit |",
-            "|---|---|---|---|---|---|"]
+    rows = ["| config | AUTO steps | judgment steps | best IS-CI-lo | best exit |",
+            "|---|---|---|---|---|"]
     for cd in cube_dirs:
         r = report(cd)
         auto = (f"{sum(1 for v in r['auto'].values() if v['status'] == 'DONE')}"
@@ -150,9 +146,8 @@ def summary_table(cube_dirs: list[str]) -> list[str]:
                f"/{len(JUDGMENT_STEPS)} pending review")
         b = r.get("best") or {}
         cl = b.get("is_ci_lo")
-        floor = "-" if cl is None else ("ABOVE" if r.get("above_floor") else "below")
         rows.append(f"| {cd} | {auto} | {jud} | {'-' if cl is None else cl} | "
-                    f"{floor} | {b.get('exit', '-')} |")
+                    f"{b.get('exit', '-')} |")
     return rows
 
 

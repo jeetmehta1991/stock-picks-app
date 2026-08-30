@@ -383,20 +383,14 @@ def main() -> int:
                         "gates_passed": sum(gates.values()),
                         "verdict": _verdict})
             if _verdict == "PASS":
-                # S6-B2379: label every qualifier ROBUST or PROVISIONAL HERE.
-                # Under the waterfall only a ROBUST cell stops the run, so a
-                # PROVISIONAL qualifier lets the program continue and, if the
-                # remaining configs yield nothing, TERMINATE NEGATIVE while a
-                # cell that cleared all six gates sits in the artifacts. It
-                # must be recorded, or that cell is lost to a later re-run.
-                # The floor is imported from its CANONICAL HOME rather
-                # than re-declared, and named at the call site so the grain is
-                # explicit: this is the Phase-1B PER-CELL yardstick, applied to
-                # a Step-2 qualifier, which is the same grain. It is NOT a
-                # Step-1 admission bar (owner ruling B1608).
-                from build_phase_1b_roster import SELECTION_NOISE_FLOOR as _NF
-                _m, _s = rc.robust_status(res.get("sharpe"), floor=_NF)
-                row["margin"], row["status"] = _m, _s
+                # S6-B2379/S6-B2409: a QUALIFIER is a combination clearing all
+                # six LIVE_GATES, full stop - the owner ruling 2026-08-30
+                # retired the selection-noise floor and the ROBUST/PROVISIONAL
+                # label in their entirety, so PASS alone is the waterfall's
+                # stop condition. The margin over the live pooled gate is
+                # recorded as a NUMBER (how far above the gate the holdout
+                # landed), never a label.
+                row["margin"] = rc.qualifier_margin(res.get("sharpe"))
         rows.append(row)
 
     rows.sort(key=lambda r: (-(r.get("gates_passed") or 0), -(r.get("fires") or 0)))
@@ -546,12 +540,12 @@ def main() -> int:
                            "age_bars_max": m.get("age_bars_max"),
                            "tail_n": m.get("tail_n")} for m in c]}
              for i, c in enumerate(ranked, 1)],
-         # S6-B2379: a sibling key so a PROVISIONAL qualifier is findable
+         # S6-B2379/S6-B2409: a sibling key so a QUALIFIER (all six gates
+         # cleared - the whole test, per owner ruling 2026-08-30) is findable
          # rather than buried among 300 rows. Empty list when there are none,
          # which is a MEASURED absence and distinguishable from the key being
          # missing entirely on an older grid (L580).
-         "provisional_qualifiers": [r for r in rows
-                                    if r.get("status") == "PROVISIONAL"],
+         "qualifiers": [r for r in rows if r.get("verdict") == "PASS"],
          "step1_combinations_carried": sum(len(c) for c in ranked),
          "step1_distinct_outcomes": len(classes),
          "results": rows}, indent=2))

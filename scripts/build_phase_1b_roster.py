@@ -55,23 +55,13 @@ from backtest.config import (STRATEGIES_DISABLED_DATA_SCARCITY,  # noqa: E402
 # S6-B1452a (B1463): the window discipline, the conditioning and the gate evaluation now
 # live in ONE place. Two files independently defining IS_END is how the B1452 lookahead
 # would recur unnoticed, and S6-OPT-196 regrades the 196-strategy backlog repeatedly.
-# S6-B1467c (owner-approved 2026-08-06) -- SELECTION-NOISE HAIRCUT.
-# B1467 measured exit-selection variance using duplicate strategies as natural
-# replicates: near-identical entries, independently chosen exits. When the choice
-# diverged (~6% of 32 pairs) the holdout Sharpe gap was 0.369 -- 74% of the 0.50 gate --
-# and it flipped one verdict outright (macd_crossover 0.588 PASS vs macd_ichimoku 0.223
-# fail, on 99.93% identical trades). A cell clearing the gate by LESS than that gap
-# cannot be distinguished from one that cleared it on exit luck, so it is reported
-# PROVISIONAL rather than PASS. This changes no gate and drops no cell: it labels how
-# much of the margin is decision-grade.
-# B2009 (D3, owner-approved): RE-MEASURED on the post-D2 roster. Mean of the
-# disagreeing near-identical twin gaps {0.450, 0.216} = 0.333 (same statistic
-# as the old 0.369; max 0.450; n=2 of 7 pairs), from
-# output_audit/b1467_exit_selection_noise.json. The S6-B1772b family worry is
-# answered by the picks themselves: neither disagreeing pair chose
-# outcome-duplicate exits (duplicate map: measure_degraded_exits, effective
-# ~17 of 26), so the empirical floor already ranges over the effective family.
-SELECTION_NOISE_FLOOR = 0.333
+# S6-B1467c/B2009 HISTORY: a selection-noise floor (the mean holdout-Sharpe
+# gap between near-identical twins whose exits were chosen independently,
+# from output_audit/b1467_exit_selection_noise.json) once split gate-clearing
+# cells into ROBUST/PROVISIONAL. S6-B2409 (owner ruling 2026-08-30): that
+# floor and the split are RETIRED IN THEIR ENTIRETY - clearing the six
+# LIVE_GATES is qualification, full stop. The per-cell margin over the live
+# gate remains a reported number (roster_core.qualifier_margin).
 
 from roster_core import (                                    # noqa: E402
     IS_START, IS_END, HO_START, HO_END, WINSORIZE, COST_BPS, MIN_N, FDR_Q, JACCARD,
@@ -419,8 +409,8 @@ def main() -> int:
     A("")
     A(f"## THE ROSTER - {len(kept)} cells")
     A("")
-    A("| # | Strategy | Dir | Status | Cube | Tkrs | Exit | IS Shrp | HO Shrp | margin | HO n | Exp | WR | PF | Payoff | Mirror |")
-    A("|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|")
+    A("| # | Strategy | Dir | Cube | Tkrs | Exit | IS Shrp | HO Shrp | margin | HO n | Exp | WR | PF | Payoff | Mirror |")
+    A("|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|")
     # B1974: display sort - same class, no decision rides on it, fixed
     # anyway so the file has ONE definition of the ranking key (#226).
     for i, r in enumerate(sorted(kept,
@@ -440,39 +430,26 @@ def main() -> int:
         # per-regime 0.5. The crossed-bar class, inside the roster builder.
         # B2048 (S6-B1972b): a kept cell passed the Sharpe gate, so an absent
         # holdout Sharpe here is a broken contract - it must FAIL LOUD, not
-        # coalesce to 0 and silently print margin -1.0 as PROVISIONAL.
+        # coalesce to 0 and silently print margin -1.0.
         if h["sharpe"] is None:
             raise ValueError(
                 f"gate-passing cell {r['strategy']}|{r['direction']} carries "
                 "no holdout sharpe - the kept-population contract broke")
-        # S6-B2379: one definition, in roster_core. The formula used to live
-        # only here, so the grid producer could not label a qualifier - and
-        # the waterfall's stop condition IS that label.
-        from roster_core import robust_status as _robust_status
-        margin, _st = _robust_status(h["sharpe"],
-                                     floor=SELECTION_NOISE_FLOOR)
-        status = "ROBUST" if _st == "ROBUST" else "**PROVISIONAL**"
-        r["margin"], r["status"] = round(margin, 3), status.strip("*")
-        A(f"| {i} | `{r['strategy']}` | {r['direction']} | {status} | {r['cube']} | {r['n_tickers']} | "
+        # S6-B2379/S6-B2409: one definition, in roster_core; margin is a
+        # reported number only - the ROBUST/PROVISIONAL split is retired
+        # (owner ruling 2026-08-30).
+        from roster_core import qualifier_margin as _qualifier_margin
+        margin = _qualifier_margin(h["sharpe"])
+        r["margin"] = margin
+        A(f"| {i} | `{r['strategy']}` | {r['direction']} | {r['cube']} | {r['n_tickers']} | "
           f"`{r['exit']}` | {fmt(r['is_sharpe'])} | {fmt(h['sharpe'])} | {margin:+.3f} | {h['n']} | "
           f"{fmt(h['expectancy'])} | {fmt(h['win_rate'],5,3)} | {fmt(h['profit_factor'])} | "
           f"{fmt(h['payoff'])} | {mir} |")
     A("")
-    _rob = [r for r in kept if r.get("status") == "ROBUST"]
-    _prov = [r for r in kept if r.get("status") == "PROVISIONAL"]
-    A(f"**Status (S6-B1467c, owner-approved).** ROBUST **{len(_rob)}** / "
-      f"PROVISIONAL **{len(_prov)}**. A cell is ROBUST only if it clears the "
-      f"{PC['min_sharpe_overall']} Sharpe gate by more than the measured "
-      f"selection-noise floor of {SELECTION_NOISE_FLOOR}. That floor is the holdout-Sharpe gap "
-      "observed between duplicate strategies with ~identical entries whose exits were chosen "
-      "independently (B1467) -- i.e. the amount of a cell's margin that the exit choice alone "
-      "can account for. PROVISIONAL does NOT mean the cell failed: it cleared every live gate. "
-      "It means its margin is smaller than the pipeline's own decision noise, so PASS overstates "
-      "the certainty.")
-    A("")
-    A("**Do not read PROVISIONAL as \"12 of 13 are luck\".** Selection diverged in only ~6% of "
-      "the 32 replicate pairs, so the calibrated exposure is **roughly ONE roster cell** placed "
-      "by exit luck -- not twelve. The label marks which cells COULD be affected, not which are.")
+    A("**Qualification (S6-B2409, owner ruling 2026-08-30).** A cell on this roster cleared "
+      "all six live gates - that IS qualification. The former ROBUST/PROVISIONAL split "
+      "against a selection-noise floor is retired in its entirety; `margin` reports how far "
+      "the holdout Sharpe cleared the live pooled gate, as a number, gating nothing.")
     A("")
     A("## Symmetric short mirrors")
     A("")

@@ -281,46 +281,34 @@ def evaluate(pnl: pd.Series, hold: pd.Series, *, min_n: int | None = None,
                                and all(_evaluable.values()))}
 
 
-# S6-B2379: ONE definition of the ROBUST/PROVISIONAL call. It lived only in
-# build_phase_1b_roster.py:448-450, so the grid producer could not label a
-# qualifier at all - and under the waterfall's ROBUST-only stopping rule that
-# label decides whether the program stops or keeps spending. A second
-# hand-copy would be a fourth duplicate that drifts at the next floor change,
-# which is the class L536/#271 records.
-# NO FLOOR CONSTANT HERE, deliberately. test_b2300 guards roster_core against
-# carrying it, and that guard is right: Step 1 imports this module, and the
-# selection-noise floor is the PHASE-1B PER-CELL grain. A constant at the wrong
-# grain is quotable at the wrong grain (L664), which is how a per-cell yardstick
-# ends up gating Step-1 admission. The arithmetic lives here; the FLOOR is the
-# caller's, and passing it is what makes each call site declare its grain.
+# S6-B2379: ONE definition of the qualifier margin (it lived only in
+# build_phase_1b_roster.py, so the grid producer could not report it at all).
+# S6-B2409 (owner ruling 2026-08-30): the selection-noise floor and the
+# ROBUST/PROVISIONAL split it defined are RETIRED IN THEIR ENTIRETY - a
+# combination that clears all six LIVE_GATES QUALIFIES, with no further
+# margin requirement, and the waterfall's stop condition is that
+# qualification. The margin over the live pooled gate remains a REPORTED
+# number (how far above the gate the holdout landed) - never a gate, never
+# a label. NO FLOOR CONSTANT HERE, still deliberate: test_b2300 guards this
+# module against carrying one (L664 - a constant at the wrong grain is
+# quotable at the wrong grain).
 
 
-def robust_status(holdout_sharpe, *, floor: float):
-    """(margin, status) for a cell that has already cleared the gates.
+def qualifier_margin(holdout_sharpe):
+    """Holdout Sharpe's distance above the LIVE pooled gate, for a cell that
+    has already cleared the gates. REPORTING ONLY - no floor, no label
+    (S6-B2409: owner ruling 2026-08-30 retired the ROBUST/PROVISIONAL split).
 
-    margin is the holdout Sharpe's distance above the LIVE pooled gate. A cell
-    clearing by LESS than `floor` cannot be told from one that cleared on
-    exit-selection luck: the floor is the mean holdout-Sharpe gap between
-    near-identical twins that independently chose different exits (B2009, from
-    output_audit/b1467_exit_selection_noise.json). `floor` is REQUIRED - there
-    is no default, so no caller can inherit a grain it did not choose.
-
-    Returns (None, None) when the Sharpe is absent, so an UNMEASURED cell is
-    never silently labelled PROVISIONAL - a missing measurement and a measured
+    Returns None when the Sharpe is absent, so an UNMEASURED cell is never
+    rendered as a measured shortfall - a missing measurement and a measured
     shortfall are different facts (L580).
     """
     if holdout_sharpe is None:
-        return None, None
-    # Decide on the ROUNDED margin, which is also the value reported. Deciding
-    # on the raw float while REPORTING the rounded one means a cell displaying
-    # exactly the floor can be labelled PROVISIONAL, because gate + floor -
-    # gate is a hair BELOW floor in binary float. The pin caught this on its
-    # first run. A reader must never see a number that contradicts the label
-    # beside it. (The floor's value is deliberately not written here: the grain
-    # guard forbids this module carrying it, comments included - and a
-    # presence-grep cannot tell a comment from code, L582.)
-    margin = round(float(holdout_sharpe) - PC["min_sharpe_overall"], 3)
-    return margin, ("ROBUST" if margin >= floor else "PROVISIONAL")
+        return None
+    # Rounded before it is returned, so the number a reader sees IS the number
+    # any downstream comparison would use (L716: decide on the displayed
+    # value, never on a raw float the display contradicts).
+    return round(float(holdout_sharpe) - PC["min_sharpe_overall"], 3)
 
 
 def in_sample(g: pd.DataFrame) -> pd.DataFrame:

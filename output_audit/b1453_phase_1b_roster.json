@@ -81,8 +81,7 @@
       "mirror": "xs_momentum_bottom_decile_short",
       "asym_signals": [],
       "mirror_registered": true,
-      "margin": 0.624,
-      "status": "ROBUST"
+      "margin": 0.624
     },
     {
       "cube": "R5",
@@ -121,8 +120,7 @@
       "mirror": "xs_momentum_bottom_decile_short",
       "asym_signals": [],
       "mirror_registered": true,
-      "margin": 0.209,
-      "status": "PROVISIONAL"
+      "margin": 0.209
     },
     {
       "cube": "R5",
@@ -161,8 +159,7 @@
       "mirror": "52w_low_breakdown_pullback_short",
       "asym_signals": [],
       "mirror_registered": true,
-      "margin": 0.281,
-      "status": "PROVISIONAL"
+      "margin": 0.281
     }
   ],
   "all_rows": [
@@ -203,8 +200,7 @@
       "mirror": "52w_low_breakdown_pullback_short",
       "asym_signals": [],
       "mirror_registered": true,
-      "margin": 0.281,
-      "status": "PROVISIONAL"
+      "margin": 0.281
     },
     {
       "cube": "R5",
@@ -7035,8 +7031,7 @@
       "mirror": "xs_momentum_bottom_decile_short",
       "asym_signals": [],
       "mirror_registered": true,
-      "margin": 0.624,
-      "status": "ROBUST"
+      "margin": 0.624
     },
     {
       "cube": "R5",
@@ -7075,8 +7070,7 @@
       "mirror": "xs_momentum_bottom_decile_short",
       "asym_signals": [],
       "mirror_registered": true,
-      "margin": 0.209,
-      "status": "PROVISIONAL"
+      "margin": 0.209
     },
     {
       "cube": "R5",

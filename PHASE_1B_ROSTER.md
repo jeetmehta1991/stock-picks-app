@@ -62,15 +62,13 @@ The cell count is NOT the number of independent bets. De-dup compares (ticker, e
 
 ## THE ROSTER - 3 cells
 
-| # | Strategy | Dir | Status | Cube | Tkrs | Exit | IS Shrp | HO Shrp | margin | HO n | Exp | WR | PF | Payoff | Mirror |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 1 | `xs_momentum_top_decile` | long | ROBUST | R5 | 544 | `time_stop_10d` |   0.81 |   1.62 | +0.624 | 50 |   2.23 | 0.660 |   2.34 |   1.20 | `xs_momentum_bottom_decile_short` |
-| 2 | `52w_high_breakout_pullback_long` | long | **PROVISIONAL** | R5 | 544 | `breakeven_plus_trail` |   0.56 |   1.28 | +0.281 | 50 |   7.83 | 0.420 |   4.38 |   6.04 | `52w_low_breakdown_pullback_short` |
-| 3 | `xs_momentum_with_smart_money_long` | long | **PROVISIONAL** | R5 | 544 | `time_stop_20d` |   0.69 |   1.21 | +0.209 | 162 |   5.63 | 0.593 |   2.94 |   2.02 | `xs_momentum_bottom_decile_short` |
+| # | Strategy | Dir | Cube | Tkrs | Exit | IS Shrp | HO Shrp | margin | HO n | Exp | WR | PF | Payoff | Mirror |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 1 | `xs_momentum_top_decile` | long | R5 | 544 | `time_stop_10d` |   0.81 |   1.62 | +0.624 | 50 |   2.23 | 0.660 |   2.34 |   1.20 | `xs_momentum_bottom_decile_short` |
+| 2 | `52w_high_breakout_pullback_long` | long | R5 | 544 | `breakeven_plus_trail` |   0.56 |   1.28 | +0.281 | 50 |   7.83 | 0.420 |   4.38 |   6.04 | `52w_low_breakdown_pullback_short` |
+| 3 | `xs_momentum_with_smart_money_long` | long | R5 | 544 | `time_stop_20d` |   0.69 |   1.21 | +0.209 | 162 |   5.63 | 0.593 |   2.94 |   2.02 | `xs_momentum_bottom_decile_short` |
 
-**Status (S6-B1467c, owner-approved).** ROBUST **1** / PROVISIONAL **2**. A cell is ROBUST only if it clears the 1.0 Sharpe gate by more than the measured selection-noise floor of 0.333. That floor is the holdout-Sharpe gap observed between duplicate strategies with ~identical entries whose exits were chosen independently (B1467) -- i.e. the amount of a cell's margin that the exit choice alone can account for. PROVISIONAL does NOT mean the cell failed: it cleared every live gate. It means its margin is smaller than the pipeline's own decision noise, so PASS overstates the certainty.
-
-**Do not read PROVISIONAL as "12 of 13 are luck".** Selection diverged in only ~6% of the 32 replicate pairs, so the calibrated exposure is **roughly ONE roster cell** placed by exit luck -- not twelve. The label marks which cells COULD be affected, not which are.
+**Qualification (S6-B2409, owner ruling 2026-08-30).** A cell on this roster cleared all six live gates - that IS qualification. The former ROBUST/PROVISIONAL split against a selection-noise floor is retired in its entirety; `margin` reports how far the holdout Sharpe cleared the live pooled gate, as a number, gating nothing.
 
 ## Symmetric short mirrors
 

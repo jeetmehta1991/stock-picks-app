@@ -4,8 +4,9 @@
 # Strategy Optimisation Plan — Phase 1 (tightening) and Phase 2 (loosening)
 
 **Population:** 207 strategies (`222 registered - 3 Phase-1B roster - 12 disabled`).
-**Current roster:** 2 cells / 3 strategies, ROBUST 2 / PROVISIONAL 0.
-**Purpose of this programme:** the roster is 2 cells. Optimisation is not an enhancement; it is the
+**Current roster:** 3 cells / 3 distinct strategies, all QUALIFIERS (S6-B2409, owner ruling
+2026-08-30, retired the ROBUST/PROVISIONAL split - see PHASE_1B_ROSTER.md).
+**Purpose of this programme:** the roster is 3 cells. Optimisation is not an enhancement; it is the
 only remaining path to a deployable Phase 1B.
 
 ---
@@ -285,14 +286,14 @@ combinations free inside each. Costing by combinations would have overstated the
 - Every number in the report carries its funnel stage (L295).
 - Sensitivity curve published for any threshold that ends up chosen (L288 / #175).
 - Effective breadth (`N_eff`) reported for the resulting roster, not just the count (#175).
-- PROVISIONAL/ROBUST status applied against the measured selection-noise floor (S6-B1467c; 0.333 at the per-cell twin grain, B2009). **Family-pooled grains measured B2068/B2080: iid floor 0.088 and entry-day BLOCK floor 0.2245 at the 62,064-trade EMA pool; SMC pool 10,862 trades, block floor 0.3115 (b2068/b2081 artifacts)** - the A1 design's instrument basis; the 0.333 remains the PER-CELL yardstick.
+- ~~PROVISIONAL/ROBUST status applied against the measured selection-noise floor~~ **RETIRED (S6-B2409, owner ruling 2026-08-30): the floor and the split are removed in their entirety - clearing the six live gates IS qualification.** Historical measurements preserved for lineage: per-cell twin grain 0.333 (S6-B1467c/B2009); family-pooled grains B2068/B2080 (iid 0.088, entry-day block 0.2245 at the 62,064-trade EMA pool; SMC pool 10,862 trades, block 0.3115 - b2068/b2081 artifacts).
 - Any strategy whose tightened config differs from its shipped gates is a **strategy change** and
   needs owner approval before it is written to `screener.py`.
 
 ### 2.6 Expected outcome, stated honestly
 The R6b base rate is 4/13. Steps 2 and 4 are designed to beat it, but **the realistic expectation is
 that a minority of the 41 convert** -- and at the Sharpe >= 1.0 bar, possibly very few. If Phase 1
-delivers 3-5 additional ROBUST cells that is a doubling of the roster and a success. If it delivers
+delivers 3-5 additional qualifying cells that is a doubling of the roster and a success. If it delivers
 zero, that is also an answer: it says the library's edges are not recoverable by threshold tuning,
 and Phase 2 or a new strategy class is required.
 
@@ -867,19 +868,18 @@ config 2 then 3 then terminate."*
 **THE RULE.** Configs run SEQUENTIALLY in the mechanical rank order. After each config's cube is
 graded, evaluate its 300 combinations:
 
-1. **Config 1 = sw50sp50.** Run the config **IN ITS ENTIRETY** - all 300 combinations graded; the waterfall never stops mid-config. Then: if any combination qualifies **AND is ROBUST** -> **STOP. Configs 2 and 3 are not run.**
-2. Otherwise **config 2 = sw30sp150**, again in its entirety. If any qualifies AND is ROBUST -> STOP.
-3. Otherwise **config 3 = sw50sp20**, in its entirety. If any qualifies AND is ROBUST -> admit it; otherwise **TERMINATE** - `smc_breaker_block_long` closes NEGATIVE for Phase 1B and the program moves to the next of the 207-strategy optimisation backlog.
+1. **Config 1 = sw50sp50.** Run the config **IN ITS ENTIRETY** - all 300 combinations graded; the waterfall never stops mid-config. Then: if any combination qualifies -> **STOP. Configs 2 and 3 are not run.** *(2026-08-30 amendment, S6-B2409: the original "AND is ROBUST" condition is retired - see the STOPPING RULE section below.)*
+2. Otherwise **config 2 = sw30sp150**, again in its entirety. If any qualifies -> STOP.
+3. Otherwise **config 3 = sw50sp20**, in its entirety. If any qualifies -> admit it; otherwise **TERMINATE** - `smc_breaker_block_long` closes NEGATIVE for Phase 1B and the program moves to the next of the 207-strategy optimisation backlog.
    `smc_breaker_block_long` does not enter Phase 1B and its optimisation-backlog entry closes NEGATIVE.
 
 **WHAT "QUALIFY" MEANS, IN CODE - not paraphrased.** `tighten_breaker_block.py:373-383`: a row gets
 `verdict = "PASS"` iff `all(gates.values())` over the six `LIVE_GATES` (`roster_core.py:60-61`:
 pooled_sharpe, profit_factor, sortino, psr, min_trades_holdout, min_trades_full_period). Anything that
 returns `None` from `evaluate` never reaches the gate branch at all and is `BELOW_POWER_FLOOR`.
-`build_phase_1b_roster.py:449` then labels an admitted cell **ROBUST** if its margin clears the 0.333
-selection-noise floor and **PROVISIONAL** otherwise - and the roster's own text is explicit that
-*"PROVISIONAL does NOT mean the cell failed: it cleared every live gate."* **So admission == PASS;
-ROBUST/PROVISIONAL is a quality LABEL applied after admission, not a further gate.**
+**Qualification is that PASS, full stop** (S6-B2409, owner ruling 2026-08-30 - the former
+ROBUST/PROVISIONAL label against the 0.333 selection-noise floor is retired in its entirety;
+`roster_core.qualifier_margin` reports the margin over the live gate as a number, gating nothing).
 
 **COST PROFILE.** Best case 18.7h (config 1 qualifies). Then 36.0h. Worst case 80.0h (all three run
 and none qualifies). The waterfall is therefore **never more expensive than the flat top-3 slate and
@@ -899,18 +899,48 @@ program. See the DECISIONS PENDING block below - none of these is resolved here.
 
 ### DECISIONS RULED - ALL SIX (owner, 2026-08-29, S6-B2375)
 
-**D1 - RULED: ROBUST.** *"D1 robust that said the config runs to be run in its entirety."* Two
-things: the stop condition is **ROBUST, not bare PASS** - a qualifier whose holdout-Sharpe margin is
-below the 0.333 selection-noise floor is PROVISIONAL and does **not** stop the waterfall; and **a
-config always runs to completion** - all 300 combinations are graded before the stop test, so the
-waterfall never halts mid-config. This is STRICTER than admission: a cell can clear all six gates and
-still not stop the run.
+**D1 - RULED: ROBUST. [SUPERSEDED 2026-08-30, S6-B2409 - preserved as history.]** *"D1 robust that
+said the config runs to be run in its entirety."* Two things: the stop condition was **ROBUST, not
+bare PASS** - a qualifier whose holdout-Sharpe margin was below the 0.333 selection-noise floor was
+PROVISIONAL and did **not** stop the waterfall; and **a config always runs to completion** - all
+300 combinations are graded before the stop test, so the waterfall never halts mid-config.
+**The 2026-08-30 ruling retired the ROBUST half in its entirety** (*"noise floor is 0.333 meaning
+that the result has to be more than 1.333 in the holdout period to qualify. Remove the 0.333
+selection-noise floor requirement in its entirety"*): the stop condition is now bare PASS over the
+six gates. The run-to-completion half of D1 STANDS. Note for the record (L633, disagreement stated
+once): D2's no-BH-FDR ruling was recorded as partly weighing on the D1 ROBUST hurdle; with that
+hurdle retired, `psr >= 0.95` is the remaining significance-style control on a qualifier.
 
-> **STATED CONSEQUENCE, flagged not resolved.** If a config yields a PROVISIONAL qualifier and the
-> two after it yield nothing, the program terminates NEGATIVE **while holding a cell that cleared
-> every live gate.** That is the ruling working as intended - the margin cannot be told from exit
-> luck - but the disposition of such a cell is not written anywhere. It should be RECORDED in the
-> Step-2 output rather than discarded, so a later re-run has it. **Not resolved here.**
+> **CONSEQUENCE RESOLVED BY THE SAME RULING.** The flagged case - a program terminating NEGATIVE
+> while holding a gate-clearing cell - can no longer occur: a gate-clearing cell now stops the
+> waterfall itself. Config 1's qualifier (retained by ruling 2 of 2026-08-30, S6-B2410) closes the
+> question S6-B2407 raised.
+
+### DECISIONS RULED 2026-08-30 (S6-B2409 / S6-B2410) - the floor retired; the qualifier retained
+
+**RULING 1 (S6-B2409), owner verbatim:** *"noise floor is 0.333 meaning that the result has to be
+more than 1.333 in the holdout period to qualify. Remove the 0.333 selection-noise floor
+requirement in its entirety."* Implemented same day: `roster_core.robust_status` ->
+`qualifier_margin` (margin as a plain number, no floor, no label); `SELECTION_NOISE_FLOOR` deleted
+from the roster builder; the grid payload's `provisional_qualifiers` key -> `qualifiers` (every
+PASS row); the postconfig renderers no longer frame any value against a floor; pins rewritten
+(test_b2409_*). My prior recommendation of the floor as the grid-stage selection-noise control is
+recorded as overruled (L633 - stated once, ruling governs).
+
+**RULING 2 (S6-B2410), owner verbatim:** *"Lets retain the break_pct_max 0.02, close_mitigation
+True, age_bars_max None, exit time_stop_10d, tail_n (20) combination."* That is config 1
+(sw50sp50)'s qualifying parameter set at its tail_n=20 member - `smc_breaker_block_long`, P1
+swing_length=50, P6 span=50, close_mitigation=True, break_pct_max=0.02, age_bars_max=None,
+tail_n=20, exit `time_stop_10d`; holdout sharpe 1.152, profit factor 1.937, sortino 1.925, psr
+1.0, holdout_n 41, full_period_n 180 (S6-B2399 grid). The three passers were ONE parameter set
+differing only in tail_n {10, 20, 2}; the owner's pick resolves that tie explicitly (#165 - no
+criterion of mine).
+
+**CONSEQUENCE UNDER THE AMENDED WATERFALL:** config 1 holds a qualifier, so **the stop condition
+is MET - configs 2 and 3 are not run** and `smc_breaker_block_long` closes POSITIVE for Step 2.
+S6-B2407 (the PROVISIONAL-worth question) closes as mooted. Engine implementation of the retained
+combination (battery judgment step 7_implement_in_engine) is ticketed S6-B2411 - the retention
+ruling approves the parameter set; the wiring is follow-on work, not auto-executed.
 
 **D2 - RULED: no BH-FDR.** *"this doesn't apply. Apply config runs we will analyze the 300
 combinations and select the one that passes all gates. If its multiple combinations, we select the
@@ -1480,26 +1510,25 @@ grids on step1_ranking[0].is_ci_lo:
 Recorded so a later widening need not re-derive them: sw30sp20 (+0.816, first holder of a
 triplicate signature - sw30sp50 and sw30sp100 collapse into it) and sw50sp9 (+0.724).
 
-**THE STOPPING RULE (owner, D1).** Each config runs **IN ITS ENTIRETY** - all 300 combinations
-graded; the waterfall never halts mid-config. Then, and only then: if any combination **clears all
-six gates AND is ROBUST**, STOP - the remaining configs are not run. A **PROVISIONAL** qualifier
-does NOT stop the run. If none of the three yields a ROBUST qualifier, **TERMINATE**:
-smc_breaker_block_long closes NEGATIVE for Phase 1B and the program moves to the next of the
-207-strategy backlog (owner, D6 - the METHOD is not on trial).
+**THE STOPPING RULE (owner, D1; AMENDED by owner ruling 2026-08-30, S6-B2409).** Each config runs
+**IN ITS ENTIRETY** - all 300 combinations graded; the waterfall never halts mid-config. Then, and
+only then: if any combination **clears all six gates**, STOP - the remaining configs are not run.
+If none of the three yields a qualifier, **TERMINATE**: smc_breaker_block_long closes NEGATIVE for
+Phase 1B and the program moves to the next of the 207-strategy backlog (owner, D6 - the METHOD is
+not on trial).
 
-**ROBUST vs PROVISIONAL** is computed by roster_core.robust_status(holdout_sharpe, floor=...), the
-ONE definition (S6-B2379; it previously lived only in the roster builder, so the grid producer
-could not label a qualifier at all). margin = holdout_sharpe minus min_sharpe_overall; ROBUST iff
-margin >= 0.333. **The floor is a REQUIRED argument with no default**, deliberately: 0.333 is the
-Phase-1B PER-CELL selection-noise grain, Step 1 imports roster_core, and a constant at the wrong
-grain is quotable at the wrong grain (L664). **roster_core does not carry the constant** -
-test_b2300 forbids it - so each caller names its own floor.
-
-**WHY 0.333, and what it is not.** It is the mean holdout-Sharpe gap between near-identical twins
-that independently chose DIFFERENT exits, from output_audit/b1467_exit_selection_noise.json (B2009;
-the disagreeing pairs were 0.450 and 0.216). A cell clearing the gate by less than that cannot be
-distinguished from one that cleared it on exit-selection luck. It is **NOT** a Step-1 admission bar
-(owner ruling B1608).
+**THE 2026-08-30 AMENDMENT (S6-B2409).** The original D1 stop condition was *qualifies AND is
+ROBUST* - ROBUST meaning the holdout Sharpe cleared the 1.0 gate by more than the 0.333
+selection-noise floor (i.e. holdout > 1.333). The owner retired that floor and the
+ROBUST/PROVISIONAL split **in their entirety**: clearing the six gates IS qualification and IS the
+stop condition. In code, roster_core.qualifier_margin(holdout_sharpe) reports the margin over the
+live pooled gate as a plain number - no floor argument, no label - and the grid payload's
+qualifier key is `qualifiers` (every PASS row). The old mechanics (robust_status, the floor
+constant, the provisional_qualifiers key) are removed and pinned removed
+(test_b2409_floor_retired_margin_measures_live_gate). Applied retroactively to config 1: its 3
+gate-clearing combinations (one parameter set, tail_n variants) are QUALIFIERS, so **the waterfall
+stop condition is MET at config 1 and configs 2/3 are not run**. The owner retained the tail_n=20
+member (ruling 2 of the same date, S6-B2410).
 
 **NO separate baseline run is needed** (L423) - all six gates are ABSOLUTE thresholds, so admission
 depends on a candidate's own metrics. Valid on the appended universe because `--cube-isolation`

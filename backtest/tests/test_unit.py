@@ -22924,17 +22924,20 @@ def test_b2008_tiers_are_explicit_and_the_forks_are_dead():
 
 
 
-def test_b2009_noise_floor_is_derived_from_the_artifact():
-    """B2009 (D3 / S6-B1772b): the floor is the artifact's number, not prose.
+def test_b2409_floor_retired_margin_measures_live_gate():
+    """S6-B2409 (owner ruling 2026-08-30): the selection-noise floor is RETIRED.
 
-    0.369 sat as a literal while its input artifact was regenerated under
-    D2 grading - the floor is now pinned EQUAL to the statistic recomputed
-    from the artifact (mean |dSharpe| of disagreeing near-identical pairs),
-    so a regeneration that moves the gaps fails this test instead of
-    leaving a stale literal in the owner-facing roster.
+    Its predecessor (test_b2009) pinned SELECTION_NOISE_FLOOR equal to the
+    statistic recomputed from output_audit/b1467_exit_selection_noise.json.
+    The owner retired the floor and the ROBUST/PROVISIONAL split in their
+    entirety: qualification is clearing the six LIVE_GATES, full stop. What
+    stays pinned: (a) the retirement STAYS retired - no floor constant in the
+    builder, no robust_status in roster_core - and (b) the reported margin is
+    still measured against the LIVE pooled gate the cell actually cleared
+    (the crossed-bar class, B2009's surviving property).
     """
     import importlib.util as _iu
-    import json as _json
+    import inspect as _insp2
     import pathlib as _p
     import sys as _sys
 
@@ -22942,44 +22945,29 @@ def test_b2009_noise_floor_is_derived_from_the_artifact():
     if str(root / "scripts") not in _sys.path:
         _sys.path.insert(0, str(root / "scripts"))
     spec = _iu.spec_from_file_location(
-        "bpr_b2009", root / "scripts" / "build_phase_1b_roster.py")
+        "bpr_b2409", root / "scripts" / "build_phase_1b_roster.py")
     m = _iu.module_from_spec(spec)
     spec.loader.exec_module(m)
 
-    art = root / "output_audit" / "b1467_exit_selection_noise.json"
-    d = _json.loads(art.read_text(encoding="utf-8"))
-    tier = next(v for k, v in d["tiers"].items() if "NEAR" in k.upper())
-    gaps = [abs(p["d_sharpe"]) for p in tier
-            if isinstance(p, dict) and p.get("exit_a") != p.get("exit_b")]
-    assert gaps, ("no disagreeing pairs in the artifact - the floor has no "
-                  "basis and the literal is untestable; investigate before "
-                  "trusting either")
-    expect = round(sum(gaps) / len(gaps), 3)
-    assert abs(m.SELECTION_NOISE_FLOOR - expect) < 1e-9, (
-        f"SELECTION_NOISE_FLOOR={m.SELECTION_NOISE_FLOOR} but the artifact "
-        f"derives {expect} from gaps {sorted(gaps)} - the literal went stale "
-        "against its own input (the 0.369 incident, pinned)")
-
-    # the margin bar is the LIVE overall gate, not the per-regime 0.5
-    import source_text as st
-    code = st.code_only(root / "scripts" / "build_phase_1b_roster.py")
-    # B2048: the pinned line dropped its coalescing (S6-B1972b - an
-    # absent sharpe now fails loud instead of printing margin -1.0);
-    # the property this pin protects is the BAR, unchanged.
-    # S6-B2391: the formula MOVED to roster_core.robust_status so the grid
-    # producer could label a qualifier without a fourth hand-copy. This pin
-    # asserted its literal TEXT in this file; re-anchored onto the ARITHMETIC
-    # wherever it lives, which is what the assertion always meant - the margin
-    # must be measured against the bar the cell actually cleared.
-    import inspect as _insp2
+    # (a) retired stays retired
+    assert not hasattr(m, "SELECTION_NOISE_FLOOR"), (
+        "SELECTION_NOISE_FLOOR is back in build_phase_1b_roster - the owner "
+        "ruling 2026-08-30 (S6-B2409) retired the floor in its entirety")
     import roster_core as _rc9
-    _fsrc = _insp2.getsource(_rc9.robust_status)
+    assert not hasattr(_rc9, "robust_status"), (
+        "robust_status is back in roster_core - the ROBUST/PROVISIONAL split "
+        "was retired in its entirety (S6-B2409, owner ruling 2026-08-30)")
+
+    # (b) the margin is measured against the LIVE pooled gate, wherever the
+    # formula lives - the crossed-bar class (B2009), which survives the
+    # retirement because it is about the BAR, not the floor
+    _fsrc = _insp2.getsource(_rc9.qualifier_margin)
     assert 'PC["min_sharpe_overall"]' in _fsrc, (
-        "the ROBUST margin must be measured against the LIVE pooled gate the "
-        "cell actually cleared - the crossed-bar class (B2009)")
+        "the qualifier margin must be measured against the LIVE pooled gate "
+        "the cell actually cleared - the crossed-bar class (B2009)")
     _bpr_src = (root / "scripts" / "build_phase_1b_roster.py").read_text(
         encoding="utf-8")
-    assert "robust_status" in _bpr_src, (
+    assert "qualifier_margin" in _bpr_src, (
         "the roster builder must CALL the shared formula, not re-derive it")
 
 
@@ -25182,6 +25170,8 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
          "L695 addendum (B2397): the delta is checked, the base is not"),
         ("A CODE CLAIM AND AN ARTIFACT CLAIM HAVE DIFFERENT DENOMINATORS",
          "L717: code reach spliced onto artifact precision"),
+        ("BISECT THE PAYLOAD BEFORE CHANGING ROUTE - A TRANSPORT FAILURE MAY BE CONTENT",
+         "L638 addendum (B2404): diagnose the layer before changing it"),
     ):
         if frag not in discipline_text:
             missing.append(f"execution-discipline lost [{why}]: {frag!r}")
@@ -25207,7 +25197,7 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # B2316: 54 -> 88 with the S6-B2245 batch-1 fragments. This number is the
     # pin's own must-FIRE arm - if a doc edit silently drops fragments, the
     # gutted count falls and this assertion catches the shrinkage.
-    assert len(gutted) == 117, gutted
+    assert len(gutted) == 118, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -26166,7 +26156,9 @@ def test_b2198_battery_result_is_rendered_not_only_written(tmp_path, monkeypatch
         encoding="utf-8")
     rep = pcr.report("output_x")
     assert rep["all_auto_done"] is True
-    assert rep["above_floor"] is False, "0.123 is below the 0.333 floor"
+    # S6-B2409: the report carries NO floor field - the selection-noise floor
+    # is retired in its entirety (owner ruling 2026-08-30)
+    assert "above_floor" not in rep, "the retired floor field is back"
     body = "\n".join(pcr.render(rep))
     for step in pcr.AUTO_STEPS + pcr.JUDGMENT_STEPS:
         assert step in body, f"report card omitted {step}"
@@ -26177,7 +26169,8 @@ def test_b2198_battery_result_is_rendered_not_only_written(tmp_path, monkeypatch
     assert pcr.all_cube_dirs() == ["output_x"]
     summ = chr(10).join(pcr.summary_table(pcr.all_cube_dirs()))
     assert "output_x" in summ and "5/5 DONE" in summ and "0.123" in summ
-    assert "below" in summ, "a sub-floor cell must say so in the summary row"
+    # S6-B2409: no floor column in the summary - the value stands alone
+    assert "floor" not in summ, "the retired floor framing is back in the summary"
 
     # the ABSENT direction: an unrecorded config must be reported as such
     missing = pcr.report("output_never_ran")
@@ -27385,12 +27378,16 @@ def test_b2299_step1_report_states_the_criterion_not_a_floor():
     mod = _ilu.module_from_spec(spec)
     spec.loader.exec_module(mod)
 
-    # (a) the constant survives but must carry its GRAIN in the source
+    # (a) S6-B2409 (owner ruling 2026-08-30): the floor is RETIRED IN ITS
+    # ENTIRETY - no constant, no 0.333 framing, not even as a diagnostic.
+    # (Supersedes the B2299-era decision that the diagnostic survives.)
     text = src.read_text(encoding='utf-8')
-    assert 'NOISE_FLOOR = 0.333' in text, 'the diagnostic yardstick was removed entirely'
-    assert 'PHASE-1B' in text, (
-        'NOISE_FLOOR must name the grain it belongs to - an unqualified 0.333'
-        ' beside Step-1 output is what caused L696')
+    assert 'NOISE_FLOOR =' not in text, (
+        'the selection-noise floor constant is back in postconfig_doc - owner'
+        ' ruling 2026-08-30 (S6-B2409) retired it in its entirety')
+    assert '0.333' not in text, (
+        'a 0.333 literal re-entered postconfig_doc - the constant the owner'
+        ' corrected out four times (L696) and then retired (S6-B2409)')
 
     # (b) the renderer must NOT emit a Step-1 verdict, in either branch
     assert 'VERDICT: best cell' not in text, (
@@ -27406,8 +27403,7 @@ def test_b2299_step1_report_states_the_criterion_not_a_floor():
     # (d) must-QUIET arm (L686): the module still IMPORTS and still defines the
     # renderer. Without this the whole test is satisfiable by deleting the file's
     # contents, which would 'pass' every assertion above about absent strings.
-    assert hasattr(mod, 'NOISE_FLOOR'), 'module lost its constant'
-    assert abs(mod.NOISE_FLOOR - 0.333) < 1e-9, 'the diagnostic value changed silently'
+    assert hasattr(mod, 'config_section'), 'module lost its renderer'
 
 
 
@@ -28276,14 +28272,12 @@ def test_b2213a_zero_open_trades_still_writes_a_header_only_book(tmp_path):
         "tell it apart from a truncated write")
 
 
-def test_b2379_robust_status_is_one_shared_definition():
-    """S6-B2379: the ROBUST/PROVISIONAL call must have ONE definition.
+def test_b2409_qualifier_margin_reports_without_labelling():
+    """S6-B2379/S6-B2409: ONE shared margin definition; no floor, no label.
 
-    It lived only in build_phase_1b_roster.py, so the grid producer could not
-    label a qualifier at all - and under the waterfall's ROBUST-only stopping
-    rule that label decides whether the program stops or keeps spending. A
-    hand-copy into the producer would have been a fourth duplicate that drifts
-    at the next floor change.
+    The ROBUST/PROVISIONAL split and its selection-noise floor were retired
+    in their entirety by owner ruling 2026-08-30: a combination clearing all
+    six LIVE_GATES qualifies, and margin is a reported number only.
     """
     import sys
     from pathlib import Path
@@ -28295,44 +28289,40 @@ def test_b2379_robust_status_is_one_shared_definition():
     from backtest.config import PASSING_CRITERIA as PC
 
     gate = PC["min_sharpe_overall"]
-    # the floor comes from its CANONICAL HOME - roster_core deliberately does
-    # not carry it, because Step 1 imports that module and the floor is the
-    # Phase-1B per-cell grain (test_b2300 guards exactly this)
-    import importlib.util as _iu
-    _spec = _iu.spec_from_file_location(
-        "bpr_b2379", root / "scripts" / "build_phase_1b_roster.py")
-    _bpr = _iu.module_from_spec(_spec)
-    _spec.loader.exec_module(_bpr)
-    floor = _bpr.SELECTION_NOISE_FLOOR
 
-    # the floor is REQUIRED, so no caller can inherit a grain it did not choose
-    import pytest as _pytest
-    with _pytest.raises(TypeError):
-        rc.robust_status(1.5)
+    # an UNMEASURED Sharpe must not render as a measured shortfall - L580, a
+    # missing measurement and a measured shortfall are different facts
+    assert rc.qualifier_margin(None) is None
 
-    # an UNMEASURED Sharpe must not be labelled - L580, a missing measurement
-    # and a measured shortfall are different facts
-    assert rc.robust_status(None, floor=floor) == (None, None)
+    # the margin is the rounded distance above the LIVE pooled gate, and it
+    # carries NO label: the return is a plain number, not a (margin, status)
+    m = rc.qualifier_margin(gate + 0.152)
+    assert m == 0.152, m
+    assert not isinstance(m, tuple), "the retired label came back"
 
-    # just under the floor -> PROVISIONAL; at the floor -> ROBUST
-    m, s = rc.robust_status(gate + floor - 0.01, floor=floor)
-    assert s == "PROVISIONAL", f"margin {m} below {floor} must be PROVISIONAL"
-    m, s = rc.robust_status(gate + floor, floor=floor)
-    assert s == "ROBUST", f"margin {m} at {floor} must be ROBUST"
+    # the retirement stays retired: nothing in roster_core can label a
+    # qualifier ROBUST or PROVISIONAL any more
+    assert not hasattr(rc, "robust_status"), (
+        "robust_status is back - the split was retired in its entirety "
+        "(S6-B2409, owner ruling 2026-08-30)")
 
-    # and the roster builder must CALL it rather than re-deriving
+    # and the roster builder must CALL the shared definition rather than
+    # re-deriving the margin formula
     src = (root / "scripts" / "build_phase_1b_roster.py").read_text(encoding="utf-8")
-    assert "robust_status" in src, (
-        "build_phase_1b_roster must call the shared robust_status, not "
+    assert "qualifier_margin" in src, (
+        "build_phase_1b_roster must call the shared qualifier_margin, not "
         "re-implement the margin formula")
 
 
-def test_b2379_pass_rows_carry_status_and_provisionals_are_collected():
-    """S6-B2379: a PROVISIONAL qualifier must be RECORDED, not lost.
+def test_b2409_pass_rows_carry_margin_and_qualifiers_are_collected():
+    """S6-B2379/S6-B2409: a QUALIFIER must be RECORDED, not lost - and the
+    retired ROBUST/PROVISIONAL label must STAY retired.
 
-    Under the waterfall a PROVISIONAL qualifier does not stop the run, so the
-    program can terminate NEGATIVE while holding a cell that cleared every
-    live gate. Nothing recorded that cell before this ticket.
+    Owner ruling 2026-08-30 removed the selection-noise floor in its
+    entirety: clearing all six LIVE_GATES IS qualification and IS the
+    waterfall's stop condition. The don't-lose-the-qualifier purpose
+    survives: a gate-clearing cell must be findable in the payload, not
+    buried among 300 rows.
 
     Anchored on the PASS-row assignment and the emitted KEY specifically -
     test_b2215 walked every dict in the file and was green for months while
@@ -28345,7 +28335,8 @@ def test_b2379_pass_rows_carry_status_and_provisionals_are_collected():
     src = (root / "scripts" / "tighten_breaker_block.py").read_text(encoding="utf-8")
     tree = _ast.parse(src)
 
-    # the PASS branch must assign margin AND status onto the row
+    # the PASS branch must attach margin (a number) - and must NOT attach a
+    # status label, which the retirement removed
     assigns = set()
     for n in _ast.walk(tree):
         if isinstance(n, _ast.Assign):
@@ -28358,11 +28349,12 @@ def test_b2379_pass_rows_carry_status_and_provisionals_are_collected():
                 if (isinstance(e, _ast.Subscript)
                         and isinstance(e.slice, _ast.Constant)):
                     assigns.add(e.slice.value)
-    for field in ("margin", "status"):
-        assert field in assigns, (
-            f"the PASS branch must attach {field!r} to the row - without it a "
-            f"qualifier cannot be told ROBUST from PROVISIONAL, which is the "
-            f"waterfall's entire stop condition. found: {sorted(assigns)}")
+    assert "margin" in assigns, (
+        "the PASS branch must attach 'margin' to the row - the distance above "
+        f"the live gate is a reported number. found: {sorted(assigns)}")
+    assert "status" not in assigns, (
+        "a 'status' label is being assigned again - the ROBUST/PROVISIONAL "
+        "split was retired in its entirety (S6-B2409, owner ruling 2026-08-30)")
 
     # and the emitted payload must carry the sibling key
     top_keys = set()
@@ -28371,9 +28363,11 @@ def test_b2379_pass_rows_carry_status_and_provisionals_are_collected():
             for k in n.keys:
                 if isinstance(k, _ast.Constant) and isinstance(k.value, str):
                     top_keys.add(k.value)
-    assert "provisional_qualifiers" in top_keys, (
-        "the grid payload must carry provisional_qualifiers, or a cell that "
-        "cleared every gate is buried among 300 rows and lost to a re-run")
+    assert "qualifiers" in top_keys, (
+        "the grid payload must carry 'qualifiers', or a cell that cleared "
+        "every gate is buried among 300 rows and lost to a re-run")
+    assert "provisional_qualifiers" not in top_keys, (
+        "the retired provisional_qualifiers key is back (S6-B2409)")
 
 
 def test_b2118b_borrow_trap_counter_measures_the_blocking_rate():
