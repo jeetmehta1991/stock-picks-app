@@ -187,6 +187,88 @@ def mirror_status(name: str) -> tuple[str, str | None]:
     return "NEEDS-CREATION", None
 
 
+def step2_admissions_section(A, admissions_path=None) -> None:
+    """S6-B2413 (owner instruction 2026-08-30): render owner-ruled Step-2
+    admissions into the roster document.
+
+    The admissions file carries IDENTITY only (which combination, which
+    ruling); every metric is re-derived here from the named grid artifact by
+    EXACT match on the swept combination fields plus the exit - a hand-copied
+    number in a record decays while staying quotable (L577/#256). A listed
+    admission whose row cannot be located, or whose verdict is not PASS,
+    REFUSES loudly (a guard fails closed on the absent input, L642): an
+    admission is a bound, not a feature. An absent admissions FILE is the
+    feature being absent - nothing ruled yet - and skips silently.
+    """
+    def _fmt(v, w=6, d=2):
+        return f"{v:>{w}.{d}f}" if isinstance(v, (int, float)) else f"{'-':>{w}}"
+
+    p = Path(admissions_path) if admissions_path else (
+        REPO / "output_audit" / "phase_1b_step2_admissions.json")
+    if not p.exists():
+        return
+    doc = json.loads(p.read_text(encoding="utf-8"))
+    adms = doc.get("admissions") or []
+    if not adms:
+        return
+    A("## Step-2 admissions (owner-ruled)")
+    A("")
+    A("Cells admitted by explicit owner ruling from the STRATEGY_OPTIMISATION_PLAN Step-2 "
+      "waterfall - a DIFFERENT pipeline from the 3-cube funnel above (per-strategy "
+      "producer-parameter search, six-gate grading, first-qualifier-stops). They are NOT rows "
+      "of the funnel table and are not counted in it. Metrics are re-derived at render time "
+      "from each admission's own grading artifact; the admissions file carries identity only.")
+    A("")
+    A("| Strategy | Dir | Producer combination | Exit | IS Shrp | IS ci_lo | HO Shrp | HO ci_lo | margin | psr | PF | Sortino | WR | Exp | HO n | Full n | Mirror |")
+    A("|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|")
+    for adm in adms:
+        art = REPO / adm["grid_artifact"]
+        grid = json.loads(art.read_text(encoding="utf-8"))
+        rows = (grid.get("qualifiers") or grid.get("provisional_qualifiers")
+                or grid.get("results") or [])
+        want = adm["combination"]
+        hit = [r for r in rows
+               if all(r.get(k) == v for k, v in want.items())
+               and r.get("exit") == adm["exit"]]
+        if len(hit) != 1:
+            raise ValueError(
+                f"admission {adm['ticket']}: expected exactly 1 row matching "
+                f"{want} + exit {adm['exit']!r} in {art.name}, found {len(hit)} "
+                "- refusing to render an admission whose evidence cannot be located")
+        r = hit[0]
+        if r.get("verdict") != "PASS":
+            raise ValueError(
+                f"admission {adm['ticket']}: matched row verdict is "
+                f"{r.get('verdict')!r}, not PASS - an admitted combination must "
+                "have cleared all six gates")
+        mstat, mname = mirror_status(adm["strategy"])
+        mir = f"`{mname}`" if (mstat == "REGISTERED" and mname) else mstat
+        combo = ", ".join(f"{k}={v}" for k, v in want.items())
+        cfg = ", ".join(f"{k}={v}" for k, v in (adm.get("config") or {}).items())
+        A(f"| `{adm['strategy']}` | {adm['direction']} | {cfg}; {combo} | `{adm['exit']}` | "
+          f"{_fmt(r.get('is_sharpe'))} | {_fmt(r.get('is_ci_lo'))} | {_fmt(r.get('sharpe'))} | "
+          f"{_fmt(r.get('ci_lo'))} | {r.get('margin'):+.3f} | {_fmt(r.get('psr'))} | "
+          f"{_fmt(r.get('profit_factor'))} | {_fmt(r.get('sortino'))} | "
+          f"{_fmt(r.get('win_rate'), 5, 3)} | {_fmt(r.get('expectancy'))} | "
+          f"{r.get('holdout_n')} | {r.get('full_period_n')} | {mir} |")
+    A("")
+    for adm in adms:
+        A(f"**{adm['ticket']} ({adm['ruled']})** - owner verbatim: "
+          f"*\"{adm['ruling_verbatim']}\"* - strategy `{adm['strategy']}`, "
+          f"{adm.get('universe', 'universe not recorded')}, "
+          f"{adm.get('window', 'window not recorded')}; artifact `{adm['grid_artifact']}`.")
+    A("")
+    A("**Read the evidence shape honestly (L636).** These cells come from a parameter SEARCH "
+      "(300 combinations per config; no multiplicity correction at the grid stage per owner "
+      "ruling D2, psr being the remaining significance-style control), and the gates are "
+      "computed on the 1-year holdout except the full-period trade count. Where a holdout "
+      "Sharpe far exceeds its in-sample value on a small holdout n, the margin is fragile - "
+      "the IS and holdout confidence lower bounds are rendered beside the point estimates so "
+      "the interval width is never hidden. Engine wiring of an admitted combination is "
+      "tracked separately (S6-B2411); admission to this document is not deployment.")
+    A("")
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--output", default="PHASE_1B_ROSTER.md")
@@ -451,6 +533,10 @@ def main() -> int:
       "against a selection-noise floor is retired in its entirety; `margin` reports how far "
       "the holdout Sharpe cleared the live pooled gate, as a number, gating nothing.")
     A("")
+    # S6-B2413: owner-ruled Step-2 admissions render here, between the funnel
+    # roster and the mirrors - identity from the admissions file, metrics
+    # re-derived from each admission's own grading artifact.
+    step2_admissions_section(A)
     A("## Symmetric short mirrors")
     A("")
     A("Owner standing directive: *promoted longs carry short mirrors by default* - the mirror is "

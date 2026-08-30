@@ -942,6 +942,13 @@ S6-B2407 (the PROVISIONAL-worth question) closes as mooted. Engine implementatio
 combination (battery judgment step 7_implement_in_engine) is ticketed S6-B2411 - the retention
 ruling approves the parameter set; the wiring is follow-on work, not auto-executed.
 
+**ROSTER-DOCUMENT ADMISSION (S6-B2413, owner instruction 2026-08-30).** The retained combination
+is rendered in PHASE_1B_ROSTER.md under *Step-2 admissions (owner-ruled)* - identity from
+`output_audit/phase_1b_step2_admissions.json`, metrics re-derived at render time from the b2399
+grid artifact by exact combination+exit match (never hand-copied), refuse-loud when the evidence
+row cannot be located or did not PASS. This closes S6-B2411's roster-integration part; its engine
+wiring and battery judgment steps remain open.
+
 **D2 - RULED: no BH-FDR.** *"this doesn't apply. Apply config runs we will analyze the 300
 combinations and select the one that passes all gates. If its multiple combinations, we select the
 one with the best sharpe. No bh fdr needed here."* No multiplicity correction is applied across a

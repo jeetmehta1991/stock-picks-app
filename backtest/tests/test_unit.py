@@ -28370,6 +28370,80 @@ def test_b2409_pass_rows_carry_margin_and_qualifiers_are_collected():
         "the retired provisional_qualifiers key is back (S6-B2409)")
 
 
+def test_b2413_step2_admission_renders_rederived_and_refuses_unlocatable():
+    """S6-B2413 (owner instruction 2026-08-30): the retained Step-2 qualifier
+    is rendered into PHASE_1B_ROSTER.md with metrics RE-DERIVED from its own
+    grading artifact - and the section REFUSES an admission whose evidence
+    cannot be located or did not PASS.
+
+    The admissions file carries identity only (L577/#256 - a hand-copied
+    number decays while staying quotable). Behavioural on the real committed
+    artifact, with the target line SELECTED before asserting within it (L705).
+    """
+    import importlib.util as _iu
+    import json as _json
+    import inspect as _insp
+    import sys as _sys
+    from pathlib import Path as _P
+
+    import pytest as _pytest
+
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    spec = _iu.spec_from_file_location(
+        "bpr_b2413", root / "scripts" / "build_phase_1b_roster.py")
+    m = _iu.module_from_spec(spec)
+    spec.loader.exec_module(m)
+
+    # happy path: the REAL admissions file + REAL grid artifact
+    lines: list = []
+    m.step2_admissions_section(lines.append)
+    out = "\n".join(lines)
+    assert "## Step-2 admissions (owner-ruled)" in out
+    row = [l for l in out.splitlines() if l.startswith("| `smc_breaker_block_long`")]
+    assert len(row) == 1, f"expected exactly 1 admission row, got {len(row)}"
+    for token in ("time_stop_10d", "1.15", "+0.152", "1.94",
+                  "smc_breaker_block_short"):
+        assert token in row[0], f"{token!r} missing from the admission row: {row[0]}"
+    assert "S6-B2410" in out and "S6-B2411" in out
+
+    # absent admissions FILE = feature absent, renders nothing (must-QUIET)
+    quiet: list = []
+    m.step2_admissions_section(quiet.append,
+                               admissions_path=root / "output_audit" / "_no_such_admissions.json")
+    assert quiet == [], "an absent admissions file must render nothing"
+
+    # a combination absent from the artifact must REFUSE (must-FIRE)
+    import tempfile as _tf
+    real = _json.loads((root / "output_audit" / "phase_1b_step2_admissions.json")
+                       .read_text(encoding="utf-8"))
+    bad = _json.loads(_json.dumps(real))
+    bad["admissions"][0]["combination"]["tail_n"] = 21
+    with _tf.TemporaryDirectory() as td:
+        badp = _P(td) / "adm.json"
+        badp.write_text(_json.dumps(bad), encoding="utf-8")
+        with _pytest.raises(ValueError, match="cannot be located"):
+            m.step2_admissions_section((lambda s: None), admissions_path=badp)
+
+        # a located row whose verdict is not PASS must REFUSE (must-FIRE)
+        fake_grid = _P(td) / "grid.json"
+        row0 = dict(real["admissions"][0]["combination"],
+                    exit=real["admissions"][0]["exit"], verdict="FAIL")
+        fake_grid.write_text(_json.dumps({"results": [row0]}), encoding="utf-8")
+        notpass = _json.loads(_json.dumps(real))
+        notpass["admissions"][0]["grid_artifact"] = str(fake_grid)
+        npp = _P(td) / "adm2.json"
+        npp.write_text(_json.dumps(notpass), encoding="utf-8")
+        with _pytest.raises(ValueError, match="not PASS"):
+            m.step2_admissions_section((lambda s: None), admissions_path=npp)
+
+    # reachability (B2208): main() must actually call the section
+    assert "step2_admissions_section(A)" in _insp.getsource(m.main), (
+        "the section is defined but main() does not call it - an unreached "
+        "call site is not wired (#224)")
+
+
 def test_b2118b_borrow_trap_counter_measures_the_blocking_rate():
     """S6-B2118b: the borrow-trap gate had no counter, so its blocking rate
     against the 23.5pct baseline was unmeasured for ~10 ticket touches.

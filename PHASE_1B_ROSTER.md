@@ -70,6 +70,18 @@ The cell count is NOT the number of independent bets. De-dup compares (ticker, e
 
 **Qualification (S6-B2409, owner ruling 2026-08-30).** A cell on this roster cleared all six live gates - that IS qualification. The former ROBUST/PROVISIONAL split against a selection-noise floor is retired in its entirety; `margin` reports how far the holdout Sharpe cleared the live pooled gate, as a number, gating nothing.
 
+## Step-2 admissions (owner-ruled)
+
+Cells admitted by explicit owner ruling from the STRATEGY_OPTIMISATION_PLAN Step-2 waterfall - a DIFFERENT pipeline from the 3-cube funnel above (per-strategy producer-parameter search, six-gate grading, first-qualifier-stops). They are NOT rows of the funnel table and are not counted in it. Metrics are re-derived at render time from each admission's own grading artifact; the admissions file carries identity only.
+
+| Strategy | Dir | Producer combination | Exit | IS Shrp | IS ci_lo | HO Shrp | HO ci_lo | margin | psr | PF | Sortino | WR | Exp | HO n | Full n | Mirror |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| `smc_breaker_block_long` | long | P1_swing_length=50, P6_span=50; close_mitigation=True, break_pct_max=0.02, age_bars_max=None, tail_n=20 | `time_stop_10d` |   0.45 |  -0.39 |   1.15 |  -0.41 | +0.152 |   1.00 |   1.94 |   1.93 | 0.537 |   1.31 | 41 | 180 | `smc_breaker_block_short` |
+
+**S6-B2410 (2026-08-30)** - owner verbatim: *"Lets retain the break_pct_max 0.02, close_mitigation True, age_bars_max None, exit time_stop_10d, tail_n (20) combination"* - strategy `smc_breaker_block_long`, 544 tickers (output_audit/r5_universe_544.txt), 4 years 2022-05-06 .. 2026-04-30 (IS 3y + 1y holdout); artifact `output_audit/output_b2399_step2_sw50sp50_step2_sw50sp50_grid_auto.json`.
+
+**Read the evidence shape honestly (L636).** These cells come from a parameter SEARCH (300 combinations per config; no multiplicity correction at the grid stage per owner ruling D2, psr being the remaining significance-style control), and the gates are computed on the 1-year holdout except the full-period trade count. Where a holdout Sharpe far exceeds its in-sample value on a small holdout n, the margin is fragile - the IS and holdout confidence lower bounds are rendered beside the point estimates so the interval width is never hidden. Engine wiring of an admitted combination is tracked separately (S6-B2411); admission to this document is not deployment.
+
 ## Symmetric short mirrors
 
 Owner standing directive: *promoted longs carry short mirrors by default* - the mirror is retained irrespective of its own cube result. The single excuse is a **long-only DATA SOURCE** (13F / insider / congressional / buyback), where a mechanical inverse is economically false rather than merely untested (B611 reversal).

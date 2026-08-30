@@ -1,0 +1,18 @@
+{
+  "_doc": "Owner-ruled Step-2 admissions to the Phase 1B roster document (S6-B2413). IDENTITY ONLY - every metric is re-derived at render time from the named grid artifact by exact combination+exit match (build_phase_1b_roster.step2_admissions_section), because a hand-copied number in a record decays while staying quotable (L577/#256). CSV-first: this list of admitted items is DATA, so it lives here and not in the generator.",
+  "admissions": [
+    {
+      "ticket": "S6-B2410",
+      "ruled": "2026-08-30",
+      "ruling_verbatim": "Lets retain the break_pct_max 0.02, close_mitigation True, age_bars_max None, exit time_stop_10d, tail_n (20) combination",
+      "strategy": "smc_breaker_block_long",
+      "direction": "long",
+      "config": {"P1_swing_length": 50, "P6_span": 50},
+      "grid_artifact": "output_audit/output_b2399_step2_sw50sp50_step2_sw50sp50_grid_auto.json",
+      "combination": {"close_mitigation": true, "break_pct_max": 0.02, "age_bars_max": null, "tail_n": 20},
+      "exit": "time_stop_10d",
+      "universe": "544 tickers (output_audit/r5_universe_544.txt)",
+      "window": "4 years 2022-05-06 .. 2026-04-30 (IS 3y + 1y holdout)"
+    }
+  ]
+}
