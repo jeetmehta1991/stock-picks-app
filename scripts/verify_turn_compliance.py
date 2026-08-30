@@ -1430,7 +1430,13 @@ def scan_uninspected_constant(entries, *, tool_text=None,
     # evidence must be what RAN. `_tool_text` includes Write and Edit inputs,
     # so WRITING a script containing `grep MIN_N` satisfied it without the
     # grep ever executing - the gate accepted "was typed" for "was run".
-    tt = _executed_tool_text(entries, tool_text).lower()
+    # B2416 (S6-B2412): "was it LOOKED AT" is also answered by the harness
+    # Read/Grep/Glob tools, whose inputs never reach the executed text - the
+    # gate fired three closes running on a file being grepped via the tool,
+    # and again via Read. Union with _inspecting_tool_text, the exact pattern
+    # its sibling scan_uncosted_probe has used since B1985.
+    tt = (_executed_tool_text(entries, tool_text) + " "
+          + _inspecting_tool_text(entries)).lower()
     # B1760: honour the injected text. This function accepted `text=` and then
     # read `_raw_assistant(entries)` for the case-preserved copy, so the
     # parameter existed and did nothing - the gate could never be exercised on

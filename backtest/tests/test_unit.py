@@ -28447,6 +28447,54 @@ def test_b2413_step2_admission_renders_rederived_and_refuses_unlocatable():
         "call site is not wired (#224)")
 
 
+def test_b2416_uninspected_constant_sees_grep_and_read_tools():
+    """B2416 (S6-B2412): the #222 gate must accept the harness Grep/Read tools
+    as inspection - not only shell commands.
+
+    MEASURED: the gate fired three closes running on a doc being grepped via
+    the Grep TOOL (path+pattern in the tool call's fields), then again via
+    Read; the identical search through Bash cleared it, because only
+    _executed_tool_text was consulted. The fix unions _inspecting_tool_text
+    (Read/Grep/Glob inputs, built B1985 for scan_uncosted_probe). Both
+    directions per B1944 - a fire-only corpus never proves a gate can stay
+    quiet.
+    """
+    import importlib.util as _iu
+    import sys as _sys
+    from pathlib import Path as _P
+
+    root = _P(__file__).resolve().parents[2]
+    if str(root / "scripts") not in _sys.path:
+        _sys.path.insert(0, str(root / "scripts"))
+    spec = _iu.spec_from_file_location(
+        "tg_b2416", root / "scripts" / "verify_turn_compliance.py")
+    tg = _iu.module_from_spec(spec)
+    spec.loader.exec_module(tg)
+
+    prose = [{'type': 'assistant', 'message': {'content': [
+        {'type': 'text',
+         'text': 'the section stands in PHASE_1B_ROSTER at line 73'}]}}]
+    grep_tool = [{'type': 'assistant', 'message': {'content': [
+        {'type': 'tool_use', 'name': 'Grep',
+         'input': {'pattern': 'Step-2 admissions',
+                   'path': 'C:/repo/PHASE_1B_ROSTER.md'}}]}}]
+    read_tool = [{'type': 'assistant', 'message': {'content': [
+        {'type': 'tool_use', 'name': 'Read',
+         'input': {'file_path': 'C:/repo/PHASE_1B_ROSTER.md'}}]}}]
+
+    # must-FIRE: named in prose, touched by nothing
+    assert tg.scan_uninspected_constant(prose, tool_text='ls'), (
+        "a constant named with no inspection anywhere must still fire")
+    # must-QUIET: a Grep TOOL call naming the identifier IS inspection
+    assert tg.scan_uninspected_constant(prose + grep_tool, tool_text='ls') == [], (
+        "a Grep tool call on the named file must clear the gate - the "
+        "S6-B2412 blindness is back")
+    # must-QUIET: a Read TOOL call naming the identifier IS inspection
+    assert tg.scan_uninspected_constant(prose + read_tool, tool_text='ls') == [], (
+        "a Read tool call on the named file must clear the gate - the "
+        "S6-B2412 blindness is back (second face)")
+
+
 def test_b2118b_borrow_trap_counter_measures_the_blocking_rate():
     """S6-B2118b: the borrow-trap gate had no counter, so its blocking rate
     against the 23.5pct baseline was unmeasured for ~10 ticket touches.

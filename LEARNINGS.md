@@ -17286,3 +17286,16 @@ and the B2413 commit message.
 come from distinct artifact fields per column; (3) the S6-B2410 queue row's "holdout sharpe
 1.152, profit factor 1.937, sortino 1.925" - SOUND, all three read from the holdout-leg fields
 of the qualifier row.
+
+**ADDENDUM (B2416) - THE RECORDED COLLECTOR GAP WAS REAL, AND ONE MEASUREMENT MOVED THE FIX.**
+S6-B2412 recorded the #222 gate blind to Grep-TOOL inspection (three firings in one close); the
+class recurred through the Read tool at the B2413 close - instance 2, a COUNT per L710, not a new
+lesson. The #237 sweep the fix required, measured: **43 scan gates; `_inspecting_tool_text`
+(Read/Grep/Glob inputs, built B1985) had exactly 1 consumer (scan_uncosted_probe); the #222 gate
+read `_executed_tool_text` alone.** So the ticket's hypothesized fix ("extend the collector") was
+wrong in a useful way - the collector needed no extension; the CONSUMER needed the second input,
+a one-line union at verify_turn_compliance.py matching the pattern its sibling already used
+(L639: a number inside an open ticket decays - here the ticket's MECHANISM hypothesis decayed the
+same way, corrected in the closing row). Pinned both directions by
+test_b2416_uninspected_constant_sees_grep_and_read_tools per B1944 (a fire-only corpus never
+proves a gate can stay quiet); the gate's two prior tests still pass unmodified.
