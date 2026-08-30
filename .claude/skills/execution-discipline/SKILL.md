@@ -3058,6 +3058,12 @@ mismatch.** The number was real, the reading was real, the comparison was meanin
 - **Watch for sibling floors at other grains.** The same sweep found 0.333 is the PER-CELL
   yardstick while iid (0.088), entry-day block (0.2245) and SMC block (0.3115) floors exist
   beside it. Quoting the right number at the wrong grain is this failure's most common shape.
+- **A LEG LABEL IS GRAIN (L718/B2413).** A value can be re-derived to full precision while its
+  leg attribution (IS vs holdout, per-cell vs family) stays false - no numeric check touches the
+  label. MEASURED: "in-sample ci_lo -0.415" shipped in an owner-facing objection; the artifact
+  holds `is_ci_lo` -0.385 (IS) beside `ci_lo` -0.415 (HOLDOUT), and sibling fields differing only
+  in prefix are the tell that a bare name in prose is undecidable. Re-derive the qualifier from
+  the artifact's own field names, never from a secondary record's sentence.
 - **Third recurrence of one class** (L656 heartbeat-proves-the-watchdog, L660 read-the-directory-
   not-the-log, L664 read-the-file-not-the-ticket): **trusting a SECONDARY record about a PRIMARY
   fact.** L664 is the worst of the three - the primary file already carried the exact correction
