@@ -1,0 +1,23 @@
+{
+ "wave": "b2399_step2_sw50sp50",
+ "tickers_file": "output_audit/r5_universe_544.txt",
+ "strategy_subset": "output_audit/_subset_one.txt",
+ "window": {
+  "start": "2022-05-05",
+  "end": "2026-05-05"
+ },
+ "leg_cap_hours": 4.5,
+ "max_legs": 5,
+ "step1_cube": false,
+ "pool_workers": 10,
+ "allow_engine_drift": true,
+ "arms": [
+  {
+   "tag": "step2_sw50sp50",
+   "env": {
+    "SMC_SWING_LENGTH": "50",
+    "STRAT_EMA_SPAN": "50"
+   }
+  }
+ ]
+}
