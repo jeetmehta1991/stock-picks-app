@@ -17357,3 +17357,42 @@ before the check. (3) "the other 6 members are gate-consistent" - argued from co
 R5 artifact date, and it survives only in the weaker direction the dates can support (no post-R5
 family gate change exists: B1422 touched a non-member) - SOUND as stated, and deliberately not
 strengthened beyond what dates can carry.
+
+## L720
+**RE-DERIVING A RULE THE REPO ALREADY HAS MEANS YOU ALSO SKIPPED ITS CORRECTION (B2427).**
+Explaining why this family's tuning is free while the SMC sweep cost 16.7h/config, I offered the
+distinction *"SMC swept PRODUCER parameters; this family tunes THRESHOLDS over persisted producer
+OUTPUTS"* - presented as the reason, with no prior-art search. **The plan already carries the
+rule, and carries it SHARPER:** section 2.3a, *"RESIMULATION - the rule is SUBSET-SAFETY, not
+'tightening'"*, corrected at B1508 after this exact confusion; its line 21 says a parameter that
+can ADD fires *"produces trades R5 never took, and the cube holds no P&L for those"* - **and it
+names EMA `span` as one of those parameters.**
+**So the missing search did not merely cost attribution - it let me publish a claim the existing
+rule forbids.** In the same breath I told the owner that all five persisted EMA spans made the
+regime leg *"re-selectable offline"*. **MEASURED on the family's own fired rows: of 13,440 rows
+from EMA200-gated members, 5,770 (42.9pct) are above the 200 EMA and BELOW the 50 EMA**, and
+1,401 high_conviction rows are the reverse - so neither leg nests inside the other and a span
+swap ADDS fires that no artifact holds. The claim was false in both directions.
+**Why my framing felt like an insight:** producer-parameter-vs-threshold is TRUE and it
+correlates with subset-safety in the cases I had in front of me - but it is the wrong INVARIANT.
+Subset-safety is about the DIRECTION of the fire-set change; the producer/threshold split is
+about where the knob lives, and the two come apart exactly at a knob like EMA span, which is
+neither a producer parameter of the 13F pipeline nor a monotone threshold.
+**The rule: when you find yourself explaining WHY something is cheap or safe, search for the
+repo's existing statement of that rule BEFORE publishing yours** - the existing one has usually
+already been corrected once, and the correction is the part you do not have.
+Compliance failure against CHECKLIST item 26 read with the SEARCH-THE-CLASS-NOT-THE-CONSEQUENCE
+rule already in the skill (L635/B2135). No new item and no new skill clause (#136): both rules
+existed and both were skipped; the failure is compliance, not coverage.
+Mechanism: **DETECTION is JUDGMENT-ONLY** - no scan knows an explanation is a re-derivation of
+documented prior art. **Durability IS taken**: the retraction and the 42.9pct measurement are in
+the S6-B2427 ledger row and the B2427 commit message, and the measurement is reproducible from
+the committed artifacts.
+**Retroactive sweep (#237): every "this is free / no engine needed" claim I made this turn.** Four.
+(1) **Integer count-threshold TIGHTENING** - raising an `>= N` bar strictly removes fires, so
+subset-safe: **SOUND**, and it is the family's actual tunable. (2) **Exit re-selection among the
+26** - verified present at 63,726 = 26 x 2,451 with a 1:1 join to the log: **SOUND**. (3) **EMA
+span re-selection** - **WRONG**, retracted above, excised from the free grid. (4) **Re-deriving
+`institutional_strong_buy` from its raw persisted counts** - **SOUND ONLY IN THE TIGHTENING
+DIRECTION**; I stated it unqualified, and a LOOSER re-classification adds fires the log never
+took, so the qualifier is now attached.
