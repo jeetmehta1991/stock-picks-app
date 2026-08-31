@@ -28498,6 +28498,39 @@ def test_b2416_uninspected_constant_sees_grep_and_read_tools():
         "S6-B2412 blindness is back (second face)")
 
 
+def test_b2427_subset_safety_prior_art_survives_in_the_plan():
+    """S6-B2427 (L720): the rule I re-derived must stay findable where it lives.
+
+    B2427's miss was publishing a weaker home-made version of a rule the plan
+    already carries - and, in the same breath, violating it. Detection of that
+    class is judgment-only, but the PRIOR ART's disappearance is mechanisable:
+    if section 2.3a's subset-safety statement or its EMA-span example is ever
+    deleted, the next reader re-derives the weaker producer-vs-threshold
+    framing with nothing to correct them.
+
+    Anchors on the DIAGNOSTIC, not the heading (L548): the invariant's name
+    AND the concrete example that makes it usable.
+    """
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[2]
+    plan = (root / "STRATEGY_OPTIMISATION_PLAN.md").read_text(encoding="utf-8")
+
+    assert "the rule is SUBSET-SAFETY" in plan, (
+        "section 2.3a's invariant is gone - without it, 'tightening is free' "
+        "reads as unconditional and the B1508 correction is lost")
+    assert "produces trades R5 never took" in plan, (
+        "the add-fires consequence is gone - it is what makes the invariant "
+        "actionable rather than a slogan")
+    # the EMA-span example specifically: it is the case that caught B2427, and
+    # a general rule without it did not stop me from claiming span swaps free
+    span_lines = [l for l in plan.splitlines()
+                  if "produces trades R5 never took" in l]
+    assert span_lines, "the add-fires line vanished"
+    assert any("span" in l for l in span_lines), (
+        "the add-fires line no longer names EMA span as an example - that "
+        "example is precisely what B2427 violated (L720)")
+
+
 def test_b2417_admission_mirror_is_counted_in_the_rollup():
     """S6-B2417 (closes S6-B2414): the Step-2 admission's registered mirror
     must appear in the mirrors roll-up AND in the deployable total.
