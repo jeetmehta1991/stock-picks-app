@@ -1021,6 +1021,16 @@ gate had just named.**
   **The retry loop, not the work, is what reaches the owner.** One self-run over
   a 21MB transcript returned the whole list in seconds. Trigger: any turn that
   shipped code, or any turn already blocked once.
+- **A COMPLIANCE GATE IS ARMED BY THE CLAIM, SO RESTATING A FINISHED REMEDIATION
+  RE-ARMS IT (B2433/L720).** Some gates fire only when the response ASSERTS the
+  thing they audit, and they are scoped to the window that assertion lands in.
+  MEASURED: a Phase-5 arc spread over 7 commits drew 8 blocked closes, each
+  close re-asserting *all four members satisfied* and thereby re-arming a check
+  that could only see the one member that window had landed. The self-run proved
+  it - **2 violations, neither of them the Phase-5 one**. So once an arc has
+  already spread across commits, **stop claiming it**: land the remaining member
+  and let the close carry the standing lines only. Restating completeness never
+  adds completeness; it only adds a firing.
 - **B1843: the BARE command hangs** (reads stdin, which only the hook fills) and
   **`</dev/null` exits 0 having read nothing**. L563 cited the bare form before
   anyone ran it - **a lesson recommending an unrun mechanism, inside the entry
