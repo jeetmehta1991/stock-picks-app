@@ -142,7 +142,7 @@ fires            =  ( breaker_bullish )  AND  ( price_above_ema_200 ) [from P6]"
              "evidence": "smc_ict.py:283-284 (no parameter today)",
              "engine_implemented": True},
             {"id": "P6", "producer": "compute_ema_sma", "param": "span",
-             "production": 200, "type": "int", "band": [9, 20, 50, 100, 150, 200],
+             "production": 200, "type": "int", "band": [9, 20, 21, 50, 100, 150, 200],
              "derivation": "ALL spans the producer emits (READ technical.py:750 pairs "
                            "(9,21),(20,50),(50,200)). B1507 widened from [50,200] - the "
                            "earlier band silently dropped 9/20/21 with no stated rule "
@@ -282,12 +282,12 @@ fires =  ( P7  OR  P8 )  AND  P9
              "derivation": "the B1230 fallback, live wherever the persistence precompute has no row (~4pct of fired rows). PERSISTED, so the same per-level split as P7: raising it only removes fires and grades FREE; 2 and 3 add fires and need resim. Levels are the measured IS deciles of institutional_increased."},
             {"id": "P9", "producer": "compute_ema_sma",
              "param": "span", "production": 200,
-             "band": [9, 20, 50, 100, 150, 200],
-             "free_band": [], "resim_band": [9, 20, 50, 100, 150, 200],
+             "band": [9, 20, 21, 50, 100, 150, 200],
+             "free_band": [], "resim_band": [9, 20, 21, 50, 100, 150, 200],
              "subset_safe": False, "status": "UNTESTED",
              "evidence": "technical.py:768 + config.py:2496-2497",
              "type": "int", "engine_implemented": True,
-             "derivation": "OWNER DIRECTIVE 2026-08-30: 'EMA can not stay as is - EMA span itself may help drive higher sharpe.' NOT subset-safe in EITHER direction and this is MEASURED, not argued (recorded S6-B2427): of 13,440 EMA200-gated family rows, 5,770 sit above the 200 EMA and below the 50, and 1,401 high_conviction rows are the reverse - the legs do not nest, so no span change re-scores off a cube. CHEAP TO VARY, NOT CHEAP TO RUN: EMA_PAIRS is env-driven (config.py:2496-2497, verified) so no code change is needed, but each span still costs one engine run."},
+             "derivation": "SWEEP SCOPE, NOT AVAILABILITY: the band lists every span EMA_PAIRS emits, which is what this column asserts and what the drift verifier checks. Span 21 is listed because the producer offers it, and it should NOT be swept: MEASURED from the b2197 run ledger, that wave ran 21 ONCE at sw20 and omitted it from sw5/sw10/sw30/sw50 - 26 configs, not 30 - so the programme already found it a near-duplicate of 20 that did not earn an engine run. Carry that into the Step-1 design, not into this column. OWNER DIRECTIVE 2026-08-30: 'EMA can not stay as is - EMA span itself may help drive higher sharpe.' NOT subset-safe in EITHER direction and this is MEASURED, not argued (recorded S6-B2427): of 13,440 EMA200-gated family rows, 5,770 sit above the 200 EMA and below the 50, and 1,401 high_conviction rows are the reverse - the legs do not nest, so no span change re-scores off a cube. CHEAP TO VARY, NOT CHEAP TO RUN: EMA_PAIRS is env-driven (config.py:2496-2497, verified) so no code change is needed, but each span still costs one engine run."},
         ],
     },
 }

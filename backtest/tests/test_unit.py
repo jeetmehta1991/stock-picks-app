@@ -25090,6 +25090,7 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         ("PROSE-ONLY: an INDEX of historical failures - each entry's enforcement lives with its own rule; gating the index would gate a table of contents.",
          "B2382: Failure modes this skill exists to prevent lineage"),
         ("A 0pct OR 100pct RESULT FROM A NEW EXTRACTOR IS A PARSER HYPOTHESIS", "L724/B2419: a coverage extreme from a new extractor"),
+        ("a claim about its", "L728/B2472: a recommendation to preserve is a claim about current state"),
         ("reconstruct it from the RUN LEDGER, not the spec", "L727/B2469: an inherited band records intent, not what survived"),
         ("ask what the cube STORES, not which way the", "L726/B2467: persistence, not monotonicity, decides cache-gradability"),
         ("Anything the owner asked to SEE goes in the", "L725/B2466: tool output is not delivery"),
@@ -25427,7 +25428,8 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # 220 -> 221 at B2466 (the L725 tool-output-is-not-delivery fragment).
     # 221 -> 222 at B2467 (the L726 persistence-not-monotonicity fragment).
     # 222 -> 223 at B2469 (the L727 inherited-band fragment).
-    assert len(gutted) == 223, gutted
+    # 223 -> 224 at B2472 (the L728 assert-the-match-count fragment).
+    assert len(gutted) == 224, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -28940,12 +28942,19 @@ def test_b2467_subset_safety_is_per_level_and_partitions_the_band():
     assert functools.reduce(operator.mul, free, 1) == 8, (
         "Table A's free combinations moved off the 8 that survive the "
         "measured sample-floor check")
-    # bands must stay de-duplicated: the b2197 wave ran span 21 once at sw20
-    # and dropped it for the other four swing lengths (26 configs, not 30)
+    # S6-B2472: this assertion was WRONG and is inverted. `band` for span
+    # asserts what the producer OFFERS - verify_describing_artifacts compares
+    # it against the spans EMA_PAIRS emits - so deleting 21 made the record
+    # disagree with the code, which is the drift the gate exists to catch.
+    # The sp21 finding is a SWEEP-SCOPE decision and lives in the prose.
     p9 = next(p for p in spec["params"] if p["param"] == "span")
-    assert 21 not in p9["band"], (
-        "span 21 is back - the programme measured it as a near-duplicate of "
-        "20 and dropped it after one run")
+    assert 21 in p9["band"], (
+        "span 21 is missing from the band - that column asserts what the "
+        "producer emits, and EMA_PAIRS emits it; removing it drifts the "
+        "record from the code")
+    assert "ran 21 ONCE" in p9["derivation"], (
+        "the run-ledger finding that span 21 was dropped after one config is "
+        "gone from the prose, which is where a sweep-scope decision belongs")
     p8 = next(p for p in spec["params"] if p["param"] == "fallback_min_increased")
     for dead in (32, 230, 319):
         assert dead not in p8["band"], (

@@ -1772,6 +1772,13 @@ and the position feeling settled is what makes the disproof feel unnecessary.
   in a mid-run log - a check that could only ever pass, and would have read as reassurance at
   exactly the moment the run failed that way. **Find the WRITER of the string and confirm it
   reaches the file you are searching**, then trust the absence.
+- **ASSERT THE MATCH COUNT BEFORE A REPLACE, AND RE-READ WHAT YOU RECOMMEND PRESERVING
+  (B2472/L728).** A global `str.replace` is a blast-radius decision. MEASURED: one matched 3
+  sites, not 1, and silently edited a spec that pre-registers a COMPLETED programme. Two commits
+  later I filed a ticket recommending that spec be left untouched - **written from belief, about
+  a state I had already destroyed.** A recommendation to preserve something is a claim about its
+  current state: open it first. And note a pin can ENCODE a mistake and then defend it - mine
+  asserted the wrong band and passed green until a drift gate compared the record to the code.
 - **DECILES DESCRIBE A DISTRIBUTION; A SEARCH GRID MUST SPAN AN EFFECT (B2469/L727).**
   Building a band from percentiles clusters levels where the mass is and throws one absurd value
   at the tail. MEASURED: three levels of one band retained 13, 1 and 0 rows, and three others

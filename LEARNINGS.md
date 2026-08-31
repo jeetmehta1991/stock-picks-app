@@ -16339,6 +16339,42 @@ path, verified by the pyramid failing then passing. The `ledger_path` redirect -
 
 ### L727
 
+### L728
+
+**L728 (B2472) - AN UNSCOPED REPLACE EDITED A SPEC I HAD JUST ARGUED MUST NOT BE TOUCHED, AND I
+FILED A TICKET DESCRIBING THE STATE I HAD ALREADY DESTROYED.**
+
+Two failures, and the second is the one worth keeping.
+**FIRST:** fixing one band I ran a global string replace over the module. The literal matched **3
+sites, not 1** - including `smc_breaker_block_long`'s span band, a pre-registration for a COMPLETED
+programme. A global replace is a BLAST-RADIUS DECISION and I never counted its matches, in a repo
+whose standing rule is that local changes are the default and global ones need approval.
+**SECOND, and worse:** two commits later I filed a ticket recommending *leave the smc band untouched,
+add a non-destructive annotation* - reasoning carefully about a state **I had already changed**. The
+ticket was written from BELIEF, not from the file. **Nothing in the evidence discipline caught it,
+because every number in it was true of the world as I remembered it**, and a recommendation about
+what to leave alone never prompts you to re-open the thing you are leaving alone. **Before writing a
+ticket that recommends preserving something, READ IT** - the recommendation is a claim about its
+current state.
+**THE THIRD ERROR, which the gate named for me.** The `#221` drift message says *fix the RECORD*. I
+had deleted a level from a column that asserts WHAT THE PRODUCER OFFERS in order to express a
+decision about WHAT TO SWEEP. Those are different claims and the column carries only the first;
+`verify_describing_artifacts` compares it against the spans EMA_PAIRS actually emits and correctly
+reported drift. **A sweep-scope decision belongs in the prose or the design, never in an
+availability column** - narrowing the record to match an intention makes the record lie about the
+code.
+Compliance failure against CHECKLIST item 221, read with the narrow-scope/blast-radius rule.
+Mechanism: `verify_describing_artifacts` caught it and is the gate for the class - now 7 agree, 0
+drifted; and the pin that encoded my WRONG fix (`assert 21 not in band`) is INVERTED to assert the
+level is present and that the run-ledger finding survives in the prose. **A pin can encode a
+mistake and then defend it** - that is the sharpest thing here, because a green test made the wrong
+band look verified.
+**Retroactive sweep (#237): every multi-site edit I made this session.** Four scripted edits used a
+bare `str.replace` without asserting a match count. Three were single-site by luck and are correct;
+this one matched three. **1 of 4 defective, and the assert-the-count habit that would have caught it
+is already in the repo** - I use it for anchors and had not carried it to replacements.
+
+
 **L727 (B2469) - A BAND BUILT FROM DECILES IS NOT A SEARCH GRID, AND I NEVER CHECKED WHAT THE
 PROGRAMME ACTUALLY RAN.**
 
