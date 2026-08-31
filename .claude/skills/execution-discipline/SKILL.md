@@ -1772,6 +1772,15 @@ and the position feeling settled is what makes the disproof feel unnecessary.
   in a mid-run log - a check that could only ever pass, and would have read as reassurance at
   exactly the moment the run failed that way. **Find the WRITER of the string and confirm it
   reaches the file you are searching**, then trust the absence.
+- **A FIELD'S TYPE CAN MAKE A TRUTH UNSAYABLE (B2467/L726).** A boolean cannot say
+  'half'. MEASURED: a per-parameter subset_safe flag could not express that raising a threshold
+  is free while lowering it needs the engine, so it rounded conservative and a factorial read
+  31,500 against a true 3,500 - arithmetic correct over a field that could not carry the answer.
+  The tell was a row contradicting itself across two columns. **And for cache-gradability the
+  discriminator is PERSISTENCE, not monotonicity: ask what the cube STORES, not which way the
+  knob turns.** Related: naming a producer by its FILE rather than its step does not merely
+  describe badly, it HIDES ROWS - two constants went uninventoried because nobody asks which
+  parameters a filename has.
 - **TOOL OUTPUT IS NOT DELIVERY (B2466/L725).** Anything the owner asked to SEE goes in the
   RESPONSE BODY. A rendered table in a tool result looks delivered from the inside - correctly
   formatted, freshly generated, right there in context - and the channel is invisible from where

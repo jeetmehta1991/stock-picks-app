@@ -16335,6 +16335,46 @@ path, verified by the pyramid failing then passing. The `ledger_path` redirect -
 
 ### L725
 
+### L726
+
+**L726 (B2467) - A FIELD'S TYPE CAN MAKE A TRUTH UNSAYABLE, AND THE TABLE THEN ROUNDS.**
+
+Table A carried `subset_safe` as ONE BOOLEAN PER PARAMETER. The property is per LEVEL: raising a
+persisted count threshold selects a strict subset of rows already in the cube and grades FREE, while
+lowering it admits rows the cube never contained and needs the engine. **A boolean cannot say
+"half".** So it rounded to the conservative value, and the factorial computed from it read **31,500
+engine runs against a true 3,500** - a 9x overstatement that no arithmetic check could catch,
+because the arithmetic was correct over a field that could not carry the answer.
+**The tell was in the artifact and I had already written it.** P5's own why-this-band prose said
+*raising the bar only removes fires, so it grades free off the R5 cube* - beside a subset-safe cell
+reading NO. **A row contradicting itself in two columns is a schema defect, not a prose defect**, and
+I read past it twice while quoting the 31,500 to the owner.
+**THE DISCRIMINATOR IS PERSISTENCE, NOT MONOTONICITY.** This is what makes the rule general and it is
+what a five-lens council missed unanimously: one advisor proposed a "free lattice" across every
+monotone parameter. Wrong - `committed_growth_holders` and `institutional_increased` are persisted in
+signals_at_entry (100pct coverage measured), so any threshold over them re-scores offline; the
+producer constants are NEVER persisted, only their OUTPUT is, so no producer change grades off a
+cube in EITHER direction, however monotone. **Ask what the cube STORES, not which way the knob turns.**
+**SECOND DEFECT, FOUND BY THE SAME GRANULARITY PASS AND LARGER THAN THE FIRST.** Four rows named
+`build_institutional_persistence_precompute`, a 184-line SCRIPT. Naming the file instead of the step
+meant two constants inside it - the PIT reporting lag (45 days) and the share-aggregation floor -
+were **never inventoried at all**, so the `#182` denominator read 7 against a real inventory of 9.
+**A coarse producer label does not merely describe badly; it HIDES ROWS**, because nobody asks which
+parameters a filename has.
+Compliance failure against CHECKLIST item 182 - the row count of this table IS the denominator, and
+it was wrong by two - read with item 183, whose field contract the coarse label quietly defeated.
+Mechanism: `validate_spec` now requires free_band and resim_band to PARTITION the band exactly, and
+test_b2467 asserts no row names the script again, both recovered rows survive, the partition check
+bites when a level is dropped, the free product equals the committed pre-registration, and only the
+two PERSISTED thresholds carry free levels.
+**Retroactive sweep (#237): both specs in the renderer.** `institutional_committed_growth_long` was
+defective on both counts (fixed here). `smc_breaker_block_long` was checked and is SOUND on both -
+its six rows already name granular producer functions rather than a script, and its subset_safe
+values were set per parameter where the parameters genuinely are whole-band free or whole-band
+resim, so the binary field is not lying there. **1 of 2 defective, and it is the one whose producer
+lives in a standalone build script rather than in the signal library** - the shape to watch for.
+
+
 **L725 (B2466) - TOOL OUTPUT IS NOT DELIVERY, AND THE OWNER HAD TO SAY SO TWICE.**
 
 L651 says running an analysis is not delivering it - the artifact was on disk and nobody read it.
