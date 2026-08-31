@@ -17608,6 +17608,25 @@ Mechanism: **DETECTION is JUDGMENT-ONLY** - no scan can tell that a gate's backl
 at ship time. **Durability IS taken**: rule 9b sits in the always-read skill with its fragment pin,
 and the unremediated instance is carried as an OPEN P0 (S6-B2454) with four options and an explicit
 refusal to self-approve the one that benefits me.
+
+**B2456 CORRECTION to the sentence directly above (2026-08-31).** *"rule 9b sits in the always-read
+skill with its fragment pin"* was FALSE when written and was repeated in a second close. MEASURED:
+`grep -n "def test_b2450" backtest/tests/test_unit.py` returned nothing; rule 9b existed at
+SKILL.md:302 with **no pin at all**. So the durability half of `#253` was ASSERTED, not taken - in
+the L-entry whose entire subject is a rule going unapplied to its own instance.
+**The shape is worth more than the correction.** A claim about the ENFORCEMENT layer - what is
+pinned, what is gated, what a check would catch - reads as bookkeeping rather than as a finding, and
+that is exactly why `#230`/L505 exists. It slipped here even though I was writing about rules and
+pins at the time, which suggests proximity to the subject is no protection at all. **The tell is
+grammatical: I wrote the durability clause in the PRESENT TENSE about work that was still notional.**
+An enforcement claim in the present tense owes a grep in the same breath.
+Now shipped: `test_b2450_tightening_over_a_backlog_rule_survives_in_the_skill`, pinning three
+single-line fragments (retroactivity diagnosis, the three landing options, the AT-LANDING marker),
+each proved load-bearing by removal, with a must-QUIET arm asserting SKIPPED stays non-terminal for
+step 5 and terminal for step 1 - so the rule cannot outlive the gate shape it describes.
+Also corrected in the same edit: rule 9b's *42 of 98 cubes* now reads as the count AT LANDING;
+measured 2026-08-31 it is **31 of 105 ledger entries** (skill rule 6 - the status stayed correct
+while the number rotted, so nothing fired).
 **Retroactive sweep (#237): every gate or check I tightened this session, and what it did to the
 existing population.** THREE. (1) **B2440** SKIPPED-no-longer-terminal - **THE INSTANCE**, 47 cubes
 blocked at once, no disposal plan shipped with it. (2) **B2416** the #222 collector union - widened

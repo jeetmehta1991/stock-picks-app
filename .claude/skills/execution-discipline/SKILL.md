@@ -312,6 +312,11 @@ batch-1 traps. Each rule retroactively catches >=2 real past misses (#136).
    admits only artifacts created after the change, or an explicit
    grandfathered set that shrinks. **Otherwise the gate's own noise trains
    everyone to read past it**, which is how the control it replaced died.
+   The 42-of-98 figure is the reading AT LANDING, not a live count; measured
+   2026-08-31 after reclassifying the reasoned exclusions it is 31 of 105
+   ledger entries, and the gate still fires on every close. Pin:
+   test_b2450_tightening_over_a_backlog_rule_survives_in_the_skill (B2456 -
+   the rule was cited as pinned for two closes while no pin existed).
 
 10. **A SWEEP MUST CLASSIFY, NOT COUNT (L643/B2161).** "N instances of the
     bad pattern" invites a mass edit; "N instances, M of which mean a bound"

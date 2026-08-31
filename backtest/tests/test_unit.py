@@ -28630,6 +28630,60 @@ def test_b2439_postconfig_battery_rules_survive_in_the_runbook():
         "- the runbook rule and the code have drifted apart")
 
 
+def test_b2450_tightening_over_a_backlog_rule_survives_in_the_skill():
+    """S6-B2456 (L721): rule 9b was cited as pinned for two closes, unpinned.
+
+    B2450 wrote the rule from its own violation - a one-line tightening that
+    was correct and immediately put a historical backlog into a blocking
+    state - and put it in the always-read skill. Two closes then described it
+    as carrying a fragment pin. MEASURED 2026-08-31: `grep test_b2450` over
+    this file returned nothing. The claim was about the ENFORCEMENT layer,
+    which is the shape the skill's own capability-claims rule names as the
+    one that slips past (B1731/L505), and it slipped past here.
+
+    DETECTION of the class - a gate tightening that will strand an existing
+    population - stays JUDGMENT-ONLY: it needs the counterfactual "what would
+    this say about every artifact already on disk", which no scan evaluates
+    at ship time. DURABILITY is pinnable and is what this asserts.
+
+    Anchored per L705/L706 on fragments that sit WHOLLY on one line - the
+    L720 pin failed first time on a fragment spanning a line wrap.
+    """
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[2]
+    skill = (root / ".claude" / "skills" / "execution-discipline"
+             / "SKILL.md").read_text(encoding="utf-8")
+    lines = skill.splitlines()
+
+    # the diagnosis - a rule without its reason degrades to bookkeeping (L548)
+    assert any("A gate change is retroactive by default" in l for l in lines), (
+        "the skill lost rule 9b's diagnosis; without it the rule reads as "
+        "process trivia rather than the retroactivity finding it encodes")
+    # the remedy, which is the half that was missing when the rule was violated
+    assert any("a disposal plan with an owner, a scope that" in l
+               for l in lines), (
+        "the skill lost rule 9b's three landing options - the rule then says "
+        "a tightening is costly without saying what to ship alongside it")
+    # the number must stay marked as AT LANDING (skill rule 6: a count inside
+    # an open item decays silently while its status stays correct)
+    assert any("the reading AT LANDING, not a live count" in l
+               for l in lines), (
+        "rule 9b's 42-of-98 lost its as-of marker and now reads as current")
+
+    # must-QUIET arm: the rule describes a live gate. If the judgment steps
+    # stopped being non-terminal, 9b would be documenting a shape that no
+    # longer exists and the backlog it warns about would be imaginary.
+    import sys
+    sys.path.insert(0, str(root / "scripts"))
+    import verify_postconfig_complete as vpc
+    assert "SKIPPED" not in vpc.terminal_for("5_adversarial_lens_review"), (
+        "SKIPPED is terminal again for a judgment step - rule 9b's whole "
+        "premise (the tightening that created the backlog) has been reverted")
+    assert "SKIPPED" in vpc.terminal_for("1_cube_sanity"), (
+        "the tightening leaked onto the AUTO steps; 9b describes a change "
+        "scoped to steps 5-8 only")
+
+
 def test_b2427_subset_safety_prior_art_survives_in_the_plan():
     """S6-B2427 (L720): the rule I re-derived must stay findable where it lives.
 
