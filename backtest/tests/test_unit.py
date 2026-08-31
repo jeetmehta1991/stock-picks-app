@@ -24934,6 +24934,8 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
          "B2446/L721: a state collapsing 'cannot' and 'not yet' voids its count"),
         ("ask what it will say about the EXISTING population",
          "B2450/L721: a tightened gate re-judges the backlog and blocks every turn"),
+        ("Open ONE other member and confirm it carries",
+         "L722/B2444: a recommended comparison presupposes a population"),
         ("OBJECT of the request",
          "L624: a skill named as the subject is still triggered"),
         ("ASSERT THE ANCHOR BEFORE YOU REPLACE IT",
@@ -25225,10 +25227,11 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # source fragment); 121 -> 122 at B2432 (the subject-vs-remedy fragment);
     # 122 -> 123 at B2434 (the claim-armed-gate fragment); 123 -> 124 at B2446
     # (the collapsed-status-count fragment); 124 -> 125 at B2450 (the
-    # tightened-gate-re-judges-the-backlog fragment). This number is the pin's
-    # own must-FIRE arm - if a doc edit silently drops fragments, the gutted
-    # count falls and this assertion catches the shrinkage.
-    assert len(gutted) == 125, gutted
+    # tightened-gate-re-judges-the-backlog fragment); 125 -> 126 at B2453 (the
+    # presupposed-population fragment). This number is the pin's own must-FIRE
+    # arm - if a doc edit silently drops fragments, the gutted count falls and
+    # this assertion catches the shrinkage.
+    assert len(gutted) == 126, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 

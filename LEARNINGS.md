@@ -17539,3 +17539,46 @@ and it is the control that shows the repo already knows the distinction in one p
 battery gate lost it in another.** The difference is that the queue's classifier was designed as a
 PARTITION with terminality declared per class (L537), while the battery's TERMINAL set was written
 as a convenience set of "things that are not still pending".
+
+## L722
+**RECOMMENDING A PROBE IS A CAPABILITY CLAIM ABOUT A POPULATION THAT MAY NOT EXIST (B2444).**
+Asked to choose among four remediation options, I recommended the cheapest-looking one: *"measure
+psr's spread on two or three other configs and see whether this is local or general"*. The owner
+approved it. **It cannot be run.** Of 32 grid artifacts with result rows, **31 carry ONLY
+BELOW_POWER_FLOOR / NO_EXIT_SELECTABLE / ZERO_FIRES and never PASS or FAIL**, because Step 1 runs
+rank-only with no gates (owner ruling B1608) and at 100 tickers x 2y nearly every combination is
+cut by sample size before a gate is reached. **Exactly ONE config has ever produced graded rows -
+198 of the programme's ~9,600 enumerated combinations.** The comparison population I proposed
+measuring does not exist and never did.
+**Why this slipped past every check I ran.** #230/L506 says an effort estimate is a quantitative
+claim and a claim about what a FILE can support is a capability claim - and its examples are all
+about a named artifact's FIELDS. I checked nothing because I was not proposing to read a field; I
+was proposing to read *more of the same thing I had already read successfully*. **The population
+felt like a given rather than a claim**, since 32 artifacts plainly exist on disk. What does not
+exist is the SUBSET of them that carries the verdict my probe needed.
+**The rule: before recommending "measure it on the others", open one OTHER member and confirm it
+carries the field the measurement reads.** One file, one key. The tell is a recommendation whose
+verb is *compare*, *replicate* or *check elsewhere* - each presupposes a second population, and
+presupposition is exactly what goes unstated.
+**Applied immediately to my own replacement recommendation, which is the part worth copying.**
+Having moved to option (c) - require a bar psr cannot saturate, namely holdout ci_lo > 0 - I
+opened the artifact BEFORE repeating it: **ci_lo is populated on 198 of 198 graded rows (100pct),
+range -4.169 .. 0.19, and 37 rows clear zero**, so the bar is computable and non-vacuous; and all
+three current qualifiers sit at -0.415 / -0.415 / -0.663, so **none would clear it**. That is the
+same class of claim, checked this time.
+Compliance failure against **CHECKLIST #230** read with its L506 extension; no new item (#136) -
+230 is exactly the class, and what this entry adds is the POPULATION face, where the missing thing
+is not a field in a known file but the existence of comparable files at all.
+Mechanism: **DETECTION is JUDGMENT-ONLY** - no scan can tell that a recommended comparison
+presupposes a population, because the presupposition is never written down. **Durability IS
+taken**: the rule is in the skill beside #230's artifact-and-field clause, fragment-pinned in
+test_b2123, and the corrective measurement above is reproducible from the committed grid artifact.
+**Retroactive sweep (#237): every recommendation I made this turn that presupposes a population.**
+FOUR. (1) *"measure psr on other configs"* - **WRONG, the instance**; no gated population exists.
+(2) *"the four cfg/w1 configs are a cheaper pilot, 1 step each versus 4"* - **SOUND**, verified by
+opening the ledger entries before saying it. (3) *"run step 5 across all 31, cheap because the
+cubes exist"* - **SOUND**, and verified structurally rather than by luck: those 31 appear in the
+blocking list only because `completed_cubes()` found a trade_exit_detail.csv for each, so their
+existence is the enumeration's precondition. (4) *"require holdout ci_lo > 0"* - **SOUND, checked
+after the miss**, 198 of 198 populated. **1 of 4 defective, and the defective one was the only
+recommendation I had not opened an artifact for.**

@@ -132,6 +132,18 @@ it wins over speed, over completeness, over looking finished.
       claim about what an artifact CAN SUPPORT is a capability claim** - open it
       and check the columns before proposing work that depends on them.
 
+   a2) **POPULATION - does the SET you propose to measure across exist? (L722/B2444)**
+      The schema rule asks about a field in a KNOWN file; this asks whether the
+      comparable files exist at all. MEASURED: I recommended *"measure it on two
+      or three other configs to see whether this is local or general"*, the owner
+      approved it, and it could not be run - 31 of 32 grid artifacts carry only
+      sample-size verdicts and have never produced a graded row, so the
+      comparison population does not exist and never did. **The tell is a verb:
+      compare, replicate, check elsewhere, see whether it generalises** - each
+      presupposes a second population, and a presupposition is never written down
+      where you would notice it. **Open ONE other member and confirm it carries
+      the field your measurement reads.** One file, one key.
+
    b) **COST - "seconds", "cheap", "one command", "offline".** I said *"offline
       on cached cubes, seconds"* for work that needed a per-trade re-grade at a
       different grain. **An effort estimate is a quantitative claim** and falls
