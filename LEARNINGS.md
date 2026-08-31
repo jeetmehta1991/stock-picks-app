@@ -16333,6 +16333,45 @@ path, verified by the pyramid failing then passing. The `ledger_path` redirect -
 
 ### L724
 
+### L725
+
+**L725 (B2466) - TOOL OUTPUT IS NOT DELIVERY, AND THE OWNER HAD TO SAY SO TWICE.**
+
+L651 says running an analysis is not delivering it - the artifact was on disk and nobody read it.
+This is the SAME boundary one step further out: I rendered Table A correctly, three times, into
+**tool output**, which the harness shows to ME and not reliably to the owner. Twice the owner
+replied that they could not see it, and the second time named it exactly - *"I still cant see table
+A in this chat"*. My first reading was that the FORMAT was wrong, which sent a whole batch into
+CHECKLIST #183 (a real defect, found and fixed at S6-B2465) while the actual complaint went
+unaddressed for another turn.
+**Why it survived:** a rendered table in a tool result LOOKS delivered from where I sit - it is
+right there in my context, correctly formatted, freshly generated. **The channel is invisible from
+the inside**, and nothing in the evidence discipline asks which side of it a deliverable landed on.
+**The rule: anything the owner asked to SEE goes in the response body.** Tool output is working
+material; a file path is a durable copy; neither is the delivery. fable-mode's own zero-context test
+settles it - *would someone with none of this session's context understand it?* - and a reader
+without my tool results cannot see the table at all, so the test fails by construction.
+**And a second thing this exposed: transcribing an artifact into chat makes you the AUTHOR of its
+claims.** Pasting Table A armed the uninspected-constant gate on EMA_PAIRS and the uncosted-probe
+gate on the word "cheap" - both the renderer's words, both now mine. The gates were right. Verified
+rather than dropped: config.py:2496-2497 reads os.environ.get("EMA_PAIRS", "9:21,20:50,50:200,100:150"),
+so the knob genuinely is env-driven and its four pairs emit exactly the seven spans P7 bands; and
+technical.py:33 records that it is read at call time, not frozen at import. **Scoping correction the
+check forced: "cheap" is true of VARYING the span (no code change) and false of RUNNING it (an
+engine resim per span)** - the cell conflated the two.
+Compliance failure against CHECKLIST item 284, which is L651's anchor - an analysis that runs per
+event is RENDERED per event - extended here from "rendered into an artifact" to "rendered where the
+reader is".
+Mechanism: DETECTION is JUDGMENT-ONLY - no scan compares what the owner asked to see against which
+channel it landed in, because both are text and only one has a reader. Durability is the skill
+clause below plus its fragment pin.
+**Retroactive sweep (#237) of what this session was asked to SHOW:** four - Table A (DEFECTIVE, three
+times into tool output), Table C earlier in the session (SOUND, pasted into the response), the
+post-config battery status (SOUND, pasted), and the ticket counts table (SOUND, pasted every close).
+**1 of 4, and it is the only one whose renderer emitted many lines** - the long output is exactly
+what makes leaving it in the tool result feel sufficient.
+
+
 **L724 (B2387/B2419) - TWO WAYS A FAILURE RENDERS AS A CLEAN RESULT, both hit while implementing
 tickets this session.**
 

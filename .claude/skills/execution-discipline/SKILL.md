@@ -1772,6 +1772,14 @@ and the position feeling settled is what makes the disproof feel unnecessary.
   in a mid-run log - a check that could only ever pass, and would have read as reassurance at
   exactly the moment the run failed that way. **Find the WRITER of the string and confirm it
   reaches the file you are searching**, then trust the absence.
+- **TOOL OUTPUT IS NOT DELIVERY (B2466/L725).** Anything the owner asked to SEE goes in the
+  RESPONSE BODY. A rendered table in a tool result looks delivered from the inside - correctly
+  formatted, freshly generated, right there in context - and the channel is invisible from where
+  you sit. MEASURED: I rendered Table A three times into tool output and the owner twice replied
+  that they could not see it; my first reading was that the FORMAT was wrong, which spent a batch
+  on a real but different defect while the actual complaint went unanswered. A file path is a
+  durable copy, not a delivery. **And transcribing an artifact into chat makes you the AUTHOR of
+  its claims** - pasting a table arms the constant and effort gates on the renderer's words.
 - **A 0pct OR 100pct RESULT FROM A NEW EXTRACTOR IS A PARSER HYPOTHESIS (B2419/L724).**
   MEASURED: `ast.literal_eval` on a JSON column with lowercase true/false raised on every row, so
   a probe reported 0 of 1849 present - indistinguishable from the field not being persisted, and
