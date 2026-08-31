@@ -858,8 +858,8 @@
    "status": "DONE"
   },
   "6_post_fix_recheck": {
-   "evidence": "B1702 - same as wave 1: the B1682 regime_flip fix changes cube GENERATION, not grading, so re-grading an existing cube cannot revive the exit. cfg1/cfg2 are additionally SUPERSEDED by wave 1 on their shared parameters.",
-   "status": "SKIPPED"
+   "evidence": "B1702 - same as wave 1: the B1682 regime_flip fix changes cube GENERATION, not grading, so re-grading an existing cube cannot revive the exit. cfg1/cfg2 are additionally SUPERSEDED by wave 1 on their shared parameters. || S6-B2446 RECLASSIFIED SKIPPED -> N/A: the reason above states a MEASURED IMPOSSIBILITY (the fix changes cube GENERATION, so re-grading this cube cannot exercise it), which is 'cannot apply', not a deferral. Under S6-B2440 a deferral no longer closes a judgment step; a reasoned exclusion does. No status was upgraded to DONE and the original reason is preserved verbatim above.",
+   "status": "N/A"
   },
   "6b_equivalence_class_check": {
    "evidence": "B1702 - EXECUTED: cfg1 10 classes / 12 members, cfg2 10 classes / 21 members; every class holds exactly ONE (fires, exit, sharpe) outcome. PASS both.",
@@ -897,8 +897,8 @@
    "status": "DONE"
   },
   "6_post_fix_recheck": {
-   "evidence": "B1702 - same as wave 1: the B1682 regime_flip fix changes cube GENERATION, not grading, so re-grading an existing cube cannot revive the exit. cfg1/cfg2 are additionally SUPERSEDED by wave 1 on their shared parameters.",
-   "status": "SKIPPED"
+   "evidence": "B1702 - same as wave 1: the B1682 regime_flip fix changes cube GENERATION, not grading, so re-grading an existing cube cannot revive the exit. cfg1/cfg2 are additionally SUPERSEDED by wave 1 on their shared parameters. || S6-B2446 RECLASSIFIED SKIPPED -> N/A: the reason above states a MEASURED IMPOSSIBILITY (the fix changes cube GENERATION, so re-grading this cube cannot exercise it), which is 'cannot apply', not a deferral. Under S6-B2440 a deferral no longer closes a judgment step; a reasoned exclusion does. No status was upgraded to DONE and the original reason is preserved verbatim above.",
+   "status": "N/A"
   },
   "6b_equivalence_class_check": {
    "evidence": "B1702 - EXECUTED: cfg1 10 classes / 12 members, cfg2 10 classes / 21 members; every class holds exactly ONE (fires, exit, sharpe) outcome. PASS both.",
@@ -2113,8 +2113,8 @@
    "status": "DONE"
   },
   "6_post_fix_recheck": {
-   "evidence": "B1700 - the B1682 regime_flip fix changes cube GENERATION, not grading. MEASURED: 302/320 rows carry the bare 'regime_flip' label, baked in at run time; re-grading cannot revive it and only a re-RUN can. Blocked on the S6-B1682b owner ruling - SKIPPED with a reason, not silently pending.",
-   "status": "SKIPPED"
+   "evidence": "B1700 - the B1682 regime_flip fix changes cube GENERATION, not grading. MEASURED: 302/320 rows carry the bare 'regime_flip' label, baked in at run time; re-grading cannot revive it and only a re-RUN can. Blocked on the S6-B1682b owner ruling - SKIPPED with a reason, not silently pending. || S6-B2446 RECLASSIFIED SKIPPED -> N/A: the reason above states a MEASURED IMPOSSIBILITY (the fix changes cube GENERATION, so re-grading this cube cannot exercise it), which is 'cannot apply', not a deferral. Under S6-B2440 a deferral no longer closes a judgment step; a reasoned exclusion does. No status was upgraded to DONE and the original reason is preserved verbatim above.",
+   "status": "N/A"
   },
   "6b_equivalence_class_check": {
    "evidence": "B1700 - EXECUTED: 10 classes / 16 members per config; every class holds exactly ONE (fires, exit, sharpe) outcome and class_size == len(members). PASS both configs.",
@@ -2151,8 +2151,8 @@
    "status": "DONE"
   },
   "6_post_fix_recheck": {
-   "evidence": "B1700 - the B1682 regime_flip fix changes cube GENERATION, not grading. MEASURED: 302/320 rows carry the bare 'regime_flip' label, baked in at run time; re-grading cannot revive it and only a re-RUN can. Blocked on the S6-B1682b owner ruling - SKIPPED with a reason, not silently pending.",
-   "status": "SKIPPED"
+   "evidence": "B1700 - the B1682 regime_flip fix changes cube GENERATION, not grading. MEASURED: 302/320 rows carry the bare 'regime_flip' label, baked in at run time; re-grading cannot revive it and only a re-RUN can. Blocked on the S6-B1682b owner ruling - SKIPPED with a reason, not silently pending. || S6-B2446 RECLASSIFIED SKIPPED -> N/A: the reason above states a MEASURED IMPOSSIBILITY (the fix changes cube GENERATION, so re-grading this cube cannot exercise it), which is 'cannot apply', not a deferral. Under S6-B2440 a deferral no longer closes a judgment step; a reasoned exclusion does. No status was upgraded to DONE and the original reason is preserved verbatim above.",
+   "status": "N/A"
   },
   "6b_equivalence_class_check": {
    "evidence": "B1700 - EXECUTED: 10 classes / 16 members per config; every class holds exactly ONE (fires, exit, sharpe) outcome and class_size == len(members). PASS both configs.",

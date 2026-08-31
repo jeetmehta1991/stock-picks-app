@@ -17465,6 +17465,24 @@ dispositioned, so the completeness gate passes. **The gate checks whether a deci
 never whether the work was DONE** - and every one of the 42 skips carried the same reason,
 *"PENDING-WAVE-REVIEW: the wave-level review batch performs this step"*, naming a batch that has
 never existed. **A deferral to a process nobody built satisfied a mandatory control 42 times.**
+**CORRECTED (B2446), and the correction sharpens the finding rather than softening it.** The
+sentence above says *every one* of the skips carried that same reason. **Measured over the whole
+ledger instead of recalled: there are 170 judgment-step SKIPs across 40 DISTINCT reason
+prefixes**, of which **124 (31 configs x 4)** are the PENDING-WAVE-REVIEW deferral and the
+remaining **46 are reasoned exclusions** - instrument cubes whose deliverable was a
+concurrency/determinism/isolation measurement rather than a strategy result, a *"no fix arose from
+step 5 - nothing to recheck"*, a comparator cube, and four carrying a MEASURED impossibility (the
+regime_flip fix changes cube GENERATION, so re-grading an existing cube cannot exercise it;
+302/320 rows carry the label baked in at run time). **Those 46 were never deferrals - they were
+N/A wearing SKIPPED's label**, and 42 was the count for step 5 alone, not the population.
+**Why the corrected reading is worse for the old gate, not better:** the vocabulary had two
+distinct facts - *not applicable* and *not yet done* - collapsed into one accepting state, so the
+legitimate exclusions and the empty promises were indistinguishable to every reader AND to the
+gate. That is why nobody could see 124 real deferrals inside 170 skips. The B2440 split forces the
+distinction, and applying it (B2446) reclassified four of them to N/A on their own recorded
+evidence, dropping the blocking population from 47 cubes to 42 without upgrading anything to DONE.
+**The general rule: when a status set collapses "cannot" and "not yet" into one value, the count of
+the state tells you nothing about the debt - re-read the REASONS before quoting the number.**
 **Three properties made it invisible, and each is reusable as a tell:**
 (1) **The escape was TERMINAL.** L642 says a guard must fail closed on the ABSENT input; this is
 the sibling - a guard must not treat a PROMISE as an outcome. SKIPPED is a deferral; a deferral is
