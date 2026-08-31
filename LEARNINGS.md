@@ -9223,6 +9223,38 @@ throws away the direction and the magnitude - the two things that determine what
 
 ### L503
 
+**ADDENDUM (B2459): THE REMEDY ANSWERED THE MEASUREMENT, NOT THE QUESTION.** L503's instance was a
+RESPONSE that was true and off-target. This is the same defect one step later, in a RECOMMENDATION
+the owner was asked to rule on. MEASURED: the pilot's finding was that a 300-combination search runs
+with no effective multiplicity correction. The thing I had just measured was that psr cannot
+DISCRIMINATE - computable on 85 of 198 graded rows, taking two distinct values, both above its bar.
+I then recommended a non-saturating statistic (holdout ci_lo > 0) as the answer, and it is not one:
+ci_lo is measured on the SAME holdout used to select among the 300, so taking the best of 198
+candidates on it is exactly as exposed as taking the best pooled Sharpe was. **It fixes
+discrimination. The question was multiplicity.**
+**Why it slipped, and this is the general shape:** the remedy you reach for is the one that answers
+the MEASUREMENT in front of you, not the QUESTION you asked - because the measurement is fresh,
+quantified and yours, while the question is a sentence written several steps earlier. The two feel
+like one topic (both are "the gates are not doing their job"), and nothing in the evidence
+discipline separates them: every number in the bad recommendation was correctly measured. A properly
+costed objection is what caught it, which is the Contrarian lens earning its mandate rather than
+decorating an answer.
+**A second tell worth keeping:** the recommendation would have retroactively voided a decision the
+owner had already made - all three qualifiers sit at -0.415/-0.415/-0.663 and 0 of 3 clear the
+proposed bar. **A remedy that invalidates a standing owner ruling deserves a second look at whether
+it is even answering the right question**, because that consequence is a strong signal the remedy
+is aimed at a different target than the one under discussion.
+Compliance failure against CHECKLIST item 228 read with L503. No new item (#136): 228 IS the
+question-to-answer mapping class, and this extends its subject from a RESPONSE to a RECOMMENDATION.
+Mechanism: DETECTION is JUDGMENT-ONLY - no scan compares a remedy's target property to the stated
+finding's, since both are prose and both are on-topic. Durability is the skill's #228 section, which
+this addendum extends in place, plus its fragment pin.
+**Retroactive sweep (#237) of every remedy recommended to the owner this turn:** four - the gate
+fix (targets the stated defect, SOUND), the pilot scope (SOUND), the unreviewed-admission marking
+(SOUND), and the ci_lo bar (DEFECTIVE, aimed at the adjacent property). **1 of 4 defective, and it
+is the only one proposed immediately after measuring something else.**
+
+
 **I answered the question I had work for, not the question asked**
 
 **B1722, owner catch.** Asked what the previous turn did about CONTEXT COMPRESSION specifically, I

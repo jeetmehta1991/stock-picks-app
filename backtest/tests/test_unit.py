@@ -24913,6 +24913,7 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         if frag not in fable_text:
             missing.append(f"fable-mode lost [{why}]: {frag!r}")
     for frag, why in (
+        ("answers the measurement in front of you", "L503/B2459: a remedy can miss the question"),
         ("the trigger to re-run its cheapest disproof", "L583/B2458: repeating a refusal is not re-deriving it"),
         ("`-m` appearing at all is wrong", "L520/B2457: the bright line is a FORM, not a property"),
         ("second instance L623/B2122", "the B1993d bullet must name both instances"),
@@ -25235,7 +25236,8 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # this assertion catches the shrinkage.
     # 126 -> 127 at B2457 (the L520 form-not-property fragment).
     # 127 -> 128 at B2458 (the L583 restated-position fragment).
-    assert len(gutted) == 128, gutted
+    # 128 -> 129 at B2459 (the L503 remedy-misses-the-question fragment).
+    assert len(gutted) == 129, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 

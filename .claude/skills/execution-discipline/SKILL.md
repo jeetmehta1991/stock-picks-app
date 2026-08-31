@@ -1736,6 +1736,17 @@ I happened to grep first. **Nothing required that grep.**
 
 ## A FIGURE IN A CODE COMMENT IS AN ASSERTION, NOT A MEASUREMENT (B1908 - L583, CHECKLIST #201)
 
+**EXTENDED (B2459): AND A RECOMMENDATION CAN MISS THE QUESTION THE SAME WAY A RESPONSE CAN.**
+MEASURED: after finding a search had no multiplicity correction, I measured that its significance
+statistic could not DISCRIMINATE, and recommended a non-saturating statistic - which fixes
+discrimination and leaves multiplicity untouched, because it is selected on the same holdout.
+**The remedy you reach for answers the measurement in front of you, not the question you asked** -
+the measurement is fresh, quantified and yours; the question is a sentence from several steps back,
+and the two feel like one topic. No evidence check separates them, since every number in the bad
+recommendation was correctly measured. Before filing a remedy, name the PROPERTY it changes and
+check that property is the one the finding named. A remedy that would void a standing owner ruling
+is a strong tell that it is aimed at a different target.
+
 **WIDENED (B2458): NOT ONLY A FIGURE - ANY CLAIM A COMMENT ASSERTS.** What a gate covers, what an
 escape reaches, what a branch does. MEASURED: across EIGHT consecutive blocked closes I told the
 owner *"the .stop_exempt hatch does not reach scan gates"*, citing a line number that is a COMMENT
