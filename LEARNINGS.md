@@ -17317,3 +17317,43 @@ seven named, and S6-B2419 enumerates them as the work population.
 Mechanism: **JUDGMENT-ONLY for detection** - no scan knows which rows a prose count meant to
 cover; durability is the named enumeration in the two queue rows (greppable population, count
 re-derivable by one expression).
+
+## L719
+**A KEY'S PRESENCE IN A PERSISTED SIGNAL DICT IS A PRODUCER FACT, NOT A GATE FACT (B2423).**
+Measuring why `insider_cluster_active` was absent from 95.7pct of one strategy's fire rows, I
+wrote that the strategy's then-live OR gate "explains part of" the absence - reasoning that under
+an OR the second branch need not be evaluated. **That is false about this system and I published
+it before checking.** The signals dict is built ONCE PER (ticker, bar) by the producer layer and
+handed to every strategy; no gate's evaluation writes to it, so short-circuit semantics cannot
+touch what it contains. **The disproof was already in the same measurement I had run:** the key is
+~95pct absent on family members that never reference it (4.4-4.5pct on two that don't gate on it
+at all), which a gate-side explanation cannot produce.
+**Why the wrong explanation was attractive:** short-circuit evaluation is a real mechanism, the
+strategy in question really did have an OR gate, and the numbers really were low - three true
+premises assembling a false cause (the manufactured-finding shape of L688, arriving through
+evaluation semantics instead of a branch).
+**The rule: before explaining a persisted field's presence or absence by CONSUMER behaviour,
+locate the WRITER.** One read of the producer settles which layer can affect it, and the
+discriminator is cheap and general: **if the field is equally absent for consumers that never
+read it, no consumer-side story is available.**
+**What the correct reading bought, immediately:** an emission-rate fact rather than a gate quirk,
+and from it a strict upper bound - AND-fires are a subset of the logged OR-fires, 24 of 2,751
+rows carry the key true, so the strategy fires at most 24 times in four years against a
+75-trade bar and is FIRE-DEAD under its live gate. The wrong explanation would have left that
+undiscovered and sent the next reader to the gate rather than the producer.
+Compliance failure against CHECKLIST item 44(b) read with the NO-UNTESTED-CAUSE rule - a
+default/absent value must be INVESTIGATED at its producer, never explained from the consumer.
+No new item (#136): 44(b) is the class and its examples are exactly this shape.
+Mechanism: **DETECTION is JUDGMENT-ONLY** - no scan can tell which layer a prose causal claim
+assigns a field to. **Durability IS taken**: the retraction and the corrected reading are in the
+S6-B2423 ledger row and the B2423 commit message, and the coverage measurement that disproves the
+gate-side story is reproducible from the committed artifact by the scratchpad scan.
+**Retroactive sweep (#237): every causal claim about a persisted-field value this turn.** Three.
+(1) THIS ONE - consumer-side story for a producer-side fact, WRONG, retracted. (2) "R5's
+insider_combo cell measures the OR variant" - originally argued from git dates, which do NOT
+close (pre-B1197 was also AND); re-grounded on the data (93 of 117 rows false, impossible under
+AND) and SOUND on the second footing - recorded because the first footing shipped into a ticket
+before the check. (3) "the other 6 members are gate-consistent" - argued from commit dates vs the
+R5 artifact date, and it survives only in the weaker direction the dates can support (no post-R5
+family gate change exists: B1422 touched a non-member) - SOUND as stated, and deliberately not
+strengthened beyond what dates can carry.

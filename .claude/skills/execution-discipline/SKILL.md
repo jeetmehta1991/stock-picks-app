@@ -512,7 +512,16 @@ Surface-level = non-compliant. Every audit must satisfy ALL of:
    row. **Open ONE row and look for the value under another name or another
    level before writing "not recorded" into a ticket** - and note that the
    honest-rendering rule (an unmeasured value shows `-`, never `0`) is exactly
-   what let this look like good reporting for as long as it survived; temporal coverage checked across the full
+   what let this look like good reporting for as long as it survived.
+   **EXTENSION (B2423 / L719): a persisted field's presence is a PRODUCER fact,
+   so locate the WRITER before explaining it by consumer behaviour.** I
+   attributed a key's 95pct absence to a strategy's OR gate short-circuiting -
+   three true premises (short-circuit is real, the gate was an OR, the rate was
+   low) assembling a false cause, when signal dicts are built once per (ticker,
+   bar) before any gate reads them. The cheap general discriminator:
+   if the field is equally absent for consumers that never read it, no consumer-side story is available.
+   Correcting it turned a gate quirk into an emission rate and yielded a strict
+   upper bound that showed the strategy was fire-dead. Temporal coverage checked across the full
    backtest window, not one date (CHECKLIST #156 / L201).
 7. **Line-by-line ticket extraction** when reviewing feedback or prior turns:
    every sentence becomes a candidate ticket BEFORE synthesis
