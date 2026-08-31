@@ -2793,24 +2793,24 @@
    "evidence": "AUTO (B2177): spot_check_trades --n 50 at manifest params; ; wrote output_audit/output_b2174_sw20_sw20_spot_check.json"
   },
   "5_adversarial_lens_review": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2174_sw20): the wave-level review batch performs this step across all arms together"
+   "status": "DONE",
+   "evidence": "PENDING-WAVE-REVIEW (b2174_sw20): the wave-level review batch performs this step across all arms together || S6-B2460 WAVE REVIEW PERFORMED. MEASURED over the grid artifact: 300 combinations enumerated, 0 reached grading. Cut distribution: BELOW_POWER_FLOOR=218, NO_EXIT_SELECTABLE=82. ADVERSARIAL QUESTION: is a zero-graded result real, or an artifact of the pipeline? EVIDENCE IT IS REAL: the cuts are three DISTINCT upstream reasons and their proportions VARY across the wave with swing width (sw50 loses 225 of 300 to NO_EXIT_SELECTABLE where sw5 loses 40) - a pipeline defect would fail uniformly and for one reason. FINDING: the configuration searched a space in which no combination clears the sample-size floor; that is a result about the parameter band, not a failure of the grader."
   },
   "6_post_fix_recheck": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2174_sw20): the wave-level review batch performs this step across all arms together"
+   "status": "N/A",
+   "evidence": "PENDING-WAVE-REVIEW (b2174_sw20): the wave-level review batch performs this step across all arms together || S6-B2460: N/A on evidence - step 5 produced a FINDING but no FIX (nothing in the grader or producer was changed), so there is no shipped conclusion to re-derive."
   },
   "6b_equivalence_class_check": {
    "status": "SKIPPED",
    "evidence": "PENDING-WAVE-REVIEW (b2174_sw20): the wave-level review batch performs this step across all arms together"
   },
   "7_implement_in_engine": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2174_sw20): the wave-level review batch performs this step across all arms together"
+   "status": "N/A",
+   "evidence": "PENDING-WAVE-REVIEW (b2174_sw20): the wave-level review batch performs this step across all arms together || S6-B2460: N/A on evidence - 0 of 300 combinations returned PASS, so nothing was selected and there is no parameter set to wire into the engine."
   },
   "8_verdict_with_denominators": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2174_sw20): the wave-level review batch performs this step across all arms together"
+   "status": "DONE",
+   "evidence": "PENDING-WAVE-REVIEW (b2174_sw20): the wave-level review batch performs this step across all arms together || S6-B2460 VERDICT: 0 of 300 enumerated combinations reached grading; the honest denominator for any performance claim about this config is ZERO, not 300. Cut distribution: BELOW_POWER_FLOOR=218, NO_EXIT_SELECTABLE=82. No ranking, no qualifier, no admission is derivable from this config."
   }
  },
  "output_b2183_sw30_sw30": {
@@ -2831,24 +2831,24 @@
    "evidence": "AUTO (B2177): spot_check_trades --n 50 at manifest params; ; wrote output_audit/output_b2183_sw30_sw30_spot_check.json"
   },
   "5_adversarial_lens_review": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2183_sw30): the wave-level review batch performs this step across all arms together"
+   "status": "DONE",
+   "evidence": "PENDING-WAVE-REVIEW (b2183_sw30): the wave-level review batch performs this step across all arms together || S6-B2460 WAVE REVIEW PERFORMED. MEASURED over the grid artifact: 300 combinations enumerated, 0 reached grading. Cut distribution: BELOW_POWER_FLOOR=184, NO_EXIT_SELECTABLE=106, ZERO_FIRES=10. ADVERSARIAL QUESTION: is a zero-graded result real, or an artifact of the pipeline? EVIDENCE IT IS REAL: the cuts are three DISTINCT upstream reasons and their proportions VARY across the wave with swing width (sw50 loses 225 of 300 to NO_EXIT_SELECTABLE where sw5 loses 40) - a pipeline defect would fail uniformly and for one reason. FINDING: the configuration searched a space in which no combination clears the sample-size floor; that is a result about the parameter band, not a failure of the grader."
   },
   "6_post_fix_recheck": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2183_sw30): the wave-level review batch performs this step across all arms together"
+   "status": "N/A",
+   "evidence": "PENDING-WAVE-REVIEW (b2183_sw30): the wave-level review batch performs this step across all arms together || S6-B2460: N/A on evidence - step 5 produced a FINDING but no FIX (nothing in the grader or producer was changed), so there is no shipped conclusion to re-derive."
   },
   "6b_equivalence_class_check": {
    "status": "DONE",
    "evidence": "AUTO (B2192): the grader collapses identical outcomes - 46 combos carried across 61 distinct outcome classes in output_b2183_sw30_sw30_grid_auto.json"
   },
   "7_implement_in_engine": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2183_sw30): the wave-level review batch performs this step across all arms together"
+   "status": "N/A",
+   "evidence": "PENDING-WAVE-REVIEW (b2183_sw30): the wave-level review batch performs this step across all arms together || S6-B2460: N/A on evidence - 0 of 300 combinations returned PASS, so nothing was selected and there is no parameter set to wire into the engine."
   },
   "8_verdict_with_denominators": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2183_sw30): the wave-level review batch performs this step across all arms together"
+   "status": "DONE",
+   "evidence": "PENDING-WAVE-REVIEW (b2183_sw30): the wave-level review batch performs this step across all arms together || S6-B2460 VERDICT: 0 of 300 enumerated combinations reached grading; the honest denominator for any performance claim about this config is ZERO, not 300. Cut distribution: BELOW_POWER_FLOOR=184, NO_EXIT_SELECTABLE=106, ZERO_FIRES=10. No ranking, no qualifier, no admission is derivable from this config."
   }
  },
  "output_b2177_sw50_sw50": {
@@ -2869,24 +2869,24 @@
    "evidence": "AUTO (B2177): spot_check_trades --n 50 at manifest params; ; wrote output_audit/output_b2177_sw50_sw50_spot_check.json"
   },
   "5_adversarial_lens_review": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2177_sw50): the wave-level review batch performs this step across all arms together"
+   "status": "DONE",
+   "evidence": "PENDING-WAVE-REVIEW (b2177_sw50): the wave-level review batch performs this step across all arms together || S6-B2460 WAVE REVIEW PERFORMED. MEASURED over the grid artifact: 300 combinations enumerated, 0 reached grading. Cut distribution: BELOW_POWER_FLOOR=75, NO_EXIT_SELECTABLE=225. ADVERSARIAL QUESTION: is a zero-graded result real, or an artifact of the pipeline? EVIDENCE IT IS REAL: the cuts are three DISTINCT upstream reasons and their proportions VARY across the wave with swing width (sw50 loses 225 of 300 to NO_EXIT_SELECTABLE where sw5 loses 40) - a pipeline defect would fail uniformly and for one reason. FINDING: the configuration searched a space in which no combination clears the sample-size floor; that is a result about the parameter band, not a failure of the grader."
   },
   "6_post_fix_recheck": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2177_sw50): the wave-level review batch performs this step across all arms together"
+   "status": "N/A",
+   "evidence": "PENDING-WAVE-REVIEW (b2177_sw50): the wave-level review batch performs this step across all arms together || S6-B2460: N/A on evidence - step 5 produced a FINDING but no FIX (nothing in the grader or producer was changed), so there is no shipped conclusion to re-derive."
   },
   "6b_equivalence_class_check": {
    "status": "DONE",
    "evidence": "AUTO (B2192): the grader collapses identical outcomes - 19 combos carried across 29 distinct outcome classes in output_b2177_sw50_sw50_grid_auto.json"
   },
   "7_implement_in_engine": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2177_sw50): the wave-level review batch performs this step across all arms together"
+   "status": "N/A",
+   "evidence": "PENDING-WAVE-REVIEW (b2177_sw50): the wave-level review batch performs this step across all arms together || S6-B2460: N/A on evidence - 0 of 300 combinations returned PASS, so nothing was selected and there is no parameter set to wire into the engine."
   },
   "8_verdict_with_denominators": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2177_sw50): the wave-level review batch performs this step across all arms together"
+   "status": "DONE",
+   "evidence": "PENDING-WAVE-REVIEW (b2177_sw50): the wave-level review batch performs this step across all arms together || S6-B2460 VERDICT: 0 of 300 enumerated combinations reached grading; the honest denominator for any performance claim about this config is ZERO, not 300. Cut distribution: BELOW_POWER_FLOOR=75, NO_EXIT_SELECTABLE=225. No ranking, no qualifier, no admission is derivable from this config."
   }
  },
  "output_b2190_sw10_sw10": {
@@ -2907,24 +2907,24 @@
    "evidence": "AUTO (B2177): spot_check_trades --n 50 at manifest params; ; wrote output_audit/output_b2190_sw10_sw10_spot_check.json"
   },
   "5_adversarial_lens_review": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2190_sw10): the wave-level review batch performs this step across all arms together"
+   "status": "DONE",
+   "evidence": "PENDING-WAVE-REVIEW (b2190_sw10): the wave-level review batch performs this step across all arms together || S6-B2460 WAVE REVIEW PERFORMED. MEASURED over the grid artifact: 300 combinations enumerated, 0 reached grading. Cut distribution: BELOW_POWER_FLOOR=245, NO_EXIT_SELECTABLE=45, ZERO_FIRES=10. ADVERSARIAL QUESTION: is a zero-graded result real, or an artifact of the pipeline? EVIDENCE IT IS REAL: the cuts are three DISTINCT upstream reasons and their proportions VARY across the wave with swing width (sw50 loses 225 of 300 to NO_EXIT_SELECTABLE where sw5 loses 40) - a pipeline defect would fail uniformly and for one reason. FINDING: the configuration searched a space in which no combination clears the sample-size floor; that is a result about the parameter band, not a failure of the grader."
   },
   "6_post_fix_recheck": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2190_sw10): the wave-level review batch performs this step across all arms together"
+   "status": "N/A",
+   "evidence": "PENDING-WAVE-REVIEW (b2190_sw10): the wave-level review batch performs this step across all arms together || S6-B2460: N/A on evidence - step 5 produced a FINDING but no FIX (nothing in the grader or producer was changed), so there is no shipped conclusion to re-derive."
   },
   "6b_equivalence_class_check": {
    "status": "DONE",
    "evidence": "AUTO (B2192): the grader collapses identical outcomes - 16 combos carried across 133 distinct outcome classes in output_b2190_sw10_sw10_grid_auto.json"
   },
   "7_implement_in_engine": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2190_sw10): the wave-level review batch performs this step across all arms together"
+   "status": "N/A",
+   "evidence": "PENDING-WAVE-REVIEW (b2190_sw10): the wave-level review batch performs this step across all arms together || S6-B2460: N/A on evidence - 0 of 300 combinations returned PASS, so nothing was selected and there is no parameter set to wire into the engine."
   },
   "8_verdict_with_denominators": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2190_sw10): the wave-level review batch performs this step across all arms together"
+   "status": "DONE",
+   "evidence": "PENDING-WAVE-REVIEW (b2190_sw10): the wave-level review batch performs this step across all arms together || S6-B2460 VERDICT: 0 of 300 enumerated combinations reached grading; the honest denominator for any performance claim about this config is ZERO, not 300. Cut distribution: BELOW_POWER_FLOOR=245, NO_EXIT_SELECTABLE=45, ZERO_FIRES=10. No ranking, no qualifier, no admission is derivable from this config."
   }
  },
  "output_b2190_sw5_sw5": {
@@ -2945,24 +2945,24 @@
    "evidence": "AUTO (B2177): spot_check_trades --n 50 at manifest params; ; wrote output_audit/output_b2190_sw5_sw5_spot_check.json"
   },
   "5_adversarial_lens_review": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2190_sw5): the wave-level review batch performs this step across all arms together"
+   "status": "DONE",
+   "evidence": "PENDING-WAVE-REVIEW (b2190_sw5): the wave-level review batch performs this step across all arms together || S6-B2460 WAVE REVIEW PERFORMED. MEASURED over the grid artifact: 300 combinations enumerated, 0 reached grading. Cut distribution: BELOW_POWER_FLOOR=250, NO_EXIT_SELECTABLE=40, ZERO_FIRES=10. ADVERSARIAL QUESTION: is a zero-graded result real, or an artifact of the pipeline? EVIDENCE IT IS REAL: the cuts are three DISTINCT upstream reasons and their proportions VARY across the wave with swing width (sw50 loses 225 of 300 to NO_EXIT_SELECTABLE where sw5 loses 40) - a pipeline defect would fail uniformly and for one reason. FINDING: the configuration searched a space in which no combination clears the sample-size floor; that is a result about the parameter band, not a failure of the grader."
   },
   "6_post_fix_recheck": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2190_sw5): the wave-level review batch performs this step across all arms together"
+   "status": "N/A",
+   "evidence": "PENDING-WAVE-REVIEW (b2190_sw5): the wave-level review batch performs this step across all arms together || S6-B2460: N/A on evidence - step 5 produced a FINDING but no FIX (nothing in the grader or producer was changed), so there is no shipped conclusion to re-derive."
   },
   "6b_equivalence_class_check": {
    "status": "DONE",
    "evidence": "AUTO (B2192): the grader collapses identical outcomes - 20 combos carried across 132 distinct outcome classes in output_b2190_sw5_sw5_grid_auto.json"
   },
   "7_implement_in_engine": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2190_sw5): the wave-level review batch performs this step across all arms together"
+   "status": "N/A",
+   "evidence": "PENDING-WAVE-REVIEW (b2190_sw5): the wave-level review batch performs this step across all arms together || S6-B2460: N/A on evidence - 0 of 300 combinations returned PASS, so nothing was selected and there is no parameter set to wire into the engine."
   },
   "8_verdict_with_denominators": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2190_sw5): the wave-level review batch performs this step across all arms together"
+   "status": "DONE",
+   "evidence": "PENDING-WAVE-REVIEW (b2190_sw5): the wave-level review batch performs this step across all arms together || S6-B2460 VERDICT: 0 of 300 enumerated combinations reached grading; the honest denominator for any performance claim about this config is ZERO, not 300. Cut distribution: BELOW_POWER_FLOOR=250, NO_EXIT_SELECTABLE=40, ZERO_FIRES=10. No ranking, no qualifier, no admission is derivable from this config."
   }
  },
  "output_b2197_sw20sp9_sw20sp9": {
@@ -2983,24 +2983,24 @@
    "evidence": "AUTO (B2177): spot_check_trades --n 50 at manifest params; ; wrote output_audit/output_b2197_sw20sp9_sw20sp9_spot_check.json"
   },
   "5_adversarial_lens_review": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw20sp9): the wave-level review batch performs this step across all arms together"
+   "status": "DONE",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw20sp9): the wave-level review batch performs this step across all arms together || S6-B2460 WAVE REVIEW PERFORMED. MEASURED over the grid artifact: 300 combinations enumerated, 0 reached grading. Cut distribution: BELOW_POWER_FLOOR=223, NO_EXIT_SELECTABLE=77. ADVERSARIAL QUESTION: is a zero-graded result real, or an artifact of the pipeline? EVIDENCE IT IS REAL: the cuts are three DISTINCT upstream reasons and their proportions VARY across the wave with swing width (sw50 loses 225 of 300 to NO_EXIT_SELECTABLE where sw5 loses 40) - a pipeline defect would fail uniformly and for one reason. FINDING: the configuration searched a space in which no combination clears the sample-size floor; that is a result about the parameter band, not a failure of the grader."
   },
   "6_post_fix_recheck": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw20sp9): the wave-level review batch performs this step across all arms together"
+   "status": "N/A",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw20sp9): the wave-level review batch performs this step across all arms together || S6-B2460: N/A on evidence - step 5 produced a FINDING but no FIX (nothing in the grader or producer was changed), so there is no shipped conclusion to re-derive."
   },
   "6b_equivalence_class_check": {
    "status": "DONE",
    "evidence": "AUTO (B2192): the grader collapses identical outcomes - 18 combos carried across 100 distinct outcome classes in output_b2197_sw20sp9_sw20sp9_grid_auto.json"
   },
   "7_implement_in_engine": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw20sp9): the wave-level review batch performs this step across all arms together"
+   "status": "N/A",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw20sp9): the wave-level review batch performs this step across all arms together || S6-B2460: N/A on evidence - 0 of 300 combinations returned PASS, so nothing was selected and there is no parameter set to wire into the engine."
   },
   "8_verdict_with_denominators": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw20sp9): the wave-level review batch performs this step across all arms together"
+   "status": "DONE",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw20sp9): the wave-level review batch performs this step across all arms together || S6-B2460 VERDICT: 0 of 300 enumerated combinations reached grading; the honest denominator for any performance claim about this config is ZERO, not 300. Cut distribution: BELOW_POWER_FLOOR=223, NO_EXIT_SELECTABLE=77. No ranking, no qualifier, no admission is derivable from this config."
   }
  },
  "output_b2197_sw20sp20_sw20sp20": {
@@ -3021,24 +3021,24 @@
    "evidence": "AUTO (B2177): spot_check_trades --n 50 at manifest params; ; wrote output_audit/output_b2197_sw20sp20_sw20sp20_spot_check.json"
   },
   "5_adversarial_lens_review": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw20sp20): the wave-level review batch performs this step across all arms together"
+   "status": "DONE",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw20sp20): the wave-level review batch performs this step across all arms together || S6-B2460 WAVE REVIEW PERFORMED. MEASURED over the grid artifact: 300 combinations enumerated, 0 reached grading. Cut distribution: BELOW_POWER_FLOOR=223, NO_EXIT_SELECTABLE=77. ADVERSARIAL QUESTION: is a zero-graded result real, or an artifact of the pipeline? EVIDENCE IT IS REAL: the cuts are three DISTINCT upstream reasons and their proportions VARY across the wave with swing width (sw50 loses 225 of 300 to NO_EXIT_SELECTABLE where sw5 loses 40) - a pipeline defect would fail uniformly and for one reason. FINDING: the configuration searched a space in which no combination clears the sample-size floor; that is a result about the parameter band, not a failure of the grader."
   },
   "6_post_fix_recheck": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw20sp20): the wave-level review batch performs this step across all arms together"
+   "status": "N/A",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw20sp20): the wave-level review batch performs this step across all arms together || S6-B2460: N/A on evidence - step 5 produced a FINDING but no FIX (nothing in the grader or producer was changed), so there is no shipped conclusion to re-derive."
   },
   "6b_equivalence_class_check": {
    "status": "DONE",
    "evidence": "AUTO (B2192): the grader collapses identical outcomes - 17 combos carried across 97 distinct outcome classes in output_b2197_sw20sp20_sw20sp20_grid_auto.json"
   },
   "7_implement_in_engine": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw20sp20): the wave-level review batch performs this step across all arms together"
+   "status": "N/A",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw20sp20): the wave-level review batch performs this step across all arms together || S6-B2460: N/A on evidence - 0 of 300 combinations returned PASS, so nothing was selected and there is no parameter set to wire into the engine."
   },
   "8_verdict_with_denominators": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw20sp20): the wave-level review batch performs this step across all arms together"
+   "status": "DONE",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw20sp20): the wave-level review batch performs this step across all arms together || S6-B2460 VERDICT: 0 of 300 enumerated combinations reached grading; the honest denominator for any performance claim about this config is ZERO, not 300. Cut distribution: BELOW_POWER_FLOOR=223, NO_EXIT_SELECTABLE=77. No ranking, no qualifier, no admission is derivable from this config."
   }
  },
  "output_b2197_sw20sp21_sw20sp21": {
@@ -3059,24 +3059,24 @@
    "evidence": "AUTO (B2177): spot_check_trades --n 50 at manifest params; ; wrote output_audit/output_b2197_sw20sp21_sw20sp21_spot_check.json"
   },
   "5_adversarial_lens_review": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw20sp21): the wave-level review batch performs this step across all arms together"
+   "status": "DONE",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw20sp21): the wave-level review batch performs this step across all arms together || S6-B2460 WAVE REVIEW PERFORMED. MEASURED over the grid artifact: 300 combinations enumerated, 0 reached grading. Cut distribution: BELOW_POWER_FLOOR=223, NO_EXIT_SELECTABLE=77. ADVERSARIAL QUESTION: is a zero-graded result real, or an artifact of the pipeline? EVIDENCE IT IS REAL: the cuts are three DISTINCT upstream reasons and their proportions VARY across the wave with swing width (sw50 loses 225 of 300 to NO_EXIT_SELECTABLE where sw5 loses 40) - a pipeline defect would fail uniformly and for one reason. FINDING: the configuration searched a space in which no combination clears the sample-size floor; that is a result about the parameter band, not a failure of the grader."
   },
   "6_post_fix_recheck": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw20sp21): the wave-level review batch performs this step across all arms together"
+   "status": "N/A",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw20sp21): the wave-level review batch performs this step across all arms together || S6-B2460: N/A on evidence - step 5 produced a FINDING but no FIX (nothing in the grader or producer was changed), so there is no shipped conclusion to re-derive."
   },
   "6b_equivalence_class_check": {
    "status": "DONE",
    "evidence": "AUTO (B2192): the grader collapses identical outcomes - 17 combos carried across 97 distinct outcome classes in output_b2197_sw20sp21_sw20sp21_grid_auto.json"
   },
   "7_implement_in_engine": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw20sp21): the wave-level review batch performs this step across all arms together"
+   "status": "N/A",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw20sp21): the wave-level review batch performs this step across all arms together || S6-B2460: N/A on evidence - 0 of 300 combinations returned PASS, so nothing was selected and there is no parameter set to wire into the engine."
   },
   "8_verdict_with_denominators": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw20sp21): the wave-level review batch performs this step across all arms together"
+   "status": "DONE",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw20sp21): the wave-level review batch performs this step across all arms together || S6-B2460 VERDICT: 0 of 300 enumerated combinations reached grading; the honest denominator for any performance claim about this config is ZERO, not 300. Cut distribution: BELOW_POWER_FLOOR=223, NO_EXIT_SELECTABLE=77. No ranking, no qualifier, no admission is derivable from this config."
   }
  },
  "output_b2197_sw20sp50_sw20sp50": {
@@ -3097,24 +3097,24 @@
    "evidence": "AUTO (B2177): spot_check_trades --n 50 at manifest params; ; wrote output_audit/output_b2197_sw20sp50_sw20sp50_spot_check.json"
   },
   "5_adversarial_lens_review": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw20sp50): the wave-level review batch performs this step across all arms together"
+   "status": "DONE",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw20sp50): the wave-level review batch performs this step across all arms together || S6-B2460 WAVE REVIEW PERFORMED. MEASURED over the grid artifact: 300 combinations enumerated, 0 reached grading. Cut distribution: BELOW_POWER_FLOOR=223, NO_EXIT_SELECTABLE=77. ADVERSARIAL QUESTION: is a zero-graded result real, or an artifact of the pipeline? EVIDENCE IT IS REAL: the cuts are three DISTINCT upstream reasons and their proportions VARY across the wave with swing width (sw50 loses 225 of 300 to NO_EXIT_SELECTABLE where sw5 loses 40) - a pipeline defect would fail uniformly and for one reason. FINDING: the configuration searched a space in which no combination clears the sample-size floor; that is a result about the parameter band, not a failure of the grader."
   },
   "6_post_fix_recheck": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw20sp50): the wave-level review batch performs this step across all arms together"
+   "status": "N/A",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw20sp50): the wave-level review batch performs this step across all arms together || S6-B2460: N/A on evidence - step 5 produced a FINDING but no FIX (nothing in the grader or producer was changed), so there is no shipped conclusion to re-derive."
   },
   "6b_equivalence_class_check": {
    "status": "DONE",
    "evidence": "AUTO (B2192): the grader collapses identical outcomes - 19 combos carried across 92 distinct outcome classes in output_b2197_sw20sp50_sw20sp50_grid_auto.json"
   },
   "7_implement_in_engine": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw20sp50): the wave-level review batch performs this step across all arms together"
+   "status": "N/A",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw20sp50): the wave-level review batch performs this step across all arms together || S6-B2460: N/A on evidence - 0 of 300 combinations returned PASS, so nothing was selected and there is no parameter set to wire into the engine."
   },
   "8_verdict_with_denominators": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw20sp50): the wave-level review batch performs this step across all arms together"
+   "status": "DONE",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw20sp50): the wave-level review batch performs this step across all arms together || S6-B2460 VERDICT: 0 of 300 enumerated combinations reached grading; the honest denominator for any performance claim about this config is ZERO, not 300. Cut distribution: BELOW_POWER_FLOOR=223, NO_EXIT_SELECTABLE=77. No ranking, no qualifier, no admission is derivable from this config."
   }
  },
  "output_b2197_sw20sp100_sw20sp100": {
@@ -3135,24 +3135,24 @@
    "evidence": "AUTO (B2177): spot_check_trades --n 50 at manifest params; ; wrote output_audit/output_b2197_sw20sp100_sw20sp100_spot_check.json"
   },
   "5_adversarial_lens_review": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw20sp100): the wave-level review batch performs this step across all arms together"
+   "status": "DONE",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw20sp100): the wave-level review batch performs this step across all arms together || S6-B2460 WAVE REVIEW PERFORMED. MEASURED over the grid artifact: 300 combinations enumerated, 0 reached grading. Cut distribution: BELOW_POWER_FLOOR=223, NO_EXIT_SELECTABLE=77. ADVERSARIAL QUESTION: is a zero-graded result real, or an artifact of the pipeline? EVIDENCE IT IS REAL: the cuts are three DISTINCT upstream reasons and their proportions VARY across the wave with swing width (sw50 loses 225 of 300 to NO_EXIT_SELECTABLE where sw5 loses 40) - a pipeline defect would fail uniformly and for one reason. FINDING: the configuration searched a space in which no combination clears the sample-size floor; that is a result about the parameter band, not a failure of the grader."
   },
   "6_post_fix_recheck": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw20sp100): the wave-level review batch performs this step across all arms together"
+   "status": "N/A",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw20sp100): the wave-level review batch performs this step across all arms together || S6-B2460: N/A on evidence - step 5 produced a FINDING but no FIX (nothing in the grader or producer was changed), so there is no shipped conclusion to re-derive."
   },
   "6b_equivalence_class_check": {
    "status": "DONE",
    "evidence": "AUTO (B2192): the grader collapses identical outcomes - 21 combos carried across 91 distinct outcome classes in output_b2197_sw20sp100_sw20sp100_grid_auto.json"
   },
   "7_implement_in_engine": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw20sp100): the wave-level review batch performs this step across all arms together"
+   "status": "N/A",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw20sp100): the wave-level review batch performs this step across all arms together || S6-B2460: N/A on evidence - 0 of 300 combinations returned PASS, so nothing was selected and there is no parameter set to wire into the engine."
   },
   "8_verdict_with_denominators": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw20sp100): the wave-level review batch performs this step across all arms together"
+   "status": "DONE",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw20sp100): the wave-level review batch performs this step across all arms together || S6-B2460 VERDICT: 0 of 300 enumerated combinations reached grading; the honest denominator for any performance claim about this config is ZERO, not 300. Cut distribution: BELOW_POWER_FLOOR=223, NO_EXIT_SELECTABLE=77. No ranking, no qualifier, no admission is derivable from this config."
   }
  },
  "output_b2197_sw20sp150_sw20sp150": {
@@ -3173,24 +3173,24 @@
    "evidence": "AUTO (B2177): spot_check_trades --n 50 at manifest params; ; wrote output_audit/output_b2197_sw20sp150_sw20sp150_spot_check.json"
   },
   "5_adversarial_lens_review": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw20sp150): the wave-level review batch performs this step across all arms together"
+   "status": "DONE",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw20sp150): the wave-level review batch performs this step across all arms together || S6-B2460 WAVE REVIEW PERFORMED. MEASURED over the grid artifact: 300 combinations enumerated, 0 reached grading. Cut distribution: BELOW_POWER_FLOOR=223, NO_EXIT_SELECTABLE=77. ADVERSARIAL QUESTION: is a zero-graded result real, or an artifact of the pipeline? EVIDENCE IT IS REAL: the cuts are three DISTINCT upstream reasons and their proportions VARY across the wave with swing width (sw50 loses 225 of 300 to NO_EXIT_SELECTABLE where sw5 loses 40) - a pipeline defect would fail uniformly and for one reason. FINDING: the configuration searched a space in which no combination clears the sample-size floor; that is a result about the parameter band, not a failure of the grader."
   },
   "6_post_fix_recheck": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw20sp150): the wave-level review batch performs this step across all arms together"
+   "status": "N/A",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw20sp150): the wave-level review batch performs this step across all arms together || S6-B2460: N/A on evidence - step 5 produced a FINDING but no FIX (nothing in the grader or producer was changed), so there is no shipped conclusion to re-derive."
   },
   "6b_equivalence_class_check": {
    "status": "DONE",
    "evidence": "AUTO (B2192): the grader collapses identical outcomes - 18 combos carried across 92 distinct outcome classes in output_b2197_sw20sp150_sw20sp150_grid_auto.json"
   },
   "7_implement_in_engine": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw20sp150): the wave-level review batch performs this step across all arms together"
+   "status": "N/A",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw20sp150): the wave-level review batch performs this step across all arms together || S6-B2460: N/A on evidence - 0 of 300 combinations returned PASS, so nothing was selected and there is no parameter set to wire into the engine."
   },
   "8_verdict_with_denominators": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw20sp150): the wave-level review batch performs this step across all arms together"
+   "status": "DONE",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw20sp150): the wave-level review batch performs this step across all arms together || S6-B2460 VERDICT: 0 of 300 enumerated combinations reached grading; the honest denominator for any performance claim about this config is ZERO, not 300. Cut distribution: BELOW_POWER_FLOOR=223, NO_EXIT_SELECTABLE=77. No ranking, no qualifier, no admission is derivable from this config."
   }
  },
  "output_b2197_sw30sp9_sw30sp9": {
@@ -3211,24 +3211,24 @@
    "evidence": "AUTO (B2177): spot_check_trades --n 50 at manifest params; ; wrote output_audit/output_b2197_sw30sp9_sw30sp9_spot_check.json"
   },
   "5_adversarial_lens_review": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw30sp9): the wave-level review batch performs this step across all arms together"
+   "status": "DONE",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw30sp9): the wave-level review batch performs this step across all arms together || S6-B2460 WAVE REVIEW PERFORMED. MEASURED over the grid artifact: 300 combinations enumerated, 0 reached grading. Cut distribution: BELOW_POWER_FLOOR=195, NO_EXIT_SELECTABLE=95, ZERO_FIRES=10. ADVERSARIAL QUESTION: is a zero-graded result real, or an artifact of the pipeline? EVIDENCE IT IS REAL: the cuts are three DISTINCT upstream reasons and their proportions VARY across the wave with swing width (sw50 loses 225 of 300 to NO_EXIT_SELECTABLE where sw5 loses 40) - a pipeline defect would fail uniformly and for one reason. FINDING: the configuration searched a space in which no combination clears the sample-size floor; that is a result about the parameter band, not a failure of the grader."
   },
   "6_post_fix_recheck": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw30sp9): the wave-level review batch performs this step across all arms together"
+   "status": "N/A",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw30sp9): the wave-level review batch performs this step across all arms together || S6-B2460: N/A on evidence - step 5 produced a FINDING but no FIX (nothing in the grader or producer was changed), so there is no shipped conclusion to re-derive."
   },
   "6b_equivalence_class_check": {
    "status": "DONE",
    "evidence": "AUTO (B2192): the grader collapses identical outcomes - 37 combos carried across 75 distinct outcome classes in output_b2197_sw30sp9_sw30sp9_grid_auto.json"
   },
   "7_implement_in_engine": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw30sp9): the wave-level review batch performs this step across all arms together"
+   "status": "N/A",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw30sp9): the wave-level review batch performs this step across all arms together || S6-B2460: N/A on evidence - 0 of 300 combinations returned PASS, so nothing was selected and there is no parameter set to wire into the engine."
   },
   "8_verdict_with_denominators": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw30sp9): the wave-level review batch performs this step across all arms together"
+   "status": "DONE",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw30sp9): the wave-level review batch performs this step across all arms together || S6-B2460 VERDICT: 0 of 300 enumerated combinations reached grading; the honest denominator for any performance claim about this config is ZERO, not 300. Cut distribution: BELOW_POWER_FLOOR=195, NO_EXIT_SELECTABLE=95, ZERO_FIRES=10. No ranking, no qualifier, no admission is derivable from this config."
   }
  },
  "output_b2197_sw30sp20_sw30sp20": {
@@ -3249,24 +3249,24 @@
    "evidence": "AUTO (B2177): spot_check_trades --n 50 at manifest params; ; wrote output_audit/output_b2197_sw30sp20_sw30sp20_spot_check.json"
   },
   "5_adversarial_lens_review": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw30sp20): the wave-level review batch performs this step across all arms together"
+   "status": "DONE",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw30sp20): the wave-level review batch performs this step across all arms together || S6-B2460 WAVE REVIEW PERFORMED. MEASURED over the grid artifact: 300 combinations enumerated, 0 reached grading. Cut distribution: BELOW_POWER_FLOOR=200, NO_EXIT_SELECTABLE=100. ADVERSARIAL QUESTION: is a zero-graded result real, or an artifact of the pipeline? EVIDENCE IT IS REAL: the cuts are three DISTINCT upstream reasons and their proportions VARY across the wave with swing width (sw50 loses 225 of 300 to NO_EXIT_SELECTABLE where sw5 loses 40) - a pipeline defect would fail uniformly and for one reason. FINDING: the configuration searched a space in which no combination clears the sample-size floor; that is a result about the parameter band, not a failure of the grader."
   },
   "6_post_fix_recheck": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw30sp20): the wave-level review batch performs this step across all arms together"
+   "status": "N/A",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw30sp20): the wave-level review batch performs this step across all arms together || S6-B2460: N/A on evidence - step 5 produced a FINDING but no FIX (nothing in the grader or producer was changed), so there is no shipped conclusion to re-derive."
   },
   "6b_equivalence_class_check": {
    "status": "DONE",
    "evidence": "AUTO (B2192): the grader collapses identical outcomes - 43 combos carried across 74 distinct outcome classes in output_b2197_sw30sp20_sw30sp20_grid_auto.json"
   },
   "7_implement_in_engine": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw30sp20): the wave-level review batch performs this step across all arms together"
+   "status": "N/A",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw30sp20): the wave-level review batch performs this step across all arms together || S6-B2460: N/A on evidence - 0 of 300 combinations returned PASS, so nothing was selected and there is no parameter set to wire into the engine."
   },
   "8_verdict_with_denominators": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw30sp20): the wave-level review batch performs this step across all arms together"
+   "status": "DONE",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw30sp20): the wave-level review batch performs this step across all arms together || S6-B2460 VERDICT: 0 of 300 enumerated combinations reached grading; the honest denominator for any performance claim about this config is ZERO, not 300. Cut distribution: BELOW_POWER_FLOOR=200, NO_EXIT_SELECTABLE=100. No ranking, no qualifier, no admission is derivable from this config."
   }
  },
  "output_b2197_sw30sp50_sw30sp50": {
@@ -3287,24 +3287,24 @@
    "evidence": "AUTO (B2177): spot_check_trades --n 50 at manifest params; ; wrote output_audit/output_b2197_sw30sp50_sw30sp50_spot_check.json"
   },
   "5_adversarial_lens_review": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw30sp50): the wave-level review batch performs this step across all arms together"
+   "status": "DONE",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw30sp50): the wave-level review batch performs this step across all arms together || S6-B2460 WAVE REVIEW PERFORMED. MEASURED over the grid artifact: 300 combinations enumerated, 0 reached grading. Cut distribution: BELOW_POWER_FLOOR=200, NO_EXIT_SELECTABLE=100. ADVERSARIAL QUESTION: is a zero-graded result real, or an artifact of the pipeline? EVIDENCE IT IS REAL: the cuts are three DISTINCT upstream reasons and their proportions VARY across the wave with swing width (sw50 loses 225 of 300 to NO_EXIT_SELECTABLE where sw5 loses 40) - a pipeline defect would fail uniformly and for one reason. FINDING: the configuration searched a space in which no combination clears the sample-size floor; that is a result about the parameter band, not a failure of the grader."
   },
   "6_post_fix_recheck": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw30sp50): the wave-level review batch performs this step across all arms together"
+   "status": "N/A",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw30sp50): the wave-level review batch performs this step across all arms together || S6-B2460: N/A on evidence - step 5 produced a FINDING but no FIX (nothing in the grader or producer was changed), so there is no shipped conclusion to re-derive."
   },
   "6b_equivalence_class_check": {
    "status": "DONE",
    "evidence": "AUTO (B2192): the grader collapses identical outcomes - 43 combos carried across 68 distinct outcome classes in output_b2197_sw30sp50_sw30sp50_grid_auto.json"
   },
   "7_implement_in_engine": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw30sp50): the wave-level review batch performs this step across all arms together"
+   "status": "N/A",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw30sp50): the wave-level review batch performs this step across all arms together || S6-B2460: N/A on evidence - 0 of 300 combinations returned PASS, so nothing was selected and there is no parameter set to wire into the engine."
   },
   "8_verdict_with_denominators": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw30sp50): the wave-level review batch performs this step across all arms together"
+   "status": "DONE",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw30sp50): the wave-level review batch performs this step across all arms together || S6-B2460 VERDICT: 0 of 300 enumerated combinations reached grading; the honest denominator for any performance claim about this config is ZERO, not 300. Cut distribution: BELOW_POWER_FLOOR=200, NO_EXIT_SELECTABLE=100. No ranking, no qualifier, no admission is derivable from this config."
   }
  },
  "output_b2197_sw30sp100_sw30sp100": {
@@ -3325,24 +3325,24 @@
    "evidence": "AUTO (B2177): spot_check_trades --n 50 at manifest params; ; wrote output_audit/output_b2197_sw30sp100_sw30sp100_spot_check.json"
   },
   "5_adversarial_lens_review": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw30sp100): the wave-level review batch performs this step across all arms together"
+   "status": "DONE",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw30sp100): the wave-level review batch performs this step across all arms together || S6-B2460 WAVE REVIEW PERFORMED. MEASURED over the grid artifact: 300 combinations enumerated, 0 reached grading. Cut distribution: BELOW_POWER_FLOOR=200, NO_EXIT_SELECTABLE=100. ADVERSARIAL QUESTION: is a zero-graded result real, or an artifact of the pipeline? EVIDENCE IT IS REAL: the cuts are three DISTINCT upstream reasons and their proportions VARY across the wave with swing width (sw50 loses 225 of 300 to NO_EXIT_SELECTABLE where sw5 loses 40) - a pipeline defect would fail uniformly and for one reason. FINDING: the configuration searched a space in which no combination clears the sample-size floor; that is a result about the parameter band, not a failure of the grader."
   },
   "6_post_fix_recheck": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw30sp100): the wave-level review batch performs this step across all arms together"
+   "status": "N/A",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw30sp100): the wave-level review batch performs this step across all arms together || S6-B2460: N/A on evidence - step 5 produced a FINDING but no FIX (nothing in the grader or producer was changed), so there is no shipped conclusion to re-derive."
   },
   "6b_equivalence_class_check": {
    "status": "DONE",
    "evidence": "AUTO (B2192): the grader collapses identical outcomes - 43 combos carried across 67 distinct outcome classes in output_b2197_sw30sp100_sw30sp100_grid_auto.json"
   },
   "7_implement_in_engine": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw30sp100): the wave-level review batch performs this step across all arms together"
+   "status": "N/A",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw30sp100): the wave-level review batch performs this step across all arms together || S6-B2460: N/A on evidence - 0 of 300 combinations returned PASS, so nothing was selected and there is no parameter set to wire into the engine."
   },
   "8_verdict_with_denominators": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw30sp100): the wave-level review batch performs this step across all arms together"
+   "status": "DONE",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw30sp100): the wave-level review batch performs this step across all arms together || S6-B2460 VERDICT: 0 of 300 enumerated combinations reached grading; the honest denominator for any performance claim about this config is ZERO, not 300. Cut distribution: BELOW_POWER_FLOOR=200, NO_EXIT_SELECTABLE=100. No ranking, no qualifier, no admission is derivable from this config."
   }
  },
  "output_b2197_sw30sp150_sw30sp150": {
@@ -3363,24 +3363,24 @@
    "evidence": "AUTO (B2177): spot_check_trades --n 50 at manifest params; ; wrote output_audit/output_b2197_sw30sp150_sw30sp150_spot_check.json"
   },
   "5_adversarial_lens_review": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw30sp150): the wave-level review batch performs this step across all arms together"
+   "status": "DONE",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw30sp150): the wave-level review batch performs this step across all arms together || S6-B2460 WAVE REVIEW PERFORMED. MEASURED over the grid artifact: 300 combinations enumerated, 0 reached grading. Cut distribution: BELOW_POWER_FLOOR=194, NO_EXIT_SELECTABLE=106. ADVERSARIAL QUESTION: is a zero-graded result real, or an artifact of the pipeline? EVIDENCE IT IS REAL: the cuts are three DISTINCT upstream reasons and their proportions VARY across the wave with swing width (sw50 loses 225 of 300 to NO_EXIT_SELECTABLE where sw5 loses 40) - a pipeline defect would fail uniformly and for one reason. FINDING: the configuration searched a space in which no combination clears the sample-size floor; that is a result about the parameter band, not a failure of the grader."
   },
   "6_post_fix_recheck": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw30sp150): the wave-level review batch performs this step across all arms together"
+   "status": "N/A",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw30sp150): the wave-level review batch performs this step across all arms together || S6-B2460: N/A on evidence - step 5 produced a FINDING but no FIX (nothing in the grader or producer was changed), so there is no shipped conclusion to re-derive."
   },
   "6b_equivalence_class_check": {
    "status": "DONE",
    "evidence": "AUTO (B2192): the grader collapses identical outcomes - 35 combos carried across 65 distinct outcome classes in output_b2197_sw30sp150_sw30sp150_grid_auto.json"
   },
   "7_implement_in_engine": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw30sp150): the wave-level review batch performs this step across all arms together"
+   "status": "N/A",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw30sp150): the wave-level review batch performs this step across all arms together || S6-B2460: N/A on evidence - 0 of 300 combinations returned PASS, so nothing was selected and there is no parameter set to wire into the engine."
   },
   "8_verdict_with_denominators": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw30sp150): the wave-level review batch performs this step across all arms together"
+   "status": "DONE",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw30sp150): the wave-level review batch performs this step across all arms together || S6-B2460 VERDICT: 0 of 300 enumerated combinations reached grading; the honest denominator for any performance claim about this config is ZERO, not 300. Cut distribution: BELOW_POWER_FLOOR=194, NO_EXIT_SELECTABLE=106. No ranking, no qualifier, no admission is derivable from this config."
   }
  },
  "output_b2197_sw10sp9_sw10sp9": {
@@ -3401,24 +3401,24 @@
    "evidence": "AUTO (B2177): spot_check_trades --n 50 at manifest params; ; wrote output_audit/output_b2197_sw10sp9_sw10sp9_spot_check.json"
   },
   "5_adversarial_lens_review": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw10sp9): the wave-level review batch performs this step across all arms together"
+   "status": "DONE",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw10sp9): the wave-level review batch performs this step across all arms together || S6-B2460 WAVE REVIEW PERFORMED. MEASURED over the grid artifact: 300 combinations enumerated, 0 reached grading. Cut distribution: BELOW_POWER_FLOOR=258, NO_EXIT_SELECTABLE=42. ADVERSARIAL QUESTION: is a zero-graded result real, or an artifact of the pipeline? EVIDENCE IT IS REAL: the cuts are three DISTINCT upstream reasons and their proportions VARY across the wave with swing width (sw50 loses 225 of 300 to NO_EXIT_SELECTABLE where sw5 loses 40) - a pipeline defect would fail uniformly and for one reason. FINDING: the configuration searched a space in which no combination clears the sample-size floor; that is a result about the parameter band, not a failure of the grader."
   },
   "6_post_fix_recheck": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw10sp9): the wave-level review batch performs this step across all arms together"
+   "status": "N/A",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw10sp9): the wave-level review batch performs this step across all arms together || S6-B2460: N/A on evidence - step 5 produced a FINDING but no FIX (nothing in the grader or producer was changed), so there is no shipped conclusion to re-derive."
   },
   "6b_equivalence_class_check": {
    "status": "DONE",
    "evidence": "AUTO (B2192): the grader collapses identical outcomes - 16 combos carried across 138 distinct outcome classes in output_b2197_sw10sp9_sw10sp9_grid_auto.json"
   },
   "7_implement_in_engine": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw10sp9): the wave-level review batch performs this step across all arms together"
+   "status": "N/A",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw10sp9): the wave-level review batch performs this step across all arms together || S6-B2460: N/A on evidence - 0 of 300 combinations returned PASS, so nothing was selected and there is no parameter set to wire into the engine."
   },
   "8_verdict_with_denominators": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw10sp9): the wave-level review batch performs this step across all arms together"
+   "status": "DONE",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw10sp9): the wave-level review batch performs this step across all arms together || S6-B2460 VERDICT: 0 of 300 enumerated combinations reached grading; the honest denominator for any performance claim about this config is ZERO, not 300. Cut distribution: BELOW_POWER_FLOOR=258, NO_EXIT_SELECTABLE=42. No ranking, no qualifier, no admission is derivable from this config."
   }
  },
  "output_b2197_sw10sp20_sw10sp20": {
@@ -3439,24 +3439,24 @@
    "evidence": "AUTO (B2177): spot_check_trades --n 50 at manifest params; ; wrote output_audit/output_b2197_sw10sp20_sw10sp20_spot_check.json"
   },
   "5_adversarial_lens_review": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw10sp20): the wave-level review batch performs this step across all arms together"
+   "status": "DONE",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw10sp20): the wave-level review batch performs this step across all arms together || S6-B2460 WAVE REVIEW PERFORMED. MEASURED over the grid artifact: 300 combinations enumerated, 0 reached grading. Cut distribution: BELOW_POWER_FLOOR=259, NO_EXIT_SELECTABLE=41. ADVERSARIAL QUESTION: is a zero-graded result real, or an artifact of the pipeline? EVIDENCE IT IS REAL: the cuts are three DISTINCT upstream reasons and their proportions VARY across the wave with swing width (sw50 loses 225 of 300 to NO_EXIT_SELECTABLE where sw5 loses 40) - a pipeline defect would fail uniformly and for one reason. FINDING: the configuration searched a space in which no combination clears the sample-size floor; that is a result about the parameter band, not a failure of the grader."
   },
   "6_post_fix_recheck": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw10sp20): the wave-level review batch performs this step across all arms together"
+   "status": "N/A",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw10sp20): the wave-level review batch performs this step across all arms together || S6-B2460: N/A on evidence - step 5 produced a FINDING but no FIX (nothing in the grader or producer was changed), so there is no shipped conclusion to re-derive."
   },
   "6b_equivalence_class_check": {
    "status": "DONE",
    "evidence": "AUTO (B2192): the grader collapses identical outcomes - 18 combos carried across 129 distinct outcome classes in output_b2197_sw10sp20_sw10sp20_grid_auto.json"
   },
   "7_implement_in_engine": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw10sp20): the wave-level review batch performs this step across all arms together"
+   "status": "N/A",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw10sp20): the wave-level review batch performs this step across all arms together || S6-B2460: N/A on evidence - 0 of 300 combinations returned PASS, so nothing was selected and there is no parameter set to wire into the engine."
   },
   "8_verdict_with_denominators": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw10sp20): the wave-level review batch performs this step across all arms together"
+   "status": "DONE",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw10sp20): the wave-level review batch performs this step across all arms together || S6-B2460 VERDICT: 0 of 300 enumerated combinations reached grading; the honest denominator for any performance claim about this config is ZERO, not 300. Cut distribution: BELOW_POWER_FLOOR=259, NO_EXIT_SELECTABLE=41. No ranking, no qualifier, no admission is derivable from this config."
   }
  },
  "output_b2197_sw10sp50_sw10sp50": {
@@ -3477,24 +3477,24 @@
    "evidence": "AUTO (B2177): spot_check_trades --n 50 at manifest params; ; wrote output_audit/output_b2197_sw10sp50_sw10sp50_spot_check.json"
   },
   "5_adversarial_lens_review": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw10sp50): the wave-level review batch performs this step across all arms together"
+   "status": "DONE",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw10sp50): the wave-level review batch performs this step across all arms together || S6-B2460 WAVE REVIEW PERFORMED. MEASURED over the grid artifact: 300 combinations enumerated, 0 reached grading. Cut distribution: BELOW_POWER_FLOOR=250, NO_EXIT_SELECTABLE=45, ZERO_FIRES=5. ADVERSARIAL QUESTION: is a zero-graded result real, or an artifact of the pipeline? EVIDENCE IT IS REAL: the cuts are three DISTINCT upstream reasons and their proportions VARY across the wave with swing width (sw50 loses 225 of 300 to NO_EXIT_SELECTABLE where sw5 loses 40) - a pipeline defect would fail uniformly and for one reason. FINDING: the configuration searched a space in which no combination clears the sample-size floor; that is a result about the parameter band, not a failure of the grader."
   },
   "6_post_fix_recheck": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw10sp50): the wave-level review batch performs this step across all arms together"
+   "status": "N/A",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw10sp50): the wave-level review batch performs this step across all arms together || S6-B2460: N/A on evidence - step 5 produced a FINDING but no FIX (nothing in the grader or producer was changed), so there is no shipped conclusion to re-derive."
   },
   "6b_equivalence_class_check": {
    "status": "DONE",
    "evidence": "AUTO (B2192): the grader collapses identical outcomes - 16 combos carried across 128 distinct outcome classes in output_b2197_sw10sp50_sw10sp50_grid_auto.json"
   },
   "7_implement_in_engine": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw10sp50): the wave-level review batch performs this step across all arms together"
+   "status": "N/A",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw10sp50): the wave-level review batch performs this step across all arms together || S6-B2460: N/A on evidence - 0 of 300 combinations returned PASS, so nothing was selected and there is no parameter set to wire into the engine."
   },
   "8_verdict_with_denominators": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw10sp50): the wave-level review batch performs this step across all arms together"
+   "status": "DONE",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw10sp50): the wave-level review batch performs this step across all arms together || S6-B2460 VERDICT: 0 of 300 enumerated combinations reached grading; the honest denominator for any performance claim about this config is ZERO, not 300. Cut distribution: BELOW_POWER_FLOOR=250, NO_EXIT_SELECTABLE=45, ZERO_FIRES=5. No ranking, no qualifier, no admission is derivable from this config."
   }
  },
  "output_b2197_sw10sp100_sw10sp100": {
@@ -3515,24 +3515,24 @@
    "evidence": "AUTO (B2177): spot_check_trades --n 50 at manifest params; ; wrote output_audit/output_b2197_sw10sp100_sw10sp100_spot_check.json"
   },
   "5_adversarial_lens_review": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw10sp100): the wave-level review batch performs this step across all arms together"
+   "status": "DONE",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw10sp100): the wave-level review batch performs this step across all arms together || S6-B2460 WAVE REVIEW PERFORMED. MEASURED over the grid artifact: 300 combinations enumerated, 0 reached grading. Cut distribution: BELOW_POWER_FLOOR=250, NO_EXIT_SELECTABLE=40, ZERO_FIRES=10. ADVERSARIAL QUESTION: is a zero-graded result real, or an artifact of the pipeline? EVIDENCE IT IS REAL: the cuts are three DISTINCT upstream reasons and their proportions VARY across the wave with swing width (sw50 loses 225 of 300 to NO_EXIT_SELECTABLE where sw5 loses 40) - a pipeline defect would fail uniformly and for one reason. FINDING: the configuration searched a space in which no combination clears the sample-size floor; that is a result about the parameter band, not a failure of the grader."
   },
   "6_post_fix_recheck": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw10sp100): the wave-level review batch performs this step across all arms together"
+   "status": "N/A",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw10sp100): the wave-level review batch performs this step across all arms together || S6-B2460: N/A on evidence - step 5 produced a FINDING but no FIX (nothing in the grader or producer was changed), so there is no shipped conclusion to re-derive."
   },
   "6b_equivalence_class_check": {
    "status": "DONE",
    "evidence": "AUTO (B2192): the grader collapses identical outcomes - 19 combos carried across 127 distinct outcome classes in output_b2197_sw10sp100_sw10sp100_grid_auto.json"
   },
   "7_implement_in_engine": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw10sp100): the wave-level review batch performs this step across all arms together"
+   "status": "N/A",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw10sp100): the wave-level review batch performs this step across all arms together || S6-B2460: N/A on evidence - 0 of 300 combinations returned PASS, so nothing was selected and there is no parameter set to wire into the engine."
   },
   "8_verdict_with_denominators": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw10sp100): the wave-level review batch performs this step across all arms together"
+   "status": "DONE",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw10sp100): the wave-level review batch performs this step across all arms together || S6-B2460 VERDICT: 0 of 300 enumerated combinations reached grading; the honest denominator for any performance claim about this config is ZERO, not 300. Cut distribution: BELOW_POWER_FLOOR=250, NO_EXIT_SELECTABLE=40, ZERO_FIRES=10. No ranking, no qualifier, no admission is derivable from this config."
   }
  },
  "output_b2197_sw10sp150_sw10sp150": {
@@ -3553,24 +3553,24 @@
    "evidence": "AUTO (B2177): spot_check_trades --n 50 at manifest params; ; wrote output_audit/output_b2197_sw10sp150_sw10sp150_spot_check.json"
   },
   "5_adversarial_lens_review": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw10sp150): the wave-level review batch performs this step across all arms together"
+   "status": "DONE",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw10sp150): the wave-level review batch performs this step across all arms together || S6-B2460 WAVE REVIEW PERFORMED. MEASURED over the grid artifact: 300 combinations enumerated, 0 reached grading. Cut distribution: BELOW_POWER_FLOOR=250, NO_EXIT_SELECTABLE=40, ZERO_FIRES=10. ADVERSARIAL QUESTION: is a zero-graded result real, or an artifact of the pipeline? EVIDENCE IT IS REAL: the cuts are three DISTINCT upstream reasons and their proportions VARY across the wave with swing width (sw50 loses 225 of 300 to NO_EXIT_SELECTABLE where sw5 loses 40) - a pipeline defect would fail uniformly and for one reason. FINDING: the configuration searched a space in which no combination clears the sample-size floor; that is a result about the parameter band, not a failure of the grader."
   },
   "6_post_fix_recheck": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw10sp150): the wave-level review batch performs this step across all arms together"
+   "status": "N/A",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw10sp150): the wave-level review batch performs this step across all arms together || S6-B2460: N/A on evidence - step 5 produced a FINDING but no FIX (nothing in the grader or producer was changed), so there is no shipped conclusion to re-derive."
   },
   "6b_equivalence_class_check": {
    "status": "DONE",
    "evidence": "AUTO (B2192): the grader collapses identical outcomes - 20 combos carried across 131 distinct outcome classes in output_b2197_sw10sp150_sw10sp150_grid_auto.json"
   },
   "7_implement_in_engine": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw10sp150): the wave-level review batch performs this step across all arms together"
+   "status": "N/A",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw10sp150): the wave-level review batch performs this step across all arms together || S6-B2460: N/A on evidence - 0 of 300 combinations returned PASS, so nothing was selected and there is no parameter set to wire into the engine."
   },
   "8_verdict_with_denominators": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw10sp150): the wave-level review batch performs this step across all arms together"
+   "status": "DONE",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw10sp150): the wave-level review batch performs this step across all arms together || S6-B2460 VERDICT: 0 of 300 enumerated combinations reached grading; the honest denominator for any performance claim about this config is ZERO, not 300. Cut distribution: BELOW_POWER_FLOOR=250, NO_EXIT_SELECTABLE=40, ZERO_FIRES=10. No ranking, no qualifier, no admission is derivable from this config."
   }
  },
  "output_b2197_sw5sp9_sw5sp9": {
@@ -3591,24 +3591,24 @@
    "evidence": "AUTO (B2177): spot_check_trades --n 50 at manifest params; ; wrote output_audit/output_b2197_sw5sp9_sw5sp9_spot_check.json"
   },
   "5_adversarial_lens_review": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw5sp9): the wave-level review batch performs this step across all arms together"
+   "status": "DONE",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw5sp9): the wave-level review batch performs this step across all arms together || S6-B2460 WAVE REVIEW PERFORMED. MEASURED over the grid artifact: 300 combinations enumerated, 0 reached grading. Cut distribution: BELOW_POWER_FLOOR=250, NO_EXIT_SELECTABLE=45, ZERO_FIRES=5. ADVERSARIAL QUESTION: is a zero-graded result real, or an artifact of the pipeline? EVIDENCE IT IS REAL: the cuts are three DISTINCT upstream reasons and their proportions VARY across the wave with swing width (sw50 loses 225 of 300 to NO_EXIT_SELECTABLE where sw5 loses 40) - a pipeline defect would fail uniformly and for one reason. FINDING: the configuration searched a space in which no combination clears the sample-size floor; that is a result about the parameter band, not a failure of the grader."
   },
   "6_post_fix_recheck": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw5sp9): the wave-level review batch performs this step across all arms together"
+   "status": "N/A",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw5sp9): the wave-level review batch performs this step across all arms together || S6-B2460: N/A on evidence - step 5 produced a FINDING but no FIX (nothing in the grader or producer was changed), so there is no shipped conclusion to re-derive."
   },
   "6b_equivalence_class_check": {
    "status": "DONE",
    "evidence": "AUTO (B2192): the grader collapses identical outcomes - 20 combos carried across 126 distinct outcome classes in output_b2197_sw5sp9_sw5sp9_grid_auto.json"
   },
   "7_implement_in_engine": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw5sp9): the wave-level review batch performs this step across all arms together"
+   "status": "N/A",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw5sp9): the wave-level review batch performs this step across all arms together || S6-B2460: N/A on evidence - 0 of 300 combinations returned PASS, so nothing was selected and there is no parameter set to wire into the engine."
   },
   "8_verdict_with_denominators": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw5sp9): the wave-level review batch performs this step across all arms together"
+   "status": "DONE",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw5sp9): the wave-level review batch performs this step across all arms together || S6-B2460 VERDICT: 0 of 300 enumerated combinations reached grading; the honest denominator for any performance claim about this config is ZERO, not 300. Cut distribution: BELOW_POWER_FLOOR=250, NO_EXIT_SELECTABLE=45, ZERO_FIRES=5. No ranking, no qualifier, no admission is derivable from this config."
   }
  },
  "output_b2197_sw5sp20_sw5sp20": {
@@ -3629,24 +3629,24 @@
    "evidence": "AUTO (B2177): spot_check_trades --n 50 at manifest params; ; wrote output_audit/output_b2197_sw5sp20_sw5sp20_spot_check.json"
   },
   "5_adversarial_lens_review": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw5sp20): the wave-level review batch performs this step across all arms together"
+   "status": "DONE",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw5sp20): the wave-level review batch performs this step across all arms together || S6-B2460 WAVE REVIEW PERFORMED. MEASURED over the grid artifact: 300 combinations enumerated, 0 reached grading. Cut distribution: BELOW_POWER_FLOOR=250, NO_EXIT_SELECTABLE=45, ZERO_FIRES=5. ADVERSARIAL QUESTION: is a zero-graded result real, or an artifact of the pipeline? EVIDENCE IT IS REAL: the cuts are three DISTINCT upstream reasons and their proportions VARY across the wave with swing width (sw50 loses 225 of 300 to NO_EXIT_SELECTABLE where sw5 loses 40) - a pipeline defect would fail uniformly and for one reason. FINDING: the configuration searched a space in which no combination clears the sample-size floor; that is a result about the parameter band, not a failure of the grader."
   },
   "6_post_fix_recheck": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw5sp20): the wave-level review batch performs this step across all arms together"
+   "status": "N/A",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw5sp20): the wave-level review batch performs this step across all arms together || S6-B2460: N/A on evidence - step 5 produced a FINDING but no FIX (nothing in the grader or producer was changed), so there is no shipped conclusion to re-derive."
   },
   "6b_equivalence_class_check": {
    "status": "DONE",
    "evidence": "AUTO (B2192): the grader collapses identical outcomes - 27 combos carried across 125 distinct outcome classes in output_b2197_sw5sp20_sw5sp20_grid_auto.json"
   },
   "7_implement_in_engine": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw5sp20): the wave-level review batch performs this step across all arms together"
+   "status": "N/A",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw5sp20): the wave-level review batch performs this step across all arms together || S6-B2460: N/A on evidence - 0 of 300 combinations returned PASS, so nothing was selected and there is no parameter set to wire into the engine."
   },
   "8_verdict_with_denominators": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw5sp20): the wave-level review batch performs this step across all arms together"
+   "status": "DONE",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw5sp20): the wave-level review batch performs this step across all arms together || S6-B2460 VERDICT: 0 of 300 enumerated combinations reached grading; the honest denominator for any performance claim about this config is ZERO, not 300. Cut distribution: BELOW_POWER_FLOOR=250, NO_EXIT_SELECTABLE=45, ZERO_FIRES=5. No ranking, no qualifier, no admission is derivable from this config."
   }
  },
  "output_b2197_sw5sp50_sw5sp50": {
@@ -3667,24 +3667,24 @@
    "evidence": "AUTO (B2177): spot_check_trades --n 50 at manifest params; ; wrote output_audit/output_b2197_sw5sp50_sw5sp50_spot_check.json"
   },
   "5_adversarial_lens_review": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw5sp50): the wave-level review batch performs this step across all arms together"
+   "status": "DONE",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw5sp50): the wave-level review batch performs this step across all arms together || S6-B2460 WAVE REVIEW PERFORMED. MEASURED over the grid artifact: 300 combinations enumerated, 0 reached grading. Cut distribution: BELOW_POWER_FLOOR=250, NO_EXIT_SELECTABLE=45, ZERO_FIRES=5. ADVERSARIAL QUESTION: is a zero-graded result real, or an artifact of the pipeline? EVIDENCE IT IS REAL: the cuts are three DISTINCT upstream reasons and their proportions VARY across the wave with swing width (sw50 loses 225 of 300 to NO_EXIT_SELECTABLE where sw5 loses 40) - a pipeline defect would fail uniformly and for one reason. FINDING: the configuration searched a space in which no combination clears the sample-size floor; that is a result about the parameter band, not a failure of the grader."
   },
   "6_post_fix_recheck": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw5sp50): the wave-level review batch performs this step across all arms together"
+   "status": "N/A",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw5sp50): the wave-level review batch performs this step across all arms together || S6-B2460: N/A on evidence - step 5 produced a FINDING but no FIX (nothing in the grader or producer was changed), so there is no shipped conclusion to re-derive."
   },
   "6b_equivalence_class_check": {
    "status": "DONE",
    "evidence": "AUTO (B2192): the grader collapses identical outcomes - 20 combos carried across 124 distinct outcome classes in output_b2197_sw5sp50_sw5sp50_grid_auto.json"
   },
   "7_implement_in_engine": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw5sp50): the wave-level review batch performs this step across all arms together"
+   "status": "N/A",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw5sp50): the wave-level review batch performs this step across all arms together || S6-B2460: N/A on evidence - 0 of 300 combinations returned PASS, so nothing was selected and there is no parameter set to wire into the engine."
   },
   "8_verdict_with_denominators": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw5sp50): the wave-level review batch performs this step across all arms together"
+   "status": "DONE",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw5sp50): the wave-level review batch performs this step across all arms together || S6-B2460 VERDICT: 0 of 300 enumerated combinations reached grading; the honest denominator for any performance claim about this config is ZERO, not 300. Cut distribution: BELOW_POWER_FLOOR=250, NO_EXIT_SELECTABLE=45, ZERO_FIRES=5. No ranking, no qualifier, no admission is derivable from this config."
   }
  },
  "output_b2197_sw5sp100_sw5sp100": {
@@ -3705,24 +3705,24 @@
    "evidence": "AUTO (B2177): spot_check_trades --n 50 at manifest params; ; wrote output_audit/output_b2197_sw5sp100_sw5sp100_spot_check.json"
   },
   "5_adversarial_lens_review": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw5sp100): the wave-level review batch performs this step across all arms together"
+   "status": "DONE",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw5sp100): the wave-level review batch performs this step across all arms together || S6-B2460 WAVE REVIEW PERFORMED. MEASURED over the grid artifact: 300 combinations enumerated, 0 reached grading. Cut distribution: BELOW_POWER_FLOOR=250, NO_EXIT_SELECTABLE=40, ZERO_FIRES=10. ADVERSARIAL QUESTION: is a zero-graded result real, or an artifact of the pipeline? EVIDENCE IT IS REAL: the cuts are three DISTINCT upstream reasons and their proportions VARY across the wave with swing width (sw50 loses 225 of 300 to NO_EXIT_SELECTABLE where sw5 loses 40) - a pipeline defect would fail uniformly and for one reason. FINDING: the configuration searched a space in which no combination clears the sample-size floor; that is a result about the parameter band, not a failure of the grader."
   },
   "6_post_fix_recheck": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw5sp100): the wave-level review batch performs this step across all arms together"
+   "status": "N/A",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw5sp100): the wave-level review batch performs this step across all arms together || S6-B2460: N/A on evidence - step 5 produced a FINDING but no FIX (nothing in the grader or producer was changed), so there is no shipped conclusion to re-derive."
   },
   "6b_equivalence_class_check": {
    "status": "DONE",
    "evidence": "AUTO (B2192): the grader collapses identical outcomes - 24 combos carried across 132 distinct outcome classes in output_b2197_sw5sp100_sw5sp100_grid_auto.json"
   },
   "7_implement_in_engine": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw5sp100): the wave-level review batch performs this step across all arms together"
+   "status": "N/A",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw5sp100): the wave-level review batch performs this step across all arms together || S6-B2460: N/A on evidence - 0 of 300 combinations returned PASS, so nothing was selected and there is no parameter set to wire into the engine."
   },
   "8_verdict_with_denominators": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw5sp100): the wave-level review batch performs this step across all arms together"
+   "status": "DONE",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw5sp100): the wave-level review batch performs this step across all arms together || S6-B2460 VERDICT: 0 of 300 enumerated combinations reached grading; the honest denominator for any performance claim about this config is ZERO, not 300. Cut distribution: BELOW_POWER_FLOOR=250, NO_EXIT_SELECTABLE=40, ZERO_FIRES=10. No ranking, no qualifier, no admission is derivable from this config."
   }
  },
  "output_b2197_sw5sp150_sw5sp150": {
@@ -3743,24 +3743,24 @@
    "evidence": "AUTO (B2177): spot_check_trades --n 50 at manifest params; ; wrote output_audit/output_b2197_sw5sp150_sw5sp150_spot_check.json"
   },
   "5_adversarial_lens_review": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw5sp150): the wave-level review batch performs this step across all arms together"
+   "status": "DONE",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw5sp150): the wave-level review batch performs this step across all arms together || S6-B2460 WAVE REVIEW PERFORMED. MEASURED over the grid artifact: 300 combinations enumerated, 0 reached grading. Cut distribution: BELOW_POWER_FLOOR=250, NO_EXIT_SELECTABLE=40, ZERO_FIRES=10. ADVERSARIAL QUESTION: is a zero-graded result real, or an artifact of the pipeline? EVIDENCE IT IS REAL: the cuts are three DISTINCT upstream reasons and their proportions VARY across the wave with swing width (sw50 loses 225 of 300 to NO_EXIT_SELECTABLE where sw5 loses 40) - a pipeline defect would fail uniformly and for one reason. FINDING: the configuration searched a space in which no combination clears the sample-size floor; that is a result about the parameter band, not a failure of the grader."
   },
   "6_post_fix_recheck": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw5sp150): the wave-level review batch performs this step across all arms together"
+   "status": "N/A",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw5sp150): the wave-level review batch performs this step across all arms together || S6-B2460: N/A on evidence - step 5 produced a FINDING but no FIX (nothing in the grader or producer was changed), so there is no shipped conclusion to re-derive."
   },
   "6b_equivalence_class_check": {
    "status": "DONE",
    "evidence": "AUTO (B2192): the grader collapses identical outcomes - 18 combos carried across 132 distinct outcome classes in output_b2197_sw5sp150_sw5sp150_grid_auto.json"
   },
   "7_implement_in_engine": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw5sp150): the wave-level review batch performs this step across all arms together"
+   "status": "N/A",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw5sp150): the wave-level review batch performs this step across all arms together || S6-B2460: N/A on evidence - 0 of 300 combinations returned PASS, so nothing was selected and there is no parameter set to wire into the engine."
   },
   "8_verdict_with_denominators": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw5sp150): the wave-level review batch performs this step across all arms together"
+   "status": "DONE",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw5sp150): the wave-level review batch performs this step across all arms together || S6-B2460 VERDICT: 0 of 300 enumerated combinations reached grading; the honest denominator for any performance claim about this config is ZERO, not 300. Cut distribution: BELOW_POWER_FLOOR=250, NO_EXIT_SELECTABLE=40, ZERO_FIRES=10. No ranking, no qualifier, no admission is derivable from this config."
   }
  },
  "output_b2197_sw50sp9_sw50sp9": {
@@ -3781,24 +3781,24 @@
    "evidence": "AUTO (B2177): spot_check_trades --n 50 at manifest params; ; wrote output_audit/output_b2197_sw50sp9_sw50sp9_spot_check.json"
   },
   "5_adversarial_lens_review": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw50sp9): the wave-level review batch performs this step across all arms together"
+   "status": "DONE",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw50sp9): the wave-level review batch performs this step across all arms together || S6-B2460 WAVE REVIEW PERFORMED. MEASURED over the grid artifact: 300 combinations enumerated, 0 reached grading. Cut distribution: BELOW_POWER_FLOOR=100, NO_EXIT_SELECTABLE=200. ADVERSARIAL QUESTION: is a zero-graded result real, or an artifact of the pipeline? EVIDENCE IT IS REAL: the cuts are three DISTINCT upstream reasons and their proportions VARY across the wave with swing width (sw50 loses 225 of 300 to NO_EXIT_SELECTABLE where sw5 loses 40) - a pipeline defect would fail uniformly and for one reason. FINDING: the configuration searched a space in which no combination clears the sample-size floor; that is a result about the parameter band, not a failure of the grader."
   },
   "6_post_fix_recheck": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw50sp9): the wave-level review batch performs this step across all arms together"
+   "status": "N/A",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw50sp9): the wave-level review batch performs this step across all arms together || S6-B2460: N/A on evidence - step 5 produced a FINDING but no FIX (nothing in the grader or producer was changed), so there is no shipped conclusion to re-derive."
   },
   "6b_equivalence_class_check": {
    "status": "DONE",
    "evidence": "AUTO (B2192): the grader collapses identical outcomes - 20 combos carried across 42 distinct outcome classes in output_b2197_sw50sp9_sw50sp9_grid_auto.json"
   },
   "7_implement_in_engine": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw50sp9): the wave-level review batch performs this step across all arms together"
+   "status": "N/A",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw50sp9): the wave-level review batch performs this step across all arms together || S6-B2460: N/A on evidence - 0 of 300 combinations returned PASS, so nothing was selected and there is no parameter set to wire into the engine."
   },
   "8_verdict_with_denominators": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw50sp9): the wave-level review batch performs this step across all arms together"
+   "status": "DONE",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw50sp9): the wave-level review batch performs this step across all arms together || S6-B2460 VERDICT: 0 of 300 enumerated combinations reached grading; the honest denominator for any performance claim about this config is ZERO, not 300. Cut distribution: BELOW_POWER_FLOOR=100, NO_EXIT_SELECTABLE=200. No ranking, no qualifier, no admission is derivable from this config."
   }
  },
  "output_b2197_sw50sp20_sw50sp20": {
@@ -3819,24 +3819,24 @@
    "evidence": "AUTO (B2177): spot_check_trades --n 50 at manifest params; ; wrote output_audit/output_b2197_sw50sp20_sw50sp20_spot_check.json"
   },
   "5_adversarial_lens_review": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw50sp20): the wave-level review batch performs this step across all arms together"
+   "status": "DONE",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw50sp20): the wave-level review batch performs this step across all arms together || S6-B2460 WAVE REVIEW PERFORMED. MEASURED over the grid artifact: 300 combinations enumerated, 0 reached grading. Cut distribution: BELOW_POWER_FLOOR=100, NO_EXIT_SELECTABLE=200. ADVERSARIAL QUESTION: is a zero-graded result real, or an artifact of the pipeline? EVIDENCE IT IS REAL: the cuts are three DISTINCT upstream reasons and their proportions VARY across the wave with swing width (sw50 loses 225 of 300 to NO_EXIT_SELECTABLE where sw5 loses 40) - a pipeline defect would fail uniformly and for one reason. FINDING: the configuration searched a space in which no combination clears the sample-size floor; that is a result about the parameter band, not a failure of the grader."
   },
   "6_post_fix_recheck": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw50sp20): the wave-level review batch performs this step across all arms together"
+   "status": "N/A",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw50sp20): the wave-level review batch performs this step across all arms together || S6-B2460: N/A on evidence - step 5 produced a FINDING but no FIX (nothing in the grader or producer was changed), so there is no shipped conclusion to re-derive."
   },
   "6b_equivalence_class_check": {
    "status": "DONE",
    "evidence": "AUTO (B2192): the grader collapses identical outcomes - 21 combos carried across 41 distinct outcome classes in output_b2197_sw50sp20_sw50sp20_grid_auto.json"
   },
   "7_implement_in_engine": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw50sp20): the wave-level review batch performs this step across all arms together"
+   "status": "N/A",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw50sp20): the wave-level review batch performs this step across all arms together || S6-B2460: N/A on evidence - 0 of 300 combinations returned PASS, so nothing was selected and there is no parameter set to wire into the engine."
   },
   "8_verdict_with_denominators": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw50sp20): the wave-level review batch performs this step across all arms together"
+   "status": "DONE",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw50sp20): the wave-level review batch performs this step across all arms together || S6-B2460 VERDICT: 0 of 300 enumerated combinations reached grading; the honest denominator for any performance claim about this config is ZERO, not 300. Cut distribution: BELOW_POWER_FLOOR=100, NO_EXIT_SELECTABLE=200. No ranking, no qualifier, no admission is derivable from this config."
   }
  },
  "output_b2197_sw50sp50_sw50sp50": {
@@ -3857,24 +3857,24 @@
    "evidence": "AUTO (B2177): spot_check_trades --n 50 at manifest params; ; wrote output_audit/output_b2197_sw50sp50_sw50sp50_spot_check.json"
   },
   "5_adversarial_lens_review": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw50sp50): the wave-level review batch performs this step across all arms together"
+   "status": "DONE",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw50sp50): the wave-level review batch performs this step across all arms together || S6-B2460 WAVE REVIEW PERFORMED. MEASURED over the grid artifact: 300 combinations enumerated, 0 reached grading. Cut distribution: BELOW_POWER_FLOOR=100, NO_EXIT_SELECTABLE=200. ADVERSARIAL QUESTION: is a zero-graded result real, or an artifact of the pipeline? EVIDENCE IT IS REAL: the cuts are three DISTINCT upstream reasons and their proportions VARY across the wave with swing width (sw50 loses 225 of 300 to NO_EXIT_SELECTABLE where sw5 loses 40) - a pipeline defect would fail uniformly and for one reason. FINDING: the configuration searched a space in which no combination clears the sample-size floor; that is a result about the parameter band, not a failure of the grader."
   },
   "6_post_fix_recheck": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw50sp50): the wave-level review batch performs this step across all arms together"
+   "status": "N/A",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw50sp50): the wave-level review batch performs this step across all arms together || S6-B2460: N/A on evidence - step 5 produced a FINDING but no FIX (nothing in the grader or producer was changed), so there is no shipped conclusion to re-derive."
   },
   "6b_equivalence_class_check": {
    "status": "DONE",
    "evidence": "AUTO (B2192): the grader collapses identical outcomes - 14 combos carried across 42 distinct outcome classes in output_b2197_sw50sp50_sw50sp50_grid_auto.json"
   },
   "7_implement_in_engine": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw50sp50): the wave-level review batch performs this step across all arms together"
+   "status": "N/A",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw50sp50): the wave-level review batch performs this step across all arms together || S6-B2460: N/A on evidence - 0 of 300 combinations returned PASS, so nothing was selected and there is no parameter set to wire into the engine."
   },
   "8_verdict_with_denominators": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw50sp50): the wave-level review batch performs this step across all arms together"
+   "status": "DONE",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw50sp50): the wave-level review batch performs this step across all arms together || S6-B2460 VERDICT: 0 of 300 enumerated combinations reached grading; the honest denominator for any performance claim about this config is ZERO, not 300. Cut distribution: BELOW_POWER_FLOOR=100, NO_EXIT_SELECTABLE=200. No ranking, no qualifier, no admission is derivable from this config."
   }
  },
  "output_b2197_sw50sp100_sw50sp100": {
@@ -3895,24 +3895,24 @@
    "evidence": "AUTO (B2177): spot_check_trades --n 50 at manifest params; ; wrote output_audit/output_b2197_sw50sp100_sw50sp100_spot_check.json"
   },
   "5_adversarial_lens_review": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw50sp100): the wave-level review batch performs this step across all arms together"
+   "status": "DONE",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw50sp100): the wave-level review batch performs this step across all arms together || S6-B2460 WAVE REVIEW PERFORMED. MEASURED over the grid artifact: 300 combinations enumerated, 0 reached grading. Cut distribution: BELOW_POWER_FLOOR=100, NO_EXIT_SELECTABLE=200. ADVERSARIAL QUESTION: is a zero-graded result real, or an artifact of the pipeline? EVIDENCE IT IS REAL: the cuts are three DISTINCT upstream reasons and their proportions VARY across the wave with swing width (sw50 loses 225 of 300 to NO_EXIT_SELECTABLE where sw5 loses 40) - a pipeline defect would fail uniformly and for one reason. FINDING: the configuration searched a space in which no combination clears the sample-size floor; that is a result about the parameter band, not a failure of the grader."
   },
   "6_post_fix_recheck": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw50sp100): the wave-level review batch performs this step across all arms together"
+   "status": "N/A",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw50sp100): the wave-level review batch performs this step across all arms together || S6-B2460: N/A on evidence - step 5 produced a FINDING but no FIX (nothing in the grader or producer was changed), so there is no shipped conclusion to re-derive."
   },
   "6b_equivalence_class_check": {
    "status": "DONE",
    "evidence": "AUTO (B2192): the grader collapses identical outcomes - 14 combos carried across 42 distinct outcome classes in output_b2197_sw50sp100_sw50sp100_grid_auto.json"
   },
   "7_implement_in_engine": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw50sp100): the wave-level review batch performs this step across all arms together"
+   "status": "N/A",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw50sp100): the wave-level review batch performs this step across all arms together || S6-B2460: N/A on evidence - 0 of 300 combinations returned PASS, so nothing was selected and there is no parameter set to wire into the engine."
   },
   "8_verdict_with_denominators": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw50sp100): the wave-level review batch performs this step across all arms together"
+   "status": "DONE",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw50sp100): the wave-level review batch performs this step across all arms together || S6-B2460 VERDICT: 0 of 300 enumerated combinations reached grading; the honest denominator for any performance claim about this config is ZERO, not 300. Cut distribution: BELOW_POWER_FLOOR=100, NO_EXIT_SELECTABLE=200. No ranking, no qualifier, no admission is derivable from this config."
   }
  },
  "output_b2197_sw50sp150_sw50sp150": {
@@ -3933,24 +3933,24 @@
    "evidence": "AUTO (B2177): spot_check_trades --n 50 at manifest params; ; wrote output_audit/output_b2197_sw50sp150_sw50sp150_spot_check.json"
   },
   "5_adversarial_lens_review": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw50sp150): the wave-level review batch performs this step across all arms together"
+   "status": "DONE",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw50sp150): the wave-level review batch performs this step across all arms together || S6-B2460 WAVE REVIEW PERFORMED. MEASURED over the grid artifact: 300 combinations enumerated, 0 reached grading. Cut distribution: BELOW_POWER_FLOOR=110, NO_EXIT_SELECTABLE=190. ADVERSARIAL QUESTION: is a zero-graded result real, or an artifact of the pipeline? EVIDENCE IT IS REAL: the cuts are three DISTINCT upstream reasons and their proportions VARY across the wave with swing width (sw50 loses 225 of 300 to NO_EXIT_SELECTABLE where sw5 loses 40) - a pipeline defect would fail uniformly and for one reason. FINDING: the configuration searched a space in which no combination clears the sample-size floor; that is a result about the parameter band, not a failure of the grader."
   },
   "6_post_fix_recheck": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw50sp150): the wave-level review batch performs this step across all arms together"
+   "status": "N/A",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw50sp150): the wave-level review batch performs this step across all arms together || S6-B2460: N/A on evidence - step 5 produced a FINDING but no FIX (nothing in the grader or producer was changed), so there is no shipped conclusion to re-derive."
   },
   "6b_equivalence_class_check": {
    "status": "DONE",
    "evidence": "AUTO (B2192): the grader collapses identical outcomes - 14 combos carried across 44 distinct outcome classes in output_b2197_sw50sp150_sw50sp150_grid_auto.json"
   },
   "7_implement_in_engine": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw50sp150): the wave-level review batch performs this step across all arms together"
+   "status": "N/A",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw50sp150): the wave-level review batch performs this step across all arms together || S6-B2460: N/A on evidence - 0 of 300 combinations returned PASS, so nothing was selected and there is no parameter set to wire into the engine."
   },
   "8_verdict_with_denominators": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2197_sw50sp150): the wave-level review batch performs this step across all arms together"
+   "status": "DONE",
+   "evidence": "PENDING-WAVE-REVIEW (b2197_sw50sp150): the wave-level review batch performs this step across all arms together || S6-B2460 VERDICT: 0 of 300 enumerated combinations reached grading; the honest denominator for any performance claim about this config is ZERO, not 300. Cut distribution: BELOW_POWER_FLOOR=110, NO_EXIT_SELECTABLE=190. No ranking, no qualifier, no admission is derivable from this config."
   }
  },
  "output_b2399_step2_sw50sp50_step2_sw50sp50": {

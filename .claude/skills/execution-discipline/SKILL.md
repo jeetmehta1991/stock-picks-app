@@ -1575,6 +1575,13 @@ them.**
   artifacts belongs to none of them, and B2067 halted a whole goal partly on
   that mislabel. JUDGMENT-ONLY: no scan classifies gatedness; anchored at
   `#279`'s L619 extension, durability via the anchor-doc citation freeze.
+- **EXTENDED (B2460): A GATE THAT KEEPS FIRING ON WORK YOU CALLED BLOCKED IS EVIDENCE ABOUT THE
+  CLASSIFICATION.** MEASURED: twenty consecutive closes reported that no disposition was available
+  without an owner ruling, for a battery the owner had already made MANDATORY - the options I kept
+  offering were all scope REDUCTIONS, and executing a standing requirement needs no approval while
+  declining it would. Performing it took one measurement pass. **Being blocked feels like needing
+  permission**, and re-deriving the same framing each close is not re-asking the question. When a
+  block repeats, re-ask whether the work is owed rather than re-checking the dispositions.
 
 ## A DOCSTRING IS DOCUMENTATION; THE MARKER LIST IS THE PROGRAM (B1931 - L590, CHECKLIST #222)
 
