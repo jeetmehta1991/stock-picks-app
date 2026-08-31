@@ -1772,6 +1772,14 @@ and the position feeling settled is what makes the disproof feel unnecessary.
   in a mid-run log - a check that could only ever pass, and would have read as reassurance at
   exactly the moment the run failed that way. **Find the WRITER of the string and confirm it
   reaches the file you are searching**, then trust the absence.
+- **A FIELD WHOSE CORRECT VALUE DEPENDS ON WHICH QUESTION YOU ASK IS OVERLOADED - SPLIT
+  IT, DO NOT ARBITRATE IT (B2475/L728).** MEASURED twice in one table: `band` carried both what a
+  producer OFFERS and what we intend to SWEEP, and `subset_safe` carried a per-LEVEL truth in one
+  per-parameter boolean. Each agrees with itself until the two questions diverge, and then there
+  is NO correct value - I picked one and the record lied about the code, while a pin passed green
+  defending it. **The tell is finding yourself choosing carefully between two defensible values
+  for one field.** That is not a judgement call, it is a signal the field is overloaded. Splitting
+  cost one field and one validator asserting the narrower claim is a SUBSET of the wider one.
 - **ASSERT THE MATCH COUNT BEFORE A REPLACE, AND RE-READ WHAT YOU RECOMMEND PRESERVING
   (B2472/L728).** A global `str.replace` is a blast-radius decision. MEASURED: one matched 3
   sites, not 1, and silently edited a spec that pre-registers a COMPLETED programme. Two commits
