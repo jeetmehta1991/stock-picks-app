@@ -17582,3 +17582,37 @@ blocking list only because `completed_cubes()` found a trade_exit_detail.csv for
 existence is the enumeration's precondition. (4) *"require holdout ci_lo > 0"* - **SOUND, checked
 after the miss**, 198 of 198 populated. **1 of 4 defective, and the defective one was the only
 recommendation I had not opened an artifact for.**
+
+**ADDENDUM (B2454) - I AUTHORED THE RULE FROM THE VIOLATION AND STILL LEFT THE VIOLATION STANDING.**
+B2450 promoted a rule into the skill this same batch: *tightening a gate over a historical backlog
+blocks every turn until the backlog clears, so ship the disposal plan WITH the tightening*. I wrote
+it because I had just done it. **What I did not do was apply it to the instance in front of me.**
+The B2440 tightening shipped with no disposal plan, and the consequence is now measured: 31 cubes
+carry real judgment-step debt, the #223 turn gate fires on it at every close, and **no behaviour
+available to me clears it** - the work needs an owner ruling, N/A would be laundering, DONE would
+be false, and the `.stop_exempt` hatch does not reach scan gates (verify_turn_compliance.py:4028).
+**The gate is unsatisfiable BY CONSTRUCTION**, which is the exact condition B2275 already ruled on
+for a different gate in the same file, with the rationale *"a gate whose trigger no future turn can
+avoid teaches the reader to ignore it"*.
+**Two things this teaches beyond B2450's text.** First, **writing the rule is not applying it** -
+L570's authoring-feels-like-installing, arriving in its sharpest form, since the rule was DERIVED
+from this very instance and the instance still went unremediated in the same batch. Second, and
+more useful: **the remedy for a backlog-blocking gate is usually already in the repo**, because
+this class recurs - B2275 solved it once by scoping the gate to catch the NEXT occurrence while the
+event stayed recorded in its ticket. **Search for a precedent before designing a fresh escape.**
+Compliance failure against **L586** read with `#136` - an addition can fail not by being useless
+but by being COSTLY IN THE WRONG PLACE, and this one put its cost on every future turn's close.
+No new checklist item and no new skill clause: B2450's rule 9b already states the remedy, and what
+was missing was its application, not its existence.
+Mechanism: **DETECTION is JUDGMENT-ONLY** - no scan can tell that a gate's backlog was foreseeable
+at ship time. **Durability IS taken**: rule 9b sits in the always-read skill with its fragment pin,
+and the unremediated instance is carried as an OPEN P0 (S6-B2454) with four options and an explicit
+refusal to self-approve the one that benefits me.
+**Retroactive sweep (#237): every gate or check I tightened this session, and what it did to the
+existing population.** THREE. (1) **B2440** SKIPPED-no-longer-terminal - **THE INSTANCE**, 47 cubes
+blocked at once, no disposal plan shipped with it. (2) **B2416** the #222 collector union - widened
+what counts as inspection, so it can only make PASSING easier; blast radius on the backlog is zero
+by construction. **SOUND.** (3) **B2445** the N/A-vs-SKIPPED display split - reporting only, changes
+no verdict. **SOUND.** **1 of 3 defective, and it is the only one that made a gate STRICTER** -
+which is the discriminator worth carrying: a loosening or a display change cannot create a backlog,
+a tightening always can.
