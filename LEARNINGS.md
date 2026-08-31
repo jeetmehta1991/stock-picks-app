@@ -17419,3 +17419,36 @@ span re-selection** - **WRONG**, retracted above, excised from the free grid. (4
 `institutional_strong_buy` from its raw persisted counts** - **SOUND ONLY IN THE TIGHTENING
 DIRECTION**; I stated it unqualified, and a LOOSER re-classification adds fires the log never
 took, so the qualifier is now attached.
+
+**ADDENDUM (B2433) - L630's GATE STORM, OBSERVED FROM THE INSIDE, AND ITS ACTUAL CAUSE.**
+The B2427 remediation ran **7 commits (B2425-B2432) across 8 consecutive BLOCKED closes**, each
+close fixing the one violation the hook had just named. That is precisely the storm L630 predicts
+when Phase-5 members land serially instead of together - **and the rule against it was in the
+skill the whole time**, as was its remedy: L563/B2129, *after the first block, running the gate
+yourself is MANDATORY, not advisory*. I did not run it until close eight.
+**Running it took one command and reframed everything.** With `TURN_GATE_TRANSCRIPT` pointed at
+the session jsonl, the gate returned **2 violations, neither of them the Phase-5 one** - both
+were simply the closing lines that do not exist until the response is written. **The Phase-5 gate
+was not stuck; it arms on the CLAIM.** Every close I wrote asserted the miss-capture, which armed
+a check scoped to that close's window, which contained whichever single member I had just landed.
+**The loop was not the gate refusing to be satisfied; it was me re-asserting a completed
+remediation in windows that could each only hold one piece of it.**
+**Two things follow, and the second is the one I would have missed.** (1) Mechanically: land every
+member in one window, or - once an arc has already spread - STOP claiming it and let the final
+close carry the last member plus the standing lines. (2) Judgment: **a compliance CLAIM is itself
+an action with a cost.** Restating "all four members satisfied" in eight successive closes did not
+make the remediation more complete; it re-armed a check eight times and put eight near-identical
+blocks in front of the owner, which is the cost L630 measures in the owner's attention rather than
+in the ledger.
+Compliance failure against **CHECKLIST item 45** read with the skill's own one-commit rule
+(B2129/L630) and its self-run rule (L563) - both existed, both were skipped, so this is compliance
+and not coverage. No new checklist item and no new skill clause (#136), and applying B2432's own
+discriminator to confirm that: SUBJECT = landing Phase-5 members together, covered; REMEDY = run
+the gate yourself after the first block, also covered, explicitly and in those words.
+Mechanism: **DETECTION is JUDGMENT-ONLY** - no scan can tell a necessary compliance restatement
+from a redundant one. **Durability IS taken**: the self-run invocation is recorded here and in the
+S6-B2433 row, and both governing rules remain pinned in SKILL.md via test_b2123.
+**Retroactive sweep (#237): every multi-commit remediation arc in this session.** Two. (1) THIS
+ONE - 7 commits, 8 blocked closes, serial. (2) The B2409 floor retirement - one commit carrying
+code, pins, regenerated artifacts, plan, banner and ledger together, closed on the FIRST attempt:
+**SOUND, and it is the control that proves the difference is the batching and not the gate.**
