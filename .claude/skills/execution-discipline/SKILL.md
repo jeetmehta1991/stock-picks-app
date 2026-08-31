@@ -1772,6 +1772,14 @@ and the position feeling settled is what makes the disproof feel unnecessary.
   in a mid-run log - a check that could only ever pass, and would have read as reassurance at
   exactly the moment the run failed that way. **Find the WRITER of the string and confirm it
   reaches the file you are searching**, then trust the absence.
+- **READ A GATE'S SELECTOR BEFORE ACTING ON ITS VERDICT (B2478/L574 ext).** L574 says
+  being right about the CONTENT is not being right about the CLAIM. One level out: **being right
+  about the COMPARISON is not being right about the SUBJECT.** MEASURED: a drift verifier fired
+  while I edited one record, so I acted on that record - it is pinned to a DIFFERENT strategy and
+  never read mine. The gate was right, its arithmetic was right, and I applied it to the wrong
+  artifact, restoring a value the owner had told me to remove. **Temporal adjacency plus a
+  matching parameter name is not identification** - a gate reports what it examined, never that
+  it examined the thing you were touching. One grep for the selector constant settles it.
 - **A FIELD WHOSE CORRECT VALUE DEPENDS ON WHICH QUESTION YOU ASK IS OVERLOADED - SPLIT
   IT, DO NOT ARBITRATE IT (B2475/L728).** MEASURED twice in one table: `band` carried both what a
   producer OFFERS and what we intend to SWEEP, and `subset_safe` carried a per-LEVEL truth in one

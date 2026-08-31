@@ -25090,6 +25090,7 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         ("PROSE-ONLY: an INDEX of historical failures - each entry's enforcement lives with its own rule; gating the index would gate a table of contents.",
          "B2382: Failure modes this skill exists to prevent lineage"),
         ("A 0pct OR 100pct RESULT FROM A NEW EXTRACTOR IS A PARSER HYPOTHESIS", "L724/B2419: a coverage extreme from a new extractor"),
+        ("Temporal adjacency plus a", "L574/B2478: read a gate selector before acting on its verdict"),
         ("choosing carefully between two defensible values", "L728/B2475: a field whose value depends on the question asked"),
         ("a claim about its", "L728/B2472: a recommendation to preserve is a claim about current state"),
         ("reconstruct it from the RUN LEDGER, not the spec", "L727/B2469: an inherited band records intent, not what survived"),
@@ -25431,7 +25432,8 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # 222 -> 223 at B2469 (the L727 inherited-band fragment).
     # 223 -> 224 at B2472 (the L728 assert-the-match-count fragment).
     # 224 -> 225 at B2475 (the L728 overloaded-field fragment).
-    assert len(gutted) == 225, gutted
+    # 225 -> 226 at B2478 (the L574 gate-selector fragment).
+    assert len(gutted) == 226, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
