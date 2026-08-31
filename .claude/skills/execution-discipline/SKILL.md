@@ -2324,6 +2324,16 @@ change log) or it is still work. A turn may never write EXECUTED.
 - **228 rows moved DONE -> OPEN.** Never verified means never finished. **The number got worse
   because the definition got honest**; reporting that as a regression is the category-to-claim error
   again.
+- **A STATE THAT COLLAPSES "CANNOT" AND "NOT YET" MAKES ITS OWN COUNT MEANINGLESS (B2446/L721).**
+  The partition rule above is about labels that OVERLAP; this is its opposite face - one label
+  carrying two facts that must be told apart. MEASURED: a post-config ledger held 170 judgment-step
+  SKIPs, and quoting that number said nothing about the debt, because 124 were deferrals to a batch
+  that never existed and 46 were reasoned exclusions (instrument cubes, a comparator, a measured
+  impossibility) filed under the same word. Neither a reader nor the gate could separate them, which
+  is precisely why 124 real deferrals stayed invisible for 105 configs.
+  **So: before quoting a count of any status, read the REASONS behind it** - and when they turn out
+  to be two kinds, the fix is to split the state, not to re-count. The tell is a status whose
+  natural-language gloss needs an "or" - *skipped, meaning not applicable or not yet done*.
 
 **Mechanically enforced** by scan_queue_vocabulary, the queue_state.py audit invariants (terminal-not-last), and the test_b1969 parser pins.
 
