@@ -17483,6 +17483,24 @@ distinction, and applying it (B2446) reclassified four of them to N/A on their o
 evidence, dropping the blocking population from 47 cubes to 42 without upgrading anything to DONE.
 **The general rule: when a status set collapses "cannot" and "not yet" into one value, the count of
 the state tells you nothing about the debt - re-read the REASONS before quoting the number.**
+**PROMOTED (B2448).** That general rule is now in the always-read skill beside L537's partition
+rule, as its opposite face - L537 governs labels that OVERLAP, this governs ONE label carrying two
+facts - with the tell recorded: *a status whose natural-language gloss needs an "or"*.
+Fragment-pinned in test_b2123. The Phase-5 citation for the correction itself is a **compliance
+failure against CHECKLIST #270** (verdict from a partial read) read with #201: I quoted step 5's
+own counter, 42, and generalised it to "every one of the skips" over a population I had not read.
+**Retroactive sweep (#237) for the collapsed-status class, over every status vocabulary in the
+grading and enforcement path.** FOUR scanned, ONE defective - and the three sound ones are
+instructive because they were built the right way ON PURPOSE. (1) `verify_postconfig_complete`'s
+TERMINAL set - **THE INSTANCE**, SKIPPED covering both facts, split at B2440. (2) `queue_state`'s
+six CLASSES (EXECUTED / DROPPED / BLOCKED / DEFERRED / OPEN / RUNNING) - **SOUND**: abandonment,
+waiting-on-someone and later are three separate labels, so no count conflates them. (3)
+`roster_core`'s gate values - **SOUND, and the strongest control**: True / False / **None = NOT
+EVALUABLE** is an explicit THIRD state added deliberately at B2012 and B1624 precisely so
+"unknown" could not score as "passed". (4) the grid verdict vocabulary - **SOUND**: ZERO_FIRES,
+NO_EXIT_SELECTABLE and BELOW_POWER_FLOOR are separate from FAIL, so sample-size cuts never hide
+inside quality failures. **The repo already knew this rule in three places and lost it in the
+fourth** - which is why the fix is a split, not a re-count.
 **Three properties made it invisible, and each is reusable as a tell:**
 (1) **The escape was TERMINAL.** L642 says a guard must fail closed on the ABSENT input; this is
 the sibling - a guard must not treat a PROMISE as an outcome. SKIPPED is a deferral; a deferral is
