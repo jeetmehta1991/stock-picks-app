@@ -1772,6 +1772,13 @@ and the position feeling settled is what makes the disproof feel unnecessary.
   in a mid-run log - a check that could only ever pass, and would have read as reassurance at
   exactly the moment the run failed that way. **Find the WRITER of the string and confirm it
   reaches the file you are searching**, then trust the absence.
+- **A 0pct OR 100pct RESULT FROM A NEW EXTRACTOR IS A PARSER HYPOTHESIS (B2419/L724).**
+  MEASURED: `ast.literal_eval` on a JSON column with lowercase true/false raised on every row, so
+  a probe reported 0 of 1849 present - indistinguishable from the field not being persisted, and
+  nearly written into a pre-registration. Print ONE raw value before believing a coverage
+  extreme. Sibling: `getattr(obj.attr, "x", None)` guards the INNER attribute while the outer
+  access still raises - inside a writer wrapped in a broad except, that silently disabled
+  checkpointing entirely. Guard the OUTER access first.
 
 **I twice quoted a Spearman of -0.779/-0.865 as measured and used it to argue a
 result was "the expected shape". It lives in a comment.** I never ran it. The

@@ -25089,6 +25089,7 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
          "B2382: Phase 6  ENDOFTURN SWEEP CHECKLIST 67  HARD RULE n"),
         ("PROSE-ONLY: an INDEX of historical failures - each entry's enforcement lives with its own rule; gating the index would gate a table of contents.",
          "B2382: Failure modes this skill exists to prevent lineage"),
+        ("A 0pct OR 100pct RESULT FROM A NEW EXTRACTOR IS A PARSER HYPOTHESIS", "L724/B2419: a coverage extreme from a new extractor"),
         ("prove the ARTIFACT can CONTAIN the match", "L723/B2406: a negative is only as good as the haystack"),
         ("re-ask whether the work is owed", "L619/B2460: a repeating block is evidence about the classification"),
         ("answers the measurement in front of you", "L503/B2459: a remedy can miss the question"),
@@ -25419,7 +25420,8 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # 130 -> 131 at B2406 (the L723 haystack fragment).
     # 131 -> 219 at B2382 (S6-B2317 + S6-B2382: every remaining section
     # rule in the always-read skill now carries a fragment pin).
-    assert len(gutted) == 219, gutted
+    # 219 -> 220 at B2419 (the L724 parser-hypothesis fragment).
+    assert len(gutted) == 220, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 

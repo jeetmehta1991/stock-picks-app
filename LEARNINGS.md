@@ -16331,6 +16331,46 @@ path, verified by the pyramid failing then passing. The `ledger_path` redirect -
 
 ### L723
 
+### L724
+
+**L724 (B2387/B2419) - TWO WAYS A FAILURE RENDERS AS A CLEAN RESULT, both hit while implementing
+tickets this session.**
+
+**(1) `getattr(obj.attr, "x", default)` GUARDS THE INNER ATTRIBUTE WHILE THE OUTER ACCESS RAISES.**
+MEASURED: I added a portfolio block to the engine's checkpoint writer using
+`getattr(self.portfolio, "cash", None)`. When `self.portfolio` does not exist - which happens when
+the supervisor thread fires before construction completes - the expression raises `AttributeError`
+BEFORE getattr is ever called. The whole writer is wrapped in `except Exception`, so my one field
+**silently disabled checkpointing entirely**: no engine_state.json, no resumable run, one log line.
+test_b2148 caught it. **The defensive-looking call was defensive about the wrong half.** Write
+`getattr(self, "portfolio", None)` first, then guard the fields - and when adding ANY field to a
+writer wrapped in a broad except, build it in its own try so its failure degrades one value instead
+of the artifact.
+
+**(2) A PARSER THAT RAISES ON EVERY ROW REPORTS 0pct COVERAGE, WHICH LOOKS EXACTLY LIKE REAL
+ABSENCE.** MEASURED: extracting a signal distribution from the R5 trade log I used
+`ast.literal_eval`; the column is JSON with lowercase `true`/`false`, so every row raised, every row
+counted as absent, and the probe reported **0 of 1849 present** for two keys. That is a publishable-
+looking finding - *the field is not persisted* - and I nearly wrote it into a pre-registration.
+**What caught it was the ticket's own recorded 100pct persistence contradicting my fresh
+measurement.** So: a 0pct or 100pct result from a NEW extractor is a PARSER hypothesis before it is
+a data finding (L644's shape, arriving at coverage rather than at a count), and the cheapest
+disproof is to print ONE raw value - which showed JSON immediately. Switching to `json.loads`
+reproduced the recorded deciles exactly.
+**Both share a shape and it is the session's recurring one: the failure path and the honest negative
+render identically.** Neither produced an error a reader would see.
+Compliance failure against CHECKLIST item 122 for (1) - every swallowed exception owes a paired
+success-check - and item 166 for (2), whose zero-hit rule is about a pattern that cannot match and
+extends here to a PARSER that cannot parse.
+Mechanism: (1) is pinned by test_b2387_portfolio_survives_a_resume_round_trip, which asserts the
+defensive form is still in the source, and by the B2128 silent-except ratchet that also fired;
+(2) DETECTION is JUDGMENT-ONLY - no scan knows which parser suits a column - with durability in the
+skill clause below.
+**Retroactive sweep (#237): 3 extractors written this session.** The 13F decile pass (DEFECTIVE, the
+instance), the axis-redundancy pass (SOUND - reused the corrected parser), and the pre-registration
+emitter (SOUND - same). **1 of 3, and it was the first, before the corrected parser existed.**
+
+
 **L723 (B2406) - THREE MONITORING MISSES FROM ONE SESSION.**
 
 **ORIGINAL FRAMING: THREE MONITORING MISSES FROM ONE SESSION, WRITTEN UP TOGETHER BECAUSE THEY SHARE
