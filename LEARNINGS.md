@@ -17299,3 +17299,21 @@ a one-line union at verify_turn_compliance.py matching the pattern its sibling a
 same way, corrected in the closing row). Pinned both directions by
 test_b2416_uninspected_constant_sees_grep_and_read_tools per B1944 (a fire-only corpus never
 proves a gate can stay quiet); the gate's two prior tests still pass unmodified.
+
+**ADDENDUM (B2418) - A SUBGROUP COUNTED BY VISUAL ADJACENCY IS AN UN-RUN COUNT.**
+I published "6-member institutional 13F family" in an owner-facing recommendation; the owner
+repeated "6-member" back in their ruling. My own derivation script had printed SEVEN
+institutional_* strategies in the band - the "6" was never computed anywhere: it was a hand count
+of the visually CONTIGUOUS block at the top of a sorted list, with the seventh member
+(institutional_high_conviction_long, 0.676/738) sitting three rows lower behind a differently-
+ranked non-member. **Compliance failure against CHECKLIST item 201 read with #271** - a class
+count inside a printed list must come from a filter expression over the class predicate
+(`len([s for s in ranked if s.startswith("institutional_")])`), never from eyeballing adjacency;
+a sorted-by-metric list interleaves families by construction, so adjacency and membership
+diverge exactly when a member is weaker. No new item (#136): #201's test-every-quantity is the
+class; this records the ADJACENCY face and its tell (counting rows you can SEE is the un-run
+count that feels most computed). Corrected same-arc: the S6-B2418 row records 6 -> 7 with all
+seven named, and S6-B2419 enumerates them as the work population.
+Mechanism: **JUDGMENT-ONLY for detection** - no scan knows which rows a prose count meant to
+cover; durability is the named enumeration in the two queue rows (greppable population, count
+re-derivable by one expression).
