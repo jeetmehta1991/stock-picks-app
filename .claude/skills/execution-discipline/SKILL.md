@@ -1772,6 +1772,15 @@ and the position feeling settled is what makes the disproof feel unnecessary.
   in a mid-run log - a check that could only ever pass, and would have read as reassurance at
   exactly the moment the run failed that way. **Find the WRITER of the string and confirm it
   reaches the file you are searching**, then trust the absence.
+- **A GUARD THAT RETURNS None IS NOT A QUIET SUCCESS - IT IS A CHECK THAT DID NOT RUN
+  (B2482/L729).** L642 covers failing open on an ABSENT input; this is failing open on an
+  unexpected SHAPE. MEASURED: three sites assumed a manifest field was a sequence when the
+  natural form is a dict, so a summary printed 3 for a 200-ticker run, a narrow-universe advisory
+  could NEVER fire, and a disjointness check compared key names and passed vacuously. **The same
+  function had been patched once before - for a CRASH. Stopping the crash felt like closing it;
+  the crash was the symptom and the wrong number was the defect.** Rank these by silence: a
+  visibly odd value gets caught, a silent None does not. Fixing the exception is not fixing the
+  value.
 - **READ A GATE'S SELECTOR BEFORE ACTING ON ITS VERDICT (B2478/L574 ext).** L574 says
   being right about the CONTENT is not being right about the CLAIM. One level out: **being right
   about the COMPARISON is not being right about the SUBJECT.** MEASURED: a drift verifier fired
