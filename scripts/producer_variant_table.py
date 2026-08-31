@@ -160,142 +160,134 @@ fires            =  ( breaker_bullish )  AND  ( price_above_ema_200 ) [from P6]"
     # help drive higher sharpe"). Every value READ from source; evidence cites
     # the line. The EMA row is P7 and is BANDED, not pinned, on that directive.
     "institutional_committed_growth_long": {
-        # S6-B2465: MEASURED from output_r5_merged_1_7/trade_log.csv this batch,
-        # not recalled. holdout_n 666 and is_n 1275 reproduce the figures recorded
-        # at S6-B2435 and in the B2419 pre-registration exactly.
+        # S6-B2465: MEASURED from output_r5_merged_1_7/trade_log.csv,
+        # not recalled. holdout_n 666 and is_n 1275 reproduce S6-B2435
+        # and the B2419 pre-registration exactly.
         "baseline": {"artifact": "output_r5_merged_1_7", "fires": 1941,
                      "tickers": 464, "holdout_n": 666,
                      "window": "2022-05-05..2026-05-05"},
-        "gate": "(committed_growth_holders >= 3 OR (committed_growth_holders == 0 "
-                "AND institutional_increased >= 5)) AND (price_above_ema_200)",
-        "formula": """=============================== PRODUCER LAYER ===============================
+        "gate": "(committed_growth_holders >= 3 OR (committed_growth_holders == 0 AND institutional_increased >= 5)) AND (price_above_ema_200)",
+        "formula": """
+=============================== PRODUCER LAYER ===============================
+   all six steps below run INSIDE _per_ticker_persistence (one function, one
+   pass per ticker per snapshot) and write to the cached parquet under
+   data_prefetch/derived/institutional_persistence_t1a/. NONE of their
+   constants is persisted into signals_at_entry - only their OUTPUT is - so
+   no change to any of them can be graded off an existing cube.
 
-P1  per-fund quarter chain  =  walk each fund's 13F report dates backwards from
-                   the latest quarter, counting consecutive quarterly holdings
+P1  PIT visibility cut     =  keep filings whose ReportPeriod + lag <= as_of
+                   PARAMETER: REPORTING_LAG_DAYS = 45
+                      decides WHICH filings exist before any count is formed
+
+P2  per-fund quarter panel =  groupby(Fund, report_dt).Shares.sum(), keep > 0
+                   PARAMETER: positive-shares floor = 0
+                      collapses multi-class entries and drops closed positions
+
+P3  consecutive-quarter chain = walk each fund's quarters back from the latest,
+                   extending the chain while the gap stays inside the window
                    PARAMETER: quarterly gap tolerance = 70..100 days
-                      a gap outside the window BREAKS the chain, so this decides
-                      what "consecutive" means before any count exists
+                      a gap outside the window BREAKS the chain
 
-P2  growth-eligible funds   =  funds whose chain length >= 4 quarters
+P4  growth-eligible funds  =  funds whose chain length >= N
                    PARAMETER: min_consecutive_quarters = 4
-                      a fund below this is skipped entirely for growth counting
 
-P3  grew?(fund)             =  recent_shares > shares_4q_back * 1.10
-                   PARAMETER: growth_multiple = 1.10   (> +10pct over the window)
-
-P4  shares_4q_back          =  fund's share count N quarters back (iloc[3])
+P5  shares N quarters back =  fund's share count at iloc[N-1]
                    PARAMETER: growth_lookback_quarters = 4
-                      P3 measures growth ACROSS this window; P2 gates entry to it
 
-P5  committed_growth_holders = count of funds passing P2 AND P3
-    strategy threshold      =  committed_growth_holders >= 3
-                   PARAMETER: min_committed_growth = 3   (B1173 loosened 5 -> 3)
+P6  grew?(fund)            =  recent_shares > shares_back * multiple
+                   PARAMETER: growth_multiple = 1.10
 
-P6  fallback arm            =  committed_growth_holders == 0
-                                AND institutional_increased >= 5
-                   PARAMETER: fallback_min_increased = 5   (B1230 graceful
-                      degradation when the persistence precompute has no row)
-
-P7  regime leg              =  close > EMA(span)
-                   PARAMETER: span = 200, from config EMA_PAIRS
+    committed_growth_holders = count of funds passing P4 AND P6
 
 =============================== STRATEGY LAYER ===============================
+   both counts below ARE persisted in signals_at_entry (measured 100pct
+   coverage), so a threshold over them re-scores off the cached cube.
 
-fires =  ( P5  OR  P6 )  AND  P7
+P7  primary arm            =  committed_growth_holders >= T
+                   PARAMETER: min_committed_growth = 3
+
+P8  fallback arm           =  committed_growth_holders == 0
+                                AND institutional_increased >= T
+                   PARAMETER: fallback_min_increased = 5
+
+P9  regime leg             =  close > EMA(span)
+                   PARAMETER: span = 200, from config EMA_PAIRS
+
+fires =  ( P7  OR  P8 )  AND  P9
 """,
         "params": [
-            {"id": "P1", "producer": "build_institutional_persistence_precompute",
+            {"id": "P1", "producer": "_per_ticker_persistence (persistence precompute)",
+             "param": "REPORTING_LAG_DAYS", "production": 45,
+             "band": [45],
+             "free_band": [], "resim_band": [45],
+             "subset_safe": False, "status": "NOT-SWEPT-BY-DESIGN",
+             "evidence": "build_institutional_persistence_precompute.py:46 + :68",
+             "type": "int", "engine_implemented": True,
+             "derivation": "NEW ROW - absent from the pre-B2467 table entirely, so the #182 denominator read 7 when the inventory is 9. The SEC 13F filing deadline is 45 days after quarter end; this is the PIT guard that keeps a backtest from seeing a filing before it existed. NOT SWEPT: shortening it is lookahead and lengthening it only discards real information. NOT PERSISTED: the cube stores this step's OUTPUT (committed_growth_holders), never its inputs, so the value cannot be recomputed by re-filtering an existing cube. Resim in BOTH directions - monotonicity is irrelevant here, availability is what decides."},
+            {"id": "P2", "producer": "_per_ticker_persistence (persistence precompute)",
+             "param": "positive_shares_floor", "production": 0,
+             "band": [0],
+             "free_band": [], "resim_band": [0],
+             "subset_safe": False, "status": "NOT-SWEPT-BY-DESIGN",
+             "evidence": "build_institutional_persistence_precompute.py:73-74",
+             "type": "int", "engine_implemented": True,
+             "derivation": "NEW ROW - also absent before. Collapses a fund's multiple share classes into one quarterly position and drops closed positions. NOT SWEPT: a floor above 0 would silently redefine 'holds the stock' mid-chain. NOT PERSISTED: the cube stores this step's OUTPUT (committed_growth_holders), never its inputs, so the value cannot be recomputed by re-filtering an existing cube. Resim in BOTH directions - monotonicity is irrelevant here, availability is what decides."},
+            {"id": "P3", "producer": "_per_ticker_persistence (persistence precompute)",
              "param": "quarterly_gap_tolerance_days", "production": "70..100",
-             "type": "range", "band": ["70..100"],
-             "derivation": "NOT SWEPT - data hygiene, not an edge knob: it defines "
-                           "what counts as a consecutive quarter against 13F filing "
-                           "jitter, and moving it changes chain lengths for reasons "
-                           "unrelated to the thesis. Inventoried because the #182 "
-                           "denominator is the row count of this table, not the count "
-                           "of rows I chose to sweep.",
+             "band": ["70..100"],
+             "free_band": [], "resim_band": ["70..100"],
              "subset_safe": False, "status": "NOT-SWEPT-BY-DESIGN",
              "evidence": "build_institutional_persistence_precompute.py:91",
-             "engine_implemented": True},
-            {"id": "P2", "producer": "build_institutional_persistence_precompute",
+             "type": "int", "engine_implemented": True,
+             "derivation": "data hygiene against 13F filing jitter, not an edge knob: it decides what counts as a consecutive quarter, and moving it changes chain lengths for reasons unrelated to the thesis. NOT PERSISTED: the cube stores this step's OUTPUT (committed_growth_holders), never its inputs, so the value cannot be recomputed by re-filtering an existing cube. Resim in BOTH directions - monotonicity is irrelevant here, availability is what decides."},
+            {"id": "P4", "producer": "_per_ticker_persistence (persistence precompute)",
              "param": "min_consecutive_quarters", "production": 4,
-             "type": "int", "band": [2, 3, 4, 6, 8],
-             "derivation": "Yan-Zhang 2009 persistence is defined over multiple "
-                           "quarters but the canonical count varies; 4 is this repo's "
-                           "choice. Band brackets production BOTH ways per B1691 - a "
-                           "band shaped by the hypothesis 'longer chains are cleaner' "
-                           "could only confirm it, which is the tail_n mistake.",
+             "band": [2, 3, 4, 6, 8],
+             "free_band": [], "resim_band": [2, 3, 4, 6, 8],
              "subset_safe": False, "status": "UNTESTED",
              "evidence": "build_institutional_persistence_precompute.py:108",
-             "engine_implemented": True},
-            {"id": "P3", "producer": "build_institutional_persistence_precompute",
-             "param": "growth_multiple", "production": 1.10,
-             "type": "float", "band": [1.0, 1.05, 1.10, 1.25, 1.50],
-             "derivation": "1.10 = '+10pct over the window'. 1.0 is the meaningful "
-                           "floor (ANY growth) and is INCLUDED deliberately: it is "
-                           "below production, and B1691's lesson is that the level "
-                           "which wins is often one the old floor excluded.",
-             "subset_safe": False, "status": "UNTESTED",
-             "evidence": "build_institutional_persistence_precompute.py:113",
-             "engine_implemented": True},
-            {"id": "P4", "producer": "build_institutional_persistence_precompute",
+             "type": "int", "engine_implemented": True,
+             "derivation": "Yan-Zhang 2009 persistence spans multiple quarters but the canonical count varies; 4 is this repo's choice. Band brackets production BOTH ways per B1691. NOT PERSISTED: the cube stores this step's OUTPUT (committed_growth_holders), never its inputs, so the value cannot be recomputed by re-filtering an existing cube. Resim in BOTH directions - monotonicity is irrelevant here, availability is what decides. AND NOTE the fallback: tightening this can drive committed_growth_holders to 0, which switches P8 ON and can ADD fires - so it is not even monotone at the producer level."},
+            {"id": "P5", "producer": "_per_ticker_persistence (persistence precompute)",
              "param": "growth_lookback_quarters", "production": 4,
-             "type": "int", "band": [2, 3, 4, 6, 8],
-             "derivation": "the window P3 measures growth across. COLLINEAR WITH P2 "
-                           "BY CONSTRUCTION - P2 gates which funds reach P4, and both "
-                           "default to 4, so a joint sweep must report their "
-                           "correlation rather than crediting either alone (the "
-                           "tail_n/age_bars_max lesson at Spearman +0.881).",
+             "band": [2, 3, 4, 6, 8],
+             "free_band": [], "resim_band": [2, 3, 4, 6, 8],
              "subset_safe": False, "status": "UNTESTED",
              "evidence": "build_institutional_persistence_precompute.py:112",
-             "engine_implemented": True},
-            {"id": "P5", "producer": "strat_institutional_committed_growth_long",
+             "type": "int", "engine_implemented": True,
+             "derivation": "the window P6 measures growth across. COLLINEAR WITH P4 BY CONSTRUCTION - P4 gates which funds reach P5 and both default to 4, so a joint sweep must report their correlation rather than crediting either alone. NOT PERSISTED: the cube stores this step's OUTPUT (committed_growth_holders), never its inputs, so the value cannot be recomputed by re-filtering an existing cube. Resim in BOTH directions - monotonicity is irrelevant here, availability is what decides."},
+            {"id": "P6", "producer": "_per_ticker_persistence (persistence precompute)",
+             "param": "growth_multiple", "production": 1.100,
+             "band": [1.0, 1.05, 1.1, 1.25, 1.5],
+             "free_band": [], "resim_band": [1.0, 1.05, 1.1, 1.25, 1.5],
+             "subset_safe": False, "status": "UNTESTED",
+             "evidence": "build_institutional_persistence_precompute.py:113",
+             "type": "int", "engine_implemented": True,
+             "derivation": "1.10 = '+10pct over the window'. 1.0 is the meaningful floor (ANY growth) and is included deliberately - it sits below production, and B1691's lesson is that the winning level is often one the old floor excluded. NOT PERSISTED: the cube stores this step's OUTPUT (committed_growth_holders), never its inputs, so the value cannot be recomputed by re-filtering an existing cube. Resim in BOTH directions - monotonicity is irrelevant here, availability is what decides."},
+            {"id": "P7", "producer": "strat_institutional_committed_growth_long",
              "param": "min_committed_growth", "production": 3,
-             "type": "int", "band": [1, 2, 3, 5, 12, 142],
-             "derivation": "levels ARE the measured IS deciles of the fired "
-                           "population (p10/25/50/75/90 = 3/3/5/12/142 over 1,235 IS "
-                           "rows carrying the key) plus 1 and 2 below production. "
-                           "READ THE BAND'S TWO HALVES DIFFERENTLY: raising the bar "
-                           "(5, 12, 142) only removes fires, so it grades free off the "
-                           "R5 cube; 1 and 2 ADD fires and need resim. Deciles are "
-                           "selection-conditioned - they describe trades that already "
-                           "passed this gate, so they size the search, they do not "
-                           "prove headroom.",
-             "subset_safe": False, "status": "UNTESTED",
+             "band": [1, 2, 3, 5, 11, 142],
+             "free_band": [3, 5, 11, 142], "resim_band": [1, 2],
+             "subset_safe": None, "status": "UNTESTED",
              "evidence": "screener.py:6648",
-             "engine_implemented": True},
-            {"id": "P6", "producer": "strat_institutional_committed_growth_long",
+             "type": "int", "engine_implemented": True,
+             "derivation": "PERSISTED, so this row splits PER LEVEL - which the pre-B2467 binary field could not express and which is why the old factorial read 31,500. Raising the bar (5, 11, 142) selects a STRICT SUBSET of rows already in the cube and grades FREE; lowering it (1, 2) admits rows the cube never contains and needs the engine. The fallback does NOT break this: raising the primary threshold leaves committed_growth_holders unchanged, so rows at 0 still take P8 identically and rows at 3-4 simply stop firing. Levels are the measured IS deciles over 1,275 IS rows."},
+            {"id": "P8", "producer": "strat_institutional_committed_growth_long",
              "param": "fallback_min_increased", "production": 5,
-             "type": "int", "band": [2, 3, 5, 6, 32, 230],
-             "derivation": "the B1230 fallback, live wherever the persistence "
-                           "precompute has no row (~4pct of this strategy's fired "
-                           "rows). Levels are the measured IS deciles of "
-                           "institutional_increased (p10/25/50/75/90 = 3/6/32/230/321) "
-                           "plus 2 below production. SAME TWO HALVES as P5. NOTE the "
-                           "fallback is what makes P2/P3/P4 non-monotone: tightening "
-                           "the growth test can drive the count to 0, which SWITCHES "
-                           "THIS ARM ON and can ADD fires - so no persistence-producer "
-                           "knob is subset-safe while this arm exists.",
-             "subset_safe": False, "status": "UNTESTED",
+             "band": [2, 3, 5, 6, 32, 230, 319],
+             "free_band": [5, 6, 32, 230, 319], "resim_band": [2, 3],
+             "subset_safe": None, "status": "UNTESTED",
              "evidence": "screener.py:6648",
-             "engine_implemented": True},
-            {"id": "P7", "producer": "compute_ema_sma", "param": "span",
-             "production": 200, "type": "int",
+             "type": "int", "engine_implemented": True,
+             "derivation": "the B1230 fallback, live wherever the persistence precompute has no row (~4pct of fired rows). PERSISTED, so the same per-level split as P7: raising it only removes fires and grades FREE; 2 and 3 add fires and need resim. Levels are the measured IS deciles of institutional_increased."},
+            {"id": "P9", "producer": "compute_ema_sma",
+             "param": "span", "production": 200,
              "band": [9, 20, 21, 50, 100, 150, 200],
-             "derivation": "OWNER DIRECTIVE 2026-08-30: 'EMA can not stay as is - EMA "
-                           "span itself may help drive higher sharpe.' Band matches "
-                           "the SMC P6 precedent (all spans the producer emits under "
-                           "config EMA_PAIRS, 100/150 added at B1686). NOT subset-safe "
-                           "in EITHER direction and this is MEASURED, not argued: on "
-                           "13,440 EMA200-gated family rows, 5,770 (42.9pct) sit above "
-                           "the 200 EMA and below the 50, and 1,401 high_conviction "
-                           "rows are the reverse - the legs do not nest, so every span "
-                           "change needs engine resim. Cheap because EMA_PAIRS is "
-                           "already an env-driven config knob (no code change), and "
-                           "the free P5/P6 threshold grid can be re-run inside each "
-                           "span's cube.",
+             "free_band": [], "resim_band": [9, 20, 21, 50, 100, 150, 200],
              "subset_safe": False, "status": "UNTESTED",
-             "evidence": "technical.py:768 + config.py:2497",
-             "engine_implemented": True},
+             "evidence": "technical.py:768 + config.py:2496-2497",
+             "type": "int", "engine_implemented": True,
+             "derivation": "OWNER DIRECTIVE 2026-08-30: 'EMA can not stay as is - EMA span itself may help drive higher sharpe.' NOT subset-safe in EITHER direction and this is MEASURED, not argued (recorded S6-B2427): of 13,440 EMA200-gated family rows, 5,770 sit above the 200 EMA and below the 50, and 1,401 high_conviction rows are the reverse - the legs do not nest, so no span change re-scores off a cube. CHEAP TO VARY, NOT CHEAP TO RUN: EMA_PAIRS is env-driven (config.py:2496-2497, verified) so no code change is needed, but each span still costs one engine run."},
         ],
     },
 }
@@ -322,6 +314,20 @@ def validate_spec(spec: dict) -> list[str]:
     # which main() dereferences unconditionally - so the standard 3-section
     # path CRASHED on a spec this function had just approved. A validator
     # that passes an input its own caller cannot consume is not validating.
+    # S6-B2467: a per-level split must PARTITION the band - no level may be
+    # missing and none may be claimed both free and needing resim.
+    for _p in spec["params"]:
+        if _p.get("free_band") is None and _p.get("resim_band") is None:
+            continue
+        _fr = list(_p.get("free_band") or [])
+        _rs = list(_p.get("resim_band") or [])
+        _band = list(_p["band"])
+        if sorted(map(str, _fr + _rs)) != sorted(map(str, _band)):
+            errs.append(f"{_p['id']}: free_band + resim_band must partition "
+                        f"band exactly (got {_fr} + {_rs} vs {_band})")
+        if set(map(str, _fr)) & set(map(str, _rs)):
+            errs.append(f"{_p['id']}: a level is in BOTH free_band and "
+                        "resim_band")
     b = spec.get("baseline")
     if not isinstance(b, dict):
         errs.append("SPEC has no `baseline` block - main() reads it for the "
@@ -352,9 +358,18 @@ def table_a(spec: dict) -> list[str]:
             "|---|---|---|---|---|---|---|---|---|"]
     for p in spec["params"]:
         band = ", ".join(_fmt(b) for b in p["band"]) or "-"
-        ss = {True: "YES - cube-gradable, free",
-              False: "NO - needs engine resim",
-              None: "-"}[p["subset_safe"]]
+        # S6-B2467: subset-safety is PER LEVEL, not per parameter. The binary
+        # field forced 'raise the bar = free' and 'lower the bar = resim' into
+        # ONE flag, which rounded to resim and inflated the factorial. A row may
+        # now carry free_band/resim_band; the binary remains the fallback.
+        if p.get("free_band") is not None or p.get("resim_band") is not None:
+            _f = ", ".join(_fmt(b) for b in (p.get("free_band") or [])) or "none"
+            _r = ", ".join(_fmt(b) for b in (p.get("resim_band") or [])) or "none"
+            ss = f"FREE: {_f}<br>RESIM: {_r}"
+        else:
+            ss = {True: "YES - cube-gradable, free",
+                  False: "NO - needs engine resim",
+                  None: "-"}[p["subset_safe"]]
         rows.append(f"| {p['id']} | `{p['producer']}` | `{p['param']}` | "
                     f"{_fmt(p['production'])} | {band} | {ss} | **{p['status']}** | "
                     f"`{p['evidence']}` | {p['derivation']} |")

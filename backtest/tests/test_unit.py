@@ -28876,6 +28876,70 @@ def test_b2450_tightening_over_a_backlog_rule_survives_in_the_skill():
         "scoped to steps 5-8 only")
 
 
+def test_b2467_subset_safety_is_per_level_and_partitions_the_band():
+    """S6-B2467: a binary subset_safe flag rounded half a band to 'resim'.
+
+    Table A's `subset_safe` was one true/false per PARAMETER, but the property
+    is per LEVEL: raising a persisted count threshold selects a strict subset
+    of rows already in the cube (free), while lowering it admits rows the cube
+    never contained (needs the engine). The binary field could not say that, so
+    it rounded to resim and the factorial read 31,500 against a true 3,500.
+
+    The discriminator is NOT monotonicity - it is PERSISTENCE. A producer
+    constant is never stored in signals_at_entry, only its output is, so no
+    producer change re-scores off a cube in either direction.
+    """
+    import functools
+    import operator
+    import sys
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[2]
+    sys.path.insert(0, str(root / "scripts"))
+    import producer_variant_table as pvt
+
+    spec = pvt.SPECS["institutional_committed_growth_long"]
+    assert pvt.validate_spec(spec) == []
+
+    # granularity: no row may name the SCRIPT; the block was the owner's
+    # objection and naming it again is the defect returning
+    for p in spec["params"]:
+        assert p["producer"] != "build_institutional_persistence_precompute", (
+            f"{p['id']} names the 184-line SCRIPT again rather than the step "
+            "inside it that owns the constant")
+
+    # the two rows that were missing entirely must be present - their absence
+    # is what made the #182 denominator read 7 against a real inventory of 9
+    params = {p["param"] for p in spec["params"]}
+    assert "REPORTING_LAG_DAYS" in params, "the PIT lag row is gone again"
+    assert "positive_shares_floor" in params, "the share-floor row is gone again"
+    assert len(spec["params"]) == 9
+
+    # every split must PARTITION its band - validate_spec enforces it, so prove
+    # the enforcement bites rather than trusting it
+    import copy
+    broken = copy.deepcopy(spec)
+    for p in broken["params"]:
+        if p["free_band"]:
+            p["free_band"] = p["free_band"][:-1]      # drop a level entirely
+            break
+    assert any("partition" in e for e in pvt.validate_spec(broken)), (
+        "validate_spec accepts a free/resim split that loses a level")
+
+    # the free slice must agree with the committed pre-registration, or the two
+    # artifacts disagree about what can be graded without the engine
+    free = [len(p["free_band"]) for p in spec["params"] if p["free_band"]]
+    assert functools.reduce(operator.mul, free, 1) == 20, (
+        "Table A's free combinations no longer equal the 20 committed in "
+        "output_audit/b2419_preregistration_13f_family.json")
+
+    # and the persisted/not-persisted split must hold: only the two strategy
+    # thresholds may carry free levels
+    free_rows = {p["param"] for p in spec["params"] if p["free_band"]}
+    assert free_rows == {"min_committed_growth", "fallback_min_increased"}, (
+        "a producer-layer constant is claiming free levels - its value is not "
+        "persisted in signals_at_entry, so it cannot be graded off a cube")
+
+
 def test_b2465_table_a_renders_every_required_field():
     """S6-B2465: a required Table A field was pinned in the SPEC, not the OUTPUT.
 
