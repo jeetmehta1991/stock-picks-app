@@ -227,8 +227,8 @@ def step2_admissions_section(A, admissions_path=None) -> None:
       "of the funnel table and are not counted in it. Metrics are re-derived at render time "
       "from each admission's own grading artifact; the admissions file carries identity only.")
     A("")
-    A("| Strategy | Dir | Producer combination | Exit | IS Shrp | IS ci_lo | HO Shrp | HO ci_lo | margin | psr | PF | Sortino | WR | Exp | HO n | Full n | Mirror |")
-    A("|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|")
+    A("| Strategy | Dir | Review | Producer combination | Exit | IS Shrp | IS ci_lo | HO Shrp | HO ci_lo | margin | psr | PF | Sortino | WR | Exp | HO n | Full n | Mirror |")
+    A("|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|")
     for adm in adms:
         art = REPO / adm["grid_artifact"]
         grid = json.loads(art.read_text(encoding="utf-8"))
@@ -253,13 +253,31 @@ def step2_admissions_section(A, admissions_path=None) -> None:
         mir = f"`{mname}`" if (mstat == "REGISTERED" and mname) else mstat
         combo = ", ".join(f"{k}={v}" for k, v in want.items())
         cfg = ", ".join(f"{k}={v}" for k, v in (adm.get("config") or {}).items())
-        A(f"| `{adm['strategy']}` | {adm['direction']} | {cfg}; {combo} | `{adm['exit']}` | "
+        # S6-B2441: the review status rides in the TABLE, not only in a note -
+        # an admission taken from a config whose judgment review never ran must
+        # say so where the numbers are read.
+        _rev = adm.get("review_status") or "REVIEWED"
+        _rev = f"**{_rev}**" if _rev != "REVIEWED" else _rev
+        A(f"| `{adm['strategy']}` | {adm['direction']} | {_rev} | {cfg}; {combo} | `{adm['exit']}` | "
           f"{_fmt(r.get('is_sharpe'))} | {_fmt(r.get('is_ci_lo'))} | {_fmt(r.get('sharpe'))} | "
           f"{_fmt(r.get('ci_lo'))} | {r.get('margin'):+.3f} | {_fmt(r.get('psr'))} | "
           f"{_fmt(r.get('profit_factor'))} | {_fmt(r.get('sortino'))} | "
           f"{_fmt(r.get('win_rate'), 5, 3)} | {_fmt(r.get('expectancy'))} | "
           f"{r.get('holdout_n')} | {r.get('full_period_n')} | {mir} |")
     A("")
+    _unrev = [a for a in adms if a.get("review_status") == "PROVISIONAL-UNREVIEWED"]
+    if _unrev:
+        A(f"**PROVISIONAL-UNREVIEWED ({len(_unrev)} of {len(adms)}).** "
+          "These admissions come from a Step-2 config whose four JUDGMENT "
+          "post-config steps have NOT been run - they were SKIPPED citing a "
+          "wave-level review batch that has never existed (S6-B2436 / L721). "
+          "The five AUTO steps DID run and are DONE. The completeness gate now "
+          "BLOCKS such a config (S6-B2440). The row stands, marked, until the "
+          "pilot review clears it; if that review changes the verdict, the "
+          "admission is revisited.")
+        for a in _unrev:
+            A(f"    - `{a['strategy']}`: {a.get('review_note', '')}")
+        A("")
     for adm in adms:
         A(f"**{adm['ticket']} ({adm['ruled']})** - owner verbatim: "
           f"*\"{adm['ruling_verbatim']}\"* - strategy `{adm['strategy']}`, "

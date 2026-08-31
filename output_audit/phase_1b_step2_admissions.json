@@ -12,7 +12,9 @@
       "combination": {"close_mitigation": true, "break_pct_max": 0.02, "age_bars_max": null, "tail_n": 20},
       "exit": "time_stop_10d",
       "universe": "544 tickers (output_audit/r5_universe_544.txt)",
-      "window": "4 years 2022-05-06 .. 2026-04-30 (IS 3y + 1y holdout)"
+      "window": "4 years 2022-05-06 .. 2026-04-30 (IS 3y + 1y holdout)",
+      "review_status": "PROVISIONAL-UNREVIEWED",
+      "review_note": "S6-B2441 (owner-approved 2026-08-30, council recommendation). This admission was taken from a Step-2 config whose FOUR JUDGMENT post-config steps (5_adversarial_lens_review, 6_post_fix_recheck, 7_implement_in_engine, 8_verdict_with_denominators) have NOT been run - they were SKIPPED citing a wave-level review batch that has never existed (S6-B2436/L721). The five AUTO steps did run and are DONE. The gate now BLOCKS this config (S6-B2440). The admission stands in the document but is marked unreviewed until the pilot review clears it; if that review changes the verdict, the admission is revisited."
     }
   ]
 }

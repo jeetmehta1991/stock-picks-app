@@ -74,9 +74,12 @@ The cell count is NOT the number of independent bets. De-dup compares (ticker, e
 
 Cells admitted by explicit owner ruling from the STRATEGY_OPTIMISATION_PLAN Step-2 waterfall - a DIFFERENT pipeline from the 3-cube funnel above (per-strategy producer-parameter search, six-gate grading, first-qualifier-stops). They are NOT rows of the funnel table and are not counted in it. Metrics are re-derived at render time from each admission's own grading artifact; the admissions file carries identity only.
 
-| Strategy | Dir | Producer combination | Exit | IS Shrp | IS ci_lo | HO Shrp | HO ci_lo | margin | psr | PF | Sortino | WR | Exp | HO n | Full n | Mirror |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| `smc_breaker_block_long` | long | P1_swing_length=50, P6_span=50; close_mitigation=True, break_pct_max=0.02, age_bars_max=None, tail_n=20 | `time_stop_10d` |   0.45 |  -0.39 |   1.15 |  -0.41 | +0.152 |   1.00 |   1.94 |   1.93 | 0.537 |   1.31 | 41 | 180 | `smc_breaker_block_short` |
+| Strategy | Dir | Review | Producer combination | Exit | IS Shrp | IS ci_lo | HO Shrp | HO ci_lo | margin | psr | PF | Sortino | WR | Exp | HO n | Full n | Mirror |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| `smc_breaker_block_long` | long | **PROVISIONAL-UNREVIEWED** | P1_swing_length=50, P6_span=50; close_mitigation=True, break_pct_max=0.02, age_bars_max=None, tail_n=20 | `time_stop_10d` |   0.45 |  -0.39 |   1.15 |  -0.41 | +0.152 |   1.00 |   1.94 |   1.93 | 0.537 |   1.31 | 41 | 180 | `smc_breaker_block_short` |
+
+**PROVISIONAL-UNREVIEWED (1 of 1).** These admissions come from a Step-2 config whose four JUDGMENT post-config steps have NOT been run - they were SKIPPED citing a wave-level review batch that has never existed (S6-B2436 / L721). The five AUTO steps DID run and are DONE. The completeness gate now BLOCKS such a config (S6-B2440). The row stands, marked, until the pilot review clears it; if that review changes the verdict, the admission is revisited.
+    - `smc_breaker_block_long`: S6-B2441 (owner-approved 2026-08-30, council recommendation). This admission was taken from a Step-2 config whose FOUR JUDGMENT post-config steps (5_adversarial_lens_review, 6_post_fix_recheck, 7_implement_in_engine, 8_verdict_with_denominators) have NOT been run - they were SKIPPED citing a wave-level review batch that has never existed (S6-B2436/L721). The five AUTO steps did run and are DONE. The gate now BLOCKS this config (S6-B2440). The admission stands in the document but is marked unreviewed until the pilot review clears it; if that review changes the verdict, the admission is revisited.
 
 **S6-B2410 (2026-08-30)** - owner verbatim: *"Lets retain the break_pct_max 0.02, close_mitigation True, age_bars_max None, exit time_stop_10d, tail_n (20) combination"* - strategy `smc_breaker_block_long`, 544 tickers (output_audit/r5_universe_544.txt), 4 years 2022-05-06 .. 2026-04-30 (IS 3y + 1y holdout); artifact `output_audit/output_b2399_step2_sw50sp50_step2_sw50sp50_grid_auto.json`.
 

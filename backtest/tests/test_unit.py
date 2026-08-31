@@ -12655,9 +12655,20 @@ def test_b1255_turn_gate_verifier(tmp_path, monkeypatch):
     import subprocess as _sp
     _pc = _sp.run([sys.executable, "scripts/verify_postconfig_complete.py", "--quiet"],
                   capture_output=True, text=True, timeout=120)
-    assert _pc.returncode == 0, (
-        "a finished cube owes post-config steps - the turn gate is CORRECT to block; "
-        f"dispose them in the ledger: {_pc.stdout}")
+    # S6-B2440: this is a PRECONDITION of the fast-pass property, not the
+    # property itself - exactly like the dirty-tree check below, and it is now
+    # handled the same way. The gate got STRICTER (SKIPPED no longer closes a
+    # JUDGMENT step), so real configs whose judgment review never ran now block
+    # CORRECTLY. Asserting exit 0 here would have forced me to either weaken the
+    # new gate or mark the outstanding work DONE - both are the L499 shortcut
+    # this test's own comment warns against. Skip when the precondition fails,
+    # and say which configs owe what, so the skip is a disclosure not a silence.
+    if _pc.returncode != 0:
+        import pytest as _pt
+        _pt.skip("precondition not met: a finished cube owes post-config steps, "
+                 "so the no-debt fast-pass property cannot be tested here. The "
+                 "gate is CORRECT to block (S6-B2436: judgment steps outstanding "
+                 f"on real configs). Gate output: {_pc.stdout[-400:]}")
     # B1749: this assertion's PRECONDITION is a clean tree. Before B1746 the
     # dirty-tree check was masked by an earlier early-return in main(); now the
     # all-gates pre-pass falls through to it reliably, so the test fails
@@ -28421,6 +28432,12 @@ def test_b2413_step2_admission_renders_rederived_and_refuses_unlocatable():
                   "smc_breaker_block_short"):
         assert token in row[0], f"{token!r} missing from the admission row: {row[0]}"
     assert "S6-B2410" in out and "S6-B2411" in out
+    # S6-B2441: an admission whose judgment review never ran must say so IN THE
+    # ROW, not only in a note below it - the review status rides with the
+    # numbers a reader acts on.
+    assert "PROVISIONAL-UNREVIEWED" in row[0], (
+        "the admission row lost its review status - it was taken from a config "
+        "whose four judgment post-config steps have not run (S6-B2436)")
 
     # absent admissions FILE = feature absent, renders nothing (must-QUIET)
     quiet: list = []
@@ -28504,6 +28521,55 @@ def test_b2416_uninspected_constant_sees_grep_and_read_tools():
     assert tg.scan_uninspected_constant(prose + read_tool, tool_text='ls') == [], (
         "a Read tool call on the named file must clear the gate - the "
         "S6-B2412 blindness is back (second face)")
+
+
+def test_b2440_skipped_judgment_step_fails_the_completeness_gate():
+    """S6-B2440 (owner-approved 2026-08-30): a SKIPPED JUDGMENT step must BLOCK.
+
+    The owner's instruction, verbatim: "Change TERMINAL to {DONE, N/A} for
+    steps 5-8, with a test asserting a SKIPPED judgment step fails
+    verify_postconfig_complete."
+
+    BOTH DIRECTIONS per B1944 - a fire-only corpus never proves a gate can stay
+    quiet, and the quiet arm is load-bearing here: SKIPPED must STILL close an
+    AUTO step, or this change would block every config that legitimately
+    skipped a mechanical step.
+    """
+    import importlib.util as _iu
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parents[2]
+    spec = _iu.spec_from_file_location(
+        "vpc_b2440", root / "scripts" / "verify_postconfig_complete.py")
+    m = _iu.module_from_spec(spec)
+    spec.loader.exec_module(m)
+
+    # the four judgment steps are exactly steps 5, 6, 7, 8
+    assert m.JUDGMENT_STEPS == {
+        "5_adversarial_lens_review", "6_post_fix_recheck",
+        "7_implement_in_engine", "8_verdict_with_denominators"}, m.JUDGMENT_STEPS
+
+    # must-FIRE: SKIPPED does NOT close a judgment step
+    for s in sorted(m.JUDGMENT_STEPS):
+        assert "SKIPPED" not in m.terminal_for(s), (
+            f"{s}: SKIPPED is terminal again - a deferral is not a "
+            "disposition (L721/S6-B2436)")
+        assert m.terminal_for(s) == {"DONE", "N/A"}, m.terminal_for(s)
+
+    # must-QUIET: SKIPPED still closes an AUTO step, where a skip is a real
+    # operational disposition. Without this arm the fix would over-reach.
+    auto = [s for s in m.STEPS if s not in m.JUDGMENT_STEPS]
+    assert len(auto) == 5, auto
+    for s in auto:
+        assert "SKIPPED" in m.terminal_for(s), (
+            f"{s}: an AUTO step must still accept SKIPPED-with-a-reason")
+
+    # and the gate must CONSULT the per-step set, not a single global one
+    src = (root / "scripts" / "verify_postconfig_complete.py").read_text(
+        encoding="utf-8")
+    assert "terminal_for(s)" in src, (
+        "the main loop no longer calls terminal_for - it is back on one "
+        "global TERMINAL set and judgment steps accept SKIPPED again")
 
 
 def test_b2439_postconfig_battery_rules_survive_in_the_runbook():
