@@ -133,8 +133,14 @@ def main() -> int:
         for c in cubes:
             e = ledger.get(c, {})
             ran = sum(1 for s in STEPS if e.get(s, {}).get("status") == "DONE")
+            # S6-B2443: SKIPPED and N/A are DIFFERENT facts and the gate already
+            # treats them differently for judgment steps, so the display must
+            # not lump them under one word (same label-vs-truth class as the
+            # COMPLETE mark above). "deferred" is a promise; "N/A" is a reasoned
+            # exclusion.
             skipped = [s for s in STEPS
-                       if e.get(s, {}).get("status") in ("SKIPPED", "N/A")]
+                       if e.get(s, {}).get("status") == "SKIPPED"]
+            na = [s for s in STEPS if e.get(s, {}).get("status") == "N/A"]
             total_skipped += len(skipped)
             # S6-B2440: the mark must agree with the VERDICT. It used to count
             # every SKIPPED toward completion, so this line printed COMPLETE for
@@ -144,6 +150,8 @@ def main() -> int:
                 e.get(s, {}).get("status") in terminal_for(s) for s in STEPS
             ) else "INCOMPLETE"
             tail = f"  [{len(skipped)} SKIPPED: {', '.join(skipped)}]" if skipped else ""
+            if na:
+                tail += f"  [{len(na)} N/A: {', '.join(na)}]"
             print(f"  {mark:10} {c}: {ran} of {len(STEPS)} RUN{tail}")
         print(f"\n  {len(cubes)} cubes | {len(incomplete)} incomplete | "
               f"{total_skipped} step(s) SKIPPED with a reason")

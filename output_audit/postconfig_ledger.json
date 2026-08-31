@@ -3971,24 +3971,24 @@
    "evidence": "AUTO (B2177): spot_check_trades --n 50 at manifest params; ; wrote output_audit/output_b2399_step2_sw50sp50_step2_sw50sp50_spot_check.json"
   },
   "5_adversarial_lens_review": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2399_step2_sw50sp50): the wave-level review batch performs this step across all arms together"
+   "status": "DONE",
+   "evidence": "S6-B2443 PILOT (owner-approved). 6 lenses run against the grid artifact. MATERIAL FINDING (lens 1): psr is INERT AS A DISCRIMINATOR on this config - of 198 graded rows the value is computable on only 85 and ABSENT on 113, and where computable it takes exactly TWO values, 0.9893 and 1.0, BOTH above the 0.95 bar. All 113 psr-gate failures are absence, not a low value (metrics.py:521/540 return None on insufficient_sample / denominator_invalid). So psr never rejects a row on significance - it functions as a SECOND SAMPLE-SIZE gate overlapping min_trades. It IS fail-closed on absence (roster_core.py:249), which is correct. CONSEQUENCE: after owner ruling D2 removed BH-FDR at the grid stage and S6-B2409 retired the selection-noise floor, psr was the last significance-style control - and it cannot discriminate, so this 300-combination search has NO effective multiplicity control. Lens 2: HO/IS ratio 2.59x (1.152 vs 0.445) on 41 holdout trades with BOTH ci_lo below zero (-0.415 HO, -0.385 IS) - the L636 shape. Lens 3: exit selection is IN-SAMPLE (select_exit calls in_sample()) - no leak. Lens 4: exit time_stop_10d, 21 effective exits, 2 collapsed. Lens 5: the '3 qualifiers' are TWO distinct outcomes - tail_n 10 and 20 are byte-identical (1.152/41/180), tail_n 2 is weaker (1.035/35/150); the owner-retained tail_n=20 is in the stronger pair. Lens 6: 300 enumerated / 198 graded / 3 PASS rows / 2 distinct outcomes."
   },
   "6_post_fix_recheck": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2399_step2_sw50sp50): the wave-level review batch performs this step across all arms together"
+   "status": "N/A",
+   "evidence": "S6-B2443 PILOT: step 5 surfaced findings but NO CODE FIX - psr and the gate behave exactly as designed (fail-closed on absence); the finding is about what the gate can DISCRIMINATE, which is an interpretation and a programme-design question, not a defect to patch. Nothing was changed, so there is nothing to re-run. N/A is recorded rather than DONE because claiming a recheck that did not happen is the exact class this pilot exists to expose."
   },
   "6b_equivalence_class_check": {
    "status": "DONE",
    "evidence": "AUTO (B2192): the grader collapses identical outcomes - 21 combos carried across 104 distinct outcome classes in output_b2399_step2_sw50sp50_step2_sw50sp50_grid_auto.json"
   },
   "7_implement_in_engine": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2399_step2_sw50sp50): the wave-level review batch performs this step across all arms together"
+   "status": "DONE",
+   "evidence": "S6-B2443 PILOT: EXECUTED scripts/verify_engine_implemented.py - exit 0, 'PASS - every swept parameter reaches the engine', 6 of 6 ENGINE-IMPLEMENTED (P1 swing_length, P2 close_mitigation, P3 tail_n, P4 age_bars_max, P5 break_pct_max, P6 ema span), 0 GRADER-ONLY."
   },
   "8_verdict_with_denominators": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2399_step2_sw50sp50): the wave-level review batch performs this step across all arms together"
+   "status": "DONE",
+   "evidence": "S6-B2443 PILOT, re-derived from the grid artifact this batch: 300 combinations enumerated; 102 cut BEFORE grading (29 NO_EXIT_SELECTABLE + 73 BELOW_POWER_FLOOR), so the HONEST DENOMINATOR is 198 graded; 3 PASS rows = 2 DISTINCT OUTCOMES = 1 distinct parameter set ignoring tail_n. FAIL attribution over the 195 FAIL rows (a row can fail several): pooled_sharpe 179, psr 113 (all by ABSENCE), min_trades_full_period 28, min_trades_holdout 23, sortino 20, profit_factor 5. Verdict: ONE qualifying parameter set of 198 graded, carried by 41 holdout trades, with the multiplicity caveat from lens 1 attached."
   }
  }
 }
