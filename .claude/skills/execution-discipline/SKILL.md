@@ -1766,6 +1766,13 @@ rule was eight repetitions behind me. **When you find yourself restating the sam
 same reader, that is the trigger to re-run its cheapest disproof** - restatement is not evidence,
 and the position feeling settled is what makes the disproof feel unnecessary.
 
+- **A NEGATIVE IS ONLY AS GOOD AS THE HAYSTACK (B2406/L723).** `#166` says prove the PATTERN can
+  match. Its sibling: prove the ARTIFACT can CONTAIN the match. MEASURED: I checked a launch log
+  for a status token that is returned into a SUMMARY dict after the leg loop and can never appear
+  in a mid-run log - a check that could only ever pass, and would have read as reassurance at
+  exactly the moment the run failed that way. **Find the WRITER of the string and confirm it
+  reaches the file you are searching**, then trust the absence.
+
 **I twice quoted a Spearman of -0.779/-0.865 as measured and used it to argue a
 result was "the expected shape". It lives in a comment.** I never ran it. The
 turn gate caught it - a COMPLIANCE FAILURE against `#201`, not a gap in it.

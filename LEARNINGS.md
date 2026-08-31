@@ -16328,6 +16328,48 @@ path, verified by the pyramid failing then passing. The `ledger_path` redirect -
 **1 of 3 was costed at the declaration layer, and it is the one that was wrong.**
 
 ### L691
+
+### L723
+
+**L723 (B2406) - THREE MONITORING MISSES FROM ONE SESSION.**
+
+**ORIGINAL FRAMING: THREE MONITORING MISSES FROM ONE SESSION, WRITTEN UP TOGETHER BECAUSE THEY SHARE
+A SHAPE - each produced a number or a verdict that was ARITHMETICALLY FINE and about the wrong
+thing.**
+
+**(1) THE OPERAND MODEL, NOT THE ARITHMETIC.** I reported 12 worker failures by dividing a grep
+count by an assumed 2 lines per event. Each failure emits TWO traceback blocks AND two exception
+lines, so the true figure is **6** - the division was right and the model of what a line MEANS was
+wrong. L695's shape, arriving on a POPULATION count rather than a carried figure. **The tell I
+ignored was free: 10+ failures is impossible against pool_workers=6.** Before dividing a raw match
+count by an events-per-match assumption, read ONE event end to end and count its lines; and sanity-
+check the result against a known ceiling, which costs nothing and catches exactly this.
+
+**(2) A RETRY TURN INHERITS THE CLAIMS AND NOT THE EVIDENCE.** A blocked close is a NEW turn. It
+reproduces the previous response's text - including "computed this turn" labels and code citations -
+while the tool calls that backed them stayed in the turn before. Happened **twice for counts and
+once for a constant** in one session, and the boundary is invisible because the prose is identical
+either side of it. **The rule: on a retry, re-run every command the reproduced blocks assert**, as
+the FIRST action of the close, so no claim can outrun its evidence.
+
+**(3) A CHECK AGAINST AN ARTIFACT THAT CANNOT CONTAIN THE STRING IS TRUE, VACUOUS, AND READS AS
+REASSURANCE.** I checked a launch log for INCOMPLETE_MAX_LEGS across several firings. That token is
+returned into the SUMMARY dict at run_wave.py's cube-absent branch AFTER the leg loop, so it can
+**never** appear in a mid-run log. The check could only ever pass. Had the run actually failed that
+way, the check would have said exactly what it said while I was watching. **Before trusting a
+negative, find the WRITER of the string and confirm it can reach the artifact you are searching** -
+this is the zero-hit rule (#166) one level deeper: there the pattern was unvalidated, here the
+pattern was fine and the HAYSTACK could not contain the needle.
+Compliance failure against CHECKLIST item 166 read with L695 for (1) and (2); (3) extends 166 from
+the PATTERN to the HAYSTACK.
+Mechanism: (3) is now a skill clause with a fragment pin; (1) and (2) are DETECTION JUDGMENT-ONLY -
+no scan knows what a log line means, nor which of a retry's sentences were evidenced in an earlier
+turn - and their durability is this entry plus the anchor citation.
+**Retroactive sweep (#237) of the session's monitoring checks:** three defective, all three above.
+The wave-summary rate reading was a fourth candidate and turned out to be a REAL defect of a
+different class (a per-leg numerator over a cumulative denominator, S6-B2405), found by arithmetic
+rather than by this class's tell.
+
 **TWO GATES CAN LEAVE A SEAM BETWEEN THEM THAT NEITHER IS WRONG ABOUT (B2272).**
 MEASURED: I labelled the mandatory ticket-count table *'computed this turn'* in a turn with
 **no tool calls at all** - the numbers were carried from the previous close. Nothing caught it.

@@ -24913,6 +24913,7 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         if frag not in fable_text:
             missing.append(f"fable-mode lost [{why}]: {frag!r}")
     for frag, why in (
+        ("prove the ARTIFACT can CONTAIN the match", "L723/B2406: a negative is only as good as the haystack"),
         ("re-ask whether the work is owed", "L619/B2460: a repeating block is evidence about the classification"),
         ("answers the measurement in front of you", "L503/B2459: a remedy can miss the question"),
         ("the trigger to re-run its cheapest disproof", "L583/B2458: repeating a refusal is not re-deriving it"),
@@ -25239,7 +25240,8 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # 127 -> 128 at B2458 (the L583 restated-position fragment).
     # 128 -> 129 at B2459 (the L503 remedy-misses-the-question fragment).
     # 129 -> 130 at B2460 (the L619 owed-vs-blocked fragment).
-    assert len(gutted) == 130, gutted
+    # 130 -> 131 at B2406 (the L723 haystack fragment).
+    assert len(gutted) == 131, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -28690,6 +28692,61 @@ def test_b2450_tightening_over_a_backlog_rule_survives_in_the_skill():
     assert "SKIPPED" in vpc.terminal_for("1_cube_sanity"), (
         "the tightening leaked onto the AUTO steps; 9b describes a change "
         "scoped to steps 5-8 only")
+
+
+def test_b2405_leg_rate_is_measured_over_its_own_days():
+    """S6-B2405: a per-leg numerator needs a per-leg denominator.
+
+    project_from_leg divided THIS leg's elapsed seconds by the checkpoint's
+    CUMULATIVE simulated_day, so from leg 2 onward the rate was understated by
+    a factor that grows with leg number.
+
+    MEASURED on the config-1 wave (b2399_step2_sw50sp50_wave_summary.json):
+    reported 49.92 / 26.09 / 18.70 s/sim-day across legs 1-3, which reads as
+    throughput IMPROVING. Every leg had actually run the same ~4.5h cap, and
+    the true rates are 49.92 / 54.54 / 66.02 - DEGRADING. Leg 3's ETA read
+    0.69h against a true 2.42h, and legs_still_needed_at_cap - the guard that
+    decides whether an arm can finish - was computed from the wrong rate.
+
+    The regression case IS the incident's own numbers, so this cannot pass
+    against the old arithmetic.
+    """
+    import sys
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[2]
+    sys.path.insert(0, str(root / "scripts"))
+    from run_wave import project_from_leg
+
+    legs = [(16273.9, 326, 0, 49.92), (16306.2, 625, 326, 54.54),
+            (16306.4, 872, 625, 66.02)]
+    for elapsed, sim_day, start, expected in legs:
+        r = project_from_leg(elapsed, sim_day, 1004, 4.5, leg_start_day=start)
+        assert r["measured"] is True
+        assert r["days_this_leg"] == sim_day - start, (
+            "days_this_leg must span THIS leg only")
+        assert abs(r["s_per_sim_day"] - expected) < 0.05, (
+            f"leg starting at {start}: {r['s_per_sim_day']} != {expected}")
+
+    # must-FIRE arm: the OLD behaviour (cumulative denominator) is reproduced
+    # by leaving leg_start_day at its default, and it must disagree - if these
+    # ever match, the fix has been reverted.
+    old = project_from_leg(16306.4, 872, 1004, 4.5)
+    assert abs(old["s_per_sim_day"] - 18.70) < 0.05, (
+        "the cumulative-denominator result changed; this arm no longer "
+        "reproduces the defect it guards against")
+    assert old["s_per_sim_day"] < 66.02 / 3, (
+        "the old and new rates must differ by ~3.5x on this leg")
+
+    # and the ETA the guard reads must move with it
+    fixed = project_from_leg(16306.4, 872, 1004, 4.5, leg_start_day=625)
+    assert fixed["projected_remaining_hours"] > 2.0 > old[
+        "projected_remaining_hours"], (
+        "the corrected projection must be the larger one - understating the "
+        "rate is what made the ETA optimistic")
+
+    # a leg that advanced nothing must refuse to project rather than divide
+    stalled = project_from_leg(600.0, 400, 1004, 4.5, leg_start_day=400)
+    assert stalled["measured"] is False
 
 
 def test_b2404_boundary_field_is_named_for_what_it_counts():
