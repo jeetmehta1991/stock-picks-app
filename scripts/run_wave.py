@@ -134,7 +134,7 @@ def run_arm(spec: dict, arm: dict, engine_cmd: str | None = None) -> dict:
     # each checkpoint boundary records how many open trades the resume
     # will drop, read from the engine's own state file. run_wave is the
     # only layer that sees leg boundaries, so the counter lives here.
-    boundary_drops = []
+    boundary_carryover = []
     rates = []   # B2127 per-leg measured rates
     t0 = time.time()
     while legs < int(spec.get("max_legs", 4)):
@@ -214,9 +214,13 @@ def run_arm(spec: dict, arm: dict, engine_cmd: str | None = None) -> dict:
                     "legs": legs, "exit": rc}
         try:
             st = json.loads(state_p.read_text(encoding="utf-8"))
-            boundary_drops.append({
+            # S6-B2404: the open-trade count AT the boundary. The NEXT leg
+            # RESTORES exactly these trades (measured: the launch log reports
+            # the same counts as restored), so this is a CARRYOVER. It was
+            # named *_drops, which said the opposite of what it counts.
+            boundary_carryover.append({
                 "leg": legs, "sim_date": st.get("sim_date"),
-                "open_trades_dropped": st.get("open_trades")})
+                "open_trades_carried": st.get("open_trades")})
             # B2127: re-project the rest of THIS arm from THIS leg.
             total_days = 251 * max(1, (int(spec["window"]["end"][:4])
                                        - int(spec["window"]["start"][:4])))
@@ -234,8 +238,8 @@ def run_arm(spec: dict, arm: dict, engine_cmd: str | None = None) -> dict:
         except (OSError, ValueError) as exc:
             print(f"[WARN] M6: could not read {state_p} at leg {legs} "
                   f"boundary: {exc!r} - drop count UNMEASURED for this leg")
-            boundary_drops.append({
-                "leg": legs, "sim_date": None, "open_trades_dropped": None})
+            boundary_carryover.append({
+                "leg": legs, "sim_date": None, "open_trades_carried": None})
     if not cube.exists():
         return {"arm": arm["tag"], "status": "INCOMPLETE_MAX_LEGS",
                 "legs": legs}
@@ -259,7 +263,7 @@ def run_arm(spec: dict, arm: dict, engine_cmd: str | None = None) -> dict:
         "status": "DONE",
         "evidence": f"run_wave verified {rows} cube rows across {legs} "
                     f"leg(s); M6 boundary drops (B1076 caveat, measured): "
-                    f"{boundary_drops if boundary_drops else 'none - single leg'}"}
+                    f"{boundary_carryover if boundary_carryover else 'none - single leg'}"}
     from ledger_lock import locked_ledger_update
 
     def _put(ledger: dict) -> dict:
@@ -301,7 +305,7 @@ def run_arm(spec: dict, arm: dict, engine_cmd: str | None = None) -> dict:
     # token, never as the value that means "measured, and it was nothing".
     _na = "NOT-APPLICABLE-SINGLE-LEG"
     return {"arm": arm["tag"], "status": status, "legs": legs,
-            "boundary_drops": boundary_drops if legs > 1 else _na,
+            "boundary_carryover": boundary_carryover if legs > 1 else _na,
             "measured_rates": rates if legs > 1 else _na,
             "cube_rows": rows, "elapsed_s": int(time.time() - t0),
             "postconfig_exit": pc.returncode}

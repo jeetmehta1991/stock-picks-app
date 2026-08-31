@@ -1,0 +1,9 @@
+{
+  "rows": 1849,
+  "equal_rows": 139,
+  "equal_pct": 7.52,
+  "spearman": 0.8523,
+  "pearson": 0.5495,
+  "a_gt_b": 0,
+  "b_gt_a": 1710
+}

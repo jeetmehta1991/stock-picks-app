@@ -1,0 +1,201 @@
+{
+  "ticket": "S6-B2419",
+  "artifact": "PRE-REGISTRATION",
+  "committed_utc_date": "2026-08-31",
+  "commitment": "This grid is committed BEFORE any scoring. At the time of writing no Sharpe, ranking, or selection has been computed on any member of this family for any of these threshold values. Scoring may only proceed against the values enumerated here.",
+  "window": {
+    "in_sample_end_exclusive": "2025-05-05",
+    "holdout": "NEVER READ - sealed by construction; this artifact is derived exclusively from entry_date < in_sample_end"
+  },
+  "population_derivation": "Members and axes were established by reading each strategy's SOURCE this turn (inspect.getsource), never from signal names or from the ticket text.",
+  "excluded": {
+    "institutional_insider_combo_long": "fire-dead under its live gate (S6-B2423)",
+    "institutional_persistent_holders_long": "measured duplicate of strong_conviction (S6-B2419 prior row)",
+    "institutional_cluster_long": "NO count gate: fires on institutional_strong_buy AND price_above_ema_200, both BOOLEAN. new_positions/increased are read only to build a context string, so there is nothing subset-safe to tighten. Established from source this turn - this exclusion is NEW and drops the tunable population from 5 to 4."
+  },
+  "excluded_axes": {
+    "total_active_holders": "read by multi_quarter_persistence for a context string ONLY; the gate is persistent_holders_4q >= 5 alone. Measured this turn at 100% coverage (p10/25/50/75/90 = 7/10/16/494/739, max 1651) and excluded because it gates nothing.",
+    "price_above_ema_200 / price_above_ema_50": "regime legs are NOT subset-safe (42.9% non-nesting measured at S6-B2427) and are excluded from any offline grid; note also that high_conviction uses the 50 EMA while the other three use the 200."
+  },
+  "exit_axis": {
+    "n_exits": 26,
+    "rule": "exit re-selection across the 26 registered cube exits is free and subset-safe (re-reading an existing cube), and is applied per surviving threshold combination."
+  },
+  "members": {
+    "institutional_committed_growth_long": {
+      "is_rows": 1275,
+      "axes": {
+        "committed_growth_holders": {
+          "live_threshold": 3,
+          "role": "primary arm: n_grow >= T",
+          "is_present": 1235,
+          "coverage_pct": 96.86,
+          "min": 0,
+          "max": 505,
+          "deciles": {
+            "p10": 3,
+            "p25": 3,
+            "p50": 5,
+            "p75": 11,
+            "p90": 142
+          },
+          "grid_values": [
+            3,
+            5,
+            11,
+            142
+          ],
+          "subset_safe": true,
+          "direction": "TIGHTEN ONLY (raising an integer >= threshold selects a strict subset of the fired rows; no row can start firing)"
+        },
+        "institutional_increased": {
+          "live_threshold": 5,
+          "role": "fallback arm: n_grow == 0 AND n_incr >= T",
+          "is_present": 1275,
+          "coverage_pct": 100.0,
+          "min": 0,
+          "max": 803,
+          "deciles": {
+            "p10": 3,
+            "p25": 6,
+            "p50": 32,
+            "p75": 230,
+            "p90": 319
+          },
+          "grid_values": [
+            5,
+            6,
+            32,
+            230,
+            319
+          ],
+          "subset_safe": true,
+          "direction": "TIGHTEN ONLY (raising an integer >= threshold selects a strict subset of the fired rows; no row can start firing)"
+        }
+      },
+      "threshold_combinations": 20
+    },
+    "institutional_multi_quarter_persistence_long": {
+      "is_rows": 1849,
+      "axes": {
+        "persistent_holders_4q": {
+          "live_threshold": 5,
+          "role": "sole count gate",
+          "is_present": 1849,
+          "coverage_pct": 100.0,
+          "min": 5,
+          "max": 1067,
+          "deciles": {
+            "p10": 6,
+            "p25": 7,
+            "p50": 10,
+            "p75": 16,
+            "p90": 360
+          },
+          "grid_values": [
+            5,
+            6,
+            7,
+            10,
+            16,
+            360
+          ],
+          "subset_safe": true,
+          "direction": "TIGHTEN ONLY (raising an integer >= threshold selects a strict subset of the fired rows; no row can start firing)"
+        }
+      },
+      "threshold_combinations": 6
+    },
+    "institutional_strong_conviction_long": {
+      "is_rows": 1236,
+      "axes": {
+        "institutional_increased": {
+          "live_threshold": 5,
+          "role": "AND-ed count gate",
+          "is_present": 1236,
+          "coverage_pct": 100.0,
+          "min": 5,
+          "max": 803,
+          "deciles": {
+            "p10": 5,
+            "p25": 7,
+            "p50": 129,
+            "p75": 247,
+            "p90": 331
+          },
+          "grid_values": [
+            5,
+            7,
+            129,
+            247,
+            331
+          ],
+          "subset_safe": true,
+          "direction": "TIGHTEN ONLY (raising an integer >= threshold selects a strict subset of the fired rows; no row can start firing)"
+        },
+        "institutional_new_positions": {
+          "live_threshold": 2,
+          "role": "AND-ed count gate",
+          "is_present": 1236,
+          "coverage_pct": 100.0,
+          "min": 2,
+          "max": 1603,
+          "deciles": {
+            "p10": 3,
+            "p25": 11,
+            "p50": 94,
+            "p75": 147,
+            "p90": 408
+          },
+          "grid_values": [
+            2,
+            3,
+            11,
+            94,
+            147,
+            408
+          ],
+          "subset_safe": true,
+          "direction": "TIGHTEN ONLY (raising an integer >= threshold selects a strict subset of the fired rows; no row can start firing)"
+        }
+      },
+      "threshold_combinations": 30
+    },
+    "institutional_high_conviction_long": {
+      "is_rows": 1735,
+      "axes": {
+        "institutional_new_positions": {
+          "live_threshold": 3,
+          "role": "sole count gate",
+          "is_present": 1735,
+          "coverage_pct": 100.0,
+          "min": 3,
+          "max": 1555,
+          "deciles": {
+            "p10": 3,
+            "p25": 5,
+            "p50": 74,
+            "p75": 131,
+            "p90": 365
+          },
+          "grid_values": [
+            3,
+            5,
+            74,
+            131,
+            365
+          ],
+          "subset_safe": true,
+          "direction": "TIGHTEN ONLY (raising an integer >= threshold selects a strict subset of the fired rows; no row can start firing)"
+        }
+      },
+      "threshold_combinations": 5
+    }
+  },
+  "totals": {
+    "tunable_members": 4,
+    "threshold_combinations": 61,
+    "with_exit_axis": 1586
+  },
+  "multiplicity_note": "This grid enumerates 1586 candidate cells. Grid-stage multiplicity correction is an OPEN owner decision (S6-B2444); until it is ruled, any result from scoring this grid carries no family-wise error control and must be reported with that caveat."
+}

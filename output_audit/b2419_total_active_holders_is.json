@@ -1,0 +1,33 @@
+{
+  "strategy": "institutional_multi_quarter_persistence_long",
+  "is_end_exclusive": "2025-05-05",
+  "is_rows": 1849,
+  "total_active_holders": {
+    "present": 1849,
+    "absent": 0,
+    "coverage_pct": 100.0,
+    "deciles": {
+      "p10": 7.0,
+      "p25": 10.0,
+      "p50": 16.0,
+      "p75": 494.0,
+      "p90": 739.4000000000001
+    },
+    "min": 5.0,
+    "max": 1651.0
+  },
+  "persistent_holders_4q": {
+    "present": 1849,
+    "absent": 0,
+    "coverage_pct": 100.0,
+    "deciles": {
+      "p10": 6.0,
+      "p25": 7.0,
+      "p50": 10.0,
+      "p75": 16.0,
+      "p90": 360.0
+    },
+    "min": 5.0,
+    "max": 1067.0
+  }
+}

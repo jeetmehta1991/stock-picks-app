@@ -24781,8 +24781,8 @@ if n == 1:
         assert res.get("postconfig_exit") not in (None, 0), res
         # B2121 (M6): the leg-1 checkpoint's 7 open trades must be recorded
         # as dropped at the boundary - the B1076 caveat, quantified.
-        assert res["boundary_drops"] == [
-            {"leg": 1, "sim_date": "2024-11-01", "open_trades_dropped": 7}], res
+        assert res["boundary_carryover"] == [
+            {"leg": 1, "sim_date": "2024-11-01", "open_trades_carried": 7}], res
         ledger = _json.loads((root / "output_audit" /
                               "postconfig_ledger.json").read_text())
         ent = ledger[f"output_{wave}_armx"]
@@ -26740,7 +26740,7 @@ def test_b2250a_spawn_probe_refuses_at_launch_not_after_hours():
 def test_b2230_single_leg_accumulators_are_not_applicable_not_empty():
     """S6-B2230 (L580 for a LIST): at legs=1 the append sites are unreachable.
 
-    scripts/run_wave.py appends to boundary_drops and rates ONLY inside the leg
+    scripts/run_wave.py appends to boundary_carryover and rates ONLY inside the leg
     loop, after `if cube.exists(): break`. A run whose cube exists at the end of
     leg 1 breaks out first, so an empty list is STRUCTURALLY GUARANTEED - and I
     reported 15 such configs as "zero boundary drops" when no boundary existed.
@@ -26763,7 +26763,7 @@ def test_b2230_single_leg_accumulators_are_not_applicable_not_empty():
                if isinstance(n, _ast.Call) and isinstance(n.func, _ast.Attribute)
                and n.func.attr == "append"
                and isinstance(n.func.value, _ast.Name)
-               and n.func.value.id in ("boundary_drops", "rates")]
+               and n.func.value.id in ("boundary_carryover", "rates")]
     assert len(appends) >= 3, f"expected the 3 known append sites, got {len(appends)}"
     loops = [n for n in _ast.walk(fn) if isinstance(n, _ast.While)]
     assert any(isinstance(b, _ast.Break) for lp in loops for b in _ast.walk(lp)), (
@@ -28690,6 +28690,103 @@ def test_b2450_tightening_over_a_backlog_rule_survives_in_the_skill():
     assert "SKIPPED" in vpc.terminal_for("1_cube_sanity"), (
         "the tightening leaked onto the AUTO steps; 9b describes a change "
         "scoped to steps 5-8 only")
+
+
+def test_b2404_boundary_field_is_named_for_what_it_counts():
+    """S6-B2404: the field counts survivors; it used to be named for losses.
+
+    MEASURED by code read: run_wave.py fills this entry from the checkpoint's
+    open_trades at a leg boundary, and the NEXT leg restores exactly those
+    trades - the launch log reported the same counts (35/83/39) as restored.
+    Named *_drops, it told every future reader of a wave summary the opposite
+    of what happened.
+
+    This pins the NAME against the SOURCE it is read from, so a rename back
+    (or a new writer using the old word) fails rather than silently misleading.
+    """
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[2]
+    src = (root / "scripts" / "run_wave.py").read_text(encoding="utf-8")
+
+    assert "open_trades_carried" in src and "boundary_carryover" in src, (
+        "the corrected names are gone from run_wave.py")
+    # must-FIRE arm: the misleading name must not come back anywhere in the file
+    assert "open_trades_dropped" not in src, (
+        "open_trades_dropped is back - it counts trades the next leg RESTORES")
+    assert "boundary_drops" not in src, "boundary_drops is back"
+    # the value must still be read from the checkpoint's open_trades, which is
+    # what makes 'carried' the true word rather than merely a nicer one
+    assert 'st.get("open_trades")' in src, (
+        "the carryover value no longer comes from the checkpoint's open_trades "
+        "- if its source changed, the name may no longer be accurate either")
+    # and the reason must survive beside it (L548: a rule without its diagnosis)
+    assert "RESTORES exactly these trades" in src, (
+        "the note explaining why this is a carryover was removed")
+
+
+def test_b2419_preregistration_matches_the_live_gates():
+    """S6-B2419: the pre-registration must describe the gates that EXIST.
+
+    A pre-registration is only worth the paper it is on if it is (a) written
+    before scoring and (b) still true of the code. This asserts the second -
+    if a strategy's gate expression changes, the committed grid is invalidated
+    and this test says so rather than letting a stale grid silently steer a
+    later search.
+
+    The population was established from source at authoring time and is 4, NOT
+    the 5 the ticket carried: institutional_cluster_long gates on two BOOLEANS
+    (institutional_strong_buy AND price_above_ema_200) and so has nothing
+    subset-safe to tighten.
+    """
+    import inspect
+    import json
+    from pathlib import Path
+
+    from backtest.signals.screener import ALL_STRATEGIES
+
+    root = Path(__file__).resolve().parents[2]
+    doc = json.loads((root / "output_audit"
+                      / "b2419_preregistration_13f_family.json").read_text(
+                          encoding="utf-8"))
+
+    # (a) it is a pre-registration, and says so where a reader will see it
+    assert doc["artifact"] == "PRE-REGISTRATION"
+    assert "BEFORE any scoring" in doc["commitment"], (
+        "the commitment sentence is what makes this a pre-registration rather "
+        "than a report; without it the artifact proves nothing about ordering")
+    assert doc["window"]["in_sample_end_exclusive"] == "2025-05-05"
+
+    # (b) every axis named is a REAL gate in the live source, with the live
+    # threshold the artifact claims. This is the arm that fails on drift.
+    for strat, body in doc["members"].items():
+        src = inspect.getsource(ALL_STRATEGIES[strat])
+        for sig, ax in body["axes"].items():
+            assert f'"{sig}"' in src, (
+                f"{strat} no longer reads {sig!r} - the committed grid is "
+                "describing a gate that does not exist")
+            assert f">= {ax['live_threshold']}" in src, (
+                f"{strat}'s live threshold for {sig} moved away from "
+                f"{ax['live_threshold']} - the grid's baseline is stale")
+            # tightening only: no grid value may sit below the live threshold
+            assert min(ax["grid_values"]) >= ax["live_threshold"], (
+                f"{strat}/{sig} grid contains a LOOSENING value, which is not "
+                "subset-safe and cannot be graded offline")
+
+    # (c) the exclusions that shrank the population are recorded WITH reasons,
+    # so a later reader cannot mistake absence for oversight
+    assert "institutional_cluster_long" in doc["excluded"]
+    assert "BOOLEAN" in doc["excluded"]["institutional_cluster_long"]
+    assert "total_active_holders" in doc["excluded_axes"]
+    assert doc["totals"]["tunable_members"] == len(doc["members"]) == 4
+
+    # must-QUIET arm: cluster must NOT have acquired a count gate. If it did,
+    # the exclusion above became wrong and the population is no longer 4.
+    csrc = inspect.getsource(ALL_STRATEGIES["institutional_cluster_long"])
+    fires = csrc[csrc.index("fires = ("):csrc.index(")", csrc.index("fires = ("))]
+    assert ">=" not in fires, (
+        "institutional_cluster_long's fire condition now contains a >= "
+        "comparison - it has a tunable count gate and must re-enter the "
+        "pre-registered population")
 
 
 def test_b2427_subset_safety_prior_art_survives_in_the_plan():
