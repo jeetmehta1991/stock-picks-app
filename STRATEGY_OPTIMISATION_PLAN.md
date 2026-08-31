@@ -1640,6 +1640,57 @@ depends on a candidate's own 4-year metrics.
 
 ---
 
+## POST-CONFIG BATTERY — MANDATORY AFTER EVERY CONFIG, STEP 1 **AND** STEP 2
+
+**Owner directive 2026-08-30 (S6-B2436):** *"After step 2, it is mandatory to run post config
+steps as well."* This section exists because **the runbook did not describe the battery at all** —
+the nine steps lived only in `scripts/run_postconfig.py` and the ledger, so the requirement was
+invisible to anyone reading the plan. A rule with no author in the governing document is a rule
+nobody agreed to.
+
+**THE NINE STEPS.** Five run automatically at arm completion (`run_postconfig.py`, invoked from
+`run_wave.py`); four are JUDGMENT steps that the code **deliberately never auto-marks**
+(`run_postconfig.py:225` — *"JUDGMENT PROMPTS (never auto-marked)"*).
+
+| # | step | class | what it establishes |
+|---|---|---|---|
+| 1 | `1_cube_sanity` | AUTO | the cube exists, holds one strategy, spans the window, carries every registered exit |
+| 2 | `2_grade_with_config_params` | AUTO | the grid was graded at the manifest's own parameters |
+| 3 | `3_outlier_discrepancy_sweep` | AUTO | NaN/inf, winsorize bounds, degraded-exit map |
+| 4 | `4_three_leg_spot_check` | AUTO | 50 sampled trades re-derived independently |
+| 6b | `6b_equivalence_class_check` | AUTO | combinations differing only in a saturated parameter collapse |
+| 5 | `5_adversarial_lens_review` | **JUDGMENT** | the lens pass that has historically SURFACED the defects |
+| 6 | `6_post_fix_recheck` | **JUDGMENT** | anything fixed as a result was re-run end to end |
+| 7 | `7_implement_in_engine` | **JUDGMENT** | every swept parameter actually reaches the engine |
+| 8 | `8_verdict_with_denominators` | **JUDGMENT** | the verdict states N of M, not a bare headline |
+
+**MEASURED STATE AT THIS WRITING (S6-B2436, from the battery's own ledger, 105 configs):** across
+**all 31 Step-1 configs and the single Step-2 config**, the five AUTO steps are DONE and **all four
+JUDGMENT steps are SKIPPED** — every one carrying the reason *"PENDING-WAVE-REVIEW: the wave-level
+review batch performs this step"*. **That wave-level review batch has never run.** Programme-wide
+the judgment steps stand at DONE 10 / 2 / 4 / 10 against SKIPPED 42 / 47 / 43 / 42.
+
+**WHY NOTHING BLOCKED — the loophole, stated plainly.** `verify_postconfig_complete.py:54` defines
+`TERMINAL = {"DONE", "SKIPPED", "N/A"}`, so a step marked SKIPPED **with any reason string** counts
+as dispositioned and the completeness gate passes. The gate checks DISPOSITION, not EXECUTION. A
+deferral naming a process that does not exist satisfies it indefinitely.
+
+**THE RULE, going forward:**
+
+1. **A config is not COMPLETE until all nine steps are DONE or explicitly N/A.** SKIPPED is a
+   deferral, and a deferral is not a disposition.
+2. **Step 2 may not launch while any Step-1 config in its lineage carries an outstanding judgment
+   step.** The decision-bearing unit is the LINEAGE, not the single config: a Step-2 run validates a
+   candidate that Step-1 configs selected.
+3. **A ROSTER ADMISSION may not be taken from a config whose judgment steps are outstanding.**
+   Where one already has been, the roster row is marked and the admission is re-examined.
+4. **Any deferral must name an EXECUTABLE target** — a script path that exists and can be run —
+   plus an owner and a trigger. Free text describing a future process is a DROP, not a deferral.
+5. **The AUTO five are not a substitute for the JUDGMENT four**, and the record shows why: every
+   judgment-step DONE in the ledger carries a real finding (the tail_n band defect, the
+   equivalence-class defect, a grader-loader crash found and pinned). The steps that ran, found
+   things.
+
 ## STEP 4 — ADMIT
 
 > **THE GATE TABLE BELOW WAS STALE ON 3 OF 6 THRESHOLDS UNTIL B2402**, in the section that
