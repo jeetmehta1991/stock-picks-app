@@ -12067,6 +12067,12 @@ correct, verify the SCOPE of its claim; I verified only its arithmetic.
 Mechanism: the pin now asserts BOTH bands explicitly and in opposite directions - span 21 must be
 OUT of the institutional band and IN the smc band - so the two records can no longer be conflated by
 a future reader or by me. Named: test_b2467_subset_safety_is_per_level_and_partitions_the_band.
+**PROMOTED (B2479): the rule now lives in the always-read skill**, not only here - *read a gate's
+SELECTOR before acting on its verdict* - because the failure is not specific to a drift verifier: any
+gate that names a subject can be applied to the wrong one when it fires next to your edit. Fragment
+pinned in test_b2123_session_rules_survive_in_the_always_read_skills (gutted 225 -> 226). This line
+exists because the entry above recorded the lesson and not its ADDRESS - a lesson whose durable copy
+is unnamed is one the next reader cannot find from here.
 **Retroactive sweep (#237) of every gate I reasoned about this session without reading its selector:**
 three. The #223 post-config gate (I read completed_cubes and terminal_for before acting - SOUND); the
 #221 drift verifier (DEFECTIVE, this instance - I never read STRAT); the #247 queue-vocabulary gate
