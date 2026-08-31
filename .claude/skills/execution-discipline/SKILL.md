@@ -901,6 +901,16 @@ same disappearance in slow motion, and THAT is mechanisable even when detection 
 - **Prove the pin can fail (`#226`).** Deleting the diagnostic from `CHECKLIST.md` must fail the
   test. A presence-assertion that passes against a gutted file is the inert-gate defect in a new
   costume.
+- **WHEN THE LESSON'S OWN REMEDY IS "CONSULT A SOURCE", PIN THE SOURCE (L720/B2428).** The
+  durability question looks unanswerable for rules whose remedy is a HABIT - search the prior
+  art, re-read the plan, check the register - because a habit cannot be asserted. **Ask instead
+  what the habit was supposed to REACH, and pin that.** MEASURED: I published a home-made
+  framing of a rule the plan already carried, violating it in the same breath, and closed the
+  entry JUDGMENT-ONLY on both halves; the turn gate refused it three times and the gate was
+  right. The mechanisable half was never the searching - it was keeping the searched-for text
+  from vanishing, since a rule that disappears guarantees the next reader re-derives the weaker
+  version with nothing to correct them. Pin the source that would have prevented the miss, not
+  the discipline that failed to consult it.
 
 **And L512's evidence for why member 5 is not optional:** between the two `scan_skill_not_updated`
 catches the **full skill was auto-injected every turn**, containing ANCHOR-THE-RULE, which says
