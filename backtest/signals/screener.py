@@ -6648,15 +6648,20 @@ def strat_institutional_committed_growth_long(s):
     committed_growth_ok = n_grow >= 3 or (n_grow == 0 and n_incr >= 5)
     fires = (
         committed_growth_ok
-        and s.get("price_above_ema_200", False)
+        # S6-B2484: the regime leg reads the CONFIGURED span, copying the
+        # B1519 pattern proven in strat_smc_breaker_block_long. Default 200
+        # reproduces production EXACTLY; the sweep varies it across spans
+        # compute_ema_sma already emits, with no producer change. Before
+        # this, STRAT_EMA_SPAN was silently ignored here.
+        and s.get(f"price_above_ema_{_cfg.STRAT_EMA_SPAN}", False)
     )
     return _strat(fires, "long", "institutional_persistence",
         ["(committed_growth_holders>=3 OR institutional_increased>=5 as fallback)",
-         "price_above_ema_200"],
+         f"price_above_ema_{_cfg.STRAT_EMA_SPAN}"],
         [f"{n_grow} funds grew position over 4+ quarters (>10% growth; loosened >=5 -> >=3 per B1173) "
          f"OR fallback: {n_incr} institutional_increased (B1230 graceful degradation)",
          "Cohen-Malloy-Pomorski cluster canonical",
-         "Above 200 EMA (regime gate)"])
+         f"Above {_cfg.STRAT_EMA_SPAN} EMA (regime gate)"])
 
 
 def strat_institutional_increased_with_directors_long(s):

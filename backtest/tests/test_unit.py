@@ -28886,6 +28886,100 @@ def test_b2450_tightening_over_a_backlog_rule_survives_in_the_skill():
         "scoped to steps 5-8 only")
 
 
+def test_b2484_persistence_sweep_cannot_touch_the_shared_artifact():
+    """S6-B2484: 11 configs vary a producer whose cache SEVEN strategies read.
+
+    The council's whole case rested on one point: the precompute writes to a
+    module-constant path, so a naive parameter sweep overwrites the artifact
+    six other 13F strategies depend on - and that corruption does not raise,
+    it just changes numbers. Worse, MEASURED this turn, the consumer caches
+    each parquet BY PATH on first read, so overwriting mid-run gives a single
+    run two parameter sets, silently.
+
+    So the isolation is the fix, and this pins it: untagged resolves to
+    production unchanged, any tag resolves elsewhere, and BOTH the producer
+    and the consumer resolve through ONE helper so they cannot drift.
+    """
+    import importlib
+    import os
+    import sys
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[2]
+    sys.path.insert(0, str(root / "scripts"))
+    import build_institutional_persistence_precompute as bip
+
+    prod = bip.persistence_cache_dir(root)
+    assert prod.name == "institutional_persistence_t1a", (
+        "the UNTAGGED path moved - six other 13F strategies read it")
+
+    # a tag must land somewhere else, or the isolation does not exist
+    os.environ["INST_PERSIST_CACHE_TAG"] = "p4_2"
+    try:
+        tagged = bip.persistence_cache_dir(root)
+        assert tagged != prod, "a tagged sweep would overwrite production"
+        assert tagged.name == "institutional_persistence_t1a_p4_2"
+        assert tagged.parent == prod.parent
+        # the CONSUMER must agree - one helper, not two derivations
+        from backtest.signals import institutional_persistence_consumer as ipc
+        assert ipc._resolve_precompute_dir() == tagged, (
+            "producer and consumer disagree on the tagged path - a sweep would "
+            "read production while believing it read its variant")
+    finally:
+        os.environ.pop("INST_PERSIST_CACHE_TAG", None)
+    assert bip.persistence_cache_dir(root) == prod
+
+    # defaults must BE production, or an untagged rebuild silently rewrites
+    # the shared artifact with different numbers
+    importlib.reload(bip)
+    assert bip.MIN_CONSECUTIVE_QUARTERS == 4
+    assert bip.GROWTH_LOOKBACK_QUARTERS == 4
+    assert abs(bip.GROWTH_MULTIPLE - 1.10) < 1e-9
+
+    # THE OFF-BY-ONE the council caught: production lookback 4 means iloc[3].
+    # An index of `lookback` rather than `lookback - 1` would compare against
+    # the wrong quarter and still run clean.
+    src = (root / "scripts"
+           / "build_institutional_persistence_precompute.py").read_text(
+               encoding="utf-8")
+    assert "_lb - 1" in src, (
+        "the lookback index dropped its -1: production 4 means iloc[3], so "
+        "indexing by the parameter itself reads one quarter too far back")
+
+    # the parameters must be READ from env, not merely defined
+    for var in ("INST_MIN_CONSECUTIVE_QUARTERS", "INST_GROWTH_LOOKBACK_QUARTERS",
+                "INST_GROWTH_MULTIPLE"):
+        assert var in src, f"{var} is not read - that config cannot be swept"
+
+
+def test_b2484_ema_leg_reads_the_configured_span():
+    """S6-B2484: the strategy hardcoded 200 and ignored STRAT_EMA_SPAN.
+
+    Five of the 17 configs vary the regime span. Before this, setting the env
+    var changed NOTHING and the run would have been reported as a span variant
+    while testing production - a silent no-op, which is worse than a failure.
+    """
+    import inspect
+    from backtest.signals.screener import ALL_STRATEGIES
+    import backtest.config as cfg
+
+    src = inspect.getsource(
+        ALL_STRATEGIES["institutional_committed_growth_long"])
+    assert "_cfg.STRAT_EMA_SPAN" in src, (
+        "the regime leg no longer reads the configured span - a span sweep "
+        "would silently run production five times")
+    assert 's.get("price_above_ema_200", False)' not in src, (
+        "the hardcoded gate literal is back")
+    # default must preserve production exactly - config 1 is graded against it
+    assert cfg.STRAT_EMA_SPAN == 200
+
+    # the REPORTED gate must follow the applied span, or the artifact lies
+    # about which gate fired (the L558 test: could a reader tell this output
+    # from one the bug produced?)
+    assert 'f"price_above_ema_{_cfg.STRAT_EMA_SPAN}"' in src, (
+        "the reported fire_gates label is pinned to 200 while the applied "
+        "gate varies - the trade log would misattribute every span variant")
+
+
 def test_b2482_prelaunch_gate_reads_a_dict_shaped_ticker_field():
     """S6-B2482: three sites assumed `tickers` was a sequence.
 

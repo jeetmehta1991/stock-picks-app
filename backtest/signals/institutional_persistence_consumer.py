@@ -24,10 +24,18 @@ from typing import Optional
 import pandas as pd
 
 
-_PRECOMPUTE_DIR = (
-    Path(__file__).parent.parent.parent
-    / "data_prefetch" / "derived" / "institutional_persistence_t1a"
-)
+# S6-B2484: resolved through the SHARED helper the producer uses, so the
+# two cannot drift. Untagged -> the production path, unchanged.
+def _resolve_precompute_dir():
+    import sys as _sys
+    _root = Path(__file__).parent.parent.parent
+    _sys.path.insert(0, str(_root / "scripts"))
+    from build_institutional_persistence_precompute import (
+        persistence_cache_dir as _pcd)
+    return _pcd(_root)
+
+
+_PRECOMPUTE_DIR = _resolve_precompute_dir()
 
 # Module-level cache: dict[snapshot_iso] -> DataFrame keyed by ticker.
 _CACHE: dict = {}

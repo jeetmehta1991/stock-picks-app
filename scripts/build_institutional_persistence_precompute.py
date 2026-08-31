@@ -41,7 +41,37 @@ import pandas as pd
 REPO = Path(__file__).resolve().parent.parent
 INSTITUTIONAL_DIR = REPO / "data_prefetch" / "quiver" / "institutional"
 T1A_CSV = REPO / "Backtesting universe" / "Tier 1A Universe_SP500 Tickers_Jan 2020 to May 2026.csv"
-OUT_DIR = REPO / "data_prefetch" / "derived" / "institutional_persistence_t1a"
+def persistence_cache_dir(repo_root):
+    """S6-B2484: resolve the persistence-precompute directory, tag-aware.
+
+    ONE definition, imported by the producer AND the consumer. The council's
+    Executor named the failure this prevents: if each side re-derives the tag
+    string independently they drift, and a sweep then reads the production
+    artifact while believing it read its variant.
+
+    INST_PERSIST_CACHE_TAG unset or empty -> the production path, unchanged.
+    Set -> a sibling directory suffixed with the tag, so a parameter sweep can
+    never overwrite the artifact SEVEN 13F strategies read.
+    """
+    import os
+    from pathlib import Path
+    tag = (os.environ.get("INST_PERSIST_CACHE_TAG") or "").strip()
+    base = Path(repo_root) / "data_prefetch" / "derived"
+    return base / ("institutional_persistence_t1a" + (("_" + tag) if tag else ""))
+
+
+OUT_DIR = persistence_cache_dir(REPO)
+
+# S6-B2484: swept producer parameters. Defaults ARE production, so an
+# untagged run reproduces today's artifact exactly.
+import os as _os
+MIN_CONSECUTIVE_QUARTERS = int(_os.environ.get("INST_MIN_CONSECUTIVE_QUARTERS", "4"))
+GROWTH_LOOKBACK_QUARTERS = int(_os.environ.get("INST_GROWTH_LOOKBACK_QUARTERS", "4"))
+GROWTH_MULTIPLE = float(_os.environ.get("INST_GROWTH_MULTIPLE", "1.10"))
+if MIN_CONSECUTIVE_QUARTERS < 1 or GROWTH_LOOKBACK_QUARTERS < 1:
+    raise ValueError("consecutive/lookback quarters must be >= 1")
+if GROWTH_MULTIPLE <= 0:
+    raise ValueError("growth multiple must be > 0")
 
 REPORTING_LAG_DAYS = 45
 
@@ -105,12 +135,20 @@ def _per_ticker_persistence(ticker: str, as_of: _date) -> dict | None:
     # Committed growth holders: funds that GREW position over 4+ quarters
     committed_growth = 0
     for fund, sub in grp.groupby("Fund"):
-        if per_fund_counts.get(fund, 0) < 4:
+        # S6-B2484: was the literal 4. Lines above (persistent_4q >= 4,
+        # _8q >= 8) are DIFFERENT parameters for OTHER strategies - not
+        # touched.
+        if per_fund_counts.get(fund, 0) < MIN_CONSECUTIVE_QUARTERS:
             continue
         sub_sorted = sub.sort_values("report_dt", ascending=False)
         recent_shares = sub_sorted.iloc[0]["Shares"]
-        four_q_back = sub_sorted.iloc[3]["Shares"] if len(sub_sorted) >= 4 else None
-        if four_q_back is not None and recent_shares > four_q_back * 1.10:
+        # S6-B2484 OFF-BY-ONE, flagged by the council: production lookback
+        # 4 means iloc[3], so the index is (lookback - 1), never lookback.
+        _lb = GROWTH_LOOKBACK_QUARTERS
+        four_q_back = (sub_sorted.iloc[_lb - 1]["Shares"]
+                       if len(sub_sorted) >= _lb else None)
+        if (four_q_back is not None
+                and recent_shares > four_q_back * GROWTH_MULTIPLE):
             committed_growth += 1
 
     return {
