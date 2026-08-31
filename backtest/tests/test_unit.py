@@ -28949,11 +28949,22 @@ def test_b2467_subset_safety_is_per_level_and_partitions_the_band():
     # it against the spans EMA_PAIRS emits - so deleting 21 made the record
     # disagree with the code, which is the drift the gate exists to catch.
     # The sp21 finding is a SWEEP-SCOPE decision and lives in the prose.
+    # S6-B2477 (owner ruling 2026-08-31: "just ema 20"). My B2472 reasoning
+    # was WRONG: verify_describing_artifacts is pinned to STRAT =
+    # smc_breaker_block_long, so the INSTITUTIONAL band never fed that check.
+    # The earlier drift came from the smc spec, which my unscoped replace had
+    # also edited. Span 21 stays in the smc record (it describes a completed
+    # programme and the producer emits it) and is OUT of this one.
     p9 = next(p for p in spec["params"] if p["param"] == "span")
-    assert 21 in p9["band"], (
-        "span 21 is missing from the band - that column asserts what the "
-        "producer emits, and EMA_PAIRS emits it; removing it drifts the "
-        "record from the code")
+    assert 21 not in p9["band"], (
+        "span 21 is back in the institutional band - the owner ruled just "
+        "ema 20, and MEASURED: zero strategies read an ema_21 signal")
+    smc = pvt.SPECS["smc_breaker_block_long"]
+    smc9 = next(p for p in smc["params"] if p["param"] == "span")
+    assert 21 in smc9["band"], (
+        "span 21 left the smc band - that record IS checked against the "
+        "producer by verify_describing_artifacts, and EMA_PAIRS emits 21 "
+        "because golden_cross_9_21 consumes ema_9_21_golden_cross")
     assert "ran 21 ONCE" in p9["derivation"], (
         "the run-ledger finding that span 21 was dropped after one config is "
         "gone from the prose, which is where a sweep-scope decision belongs")
@@ -28980,9 +28991,9 @@ def test_b2467_subset_safety_is_per_level_and_partitions_the_band():
     # span 21 is available (the producer emits it) and must NOT be scheduled -
     # the b2197 ledger ran it once at sw20 and dropped it everywhere else
     p9 = next(p for p in spec["params"] if p["param"] == "span")
-    assert 21 in p9["band"] and 21 not in p9["sweep_levels"], (
-        "span 21 must stay in the band (availability) and out of the sweep "
-        "(the run ledger already found it did not earn a config)")
+    assert 21 not in p9["sweep_levels"], (
+        "span 21 must not be scheduled - the run ledger found it did not "
+        "earn a config, and the owner ruled it out of this band entirely")
 
     # and the persisted/not-persisted split must hold: only the two strategy
     # thresholds may carry free levels
