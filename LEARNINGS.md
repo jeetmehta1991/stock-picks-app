@@ -16355,6 +16355,31 @@ path, verified by the pyramid failing then passing. The `ledger_path` redirect -
 
 ### L728
 
+**ADDENDUM (B2474): THE REMEDY'S GENERAL FORM - WHEN ONE COLUMN MUST ANSWER TWO QUESTIONS, SPLIT IT
+RATHER THAN ARBITRATE IT.** L728 records the collision; this records why the fix took the shape it
+did, because the shape is the transferable part. Table A's `band` was carrying two different claims
+at once - **what the producer OFFERS** (the property verify_describing_artifacts checks against
+EMA_PAIRS) and **what we intend to SWEEP** (a design decision). They agree right up until a level is
+available but not worth testing, and at that moment the column must be wrong about one of them. I
+resolved it by deleting the level, which made the record lie about the code; deleting from the other
+side would have made it lie about the plan. **There was no correct value, because the question was
+malformed.**
+The fix is a second column, not a better rule for the first: `band` stays availability, `sweep_levels`
+carries the schedule, and a validator asserts the schedule is a SUBSET of availability and never
+repeats production. **The two claims can now disagree without either being false**, which is the
+whole point - the near-duplicate span is IN the band and OUT of the sweep, and both statements are
+true.
+**The tell to look for is a column whose correct value depends on which question you are asking.**
+When you find one, the choice between its two answers is not a judgement call to make carefully - it
+is a signal the field is overloaded. Splitting cost one field and one validator; arbitrating it cost
+a wrong record, a wrong pin that passed green defending it, and a ticket written about a state I had
+already destroyed.
+Compliance failure against CHECKLIST item 221 for the original instance. No new item: 221 is the
+record-vs-code class and this is its remedy, not a new failure mode. Mechanism: the validator plus
+the extended pin, which asserts span 21 is in the band AND out of the sweep - a case that could not
+even be expressed before the split.
+
+
 **L728 (B2472) - AN UNSCOPED REPLACE EDITED A SPEC I HAD JUST ARGUED MUST NOT BE TOUCHED, AND I
 FILED A TICKET DESCRIBING THE STATE I HAD ALREADY DESTROYED.**
 
