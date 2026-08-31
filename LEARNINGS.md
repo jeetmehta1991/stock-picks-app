@@ -16391,6 +16391,36 @@ path, verified by the pyramid failing then passing. The `ledger_path` redirect -
 
 ### L728
 
+### L729
+
+**L729 (B2482) - A SHAPE FIX THAT STOPS THE CRASH CAN LEAVE THE VALUE MEANINGLESS, AND THEN NOTHING
+RAISES EVER AGAIN.** L642 covers a guard failing OPEN on an absent input; this is its quieter
+sibling - a guard failing open on an unexpected SHAPE.
+MEASURED in scripts/prelaunch_gate.py, three sites, one assumption: that `tickers` is a sequence. A
+LOCAL manifest naturally names a ticker FILE, so the field is a dict {file, n, sha256}.
+`_universe_label` returned len(dict) and printed **tickers=3 for a 200-ticker run**; `advisories()`
+computed n = None, so the NARROW-UNIVERSE warning - the one that exists to stop a thin run being
+misread as a strategy verdict - **could never fire on the natural manifest shape**; and the AWS
+disjointness check set-ified the dict's KEYS, comparing 'file'/'n'/'sha256' against ticker symbols
+and passing vacuously.
+**The sharp part is the history.** B1637 had already patched that same function for a shape
+assumption, and its own docstring records what it fixed: the function used to CRASH. Stopping the
+crash felt like closing it. **The crash was the symptom; the wrong number was the defect** - and
+once nothing raised, the summary line reported a false universe size indefinitely, in the one place
+a wrong universe would show.
+**Rank the failure modes by silence:** the label printed a visibly odd 3 and I caught it; the
+advisory printed NOTHING and I would not have. **A guard that returns None is not a quiet success,
+it is a check that did not run.**
+Compliance failure against CHECKLIST item 222 - I quoted the gate's summary line as evidence the
+universe was right, without reading the function that produced the number. No new item: 222 is the
+uninspected-constant class and a gate's summary output is a constant-shaped claim.
+Mechanism: test_b2482_prelaunch_gate_reads_a_dict_shaped_ticker_field pins the VALUE (200, not "no
+exception"), asserts the advisory FIRES on a thin dict universe and stays QUIET on a broad one, and
+that the sequence form still works so the fix does not trade one shape for the other.
+**Retroactive sweep (#237): the whole file for this assumption - 3 of 3 sites found and fixed.** No
+other consumer of the manifest's tickers field exists in it.
+
+
 **ADDENDUM (B2474): THE REMEDY'S GENERAL FORM - WHEN ONE COLUMN MUST ANSWER TWO QUESTIONS, SPLIT IT
 RATHER THAN ARBITRATE IT.** L728 records the collision; this records why the fix took the shape it
 did, because the shape is the transferable part. Table A's `band` was carrying two different claims

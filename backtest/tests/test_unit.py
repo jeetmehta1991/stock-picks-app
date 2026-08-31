@@ -28886,6 +28886,49 @@ def test_b2450_tightening_over_a_backlog_rule_survives_in_the_skill():
         "scoped to steps 5-8 only")
 
 
+def test_b2482_prelaunch_gate_reads_a_dict_shaped_ticker_field():
+    """S6-B2482: three sites assumed `tickers` was a sequence.
+
+    A LOCAL manifest naturally names a ticker FILE, so the field is a dict
+    {file, n, sha256}. Under that shape:
+      - _universe_label printed len(dict) = 3 for a 200-ticker run, and the
+        summary line reporting universe size is exactly where a wrong
+        universe hides;
+      - advisories() computed n = None, so the NARROW-UNIVERSE warning never
+        fired - the warning that exists to stop a thin run being misread as a
+        strategy verdict (L642: the absent case is the one a guard is for);
+      - the AWS disjointness check set-ified the dict's KEYS, comparing
+        'file'/'n'/'sha256' against ticker symbols, so it could never overlap
+        and passed vacuously.
+
+    B1637 already patched this function once for a shape assumption; that fix
+    stopped a crash and left the number meaningless, which is why this pins
+    the VALUE rather than the absence of an exception.
+    """
+    import sys
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[2]
+    sys.path.insert(0, str(root / "scripts"))
+    import prelaunch_gate as g
+
+    dict_form = {"file": "output_audit/_sweep_200.txt", "n": 200,
+                 "sha256": "deadbeef"}
+    assert g._universe_label({"tickers": dict_form}) == "200", (
+        "the summary line no longer reports the real universe size")
+    assert g._universe_label({"tickers": ["A", "B", "C"]}) == "3"
+
+    # the narrow-universe advisory must FIRE on a thin dict-shaped universe
+    thin = g.advisories({"tickers": {"file": "x", "n": 8},
+                         "strategy_subset": "s"})
+    assert thin and "narrow universe (8 tickers" in thin[0], (
+        "the narrow-universe advisory is silent on a dict-shaped field again")
+    # and must stay QUIET on a broad one, or it is noise rather than a guard
+    assert not g.advisories({"tickers": {"file": "x", "n": 200}})
+    # sequence form must keep working - the fix must not trade one shape for
+    # the other
+    assert g.advisories({"tickers": list("abcdefgh")})
+
+
 def test_b2467_subset_safety_is_per_level_and_partitions_the_band():
     """S6-B2467: a binary subset_safe flag rounded half a band to 'resim'.
 

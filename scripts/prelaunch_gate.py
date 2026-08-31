@@ -64,7 +64,17 @@ def advisories(manifest: dict) -> list[str]:
     """
     out = []
     tk = manifest.get("tickers")
-    n = len(tk) if isinstance(tk, (list, tuple)) else None
+    # S6-B2482 sweep: SIBLING of the _universe_label defect. With a DICT-shaped
+    # tickers field this returned None, so the narrow-universe ADVISORY never
+    # fired - and the advisory exists precisely to stop a 10-ticker run being
+    # misread as a strategy verdict. A guard that silently sees nothing is the
+    # L642 shape: the absent case is the one it exists for.
+    if isinstance(tk, dict):
+        n = tk.get("n")
+    elif isinstance(tk, (list, tuple, set)):
+        n = len(tk)
+    else:
+        n = None
     subset = manifest.get("strategy_subset") or manifest.get(
         "STRATEGY_SUBSET_FILE")
     if n is not None and n < NARROW_UNIVERSE_TICKERS:
@@ -118,7 +128,11 @@ def check(manifest: dict, ledger: dict, tar_sha: str) -> list[str]:
     elif not (tar_sha.startswith(frozen) or frozen.startswith(tar_sha[:12])):
         fails.append(f"S3 tar sha={tar_sha[:12]} != manifest frozen_sha="
                      f"{frozen[:12]} (STALE ARTIFACT -- the chunk-2 class)")
-    mine = set(manifest["tickers"])
+    # S6-B2482 sweep, third site: a dict here would set-ify its KEYS and
+    # compare 'file'/'n'/'sha256' against ticker symbols - never overlapping,
+    # so the disjointness check would pass vacuously. AWS-only path.
+    _tk = manifest["tickers"]
+    mine = set(_tk.get("list", [])) if isinstance(_tk, dict) else set(_tk)
     for b in ledger.get("batches", []):
         overlap = mine & set(b.get("tickers", []))
         if overlap:
@@ -143,7 +157,17 @@ def _universe_label(manifest: dict) -> str:
     """
     tk = manifest.get("tickers")
     if tk:
-        return str(len(tk))
+        # S6-B2482: this returned len(tk) where tk is the tickers DICT, so a
+        # 200-ticker manifest printed 'tickers=3' - the count of its keys.
+        # The B1637 note above records the same function assuming a shape; that
+        # fix stopped the crash and left the number meaningless. A summary line
+        # reporting the universe size is exactly where a wrong universe hides.
+        if isinstance(tk, dict):
+            n = tk.get("n")
+            return str(n) if n is not None else "tickers:shape?"
+        if isinstance(tk, (list, tuple, set)):
+            return str(len(tk))
+        return str(tk)
     u = manifest.get("universe")
     if isinstance(u, dict):
         return "universe:" + str(u.get("tier", "?"))

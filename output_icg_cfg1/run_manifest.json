@@ -1,0 +1,59 @@
+{
+  "batch": "B2481",
+  "sequence": "institutional_committed_growth_long_step1_cfg1_baseline",
+  "execution": "LOCAL",
+  "frozen_sha": "f012ead6d2d9fe11ef312c8e9c426bdc1ce04516",
+  "isolation": true,
+  "calendar": "nyse_mcal",
+  "concurrency": "SOLO (N=1) - nothing else running (0 python processes measured)",
+  "strategy_subset": "output_audit/_subset_institutional_committed_growth_long.txt (institutional_committed_growth_long)",
+  "tickers": {
+    "file": "output_audit\\_sweep_200.txt",
+    "n": 200,
+    "sha256": "cc988b89a3ac967f1d8942bdec38e9396ccfbb948272c420d2625a2c8749eb4c"
+  },
+  "window": {
+    "start": "2024-05-05",
+    "end": "2025-05-05",
+    "note": "ruled Step-1 window - ends AT the holdout boundary (S6-B1605c)"
+  },
+  "arms": [
+    {
+      "cfg": 1,
+      "min_consecutive_quarters": 4,
+      "growth_lookback_quarters": 4,
+      "growth_multiple": 1.1,
+      "ema_span": 200,
+      "note": "PRODUCTION BASELINE. Every value is the built-in default; no env override is applied or possible (see risks)."
+    }
+  ],
+  "budget_cap_usd": 0,
+  "projected_batch_usd": 0,
+  "spent_usd": 0,
+  "wall_clock_projection_basis": "MEASURED median 1.68 h/config over 57 Step-1 configs (elapsed_s in the b2197 wave summaries, same 200-ticker 1-year shape); range 1.28-4.04 h",
+  "wall_clock_projection_hours": 4.04,
+  "obsolescence_risks": [
+    {
+      "risk": "mis-enumerated universe",
+      "status": "GATED - verify_universe_artifact this turn: 'looks like a broad universe', 200/200 overlap with the R5 cube, 0 tickers absent from it"
+    },
+    {
+      "risk": "commit exhaustion (L670 - commit, not working set, is what fails)",
+      "status": "GATED - 38.99 GB available of a 63.63 GB limit, 38.7pct used, 0 python processes running; SOLO run at pool 3"
+    },
+    {
+      "risk": "run exceeds the 5 h owner cap",
+      "status": "GATED - --max-run-hours 4.0 refuses to over-run; projection 1.68 h median against a 4.04 h worst observed"
+    },
+    {
+      "risk": "the other 16 configs of this sweep are NOT launchable",
+      "status": "ACCEPTED AND DISCLOSED - P4/P5/P6 are inline literals in build_institutional_persistence_precompute.py (zero os.environ in that file) and P9 is hardcoded as price_above_ema_200 in the strategy, which does not read STRAT_EMA_SPAN. This run is the BASELINE only, and is also an end-to-end pipeline validation."
+    },
+    {
+      "risk": "baseline duplicates information already in R5",
+      "status": "ACCEPTED - R5 ran 544 tickers x 4 years; this is 200 x 1 year, the shape the 16 variants would be compared against, so the reference point does not exist yet at this shape"
+    }
+  ],
+  "max_run_hours": 4.0,
+  "leg_cap_hours": 4.0
+}
