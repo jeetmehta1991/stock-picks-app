@@ -25090,6 +25090,7 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         ("PROSE-ONLY: an INDEX of historical failures - each entry's enforcement lives with its own rule; gating the index would gate a table of contents.",
          "B2382: Failure modes this skill exists to prevent lineage"),
         ("A 0pct OR 100pct RESULT FROM A NEW EXTRACTOR IS A PARSER HYPOTHESIS", "L724/B2419: a coverage extreme from a new extractor"),
+        ("reconstruct it from the RUN LEDGER, not the spec", "L727/B2469: an inherited band records intent, not what survived"),
         ("ask what the cube STORES, not which way the", "L726/B2467: persistence, not monotonicity, decides cache-gradability"),
         ("Anything the owner asked to SEE goes in the", "L725/B2466: tool output is not delivery"),
         ("prove the ARTIFACT can CONTAIN the match", "L723/B2406: a negative is only as good as the haystack"),
@@ -25425,7 +25426,8 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # 219 -> 220 at B2419 (the L724 parser-hypothesis fragment).
     # 220 -> 221 at B2466 (the L725 tool-output-is-not-delivery fragment).
     # 221 -> 222 at B2467 (the L726 persistence-not-monotonicity fragment).
-    assert len(gutted) == 222, gutted
+    # 222 -> 223 at B2469 (the L727 inherited-band fragment).
+    assert len(gutted) == 223, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 

@@ -1772,6 +1772,14 @@ and the position feeling settled is what makes the disproof feel unnecessary.
   in a mid-run log - a check that could only ever pass, and would have read as reassurance at
   exactly the moment the run failed that way. **Find the WRITER of the string and confirm it
   reaches the file you are searching**, then trust the absence.
+- **DECILES DESCRIBE A DISTRIBUTION; A SEARCH GRID MUST SPAN AN EFFECT (B2469/L727).**
+  Building a band from percentiles clusters levels where the mass is and throws one absurd value
+  at the tail. MEASURED: three levels of one band retained 13, 1 and 0 rows, and three others
+  were identical to each other because the live gate already excluded everything below them.
+  **Measure what each level RETAINS before it costs an engine run.** And when a band is
+  INHERITED, reconstruct it from the RUN LEDGER, not the spec - a spec records what someone
+  intended to test, the ledger records what survived contact, and they differ exactly where a
+  level was found not to earn its cost.
 - **A FIELD'S TYPE CAN MAKE A TRUTH UNSAYABLE (B2467/L726).** A boolean cannot say
   'half'. MEASURED: a per-parameter subset_safe flag could not express that raising a threshold
   is free while lowering it needs the engine, so it rounded conservative and a factorial read

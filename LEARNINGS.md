@@ -16337,6 +16337,45 @@ path, verified by the pyramid failing then passing. The `ledger_path` redirect -
 
 ### L726
 
+### L727
+
+**L727 (B2469) - A BAND BUILT FROM DECILES IS NOT A SEARCH GRID, AND I NEVER CHECKED WHAT THE
+PROGRAMME ACTUALLY RAN.**
+
+Deciles describe a DISTRIBUTION. A search grid must span an EFFECT. Using the first as the second
+produces exactly what the owner saw and I did not: levels clustered where the mass is, one absurd
+value at the p90 tail, and near-duplicates that cost a full engine run each to distinguish.
+**MEASURED on 1,235 R5 IS rows:** committed_growth_holders >=1, >=2 and >=3 all retain **1,189 rows
+- identical** - because the live gate already requires >=3 or the fallback at 0, so no fired row
+carries 1 or 2. The fallback arm carries **46 of 1,235 rows (3.7pct)**, where >=5/6/32/230/319
+retains **46/37/13/1/0**. So two levels duplicated a third, and three were statistically dead, two of
+them literally vacuous. **A band level that retains zero rows is not a conservative choice; it is a
+row in a table that can never produce a verdict.**
+**AND THE PRECEDENT WAS EMPIRICAL, SITTING IN THE LEDGER, AND I READ THE SPEC INSTEAD.** The owner
+recalled that span 21 had been dropped. It had: the b2197 wave ran **26 configs, not 30** - span 21
+once at sw20, absent from the other four swing lengths. I rebuilt the band from the SPEC, which
+still lists it, and never asked what was RUN. **A spec records what someone intended to test; the
+run ledger records what survived contact.** When a band is inherited, reconstruct it from the runs,
+not from the declaration - the two differ precisely where a level was found not to earn its cost.
+**THE COST OF NOT ASKING, computed this turn:** the full producer factorial is 600 engine runs at a
+measured median of 1.68 h/config = **1,008 hours, 42 days continuous**. One-at-a-time around
+production is 17 configs = 29 hours. **The band question was never cosmetic - it is the difference
+between a feasible sweep and one nobody can run.**
+Compliance failure against CHECKLIST item 201 read with item 222 - every band level is a quantity,
+and I inherited seven of them without measuring what any retained.
+Mechanism: test_b2467 now bars span 21 and the three dead fallback levels by name and pins the free
+product at 8; the deeper habit - reconstruct an inherited band from the run ledger - is DETECTION
+JUDGMENT-ONLY, since no scan knows which runs were the precedent, with durability in the skill
+clause below.
+**Retroactive sweep (#237): every band in the two specs the renderer carries.** The institutional
+spec was defective on three axes (span 21, the 1.05 near-duplicate, three dead fallback levels), all
+fixed. The smc spec's six bands were re-checked against the b2197 ledger: its swing_length band
+[5,10,20,30,50] matches the five swing values actually run EXACTLY, and its span band still lists 21
+- **the same latent defect, in the spec that set the precedent.** Left in place deliberately: that
+band is a record of a completed programme rather than a plan for a future one, and editing it would
+rewrite what was pre-registered for runs already done. Ticketed instead.
+
+
 **L726 (B2467) - A FIELD'S TYPE CAN MAKE A TRUTH UNSAYABLE, AND THE TABLE THEN ROUNDS.**
 
 Table A carried `subset_safe` as ONE BOOLEAN PER PARAMETER. The property is per LEVEL: raising a
