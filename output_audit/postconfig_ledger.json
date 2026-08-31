@@ -2375,24 +2375,24 @@
    "evidence": "determinism-instrument cube (B2094, S6-B1535a): the deliverable was the sorted-trade-column content hash, recorded in the S6-B1535a verdict row (byte-identical pair, sha 4c62b31df6eb919d); no grading or admission consumed it"
   },
   "5_adversarial_lens_review": {
-   "status": "SKIPPED",
-   "evidence": "determinism-instrument cube (B2094, S6-B1535a): the deliverable was the sorted-trade-column content hash, recorded in the S6-B1535a verdict row (byte-identical pair, sha 4c62b31df6eb919d); no grading or admission consumed it"
+   "status": "N/A",
+   "evidence": "determinism-instrument cube (B2094, S6-B1535a): the deliverable was the sorted-trade-column content hash, recorded in the S6-B1535a verdict row (byte-identical pair, sha 4c62b31df6eb919d); no grading or admission consumed it || S6-B2451 RECLASSIFIED SKIPPED -> N/A: this is an INSTRUMENT cube - the reason above records that its deliverable was a hash/timing measurement and that no grading or admission consumed it, so there is no strategy verdict to review, re-run, implement or state denominators for. That is 'cannot apply' (N/A), not 'not yet done' (SKIPPED). Under S6-B2440 a deferral no longer closes a judgment step; a reasoned exclusion does. Nothing upgraded to DONE; original reason preserved."
   },
   "6_post_fix_recheck": {
-   "status": "SKIPPED",
-   "evidence": "determinism-instrument cube (B2094, S6-B1535a): the deliverable was the sorted-trade-column content hash, recorded in the S6-B1535a verdict row (byte-identical pair, sha 4c62b31df6eb919d); no grading or admission consumed it"
+   "status": "N/A",
+   "evidence": "determinism-instrument cube (B2094, S6-B1535a): the deliverable was the sorted-trade-column content hash, recorded in the S6-B1535a verdict row (byte-identical pair, sha 4c62b31df6eb919d); no grading or admission consumed it || S6-B2451 RECLASSIFIED SKIPPED -> N/A: this is an INSTRUMENT cube - the reason above records that its deliverable was a hash/timing measurement and that no grading or admission consumed it, so there is no strategy verdict to review, re-run, implement or state denominators for. That is 'cannot apply' (N/A), not 'not yet done' (SKIPPED). Under S6-B2440 a deferral no longer closes a judgment step; a reasoned exclusion does. Nothing upgraded to DONE; original reason preserved."
   },
   "6b_equivalence_class_check": {
    "status": "SKIPPED",
    "evidence": "determinism-instrument cube (B2094, S6-B1535a): the deliverable was the sorted-trade-column content hash, recorded in the S6-B1535a verdict row (byte-identical pair, sha 4c62b31df6eb919d); no grading or admission consumed it"
   },
   "7_implement_in_engine": {
-   "status": "SKIPPED",
-   "evidence": "determinism-instrument cube (B2094, S6-B1535a): the deliverable was the sorted-trade-column content hash, recorded in the S6-B1535a verdict row (byte-identical pair, sha 4c62b31df6eb919d); no grading or admission consumed it"
+   "status": "N/A",
+   "evidence": "determinism-instrument cube (B2094, S6-B1535a): the deliverable was the sorted-trade-column content hash, recorded in the S6-B1535a verdict row (byte-identical pair, sha 4c62b31df6eb919d); no grading or admission consumed it || S6-B2451 RECLASSIFIED SKIPPED -> N/A: this is an INSTRUMENT cube - the reason above records that its deliverable was a hash/timing measurement and that no grading or admission consumed it, so there is no strategy verdict to review, re-run, implement or state denominators for. That is 'cannot apply' (N/A), not 'not yet done' (SKIPPED). Under S6-B2440 a deferral no longer closes a judgment step; a reasoned exclusion does. Nothing upgraded to DONE; original reason preserved."
   },
   "8_verdict_with_denominators": {
-   "status": "SKIPPED",
-   "evidence": "determinism-instrument cube (B2094, S6-B1535a): the deliverable was the sorted-trade-column content hash, recorded in the S6-B1535a verdict row (byte-identical pair, sha 4c62b31df6eb919d); no grading or admission consumed it"
+   "status": "N/A",
+   "evidence": "determinism-instrument cube (B2094, S6-B1535a): the deliverable was the sorted-trade-column content hash, recorded in the S6-B1535a verdict row (byte-identical pair, sha 4c62b31df6eb919d); no grading or admission consumed it || S6-B2451 RECLASSIFIED SKIPPED -> N/A: this is an INSTRUMENT cube - the reason above records that its deliverable was a hash/timing measurement and that no grading or admission consumed it, so there is no strategy verdict to review, re-run, implement or state denominators for. That is 'cannot apply' (N/A), not 'not yet done' (SKIPPED). Under S6-B2440 a deferral no longer closes a judgment step; a reasoned exclusion does. Nothing upgraded to DONE; original reason preserved."
   }
  },
  "output_b2094_var2": {
@@ -2413,24 +2413,24 @@
    "evidence": "determinism-instrument cube (B2094, S6-B1535a): the deliverable was the sorted-trade-column content hash, recorded in the S6-B1535a verdict row (byte-identical pair, sha 4c62b31df6eb919d); no grading or admission consumed it"
   },
   "5_adversarial_lens_review": {
-   "status": "SKIPPED",
-   "evidence": "determinism-instrument cube (B2094, S6-B1535a): the deliverable was the sorted-trade-column content hash, recorded in the S6-B1535a verdict row (byte-identical pair, sha 4c62b31df6eb919d); no grading or admission consumed it"
+   "status": "N/A",
+   "evidence": "determinism-instrument cube (B2094, S6-B1535a): the deliverable was the sorted-trade-column content hash, recorded in the S6-B1535a verdict row (byte-identical pair, sha 4c62b31df6eb919d); no grading or admission consumed it || S6-B2451 RECLASSIFIED SKIPPED -> N/A: this is an INSTRUMENT cube - the reason above records that its deliverable was a hash/timing measurement and that no grading or admission consumed it, so there is no strategy verdict to review, re-run, implement or state denominators for. That is 'cannot apply' (N/A), not 'not yet done' (SKIPPED). Under S6-B2440 a deferral no longer closes a judgment step; a reasoned exclusion does. Nothing upgraded to DONE; original reason preserved."
   },
   "6_post_fix_recheck": {
-   "status": "SKIPPED",
-   "evidence": "determinism-instrument cube (B2094, S6-B1535a): the deliverable was the sorted-trade-column content hash, recorded in the S6-B1535a verdict row (byte-identical pair, sha 4c62b31df6eb919d); no grading or admission consumed it"
+   "status": "N/A",
+   "evidence": "determinism-instrument cube (B2094, S6-B1535a): the deliverable was the sorted-trade-column content hash, recorded in the S6-B1535a verdict row (byte-identical pair, sha 4c62b31df6eb919d); no grading or admission consumed it || S6-B2451 RECLASSIFIED SKIPPED -> N/A: this is an INSTRUMENT cube - the reason above records that its deliverable was a hash/timing measurement and that no grading or admission consumed it, so there is no strategy verdict to review, re-run, implement or state denominators for. That is 'cannot apply' (N/A), not 'not yet done' (SKIPPED). Under S6-B2440 a deferral no longer closes a judgment step; a reasoned exclusion does. Nothing upgraded to DONE; original reason preserved."
   },
   "6b_equivalence_class_check": {
    "status": "SKIPPED",
    "evidence": "determinism-instrument cube (B2094, S6-B1535a): the deliverable was the sorted-trade-column content hash, recorded in the S6-B1535a verdict row (byte-identical pair, sha 4c62b31df6eb919d); no grading or admission consumed it"
   },
   "7_implement_in_engine": {
-   "status": "SKIPPED",
-   "evidence": "determinism-instrument cube (B2094, S6-B1535a): the deliverable was the sorted-trade-column content hash, recorded in the S6-B1535a verdict row (byte-identical pair, sha 4c62b31df6eb919d); no grading or admission consumed it"
+   "status": "N/A",
+   "evidence": "determinism-instrument cube (B2094, S6-B1535a): the deliverable was the sorted-trade-column content hash, recorded in the S6-B1535a verdict row (byte-identical pair, sha 4c62b31df6eb919d); no grading or admission consumed it || S6-B2451 RECLASSIFIED SKIPPED -> N/A: this is an INSTRUMENT cube - the reason above records that its deliverable was a hash/timing measurement and that no grading or admission consumed it, so there is no strategy verdict to review, re-run, implement or state denominators for. That is 'cannot apply' (N/A), not 'not yet done' (SKIPPED). Under S6-B2440 a deferral no longer closes a judgment step; a reasoned exclusion does. Nothing upgraded to DONE; original reason preserved."
   },
   "8_verdict_with_denominators": {
-   "status": "SKIPPED",
-   "evidence": "determinism-instrument cube (B2094, S6-B1535a): the deliverable was the sorted-trade-column content hash, recorded in the S6-B1535a verdict row (byte-identical pair, sha 4c62b31df6eb919d); no grading or admission consumed it"
+   "status": "N/A",
+   "evidence": "determinism-instrument cube (B2094, S6-B1535a): the deliverable was the sorted-trade-column content hash, recorded in the S6-B1535a verdict row (byte-identical pair, sha 4c62b31df6eb919d); no grading or admission consumed it || S6-B2451 RECLASSIFIED SKIPPED -> N/A: this is an INSTRUMENT cube - the reason above records that its deliverable was a hash/timing measurement and that no grading or admission consumed it, so there is no strategy verdict to review, re-run, implement or state denominators for. That is 'cannot apply' (N/A), not 'not yet done' (SKIPPED). Under S6-B2440 a deferral no longer closes a judgment step; a reasoned exclusion does. Nothing upgraded to DONE; original reason preserved."
   }
  },
  "output_b2095_c1": {
@@ -2451,24 +2451,24 @@
    "evidence": "concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it"
   },
   "5_adversarial_lens_review": {
-   "status": "SKIPPED",
-   "evidence": "concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it"
+   "status": "N/A",
+   "evidence": "concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it || S6-B2451 RECLASSIFIED SKIPPED -> N/A: this is an INSTRUMENT cube - the reason above records that its deliverable was a hash/timing measurement and that no grading or admission consumed it, so there is no strategy verdict to review, re-run, implement or state denominators for. That is 'cannot apply' (N/A), not 'not yet done' (SKIPPED). Under S6-B2440 a deferral no longer closes a judgment step; a reasoned exclusion does. Nothing upgraded to DONE; original reason preserved."
   },
   "6_post_fix_recheck": {
-   "status": "SKIPPED",
-   "evidence": "concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it"
+   "status": "N/A",
+   "evidence": "concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it || S6-B2451 RECLASSIFIED SKIPPED -> N/A: this is an INSTRUMENT cube - the reason above records that its deliverable was a hash/timing measurement and that no grading or admission consumed it, so there is no strategy verdict to review, re-run, implement or state denominators for. That is 'cannot apply' (N/A), not 'not yet done' (SKIPPED). Under S6-B2440 a deferral no longer closes a judgment step; a reasoned exclusion does. Nothing upgraded to DONE; original reason preserved."
   },
   "6b_equivalence_class_check": {
    "status": "SKIPPED",
    "evidence": "concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it"
   },
   "7_implement_in_engine": {
-   "status": "SKIPPED",
-   "evidence": "concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it"
+   "status": "N/A",
+   "evidence": "concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it || S6-B2451 RECLASSIFIED SKIPPED -> N/A: this is an INSTRUMENT cube - the reason above records that its deliverable was a hash/timing measurement and that no grading or admission consumed it, so there is no strategy verdict to review, re-run, implement or state denominators for. That is 'cannot apply' (N/A), not 'not yet done' (SKIPPED). Under S6-B2440 a deferral no longer closes a judgment step; a reasoned exclusion does. Nothing upgraded to DONE; original reason preserved."
   },
   "8_verdict_with_denominators": {
-   "status": "SKIPPED",
-   "evidence": "concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it"
+   "status": "N/A",
+   "evidence": "concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it || S6-B2451 RECLASSIFIED SKIPPED -> N/A: this is an INSTRUMENT cube - the reason above records that its deliverable was a hash/timing measurement and that no grading or admission consumed it, so there is no strategy verdict to review, re-run, implement or state denominators for. That is 'cannot apply' (N/A), not 'not yet done' (SKIPPED). Under S6-B2440 a deferral no longer closes a judgment step; a reasoned exclusion does. Nothing upgraded to DONE; original reason preserved."
   }
  },
  "output_b2095_c2": {
@@ -2489,24 +2489,24 @@
    "evidence": "concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it"
   },
   "5_adversarial_lens_review": {
-   "status": "SKIPPED",
-   "evidence": "concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it"
+   "status": "N/A",
+   "evidence": "concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it || S6-B2451 RECLASSIFIED SKIPPED -> N/A: this is an INSTRUMENT cube - the reason above records that its deliverable was a hash/timing measurement and that no grading or admission consumed it, so there is no strategy verdict to review, re-run, implement or state denominators for. That is 'cannot apply' (N/A), not 'not yet done' (SKIPPED). Under S6-B2440 a deferral no longer closes a judgment step; a reasoned exclusion does. Nothing upgraded to DONE; original reason preserved."
   },
   "6_post_fix_recheck": {
-   "status": "SKIPPED",
-   "evidence": "concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it"
+   "status": "N/A",
+   "evidence": "concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it || S6-B2451 RECLASSIFIED SKIPPED -> N/A: this is an INSTRUMENT cube - the reason above records that its deliverable was a hash/timing measurement and that no grading or admission consumed it, so there is no strategy verdict to review, re-run, implement or state denominators for. That is 'cannot apply' (N/A), not 'not yet done' (SKIPPED). Under S6-B2440 a deferral no longer closes a judgment step; a reasoned exclusion does. Nothing upgraded to DONE; original reason preserved."
   },
   "6b_equivalence_class_check": {
    "status": "SKIPPED",
    "evidence": "concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it"
   },
   "7_implement_in_engine": {
-   "status": "SKIPPED",
-   "evidence": "concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it"
+   "status": "N/A",
+   "evidence": "concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it || S6-B2451 RECLASSIFIED SKIPPED -> N/A: this is an INSTRUMENT cube - the reason above records that its deliverable was a hash/timing measurement and that no grading or admission consumed it, so there is no strategy verdict to review, re-run, implement or state denominators for. That is 'cannot apply' (N/A), not 'not yet done' (SKIPPED). Under S6-B2440 a deferral no longer closes a judgment step; a reasoned exclusion does. Nothing upgraded to DONE; original reason preserved."
   },
   "8_verdict_with_denominators": {
-   "status": "SKIPPED",
-   "evidence": "concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it"
+   "status": "N/A",
+   "evidence": "concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it || S6-B2451 RECLASSIFIED SKIPPED -> N/A: this is an INSTRUMENT cube - the reason above records that its deliverable was a hash/timing measurement and that no grading or admission consumed it, so there is no strategy verdict to review, re-run, implement or state denominators for. That is 'cannot apply' (N/A), not 'not yet done' (SKIPPED). Under S6-B2440 a deferral no longer closes a judgment step; a reasoned exclusion does. Nothing upgraded to DONE; original reason preserved."
   }
  },
  "output_b2095_c3": {
@@ -2527,24 +2527,24 @@
    "evidence": "concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it"
   },
   "5_adversarial_lens_review": {
-   "status": "SKIPPED",
-   "evidence": "concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it"
+   "status": "N/A",
+   "evidence": "concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it || S6-B2451 RECLASSIFIED SKIPPED -> N/A: this is an INSTRUMENT cube - the reason above records that its deliverable was a hash/timing measurement and that no grading or admission consumed it, so there is no strategy verdict to review, re-run, implement or state denominators for. That is 'cannot apply' (N/A), not 'not yet done' (SKIPPED). Under S6-B2440 a deferral no longer closes a judgment step; a reasoned exclusion does. Nothing upgraded to DONE; original reason preserved."
   },
   "6_post_fix_recheck": {
-   "status": "SKIPPED",
-   "evidence": "concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it"
+   "status": "N/A",
+   "evidence": "concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it || S6-B2451 RECLASSIFIED SKIPPED -> N/A: this is an INSTRUMENT cube - the reason above records that its deliverable was a hash/timing measurement and that no grading or admission consumed it, so there is no strategy verdict to review, re-run, implement or state denominators for. That is 'cannot apply' (N/A), not 'not yet done' (SKIPPED). Under S6-B2440 a deferral no longer closes a judgment step; a reasoned exclusion does. Nothing upgraded to DONE; original reason preserved."
   },
   "6b_equivalence_class_check": {
    "status": "SKIPPED",
    "evidence": "concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it"
   },
   "7_implement_in_engine": {
-   "status": "SKIPPED",
-   "evidence": "concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it"
+   "status": "N/A",
+   "evidence": "concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it || S6-B2451 RECLASSIFIED SKIPPED -> N/A: this is an INSTRUMENT cube - the reason above records that its deliverable was a hash/timing measurement and that no grading or admission consumed it, so there is no strategy verdict to review, re-run, implement or state denominators for. That is 'cannot apply' (N/A), not 'not yet done' (SKIPPED). Under S6-B2440 a deferral no longer closes a judgment step; a reasoned exclusion does. Nothing upgraded to DONE; original reason preserved."
   },
   "8_verdict_with_denominators": {
-   "status": "SKIPPED",
-   "evidence": "concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it"
+   "status": "N/A",
+   "evidence": "concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it || S6-B2451 RECLASSIFIED SKIPPED -> N/A: this is an INSTRUMENT cube - the reason above records that its deliverable was a hash/timing measurement and that no grading or admission consumed it, so there is no strategy verdict to review, re-run, implement or state denominators for. That is 'cannot apply' (N/A), not 'not yet done' (SKIPPED). Under S6-B2440 a deferral no longer closes a judgment step; a reasoned exclusion does. Nothing upgraded to DONE; original reason preserved."
   }
  },
  "output_b2096_d1": {
@@ -2565,24 +2565,24 @@
    "evidence": "concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it"
   },
   "5_adversarial_lens_review": {
-   "status": "SKIPPED",
-   "evidence": "concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it"
+   "status": "N/A",
+   "evidence": "concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it || S6-B2451 RECLASSIFIED SKIPPED -> N/A: this is an INSTRUMENT cube - the reason above records that its deliverable was a hash/timing measurement and that no grading or admission consumed it, so there is no strategy verdict to review, re-run, implement or state denominators for. That is 'cannot apply' (N/A), not 'not yet done' (SKIPPED). Under S6-B2440 a deferral no longer closes a judgment step; a reasoned exclusion does. Nothing upgraded to DONE; original reason preserved."
   },
   "6_post_fix_recheck": {
-   "status": "SKIPPED",
-   "evidence": "concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it"
+   "status": "N/A",
+   "evidence": "concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it || S6-B2451 RECLASSIFIED SKIPPED -> N/A: this is an INSTRUMENT cube - the reason above records that its deliverable was a hash/timing measurement and that no grading or admission consumed it, so there is no strategy verdict to review, re-run, implement or state denominators for. That is 'cannot apply' (N/A), not 'not yet done' (SKIPPED). Under S6-B2440 a deferral no longer closes a judgment step; a reasoned exclusion does. Nothing upgraded to DONE; original reason preserved."
   },
   "6b_equivalence_class_check": {
    "status": "SKIPPED",
    "evidence": "concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it"
   },
   "7_implement_in_engine": {
-   "status": "SKIPPED",
-   "evidence": "concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it"
+   "status": "N/A",
+   "evidence": "concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it || S6-B2451 RECLASSIFIED SKIPPED -> N/A: this is an INSTRUMENT cube - the reason above records that its deliverable was a hash/timing measurement and that no grading or admission consumed it, so there is no strategy verdict to review, re-run, implement or state denominators for. That is 'cannot apply' (N/A), not 'not yet done' (SKIPPED). Under S6-B2440 a deferral no longer closes a judgment step; a reasoned exclusion does. Nothing upgraded to DONE; original reason preserved."
   },
   "8_verdict_with_denominators": {
-   "status": "SKIPPED",
-   "evidence": "concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it"
+   "status": "N/A",
+   "evidence": "concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it || S6-B2451 RECLASSIFIED SKIPPED -> N/A: this is an INSTRUMENT cube - the reason above records that its deliverable was a hash/timing measurement and that no grading or admission consumed it, so there is no strategy verdict to review, re-run, implement or state denominators for. That is 'cannot apply' (N/A), not 'not yet done' (SKIPPED). Under S6-B2440 a deferral no longer closes a judgment step; a reasoned exclusion does. Nothing upgraded to DONE; original reason preserved."
   }
  },
  "output_b2096_d2": {
@@ -2603,24 +2603,24 @@
    "evidence": "concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it"
   },
   "5_adversarial_lens_review": {
-   "status": "SKIPPED",
-   "evidence": "concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it"
+   "status": "N/A",
+   "evidence": "concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it || S6-B2451 RECLASSIFIED SKIPPED -> N/A: this is an INSTRUMENT cube - the reason above records that its deliverable was a hash/timing measurement and that no grading or admission consumed it, so there is no strategy verdict to review, re-run, implement or state denominators for. That is 'cannot apply' (N/A), not 'not yet done' (SKIPPED). Under S6-B2440 a deferral no longer closes a judgment step; a reasoned exclusion does. Nothing upgraded to DONE; original reason preserved."
   },
   "6_post_fix_recheck": {
-   "status": "SKIPPED",
-   "evidence": "concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it"
+   "status": "N/A",
+   "evidence": "concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it || S6-B2451 RECLASSIFIED SKIPPED -> N/A: this is an INSTRUMENT cube - the reason above records that its deliverable was a hash/timing measurement and that no grading or admission consumed it, so there is no strategy verdict to review, re-run, implement or state denominators for. That is 'cannot apply' (N/A), not 'not yet done' (SKIPPED). Under S6-B2440 a deferral no longer closes a judgment step; a reasoned exclusion does. Nothing upgraded to DONE; original reason preserved."
   },
   "6b_equivalence_class_check": {
    "status": "SKIPPED",
    "evidence": "concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it"
   },
   "7_implement_in_engine": {
-   "status": "SKIPPED",
-   "evidence": "concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it"
+   "status": "N/A",
+   "evidence": "concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it || S6-B2451 RECLASSIFIED SKIPPED -> N/A: this is an INSTRUMENT cube - the reason above records that its deliverable was a hash/timing measurement and that no grading or admission consumed it, so there is no strategy verdict to review, re-run, implement or state denominators for. That is 'cannot apply' (N/A), not 'not yet done' (SKIPPED). Under S6-B2440 a deferral no longer closes a judgment step; a reasoned exclusion does. Nothing upgraded to DONE; original reason preserved."
   },
   "8_verdict_with_denominators": {
-   "status": "SKIPPED",
-   "evidence": "concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it"
+   "status": "N/A",
+   "evidence": "concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it || S6-B2451 RECLASSIFIED SKIPPED -> N/A: this is an INSTRUMENT cube - the reason above records that its deliverable was a hash/timing measurement and that no grading or admission consumed it, so there is no strategy verdict to review, re-run, implement or state denominators for. That is 'cannot apply' (N/A), not 'not yet done' (SKIPPED). Under S6-B2440 a deferral no longer closes a judgment step; a reasoned exclusion does. Nothing upgraded to DONE; original reason preserved."
   }
  },
  "output_b2096_d3": {
@@ -2641,24 +2641,24 @@
    "evidence": "concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it"
   },
   "5_adversarial_lens_review": {
-   "status": "SKIPPED",
-   "evidence": "concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it"
+   "status": "N/A",
+   "evidence": "concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it || S6-B2451 RECLASSIFIED SKIPPED -> N/A: this is an INSTRUMENT cube - the reason above records that its deliverable was a hash/timing measurement and that no grading or admission consumed it, so there is no strategy verdict to review, re-run, implement or state denominators for. That is 'cannot apply' (N/A), not 'not yet done' (SKIPPED). Under S6-B2440 a deferral no longer closes a judgment step; a reasoned exclusion does. Nothing upgraded to DONE; original reason preserved."
   },
   "6_post_fix_recheck": {
-   "status": "SKIPPED",
-   "evidence": "concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it"
+   "status": "N/A",
+   "evidence": "concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it || S6-B2451 RECLASSIFIED SKIPPED -> N/A: this is an INSTRUMENT cube - the reason above records that its deliverable was a hash/timing measurement and that no grading or admission consumed it, so there is no strategy verdict to review, re-run, implement or state denominators for. That is 'cannot apply' (N/A), not 'not yet done' (SKIPPED). Under S6-B2440 a deferral no longer closes a judgment step; a reasoned exclusion does. Nothing upgraded to DONE; original reason preserved."
   },
   "6b_equivalence_class_check": {
    "status": "SKIPPED",
    "evidence": "concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it"
   },
   "7_implement_in_engine": {
-   "status": "SKIPPED",
-   "evidence": "concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it"
+   "status": "N/A",
+   "evidence": "concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it || S6-B2451 RECLASSIFIED SKIPPED -> N/A: this is an INSTRUMENT cube - the reason above records that its deliverable was a hash/timing measurement and that no grading or admission consumed it, so there is no strategy verdict to review, re-run, implement or state denominators for. That is 'cannot apply' (N/A), not 'not yet done' (SKIPPED). Under S6-B2440 a deferral no longer closes a judgment step; a reasoned exclusion does. Nothing upgraded to DONE; original reason preserved."
   },
   "8_verdict_with_denominators": {
-   "status": "SKIPPED",
-   "evidence": "concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it"
+   "status": "N/A",
+   "evidence": "concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it || S6-B2451 RECLASSIFIED SKIPPED -> N/A: this is an INSTRUMENT cube - the reason above records that its deliverable was a hash/timing measurement and that no grading or admission consumed it, so there is no strategy verdict to review, re-run, implement or state denominators for. That is 'cannot apply' (N/A), not 'not yet done' (SKIPPED). Under S6-B2440 a deferral no longer closes a judgment step; a reasoned exclusion does. Nothing upgraded to DONE; original reason preserved."
   }
  },
  "output_b2099_iso2": {
@@ -2679,24 +2679,24 @@
    "evidence": "isolation-instrument cube (B2099, S6-B1531a): deliverable was the per-strategy content equality vs the singles' union, recorded in the verdict row; PASSED exact"
   },
   "5_adversarial_lens_review": {
-   "status": "SKIPPED",
-   "evidence": "isolation-instrument cube (B2099, S6-B1531a): deliverable was the per-strategy content equality vs the singles' union, recorded in the verdict row; PASSED exact"
+   "status": "N/A",
+   "evidence": "isolation-instrument cube (B2099, S6-B1531a): deliverable was the per-strategy content equality vs the singles' union, recorded in the verdict row; PASSED exact || S6-B2451 RECLASSIFIED SKIPPED -> N/A: this is an INSTRUMENT cube - the reason above records that its deliverable was a hash/timing measurement and that no grading or admission consumed it, so there is no strategy verdict to review, re-run, implement or state denominators for. That is 'cannot apply' (N/A), not 'not yet done' (SKIPPED). Under S6-B2440 a deferral no longer closes a judgment step; a reasoned exclusion does. Nothing upgraded to DONE; original reason preserved."
   },
   "6_post_fix_recheck": {
-   "status": "SKIPPED",
-   "evidence": "isolation-instrument cube (B2099, S6-B1531a): deliverable was the per-strategy content equality vs the singles' union, recorded in the verdict row; PASSED exact"
+   "status": "N/A",
+   "evidence": "isolation-instrument cube (B2099, S6-B1531a): deliverable was the per-strategy content equality vs the singles' union, recorded in the verdict row; PASSED exact || S6-B2451 RECLASSIFIED SKIPPED -> N/A: this is an INSTRUMENT cube - the reason above records that its deliverable was a hash/timing measurement and that no grading or admission consumed it, so there is no strategy verdict to review, re-run, implement or state denominators for. That is 'cannot apply' (N/A), not 'not yet done' (SKIPPED). Under S6-B2440 a deferral no longer closes a judgment step; a reasoned exclusion does. Nothing upgraded to DONE; original reason preserved."
   },
   "6b_equivalence_class_check": {
    "status": "SKIPPED",
    "evidence": "isolation-instrument cube (B2099, S6-B1531a): deliverable was the per-strategy content equality vs the singles' union, recorded in the verdict row; PASSED exact"
   },
   "7_implement_in_engine": {
-   "status": "SKIPPED",
-   "evidence": "isolation-instrument cube (B2099, S6-B1531a): deliverable was the per-strategy content equality vs the singles' union, recorded in the verdict row; PASSED exact"
+   "status": "N/A",
+   "evidence": "isolation-instrument cube (B2099, S6-B1531a): deliverable was the per-strategy content equality vs the singles' union, recorded in the verdict row; PASSED exact || S6-B2451 RECLASSIFIED SKIPPED -> N/A: this is an INSTRUMENT cube - the reason above records that its deliverable was a hash/timing measurement and that no grading or admission consumed it, so there is no strategy verdict to review, re-run, implement or state denominators for. That is 'cannot apply' (N/A), not 'not yet done' (SKIPPED). Under S6-B2440 a deferral no longer closes a judgment step; a reasoned exclusion does. Nothing upgraded to DONE; original reason preserved."
   },
   "8_verdict_with_denominators": {
-   "status": "SKIPPED",
-   "evidence": "isolation-instrument cube (B2099, S6-B1531a): deliverable was the per-strategy content equality vs the singles' union, recorded in the verdict row; PASSED exact"
+   "status": "N/A",
+   "evidence": "isolation-instrument cube (B2099, S6-B1531a): deliverable was the per-strategy content equality vs the singles' union, recorded in the verdict row; PASSED exact || S6-B2451 RECLASSIFIED SKIPPED -> N/A: this is an INSTRUMENT cube - the reason above records that its deliverable was a hash/timing measurement and that no grading or admission consumed it, so there is no strategy verdict to review, re-run, implement or state denominators for. That is 'cannot apply' (N/A), not 'not yet done' (SKIPPED). Under S6-B2440 a deferral no longer closes a judgment step; a reasoned exclusion does. Nothing upgraded to DONE; original reason preserved."
   }
  },
  "output_b2099_obb": {
@@ -2717,24 +2717,24 @@
    "evidence": "isolation-instrument cube (B2099): the obb single arm; cube written pre-crash (the B2100 writer defect, fixed+pinned same batch); content consumed by the isolation verdict only"
   },
   "5_adversarial_lens_review": {
-   "status": "SKIPPED",
-   "evidence": "isolation-instrument cube (B2099): the obb single arm; cube written pre-crash (the B2100 writer defect, fixed+pinned same batch); content consumed by the isolation verdict only"
+   "status": "N/A",
+   "evidence": "isolation-instrument cube (B2099): the obb single arm; cube written pre-crash (the B2100 writer defect, fixed+pinned same batch); content consumed by the isolation verdict only || S6-B2451 RECLASSIFIED SKIPPED -> N/A: this is an INSTRUMENT cube - the reason above records that its deliverable was a hash/timing measurement and that no grading or admission consumed it, so there is no strategy verdict to review, re-run, implement or state denominators for. That is 'cannot apply' (N/A), not 'not yet done' (SKIPPED). Under S6-B2440 a deferral no longer closes a judgment step; a reasoned exclusion does. Nothing upgraded to DONE; original reason preserved."
   },
   "6_post_fix_recheck": {
-   "status": "SKIPPED",
-   "evidence": "isolation-instrument cube (B2099): the obb single arm; cube written pre-crash (the B2100 writer defect, fixed+pinned same batch); content consumed by the isolation verdict only"
+   "status": "N/A",
+   "evidence": "isolation-instrument cube (B2099): the obb single arm; cube written pre-crash (the B2100 writer defect, fixed+pinned same batch); content consumed by the isolation verdict only || S6-B2451 RECLASSIFIED SKIPPED -> N/A: this is an INSTRUMENT cube - the reason above records that its deliverable was a hash/timing measurement and that no grading or admission consumed it, so there is no strategy verdict to review, re-run, implement or state denominators for. That is 'cannot apply' (N/A), not 'not yet done' (SKIPPED). Under S6-B2440 a deferral no longer closes a judgment step; a reasoned exclusion does. Nothing upgraded to DONE; original reason preserved."
   },
   "6b_equivalence_class_check": {
    "status": "SKIPPED",
    "evidence": "isolation-instrument cube (B2099): the obb single arm; cube written pre-crash (the B2100 writer defect, fixed+pinned same batch); content consumed by the isolation verdict only"
   },
   "7_implement_in_engine": {
-   "status": "SKIPPED",
-   "evidence": "isolation-instrument cube (B2099): the obb single arm; cube written pre-crash (the B2100 writer defect, fixed+pinned same batch); content consumed by the isolation verdict only"
+   "status": "N/A",
+   "evidence": "isolation-instrument cube (B2099): the obb single arm; cube written pre-crash (the B2100 writer defect, fixed+pinned same batch); content consumed by the isolation verdict only || S6-B2451 RECLASSIFIED SKIPPED -> N/A: this is an INSTRUMENT cube - the reason above records that its deliverable was a hash/timing measurement and that no grading or admission consumed it, so there is no strategy verdict to review, re-run, implement or state denominators for. That is 'cannot apply' (N/A), not 'not yet done' (SKIPPED). Under S6-B2440 a deferral no longer closes a judgment step; a reasoned exclusion does. Nothing upgraded to DONE; original reason preserved."
   },
   "8_verdict_with_denominators": {
-   "status": "SKIPPED",
-   "evidence": "isolation-instrument cube (B2099): the obb single arm; cube written pre-crash (the B2100 writer defect, fixed+pinned same batch); content consumed by the isolation verdict only"
+   "status": "N/A",
+   "evidence": "isolation-instrument cube (B2099): the obb single arm; cube written pre-crash (the B2100 writer defect, fixed+pinned same batch); content consumed by the isolation verdict only || S6-B2451 RECLASSIFIED SKIPPED -> N/A: this is an INSTRUMENT cube - the reason above records that its deliverable was a hash/timing measurement and that no grading or admission consumed it, so there is no strategy verdict to review, re-run, implement or state denominators for. That is 'cannot apply' (N/A), not 'not yet done' (SKIPPED). Under S6-B2440 a deferral no longer closes a judgment step; a reasoned exclusion does. Nothing upgraded to DONE; original reason preserved."
   }
  },
  "output_b2114_ref": {
@@ -2759,16 +2759,16 @@
    "evidence": "reviewed this batch: every graded cell is_ci_lo NEGATIVE (best -0.077), all far below the 0.333 noise floor - the STATE gate produces no rankable edge on 50t x 1y; reverse_signal degeneracy is cube-local (single strategy, reverse never fired); no defect found in the cube itself - comparator status only"
   },
   "6_post_fix_recheck": {
-   "status": "SKIPPED",
-   "evidence": "no fix arose from step 5 - nothing to recheck"
+   "status": "N/A",
+   "evidence": "no fix arose from step 5 - nothing to recheck || S6-B2451 RECLASSIFIED SKIPPED -> N/A: the reason above states the step CANNOT APPLY to this cube (no fix to recheck / nothing selected for implementation), not that it is owed later. Under S6-B2440 a deferral no longer closes a judgment step; a reasoned exclusion does. Nothing upgraded to DONE; original reason preserved verbatim."
   },
   "6b_equivalence_class_check": {
    "status": "DONE",
    "evidence": "grader collapses identical outcomes: 19 combos -> 27 distinct outcome rows across exits; ranking rows carry class_size (max 4; rank-1 class_size 2 = two combos byte-identical)"
   },
   "7_implement_in_engine": {
-   "status": "SKIPPED",
-   "evidence": "comparator cube - nothing selected for implementation; the conversion itself is B2114, already shipped with its own pin"
+   "status": "N/A",
+   "evidence": "comparator cube - nothing selected for implementation; the conversion itself is B2114, already shipped with its own pin || S6-B2451 RECLASSIFIED SKIPPED -> N/A: the reason above states the step CANNOT APPLY to this cube (no fix to recheck / nothing selected for implementation), not that it is owed later. Under S6-B2440 a deferral no longer closes a judgment step; a reasoned exclusion does. Nothing upgraded to DONE; original reason preserved verbatim."
   },
   "8_verdict_with_denominators": {
    "status": "DONE",
