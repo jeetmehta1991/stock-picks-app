@@ -28930,9 +28930,25 @@ def test_b2467_subset_safety_is_per_level_and_partitions_the_band():
     # the free slice must agree with the committed pre-registration, or the two
     # artifacts disagree about what can be graded without the engine
     free = [len(p["free_band"]) for p in spec["params"] if p["free_band"]]
-    assert functools.reduce(operator.mul, free, 1) == 20, (
-        "Table A's free combinations no longer equal the 20 committed in "
-        "output_audit/b2419_preregistration_13f_family.json")
+    # S6-B2469: 20 -> 8. The pre-registration's P8 grid carried three levels
+    # MEASURED DEAD on the fallback arm (32 -> 13 IS rows, 230 -> 1, 319 -> 0
+    # of the 46 rows that take that arm at all), and its 2/3 duplicate 5. The
+    # commitment stands as a record of what was pre-registered; the usable
+    # free grid is 4 P7 levels x 2 P8 levels.
+    assert functools.reduce(operator.mul, free, 1) == 8, (
+        "Table A's free combinations moved off the 8 that survive the "
+        "measured sample-floor check")
+    # bands must stay de-duplicated: the b2197 wave ran span 21 once at sw20
+    # and dropped it for the other four swing lengths (26 configs, not 30)
+    p9 = next(p for p in spec["params"] if p["param"] == "span")
+    assert 21 not in p9["band"], (
+        "span 21 is back - the programme measured it as a near-duplicate of "
+        "20 and dropped it after one run")
+    p8 = next(p for p in spec["params"] if p["param"] == "fallback_min_increased")
+    for dead in (32, 230, 319):
+        assert dead not in p8["band"], (
+            f"fallback level {dead} is back - MEASURED to retain 13/1/0 rows "
+            "of the 46 that reach the fallback arm")
 
     # and the persisted/not-persisted split must hold: only the two strategy
     # thresholds may carry free levels

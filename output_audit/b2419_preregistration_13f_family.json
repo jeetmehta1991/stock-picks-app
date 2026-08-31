@@ -197,5 +197,26 @@
     "threshold_combinations": 61,
     "with_exit_axis": 1586
   },
-  "multiplicity_note": "This grid enumerates 1586 candidate cells. Grid-stage multiplicity correction is an OPEN owner decision (S6-B2444); until it is ruled, any result from scoring this grid carries no family-wise error control and must be reported with that caveat."
+  "multiplicity_note": "This grid enumerates 1586 candidate cells. Grid-stage multiplicity correction is an OPEN owner decision (S6-B2444); until it is ruled, any result from scoring this grid carries no family-wise error control and must be reported with that caveat.",
+  "b2469_measured_correction": {
+    "date": "2026-08-31",
+    "what": "Sample-survival measured per level on the R5 IS rows AFTER this pre-registration was committed. The commitment stands as a record of what was pre-registered; three of its levels are statistically dead.",
+    "committed_growth_holders": {
+      "3": 1189,
+      "5": 656,
+      "11": 317,
+      "142": 125,
+      "note": "levels 1 and 2 are UNREACHABLE - distinct fired values are 0,3,4,5,... so no row carries 1 or 2; they matter only as loosening"
+    },
+    "institutional_increased_fallback_arm": {
+      "rows_taking_arm": 46,
+      "5": 46,
+      "6": 37,
+      "32": 13,
+      "230": 1,
+      "319": 0,
+      "note": "the fallback carries 46 of 1235 IS rows (3.7pct); 32/230/319 are at or below 13 rows and cannot support a verdict"
+    },
+    "usable_free_grid": "4 x 2 = 8 combinations, not the 20 enumerated"
+  }
 }
