@@ -17452,3 +17452,54 @@ S6-B2433 row, and both governing rules remain pinned in SKILL.md via test_b2123.
 ONE - 7 commits, 8 blocked closes, serial. (2) The B2409 floor retirement - one commit carrying
 code, pins, regenerated artifacts, plan, banner and ledger together, closed on the FIRST attempt:
 **SOUND, and it is the control that proves the difference is the batching and not the gate.**
+
+## L721
+**A GATE THAT ACCEPTS A DEFERRAL AS A DISPOSITION IS A GATE THAT MEASURES PAPERWORK (B2436).**
+Four mandatory post-config JUDGMENT steps went unrun across **all 31 Step-1 configs and the Step-2
+config**, and nothing ever blocked. Programme-wide the four stand at DONE 10/2/4/10 against SKIPPED
+42/47/43/42. The owner asked whether they had run; the ledger answered in one query, and the answer
+was no - not for Step 1, not before Step 2, not for Step 2.
+**The mechanism, and it is not "someone forgot".** `verify_postconfig_complete.py:54` sets
+`TERMINAL = {"DONE", "SKIPPED", "N/A"}`. A step marked SKIPPED **with any reason string** counts as
+dispositioned, so the completeness gate passes. **The gate checks whether a decision was RECORDED,
+never whether the work was DONE** - and every one of the 42 skips carried the same reason,
+*"PENDING-WAVE-REVIEW: the wave-level review batch performs this step"*, naming a batch that has
+never existed. **A deferral to a process nobody built satisfied a mandatory control 42 times.**
+**Three properties made it invisible, and each is reusable as a tell:**
+(1) **The escape was TERMINAL.** L642 says a guard must fail closed on the ABSENT input; this is
+the sibling - a guard must not treat a PROMISE as an outcome. SKIPPED is a deferral; a deferral is
+not a disposition.
+(2) **The compensating control was named, not built.** A reason string that cites a future process
+reads like diligence and is unfalsifiable at the point it is written. **Any deferral must name an
+EXECUTABLE target** - a path you can run - plus an owner and a trigger, or it is a DROP wearing a
+deferral's coat.
+(3) **The requirement lived only in code.** The runbook never described the nine steps, so no plan
+reader could know they were owed. **A mandatory control absent from the governing document is a
+rule with no author** - and it is why "mandatory" survived 105 configs without anyone disagreeing
+with it or doing it.
+**What the record proves about the value of what was skipped, measured rather than assumed:** every
+judgment-step DONE in the ledger cites a real finding - the tail_n band defect, the
+equivalence-class defect, a grader-loader crash found and pinned. **The reviews that ran, found
+things.** So the skipped population is not plausibly empty, and retiring the steps on the evidence
+of their own non-execution would launder 105 instances of non-compliance into policy.
+Compliance failure against **CHECKLIST item 224** (a gate nobody calls is not enforcement) read
+with **L642** (fail closed on the absent input) - this is the same class arriving through a
+TERMINAL SET rather than a missing call site. No new checklist item (#136): applying B2432's
+discriminator, the SUBJECT (inert gates) is covered by #224 and the REMEDY (a deferral is not a
+disposition; deferrals name an executable target) is the general form recorded here and written
+into the runbook this batch.
+Mechanism: **DETECTION is mechanisable and is SPECIFIED - drop SKIPPED from the TERMINAL set for
+steps 5-8 - but it is a RULE CHANGE and is gated on owner approval (S6-B2438), so it is not shipped
+here.** **Durability IS taken now**: `test_b2439_postconfig_battery_rules_survive_in_the_runbook`
+pins the loophole's diagnosis, the LINEAGE scope rule and the step classes in the runbook, plus the
+code's own never-auto-mark declaration, so the rule that would prevent recurrence cannot quietly
+leave the document the way the requirement originally did.
+**Retroactive sweep (#237): every other gate in the enforcement layer whose vocabulary contains a
+deferral-shaped accepting state.** Scanned `scripts/verify_postconfig_complete.py` and the queue's
+own state vocabulary. TWO found, and they read OPPOSITELY. (1) The postconfig TERMINAL set - **THE
+INSTANCE**, SKIPPED accepted as terminal. (2) The EXECUTION_QUEUE six-class vocabulary, where
+DEFERRED and BLOCKED are explicitly NON-terminal and only EXECUTED/DROPPED close a ticket - **SOUND,
+and it is the control that shows the repo already knows the distinction in one place while the
+battery gate lost it in another.** The difference is that the queue's classifier was designed as a
+PARTITION with terminality declared per class (L537), while the battery's TERMINAL set was written
+as a convenience set of "things that are not still pending".

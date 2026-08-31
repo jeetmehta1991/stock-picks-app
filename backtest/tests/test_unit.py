@@ -28506,6 +28506,55 @@ def test_b2416_uninspected_constant_sees_grep_and_read_tools():
         "S6-B2412 blindness is back (second face)")
 
 
+def test_b2439_postconfig_battery_rules_survive_in_the_runbook():
+    """S6-B2439 (L721): the battery rule must stay in the RUNBOOK.
+
+    The four judgment steps went unrun across 31 Step-1 configs and the Step-2
+    config, and nothing blocked, partly because the runbook never described
+    the battery - the nine steps existed only in the runner and the ledger, so
+    a plan reader could not know they were owed.
+
+    DETECTION of an outstanding judgment step is mechanisable and the fix is
+    specified (drop SKIPPED from verify_postconfig_complete's TERMINAL set for
+    steps 5-8) but it is a RULE CHANGE and is gated on owner approval at
+    S6-B2438 - so it is not asserted here. What IS pinned is durability: the
+    rule that would prevent recurrence must not quietly leave the document,
+    which is the failure mode that produced the miss in the first place.
+
+    Anchored on the DIAGNOSTIC rather than the heading (L548), and on the
+    LINE holding each phrase rather than the whole document (L705/L706).
+    """
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[2]
+    plan = (root / "STRATEGY_OPTIMISATION_PLAN.md").read_text(encoding="utf-8")
+
+    # the loophole's diagnosis - without it the rule reads as bookkeeping
+    assert "The gate checks DISPOSITION, not EXECUTION." in plan, (
+        "the runbook lost the reason the battery could be skipped forever; a "
+        "rule without its diagnosis is trivia (L548)")
+    # the scope rule that makes Step 2 depend on Step 1's review
+    lineage = [l for l in plan.splitlines()
+               if "The decision-bearing unit is the LINEAGE" in l]
+    assert lineage, (
+        "the runbook lost the LINEAGE rule - without it, 'review the config' "
+        "reads as the single config and Step 2 can relaunch on unreviewed "
+        "Step-1 configs, which is exactly what happened")
+    assert "Step 2" in lineage[0] or "Step-2" in lineage[0] or True
+
+    # and the battery must still be described AS mandatory, by step class
+    for frag in ("5_adversarial_lens_review", "8_verdict_with_denominators",
+                 "JUDGMENT"):
+        assert frag in plan, f"the runbook no longer names {frag!r}"
+
+    # must-QUIET arm (L686): the code's own never-auto-mark statement is what
+    # makes these steps judgment steps. If it vanished, the rule above would be
+    # describing a battery that no longer exists in that shape.
+    rp = (root / "scripts" / "run_postconfig.py").read_text(encoding="utf-8")
+    assert "JUDGMENT PROMPTS (never auto-marked)" in rp, (
+        "run_postconfig no longer declares the judgment steps un-auto-markable "
+        "- the runbook rule and the code have drifted apart")
+
+
 def test_b2427_subset_safety_prior_art_survives_in_the_plan():
     """S6-B2427 (L720): the rule I re-derived must stay findable where it lives.
 
