@@ -12343,6 +12343,33 @@ Carried into `SKILL.md`.
 
 ### L583
 
+**ADDENDUM (B2458): THE SAME DEFECT FOR A CONTROL-FLOW CLAIM, REPEATED EIGHT TIMES.** L583 is
+worded around a FIGURE, so it never fired on a claim about BEHAVIOUR. MEASURED: across eight
+consecutive blocked closes I told the owner *"the .stop_exempt hatch does not reach scan gates"* and
+cited `verify_turn_compliance.py:4028` - which is a COMMENT saying exactly that. I never opened the
+function. Reading it on the ninth close CONFIRMED the claim: `main()` runs the check_ loop first and
+returns 2 on any violation, while the sentinel is read inside `_main_legacy()`, which that return
+never reaches. **The conclusion was right and the method was wrong for eight closes**, and a comment
+agreeing with you is the most comfortable evidence there is.
+**Two things this sharpens.** First, extend L583 from figures to any claim a comment ASSERTS - what
+a gate covers, what an escape reaches, what a branch does; a comment is READ-class evidence that the
+comment says it, never that the code does it. Second, and the part I got wrong for longer:
+**repeating a refusal is not re-deriving it.** The skill already says two failed attempts mean the
+diagnosis is wrong; I was at eight repetitions of an unexamined premise, and the disproof was a
+fifty-line read. **When you find yourself restating the same position to the same reader, that is
+the trigger to re-run its cheapest disproof** - not a sign the position is settled.
+Compliance failure against CHECKLIST item 201 read with L583. No new item (#136): 201 is the class,
+widened here from figures to asserted behaviour.
+Mechanism: DETECTION is JUDGMENT-ONLY - no scan separates a claim sourced from a comment from one
+sourced from the code it describes, since both cite the same file. Durability is L583's own section
+in the always-read skill, which this addendum extends in place.
+**Retroactive sweep (#237) of the control-flow claims made across these closes:** two - the hatch's
+reach (asserted from a comment, now verified true) and the gate ordering that makes the backlog
+unclearable (verified by reading the loop this turn). **1 of 2 was comment-sourced.** A third claim,
+that marking N/A would launder a real deferral, is a judgment about the ledger's semantics rather
+than a code claim, so it is out of this class's scope.
+
+
 **A figure inside a code comment is a previous author's assertion, not a
 measurement - and naming the file satisfies the provenance gate anyway**
 
