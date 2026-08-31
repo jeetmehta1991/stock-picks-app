@@ -792,6 +792,30 @@ class BacktestEngine:
         import os as _eo
         import time as _et
         try:
+            # S6-B2387: build the portfolio block DEFENSIVELY. The whole flush is
+            # wrapped in `except Exception`, so anything raising here silently
+            # disables checkpointing - which a first cut of this did, caught by
+            # test_b2148. self.portfolio may not exist when the supervisor thread
+            # fires, and getattr(self.portfolio, ...) guards only the INNER
+            # attribute while the outer access still raises.
+            _pf_obj = getattr(self, "portfolio", None)
+            _pf_block = None
+            if _pf_obj is not None:
+                try:
+                    _pf_block = {
+                        "starting_capital": getattr(_pf_obj, "starting_capital", None),
+                        "cash": getattr(_pf_obj, "cash", None),
+                        "positions": [
+                            {"ticker": p.ticker, "sector": p.sector,
+                             "direction": p.direction,
+                             "entry_date": str(p.entry_date),
+                             "entry_price": p.entry_price, "shares": p.shares,
+                             "last_mark": p.last_mark}
+                            for p in getattr(_pf_obj, "positions", {}).values()]}
+                except Exception as _pexc:
+                    logger.error("S6-B2387: portfolio block NOT serialised (%r) - "
+                                 "the rest of the checkpoint still writes, but this "
+                                 "resume will restart portfolio accounting", _pexc)
             state = {
                 "simulated_day": getattr(self, "_last_sim_day_index", -1),
                 "cells_completed": len(self.closed_trades),
@@ -803,6 +827,11 @@ class BacktestEngine:
                 "open_trades": len(self.open_trades),
                 "timestamp": _et.strftime("%Y-%m-%dT%H:%M:%SZ", _et.gmtime()),
                 "pid": _eo.getpid(),
+                # S6-B2387: portfolio cash and positions were NEVER checkpointed, so
+                # every resume silently reset them to starting_capital with an empty
+                # book. Position carries `shares`, so the Portfolio can serialise
+                # itself - no OpenTrade schema change is needed.
+                "portfolio": _pf_block,
             }
             d = Path(self.output_dir)
             tmp, final = d / "engine_state.json.tmp", d / "engine_state.json"
@@ -856,6 +885,37 @@ class BacktestEngine:
                 "B1076 resume: prior run status=complete; nothing to resume. "
                 "Remove --resume-from-checkpoint flag for fresh run."
             )
+        # S6-B2387: restore portfolio cash + open positions. Absent block means
+        # a pre-B2387 checkpoint; leave the fresh Portfolio and say so, rather
+        # than silently resuming with reset accounting.
+        _pf = state.get("portfolio")
+        if _pf:
+            from backtest.engine.portfolio import Position as _Pos
+            from datetime import date as _d
+            self.portfolio.cash = float(_pf["cash"])
+            self.portfolio.positions = {}
+            for _p in _pf.get("positions", []):
+                _ed = _p["entry_date"]
+                try:
+                    _ed = _d.fromisoformat(str(_ed)[:10])
+                except ValueError:
+                    logger.warning("S6-B2387 resume: position %s has an "
+                                   "unparseable entry_date %r - kept as-is",
+                                   _p.get("ticker"), _p.get("entry_date"))
+                self.portfolio.positions[_p["ticker"]] = _Pos(
+                    ticker=_p["ticker"], sector=_p["sector"],
+                    direction=_p["direction"], entry_date=_ed,
+                    entry_price=float(_p["entry_price"]),
+                    shares=float(_p["shares"]),
+                    last_mark=float(_p["last_mark"]))
+            logger.info("S6-B2387 resume: portfolio restored cash=%.2f "
+                        "positions=%d", self.portfolio.cash,
+                        len(self.portfolio.positions))
+        else:
+            logger.warning("S6-B2387 resume: checkpoint carries NO portfolio "
+                           "block (pre-B2387); cash and positions stay at their "
+                           "starting values - portfolio accounting for this run "
+                           "is NOT continuous across the resume")
         resume_sim_day = int(state.get("simulated_day", 0))
         trades_so_far = int(state.get("trades_so_far", 0))
         if resume_sim_day <= 0:

@@ -24913,6 +24913,182 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         if frag not in fable_text:
             missing.append(f"fable-mode lost [{why}]: {frag!r}")
     for frag, why in (
+        ('as a miss (Phase 5) the moment it is noticed.',
+         "B2382: Standing activation owner directive 20260707  Council"),
+        ('1. **NO UNDER-GENERALIZATION.** When a defect is found, fix the CLASS, not',
+         "B2382: GENERALIZATION MANDATE owner directive 20260718  Coun"),
+        ("2. **Read the LEARNINGS relevant to this turn's task type.** Grep `LEARNINGS.md`",
+         "B2382: Phase 0  RECALL before any analysis or recommendation"),
+        ("to prevent** (B1119: 22 batches of silent doc-sync suspension; Council 236's",
+         "B2382: Phase 1  SCOPE LEDGER the nosilentmiss mechanism"),
+        ('4. Batch cap: ≤3 substantive fixes per batch (Council 201). Larger sets split',
+         "B2382: Phase 3  EXECUTE with the TEST PYRAMID GATE"),
+        ('MEASURED across one session: 24 L-entries stated a generalised rule and **18 were',
+         "B2382: ANCHORTHERULE RULE B1597  L464 CHECKLIST 197 mecha"),
+        ("*Lineage:* B1593's `regime_flip` fix landed on one of only two ROBUST Phase 1B",
+         "B2382: POSTFIX RECHECK RULE B1595  L462 CHECKLIST 196"),
+        ('say the quantity is UNMEASURED - and ticket it as `UNKNOWN - RCA NEEDED` if it',
+         "B2382: TESTEVERYQUANTITY RULE B1605  L470 CHECKLIST 201 m"),
+        ('**EXTENSION (B2019 - L617): a verdict about WHY a population is EMPTY is a causal claim.**',
+         "B2382: NOUNTESTEDCAUSE RULE B1587  L455 HARD mechanically"),
+        ('produces **"gate verdicts"**. So **"0 PASS across 400 combinations" was reported as',
+         "B2382: SPECvsIMPLEMENTATION RULE B1608  L471 CHECKLIST 202"),
+        ('GOOGL / META / TSLA — none of which were in the 381. Overlap: 133. The file held',
+         "B2382: ARTIFACTPROVENANCE RULE B1572  L445 HARD mechanicall"),
+        ('**MEASURED: `#224` - *a gate nobody calls is not enforcement* - was a checklist paragraph plus ten',
+         "B2382: CITING A RULE IS NOT THE RULE RUNNING B1753  L511 CHEC"),
+        ('**MEASURED: `step1_ranking` emitted the HOLDOUT Sharpe as its first field and omitted `is_sharpe`,',
+         "B2382: AN ARTIFACT MUST CARRY THE KEY IT WAS RANKED ON B1820"),
+        ('**MEASURED: both retractions in one turn were consequences asserted without computing.**',
+         "B2382: AN ASSERTED CONSEQUENCE IS A CLAIM  COMPUTE IT B1833"),
+        ('output from the OLD code. The committed doc had been stale for **7 commits to',
+         "B2382: RUN THE CONTROL BEFORE THE EDIT B1974  L607 CHECKLIST"),
+        ('**Mechanically enforced** by `test_b1973_reason_verdict_is_invariant_to_emphasis`',
+         "B2382: A GATE CAN BE RIGHT AND NAME THE WRONG CAUSE B1973  L60"),
+        ('failures: `sharpe or 0.0` reports an UNMEASURABLE Sharpe as a MEASURED zero;',
+         "B2382: A TICKET NAMES A SITE THE CLASS SPANS FILES B1972  L60"),
+        ('skill and the gate script, and not one is defined:** `#187`-`#192` and `#237`.',
+         "B2382: A CITED RULE MAY NOT EXIST  CHECK THE ADDRESS B1971  L"),
+        ('**1,245, not 1,197**, and those rows have no state column, so their OPEN-ness is',
+         "B2382: WHAT A PARSER REJECTS IS THE SET NOBODY AUDITS B1969  L"),
+        ("the tool that answers the question. B1722's bypass, via a false NEGATIVE.",
+         "B2382: AN EVIDENCE VOCABULARYS MISSING KIND IS INVISIBLE B1968"),
+        ('changed their state. **MEASURED: 13 of 62 OPEN rows state a count; 7 name no',
+         "B2382: A COUNT IS NOT A SET B1965  L601 CHECKLIST 280"),
+        ("`#256`'s re-derivation rule: re-running confirms BOTH numbers and resolves",
+         "B2382: TWO NUMBERS FOR ONE NAME  DIFF THE DEFINITIONS NOT THE"),
+        ("**102 of 3,519 reports carried one, 2.9pct.** The next says my block's status is",
+         "B2382: THE GATES OVER YOUR OWN REPORTING ARE THE LEAST VERIFIED"),
+        ('and passing while the required block was absent. **MEASURED: 3,519 substantive',
+         "B2382: A GATE READING THE WRONG WINDOW DOES NOT FAIL LOUDLY  IT"),
+        ('uses `## L` (89 of 502 missed); gate escapes enumerated by one syntactic shape',
+         "B2382: AN ENUMERATION PATTERN ENCODES THE EXAMPLES IN FRONT OF Y"),
+        ("code fence.** B1738's convention - vocabulary in backticks is a MENTION, not a",
+         "B2382: THE ESCAPE IS THE SIDE THAT LETS A TURN THROUGH B1948"),
+        ('text is at LINE 611, inside `L126`** - and the mis-citation reached ticket rows,',
+         "B2382: A CITATION IS A CLAIM WITH AN ADDRESS B1945  L595 CHEC"),
+        ('passes. **MEASURED: 20 of 41 gates are fire-only.**',
+         "B2382: A FIREONLY CORPUS NEVER PROVES A GATE CAN STAY QUIET B1"),
+        ('**L592 says count the sites and pin the count. I did both and they disagreed:**',
+         "B2382: PIN THE CODE THAT MEASURED IT NOT A FRESH IMPLEMENTATION"),
+        ('strip in one launch detector and not its sibling; B1936 the guard on one file',
+         "B2382: THE UNIT OF THE CHANGE WAS SMALLER THAN THE UNIT OF THE D"),
+        ("identical for a TRIGGER. L588's shape, two batches after L588.",
+         "B2382: A DOCSTRING IS DOCUMENTATION THE MARKER LIST IS THE PROG"),
+        ('**`EXIT=127 CUBE_ROWS=ABSENT` on one run, `EXIT=0` with 8,581 and 10,921 rows on',
+         "B2382: AN OUTCOME DIFFERENCE IS NOT EVIDENCE ABOUT CONTENT B192"),
+        ('nothing.** The claim was *"the existing 26 are stale"*; the control asked *"can',
+         "B2382: A CONTROL MUST TAKE THE SAME PATH AS THE CLAIM B1918  L"),
+        ('after probes found the producers alive; B1494 reverted six more.',
+         "B2382: AN EXCLUSION REGISTER DECAYS IN THE SAFELOOKING DIRECTIO"),
+        ('**Deciding whether to add a rule to a gate, I measured "11 of 41 firings, 27pct"',
+         "B2382: A METRIC THAT COUNTS THE WRONG THING ARRIVES PREARMOURED"),
+        ('- `#136` has a sibling: **an addition can fail not by being useless but by',
+         "B2382: A GATE WITH A CHILLING EFFECT ON THE RECORD IS WORSE THAN"),
+        ('explaining the fix** - ~11th instance of a gate matching its own documentation,',
+         "B2382: A TRANSFORM ON AN ASSERTIONS HAYSTACK CAN TURN IT GREEN"),
+        ('**MEASURED: a harvester ranked 192 strategies by mean pnl and put one first at',
+         "B2382: A RANKING IS A CLAIM ABOUT ORDER AND ONE ROW CAN INVERT"),
+        ('**MEASURED: four attempts to index the ledger, three failed, each returning a',
+         "B2382: A CORPUS WRITTEN FOR HUMANS BREAKS TOOLS OVER IT B1895"),
+        ('**MEASURED: a pin whose docstring says the set "cannot GROW" tested two of the',
+         "B2382: A GUARDS PROMISE IS ONLY AS WIDE AS ITS DETECTOR B1893"),
+        ('**MEASURED: a row carried "14 gates with no seam" for batches; the world said',
+         "B2382: A TICKETS NUMBERS ARE AS PERISHABLE AS A RESPONSES B18"),
+        ("**MEASURED: a launch-turn gate confirmed the cron's state-file path matched the",
+         "B2382: VERIFYING A MONITORS PLUMBING IS NOT VERIFYING ITS PERCE"),
+        ('**MEASURED: I verified a fixture was invalid Python in a bash heredoc, embedded',
+         "B2382: A LITERALS VALUE DEPENDS ON THE PATH IT TRAVELLED B1884"),
+        ('**MEASURED: a gate blocked three consecutive turns. I checked the match, found',
+         "B2382: BEING RIGHT ABOUT THE CONTENT IS NOT BEING RIGHT ABOUT TH"),
+        ('**MEASURED: I told the owner, as CAUSALLY CONFIRMED, that demand pruning',
+         "B2382: A RUN ON THE WRONG INTERPRETER DOES NOT CRASH B1878  L5"),
+        ('**MEASURED: fixing 3 markers that matched their own negation, I word-bounded',
+         "B2382: A STRICTER RULE IS A DIFFERENT RULE FOR MEMBERS IT WAS"),
+        ('**MEASURED: a row marked EXECUTED claims the migration tagged every inferred',
+         "B2382: AN AUDIT SCOPED TO OPEN ROWS CANNOT FIND A FALSE CLAIM IN"),
+        ('**MEASURED: `scan_bulk_process_kill` blocked the very turn that shipped it**, on',
+         "B2382: A TEXTSCANNING GATE TRIPS ON ITS OWN PROOF B1867  L569"),
+        ('**MEASURED: I watched a 200-ticker run for fires with `[0-9]+/200 passed`, got',
+         "B2382: AN EMPTY SEARCH RESULT PROVES NOTHING UNTIL THE PATTERN I"),
+        ('**MEASURED: a ticket reported one defect in `(?<!\\d)[.;](?!\\d)`. I fixed the',
+         "B2382: A TICKET NAMES ONE GUARD THE EXPRESSION HAS TWO B1859"),
+        ('**MEASURED: a three-arm probe returned 890.7 / 890.6 / 890.6 seconds and the',
+         "B2382: EVERY CHECK PASSED AND THE RUN DID NOTHING B1854  L566"),
+        ('**MEASURED: I recommended raising `DEMAND_PRUNING_WARMUP` from a runbook table',
+         "B2382: CHECKING THE VALUE IS NOT READING THE CODE B1852  L565"),
+        ('**MEASURED: four long jobs launched, zero monitors armed - and I did not forget.',
+         "B2382: A MECHANICAL DIRECTIVE TAKES DOIT OR ASK NOT AN EXPLANA"),
+        ('**MEASURED: the fail-arm proof for the control-character gate was defeated by the control-character',
+         "B2382: THE PROOF IS ITSELF A PROBE B1840  L562 CHECKLIST 226"),
+        ("**MEASURED while replacing `#201`'s mechanism: three bugs, none visible on reading, two of which",
+         "B2382: A SILENT GATE AND A CORRECT ONE ARE THE SAME OBSERVATION"),
+        ('**Five instances of one class, each patched alone, so the class stayed open:** `#225` fired on an',
+         "B2382: ANYVSEACH PRIMITIVE B1751  L510 CHECKLIST 234 mech"),
+        ('**MEASURED: `EXECUTION_QUEUE.md` is an APPEND LOG - 823 rows, 721 tickets.** Closing a ticket appends',
+         "B2382: COUNT ENTITIES NOT ROWS  AND NEVER WRITE A DEFAULT BRAN"),
+        ('**MEASURED: `#270` declares *"tickets, documents, or CODE"* and its gate fired on 2 of 10 realistic',
+         "B2382: NAMING AN ENFORCER IS NOT BEING ENFORCED  CHECK IT COVER"),
+        ('**MEASURED: I read 20 of 141 rows and projected. Sample 10pct complete, population 72pct - wrong',
+         "B2382: NO HALF MEASURES  READ IT END TO END B1794  L544 CHEC"),
+        ('**MEASURED: 17/20 = 85pct overall, 0/3 = 0pct on the classes that matter.** The classifier defaults',
+         "B2382: SCORE ON THE MINORITY CLASS NOT ON ACCURACY B1793  L54"),
+        ('**MEASURED: hand-reading 20 rows gave 2 complete, 17 open work, 1 misclassified.** Four classifiers',
+         "B2382: A CLASSIFIER INHERITS YOUR MODEL OF THE DATA B1792  L54"),
+        ('**MEASURED: four classifiers, hand-checked samples failing 3-of-4 then 3-of-5.** The rule *two',
+         "B2382: STOP AT THE SECOND FAILED HANDCHECK B1791  L541 CHECK"),
+        ('**MEASURED: of 148 rows naming no artifact, 138 belong to batches whose commit touched NO CODE.**',
+         "B2382: AN ANALYSIS ROW HAS NO CODE TO VERIFY B1790  L540 CHEC"),
+        ('**Mechanically enforced** by scripts/verify_build_claims.py (LANDED requires the named artifact to exist) and the A1-ruling vocabulary gates.',
+         "B2382: PROMOTION NEEDS A BATCHSPECIFIC ARTIFACT B1788  L539"),
+        ('**MEASURED: of 134 build-claiming tickets in 48h - 54 LANDED, 0 MISSING, 79 NOT_CHECKABLE.**',
+         "B2382: A BUILD CLAIM MUST NAME ITS ARTIFACT B1787  L538 CHECK"),
+        ('fences so documenting a defect cannot trip its own gate (B1781) - but a table belongs in a fence,',
+         "B2382: A RESPONSE GATE MUST NOT ASSUME HOW THE RESPONSE IS FORMA"),
+        ('**MEASURED: the gate built to stop bad arithmetic blocked my next turn WITH bad arithmetic.** It',
+         "B2382: PROVE A RESPONSE GATE ON A REALISTIC RESPONSE B1780  L5"),
+        ('**MEASURED: "388 CLOSED / 149 DONE / 96 OPEN ... 261 of 649" - three of SEVEN classes against a',
+         "B2382: SHOW EVERY CLASS OR CITE NO TOTAL B1779  L534 CHECKLIS"),
+        ('may never write it. Ledger today: **388 CLOSED / 149 DONE / 96 OPEN - 261 of 649 not verified.**',
+         "B2382: DONE IS SELFREPORTED CLOSED IS VERIFIED AGAINST CODE B"),
+        ('**MEASURED: I reported "271 closed in 48h"; the real figure is 13.** I computed',
+         "B2382: A DERIVED COUNT MUST NAME AND TEST ITS ASSUMPTION B1777"),
+        ('**MEASURED: 6 of 21 open enforcement tickets described a world that no longer existed** - and none',
+         "B2382: REDERIVE A TICKETS NUMBER BEFORE WORKING IT B1776  L5"),
+        ('**MEASURED: I explained a rho with a defect from a different dataset.** The persistence gap was real',
+         "B2382: PRINT THE SAMPLE IDENTIFIER BEFORE JOINING TWO MEASUREMEN"),
+        ('**MEASURED: writing any file exempted a turn from the uncosted-probe gate**, because `file_path` is',
+         "B2382: INSPECTION EVIDENCE COMES FROM READS NEVER FROM WRITES"),
+        ('**MEASURED: I shadowed `_read_entries` three batches after building the test that forbids it.** The',
+         "B2382: HARDEN THE EXEMPTION NOT JUST THE TRIGGER B1773  L528"),
+        ('**MEASURED on 217,724 trades: 3 of 26 exits fire a reason unrelated to their own name**, 1 shows a',
+         "B2382: MEASURE DEGRADED EXITS A HANDMAINTAINED LIST GOES STALE"),
+        ('**MEASURED: `next_pivot_target` was 100pct silent-fallback for ELEVEN QUARTERS** (5,050 trades)',
+         "B2382: A SILENT FALLBACK MAKES ONE NAME INTO TWO EXITS B1771"),
+        ('**MEASURED: the `-0.8` IS/OOS inversion is TWO defects.** Holding the exit fixed moved rho from',
+         "B2382: DECOMPOSE A POOLED CORRELATION WITHIN GROUPS B1770  L52"),
+        ('Priority is its own column (`P0/P1/P2`). **Every non-terminal class states WHY, and placeholders are',
+         "B2382: THE QUEUE HAS A CLOSED VOCABULARY AND EVERY TURN UPDATES"),
+        ('field for it.** MEASURED: having told the owner a ticket was filed *"with no reason attached"* and',
+         "B2382: CHECK THE RECORD CAN STORE THE DISTINCTION YOU DREW B176"),
+        ('**`#245` was written one batch ago and violated immediately.** It said *"commit message"*; the class',
+         "B2382: NAME THE CLASS AFTER THE MECHANISM NOT THE INCIDENT B17"),
+        ('"chosen FREELY per row".** L515 said *encode the stem* - correct for `_MISS_STEMS`. **The opposite',
+         "B2382: STEMS AND WHOLE WORDS NEED OPPOSITE MATCHERS B1767  L52"),
+        ('**MEASURED: `require_each` existed from B1751 and two fresh any-vs-each defects shipped in the two',
+         "B2382: AVAILABILITY IS NOT ADOPTION B1763  L519 CHECKLIST 24"),
+        ('**MEASURED, which is why this is a rule and not a preference:** the B1761 section asserts *"every',
+         "B2382: EVERY RULE YOU ADD SHIPS WITH ITS OWN ENFORCER B1762  L"),
+        ("**MEASURED: the only `rng.` in the transcript was the gate's OWN message**, which quotes",
+         "B2382: A GATES OWN DIAGNOSTIC IS NOT EVIDENCE AND A SEAM MUST"),
+        ('**Mechanically enforced** by scripts/gate_incident_corpus.py and test_b1762_every_scan_gate_has_a_corpus_entry.',
+         "B2382: GATECONSTRUCTION RULES B1748B1749  L509 CHECKLIST 2"),
+        ('B1743 changed this hook to emit the full skill. It shipped green and did NOTHING for two sessions',
+         "B2382: SILENTFALLBACK RULE B1744  L508 CHECKLIST 232 PROVE"),
+        ('**TICKET COUNTS BY GROUP - EVERY TURN (B1803 - CHECKLIST #274, owner directive 2026-08-21).**',
+         "B2382: Phase 6  ENDOFTURN SWEEP CHECKLIST 67  HARD RULE n"),
+        ("PROSE-ONLY: an INDEX of historical failures - each entry's enforcement lives with its own rule; gating the index would gate a table of contents.",
+         "B2382: Failure modes this skill exists to prevent lineage"),
         ("prove the ARTIFACT can CONTAIN the match", "L723/B2406: a negative is only as good as the haystack"),
         ("re-ask whether the work is owed", "L619/B2460: a repeating block is evidence about the classification"),
         ("answers the measurement in front of you", "L503/B2459: a remedy can miss the question"),
@@ -25241,7 +25417,9 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # 128 -> 129 at B2459 (the L503 remedy-misses-the-question fragment).
     # 129 -> 130 at B2460 (the L619 owed-vs-blocked fragment).
     # 130 -> 131 at B2406 (the L723 haystack fragment).
-    assert len(gutted) == 131, gutted
+    # 131 -> 219 at B2382 (S6-B2317 + S6-B2382: every remaining section
+    # rule in the always-read skill now carries a fragment pin).
+    assert len(gutted) == 219, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -28692,6 +28870,85 @@ def test_b2450_tightening_over_a_backlog_rule_survives_in_the_skill():
     assert "SKIPPED" in vpc.terminal_for("1_cube_sanity"), (
         "the tightening leaked onto the AUTO steps; 9b describes a change "
         "scoped to steps 5-8 only")
+
+
+def test_b2387_portfolio_survives_a_resume_round_trip():
+    """S6-B2387: cash and open positions used to reset silently on resume.
+
+    MEASURED before the fix: `self.portfolio = Portfolio(...)` is built in
+    __init__ and appeared nowhere in the resume path, so every resume restarted
+    accounting at starting_capital with an empty book. The ticket framed the
+    fix as needing a new OpenTrade field or a separate checkpoint - neither is
+    required, because Position already carries `shares`, so the Portfolio can
+    serialise itself.
+
+    This round-trips the state through the same JSON shape the checkpoint
+    writes, and asserts the pre-B2387 checkpoint (no portfolio block) does NOT
+    silently look restored.
+    """
+    import json
+    from datetime import date
+
+    from backtest.engine.portfolio import Portfolio, Position
+
+    pf = Portfolio(starting_capital=100_000.0)
+    pf.cash = 61_234.56
+    pf.positions = {
+        "AAPL": Position(ticker="AAPL", sector="Tech", direction="long",
+                         entry_date=date(2024, 3, 1), entry_price=180.0,
+                         shares=100.0, last_mark=190.0),
+        "MSFT": Position(ticker="MSFT", sector="Tech", direction="long",
+                         entry_date=date(2024, 4, 2), entry_price=400.0,
+                         shares=25.0, last_mark=410.0),
+    }
+
+    # the exact block the writer emits
+    block = {
+        "starting_capital": pf.starting_capital,
+        "cash": pf.cash,
+        "positions": [
+            {"ticker": p.ticker, "sector": p.sector, "direction": p.direction,
+             "entry_date": str(p.entry_date), "entry_price": p.entry_price,
+             "shares": p.shares, "last_mark": p.last_mark}
+            for p in pf.positions.values()],
+    }
+    block = json.loads(json.dumps(block))   # must survive JSON, not just Python
+
+    restored = Portfolio(starting_capital=100_000.0)
+    assert restored.cash == 100_000.0 and not restored.positions, (
+        "a fresh Portfolio must start clean - this is the state a pre-B2387 "
+        "resume silently kept")
+
+    restored.cash = float(block["cash"])
+    for p in block["positions"]:
+        restored.positions[p["ticker"]] = Position(
+            ticker=p["ticker"], sector=p["sector"], direction=p["direction"],
+            entry_date=date.fromisoformat(p["entry_date"][:10]),
+            entry_price=float(p["entry_price"]), shares=float(p["shares"]),
+            last_mark=float(p["last_mark"]))
+
+    assert restored.cash == pf.cash
+    assert set(restored.positions) == {"AAPL", "MSFT"}
+    # shares is the field whose absence on OpenTrade made the ticket think the
+    # notional was unrecoverable - assert it survives, since it is the whole
+    # reason this route works
+    assert restored.positions["AAPL"].shares == 100.0
+    assert restored.positions["MSFT"].entry_date == date(2024, 4, 2)
+
+    # must-FIRE arm: the writer must actually emit the block, and the loader
+    # must warn rather than silently proceed when it is absent
+    from pathlib import Path
+    src = (Path(__file__).resolve().parents[2] / "backtest" / "engine"
+           / "backtest.py").read_text(encoding="utf-8")
+    assert '"portfolio": _pf_block,' in src, (
+        "the checkpoint no longer writes portfolio state")
+    assert '_pf_obj = getattr(self, "portfolio", None)' in src, (
+        "the portfolio block is no longer built defensively - the flush is "
+        "wrapped in `except Exception`, so a raise here silently disables "
+        "checkpointing (this is what test_b2148 caught on the first cut)")
+    assert "NOT continuous across the resume" in src, (
+        "the absent-block branch no longer warns - a pre-B2387 checkpoint "
+        "would resume with reset accounting and say nothing")
 
 
 def test_b2405_leg_rate_is_measured_over_its_own_days():
