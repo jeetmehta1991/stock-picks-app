@@ -17385,9 +17385,22 @@ Compliance failure against CHECKLIST item 26 read with the SEARCH-THE-CLASS-NOT-
 rule already in the skill (L635/B2135). No new item and no new skill clause (#136): both rules
 existed and both were skipped; the failure is compliance, not coverage.
 Mechanism: **DETECTION is JUDGMENT-ONLY** - no scan knows an explanation is a re-derivation of
-documented prior art. **Durability IS taken**: the retraction and the 42.9pct measurement are in
-the S6-B2427 ledger row and the B2427 commit message, and the measurement is reproducible from
-the committed artifacts.
+documented prior art, because such a re-derivation is usually TRUE and merely weaker than the
+rule it restates, so nothing in the text distinguishes it. **Durability IS taken**: the
+retraction and the 42.9pct measurement are in the S6-B2427 ledger row and the B2427 commit
+message, and the measurement is reproducible from the committed artifacts.
+**AMENDED (B2428) - the durability half is now MECHANISED, and this line was stale within the
+hour (L639: a claim inside an entry decays while staying quotable).** I first closed this entry
+with judgment-only on BOTH halves; the turn gate pushed back, and the push was right - **a
+phrase is not a mechanism**, and one was available that I had not looked for. `test_b2427
+_subset_safety_prior_art_survives_in_the_plan` asserts the plan retains the invariant *"the rule
+is SUBSET-SAFETY"*, its actionable consequence *"produces trades R5 never took"*, and that the
+add-fires line still names EMA **span** - the exact example this entry records me violating.
+Proven to fail on BOTH arms (#226) with the plan restored byte-identical. **The general form,
+which is the reusable part: when a lesson's own remedy is "search for prior art", the mechanisable
+half is not the searching - it is keeping the PRIOR ART from vanishing**, because a rule that
+disappears guarantees the next reader re-derives the weaker version with nothing to correct them.
+Pin the source that would have prevented the miss, not the habit that failed to consult it.
 **Retroactive sweep (#237): every "this is free / no engine needed" claim I made this turn.** Four.
 (1) **Integer count-threshold TIGHTENING** - raising an `>= N` bar strictly removes fires, so
 subset-safe: **SOUND**, and it is the family's actual tunable. (2) **Exit re-selection among the
