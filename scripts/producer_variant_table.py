@@ -217,7 +217,7 @@ fires =  ( P7  OR  P8 )  AND  P9
 """,
         "params": [
             {"id": "P1", "producer": "_per_ticker_persistence (persistence precompute)",
-             "param": "REPORTING_LAG_DAYS", "production": 45,
+             "param": "REPORTING_LAG_DAYS", "production": 45, "sweep_levels": [],
              "band": [45],
              "free_band": [], "resim_band": [45],
              "subset_safe": False, "status": "NOT-SWEPT-BY-DESIGN",
@@ -225,7 +225,7 @@ fires =  ( P7  OR  P8 )  AND  P9
              "type": "int", "engine_implemented": True,
              "derivation": "NEW ROW - absent from the pre-B2467 table entirely, so the #182 denominator read 7 when the inventory is 9. The SEC 13F filing deadline is 45 days after quarter end; this is the PIT guard that keeps a backtest from seeing a filing before it existed. NOT SWEPT: shortening it is lookahead and lengthening it only discards real information. NOT PERSISTED: the cube stores this step's OUTPUT (committed_growth_holders), never its inputs, so the value cannot be recomputed by re-filtering an existing cube. Resim in BOTH directions - monotonicity is irrelevant here, availability is what decides."},
             {"id": "P2", "producer": "_per_ticker_persistence (persistence precompute)",
-             "param": "positive_shares_floor", "production": 0,
+             "param": "positive_shares_floor", "production": 0, "sweep_levels": [],
              "band": [0],
              "free_band": [], "resim_band": [0],
              "subset_safe": False, "status": "NOT-SWEPT-BY-DESIGN",
@@ -233,7 +233,7 @@ fires =  ( P7  OR  P8 )  AND  P9
              "type": "int", "engine_implemented": True,
              "derivation": "NEW ROW - also absent before. Collapses a fund's multiple share classes into one quarterly position and drops closed positions. NOT SWEPT: a floor above 0 would silently redefine 'holds the stock' mid-chain. NOT PERSISTED: the cube stores this step's OUTPUT (committed_growth_holders), never its inputs, so the value cannot be recomputed by re-filtering an existing cube. Resim in BOTH directions - monotonicity is irrelevant here, availability is what decides."},
             {"id": "P3", "producer": "_per_ticker_persistence (persistence precompute)",
-             "param": "quarterly_gap_tolerance_days", "production": "70..100",
+             "param": "quarterly_gap_tolerance_days", "production": "70..100", "sweep_levels": [],
              "band": ["70..100"],
              "free_band": [], "resim_band": ["70..100"],
              "subset_safe": False, "status": "NOT-SWEPT-BY-DESIGN",
@@ -241,7 +241,7 @@ fires =  ( P7  OR  P8 )  AND  P9
              "type": "int", "engine_implemented": True,
              "derivation": "data hygiene against 13F filing jitter, not an edge knob: it decides what counts as a consecutive quarter, and moving it changes chain lengths for reasons unrelated to the thesis. NOT PERSISTED: the cube stores this step's OUTPUT (committed_growth_holders), never its inputs, so the value cannot be recomputed by re-filtering an existing cube. Resim in BOTH directions - monotonicity is irrelevant here, availability is what decides."},
             {"id": "P4", "producer": "_per_ticker_persistence (persistence precompute)",
-             "param": "min_consecutive_quarters", "production": 4,
+             "param": "min_consecutive_quarters", "production": 4, "sweep_levels": [2, 3, 6, 8],
              "band": [2, 3, 4, 6, 8],
              "free_band": [], "resim_band": [2, 3, 4, 6, 8],
              "subset_safe": False, "status": "UNTESTED",
@@ -249,7 +249,7 @@ fires =  ( P7  OR  P8 )  AND  P9
              "type": "int", "engine_implemented": True,
              "derivation": "Yan-Zhang 2009 persistence spans multiple quarters but the canonical count varies; 4 is this repo's choice. Band brackets production BOTH ways per B1691. NOT PERSISTED: the cube stores this step's OUTPUT (committed_growth_holders), never its inputs, so the value cannot be recomputed by re-filtering an existing cube. Resim in BOTH directions - monotonicity is irrelevant here, availability is what decides. AND NOTE the fallback: tightening this can drive committed_growth_holders to 0, which switches P8 ON and can ADD fires - so it is not even monotone at the producer level."},
             {"id": "P5", "producer": "_per_ticker_persistence (persistence precompute)",
-             "param": "growth_lookback_quarters", "production": 4,
+             "param": "growth_lookback_quarters", "production": 4, "sweep_levels": [2, 3, 6, 8],
              "band": [2, 3, 4, 6, 8],
              "free_band": [], "resim_band": [2, 3, 4, 6, 8],
              "subset_safe": False, "status": "UNTESTED",
@@ -257,7 +257,7 @@ fires =  ( P7  OR  P8 )  AND  P9
              "type": "int", "engine_implemented": True,
              "derivation": "the window P6 measures growth across. COLLINEAR WITH P4 BY CONSTRUCTION - P4 gates which funds reach P5 and both default to 4, so a joint sweep must report their correlation rather than crediting either alone. NOT PERSISTED: the cube stores this step's OUTPUT (committed_growth_holders), never its inputs, so the value cannot be recomputed by re-filtering an existing cube. Resim in BOTH directions - monotonicity is irrelevant here, availability is what decides."},
             {"id": "P6", "producer": "_per_ticker_persistence (persistence precompute)",
-             "param": "growth_multiple", "production": 1.100,
+             "param": "growth_multiple", "production": 1.100, "sweep_levels": [1.0, 1.25, 1.5],
              "band": [1.0, 1.1, 1.25, 1.5],
              "free_band": [], "resim_band": [1.0, 1.1, 1.25, 1.5],
              "subset_safe": False, "status": "UNTESTED",
@@ -265,7 +265,7 @@ fires =  ( P7  OR  P8 )  AND  P9
              "type": "int", "engine_implemented": True,
              "derivation": "1.10 = '+10pct over the window'. 1.0 is the meaningful floor (ANY growth) and is included deliberately - it sits below production, and B1691's lesson is that the winning level is often one the old floor excluded. NOT PERSISTED: the cube stores this step's OUTPUT (committed_growth_holders), never its inputs, so the value cannot be recomputed by re-filtering an existing cube. Resim in BOTH directions - monotonicity is irrelevant here, availability is what decides."},
             {"id": "P7", "producer": "strat_institutional_committed_growth_long",
-             "param": "min_committed_growth", "production": 3,
+             "param": "min_committed_growth", "production": 3, "sweep_levels": [],
              "band": [1, 2, 3, 5, 11, 142],
              "free_band": [3, 5, 11, 142], "resim_band": [1, 2],
              "subset_safe": None, "status": "UNTESTED",
@@ -273,7 +273,7 @@ fires =  ( P7  OR  P8 )  AND  P9
              "type": "int", "engine_implemented": True,
              "derivation": "PERSISTED, so this row splits PER LEVEL - which the pre-B2467 binary field could not express and which is why the old factorial read 31,500. Raising the bar (5, 11, 142) selects a STRICT SUBSET of rows already in the cube and grades FREE; lowering it (1, 2) admits rows the cube never contains and needs the engine. The fallback does NOT break this: raising the primary threshold leaves committed_growth_holders unchanged, so rows at 0 still take P8 identically and rows at 3-4 simply stop firing. Levels are the measured IS deciles over 1,275 IS rows."},
             {"id": "P8", "producer": "strat_institutional_committed_growth_long",
-             "param": "fallback_min_increased", "production": 5,
+             "param": "fallback_min_increased", "production": 5, "sweep_levels": [],
              "band": [2, 3, 5, 6],
              "free_band": [5, 6], "resim_band": [2, 3],
              "subset_safe": None, "status": "UNTESTED",
@@ -281,7 +281,7 @@ fires =  ( P7  OR  P8 )  AND  P9
              "type": "int", "engine_implemented": True,
              "derivation": "the B1230 fallback, live wherever the persistence precompute has no row (~4pct of fired rows). PERSISTED, so the same per-level split as P7: raising it only removes fires and grades FREE; 2 and 3 add fires and need resim. Levels are the measured IS deciles of institutional_increased."},
             {"id": "P9", "producer": "compute_ema_sma",
-             "param": "span", "production": 200,
+             "param": "span", "production": 200, "sweep_levels": [9, 20, 50, 100, 150],
              "band": [9, 20, 21, 50, 100, 150, 200],
              "free_band": [], "resim_band": [9, 20, 21, 50, 100, 150, 200],
              "subset_safe": False, "status": "UNTESTED",
@@ -328,6 +328,19 @@ def validate_spec(spec: dict) -> list[str]:
         if set(map(str, _fr)) & set(map(str, _rs)):
             errs.append(f"{_p['id']}: a level is in BOTH free_band and "
                         "resim_band")
+    # S6-B2474: a scheduled sweep level must EXIST in the band, and must not
+    # repeat production - the OAT baseline already covers production, so a
+    # duplicate there would silently inflate the config count.
+    for _p in spec["params"]:
+        _sl = _p.get("sweep_levels")
+        if _sl is None:
+            continue
+        _extra = [x for x in _sl if str(x) not in [str(y) for y in _p["band"]]]
+        if _extra:
+            errs.append(f"{_p['id']}: sweep_levels {_extra} are not in band")
+        if any(str(x) == str(_p["production"]) for x in _sl):
+            errs.append(f"{_p['id']}: sweep_levels repeats production "
+                        "- the OAT baseline already covers it")
     b = spec.get("baseline")
     if not isinstance(b, dict):
         errs.append("SPEC has no `baseline` block - main() reads it for the "
@@ -354,8 +367,8 @@ def table_a(spec: dict) -> list[str]:
     # it was carried on every params row and asserted by test_b1510 IN THE
     # SPEC - never in the RENDERED table, so the owner-locked standard has
     # shipped a column short since it landed.
-    rows = ["| ID | producer | parameter | production | band tested | subset-safe | status | evidence | why this band |",
-            "|---|---|---|---|---|---|---|---|---|"]
+    rows = ["| ID | producer | parameter | production | band tested | subset-safe | status | sweep (OAT) | evidence | why this band |",
+            "|---|---|---|---|---|---|---|---|---|---|"]
     for p in spec["params"]:
         band = ", ".join(_fmt(b) for b in p["band"]) or "-"
         # S6-B2467: subset-safety is PER LEVEL, not per parameter. The binary
@@ -370,9 +383,21 @@ def table_a(spec: dict) -> list[str]:
             ss = {True: "YES - cube-gradable, free",
                   False: "NO - needs engine resim",
                   None: "-"}[p["subset_safe"]]
+        # S6-B2474 (owner ruling 2026-08-31: '17 is the feasible design'): the
+        # SWEEP column carries the SCHEDULED one-at-a-time design. `band` stays
+        # what the producer OFFERS - the contract verify_describing_artifacts
+        # checks - so the two claims never collide again (S6-B2472).
+        _swl = p.get("sweep_levels")
+        if _swl is None:
+            _sw = "-"
+        elif not _swl:
+            _sw = "**0 configs** - not swept"
+        else:
+            _sw = "**%d configs**: %s" % (len(_swl),
+                                          ", ".join(_fmt(b) for b in _swl))
         rows.append(f"| {p['id']} | `{p['producer']}` | `{p['param']}` | "
                     f"{_fmt(p['production'])} | {band} | {ss} | **{p['status']}** | "
-                    f"`{p['evidence']}` | {p['derivation']} |")
+                    f"{_sw} | `{p['evidence']}` | {p['derivation']} |")
     return rows
 
 

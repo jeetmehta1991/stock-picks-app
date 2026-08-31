@@ -28961,6 +28961,27 @@ def test_b2467_subset_safety_is_per_level_and_partitions_the_band():
             f"fallback level {dead} is back - MEASURED to retain 13/1/0 rows "
             "of the 46 that reach the fallback arm")
 
+    # S6-B2474 (owner ruling 2026-08-31: "17 is the feasible design"): the
+    # scheduled one-at-a-time sweep is COMPUTED from the rows, never typed.
+    # 1 baseline + one config per non-production level on each swept axis.
+    varied = sum(len(p.get("sweep_levels") or []) for p in spec["params"])
+    assert varied + 1 == 17, (
+        f"the OAT design no longer costs 17 configs (baseline + {varied}); "
+        "the owner ruled 17 and a band edit has moved it")
+    # producer axes are what an engine run buys; the persisted thresholds are
+    # graded free inside each run, so scheduling them would double-count
+    for p in spec["params"]:
+        if p["param"] in ("min_committed_growth", "fallback_min_increased"):
+            assert not p.get("sweep_levels"), (
+                f"{p['id']} is scheduled for its own configs, but it grades "
+                "free inside every run executed at the floor threshold")
+    # span 21 is available (the producer emits it) and must NOT be scheduled -
+    # the b2197 ledger ran it once at sw20 and dropped it everywhere else
+    p9 = next(p for p in spec["params"] if p["param"] == "span")
+    assert 21 in p9["band"] and 21 not in p9["sweep_levels"], (
+        "span 21 must stay in the band (availability) and out of the sweep "
+        "(the run ledger already found it did not earn a config)")
+
     # and the persisted/not-persisted split must hold: only the two strategy
     # thresholds may carry free levels
     free_rows = {p["param"] for p in spec["params"] if p["free_band"]}
