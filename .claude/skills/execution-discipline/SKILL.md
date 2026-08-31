@@ -1736,6 +1736,18 @@ I happened to grep first. **Nothing required that grep.**
 
 ## A FIGURE IN A CODE COMMENT IS AN ASSERTION, NOT A MEASUREMENT (B1908 - L583, CHECKLIST #201)
 
+**WIDENED (B2458): NOT ONLY A FIGURE - ANY CLAIM A COMMENT ASSERTS.** What a gate covers, what an
+escape reaches, what a branch does. MEASURED: across EIGHT consecutive blocked closes I told the
+owner *"the .stop_exempt hatch does not reach scan gates"*, citing a line number that is a COMMENT
+saying exactly that; I never opened the function. Reading it confirmed the claim - the check_ loop
+returns before the sentinel is read - so **the conclusion was right and the method was wrong eight
+times over.** A comment that agrees with you is the most comfortable evidence there is, and the
+heading's word *FIGURE* is why this never felt like the rule's subject.
+**And the half that cost more: REPEATING A REFUSAL IS NOT RE-DERIVING IT.** The two-failed-attempts
+rule was eight repetitions behind me. **When you find yourself restating the same position to the
+same reader, that is the trigger to re-run its cheapest disproof** - restatement is not evidence,
+and the position feeling settled is what makes the disproof feel unnecessary.
+
 **I twice quoted a Spearman of -0.779/-0.865 as measured and used it to argue a
 result was "the expected shape". It lives in a comment.** I never ran it. The
 turn gate caught it - a COMPLIANCE FAILURE against `#201`, not a gap in it.

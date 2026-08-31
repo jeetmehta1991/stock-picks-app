@@ -24913,6 +24913,7 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         if frag not in fable_text:
             missing.append(f"fable-mode lost [{why}]: {frag!r}")
     for frag, why in (
+        ("the trigger to re-run its cheapest disproof", "L583/B2458: repeating a refusal is not re-deriving it"),
         ("`-m` appearing at all is wrong", "L520/B2457: the bright line is a FORM, not a property"),
         ("second instance L623/B2122", "the B1993d bullet must name both instances"),
         ("presence-grep must assert its match count",
@@ -25233,7 +25234,8 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # arm - if a doc edit silently drops fragments, the gutted count falls and
     # this assertion catches the shrinkage.
     # 126 -> 127 at B2457 (the L520 form-not-property fragment).
-    assert len(gutted) == 127, gutted
+    # 127 -> 128 at B2458 (the L583 restated-position fragment).
+    assert len(gutted) == 128, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
