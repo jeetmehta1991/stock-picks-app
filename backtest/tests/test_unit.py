@@ -24915,6 +24915,8 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
          "L719: field presence is a producer fact - locate the writer"),
         ("Pin the source that would have prevented the miss",
          "L720/B2428: when the remedy is a habit, pin what the habit reaches"),
+        ("A redundancy check has two possible subjects and they answer",
+         "B2431/L720: name whether you compared the lesson's subject or remedy"),
         ("OBJECT of the request",
          "L624: a skill named as the subject is still triggered"),
         ("ASSERT THE ANCHOR BEFORE YOU REPLACE IT",
@@ -25203,10 +25205,11 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # B2316: 54 -> 88 with the S6-B2245 batch-1 fragments; 118 -> 119 at
     # B2413b (the L718 leg-label fragment); 119 -> 120 at B2423b (the L719
     # producer-vs-consumer fragment); 120 -> 121 at B2430 (the L720 pin-the-
-    # source fragment). This number is the pin's own must-FIRE arm - if a doc
-    # edit silently drops fragments, the gutted count falls and this assertion
-    # catches the shrinkage.
-    assert len(gutted) == 121, gutted
+    # source fragment); 121 -> 122 at B2432 (the subject-vs-remedy fragment).
+    # This number is the pin's own must-FIRE arm - if a doc edit silently drops
+    # fragments, the gutted count falls and this assertion catches the
+    # shrinkage.
+    assert len(gutted) == 122, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 

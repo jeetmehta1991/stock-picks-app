@@ -763,6 +763,15 @@ record, and this file is what actually gets read at the start of every turn.
    If an existing item should have caught the miss, that is a COMPLIANCE failure
    and belongs in the L-entry — but see the ratchet warning: when three or more
    L-entries accumulate with NO checklist addition, re-examine them AS A BATCH.
+   **AND WHEN YOU DECLINE TO PROMOTE A RULE, NAME WHICH CANDIDATE YOU COMPARED
+   (B2431/L720).** A redundancy check has two possible subjects and they answer
+   differently: the lesson's SUBJECT (what the miss was about) and the lesson's
+   REMEDY (what the fix teaches). MEASURED: I declined promotion three times on
+   the ground that the rules were already covered — true of the subject
+   (consulting prior art, covered twice over) and false of the remedy (where to
+   find a durability mechanism when the fix is a habit, covered nowhere). **A
+   miss whose subject is well-trodden is exactly where a novel remedy hides**,
+   because the familiarity of the subject is what makes the decline feel safe.
    Between 2026-07-23 and 2026-08-04 that ratchet produced 8 L-entries and 0
    checklist items over ~90 batches (L271); four were genuinely new classes.
 3. **Memory write** if the lesson is a standing owner-behavior rule
