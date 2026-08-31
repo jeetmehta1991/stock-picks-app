@@ -2675,6 +2675,19 @@ construction that ran `git reset --hard` at B1765; it was benign because the pay
 which is luck about the content, not care about the form. Sweep: 1 of ~12 commits that session used
 `-m`, and it was the shortest message - the lapse tracks BREVITY, not risk.
 
+**INSTANCE 5 (B2457) - THE ONE THAT WEARS THE SAFE FORM'S CLOTHING.** `git commit -q -m
+"$(cat <<'MSG' ... MSG)"` CONTAINS the quoted heredoc this rule prescribes, wrapped in `$(...)`
+inside a double-quoted argument where bash substitutes first. **The safe mechanism was present and
+the frame around it made it moot.** B2395's bright line removed the judgment *is this message
+risky?* and I substituted a new one - *does this contain a heredoc?* - the same judgment wearing a
+checklist's clothes. **So the line is a FORM, not a property: the message reaches git through
+`-F -` with the heredoc piped to STDIN. `-m` appearing at all is wrong, whatever follows it.**
+- **STAGE BY EXPLICIT PATH; NEVER `git add -A` (B2457, the cost face).** In this repo `-A` walks
+  thousands of untracked output files: it timed out at 120s, left a staged index and landed no
+  commit. Prior art covers only the CONTENT face - sweeping cache files INTO a commit. The paths
+  are known at edit time, so `-A` buys nothing but blast radius, in content and in wall-clock.
+
+
 
 **THIS RAN.** A commit message written to WARN about destructive commands contained backticked
 examples of them; bash substituted them and **`git reset --hard` executed**, clearing the index and

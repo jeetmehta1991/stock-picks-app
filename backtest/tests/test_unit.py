@@ -24913,6 +24913,7 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         if frag not in fable_text:
             missing.append(f"fable-mode lost [{why}]: {frag!r}")
     for frag, why in (
+        ("`-m` appearing at all is wrong", "L520/B2457: the bright line is a FORM, not a property"),
         ("second instance L623/B2122", "the B1993d bullet must name both instances"),
         ("presence-grep must assert its match count",
          "the check-shaped variant of the sibling-chain rule"),
@@ -25231,7 +25232,8 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # presupposed-population fragment). This number is the pin's own must-FIRE
     # arm - if a doc edit silently drops fragments, the gutted count falls and
     # this assertion catches the shrinkage.
-    assert len(gutted) == 126, gutted
+    # 126 -> 127 at B2457 (the L520 form-not-property fragment).
+    assert len(gutted) == 127, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 

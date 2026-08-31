@@ -11819,6 +11819,43 @@ history this session, which is UNVERIFIED-class evidence about my behaviour, not
 evidence from the repo. It is quoted here as a pattern, not as a measurement - and the rule
 does not depend on it: the bright line holds at any ratio.
 
+**ADDENDUM (B2457): INSTANCE 5, AND IT WEARS THE SAFE FORM'S CLOTHING.** The bright line above was
+written at B2395 - *never `-m`, for any message, of any length* - and I broke it at B2456, in the
+commit recording a DIFFERENT enforcement-layer miss. The construction:
+`git commit -q -m "$(cat <<'EOF' ... EOF)"`.
+**This is the first instance that LOOKS compliant.** Instances 1-4 were a bare string, backticks, a
+grep pattern and `printf`; this one CONTAINS a quoted heredoc, which is the exact remedy the rule
+prescribes - and wraps it in `$(...)` inside a double-quoted argument, where bash substitutes before
+git is reached. **The safe mechanism was present and the unsafe frame around it made it moot.** The
+bright line removed the judgment call *is this message risky?* and I substituted a new one -
+*does this contain a heredoc?* - which is the same judgment wearing a checklist's clothes.
+So the line tightens once more, to a FORM and not a property: the message reaches git through
+`-F -` with the heredoc piped to STDIN. If `-m` appears at all, it is wrong, whatever follows it.
+MEASURED this turn over the session transcript: **59 uses of `git commit -F -`, 2 carrying a
+substitution in a `-m` argument** - both this turn, both the same command, the second a retry of the
+first. A bare `-m` count of 16 is an UPPER BOUND contaminated by mentions, since the skill body
+quoting this very rule sits in the transcript (L557 mention-vs-use); I am not quoting it as a
+measurement.
+**A SECOND MISS IN THE SAME COMMAND, which is why it is recorded here rather than separately:**
+`git add -A && git commit ...` timed out at 120s, because `-A` walks the untracked output
+directories this repo carries by the thousand. The commit did not land, the index was left staged,
+and recovery cost a `git reset` plus a re-stage by explicit path. **Prior art exists and is a
+different face** - LEARNINGS line 525 warns that `git add -A` could sweep cache files INTO a commit,
+a CONTENT hazard; this is the COST face of the same construction, and neither the skill nor the
+checklist carries it. **Stage by explicit path, always** - the paths are known at edit time, so `-A`
+buys nothing but blast radius, in content and in wall-clock.
+Compliance failure against CHECKLIST item 245 read with L520 and L570. No new item (#136): 245
+already forbids the construction and its gate is what caught this one.
+Mechanism: `scan_shell_substitution` EXISTS and FIRED on this instance - the fifth time it has
+caught this class and the fifth time it caught it at turn-END, after the commit. **No pre-commit
+detection is possible** (preflight reads STAGED FILES; an invocation form is not a file), so
+detection stays JUDGMENT-ONLY and durability is the tightened bright line above.
+**Retroactive sweep (#237) of every message-passing form this session:** 59 safe, 2 defective, and
+the 2 are one command retried. **Both prior instances of the `add -A` face:** 1 recorded (line 525,
+content hazard, unpinned), 1 new (this one, cost). The class has no mechanism in either face and
+now has a rule in exactly one place, which is the honest state of it.
+
+
 
 **The rule: when a turn CITES a rule, treat the citation as a checklist item,
 not as evidence of compliance. Apply it to the edit in front of you before
