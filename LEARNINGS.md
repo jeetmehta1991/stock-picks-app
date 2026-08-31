@@ -17401,6 +17401,16 @@ which is the reusable part: when a lesson's own remedy is "search for prior art"
 half is not the searching - it is keeping the PRIOR ART from vanishing**, because a rule that
 disappears guarantees the next reader re-derives the weaker version with nothing to correct them.
 Pin the source that would have prevented the miss, not the habit that failed to consult it.
+**PROMOTED (B2430) - and the promotion corrects my own disposition, twice restated.** I closed
+this entry "incident-specific, belongs only in LEARNINGS" on the #136 anti-theater ground that
+both governing rules already existed. **That was true of the rules I VIOLATED and false of the
+rule this remediation PRODUCED**, which is the general form above: the skill's L548
+two-questions section covers WHETHER to ask the durability question and said nothing about
+WHERE to find an answer when the remedy is a habit. It now carries the bullet, fragment-pinned
+in test_b2123. **The transferable half is the anti-theater test's own failure mode: #136 asks
+whether an addition is redundant, and I ran it against the wrong candidate** - checking the
+lesson's SUBJECT (already covered) instead of the lesson's REMEDY (not covered). When declining
+to promote a rule, name which of the two you compared.
 **Retroactive sweep (#237): every "this is free / no engine needed" claim I made this turn.** Four.
 (1) **Integer count-threshold TIGHTENING** - raising an `>= N` bar strictly removes fires, so
 subset-safe: **SOUND**, and it is the family's actual tunable. (2) **Exit re-selection among the
