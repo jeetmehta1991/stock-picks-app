@@ -10468,6 +10468,20 @@ did not work" rather than "the probe is wrong", I would have loosened a correct 
 
 ### L537
 
+**ADDENDUM (B2471b): A REASON IN THE TITLE IS NOT A `_reason:_`, AND THE DIFFERENCE IS THE ONE THE
+FIELD EXISTS TO CARRY.** I closed a ticket DROPPED and wrote, in the title and body, a full account
+of WHY - the premise was false when written, the outcome had already been reached. It read as
+complete and the gate refused it, correctly. **The `_reason:_` marker is not a formatting tax; it is
+the field that distinguishes dropped-as-MOOT from deprioritised from blocked**, and prose describing
+the situation does not make that distinction - a reader (or a counter) still cannot tell whether
+work remains. Mine was moot: nothing to schedule, no owner ruling owed. **The tell is that I could
+explain the reason fluently and still not have RECORDED it in the place anything reads.** Same shape
+as L725 one artifact down: written where the reader is not.
+Compliance failure against CHECKLIST item 247. No new item and no new mechanism: `scan_queue_vocabulary`
+is the enforcement for this class and it CAUGHT this instance - the gate did its job on the first
+close and named the exact ticket.
+
+
 **I reported seven classes by unioning two rulings whose sets overlapped**
 
 **B1784, owner-caught.** *"You can not say 7 groups while combining the groups of two different sets
