@@ -1,0 +1,8 @@
+{
+  "artifact": "output_r5_merged_1_7",
+  "fires": 1941,
+  "tickers": 464,
+  "holdout_n": 666,
+  "window": "2022-05-05..2026-05-05",
+  "is_n": 1275
+}

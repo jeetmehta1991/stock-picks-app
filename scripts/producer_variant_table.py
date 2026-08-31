@@ -160,6 +160,12 @@ fires            =  ( breaker_bullish )  AND  ( price_above_ema_200 ) [from P6]"
     # help drive higher sharpe"). Every value READ from source; evidence cites
     # the line. The EMA row is P7 and is BANDED, not pinned, on that directive.
     "institutional_committed_growth_long": {
+        # S6-B2465: MEASURED from output_r5_merged_1_7/trade_log.csv this batch,
+        # not recalled. holdout_n 666 and is_n 1275 reproduce the figures recorded
+        # at S6-B2435 and in the B2419 pre-registration exactly.
+        "baseline": {"artifact": "output_r5_merged_1_7", "fires": 1941,
+                     "tickers": 464, "holdout_n": 666,
+                     "window": "2022-05-05..2026-05-05"},
         "gate": "(committed_growth_holders >= 3 OR (committed_growth_holders == 0 "
                 "AND institutional_increased >= 5)) AND (price_above_ema_200)",
         "formula": """=============================== PRODUCER LAYER ===============================
@@ -312,6 +318,18 @@ def validate_spec(spec: dict) -> list[str]:
         errs.append(f"{i} has a Table A row but no formula step")
     if not spec.get("formula"):
         errs.append("SPEC has no `formula` - it is REQUIRED (B1510 standard)")
+    # S6-B2465: validate_spec returned CLEAN for a spec with no `baseline`,
+    # which main() dereferences unconditionally - so the standard 3-section
+    # path CRASHED on a spec this function had just approved. A validator
+    # that passes an input its own caller cannot consume is not validating.
+    b = spec.get("baseline")
+    if not isinstance(b, dict):
+        errs.append("SPEC has no `baseline` block - main() reads it for the "
+                    "R5 baseline line and will raise KeyError")
+    else:
+        for _f in ("artifact", "tickers", "holdout_n", "window"):
+            if _f not in b:
+                errs.append("SPEC baseline missing %r - main() reads it" % _f)
     return errs
 
 
@@ -326,8 +344,12 @@ def _fmt(v) -> str:
 
 
 def table_a(spec: dict) -> list[str]:
-    rows = ["| ID | producer | parameter | production | band tested | subset-safe | status | why this band |",
-            "|---|---|---|---|---|---|---|---|"]
+    # S6-B2465: `evidence` is a REQUIRED Table A field under CHECKLIST #183;
+    # it was carried on every params row and asserted by test_b1510 IN THE
+    # SPEC - never in the RENDERED table, so the owner-locked standard has
+    # shipped a column short since it landed.
+    rows = ["| ID | producer | parameter | production | band tested | subset-safe | status | evidence | why this band |",
+            "|---|---|---|---|---|---|---|---|---|"]
     for p in spec["params"]:
         band = ", ".join(_fmt(b) for b in p["band"]) or "-"
         ss = {True: "YES - cube-gradable, free",
@@ -335,7 +357,7 @@ def table_a(spec: dict) -> list[str]:
               None: "-"}[p["subset_safe"]]
         rows.append(f"| {p['id']} | `{p['producer']}` | `{p['param']}` | "
                     f"{_fmt(p['production'])} | {band} | {ss} | **{p['status']}** | "
-                    f"{p['derivation']} |")
+                    f"`{p['evidence']}` | {p['derivation']} |")
     return rows
 
 

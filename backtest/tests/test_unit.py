@@ -28874,6 +28874,62 @@ def test_b2450_tightening_over_a_backlog_rule_survives_in_the_skill():
         "scoped to steps 5-8 only")
 
 
+def test_b2465_table_a_renders_every_required_field():
+    """S6-B2465: a required Table A field was pinned in the SPEC, not the OUTPUT.
+
+    CHECKLIST #183 locks Table A's columns and names "a source-line `evidence`
+    field" among them. test_b1510 asserts `evidence` exists on every params row
+    - in the dict. `table_a()` never emitted it, so the owner-locked artifact
+    shipped a column short from the day it landed, and nothing could see it:
+    the data was present, the pin was green, and the table was wrong.
+
+    This asserts against the RENDERED text, which is the artifact the standard
+    actually describes.
+    """
+    import sys
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[2]
+    sys.path.insert(0, str(root / "scripts"))
+    import producer_variant_table as pvt
+
+    required = ["ID", "producer", "parameter", "production", "band tested",
+                "subset-safe", "status", "evidence", "why this band"]
+
+    for name, spec in pvt.SPECS.items():
+        rows = pvt.table_a(spec)
+        header = rows[0]
+        for col in required:
+            assert col in header, (
+                f"{name}: Table A header is missing the required column "
+                f"{col!r} (CHECKLIST #183)")
+        # every params row must carry its evidence INTO the rendered line
+        body = chr(10).join(rows[2:])
+        for p in spec["params"]:
+            assert str(p["evidence"]) in body, (
+                f"{name}/{p['id']}: evidence {p['evidence']!r} is in the SPEC "
+                "but not in the rendered table - the B1510 defect exactly")
+        # column count must match the header, or the table is malformed
+        ncols = header.count("|") - 1
+        for line in rows[2:]:
+            assert line.count("|") - 1 == ncols, (
+                f"{name}: a Table A row has {line.count('|') - 1} cells "
+                f"against {ncols} header columns")
+
+    # validate_spec must reject what main() cannot consume. Before this batch it
+    # returned CLEAN for a spec with no `baseline`, which main() dereferences
+    # unconditionally - a validator passing an input its own caller crashes on.
+    import copy
+    broken = copy.deepcopy(pvt.SPECS["institutional_committed_growth_long"])
+    broken.pop("baseline")
+    errs = pvt.validate_spec(broken)
+    assert any("baseline" in e for e in errs), (
+        "validate_spec accepts a spec with no baseline block, which main() "
+        "reads unconditionally")
+    # and a complete spec must still pass, or the check is just noise
+    assert pvt.validate_spec(
+        pvt.SPECS["institutional_committed_growth_long"]) == []
+
+
 def test_b2387_portfolio_survives_a_resume_round_trip():
     """S6-B2387: cash and open positions used to reset silently on resume.
 
