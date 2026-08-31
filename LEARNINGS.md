@@ -12045,6 +12045,36 @@ carried into `SKILL.md`; retraction recorded at `S6-B1877a`.
 
 ### L574
 
+**ADDENDUM (B2477): I VERIFIED WHAT THE GATE COMPARED AND NEVER ASKED WHICH RECORD IT READ.** L574
+says being right about the CONTENT is not being right about the CLAIM. Here is the same shape one
+level out: **being right about the COMPARISON is not being right about the SUBJECT.**
+MEASURED: the drift verifier fired while I was editing the institutional Table A, so I concluded the
+institutional band had to match what EMA_PAIRS emits, and restored a level the owner had told me to
+remove. `verify_describing_artifacts` is pinned at line 96 to **STRAT = smc_breaker_block_long**. The
+institutional band **never fed that check at all** - the drift came from the SMC spec, which my own
+unscoped replace had silently edited in the same batch. So the gate was right, my reading of the
+comparison was right, and **the record I applied it to was the wrong one**.
+**Why it was so convincing:** the gate fired immediately after my edit, named the parameter I had
+just changed (`ema span band`), and printed a record-vs-code diff whose "record" value was exactly
+what I had typed. Every surface detail corroborated the wrong subject. **Temporal adjacency plus a
+matching parameter name is not identification** - a gate reports what it examined, never that it
+examined the thing you were touching.
+**The cheapest disproof was one grep for the constant that selects the subject.** Reading STRAT took
+one command and would have saved a wrong restore, a wrong pin asserting it, and an owner having to
+repeat an instruction.
+Compliance failure against CHECKLIST item 226 read with L574 - when a gate fires on work you believe
+correct, verify the SCOPE of its claim; I verified only its arithmetic.
+Mechanism: the pin now asserts BOTH bands explicitly and in opposite directions - span 21 must be
+OUT of the institutional band and IN the smc band - so the two records can no longer be conflated by
+a future reader or by me. Named: test_b2467_subset_safety_is_per_level_and_partitions_the_band.
+**Retroactive sweep (#237) of every gate I reasoned about this session without reading its selector:**
+three. The #223 post-config gate (I read completed_cubes and terminal_for before acting - SOUND); the
+#221 drift verifier (DEFECTIVE, this instance - I never read STRAT); the #247 queue-vocabulary gate
+(I read its class list and marker requirement - SOUND). **1 of 3, and it is the only one whose
+message named a parameter I had just edited** - the coincidence is what supplied the false
+identification.
+
+
 **Being right about the content is not being right about the claim**
 
 **B1880/B1881.** `scan_bare_python_launch` blocked three consecutive turns. I
