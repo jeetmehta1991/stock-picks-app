@@ -287,6 +287,20 @@ batch-1 traps. Each rule retroactively catches >=2 real past misses (#136).
    Pins: test_b2159_known_bad_manifests_are_each_refused,
    test_b2159_every_gate_check_is_reachable.
 
+9b. **TIGHTENING A GATE OVER A HISTORICAL BACKLOG BLOCKS EVERY TURN UNTIL THE
+   BACKLOG CLEARS - SHIP THE DISPOSAL PLAN IN THE SAME BATCH (B2450/L721).**
+   A gate change is retroactive by default: it re-judges every artifact already
+   on disk, not just the next one. MEASURED: making SKIPPED non-terminal for
+   four judgment steps was correct and one line, and it immediately put **42 of
+   98 cubes** into a blocking state, so the TURN gate that consumes it now fires
+   on every close - including closes doing unrelated work. **The fix is right
+   and the operational cost is real and was not planned for.** Before shipping a
+   stricter gate, ask what it will say about the EXISTING population, and land
+   one of three things with it: a disposal plan with an owner, a scope that
+   admits only artifacts created after the change, or an explicit
+   grandfathered set that shrinks. **Otherwise the gate's own noise trains
+   everyone to read past it**, which is how the control it replaced died.
+
 10. **A SWEEP MUST CLASSIFY, NOT COUNT (L643/B2161).** "N instances of the
     bad pattern" invites a mass edit; "N instances, M of which mean a bound"
     is a finding. MEASURED: after fixing a cap check that approved every
