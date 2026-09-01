@@ -29788,3 +29788,41 @@ def test_b2492_the_in_loop_cap_is_suspension_aware_too():
     assert "active_h = max(0.0, elapsed_h - suspended_h)" in src
     assert "suspended_hours=%.2f" in src, "progress line must carry it"
     assert "(suspended=%.2fh active=%.2fh)" in src, "kill line must carry it"
+
+
+
+def test_b2496_l733_is_anchored_where_it_gets_read():
+    """S6-B2496: L733 must live in the SKILL and CHECKLIST, not only LEARNINGS.
+
+    B1723 measured the shape this prevents: the skill was edited 5 times
+    while LEARNINGS gained 57 entries. A rule recorded only in LEARNINGS is
+    read when someone goes looking; the skill is read every turn.
+
+    Fragments are single-line so a wrap cannot silently un-pin them, and
+    each is a DIAGNOSTIC (the usable part), not merely the L-number.
+    """
+    import io
+    import pathlib
+
+    root = pathlib.Path(__file__).resolve().parent.parent.parent
+    skill = io.open(root / ".claude" / "skills" / "execution-discipline"
+                    / "SKILL.md", encoding="utf-8").read()
+    check = io.open(root / "CHECKLIST.md", encoding="utf-8").read()
+
+    for frag in ("A DETECTOR'S DOCSTRING IS WHERE ITS LIMITS GET OVERSTATED",
+                 "claims get believed"):
+        assert frag in skill, "skill lost the L733 rule: %s" % frag
+    assert "L733" in skill and "L733" in check, "L733 must be cited in both"
+
+    # The diagnostic, not just the label - this is what makes the rule usable.
+    #
+    # S6-B2496b: the first version of these two asserts SPANNED A LINE WRAP in
+    # CHECKLIST.md and failed on a correct file - the exact defect this test's
+    # own docstring warns about, three lines above, written in the same breath.
+    # A fragment must fit on ONE source line of the file it is asserted against,
+    # which is a property of the TARGET's formatting, not of the phrase's
+    # meaning. Normalising whitespace is the general fix; single-line fragments
+    # are the cheap one.
+    flat = " ".join(check.split())
+    assert "must not be wired to a control that assumes it can" in flat
+    assert "compute the boundary at the LIVE parameter values" in flat

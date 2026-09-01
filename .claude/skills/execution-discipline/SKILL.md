@@ -3925,6 +3925,23 @@ Owner, verbatim: **"No arbitrary decisions. That's an absolute red flag."** and
    like coverage of the cause. **Pins written against the code you just changed
    confirm the patch, not the property** - they cover one site as convincingly
    as they would cover all of them.
+   (c) **A DETECTOR'S DOCSTRING IS WHERE ITS LIMITS GET OVERSTATED (L733).**
+   **A docstring's POSITIVE claims get verified against the body; its NEGATIVE
+   claims get believed** - an exclusion describes inputs the code never sees,
+   so no reader can check it by reading the implementation. MEASURED, on the
+   detector shipped for (a) one turn earlier: its docstring promised *"the
+   floor is absolute so ordinary scheduler jitter and a slow disk never
+   register as a suspend"*, and at the LIVE interval (30 s, threshold 150 s) a
+   180 s gap is credited 150 s - a slow disk stalling three minutes registers
+   as a suspend. **The false sentence was load-bearing for a recommendation
+   already made**: it would have let the detector credit time back against a
+   safety cap, granting a run extra licence to live IN PROPORTION TO HOW BADLY
+   IT IS BEHAVING. **So: when a docstring says what a detector will NOT fire
+   on, compute the boundary at the LIVE parameter values and put the numbers
+   in the docstring** - not the design intent, the measured behaviour at the
+   settings it runs with. And **a detector that cannot separate two causes
+   must not be wired to a control that assumes it can**: reporting is safe,
+   gating is not.
 
 ## TRIPWIRE TABLE — recurring mistake classes and their pre-action checks
 
@@ -3940,6 +3957,7 @@ check FIRST. Each row is a real failure that recurred until its check existed.
 | Diagnose a long run that "hung" - stalled counter, frozen heartbeat, absurd phase duration | Ask the OS FIRST (Kernel-Power 42/107/187). Total silence that ends normally = the machine stopped, not the code | L731 / #287 (55213.961s "screen day" was ~32s of work either side of a night's sleep) |
 | Ship a fix to any wall-clock / timing / resource measurement | Grep the IDENTIFIER tree-wide; split hits into GATES vs REPORTS; the gates are the siblings | L732 / #287 (B2490 fixed the supervisor, left the in-loop cap that actually fired) |
 | Write a pin for a fix you just made | Ask what it would catch at a site you did NOT edit; a source-text pin proves wiring, a behaviour pin proves the rule - the fix needs both | L732 (64 of 1087 unit tests are source-text pins; the B2492 gap was zero coverage at site 2, not pin style) |
+| Write or read a docstring saying what something will NOT do / does NOT cover / never fires on | Compute the boundary at the LIVE parameter values and put the numbers in the docstring; negative claims are believed, never checked | L733 / #287c ("a slow disk never registers as a suspend" - at interval 30 s a 180 s stall is credited 150 s) |
 | Claim a monitor/job is armed or running | `Get-Process` (Windows truth) + evidence artifact; check existing PIDs before launching | CHECKLIST #121/#124; `feedback_powershell_authoritative_for_windows_process_truth` |
 | Declare an audit/review complete | Did you check the HAPPY-PATH output artifacts (not just failure branches)? Both code AND docs? | CHECKLIST #128 (B1019 0-byte monitor.log) |
 | Interpret a signal/field name | Verify semantics in producer source (vol_spike_15x = 1.5x, NOT 15x) | `feedback_vol_spike_naming_convention` |

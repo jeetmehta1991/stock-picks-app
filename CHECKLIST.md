@@ -5385,4 +5385,13 @@ path (recorded), 1 diagnostic (the 7 PHASE_TIMING markers, deliberately left:
 this item's boundary is 'gates something'). A pin written against the code you
 just changed confirms the patch, not the property.
 
-**Pins:** test_b2490 x2, test_b2492.
+**Third rule (L733):** a docstring's POSITIVE claims get verified against the
+body; its NEGATIVE claims get believed, because an exclusion describes inputs
+the code never sees. When a detector's docstring says what it will NOT fire on,
+compute the boundary at the LIVE parameter values and state the numbers there.
+MEASURED on this incident's own fix: "a slow disk never registers as a suspend"
+against a 150 s threshold at the live 30 s interval, where a 180 s stall is
+credited 150 s. **A detector that cannot separate two causes must not be wired
+to a control that assumes it can** - reporting is safe, gating is not.
+
+**Pins:** test_b2490 x2, test_b2492, test_b2495, test_b2496.
