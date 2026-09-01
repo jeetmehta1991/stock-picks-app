@@ -25090,6 +25090,7 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         ("PROSE-ONLY: an INDEX of historical failures - each entry's enforcement lives with its own rule; gating the index would gate a table of contents.",
          "B2382: Failure modes this skill exists to prevent lineage"),
         ("A 0pct OR 100pct RESULT FROM A NEW EXTRACTOR IS A PARSER HYPOTHESIS", "L724/B2419: a coverage extreme from a new extractor"),
+        ("IS TWO PROPERTIES, AND A THREAD BUYS ONE", "L730/B2487: a watchdog must be outside the scheduler, not just the loop"),
         ("A GUARD THAT RETURNS None IS NOT A QUIET SUCCESS", "L729/B2482: failing open on an unexpected shape"),
         ("Temporal adjacency plus a", "L574/B2478: read a gate selector before acting on its verdict"),
         ("choosing carefully between two defensible values", "L728/B2475: a field whose value depends on the question asked"),
@@ -25435,7 +25436,8 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # 224 -> 225 at B2475 (the L728 overloaded-field fragment).
     # 225 -> 226 at B2478 (the L574 gate-selector fragment).
     # 226 -> 227 at B2482 (the L729 silent-None fragment).
-    assert len(gutted) == 227, gutted
+    # 227 -> 228 at B2487 (the L730 watchdog-scheduler fragment).
+    assert len(gutted) == 228, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -28886,6 +28888,115 @@ def test_b2450_tightening_over_a_backlog_rule_survives_in_the_skill():
     assert "SKIPPED" in vpc.terminal_for("1_cube_sanity"), (
         "the tightening leaked onto the AUTO steps; 9b describes a change "
         "scoped to steps 5-8 only")
+
+
+def test_b2487_supervisor_is_thread_based_and_that_limit_is_recorded():
+    """S6-B2487: the wall-time supervisor is a THREAD, and that is a known limit.
+
+    MEASURED on Step-1 config 1: the supervisor ran for 46 minutes, then
+    executed not one iteration in 15.3 hours while the main thread sat inside a
+    single screen_universe call, and the in-loop cap fired at elapsed 16.10 h
+    against a 4.0 h owner cap. It shares no control flow with the day loop -
+    exactly as designed - and it shares the GIL, which was enough.
+
+    This does NOT assert a fix (moving the watchdog to a separate process is an
+    owner decision, S6-B2488). It pins the LIMIT so it cannot be silently
+    forgotten, and pins that the kill path still exists so a future edit cannot
+    quietly remove the half that does work.
+    """
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[2]
+    src = (root / "backtest" / "engine" / "backtest.py").read_text(
+        encoding="utf-8")
+
+    # the kill path must still exist - it is correct code that simply could not
+    # be scheduled, and deleting it would remove the guard that DOES fire when
+    # the loop keeps turning
+    assert "B2148 SUPERVISOR KILL" in src, "the supervisor kill path is gone"
+    assert "_so._exit(1)" in src, "the supervisor no longer hard-exits"
+
+    # and it must still be armed OUTSIDE the day loop
+    assert "_start_run_supervisor()" in src
+
+    # the known limitation must be recorded where a reader will meet it
+    lrn = (root / "LEARNINGS.md").read_text(encoding="utf-8", errors="ignore")
+    assert "L730" in lrn, "the supervisor's scheduler limit left LEARNINGS"
+    skill = (root / ".claude" / "skills" / "execution-discipline"
+             / "SKILL.md").read_text(encoding="utf-8", errors="ignore")
+    assert "IS TWO PROPERTIES, AND A THREAD BUYS ONE" in skill, (
+        "the always-read skill no longer carries the watchdog limit - the next "
+        "reader would rebuild the same thread-based guard")
+
+
+def test_b2485_prescreen_compares_sets_pairwise_and_refuses_production():
+    """S6-B2485: the pre-screen's design decisions, pinned.
+
+    The council's two load-bearing points, and why counts would not do:
+      * Compare SETS, not counts. Two configs can both land near "255 passing"
+        while sharing almost none of those tickers. Set identity is SUFFICIENT
+        here, not merely indicative, because the EMA leg is identical across
+        all 11 configs - two configs with the same pass-set differ in nothing
+        the gate reads.
+      * Compare ALL PAIRS, not each against baseline. Two configs that both
+        hijack the fallback converge on the same fallback-dominated
+        population: duplicates of each other, invisible to config-vs-baseline.
+
+    And the safety property: an empty tag resolves to the PRODUCTION path that
+    seven strategies read, so build() must refuse it outright.
+    """
+    import sys
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[2]
+    sys.path.insert(0, str(root / "scripts"))
+    import prescreen_persistence_configs as ps
+
+    # 11 configs, each varying EXACTLY one axis off production
+    assert len(ps.CONFIGS) == 11, f"expected 11 configs, got {len(ps.CONFIGS)}"
+    for tag, env in ps.CONFIGS.items():
+        differing = [k for k, v in env.items() if v != ps.PRODUCTION[k]]
+        assert len(differing) == 1, (
+            f"{tag} varies {differing} - one-at-a-time means exactly one axis, "
+            "or the result cannot be attributed to a parameter")
+        assert set(env) == set(ps.PRODUCTION), f"{tag} lost an axis"
+
+    # an empty tag would write to the shared production artifact
+    try:
+        ps.build("", ps.PRODUCTION)
+    except AssertionError:
+        pass
+    else:                                            # pragma: no cover
+        raise AssertionError(
+            "build() accepted an EMPTY tag - that writes to the production "
+            "path seven 13F strategies read")
+
+    # set comparison, including the degenerate cases a count would blur
+    assert ps.jaccard({1, 2}, {1, 2}) == 1.0
+    assert ps.jaccard({1}, {2}) == 0.0
+    assert ps.jaccard(set(), set()) == 1.0
+    assert abs(ps.jaccard({1, 2}, {2, 3}) - 1 / 3) < 1e-9
+
+    # the screen must emit EVERY pair, not each config against baseline only.
+    # With production + 3 configs that is C(4,2) = 6 pairs, not 3.
+    parts = {
+        "production": {"2024-01-01": {"primary": {"A", "B"}, "fallback": {"C"}, "n": 3}},
+        "x": {"2024-01-01": {"primary": {"A", "B"}, "fallback": {"C"}, "n": 3}},
+        "y": {"2024-01-01": {"primary": {"A"}, "fallback": {"B", "C"}, "n": 3}},
+        "z": {"2024-01-01": {"primary": set(), "fallback": {"A", "B", "C"}, "n": 3}},
+    }
+    out = ps.screen(parts)
+    assert len(out["pairs"]) == 6, (
+        f"{len(out['pairs'])} pairs - a config-vs-baseline check would give 3 "
+        "and would miss two hijacked configs that duplicate EACH OTHER")
+    top = out["pairs"][0]
+    assert {top["a"], top["b"]} == {"production", "x"} and top["mean"] == 1.0, (
+        "the identical pair must rank first - that is the duplicate the "
+        "screen exists to drop")
+
+    # the fallback rate must be reported against THAT YEAR's baseline, because
+    # the real baseline runs 12.4% in 2022 and 1.9% in 2026
+    fb = out["fallback"]["z"]["2024-01-01"]
+    assert fb["rate"] == 1.0 and fb["baseline_rate"] < 1.0, (
+        "a fully hijacked config must show its rate ABOVE its own baseline")
 
 
 def test_b2484_persistence_sweep_cannot_touch_the_shared_artifact():

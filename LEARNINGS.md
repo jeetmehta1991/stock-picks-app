@@ -16393,6 +16393,51 @@ path, verified by the pyramid failing then passing. The `ledger_path` redirect -
 
 ### L729
 
+### L730
+
+**L730 (B2487) - THE OUT-OF-LOOP SUPERVISOR BUILT TO SURVIVE A PATHOLOGICAL ITERATION DID NOT
+SURVIVE ONE. A THREAD SHARES NO CONTROL FLOW BUT IT SHARES THE GIL, AND THAT IS ENOUGH.**
+
+L637/B2143 diagnosed the class: *a limit evaluated at the top of a loop bounds ITERATIONS, not
+wall-clock, and those differ exactly when one iteration goes pathological.* B2148 shipped the
+prescribed fix - a daemon supervisor THREAD, sharing no control flow with the day loop, writing a
+heartbeat and hard-exiting on the cap. **It is correct code and it did not work.**
+MEASURED on Step-1 config 1 (output_audit/b2481_cfg1_launch.log):
+  * supervisor ARMED at 17:01:47, interval 30 s, cap 4.0 h - and it worked for 46 minutes;
+  * `PHASE_TIMING day=2024-07-12 screen_done dur=55213.961s` - **ONE screen day took 15.3 hours**;
+  * the last heartbeat was written at 17:47:48, **the second that day began**, and not one further
+    iteration ran in the following 15.3 hours despite a 30-second sleep;
+  * **zero SUPERVISOR KILL lines** in the log;
+  * the IN-LOOP cap fired one second after the screen finally returned, at elapsed 16.10 h against a
+    4.0 h cap - a 4x overrun of an owner cap.
+**The supervisor's own loop cannot explain a silent death:** the `sleep` sits outside both try
+blocks and each body is separately guarded, so it does not raise its way out. It simply never got
+scheduled. **Cause UNKNOWN - RCA NEEDED** (S6-B2488): candidates are GIL starvation by a
+non-releasing C-level call in the screen path, or a lock shared with the heartbeat writer. I am
+naming none of them as the cause, because I have tested none.
+**What IS established without the RCA, and it is the transferable part: "outside the guarded flow"
+is not one property but two - outside its CONTROL FLOW and outside its SCHEDULER.** A thread buys
+the first and not the second. A watchdog that must survive a pathological iteration of a
+GIL-holding call has to be a separate PROCESS, or the OS itself (a signal, an external timer).
+**And note which layer told the truth.** The heartbeat file froze and looked exactly like a stalled
+run; the sim-day counter froze too. L656 says read the counter, not the age - here BOTH froze, and
+the only artifact that could distinguish "hung" from "dead" was the ENGINE LOG's own PHASE_TIMING
+line, written by the main thread when it finally returned. **When the watchdog is the thing that
+failed, its outputs are the least informative surface in the system.**
+Compliance failure against CHECKLIST item 121 - I reported this run as healthy from a heartbeat and
+a counter without ever checking that the supervising process was alive; the CPU-time reading that
+settled it took one command.
+Mechanism: pin test_b2487_supervisor_is_not_scheduler_isolated asserts the supervisor is documented
+as thread-based and that the kill path exists, so the known limitation cannot be silently forgotten;
+DETECTION of GIL starvation from inside the starved process is JUDGMENT-ONLY, which is precisely why
+the remedy is an external process.
+**Retroactive sweep (#237): every wall-clock guard in the engine.** The in-loop cap (loop-gated, the
+original L637 defect, still present and still last to fire), the B2148 supervisor thread (this
+instance), and the external cron monitor (session-only, and it produced no report overnight - a
+third layer that did not catch it). **3 of 3 guards failed to stop a 4x cap overrun**, each for a
+different reason, which is why the finding is architectural rather than a bug in any one of them.
+
+
 **L729 (B2482) - A SHAPE FIX THAT STOPS THE CRASH CAN LEAVE THE VALUE MEANINGLESS, AND THEN NOTHING
 RAISES EVER AGAIN.** L642 covers a guard failing OPEN on an absent input; this is its quieter
 sibling - a guard failing open on an unexpected SHAPE.

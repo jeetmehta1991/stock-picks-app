@@ -1772,6 +1772,15 @@ and the position feeling settled is what makes the disproof feel unnecessary.
   in a mid-run log - a check that could only ever pass, and would have read as reassurance at
   exactly the moment the run failed that way. **Find the WRITER of the string and confirm it
   reaches the file you are searching**, then trust the absence.
+- **"OUTSIDE THE GUARDED FLOW" IS TWO PROPERTIES, AND A THREAD BUYS ONE (B2487/L730).**
+  L637 said a wall-clock cap needs a watchdog outside the loop it guards. MEASURED: the daemon
+  supervisor thread built for exactly that ran fine for 46 minutes, then executed NOT ONE
+  iteration in 15.3 hours while the main thread sat inside a single call - and the in-loop cap
+  fired at 16.10 h against a 4.0 h owner cap. It shared no CONTROL FLOW and it shared the GIL.
+  **A watchdog that must survive a pathological iteration has to be outside the SCHEDULER too -
+  a separate process, or the OS.** And when the watchdog is what failed, its own outputs are the
+  least informative surface: the heartbeat and the counter both froze, and only the main
+  thread's log line, written when it finally returned, could tell hung from dead.
 - **A GUARD THAT RETURNS None IS NOT A QUIET SUCCESS - IT IS A CHECK THAT DID NOT RUN
   (B2482/L729).** L642 covers failing open on an ABSENT input; this is failing open on an
   unexpected SHAPE. MEASURED: three sites assumed a manifest field was a sequence when the
