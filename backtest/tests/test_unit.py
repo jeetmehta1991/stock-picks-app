@@ -29966,3 +29966,41 @@ def test_b2502_both_gating_sites_call_the_one_decision():
     # the heartbeat carries all three figures
     sup2 = inspect.getsource(BacktestEngine._start_run_supervisor)
     assert '"sleep_credit_hours": round(_cred_h, 4),' in sup2
+
+
+def test_b2504_free_level_filter_mirrors_the_engine_gate():
+    """S6-B2504: the offline re-score must apply the SAME gate the engine ran.
+
+    The OR's two arms are independent: raising the primary bar must never
+    remove a fallback-arm trade, raising the fallback bar must never remove a
+    primary-arm trade, and an absent key reads 0 (s.get default) - 3.8 pct of
+    the strategy's fired rows have no committed key at all (B1230 fallback).
+    """
+    import importlib.util
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parents[2]
+    spec = importlib.util.spec_from_file_location(
+        "grade_free_b2504", root / "scripts" / "grade_free_levels_institutional.py")
+    g = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(g)
+    k = g.keep_row
+
+    # production gate (3, 5): primary arm, fallback arm, and the dead zone
+    assert k(3, 0, 3, 5) and k(10, 0, 3, 5), "primary arm"
+    assert k(0, 5, 3, 5), "fallback arm"
+    assert not k(0, 4, 3, 5), "fallback below bar"
+    assert not k(2, 99, 3, 5), (
+        "0 < committed < bar is the dead zone: the fallback arm requires "
+        "committed == 0, not merely 'primary failed'")
+
+    # raising P7 keeps every fallback trade (the arms are independent)
+    assert k(0, 5, 14, 5), "fallback survives any primary bar"
+    assert not k(5, 0, 14, 5), "primary at 5 dies at bar 14"
+
+    # raising P8 keeps every primary trade
+    assert k(3, 0, 3, 6), "primary survives any fallback bar"
+    assert not k(0, 5, 3, 6), "fallback at 5 dies at bar 6"
+
+    # engine default semantics: absent key was parsed as 0 upstream, so a
+    # no-key row IS a committed==0 row here - the truth table above covers it

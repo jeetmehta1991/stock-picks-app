@@ -200,8 +200,13 @@ P6  grew?(fund)            =  recent_shares > shares_back * multiple
     committed_growth_holders = count of funds passing P4 AND P6
 
 =============================== STRATEGY LAYER ===============================
-   both counts below ARE persisted in signals_at_entry (measured 100pct
-   coverage), so a threshold over them re-scores off the cached cube.
+   both counts below ARE persisted in signals_at_entry - measured S6-B2504:
+   96.2pct of this strategy's 1,941 fired rows carry the committed key; the
+   3.8pct without it are B1230 no-artifact-row fallback fires where the
+   engine's s.get read 0 (an earlier revision said "100pct coverage", which
+   was true of the counts' presence as FIELDS but not of every fired row).
+   A threshold over them re-scores off the cached cube, defaulting absent
+   keys to 0 exactly as the engine did.
 
 P7  primary arm            =  committed_growth_holders >= T
                    PARAMETER: min_committed_growth = 3
