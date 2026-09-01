@@ -5377,4 +5377,12 @@ active separately.** Sweep siblings when you fix one: B2490 fixed the
 supervisor's reporting and left the in-loop cap - the guard that actually
 fired - reading raw wall-clock, closed only by B2492.
 
+**Sibling rule (L732):** after fixing any wall-clock / timing / resource
+measurement, grep the IDENTIFIER tree-wide - not the file - and sort hits into
+GATES vs REPORTS. MEASURED class for this incident: 5 sites - 2 gating in the
+live engine (fixed B2490+B2492), 2 gating in AWS-era scripts off the current
+path (recorded), 1 diagnostic (the 7 PHASE_TIMING markers, deliberately left:
+this item's boundary is 'gates something'). A pin written against the code you
+just changed confirms the patch, not the property.
+
 **Pins:** test_b2490 x2, test_b2492.

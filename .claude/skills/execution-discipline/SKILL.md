@@ -3902,6 +3902,30 @@ Owner, verbatim: **"No arbitrary decisions. That's an absolute red flag."** and
    L-entries accumulate without a checklist item, that is a signal the anti-theater guard
    (#136) is being over-applied - re-examine them as a batch.
 
+6. **ASK THE OS BEFORE BLAMING THE CODE, AND FIX THE KILLER NOT THE REPORTER
+   (L731 + L732 / CHECKLIST #287).** Two rules from one incident where a run
+   was declared hung, given a code-defect RCA, then a GIL hypothesis its own
+   probe refuted - and the machine had simply slept.
+   (a) **A hang leaves PARTIAL evidence; total silence that ENDS NORMALLY means
+   the process was not running.** Zero log lines, zero heartbeats, zero
+   exception-handler entries plus a clean return is a suspended machine, not a
+   bug. On Windows: `Get-WinEvent -ProviderName Microsoft-Windows-Kernel-Power`
+   (42=sleep, 107=resume, 187=explicit SetSuspendState). MEASURED: a screen day
+   reported dur=55213.961s against a 66s median; real compute was ~32s, and the
+   cap then killed a HEALTHY run at elapsed_hours=16.10. **No in-process
+   watchdog crosses a suspend** - thread, subprocess, signal handler and cron
+   are all frozen - so design to TOLERATE, never to prevent.
+   (b) **After any timing/resource fix, grep the IDENTIFIER across the whole
+   tree - not the file, not the function - and sort hits by whether they GATE
+   or merely REPORT.** MEASURED: the fix for (a) shipped green with two pins
+   while the guard that ACTUALLY killed the run sat 1,400 lines below in the
+   same file, still reading raw wall-clock. I fixed the instrument that
+   REPORTS the number and left the one that ACTS on it, because I searched
+   where I had EXPERIENCED the defect and an explanation of the symptom felt
+   like coverage of the cause. **Pins written against the code you just changed
+   confirm the patch, not the property** - they cover one site as convincingly
+   as they would cover all of them.
+
 ## TRIPWIRE TABLE — recurring mistake classes and their pre-action checks
 
 Before acting, scan this table. If the action matches a row, run the tripwire
@@ -3913,6 +3937,9 @@ check FIRST. Each row is a real failure that recurred until its check existed.
 | Propose a probe / say work is "seconds", "cheap", "one command" | OPEN the artifact and name the FIELD it needs; an effort estimate is a quantitative claim | CHECKLIST #230 EXT (B1736 / L506); "split by exit_reason, offline, seconds" against a file with no such column |
 | Relay a sub-agent's finding | Independently verify ≥1 concrete artifact from it | PIVOT #41 fabrication |
 | Claim something is "wired" / "consumed" / "integrated" | Runtime probe on the actual call path, not grep | `feedback_wired_means_engine_consumed` |
+| Diagnose a long run that "hung" - stalled counter, frozen heartbeat, absurd phase duration | Ask the OS FIRST (Kernel-Power 42/107/187). Total silence that ends normally = the machine stopped, not the code | L731 / #287 (55213.961s "screen day" was ~32s of work either side of a night's sleep) |
+| Ship a fix to any wall-clock / timing / resource measurement | Grep the IDENTIFIER tree-wide; split hits into GATES vs REPORTS; the gates are the siblings | L732 / #287 (B2490 fixed the supervisor, left the in-loop cap that actually fired) |
+| Write a pin for a fix you just made | Ask what it would catch at a site you did NOT edit; a source-text pin proves wiring, a behaviour pin proves the rule - the fix needs both | L732 (64 of 1087 unit tests are source-text pins; the B2492 gap was zero coverage at site 2, not pin style) |
 | Claim a monitor/job is armed or running | `Get-Process` (Windows truth) + evidence artifact; check existing PIDs before launching | CHECKLIST #121/#124; `feedback_powershell_authoritative_for_windows_process_truth` |
 | Declare an audit/review complete | Did you check the HAPPY-PATH output artifacts (not just failure branches)? Both code AND docs? | CHECKLIST #128 (B1019 0-byte monitor.log) |
 | Interpret a signal/field name | Verify semantics in producer source (vol_spike_15x = 1.5x, NOT 15x) | `feedback_vol_spike_naming_convention` |
