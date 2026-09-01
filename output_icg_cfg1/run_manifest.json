@@ -55,5 +55,19 @@
     }
   ],
   "max_run_hours": 4.0,
-  "leg_cap_hours": 4.0
+  "leg_cap_hours": 4.0,
+  "resume_arm_b2503": {
+    "resumed": "2026-09-01",
+    "from_sim_day": 47,
+    "open_book_restored_rows": 40,
+    "frozen_sha": "74297d260927b91ff938f33168a5dde084c22f5b",
+    "original_sha_note": "HEAD moved since launch; per B1335 a changed pin restarts the sequence, so this is a NEW manifest arm documenting the delta: every change since launch is GUARD-LAYER (suspension detection B2490/B2492, cap semantics B2502) or test/doc; strategy+exit+producer code is cube-equivalent at defaults, test-pinned (test_b2484 default-200; untagged producer path byte-identical, 60-ticker equivalence)",
+    "cap_semantics": "S6-B2491 IMPLEMENTED: max_run_hours=4.0 now bounds ACTIVE hours (elapsed minus sleep-credit, 30-min gap floor); a laptop sleep no longer kills the run",
+    "wall_clock_projection_hours": 3.33,
+    "wall_clock_projection_basis": "MEASURED from this run's own first segment: 47 sim-days in 0.767 active hours = 0.0163 h/day x 203 remaining days",
+    "recovery_window": "largest hard-death loss ~30 min of compute (100-day checkpoint gate AND 30-min time trigger AND 30s-cadence supervisor heartbeat+state)",
+    "env": {
+      "STRATEGY_SUBSET_FILE": "output_audit/_subset_institutional_committed_growth_long.txt"
+    }
+  }
 }
