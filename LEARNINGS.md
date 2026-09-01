@@ -18248,3 +18248,48 @@ recorded as backtest.py:1788 pointed at unrelated code by the time I read it.
 the same turn** - the file moved under the reference.
 
 **Mechanism:** CHECKLIST #287 rule (b); pins test_b2490 x2 + test_b2492.
+
+
+### L733 - The docstring of a detector is where its limits get overstated
+
+**B2495, 2026-09-01. Found by the turn gate demanding I cost a claim I had
+made about my own code, one turn after shipping it.**
+
+I wrote `suspension_seconds` and gave it a docstring ending *"the floor is
+absolute so ordinary scheduler jitter and a slow disk never register as a
+suspend."* MEASURED at the live interval (30 s, threshold 150 s): a 150 s gap
+is counted as work and a **180 s gap is credited 150 s as suspension**. A slow
+disk that stalls three minutes registers as a suspend. The claim is true of
+JITTER and false of a STALL, and I wrote it while looking at the arithmetic.
+
+**Why the overclaim landed there and not in the code.** The function is four
+lines and correct. What was wrong is the sentence describing what it EXCLUDES -
+and an exclusion is the one property a reader cannot check by reading the
+implementation, because it is a claim about inputs the code never sees. **A
+docstring's positive claims get verified against the body; its negative claims
+get believed.**
+
+**The consequence was not cosmetic.** In the same turn I was recommending that
+the owner let this detector credit time back against a wall-clock cap. Had the
+docstring been true, that recommendation would have been safe. Because it is
+false, the honest version of my own objection is that **a 3-minute stall buys a
+run 150 seconds of extra licence to live, in proportion to how badly it is
+behaving** - which is exactly the property a safety cap must not have. **The
+false sentence was load-bearing for a recommendation I had already made.**
+
+**The rule: when a detector's docstring says what it will NOT fire on, compute
+the boundary at the LIVE parameter values and put the numbers in the
+docstring.** Not the design intent - the measured behaviour at the settings it
+actually runs with. My threshold reads `max(5.0 * interval_s, 120.0)`, which
+looks conservative in the abstract and is 150 s in practice, and the abstract
+form is what I described.
+
+**And the general form, which is why this is not just a comment bug:** a
+detector that cannot separate two causes must not be wired to a control that
+assumes it can. Reporting is safe; gating is not. That is now stated in the
+docstring itself rather than living only in my head, because the next reader
+deciding whether to gate on this will read the function, not this entry.
+
+**Mechanism:** test_b2495_docstring_does_not_overclaim_what_the_floor_excludes
+plus the live-interval boundary assertions in test_b2490. Anchored at
+CHECKLIST #287, which already carries [[L731]] and [[L732]].

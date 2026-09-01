@@ -714,8 +714,19 @@ class BacktestEngine:
         nothing computed, which is what silently converted ~32 s of real work
         into a reported 15.3 h and got a healthy run killed at the cap.
 
-        The floor is absolute so ordinary scheduler jitter and a slow disk
-        never register as a suspend.
+        THE FLOOR'S REAL REACH, measured at the live interval (S6-B2495).
+        interval=30 s gives threshold=150 s, so:
+          gap 150 s -> 0.0 credited   (counted as work)
+          gap 180 s -> 150.0 credited (FORGIVEN)
+        This function CANNOT distinguish a sleeping machine from a stall
+        longer than 2.5 minutes - a slow disk, a swap storm, a long GC. An
+        earlier version of this docstring claimed "a slow disk never
+        registers as a suspend"; that is true of JITTER and false of a
+        genuine stall, and the difference matters because credited seconds
+        are seconds a cap will not count. The ambiguity is why S6-B2490
+        ships REPORTING ONLY and the kill still fires on wall-clock: a
+        detector that cannot tell sleep from stall must not be allowed to
+        extend a run's licence to live.
         """
         if gap_s <= 0 or interval_s <= 0:
             return 0.0

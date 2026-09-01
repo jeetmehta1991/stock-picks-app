@@ -29700,6 +29700,13 @@ def test_b2490_a_heartbeat_gap_is_machine_suspend_not_work():
     assert f(100.0, 1.0) == 0.0
     assert f(300.0, 1.0) == 299.0
 
+    # S6-B2495: the boundary AT THE LIVE INTERVAL (30 s -> threshold 150 s).
+    # The earlier docstring claimed a slow disk could never register as a
+    # suspend. It can: 180 s is credited. Pinned so the claim cannot drift
+    # back, and so the forgiveness window stays a known number.
+    assert f(150.0, 30.0) == 0.0, "at threshold: counted as work"
+    assert f(180.0, 30.0) == 150.0, "3-min stall IS forgiven - known limit"
+
     # degenerate inputs fail closed at zero, never negative
     assert f(0.0, 30.0) == 0.0
     assert f(-5.0, 30.0) == 0.0
@@ -29727,6 +29734,39 @@ def test_b2490_supervisor_reports_suspended_and_active_separately():
 
     # the kill line must say BOTH, so a sleep-killed run is legible as such
     assert "suspended=%.2fh active=%.2fh" in src
+
+
+def test_b2495_docstring_does_not_overclaim_what_the_floor_excludes():
+    """S6-B2495: the docstring must not promise a discrimination it lacks.
+
+    It claimed a slow disk never registers as a suspend. MEASURED at the
+    live 30 s interval, a 180 s gap is credited 150 s. A comment asserting
+    a property the code does not have is a claim (L583), and this one would
+    have justified letting the detector gate a kill.
+    """
+    import inspect
+
+    from backtest.engine.backtest import BacktestEngine
+
+    doc = inspect.getdoc(BacktestEngine.suspension_seconds) or ""
+    # S6-B2495b: this pin's FIRST assertion was vacuous - it looked for the
+    # old wording with 8 spaces of indent, and inspect.getdoc DEDENTS, so it
+    # could never match (L684: prove-it-can-fail tests only the mutation you
+    # CHOSE, and mine happened to exercise the two live assertions below).
+    # The naive repair is worse: the corrected docstring QUOTES the old claim
+    # in order to explain it, so `"a slow disk" not in doc` would fail on a
+    # CORRECT file - L586, documenting a failure must not trip its own gate.
+    #
+    # Replaced with an assertion prose cannot satisfy: the numbers the
+    # docstring states must be the numbers the function actually computes.
+    assert "CANNOT distinguish" in doc, "the limit must be stated"
+    assert "REPORTING ONLY" in doc, "why the limit forces reporting-only"
+    for gap, credited in ((150.0, 0.0), (180.0, 150.0)):
+        assert str(int(gap)) in doc, "docstring must state the %d s case" % gap
+        assert BacktestEngine.suspension_seconds(gap, 30.0) == credited, (
+            "docstring claims %s s -> %s credited; the code disagrees"
+            % (gap, credited))
+    assert "150.0" in doc, "the credited value must be stated, not implied"
 
 
 def test_b2492_the_in_loop_cap_is_suspension_aware_too():
