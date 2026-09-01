@@ -307,9 +307,13 @@ def main():
                         "containing engine_state.json + trade_log_checkpoint.csv "
                         "from prior interrupted run. Engine reads sim_day_index + "
                         "trades_so_far + closed trades; skips sim_day loop up to "
-                        "resume_sim_day + 1; continues from there. Open trades "
-                        "dropped (warned). Operator: aws s3 sync prior RUN_ID "
-                        "output_phase_N/ <local-dir>/ pre-launch.")
+                        "resume_sim_day + 1; continues from there. S6-B2213a: "
+                        "open trades are RESTORED from open_trades_checkpoint.csv "
+                        "or the resume HALTS - never dropped (this help said "
+                        "'dropped (warned)' long after the code stopped doing "
+                        "that; owner ruling 2026-08-26 'no dropped trades'). "
+                        "Operator: aws s3 sync prior RUN_ID output_phase_N/ "
+                        "<local-dir>/ pre-launch.")
     p.add_argument("--vectorized-cube-exits", action="store_true",
                    help="Batch 412 (owner 2026-05-28 owner-approved): activate "
                         "the numpy-vectorized cube-exit fast path "
