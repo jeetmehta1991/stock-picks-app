@@ -3990,5 +3990,43 @@
    "status": "DONE",
    "evidence": "S6-B2443 PILOT, re-derived from the grid artifact this batch: 300 combinations enumerated; 102 cut BEFORE grading (29 NO_EXIT_SELECTABLE + 73 BELOW_POWER_FLOOR), so the HONEST DENOMINATOR is 198 graded; 3 PASS rows = 2 DISTINCT OUTCOMES = 1 distinct parameter set ignoring tail_n. FAIL attribution over the 195 FAIL rows (a row can fail several): pooled_sharpe 179, psr 113 (all by ABSENCE), min_trades_full_period 28, min_trades_holdout 23, sortino 20, profit_factor 5. Verdict: ONE qualifying parameter set of 198 graded, carried by 41 holdout trades, with the multiplicity caveat from lens 1 attached."
   }
+ },
+ "output_icg_cfg1": {
+  "1_cube_sanity": {
+   "status": "DONE",
+   "evidence": "run_postconfig: cube_exists=PASS(8952 rows); one_strategy=PASS(1 strategies); M2_exits_per_entry_vs_registry=PASS(cube [24] vs registry-now 24 (a differing single value = an ); megacaps_present=PASS(NVDA); M1_content_sha=PASS(af35ab7fc09b5b2b); M3_fill_date=PASS(0 fills before entry); M4_window=PASS(entries 2024-05-06 .. 2025-05-01); M4_holdout_touch=PASS(0 entries at/after HO_START 2025-05-05 in a STEP-1 cube); M5_pnl_integrity=PASS(0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS); M7_degraded_exits=PASS(degraded map (B1623 measure-not-assume): {'reverse_signal': ); M10_gate_receipt=SKIP(no gate_receipt.json - cube predates B2169 or was launched A); step7_engine_implemented=PASS(exit 0); M9_universe_artifact=PASS(exit 0 on output_audit\\_sweep_200.txt (verifier is non-block); ledger_status_matches_evidence=PASS(0 row(s) claim DONE with contradicting evidence); step2_step4_auto=SKIP(manifest carries no arms env (pre-B2138 cube) - steps 2/4 re)"
+  },
+  "2_grade_with_config_params": {
+   "status": "DONE",
+   "evidence": "output_audit/output_icg_cfg1_grid_auto.json - roster_core.evaluate per exit (24 exits, n=373 each), config IS production (P4=4 P5=4 P6=1.10 P9=200, the baseline); best breakeven_plus_trail is_sharpe 0.263 is_ci_lo -0.087; written under the B2505 contract keys"
+  },
+  "3_outlier_discrepancy_sweep": {
+   "status": "DONE",
+   "evidence": "fresh sweep: 0 dup (ticker,entry,exit) rows (measured 0); pnl range [-50.24, 108.17] pct, 0 beyond winsorize 300 (battery M5); every one of 24 exits carries exactly 373==373 rows (uniform 373)"
+  },
+  "4_three_leg_spot_check": {
+   "status": "DONE",
+   "evidence": "50-trade gate re-derivation from signals_at_entry (random_state=42): 45 of 50 reproduce the OR gate; the 5 failures widened to the FULL population = 23 of 373 EMPTY signals dicts, exactly the 23 trades closed pre-kill and restored across the resume boundary -> S6-B2512 (UNKNOWN - RCA NEEDED, 3 mechanisms refuted by probes). EMA leg not re-derived (engine-computed; population cross-validated at B2504)"
+  },
+  "5_adversarial_lens_review": {
+   "status": "DONE",
+   "evidence": "the spot-check anomaly was hunted adversarially: hypotheses tested and REFUTED by execution - open-book restore round-trips 816 keys; kill-era flush shape round-trips 4/4 keys; closed-trade parser delegates to signals_serde (B1260). Cause filed UNKNOWN not guessed (S6-B2512). Also: M10 gate_receipt SKIP identified as a launch-path finding (run_phase1a direct, not run_wave) - closed for the NEXT launch (b2207a goes through run_wave, receipt verified present)"
+  },
+  "6_post_fix_recheck": {
+   "status": "DONE",
+   "evidence": "re-check RUN, not waived (#196): enumerated this cycle's fixes - B2490/B2492/B2502 (cap gates on active hours; guard/kill accounting only), B2498 (prescreen fallback jaccard), B2505 (Table D axis registry) - and swept for shipped conclusions resting on pre-fix behaviour. The only cube-coupled claim is the resume manifest's cube-equivalence-at-defaults, held by test_b2484 (span default 200 pinned) and the completed run's M1-M7 checks; the grid/battery/free-level artifacts read pnl+hold, which no fix in the cycle touches. RESULT: 0 shipped conclusions require re-derivation - a re-check that finds nothing is a finding, not a skip (B2460)."
+  },
+  "6b_equivalence_class_check": {
+   "status": "SKIPPED",
+   "reason": "baseline config carried no subset-safe equivalence classes to propagate - class_size=1 recorded on every ranked row in the grid artifact; the free-level re-scores that DO carry classes live in output_audit/b2504_free_levels_institutional.json (S6-B2501, graded separately)"
+  },
+  "7_implement_in_engine": {
+   "status": "DONE",
+   "evidence": "trivially satisfied for a BASELINE: the config IS production (every value the built-in default), so the engine already implements it; battery step7_engine_implemented PASS exit 0"
+  },
+  "8_verdict_with_denominators": {
+   "status": "DONE",
+   "evidence": "VERDICT: baseline Step-1 reference measured - best of 24 exits (breakeven_plus_trail) at is_sharpe 0.263 / is_ci_lo -0.087 on n=373 IS fires over 200 tickers x 1 year; 0 of 24 exits reach a positive ci_lo; this is the comparison bar for the 16 variant configs, per the ruled Step-1 rank-only design (no gates, B1608)"
+  }
  }
 }
