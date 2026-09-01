@@ -4028,5 +4028,43 @@
    "status": "DONE",
    "evidence": "VERDICT: baseline Step-1 reference measured - best of 24 exits (breakeven_plus_trail) at is_sharpe 0.263 / is_ci_lo -0.087 on n=373 IS fires over 200 tickers x 1 year; 0 of 24 exits reach a positive ci_lo; this is the comparison bar for the 16 variant configs, per the ruled Step-1 rank-only design (no gates, B1608)"
   }
+ },
+ "output_b2207a_lockprobe_p1": {
+  "1_cube_sanity": {
+   "status": "DONE",
+   "evidence": "run_wave verified 264 cube rows across 1 leg(s); M6 boundary drops (B1076 caveat, measured): none - single leg"
+  },
+  "2_grade_with_config_params": {
+   "status": "DONE",
+   "evidence": "graded via roster_core.evaluate per exit: 11 trades x 24 exits = 264 rows, uniform 11 per exit; best by is_ci_lo = hybrid_50pct_target sharpe -0.133 ci_lo -1.934. NOT a strategy result - n=11 is at the Step-1 min-trades floor of 10 and this is a 20-ticker MECHANISM probe (S6-B2207a), not a config in the sweep"
+  },
+  "3_outlier_discrepancy_sweep": {
+   "status": "DONE",
+   "evidence": "0 duplicate (ticker,entry,exit) rows; all 24 exits uniform at 11 rows; cube rows 264 == trades 11 x 24 exactly"
+  },
+  "4_three_leg_spot_check": {
+   "status": "DONE",
+   "evidence": "all 11 trades inspected (the whole population, not a 50-sample - the cube is smaller than the sample size); cube/trade-log row arithmetic reconciles exactly"
+  },
+  "5_adversarial_lens_review": {
+   "status": "DONE",
+   "evidence": "THE PROBE'S OWN PURPOSE IS THE FINDING: it exercised the run_wave path end to end and the auto-battery wrote steps 2-8 as SKIPPED citing PENDING-WAVE-REVIEW - a wave-level review batch that L721/S6-B2436 measured as NEVER HAVING EXISTED. So the automation records a DEFERRAL, not an analysis, and the #223 gate is what refuses it (correctly). Filed to S6-B2515. Second finding: the advisory fired as designed (narrow 20-ticker universe + strategy subset = the exact shape that produced a past misread), and it was heeded - no strategy conclusion is drawn from n=11"
+  },
+  "6_post_fix_recheck": {
+   "status": "DONE",
+   "evidence": "re-check RUN: this probe post-dates B2490/B2492/B2502/B2498/B2505 and was launched at sha e80302541 which contains all of them; no shipped conclusion rests on pre-fix behaviour because the probe produced no prior conclusion. 0 re-derivations owed"
+  },
+  "6b_equivalence_class_check": {
+   "status": "SKIPPED",
+   "reason": "single-arm probe with no swept parameters - no equivalence classes exist to carry"
+  },
+  "7_implement_in_engine": {
+   "status": "DONE",
+   "evidence": "N/A-by-construction and recorded as such: the probe swept nothing, so there is no winner to implement; it ran production defaults through the gated launcher"
+  },
+  "8_verdict_with_denominators": {
+   "status": "DONE",
+   "evidence": "VERDICT (S6-B2207a): GAP CLOSED, NOT LOCK PROVEN. Measured: 11 trades against ~8.5 expected at the 85-per-200-ticker-year rate (the L685 resize worked - the 5x3 smoke's 0 fires was the modal outcome of an undersized probe, not a defect); cube 264 rows = 11 x 24 exits; run_wave wrote manifest + gate_receipt + a 9-step ledger entry WITHOUT human intervention. This proves the locked-ledger write path works at ONE contention level (1 of 1 concurrent writers); it does NOT prove the lock under contention, which needs 2 simultaneous configs and remains untested"
+  }
  }
 }
