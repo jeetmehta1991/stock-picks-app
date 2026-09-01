@@ -515,6 +515,68 @@ travels without its source file. B1898b: a value the artifact does not record re
 fixed in CODE since B1898 and was absent from this plan entirely, so a reader working from the
 plan could not know it existed.
 
+### 6.4b Section 4b — TABLE D + D-2, the cross-config ranked list (shipped S6-B2330; documented S6-B2499)
+
+**Table C answers "what happened inside one config"; TABLE D answers "across every
+config, which outcomes rank highest"** — one row per (config × exit) outcome, top 20
+by default. Owner directive 2026-08-28. Documented here for the same reason Table C
+was (B2134): it had been fixed in CODE and absent from this plan entirely.
+
+**Format, locked (read from `producer_variant_table.py:466-626` at documentation
+time, never recalled):**
+
+- **Sort: `is_ci_lo` descending, then `n` descending — and NOTHING is filtered.**
+  Step-1 admission is min-trades ≥ 10 plus a ranked list with NO gates (owner ruling
+  B1608), so every column is displayed, never applied. Sorting on Sharpe was
+  rejected: L455 records that the higher Sharpe can carry a NEGATIVE lower bound.
+- **14 columns:** `# | config | sw | sp | exit | is_ci_lo | n | tier | dup |
+  is_sharpe | cls | holdout_n | full_period_n | verdict`.
+- **`tier` = DEEP n≥100 / MID 30-99 / THIN 10-29.** It exists because of a
+  measurement made while building the table: 0 of a naive top-20 had n ≥ 100, and
+  the best result per band ran +0.098 at n=128, +0.179 at n=40, +1.214 at n=11 —
+  **rank improving monotonically as evidence thins. RANK IS NOT TRUSTWORTHINESS**;
+  a conservative lower bound still favours a tight small sample over a noisy deep
+  one, so `n` sits beside the sort key deliberately.
+- **`dup` reads `k of m`:** this row's (ci_lo, sharpe, n, exit) signature appears in
+  m configs — ONE discovery restated, never independent confirmations. Duplicates
+  are labelled, not dropped: suppressing rows in a step the owner ruled has no gates
+  is itself a gate. `cls` = equivalence-class size.
+- **The exit-selection disclosure prints on the table itself:** Step 1 picks each
+  cell's exit by SHARPE alone (owner ruling B1605, a cheap ranking pass) while this
+  table RANKS by is_ci_lo — two objectives, disclosed because a row can lead on
+  is_ci_lo carrying the exit that won on Sharpe. 24 exit methods are registered and
+  **22 are effective per cell**: next_pivot_target refused on boundary-spanning
+  cells (B2014, `npt_excluded_identity_boundary`) and one collapsed byte-identical
+  to a survivor (B1593).
+- **A per-tier best summary is appended** — the comparison a rank order hides.
+
+**TABLE D-2 — the swept axes for the SAME rows, same order, join on `#`.** A second
+table rather than more columns because at 18 columns a markdown table wraps, which
+is exactly how Table C lost four columns three times. Columns: `# | config |
+P1 swing | P2 close_mit | P3 tail_n | P4 age_bars | P5 break_pct | P6 span |
+npt_excl`. P2-P5 were already in every ranked row's `admit` dict and simply never
+displayed — hiding four of six swept axes was a display defect, not a data gap.
+
+**The renderer is the only source: `python scripts/show_table_d.py`.** Print it,
+never retype it — Table C's docstring records that hand-retyping dropped four
+columns three times (L652). Auto-regenerated at every landing: `run_wave.py:289`
+invokes `postconfig_doc.py`, so the table needs no watcher and no cron.
+
+**Reading discipline (pinned):** `step1_ranking` — Table D's source — holds the TOP
+10 ROWS PER CONFIG, a SELECTED set. **Population claims must be taken over the
+`results` field, never over this table** (L708; test_b2342 pins that the ranking is
+bounded at 10 and its exits are a subset of the population's). Pins on the format:
+test_b2330 (proven on three mutations), test_b2331 (assertions anchored to the
+header ROW after the per-tier summary satisfied a check written for the main
+header — L703/L705).
+
+**SCOPE CAVEAT (S6-B2499 audit finding):** the `sw`/`sp` columns and ALL SIX D-2
+axes are read from HARDCODED keys of the smc_breaker_block spec
+(`P1_swing_length`, `close_mitigation`, `tail_n`, `age_bars_max`, `break_pct_max`,
+`P6_span`). A grid from another family renders `None` in those cells — it degrades
+legibly rather than crashing, but reusing Table D for the institutional family
+needs a per-strategy axis map keyed off SPECS. Ticketed S6-B2500.
+
 ### 6.5 The exit registry, and why a cube's exit COUNT is a dated fact
 
 **`len(EXIT_STRATEGIES)` is 24 today** - derived by running the code, never recalled. B2110
@@ -2330,6 +2392,70 @@ of 26, and the `ci_lo` of every PASS. **Margin of error is part of the verdict, 
 | pyramid OOMs mid-run | an engine run holds RAM; commit BEFORE launching | L425 |
 
 ---
+
+## CURRENT PROGRAMME — institutional_committed_growth_long STEP 1 (S6-B2481..B2499, 2026-09-01)
+
+**Inventory** — `SPECS["institutional_committed_growth_long"]` in
+`producer_variant_table.py`: 9 parameters P1-P9. P1-P3 NOT-SWEPT-BY-DESIGN (PIT
+lag / share-class floor / gap tolerance — availability and hygiene, not edge
+knobs). The per-level free/resim split corrected the factorial 31,500 → 700
+(L726). **Ruled Step-1 design: 17 engine configs** — baseline + P4 {2,3,6,8} +
+P5 {2,3,6,8} + P6 {1.0,1.25,1.5} + P9 spans {9,20,50,100,150} — **plus 4 FREE
+cache-graded levels** (P7 {5,11,14}, P8 {6}) that need no engine run because both
+counts persist in `signals_at_entry` at 100 % measured coverage. P7 resim {1,2}
+and P8 resim {2,3} are recorded in the band and deliberately NOT scheduled.
+The P9 band excludes producer-offered span 21 (owner directive 2026-08-31; the
+b2197 ledger measured it a near-duplicate of 20 that did not earn a run).
+
+**Mechanism (S6-B2484)** — the persistence producer is parameterised via env
+`INST_MIN_CONSECUTIVE_QUARTERS` / `INST_GROWTH_LOOKBACK_QUARTERS` /
+`INST_GROWTH_MULTIPLE`, with variant artifacts written to tagged caches via
+`INST_PERSIST_CACHE_TAG` through ONE shared helper (`persistence_cache_dir`)
+imported by producer AND consumer so the two cannot drift. Untagged = the
+production path the rest of the 13F family reads, byte-identical (defaults ARE
+production; 60-ticker equivalence run recorded 0 mismatches, S6-B2484). The
+`persistent_holders_4q`/`_8q` chains (other strategies' inputs) are deliberately
+untouched.
+
+**Offline pre-screen (S6-B2485, corrected S6-B2498)** — all 11 producer configs
+materialised at a MEASURED 283 s/config (~52 min; the shipped 104.6 s claim was a
+warm one-snapshot sample, understated 2.7×). The screen compares the PRIMARY and
+FALLBACK partitions pairwise (both Jaccards; a duplicate verdict needs both high)
+plus per-year fallback rate against that year's baseline, over the full artifact
+AND the 200-ticker sweep universe. Artifact: `output_audit/b2485_prescreen.json`.
+**Results:** `minq2`/`minq3` are NEAR-DUPLICATES of baseline on both partitions
+(primary 0.940/0.964, fallback 0.906/0.929) — dropping them from the engine queue
+saves ~3.4 h of ~29 h, an owner decision. `mult1.5`/`lookback2`/`minq8` nearly
+TRIPLE the 2022 fallback rate (0.329/0.304/0.253 vs baseline 0.124) — the B1230
+fallback-switch hazard MEASURED: those configs shift the strategy's early-year
+identity toward the fallback arm. Fallback membership diverges MORE than primary
+on all 11 baseline pairs, which is why the primary-only screen was corrected. The
+screen CANNOT see which fallback members clear `institutional_increased >= 5` —
+that column is not in the artifact; the residual stays with the engine.
+
+**Status** — cfg1 (baseline) is INTERRUPTED at sim-day 47, not failed: the
+machine slept (Kernel-Power Event 42; L731), ~32 s of compute was reported as a
+15.3 h screen day, and the wall-clock cap killed a healthy run. Resumable.
+**Owner rulings pending: S6-B2491** (does the 5 h cap measure wall-clock or
+active time — until ruled, an overnight chain dies at the first user-initiated
+sleep) **and S6-B2481** (resume go). Heartbeats and kill lines now carry
+`suspended_hours` / `active_hours` separately (B2490/B2492); the kill itself
+still fires on wall-clock by design pending the ruling.
+
+**Launch path for configs 2-17** — no new code: `run_wave.py` arms already carry
+per-arm env (run_wave.py:190-202), so a wave spec whose arms set
+`INST_PERSIST_CACHE_TAG=<tag>` (producer configs) or `STRAT_EMA_SPAN=<span>`
+(P9 configs) launches the set under the existing chain, monitor and post-config
+battery. The spec + manifest are written at launch time per §1.0-§1.3; launch
+requires the owner's explicit go in the launch turn.
+
+**Couplings and cautions** — `STRAT_EMA_SPAN` is read by smc_breaker_block_long
+/ _short AND this strategy (screener.py:4407/4442/6656): **P9 span configs are
+valid ONLY as solo-subset runs; never set it on a multi-strategy run.** Table D's
+`sw`/`sp` and all D-2 axes are smc-spec keys (see §6.4b caveat, S6-B2500).
+
+**Cheapest next action** — grade the P7/P8 FREE levels off the existing R5 cube:
+zero engine hours, both counts persisted at 100 % coverage (S6-B2501).
 
 ## APPENDIX S1-200 - THE 200 STEP-1 TICKERS (owner ruling 2026-08-29)
 
