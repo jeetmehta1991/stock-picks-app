@@ -1,0 +1,27 @@
+{
+ "ticket": "S6-B2342a",
+ "cube": "output_r5_merged_1_7/trade_exit_detail.csv",
+ "method": "Spearman rho of per-exit (mean hold_days, mean pnl_pct), exits with n>=30; the separating test run OFFLINE on regime_at_entry subsets instead of a control engine run. LIMIT: neutral AT ENTRY does not guarantee flat DURING hold - an imperfect control, disclosed.",
+ "results": {
+  "full": {
+   "exits": 26,
+   "n": 4917172,
+   "rho": 0.818
+  },
+  "neutral_entry": {
+   "exits": 26,
+   "n": 168636,
+   "rho": 0.605
+  },
+  "bear_crisis": {
+   "exits": 26,
+   "n": 1827644,
+   "rho": 0.901
+  },
+  "bull": {
+   "exits": 26,
+   "n": 2920892,
+   "rho": 0.706
+  }
+ }
+}
