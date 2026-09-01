@@ -18207,3 +18207,44 @@ false positive that buys no safety; crediting suspended time back changes what
 an owner-set threshold MEANS. So B2490 ships DETECTION AND REPORTING ONLY - the
 kill still fires on wall-clock, unchanged - and the ruling goes to the owner
 with both numbers in the kill line.
+
+
+### L732 - I fixed the reporter and left the killer: the sibling hides in the file you just patched
+
+**B2492, 2026-09-01. The miss this entry captures happened INSIDE the fix for
+[[L731]], one commit later, in the same file.**
+
+B2490 taught the supervisor thread to separate suspended wall-clock from
+active time and shipped green with two passing pins. It was incomplete in the
+way that mattered: the guard that ACTUALLY killed the run is the in-loop cap
+at backtest.py:1206, and it was still reading raw `time.time()`. I had fixed
+the instrument that REPORTS the number and left the instrument that ACTS on
+it. Only the mandated retroactive sweep found it - four gating sites, one of
+them fourteen hundred lines below the code I had just edited.
+
+**Why the sweep found what the fix did not.** I searched for the defect where
+I had experienced it. The evidence arrived through the supervisor - a frozen
+heartbeat, a missing kill line - so the supervisor is where I looked, and once
+its arithmetic was right the symptom was explained. **An explanation of the
+symptom felt like coverage of the cause**, and the pins I wrote confirmed the
+patch rather than the property, because I wrote them against the code I had
+changed. Two green tests over one of two gating sites reads identically to two
+green tests over both.
+
+**The rule: after fixing a wall-clock, resource or timing defect, grep the
+identifier - not the file, not the function - across the whole tree, and sort
+the hits by whether they GATE or merely REPORT.** The gating ones are the
+siblings. Reporting sites are lower stakes but not zero: the seven
+PHASE_TIMING markers are also `time.time()`, and it was PHASE_TIMING's
+`dur=55213.961s` that sent me hunting a code defect for two hours. They are
+deliberately left alone - CHECKLIST #287's boundary is "gates something", and
+these are diagnostic - but a diagnostic number that misleads the diagnostician
+is worth knowing about.
+
+**A second-order note on where line numbers come from.** The sweep's own
+citations went stale inside one turn: my patches added lines, so a hit
+recorded as backtest.py:1788 pointed at unrelated code by the time I read it.
+**Re-grep the identifier before quoting a line number you captured earlier in
+the same turn** - the file moved under the reference.
+
+**Mechanism:** CHECKLIST #287 rule (b); pins test_b2490 x2 + test_b2492.
