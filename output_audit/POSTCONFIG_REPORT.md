@@ -6,7 +6,7 @@ REGENERATED WHOLE at every config landing. Replaces the per-config report cards 
 
 ## How much confidence these checks earn
 
-**Across the entire ledger (105 entries), 524 named checks have run and 1 have ever returned non-PASS.**
+**Across the entire ledger (107 entries), 539 named checks have run and 3 have ever returned non-PASS.**
 
 ## TABLE D - STEP-1 RANKED LIST (top 20)
 
@@ -39,13 +39,13 @@ _Step-1 ranked list. `is_ci_lo` is the RANKING KEY, not a gate - Step-1 admissio
 | 19 | b2197_sw30sp50_sw30sp50 | 30 | 50 | earnings_blackout | +0.644 | 16 | THIN | 1 of 2 | 1.830 | 5 | 0 | 16 | BELOW_POWER_FLOOR |
 | 20 | b2197_sw30sp100_sw30sp100 | 30 | 100 | earnings_blackout | +0.644 | 16 | THIN | 2 of 2 | 1.830 | 5 | 0 | 16 | BELOW_POWER_FLOOR |
 
-_320 ranked outcomes across 32 graded configs; 297 distinct signatures._
+_330 ranked outcomes across 33 graded configs; 307 distinct signatures._
 
 **Best within each depth tier** (the comparison a rank order hides):
 
 | tier | best is_ci_lo | at n | rows |
 |---|---|---|---|
-| DEEP | +0.098 | 128 | 106 |
+| DEEP | +0.098 | 128 | 116 |
 | MID | +0.656 | 33 | 138 |
 | THIN | +1.250 | 14 | 76 |
 
@@ -76,44 +76,98 @@ _The SIX swept axes for the same rows, same order - join on `#`. P1 swing_length
 | 19 | b2197_sw30sp50_sw30sp50 | 30 | True | 20 | 250 | 0.02 | 50 | None |
 | 20 | b2197_sw30sp100_sw30sp100 | 30 | True | 20 | 250 | 0.02 | 100 | None |
 
-## Index - 32 graded config(s), newest first
+## Index - 33 graded config(s), newest first
 
 | config | best is_ci_lo | fires | starved | steps run |
 |---|---|---|---|---|
-| output_b2399_step2_sw50sp50_step2_sw50sp50 | -0.026 | 325 | 29/300 | 5/9 |
-| output_b2197_sw50sp150_sw50sp150 | 0.437 | 10 | 190/300 | 5/9 |
-| output_b2197_sw50sp100_sw50sp100 | -0.023 | 25 | 200/300 | 5/9 |
-| output_b2197_sw50sp50_sw50sp50 | 1.25 | 14 | 200/300 | 5/9 |
-| output_b2197_sw50sp20_sw50sp20 | 0.93 | 14 | 200/300 | 5/9 |
-| output_b2197_sw50sp9_sw50sp9 | 0.724 | 25 | 200/300 | 5/9 |
-| output_b2197_sw5sp150_sw5sp150 | 0.019 | 76 | 40/300 | 5/9 |
-| output_b2197_sw5sp100_sw5sp100 | 0.027 | 77 | 40/300 | 5/9 |
-| output_b2197_sw5sp50_sw5sp50 | -0.005 | 220 | 45/300 | 5/9 |
-| output_b2197_sw5sp20_sw5sp20 | -0.005 | 140 | 45/300 | 5/9 |
-| output_b2197_sw5sp9_sw5sp9 | 0.098 | 128 | 45/300 | 5/9 |
-| output_b2197_sw10sp150_sw10sp150 | -0.11 | 119 | 40/300 | 5/9 |
-| output_b2197_sw10sp100_sw10sp100 | -0.12 | 174 | 40/300 | 5/9 |
-| output_b2197_sw10sp50_sw10sp50 | -0.042 | 156 | 45/300 | 5/9 |
-| output_b2197_sw10sp20_sw10sp20 | -0.07 | 110 | 41/300 | 5/9 |
-| output_b2197_sw10sp9_sw10sp9 | -0.014 | 68 | 42/300 | 5/9 |
-| output_b2197_sw30sp150_sw30sp150 | 1.214 | 11 | 106/300 | 5/9 |
-| output_b2197_sw30sp100_sw30sp100 | 0.816 | 12 | 100/300 | 5/9 |
-| output_b2197_sw30sp50_sw30sp50 | 0.816 | 12 | 100/300 | 5/9 |
-| output_b2197_sw30sp20_sw30sp20 | 0.816 | 12 | 100/300 | 5/9 |
-| output_b2197_sw30sp9_sw30sp9 | 0.687 | 22 | 95/300 | 5/9 |
-| output_b2197_sw20sp150_sw20sp150 | -0.114 | 80 | 77/300 | 5/9 |
-| output_b2197_sw20sp100_sw20sp100 | -0.036 | 66 | 77/300 | 5/9 |
-| output_b2197_sw20sp50_sw20sp50 | 0.025 | 62 | 77/300 | 5/9 |
-| output_b2197_sw20sp21_sw20sp21 | 0.107 | 88 | 77/300 | 5/9 |
-| output_b2197_sw20sp20_sw20sp20 | 0.107 | 88 | 77/300 | 5/9 |
-| output_b2197_sw20sp9_sw20sp9 | 0.044 | 71 | 77/300 | 5/9 |
-| output_b2190_sw5_sw5 | 0.123 | 74 | 40/300 | 5/9 |
-| output_b2190_sw10_sw10 | -0.091 | 92 | 45/300 | 5/9 |
-| output_b2177_sw50_sw50 | -0.508 | 33 | 225/300 | 5/9 |
-| output_b2183_sw30_sw30 | 0.362 | 11 | 106/300 | 5/9 |
-| output_b2174_sw20_sw20 | -0.196 | 79 | 82/300 | 3/9 |
+| output_icg_cfg1 | -0.087 | 373 | 0/0 | 8/9 |
+| output_b2399_step2_sw50sp50_step2_sw50sp50 | -0.026 | 325 | 29/300 | 8/8 |
+| output_b2197_sw50sp150_sw50sp150 | 0.437 | 10 | 190/300 | 7/7 |
+| output_b2197_sw50sp100_sw50sp100 | -0.023 | 25 | 200/300 | 7/7 |
+| output_b2197_sw50sp50_sw50sp50 | 1.25 | 14 | 200/300 | 7/7 |
+| output_b2197_sw50sp20_sw50sp20 | 0.93 | 14 | 200/300 | 7/7 |
+| output_b2197_sw50sp9_sw50sp9 | 0.724 | 25 | 200/300 | 7/7 |
+| output_b2197_sw5sp150_sw5sp150 | 0.019 | 76 | 40/300 | 7/7 |
+| output_b2197_sw5sp100_sw5sp100 | 0.027 | 77 | 40/300 | 7/7 |
+| output_b2197_sw5sp50_sw5sp50 | -0.005 | 220 | 45/300 | 7/7 |
+| output_b2197_sw5sp20_sw5sp20 | -0.005 | 140 | 45/300 | 7/7 |
+| output_b2197_sw5sp9_sw5sp9 | 0.098 | 128 | 45/300 | 7/7 |
+| output_b2197_sw10sp150_sw10sp150 | -0.11 | 119 | 40/300 | 7/7 |
+| output_b2197_sw10sp100_sw10sp100 | -0.12 | 174 | 40/300 | 7/7 |
+| output_b2197_sw10sp50_sw10sp50 | -0.042 | 156 | 45/300 | 7/7 |
+| output_b2197_sw10sp20_sw10sp20 | -0.07 | 110 | 41/300 | 7/7 |
+| output_b2197_sw10sp9_sw10sp9 | -0.014 | 68 | 42/300 | 7/7 |
+| output_b2197_sw30sp150_sw30sp150 | 1.214 | 11 | 106/300 | 7/7 |
+| output_b2197_sw30sp100_sw30sp100 | 0.816 | 12 | 100/300 | 7/7 |
+| output_b2197_sw30sp50_sw30sp50 | 0.816 | 12 | 100/300 | 7/7 |
+| output_b2197_sw30sp20_sw30sp20 | 0.816 | 12 | 100/300 | 7/7 |
+| output_b2197_sw30sp9_sw30sp9 | 0.687 | 22 | 95/300 | 7/7 |
+| output_b2197_sw20sp150_sw20sp150 | -0.114 | 80 | 77/300 | 7/7 |
+| output_b2197_sw20sp100_sw20sp100 | -0.036 | 66 | 77/300 | 7/7 |
+| output_b2197_sw20sp50_sw20sp50 | 0.025 | 62 | 77/300 | 7/7 |
+| output_b2197_sw20sp21_sw20sp21 | 0.107 | 88 | 77/300 | 7/7 |
+| output_b2197_sw20sp20_sw20sp20 | 0.107 | 88 | 77/300 | 7/7 |
+| output_b2197_sw20sp9_sw20sp9 | 0.044 | 71 | 77/300 | 7/7 |
+| output_b2190_sw5_sw5 | 0.123 | 74 | 40/300 | 7/7 |
+| output_b2190_sw10_sw10 | -0.091 | 92 | 45/300 | 7/7 |
+| output_b2177_sw50_sw50 | -0.508 | 33 | 225/300 | 7/7 |
+| output_b2183_sw30_sw30 | 0.362 | 11 | 106/300 | 7/7 |
+| output_b2174_sw20_sw20 | -0.196 | 79 | 82/300 | 5/7 |
 
 ## Per-config findings
+
+### output_icg_cfg1
+
+**Configuration:** P4_min_consecutive_quarters=4, P5_growth_lookback_quarters=4, P6_growth_multiple=1.1, P9_span=200
+
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.087** (is_sharpe 0.263, 373 fires, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+
+**Completeness: 8 of 9 steps ran.** The 1 judgment steps (6b_equivalence_class_check) are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
+
+**Is this the right data?**
+
+| check | measured | outcome | what would have been alarming |
+|---|---|---|---|
+| cube produced rows | 8952 rows | PASS | zero rows = the config ran and emitted nothing |
+| exactly one strategy in the cube | 1 strategies | PASS | more than 1 = the strategy-subset filter leaked |
+| mega-caps present in the universe | NVDA | PASS | absent = the abandoned A-C chunk universe (L445) |
+| universe artifact verified | exit 0 on output_audit\_sweep_200.txt (verifier is non-block | PASS | FAIL = the ticker list is not what was intended |
+| cube content hash | af35ab7fc09b5b2b | PASS | a repeat across configs = two configs produced identical cubes, so one knob did nothing |
+| entry-date span actually simulated | entries 2024-05-06 .. 2025-05-01 | PASS | a short span = the run did not cover its window |
+| every entry carries one row per registered exit | cube [24] vs registry-now 24 (a differing single value = an | PASS | a shortfall = exits silently dropped from the cube |
+
+**Did anything leak from the future?**
+
+| check | measured | outcome | what would have been alarming |
+|---|---|---|---|
+| entries at or after the LOCKED holdout start | 0 entries at/after HO_START 2025-05-05 in a STEP-1 cube | PASS | any non-zero = the holdout was contaminated and the run is void |
+| fills that preceded their own entry | 0 fills before entry | PASS | any non-zero = look-ahead in execution |
+| pre-launch receipt matches the run manifest | no gate_receipt.json - cube predates B2169 or was launched A | SKIP **<-- NOT PASS** | mismatch = this run is not the run that was gated |
+
+**Does the arithmetic reproduce?**
+
+| check | measured | outcome | what would have been alarming |
+|---|---|---|---|
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| engine-side implementation check exit code | exit 0 | PASS | non-zero = the wiring is absent |
+
+**Is the sample large enough to mean anything? (step 2 funnel)**
+
+- 0 parameter combinations enumerated.
+- **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
+- 0 graded and ranked; None carried across None distinct outcome classes after equivalence collapse (combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473).
+
+| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+|---|---|---|---|---|---|---|
+| None | -0.087 | 0.263 | 373 | breakeven_plus_trail | 1 | cm=None brk=None age=None tail=None |
+| None | -0.285 | -0.001 | 373 | hybrid_50pct_target | 1 | cm=None brk=None age=None tail=None |
+| None | -0.462 | -0.161 | 373 | trailing_10pct | 1 | cm=None brk=None age=None tail=None |
+| None | -0.53 | -0.293 | 373 | earnings_blackout | 1 | cm=None brk=None age=None tail=None |
+| None | -0.549 | -0.137 | 373 | regime_flip | 1 | cm=None brk=None age=None tail=None |
+
+_Top 5 of the ranking; the full list is in output_audit/output_icg_cfg1_grid_auto.json._
 
 ### output_b2399_step2_sw50sp50_step2_sw50sp50
 
@@ -121,7 +175,7 @@ _The SIX swept axes for the same rows, same order - join on `#`. P1 swing_length
 
 **STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.026** (is_sharpe 0.145, 325 fires, exit trailing_15pct). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
-**Completeness: 5 of 9 steps ran.** The 4 judgment steps (5_adversarial_lens_review, 6_post_fix_recheck, 7_implement_in_engine, 8_verdict_with_denominators) are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
+**Completeness: 8 of 8 steps ran.** The 0 judgment steps () are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
 
 **Is this the right data?**
 
@@ -182,7 +236,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2399_step2_sw50s
 
 **STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.437** (is_sharpe 3.083, 10 fires, exit fixed_4r_2r). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
-**Completeness: 5 of 9 steps ran.** The 4 judgment steps (5_adversarial_lens_review, 6_post_fix_recheck, 7_implement_in_engine, 8_verdict_with_denominators) are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
+**Completeness: 7 of 7 steps ran.** The 0 judgment steps () are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
 
 **Is this the right data?**
 
@@ -243,7 +297,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw50sp150_s
 
 **STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.023** (is_sharpe 2.292, 25 fires, exit r_multiple_3r). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
-**Completeness: 5 of 9 steps ran.** The 4 judgment steps (5_adversarial_lens_review, 6_post_fix_recheck, 7_implement_in_engine, 8_verdict_with_denominators) are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
+**Completeness: 7 of 7 steps ran.** The 0 judgment steps () are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
 
 **Is this the right data?**
 
@@ -304,7 +358,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw50sp100_s
 
 **STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 1.25** (is_sharpe 4.301, 14 fires, exit time_stop_10d). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
-**Completeness: 5 of 9 steps ran.** The 4 judgment steps (5_adversarial_lens_review, 6_post_fix_recheck, 7_implement_in_engine, 8_verdict_with_denominators) are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
+**Completeness: 7 of 7 steps ran.** The 0 judgment steps () are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
 
 **Is this the right data?**
 
@@ -365,7 +419,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw50sp50_sw
 
 **STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.93** (is_sharpe 3.915, 14 fires, exit time_stop_10d). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
-**Completeness: 5 of 9 steps ran.** The 4 judgment steps (5_adversarial_lens_review, 6_post_fix_recheck, 7_implement_in_engine, 8_verdict_with_denominators) are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
+**Completeness: 7 of 7 steps ran.** The 0 judgment steps () are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
 
 **Is this the right data?**
 
@@ -426,7 +480,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw50sp20_sw
 
 **STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.724** (is_sharpe 2.82, 25 fires, exit time_stop_10d). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
-**Completeness: 5 of 9 steps ran.** The 4 judgment steps (5_adversarial_lens_review, 6_post_fix_recheck, 7_implement_in_engine, 8_verdict_with_denominators) are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
+**Completeness: 7 of 7 steps ran.** The 0 judgment steps () are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
 
 **Is this the right data?**
 
@@ -487,7 +541,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw50sp9_sw5
 
 **STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.019** (is_sharpe 0.508, 76 fires, exit earnings_blackout). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
-**Completeness: 5 of 9 steps ran.** The 4 judgment steps (5_adversarial_lens_review, 6_post_fix_recheck, 7_implement_in_engine, 8_verdict_with_denominators) are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
+**Completeness: 7 of 7 steps ran.** The 0 judgment steps () are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
 
 **Is this the right data?**
 
@@ -548,7 +602,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw5sp150_sw
 
 **STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.027** (is_sharpe 0.513, 77 fires, exit earnings_blackout). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
-**Completeness: 5 of 9 steps ran.** The 4 judgment steps (5_adversarial_lens_review, 6_post_fix_recheck, 7_implement_in_engine, 8_verdict_with_denominators) are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
+**Completeness: 7 of 7 steps ran.** The 0 judgment steps () are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
 
 **Is this the right data?**
 
@@ -609,7 +663,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw5sp100_sw
 
 **STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.005** (is_sharpe 0.402, 220 fires, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
-**Completeness: 5 of 9 steps ran.** The 4 judgment steps (5_adversarial_lens_review, 6_post_fix_recheck, 7_implement_in_engine, 8_verdict_with_denominators) are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
+**Completeness: 7 of 7 steps ran.** The 0 judgment steps () are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
 
 **Is this the right data?**
 
@@ -670,7 +724,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw5sp50_sw5
 
 **STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.005** (is_sharpe 0.49, 140 fires, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
-**Completeness: 5 of 9 steps ran.** The 4 judgment steps (5_adversarial_lens_review, 6_post_fix_recheck, 7_implement_in_engine, 8_verdict_with_denominators) are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
+**Completeness: 7 of 7 steps ran.** The 0 judgment steps () are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
 
 **Is this the right data?**
 
@@ -731,7 +785,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw5sp20_sw5
 
 **STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.098** (is_sharpe 0.6, 128 fires, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
-**Completeness: 5 of 9 steps ran.** The 4 judgment steps (5_adversarial_lens_review, 6_post_fix_recheck, 7_implement_in_engine, 8_verdict_with_denominators) are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
+**Completeness: 7 of 7 steps ran.** The 0 judgment steps () are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
 
 **Is this the right data?**
 
@@ -792,7 +846,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw5sp9_sw5s
 
 **STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.11** (is_sharpe 0.282, 119 fires, exit hybrid_50pct_target). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
-**Completeness: 5 of 9 steps ran.** The 4 judgment steps (5_adversarial_lens_review, 6_post_fix_recheck, 7_implement_in_engine, 8_verdict_with_denominators) are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
+**Completeness: 7 of 7 steps ran.** The 0 judgment steps () are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
 
 **Is this the right data?**
 
@@ -853,7 +907,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw10sp150_s
 
 **STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.12** (is_sharpe 0.34, 174 fires, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
-**Completeness: 5 of 9 steps ran.** The 4 judgment steps (5_adversarial_lens_review, 6_post_fix_recheck, 7_implement_in_engine, 8_verdict_with_denominators) are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
+**Completeness: 7 of 7 steps ran.** The 0 judgment steps () are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
 
 **Is this the right data?**
 
@@ -914,7 +968,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw10sp100_s
 
 **STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.042** (is_sharpe 0.422, 156 fires, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
-**Completeness: 5 of 9 steps ran.** The 4 judgment steps (5_adversarial_lens_review, 6_post_fix_recheck, 7_implement_in_engine, 8_verdict_with_denominators) are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
+**Completeness: 7 of 7 steps ran.** The 0 judgment steps () are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
 
 **Is this the right data?**
 
@@ -975,7 +1029,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw10sp50_sw
 
 **STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.07** (is_sharpe 0.47, 110 fires, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
-**Completeness: 5 of 9 steps ran.** The 4 judgment steps (5_adversarial_lens_review, 6_post_fix_recheck, 7_implement_in_engine, 8_verdict_with_denominators) are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
+**Completeness: 7 of 7 steps ran.** The 0 judgment steps () are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
 
 **Is this the right data?**
 
@@ -1036,7 +1090,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw10sp20_sw
 
 **STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.014** (is_sharpe 0.714, 68 fires, exit class_time_stop). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
-**Completeness: 5 of 9 steps ran.** The 4 judgment steps (5_adversarial_lens_review, 6_post_fix_recheck, 7_implement_in_engine, 8_verdict_with_denominators) are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
+**Completeness: 7 of 7 steps ran.** The 0 judgment steps () are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
 
 **Is this the right data?**
 
@@ -1097,7 +1151,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw10sp9_sw1
 
 **STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 1.214** (is_sharpe 4.807, 11 fires, exit time_stop_10d). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
-**Completeness: 5 of 9 steps ran.** The 4 judgment steps (5_adversarial_lens_review, 6_post_fix_recheck, 7_implement_in_engine, 8_verdict_with_denominators) are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
+**Completeness: 7 of 7 steps ran.** The 0 judgment steps () are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
 
 **Is this the right data?**
 
@@ -1158,7 +1212,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw30sp150_s
 
 **STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.816** (is_sharpe 4.103, 12 fires, exit time_stop_10d). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
-**Completeness: 5 of 9 steps ran.** The 4 judgment steps (5_adversarial_lens_review, 6_post_fix_recheck, 7_implement_in_engine, 8_verdict_with_denominators) are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
+**Completeness: 7 of 7 steps ran.** The 0 judgment steps () are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
 
 **Is this the right data?**
 
@@ -1219,7 +1273,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw30sp100_s
 
 **STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.816** (is_sharpe 4.103, 12 fires, exit time_stop_10d). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
-**Completeness: 5 of 9 steps ran.** The 4 judgment steps (5_adversarial_lens_review, 6_post_fix_recheck, 7_implement_in_engine, 8_verdict_with_denominators) are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
+**Completeness: 7 of 7 steps ran.** The 0 judgment steps () are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
 
 **Is this the right data?**
 
@@ -1280,7 +1334,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw30sp50_sw
 
 **STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.816** (is_sharpe 4.103, 12 fires, exit time_stop_10d). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
-**Completeness: 5 of 9 steps ran.** The 4 judgment steps (5_adversarial_lens_review, 6_post_fix_recheck, 7_implement_in_engine, 8_verdict_with_denominators) are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
+**Completeness: 7 of 7 steps ran.** The 0 judgment steps () are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
 
 **Is this the right data?**
 
@@ -1341,7 +1395,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw30sp20_sw
 
 **STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.687** (is_sharpe 1.684, 22 fires, exit earnings_blackout). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
-**Completeness: 5 of 9 steps ran.** The 4 judgment steps (5_adversarial_lens_review, 6_post_fix_recheck, 7_implement_in_engine, 8_verdict_with_denominators) are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
+**Completeness: 7 of 7 steps ran.** The 0 judgment steps () are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
 
 **Is this the right data?**
 
@@ -1402,7 +1456,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw30sp9_sw3
 
 **STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.114** (is_sharpe 0.357, 80 fires, exit hybrid_50pct_target). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
-**Completeness: 5 of 9 steps ran.** The 4 judgment steps (5_adversarial_lens_review, 6_post_fix_recheck, 7_implement_in_engine, 8_verdict_with_denominators) are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
+**Completeness: 7 of 7 steps ran.** The 0 judgment steps () are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
 
 **Is this the right data?**
 
@@ -1463,7 +1517,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw20sp150_s
 
 **STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.036** (is_sharpe 0.465, 66 fires, exit hybrid_50pct_target). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
-**Completeness: 5 of 9 steps ran.** The 4 judgment steps (5_adversarial_lens_review, 6_post_fix_recheck, 7_implement_in_engine, 8_verdict_with_denominators) are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
+**Completeness: 7 of 7 steps ran.** The 0 judgment steps () are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
 
 **Is this the right data?**
 
@@ -1524,7 +1578,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw20sp100_s
 
 **STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.025** (is_sharpe 0.535, 62 fires, exit hybrid_50pct_target). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
-**Completeness: 5 of 9 steps ran.** The 4 judgment steps (5_adversarial_lens_review, 6_post_fix_recheck, 7_implement_in_engine, 8_verdict_with_denominators) are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
+**Completeness: 7 of 7 steps ran.** The 0 judgment steps () are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
 
 **Is this the right data?**
 
@@ -1585,7 +1639,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw20sp50_sw
 
 **STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.107** (is_sharpe 0.551, 88 fires, exit hybrid_50pct_target). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
-**Completeness: 5 of 9 steps ran.** The 4 judgment steps (5_adversarial_lens_review, 6_post_fix_recheck, 7_implement_in_engine, 8_verdict_with_denominators) are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
+**Completeness: 7 of 7 steps ran.** The 0 judgment steps () are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
 
 **Is this the right data?**
 
@@ -1646,7 +1700,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw20sp21_sw
 
 **STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.107** (is_sharpe 0.551, 88 fires, exit hybrid_50pct_target). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
-**Completeness: 5 of 9 steps ran.** The 4 judgment steps (5_adversarial_lens_review, 6_post_fix_recheck, 7_implement_in_engine, 8_verdict_with_denominators) are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
+**Completeness: 7 of 7 steps ran.** The 0 judgment steps () are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
 
 **Is this the right data?**
 
@@ -1707,7 +1761,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw20sp20_sw
 
 **STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.044** (is_sharpe 1.576, 71 fires, exit r_multiple_2r). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
-**Completeness: 5 of 9 steps ran.** The 4 judgment steps (5_adversarial_lens_review, 6_post_fix_recheck, 7_implement_in_engine, 8_verdict_with_denominators) are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
+**Completeness: 7 of 7 steps ran.** The 0 judgment steps () are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
 
 **Is this the right data?**
 
@@ -1768,7 +1822,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw20sp9_sw2
 
 **STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.123** (is_sharpe 0.625, 74 fires, exit earnings_blackout). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
-**Completeness: 5 of 9 steps ran.** The 4 judgment steps (5_adversarial_lens_review, 6_post_fix_recheck, 7_implement_in_engine, 8_verdict_with_denominators) are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
+**Completeness: 7 of 7 steps ran.** The 0 judgment steps () are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
 
 **Is this the right data?**
 
@@ -1829,7 +1883,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2190_sw5_sw5_gri
 
 **STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.091** (is_sharpe 0.746, 92 fires, exit fixed_4r_2r). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
-**Completeness: 5 of 9 steps ran.** The 4 judgment steps (5_adversarial_lens_review, 6_post_fix_recheck, 7_implement_in_engine, 8_verdict_with_denominators) are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
+**Completeness: 7 of 7 steps ran.** The 0 judgment steps () are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
 
 **Is this the right data?**
 
@@ -1890,7 +1944,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2190_sw10_sw10_g
 
 **STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.508** (is_sharpe 0.889, 33 fires, exit chandelier_3x). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
-**Completeness: 5 of 9 steps ran.** The 4 judgment steps (5_adversarial_lens_review, 6_post_fix_recheck, 7_implement_in_engine, 8_verdict_with_denominators) are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
+**Completeness: 7 of 7 steps ran.** The 0 judgment steps () are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
 
 **Is this the right data?**
 
@@ -1951,7 +2005,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2177_sw50_sw50_g
 
 **STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.362** (is_sharpe 2.757, 11 fires, exit time_stop_20d). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
-**Completeness: 5 of 9 steps ran.** The 4 judgment steps (5_adversarial_lens_review, 6_post_fix_recheck, 7_implement_in_engine, 8_verdict_with_denominators) are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
+**Completeness: 7 of 7 steps ran.** The 0 judgment steps () are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
 
 **Is this the right data?**
 
@@ -2012,7 +2066,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2183_sw30_sw30_g
 
 **STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.196** (is_sharpe 0.282, 79 fires, exit hybrid_50pct_target). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
-**Completeness: 3 of 9 steps ran.** The 6 judgment steps (3_outlier_discrepancy_sweep, 5_adversarial_lens_review, 6_post_fix_recheck, 6b_equivalence_class_check, 7_implement_in_engine, 8_verdict_with_denominators) are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
+**Completeness: 5 of 7 steps ran.** The 2 judgment steps (3_outlier_discrepancy_sweep, 6b_equivalence_class_check) are NOT automated and remain outstanding - this evidence package is incomplete by design, which is different from clean.
 
 **Is this the right data?**
 
