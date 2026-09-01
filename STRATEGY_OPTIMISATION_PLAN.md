@@ -2449,10 +2449,19 @@ per-arm env (run_wave.py:190-202), so a wave spec whose arms set
 battery. The spec + manifest are written at launch time per §1.0-§1.3; launch
 requires the owner's explicit go in the launch turn.
 
-**Couplings and cautions** — `STRAT_EMA_SPAN` is read by smc_breaker_block_long
-/ _short AND this strategy (screener.py:4407/4442/6656): **P9 span configs are
-valid ONLY as solo-subset runs; never set it on a multi-strategy run.** Table D's
-`sw`/`sp` and all D-2 axes are smc-spec keys (see §6.4b caveat, S6-B2500).
+**Couplings and cautions** — TWO couplings, one per knob class, and both make
+every config in this programme SOLO-SUBSET-ONLY. (1) env knob: `STRAT_EMA_SPAN`
+is read by smc_breaker_block_long / _short AND this strategy
+(screener.py:4407/4442/6656) — never set it on a multi-strategy run. (2)
+artifact tag (S6-B2499b, found auditing consumers): `INST_PERSIST_CACHE_TAG`
+re-routes the WHOLE persistence artifact for the engine process, and
+`committed_growth_holders` is ALSO consumed by `strat_simple_below_ema_50_short`
+(screener.py:6144, the B1422 selectivity gate) — so a tagged producer-config run
+with more than the target strategy in its subset silently alters that
+strategy's gate input too. `strat_institutional_multi_quarter_persistence_long`
+(screener.py:6611) reads `persistent_holders_4q`, which this sweep measurably
+does not move. Table D's `sw`/`sp` and all D-2 axes are smc-spec keys (see
+§6.4b caveat, S6-B2500).
 
 **Cheapest next action** — grade the P7/P8 FREE levels off the existing R5 cube:
 zero engine hours, both counts persisted at 100 % coverage (S6-B2501).
