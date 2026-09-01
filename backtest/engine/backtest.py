@@ -1206,15 +1206,25 @@ class BacktestEngine:
             elapsed_s = (time.time() - self._run_start_time
                          if self._run_start_time else 0.0)
             elapsed_h = elapsed_s / 3600.0
+            # S6-B2492: THIS is the guard that killed cfg1 at 16.10h, of
+            # which 15.32h was the machine asleep. B2490 taught the
+            # supervisor to tell those apart but left this site reading raw
+            # wall-clock - the sibling the GENERALIZATION MANDATE is about.
+            # The GATE still uses elapsed_h (owner ruling S6-B2491 pending);
+            # only the reporting distinguishes them.
+            suspended_h = getattr(self, "_suspended_seconds", 0.0) / 3600.0
+            active_h = max(0.0, elapsed_h - suspended_h)
             if i % 20 == 0:
                 # Batch 394: emit elapsed_hours in the progress line so the
                 # external monitor (W1/W12) can grep wall-time without
                 # needing to compute from start-of-log.
                 logger.info(
-                    "Progress: %d/%d [%s] open=%d closed=%d elapsed_hours=%.2f",
+                    "Progress: %d/%d [%s] open=%d closed=%d "
+                    "elapsed_hours=%.2f suspended_hours=%.2f "
+                    "active_hours=%.2f",
                     i, len(trading_days), as_of,
                     len(self.open_trades), len(self.closed_trades),
-                    elapsed_h,
+                    elapsed_h, suspended_h, active_h,
                 )
             # WARN once at warn_run_hours threshold.
             if (self.warn_run_hours is not None
@@ -1233,9 +1243,12 @@ class BacktestEngine:
                     and elapsed_h >= self.max_run_hours):
                 logger.error(
                     "Batch 394 WALL-TIME KILL: elapsed_hours=%.2f >= "
-                    "max_run_hours=%s; flushing final checkpoint and "
-                    "exiting with code 1",
-                    elapsed_h, self.max_run_hours,
+                    "max_run_hours=%s (suspended=%.2fh active=%.2fh). "
+                    "S6-B2492: a large suspended figure means the MACHINE "
+                    "SLEPT and this run was healthy - the kill is on "
+                    "wall-clock by design, pending owner ruling S6-B2491. "
+                    "Flushing final checkpoint and exiting with code 1",
+                    elapsed_h, self.max_run_hours, suspended_h, active_h,
                 )
                 try:
                     if self.closed_trades:

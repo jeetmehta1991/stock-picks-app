@@ -5342,3 +5342,39 @@ When a test asserts a hardcoded set/list of expected values, it must either BUIL
 *Why this is a checklist line and NOT a gate:* the council was 0 of 5 in favour of building one. First Principles: *'each hardcodes the literal shape of one caught bug into infra that runs every turn forever'*; the Executor: *'a checklist line catches this at write-time, forever, for free - a gate catches it at commit-time at the cost of another gate a future agent has to reason about, corpus-maintain, and debug when it false-positives.'* The detection question (was this literal typed from a definition or from a sample) is undetectable - both compile to the same tuple.
 
 *Enforced by:* authored practice at pin-writing time. **NOT mechanised, deliberately.**
+
+
+## #287 - TOTAL INSTRUMENT SILENCE THAT ENDS NORMALLY MEANS THE MACHINE STOPPED, NOT THE CODE (L731 / S6-B2488)
+
+**Trigger:** any long-running job that appears to have hung - a stalled
+counter, a frozen heartbeat, a phase duration wildly out of family.
+
+**Before diagnosing a code defect, ask the operating system.** A hang leaves
+PARTIAL evidence: some threads advance, exception handlers fire, logs
+dribble. **Total silence that then ENDS NORMALLY is not a hang** - it is a
+process that was not running, and a process can stop running with no bug in
+it. On Windows one command settles it:
+`Get-WinEvent -ProviderName Microsoft-Windows-Kernel-Power` over the window;
+Event 42 is entering sleep, 107 is resume, 187 is an explicit
+SetSuspendState call.
+
+**MEASURED (B2481 cfg1):** a screen day reported dur=55213.961s against a
+66 s median. The machine slept 3 seconds after the last heartbeat and woke
+15.3 hours later; real compute was about 32 seconds. Because `time.time()`
+counts suspended time, the cap killed a HEALTHY run at elapsed_hours=16.10.
+I published a code-defect RCA first, then a GIL hypothesis which its own
+probe refuted (a genuinely GIL-holding call still yielded 8pct of beats;
+this yielded exactly 0pct - **exactly zero is a different signature**).
+
+**Two rules follow.**
+(a) **No in-process watchdog crosses a suspend.** Thread, subprocess, signal
+handler and cron are all frozen. L637's "outside the guarded flow" has a
+THIRD property beyond control flow and scheduler: the machine being powered.
+Design for TOLERATE, not prevent - a run cannot refuse an explicit user
+suspend and should not try.
+(b) **Any wall-clock figure that GATES something must state suspended and
+active separately.** Sweep siblings when you fix one: B2490 fixed the
+supervisor's reporting and left the in-loop cap - the guard that actually
+fired - reading raw wall-clock, closed only by B2492.
+
+**Pins:** test_b2490 x2, test_b2492.

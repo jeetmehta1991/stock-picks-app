@@ -29727,3 +29727,24 @@ def test_b2490_supervisor_reports_suspended_and_active_separately():
 
     # the kill line must say BOTH, so a sleep-killed run is legible as such
     assert "suspended=%.2fh active=%.2fh" in src
+
+
+def test_b2492_the_in_loop_cap_is_suspension_aware_too():
+    """S6-B2492: the SIBLING B2490 missed - and the one that actually fired.
+
+    B2490 taught the supervisor to separate suspended from active time, but
+    the guard that killed cfg1 at 16.10h is the IN-LOOP cap, which was still
+    reading raw wall-clock. A retroactive sweep for wall-clock elapsed
+    measurements found 4 gating sites; this pins the one that fired.
+    Fixing the reporter and leaving the killer is exactly the
+    under-generalisation the mandate prohibits.
+    """
+    import inspect
+
+    from backtest.engine.backtest import BacktestEngine
+
+    src = inspect.getsource(BacktestEngine.run)
+    assert "suspended_h = getattr(self, \"_suspended_seconds\", 0.0) / 3600.0" in src
+    assert "active_h = max(0.0, elapsed_h - suspended_h)" in src
+    assert "suspended_hours=%.2f" in src, "progress line must carry it"
+    assert "(suspended=%.2fh active=%.2fh)" in src, "kill line must carry it"
