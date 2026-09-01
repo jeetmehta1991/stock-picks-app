@@ -18293,3 +18293,49 @@ deciding whether to gate on this will read the function, not this entry.
 **Mechanism:** test_b2495_docstring_does_not_overclaim_what_the_floor_excludes
 plus the live-interval boundary assertions in test_b2490. Anchored at
 CHECKLIST #287, which already carries [[L731]] and [[L732]].
+
+
+### L734 - The boundary matrix is a design review; run it against the RECOMMENDATION, not the implementation
+
+**B2502/B2507, 2026-09-01.** The cap-semantics change shipped this turn with a
+design correction found in an unusual place: **the pin's boundary matrix
+falsified the twice-presented recommendation before any run**. The recommended
+3x wall backstop returned "wall_backstop" for f(16.10, 15.32, 4.0) - the exact
+cfg1 incident the whole change exists to survive - because any overnight sleep
+exceeds 3x a sane cap. The backstop would have re-killed every sleep-heavy run
+while presenting as their protection.
+
+**The general rule: a boundary matrix over the MOTIVATING INCIDENT'S OWN
+NUMBERS is the cheapest design review that exists, and it belongs BEFORE the
+recommendation is presented, not after implementation begins.** I presented
+the backstop twice, with a written case against, measured figures, and an
+owner go - and the one check that killed it was mechanical: plug the incident
+into the proposed rule and read the output. Nothing about the presentations
+was wrong on their own terms; the design was never EXECUTED against its own
+test case. An advocate's case-against enumerates qualitative risks (mine
+correctly named stall-forgiveness) and still misses the arithmetic failure,
+because prose reasons about the rule while the matrix RUNS it.
+
+**Two compliance failures from the same turn, recorded here per #194, both
+against existing items - no new item warranted:**
+(a) **compliance failure against #187**: cfg1's resume launched before
+`verify_universe_artifact.py` ran on its tickers file this turn. I verified
+the SHA against the manifest and read that as coverage; the mechanical gate
+wants the CONTENT check against the baseline cube, and it is right to - a
+sha proves the file is unchanged, not that it was ever the right file (L445's
+class exactly). Run after the fact: broad universe, 200/200 in the cube,
+exit 0 - the launch was sound, the ORDER was not.
+(b) **compliance failure against #185, the FIFTH instance of the
+monitor-cadence class**: the launch-turn cron promised condition-shaped
+reporting (report state, escalate on death) rather than the ruled shape -
+PERIODIC and UNCONDITIONAL, where a quiet interval is itself the report.
+Re-armed with the required language in the same close (job 44ed1f43 replacing
+cfe3e959). Five instances means the class survives every anchor it has; what
+finally encodes it is the gate's own wording check, which is the mechanism.
+
+**Mechanism for this entry's rule:** test_b2502_kill_decision_boundary_matrix
+IS the matrix, permanently pinned to the incident's real numbers; its
+docstring records that the first design died on it. Anchored at CHECKLIST
+#226 (prove-it-can-fail), whose scope this extends from "prove the PIN can
+fail" to "prove the DESIGN survives its own motivating case" - an extension
+recorded here and in the #226 citation, not a new item (#136).
