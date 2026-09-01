@@ -5395,3 +5395,11 @@ credited 150 s. **A detector that cannot separate two causes must not be wired
 to a control that assumes it can** - reporting is safe, gating is not.
 
 **Pins:** test_b2490 x2, test_b2492, test_b2495, test_b2496.
+
+**#226 SCOPE EXTENSION (L734):** prove-it-can-fail extends from pins to
+DESIGNS - before presenting any rule/threshold/mechanism recommendation,
+evaluate it on the motivating incident's own numbers. One function call.
+MEASURED: the 3x wall backstop survived two owner presentations with a
+written case-against and died on f(16.10, 15.32, 4.0) - prose reasons about
+a rule, the matrix runs it. Mechanism: test_b2502's boundary matrix, pinned
+to the incident's real numbers; test_b2508 holds this rule in the skill.

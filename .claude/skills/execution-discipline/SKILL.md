@@ -3942,6 +3942,17 @@ Owner, verbatim: **"No arbitrary decisions. That's an absolute red flag."** and
    settings it runs with. And **a detector that cannot separate two causes
    must not be wired to a control that assumes it can**: reporting is safe,
    gating is not.
+   (d) **A BOUNDARY MATRIX OVER THE MOTIVATING INCIDENT'S OWN NUMBERS IS THE
+   CHEAPEST DESIGN REVIEW THAT EXISTS - RUN IT AGAINST THE RECOMMENDATION,
+   BEFORE PRESENTING IT (L734).** MEASURED: the 3x wall backstop was presented
+   to the owner TWICE, with a written case-against and an owner go - and died
+   on ONE mechanical evaluation: f(16.10, 15.32, 4.0) returned wall_backstop,
+   killing the exact cfg1 incident the change exists to survive, because any
+   overnight sleep exceeds 3x a sane cap. **Prose reasons ABOUT a rule; the
+   matrix RUNS it** - an advocate's case-against enumerates qualitative risks
+   and still misses the arithmetic failure. Cost: one function call per case
+   (test_b2502's matrix is eleven asserts). Extends #226 from "prove the PIN
+   can fail" to "prove the DESIGN survives its own motivating case".
 
 ## TRIPWIRE TABLE — recurring mistake classes and their pre-action checks
 
@@ -3958,6 +3969,7 @@ check FIRST. Each row is a real failure that recurred until its check existed.
 | Ship a fix to any wall-clock / timing / resource measurement | Grep the IDENTIFIER tree-wide; split hits into GATES vs REPORTS; the gates are the siblings | L732 / #287 (B2490 fixed the supervisor, left the in-loop cap that actually fired) |
 | Write a pin for a fix you just made | Ask what it would catch at a site you did NOT edit; a source-text pin proves wiring, a behaviour pin proves the rule - the fix needs both | L732 (64 of 1087 unit tests are source-text pins; the B2492 gap was zero coverage at site 2, not pin style) |
 | Write or read a docstring saying what something will NOT do / does NOT cover / never fires on | Compute the boundary at the LIVE parameter values and put the numbers in the docstring; negative claims are believed, never checked | L733 / #287c ("a slow disk never registers as a suspend" - at interval 30 s a 180 s stall is credited 150 s) |
+| Present a rule/threshold/mechanism RECOMMENDATION to the owner | Evaluate it on the motivating incident's OWN numbers first - one function call; prose reasons about the rule, the matrix runs it | L734 / #226 ext (the 3x backstop survived two presentations and died on f(16.10, 15.32, 4.0)) |
 | Claim a monitor/job is armed or running | `Get-Process` (Windows truth) + evidence artifact; check existing PIDs before launching | CHECKLIST #121/#124; `feedback_powershell_authoritative_for_windows_process_truth` |
 | Declare an audit/review complete | Did you check the HAPPY-PATH output artifacts (not just failure branches)? Both code AND docs? | CHECKLIST #128 (B1019 0-byte monitor.log) |
 | Interpret a signal/field name | Verify semantics in producer source (vol_spike_15x = 1.5x, NOT 15x) | `feedback_vol_spike_naming_convention` |

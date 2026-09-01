@@ -30064,3 +30064,28 @@ def test_b2505_table_d_axes_come_from_the_family_registry():
                            "is_sharpe": 0.5, "class_size": 1, "admit": {}}]}}
     d2s = "\n".join(pvt.table_d_params(smc_grid))
     assert "P1 swing" in d2s and "P2 close_mit" in d2s
+
+
+
+def test_b2508_l734_design_matrix_rule_is_anchored():
+    """L734 must live in the skill and CHECKLIST, not only LEARNINGS (#197).
+
+    Single-line fragments, whitespace-normalised against the target file
+    (S6-B2496b: a fragment spanning a line wrap fails on a correct file).
+    """
+    import io
+    import pathlib
+
+    root = pathlib.Path(__file__).resolve().parent.parent.parent
+    skill = " ".join(io.open(root / ".claude" / "skills" /
+                             "execution-discipline" / "SKILL.md",
+                             encoding="utf-8").read().split())
+    check = " ".join(io.open(root / "CHECKLIST.md", encoding="utf-8")
+                     .read().split())
+    for frag, where in (
+            ("RUN IT AGAINST THE RECOMMENDATION", skill),
+            ("the matrix RUNS it", skill),
+            ("L734", skill),
+            ("prove-it-can-fail extends from pins to DESIGNS", check),
+            ("L734", check)):
+        assert frag in where, "L734 anchoring lost: %s" % frag
