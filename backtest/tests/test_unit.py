@@ -25455,10 +25455,14 @@ def _b2126_kill_block_writes(src: str) -> dict:
         if not isinstance(node, ast.If):
             continue
         test_src = ast.unparse(node.test)
-        if "max_run_hours" not in test_src or ">=" not in test_src:
+        # S6-B2502b: the in-loop guard is now `if _kill_why:` over the shared
+        # kill_decision() and its message reads RUN-HOURS KILL. The property
+        # this helper feeds (the kill block writes BOTH checkpoint halves)
+        # is unchanged.
+        if "_kill_why" not in test_src:
             continue
         body = "\n".join(ast.unparse(b) for b in node.body)
-        if "WALL-TIME KILL" not in body:
+        if "RUN-HOURS KILL" not in body:
             continue
         return {
             "writes_trade_log": "trade_log_checkpoint.csv" in body,
@@ -25655,12 +25659,14 @@ def test_b2132_wall_time_cap_is_checked_every_day_not_every_20():
     kill_nodes, guarded = [], []
     for parent in ast.walk(tree):
         for child in ast.iter_child_nodes(parent):
-            if isinstance(child, ast.If) and "max_run_hours" in ast.unparse(child.test) \
-                    and ">=" in ast.unparse(child.test):
+            # S6-B2502b: the in-loop kill is `if _kill_why:` over the shared
+            # kill_decision(); the property (evaluated EVERY day, never under
+            # a modulo guard) is unchanged.
+            if isinstance(child, ast.If) and "_kill_why" in ast.unparse(child.test):
                 kill_nodes.append(child)
                 if isinstance(parent, ast.If) and modulo_guarded(parent):
                     guarded.append(child)
-    assert kill_nodes, "the wall-time kill check was not found - did it move?"
+    assert kill_nodes, "the run-hours kill check was not found - did it move?"
     assert not guarded, (
         "the wall-time KILL is nested under a modulo guard, so the cap is "
         "only checked every N sim-days - the B2128b bug. Hoist it out; the "
@@ -25672,7 +25678,7 @@ def test_b2132_wall_time_cap_is_checked_every_day_not_every_20():
     # min-lineno comparison now reads the wrong pair. The property pinned
     # here concerns the IN-LOOP check.
     loop_elapsed = src.index("elapsed_s = (time.time() - self._run_start_time")
-    loop_kill = src.index("Batch 394 WALL-TIME KILL")
+    loop_kill = src.index("Batch 394 RUN-HOURS KILL")
     assert loop_elapsed < loop_kill, (
         "in the day loop, elapsed must be computed before the kill check")
     # and the out-of-loop supervisor kill must EXIST (B2148/L637): the
@@ -25796,9 +25802,10 @@ def test_b2145_no_new_loop_gated_writer_without_a_supervisor():
     from pathlib import Path as _P2
     _src = (_P2(__file__).resolve().parents[1] / "engine" / "backtest.py"
             ).read_text(encoding="utf-8")
-    assert "if (self.max_run_hours is not None" in _src, (
-        "the wall-time cap moved; re-derive whether it still shares the day "
-        "loop's control flow (L637)")
+    assert "_kill_why = self.kill_decision(elapsed_h, sleep_credit_h," in _src, (
+        "the run-hours cap moved; re-derive whether it still shares the day "
+        "loop's control flow (L637). S6-B2502b renamed the guard from the "
+        "bare max_run_hours comparison to the shared kill_decision().")
 
 
 def test_b2148_supervisor_kills_a_run_whose_day_never_ends(tmp_path):
@@ -25868,7 +25875,14 @@ def test_b2148_supervisor_kills_a_run_whose_day_never_ends(tmp_path):
     st = out / "engine_state.json"
     assert st.exists(), "the kill must leave resumable state on disk"
     state = _j.loads(st.read_text())
-    assert state["status"] == "supervisor_wall_time_kill"
+    # S6-B2502b: the status now names the ARM that fired. A hung day with a
+    # live supervisor accrues no sleep credit, so active == elapsed and the
+    # kill is the active cap - which is exactly the pre-B2491 protection
+    # this test exists to prove still works.
+    assert state["status"] == "supervisor_active_cap", (
+        "a hung day must die on the ACTIVE cap - if this reads "
+        "wall_time_kill the B2502b rename regressed, and any other value "
+        "means the hung-day protection weakened")
     assert state["sim_day_index"] == 7
     assert state["open_trades"] == 1
 
@@ -29807,9 +29821,13 @@ def test_b2492_the_in_loop_cap_is_suspension_aware_too():
 
     src = inspect.getsource(BacktestEngine.run)
     assert "suspended_h = getattr(self, \"_suspended_seconds\", 0.0) / 3600.0" in src
-    assert "active_h = max(0.0, elapsed_h - suspended_h)" in src
+    # S6-B2502b evolved this pin with the design: active is now computed
+    # from the CAP accumulator (sleep credit, 30-min floor), while
+    # suspended_h stays the REPORTING figure - the property this test
+    # pins (the in-loop cap is suspension-aware) is unchanged.
+    assert "active_h = max(0.0, elapsed_h - sleep_credit_h)" in src
     assert "suspended_hours=%.2f" in src, "progress line must carry it"
-    assert "(suspended=%.2fh active=%.2fh)" in src, "kill line must carry it"
+    assert "suspended=%.2fh active=%.2fh" in src, "kill line must carry it"
 
 
 
@@ -29848,3 +29866,103 @@ def test_b2496_l733_is_anchored_where_it_gets_read():
     flat = " ".join(check.split())
     assert "must not be wired to a control that assumes it can" in flat
     assert "compute the boundary at the LIVE parameter values" in flat
+
+
+def test_b2502_kill_decision_boundary_matrix():
+    """S6-B2491/B2502b: the cap gates on ACTIVE = elapsed - CREDITED sleep.
+
+    THE FIRST DESIGN DIED ON THIS MATRIX BEFORE ANY RUN: the recommended
+    3x wall backstop returned "wall_backstop" for f(16.10, 15.32, 4.0) -
+    the exact cfg1 incident the change exists to survive, because any
+    overnight sleep exceeds 3x a sane cap. The forgiveness bound moved to
+    the GAP (sleep_credit_seconds, floor 30 min), which a stall cannot
+    reach, so no wall ceiling exists and the matrix below asserts that.
+    """
+    from backtest.engine.backtest import BacktestEngine
+
+    f = BacktestEngine.kill_decision
+    assert not hasattr(BacktestEngine, "WALL_BACKSTOP_MULTIPLE"), (
+        "the backstop was removed BY MEASUREMENT - reintroducing it "
+        "re-kills every overnight-sleep run")
+
+    # healthy / boundaries of the active cap
+    assert f(1.0, 0.0, 4.0) is None
+    assert f(3.99, 0.0, 4.0) is None
+    assert f(4.0, 0.0, 4.0) == "active_cap", "AT the cap kills, not past it"
+
+    # the measured incident: 16.10h wall, 15.32h credited sleep -> survives
+    assert f(16.10, 15.32, 4.0) is None, (
+        "cfg1's real input - 0.78h of compute - must not kill")
+    # the same run once it has done 4h of REAL compute dies on the cap
+    assert f(19.32, 15.32, 4.0) == "active_cap"
+    # a weekend-long sleep is fine as long as compute stays under cap
+    assert f(60.0, 57.0, 4.0) is None
+
+    # a stall-y run accrues NO credit (gaps under 30 min credit nothing),
+    # so its active == elapsed and the old wall-clock kill applies intact
+    assert f(4.2, 0.0, 4.0) == "active_cap"
+
+    # fail-closed / degenerate inputs
+    assert f(99.0, 0.0, None) is None, "no cap configured -> never kills"
+    assert f(None, 0.0, 4.0) is None, "no elapsed yet -> no decision"
+    assert f(2.0, -5.0, 4.0) is None, (
+        "negative credit junk clamps to 0, not to extra elapsed")
+    assert f(4.0, None, 4.0) == "active_cap", (
+        "credit None reads as 0.0 - the conservative direction: with no "
+        "detector the semantics reduce to the old wall-clock kill")
+
+
+def test_b2502b_sleep_credit_floor_separates_stall_from_sleep():
+    """S6-B2502b: two accumulators, two questions (L728).
+
+    suspension_seconds REPORTS from a 2.5-min floor; sleep_credit_seconds
+    CREDITS the cap only from a 30-min floor. The band between them - the
+    ambiguous stall - is reported and never forgiven, which is what kills
+    the L733 objection at the source.
+    """
+    from backtest.engine.backtest import BacktestEngine as E
+
+    assert E.SLEEP_CREDIT_MIN_S == 1800.0
+    # a 3-minute stall: REPORTED as suspension, credited NOTHING
+    assert E.suspension_seconds(180.0, 30.0) == 150.0
+    assert E.sleep_credit_seconds(180.0, 30.0) == 0.0
+    # a 29-minute gap: still ambiguous, still no credit
+    assert E.sleep_credit_seconds(1740.0, 30.0) == 0.0
+    # a 30-minute gap: unambiguous sleep, credited
+    assert E.sleep_credit_seconds(1800.0, 30.0) == 1770.0
+    # the real cfg1 gap
+    assert abs(E.sleep_credit_seconds(55196.0, 30.0) / 3600.0 - 15.32) < 0.02
+    # degenerates fail closed
+    assert E.sleep_credit_seconds(0.0, 30.0) == 0.0
+    assert E.sleep_credit_seconds(-5.0, 30.0) == 0.0
+    assert E.sleep_credit_seconds(1800.0, 0.0) == 0.0
+
+
+def test_b2502_both_gating_sites_call_the_one_decision():
+    """L732 applied in advance: the semantics live in ONE function and both
+    the supervisor thread and the in-loop cap consume it - the B2490/B2492
+    incident was exactly these two sites drifting apart.
+    """
+    import inspect
+
+    from backtest.engine.backtest import BacktestEngine
+
+    sup = inspect.getsource(BacktestEngine._start_run_supervisor)
+    assert "_why = self.kill_decision(_el, _cr_h, self.max_run_hours)" in sup, (
+        "the supervisor must pass the CAP accumulator (sleep credit), not "
+        "the reporting one - passing _sh would forgive stalls")
+    assert "SUPERVISOR KILL [%s]" in sup, "the kill line names its arm"
+
+    run = inspect.getsource(BacktestEngine.run)
+    assert "_kill_why = self.kill_decision(elapsed_h, sleep_credit_h," in run
+    assert "RUN-HOURS KILL [%s]" in run, "the kill line names its arm"
+    # the WARN threshold moved to active hours with the kill (coherence)
+    assert "active_h >= self.warn_run_hours" in run
+    assert "elapsed_h >= self.warn_run_hours" not in run, (
+        "a wall-based warn beside an active-based kill would fire on a "
+        "sleeping run it will never kill")
+    # active is computed from the CAP accumulator, not the reporting one
+    assert "active_h = max(0.0, elapsed_h - sleep_credit_h)" in run
+    # the heartbeat carries all three figures
+    sup2 = inspect.getsource(BacktestEngine._start_run_supervisor)
+    assert '"sleep_credit_hours": round(_cred_h, 4),' in sup2

@@ -723,15 +723,78 @@ class BacktestEngine:
         earlier version of this docstring claimed "a slow disk never
         registers as a suspend"; that is true of JITTER and false of a
         genuine stall, and the difference matters because credited seconds
-        are seconds a cap will not count. The ambiguity is why S6-B2490
-        ships REPORTING ONLY and the kill still fires on wall-clock: a
-        detector that cannot tell sleep from stall must not be allowed to
-        extend a run's licence to live.
+        are seconds a cap will not count. That ambiguity is why S6-B2490
+        shipped REPORTING ONLY at first, and why the CAP now reads a
+        SEPARATE, stricter accumulator: sleep_credit_seconds credits only
+        gaps >= 30 min (unambiguous machine sleep), so a stall this
+        function reports is never a stall the cap forgives. S6-B2491
+        (owner go 2026-09-01) gates the kill on active hours computed from
+        that credit, via kill_decision(), which both gating sites call.
         """
         if gap_s <= 0 or interval_s <= 0:
             return 0.0
         threshold = max(5.0 * interval_s, 120.0)
         return (gap_s - interval_s) if gap_s > threshold else 0.0
+
+    # S6-B2502b: only a gap at least this long earns CAP credit. A disk
+    # stall, swap storm or GC pause lasts minutes; a machine suspend lasts
+    # tens of minutes to hours. Gaps between the reporting threshold
+    # (max(5x interval, 120 s)) and this floor are AMBIGUOUS and count as
+    # WORK - the conservative direction (they can only shorten a run's
+    # budget, never extend it).
+    SLEEP_CREDIT_MIN_S = 1800.0
+
+    @staticmethod
+    def sleep_credit_seconds(gap_s: float, interval_s: float) -> float:
+        """S6-B2502b: cap credit implied by one heartbeat gap, else 0.0.
+
+        DISTINCT FROM suspension_seconds, deliberately (L728 - one field
+        must not carry two questions): suspension_seconds answers the
+        REPORTING question (how long was the machine not computing, floor
+        2.5 min) and this answers the CAP question (how much of that is
+        unambiguous machine sleep, floor 30 min). A 3-minute disk stall is
+        reported as suspension and earns NO cap credit.
+        """
+        if gap_s <= 0 or interval_s <= 0:
+            return 0.0
+        if gap_s < BacktestEngine.SLEEP_CREDIT_MIN_S:
+            return 0.0
+        return gap_s - interval_s
+
+    @staticmethod
+    def kill_decision(elapsed_h, sleep_credit_h, max_run_hours):
+        """S6-B2491/B2502b: what the run-hours cap measures, decided ONCE.
+
+        Returns None (keep running) or "active_cap".
+
+        OWNER RULING IMPLEMENTED (2026-09-01, "address and implement all
+        open tickets" over the twice-presented S6-B2491 recommendation):
+        the cap gates on ACTIVE hours - wall-clock minus CREDITED machine
+        sleep - because cfg1 was killed at 16.10 h wall of which 15.32 h
+        was the laptop asleep and 0.78 h was compute (L731).
+
+        DESIGN CORRECTION, FOUND BY THIS FUNCTION'S OWN BOUNDARY MATRIX
+        BEFORE ANY RUN: the recommendation carried a wall-clock backstop
+        at 3x the cap to bound detector forgiveness (L733) - and the
+        matrix showed f(16.10, 15.32, 4.0) trips a 12 h backstop, so the
+        backstop KILLS THE MOTIVATING INCIDENT: any overnight sleep
+        exceeds 3x a sane cap. The forgiveness bound therefore moved to
+        the GAP: only gaps >= SLEEP_CREDIT_MIN_S (30 min) earn credit,
+        which a stall physically cannot reach, so no wall ceiling is
+        needed and none exists.
+
+        FAIL DIRECTION IS CONSERVATIVE: with no credit accrued (supervisor
+        dead, or only short gaps), active == elapsed and this reduces
+        exactly to the old wall-clock kill. Both gating sites - the
+        supervisor thread and the in-loop cap - call THIS function (L732).
+        """
+        if max_run_hours is None or elapsed_h is None:
+            return None
+        credit_h = max(0.0, float(sleep_credit_h or 0.0))
+        active_h = max(0.0, float(elapsed_h) - credit_h)
+        if active_h >= float(max_run_hours):
+            return "active_cap"
+        return None
 
     def _start_run_supervisor(self) -> None:
         """B2148 (S6-B2143a/b, L637): a watchdog that shares NO control flow
@@ -774,6 +837,14 @@ class BacktestEngine:
                 if _susp > 0.0:
                     self._suspended_seconds = (
                         getattr(self, "_suspended_seconds", 0.0) + _susp)
+                    # S6-B2502b: the CAP credit is a separate, stricter
+                    # accumulator - only unambiguous sleep (>= 30 min gap)
+                    # buys a run time back; a stall is reported above and
+                    # credited nothing.
+                    _cr = self.sleep_credit_seconds(_gap, interval)
+                    if _cr > 0.0:
+                        self._sleep_credit_seconds = (
+                            getattr(self, "_sleep_credit_seconds", 0.0) + _cr)
                     logger.warning(
                         "B2490 SUSPENSION DETECTED: %.0fs gap between beats "
                         "(interval=%.0fs). The machine slept; no compute "
@@ -788,10 +859,12 @@ class BacktestEngine:
                     elapsed_h = ((_stime.time() - self._run_start_time) / 3600.0
                                  if self._run_start_time else 0.0)
                     _susp_h = getattr(self, "_suspended_seconds", 0.0) / 3600.0
+                    _cred_h = getattr(self, "_sleep_credit_seconds", 0.0) / 3600.0
                     beat = {
                         "elapsed_hours": round(elapsed_h, 4),
                         "suspended_hours": round(_susp_h, 4),
-                        "active_hours": round(max(0.0, elapsed_h - _susp_h), 4),
+                        "sleep_credit_hours": round(_cred_h, 4),
+                        "active_hours": round(max(0.0, elapsed_h - _cred_h), 4),
                         "sim_day_index": getattr(self, "_last_sim_day_index", -1),
                         "sim_date": str(getattr(self, "_last_sim_date", "")),
                         "closed_trades": len(self.closed_trades),
@@ -808,23 +881,23 @@ class BacktestEngine:
                 except Exception as _hb_exc:      # never kill the watchdog
                     logger.warning("B2148 heartbeat write failed: %r", _hb_exc)
                 try:
-                    if (self.max_run_hours is not None
-                            and self._run_start_time
-                            and (_stime.time() - self._run_start_time)
-                            >= self.max_run_hours * 3600.0):
-                        _el = ((_stime.time() - self._run_start_time)
-                               / 3600.0)
-                        _sh = getattr(self, "_suspended_seconds", 0.0) / 3600.0
+                    _el = ((_stime.time() - self._run_start_time) / 3600.0
+                           if self._run_start_time else None)
+                    _sh = getattr(self, "_suspended_seconds", 0.0) / 3600.0
+                    _cr_h = getattr(self, "_sleep_credit_seconds", 0.0) / 3600.0
+                    _why = self.kill_decision(_el, _cr_h, self.max_run_hours)
+                    if _why:
                         logger.error(
-                            "B2148 SUPERVISOR KILL: elapsed_hours=%.2f >= "
-                            "max_run_hours=%s (suspended=%.2fh active=%.2fh). "
-                            "S6-B2490: if suspended is large this run was "
-                            "HEALTHY and the machine slept - the kill is on "
-                            "WALL-CLOCK by design, pending owner ruling. "
+                            "B2148 SUPERVISOR KILL [%s]: elapsed=%.2fh "
+                            "(suspended=%.2fh active=%.2fh sleep_credit=%.2fh) "
+                            "cap=%sh. S6-B2491 IMPLEMENTED: the cap gates on "
+                            "ACTIVE hours = elapsed minus CREDITED sleep "
+                            "(gaps >= 30 min only - a stall earns nothing). "
                             "Flushing state and hard-exiting.",
-                            _el, self.max_run_hours, _sh, max(0.0, _el - _sh),
+                            _why, _el, _sh, max(0.0, _el - _cr_h), _cr_h,
+                            self.max_run_hours,
                         )
-                        self._emit_kill_state("supervisor_wall_time_kill")
+                        self._emit_kill_state("supervisor_%s" % _why)
                         _so._exit(1)
                 except Exception as _k_exc:
                     logger.error("B2148 supervisor kill path failed: %r", _k_exc)
@@ -1224,7 +1297,11 @@ class BacktestEngine:
             # The GATE still uses elapsed_h (owner ruling S6-B2491 pending);
             # only the reporting distinguishes them.
             suspended_h = getattr(self, "_suspended_seconds", 0.0) / 3600.0
-            active_h = max(0.0, elapsed_h - suspended_h)
+            # S6-B2502b: the cap credits only unambiguous sleep (>= 30 min
+            # gaps); suspended_h stays the REPORTING figure and active_h is
+            # the CAP figure - two questions, two fields (L728).
+            sleep_credit_h = getattr(self, "_sleep_credit_seconds", 0.0) / 3600.0
+            active_h = max(0.0, elapsed_h - sleep_credit_h)
             if i % 20 == 0:
                 # Batch 394: emit elapsed_hours in the progress line so the
                 # external monitor (W1/W12) can grep wall-time without
@@ -1237,9 +1314,10 @@ class BacktestEngine:
                     len(self.open_trades), len(self.closed_trades),
                     elapsed_h, suspended_h, active_h,
                 )
-            # WARN once at warn_run_hours threshold.
+            # WARN once at warn_run_hours threshold - on ACTIVE hours,
+            # matching what the kill measures (S6-B2491).
             if (self.warn_run_hours is not None
-                    and elapsed_h >= self.warn_run_hours
+                    and active_h >= self.warn_run_hours
                     and not self._warn_fired):
                 logger.warning(
                     "Batch 394 WALL-TIME WARN: elapsed_hours=%.2f >= "
@@ -1250,16 +1328,17 @@ class BacktestEngine:
                 self._warn_fired = True
             # HARD-KILL at max_run_hours threshold.  Flush a final
             # checkpoint first so partial cube is salvageable.
-            if (self.max_run_hours is not None
-                    and elapsed_h >= self.max_run_hours):
+            _kill_why = self.kill_decision(elapsed_h, sleep_credit_h,
+                                           self.max_run_hours)
+            if _kill_why:
                 logger.error(
-                    "Batch 394 WALL-TIME KILL: elapsed_hours=%.2f >= "
-                    "max_run_hours=%s (suspended=%.2fh active=%.2fh). "
-                    "S6-B2492: a large suspended figure means the MACHINE "
-                    "SLEPT and this run was healthy - the kill is on "
-                    "wall-clock by design, pending owner ruling S6-B2491. "
-                    "Flushing final checkpoint and exiting with code 1",
-                    elapsed_h, self.max_run_hours, suspended_h, active_h,
+                    "Batch 394 RUN-HOURS KILL [%s]: elapsed=%.2fh "
+                    "(suspended=%.2fh active=%.2fh sleep_credit=%.2fh) "
+                    "cap=%sh. S6-B2491 IMPLEMENTED: the cap gates on ACTIVE "
+                    "hours = elapsed minus CREDITED sleep (>= 30 min gaps "
+                    "only). Flushing final checkpoint and exiting with code 1",
+                    _kill_why, elapsed_h, suspended_h, active_h,
+                    sleep_credit_h, self.max_run_hours,
                 )
                 try:
                     if self.closed_trades:
