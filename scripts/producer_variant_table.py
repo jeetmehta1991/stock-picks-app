@@ -468,6 +468,52 @@ def _d_tier(n) -> str:
     return "?"
 
 
+# S6-B2500/B2505: Table D/D-2 axes per STRATEGY FAMILY. The smc entry
+# mirrors the previously hardcoded keys exactly (golden-diff proven at
+# landing). The institutional entry is a CONTRACT, not a description: no
+# institutional grid exists yet, so these are the config keys its future
+# grader MUST emit (pinned by test_b2505) - defining the schema now beats
+# guessing it later (L722).
+D_AXIS_FAMILIES = {
+    "smc_breaker_block": {
+        "detect": "P1_swing_length",
+        "d1": (("sw", "cfg", "P1_swing_length"), ("sp", "cfg", "P6_span")),
+        "d2": (("P1 swing", "cfg", "P1_swing_length"),
+               ("P2 close_mit", "admit", "close_mitigation"),
+               ("P3 tail_n", "admit", "tail_n"),
+               ("P4 age_bars", "admit", "age_bars_max"),
+               ("P5 break_pct", "admit", "break_pct_max"),
+               ("P6 span", "cfg", "P6_span")),
+    },
+    "institutional_committed_growth_long": {
+        "detect": "P4_min_consecutive_quarters",
+        "d1": (("sw", "cfg", "P4_min_consecutive_quarters"),
+               ("sp", "cfg", "P9_span")),
+        "d2": (("P4 minq", "cfg", "P4_min_consecutive_quarters"),
+               ("P5 lookback", "cfg", "P5_growth_lookback_quarters"),
+               ("P6 mult", "cfg", "P6_growth_multiple"),
+               ("P7 min_committed", "admit", "min_committed_growth"),
+               ("P8 fb_min_incr", "admit", "fallback_min_increased"),
+               ("P9 span", "cfg", "P9_span")),
+    },
+}
+
+
+def _d_family(cfg: dict) -> dict:
+    """Pick the axis family by its detect key; smc stays the default so the
+    existing grids render byte-identically. An UNREGISTERED family falls back
+    to smc's columns, which then render '-' - visible, never silent."""
+    for fam in D_AXIS_FAMILIES.values():
+        if fam["detect"] in (cfg or {}):
+            return fam
+    return D_AXIS_FAMILIES["smc_breaker_block"]
+
+
+def _d_axis_value(spec, cfg: dict, admit: dict):
+    _, src, key = spec
+    return (cfg if src == "cfg" else (admit or {})).get(key)
+
+
 def table_d(grids: dict[str, dict], top: int = 20) -> list[str]:
     """STEP-1 RANKED LIST - one row per (config x exit) outcome, top N.
 
@@ -506,11 +552,14 @@ def table_d(grids: dict[str, dict], top: int = 20) -> list[str]:
     rows = []
     for name, g in grids.items():
         cfg = g.get("config") or {}
+        _fam = _d_family(cfg)
         for r in (g.get("step1_ranking") or []):
             a = r.get("admit") or {}
             rows.append({
-                "config": name, "sw": cfg.get("P1_swing_length"),
-                "sp": cfg.get("P6_span"), "exit": r.get("exit"),
+                "config": name,
+                "sw": _d_axis_value(_fam["d1"][0], cfg, a),
+                "sp": _d_axis_value(_fam["d1"][1], cfg, a),
+                "exit": r.get("exit"),
                 "ci": r.get("is_ci_lo"), "n": r.get("fires"),
                 "sh": r.get("is_sharpe"), "cls": r.get("class_size"),
                 "ho": a.get("holdout_n"), "fp": a.get("full_period_n"),
@@ -596,38 +645,45 @@ def table_d_params(grids: dict[str, dict], top: int = 20) -> list[str]:
     hiding four of six swept axes was a display defect rather than a gap.
     """
     rows = []
+    fam_seen = None
     for name, g in grids.items():
         cfg = g.get("config") or {}
+        _fam = _d_family(cfg)
+        fam_seen = fam_seen or _fam
         for r in (g.get("step1_ranking") or []):
             a = r.get("admit") or {}
-            rows.append({
-                "config": name, "ci": r.get("is_ci_lo"), "n": r.get("fires"),
-                "P1": cfg.get("P1_swing_length"),
-                "P2": a.get("close_mitigation"),
-                "P3": a.get("tail_n"),
-                "P4": a.get("age_bars_max"),
-                "P5": a.get("break_pct_max"),
-                "P6": cfg.get("P6_span"),
-                "npt": a.get("npt_excluded_identity_boundary"),
-            })
+            row = {"config": name, "ci": r.get("is_ci_lo"),
+                   "n": r.get("fires"),
+                   "npt": a.get("npt_excluded_identity_boundary")}
+            for i, spec in enumerate(_fam["d2"], 1):
+                row[f"A{i}"] = _d_axis_value(spec, cfg, a)
+            rows.append(row)
     rows.sort(key=lambda r: (-(r["ci"] if r["ci"] is not None else -9e9),
                              -(r["n"] or 0)))
-    out = [
+    fam = fam_seen or D_AXIS_FAMILIES["smc_breaker_block"]
+    labels = [spec[0] for spec in fam["d2"]]
+    _is_smc = fam is D_AXIS_FAMILIES["smc_breaker_block"]
+    _preamble = (
+        # BYTE-IDENTICAL to the pre-B2505 text for smc grids (golden diff)
         "_The SIX swept axes for the same rows, same order - join on `#`. "
         "P1 swing_length, P2 close_mitigation (False = production, mitigate on "
         "high/low), P3 tail_n, P4 age_bars_max (None = production, no cap), "
         "P5 break_pct_max (None = production, no cap), P6 span. `npt_excl` = "
         "next_pivot_target was refused on this cell as boundary-spanning "
-        "(B2014), which is one of the two exits missing from 24._",
+        "(B2014), which is one of the two exits missing from 24._"
+        if _is_smc else
+        "_The swept axes for the same rows, same order - join on `#`. Axis "
+        "labels come from the per-family registry (D_AXIS_FAMILIES); `npt_excl`"
+        " = next_pivot_target refused as boundary-spanning (B2014)._")
+    out = [
+        _preamble,
         "",
-        "| # | config | P1 swing | P2 close_mit | P3 tail_n | P4 age_bars | "
-        "P5 break_pct | P6 span | npt_excl |",
-        "|---|---|---|---|---|---|---|---|---|",
+        "| # | config | " + " | ".join(labels) + " | npt_excl |",
+        "|" + "---|" * (len(labels) + 3),
     ]
     for i, r in enumerate(rows[:top], 1):
-        out.append(
-            f"| {i} | {r['config']} | {r['P1']} | {r['P2']} | {r['P3']} | "
-            f"{r['P4']} | {r['P5']} | {r['P6']} | {r['npt']} |")
+        vals = " | ".join(str(r[f"A{j}"]) for j in range(1, len(labels) + 1))
+        out.append(f"| {i} | {r['config']} | {vals} | {r['npt']} |")
     return out
 
 

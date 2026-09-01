@@ -30004,3 +30004,63 @@ def test_b2504_free_level_filter_mirrors_the_engine_gate():
 
     # engine default semantics: absent key was parsed as 0 upstream, so a
     # no-key row IS a committed==0 row here - the truth table above covers it
+
+
+def test_b2505_table_d_axes_come_from_the_family_registry():
+    """S6-B2500/B2505: Table D/D-2 axes are per-family, and the institutional
+    entry is a pinned CONTRACT for a grid schema that does not exist yet.
+
+    Before this, sw/sp and all six D-2 axes were hardcoded smc keys - an
+    institutional grid would have rendered None in every cell. The smc render
+    is proven byte-identical on the real grids by a golden diff at landing;
+    this pin holds the structure.
+    """
+    import importlib.util
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parents[2]
+    spec = importlib.util.spec_from_file_location(
+        "pvt_b2505", root / "scripts" / "producer_variant_table.py")
+    pvt = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(pvt)
+
+    fams = pvt.D_AXIS_FAMILIES
+    assert set(fams) >= {"smc_breaker_block",
+                         "institutional_committed_growth_long"}
+
+    # THE CONTRACT: the future institutional grader must emit these config
+    # keys, or Table D renders '-' and the pin points here.
+    inst = fams["institutional_committed_growth_long"]
+    d2_keys = [k for (_lbl, src, k) in inst["d2"]]
+    assert d2_keys == ["P4_min_consecutive_quarters",
+                       "P5_growth_lookback_quarters", "P6_growth_multiple",
+                       "min_committed_growth", "fallback_min_increased",
+                       "P9_span"]
+    assert inst["detect"] == "P4_min_consecutive_quarters"
+
+    # an INSTITUTIONAL grid renders its own axes, not smc Nones
+    grid = {"icg_cfg2": {
+        "config": {"P4_min_consecutive_quarters": 2, "P9_span": 200,
+                   "P5_growth_lookback_quarters": 4,
+                   "P6_growth_multiple": 1.10},
+        "step1_ranking": [{"exit": "breakeven_plus_trail", "is_ci_lo": 0.35,
+                           "fires": 100, "is_sharpe": 1.0, "class_size": 1,
+                           "admit": {"min_committed_growth": 3,
+                                     "fallback_min_increased": 5,
+                                     "holdout_n": 0, "full_period_n": 100,
+                                     "verdict": "RANKED"}}]}}
+    d1 = "\n".join(pvt.table_d(grid))
+    assert "| 2 | 200 |" in d1, "sw/sp must carry the institutional axes"
+    d2 = "\n".join(pvt.table_d_params(grid))
+    assert "P4 minq" in d2 and "P7 min_committed" in d2, (
+        "D-2 header must use the institutional labels")
+    assert "| 2 | 4 | 1.1 | 3 | 5 | 200 |" in d2, (
+        "D-2 row must carry the six institutional values in order")
+
+    # the smc family still detects and renders its own labels
+    smc_grid = {"b_sw20": {
+        "config": {"P1_swing_length": 20, "P6_span": 200},
+        "step1_ranking": [{"exit": "e", "is_ci_lo": 0.1, "fires": 50,
+                           "is_sharpe": 0.5, "class_size": 1, "admit": {}}]}}
+    d2s = "\n".join(pvt.table_d_params(smc_grid))
+    assert "P1 swing" in d2s and "P2 close_mit" in d2s
