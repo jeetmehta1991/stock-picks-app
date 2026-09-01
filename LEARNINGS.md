@@ -18149,3 +18149,61 @@ by construction. **SOUND.** (3) **B2445** the N/A-vs-SKIPPED display split - rep
 no verdict. **SOUND.** **1 of 3 defective, and it is the only one that made a gate STRICTER** -
 which is the discriminator worth carrying: a loosening or a display change cannot create a backlog,
 a tightening always can.
+
+
+### L731 - The machine is a third thing outside the guarded flow, and no in-process watchdog crosses it
+
+**B2490, 2026-09-01. This entry RETRACTS L730 and the RCA I published one turn earlier.**
+
+L730 said "outside the guarded flow" is two properties - control flow and
+scheduler - and that a thread buys only the first. Measured, that framing is
+incomplete in the way that mattered. There is a THIRD property: the machine
+being powered. A watchdog thread, a watchdog process, a signal handler and a
+cron job are all frozen by a system suspend, so NO in-process mechanism of any
+design can guard against it.
+
+**What actually happened**, from the Windows System log read against the run's
+own timestamps: 17:47:33 the screen phase begins; 17:47:48 the supervisor
+writes its last heartbeat; **17:47:51 Kernel-Power Event 42, "The system is
+entering sleep"**; 09:07:30 the system wakes; 09:07:47 the screen call returns
+reporting `dur=55213.961s`. About 32 seconds of real compute, wrapped around a
+night of suspension, against a 66 s median. The in-loop cap then killed the run
+at `elapsed_hours=16.10 >= 4.0` - correctly by its own logic, for a false
+reason. **All three guards were right. Their INPUT was wrong**, because
+`time.time()` counts time in which nothing runs.
+
+**How I got it wrong, and the tell I walked past.** I had the zero-beat fact
+and reached for a code defect, because the previous incident in this family
+WAS a code defect and I pattern-matched onto it. I then built a GIL-starvation
+hypothesis and tested it - and the probe REFUTED it: catastrophic regex
+backtracking, a genuinely GIL-holding C call, still let the watchdog take 1 beat
+of an expected 13. Eight percent, not zero. **Exactly zero is a different
+signature from heavily starved**, and it is the signature of nothing running at
+all. The clock said 17:47 to 09:07 in the first log line I read, and an evening-
+to-morning gap is what a sleeping laptop looks like. I read past it four times.
+
+**The general rule: when a process's own instruments all agree it was frozen,
+suspect the environment before the code.** Zero log lines, zero beats, zero
+exception-handler entries and a clean return afterwards is not a hang - a hang
+leaves partial evidence. Total silence that ENDS NORMALLY means the process was
+not running, and a process can stop running without any bug in it. Ask the
+operating system: on Windows, `Get-WinEvent -ProviderName
+Microsoft-Windows-Kernel-Power` costs one command and settles it.
+
+**Two corollaries that bit here.**
+(a) `SetThreadExecutionState(ES_SYSTEM_REQUIRED)` blocks IDLE sleep only. It
+would NOT have prevented this: `powercfg` shows "Sleep after"=0 on AC and DC
+already, and Event 187 records a user-mode `SetSuspendState` call. A run cannot
+refuse an explicit user suspend, and should not try - so the requirement is
+TOLERATE, not prevent.
+(b) A suspend is invisible while it happens and obvious afterwards. The
+watchdog is frozen too, so it can only measure the HOLE: a beat gap far larger
+than the sampling interval. That is now `BacktestEngine.suspension_seconds`,
+pinned on the real 55,196 s gap.
+
+**What this does NOT settle, and I am not deciding it:** whether the owner's
+5 h cap measures wall-clock or compute. Killing a healthy suspended run is a
+false positive that buys no safety; crediting suspended time back changes what
+an owner-set threshold MEANS. So B2490 ships DETECTION AND REPORTING ONLY - the
+kill still fires on wall-clock, unchanged - and the ruling goes to the owner
+with both numbers in the kill line.

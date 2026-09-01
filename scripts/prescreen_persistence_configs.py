@@ -1,9 +1,18 @@
 """S6-B2485: offline pre-screen of producer-parameter configs before engine spend.
 
 WHY THIS EXISTS. An engine run costs a MEASURED 1.68 h; regenerating the
-persistence artifact for one parameter set costs a MEASURED 104.6 s. So the 11
-producer configs can be materialised offline in ~19 minutes and screened before
+persistence artifact for one parameter set costs a MEASURED 283 s. So the 11
+producer configs can be materialised offline in ~52 minutes and screened before
 committing 18.5 engine-hours.
+
+COST CORRECTION (S6-B2490, measured mid-run off this script's own artifact
+mtimes): this docstring shipped saying 104.6 s and ~19 minutes, which
+UNDERSTATED the real cost by 2.7x. The 104.6 s came from a warm in-process
+sample of ONE snapshot; a config is FIVE snapshots, and per-snapshot cost
+grows ~9x from 2022 to 2026 as 13F coverage thickens, so the mean is neither
+104.6 s nor flat. Measured across 5 completed configs: mean 283 s, median
+268 s, range 177-436 s. An effort estimate is a quantitative claim and
+carries a measurement's burden (L506b).
 
 WHAT IT MEASURES, and the limit stated up front (council, unanimous): this
 computes the PRODUCER OUTPUT partition - which tickers land in the primary arm,

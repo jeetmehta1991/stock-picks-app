@@ -704,6 +704,24 @@ class BacktestEngine:
         kwargs = {k: v for k, v in kwargs.items() if k in valid_fields}
         return ClosedTrade(**kwargs)
 
+    @staticmethod
+    def suspension_seconds(gap_s: float, interval_s: float) -> float:
+        """S6-B2490: suspended seconds implied by a heartbeat gap, else 0.0.
+
+        A watchdog thread cannot observe a machine suspend while it happens -
+        it is frozen too. It can only see the HOLE afterwards. A gap far
+        larger than the sampling interval means wall-clock advanced while
+        nothing computed, which is what silently converted ~32 s of real work
+        into a reported 15.3 h and got a healthy run killed at the cap.
+
+        The floor is absolute so ordinary scheduler jitter and a slow disk
+        never register as a suspend.
+        """
+        if gap_s <= 0 or interval_s <= 0:
+            return 0.0
+        threshold = max(5.0 * interval_s, 120.0)
+        return (gap_s - interval_s) if gap_s > threshold else 0.0
+
     def _start_run_supervisor(self) -> None:
         """B2148 (S6-B2143a/b, L637): a watchdog that shares NO control flow
         with the day loop.
@@ -732,13 +750,37 @@ class BacktestEngine:
         hb_path = Path(self.output_dir) / "run_heartbeat.json"
 
         def _supervise() -> None:
+            # S6-B2490: a beat gap far larger than the interval means the
+            # MACHINE was suspended - every thread frozen, nothing computed.
+            # This thread cannot observe a suspend while it happens; it can
+            # only see the hole afterwards, which is enough.
+            _last_beat = _stime.time()
             while True:
                 _stime.sleep(interval)
+                _now = _stime.time()
+                _gap = _now - _last_beat
+                _susp = self.suspension_seconds(_gap, interval)
+                if _susp > 0.0:
+                    self._suspended_seconds = (
+                        getattr(self, "_suspended_seconds", 0.0) + _susp)
+                    logger.warning(
+                        "B2490 SUSPENSION DETECTED: %.0fs gap between beats "
+                        "(interval=%.0fs). The machine slept; no compute "
+                        "happened. Cumulative suspended=%.2fh. Wall-clock "
+                        "elapsed OVERSTATES work by that much, and the "
+                        "wall-clock cap is still what kills this run.",
+                        _gap, interval,
+                        self._suspended_seconds / 3600.0,
+                    )
+                _last_beat = _now
                 try:
                     elapsed_h = ((_stime.time() - self._run_start_time) / 3600.0
                                  if self._run_start_time else 0.0)
+                    _susp_h = getattr(self, "_suspended_seconds", 0.0) / 3600.0
                     beat = {
                         "elapsed_hours": round(elapsed_h, 4),
+                        "suspended_hours": round(_susp_h, 4),
+                        "active_hours": round(max(0.0, elapsed_h - _susp_h), 4),
                         "sim_day_index": getattr(self, "_last_sim_day_index", -1),
                         "sim_date": str(getattr(self, "_last_sim_date", "")),
                         "closed_trades": len(self.closed_trades),
@@ -759,18 +801,37 @@ class BacktestEngine:
                             and self._run_start_time
                             and (_stime.time() - self._run_start_time)
                             >= self.max_run_hours * 3600.0):
+                        _el = ((_stime.time() - self._run_start_time)
+                               / 3600.0)
+                        _sh = getattr(self, "_suspended_seconds", 0.0) / 3600.0
                         logger.error(
                             "B2148 SUPERVISOR KILL: elapsed_hours=%.2f >= "
-                            "max_run_hours=%s - the day loop did not reach a "
-                            "boundary, so the in-loop cap could not fire. "
+                            "max_run_hours=%s (suspended=%.2fh active=%.2fh). "
+                            "S6-B2490: if suspended is large this run was "
+                            "HEALTHY and the machine slept - the kill is on "
+                            "WALL-CLOCK by design, pending owner ruling. "
                             "Flushing state and hard-exiting.",
-                            (_stime.time() - self._run_start_time) / 3600.0,
-                            self.max_run_hours,
+                            _el, self.max_run_hours, _sh, max(0.0, _el - _sh),
                         )
                         self._emit_kill_state("supervisor_wall_time_kill")
                         _so._exit(1)
                 except Exception as _k_exc:
                     logger.error("B2148 supervisor kill path failed: %r", _k_exc)
+
+        # S6-B2490: block IDLE sleep for the life of this process. This does
+        # NOT cover an explicit user/API suspend (measured: Event 187
+        # SetSuspendState is what took cfg1 down, with idle-sleep already
+        # disabled at powercfg "Sleep after"=0), so it closes a SIBLING
+        # class, not the observed one.
+        try:
+            if _so.name == "nt":
+                import ctypes as _ct
+                _ES = 0x80000000 | 0x00000001 | 0x00000040  # CONT|SYS|AWAY
+                if _ct.windll.kernel32.SetThreadExecutionState(_ES):
+                    logger.info("B2490 idle-sleep blocked for this process "
+                                "(explicit user suspend is NOT covered)")
+        except Exception as _es_exc:
+            logger.warning("B2490 could not block idle sleep: %r", _es_exc)
 
         t = _st.Thread(target=_supervise, name="b2148_run_supervisor",
                        daemon=True)

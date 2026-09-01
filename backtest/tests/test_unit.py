@@ -29666,3 +29666,64 @@ def test_b2118b_counter_lives_at_the_definition_not_the_call_sites():
     assert "_BORROW_TRAP_COUNTER" in names, (
         "the counter must increment INSIDE the gate function, so every call "
         "site - including ones not yet written - is measured")
+
+
+def test_b2490_a_heartbeat_gap_is_machine_suspend_not_work():
+    """S6-B2490: wall-clock counts time the machine was ASLEEP.
+
+    MEASURED (Windows System log, Kernel-Power, against the cfg1 run log):
+      17:47:33 screen begins / 17:47:48 last heartbeat /
+      17:47:51 Event 42 "entering sleep" / 09:07:30 wake /
+      09:07:47 the screen call returns dur=55213.961s.
+    ~32 s of real compute was reported as 15.3 h because time.time()
+    counts suspended time, and the cap then killed a HEALTHY run at
+    elapsed_hours=16.10 >= 4.0. Every guard was correct; the input was not.
+
+    The bug this reproduces is the arithmetic that could not tell the two
+    apart. It lived in a thread closure behind a 120 s floor, so nothing
+    could exercise it in bounded time (L642: a guard nobody has watched
+    fire). It is a pure function now, and this is the watching.
+    """
+    from backtest.engine.backtest import BacktestEngine
+
+    f = BacktestEngine.suspension_seconds
+
+    # the real gap, from the measured timestamps
+    assert abs(f(55196.0, 30.0) / 3600.0 - 15.32) < 0.02, "cfg1 case"
+
+    # a normal beat and ordinary jitter are NOT suspends
+    assert f(30.4, 30.0) == 0.0
+    assert f(90.0, 30.0) == 0.0
+
+    # the floor is absolute, so a fast interval cannot make jitter look
+    # like a suspend
+    assert f(100.0, 1.0) == 0.0
+    assert f(300.0, 1.0) == 299.0
+
+    # degenerate inputs fail closed at zero, never negative
+    assert f(0.0, 30.0) == 0.0
+    assert f(-5.0, 30.0) == 0.0
+    assert f(50.0, 0.0) == 0.0
+
+
+def test_b2490_supervisor_reports_suspended_and_active_separately():
+    """The loop must USE the rule and the heartbeat must carry both numbers.
+
+    A rule the loop does not call is decoration (fable Gate 4). Fragments
+    are single-line so a wrap never silently un-pins them.
+    """
+    import inspect
+
+    from backtest.engine.backtest import BacktestEngine
+
+    src = inspect.getsource(BacktestEngine._start_run_supervisor)
+    for frag in (
+        "_susp = self.suspension_seconds(_gap, interval)",
+        "B2490 SUSPENSION DETECTED",
+        '"suspended_hours": round(_susp_h, 4),',
+        "SetThreadExecutionState",
+    ):
+        assert frag in src, "supervisor lost: %s" % frag
+
+    # the kill line must say BOTH, so a sleep-killed run is legible as such
+    assert "suspended=%.2fh active=%.2fh" in src
