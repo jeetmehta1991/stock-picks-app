@@ -22,10 +22,19 @@ does. Nothing here is a prediction of engine results.
 
 DESIGN, adopted from the council:
   * Compare SETS, not counts (Outsider). Two configs can both land near "255
-    tickers passing" while sharing almost none of them. And the reason set
-    identity is SUFFICIENT rather than merely indicative: the EMA leg is
-    identical across all 11 configs, so two configs with the same pass-set
-    per (ticker, snapshot) differ in nothing the gate reads.
+    tickers passing" while sharing almost none of them.
+    S6-B2498 CORRECTION to this design note: it originally claimed two configs
+    with the same set "differ in nothing the gate reads" while comparing the
+    PRIMARY sets only. The gate has a SECOND arm - committed==0 AND
+    institutional_increased>=5 - and the artifact carries NO
+    institutional_increased column (verified: 7 columns, none is it), so the
+    full pass-set is NOT computable offline. Two configs with identical
+    primary sets can still differ through the fallback arm, and fallback
+    rates measured 0.054..0.333 across configs, so that difference is not
+    negligible. The screen therefore now compares BOTH partitions pairwise:
+    a DUPLICATE verdict requires primary AND fallback Jaccard high. The
+    residual blind spot - which fallback members clear increased>=5 - stays
+    with the engine, and is stated in `limit`.
   * Compare ALL PAIRS, not each against baseline (Contrarian). Two configs that
     both hijack the fallback can converge on the same fallback-dominated
     population - duplicates of each other, invisible to a config-vs-baseline
@@ -151,17 +160,28 @@ def screen(parts: dict) -> dict:
         rows["fallback"][tag] = per_year
     tags = list(parts)
     for a, b in itertools.combinations(tags, 2):
-        per_year = {}
+        per_year, per_year_fb = {}, {}
         for snap in SNAPSHOTS:
             pa, pb = parts[a].get(snap), parts[b].get(snap)
             if not pa or not pb:
                 continue
             per_year[snap] = round(jaccard(pa["primary"], pb["primary"]), 4)
+            # S6-B2498: the fallback arm is part of the gate. Two configs with
+            # identical primary sets can still admit different tickers through
+            # committed==0 AND increased>=5, so a duplicate verdict needs BOTH
+            # partitions to agree. Which fallback members clear increased>=5
+            # is engine-only knowledge (the artifact has no such column).
+            per_year_fb[snap] = round(jaccard(pa["fallback"], pb["fallback"]), 4)
         if per_year:
+            fbv = list(per_year_fb.values())
             rows["pairs"].append({"a": a, "b": b, "per_year": per_year,
                                   "min": min(per_year.values()),
                                   "mean": round(
-                                      sum(per_year.values()) / len(per_year), 4)})
+                                      sum(per_year.values()) / len(per_year), 4),
+                                  "per_year_fallback": per_year_fb,
+                                  "min_fallback": min(fbv) if fbv else None,
+                                  "mean_fallback": (round(sum(fbv) / len(fbv), 4)
+                                                    if fbv else None)})
     rows["pairs"].sort(key=lambda r: -r["mean"])
     return rows
 

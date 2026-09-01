@@ -28933,10 +28933,14 @@ def test_b2485_prescreen_compares_sets_pairwise_and_refuses_production():
 
     The council's two load-bearing points, and why counts would not do:
       * Compare SETS, not counts. Two configs can both land near "255 passing"
-        while sharing almost none of those tickers. Set identity is SUFFICIENT
-        here, not merely indicative, because the EMA leg is identical across
-        all 11 configs - two configs with the same pass-set differ in nothing
-        the gate reads.
+        while sharing almost none of those tickers.
+        S6-B2498 CORRECTION: this docstring originally said set identity is
+        sufficient because "two configs with the same pass-set differ in
+        nothing the gate reads" - while the screen compared PRIMARY sets only.
+        The gate's fallback arm (committed==0 AND increased>=5) reads a column
+        the artifact does not carry, so the full pass-set is not computable
+        offline; the screen now compares BOTH partitions pairwise and a
+        duplicate verdict needs both Jaccards high.
       * Compare ALL PAIRS, not each against baseline. Two configs that both
         hijack the fallback converge on the same fallback-dominated
         population: duplicates of each other, invisible to config-vs-baseline.
@@ -28968,6 +28972,24 @@ def test_b2485_prescreen_compares_sets_pairwise_and_refuses_production():
         raise AssertionError(
             "build() accepted an EMPTY tag - that writes to the production "
             "path seven 13F strategies read")
+
+    # S6-B2498: the pairwise screen must compare BOTH partitions - primary
+    # AND fallback - because the gate's OR has two arms and the fallback arm
+    # switches ON exactly when tightening empties the primary. A toy pair
+    # with IDENTICAL primary sets and DISJOINT fallback sets must not read
+    # as a duplicate. (Deterministic fixture; the STRUCTURE is the test.)
+    toy = {
+        "production": {"2022-01-01": {"primary": {"A", "B"},
+                                      "fallback": {"X"}, "n": 10}},
+        "variant":    {"2022-01-01": {"primary": {"A", "B"},
+                                      "fallback": {"Y"}, "n": 10}},
+    }
+    toy_rows = ps.screen(toy)
+    pair = toy_rows["pairs"][0]
+    assert pair["mean"] == 1.0, "primary sets identical -> primary jaccard 1"
+    assert pair["mean_fallback"] == 0.0, (
+        "fallback sets disjoint -> fallback jaccard 0; a primary-only screen "
+        "would have called these configs duplicates")
 
     # set comparison, including the degenerate cases a count would blur
     assert ps.jaccard({1, 2}, {1, 2}) == 1.0
