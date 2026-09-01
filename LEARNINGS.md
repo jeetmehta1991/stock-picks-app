@@ -18339,3 +18339,25 @@ docstring records that the first design died on it. Anchored at CHECKLIST
 #226 (prove-it-can-fail), whose scope this extends from "prove the PIN can
 fail" to "prove the DESIGN survives its own motivating case" - an extension
 recorded here and in the #226 citation, not a new item (#136).
+
+
+### L735 - A file's tracked-status is a one-command fact, not a convention
+
+**B2503b, 2026-09-01. Compliance failure against CHECKLIST #166 - no new
+item; the mechanism for the class already exists and is what caught it.**
+
+I left output_icg_cfg1/run_manifest.json uncommitted at launch because
+"output directories are not committed until complete" - a convention I
+asserted as a fact about THIS file. `git ls-files output_icg_cfg1/` settles
+tracked-status in one command; I never ran it, and the file is tracked
+(committed with the original cfg1 manifest at B2481). Gate B's
+modified-tracked-files scan caught it at turn end - **the mechanism for this
+class is Gate B itself, already wired, proven by this very firing** - and the
+fix was the commit the file deserved anyway, since a resume-arm manifest is
+exactly what belongs in history.
+
+The #166 shape: an ABSENCE claim ("this is not tracked") made from a pattern
+("output dirs are untracked") without running the command that can refute it.
+Same class as the zero-hit grep: the claim was cheap to check and the
+convention made it feel checked. Record-of-fact beyond that sentence - the
+generalised rule IS #166's, and this entry adds an instance, not a rule.
