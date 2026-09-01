@@ -18359,5 +18359,8 @@ exactly what belongs in history.
 The #166 shape: an ABSENCE claim ("this is not tracked") made from a pattern
 ("output dirs are untracked") without running the command that can refute it.
 Same class as the zero-hit grep: the claim was cheap to check and the
-convention made it feel checked. Record-of-fact beyond that sentence - the
-generalised rule IS #166's, and this entry adds an instance, not a rule.
+convention made it feel checked. **record-of-fact** - the generalised rule IS #166's (already carried in
+the skill's B1446 rule 3, zero-hit-greps-prove-nothing), and this entry
+adds an INSTANCE, not a rule; the class mechanism is Gate B's
+modified-tracked-files scan in scripts/verify_turn_compliance.py, wired
+and proven by the firing that produced this entry.
