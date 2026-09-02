@@ -18579,3 +18579,45 @@ pipelines and not to a launch, which is the place a false success is most
 expensive. Fix ticketed as S6-B2529a and deliberately NOT applied while the
 chain runs, because editing the launcher mid-chain is the obsolescence risk
 the run's own manifest records.
+
+
+### L739 - Read the diff SIZE before committing a byte-level edit: it catches what you do not understand
+
+**B2534, 2026-09-02. A ~15-line addendum committed as 18,248 insertions and
+18,226 deletions.**
+
+**What happened.** My scratchpad patchers write files back at BYTE level,
+preserving the worktree's own line endings - which is exactly right for
+matching anchors in a CRLF repo, and is why they replaced the Edit tool after
+repeated exact-match failures. On this commit the stored form of LEARNINGS.md
+came out different from HEAD~1's, so git recorded the entire 18k-line file as
+changed. Content was intact and every doc pin passed; what was destroyed was
+REVIEWABILITY of the project's own lesson ledger.
+
+**The cause is UNKNOWN and is ticketed as unknown (S6-B2533).** Probes refuted
+the obvious stories: no NUL bytes and no control characters, `git check-attr`
+reports text unspecified, the diff is a normal numstat line diff rather than
+*Binary files differ*, and mixed endings are not the discriminator because
+EXECUTION_QUEUE.md is mixed and normalises correctly while CHECKLIST.md is pure
+CRLF and does not. **So this entry deliberately proposes NO rule about line
+endings** - a rule resting on a cause I have not identified is the thing the
+no-untested-cause rule forbids.
+
+**The rule it does propose is cause-independent.** After any byte-level write
+to a tracked file, run `git diff --numstat` and compare the line count to the
+size of the edit you INTENDED. An order-of-magnitude gap means something
+happened that you did not author, and it is far cheaper to see it before the
+commit than to explain it after. **This check needs no theory of the cause,
+which is precisely why it is the one worth having** - it fires on encoding
+flips, on accidental reformatting, on a stray whole-file rewrite, and on
+whatever this turns out to be.
+
+**Why it is worth a rule at all, given nothing was lost.** A 36k-line diff on
+the file that records every lesson makes `git log -p` and blame unusable there,
+and the next reader learns to skip it - L586's costly-in-the-wrong-place,
+landing on the error-correction loop itself.
+
+**Anchored:** SKILL.md tripwire row, same commit. Detection is JUDGMENT-ONLY -
+no scan knows what edit you intended - and durability is covered by
+test_b2526_recent_learnings_are_anchored_and_l735_is_not_an_orphan, which
+asserts every L-entry from L725 is referenced in an anchor file.
