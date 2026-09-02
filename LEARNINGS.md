@@ -18925,3 +18925,49 @@ S6-B2556a.
 **Anchored:** SKILL.md tripwire row, same commit. Detection is JUDGMENT-ONLY -
 no scan counts the shapes a test did not try - and durability rides
 test_b2526's anchor sweep.
+
+
+### L747 - A numeric ratchet bounds the count and forgets the why; a named set with reasons does both
+
+**B2558, 2026-09-02.** I shipped a shrink-only ratchet on gate pins whose
+negative direction rests on one arm, baselined at an integer: `BASELINE = 22`.
+The `#237` sweep it owed then measured every baseline in the suite - **13 of
+them, 10 declaring shrink-only intent, and only 3 asserting that each entry
+carries a REASON.** Mine is in the ten and not in the three, because its
+baseline is a bare number rather than a named set.
+
+**What the number cannot do.** It stops the population growing, which is the
+regrowth it was built to stop. It cannot say WHICH pins are in the 22, so
+nobody can tell a pin that is single-armed because its gate genuinely has one
+negative shape from a pin that is single-armed because I stopped writing arms.
+**A count treats every member as interchangeable, and the whole value of a
+backlog is that its members are not.** When the count later falls to 19,
+nothing records which three were fixed or whether the right three were.
+
+**Why the weaker form is the tempting one.** A number is derivable by the sweep
+that found the problem - I already had `len(single)`, so the baseline cost
+nothing - while a named set must be typed out and each entry justified. **The
+cheap artifact is the one the measurement hands you; the useful one is the one
+you have to write.** The same asymmetry produced `scan_gate_has_a_corpus_entry`
+cited in three documents and defined nowhere: nothing forced the citation to
+carry a reason, so it carried none and rotted unseen.
+
+**The rule.** A ratchet over a set of KNOWN EXCEPTIONS names them and requires a
+reason each (`assert all(KNOWN.values())` is the shape already used by
+`KNOWN_DUPLICATE_L` and `KNOWN_MISSING`). A bare integer is acceptable only for
+a population too large to enumerate - and then say so, because an unexplained
+number invites the reader to assume enumeration was considered and rejected,
+when usually it was never considered at all.
+
+**The residue, stated rather than implied.** Three baselines in this suite
+declare neither shrink-only intent nor per-entry reasons -
+`test_b1799_shadowing_check_has_no_intent_exemption`,
+`test_b1824_exit_names_in_engine_messages_are_registered`,
+`test_b1916_pure_gates_have_incidents_and_are_no_longer_exempt` - so those lists
+can grow silently and unexplained. Not widened tonight: each needs a reason
+written by someone who knows why the entry is there, which is judgement per
+entry (S6-B2558a).
+
+**Anchored:** SKILL.md tripwire row, same commit. Detection is JUDGMENT-ONLY -
+whether a population is too large to enumerate is a judgement, not a threshold -
+and durability rides test_b2526's anchor sweep.
