@@ -2471,16 +2471,58 @@ on all 11 baseline pairs, which is why the primary-only screen was corrected. Th
 screen CANNOT see which fallback members clear `institutional_increased >= 5` —
 that column is not in the artifact; the residual stays with the engine.
 
-**Status** — cfg1 (baseline) is INTERRUPTED at sim-day 47, not failed: the
-machine slept (Kernel-Power Event 42; L731), ~32 s of compute was reported as a
-15.3 h screen day, and the wall-clock cap killed a healthy run. Resumable.
-**Owner rulings pending: S6-B2491** (does the 5 h cap measure wall-clock or
-active time — until ruled, an overnight chain dies at the first user-initiated
-sleep) **and S6-B2481** (resume go). Heartbeats and kill lines now carry
-`suspended_hours` / `active_hours` separately (B2490/B2492); the kill itself
-still fires on wall-clock by design pending the ruling.
+**Status (B2531, 2026-09-02) — cfg1 LANDED and configs 2-17 are RUNNING.**
+VERIFIED against primaries, not against this document: `output_icg_cfg1/
+engine_state.json` reads `status: complete`, `trade_log.parquet` holds 373
+trades, and all nine post-config ledger steps are terminal ({DONE, N/A}, gate
+`verify_postconfig_complete.py` COMPLETE). Best of 24 exits ranked
+`breakeven_plus_trail` at is_sharpe 0.263 / is_ci_lo -0.087 on 8,952 IS rows —
+Step-1 is ranking only, no admission (B1608). One open finding: 23 of 373 rows
+carry an empty `signals_at_entry`, RCA CLOSED at S6-B2512 (they are exactly the
+closed trades restored at `resume_sim_day=47`; historical, unrecoverable, and
+they gate nothing).
 
-**Launch path for configs 2-17** — no new code: `run_wave.py` arms already carry
+**BOTH OWNER RULINGS ARE RESOLVED — the text below this paragraph said they were
+pending, and that staleness nearly produced a wrong call.** S6-B2491 is
+IMPLEMENTED in `backtest/engine/backtest.py::kill_decision`: the cap gates on
+ACTIVE hours — wall-clock minus CREDITED machine sleep, where only gaps of
+30 minutes or more earn credit — and BOTH gating sites (the supervisor thread
+and the in-loop cap) call that one function. The fail direction is conservative:
+with no credit accrued it reduces exactly to the old wall-clock kill. There is
+no wall-clock backstop, deliberately: a 3x backstop was designed and then killed
+by its own boundary matrix, because any overnight sleep exceeds 3x a sane cap
+and it would have killed the very incident it was meant to survive (L734).
+S6-B2481 (resume go) was given and the resume landed. Reading the superseded
+text, an overnight chain looks unlaunchable; the code had already closed it
+(L664 — a secondary record preserving a state the primary has moved past).
+
+**THE TWO HOUR FIGURES ARE DIFFERENT THINGS, and this section previously used
+only one of them.** **5 h is the CEILING** — the owner's hard cap (B2107, raised
+from 3 h on 2026-08-24), which no local run may exceed. **4.0 h is the value
+actually ENFORCED** — `leg_cap_hours` in every spec, passed to the engine as
+`--max-run-hours` (`run_wave.py:173`). cfg1 used 4.0 and all 16 B2527 specs use
+4.0. So the engine kills a leg at 4.0 h of ACTIVE time; 5 h is the bound that
+choice has to respect.
+
+**Launch path for configs 2-17 — EXECUTED 2026-09-02 (B2527/B2529), chain RUNNING.**
+The owner's go was given in the launch turn; 16 specs (`output_audit/
+b2527_icg_*_spec.json`) run serially under one detached Task Scheduler task via
+`run_serial_chain.py`, ordered by expected information so an early halt loses
+least: the 5 unmeasured P9 spans, then the 3 producer configs the S6-B2485
+pre-screen measured as most divergent, then the unranked middle, then
+`minq3`/`minq2`, which that same pre-screen measured as near-duplicates of
+baseline. Pre-launch gates all executed: `prelaunch_gate.py` exit 0 (it failed
+exit 3 first, on field names — which is why it is run and not assumed), tickers
+sha256-pinned at 200, subset asserted SOLO and confirmed at runtime by
+`[B1425 STRATEGY_SUBSET_FILE] requested 1, matched 1/219`, and all 11 tagged
+precomputes asserted present because a missing cache falls back to the untagged
+production artifact and would run a silent duplicate of the baseline. Projection
+38-47 h serial from cfg1's measured rate. Two defects were caught before they
+cost a night: the detached task's `ExecutionTimeLimit` was 12 h against a 38-47 h
+chain (B2528), and `launch_detached` reported success on a DENIED registration
+(S6-B2529a, still open). The original note follows.
+
+**Launch path for configs 2-17 (original)** — no new code: `run_wave.py` arms already carry
 per-arm env (run_wave.py:190-202), so a wave spec whose arms set
 `INST_PERSIST_CACHE_TAG=<tag>` (producer configs) or `STRAT_EMA_SPAN=<span>`
 (P9 configs) launches the set under the existing chain, monitor and post-config
