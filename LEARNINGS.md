@@ -18636,3 +18636,37 @@ store CRLF unnormalised (LEARNINGS.md, CHECKLIST.md) and three normalise to LF,
 with no NUL bytes, no control characters and `text: unspecified` on all five -
 so the discriminator is still unidentified and stays ticketed as unknown
 (S6-B2533) rather than guessed.
+
+
+### L740 - A value you CHOSE, standing next to one you measured, inherits authority it did not earn
+
+**B2538, 2026-09-02.** I wrote *re-armed at 0.7 GB, below the measured band*.
+The band was measured - Get-Counter readings over Memory Committed Bytes and
+Memory Commit Limit, an operating range of about 1.2 to 1.8 GB with one
+transient dip to 1.15. **0.7 was a threshold I picked.** The sentence sets them
+side by side, and nothing in it tells the reader which is which.
+
+**Why this is not just #201 again.** `#201` asks a figure to NAME ITS SOURCE,
+and a chosen threshold has no source to name - so the rule reads as though it
+does not apply, and the number sails through. **The missing word is not a
+citation but a KIND**: measured, derived, or chosen. A chosen value is a
+DECISION, and `#165` says a decision states its criterion - so the two rules
+meet exactly here, and the gap is between them.
+
+**Why proximity is the aggravating factor.** Alone, *the alert is at 0.7 GB*
+invites the question. Next to *the measured band*, it borrows the measurement's
+authority for free, and the reader's scepticism is spent on the half that
+already survives it. Same shape as an ARBITRARY tie-break published beside a
+real statistic (`#165`), and as a code claim spliced onto artifact precision
+(L717) - in each, one clause lends standing to another that has not earned it.
+
+**The rule.** When a sentence carries both, LABEL THE KIND: *the band is
+measured at 1.2-1.8 GB; I set the alert at 0.7, below the lowest observed 1.15,
+so it signals departure from the band rather than the band itself.* Same length,
+and now the reader can disagree with the choice without re-deriving the
+measurement.
+
+**Anchored:** SKILL.md tripwire row, same commit. Detection is JUDGMENT-ONLY -
+no scan distinguishes a chosen number from a measured one in prose - and
+durability is covered by test_b2526_recent_learnings_are_anchored_and_l735_is_not_an_orphan,
+which asserts every L-entry from L725 is referenced in an anchor file.
