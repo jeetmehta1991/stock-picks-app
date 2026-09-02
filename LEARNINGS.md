@@ -18750,3 +18750,41 @@ just told them did not exist.
 **Anchored:** SKILL.md tripwire row, same commit. Mechanism is JUDGMENT-ONLY -
 no scan can tell which grep produced a prose claim - and durability rides
 test_b2526's anchor sweep, which asserts every entry from L725 is referenced.
+
+
+### L743 - I hardened the engine against session death and left the OWNER'S channel session-scoped
+
+**B2546, 2026-09-02. Owner caught it: "Is hourly update on as per monitor
+standards? Not seeing anything."** They were not seeing anything because nothing
+was sending anything. `CronList` returned *No scheduled jobs*, and the three
+Monitors armed at launch were marked stopped when the previous session exited.
+
+**The inversion, stated plainly.** L637 says the durable channel is a file any
+session can read, never a session-held pipe. I applied it to the ENGINE - the
+chain runs detached under Task Scheduler, writes `run_heartbeat.json` from a
+supervisor thread outside the day loop, and survived the very session death that
+killed my monitors. Then I used a **session-held pipe for the owner's
+reporting**. The component that most needed to outlive the session was the only
+one I left fragile, and I had the correct pattern in hand while doing it.
+
+**Why it was invisible from inside.** A Monitor that dies stops emitting, and
+*not emitting* is exactly what a quiet period looks like. L641's shape - a
+record that logs only its success path cannot report the endings that matter -
+except here the silent thing was the REPORTER, so the failure and the
+all-is-well signal were byte-identical: nothing. No amount of watching my own
+output would have shown it; the owner asking is what surfaced it.
+
+**The honest limit of the fix, which is not fully a fix.** I have armed an
+hourly cron, and a cron is ALSO session-only - its own tool description says so.
+**So the periodic push is best-effort by construction, and the DURABLE channel
+is a different mechanism**: the landing supervisor commits and pushes each
+landing, records it unreported in `postconfig_landings.jsonl`, and the next
+session's preamble surfaces it - which is exactly how span20's landing reached
+this turn after the monitors were already dead. Periodic progress is
+best-effort; a LANDING is guaranteed. Saying which is which is the deliverable,
+because a best-effort channel described as reliable is the same silence one
+layer up.
+
+**Anchored:** SKILL.md tripwire row, same commit. Detection is JUDGMENT-ONLY -
+no scan knows which channel a report was promised on - and durability rides
+test_b2526's anchor sweep.
