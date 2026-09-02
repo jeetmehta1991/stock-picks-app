@@ -572,6 +572,15 @@ is good, the commit is green. **But capture is not enforcement.** LEARNINGS is r
 when someone goes looking; CHECKLIST and this skill are read every turn. An
 unanchored rule gets rediscovered by repeating the failure that produced it.
 
+**A LESSON USUALLY PRODUCES TWO THINGS, AND THEY LIVE IN DIFFERENT FILES (B2536).**
+The RULE goes in this file, which is read every turn; the MEASUREMENT stays in the
+incident record. A tripwire row carrying a count becomes a row that DECAYS (L639), and
+the next reader needs the instruction, not last week's tally. MEASURED: L739's rule
+*read the diff size first* belongs here, while its sweep result - byte-level writes at
+1 of 374 tracked scripts - belongs in LEARNINGS, because the rule is durable and the
+count is true only on the day it was taken. **So 'it is already in the skill' is a
+checkable claim, not a way out: grep the rule before saying it.**
+
 **Every L-entry stating a generalised rule MUST, in the same turn, be anchored by a
 NEW CHECKLIST item citing the L-number, or an explicit citation of an EXISTING item
 that already covers it.**
