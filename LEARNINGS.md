@@ -19017,3 +19017,42 @@ actually contains.**
 **Anchored:** SKILL.md tripwire row, same commit. Detection is JUDGMENT-ONLY -
 no scan knows whether a matched occurrence is the intended one - and durability
 rides test_b2526's anchor sweep.
+
+
+### L749 - A correctly-sourced figure can still be stale: #201 asks WHERE, not WHEN
+
+**B2563, 2026-09-02.** I wrote *"Chain right now: sim-day 144 of 250, 1.81 h
+active"* and named the file those numbers came from, exactly as `#201` requires.
+Re-measured in the next window: **sim-day 177, 2.519 h active.** The figures
+were 33 sim-days out of date. The source was named correctly and the number was
+wrong anyway.
+
+**The gap between two claims that look like one.** `#201` makes a figure carry
+its PROVENANCE - which artifact produced it - and that is what stops a
+`rng.normal` sample reading as a measurement. It says nothing about RECENCY. On
+a monitored artifact those diverge constantly: a heartbeat file is correct at
+every instant and different at every instant, so citing it truthfully is not the
+same as citing it currently.
+
+**Why "right now" is the specific trap.** A source name reads as freshness
+because naming a live file implies you just looked at it. **The provenance
+label does the work of a timestamp without being one** - and I had genuinely
+opened that file, several turns earlier, which is what made re-opening it feel
+redundant. It was not redundant; the run had advanced 33 days.
+
+**The rule.** A figure describing a MOVING artifact - a heartbeat, a progress
+counter, a queue depth, a running total - carries the reading's AGE or the
+window it was taken in, not just its file. Say "measured this window" and mean
+it, or give the value with its timestamp. **If the sentence contains "right
+now", "currently", or "live", the measurement belongs in THIS turn's tool
+output, not an earlier one.**
+
+**Relation to what already exists.** L695 covers a provenance label emitted by
+boilerplate rather than earned; this is its inverse - a label genuinely earned
+ONCE and then reused past its life. Both end with the reader trusting a claim
+the text no longer supports, and neither is caught by naming the source, which
+is the check both rules otherwise satisfy.
+
+**Anchored:** SKILL.md tripwire row, same commit. Detection is JUDGMENT-ONLY -
+no scan knows which turn a quoted number was read in - and durability rides
+test_b2526's anchor sweep.
