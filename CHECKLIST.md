@@ -5537,3 +5537,34 @@ Mechanism: DETECTION is JUDGMENT-ONLY - no scan knows which field name suits an 
 pinned by `test_b2520p_uniform_value_is_a_parser_hypothesis_is_anchored`, which asserts the rule
 survives in both CHECKLIST.md and LEARNINGS.md. This item also repairs L724's ANCHOR: it was cited
 in SKILL.md and in no CHECKLIST item, which is the orphan-rule shape ANCHOR-THE-RULE exists to stop.
+
+### #290 - A CHECK OWED EVERY LANDING IS DONE ONLY WHEN A SUPERVISOR RUNS IT UNPROMPTED (B2569 / L752)
+
+**The moment an analysis check is invented, run, or approved for ANY config's landed cube, the same
+turn does one of exactly two things: wires it into the post-config battery (a family-runner leg
+that FAILS closed), or files a ticket naming the battery gap.** "Executed once" + "the tool exists"
++ "it is documented" is the three-part disguise of an unwired check - none of those three runs it
+on the NEXT landing.
+
+**The trigger is the words "per config", "per landing", "every strategy", or membership in a
+pre-registered band.** If the design counts a measurement as part of every config's grade (the
+P7/P8 free levels were counted in the 17-config band's coverage), then producing it once, at
+strategy level, on a different cube shape, is the N1 class bug - not a cheaper substitute.
+
+**The band-side companion (SS0.7):** free grading tightens only, so every looser-than-production
+level in a PERSISTED parameter's band is engine-only BY CONSTRUCTION and must be either scheduled
+WITH a proven actuation mechanism (the env knob must reach the gate - grep it, L751's three links)
+or struck with NOT-MEASURED-BY-DESIGN and a reason. Banded-unscheduled-unrunnable rows advertise
+coverage the programme cannot deliver.
+
+MEASURED (B2569): S6-B2501's free-level grading existed as a correct tool (B2504), a registered
+family battery (B2520), and a pre-registered manifest (B2527) - three consecutive batches, zero
+wiring, four configs landed ungraded. Wired at B2569 (`step2_free_levels`, reproduction-gated:
+every covered landed trade must re-pass the production gate offline before any level is believed);
+retro-run reproduced all 4 landed cubes exactly (609/531/405/350-of-373 with the 23 S6-B2512 rows
+counted, never silently failed).
+
+Mechanism: `run_postconfig.run_institutional` free-levels leg + `_GRADER_CHECKS` routing + pins
+test_b2569_battery_runs_free_levels_on_every_institutional_landing /
+test_b2569_free_level_reproduction_gate_and_specs_derivation. DETECTION of new unwired checks is
+JUDGMENT-ONLY; the pin holds the wiring that exists.

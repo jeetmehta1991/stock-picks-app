@@ -19137,3 +19137,50 @@ flag - the schema question and the behaviour question were one investigation.
 **Anchored:** SKILL.md tripwire row, same commit; durability pinned in
 test_b2564. Ticket S6-B2567 holds the owner's approval until the correct
 re-scorer is parameterised.
+
+### L752 - A check the runbook owes EVERY config is not satisfied by one hand-run execution
+
+**B2569, 2026-09-02, owner-caught.** The ruled Step-1 design counts the P7/P8
+FREE levels as part of EVERY config's band. S6-B2501/B2504 graded them ONCE, at
+strategy level, against the R5 merged cube - which is not even the Step-1 shape -
+and the per-config battery never ran them on cfg1, span9, span20 or span50. The
+owner: *"It ran at strategy level on the old cube and was never wired into the
+per-config battery... The runbook workflow implies that it's not specific to an
+individual strategy but that the workbook must follow the same exact pattern for
+ALL strategies."*
+
+**Three chances to wire it were missed, each one a different disguise.** B2504
+shipped the correct tool hardcoded to one cube - the execution LOOKED like
+completion. B2520 built the engine-invoked battery and registered the family -
+the free levels were named in the grader's docstring and still got no leg. B2527
+pre-registered 16 specs whose manifest counted the free levels as band coverage
+with no mechanism to produce them per config. At every point the check EXISTED
+somewhere, so nothing looked missing.
+
+**Why this recurs (the owner's exact charge: the class keeps losing to the
+instance).** The battery itself was built because six prior asks each drew an
+instance fix (L736/#288, "count the asks") - and the FIRST analysis step invented
+after the battery shipped repeated the pattern the battery was built to kill. A
+lesson gets recorded, its tool gets built, and the WIRING that makes it
+self-executing is deferred as an enhancement. L751's instance fix showed the same
+lag: the lesson landed at B2568 and the refusing flag shipped a batch later.
+
+**The rule (#290).** A check owed per-config/per-landing is DONE only when a
+supervisor runs it unprompted on the next landing. The moment an analysis step is
+invented for ANY config, the same turn either wires it into the battery, or files
+a ticket naming the battery gap. "Executed once" + "tool exists" + "documented"
+is the three-part disguise of an unwired check - none of the three runs it next
+time.
+
+**The companion defect found by the same audit (band side):** free grading moves
+one direction only - tighter - so a band's looser-than-production levels are
+engine-only BY CONSTRUCTION, and each must be scheduled-with-a-mechanism or
+struck-with-a-reason at pre-registration (SS0.7). P7 resim {1,2} / P8 resim {2,3}
+were neither: banded, unscheduled, and unrunnable (the screener hardcodes both
+thresholds; no env knob exists). Nobody flagged it across four batches because
+the band LOOKED complete.
+
+**Anchored:** battery leg `step2_free_levels` (reproduction-gated) +
+test_b2569 pins x3 + CHECKLIST #290 + SS0.7/SS2 of the runbook rewritten
+family-generic. Reproduction verified on all 4 landed cubes before any level was
+believed (span9 609/609 landed fires re-passed at production).

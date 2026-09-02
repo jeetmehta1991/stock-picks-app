@@ -1271,6 +1271,17 @@ PYTHONPATH=. python scripts/producer_variant_table.py --strategy <STRATEGY> --fa
 ```
 This BLOCKS if the formula and Table A disagree, and prints the factorial + engine-run count.
 
+**0.7 BAND COMPLETENESS (B2569/#290 — every level must have a path to a measurement).** Free
+grading moves ONE direction — tighter (§0a #1). So for every PERSISTED threshold parameter, the
+looser-than-production side is ENGINE-ONLY **by construction**, and each such level must at band
+time be either (a) SCHEDULED as an engine config **with an actuation mechanism proven to exist**
+(env knob reaching the gate — 0.3's check applies to gate thresholds too, not just producer
+params), or (b) STRUCK with an explicit NOT-MEASURED-BY-DESIGN disposition and its reason. A band
+row that is neither is dead weight advertising coverage the programme cannot deliver — the P7
+resim {1,2} / P8 resim {2,3} defect (S6-B2569a): banded, unscheduled, AND unrunnable, because the
+screener hardcodes both thresholds and no env knob was ever built. Assert this per parameter
+before §1.0 signs the pre-spend manifest.
+
 ---
 
 ## STEP 1 — SEARCH: all fire-adding configs (RULED SHAPE per 10.1: 200 tickers x 1 year 2024-05-05 -> 2025-05-05; this heading's original '100 tickers, 2 years' is the pre-2026-08-21 shape, kept in the lineage note below - B2117c)
@@ -1719,6 +1730,14 @@ RETIRED: the run_wave-only wiring left direct and resume launches with no batter
 with no gate receipt and a hand-built grid, S6-B2515 - and the never-auto-marked design is what the
 owner asked six times to have removed. L736 / CHECKLIST #288.)*
 
+**STEP 2 HAS TWO LEGS (B2569, owner directive 2026-09-02):** the family grader at the
+manifest's own parameters AND the FREE levels of every PERSISTED parameter
+(`step2_free_levels`), graded on THIS cube behind a reproduction gate — every covered landed
+trade must re-pass the production gate offline or the step FAILS closed. Free levels are part
+of every config's band (ruled design), so grading them once at strategy level is the N1 class
+bug (b2569 audit), not a substitute. A new family's registration is incomplete without its
+free-levels grader (#290).
+
 **THE PIPELINE, by file.** `backtest/run_phase1a.py::_postconfig_landing_hook` fires the moment
 `trade_exit_detail.csv` is written (`POSTCONFIG_LANDING=0` opts out, logged; a run that dies before
 writing a cube is the monitor's case, L641) -> `scripts/postconfig_landing.py`, ONE supervisor shared
@@ -2159,13 +2178,37 @@ print(len(EXIT_STRATEGIES))"` -> **24 post-B2110**; the four legacy cubes and ev
 cube carry [26] - judge each cube against the registry AT ITS OWN SHA, B2117c) - and mega-caps
 PRESENT (their absence means the archived A-C chunk universe, L445).
 
-### 2. Grade - with the CONFIG'S OWN parameters
+### 2. Grade - with the CONFIG'S OWN parameters (PER FAMILY - B2569 generalisation)
+
+**This step is family-dispatched, never strategy-specific prose.** The battery
+(`run_postconfig.py::FAMILIES`) fails CLOSED on a strategy with no registered grader; this doc
+previously showed only the smc command, which is how an entire analysis step (free levels) got
+executed once at strategy level and never per config (the N1 class bug, b2569 audit). The step
+has TWO legs on every landing and step 2 is DONE only when BOTH succeed:
+
+**(a) the family grader, at the manifest's own parameters:**
 ```bash
-PYTHONPATH=.:scripts python scripts/tighten_breaker_block.py   --cube output_cfg<N>/trade_exit_detail.csv   --swing-length <THE SW THIS CONFIG RAN> --min-n 10   --out output_audit/<batch>_cfg<N>_grid.json
+# smc_breaker_block family:
+PYTHONPATH=".;scripts" python scripts/tighten_breaker_block.py --cube output_cfg<N>/trade_exit_detail.csv \
+  --swing-length <THE SW THIS CONFIG RAN> --min-n 10 --out output_audit/<batch>_cfg<N>_grid.json
+# institutional_committed_growth family:
+PYTHONPATH=".;scripts" python scripts/grade_institutional_config.py --cube output_icg_<cfg> \
+  --min-consecutive-quarters <P4> --growth-lookback-quarters <P5> --growth-multiple <P6> --span <P9>
 ```
-**`--swing-length` MUST match the run.** The grader RE-DERIVES every fire; a mismatch silently
-drops the fires that do not reproduce - cfg2 lost 167 of 420 that way (L454). The union
-diagnosis-loss gate aborts above 2pct.
+**Parameters MUST match the run.** The smc grader RE-DERIVES every fire; a mismatch silently
+drops the fires that do not reproduce - cfg2 lost 167 of 420 that way (L454); the union
+diagnosis-loss gate aborts above 2pct. The institutional grader REFUSES non-production P7/P8
+values (L751 - they are artifact stamps, not filters).
+
+**(b) the FREE levels of every PERSISTED parameter, on THIS config's cube:**
+```bash
+PYTHONPATH=".;scripts" python scripts/grade_free_levels_institutional.py --cube output_icg_<cfg>
+```
+Levels come from SPECS `free_band` (single source). The tool gates itself: every covered landed
+trade must RE-PASS the production gate offline (REPRODUCTION line printed) before any level is
+graded - a reproduction failure exits 2 and the battery FAILS step 2 closed. Empty
+`signals_at_entry` rows (S6-B2512 class) are counted and excluded, never silently failed. A new
+family's free-levels grader is part of registering the family, not a later enhancement.
 
 ### 3. Outlier + discrepancy sweep - ALL of these, every time
 | check | why |
@@ -2440,8 +2483,17 @@ knobs). The per-level free/resim split corrected the factorial 31,500 → 700
 (L726). **Ruled Step-1 design: 17 engine configs** — baseline + P4 {2,3,6,8} +
 P5 {2,3,6,8} + P6 {1.0,1.25,1.5} + P9 spans {9,20,50,100,150} — **plus 4 FREE
 cache-graded levels** (P7 {5,11,14}, P8 {6}) that need no engine run because both
-counts persist in `signals_at_entry` at 100 % measured coverage. P7 resim {1,2}
-and P8 resim {2,3} are recorded in the band and deliberately NOT scheduled.
+counts persist in `signals_at_entry` — coverage is NOT 100 % (B2569 correction of
+this line's own claim, L749 class): measured 96.2 % of fired rows carry the
+committed key on R5 (S6-B2504) and 93.83 % on cfg1 (23 resume-restored rows empty,
+S6-B2512; span9/span20/span50 measure 100 %). **The free levels are graded on
+EVERY landing by the battery** (`step2_free_levels`, reproduction-gated, B2569) —
+the one-time R5-cube grading at S6-B2504 was the N1 class bug, not the design.
+P7 resim {1,2} and P8 resim {2,3} are recorded in the band and deliberately NOT
+scheduled — **and are UNRUNNABLE as specced: the screener hardcodes both
+thresholds (screener.py:6646-6648) and no env knob exists** (§0.7
+band-completeness defect; owner decision S6-B2569a: strike, or build the knob and
+schedule 4 configs at ~+10-12 h serial).
 The P9 band excludes producer-offered span 21 (owner directive 2026-08-31; the
 b2197 ledger measured it a near-duplicate of 20 that did not earn a run).
 
@@ -2543,8 +2595,23 @@ strategy's gate input too. `strat_institutional_multi_quarter_persistence_long`
 does not move. Table D's `sw`/`sp` and all D-2 axes are smc-spec keys (see
 §6.4b caveat, S6-B2500).
 
-**Cheapest next action** — grade the P7/P8 FREE levels off the existing R5 cube:
-zero engine hours, both counts persisted at 100 % coverage (S6-B2501).
+**Free-level status (B2569 — supersedes the "cheapest next action" line that stood
+here, which pointed at S6-B2501 work EXECUTED 2026-09-01 and then superseded by the
+per-config directive).** The battery now grades the P7/P8 free levels on every
+landing (`step2_free_levels`), gated on reproducing the landed baseline at
+production levels first. Executed retroactively on all 4 landed cubes — every one
+reproduces (span9 609/609, span20 531/531, span50 405/405, cfg1 350/350 covered
+with the 23 S6-B2512 rows counted and excluded) — and the verdict with its
+denominators is: **0 of 4 free levels beat baseline on ANY landed config (0 of 16
+level×config cells); every P7 tightening costs 31-79 % of fires and drops top
+ci_lo; p8_6 is a 4-6-trade no-op.** Artifacts:
+`output_audit/output_icg_*_free_levels.json`; audit `output_audit/b2569_icg_programme_audit.md`.
+
+**Step-1 leaderboard after 4 of 17 landings (ranking only, no admission — B1608):**
+span9 `regime_flip` is_ci_lo **+0.167** / is_sharpe 0.489 / 609 fires; span20
+`breakeven_plus_trail` −0.015 / 0.300 / 531; span50 `breakeven_plus_trail` −0.067 /
+0.288 / 405; cfg1 (baseline, span200) `breakeven_plus_trail` −0.087 / 0.263 / 373.
+The span axis is measuring as the live one; span100/span150 land next in the chain.
 
 ## APPENDIX S1-200 - THE 200 STEP-1 TICKERS (owner ruling 2026-08-29)
 
