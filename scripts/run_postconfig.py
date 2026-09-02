@@ -65,8 +65,8 @@ from grid_population import grid_population  # noqa: E402  (B2521 S6-B2520m)
 
 MEGA = ("NVDA", "MSFT", "GOOGL", "META", "TSLA", "AAPL")
 TERMINAL = ("DONE", "N/A")
-_GRADER_CHECKS = ("step2_grade_auto", "step4_spot_check_auto",
-                  "step7_engine_implemented")
+_GRADER_CHECKS = ("step2_grade_auto", "step2_free_levels",
+                  "step4_spot_check_auto", "step7_engine_implemented")
 _LEDGER_WIDE = ("ledger_status_matches_evidence",)
 
 
@@ -366,11 +366,27 @@ def run_institutional(cube_dir: Path, p: dict, manifest: dict) -> tuple[list, di
     results.append(("step2_grade_auto", "PASS" if ok2 else "FAIL",
                     f"exit {g.returncode}; {label} -> {grid_out.name}; "
                     f"{_tail(g)[:160]}"))
+    # B2569 (owner directive 2026-09-02): the P7/P8 FREE levels are part of
+    # EVERY config's band, so they are graded on EVERY landing - not once at
+    # strategy level (the S6-B2501/B2504 class bug). The tool gates itself on
+    # reproducing the landed baseline at production levels before grading;
+    # a reproduction failure exits nonzero and FAILS this step closed.
+    free_out = ROOT / "output_audit" / f"{cube_dir.name}_free_levels.json"
+    fl = _run([sys.executable,
+               str(ROOT / "scripts" / "grade_free_levels_institutional.py"),
+               "--cube", str(cube_dir), "--out", str(free_out)])
+    okf = fl.returncode == 0 and free_out.exists()
+    results.append(("step2_free_levels", "PASS" if okf else "FAIL",
+                    f"exit {fl.returncode}; reproduction-gated free levels "
+                    f"-> {free_out.name}; {_tail(fl)[:160]}"))
     notes["2_grade_with_config_params"] = (
-        ("DONE", f"AUTO (B2520): grade_institutional_config at manifest {label} "
-                 f"-> {grid_out.name}; {_tail(g, 2)[:160]}") if ok2 else
-        ("FAIL", f"grade_institutional_config exit {g.returncode} at {label}: "
-                 f"{_tail(g)[:200]}"))
+        ("DONE", f"AUTO (B2520/B2569): grade_institutional_config at manifest "
+                 f"{label} -> {grid_out.name}; free levels reproduction-gated "
+                 f"-> {free_out.name}") if ok2 and okf else
+        ("FAIL", (f"grade_institutional_config exit {g.returncode} at {label}: "
+                  f"{_tail(g)[:140]}" if not ok2 else
+                  f"free-levels grade exit {fl.returncode} (reproduction gate "
+                  f"or grading failed): {_tail(fl)[:140]}")))
     win = manifest.get("window") or {}
     cmd = [sys.executable, str(ROOT / "scripts" / "spot_check_institutional.py"),
            "--cube", str(cube_dir), "--n", "50", "--ema-span", str(p["ema_span"]),

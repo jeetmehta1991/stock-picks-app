@@ -1,0 +1,929 @@
+{
+ "ticket": "B2569",
+ "strategy": "institutional_committed_growth_long",
+ "cube": "output_icg_span9_span9\\trade_exit_detail.csv",
+ "method": "per-config subset re-score per SPECS P7/P8 free_band; reproduction gate at production PASSED before grading; IS window only (roster_core.in_sample); holdout never read; absent signal keys default to 0 exactly as the engine's s.get did; empty signals_at_entry excluded and counted (S6-B2512)",
+ "multiplicity_exposure": {
+  "levels_searched_this_pass": 4,
+  "note": "S6-B2444 recording rule; each level's headline is a max over the exits graded, and every level is a nested subset of ONE engine run - levels are not independent measurements"
+ },
+ "levels": {
+  "baseline_p7_3": {
+   "p7": 3,
+   "p8": 5,
+   "is_fires": 609,
+   "is_rows_all_exits": 14616,
+   "sharpe_selected_exit": "regime_flip",
+   "sharpe_selected_stats": {
+    "sharpe": 0.489,
+    "ci_lo": 0.167
+   },
+   "per_exit_ranked_by_ci_lo": [
+    {
+     "exit": "regime_flip",
+     "n": 609,
+     "is_sharpe": 0.489,
+     "is_ci_lo": 0.167,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "breakeven_plus_trail",
+     "n": 609,
+     "is_sharpe": 0.423,
+     "is_ci_lo": 0.134,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "hybrid_50pct_target",
+     "n": 609,
+     "is_sharpe": 0.161,
+     "is_ci_lo": -0.068,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "time_stop_10d",
+     "n": 609,
+     "is_sharpe": 0.252,
+     "is_ci_lo": -0.146,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "class_time_stop",
+     "n": 609,
+     "is_sharpe": -0.024,
+     "is_ci_lo": -0.274,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "atr_trail_2x",
+     "n": 609,
+     "is_sharpe": 0.056,
+     "is_ci_lo": -0.298,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "trailing_10pct",
+     "n": 609,
+     "is_sharpe": -0.126,
+     "is_ci_lo": -0.371,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "earnings_blackout",
+     "n": 609,
+     "is_sharpe": -0.187,
+     "is_ci_lo": -0.381,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "fixed_4r_2r",
+     "n": 609,
+     "is_sharpe": -0.092,
+     "is_ci_lo": -0.411,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "time_stop_20d",
+     "n": 609,
+     "is_sharpe": -0.123,
+     "is_ci_lo": -0.418,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "trailing_15pct",
+     "n": 609,
+     "is_sharpe": -0.265,
+     "is_ci_lo": -0.463,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "break_even_at_1r",
+     "n": 609,
+     "is_sharpe": -0.332,
+     "is_ci_lo": -0.742,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "next_pivot_target",
+     "n": 609,
+     "is_sharpe": -0.365,
+     "is_ci_lo": -0.796,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "atr_trail_vix_conditional",
+     "n": 609,
+     "is_sharpe": -0.437,
+     "is_ci_lo": -0.899,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "r_multiple_3r",
+     "n": 609,
+     "is_sharpe": -0.489,
+     "is_ci_lo": -0.945,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "r_multiple_2r",
+     "n": 609,
+     "is_sharpe": -0.542,
+     "is_ci_lo": -1.046,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "trailing_5pct",
+     "n": 609,
+     "is_sharpe": -0.93,
+     "is_ci_lo": -1.321,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "ma_exit_ema9",
+     "n": 609,
+     "is_sharpe": -0.842,
+     "is_ci_lo": -1.401,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "chandelier_3x",
+     "n": 609,
+     "is_sharpe": -1.269,
+     "is_ci_lo": -1.856,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "multi_tier_partial",
+     "n": 609,
+     "is_sharpe": -1.746,
+     "is_ci_lo": -2.338,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "atr_trail_1x",
+     "n": 609,
+     "is_sharpe": -2.022,
+     "is_ci_lo": -2.605,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "reverse_signal",
+     "n": 609,
+     "is_sharpe": -2.022,
+     "is_ci_lo": -2.605,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "mfe_lockin_trail",
+     "n": 609,
+     "is_sharpe": -2.52,
+     "is_ci_lo": -3.125,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "smc_mitigation_zone",
+     "n": 609,
+     "is_sharpe": -4.516,
+     "is_ci_lo": -5.412,
+     "verdict": "RANKED"
+    }
+   ]
+  },
+  "p7_5": {
+   "p7": 5,
+   "p8": 5,
+   "is_fires": 340,
+   "is_rows_all_exits": 8160,
+   "sharpe_selected_exit": "regime_flip",
+   "sharpe_selected_stats": {
+    "sharpe": 0.253,
+    "ci_lo": -0.181
+   },
+   "per_exit_ranked_by_ci_lo": [
+    {
+     "exit": "breakeven_plus_trail",
+     "n": 340,
+     "is_sharpe": 0.248,
+     "is_ci_lo": -0.15,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "regime_flip",
+     "n": 340,
+     "is_sharpe": 0.253,
+     "is_ci_lo": -0.181,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "hybrid_50pct_target",
+     "n": 340,
+     "is_sharpe": 0.061,
+     "is_ci_lo": -0.275,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "class_time_stop",
+     "n": 340,
+     "is_sharpe": -0.244,
+     "is_ci_lo": -0.582,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "time_stop_10d",
+     "n": 340,
+     "is_sharpe": -0.085,
+     "is_ci_lo": -0.619,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "earnings_blackout",
+     "n": 340,
+     "is_sharpe": -0.385,
+     "is_ci_lo": -0.647,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "fixed_4r_2r",
+     "n": 340,
+     "is_sharpe": -0.244,
+     "is_ci_lo": -0.672,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "atr_trail_2x",
+     "n": 340,
+     "is_sharpe": -0.232,
+     "is_ci_lo": -0.717,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "trailing_15pct",
+     "n": 340,
+     "is_sharpe": -0.45,
+     "is_ci_lo": -0.737,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "time_stop_20d",
+     "n": 340,
+     "is_sharpe": -0.349,
+     "is_ci_lo": -0.747,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "trailing_10pct",
+     "n": 340,
+     "is_sharpe": -0.418,
+     "is_ci_lo": -0.777,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "next_pivot_target",
+     "n": 340,
+     "is_sharpe": -0.446,
+     "is_ci_lo": -1.019,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "break_even_at_1r",
+     "n": 340,
+     "is_sharpe": -0.636,
+     "is_ci_lo": -1.215,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "r_multiple_3r",
+     "n": 340,
+     "is_sharpe": -0.631,
+     "is_ci_lo": -1.26,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "r_multiple_2r",
+     "n": 340,
+     "is_sharpe": -0.605,
+     "is_ci_lo": -1.301,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "atr_trail_vix_conditional",
+     "n": 340,
+     "is_sharpe": -0.911,
+     "is_ci_lo": -1.54,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "ma_exit_ema9",
+     "n": 340,
+     "is_sharpe": -1.045,
+     "is_ci_lo": -1.815,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "trailing_5pct",
+     "n": 340,
+     "is_sharpe": -1.481,
+     "is_ci_lo": -2.055,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "chandelier_3x",
+     "n": 340,
+     "is_sharpe": -1.251,
+     "is_ci_lo": -2.062,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "multi_tier_partial",
+     "n": 340,
+     "is_sharpe": -2.212,
+     "is_ci_lo": -3.025,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "atr_trail_1x",
+     "n": 340,
+     "is_sharpe": -2.733,
+     "is_ci_lo": -3.544,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "reverse_signal",
+     "n": 340,
+     "is_sharpe": -2.733,
+     "is_ci_lo": -3.544,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "mfe_lockin_trail",
+     "n": 340,
+     "is_sharpe": -3.069,
+     "is_ci_lo": -3.905,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "smc_mitigation_zone",
+     "n": 340,
+     "is_sharpe": -4.986,
+     "is_ci_lo": -6.224,
+     "verdict": "RANKED"
+    }
+   ]
+  },
+  "p7_11": {
+   "p7": 11,
+   "p8": 5,
+   "is_fires": 176,
+   "is_rows_all_exits": 4224,
+   "sharpe_selected_exit": "breakeven_plus_trail",
+   "sharpe_selected_stats": {
+    "sharpe": 0.041,
+    "ci_lo": -0.528
+   },
+   "per_exit_ranked_by_ci_lo": [
+    {
+     "exit": "breakeven_plus_trail",
+     "n": 176,
+     "is_sharpe": 0.041,
+     "is_ci_lo": -0.528,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "regime_flip",
+     "n": 176,
+     "is_sharpe": -0.077,
+     "is_ci_lo": -0.688,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "hybrid_50pct_target",
+     "n": 176,
+     "is_sharpe": -0.216,
+     "is_ci_lo": -0.731,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "earnings_blackout",
+     "n": 176,
+     "is_sharpe": -0.608,
+     "is_ci_lo": -0.975,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "class_time_stop",
+     "n": 176,
+     "is_sharpe": -0.606,
+     "is_ci_lo": -1.079,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "trailing_15pct",
+     "n": 176,
+     "is_sharpe": -0.669,
+     "is_ci_lo": -1.087,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "fixed_4r_2r",
+     "n": 176,
+     "is_sharpe": -0.575,
+     "is_ci_lo": -1.198,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "time_stop_10d",
+     "n": 176,
+     "is_sharpe": -0.511,
+     "is_ci_lo": -1.259,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "time_stop_20d",
+     "n": 176,
+     "is_sharpe": -0.722,
+     "is_ci_lo": -1.279,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "atr_trail_2x",
+     "n": 176,
+     "is_sharpe": -0.61,
+     "is_ci_lo": -1.307,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "trailing_10pct",
+     "n": 176,
+     "is_sharpe": -0.8,
+     "is_ci_lo": -1.356,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "break_even_at_1r",
+     "n": 176,
+     "is_sharpe": -0.809,
+     "is_ci_lo": -1.665,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "next_pivot_target",
+     "n": 176,
+     "is_sharpe": -1.016,
+     "is_ci_lo": -1.826,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "r_multiple_3r",
+     "n": 176,
+     "is_sharpe": -1.046,
+     "is_ci_lo": -1.964,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "r_multiple_2r",
+     "n": 176,
+     "is_sharpe": -1.033,
+     "is_ci_lo": -2.032,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "atr_trail_vix_conditional",
+     "n": 176,
+     "is_sharpe": -1.177,
+     "is_ci_lo": -2.079,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "ma_exit_ema9",
+     "n": 176,
+     "is_sharpe": -1.364,
+     "is_ci_lo": -2.442,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "chandelier_3x",
+     "n": 176,
+     "is_sharpe": -1.957,
+     "is_ci_lo": -3.174,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "trailing_5pct",
+     "n": 176,
+     "is_sharpe": -2.264,
+     "is_ci_lo": -3.194,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "multi_tier_partial",
+     "n": 176,
+     "is_sharpe": -2.49,
+     "is_ci_lo": -3.654,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "atr_trail_1x",
+     "n": 176,
+     "is_sharpe": -2.958,
+     "is_ci_lo": -4.108,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "reverse_signal",
+     "n": 176,
+     "is_sharpe": -2.958,
+     "is_ci_lo": -4.108,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "mfe_lockin_trail",
+     "n": 176,
+     "is_sharpe": -3.28,
+     "is_ci_lo": -4.46,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "smc_mitigation_zone",
+     "n": 176,
+     "is_sharpe": -5.248,
+     "is_ci_lo": -7.019,
+     "verdict": "RANKED"
+    }
+   ]
+  },
+  "p7_14": {
+   "p7": 14,
+   "p8": 5,
+   "is_fires": 145,
+   "is_rows_all_exits": 3480,
+   "sharpe_selected_exit": "regime_flip",
+   "sharpe_selected_stats": {
+    "sharpe": 0.206,
+    "ci_lo": -0.474
+   },
+   "per_exit_ranked_by_ci_lo": [
+    {
+     "exit": "breakeven_plus_trail",
+     "n": 145,
+     "is_sharpe": 0.155,
+     "is_ci_lo": -0.457,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "regime_flip",
+     "n": 145,
+     "is_sharpe": 0.206,
+     "is_ci_lo": -0.474,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "hybrid_50pct_target",
+     "n": 145,
+     "is_sharpe": -0.105,
+     "is_ci_lo": -0.654,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "trailing_15pct",
+     "n": 145,
+     "is_sharpe": -0.443,
+     "is_ci_lo": -0.882,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "earnings_blackout",
+     "n": 145,
+     "is_sharpe": -0.508,
+     "is_ci_lo": -0.913,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "class_time_stop",
+     "n": 145,
+     "is_sharpe": -0.481,
+     "is_ci_lo": -1.0,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "atr_trail_2x",
+     "n": 145,
+     "is_sharpe": -0.396,
+     "is_ci_lo": -1.148,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "time_stop_20d",
+     "n": 145,
+     "is_sharpe": -0.554,
+     "is_ci_lo": -1.167,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "trailing_10pct",
+     "n": 145,
+     "is_sharpe": -0.585,
+     "is_ci_lo": -1.174,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "fixed_4r_2r",
+     "n": 145,
+     "is_sharpe": -0.549,
+     "is_ci_lo": -1.216,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "time_stop_10d",
+     "n": 145,
+     "is_sharpe": -0.492,
+     "is_ci_lo": -1.317,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "break_even_at_1r",
+     "n": 145,
+     "is_sharpe": -0.441,
+     "is_ci_lo": -1.351,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "next_pivot_target",
+     "n": 145,
+     "is_sharpe": -0.823,
+     "is_ci_lo": -1.686,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "r_multiple_2r",
+     "n": 145,
+     "is_sharpe": -0.685,
+     "is_ci_lo": -1.764,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "r_multiple_3r",
+     "n": 145,
+     "is_sharpe": -0.889,
+     "is_ci_lo": -1.876,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "atr_trail_vix_conditional",
+     "n": 145,
+     "is_sharpe": -1.049,
+     "is_ci_lo": -2.024,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "ma_exit_ema9",
+     "n": 145,
+     "is_sharpe": -1.321,
+     "is_ci_lo": -2.503,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "trailing_5pct",
+     "n": 145,
+     "is_sharpe": -1.965,
+     "is_ci_lo": -2.959,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "chandelier_3x",
+     "n": 145,
+     "is_sharpe": -1.677,
+     "is_ci_lo": -2.98,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "multi_tier_partial",
+     "n": 145,
+     "is_sharpe": -1.982,
+     "is_ci_lo": -3.227,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "atr_trail_1x",
+     "n": 145,
+     "is_sharpe": -2.413,
+     "is_ci_lo": -3.636,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "reverse_signal",
+     "n": 145,
+     "is_sharpe": -2.413,
+     "is_ci_lo": -3.636,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "mfe_lockin_trail",
+     "n": 145,
+     "is_sharpe": -2.793,
+     "is_ci_lo": -4.052,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "smc_mitigation_zone",
+     "n": 145,
+     "is_sharpe": -4.85,
+     "is_ci_lo": -6.797,
+     "verdict": "RANKED"
+    }
+   ]
+  },
+  "p8_6": {
+   "p7": 3,
+   "p8": 6,
+   "is_fires": 603,
+   "is_rows_all_exits": 14472,
+   "sharpe_selected_exit": "regime_flip",
+   "sharpe_selected_stats": {
+    "sharpe": 0.473,
+    "ci_lo": 0.149
+   },
+   "per_exit_ranked_by_ci_lo": [
+    {
+     "exit": "regime_flip",
+     "n": 603,
+     "is_sharpe": 0.473,
+     "is_ci_lo": 0.149,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "breakeven_plus_trail",
+     "n": 603,
+     "is_sharpe": 0.413,
+     "is_ci_lo": 0.122,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "hybrid_50pct_target",
+     "n": 603,
+     "is_sharpe": 0.145,
+     "is_ci_lo": -0.086,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "time_stop_10d",
+     "n": 603,
+     "is_sharpe": 0.248,
+     "is_ci_lo": -0.152,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "class_time_stop",
+     "n": 603,
+     "is_sharpe": -0.05,
+     "is_ci_lo": -0.302,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "atr_trail_2x",
+     "n": 603,
+     "is_sharpe": 0.023,
+     "is_ci_lo": -0.333,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "trailing_10pct",
+     "n": 603,
+     "is_sharpe": -0.14,
+     "is_ci_lo": -0.387,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "earnings_blackout",
+     "n": 603,
+     "is_sharpe": -0.2,
+     "is_ci_lo": -0.394,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "fixed_4r_2r",
+     "n": 603,
+     "is_sharpe": -0.107,
+     "is_ci_lo": -0.427,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "time_stop_20d",
+     "n": 603,
+     "is_sharpe": -0.142,
+     "is_ci_lo": -0.438,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "trailing_15pct",
+     "n": 603,
+     "is_sharpe": -0.285,
+     "is_ci_lo": -0.486,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "break_even_at_1r",
+     "n": 603,
+     "is_sharpe": -0.368,
+     "is_ci_lo": -0.783,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "next_pivot_target",
+     "n": 603,
+     "is_sharpe": -0.39,
+     "is_ci_lo": -0.824,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "atr_trail_vix_conditional",
+     "n": 603,
+     "is_sharpe": -0.437,
+     "is_ci_lo": -0.901,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "r_multiple_3r",
+     "n": 603,
+     "is_sharpe": -0.507,
+     "is_ci_lo": -0.965,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "r_multiple_2r",
+     "n": 603,
+     "is_sharpe": -0.558,
+     "is_ci_lo": -1.064,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "trailing_5pct",
+     "n": 603,
+     "is_sharpe": -0.975,
+     "is_ci_lo": -1.37,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "ma_exit_ema9",
+     "n": 603,
+     "is_sharpe": -1.005,
+     "is_ci_lo": -1.571,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "chandelier_3x",
+     "n": 603,
+     "is_sharpe": -1.465,
+     "is_ci_lo": -2.063,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "multi_tier_partial",
+     "n": 603,
+     "is_sharpe": -1.8,
+     "is_ci_lo": -2.396,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "atr_trail_1x",
+     "n": 603,
+     "is_sharpe": -2.138,
+     "is_ci_lo": -2.726,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "reverse_signal",
+     "n": 603,
+     "is_sharpe": -2.138,
+     "is_ci_lo": -2.726,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "mfe_lockin_trail",
+     "n": 603,
+     "is_sharpe": -2.588,
+     "is_ci_lo": -3.198,
+     "verdict": "RANKED"
+    },
+    {
+     "exit": "smc_mitigation_zone",
+     "n": 603,
+     "is_sharpe": -4.538,
+     "is_ci_lo": -5.441,
+     "verdict": "RANKED"
+    }
+   ]
+  }
+ },
+ "reproduction": {
+  "landed_fires": 609,
+  "empty_signals": 0,
+  "covered": 609,
+  "repassed_at_production": 609,
+  "production": {
+   "p7": 3,
+   "p8": 5
+  },
+  "empty_disposition": "none",
+  "verdict": "PASS"
+ }
+}

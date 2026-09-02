@@ -49,6 +49,20 @@ STRAT = "institutional_committed_growth_long"
 P7_PROD, P8_PROD = 3, 5   # screener.py:6648 production levels (S6-B2504)
 
 
+def refuse_nonproduction(p7: int, p8: int) -> str | None:
+    """L751/B2569: these flags are artifact STAMPS, not filters - grade()
+    never reads them. A non-production value would ship an identical grade
+    stamped as a different measurement, so it is REFUSED, not recorded.
+    Free levels are graded by grade_free_levels_institutional.py --cube,
+    which applies the OR gate and gates on baseline reproduction first."""
+    if (p7, p8) != (P7_PROD, P8_PROD):
+        return (f"[FAIL] --min-committed-growth/--fallback-min-increased are "
+                f"artifact stamps at production ({P7_PROD}, {P8_PROD}) only; "
+                f"this grader does NOT filter on them (L751). Got ({p7}, {p8})."
+                f" Use grade_free_levels_institutional.py --cube for levels.")
+    return None
+
+
 def grade(cube_csv: Path, config: dict, admit: dict, *, min_n: int = 10,
           top_n: int = 10, note: str = "") -> dict:
     cube = rc.load_cube(cube_csv, chunksize=500_000)
@@ -124,6 +138,11 @@ def main() -> int:
     ap.add_argument("--out", default=None,
                     help="default output_audit/<cube dir>_grid_auto.json")
     a = ap.parse_args()
+    refusal = refuse_nonproduction(a.min_committed_growth,
+                                   a.fallback_min_increased)
+    if refusal:
+        print(refusal)
+        return 2
     cube = Path(a.cube)
     if cube.is_dir():
         cube = cube / "trade_exit_detail.csv"

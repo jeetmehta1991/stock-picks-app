@@ -30107,6 +30107,151 @@ def test_b2504_free_level_filter_mirrors_the_engine_gate():
     # no-key row IS a committed==0 row here - the truth table above covers it
 
 
+def test_b2569_free_level_reproduction_gate_and_specs_derivation(tmp_path):
+    """B2569 (owner 2026-09-02): before any free level is graded, every
+    covered landed trade must RE-PASS the production gate offline - a
+    reproduction failure exits 2 and grades nothing. Empty signals_at_entry
+    rows (S6-B2512 class) are counted and excluded, never silently failed.
+    Levels derive from SPECS free_band - strictly tighter-than-production;
+    the resim (looser) levels never enter the free grader."""
+    import importlib.util
+    import json as _json
+    import sys as _sys
+    from pathlib import Path
+
+    import pandas as pd
+    import pytest as _pt
+
+    root = Path(__file__).resolve().parents[2]
+    sp = str(root / "scripts")
+    if sp not in _sys.path:
+        _sys.path.insert(0, sp)
+    spec = importlib.util.spec_from_file_location(
+        "grade_free_b2569",
+        root / "scripts" / "grade_free_levels_institutional.py")
+    g = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(g)
+
+    levels = g.spec_levels()
+    assert levels[0][1:] == (g.P7_PROD, g.P8_PROD), "baseline first"
+    assert all(p7 >= g.P7_PROD and p8 >= g.P8_PROD for _, p7, p8 in levels[1:])
+    assert all((p7, p8) != (g.P7_PROD, g.P8_PROD) for _, p7, p8 in levels[1:])
+
+    def mk(committed, increased):
+        return _json.dumps({"committed_growth_holders": committed,
+                            "institutional_increased": increased})
+
+    tl = pd.DataFrame({
+        "ticker": ["A", "B", "C"], "strategy": [g.STRAT] * 3,
+        "entry_date": ["2024-06-03"] * 3, "direction": ["long"] * 3,
+        "signals_at_entry": [mk(3, 0), mk(0, 5), ""]})
+    f = tmp_path / "trade_log.csv"
+    tl.to_csv(f, index=False)
+    rec = g.reproduction_gate(g.load_trade_flags(f))
+    assert (rec["landed_fires"], rec["covered"], rec["empty_signals"],
+            rec["repassed_at_production"], rec["verdict"]) == (3, 2, 1, 2,
+                                                               "PASS")
+
+    # a COVERED row in the dead zone (0 < committed < bar) could never have
+    # fired - logged signals disagreeing with the engine's gate must exit 2
+    tl.loc[2, "signals_at_entry"] = mk(1, 0)
+    tl.to_csv(f, index=False)
+    with _pt.raises(SystemExit) as ex:
+        g.reproduction_gate(g.load_trade_flags(f))
+    assert ex.value.code == 2
+
+
+def test_b2569_institutional_grader_refuses_nonproduction_admit(tmp_path):
+    """L751/B2569: grade_institutional_config's P7/P8 flags are stamps the
+    grading path never reads - a non-production value shipped four identical
+    rows as four measurements. The CLI now REFUSES such values (exit 2),
+    asserted by EXECUTION, not by reading the source (L750)."""
+    import importlib.util
+    import subprocess
+    import sys as _sys
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parents[2]
+    r = subprocess.run(
+        [_sys.executable,
+         str(root / "scripts" / "grade_institutional_config.py"),
+         "--cube", str(tmp_path / "no_cube"),
+         "--min-consecutive-quarters", "4", "--growth-lookback-quarters", "4",
+         "--growth-multiple", "1.1", "--span", "200",
+         "--min-committed-growth", "14"],
+        capture_output=True, text=True, cwd=str(root))
+    assert r.returncode == 2, (r.returncode, r.stdout, r.stderr)
+    assert "does NOT filter" in (r.stdout + r.stderr)
+
+    spec = importlib.util.spec_from_file_location(
+        "gic_b2569", root / "scripts" / "grade_institutional_config.py")
+    m = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(m)
+    assert m.refuse_nonproduction(m.P7_PROD, m.P8_PROD) is None
+    assert m.refuse_nonproduction(m.P7_PROD, m.P8_PROD + 1) is not None
+
+
+def test_b2569_battery_runs_free_levels_on_every_institutional_landing(
+        tmp_path, monkeypatch):
+    """B2569 class fix (S6-B2501 was executed ONCE at strategy level and
+    never wired): run_institutional invokes the reproduction-gated free-level
+    grader on EVERY landing, and step 2 is DONE only when BOTH the config
+    grade and the free-levels grade succeed - the free leg failing FAILS
+    step 2 closed."""
+    import importlib.util
+    import types
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parents[2]
+    spec = importlib.util.spec_from_file_location(
+        "run_postconfig_b2569", root / "scripts" / "run_postconfig.py")
+    rp = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(rp)
+
+    calls = []
+
+    def fake_run(cmd, env_extra=None):
+        cmd = [str(c) for c in cmd]
+        calls.append(cmd)
+        for i, c in enumerate(cmd):
+            if c == "--out":
+                Path(cmd[i + 1]).write_text("{}", encoding="utf-8")
+        return types.SimpleNamespace(returncode=0, stdout="ok", stderr="")
+
+    monkeypatch.setattr(rp, "_run", fake_run)
+    monkeypatch.setattr(rp, "spot_summary", lambda p: "stub")
+    # artifacts land under tmp_path, never the real output_audit (hygiene);
+    # the step-7 code-presence check FAILs harmlessly under the fake ROOT
+    monkeypatch.setattr(rp, "ROOT", tmp_path)
+    (tmp_path / "output_audit").mkdir()
+    cube = tmp_path / "output_icg_fake"
+    cube.mkdir()
+    p = {"min_consecutive_quarters": 4, "growth_lookback_quarters": 4,
+         "growth_multiple": 1.1, "ema_span": 200}
+    results, notes, _, _ = rp.run_institutional(cube, p, {"window": {}})
+    assert "step2_free_levels" in [n for n, _, _ in results]
+    free_cmds = [c for c in calls
+                 if any("grade_free_levels_institutional" in x for x in c)]
+    assert free_cmds and "--cube" in free_cmds[0]
+    assert notes["2_grade_with_config_params"][0] == "DONE"
+    assert "step2_free_levels" in rp._GRADER_CHECKS, (
+        "a free-leg FAIL must surface in step 2, not step 1")
+
+    def failing_run(cmd, env_extra=None):
+        cmd = [str(c) for c in cmd]
+        if any("grade_free_levels_institutional" in x for x in cmd):
+            return types.SimpleNamespace(returncode=2, stdout="",
+                                         stderr="REPRODUCTION FAIL")
+        for i, c in enumerate(cmd):
+            if c == "--out":
+                Path(cmd[i + 1]).write_text("{}", encoding="utf-8")
+        return types.SimpleNamespace(returncode=0, stdout="ok", stderr="")
+
+    monkeypatch.setattr(rp, "_run", failing_run)
+    _, notes2, _, _ = rp.run_institutional(cube, p, {"window": {}})
+    assert notes2["2_grade_with_config_params"][0] == "FAIL"
+
+
 def test_b2505_table_d_axes_come_from_the_family_registry():
     """S6-B2500/B2505: Table D/D-2 axes are per-family, and the institutional
     entry is a pinned CONTRACT for a grid schema that does not exist yet.
