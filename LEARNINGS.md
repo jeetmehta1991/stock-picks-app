@@ -18844,3 +18844,41 @@ still reported - cause filed UNKNOWN, not guessed). Detection is JUDGMENT-ONLY
 until the caller-side gate is replaced by a callee-side assertion in the engine,
 which is council-recommended and owner-gated because it would halt a running
 chain; durability rides test_b2526's anchor sweep.
+
+
+### L745 - The uncosted estimate that DISPARAGES your own work escapes the bias check
+
+**B2552, 2026-09-02.** I shipped a new gate and described its coverage as the
+inexpensive half of the problem, saying the remaining half needed a constructed
+case per gate and was therefore substantial. Both halves of that were an
+estimate and neither was measured. The gate challenged it under `#230 EXT`, I
+opened `gate_incident_corpus.py`, and the real numbers are: **43 of 44 scan_
+gates already carry a corpus case, and of the six gates named by the checklist's
+enforcement claims, five are covered and ZERO lack one.** The work I called
+substantial is zero new tuples.
+
+**Why this one got through a rule I had already applied twice this session.**
+The standing habit says *the consequence that supports what you already decided
+is the one you are least likely to test* - and that habit is watching for
+FLATTERY. This estimate ran the other way: it made my own pin sound more limited
+than it is. **A self-deprecating number feels like candour, and candour does not
+trigger the scepticism that self-praise does.** So the check never fired, on a
+turn where I had run it correctly on two other claims.
+
+**The rule, widened.** `#230 EXT` says an effort estimate is a quantitative
+claim. Add: **its DIRECTION is irrelevant to whether it needs measuring.**
+Understating your own coverage is as much a fabrication as overstating it, and
+it has a worse second-order effect - it invites the reader to fund work that is
+already done, and it makes the artifact look weaker than the evidence supports.
+
+**The residue that IS real, and is not what I claimed.** The corpus proves a
+gate fires on ITS RECORDED INCIDENT. It does not prove the gate fires on the
+CANONICAL EXAMPLE its checklist entry advertises - which is exactly how
+`#185`/`#186` passed while `scan_unmonitored_launch` could not fire on a bare
+`run_phase1a.py` (L744). That distinction is worth stating precisely, and my
+inexpensive/substantial framing obscured it by putting the emphasis on volume of
+work rather than on the difference between two kinds of proof.
+
+**Anchored:** SKILL.md tripwire row, same commit. Detection is JUDGMENT-ONLY -
+no scan can tell an estimate's direction from prose - and durability rides
+test_b2526's anchor sweep.
