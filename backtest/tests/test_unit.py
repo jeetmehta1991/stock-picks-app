@@ -31511,3 +31511,47 @@ def test_b2560_parameters_tested_block_renders_every_family(tmp_path):
     assert "icg_probe" in out, (
         "the foreign config disappeared from the table entirely - a fix that "
         "trades a visible defect for an invisible one")
+def test_b2564_the_four_later_session_rules_survive_in_the_skill():
+    """Durability for L746, L747, L748, L749 - the tripwire rows after L745.
+
+    Companion to test_b2553, which covers L743-L745. Each assertion pins the
+    rule's DIAGNOSTIC rather than its headline, so an edit that keeps the
+    wording and drops the reasoning still fails.
+
+    These four rules all concern claims about one's OWN work - how many arms a
+    pin has, whether a baseline names its members, whether an assertion matched
+    code or the comment beside it, and whether a sourced figure is also current.
+    Detection for all four is judgment-only; durability is not, and durability
+    is the half that decays (B1723: the skill edited 5 times while LEARNINGS
+    gained 57 entries).
+    """
+    from pathlib import Path as _P
+
+    root = _P(__file__).resolve().parents[2]
+    sk = " ".join((root / ".claude" / "skills" / "execution-discipline" / "SKILL.md")
+                  .read_text(encoding="utf-8", errors="ignore").split())
+    ln = " ".join((root / "LEARNINGS.md").read_text(encoding="utf-8", errors="ignore").split())
+
+    # L746 - a two-arm pin proves two arms, not two directions
+    assert "COUNT THE SHAPES YOU TESTED" in sk
+    assert "is a sample of size two" in sk, (
+        "L746's diagnostic - two arms are a sample, not a proof - is gone")
+    assert "### L746" in ln
+
+    # L747 - a numeric ratchet forgets the why
+    assert "NAME THE MEMBERS AND GIVE EACH A REASON" in sk
+    assert "treats every member as interchangeable" in sk, (
+        "L747's diagnostic - why a count cannot replace a named set - is gone")
+    assert "### L747" in ln
+
+    # L748 - an assertion matches the comment describing the code
+    assert "ANCHOR ON SOMETHING THAT CANNOT APPEAR IN PROSE" in sk
+    assert "the more reliably it poisons the match" in sk, (
+        "L748's diagnostic - good documentation defeats the grep - is gone")
+    assert "### L748" in ln
+
+    # L749 - a sourced figure can still be stale
+    assert "CARRY THE READING'S AGE" in sk
+    assert "a source name reads as freshness" in sk, (
+        "L749's diagnostic - why provenance masquerades as recency - is gone")
+    assert "### L749" in ln
