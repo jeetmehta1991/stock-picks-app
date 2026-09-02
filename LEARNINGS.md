@@ -19184,3 +19184,41 @@ the band LOOKED complete.
 test_b2569 pins x3 + CHECKLIST #290 + SS0.7/SS2 of the runbook rewritten
 family-generic. Reproduction verified on all 4 landed cubes before any level was
 believed (span9 609/609 landed fires re-passed at production).
+
+### L753 - The remediation pass is a working turn, bound by every rule it is citing
+
+**B2569-B2572, 2026-09-02.** Two misses made INSIDE the pass that was remediating
+the turn-gate's findings, plus one repaired a commit late:
+
+**(1) The gate ran before the content it vouched for existed.** The full pyramid
+ran green, THEN the doc edits landed (CHECKLIST #290, L752, banner), then B2570
+committed - so B2570's gate evidence predated its own diff. test_b1486 caught it
+on the NEXT run: the banner still claimed #289/L751 after the tail moved to
+#290/L752. COMPLIANCE FAILURE against Phase 3 (pyramid per addressal, on the
+staged content) and #67 (banner sync). The pin - not my sequencing - is what
+held; the banner was bumped and the gate re-run ON the staged diff before B2571.
+
+**(2) The gate's exit code was tail's, not pytest's.** The background gate was
+shaped `pytest ... | tail -2`, so the task reported exit 0 while the output file
+held `1 failed`. A pipeline's exit status is its LAST command's; the launcher's
+word again (L738's class, this time self-inflicted through command shape).
+Caught by reading the artifact instead of the status. Durable form: write the
+run to a file, report `$?` of pytest itself, tail the file separately.
+
+**(3) The L752 tripwire row shipped without its fragment pin.** B2130 says a
+skill edit and its test fragment go in the same scripted call; B2571 edited
+SKILL.md with no test touch. Repaired at B2572 (fragment + gutted-count bump).
+
+**The class statement:** a close that exists only to satisfy the gate arrives
+feeling like bookkeeping, and every one of these slipped in precisely because
+"this is just the remediation" suppressed the rules' application to it. The
+gate treats every close as a working turn; so must I.
+
+**Mechanisms:** (1) is detected by the existing freshness pin (test_b1486) -
+the sequencing itself is JUDGMENT-ONLY (no scan knows whether edits followed
+the gate run; the pin catches the consequence). (2) durability: this entry +
+the reshaped command; detection JUDGMENT-ONLY (no scan reads pipeline shape in
+ad-hoc background commands; the tell is a task exit disagreeing with its
+artifact - read the artifact). (3) enforced by the existing gutted-count
+must-fire arm in test_b2123, which is exactly what makes a dropped fragment
+loud.
