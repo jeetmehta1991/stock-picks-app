@@ -31394,3 +31394,110 @@ def test_b2557_gate_pins_do_not_add_single_negative_arm_proofs():
         f"only {len(single)} single-negative-arm pins remain against a baseline "
         f"of {BASELINE} - real progress; lower BASELINE to lock it in, or the "
         "ratchet stops ratcheting.")
+def test_b2559_launcher_reports_the_task_it_observes_not_the_one_it_intended():
+    """S6-B2529a: a denied registration reported success.
+
+    MEASURED this session: _register_and_start emitted `registered_and_started`
+    unconditionally after Start-ScheduledTask, and launch() grepped that string.
+    Register-ScheduledTask was DENIED under the SYSTEM principal (no admin), the
+    success token printed anyway, and I reported CHAIN LAUNCHED for a task that
+    did not exist - caught only by querying Get-ScheduledTask by hand.
+
+    The only discriminator available at the time, an empty `last_result=`, was
+    printed and read by nothing. That is the unpaired-success-check class (#122)
+    in the launch path, where a false success costs an entire run.
+
+    TWO negative arms, because the quiet side of a success check is an open
+    family (L746): a failure line must not satisfy it, and neither must a
+    truncated or empty output.
+    """
+    import inspect
+    import sys as _sys
+    from pathlib import Path as _P
+
+    root = _P(__file__).resolve().parents[2]
+    _sys.path.insert(0, str(root / "scripts"))
+    import launch_detached as ld
+
+    ps = inspect.getsource(ld._register_and_start)
+    # the success line is emitted only from a branch that SAW the task
+    assert "Get-ScheduledTask" in ps, "the script never queries the scheduler back"
+    assert "register_failed" in ps, "there is no failure branch to take"
+    assert "state=" in ps, "the success line carries no observed state"
+    # the EMIT, not a comment mentioning it - my own explanatory comment
+    # contains the token, so .index() found the comment and not the line
+    emit_at = ps.index('Write-Output ("registered_and_started')
+    if_at = ps.index("$t = Get-ScheduledTask")
+    assert if_at < emit_at, (
+        "the success token is still emitted before the task is observed")
+
+    # the caller must require the observed-state token, not just the word
+    caller = inspect.getsource(ld.launch)
+    assert '"state=" not in out' in caller, (
+        "launch() still accepts the bare success word - the exact grep that "
+        "passed for a task that did not exist")
+
+    # NEGATIVE ARM 1 - a failure line must not read as success
+    fail_out = "register_failed stockpicks_x - the task does not exist"
+    assert not ("registered_and_started" in fail_out and "state=" in fail_out)
+
+    # NEGATIVE ARM 2 - a truncated success line (no state) must not pass either
+    truncated = "registered_and_started stockpicks_x last_result="
+    assert not ("registered_and_started" in truncated and "state=" in truncated), (
+        "a success line without observed state satisfies the check - that is "
+        "the pre-fix behaviour returning by another route")
+def test_b2560_parameters_tested_block_renders_every_family(tmp_path):
+    """S6-B2542a: the block iterated one family's six axes, so every other
+    family rendered "not recorded" in all six cells.
+
+    NOT COSMETIC. Phase 1B targets 20 long + 20 short strategies, and a report
+    generator hard-wired to one family's axes renders every other family blank -
+    capping the legible roster at one family. The funnel row above was made
+    family-aware at B2542; this is the block beneath it, reading the same
+    source: the artifact's own `config` keys.
+
+    TWO negative arms (L746): a foreign config must not render "not recorded",
+    and it must not VANISH either - v1 of this patch split foreign configs out
+    and emitted nothing for them, trading a visible defect for an invisible one.
+    """
+    import sys as _sys
+    from pathlib import Path as _P
+
+    root = _P(__file__).resolve().parents[2]
+    _sys.path.insert(0, str(root / "scripts"))
+    import producer_variant_table as pv
+
+    inst = {"config": {"P4_min_consecutive_quarters": 4, "P9_span": 9},
+            "results": [{"combo": {}, "verdict": "RANKED"}],
+            "per_exit": [{"exit": "a", "is_sharpe": 0.1, "is_ci_lo": 0.0,
+                          "fires": 10, "admit": {"verdict": "RANKED"}}],
+            "step1_ranking": [{"exit": "a", "is_sharpe": 0.1, "is_ci_lo": 0.0,
+                               "fires": 10, "rank": 1, "admit": {"verdict": "RANKED"}}]}
+    out = "\n".join(pv.table_c({"icg_probe": inst}))
+
+    # POSITIVE - its own axes appear, with values
+    assert "P4_min_consecutive_quarters" in out, (
+        "a foreign family's own axes are not rendered - the block is still "
+        "hard-wired to one family")
+    assert "P9_span" in out
+
+    # NEGATIVE ARM 1 - its ROW must not be described as unrecorded. Scoped to
+    # the row, not the whole render: the block's own preamble EXPLAINS the
+    # phrase ("reads `not recorded`, never `1`"), and my first version of
+    # this arm matched that prose - L746 in miniature, a negative arm
+    # testing the wrong scope.
+    # the config legitimately appears TWICE - once in the funnel, once in
+    # the parameters block - and my first version asserted one row, which
+    # is the same wrong-scope error one layer down.
+    rows_for_cfg = [l for l in out.splitlines() if "icg_probe" in l]
+    assert len(rows_for_cfg) == 2, (
+        f"expected the config in the funnel AND the parameters block, "
+        f"got {len(rows_for_cfg)} row(s)")
+    assert not any("not recorded" in r for r in rows_for_cfg), (
+        "a foreign family still renders 'not recorded' for axes that ARE "
+        "recorded in its config block")
+
+    # NEGATIVE ARM 2 - and it must not silently vanish from the report
+    assert "icg_probe" in out, (
+        "the foreign config disappeared from the table entirely - a fix that "
+        "trades a visible defect for an invisible one")

@@ -869,6 +869,25 @@ def table_c(grids: dict[str, dict]) -> list[str]:
                         f"reconcile, do not trust this row** |")
         per_config_axes[name] = (axes, cfg)
 
+    # B2560 (S6-B2542a): a config whose family does not use the SMC six records
+    # its OWN axes as P<N>_<name> in the artifact's config block. Rendering the
+    # hard-coded six for it printed "not recorded" in all six cells - true,
+    # useless, and indistinguishable from an axis that genuinely was not
+    # recorded. Such configs are split out and rendered from their own keys,
+    # the same source the funnel row above already reads (B2542). They are
+    # RENDERED, not dropped: v1 of this patch removed them from the table and
+    # emitted nothing, trading a visible defect for an invisible one.
+    _foreign = {}
+    for _n in list(per_config_axes):
+        _axes, _cfg = per_config_axes[_n]
+        _own = {k: v for k, v in (_cfg or {}).items()
+                if k.startswith("P") and "_" in k}
+        _is_smc = (any(nm in (_axes or {}) for _, nm in P_AXES)
+                   or "P1_swing_length" in (_cfg or {}))
+        if _own and not _is_smc:
+            _foreign[_n] = _own
+            del per_config_axes[_n]
+
     # B2137, owner directive: PARAMETERS TESTED - the P1..P6 bands each config
     # actually exercised, by P-id, so a reader can see WHICH axes carried the
     # search and which sat at one value. A `bands` COUNT says how many; this
@@ -882,8 +901,10 @@ def table_c(grids: dict[str, dict]) -> list[str]:
              "a count. Recorded in the artifact since B2138; anything graded before that reads "
              "`not recorded`, which is what let a swing-10 cube be re-graded as swing-20 "
              "(S6-B2136).", "",
-             "| config | " + " | ".join(f"{pid} {nm}" for pid, nm in P_AXES) + " |",
-             "|---|" + "---|" * len(P_AXES)]
+             ]
+    if per_config_axes:
+        rows += ["| config | " + " | ".join(f"{pid} {nm}" for pid, nm in P_AXES) + " |",
+                 "|---|" + "---|" * len(P_AXES)]
     for name, (axes, cfg) in per_config_axes.items():
         cells = []
         for pid, nm in P_AXES:
@@ -904,6 +925,28 @@ def table_c(grids: dict[str, dict]) -> list[str]:
                 # reads as a jumbled band and hides whether the axis is ordered.
                 cells.append(f"{len(vals)}: " + _band_str(vals))
         rows.append(f"| `{name}` | " + " | ".join(cells) + " |")
+
+    # B2560: the other families, each from its own recorded axes. One table per
+    # axis-set, because a shared header would have to be the union and would
+    # reintroduce the empty cells this fixes.
+    if _foreign:
+        rows += ["", "**Parameters tested - other strategy families.** These configs record "
+                 "their own axes in the artifact's `config` block rather than the SMC six "
+                 "above, so they are rendered from those keys. A family whose axes are all "
+                 "held fixed within a config shows values rather than counts, exactly as P1 "
+                 "and P6 do for SMC (S6-B2542a)."]
+        # GROUP by axis-set: configs sharing an axis set share a table, or the
+        # render repeats an identical header per config, which reads as several
+        # families when it is one.
+        _groups = {}
+        for _n, _own in _foreign.items():
+            _groups.setdefault(tuple(sorted(_own)), []).append((_n, _own))
+        for _keys, _members in _groups.items():
+            rows += ["", "| config | " + " | ".join(_keys) + " |",
+                     "|---|" + "---|" * len(_keys)]
+            for _n, _own in _members:
+                rows.append(f"| `{_n}` | " + " | ".join(
+                    f"FIXED at {_fmt(_own[k])}" for k in _keys) + " |")
     return rows
 
 

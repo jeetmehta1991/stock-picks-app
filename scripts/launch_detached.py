@@ -74,10 +74,19 @@ $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries `
     -DontStopIfGoingOnBatteries -StartWhenAvailable `
     -ExecutionTimeLimit (New-TimeSpan -Hours {time_limit_hours})
 {principal}Register-ScheduledTask -TaskName "{name}" -Action $action -Settings $settings{principal_arg} -Force | Out-Null
-Start-ScheduledTask -TaskName "{name}"
+Start-ScheduledTask -TaskName "{name}" -ErrorAction SilentlyContinue
 Start-Sleep -Seconds 3
-$info = Get-ScheduledTaskInfo -TaskName "{name}"
-Write-Output ("registered_and_started " + "{name}" + " last_result=" + $info.LastTaskResult)
+# B2559 (S6-B2529a): report the task we OBSERVE, never the one we intended.
+# This block used to print `registered_and_started` unconditionally, so a
+# DENIED Register-ScheduledTask still reported success and the caller's grep
+# passed - my first chain launch said LAUNCHED with no task in existence.
+$t = Get-ScheduledTask -TaskName "{name}" -ErrorAction SilentlyContinue
+if ($t) {{
+    $info = Get-ScheduledTaskInfo -TaskName "{name}"
+    Write-Output ("registered_and_started " + "{name}" + " state=" + $t.State + " last_result=" + $info.LastTaskResult)
+}} else {{
+    Write-Output ("register_failed " + "{name}" + " - the task does not exist after Register-ScheduledTask")
+}}
 """
     return _run_ps(script)
 
@@ -91,7 +100,11 @@ def launch(spec_path: str, hardened: bool = False) -> int:
             f'>> {log} 2>&1"')
     r = _register_and_start(name, "cmd.exe", args, hardened=hardened)
     out = (r.stdout or "") + (r.stderr or "")
-    if r.returncode != 0 or "registered_and_started" not in out:
+    # B2559 (S6-B2529a): `registered_and_started` alone was emitted whether or
+    # not the task existed. The success line now carries `state=`, written only
+    # from a Get-ScheduledTask that returned an object, so requiring it means
+    # the caller is reading an OBSERVATION rather than an intention.
+    if r.returncode != 0 or "registered_and_started" not in out or "state=" not in out:
         print(f"DETACHED LAUNCH FAILED: {out.strip()[:400]}")
         return 1
     print(f"DETACHED LAUNCH OK: task={name}")
