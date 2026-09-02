@@ -31327,3 +31327,70 @@ def test_b2555_launch_gate_fires_on_its_own_example_and_survives_gate_feedback()
          bash("python scripts/run_phase1a.py")]), (
         "a genuine new instruction no longer resets the window - the fix "
         "over-corrected and an arm now covers unrelated later launches")
+def test_b2557_gate_pins_do_not_add_single_negative_arm_proofs():
+    """L746: a two-arm pin proves TWO ARMS, not two directions.
+
+    THE MISS THIS RATCHETS. I fixed a gate failing both ways, pinned a must-fire
+    arm and ONE must-quiet arm, and reported it "stays silent on prose that
+    merely discusses a launch". Minutes later it flagged two of my own commands:
+    the quiet side is an OPEN FAMILY of shapes - bare invocation, quoted string,
+    heredoc, nested interpreter - and I had tested one member of it. That is
+    #182's denominator rule applied to a TEST SUITE rather than a dataset.
+
+    SHRINK-ONLY. The baseline is the measured count of gate pins whose negative
+    direction rests on ONE arm. It may fall, never rise: a NEW pin brings two
+    distinct negative shapes, or widens an existing one to pay for itself.
+
+    The count is a PROXY and says so - three arms over three near-identical
+    inputs would score well and prove little - which is why L746's detection is
+    judgment-only and this ratchet guards REGROWTH rather than certifying
+    coverage.
+    """
+    import re
+    from pathlib import Path as _P
+
+    src = _P(__file__).read_text(encoding="utf-8", errors="replace")
+    bodies = re.findall(
+        r"\ndef (test_b\d+[a-z0-9_]*)\(.*?\n((?:.|\n)*?)(?=\ndef |\Z)", src)
+
+    def _negative_arms(body: str) -> int:
+        return len(re.findall(r"assert not ", body))
+
+    single, multi = [], []
+    for name, body in bodies:
+        if "scan_" not in body:
+            continue
+        n = _negative_arms(body)
+        if n == 0:
+            continue
+        (single if n == 1 else multi).append(name)
+
+    assert multi, "no multi-negative-arm pins found - the parser is broken"
+
+    # SECOND NEGATIVE ARM - and the ratchet caught ITSELF needing one. A test
+    # that asserts a negative but never touches a gate must NOT be counted, or
+    # the baseline inflates with unrelated tests and stops meaning anything.
+    decoy_body = "    assert not something_unrelated_to_any_gate\n"
+    assert "scan_" not in decoy_body and _negative_arms(decoy_body) == 1, (
+        "the decoy is malformed - it must have a negative arm and no gate "
+        "reference, or it tests nothing")
+    counted = [n for n, b in [("test_b0000_decoy", decoy_body)]
+               if "scan_" in b and _negative_arms(b) == 1]
+    assert not counted, (
+        "the parser counted a test with no scan_ reference - the baseline would "
+        "inflate with tests that are not gate pins at all")
+
+    # MEASURED at B2557 by sweeping this file. Shrink-only.
+    BASELINE = 22
+    assert len(single) <= BASELINE, (
+        f"{len(single)} gate pins now prove their negative direction from a "
+        f"SINGLE input shape, above the {BASELINE} baseline: "
+        f"{sorted(single)[-3:]}. A must-quiet arm is one member of an open "
+        "family, so two passing arms are a sample of size two, not a proof of "
+        "both directions (L746). Add a second distinct negative shape, or widen "
+        "an existing single-arm pin to pay for this one.")
+
+    assert len(single) >= BASELINE - 6, (
+        f"only {len(single)} single-negative-arm pins remain against a baseline "
+        f"of {BASELINE} - real progress; lower BASELINE to lock it in, or the "
+        "ratchet stops ratcheting.")
