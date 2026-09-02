@@ -30836,3 +30836,61 @@ def test_b2522_automated_landing_commit_can_clear_the_queue_anchor_gate(tmp_path
     # a failure appending the row must not raise into the landing path
     monkeypatch.setattr(pl, "QUEUE", tmp_path / "no" / "such" / "dir" / "Q.md")
     assert pl._append_landing_queue_row("output_probe", 0, "x") is False
+def test_b2524_landings_record_has_one_authoritative_reader():
+    """B2524 / L737 / compliance failure against #271.
+
+    An append log answers questions only through its REDUCTION. The landings
+    record takes the last event per cube, so a raw count of rows carrying
+    `reported_to_owner=false` is a number about the FILE, not the world.
+
+    MEASURED: my own probe printed "undelivered now: 6" from a raw
+    comprehension; `postconfig_landing.undelivered()` returns 0, because six
+    historical false rows are superseded by later true rows for the same two
+    cubes.
+
+    This pins the CLASS, not the incident: `undelivered_events` is the single
+    reducer, and no other module may count the flag itself. #271's own gate
+    could not catch it - that gate reads response prose about the LEDGER, and
+    this is a different append log read by a different module.
+    """
+    import re
+    import sys as _sys
+    from pathlib import Path as _P
+
+    root = _P(__file__).resolve().parents[2]
+    _sys.path.insert(0, str(root / "scripts"))
+    import postconfig_landing as pl
+
+    # the reducer is last-event-per-key, not a row filter
+    events = [
+        {"cube": "a", "reported_to_owner": False},
+        {"cube": "b", "reported_to_owner": False},
+        {"cube": "a", "reported_to_owner": True},    # supersedes row 0
+    ]
+    assert [e["cube"] for e in pl.undelivered_events(events)] == ["b"], (
+        "the reducer must take the LAST event per cube")
+    raw_count = sum(1 for e in events if not e["reported_to_owner"])
+    assert raw_count == 2 and len(pl.undelivered_events(events)) == 1, (
+        "the raw row count and the answer must actually differ here, or this "
+        "pin asserts nothing")
+
+    # and no OTHER module may count the flag itself - one reader, everyone calls it
+    owner = root / "scripts" / "postconfig_landing.py"
+    offenders = []
+    for path in sorted((root / "scripts").glob("*.py")):
+        if path == owner:
+            continue
+        src = path.read_text(encoding="utf-8", errors="ignore")
+        # strip strings/comments crudely: only flag real comprehensions
+        for m in re.finditer(r"(?:sum|len)\s*\([^)]{0,200}reported_to_owner", src):
+            offenders.append(f"{path.name}: {m.group(0)[:60]}")
+    assert not offenders, (
+        "modules counting reported_to_owner outside the reducer that owns it "
+        f"(L737 / #271): {offenders}")
+
+    # the owner module must expose the reducer, and undelivered() must delegate
+    src = owner.read_text(encoding="utf-8", errors="ignore")
+    assert "def undelivered_events(" in src
+    i = src.index("def undelivered(path")
+    assert "undelivered_events(" in src[i:i + 400], (
+        "undelivered() must delegate to the reducer, not re-implement it")

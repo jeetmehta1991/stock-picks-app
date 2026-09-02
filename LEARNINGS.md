@@ -18460,3 +18460,49 @@ Gmail connector being authorised (S6-B2520h).
 **Anchored:** CHECKLIST #288 (mechanism + pins) and the SKILL.md tripwire row
 *"Answer an owner question of the form 'why did this not run automatically?'"*;
 amends #223 (SKIPPED clause retired) and #284 (render lives in the supervisor).
+
+
+### L737 - Every append log needs ONE authoritative reader, and counting its rows is never the question
+
+**B2524, 2026-09-02. Two wrong counts in one turn, same shape, one of them
+inside the command that was checking the other.**
+
+**The instances.** (1) I reported *"four advisors rejected discarding the 23
+rows"*; re-reading the five returned texts, all five reject it - a count
+asserted from impression over a population sitting in front of me. (2)
+Minutes later, probing the landing record, I printed *"undelivered now: 6"* by
+counting raw rows carrying `reported_to_owner=false`. The record is an APPEND
+LOG: `postconfig_landing.undelivered()` takes the LAST event per cube, and the
+true figure is **0** - six historical false rows are superseded by their later
+true rows. The second number never reached the owner, and only because I
+re-checked it; the wrong figure had already been printed.
+
+**Why the second is the instructive one.** `#271` states this rule exactly - a
+row is not a ticket - and it has a gate, `scan_row_vs_ticket`. Neither helped,
+because the gate reads response prose about the LEDGER and this was a jsonl
+file read by a different module. **A rule learned on one append log did not
+travel to the second append log in the same repo** (L536's carry problem, in a
+new file). The queue has `queue_state.py` as its single authoritative reader
+precisely because of `#271`; the landings record has `undelivered()`, and I
+wrote a raw comprehension beside it anyway.
+
+**The general form.** An append log answers questions only through its
+reduction - last-row-wins, latest-per-key, sum-of-deltas - and the raw row
+count is a number about the FILE, not about the world. It is always available,
+always plausible, and always wrong when the log has ever been appended to
+twice for one key. **So: an append log gets exactly ONE authoritative reader,
+and every consumer calls it.** If you find yourself writing a comprehension
+over its rows, you are asking the file a question only its reducer can answer.
+
+**And the tell for instance (1):** a cardinal in a summary sentence -
+*four of five*, *most*, *all but one* - trips no gate, because the
+unmeasured-quantity scan reads for hedge words and a bare number carries none.
+When the population is small and in front of you, COUNT IT; the read costs
+less than the correction.
+
+**Anchored:** compliance failure against CHECKLIST `#271` (a row is not an
+entity) - no new item, the rule was already correct and already gated on the
+surface it was learned on. Mechanism: `test_b2524_landings_record_has_one_
+authoritative_reader` asserts no module counts `reported_to_owner` outside the
+reducer that owns it. Detection of the prose form is JUDGMENT-ONLY - no scan
+counts agreement across sub-agent texts.
