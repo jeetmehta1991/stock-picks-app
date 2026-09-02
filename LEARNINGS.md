@@ -18713,3 +18713,40 @@ tried to read the results. **A guard that fails closed converts a silent
 **Anchored:** SKILL.md tripwire row, same commit. Mechanism: pinned by
 test_b2541, which asserts every b2527 spec arm carries the four keys
 `_institutional_params` reads.
+
+
+### L742 - "Nothing calls this" is a repo-wide claim, and I made it from one file
+
+**B2544, 2026-09-02. Caught before publishing, which is the only reason this is
+a near-miss rather than a retraction.** Table C would not render, so I grepped
+`producer_variant_table.py` for callers of `table_c`, found the definition and
+nothing else, and was one sentence from telling the owner the function was
+unwired - the L499 shape, a capability asserted absent. A repo-wide grep found
+`scripts/show_table_c.py`, a dedicated renderer built for exactly this, whose
+own docstring says the table must be printed and never retyped.
+
+**Why the wrong search felt like the right one.** A definition lives in one
+file, so that file is where you go to read the function - and having gone there
+to READ it, the grep you run is scoped to the buffer already open. **The
+question changed from "what is this?" to "who uses this?" and the scope did
+not follow.** Nothing signals the switch; both questions are answered by
+grepping the same word.
+
+**The asymmetry that makes it dangerous.** "X calls this" needs ONE hit and is
+self-verifying. **"Nothing calls this" is a claim about every file that does
+not exist in the search**, so its evidence is an absence, and an absence
+measured over the wrong population is indistinguishable from an absence
+measured over the right one. Same shape as `#280` - a count is not a set, name
+the query - except here the query's SCOPE is what was unstated.
+
+**The rule.** Any claim of the form *nothing calls / nothing reads / nothing
+consumes / this is unwired / this has no callers* is repo-wide by construction:
+run it across the tree, name the directories searched and the hit count, and
+say which paths were excluded. A single-file grep supports *"the definition is
+here"* and nothing else. Note the near-miss cost nothing because it was caught;
+the same claim published would have sent the owner looking for a renderer I had
+just told them did not exist.
+
+**Anchored:** SKILL.md tripwire row, same commit. Mechanism is JUDGMENT-ONLY -
+no scan can tell which grep produced a prose claim - and durability rides
+test_b2526's anchor sweep, which asserts every entry from L725 is referenced.
