@@ -30894,3 +30894,40 @@ def test_b2524_landings_record_has_one_authoritative_reader():
     i = src.index("def undelivered(path")
     assert "undelivered_events(" in src[i:i + 400], (
         "undelivered() must delegate to the reducer, not re-implement it")
+def test_b2525_l737_append_log_rule_is_anchored():
+    """B2525 / #197: L737 must live where it is READ, not only where it happened.
+
+    The turn gate refused L737 twice for exactly this - a rule recorded only
+    in LEARNINGS is a story. ANCHOR-THE-RULE measured a 75pct orphan rate on
+    this shape, and B1723 measured the skill edited 5 times while LEARNINGS
+    gained 57 entries.
+
+    Pins the DIAGNOSTIC (call the reducer; a raw row count is a number about
+    the file) rather than the headline, so a doc edit that keeps the wording
+    and drops the substance still fails.
+    """
+    from pathlib import Path as _P
+
+    root = _P(__file__).resolve().parents[2]
+
+    def _norm(s):
+        return " ".join(s.split())
+
+    sk = _norm((root / ".claude" / "skills" / "execution-discipline" / "SKILL.md")
+               .read_text(encoding="utf-8", errors="ignore"))
+    ck = _norm((root / "CHECKLIST.md").read_text(encoding="utf-8", errors="ignore"))
+    ln = _norm((root / "LEARNINGS.md").read_text(encoding="utf-8", errors="ignore"))
+
+    # the tripwire, in the file loaded every turn
+    assert "Count anything held in an APPEND LOG" in sk
+    assert "CALL ITS REDUCER" in sk
+    assert "L737 / #271" in sk
+
+    # the checklist anchor - and the DIAGNOSTIC, not just the citation
+    assert "L737" in ck
+    assert "one authoritative reader per log" in ck
+    assert "undelivered_events()" in ck and "queue_state.py" in ck
+
+    # the incident record itself
+    assert "### L737" in ln
+    assert "counting its rows is never the question" in ln

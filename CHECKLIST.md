@@ -4952,6 +4952,26 @@ generalising from a slice**, which no amount of care inside the slice can detect
 
 ### #271 - COUNT TICKETS, NOT ROWS (B1795 / L545)
 
+**AMENDED B2525 (L737): the rule is right and its GATE sees one surface only.**
+`scan_row_vs_ticket` reads response prose about the EXECUTION_QUEUE ledger. MEASURED: the same
+defect landed on a different append log - `output_audit/postconfig_landings.jsonl` - read by a
+different module, and nothing was watching. I printed *"undelivered now: 6"* from a raw
+comprehension over rows carrying `reported_to_owner=false`; the record is append-only and
+`postconfig_landing.undelivered()` takes the LAST event per cube, so the answer is **0** - six
+historical false rows superseded by later true rows for two cubes.
+
+**So #271 extends to EVERY append log, not just the ledger: one authoritative reader per log, and
+every consumer calls it.** If you are writing a comprehension over an append log's rows, you are
+asking the file a question only its reducer can answer. Known readers: `scripts/queue_state.py`
+(the queue, per distinct ticket, last row wins) and `postconfig_landing.undelivered_events()`
+(landings, last event per cube).
+
+Mechanism: `test_b2524_landings_record_has_one_authoritative_reader` asserts no module outside the
+reducer counts the flag - MEASURED 0 hits across 373 of 374 `scripts/*.py` (the reducer's own
+module excluded), pattern validated against a planted instance (#166). The PROSE form - a bare
+cardinal in a summary sentence - stays JUDGMENT-ONLY: no scan reads a number's intended
+population.
+
 **MEASURED: `EXECUTION_QUEUE.md` holds 823 rows for 721 distinct tickets.** Closing a ticket APPENDS
 a row rather than editing the old one, so **81 ids carry 2+ rows and 74 are in contradictory states -
 57 are EXECUTED AND OPEN at once.**
