@@ -18971,3 +18971,49 @@ entry (S6-B2558a).
 **Anchored:** SKILL.md tripwire row, same commit. Detection is JUDGMENT-ONLY -
 whether a population is too large to enumerate is a judgement, not a threshold -
 and durability rides test_b2526's anchor sweep.
+
+
+### L748 - An assertion about code will happily match the comment that describes it
+
+**B2561, 2026-09-02.** Three of my own test arms were wrong tonight, each caught
+by RUNNING the pin rather than reading it, and two shared one shape:
+
+- `ps.index("registered_and_started")` found **my own explanatory comment**
+  containing the token - a comment I had just written to explain the fix - and
+  so measured the comment's position instead of the emit's.
+- `assert "not recorded" not in out` matched the report block's **own preamble**,
+  which explains the phrase (*"reads `not recorded`, never `1`"*), not any data
+  cell.
+
+**The shape.** A source file contains the code AND the prose about the code, in
+the same string. Any assertion that greps that string is searching a corpus
+where **the most fluent description of the thing you are testing sits right
+beside the thing** - and a good comment mentions the exact token the assertion
+looks for, because that is what makes it a good comment. **The better the
+documentation, the more reliably it poisons the grep.**
+
+**Why it survives review.** The assertion reads correctly in English: *the
+success token must come after the scheduler query*. It is only wrong about WHICH
+occurrence, and an occurrence count is invisible until the file changes. My
+comment made the test pass or fail on prose I had authored seconds earlier - the
+test was measuring me, not the code.
+
+**The rule.** When asserting over source text, anchor on something that cannot
+appear in prose: the executable line including its syntax
+(`Write-Output ("registered_and_started`), a parsed AST node, or a scoped slice
+(the config's own table row, not the whole render). If the anchor would read
+naturally in a sentence, it will eventually be IN one. This is the mirror of
+B1738, where the compliance gate strips inline-code spans because a mention is
+not a claim - the same distinction, applied to test assertions rather than to
+response text.
+
+**Third arm, a different error worth naming.** `assert len(rows) == 1` for a
+config that legitimately appears TWICE - once in the funnel, once in the
+parameters block. Not a prose collision: a scope assumption never checked
+against the artifact. All three failed the same way at the meta level - **I
+wrote what the assertion should mean and did not run it against what the file
+actually contains.**
+
+**Anchored:** SKILL.md tripwire row, same commit. Detection is JUDGMENT-ONLY -
+no scan knows whether a matched occurrence is the intended one - and durability
+rides test_b2526's anchor sweep.
