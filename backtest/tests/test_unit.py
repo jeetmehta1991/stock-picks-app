@@ -31550,6 +31550,13 @@ def test_b2564_the_four_later_session_rules_survive_in_the_skill():
         "L748's diagnostic - good documentation defeats the grep - is gone")
     assert "### L748" in ln
 
+    # L750 - a gate's message describes the check; the code is the check
+    assert "OPEN THE GATE'S SOURCE AND FIND THE PREDICATE" in sk
+    assert "only the code runs" in sk, (
+        "L750's diagnostic - the message is a summary, the predicate is the "
+        "check - is gone")
+    assert "### L750" in ln
+
     # L749 - a sourced figure can still be stale
     assert "CARRY THE READING'S AGE" in sk
     assert "a source name reads as freshness" in sk, (

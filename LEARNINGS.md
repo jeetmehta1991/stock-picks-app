@@ -19056,3 +19056,44 @@ is the check both rules otherwise satisfy.
 **Anchored:** SKILL.md tripwire row, same commit. Detection is JUDGMENT-ONLY -
 no scan knows which turn a quoted number was read in - and durability rides
 test_b2526's anchor sweep.
+
+
+### L750 - A gate's message describes the check in English; the code IS the check
+
+**B2565, 2026-09-02.** The Phase-5 gate rejected eight consecutive closes on the
+same member. Its message reads *"mechanism for the CLASS (scan_/pin test) or
+explicit JUDGMENT-ONLY"*, so I wrote JUDGMENT-ONLY - four times, each time more
+prominently, once in bold at the top of the response. The member evaluates
+`_artifact_touched("scripts/verify_turn_compliance.py",
+"backtest/tests/test_unit.py")`. **It wanted a FILE TOUCH. No phrasing could
+ever have satisfied it.**
+
+**The trap is that the message is honest.** It is a faithful English summary of
+the intent - the member does accept a judgment-only DECISION - and B1797d's
+comment inside the same function explains that a bare judgment-only answers the
+DETECTION half while leaving DURABILITY unasked, which is exactly why the check
+requires an artifact. The message describes the policy; the code implements a
+proxy for it. **Both are correct, and only one of them runs.**
+
+**Why repetition felt like the fix.** Each rejection returned the same text, so
+the natural read was *I have not said it clearly enough* - and clarity is
+something you can always add more of. Eight closes went into rewording an answer
+the detector was structurally unable to read. **A message that does not change
+between attempts is evidence about the CHECK, not about the phrasing** - the
+same input produced the same output because the input never reached the thing
+being tested.
+
+**The rule.** After the SECOND identical rejection from any automated gate, stop
+composing and open its source. Find the predicate, not the prose. This is L638's
+change-route rule (*after one failed exact-match edit, change route*) applied to
+compliance rather than to file edits: the transport keeps failing, so stop
+re-sending the payload and look at what is actually reading it.
+
+**The cost, stated because it is the argument.** Eight closes, each with its own
+sweep, count and compliance block, to satisfy one member that a single `grep`
+would have resolved in one. The cheapest instrument in the room was the gate's
+own source, and I did not open it until the eighth attempt - the same shape as
+L736, where the count of asks was the signal nobody read.
+
+**Anchored:** SKILL.md tripwire row, same commit; durability pinned in
+test_b2564 alongside L746-L749.
