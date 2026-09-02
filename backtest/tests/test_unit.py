@@ -30931,3 +30931,41 @@ def test_b2525_l737_append_log_rule_is_anchored():
     # the incident record itself
     assert "### L737" in ln
     assert "counting its rows is never the question" in ln
+def test_b2526_recent_learnings_are_anchored_and_l735_is_not_an_orphan():
+    """B2526 / #197 / #237: the retroactive sweep's own finding, held.
+
+    MEASURED at B2526: of the 13 L-entries from L725 onward, ONE was
+    referenced in neither CHECKLIST.md nor SKILL.md - L735, "a file's
+    tracked-status is a one-command fact", which is the rule governing the
+    tracked-status triage performed in that same turn. An orphan is most
+    dangerous when it is the rule you are currently relying on.
+
+    Pins the SWEEP rather than one entry: every L-entry from L725 must be
+    referenced in at least one anchor file, so the next unanchored entry
+    fails here instead of waiting for someone to run a sweep.
+    """
+    import re
+    from pathlib import Path as _P
+
+    root = _P(__file__).resolve().parents[2]
+    ln = (root / "LEARNINGS.md").read_text(encoding="utf-8", errors="ignore")
+    ck = (root / "CHECKLIST.md").read_text(encoding="utf-8", errors="ignore")
+    sk = (root / ".claude" / "skills" / "execution-discipline" / "SKILL.md").read_text(
+        encoding="utf-8", errors="ignore")
+
+    nums = sorted({int(n) for n in re.findall(r"^### L(\d+)", ln, re.M)})
+    recent = [n for n in nums if n >= 725]
+    assert len(recent) >= 13, (
+        f"expected at least 13 entries from L725, found {len(recent)} - if the "
+        "heading format changed, fix the PARSER (#199), not this floor")
+
+    orphans = [f"L{n}" for n in recent
+               if not re.search(rf"\bL{n}\b", ck) and not re.search(rf"\bL{n}\b", sk)]
+    assert not orphans, (
+        f"L-entries stating a rule but referenced in NEITHER anchor file "
+        f"(#197): {orphans}. A rule recorded only in LEARNINGS is a story - "
+        "add a CHECKLIST item or a SKILL tripwire row citing the L-number.")
+
+    # the specific orphan the sweep found, and its DIAGNOSTIC not its headline
+    assert re.search(r"\bL735\b", sk), "L735 lost its anchor"
+    assert "ASK GIT, do not infer from the directory" in " ".join(sk.split())

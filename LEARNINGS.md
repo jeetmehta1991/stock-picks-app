@@ -18506,3 +18506,19 @@ surface it was learned on. Mechanism: `test_b2524_landings_record_has_one_
 authoritative_reader` asserts no module counts `reported_to_owner` outside the
 reducer that owns it. Detection of the prose form is JUDGMENT-ONLY - no scan
 counts agreement across sub-agent texts.
+
+**B2526 ADDENDUM - the same turn produced the VERDICT form of this, and the
+sweep found a live orphan.** (a) Closing L737 I wrote *"no other module counts
+the flag"* while my tool calls showed a truncated read; the `#270` gate blocked
+it, and re-measuring returned the SAME answer - 0 hits across 373 of 374
+`scripts/*.py`, pattern validated against a planted instance. **A verdict that
+survives re-measurement was still not evidence at the moment I stated it**;
+being right is not the same as having checked, and from outside the two are
+indistinguishable. (b) The `#237` sweep that followed checked all 13 L-entries
+from L725 against BOTH anchor files and found **one orphan: L735** - *a file's
+tracked-status is a one-command fact, not a convention* - which is the rule
+governing the tracked-status triage performed in that very turn. **An orphan is
+most dangerous when it is the rule you are currently relying on**, because
+acting on it feels like compliance while nothing enforces it. Anchored as a
+SKILL tripwire in the same commit, and the sweep itself is now a pin so the
+next unanchored entry fails at once instead of waiting for a sweep.
