@@ -31077,3 +31077,31 @@ def test_b2541_every_b2527_spec_arm_carries_the_keys_its_grader_reads():
         assert arm.get("env"), f"{sp.name}: the env actuator is gone"
         for k in required:
             assert isinstance(arm[k], (int, float)), f"{sp.name}: {k} is not numeric"
+def test_b2545_query_scope_rule_survives_in_the_skill():
+    """L742: "nothing calls this" is a repo-wide claim.
+
+    B1739 requires a mechanism for any SKILL.md rule. DETECTION is
+    judgment-only - no scan can tell which grep produced a prose claim - but
+    DURABILITY is mechanisable, and that is what decays: a rule silently
+    dropped from the always-read file stops being read.
+
+    Pins the DIAGNOSTIC, not the headline, so an edit that keeps the wording
+    and drops the reasoning still fails.
+    """
+    from pathlib import Path as _P
+
+    root = _P(__file__).resolve().parents[2]
+    sk = " ".join((root / ".claude" / "skills" / "execution-discipline" / "SKILL.md")
+                  .read_text(encoding="utf-8", errors="ignore").split())
+    ln = " ".join((root / "LEARNINGS.md").read_text(encoding="utf-8", errors="ignore").split())
+
+    assert "SEARCH THE TREE, NOT THE FILE" in sk
+    assert "L742" in sk, "L742 lost its anchor"
+    # the asymmetry IS the rule - without it this is just "grep harder"
+    assert "needs one hit and self-verifies" in sk, (
+        "the asymmetry between a positive and a negative call-claim is gone")
+    assert "every file NOT in your search" in sk, (
+        "the diagnostic - a negative claim is about what you did not search - is gone")
+
+    assert "### L742" in ln
+    assert "is a repo-wide claim" in ln
