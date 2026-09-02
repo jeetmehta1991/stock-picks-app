@@ -10,12 +10,12 @@ REGENERATED WHOLE at every config landing - by the landing supervisor the engine
 
 ## Landings - what the supervisor recorded (B2520)
 
-2 cube(s) landed through the supervisor; **2 not yet reported to the owner** (output_icg_cfg1, output_b2174_sw20_sw20).
+2 cube(s) landed through the supervisor; **0 not yet reported to the owner**.
 
 | cube | landed | via | battery exit | blocking | WARN/FAIL findings | committed | pushed | reported |
 |---|---|---|---|---|---|---|---|---|
-| output_icg_cfg1 | 2026-09-01T20:07:48 | manual | 0 | none | 1: empty_signals_share WARN: 23 of 373 trade_log rows carry an empty signals_at_entry (S6-B2512 class) | False | False | **NO** |
-| output_b2174_sw20_sw20 | 2026-09-01T19:57:30 | manual | 0 | none | 1: selection_margin WARN: rank-1 [close_mitigation=False break_pct_max=None age_bars_max=250 tail_n=20 -> hybrid_50pct_target] is_ci_lo -0.196 vs rank-2 [close_mitigation=False break_pct | False | False | **NO** |
+| output_b2174_sw20_sw20 | 2026-09-01T20:08:36 | manual | 0 | none | 1: selection_margin WARN: rank-1 [close_mitigation=False break_pct_max=None age_bars_max=250 tail_n=20 -> hybrid_50pct_target] is_ci_lo -0.196 vs rank-2 [close_mitigation=False break_pct_max=None age_bars_max=None tail_n=2 -> hybrid_50pct_target] -0.198: margin 0.002 between outcome classes; WARN < 0.05 (selection at noise level) | False | False | yes 2026-09-02T02:27:00 |
+| output_icg_cfg1 | 2026-09-01T20:07:48 | manual | 0 | none | 1: empty_signals_share WARN: 23 of 373 trade_log rows carry an empty signals_at_entry (S6-B2512 class) | False | False | yes 2026-09-02T02:26:59 |
 
 
 ## TABLE D - STEP-1 RANKED LIST (top 20)
@@ -90,8 +90,8 @@ _The SIX swept axes for the same rows, same order - join on `#`. P1 swing_length
 
 | config | best is_ci_lo | fires | starved | steps closed (DONE+N/A of 9; the gate's own is_closed) |
 |---|---|---|---|---|
+| output_icg_cfg1 | -0.087 | 373 | 0/24 | 9/9 |
 | output_b2174_sw20_sw20 | -0.196 | 79 | 82/300 | 9/9 |
-| output_icg_cfg1 | -0.087 | 373 | 0/1 | 9/9 |
 | output_b2399_step2_sw50sp50_step2_sw50sp50 | -0.026 | 325 | 29/300 | 9/9 |
 | output_b2197_sw50sp150_sw50sp150 | 0.437 | 10 | 190/300 | 9/9 |
 | output_b2197_sw50sp100_sw50sp100 | -0.023 | 25 | 200/300 | 9/9 |
@@ -125,6 +125,94 @@ _The SIX swept axes for the same rows, same order - join on `#`. P1 swing_length
 | output_b2183_sw30_sw30 | 0.362 | 11 | 106/300 | 9/9 |
 
 ## Per-config findings
+
+### output_icg_cfg1
+
+**Configuration:** P4_min_consecutive_quarters=4, P5_growth_lookback_quarters=4, P6_growth_multiple=1.1, P9_span=200
+
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.087** (is_sharpe 0.263, 373 fires, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+
+**Completeness: 9 of 9 steps closed** (8 DONE with evidence, 1 N/A with a reason: 6b_equivalence_class_check). Every step is dispositioned; nothing is outstanding on this cube.
+
+| step | status | evidence / reason (never truncated) |
+|---|---|---|
+| 1_cube_sanity | DONE | the named checks are tabulated below by risk question |
+| 2_grade_with_config_params | DONE | output_audit/output_icg_cfg1_grid_auto.json - roster_core.evaluate per exit (24 exits, n=373 each), config IS production (P4=4 P5=4 P6=1.10 P9=200, the baseline); best breakeven_plus_trail is_sharpe 0.263 is_ci_lo -0.087; written under the B2505 contract keys / battery re-run 2026-09-02 07:29: DONE - AUTO (B2520): grade_institutional_config at manifest minq=4 lookback=4 multiple=1.1 span=200 -> output_icg_cfg1_grid_auto.json; graded 24 exits on 8952 IS rows (8952 total, holdout rows 0); best breakeven_plus_trail is_ci_lo -0.087 is_sharpe 0.263 fires 373; wrote C:\Users\jeetm\Github\s |
+| 3_outlier_discrepancy_sweep | DONE | fresh sweep: 0 dup (ticker,entry,exit) rows (measured 0); pnl range [-50.24, 108.17] pct, 0 beyond winsorize 300 (battery M5); every one of 24 exits carries exactly 373==373 rows (uniform 373) / battery re-run 2026-09-02 07:29: DONE - AUTO (B2192): mechanical core executed by the battery (M2 exits-vs-registry, M5 NaN/inf/winsorize, M7 degraded exits) + the grader's union diagnosis-loss gate and ci_lo-led ranking; M2_exits_per_entry_vs_registry=PASS; M3_fill_date=PASS; M4_holdout_touch=PASS; M5_pnl_integrity=PASS; M7_degraded_exits=PASS |
+| 4_three_leg_spot_check | DONE | 50-trade gate re-derivation from signals_at_entry (random_state=42): 45 of 50 reproduce the OR gate; the 5 failures widened to the FULL population = 23 of 373 EMPTY signals dicts, exactly the 23 trades closed pre-kill and restored across the resume boundary -> S6-B2512 (UNKNOWN - RCA NEEDED, 3 mechanisms refuted by probes). EMA leg not re-derived (engine-computed; population cross-validated at B2504) / battery re-run 2026-09-02 07:29: DONE - AUTO (B2520): spot_check_institutional --n 50 at manifest span=200; n_sampled 50 seed 42: 50 agree / 0 DISAGREE / 0 skipped; execution failures 0; empty records 6; legs A/B disagree 0; artifact output_icg_cfg1_spot_check.json |
+| 5_adversarial_lens_review | DONE | the spot-check anomaly was hunted adversarially: hypotheses tested and REFUTED by execution - open-book restore round-trips 816 keys; kill-era flush shape round-trips 4/4 keys; closed-trade parser delegates to signals_serde (B1260). Cause filed UNKNOWN not guessed (S6-B2512). Also: M10 gate_receipt SKIP identified as a launch-path finding (run_phase1a direct, not run_wave) - closed for the NEXT launch (b2207a goes through run_wave, receipt verified present) / battery re-run 2026-09-02 07:29: DONE - AUTO (B2520): lenses 8 run: 1 WARN / 0 FAIL / 7 INFO -> output_icg_cfg1_lenses.json; findings: empty_signals_share WARN: 23 of 373 trade_log rows carry an empty signals_at_entry (S6-B2512 class) |
+| 6_post_fix_recheck | DONE | re-check RUN, not waived (#196): enumerated this cycle's fixes - B2490/B2492/B2502 (cap gates on active hours; guard/kill accounting only), B2498 (prescreen fallback jaccard), B2505 (Table D axis registry) - and swept for shipped conclusions resting on pre-fix behaviour. The only cube-coupled claim is the resume manifest's cube-equivalence-at-defaults, held by test_b2484 (span default 200 pinned) and the completed run's M1-M7 checks; the grid/battery/free-level artifacts read pnl+hold, which no fix in the cycle touches. RESULT: 0 shipped conclusions require re-derivation - a re-check that finds nothing is a finding, not a skip (B2460). / battery re-run 2026-09-02 07:29: OPEN - 1 lens finding(s) need a recheck with evidence (#196): empty_signals_share WARN |
+| 6b_equivalence_class_check | N/A | N/A (B2520 migration, L721): no equivalence classes exist to carry - baseline config carried no subset-safe equivalence classes to propagate - class_size=1 recorded on every ranked row in the grid artifact; the free-level re-scores that DO carry classes live in output_audit/b2504_free_levels_institutional.json (S6-B2501, graded separately) / battery re-run 2026-09-02 07:29: N/A - 1 combination per cube (the swept parameters live in the precompute the engine consumed); equivalence collapse requires >= 2 combinations - N/A on evidence |
+| 7_implement_in_engine | DONE | trivially satisfied for a BASELINE: the config IS production (every value the built-in default), so the engine already implements it; battery step7_engine_implemented PASS exit 0 / battery re-run 2026-09-02 07:29: N/A - Step-1 ranking cube; admission happens at Step 2; nothing to implement. Engine check PASS: 4 of 4 swept parameters anchored in the engine path (precompute INST_* x3 + screener STRAT_EMA_SPAN; code-presence check) |
+| 8_verdict_with_denominators | DONE | VERDICT: baseline Step-1 reference measured - best of 24 exits (breakeven_plus_trail) at is_sharpe 0.263 / is_ci_lo -0.087 on n=373 IS fires over 200 tickers x 1 year; 0 of 24 exits reach a positive ci_lo; this is the comparison bar for the 16 variant configs, per the ruled Step-1 rank-only design (no gates, B1608) / battery re-run 2026-09-02 07:29: DONE - AUTO (B2520) VERDICT (denominators from output_icg_cfg1_grid_auto.json): 24 of 24 exits RANKED at min-trades >= 10 on 8952 IS rows (8952 cube rows, 0 holdout rows); rank-1 [breakeven_plus_trail] is_ci_lo -0.087 is_sharpe 0.263 fires 373 - Step-1: ranking only, no admission (B1608) |
+
+**Is this the right data?**
+
+| check | measured | outcome | what would have been alarming |
+|---|---|---|---|
+| cube produced rows | 8952 rows | PASS | zero rows = the config ran and emitted nothing |
+| exactly one strategy in the cube | 1 strategies | PASS | more than 1 = the strategy-subset filter leaked |
+| mega-caps present in the universe | NVDA | PASS | absent = the abandoned A-C chunk universe (L445) |
+| universe artifact verified | exit 0 on output_audit\_sweep_200.txt (verifier is non-block | PASS | FAIL = the ticker list is not what was intended |
+| cube content hash | af35ab7fc09b5b2b | PASS | a repeat across configs = two configs produced identical cubes, so one knob did nothing |
+| entry-date span actually simulated | entries 2024-05-06 .. 2025-05-01 | PASS | a short span = the run did not cover its window |
+| every entry carries one row per registered exit | cube [24] vs registry-now 24 (a differing single value = an | PASS | a shortfall = exits silently dropped from the cube |
+
+**Did anything leak from the future?**
+
+| check | measured | outcome | what would have been alarming |
+|---|---|---|---|
+| entries at or after the LOCKED holdout start | 0 entries at/after HO_START 2025-05-05 in a STEP-1 cube | PASS | any non-zero = the holdout was contaminated and the run is void |
+| fills that preceded their own entry | 0 fills before entry | PASS | any non-zero = look-ahead in execution |
+| pre-launch receipt matches the run manifest | no gate_receipt.json - cube predates B2169 or was launched A | SKIP **<-- NOT PASS** | mismatch = this run is not the run that was gated |
+
+**Does the arithmetic reproduce?**
+
+| check | measured | outcome | what would have been alarming |
+|---|---|---|---|
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| engine-side implementation check exit code | 4 of 4 swept parameters anchored in the engine path (precomp | PASS | non-zero = the wiring is absent |
+
+**Independent re-derivation of sampled trades (step 4)**
+
+- 50 of 50 sampled trades re-derived to the SAME fire/no-fire decision as the engine; 0 disagreed; 0 execution failures.
+- Sampled with seed 42 at this config's own parameters (ema_span 200, min_committed_growth 3, fallback_min_increased 5) by scripts/spot_check_institutional.py (B2520).
+- CAVEAT worth stating: the re-derivation uses the SAME parameter set as the engine, so it catches wiring and data faults, NOT a wrong parameter choice. Full per-trade rows: output_audit/output_icg_cfg1_spot_check.json.
+
+- 6 sampled trades carried an EMPTY signals_at_entry record (S6-B2512 class) - the re-derivation could still decide them from the precompute, but the engine's own record is missing.
+
+**Adversarial lenses (step 5) - 8 lenses, 1 WARN/FAIL** (step basis: manifest window.end 2025-05-05 <= HO_START 2025-05-05 -> Step-1 cube; family institutional_committed_growth_long)
+
+| lens | level | evidence |
+|---|---|---|
+| holdout_untouched | INFO | 0 of 373 entries at/after HO_START 2025-05-05 (Step-1 cube: any touch is a leak, B1718 class) |
+| period_concentration | INFO | max quarter share 0.40 (2025Q1) over 5 quarters of 373 entries; WARN > 0.5 |
+| ticker_concentration | INFO | top-5 tickers carry 0.09 of 373 entries across 133 tickers; WARN > 0.30 |
+| selection_margin | INFO | rank-1 [breakeven_plus_trail] is_ci_lo -0.087 vs rank-2 [hybrid_50pct_target] -0.285: margin 0.198 between exits; WARN < 0.05 (selection at noise level) |
+| empty_signals_share | WARN **<-- NOT INFO** | 23 of 373 trade_log rows carry an empty signals_at_entry (S6-B2512 class) |
+| direction_consistency | INFO | directions ['long'] (one strategy, one direction expected) |
+| spot_check_disagreements | INFO | 50 agree / 0 DISAGREE / 0 skipped in output_icg_cfg1_spot_check.json |
+| min_trades_floor | INFO | 373 distinct entries; the live gates need holdout >= 15 and full-period >= 75 (applied by the grader, not here) |
+
+**Is the sample large enough to mean anything? (step 2 funnel)**
+
+- 24 exits enumerated (population field `per_exit`).
+- **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
+- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+
+| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+|---|---|---|---|---|---|---|
+| 1 | -0.087 | 0.263 | 373 | breakeven_plus_trail | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 2 | -0.285 | -0.001 | 373 | hybrid_50pct_target | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 3 | -0.462 | -0.161 | 373 | trailing_10pct | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 4 | -0.53 | -0.293 | 373 | earnings_blackout | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 5 | -0.549 | -0.137 | 373 | regime_flip | 1 | min_committed_growth=3 fallback_min_increased=5 |
+
+_Top 5 of the ranking; the full list is in output_audit/output_icg_cfg1_grid_auto.json._
 
 ### output_b2174_sw20_sw20
 
@@ -198,7 +286,7 @@ _The SIX swept axes for the same rows, same order - join on `#`. P1 swing_length
 
 **Is the sample large enough to mean anything? (step 2 funnel)**
 
-- 300 parameter combinations enumerated.
+- 300 combinations enumerated (population field `results`).
 - **82 (27%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 218 graded and ranked, collapsing to 89 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 22 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
@@ -211,94 +299,6 @@ _The SIX swept axes for the same rows, same order - join on `#`. P1 swing_length
 | 5 | -0.24 | 0.268 | 65 | hybrid_50pct_target | 1 | close_mitigation=False break_pct_max=0.05 age_bars_max=None tail_n=2 |
 
 _Top 5 of the ranking; the full list is in output_audit/output_b2174_sw20_sw20_grid_auto.json._
-
-### output_icg_cfg1
-
-**Configuration:** P4_min_consecutive_quarters=4, P5_growth_lookback_quarters=4, P6_growth_multiple=1.1, P9_span=200
-
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.087** (is_sharpe 0.263, 373 fires, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
-
-**Completeness: 9 of 9 steps closed** (8 DONE with evidence, 1 N/A with a reason: 6b_equivalence_class_check). Every step is dispositioned; nothing is outstanding on this cube.
-
-| step | status | evidence / reason (never truncated) |
-|---|---|---|
-| 1_cube_sanity | DONE | the named checks are tabulated below by risk question |
-| 2_grade_with_config_params | DONE | output_audit/output_icg_cfg1_grid_auto.json - roster_core.evaluate per exit (24 exits, n=373 each), config IS production (P4=4 P5=4 P6=1.10 P9=200, the baseline); best breakeven_plus_trail is_sharpe 0.263 is_ci_lo -0.087; written under the B2505 contract keys / battery re-run 2026-09-01 20:07: DONE - AUTO (B2520): grade_institutional_config at manifest minq=4 lookback=4 multiple=1.1 span=200 -> output_icg_cfg1_grid_auto.json; graded 24 exits on 8952 IS rows (8952 total, holdout rows 0); best breakeven_plus_trail is_ci_lo -0.087 is_sharpe 0.263 fires 373; wrote C:\Users\jeetm\Github\s |
-| 3_outlier_discrepancy_sweep | DONE | fresh sweep: 0 dup (ticker,entry,exit) rows (measured 0); pnl range [-50.24, 108.17] pct, 0 beyond winsorize 300 (battery M5); every one of 24 exits carries exactly 373==373 rows (uniform 373) / battery re-run 2026-09-01 20:07: DONE - AUTO (B2192): mechanical core executed by the battery (M2 exits-vs-registry, M5 NaN/inf/winsorize, M7 degraded exits) + the grader's union diagnosis-loss gate and ci_lo-led ranking; M2_exits_per_entry_vs_registry=PASS; M3_fill_date=PASS; M4_holdout_touch=PASS; M5_pnl_integrity=PASS; M7_degraded_exits=PASS |
-| 4_three_leg_spot_check | DONE | 50-trade gate re-derivation from signals_at_entry (random_state=42): 45 of 50 reproduce the OR gate; the 5 failures widened to the FULL population = 23 of 373 EMPTY signals dicts, exactly the 23 trades closed pre-kill and restored across the resume boundary -> S6-B2512 (UNKNOWN - RCA NEEDED, 3 mechanisms refuted by probes). EMA leg not re-derived (engine-computed; population cross-validated at B2504) / battery re-run 2026-09-01 20:07: DONE - AUTO (B2520): spot_check_institutional --n 50 at manifest span=200; n_sampled 50 seed 42: 50 agree / 0 DISAGREE / 0 skipped; execution failures 0; empty records 6; legs A/B disagree 0; artifact output_icg_cfg1_spot_check.json |
-| 5_adversarial_lens_review | DONE | the spot-check anomaly was hunted adversarially: hypotheses tested and REFUTED by execution - open-book restore round-trips 816 keys; kill-era flush shape round-trips 4/4 keys; closed-trade parser delegates to signals_serde (B1260). Cause filed UNKNOWN not guessed (S6-B2512). Also: M10 gate_receipt SKIP identified as a launch-path finding (run_phase1a direct, not run_wave) - closed for the NEXT launch (b2207a goes through run_wave, receipt verified present) / battery re-run 2026-09-01 20:07: DONE - AUTO (B2520): lenses 8 run: 1 WARN / 0 FAIL / 7 INFO -> output_icg_cfg1_lenses.json; findings: empty_signals_share WARN: 23 of 373 trade_log rows carry an empty signals_at_entry (S6-B2512 class) |
-| 6_post_fix_recheck | DONE | re-check RUN, not waived (#196): enumerated this cycle's fixes - B2490/B2492/B2502 (cap gates on active hours; guard/kill accounting only), B2498 (prescreen fallback jaccard), B2505 (Table D axis registry) - and swept for shipped conclusions resting on pre-fix behaviour. The only cube-coupled claim is the resume manifest's cube-equivalence-at-defaults, held by test_b2484 (span default 200 pinned) and the completed run's M1-M7 checks; the grid/battery/free-level artifacts read pnl+hold, which no fix in the cycle touches. RESULT: 0 shipped conclusions require re-derivation - a re-check that finds nothing is a finding, not a skip (B2460). / battery re-run 2026-09-01 20:07: OPEN - 1 lens finding(s) need a recheck with evidence (#196): empty_signals_share WARN |
-| 6b_equivalence_class_check | N/A | N/A (B2520 migration, L721): no equivalence classes exist to carry - baseline config carried no subset-safe equivalence classes to propagate - class_size=1 recorded on every ranked row in the grid artifact; the free-level re-scores that DO carry classes live in output_audit/b2504_free_levels_institutional.json (S6-B2501, graded separately) / battery re-run 2026-09-01 20:07: N/A - 1 combination per cube (the swept parameters live in the precompute the engine consumed); equivalence collapse requires >= 2 combinations - N/A on evidence |
-| 7_implement_in_engine | DONE | trivially satisfied for a BASELINE: the config IS production (every value the built-in default), so the engine already implements it; battery step7_engine_implemented PASS exit 0 / battery re-run 2026-09-01 20:07: N/A - Step-1 ranking cube; admission happens at Step 2; nothing to implement. Engine check PASS: 4 of 4 swept parameters anchored in the engine path (precompute INST_* x3 + screener STRAT_EMA_SPAN; code-presence check) |
-| 8_verdict_with_denominators | DONE | VERDICT: baseline Step-1 reference measured - best of 24 exits (breakeven_plus_trail) at is_sharpe 0.263 / is_ci_lo -0.087 on n=373 IS fires over 200 tickers x 1 year; 0 of 24 exits reach a positive ci_lo; this is the comparison bar for the 16 variant configs, per the ruled Step-1 rank-only design (no gates, B1608) / battery re-run 2026-09-01 20:07: DONE - AUTO (B2520) VERDICT (denominators from output_icg_cfg1_grid_auto.json): 24 of 24 exits RANKED at min-trades >= 10 on 8952 IS rows (8952 cube rows, 0 holdout rows); rank-1 [breakeven_plus_trail] is_ci_lo -0.087 is_sharpe 0.263 fires 373 - Step-1: ranking only, no admission (B1608) |
-
-**Is this the right data?**
-
-| check | measured | outcome | what would have been alarming |
-|---|---|---|---|
-| cube produced rows | 8952 rows | PASS | zero rows = the config ran and emitted nothing |
-| exactly one strategy in the cube | 1 strategies | PASS | more than 1 = the strategy-subset filter leaked |
-| mega-caps present in the universe | NVDA | PASS | absent = the abandoned A-C chunk universe (L445) |
-| universe artifact verified | exit 0 on output_audit\_sweep_200.txt (verifier is non-block | PASS | FAIL = the ticker list is not what was intended |
-| cube content hash | af35ab7fc09b5b2b | PASS | a repeat across configs = two configs produced identical cubes, so one knob did nothing |
-| entry-date span actually simulated | entries 2024-05-06 .. 2025-05-01 | PASS | a short span = the run did not cover its window |
-| every entry carries one row per registered exit | cube [24] vs registry-now 24 (a differing single value = an | PASS | a shortfall = exits silently dropped from the cube |
-
-**Did anything leak from the future?**
-
-| check | measured | outcome | what would have been alarming |
-|---|---|---|---|
-| entries at or after the LOCKED holdout start | 0 entries at/after HO_START 2025-05-05 in a STEP-1 cube | PASS | any non-zero = the holdout was contaminated and the run is void |
-| fills that preceded their own entry | 0 fills before entry | PASS | any non-zero = look-ahead in execution |
-| pre-launch receipt matches the run manifest | no gate_receipt.json - cube predates B2169 or was launched A | SKIP **<-- NOT PASS** | mismatch = this run is not the run that was gated |
-
-**Does the arithmetic reproduce?**
-
-| check | measured | outcome | what would have been alarming |
-|---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
-| exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
-| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
-| engine-side implementation check exit code | 4 of 4 swept parameters anchored in the engine path (precomp | PASS | non-zero = the wiring is absent |
-
-**Independent re-derivation of sampled trades (step 4)**
-
-- 50 of 50 sampled trades re-derived to the SAME fire/no-fire decision as the engine; 0 disagreed; 0 execution failures.
-- Sampled with seed 42 at this config's own parameters (ema_span 200, min_committed_growth 3, fallback_min_increased 5) by scripts/spot_check_institutional.py (B2520).
-- CAVEAT worth stating: the re-derivation uses the SAME parameter set as the engine, so it catches wiring and data faults, NOT a wrong parameter choice. Full per-trade rows: output_audit/output_icg_cfg1_spot_check.json.
-
-- 6 sampled trades carried an EMPTY signals_at_entry record (S6-B2512 class) - the re-derivation could still decide them from the precompute, but the engine's own record is missing.
-
-**Adversarial lenses (step 5) - 8 lenses, 1 WARN/FAIL** (step basis: declared --step1-cube; family institutional_committed_growth_long)
-
-| lens | level | evidence |
-|---|---|---|
-| holdout_untouched | INFO | 0 of 373 entries at/after HO_START 2025-05-05 (Step-1 cube: any touch is a leak, B1718 class) |
-| period_concentration | INFO | max quarter share 0.40 (2025Q1) over 5 quarters of 373 entries; WARN > 0.5 |
-| ticker_concentration | INFO | top-5 tickers carry 0.09 of 373 entries across 133 tickers; WARN > 0.30 |
-| selection_margin | INFO | rank-1 [breakeven_plus_trail] is_ci_lo -0.087 vs rank-2 [hybrid_50pct_target] -0.285: margin 0.198 between exits; WARN < 0.05 (selection at noise level) |
-| empty_signals_share | WARN **<-- NOT INFO** | 23 of 373 trade_log rows carry an empty signals_at_entry (S6-B2512 class) |
-| direction_consistency | INFO | directions ['long'] (one strategy, one direction expected) |
-| spot_check_disagreements | INFO | 50 agree / 0 DISAGREE / 0 skipped in output_icg_cfg1_spot_check.json |
-| min_trades_floor | INFO | 373 distinct entries; the live gates need holdout >= 15 and full-period >= 75 (applied by the grader, not here) |
-
-**Is the sample large enough to mean anything? (step 2 funnel)**
-
-- 1 parameter combinations enumerated.
-- **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 1 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
-
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
-|---|---|---|---|---|---|---|
-| 1 | -0.087 | 0.263 | 373 | breakeven_plus_trail | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 2 | -0.285 | -0.001 | 373 | hybrid_50pct_target | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 3 | -0.462 | -0.161 | 373 | trailing_10pct | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 4 | -0.53 | -0.293 | 373 | earnings_blackout | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 5 | -0.549 | -0.137 | 373 | regime_flip | 1 | min_committed_growth=3 fallback_min_increased=5 |
-
-_Top 5 of the ranking; the full list is in output_audit/output_icg_cfg1_grid_auto.json._
 
 ### output_b2399_step2_sw50sp50_step2_sw50sp50
 
@@ -359,7 +359,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_icg_cfg1_grid_aut
 
 **Is the sample large enough to mean anything? (step 2 funnel)**
 
-- 300 parameter combinations enumerated.
+- 300 combinations enumerated (population field `results`).
 - **29 (10%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 271 graded and ranked, collapsing to 104 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 21 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
@@ -432,7 +432,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2399_step2_sw50s
 
 **Is the sample large enough to mean anything? (step 2 funnel)**
 
-- 300 parameter combinations enumerated.
+- 300 combinations enumerated (population field `results`).
 - **190 (63%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 110 graded and ranked, collapsing to 44 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 14 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
@@ -505,7 +505,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw50sp150_s
 
 **Is the sample large enough to mean anything? (step 2 funnel)**
 
-- 300 parameter combinations enumerated.
+- 300 combinations enumerated (population field `results`).
 - **200 (67%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 100 graded and ranked, collapsing to 42 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 14 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
@@ -578,7 +578,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw50sp100_s
 
 **Is the sample large enough to mean anything? (step 2 funnel)**
 
-- 300 parameter combinations enumerated.
+- 300 combinations enumerated (population field `results`).
 - **200 (67%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 100 graded and ranked, collapsing to 42 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 14 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
@@ -651,7 +651,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw50sp50_sw
 
 **Is the sample large enough to mean anything? (step 2 funnel)**
 
-- 300 parameter combinations enumerated.
+- 300 combinations enumerated (population field `results`).
 - **200 (67%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 100 graded and ranked, collapsing to 41 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 21 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
@@ -724,7 +724,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw50sp20_sw
 
 **Is the sample large enough to mean anything? (step 2 funnel)**
 
-- 300 parameter combinations enumerated.
+- 300 combinations enumerated (population field `results`).
 - **200 (67%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 100 graded and ranked, collapsing to 42 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 20 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
@@ -797,7 +797,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw50sp9_sw5
 
 **Is the sample large enough to mean anything? (step 2 funnel)**
 
-- 300 parameter combinations enumerated.
+- 300 combinations enumerated (population field `results`).
 - **40 (13%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 260 graded and ranked, collapsing to 132 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 18 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
@@ -870,7 +870,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw5sp150_sw
 
 **Is the sample large enough to mean anything? (step 2 funnel)**
 
-- 300 parameter combinations enumerated.
+- 300 combinations enumerated (population field `results`).
 - **40 (13%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 260 graded and ranked, collapsing to 132 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 24 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
@@ -943,7 +943,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw5sp100_sw
 
 **Is the sample large enough to mean anything? (step 2 funnel)**
 
-- 300 parameter combinations enumerated.
+- 300 combinations enumerated (population field `results`).
 - **45 (15%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 255 graded and ranked, collapsing to 124 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 20 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
@@ -1016,7 +1016,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw5sp50_sw5
 
 **Is the sample large enough to mean anything? (step 2 funnel)**
 
-- 300 parameter combinations enumerated.
+- 300 combinations enumerated (population field `results`).
 - **45 (15%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 255 graded and ranked, collapsing to 125 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 27 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
@@ -1089,7 +1089,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw5sp20_sw5
 
 **Is the sample large enough to mean anything? (step 2 funnel)**
 
-- 300 parameter combinations enumerated.
+- 300 combinations enumerated (population field `results`).
 - **45 (15%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 255 graded and ranked, collapsing to 126 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 20 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
@@ -1162,7 +1162,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw5sp9_sw5s
 
 **Is the sample large enough to mean anything? (step 2 funnel)**
 
-- 300 parameter combinations enumerated.
+- 300 combinations enumerated (population field `results`).
 - **40 (13%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 260 graded and ranked, collapsing to 131 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 20 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
@@ -1235,7 +1235,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw10sp150_s
 
 **Is the sample large enough to mean anything? (step 2 funnel)**
 
-- 300 parameter combinations enumerated.
+- 300 combinations enumerated (population field `results`).
 - **40 (13%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 260 graded and ranked, collapsing to 127 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 19 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
@@ -1308,7 +1308,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw10sp100_s
 
 **Is the sample large enough to mean anything? (step 2 funnel)**
 
-- 300 parameter combinations enumerated.
+- 300 combinations enumerated (population field `results`).
 - **45 (15%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 255 graded and ranked, collapsing to 128 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 16 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
@@ -1381,7 +1381,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw10sp50_sw
 
 **Is the sample large enough to mean anything? (step 2 funnel)**
 
-- 300 parameter combinations enumerated.
+- 300 combinations enumerated (population field `results`).
 - **41 (14%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 259 graded and ranked, collapsing to 129 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 18 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
@@ -1454,7 +1454,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw10sp20_sw
 
 **Is the sample large enough to mean anything? (step 2 funnel)**
 
-- 300 parameter combinations enumerated.
+- 300 combinations enumerated (population field `results`).
 - **42 (14%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 258 graded and ranked, collapsing to 138 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 16 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
@@ -1527,7 +1527,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw10sp9_sw1
 
 **Is the sample large enough to mean anything? (step 2 funnel)**
 
-- 300 parameter combinations enumerated.
+- 300 combinations enumerated (population field `results`).
 - **106 (35%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 194 graded and ranked, collapsing to 65 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 35 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
@@ -1600,7 +1600,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw30sp150_s
 
 **Is the sample large enough to mean anything? (step 2 funnel)**
 
-- 300 parameter combinations enumerated.
+- 300 combinations enumerated (population field `results`).
 - **100 (33%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 200 graded and ranked, collapsing to 67 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 43 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
@@ -1673,7 +1673,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw30sp100_s
 
 **Is the sample large enough to mean anything? (step 2 funnel)**
 
-- 300 parameter combinations enumerated.
+- 300 combinations enumerated (population field `results`).
 - **100 (33%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 200 graded and ranked, collapsing to 68 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 43 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
@@ -1746,7 +1746,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw30sp50_sw
 
 **Is the sample large enough to mean anything? (step 2 funnel)**
 
-- 300 parameter combinations enumerated.
+- 300 combinations enumerated (population field `results`).
 - **100 (33%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 200 graded and ranked, collapsing to 74 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 43 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
@@ -1819,7 +1819,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw30sp20_sw
 
 **Is the sample large enough to mean anything? (step 2 funnel)**
 
-- 300 parameter combinations enumerated.
+- 300 combinations enumerated (population field `results`).
 - **95 (32%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 205 graded and ranked, collapsing to 75 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 37 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
@@ -1892,7 +1892,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw30sp9_sw3
 
 **Is the sample large enough to mean anything? (step 2 funnel)**
 
-- 300 parameter combinations enumerated.
+- 300 combinations enumerated (population field `results`).
 - **77 (26%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 223 graded and ranked, collapsing to 92 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 18 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
@@ -1965,7 +1965,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw20sp150_s
 
 **Is the sample large enough to mean anything? (step 2 funnel)**
 
-- 300 parameter combinations enumerated.
+- 300 combinations enumerated (population field `results`).
 - **77 (26%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 223 graded and ranked, collapsing to 91 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 21 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
@@ -2038,7 +2038,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw20sp100_s
 
 **Is the sample large enough to mean anything? (step 2 funnel)**
 
-- 300 parameter combinations enumerated.
+- 300 combinations enumerated (population field `results`).
 - **77 (26%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 223 graded and ranked, collapsing to 92 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 19 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
@@ -2111,7 +2111,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw20sp50_sw
 
 **Is the sample large enough to mean anything? (step 2 funnel)**
 
-- 300 parameter combinations enumerated.
+- 300 combinations enumerated (population field `results`).
 - **77 (26%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 223 graded and ranked, collapsing to 97 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 17 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
@@ -2184,7 +2184,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw20sp21_sw
 
 **Is the sample large enough to mean anything? (step 2 funnel)**
 
-- 300 parameter combinations enumerated.
+- 300 combinations enumerated (population field `results`).
 - **77 (26%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 223 graded and ranked, collapsing to 97 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 17 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
@@ -2257,7 +2257,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw20sp20_sw
 
 **Is the sample large enough to mean anything? (step 2 funnel)**
 
-- 300 parameter combinations enumerated.
+- 300 combinations enumerated (population field `results`).
 - **77 (26%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 223 graded and ranked, collapsing to 100 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 18 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
@@ -2330,7 +2330,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2197_sw20sp9_sw2
 
 **Is the sample large enough to mean anything? (step 2 funnel)**
 
-- 300 parameter combinations enumerated.
+- 300 combinations enumerated (population field `results`).
 - **40 (13%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 260 graded and ranked, collapsing to 132 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 20 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
@@ -2403,7 +2403,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2190_sw5_sw5_gri
 
 **Is the sample large enough to mean anything? (step 2 funnel)**
 
-- 300 parameter combinations enumerated.
+- 300 combinations enumerated (population field `results`).
 - **45 (15%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 255 graded and ranked, collapsing to 133 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 16 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
@@ -2476,7 +2476,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2190_sw10_sw10_g
 
 **Is the sample large enough to mean anything? (step 2 funnel)**
 
-- 300 parameter combinations enumerated.
+- 300 combinations enumerated (population field `results`).
 - **225 (75%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 75 graded and ranked, collapsing to 29 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 19 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 
@@ -2549,7 +2549,7 @@ _Top 5 of the ranking; the full list is in output_audit/output_b2177_sw50_sw50_g
 
 **Is the sample large enough to mean anything? (step 2 funnel)**
 
-- 300 parameter combinations enumerated.
+- 300 combinations enumerated (population field `results`).
 - **106 (35%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
 - 194 graded and ranked, collapsing to 61 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 46 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
 

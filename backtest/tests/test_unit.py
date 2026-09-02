@@ -30747,8 +30747,6 @@ def test_b2521_grid_population_is_declared_not_inferred_from_a_field_name():
     doc = (root / "scripts" / "postconfig_doc.py").read_text(encoding="utf-8", errors="ignore")
     assert 'grid.get("results") or []' not in doc, (
         "postconfig_doc.py reads `results` blind again - the population is declared")
-
-
 def test_b2521_resume_reports_empty_signals_where_the_loss_happens():
     """S6-B2512 / B2521: the empty-signals detector was POST-HOC only.
 
@@ -30789,3 +30787,52 @@ def test_b2521_resume_reports_empty_signals_where_the_loss_happens():
 
     # the whole module still parses (a byte-level edit landed here)
     ast.parse(src)
+
+
+def test_b2522_automated_landing_commit_can_clear_the_queue_anchor_gate(tmp_path, monkeypatch):
+    """S6-B2520g / B2522: the automated commit staged no queue row, so the
+    repo's own C8 gate refused EVERY landing commit - permanently.
+
+    MEASURED on the first real exercise of commit_and_push (it had only ever
+    run under --no-git): "git commit failed: preflight: FAIL - C8 QUEUE-ENTRY
+    | commit does not stage EXECUTION_QUEUE.md". Stubs could not have caught
+    it - the gate lives in a git hook, outside every mock - which is exactly
+    why a never-exercised path is not a tested path.
+
+    Pins the SHAPE of the fix (a valid ledger row, and the queue actually
+    STAGED) rather than the git result, so it runs offline.
+    """
+    import re
+    import sys as _sys
+    from pathlib import Path as _P
+
+    root = _P(__file__).resolve().parents[2]
+    _sys.path.insert(0, str(root / "scripts"))
+    import postconfig_landing as pl
+
+    q = tmp_path / "EXECUTION_QUEUE.md"
+    q.write_bytes(b"| **S6-SEED** | **EXECUTED** | P1 | seed | _reason:_ seed |\r\n")
+    monkeypatch.setattr(pl, "QUEUE", q)
+    assert pl._append_landing_queue_row("output_probe", 0, "battery exit 0; 9 steps") is True
+
+    raw = q.read_bytes()
+    assert raw.endswith(b"\r\n"), "the row must be CRLF-terminated like its neighbours"
+    row = raw.decode("utf-8").strip().splitlines()[-1]
+
+    # it must be a row the ledger's own reader accepts, in the closed vocabulary
+    m = re.match(r"\|\s*\*\*(S6-[A-Za-z0-9_.-]+)\*\*\s*\|\s*\*\*([A-Z-]+)\*\*\s*\|", row)
+    assert m, "not a parseable ledger row: " + row[:120]
+    assert m.group(2) in ("EXECUTED", "DROPPED", "BLOCKED", "DEFERRED", "OPEN", "RUNNING")
+    assert "output_probe" in row and "_reason:_" in row
+    assert row.count("|") >= 6, "row must carry all ledger cells"
+
+    # and commit_and_push must actually STAGE it - otherwise C8 refuses again
+    src = (root / "scripts" / "postconfig_landing.py").read_text(encoding="utf-8", errors="ignore")
+    i = src.index("def commit_and_push")
+    body = src[i:i + 2500]
+    assert "_append_landing_queue_row" in body, "the commit does not create a queue row"
+    assert "paths.append(QUEUE)" in body, "the queue row is created but never STAGED"
+
+    # a failure appending the row must not raise into the landing path
+    monkeypatch.setattr(pl, "QUEUE", tmp_path / "no" / "such" / "dir" / "Q.md")
+    assert pl._append_landing_queue_row("output_probe", 0, "x") is False

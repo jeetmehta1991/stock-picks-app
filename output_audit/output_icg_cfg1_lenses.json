@@ -1,9 +1,9 @@
 {
  "cube": "output_icg_cfg1",
  "step": 1,
- "step_basis": "declared --step1-cube",
+ "step_basis": "manifest window.end 2025-05-05 <= HO_START 2025-05-05 -> Step-1 cube",
  "family": "institutional_committed_growth_long",
- "ts": "2026-09-01T20:07:48",
+ "ts": "2026-09-02T07:29:06",
  "lenses": [
   {
    "lens": "holdout_untouched",

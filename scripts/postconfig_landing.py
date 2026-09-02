@@ -211,14 +211,58 @@ def _git(args: list[str], *, timeout: float | None = None) -> subprocess.Complet
                           text=True, timeout=timeout)
 
 
+QUEUE = ROOT / "EXECUTION_QUEUE.md"
+# CRLF, built without escapes: L638 - backslashes do not survive a heredoc,
+# and this literal was mangled into a real line break on the first attempt.
+_ROW_END = chr(13) + chr(10)
+
+
+def _append_landing_queue_row(cube: str, battery_exit: int, summary: str) -> bool:
+    """S6-B2520g (B2522): one EXECUTED ledger row per landing.
+
+    A landing is a work event, so it belongs in the queue the owner reads -
+    and staging it is also what lets the automated commit clear the C8
+    queue-anchor gate honestly instead of via an exemption. Returns whether a
+    row was appended; a failure here must never stop the landing from being
+    RECORDED, so it degrades to False and the commit is skipped rather than
+    attempted and rejected.
+    """
+    try:
+        tid = f"S6-LANDING-{cube}-{_now().replace(':', '').replace('-', '')[:15]}"
+        one_line = " ".join(str(summary).split())[:600]
+        row = (f"| **{tid}** | **EXECUTED** | P1 | "
+               f"**Post-config battery landed for `{cube}` (battery exit "
+               f"{battery_exit})** | _reason:_ EXECUTED - recorded automatically "
+               f"by scripts/postconfig_landing.py at {_now()} (B2520 owner "
+               f"ruling: every landing runs the battery and reaches the owner). "
+               f"{one_line} |" + _ROW_END)
+        with QUEUE.open("ab") as f:
+            f.write(row.encode("utf-8"))
+        return True
+    except Exception:
+        return False
+
+
 def commit_and_push(cube: str, battery_exit: int, summary: str) -> dict:
     """Scoped commit of the AUDIT artifacts only - never a cube dir (L735 /
     CHECKLIST #166), never the landings jsonl (it is the record of what was
     reported, so it changes after the commit). A push rejection is recorded,
     never auto-rebased (HARD RULE: never force / never rebase unattended)."""
     out = {"committed": False, "pushed": False, "note": ""}
+    # S6-B2520g (B2522): the FIRST real exercise of this function found it could
+    # never succeed. It staged audit artifacts only, and the repo's own C8
+    # queue-anchor gate REFUSES any commit that does not stage
+    # EXECUTION_QUEUE.md - so every automated landing commit was rejected at
+    # preflight, silently, with the rejection recorded as a note nobody read.
+    # The honest fix is to SATISFY the gate rather than bypass it with
+    # GIT_QUEUE_EXEMPT: a landing IS a work event, so it earns a ledger row,
+    # and that row is what the owner reads. Stubs could never have caught this
+    # - the gate lives in a git hook, outside every mock.
+    queue_row = _append_landing_queue_row(cube, battery_exit, summary)
     paths = [LEDGER, REPORT] + [AUDIT / f"{cube}_{k}.json"
                                 for k in ("grid_auto", "spot_check", "lenses")]
+    if queue_row:
+        paths.append(QUEUE)
     rel = [str(p.relative_to(ROOT)).replace("\\", "/") for p in paths if p.is_file()]
     if not rel:
         out["note"] = "no audit artifacts on disk to commit"
