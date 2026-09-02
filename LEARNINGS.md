@@ -14543,6 +14543,23 @@ two contexts is worse than a verbose one that behaves the same everywhere.
 attempt. The content was never the problem; the transport was.
 
 
+### L638 addendum - a MIXED-EOL file has no single line ending to preserve (B2573)
+
+**B2573, 2026-09-02.** A scripted helper decoded each file, normalised `\r\n` to `\n`, edited,
+and wrote back in "the file's line ending" - chosen as CRLF if the file was CRLF-only, else LF.
+CHECKLIST.md and LEARNINGS.md are MIXED (CRLF bodies, LF tails appended by earlier batches), so
+they took the LF branch and every line was rewritten: 5,539 and 18,624 CRLF lines became 0, and
+the commit carried 48,747 changed lines for a 263-line content delta. Caught AFTER the commit,
+BEFORE the push, by `git show --stat` disagreeing with `git diff --stat --ignore-cr-at-eol`;
+restored from the HEAD~1 blob bytes plus the tail in the tail's own EOL, and amended (unpushed).
+
+**The rule extension:** a two-branch EOL helper (all-CRLF / else-LF) is a classifier with a third
+class it cannot name. For a MIXED file never normalise; edit BYTES - append in the tail's EOL, and
+insert mid-body in the EOL of the lines around the anchor. **Mechanical tell, every commit touching
+a doc file:** `git diff --cached --stat` must agree with `git diff --cached --stat --ignore-cr-at-eol`
+to within the content delta; a 10x gap is an EOL rewrite, not an edit. Detection is JUDGMENT-ONLY
+until that comparison is a hook.
+
 ## L639 — A ticket's count decays silently while the ticket stays open (B2153)
 
 **What happened:** S6-B2128c recorded "4 manifest fields declared but read by no gate". Sweeping
@@ -19222,3 +19239,60 @@ ad-hoc background commands; the tell is a task exit disagreeing with its
 artifact - read the artifact). (3) enforced by the existing gutted-count
 must-fire arm in test_b2123, which is exactly what makes a dropped fragment
 loud.
+
+### L754 - A script with a STRAT constant is the first instance of a portability class, and registration is checked at LAUNCH, not at landing
+
+**B2573, 2026-09-02.** The owner asked whether the optimisation workflow is
+mechanical enough for Opus to run across all strategies, noting "we have faced a
+lot of such issues due to the code you developed for the previous strategy."
+The audit (`output_audit/b2573_optimisation_workflow_portability_audit.md`)
+measured the answer: NO - 0 of 219 strategies could enter the battery without
+new hand-written code except the 2 already registered.
+
+**What was measured (EXECUTED / READ, denominators named):**
+- `run_postconfig.FAMILIES` holds 2 of 219 strategies, each a bespoke params
+  extractor + `run_<family>`; a third strategy needs ~6 hand artifacts before
+  the battery stops FAILING closed. 7 of 9 battery/runbook scripts carry a
+  `STRAT = "..."` constant or a family-specific key set
+  (`producer_variant_table --keys` defaults to the smc keys).
+- 0 of 4 launch-path scripts (prelaunch_gate, run_wave, run_serial_chain,
+  launch_sweep) check that the spec's strategy is registered - so the battery
+  discovers an unregistered strategy AFTER the engine's 2-4 h. Precedent: the
+  institutional strategy landed 4 configs ungraded (L752).
+- The runbook had no single ordered list for a new strategy; its generic STEP
+  0-4 carry smc commands at 4 sites and 5 numbers superseded by later rulings;
+  the documented launch command (direct `run_phase1a.py`) is not the live path
+  (spec -> run_serial_chain -> run_wave -> launch_sweep -> prelaunch_gate).
+- Monitoring: chain HALT is log-only; two hourly crons armed for one chain;
+  no periodic reader of `run_heartbeat.json`; 4 chain specs froze 4 SHAs.
+
+**The class statement.** Every one of these began as a correct tool built for
+the strategy in front of me - `tighten_breaker_block.py`, `spot_check_trades.py`,
+`verify_engine_implemented.py` - and each was right for that strategy. The miss
+is not in any of them; it is that the SECOND family (institutional) was served by
+COPYING the shape (grade_institutional_config.py, spot_check_institutional.py)
+instead of extracting the contract, so the third strategy inherits two
+divergent copies and no interface. **A script that names one strategy is the
+first instance of a portability class, not a tool** - the moment it exists the
+question is "what is the contract every family must satisfy?", and that contract
+is what the LAUNCH gate checks, so an unregistered strategy is refused before
+the engine spends its hours rather than failed closed after them.
+
+**The rule (CHECKLIST #291):** a family-specific artifact is an adapter member
+behind ONE contract (params_from_env / grade / free_levels / spot_check /
+engine_anchors), and REGISTRATION IS CHECKED AT LAUNCH. Until the adapter and
+launch check ship (S6-B2573a/b, owner approval needed - plumbing), the runbook's
+SS11.1 ON-RAMP table R1-R9 is the hand-run gate, and every mechanism a runbook
+step cites is named with its file or marked PROPOSED-NOT-BUILT (B1335 rule 2
+applied to a runbook - MEASURED this turn: my own SS11.2 draft cited
+`prelaunch_gate.py --spec`; the flag is `--manifest` and launch_sweep runs it
+automatically; caught by the verification pass before the patch was applied).
+
+**Mechanisms:** durability = this entry + #291 + the SKILL tripwire row
+(fragment-pinned in test_b2123). Detection today is JUDGMENT-ONLY for the class
+(no scan can tell a one-strategy tool from an adapter member); the mechanical
+form is the S6-B2573a pin (instantiate the adapter for EVERY SPECS entry) plus
+the S6-B2573b launch refusal, both ticketed OPEN, neither built. Retroactive
+coverage (#136): would have caught grade_institutional_config.py at B2504 (the
+second copy), the P7/P8 banded-unrunnable rows at B2527 (a launch-time knob
+check), and the 4 ungraded institutional landings (L752).

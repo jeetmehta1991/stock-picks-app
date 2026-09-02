@@ -1121,7 +1121,7 @@ free if it ranks. Scoping a baseline run wasted 7.3 h of plan before this was ca
                            0.2484 @ 50t x 4y, 0.2743 @ 20t x 2y)
 
 per run  =  tickers x sim-days x 0.2613
-100 tickers x  503 days (2y)  ~= 3.65 h      <- Phase 1, per config
+100 tickers x  503 days (2y)  ~= 3.65 h      <- Phase 1, per config  [B2573: PRE-RULING SHAPE. The ruled Step-1 shape is 200 tickers x 1 year (SS10.1); measured 2026-09-02 on the ICG chain: 2.0 h / 2.1 h / 4.0 h per config at pool 0 - serial_chain.log]
 100 tickers x 1003 days (4y)  ~= 7.3 h
 544 tickers x 1003 days (4y)  ~= 39.7 h   <- 7.3 h x (544/100), rescaled B1618
 ```
@@ -1142,7 +1142,7 @@ before any projection.**
 | setting | value | why |
 |---|---|---|
 | `--cube-isolation` | ON | bypasses ALL cross-strategy gates (`backtest.py:134`) |
-| `--screen-pool-workers` | 10 | default 0 is sequential (L407) |
+| `--screen-pool-workers` | 10 | default 0 is sequential (L407) [B2573: STALE - STEP 1.3 says 3 per concurrent config; the live launch stack hardcodes 0 (RUN-SAFETY, 1 of 10 cores). Authority: the spec file's arm, read by launch_sweep - not this cell] |
 | `--no-agents --no-news --no-git --no-walk-forward` | ON | not consumed by the 6 gates |
 | `--max-run-hours` | set | the runner REFUSES to start without it |
 | `OPTIMIZATION_MODE` | 1 | uncaps `max_cands` (no-op under isolation, L419) |
@@ -1203,10 +1203,10 @@ the baseline rate · gradability (how many combinations produced a verdict at al
 | Holdout dates and duration NEVER change | LOCKED |
 | Fewer configs to save time | **OUT OF QUESTION** — cost comes from speed or machine |
 | Threshold-only vs adding a NEW gate | **ASK EVERY TIME** — no default |
-| Universe 100 for search | approved; speed is key |
+| Universe 100 for search | approved; speed is key [B2573: SUPERSEDED - owner ruled 200 tickers 2026-08-29 (SS10.1 + APPENDIX S1-200); the 100 here is the B1548 shape] |
 | Isolation bypasses tier sizing | approved, comparability loss accepted |
 | Hourly updates while any run is active | STANDING |
-| AWS | requires a REAL quote against the $50 CAD cap and typed approval |
+| AWS | requires a REAL quote against the $50 CAD cap and typed approval [B2573: SUPERSEDED - B2109 set ONE $100 total compute budget across all strategies; venue ruling S6-B2107a = Hetzner auction gated on the local pilot] |
 
 ### 10.8 Per-strategy checklist
 
@@ -1852,7 +1852,7 @@ config's 300 combinations** (owner ruling D2, 2026-08-29: none is required - *se
 passes all gates; if multiple, the best Sharpe*).
 
 **A PROVISIONAL QUALIFIER IS RECORDED, NOT DISCARDED** (S6-B2379). Every PASS row carries `margin`
-and `status`, and the grid emits a `provisional_qualifiers` sibling key. Without it, a run
+and `status`, and the grid emits a `provisional_qualifiers` sibling key [B2573: RENAMED to `qualifiers` at S6-B2409 - see the STEP 2 ENTRY note above; this paragraph predates the rename]. Without it, a run
 terminating NEGATIVE could do so while holding a cell that cleared every live gate, with nothing
 recording it. **Its disposition is an open owner question.**
 
@@ -2612,6 +2612,75 @@ span9 `regime_flip` is_ci_lo **+0.167** / is_sharpe 0.489 / 609 fires; span20
 `breakeven_plus_trail` −0.015 / 0.300 / 531; span50 `breakeven_plus_trail` −0.067 /
 0.288 / 405; cfg1 (baseline, span200) `breakeven_plus_trail` −0.087 / 0.263 / 373.
 The span axis is measuring as the live one; span100/span150 land next in the chain.
+
+## 11. MECHANICAL PROCEDURE FOR ANY STRATEGY (B2573, 2026-09-02) - the ordered list Opus follows
+
+**Why this section exists.** The owner asked (2026-09-02) whether the workflow is mechanical enough for
+Opus to run across all strategies. The audit (`output_audit/b2573_optimisation_workflow_portability_audit.md`)
+measured: NO - the battery's family registry holds 2 of 219 strategies, 7 of 9 battery/runbook scripts are
+one-strategy code, nothing at launch checks registration, and this runbook had no single ordered list.
+This section IS the ordered list. Every mechanism it cites either exists (named with its file) or is
+marked **PROPOSED-NOT-BUILT (ticket)** - the B1335 mechanism-existence rule applies to a runbook too.
+Sections above remain the authority for WHY; this section is the authority for WHAT, IN WHAT ORDER.
+
+### 11.0 Standing constraints that bind every step (read once, apply always)
+
+- Owner approval before any rule/threshold/parameter change (CLAUDE.md Critical Rules). This
+  procedure never changes a strategy; it MEASURES one.
+- Local run cap **5 h** per leg (B2107 owner ruling 2026-08-24; `prelaunch_gate.OWNER_LOCAL_CAP_HOURS`).
+  Compute budget **$100 total** across all strategies (B2109). Venue ruling S6-B2107a precedes any
+  non-local launch.
+- No launch except through `run_wave.py` (which writes `run_manifest.json` from the spec, run_wave.py:133)
+  -> `launch_sweep.py` (which runs `prelaunch_gate.py --manifest` and REFUSES on non-zero, launch_sweep.py:43,
+  then writes `gate_receipt.json` - M10; the battery FAILS a cube without one). A direct `run_phase1a.py`
+  invocation bypasses all three (S6-B2159b class) - never launch that way.
+- A running chain is LIVE CODE: `run_postconfig.py`, `postconfig_landing.py`, `run_wave.py`,
+  `launch_sweep.py` and the engine are re-read at each landing/launch. An edit to any of them while a
+  chain runs is a deploy onto every queued spec (S6-B2573i). Do not edit them mid-chain without saying so.
+- Step-1 universe = the 200 tickers of APPENDIX S1-200 (`output_audit/_sweep_200.txt`); window
+  2024-05-05 -> 2025-05-05 (SS10.1). Step 2/3 = 4 years, all 544 tickers (STEP 3).
+
+### 11.1 ON-RAMP - what must exist BEFORE the first spec of a new strategy launches
+
+Run each probe; every one must print the expected line. A missing item is a STOP, not a note.
+(Today the battery fails CLOSED at LANDING for a missing item - after the engine's hours. The launch-time
+check is **PROPOSED-NOT-BUILT (S6-B2573b)**; until it ships, this list is the gate.)
+
+| # | Artifact | Probe (PYTHONPATH=.:scripts) | Expected | Exists today for |
+|---|---|---|---|---|
+| R1 | `SPECS["<strategy>"]` in `scripts/producer_variant_table.py` - every swept parameter with its env knob, `free_band` / `resim_band` / `subset_safe`, and a reason for every level that is banded but not scheduled (SS0.7, #290) | `python -c "from producer_variant_table import SPECS, validate_spec; validate_spec(SPECS['<strategy>']); print('SPEC OK')"` | `SPEC OK` | smc, institutional |
+| R2 | `D_AXIS_FAMILIES["<strategy>"]` (Table D axes + `detect` key) | `python -c "from producer_variant_table import D_AXIS_FAMILIES as D; print('<strategy>' in D)"` | `True` | smc, institutional |
+| R3 | `FAMILIES["<strategy>"]` in `scripts/run_postconfig.py` with a params extractor and a `run_<family>` that executes EVERY `_GRADER_CHECKS` leg (`step2_grade_auto`, `step2_free_levels`, `step4_spot_check_auto`, `step7_engine_implemented`) | `python -c "from run_postconfig import FAMILIES, _GRADER_CHECKS; f=FAMILIES['<strategy>']; print(sorted(f))"` then read `run_<family>` and tick each leg | 4 legs present | smc (3 of 4 - no free-levels leg), institutional (4 of 4) |
+| R4 | Step-1 grader for the family (grades the landed cube at the manifest's own params; emits the B2505 grid contract: `config`, `strategy`, `grader`, `rows`, `is_rows`, `holdout_rows`, `results[]`) | `--help` of the grader | usage text | `tighten_breaker_block.py` (smc), `grade_institutional_config.py` (institutional) |
+| R5 | Free-levels re-scorer (tighter-only subset re-score off `signals_at_entry`, gated on REPRODUCING the landed baseline) | `--help` | usage text | `grade_free_levels_institutional.py` (institutional only) |
+| R6 | Three-leg spot check (precompute / production consumer / engine record, n=50 seed 42) | `--help` | usage text | `spot_check_trades.py` (smc), `spot_check_institutional.py` (institutional) |
+| R7 | Step-7 engine-anchor set (the tokens that prove each swept parameter reaches the engine path) | grep the tokens in the engine files | every token found | `verify_engine_implemented.py` (smc); inline grep in `run_institutional` |
+| R8 | Every env knob in the spec's arm is READ by the engine/precompute and its full consumer list is known (blast radius; **PROPOSED-NOT-BUILT S6-B2573d**) | `grep -rn "<KNOB>" backtest/ scripts/build_*precompute*.py` | every consumer listed in the SPECS entry | declared for none |
+| R9 | The precompute the strategy reads exists for every scheduled level (e.g. `INST_PERSIST_CACHE_TAG` dirs), built BEFORE the spec launches | `ls` the cache dir per level | one dir per level | institutional |
+
+**A single generic adapter replacing R3-R7 is PROPOSED-NOT-BUILT (S6-B2573a).** Until it ships, a new
+strategy costs the six hand-written pieces above; write them BEFORE the spec, never after the cube.
+
+### 11.2 THE RUN - STEP 0 to STEP 4, in order, with the artifact each step must leave
+
+| Step | Do | Command / mechanism | Must leave | Gate to the next step |
+|---|---|---|---|---|
+| 0 | Inventory: read the strategy block in `screener.py`, its producer, its precompute; list every parameter (fixed / searched / banded-unscheduled with reason); write R1 + R2 | STEP 0 above; `validate_spec` | SPECS entry; `PRODUCER_VARIANT_TABLE_<strategy>.md` via `producer_variant_table.py --strategy <s> --factorial` | R1-R9 all green (SS11.1) |
+| 0.5 | Instrument ONE ticker at the production params to see fires exist (family example: `instrument_breaker_block.py` for smc; institutional used the precompute builder + a `python -c` count). Generic form: count fires of the strategy on 6 megacaps at production params | family script or `python -c` | a fire count > 0 recorded in the spec's `note` | fires > 0 (a 0 here is a producer defect, not a search) |
+| 1 | Write ONE spec per fire-adding combination (`output_audit/<batch>_<cfg>_spec.json`: `strategy_subset`, `tickers_file` = `_sweep_200.txt`, window, `arms[0].env` with every knob, `max_run_hours` <= 5, `resume`); copy an existing spec (`b2527_icg_span50_spec.json`) and change ONLY the knob values + names | spec file | the spec, diffed against its template in the turn | every knob in `arms[0].env` matches R8; `launch_sweep.arm_env_matches` will refuse an UNSET or mismatched one at launch |
+| 1.1 | Launch the chain DETACHED: `launch_detached.py` (Task Scheduler) or `launch_chain_noconsole.py` wrapping `run_serial_chain.py --specs <all specs in information order>`; per spec, run_wave writes the manifest and launch_sweep runs the gate (exit 0 or REFUSED) and writes `gate_receipt.json` | `scripts/run_serial_chain.py` -> `run_wave.py` -> `launch_sweep.py` -> `prelaunch_gate.py` | `output_audit/serial_chain.log` LAUNCH line; `<out-dir>/run_manifest.json` + `gate_receipt.json`; Task Scheduler task `stockpicks_chain_<batch>_<ts>` observed Running | the task is OBSERVED (S6-B2529a), not intended; the receipt exists |
+| 1.2 | Arm monitoring IN THE LAUNCH TURN: exactly ONE hourly cron per chain (delete any existing one for the same chain first - two were found armed, S6-B2573f), unconditional + periodic markers (#185/#186); read `run_heartbeat.json` at each report | CronCreate (session-held - S6-B2548) | the hourly report block in every turn while the chain runs | none - reporting is a standing duty |
+| 1.3 | Each landing: the engine hook runs the battery unprompted (`_postconfig_landing_hook` -> `postconfig_landing.py` -> `run_postconfig.py`); the turn's response carries `LANDING REPORT: <cube>` (Stop hook blocks otherwise) | automatic | `postconfig_ledger.json[<cube>]` with all nine steps dispositioned DONE / N/A / FAIL / OPEN; `postconfig_landings.jsonl` row; commit `bNNN` pushed; toast | every step DONE or N/A ON EVIDENCE; a FAIL is a B-batch, not a footnote |
+| 1.4 | Chain HALT (any non-COMPLETE): read `serial_chain.log`, `classify_run_log.py <log>` (DEAD vs live), the out-dir's `engine_state.json`; decide RESUME (`resume: true` spec + `--resume-from-checkpoint`, verify the spec points at the checkpoint dir FIRST - L646) or RE-RUN; relaunch the chain from the halted spec with `--wait-for` if another run is live. HALT notification beyond the log is **PROPOSED-NOT-BUILT (S6-B2573f)** | `scripts/classify_run_log.py`, `scripts/run_serial_chain.py --wait-for` | a queue row naming the halted spec, the cause class, and the relaunch command | chain log shows the relaunch |
+| 2 | When every Step-1 spec is COMPLETE: grade every landed cube with the family grader (already done per landing by the battery); render Tables A-D (`producer_variant_table.py --strategy <s> --results <grid...> --keys <params> --out`; NOTE `--keys` DEFAULTS to the smc keys `close_mitigation,age_bars_max,tail_n` - always pass the family's own, S6-B2573c); pick the top-3 configs by the STEP 2 ENTRY rule (mechanical: rank on `is_ci_lo`, min-trades >= 10, no gates - B1608) | family grader + `producer_variant_table.py` | `PRODUCER_VARIANT_TABLE_<strategy>.md` Tables A-D populated; top-3 list in the queue row | top-3 named with `is_ci_lo` values |
+| 3 | WATERFALL: run config 1 at 4 y x 544 tickers (legs <= 5 h each, `resume: true`); the battery grades it against the six LIVE_GATES; STOP at the first config that qualifies; else config 2, then 3 (STEP 2 EXECUTION) | same launch path as 1.1; `roster_core.LIVE_GATES` | `output_audit/<batch>_cfgN_grid.json` with `qualifiers` (renamed from `provisional_qualifiers` at S6-B2409) | a qualifier, or 3 of 3 non-qualifying with denominators |
+| 4 | ADMIT: render the qualifier into `PHASE_1B_ROSTER.md` (`phase_1b_step2_admissions.json`, metrics re-derived from the grid at render time - S6-B2413); count the REGISTERED mirror short (S6-B2417); engine wiring is DEFERRED to Phase 1B deployment (S6-B2411, trigger named there) | `scripts/build_phase_1b_roster.py` | roster row + queue row | owner-visible roster diff in the turn |
+
+### 11.3 The turn-close that every step above requires
+
+Ticket table with six classes and the delta (`scripts/queue_state.py`), SKILLS INVOKED three-skill
+block, #237 sweep, compliance statement, and - while a chain runs - the hourly report and any
+`LANDING REPORT: <cube>` the landings file says is unreported.
 
 ## APPENDIX S1-200 - THE 200 STEP-1 TICKERS (owner ruling 2026-08-29)
 

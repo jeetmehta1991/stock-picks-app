@@ -24968,6 +24968,11 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         # looks wired when it is not. Pins the disguise, not the heading (L548).
         ('"Executed once" + "the tool exists" + "it is documented" is the three-part disguise of an unwired check',
          "B2569/L752: a check owed per-config is DONE only when a supervisor runs it unprompted"),
+        # B2573: the L754 tripwire row - a one-strategy script is a class instance,
+        # and the launch gate (not the landing battery) is where registration is
+        # checked. Dropped from the skill, the third strategy inherits two copies.
+        ("A SCRIPT WITH A STRAT CONSTANT IS THE FIRST INSTANCE OF A PORTABILITY CLASS, NOT A TOOL",
+         "B2573/L754: extract the contract at the second family; check registration at launch"),
         ("2. **Read the LEARNINGS relevant to this turn's task type.** Grep `LEARNINGS.md`",
          "B2382: Phase 0  RECALL before any analysis or recommendation"),
         ("to prevent** (B1119: 22 batches of silent doc-sync suspension; Council 236's",
@@ -25496,7 +25501,9 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # 229 -> 230 at B2572 (the L752 three-part-disguise fragment; the L752
     # tripwire row landed at B2571 without its fragment - the B2130 same-call
     # rule violated and repaired one commit later, recorded in L753).
-    assert len(gutted) == 230, gutted
+    # 230 -> 231 at B2573 (the L754 portability-class fragment; same-call with
+    # its tripwire row per B2130).
+    assert len(gutted) == 231, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 

@@ -5568,3 +5568,25 @@ Mechanism: `run_postconfig.run_institutional` free-levels leg + `_GRADER_CHECKS`
 test_b2569_battery_runs_free_levels_on_every_institutional_landing /
 test_b2569_free_level_reproduction_gate_and_specs_derivation. DETECTION of new unwired checks is
 JUDGMENT-ONLY; the pin holds the wiring that exists.
+
+### #291 - A SCRIPT WITH A STRAT CONSTANT IS THE FIRST INSTANCE OF A PORTABILITY CLASS; REGISTRATION IS CHECKED AT LAUNCH (B2573 / L754)
+
+**Any grader, spot-check, verifier, or table renderer written for ONE strategy (a `STRAT`
+constant, a hardcoded key set, a family-specific env knob) is an adapter member behind ONE
+family contract - params_from_env / grade / free_levels / spot_check / engine_anchors - and the
+LAUNCH gate refuses a spec whose strategy has no complete adapter.** A battery that fails closed
+at LANDING has already spent the engine's hours; the refusal belongs before the spend.
+
+**The trigger is writing or reusing anything that names a strategy in code, OR copying a
+per-family script for the next family.** The copy is the tell: the second copy is the moment the
+contract should have been extracted (B2504 grade_institutional_config.py was that moment).
+
+**Pre-flight for a new strategy (until S6-B2573a/b ship): run the runbook SS11.1 ON-RAMP table
+R1-R9 and paste each probe's output - a missing item is a STOP.** Every mechanism a runbook step
+cites is named with its file or marked PROPOSED-NOT-BUILT (B1335 rule 2 applies to runbooks).
+
+**MEASURED 2026-09-02 (B2573):** FAMILIES 2 of 219; 7 of 9 battery/runbook scripts one-strategy;
+0 of 4 launch-path scripts check registration; the runbook had no ordered list, smc commands at 4
+generic sites, 5 stale numbers, and a documented launch command that is not the live path.
+Tickets S6-B2573a-i carry the class fixes; none are built. Detection is JUDGMENT-ONLY until the
+S6-B2573a adapter pin exists; the pin holds the contract that exists.
