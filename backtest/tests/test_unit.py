@@ -24959,6 +24959,11 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
          "B2382: Standing activation owner directive 20260707  Council"),
         ('1. **NO UNDER-GENERALIZATION.** When a defect is found, fix the CLASS, not',
          "B2382: GENERALIZATION MANDATE owner directive 20260718  Coun"),
+        # S6-B2532a: the B2532 rule had no fragment, so the durability mechanism
+        # every other SKILL rule has did not cover it. Pins the DIAGNOSTIC - why a
+        # named source is the one nobody re-checks - not the heading (L548).
+        ("A named source reads as the strongest provenance there is, which is why it is",
+         "B2532/L695 addendum: naming the call that produced a figure is itself a claim"),
         ("2. **Read the LEARNINGS relevant to this turn's task type.** Grep `LEARNINGS.md`",
          "B2382: Phase 0  RECALL before any analysis or recommendation"),
         ("to prevent** (B1119: 22 batches of silent doc-sync suspension; Council 236's",
@@ -25479,7 +25484,12 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # 225 -> 226 at B2478 (the L574 gate-selector fragment).
     # 226 -> 227 at B2482 (the L729 silent-None fragment).
     # 227 -> 228 at B2487 (the L730 watchdog-scheduler fragment).
-    assert len(gutted) == 228, gutted
+    # 228 -> 229 at B2562 (S6-B2532a: the B2532/L695-addendum fragment -
+    # a named source is the provenance nobody re-opens. The rule had sat in
+    # the skill with no fragment, so the durability mechanism every other
+    # rule has did not cover it; the pin was deferred once on a measured
+    # memory constraint that has since resolved).
+    assert len(gutted) == 229, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
