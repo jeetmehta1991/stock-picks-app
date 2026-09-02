@@ -4066,5 +4066,43 @@
    "status": "DONE",
    "evidence": "VERDICT (S6-B2207a): GAP CLOSED, NOT LOCK PROVEN. Measured: 11 trades against ~8.5 expected at the 85-per-200-ticker-year rate (the L685 resize worked - the 5x3 smoke's 0 fires was the modal outcome of an undersized probe, not a defect); cube 264 rows = 11 x 24 exits; run_wave wrote manifest + gate_receipt + a 9-step ledger entry WITHOUT human intervention. This proves the locked-ledger write path works at ONE contention level (1 of 1 concurrent writers); it does NOT prove the lock under contention, which needs 2 simultaneous configs and remains untested"
   }
+ },
+ "output_icg_span9_span9": {
+  "1_cube_sanity": {
+   "status": "DONE",
+   "evidence": "run_postconfig: cube_exists=PASS(14616 rows); one_strategy=PASS(1 strategies); M2_exits_per_entry_vs_registry=PASS(cube [24] vs registry-now 24 (a differing single value = an ); megacaps_present=PASS(NVDA, TSLA); M1_content_sha=PASS(071f4e8e28487900); M3_fill_date=PASS(0 fills before entry); M4_window=PASS(entries 2024-05-06 .. 2025-05-02); M4_holdout_touch=PASS(0 entries at/after HO_START 2025-05-05 in a STEP-1 cube); M5_pnl_integrity=PASS(0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS); M7_degraded_exits=PASS(degraded map (B1623 measure-not-assume): {'reverse_signal': ); M10_gate_receipt=PASS(receipt matches manifest sha da277b664fe1); step_derivation=PASS(Step-1: manifest window.end 2025-05-05 <= HO_START 2025-05-0); M9_universe_artifact=PASS(exit 0 on output_audit/_sweep_200.txt (verifier is non-block); family_dispatch=FAIL(family institutional_committed_growth_long: manifest arms[0]); ledger_status_matches_evidence=PASS(0 row(s) claim DONE with contradicting evidence)"
+  },
+  "3_outlier_discrepancy_sweep": {
+   "status": "DONE",
+   "evidence": "AUTO (B2192): mechanical core executed by the battery (M2 exits-vs-registry, M5 NaN/inf/winsorize, M7 degraded exits) + the grader's union diagnosis-loss gate and ci_lo-led ranking; M2_exits_per_entry_vs_registry=PASS; M3_fill_date=PASS; M4_holdout_touch=PASS; M5_pnl_integrity=PASS; M7_degraded_exits=PASS"
+  },
+  "2_grade_with_config_params": {
+   "status": "FAIL",
+   "evidence": "family institutional_committed_growth_long: manifest arms[0] lacks ['min_consecutive_quarters', 'growth_lookback_quarters', 'growth_multiple'] (neither the INST_*/STRAT_EMA_SPAN env keys nor the plain keys) (fail closed, L642)"
+  },
+  "4_three_leg_spot_check": {
+   "status": "FAIL",
+   "evidence": "family institutional_committed_growth_long: manifest arms[0] lacks ['min_consecutive_quarters', 'growth_lookback_quarters', 'growth_multiple'] (neither the INST_*/STRAT_EMA_SPAN env keys nor the plain keys) (fail closed, L642)"
+  },
+  "5_adversarial_lens_review": {
+   "status": "DONE",
+   "evidence": "AUTO (B2520): lenses 8 run: 1 WARN / 0 FAIL / 7 INFO -> output_icg_span9_span9_lenses.json; findings: spot_check_disagreements WARN: no spot-check artifact - step 4 produced nothing to read"
+  },
+  "6_post_fix_recheck": {
+   "status": "OPEN",
+   "evidence": "1 lens finding(s) need a recheck with evidence (#196): spot_check_disagreements WARN"
+  },
+  "6b_equivalence_class_check": {
+   "status": "FAIL",
+   "evidence": "family institutional_committed_growth_long: manifest arms[0] lacks ['min_consecutive_quarters', 'growth_lookback_quarters', 'growth_multiple'] (neither the INST_*/STRAT_EMA_SPAN env keys nor the plain keys) (fail closed, L642)"
+  },
+  "7_implement_in_engine": {
+   "status": "FAIL",
+   "evidence": "family institutional_committed_growth_long: manifest arms[0] lacks ['min_consecutive_quarters', 'growth_lookback_quarters', 'growth_multiple'] (neither the INST_*/STRAT_EMA_SPAN env keys nor the plain keys) (fail closed, L642)"
+  },
+  "8_verdict_with_denominators": {
+   "status": "OPEN",
+   "evidence": "no grid artifact - step 2 produced nothing to derive a verdict from (family institutional_committed_growth_long: manifest arms[0] lacks ['min_consecutive_quarters', 'growth_lookback_quarters', 'growth_multiple'] (neither the INST_*/STRAT_EMA_SPAN env keys nor the plain keys) (fail closed, L642))"
+  }
  }
 }
