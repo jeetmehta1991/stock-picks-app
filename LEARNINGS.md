@@ -18621,3 +18621,18 @@ landing on the error-correction loop itself.
 no scan knows what edit you intended - and durability is covered by
 test_b2526_recent_learnings_are_anchored_and_l735_is_not_an_orphan, which
 asserts every L-entry from L725 is referenced in an anchor file.
+
+**B2536 SWEEP - the class is bounded, and the bound is the finding.** The
+`#237` sweep this entry owed: across all 374 tracked `scripts/*.py`, byte-level
+`write_bytes` appears at exactly ONE call site (`measure_clause_admission.py:228`).
+So the pattern that produced the 36k-line diff lives almost entirely in the
+UNTRACKED scratchpad patchers I write per batch, not in the repo's own tooling -
+**blast radius one, which is as useful a sweep result as finding seven** (L643).
+That bounds the exposure and it also relocates the rule: the diff-size check
+belongs to how I EDIT, not to anything the repo ships, which is exactly why its
+home is the always-read skill rather than a CHECKLIST item about repo code.
+The unexplained half is separately bounded too: of the five canonical docs, TWO
+store CRLF unnormalised (LEARNINGS.md, CHECKLIST.md) and three normalise to LF,
+with no NUL bytes, no control characters and `text: unspecified` on all five -
+so the discriminator is still unidentified and stays ticketed as unknown
+(S6-B2533) rather than guessed.
