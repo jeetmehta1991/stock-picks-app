@@ -31178,3 +31178,41 @@ def test_b2551_every_mechanically_enforced_claim_names_a_real_enforcer():
         assert f"def {fn}" not in gate and f"def {fn}" not in tests, (
             f"{fn} now EXISTS - remove it from KNOWN_MISSING so the baseline "
             "stays a record of what is genuinely absent")
+def test_b2553_the_three_reporting_and_estimate_rules_survive_in_the_skill():
+    """L743, L744, L745 - three rules added to the always-read file, one pin.
+
+    Each pins the DIAGNOSTIC, never the headline, so an edit that keeps the
+    wording and drops the reasoning still fails. Grouped deliberately: one pin
+    per lesson would grow a test per turn, and what actually needs guarding is
+    that the always-read file keeps the REASON a rule exists.
+
+    Detection for all three is JUDGMENT-ONLY, and that is measured rather than
+    claimed: a keyword sweep over 61 tickets for L745's class returned 37 hits
+    dominated by the word "only" used descriptively, which no pattern separates
+    from an effort estimate.
+    """
+    from pathlib import Path as _P
+
+    root = _P(__file__).resolve().parents[2]
+    sk = " ".join((root / ".claude" / "skills" / "execution-discipline" / "SKILL.md")
+                  .read_text(encoding="utf-8", errors="ignore").split())
+    ln = " ".join((root / "LEARNINGS.md").read_text(encoding="utf-8", errors="ignore").split())
+
+    # L743 - the reporting channel must outlive the job
+    assert "ASK WHICH CHANNEL OUTLIVES THIS SESSION" in sk
+    assert "a dead reporter looks exactly like a quiet period" in sk, (
+        "L743's diagnostic - failure and health are byte-identical - is gone")
+    assert "### L743" in ln
+
+    # L744 - a control has three parts and "enforced" covers one
+    assert "A CONTROL HAS THREE PARTS" in sk
+    assert "RUN THE ENFORCEMENT AGAINST ITS OWN STATED EXAMPLE" in sk, (
+        "L744's actionable half - test the gate on its own example - is gone")
+    assert "### L744" in ln
+
+    # L745 - an estimate needs measuring regardless of direction
+    assert "MEASURE IT ANYWAY" in sk
+    assert "candour does not trigger the scepticism self-praise does" in sk, (
+        "L745's diagnostic - why a self-deprecating number evades the bias "
+        "check - is gone, leaving a rule with no reason attached")
+    assert "### L745" in ln
