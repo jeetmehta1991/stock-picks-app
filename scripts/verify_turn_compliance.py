@@ -298,6 +298,47 @@ LAUNCH_MARKERS = (
 ARM_MARKERS = ("CronCreate", "cron", "PushNotification", "Monitor")
 
 
+def _is_gate_feedback(text: str) -> bool:
+    """Is this user-type entry the Stop hook talking, rather than an instruction?
+
+    B2555 (S6-B2549), CAUSE EXECUTED not guessed: the Stop hook's own feedback
+    arrives as a USER entry. Every gate that resets its scan window on "the last
+    user message" therefore advances that window past work done earlier in the
+    SAME turn, the moment the turn is blocked once. MEASURED on
+    scan_unmonitored_launch: [user, cron, launch] is clean, and
+    [user, cron, user, launch] FIRES - the gate reported an unmonitored launch
+    against a monitor it had itself made invisible. A long turn erases its own
+    compliance evidence, and long turns are when monitoring matters most.
+
+    SCOPE, stated: the window computation is duplicated at 11 sites in 10
+    distinct shapes. This helper is used by scan_unmonitored_launch only - the
+    one instance with a measured failure - and the other 10 are ticketed
+    (S6-B2555a) rather than swept mechanically while a chain is mid-flight.
+    """
+    t = (text or "").lower()
+    return ("turn-gate block" in t
+            or "verify_turn_compliance.py]" in t
+            or "stop hook feedback" in t)
+
+
+def _last_instruction_index(entries) -> int:
+    """Index of the last REAL user instruction, ignoring gate feedback."""
+    last = -1
+    for i, e in enumerate(entries or ()):
+        if e.get("type") != "user":
+            continue
+        content = (e.get("message") or {}).get("content")
+        if isinstance(content, str) and content.strip():
+            if not _is_gate_feedback(content):
+                last = i
+        elif isinstance(content, list):
+            joined = " ".join(c.get("text", "") for c in content
+                              if isinstance(c, dict) and c.get("type") == "text")
+            if joined.strip() and not _is_gate_feedback(joined):
+                last = i
+    return last
+
+
 def scan_unmonitored_launch(entries: list[dict]) -> list[str]:
     """Return launch snippets that had no monitor armed in the same turn.
 
@@ -305,16 +346,9 @@ def scan_unmonitored_launch(entries: list[dict]) -> list[str]:
     long-running runner; an arm is any tool_use naming a scheduling or
     notification tool. Both are counted only AFTER the last real user message.
     """
-    last_user = -1
-    for i, e in enumerate(entries):
-        if e.get("type") != "user":
-            continue
-        content = (e.get("message") or {}).get("content")
-        if isinstance(content, str) and content.strip():
-            last_user = i
-        elif isinstance(content, list) and any(
-                isinstance(c, dict) and c.get("type") == "text" for c in content):
-            last_user = i
+    # B2555 (S6-B2549): the window must reset on a new INSTRUCTION, not on the
+    # gate's own block message - see _is_gate_feedback for the measurement.
+    last_user = _last_instruction_index(entries)
     launches, armed = [], False
     for e in entries[last_user + 1:]:
         if e.get("type") != "assistant":
@@ -366,8 +400,18 @@ def scan_unmonitored_launch(entries: list[dict]) -> list[str]:
             _cmd = ""
             if name in ("Bash", "PowerShell"):
                 _cmd = str((c.get("input") or {}).get("command", ""))
-            if _cmd and any(m in _cmd for m in LAUNCH_MARKERS[:2]) and (
-                    "nohup" in _cmd or c.get("input", {}).get("run_in_background")):
+            # B2555 (S6-B2547). Two measured defects: LAUNCH_MARKERS[:2] read
+            # the REBOUND two-filename tuple, and the conjunction with
+            # nohup-or-background meant a bare
+            # `python scripts/run_phase1a.py --phase 1a-beta` - the canonical
+            # launch this gate exists for - produced NO finding. The predicate
+            # now asks whether the command INVOKES a runner, which is what a
+            # launch is. `python -c "...run_phase1a.py..."` is excluded because
+            # discussing a launch is not launching (B1603's rule, applied to
+            # Write payloads but never to Bash commands - my own diagnostic
+            # probe tripped the old gate exactly that way).
+            _launching = bool(_re_launch.search(_cmd)) if _cmd else False
+            if _launching:
                 launches.append(_cmd[:140])
     return [] if (armed or not launches) else launches
 
@@ -514,11 +558,11 @@ def check_orphan_rule() -> str | None:
         import subprocess
         from pathlib import Path
         r = subprocess.run(["git", "diff", "HEAD", "--unified=0", "--", "LEARNINGS.md"],
-                           capture_output=True, text=True, timeout=15)
+                           capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=15)
         added = r.stdout or ""
         if not added.strip():
             r2 = subprocess.run(["git", "log", "-1", "-p", "--unified=0", "--", "LEARNINGS.md"],
-                                capture_output=True, text=True, timeout=15)
+                                capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=15)
             added = r2.stdout or ""
         new_entries = re.findall(r"^\+### (L\d+)", added, re.M)
         # B1633: this gate was PER-TURN only. An entry that slipped through on
@@ -678,9 +722,9 @@ def check_postfix_recheck() -> str | None:
     try:
         import subprocess
         m = subprocess.run(["git", "log", "-1", "--pretty=%B"],
-                           capture_output=True, text=True, timeout=15).stdout
+                           capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=15).stdout
         f = subprocess.run(["git", "log", "-1", "--name-only", "--pretty=format:"],
-                           capture_output=True, text=True, timeout=15).stdout
+                           capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=15).stdout
     except Exception:
         return None
     bad = scan_postfix_recheck(m, [x for x in (f or "").splitlines() if x.strip()])
@@ -856,7 +900,7 @@ def check_describing_artifact_drift() -> str | None:
     import subprocess
     try:
         r = subprocess.run([sys.executable, "scripts/verify_describing_artifacts.py",
-                            "--quiet"], capture_output=True, text=True, timeout=180)
+                            "--quiet"], capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=180)
     except Exception as exc:
         return f"describing-artifact verifier could not run ({exc!r}) - fail CLOSED"
     if r.returncode == 0:
@@ -877,7 +921,7 @@ def check_postconfig_complete() -> str | None:
     import subprocess
     try:
         r = subprocess.run([sys.executable, "scripts/verify_postconfig_complete.py",
-                            "--quiet"], capture_output=True, text=True, timeout=120)
+                            "--quiet"], capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=120)
     except Exception as exc:
         return f"post-config ledger check could not run ({exc!r}) - fail CLOSED"
     if r.returncode == 0:
@@ -998,9 +1042,9 @@ def _queue_touched() -> bool:
     import subprocess
     try:
         d = subprocess.run(["git", "status", "--porcelain", "EXECUTION_QUEUE.md"],
-                           capture_output=True, text=True, timeout=15).stdout.strip()
+                           capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=15).stdout.strip()
         c = subprocess.run(["git", "log", "-1", "--name-only", "--format="],
-                           capture_output=True, text=True, timeout=15).stdout
+                           capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=15).stdout
     except Exception:
         return False                      # fail CLOSED: unknown is not "touched"
     return bool(d) or ("EXECUTION_QUEUE.md" in (c or ""))
@@ -1109,11 +1153,11 @@ def scan_response_gates(entries, *, queue_touched=None,
             import subprocess
             try:
                 dirty = subprocess.run(["git", "status", "--porcelain"],
-                                       capture_output=True, text=True,
+                                       capture_output=True, text=True, encoding="utf-8", errors="replace",
                                        timeout=15).stdout.strip()
                 last = subprocess.run(["git", "log", "-1", "--name-only",
                                        "--format="], capture_output=True,
-                                      text=True, timeout=15).stdout
+                                      text=True, encoding="utf-8", errors="replace", timeout=15).stdout
             except Exception:
                 dirty, last = "", ""
             _tc = bool(dirty) or bool((last or "").strip())
@@ -1654,9 +1698,9 @@ def scan_skill_not_updated(entries, *, learnings_touched=None,
     def _touched(path):
         try:
             d = subprocess.run(["git", "status", "--porcelain", path],
-                               capture_output=True, text=True, timeout=15).stdout
+                               capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=15).stdout
             c = subprocess.run(["git", "log", "-1", "--name-only", "--format="],
-                               capture_output=True, text=True, timeout=15).stdout
+                               capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=15).stdout
         except Exception:
             return False
         return bool(d.strip()) or (path.split("/")[-1] in (c or ""))
@@ -2222,7 +2266,7 @@ def _queue_rows_added(diff_text=None) -> list[str]:
                 ["git", "diff", "HEAD~1", "HEAD", "--unified=0",
                  "--", "EXECUTION_QUEUE.md"]):
         try:
-            d = subprocess.run(cmd, capture_output=True, text=True,
+            d = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8", errors="replace",
                                timeout=20).stdout or ""
         except Exception:
             continue
@@ -3120,7 +3164,7 @@ def scan_ungated_addition(entries, *, text=None, added_rules=None) -> list[str]:
         try:
             for path in ("CHECKLIST.md", ".claude/skills/execution-discipline/SKILL.md"):
                 d = subprocess.run(["git", "diff", "HEAD", "--unified=0", "--", path],
-                                   capture_output=True, text=True, timeout=20).stdout
+                                   capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=20).stdout
                 added_rules += re.findall(r"^\+#{2,3} #(\d+)", d or "", re.M)
         except Exception:
             return []
@@ -3184,9 +3228,9 @@ def scan_prose_only_rule(entries, *, docs_touched=None, code_touched=None,
     def _touched(paths):
         try:
             d = subprocess.run(["git", "status", "--porcelain"] + paths,
-                               capture_output=True, text=True, timeout=20).stdout
+                               capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=20).stdout
             c = subprocess.run(["git", "log", "-1", "--name-only", "--format="],
-                               capture_output=True, text=True, timeout=20).stdout
+                               capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=20).stdout
         except Exception:
             return False
         return bool(d.strip()) or any(pp.split("/")[-1] in (c or "") for pp in paths)
@@ -3500,9 +3544,9 @@ def _artifact_touched(*paths) -> bool:
     import subprocess
     try:
         d = subprocess.run(["git", "status", "--porcelain"] + list(paths),
-                           capture_output=True, text=True, timeout=20).stdout
+                           capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=20).stdout
         c = subprocess.run(["git", "log", "-1", "--name-only", "--format="],
-                           capture_output=True, text=True, timeout=20).stdout
+                           capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=20).stdout
     except Exception:
         return False
     return bool(d.strip()) or any(pp.split("/")[-1] in (c or "") for pp in paths)
@@ -3710,7 +3754,7 @@ def check_unrecorded_miss() -> str | None:
         # left the file clean and tripped this gate. A gate that punishes
         # compliance trains people to bypass it.
         r = subprocess.run(["git", "status", "--porcelain", "LEARNINGS.md"],
-                           capture_output=True, text=True, timeout=15)
+                           capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=15)
         touched = bool(r.stdout.strip())
         if not touched:
             # B1583: check the last SEVERAL commits, not just HEAD. A turn
@@ -3719,7 +3763,7 @@ def check_unrecorded_miss() -> str | None:
             # L447 - I enumerated one legitimate end state and missed the rest.
             h = subprocess.run(
                 ["git", "log", "-6", "--name-only", "--pretty=format:"],
-                capture_output=True, text=True, timeout=15)
+                capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=15)
             touched = "LEARNINGS.md" in (h.stdout or "")
     except Exception:
         # Never let the gate itself break the turn; fail OPEN and say so.
@@ -3728,7 +3772,15 @@ def check_unrecorded_miss() -> str | None:
     return bad[0] if bad else None
 
 
-LAUNCH_MARKERS = ("run_phase1a.py", "run_phase1b.py")
+# B2555 (S6-B2547): this REBOUND the module-level LAUNCH_MARKERS defined far
+# above, silently making its four entries dead code - so nohup and
+# run_in_background survived only inside the conjunction below. Renamed so
+# neither list shadows the other.
+RUNNER_SCRIPTS = ("run_phase1a.py", "run_phase1b.py")
+import re as _re_mod
+_re_launch = _re_mod.compile(
+    r"python[0-9.]*\s+(?!-c\b)(?:-[A-Za-z]+\s+)*[^;&|]*?\b(?:"
+    + "|".join(_re_mod.escape(s) for s in RUNNER_SCRIPTS) + r")\b")
 POOL_FLAG = "--screen-pool-workers"
 STALL_MARKERS = ("stall", "hang", "mtime", "not advanced", "no progress")
 BULK_KILL = ("stop-process -name", "stop-process -force",
@@ -4178,7 +4230,7 @@ def get_modified_tracked() -> list[str]:
     try:
         result = subprocess.run(
             ["git", "status", "--porcelain", "--untracked-files=no"],
-            cwd=REPO_ROOT, capture_output=True, text=True, check=False,
+            cwd=REPO_ROOT, capture_output=True, text=True, encoding="utf-8", errors="replace", check=False,
         )
     except Exception:
         return []

@@ -31216,3 +31216,114 @@ def test_b2553_the_three_reporting_and_estimate_rules_survive_in_the_skill():
         "L745's diagnostic - why a self-deprecating number evades the bias "
         "check - is gone, leaving a rule with no reason attached")
     assert "### L745" in ln
+def test_b2554_the_gate_never_decodes_subprocess_output_with_the_platform_default():
+    """S6-B2534a: the turn-compliance gate crashed decoding its OWN output.
+
+    MEASURED before the fix: 21 subprocess.run call sites in
+    scripts/verify_turn_compliance.py decode output (text=True /
+    capture_output=True) and ZERO specified an encoding, so on Windows they
+    decode as cp1252 - in which byte 0x81 is undefined. The gate raised
+    UnicodeDecodeError partway through, AFTER emitting some verdicts.
+
+    That is the worst shape a checker can have: a reader thread dying
+    mid-stream discards input, so a gate that loses input can only
+    UNDER-report, and a partial run is indistinguishable from a clean pass.
+    Every verdict it produced was therefore untrusted evidence - which is why
+    this was fixed before the other gate tickets, not after.
+
+    Pins the CLASS (no decoding call may rely on the platform default), not the
+    count, so a new subprocess call added tomorrow is caught too.
+    """
+    import re
+    from pathlib import Path as _P
+
+    root = _P(__file__).resolve().parents[2]
+    src = (root / "scripts" / "verify_turn_compliance.py").read_text(
+        encoding="utf-8", errors="replace")
+
+    calls = re.findall(r"subprocess\.run\((?:[^()]|\([^()]*\))*\)", src, re.S)
+    decoding = [c for c in calls
+                if "text=True" in c or "capture_output=True" in c]
+    assert decoding, "no decoding subprocess calls found - the parser is broken"
+
+    bare = [" ".join(c.split())[:90] for c in decoding if "encoding=" not in c]
+    assert not bare, (
+        f"{len(bare)} of {len(decoding)} subprocess.run call(s) in the gate decode "
+        f"with the PLATFORM DEFAULT (cp1252 on Windows, where 0x81 is undefined): "
+        f"{bare}. A gate that dies mid-decode can only under-report, and a partial "
+        "run looks exactly like a clean pass. Pass encoding='utf-8', "
+        "errors='replace'.")
+
+    # and the byte that actually crashed it must survive the chosen codec
+    assert b"\x81".decode("utf-8", errors="replace"), "replacement decoding failed"
+def test_b2555_launch_gate_fires_on_its_own_example_and_survives_gate_feedback():
+    """S6-B2547 + S6-B2549: the monitor-armed gate, both defects, four arms.
+
+    S6-B2547, MEASURED before the fix: LAUNCH_MARKERS was bound twice and the
+    second binding won, so `LAUNCH_MARKERS[:2]` read two filenames and the four
+    entries above - including nohup and run_in_background - were dead code. The
+    launch test then ANDed the marker with (nohup OR run_in_background), so a
+    bare `python scripts/run_phase1a.py --phase 1a-beta` - THE CANONICAL LAUNCH
+    THIS GATE EXISTS FOR - produced no finding. Conversely a Bash command that
+    merely DISCUSSED a launch fired, which is how my own diagnostic probe
+    tripped it.
+
+    S6-B2549, CAUSE EXECUTED not guessed: the Stop hook's own feedback arrives
+    as a USER entry, so the scan window advanced past an arm made earlier in the
+    same turn the moment the turn was blocked once. Measured then:
+    [user, cron, launch] clean, [user, cron, user, launch] FIRES - the gate
+    reporting an unmonitored launch against a monitor it had made invisible.
+
+    Four arms, because two of them are the false-negative direction that let
+    five instances through, and two are the guard against over-correcting.
+    """
+    import importlib.util
+    import sys as _sys
+    from pathlib import Path as _P
+
+    root = _P(__file__).resolve().parents[2]
+    _sys.path.insert(0, str(root / "scripts"))
+    spec = importlib.util.spec_from_file_location(
+        "vtc_b2555", root / "scripts" / "verify_turn_compliance.py")
+    m = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(m)
+
+    def bash(cmd):
+        return {"type": "assistant", "message": {"content": [
+            {"type": "tool_use", "name": "Bash", "input": {"command": cmd}}]}}
+
+    def user(t):
+        return {"type": "user", "message": {"content": t}}
+
+    cron = {"type": "assistant", "message": {"content": [
+        {"type": "tool_use", "name": "CronCreate", "input": {
+            "cron": "13 * * * *",
+            "prompt": "hourly, every hour, unconditional, do not withhold"}}]}}
+    feedback = user("Stop hook feedback:\n[python scripts/verify_turn_compliance.py]: "
+                    "TURN-GATE BLOCK - 1 violation(s)")
+
+    # ARM A - the canonical launch must fire when nothing is armed
+    assert m.scan_unmonitored_launch(
+        [user("go"), bash("python scripts/run_phase1a.py --phase 1a-beta")]), (
+        "the gate does not fire on a bare canonical launch - the exact "
+        "false negative that let five instances through")
+
+    # ARM B - discussing a launch is not launching
+    assert not m.scan_unmonitored_launch([user("go"), bash(
+        'echo "the test ANDs nohup/run_in_background"; '
+        'python -c "print(1) # run_phase1a.py"')]), (
+        "a command that merely discusses a launch fires - B1603's rule was "
+        "applied to Write payloads but never to Bash commands")
+
+    # ARM C - an arm must survive the gate's OWN feedback
+    assert not m.scan_unmonitored_launch(
+        [user("go"), cron, feedback, bash("python scripts/run_phase1a.py")]), (
+        "the gate's own block message erased the arm - a long turn destroying "
+        "its own compliance evidence (S6-B2549)")
+
+    # ARM D - a REAL new instruction still resets the window (no over-correction)
+    assert m.scan_unmonitored_launch(
+        [user("go"), cron, user("now do something else"),
+         bash("python scripts/run_phase1a.py")]), (
+        "a genuine new instruction no longer resets the window - the fix "
+        "over-corrected and an arm now covers unrelated later launches")
