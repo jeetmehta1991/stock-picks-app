@@ -1,0 +1,23 @@
+{
+ "wave": "icg_minq6",
+ "tickers_file": "output_audit/_sweep_200.txt",
+ "strategy_subset": "output_audit/_subset_institutional_committed_growth_long.txt",
+ "window": {
+  "start": "2024-05-05",
+  "end": "2025-05-05"
+ },
+ "leg_cap_hours": 4.0,
+ "max_legs": 3,
+ "step1_cube": true,
+ "pool_workers": 10,
+ "allow_engine_drift": true,
+ "arms": [
+  {
+   "tag": "minq6",
+   "env": {
+    "INST_PERSIST_CACHE_TAG": "minq6"
+   },
+   "note": "P4 min_consecutive_quarters=6 (baseline 4)"
+  }
+ ]
+}

@@ -1,0 +1,198 @@
+{
+ "batch": "B2527",
+ "programme": "institutional_committed_growth_long STEP 1, configs 2-17",
+ "execution": "LOCAL",
+ "working_tree_dirty": true,
+ "isolation": true,
+ "calendar": "nyse_mcal",
+ "window": {
+  "start": "2024-05-05",
+  "end": "2025-05-05"
+ },
+ "tickers": {
+  "file": "output_audit/_sweep_200.txt",
+  "n": 200,
+  "sha256": "cc988b89a3ac967f1d8942bdec38e9396ccfbb948272c420d2625a2c8749eb4c"
+ },
+ "strategy_subset": "output_audit/_subset_institutional_committed_growth_long.txt (institutional_committed_growth_long)",
+ "configs": [
+  {
+   "tag": "minq2",
+   "env": {
+    "INST_PERSIST_CACHE_TAG": "minq2"
+   },
+   "knob": "P4 min_consecutive_quarters=2 (baseline 4)"
+  },
+  {
+   "tag": "minq3",
+   "env": {
+    "INST_PERSIST_CACHE_TAG": "minq3"
+   },
+   "knob": "P4 min_consecutive_quarters=3 (baseline 4)"
+  },
+  {
+   "tag": "minq6",
+   "env": {
+    "INST_PERSIST_CACHE_TAG": "minq6"
+   },
+   "knob": "P4 min_consecutive_quarters=6 (baseline 4)"
+  },
+  {
+   "tag": "minq8",
+   "env": {
+    "INST_PERSIST_CACHE_TAG": "minq8"
+   },
+   "knob": "P4 min_consecutive_quarters=8 (baseline 4)"
+  },
+  {
+   "tag": "lookback2",
+   "env": {
+    "INST_PERSIST_CACHE_TAG": "lookback2"
+   },
+   "knob": "P5 growth_lookback_quarters=2 (baseline 4)"
+  },
+  {
+   "tag": "lookback3",
+   "env": {
+    "INST_PERSIST_CACHE_TAG": "lookback3"
+   },
+   "knob": "P5 growth_lookback_quarters=3 (baseline 4)"
+  },
+  {
+   "tag": "lookback6",
+   "env": {
+    "INST_PERSIST_CACHE_TAG": "lookback6"
+   },
+   "knob": "P5 growth_lookback_quarters=6 (baseline 4)"
+  },
+  {
+   "tag": "lookback8",
+   "env": {
+    "INST_PERSIST_CACHE_TAG": "lookback8"
+   },
+   "knob": "P5 growth_lookback_quarters=8 (baseline 4)"
+  },
+  {
+   "tag": "mult1.0",
+   "env": {
+    "INST_PERSIST_CACHE_TAG": "mult1.0"
+   },
+   "knob": "P6 growth_multiple=1.0 (baseline 1.1)"
+  },
+  {
+   "tag": "mult1.25",
+   "env": {
+    "INST_PERSIST_CACHE_TAG": "mult1.25"
+   },
+   "knob": "P6 growth_multiple=1.25 (baseline 1.1)"
+  },
+  {
+   "tag": "mult1.5",
+   "env": {
+    "INST_PERSIST_CACHE_TAG": "mult1.5"
+   },
+   "knob": "P6 growth_multiple=1.5 (baseline 1.1)"
+  },
+  {
+   "tag": "span9",
+   "env": {
+    "STRAT_EMA_SPAN": "9"
+   },
+   "knob": "P9 ema span=9 (baseline 200)"
+  },
+  {
+   "tag": "span20",
+   "env": {
+    "STRAT_EMA_SPAN": "20"
+   },
+   "knob": "P9 ema span=20 (baseline 200)"
+  },
+  {
+   "tag": "span50",
+   "env": {
+    "STRAT_EMA_SPAN": "50"
+   },
+   "knob": "P9 ema span=50 (baseline 200)"
+  },
+  {
+   "tag": "span100",
+   "env": {
+    "STRAT_EMA_SPAN": "100"
+   },
+   "knob": "P9 ema span=100 (baseline 200)"
+  },
+  {
+   "tag": "span150",
+   "env": {
+    "STRAT_EMA_SPAN": "150"
+   },
+   "knob": "P9 ema span=150 (baseline 200)"
+  }
+ ],
+ "n_configs": 16,
+ "leg_cap_hours": 4.0,
+ "owner_hard_cap_hours": 5.0,
+ "obsolescence_risks": [
+  {
+   "risk": "machine sleeps overnight and the run-hours cap kills a healthy run",
+   "status": "CLOSED - kill_decision() gates on ACTIVE hours (elapsed minus credited sleep >= 30 min gaps). Verified by reading the function, not the plan text, which is STALE and still says 'pending ruling'.",
+   "gate": "backtest/engine/backtest.py::kill_decision"
+  },
+  {
+   "risk": "a tagged producer config silently alters ANOTHER strategy's gate input (committed_growth_holders is also read by strat_simple_below_ema_50_short; STRAT_EMA_SPAN is also read by smc_breaker_block_long/_short)",
+   "status": "CLOSED by construction - the subset is SOLO, asserted in this builder before any spec is written.",
+   "gate": "assert subset_lines == ['institutional_committed_growth_long']"
+  },
+  {
+   "risk": "a producer config's precompute is missing, so it silently falls back to the untagged production artifact and runs a DUPLICATE of the baseline - an expensive no-op that looks like a result",
+   "status": "CLOSED - all 11 tagged precomputes asserted present and non-empty before any spec was written.",
+   "gate": "the missing[] assert in this builder"
+  },
+  {
+   "risk": "minq2 / minq3 are near-duplicates of baseline per the S6-B2485 pre-screen (primary Jaccard 0.940/0.964, fallback 0.906/0.929), so ~2 of the 16 configs may buy little",
+   "status": "OWNER-ACCEPTED BY THE LAUNCH INSTRUCTION - the owner said 16. Surfaced here rather than silently dropped; cutting them would save roughly 5-6 h of the 38-47 h.",
+   "gate": "none - a judgement the owner owns"
+  },
+  {
+   "risk": "code changes mid-chain, so later configs run different code",
+   "status": "PINNED - code_sha recorded above; a running process holds the code it loaded at launch, and each config is a fresh process, so an edit DOES reach configs not yet started.",
+   "gate": "do not edit backtest/ or scripts/ while the chain runs"
+  }
+ ],
+ "specs": [
+  "output_audit/b2527_icg_minq2_spec.json",
+  "output_audit/b2527_icg_minq3_spec.json",
+  "output_audit/b2527_icg_minq6_spec.json",
+  "output_audit/b2527_icg_minq8_spec.json",
+  "output_audit/b2527_icg_lookback2_spec.json",
+  "output_audit/b2527_icg_lookback3_spec.json",
+  "output_audit/b2527_icg_lookback6_spec.json",
+  "output_audit/b2527_icg_lookback8_spec.json",
+  "output_audit/b2527_icg_mult1.0_spec.json",
+  "output_audit/b2527_icg_mult1.25_spec.json",
+  "output_audit/b2527_icg_mult1.5_spec.json",
+  "output_audit/b2527_icg_span9_spec.json",
+  "output_audit/b2527_icg_span20_spec.json",
+  "output_audit/b2527_icg_span50_spec.json",
+  "output_audit/b2527_icg_span100_spec.json",
+  "output_audit/b2527_icg_span150_spec.json"
+ ],
+ "sequence": "b2527_icg_step1_configs_2_17",
+ "frozen_sha": "4506d0117f4fb00c87662a77c94b2a5b1a5b95fb",
+ "isolation_scope": "TRUE means: solo strategy subset (asserted), one output dir per config, tagged precompute cache per producer config. It does NOT mean a frozen code copy - the engine runs from the live working tree, so frozen_sha is pinned above and 'do not edit backtest/ or scripts/ while the chain runs' is a recorded obsolescence risk. Stated because a manifest once declared isolation for months while nothing consumed the field.",
+ "calendar_note": "L207 - pinned explicitly rather than left to the default",
+ "wall_clock_projection_hours": 47.0,
+ "wall_clock_projection_basis": "cfg1 MEASURED (output_audit/b2503_cfg1_resume.log): 2.38 h/config steady-state, 2.91 h/config including startup; 16 configs serial = 38 - 47 h. The single number above is the UPPER end - a projection used as a bound should not be the optimistic half. Chunked at 4.0h legs under the owner's 5h HARD CAP.",
+ "wall_clock_projection_detail": {
+  "basis": "cfg1 MEASURED, output_audit/b2503_cfg1_resume.log",
+  "steady_state_h_per_config": 2.38,
+  "incl_startup_h_per_config": 2.91,
+  "range_h_per_config": "2.4 - 2.9",
+  "range_h_total_serial": "38 - 47",
+  "note": "stated as a RANGE from two estimates off the same log; a point estimate here would be false precision (L644)"
+ },
+ "budget_cap_usd": 100.0,
+ "spent_usd": 0.0,
+ "projected_batch_usd": 0.0,
+ "budget_note": "LOCAL run - no paid API calls. The $100 programme budget is unaffected; the cost is wall-clock and electricity. spent_usd/projected_batch_usd record THIS batch's attributable API spend, which is zero; no verified programme-to-date figure is claimed here."
+}
