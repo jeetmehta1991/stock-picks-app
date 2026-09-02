@@ -9,7 +9,7 @@
  "leg_cap_hours": 4.0,
  "max_legs": 3,
  "step1_cube": true,
- "pool_workers": 10,
+ "pool_workers": 4,
  "allow_engine_drift": true,
  "arms": [
   {
@@ -19,5 +19,6 @@
    },
    "note": "P5 growth_lookback_quarters=6 (baseline 4)"
   }
- ]
+ ],
+ "pool_workers_note": "B2535: reduced 10 -> 4 while configs 2-16 were still unstarted. MEASURED on config 1: pre_screen is 15.9s cold and 0.001s median, 1 of 74 days over 1s, 16.0s total per config - so the pool does ~16 seconds of work while its workers hold the Quiver bulk feeds (patentmomentum 5.8M rows, insiders 1M, sec13f 500k) for the whole run. Commit headroom fell to 1.72 GB with the limit stuck at 63.6 GB. Parallelism, not logic: screening is per-ticker independent, so results are unchanged; only wall-clock and memory move, and the measured wall-clock cost is seconds."
 }
