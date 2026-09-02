@@ -110,3 +110,14 @@ output_audit/_signal_cache/
 # B1407: quality-lift full-candidate dumps (100MB+); summaries are committed instead
 output_audit/*quality_lift*.json
 !output_audit/b1408_tightening_proposals.json
+
+# ---- B2521 (S6-B2520k): a tracked-status audit, decided per GROUP.
+# The council was unanimous that the split was accidental, not a policy:
+# 31 per-cube result JSONs are tracked and ~39 identical siblings were not,
+# so a citation resolved for the author and not for a reader. Those are
+# EVIDENCE and are now tracked. What follows is DERIVED - regenerable from
+# code plus inputs - so it is ignored rather than stored.
+# Regeneration: scripts/build_institutional_persistence.py (per parameter set).
+data_prefetch/derived/institutional_persistence_t1a_*/
+# scratch probes written during a turn; never evidence, never cited.
+output_audit/_*

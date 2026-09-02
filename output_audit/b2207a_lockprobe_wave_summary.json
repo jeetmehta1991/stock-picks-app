@@ -1,0 +1,34 @@
+{
+ "spec": {
+  "wave": "b2207a_lockprobe",
+  "tickers_file": "output_audit/_probe_20.txt",
+  "strategy_subset": "output_audit/_subset_one.txt",
+  "window": {
+   "start": "2024-05-05",
+   "end": "2025-05-05"
+  },
+  "arms": [
+   {
+    "tag": "p1",
+    "env": {}
+   }
+  ],
+  "leg_cap_hours": 2.0,
+  "max_legs": 2,
+  "pool_workers": 2,
+  "allow_engine_drift": false,
+  "note": "S6-B2207a DO-IT-NOW probe per council: 20 tickers x 12 months, ~8.5 expected fires (85 per 200 ticker-years measured rate), P(zero)~0.02pct; purpose = exercise run_wave + battery + locked ledger on a NON-EMPTY cube after the 5x3 smoke fired zero (L685). PASS = lands + cube non-empty + ledger entry written. Honest close is GAP CLOSED, never LOCK PROVEN (one contention level). DELIBERATELY NARROW 20-name universe, stated in writing (L445 r4). Owner authorisation: 'implement all open tickets' 2026-09-01, recorded in the S6-B2207a row."
+ },
+ "results": [
+  {
+   "arm": "p1",
+   "status": "COMPLETE",
+   "legs": 1,
+   "boundary_carryover": "NOT-APPLICABLE-SINGLE-LEG",
+   "measured_rates": "NOT-APPLICABLE-SINGLE-LEG",
+   "cube_rows": 264,
+   "elapsed_s": 1653,
+   "postconfig_exit": 2
+  }
+ ]
+}

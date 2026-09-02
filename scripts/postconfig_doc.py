@@ -48,6 +48,7 @@ DOC = AUDIT / "POSTCONFIG_REPORT.md"
 if str(Path(__file__).resolve().parent) not in sys.path:
     sys.path.insert(0, str(Path(__file__).resolve().parent))
 from verify_postconfig_complete import STEPS, is_closed  # noqa: E402
+from grid_population import grid_population  # noqa: E402  (B2521 S6-B2520m)
 import postconfig_landing as _landing  # noqa: E402
 # S6-B2409 (owner ruling 2026-08-30): the selection-noise floor is RETIRED IN
 # ITS ENTIRETY - this renderer no longer frames any value against it, not even
@@ -326,13 +327,19 @@ def config_section(cube: str, entry: dict, art: dict) -> list[str]:
         lines.append("")
 
     if grid:
-        res = grid.get("results") or []
+        # B2521 (S6-B2520m): read the DECLARED population and name the field
+        # it came from. On a single-combination grid "1 combination, 0
+        # starved" is true and tells the reader nothing - the denominator
+        # carrying the evidence there is the exits.
+        res, _pf, _pu = grid_population(grid)
         verd = Counter(r.get("verdict") for r in res)
-        starved = verd.get("NO_EXIT_SELECTABLE", 0)
+        starved = verd.get("NO_EXIT_SELECTABLE", 0) + sum(
+            1 for r in res
+            if (r.get("admit") or {}).get("verdict") == "BELOW_POWER_FLOOR")
         pct = (100.0 * starved / len(res)) if res else 0.0
         lines += ["**Is the sample large enough to mean anything? "
                   "(step 2 funnel)**", "",
-                  f"- {len(res)} parameter combinations enumerated.",
+                  f"- {len(res)} {_pu} enumerated (population field `{_pf}`).",
                   f"- **{starved} ({pct:.0f}%) STARVED in-sample** - no exit "
                   "cleared the minimum trade count, so they were never graded. "
                   "A sample-size fact, not a quality verdict.",
@@ -423,8 +430,11 @@ def build(cubes: list[str] | None = None) -> str:
         rank = grid.get("step1_ranking") or []
         top = rank[0] if rank else {}
         cl = top.get("is_ci_lo")
-        res = grid.get("results") or []
-        starved = sum(1 for r in res if r.get("verdict") == "NO_EXIT_SELECTABLE")
+        # B2521: the same declared population as the section above.
+        res, _pf, _pu = grid_population(grid)
+        starved = sum(1 for r in res
+                      if r.get("verdict") == "NO_EXIT_SELECTABLE"
+                      or (r.get("admit") or {}).get("verdict") == "BELOW_POWER_FLOOR")
         entry = ledger.get(c, {})
         n_closed = sum(1 for s in STEPS if is_closed(entry.get(s)))
         open_names = [s for s in STEPS if not is_closed(entry.get(s))]

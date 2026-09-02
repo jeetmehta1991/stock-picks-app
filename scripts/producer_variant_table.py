@@ -24,6 +24,9 @@ import argparse
 import json
 import math
 from pathlib import Path
+import sys as _sys
+_sys.path.insert(0, str(Path(__file__).resolve().parent))
+from grid_population import grid_population  # noqa: E402  (B2521 S6-B2520m)
 
 # --------------------------------------------------------------------------
 # SPECS - the parameter inventory per strategy. Every value here is READ from
@@ -741,7 +744,8 @@ def table_c(grids: dict[str, dict]) -> list[str]:
             "| config | combos | starved-IS | no-Sharpe | graded | distinct | bands | P1-P6 bands tested | median IS-Sharpe | best IS-Sharpe | best IS-CI-lo | best combination |",
             "|---|---|---|---|---|---|---|---|---|---|---|---|"]
     for name, g in grids.items():
-        res = g.get("results", [])
+        # B2521 (S6-B2520m): the declared population, not the field name.
+        res, _pf, _pu = grid_population(g)
         # B2181 (S6-B2176b): a pure Step-1 grid populates ONLY the IS fields
         # (holdout untouched by design post-B2136), so bucketing on the
         # holdout `sharpe` rendered graded=0 beside 89 real distinct

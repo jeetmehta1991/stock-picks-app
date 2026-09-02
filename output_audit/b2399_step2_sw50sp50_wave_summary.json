@@ -1,0 +1,81 @@
+{
+ "spec": {
+  "wave": "b2399_step2_sw50sp50",
+  "tickers_file": "output_audit/r5_universe_544.txt",
+  "strategy_subset": "output_audit/_subset_one.txt",
+  "window": {
+   "start": "2022-05-05",
+   "end": "2026-05-05"
+  },
+  "leg_cap_hours": 4.5,
+  "max_legs": 10,
+  "step1_cube": false,
+  "pool_workers": 6,
+  "allow_engine_drift": true,
+  "arms": [
+   {
+    "tag": "step2_sw50sp50",
+    "env": {
+     "SMC_SWING_LENGTH": "50",
+     "STRAT_EMA_SPAN": "50"
+    }
+   }
+  ]
+ },
+ "results": [
+  {
+   "arm": "step2_sw50sp50",
+   "status": "COMPLETE",
+   "legs": 4,
+   "boundary_drops": [
+    {
+     "leg": 1,
+     "sim_date": "2023-08-23",
+     "open_trades_dropped": 35
+    },
+    {
+     "leg": 2,
+     "sim_date": "2024-10-30",
+     "open_trades_dropped": 83
+    },
+    {
+     "leg": 3,
+     "sim_date": "2025-10-27",
+     "open_trades_dropped": 39
+    }
+   ],
+   "measured_rates": [
+    {
+     "leg": 1,
+     "measured": true,
+     "s_per_sim_day": 49.92,
+     "days_done": 326,
+     "days_remaining": 678,
+     "projected_remaining_hours": 9.4,
+     "legs_still_needed_at_cap": 3
+    },
+    {
+     "leg": 2,
+     "measured": true,
+     "s_per_sim_day": 26.09,
+     "days_done": 625,
+     "days_remaining": 379,
+     "projected_remaining_hours": 2.75,
+     "legs_still_needed_at_cap": 1
+    },
+    {
+     "leg": 3,
+     "measured": true,
+     "s_per_sim_day": 18.7,
+     "days_done": 872,
+     "days_remaining": 132,
+     "projected_remaining_hours": 0.69,
+     "legs_still_needed_at_cap": 1
+    }
+   ],
+   "cube_rows": 10488,
+   "elapsed_s": 59993,
+   "postconfig_exit": 0
+  }
+ ]
+}

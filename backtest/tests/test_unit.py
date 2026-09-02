@@ -30701,3 +30701,91 @@ def test_b2520p_uniform_value_is_a_parser_hypothesis_is_anchored():
                .read_text(encoding="utf-8", errors="ignore"))
     assert "A UNIFORM VALUE FROM A NEW EXTRACTOR IS A PARSER HYPOTHESIS" in sk
     assert "The tell is UNIFORMITY, whatever the value" in sk
+def test_b2521_grid_population_is_declared_not_inferred_from_a_field_name():
+    """B2521 / S6-B2520m: ONE owner for "what is this grid's population".
+
+    THE MISS: three consumers each asked `"per_exit" in grid` or read
+    `results` directly. On a single-combination institutional grid two of
+    them rendered "1 combination, 0 starved" - true, and uninformative,
+    because the denominator carrying the evidence there is the 24 EXITS.
+    The council's First Principles lens: a renderer must never infer a
+    denominator from a field NAME.
+
+    Asserts BOTH shapes (the exact asymmetry), that the unit and field name
+    travel with the rows so a report can name its own denominator (L717),
+    and that no consumer has gone back to reading `results` blind.
+    """
+    import sys as _sys
+    from pathlib import Path as _P
+
+    root = _P(__file__).resolve().parents[2]
+    _sys.path.insert(0, str(root / "scripts"))
+    from grid_population import grid_population, population_note
+
+    # single-combination shape: population is per_exit, NOT the 1-row funnel
+    single = {"results": [{"combo": {}, "verdict": "RANKED"}],
+              "per_exit": [{"exit": f"e{i}"} for i in range(24)]}
+    rows, field, unit = grid_population(single)
+    assert len(rows) == 24 and field == "per_exit" and unit == "exits", (field, unit)
+    assert "24 exits" in population_note(single)
+    assert "per_exit" in population_note(single)
+
+    # multi-combination shape: population IS results
+    multi = {"results": [{"verdict": "RANKED"} for _ in range(300)]}
+    rows, field, unit = grid_population(multi)
+    assert len(rows) == 300 and field == "results" and unit == "combinations"
+
+    # degenerate inputs must not raise - a renderer runs on whatever landed
+    for bad in ({}, {"per_exit": []}, {"results": None}, None, []):
+        r, f, u = grid_population(bad)
+        assert isinstance(r, list) and isinstance(f, str) and isinstance(u, str)
+
+    # and the consumers must ROUTE through it, not re-derive the question
+    for name in ("postconfig_doc.py", "run_postconfig.py", "producer_variant_table.py"):
+        src = (root / "scripts" / name).read_text(encoding="utf-8", errors="ignore")
+        assert "grid_population" in src, f"{name} does not use the helper"
+    doc = (root / "scripts" / "postconfig_doc.py").read_text(encoding="utf-8", errors="ignore")
+    assert 'grid.get("results") or []' not in doc, (
+        "postconfig_doc.py reads `results` blind again - the population is declared")
+
+
+def test_b2521_resume_reports_empty_signals_where_the_loss_happens():
+    """S6-B2512 / B2521: the empty-signals detector was POST-HOC only.
+
+    MEASURED on output_icg_cfg1: 23 of 373 rows empty, a perfect partition on
+    exit date at sim-day 49, and the launcher log already said
+    `closed_trades=23` at resume_sim_day=47 - the count was derivable at the
+    resume and nothing computed it. The only detector was the
+    empty_signals_share lens in run_postconfig.py, which runs on a FINISHED
+    cube, so the condition stayed invisible for the rest of the run.
+
+    Pins that the check exists at the RESUME site, that it WARNS rather than
+    raises (landed cubes already carry the condition - L721), and that a
+    failure inside the check cannot kill a resume.
+    """
+    import ast
+    from pathlib import Path as _P
+
+    root = _P(__file__).resolve().parents[2]
+    src = (root / "backtest" / "engine" / "backtest.py").read_text(
+        encoding="utf-8", errors="ignore")
+
+    assert "S6-B2512 RESUME INTEGRITY" in src, "the resume-time check is gone"
+    # it must sit in the resume path, beside the B1076 line that already knew
+    i_resume = src.index("B1076 RESUME: resume_sim_day=%d closed_trades=%d")
+    i_check = src.index("S6-B2512 RESUME INTEGRITY")
+    assert 0 < i_check - i_resume < 3000, (
+        "the check drifted away from the resume site it belongs to")
+
+    # WARN, never raise - a landed cube must not become a blocking failure
+    seg = src[i_check - 1500:i_check + 1500]
+    assert "logger.warning" in seg
+    assert "raise" not in seg.split("S6-B2512 RESUME INTEGRITY")[1][:900], (
+        "the resume-integrity check must not raise (L721: a gate tightened "
+        "over a backlog blocks every landed artifact)")
+
+    # a broken CHECK must not kill the resume it guards
+    assert "S6-B2512 resume-integrity check failed" in src
+
+    # the whole module still parses (a byte-level edit landed here)
+    ast.parse(src)

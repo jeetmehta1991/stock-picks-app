@@ -61,6 +61,7 @@ sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "scripts"))
 
 from verify_postconfig_complete import STEPS  # noqa: E402  (the gate's list)
+from grid_population import grid_population  # noqa: E402  (B2521 S6-B2520m)
 
 MEGA = ("NVDA", "MSFT", "GOOGL", "META", "TSLA", "AAPL")
 TERMINAL = ("DONE", "N/A")
@@ -470,7 +471,9 @@ def lenses(cube_dir: Path, step: int, grid: dict, spot_out: Path | None) -> list
     # multi-combination grid (two classes may share an exit) and EXITS on a
     # single-combination grid - row_label names whichever it is.
     rk = grid.get("step1_ranking") or []
-    unit = "exits" if "per_exit" in grid else "outcome classes"
+    # B2521 (S6-B2520m): the population question has ONE owner now.
+    _, _pop_field, _pop_unit = grid_population(grid)
+    unit = "exits" if _pop_field == "per_exit" else "outcome classes"
     if (len(rk) >= 2 and rk[0].get("is_ci_lo") is not None
             and rk[1].get("is_ci_lo") is not None):
         margin = float(rk[0]["is_ci_lo"]) - float(rk[1]["is_ci_lo"])

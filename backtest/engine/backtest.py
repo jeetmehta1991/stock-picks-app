@@ -1166,6 +1166,37 @@ class BacktestEngine:
             resume_sim_day, trades_so_far, resume_dir,
         )
 
+        # S6-B2512 (B2521): the RESTORED closed trades are where
+        # signals_at_entry goes missing, and until now the ONLY detector was
+        # post-hoc - scripts/run_postconfig.py's empty_signals_share lens,
+        # which runs on a FINISHED cube, so a resume that nulls the field is
+        # invisible for the rest of the run. MEASURED on output_icg_cfg1:
+        # 23 of 373 rows empty, a perfect partition on exit date at
+        # sim-day 49, and the log line above already said closed_trades=23.
+        # The count was derivable at resume and nobody was computing it.
+        # WARN rather than raise: landed cubes already carry the condition,
+        # and a hard failure would put them into a blocking state
+        # retroactively (L721 - ship the disposal plan with the gate).
+        try:
+            _restored = getattr(self, "closed_trades", None) or []
+            _empty = sum(1 for _t in _restored
+                         if not getattr(_t, "signals_at_entry", None))
+            if _empty:
+                logger.warning(
+                    "S6-B2512 RESUME INTEGRITY: %d of %d restored closed "
+                    "trade(s) carry an EMPTY signals_at_entry - those rows "
+                    "cannot be re-derived downstream (entry reasons are "
+                    "unrecoverable for them). Not fatal; the cube is still "
+                    "valid for ranking, which counts fires. Recorded so the "
+                    "loss is visible AT the resume rather than post-hoc.",
+                    _empty, len(_restored))
+            else:
+                logger.info(
+                    "S6-B2512 RESUME INTEGRITY: %d restored closed trade(s), "
+                    "0 with an empty signals_at_entry", len(_restored))
+        except Exception as _exc:   # a broken CHECK must not kill a resume
+            logger.warning("S6-B2512 resume-integrity check failed: %r", _exc)
+
     # ----------------------------------------------------------------------
     # MAIN LOOP
     # ----------------------------------------------------------------------

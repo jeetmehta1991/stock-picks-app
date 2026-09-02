@@ -1,0 +1,32 @@
+{
+ "spec": {
+  "wave": "b2207a_smokeA",
+  "tickers_file": "output_audit/_smoke_5.txt",
+  "strategy_subset": "output_audit/_subset_one.txt",
+  "window": {
+   "start": "2024-05-05",
+   "end": "2024-08-05"
+  },
+  "leg_cap_hours": 0.5,
+  "max_legs": 1,
+  "step1_cube": true,
+  "pool_workers": 2,
+  "allow_engine_drift": true,
+  "arms": [
+   {
+    "tag": "smokeA",
+    "env": {
+     "SMC_SWING_LENGTH": "20",
+     "STRAT_EMA_SPAN": "20"
+    }
+   }
+  ]
+ },
+ "results": [
+  {
+   "arm": "smokeA",
+   "status": "INCOMPLETE_MAX_LEGS",
+   "legs": 1
+  }
+ ]
+}

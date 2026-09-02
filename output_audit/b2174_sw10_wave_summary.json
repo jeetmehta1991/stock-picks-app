@@ -1,0 +1,33 @@
+{
+ "spec": {
+  "wave": "b2174_sw10",
+  "tickers_file": "output_audit/_sweep_200.txt",
+  "strategy_subset": "output_audit/_subset_one.txt",
+  "window": {
+   "start": "2024-05-05",
+   "end": "2025-05-05"
+  },
+  "leg_cap_hours": 4.5,
+  "max_legs": 3,
+  "step1_cube": true,
+  "pool_workers": 5,
+  "allow_engine_drift": true,
+  "arms": [
+   {
+    "tag": "sw10",
+    "env": {
+     "SMC_SWING_LENGTH": "10",
+     "STRAT_EMA_SPAN": "200"
+    }
+   }
+  ]
+ },
+ "results": [
+  {
+   "arm": "sw10",
+   "status": "FAILED_NO_CHECKPOINT",
+   "legs": 1,
+   "exit": 3221225477
+  }
+ ]
+}
