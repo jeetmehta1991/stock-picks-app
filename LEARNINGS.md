@@ -17323,7 +17323,20 @@ SKILL.md and by both assertions in test_b2330 now carrying the anchoring comment
 next reader meets the reasoning at the site.
 **Retroactive sweep (#237): every assertion in test_b2330 checked for the same shape.** 9
 assertions: 2 were substring-over-whole-output on a column name - **both instances above, both
-now anchored**; 3 assert on CONTENT that appears nowhere else (`deep_exit`, `1 of 2`, `2 of 2`)
+now anchored**; 3 assert on CONTENT that appears nowhere else (`deep_exit`, `1 of 2`, `2 of 2`)
+- **NAMING THE CALL THAT PRODUCED A FIGURE IS ITSELF A CLAIM, AND IT IS THE ONE
+  NOBODY RE-OPENS (L695 addendum, B2532).** MEASURED: I published a ticket table
+  reading EXECUTED 1734 / TOTAL 1781 and wrote that it was *run in the commit
+  call above*. That call ran a commit, a push, a tail and a grep - and no
+  queue_state; the true figures were 1731 / 1781. **A named source reads as the
+  STRONGEST provenance there is**, which is exactly why it is not checked:
+  verifying it means scrolling back through tool output, while a bare label
+  only invites re-reading a sentence. So the stronger the attribution sounds,
+  the cheaper it is to fabricate by accident. The remedy is unchanged and it is
+  ORDER, not diligence - run the backing command as the FIRST action of the
+  close, before any response text exists, so there is nothing to attribute
+  retroactively. Third instance this session.
+
 - **SOUND**, a fabricated exit name and a dup marker have no prose home; 2 assert on the first
 DATA row extracted structurally - **SOUND by construction**; 2 assert disclosure sentences
 (`SHARPE alone`, `Best within each depth tier`) which are PROSE BY INTENT, so substring is the

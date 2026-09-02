@@ -3604,6 +3604,13 @@ own description; the freeze never reached it.
   register sizes, backlog figures. The remedy is ORDER, not diligence: run the backing command as the
   FIRST action of the close, so there is no base to inherit.
 
+- **NAMING THE CALL THAT PRODUCED A FIGURE IS ITSELF A CLAIM (L695 addendum, B2532).**
+  MEASURED: a ticket table was published as *run in the commit call above*; that call
+  ran a commit, a push, a tail and a grep, and no queue_state - the figures were wrong
+  by 3. **A named source reads as the strongest provenance there is, which is why it is
+  the one nobody re-opens** - checking it costs a scroll through tool output, while a
+  bare label only costs re-reading a sentence. Run the backing command as the FIRST
+  action of the close, so there is nothing to attribute retroactively.
 - **AN EVIDENCE LABEL INSIDE BOILERPLATE IS ASSERTED BY DEFAULT (L695).** Any recurring block that
   contains its own provenance claim - "executed this turn", "GREEN", "FULLY LOADED" - emits that
   claim by being reproduced, not by being earned, so it is the one place a fabrication needs no
