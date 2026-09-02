@@ -18882,3 +18882,46 @@ work rather than on the difference between two kinds of proof.
 **Anchored:** SKILL.md tripwire row, same commit. Detection is JUDGMENT-ONLY -
 no scan can tell an estimate's direction from prose - and durability rides
 test_b2526's anchor sweep.
+
+
+### L746 - A two-arm pin proves TWO ARMS, not two directions
+
+**B2556, 2026-09-02.** I fixed a gate that failed in both directions, pinned
+four arms, watched them pass, and reported that it now *"fires on its own
+canonical example, and stays silent on prose that merely discusses one."* The
+first half is true. The second is true **only of the one prose shape I tested**.
+Minutes later the gate flagged two of my own commands, and a direct measurement
+found the residual: a `python -c` payload or a heredoc that CONTAINS a nested
+invocation still matches, because the pattern can match at the inner
+occurrence.
+
+**The error is a denominator, not a regex.** `#182` says a verdict names its
+denominator - *"0 of 20 combinations"*, never *"it fails"*. I applied that
+faithfully to data all session and did not apply it to MY OWN TEST SUITE. Two
+passing arms are a sample of size two from an open set of command shapes:
+bare invocation, quoted string, heredoc, nested interpreter, `xargs`, a
+generated script. **"Both directions are closed" is a claim about that whole
+set, made from two members of it.**
+
+**Why a test suite is the easiest place for this to hide.** A green pin FEELS
+like proof in a way a green data query does not. The suite's own vocabulary -
+"must-fire arm", "must-quiet arm" - names two categories and thereby suggests
+the space HAS two members, when the quiet side is an open family and the fire
+side is usually a single canonical shape. The naming does the overreaching.
+
+**The rule.** When you pin a gate's negative direction, say how many SHAPES of
+negative you tested and name the ones you did not. A pin that covers one prose
+shape supports *"silent on THIS shape"*; the general claim needs either an
+enumeration or an explicit admission of the residual.
+
+**The disposition here, which is a judgement and not an oversight.** The
+residual is left OPEN deliberately: for a launch gate, over-reporting costs a
+compliance statement and under-reporting costs an unmonitored 30-hour run, so
+fail-closed is the correct asymmetry. Chasing quoting-aware parsing would trade
+a cheap, visible annoyance for an expensive, invisible risk. **Stating the
+asymmetry is what makes the residual a decision rather than a defect** -
+S6-B2556a.
+
+**Anchored:** SKILL.md tripwire row, same commit. Detection is JUDGMENT-ONLY -
+no scan counts the shapes a test did not try - and durability rides
+test_b2526's anchor sweep.
