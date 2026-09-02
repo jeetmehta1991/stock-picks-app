@@ -10,10 +10,11 @@ REGENERATED WHOLE at every config landing - by the landing supervisor the engine
 
 ## Landings - what the supervisor recorded (B2520)
 
-2 cube(s) landed through the supervisor; **0 not yet reported to the owner**.
+3 cube(s) landed through the supervisor; **1 not yet reported to the owner** (output_icg_span9_span9).
 
 | cube | landed | via | battery exit | blocking | WARN/FAIL findings | committed | pushed | reported |
 |---|---|---|---|---|---|---|---|---|
+| output_icg_span9_span9 | 2026-09-02T10:38:38 | engine-hook | 2 | 2_grade_with_config_params, 4_three_leg_spot_check, 6_post_fix_recheck, 6b_equivalence_class_check, 7_implement_in_engine, 8_verdict_with_denominators | 1: spot_check_disagreements WARN: no spot-check artifact - step 4 produced nothing to read | 3745e05dc | True | **NO** |
 | output_icg_cfg1 | 2026-09-02T07:45:46 | manual | 0 | none | 1: empty_signals_share WARN: 23 of 373 trade_log rows carry an empty signals_at_entry (S6-B2512 class) | 42ca9c20f | True | yes 2026-09-02T07:47:02 |
 | output_b2174_sw20_sw20 | 2026-09-01T20:08:36 | manual | 0 | none | 1: selection_margin WARN: rank-1 [close_mitigation=False break_pct_max=None age_bars_max=250 tail_n=20 -> hybrid_50pct_target] is_ci_lo -0.196 vs rank-2 [close_mitigation=False break_pct_max=None age_bars_max=None tail_n=2 -> hybrid_50pct_target] -0.198: margin 0.002 between outcome classes; WARN < 0.05 (selection at noise level) | False | False | yes 2026-09-02T02:27:00 |
 

@@ -31005,3 +31005,75 @@ def test_b2528_detached_task_time_limit_is_a_parameter_sized_to_the_job():
     # the arithmetic that motivated it - if a chain ever fits inside the
     # default, this pin's premise is stale and should be re-derived
     assert 16 * 2.9 > 12
+def test_b2539_rule_vs_measurement_and_chosen_vs_measured_survive_in_the_skill():
+    """B2537 + B2538/L740: two rules added to the always-read file this turn.
+
+    B1739's gate demands a mechanism for any SKILL.md edit. These were deferred
+    twice on an ASSUMED pytest cost of 1-2 GB of commit headroom; measured, it
+    is 0.45 GB (1.63 -> 1.18 during -> 1.67 after), so the deferral rested on a
+    figure roughly 3x too high. An effort estimate is a quantitative claim.
+
+    Pins the DIAGNOSTIC of each rule, not its headline, so an edit that keeps
+    the wording and drops the substance still fails.
+    """
+    from pathlib import Path as _P
+
+    root = _P(__file__).resolve().parents[2]
+    sk = " ".join((root / ".claude" / "skills" / "execution-discipline" / "SKILL.md")
+                  .read_text(encoding="utf-8", errors="ignore").split())
+    ln = " ".join((root / "LEARNINGS.md").read_text(encoding="utf-8", errors="ignore").split())
+
+    # B2537 - where a rule lives vs where its measurement lives
+    assert "A LESSON USUALLY PRODUCES TWO THINGS" in sk
+    assert "a row that DECAYS" in sk, "the reason the count stays out of the skill is gone"
+    assert "grep the rule before saying it" in sk, (
+        "the clause that makes 'it is already in the skill' checkable is gone")
+
+    # B2538 / L740 - a chosen value beside a measured one
+    assert "LABEL THE KIND" in sk
+    assert "measured, derived, or CHOSEN" in sk
+    assert "borrows the measurement's authority" in sk, (
+        "the diagnostic - proximity lends unearned authority - is gone")
+    assert "L740" in sk, "L740 lost its anchor"
+
+    # and the incident records behind them
+    assert "### L740" in ln
+    assert "inherits authority it did not earn" in ln
+def test_b2541_every_b2527_spec_arm_carries_the_keys_its_grader_reads():
+    """L741: an artifact you WRITE owes its consumer's required fields.
+
+    All 16 B2527 specs were generated from an SMC template whose arm carries
+    only tag+env. The institutional battery reads four PLAIN keys from
+    manifest arms[0] - run_postconfig._institutional_params - so every landing
+    failed 5 of 9 steps while the engine itself ran correctly, because the
+    engine is actuated by env and never reads those keys.
+
+    Pins the CONTRACT, not the values: each spec arm must carry all four keys
+    the grader reads, and the env actuator must still be present. The list is
+    read from the parser itself so it cannot drift from what the code wants.
+    """
+    import inspect
+    import json
+    import sys as _sys
+    from pathlib import Path as _P
+
+    root = _P(__file__).resolve().parents[2]
+    _sys.path.insert(0, str(root / "scripts"))
+    import run_postconfig as rp
+
+    # the required keys, taken from the parser rather than restated here
+    src = inspect.getsource(rp._institutional_params)
+    required = {"min_consecutive_quarters", "growth_lookback_quarters",
+                "growth_multiple", "ema_span"}
+    for k in required:
+        assert k in src, f"{k} is no longer read by _institutional_params - retarget this pin"
+
+    specs = sorted((root / "output_audit").glob("b2527_icg_*_spec.json"))
+    assert len(specs) == 16, f"expected 16 B2527 specs, found {len(specs)}"
+    for sp in specs:
+        arm = json.loads(sp.read_text(encoding="utf-8"))["arms"][0]
+        missing = sorted(required - set(arm))
+        assert not missing, f"{sp.name}: arm lacks {missing} - the grader reads these"
+        assert arm.get("env"), f"{sp.name}: the env actuator is gone"
+        for k in required:
+            assert isinstance(arm[k], (int, float)), f"{sp.name}: {k} is not numeric"

@@ -17,7 +17,11 @@
    "env": {
     "STRAT_EMA_SPAN": "9"
    },
-   "note": "P9 ema span=9 (baseline 200)"
+   "note": "B2540: the four plain keys the battery's _institutional_params reads from manifest arms[0]. This config varies ema_span=9; the other three are the production baseline read from cfg1's graded manifest. The env entry stays as the ACTUATOR (cache tag or STRAT_EMA_SPAN); these keys are what the GRADER reads.",
+   "min_consecutive_quarters": 4,
+   "growth_lookback_quarters": 4,
+   "growth_multiple": 1.1,
+   "ema_span": 9
   }
  ]
 }

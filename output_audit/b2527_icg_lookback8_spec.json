@@ -17,7 +17,11 @@
    "env": {
     "INST_PERSIST_CACHE_TAG": "lookback8"
    },
-   "note": "P5 growth_lookback_quarters=8 (baseline 4)"
+   "note": "B2540: the four plain keys the battery's _institutional_params reads from manifest arms[0]. This config varies growth_lookback_quarters=8; the other three are the production baseline read from cfg1's graded manifest. The env entry stays as the ACTUATOR (cache tag or STRAT_EMA_SPAN); these keys are what the GRADER reads.",
+   "min_consecutive_quarters": 4,
+   "growth_lookback_quarters": 8,
+   "growth_multiple": 1.1,
+   "ema_span": 200
   }
  ],
  "pool_workers_note": "B2535: reduced 10 -> 4 while configs 2-16 were still unstarted. MEASURED on config 1: pre_screen is 15.9s cold and 0.001s median, 1 of 74 days over 1s, 16.0s total per config - so the pool does ~16 seconds of work while its workers hold the Quiver bulk feeds (patentmomentum 5.8M rows, insiders 1M, sec13f 500k) for the whole run. Commit headroom fell to 1.72 GB with the limit stuck at 63.6 GB. Parallelism, not logic: screening is per-ticker independent, so results are unchanged; only wall-clock and memory move, and the measured wall-clock cost is seconds."

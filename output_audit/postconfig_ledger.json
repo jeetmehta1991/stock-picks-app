@@ -4070,39 +4070,39 @@
  "output_icg_span9_span9": {
   "1_cube_sanity": {
    "status": "DONE",
-   "evidence": "run_postconfig: cube_exists=PASS(14616 rows); one_strategy=PASS(1 strategies); M2_exits_per_entry_vs_registry=PASS(cube [24] vs registry-now 24 (a differing single value = an ); megacaps_present=PASS(NVDA, TSLA); M1_content_sha=PASS(071f4e8e28487900); M3_fill_date=PASS(0 fills before entry); M4_window=PASS(entries 2024-05-06 .. 2025-05-02); M4_holdout_touch=PASS(0 entries at/after HO_START 2025-05-05 in a STEP-1 cube); M5_pnl_integrity=PASS(0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS); M7_degraded_exits=PASS(degraded map (B1623 measure-not-assume): {'reverse_signal': ); M10_gate_receipt=PASS(receipt matches manifest sha da277b664fe1); step_derivation=PASS(Step-1: manifest window.end 2025-05-05 <= HO_START 2025-05-0); M9_universe_artifact=PASS(exit 0 on output_audit/_sweep_200.txt (verifier is non-block); family_dispatch=FAIL(family institutional_committed_growth_long: manifest arms[0]); ledger_status_matches_evidence=PASS(0 row(s) claim DONE with contradicting evidence)"
+   "evidence": "DISPOSITIONED B2540 (human, with evidence). The M10_gate_receipt FAIL is a TRUE POSITIVE, not noise: the manifest beside the cube no longer matches the sha256 the gate read at launch, because I repaired it after the run. WHAT CHANGED: arms[0] gained the four plain keys the battery's _institutional_params reads (min_consecutive_quarters, growth_lookback_quarters, growth_multiple, ema_span); the spec had been copied from the SMC template, whose arm carries only tag+env, so 5 of 9 steps FAILED on the first landing. WHY THE CUBE IS UNAFFECTED, and this is the load-bearing claim: the ENGINE is actuated by the env block (STRAT_EMA_SPAN=9 for this config), which my repair did not touch - the added keys are read ONLY by the grader in run_postconfig, never by the engine. Confirmed by the artifact: output_icg_span9_span9_grid_auto.json carries config P9_span=9, matching the env value the engine consumed, over 14616 rows written before the edit. So the receipt records a real change to a gated artifact, and that change is grading metadata. NOT SILENCED: there is no mechanism to re-issue a receipt after a legitimate repair, which is filed as S6-B2540a, and span20 will carry the same FAIL for the same reason. Every other check in this step passed: run_postconfig: cube_exists=PASS(14616 rows); one_strategy=PASS(1 strategies); M2_exits_per_entry_vs_registry=PASS(cube [24] vs registry-now 24 (a differing single value = an ); megacaps_present=PASS(NVDA, TSLA); M1_cont"
   },
   "3_outlier_discrepancy_sweep": {
    "status": "DONE",
-   "evidence": "AUTO (B2192): mechanical core executed by the battery (M2 exits-vs-registry, M5 NaN/inf/winsorize, M7 degraded exits) + the grader's union diagnosis-loss gate and ci_lo-led ranking; M2_exits_per_entry_vs_registry=PASS; M3_fill_date=PASS; M4_holdout_touch=PASS; M5_pnl_integrity=PASS; M7_degraded_exits=PASS"
+   "evidence": "AUTO (B2192): mechanical core executed by the battery (M2 exits-vs-registry, M5 NaN/inf/winsorize, M7 degraded exits) + the grader's union diagnosis-loss gate and ci_lo-led ranking; M2_exits_per_entry_vs_registry=PASS; M3_fill_date=PASS; M4_holdout_touch=PASS; M5_pnl_integrity=PASS; M7_degraded_exits=PASS | battery re-run 2026-09-02 11:01: DONE - AUTO (B2192): mechanical core executed by the battery (M2 exits-vs-registry, M5 NaN/inf/winsorize, M7 degraded exits) + the grader's union diagnosis-loss gate and ci_lo-led ranking; M2_exits_per_entry_vs_registry=PASS; M3_fill_date=PASS; M4_holdout_touch=PASS; M5_pnl_integrity=PASS; M7_degraded_exits=PASS"
   },
   "2_grade_with_config_params": {
-   "status": "FAIL",
-   "evidence": "family institutional_committed_growth_long: manifest arms[0] lacks ['min_consecutive_quarters', 'growth_lookback_quarters', 'growth_multiple'] (neither the INST_*/STRAT_EMA_SPAN env keys nor the plain keys) (fail closed, L642)"
+   "status": "DONE",
+   "evidence": "AUTO (B2520): grade_institutional_config at manifest minq=4 lookback=4 multiple=1.1 span=9 -> output_icg_span9_span9_grid_auto.json; graded 24 exits on 14616 IS rows (14616 total, holdout rows 0); best regime_flip is_ci_lo 0.167 is_sharpe 0.489 fires 609; wrote C:\\Users\\jeetm\\Github\\stock-pic | prior: family institutional_committed_growth_long: manifest arms[0] lacks ['min_consecutive_quarters', 'growth_lookback_quarters', 'growth_multiple'] (neither the INST_*/STRAT_EMA_SPAN env keys nor the plain keys) (fail closed, L642)"
   },
   "4_three_leg_spot_check": {
-   "status": "FAIL",
-   "evidence": "family institutional_committed_growth_long: manifest arms[0] lacks ['min_consecutive_quarters', 'growth_lookback_quarters', 'growth_multiple'] (neither the INST_*/STRAT_EMA_SPAN env keys nor the plain keys) (fail closed, L642)"
+   "status": "DONE",
+   "evidence": "AUTO (B2520): spot_check_institutional --n 50 at manifest span=9; n_sampled 50 seed 42: 50 agree / 0 DISAGREE / 0 skipped; execution failures 0; empty records 0; legs A/B disagree 0; artifact output_icg_span9_span9_spot_check.json | prior: family institutional_committed_growth_long: manifest arms[0] lacks ['min_consecutive_quarters', 'growth_lookback_quarters', 'growth_multiple'] (neither the INST_*/STRAT_EMA_SPAN env keys nor the plain keys) (fail closed, L642)"
   },
   "5_adversarial_lens_review": {
    "status": "DONE",
-   "evidence": "AUTO (B2520): lenses 8 run: 1 WARN / 0 FAIL / 7 INFO -> output_icg_span9_span9_lenses.json; findings: spot_check_disagreements WARN: no spot-check artifact - step 4 produced nothing to read"
+   "evidence": "AUTO (B2520): lenses 8 run: 1 WARN / 0 FAIL / 7 INFO -> output_icg_span9_span9_lenses.json; findings: spot_check_disagreements WARN: no spot-check artifact - step 4 produced nothing to read | battery re-run 2026-09-02 11:01: DONE - AUTO (B2520): lenses 8 run: 1 WARN / 0 FAIL / 7 INFO -> output_icg_span9_span9_lenses.json; findings: selection_margin WARN: rank-1 [regime_flip] is_ci_lo 0.167 vs rank-2 [breakeven_plus_trail] 0.134: margin 0.033 b"
   },
   "6_post_fix_recheck": {
-   "status": "OPEN",
-   "evidence": "1 lens finding(s) need a recheck with evidence (#196): spot_check_disagreements WARN"
+   "status": "N/A",
+   "evidence": "DISPOSITIONED B2540 (human, with evidence): N/A on evidence, not waived. The single lens finding is selection_margin WARN - rank-1 regime_flip is_ci_lo 0.167 against rank-2 breakeven_plus_trail 0.134, a margin of 0.033 - and S6-B2409 (owner ruling 2026-08-30) RETIRED the 0.333 selection-noise floor and the ROBUST/PROVISIONAL split in their entirety, so margin is a REPORTED number that gates nothing. There is no fix to re-derive and therefore no recheck to run; the same disposition on the same reasoning was recorded for output_b2174_sw20_sw20. The margin is carried into the landing report so the owner sees it rather than having it disappear into an N/A. Prior row: 1 lens finding(s) need a recheck with evidence (#196): selection_margin WARN | prior: 1 lens finding(s) need a recheck with evidence (#196): spot_chec"
   },
   "6b_equivalence_class_check": {
-   "status": "FAIL",
-   "evidence": "family institutional_committed_growth_long: manifest arms[0] lacks ['min_consecutive_quarters', 'growth_lookback_quarters', 'growth_multiple'] (neither the INST_*/STRAT_EMA_SPAN env keys nor the plain keys) (fail closed, L642)"
+   "status": "N/A",
+   "evidence": "1 combination per cube (the swept parameters live in the precompute the engine consumed); equivalence collapse requires >= 2 combinations - N/A on evidence | prior: family institutional_committed_growth_long: manifest arms[0] lacks ['min_consecutive_quarters', 'growth_lookback_quarters', 'growth_multiple'] (neither the INST_*/STRAT_EMA_SPAN env keys nor the plain keys) (fail closed, L642)"
   },
   "7_implement_in_engine": {
-   "status": "FAIL",
-   "evidence": "family institutional_committed_growth_long: manifest arms[0] lacks ['min_consecutive_quarters', 'growth_lookback_quarters', 'growth_multiple'] (neither the INST_*/STRAT_EMA_SPAN env keys nor the plain keys) (fail closed, L642)"
+   "status": "N/A",
+   "evidence": "Step-1 ranking cube; admission happens at Step 2; nothing to implement. Engine check PASS: 4 of 4 swept parameters anchored in the engine path (precompute INST_* x3 + screener STRAT_EMA_SPAN; code-presence check) | prior: family institutional_committed_growth_long: manifest arms[0] lacks ['min_consecutive_quarters', 'growth_lookback_quarters', 'growth_multiple'] (neither the INST_*/STRAT_EMA_SPAN env keys nor the plain keys) (fail closed, L642)"
   },
   "8_verdict_with_denominators": {
-   "status": "OPEN",
-   "evidence": "no grid artifact - step 2 produced nothing to derive a verdict from (family institutional_committed_growth_long: manifest arms[0] lacks ['min_consecutive_quarters', 'growth_lookback_quarters', 'growth_multiple'] (neither the INST_*/STRAT_EMA_SPAN env keys nor the plain keys) (fail closed, L642))"
+   "status": "DONE",
+   "evidence": "AUTO (B2520) VERDICT (denominators from output_icg_span9_span9_grid_auto.json): 24 of 24 exits RANKED at min-trades >= 10 on 14616 IS rows (14616 cube rows, 0 holdout rows); rank-1 [regime_flip] is_ci_lo 0.167 is_sharpe 0.489 fires 609 - Step-1: ranking only, no admission (B1608) | prior: no grid artifact - step 2 produced nothing to derive a verdict from (family institutional_committed_growth_long: manifest arms[0] lacks ['min_consecutive_quarters', 'growth_lookback_quarters', 'growth_multiple'] (neither the INST_*/STRAT_EMA_SPAN env keys nor the plain keys) (fail closed, L642))"
   }
  }
 }

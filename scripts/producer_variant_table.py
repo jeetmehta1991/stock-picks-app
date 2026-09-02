@@ -800,8 +800,19 @@ def table_c(grids: dict[str, dict]) -> list[str]:
                                        else -9)) if rank else None
         if top:
             a = top["admit"]
-            combo = (f"cm={a['close_mitigation']} brk={_fmt(a['break_pct_max'])} "
-                     f"age={_fmt(a['age_bars_max'])} tail={a['tail_n']} / {a['exit']}")
+            # B2542: FAMILY-AWARE. This read the SMC family's four parameter
+            # names directly and raised KeyError on every institutional grid,
+            # so no config of that family had ever rendered - the same family
+            # boundary as L741, crossed from the consumer's side. The locked
+            # 12-column format is unchanged; only this cell's content adapts.
+            _exit = a.get("exit") or top.get("exit") or "-"
+            if "close_mitigation" in a:
+                combo = (f"cm={a['close_mitigation']} brk={_fmt(a['break_pct_max'])} "
+                         f"age={_fmt(a['age_bars_max'])} tail={a['tail_n']} / {_exit}")
+            else:
+                _cfg = g.get("config") or {}
+                _parts = " ".join(f"{k}={_fmt(v)}" for k, v in sorted(_cfg.items()))
+                combo = f"{_parts or '?'} / {_exit}"
             if _has_is:
                 sh, cl = _measured_fmt(top.get("is_sharpe")), _measured_fmt(top.get("is_ci_lo"))
             else:
@@ -823,6 +834,19 @@ def table_c(grids: dict[str, dict]) -> list[str]:
         _med_vals = [r.get(_sk) for r in graded if r.get(_sk) is not None]
         med = round(_st.median(_med_vals), 3) if _med_vals else None
         cfg = g.get("config") or {}
+        # B2542: a family whose axes are not the SMC six records them as
+        # P<N>_<name> in its own config block. Render THOSE rather than six
+        # `?` cells, which said "not recorded" about axes that ARE recorded.
+        _smc_shaped = any(nm in axes for nm in AXIS_KEYS) or "P1_swing_length" in cfg
+        if not _smc_shaped and cfg:
+            p_col = "; ".join(
+                f"{k.split('_', 1)[0]}={_fmt(v)}(fixed)" for k, v in sorted(cfg.items()))
+            rows.append(f"| `{name}` | {len(res)} | {len(no_exit)} | {len(no_sh)} | "
+                        f"{len(graded)} | {g.get('step1_distinct_outcomes', '-')} | "
+                        f"{_measured_fmt(bands)} | {p_col} | {_measured_fmt(med)} | "
+                        f"{sh} | {cl} | {combo} |")
+            per_config_axes[name] = (axes, cfg)
+            continue
         p_cells = []
         for pid, nm in P_AXES:
             if pid == "P1":

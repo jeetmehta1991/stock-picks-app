@@ -18670,3 +18670,46 @@ measurement.
 no scan distinguishes a chosen number from a measured one in prose - and
 durability is covered by test_b2526_recent_learnings_are_anchored_and_l735_is_not_an_orphan,
 which asserts every L-entry from L725 is referenced in an anchor file.
+
+
+### L741 - The schema rule has a mirror: an artifact you WRITE owes its consumer's required fields
+
+**B2541, 2026-09-02.** I generated 16 launch specs by copying the shape of an
+existing spec from a DIFFERENT strategy family. Every one landed with 5 of its 9
+post-config steps FAILED, on one cause: the battery's grader reads four plain
+parameter keys from `manifest arms[0]`, the SMC template's arm carries only
+`tag` and `env`, and the institutional family's four keys were therefore absent
+from all 16. The engine ran fine - it is actuated by `env` - so the cube was
+correct and ONLY the grading failed, which is why nothing upstream noticed.
+
+**Why the existing rule did not catch it.** `#230a` says: before proposing work
+that depends on a field, OPEN THE ARTIFACT AND CHECK THE COLUMNS. It is written
+for artifacts you READ. Here I was WRITING the artifact, and the field was
+required by a consumer I never opened. **The reading direction had a rule and
+the writing direction did not**, so the check felt done - I had opened the
+template - when the thing I needed to open was `run_postconfig`.
+
+**The tell was in the request and I misread it.** Copying a template ACROSS a
+family boundary is not replication, it is translation, and the parts that must
+change are exactly the parts the two families do not share. The `env` block
+looked like the whole configuration because for the SMC family it is; for this
+family `INST_PERSIST_CACHE_TAG` is a CACHE SELECTOR and the graded values live
+elsewhere. **One artifact, two readers, different keys** - and I checked neither
+reader.
+
+**The rule.** When you generate an artifact from a template, name its CONSUMER
+and open the code that parses it. If the template came from a different family,
+tier, or strategy, list what the two do not share BEFORE copying, because that
+list is precisely the set of fields that will be silently wrong.
+
+**What made it visible, and this is the part worth keeping.** The battery FAILED
+CLOSED - it wrote FAIL rows naming the missing keys - which is the B2520 fix
+working. Under the old design those five steps would have been written SKIPPED
+with a reason and the completeness gate would have passed, so 16 configs would
+have run to completion ungradeable and nobody would have known until someone
+tried to read the results. **A guard that fails closed converts a silent
+16-config waste into one legible error message.**
+
+**Anchored:** SKILL.md tripwire row, same commit. Mechanism: pinned by
+test_b2541, which asserts every b2527 spec arm carries the four keys
+`_institutional_params` reads.

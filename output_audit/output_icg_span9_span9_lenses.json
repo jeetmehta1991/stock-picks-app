@@ -1,9 +1,9 @@
 {
  "cube": "output_icg_span9_span9",
  "step": 1,
- "step_basis": "manifest window.end 2025-05-05 <= HO_START 2025-05-05 -> Step-1 cube",
+ "step_basis": "declared --step1-cube",
  "family": "institutional_committed_growth_long",
- "ts": "2026-09-02T10:38:22",
+ "ts": "2026-09-02T11:01:46",
  "lenses": [
   {
    "lens": "holdout_untouched",
@@ -22,8 +22,8 @@
   },
   {
    "lens": "selection_margin",
-   "level": "INFO",
-   "evidence": "no ranked row in the grid artifact"
+   "level": "WARN",
+   "evidence": "rank-1 [regime_flip] is_ci_lo 0.167 vs rank-2 [breakeven_plus_trail] 0.134: margin 0.033 between exits; WARN < 0.05 (selection at noise level)"
   },
   {
    "lens": "empty_signals_share",
@@ -37,8 +37,8 @@
   },
   {
    "lens": "spot_check_disagreements",
-   "level": "WARN",
-   "evidence": "no spot-check artifact - step 4 produced nothing to read"
+   "level": "INFO",
+   "evidence": "50 agree / 0 DISAGREE / 0 skipped in output_icg_span9_span9_spot_check.json"
   },
   {
    "lens": "min_trades_floor",
