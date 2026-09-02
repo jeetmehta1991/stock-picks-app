@@ -121,3 +121,12 @@ output_audit/*quality_lift*.json
 data_prefetch/derived/institutional_persistence_t1a_*/
 # scratch probes written during a turn; never evidence, never cited.
 output_audit/_*
+
+# B2529 EXCEPTION to the output_audit/_* scratch rule above. These two are
+# NOT scratch: the .cmd IS the launch payload a running Task Scheduler task
+# executes, and the .json is the launch record the queue row cites. The rule
+# is right and the filenames were wrong; renaming them while the task holds
+# the path is the riskier fix, so the exception is recorded here where a
+# reader will find it (#279 - an exclusion you cannot see is a fail-open).
+!output_audit/_b2527_chain.cmd
+!output_audit/_b2527_chain_task.json
