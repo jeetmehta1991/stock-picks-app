@@ -18788,3 +18788,59 @@ layer up.
 **Anchored:** SKILL.md tripwire row, same commit. Detection is JUDGMENT-ONLY -
 no scan knows which channel a report was promised on - and durability rides
 test_b2526's anchor sweep.
+
+
+### L744 - A gate that cannot fire on its own canonical example, guarding a rule whose remedy cannot satisfy it
+
+**B2550, 2026-09-02. Owner caught it: "I believe it is a part of the pre launch
+checklist. What went wrong?"** They were right that it is. `#185` MONITOR-ARMED
+GATE and `#186` MONITOR CADENCE both exist, both say they are MECHANICALLY
+ENFORCED, and `#186`'s own text records four prior wrong arms. This was the
+fifth, and three independent failures had to line up for it.
+
+**1. The gate cannot fire on the launch it names.** MEASURED by importing the
+module: `LAUNCH_MARKERS` is bound at `verify_turn_compliance.py:292` as four
+entries including `nohup` and `run_in_background`, then REBOUND at `:3731` to
+two filenames. The second binding wins, so the broader tuple is dead code - and
+the launch test then ANDs the surviving marker with `nohup`-or-background. Fed
+a bare `python scripts/run_phase1a.py --phase 1a-beta`, the gate returns
+**nothing**. Not "misses an exotic path": misses the canonical one.
+
+**2. The same gate fails CLOSED on prose.** A Bash command that merely
+DISCUSSES a launch - containing the marker and the word nohup - IS flagged, as
+my own diagnostic probe discovered by tripping it. `B1603` narrowed scanning to
+the executed command precisely to stop "writing about a launch" from tripping
+it; that narrowing excluded Write payloads and not Bash commands that discuss
+launches. **One gate, both error directions, and the fail-open direction is the
+one it exists for.**
+
+**3. The mandated remedy cannot satisfy the requirement.** `#185` prescribes
+CronCreate plus PushNotification. Both are SESSION-ONLY - the CronCreate tool
+description says jobs are not written to disk and are gone when Claude exits.
+So **full compliance still produces a reporter that dies before a 30-hour
+detached chain finishes**. And the repo already knew: a `#237` sweep recorded in
+LEARNINGS names "the external cron monitor (session-only, and it produced no
+report overnight)" as the third of three guards that failed a 4x cap overrun.
+**The measurement existed and the RULE was never updated.**
+
+**The class, stated so it generalises.** A control has three parts - the
+DETECTOR, the REQUIREMENT, and the REMEDY - and an audit that checks one says
+nothing about the others. Here the requirement was sound, the detector could
+not see the event, and the remedy could not outlive the job. Each was
+individually plausible; only the composition was tested, by the owner noticing
+silence. **When a rule says MECHANICALLY ENFORCED, ask which of the three that
+claim covers**, and run the enforcement against its own stated example before
+trusting it.
+
+**And the lifetime rule the checklist never states:** a watcher must outlive its
+subject. I detached the job so it would survive the session, then attached the
+reporter to the session - the one component that had to outlive it was the only
+one left fragile (L743). A remedy that is session-scoped cannot be the mandated
+remedy for a detached job, however well worded.
+
+**Anchored:** SKILL.md tripwire row, same commit. Tickets S6-B2547 (both gate
+directions, measured), S6-B2548 (remedy session-only), S6-B2549 (an armed cron
+still reported - cause filed UNKNOWN, not guessed). Detection is JUDGMENT-ONLY
+until the caller-side gate is replaced by a callee-side assertion in the engine,
+which is council-recommended and owner-gated because it would halt a running
+chain; durability rides test_b2526's anchor sweep.
