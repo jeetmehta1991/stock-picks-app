@@ -1838,7 +1838,19 @@ and the position feeling settled is what makes the disproof feel unnecessary.
   on a real but different defect while the actual complaint went unanswered. A file path is a
   durable copy, not a delivery. **And transcribing an artifact into chat makes you the AUTHOR of
   its claims** - pasting a table arms the constant and effort gates on the renderer's words.
-- **A 0pct OR 100pct RESULT FROM A NEW EXTRACTOR IS A PARSER HYPOTHESIS (B2419/L724).**
+- **A UNIFORM VALUE FROM A NEW EXTRACTOR IS A PARSER HYPOTHESIS - 0pct AND 100pct ARE ONLY ITS
+  LOUDEST CASES (B2419/L724, widened B2520p/#289).** *(Prior form, kept verbatim because the
+  ratchet froze it and a widening must not quietly retire it)*
+  *"A 0pct OR 100pct RESULT FROM A NEW EXTRACTOR IS A PARSER HYPOTHESIS".* **B2520p: that wording named 0pct and 100pct, and
+  the recurrence returned NEITHER.** A lens tally keyed on a GUESSED field name (`severity`;
+  the artifact uses `level`) yielded None for every row and read `{None: 8}` - which would have
+  reported 0 WARN / 0 FAIL on the one post-config step carrying a real finding, in a
+  VERIFICATION pass built to distrust that step's own prose. **The tell is UNIFORMITY, whatever
+  the value**: one answer for EVERY member of a heterogeneous population is evidence about the
+  READER first, because real data about eight different checks does not agree perfectly. **A
+  dict-shaped tally hides it better than a percentage** - `{None: 8}` renders as output, not as
+  an error - so watch Counters, tallies and groupbys hardest. And the probe you write BECAUSE
+  another source was untrusted inherits none of that suspicion (L679).
   MEASURED: `ast.literal_eval` on a JSON column with lowercase true/false raised on every row, so
   a probe reported 0 of 1849 present - indistinguishable from the field not being persisted, and
   nearly written into a pre-registration. Print ONE raw value before believing a coverage

@@ -30694,3 +30694,10 @@ def test_b2520p_uniform_value_is_a_parser_hypothesis_is_anchored():
 
     # must-QUIET side: the rule is not claimed to detect the varied-value case
     assert "Would NOT have caught a parser that yields plausible VARIED values" in ck
+
+    # B2520p: the rule must ALSO live in the file loaded every turn - the 0pct/100pct
+    # wording is what failed to fire here, so the widened form is what is pinned.
+    sk = _norm((root / ".claude" / "skills" / "execution-discipline" / "SKILL.md")
+               .read_text(encoding="utf-8", errors="ignore"))
+    assert "A UNIFORM VALUE FROM A NEW EXTRACTOR IS A PARSER HYPOTHESIS" in sk
+    assert "The tell is UNIFORMITY, whatever the value" in sk
