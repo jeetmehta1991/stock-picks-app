@@ -31105,3 +31105,76 @@ def test_b2545_query_scope_rule_survives_in_the_skill():
 
     assert "### L742" in ln
     assert "is a repo-wide claim" in ln
+def test_b2551_every_mechanically_enforced_claim_names_a_real_enforcer():
+    """L744: a rule that says MECHANICALLY ENFORCED is making a checkable claim.
+
+    THE MISS THIS PINS. #185/#186 both say MECHANICALLY ENFORCED and both name
+    scan_unmonitored_launch. The function exists - and MEASURED by importing the
+    module, a bare `python scripts/run_phase1a.py --phase 1a-beta` produces NO
+    finding, because LAUNCH_MARKERS is rebound later in the file to two entries
+    and the launch test ANDs it with nohup-or-background. The gate could not
+    fire on its own canonical example, and the owner found out by asking why no
+    updates were arriving.
+
+    This pins the CHEAP half - the named enforcer exists - which is what a grep
+    can settle. It deliberately does NOT claim the expensive half (that each
+    gate fires on its own positive case); that needs a constructed case per gate
+    and lives in gate_incident_corpus.py. Saying which half is covered is the
+    point: L744's class is a control whose three parts are audited separately.
+
+    KNOWN_MISSING is SHRINK-ONLY. It records enforcers cited but not defined,
+    found by the #237 sweep. Adding to it is a deliberate act visible in review.
+    """
+    import re
+    from pathlib import Path as _P
+
+    root = _P(__file__).resolve().parents[2]
+    ck = (root / "CHECKLIST.md").read_text(encoding="utf-8", errors="ignore")
+    gate = (root / "scripts" / "verify_turn_compliance.py").read_text(
+        encoding="utf-8", errors="ignore")
+    tests = _P(__file__).read_text(encoding="utf-8", errors="ignore")
+
+    # cited in CHECKLIST but not defined anywhere - each needs a reason
+    KNOWN_MISSING = {
+        "scan_gate_has_a_corpus_entry":
+            "cited at CHECKLIST.md:5213; no such function is defined in the gate "
+            "module or the test file. Found by the B2551 sweep, ticketed - the "
+            "corpus rule is real and enforced by test_b1762, under a different name",
+    }
+    assert all(KNOWN_MISSING.values()), "every known-missing entry needs a reason"
+
+    lines = ck.splitlines()
+    claims = [(i + 1, l) for i, l in enumerate(lines)
+              if re.search(r"[Mm]echanically [Ee]nforced|MECHANICALLY ENFORCED", l)]
+    assert claims, "no 'mechanically enforced' claims found - the parser is broken"
+
+    missing, bare = [], []
+    for ln, _l in claims:
+        ctx = " ".join(lines[max(0, ln - 3):ln + 4])
+        fns = (set(re.findall(r"(scan_[a-z0-9_]+)", ctx))
+               | set(re.findall(r"(test_b\d+[a-z0-9_]*)", ctx)))
+        if not fns:
+            bare.append(ln)
+            continue
+        for fn in fns:
+            if f"def {fn}" in gate or f"def {fn}" in tests:
+                continue
+            if fn in KNOWN_MISSING:
+                continue
+            missing.append((ln, fn))
+
+    assert not bare, (
+        f"'mechanically enforced' claimed at line(s) {bare} naming NO enforcer - "
+        "a rule that asserts enforcement must say what enforces it (L499)")
+    assert not missing, (
+        f"'mechanically enforced' names an enforcer that does not exist: {missing}. "
+        "Either the function was renamed and the claim went stale, or the rule was "
+        "never wired - both are L744's first half. Fix the citation or the code; "
+        "add to KNOWN_MISSING only with a reason and a ticket.")
+
+    # the baseline is a record of fact, not a parking space: anything listed
+    # must still actually be absent, or it should have been removed
+    for fn in KNOWN_MISSING:
+        assert f"def {fn}" not in gate and f"def {fn}" not in tests, (
+            f"{fn} now EXISTS - remove it from KNOWN_MISSING so the baseline "
+            "stays a record of what is genuinely absent")
