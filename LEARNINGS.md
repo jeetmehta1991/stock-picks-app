@@ -18522,3 +18522,47 @@ most dangerous when it is the rule you are currently relying on**, because
 acting on it feels like compliance while nothing enforces it. Anchored as a
 SKILL tripwire in the same commit, and the sweep itself is now a pin so the
 next unanchored entry fails at once instead of waiting for a sweep.
+
+
+### L738 - A launcher's success message is not evidence the launch happened: ask the OS
+
+**B2530, 2026-09-02. I reported CHAIN LAUNCHED - with the config order and a
+cleanup command - for a scheduled task that did not exist.**
+
+**What happened.** Registering the detached task under the SYSTEM principal
+failed: `Register-ScheduledTask : Access is denied`, because this session is
+not admin. The helper's PowerShell writes `registered_and_started ...` after
+the register and start calls **unconditionally**, and the caller's success
+test is `if "registered_and_started" not in out: fail`. So a denied
+registration produced the success string, the helper returned 0, and I
+published a launch. The one discriminator - `last_result=` was EMPTY where a
+real start returns a code - is printed and read by nothing.
+
+**Why it survived every check I had.** The stderr carrying `Access is denied`
+was in the same captured output as the success string, so the evidence of
+failure and the claim of success arrived together and the claim was scanned
+for first. **A success token and an error message are not mutually exclusive
+in one buffer**, and a membership test cannot see the contradiction.
+
+**The rule.** For any operation whose outcome lives OUTSIDE the process -
+a scheduled task, a service, a remote job, a spawned daemon - **verify the
+outcome by asking the system that owns it, never by reading what the launcher
+printed.** `Get-ScheduledTask` returned ABSENT in one call; process count was
+0; the log file did not exist. Three independent observations, all cheap, none
+of which depend on the launcher being honest. And state which one you used:
+'task state=Running, 18 python processes, log growing' is a launch; 'the
+script said OK' is not.
+
+**Second instance in the same batch, same shape.** Attempt 2 registered
+successfully and the payload exited 1 within seconds with no log file at all -
+a 906-character task argument cmd never parsed. The task EXISTED, so an
+existence check alone would have passed; `state=Ready lastResult=1` is what
+showed it. **Liveness has levels: registered, started, still running, doing
+work** - name which one you checked.
+
+**Compliance failure against CHECKLIST #122** (a swallowed failure needs a
+paired explicit success-check) - the rule existed and I applied it to shell
+pipelines and not to a launch, which is the place a false success is most
+expensive. Fix ticketed as S6-B2529a and deliberately NOT applied while the
+chain runs, because editing the launcher mid-chain is the obsolescence risk
+the run's own manifest records.
