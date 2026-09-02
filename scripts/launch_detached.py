@@ -40,7 +40,8 @@ def _run_ps(script: str) -> subprocess.CompletedProcess:
 
 
 def _register_and_start(name: str, exe: str, args: str,
-                        hardened: bool = False) -> subprocess.CompletedProcess:
+                        hardened: bool = False,
+                        time_limit_hours: int = 12) -> subprocess.CompletedProcess:
     """B2203a HARDENING (S6-B2202a class): hardened=True registers the task
     under the SYSTEM principal (session 0, no interactive console), so a
     console-control event in the user's session - window close, logoff,
@@ -51,6 +52,17 @@ def _register_and_start(name: str, exe: str, args: str,
     files are SYSTEM-owned (admin users still read them) and its environment
     is not the user's - launch commands must carry absolute paths, which
     ours already do.
+
+    B2528 - time_limit_hours: Task Scheduler's ExecutionTimeLimit bounds the
+    WHOLE task run, and 12 h was sized for ONE wave (~2.9 h measured). A
+    16-config serial chain projects at 38-47 h, so the default would have
+    killed it about four configs in, overnight, with the chain log simply
+    stopping - a guard whose bound nobody multiplied out against the job it
+    was guarding (L637). The parameter DEFAULTS to 12 so every single-wave
+    caller is byte-identical; a chain passes its own bound. Size it ABOVE the
+    projected upper end with margin, never at it: this is a backstop for a
+    hung task, and a backstop set at the expected duration kills healthy work
+    (L734, where a 3x wall backstop died on exactly that arithmetic).
     """
     principal = ('$principal = New-ScheduledTaskPrincipal -UserId "SYSTEM" '
                  '-LogonType ServiceAccount -RunLevel Highest\n'
@@ -60,7 +72,7 @@ def _register_and_start(name: str, exe: str, args: str,
 $action = New-ScheduledTaskAction -Execute "{exe}" -Argument '{args}'
 $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries `
     -DontStopIfGoingOnBatteries -StartWhenAvailable `
-    -ExecutionTimeLimit (New-TimeSpan -Hours 12)
+    -ExecutionTimeLimit (New-TimeSpan -Hours {time_limit_hours})
 {principal}Register-ScheduledTask -TaskName "{name}" -Action $action -Settings $settings{principal_arg} -Force | Out-Null
 Start-ScheduledTask -TaskName "{name}"
 Start-Sleep -Seconds 3

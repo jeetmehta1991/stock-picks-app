@@ -30969,3 +30969,39 @@ def test_b2526_recent_learnings_are_anchored_and_l735_is_not_an_orphan():
     # the specific orphan the sweep found, and its DIAGNOSTIC not its headline
     assert re.search(r"\bL735\b", sk), "L735 lost its anchor"
     assert "ASK GIT, do not infer from the directory" in " ".join(sk.split())
+def test_b2528_detached_task_time_limit_is_a_parameter_sized_to_the_job():
+    """B2528: ExecutionTimeLimit bounds the WHOLE task run, sized for ONE wave.
+
+    MEASURED before the B2527 launch: a single wave is ~2.9 h so 12 h is
+    generous, but a 16-config chain projects at 38-47 h - Task Scheduler would
+    have killed it about four configs in, overnight, with the chain log simply
+    stopping. A guard whose bound nobody multiplied out against the job it
+    guards (L637).
+
+    Pins that the limit is a PARAMETER, that its default is unchanged at 12 so
+    every single-wave caller is byte-identical, and that the emitted PowerShell
+    actually interpolates it - a parameter the script ignores would be the
+    L499 shape, a capability asserted and not wired.
+    """
+    import inspect
+    import sys as _sys
+    from pathlib import Path as _P
+
+    root = _P(__file__).resolve().parents[2]
+    _sys.path.insert(0, str(root / "scripts"))
+    import launch_detached as ld
+
+    sig = inspect.signature(ld._register_and_start)
+    assert "time_limit_hours" in sig.parameters, "the limit is still hard-coded"
+    assert sig.parameters["time_limit_hours"].default == 12, (
+        "the DEFAULT must stay 12 - raising it silently extends every existing "
+        "single-wave launch's licence to run")
+
+    src = inspect.getsource(ld._register_and_start)
+    assert "New-TimeSpan -Hours {time_limit_hours}" in src, (
+        "the parameter is accepted but the PowerShell does not interpolate it")
+    assert "New-TimeSpan -Hours 12)" not in src, "a hard-coded 12 survives"
+
+    # the arithmetic that motivated it - if a chain ever fits inside the
+    # default, this pin's premise is stale and should be re-derived
+    assert 16 * 2.9 > 12
