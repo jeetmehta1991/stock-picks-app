@@ -34,6 +34,7 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import sys
 from collections import Counter
 from pathlib import Path
 
@@ -41,6 +42,13 @@ ROOT = Path(__file__).resolve().parent.parent
 AUDIT = ROOT / "output_audit"
 LEDGER = AUDIT / "postconfig_ledger.json"
 DOC = AUDIT / "POSTCONFIG_REPORT.md"
+# B2520: "closed" has ONE definition - the gate's (DONE with evidence, or N/A
+# with a reason; SKIPPED closes nothing). Rendering a second definition here
+# is how a report can say "9 of 9" while the gate says exit 2.
+if str(Path(__file__).resolve().parent) not in sys.path:
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+from verify_postconfig_complete import STEPS, is_closed  # noqa: E402
+import postconfig_landing as _landing  # noqa: E402
 # S6-B2409 (owner ruling 2026-08-30): the selection-noise floor is RETIRED IN
 # ITS ENTIRETY - this renderer no longer frames any value against it, not even
 # as a diagnostic. (Its L696 history: the constant kept re-entering Step-1
@@ -134,10 +142,73 @@ def falsifiability(ledger: dict) -> tuple[int, int]:
 def load_artifacts(cube: str) -> dict:
     d: dict = {"cube": cube}
     for key, path in (("grid", AUDIT / (cube + "_grid_auto.json")),
-                      ("spot", AUDIT / (cube + "_spot_check.json"))):
+                      ("spot", AUDIT / (cube + "_spot_check.json")),
+                      ("lenses", AUDIT / (cube + "_lenses.json"))):
         d[key] = (json.loads(path.read_text(encoding="utf-8"))
                   if path.exists() else None)
     return d
+
+
+# The metric keys the graders copy INTO the admit dict beside the knobs; the
+# knobs are whatever remains, so a new family renders without a new branch.
+_ADMIT_METRIC_KEYS = frozenset({
+    "fires", "exit", "holdout_n", "full_period_n", "is_ci_lo", "is_sharpe",
+    "sharpe", "ci_lo", "verdict", "exits_effective", "exits_collapsed",
+    "npt_excluded_identity_boundary", "rank", "class_size", "members"})
+_SPOT_PARAM_KEYS = ("swing_length", "ema_span", "close_mitigation", "tail_n",
+                    "min_committed_growth", "fallback_min_increased")
+
+
+def combination_label(admit: dict) -> str:
+    """Knob=value for every knob the admit dict carries (B2520: the smc-only
+    cm/brk/age/tail template rendered None x4 for the institutional family)."""
+    knobs = [(k, v) for k, v in admit.items() if k not in _ADMIT_METRIC_KEYS]
+    return " ".join(f"{k}={v}" for k, v in knobs) or "(no knobs recorded)"
+
+
+def spot_params(spot: dict) -> str:
+    """The parameters the spot-checker actually ran with - only the keys the
+    artifact carries with a value (institutional has no swing/tail)."""
+    parts = [f"{k} {spot.get(k)}" for k in _SPOT_PARAM_KEYS
+             if spot.get(k) is not None]
+    return ", ".join(parts) or "parameters not recorded in the artifact"
+
+
+def landings_section() -> list[str]:
+    """B2520: what landed, when, by which path, and whether the owner has seen
+    it. The record is output_audit/postconfig_landings.jsonl, appended by
+    scripts/postconfig_landing.py the moment a cube lands (engine hook or
+    run_wave); reported_to_owner flips when a LANDING REPORT for the cube
+    reaches the final response (verify_turn_compliance.scan_undelivered_landing)."""
+    try:
+        events = _landing.read_landings()
+    except Exception as exc:  # noqa: BLE001 - a report must render regardless
+        return [f"_landing record unreadable: {type(exc).__name__}: {exc}_", ""]
+    latest: dict[str, dict] = {}
+    for ev in events:
+        if ev.get("cube"):
+            latest[ev["cube"]] = ev
+    if not latest:
+        return ["_no landings recorded yet (record starts at B2520; every cube "
+                "landed before it was dispositioned by hand)_", ""]
+    pending = [c for c, ev in latest.items() if not ev.get("reported_to_owner")]
+    out = [f"{len(latest)} cube(s) landed through the supervisor; "
+           f"**{len(pending)} not yet reported to the owner**"
+           + (f" ({', '.join(pending)})" if pending else "") + ".", "",
+           "| cube | landed | via | battery exit | blocking | WARN/FAIL findings "
+           "| committed | pushed | reported |", "|---|---|---|---|---|---|---|---|---|"]
+    for c, ev in sorted(latest.items(), key=lambda kv: kv[1].get("ts") or "",
+                        reverse=True):
+        finds = ev.get("findings") or []
+        blocking = ev.get("blocking") or []
+        out.append(
+            f"| {c} | {ev.get('ts')} | {ev.get('source')} | "
+            f"{ev.get('battery_exit')} | {', '.join(blocking) or 'none'} | "
+            f"{len(finds)}{': ' + '; '.join(str(f).replace('|', '/') for f in finds) if finds else ''} | "
+            f"{ev.get('committed')} | {ev.get('pushed')} | "
+            f"{'yes ' + str(ev.get('reported_ts') or '') if ev.get('reported_to_owner') else '**NO**'} |")
+    out.append("")
+    return out
 
 
 def config_section(cube: str, entry: dict, art: dict) -> list[str]:
@@ -167,13 +238,38 @@ def config_section(cube: str, entry: dict, art: dict) -> list[str]:
     else:
         lines += ["**NO GRADED GRID** - step 2 produced no artifact.", ""]
 
-    skipped = sorted(k for k, v in entry.items() if v.get("status") == "SKIPPED")
-    done = [k for k, v in entry.items() if v.get("status") == "DONE"]
-    lines += [f"**Completeness: {len(done)} of {len(done) + len(skipped)} "
-              f"steps ran.** The {len(skipped)} judgment steps "
-              f"({', '.join(skipped)}) are NOT automated and remain "
-              "outstanding - this evidence package is incomplete by design, "
-              "which is different from clean.", ""]
+    # B2520: completeness is the GATE's verdict, not a second tally. Before
+    # B2520 this line counted DONE + SKIPPED as "steps ran" and called the
+    # skipped ones "NOT automated ... by design" - a report that normalised the
+    # very miss the owner asked about ("why are some steps skipped after each
+    # config?"). Now: every one of the nine steps is either closed (DONE with
+    # evidence / N/A with a reason) or NAMED as open, and an open step means
+    # verify_postconfig_complete exits 2 for this cube.
+    closed = [s for s in STEPS if is_closed(entry.get(s))]
+    na = [s for s in closed if (entry.get(s) or {}).get("status") == "N/A"]
+    open_steps = [s for s in STEPS if s not in closed]
+    lines += [f"**Completeness: {len(closed)} of {len(STEPS)} steps closed** "
+              f"({len(closed) - len(na)} DONE with evidence, {len(na)} N/A with "
+              f"a reason{': ' + ', '.join(na) if na else ''}). "
+              + ("Every step is dispositioned; nothing is outstanding on this "
+                 "cube."
+                 if not open_steps else
+                 f"**{len(open_steps)} step(s) NOT closed "
+                 f"({', '.join(open_steps)}) - this cube BLOCKS the turn gate "
+                 "until each is DONE with evidence or N/A with a reason; "
+                 "SKIPPED is not a disposition (B2520).**"), ""]
+    lines += ["| step | status | evidence / reason (never truncated) |",
+              "|---|---|---|"]
+    for s in STEPS:
+        row = entry.get(s) or {}
+        st = row.get("status") or "MISSING"
+        ev = str(row.get("evidence") or row.get("reason") or
+                 row.get("note") or "").replace("|", "/").replace("\n", " ")
+        if s == "1_cube_sanity":
+            ev = "the named checks are tabulated below by risk question"
+        mark = "" if is_closed(row) else " **<-- NOT CLOSED**"
+        lines.append(f"| {s} | {st}{mark} | {ev or '-'} |")
+    lines.append("")
 
     for title, names in GROUPS:
         rows = [(n, by_name[n]) for n in names if n in by_name]
@@ -199,10 +295,9 @@ def config_section(cube: str, entry: dict, art: dict) -> list[str]:
                   f"fire/no-fire decision as the engine; {dis} disagreed; "
                   f"{fails} execution failures.",
                   f"- Sampled with seed {spot.get('seed')} at this config's own "
-                  f"parameters (swing {spot.get('swing_length')}, span "
-                  f"{spot.get('ema_span')}, close_mitigation "
-                  f"{spot.get('close_mitigation')}, tail_n "
-                  f"{spot.get('tail_n')}).",
+                  f"parameters ({spot_params(spot)})"
+                  + (f" by {spot.get('checker')}" if spot.get("checker") else "")
+                  + ".",
                   "- CAVEAT worth stating: the re-derivation uses the SAME "
                   "parameter set as the engine, so it catches wiring and data "
                   "faults, NOT a wrong parameter choice. Full per-trade rows: "
@@ -210,6 +305,25 @@ def config_section(cube: str, entry: dict, art: dict) -> list[str]:
         if dis:
             lines += [f"- **{dis} DISAGREEMENTS - inspect before trusting "
                       "this cube.**", ""]
+        if spot.get("empty_records") not in (None, 0):
+            lines += [f"- {spot.get('empty_records')} sampled trades carried an "
+                      "EMPTY signals_at_entry record (S6-B2512 class) - the "
+                      "re-derivation could still decide them from the "
+                      "precompute, but the engine's own record is missing.", ""]
+
+    lenses = art.get("lenses")
+    if lenses:
+        rows_l = lenses.get("lenses") or []
+        bad_l = [r for r in rows_l if r.get("level") in ("WARN", "FAIL")]
+        lines += [f"**Adversarial lenses (step 5) - {len(rows_l)} lenses, "
+                  f"{len(bad_l)} WARN/FAIL** (step basis: "
+                  f"{lenses.get('step_basis')}; family {lenses.get('family')})",
+                  "", "| lens | level | evidence |", "|---|---|---|"]
+        for r in rows_l:
+            mark = "" if r.get("level") == "INFO" else " **<-- NOT INFO**"
+            lines.append(f"| {r.get('lens')} | {r.get('level')}{mark} | "
+                         f"{str(r.get('evidence')).replace('|', '/')} |")
+        lines.append("")
 
     if grid:
         res = grid.get("results") or []
@@ -222,21 +336,20 @@ def config_section(cube: str, entry: dict, art: dict) -> list[str]:
                   f"- **{starved} ({pct:.0f}%) STARVED in-sample** - no exit "
                   "cleared the minimum trade count, so they were never graded. "
                   "A sample-size fact, not a quality verdict.",
-                  f"- {verd.get('BELOW_POWER_FLOOR', 0)} graded and ranked; "
-                  f"{grid.get('step1_combinations_carried')} carried across "
+                  f"- {len(res) - starved} graded and ranked, collapsing to "
                   f"{grid.get('step1_distinct_outcomes')} distinct outcome "
-                  "classes after equivalence collapse (combinations differing "
-                  "only in a saturated parameter are the SAME fire set, so "
-                  "counting rows overstates the evidence - L473).", ""]
+                  "classes (step 6b: combinations differing only in a "
+                  "saturated parameter are the SAME fire set, so counting rows "
+                  "overstates the evidence - L473); the top "
+                  f"{len(rank)} classes carry "
+                  f"{grid.get('step1_combinations_carried')} combinations "
+                  "forward to Step 2 (tighten_breaker_block.py:449-454).", ""]
         if rank:
             lines += ["| rank | is_ci_lo | is_sharpe | fires | exit | "
                       "class size | combination |",
                       "|---|---|---|---|---|---|---|"]
             for r in rank[:5]:
-                a = r.get("admit") or {}
-                combo = (f"cm={a.get('close_mitigation')} "
-                         f"brk={a.get('break_pct_max')} "
-                         f"age={a.get('age_bars_max')} tail={a.get('tail_n')}")
+                combo = combination_label(r.get("admit") or {})
                 lines.append(f"| {r.get('rank')} | {r.get('is_ci_lo')} | "
                              f"{r.get('is_sharpe')} | {r.get('fires')} | "
                              f"{r.get('exit')} | {r.get('class_size')} | "
@@ -278,15 +391,20 @@ def build(cubes: list[str] | None = None) -> str:
 
     out = ["# POST-CONFIG ANALYSIS - all configs, all findings", "",
            "Source: output_audit/postconfig_ledger.json plus each config's "
-           "_grid_auto.json and _spot_check.json (written by "
-           "scripts/run_postconfig.py); rendered by scripts/postconfig_doc.py; "
-           "per CHECKLIST #77.", "",
-           "REGENERATED WHOLE at every config landing. Replaces the per-config "
+           "_grid_auto.json, _spot_check.json and _lenses.json (written by "
+           "scripts/run_postconfig.py) and output_audit/postconfig_landings.jsonl "
+           "(written by scripts/postconfig_landing.py); rendered by "
+           "scripts/postconfig_doc.py; per CHECKLIST #77.", "",
+           "REGENERATED WHOLE at every config landing - by the landing "
+           "supervisor the engine itself invokes (B2520), so a cube that lands "
+           "by ANY launch path reaches this document. Replaces the per-config "
            "report cards (B2198/B2208), which reported step STATUS rather than "
            "step FINDINGS.", "",
            "## How much confidence these checks earn", "",
            f"**Across the entire ledger ({len(ledger)} entries), {total} named "
            f"checks have run and {bad} have ever returned non-PASS.**"]
+    out += ["", "## Landings - what the supervisor recorded (B2520)", ""]
+    out += landings_section()
     out += ["", "## TABLE D - STEP-1 RANKED LIST (top 20)", ""] + _td
     if bad == 0:
         out += ["", "**Read that as a caution, not a reassurance.** A check "
@@ -297,7 +415,8 @@ def build(cubes: list[str] | None = None) -> str:
                 "then, green means 'nothing obviously wrong was detected', "
                 "never 'this cube is correct'."]
     out += ["", f"## Index - {len(graded)} graded config(s), newest first", "",
-            "| config | best is_ci_lo | fires | starved | steps run |",
+            "| config | best is_ci_lo | fires | starved | steps closed "
+            "(DONE+N/A of 9; the gate's own is_closed) |",
             "|---|---|---|---|---|"]
     for c in graded:
         grid = json.loads((AUDIT / (c + "_grid_auto.json")).read_text(encoding="utf-8"))
@@ -307,12 +426,13 @@ def build(cubes: list[str] | None = None) -> str:
         res = grid.get("results") or []
         starved = sum(1 for r in res if r.get("verdict") == "NO_EXIT_SELECTABLE")
         entry = ledger.get(c, {})
-        done = sum(1 for v in entry.values() if v.get("status") == "DONE")
-        steps = sum(1 for v in entry.values()
-                    if v.get("status") in ("DONE", "SKIPPED"))
+        n_closed = sum(1 for s in STEPS if is_closed(entry.get(s)))
+        open_names = [s for s in STEPS if not is_closed(entry.get(s))]
         out.append(f"| {c} | {cl if cl is not None else '-'} | "
                    f"{top.get('fires', '-')} | {starved}/{len(res)} | "
-                   f"{done}/{steps} |")
+                   f"{n_closed}/{len(STEPS)}"
+                   + (f" **OPEN: {', '.join(open_names)}**" if open_names else "")
+                   + " |")
     out += ["", "## Per-config findings", ""]
     for c in graded:
         out += config_section(c, ledger.get(c, {}), load_artifacts(c))

@@ -19,6 +19,9 @@
       "fires": 79,
       "exit": "hybrid_50pct_target",
       "class_size": 3,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "admit": {
         "close_mitigation": false,
         "break_pct_max": null,
@@ -30,6 +33,9 @@
         "full_period_n": 79,
         "is_ci_lo": -0.196,
         "is_sharpe": 0.282,
+        "exits_effective": 22,
+        "exits_collapsed": 1,
+        "npt_excluded_identity_boundary": true,
         "verdict": "BELOW_POWER_FLOOR"
       },
       "members": [
@@ -62,6 +68,9 @@
       "fires": 76,
       "exit": "hybrid_50pct_target",
       "class_size": 1,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "admit": {
         "close_mitigation": false,
         "break_pct_max": null,
@@ -73,6 +82,9 @@
         "full_period_n": 76,
         "is_ci_lo": -0.198,
         "is_sharpe": 0.275,
+        "exits_effective": 22,
+        "exits_collapsed": 1,
+        "npt_excluded_identity_boundary": true,
         "verdict": "BELOW_POWER_FLOOR"
       },
       "members": [
@@ -93,6 +105,9 @@
       "fires": 78,
       "exit": "hybrid_50pct_target",
       "class_size": 1,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "admit": {
         "close_mitigation": false,
         "break_pct_max": null,
@@ -104,6 +119,9 @@
         "full_period_n": 78,
         "is_ci_lo": -0.205,
         "is_sharpe": 0.274,
+        "exits_effective": 22,
+        "exits_collapsed": 1,
+        "npt_excluded_identity_boundary": true,
         "verdict": "BELOW_POWER_FLOOR"
       },
       "members": [
@@ -124,6 +142,9 @@
       "fires": 66,
       "exit": "hybrid_50pct_target",
       "class_size": 4,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "admit": {
         "close_mitigation": false,
         "break_pct_max": null,
@@ -135,6 +156,9 @@
         "full_period_n": 66,
         "is_ci_lo": -0.236,
         "is_sharpe": 0.286,
+        "exits_effective": 22,
+        "exits_collapsed": 1,
+        "npt_excluded_identity_boundary": true,
         "verdict": "BELOW_POWER_FLOOR"
       },
       "members": [
@@ -173,6 +197,9 @@
       "fires": 65,
       "exit": "hybrid_50pct_target",
       "class_size": 1,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "admit": {
         "close_mitigation": false,
         "break_pct_max": 0.05,
@@ -184,6 +211,9 @@
         "full_period_n": 65,
         "is_ci_lo": -0.24,
         "is_sharpe": 0.268,
+        "exits_effective": 22,
+        "exits_collapsed": 1,
+        "npt_excluded_identity_boundary": true,
         "verdict": "BELOW_POWER_FLOOR"
       },
       "members": [
@@ -204,6 +234,9 @@
       "fires": 65,
       "exit": "hybrid_50pct_target",
       "class_size": 1,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "admit": {
         "close_mitigation": false,
         "break_pct_max": null,
@@ -215,6 +248,9 @@
         "full_period_n": 65,
         "is_ci_lo": -0.243,
         "is_sharpe": 0.281,
+        "exits_effective": 22,
+        "exits_collapsed": 1,
+        "npt_excluded_identity_boundary": true,
         "verdict": "BELOW_POWER_FLOOR"
       },
       "members": [
@@ -235,6 +271,9 @@
       "fires": 73,
       "exit": "hybrid_50pct_target",
       "class_size": 1,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "admit": {
         "close_mitigation": false,
         "break_pct_max": null,
@@ -246,6 +285,9 @@
         "full_period_n": 73,
         "is_ci_lo": -0.25,
         "is_sharpe": 0.236,
+        "exits_effective": 22,
+        "exits_collapsed": 1,
+        "npt_excluded_identity_boundary": true,
         "verdict": "BELOW_POWER_FLOOR"
       },
       "members": [
@@ -266,6 +308,9 @@
       "fires": 67,
       "exit": "hybrid_50pct_target",
       "class_size": 4,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "admit": {
         "close_mitigation": false,
         "break_pct_max": 0.05,
@@ -277,6 +322,9 @@
         "full_period_n": 67,
         "is_ci_lo": -0.251,
         "is_sharpe": 0.264,
+        "exits_effective": 22,
+        "exits_collapsed": 1,
+        "npt_excluded_identity_boundary": true,
         "verdict": "BELOW_POWER_FLOOR"
       },
       "members": [
@@ -315,6 +363,9 @@
       "fires": 95,
       "exit": "hybrid_50pct_target",
       "class_size": 1,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "admit": {
         "close_mitigation": false,
         "break_pct_max": 0.05,
@@ -326,6 +377,9 @@
         "full_period_n": 95,
         "is_ci_lo": -0.253,
         "is_sharpe": 0.184,
+        "exits_effective": 22,
+        "exits_collapsed": 1,
+        "npt_excluded_identity_boundary": true,
         "verdict": "BELOW_POWER_FLOOR"
       },
       "members": [
@@ -346,6 +400,9 @@
       "fires": 48,
       "exit": "hybrid_50pct_target",
       "class_size": 5,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "admit": {
         "close_mitigation": false,
         "break_pct_max": 0.05,
@@ -357,6 +414,9 @@
         "full_period_n": 48,
         "is_ci_lo": -0.258,
         "is_sharpe": 0.335,
+        "exits_effective": 22,
+        "exits_collapsed": 1,
+        "npt_excluded_identity_boundary": true,
         "verdict": "BELOW_POWER_FLOOR"
       },
       "members": [
@@ -393,6 +453,7 @@
       ]
     }
   ],
+  "qualifiers": [],
   "step1_combinations_carried": 22,
   "step1_distinct_outcomes": 89,
   "results": [
@@ -407,6 +468,9 @@
       "full_period_n": 113,
       "is_ci_lo": -0.445,
       "is_sharpe": 0.094,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -420,6 +484,9 @@
       "full_period_n": 113,
       "is_ci_lo": -0.445,
       "is_sharpe": 0.094,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -433,6 +500,9 @@
       "full_period_n": 112,
       "is_ci_lo": -0.306,
       "is_sharpe": 0.104,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -446,6 +516,9 @@
       "full_period_n": 100,
       "is_ci_lo": -0.315,
       "is_sharpe": 0.112,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -459,6 +532,9 @@
       "full_period_n": 100,
       "is_ci_lo": -0.315,
       "is_sharpe": 0.112,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -472,6 +548,9 @@
       "full_period_n": 98,
       "is_ci_lo": -0.466,
       "is_sharpe": 0.107,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -485,6 +564,9 @@
       "full_period_n": 98,
       "is_ci_lo": -0.466,
       "is_sharpe": 0.107,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -498,6 +580,9 @@
       "full_period_n": 95,
       "is_ci_lo": -0.253,
       "is_sharpe": 0.184,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -511,6 +596,9 @@
       "full_period_n": 94,
       "is_ci_lo": -0.389,
       "is_sharpe": 0.066,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -524,6 +612,9 @@
       "full_period_n": 94,
       "is_ci_lo": -0.327,
       "is_sharpe": 0.12,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -537,6 +628,9 @@
       "full_period_n": 80,
       "is_ci_lo": -1.341,
       "is_sharpe": 0.106,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -550,6 +644,9 @@
       "full_period_n": 80,
       "is_ci_lo": -1.341,
       "is_sharpe": 0.106,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -563,6 +660,9 @@
       "full_period_n": 79,
       "is_ci_lo": -0.462,
       "is_sharpe": 0.017,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -576,6 +676,9 @@
       "full_period_n": 79,
       "is_ci_lo": -0.462,
       "is_sharpe": 0.017,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -589,6 +692,9 @@
       "full_period_n": 79,
       "is_ci_lo": -0.196,
       "is_sharpe": 0.282,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -602,6 +708,9 @@
       "full_period_n": 79,
       "is_ci_lo": -0.196,
       "is_sharpe": 0.282,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -615,6 +724,9 @@
       "full_period_n": 79,
       "is_ci_lo": -0.196,
       "is_sharpe": 0.282,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -628,6 +740,9 @@
       "full_period_n": 78,
       "is_ci_lo": -0.37,
       "is_sharpe": 0.014,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -641,6 +756,9 @@
       "full_period_n": 78,
       "is_ci_lo": -0.205,
       "is_sharpe": 0.274,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -654,6 +772,9 @@
       "full_period_n": 76,
       "is_ci_lo": -0.198,
       "is_sharpe": 0.275,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -667,6 +788,9 @@
       "full_period_n": 75,
       "is_ci_lo": -1.201,
       "is_sharpe": 0.28,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -680,6 +804,9 @@
       "full_period_n": 75,
       "is_ci_lo": -0.264,
       "is_sharpe": 0.204,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -693,6 +820,9 @@
       "full_period_n": 73,
       "is_ci_lo": -0.529,
       "is_sharpe": 0.13,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -706,6 +836,9 @@
       "full_period_n": 73,
       "is_ci_lo": -0.25,
       "is_sharpe": 0.236,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -719,6 +852,9 @@
       "full_period_n": 67,
       "is_ci_lo": -0.251,
       "is_sharpe": 0.264,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -732,6 +868,9 @@
       "full_period_n": 67,
       "is_ci_lo": -0.251,
       "is_sharpe": 0.264,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -745,6 +884,9 @@
       "full_period_n": 67,
       "is_ci_lo": -0.251,
       "is_sharpe": 0.264,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -758,6 +900,9 @@
       "full_period_n": 67,
       "is_ci_lo": -0.251,
       "is_sharpe": 0.264,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -771,6 +916,9 @@
       "full_period_n": 66,
       "is_ci_lo": -0.236,
       "is_sharpe": 0.286,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -784,6 +932,9 @@
       "full_period_n": 66,
       "is_ci_lo": -0.236,
       "is_sharpe": 0.286,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -797,6 +948,9 @@
       "full_period_n": 66,
       "is_ci_lo": -0.236,
       "is_sharpe": 0.286,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -810,6 +964,9 @@
       "full_period_n": 66,
       "is_ci_lo": -0.236,
       "is_sharpe": 0.286,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -823,6 +980,9 @@
       "full_period_n": 65,
       "is_ci_lo": -0.416,
       "is_sharpe": 0.097,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -836,6 +996,9 @@
       "full_period_n": 65,
       "is_ci_lo": -0.416,
       "is_sharpe": 0.097,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -849,6 +1012,9 @@
       "full_period_n": 65,
       "is_ci_lo": -0.416,
       "is_sharpe": 0.097,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -862,6 +1028,9 @@
       "full_period_n": 65,
       "is_ci_lo": -0.24,
       "is_sharpe": 0.268,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -875,6 +1044,9 @@
       "full_period_n": 65,
       "is_ci_lo": -0.243,
       "is_sharpe": 0.281,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -888,6 +1060,9 @@
       "full_period_n": 63,
       "is_ci_lo": -0.45,
       "is_sharpe": 0.079,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -901,6 +1076,9 @@
       "full_period_n": 63,
       "is_ci_lo": -0.292,
       "is_sharpe": 0.23,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -914,6 +1092,9 @@
       "full_period_n": 61,
       "is_ci_lo": -0.438,
       "is_sharpe": 0.106,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -927,6 +1108,9 @@
       "full_period_n": 61,
       "is_ci_lo": -1.243,
       "is_sharpe": 0.097,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -940,6 +1124,9 @@
       "full_period_n": 61,
       "is_ci_lo": -1.243,
       "is_sharpe": 0.097,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -953,6 +1140,9 @@
       "full_period_n": 59,
       "is_ci_lo": -0.594,
       "is_sharpe": -0.154,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -966,6 +1156,9 @@
       "full_period_n": 59,
       "is_ci_lo": -0.594,
       "is_sharpe": -0.154,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -979,6 +1172,9 @@
       "full_period_n": 58,
       "is_ci_lo": -0.516,
       "is_sharpe": 0.048,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -992,6 +1188,9 @@
       "full_period_n": 58,
       "is_ci_lo": -1.5,
       "is_sharpe": 0.157,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -1005,6 +1204,9 @@
       "full_period_n": 57,
       "is_ci_lo": -0.432,
       "is_sharpe": 0.118,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -1018,6 +1220,9 @@
       "full_period_n": 57,
       "is_ci_lo": -0.324,
       "is_sharpe": 0.239,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -1031,6 +1236,9 @@
       "full_period_n": 57,
       "is_ci_lo": -0.324,
       "is_sharpe": 0.239,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -1044,6 +1252,9 @@
       "full_period_n": 57,
       "is_ci_lo": -0.324,
       "is_sharpe": 0.239,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -1057,6 +1268,9 @@
       "full_period_n": 57,
       "is_ci_lo": -0.324,
       "is_sharpe": 0.239,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -1070,6 +1284,9 @@
       "full_period_n": 56,
       "is_ci_lo": -1.32,
       "is_sharpe": 0.265,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -1083,6 +1300,9 @@
       "full_period_n": 56,
       "is_ci_lo": -0.333,
       "is_sharpe": 0.233,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -1096,6 +1316,9 @@
       "full_period_n": 54,
       "is_ci_lo": -0.551,
       "is_sharpe": -0.093,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -1109,6 +1332,9 @@
       "full_period_n": 53,
       "is_ci_lo": -0.454,
       "is_sharpe": 0.133,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -1122,6 +1348,9 @@
       "full_period_n": 53,
       "is_ci_lo": -0.454,
       "is_sharpe": 0.133,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -1135,6 +1364,9 @@
       "full_period_n": 53,
       "is_ci_lo": -0.454,
       "is_sharpe": 0.133,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -1148,6 +1380,9 @@
       "full_period_n": 53,
       "is_ci_lo": -0.293,
       "is_sharpe": 0.281,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -1161,6 +1396,9 @@
       "full_period_n": 53,
       "is_ci_lo": -0.293,
       "is_sharpe": 0.281,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -1174,6 +1412,9 @@
       "full_period_n": 53,
       "is_ci_lo": -0.293,
       "is_sharpe": 0.281,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -1187,6 +1428,9 @@
       "full_period_n": 53,
       "is_ci_lo": -0.293,
       "is_sharpe": 0.281,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -1200,6 +1444,9 @@
       "full_period_n": 53,
       "is_ci_lo": -0.293,
       "is_sharpe": 0.281,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -1213,6 +1460,9 @@
       "full_period_n": 52,
       "is_ci_lo": -0.508,
       "is_sharpe": 0.102,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -1226,6 +1476,9 @@
       "full_period_n": 52,
       "is_ci_lo": -0.508,
       "is_sharpe": 0.102,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -1239,6 +1492,9 @@
       "full_period_n": 51,
       "is_ci_lo": -1.442,
       "is_sharpe": 0.294,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -1252,6 +1508,9 @@
       "full_period_n": 51,
       "is_ci_lo": -1.442,
       "is_sharpe": 0.294,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -1265,6 +1524,9 @@
       "full_period_n": 51,
       "is_ci_lo": -1.442,
       "is_sharpe": 0.294,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -1278,6 +1540,9 @@
       "full_period_n": 51,
       "is_ci_lo": -1.442,
       "is_sharpe": 0.294,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -1291,6 +1556,9 @@
       "full_period_n": 50,
       "is_ci_lo": -0.468,
       "is_sharpe": 0.127,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -1304,6 +1572,9 @@
       "full_period_n": 50,
       "is_ci_lo": -0.468,
       "is_sharpe": 0.127,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -1317,6 +1588,9 @@
       "full_period_n": 50,
       "is_ci_lo": -0.468,
       "is_sharpe": 0.127,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -1330,6 +1604,9 @@
       "full_period_n": 50,
       "is_ci_lo": -0.468,
       "is_sharpe": 0.127,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -1343,6 +1620,9 @@
       "full_period_n": 50,
       "is_ci_lo": -0.361,
       "is_sharpe": 0.198,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -1356,6 +1636,9 @@
       "full_period_n": 49,
       "is_ci_lo": -0.565,
       "is_sharpe": 0.048,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -1369,6 +1652,9 @@
       "full_period_n": 49,
       "is_ci_lo": -0.395,
       "is_sharpe": 0.177,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -1382,6 +1668,9 @@
       "full_period_n": 48,
       "is_ci_lo": -0.258,
       "is_sharpe": 0.335,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -1395,6 +1684,9 @@
       "full_period_n": 48,
       "is_ci_lo": -0.258,
       "is_sharpe": 0.335,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -1408,6 +1700,9 @@
       "full_period_n": 48,
       "is_ci_lo": -0.258,
       "is_sharpe": 0.335,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -1421,6 +1716,9 @@
       "full_period_n": 48,
       "is_ci_lo": -0.258,
       "is_sharpe": 0.335,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -1434,6 +1732,9 @@
       "full_period_n": 48,
       "is_ci_lo": -0.258,
       "is_sharpe": 0.335,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -1447,6 +1748,9 @@
       "full_period_n": 47,
       "is_ci_lo": -0.655,
       "is_sharpe": -0.016,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -1460,6 +1764,9 @@
       "full_period_n": 44,
       "is_ci_lo": -0.965,
       "is_sharpe": 0.874,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -1473,6 +1780,9 @@
       "full_period_n": 44,
       "is_ci_lo": -0.965,
       "is_sharpe": 0.874,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -1486,6 +1796,9 @@
       "full_period_n": 44,
       "is_ci_lo": -0.965,
       "is_sharpe": 0.874,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -1499,6 +1812,9 @@
       "full_period_n": 44,
       "is_ci_lo": -0.965,
       "is_sharpe": 0.874,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -1512,6 +1828,9 @@
       "full_period_n": 43,
       "is_ci_lo": -1.039,
       "is_sharpe": 0.807,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -1525,6 +1844,9 @@
       "full_period_n": 42,
       "is_ci_lo": -0.724,
       "is_sharpe": -0.023,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -1538,6 +1860,9 @@
       "full_period_n": 42,
       "is_ci_lo": -0.724,
       "is_sharpe": -0.023,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -1551,6 +1876,9 @@
       "full_period_n": 42,
       "is_ci_lo": -0.724,
       "is_sharpe": -0.023,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -1564,6 +1892,9 @@
       "full_period_n": 42,
       "is_ci_lo": -0.724,
       "is_sharpe": -0.023,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -1577,6 +1908,9 @@
       "full_period_n": 42,
       "is_ci_lo": -0.724,
       "is_sharpe": -0.023,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -1590,6 +1924,9 @@
       "full_period_n": 41,
       "is_ci_lo": -0.65,
       "is_sharpe": 0.048,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -1603,6 +1940,9 @@
       "full_period_n": 41,
       "is_ci_lo": -0.65,
       "is_sharpe": 0.048,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -1616,6 +1956,9 @@
       "full_period_n": 41,
       "is_ci_lo": -0.65,
       "is_sharpe": 0.048,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -1629,6 +1972,9 @@
       "full_period_n": 41,
       "is_ci_lo": -0.65,
       "is_sharpe": 0.048,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -1642,6 +1988,9 @@
       "full_period_n": 41,
       "is_ci_lo": -0.65,
       "is_sharpe": 0.048,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -1655,6 +2004,9 @@
       "full_period_n": 41,
       "is_ci_lo": -1.532,
       "is_sharpe": 0.249,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -1668,6 +2020,9 @@
       "full_period_n": 40,
       "is_ci_lo": -0.645,
       "is_sharpe": -0.132,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -1681,6 +2036,9 @@
       "full_period_n": 40,
       "is_ci_lo": -0.645,
       "is_sharpe": -0.132,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -1694,6 +2052,9 @@
       "full_period_n": 40,
       "is_ci_lo": -0.485,
       "is_sharpe": 0.017,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -1707,6 +2068,9 @@
       "full_period_n": 37,
       "is_ci_lo": -1.469,
       "is_sharpe": 0.465,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -1720,6 +2084,9 @@
       "full_period_n": 37,
       "is_ci_lo": -1.469,
       "is_sharpe": 0.465,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -1733,6 +2100,9 @@
       "full_period_n": 37,
       "is_ci_lo": -1.469,
       "is_sharpe": 0.465,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -1746,6 +2116,9 @@
       "full_period_n": 37,
       "is_ci_lo": -1.469,
       "is_sharpe": 0.465,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -1759,6 +2132,9 @@
       "full_period_n": 37,
       "is_ci_lo": -1.469,
       "is_sharpe": 0.465,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -1772,6 +2148,9 @@
       "full_period_n": 36,
       "is_ci_lo": -1.22,
       "is_sharpe": 0.647,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -1785,6 +2164,9 @@
       "full_period_n": 36,
       "is_ci_lo": -1.22,
       "is_sharpe": 0.647,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -1798,6 +2180,9 @@
       "full_period_n": 36,
       "is_ci_lo": -1.22,
       "is_sharpe": 0.647,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -1811,6 +2196,9 @@
       "full_period_n": 36,
       "is_ci_lo": -1.22,
       "is_sharpe": 0.647,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -1824,6 +2212,9 @@
       "full_period_n": 35,
       "is_ci_lo": -0.713,
       "is_sharpe": -0.045,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -1837,6 +2228,9 @@
       "full_period_n": 35,
       "is_ci_lo": -0.627,
       "is_sharpe": 0.108,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -1850,6 +2244,9 @@
       "full_period_n": 35,
       "is_ci_lo": -0.627,
       "is_sharpe": 0.108,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -1863,6 +2260,9 @@
       "full_period_n": 35,
       "is_ci_lo": -0.627,
       "is_sharpe": 0.108,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -1876,6 +2276,9 @@
       "full_period_n": 35,
       "is_ci_lo": -0.627,
       "is_sharpe": 0.108,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -1889,6 +2292,9 @@
       "full_period_n": 35,
       "is_ci_lo": -0.627,
       "is_sharpe": 0.108,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -1902,6 +2308,9 @@
       "full_period_n": 35,
       "is_ci_lo": -1.509,
       "is_sharpe": 0.308,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -1915,6 +2324,9 @@
       "full_period_n": 35,
       "is_ci_lo": -1.509,
       "is_sharpe": 0.308,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -1928,6 +2340,9 @@
       "full_period_n": 35,
       "is_ci_lo": -1.463,
       "is_sharpe": 0.409,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -1941,6 +2356,9 @@
       "full_period_n": 34,
       "is_ci_lo": -0.475,
       "is_sharpe": 0.071,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -1954,6 +2372,9 @@
       "full_period_n": 34,
       "is_ci_lo": -0.475,
       "is_sharpe": 0.071,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -1967,6 +2388,9 @@
       "full_period_n": 34,
       "is_ci_lo": -0.475,
       "is_sharpe": 0.071,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -1980,6 +2404,9 @@
       "full_period_n": 34,
       "is_ci_lo": -0.475,
       "is_sharpe": 0.071,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -1993,6 +2420,9 @@
       "full_period_n": 34,
       "is_ci_lo": -0.515,
       "is_sharpe": 0.028,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -2006,6 +2436,9 @@
       "full_period_n": 34,
       "is_ci_lo": -1.408,
       "is_sharpe": 0.479,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -2019,6 +2452,9 @@
       "full_period_n": 33,
       "is_ci_lo": -0.551,
       "is_sharpe": 0.013,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -2032,6 +2468,9 @@
       "full_period_n": 33,
       "is_ci_lo": -1.571,
       "is_sharpe": 0.263,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -2045,6 +2484,9 @@
       "full_period_n": 30,
       "is_ci_lo": -0.602,
       "is_sharpe": 1.407,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -2058,6 +2500,9 @@
       "full_period_n": 30,
       "is_ci_lo": -0.602,
       "is_sharpe": 1.407,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -2071,6 +2516,9 @@
       "full_period_n": 30,
       "is_ci_lo": -0.602,
       "is_sharpe": 1.407,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -2084,6 +2532,9 @@
       "full_period_n": 30,
       "is_ci_lo": -0.602,
       "is_sharpe": 1.407,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -2097,6 +2548,9 @@
       "full_period_n": 29,
       "is_ci_lo": -2.174,
       "is_sharpe": 0.591,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -2110,6 +2564,9 @@
       "full_period_n": 29,
       "is_ci_lo": -2.174,
       "is_sharpe": 0.591,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -2123,6 +2580,9 @@
       "full_period_n": 29,
       "is_ci_lo": -2.174,
       "is_sharpe": 0.591,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -2136,6 +2596,9 @@
       "full_period_n": 29,
       "is_ci_lo": -2.174,
       "is_sharpe": 0.591,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -2149,6 +2612,9 @@
       "full_period_n": 29,
       "is_ci_lo": -2.174,
       "is_sharpe": 0.591,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -2162,6 +2628,9 @@
       "full_period_n": 29,
       "is_ci_lo": -0.693,
       "is_sharpe": 1.323,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -2175,6 +2644,9 @@
       "full_period_n": 25,
       "is_ci_lo": -0.619,
       "is_sharpe": -0.01,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -2188,6 +2660,9 @@
       "full_period_n": 25,
       "is_ci_lo": -0.978,
       "is_sharpe": 1.119,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -2201,6 +2676,9 @@
       "full_period_n": 25,
       "is_ci_lo": -0.978,
       "is_sharpe": 1.119,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -2214,6 +2692,9 @@
       "full_period_n": 25,
       "is_ci_lo": -0.978,
       "is_sharpe": 1.119,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -2227,6 +2708,9 @@
       "full_period_n": 25,
       "is_ci_lo": -0.978,
       "is_sharpe": 1.119,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -2240,6 +2724,9 @@
       "full_period_n": 25,
       "is_ci_lo": -0.978,
       "is_sharpe": 1.119,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -2253,6 +2740,9 @@
       "full_period_n": 25,
       "is_ci_lo": -0.898,
       "is_sharpe": -0.052,
+      "exits_effective": 21,
+      "exits_collapsed": 2,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -2266,6 +2756,9 @@
       "full_period_n": 25,
       "is_ci_lo": -0.898,
       "is_sharpe": -0.052,
+      "exits_effective": 21,
+      "exits_collapsed": 2,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -2279,6 +2772,9 @@
       "full_period_n": 25,
       "is_ci_lo": -0.898,
       "is_sharpe": -0.052,
+      "exits_effective": 21,
+      "exits_collapsed": 2,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -2292,6 +2788,9 @@
       "full_period_n": 25,
       "is_ci_lo": -0.898,
       "is_sharpe": -0.052,
+      "exits_effective": 21,
+      "exits_collapsed": 2,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -2305,6 +2804,9 @@
       "full_period_n": 25,
       "is_ci_lo": -0.898,
       "is_sharpe": -0.052,
+      "exits_effective": 21,
+      "exits_collapsed": 2,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -2318,6 +2820,9 @@
       "full_period_n": 24,
       "is_ci_lo": -0.667,
       "is_sharpe": 0.156,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -2331,6 +2836,9 @@
       "full_period_n": 24,
       "is_ci_lo": -0.667,
       "is_sharpe": 0.156,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -2344,6 +2852,9 @@
       "full_period_n": 24,
       "is_ci_lo": -0.667,
       "is_sharpe": 0.156,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -2357,6 +2868,9 @@
       "full_period_n": 24,
       "is_ci_lo": -0.667,
       "is_sharpe": 0.156,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -2370,6 +2884,9 @@
       "full_period_n": 24,
       "is_ci_lo": -0.667,
       "is_sharpe": 0.156,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -2383,6 +2900,9 @@
       "full_period_n": 22,
       "is_ci_lo": -0.757,
       "is_sharpe": 0.124,
+      "exits_effective": 21,
+      "exits_collapsed": 2,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -2396,6 +2916,9 @@
       "full_period_n": 22,
       "is_ci_lo": -0.757,
       "is_sharpe": 0.124,
+      "exits_effective": 21,
+      "exits_collapsed": 2,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -2409,6 +2932,9 @@
       "full_period_n": 22,
       "is_ci_lo": -0.757,
       "is_sharpe": 0.124,
+      "exits_effective": 21,
+      "exits_collapsed": 2,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -2422,6 +2948,9 @@
       "full_period_n": 22,
       "is_ci_lo": -0.757,
       "is_sharpe": 0.124,
+      "exits_effective": 21,
+      "exits_collapsed": 2,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -2435,6 +2964,9 @@
       "full_period_n": 22,
       "is_ci_lo": -0.757,
       "is_sharpe": 0.124,
+      "exits_effective": 21,
+      "exits_collapsed": 2,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -2448,6 +2980,9 @@
       "full_period_n": 21,
       "is_ci_lo": -2.39,
       "is_sharpe": 0.176,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -2461,6 +2996,9 @@
       "full_period_n": 21,
       "is_ci_lo": -2.39,
       "is_sharpe": 0.176,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -2474,6 +3012,9 @@
       "full_period_n": 21,
       "is_ci_lo": -0.567,
       "is_sharpe": 0.093,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -2487,6 +3028,9 @@
       "full_period_n": 21,
       "is_ci_lo": -0.567,
       "is_sharpe": 0.093,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -2500,6 +3044,9 @@
       "full_period_n": 21,
       "is_ci_lo": -0.567,
       "is_sharpe": 0.093,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -2513,6 +3060,9 @@
       "full_period_n": 21,
       "is_ci_lo": -0.567,
       "is_sharpe": 0.093,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -2526,6 +3076,9 @@
       "full_period_n": 21,
       "is_ci_lo": -0.624,
       "is_sharpe": 0.033,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -2539,6 +3092,9 @@
       "full_period_n": 21,
       "is_ci_lo": -2.205,
       "is_sharpe": 0.447,
+      "exits_effective": 21,
+      "exits_collapsed": 2,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -2552,6 +3108,9 @@
       "full_period_n": 20,
       "is_ci_lo": -0.683,
       "is_sharpe": 0.01,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -2565,6 +3124,9 @@
       "full_period_n": 19,
       "is_ci_lo": -2.541,
       "is_sharpe": 0.176,
+      "exits_effective": 23,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": null,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -2578,6 +3140,9 @@
       "full_period_n": 19,
       "is_ci_lo": -2.045,
       "is_sharpe": 0.725,
+      "exits_effective": 21,
+      "exits_collapsed": 2,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -2591,6 +3156,9 @@
       "full_period_n": 19,
       "is_ci_lo": -2.045,
       "is_sharpe": 0.725,
+      "exits_effective": 21,
+      "exits_collapsed": 2,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -2604,6 +3172,9 @@
       "full_period_n": 19,
       "is_ci_lo": -2.045,
       "is_sharpe": 0.725,
+      "exits_effective": 21,
+      "exits_collapsed": 2,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -2617,6 +3188,9 @@
       "full_period_n": 19,
       "is_ci_lo": -2.045,
       "is_sharpe": 0.725,
+      "exits_effective": 21,
+      "exits_collapsed": 2,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -2630,6 +3204,9 @@
       "full_period_n": 19,
       "is_ci_lo": -1.141,
       "is_sharpe": 0.189,
+      "exits_effective": 21,
+      "exits_collapsed": 2,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -2643,6 +3220,9 @@
       "full_period_n": 19,
       "is_ci_lo": -1.141,
       "is_sharpe": 0.189,
+      "exits_effective": 21,
+      "exits_collapsed": 2,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -2656,6 +3236,9 @@
       "full_period_n": 19,
       "is_ci_lo": -1.141,
       "is_sharpe": 0.189,
+      "exits_effective": 21,
+      "exits_collapsed": 2,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -2669,6 +3252,9 @@
       "full_period_n": 19,
       "is_ci_lo": -1.141,
       "is_sharpe": 0.189,
+      "exits_effective": 21,
+      "exits_collapsed": 2,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -2682,6 +3268,9 @@
       "full_period_n": 19,
       "is_ci_lo": -1.141,
       "is_sharpe": 0.189,
+      "exits_effective": 21,
+      "exits_collapsed": 2,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -2695,6 +3284,9 @@
       "full_period_n": 17,
       "is_ci_lo": -2.536,
       "is_sharpe": 0.784,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -2708,6 +3300,9 @@
       "full_period_n": 17,
       "is_ci_lo": -2.536,
       "is_sharpe": 0.784,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -2721,6 +3316,9 @@
       "full_period_n": 17,
       "is_ci_lo": -2.536,
       "is_sharpe": 0.784,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -2734,6 +3332,9 @@
       "full_period_n": 17,
       "is_ci_lo": -2.536,
       "is_sharpe": 0.784,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -2747,6 +3348,9 @@
       "full_period_n": 17,
       "is_ci_lo": -2.536,
       "is_sharpe": 0.784,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -2760,6 +3364,9 @@
       "full_period_n": 17,
       "is_ci_lo": -0.845,
       "is_sharpe": -0.06,
+      "exits_effective": 21,
+      "exits_collapsed": 2,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -2773,6 +3380,9 @@
       "full_period_n": 17,
       "is_ci_lo": -0.845,
       "is_sharpe": -0.06,
+      "exits_effective": 21,
+      "exits_collapsed": 2,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -2786,6 +3396,9 @@
       "full_period_n": 17,
       "is_ci_lo": -0.845,
       "is_sharpe": -0.06,
+      "exits_effective": 21,
+      "exits_collapsed": 2,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -2799,6 +3412,9 @@
       "full_period_n": 17,
       "is_ci_lo": -0.845,
       "is_sharpe": -0.06,
+      "exits_effective": 21,
+      "exits_collapsed": 2,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -2812,6 +3428,9 @@
       "full_period_n": 17,
       "is_ci_lo": -0.845,
       "is_sharpe": -0.06,
+      "exits_effective": 21,
+      "exits_collapsed": 2,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -2825,6 +3444,9 @@
       "full_period_n": 16,
       "is_ci_lo": -1.67,
       "is_sharpe": 0.799,
+      "exits_effective": 21,
+      "exits_collapsed": 2,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -2838,6 +3460,9 @@
       "full_period_n": 16,
       "is_ci_lo": -1.67,
       "is_sharpe": 0.799,
+      "exits_effective": 21,
+      "exits_collapsed": 2,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -2851,6 +3476,9 @@
       "full_period_n": 14,
       "is_ci_lo": -3.248,
       "is_sharpe": 0.292,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -2864,6 +3492,9 @@
       "full_period_n": 14,
       "is_ci_lo": -3.248,
       "is_sharpe": 0.292,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -2877,6 +3508,9 @@
       "full_period_n": 14,
       "is_ci_lo": -3.248,
       "is_sharpe": 0.292,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -2890,6 +3524,9 @@
       "full_period_n": 14,
       "is_ci_lo": -3.248,
       "is_sharpe": 0.292,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -2903,6 +3540,9 @@
       "full_period_n": 14,
       "is_ci_lo": -3.248,
       "is_sharpe": 0.292,
+      "exits_effective": 22,
+      "exits_collapsed": 1,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -2916,6 +3556,9 @@
       "full_period_n": 14,
       "is_ci_lo": -0.827,
       "is_sharpe": 0.018,
+      "exits_effective": 21,
+      "exits_collapsed": 2,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -2929,6 +3572,9 @@
       "full_period_n": 14,
       "is_ci_lo": -0.827,
       "is_sharpe": 0.018,
+      "exits_effective": 21,
+      "exits_collapsed": 2,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -2942,6 +3588,9 @@
       "full_period_n": 14,
       "is_ci_lo": -0.827,
       "is_sharpe": 0.018,
+      "exits_effective": 21,
+      "exits_collapsed": 2,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -2955,6 +3604,9 @@
       "full_period_n": 14,
       "is_ci_lo": -0.827,
       "is_sharpe": 0.018,
+      "exits_effective": 21,
+      "exits_collapsed": 2,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -2968,6 +3620,9 @@
       "full_period_n": 14,
       "is_ci_lo": -0.827,
       "is_sharpe": 0.018,
+      "exits_effective": 21,
+      "exits_collapsed": 2,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -2981,6 +3636,9 @@
       "full_period_n": 13,
       "is_ci_lo": -0.544,
       "is_sharpe": 2.811,
+      "exits_effective": 21,
+      "exits_collapsed": 2,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -2994,6 +3652,9 @@
       "full_period_n": 13,
       "is_ci_lo": -0.544,
       "is_sharpe": 2.811,
+      "exits_effective": 21,
+      "exits_collapsed": 2,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -3007,6 +3668,9 @@
       "full_period_n": 13,
       "is_ci_lo": -0.544,
       "is_sharpe": 2.811,
+      "exits_effective": 21,
+      "exits_collapsed": 2,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -3020,6 +3684,9 @@
       "full_period_n": 13,
       "is_ci_lo": -0.544,
       "is_sharpe": 2.811,
+      "exits_effective": 21,
+      "exits_collapsed": 2,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -3033,6 +3700,9 @@
       "full_period_n": 12,
       "is_ci_lo": -2.267,
       "is_sharpe": 0.599,
+      "exits_effective": 22,
+      "exits_collapsed": 2,
+      "npt_excluded_identity_boundary": null,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -3046,6 +3716,9 @@
       "full_period_n": 12,
       "is_ci_lo": -0.742,
       "is_sharpe": 2.651,
+      "exits_effective": 21,
+      "exits_collapsed": 2,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -3059,6 +3732,9 @@
       "full_period_n": 11,
       "is_ci_lo": -2.094,
       "is_sharpe": 0.919,
+      "exits_effective": 22,
+      "exits_collapsed": 2,
+      "npt_excluded_identity_boundary": null,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -3072,6 +3748,9 @@
       "full_period_n": 11,
       "is_ci_lo": -2.094,
       "is_sharpe": 0.919,
+      "exits_effective": 22,
+      "exits_collapsed": 2,
+      "npt_excluded_identity_boundary": null,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -3085,6 +3764,9 @@
       "full_period_n": 11,
       "is_ci_lo": -2.094,
       "is_sharpe": 0.919,
+      "exits_effective": 22,
+      "exits_collapsed": 2,
+      "npt_excluded_identity_boundary": null,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -3098,6 +3780,9 @@
       "full_period_n": 11,
       "is_ci_lo": -2.094,
       "is_sharpe": 0.919,
+      "exits_effective": 22,
+      "exits_collapsed": 2,
+      "npt_excluded_identity_boundary": null,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -3111,6 +3796,9 @@
       "full_period_n": 11,
       "is_ci_lo": -1.405,
       "is_sharpe": 0.313,
+      "exits_effective": 20,
+      "exits_collapsed": 3,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -3124,6 +3812,9 @@
       "full_period_n": 11,
       "is_ci_lo": -1.405,
       "is_sharpe": 0.313,
+      "exits_effective": 20,
+      "exits_collapsed": 3,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -3137,6 +3828,9 @@
       "full_period_n": 11,
       "is_ci_lo": -1.405,
       "is_sharpe": 0.313,
+      "exits_effective": 20,
+      "exits_collapsed": 3,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -3150,6 +3844,9 @@
       "full_period_n": 11,
       "is_ci_lo": -1.405,
       "is_sharpe": 0.313,
+      "exits_effective": 20,
+      "exits_collapsed": 3,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -3163,6 +3860,9 @@
       "full_period_n": 11,
       "is_ci_lo": -1.405,
       "is_sharpe": 0.313,
+      "exits_effective": 20,
+      "exits_collapsed": 3,
+      "npt_excluded_identity_boundary": true,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -3176,6 +3876,9 @@
       "full_period_n": 11,
       "is_ci_lo": -1.014,
       "is_sharpe": 0.204,
+      "exits_effective": 22,
+      "exits_collapsed": 2,
+      "npt_excluded_identity_boundary": null,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -3189,6 +3892,9 @@
       "full_period_n": 11,
       "is_ci_lo": -1.014,
       "is_sharpe": 0.204,
+      "exits_effective": 22,
+      "exits_collapsed": 2,
+      "npt_excluded_identity_boundary": null,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -3202,6 +3908,9 @@
       "full_period_n": 11,
       "is_ci_lo": -1.014,
       "is_sharpe": 0.204,
+      "exits_effective": 22,
+      "exits_collapsed": 2,
+      "npt_excluded_identity_boundary": null,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -3215,6 +3924,9 @@
       "full_period_n": 11,
       "is_ci_lo": -1.014,
       "is_sharpe": 0.204,
+      "exits_effective": 22,
+      "exits_collapsed": 2,
+      "npt_excluded_identity_boundary": null,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {
@@ -3228,6 +3940,9 @@
       "full_period_n": 11,
       "is_ci_lo": -1.014,
       "is_sharpe": 0.204,
+      "exits_effective": 22,
+      "exits_collapsed": 2,
+      "npt_excluded_identity_boundary": null,
       "verdict": "BELOW_POWER_FLOOR"
     },
     {

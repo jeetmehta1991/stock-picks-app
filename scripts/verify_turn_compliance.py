@@ -3999,6 +3999,75 @@ def scan_bare_python_launch(entries, *, cmds=None) -> list[str]:
             + bad[0][:120]]
 
 
+def scan_undelivered_landing(entries, *, text=None, landings=None) -> list[str]:
+    """B2520 (owner ruling 2026-09-01): a landed cube is REPORTED to the owner
+    before a turn may end - "once the config lands, i want it to run
+    automatically no exceptions and share results with me".
+
+    The landing supervisor (scripts/postconfig_landing.py, called by the engine
+    the moment a cube lands) appends an event with reported_to_owner=false to
+    output_audit/postconfig_landings.jsonl. Nothing in that path depends on a
+    session being alive (L641) - so the RECORD is durable, and this gate makes
+    the REPORT unavoidable: while any landing's last event is unreported, the
+    final response must carry `LANDING REPORT: <cube>` for it (the block the
+    supervisor prints; paste or restate it). A match flips the record to
+    reported=true; a miss BLOCKS with the cube named. The turn preamble
+    (inject_tier3_discipline.py) prints the same undelivered list at the top
+    of the next turn, so the reader has two chances before the gate has one.
+
+    Why a gate and not a habit: run_wave rendered the battery result to a file
+    (B2208) and to a report (B2211), and the owner still asked "has the
+    mandatory post config analysis been run?" - a file nobody is made to
+    read is a file nobody read (L721 shape).
+    """
+    try:
+        _here = str(Path(__file__).resolve().parent)
+        if _here not in sys.path:          # imported from a test, not run as a script
+            sys.path.insert(0, _here)
+        import postconfig_landing as _pl
+    except Exception as _exc:              # a BROKEN gate is itself a finding
+        return [f"UNDELIVERED-LANDING GATE BROKEN: postconfig_landing import "
+                f"failed ({_exc!r}) - fail CLOSED"]
+    # #241 seam: `landings` is the jsonl PATH in production and may be an
+    # in-memory list of landing events (the incident corpus), so the gate is
+    # exercisable on FIXED input without touching the live record.
+    in_memory = isinstance(landings, (list, tuple))
+    if in_memory:
+        path, pending = None, _pl.undelivered_events(list(landings))
+    else:
+        path = _pl.LANDINGS if landings is None else Path(landings)
+        pending = _pl.undelivered(path)
+    if not pending:
+        return []
+    body = _response_text(entries, text, keep_code=True)
+    delivered = [ev["cube"] for ev in pending
+                 if f"landing report: {ev['cube'].lower()}" in body]
+    # B2520: the in-memory seam does NOT write back. It used to flip
+    # reported_to_owner on the caller's own dicts, which made a corpus case
+    # STATEFUL - the must-QUIET arm passed, and re-running it with the report
+    # removed stayed quiet because the previous call had already marked it.
+    # A seam that mutates its input proves nothing on the second call.
+    if delivered and not in_memory:
+        try:
+            _pl.mark_reported(delivered, path, by="verify_turn_compliance")
+        except Exception as _exc:
+            return [f"UNDELIVERED-LANDING GATE could not mark {delivered} "
+                    f"reported ({_exc!r}) - fail CLOSED"]
+    # #244: the rule is per landing, so the check names EACH member; the
+    # member label carries what the owner needs to find the result.
+    required = {
+        (f"{ev['cube']} (battery exit {ev.get('battery_exit')}, blocking "
+         f"{ev.get('blocking') or 'none'}, findings "
+         f"{len(ev.get('findings') or [])})"): ev["cube"] in delivered
+        for ev in pending}
+    return require_each(
+        "LANDED CUBE NOT REPORTED TO THE OWNER (B2520)", required,
+        why=("A cube landed and the owner has not seen its post-config result. "
+             "Put a `LANDING REPORT: <cube>` block in the final response for EACH "
+             "(the supervisor printed one; `python scripts/postconfig_landing.py "
+             "--cube <dir> --if-not-landed --no-git --no-notify` reprints it)."))
+
+
 def scan_bulk_process_kill(entries, *, cmds=None) -> list[str]:
     import re as _re
 
@@ -4226,7 +4295,9 @@ def main() -> int:
                 scan_monitor_without_stall_check,
                 scan_bulk_process_kill,
                 scan_bare_python_launch,
-                scan_monitor_pattern_unverified):
+                scan_monitor_pattern_unverified,
+                # B2520: a landed cube must be REPORTED before the turn ends.
+                scan_undelivered_landing):
         try:
             _r = _sc(_e2)
         except Exception as _e:

@@ -13609,13 +13609,22 @@ def test_b1486_claude_md_banner_counts_are_fresh():
     # #205 - 13 items outside the freshness check it exists to provide.
     # Same class as L469 (a heading format invisible to its consuming parser)
     # and #199 (fix the parser, not the artifact it mis-reads).
+    # B2520: the second pattern pinned the heading LEVEL at exactly three
+    # hashes, so #287 - written as "## #287" - was invisible and the
+    # banner check reported max=286. Third instance of the B1610 class in
+    # this one parser: match the item, not the level.
     pats = (_re.compile(r"^(?:\*{0,2}#?)(\d+)[.\s]"),
-            _re.compile(r"^###\s+#(\d+)[\s" + chr(0x2014) + "-]"))
+            _re.compile(r"^#{2,4}\s+#(\d+)[\s" + chr(0x2014) + "-]"))
     actual_ck = max(int(m.group(1)) for ln in checklist.splitlines()
                     for pat in pats if (m := pat.match(ln)))
 
     learnings = (repo / "LEARNINGS.md").read_text(encoding="utf-8", errors="ignore")
-    actual_l = max(int(n) for n in _re.findall(r"^### L(\d+)$", learnings, _re.M))
+    # B2520: `^### L(\d+)$` saw ONLY the bare "### L730" form and was blind to
+    # the dashed "### L731 - title" form every entry since L731 uses - the
+    # banner sat at L730 through six entries with this test GREEN. Same class
+    # as the B1610 note above (a heading format invisible to its consuming
+    # parser); fix the parser (#199).
+    actual_l = max(int(n) for n in _re.findall(r"^### L(\d+)(?:\s|$)", learnings, _re.M))
 
     m_ck = _re.search(r"CHECKLIST #1-#(\d+)", banner)
     m_l = _re.search(r"LEARNINGS L1-L(\d+)", banner)
@@ -24707,7 +24716,7 @@ def test_b2114_breaker_legs_are_retest_event_anchored():
     assert r["fires"] is True and r["direction"] == "short"
 
 
-def test_b2116_run_wave_resume_loop_both_ways(tmp_path):
+def test_b2116_run_wave_resume_loop_both_ways(tmp_path, monkeypatch):
     """B2116 (S6-B2115b): the orchestrator's leg/resume loop, seam-driven.
     Leg 1's fake engine checkpoints out (writes engine_state.json, no cube)
     - the orchestrator MUST relaunch with --resume-from-checkpoint; leg 2
@@ -24721,6 +24730,13 @@ def test_b2116_run_wave_resume_loop_both_ways(tmp_path):
     root = _P(__file__).resolve().parents[2]
     spec_dir = tmp_path
     wave = "b2116test"
+    # B2520: the wave lands the cube through the landing supervisor. The
+    # durable landing record goes to a TEMP file (never the production
+    # jsonl - a fake cube must never be owed a LANDING REPORT) and git is
+    # disabled belt-and-braces (run_wave already passes --no-git for a
+    # substitute engine).
+    monkeypatch.setenv("POSTCONFIG_LANDINGS_PATH", str(tmp_path / "landings.jsonl"))
+    monkeypatch.setenv("POSTCONFIG_LANDING_NO_GIT", "1")
     out_dir = root / f"output_{wave}_armx"
     # B2277 (S6-B2269, owner-approved option b): this test drives run_wave
     # against the PRODUCTION ledger, and run_arm regenerates the findings doc
@@ -24786,12 +24802,38 @@ if n == 1:
         ledger = _json.loads((root / "output_audit" /
                               "postconfig_ledger.json").read_text())
         ent = ledger[f"output_{wave}_armx"]
-        assert ent["1_cube_sanity"]["status"] == "DONE"
-        assert "PENDING-WAVE-REVIEW" in ent["5_adversarial_lens_review"]["evidence"]
+        # B2520: for a substitute engine the supervisor call in run_wave IS
+        # the landing - every one of the nine steps is recorded, none is
+        # SKIPPED, and the wave's own evidence rides on step 1 WITHOUT
+        # overriding the battery's status: the junk 2-column cube fails
+        # sanity (checks_crashed), so FAIL stands. Until B2520 this block
+        # asserted the phantom deferral (SKIPPED "PENDING-WAVE-REVIEW")
+        # that the owner asked about (L721).
+        _sys.path.insert(0, str(root / "scripts"))
+        import verify_postconfig_complete as _vpc
+        for _s in _vpc.STEPS:
+            assert _s in ent, f"{_s} not recorded by the landing: {sorted(ent)}"
+            assert ent[_s]["status"] != "SKIPPED", (_s, ent[_s])
+        assert ent["1_cube_sanity"]["status"] == "FAIL", ent["1_cube_sanity"]
+        assert ("run_wave verified 2 cube rows across 2 leg(s)"
+                in ent["1_cube_sanity"]["evidence"]), ent["1_cube_sanity"]
+        assert "PENDING-WAVE-REVIEW" not in _json.dumps(ent)
+        assert res["postconfig_exit"] == 2, res
+        # the durable landing record: cube, source, exit, and that the
+        # owner has not seen it yet (the Stop hook reads this flag)
+        evs = [_json.loads(x) for x in (tmp_path / "landings.jsonl")
+               .read_text(encoding="utf-8").splitlines() if x.strip()]
+        assert [e["cube"] for e in evs] == [f"output_{wave}_armx"], evs
+        assert evs[0]["source"] == "run_wave" and evs[0]["battery_exit"] == 2
+        assert evs[0]["reported_to_owner"] is False
+        assert evs[0]["committed"] is False and evs[0]["pushed"] is False
+        assert "1_cube_sanity" in evs[0]["blocking"], evs[0]["blocking"]
     finally:
         shutil.rmtree(out_dir, ignore_errors=True)
         (root / "output_audit" / f"{wave}_wave_summary.json").unlink(missing_ok=True)
         (root / "output_audit" / f"{wave}_summary.log").unlink(missing_ok=True)
+        for _sfx in ("_grid_auto", "_spot_check", "_lenses"):   # B2520 battery artifacts
+            (root / "output_audit" / f"output_{wave}_armx{_sfx}.json").unlink(missing_ok=True)
         led_p = root / "output_audit" / "postconfig_ledger.json"
         led = _json.loads(led_p.read_text())
         led.pop(f"output_{wave}_armx", None)
@@ -26529,9 +26571,20 @@ def test_b2211_single_doc_reports_findings_not_status(tmp_path, monkeypatch):
     assert "50 of 50 sampled trades" in body, "step 4 findings missing"
     assert "77 (26%) STARVED" in body, "the funnel's headline loss is missing"
     assert "5 of 9 steps ran" not in body  # this fixture has 2 steps, not 9
-    assert "incomplete by design" in body, "outstanding judgment steps must be stated"
-    # the retired card's failure mode must not return
-    assert "| DONE |" not in body, "status-only rows are what the owner rejected"
+    # B2520: "incomplete by design" is RETIRED - that phrase normalised the
+    # very skip the owner asked about. The open steps are NAMED, the cube is
+    # said to block the gate, and SKIPPED is not a disposition.
+    assert "incomplete by design" not in body
+    assert "**Completeness: 1 of 9 steps closed**" in body, body
+    assert "8 step(s) NOT closed" in body and "SKIPPED is not a disposition (B2520)" in body
+    assert "| 5_adversarial_lens_review | SKIPPED **<-- NOT CLOSED** | x |" in body
+    # the retired card's failure mode must not return: a status with nothing
+    # beside it. Every closed step row carries its evidence / reason.
+    import re as _re
+    closed_rows = _re.findall(r"^\| (\S+) \| (DONE|N/A) \| (.*) \|$", body, flags=_re.M)
+    assert [r[0] for r in closed_rows] == ["1_cube_sanity"], closed_rows
+    for _row in closed_rows:
+        assert _row[2].strip() not in ("", "-"), ("status-only row", _row)
 
 def test_b2214_kill_wave_tree_targets_by_identity_not_name(tmp_path, monkeypatch):
     """B2214 (L658, compliance failure vs L411): the kill helper must target
@@ -28050,18 +28103,32 @@ def test_b2342_ranking_is_a_slice_not_the_population():
         if not rank or not res:
             continue
         checked += 1
+        # B2520: a SINGLE-COMBINATION grid (institutional Step-1, one config
+        # per cube - scripts/grade_institutional_config.py) ranks the EXITS
+        # inside its one combination. There `results` is the one-row funnel
+        # (the combination and its verdict) and the population the ranking
+        # slices is `per_exit`. Same asymmetry, different key - counting
+        # exits over step1_ranking on that grid is the L708 error verbatim,
+        # so the pin names the population per shape instead of skipping it.
+        if 'per_exit' in g:
+            assert len(res) == 1, (
+                f'{p.name}: a per_exit grid is ONE combination; results holds '
+                f'{len(res)} rows')
+            pop, pop_name = g['per_exit'], 'per_exit'
+        else:
+            pop, pop_name = res, 'results'
         # (a) the ranking is BOUNDED and small; the population is not
         assert len(rank) <= 10, (
             f'{p.name}: step1_ranking holds {len(rank)} rows - it is a top-N '
             'view and the bound is what makes counting over it a selection')
-        assert len(res) > len(rank), (
-            f'{p.name}: results ({len(res)}) must exceed the ranking '
+        assert len(pop) > len(rank), (
+            f'{p.name}: {pop_name} ({len(pop)}) must exceed the ranking '
             f'({len(rank)}) - if they were equal the view would BE the '
             'population and the distinction this pins would not exist')
         # (b) the population carries strictly more distinct exits than the
         # view - the exact asymmetry that produced the wrong claim
         r_ex = {r.get('exit') for r in rank if r.get('exit')}
-        p_ex = {r.get('exit') for r in res if r.get('exit')}
+        p_ex = {r.get('exit') for r in pop if r.get('exit')}
         assert r_ex <= p_ex, (
             f'{p.name}: the ranking names an exit absent from results - the '
             'view must be a SUBSET of the population')
@@ -28785,20 +28852,32 @@ def test_b2440_skipped_judgment_step_fails_the_completeness_gate():
             "disposition (L721/S6-B2436)")
         assert m.terminal_for(s) == {"DONE", "N/A"}, m.terminal_for(s)
 
-    # must-QUIET: SKIPPED still closes an AUTO step, where a skip is a real
-    # operational disposition. Without this arm the fix would over-reach.
+    # B2520 (owner ruling 2026-09-01: "they should ideally not get skipped at
+    # all"): the must-QUIET arm that once kept SKIPPED terminal for the five
+    # AUTO steps is RETIRED - SKIPPED closes NOTHING now. The battery records
+    # every step on every landing, so an AUTO step has no legitimate skip
+    # left: it is DONE with evidence, N/A with a reason, or it blocks.
     auto = [s for s in m.STEPS if s not in m.JUDGMENT_STEPS]
     assert len(auto) == 5, auto
     for s in auto:
-        assert "SKIPPED" in m.terminal_for(s), (
-            f"{s}: an AUTO step must still accept SKIPPED-with-a-reason")
+        assert "SKIPPED" not in m.terminal_for(s), (
+            f"{s}: SKIPPED is terminal for an AUTO step again - B2520 retired "
+            "the skip for every step")
+        assert m.terminal_for(s) == {"DONE", "N/A"}
 
-    # and the gate must CONSULT the per-step set, not a single global one
+    # and the gate must decide CLOSURE per row (status AND evidence), not by
+    # status alone - a terminal status with no evidence is not a disposition
     src = (root / "scripts" / "verify_postconfig_complete.py").read_text(
         encoding="utf-8")
-    assert "terminal_for(s)" in src, (
-        "the main loop no longer calls terminal_for - it is back on one "
-        "global TERMINAL set and judgment steps accept SKIPPED again")
+    assert "is_closed(entry.get(s))" in src, (
+        "the main loop no longer calls is_closed - it is back on a status-only "
+        "check and an evidence-less N/A closes a step again")
+    assert m.is_closed({"status": "DONE", "evidence": "x"}) is True
+    assert m.is_closed({"status": "N/A", "reason": "x"}) is True
+    assert m.is_closed({"status": "N/A"}) is False
+    assert m.is_closed({"status": "SKIPPED", "evidence": "x"}) is False
+    assert m.is_closed({"status": "OPEN", "evidence": "x"}) is False
+    assert m.is_closed(None) is False
 
 
 def test_b2439_postconfig_battery_rules_survive_in_the_runbook():
@@ -28841,13 +28920,21 @@ def test_b2439_postconfig_battery_rules_survive_in_the_runbook():
                  "JUDGMENT"):
         assert frag in plan, f"the runbook no longer names {frag!r}"
 
-    # must-QUIET arm (L686): the code's own never-auto-mark statement is what
-    # makes these steps judgment steps. If it vanished, the rule above would be
-    # describing a battery that no longer exists in that shape.
+    # must-QUIET arm (L686), RETARGETED at B2520: the code's declaration that
+    # made steps 5/6/8 "never auto-marked" is GONE by owner ruling ("once the
+    # config lands, i want it to run automatically no exceptions") - the
+    # battery now records every step on every run and never writes SKIPPED.
+    # If THAT declaration vanished, the runbook rule would again describe a
+    # battery that no longer exists in that shape.
     rp = (root / "scripts" / "run_postconfig.py").read_text(encoding="utf-8")
-    assert "JUDGMENT PROMPTS (never auto-marked)" in rp, (
-        "run_postconfig no longer declares the judgment steps un-auto-markable "
-        "- the runbook rule and the code have drifted apart")
+    assert "JUDGMENT PROMPTS (never auto-marked)" not in rp, (
+        "run_postconfig declares judgment steps un-auto-markable again - the "
+        "B2520 ruling (every step, every landing, no exceptions) was reverted")
+    for frag in ("EVERY step written to the ledger on EVERY run, FAIL included",
+                 "never SKIPPED"):
+        assert frag in rp, (
+            f"run_postconfig no longer declares {frag!r} - the runbook rule "
+            "and the code have drifted apart")
 
 
 def test_b2450_tightening_over_a_backlog_rule_survives_in_the_skill():
@@ -28899,9 +28986,13 @@ def test_b2450_tightening_over_a_backlog_rule_survives_in_the_skill():
     assert "SKIPPED" not in vpc.terminal_for("5_adversarial_lens_review"), (
         "SKIPPED is terminal again for a judgment step - rule 9b's whole "
         "premise (the tightening that created the backlog) has been reverted")
-    assert "SKIPPED" in vpc.terminal_for("1_cube_sanity"), (
-        "the tightening leaked onto the AUTO steps; 9b describes a change "
-        "scoped to steps 5-8 only")
+    # B2520 widened the tightening to EVERY step by owner ruling ("they
+    # should ideally not get skipped at all") - 9b's backlog population is
+    # now every SKIPPED row, judgment or auto, and the landing supervisor is
+    # the disposal plan the rule demands.
+    assert "SKIPPED" not in vpc.terminal_for("1_cube_sanity"), (
+        "SKIPPED is terminal for an AUTO step again - the B2520 widening of "
+        "the tightening was reverted without a disposal plan")
 
 
 def test_b2487_supervisor_is_thread_based_and_that_limit_is_recorded():
@@ -30089,3 +30180,484 @@ def test_b2508_l734_design_matrix_rule_is_anchored():
             ("prove-it-can-fail extends from pins to DESIGNS", check),
             ("L734", check)):
         assert frag in where, "L734 anchoring lost: %s" % frag
+
+
+# ---------------------------------------------------------------------------
+# B2520 (owner ruling 2026-09-01): "Once the config lands, i want it to run
+# automatically no exceptions and share results with me." Six owner asks
+# (B2177 -> B2192 -> B2198/B2208 -> B2211 -> S6-B2436 -> S6-B2515) had each
+# been answered with an instance fix. These pins cover the CLASS: the engine
+# lands every cube (one supervisor outside the launch paths), the battery
+# records all nine steps and never SKIPs, the gate closes nothing without
+# evidence, and the result cannot stay unreported. Every pin carries a
+# must-FIRE and a must-QUIET arm (B1944).
+# ---------------------------------------------------------------------------
+
+def _b2520_scripts_on_path():
+    import sys as _s
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    sp = str(root / "scripts")
+    if sp not in _s.path:
+        _s.path.insert(0, sp)
+    return root
+
+
+def test_b2520_engine_hook_lands_every_cube(tmp_path, monkeypatch):
+    """The battery is invoked from run_phase1a.main() itself - after the
+    quality gate, before the return - so chain / wave / sweep / direct /
+    resume launches all land through ONE supervisor (execution-discipline
+    rule 4). Before B2520 only run_wave called it; output_icg_cfg1 landed by
+    a direct launch with no gate receipt and a hand-built grid (S6-B2515)."""
+    import subprocess as _sp
+    from types import SimpleNamespace
+
+    import backtest.run_phase1a as r
+    root = _b2520_scripts_on_path()
+    src = (root / "backtest" / "run_phase1a.py").read_text(encoding="utf-8")
+    assert src.count("_postconfig_landing_hook(args.output_dir)") == 1
+    assert (src.index("_postconfig_landing_hook(args.output_dir)")
+            > src.index("phase1a_quality_gate(engine)")), (
+        "the landing hook must run AFTER the quality gate, on the landed cube")
+
+    calls = []
+
+    def fake(cmd, *a, **k):
+        calls.append(list(cmd))
+        return SimpleNamespace(returncode=0)
+    monkeypatch.setattr(_sp, "run", fake)
+    monkeypatch.delenv("POSTCONFIG_LANDING", raising=False)
+    out = tmp_path / "output_b2520_hook"
+    out.mkdir()
+    # must-QUIET 1: no cube file -> nothing landed, nothing owed, no call
+    assert r._postconfig_landing_hook(str(out)) is None
+    assert calls == []
+    (out / "trade_exit_detail.csv").write_text("h\n1\n", encoding="utf-8")
+    # must-QUIET 2: the explicit, logged opt-out for ad-hoc probes
+    monkeypatch.setenv("POSTCONFIG_LANDING", "0")
+    assert r._postconfig_landing_hook(str(out)) is None
+    assert calls == []
+    monkeypatch.delenv("POSTCONFIG_LANDING")
+    # must-FIRE: a landed cube runs the supervisor with the full channel set
+    assert r._postconfig_landing_hook(str(out)) == 0
+    assert len(calls) == 1, calls
+    cmd = calls[0]
+    assert cmd[1].replace("\\", "/").endswith("scripts/postconfig_landing.py"), cmd
+    for tok in ("--cube", str(out), "--if-not-landed", "--source", "engine-hook"):
+        assert tok in cmd, (tok, cmd)
+    assert "--no-git" not in cmd and "--no-notify" not in cmd, (
+        "a REAL landing commits, pushes and toasts - only substitute engines "
+        "(run_wave --engine-cmd) switch those off")
+    # never raises: a reporting failure must not turn a landed cube into a
+    # failed run (the ledger gate still blocks the turn)
+
+    def boom(cmd, *a, **k):
+        raise OSError("no interpreter")
+    monkeypatch.setattr(_sp, "run", boom)
+    assert r._postconfig_landing_hook(str(out)) is None
+
+
+def test_b2520_battery_records_all_nine_steps_and_fails_closed(tmp_path):
+    """A cube the battery cannot grade (no strategy column, no family) is
+    recorded on EVERY step as FAIL/OPEN and exits 2 - never 'skipped as a
+    pre-B2138 cube', which is what the old else-branch did (fail open, L642).
+    Read from the battery's own stdout so the pin sees what a reader sees."""
+    import re as _re
+    import subprocess as _sp
+    import sys as _s
+
+    root = _b2520_scripts_on_path()
+    import verify_postconfig_complete as vpc
+    cube = tmp_path / "output_b2520junk_test"
+    cube.mkdir()
+    (cube / "trade_exit_detail.csv").write_text("h1,h2\na,1\nb,2\n", encoding="utf-8")
+    lens = root / "output_audit" / "output_b2520junk_test_lenses.json"
+    try:
+        r = _sp.run([_s.executable, str(root / "scripts" / "run_postconfig.py"),
+                     "--cube", str(cube), "--step1-cube"],
+                    cwd=str(root), capture_output=True, text=True, encoding="utf-8",
+                    errors="replace")
+        assert r.returncode == 2, r.stdout + r.stderr
+        found = {}
+        for line in r.stdout.splitlines():
+            m = _re.match(r"^\s+(DONE|N/A|OPEN|FAIL|SKIPPED)\s+(\S+?):", line)
+            if m and m.group(2) in vpc.STEPS:
+                found[m.group(2)] = m.group(1)
+        assert set(found) == set(vpc.STEPS), (found, r.stdout)
+        assert "SKIPPED" not in found.values(), found
+        assert found["1_cube_sanity"] == "FAIL", found          # checks crashed
+        assert found["2_grade_with_config_params"] == "FAIL", found
+        assert found["6b_equivalence_class_check"] == "FAIL", found
+        assert found["7_implement_in_engine"] == "FAIL", found
+        assert found["8_verdict_with_denominators"] == "OPEN", found
+        assert "no registered post-config family" in r.stdout
+        assert "fail closed" in r.stdout
+        assert "PENDING-WAVE-REVIEW" not in r.stdout      # the phantom deferral is gone
+        # step 5's artifact is written on every run, --write-ledger or not
+        assert lens.is_file(), "lens artifact not written"
+    finally:
+        lens.unlink(missing_ok=True)
+
+
+def test_b2520_battery_and_gate_share_one_step_list_and_one_terminal_set():
+    """The battery imports the gate's STEPS (one list, not two copies that
+    drift) and both agree that only DONE and N/A are terminal."""
+    _b2520_scripts_on_path()
+    import run_postconfig as rp
+    import verify_postconfig_complete as vpc
+    assert rp.STEPS is vpc.STEPS
+    assert len(vpc.STEPS) == 9 and len(set(vpc.STEPS)) == 9
+    assert tuple(rp.TERMINAL) == ("DONE", "N/A")
+    assert vpc.TERMINAL == {"DONE", "N/A"} and set(rp.TERMINAL) == vpc.TERMINAL
+    for s in vpc.STEPS:
+        assert vpc.terminal_for(s) == {"DONE", "N/A"}, s
+        assert "SKIPPED" not in vpc.terminal_for(s), s
+    # the family registry: both graded families registered, each complete
+    assert {"smc_breaker_block_long", "institutional_committed_growth_long"} <= set(rp.FAMILIES)
+    for name, fam in rp.FAMILIES.items():
+        assert callable(fam["params"]) and callable(fam["run"]), name
+        assert isinstance(fam["single_combination"], bool), name
+
+
+def test_b2520_institutional_grader_golden_on_cfg1():
+    """The institutional Step-1 grader, pinned on the landed config-1 cube
+    (values read from output_audit/output_icg_cfg1_grid_auto.json at
+    B2520). Skipped where the cube dir is absent - cube dirs are never
+    committed (L735/#166)."""
+    import pytest as _pt
+    root = _b2520_scripts_on_path()
+    csv = root / "output_icg_cfg1" / "trade_exit_detail.csv"
+    if not csv.is_file():
+        _pt.skip("output_icg_cfg1 cube not on this machine (cube dirs are never committed)")
+    import grade_institutional_config as g
+    res = g.grade(csv, {"P4_min_consecutive_quarters": 4,
+                        "P5_growth_lookback_quarters": 4,
+                        "P6_growth_multiple": 1.1, "P9_span": 200},
+                  {"min_committed_growth": 3, "fallback_min_increased": 5})
+    assert res["strategy"] == "institutional_committed_growth_long"
+    assert res["results_n_exits"] == 24, res["results_n_exits"]
+    assert res["step1_combinations_carried"] == 1
+    assert res["step1_distinct_outcomes"] == 1
+    top = res["step1_ranking"][0]
+    assert top["exit"] == "breakeven_plus_trail", top
+    assert round(top["is_sharpe"], 3) == 0.263, top
+    assert round(top["is_ci_lo"], 3) == -0.087, top
+    assert top["fires"] == 373, top
+
+
+def test_b2520_institutional_spot_check_artifact_schema():
+    """The institutional spot-check artifact carries the same top-level keys
+    the report reader and the lens battery consume, and its tallies add up.
+    Skipped when the artifact is absent."""
+    import json as _j
+    import pytest as _pt
+    root = _b2520_scripts_on_path()
+    p = root / "output_audit" / "output_icg_cfg1_spot_check.json"
+    if not p.is_file():
+        _pt.skip("output_icg_cfg1 spot-check artifact absent")
+    d = _j.loads(p.read_text(encoding="utf-8"))
+    for k in ("family", "checker", "n_sampled", "seed", "agree", "disagree",
+              "skipped", "empty_records", "legs_ab_disagree", "execution_failures",
+              "rows", "ema_span", "min_committed_growth", "fallback_min_increased"):
+        assert k in d, k
+    assert d["family"] == "institutional_committed_growth_long"
+    assert d["n_sampled"] == len(d["rows"]) > 0
+    assert d["agree"] + d["disagree"] + d["skipped"] == d["n_sampled"], d
+    assert isinstance(d["execution_failures"], list)
+
+
+def test_b2520_stop_hook_blocks_until_a_landing_is_reported(tmp_path):
+    """scan_undelivered_landing: an unreported landing BLOCKS the turn with
+    the cube named; a `LANDING REPORT: <cube>` in the final response (fenced
+    or not - the supervisor's block is pasted in a fence) flips the record to
+    reported and the block clears; nothing pending stays quiet."""
+    _b2520_scripts_on_path()
+    import postconfig_landing as pl
+    import verify_turn_compliance as vtc
+    p = tmp_path / "landings.jsonl"
+    # must-QUIET: no record, then an empty record
+    assert vtc.scan_undelivered_landing([], text="anything", landings=p) == []
+    p.write_text("", encoding="utf-8")
+    assert vtc.scan_undelivered_landing([], text="anything", landings=p) == []
+    ev = {"cube": "output_x", "ts": "t", "fingerprint": "1:2", "source": "engine-hook",
+          "battery_exit": 0, "blocking": [], "findings": ["lens WARN: 1 of 2"],
+          "committed": True, "pushed": True, "reported_to_owner": False}
+    pl.append_landing(ev, p)
+    # must-FIRE: landed, not reported
+    out = vtc.scan_undelivered_landing([], text="I did some other work.", landings=p)
+    assert len(out) == 1 and "output_x" in out[0], out
+    assert "LANDED CUBE NOT REPORTED TO THE OWNER (B2520)" in out[0]
+    assert "findings 1" in out[0]
+    # a mention of the phrase without the cube name is not a report
+    out = vtc.scan_undelivered_landing([], text="LANDING REPORT: output_y", landings=p)
+    assert len(out) == 1 and "output_x" in out[0]
+    assert pl.last_landing("output_x", p)["reported_to_owner"] is False
+    # the report, inside a fence, clears it and flips the record (append-only)
+    out = vtc.scan_undelivered_landing(
+        [], text="```\n=== LANDING REPORT: output_x ===\nbattery exit 0\n```",
+        landings=p)
+    assert out == [], out
+    last = pl.last_landing("output_x", p)
+    assert last["reported_to_owner"] is True
+    assert last["reported_by"] == "verify_turn_compliance" and last.get("reported_ts")
+    assert len(pl.read_landings(p)) == 2
+    # and it stays reported
+    assert vtc.scan_undelivered_landing([], text="nothing now", landings=p) == []
+    assert pl.undelivered(p) == []
+
+
+def test_b2520_landing_supervisor_is_idempotent_per_fingerprint(tmp_path, monkeypatch):
+    """postconfig_landing.land(): one landing per cube fingerprint (so the
+    engine hook and run_wave's second call do not double-run), a changed
+    cube lands again, --force re-lands, no cube file fails closed with no
+    battery and no record, findings are never truncated, and git runs ONLY
+    when allowed (flag + env + manifest). The module is loaded fresh under
+    POSTCONFIG_LANDINGS_PATH so its import-time default path is the temp file."""
+    import importlib.util as _iu
+    import time as _t
+    root = _b2520_scripts_on_path()
+    monkeypatch.setenv("POSTCONFIG_LANDINGS_PATH", str(tmp_path / "landings.jsonl"))
+    monkeypatch.delenv("POSTCONFIG_LANDING_NO_GIT", raising=False)
+    spec = _iu.spec_from_file_location("pl_b2520_idem", root / "scripts" / "postconfig_landing.py")
+    m = _iu.module_from_spec(spec)
+    spec.loader.exec_module(m)
+    assert m.LANDINGS == tmp_path / "landings.jsonl"
+
+    cube = tmp_path / "output_b2520_idem"
+    cube.mkdir()
+    (cube / "trade_exit_detail.csv").write_text("h\n1\n", encoding="utf-8")
+    ran, gits = [], []
+    monkeypatch.setattr(m, "run_battery",
+                        lambda d, *, step1, step2: (ran.append(d.name), 2)[1])
+    monkeypatch.setattr(m, "ledger_steps",
+                        lambda c: ({"1_cube_sanity": "FAIL"}, ["1_cube_sanity"]))
+    monkeypatch.setattr(m, "lens_findings", lambda c: ["x FAIL: " + "9" * 300])
+    monkeypatch.setattr(m, "render_report", lambda: (True, "stubbed"))
+
+    def _git(cube_name, battery_exit, summary):
+        gits.append(cube_name)
+        return {"committed": "abc1234", "pushed": True, "note": "stub"}
+
+    def _no_toast(*a, **k):
+        raise AssertionError("toast must not run under --no-notify")
+    monkeypatch.setattr(m, "commit_and_push", _git)
+    monkeypatch.setattr(m, "toast", _no_toast)
+    kw = dict(source="manual", if_not_landed=True, force=False, no_git=True,
+              no_notify=True, step1=True, step2=False)
+
+    assert m.land(cube, **kw) == 2
+    # must-QUIET: same fingerprint -> no-op, battery not re-run, no new record
+    assert m.land(cube, **kw) == 2
+    assert ran == ["output_b2520_idem"], ran
+    evs = m.read_landings()
+    assert len(evs) == 1, evs
+    assert evs[0]["findings"][0].endswith("9" * 300), "finding truncated"
+    assert evs[0]["reported_to_owner"] is False
+    assert evs[0]["committed"] is False and evs[0]["pushed"] is False
+    assert evs[0]["git_note"] == "git disabled" and gits == []
+    assert evs[0]["blocking"] == ["1_cube_sanity"] and evs[0]["step_flags"] == "step1"
+    # must-FIRE: the cube changed -> a new landing
+    _t.sleep(0.01)
+    (cube / "trade_exit_detail.csv").write_text("h\n1\n2\n", encoding="utf-8")
+    assert m.land(cube, **kw) == 2
+    assert ran == ["output_b2520_idem"] * 2 and len(m.read_landings()) == 2
+    # --force re-lands an unchanged fingerprint
+    assert m.land(cube, **{**kw, "force": True}) == 2
+    assert len(ran) == 3 and len(m.read_landings()) == 3
+    # a changed FLAG is not a changed cube: same fingerprint, no_git flipped
+    # -> still a no-op (the record is keyed on the cube, not the call)
+    assert m.land(cube, **{**kw, "no_git": False}) == 2
+    assert len(ran) == 3 and len(m.read_landings()) == 3
+
+    def _bump(n):                      # a new fingerprint (size grows) per arm
+        (cube / "trade_exit_detail.csv").write_text("h\n" + "1\n" * n, encoding="utf-8")
+    # git guard, three arms: env kill-switch / no manifest / allowed
+    monkeypatch.setenv("POSTCONFIG_LANDING_NO_GIT", "1")
+    _bump(4)
+    assert m.land(cube, **{**kw, "no_git": False}) == 2
+    assert gits == [] and m.read_landings()[-1]["git_note"] == "git disabled"
+    monkeypatch.delenv("POSTCONFIG_LANDING_NO_GIT")
+    _bump(5)
+    assert m.land(cube, **{**kw, "no_git": False}) == 2
+    ev = m.read_landings()[-1]
+    assert gits == [] and "no run_manifest.json" in ev["git_note"], ev
+    assert ev["committed"] is False and ev["pushed"] is False
+    (cube / "run_manifest.json").write_text("{}", encoding="utf-8")
+    _bump(6)
+    assert m.land(cube, **{**kw, "no_git": False}) == 2
+    ev = m.read_landings()[-1]
+    assert gits == ["output_b2520_idem"] and ev["committed"] == "abc1234" and ev["pushed"] is True
+    assert len(ran) == 6 and len(m.read_landings()) == 6
+    # fail closed: no cube file -> exit 2, no battery, no record
+    empty = tmp_path / "output_b2520_none"
+    empty.mkdir()
+    assert m.land(empty, **kw) == 2
+    assert len(ran) == 6 and len(m.read_landings()) == 6
+    assert [e["cube"] for e in m.undelivered()] == ["output_b2520_idem"]
+    assert m.mark_reported(["output_b2520_idem", "output_never"]) == 1
+    assert m.undelivered() == [] and m.mark_reported(["output_b2520_idem"]) == 0
+
+
+def test_b2520_asserts_non_execution_reads_assertions_not_mentions():
+    """The B2136 contradiction detector, after its two false-positive
+    classes (B2520): a claim asserts non-execution when it STARTS or ENDS
+    with SKIPPED / NOT RUN, or carries a phrase no narrative quotes. A tally
+    ('0 skipped'), a quoted status, or the words inside another token are
+    MENTIONS and must stay quiet - the old detector flipped seven DONE rows
+    on exactly those."""
+    _b2520_scripts_on_path()
+    import run_postconfig as rp
+    fire = ("SKIPPED: x", "x ... SKIPPED", "M4 holdout touch SKIPPED.", "NOT RUN",
+            "(status kept - terminal rows are never downgraded)", "cannot be applied",
+            "the check never ran on this cube", "skipped")
+    quiet = ("0 skipped in artifact", "wrote steps 2-8 as SKIPPED citing a batch",
+             "run_phase1a direct, not run_wave", "DONE with evidence", "")
+    for c in fire:
+        assert rp.asserts_non_execution(c) is True, c
+    for c in quiet:
+        assert rp.asserts_non_execution(c) is False, c
+    # _current_claim: history after ' | prior:' is not the claim; a numeric
+    # tally is not a status - the two strippers the detector reads THROUGH
+    # (a raw '... 0 skipped' still ends in the word; the tally strip is what
+    # keeps a spot-check line quiet)
+    assert rp._current_claim("spot 12 agree, 0 skipped | prior: SKIPPED").strip() == "spot 12 agree,"
+    assert rp.asserts_non_execution("12 agree, 0 disagree, 0 skipped") is True
+    assert rp.asserts_non_execution(rp._current_claim("12 agree, 0 disagree, 0 skipped")) is False
+    led = {"c": {"s": {"status": "DONE", "evidence": "spot 12 agree, 0 skipped | prior: SKIPPED"},
+                 "t": {"status": "DONE", "evidence": "M4 check SKIPPED"},
+                 "u": {"status": "OPEN", "evidence": "SKIPPED"},
+                 "v": {"status": "DONE", "reason": "battery re-run: FAIL (status kept - x)"}}}
+    assert rp.ledger_contradictions(led) == ["c/t", "c/v"]
+
+
+def test_b2520_merge_row_never_truncates_and_never_downgrades_terminal():
+    """merge_row: evidence is kept whole (B2211 - the measured numbers sit at
+    the END of a battery line, so any cut removes exactly the numbers); a
+    terminal row keeps its status and carries ONE re-run tag; a non-terminal
+    row is replaced and keeps ONE level of prior history."""
+    _b2520_scripts_on_path()
+    import run_postconfig as rp
+    long = "M4=PASS(" + "x" * 480 + ") n=373"
+    e = rp.merge_row({}, "2_x", "DONE", long, "t1")
+    assert e["2_x"] == {"status": "DONE", "evidence": long}
+    # terminal row re-merged twice: status kept, exactly one re-run tag, the
+    # FAIL variant carries the kept-status marker the B2136 check reads
+    e = rp.merge_row(e, "2_x", "FAIL", "grader crashed", "t2")
+    assert e["2_x"]["status"] == "DONE"
+    assert e["2_x"]["evidence"].startswith(long + " | battery re-run t2: FAIL (status kept")
+    assert e["2_x"]["evidence"].endswith("- grader crashed")
+    e = rp.merge_row(e, "2_x", "DONE", "re-graded ok", "t3")
+    assert e["2_x"]["evidence"] == long + " | battery re-run t3: DONE - re-graded ok"
+    assert e["2_x"]["evidence"].count(" | battery re-run ") == 1
+    # non-terminal chain: replaced, one level of prior
+    e = rp.merge_row({}, "8_v", "OPEN", "no grid", "t1")
+    e = rp.merge_row(e, "8_v", "FAIL", "family missing", "t2")
+    assert e["8_v"] == {"status": "FAIL", "evidence": "family missing | prior: no grid"}
+    e = rp.merge_row(e, "8_v", "DONE", "verdict 3 of 24", "t3")
+    assert e["8_v"] == {"status": "DONE", "evidence": "verdict 3 of 24 | prior: family missing"}
+    assert e["8_v"]["evidence"].count(" | prior: ") == 1
+    # a legacy row keyed by reason/note is read as evidence, not lost
+    e = rp.merge_row({"6_r": {"status": "N/A", "reason": "nothing to recheck"}},
+                     "6_r", "OPEN", "1 finding", "t4")
+    assert e["6_r"]["status"] == "N/A"
+    assert e["6_r"]["evidence"] == "nothing to recheck | battery re-run t4: OPEN - 1 finding"
+
+
+def test_b2520_turn_preamble_lists_undelivered_landings(tmp_path):
+    """inject_tier3_discipline.py prints every unreported landing at the TOP
+    of the next turn, whole (no truncation) and ASCII-safe; nothing pending
+    prints nothing extra. Run as the hook runs it: a subprocess reading
+    stdin, writing bytes."""
+    import os as _os
+    import subprocess as _sp
+    import sys as _s
+    root = _b2520_scripts_on_path()
+    import postconfig_landing as pl
+    p = tmp_path / "landings.jsonl"
+    env = {**_os.environ, "POSTCONFIG_LANDINGS_PATH": str(p)}
+
+    def run():
+        return _sp.run([_s.executable, str(root / "scripts" / "inject_tier3_discipline.py")],
+                       cwd=str(root), input="", capture_output=True, text=True,
+                       encoding="utf-8", errors="replace", env=env)
+    p.write_text("", encoding="utf-8")
+    r = run()
+    assert r.returncode == 0, r.stderr
+    assert "[UNDELIVERED LANDINGS" not in r.stdout
+    assert "EXECUTION-DISCIPLINE" in r.stdout
+    pl.append_landing({"cube": "output_zzz", "ts": "2026-09-01T00:00:00", "source": "engine-hook",
+                       "battery_exit": 0, "blocking": [], "findings": ["lens WARN: " + "7" * 250],
+                       "committed": "abc", "pushed": True, "reported_to_owner": False}, p)
+    r = run()
+    assert r.returncode == 0, r.stderr
+    assert r.stdout.startswith("[UNDELIVERED LANDINGS (B2520)"), r.stdout[:200]
+    head = r.stdout.split("[EXECUTION-DISCIPLINE")[0]
+    assert "output_zzz" in head and "LANDING REPORT" in head
+    assert "7" * 250 in head, "finding truncated in the banner"
+    assert head.isascii()
+    # reported -> gone from the banner
+    pl.mark_reported(["output_zzz"], p, by="test")
+    assert "[UNDELIVERED LANDINGS" not in run().stdout
+
+
+def test_b2520_report_renders_every_family_and_names_open_steps():
+    """postconfig_doc: the combination label and spot-check parameters come
+    from the artifact's own keys (the smc-only template rendered None x4 for
+    the institutional family); completeness is the gate's is_closed verdict
+    and an open step is NAMED, never counted as 'ran'."""
+    _b2520_scripts_on_path()
+    import postconfig_doc as pcd
+    from verify_postconfig_complete import STEPS
+    assert pcd.combination_label({"a": 1, "b": None, "fires": 3, "verdict": "RANKED"}) == "a=1 b=None"
+    assert pcd.combination_label({"fires": 3}) == "(no knobs recorded)"
+    assert pcd.spot_params({"seed": 1, "ema_span": 200, "swing_length": None}) == "ema_span 200"
+    assert pcd.spot_params({"seed": 1}) == "parameters not recorded in the artifact"
+    assert isinstance(pcd.landings_section(), list)
+    art = {"grid": None, "spot": None, "lenses": None}
+    entry = {"1_cube_sanity": {"status": "DONE", "evidence": "run_postconfig: M4_holdout_touch=PASS(0 rows)"},
+             "5_adversarial_lens_review": {"status": "SKIPPED", "evidence": "PENDING-WAVE-REVIEW"},
+             "6_post_fix_recheck": {"status": "N/A"}}
+    txt = "\n".join(pcd.config_section("output_b2520_doc", entry, art))
+    assert "**Completeness: 1 of 9 steps closed**" in txt, txt
+    assert "8 step(s) NOT closed" in txt and "SKIPPED is not a disposition (B2520)" in txt
+    assert "| 5_adversarial_lens_review | SKIPPED **<-- NOT CLOSED** |" in txt
+    assert "| 6_post_fix_recheck | N/A **<-- NOT CLOSED** |" in txt   # no reason = not closed
+    assert "| 1_cube_sanity | DONE |" in txt
+    closed = {s: {"status": "N/A", "evidence": "reason"} for s in STEPS}
+    txt2 = "\n".join(pcd.config_section("output_b2520_doc", closed, art))
+    assert "**Completeness: 9 of 9 steps closed**" in txt2
+    assert "NOT CLOSED" not in txt2 and "nothing is outstanding" in txt2
+
+
+def test_b2520_l736_count_the_asks_rule_is_anchored():
+    """L736 must live in the skill, CHECKLIST and the runbook, not only
+    LEARNINGS (#197). Fragments are single-line and whitespace-normalised
+    against the target (S6-B2496b). Must-QUIET arm: the retired clauses that
+    let SKIPPED count as a disposition must not come back in either document.
+    """
+    import io
+    import pathlib
+
+    root = pathlib.Path(__file__).resolve().parent.parent.parent
+
+    def norm(rel):
+        return " ".join(io.open(root / rel, encoding="utf-8").read().split())
+
+    skill = norm(".claude/skills/execution-discipline/SKILL.md")
+    check = norm("CHECKLIST.md")
+    plan = norm("STRATEGY_OPTIMISATION_PLAN.md")
+    learn = norm("LEARNINGS.md")
+    for frag, where, name in (
+            ("COUNT THE ASKS", skill, "skill"),
+            ("L736 / #288", skill, "skill"),
+            ("A mechanism the owner has asked about more than once is a class defect", check, "CHECKLIST"),
+            ("SKIPPED is not a disposition and is in no terminal set", check, "CHECKLIST"),
+            ("SKIPPED is not a disposition and is in no terminal set", plan, "runbook"),
+            ("ALL NINE RUN ON EVERY LANDING, FROM EVERY LAUNCH SHAPE", plan, "runbook"),
+            ("### L736 - A mechanism the owner has asked about more than once", learn, "LEARNINGS")):
+        assert frag in where, "L736 anchoring lost in %s: %s" % (name, frag)
+    # must-QUIET: the clauses that made SKIPPED a disposition stay retired
+    assert "Silence is not a disposition; SKIPPED-with-reason is." not in check
+    assert "deliberately never auto-marks" not in plan.replace(
+        "never auto-marks (`run_postconfig.py:225`", "")  # the historical quote is allowed once
+    assert 'TERMINAL = {"DONE", "SKIPPED", "N/A"}, so a step marked SKIPPED **with any reason string** counts' not in plan

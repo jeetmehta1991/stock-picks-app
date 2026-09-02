@@ -849,9 +849,9 @@
    "status": "DONE"
   },
   "4_three_leg_spot_check": {
-   "evidence": "B2136 status corrected DONE -> SKIPPED: the status contradicted its own evidence, which says this cannot be applied retroactively. B1702 - the three-leg spot check was BUILT at B1634, AFTER cfg1/cfg2 ran, and it re-derives from a cube's own OHLCV at run time. It cannot be applied retroactively to a cube whose run is over. SKIPPED with a reason; wave 1 onward carries it (100pct on all three legs).",
+   "evidence": "B2520: DONE restored - B2136's contradiction detector matched the literal '0 skipped' inside the spot-check tally (false positive, pinned test_b2520); artifact output_audit/b1814_cfg1_spotcheck_n50.json present on disk (EXECUTED check), tally 50 agree / 0 DISAGREE | prior: B2136 status corrected DONE -> SKIPPED: the status contradicted its own evidence, which says this cannot be applied retroactively. B1702 - the three-leg spot check was BUILT at B1634, AFTER cfg1/cfg2 ",
    "note": "B1814 - EXECUTED RETROACTIVELY. The B1702 skip reason was WRONG: spot_check_trades.py reads --cube from disk and OHLCV from the persistent cache, so it needs no run-time state. Coverage prerequisite verify_spotcheck_coverage.py smc_breaker_block_long exit 0. At the runbook's mandated n=50: 50 agree / 0 DISAGREE / 0 skipped, 0 execution failures (sw=20 span=200). Artifact: output_audit/b1814_cfg1_spotcheck_n50.json",
-   "status": "SKIPPED"
+   "status": "DONE"
   },
   "5_adversarial_lens_review": {
    "evidence": "B1615/B1619 - the cfg1/cfg2 lens pass is what SURFACED the tail_n band defect (0 of 50 groups moved at 10->20) and the equivalence-class defect (top 10 held 4 real candidates). Both became owner-approved changes.",
@@ -888,9 +888,9 @@
    "status": "DONE"
   },
   "4_three_leg_spot_check": {
-   "evidence": "B2136 status corrected DONE -> SKIPPED: the status contradicted its own evidence, which says this cannot be applied retroactively. B1702 - the three-leg spot check was BUILT at B1634, AFTER cfg1/cfg2 ran, and it re-derives from a cube's own OHLCV at run time. It cannot be applied retroactively to a cube whose run is over. SKIPPED with a reason; wave 1 onward carries it (100pct on all three legs).",
+   "evidence": "B2520: DONE restored - B2136's contradiction detector matched the literal '0 skipped' inside the spot-check tally (false positive, pinned test_b2520); artifact output_audit/b1814_cfg2_spotcheck_n50.json present on disk (EXECUTED check), tally 50 agree / 0 DISAGREE | prior: B2136 status corrected DONE -> SKIPPED: the status contradicted its own evidence, which says this cannot be applied retroactively. B1702 - the three-leg spot check was BUILT at B1634, AFTER cfg1/cfg2 ",
    "note": "B1814 - EXECUTED RETROACTIVELY. The B1702 skip reason was WRONG: spot_check_trades.py reads --cube from disk and OHLCV from the persistent cache, so it needs no run-time state. Coverage prerequisite verify_spotcheck_coverage.py smc_breaker_block_long exit 0. At the runbook's mandated n=50: 50 agree / 0 DISAGREE / 0 skipped, 0 execution failures (sw=10 span=50). Artifact: output_audit/b1814_cfg2_spotcheck_n50.json",
-   "status": "SKIPPED"
+   "status": "DONE"
   },
   "5_adversarial_lens_review": {
    "evidence": "B1615/B1619 - the cfg1/cfg2 lens pass is what SURFACED the tail_n band defect (0 of 50 groups moved at 10->20) and the equivalence-class defect (top 10 held 4 real candidates). Both became owner-approved changes.",
@@ -2181,8 +2181,8 @@
    "evidence": "B2018: cube entries == grid max fires (172==172). Verdicts of 300 rows: {166 NO_EXIT_SELECTABLE / 79 BELOW_POWER_FLOOR / 55 ZERO_FIRES} - ZERO combinations carried; NO_EXIT_SELECTABLE is a SAMPLE-SIZE verdict, so SP50@1y lacks within-arm tightening power (S6-B1817e's universe concern, measured; cross-arm P1 comparison is unaffected - same universe every arm). verify_grid_bands --anchor tail_n=20: PASS, every swept level moves some group. measure_degraded_exits: 3 collapsed pairs (atr_trail_mae_conditional==atr_trail_1x, reverse_signal==atr_trail_mae_conditional, time_stop_20d==regime_flip) - effective exits 23 of 26, and the regime_flip collapse is on a POST-B1682 cube -> S6-B2018a P0. CORRECTED B2019 (visible retraction, Truth Standard 6): the earlier claim that 0-carried reflects 'SP50@1y within-arm tightening power' was a PARTIAL misattribution. MEASURED across all 4 arms: every row has holdout_n=0 because the owner-ruled window ENDS AT the holdout boundary (HO 2025-05-05..2026-05-05 per roster_core.py:17), and the rankable filter at tighten_breaker_block.py:354 still requires the HOLDOUT sharpe to be non-None - so 0 rows are rankable BY CONSTRUCTION, independent of universe power. The NO_EXIT_SELECTABLE dominance IS in-sample sample-size; the 0-carried headline is the filter clause. S6-B2018c (BLOCKED, owner ruling)."
   },
   "4_three_leg_spot_check": {
-   "status": "SKIPPED",
-   "evidence": "B2136 status corrected DONE -> SKIPPED (the status contradicted its own evidence). B2018: verify_spotcheck_coverage.py smc_breaker_block_long exit 0; spot_check_trades.py --n 50 --swing-length 10 --ema-span 200: 50 agree / 0 DISAGREE / 0 skipped, 0 execution failures. Artifact output_audit/b2018_sw10_spotcheck_n50.json."
+   "status": "DONE",
+   "evidence": "B2520: DONE restored - B2136's contradiction detector matched the literal '0 skipped' inside the spot-check tally (false positive, pinned test_b2520); artifact output_audit/b2018_sw10_spotcheck_n50.json present on disk (EXECUTED check), tally 50 agree / 0 DISAGREE | prior: B2136 status corrected DONE -> SKIPPED (the status contradicted its own evidence). B2018: verify_spotcheck_coverage.py smc_breaker_block_long exit 0; spot_check_trades.py --n 50 --swing-length 10 --em"
   },
   "5_adversarial_lens_review": {
    "status": "DONE",
@@ -2219,8 +2219,8 @@
    "evidence": "B2018: cube entries == grid max fires (105==105). Verdicts of 300 rows: {208 NO_EXIT_SELECTABLE / 45 BELOW_POWER_FLOOR / 47 ZERO_FIRES} - ZERO combinations carried; NO_EXIT_SELECTABLE is a SAMPLE-SIZE verdict, so SP50@1y lacks within-arm tightening power (S6-B1817e's universe concern, measured; cross-arm P1 comparison is unaffected - same universe every arm). verify_grid_bands --anchor tail_n=20: PASS, every swept level moves some group. measure_degraded_exits: 3 collapsed pairs (atr_trail_mae_conditional==atr_trail_1x, reverse_signal==atr_trail_mae_conditional, time_stop_20d==regime_flip) - effective exits 23 of 26, and the regime_flip collapse is on a POST-B1682 cube -> S6-B2018a P0. CORRECTED B2019 (visible retraction, Truth Standard 6): the earlier claim that 0-carried reflects 'SP50@1y within-arm tightening power' was a PARTIAL misattribution. MEASURED across all 4 arms: every row has holdout_n=0 because the owner-ruled window ENDS AT the holdout boundary (HO 2025-05-05..2026-05-05 per roster_core.py:17), and the rankable filter at tighten_breaker_block.py:354 still requires the HOLDOUT sharpe to be non-None - so 0 rows are rankable BY CONSTRUCTION, independent of universe power. The NO_EXIT_SELECTABLE dominance IS in-sample sample-size; the 0-carried headline is the filter clause. S6-B2018c (BLOCKED, owner ruling)."
   },
   "4_three_leg_spot_check": {
-   "status": "SKIPPED",
-   "evidence": "B2136 status corrected DONE -> SKIPPED (the status contradicted its own evidence). B2018: verify_spotcheck_coverage.py smc_breaker_block_long exit 0; spot_check_trades.py --n 50 --swing-length 20 --ema-span 200: 50 agree / 0 DISAGREE / 0 skipped, 0 execution failures. Artifact output_audit/b2018_sw20_spotcheck_n50.json."
+   "status": "DONE",
+   "evidence": "B2520: DONE restored - B2136's contradiction detector matched the literal '0 skipped' inside the spot-check tally (false positive, pinned test_b2520); artifact output_audit/b2018_sw20_spotcheck_n50.json present on disk (EXECUTED check), tally 50 agree / 0 DISAGREE | prior: B2136 status corrected DONE -> SKIPPED (the status contradicted its own evidence). B2018: verify_spotcheck_coverage.py smc_breaker_block_long exit 0; spot_check_trades.py --n 50 --swing-length 20 --em"
   },
   "5_adversarial_lens_review": {
    "status": "DONE",
@@ -2257,8 +2257,8 @@
    "evidence": "B2019: cube entries == grid max fires (83==83). Verdicts of 300: {210 NO_EXIT_SELECTABLE / 30 BELOW_POWER_FLOOR / 60 ZERO_FIRES}. verify_grid_bands exit 0 with DISCLOSED INERT level: tail_n 5->10 moved 2/50 groups (L473 lens; at 83 fires the upper tail bands saturate). measure_degraded_exits: same 3 collapsed pairs as sw10/sw20 - effective exits 23 of 26; regime_flip cap-branch on 83/83 rows (S6-B2018a P0, now measured on ALL FOUR arms). CRITICAL STRUCTURAL FACT (S6-B2018c): holdout_n=0 on every row - the ruled window ends AT the holdout boundary, and the rankable filter (tighten_breaker_block.py:354) requires holdout sharpe non-None, so 0 of 300 combinations are rankable BY CONSTRUCTION in every arm."
   },
   "4_three_leg_spot_check": {
-   "status": "SKIPPED",
-   "evidence": "B2136 status corrected DONE -> SKIPPED (the status contradicted its own evidence). B2019: coverage gate exit 0 (prior run this batch); spot_check_trades.py --n 50 --swing-length 30 --ema-span 200: 50 agree / 0 DISAGREE / 0 skipped, 0 execution failures. Artifact output_audit/b2018_sw30_spotcheck_n50.json."
+   "status": "DONE",
+   "evidence": "B2520: DONE restored - B2136's contradiction detector matched the literal '0 skipped' inside the spot-check tally (false positive, pinned test_b2520); artifact output_audit/b2018_sw30_spotcheck_n50.json present on disk (EXECUTED check), tally 50 agree / 0 DISAGREE | prior: B2136 status corrected DONE -> SKIPPED (the status contradicted its own evidence). B2019: coverage gate exit 0 (prior run this batch); spot_check_trades.py --n 50 --swing-length 30 --ema-span 200: 50 "
   },
   "5_adversarial_lens_review": {
    "status": "DONE",
@@ -2295,8 +2295,8 @@
    "evidence": "B2019: cube entries == grid max fires (53==53). Verdicts of 300: {179 NO_EXIT_SELECTABLE / 25 BELOW_POWER_FLOOR / 96 ZERO_FIRES}. verify_grid_bands exit 0 with DISCLOSED INERT level: tail_n 5->10 moved 0/50 groups (L473 lens; at 53 fires the upper tail bands saturate). measure_degraded_exits: same 3 collapsed pairs as sw10/sw20 - effective exits 23 of 26; regime_flip cap-branch on 53/53 rows (S6-B2018a P0, now measured on ALL FOUR arms). CRITICAL STRUCTURAL FACT (S6-B2018c): holdout_n=0 on every row - the ruled window ends AT the holdout boundary, and the rankable filter (tighten_breaker_block.py:354) requires holdout sharpe non-None, so 0 of 300 combinations are rankable BY CONSTRUCTION in every arm."
   },
   "4_three_leg_spot_check": {
-   "status": "SKIPPED",
-   "evidence": "B2136 status corrected DONE -> SKIPPED (the status contradicted its own evidence). B2019: coverage gate exit 0 (prior run this batch); spot_check_trades.py --n 50 --swing-length 50 --ema-span 200: 50 agree / 0 DISAGREE / 0 skipped, 0 execution failures. Artifact output_audit/b2018_sw50_spotcheck_n50.json."
+   "status": "DONE",
+   "evidence": "B2520: DONE restored - B2136's contradiction detector matched the literal '0 skipped' inside the spot-check tally (false positive, pinned test_b2520); artifact output_audit/b2018_sw50_spotcheck_n50.json present on disk (EXECUTED check), tally 50 agree / 0 DISAGREE | prior: B2136 status corrected DONE -> SKIPPED (the status contradicted its own evidence). B2019: coverage gate exit 0 (prior run this batch); spot_check_trades.py --n 50 --swing-length 50 --ema-span 200: 50 "
   },
   "5_adversarial_lens_review": {
    "status": "DONE",
@@ -2333,8 +2333,8 @@
    "evidence": "B2034: entries==grid max (138==138). Verdicts of 300: {184 NO_EXIT_SELECTABLE / 101 BELOW_POWER_FLOOR / 15 ZERO_FIRES}; rankable 101, carried 17, distinct 45. verify_grid_bands --anchor tail_n=20: PASS. measure_degraded_exits: same 3 collapsed pairs; regime_flip cap-branch 138/138 (S6-B2018a now measured on FIVE arms). RANK-1 IS THE SEQUENCE'S FIRST POSITIVE LOWER BOUND: is_ci_lo +0.025, is_sharpe 2.965, 18 of 138 fires, exit r_multiple_2r - thin n, carried to STEP 2 where the disjoint universe grows the sample."
   },
   "4_three_leg_spot_check": {
-   "status": "SKIPPED",
-   "evidence": "B2136 status corrected DONE -> SKIPPED (the status contradicted its own evidence). B2034: spot_check_trades.py --n 50 --swing-length 10 --ema-span 50: 50 agree / 0 DISAGREE / 0 skipped, 0 execution failures. Artifact output_audit/b2034_sw10_span50_spotcheck_n50.json."
+   "status": "DONE",
+   "evidence": "B2520: DONE restored - B2136's contradiction detector matched the literal '0 skipped' inside the spot-check tally (false positive, pinned test_b2520); artifact output_audit/b2034_sw10_span50_spotcheck_n50.json present on disk (EXECUTED check), tally 50 agree / 0 DISAGREE | prior: B2136 status corrected DONE -> SKIPPED (the status contradicted its own evidence). B2034: spot_check_trades.py --n 50 --swing-length 10 --ema-span 50: 50 agree / 0 DISAGREE / 0 skipped, 0 execution fa"
   },
   "5_adversarial_lens_review": {
    "status": "DONE",
@@ -2359,20 +2359,20 @@
  },
  "output_b2094_var1": {
   "1_cube_sanity": {
-   "status": "SKIPPED",
-   "evidence": "determinism-instrument cube (B2094, S6-B1535a): the deliverable was the sorted-trade-column content hash, recorded in the S6-B1535a verdict row (byte-identical pair, sha 4c62b31df6eb919d); no grading or admission consumed it"
+   "status": "N/A",
+   "evidence": "N/A (B2520 migration, L721: SKIPPED is no longer terminal; instrument cube, step never applied): determinism-instrument cube (B2094, S6-B1535a): the deliverable was the sorted-trade-column content hash, recorded in the S6-B1535a verdict row (byte-identical pair, sha 4c62b31df6eb919d); no grading or admission consumed it"
   },
   "2_grade_with_config_params": {
-   "status": "SKIPPED",
-   "evidence": "determinism-instrument cube (B2094, S6-B1535a): the deliverable was the sorted-trade-column content hash, recorded in the S6-B1535a verdict row (byte-identical pair, sha 4c62b31df6eb919d); no grading or admission consumed it"
+   "status": "N/A",
+   "evidence": "N/A (B2520 migration, L721: SKIPPED is no longer terminal; instrument cube, step never applied): determinism-instrument cube (B2094, S6-B1535a): the deliverable was the sorted-trade-column content hash, recorded in the S6-B1535a verdict row (byte-identical pair, sha 4c62b31df6eb919d); no grading or admission consumed it"
   },
   "3_outlier_discrepancy_sweep": {
-   "status": "SKIPPED",
-   "evidence": "determinism-instrument cube (B2094, S6-B1535a): the deliverable was the sorted-trade-column content hash, recorded in the S6-B1535a verdict row (byte-identical pair, sha 4c62b31df6eb919d); no grading or admission consumed it"
+   "status": "N/A",
+   "evidence": "N/A (B2520 migration, L721: SKIPPED is no longer terminal; instrument cube, step never applied): determinism-instrument cube (B2094, S6-B1535a): the deliverable was the sorted-trade-column content hash, recorded in the S6-B1535a verdict row (byte-identical pair, sha 4c62b31df6eb919d); no grading or admission consumed it"
   },
   "4_three_leg_spot_check": {
-   "status": "SKIPPED",
-   "evidence": "determinism-instrument cube (B2094, S6-B1535a): the deliverable was the sorted-trade-column content hash, recorded in the S6-B1535a verdict row (byte-identical pair, sha 4c62b31df6eb919d); no grading or admission consumed it"
+   "status": "N/A",
+   "evidence": "N/A (B2520 migration, L721: SKIPPED is no longer terminal; instrument cube, step never applied): determinism-instrument cube (B2094, S6-B1535a): the deliverable was the sorted-trade-column content hash, recorded in the S6-B1535a verdict row (byte-identical pair, sha 4c62b31df6eb919d); no grading or admission consumed it"
   },
   "5_adversarial_lens_review": {
    "status": "N/A",
@@ -2383,8 +2383,8 @@
    "evidence": "determinism-instrument cube (B2094, S6-B1535a): the deliverable was the sorted-trade-column content hash, recorded in the S6-B1535a verdict row (byte-identical pair, sha 4c62b31df6eb919d); no grading or admission consumed it || S6-B2451 RECLASSIFIED SKIPPED -> N/A: this is an INSTRUMENT cube - the reason above records that its deliverable was a hash/timing measurement and that no grading or admission consumed it, so there is no strategy verdict to review, re-run, implement or state denominators for. That is 'cannot apply' (N/A), not 'not yet done' (SKIPPED). Under S6-B2440 a deferral no longer closes a judgment step; a reasoned exclusion does. Nothing upgraded to DONE; original reason preserved."
   },
   "6b_equivalence_class_check": {
-   "status": "SKIPPED",
-   "evidence": "determinism-instrument cube (B2094, S6-B1535a): the deliverable was the sorted-trade-column content hash, recorded in the S6-B1535a verdict row (byte-identical pair, sha 4c62b31df6eb919d); no grading or admission consumed it"
+   "status": "N/A",
+   "evidence": "N/A (B2520 migration, L721: SKIPPED is no longer terminal; instrument cube, step never applied): determinism-instrument cube (B2094, S6-B1535a): the deliverable was the sorted-trade-column content hash, recorded in the S6-B1535a verdict row (byte-identical pair, sha 4c62b31df6eb919d); no grading or admission consumed it"
   },
   "7_implement_in_engine": {
    "status": "N/A",
@@ -2397,20 +2397,20 @@
  },
  "output_b2094_var2": {
   "1_cube_sanity": {
-   "status": "SKIPPED",
-   "evidence": "determinism-instrument cube (B2094, S6-B1535a): the deliverable was the sorted-trade-column content hash, recorded in the S6-B1535a verdict row (byte-identical pair, sha 4c62b31df6eb919d); no grading or admission consumed it"
+   "status": "N/A",
+   "evidence": "N/A (B2520 migration, L721: SKIPPED is no longer terminal; instrument cube, step never applied): determinism-instrument cube (B2094, S6-B1535a): the deliverable was the sorted-trade-column content hash, recorded in the S6-B1535a verdict row (byte-identical pair, sha 4c62b31df6eb919d); no grading or admission consumed it"
   },
   "2_grade_with_config_params": {
-   "status": "SKIPPED",
-   "evidence": "determinism-instrument cube (B2094, S6-B1535a): the deliverable was the sorted-trade-column content hash, recorded in the S6-B1535a verdict row (byte-identical pair, sha 4c62b31df6eb919d); no grading or admission consumed it"
+   "status": "N/A",
+   "evidence": "N/A (B2520 migration, L721: SKIPPED is no longer terminal; instrument cube, step never applied): determinism-instrument cube (B2094, S6-B1535a): the deliverable was the sorted-trade-column content hash, recorded in the S6-B1535a verdict row (byte-identical pair, sha 4c62b31df6eb919d); no grading or admission consumed it"
   },
   "3_outlier_discrepancy_sweep": {
-   "status": "SKIPPED",
-   "evidence": "determinism-instrument cube (B2094, S6-B1535a): the deliverable was the sorted-trade-column content hash, recorded in the S6-B1535a verdict row (byte-identical pair, sha 4c62b31df6eb919d); no grading or admission consumed it"
+   "status": "N/A",
+   "evidence": "N/A (B2520 migration, L721: SKIPPED is no longer terminal; instrument cube, step never applied): determinism-instrument cube (B2094, S6-B1535a): the deliverable was the sorted-trade-column content hash, recorded in the S6-B1535a verdict row (byte-identical pair, sha 4c62b31df6eb919d); no grading or admission consumed it"
   },
   "4_three_leg_spot_check": {
-   "status": "SKIPPED",
-   "evidence": "determinism-instrument cube (B2094, S6-B1535a): the deliverable was the sorted-trade-column content hash, recorded in the S6-B1535a verdict row (byte-identical pair, sha 4c62b31df6eb919d); no grading or admission consumed it"
+   "status": "N/A",
+   "evidence": "N/A (B2520 migration, L721: SKIPPED is no longer terminal; instrument cube, step never applied): determinism-instrument cube (B2094, S6-B1535a): the deliverable was the sorted-trade-column content hash, recorded in the S6-B1535a verdict row (byte-identical pair, sha 4c62b31df6eb919d); no grading or admission consumed it"
   },
   "5_adversarial_lens_review": {
    "status": "N/A",
@@ -2421,8 +2421,8 @@
    "evidence": "determinism-instrument cube (B2094, S6-B1535a): the deliverable was the sorted-trade-column content hash, recorded in the S6-B1535a verdict row (byte-identical pair, sha 4c62b31df6eb919d); no grading or admission consumed it || S6-B2451 RECLASSIFIED SKIPPED -> N/A: this is an INSTRUMENT cube - the reason above records that its deliverable was a hash/timing measurement and that no grading or admission consumed it, so there is no strategy verdict to review, re-run, implement or state denominators for. That is 'cannot apply' (N/A), not 'not yet done' (SKIPPED). Under S6-B2440 a deferral no longer closes a judgment step; a reasoned exclusion does. Nothing upgraded to DONE; original reason preserved."
   },
   "6b_equivalence_class_check": {
-   "status": "SKIPPED",
-   "evidence": "determinism-instrument cube (B2094, S6-B1535a): the deliverable was the sorted-trade-column content hash, recorded in the S6-B1535a verdict row (byte-identical pair, sha 4c62b31df6eb919d); no grading or admission consumed it"
+   "status": "N/A",
+   "evidence": "N/A (B2520 migration, L721: SKIPPED is no longer terminal; instrument cube, step never applied): determinism-instrument cube (B2094, S6-B1535a): the deliverable was the sorted-trade-column content hash, recorded in the S6-B1535a verdict row (byte-identical pair, sha 4c62b31df6eb919d); no grading or admission consumed it"
   },
   "7_implement_in_engine": {
    "status": "N/A",
@@ -2435,20 +2435,20 @@
  },
  "output_b2095_c1": {
   "1_cube_sanity": {
-   "status": "SKIPPED",
-   "evidence": "concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it"
+   "status": "N/A",
+   "evidence": "N/A (B2520 migration, L721: SKIPPED is no longer terminal; instrument cube, step never applied): concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it"
   },
   "2_grade_with_config_params": {
-   "status": "SKIPPED",
-   "evidence": "concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it"
+   "status": "N/A",
+   "evidence": "N/A (B2520 migration, L721: SKIPPED is no longer terminal; instrument cube, step never applied): concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it"
   },
   "3_outlier_discrepancy_sweep": {
-   "status": "SKIPPED",
-   "evidence": "concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it"
+   "status": "N/A",
+   "evidence": "N/A (B2520 migration, L721: SKIPPED is no longer terminal; instrument cube, step never applied): concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it"
   },
   "4_three_leg_spot_check": {
-   "status": "SKIPPED",
-   "evidence": "concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it"
+   "status": "N/A",
+   "evidence": "N/A (B2520 migration, L721: SKIPPED is no longer terminal; instrument cube, step never applied): concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it"
   },
   "5_adversarial_lens_review": {
    "status": "N/A",
@@ -2459,8 +2459,8 @@
    "evidence": "concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it || S6-B2451 RECLASSIFIED SKIPPED -> N/A: this is an INSTRUMENT cube - the reason above records that its deliverable was a hash/timing measurement and that no grading or admission consumed it, so there is no strategy verdict to review, re-run, implement or state denominators for. That is 'cannot apply' (N/A), not 'not yet done' (SKIPPED). Under S6-B2440 a deferral no longer closes a judgment step; a reasoned exclusion does. Nothing upgraded to DONE; original reason preserved."
   },
   "6b_equivalence_class_check": {
-   "status": "SKIPPED",
-   "evidence": "concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it"
+   "status": "N/A",
+   "evidence": "N/A (B2520 migration, L721: SKIPPED is no longer terminal; instrument cube, step never applied): concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it"
   },
   "7_implement_in_engine": {
    "status": "N/A",
@@ -2473,20 +2473,20 @@
  },
  "output_b2095_c2": {
   "1_cube_sanity": {
-   "status": "SKIPPED",
-   "evidence": "concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it"
+   "status": "N/A",
+   "evidence": "N/A (B2520 migration, L721: SKIPPED is no longer terminal; instrument cube, step never applied): concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it"
   },
   "2_grade_with_config_params": {
-   "status": "SKIPPED",
-   "evidence": "concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it"
+   "status": "N/A",
+   "evidence": "N/A (B2520 migration, L721: SKIPPED is no longer terminal; instrument cube, step never applied): concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it"
   },
   "3_outlier_discrepancy_sweep": {
-   "status": "SKIPPED",
-   "evidence": "concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it"
+   "status": "N/A",
+   "evidence": "N/A (B2520 migration, L721: SKIPPED is no longer terminal; instrument cube, step never applied): concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it"
   },
   "4_three_leg_spot_check": {
-   "status": "SKIPPED",
-   "evidence": "concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it"
+   "status": "N/A",
+   "evidence": "N/A (B2520 migration, L721: SKIPPED is no longer terminal; instrument cube, step never applied): concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it"
   },
   "5_adversarial_lens_review": {
    "status": "N/A",
@@ -2497,8 +2497,8 @@
    "evidence": "concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it || S6-B2451 RECLASSIFIED SKIPPED -> N/A: this is an INSTRUMENT cube - the reason above records that its deliverable was a hash/timing measurement and that no grading or admission consumed it, so there is no strategy verdict to review, re-run, implement or state denominators for. That is 'cannot apply' (N/A), not 'not yet done' (SKIPPED). Under S6-B2440 a deferral no longer closes a judgment step; a reasoned exclusion does. Nothing upgraded to DONE; original reason preserved."
   },
   "6b_equivalence_class_check": {
-   "status": "SKIPPED",
-   "evidence": "concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it"
+   "status": "N/A",
+   "evidence": "N/A (B2520 migration, L721: SKIPPED is no longer terminal; instrument cube, step never applied): concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it"
   },
   "7_implement_in_engine": {
    "status": "N/A",
@@ -2511,20 +2511,20 @@
  },
  "output_b2095_c3": {
   "1_cube_sanity": {
-   "status": "SKIPPED",
-   "evidence": "concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it"
+   "status": "N/A",
+   "evidence": "N/A (B2520 migration, L721: SKIPPED is no longer terminal; instrument cube, step never applied): concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it"
   },
   "2_grade_with_config_params": {
-   "status": "SKIPPED",
-   "evidence": "concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it"
+   "status": "N/A",
+   "evidence": "N/A (B2520 migration, L721: SKIPPED is no longer terminal; instrument cube, step never applied): concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it"
   },
   "3_outlier_discrepancy_sweep": {
-   "status": "SKIPPED",
-   "evidence": "concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it"
+   "status": "N/A",
+   "evidence": "N/A (B2520 migration, L721: SKIPPED is no longer terminal; instrument cube, step never applied): concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it"
   },
   "4_three_leg_spot_check": {
-   "status": "SKIPPED",
-   "evidence": "concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it"
+   "status": "N/A",
+   "evidence": "N/A (B2520 migration, L721: SKIPPED is no longer terminal; instrument cube, step never applied): concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it"
   },
   "5_adversarial_lens_review": {
    "status": "N/A",
@@ -2535,8 +2535,8 @@
    "evidence": "concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it || S6-B2451 RECLASSIFIED SKIPPED -> N/A: this is an INSTRUMENT cube - the reason above records that its deliverable was a hash/timing measurement and that no grading or admission consumed it, so there is no strategy verdict to review, re-run, implement or state denominators for. That is 'cannot apply' (N/A), not 'not yet done' (SKIPPED). Under S6-B2440 a deferral no longer closes a judgment step; a reasoned exclusion does. Nothing upgraded to DONE; original reason preserved."
   },
   "6b_equivalence_class_check": {
-   "status": "SKIPPED",
-   "evidence": "concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it"
+   "status": "N/A",
+   "evidence": "N/A (B2520 migration, L721: SKIPPED is no longer terminal; instrument cube, step never applied): concurrency-instrument cube (B2095, S6-B1552a): the deliverable was per-arm ELAPSED plus the content hash, recorded in the S6-B1552a verdict row; content sha matches the B2094 determinism sha exactly; no grading or admission consumed it"
   },
   "7_implement_in_engine": {
    "status": "N/A",
@@ -2549,20 +2549,20 @@
  },
  "output_b2096_d1": {
   "1_cube_sanity": {
-   "status": "SKIPPED",
-   "evidence": "concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it"
+   "status": "N/A",
+   "evidence": "N/A (B2520 migration, L721: SKIPPED is no longer terminal; instrument cube, step never applied): concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it"
   },
   "2_grade_with_config_params": {
-   "status": "SKIPPED",
-   "evidence": "concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it"
+   "status": "N/A",
+   "evidence": "N/A (B2520 migration, L721: SKIPPED is no longer terminal; instrument cube, step never applied): concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it"
   },
   "3_outlier_discrepancy_sweep": {
-   "status": "SKIPPED",
-   "evidence": "concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it"
+   "status": "N/A",
+   "evidence": "N/A (B2520 migration, L721: SKIPPED is no longer terminal; instrument cube, step never applied): concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it"
   },
   "4_three_leg_spot_check": {
-   "status": "SKIPPED",
-   "evidence": "concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it"
+   "status": "N/A",
+   "evidence": "N/A (B2520 migration, L721: SKIPPED is no longer terminal; instrument cube, step never applied): concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it"
   },
   "5_adversarial_lens_review": {
    "status": "N/A",
@@ -2573,8 +2573,8 @@
    "evidence": "concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it || S6-B2451 RECLASSIFIED SKIPPED -> N/A: this is an INSTRUMENT cube - the reason above records that its deliverable was a hash/timing measurement and that no grading or admission consumed it, so there is no strategy verdict to review, re-run, implement or state denominators for. That is 'cannot apply' (N/A), not 'not yet done' (SKIPPED). Under S6-B2440 a deferral no longer closes a judgment step; a reasoned exclusion does. Nothing upgraded to DONE; original reason preserved."
   },
   "6b_equivalence_class_check": {
-   "status": "SKIPPED",
-   "evidence": "concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it"
+   "status": "N/A",
+   "evidence": "N/A (B2520 migration, L721: SKIPPED is no longer terminal; instrument cube, step never applied): concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it"
   },
   "7_implement_in_engine": {
    "status": "N/A",
@@ -2587,20 +2587,20 @@
  },
  "output_b2096_d2": {
   "1_cube_sanity": {
-   "status": "SKIPPED",
-   "evidence": "concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it"
+   "status": "N/A",
+   "evidence": "N/A (B2520 migration, L721: SKIPPED is no longer terminal; instrument cube, step never applied): concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it"
   },
   "2_grade_with_config_params": {
-   "status": "SKIPPED",
-   "evidence": "concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it"
+   "status": "N/A",
+   "evidence": "N/A (B2520 migration, L721: SKIPPED is no longer terminal; instrument cube, step never applied): concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it"
   },
   "3_outlier_discrepancy_sweep": {
-   "status": "SKIPPED",
-   "evidence": "concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it"
+   "status": "N/A",
+   "evidence": "N/A (B2520 migration, L721: SKIPPED is no longer terminal; instrument cube, step never applied): concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it"
   },
   "4_three_leg_spot_check": {
-   "status": "SKIPPED",
-   "evidence": "concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it"
+   "status": "N/A",
+   "evidence": "N/A (B2520 migration, L721: SKIPPED is no longer terminal; instrument cube, step never applied): concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it"
   },
   "5_adversarial_lens_review": {
    "status": "N/A",
@@ -2611,8 +2611,8 @@
    "evidence": "concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it || S6-B2451 RECLASSIFIED SKIPPED -> N/A: this is an INSTRUMENT cube - the reason above records that its deliverable was a hash/timing measurement and that no grading or admission consumed it, so there is no strategy verdict to review, re-run, implement or state denominators for. That is 'cannot apply' (N/A), not 'not yet done' (SKIPPED). Under S6-B2440 a deferral no longer closes a judgment step; a reasoned exclusion does. Nothing upgraded to DONE; original reason preserved."
   },
   "6b_equivalence_class_check": {
-   "status": "SKIPPED",
-   "evidence": "concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it"
+   "status": "N/A",
+   "evidence": "N/A (B2520 migration, L721: SKIPPED is no longer terminal; instrument cube, step never applied): concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it"
   },
   "7_implement_in_engine": {
    "status": "N/A",
@@ -2625,20 +2625,20 @@
  },
  "output_b2096_d3": {
   "1_cube_sanity": {
-   "status": "SKIPPED",
-   "evidence": "concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it"
+   "status": "N/A",
+   "evidence": "N/A (B2520 migration, L721: SKIPPED is no longer terminal; instrument cube, step never applied): concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it"
   },
   "2_grade_with_config_params": {
-   "status": "SKIPPED",
-   "evidence": "concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it"
+   "status": "N/A",
+   "evidence": "N/A (B2520 migration, L721: SKIPPED is no longer terminal; instrument cube, step never applied): concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it"
   },
   "3_outlier_discrepancy_sweep": {
-   "status": "SKIPPED",
-   "evidence": "concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it"
+   "status": "N/A",
+   "evidence": "N/A (B2520 migration, L721: SKIPPED is no longer terminal; instrument cube, step never applied): concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it"
   },
   "4_three_leg_spot_check": {
-   "status": "SKIPPED",
-   "evidence": "concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it"
+   "status": "N/A",
+   "evidence": "N/A (B2520 migration, L721: SKIPPED is no longer terminal; instrument cube, step never applied): concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it"
   },
   "5_adversarial_lens_review": {
    "status": "N/A",
@@ -2649,8 +2649,8 @@
    "evidence": "concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it || S6-B2451 RECLASSIFIED SKIPPED -> N/A: this is an INSTRUMENT cube - the reason above records that its deliverable was a hash/timing measurement and that no grading or admission consumed it, so there is no strategy verdict to review, re-run, implement or state denominators for. That is 'cannot apply' (N/A), not 'not yet done' (SKIPPED). Under S6-B2440 a deferral no longer closes a judgment step; a reasoned exclusion does. Nothing upgraded to DONE; original reason preserved."
   },
   "6b_equivalence_class_check": {
-   "status": "SKIPPED",
-   "evidence": "concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it"
+   "status": "N/A",
+   "evidence": "N/A (B2520 migration, L721: SKIPPED is no longer terminal; instrument cube, step never applied): concurrency-instrument cube (B2096 clean rerun, S6-B1552a): deliverable was per-arm ELAPSED + the content hash (matches the determinism sha); no grading consumed it"
   },
   "7_implement_in_engine": {
    "status": "N/A",
@@ -2663,20 +2663,20 @@
  },
  "output_b2099_iso2": {
   "1_cube_sanity": {
-   "status": "SKIPPED",
-   "evidence": "isolation-instrument cube (B2099, S6-B1531a): deliverable was the per-strategy content equality vs the singles' union, recorded in the verdict row; PASSED exact"
+   "status": "N/A",
+   "evidence": "N/A (B2520 migration, L721: SKIPPED is no longer terminal; instrument cube, step never applied): isolation-instrument cube (B2099, S6-B1531a): deliverable was the per-strategy content equality vs the singles' union, recorded in the verdict row; PASSED exact"
   },
   "2_grade_with_config_params": {
-   "status": "SKIPPED",
-   "evidence": "isolation-instrument cube (B2099, S6-B1531a): deliverable was the per-strategy content equality vs the singles' union, recorded in the verdict row; PASSED exact"
+   "status": "N/A",
+   "evidence": "N/A (B2520 migration, L721: SKIPPED is no longer terminal; instrument cube, step never applied): isolation-instrument cube (B2099, S6-B1531a): deliverable was the per-strategy content equality vs the singles' union, recorded in the verdict row; PASSED exact"
   },
   "3_outlier_discrepancy_sweep": {
-   "status": "SKIPPED",
-   "evidence": "isolation-instrument cube (B2099, S6-B1531a): deliverable was the per-strategy content equality vs the singles' union, recorded in the verdict row; PASSED exact"
+   "status": "N/A",
+   "evidence": "N/A (B2520 migration, L721: SKIPPED is no longer terminal; instrument cube, step never applied): isolation-instrument cube (B2099, S6-B1531a): deliverable was the per-strategy content equality vs the singles' union, recorded in the verdict row; PASSED exact"
   },
   "4_three_leg_spot_check": {
-   "status": "SKIPPED",
-   "evidence": "isolation-instrument cube (B2099, S6-B1531a): deliverable was the per-strategy content equality vs the singles' union, recorded in the verdict row; PASSED exact"
+   "status": "N/A",
+   "evidence": "N/A (B2520 migration, L721: SKIPPED is no longer terminal; instrument cube, step never applied): isolation-instrument cube (B2099, S6-B1531a): deliverable was the per-strategy content equality vs the singles' union, recorded in the verdict row; PASSED exact"
   },
   "5_adversarial_lens_review": {
    "status": "N/A",
@@ -2687,8 +2687,8 @@
    "evidence": "isolation-instrument cube (B2099, S6-B1531a): deliverable was the per-strategy content equality vs the singles' union, recorded in the verdict row; PASSED exact || S6-B2451 RECLASSIFIED SKIPPED -> N/A: this is an INSTRUMENT cube - the reason above records that its deliverable was a hash/timing measurement and that no grading or admission consumed it, so there is no strategy verdict to review, re-run, implement or state denominators for. That is 'cannot apply' (N/A), not 'not yet done' (SKIPPED). Under S6-B2440 a deferral no longer closes a judgment step; a reasoned exclusion does. Nothing upgraded to DONE; original reason preserved."
   },
   "6b_equivalence_class_check": {
-   "status": "SKIPPED",
-   "evidence": "isolation-instrument cube (B2099, S6-B1531a): deliverable was the per-strategy content equality vs the singles' union, recorded in the verdict row; PASSED exact"
+   "status": "N/A",
+   "evidence": "N/A (B2520 migration, L721: SKIPPED is no longer terminal; instrument cube, step never applied): isolation-instrument cube (B2099, S6-B1531a): deliverable was the per-strategy content equality vs the singles' union, recorded in the verdict row; PASSED exact"
   },
   "7_implement_in_engine": {
    "status": "N/A",
@@ -2701,20 +2701,20 @@
  },
  "output_b2099_obb": {
   "1_cube_sanity": {
-   "status": "SKIPPED",
-   "evidence": "isolation-instrument cube (B2099): the obb single arm; cube written pre-crash (the B2100 writer defect, fixed+pinned same batch); content consumed by the isolation verdict only"
+   "status": "N/A",
+   "evidence": "N/A (B2520 migration, L721: SKIPPED is no longer terminal; instrument cube, step never applied): isolation-instrument cube (B2099): the obb single arm; cube written pre-crash (the B2100 writer defect, fixed+pinned same batch); content consumed by the isolation verdict only"
   },
   "2_grade_with_config_params": {
-   "status": "SKIPPED",
-   "evidence": "isolation-instrument cube (B2099): the obb single arm; cube written pre-crash (the B2100 writer defect, fixed+pinned same batch); content consumed by the isolation verdict only"
+   "status": "N/A",
+   "evidence": "N/A (B2520 migration, L721: SKIPPED is no longer terminal; instrument cube, step never applied): isolation-instrument cube (B2099): the obb single arm; cube written pre-crash (the B2100 writer defect, fixed+pinned same batch); content consumed by the isolation verdict only"
   },
   "3_outlier_discrepancy_sweep": {
-   "status": "SKIPPED",
-   "evidence": "isolation-instrument cube (B2099): the obb single arm; cube written pre-crash (the B2100 writer defect, fixed+pinned same batch); content consumed by the isolation verdict only"
+   "status": "N/A",
+   "evidence": "N/A (B2520 migration, L721: SKIPPED is no longer terminal; instrument cube, step never applied): isolation-instrument cube (B2099): the obb single arm; cube written pre-crash (the B2100 writer defect, fixed+pinned same batch); content consumed by the isolation verdict only"
   },
   "4_three_leg_spot_check": {
-   "status": "SKIPPED",
-   "evidence": "isolation-instrument cube (B2099): the obb single arm; cube written pre-crash (the B2100 writer defect, fixed+pinned same batch); content consumed by the isolation verdict only"
+   "status": "N/A",
+   "evidence": "N/A (B2520 migration, L721: SKIPPED is no longer terminal; instrument cube, step never applied): isolation-instrument cube (B2099): the obb single arm; cube written pre-crash (the B2100 writer defect, fixed+pinned same batch); content consumed by the isolation verdict only"
   },
   "5_adversarial_lens_review": {
    "status": "N/A",
@@ -2725,8 +2725,8 @@
    "evidence": "isolation-instrument cube (B2099): the obb single arm; cube written pre-crash (the B2100 writer defect, fixed+pinned same batch); content consumed by the isolation verdict only || S6-B2451 RECLASSIFIED SKIPPED -> N/A: this is an INSTRUMENT cube - the reason above records that its deliverable was a hash/timing measurement and that no grading or admission consumed it, so there is no strategy verdict to review, re-run, implement or state denominators for. That is 'cannot apply' (N/A), not 'not yet done' (SKIPPED). Under S6-B2440 a deferral no longer closes a judgment step; a reasoned exclusion does. Nothing upgraded to DONE; original reason preserved."
   },
   "6b_equivalence_class_check": {
-   "status": "SKIPPED",
-   "evidence": "isolation-instrument cube (B2099): the obb single arm; cube written pre-crash (the B2100 writer defect, fixed+pinned same batch); content consumed by the isolation verdict only"
+   "status": "N/A",
+   "evidence": "N/A (B2520 migration, L721: SKIPPED is no longer terminal; instrument cube, step never applied): isolation-instrument cube (B2099): the obb single arm; cube written pre-crash (the B2100 writer defect, fixed+pinned same batch); content consumed by the isolation verdict only"
   },
   "7_implement_in_engine": {
    "status": "N/A",
@@ -2778,39 +2778,39 @@
  "output_b2174_sw20_sw20": {
   "1_cube_sanity": {
    "status": "DONE",
-   "evidence": "run_postconfig: cube_exists=PASS(2712 rows); one_strategy=PASS(1 strategies); M2_exits_per_entry_vs_registry=PASS(cube [24] vs registry-now 24 (a differing single value = an ); megacaps_present=PASS(TSLA, AAPL); M1_content_sha=PASS(bb3984d740f34536); M3_fill_date=PASS(0 fills before entry); M4_window=PASS(entries 2024-05-06 .. 2025-04-22); M4_holdout_touch=PASS(0 entries at/after HO_START 2025-05-05 in a STEP-1 cube); M5_pnl_integrity=PASS(0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS); M7_degraded_exits=PASS(degraded map (B1623 measure-not-assume): {'reverse_signal': ); M10_gate_receipt=PASS(receipt matches manifest sha 619049ff06b5); step7_engine_implemented=PASS(exit 0); M9_universe_artifact=PASS(exit 0 on output_audit/_sweep_200.txt (verifier is non-block); ledger_status_matches_evidence=PASS(0 row(s) claim DONE with contradicting evidence); step2_grade_auto=PASS(exit 0; swing=20 span=200 -> output_b2174_sw20_sw20_grid_aut); step4_spot_check_auto=PASS(exit 0; ; wrote output_audit/output_b2174_sw20_sw20_spot_che)"
+   "evidence": "run_postconfig: cube_exists=PASS(2712 rows); one_strategy=PASS(1 strategies); M2_exits_per_entry_vs_registry=PASS(cube [24] vs registry-now 24 (a differing single value = an ); megacaps_present=PASS(TSLA, AAPL); M1_content_sha=PASS(bb3984d740f34536); M3_fill_date=PASS(0 fills before entry); M4_window=PASS(entries 2024-05-06 .. 2025-04-22); M4_holdout_touch=PASS(0 entries at/after HO_START 2025-05-05 in a STEP-1 cube); M5_pnl_integrity=PASS(0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS); M7_degraded_exits=PASS(degraded map (B1623 measure-not-assume): {'reverse_signal': ); M10_gate_receipt=PASS(receipt matches manifest sha 619049ff06b5); step7_engine_implemented=PASS(exit 0); M9_universe_artifact=PASS(exit 0 on output_audit/_sweep_200.txt (verifier is non-block); ledger_status_matches_evidence=PASS(0 row(s) claim DONE with contradicting evidence); step2_grade_auto=PASS(exit 0; swing=20 span=200 -> output_b2174_sw20_sw20_grid_aut); step4_spot_check_auto=PASS(exit 0; ; wrote output_audit/output_b2174_sw20_sw20_spot_che) | battery re-run 2026-09-01 20:08: DONE - run_postconfig: cube_exists=PASS(2712 rows); one_strategy=PASS(1 strategies); M2_exits_per_entry_vs_registry=PASS(cube [24] vs registry-now 24 (a differing single value = an ); megacaps_present=PASS(TSLA, AAPL); M1_content_sha=PASS(bb3984d740f34536); M3_fill_date=PASS(0 fills before entry); M4_window=PASS(entries 2024-05-06 .. 2025-04-22); M4_holdout_touch=PASS(0 entries at/after HO_START 2025-05-05 in a STEP-1 cube); M5_pnl_integrity=PASS(0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS); M7_degraded_exits=PASS(degraded map (B1623 measure-not-assume): {'reverse_signal': ); M10_gate_receipt=PASS(receipt matches manifest sha 619049ff06b5); step_derivation=PASS(Step-1: declared --step1-cube); M9_universe_artifact=PASS(exit 0 on output_audit/_sweep_200.txt (verifier is non-block); family_dispatch=PASS(smc_breaker_block_long: manifest arms[0].env swing=20 span=2); step2_grade_auto=PASS(exit 0; swing=20 span=200 -> output_b2174_sw20_sw20_grid_aut); step4_spot_check_auto=PASS(exit 0; n_sampled 50 seed 20260816: 50 agree / 0 DISAGREE / ); step7_engine_implemented=PASS(exit 0; PASS - every swept parameter reaches the engine.); ledger_status_matches_evidence=PASS(0 row(s) claim DONE with contradicting evidence)"
   },
   "2_grade_with_config_params": {
    "status": "DONE",
-   "evidence": "AUTO (B2177): graded at manifest swing=20 span=200 -> output_b2174_sw20_sw20_grid_auto.json"
+   "evidence": "AUTO (B2177): graded at manifest swing=20 span=200 -> output_b2174_sw20_sw20_grid_auto.json | battery re-run 2026-09-01 20:08: DONE - AUTO (B2177): graded at manifest swing=20 span=200 -> output_b2174_sw20_sw20_grid_auto.json"
   },
   "3_outlier_discrepancy_sweep": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2174_sw20): the wave-level review batch performs this step across all arms together"
+   "status": "DONE",
+   "evidence": "AUTO (B2192): mechanical core executed by the battery (M2 exits-vs-registry, M5 NaN/inf/winsorize, M7 degraded exits) + the grader's union diagnosis-loss gate and ci_lo-led ranking; M2_exits_per_entry_vs_registry=PASS; M3_fill_date=PASS; M4_holdout_touch=PASS; M5_pnl_integrity=PASS; M7_degraded_exits=PASS | prior: PENDING-WAVE-REVIEW (b2174_sw20): the wave-level review batch performs this step across all arms together | battery re-run 2026-09-01 20:08: DONE - AUTO (B2192): mechanical core executed by the battery (M2 exits-vs-registry, M5 NaN/inf/winsorize, M7 degraded exits) + the grader's union diagnosis-loss gate and ci_lo-led ranking; M2_exits_per_entry_vs_registry=PASS; M3_fill_date=PASS; M4_holdout_touch=PASS; M5_pnl_integrity=PASS; M7_degraded_exits=PASS"
   },
   "4_three_leg_spot_check": {
    "status": "DONE",
-   "evidence": "AUTO (B2177): spot_check_trades --n 50 at manifest params; ; wrote output_audit/output_b2174_sw20_sw20_spot_check.json"
+   "evidence": "AUTO (B2177): spot_check_trades --n 50 at manifest params; ; wrote output_audit/output_b2174_sw20_sw20_spot_check.json | battery re-run 2026-09-01 20:08: DONE - AUTO (B2177): spot_check_trades --n 50 at manifest swing=20 span=200; n_sampled 50 seed 20260816: 50 agree / 0 DISAGREE / 0 skipped; execution failures 0; artifact output_b2174_sw20_sw20_spot_check.json"
   },
   "5_adversarial_lens_review": {
    "status": "DONE",
-   "evidence": "PENDING-WAVE-REVIEW (b2174_sw20): the wave-level review batch performs this step across all arms together || S6-B2460 WAVE REVIEW PERFORMED. MEASURED over the grid artifact: 300 combinations enumerated, 0 reached grading. Cut distribution: BELOW_POWER_FLOOR=218, NO_EXIT_SELECTABLE=82. ADVERSARIAL QUESTION: is a zero-graded result real, or an artifact of the pipeline? EVIDENCE IT IS REAL: the cuts are three DISTINCT upstream reasons and their proportions VARY across the wave with swing width (sw50 loses 225 of 300 to NO_EXIT_SELECTABLE where sw5 loses 40) - a pipeline defect would fail uniformly and for one reason. FINDING: the configuration searched a space in which no combination clears the sample-size floor; that is a result about the parameter band, not a failure of the grader."
+   "evidence": "PENDING-WAVE-REVIEW (b2174_sw20): the wave-level review batch performs this step across all arms together || S6-B2460 WAVE REVIEW PERFORMED. MEASURED over the grid artifact: 300 combinations enumerated, 0 reached grading. Cut distribution: BELOW_POWER_FLOOR=218, NO_EXIT_SELECTABLE=82. ADVERSARIAL QUESTION: is a zero-graded result real, or an artifact of the pipeline? EVIDENCE IT IS REAL: the cuts are three DISTINCT upstream reasons and their proportions VARY across the wave with swing width (sw50 loses 225 of 300 to NO_EXIT_SELECTABLE where sw5 loses 40) - a pipeline defect would fail uniformly and for one reason. FINDING: the configuration searched a space in which no combination clears the sample-size floor; that is a result about the parameter band, not a failure of the grader. | battery re-run 2026-09-01 20:08: DONE - AUTO (B2520): lenses 8 run: 1 WARN / 0 FAIL / 7 INFO -> output_b2174_sw20_sw20_lenses.json; findings: selection_margin WARN: rank-1 [close_mitigation=False break_pct_max=None age_bars_max=250 tail_n=20 -> hybrid_50p"
   },
   "6_post_fix_recheck": {
    "status": "N/A",
-   "evidence": "PENDING-WAVE-REVIEW (b2174_sw20): the wave-level review batch performs this step across all arms together || S6-B2460: N/A on evidence - step 5 produced a FINDING but no FIX (nothing in the grader or producer was changed), so there is no shipped conclusion to re-derive."
+   "evidence": "PENDING-WAVE-REVIEW (b2174_sw20): the wave-level review batch performs this step across all arms together || S6-B2460: N/A on evidence - step 5 produced a FINDING but no FIX (nothing in the grader or producer was changed), so there is no shipped conclusion to re-derive. | battery re-run 2026-09-01 20:08: OPEN - 1 lens finding(s) need a recheck with evidence (#196): selection_margin WARN"
   },
   "6b_equivalence_class_check": {
-   "status": "SKIPPED",
-   "evidence": "PENDING-WAVE-REVIEW (b2174_sw20): the wave-level review batch performs this step across all arms together"
+   "status": "DONE",
+   "evidence": "AUTO (B2192): the grader collapses identical outcomes - 10 ranked outcome classes carry 22 parameter combinations; 89 distinct outcome classes among 300 combinations enumerated in output_b2174_sw20_sw20_grid_auto.json | prior: PENDING-WAVE-REVIEW (b2174_sw20): the wave-level review batch performs this step across all arms together | battery re-run 2026-09-01 20:08: DONE - AUTO (B2192): the grader collapses identical outcomes - 10 ranked outcome classes carry 22 parameter combinations; 89 distinct outcome classes among 300 combinations enumerated in output_b2174_sw20_sw20_grid_auto.json"
   },
   "7_implement_in_engine": {
    "status": "N/A",
-   "evidence": "PENDING-WAVE-REVIEW (b2174_sw20): the wave-level review batch performs this step across all arms together || S6-B2460: N/A on evidence - 0 of 300 combinations returned PASS, so nothing was selected and there is no parameter set to wire into the engine."
+   "evidence": "PENDING-WAVE-REVIEW (b2174_sw20): the wave-level review batch performs this step across all arms together || S6-B2460: N/A on evidence - 0 of 300 combinations returned PASS, so nothing was selected and there is no parameter set to wire into the engine. | battery re-run 2026-09-01 20:08: N/A - Step-1 ranking cube; admission happens at Step 2; nothing to implement. Engine check PASS: exit 0; PASS - every swept parameter reaches the engine."
   },
   "8_verdict_with_denominators": {
    "status": "DONE",
-   "evidence": "PENDING-WAVE-REVIEW (b2174_sw20): the wave-level review batch performs this step across all arms together || S6-B2460 VERDICT: 0 of 300 enumerated combinations reached grading; the honest denominator for any performance claim about this config is ZERO, not 300. Cut distribution: BELOW_POWER_FLOOR=218, NO_EXIT_SELECTABLE=82. No ranking, no qualifier, no admission is derivable from this config."
+   "evidence": "PENDING-WAVE-REVIEW (b2174_sw20): the wave-level review batch performs this step across all arms together || S6-B2460 VERDICT: 0 of 300 enumerated combinations reached grading; the honest denominator for any performance claim about this config is ZERO, not 300. Cut distribution: BELOW_POWER_FLOOR=218, NO_EXIT_SELECTABLE=82. No ranking, no qualifier, no admission is derivable from this config. | battery re-run 2026-09-01 20:08: DONE - AUTO (B2520) VERDICT (denominators from output_b2174_sw20_sw20_grid_auto.json): 300 combinations enumerated: 218 BELOW_POWER_FLOOR, 82 NO_EXIT_SELECTABLE; rank-1 [close_mitigation=False break_pct_max=None age_bars_max=250 tail_n=20 -> hybrid_50pct_target] is_ci_lo -0.196 is_sharpe 0.282 fires 79 - Step-1: ranking only, no admission (B1608)"
   }
  },
  "output_b2183_sw30_sw30": {
@@ -3994,39 +3994,39 @@
  "output_icg_cfg1": {
   "1_cube_sanity": {
    "status": "DONE",
-   "evidence": "run_postconfig: cube_exists=PASS(8952 rows); one_strategy=PASS(1 strategies); M2_exits_per_entry_vs_registry=PASS(cube [24] vs registry-now 24 (a differing single value = an ); megacaps_present=PASS(NVDA); M1_content_sha=PASS(af35ab7fc09b5b2b); M3_fill_date=PASS(0 fills before entry); M4_window=PASS(entries 2024-05-06 .. 2025-05-01); M4_holdout_touch=PASS(0 entries at/after HO_START 2025-05-05 in a STEP-1 cube); M5_pnl_integrity=PASS(0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS); M7_degraded_exits=PASS(degraded map (B1623 measure-not-assume): {'reverse_signal': ); M10_gate_receipt=SKIP(no gate_receipt.json - cube predates B2169 or was launched A); step7_engine_implemented=PASS(exit 0); M9_universe_artifact=PASS(exit 0 on output_audit\\_sweep_200.txt (verifier is non-block); ledger_status_matches_evidence=PASS(0 row(s) claim DONE with contradicting evidence); step2_step4_auto=SKIP(manifest carries no arms env (pre-B2138 cube) - steps 2/4 re)"
+   "evidence": "run_postconfig: cube_exists=PASS(8952 rows); one_strategy=PASS(1 strategies); M2_exits_per_entry_vs_registry=PASS(cube [24] vs registry-now 24 (a differing single value = an ); megacaps_present=PASS(NVDA); M1_content_sha=PASS(af35ab7fc09b5b2b); M3_fill_date=PASS(0 fills before entry); M4_window=PASS(entries 2024-05-06 .. 2025-05-01); M4_holdout_touch=PASS(0 entries at/after HO_START 2025-05-05 in a STEP-1 cube); M5_pnl_integrity=PASS(0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS); M7_degraded_exits=PASS(degraded map (B1623 measure-not-assume): {'reverse_signal': ); M10_gate_receipt=SKIP(no gate_receipt.json - cube predates B2169 or was launched A); step7_engine_implemented=PASS(exit 0); M9_universe_artifact=PASS(exit 0 on output_audit\\_sweep_200.txt (verifier is non-block); ledger_status_matches_evidence=PASS(0 row(s) claim DONE with contradicting evidence); step2_step4_auto=SKIP(manifest carries no arms env (pre-B2138 cube) - steps 2/4 re) | battery re-run 2026-09-01 20:07: DONE - run_postconfig: cube_exists=PASS(8952 rows); one_strategy=PASS(1 strategies); M2_exits_per_entry_vs_registry=PASS(cube [24] vs registry-now 24 (a differing single value = an ); megacaps_present=PASS(NVDA); M1_content_sha=PASS(af35ab7fc09b5b2b); M3_fill_date=PASS(0 fills before entry); M4_window=PASS(entries 2024-05-06 .. 2025-05-01); M4_holdout_touch=PASS(0 entries at/after HO_START 2025-05-05 in a STEP-1 cube); M5_pnl_integrity=PASS(0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS); M7_degraded_exits=PASS(degraded map (B1623 measure-not-assume): {'reverse_signal': ); M10_gate_receipt=SKIP(no gate_receipt.json - cube predates B2169 or was launched A); step_derivation=PASS(Step-1: declared --step1-cube); M9_universe_artifact=PASS(exit 0 on output_audit\\_sweep_200.txt (verifier is non-block); family_dispatch=PASS(institutional_committed_growth_long: manifest arms[0] min_co); step2_grade_auto=PASS(exit 0; minq=4 lookback=4 multiple=1.1 span=200 -> output_ic); step4_spot_check_auto=PASS(exit 0; n_sampled 50 seed 42: 50 agree / 0 DISAGREE / 0 skip); step7_engine_implemented=PASS(4 of 4 swept parameters anchored in the engine path (precomp); ledger_status_matches_evidence=PASS(0 row(s) claim DONE with contradicting evidence)"
   },
   "2_grade_with_config_params": {
    "status": "DONE",
-   "evidence": "output_audit/output_icg_cfg1_grid_auto.json - roster_core.evaluate per exit (24 exits, n=373 each), config IS production (P4=4 P5=4 P6=1.10 P9=200, the baseline); best breakeven_plus_trail is_sharpe 0.263 is_ci_lo -0.087; written under the B2505 contract keys"
+   "evidence": "output_audit/output_icg_cfg1_grid_auto.json - roster_core.evaluate per exit (24 exits, n=373 each), config IS production (P4=4 P5=4 P6=1.10 P9=200, the baseline); best breakeven_plus_trail is_sharpe 0.263 is_ci_lo -0.087; written under the B2505 contract keys | battery re-run 2026-09-01 20:07: DONE - AUTO (B2520): grade_institutional_config at manifest minq=4 lookback=4 multiple=1.1 span=200 -> output_icg_cfg1_grid_auto.json; graded 24 exits on 8952 IS rows (8952 total, holdout rows 0); best breakeven_plus_trail is_ci_lo -0.087 is_sharpe 0.263 fires 373; wrote C:\\Users\\jeetm\\Github\\s"
   },
   "3_outlier_discrepancy_sweep": {
    "status": "DONE",
-   "evidence": "fresh sweep: 0 dup (ticker,entry,exit) rows (measured 0); pnl range [-50.24, 108.17] pct, 0 beyond winsorize 300 (battery M5); every one of 24 exits carries exactly 373==373 rows (uniform 373)"
+   "evidence": "fresh sweep: 0 dup (ticker,entry,exit) rows (measured 0); pnl range [-50.24, 108.17] pct, 0 beyond winsorize 300 (battery M5); every one of 24 exits carries exactly 373==373 rows (uniform 373) | battery re-run 2026-09-01 20:07: DONE - AUTO (B2192): mechanical core executed by the battery (M2 exits-vs-registry, M5 NaN/inf/winsorize, M7 degraded exits) + the grader's union diagnosis-loss gate and ci_lo-led ranking; M2_exits_per_entry_vs_registry=PASS; M3_fill_date=PASS; M4_holdout_touch=PASS; M5_pnl_integrity=PASS; M7_degraded_exits=PASS"
   },
   "4_three_leg_spot_check": {
    "status": "DONE",
-   "evidence": "50-trade gate re-derivation from signals_at_entry (random_state=42): 45 of 50 reproduce the OR gate; the 5 failures widened to the FULL population = 23 of 373 EMPTY signals dicts, exactly the 23 trades closed pre-kill and restored across the resume boundary -> S6-B2512 (UNKNOWN - RCA NEEDED, 3 mechanisms refuted by probes). EMA leg not re-derived (engine-computed; population cross-validated at B2504)"
+   "evidence": "50-trade gate re-derivation from signals_at_entry (random_state=42): 45 of 50 reproduce the OR gate; the 5 failures widened to the FULL population = 23 of 373 EMPTY signals dicts, exactly the 23 trades closed pre-kill and restored across the resume boundary -> S6-B2512 (UNKNOWN - RCA NEEDED, 3 mechanisms refuted by probes). EMA leg not re-derived (engine-computed; population cross-validated at B2504) | battery re-run 2026-09-01 20:07: DONE - AUTO (B2520): spot_check_institutional --n 50 at manifest span=200; n_sampled 50 seed 42: 50 agree / 0 DISAGREE / 0 skipped; execution failures 0; empty records 6; legs A/B disagree 0; artifact output_icg_cfg1_spot_check.json"
   },
   "5_adversarial_lens_review": {
    "status": "DONE",
-   "evidence": "the spot-check anomaly was hunted adversarially: hypotheses tested and REFUTED by execution - open-book restore round-trips 816 keys; kill-era flush shape round-trips 4/4 keys; closed-trade parser delegates to signals_serde (B1260). Cause filed UNKNOWN not guessed (S6-B2512). Also: M10 gate_receipt SKIP identified as a launch-path finding (run_phase1a direct, not run_wave) - closed for the NEXT launch (b2207a goes through run_wave, receipt verified present)"
+   "evidence": "the spot-check anomaly was hunted adversarially: hypotheses tested and REFUTED by execution - open-book restore round-trips 816 keys; kill-era flush shape round-trips 4/4 keys; closed-trade parser delegates to signals_serde (B1260). Cause filed UNKNOWN not guessed (S6-B2512). Also: M10 gate_receipt SKIP identified as a launch-path finding (run_phase1a direct, not run_wave) - closed for the NEXT launch (b2207a goes through run_wave, receipt verified present) | battery re-run 2026-09-01 20:07: DONE - AUTO (B2520): lenses 8 run: 1 WARN / 0 FAIL / 7 INFO -> output_icg_cfg1_lenses.json; findings: empty_signals_share WARN: 23 of 373 trade_log rows carry an empty signals_at_entry (S6-B2512 class)"
   },
   "6_post_fix_recheck": {
    "status": "DONE",
-   "evidence": "re-check RUN, not waived (#196): enumerated this cycle's fixes - B2490/B2492/B2502 (cap gates on active hours; guard/kill accounting only), B2498 (prescreen fallback jaccard), B2505 (Table D axis registry) - and swept for shipped conclusions resting on pre-fix behaviour. The only cube-coupled claim is the resume manifest's cube-equivalence-at-defaults, held by test_b2484 (span default 200 pinned) and the completed run's M1-M7 checks; the grid/battery/free-level artifacts read pnl+hold, which no fix in the cycle touches. RESULT: 0 shipped conclusions require re-derivation - a re-check that finds nothing is a finding, not a skip (B2460)."
+   "evidence": "re-check RUN, not waived (#196): enumerated this cycle's fixes - B2490/B2492/B2502 (cap gates on active hours; guard/kill accounting only), B2498 (prescreen fallback jaccard), B2505 (Table D axis registry) - and swept for shipped conclusions resting on pre-fix behaviour. The only cube-coupled claim is the resume manifest's cube-equivalence-at-defaults, held by test_b2484 (span default 200 pinned) and the completed run's M1-M7 checks; the grid/battery/free-level artifacts read pnl+hold, which no fix in the cycle touches. RESULT: 0 shipped conclusions require re-derivation - a re-check that finds nothing is a finding, not a skip (B2460). | battery re-run 2026-09-01 20:07: OPEN - 1 lens finding(s) need a recheck with evidence (#196): empty_signals_share WARN"
   },
   "6b_equivalence_class_check": {
-   "status": "SKIPPED",
-   "reason": "baseline config carried no subset-safe equivalence classes to propagate - class_size=1 recorded on every ranked row in the grid artifact; the free-level re-scores that DO carry classes live in output_audit/b2504_free_levels_institutional.json (S6-B2501, graded separately)"
+   "status": "N/A",
+   "evidence": "N/A (B2520 migration, L721): no equivalence classes exist to carry - baseline config carried no subset-safe equivalence classes to propagate - class_size=1 recorded on every ranked row in the grid artifact; the free-level re-scores that DO carry classes live in output_audit/b2504_free_levels_institutional.json (S6-B2501, graded separately) | battery re-run 2026-09-01 20:07: N/A - 1 combination per cube (the swept parameters live in the precompute the engine consumed); equivalence collapse requires >= 2 combinations - N/A on evidence"
   },
   "7_implement_in_engine": {
    "status": "DONE",
-   "evidence": "trivially satisfied for a BASELINE: the config IS production (every value the built-in default), so the engine already implements it; battery step7_engine_implemented PASS exit 0"
+   "evidence": "trivially satisfied for a BASELINE: the config IS production (every value the built-in default), so the engine already implements it; battery step7_engine_implemented PASS exit 0 | battery re-run 2026-09-01 20:07: N/A - Step-1 ranking cube; admission happens at Step 2; nothing to implement. Engine check PASS: 4 of 4 swept parameters anchored in the engine path (precompute INST_* x3 + screener STRAT_EMA_SPAN; code-presence check)"
   },
   "8_verdict_with_denominators": {
    "status": "DONE",
-   "evidence": "VERDICT: baseline Step-1 reference measured - best of 24 exits (breakeven_plus_trail) at is_sharpe 0.263 / is_ci_lo -0.087 on n=373 IS fires over 200 tickers x 1 year; 0 of 24 exits reach a positive ci_lo; this is the comparison bar for the 16 variant configs, per the ruled Step-1 rank-only design (no gates, B1608)"
+   "evidence": "VERDICT: baseline Step-1 reference measured - best of 24 exits (breakeven_plus_trail) at is_sharpe 0.263 / is_ci_lo -0.087 on n=373 IS fires over 200 tickers x 1 year; 0 of 24 exits reach a positive ci_lo; this is the comparison bar for the 16 variant configs, per the ruled Step-1 rank-only design (no gates, B1608) | battery re-run 2026-09-01 20:07: DONE - AUTO (B2520) VERDICT (denominators from output_icg_cfg1_grid_auto.json): 24 of 24 exits RANKED at min-trades >= 10 on 8952 IS rows (8952 cube rows, 0 holdout rows); rank-1 [breakeven_plus_trail] is_ci_lo -0.087 is_sharpe 0.263 fires 373 - Step-1: ranking only, no admission (B1608)"
   }
  },
  "output_b2207a_lockprobe_p1": {
@@ -4055,8 +4055,8 @@
    "evidence": "re-check RUN: this probe post-dates B2490/B2492/B2502/B2498/B2505 and was launched at sha e80302541 which contains all of them; no shipped conclusion rests on pre-fix behaviour because the probe produced no prior conclusion. 0 re-derivations owed"
   },
   "6b_equivalence_class_check": {
-   "status": "SKIPPED",
-   "reason": "single-arm probe with no swept parameters - no equivalence classes exist to carry"
+   "status": "N/A",
+   "evidence": "N/A (B2520 migration, L721): no equivalence classes exist to carry - single-arm probe with no swept parameters - no equivalence classes exist to carry"
   },
   "7_implement_in_engine": {
    "status": "DONE",

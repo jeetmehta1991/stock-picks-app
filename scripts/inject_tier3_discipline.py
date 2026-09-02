@@ -47,6 +47,42 @@ statement (Stop hook + pre-commit enforce the mechanical half).
 """
 
 
+def undelivered_landings_banner() -> str:
+    """B2520 (owner ruling 2026-09-01, "share results with me"): every cube
+    whose landing has not yet been reported to the owner is printed at the
+    TOP of the next turn, before the skill - so the reader meets the result
+    before any other work, and the Stop hook (scan_undelivered_landing) has a
+    reader who already knows what it will ask for. Pure ASCII; never raises;
+    empty when nothing is pending or the record cannot be read."""
+    try:
+        here = str(pathlib.Path(__file__).resolve().parent)
+        if here not in sys.path:
+            sys.path.insert(0, here)
+        import postconfig_landing as _pl
+        pend = _pl.undelivered()
+    except Exception:
+        return ""
+    if not pend:
+        return ""
+    lines = ["[UNDELIVERED LANDINGS (B2520) - report each as `LANDING REPORT: "
+             "<cube>` in this turn's final response; the Stop hook blocks until "
+             "you do]"]
+    for ev in pend:
+        blocking = ev.get("blocking") or []
+        finds = ev.get("findings") or []
+        lines.append(
+            f"  {ev.get('cube')}: landed {ev.get('ts')} via {ev.get('source')}; "
+            f"battery_exit {ev.get('battery_exit')}; blocking "
+            f"{', '.join(blocking) if blocking else 'none'}; findings "
+            f"{len(finds)}; committed {ev.get('committed')}; pushed "
+            f"{ev.get('pushed')}")
+        # B2211: never truncate a finding - the measured numbers sit at
+        # the END of a battery line, so a cut removes exactly the numbers
+        for f in finds:
+            lines.append("    - " + str(f))
+    return "\n".join(lines).encode("ascii", "replace").decode("ascii") + "\n\n"
+
+
 def main() -> int:
     try:
         # Consume stdin (the hook payload) so the pipe closes cleanly; we don't
@@ -69,7 +105,8 @@ def main() -> int:
                   / ".claude" / "skills" / "execution-discipline" / "SKILL.md")
         try:
             body = _skill.read_text(encoding="utf-8")
-            out = ("[EXECUTION-DISCIPLINE - FULL SKILL, auto-injected every turn "
+            out = (undelivered_landings_banner()
+                   + "[EXECUTION-DISCIPLINE - FULL SKILL, auto-injected every turn "
                    "(B1744). Apply UNPROMPTED.]" + chr(10) + body)
             # B1744 ROOT CAUSE. B1743 shipped and SILENTLY did nothing for two
             # sessions, including across a restart. PROVEN: this hook writes to a
@@ -91,7 +128,7 @@ def main() -> int:
         except Exception:
             # Fallback retained, but it is now a REAL last resort rather than the
             # everyday path. TIER3 is pure ASCII so it always encodes.
-            sys.stdout.write(TIER3)
+            sys.stdout.write(undelivered_landings_banner() + TIER3)
     except Exception:
         pass  # fail-open: never block a turn
     return 0

@@ -25,12 +25,19 @@ This closes that hole. For every cube that finished, a ledger entry must exist
 with all NINE steps dispositioned. Silence is not a disposition.
 
 S6-B2440 (owner-approved 2026-08-30): neither is a DEFERRAL, for the four
-JUDGMENT steps. SKIPPED-with-a-reason still closes an AUTO step; for steps
-5/6/7/8 only DONE or N/A close it, because 42 skips citing a review batch that
-never existed passed this gate unchallenged (L721).
+JUDGMENT steps - 42 skips citing a review batch that never existed had passed
+this gate unchallenged (L721).
+
+B2520 (owner ruling 2026-09-01: "Why are some steps skipped after each config?
+They should ideally not get skipped at all!!!"): SKIPPED is terminal for NO
+step. Every one of the nine steps closes only as DONE (it ran, with evidence)
+or N/A (it cannot apply to this config, with the reason). The battery
+(scripts/run_postconfig.py, invoked by scripts/postconfig_landing.py from the
+engine itself the moment a cube lands) records every step, so a SKIPPED row
+can now only come from a hand edit - and it blocks until dispositioned.
 
 Exit 0 = every completed cube has a complete ledger.
-Exit 2 = a cube exists with steps neither DONE nor explicitly SKIPPED.
+Exit 2 = a cube exists with a step that is neither DONE nor N/A-with-a-reason.
 Exit 3 = the ledger is unreadable (fail CLOSED).
 """
 from __future__ import annotations
@@ -55,9 +62,8 @@ STEPS = [
     "7_implement_in_engine",
     "8_verdict_with_denominators",
 ]
-# S6-B2440 (owner-approved 2026-08-30, council recommendation): SKIPPED is NO
-# LONGER TERMINAL for the four JUDGMENT steps. It stays terminal for the five
-# AUTO steps, where a skip is a real operational disposition.
+# S6-B2440 (owner-approved 2026-08-30, council recommendation): SKIPPED stopped
+# being TERMINAL for the four JUDGMENT steps.
 #
 # WHY. Measured at S6-B2436: across all 31 Step-1 configs AND the Step-2 config,
 # the four judgment steps were SKIPPED, every one carrying the reason
@@ -67,21 +73,43 @@ STEPS = [
 # the work was DONE (L721). A deferral to a process nobody built satisfied a
 # mandatory control 42 times.
 #
-# A deferral is not a disposition. For a judgment step, only DONE (it ran) or
-# N/A (it cannot apply to this config) close it.
+# B2520 closed the other half: SKIPPED is terminal for NO step, AUTO steps
+# included. The five AUTO steps had kept SKIPPED "because a skip there is a real
+# operational disposition" - and MEASURED, the skips it admitted were not:
+# step 2 SKIPPED on every non-smc cube with the wrong diagnosis "pre-B2138
+# cube" (a family the grader could not dispatch), step 4 SKIPPED on every
+# institutional cube because no spot-checker existed for the family. Both were
+# missing MECHANISMS recorded as dispositions. The remedy is the mechanism
+# (grade_institutional_config.py, spot_check_institutional.py, a fail-closed
+# family registry) plus a gate that no longer accepts the excuse.
+#
+# A deferral is not a disposition. Only DONE (it ran, evidence) or N/A (it
+# cannot apply to this config, reason) close a step - any step.
 JUDGMENT_STEPS = frozenset({
     "5_adversarial_lens_review",
     "6_post_fix_recheck",
     "7_implement_in_engine",
     "8_verdict_with_denominators",
 })
-TERMINAL = {"DONE", "SKIPPED", "N/A"}
-TERMINAL_JUDGMENT = {"DONE", "N/A"}
+TERMINAL = {"DONE", "N/A"}
+TERMINAL_JUDGMENT = TERMINAL
 
 
 def terminal_for(step: str) -> set:
-    """The accepting states for one step. Judgment steps refuse SKIPPED."""
+    """The accepting states for one step - the same two for every step since
+    B2520 (kept as a function: two pinned tests and the doc renderer call it,
+    and a future per-step distinction belongs here, not in a caller)."""
     return TERMINAL_JUDGMENT if step in JUDGMENT_STEPS else TERMINAL
+
+
+def is_closed(row) -> bool:
+    """A step is closed only by a terminal status carrying its evidence: DONE
+    with evidence, or N/A with a reason. An N/A with nothing behind it is a
+    skip wearing a different word (L642: the absent case is the guarded case)."""
+    if not isinstance(row, dict) or row.get("status") not in TERMINAL:
+        return False
+    return bool(str(row.get("evidence") or row.get("reason") or
+                    row.get("note") or "").strip())
 
 
 def completed_cubes() -> list[str]:
@@ -116,8 +144,7 @@ def main() -> int:
     incomplete = []
     for c in cubes:
         entry = ledger.get(c, {})
-        missing = [s for s in STEPS
-                   if entry.get(s, {}).get("status") not in terminal_for(s)]
+        missing = [s for s in STEPS if not is_closed(entry.get(s))]
         if missing:
             incomplete.append((c, missing))
 
@@ -147,25 +174,27 @@ def main() -> int:
             # a config the gate then blocked on three lines later - a reader
             # must never see a label contradicting the number beside it (L558).
             mark = "COMPLETE" if all(
-                e.get(s, {}).get("status") in terminal_for(s) for s in STEPS
-            ) else "INCOMPLETE"
+                is_closed(e.get(s)) for s in STEPS) else "INCOMPLETE"
             tail = f"  [{len(skipped)} SKIPPED: {', '.join(skipped)}]" if skipped else ""
             if na:
                 tail += f"  [{len(na)} N/A: {', '.join(na)}]"
             print(f"  {mark:10} {c}: {ran} of {len(STEPS)} RUN{tail}")
         print(f"\n  {len(cubes)} cubes | {len(incomplete)} incomplete | "
-              f"{total_skipped} step(s) SKIPPED with a reason")
+              f"{total_skipped} step(s) SKIPPED")
         if total_skipped:
-            print("  NOTE (S6-B2440): a SKIPPED step satisfies this gate ONLY for "
-                  "the five AUTO steps. For the four JUDGMENT steps "
-                  f"({', '.join(sorted(JUDGMENT_STEPS))}) a deferral is NOT a "
-                  "disposition and BLOCKS - only DONE or N/A close them.")
+            print("  NOTE (B2520): a SKIPPED step satisfies this gate for NO "
+                  "step. A deferral is NOT a disposition and BLOCKS - only DONE "
+                  "(with evidence) or N/A (with a reason) close a step. Run "
+                  "scripts/postconfig_landing.py --cube <dir> --force to record "
+                  "every step from the battery.")
 
     if incomplete:
         print("\nBLOCK: a finished cube owes a complete post-config ledger. "
               "The runbook calls skipping a step a silent miss, so a step with no "
-              "entry is not 'pending' - it is missing. Record DONE with evidence, "
-              "or SKIPPED with a reason.")
+              "entry is not 'pending' - it is missing, and SKIPPED is the same "
+              "miss with a label (B2520). Record DONE with evidence, or N/A with "
+              "a reason - scripts/postconfig_landing.py --cube <dir> --force "
+              "records every step from the battery.")
         for c, missing in incomplete:
             print(f"  {c}: {', '.join(missing)}")
         return 2

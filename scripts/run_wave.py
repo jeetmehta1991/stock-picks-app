@@ -265,41 +265,55 @@ def run_arm(spec: dict, arm: dict, engine_cmd: str | None = None) -> dict:
     with cube.open(encoding="utf-8", errors="replace") as f:
         rows = sum(1 for _ in f) - 1
     status = "COMPLETE" if rows > 1 else "FAILED_EMPTY_CUBE"
-    # mechanical ledger entries: what the orchestrator itself verified
+    # B2118 (S6-B2117b) -> B2520: the post-config LANDING SUPERVISOR runs
+    # HERE as the second line of defence, BEFORE this orchestrator writes a
+    # word to the ledger. The engine itself calls it the moment the cube is
+    # written (run_phase1a._postconfig_landing_hook), so for a real engine
+    # this call is a fingerprint no-op (--if-not-landed); for a substitute
+    # engine (--engine-cmd, tests) it is THE landing, with git + toast off
+    # because a fake cube must never be pushed or announced. A non-zero exit
+    # is RECORDED on the arm result, never swallowed. Waves are Step-1 search
+    # runs by the ruled shape unless the spec says step1_cube: false (a
+    # Step-2 validation wave).
+    pc = subprocess.run(
+        [sys.executable, str(ROOT / "scripts" / "postconfig_landing.py"),
+         "--cube", out_dir.name, "--if-not-landed", "--source", "run_wave"]
+        + (["--step1-cube"] if spec.get("step1_cube", True) else ["--step2-cube"])
+        + (["--no-git", "--no-notify"] if engine_cmd else []),
+        cwd=str(ROOT))
+    # mechanical ledger entry: what the orchestrator ITSELF verified (legs +
+    # M6 boundary drops - the battery cannot know these).
     # B2207 (S6-B2205a): the ledger write is LOCKED + atomic via
     # ledger_lock.locked_ledger_update - two configs landing simultaneously
     # serialize instead of losing an entry. The parallel-program prerequisite.
-    steps = ["1_cube_sanity", "2_grade_with_config_params",
-             "3_outlier_discrepancy_sweep", "4_three_leg_spot_check",
-             "5_adversarial_lens_review", "6_post_fix_recheck",
-             "6b_equivalence_class_check", "7_implement_in_engine",
-             "8_verdict_with_denominators"]
-    entry = {s: {"status": "SKIPPED",
-                 "evidence": f"PENDING-WAVE-REVIEW ({spec['wave']}): the "
-                             "wave-level review batch performs this step "
-                             "across all arms together"} for s in steps}
-    entry["1_cube_sanity"] = {
-        "status": "DONE",
-        "evidence": f"run_wave verified {rows} cube rows across {legs} "
-                    f"leg(s); M6 boundary drops (B1076 caveat, measured): "
-                    f"{boundary_carryover if boundary_carryover else 'none - single leg'}"}
+    # B2520: ADDITIVE, never authoritative. Until B2520 this block pre-wrote
+    # all nine steps as SKIPPED "PENDING-WAVE-REVIEW" for a review batch that
+    # never existed (L721) - the phantom deferral behind "why are some steps
+    # skipped after each config?" - and its first B2520 shape wrote step 1 as
+    # DONE before the battery had run, which would have turned a battery FAIL
+    # into DONE. Now the battery's status STANDS and the wave's evidence is
+    # appended to it; if the battery recorded nothing (supervisor crashed),
+    # the row is OPEN - a row-count is not a sanity verdict (L642).
+    _wave_ev = (f"run_wave verified {rows} cube rows across {legs} leg(s); "
+                f"M6 boundary drops (B1076 caveat, measured): "
+                f"{boundary_carryover if boundary_carryover else 'none - single leg'}")
     from ledger_lock import locked_ledger_update
 
     def _put(ledger: dict) -> dict:
+        entry = dict(ledger.get(out_dir.name) or {})
+        old = entry.get("1_cube_sanity") or {}
+        if old.get("status") and old.get("evidence"):
+            entry["1_cube_sanity"] = {
+                "status": old["status"], "evidence": f"{old['evidence']} | {_wave_ev}"}
+        else:
+            entry["1_cube_sanity"] = {
+                "status": "OPEN",
+                "evidence": f"{_wave_ev} - the battery recorded nothing for this "
+                            f"step (supervisor exit {pc.returncode}); OPEN until "
+                            "it does (fail closed, L642)"}
         ledger[out_dir.name] = entry
         return ledger
     locked_ledger_update(_put)
-    # B2118 (S6-B2117b): the mechanical post-config battery runs HERE, at
-    # wave completion, not by hand. --write-ledger upgrades 1_cube_sanity
-    # with the M-check evidence when all checks pass; a non-zero exit is
-    # RECORDED on the arm result, never swallowed. Waves are Step-1 search
-    # runs by the ruled shape, so the holdout-touch FAIL is armed unless
-    # the spec says step1_cube: false (a Step-2 validation wave).
-    pc = subprocess.run(
-        [sys.executable, str(ROOT / "scripts" / "run_postconfig.py"),
-         "--cube", out_dir.name, "--write-ledger"]
-        + (["--step1-cube"] if spec.get("step1_cube", True) else []),
-        cwd=str(ROOT))
     # B2198 (L651) + B2208 FIX: the battery's result is RENDERED, not only
     # written. B2198 placed this block AFTER the return - dead code, which is
     # why the owner saw nothing print for three landings. It now runs BEFORE
@@ -308,7 +322,8 @@ def run_arm(spec: dict, arm: dict, engine_cmd: str | None = None) -> dict:
     try:
         # B2211: ONE document, regenerated whole (owner: "I want a single
         # document and not multiple"). Per-config cards are retired; this
-        # doc carries every step's FINDINGS, not its status.
+        # doc carries every step's FINDINGS, not its status. Regenerated
+        # AFTER the wave evidence lands so the report carries it.
         import postconfig_doc as _pcd
         _doc = ROOT / "output_audit" / "POSTCONFIG_REPORT.md"
         _doc.write_text(_pcd.build(), encoding="utf-8")

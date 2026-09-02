@@ -267,6 +267,31 @@ INCIDENTS: dict[str, tuple[str, bool, dict]] = {
         True,
         {},
     ),
+    # B2520: VERBATIM from the response to the owner's "Has the mandatory post
+    # config analysis steps been run automatically?" (2026-09-01). The cube
+    # output_icg_cfg1 had LANDED; the response discussed it for three
+    # paragraphs and none of it was a LANDING REPORT block, so nothing
+    # mechanical could tell the landing had reached the owner - the sixth
+    # ask about the same mechanism (L736). The state is the landing event as
+    # the supervisor writes it; the gate reads the LAST event per cube.
+    "scan_undelivered_landing": (
+        "**No \u2014 not for config 1. I ran it by hand, and that was a gap in how "
+        "I launched, not in the machinery.** The automation exists and is real: "
+        "[run_wave.py:299](scripts/run_wave.py#L299) invokes "
+        "`scripts/run_postconfig.py` at arm completion and line 312 imports "
+        "`postconfig_doc` to render the result. But **config 1 never went "
+        "through run_wave** \u2014 its own log shows the argv was a direct "
+        "`backtest/run_phase1a.py` invocation (the resume flag needed a specific "
+        "checkpoint path, and I launched it directly). Nothing auto-ran, because "
+        "nothing was watching that path.",
+        True,
+        {"landings": [{"cube": "output_icg_cfg1", "ts": "2026-09-01T19:56:19",
+                       "fingerprint": "b2520-incident", "source": "manual",
+                       "battery_exit": 0, "blocking": [],
+                       "findings": ["empty_signals_share WARN: 23 of 373"],
+                       "committed": False, "pushed": False,
+                       "reported_to_owner": False}]},
+    ),
     # NEGATIVE control - ordinary reporting prose that must NOT trip anything.
     # Note it is a bare sentence, so gates that legitimately require RESPONSE
     # STRUCTURE (a SKILLS block, a compliance block) are excluded by the sweep
@@ -455,6 +480,25 @@ PURE_INCIDENTS: dict[str, list[tuple[tuple, bool, str]]] = {
 
 
 EXTRA_INCIDENTS: dict[str, list[tuple[str, bool, dict]]] = {
+    # B2520 must-QUIET: the SAME landing event, and a response that carries
+    # the report. It is quiet because of the `LANDING REPORT: <cube>` block and
+    # nothing else - deleting only that line makes it fire, which is the
+    # council's discriminate-test and is asserted in
+    # test_b2520_stop_hook_blocks_until_a_landing_is_reported.
+    "scan_undelivered_landing": [
+        ("Both cubes are reported below.\n\n"
+         "```\n=== LANDING REPORT: output_icg_cfg1 ===\n"
+         "battery exit 0 | 8 of 9 RUN [1 N/A: 6b] | findings 1\n"
+         "  empty_signals_share WARN: 23 of 373 trade_log rows carry an empty "
+         "signals_at_entry (S6-B2512 class)\n```",
+         False,
+         {"landings": [{"cube": "output_icg_cfg1", "ts": "2026-09-01T20:07:48",
+                        "fingerprint": "b2520-quiet", "source": "manual",
+                        "battery_exit": 0, "blocking": [],
+                        "findings": ["empty_signals_share WARN: 23 of 373"],
+                        "committed": False, "pushed": False,
+                        "reported_to_owner": False}]}),
+    ],
     # ---- S6-B2263 batch 1 (B2291): must-QUIET cases for FIRE_ONLY_LEGACY gates.
     # A gate that refuses EVERYTHING satisfies every must-FIRE case ever written
     # for it (L686), so the accept-path is the only arm that proves the gate
@@ -853,6 +897,9 @@ NEUTRAL: dict[str, dict] = {
     "scan_row_vs_ticket": {"tool_text": ""},
     # reads TOOL text for a generator; neutralise for the text-only control
     "scan_synthetic_provenance": {"tool_text": ""},
+    # B2520: reads the LIVE landings record; an empty record is the neutral
+    # state, or the control measures whatever landed today (L517 shape).
+    "scan_undelivered_landing": {"landings": []},
 }
 
 

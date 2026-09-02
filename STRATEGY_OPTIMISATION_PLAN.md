@@ -1710,48 +1710,79 @@ the nine steps lived only in `scripts/run_postconfig.py` and the ledger, so the 
 invisible to anyone reading the plan. A rule with no author in the governing document is a rule
 nobody agreed to.
 
-**THE NINE STEPS.** Five run automatically at arm completion (`run_postconfig.py`, invoked from
-`run_wave.py`); four are JUDGMENT steps that the code **deliberately never auto-marks**
-(`run_postconfig.py:225` — *"JUDGMENT PROMPTS (never auto-marked)"*).
+**THE NINE STEPS - ALL NINE RUN ON EVERY LANDING, FROM EVERY LAUNCH SHAPE (B2520, owner ruling
+2026-09-01: *"Once the config lands, i want it to run automatically no exceptions and share results
+with me."*).** *(The paragraph this replaced read: "Five run automatically at arm completion
+(`run_postconfig.py`, invoked from `run_wave.py`); four are JUDGMENT steps that the code deliberately
+never auto-marks (`run_postconfig.py:225` - 'JUDGMENT PROMPTS (never auto-marked)')." Both halves are
+RETIRED: the run_wave-only wiring left direct and resume launches with no battery at all - cfg1 landed
+with no gate receipt and a hand-built grid, S6-B2515 - and the never-auto-marked design is what the
+owner asked six times to have removed. L736 / CHECKLIST #288.)*
 
-| # | step | class | what it establishes |
+**THE PIPELINE, by file.** `backtest/run_phase1a.py::_postconfig_landing_hook` fires the moment
+`trade_exit_detail.csv` is written (`POSTCONFIG_LANDING=0` opts out, logged; a run that dies before
+writing a cube is the monitor's case, L641) -> `scripts/postconfig_landing.py`, ONE supervisor shared
+by every launch path and idempotent per cube fingerprint (so `run_wave.py`'s own call after a real
+engine run is a no-op, after a substitute engine IS the landing, and a manual call behaves the same)
+-> `scripts/run_postconfig.py` (every step written on every run, FAIL included; `FAMILIES` fails
+CLOSED on a strategy with no registered grader) -> `output_audit/postconfig_ledger.json` ->
+`output_audit/POSTCONFIG_REPORT.md` (the ONE report, B2211, re-rendered on every landing, with a
+Landings section) -> `output_audit/postconfig_landings.jsonl` (`reported_to_owner: false`) -> the turn
+preamble lists every undelivered landing, and the Stop hook BLOCKS the turn until the response carries
+a `LANDING REPORT: <cube>` block -> the supervisor commits + pushes the ledger, report and per-cube
+artifacts (never the cube directory) and raises a desktop toast.
+
+| # | step | class (B2520) | what it establishes |
 |---|---|---|---|
 | 1 | `1_cube_sanity` | AUTO | the cube exists, holds one strategy, spans the window, carries every registered exit |
-| 2 | `2_grade_with_config_params` | AUTO | the grid was graded at the manifest's own parameters |
+| 2 | `2_grade_with_config_params` | AUTO, per family | the grid was graded at the manifest's own parameters (SMC: `tighten_breaker_block.py`; institutional: `grade_institutional_config.py`) |
 | 3 | `3_outlier_discrepancy_sweep` | AUTO | NaN/inf, winsorize bounds, degraded-exit map |
-| 4 | `4_three_leg_spot_check` | AUTO | 50 sampled trades re-derived independently |
+| 4 | `4_three_leg_spot_check` | AUTO, per family | 50 sampled trades re-derived independently |
 | 6b | `6b_equivalence_class_check` | AUTO | combinations differing only in a saturated parameter collapse |
-| 5 | `5_adversarial_lens_review` | **JUDGMENT** | the lens pass that has historically SURFACED the defects |
-| 6 | `6_post_fix_recheck` | **JUDGMENT** | anything fixed as a result was re-run end to end |
-| 7 | `7_implement_in_engine` | **JUDGMENT** | every swept parameter actually reaches the engine |
-| 8 | `8_verdict_with_denominators` | **JUDGMENT** | the verdict states N of M, not a bare headline |
+| 5 | `5_adversarial_lens_review` | AUTO (was JUDGMENT) | an eight-lens battery runs and writes `<cube>_lenses.json`; every WARN / FAIL finding is recorded on the row, never summarised away |
+| 6 | `6_post_fix_recheck` | AUTO-DISPOSITIONED (was JUDGMENT) | OPEN while any lens finding lacks a recheck with evidence (#196); N/A-on-evidence when there is none |
+| 7 | `7_implement_in_engine` | AUTO (was JUDGMENT) | every swept parameter reaches the engine - checked by step number, not by label |
+| 8 | `8_verdict_with_denominators` | AUTO (was JUDGMENT) | the verdict is computed from the grid artifact WITH its N of M |
 
-**MEASURED STATE AT THIS WRITING (S6-B2436, from the battery's own ledger, 105 configs):** across
-**all 31 Step-1 configs and the single Step-2 config**, the five AUTO steps are DONE and **all four
-JUDGMENT steps are SKIPPED** — every one carrying the reason *"PENDING-WAVE-REVIEW: the wave-level
-review batch performs this step"*. **That wave-level review batch has never run.** Programme-wide
-the judgment steps stand at DONE 10 / 2 / 4 / 10 against SKIPPED 42 / 47 / 43 / 42.
+Every step ends DONE-with-evidence, N/A-with-a-reason, FAIL or OPEN. **SKIPPED is not a disposition
+and is in no terminal set** (`verify_postconfig_complete.py::terminal_for` returns {DONE, N/A} for every
+step; `is_closed` also requires the evidence text). FAIL and OPEN block the completeness gate until a
+human dispositions the row with evidence; a re-run never downgrades a terminal row and never truncates
+the evidence already on it (`run_postconfig.py::merge_row`).
 
-**WHY NOTHING BLOCKED — the loophole, stated plainly.** `verify_postconfig_complete.py:54` defines
-`TERMINAL = {"DONE", "SKIPPED", "N/A"}`, so a step marked SKIPPED **with any reason string** counts
-as dispositioned and the completeness gate passes. The gate checks DISPOSITION, not EXECUTION. A
-deferral naming a process that does not exist satisfies it indefinitely.
+**MEASURED STATE AT S6-B2436 (2026-08-30 - historical; the reading that produced this section):**
+across all 31 Step-1 configs and the single Step-2 config, the five AUTO steps were DONE and **all four
+JUDGMENT steps were SKIPPED**, every one carrying the reason *"PENDING-WAVE-REVIEW: the wave-level
+review batch performs this step"*. **That wave-level review batch never existed.** Programme-wide the
+judgment steps stood at DONE 10 / 2 / 4 / 10 against SKIPPED 42 / 47 / 43 / 42. At B2520 the gate reads
+100 cubes, 0 incomplete, 0 steps SKIPPED (`python scripts/verify_postconfig_complete.py`, exit 0).
+
+**WHY NOTHING BLOCKED - the loophole, stated plainly (historical, closed at B2520).**
+`verify_postconfig_complete.py` then defined `TERMINAL = {"DONE", "SKIPPED", "N/A"}`, so a step marked
+SKIPPED **with any reason string** counted as dispositioned and the completeness gate passed.
+The gate checks DISPOSITION, not EXECUTION. A deferral naming a process that does not exist
+satisfied it indefinitely. The gate STILL checks disposition - which is exactly why every step now
+WRITES one, on every run, and why SKIPPED can no longer be written at all.
 
 **THE RULE, going forward:**
 
-1. **A config is not COMPLETE until all nine steps are DONE or explicitly N/A.** SKIPPED is a
-   deferral, and a deferral is not a disposition.
+1. **A config is not COMPLETE until all nine steps are DONE or explicitly N/A.** SKIPPED is not a
+   disposition; a step that could not run is FAIL or OPEN and BLOCKS.
 2. **Step 2 may not launch while any Step-1 config in its lineage carries an outstanding judgment
    step.** The decision-bearing unit is the LINEAGE, not the single config: a Step-2 run validates a
    candidate that Step-1 configs selected.
 3. **A ROSTER ADMISSION may not be taken from a config whose judgment steps are outstanding.**
    Where one already has been, the roster row is marked and the admission is re-examined.
-4. **Any deferral must name an EXECUTABLE target** — a script path that exists and can be run —
+4. **Any deferral must name an EXECUTABLE target** - a script path that exists and can be run -
    plus an owner and a trigger. Free text describing a future process is a DROP, not a deferral.
-5. **The AUTO five are not a substitute for the JUDGMENT four**, and the record shows why: every
-   judgment-step DONE in the ledger carries a real finding (the tail_n band defect, the
-   equivalence-class defect, a grader-loader crash found and pinned). The steps that ran, found
-   things.
+5. **Automation is not a substitute for READING the findings.** Steps 5-8 now run unattended, but
+   their output is a list of findings addressed to a human: every judgment-step DONE in the ledger
+   before B2520 carried a real finding (the tail_n band defect, the equivalence-class defect, a
+   grader-loader crash found and pinned), and the lens battery's WARN / FAIL rows are the same
+   material, delivered instead of deferred. The `LANDING REPORT: <cube>` block is where they are read.
+6. **The result reaches the owner mechanically, in the channel the owner reads.** A landing nobody
+   has reported is listed in the turn preamble and blocks the Stop hook; "I will summarise it next
+   turn" is the silence this section exists to end.
 
 ## STEP 4 — ADMIT
 
@@ -2046,7 +2077,8 @@ class).
   source-text greps; LOCAL mode still waives the ticker-list requirement when `universe`
   is present.
 
-### Post-config battery (run_postconfig.py — invoked by run_wave at every arm end)
+### Post-config battery (run_postconfig.py — invoked by the ENGINE's landing hook through
+scripts/postconfig_landing.py on every landing, B2520; run_wave's own call is idempotent)
 
 Step-1 sanity + M1 content-sha, M2 exits-vs-live-registry, M3 fill_date, M4 window +
 holdout-touch, M5 pnl integrity, M7 degraded exits, M9 universe artifact, **M10 gate
@@ -2096,7 +2128,13 @@ artifact, visible in every render.
 
 **This runs after every config completes. No prompt required. Skipping a step is a silent miss.**
 
-> **AUTOMATED since B2118 (S6-B2117b):** `PYTHONPATH=".;scripts" python
+> **B2520 (owner ruling 2026-09-01): the battery is invoked by the ENGINE on every landing and
+> runs ALL NINE steps** - see *POST-CONFIG BATTERY* above for the pipeline by file and CHECKLIST
+> #288 for the rule. The B2118 blockquote below is kept as history, because the manual blocks it
+> introduces remain the reference for what each check MEANS; *"Steps 5/6/8 remain judgment"* is
+> RETIRED - they run, and their findings land on the ledger row and in the LANDING REPORT.
+>
+> **AUTOMATED since B2118 (S6-B2117b) - HISTORICAL:** `PYTHONPATH=".;scripts" python
 > scripts/run_postconfig.py --cube output_<dir> [--step1-cube] [--write-ledger]`
 > executes step 1 + step 7 + the M-checks (M1 content-sha, M2 exits-vs-live-registry,
 > M3 fill_date, M4 window + holdout-touch FAIL on Step-1 cubes, M5 NaN/inf/winsorize,

@@ -178,6 +178,59 @@ def phase1a_quality_gate(engine: BacktestEngine) -> bool:
     return passed
 
 
+def _postconfig_landing_hook(output_dir: str) -> "int | None":
+    """B2520 (owner ruling 2026-09-01): the post-config battery runs the moment
+    a cube lands, from EVERY launch path, with no exceptions.
+
+    Chain / wave / sweep / direct / --resume-from-checkpoint all end in main()
+    below, so THIS is the one place a landing cannot bypass (execution-discipline
+    rule 4: one supervisor outside the guarded flow, not a call site per
+    launcher). Before B2520 the battery was invoked only by run_wave.py after
+    the engine returned - a direct or resumed launch got nothing (MEASURED:
+    output_icg_cfg1 landed with no gate receipt and a hand-built grid).
+
+    The supervisor (scripts/postconfig_landing.py) records every step in the
+    ledger, regenerates the single report, commits + pushes the audit
+    artifacts (never the cube dir, CHECKLIST #166), toasts, and appends a
+    durable landing event that the Stop hook refuses to let a turn end without
+    reporting. --if-not-landed makes run_wave's later call a no-op.
+
+    Never raises: a reporting failure must not turn a landed cube into a
+    failed run. POSTCONFIG_LANDING=0 opts out for ad-hoc probes (logged; the
+    ledger gate still blocks the turn until the cube is dispositioned).
+    Returns the supervisor's exit code, or None when nothing was owed/run.
+    """
+    import subprocess
+    import time
+    out = Path(output_dir)
+    if not out.is_absolute():
+        out = Path.cwd() / out
+    if not (out / "trade_exit_detail.csv").is_file():
+        print(f"[B2520 landing] no trade_exit_detail.csv under {out} - no cube "
+              "landed, no battery owed")
+        return None
+    if os.environ.get("POSTCONFIG_LANDING") == "0":
+        print(f"[B2520 landing] POSTCONFIG_LANDING=0: battery NOT run for "
+              f"{out.name} (opt-out LOGGED; verify_postconfig_complete still "
+              "blocks the turn until this cube is dispositioned)")
+        return None
+    sup = Path(__file__).resolve().parent.parent / "scripts" / "postconfig_landing.py"
+    cmd = [sys.executable, str(sup), "--cube", str(out), "--if-not-landed",
+           "--source", "engine-hook"]
+    t0 = time.time()
+    print(f"\n[B2520 landing] cube landed at {out.name} - running the post-config "
+          "supervisor (all nine steps, report, commit, notify)", flush=True)
+    try:
+        rc = subprocess.run(cmd, cwd=str(sup.parent.parent)).returncode
+    except Exception as exc:  # noqa: BLE001 - a landed cube must never be lost to reporting
+        print(f"[B2520 landing] supervisor could not run: {exc!r} - the ledger "
+              "gate will block until this cube is dispositioned by hand")
+        return None
+    print(f"[B2520 landing] {out.name}: supervisor exit {rc} in "
+          f"{int(time.time() - t0)}s (0 = no FAIL; 2 = FAIL recorded in the ledger)")
+    return rc
+
+
 def _install_sigterm_handler():
     """B1043 Council 138 F-06 fix: install SIGTERM handler so kill -15 from
     phase_watchdog OR B1019 HALT-CRITICAL flushes checkpoint before exit.
@@ -655,6 +708,9 @@ def main():
     print_results(engine)
     engine.save_all_outputs()
     phase1a_quality_gate(engine)
+    # B2520: the landing supervisor runs HERE, after the cube is written,
+    # on every launch path - the one call site a landing cannot bypass.
+    _postconfig_landing_hook(args.output_dir)
     print(f"\nLog: backtest_v2.log | Outputs: {args.output_dir}/")
 
 

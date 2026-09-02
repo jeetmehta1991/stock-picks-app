@@ -3697,7 +3697,11 @@ every gate. **That is why "the rule was already written" kept being true while t
 happening.**
 
 For any MANDATORY sequence, the artifact that proves it ran is a **ledger with a terminal
-disposition per step**, checked mechanically. Silence is not a disposition; SKIPPED-with-reason is.
+disposition per step**, checked mechanically. Silence is not a disposition. **B2520 AMENDMENT (owner
+ruling 2026-09-01, L736): neither is SKIPPED.** From B1699 to B2520 this line read *"SKIPPED-with-reason
+is"*, and that clause is what let nine steps be pre-written SKIPPED against a review batch that never
+existed (L721). The only dispositions are DONE-with-evidence and N/A-with-a-reason; a step that could
+not run is FAIL or OPEN and BLOCKS until a human dispositions it with evidence. See #288.
 Items outside scope are marked N/A **in the ledger**, never filtered out of the scan - an exclusion
 you cannot see is a fail-open.
 
@@ -3710,7 +3714,9 @@ mechanism that was working.
 
 **Retroactive coverage (#136):** the post-config sequence skipped four times; the drift class named
 three times and fixed as instances; the GENERALIZATION MANDATE satisfied in letter by stating a
-class while leaving siblings open.
+class while leaving siblings open. **B2520 addendum:** by 2026-09-01 the owner had asked SIX times
+(B2177, B2192, B2198/B2208, B2211, S6-B2436, S6-B2515) and received six instance fixes, each closing
+the one mechanism that had just failed while its siblings stayed open - the class is closed at #288.
 
 ### #224 - A GATE NOBODY CALLS IS DOCUMENTATION WITH AN EXIT CODE (B1702 / L499)
 
@@ -5303,10 +5309,16 @@ auto-ran on every landing with its steps recorded, and the owner never saw a per
 result because every report verified the run and quoted one number. Ship the renderer with
 the runner, and have the runner invoke it at the same moment it announces completion.
 
-*Enforced by:* scripts/postconfig_doc.py, imported by run_wave.py:289 at arm completion,
+*Enforced by:* scripts/postconfig_doc.py, rendered by scripts/postconfig_landing.py
+(`render_report`) on EVERY landing - the supervisor the engine itself invokes from
+backtest/run_phase1a.py `_postconfig_landing_hook` and that run_wave.py calls idempotently, then
+re-renders after its own leg evidence lands (B2520 / #288; the earlier text *imported by
+run_wave.py:289 at arm completion* described the run_wave-only wiring that left direct and resume
+launches with no render at all - cfg1, S6-B2515).
 (S6-B2310 CORRECTION: previously named `postconfig_report.py invoked from run_wave.py` -
 MEASURED, nothing invokes that file; it is a hand-run CLI. L499/#224.)
-pinned by test_b2198_battery_result_is_rendered_not_only_written (both directions).
+pinned by test_b2198_battery_result_is_rendered_not_only_written (both directions) and
+test_b2520_report_renders_every_family_and_names_open_steps.
 
 ### #286 - FIND THE BRANCH THAT EMITS A STRING BEFORE FILING IT AS WRONG (B2266 / L688)
 
@@ -5344,7 +5356,7 @@ When a test asserts a hardcoded set/list of expected values, it must either BUIL
 *Enforced by:* authored practice at pin-writing time. **NOT mechanised, deliberately.**
 
 
-## #287 - TOTAL INSTRUMENT SILENCE THAT ENDS NORMALLY MEANS THE MACHINE STOPPED, NOT THE CODE (L731 / S6-B2488)
+### #287 - TOTAL INSTRUMENT SILENCE THAT ENDS NORMALLY MEANS THE MACHINE STOPPED, NOT THE CODE (L731 / S6-B2488)
 
 **Trigger:** any long-running job that appears to have hung - a stalled
 counter, a frozen heartbeat, a phase duration wildly out of family.
@@ -5403,3 +5415,73 @@ MEASURED: the 3x wall backstop survived two owner presentations with a
 written case-against and died on f(16.10, 15.32, 4.0) - prose reasons about
 a rule, the matrix runs it. Mechanism: test_b2502's boundary matrix, pinned
 to the incident's real numbers; test_b2508 holds this rule in the skill.
+
+### #288 - A MANDATORY POST-EVENT SEQUENCE IS INVOKED BY THE EVENT'S PRODUCER, AND EVERY STEP IS RECORDED OR THE LANDING BLOCKS (B2520 / L736)
+
+**Trigger:** any sequence a directive requires "after every X" (config landing, batch completion,
+wave arm) - and, separately, any owner question of the form *"why did this not run automatically?"*
+asked a SECOND time about the same mechanism.
+
+**Owner ruling 2026-09-01 (verbatim):** *"Once the config lands, i want it to run automatically no
+exceptions and share results with me."* Four rules follow, each with its mechanism named:
+
+(a) **The PRODUCER of the event invokes the sequence** - not an orchestrator that some launch shapes
+bypass. The post-config battery is invoked from `backtest/run_phase1a.py::_postconfig_landing_hook`
+the moment `trade_exit_detail.csv` is written, through ONE supervisor (`scripts/postconfig_landing.py`)
+that every launch path shares: engine hook, `run_wave.py` (idempotent per cube fingerprint, so a real
+engine's wave call is a no-op and a substitute engine's is THE landing), and a manual call. Opting out
+is an explicit `POSTCONFIG_LANDING=0`, logged. The hook fires once the cube file exists; a run that
+dies before writing one is the monitor's case (L641, absence of an ending reads as DEAD), not the
+battery's, and a supervisor pointed at a directory with no cube prints FAIL and exits 2.
+
+(b) **Every step is written to the ledger on every run.** DONE with evidence, N/A with a reason, or
+FAIL / OPEN - **SKIPPED is not a disposition and is in no terminal set**
+(`verify_postconfig_complete.py::terminal_for` returns {DONE, N/A} for every step; `is_closed` also
+requires the evidence / reason text). The four "judgment" steps are NOT exempt: an eight-lens battery
+runs step 5 and writes `<cube>_lenses.json`; step 6 is OPEN while any lens finding lacks a recheck and
+N/A-on-evidence when there is none; step 7 checks that every swept parameter reaches the engine, by
+step number; step 8's verdict is computed from the grid artifact WITH its denominators. A step that
+cannot run FAILs and blocks. A terminal row is never downgraded by a re-run; the re-run's result is
+appended beside it for a human to disposition (`run_postconfig.py::merge_row`), and a re-run never
+truncates the evidence already on the row.
+
+(c) **Grading is family-aware and fails CLOSED.** `run_postconfig.py::FAMILIES` maps a cube's strategy
+to its grader + spot-check; a cube with no registered family gets FAIL on every graded step, never a
+quiet pass (the institutional family - `grade_institutional_config.py` + `spot_check_institutional.py`
+- was added because cfg1 landed with no grader and its grid was hand-built at B2511).
+
+(d) **The result reaches the owner mechanically.** Each landing is appended to
+`output_audit/postconfig_landings.jsonl` with `reported_to_owner: false`; the turn preamble
+(`inject_tier3_discipline.py::undelivered_landings_banner`) lists every undelivered landing with its
+findings untruncated; the Stop hook (`verify_turn_compliance.py::scan_undelivered_landing`) BLOCKS the
+turn until a `LANDING REPORT: <cube>` block appears in the final response, and marks it reported only
+then; the ONE report (`output_audit/POSTCONFIG_REPORT.md`) carries a Landings section; the supervisor
+commits and pushes the ledger, report and per-cube artifacts (never the cube directory) and raises a
+desktop toast. The channel the owner reads is the response, so the response is what the gate checks.
+
+**MEASURED (B2520):** the owner asked six times (B2177, B2192, B2198/B2208, B2211, S6-B2436,
+S6-B2515) and got six instance fixes. The six mechanisms, each of which had to fail for a landing to
+go unreported: wiring location (battery invoked only from run_wave, so direct and resume launches ran
+nothing - cfg1 had no gate receipt); phantom deferral (nine steps pre-written SKIPPED
+"PENDING-WAVE-REVIEW" for a review batch that never existed, L721); family-conditional grading that
+passed silently on an unregistered strategy; an all-or-nothing ledger write that recorded nothing
+when one check crashed; judgment steps designed never to auto-run; and no delivery channel at all.
+Each fix closed the mechanism that had just failed; the GENERALIZATION MANDATE was satisfied in
+letter every time. **A mechanism the owner has asked about more than once is a class defect - count
+the asks (L736).**
+
+**Pins (all EXECUTED at B2520):** test_b2520_engine_hook_lands_every_cube,
+test_b2520_battery_records_all_nine_steps_and_fails_closed,
+test_b2520_battery_and_gate_share_one_step_list_and_one_terminal_set,
+test_b2520_landing_supervisor_is_idempotent_per_fingerprint,
+test_b2520_stop_hook_blocks_until_a_landing_is_reported,
+test_b2520_turn_preamble_lists_undelivered_landings,
+test_b2520_report_renders_every_family_and_names_open_steps,
+test_b2520_asserts_non_execution_reads_assertions_not_mentions,
+test_b2520_merge_row_never_truncates_and_never_downgrades_terminal,
+test_b2520_institutional_grader_golden_on_cfg1, test_b2520_institutional_spot_check_artifact_schema;
+retargeted: test_b2116, test_b2211, test_b2439, test_b2440, test_b2450.
+
+**NOT yet exercised on a real landing:** the git-push and toast paths - every landing so far ran
+`--no-git --no-notify`, and `commit_and_push` is covered only by the stub arms of the idempotence
+pin (S6-B2520g). Amends #223 (SKIPPED clause retired) and #284 (enforcement note).

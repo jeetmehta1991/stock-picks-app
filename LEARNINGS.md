@@ -9075,6 +9075,10 @@ building the gate.
 finished cube owes all NINE steps a terminal disposition. Silence is not a disposition; SKIPPED
 with a reason is. Historical pre-runbook cubes are **explicitly** marked N/A rather than filtered
 out of the scan, because an exclusion you cannot see is the same fail-open.
+*(B2520, 2026-09-01: the "SKIPPED with a reason is" clause above is RETIRED by owner ruling - DONE
+with evidence and N/A with a reason are the only dispositions; a step that could not run is FAIL or
+OPEN and blocks. Kept here as the record of what the rule said when it let nine steps be pre-written
+SKIPPED for a review batch that never existed. See L736 / CHECKLIST #288.)*
 
 **It blocks on its first run, and I did not make it stop.** MEASURED: `output_w1_*` are 6 of 9,
 missing steps 6 / 6b / 7; cfg1 and cfg2 are 3 of 9. **Seeding those as DONE would have made the
@@ -18364,3 +18368,75 @@ the skill's B1446 rule 3, zero-hit-greps-prove-nothing), and this entry
 adds an INSTANCE, not a rule; the class mechanism is Gate B's
 modified-tracked-files scan in scripts/verify_turn_compliance.py, wired
 and proven by the firing that produced this entry.
+
+
+### L736 - A mechanism the owner has asked about more than once is a class defect: count the asks
+
+**B2520, 2026-09-01. Owner ruling, verbatim: "Once the config lands, i want it
+to run automatically no exceptions and share results with me." Six asks, six
+instance fixes, one class - closed at CHECKLIST #288.**
+
+**The record (READ from EXECUTION_QUEUE.md and the ledger this session).** B2177
+wired the post-config battery to run_wave. B2192 auto-ran steps 3 and 6b. B2198
+and B2208 moved the render before a `return` it had been sitting behind. B2211
+made the report ONE document. S6-B2436 wrote the battery into the runbook and
+named the SKIPPED loophole. S6-B2515 found that the battery was wired to the
+launcher, not the engine. Each answer fixed the mechanism that had just failed.
+Each left the others standing. **The sixth question was the first question.**
+
+**Six mechanisms had to fail for a landing to reach the owner unreported, and
+all six had.** (A) WIRING - EXECUTED: the battery ran only from run_wave, so a
+direct or resume launch ran nothing; cfg1 landed with no gate receipt and its
+grid was built by hand at B2511. (B) PHANTOM DEFERRAL - READ: run_wave
+pre-wrote all nine steps SKIPPED "PENDING-WAVE-REVIEW" for a review batch that
+never existed (L721), and the gate's terminal set contained SKIPPED. (C)
+FAMILY-CONDITIONAL GRADING - READ: the grader keyed on the SMC manifest shape
+and, on any other strategy, wrote nothing rather than FAIL; cfg1 is
+institutional. (D) ALL-OR-NOTHING LEDGER WRITE - READ: one crashed check meant
+no step was written. (E) JUDGMENT STEPS DESIGNED NEVER TO AUTO-RUN - READ:
+run_postconfig.py carried the heading *"JUDGMENT PROMPTS (never auto-marked)"*
+for steps 5/6/7/8. (F) NO DELIVERY CHANNEL - DERIVED: nothing read the ledger
+but the completeness gate, and that gate checks disposition, not delivery; the
+owner saw a result exactly when I typed one. Fixes, all pinned test_b2520_*:
+the engine invokes ONE landing supervisor (`scripts/postconfig_landing.py`)
+that every launch path shares, idempotent per cube fingerprint; every step is
+written on every run and SKIPPED is in no terminal set; `FAMILIES` fails closed
+on an unregistered strategy, and the institutional family got its grader and
+spot-check; an eight-lens battery runs step 5, step 8's verdict is computed
+with its denominators, step 7 is checked by step number; each landing is
+appended to `postconfig_landings.jsonl` unreported, the turn preamble lists
+it, and the Stop hook blocks the turn until a `LANDING REPORT: <cube>` block
+is in the final response - the channel the owner reads is what the gate reads.
+
+**Why the class stayed open through six fixes.** Every ask arrived as a
+question about the LAST failure, so every fix was scoped to the last failure.
+The GENERALIZATION MANDATE asks *"what else breaks the same way?"* and I
+answered it PER MECHANISM - siblings of the wiring bug, siblings of the
+SKIPPED bug - never PER OUTCOME: *what else makes a landing go unreported?*
+**The class is defined by the outcome the owner experiences, not by the
+mechanism I just touched.** Six mechanisms with one outcome are one class,
+and one supervisor outside every launch path (the L637 rule-4 shape) plus a
+gate on the delivery channel is its fix; six patches were not.
+
+**The tripwire, and why it is a count.** Every mechanism above was invisible
+from inside its own fix - the wiring fix could not see the deferral, the
+deferral fix could not see the family gap. What WAS visible, every time, was
+the owner asking again. **A second ask about the same mechanism is the class
+signal**: stop fixing the instance, enumerate every path from the event to the
+owner's screen, and put one mechanism across all of them. The count is the
+cheapest instrument in the room and it was never read.
+
+**Caught in the same close, same shape.** The first B2520 run_wave patch wrote
+step 1 DONE BEFORE the battery ran - a later writer downgrading a finding, the
+B2211 write-order defect in a new coat; it is now an additive, status-keeping
+merge with OPEN when the battery recorded nothing (L642). The B2136
+contradiction detector fired on tallies ("0 skipped") because it read mentions,
+not assertions; it now reads the current claim's leading or trailing assertion
+only. `merge_row` truncated prior evidence on re-run; it no longer does.
+**Not exercised:** the supervisor's git-push and toast paths have run only under
+`--no-git --no-notify` and stubs (S6-B2520g); email delivery waits on the
+Gmail connector being authorised (S6-B2520h).
+
+**Anchored:** CHECKLIST #288 (mechanism + pins) and the SKILL.md tripwire row
+*"Answer an owner question of the form 'why did this not run automatically?'"*;
+amends #223 (SKIPPED clause retired) and #284 (render lives in the supervisor).
