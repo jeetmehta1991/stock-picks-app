@@ -19097,3 +19097,43 @@ L736, where the count of asks was the signal nobody read.
 
 **Anchored:** SKILL.md tripwire row, same commit; durability pinned in
 test_b2564 alongside L746-L749.
+
+
+### L751 - A parameter that is accepted, RECORDED, and never applied is worse than one that errors
+
+**B2568, 2026-09-02.** The owner approved grading a strategy's free parameter
+levels off cubes already on disk. Before building, I ran the grader at
+`--min-committed-growth 14` against a baseline of 3. MEASURED: **fires 373 at
+both**, with exit, fires, is_sharpe and is_ci_lo byte-identical. The only
+difference in the entire artifact was the `admit` dict stamping
+`min_committed_growth: 14`. The flag is parsed, carried, and written into the
+output - and never read by the grading path.
+
+**Why this is worse than a flag that does not exist.** An unknown flag errors
+and you fix it in seconds. A flag that errors on an unsupported value tells you
+its limits. **This one produces a complete, well-formed artifact that
+self-documents a setting it did not apply.** Four free levels would have yielded
+four identical rows, each stamped with a different level, each looking exactly
+like a measurement. Nothing in the output distinguishes them from four real
+gradings except recomputing them.
+
+**The tell I nearly missed.** `argparse` accepting a flag proves only that
+someone wrote `add_argument`. The chain from flag to behaviour has three links -
+PARSED, PASSED, READ - and a plan reviewer sees the first, a code reader sees
+the second, and only an execution sees the third. `#230a` asks whether an
+artifact holds the field you will read; this is its mirror on the WRITE side:
+**does the knob you are about to turn reach anything?**
+
+**The rule.** Before grading a sweep through a parameter, run TWO values that
+must differ and assert the output differs. One command. If the numbers match,
+the flag is a label and every row you were about to produce is the same row.
+Never trust a stamped value as evidence the stamp was applied.
+
+**What made it catchable.** The plan said the counts persist at 100 pct
+coverage; opening the cube showed the field is not in it at all, and is in a
+different file at 93.83 pct. Checking that premise is what led to running the
+flag - the schema question and the behaviour question were one investigation.
+
+**Anchored:** SKILL.md tripwire row, same commit; durability pinned in
+test_b2564. Ticket S6-B2567 holds the owner's approval until the correct
+re-scorer is parameterised.

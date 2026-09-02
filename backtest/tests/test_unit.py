@@ -31550,6 +31550,13 @@ def test_b2564_the_four_later_session_rules_survive_in_the_skill():
         "L748's diagnostic - good documentation defeats the grep - is gone")
     assert "### L748" in ln
 
+    # L751 - a flag accepted, stamped, and never applied
+    assert "RUN TWO VALUES THAT MUST DIFFER" in sk
+    assert "PARSED, PASSED, READ" in sk, (
+        "L751's diagnostic - the three links a flag needs, of which "
+        "argparse proves one - is gone")
+    assert "### L751" in ln
+
     # L750 - a gate's message describes the check; the code is the check
     assert "OPEN THE GATE'S SOURCE AND FIND THE PREDICATE" in sk
     assert "only the code runs" in sk, (
