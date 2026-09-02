@@ -16678,6 +16678,26 @@ skill clause below.
 instance), the axis-redundancy pass (SOUND - reused the corrected parser), and the pre-registration
 emitter (SOUND - same). **1 of 3, and it was the first, before the corrected parser existed.**
 
+**B2520p ADDENDUM - RECURRENCE, AND THE TELL IS UNIFORMITY, NOT THE VALUE.** MEASURED: asked
+whether all nine post-config steps ran on config 1, I tallied the adversarial-lens severities on a
+field name I GUESSED - `severity` - while the artifact uses `level`. Every row returned None, the
+tally read `{None: 8}`, and reporting it would have said **0 WARN / 0 FAIL** for a step whose one
+real finding is an open ticket - a clean adversarial review manufactured by a KeyError, on the
+exact step the owner has asked about six times. **This entry's own remedy is what caught it**:
+printing one raw row showed `{"lens": ..., "level": "INFO", ...}` immediately.
+**The sharpening: L724(2) names 0pct and 100pct as the signal, and this returned NEITHER - it
+returned None, a value my summary line rendered as an ordinary tally key.** The general tell is
+UNIFORMITY: one value for EVERY row of a heterogeneous population is a parser hypothesis whatever
+that value is, because real data about eight different checks does not agree perfectly. A
+dict-shaped tally hides it better than a percentage, since `{None: 8}` looks like output rather
+than like an error. **And note where it landed: in a VERIFICATION pass built to distrust the
+ledger's prose** - the probe replacing the untrusted source inherited none of that suspicion
+(L679: a probe measuring your own compliance gets more validation, not less).
+Compliance failure against CHECKLIST item 166 (extended here from a pattern that cannot match to a
+FIELD NAME that does not exist) - and against this entry itself, whose remedy was one command away.
+**Anchor repaired the same turn: L724 was cited in SKILL.md and in NO CHECKLIST item, so its rule
+was prose the orphan ratchet could not see. It is now CHECKLIST #289.**
+
 
 **L723 (B2406) - THREE MONITORING MISSES FROM ONE SESSION.**
 

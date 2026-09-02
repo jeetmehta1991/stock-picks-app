@@ -5485,3 +5485,35 @@ retargeted: test_b2116, test_b2211, test_b2439, test_b2440, test_b2450.
 **NOT yet exercised on a real landing:** the git-push and toast paths - every landing so far ran
 `--no-git --no-notify`, and `commit_and_push` is covered only by the stub arms of the idempotence
 pin (S6-B2520g). Amends #223 (SKIPPED clause retired) and #284 (enforcement note).
+### #289 - A UNIFORM VALUE ACROSS EVERY ROW IS A PARSER HYPOTHESIS (B2520p / L724)
+
+**Before quoting any tally, distribution or coverage figure from an extractor written in the same
+turn, print ONE RAW ROW of the thing being parsed.** One command, and it settles what no amount of
+re-reading the extractor will.
+
+**The trigger is UNIFORMITY, not a particular value.** L724(2) named 0pct and 100pct; those are the
+loud cases. The general form is one value for EVERY member of a heterogeneous population - `{None:
+8}` across eight different checks, `0` for every row, `True` for every field. Real data about
+different things does not agree perfectly, so perfect agreement is evidence about the READER first.
+
+**A dict-shaped tally hides this better than a percentage.** `{None: 8}` renders as output, not as
+an error; `0 of 8` at least invites the question. Watch tallies, Counters and groupbys hardest.
+
+**And it lands most easily inside a VERIFICATION pass.** A probe written precisely because some
+other source was not trusted inherits none of that suspicion - the scepticism was spent on the
+source, and the instrument replacing it arrives unexamined (L679).
+
+MEASURED (B2520p): asked whether all nine post-config steps ran on config 1, I tallied adversarial-
+lens severities on a guessed field name (`severity`; the artifact uses `level`). The tally read
+`{None: 8}` and would have reported **0 WARN / 0 FAIL** on a step whose one real finding is an open
+ticket. Printing one raw row showed the correct field immediately; the corrected tally is 1 WARN /
+7 INFO.
+
+Would have caught: the B2419 13F decile pass (0 of 1849 from `ast.literal_eval` on JSON), and this
+instance. Would NOT have caught a parser that yields plausible VARIED values from the wrong field -
+that is #276b's path question, not this one.
+
+Mechanism: DETECTION is JUDGMENT-ONLY - no scan knows which field name suits an artifact. Durability
+pinned by `test_b2520p_uniform_value_is_a_parser_hypothesis_is_anchored`, which asserts the rule
+survives in both CHECKLIST.md and LEARNINGS.md. This item also repairs L724's ANCHOR: it was cited
+in SKILL.md and in no CHECKLIST item, which is the orphan-rule shape ANCHOR-THE-RULE exists to stop.

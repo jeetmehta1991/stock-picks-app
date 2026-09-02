@@ -30661,3 +30661,36 @@ def test_b2520_l736_count_the_asks_rule_is_anchored():
     assert "deliberately never auto-marks" not in plan.replace(
         "never auto-marks (`run_postconfig.py:225`", "")  # the historical quote is allowed once
     assert 'TERMINAL = {"DONE", "SKIPPED", "N/A"}, so a step marked SKIPPED **with any reason string** counts' not in plan
+def test_b2520p_uniform_value_is_a_parser_hypothesis_is_anchored():
+    """B2520p / L724 addendum: the uniformity rule survives in both durable docs.
+
+    DETECTION is judgment-only - no scan knows which field name suits an
+    artifact - so what is mechanised is DURABILITY (L548's second question).
+    The miss: a lens tally computed on a guessed field name returned {None: 8}
+    and would have reported 0 WARN / 0 FAIL on a step whose one finding is an
+    open ticket. Prove-it-can-fail: deleting either fragment fails this.
+    """
+    from pathlib import Path as _P
+
+    root = _P(__file__).resolve().parents[2]
+
+    def _norm(s):
+        return " ".join(s.split())
+
+    ck = _norm((root / "CHECKLIST.md").read_text(encoding="utf-8", errors="ignore"))
+    ln = _norm((root / "LEARNINGS.md").read_text(encoding="utf-8", errors="ignore"))
+
+    # the rule, in the pre-action gate list
+    assert "A UNIFORM VALUE ACROSS EVERY ROW IS A PARSER HYPOTHESIS" in ck
+    assert "print ONE RAW ROW" in ck
+    # the DIAGNOSTIC, not just the headline - uniformity, not a particular value
+    assert "The trigger is UNIFORMITY, not a particular value" in ck
+    # the anchor repair L724 was missing
+    assert "B2520p / L724" in ck
+
+    # the incident record, on the entry it recurs against
+    assert "B2520p ADDENDUM" in ln
+    assert "one value for EVERY row" in ln or "UNIFORMITY" in ln
+
+    # must-QUIET side: the rule is not claimed to detect the varied-value case
+    assert "Would NOT have caught a parser that yields plausible VARIED values" in ck
