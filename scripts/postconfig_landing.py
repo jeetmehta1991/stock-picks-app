@@ -259,8 +259,12 @@ def commit_and_push(cube: str, battery_exit: int, summary: str) -> dict:
     # and that row is what the owner reads. Stubs could never have caught this
     # - the gate lives in a git hook, outside every mock.
     queue_row = _append_landing_queue_row(cube, battery_exit, summary)
+    # B2574: free_levels joined the list - B2569 added the artifact to the
+    # battery but not to this commit, so five landings left their
+    # <cube>_free_levels.json untracked (git status 2026-09-03).
     paths = [LEDGER, REPORT] + [AUDIT / f"{cube}_{k}.json"
-                                for k in ("grid_auto", "spot_check", "lenses")]
+                                for k in ("grid_auto", "spot_check", "lenses",
+                                          "free_levels")]
     if queue_row:
         paths.append(QUEUE)
     rel = [str(p.relative_to(ROOT)).replace("\\", "/") for p in paths if p.is_file()]

@@ -31947,3 +31947,83 @@ def test_b2574_free_level_grader_refuses_sub_floor_coverage(tmp_path):
     assert _json.loads(out.read_text(encoding="utf-8"))["levels"] == []
 
 
+def test_b2575_chain_launch_path_exists_and_engine_hash_gate_records(tmp_path, monkeypatch):
+    """B2575 (S6-B2573e / S6-B2573i): the b2527 chain was hand-registered
+    from a hand-written .cmd; launch_detached --chain now writes that .cmd
+    from one template (the running chain's file is the golden shape) and
+    refuses unreadable specs / a bad --wait-for. run_serial_chain hashes the
+    engine path before each launch and HALTs on a mid-chain change unless
+    accepted - B2574 landed an engine fix between minq8 and mult1.0 with
+    nothing recording which cubes ran under which engine."""
+    import json as _json
+    import sys as _sys
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parents[2]
+    sp = str(root / "scripts")
+    if sp not in _sys.path:
+        _sys.path.insert(0, sp)
+    import launch_detached as ld
+    import run_serial_chain as rsc
+
+    # (a) the template reproduces the hand-written b2527 chain cmd line for line
+    golden = (root / "output_audit" / "_b2527_chain.cmd").read_text(encoding="utf-8")
+    g_lines = [ln for ln in golden.splitlines() if ln.strip()]
+    specs = [s for s in g_lines[-2].split(" --specs ")[1].split(" >> ")[0].split()]
+    assert len(specs) == 16 and specs[3].endswith("b2527_icg_span100_spec.json")
+    log = root / "output_audit" / "b2527_chain_detached.log"
+    ours = ld.chain_cmd_text(specs, log, None)
+    o_lines = [ln for ln in ours.splitlines() if ln.strip()]
+    assert o_lines[:6] == g_lines[:6], (o_lines[:6], g_lines[:6])
+    assert o_lines[-1] == g_lines[-1] == "exit /b %ERRORLEVEL%"
+    marker = " scripts" + chr(92) + "run_serial_chain.py "   # backslash spelled out
+    assert o_lines[-2].split(marker)[1] == g_lines[-2].split(marker)[1]
+    assert o_lines == g_lines, "the template no longer reproduces the running chain's .cmd"
+    assert "\r\n" in ours                                    # cmd.exe line endings
+    waited = ld.chain_cmd_text(specs[:1], log, "output_audit/icg_minq2_wave_summary.json")
+    assert "--wait-for output_audit/icg_minq2_wave_summary.json --specs " in waited
+
+    # (b) refusals happen before any PowerShell runs
+    monkeypatch.setattr(ld, "_run_ps", lambda *_a, **_k: (_ for _ in ()).throw(
+        AssertionError("PowerShell must not run on a refused launch")))
+    assert ld.launch_chain("b2575", ["output_audit/no_such_spec.json"], None, 48) == 2
+    assert ld.launch_chain("b2575", ["output_audit/b2574_icg_span100_rerun_spec.json"],
+                           "output_audit/not_a_summary.txt", 48) == 2
+    assert ld.launch_chain("b 2575", ["output_audit/b2574_icg_span100_rerun_spec.json"],
+                           None, 48) == 2
+
+    # (c) the engine hash gate: records, halts on change, accepts when told
+    monkeypatch.setattr(rsc, "ENGINE_HASH_RECORD", tmp_path / "hash.json")
+    monkeypatch.setattr(rsc, "LOG", tmp_path / "chain.log")
+    digest, n = rsc.engine_path_hash()
+    assert len(digest) == 16 and n > 50
+    ok, rec = rsc.engine_hash_gate("w1", None, accepted=False)
+    assert ok and rec["engine_hash"] == digest and "changed_from" not in rec
+    ok, rec2 = rsc.engine_hash_gate("w2", rec, accepted=False)
+    assert ok and "changed_from" not in rec2                 # same tree, same hash
+    stale = {"wave": "w0", "engine_hash": "0" * 16}
+    ok, rec3 = rsc.engine_hash_gate("w3", stale, accepted=False)
+    assert not ok and rec3["changed_from"] == stale and rec3["accepted"] is False
+    ok, rec4 = rsc.engine_hash_gate("w4", stale, accepted=True)
+    assert ok and rec4["accepted"] is True
+    book = _json.loads((tmp_path / "hash.json").read_text(encoding="utf-8"))
+    assert set(book) == {"w1", "w2", "w3", "w4"}
+    chain_log = (tmp_path / "chain.log").read_text(encoding="utf-8")
+    assert "ENGINE CHANGE at w3" in chain_log and "ACCEPTED" in chain_log
+    src = Path(rsc.__file__).read_text(encoding="utf-8")
+    assert "engine_change_accepted" in src and '"--on-engine-change"' in src
+
+    # (d) the rerun spec is the span100 spec with only wave/note/rerun_of moved
+    a = _json.loads((root / "output_audit" / "b2527_icg_span100_spec.json").read_text(encoding="utf-8"))
+    b = _json.loads((root / "output_audit" / "b2574_icg_span100_rerun_spec.json").read_text(encoding="utf-8"))
+    assert b["wave"] == "icg_span100_rerun" and b["rerun_of"]["cube"] == "output_icg_span100_span100"
+    for k in ("tickers_file", "strategy_subset", "window", "leg_cap_hours", "max_legs",
+              "step1_cube", "pool_workers", "allow_engine_drift"):
+        assert a[k] == b[k], k
+    for k in ("tag", "env", "min_consecutive_quarters", "growth_lookback_quarters",
+              "growth_multiple", "ema_span"):
+        assert a["arms"][0][k] == b["arms"][0][k], k
+
+    # (e) the supervisor commits the free-level artifact (five landings had left it untracked)
+    pl = (root / "scripts" / "postconfig_landing.py").read_text(encoding="utf-8")
+    assert '"free_levels")]' in pl

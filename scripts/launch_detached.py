@@ -16,8 +16,21 @@ on this same box.
 
 Usage:
   python scripts/launch_detached.py --spec output_audit/<spec>.json
+  python scripts/launch_detached.py --chain --batch b2574
+      --specs output_audit/<a>_spec.json output_audit/<b>_spec.json
+      [--wait-for output_audit/<predecessor>_wave_summary.json]
+      [--time-limit-hours 48]
   python scripts/launch_detached.py --selftest
   python scripts/launch_detached.py --cleanup <task_name>
+
+B2574 (S6-B2573e class) --chain: the b2527 chain was HAND-registered from a
+hand-written output_audit/_b2527_chain.cmd because this script only knew
+single waves - the launch path a runbook can cite did not exist for the
+thing actually running. --chain writes output_audit/_<batch>_chain.cmd
+(the same template, plus --wait-for when given), refuses a spec that does
+not parse or a batch whose chain task is already Running, registers
+stockpicks_chain_<batch>_<ts> with the chain-sized ExecutionTimeLimit, and
+records the OBSERVED task state in output_audit/_<batch>_chain_task.json.
 """
 from __future__ import annotations
 
@@ -114,6 +127,88 @@ def launch(spec_path: str, hardened: bool = False) -> int:
     return 0
 
 
+def chain_cmd_text(specs: list[str], log: Path, wait_for: str | None) -> str:
+    """The .cmd body Task Scheduler runs. Single-threaded BLAS (the engine
+    forks a screen pool; nested BLAS threads oversubscribe the box), repo
+    root cwd, PYTHONPATH=., stdout+stderr appended to the chain log."""
+    wait = f"--wait-for {wait_for} " if wait_for else ""
+    lines = [
+        "@echo off",
+        f"cd /d {ROOT}",
+        "set PYTHONPATH=.",
+        "set OPENBLAS_NUM_THREADS=1",
+        "set OMP_NUM_THREADS=1",
+        "set MKL_NUM_THREADS=1",
+        f'"{sys.executable}" scripts\\run_serial_chain.py {wait}--specs '
+        + " ".join(specs) + f' >> "{log}" 2>&1',
+        "exit /b %ERRORLEVEL%",
+    ]
+    return "\r\n".join(lines) + "\r\n"
+
+
+def chain_task_running(batch: str) -> str | None:
+    """Name of an already-Running stockpicks_chain_<batch>_* task, or None
+    (feedback_check_existing_pids_before_long_background_launch)."""
+    r = _run_ps(
+        f'Get-ScheduledTask -TaskPath "\\" -ErrorAction SilentlyContinue | '
+        f'Where-Object {{ $_.TaskName -like "stockpicks_chain_{batch}_*" '
+        f'-and $_.State -eq "Running" }} | '
+        f'ForEach-Object {{ Write-Output $_.TaskName }}')
+    names = [ln.strip() for ln in (r.stdout or "").splitlines() if ln.strip()]
+    return names[0] if names else None
+
+
+def launch_chain(batch: str, specs: list[str], wait_for: str | None,
+                 time_limit_hours: int, hardened: bool = False) -> int:
+    if not batch.replace("_", "").isalnum():
+        print(f"CHAIN LAUNCH REFUSED: batch {batch!r} must be alphanumeric/_")
+        return 2
+    waves = []
+    for sp in specs:
+        try:
+            j = json.loads((ROOT / sp).read_text(encoding="utf-8"))
+            waves.append(j["wave"])
+        except (OSError, ValueError, KeyError) as exc:
+            print(f"CHAIN LAUNCH REFUSED: spec {sp} unreadable or has no 'wave': {exc!r}")
+            return 2
+    if wait_for and not wait_for.endswith("_wave_summary.json"):
+        print(f"CHAIN LAUNCH REFUSED: --wait-for must name a *_wave_summary.json, got {wait_for}")
+        return 2
+    running = chain_task_running(batch)
+    if running:
+        print(f"CHAIN LAUNCH REFUSED: {running} is already Running for batch {batch}")
+        return 2
+    log = ROOT / "output_audit" / f"{batch}_chain_detached.log"
+    cmd = ROOT / "output_audit" / f"_{batch}_chain.cmd"
+    cmd.write_text(chain_cmd_text(specs, log, wait_for), encoding="utf-8")
+    name = f"stockpicks_chain_{batch}_{int(time.time())}"
+    r = _register_and_start(name, "cmd.exe", f'/c "{cmd}"', hardened=hardened,
+                            time_limit_hours=time_limit_hours)
+    out = (r.stdout or "") + (r.stderr or "")
+    ok = (r.returncode == 0 and "registered_and_started" in out and "state=" in out)
+    state_line = next((ln for ln in out.splitlines() if "registered_and_started" in ln
+                       or "register_failed" in ln), out.strip()[:200])
+    record = {"task": name, "batch": batch, "order": waves, "specs": specs,
+              "wait_for": wait_for, "cmd_file": cmd.name,
+              "time_limit_hours": time_limit_hours, "hardened": hardened,
+              "verified_task": state_line.strip(), "launched": ok,
+              "log": str(log).replace("\\", "/"),
+              "registered_at": time.strftime("%Y-%m-%dT%H:%M:%S")}
+    (ROOT / "output_audit" / f"_{batch}_chain_task.json").write_text(
+        json.dumps(record, indent=1), encoding="utf-8")
+    if not ok:
+        print(f"DETACHED CHAIN LAUNCH FAILED: {out.strip()[:400]}")
+        return 1
+    print(f"DETACHED CHAIN LAUNCH OK: task={name}")
+    print(f"  specs={len(specs)} order={waves}")
+    print(f"  wait_for={wait_for}")
+    print(f"  cmd -> {cmd}")
+    print(f"  stdout -> {log}")
+    print(f"  observed: {state_line.strip()}")
+    print(f"  cleanup when CHAIN DONE: python scripts/launch_detached.py --cleanup {name}")
+    return 0
+
+
 def selftest(hardened: bool = False) -> int:
     """Prove detachment end-to-end with a file-writing payload."""
     proof = ROOT / "output_audit" / "_detached_selftest.txt"
@@ -142,9 +237,23 @@ def main() -> int:
                     help="register under SYSTEM (session 0) - immune to "
                          "console-control kills (B2203a; the 0xC000013A class)")
     ap.add_argument("--cleanup")
+    ap.add_argument("--chain", action="store_true",
+                    help="register a run_serial_chain over --specs (B2574)")
+    ap.add_argument("--batch", help="chain batch id, e.g. b2574")
+    ap.add_argument("--specs", nargs="+", help="chain specs in run order")
+    ap.add_argument("--wait-for", default=None,
+                    help="predecessor *_wave_summary.json the chain waits on")
+    ap.add_argument("--time-limit-hours", type=int, default=48,
+                    help="chain ExecutionTimeLimit; size ABOVE wait + run (B2528)")
     a = ap.parse_args()
     if a.selftest:
         return selftest(hardened=a.hardened)
+    if a.chain:
+        if not (a.batch and a.specs):
+            print("--chain needs --batch and --specs")
+            return 2
+        return launch_chain(a.batch, a.specs, a.wait_for, a.time_limit_hours,
+                            hardened=a.hardened)
     if a.cleanup:
         r = _run_ps(f'Unregister-ScheduledTask -TaskName "{a.cleanup}" -Confirm:$false; '
                     f'Write-Output "deleted {a.cleanup}"')

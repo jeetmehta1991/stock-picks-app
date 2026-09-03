@@ -1,0 +1,34 @@
+{
+ "wave": "icg_span100_rerun",
+ "tickers_file": "output_audit/_sweep_200.txt",
+ "strategy_subset": "output_audit/_subset_institutional_committed_growth_long.txt",
+ "window": {
+  "start": "2024-05-05",
+  "end": "2025-05-05"
+ },
+ "leg_cap_hours": 4.0,
+ "max_legs": 3,
+ "step1_cube": true,
+ "pool_workers": 4,
+ "allow_engine_drift": true,
+ "arms": [
+  {
+   "tag": "span100",
+   "env": {
+    "STRAT_EMA_SPAN": "100"
+   },
+   "note": "B2574 RERUN of b2527 span100 under the S6-B2512-fixed engine: the first landing (output_icg_span100_span100, 2026-09-02T21:16:40, commit 7c20103da) hit the 4.0h leg cap, its kill-flush wrote raw vars(t) rows, the resume leg restored 313/313 closed trades with signals_at_entry={} and the cube replay priced 313/374 exits (83.7%) off the 2pct-of-price ATR proxy - exit ranking and free levels NOT COMPARABLE. Same four keys, same actuator, same window, same tickers; only the engine differs (closed_trade_rows writer + datetime repr rescue). Output dir output_icg_span100_rerun_span100.",
+   "min_consecutive_quarters": 4,
+   "growth_lookback_quarters": 4,
+   "growth_multiple": 1.1,
+   "ema_span": 100
+  }
+ ],
+ "pool_workers_note": "B2535: reduced 10 -> 4 while configs 2-16 were still unstarted. MEASURED on config 1: pre_screen is 15.9s cold and 0.001s median, 1 of 74 days over 1s, 16.0s total per config - so the pool does ~16 seconds of work while its workers hold the Quiver bulk feeds (patentmomentum 5.8M rows, insiders 1M, sec13f 500k) for the whole run. Commit headroom fell to 1.72 GB with the limit stuck at 63.6 GB. Parallelism, not logic: screening is per-ticker independent, so results are unchanged; only wall-clock and memory move, and the measured wall-clock cost is seconds.",
+ "rerun_of": {
+  "cube": "output_icg_span100_span100",
+  "ticket": "S6-B2512",
+  "fix": "B2574",
+  "reason": "replay ATR proxy 313/374 = 83.7%"
+ }
+}
