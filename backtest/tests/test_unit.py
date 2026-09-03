@@ -32984,6 +32984,34 @@ def test_b2581_a_line_ending_flip_is_blocked_and_invisible_to_the_diff_gates(mon
     assert any("--ignore-cr-at-eol" in c for c in calls), calls
     assert any("--ignore-cr-at-eol" not in c for c in calls), calls
 
+    # B2589 (#226 / the B2588 sweep's one new finding): assert the PREDICATE
+    # directly. _bare_endings had zero direct references - it is reached only
+    # through check_line_ending_rewrite, whose arms assert the MESSAGE, so a
+    # wrong count that still produced a block would have passed.
+    _be = pf.check_line_ending_rewrite.__globals__.get("_bare_endings")
+    if _be is None:                     # defined INSIDE the checker
+        import inspect as _inspect
+        assert "def _bare_endings" in _inspect.getsource(pf.check_line_ending_rewrite), (
+            "the predicate moved or was renamed - this pin would silently stop "
+            "covering the value C13 decides on")
+        _src = _inspect.getsource(pf.check_line_ending_rewrite)
+        _ns = {"subprocess": pf.subprocess, "REPO_ROOT": pf.REPO_ROOT,
+               "CRLF": pf.CRLF, "LF": pf.LF, "CR": pf.CR}
+        _body = _src[_src.index("    def _bare_endings"):]
+        _body = _body[:_body.index("\n    raw, blind")]
+        exec(__import__("textwrap").dedent(_body), _ns)
+        _be = _ns["_bare_endings"]
+    # 2 CRLF, 2 bare LF, 1 lone CR -> 3 endings are NOT CRLF
+    monkeypatch.setattr(pf.subprocess, "run", lambda cmd, **kw: types.SimpleNamespace(
+        stdout=b"a\r\nb\nc\r\nd\re\n", returncode=0))
+    assert _be("HEAD", "x.md") == 3, _be("HEAD", "x.md")
+    monkeypatch.setattr(pf.subprocess, "run", lambda cmd, **kw: types.SimpleNamespace(
+        stdout=b"a\r\nb\r\n", returncode=0))
+    assert _be("HEAD", "x.md") == 0, "an all-CRLF blob has nothing to lose"
+    monkeypatch.setattr(pf.subprocess, "run", lambda cmd, **kw: types.SimpleNamespace(
+        stdout=b"a\nb\nc\n", returncode=0))
+    assert _be("HEAD", "x.md") == 3, "a uniform bare-LF file is all at risk"
+
     # the RESTORE direction: same diff shape, endings going the other way
     monkeypatch.setattr(pf.subprocess, "run", make_fake(FLAT, MIXED))
     assert pf.check_line_ending_rewrite() == []
