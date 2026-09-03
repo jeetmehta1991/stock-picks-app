@@ -49,7 +49,14 @@ python -m backtest.run_phase1a \
 # Commit results
 echo "Committing results..."
 git add "${OUTPUT_DIR}/" backtest/agents/cache/ 2>/dev/null || true
-git commit -m "Phase ${PHASE^^} results — $(date -u '+%Y-%m-%d %H:%M UTC')"
+# B2587 (#245 / L759 sweep): `git commit -m "...$( )..."` is the B1765
+# construction - bash substitutes inside the double quotes before git runs,
+# which is how `git reset --hard` executed from a commit message. The message
+# reaches git through STDIN, where nothing substitutes.
+RUN_TS=$(date -u '+%Y-%m-%d %H:%M UTC')
+git commit -F - <<MSG
+Phase ${PHASE^^} results - ${RUN_TS}
+MSG
 git push origin main
 
 echo "=== Complete — results committed to main ==="

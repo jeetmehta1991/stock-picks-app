@@ -25006,6 +25006,10 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         # from a finished stage reads as rigour - not the heading (L548).
         ("WORK INSIDE THE CURRENT STRATEGY'S CONTEXT",
          "B2584/L758: a coverage figure from a stage that already ran is a zoom-out"),
+        # B2587: the L759 tripwire row. Pins the DIAGNOSTIC - the rule
+        # attaches to the artifact, not to the mechanism - not the heading.
+        ("SWEEP THE TURN'S OTHER CALLS IN THE SAME BREATH",
+         "B2586/L759: a shell rule applied to the patcher does not reach the probe"),
         ("2. **Read the LEARNINGS relevant to this turn's task type.** Grep `LEARNINGS.md`",
          "B2382: Phase 0  RECALL before any analysis or recommendation"),
         ("to prevent** (B1119: 22 batches of silent doc-sync suspension; Council 236's",
@@ -25545,7 +25549,9 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # CHECKLIST, skill, pin, queue row and banner in ONE call per L632).
     # 234 -> 235 at B2584 (the L758 strategy-context fragment; the owner's
     # scope ruling, recorded and acted on in the same call).
-    assert len(gutted) == 235, gutted
+    # 235 -> 236 at B2587 (the L759 sweep-the-other-calls fragment, shipped
+    # with the two live instances the sweep found).
+    assert len(gutted) == 236, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 

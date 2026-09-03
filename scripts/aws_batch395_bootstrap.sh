@@ -83,7 +83,11 @@ fi
 # numba may fail on python3.14 -- requirements has python_version<'3.14' constraint
 echo "[$(date)] python: $(python --version)"
 # B901 verification: confirm smc import succeeds before launching engine.
-python -c "from vendored.smartmoneyconcepts.smartmoneyconcepts import smc; print('[$(date)] SMC library import OK')" 2>&1 || {
+# B2587 (#245 / L759 sweep): the timestamp came from a command substitution
+# INSIDE the double-quoted -c argument. Take it outside, and single-quote the
+# python so nothing in it is substitutable.
+SMC_TS=$(date)
+python -c 'from vendored.smartmoneyconcepts.smartmoneyconcepts import smc; print("SMC library import OK")' 2>&1 && echo "[$SMC_TS] SMC library import OK" || {
     echo "[$(date)] FATAL: SMC library import FAILED -- aborting R5 launch to prevent R4-style silent-quiet bug" >&2
     exit 1
 }
