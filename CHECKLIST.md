@@ -4314,7 +4314,9 @@ matched inside `'reclassified'`.**
 a ticket names a live defect class in machinery you are actively relying on, the deferral is not
 neutral - **it is a decision to accept the next incident**, and it should be written down as that.
 
-### #245 - NEVER PASS A MESSAGE THROUGH A DOUBLE-QUOTED SHELL ARGUMENT (B1765 / L520)
+### #245 - NEVER PASS A MESSAGE THROUGH A DOUBLE-QUOTED SHELL ARGUMENT (B1765 / L520; scope widened B1768/B2363; L759)
+
+**SWEEP THE TURN'S OTHER CALLS WHEN YOU APPLY THIS (L759, B2586).** The rule reaches whichever kind of call you happen to be thinking about. MEASURED: in the turn that shipped the byte-writing patcher rule, the discipline attached to the PATCHERS and a dozen read-only probes still ran as `python -c` with a shell variable expanded inside a double-quoted argument. Every one was harmless because the variable held a path - which is how the unsafe form becomes automatic, and the once it mattered (B1765) it ran `git reset --hard`. Patcher, probe, one-liner and grep are the same act to bash; sweep them together.
 
 **THIS RAN.** A commit message written to WARN about destructive commands contained backticked
 examples; bash substituted them and **`git reset --hard` executed**. `git reflog` records

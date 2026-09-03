@@ -19469,3 +19469,34 @@ rule is anchored at CHECKLIST #295, carried in the skill's tripwire table with i
 test_b2123, and written to memory as a standing owner directive. The ruling's ACTION half is
 mechanical and done: the three non-terminal tickets proposing further smc_breaker_block work
 (S6-B1545a, S6-B2115a, S6-B2411) are DROPPED citing it.
+
+### L759 - A rule learned for the PATCHER does not reach the PROBE, and a harmless substitution is what trains the habit
+
+**What happened (2026-09-03, the same turn that shipped L756).** I wrote and enforced a rule that a
+patcher must write BYTES and must never travel through a shell heredoc, applied it to every patcher in
+the turn, and then ran a dozen read-only probes as `python -c "...$S..."` - a shell variable expanded
+inside a double-quoted argument, which is the #245 class exactly. The turn gate caught it at close.
+
+**Two things make this worth an entry rather than a bare citation.**
+
+1. **The rule transferred to one tool and not its neighbour.** Patchers and probes are the same act -
+   code assembled in a shell and handed to python - and the discipline attached to the artifact I was
+   thinking about (the patcher, which writes) rather than to the mechanism (the shell, which
+   substitutes). L536's carry-the-rule lesson, arriving between two tools in one session instead of
+   between two gates.
+2. **Every instance was harmless, which is the training signal.** `$S` held a path, so nothing
+   surprising ran, a dozen times in a row. A construction that works every time builds the habit that
+   fails the once it matters - and the once it mattered, at B1765, ran `git reset --hard` and reverted
+   uncommitted work. **Benign repetition is not evidence of safety; it is the mechanism by which the
+   unsafe form becomes automatic.**
+
+**The rule, unchanged: compliance failure against #245, no new checklist item.** The class is already
+stated, already widened past commit messages (B1768/B2363), and already mechanised - the existing
+`scan_shell_substitution` is what blocked this close, which is the strongest evidence a new item would
+be theatre (#136). What this entry adds is the SCOPE reminder: when a shell-safety rule is applied to
+one kind of call, sweep the turn's other calls in the same breath - probes, one-liners, greps - because
+the shell does not know which of them you consider important.
+
+**Mechanism: none added, and none needed.** Detection is `scan_shell_substitution` (it fired);
+durability is #245's own text plus this entry. Retroactive coverage (#136): the same scan would have
+caught every one of this turn's probe instances at their own turn close, which is what it did.
