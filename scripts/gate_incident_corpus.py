@@ -861,6 +861,21 @@ EXTRA_INCIDENTS: dict[str, list[tuple[str, bool, dict]]] = {
          {"blobs": ["PYTHONPATH=. python backtest/run_phase1a.py "
                     "--tickers-file output_audit/_sweep_100.txt "
                     "--screen-pool-workers 0 --output-dir output_cfg1"]}),
+        # B2581d, VERBATIM from this turn: the enforced pyramid, run through
+        # the wrapper CHECKLIST #292 mandates, backgrounded because it takes
+        # ~19 minutes. It carries a background word and no runner, and pytest
+        # has no --screen-pool-workers to name.
+        ("pyramid gate, backgrounded", False,
+         {"blobs": ['nohup python scripts/pyramid_gate.py --out '
+                    'C:/tmp/pyramid_b2581.txt -- backtest/tests/test_unit.py '
+                    'backtest/tests/test_integration.py -q -p no:cacheprovider '
+                    '> C:/tmp/pyramid_b2581.launch.log 2>&1 &']}),
+        # ... and the shape the exclusion must NOT swallow: a real runner
+        # backgrounded through the same wrapper vocabulary.
+        ("runner backgrounded beside a non-launch target", True,
+         {"blobs": ["nohup python scripts/pyramid_gate.py --out x.txt ; "
+                    "nohup python backtest/run_phase1a.py --phase 1a-beta "
+                    "--output-dir output_x &"]}),
     ],
     "scan_novelty_claim_without_search": [
         # the SAME finding made properly - the search is named in-clause

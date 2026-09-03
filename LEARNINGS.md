@@ -17340,8 +17340,7 @@ SKILL.md and by both assertions in test_b2330 now carrying the anchoring comment
 next reader meets the reasoning at the site.
 **Retroactive sweep (#237): every assertion in test_b2330 checked for the same shape.** 9
 assertions: 2 were substring-over-whole-output on a column name - **both instances above, both
-now anchored**; 3 assert on CONTENT that appears nowhere else (`deep_exit`, `1 of 2`, `2 of 2`)
-
+now anchored**; 3 assert on CONTENT that appears nowhere else (`deep_exit`, `1 of 2`, `2 of 2`)
 - **NAMING THE CALL THAT PRODUCED A FIGURE IS ITSELF A CLAIM, AND IT IS THE ONE
   NOBODY RE-OPENS (L695 addendum, B2532).** MEASURED: I published a ticket table
   reading EXECUTED 1734 / TOTAL 1781 and wrote that it was *run in the commit
@@ -19352,3 +19351,36 @@ run is exactly what the fingerprint covers; detection of a verdict that pre-date
 JUDGMENT-ONLY (the #67 sweep re-runs the gate on staged content, B2571 precedent). Retroactive
 coverage (#136): instances 1 and 2 above trip `tree=CHANGED`; instance 3 is caught by test_b1486 as
 before.
+
+### L756 - A line-ending flip is invisible in review and reads as CONTENT to every gate that parses a diff
+
+**What happened (B2580 -> B2581, 2026-09-03):** `Path.write_text` on Windows translates every `\n` it
+writes into `\r\n`. LEARNINGS.md and CHECKLIST.md were MIXED files (LEARNINGS: 18,641 CRLF + 657 bare LF
++ one lone CR; CHECKLIST: 5,539 + 53), so a patcher that appended 57 lines rewrote the endings of the
+whole file. `git show --numstat` reads **18,868 added / 18,812 removed** on LEARNINGS.md for that append,
+and the lone CR was silently turned into a line break - a content change nobody asked for, in a diff
+nobody could read.
+
+**The consequence was not cosmetic.** Two gates parse a diff for ADDED lines:
+`verify_turn_compliance.check_orphan_rule` reads `git log -1 -p -- LEARNINGS.md` for `^\+### (L\d+)`, and
+after the flip it saw **472** of them instead of 1 - it blocked the turn demanding CHECKLIST anchors for
+~170 historical entries. The only way to satisfy that demand would have been to write dispositions for
+entries nobody had touched, which is a fabricated record produced by a true gate reading a corrupted
+input. `preflight.get_staged_added_lines` (the C7 banned-pattern scan) has the same shape and would have
+re-scanned an entire file as new.
+
+**Why it generalises:** the flip is the perfect blind spot - review shows a plausible file, the pyramid
+stays green because the content is unchanged, and only a machine reading the diff notices, at which
+point it reports something false with total confidence. Anything that answers "what did this change
+add?" from a diff inherits the defect.
+
+**The rule:** a patcher writes BYTES (or opens with `newline=""`); never `write_text` on a file it did
+not create. Before committing a doc edit, compare `git diff --cached --numstat` against the same command
+with `--ignore-cr-at-eol` - if the second is a small fraction of the first, the difference is whitespace,
+not work. And every gate that reads added lines passes `--ignore-cr-at-eol`.
+
+**Mechanisms:** preflight C13 `check_line_ending_rewrite` BLOCKS a staged file with >= 50 changed lines
+whose CR-blind count is under a fifth of that, naming the file and both numbers; `--ignore-cr-at-eol`
+added to `check_orphan_rule` and to `preflight.get_staged_added_lines` (MEASURED: 472 false `+### L`
+hits collapse to the 1 real entry). Pin: test_b2581. Retroactive coverage (#136): C13 fires on the B2580
+commit that produced this entry, and the CR-blind orphan gate passes the turn that had to write it.

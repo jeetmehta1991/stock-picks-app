@@ -32882,3 +32882,130 @@ def test_b2580_the_runbook_names_only_scripts_that_exist():
     assert len(cited) >= 25, cited
     missing = [n for n in cited if not (root / "scripts" / n).exists()]
     assert missing == [], missing
+
+def test_b2581_a_line_ending_flip_is_blocked_and_invisible_to_the_diff_gates(monkeypatch):
+    """B2581 (CHECKLIST #293 / L756): a line-ending rewrite must BLOCK at
+    commit time, and every gate that reads "what did this change add" must be
+    blind to it.
+
+    MEASURED at B2580: `Path.write_text` on Windows turned 657 bare-LF lines
+    in LEARNINGS.md into CRLF, so a 57-line append staged as 18,868 added /
+    18,812 removed - and `check_orphan_rule`, which greps the diff for
+    `+### L<n>`, read 472 entries instead of 1 and blocked the turn demanding
+    CHECKLIST anchors for ~170 entries nobody had touched. Satisfying it would
+    have meant fabricating dispositions: a true gate reporting something false
+    because its INPUT was corrupted.
+
+    Both arms are driven through the argv the gates actually build, not
+    through their source text (L748).
+    """
+    import importlib.util as _ilu
+    import types
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parents[2]
+
+    def load(name, rel):
+        spec = _ilu.spec_from_file_location(name, root / rel)
+        m = _ilu.module_from_spec(spec)
+        spec.loader.exec_module(m)
+        return m
+
+    pf = load("preflight_b2581", "scripts/preflight.py")
+
+    # ---- C13: a big raw diff whose CR-blind twin is tiny AND which
+    # HOMOGENISES the file's endings. The restore has the first half of that
+    # signature and must NOT be blocked - measured at B2581, where the first
+    # version of this gate refused the repair as readily as the damage.
+    MIXED = b"a\r\nb\nc\r\n"          # two ending kinds
+    FLAT = b"a\r\nb\r\nc\r\n"         # one
+    calls = []
+
+    def numstat(blind):
+        return "\n".join([
+            # the B2580 shape: 37,680 raw lines, 58 of them real
+            ("57\t1\tLEARNINGS.md" if blind else "18868\t18812\tLEARNINGS.md"),
+            "300\t120\tbacktest/tests/test_unit.py",   # an honest large edit
+            "20\t0\tCLAUDE.md",                        # under the floor
+            "-\t-\tdocs/img.png",                      # binary must not crash
+        ]) + "\n"
+
+    def make_fake(head_blob, index_blob):
+        def fake_run(cmd, **kw):
+            calls.append(list(cmd))
+            if "--numstat" in cmd:
+                return types.SimpleNamespace(
+                    stdout=numstat("--ignore-cr-at-eol" in cmd), returncode=0)
+            ref = cmd[-1]                      # git show <ref>:<name>
+            return types.SimpleNamespace(
+                stdout=index_blob if ref.startswith(":0:") else head_blob,
+                returncode=0)
+        return fake_run
+
+    monkeypatch.setattr(pf.subprocess, "run", make_fake(MIXED, FLAT))
+    bad = pf.check_line_ending_rewrite()
+    assert len(bad) == 1, bad
+    # the message counts CHANGED lines (added + deleted), both ways round:
+    # 18868 + 18812 raw against 57 + 1 CR-blind
+    assert "LEARNINGS.md" in bad[0] and "37680" in bad[0] and "58" in bad[0]
+    assert "C13" in bad[0] and "L756" in bad[0]
+    assert "test_unit.py" not in bad[0] and "CLAUDE.md" not in bad[0]
+    assert any("--ignore-cr-at-eol" in c for c in calls), calls
+    assert any("--ignore-cr-at-eol" not in c for c in calls), calls
+
+    # the RESTORE direction: same diff shape, endings going the other way
+    monkeypatch.setattr(pf.subprocess, "run", make_fake(FLAT, MIXED))
+    assert pf.check_line_ending_rewrite() == []
+
+    # a clean commit is quiet (the counter is not vacuously firing, #226)
+    monkeypatch.setattr(pf.subprocess, "run", lambda cmd, **kw: types.SimpleNamespace(
+        stdout="57\t1\tLEARNINGS.md\n", returncode=0))
+    assert pf.check_line_ending_rewrite() == []
+    # a git failure must not block the commit on the gate's own error
+    def boom(cmd, **kw):
+        raise OSError("git missing")
+    monkeypatch.setattr(pf.subprocess, "run", boom)
+    assert pf.check_line_ending_rewrite() == []
+
+    # ---- C7's added-line reader passes the flag
+    seen = []
+
+    def fake_diff(cmd, **kw):
+        seen.append(list(cmd))
+        return types.SimpleNamespace(
+            stdout="+++ b/scripts/x.py\n+a = 1\n", returncode=0)
+
+    monkeypatch.setattr(pf.subprocess, "run", fake_diff)
+    assert pf.get_staged_added_lines() == [("scripts/x.py", "a = 1")]
+    assert "--ignore-cr-at-eol" in seen[0], seen
+
+    # ---- the orphan-rule gate passes the flag on BOTH of its git reads
+    vtc = load("vtc_b2581", "scripts/verify_turn_compliance.py")
+    argvs = []
+
+    def fake_git(cmd, **kw):
+        argvs.append(list(cmd))
+        # first call (git diff HEAD) returns nothing so the fallback runs too
+        out = "" if len(argvs) == 1 else "+### L755 - a rule\n"
+        return types.SimpleNamespace(stdout=out, returncode=0)
+
+    # B2581d: a backgrounded PYTEST WRAPPER is not an engine launch. The
+    # pyramid CHECKLIST #292 mandates is run with nohup, and "nohup" is a
+    # LAUNCH_MARKER, so the pool-workers gate demanded a flag pytest does not
+    # have. Fourth instance of this classifier class (B1880 Write, B2028 grep,
+    # B2280 git): naming is not invoking. The corpus carries both arms.
+    assert vtc._segment_is_launch(
+        "nohup python scripts/pyramid_gate.py --out x -- backtest/tests/"
+        "test_unit.py -q > y.launch.log 2>&1 &") is False
+    assert vtc._segment_is_launch(
+        "nohup python scripts/pyramid_gate.py --out x ; nohup python "
+        "backtest/run_phase1a.py --phase 1a-beta &") is True
+    assert vtc._segment_is_launch(
+        "nohup python scripts/launch_detached.py --chain --specs s.json &") is True
+
+    monkeypatch.setattr(vtc.subprocess, "run", fake_git)
+    vtc.check_orphan_rule()
+    assert len(argvs) == 2, argvs
+    for c in argvs:
+        assert "--ignore-cr-at-eol" in c, c
+        assert "LEARNINGS.md" in c, c

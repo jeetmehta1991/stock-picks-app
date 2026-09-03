@@ -188,8 +188,12 @@ def get_staged_added_lines() -> list[tuple[str, str]]:
         # default cp1252 text decode CRASHES the whole preflight when the
         # staged diff contains any multi-byte char (emoji in a doc), which
         # blocked a legitimate commit. Gates must not be DoS-able by docs.
+        # B2581 (L756): --ignore-cr-at-eol, same reason as the orphan-rule gate -
+        # a line-ending flip would present an entire file as newly added and the
+        # C7 banned-pattern scan would run over all of it.
         result = subprocess.run(
-            ["git", "diff", "--cached", "-U0", "--diff-filter=ACMR"],
+            ["git", "diff", "--cached", "-U0", "--ignore-cr-at-eol",
+             "--diff-filter=ACMR"],
             cwd=REPO_ROOT, capture_output=True, text=True, check=False,
             encoding="utf-8", errors="replace",
         )
@@ -488,6 +492,68 @@ def check_doc_ticket_ids_in_queue(paths: Iterable[Path]) -> list[str]:
 KNOWN_DUPLICATE_L = {"114", "115", "253", "333"}
 
 
+CRLF = bytes((13, 10))     # B2581: written as ordinals so the
+LF = bytes((10,))          # constants survive any transport
+CR = bytes((13,))
+
+
+def check_line_ending_rewrite() -> list[str]:
+    """C13 (B2581 / L756): BLOCK a commit that rewrites a file's line endings.
+
+    MEASURED on the B2580 commit: `Path.write_text` on Windows turned every
+    bare LF in LEARNINGS.md into CRLF, so a 57-line append staged as 18,868
+    added / 18,812 removed - unreviewable, and it made two diff-reading gates
+    treat the whole file as new. The signature is a large raw diff whose
+    CR-blind counterpart is tiny.
+    """
+    def _numstat(extra: list[str]) -> dict[str, int]:
+        try:
+            r = subprocess.run(["git", "diff", "--cached", "--numstat", *extra],
+                               cwd=REPO_ROOT, capture_output=True, text=True,
+                               encoding="utf-8", errors="replace", check=False)
+        except Exception:
+            return {}
+        out = {}
+        for line in (r.stdout or "").splitlines():
+            parts = line.split("\t")
+            if len(parts) != 3:
+                continue
+            a, d, name = parts
+            if a == "-" or d == "-":      # binary
+                continue
+            out[name] = int(a) + int(d)
+        return out
+
+    def _eol_kinds(ref: str, name: str) -> int:
+        """How many DISTINCT line endings a blob uses (CRLF / bare LF / lone
+        CR). A flip HOMOGENISES a mixed file; a restore brings the variety
+        back. Blocking on the diff shape alone refuses the repair as readily
+        as the damage - MEASURED at B2581, where the restoring commit carried
+        an identical signature and this gate stopped it."""
+        try:
+            r = subprocess.run(["git", "show", ref + ":" + name], cwd=REPO_ROOT,
+                               capture_output=True, check=False)
+            b = r.stdout or b""
+        except Exception:
+            return 0
+        crlf = b.count(CRLF)
+        return sum(1 for k in (crlf, b.count(LF) - crlf, b.count(CR) - crlf) if k)
+
+    raw, blind = _numstat([]), _numstat(["--ignore-cr-at-eol"])
+    bad = []
+    for name, n in sorted(raw.items()):
+        m = blind.get(name, 0)
+        if n >= 50 and m * 5 < n and _eol_kinds(":0", name) < _eol_kinds("HEAD", name):
+            bad.append(
+                f"C13 LINE-ENDING REWRITE (B2581/L756): {name} stages {n} changed "
+                f"lines but only {m} survive --ignore-cr-at-eol - the rest is a "
+                f"line-ending flip, which is unreviewable and makes every "
+                f"diff-reading gate treat the file as new. A patcher must write "
+                f"BYTES (or open with newline=''); restore the file from HEAD and "
+                f"re-apply the real change.")
+    return bad
+
+
 def check_duplicate_learning_numbers(paths: Iterable[Path],
                                      source: Path | None = None) -> list[str]:
     """C12: no NEW duplicate L-number may be committed.
@@ -563,6 +629,8 @@ def main() -> int:
         all_violations += check_arbitrary_selection_declared()
         # C12 (S6-B1534a): no NEW duplicate L-number
         all_violations += check_duplicate_learning_numbers(files)
+        # C13 (B2581 / L756): no line-ending rewrite
+        all_violations += check_line_ending_rewrite()
 
     if not all_violations:
         print("preflight: PASS - no rule violations found")

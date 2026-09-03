@@ -557,11 +557,19 @@ def check_orphan_rule() -> str | None:
         import re
         import subprocess
         from pathlib import Path
-        r = subprocess.run(["git", "diff", "HEAD", "--unified=0", "--", "LEARNINGS.md"],
+        # B2581 (L756): --ignore-cr-at-eol. A patcher that rewrote LEARNINGS.md's
+        # line endings (Path.write_text on a MIXED file) made this gate read 472
+        # `+### L` lines instead of 1, and it blocked the turn demanding CHECKLIST
+        # anchors for ~170 entries nobody had touched. A whitespace-only rewrite
+        # is not an addition, and the gate that cannot tell will be satisfied
+        # with a fabricated disposition.
+        r = subprocess.run(["git", "diff", "HEAD", "--unified=0", "--ignore-cr-at-eol",
+                            "--", "LEARNINGS.md"],
                            capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=15)
         added = r.stdout or ""
         if not added.strip():
-            r2 = subprocess.run(["git", "log", "-1", "-p", "--unified=0", "--", "LEARNINGS.md"],
+            r2 = subprocess.run(["git", "log", "-1", "-p", "--unified=0", "--ignore-cr-at-eol",
+                                 "--", "LEARNINGS.md"],
                                 capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=15)
             added = r2.stdout or ""
         new_entries = re.findall(r"^\+### (L\d+)", added, re.M)
@@ -3842,6 +3850,18 @@ def _launch_blobs(entries) -> list[str]:
 _READER_HEADS = {"grep", "rg", "sed", "cat", "head", "tail", "ls", "echo",
                  "wc", "awk", "cut", "sort", "uniq", "find", "diff", "stat",
                  "git"}
+# B2581d: targets that are NOT an engine launch even when backgrounded. The
+# background WORDS ("nohup", "run_in_background") are in LAUNCH_MARKERS so a
+# wrapper cannot hide a runner behind them - but that makes every backgrounded
+# command a launch, and the pyramid gate CHECKLIST #292 mandates is run exactly
+# that way. MEASURED this turn: `nohup python scripts/pyramid_gate.py --
+# backtest/tests/...` was reported as a launch missing --screen-pool-workers,
+# a flag pytest does not have. Fourth instance of the classifier's class
+# (B1880 Write, B2028 grep, B2280 git): naming is not invoking. Fail-closed:
+# only these exact targets are excused, anything else backgrounded still
+# counts.
+_NON_LAUNCH_TARGETS = {"pyramid_gate.py", "pytest", "queue_state.py",
+                       "verify_turn_compliance.py"}
 
 
 def _segment_is_launch(cmd: str) -> bool:
@@ -3864,6 +3884,14 @@ def _segment_is_launch(cmd: str) -> bool:
             continue
         head = toks[0].rsplit("/", 1)[-1].rsplit("\\", 1)[-1].lower()
         if head in _READER_HEADS:
+            continue
+        bases = {t.rsplit("/", 1)[-1].rsplit("\\", 1)[-1].lower() for t in toks}
+        # B2581d: a RUNNER file named in the segment is a launch however it is
+        # spelled; a background word alone is one only when what it backgrounds
+        # is not a known non-launch target.
+        if any(m in t for m in RUNNER_SCRIPTS for t in toks):
+            return True
+        if bases & _NON_LAUNCH_TARGETS:
             continue
         if any(m in t for m in LAUNCH_MARKERS for t in toks):
             return True

@@ -5611,3 +5611,21 @@ test_b2213a) and a would-have-been false GREEN (B2576 pyramid #2, three scripts 
 un-dry patcher at ~40%) and a verdict older than its edits (B2570 -> test_b1486 at B2571). Pin:
 test_b2580_pyramid_gate_voids_a_run_whose_tree_changed. Detection of a mid-run edit is MECHANICAL;
 detection of a stale verdict is JUDGMENT-ONLY.
+
+### #293 - A PATCHER WRITES BYTES; A GATE THAT READS A DIFF IS ENDING-BLIND (B2581 / L756)
+
+**Never `Path.write_text` a file you did not create.** On Windows it rewrites every line ending in the
+file. MEASURED at B2580: LEARNINGS.md held 657 bare-LF lines among 18,641 CRLF, so a 57-line append
+staged as **18,868 added / 18,812 removed**, and a lone CR became a line break - a content change inside
+an unreadable diff. Write bytes, or open with `newline=""`.
+
+**Before committing a doc edit, compare the two numstats.** `git diff --cached --numstat` against
+`git diff --cached --numstat --ignore-cr-at-eol`: if the second is a small fraction of the first, what
+you are about to commit is whitespace. Preflight C13 (`check_line_ending_rewrite`) now BLOCKS that
+commit and names both counts.
+
+**Every gate that asks "what did this change add" passes `--ignore-cr-at-eol`.** MEASURED (B2581): after
+the flip, the orphan-rule gate read 472 `+### L` lines and demanded CHECKLIST anchors for ~170 entries
+nobody had touched - satisfying it would have meant fabricating dispositions. With the flag it reads the
+1 real entry. Wired: `verify_turn_compliance.check_orphan_rule` and
+`preflight.get_staged_added_lines` (the C7 scan). Pin: test_b2581.
