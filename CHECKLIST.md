@@ -5650,3 +5650,26 @@ handed every row gate 1,846 rows as new. Sibling of #226 (prove it can fail) at 
 and of L592 (the unit of the change was smaller than the unit of the defect) one dimension across:
 there the fix reached fewer SITES, here fewer SHAPES. Detection is JUDGMENT-ONLY; durability is
 pinned by test_b2581's uniform-LF arm and the skill fragment in test_b2123.
+
+### #295 - WORK INSIDE THE CURRENT STRATEGY'S CONTEXT; A ZOOM-OUT IS SCOPE CREEP (B2584 / L758)
+
+**Owner directive 2026-09-03:** when working the optimisation plan for a strategy, work ONLY in the
+context of that strategy. Its config runs, its parameters, its cubes, its verdicts. Do not zoom out to
+the programme, the backlog or the roster unless the owner asks - repeated zoom-outs create scope creep
+and disrupt the workflow.
+
+**The premise that makes the zoom-out wrong, not merely unwelcome:** R5 already ran the whole
+population - the merged R5 cube holds 196 distinct strategies (measured 2026-09-03 from
+output_r5_merged_1_7/trade_exit_detail.csv) - and 2 to 3 qualified. Per-strategy optimisation exists
+BECAUSE of that result, so a coverage figure like "2 strategies out of 207" describes a stage that has
+already run and says nothing about the stage in progress. **Before quoting any coverage denominator,
+name the stage that produced the population and check whether an earlier stage already covered it**
+(#182 requires a denominator, which is exactly why a denominator from the wrong stage passes as rigour).
+
+**Standing scope facts this item pins:** smc_breaker_block_long is FINALISED on the Phase 1B roster as
+a Step-2 admission, with smc_breaker_block_short registered as its mirror. Both stay as they are -
+PROVISIONAL-UNREVIEWED included - and no further work is to be done on that strategy; tickets
+proposing more of it are closed by the ruling, not by a measurement. Detection is JUDGMENT-ONLY (a
+zoom-out is a true sentence about the repo, indistinguishable to a scan from a relevant one);
+durability is pinned by the skill fragment in test_b2123 and the memory entry
+feedback_strategy_scope_no_zoom_out.

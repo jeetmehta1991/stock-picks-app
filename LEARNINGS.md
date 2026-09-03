@@ -19431,3 +19431,41 @@ pinned in both directions by test_b2581 including the uniform-LF shape and the d
 that a deliberate CRLF-to-LF normalisation stays quiet. Detection of the class itself is
 JUDGMENT-ONLY - no scan knows what population a gate's precondition selects - and durability is
 pinned by the CHECKLIST #294 citation plus the skill fragment in test_b2123.
+
+### L758 - A programme's coverage denominator is the STAGE that already ran, not the population you can still see
+
+**The owner correction (2026-09-03).** Asked why the box was testing smc and icg, I answered with the
+programme's spec census - 44 of 61 specs on smc_breaker_block_long, 17 on
+institutional_committed_growth_long, "2 distinct strategies out of a 207-strategy backlog" - and built
+a case-against on it: that the optimisation programme had touched under 1 percent of the population it
+was written for. **The premise was false.** R5 already ran the whole population; the merged R5 cube
+holds 196 distinct strategies (measured this turn from output_r5_merged_1_7/trade_exit_detail.csv).
+Two or three qualified. Optimisation exists BECAUSE of that result and is per-strategy by
+construction: one strategy, its own producer parameters, its own configs. A per-strategy programme
+has no population denominator to be short of.
+
+**The second half of the correction, which is a standing rule about how to work.** Owner, in
+substance: when working the optimisation plan for a strategy, work ONLY in the context of that
+strategy; its config runs are in the context of that strategy itself; do not zoom out repeatedly,
+because it creates scope creep and disrupts the workflow. My census sentence was itself the zoom-out -
+it re-framed a question about the running config as a question about the whole programme, and the
+re-framing arrived wearing a denominator, which is what made it feel rigorous.
+
+**Why the shape is dangerous rather than merely wrong.** #182 requires a denominator on every verdict,
+so reaching for one is a trained reflex - and a denominator taken from the WRONG STAGE passes that
+check while inverting the meaning. The programme census was correctly counted and answered a question
+nobody had asked. **Before quoting a coverage figure, name the stage that produced the population and
+check whether an earlier stage already covered it.**
+
+**And the ruling it carried, which is a scope decision, not an inference:** smc_breaker_block_long is
+FINALISED - it is on the Phase 1B roster as a Step-2 admission and its short mirror is registered.
+Both stay exactly as they are, PROVISIONAL-UNREVIEWED included, and no further work is to be done on
+that strategy. Any open ticket proposing more smc_breaker_block work is closed by that ruling rather
+than by a measurement.
+
+**Mechanisms.** The scope rule is JUDGMENT-ONLY for detection - no scan can tell a relevant
+cross-strategy fact from a zoom-out, since both are true sentences about the repo. Durability: the
+rule is anchored at CHECKLIST #295, carried in the skill's tripwire table with its fragment pinned by
+test_b2123, and written to memory as a standing owner directive. The ruling's ACTION half is
+mechanical and done: the three non-terminal tickets proposing further smc_breaker_block work
+(S6-B1545a, S6-B2115a, S6-B2411) are DROPPED citing it.
