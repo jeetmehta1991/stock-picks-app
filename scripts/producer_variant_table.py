@@ -1163,7 +1163,93 @@ def table_d_params(grids: dict[str, dict], top: int = 20) -> list[str]:
     return out
 
 
-def table_c(grids: dict[str, dict]) -> list[str]:
+def free_levels_graded(name, root=None) -> dict:
+    """Which levels of a FREE-graded parameter this config actually had graded.
+
+    Read from the battery's own artifact
+    output_audit/output_<name>_free_levels.json (B2569, written on every
+    landing), keyed by the lowercased P-id: {"p7": [3, 5, 11, 14]}. The
+    reproduction gate writes `levels: []` when it REFUSES to grade (coverage
+    below floor), and that empty case reads as NOTHING GRADED rather than as
+    the declared band - the point of the gate is that those levels were not
+    measured on this cube.
+    """
+    root = Path(root) if root is not None else CODE_ROOT
+    p = root / "output_audit" / ("output_" + name + "_free_levels.json")
+    if not p.is_file():
+        return {}
+    try:
+        doc = json.loads(p.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
+    levels = doc.get("levels")
+    if not isinstance(levels, dict):
+        return {}
+    out = {}
+    for entry in levels.values():
+        if not isinstance(entry, dict):
+            continue
+        for pid in ("p7", "p8"):
+            if entry.get(pid) is not None:
+                out.setdefault(pid, set()).add(entry[pid])
+    return {k: sorted(v) for k, v in out.items()}
+
+
+def producer_bands(name, grid, root=None):
+    """One cell per parameter of the config's family - EVERY producer band.
+
+    Owner directive 2026-09-03: the column is `all producer bands tested`, not
+    the SMC six. MEASURED at that ruling: SPECS carries 6 params for
+    smc_breaker_block_long and 9 for institutional_committed_growth_long, and
+    ICG rows rendered 4 of 9 - P1/P2/P3 (precompute hygiene, not swept by
+    design) and P7/P8 (graded FREE from the landed cube) were absent, so the
+    row could not be read as a statement of what the config exercised.
+
+    Returns [(pid, param, cell)], or None when the grid names no family this
+    table knows - the caller then falls back to the config block. Precedence:
+      1. PINNED in the artifact's config block -> `v(fixed)`
+      2. OBSERVED in the result rows -> the values searched in-cube
+      3. GRADED FREE on this cube -> `v1,v2(free)`
+      4. declared free band, no artifact -> `v1,v2(free, declared)`
+      5. NOT-SWEPT-BY-DESIGN -> `v(not swept)`
+      6. otherwise `?` - never a number (L580)
+    """
+    spec = SPECS.get(grid.get("strategy"))
+    if not spec:
+        return None
+    cfg = grid.get("config") or {}
+    res, _pf, _pu = grid_population(grid)
+    observed = {}
+    for r in res:
+        for _p in spec["params"]:
+            k = _p["param"]
+            if k in r:
+                observed.setdefault(k, set()).add(repr(r[k]))
+    freed = free_levels_graded(name, root)
+    cells = []
+    for _p in spec["params"]:
+        pid, nm = _p["id"], _p["param"]
+        pin = cfg.get(pid + "_" + nm)
+        obs = observed.get(nm)
+        fl = freed.get(pid.lower())
+        band = [str(x) for x in (_p.get("band") or [])]
+        if pin is not None:
+            cell = _fmt(pin) + "(fixed)"
+        elif obs:
+            cell = _band_str(obs)
+        elif fl:
+            cell = _band_str({repr(v) for v in fl}) + "(free)"
+        elif _p.get("free_band"):
+            cell = _band_str({repr(v) for v in _p["free_band"]}) + "(free, declared)"
+        elif not (_p.get("sweep_levels") or []) and band == [str(_p.get("production"))]:
+            cell = _fmt(_p.get("production")) + "(not swept)"
+        else:
+            cell = "?"
+        cells.append((pid, nm, cell))
+    return cells
+
+
+def table_c(grids: dict[str, dict], root=None) -> list[str]:
     """POST RUN CONFIG TABLE - one row per config, the whole funnel across it.
 
     B1701, owner directive: the post-config numbers were being reported as prose
@@ -1206,15 +1292,23 @@ def table_c(grids: dict[str, dict]) -> list[str]:
     # own terms. A reader who meets `graded` or `ci_lo` for the first time in a
     # pasted table has no way to look them up.
     per_config_axes: dict = {}
+    _per_config_grid: dict = {}   # B2585: the grid itself, for producer_bands
     rows = ["_`starved-IS` = no exit cleared min_n IN-SAMPLE, a SAMPLE-SIZE fact "
             "rather than a quality verdict. `graded` = reached `evaluate()` and "
             "produced a Sharpe. `distinct` = graded outcomes after "
             "equivalence-class collapse (L473). `bands` = distinct parameter "
             "VALUES exercised. `ci_lo` = the LOWER bound of the Sharpe "
             "confidence interval, which is what `best` ranks on - a higher "
-            "Sharpe can carry a NEGATIVE lower bound (L455)._",
+            "Sharpe can carry a NEGATIVE lower bound (L455). `all producer "
+            "bands tested` = EVERY parameter of this config's family (owner "
+            "directive 2026-09-03), each marked how it was exercised: (fixed) "
+            "pinned by this config, a bare list searched in-cube, (free) graded "
+            "from the landed cube by the battery, (free, declared) gradable but "
+            "not graded here, (not swept) held by design. The count is the "
+            "family's own SPECS entry - 6 for smc_breaker_block_long, 9 for "
+            "institutional_committed_growth_long._",
             "",
-            "| config | combos | starved-IS | no-Sharpe | graded | distinct | bands | P1-P6 bands tested | median IS-Sharpe | best IS-Sharpe | best IS-CI-lo | best combination |",
+            "| config | combos | starved-IS | no-Sharpe | graded | distinct | bands | all producer bands tested | median IS-Sharpe | best IS-Sharpe | best IS-CI-lo | best combination |",
             "|---|---|---|---|---|---|---|---|---|---|---|---|"]
     for name, g in grids.items():
         # B2521 (S6-B2520m): the declared population, not the field name.
@@ -1257,8 +1351,15 @@ def table_c(grids: dict[str, dict]) -> list[str]:
         # when the truth is 'not recorded' - the exact rule written one
         # batch earlier at B1889b, that a value which cannot be measured
         # must not render as a number.
-        bands = (sum(len(v) for v in axes.values() if len(v) > 1)
-                 if axes else None)
+        # B2585: a level graded FREE from the landed cube is a value this
+        # config exercised - the battery grades them on every landing
+        # (B2569) - so the count includes them. Before this, a family that
+        # searches nothing in-cube but grades four free levels read `-`,
+        # which says 'not recorded' about work that WAS done.
+        _freed = free_levels_graded(name, root)
+        _free_n = sum(len(v) for v in _freed.values() if len(v) > 1)
+        bands = (sum(len(v) for v in axes.values() if len(v) > 1) + _free_n
+                 if (axes or _freed) else None)
         rank = g.get("step1_ranking") or []
         # B2136 (S6-B2135a): rank on the IN-SAMPLE key when the artifact carries
         # it. This selected on `ci_lo`, which is HOLDOUT-derived - so the table
@@ -1310,6 +1411,19 @@ def table_c(grids: dict[str, dict]) -> list[str]:
         # B2542: a family whose axes are not the SMC six records them as
         # P<N>_<name> in its own config block. Render THOSE rather than six
         # `?` cells, which said "not recorded" about axes that ARE recorded.
+        # B2585, owner directive: EVERY producer parameter of the family,
+        # derived from its SPECS entry. The two branches below survive as
+        # fallbacks for a grid naming no family this table knows.
+        _pb = producer_bands(name, g, root)
+        if _pb:
+            p_col = "; ".join(pid + "=" + cell for pid, _nm, cell in _pb)
+            rows.append(f"| `{name}` | {len(res)} | {len(no_exit)} | {len(no_sh)} | "
+                        f"{len(graded)} | {g.get('step1_distinct_outcomes', '-')} | "
+                        f"{_measured_fmt(bands)} | {p_col} | {_measured_fmt(med)} | "
+                        f"{sh} | {cl} | {combo} |")
+            per_config_axes[name] = (axes, cfg)
+            _per_config_grid[name] = g
+            continue
         _smc_shaped = any(nm in axes for nm in AXIS_KEYS) or "P1_swing_length" in cfg
         if not _smc_shaped and cfg:
             p_col = "; ".join(
@@ -1415,6 +1529,21 @@ def table_c(grids: dict[str, dict]) -> list[str]:
         for _n, _own in _foreign.items():
             _groups.setdefault(tuple(sorted(_own)), []).append((_n, _own))
         for _keys, _members in _groups.items():
+            # B2585: prefer the family's FULL parameter set over the config
+            # block's keys - the block recorded only what the launcher set,
+            # so P1/P2/P3 (not swept) and P7/P8 (free) never appeared here
+            # either. Falls back to the recorded keys for an unknown family.
+            _pb0 = producer_bands(_members[0][0],
+                                  _per_config_grid.get(_members[0][0]) or {}, root)
+            if _pb0:
+                rows += ["", "| config | " + " | ".join(
+                    pid + " " + nm for pid, nm, _c in _pb0) + " |",
+                         "|---|" + "---|" * len(_pb0)]
+                for _n, _own in _members:
+                    _cells = producer_bands(_n, _per_config_grid.get(_n) or {}, root) or []
+                    rows.append(f"| `{_n}` | " + " | ".join(
+                        c for _pid, _nm, c in _cells) + " |")
+                continue
             rows += ["", "| config | " + " | ".join(_keys) + " |",
                      "|---|" + "---|" * len(_keys)]
             for _n, _own in _members:

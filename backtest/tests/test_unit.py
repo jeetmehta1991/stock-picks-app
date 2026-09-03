@@ -13742,8 +13742,11 @@ def test_b1510_producer_artifact_standard():
     # locked format drifts silently.
     src_c = (_P(__file__).resolve().parents[2] / "scripts"
              / "producer_variant_table.py").read_text(encoding="utf-8")
+    # B2585, owner directive 2026-09-03: the lock MOVED - the column is now
+    # `all producer bands tested`, every parameter of the config's family
+    # rather than the SMC six. A lock pin follows its lock, in the same commit.
     header_c = ("| config | combos | starved-IS | no-Sharpe | graded | distinct "
-                "| bands | P1-P6 bands tested | median IS-Sharpe | best IS-Sharpe "
+                "| bands | all producer bands tested | median IS-Sharpe | best IS-Sharpe "
                 "| best IS-CI-lo | best combination |")
     assert header_c in src_c, (
         "TABLE C header drifted from the locked B1898 column set. The columns "
@@ -26808,8 +26811,11 @@ def test_b2199_table_c_is_printed_with_every_locked_column(tmp_path, monkeypatch
 
     from producer_variant_table import table_c
     header = [l for l in table_c(found) if l.startswith("| config |")][0]
+    # B2585, owner directive 2026-09-03: the column is `all producer bands
+    # tested` - EVERY parameter of the config's family, not the SMC six. The
+    # lock moved, so this pin moves with it, in the same commit.
     for col in ("combos", "starved-IS", "no-Sharpe", "graded", "distinct",
-                "bands", "P1-P6 bands tested", "median IS-Sharpe",
+                "bands", "all producer bands tested", "median IS-Sharpe",
                 "best IS-Sharpe", "best IS-CI-lo", "best combination"):
         assert col in header, f"locked column missing from Table C: {col}"
     assert header.count("|") == 13, "locked Table C is 12 columns"
@@ -33043,3 +33049,128 @@ def test_b2581_a_line_ending_flip_is_blocked_and_invisible_to_the_diff_gates(mon
     for c in argvs:
         assert "--ignore-cr-at-eol" in c, c
         assert "LEARNINGS.md" in c, c
+
+
+def test_b2585_table_c_bands_column_carries_every_producer_parameter(tmp_path, monkeypatch):
+    """B2585 (owner directive 2026-09-03): Table C's bands cell is EVERY
+    producer parameter of the config's family, derived from its SPECS entry.
+
+    MEASURED at the ruling: SPECS holds 6 params for smc_breaker_block_long and
+    9 for institutional_committed_growth_long, while the cell was built from the
+    hardcoded SMC six - so every ICG row rendered 4 of 9. P1/P2/P3 (the
+    precompute's not-swept hygiene knobs) and P7/P8 (the thresholds the battery
+    grades FREE on every landing, B2569) were absent, and the column was NAMED
+    for one family. Owner: "it should be all produced bands tested".
+
+    Both directions are asserted: the cell must carry every parameter the family
+    declares, and it must stop carrying one that is removed from SPECS - a
+    hardcoded list would pass the first arm and fail the second.
+    """
+    import copy
+    import importlib.util as _ilu
+    import json as _json
+    import sys as _sys
+    from pathlib import Path as _P
+
+    root = _P(__file__).resolve().parents[2]
+    _sys.path.insert(0, str(root / "scripts"))
+    import producer_variant_table as pv
+
+    icg = {"strategy": "institutional_committed_growth_long",
+           "config": {"P4_min_consecutive_quarters": 8,
+                      "P5_growth_lookback_quarters": 4,
+                      "P6_growth_multiple": 1.1, "P9_span": 200},
+           "results": [{"exit": "e", "is_sharpe": 0.4, "is_ci_lo": 0.05,
+                        "verdict": "RANKED", "sharpe": None}],
+           "step1_distinct_outcomes": 1,
+           "step1_ranking": [{"exit": "e", "is_sharpe": 0.4, "is_ci_lo": 0.05,
+                              "admit": {"verdict": "RANKED", "exit": "e"}}]}
+    smc = {"strategy": "smc_breaker_block_long",
+           "config": {"P1_swing_length": 30, "P6_span": 20},
+           "results": [{"exit": "e", "is_sharpe": 0.4, "is_ci_lo": 0.05,
+                        "verdict": "OK", "sharpe": None, "close_mitigation": True,
+                        "tail_n": 3, "age_bars_max": 120, "break_pct_max": 0.02},
+                       {"exit": "e", "is_sharpe": 0.3, "is_ci_lo": 0.01,
+                        "verdict": "OK", "sharpe": None, "close_mitigation": False,
+                        "tail_n": 20, "age_bars_max": None, "break_pct_max": None}],
+           "step1_distinct_outcomes": 2,
+           "step1_ranking": [{"exit": "e", "is_sharpe": 0.4, "is_ci_lo": 0.05,
+                              "admit": {"verdict": "OK", "exit": "e",
+                                        "close_mitigation": True, "tail_n": 3,
+                                        "age_bars_max": 120, "break_pct_max": 0.02}}]}
+
+    # ---- the family's own parameter COUNT, not a fixed six
+    cells_icg = pv.producer_bands("icg_probe", icg, tmp_path)
+    cells_smc = pv.producer_bands("smc_probe", smc, tmp_path)
+    assert [p for p, _n, _c in cells_icg] == ["P1", "P2", "P3", "P4", "P5",
+                                              "P6", "P7", "P8", "P9"], cells_icg
+    assert [p for p, _n, _c in cells_smc] == ["P1", "P2", "P3", "P4", "P5", "P6"]
+    assert len(cells_icg) == len(pv.SPECS["institutional_committed_growth_long"]["params"])
+    assert len(cells_smc) == len(pv.SPECS["smc_breaker_block_long"]["params"])
+
+    by = {p: c for p, _n, c in cells_icg}
+    # NOT-SWEPT-BY-DESIGN reads as held, never as a searched value
+    assert by["P1"] == "45(not swept)" and by["P2"] == "0(not swept)", by
+    assert "(not swept)" in by["P3"]
+    # pinned by this config's own manifest
+    assert by["P4"] == "8(fixed)" and by["P9"] == "200(fixed)", by
+    # FREE levels with no artifact: gradable, not graded HERE
+    assert by["P7"].endswith("(free, declared)") and by["P8"].endswith("(free, declared)")
+    # the SMC family: pinned cross-config axes, searched in-cube axes
+    bs = {p: c for p, _n, c in cells_smc}
+    assert bs["P1"] == "30(fixed)" and bs["P6"] == "20(fixed)", bs
+    assert "False" in bs["P2"] and "True" in bs["P2"], bs
+    assert "3" in bs["P3"] and "20" in bs["P3"], bs
+
+    # ---- a free-levels artifact turns (free, declared) into the graded levels
+    (tmp_path / "output_audit").mkdir()
+    (tmp_path / "output_audit" / "output_icg_probe_free_levels.json").write_text(
+        _json.dumps({"levels": {"baseline_p7_3": {"p7": 3, "p8": 5},
+                                "p7_5": {"p7": 5, "p8": 5},
+                                "p7_11": {"p7": 11, "p8": 5},
+                                "p7_14": {"p7": 14, "p8": 5},
+                                "p8_6": {"p7": 3, "p8": 6}}}), encoding="utf-8")
+    graded = pv.free_levels_graded("icg_probe", tmp_path)
+    assert graded == {"p7": [3, 5, 11, 14], "p8": [5, 6]}, graded
+    by2 = {p: c for p, _n, c in pv.producer_bands("icg_probe", icg, tmp_path)}
+    assert by2["P7"] == "3,5,11,14(free)" and by2["P8"] == "5,6(free)", by2
+
+    # the REFUSED reproduction gate writes levels: [] - that is nothing graded,
+    # not the declared band (the gate exists to say those levels were not
+    # measured on this cube)
+    (tmp_path / "output_audit" / "output_icg_probe_free_levels.json").write_text(
+        _json.dumps({"levels": [], "not_comparable": True}), encoding="utf-8")
+    assert pv.free_levels_graded("icg_probe", tmp_path) == {}
+    by3 = {p: c for p, _n, c in pv.producer_bands("icg_probe", icg, tmp_path)}
+    assert by3["P7"].endswith("(free, declared)"), by3
+
+    # ---- the locked header, and bands counting the free levels
+    out = "\n".join(pv.table_c({"icg_probe": icg}, tmp_path))
+    hdr = [l for l in out.splitlines() if l.startswith("| config | combos")][0]
+    assert "all producer bands tested" in hdr, hdr
+    assert "P1-P6 bands tested" not in hdr
+    assert hdr.count("|") == 13, "the locked table is 12 columns"
+    row = [l for l in out.splitlines() if l.startswith("| `icg_probe` | 1 ")][0]
+    assert "P7=" in row and "P8=" in row and "P1=" in row, row
+    # refused artifact in place -> nothing graded free -> bands is not a number
+    assert "| - |" in row, row
+
+    (tmp_path / "output_audit" / "output_icg_probe_free_levels.json").write_text(
+        _json.dumps({"levels": {"baseline_p7_3": {"p7": 3, "p8": 5},
+                                "p7_5": {"p7": 5, "p8": 5},
+                                "p7_11": {"p7": 11, "p8": 5},
+                                "p7_14": {"p7": 14, "p8": 5},
+                                "p8_6": {"p7": 3, "p8": 6}}}), encoding="utf-8")
+    row2 = [l for l in "\n".join(pv.table_c({"icg_probe": icg}, tmp_path)).splitlines()
+            if l.startswith("| `icg_probe` | 1 ")][0]
+    assert "| 6 |" in row2, ("4 P7 levels + 2 P8 levels graded free = 6 values "
+                             "this config exercised", row2)
+
+    # ---- PROVE IT CAN FAIL (#226): the cell is DERIVED from SPECS, so removing
+    # a parameter must remove its cell. A hardcoded list passes every arm above.
+    spec = copy.deepcopy(pv.SPECS["institutional_committed_growth_long"])
+    spec["params"] = [p for p in spec["params"] if p["id"] != "P7"]
+    monkeypatch.setitem(pv.SPECS, "institutional_committed_growth_long", spec)
+    shrunk = pv.producer_bands("icg_probe", icg, tmp_path)
+    assert [p for p, _n, _c in shrunk] == ["P1", "P2", "P3", "P4", "P5",
+                                           "P6", "P8", "P9"], shrunk

@@ -461,9 +461,22 @@ Rendered by `scripts/producer_variant_table.py`; header pinned by
 `test_b1510_producer_artifact_standard` alongside Tables A and B. It answers ONE question:
 of everything this config tried, how much survived, and where did the rest stop?
 
-| config | combos | starved-IS | no-Sharpe | graded | distinct | bands | P1-P6 bands tested | median IS-Sharpe | best IS-Sharpe | best IS-CI-lo | best combination |
+| config | combos | starved-IS | no-Sharpe | graded | distinct | bands | all producer bands tested | median IS-Sharpe | best IS-Sharpe | best IS-CI-lo | best combination |
 
-**P1-P6 IN THE ROW (B2138/B2141, owner directive).** The funnel row itself carries the BAND VALUES, comma-separated and semicolon-delimited: `P1=20(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=200(fixed)` - the values for each SEARCHED axis and the fixed VALUE for the two cross-config axes. B2141 replaced counts with values because two configs that searched DIFFERENT grids of the same width are indistinguishable by count alone. The delimiter is a SEMICOLON: a pipe splits the cell into six columns and destroys the table, which is what the first render showed. Values sort numerically through ONE shared helper used by both this column and the block below (L593: two sorts of the same values diverge on the first edit) - so a pasted row says which axes carried the search without a second table. P1 and P6 are read from the artifact's own `config` block, which `tighten_breaker_block.py` has recorded since B2138; before that they were written NOWHERE, which is why a swing-10 cube could be re-graded as swing-20 (S6-B2136) and why pre-B2138 artifacts read `?` there.
+**ALL PRODUCER BANDS IN THE ROW (B2585, owner directive 2026-09-03 - the format is LOCKED here).** The cell carries **every parameter of the config's family**, derived from that family's own `SPECS` entry in `producer_variant_table.py` - 6 for `smc_breaker_block_long`, 9 for `institutional_committed_growth_long` - each marked with HOW it was exercised:
+
+| marker | meaning | source |
+|---|---|---|
+| `v(fixed)` | pinned by THIS config; the cross-config axis that defines which cube this is | the artifact's `config` block |
+| `v1,v2,...` (bare) | SEARCHED in-cube - the distinct values the engine actually ran | the result rows' own parameter keys |
+| `v1,v2(free)` | graded FREE from the landed cube by the battery's `step2_free_levels` leg | `output_audit/output_<cube>_free_levels.json` |
+| `v1,v2(free, declared)` | gradable free, but NOT graded on this cube - the reproduction gate refused, or no artifact exists | the SPECS `free_band` |
+| `v(not swept)` | held by design: no sweep levels, no free levels, band == production | the SPECS entry |
+| `?` | not recorded - never a number (L580) | - |
+
+**Why it changed:** the cell was built from a hardcoded P1-P6 and NAMED for one family, so every institutional row rendered 4 of its 9 parameters - P1/P2/P3 (the precompute's hygiene knobs) and P7/P8 (the free-graded thresholds) were absent entirely, and a reader could not tell a parameter held by design from one nobody had recorded. Owner, 2026-09-03: *"its not p1-p6 bands tested, it should should be all produced bands tested ... please lock this format"*. The `bands` COUNT now includes free-graded levels for the same reason - a level the battery grades from the landed cube is a value the config exercised, and rendering `-` said *not recorded* about work that was done. Pinned by `test_b2585_table_c_bands_column_carries_every_producer_parameter`, which asserts the family's own parameter count in both directions: removing a parameter from SPECS must remove its cell, which a hardcoded list would survive.
+
+**Superseded text (B2138/B2141, kept for lineage).** The funnel row itself carries the BAND VALUES, comma-separated and semicolon-delimited: `P1=20(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=200(fixed)` - the values for each SEARCHED axis and the fixed VALUE for the two cross-config axes. B2141 replaced counts with values because two configs that searched DIFFERENT grids of the same width are indistinguishable by count alone. The delimiter is a SEMICOLON: a pipe splits the cell into six columns and destroys the table, which is what the first render showed. Values sort numerically through ONE shared helper used by both this column and the block below (L593: two sorts of the same values diverge on the first edit) - so a pasted row says which axes carried the search without a second table. P1 and P6 are read from the artifact's own `config` block, which `tighten_breaker_block.py` has recorded since B2138; before that they were written NOWHERE, which is why a swing-10 cube could be re-graded as swing-20 (S6-B2136) and why pre-B2138 artifacts read `?` there.
 
 The columns are the funnel **in order**, because every drop-off has a different cause and
 lumping them hides which one is binding: `combos` = every parameter combination enumerated;
@@ -485,8 +498,7 @@ key — every pre-B2010 grid — renders its values prefixed `HOLDOUT` so a read
 one for the other. And the renderer **asserts** that
 `graded + starved-IS + no-Sharpe + zero-fires == combos` rather than trusting the arithmetic.
 
-**PARAMETERS TESTED (added B2137, owner directive).** Beneath the funnel, a second block names
-the P1..P6 bands each config actually exercised, read from the result rows' own parameter keys:
+**PARAMETERS TESTED (added B2137, owner directive; family-complete since B2585).** Beneath the funnel, a second block names the bands each config exercised, one column per parameter of its family - the same derivation and the same markers as the funnel cell above, so the two renders cannot contradict each other. For the SMC family that is P1..P6, read from the result rows' own parameter keys; for the institutional family it is P1..P9:
 
 | config | P1 swing_length | P2 close_mitigation | P3 tail_n | P4 age_bars_max | P5 break_pct_max | P6 span |
 |---|---|---|---|---|---|---|
