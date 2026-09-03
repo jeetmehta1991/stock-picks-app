@@ -26257,8 +26257,11 @@ def test_b2177_steps_2_and_4_auto_run_from_the_manifest():
     from pathlib import Path as _P
     src = (_P(__file__).resolve().parents[2] / "scripts" /
            "run_postconfig.py").read_text(encoding="utf-8")
+    # B2579: the knob NAMES left this file - the family's `tools` adapter
+    # block in SPECS carries them now (tools.keys -> the param's `env`), so a
+    # text match for SMC_SWING_LENGTH would pin the old IMPLEMENTATION, not
+    # the property (L748). The property is asserted below, on behaviour.
     for frag, why in (
-        ("SMC_SWING_LENGTH", "params come from the manifest arms env"),
         ("step2_grade_auto", "the grader is INVOKED, not prompted"),
         ("step4_spot_check_auto", "the spot check is INVOKED"),
         ("for step_name, ev in auto_notes:", "ledger steps 2/4 upgraded"),
@@ -26267,6 +26270,19 @@ def test_b2177_steps_2_and_4_auto_run_from_the_manifest():
         ("6b_equivalence_class_check", "step 6b class collapse recorded (B2192)"),
     ):
         assert frag in src, f"auto-wiring lost: {why} ({frag!r})"
+    # the B2177 property itself, generic since B2579: the ARM ENV of the cube's
+    # own manifest is what produces the grader's parameters.
+    import importlib.util as _ilu2
+    _sp = _ilu2.spec_from_file_location(
+        "run_postconfig_b2177", _P(__file__).resolve().parents[2] / "scripts" /
+        "run_postconfig.py")
+    _rp = _ilu2.module_from_spec(_sp)
+    _sp.loader.exec_module(_rp)
+    _p, _basis = _rp._smc_params(
+        {"arms": [{"env": {"SMC_SWING_LENGTH": "30", "STRAT_EMA_SPAN": "9"}}]})
+    assert _p == {"swing": "30", "span": "9"}, _p
+    assert "swing=30" in _basis and "span=9" in _basis, _basis
+    assert _rp._smc_params({"arms": [{}]})[0] is None, "a pre-B2138 cube fails closed"
     # #226: the pre-B2177 shape (no auto block) must be reported
     gutted = src.replace("step2_grade_auto", "step2_removed")
     assert "step2_grade_auto" not in gutted
@@ -32492,3 +32508,263 @@ def test_b2578_launch_gate_refuses_before_the_engine_and_p7_p8_are_struck(tmp_pa
     import inspect as _insp
     assert "launch_refusals(spec, ROOT)" in _insp.getsource(rw.main)
     assert "launch_refusals(manifest" in _insp.getsource(pg.check)
+
+def test_b2579_battery_families_and_knob_blast_radius_are_derived_not_handwritten(
+        tmp_path, monkeypatch):
+    """B2579 (S6-B2573a/c/d): the post-config battery's per-family plumbing is
+    DERIVED from one declaration, and a knob's blast radius is MEASURED.
+
+    Before this, `run_postconfig.FAMILIES` held two hand-written closures and
+    every grader flag, cube path, PYTHONPATH and window rule was typed twice
+    (once per family); a third strategy meant six more hand-written pieces,
+    and the four institutional configs that landed ungraded pre-B2520 are what
+    a missing piece costs. Now each SPECS entry carries a `tools` adapter
+    block, `family_entry` builds the row from it, `family_refusal` says why an
+    incomplete block is NOT a family (fail closed, L642), and R8's consumer
+    half is a measurement (`knob_consumers` tokenizes the tree) pinned equal
+    to the declaration - drift refuses at launch AND fails step 7 at landing.
+    """
+    import copy
+    import importlib.util
+    import json
+    import types
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parents[2]
+
+    def load(name, rel):
+        spec = importlib.util.spec_from_file_location(name, root / rel)
+        m = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(m)
+        return m
+
+    pvt = load("pvt_b2579", "scripts/producer_variant_table.py")
+
+    # ---- (1) S6-B2573d: declared consumer list == the measured one, for
+    # every env knob AND every env actuator in every SPECS entry.
+    n_knobs = 0
+    for sname, spec in pvt.SPECS.items():
+        for row in spec["params"]:
+            if row.get("env"):
+                dec = pvt.declared_consumers(spec, row["env"])
+                got = pvt.knob_consumers(row["env"])
+                assert dec == got, (sname, row["env"], dec, got)
+                assert got, (sname, row["env"], "a declared knob nothing reads")
+                n_knobs += 1
+        for k in (spec.get("env_actuators") or {}):
+            dec, got = pvt.declared_consumers(spec, k), pvt.knob_consumers(k)
+            assert dec == got, (sname, k, dec, got)
+            n_knobs += 1
+    assert n_knobs >= 11, n_knobs
+    # A mention inside a module docstring is prose, not a consumer. MEASURED
+    # instances: demand_pruning.py:13 names STRAT_EMA_SPAN in its docstring
+    # (a hand-written list had it as a consumer - the tokenizer caught it),
+    # spot_check_institutional.py names INST_PERSIST_CACHE_TAG in its.
+    assert "backtest/signals/demand_pruning.py" not in pvt.knob_consumers("STRAT_EMA_SPAN")
+    assert "scripts/spot_check_institutional.py" not in pvt.knob_consumers("INST_PERSIST_CACHE_TAG")
+    assert pvt.knob_consumers("NO_SUCH_KNOB_XYZ") == []
+    assert pvt.declared_consumers(pvt.SPECS["smc_breaker_block_long"],
+                                  "NO_SUCH_KNOB_XYZ") is None
+    # B2579b: the scripts/ half reads the AST, not the file's text. MEASURED
+    # the moment B2579 landed - knob_consumers' own docstring names
+    # `environ.get("SMC_SWING_LENGTH")` as its example, and the regex version
+    # made THIS module report itself as a consumer (L748: a good comment names
+    # the exact token your matcher greps). A docstring is not a read; a real
+    # os.environ access is, whatever spelling it uses.
+    assert "scripts/producer_variant_table.py" not in pvt.knob_consumers("SMC_SWING_LENGTH")
+    assert pvt._env_reads(
+        root / "scripts" / "build_institutional_persistence_precompute.py") >= {
+        "INST_MIN_CONSECUTIVE_QUARTERS", "INST_GROWTH_LOOKBACK_QUARTERS",
+        "INST_GROWTH_MULTIPLE", "INST_PERSIST_CACHE_TAG"}
+    fake_script = tmp_path / "fake_env_script.py"
+    fake_script.write_text(
+        '"""doc example: os.environ.get(\'DOC_ONLY_KNOB\')"""\n'
+        "import os\n"
+        "a = os.environ.get('GET_KNOB')\n"
+        "b = os.environ['SUB_KNOB']\n"
+        "c = os.getenv('GETENV_KNOB')\n"
+        "d = os.environ.pop('POP_KNOB', None)\n"
+        "e = 'MENTIONED_KNOB'\n", encoding="utf-8")
+    assert pvt._env_reads(fake_script) == {
+        "GET_KNOB", "SUB_KNOB", "GETENV_KNOB", "POP_KNOB"}, pvt._env_reads(fake_script)
+    unparseable = tmp_path / "broken.py"
+    unparseable.write_text("def (:\n", encoding="utf-8")
+    assert pvt._env_reads(unparseable) == frozenset()
+
+    # ---- (2) the launch gate refuses DRIFT and an undeclared list
+    good = json.loads((root / "output_audit" / "b2527_icg_span50_spec.json")
+                      .read_text(encoding="utf-8"))
+    assert pvt.launch_refusals(good, root) == []
+    inst = pvt.SPECS["institutional_committed_growth_long"]
+    row = [p for p in inst["params"]
+           if p.get("env") == "INST_MIN_CONSECUTIVE_QUARTERS"][0]
+    saved = list(row["consumers"])
+    row["consumers"] = saved + ["scripts/nope.py"]
+    assert any("consumer DRIFT" in e for e in pvt.launch_refusals(good, root))
+    del row["consumers"]
+    assert any("declares no `consumers` list" in e
+               for e in pvt.launch_refusals(good, root))
+    row["consumers"] = saved
+    assert pvt.launch_refusals(good, root) == []
+    # B2579c (#122): a file the tokenizer cannot read is UNMEASURABLE, not
+    # "does not use this knob" - the swallow that used to be a bare `except:
+    # pass` now records the file and the launch gate refuses while any is
+    # unmeasurable, because under-stating a blast radius lets a launch through.
+    broken = tmp_path / "broken_tokens.py"
+    broken.write_text("x = '''unterminated\n", encoding="utf-8")
+    pvt._UNMEASURABLE.clear()
+    pvt._code_tokens(broken)
+    assert str(broken) in pvt._UNMEASURABLE, pvt._UNMEASURABLE
+    assert any("UNMEASURABLE" in e for e in pvt.launch_refusals(good, root))
+    pvt._UNMEASURABLE.clear()
+    assert pvt.launch_refusals(good, root) == []
+
+    # ---- (3) FAMILIES is derived from SPECS, and family_refusal names the
+    # shapes an incomplete adapter block can take.
+    rp = load("run_postconfig_b2579", "scripts/run_postconfig.py")
+    assert set(rp.FAMILIES) == {"smc_breaker_block_long",
+                                "institutional_committed_growth_long"}, sorted(rp.FAMILIES)
+    assert rp.FAMILY_REFUSALS == {}, rp.FAMILY_REFUSALS
+    for name, fam in rp.FAMILIES.items():
+        assert callable(fam["params"]) and callable(fam["run"]), name
+        assert isinstance(fam["single_combination"], bool), name
+    assert rp.FAMILIES["institutional_committed_growth_long"]["single_combination"] is True
+    assert rp.FAMILIES["smc_breaker_block_long"]["single_combination"] is False
+    assert "no SPECS entry" in rp.family_refusal("never_registered_long")
+    monkeypatch.setitem(rp.SPECS, "fake_family_long", {"params": [], "gate": ""})
+    assert rp.family_entry("fake_family_long") is None
+    assert "no `tools`" in rp.family_refusal("fake_family_long")
+    bad = copy.deepcopy(rp.SPECS["smc_breaker_block_long"])
+    monkeypatch.setitem(rp.SPECS, "bad_long", bad)
+    bad["tools"].pop("spot_check")
+    assert "lacks ['spot_check']" in rp.family_refusal("bad_long")
+    bad["tools"]["spot_check"] = {"script": "no_such_script.py", "cube": "",
+                                  "flags": {}}
+    assert "does not exist" in rp.family_refusal("bad_long")
+    bad["tools"]["spot_check"] = {"script": "spot_check_trades.py", "cube": "",
+                                  "flags": {"P99": "--nope"}}
+    assert "not in tools.keys" in rp.family_refusal("bad_long")
+    bad["tools"]["spot_check"]["flags"] = {}
+    bad["tools"]["single_combination"] = "yes"
+    assert "not a bool" in rp.family_refusal("bad_long")
+
+    # ---- (4) the landed arm's params: env first, then the plain arm key,
+    # then a CLOSED failure naming the env keys (a pre-B2138 cube).
+    fam = "institutional_committed_growth_long"
+    p, basis = rp.params_from_manifest(fam, {"arms": [{"env": {
+        "INST_MIN_CONSECUTIVE_QUARTERS": "8", "INST_GROWTH_LOOKBACK_QUARTERS": "4",
+        "INST_GROWTH_MULTIPLE": "1.1", "STRAT_EMA_SPAN": "200"}}]})
+    assert p == {"min_consecutive_quarters": "8", "growth_lookback_quarters": "4",
+                 "growth_multiple": "1.1", "ema_span": "200"}, p
+    assert basis.startswith("manifest arms[0] min_consecutive_quarters=8"), basis
+    p2, _ = rp.params_from_manifest(fam, {"arms": [{
+        "min_consecutive_quarters": 4, "growth_lookback_quarters": 4,
+        "growth_multiple": 1.1, "ema_span": 200}]})
+    assert p2["min_consecutive_quarters"] == 4, p2
+    p3, why = rp.params_from_manifest(fam, {"arms": [{}]})
+    assert p3 is None and "pre-B2138" in why and "INST_MIN_CONSECUTIVE_QUARTERS" in why, why
+    p4, why4 = rp._smc_params({"arms": [{"env": {}}]})
+    assert p4 is None and "SMC_SWING_LENGTH + STRAT_EMA_SPAN" in why4, why4
+
+    # ---- (5) the generic runner reproduces both families' command shapes
+    # byte-for-byte (the B2569 + B2576 contracts, now derived): the graded
+    # tools run ARMED with the landed arm's env, the flags come from
+    # tools.*.flags in tools.keys order, the window is passed only where the
+    # contract says so, and step 7 measures knobs + consumer lists.
+    (tmp_path / "output_audit").mkdir()
+    monkeypatch.setattr(rp, "ROOT", tmp_path)
+    monkeypatch.setattr(rp, "spot_summary", lambda p: "50 agree / 0 disagree")
+    cube = tmp_path / "output_icg_fake_minq8"
+    cube.mkdir()
+    manifest = {"window": {"start": "2024-05-05", "end": "2025-05-05"},
+                "arms": [{"env": {"INST_PERSIST_CACHE_TAG": "minq8"}}]}
+    params = {"min_consecutive_quarters": 8, "growth_lookback_quarters": 4,
+              "growth_multiple": 1.1, "ema_span": 200}
+    seen = []
+
+    def make_run(precompute_name, fail_free=False):
+        def fake_run(cmd, env_extra=None):
+            cmd = [str(c) for c in cmd]
+            seen.append((cmd, dict(env_extra or {})))
+            if fail_free and any("grade_free_levels_institutional" in x for x in cmd):
+                return types.SimpleNamespace(returncode=2, stdout="",
+                                             stderr="REPRODUCTION FAIL")
+            for i, c in enumerate(cmd):
+                if c == "--out":
+                    doc = {}
+                    if "spot_check_institutional" in " ".join(cmd) and precompute_name:
+                        doc = {"precompute_dir": "data_prefetch/derived/" + precompute_name}
+                    Path(cmd[i + 1]).write_text(json.dumps(doc), encoding="utf-8")
+            return types.SimpleNamespace(returncode=0, stdout="[PASS] ok", stderr="")
+        return fake_run
+
+    monkeypatch.setattr(rp, "_run", make_run("institutional_persistence_t1a_minq8"))
+    results, notes, grid_out, spot_out = rp.run_institutional(cube, params, manifest)
+    by = {n: (s, m) for n, s, m in results}
+    armed = [c for c, e in seen if e.get("INST_PERSIST_CACHE_TAG") == "minq8"]
+    for tool in ("grade_institutional_config", "grade_free_levels_institutional",
+                 "spot_check_institutional"):
+        assert any(tool in " ".join(c) for c in armed), tool
+    assert by["step2_grade_auto"][0] == "PASS" and by["step2_free_levels"][0] == "PASS"
+    assert by["step4_spot_check_auto"][0] == "PASS"
+    assert "matches the arm" in by["step4_spot_check_auto"][1]
+    assert by["step7_engine_implemented"][0] == "PASS", by["step7_engine_implemented"]
+    assert "consumer lists match the tree" in by["step7_engine_implemented"][1]
+    assert notes["2_grade_with_config_params"][0] == "DONE"
+    assert notes["4_three_leg_spot_check"][0] == "DONE"
+    gcmd = [c for c, e in seen if "grade_institutional_config" in " ".join(c)][0]
+    assert gcmd[2:] == ["--cube", str(cube), "--min-consecutive-quarters", "8",
+                        "--growth-lookback-quarters", "4", "--growth-multiple", "1.1",
+                        "--span", "200", "--min-n", "10", "--out", str(grid_out)], gcmd
+    scmd = [c for c, e in seen if "spot_check_institutional" in " ".join(c)][0]
+    assert scmd[2:] == ["--cube", str(cube), "--n", "50", "--ema-span", "200",
+                        "--out", str(spot_out),
+                        "--start", "2024-05-05", "--end", "2025-05-05"], scmd
+    assert "PYTHONPATH" not in [e for c, e in seen
+                                if "grade_institutional_config" in " ".join(c)][0]
+
+    seen.clear()
+    monkeypatch.setattr(rp, "_run", make_run("institutional_persistence_t1a"))
+    results, notes, _, _ = rp.run_institutional(cube, params, manifest)
+    by = {n: (s, m) for n, s, m in results}
+    assert by["step4_spot_check_auto"][0] == "FAIL"
+    assert "precompute-dir mismatch" in by["step4_spot_check_auto"][1]
+    assert notes["4_three_leg_spot_check"][0] == "FAIL"
+    seen.clear()
+    monkeypatch.setattr(rp, "_run",
+                        make_run("institutional_persistence_t1a_minq8", fail_free=True))
+    _, notes2, _, _ = rp.run_institutional(cube, params, manifest)
+    assert notes2["2_grade_with_config_params"][0] == "FAIL"
+    assert "reproduction gate" in notes2["2_grade_with_config_params"][1]
+
+    # smc: exactly the two graded tools armed with the arm's STRAT_EMA_SPAN and
+    # their own PYTHONPATH, the cube arg is the CSV (not the dir), no free-level
+    # leg (the family has no free-level grader), and step 7 runs the anchor.
+    seen.clear()
+    monkeypatch.setattr(rp, "_run", make_run(None))
+    smc_manifest = {"arms": [{"env": {"SMC_SWING_LENGTH": "50",
+                                      "STRAT_EMA_SPAN": "50"}}]}
+    results, notes, grid_out, spot_out = rp.run_smc(
+        cube, {"swing": "50", "span": "50"}, smc_manifest)
+    smc_armed = [(c, e) for c, e in seen
+                 if any(x in " ".join(c) for x in ("tighten_breaker_block",
+                                                   "spot_check_trades"))]
+    assert len(smc_armed) == 2, smc_armed
+    for c, e in smc_armed:
+        assert e.get("STRAT_EMA_SPAN") == "50" and "PYTHONPATH" in e, (c, e)
+    assert [e["PYTHONPATH"] for c, e in smc_armed] == [".;scripts", "."]
+    tb = [c for c, e in smc_armed if "tighten_breaker_block" in " ".join(c)][0]
+    assert tb[2:] == ["--cube", str(cube / "trade_exit_detail.csv"),
+                      "--swing-length", "50", "--span", "50",
+                      "--min-n", "10", "--out", str(grid_out)], tb
+    st = [c for c, e in smc_armed if "spot_check_trades" in " ".join(c)][0]
+    assert st[2:] == ["--cube", str(cube / "trade_exit_detail.csv"), "--n", "50",
+                      "--swing-length", "50", "--ema-span", "50",
+                      "--out", str(spot_out)], st
+    by = {n: (s, m) for n, s, m in results}
+    assert "step2_free_levels" not in by
+    assert by["step7_engine_implemented"][0] == "PASS"
+    assert "verify_engine_implemented.py exit 0" in by["step7_engine_implemented"][1]
+    assert notes["2_grade_with_config_params"] == (
+        "DONE", "AUTO (B2177): tighten_breaker_block at manifest swing=50 "
+                f"span=50 -> {grid_out.name}"), notes

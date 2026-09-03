@@ -339,129 +339,184 @@ def derive_step(manifest: dict, *, step1_flag: bool, step2_flag: bool) -> tuple[
 # family registry - keyed by the cube's strategy column. An unregistered
 # strategy FAILS closed; there is no else-branch that skips.
 # --------------------------------------------------------------------------
-def _smc_params(manifest: dict) -> tuple[dict | None, str]:
-    _, env = _arm0(manifest)
-    swing, span = env.get("SMC_SWING_LENGTH"), env.get("STRAT_EMA_SPAN")
-    if swing and span:
-        return ({"swing": str(swing), "span": str(span)},
-                f"manifest arms[0].env swing={swing} span={span}")
-    return None, ("manifest carries no arms env with SMC_SWING_LENGTH + "
-                  "STRAT_EMA_SPAN (a pre-B2138 cube has this shape)")
+# ---------------------------------------------------------------------------
+# B2579 (S6-B2573a): ONE generic adapter, driven by the SPECS `tools` block.
+#
+# Before B2579 each family was six hand-written pieces (params parser, runner,
+# grader flags, spot-check flags, step-7 anchors, registry row) and a new
+# strategy could spend its cube before anyone noticed the battery had no
+# adapter for it (four institutional configs landed ungraded pre-B2520).
+# Now the family-specific facts live in producer_variant_table.SPECS[...]
+# ["tools"] beside the parameters they describe, and FAMILIES is DERIVED from
+# SPECS: a strategy is a battery family exactly when its `tools` block is
+# complete (family_refusal names what is missing). The two hand-written
+# adapters remain as thin wrappers so the B2520/B2569/B2576 pins keep
+# reading them.
+# ---------------------------------------------------------------------------
+from producer_variant_table import (  # noqa: E402
+    CODE_ROOT as _CODE_ROOT, SPECS, declared_consumers, knob_consumers, knob_is_read)
+
+_TOOLS_REQUIRED = ("keys", "grid_keys", "grade", "spot_check", "single_combination")
+_GRADE_REQUIRED = ("script", "cube", "flags")
+# where the tools SCRIPTS live - the code tree, which a test never relocates
+# (ROOT is the runtime root: artifacts land under it and tests point it at
+# tmp_path; the B2569/B2576 pins do exactly that)
+_SCRIPTS_DIR = Path(__file__).resolve().parent
 
 
-def _institutional_params(manifest: dict) -> tuple[dict | None, str]:
+def family_refusal(fam_name: str) -> str:
+    """Why `fam_name` is NOT a battery family ('' when it is one)."""
+    spec = SPECS.get(fam_name)
+    if spec is None:
+        return "no SPECS entry in producer_variant_table"
+    tools = spec.get("tools")
+    if not isinstance(tools, dict):
+        return "SPECS entry has no `tools` adapter block (S6-B2573a)"
+    missing = [k for k in _TOOLS_REQUIRED if k not in tools]
+    if missing:
+        return f"`tools` block lacks {missing}"
+    by_id = {p["id"]: p for p in spec.get("params") or []}
+    for pid, key in dict(tools["keys"]).items():
+        if pid not in by_id:
+            return f"`tools.keys` names {pid}, which is not a param of the entry"
+        if not by_id[pid].get("env"):
+            return f"`tools.keys` names {pid} ({by_id[pid].get('param')}) but it has no env knob"
+    for section in ("grade", "spot_check"):
+        blk = tools.get(section) or {}
+        lacks = [k for k in _GRADE_REQUIRED if k not in blk]
+        if lacks:
+            return f"`tools.{section}` lacks {lacks}"
+        for pid in blk["flags"]:
+            if pid not in tools["keys"]:
+                return f"`tools.{section}.flags` names {pid}, which is not in tools.keys"
+        script = _SCRIPTS_DIR / str(blk["script"])
+        if not script.exists():
+            return f"`tools.{section}.script` {blk['script']} does not exist under scripts/"
+    fl = tools.get("free_levels")
+    if fl and not (_SCRIPTS_DIR / str(fl.get("script", ""))).exists():
+        return f"`tools.free_levels.script` {fl.get('script')} does not exist under scripts/"
+    if not isinstance(tools["single_combination"], bool):
+        return "`tools.single_combination` is not a bool"
+    return ""
+
+
+def _tools(fam_name: str) -> dict:
+    why = family_refusal(fam_name)
+    if why:
+        raise KeyError(f"{fam_name}: {why}")
+    return SPECS[fam_name]["tools"]
+
+
+def params_from_manifest(fam_name: str, manifest: dict,
+                         expect: tuple | None = None) -> tuple[dict | None, str]:
+    """The landed arm's values for the family's swept knobs (tools.keys),
+    env first (the launcher's contract), then the plain arm key. Missing ->
+    (None, reason) and the battery fails CLOSED (L642). `expect` pins the
+    params keys a caller relies on (the institutional wrapper)."""
+    tools = _tools(fam_name)
+    by_id = {p["id"]: p for p in SPECS[fam_name]["params"]}
     arm, env = _arm0(manifest)
-    keys = (("INST_MIN_CONSECUTIVE_QUARTERS", "min_consecutive_quarters"),
-            ("INST_GROWTH_LOOKBACK_QUARTERS", "growth_lookback_quarters"),
-            ("INST_GROWTH_MULTIPLE", "growth_multiple"),
-            ("STRAT_EMA_SPAN", "ema_span"))
-    vals = {}
-    for ek, pk in keys:
-        v = env.get(ek)
+    vals, envs = {}, []
+    for pid, key in dict(tools["keys"]).items():
+        row = by_id[pid]
+        envs.append(row["env"])
+        v = env.get(row["env"])
         if v is None:
-            v = arm.get(pk)
-        vals[pk] = v
+            v = arm.get(key)
+        if v is None:
+            v = arm.get(row["param"])
+        vals[key] = v
+    if expect is not None:
+        assert set(vals) == set(expect), (fam_name, sorted(vals), expect)
     missing = [k for k, v in vals.items() if v is None]
     if missing:
-        return None, (f"manifest arms[0] lacks {missing} (neither the INST_*/"
-                      f"STRAT_EMA_SPAN env keys nor the plain keys)")
+        return None, (f"manifest arms[0] lacks {missing} (neither the "
+                      f"{' + '.join(envs)} env keys nor the plain keys; a "
+                      "pre-B2138 cube has this shape)")
     return vals, "manifest arms[0] " + " ".join(f"{k}={v}" for k, v in vals.items())
 
 
-def run_smc(cube_dir: Path, p: dict, manifest: dict) -> tuple[list, dict, Path, Path]:
-    swing2, span2 = p["swing"], p["span"]
+def _cube_arg(cube_dir: Path, blk: dict) -> str:
+    return str(cube_dir / blk["cube"]) if blk.get("cube") else str(cube_dir)
+
+
+def _flag_args(blk: dict, tools: dict, p: dict) -> list[str]:
+    out: list[str] = []
+    for pid, flag in dict(blk.get("flags") or {}).items():
+        out += [flag, str(p[tools["keys"][pid]])]
+    return out
+
+
+def _sub_env(arm_env: dict, blk: dict) -> dict:
+    pp = blk.get("pythonpath")
+    return {**arm_env, "PYTHONPATH": pp} if pp else dict(arm_env)
+
+
+def run_family(fam_name: str, cube_dir: Path, p: dict,
+               manifest: dict) -> tuple[list, dict, Path, Path]:
+    """Steps 2 (grade + optional reproduction-gated free levels), 4 (spot
+    check, window + precompute-dir check when the contract says so) and 7
+    (engine anchors) for ANY family, from its tools block. Every subprocess
+    runs under the landed arm's env (B2576)."""
+    spec, tools = SPECS[fam_name], _tools(fam_name)
     results, notes = [], {}
     arm_env = _arm_env(manifest)          # B2576: every subprocess runs armed
     grid_out = ROOT / "output_audit" / f"{cube_dir.name}_grid_auto.json"
     spot_out = ROOT / "output_audit" / f"{cube_dir.name}_spot_check.json"
-    g = _run([sys.executable, str(ROOT / "scripts" / "tighten_breaker_block.py"),
-              "--cube", str(cube_dir / "trade_exit_detail.csv"),
-              "--swing-length", str(swing2), "--span", str(span2),
-              "--min-n", "10", "--out", str(grid_out)],
-             {**arm_env, "PYTHONPATH": ".;scripts"})
+    label = " ".join(f"{k}={p[k]}" for k in tools["keys"].values())
+
+    # ---- step 2: the family grader at the manifest's own parameters
+    gb = tools["grade"]
+    g = _run([sys.executable, str(ROOT / "scripts" / gb["script"]),
+              "--cube", _cube_arg(cube_dir, gb), *_flag_args(gb, tools, p),
+              *list(gb.get("extra") or []), "--out", str(grid_out)],
+             _sub_env(arm_env, gb))
     ok2 = g.returncode == 0 and grid_out.exists()
     results.append(("step2_grade_auto", "PASS" if ok2 else "FAIL",
-                    f"exit {g.returncode}; swing={swing2} span={span2} "
-                    f"-> {grid_out.name}" + ("" if ok2 else f"; {_tail(g)[:160]}")))
+                    f"exit {g.returncode}; {label} -> {grid_out.name}"
+                    + ("" if ok2 else f"; {_tail(g)[:160]}")))
+    # B2569 (owner directive 2026-09-02): a family whose band carries FREE
+    # levels grades them on EVERY landing, reproduction-gated - never once at
+    # strategy level (the S6-B2501/B2504 class bug). A reproduction failure
+    # exits nonzero and FAILS step 2 closed.
+    fb = tools.get("free_levels")
+    okf, free_out, fl = True, None, None
+    if fb:
+        free_out = ROOT / "output_audit" / f"{cube_dir.name}_free_levels.json"
+        fl = _run([sys.executable, str(ROOT / "scripts" / fb["script"]),
+                   "--cube", str(cube_dir), "--out", str(free_out)],
+                  _sub_env(arm_env, fb))
+        okf = fl.returncode == 0 and free_out.exists()
+        # B2576: the grader's verdict line, not whatever stderr printed last
+        results.append(("step2_free_levels", "PASS" if okf else "FAIL",
+                        f"exit {fl.returncode}; reproduction-gated free levels "
+                        f"-> {free_out.name}; {_verdict_line(fl)[:160]}"))
+    note2 = gb.get("note", "AUTO")
     notes["2_grade_with_config_params"] = (
-        ("DONE", f"AUTO (B2177): graded at manifest swing={swing2} "
-                 f"span={span2} -> {grid_out.name}") if ok2 else
-        ("FAIL", f"tighten_breaker_block exit {g.returncode} at swing={swing2} "
-                 f"span={span2}: {_tail(g)[:200]}"))
-    sc = _run([sys.executable, str(ROOT / "scripts" / "spot_check_trades.py"),
-               "--cube", str(cube_dir / "trade_exit_detail.csv"),
-               "--n", "50", "--swing-length", str(swing2),
-               "--ema-span", str(span2), "--out", str(spot_out)],
-              {**arm_env, "PYTHONPATH": "."})
-    ok4 = sc.returncode == 0 and spot_out.exists()
-    tail = spot_summary(spot_out) if ok4 else _tail(sc)
-    results.append(("step4_spot_check_auto", "PASS" if ok4 else "FAIL",
-                    f"exit {sc.returncode}; {tail[:180]}"))
-    notes["4_three_leg_spot_check"] = (
-        ("DONE", f"AUTO (B2177): spot_check_trades --n 50 at manifest "
-                 f"swing={swing2} span={span2}; {tail[:200]}") if ok4 else
-        ("FAIL", f"spot_check_trades exit {sc.returncode}: {tail[:200]}"))
-    # step 7 engine implementation, invoked (was HAND-RUN-ONLY before B2118)
-    r = _run([sys.executable, str(ROOT / "scripts" / "verify_engine_implemented.py")])
-    results.append(("step7_engine_implemented",
-                    "PASS" if r.returncode == 0 else "FAIL",
-                    f"exit {r.returncode}; {_tail(r, 1)[:120]}"))
-    return results, notes, grid_out, spot_out
-
-
-def run_institutional(cube_dir: Path, p: dict, manifest: dict) -> tuple[list, dict, Path, Path]:
-    results, notes = [], {}
-    arm_env = _arm_env(manifest)          # B2576: every subprocess runs armed
-    grid_out = ROOT / "output_audit" / f"{cube_dir.name}_grid_auto.json"
-    spot_out = ROOT / "output_audit" / f"{cube_dir.name}_spot_check.json"
-    label = (f"minq={p['min_consecutive_quarters']} lookback="
-             f"{p['growth_lookback_quarters']} multiple={p['growth_multiple']} "
-             f"span={p['ema_span']}")
-    g = _run([sys.executable, str(ROOT / "scripts" / "grade_institutional_config.py"),
-              "--cube", str(cube_dir),
-              "--min-consecutive-quarters", str(p["min_consecutive_quarters"]),
-              "--growth-lookback-quarters", str(p["growth_lookback_quarters"]),
-              "--growth-multiple", str(p["growth_multiple"]),
-              "--span", str(p["ema_span"]), "--min-n", "10",
-              "--out", str(grid_out)], arm_env)
-    ok2 = g.returncode == 0 and grid_out.exists()
-    results.append(("step2_grade_auto", "PASS" if ok2 else "FAIL",
-                    f"exit {g.returncode}; {label} -> {grid_out.name}; "
-                    f"{_tail(g)[:160]}"))
-    # B2569 (owner directive 2026-09-02): the P7/P8 FREE levels are part of
-    # EVERY config's band, so they are graded on EVERY landing - not once at
-    # strategy level (the S6-B2501/B2504 class bug). The tool gates itself on
-    # reproducing the landed baseline at production levels before grading;
-    # a reproduction failure exits nonzero and FAILS this step closed.
-    free_out = ROOT / "output_audit" / f"{cube_dir.name}_free_levels.json"
-    fl = _run([sys.executable,
-               str(ROOT / "scripts" / "grade_free_levels_institutional.py"),
-               "--cube", str(cube_dir), "--out", str(free_out)], arm_env)
-    okf = fl.returncode == 0 and free_out.exists()
-    # B2576: the grader's verdict line, not whatever stderr printed last
-    results.append(("step2_free_levels", "PASS" if okf else "FAIL",
-                    f"exit {fl.returncode}; reproduction-gated free levels "
-                    f"-> {free_out.name}; {_verdict_line(fl)[:160]}"))
-    notes["2_grade_with_config_params"] = (
-        ("DONE", f"AUTO (B2520/B2569): grade_institutional_config at manifest "
-                 f"{label} -> {grid_out.name}; free levels reproduction-gated "
-                 f"-> {free_out.name}") if ok2 and okf else
-        ("FAIL", (f"grade_institutional_config exit {g.returncode} at {label}: "
+        ("DONE", f"{note2}: {Path(gb['script']).stem} at manifest {label} -> "
+                 f"{grid_out.name}"
+                 + (f"; free levels reproduction-gated -> {free_out.name}"
+                    if fb else "")) if ok2 and okf else
+        ("FAIL", (f"{Path(gb['script']).stem} exit {g.returncode} at {label}: "
                   f"{_tail(g)[:140]}" if not ok2 else
                   f"free-levels grade exit {fl.returncode} (reproduction gate "
                   f"or grading failed): {_verdict_line(fl)[:140]}")))
-    win = manifest.get("window") or {}
-    cmd = [sys.executable, str(ROOT / "scripts" / "spot_check_institutional.py"),
-           "--cube", str(cube_dir), "--n", "50", "--ema-span", str(p["ema_span"]),
-           "--out", str(spot_out)]
-    if win.get("start"):
-        cmd += ["--start", str(win["start"])[:10]]
-    if win.get("end"):
-        cmd += ["--end", str(win["end"])[:10]]
-    sc = _run(cmd, arm_env)
+
+    # ---- step 4: the three-leg spot check
+    sb = tools["spot_check"]
+    cmd = [sys.executable, str(ROOT / "scripts" / sb["script"]),
+           "--cube", _cube_arg(cube_dir, sb), *list(sb.get("extra") or []),
+           *_flag_args(sb, tools, p), "--out", str(spot_out)]
+    if sb.get("window"):
+        win = manifest.get("window") or {}
+        if win.get("start"):
+            cmd += ["--start", str(win["start"])[:10]]
+        if win.get("end"):
+            cmd += ["--end", str(win["end"])[:10]]
+    sc = _run(cmd, _sub_env(arm_env, sb))
     ok4 = sc.returncode == 0 and spot_out.exists()
     tail = spot_summary(spot_out) if ok4 else _tail(sc)
-    if ok4:
+    if ok4 and sb.get("precompute_check"):
         # B2576 (S6-B2574b): the artifact must have read the ARM's precompute
         # directory; a production read under a tagged arm is a wrong answer
         # that agrees with nothing (minq8: 32 agree / 18 DISAGREE by hand vs
@@ -471,39 +526,68 @@ def run_institutional(cube_dir: Path, p: dict, manifest: dict) -> tuple[list, di
     results.append(("step4_spot_check_auto", "PASS" if ok4 else "FAIL",
                     f"exit {sc.returncode}; {tail[:180]}"))
     notes["4_three_leg_spot_check"] = (
-        ("DONE", f"AUTO (B2520): spot_check_institutional --n 50 at manifest "
-                 f"span={p['ema_span']}; {tail[:200]}") if ok4 else
-        ("FAIL", f"spot_check_institutional exit {sc.returncode}: {tail[:200]}"))
-    # step 7 anchors: the swept parameters reach the engine through env reads
-    # in the precompute builder (INST_* x3) and the screener's EMA gate
-    # (STRAT_EMA_SPAN). A code-presence check, named as such.
-    try:
-        pre = (ROOT / "scripts" / "build_institutional_persistence_precompute.py"
-               ).read_text(encoding="utf-8", errors="replace")
-        scr = (ROOT / "backtest" / "signals" / "screener.py"
-               ).read_text(encoding="utf-8", errors="replace")
-        need = (("INST_MIN_CONSECUTIVE_QUARTERS", pre),
-                ("INST_GROWTH_LOOKBACK_QUARTERS", pre),
-                ("INST_GROWTH_MULTIPLE", pre), ("STRAT_EMA_SPAN", scr))
-        missing = [k for k, src in need if k not in src]
-    except OSError as exc:
-        missing = [f"unreadable: {exc!r}"]
-    results.append(("step7_engine_implemented",
-                    "PASS" if not missing else "FAIL",
-                    "4 of 4 swept parameters anchored in the engine path "
-                    "(precompute INST_* x3 + screener STRAT_EMA_SPAN; "
-                    "code-presence check)" if not missing else
-                    f"missing anchors {missing}"))
+        ("DONE", f"{sb.get('note', 'AUTO')}: {Path(sb['script']).stem} at "
+                 f"manifest {label}; {tail[:200]}") if ok4 else
+        ("FAIL", f"{Path(sb['script']).stem} exit {sc.returncode}: {tail[:200]}"))
+
+    # ---- step 7: every swept knob is READ from the environment and its
+    # declared consumer list equals the tree's (S6-B2573d); plus the family's
+    # own anchor script when the contract names one.
+    knobs = [(row["id"], row["param"], row["env"])
+             for row in spec["params"] if row.get("env")]
+    not_read = [e for _, _, e in knobs if not knob_is_read(e, _CODE_ROOT)]
+    drift = [e for _, _, e in knobs
+             if declared_consumers(spec, e) != knob_consumers(e)]
+    script = (tools.get("engine_anchors") or {}).get("script")
+    rc = None
+    if script:
+        r = _run([sys.executable, str(ROOT / "scripts" / script)], arm_env)
+        rc = r.returncode
+    ok7 = not not_read and not drift and rc in (None, 0)
+    results.append(("step7_engine_implemented", "PASS" if ok7 else "FAIL",
+                    (f"{len(knobs)} of {len(knobs)} declared knobs read from the "
+                     f"environment + consumer lists match the tree"
+                     + (f"; {script} exit {rc}" if script else "")) if ok7 else
+                    (f"knobs not read {not_read}; consumer drift {drift}"
+                     + (f"; {script} exit {rc}" if script else ""))))
     return results, notes, grid_out, spot_out
 
 
-FAMILIES = {
-    "smc_breaker_block_long": {"params": _smc_params, "run": run_smc,
-                               "single_combination": False},
-    "institutional_committed_growth_long": {"params": _institutional_params,
-                                            "run": run_institutional,
-                                            "single_combination": True},
-}
+def family_entry(fam_name: str) -> dict | None:
+    """The FAMILIES row for `fam_name`, or None when family_refusal says why."""
+    if family_refusal(fam_name):
+        return None
+    tools = SPECS[fam_name]["tools"]
+    return {"params": (lambda m, _f=fam_name: params_from_manifest(_f, m)),
+            "run": (lambda c, p, m, _f=fam_name: run_family(_f, c, p, m)),
+            "single_combination": bool(tools["single_combination"])}
+
+
+# thin wrappers - the B2520 / B2569 / B2576 pins read these by name
+def _smc_params(manifest: dict) -> tuple[dict | None, str]:
+    return params_from_manifest("smc_breaker_block_long", manifest,
+                                expect=("swing", "span"))
+
+
+def _institutional_params(manifest: dict) -> tuple[dict | None, str]:
+    return params_from_manifest(
+        "institutional_committed_growth_long", manifest,
+        expect=("min_consecutive_quarters", "growth_lookback_quarters",
+                "growth_multiple", "ema_span"))
+
+
+def run_smc(cube_dir: Path, p: dict, manifest: dict) -> tuple[list, dict, Path, Path]:
+    return run_family("smc_breaker_block_long", cube_dir, p, manifest)
+
+
+def run_institutional(cube_dir: Path, p: dict, manifest: dict) -> tuple[list, dict, Path, Path]:
+    return run_family("institutional_committed_growth_long", cube_dir, p, manifest)
+
+
+# DERIVED from SPECS (S6-B2573a): a strategy is a battery family exactly when
+# its tools block is complete. FAMILY_REFUSALS names why the others are not.
+FAMILIES = {k: e for k in SPECS if (e := family_entry(k)) is not None}
+FAMILY_REFUSALS = {k: family_refusal(k) for k in SPECS if k not in FAMILIES}
 
 
 # B2574: the engine's threshold is the ONE number for "how much of the cube
@@ -829,9 +913,11 @@ def main() -> int:
     fam_fail = None
     if fam is None:
         fam_fail = (f"no registered post-config family for strategies "
-                    f"{strategies or '[]'} - register it in run_postconfig."
-                    f"FAMILIES (fail closed, L642; the old else-branch called "
-                    f"this a pre-B2138 cube and skipped)")
+                    f"{strategies or '[]'} - give its SPECS entry a complete "
+                    f"`tools` adapter block (B2579; "
+                    f"{FAMILY_REFUSALS.get(fam_name or '', 'no SPECS entry')}) "
+                    f"(fail closed, L642; the old else-branch called this a "
+                    f"pre-B2138 cube and skipped)")
         results.append(("family_dispatch", "FAIL", fam_fail))
     else:
         params, basis = fam["params"](manifest)

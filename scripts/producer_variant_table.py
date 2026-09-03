@@ -35,6 +35,30 @@ from grid_population import grid_population  # noqa: E402  (B2521 S6-B2520m)
 SPECS: dict[str, dict] = {
     "smc_breaker_block_long": {
         "gate": "(breaker_bullish) AND (price_above_ema_200)",
+        # B2579 (S6-B2573a): the post-config battery's ADAPTER CONTRACT.
+        # run_postconfig.run_family reads THIS block and nothing else that is
+        # family-specific: which Pids are the manifest's swept knobs and the
+        # params key each maps to, the grader / free-level grader / spot
+        # checker scripts with the CLI flag per Pid, the grid row keys, and
+        # the engine-anchor script. A SPECS entry with no complete `tools`
+        # block is NOT a battery family (run_postconfig.family_refusal) and
+        # the B2578 launch gate refuses its spec before the engine.
+        "tools": {
+            "keys": {"P1": "swing", "P6": "span"},
+            "grid_keys": ["close_mitigation", "break_pct_max", "age_bars_max", "tail_n"],
+            "grade": {"script": "tighten_breaker_block.py", "cube": "trade_exit_detail.csv",
+                      "flags": {"P1": "--swing-length", "P6": "--span"},
+                      "extra": ["--min-n", "10"], "pythonpath": ".;scripts",
+                      "note": "AUTO (B2177)"},
+            "free_levels": None,
+            "spot_check": {"script": "spot_check_trades.py", "cube": "trade_exit_detail.csv",
+                           "flags": {"P1": "--swing-length", "P6": "--ema-span"},
+                           "extra": ["--n", "50"], "window": False,
+                           "precompute_check": False, "pythonpath": ".",
+                           "note": "AUTO (B2177)"},
+            "engine_anchors": {"script": "verify_engine_implemented.py"},
+            "single_combination": False,
+        },
         "formula": """=============================== PRODUCER LAYER ===============================
 
 P1  swings  =  swing_highs_lows( ohlc, swing_length = 20 )
@@ -92,6 +116,10 @@ fires            =  ( breaker_bullish )  AND  ( price_above_ema_200 ) [from P6]"
         "params": [
             {"id": "P1", "producer": "_smc.swing_highs_lows", "param": "swing_length",
              "env": "SMC_SWING_LENGTH",   # B2578: the knob the engine reads (config.py)
+             "consumers": [   # S6-B2573d: measured by knob_consumers, pinned equal
+                           "backtest/config.py",
+                           "backtest/engine/exit_strategies.py",
+                           "backtest/signals/screener.py"],
              "production": 20, "type": "int", "band": [5, 10, 20, 30, 50],
              # B1691 owner directive: swing_length=5 ADDED. The band had ONE level
              # below production and TWO above - built on the hypothesis that higher
@@ -105,6 +133,10 @@ fires            =  ( breaker_bullish )  AND  ( price_above_ema_200 ) [from P6]"
              "engine_implemented": True},
             {"id": "P2", "producer": "_smc.ob", "param": "close_mitigation",
              "env": "SMC_OB_CLOSE_MITIGATION",
+             "consumers": [   # S6-B2573d: measured by knob_consumers, pinned equal
+                           "backtest/config.py",
+                           "backtest/engine/exit_strategies.py",
+                           "backtest/signals/screener.py"],
              "production": False, "type": "bool", "band": [False, True],
              "derivation": "boolean - both values ARE the band. True = mitigated on CLOSE only.",
              "subset_safe": True, "status": "TESTED",
@@ -112,6 +144,10 @@ fires            =  ( breaker_bullish )  AND  ( price_above_ema_200 ) [from P6]"
              "engine_implemented": True},
             {"id": "P3", "producer": "ob_events.tail(N)", "param": "tail_n",
              "env": "SMC_OB_TAIL_N",
+             "consumers": [   # S6-B2573d: measured by knob_consumers, pinned equal
+                           "backtest/config.py",
+                           "backtest/engine/exit_strategies.py",
+                           "backtest/signals/screener.py"],
              "production": 20, "type": "int", "band": [1, 2, 3, 5, 10, 20],
              "derivation": "B1610 DEFECT - this text says the band spans the measured "
                            "rank range 1-4, and it does NOT: its floor is 3, the TOP of "
@@ -125,6 +161,10 @@ fires            =  ( breaker_bullish )  AND  ( price_above_ema_200 ) [from P6]"
              "engine_implemented": True},
             {"id": "P4", "producer": "recency filter on OB age", "param": "age_bars_max",
              "env": "SMC_BREAKER_AGE_BARS_MAX",
+             "consumers": [   # S6-B2573d: measured by knob_consumers, pinned equal
+                           "backtest/config.py",
+                           "backtest/engine/exit_strategies.py",
+                           "backtest/signals/screener.py"],
              "production": None, "type": "int|None", "band": [60, 120, 180, 250, None],
              "derivation": "measured real retests 45-134 bars, latches 294-469, gap 134-294 (B1501).",
              "subset_safe": True, "status": "TESTED",
@@ -138,6 +178,10 @@ fires            =  ( breaker_bullish )  AND  ( price_above_ema_200 ) [from P6]"
              "engine_implemented": True},
             {"id": "P5", "producer": "break test (close > top)", "param": "break_pct_max",
              "env": "SMC_BREAKER_BREAK_PCT_MAX",
+             "consumers": [   # S6-B2573d: measured by knob_consumers, pinned equal
+                           "backtest/config.py",
+                           "backtest/engine/exit_strategies.py",
+                           "backtest/signals/screener.py"],
              "production": None, "type": "float|None", "band": [0.01, 0.02, 0.03, 0.05, None],
              "derivation": "NEW-GATE, OWNER-APPROVED B1507 (was N/A - production has no such "
                            "parameter; `close > top` is a strict inequality). Band from the "
@@ -151,6 +195,10 @@ fires            =  ( breaker_bullish )  AND  ( price_above_ema_200 ) [from P6]"
              "engine_implemented": True},
             {"id": "P6", "producer": "compute_ema_sma", "param": "span",
              "env": "STRAT_EMA_SPAN",
+             "consumers": [   # S6-B2573d: measured by knob_consumers, pinned equal
+                           "backtest/config.py",
+                           "backtest/engine/exit_strategies.py",
+                           "backtest/signals/screener.py"],
              "production": 200, "type": "int", "band": [9, 20, 21, 50, 100, 150, 200],
              "derivation": "ALL spans the producer emits (READ technical.py:750 pairs "
                            "(9,21),(20,50),(50,200)). B1507 widened from [50,200] - the "
@@ -177,6 +225,34 @@ fires            =  ( breaker_bullish )  AND  ( price_above_ema_200 ) [from P6]"
         # values and records none of them (S6-B2578a) - the gate can only
         # check the tagged directory exists and holds parquet.
         "env_actuators": {"INST_PERSIST_CACHE_TAG": "persistence precompute tag"},
+        # B2579 (S6-B2573d): every file that READS the actuator - measured by
+        # knob_consumers and pinned equal (test_b2579).
+        "actuator_consumers": {"INST_PERSIST_CACHE_TAG": [
+            "scripts/build_institutional_persistence_precompute.py",
+            "scripts/prescreen_persistence_configs.py"]},
+        # B2579 (S6-B2573a): the battery adapter contract (see the smc entry).
+        # `cube: ""` passes the cube DIRECTORY; the institutional grid rows
+        # carry one `combo` (single_combination), the free levels have their
+        # own reproduction-gated grader, and the spot check takes the
+        # manifest window and must record the arm's precompute dir (B2576).
+        "tools": {
+            "keys": {"P4": "min_consecutive_quarters", "P5": "growth_lookback_quarters",
+                     "P6": "growth_multiple", "P9": "ema_span"},
+            "grid_keys": ["combo"],
+            "grade": {"script": "grade_institutional_config.py", "cube": "",
+                      "flags": {"P4": "--min-consecutive-quarters",
+                                "P5": "--growth-lookback-quarters",
+                                "P6": "--growth-multiple", "P9": "--span"},
+                      "extra": ["--min-n", "10"], "pythonpath": None,
+                      "note": "AUTO (B2520/B2569)"},
+            "free_levels": {"script": "grade_free_levels_institutional.py"},
+            "spot_check": {"script": "spot_check_institutional.py", "cube": "",
+                           "flags": {"P9": "--ema-span"}, "extra": ["--n", "50"],
+                           "window": True, "precompute_check": True,
+                           "pythonpath": None, "note": "AUTO (B2520)"},
+            "engine_anchors": {"script": None},
+            "single_combination": True,
+        },
         # S6-B2465: MEASURED from output_r5_merged_1_7/trade_log.csv,
         # not recalled. holdout_n 666 and is_n 1275 reproduce S6-B2435
         # and the B2419 pre-registration exactly.
@@ -265,6 +341,8 @@ fires =  ( P7  OR  P8 )  AND  P9
             {"id": "P4", "producer": "_per_ticker_persistence (persistence precompute)",
              "param": "min_consecutive_quarters", "production": 4, "sweep_levels": [2, 3, 6, 8],
              "env": "INST_MIN_CONSECUTIVE_QUARTERS",   # read at precompute build time
+             "consumers": [   # S6-B2573d: measured by knob_consumers, pinned equal
+                           "scripts/build_institutional_persistence_precompute.py"],
              "band": [2, 3, 4, 6, 8],
              "free_band": [], "resim_band": [2, 3, 4, 6, 8],
              "subset_safe": False, "status": "UNTESTED",
@@ -274,6 +352,8 @@ fires =  ( P7  OR  P8 )  AND  P9
             {"id": "P5", "producer": "_per_ticker_persistence (persistence precompute)",
              "param": "growth_lookback_quarters", "production": 4, "sweep_levels": [2, 3, 6, 8],
              "env": "INST_GROWTH_LOOKBACK_QUARTERS",
+             "consumers": [   # S6-B2573d: measured by knob_consumers, pinned equal
+                           "scripts/build_institutional_persistence_precompute.py"],
              "band": [2, 3, 4, 6, 8],
              "free_band": [], "resim_band": [2, 3, 4, 6, 8],
              "subset_safe": False, "status": "UNTESTED",
@@ -283,6 +363,8 @@ fires =  ( P7  OR  P8 )  AND  P9
             {"id": "P6", "producer": "_per_ticker_persistence (persistence precompute)",
              "param": "growth_multiple", "production": 1.100, "sweep_levels": [1.0, 1.25, 1.5],
              "env": "INST_GROWTH_MULTIPLE",
+             "consumers": [   # S6-B2573d: measured by knob_consumers, pinned equal
+                           "scripts/build_institutional_persistence_precompute.py"],
              "band": [1.0, 1.1, 1.25, 1.5],
              "free_band": [], "resim_band": [1.0, 1.1, 1.25, 1.5],
              "subset_safe": False, "status": "UNTESTED",
@@ -317,6 +399,10 @@ fires =  ( P7  OR  P8 )  AND  P9
             {"id": "P9", "producer": "compute_ema_sma",
              "param": "span", "production": 200, "sweep_levels": [9, 20, 50, 100, 150],
              "env": "STRAT_EMA_SPAN",
+             "consumers": [   # S6-B2573d: measured by knob_consumers, pinned equal
+                           "backtest/config.py",
+                           "backtest/engine/exit_strategies.py",
+                           "backtest/signals/screener.py"],
              "band": [9, 20, 50, 100, 150, 200],
              "free_band": [], "resim_band": [9, 20, 50, 100, 150, 200],
              "subset_safe": False, "status": "UNTESTED",
@@ -444,9 +530,157 @@ def knob_is_read(knob: str, root: Path) -> bool:
     return False
 
 
+CODE_ROOT = Path(__file__).resolve().parents[1]
+_CODE_TOKENS: dict = {}
+# B2579c (#122): files the tokenizer could not read. NOT the same as 'no mention'
+# - an unreadable file makes a knob's blast radius UNKNOWN, so the launch gate
+# refuses while this is non-empty. path -> the exception that stopped it.
+_UNMEASURABLE: dict[str, str] = {}
+
+
+def _code_tokens(path: Path) -> tuple[set, list]:
+    """(NAME tokens, code STRING tokens) of a module, cached on (size, mtime).
+    A STRING that opens a logical line (a docstring, a bare string statement)
+    is NOT code: a docstring naming a knob consumes nothing. Comments are
+    COMMENT tokens and never counted."""
+    import io as _io
+    import tokenize as _tk
+    try:
+        st = path.stat()
+    except OSError:
+        return set(), []
+    key = (str(path), st.st_size, st.st_mtime_ns)
+    if key in _CODE_TOKENS:
+        return _CODE_TOKENS[key]
+    names, strings = set(), []
+    try:
+        src = path.read_text(encoding="utf-8", errors="replace")
+        prev = None
+        for tok in _tk.generate_tokens(_io.StringIO(src).readline):
+            if tok.type == _tk.NAME:
+                names.add(tok.string)
+            elif tok.type == _tk.STRING:
+                if prev not in (None, _tk.NEWLINE, _tk.NL, _tk.INDENT, _tk.DEDENT,
+                                _tk.ENCODING):
+                    strings.append(tok.string)
+            if tok.type not in (_tk.NL, _tk.COMMENT):
+                prev = tok.type
+    except (SyntaxError, _tk.TokenError, UnicodeDecodeError) as _exc:
+        # #122: never a silent swallow. Partial tokens would read as "this file
+        # does not mention the knob", which under-states the blast radius in
+        # the direction that lets a launch through - so record it and let
+        # launch_refusals fail CLOSED (L642).
+        _UNMEASURABLE[str(path)] = f"{type(_exc).__name__}: {_exc}"
+        print(f"[knob_consumers] UNMEASURABLE {path}: {type(_exc).__name__}",
+              file=_sys.stderr)
+    _CODE_TOKENS[key] = (names, strings)
+    return names, strings
+
+
+_ENV_READS: dict[str, frozenset] = {}
+
+
+def _env_reads(path: Path) -> frozenset:
+    """Every LITERAL environment key a script reads, via the AST.
+
+    B2579b: this was a regex over the file's text, and knob_consumers' own
+    docstring - which names `environ.get("SMC_SWING_LENGTH")` as the example -
+    made producer_variant_table.py report itself as a consumer of that knob
+    (L748: the better the comment, the more reliably it poisons a text match).
+    The AST sees `os.environ.get(K)`, `environ[K]`, `.pop(K)`, `.setdefault(K)`
+    and `os.getenv(K)`, and cannot see prose. A file that will not parse
+    contributes nothing (it cannot be a consumer of anything).
+    """
+    key = str(path)
+    if key in _ENV_READS:
+        return _ENV_READS[key]
+    import ast as _ast
+
+    def _is_environ(node) -> bool:
+        return ((isinstance(node, _ast.Name) and node.id == "environ")
+                or (isinstance(node, _ast.Attribute) and node.attr == "environ"))
+
+    found: set = set()
+    try:
+        tree = _ast.parse(path.read_text(encoding="utf-8", errors="replace"))
+    except (OSError, SyntaxError):
+        _ENV_READS[key] = frozenset()
+        return _ENV_READS[key]
+    for node in _ast.walk(tree):
+        if isinstance(node, _ast.Call):
+            f = node.func
+            named = (isinstance(f, _ast.Attribute)
+                     and f.attr in ("get", "pop", "setdefault")
+                     and _is_environ(f.value))
+            getenv = ((isinstance(f, _ast.Attribute) and f.attr == "getenv")
+                      or (isinstance(f, _ast.Name) and f.id == "getenv"))
+            if (named or getenv) and node.args:
+                a = node.args[0]
+                if isinstance(a, _ast.Constant) and isinstance(a.value, str):
+                    found.add(a.value)
+        elif isinstance(node, _ast.Subscript) and _is_environ(node.value):
+            sl = node.slice
+            if isinstance(sl, _ast.Constant) and isinstance(sl.value, str):
+                found.add(sl.value)
+    _ENV_READS[key] = frozenset(found)
+    return _ENV_READS[key]
+
+
+_CONSUMERS: dict[tuple, list[str]] = {}
+
+
+def knob_consumers(knob: str, code_root: Path | None = None) -> list[str]:
+    """B2579 (S6-B2573d): every file that CONSUMES an env knob - the blast
+    radius of setting it in an arm. MEASURED, never recalled:
+      * under backtest/ (engine; tests excluded): a code mention - the knob
+        as a NAME (`_cfg.STRAT_EMA_SPAN`) or inside a code STRING
+        (`environ.get("SMC_SWING_LENGTH")`, `getattr(_c, "STRAT_EMA_SPAN")`);
+      * under scripts/: an ENVIRON access of the knob in CODE, read from the
+        AST by `_env_reads` (`os.environ.get(K)`, `environ[K]`, `.pop(K)`,
+        `.setdefault(K)`, `os.getenv(K)`) - launch and grade tooling passes
+        knob names around as strings without consuming them, so a string
+        mention there is not a read, and neither is this docstring.
+    Paths are repo-relative with forward slashes, sorted. Memoised per
+    (knob, root): MEASURED 2026-09-03, an uncached call costs ~0.27 s once the
+    backtest token cache is warm (the scripts/ regex re-reads ~80 files), and
+    the launch gate asks for every knob of every strategy in a spec - 61 live
+    specs took over 2 minutes to check. A process that patches the tree and
+    re-measures in the same run must clear `_CONSUMERS`."""
+    root = Path(code_root) if code_root is not None else CODE_ROOT
+    ck = (knob, str(root))
+    if ck in _CONSUMERS:
+        return list(_CONSUMERS[ck])
+    out = []
+    for p in sorted((root / "backtest").rglob("*.py")):
+        if "tests" in p.parts:
+            continue
+        names, strings = _code_tokens(p)
+        if knob in names or any(knob in s for s in strings):
+            out.append(p)
+    for p in sorted((root / "scripts").glob("*.py")):
+        if knob in _env_reads(p):
+            out.append(p)
+    _CONSUMERS[ck] = sorted(
+        str(p.relative_to(root)).replace("\\", "/") for p in out)
+    return list(_CONSUMERS[ck])
+
+
+def declared_consumers(spec: dict, knob: str) -> list[str] | None:
+    """The consumer list the SPECS entry declares for `knob` (a param's
+    `consumers` or an actuator's `actuator_consumers`), or None when the
+    entry declares the knob without a list."""
+    for p in spec.get("params") or []:
+        if p.get("env") == knob:
+            return sorted(p.get("consumers") or []) if "consumers" in p else None
+    ac = spec.get("actuator_consumers") or {}
+    if knob in (spec.get("env_actuators") or {}):
+        return sorted(ac[knob]) if knob in ac else None
+    return None
+
+
 def _battery_families() -> tuple[set | None, str]:
-    """The post-config battery's registry (run_postconfig.FAMILIES today;
-    S6-B2573a replaces this with the SPECS adapter contract). Imported, never
+    """The post-config battery's registry (run_postconfig.FAMILIES - since
+    B2579 derived from the SPECS `tools` adapter contract). Imported, never
     retyped; an import failure is reported, not swallowed."""
     try:
         import run_postconfig as _rp
@@ -541,6 +775,20 @@ def launch_refusals(doc: dict, root: Path | None = None,
                             f"{KNOB_READERS} - a knob the engine never reads "
                             "makes the manifest lie (S6-B2136 class)")
         actuators = dict(spec.get("env_actuators") or {})
+        # B2579 (S6-B2573d): the declared blast radius must equal the tree's.
+        # Measured against THIS repo's code (CODE_ROOT) - `root` is where the
+        # spec's files live, which a test may relocate; the code tree is not.
+        for k in list(knobs) + list(actuators):
+            dec = declared_consumers(spec, k)
+            got = knob_consumers(k)
+            if dec is None:
+                errs.append(f"{s}: knob {k} declares no `consumers` list - its "
+                            "blast radius is unknown (S6-B2573d; the tree reads "
+                            f"it in {got})")
+            elif dec != got:
+                errs.append(f"{s}: knob {k} consumer DRIFT - SPECS declares "
+                            f"{dec} but the tree reads it in {got} (S6-B2573d; "
+                            "re-measure with knob_consumers and update the entry)")
         by_param = {p["param"]: p for p in spec["params"]}
         for arm in (doc.get("arms") or []):
             tag = arm.get("tag", "?")
@@ -575,6 +823,13 @@ def launch_refusals(doc: dict, root: Path | None = None,
                 if not _level_in_band(pv, row):
                     errs.append(f"{s}: arm '{tag}' declares {pk}={pv!r} but that is "
                                 f"not a level of {row['id']} band {row['band']}")
+    if _UNMEASURABLE:
+        errs.append("knob blast radius is UNMEASURABLE - the tokenizer could not "
+                    "read " + ", ".join(f"{k} ({v})" for k, v in
+                                        sorted(_UNMEASURABLE.items()))
+                    + " (S6-B2573d): a file that will not parse reads as 'does "
+                      "not use this knob', so fix the file or the measurement "
+                      "rather than launch on a partial radius")
     return errs
 
 
@@ -1206,7 +1461,10 @@ def main() -> int:
     # in the tool, not in anyone remembering.
     ap.add_argument("--factorial", action="store_true",
                     help="print Section 1 formula + factorial breakdown; no results needed")
-    ap.add_argument("--keys", default="close_mitigation,age_bars_max,tail_n")
+    ap.add_argument("--keys", default=None,
+                    help="grid row keys for Table B; default = the family's own "
+                         "SPECS tools.grid_keys (S6-B2573c - the old default was "
+                         "the smc keys for every family)")
     ap.add_argument("--out", default="")
     a = ap.parse_args()
 
@@ -1257,7 +1515,11 @@ def main() -> int:
         return 1
     data = json.loads(Path(a.results).read_text())
     results = data["results"]
-    keys = a.keys.split(",")
+    keys = a.keys.split(",") if a.keys else list(
+        (spec.get("tools") or {}).get("grid_keys") or [])
+    if not keys:
+        print(f"--keys not given and SPECS[{a.strategy!r}] declares no tools.grid_keys")
+        return 1
 
     tested = [p for p in spec["params"] if p["status"] == "TESTED"]
     applicable = [p for p in spec["params"] if p["status"] != "N/A"]
