@@ -24986,6 +24986,11 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         # checked. Dropped from the skill, the third strategy inherits two copies.
         ("A SCRIPT WITH A STRAT CONSTANT IS THE FIRST INSTANCE OF A PORTABILITY CLASS, NOT A TOOL",
          "B2573/L754: extract the contract at the second family; check registration at launch"),
+        # B2580: the L755 tripwire row - a pyramid measures ONE tree. Pins
+        # the DIAGNOSTIC (a GREEN run over a moving tree reads exactly like
+        # a real one), not the heading (L548).
+        ("A PYRAMID IS A MEASUREMENT OF ONE TREE",
+         "B2580/L755: a verdict over a moving tree is not evidence; tree=CHANGED is VOID"),
         ("2. **Read the LEARNINGS relevant to this turn's task type.** Grep `LEARNINGS.md`",
          "B2382: Phase 0  RECALL before any analysis or recommendation"),
         ("to prevent** (B1119: 22 batches of silent doc-sync suspension; Council 236's",
@@ -25516,7 +25521,9 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # rule violated and repaired one commit later, recorded in L753).
     # 230 -> 231 at B2573 (the L754 portability-class fragment; same-call with
     # its tripwire row per B2130).
-    assert len(gutted) == 231, gutted
+    # 231 -> 232 at B2580 (the L755 one-tree fragment; same-call with its
+    # tripwire row per B2130).
+    assert len(gutted) == 232, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -32768,3 +32775,110 @@ def test_b2579_battery_families_and_knob_blast_radius_are_derived_not_handwritte
     assert notes["2_grade_with_config_params"] == (
         "DONE", "AUTO (B2177): tighten_breaker_block at manifest swing=50 "
                 f"span=50 -> {grid_out.name}"), notes
+
+def test_b2580_pyramid_gate_voids_a_run_whose_tree_changed(tmp_path, monkeypatch):
+    """B2580 (CHECKLIST #292 / L755): a pyramid is a measurement of ONE tree.
+
+    `scripts/pyramid_gate.py` fingerprints the tree under test before and
+    after pytest and writes `tree=SAME|CHANGED` beside `exit=`; a CHANGED run
+    exits 4 whatever pytest returned. Measured need: B2574 (false RED from a
+    mid-run engine edit), B2576 (three scripts overwritten at ~40% by an
+    un-dry patcher), B2570->B2571 (a verdict older than its edits).
+    """
+    import importlib.util as _ilu
+    import sys as _sys
+    import time as _time
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parents[2]
+    _spec = _ilu.spec_from_file_location("pyramid_gate_b2580", root / "scripts" / "pyramid_gate.py")
+    pg = _ilu.module_from_spec(_spec); _spec.loader.exec_module(pg)
+
+    # a tree of the real shape: scripts/, backtest/, .claude/skills/, root *.md,
+    # plus the out-of-scope places a live run writes to (cube dir, output_audit)
+    (tmp_path / "scripts").mkdir(); (tmp_path / "backtest" / "engine").mkdir(parents=True)
+    (tmp_path / ".claude" / "skills" / "x").mkdir(parents=True)
+    (tmp_path / "output_audit").mkdir(); (tmp_path / "output_cube").mkdir()
+    (tmp_path / "scripts" / "a.py").write_text("x = 1\n", encoding="utf-8")
+    (tmp_path / "backtest" / "engine" / "b.py").write_text("y = 2\n", encoding="utf-8")
+    (tmp_path / ".claude" / "skills" / "x" / "SKILL.md").write_text("# s\n", encoding="utf-8")
+    (tmp_path / "CLAUDE.md").write_text("# c\n", encoding="utf-8")
+    (tmp_path / "scripts" / "__pycache__").mkdir()
+    (tmp_path / "scripts" / "__pycache__" / "a.cpython-314.pyc").write_bytes(b"\x00")
+
+    before = pg.fingerprint(tmp_path)
+    assert set(before) == {"scripts/a.py", "backtest/engine/b.py",
+                           ".claude/skills/x/SKILL.md", "CLAUDE.md"}, sorted(before)
+    assert pg.changed(before, pg.fingerprint(tmp_path)) == []
+    assert pg.verdict_line([]) == "tree=SAME"
+
+    # out-of-scope writes (a landing artifact, a heartbeat, a bytecode cache) are not edits
+    (tmp_path / "output_audit" / "x_landed.json").write_text("{}", encoding="utf-8")
+    (tmp_path / "output_cube" / "run_heartbeat.json").write_text("{}", encoding="utf-8")
+    (tmp_path / "scripts" / "__pycache__" / "a.cpython-314.pyc").write_bytes(b"\x00\x01")
+    assert pg.changed(before, pg.fingerprint(tmp_path)) == []
+
+    # EXECUTION_QUEUE.md is IN scope, but the landing row an unattended battery
+    # appends mid-run is data, not an edit (MEASURED: the icg_mult1.25 landing
+    # voided the B2578 run). The row is invisible; anything else in the file is
+    # not - including a row appended ABOVE it.
+    q = tmp_path / "EXECUTION_QUEUE.md"
+    q.write_text("| **S6-X** | **OPEN** | P1 | x | y |\n", encoding="utf-8")
+    before_q = pg.fingerprint(tmp_path)
+    _time.sleep(0.01)
+    with q.open("a", encoding="utf-8") as fh:
+        fh.write("| **S6-LANDING-output_icg_x-20260903T124855** | **EXECUTED** "
+                 "| P1 | battery exit 0 | recorded automatically |\n")
+    assert pg.changed(before_q, pg.fingerprint(tmp_path)) == []
+    with q.open("a", encoding="utf-8") as fh:
+        fh.write("| **S6-B9999** | **EXECUTED** | P1 | a real row | reason |\n")
+    assert pg.changed(before_q, pg.fingerprint(tmp_path)) == ["EXECUTION_QUEUE.md"]
+    q.unlink()
+    assert pg.changed(before, pg.fingerprint(tmp_path)) == []
+
+    # an in-scope edit (same size, later mtime), an added module, a removed doc
+    _time.sleep(0.01)
+    (tmp_path / "backtest" / "engine" / "b.py").write_text("y = 3\n", encoding="utf-8")
+    (tmp_path / "scripts" / "new.py").write_text("", encoding="utf-8")
+    (tmp_path / "CLAUDE.md").unlink()
+    diff = pg.changed(before, pg.fingerprint(tmp_path))
+    assert diff == ["CLAUDE.md", "backtest/engine/b.py", "scripts/new.py"], diff
+    assert pg.verdict_line(diff).startswith("tree=CHANGED (3 paths): CLAUDE.md, backtest/engine/b.py")
+
+    # the wrapper: pytest's exit survives on a SAME tree; a CHANGED tree exits 4
+    # whatever pytest said, and the artifact carries all three lines (L738 shape)
+    calls = []
+    def fake_call(cmd, stdout=None, stderr=None, cwd=None):
+        calls.append((cmd, cwd))
+        stdout.write("1 passed\n")
+        if calls[-1][0][-1] == "--edit-during":
+            (Path(cwd) / "scripts" / "a.py").write_text("x = 2\n", encoding="utf-8")
+        return 0
+    monkeypatch.setattr(pg.subprocess, "call", fake_call)
+    out = tmp_path / "pyr.txt"
+    assert pg.run(out, tmp_path, ["-q"]) == 0
+    text = out.read_text(encoding="utf-8")
+    assert "1 passed" in text and "pytest_exit=0\ntree=SAME\nexit=0\n" in text, text
+    assert calls[-1][0][:3] == [_sys.executable, "-m", "pytest"] and calls[-1][1] == str(tmp_path)
+    _time.sleep(0.01)
+    assert pg.run(out, tmp_path, ["--edit-during"]) == 4
+    text = out.read_text(encoding="utf-8")
+    assert "pytest_exit=0\ntree=CHANGED (1 paths): scripts/a.py\nexit=4\n" in text, text
+    # main(): `--` separates the wrapper's flags from pytest's
+    assert pg.main(["--out", str(out), "--root", str(tmp_path), "--", "-q", "-x"]) == 0
+    assert calls[-1][0][-2:] == ["-q", "-x"]
+
+def test_b2580_the_runbook_names_only_scripts_that_exist():
+    """B2580 (S6-B2573e): every `scripts/<name>.py` the optimisation runbook
+    cites must exist. The B2573 audit found runbook steps whose mechanism was
+    a script nobody had written - a step that cannot be run reads exactly like
+    one that can, and the reader finds out at the point of use."""
+    import re
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parents[2]
+    text = (root / "STRATEGY_OPTIMISATION_PLAN.md").read_text(encoding="utf-8")
+    cited = sorted(set(re.findall(r"scripts/([A-Za-z0-9_]+\.py)", text)))
+    assert len(cited) >= 25, cited
+    missing = [n for n in cited if not (root / "scripts" / n).exists()]
+    assert missing == [], missing

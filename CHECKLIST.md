@@ -5590,3 +5590,24 @@ cites is named with its file or marked PROPOSED-NOT-BUILT (B1335 rule 2 applies 
 generic sites, 5 stale numbers, and a documented launch command that is not the live path.
 Tickets S6-B2573a-i carry the class fixes; none are built. Detection is JUDGMENT-ONLY until the
 S6-B2573a adapter pin exists; the pin holds the contract that exists.
+
+### #292 - A PYRAMID IS A MEASUREMENT OF ONE TREE; AN EDIT DURING THE RUN VOIDS IT (B2580 / L755)
+
+**Run every pyramid through `scripts/pyramid_gate.py -- <pytest args>`.** It fingerprints the tree
+under test (scripts/, backtest/, root *.md, .claude/) before and after pytest and writes
+`tree=SAME` or `tree=CHANGED (<n> paths)` beside `exit=`; a CHANGED run is VOID (exit 4) regardless of
+the pytest result and is re-run on the settled tree. While it runs: NO edit to code or to the canonical
+docs the tests read; dry-run patchers write to the scratchpad. The gate run is the LAST action before
+the commit (a verdict that pre-dates an edit it vouches for is the same defect - B2570/B2571), which
+means the batch's QUEUE ROWS and doc text go in BEFORE it, not after.
+
+Out of scope by design, because an unattended supervisor writes there while the run proceeds: cube
+dirs, `output_audit/`, `data_prefetch/`, `__pycache__` - and the `| **S6-LANDING-` rows a landing
+appends to EXECUTION_QUEUE.md (that file is otherwise fingerprinted by content, so any other row in
+it still voids the run).
+
+**MEASURED 2026-09-02/03 (L755):** three instances in one session - a false RED (B2574 batch-1,
+test_b2213a) and a would-have-been false GREEN (B2576 pyramid #2, three scripts overwritten by an
+un-dry patcher at ~40%) and a verdict older than its edits (B2570 -> test_b1486 at B2571). Pin:
+test_b2580_pyramid_gate_voids_a_run_whose_tree_changed. Detection of a mid-run edit is MECHANICAL;
+detection of a stale verdict is JUDGMENT-ONLY.

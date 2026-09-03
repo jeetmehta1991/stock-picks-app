@@ -17340,7 +17340,8 @@ SKILL.md and by both assertions in test_b2330 now carrying the anchoring comment
 next reader meets the reasoning at the site.
 **Retroactive sweep (#237): every assertion in test_b2330 checked for the same shape.** 9
 assertions: 2 were substring-over-whole-output on a column name - **both instances above, both
-now anchored**; 3 assert on CONTENT that appears nowhere else (`deep_exit`, `1 of 2`, `2 of 2`)
+now anchored**; 3 assert on CONTENT that appears nowhere else (`deep_exit`, `1 of 2`, `2 of 2`)
+
 - **NAMING THE CALL THAT PRODUCED A FIGURE IS ITSELF A CLAIM, AND IT IS THE ONE
   NOBODY RE-OPENS (L695 addendum, B2532).** MEASURED: I published a ticket table
   reading EXECUTED 1734 / TOTAL 1781 and wrote that it was *run in the commit
@@ -19296,3 +19297,58 @@ the S6-B2573b launch refusal, both ticketed OPEN, neither built. Retroactive
 coverage (#136): would have caught grade_institutional_config.py at B2504 (the
 second copy), the P7/P8 banded-unrunnable rows at B2527 (a launch-time knob
 check), and the 4 ungraded institutional landings (L752).
+
+### L755 - A pyramid is a measurement of ONE tree; an edit during the run voids it, and the verdict must post-date every edit it vouches for
+
+**What happened (three instances in one session, 2026-09-02/03):**
+
+1. **B2574 batch-1 pyramid, 1 failed / 1054 passed:** `test_b2213a_resume_restores_the_open_book_or_halts`
+   read `backtest/engine/backtest.py` through `inspect.getsource` AFTER ~40 lines had been inserted
+   above the function it pins, mid-run. The test passed alone on the settled tree (1 passed / 1133
+   deselected) and the untouched-tree re-run was 1280 passed / 3 skipped. The failure was
+   self-inflicted; the batch it was blamed on had no defect.
+2. **B2576 pyramid #2:** a patcher was run without its dry-run env (`B2578_DRY` unset) and wrote three
+   repo scripts (`producer_variant_table.py`, `run_wave.py`, `prelaunch_gate.py`) while the B2576
+   pyramid was at ~40%. The three files were restored from HEAD, pyramid #2 stopped, and #3 relaunched
+   (1282 passed / 3 skipped, exit=0). Had #2 been allowed to finish GREEN, its verdict would have
+   covered a tree that no longer existed.
+3. **B2570 -> B2571 (the mirror image):** the B2570 gate run PRE-DATED its own doc edits; `test_b1486`
+   then failed at B2571 because #290/L752 were added without the banner bump. A verdict older than
+   the edit it vouches for is the same defect from the other side.
+
+4. **B2578 (the gate's own first run, and the reason it is not a blunt file-watcher):** the run came back
+   `1 failed / 1283 passed` AND `tree=CHANGED (1 paths): EXECUTION_QUEUE.md`. Neither half was noise: the
+   failure was real (the B2578 launch gate is the first consumer of `strategy_subset` as a PATH, and
+   test_b2082's historical fixture holds `output_audit/_subset_one.txt (smc_breaker_block_long)` - a path
+   with a human annotation), and the tree change was the icg_mult1.25 landing appending its own
+   `| **S6-LANDING-...` row at 16:48:55Z, unattended, exactly as B2520 requires. A rule that voids a run
+   whenever an unattended supervisor records a landing would be unusable, so the gate fingerprints
+   EXECUTION_QUEUE.md by a hash of its content MINUS those rows: the landing is invisible, any other
+   character is not.
+
+**Why it matters:** the pyramid is the ONLY evidence the commit rule accepts (#69, #75). A verdict over
+a moving tree is not evidence of anything - it can be GREEN over code that was never tested (instance
+2) or RED over code that is fine (instance 1), and both read identically in the log. The B2574 case
+cost a batch a false RCA; the B2576 case cost 16 minutes and a restore.
+
+**The rule (CHECKLIST #292):** run the pyramid through `scripts/pyramid_gate.py`, which fingerprints
+the tree under test (scripts/, backtest/, root *.md, .claude/) before pytest and again after, and
+writes `tree=SAME` or `tree=CHANGED (<n> paths)` beside the `exit=` line - a CHANGED run is VOID
+(exit 4) whatever pytest said. While it runs: no edit to code or to the canonical docs the tests read
+(CLAUDE.md / CHECKLIST.md / LEARNINGS.md / EXECUTION_QUEUE.md / STRATEGY_OPTIMISATION_PLAN.md /
+SKILL.md); dry-run patchers write to the scratchpad, never the repo. And the gate run is the LAST
+action before the commit - every edit the commit carries precedes it.
+
+**Order matters as much as the fingerprint:** the doc rows a batch commits (its EXECUTION_QUEUE entries,
+its CHECKLIST/LEARNINGS text) are read by tests, so they belong in the tree BEFORE the gate runs, not
+after it. B2578 paid for this the honest way - a second full gate run, 18 minutes, because its queue rows
+were written after a green one.
+
+**Mechanisms:** `scripts/pyramid_gate.py` (`fingerprint` + the wrapper) pinned by test_b2580 (a
+tmp-dir tree edited between two fingerprints reads CHANGED; an untouched one SAME; an out-of-scope
+write - a cube heartbeat - does not count; a landing row appended to EXECUTION_QUEUE.md does not
+count, while any other row in the same file does). Detection of an edit made by ANOTHER process during the
+run is exactly what the fingerprint covers; detection of a verdict that pre-dates an edit is
+JUDGMENT-ONLY (the #67 sweep re-runs the gate on staged content, B2571 precedent). Retroactive
+coverage (#136): instances 1 and 2 above trip `tree=CHANGED`; instance 3 is caught by test_b1486 as
+before.

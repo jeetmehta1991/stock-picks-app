@@ -1258,7 +1258,9 @@ A parameter the producer accepts but the caller never passes is **NOT tunable** 
 **Engine runs = product of the FIRE-ADDING bands only.** Everything else is free (L371).
 
 **0.5** Derive each band from MEASURED distributions, never round numbers (L356, L369).
-Instrument the qualifying event first:
+Instrument the qualifying event first. **FAMILY EXAMPLE (smc) - generic form (SS11.2 step 0.5):
+count the strategy's fires on 6 megacaps at production params via the producer or precompute
+(institutional used `build_institutional_persistence_precompute.py` + a `python -c` count):**
 ```bash
 PYTHONPATH=. python scripts/instrument_breaker_block.py --ticker AAPL \
   --start 2022-05-05 --end 2026-05-05 --out output_audit/<STRATEGY>_instr.json
@@ -1421,6 +1423,24 @@ killing any one could not have produced exit codes in the others. RESIDUAL, stat
 across a HARNESS death is untested (testing it costs a deliberate session kill); the per-15-min
 monitor contract bounds the loss either way.
 
+**THE LIVE LAUNCH PATH (B2580 / S6-B2573e item 2; EXECUTED process tree of the b2527 chain:
+run_serial_chain 24172 -> run_wave 27488 -> launch_sweep 28236 -> run_phase1a 21376, measured 2026-09-03T15:46Z):** write ONE spec per
+config and launch the chain DETACHED - every flag below is derived from the spec by `run_wave.py`
+(manifest) and checked by `prelaunch_gate.py` through `launch_sweep.py`; the B2578 launch gate
+(`producer_variant_table.launch_refusals`) refuses an unregistered strategy or an off-band knob
+BEFORE the engine.
+```bash
+# spec: copy output_audit/b2527_icg_span50_spec.json, change ONLY strategy_subset / wave / arms[0].env
+PYTHONPATH=.:scripts python scripts/launch_detached.py --chain --batch <bNNNN> \
+  --specs output_audit/<bNNNN>_<STRATEGY>_cfg<N>_spec.json [more specs, information order] \
+  [--wait-for output_audit/<running wave>_wave_summary.json]
+# -> Task Scheduler task stockpicks_chain_<bNNNN>_<ts> (observe it Running - S6-B2529a);
+#    per spec: run_wave.py -> launch_sweep.py -> prelaunch_gate.py -> run_phase1a.py, gate_receipt.json
+```
+
+**AROUND-THE-GATE ROUTE - the direct engine command the spec expands to. NEVER launch this way
+(S6-B2159b class: no manifest, no gate receipt, no battery hook registration, no chain HALT record);
+it is kept so the flags stay readable:**
 ```bash
 STRATEGY_SUBSET_FILE=output_audit/_subset_<STRATEGY>.txt \
 OPTIMIZATION_MODE=1 \
@@ -1536,6 +1556,10 @@ hang after writing — the pool does not always exit. Verify the artifact, then 
 
 ## STEP 2 — GRADE: derive the subset-safe combinations
 
+**FAMILY EXAMPLE (smc) - generic form: the family grader named in SS11.1 R4 (institutional:
+`grade_institutional_config.py --cube output_icg_<cfg> --min-consecutive-quarters <P4>
+--growth-lookback-quarters <P5> --growth-multiple <P6> --span <P9>`); the battery runs it on every
+landing (B2520), so this hand form is for a re-grade only:**
 ```bash
 PYTHONPATH=.:scripts python scripts/tighten_breaker_block.py \
   --cube output_<STRATEGY>_cfg<N>/trade_exit_detail.csv \
@@ -1556,7 +1580,10 @@ So a cell with 10-14 holdout trades IS graded and FAILS the holdout gate; below 
 graded at all. Two cuts, two numbers, both live) ·
 `NO_EXIT_SELECTABLE` (too few IS trades to rank 26 exits) · `ZERO_FIRES`
 
-**Generate the locked artifact:**
+**Generate the locked artifact. Since B2579 (S6-B2573c) `--keys` DEFAULTS to the family's own
+`tools.grid_keys` (smc `close_mitigation,break_pct_max,age_bars_max,tail_n`; institutional
+`combo`), so pass it only to override - the smc keys spelled out below are that default, not a
+value to copy onto another family:**
 ```bash
 PYTHONPATH=. python scripts/producer_variant_table.py \
   --strategy <STRATEGY> \
@@ -2186,7 +2213,12 @@ previously showed only the smc command, which is how an entire analysis step (fr
 executed once at strategy level and never per config (the N1 class bug, b2569 audit). The step
 has TWO legs on every landing and step 2 is DONE only when BOTH succeed:
 
-**(a) the family grader, at the manifest's own parameters:**
+**(a) the family grader, at the manifest's own parameters (FAMILY EXAMPLES - both registered
+families. Since B2579 a third family is ONE declaration: a `tools` adapter block in its SPECS entry
+(keys / grid_keys / grade / spot_check / single_combination, optional free_levels + engine_anchors),
+from which `run_postconfig.family_entry` builds the row - an incomplete block is not a family and
+`run_postconfig.FAMILY_REFUSALS` says which piece is missing, so the B2578 launch gate refuses the
+spec before the engine spends the hours):**
 ```bash
 # smc_breaker_block family:
 PYTHONPATH=".;scripts" python scripts/tighten_breaker_block.py --cube output_cfg<N>/trade_exit_detail.csv \
@@ -2643,8 +2675,14 @@ Sections above remain the authority for WHY; this section is the authority for W
 ### 11.1 ON-RAMP - what must exist BEFORE the first spec of a new strategy launches
 
 Run each probe; every one must print the expected line. A missing item is a STOP, not a note.
-(Today the battery fails CLOSED at LANDING for a missing item - after the engine's hours. The launch-time
-check is **PROPOSED-NOT-BUILT (S6-B2573b)**; until it ships, this list is the gate.)
+(The launch-time check SHIPPED at B2578 (S6-B2573b): `producer_variant_table.launch_refusals` runs in
+`run_wave.main` BEFORE any arm and in `prelaunch_gate.check` for every LOCAL manifest; it refuses R1
+(no SPECS entry), R3 (not in `run_postconfig.FAMILIES`), an undeclared or off-band env knob, a resim
+level with no knob (the S6-B2569a P7/P8 class) and an INST_PERSIST_CACHE_TAG dir with no parquet (R9).
+B2579 added R8's consumer half: every knob's consumer list is MEASURED from the tree
+(`producer_variant_table.knob_consumers`) and drift from the declaration is a refusal at launch and a
+step-7 FAIL at landing. R4-R7 are now derived from the `tools` adapter block rather than probed by
+hand; R2 (the producer-level fire count) stays a hand probe.)
 
 | # | Artifact | Probe (PYTHONPATH=.:scripts) | Expected | Exists today for |
 |---|---|---|---|---|
@@ -2655,11 +2693,14 @@ check is **PROPOSED-NOT-BUILT (S6-B2573b)**; until it ships, this list is the ga
 | R5 | Free-levels re-scorer (tighter-only subset re-score off `signals_at_entry`, gated on REPRODUCING the landed baseline) | `--help` | usage text | `grade_free_levels_institutional.py` (institutional only) |
 | R6 | Three-leg spot check (precompute / production consumer / engine record, n=50 seed 42) | `--help` | usage text | `spot_check_trades.py` (smc), `spot_check_institutional.py` (institutional) |
 | R7 | Step-7 engine-anchor set (the tokens that prove each swept parameter reaches the engine path) | grep the tokens in the engine files | every token found | `verify_engine_implemented.py` (smc); inline grep in `run_institutional` |
-| R8 | Every env knob in the spec's arm is READ by the engine/precompute and its full consumer list is known (blast radius; **PROPOSED-NOT-BUILT S6-B2573d**) | `grep -rn "<KNOB>" backtest/ scripts/build_*precompute*.py` | every consumer listed in the SPECS entry | declared for none |
+| R8 | Every env knob in the spec's arm is READ by the engine/precompute (`knob_is_read`, B2578) and its full consumer list is MEASURED and pinned equal to the declaration (blast radius; `knob_consumers` tokenizes `backtest/**` + reads `os.environ` sites under `scripts/`, so a name inside a docstring is prose, not a consumer - B2579) | `python -c "import sys; sys.path.insert(0,'scripts'); from producer_variant_table import SPECS, declared_consumers, knob_consumers, knob_is_read; from pathlib import Path; s=SPECS['<strategy>']; print(all(knob_is_read(p['env'], Path('.')) and declared_consumers(s,p['env'])==knob_consumers(p['env']) for p in s['params'] if p.get('env')))"` | `True` - and the launch gate refuses any drift | ENFORCED for smc + institutional (B2578 knobs, B2579 consumer lists) |
 | R9 | The precompute the strategy reads exists for every scheduled level (e.g. `INST_PERSIST_CACHE_TAG` dirs), built BEFORE the spec launches | `ls` the cache dir per level | one dir per level | institutional |
 
-**A single generic adapter replacing R3-R7 is PROPOSED-NOT-BUILT (S6-B2573a).** Until it ships, a new
-strategy costs the six hand-written pieces above; write them BEFORE the spec, never after the cube.
+**The single generic adapter replacing R3-R7 SHIPPED at B2579 (S6-B2573a).** A new strategy now
+declares ONE `tools` block in its SPECS entry and the battery derives the rest; the six pieces above
+are what that block replaces, kept as the reading of what it must contain. Write the block BEFORE the
+spec, never after the cube: since B2578 the launch gate refuses a strategy with no SPECS entry and
+since B2579 an incomplete `tools` block is not a family, so the refusal lands before the engine.
 
 ### 11.2 THE RUN - STEP 0 to STEP 4, in order, with the artifact each step must leave
 
@@ -2667,11 +2708,11 @@ strategy costs the six hand-written pieces above; write them BEFORE the spec, ne
 |---|---|---|---|---|
 | 0 | Inventory: read the strategy block in `screener.py`, its producer, its precompute; list every parameter (fixed / searched / banded-unscheduled with reason); write R1 + R2 | STEP 0 above; `validate_spec` | SPECS entry; `PRODUCER_VARIANT_TABLE_<strategy>.md` via `producer_variant_table.py --strategy <s> --factorial` | R1-R9 all green (SS11.1) |
 | 0.5 | Instrument ONE ticker at the production params to see fires exist (family example: `instrument_breaker_block.py` for smc; institutional used the precompute builder + a `python -c` count). Generic form: count fires of the strategy on 6 megacaps at production params | family script or `python -c` | a fire count > 0 recorded in the spec's `note` | fires > 0 (a 0 here is a producer defect, not a search) |
-| 1 | Write ONE spec per fire-adding combination (`output_audit/<batch>_<cfg>_spec.json`: `strategy_subset`, `tickers_file` = `_sweep_200.txt`, window, `arms[0].env` with every knob, `max_run_hours` <= 5, `resume`); copy an existing spec (`b2527_icg_span50_spec.json`) and change ONLY the knob values + names | spec file | the spec, diffed against its template in the turn | every knob in `arms[0].env` matches R8; `launch_sweep.arm_env_matches` will refuse an UNSET or mismatched one at launch |
-| 1.1 | Launch the chain DETACHED: `launch_detached.py` (Task Scheduler) or `launch_chain_noconsole.py` wrapping `run_serial_chain.py --specs <all specs in information order>`; per spec, run_wave writes the manifest and launch_sweep runs the gate (exit 0 or REFUSED) and writes `gate_receipt.json` | `scripts/run_serial_chain.py` -> `run_wave.py` -> `launch_sweep.py` -> `prelaunch_gate.py` | `output_audit/serial_chain.log` LAUNCH line; `<out-dir>/run_manifest.json` + `gate_receipt.json`; Task Scheduler task `stockpicks_chain_<batch>_<ts>` observed Running | the task is OBSERVED (S6-B2529a), not intended; the receipt exists |
+| 1 | Write ONE spec per fire-adding combination (`output_audit/<batch>_<cfg>_spec.json`: `strategy_subset`, `tickers_file` = `_sweep_200.txt`, window, `arms[0].env` with every knob, `max_run_hours` <= 5, `resume`); copy an existing spec (`b2527_icg_span50_spec.json`) and change ONLY the knob values + names | spec file | the spec, diffed against its template in the turn | every knob in `arms[0].env` is a declared SPECS knob at a band level - `launch_refusals` (B2578) refuses the spec otherwise, and `launch_sweep.arm_env_matches` refuses an UNSET or mismatched one in the process env |
+| 1.1 | Launch the chain DETACHED: `launch_detached.py --chain --batch <b> --specs <all specs in information order> [--wait-for <summary.json>]` (B2575; the ONLY sanctioned chain launch path - `chain_task_running` refuses a second chain; the task unregisters ITSELF at CHAIN DONE, B2577) wrapping `run_serial_chain.py`; per spec, run_wave writes the manifest and launch_sweep runs the gate (exit 0 or REFUSED) and writes `gate_receipt.json` | `scripts/run_serial_chain.py` -> `run_wave.py` -> `launch_sweep.py` -> `prelaunch_gate.py` | `output_audit/serial_chain.log` LAUNCH line; `<out-dir>/run_manifest.json` + `gate_receipt.json`; Task Scheduler task `stockpicks_chain_<batch>_<ts>` observed Running | the task is OBSERVED (S6-B2529a), not intended; the receipt exists |
 | 1.2 | Arm monitoring IN THE LAUNCH TURN: exactly ONE hourly cron per chain (delete any existing one for the same chain first - two were found armed, S6-B2573f), unconditional + periodic markers (#185/#186); read `run_heartbeat.json` at each report | CronCreate (session-held - S6-B2548) | the hourly report block in every turn while the chain runs | none - reporting is a standing duty |
 | 1.3 | Each landing: the engine hook runs the battery unprompted (`_postconfig_landing_hook` -> `postconfig_landing.py` -> `run_postconfig.py`); the turn's response carries `LANDING REPORT: <cube>` (Stop hook blocks otherwise) | automatic | `postconfig_ledger.json[<cube>]` with all nine steps dispositioned DONE / N/A / FAIL / OPEN; `postconfig_landings.jsonl` row; commit `bNNN` pushed; toast | every step DONE or N/A ON EVIDENCE; a FAIL is a B-batch, not a footnote |
-| 1.4 | Chain HALT (any non-COMPLETE): read `serial_chain.log`, `classify_run_log.py <log>` (DEAD vs live), the out-dir's `engine_state.json`; decide RESUME (`resume: true` spec + `--resume-from-checkpoint`, verify the spec points at the checkpoint dir FIRST - L646) or RE-RUN; relaunch the chain from the halted spec with `--wait-for` if another run is live. HALT notification beyond the log is **PROPOSED-NOT-BUILT (S6-B2573f)** | `scripts/classify_run_log.py`, `scripts/run_serial_chain.py --wait-for` | a queue row naming the halted spec, the cause class, and the relaunch command | chain log shows the relaunch |
+| 1.4 | Chain HALT (any non-COMPLETE): read `serial_chain.log`, `classify_run_log.py <log>` (DEAD vs live), the out-dir's `engine_state.json`; decide RESUME (`resume: true` spec + `--resume-from-checkpoint`, verify the spec points at the checkpoint dir FIRST - L646) or RE-RUN; relaunch the chain from the halted spec with `--wait-for` if another run is live. HALT notification SHIPPED at B2577 (S6-B2573f.a): every HALT appends `output_audit/chain_halts.jsonl`, toasts, and the Stop hook blocks the turn until the response carries `CHAIN HALT REPORT: <wave>`; the session-independent 15-min watcher is **PROPOSED-NOT-BUILT (S6-B2573f.c)** | `scripts/classify_run_log.py`, `scripts/run_serial_chain.py --wait-for` | a queue row naming the halted spec, the cause class, and the relaunch command | chain log shows the relaunch |
 | 2 | When every Step-1 spec is COMPLETE: grade every landed cube with the family grader (already done per landing by the battery); render Tables A-D (`producer_variant_table.py --strategy <s> --results <grid...> --keys <params> --out`; NOTE `--keys` DEFAULTS to the smc keys `close_mitigation,age_bars_max,tail_n` - always pass the family's own, S6-B2573c); pick the top-3 configs by the STEP 2 ENTRY rule (mechanical: rank on `is_ci_lo`, min-trades >= 10, no gates - B1608) | family grader + `producer_variant_table.py` | `PRODUCER_VARIANT_TABLE_<strategy>.md` Tables A-D populated; top-3 list in the queue row | top-3 named with `is_ci_lo` values |
 | 3 | WATERFALL: run config 1 at 4 y x 544 tickers (legs <= 5 h each, `resume: true`); the battery grades it against the six LIVE_GATES; STOP at the first config that qualifies; else config 2, then 3 (STEP 2 EXECUTION) | same launch path as 1.1; `roster_core.LIVE_GATES` | `output_audit/<batch>_cfgN_grid.json` with `qualifiers` (renamed from `provisional_qualifiers` at S6-B2409) | a qualifier, or 3 of 3 non-qualifying with denominators |
 | 4 | ADMIT: render the qualifier into `PHASE_1B_ROSTER.md` (`phase_1b_step2_admissions.json`, metrics re-derived from the grid at render time - S6-B2413); count the REGISTERED mirror short (S6-B2417); engine wiring is DEFERRED to Phase 1B deployment (S6-B2411, trigger named there) | `scripts/build_phase_1b_roster.py` | roster row + queue row | owner-visible roster diff in the turn |
