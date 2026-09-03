@@ -5629,3 +5629,24 @@ the flip, the orphan-rule gate read 472 `+### L` lines and demanded CHECKLIST an
 nobody had touched - satisfying it would have meant fabricating dispositions. With the flag it reads the
 1 real entry. Wired: `verify_turn_compliance.check_orphan_rule` and
 `preflight.get_staged_added_lines` (the C7 scan). Pin: test_b2581.
+
+### #294 - AFTER SHIPPING A GATE, ENUMERATE THE POPULATION ITS PRECONDITION SELECTS (B2583 / L757)
+
+**A gate is designed from the one or two instances that bit you, so its predicate encodes their
+accidents.** State the gate's PRECONDITION in one sentence, enumerate every member of the population
+that precondition selects, and re-derive the predicate against that population. If any member would
+PASS, the predicate is fitted to the incident rather than to the class.
+
+**MEASURED (B2582):** preflight C13 was written after two MIXED-ending files were damaged, so it
+keyed on ending DIVERSITY - right for both. Its precondition is "the file contains a bare LF", and
+that population holds three canonical docs, the third of which is CANONICAL_FACTS.md at 843 bare LF
+and zero CRLF. A whole-file flip there leaves the kind count at 1 -> 1: the gate would have passed
+the worst instance of its own class. The predicate is now the count of NON-CRLF endings, which a flip
+drives toward zero and a restore raises.
+
+**The same sweep found a fourth live instance** - EXECUTION_QUEUE.md's working tree had drifted to
+CRLF against a bare-LF blob, so a one-row append read as 13,533 changed lines and the row collector
+handed every row gate 1,846 rows as new. Sibling of #226 (prove it can fail) at the population level,
+and of L592 (the unit of the change was smaller than the unit of the defect) one dimension across:
+there the fix reached fewer SITES, here fewer SHAPES. Detection is JUDGMENT-ONLY; durability is
+pinned by test_b2581's uniform-LF arm and the skill fragment in test_b2123.

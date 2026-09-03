@@ -19384,3 +19384,50 @@ whose CR-blind count is under a fifth of that, naming the file and both numbers;
 added to `check_orphan_rule` and to `preflight.get_staged_added_lines` (MEASURED: 472 false `+### L`
 hits collapse to the 1 real entry). Pin: test_b2581. Retroactive coverage (#136): C13 fires on the B2580
 commit that produced this entry, and the CR-blind orphan gate passes the turn that had to write it.
+
+### L757 - A gate inherits the shape of the instances that bit you; the population sweep is what finds the rest
+
+**What happened (B2581 -> B2582, 2026-09-03).** L756's gate, preflight C13, was written hours after two
+files were damaged by a line-ending rewrite. Both were MIXED - LEARNINGS.md held 657 bare LF and one
+lone CR among 18,641 CRLF, CHECKLIST.md 53 among 5,539 - so the discriminator I reached for was
+ending DIVERSITY: a flip collapses a mixed file to one ending, a restore brings the variety back.
+That predicate is correct for both instances and it was derived from them.
+
+**The retro-sweep the turn gate demanded then enumerated the population the precondition selects** -
+every canonical doc containing at least one bare LF, since CRLF is what the damaging call emits.
+Three qualify, and the third is the one the instances could not teach: CANONICAL_FACTS.md is
+UNIFORM bare LF, 843 endings and not one CRLF. Flipping that file whole leaves the ending-kind count
+at 1 -> 1, **so C13 would have passed the worst instance of the class it exists to catch, in the file
+it would hit hardest.** The quantity that actually separates damage from repair is the count of
+NON-CRLF endings: a flip drives it toward zero, a restore raises it.
+
+**And the sweep found a fourth live instance the same way, in the file the gates read.**
+EXECUTION_QUEUE.md's blob is bare LF under core.autocrlf=true while its working tree had drifted to
+all-CRLF, carrying a lone CR from a queue row a heredoc had mangled. Measured with git diff numstat:
+13,533 added / 13,532 removed for a ONE-ROW append. The row collector _queue_rows_added therefore
+handed every row-reading gate 1,846 rows as "added this turn", and test_b1795 failed on duplicate
+priority strings scraped out of rows written months ago. Restoring the file from HEAD's blob plus the
+new row brought the diff to 1 line and both row gates green.
+
+**Why it generalises.** A defect arrives as one or two instances, and they are the material the fix is
+designed from - so the predicate encodes their accidents. The instances teach the SYMPTOM; only the
+population its precondition selects can teach the DISCRIMINATOR. This is L592's unit-of-the-change
+lesson one level up: there the fix reached fewer SITES than the defect, here it reached fewer SHAPES.
+The tell is that the gate's condition mentions a property both instances happened to share.
+
+**The rule.** After shipping a gate, state its PRECONDITION in one sentence, enumerate every member
+of the population that precondition selects, and re-derive the predicate against that population
+before the gate is trusted. If a member would pass, the predicate is fitted to the incident.
+
+**Compliance failures recorded in the same pass, none of them new classes:** citing
+STRATEGIES_DISABLED_DATA_SCARCITY and STRATEGIES_DISABLED_DUPLICATE from memory rather than opening
+backtest/config.py (#222); phrasing a completion claim over a set while the turn's tool output
+carried truncation markers (#270); quoting live heartbeat figures with the artifact named only in
+backticks, which the source gate strips as a mention (#201 / L705); and landing Phase-5 members
+across successive commits rather than one (#236 / L630).
+
+**Mechanisms.** preflight C13 now counts non-CRLF endings (_bare_endings) rather than ending kinds,
+pinned in both directions by test_b2581 including the uniform-LF shape and the documented residual
+that a deliberate CRLF-to-LF normalisation stays quiet. Detection of the class itself is
+JUDGMENT-ONLY - no scan knows what population a gate's precondition selects - and durability is
+pinned by the CHECKLIST #294 citation plus the skill fragment in test_b2123.

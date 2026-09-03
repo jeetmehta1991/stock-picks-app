@@ -24995,6 +24995,10 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         # read as CONTENT by the gates downstream - not the heading (L548).
         ("A PATCHER WRITES BYTES",
          "B2581/L756: write_text re-encodes every ending; the diff gates then read the file as new"),
+        # B2583: the L757 tripwire row. Pins the DIAGNOSTIC - a predicate
+        # resting on what the instances happened to share - not the heading.
+        ("ENUMERATE THE POPULATION ITS PRECONDITION SELECTS",
+         "B2582/L757: a gate built from its instances inherits their shape"),
         ("2. **Read the LEARNINGS relevant to this turn's task type.** Grep `LEARNINGS.md`",
          "B2382: Phase 0  RECALL before any analysis or recommendation"),
         ("to prevent** (B1119: 22 batches of silent doc-sync suspension; Council 236's",
@@ -25530,7 +25534,9 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # 232 -> 233 at B2582 (the L756 patcher-writes-bytes fragment; its
     # tripwire row ships in the same commit per B2130 - the rule the turn
     # gate asked for when L756 landed in LEARNINGS alone).
-    assert len(gutted) == 233, gutted
+    # 233 -> 234 at B2583 (the L757 population-sweep fragment; LEARNINGS,
+    # CHECKLIST, skill, pin, queue row and banner in ONE call per L632).
+    assert len(gutted) == 234, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
