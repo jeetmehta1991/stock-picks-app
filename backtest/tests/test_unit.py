@@ -19636,7 +19636,9 @@ def test_b1864_process_rule_gates():
     # ---- WIRED, not merely defined (B1751 / #224) ------------------------
     src = (root / "scripts"
            / "verify_turn_compliance.py").read_text(encoding="utf-8")
-    main_src = src[src.index("def main()"):]
+    # B2576 gave main() an argv parameter (--selftest); slice at the
+    # name, not at a literal signature the pin has no business freezing.
+    main_src = src[src.index("def main("):]
     for name in ("scan_launch_missing_pool_workers",
                  "scan_monitor_without_stall_check",
                  "scan_bulk_process_kill"):
@@ -32027,3 +32029,157 @@ def test_b2575_chain_launch_path_exists_and_engine_hash_gate_records(tmp_path, m
     # (e) the supervisor commits the free-level artifact (five landings had left it untracked)
     pl = (root / "scripts" / "postconfig_landing.py").read_text(encoding="utf-8")
     assert '"free_levels")]' in pl
+
+
+def test_b2576_battery_runs_armed_and_refuses_the_wrong_precompute(tmp_path, monkeypatch):
+    """S6-B2574b (BATTERY-ENV class): `_run` accepted env_extra and no family
+    runner passed the landed arm's env, so a battery run outside the engine
+    hook resolved INST_PERSIST_CACHE_TAG from the CALLER and the minq8 spot
+    check read production (`_t1a`) while the cube was built from `_t1a_minq8`
+    - 32 agree / 18 DISAGREE by hand against a landed 50 / 0. B2576: every
+    family subprocess runs under the arm env, step 4 FAILS when the artifact
+    records a precompute dir other than the arm's (missing record fails
+    closed), the free-level row carries the grader's verdict line rather
+    than the last stderr line, and the resolver takes an explicit tag."""
+    import importlib.util
+    import json as _json
+    import os as _os
+    import sys as _sys
+    import types
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parents[2]
+    _sys.path.insert(0, str(root / "scripts"))
+    import build_institutional_persistence_precompute as bip
+
+    # (a) the resolver: explicit tag beats the environment; "" is production
+    _os.environ["INST_PERSIST_CACHE_TAG"] = "env_tag"
+    try:
+        assert bip.persistence_cache_dir(root).name == "institutional_persistence_t1a_env_tag"
+        assert bip.persistence_cache_dir(root, tag="minq8").name == "institutional_persistence_t1a_minq8"
+        assert bip.persistence_cache_dir(root, tag="").name == "institutional_persistence_t1a"
+    finally:
+        _os.environ.pop("INST_PERSIST_CACHE_TAG", None)
+
+    spec = importlib.util.spec_from_file_location(
+        "run_postconfig_b2576", root / "scripts" / "run_postconfig.py")
+    rp = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(rp)
+
+    # (b) the verdict line survives a stderr trailer
+    p = types.SimpleNamespace(
+        returncode=2,
+        stdout="REPRODUCTION: 61 of 374 covered\n[FAIL] NOT_COMPARABLE: 313 of 374 empty\n",
+        stderr="pandas-ta not installed; falling back\n")
+    assert rp._verdict_line(p) == "[FAIL] NOT_COMPARABLE: 313 of 374 empty"
+    assert rp._tail(p) != rp._verdict_line(p), "the trailer was the whole defect"
+    quiet = types.SimpleNamespace(returncode=1, stdout="", stderr="Traceback\nKeyError: 'x'")
+    assert rp._verdict_line(quiet) == rp._tail(quiet), "no verdict printed -> tail"
+
+    # (c) every institutional subprocess carries the arm env; step 4 reads the record
+    monkeypatch.setattr(rp, "ROOT", tmp_path)
+    monkeypatch.setattr(rp, "spot_summary", lambda p: "50 agree / 0 disagree")
+    (tmp_path / "output_audit").mkdir()
+    cube = tmp_path / "output_icg_fake_minq8"
+    cube.mkdir()
+    manifest = {"window": {}, "arms": [{"env": {"INST_PERSIST_CACHE_TAG": "minq8"}}]}
+    params = {"min_consecutive_quarters": 8, "growth_lookback_quarters": 4,
+              "growth_multiple": 1.1, "ema_span": 200}
+    seen = []
+
+    def make_run(precompute_name):
+        def fake_run(cmd, env_extra=None):
+            cmd = [str(c) for c in cmd]
+            seen.append((cmd, dict(env_extra or {})))
+            for i, c in enumerate(cmd):
+                if c == "--out":
+                    doc = {}
+                    if "spot_check_institutional" in " ".join(cmd) and precompute_name:
+                        doc = {"precompute_dir": "data_prefetch/derived/" + precompute_name}
+                    Path(cmd[i + 1]).write_text(_json.dumps(doc), encoding="utf-8")
+            return types.SimpleNamespace(returncode=0, stdout="[PASS] ok", stderr="")
+        return fake_run
+
+    monkeypatch.setattr(rp, "_run", make_run("institutional_persistence_t1a_minq8"))
+    results, notes, _, _ = rp.run_institutional(cube, params, manifest)
+    armed = [c for c, e in seen if e.get("INST_PERSIST_CACHE_TAG") == "minq8"]
+    tools = ("grade_institutional_config", "grade_free_levels_institutional",
+             "spot_check_institutional")
+    for t in tools:
+        assert any(t in " ".join(c) for c in armed), (
+            f"{t} ran without the arm env - it resolves inputs from the caller")
+    by = {n: (s, m) for n, s, m in results}
+    assert by["step4_spot_check_auto"][0] == "PASS", by["step4_spot_check_auto"]
+    assert "matches the arm" in by["step4_spot_check_auto"][1]
+    assert notes["4_three_leg_spot_check"][0] == "DONE"
+
+    seen.clear()
+    monkeypatch.setattr(rp, "_run", make_run("institutional_persistence_t1a"))
+    results, notes, _, _ = rp.run_institutional(cube, params, manifest)
+    by = {n: (s, m) for n, s, m in results}
+    assert by["step4_spot_check_auto"][0] == "FAIL", (
+        "a production read under a tagged arm must FAIL step 4 - this is the "
+        "minq8 32/18 vs 50/0 defect")
+    assert "precompute-dir mismatch" in by["step4_spot_check_auto"][1]
+    assert notes["4_three_leg_spot_check"][0] == "FAIL"
+
+    seen.clear()
+    monkeypatch.setattr(rp, "_run", make_run(None))
+    results, _, _, _ = rp.run_institutional(cube, params, manifest)
+    by = {n: (s, m) for n, s, m in results}
+    assert by["step4_spot_check_auto"][0] == "FAIL", "a missing record fails closed"
+
+    # (d) the smc runner is armed too (merged with its PYTHONPATH)
+    seen.clear()
+    monkeypatch.setattr(rp, "_run", make_run(None))
+    smc_manifest = {"arms": [{"env": {"SMC_SWING_LENGTH": "50", "STRAT_EMA_SPAN": "50"}}]}
+    rp.run_smc(cube, {"swing": "50", "span": "50"}, smc_manifest)
+    smc_armed = [(c, e) for c, e in seen
+                 if any(x in " ".join(c) for x in ("tighten_breaker_block", "spot_check_trades"))]
+    assert len(smc_armed) == 2
+    for c, e in smc_armed:
+        assert e.get("STRAT_EMA_SPAN") == "50" and "PYTHONPATH" in e, (c, e)
+
+
+def test_b2576_turn_gate_refuses_a_tty_and_selftests_every_gate(monkeypatch):
+    """S6-B2573g: verify_turn_compliance.py read stdin unconditionally, so a
+    hand run from a terminal blocked forever with no message (the Stop hook
+    pipes its payload, so it never saw this). B2576: on a TTY with no
+    TURN_GATE_TRANSCRIPT it prints usage and exits 2 WITHOUT reading stdin;
+    --selftest runs every wired gate over a synthetic transcript and fails
+    only when a gate RAISES (violations are expected off-turn)."""
+    import importlib.util
+    import os as _os
+    import subprocess as _sp
+    import sys as _sys
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parents[2]
+    spec = importlib.util.spec_from_file_location(
+        "verify_turn_compliance_b2576", root / "scripts" / "verify_turn_compliance.py")
+    m = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(m)
+
+    class _Tty:
+        def isatty(self):
+            return True
+
+        def read(self):
+            raise AssertionError("main() read stdin on a TTY - this is the hang")
+
+    monkeypatch.delenv("TURN_GATE_TRANSCRIPT", raising=False)
+    monkeypatch.setattr(m.sys, "stdin", _Tty())
+    m._ENTRIES_CACHE = None
+    assert m.main([]) == 2
+
+    # the synthetic transcript is a parseable turn: user text, tool call, marker
+    ents = m.synthetic_transcript()
+    assert m.scan_transcript_entries(ents) == (False, True)
+
+    r = _sp.run([_sys.executable, str(root / "scripts" / "verify_turn_compliance.py"),
+                 "--selftest"], capture_output=True, text=True, cwd=str(root),
+                timeout=300, stdin=_sp.DEVNULL)
+    assert r.returncode == 0, r.stdout + r.stderr
+    assert "0 RAISED" in r.stdout, r.stdout
+    n = int(r.stdout.split("SELFTEST: ")[1].split(" named")[0])
+    assert n >= 39, f"the selftest ran {n} gates; main() wires 39 today"

@@ -197,6 +197,66 @@ def _tail(p: subprocess.CompletedProcess, n: int = 2) -> str:
     return "; ".join(x.strip() for x in lines[-n:] if x.strip())
 
 
+_VERDICT_PREFIXES = ("[FAIL]", "[PASS]", "REPRODUCTION:")
+
+
+def _verdict_line(p: subprocess.CompletedProcess) -> str:
+    """The grader's own verdict line, when it printed one.
+
+    B2576 (S6-B2574b): `_tail` joins stdout+stderr and keeps the LAST two
+    lines, so a stderr trailer ("pandas-ta not installed ...") displaced the
+    grader's `[FAIL] NOT_COMPARABLE: ...` line from the span100 ledger row -
+    the row carried the noise and not the verdict. Prefer a stdout line that
+    starts with a verdict prefix; fall back to `_tail` when none was printed.
+    """
+    for line in reversed((p.stdout or "").splitlines()):
+        s = line.strip()
+        if s.startswith(_VERDICT_PREFIXES):
+            return s
+    return _tail(p)
+
+
+def _arm_env(manifest: dict) -> dict:
+    """The landed arm's env, passed to EVERY family subprocess (B2576).
+
+    S6-B2574b: `_run` accepted `env_extra` and no family runner passed the
+    manifest arm env, so a battery run outside the engine hook resolved
+    env-dependent inputs (the INST_PERSIST_CACHE_TAG precompute directory)
+    from the CALLER's environment - production - and the minq8 spot check
+    read `_t1a` while the cube was built from `_t1a_minq8` (32 agree /
+    18 DISAGREE against a landed 50 / 0). Inside the hook the env happened
+    to match; the battery's correctness must not depend on who calls it.
+    """
+    return {str(k): str(v) for k, v in _arm0(manifest)[1].items()}
+
+
+def _expected_precompute_dir(arm_env: dict) -> Path:
+    """Where the arm's persistence precompute lives - ONE resolver (S6-B2484),
+    called with the arm's tag rather than the caller's environment."""
+    from build_institutional_persistence_precompute import persistence_cache_dir
+    return persistence_cache_dir(ROOT, tag=arm_env.get("INST_PERSIST_CACHE_TAG", ""))
+
+
+def _precompute_dir_check(spot_out: Path, arm_env: dict) -> tuple[bool, str]:
+    """B2576: the spot-check artifact records the precompute directory it
+    read; it must be the arm's. A missing record fails closed."""
+    try:
+        doc = json.loads(spot_out.read_text(encoding="utf-8")) or {}
+    except (OSError, ValueError):
+        return False, f"spot artifact {spot_out.name} unreadable"
+    got = doc.get("precompute_dir")
+    if not got:
+        return False, (f"spot artifact {spot_out.name} records no "
+                       f"precompute_dir - cannot show it read the arm's artifact")
+    exp = _expected_precompute_dir(arm_env)
+    if Path(str(got)).name != exp.name:
+        return False, (f"precompute-dir mismatch: spot check read "
+                       f"{Path(str(got)).name} but the arm expects {exp.name} "
+                       f"(battery ran against the wrong persistence artifact - "
+                       f"S6-B2574b class)")
+    return True, f"precompute_dir {exp.name} matches the arm"
+
+
 def spot_summary(spot_out: Path) -> str:
     """Step-4 evidence from the ARTIFACT, never from stdout - the smc checker
     prints a blank line before 'wrote ...', so a stdout tail lost the tally
@@ -311,13 +371,14 @@ def _institutional_params(manifest: dict) -> tuple[dict | None, str]:
 def run_smc(cube_dir: Path, p: dict, manifest: dict) -> tuple[list, dict, Path, Path]:
     swing2, span2 = p["swing"], p["span"]
     results, notes = [], {}
+    arm_env = _arm_env(manifest)          # B2576: every subprocess runs armed
     grid_out = ROOT / "output_audit" / f"{cube_dir.name}_grid_auto.json"
     spot_out = ROOT / "output_audit" / f"{cube_dir.name}_spot_check.json"
     g = _run([sys.executable, str(ROOT / "scripts" / "tighten_breaker_block.py"),
               "--cube", str(cube_dir / "trade_exit_detail.csv"),
               "--swing-length", str(swing2), "--span", str(span2),
               "--min-n", "10", "--out", str(grid_out)],
-             {"PYTHONPATH": ".;scripts"})
+             {**arm_env, "PYTHONPATH": ".;scripts"})
     ok2 = g.returncode == 0 and grid_out.exists()
     results.append(("step2_grade_auto", "PASS" if ok2 else "FAIL",
                     f"exit {g.returncode}; swing={swing2} span={span2} "
@@ -331,7 +392,7 @@ def run_smc(cube_dir: Path, p: dict, manifest: dict) -> tuple[list, dict, Path, 
                "--cube", str(cube_dir / "trade_exit_detail.csv"),
                "--n", "50", "--swing-length", str(swing2),
                "--ema-span", str(span2), "--out", str(spot_out)],
-              {"PYTHONPATH": "."})
+              {**arm_env, "PYTHONPATH": "."})
     ok4 = sc.returncode == 0 and spot_out.exists()
     tail = spot_summary(spot_out) if ok4 else _tail(sc)
     results.append(("step4_spot_check_auto", "PASS" if ok4 else "FAIL",
@@ -350,6 +411,7 @@ def run_smc(cube_dir: Path, p: dict, manifest: dict) -> tuple[list, dict, Path, 
 
 def run_institutional(cube_dir: Path, p: dict, manifest: dict) -> tuple[list, dict, Path, Path]:
     results, notes = [], {}
+    arm_env = _arm_env(manifest)          # B2576: every subprocess runs armed
     grid_out = ROOT / "output_audit" / f"{cube_dir.name}_grid_auto.json"
     spot_out = ROOT / "output_audit" / f"{cube_dir.name}_spot_check.json"
     label = (f"minq={p['min_consecutive_quarters']} lookback="
@@ -361,7 +423,7 @@ def run_institutional(cube_dir: Path, p: dict, manifest: dict) -> tuple[list, di
               "--growth-lookback-quarters", str(p["growth_lookback_quarters"]),
               "--growth-multiple", str(p["growth_multiple"]),
               "--span", str(p["ema_span"]), "--min-n", "10",
-              "--out", str(grid_out)])
+              "--out", str(grid_out)], arm_env)
     ok2 = g.returncode == 0 and grid_out.exists()
     results.append(("step2_grade_auto", "PASS" if ok2 else "FAIL",
                     f"exit {g.returncode}; {label} -> {grid_out.name}; "
@@ -374,11 +436,12 @@ def run_institutional(cube_dir: Path, p: dict, manifest: dict) -> tuple[list, di
     free_out = ROOT / "output_audit" / f"{cube_dir.name}_free_levels.json"
     fl = _run([sys.executable,
                str(ROOT / "scripts" / "grade_free_levels_institutional.py"),
-               "--cube", str(cube_dir), "--out", str(free_out)])
+               "--cube", str(cube_dir), "--out", str(free_out)], arm_env)
     okf = fl.returncode == 0 and free_out.exists()
+    # B2576: the grader's verdict line, not whatever stderr printed last
     results.append(("step2_free_levels", "PASS" if okf else "FAIL",
                     f"exit {fl.returncode}; reproduction-gated free levels "
-                    f"-> {free_out.name}; {_tail(fl)[:160]}"))
+                    f"-> {free_out.name}; {_verdict_line(fl)[:160]}"))
     notes["2_grade_with_config_params"] = (
         ("DONE", f"AUTO (B2520/B2569): grade_institutional_config at manifest "
                  f"{label} -> {grid_out.name}; free levels reproduction-gated "
@@ -386,7 +449,7 @@ def run_institutional(cube_dir: Path, p: dict, manifest: dict) -> tuple[list, di
         ("FAIL", (f"grade_institutional_config exit {g.returncode} at {label}: "
                   f"{_tail(g)[:140]}" if not ok2 else
                   f"free-levels grade exit {fl.returncode} (reproduction gate "
-                  f"or grading failed): {_tail(fl)[:140]}")))
+                  f"or grading failed): {_verdict_line(fl)[:140]}")))
     win = manifest.get("window") or {}
     cmd = [sys.executable, str(ROOT / "scripts" / "spot_check_institutional.py"),
            "--cube", str(cube_dir), "--n", "50", "--ema-span", str(p["ema_span"]),
@@ -395,9 +458,16 @@ def run_institutional(cube_dir: Path, p: dict, manifest: dict) -> tuple[list, di
         cmd += ["--start", str(win["start"])[:10]]
     if win.get("end"):
         cmd += ["--end", str(win["end"])[:10]]
-    sc = _run(cmd)
+    sc = _run(cmd, arm_env)
     ok4 = sc.returncode == 0 and spot_out.exists()
     tail = spot_summary(spot_out) if ok4 else _tail(sc)
+    if ok4:
+        # B2576 (S6-B2574b): the artifact must have read the ARM's precompute
+        # directory; a production read under a tagged arm is a wrong answer
+        # that agrees with nothing (minq8: 32 agree / 18 DISAGREE by hand vs
+        # the landed 50 / 0). Fails closed on a missing record.
+        ok4, why = _precompute_dir_check(spot_out, arm_env)
+        tail = f"{tail}; {why}" if ok4 else why
     results.append(("step4_spot_check_auto", "PASS" if ok4 else "FAIL",
                     f"exit {sc.returncode}; {tail[:180]}"))
     notes["4_three_leg_spot_check"] = (

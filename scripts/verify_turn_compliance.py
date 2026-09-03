@@ -4304,7 +4304,30 @@ def scan_unrecorded_miss(entries, learnings_modified: bool):
              "and end the turn again.")]
 
 
-def main() -> int:
+TTY_USAGE = (
+    "verify_turn_compliance.py reads the Stop-hook payload from stdin; on an "
+    "interactive terminal that read blocks forever (S6-B2573g). Run it with "
+    "TURN_GATE_TRANSCRIPT=<transcript.jsonl> to gate a saved transcript, or "
+    "with --selftest to run every gate on a synthetic transcript.")
+
+
+def synthetic_transcript() -> list[dict]:
+    """B2576 (S6-B2573g): a minimal turn every gate can parse - one user text,
+    one assistant tool call, one assistant text carrying the compliance
+    marker. Gates may REPORT violations over it (the tree is not a turn's);
+    none may RAISE - a gate that raises is the finding --selftest exists for."""
+    return [
+        {"type": "user", "message": {"content": "selftest turn"}},
+        {"type": "assistant", "message": {"content": [
+            {"type": "tool_use", "name": "Bash",
+             "input": {"command": "git status --short"}}]}},
+        {"type": "assistant", "message": {"content": [
+            {"type": "text",
+             "text": "## CHECKLIST compliance\nselftest: no recommendation made."}]}},
+    ]
+
+
+def main(argv: list[str] | None = None) -> int:
     # B1746: RUN EVERY GATE, REPORT EVERY VIOLATION.
     #
     # Root cause of the missed fable-mode catch: main() had 18 early `return 2`
@@ -4317,12 +4340,26 @@ def main() -> int:
     # as #225 firing only on an untouched queue, and as the per-skill gate that
     # any Skill call satisfied. A gate suite that stops at the first failure
     # trains you to fix one thing per turn and never see the rest.
+    global _ENTRIES_CACHE
+    argv = list(sys.argv[1:]) if argv is None else list(argv)
+    selftest = "--selftest" in argv
+    if selftest:
+        _ENTRIES_CACHE = synthetic_transcript()
+    elif not os.environ.get("TURN_GATE_TRANSCRIPT") and sys.stdin.isatty():
+        # B2576 (S6-B2573g): refuse to block on a keyboard. The Stop hook
+        # pipes its payload, so isatty() is False there and nothing changes.
+        print(TTY_USAGE, file=sys.stderr)
+        return 2
     _v: list[str] = []
+    _raised: list[str] = []
+    _n_gates = 0
     for _fn in (check_compliance_marker, check_verdict_denominator, check_unverified_structure, check_describing_artifact_drift, check_skill_gates, check_uninspected_constant, check_response_gates, check_postconfig_complete, check_unmeasured_quantity, check_unverified_universe, check_postfix_recheck, check_orphan_rule, check_unrecorded_miss, check_monitor_armed):
+        _n_gates += 1
         try:
             _r = _fn()
         except Exception as _e:            # a BROKEN gate is itself a finding
             _v.append(f"{_fn.__name__} RAISED {_e!r} - this gate is broken")
+            _raised.append(_fn.__name__)
             continue
         if _r:
             _v.append(_r if isinstance(_r, str) else str(_r))
@@ -4350,13 +4387,26 @@ def main() -> int:
                 scan_monitor_pattern_unverified,
                 # B2520: a landed cube must be REPORTED before the turn ends.
                 scan_undelivered_landing):
+        _n_gates += 1
         try:
             _r = _sc(_e2)
         except Exception as _e:
             _v.append(f"{_sc.__name__} RAISED {_e!r} - this gate is broken")
+            _raised.append(_sc.__name__)
             continue
         if _r:
             _v.append(_r[0])
+    if selftest:
+        # B2576: the selftest asks ONE question - did any gate raise? Reported
+        # violations are expected (the working tree is not a finished turn)
+        # and are listed for the reader, not counted against the run. The
+        # legacy inline body (dirty-tree Gate B) is not exercised here.
+        print(f"SELFTEST: {_n_gates} named gates ran on a synthetic transcript; "
+              f"{len(_raised)} RAISED; {len(_v) - len(_raised)} violation(s) "
+              f"reported (expected off-turn); legacy inline gates not exercised")
+        for _msg in _v:
+            print(f"  - {_msg[:200]}")
+        return 2 if _raised else 0
     if _v:
         print(f"TURN-GATE BLOCK - {len(_v)} violation(s), ALL listed:",
               file=sys.stderr)

@@ -41,7 +41,7 @@ import pandas as pd
 REPO = Path(__file__).resolve().parent.parent
 INSTITUTIONAL_DIR = REPO / "data_prefetch" / "quiver" / "institutional"
 T1A_CSV = REPO / "Backtesting universe" / "Tier 1A Universe_SP500 Tickers_Jan 2020 to May 2026.csv"
-def persistence_cache_dir(repo_root):
+def persistence_cache_dir(repo_root, tag=None):
     """S6-B2484: resolve the persistence-precompute directory, tag-aware.
 
     ONE definition, imported by the producer AND the consumer. The council's
@@ -52,10 +52,16 @@ def persistence_cache_dir(repo_root):
     INST_PERSIST_CACHE_TAG unset or empty -> the production path, unchanged.
     Set -> a sibling directory suffixed with the tag, so a parameter sweep can
     never overwrite the artifact SEVEN 13F strategies read.
+
+    `tag` (B2576): an explicit tag overrides the environment read, so the
+    post-config battery can ask "where does THIS arm's artifact live" for a
+    landed manifest without mutating its own process env. None = read env.
     """
     import os
     from pathlib import Path
-    tag = (os.environ.get("INST_PERSIST_CACHE_TAG") or "").strip()
+    if tag is None:
+        tag = os.environ.get("INST_PERSIST_CACHE_TAG") or ""
+    tag = str(tag).strip()
     base = Path(repo_root) / "data_prefetch" / "derived"
     return base / ("institutional_persistence_t1a" + (("_" + tag) if tag else ""))
 
