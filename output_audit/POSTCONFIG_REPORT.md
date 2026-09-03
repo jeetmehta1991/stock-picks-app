@@ -6,21 +6,21 @@ REGENERATED WHOLE at every config landing - by the landing supervisor the engine
 
 ## How much confidence these checks earn
 
-**Across the entire ledger (117 entries), 733 named checks have run and 4 have ever returned non-PASS.**
+**Across the entire ledger (118 entries), 752 named checks have run and 4 have ever returned non-PASS.**
 
 ## Landings - what the supervisor recorded (B2520)
 
-12 cube(s) landed through the supervisor; **7 not yet reported to the owner** (output_icg_span100_span100, output_icg_span150_span150, output_icg_mult1.5_mult1.5, output_icg_lookback2_lookback2, output_icg_minq8_minq8, output_icg_mult1.0_mult1.0, output_icg_mult1.25_mult1.25).
+12 cube(s) landed through the supervisor; **0 not yet reported to the owner**.
 
 | cube | landed | via | battery exit | blocking | WARN/FAIL findings | committed | pushed | reported |
 |---|---|---|---|---|---|---|---|---|
-| output_icg_mult1.25_mult1.25 | 2026-09-03T12:49:03 | engine-hook | 0 | 6_post_fix_recheck | 1: selection_margin WARN: rank-1 [breakeven_plus_trail] is_ci_lo -0.297 vs rank-2 [hybrid_50pct_target] -0.297: margin 0.000 between exits; WARN < 0.05 (selection at noise level) | False | False | **NO** |
-| output_icg_mult1.0_mult1.0 | 2026-09-03T09:41:39 | engine-hook | 0 | none | 0 | 388db03c0 | True | **NO** |
-| output_icg_minq8_minq8 | 2026-09-03T06:13:18 | engine-hook | 0 | none | 0 | 47363d1e7 | True | **NO** |
-| output_icg_lookback2_lookback2 | 2026-09-03T04:00:41 | engine-hook | 0 | none | 0 | f1861a9a4 | True | **NO** |
-| output_icg_mult1.5_mult1.5 | 2026-09-03T01:45:20 | engine-hook | 0 | none | 0 | 5b3e3c8fa | True | **NO** |
-| output_icg_span150_span150 | 2026-09-02T23:31:07 | engine-hook | 0 | none | 0 | 1946b3605 | True | **NO** |
-| output_icg_span100_span100 | 2026-09-02T21:16:40 | engine-hook | 0 | 6_post_fix_recheck | 1: empty_signals_share WARN: 313 of 374 trade_log rows carry an empty signals_at_entry (S6-B2512 class) | 7c20103da | True | **NO** |
+| output_icg_mult1.25_mult1.25 | 2026-09-03T12:49:03 | engine-hook | 0 | 6_post_fix_recheck | 1: selection_margin WARN: rank-1 [breakeven_plus_trail] is_ci_lo -0.297 vs rank-2 [hybrid_50pct_target] -0.297: margin 0.000 between exits; WARN < 0.05 (selection at noise level) | False | False | yes 2026-09-03T14:52:20 |
+| output_icg_mult1.0_mult1.0 | 2026-09-03T09:41:39 | engine-hook | 0 | none | 0 | 388db03c0 | True | yes 2026-09-03T14:52:20 |
+| output_icg_minq8_minq8 | 2026-09-03T06:13:18 | engine-hook | 0 | none | 0 | 47363d1e7 | True | yes 2026-09-03T14:52:20 |
+| output_icg_lookback2_lookback2 | 2026-09-03T04:00:41 | engine-hook | 0 | none | 0 | f1861a9a4 | True | yes 2026-09-03T14:52:20 |
+| output_icg_mult1.5_mult1.5 | 2026-09-03T01:45:20 | engine-hook | 0 | none | 0 | 5b3e3c8fa | True | yes 2026-09-03T14:52:20 |
+| output_icg_span150_span150 | 2026-09-02T23:31:07 | engine-hook | 0 | none | 0 | 1946b3605 | True | yes 2026-09-03T14:52:20 |
+| output_icg_span100_span100 | 2026-09-02T21:16:40 | engine-hook | 0 | 6_post_fix_recheck | 1: empty_signals_share WARN: 313 of 374 trade_log rows carry an empty signals_at_entry (S6-B2512 class) | 7c20103da | True | yes 2026-09-03T14:52:19 |
 | output_icg_span50_span50 | 2026-09-02T16:46:26 | engine-hook | 0 | none | 0 | bafb5118e | True | yes 2026-09-02T17:08:14 |
 | output_icg_span20_span20 | 2026-09-02T12:46:15 | engine-hook | 2 | 1_cube_sanity | 0 | fb885e91e | True | yes 2026-09-02T13:04:31 |
 | output_icg_span9_span9 | 2026-09-02T10:38:38 | engine-hook | 2 | 2_grade_with_config_params, 4_three_leg_spot_check, 6_post_fix_recheck, 6b_equivalence_class_check, 7_implement_in_engine, 8_verdict_with_denominators | 1: spot_check_disagreements WARN: no spot-check artifact - step 4 produced nothing to read | 3745e05dc | True | yes 2026-09-02T11:23:02 |
@@ -59,13 +59,13 @@ _Step-1 ranked list. `is_ci_lo` is the RANKING KEY, not a gate - Step-1 admissio
 | 19 | b2197_sw30sp50_sw30sp50 | 30 | 50 | earnings_blackout | +0.644 | 16 | THIN | 1 of 2 | 1.830 | 5 | 0 | 16 | BELOW_POWER_FLOOR |
 | 20 | b2197_sw30sp100_sw30sp100 | 30 | 100 | earnings_blackout | +0.644 | 16 | THIN | 2 of 2 | 1.830 | 5 | 0 | 16 | BELOW_POWER_FLOOR |
 
-_430 ranked outcomes across 43 graded configs; 407 distinct signatures._
+_440 ranked outcomes across 44 graded configs; 417 distinct signatures._
 
 **Best within each depth tier** (the comparison a rank order hides):
 
 | tier | best is_ci_lo | at n | rows |
 |---|---|---|---|
-| DEEP | +0.167 | 609 | 216 |
+| DEEP | +0.167 | 609 | 226 |
 | MID | +0.656 | 33 | 138 |
 | THIN | +1.250 | 14 | 76 |
 
@@ -96,11 +96,12 @@ _The SIX swept axes for the same rows, same order - join on `#`. P1 swing_length
 | 19 | b2197_sw30sp50_sw30sp50 | 30 | True | 20 | 250 | 0.02 | 50 | None |
 | 20 | b2197_sw30sp100_sw30sp100 | 30 | True | 20 | 250 | 0.02 | 100 | None |
 
-## Index - 43 graded config(s), newest first
+## Index - 44 graded config(s), newest first
 
 | config | best is_ci_lo | fires | starved | steps closed (DONE+N/A of 9; the gate's own is_closed) |
 |---|---|---|---|---|
-| output_icg_mult1.25_mult1.25 | -0.297 | 301 | 0/24 | 8/9 **OPEN: 6_post_fix_recheck** |
+| output_icg_lookback3_lookback3 | -0.134 | 338 | 0/24 | 9/9 |
+| output_icg_mult1.25_mult1.25 | -0.297 | 301 | 0/24 | 9/9 |
 | output_icg_mult1.0_mult1.0 | -0.091 | 450 | 0/24 | 9/9 |
 | output_icg_span100_span100 | 0.062 | 374 | 0/24 | 9/9 |
 | output_icg_minq8_minq8 | 0.054 | 256 | 0/24 | 9/9 |
@@ -146,13 +147,100 @@ _The SIX swept axes for the same rows, same order - join on `#`. P1 swing_length
 
 ## Per-config findings
 
+### output_icg_lookback3_lookback3
+
+**Configuration:** P4_min_consecutive_quarters=4, P5_growth_lookback_quarters=3, P6_growth_multiple=1.1, P9_span=200
+
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.134** (is_sharpe 0.231, 338 fires, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+
+**Completeness: 9 of 9 steps closed** (6 DONE with evidence, 3 N/A with a reason: 6_post_fix_recheck, 6b_equivalence_class_check, 7_implement_in_engine). Every step is dispositioned; nothing is outstanding on this cube.
+
+| step | status | evidence / reason (never truncated) |
+|---|---|---|
+| 1_cube_sanity | DONE | the named checks are tabulated below by risk question |
+| 2_grade_with_config_params | DONE | AUTO (B2520/B2569): grade_institutional_config at manifest min_consecutive_quarters=4 growth_lookback_quarters=3 growth_multiple=1.1 ema_span=200 -> output_icg_lookback3_lookback3_grid_auto.json; free levels reproduction-gated -> output_icg_lookback3_lookback3_free_levels.json |
+| 3_outlier_discrepancy_sweep | DONE | AUTO (B2192): mechanical core executed by the battery (M2 exits-vs-registry, M5 NaN/inf/winsorize, M7 degraded exits) + the grader's union diagnosis-loss gate and ci_lo-led ranking; M2_exits_per_entry_vs_registry=PASS; M3_fill_date=PASS; M4_holdout_touch=PASS; M5_pnl_integrity=PASS; M7_degraded_exits=PASS |
+| 4_three_leg_spot_check | DONE | AUTO (B2520): spot_check_institutional at manifest min_consecutive_quarters=4 growth_lookback_quarters=3 growth_multiple=1.1 ema_span=200; n_sampled 50 seed 42: 50 agree / 0 DISAGREE / 0 skipped; execution failures 0; empty records 0; legs A/B disagree 0; artifact output_icg_lookback3_lookback3_spot_check.json; precompute_dir institution |
+| 5_adversarial_lens_review | DONE | AUTO (B2520): lenses 9 run: 0 WARN / 0 FAIL / 9 INFO -> output_icg_lookback3_lookback3_lenses.json |
+| 6_post_fix_recheck | N/A | no lens finding (9 lenses, 0 WARN / 0 FAIL) -> nothing to recheck; N/A on evidence |
+| 6b_equivalence_class_check | N/A | 1 combination per cube (the swept parameters live in the precompute the engine consumed); equivalence collapse requires >= 2 combinations - N/A on evidence |
+| 7_implement_in_engine | N/A | Step-1 ranking cube; admission happens at Step 2; nothing to implement. Engine check PASS: 4 of 4 declared knobs read from the environment + consumer lists match the tree |
+| 8_verdict_with_denominators | DONE | AUTO (B2520) VERDICT (denominators from output_icg_lookback3_lookback3_grid_auto.json): 24 of 24 exits RANKED at min-trades >= 10 on 8112 IS rows (8112 cube rows, 0 holdout rows); rank-1 [breakeven_plus_trail] is_ci_lo -0.134 is_sharpe 0.231 fires 338 - Step-1: ranking only, no admission (B1608) |
+
+**Is this the right data?**
+
+| check | measured | outcome | what would have been alarming |
+|---|---|---|---|
+| cube produced rows | 8112 rows | PASS | zero rows = the config ran and emitted nothing |
+| exactly one strategy in the cube | 1 strategies | PASS | more than 1 = the strategy-subset filter leaked |
+| mega-caps present in the universe | NVDA, MSFT, TSLA | PASS | absent = the abandoned A-C chunk universe (L445) |
+| universe artifact verified | exit 0 on output_audit/_sweep_200.txt (verifier is non-block | PASS | FAIL = the ticker list is not what was intended |
+| cube content hash | 42d69f3d759d662b | PASS | a repeat across configs = two configs produced identical cubes, so one knob did nothing |
+| entry-date span actually simulated | entries 2024-05-06 .. 2025-05-01 | PASS | a short span = the run did not cover its window |
+| every entry carries one row per registered exit | cube [24] vs registry-now 24 (a differing single value = an | PASS | a shortfall = exits silently dropped from the cube |
+
+**Did anything leak from the future?**
+
+| check | measured | outcome | what would have been alarming |
+|---|---|---|---|
+| entries at or after the LOCKED holdout start | 0 entries at/after HO_START 2025-05-05 in a STEP-1 cube | PASS | any non-zero = the holdout was contaminated and the run is void |
+| fills that preceded their own entry | 0 fills before entry | PASS | any non-zero = look-ahead in execution |
+| pre-launch receipt matches the run manifest | receipt matches manifest sha 75ba284693c3 | PASS | mismatch = this run is not the run that was gated |
+
+**Does the arithmetic reproduce?**
+
+| check | measured | outcome | what would have been alarming |
+|---|---|---|---|
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| engine-side implementation check exit code | 4 of 4 declared knobs read from the environment + consumer l | PASS | non-zero = the wiring is absent |
+
+**Independent re-derivation of sampled trades (step 4)**
+
+- 50 of 50 sampled trades re-derived to the SAME fire/no-fire decision as the engine; 0 disagreed; 0 execution failures.
+- Sampled with seed 42 at this config's own parameters (ema_span 200, min_committed_growth 3, fallback_min_increased 5) by scripts/spot_check_institutional.py (B2520).
+- CAVEAT worth stating: the re-derivation uses the SAME parameter set as the engine, so it catches wiring and data faults, NOT a wrong parameter choice. Full per-trade rows: output_audit/output_icg_lookback3_lookback3_spot_check.json.
+
+**Adversarial lenses (step 5) - 9 lenses, 0 WARN/FAIL** (step basis: manifest window.end 2025-05-05 <= HO_START 2025-05-05 -> Step-1 cube; family institutional_committed_growth_long)
+
+| lens | level | evidence |
+|---|---|---|
+| holdout_untouched | INFO | 0 of 338 entries at/after HO_START 2025-05-05 (Step-1 cube: any touch is a leak, B1718 class) |
+| period_concentration | INFO | max quarter share 0.39 (2025Q1) over 5 quarters of 338 entries; WARN > 0.5 |
+| ticker_concentration | INFO | top-5 tickers carry 0.10 of 338 entries across 129 tickers; WARN > 0.30 |
+| selection_margin | INFO | rank-1 [breakeven_plus_trail] is_ci_lo -0.134 vs rank-2 [hybrid_50pct_target] -0.285: margin 0.151 between exits; WARN < 0.05 (selection at noise level) |
+| empty_signals_share | INFO | 0 of 338 trade_log rows carry an empty signals_at_entry (S6-B2512 class) |
+| replay_atr_proxy | INFO | ATR proxy on 0.0% of replayed trades (<= 5%; MEASURED 0/338 (0.0%) from replay_atr_fallback.json) |
+| direction_consistency | INFO | directions ['long'] (one strategy, one direction expected) |
+| spot_check_disagreements | INFO | 50 agree / 0 DISAGREE / 0 skipped in output_icg_lookback3_lookback3_spot_check.json |
+| min_trades_floor | INFO | 338 distinct entries; the live gates need holdout >= 15 and full-period >= 75 (applied by the grader, not here) |
+
+**Is the sample large enough to mean anything? (step 2 funnel)**
+
+- 24 exits enumerated (population field `per_exit`).
+- **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
+- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+
+| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+|---|---|---|---|---|---|---|
+| 1 | -0.134 | 0.231 | 338 | breakeven_plus_trail | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 2 | -0.285 | -0.006 | 338 | hybrid_50pct_target | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 3 | -0.382 | -0.09 | 338 | trailing_10pct | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 4 | -0.562 | -0.142 | 338 | regime_flip | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 5 | -0.604 | -0.358 | 338 | earnings_blackout | 1 | min_committed_growth=3 fallback_min_increased=5 |
+
+_Top 5 of the ranking; the full list is in output_audit/output_icg_lookback3_lookback3_grid_auto.json._
+
 ### output_icg_mult1.25_mult1.25
 
 **Configuration:** P4_min_consecutive_quarters=4, P5_growth_lookback_quarters=4, P6_growth_multiple=1.25, P9_span=200
 
 **STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo -0.297** (is_sharpe 0.092, 301 fires, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
 
-**Completeness: 8 of 9 steps closed** (6 DONE with evidence, 2 N/A with a reason: 6b_equivalence_class_check, 7_implement_in_engine). **1 step(s) NOT closed (6_post_fix_recheck) - this cube BLOCKS the turn gate until each is DONE with evidence or N/A with a reason; SKIPPED is not a disposition (B2520).**
+**Completeness: 9 of 9 steps closed** (7 DONE with evidence, 2 N/A with a reason: 6b_equivalence_class_check, 7_implement_in_engine). Every step is dispositioned; nothing is outstanding on this cube.
 
 | step | status | evidence / reason (never truncated) |
 |---|---|---|
@@ -161,7 +249,7 @@ _The SIX swept axes for the same rows, same order - join on `#`. P1 swing_length
 | 3_outlier_discrepancy_sweep | DONE | AUTO (B2192): mechanical core executed by the battery (M2 exits-vs-registry, M5 NaN/inf/winsorize, M7 degraded exits) + the grader's union diagnosis-loss gate and ci_lo-led ranking; M2_exits_per_entry_vs_registry=PASS; M3_fill_date=PASS; M4_holdout_touch=PASS; M5_pnl_integrity=PASS; M7_degraded_exits=PASS |
 | 4_three_leg_spot_check | DONE | AUTO (B2520): spot_check_institutional --n 50 at manifest span=200; n_sampled 50 seed 42: 50 agree / 0 DISAGREE / 0 skipped; execution failures 0; empty records 0; legs A/B disagree 0; artifact output_icg_mult1.25_mult1.25_spot_check.json; precompute_dir institutional |
 | 5_adversarial_lens_review | DONE | AUTO (B2520): lenses 9 run: 1 WARN / 0 FAIL / 8 INFO -> output_icg_mult1.25_mult1.25_lenses.json; findings: selection_margin WARN: rank-1 [breakeven_plus_trail] is_ci_lo -0.297 vs rank-2 [hybrid_50pct_target] -0.297: marg |
-| 6_post_fix_recheck | OPEN **<-- NOT CLOSED** | 1 lens finding(s) need a recheck with evidence (#196): selection_margin WARN |
+| 6_post_fix_recheck | DONE | B2580 hand disposition 2026-09-03 13:33: selection_margin WARN rechecked with evidence (#196). MEASURED from output_icg_mult1.25_mult1.25_grid_auto.json: rank-1 [breakeven_plus_trail] is_sharpe 0.092 is_ci_lo -0.297 and rank-2 [hybrid_50pct_target] is_sharpe -0.002 is_ci_lo -0.297 on 7224 IS rows / 301 fires - the WARN is CORRECT: the two exits are not separable. CONSEQUENCE BOUNDED, not dismissed: Step 1 produces a RANKING with no admission (B1608 owner ruling), and this config's rank-1 is_ci_lo is NEGATIVE, so it is not a Step-2 candidate under EITHER ordering - the tie is between two indistinguishably unprofitable exits, and no downstream decision reads the order. No re-run and no parameter change follow. MECHANISM for the next instance (so this is not an executed-once judgment, L752): S6-B2581b - the selection_margin lens takes rank-1 is_ci_lo < 0 as INFO with this reasoning, since nothing is being selected at Step 1 / prior: 1 lens finding(s) need a recheck with evidence (#196): selection_margin WARN |
 | 6b_equivalence_class_check | N/A | 1 combination per cube (the swept parameters live in the precompute the engine consumed); equivalence collapse requires >= 2 combinations - N/A on evidence |
 | 7_implement_in_engine | N/A | Step-1 ranking cube; admission happens at Step 2; nothing to implement. Engine check PASS: 4 of 4 swept parameters anchored in the engine path (precompute INST_* x3 + screener STRAT_EMA_SPAN; code-presence check) |
 | 8_verdict_with_denominators | DONE | AUTO (B2520) VERDICT (denominators from output_icg_mult1.25_mult1.25_grid_auto.json): 24 of 24 exits RANKED at min-trades >= 10 on 7224 IS rows (7224 cube rows, 0 holdout rows); rank-1 [breakeven_plus_trail] is_ci_lo -0.297 is_sharpe 0.092 fires 301 - Step-1: ranking only, no admission (B1608) |
