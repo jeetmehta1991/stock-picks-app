@@ -10,10 +10,11 @@ REGENERATED WHOLE at every config landing - by the landing supervisor the engine
 
 ## Landings - what the supervisor recorded (B2520)
 
-9 cube(s) landed through the supervisor; **4 not yet reported to the owner** (output_icg_span100_span100, output_icg_span150_span150, output_icg_mult1.5_mult1.5, output_icg_lookback2_lookback2).
+10 cube(s) landed through the supervisor; **5 not yet reported to the owner** (output_icg_span100_span100, output_icg_span150_span150, output_icg_mult1.5_mult1.5, output_icg_lookback2_lookback2, output_icg_minq8_minq8).
 
 | cube | landed | via | battery exit | blocking | WARN/FAIL findings | committed | pushed | reported |
 |---|---|---|---|---|---|---|---|---|
+| output_icg_minq8_minq8 | 2026-09-03T06:13:18 | engine-hook | 0 | none | 0 | 47363d1e7 | True | **NO** |
 | output_icg_lookback2_lookback2 | 2026-09-03T04:00:41 | engine-hook | 0 | none | 0 | f1861a9a4 | True | **NO** |
 | output_icg_mult1.5_mult1.5 | 2026-09-03T01:45:20 | engine-hook | 0 | none | 0 | 5b3e3c8fa | True | **NO** |
 | output_icg_span150_span150 | 2026-09-02T23:31:07 | engine-hook | 0 | none | 0 | 1946b3605 | True | **NO** |
@@ -97,11 +98,11 @@ _The SIX swept axes for the same rows, same order - join on `#`. P1 swing_length
 
 | config | best is_ci_lo | fires | starved | steps closed (DONE+N/A of 9; the gate's own is_closed) |
 |---|---|---|---|---|
+| output_icg_span100_span100 | 0.062 | 374 | 0/24 | 9/9 |
 | output_icg_minq8_minq8 | 0.054 | 256 | 0/24 | 9/9 |
 | output_icg_lookback2_lookback2 | -0.075 | 323 | 0/24 | 9/9 |
 | output_icg_mult1.5_mult1.5 | -0.223 | 266 | 0/24 | 9/9 |
 | output_icg_span150_span150 | -0.11 | 371 | 0/24 | 9/9 |
-| output_icg_span100_span100 | 0.062 | 374 | 0/24 | 8/9 **OPEN: 6_post_fix_recheck** |
 | output_icg_span50_span50 | -0.067 | 405 | 0/24 | 9/9 |
 | output_icg_span20_span20 | -0.015 | 531 | 0/24 | 9/9 |
 | output_icg_span9_span9 | 0.167 | 609 | 0/24 | 9/9 |
@@ -140,6 +141,95 @@ _The SIX swept axes for the same rows, same order - join on `#`. P1 swing_length
 | output_b2183_sw30_sw30 | 0.362 | 11 | 106/300 | 9/9 |
 
 ## Per-config findings
+
+### output_icg_span100_span100
+
+**Configuration:** P4_min_consecutive_quarters=4, P5_growth_lookback_quarters=4, P6_growth_multiple=1.1, P9_span=100
+
+**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.062** (is_sharpe 0.438, 374 fires, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
+
+**Completeness: 9 of 9 steps closed** (6 DONE with evidence, 3 N/A with a reason: 6b_equivalence_class_check, 7_implement_in_engine, 8_verdict_with_denominators). Every step is dispositioned; nothing is outstanding on this cube.
+
+| step | status | evidence / reason (never truncated) |
+|---|---|---|
+| 1_cube_sanity | DONE | the named checks are tabulated below by risk question |
+| 2_grade_with_config_params | DONE | B2574 hand disposition 2026-09-03 07:18: both legs ran; verdict NOT COMPARABLE - 313 of 374 closed trades carry an empty signals_at_entry (S6-B2512 class: the raw vars(t) checkpoint writers bypassed dumps_signals and a datetime.date repr defeated the reader -> {}), so the cube replay priced ATR exits on the 2%-of-price proxy for 83.7% of trades (> the 5% REPLAY_ATR_FALLBACK_WARN_RATE floor); free-level grader coverage 0.1631 vs floor 0.95 -> NOT_COMPARABLE (output_icg_span100_span100_free_levels.json, levels []); the family grid output_icg_span100_span100_grid_auto.json ranks exits priced on proxy ATR and is not comparable across ATR exits / prior: AUTO (B2520/B2569): grade_institutional_config at manifest minq=4 lookback=4 multiple=1.1 span=100 -> output_icg_span100_span100_grid_auto.json; free levels reproduction-gated -> output_icg_span100_span100_free_levels.json |
+| 3_outlier_discrepancy_sweep | DONE | AUTO (B2192): mechanical core executed by the battery (M2 exits-vs-registry, M5 NaN/inf/winsorize, M7 degraded exits) + the grader's union diagnosis-loss gate and ci_lo-led ranking; M2_exits_per_entry_vs_registry=PASS; M3_fill_date=PASS; M4_holdout_touch=PASS; M5_pnl_integrity=PASS; M7_degraded_exits=PASS |
+| 4_three_leg_spot_check | DONE | AUTO (B2520): spot_check_institutional --n 50 at manifest span=100; n_sampled 50 seed 42: 49 agree / 0 DISAGREE / 1 skipped; execution failures 0; empty records 43; legs A/B disagree 0; artifact output_icg_span100_span100_spot_check.json |
+| 5_adversarial_lens_review | DONE | AUTO (B2520): lenses 8 run: 1 WARN / 0 FAIL / 7 INFO -> output_icg_span100_span100_lenses.json; findings: empty_signals_share WARN: 313 of 374 trade_log rows carry an empty signals_at_entry (S6-B2512 class) |
+| 6_post_fix_recheck | DONE | B2574 hand disposition 2026-09-03 07:18: empty_signals_share WARN rechecked with evidence (#196) - cause found and fixed two-sided (backtest/util/signals_serde.py _dt_repr_to_iso rescue + backtest/engine/backtest.py closed_trade_rows on all three checkpoint writers; pins test_b2574_*); consequence MEASURED: 313 of 374 closed trades carry an empty signals_at_entry (S6-B2512 class: the raw vars(t) checkpoint writers bypassed dumps_signals and a datetime.date repr defeated the reader -> {}), so the cube replay priced ATR exits on the 2%-of-price proxy for 83.7% of trades (> the 5% REPLAY_ATR_FALLBACK_WARN_RATE floor); engine now persists replay_atr_fallback.json and the battery lens replay_atr_proxy FAILs above the floor; remedy = rerun spec output_audit/b2574_icg_span100_rerun_spec.json queued behind the chain (output_icg_span100_rerun_span100) / prior: 1 lens finding(s) need a recheck with evidence (#196): empty_signals_share WARN |
+| 6b_equivalence_class_check | N/A | 1 combination per cube (the swept parameters live in the precompute the engine consumed); equivalence collapse requires >= 2 combinations - N/A on evidence |
+| 7_implement_in_engine | N/A | Step-1 ranking cube; admission happens at Step 2; nothing to implement. Engine check PASS: 4 of 4 swept parameters anchored in the engine path (precompute INST_* x3 + screener STRAT_EMA_SPAN; code-presence check) |
+| 8_verdict_with_denominators | N/A | B2574 hand disposition 2026-09-03 07:18: NOT COMPARABLE - a verdict cannot be drawn from this cube (313 of 374 closed trades carry an empty signals_at_entry (S6-B2512 class: the raw vars(t) checkpoint writers bypassed dumps_signals and a datetime.date repr defeated the reader -> {}), so the cube replay priced ATR exits on the 2%-of-price proxy for 83.7% of trades (> the 5% REPLAY_ATR_FALLBACK_WARN_RATE floor)); superseded by the span100 rerun landing (output_icg_span100_rerun_span100), which carries the verdict / prior: AUTO (B2520) VERDICT (denominators from output_icg_span100_span100_grid_auto.json): 24 of 24 exits RANKED at min-trades >= 10 on 8976 IS rows (8976 cube rows, 0 holdout rows); rank-1 [breakeven_plus_trail] is_ci_lo 0.062 is_sharpe 0.438 fires 374 - Step-1: ranking only, no admission (B1608) |
+
+**Is this the right data?**
+
+| check | measured | outcome | what would have been alarming |
+|---|---|---|---|
+| cube produced rows | 8976 rows | PASS | zero rows = the config ran and emitted nothing |
+| exactly one strategy in the cube | 1 strategies | PASS | more than 1 = the strategy-subset filter leaked |
+| mega-caps present in the universe | NVDA | PASS | absent = the abandoned A-C chunk universe (L445) |
+| universe artifact verified | exit 0 on output_audit/_sweep_200.txt (verifier is non-block | PASS | FAIL = the ticker list is not what was intended |
+| cube content hash | c00c2853c9cb4d33 | PASS | a repeat across configs = two configs produced identical cubes, so one knob did nothing |
+| entry-date span actually simulated | entries 2024-05-06 .. 2025-05-02 | PASS | a short span = the run did not cover its window |
+| every entry carries one row per registered exit | cube [24] vs registry-now 24 (a differing single value = an | PASS | a shortfall = exits silently dropped from the cube |
+
+**Did anything leak from the future?**
+
+| check | measured | outcome | what would have been alarming |
+|---|---|---|---|
+| entries at or after the LOCKED holdout start | 0 entries at/after HO_START 2025-05-05 in a STEP-1 cube | PASS | any non-zero = the holdout was contaminated and the run is void |
+| fills that preceded their own entry | 0 fills before entry | PASS | any non-zero = look-ahead in execution |
+| pre-launch receipt matches the run manifest | receipt matches manifest sha 916bac8d6dad | PASS | mismatch = this run is not the run that was gated |
+
+**Does the arithmetic reproduce?**
+
+| check | measured | outcome | what would have been alarming |
+|---|---|---|---|
+| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
+| exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence) / run_wave verified 8976 cube rows across 2 leg(s | PASS | any non-zero = the ledger is lying about itself |
+| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
+| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
+| engine-side implementation check exit code | 4 of 4 swept parameters anchored in the engine path (precomp | PASS | non-zero = the wiring is absent |
+
+**Independent re-derivation of sampled trades (step 4)**
+
+- 49 of 50 sampled trades re-derived to the SAME fire/no-fire decision as the engine; 0 disagreed; 0 execution failures.
+- Sampled with seed 42 at this config's own parameters (ema_span 100, min_committed_growth 3, fallback_min_increased 5) by scripts/spot_check_institutional.py (B2520).
+- CAVEAT worth stating: the re-derivation uses the SAME parameter set as the engine, so it catches wiring and data faults, NOT a wrong parameter choice. Full per-trade rows: output_audit/output_icg_span100_span100_spot_check.json.
+
+- 43 sampled trades carried an EMPTY signals_at_entry record (S6-B2512 class) - the re-derivation could still decide them from the precompute, but the engine's own record is missing.
+
+**Adversarial lenses (step 5) - 9 lenses, 2 WARN/FAIL** (step basis: declared --step1-cube; family institutional_committed_growth_long)
+
+| lens | level | evidence |
+|---|---|---|
+| holdout_untouched | INFO | 0 of 374 entries at/after HO_START 2025-05-05 (Step-1 cube: any touch is a leak, B1718 class) |
+| period_concentration | INFO | max quarter share 0.41 (2025Q1) over 5 quarters of 374 entries; WARN > 0.5 |
+| ticker_concentration | INFO | top-5 tickers carry 0.08 of 374 entries across 144 tickers; WARN > 0.30 |
+| selection_margin | INFO | rank-1 [breakeven_plus_trail] is_ci_lo 0.062 vs rank-2 [hybrid_50pct_target] -0.232: margin 0.294 between exits; WARN < 0.05 (selection at noise level) |
+| empty_signals_share | WARN **<-- NOT INFO** | 313 of 374 trade_log rows carry an empty signals_at_entry (S6-B2512 class) |
+| replay_atr_proxy | FAIL **<-- NOT INFO** | NOT COMPARABLE: cube replay used the 2pct-of-price ATR proxy on 83.7% of trades (> 5% engine threshold; INFERRED from the empty signals_at_entry share 83.7% (pre-B2574 cube, no replay_atr_fallback.json)) - the exit ranking is a different population from a cube with signals (S6-B2512 / B2574); re-land under the B2574 engine before comparing |
+| direction_consistency | INFO | directions ['long'] (one strategy, one direction expected) |
+| spot_check_disagreements | INFO | 49 agree / 0 DISAGREE / 1 skipped in output_icg_span100_span100_spot_check.json |
+| min_trades_floor | INFO | 374 distinct entries; the live gates need holdout >= 15 and full-period >= 75 (applied by the grader, not here) |
+
+**Is the sample large enough to mean anything? (step 2 funnel)**
+
+- 24 exits enumerated (population field `per_exit`).
+- **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
+- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
+
+| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
+|---|---|---|---|---|---|---|
+| 1 | 0.062 | 0.438 | 374 | breakeven_plus_trail | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 2 | -0.232 | 0.061 | 374 | hybrid_50pct_target | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 3 | -0.472 | -0.175 | 374 | trailing_10pct | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 4 | -0.619 | 0.198 | 374 | r_multiple_2r | 1 | min_committed_growth=3 fallback_min_increased=5 |
+| 5 | -0.622 | -0.114 | 374 | fixed_4r_2r | 1 | min_committed_growth=3 fallback_min_increased=5 |
+
+_Top 5 of the ranking; the full list is in output_audit/output_icg_span100_span100_grid_auto.json._
 
 ### output_icg_minq8_minq8
 
@@ -187,7 +277,7 @@ _The SIX swept axes for the same rows, same order - join on `#`. P1 swing_length
 |---|---|---|---|
 | NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
-| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence) / run_wave verified 6144 cube rows across 1 leg(s | PASS | any non-zero = the ledger is lying about itself |
 | grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
 | independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | 4 of 4 swept parameters anchored in the engine path (precomp | PASS | non-zero = the wiring is absent |
@@ -484,94 +574,6 @@ _Top 5 of the ranking; the full list is in output_audit/output_icg_mult1.5_mult1
 | 5 | -0.574 | -0.338 | 371 | earnings_blackout | 1 | min_committed_growth=3 fallback_min_increased=5 |
 
 _Top 5 of the ranking; the full list is in output_audit/output_icg_span150_span150_grid_auto.json._
-
-### output_icg_span100_span100
-
-**Configuration:** P4_min_consecutive_quarters=4, P5_growth_lookback_quarters=4, P6_growth_multiple=1.1, P9_span=100
-
-**STEP-1 RANKING (no gates applied - owner ruling B1608): best cell is_ci_lo 0.062** (is_sharpe 0.438, 374 fires, exit breakeven_plus_trail). Step-1 admission is min-trades >= 10 plus this ranked list; is_ci_lo is the RANKING KEY, not a gate. A ranked cell is a CANDIDATE for Step-2 validation, not a validated edge - its height is partly the search itself. (S6-B2409: the former selection-noise-floor framing is retired.)
-
-**Completeness: 8 of 9 steps closed** (6 DONE with evidence, 2 N/A with a reason: 6b_equivalence_class_check, 7_implement_in_engine). **1 step(s) NOT closed (6_post_fix_recheck) - this cube BLOCKS the turn gate until each is DONE with evidence or N/A with a reason; SKIPPED is not a disposition (B2520).**
-
-| step | status | evidence / reason (never truncated) |
-|---|---|---|
-| 1_cube_sanity | DONE | the named checks are tabulated below by risk question |
-| 2_grade_with_config_params | DONE | AUTO (B2520/B2569): grade_institutional_config at manifest minq=4 lookback=4 multiple=1.1 span=100 -> output_icg_span100_span100_grid_auto.json; free levels reproduction-gated -> output_icg_span100_span100_free_levels.json |
-| 3_outlier_discrepancy_sweep | DONE | AUTO (B2192): mechanical core executed by the battery (M2 exits-vs-registry, M5 NaN/inf/winsorize, M7 degraded exits) + the grader's union diagnosis-loss gate and ci_lo-led ranking; M2_exits_per_entry_vs_registry=PASS; M3_fill_date=PASS; M4_holdout_touch=PASS; M5_pnl_integrity=PASS; M7_degraded_exits=PASS |
-| 4_three_leg_spot_check | DONE | AUTO (B2520): spot_check_institutional --n 50 at manifest span=100; n_sampled 50 seed 42: 49 agree / 0 DISAGREE / 1 skipped; execution failures 0; empty records 43; legs A/B disagree 0; artifact output_icg_span100_span100_spot_check.json |
-| 5_adversarial_lens_review | DONE | AUTO (B2520): lenses 8 run: 1 WARN / 0 FAIL / 7 INFO -> output_icg_span100_span100_lenses.json; findings: empty_signals_share WARN: 313 of 374 trade_log rows carry an empty signals_at_entry (S6-B2512 class) |
-| 6_post_fix_recheck | OPEN **<-- NOT CLOSED** | 1 lens finding(s) need a recheck with evidence (#196): empty_signals_share WARN |
-| 6b_equivalence_class_check | N/A | 1 combination per cube (the swept parameters live in the precompute the engine consumed); equivalence collapse requires >= 2 combinations - N/A on evidence |
-| 7_implement_in_engine | N/A | Step-1 ranking cube; admission happens at Step 2; nothing to implement. Engine check PASS: 4 of 4 swept parameters anchored in the engine path (precompute INST_* x3 + screener STRAT_EMA_SPAN; code-presence check) |
-| 8_verdict_with_denominators | DONE | AUTO (B2520) VERDICT (denominators from output_icg_span100_span100_grid_auto.json): 24 of 24 exits RANKED at min-trades >= 10 on 8976 IS rows (8976 cube rows, 0 holdout rows); rank-1 [breakeven_plus_trail] is_ci_lo 0.062 is_sharpe 0.438 fires 374 - Step-1: ranking only, no admission (B1608) |
-
-**Is this the right data?**
-
-| check | measured | outcome | what would have been alarming |
-|---|---|---|---|
-| cube produced rows | 8976 rows | PASS | zero rows = the config ran and emitted nothing |
-| exactly one strategy in the cube | 1 strategies | PASS | more than 1 = the strategy-subset filter leaked |
-| mega-caps present in the universe | NVDA | PASS | absent = the abandoned A-C chunk universe (L445) |
-| universe artifact verified | exit 0 on output_audit/_sweep_200.txt (verifier is non-block | PASS | FAIL = the ticker list is not what was intended |
-| cube content hash | c00c2853c9cb4d33 | PASS | a repeat across configs = two configs produced identical cubes, so one knob did nothing |
-| entry-date span actually simulated | entries 2024-05-06 .. 2025-05-02 | PASS | a short span = the run did not cover its window |
-| every entry carries one row per registered exit | cube [24] vs registry-now 24 (a differing single value = an | PASS | a shortfall = exits silently dropped from the cube |
-
-**Did anything leak from the future?**
-
-| check | measured | outcome | what would have been alarming |
-|---|---|---|---|
-| entries at or after the LOCKED holdout start | 0 entries at/after HO_START 2025-05-05 in a STEP-1 cube | PASS | any non-zero = the holdout was contaminated and the run is void |
-| fills that preceded their own entry | 0 fills before entry | PASS | any non-zero = look-ahead in execution |
-| pre-launch receipt matches the run manifest | receipt matches manifest sha 916bac8d6dad | PASS | mismatch = this run is not the run that was gated |
-
-**Does the arithmetic reproduce?**
-
-| check | measured | outcome | what would have been alarming |
-|---|---|---|---|
-| NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
-| exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
-| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence) / run_wave verified 8976 cube rows across 2 leg(s | PASS | any non-zero = the ledger is lying about itself |
-| grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
-| independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
-| engine-side implementation check exit code | 4 of 4 swept parameters anchored in the engine path (precomp | PASS | non-zero = the wiring is absent |
-
-**Independent re-derivation of sampled trades (step 4)**
-
-- 49 of 50 sampled trades re-derived to the SAME fire/no-fire decision as the engine; 0 disagreed; 0 execution failures.
-- Sampled with seed 42 at this config's own parameters (ema_span 100, min_committed_growth 3, fallback_min_increased 5) by scripts/spot_check_institutional.py (B2520).
-- CAVEAT worth stating: the re-derivation uses the SAME parameter set as the engine, so it catches wiring and data faults, NOT a wrong parameter choice. Full per-trade rows: output_audit/output_icg_span100_span100_spot_check.json.
-
-- 43 sampled trades carried an EMPTY signals_at_entry record (S6-B2512 class) - the re-derivation could still decide them from the precompute, but the engine's own record is missing.
-
-**Adversarial lenses (step 5) - 8 lenses, 1 WARN/FAIL** (step basis: manifest window.end 2025-05-05 <= HO_START 2025-05-05 -> Step-1 cube; family institutional_committed_growth_long)
-
-| lens | level | evidence |
-|---|---|---|
-| holdout_untouched | INFO | 0 of 374 entries at/after HO_START 2025-05-05 (Step-1 cube: any touch is a leak, B1718 class) |
-| period_concentration | INFO | max quarter share 0.41 (2025Q1) over 5 quarters of 374 entries; WARN > 0.5 |
-| ticker_concentration | INFO | top-5 tickers carry 0.08 of 374 entries across 144 tickers; WARN > 0.30 |
-| selection_margin | INFO | rank-1 [breakeven_plus_trail] is_ci_lo 0.062 vs rank-2 [hybrid_50pct_target] -0.232: margin 0.294 between exits; WARN < 0.05 (selection at noise level) |
-| empty_signals_share | WARN **<-- NOT INFO** | 313 of 374 trade_log rows carry an empty signals_at_entry (S6-B2512 class) |
-| direction_consistency | INFO | directions ['long'] (one strategy, one direction expected) |
-| spot_check_disagreements | INFO | 49 agree / 0 DISAGREE / 1 skipped in output_icg_span100_span100_spot_check.json |
-| min_trades_floor | INFO | 374 distinct entries; the live gates need holdout >= 15 and full-period >= 75 (applied by the grader, not here) |
-
-**Is the sample large enough to mean anything? (step 2 funnel)**
-
-- 24 exits enumerated (population field `per_exit`).
-- **0 (0%) STARVED in-sample** - no exit cleared the minimum trade count, so they were never graded. A sample-size fact, not a quality verdict.
-- 24 graded and ranked, collapsing to 1 distinct outcome classes (step 6b: combinations differing only in a saturated parameter are the SAME fire set, so counting rows overstates the evidence - L473); the top 10 classes carry 1 combinations forward to Step 2 (tighten_breaker_block.py:449-454).
-
-| rank | is_ci_lo | is_sharpe | fires | exit | class size | combination |
-|---|---|---|---|---|---|---|
-| 1 | 0.062 | 0.438 | 374 | breakeven_plus_trail | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 2 | -0.232 | 0.061 | 374 | hybrid_50pct_target | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 3 | -0.472 | -0.175 | 374 | trailing_10pct | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 4 | -0.619 | 0.198 | 374 | r_multiple_2r | 1 | min_committed_growth=3 fallback_min_increased=5 |
-| 5 | -0.622 | -0.114 | 374 | fixed_4r_2r | 1 | min_committed_growth=3 fallback_min_increased=5 |
-
-_Top 5 of the ranking; the full list is in output_audit/output_icg_span100_span100_grid_auto.json._
 
 ### output_icg_span50_span50
 

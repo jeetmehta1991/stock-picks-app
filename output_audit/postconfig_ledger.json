@@ -4192,7 +4192,7 @@
   },
   "2_grade_with_config_params": {
    "status": "DONE",
-   "evidence": "AUTO (B2520/B2569): grade_institutional_config at manifest minq=4 lookback=4 multiple=1.1 span=100 -> output_icg_span100_span100_grid_auto.json; free levels reproduction-gated -> output_icg_span100_span100_free_levels.json"
+   "evidence": "B2574 hand disposition 2026-09-03 07:18: both legs ran; verdict NOT COMPARABLE - 313 of 374 closed trades carry an empty signals_at_entry (S6-B2512 class: the raw vars(t) checkpoint writers bypassed dumps_signals and a datetime.date repr defeated the reader -> {}), so the cube replay priced ATR exits on the 2%-of-price proxy for 83.7% of trades (> the 5% REPLAY_ATR_FALLBACK_WARN_RATE floor); free-level grader coverage 0.1631 vs floor 0.95 -> NOT_COMPARABLE (output_icg_span100_span100_free_levels.json, levels []); the family grid output_icg_span100_span100_grid_auto.json ranks exits priced on proxy ATR and is not comparable across ATR exits | prior: AUTO (B2520/B2569): grade_institutional_config at manifest minq=4 lookback=4 multiple=1.1 span=100 -> output_icg_span100_span100_grid_auto.json; free levels reproduction-gated -> output_icg_span100_span100_free_levels.json"
   },
   "4_three_leg_spot_check": {
    "status": "DONE",
@@ -4203,8 +4203,8 @@
    "evidence": "AUTO (B2520): lenses 8 run: 1 WARN / 0 FAIL / 7 INFO -> output_icg_span100_span100_lenses.json; findings: empty_signals_share WARN: 313 of 374 trade_log rows carry an empty signals_at_entry (S6-B2512 class)"
   },
   "6_post_fix_recheck": {
-   "status": "OPEN",
-   "evidence": "1 lens finding(s) need a recheck with evidence (#196): empty_signals_share WARN"
+   "status": "DONE",
+   "evidence": "B2574 hand disposition 2026-09-03 07:18: empty_signals_share WARN rechecked with evidence (#196) - cause found and fixed two-sided (backtest/util/signals_serde.py _dt_repr_to_iso rescue + backtest/engine/backtest.py closed_trade_rows on all three checkpoint writers; pins test_b2574_*); consequence MEASURED: 313 of 374 closed trades carry an empty signals_at_entry (S6-B2512 class: the raw vars(t) checkpoint writers bypassed dumps_signals and a datetime.date repr defeated the reader -> {}), so the cube replay priced ATR exits on the 2%-of-price proxy for 83.7% of trades (> the 5% REPLAY_ATR_FALLBACK_WARN_RATE floor); engine now persists replay_atr_fallback.json and the battery lens replay_atr_proxy FAILs above the floor; remedy = rerun spec output_audit/b2574_icg_span100_rerun_spec.json queued behind the chain (output_icg_span100_rerun_span100) | prior: 1 lens finding(s) need a recheck with evidence (#196): empty_signals_share WARN"
   },
   "6b_equivalence_class_check": {
    "status": "N/A",
@@ -4215,8 +4215,8 @@
    "evidence": "Step-1 ranking cube; admission happens at Step 2; nothing to implement. Engine check PASS: 4 of 4 swept parameters anchored in the engine path (precompute INST_* x3 + screener STRAT_EMA_SPAN; code-presence check)"
   },
   "8_verdict_with_denominators": {
-   "status": "DONE",
-   "evidence": "AUTO (B2520) VERDICT (denominators from output_icg_span100_span100_grid_auto.json): 24 of 24 exits RANKED at min-trades >= 10 on 8976 IS rows (8976 cube rows, 0 holdout rows); rank-1 [breakeven_plus_trail] is_ci_lo 0.062 is_sharpe 0.438 fires 374 - Step-1: ranking only, no admission (B1608)"
+   "status": "N/A",
+   "evidence": "B2574 hand disposition 2026-09-03 07:18: NOT COMPARABLE - a verdict cannot be drawn from this cube (313 of 374 closed trades carry an empty signals_at_entry (S6-B2512 class: the raw vars(t) checkpoint writers bypassed dumps_signals and a datetime.date repr defeated the reader -> {}), so the cube replay priced ATR exits on the 2%-of-price proxy for 83.7% of trades (> the 5% REPLAY_ATR_FALLBACK_WARN_RATE floor)); superseded by the span100 rerun landing (output_icg_span100_rerun_span100), which carries the verdict | prior: AUTO (B2520) VERDICT (denominators from output_icg_span100_span100_grid_auto.json): 24 of 24 exits RANKED at min-trades >= 10 on 8976 IS rows (8976 cube rows, 0 holdout rows); rank-1 [breakeven_plus_trail] is_ci_lo 0.062 is_sharpe 0.438 fires 374 - Step-1: ranking only, no admission (B1608)"
   }
  },
  "output_icg_span150_span150": {
@@ -4336,7 +4336,7 @@
  "output_icg_minq8_minq8": {
   "1_cube_sanity": {
    "status": "DONE",
-   "evidence": "run_postconfig: cube_exists=PASS(6144 rows); one_strategy=PASS(1 strategies); M2_exits_per_entry_vs_registry=PASS(cube [24] vs registry-now 24 (a differing single value = an ); megacaps_present=PASS(NVDA, MSFT, TSLA); M1_content_sha=PASS(f21e2c066a5a6718); M3_fill_date=PASS(0 fills before entry); M4_window=PASS(entries 2024-05-06 .. 2025-05-02); M4_holdout_touch=PASS(0 entries at/after HO_START 2025-05-05 in a STEP-1 cube); M5_pnl_integrity=PASS(0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS); M7_degraded_exits=PASS(degraded map (B1623 measure-not-assume): {'reverse_signal': ); M10_gate_receipt=PASS(receipt matches manifest sha aae8b76ff9a7); step_derivation=PASS(Step-1: manifest window.end 2025-05-05 <= HO_START 2025-05-0); M9_universe_artifact=PASS(exit 0 on output_audit/_sweep_200.txt (verifier is non-block); family_dispatch=PASS(institutional_committed_growth_long: manifest arms[0] min_co); step2_grade_auto=PASS(exit 0; minq=8 lookback=4 multiple=1.1 span=200 -> output_ic); step2_free_levels=PASS(exit 0; reproduction-gated free levels -> output_icg_minq8_m); step4_spot_check_auto=PASS(exit 0; n_sampled 50 seed 42: 50 agree / 0 DISAGREE / 0 skip); step7_engine_implemented=PASS(4 of 4 swept parameters anchored in the engine path (precomp); ledger_status_matches_evidence=PASS(0 row(s) claim DONE with contradicting evidence)"
+   "evidence": "run_postconfig: cube_exists=PASS(6144 rows); one_strategy=PASS(1 strategies); M2_exits_per_entry_vs_registry=PASS(cube [24] vs registry-now 24 (a differing single value = an ); megacaps_present=PASS(NVDA, MSFT, TSLA); M1_content_sha=PASS(f21e2c066a5a6718); M3_fill_date=PASS(0 fills before entry); M4_window=PASS(entries 2024-05-06 .. 2025-05-02); M4_holdout_touch=PASS(0 entries at/after HO_START 2025-05-05 in a STEP-1 cube); M5_pnl_integrity=PASS(0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS); M7_degraded_exits=PASS(degraded map (B1623 measure-not-assume): {'reverse_signal': ); M10_gate_receipt=PASS(receipt matches manifest sha aae8b76ff9a7); step_derivation=PASS(Step-1: manifest window.end 2025-05-05 <= HO_START 2025-05-0); M9_universe_artifact=PASS(exit 0 on output_audit/_sweep_200.txt (verifier is non-block); family_dispatch=PASS(institutional_committed_growth_long: manifest arms[0] min_co); step2_grade_auto=PASS(exit 0; minq=8 lookback=4 multiple=1.1 span=200 -> output_ic); step2_free_levels=PASS(exit 0; reproduction-gated free levels -> output_icg_minq8_m); step4_spot_check_auto=PASS(exit 0; n_sampled 50 seed 42: 50 agree / 0 DISAGREE / 0 skip); step7_engine_implemented=PASS(4 of 4 swept parameters anchored in the engine path (precomp); ledger_status_matches_evidence=PASS(0 row(s) claim DONE with contradicting evidence) | run_wave verified 6144 cube rows across 1 leg(s); M6 boundary drops (B1076 caveat, measured): none - single leg"
   },
   "3_outlier_discrepancy_sweep": {
    "status": "DONE",

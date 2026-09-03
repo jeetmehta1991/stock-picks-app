@@ -436,6 +436,49 @@ FAMILIES = {
 }
 
 
+# B2574: the engine's threshold is the ONE number for "how much of the cube
+# replay may run on the ATR proxy before the ranking is a different
+# population" - imported, never retyped.
+from backtest.engine.backtest import REPLAY_ATR_FALLBACK_WARN_RATE  # noqa: E402
+
+NOT_COMPARABLE_TAG = "NOT COMPARABLE"
+
+
+def replay_atr_proxy_lens(cube_dir: Path, empty_share: float | None) -> tuple:
+    """B2574: FAIL when the cube replay priced exits off the 2pct-of-price
+    ATR proxy for more than the engine's threshold of trades. Reads the
+    engine's measured rate (replay_atr_fallback.json); a cube landed before
+    B2574 has no file, so the empty signals_at_entry share stands in for it,
+    labelled INFERRED (every empty row hits the proxy: resolve_replay_atr
+    reads sig['atr'] and an empty dict has none)."""
+    f = cube_dir / "replay_atr_fallback.json"
+    thr = REPLAY_ATR_FALLBACK_WARN_RATE
+    if f.exists():
+        try:
+            j = json.loads(f.read_text(encoding="utf-8"))
+            rate, tot, fb = float(j["rate"]), int(j["total"]), int(j["fallback"])
+        except (OSError, ValueError, KeyError, TypeError) as exc:
+            return ("replay_atr_proxy", "FAIL",
+                    f"{f.name} unreadable ({exc!r}) - the measured rate is owed")
+        src = f"MEASURED {fb}/{tot} ({rate:.1%}) from {f.name}"
+    elif empty_share is not None:
+        rate, src = empty_share, (f"INFERRED from the empty signals_at_entry "
+                                  f"share {empty_share:.1%} (pre-B2574 cube, no "
+                                  f"{f.name})")
+    else:
+        return ("replay_atr_proxy", "INFO",
+                f"no {f.name} and no readable trade_log - nothing to measure")
+    if rate > thr:
+        return ("replay_atr_proxy", "FAIL",
+                f"{NOT_COMPARABLE_TAG}: cube replay used the 2pct-of-price ATR "
+                f"proxy on {rate:.1%} of trades (> {thr:.0%} engine threshold; "
+                f"{src}) - the exit ranking is a different population from a "
+                f"cube with signals (S6-B2512 / B2574); re-land under the B2574 "
+                f"engine before comparing")
+    return ("replay_atr_proxy", "INFO",
+            f"ATR proxy on {rate:.1%} of replayed trades (<= {thr:.0%}; {src})")
+
+
 # --------------------------------------------------------------------------
 # step 5: the mechanical lens battery. Each lens returns INFO / WARN / FAIL
 # with its evidence; WARN or FAIL is a FINDING and makes step 6 OPEN.
@@ -505,12 +548,23 @@ def lenses(cube_dir: Path, step: int, grid: dict, spot_out: Path | None) -> list
         out.append(("selection_margin", "INFO",
                     "no ranked row in the grid artifact"))
 
+    # B2574 (S6-B2512 CAUSE FOUND): the empty share is the SYMPTOM; the
+    # consequence is that the cube replay priced every such trade's exits
+    # off a 2pct-of-price ATR proxy (backtest.py resolve_replay_atr), so the
+    # exit ranking is NOT COMPARABLE to a cube with signals. span100 landed
+    # with 313/374 empty, the engine logged 83.7 pct proxy use, and this
+    # lens WARNed on the count without saying so. Now: the engine's own
+    # measured rate (replay_atr_fallback.json, B2574) decides, FAIL above the
+    # engine's threshold; a pre-B2574 cube without the file falls back to the
+    # empty share against the same threshold, labelled as inferred.
     tl = cube_dir / "trade_log.csv"
+    empty_share = None
     if tl.exists():
         try:
             s = pd.read_csv(tl, usecols=["signals_at_entry"], low_memory=False
                             )["signals_at_entry"].fillna("").astype(str).str.strip()
             empty = int(((s == "") | (s == "{}")).sum())
+            empty_share = (empty / len(s)) if len(s) else 0.0
             out.append(("empty_signals_share", "WARN" if empty else "INFO",
                         f"{empty} of {len(s)} trade_log rows carry an empty "
                         "signals_at_entry (S6-B2512 class)"))
@@ -519,6 +573,7 @@ def lenses(cube_dir: Path, step: int, grid: dict, spot_out: Path | None) -> list
                         f"trade_log.csv has no readable signals_at_entry: {exc!r}"))
     else:
         out.append(("empty_signals_share", "INFO", "no trade_log.csv beside the cube"))
+    out.append(replay_atr_proxy_lens(cube_dir, empty_share))
 
     if "direction" in df.columns:
         dirs = sorted(str(x) for x in df["direction"].dropna().unique())
@@ -846,7 +901,17 @@ def main() -> int:
             if e7[0] == "PASS" else
             ("OPEN", f"engine check FAIL on a Step-2 cube: {e7[1][:160]}"))
     # 8
-    if grid:
+    # B2574: a verdict on a cube whose replay ran on the ATR proxy is a
+    # verdict on a different population - it is written (the numbers are
+    # what they are) but OPEN, prefixed NOT COMPARABLE, never terminal.
+    not_comparable = [ev for ln, lv, ev in lens_rows
+                      if ln == "replay_atr_proxy" and lv == "FAIL"]
+    if grid and not_comparable:
+        steps["8_verdict_with_denominators"] = (
+            "OPEN", f"{NOT_COMPARABLE_TAG} (B2574: {not_comparable[0][:160]}) - "
+                    f"AUTO VERDICT (denominators from {grid_out.name}): "
+                    + verdict_from_grid(grid, step))
+    elif grid:
         steps["8_verdict_with_denominators"] = (
             "DONE", f"AUTO (B2520) VERDICT (denominators from {grid_out.name}): "
                     + verdict_from_grid(grid, step))

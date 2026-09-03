@@ -102,6 +102,57 @@ def emit_replay_atr_fallback_report(counters: dict) -> str:
             f"[{status}] (B1261 ENG-2; 100% pre-ENG-1-fix on Batch A)")
 
 
+def write_replay_atr_fallback(output_dir, counters: dict, message: str):
+    """B2574: persist the replay-ATR proxy rate beside the cube so the
+    post-config battery reads a MEASURED number instead of inferring it
+    from empty signals_at_entry rows. span100 logged 313/374 (83.7 pct)
+    into a shared 80 MB backtest_v2.log and the battery WARNed on the empty
+    share without ever stating the consequence (proxy ATR on the cube
+    replay -> exit ranking not comparable). Never fatal: a failed write is
+    logged and the run continues. Returns the path written, or None."""
+    import json as _rj
+    tot = counters.get("total", 0)
+    fb = counters.get("fallback", 0)
+    rate = (fb / tot) if tot else 0.0
+    out = Path(output_dir) / "replay_atr_fallback.json"
+    try:
+        out.write_text(
+            _rj.dumps({"total": int(tot), "fallback": int(fb), "rate": rate,
+                       "threshold": REPLAY_ATR_FALLBACK_WARN_RATE,
+                       "exceeds": bool(tot > 0 and rate > REPLAY_ATR_FALLBACK_WARN_RATE),
+                       "message": message}, indent=1), encoding="utf-8")
+        return out
+    except Exception as exc:  # noqa: BLE001 - observability only
+        logger.warning("B2574 %s not written: %r", out.name, exc)
+        return None
+
+
+def closed_trade_rows(trades) -> list:
+    """B2574 (S6-B2512 CAUSE FOUND): the ONE serialising path for a
+    closed-trade checkpoint row. Every dict/list field goes through the
+    signals_serde writer contract (B1260), so the resume reader's
+    loads_signals() gets JSON back.
+
+    Why one function: B1260 fixed the periodic checkpoint writer but left
+    the B2148 kill-state flush and the max-run-hours cap-kill flush writing
+    raw `vars(t)` (str(dict) with numpy + datetime.date reprs). A cap-hit
+    leg therefore restored every closed trade with signals_at_entry == {}
+    (output_icg_span100_span100: 313 of 313 leg-1 rows) and the cube replay
+    ran on the 2pct-of-price ATR proxy for 83.7 pct of trades. All three
+    writers now call this; test_b2574_* pins the raw shape as the failure
+    and greps backtest.py for any writer that bypasses it.
+    """
+    from backtest.util.signals_serde import dumps_signals
+    rows = []
+    for t in trades:
+        r = dict(vars(t))
+        for k, v in r.items():
+            if isinstance(v, (dict, list)):
+                r[k] = dumps_signals(v)
+        rows.append(r)
+    return rows
+
+
 def _b1070_starmap_wrapper(args):
     """Module-level unpacker so multiprocessing.Pool.imap_unordered can pickle
     it on Windows spawn. Delegates to _pool_cube_replay_worker with unpacked args."""
@@ -984,7 +1035,8 @@ class BacktestEngine:
             _eo.replace(tmp, final)
             if self.closed_trades:
                 import pandas as _epd
-                _epd.DataFrame([vars(t) for t in self.closed_trades]).to_csv(
+                # B2574: through the serialising path, not raw vars(t)
+                _epd.DataFrame(closed_trade_rows(self.closed_trades)).to_csv(
                     d / "trade_log_checkpoint.csv", index=False)
             self._flush_open_trades_checkpoint(d)   # S6-B2213a
             logger.error("B2148 %s state flushed: day=%s trades=%d",
@@ -1374,8 +1426,10 @@ class BacktestEngine:
                 try:
                     if self.closed_trades:
                         import pandas as _pd
+                        # B2574 (S6-B2512 CAUSE FOUND): this raw vars(t)
+                        # write was the span100 leg-1 wipe (313/313 rows).
                         _pd.DataFrame(
-                            [vars(t) for t in self.closed_trades]
+                            closed_trade_rows(self.closed_trades)
                         ).to_csv(
                             self.output_dir / "trade_log_checkpoint.csv",
                             index=False,
@@ -1505,15 +1559,10 @@ class BacktestEngine:
                     # raw vars(t) dicts hit to_csv as str(dict) with numpy
                     # reprs + nan -> unparseable by the resume reader ->
                     # every resume wiped signals_at_entry (B1250 ENG-1).
-                    from backtest.util.signals_serde import dumps_signals
-                    _rows = []
-                    for t in self.closed_trades:
-                        _r = dict(vars(t))
-                        for _k, _v in _r.items():
-                            if isinstance(_v, (dict, list)):
-                                _r[_k] = dumps_signals(_v)
-                        _rows.append(_r)
-                    _pd.DataFrame(_rows).to_csv(checkpoint_tmp, index=False)
+                    # B2574: the serialising loop moved to closed_trade_rows()
+                    # so the two kill-flush writers share it.
+                    _pd.DataFrame(closed_trade_rows(self.closed_trades)
+                                  ).to_csv(checkpoint_tmp, index=False)
                     _os.replace(checkpoint_tmp, checkpoint_path)
                     logger.debug("Checkpoint: %d trades -> %s", len(self.closed_trades), checkpoint_path)
                     _csv_written = True  # B1089 atomic-pair tracking
@@ -3740,6 +3789,11 @@ class BacktestEngine:
                          self._replay_atr_counters["total"]
                          > REPLAY_ATR_FALLBACK_WARN_RATE)
         (logger.warning if _atr_rate_bad else logger.info)(_atr_msg)
+        # B2574: persist the rate beside the cube (replay_atr_fallback.json)
+        # so the post-config battery reads a MEASURED number - see
+        # write_replay_atr_fallback(); never fatal.
+        write_replay_atr_fallback(Path(self.output_dir),
+                                  self._replay_atr_counters, _atr_msg)
 
         exit_frames = []
         trade_detail_frames = []

@@ -30155,20 +30155,26 @@ def test_b2569_free_level_reproduction_gate_and_specs_derivation(tmp_path):
         return _json.dumps({"committed_growth_holders": committed,
                             "institutional_increased": increased})
 
+    # 40 rows, one empty: coverage 0.975 clears the B2574 floor (0.95), so
+    # the empty row is counted + excluded and the verdict is PASS. (The
+    # original 3-row fixture at 2/3 coverage now reads NOT_COMPARABLE - that
+    # case is pinned in test_b2574_free_level_grader_refuses_sub_floor_coverage.)
+    n = 40
     tl = pd.DataFrame({
-        "ticker": ["A", "B", "C"], "strategy": [g.STRAT] * 3,
-        "entry_date": ["2024-06-03"] * 3, "direction": ["long"] * 3,
-        "signals_at_entry": [mk(3, 0), mk(0, 5), ""]})
+        "ticker": [f"T{i}" for i in range(n)], "strategy": [g.STRAT] * n,
+        "entry_date": ["2024-06-03"] * n, "direction": ["long"] * n,
+        "signals_at_entry": [mk(3, 0) if i % 2 else mk(0, 5)
+                             for i in range(n - 1)] + [""]})
     f = tmp_path / "trade_log.csv"
     tl.to_csv(f, index=False)
     rec = g.reproduction_gate(g.load_trade_flags(f))
     assert (rec["landed_fires"], rec["covered"], rec["empty_signals"],
-            rec["repassed_at_production"], rec["verdict"]) == (3, 2, 1, 2,
-                                                               "PASS")
+            rec["repassed_at_production"], rec["verdict"]) == (n, n - 1, 1,
+                                                               n - 1, "PASS")
 
     # a COVERED row in the dead zone (0 < committed < bar) could never have
     # fired - logged signals disagreeing with the engine's gate must exit 2
-    tl.loc[2, "signals_at_entry"] = mk(1, 0)
+    tl.loc[n - 1, "signals_at_entry"] = mk(1, 0)
     tl.to_csv(f, index=False)
     with _pt.raises(SystemExit) as ex:
         g.reproduction_gate(g.load_trade_flags(f))
@@ -31728,3 +31734,216 @@ def test_b2564_the_four_later_session_rules_survive_in_the_skill():
     assert "a source name reads as freshness" in sk, (
         "L749's diagnostic - why provenance masquerades as recency - is gone")
     assert "### L749" in ln
+
+
+# ---------------------------------------------------------------------------
+# B2574 (S6-B2512 CAUSE FOUND 2026-09-03): the raw kill-flush checkpoint
+# writers wiped signals_at_entry on every cap-hit resume.
+# ---------------------------------------------------------------------------
+def _b2574_raw_row_from_span100():
+    """The real failing shape: one leg-1 row of the span100 cap-kill flush
+    (output_icg_span100_span100/trade_log_checkpoint.csv, 313 rows, every
+    one restored as {} under the pre-B2574 reader). Kept inline so the pin
+    does not depend on the cube dir (L735: cube dirs are not committed)."""
+    return ("{'pivot': np.float64(161.4533), 'r1': np.float64(163.7567), "
+            "'atr': np.float64(15.6188), 'break_52w_high': np.True_, "
+            "'vol_below_avg': np.False_, 'rsi_14': nan, "
+            "'short_interest_settlement_date': datetime.date(2025, 3, 31), "
+            "'category': 'institutional', 'n': 3}")
+
+
+def test_b2574_datetime_repr_is_the_wipe_and_the_reader_rescues_it():
+    """(a) The datetime.date repr alone defeats json/literal_eval/numpy-
+    rescue: without the B2574 step-3 rescue the row is {}; (b) with it the
+    row restores with every key and the date as the ISO string the serde
+    writer would have produced; (c) the same row minus the date key was
+    already rescuable - which is why S6-B2512's earlier refutation of the
+    kill-flush shape was wrong (it never planted the date)."""
+    import ast
+    from backtest.util import signals_serde as S
+    raw = _b2574_raw_row_from_span100()
+    # (a) reproduce the pre-B2574 reader exactly: numpy rescue, no datetime
+    r = S._NP_SCALAR_RE.sub(r"\1", raw)
+    r = S._NP_BOOL_TRUE_RE.sub("True", r)
+    r = S._NP_BOOL_FALSE_RE.sub("False", r)
+    r = S._BARE_NAN_RE.sub("None", r)
+    with pytest.raises((ValueError, SyntaxError)):
+        ast.literal_eval(r)
+    # (b) the shipped reader
+    back = S.loads_signals(raw, {})
+    assert back != {}, "B2574 reader must rescue the datetime.date repr"
+    assert back["short_interest_settlement_date"] == "2025-03-31"
+    assert back["atr"] == 15.6188 and back["break_52w_high"] is True
+    assert back["vol_below_avg"] is False and back["rsi_14"] is None
+    assert back["category"] == "institutional" and back["n"] == 3
+    # datetime.datetime repr -> ISO seconds
+    back2 = S.loads_signals("{'t': datetime.datetime(2025, 3, 31, 9, 30, 5)}", {})
+    assert back2 == {"t": "2025-03-31T09:30:05"}
+    # (c) the same row without the date key was never the problem
+    no_date = raw.replace(
+        "'short_interest_settlement_date': datetime.date(2025, 3, 31), ", "")
+    assert S.loads_signals(no_date, {})["atr"] == 15.6188
+
+
+def test_b2574_closed_trade_rows_is_the_only_checkpoint_writer(tmp_path):
+    """(a) closed_trade_rows() serialises a ClosedTrade whose signals hold a
+    datetime.date + numpy scalars into a row that survives to_csv/read_csv/
+    loads_signals with every key; (b) backtest.py has NO checkpoint writer
+    left that hands raw vars(t) to a DataFrame - the class, not the two
+    instances (B2148 kill-state flush + max-run-hours cap-kill flush)."""
+    import datetime as _dt
+    import re
+    from pathlib import Path
+    import numpy as np
+    import pandas as pd
+    from backtest.engine import backtest as B
+    from backtest.util.signals_serde import loads_signals
+
+    class _T:  # a vars()-able stand-in with the fields that matter
+        def __init__(self):
+            self.ticker = "AAPL"
+            self.entry_price = 100.0
+            self.signals_at_entry = {
+                "atr": np.float64(15.6188), "flag": np.True_,
+                "rsi_14": float("nan"),
+                "short_interest_settlement_date": _dt.date(2025, 3, 31),
+            }
+            self.context_bullets = ["a", np.float64(1.5)]
+
+    rows = B.closed_trade_rows([_T()])
+    assert isinstance(rows[0]["signals_at_entry"], str)
+    f = tmp_path / "trade_log_checkpoint.csv"
+    pd.DataFrame(rows).to_csv(f, index=False)
+    back = loads_signals(pd.read_csv(f)["signals_at_entry"].iloc[0], {})
+    assert set(back) == {"atr", "flag", "rsi_14", "short_interest_settlement_date"}
+    assert back["short_interest_settlement_date"] == "2025-03-31"
+    assert back["atr"] == 15.6188 and back["flag"] is True and back["rsi_14"] is None
+    assert loads_signals(pd.read_csv(f)["context_bullets"].iloc[0], []) == ["a", 1.5]
+
+    # (b) the class guard: no raw vars(t) list handed to a DataFrame anywhere
+    src = Path(B.__file__).read_text(encoding="utf-8")
+    raw_writers = re.findall(r"DataFrame\(\s*\[\s*vars\(\s*\w+\s*\)\s+for\s+\w+\s+in\s+self\.closed_trades\s*\]", src)
+    assert raw_writers == [], (
+        "a closed-trade checkpoint writer bypasses closed_trade_rows(): "
+        f"{raw_writers}")
+    assert src.count("closed_trade_rows(self.closed_trades)") == 3, (
+        "three checkpoint writers (B2148 kill-state flush, cap-kill flush, "
+        "periodic writer) must all go through closed_trade_rows()")
+
+
+def test_b2574_replay_atr_proxy_is_measured_by_the_engine_and_gated_by_the_battery(tmp_path):
+    """B2574 batch 2 (feedback_analysis_checks_must_be_battery_wired): the
+    consequence of S6-B2512 - cube replay on the 2pct-of-price ATR proxy -
+    was a log line in an 80 MB shared log. Now (a) the engine writes the
+    measured rate beside the cube, (b) the battery lens reads it (MEASURED)
+    or infers it from the empty signals_at_entry share (INFERRED, pre-B2574
+    cubes) and FAILs above the engine's own threshold with the words
+    NOT COMPARABLE, (c) step 8 is OPEN with that prefix, not DONE."""
+    import json as _json
+    import sys as _sys
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parents[2]
+    sp = str(root / "scripts")
+    if sp not in _sys.path:
+        _sys.path.insert(0, sp)
+    import backtest.engine.backtest as B
+    import run_postconfig as rp
+
+    thr = B.REPLAY_ATR_FALLBACK_WARN_RATE
+    assert rp.REPLAY_ATR_FALLBACK_WARN_RATE is thr           # imported, not retyped
+
+    # (a) the engine writer, executed: span100's own counters
+    cube = tmp_path / "output_icg_x"
+    cube.mkdir()
+    out = B.write_replay_atr_fallback(cube, {"total": 374, "fallback": 313}, "msg")
+    j = _json.loads(out.read_text(encoding="utf-8"))
+    assert (j["total"], j["fallback"], j["exceeds"], j["threshold"]) == (374, 313, True, thr)
+    assert abs(j["rate"] - 313 / 374) < 1e-9
+    # a write failure is logged, never raised (observability only)
+    assert B.write_replay_atr_fallback(cube / "no_such_dir", {"total": 1, "fallback": 0}, "m") is None
+
+    # (b) the lens: MEASURED FAIL on that file
+    name, level, ev = rp.replay_atr_proxy_lens(cube, None)
+    assert (name, level) == ("replay_atr_proxy", "FAIL")
+    assert rp.NOT_COMPARABLE_TAG in ev and "MEASURED 313/374" in ev and "83.7%" in ev
+    # MEASURED INFO below threshold
+    B.write_replay_atr_fallback(cube, {"total": 400, "fallback": 8}, "msg")
+    assert rp.replay_atr_proxy_lens(cube, 0.9)[1] == "INFO"       # file wins over the share
+    # INFERRED from the empty share when the file is absent (pre-B2574 cube)
+    (cube / "replay_atr_fallback.json").unlink()
+    name, level, ev = rp.replay_atr_proxy_lens(cube, 313 / 374)
+    assert level == "FAIL" and "INFERRED" in ev and rp.NOT_COMPARABLE_TAG in ev
+    assert rp.replay_atr_proxy_lens(cube, 0.01)[1] == "INFO"
+    assert rp.replay_atr_proxy_lens(cube, None)[1] == "INFO"       # nothing to measure
+    # an unreadable file is a FAIL, never a silent INFO
+    (cube / "replay_atr_fallback.json").write_text("{not json", encoding="utf-8")
+    assert rp.replay_atr_proxy_lens(cube, None)[1] == "FAIL"
+
+    # (c) wiring: the lens runs inside lenses() and step 8 reads its FAIL
+    src = Path(rp.__file__).read_text(encoding="utf-8")
+    assert "out.append(replay_atr_proxy_lens(cube_dir, empty_share))" in src
+    i8 = src.index('steps["8_verdict_with_denominators"] = (\n            "OPEN", f"{NOT_COMPARABLE_TAG}')
+    assert 'ln == "replay_atr_proxy" and lv == "FAIL"' in src[i8 - 400:i8]
+
+
+def test_b2574_free_level_grader_refuses_sub_floor_coverage(tmp_path):
+    """B2574: the B2569 reproduction gate PASSED span100 at 61/374 covered
+    rows (16 pct) and graded the baseline at sharpe 3.951 on 61 fires beside
+    374-fire grades on every other config. The gate now carries a coverage
+    floor = 1 - the engine's replay-ATR threshold (one number, imported);
+    below it the verdict is NOT_COMPARABLE, the doc carries no level, and
+    the tool exits 2."""
+    import importlib.util
+    import json as _json
+    import sys as _sys
+    from pathlib import Path
+
+    import pandas as pd
+
+    root = Path(__file__).resolve().parents[2]
+    sp = str(root / "scripts")
+    if sp not in _sys.path:
+        _sys.path.insert(0, sp)
+    import backtest.engine.backtest as B
+    spec = importlib.util.spec_from_file_location(
+        "grade_free_b2574", root / "scripts" / "grade_free_levels_institutional.py")
+    g = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(g)
+    assert g.COVERAGE_FLOOR == 1.0 - B.REPLAY_ATR_FALLBACK_WARN_RATE
+
+    def mk(committed, increased):
+        return _json.dumps({"committed_growth_holders": committed,
+                            "institutional_increased": increased})
+
+    # the original B2569 fixture: 2 of 3 covered -> was PASS, is NOT_COMPARABLE
+    tl = pd.DataFrame({
+        "ticker": ["A", "B", "C"], "strategy": [g.STRAT] * 3,
+        "entry_date": ["2024-06-03"] * 3, "direction": ["long"] * 3,
+        "signals_at_entry": [mk(3, 0), mk(0, 5), ""]})
+    f = tmp_path / "trade_log.csv"
+    tl.to_csv(f, index=False)
+    rec = g.reproduction_gate(g.load_trade_flags(f))
+    assert rec["verdict"] == "NOT_COMPARABLE"
+    assert (rec["covered"], rec["landed_fires"], rec["coverage"]) == (2, 3, 0.6667)
+    assert rec["coverage_floor"] == g.COVERAGE_FLOOR
+    doc = g.not_comparable_doc(rec, ticket="B2569", cube_name="output_icg_x")
+    assert doc["levels"] == [] and "S6-B2512" in doc["not_comparable"]
+    assert doc["reproduction"] is rec
+
+    # the tool, end to end: a cube dir with that log exits 2 and writes the doc
+    import subprocess as _sp
+    cube = tmp_path / "output_icg_x"
+    cube.mkdir()
+    tl.to_csv(cube / "trade_log.csv", index=False)
+    (cube / "trade_exit_detail.csv").write_text("strategy,exit_method\n", encoding="utf-8")
+    out = tmp_path / "free_levels.json"
+    r = _sp.run([_sys.executable, str(root / "scripts" / "grade_free_levels_institutional.py"),
+                 "--cube", str(cube), "--out", str(out)],
+                cwd=str(root), capture_output=True, text=True, encoding="utf-8",
+                errors="replace")
+    assert r.returncode == 2, r.stdout + r.stderr
+    assert "[FAIL] NOT_COMPARABLE" in r.stdout
+    assert _json.loads(out.read_text(encoding="utf-8"))["levels"] == []
+
+

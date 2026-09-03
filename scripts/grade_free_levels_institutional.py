@@ -64,6 +64,24 @@ STRAT = "institutional_committed_growth_long"
 # production thresholds (screener.py:6648) and the FREE levels (SPECS P7/P8)
 P7_PROD, P8_PROD = 3, 5
 
+# B2574 COVERAGE FLOOR: the reproduction gate can PASS on a SUBPOPULATION.
+# MEASURED on output_icg_span100_span100: 313 of 374 landed rows carried an
+# empty signals_at_entry (S6-B2512, cause found B2574), the 61 covered rows
+# re-passed production, verdict PASS, and the baseline was then graded at
+# sharpe 3.951 on 61 fires against 374-fire baselines on every other config.
+# A graded population below the floor is NOT COMPARABLE across configs: the
+# tool writes the reproduction record with verdict NOT_COMPARABLE, grades no
+# level, and exits 2 (fail closed, L642). The floor is 1 - the engine's own
+# replay-ATR proxy threshold (backtest.py REPLAY_ATR_FALLBACK_WARN_RATE) -
+# ONE number for "how many trades may lack signals before the cube is a
+# different population" - imported, never retyped (the engine import costs
+# ~4 s once per landing; the grader runs once per landing).
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+from backtest.engine.backtest import REPLAY_ATR_FALLBACK_WARN_RATE  # noqa: E402
+
+COVERAGE_FLOOR = 1.0 - REPLAY_ATR_FALLBACK_WARN_RATE
+
 
 def spec_levels() -> list[tuple[str, int, int]]:
     """Baseline + free levels, derived from SPECS - the pre-registered band.
@@ -141,15 +159,24 @@ def reproduction_gate(flags: pd.DataFrame) -> dict:
     repassed = cov[[keep_row(c, i, P7_PROD, P8_PROD)
                     for c, i in zip(cov["committed"], cov["increased"])]]
     disagree = len(cov) - len(repassed)
+    coverage = (len(cov) / n) if n else 0.0
+    if disagree:
+        verdict = "FAIL"
+    elif coverage < COVERAGE_FLOOR:
+        verdict = "NOT_COMPARABLE"
+    else:
+        verdict = "PASS"
     rec = {"landed_fires": int(n), "empty_signals": int(n - len(cov)),
            "covered": int(len(cov)), "repassed_at_production": int(len(repassed)),
            "production": {"p7": P7_PROD, "p8": P8_PROD},
+           "coverage": round(coverage, 4), "coverage_floor": COVERAGE_FLOOR,
            "empty_disposition": ("S6-B2512 class: excluded from the graded "
                                  "population, counted here, never silently "
                                  "failed" if n > len(cov) else "none"),
-           "verdict": "PASS" if disagree == 0 else "FAIL"}
+           "verdict": verdict}
     print(f"REPRODUCTION: landed {n}, covered {len(cov)} "
-          f"({n - len(cov)} empty signals_at_entry), re-passed at production "
+          f"({n - len(cov)} empty signals_at_entry; coverage {coverage:.3f} vs "
+          f"floor {COVERAGE_FLOOR}), re-passed at production "
           f"(P7={P7_PROD}, P8={P8_PROD}) {len(repassed)} -> {rec['verdict']}")
     if disagree:
         bad = cov[[not keep_row(c, i, P7_PROD, P8_PROD)
@@ -157,6 +184,20 @@ def reproduction_gate(flags: pd.DataFrame) -> dict:
         print(bad.head(10).to_string())
         raise SystemExit(2)
     return rec
+
+
+def not_comparable_doc(repro: dict, *, ticket: str, cube_name: str) -> dict:
+    """B2574: the artifact written when coverage is below the floor - the
+    reproduction record, no graded level, and the reason in words."""
+    return {"ticket": ticket, "strategy": STRAT, "cube": cube_name,
+            "method": "NOT GRADED: covered population below COVERAGE_FLOOR",
+            "levels": [], "reproduction": repro,
+            "not_comparable": (
+                f"{repro['covered']} of {repro['landed_fires']} landed fires carry "
+                f"signals (coverage {repro['coverage']}); a free-level grade on "
+                f"this subpopulation would sit beside full-population grades on "
+                f"the other configs as if comparable. Resolve the S6-B2512 loss "
+                f"(B2574 engine fix) and re-land, then grade.")}
 
 
 def grade_levels(cube_csv: Path, flags: pd.DataFrame, *, min_n: int = 10,
@@ -245,6 +286,13 @@ def main() -> int:
             ROOT / "output_audit" / f"{cube_dir.name}_free_levels.json")
         flags = load_trade_flags(tl)
         repro = reproduction_gate(flags)
+        if repro["verdict"] == "NOT_COMPARABLE":
+            doc = not_comparable_doc(repro, ticket="B2569", cube_name=cube_dir.name)
+            out.parent.mkdir(parents=True, exist_ok=True)
+            out.write_text(json.dumps(doc, indent=1, default=float), encoding="utf-8")
+            print(f"[FAIL] NOT_COMPARABLE: {doc['not_comparable']}")
+            print(f"wrote {out}")
+            return 2
         doc = grade_levels(
             cube_csv, flags, min_n=a.min_n, ticket="B2569",
             method=("per-config subset re-score per SPECS P7/P8 free_band; "

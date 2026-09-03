@@ -24,9 +24,25 @@ Design:
   loads_signals(s, default) -> tolerant reader, in order:
       1. json.loads             (canonical format, this module's writes)
       2. ast.literal_eval       (legacy Python-repr strings)
-      3. legacy-numpy-repr rescue (regex np.float64(x)->x, np.True_->True,
-         bare nan->None) then literal_eval  (pre-B1260 checkpoint files)
+      3. legacy-repr rescue (regex np.float64(x)->x, np.True_->True,
+         bare nan->None, datetime.date(Y, M, D)->'YYYY-MM-DD') then
+         literal_eval  (pre-B1260 checkpoint files AND the B2574 raw
+         kill-flush files - see below)
       4. default (+ module-level one-shot counter for observability)
+
+B2574 (S6-B2512 CAUSE FOUND, 2026-09-03): two checkpoint writers in
+backtest.py (the B2148 kill-state flush and the max-run-hours cap-kill
+flush) bypassed dumps_signals() and wrote raw `str(vars(t))`. Every trade
+carries `short_interest_settlement_date`, a `datetime.date`, whose repr
+`datetime.date(2025, 3, 31)` is neither JSON nor a literal -> steps 1-3
+all failed -> `{}` on restore. MEASURED on output_icg_span100_span100:
+313 of 313 leg-1 rows restored as {} (100 pct), and the cube replay then
+ran on the 2pct-of-price ATR proxy for 313/374 trades (83.7 pct,
+backtest_v2.log 2026-09-02 21:13:53). The fix is two-sided: the writers
+now share `backtest.engine.backtest.closed_trade_rows()` (one serialising
+path), and step 3 here rescues the datetime repr so a leg written by the
+OLD code still restores under the new reader (the resume subprocess loads
+fresh; the in-flight leg does not).
 """
 from __future__ import annotations
 
@@ -49,6 +65,22 @@ _NP_SCALAR_RE = re.compile(r"np\.(?:float|int|uint)\d*\(([^)]*)\)")
 _NP_BOOL_TRUE_RE = re.compile(r"np\.True_")
 _NP_BOOL_FALSE_RE = re.compile(r"np\.False_")
 _BARE_NAN_RE = re.compile(r"(?<![A-Za-z0-9_'\"])(nan|inf|-inf)(?![A-Za-z0-9_'\"])")
+# B2574: `datetime.date(2025, 3, 31)` / `datetime.datetime(2025, 3, 31, 9, 30, 0)`
+# reprs from the raw kill-flush writers -> the ISO string sanitize_for_json()
+# would have written. Non-integer args (never seen) collapse to None.
+_DT_REPR_RE = re.compile(r"datetime\.(?:date|datetime)\(([^)]*)\)")
+
+
+def _dt_repr_to_iso(m) -> str:
+    try:
+        nums = [int(x.strip()) for x in m.group(1).split(",") if x.strip()]
+    except ValueError:
+        return "None"
+    if len(nums) == 3:
+        return "'%04d-%02d-%02d'" % tuple(nums)
+    if len(nums) >= 6:
+        return "'%04d-%02d-%02dT%02d:%02d:%02d'" % tuple(nums[:6])
+    return "None"
 
 
 def sanitize_for_json(obj):
@@ -106,12 +138,14 @@ def loads_signals(value, default):
         return ast.literal_eval(s)
     except (ValueError, SyntaxError, TypeError, MemoryError, RecursionError):
         pass
-    # 3. legacy numpy-repr rescue (pre-B1260 checkpoint files)
+    # 3. legacy repr rescue (pre-B1260 numpy reprs; B2574 datetime reprs
+    #    written by the raw kill-flush writers)
     try:
         rescued = _NP_SCALAR_RE.sub(r"\1", s)
         rescued = _NP_BOOL_TRUE_RE.sub("True", rescued)
         rescued = _NP_BOOL_FALSE_RE.sub("False", rescued)
         rescued = _BARE_NAN_RE.sub("None", rescued)
+        rescued = _DT_REPR_RE.sub(_dt_repr_to_iso, rescued)
         return ast.literal_eval(rescued)
     except (ValueError, SyntaxError, TypeError, MemoryError, RecursionError):
         pass

@@ -1,9 +1,9 @@
 {
  "cube": "output_icg_span100_span100",
  "step": 1,
- "step_basis": "manifest window.end 2025-05-05 <= HO_START 2025-05-05 -> Step-1 cube",
+ "step_basis": "declared --step1-cube",
  "family": "institutional_committed_growth_long",
- "ts": "2026-09-02T21:16:28",
+ "ts": "2026-09-03T07:01:36",
  "lenses": [
   {
    "lens": "holdout_untouched",
@@ -29,6 +29,11 @@
    "lens": "empty_signals_share",
    "level": "WARN",
    "evidence": "313 of 374 trade_log rows carry an empty signals_at_entry (S6-B2512 class)"
+  },
+  {
+   "lens": "replay_atr_proxy",
+   "level": "FAIL",
+   "evidence": "NOT COMPARABLE: cube replay used the 2pct-of-price ATR proxy on 83.7% of trades (> 5% engine threshold; INFERRED from the empty signals_at_entry share 83.7% (pre-B2574 cube, no replay_atr_fallback.json)) - the exit ranking is a different population from a cube with signals (S6-B2512 / B2574); re-land under the B2574 engine before comparing"
   },
   {
    "lens": "direction_consistency",

@@ -1,0 +1,22 @@
+{
+ "ticket": "B2569",
+ "strategy": "institutional_committed_growth_long",
+ "cube": "output_icg_span100_span100",
+ "method": "NOT GRADED: covered population below COVERAGE_FLOOR",
+ "levels": [],
+ "reproduction": {
+  "landed_fires": 374,
+  "empty_signals": 313,
+  "covered": 61,
+  "repassed_at_production": 61,
+  "production": {
+   "p7": 3,
+   "p8": 5
+  },
+  "coverage": 0.1631,
+  "coverage_floor": 0.95,
+  "empty_disposition": "S6-B2512 class: excluded from the graded population, counted here, never silently failed",
+  "verdict": "NOT_COMPARABLE"
+ },
+ "not_comparable": "61 of 374 landed fires carry signals (coverage 0.1631); a free-level grade on this subpopulation would sit beside full-population grades on the other configs as if comparable. Resolve the S6-B2512 loss (B2574 engine fix) and re-land, then grade."
+}
