@@ -32183,3 +32183,140 @@ def test_b2576_turn_gate_refuses_a_tty_and_selftests_every_gate(monkeypatch):
     assert "0 RAISED" in r.stdout, r.stdout
     n = int(r.stdout.split("SELFTEST: ")[1].split(" named")[0])
     assert n >= 39, f"the selftest ran {n} gates; main() wires 39 today"
+
+
+def test_b2577_chain_halts_are_reported_cleanup_is_self_and_kill_finds_the_root(tmp_path, monkeypatch):
+    """B2577 (S6-B2573f.a / g.a / g.c):
+    (a) every HALT path of run_serial_chain appends a durable record with
+        reported_to_owner=false and the Stop-hook gate scan_chain_halt BLOCKS
+        the turn until the response carries `CHAIN HALT REPORT: <wave>`
+        (the in-memory seam never mutates its input);
+    (b) the chain unregisters ITS OWN task at CHAIN DONE - the launcher picks
+        the task name before writing the .cmd and passes --task-name; with
+        task_name=None the .cmd stays byte-identical to the b2527 golden shape;
+    (c) kill_wave_tree reaches the run_wave ROOT (whose command line names the
+        spec, not the out_dir), stops at run_serial_chain, and counts a venv
+        launcher + its interpreter twin as ONE launch (measured live tree)."""
+    import importlib.util as _ilu
+    import json as _json
+    import sys as _sys
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parents[2]
+    sp = str(root / "scripts")
+    if sp not in _sys.path:
+        _sys.path.insert(0, sp)
+    import launch_detached as ld
+    import run_serial_chain as rsc
+    import postconfig_landing as pl
+    import verify_turn_compliance as vtc
+
+    # ---- (a) HALT record + toast + gate
+    halts = tmp_path / "chain_halts.jsonl"
+    monkeypatch.setattr(rsc, "LOG", tmp_path / "chain.log")
+    monkeypatch.setattr(rsc, "HALTS", halts)
+    toasts = []
+    monkeypatch.setattr(pl, "toast", lambda t, b: (toasts.append((t, b)) or (True, "fake")))
+    assert rsc.halt("icg_w1", "run_wave exit 1, summary status FAILED",
+                    ["s2.json", "s3.json"], halts) == 1
+    assert toasts and toasts[0][0] == "CHAIN HALT at icg_w1"
+    pend = rsc.undelivered_halts(halts)
+    assert [e["wave"] for e in pend] == ["icg_w1"] and pend[0]["remaining"] == ["s2.json", "s3.json"]
+    assert "CHAIN HALT at icg_w1" in (tmp_path / "chain.log").read_text(encoding="utf-8")
+    out = vtc.scan_chain_halt([], text="I did other work.", halts=halts)
+    assert len(out) == 1 and "icg_w1" in out[0] and "summary status FAILED" in out[0] \
+        and "2 spec(s) not launched" in out[0], out
+    # the in-memory seam reports but does not write back
+    mem = rsc.read_halts(halts)
+    assert vtc.scan_chain_halt([], text="CHAIN HALT REPORT: icg_w1", halts=mem) == []
+    assert vtc.scan_chain_halt([], text="nothing", halts=mem), "in-memory seam must not mutate"
+    # the file seam flips the record; a second turn is quiet
+    assert vtc.scan_chain_halt([], text="CHAIN HALT REPORT: icg_w1 - reason ...", halts=halts) == []
+    assert rsc.undelivered_halts(halts) == []
+    assert vtc.scan_chain_halt([], text="nothing", halts=halts) == []
+    # wired, not merely defined (B1864 shape), and the preamble banner prints it
+    import inspect as _insp
+    assert "scan_chain_halt" in _insp.getsource(vtc.main)
+    rsc.halt("icg_w2", "existing summary reads UNREADABLE", [], halts)
+    _spec = _ilu.spec_from_file_location("inject_tier3_b2577", root / "scripts" / "inject_tier3_discipline.py")
+    it3 = _ilu.module_from_spec(_spec); _spec.loader.exec_module(it3)
+    ban = it3.chain_halts_banner()
+    assert "icg_w2" in ban and "UNREADABLE" in ban and "CHAIN HALT REPORT" in ban
+
+    # main(): a non-COMPLETE existing summary HALTs through halt(); an
+    # all-COMPLETE chain reaches CHAIN DONE and cleans up its own task
+    oa = tmp_path / "output_audit"; oa.mkdir()
+    monkeypatch.setattr(rsc, "ROOT", tmp_path)
+    monkeypatch.setattr(rsc, "ENGINE_HASH_RECORD", oa / "hash.json")
+    (tmp_path / "spec_a.json").write_text(_json.dumps({"wave": "wa"}), encoding="utf-8")
+    (oa / "wa_wave_summary.json").write_text(_json.dumps({"results": [{"status": "FAILED"}]}), encoding="utf-8")
+    monkeypatch.setattr(_sys, "argv", ["run_serial_chain.py", "--specs", "spec_a.json"])
+    assert rsc.main() == 1
+    assert [e["wave"] for e in rsc.undelivered_halts(halts)] == ["icg_w2", "wa"]
+    cleaned = []
+    monkeypatch.setattr(rsc, "cleanup_task", lambda n: cleaned.append(n))
+    (oa / "wa_wave_summary.json").write_text(_json.dumps({"results": [{"status": "COMPLETE"}]}), encoding="utf-8")
+    monkeypatch.setattr(_sys, "argv", ["run_serial_chain.py", "--task-name", "stockpicks_chain_x_1", "--specs", "spec_a.json"])
+    assert rsc.main() == 0 and cleaned == ["stockpicks_chain_x_1"]
+    assert "CHAIN DONE" in (tmp_path / "chain.log").read_text(encoding="utf-8")
+    monkeypatch.setattr(_sys, "argv", ["run_serial_chain.py", "--specs", "spec_a.json"])
+    assert rsc.main() == 0 and cleaned == ["stockpicks_chain_x_1"], "no --task-name, no cleanup"
+
+    # ---- (b) the launcher passes its own task name; None keeps the golden shape
+    log = tmp_path / "x.log"
+    plain = ld.chain_cmd_text(["a.json"], log, None)
+    named = ld.chain_cmd_text(["a.json"], log, None, task_name="stockpicks_chain_b1_9")
+    assert "--task-name" not in plain
+    assert "run_serial_chain.py --task-name stockpicks_chain_b1_9 --specs a.json" in named
+    both = ld.chain_cmd_text(["a.json"], log, "output_audit/p_wave_summary.json", task_name="t")
+    assert "--wait-for output_audit/p_wave_summary.json --task-name t --specs a.json" in both
+    seen = {}
+    class _R:  # what _register_and_start returns
+        returncode = 0
+        stdout = "registered_and_started NAME state=Running last_result=0"
+        stderr = ""
+    def fake_register(name, exe, args, **kw):
+        seen["name"] = name; seen["args"] = args
+        _R.stdout = _R.stdout.replace("NAME", name)
+        return _R
+    monkeypatch.setattr(ld, "ROOT", tmp_path)
+    monkeypatch.setattr(ld, "_register_and_start", fake_register)
+    monkeypatch.setattr(ld, "chain_task_running", lambda b: None)
+    (oa / "s.json").write_text(_json.dumps({"wave": "wz"}), encoding="utf-8")
+    assert ld.launch_chain("b2577t", ["output_audit/s.json"], None, 48) == 0
+    cmd_text = (oa / "_b2577t_chain.cmd").read_text(encoding="utf-8")
+    assert f"--task-name {seen['name']} --specs output_audit/s.json" in cmd_text
+    assert seen["name"].startswith("stockpicks_chain_b2577t_")
+    rec = _json.loads((oa / "_b2577t_chain_task.json").read_text(encoding="utf-8"))
+    assert rec["task"] == seen["name"] and rec["launched"] is True
+
+    # ---- (c) kill_wave_tree: the measured live tree of the b2527 chain
+    _spec = _ilu.spec_from_file_location("kill_wave_tree_b2577", root / "scripts" / "kill_wave_tree.py")
+    kwt = _ilu.module_from_spec(_spec); _spec.loader.exec_module(kwt)
+    V = "C:\\r\\.venv\\Scripts\\python.exe"
+    od = "output_icg_mult1.0_mult1.0"
+    fake = [
+        (24172, 25776, f"{V} scripts\\run_serial_chain.py --specs output_audit/b2527_icg_span9_spec.json"),
+        (9228, 24172, f"{V} scripts\\run_serial_chain.py --specs output_audit/b2527_icg_span9_spec.json"),
+        (27132, 9228, f"{V} C:\\r\\scripts\\run_wave.py --spec output_audit/b2527_icg_mult1.0_spec.json"),
+        (13664, 27132, f"{V} C:\\r\\scripts\\run_wave.py --spec output_audit/b2527_icg_mult1.0_spec.json"),
+        (3032, 13664, f"{V} C:\\r\\scripts\\launch_sweep.py --manifest C:\\r\\{od}\\run_manifest.json"),
+        (15084, 3032, f"{V} C:\\r\\scripts\\launch_sweep.py --manifest C:\\r\\{od}\\run_manifest.json"),
+        (23180, 15084, f"{V} C:\\r\\backtest\\run_phase1a.py --output-dir {od}"),
+        (27960, 23180, f"{V} C:\\r\\backtest\\run_phase1a.py --output-dir {od}"),
+        (22188, 27960, "C:\\py314\\python.exe -c from multiprocessing.spawn import spawn_main; spawn_main(parent_pid=27960, pipe_handle=1)"),
+        (11392, 27960, "C:\\py314\\python.exe -c from multiprocessing.spawn import spawn_main; spawn_main(parent_pid=27960, pipe_handle=2)"),
+        (24548, 5356, f"{V} scripts\\run_serial_chain.py --wait-for output_audit/icg_minq2_wave_summary.json --specs output_audit/b2574_icg_span100_rerun_spec.json"),
+        (5176, 10272, f"{V} -m pytest backtest/tests/test_unit.py -q"),
+        (4964, 5176, f"{V} -m pytest backtest/tests/test_unit.py -q"),
+    ]
+    monkeypatch.setattr(kwt, "_ps", lambda cmd: "\n".join(f"{p}|{pp}|{c}" for p, pp, c in fake))
+    keep = kwt.candidates(od)
+    pids = sorted(p for p, _, _ in keep)
+    assert pids == [3032, 11392, 13664, 15084, 22188, 23180, 27132, 27960], pids
+    assert 9228 not in pids and 24172 not in pids, "the serial chain must never be killed"
+    assert 24548 not in pids and 5176 not in pids and 4964 not in pids
+    assert kwt.launches(keep) == 5          # run_wave, launch_sweep, run_phase1a, 2 workers
+    # the B2214 shape (no launcher twins) still counts one launch per pid
+    keep2 = [(100, 4, "py run_phase1a.py --output-dir output_T"), (101, 100, "py -c spawn_main")]
+    assert kwt.launches(keep2) == 2

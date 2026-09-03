@@ -292,6 +292,36 @@ INCIDENTS: dict[str, tuple[str, bool, dict]] = {
                        "committed": False, "pushed": False,
                        "reported_to_owner": False}]},
     ),
+    # B2577 (S6-B2573f.a): VERBATIM from output_audit/b2573_optimisation_
+    # workflow_portability_audit.md (the B2573 audit, 2026-09-03). The
+    # 2026-08-26T02:57:58Z HALT of the chain waiting on b2177_sw50
+    # ("predecessor did not COMPLETE; nothing launched") wrote ONE
+    # serial_chain.log line and reached nobody until the audit tailed the log
+    # eight days later; the prose that finally discussed the class carried no
+    # CHAIN HALT REPORT block, so nothing mechanical could tell a HALT had
+    # reached the owner (the B2520 landing shape, applied to a chain). The
+    # state is the event exactly as run_serial_chain.halt() writes it; the
+    # gate reads the LAST event per wave.
+    "scan_chain_halt": (
+        "Monitoring and session survival: the durable channels are the "
+        "heartbeat file, the chain log and the landing ledger; **every "
+        "notification channel except the Windows toast is session-held** "
+        "(CronCreate, PushNotification) - the chain HALT path writes a log "
+        "line and nothing else. Two duplicate hourly crons are armed right now "
+        "(EXECUTED CronList: `:13` and `:17`), which shows the \"arm the "
+        "monitor\" step is not idempotent either.",
+        True,
+        {"halts": [{"wave": "b2177_sw50",
+                    "reason": "predecessor did not COMPLETE; nothing launched "
+                              "(the no-relaunch rule; a human decides)",
+                    "remaining": ["output_audit/b2180_sw5_spec.json"],
+                    "ts": "2026-08-26T02:57:58Z",
+                    "log_line": "CHAIN HALT at b2177_sw50 - predecessor did not "
+                                "COMPLETE; nothing launched (the no-relaunch "
+                                "rule; a human decides); remaining specs NOT "
+                                "launched (a human decides)",
+                    "reported_to_owner": False}]},
+    ),
     # NEGATIVE control - ordinary reporting prose that must NOT trip anything.
     # Note it is a bare sentence, so gates that legitimately require RESPONSE
     # STRUCTURE (a SKILLS block, a compliance block) are excluded by the sweep
@@ -485,6 +515,22 @@ EXTRA_INCIDENTS: dict[str, list[tuple[str, bool, dict]]] = {
     # nothing else - deleting only that line makes it fire, which is the
     # council's discriminate-test and is asserted in
     # test_b2520_stop_hook_blocks_until_a_landing_is_reported.
+    # B2577 must-QUIET: the SAME halt event, and a response that carries the
+    # report. Quiet because of the `CHAIN HALT REPORT: <wave>` block and
+    # nothing else - the discriminate-test is asserted in test_b2577.
+    "scan_chain_halt": [
+        ("The chain is stopped and reported below.\n\n"
+         "```\n=== CHAIN HALT REPORT: b2177_sw50 ===\n"
+         "predecessor did not COMPLETE; nothing launched (the no-relaunch rule; "
+         "a human decides) | 1 spec(s) not launched\n```",
+         False,
+         {"halts": [{"wave": "b2177_sw50",
+                     "reason": "predecessor did not COMPLETE; nothing launched "
+                               "(the no-relaunch rule; a human decides)",
+                     "remaining": ["output_audit/b2180_sw5_spec.json"],
+                     "ts": "2026-08-26T02:57:58Z",
+                     "reported_to_owner": False}]}),
+    ],
     "scan_undelivered_landing": [
         ("Both cubes are reported below.\n\n"
          "```\n=== LANDING REPORT: output_icg_cfg1 ===\n"
@@ -900,6 +946,9 @@ NEUTRAL: dict[str, dict] = {
     # B2520: reads the LIVE landings record; an empty record is the neutral
     # state, or the control measures whatever landed today (L517 shape).
     "scan_undelivered_landing": {"landings": []},
+    # B2577: reads the LIVE chain_halts.jsonl; an empty event list is the
+    # neutral state (same reason as scan_undelivered_landing).
+    "scan_chain_halt": {"halts": []},
 }
 
 

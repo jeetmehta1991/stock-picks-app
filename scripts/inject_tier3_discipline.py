@@ -83,6 +83,29 @@ def undelivered_landings_banner() -> str:
     return "\n".join(lines).encode("ascii", "replace").decode("ascii") + "\n\n"
 
 
+def chain_halts_banner() -> str:
+    """B2577: every serial-chain HALT not yet reported to the owner, printed
+    at the top of the next turn beside the landings (the Stop hook's
+    scan_chain_halt asks for `CHAIN HALT REPORT: <wave>`). Never raises."""
+    try:
+        here = str(pathlib.Path(__file__).resolve().parent)
+        if here not in sys.path:
+            sys.path.insert(0, here)
+        import run_serial_chain as _rsc
+        pend = _rsc.undelivered_halts()
+    except Exception:
+        return ""
+    if not pend:
+        return ""
+    lines = ["[CHAIN HALTS NOT REPORTED (B2577) - report each as `CHAIN HALT "
+             "REPORT: <wave>` in this turn's final response; the Stop hook "
+             "blocks until you do]"]
+    for ev in pend:
+        lines.append(f"  {ev.get('wave')}: {ev.get('ts')} - {ev.get('reason')}; "
+                     f"{len(ev.get('remaining') or [])} spec(s) not launched")
+    return "\n".join(lines).encode("ascii", "replace").decode("ascii") + "\n\n"
+
+
 def main() -> int:
     try:
         # Consume stdin (the hook payload) so the pipe closes cleanly; we don't
@@ -105,7 +128,7 @@ def main() -> int:
                   / ".claude" / "skills" / "execution-discipline" / "SKILL.md")
         try:
             body = _skill.read_text(encoding="utf-8")
-            out = (undelivered_landings_banner()
+            out = (undelivered_landings_banner() + chain_halts_banner()
                    + "[EXECUTION-DISCIPLINE - FULL SKILL, auto-injected every turn "
                    "(B1744). Apply UNPROMPTED.]" + chr(10) + body)
             # B1744 ROOT CAUSE. B1743 shipped and SILENTLY did nothing for two
@@ -128,7 +151,7 @@ def main() -> int:
         except Exception:
             # Fallback retained, but it is now a REAL last resort rather than the
             # everyday path. TIER3 is pure ASCII so it always encodes.
-            sys.stdout.write(undelivered_landings_banner() + TIER3)
+            sys.stdout.write(undelivered_landings_banner() + chain_halts_banner() + TIER3)
     except Exception:
         pass  # fail-open: never block a turn
     return 0

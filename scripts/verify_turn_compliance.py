@@ -4120,6 +4120,51 @@ def scan_undelivered_landing(entries, *, text=None, landings=None) -> list[str]:
              "--cube <dir> --if-not-landed --no-git --no-notify` reprints it)."))
 
 
+def scan_chain_halt(entries, *, text=None, halts=None) -> list[str]:
+    """B2577 (S6-B2573f.a): a serial chain that HALTED is REPORTED to the
+    owner before a turn may end - the same contract B2520 gives a landed
+    cube. run_serial_chain appends {wave, reason, reported_to_owner=false}
+    to output_audit/chain_halts.jsonl on every HALT path; while any wave's
+    last event is unreported, the final response must carry
+    `CHAIN HALT REPORT: <wave>` for it. A match flips the record; a miss
+    BLOCKS with the wave and reason named. The b2527 chain's four HALT paths
+    each wrote one log line to a file nobody is made to read (L721 shape)."""
+    try:
+        _here = str(Path(__file__).resolve().parent)
+        if _here not in sys.path:
+            sys.path.insert(0, _here)
+        import run_serial_chain as _rsc
+    except Exception as _exc:
+        return [f"CHAIN-HALT GATE BROKEN: run_serial_chain import failed "
+                f"({_exc!r}) - fail CLOSED"]
+    in_memory = isinstance(halts, (list, tuple))
+    if in_memory:
+        path, pending = None, _rsc.undelivered_halt_events(list(halts))
+    else:
+        path = _rsc.HALTS if halts is None else Path(halts)
+        pending = _rsc.undelivered_halts(path)
+    if not pending:
+        return []
+    body = _response_text(entries, text, keep_code=True)
+    delivered = [ev["wave"] for ev in pending
+                 if f"chain halt report: {ev['wave'].lower()}" in body]
+    if delivered and not in_memory:
+        try:
+            _rsc.mark_halt_reported(delivered, path, by="verify_turn_compliance")
+        except Exception as _exc:
+            return [f"CHAIN-HALT GATE could not mark {delivered} reported "
+                    f"({_exc!r}) - fail CLOSED"]
+    required = {
+        (f"{ev['wave']} ({ev.get('reason')}; {len(ev.get('remaining') or [])} "
+         f"spec(s) not launched)"): ev["wave"] in delivered
+        for ev in pending}
+    return require_each(
+        "SERIAL CHAIN HALTED AND NOT REPORTED TO THE OWNER (B2577)", required,
+        why=("A detached chain stopped and the owner has not seen why. Put a "
+             "`CHAIN HALT REPORT: <wave>` block in the final response for EACH "
+             "(reason, specs not launched, what a human decides next)."))
+
+
 def scan_bulk_process_kill(entries, *, cmds=None) -> list[str]:
     import re as _re
 
@@ -4386,7 +4431,9 @@ def main(argv: list[str] | None = None) -> int:
                 scan_bare_python_launch,
                 scan_monitor_pattern_unverified,
                 # B2520: a landed cube must be REPORTED before the turn ends.
-                scan_undelivered_landing):
+                scan_undelivered_landing,
+                # B2577: so must a HALTED serial chain.
+                scan_chain_halt):
         _n_gates += 1
         try:
             _r = _sc(_e2)

@@ -127,11 +127,16 @@ def launch(spec_path: str, hardened: bool = False) -> int:
     return 0
 
 
-def chain_cmd_text(specs: list[str], log: Path, wait_for: str | None) -> str:
+def chain_cmd_text(specs: list[str], log: Path, wait_for: str | None,
+                   task_name: str | None = None) -> str:
     """The .cmd body Task Scheduler runs. Single-threaded BLAS (the engine
     forks a screen pool; nested BLAS threads oversubscribe the box), repo
-    root cwd, PYTHONPATH=., stdout+stderr appended to the chain log."""
+    root cwd, PYTHONPATH=., stdout+stderr appended to the chain log.
+    B2577: `task_name` (None = byte-identical to the b2527 golden shape)
+    passes the task's own name so run_serial_chain can unregister it at
+    CHAIN DONE."""
     wait = f"--wait-for {wait_for} " if wait_for else ""
+    wait += f"--task-name {task_name} " if task_name else ""
     lines = [
         "@echo off",
         f"cd /d {ROOT}",
@@ -180,8 +185,11 @@ def launch_chain(batch: str, specs: list[str], wait_for: str | None,
         return 2
     log = ROOT / "output_audit" / f"{batch}_chain_detached.log"
     cmd = ROOT / "output_audit" / f"_{batch}_chain.cmd"
-    cmd.write_text(chain_cmd_text(specs, log, wait_for), encoding="utf-8")
+    # B2577: the name is chosen BEFORE the .cmd is written so the chain can
+    # unregister its own task at CHAIN DONE (S6-B2573g.a).
     name = f"stockpicks_chain_{batch}_{int(time.time())}"
+    cmd.write_text(chain_cmd_text(specs, log, wait_for, task_name=name),
+                   encoding="utf-8")
     r = _register_and_start(name, "cmd.exe", f'/c "{cmd}"', hardened=hardened,
                             time_limit_hours=time_limit_hours)
     out = (r.stdout or "") + (r.stderr or "")
@@ -205,7 +213,8 @@ def launch_chain(batch: str, specs: list[str], wait_for: str | None,
     print(f"  cmd -> {cmd}")
     print(f"  stdout -> {log}")
     print(f"  observed: {state_line.strip()}")
-    print(f"  cleanup when CHAIN DONE: python scripts/launch_detached.py --cleanup {name}")
+    print(f"  cleanup at CHAIN DONE: the chain unregisters {name} itself (B2577); "
+          f"after a HALT: python scripts/launch_detached.py --cleanup {name}")
     return 0
 
 
