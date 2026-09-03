@@ -91,6 +91,7 @@ fires            =  ( breaker_bullish )  AND  ( price_above_ema_200 ) [from P6]"
         # quoting this table (#202).
         "params": [
             {"id": "P1", "producer": "_smc.swing_highs_lows", "param": "swing_length",
+             "env": "SMC_SWING_LENGTH",   # B2578: the knob the engine reads (config.py)
              "production": 20, "type": "int", "band": [5, 10, 20, 30, 50],
              # B1691 owner directive: swing_length=5 ADDED. The band had ONE level
              # below production and TWO above - built on the hypothesis that higher
@@ -103,12 +104,14 @@ fires            =  ( breaker_bullish )  AND  ( price_above_ema_200 ) [from P6]"
              "evidence": "smc.py:137",
              "engine_implemented": True},
             {"id": "P2", "producer": "_smc.ob", "param": "close_mitigation",
+             "env": "SMC_OB_CLOSE_MITIGATION",
              "production": False, "type": "bool", "band": [False, True],
              "derivation": "boolean - both values ARE the band. True = mitigated on CLOSE only.",
              "subset_safe": True, "status": "TESTED",
              "evidence": "smc.py:380",
              "engine_implemented": True},
             {"id": "P3", "producer": "ob_events.tail(N)", "param": "tail_n",
+             "env": "SMC_OB_TAIL_N",
              "production": 20, "type": "int", "band": [1, 2, 3, 5, 10, 20],
              "derivation": "B1610 DEFECT - this text says the band spans the measured "
                            "rank range 1-4, and it does NOT: its floor is 3, the TOP of "
@@ -121,6 +124,7 @@ fires            =  ( breaker_bullish )  AND  ( price_above_ema_200 ) [from P6]"
              "evidence": "smc_ict.py:266-268",
              "engine_implemented": True},
             {"id": "P4", "producer": "recency filter on OB age", "param": "age_bars_max",
+             "env": "SMC_BREAKER_AGE_BARS_MAX",
              "production": None, "type": "int|None", "band": [60, 120, 180, 250, None],
              "derivation": "measured real retests 45-134 bars, latches 294-469, gap 134-294 (B1501).",
              "subset_safe": True, "status": "TESTED",
@@ -133,6 +137,7 @@ fires            =  ( breaker_bullish )  AND  ( price_above_ema_200 ) [from P6]"
                          "engine counterpart; see S6-B1612f.",
              "engine_implemented": True},
             {"id": "P5", "producer": "break test (close > top)", "param": "break_pct_max",
+             "env": "SMC_BREAKER_BREAK_PCT_MAX",
              "production": None, "type": "float|None", "band": [0.01, 0.02, 0.03, 0.05, None],
              "derivation": "NEW-GATE, OWNER-APPROVED B1507 (was N/A - production has no such "
                            "parameter; `close > top` is a strict inequality). Band from the "
@@ -145,6 +150,7 @@ fires            =  ( breaker_bullish )  AND  ( price_above_ema_200 ) [from P6]"
              "evidence": "smc_ict.py:283-284 (no parameter today)",
              "engine_implemented": True},
             {"id": "P6", "producer": "compute_ema_sma", "param": "span",
+             "env": "STRAT_EMA_SPAN",
              "production": 200, "type": "int", "band": [9, 20, 21, 50, 100, 150, 200],
              "derivation": "ALL spans the producer emits (READ technical.py:750 pairs "
                            "(9,21),(20,50),(50,200)). B1507 widened from [50,200] - the "
@@ -163,6 +169,14 @@ fires            =  ( breaker_bullish )  AND  ( price_above_ema_200 ) [from P6]"
     # help drive higher sharpe"). Every value READ from source; evidence cites
     # the line. The EMA row is P7 and is BANDED, not pinned, on that directive.
     "institutional_committed_growth_long": {
+        # B2578 (S6-B2573b): env values an arm may set that are NOT a
+        # parameter knob. INST_PERSIST_CACHE_TAG routes the strategy's
+        # persistence read to data_prefetch/derived/
+        # institutional_persistence_t1a_<tag> (persistence_cache_dir);
+        # the tagged precompute is built OUT OF BAND at the arm's P4/P5/P6
+        # values and records none of them (S6-B2578a) - the gate can only
+        # check the tagged directory exists and holds parquet.
+        "env_actuators": {"INST_PERSIST_CACHE_TAG": "persistence precompute tag"},
         # S6-B2465: MEASURED from output_r5_merged_1_7/trade_log.csv,
         # not recalled. holdout_n 666 and is_n 1275 reproduce S6-B2435
         # and the B2419 pre-registration exactly.
@@ -250,6 +264,7 @@ fires =  ( P7  OR  P8 )  AND  P9
              "derivation": "data hygiene against 13F filing jitter, not an edge knob: it decides what counts as a consecutive quarter, and moving it changes chain lengths for reasons unrelated to the thesis. NOT PERSISTED: the cube stores this step's OUTPUT (committed_growth_holders), never its inputs, so the value cannot be recomputed by re-filtering an existing cube. Resim in BOTH directions - monotonicity is irrelevant here, availability is what decides."},
             {"id": "P4", "producer": "_per_ticker_persistence (persistence precompute)",
              "param": "min_consecutive_quarters", "production": 4, "sweep_levels": [2, 3, 6, 8],
+             "env": "INST_MIN_CONSECUTIVE_QUARTERS",   # read at precompute build time
              "band": [2, 3, 4, 6, 8],
              "free_band": [], "resim_band": [2, 3, 4, 6, 8],
              "subset_safe": False, "status": "UNTESTED",
@@ -258,6 +273,7 @@ fires =  ( P7  OR  P8 )  AND  P9
              "derivation": "Yan-Zhang 2009 persistence spans multiple quarters but the canonical count varies; 4 is this repo's choice. Band brackets production BOTH ways per B1691. NOT PERSISTED: the cube stores this step's OUTPUT (committed_growth_holders), never its inputs, so the value cannot be recomputed by re-filtering an existing cube. Resim in BOTH directions - monotonicity is irrelevant here, availability is what decides. AND NOTE the fallback: tightening this can drive committed_growth_holders to 0, which switches P8 ON and can ADD fires - so it is not even monotone at the producer level."},
             {"id": "P5", "producer": "_per_ticker_persistence (persistence precompute)",
              "param": "growth_lookback_quarters", "production": 4, "sweep_levels": [2, 3, 6, 8],
+             "env": "INST_GROWTH_LOOKBACK_QUARTERS",
              "band": [2, 3, 4, 6, 8],
              "free_band": [], "resim_band": [2, 3, 4, 6, 8],
              "subset_safe": False, "status": "UNTESTED",
@@ -266,6 +282,7 @@ fires =  ( P7  OR  P8 )  AND  P9
              "derivation": "the window P6 measures growth across. COLLINEAR WITH P4 BY CONSTRUCTION - P4 gates which funds reach P5 and both default to 4, so a joint sweep must report their correlation rather than crediting either alone. NOT PERSISTED: the cube stores this step's OUTPUT (committed_growth_holders), never its inputs, so the value cannot be recomputed by re-filtering an existing cube. Resim in BOTH directions - monotonicity is irrelevant here, availability is what decides."},
             {"id": "P6", "producer": "_per_ticker_persistence (persistence precompute)",
              "param": "growth_multiple", "production": 1.100, "sweep_levels": [1.0, 1.25, 1.5],
+             "env": "INST_GROWTH_MULTIPLE",
              "band": [1.0, 1.1, 1.25, 1.5],
              "free_band": [], "resim_band": [1.0, 1.1, 1.25, 1.5],
              "subset_safe": False, "status": "UNTESTED",
@@ -274,22 +291,32 @@ fires =  ( P7  OR  P8 )  AND  P9
              "derivation": "1.10 = '+10pct over the window'. 1.0 is the meaningful floor (ANY growth) and is included deliberately - it sits below production, and B1691's lesson is that the winning level is often one the old floor excluded. NOT PERSISTED: the cube stores this step's OUTPUT (committed_growth_holders), never its inputs, so the value cannot be recomputed by re-filtering an existing cube. Resim in BOTH directions - monotonicity is irrelevant here, availability is what decides."},
             {"id": "P7", "producer": "strat_institutional_committed_growth_long",
              "param": "min_committed_growth", "production": 3, "sweep_levels": [],
-             "band": [1, 2, 3, 5, 11, 14],
-             "free_band": [3, 5, 11, 14], "resim_band": [1, 2],
+             # S6-B2569a STRIKE (owner-approved 2026-09-03, B2578): resim
+             # levels 1 and 2 REMOVED. The threshold is the literal
+             # `n_grow >= 3` at screener.py:6648 with NO env knob, so the
+             # looser levels were scheduled with no mechanism (L752 class:
+             # scheduled-with-mechanism or struck). NOT-MEASURED-BY-DESIGN
+             # until a knob exists; the free (tighter) levels grade on every
+             # landing (step2_free_levels).
+             "band": [3, 5, 11, 14],
+             "free_band": [3, 5, 11, 14], "resim_band": [],
              "subset_safe": None, "status": "UNTESTED",
              "evidence": "screener.py:6648",
              "type": "int", "engine_implemented": True,
-             "derivation": "PERSISTED, so this row splits PER LEVEL - which the pre-B2467 binary field could not express and which is why the old factorial read 31,500. Raising the bar (5, 11, 14) selects a STRICT SUBSET of rows already in the cube and grades FREE; lowering it (1, 2) admits rows the cube never contains and needs the engine. The fallback does NOT break this: raising the primary threshold leaves committed_growth_holders unchanged, so rows at 0 still take P8 identically and rows at 3-4 simply stop firing. Levels are the measured IS deciles over 1,275 IS rows."},
+             "derivation": "PERSISTED, so this row splits PER LEVEL - which the pre-B2467 binary field could not express and which is why the old factorial read 31,500. Raising the bar (5, 11, 14) selects a STRICT SUBSET of rows already in the cube and grades FREE; lowering it (1, 2) would admit rows the cube never contains and need the engine - and the engine has no knob for it, so those two levels were STRUCK at B2578 (S6-B2569a). The fallback does NOT break this: raising the primary threshold leaves committed_growth_holders unchanged, so rows at 0 still take P8 identically and rows at 3-4 simply stop firing. Levels are the measured IS deciles over 1,275 IS rows."},
             {"id": "P8", "producer": "strat_institutional_committed_growth_long",
              "param": "fallback_min_increased", "production": 5, "sweep_levels": [],
-             "band": [2, 3, 5, 6],
-             "free_band": [5, 6], "resim_band": [2, 3],
+             # S6-B2569a STRIKE (B2578): resim levels 2 and 3 REMOVED - the
+             # literal `n_incr >= 5` at screener.py:6648 has no env knob.
+             "band": [5, 6],
+             "free_band": [5, 6], "resim_band": [],
              "subset_safe": None, "status": "UNTESTED",
              "evidence": "screener.py:6648",
              "type": "int", "engine_implemented": True,
-             "derivation": "the B1230 fallback, live wherever the persistence precompute has no row (~4pct of fired rows). PERSISTED, so the same per-level split as P7: raising it only removes fires and grades FREE; 2 and 3 add fires and need resim. Levels are the measured IS deciles of institutional_increased."},
+             "derivation": "the B1230 fallback, live wherever the persistence precompute has no row (~4pct of fired rows). PERSISTED, so the same per-level split as P7: raising it only removes fires and grades FREE; 2 and 3 would add fires and need resim - no knob exists, STRUCK at B2578 (S6-B2569a). Levels are the measured IS deciles of institutional_increased."},
             {"id": "P9", "producer": "compute_ema_sma",
              "param": "span", "production": 200, "sweep_levels": [9, 20, 50, 100, 150],
+             "env": "STRAT_EMA_SPAN",
              "band": [9, 20, 50, 100, 150, 200],
              "free_band": [], "resim_band": [9, 20, 50, 100, 150, 200],
              "subset_safe": False, "status": "UNTESTED",
@@ -349,6 +376,18 @@ def validate_spec(spec: dict) -> list[str]:
         if any(str(x) == str(_p["production"]) for x in _sl):
             errs.append(f"{_p['id']}: sweep_levels repeats production "
                         "- the OAT baseline already covers it")
+    # B2578 (S6-B2573b / S6-B2569a class): a resim level other than
+    # production is a promise to run the engine at that value. Without a
+    # declared env knob nothing can honour it - the P7/P8 defect that sat
+    # in this table for 11 configs. Fail CLOSED here so the launch gate
+    # and Table A read the same rule.
+    for _p in spec["params"]:
+        _extra = [x for x in (_p.get("resim_band") or [])
+                  if str(x) != str(_p.get("production"))]
+        if _extra and not _p.get("env"):
+            errs.append(f"{_p['id']} {_p['param']}: resim levels {_extra} "
+                        "have no env knob - unrunnable by design "
+                        "(S6-B2569a class): strike them or add the knob")
     b = spec.get("baseline")
     if not isinstance(b, dict):
         errs.append("SPEC has no `baseline` block - main() reads it for the "
@@ -357,6 +396,185 @@ def validate_spec(spec: dict) -> list[str]:
         for _f in ("artifact", "tickers", "holdout_n", "window"):
             if _f not in b:
                 errs.append("SPEC baseline missing %r - main() reads it" % _f)
+    return errs
+
+
+# --------------------------------------------------------------------------
+# B2578 (S6-B2573b): the LAUNCH GATE. Before B2578 nothing between a spec file
+# and the engine asked whether the strategy was registered anywhere or whether
+# the env values an arm set were knobs the engine reads - four institutional
+# configs landed ungraded pre-B2520 and the P7/P8 resim levels sat unrunnable
+# for 11 configs. Everything here fails CLOSED (L642): an absent entry, an
+# unreadable registry, an undeclared env key or an off-band level is a refusal.
+# Called by run_wave.main BEFORE any arm runs and by prelaunch_gate.check for
+# every LOCAL manifest (so the around-the-gate launch_sweep route refuses too).
+# --------------------------------------------------------------------------
+KNOB_READERS = ("backtest/config.py",
+                "scripts/build_institutional_persistence_precompute.py")
+
+
+def strategies_of(doc: dict, root: Path) -> list[str]:
+    """The strategies a spec/manifest runs: one per non-comment line of its
+    strategy_subset file (the launcher passes that file to the engine)."""
+    rel = doc.get("strategy_subset")
+    if not rel:
+        return []
+    p = root / str(rel)
+    if not p.exists():
+        return []
+    return [ln.strip() for ln in p.read_text(encoding="utf-8").splitlines()
+            if ln.strip() and not ln.lstrip().startswith("#")]
+
+
+def knob_is_read(knob: str, root: Path) -> bool:
+    """A knob is PROVEN when a reader module literally reads it from the
+    environment - the same code-presence shape verify_engine_implemented uses
+    for engine anchors. A typo'd knob (SMC_SWING_LEN) proves nothing. The
+    read may wrap (config.py:2511 `os.environ.get(<newline> "SMC_OB_..."`),
+    so the match is whitespace-tolerant - measured at B2578 when the literal
+    needle refused a knob the engine does read."""
+    import re as _re
+    pat = _re.compile(r'environ\.get\(\s*"' + _re.escape(knob) + '"')
+    for rel in KNOB_READERS:
+        try:
+            if pat.search((root / rel).read_text(encoding="utf-8")):
+                return True
+        except OSError:
+            continue
+    return False
+
+
+def _battery_families() -> tuple[set | None, str]:
+    """The post-config battery's registry (run_postconfig.FAMILIES today;
+    S6-B2573a replaces this with the SPECS adapter contract). Imported, never
+    retyped; an import failure is reported, not swallowed."""
+    try:
+        import run_postconfig as _rp
+        return set(_rp.FAMILIES), ""
+    except Exception as exc:                       # noqa: BLE001 - report ANY
+        return None, f"{type(exc).__name__}: {exc}"
+
+
+def _level_in_band(value, row: dict) -> bool:
+    """Does an env/arm value name a level of the row's band? Env values are
+    strings: '1'/'0' for bools, '' for None, '1.25' for floats."""
+    t = str(row.get("type", ""))
+    band = list(row.get("band") or [])
+    s = str(value).strip()
+    if t.startswith("bool"):
+        low = s.lower()
+        if low in ("1", "true"):
+            return True in band
+        if low in ("0", "false"):
+            return False in band
+        return False    # "2" names no bool level (the engine reads == "1")
+    if s == "" or s.lower() == "none":
+        return None in band
+    for b in band:
+        if b is None:
+            continue
+        try:
+            if float(b) == float(s):
+                return True
+        except (TypeError, ValueError):
+            if str(b) == s:
+                return True
+    return False
+
+
+def launch_refusals(doc: dict, root: Path | None = None,
+                    require_subset: bool = True) -> list[str]:
+    """Reasons NOT to launch `doc` (a wave spec or a run manifest - both carry
+    strategy_subset + arms). Empty list = launch. Every reason names the
+    class it refuses under so the HALT record reads without this file open.
+
+    require_subset: a wave spec (run_wave) is a Step-1 config by construction
+    and MUST name its strategy. A LOCAL manifest without one is a full-roster
+    run (the B1488 shape) - nothing here to gate unless it also sets arms,
+    in which case the arms have no strategy to be checked against."""
+    root = Path(root) if root is not None else Path(__file__).resolve().parents[1]
+    rel = doc.get("strategy_subset")
+    if not rel:
+        if require_subset or doc.get("arms"):
+            return ["spec/manifest carries no strategy_subset - the gate cannot "
+                    "tell which strategy the run is for (fail CLOSED, L642)"]
+        return []
+    if not (root / str(rel)).exists():
+        # B2578 addendum: the field has historically been used as free text in
+        # hand-written manifests - MEASURED 2026-09-03, six pre-B2118 ones read
+        # "output_audit/_subset_one.txt (smc_breaker_block_long)" and
+        # output_b2099_iso2's is prose only. A path field that is sometimes
+        # prose cannot be checked, so the annotated form is refused (L642) with
+        # the diagnostic rather than silently parsed. Every LIVE manifest
+        # run_wave writes carries a bare path.
+        head = str(rel).split(" (")[0].strip()
+        why = ("" if head == str(rel) or not (root / head).exists() else
+               f" - the field carries a parenthetical annotation and must be a "
+               f"BARE path ({head} exists); pre-B2118 hand-written manifests use "
+               "the annotated form and are refused deliberately")
+        return [f"strategy_subset {rel} does not exist under {root}{why}"]
+    strats = strategies_of(doc, root)
+    if not strats:
+        return [f"strategy_subset {rel} lists no strategy"]
+    fams, why = _battery_families()
+    errs: list[str] = []
+    for s in strats:
+        spec = SPECS.get(s)
+        if spec is None:
+            errs.append(f"{s}: no SPECS entry in producer_variant_table - the "
+                        "post-config battery would FAIL closed at landing AFTER "
+                        "the engine spend (S6-B2573b; fail CLOSED at launch)")
+            continue
+        if fams is None:
+            errs.append(f"{s}: the battery registry could not be read ({why}) "
+                        "- refusing rather than guessing (L642)")
+        elif s not in fams:
+            errs.append(f"{s}: has a SPECS entry but is NOT a registered "
+                        "post-config battery family (run_postconfig.FAMILIES) - "
+                        "the landing would FAIL closed (S6-B2573b)")
+        errs += [f"{s}: {e}" for e in validate_spec(spec)]
+        knobs = {p["env"]: p for p in spec["params"] if p.get("env")}
+        for k in knobs:
+            if not knob_is_read(k, root):
+                errs.append(f"{s}: declared knob {k} ({knobs[k]['id']} "
+                            f"{knobs[k]['param']}) is read by none of "
+                            f"{KNOB_READERS} - a knob the engine never reads "
+                            "makes the manifest lie (S6-B2136 class)")
+        actuators = dict(spec.get("env_actuators") or {})
+        by_param = {p["param"]: p for p in spec["params"]}
+        for arm in (doc.get("arms") or []):
+            tag = arm.get("tag", "?")
+            for k, v in dict(arm.get("env") or {}).items():
+                if k in knobs:
+                    if not _level_in_band(v, knobs[k]):
+                        errs.append(f"{s}: arm '{tag}' sets {k}={v!r} but that is "
+                                    f"not a level of {knobs[k]['id']} "
+                                    f"{knobs[k]['param']} band "
+                                    f"{knobs[k]['band']} - the cube would be "
+                                    "graded under a label Table A does not carry")
+                elif k in actuators:
+                    if k == "INST_PERSIST_CACHE_TAG":
+                        from build_institutional_persistence_precompute import (
+                            persistence_cache_dir)
+                        d = Path(persistence_cache_dir(root, str(v)))
+                        n = len(list(d.glob("*.parquet"))) if d.is_dir() else 0
+                        if n == 0:
+                            errs.append(f"{s}: arm '{tag}' routes the persistence "
+                                        f"read to {d} via {k}={v!r} but that "
+                                        "directory holds no parquet - the engine "
+                                        "would run on nothing (S6-B2484 class)")
+                else:
+                    errs.append(f"{s}: arm '{tag}' sets {k}={v!r}, which the SPECS "
+                                "entry declares neither as a param knob nor as an "
+                                "actuator - an undeclared env value is the "
+                                "S6-B2573d blast-radius class; declare it or drop it")
+            for pk, pv in arm.items():
+                row = by_param.get(pk)
+                if row is None or pk in ("tag", "env", "note"):
+                    continue
+                if not _level_in_band(pv, row):
+                    errs.append(f"{s}: arm '{tag}' declares {pk}={pv!r} but that is "
+                                f"not a level of {row['id']} band {row['band']}")
     return errs
 
 

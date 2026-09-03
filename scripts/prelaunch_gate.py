@@ -31,6 +31,10 @@ import json
 import sys
 from pathlib import Path
 
+_REPO_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(_REPO_ROOT / "scripts"))
+from producer_variant_table import launch_refusals  # noqa: E402  (B2578)
+
 BUCKET = "stock-picks-r5-jm-2026"
 SIDECAR_KEY = "payload/r5_code.tar.sha"
 REQUIRED = ("sequence", "batch", "frozen_sha", "isolation", "calendar",
@@ -121,6 +125,13 @@ def check(manifest: dict, ledger: dict, tar_sha: str) -> list[str]:
         if "wall_clock_projection_hours" not in manifest:
             fails.append("LOCAL manifest missing wall_clock_projection_hours "
                          "(wall clock is the scarce resource when dollars are not; L333)")
+        # B2578 (S6-B2573b): the strategy/knob gate also runs HERE so the
+        # around-the-gate route (launch_sweep --manifest without run_wave)
+        # refuses the same specs. The manifest carries strategy_subset +
+        # arms exactly as the spec did.
+        fails += ["LAUNCH REFUSED (S6-B2573b): " + r
+                  for r in launch_refusals(manifest, _REPO_ROOT,
+                                           require_subset=False)]
         return fails
     if not tar_sha:
         fails.append("S3 tar .sha sidecar missing/unreadable -- rebuild+upload "

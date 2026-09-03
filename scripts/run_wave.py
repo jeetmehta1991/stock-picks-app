@@ -55,6 +55,8 @@ import time
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT / "scripts"))
+from producer_variant_table import launch_refusals  # noqa: E402  (B2578 launch gate)
 RATE_S_PER_TICKER_DAY = 0.2613   # canonical, B2021-bracketed end to end
 
 
@@ -400,6 +402,21 @@ def main() -> int:
     stale = archive_stale_summary(spec["wave"])
     if stale:
         print(f"[STALE] prior wave summary archived -> {stale.name}")
+    # B2578 (S6-B2573b): the launch gate runs BEFORE any arm. A refusal
+    # writes a REFUSED summary (so run_serial_chain HALTs on it and an
+    # idempotent restart does not relaunch the same spec) and exits 3.
+    refusals = launch_refusals(spec, ROOT)
+    if refusals:
+        for r in refusals:
+            print(f"LAUNCH REFUSED (S6-B2573b): {r}")
+        out = ROOT / "output_audit" / f"{spec['wave']}_wave_summary.json"
+        out.write_text(json.dumps({
+            "spec": spec, "refusals": refusals,
+            "results": [{"arm": arm.get("tag", "?"), "status": "REFUSED",
+                         "legs": 0} for arm in spec["arms"]]},
+            indent=1), encoding="utf-8")
+        print(f"[REFUSED] wrote {out}")
+        return 3
     results = [run_arm(spec, arm, engine_cmd=a.engine_cmd)
                for arm in spec["arms"]]
     out = ROOT / "output_audit" / f"{spec['wave']}_wave_summary.json"

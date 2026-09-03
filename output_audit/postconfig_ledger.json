@@ -4374,7 +4374,7 @@
  "output_icg_mult1.0_mult1.0": {
   "1_cube_sanity": {
    "status": "DONE",
-   "evidence": "run_postconfig: cube_exists=PASS(10800 rows); one_strategy=PASS(1 strategies); M2_exits_per_entry_vs_registry=PASS(cube [24] vs registry-now 24 (a differing single value = an ); megacaps_present=PASS(NVDA, MSFT); M1_content_sha=PASS(52dad07a84554e93); M3_fill_date=PASS(0 fills before entry); M4_window=PASS(entries 2024-05-06 .. 2025-05-02); M4_holdout_touch=PASS(0 entries at/after HO_START 2025-05-05 in a STEP-1 cube); M5_pnl_integrity=PASS(0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS); M7_degraded_exits=PASS(degraded map (B1623 measure-not-assume): {'reverse_signal': ); M10_gate_receipt=PASS(receipt matches manifest sha 903983b77412); step_derivation=PASS(Step-1: manifest window.end 2025-05-05 <= HO_START 2025-05-0); M9_universe_artifact=PASS(exit 0 on output_audit/_sweep_200.txt (verifier is non-block); family_dispatch=PASS(institutional_committed_growth_long: manifest arms[0] min_co); step2_grade_auto=PASS(exit 0; minq=4 lookback=4 multiple=1.0 span=200 -> output_ic); step2_free_levels=PASS(exit 0; reproduction-gated free levels -> output_icg_mult1.0); step4_spot_check_auto=PASS(exit 0; n_sampled 50 seed 42: 50 agree / 0 DISAGREE / 0 skip); step7_engine_implemented=PASS(4 of 4 swept parameters anchored in the engine path (precomp); ledger_status_matches_evidence=PASS(0 row(s) claim DONE with contradicting evidence)"
+   "evidence": "run_postconfig: cube_exists=PASS(10800 rows); one_strategy=PASS(1 strategies); M2_exits_per_entry_vs_registry=PASS(cube [24] vs registry-now 24 (a differing single value = an ); megacaps_present=PASS(NVDA, MSFT); M1_content_sha=PASS(52dad07a84554e93); M3_fill_date=PASS(0 fills before entry); M4_window=PASS(entries 2024-05-06 .. 2025-05-02); M4_holdout_touch=PASS(0 entries at/after HO_START 2025-05-05 in a STEP-1 cube); M5_pnl_integrity=PASS(0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS); M7_degraded_exits=PASS(degraded map (B1623 measure-not-assume): {'reverse_signal': ); M10_gate_receipt=PASS(receipt matches manifest sha 903983b77412); step_derivation=PASS(Step-1: manifest window.end 2025-05-05 <= HO_START 2025-05-0); M9_universe_artifact=PASS(exit 0 on output_audit/_sweep_200.txt (verifier is non-block); family_dispatch=PASS(institutional_committed_growth_long: manifest arms[0] min_co); step2_grade_auto=PASS(exit 0; minq=4 lookback=4 multiple=1.0 span=200 -> output_ic); step2_free_levels=PASS(exit 0; reproduction-gated free levels -> output_icg_mult1.0); step4_spot_check_auto=PASS(exit 0; n_sampled 50 seed 42: 50 agree / 0 DISAGREE / 0 skip); step7_engine_implemented=PASS(4 of 4 swept parameters anchored in the engine path (precomp); ledger_status_matches_evidence=PASS(0 row(s) claim DONE with contradicting evidence) | run_wave verified 10800 cube rows across 1 leg(s); M6 boundary drops (B1076 caveat, measured): none - single leg"
   },
   "3_outlier_discrepancy_sweep": {
    "status": "DONE",
@@ -4407,6 +4407,44 @@
   "8_verdict_with_denominators": {
    "status": "DONE",
    "evidence": "AUTO (B2520) VERDICT (denominators from output_icg_mult1.0_mult1.0_grid_auto.json): 24 of 24 exits RANKED at min-trades >= 10 on 10800 IS rows (10800 cube rows, 0 holdout rows); rank-1 [breakeven_plus_trail] is_ci_lo -0.091 is_sharpe 0.224 fires 450 - Step-1: ranking only, no admission (B1608)"
+  }
+ },
+ "output_icg_mult1.25_mult1.25": {
+  "1_cube_sanity": {
+   "status": "DONE",
+   "evidence": "run_postconfig: cube_exists=PASS(7224 rows); one_strategy=PASS(1 strategies); M2_exits_per_entry_vs_registry=PASS(cube [24] vs registry-now 24 (a differing single value = an ); megacaps_present=PASS(NVDA); M1_content_sha=PASS(6f9fcbf9c0563678); M3_fill_date=PASS(0 fills before entry); M4_window=PASS(entries 2024-05-06 .. 2025-05-01); M4_holdout_touch=PASS(0 entries at/after HO_START 2025-05-05 in a STEP-1 cube); M5_pnl_integrity=PASS(0 NaN/inf; 0 beyond winsorize 300.0 (beyond-count is DISCLOS); M7_degraded_exits=PASS(degraded map (B1623 measure-not-assume): {'reverse_signal': ); M10_gate_receipt=PASS(receipt matches manifest sha 503558bc8249); step_derivation=PASS(Step-1: manifest window.end 2025-05-05 <= HO_START 2025-05-0); M9_universe_artifact=PASS(exit 0 on output_audit/_sweep_200.txt (verifier is non-block); family_dispatch=PASS(institutional_committed_growth_long: manifest arms[0] min_co); step2_grade_auto=PASS(exit 0; minq=4 lookback=4 multiple=1.25 span=200 -> output_i); step2_free_levels=PASS(exit 0; reproduction-gated free levels -> output_icg_mult1.2); step4_spot_check_auto=PASS(exit 0; n_sampled 50 seed 42: 50 agree / 0 DISAGREE / 0 skip); step7_engine_implemented=PASS(4 of 4 swept parameters anchored in the engine path (precomp); ledger_status_matches_evidence=PASS(0 row(s) claim DONE with contradicting evidence) | run_wave verified 7224 cube rows across 1 leg(s); M6 boundary drops (B1076 caveat, measured): none - single leg"
+  },
+  "3_outlier_discrepancy_sweep": {
+   "status": "DONE",
+   "evidence": "AUTO (B2192): mechanical core executed by the battery (M2 exits-vs-registry, M5 NaN/inf/winsorize, M7 degraded exits) + the grader's union diagnosis-loss gate and ci_lo-led ranking; M2_exits_per_entry_vs_registry=PASS; M3_fill_date=PASS; M4_holdout_touch=PASS; M5_pnl_integrity=PASS; M7_degraded_exits=PASS"
+  },
+  "2_grade_with_config_params": {
+   "status": "DONE",
+   "evidence": "AUTO (B2520/B2569): grade_institutional_config at manifest minq=4 lookback=4 multiple=1.25 span=200 -> output_icg_mult1.25_mult1.25_grid_auto.json; free levels reproduction-gated -> output_icg_mult1.25_mult1.25_free_levels.json"
+  },
+  "4_three_leg_spot_check": {
+   "status": "DONE",
+   "evidence": "AUTO (B2520): spot_check_institutional --n 50 at manifest span=200; n_sampled 50 seed 42: 50 agree / 0 DISAGREE / 0 skipped; execution failures 0; empty records 0; legs A/B disagree 0; artifact output_icg_mult1.25_mult1.25_spot_check.json; precompute_dir institutional"
+  },
+  "5_adversarial_lens_review": {
+   "status": "DONE",
+   "evidence": "AUTO (B2520): lenses 9 run: 1 WARN / 0 FAIL / 8 INFO -> output_icg_mult1.25_mult1.25_lenses.json; findings: selection_margin WARN: rank-1 [breakeven_plus_trail] is_ci_lo -0.297 vs rank-2 [hybrid_50pct_target] -0.297: marg"
+  },
+  "6_post_fix_recheck": {
+   "status": "DONE",
+   "evidence": "B2580 hand disposition 2026-09-03 13:33: selection_margin WARN rechecked with evidence (#196). MEASURED from output_icg_mult1.25_mult1.25_grid_auto.json: rank-1 [breakeven_plus_trail] is_sharpe 0.092 is_ci_lo -0.297 and rank-2 [hybrid_50pct_target] is_sharpe -0.002 is_ci_lo -0.297 on 7224 IS rows / 301 fires - the WARN is CORRECT: the two exits are not separable. CONSEQUENCE BOUNDED, not dismissed: Step 1 produces a RANKING with no admission (B1608 owner ruling), and this config's rank-1 is_ci_lo is NEGATIVE, so it is not a Step-2 candidate under EITHER ordering - the tie is between two indistinguishably unprofitable exits, and no downstream decision reads the order. No re-run and no parameter change follow. MECHANISM for the next instance (so this is not an executed-once judgment, L752): S6-B2581b - the selection_margin lens takes rank-1 is_ci_lo < 0 as INFO with this reasoning, since nothing is being selected at Step 1 | prior: 1 lens finding(s) need a recheck with evidence (#196): selection_margin WARN"
+  },
+  "6b_equivalence_class_check": {
+   "status": "N/A",
+   "evidence": "1 combination per cube (the swept parameters live in the precompute the engine consumed); equivalence collapse requires >= 2 combinations - N/A on evidence"
+  },
+  "7_implement_in_engine": {
+   "status": "N/A",
+   "evidence": "Step-1 ranking cube; admission happens at Step 2; nothing to implement. Engine check PASS: 4 of 4 swept parameters anchored in the engine path (precompute INST_* x3 + screener STRAT_EMA_SPAN; code-presence check)"
+  },
+  "8_verdict_with_denominators": {
+   "status": "DONE",
+   "evidence": "AUTO (B2520) VERDICT (denominators from output_icg_mult1.25_mult1.25_grid_auto.json): 24 of 24 exits RANKED at min-trades >= 10 on 7224 IS rows (7224 cube rows, 0 holdout rows); rank-1 [breakeven_plus_trail] is_ci_lo -0.297 is_sharpe 0.092 fires 301 - Step-1: ranking only, no admission (B1608)"
   }
  }
 }

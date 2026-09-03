@@ -24106,6 +24106,13 @@ def test_b2082_launch_sweep_refuses_without_a_passing_gate():
         # this historical manifest predates the field. The pin firing here
         # is the new rule working - this manifest passed an hour ago.
         _m["leg_cap_hours"] = 2.5
+        # B2578: same class again. The B2578 launch gate is the FIRST consumer
+        # of `strategy_subset` as a path, and this historical manifest holds
+        # "output_audit/_subset_one.txt (smc_breaker_block_long)" - a path with
+        # a human annotation, which the gate refuses rather than parse (six
+        # pre-B2118 manifests share the form; every manifest run_wave writes
+        # carries a bare path). Re-point the COPY at the bare path that exists.
+        _m["strategy_subset"] = "output_audit/_subset_one.txt"
         good = str(td / "good_manifest.json")
         (td / "good_manifest.json").write_text(_bj.dumps(_m), encoding="utf-8")
         r = subprocess.run(
@@ -24767,7 +24774,11 @@ if n == 1:
     tick = spec_dir / "t.txt"
     tick.write_text("AAA\nBBB\n", encoding="utf-8")
     sub = spec_dir / "s.txt"
-    sub.write_text("some_strategy\n", encoding="utf-8")
+    # B2578: the launch gate (S6-B2573b) refuses a spec whose strategy has no
+    # SPECS entry, so this fixture names the registered strategy whose knob the
+    # arm already sets. The junk 2-column cube still fails the battery, which
+    # is what this test measures.
+    sub.write_text("smc_breaker_block_long\n", encoding="utf-8")
     spec = {"wave": wave, "tickers_file": str(tick),
             "strategy_subset": str(sub),
             "window": {"start": "2024-05-05", "end": "2025-05-05"},
@@ -32320,3 +32331,164 @@ def test_b2577_chain_halts_are_reported_cleanup_is_self_and_kill_finds_the_root(
     # the B2214 shape (no launcher twins) still counts one launch per pid
     keep2 = [(100, 4, "py run_phase1a.py --output-dir output_T"), (101, 100, "py -c spawn_main")]
     assert kwt.launches(keep2) == 2
+
+def test_b2578_launch_gate_refuses_before_the_engine_and_p7_p8_are_struck(tmp_path, monkeypatch):
+    """B2578 (S6-B2573b launch gate + S6-B2569a P7/P8 STRIKE).
+
+    Until B2578 nothing between a spec file and the engine asked whether the
+    strategy was registered with the post-config battery or whether an arm's
+    env values were knobs the engine reads: four institutional configs landed
+    ungraded pre-B2520, and the P7/P8 resim levels sat in Table A for 11
+    configs with no knob that could ever run them. The gate fails CLOSED at
+    launch (L642) - in run_wave.main BEFORE run_arm, and in prelaunch_gate for
+    every LOCAL manifest (the launch_sweep route) - and validate_spec refuses a
+    resim level that has no env knob, which is the rule the STRIKE applies.
+    """
+    import copy as _copy
+    import glob as _glob
+    import json as _json
+    import sys as _sys
+    from pathlib import Path as _P
+
+    root = _P(__file__).resolve().parents[2]
+    sp = str(root / "scripts")
+    if sp not in _sys.path:
+        _sys.path.insert(0, sp)
+    import producer_variant_table as pvt
+    import run_wave as rw
+    import prelaunch_gate as pg
+    import run_serial_chain as rsc
+
+    # ---- S6-B2569a STRIKE: P7/P8 carry only the levels the cube can grade
+    icg = pvt.SPECS["institutional_committed_growth_long"]
+    by = {p["id"]: p for p in icg["params"]}
+    assert by["P7"]["band"] == [3, 5, 11, 14] == by["P7"]["free_band"]
+    assert by["P7"]["resim_band"] == [] and by["P7"].get("env") is None
+    assert by["P8"]["band"] == [5, 6] == by["P8"]["free_band"]
+    assert by["P8"]["resim_band"] == [] and by["P8"].get("env") is None
+    assert len(by["P7"]["free_band"]) * len(by["P8"]["free_band"]) == 8, "free product unchanged"
+    for k, v in pvt.SPECS.items():
+        assert pvt.validate_spec(v) == [], (k, pvt.validate_spec(v))
+    # the rule behind the strike: a resim level with no knob is unrunnable
+    bad = _copy.deepcopy(icg)
+    p7 = next(p for p in bad["params"] if p["id"] == "P7")
+    p7["band"] = [1, 2, 3, 5, 11, 14]
+    p7["resim_band"] = [1, 2]
+    errs = pvt.validate_spec(bad)
+    assert any("P7" in e and "no env knob" in e and "[1, 2]" in e for e in errs), errs
+
+    # ---- every declared knob is one the engine/precompute actually reads
+    for k, v in pvt.SPECS.items():
+        for p in v["params"]:
+            if p.get("env"):
+                assert pvt.knob_is_read(p["env"], root), (k, p["id"], p["env"])
+    assert not pvt.knob_is_read("SMC_SWING_LEN", root), "a typo proves nothing"
+    assert pvt.knob_is_read("SMC_OB_CLOSE_MITIGATION", root), (
+        "config.py:2511 wraps the read across two lines - a literal needle "
+        "refused a knob the engine reads (measured at B2578)")
+
+    # ---- every live spec of the running chain passes (no self-inflicted HALT)
+    live = sorted(_glob.glob(str(root / "output_audit" / "b2527_icg_*_spec.json")))
+    live.append(str(root / "output_audit" / "b2574_icg_span100_rerun_spec.json"))
+    assert len(live) >= 17, live
+    for f in live:
+        d = _json.loads(_P(f).read_text(encoding="utf-8"))
+        assert pvt.launch_refusals(d, root) == [], (f, pvt.launch_refusals(d, root))
+    # an smc spec of the b2197 shape, with its own subset file (the live
+    # _subset_one.txt is untracked); pathlib keeps an absolute subset path
+    sub_smc = tmp_path / "smc.txt"
+    sub_smc.write_text("smc_breaker_block_long\n", encoding="utf-8")
+    smc = {"wave": "b2578t", "strategy_subset": str(sub_smc),
+           "arms": [{"tag": "sw10sp21",
+                     "env": {"SMC_SWING_LENGTH": "10", "STRAT_EMA_SPAN": "21"}}]}
+    assert pvt.launch_refusals(smc, root) == []
+
+    # ---- refusals, each naming its class
+    def one(doc, needle, **kw):
+        r = pvt.launch_refusals(doc, root, **kw)
+        assert r and any(needle in x for x in r), (needle, r)
+        return r
+    x = _copy.deepcopy(smc); x["arms"][0]["env"]["SMC_SWING_LEN"] = "10"
+    one(x, "declares neither as a param knob nor as an actuator")
+    x = _copy.deepcopy(smc); x["arms"][0]["env"]["SMC_SWING_LENGTH"] = "12"
+    one(x, "not a level of P1 swing_length band")
+    x = _copy.deepcopy(smc); x["arms"][0]["env"]["SMC_OB_CLOSE_MITIGATION"] = "1"
+    assert pvt.launch_refusals(x, root) == [], "bool '1' is a band level"
+    x["arms"][0]["env"]["SMC_OB_CLOSE_MITIGATION"] = "2"
+    one(x, "not a level of P2 close_mitigation band")
+    x = _copy.deepcopy(smc); x["arms"][0]["env"]["SMC_BREAKER_AGE_BARS_MAX"] = ""
+    assert pvt.launch_refusals(x, root) == [], "'' is the None level of P4"
+    x = _copy.deepcopy(smc); x["arms"][0]["min_consecutive_quarters"] = 4
+    assert pvt.launch_refusals(x, root) == [], "a plain key of another family's param is ignored"
+    x = _copy.deepcopy(smc); x["arms"][0]["swing_length"] = 12
+    one(x, "declares swing_length=12 but that is not a level of P1")
+    x = {"strategy_subset": "output_audit/_subset_iso2.txt", "arms": []}   # tracked, 2 strategies
+    r = one(x, "smc_order_block_bounce: no SPECS entry")
+    assert not any("smc_breaker_block_long" in e for e in r), "the registered one is not blamed"
+    one({"strategy_subset": str(tmp_path / "missing.txt"), "arms": []}, "does not exist")
+    one({"arms": [{"tag": "a"}]}, "carries no strategy_subset")
+    one({}, "carries no strategy_subset")
+    assert pvt.launch_refusals({}, root, require_subset=False) == [], "full-roster LOCAL run"
+    one({"arms": [{"tag": "a"}]}, "carries no strategy_subset", require_subset=False)
+    icg_spec = _json.loads(_P(live[-1]).read_text(encoding="utf-8"))
+    x = _copy.deepcopy(icg_spec); x["arms"][0]["env"]["INST_PERSIST_CACHE_TAG"] = "b2578_no_such_tag"
+    one(x, "holds no parquet")
+    x = _copy.deepcopy(icg_spec); x["arms"][0]["env"]["INST_GROWTH_MULTIPLE"] = "1.3"
+    one(x, "not a level of P6 growth_multiple band")
+    # the registry is imported, and an unreadable or incomplete one refuses
+    orig = pvt._battery_families
+    fams, why = orig()
+    assert fams == set(pvt.SPECS) and why == "", (fams, why)
+    monkeypatch.setattr(pvt, "_battery_families", lambda: (None, "ImportError: boom"))
+    one(smc, "battery registry could not be read (ImportError: boom)")
+    monkeypatch.setattr(pvt, "_battery_families",
+                        lambda: ({"institutional_committed_growth_long"}, ""))
+    one(smc, "NOT a registered post-config battery family")
+    monkeypatch.setattr(pvt, "_battery_families", orig)
+
+    # ---- run_wave.main: refused BEFORE run_arm; REFUSED summary; exit 3;
+    #      the chain reads that summary as a HALT, not a SKIP
+    monkeypatch.setattr(pvt, "KNOB_READERS",
+                        tuple(str(root / r) for r in pvt.KNOB_READERS))
+    monkeypatch.setattr(rw, "ROOT", tmp_path)
+    monkeypatch.setattr(rsc, "ROOT", tmp_path)
+    (tmp_path / "output_audit").mkdir()
+    called = []
+    monkeypatch.setattr(rw, "run_arm", lambda spec, arm, engine_cmd=None: (
+        called.append(arm["tag"]) or {"arm": arm["tag"], "status": "COMPLETE", "legs": 1}))
+    bad_sub = tmp_path / "bad.txt"
+    bad_sub.write_text("not_a_strategy\n", encoding="utf-8")
+    spec = {"wave": "b2578ref", "strategy_subset": str(bad_sub),
+            "arms": [{"tag": "a1", "env": {}}]}
+    sp_p = tmp_path / "spec.json"
+    sp_p.write_text(_json.dumps(spec), encoding="utf-8")
+    monkeypatch.setattr(_sys, "argv", ["run_wave.py", "--spec", str(sp_p)])
+    assert rw.main() == 3
+    assert called == [], "run_arm (the only path to the engine) must not be reached"
+    summ = _json.loads((tmp_path / "output_audit" / "b2578ref_wave_summary.json")
+                       .read_text(encoding="utf-8"))
+    assert summ["results"] == [{"arm": "a1", "status": "REFUSED", "legs": 0}], summ
+    assert any("not_a_strategy" in r for r in summ["refusals"]), summ
+    assert rsc.summary_status({"wave": "b2578ref"}) == "REFUSED", "HALT, not SKIP"
+    # a registered spec goes through to run_arm - the gate is not a wall
+    good = {"wave": "b2578ok", "strategy_subset": str(sub_smc),
+            "arms": [{"tag": "sw10", "env": {"SMC_SWING_LENGTH": "10"}}]}
+    sp_g = tmp_path / "good.json"
+    sp_g.write_text(_json.dumps(good), encoding="utf-8")
+    monkeypatch.setattr(_sys, "argv", ["run_wave.py", "--spec", str(sp_g)])
+    assert rw.main() == 0 and called == ["sw10"]
+    assert rsc.summary_status({"wave": "b2578ok"}) == "COMPLETE"
+
+    # ---- prelaunch_gate.check: the launch_sweep route refuses the same doc
+    ok = _b2159_ok_manifest()
+    assert pg.check(ok, {}, "") == [], "the full-roster LOCAL manifest still passes"
+    m = dict(ok, strategy_subset=str(bad_sub), arms=[{"tag": "a1", "env": {}}])
+    fails = pg.check(m, {}, "")
+    assert any("LAUNCH REFUSED (S6-B2573b)" in f and "not_a_strategy" in f for f in fails), fails
+    m2 = dict(ok, strategy_subset=str(sub_smc),
+              arms=[{"tag": "sw10", "env": {"SMC_SWING_LENGTH": "10"}}])
+    assert pg.check(m2, {}, "") == [], pg.check(m2, {}, "")
+    # wired, not merely defined (B1864 shape): both callers name the gate
+    import inspect as _insp
+    assert "launch_refusals(spec, ROOT)" in _insp.getsource(rw.main)
+    assert "launch_refusals(manifest" in _insp.getsource(pg.check)
