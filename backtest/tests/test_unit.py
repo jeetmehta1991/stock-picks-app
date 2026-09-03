@@ -24991,6 +24991,10 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         # a real one), not the heading (L548).
         ("A PYRAMID IS A MEASUREMENT OF ONE TREE",
          "B2580/L755: a verdict over a moving tree is not evidence; tree=CHANGED is VOID"),
+        # B2582: the L756 tripwire row. Pins the DIAGNOSTIC - that the flip is
+        # read as CONTENT by the gates downstream - not the heading (L548).
+        ("A PATCHER WRITES BYTES",
+         "B2581/L756: write_text re-encodes every ending; the diff gates then read the file as new"),
         ("2. **Read the LEARNINGS relevant to this turn's task type.** Grep `LEARNINGS.md`",
          "B2382: Phase 0  RECALL before any analysis or recommendation"),
         ("to prevent** (B1119: 22 batches of silent doc-sync suspension; Council 236's",
@@ -25523,7 +25527,10 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # its tripwire row per B2130).
     # 231 -> 232 at B2580 (the L755 one-tree fragment; same-call with its
     # tripwire row per B2130).
-    assert len(gutted) == 232, gutted
+    # 232 -> 233 at B2582 (the L756 patcher-writes-bytes fragment; its
+    # tripwire row ships in the same commit per B2130 - the rule the turn
+    # gate asked for when L756 landed in LEARNINGS alone).
+    assert len(gutted) == 233, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -32955,6 +32962,21 @@ def test_b2581_a_line_ending_flip_is_blocked_and_invisible_to_the_diff_gates(mon
 
     # the RESTORE direction: same diff shape, endings going the other way
     monkeypatch.setattr(pf.subprocess, "run", make_fake(FLAT, MIXED))
+    assert pf.check_line_ending_rewrite() == []
+
+    # B2582 retro-sweep: a UNIFORM bare-LF file flipped whole. B2581 counted
+    # distinct ending KINDS, which stays 1 -> 1 here, so the gate would have
+    # passed the worst instance of its own class - MEASURED on
+    # CANONICAL_FACTS.md, 843 bare-LF lines and not one CRLF. The quantity is
+    # the count of NON-CRLF endings: a flip drives it to zero.
+    ALL_LF = b"a\nb\nc\n"
+    monkeypatch.setattr(pf.subprocess, "run", make_fake(ALL_LF, FLAT))
+    bad_lf = pf.check_line_ending_rewrite()
+    assert len(bad_lf) == 1 and "LEARNINGS.md" in bad_lf[0], bad_lf
+    # its mirror (CRLF -> all bare LF) ADDS bare endings, so it reads as a
+    # restore and stays quiet. Documented residual: a deliberate CRLF->LF
+    # normalisation is not blocked, only the Windows-rewrite direction is.
+    monkeypatch.setattr(pf.subprocess, "run", make_fake(FLAT, ALL_LF))
     assert pf.check_line_ending_rewrite() == []
 
     # a clean commit is quiet (the counter is not vacuously firing, #226)

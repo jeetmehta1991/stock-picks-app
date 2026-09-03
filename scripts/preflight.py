@@ -524,12 +524,17 @@ def check_line_ending_rewrite() -> list[str]:
             out[name] = int(a) + int(d)
         return out
 
-    def _eol_kinds(ref: str, name: str) -> int:
-        """How many DISTINCT line endings a blob uses (CRLF / bare LF / lone
-        CR). A flip HOMOGENISES a mixed file; a restore brings the variety
-        back. Blocking on the diff shape alone refuses the repair as readily
-        as the damage - MEASURED at B2581, where the restoring commit carried
-        an identical signature and this gate stopped it."""
+    def _bare_endings(ref: str, name: str) -> int:
+        """How many line endings in a blob are NOT CRLF (bare LF + lone CR).
+
+        This is the quantity a Windows rewrite destroys: `write_text` emits
+        CRLF, so a flip drives it to zero and a restore brings it back. The
+        direction is what separates the damage from its repair - B2581 shipped
+        this as a count of DISTINCT ending KINDS, and the B2582 retro-sweep
+        found the hole: CANONICAL_FACTS.md is UNIFORM bare LF (843 lines), so
+        flipping the whole file leaves the kind count at 1 -> 1 and the gate
+        would have passed the worst instance of the class it exists to catch.
+        """
         try:
             r = subprocess.run(["git", "show", ref + ":" + name], cwd=REPO_ROOT,
                                capture_output=True, check=False)
@@ -537,13 +542,14 @@ def check_line_ending_rewrite() -> list[str]:
         except Exception:
             return 0
         crlf = b.count(CRLF)
-        return sum(1 for k in (crlf, b.count(LF) - crlf, b.count(CR) - crlf) if k)
+        return (b.count(LF) - crlf) + (b.count(CR) - crlf)
 
     raw, blind = _numstat([]), _numstat(["--ignore-cr-at-eol"])
     bad = []
     for name, n in sorted(raw.items()):
         m = blind.get(name, 0)
-        if n >= 50 and m * 5 < n and _eol_kinds(":0", name) < _eol_kinds("HEAD", name):
+        if n >= 50 and m * 5 < n and \
+                _bare_endings(":0", name) < _bare_endings("HEAD", name):
             bad.append(
                 f"C13 LINE-ENDING REWRITE (B2581/L756): {name} stages {n} changed "
                 f"lines but only {m} survive --ignore-cr-at-eol - the rest is a "
