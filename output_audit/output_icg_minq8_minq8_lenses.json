@@ -1,0 +1,49 @@
+{
+ "cube": "output_icg_minq8_minq8",
+ "step": 1,
+ "step_basis": "manifest window.end 2025-05-05 <= HO_START 2025-05-05 -> Step-1 cube",
+ "family": "institutional_committed_growth_long",
+ "ts": "2026-09-03T06:13:05",
+ "lenses": [
+  {
+   "lens": "holdout_untouched",
+   "level": "INFO",
+   "evidence": "0 of 256 entries at/after HO_START 2025-05-05 (Step-1 cube: any touch is a leak, B1718 class)"
+  },
+  {
+   "lens": "period_concentration",
+   "level": "INFO",
+   "evidence": "max quarter share 0.36 (2025Q1) over 5 quarters of 256 entries; WARN > 0.5"
+  },
+  {
+   "lens": "ticker_concentration",
+   "level": "INFO",
+   "evidence": "top-5 tickers carry 0.14 of 256 entries across 106 tickers; WARN > 0.30"
+  },
+  {
+   "lens": "selection_margin",
+   "level": "INFO",
+   "evidence": "rank-1 [breakeven_plus_trail] is_ci_lo 0.054 vs rank-2 [hybrid_50pct_target] -0.264: margin 0.318 between exits; WARN < 0.05 (selection at noise level)"
+  },
+  {
+   "lens": "empty_signals_share",
+   "level": "INFO",
+   "evidence": "0 of 256 trade_log rows carry an empty signals_at_entry (S6-B2512 class)"
+  },
+  {
+   "lens": "direction_consistency",
+   "level": "INFO",
+   "evidence": "directions ['long'] (one strategy, one direction expected)"
+  },
+  {
+   "lens": "spot_check_disagreements",
+   "level": "INFO",
+   "evidence": "50 agree / 0 DISAGREE / 0 skipped in output_icg_minq8_minq8_spot_check.json"
+  },
+  {
+   "lens": "min_trades_floor",
+   "level": "INFO",
+   "evidence": "256 distinct entries; the live gates need holdout >= 15 and full-period >= 75 (applied by the grader, not here)"
+  }
+ ]
+}
