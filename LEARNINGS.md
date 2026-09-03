@@ -19431,6 +19431,7 @@ pinned in both directions by test_b2581 including the uniform-LF shape and the d
 that a deliberate CRLF-to-LF normalisation stays quiet. Detection of the class itself is
 JUDGMENT-ONLY - no scan knows what population a gate's precondition selects - and durability is
 pinned by the CHECKLIST #294 citation plus the skill fragment in test_b2123.
+**ADDENDUM (B2588, the second instance in two batches - and it is the SWEEP that failed, not the gate).** L757 says enumerate the population a precondition selects. At B2587 I did exactly that for the #245 class and the ENUMERATOR was wrong: my pattern required a double-quoted argument and its content on ONE line, so it returned 4 hits where the population is 6 - two bootstraps open a multi-line `python -c` whose body interpolates a shell variable (aws_batch395_bootstrap.sh:130, aws_b660_bootstrap.sh:106), and I found them only by opening a file the sweep had already 'cleared'. **A population sweep inherits every accident of the examples that suggested its pattern** - which is #162's rule, arriving one level up: the sweep written to satisfy a population rule needs a population rule of its own. So before quoting a sweep's count, name a member you know exists and did NOT derive the pattern from, and assert the pattern finds it; if you cannot name one, say the count is a lower bound. Compliance failure against #162, no new class.
 
 ### L758 - A programme's coverage denominator is the STAGE that already ran, not the population you can still see
 

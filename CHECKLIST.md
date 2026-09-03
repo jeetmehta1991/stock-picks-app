@@ -5652,6 +5652,7 @@ handed every row gate 1,846 rows as new. Sibling of #226 (prove it can fail) at 
 and of L592 (the unit of the change was smaller than the unit of the defect) one dimension across:
 there the fix reached fewer SITES, here fewer SHAPES. Detection is JUDGMENT-ONLY; durability is
 pinned by test_b2581's uniform-LF arm and the skill fragment in test_b2123.
+**AND THE SWEEP ITSELF NEEDS A CONTROL (B2588).** The enumerator inherits the accidents of the examples that suggested it - measured on this item's own first application: a #245 sweep patterned on single-line examples returned 4 of a 6-member population, missing both multi-line cases. Before quoting a sweep's count, name a member you did NOT derive the pattern from and assert the pattern finds it (#162, #166); if you cannot, report the figure as a LOWER BOUND.
 
 ### #295 - WORK INSIDE THE CURRENT STRATEGY'S CONTEXT; A ZOOM-OUT IS SCOPE CREEP (B2584 / L758)
 
