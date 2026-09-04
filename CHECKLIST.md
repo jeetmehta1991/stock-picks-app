@@ -2788,6 +2788,7 @@ classes tag PROVENANCE and not SCOPE.
 having enumerated only GATE EXPRESSIONS; (3) B1500 "16 untunable" propagated into a revised
 Phase-1 population of 25, a planning number derived from an over-scoped verdict. Does NOT overlap
 #165 (invented numbers) or L361 (scope of ACTION) - this covers scope of CONCLUSION.
+**AND THE NUMERATOR CAN DROP A MEMBER WHILE THE DENOMINATOR STAYS RIGHT (B2594 / L761).** This item disciplines SCOPE, so it is silent when the population is complete and a MEMBER was excluded for a reason the count's definition never mentions. MEASURED 2026-09-04: "two of the twelve configs carry a positive lower bound" - the true figure is three; the third was dropped because its grade is NOT COMPARABLE, a validity fact rather than a fact about the sign. When a member carries a caveat, state the count BOTH ways (3 of 12, of which one is not comparable, so 2 of 11 comparable). JUDGMENT-ONLY: a mentally excluded row leaves no trace in the sentence.
 
 **#183 PRODUCER-OPTIMISATION ARTIFACT STANDARD (B1510, owner-locked).** Every strategy entering
 S6-OPT-196 is reported through `scripts/producer_variant_table.py` in ONE 3-section artifact, so

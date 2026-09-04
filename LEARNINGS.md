@@ -19535,3 +19535,29 @@ a scan can count fragments against rows (this entry's own measurement is that sc
 nothing can decide which rows OUGHT to carry one, and freezing a coverage ratchet over 24 unpinned
 rows would be the tightening-over-a-backlog defect L721 records. The 24 are a candidate batch, named
 here so the number cannot be quietly forgotten, not a queued obligation.
+
+### L761 - A quality caveat on one member silently changes the count, and the denominator still looks right
+
+**Measured 2026-09-04.** Reporting the twelve graded institutional_committed_growth_long configs I
+wrote *"two carry a positive lower bound"*. Re-deriving the sign over all twelve gives **three**:
+span9 +0.167, span100 +0.062, minq8 +0.054. I had dropped span100 because its grade is NOT
+COMPARABLE - its free-level reproduction gate refused at coverage 0.1631 against the 0.95 floor - and
+that is a fact about grade VALIDITY, not about the sign of its ci_lo. Two true facts, one sentence,
+and the sentence answered a question nobody asked.
+
+**Why #182 does not catch it.** The denominator rule makes a verdict name its scope, and mine did:
+twelve rows, all read, no truncation. **The defect was in the NUMERATOR** - a member was excluded for
+a reason unrelated to the property being counted, and every check I ran was aimed at whether the
+population was complete. A count can be wrong while its denominator is right, and that is the harder
+half to see because the visible discipline is all on the denominator.
+
+**The rule.** When a member carries a caveat - not comparable, provisional, degraded, superseded - say
+the count BOTH ways: *3 of 12 positive, of which one is not comparable, so 2 of 11 comparable*.
+Never let a caveat silently remove a member from a count whose definition does not mention it. The
+tell is a sentence where the caveat lives in your head and not in the arithmetic.
+
+**Mechanisms.** Detection is JUDGMENT-ONLY: no scan can know that a reporter mentally excluded a row,
+because the excluded row leaves no trace in the sentence - which is exactly what makes this worth
+writing down rather than gating. Durability: the #182 amendment plus this entry. Related: L708
+(a statistic over a SELECTED collection measures the selection) is the same defect when the selection
+is mechanical; here it was editorial.
