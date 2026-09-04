@@ -637,6 +637,41 @@ def replay_atr_proxy_lens(cube_dir: Path, empty_share: float | None) -> tuple:
 # step 5: the mechanical lens battery. Each lens returns INFO / WARN / FAIL
 # with its evidence; WARN or FAIL is a FINDING and makes step 6 OPEN.
 # --------------------------------------------------------------------------
+def selection_margin_row(rk: list, unit: str) -> tuple:
+    """The rank-1 vs rank-2 margin lens (S6-B2581b).
+
+    WARN means "the top two are within noise of each other, so which one you
+    picked is arbitrary". That reading only holds when rank-1 is a CANDIDATE.
+    MEASURED at the output_icg_mult1.25_mult1.25 landing: rank-1 and rank-2
+    both carried is_ci_lo -0.297, margin 0.000, and the resulting WARN held
+    the landing in a blocking state - a warning about choosing between two
+    exits neither of which would be chosen.
+
+    Step 1 ranks and does not admit (B1608), so a negative rank-1 means the
+    selection question is not live and the row is INFO. The margin is still
+    reported either way; only the LEVEL changes, so nothing is hidden.
+    """
+    if len(rk) >= 2 and rk[0].get("is_ci_lo") is not None \
+            and rk[1].get("is_ci_lo") is not None:
+        r1 = float(rk[0]["is_ci_lo"])
+        margin = r1 - float(rk[1]["is_ci_lo"])
+        selectable = r1 > 0
+        why = ("" if selectable else
+               f"; INFO not WARN - rank-1 is_ci_lo {r1} is not above zero, so "
+               "nothing is selectable and a narrow margin is not a selection "
+               "risk (S6-B2581b)")
+        return ("selection_margin",
+                "WARN" if (margin < 0.05 and selectable) else "INFO",
+                f"rank-1 [{row_label(rk[0])}] is_ci_lo {rk[0]['is_ci_lo']} vs "
+                f"rank-2 [{row_label(rk[1])}] {rk[1]['is_ci_lo']}: margin "
+                f"{margin:.3f} between {unit}; WARN < 0.05 (selection at "
+                f"noise level){why}")
+    if rk:
+        return ("selection_margin", "INFO",
+                f"1 ranked row ({unit}) - no margin to measure")
+    return ("selection_margin", "INFO", "no ranked row in the grid artifact")
+
+
 def lenses(cube_dir: Path, step: int, grid: dict, spot_out: Path | None) -> list:
     import pandas as pd
     from roster_core import HO_START
@@ -687,20 +722,7 @@ def lenses(cube_dir: Path, step: int, grid: dict, spot_out: Path | None) -> list
     # B2521 (S6-B2520m): the population question has ONE owner now.
     _, _pop_field, _pop_unit = grid_population(grid)
     unit = "exits" if _pop_field == "per_exit" else "outcome classes"
-    if (len(rk) >= 2 and rk[0].get("is_ci_lo") is not None
-            and rk[1].get("is_ci_lo") is not None):
-        margin = float(rk[0]["is_ci_lo"]) - float(rk[1]["is_ci_lo"])
-        out.append(("selection_margin", "WARN" if margin < 0.05 else "INFO",
-                    f"rank-1 [{row_label(rk[0])}] is_ci_lo {rk[0]['is_ci_lo']} vs "
-                    f"rank-2 [{row_label(rk[1])}] {rk[1]['is_ci_lo']}: margin "
-                    f"{margin:.3f} between {unit}; WARN < 0.05 (selection at "
-                    "noise level)"))
-    elif rk:
-        out.append(("selection_margin", "INFO",
-                    f"1 ranked row ({unit}) - no margin to measure"))
-    else:
-        out.append(("selection_margin", "INFO",
-                    "no ranked row in the grid artifact"))
+    out.append(selection_margin_row(rk, unit))
 
     # B2574 (S6-B2512 CAUSE FOUND): the empty share is the SYMPTOM; the
     # consequence is that the cube replay priced every such trade's exits

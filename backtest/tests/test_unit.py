@@ -33239,3 +33239,46 @@ def test_b2585_table_c_bands_column_carries_every_producer_parameter(tmp_path, m
     shrunk = pv.producer_bands("icg_probe", icg, tmp_path)
     assert [p for p, _n, _c in shrunk] == ["P1", "P2", "P3", "P4", "P5",
                                            "P6", "P8", "P9"], shrunk
+
+
+def test_b2598_selection_margin_is_info_when_nothing_is_selectable():
+    """S6-B2581b: a near-tie WARNs only when rank-1 could actually be selected.
+
+    MEASURED incident (output_icg_mult1.25_mult1.25 landing): rank-1 and rank-2
+    both at is_ci_lo -0.297, margin 0.000 -> WARN -> the landing sat in a
+    blocking state on a warning about choosing between two exits neither of
+    which would be chosen. Step 1 ranks and does not admit (B1608).
+
+    Pins the VALUE the decision reads (L757), not the message: the helper is
+    pure, so the arms below drive it directly rather than through a cube.
+    """
+    _b2520_scripts_on_path()
+    import run_postconfig as rp
+
+    def _row(ci):
+        return {"is_ci_lo": ci, "exit": "breakeven_plus_trail"}
+
+    # must-FIRE: a real near-tie between two selectable candidates
+    name, lvl, ev = rp.selection_margin_row([_row(0.30), _row(0.28)], "exits")
+    assert (name, lvl) == ("selection_margin", "WARN"), (name, lvl, ev)
+    assert "0.020" in ev, ev
+
+    # must-QUIET: the SAME margin, rank-1 not above zero - the incident
+    name, lvl, ev = rp.selection_margin_row([_row(-0.297), _row(-0.297)], "exits")
+    assert lvl == "INFO", (lvl, ev)
+    assert "nothing is selectable" in ev, ev
+    assert "0.000" in ev, ev          # the margin is still REPORTED, not hidden
+
+    # boundary: exactly zero is not above zero
+    _, lvl, _ = rp.selection_margin_row([_row(0.0), _row(-0.01)], "exits")
+    assert lvl == "INFO", lvl
+
+    # a wide margin between selectable candidates is INFO for the old reason
+    _, lvl, ev = rp.selection_margin_row([_row(0.40), _row(0.10)], "exits")
+    assert lvl == "INFO" and "0.300" in ev, ev
+
+    # degenerate inputs keep their pre-existing INFO rows
+    _, lvl, ev = rp.selection_margin_row([_row(0.30)], "outcome classes")
+    assert lvl == "INFO" and "1 ranked row" in ev, ev
+    _, lvl, ev = rp.selection_margin_row([], "exits")
+    assert lvl == "INFO" and "no ranked row" in ev, ev
