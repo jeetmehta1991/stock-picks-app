@@ -25021,6 +25021,11 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         # rather than the heading (L548).
         ("A CO-OCCURRENCE TRIGGER PROTECTS THE TRANSITION, NEVER THE STATE",
          "B2592/L760: a gate's silence is not coverage; measure the population once"),
+        # B2595: the L761 row. Pins the DIAGNOSTIC - #182 guards the
+        # denominator, so a caveat can drop a member from the numerator with
+        # the scope still correct - rather than the heading (L548).
+        ("STATE THE COUNT BOTH WAYS",
+         "B2594/L761: a caveat must not silently remove a member from a count"),
         ("2. **Read the LEARNINGS relevant to this turn's task type.** Grep `LEARNINGS.md`",
          "B2382: Phase 0  RECALL before any analysis or recommendation"),
         ("to prevent** (B1119: 22 batches of silent doc-sync suspension; Council 236's",
@@ -25567,7 +25572,9 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # while the row's original pin stays green).
     # 237 -> 238 at B2593 (the L760 co-occurrence row, shipped with its pin in
     # the same call after B1723 caught the entry landing in LEARNINGS alone).
-    assert len(gutted) == 238, gutted
+    # 238 -> 239 at B2595 (the L761 count-both-ways row; the fourth entry in a
+    # row to need its skill row on the NEXT close, which the row now says).
+    assert len(gutted) == 239, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
