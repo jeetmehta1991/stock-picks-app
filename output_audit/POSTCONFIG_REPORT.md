@@ -10,10 +10,11 @@ REGENERATED WHOLE at every config landing - by the landing supervisor the engine
 
 ## Landings - what the supervisor recorded (B2520)
 
-15 cube(s) landed through the supervisor; **0 not yet reported to the owner**.
+16 cube(s) landed through the supervisor; **1 not yet reported to the owner** (output_icg_minq6_minq6).
 
 | cube | landed | via | battery exit | blocking | WARN/FAIL findings | committed | pushed | reported |
 |---|---|---|---|---|---|---|---|---|
+| output_icg_minq6_minq6 | 2026-09-04T05:12:47 | engine-hook | 0 | none | 0 | eff36c19b | True | **NO** |
 | output_icg_lookback8_lookback8 | 2026-09-04T02:57:37 | engine-hook | 0 | none | 0 | e6ee52ce0 | True | yes 2026-09-04T03:26:39 |
 | output_icg_lookback6_lookback6 | 2026-09-04T00:23:35 | engine-hook | 0 | none | 0 | 6425598fb | True | yes 2026-09-04T00:26:36 |
 | output_icg_lookback3_lookback3 | 2026-09-03T19:11:37 | engine-hook | 0 | none | 0 | 50257e198 | True | yes 2026-09-03T19:38:59 |
@@ -199,7 +200,7 @@ _The SIX swept axes for the same rows, same order - join on `#`. P1 swing_length
 |---|---|---|---|
 | NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
-| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence) / run_wave verified 6120 cube rows across 1 leg(s | PASS | any non-zero = the ledger is lying about itself |
 | grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
 | independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | 4 of 4 declared knobs read from the environment + consumer l | PASS | non-zero = the wiring is absent |
