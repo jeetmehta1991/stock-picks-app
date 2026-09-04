@@ -19561,3 +19561,41 @@ because the excluded row leaves no trace in the sentence - which is exactly what
 writing down rather than gating. Durability: the #182 amendment plus this entry. Related: L708
 (a statistic over a SELECTED collection measures the selection) is the same defect when the selection
 is mechanical; here it was editorial.
+
+### L762 - L705's rule is about the EXPRESSION, not about tests: an EXTRACTION over a multi-table render needs a selector too
+
+**Measured 2026-09-03.** Building the hourly chain report I piped `scripts/show_table_c.py` through an
+awk that took columns 2, 10, 11 and 12 of every row matching the config-name prefix. That render emits
+**two** tables - the funnel and the per-config parameter table - and both carry rows with that prefix,
+so the output held twelve phantom rows whose "median" column read `5,6(free)`: the P8 free-levels cell,
+sitting where a median was expected. The twelve funnel rows I reported were correct, read from the
+first table; the extraction that produced them was not.
+
+**Why L705 did not fire in my head.** L705 says an assertion over rendered output selects its target
+line first. Its statement and all three of its examples are ASSERTIONS - a pin, a substring check, a
+mutation that should have gone red - so I read it as a rule about TESTS. This was an extraction for a
+REPORT. The purpose differs and nothing else does: same pattern, same whole-document scope, same
+missing selector. **A rule whose examples share one shape gets applied to that shape only** - the
+diagnosis L706, L759 and the capability-claims rule have each recorded, arriving here in the reporting
+path rather than the test path.
+
+**What made it benign, and why that is not reassurance.** The two tables' cells differ in TYPE, so
+`5,6(free)` could never be mistaken for a Sharpe and the defect announced itself. That is a property of
+today's data, not of the method: a family whose parameter column held decimals would yield numbers
+indistinguishable from medians out of the identical slice. **A failure that is loud by luck is still
+undetected by construction.**
+
+**The rule.** An extraction over a multi-section render selects its section before it slices - filter
+to the target table's line range, or key on a column only that table has - exactly as an assertion
+must. And when the render is a LOCKED format, prefer quoting from the printed table over slicing it at
+all: the columns are locked precisely so a reader does not have to re-derive them.
+
+**Compliance failure against CHECKLIST item 285 read with L705.** #285 says a locked format is PRINTED,
+never retyped, and I did print it - then post-processed the print with an untargeted slicer, which is a
+second renderer wearing the first one's output. No new checklist item: #285 is amended, because this is
+its blind spot rather than a new class (#136).
+
+**Mechanisms.** Detection is JUDGMENT-ONLY - a slice with a selector and one without are the same
+expression over the same string, and nothing can tell which sections a pattern was meant to reach.
+Durability is mechanised: this entry, the #285 amendment, and the SKILL.md clause with its own fragment
+pin in test_b2123, shipped in this call rather than the next one (L761).

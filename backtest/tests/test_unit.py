@@ -25026,6 +25026,11 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         # the scope still correct - rather than the heading (L548).
         ("STATE THE COUNT BOTH WAYS",
          "B2594/L761: a caveat must not silently remove a member from a count"),
+        # B2596: the L762 clause on the L705 row. Pins the DIAGNOSTIC - the
+        # rule reads as a rule about tests and is a rule about the expression
+        # - rather than the heading (L548).
+        ("THE RULE IS ABOUT THE EXPRESSION, NOT ABOUT TESTS",
+         "B2596/L762: a report extraction over a multi-table render needs a selector"),
         ("2. **Read the LEARNINGS relevant to this turn's task type.** Grep `LEARNINGS.md`",
          "B2382: Phase 0  RECALL before any analysis or recommendation"),
         ("to prevent** (B1119: 22 batches of silent doc-sync suspension; Council 236's",
@@ -25574,7 +25579,10 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # the same call after B1723 caught the entry landing in LEARNINGS alone).
     # 238 -> 239 at B2595 (the L761 count-both-ways row; the fourth entry in a
     # row to need its skill row on the NEXT close, which the row now says).
-    assert len(gutted) == 239, gutted
+    # 239 -> 240 at B2596 (the L762 clause amended into the L705 row; an
+    # amendment needs its own fragment or it can be deleted while the row's
+    # original pin stays green - B2591's rule, second application).
+    assert len(gutted) == 240, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 

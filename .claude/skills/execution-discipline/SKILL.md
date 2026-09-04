@@ -3392,6 +3392,12 @@ own description; the freeze never reached it.
   l.startswith(...)]`), assert the selector is non-empty, then assert within it. Sweep: 2 of 5
   substring assertions this session shared the defect, both in the same new pin. An assertion over a
   multi-section render needs a selector; one over a source file or a parsed structure does not.
+  **THE RULE IS ABOUT THE EXPRESSION, NOT ABOUT TESTS (L762).** Every example above is an
+  assertion, so it reads as a testing rule; an EXTRACTION for a REPORT has the same shape and
+  the same defect. MEASURED 2026-09-03: an awk taking four columns from every matching row of
+  the show_table_c.py render matched BOTH its tables and put a free-levels cell in the median
+  column of twelve rows. Select the section, then slice - and over a LOCKED format, prefer
+  quoting the printed table to slicing it (#285).
 
 - **NEVER ASSERT A COLUMN EXISTS BY SUBSTRING OVER A WHOLE RENDERED DOCUMENT (L706).** Extract the
   HEADER ROW and assert against that. A table that documents itself - glossary, preamble, per-tier
