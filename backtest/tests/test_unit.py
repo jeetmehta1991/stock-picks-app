@@ -25016,6 +25016,11 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         # B1739 exists to stop, arriving inside a row that already had a pin.
         ("A MECHANISM IS NOT PINNED BECAUSE ITS WRAPPER IS",
          "B2589/L757 addendum 2: assert the value the decision reads"),
+        # B2593: the L760 row. Pins the DIAGNOSTIC - a trigger shaped
+        # "changed X without Y" reports on turns, never on the population -
+        # rather than the heading (L548).
+        ("A CO-OCCURRENCE TRIGGER PROTECTS THE TRANSITION, NEVER THE STATE",
+         "B2592/L760: a gate's silence is not coverage; measure the population once"),
         ("2. **Read the LEARNINGS relevant to this turn's task type.** Grep `LEARNINGS.md`",
          "B2382: Phase 0  RECALL before any analysis or recommendation"),
         ("to prevent** (B1119: 22 batches of silent doc-sync suspension; Council 236's",
@@ -25560,7 +25565,9 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # 236 -> 237 at B2591 (the wrapper-vs-predicate clause B2590 amended into
     # the L757 row; an amendment needs its own fragment or it can be deleted
     # while the row's original pin stays green).
-    assert len(gutted) == 237, gutted
+    # 237 -> 238 at B2593 (the L760 co-occurrence row, shipped with its pin in
+    # the same call after B1723 caught the entry landing in LEARNINGS alone).
+    assert len(gutted) == 238, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
