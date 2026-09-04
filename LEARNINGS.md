@@ -19635,3 +19635,39 @@ alongside a preflight FAIL block, two facts that cannot both describe one succes
 tell a deliberate sequence from a dependent one. Durability is mechanised: the skill bullet now carries
 the heredoc clause and test_b2123 pins its fragment, so the addendum cannot be deleted while the
 original rule's pin stays green (B2591's rule, third application).
+
+### L764 - A refusal you reproduce on YOUR path is not evidence about ANOTHER actor's path
+
+**Measured 2026-09-04.** My reporting commits - artifacts only, no ledger row - were refused three times
+by preflight's C8 queue-anchor check. I filed that as **S6-B2599a, P1, a class defect**, asserting the
+ENGINE's automated landing commit fails the same way, and wrote it into three commit messages. A
+council advisor disputed it and one file settled it against me:
+`scripts/postconfig_landing.py:220` defines `_append_landing_queue_row`, `commit_and_push` appends
+`QUEUE` to its staged paths when that returns True, and B2522's comment in that same function records
+the fix being made for exactly this reason. **The automated path clears C8 honestly** - the day's three
+landing commits each carry a hash and `pushed: true`, which was in front of me the whole time.
+
+**Why three reproductions felt like proof.** Reproducibility is the right instinct and it answered the
+wrong question. Three identical failures establish that the refusal is DETERMINISTIC; they say nothing
+about WHOSE path it is deterministic on, because all three were draws from ONE actor's path - mine. The
+sample size grew and the population never did. **A count of instances measures reliability, not
+scope.**
+
+**The tell I walked past.** The engine's landing commits were succeeding IN THE SAME LEDGER I was
+reading to find the failures - `committed: <hash>, pushed: true` on the very rows above the ones I
+quoted. A counter-example sitting inside the evidence you are citing is the cheapest disproof there
+is, and it is invisible while you are filtering for confirmations.
+
+**The rule.** Before generalising a failure from your own path to a second actor's - engine, hook,
+supervisor, CI, another user - OPEN THE SECOND ACTOR'S CODE and find the line that makes it differ or
+not. Two actors sharing a gate do not share a path through it. And when the second actor's outcomes
+are already recorded, read those outcomes first: they are a population, and your reproductions are not.
+
+**Compliance failure against CHECKLIST item 215** - a claim about code structure needs the file opened -
+which is exactly what I did not do for `commit_and_push`. No new checklist item: #215 covers it and the
+gate for it (`scan_unverified_structure`) is what has fired on this class before.
+
+**Mechanisms.** Detection is JUDGMENT-ONLY: no scan can know that a sentence about actor B rests on
+observations of actor A, because both are true sentences about the same gate. Durability is mechanised -
+the skill row plus `test_b2606_a_refusal_on_your_path_is_not_evidence_about_another_actors_path`, which
+asserts the rule survives in the tripwire table.

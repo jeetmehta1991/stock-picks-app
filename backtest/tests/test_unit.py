@@ -33371,3 +33371,34 @@ def test_b2604_bootstrap_index_reaches_python_as_argv_not_by_substitution(tmp_pa
         cp = subprocess.run([_sys.executable, "-c", runnable, "0; rm -rf /"],
                             capture_output=True, text=True, timeout=60)
         assert cp.returncode != 0 and "KeyError" in cp.stderr, cp.stderr
+
+
+def test_b2606_a_refusal_on_your_path_is_not_evidence_about_another_actors_path():
+    """L764: three reproductions measure reliability, not scope.
+
+    MEASURED 2026-09-04: I reproduced a C8 preflight refusal three times on my
+    own artifact-only commits and filed it as a class defect against the
+    ENGINE's landing commit. postconfig_landing.py stages its own ledger row
+    (_append_landing_queue_row) so the automated path clears the gate - and
+    that day's landing commits each carried a hash in the same record I was
+    reading failures from.
+
+    Detection is JUDGMENT-ONLY (both sentences are true statements about one
+    gate; no scan separates them), so what is pinned is DURABILITY - and the
+    live code fact the rule rests on, so the entry cannot outlive its premise.
+    """
+    root = Path(__file__).parent.parent.parent
+    skill = (root / ".claude" / "skills" / "execution-discipline"
+             / "SKILL.md").read_text(encoding="utf-8", errors="replace")
+    assert "OPEN THE SECOND ACTOR'S CODE" in skill, \
+        "L764's rule is missing from the tripwire table"
+    assert "L764" in skill
+
+    # the premise: the automated path really does stage its own queue row, so
+    # a future reader can tell the rule from a story (L595 - a citation is a
+    # claim with an address)
+    landing = (root / "scripts" / "postconfig_landing.py").read_text(
+        encoding="utf-8", errors="replace")
+    assert "def _append_landing_queue_row" in landing
+    assert "paths.append(QUEUE)" in landing, \
+        "the automated commit no longer stages the queue - L764's premise moved"
