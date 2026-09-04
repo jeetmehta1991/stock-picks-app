@@ -33282,3 +33282,25 @@ def test_b2598_selection_margin_is_info_when_nothing_is_selectable():
     assert lvl == "INFO" and "1 ranked row" in ev, ev
     _, lvl, ev = rp.selection_margin_row([], "exits")
     assert lvl == "INFO" and "no ranked row" in ev, ev
+
+
+def test_b2600_heredoc_terminator_sibling_chain_rule_is_in_the_skill():
+    """L763: the line after a heredoc terminator is a NEW command.
+
+    Fourth instance of L615's sibling-chain class, and the first where the
+    break was invisible: a preflight-refused commit was followed by `git log`
+    and `git push` below the MSG terminator, which ran and printed a hash for
+    a commit that never happened.
+
+    Detection is JUDGMENT-ONLY (no scan reads shell chaining), so what is
+    pinned is DURABILITY - the addendum cannot be deleted while the original
+    rule's pin stays green, which is the gap B2591 measured.
+    """
+    _root = Path(__file__).parent.parent.parent
+    skill = (_root / ".claude" / "skills" / "execution-discipline"
+             / "SKILL.md").read_text(encoding="utf-8", errors="replace")
+    assert "AFTER A HEREDOC TERMINATOR IS A NEW COMMAND" in skill, \
+        "L763's heredoc clause is missing from the tripwire bullet"
+    # the ORIGINAL rule must still be there - an addendum must not replace it
+    assert "The trigger is the FAILURE MODE, not the tool" in skill
+    assert "L763/B2600" in skill

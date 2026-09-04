@@ -1123,7 +1123,15 @@ false claim shipped: the rule covers checks, not only edits, and a
 presence-grep must assert its match count to be able to fail; **THIRD instance
 L629/B2129** - an anchor assert failed and the newline-separated commit shipped
 a row claiming a skill edit that never landed, hours after I authored this very
-rule. **The trigger is the FAILURE MODE, not the tool**: any step whose failure
+rule. **FOURTH instance L763/B2600 - AND THE BREAK CAN BE INVISIBLE: THE LINE
+AFTER A HEREDOC TERMINATOR IS A NEW COMMAND.** A commit refused by preflight was
+followed by `git log` and `git push` placed below the `MSG` terminator; they ran,
+printed a hash and the word *pushed*, and described a commit that did not happen.
+The three prior instances were newline-separated ordinary commands where the break
+is at least visible; a heredoc hides it exactly when the payload is long, which is
+exactly when the commit is worth checking. Chain with `&&` AFTER the terminator.
+The tell: output showing a preflight FAIL and a commit hash together, two facts
+that cannot both describe one successful commit. **The trigger is the FAILURE MODE, not the tool**: any step whose failure
 would invalidate a LATER step is joined to it with `&&`. I chain when thinking
 about commits, and twice now the failing step was an EDIT or a CHECK. Prefer one
 edit per shell call when its success is load-bearing for a commit message).

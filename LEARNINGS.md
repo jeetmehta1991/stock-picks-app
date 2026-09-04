@@ -19606,3 +19606,32 @@ its blind spot rather than a new class (#136).
 expression over the same string, and nothing can tell which sections a pattern was meant to reach.
 Durability is mechanised: this entry, the #285 amendment, and the SKILL.md clause with its own fragment
 pin in test_b2123, shipped in this call rather than the next one (L761).
+
+### L763 - A HEREDOC TERMINATOR HIDES THE SIBLING-CHAIN BREAK (fourth instance of L615)
+
+**Measured 2026-09-04.** A commit of landing artifacts was refused by preflight - `C8 QUEUE-ENTRY |
+commit does not stage EXECUTION_QUEUE.md` - and the `git log --oneline -1 && git push` that followed
+**ran anyway**, printing a commit hash and the word *pushed*. Nothing was pushed: the hash belonged to
+the supervisor's own earlier commit, already on the remote. So the damage was a false line in a
+report, not a false state in the repo - which is luck about what the next command happened to print.
+
+**What is new, three instances after the rule was written.** L615's prior cases were newline-separated
+ordinary commands, where the break between them is at least visible in the text. Here the failing
+command ended in a HEREDOC, and after the `MSG` terminator the following line READS as a continuation
+of the same invocation while bash reads it as a fresh command. **The boundary becomes invisible exactly
+when the payload is long**, which is exactly when a commit message is long, which is exactly when the
+commit is worth checking.
+
+**The rule, unchanged in substance and sharper in trigger.** Any step whose failure would invalidate a
+LATER step is joined to it with `&&`. Add: **the line after a heredoc terminator is a NEW command** -
+if it depends on the heredoc's command succeeding, it is chained with `&&` after the terminator, not
+merely placed below it.
+
+**Compliance failure against the existing rule** (L615 / the skill's B1993d bullet), not a new class.
+And note the tell that should have fired: the output printed a hash I had not seen this session
+alongside a preflight FAIL block, two facts that cannot both describe one successful commit.
+
+**Mechanisms.** Detection stays JUDGMENT-ONLY - no scan reads shell chaining, and a transcript cannot
+tell a deliberate sequence from a dependent one. Durability is mechanised: the skill bullet now carries
+the heredoc clause and test_b2123 pins its fragment, so the addendum cannot be deleted while the
+original rule's pin stays green (B2591's rule, third application).
