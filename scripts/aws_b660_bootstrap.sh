@@ -103,12 +103,15 @@ else
     echo "[$(date)] Resolving tickers for shard_${B660_INDEX}..."
     aws s3 cp "s3://$B660_BUCKET/$B660_SPLITS_KEY" /tmp/b660_splits.json \
         --no-progress --only-show-errors
-    TICKERS_CSV=$(python -c "
-import json
-splits = json.load(open('/tmp/b660_splits.json'))
-key = f'shard_${B660_INDEX}'
-print(','.join(splits[key]))
-")
+    # B2604 (S6-B2587b, #245/L759): the index reaches python as ARGV, never by
+    # bash substitution inside a double-quoted -c argument. Single quotes mean
+    # bash substitutes nothing in the program text.
+    TICKERS_CSV=$(python -c '
+import json, sys
+splits = json.load(open("/tmp/b660_splits.json"))
+key = "shard_" + sys.argv[1]
+print(",".join(splits[key]))
+' "$B660_INDEX")
 fi
 TICKER_COUNT=$(echo "$TICKERS_CSV" | tr ',' '\n' | wc -l)
 echo "[$(date)] Shard $B660_INDEX -> $TICKER_COUNT tickers"

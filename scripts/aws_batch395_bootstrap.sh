@@ -131,12 +131,15 @@ else
     echo "[$(date)] Resolving tickers for batch_${BATCH395_INDEX}..."
     aws s3 cp "s3://$BATCH395_BUCKET/aws_batch395_splits.json" /tmp/splits.json \
         --no-progress --only-show-errors
-    TICKERS=$(python -c "
+    # B2604 (S6-B2587b, #245/L759): the index reaches python as ARGV, never by
+    # bash substitution inside a double-quoted -c argument. Single quotes mean
+    # bash substitutes nothing in the program text.
+    TICKERS=$(python -c '
 import json, sys
-splits = json.load(open('/tmp/splits.json'))
-key = f'batch_${BATCH395_INDEX}'
-print(','.join(splits[key]))
-")
+splits = json.load(open("/tmp/splits.json"))
+key = "batch_" + sys.argv[1]
+print(",".join(splits[key]))
+' "$BATCH395_INDEX")
 fi
 TICKER_COUNT=$(echo "$TICKERS" | tr ',' '\n' | wc -l)
 echo "[$(date)] Batch $BATCH395_INDEX -> $TICKER_COUNT tickers"

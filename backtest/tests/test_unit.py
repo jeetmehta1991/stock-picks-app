@@ -33304,3 +33304,70 @@ def test_b2600_heredoc_terminator_sibling_chain_rule_is_in_the_skill():
     # the ORIGINAL rule must still be there - an addendum must not replace it
     assert "The trigger is the FAILURE MODE, not the tool" in skill
     assert "L763/B2600" in skill
+
+
+def _b2604_python_body(script_text: str) -> str:
+    """Extract the single-quoted python program from a `python -c '...'` call.
+
+    Anchored on the STRUCTURE (the -c and its quote) rather than a line range,
+    so inserting lines above it cannot blind this (L715).
+    """
+    # Anchor on the ASSIGNMENT, not the first `python -c '` in the file:
+    # both bootstraps also run an SMC import check through a single-quoted
+    # -c earlier, and matching that one made this pin read the wrong
+    # program - the enumeration-inherits-its-examples defect (L757).
+    marker = "=$(python -c '"
+    i = script_text.index(marker) + len(marker)
+    j = script_text.index("\n'", i)
+    return script_text[i:j]
+
+
+def test_b2604_bootstrap_index_reaches_python_as_argv_not_by_substitution(tmp_path):
+    """S6-B2587b (owner-ruled): the two AWS bootstraps must not interpolate a
+    shell variable into a python program.
+
+    The ticket's stated blocker was that these scripts run only on a fresh
+    cloud instance, so the fix could not be executed. It can: the python body
+    is extracted FROM THE SHIPPED FILE and run here against a temp splits
+    JSON, which proves the argv form selects the same key and prints the same
+    CSV. That is the literal verified where it lives (L575), not a copy.
+    """
+    import json
+    import subprocess
+    import sys as _sys
+
+    root = Path(__file__).parent.parent.parent
+    cases = [
+        ("scripts/aws_batch395_bootstrap.sh", "batch_", "/tmp/splits.json"),
+        ("scripts/aws_b660_bootstrap.sh", "shard_", "/tmp/b660_splits.json"),
+    ]
+    for rel, prefix, hardcoded_path in cases:
+        text = (root / rel).read_text(encoding="utf-8", errors="replace")
+
+        # 1. the DOUBLE-quoted form is gone - that is the #245 construction
+        assert 'python -c "' not in text, (
+            f"{rel} still opens a double-quoted python -c; bash substitutes "
+            "inside it (B1765 / #245)")
+
+        # 2. no shell expansion survives inside the program text
+        body = _b2604_python_body(text)
+        assert "${" not in body and "$(" not in body, (
+            f"{rel} python body still carries a shell expansion: {body!r}")
+        assert "sys.argv[1]" in body, f"{rel} does not read the index from argv"
+
+        # 3. and it BEHAVES: run the shipped body against a temp splits file
+        splits = {f"{prefix}0": ["AAPL", "MSFT"], f"{prefix}7": ["NVDA"]}
+        tmp_json = tmp_path / Path(hardcoded_path).name
+        tmp_json.write_text(json.dumps(splits), encoding="utf-8")
+        runnable = body.replace(hardcoded_path, str(tmp_json).replace("\\", "/"))
+        for idx, want in (("0", "AAPL,MSFT"), ("7", "NVDA")):
+            cp = subprocess.run([_sys.executable, "-c", runnable, idx],
+                                capture_output=True, text=True, timeout=60)
+            assert cp.returncode == 0, (rel, idx, cp.stderr)
+            assert cp.stdout.strip() == want, (rel, idx, cp.stdout, want)
+
+        # 4. a value that WOULD have been dangerous under substitution is now
+        #    inert data - it selects no key and raises KeyError, it does not run
+        cp = subprocess.run([_sys.executable, "-c", runnable, "0; rm -rf /"],
+                            capture_output=True, text=True, timeout=60)
+        assert cp.returncode != 0 and "KeyError" in cp.stderr, cp.stderr
