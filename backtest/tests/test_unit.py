@@ -25010,6 +25010,12 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         # attaches to the artifact, not to the mechanism - not the heading.
         ("SWEEP THE TURN'S OTHER CALLS IN THE SAME BREATH",
          "B2586/L759: a shell rule applied to the patcher does not reach the probe"),
+        # B2591: the clauses B2590 AMENDED into the L757 row. The row's
+        # first fragment covers only its original clause, so these two could
+        # have been deleted with the pin still green - which is the decay
+        # B1739 exists to stop, arriving inside a row that already had a pin.
+        ("A MECHANISM IS NOT PINNED BECAUSE ITS WRAPPER IS",
+         "B2589/L757 addendum 2: assert the value the decision reads"),
         ("2. **Read the LEARNINGS relevant to this turn's task type.** Grep `LEARNINGS.md`",
          "B2382: Phase 0  RECALL before any analysis or recommendation"),
         ("to prevent** (B1119: 22 batches of silent doc-sync suspension; Council 236's",
@@ -25551,7 +25557,10 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # scope ruling, recorded and acted on in the same call).
     # 235 -> 236 at B2587 (the L759 sweep-the-other-calls fragment, shipped
     # with the two live instances the sweep found).
-    assert len(gutted) == 236, gutted
+    # 236 -> 237 at B2591 (the wrapper-vs-predicate clause B2590 amended into
+    # the L757 row; an amendment needs its own fragment or it can be deleted
+    # while the row's original pin stays green).
+    assert len(gutted) == 237, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
