@@ -19572,9 +19572,16 @@ sitting where a median was expected. The twelve funnel rows I reported were corr
 first table; the extraction that produced them was not.
 
 **Why L705 did not fire in my head.** L705 says an assertion over rendered output selects its target
-line first. Its statement and all three of its examples are ASSERTIONS - a pin, a substring check, a
-mutation that should have gone red - so I read it as a rule about TESTS. This was an extraction for a
-REPORT. The purpose differs and nothing else does: same pattern, same whole-document scope, same
+line first. Every case it names is an ASSERTION inside a pytest pin - MEASURED over the whole entry
+(LEARNINGS.md, the block from its heading to L706's): **5 of 5** in its retroactive sweep, test_b2330's
+tier check, test_b2330's `'| n |'` check, test_b2299, test_b2310 and test_b2286, with the SKILL row
+carrying one worked example and that same 2-of-5 figure. So I read it as a rule about TESTS. This was
+an extraction for a REPORT.
+
+**B2597 CORRECTION, and it belongs in this entry rather than a new one.** The sentence above first
+shipped as *all three of its examples*, a number I never counted, inside the paragraph diagnosing a
+defect of counting without reading. The claim's substance was right and its arithmetic was invented -
+which is the failure mode this entry is about, one level in. Compliance failure against #270. The purpose differs and nothing else does: same pattern, same whole-document scope, same
 missing selector. **A rule whose examples share one shape gets applied to that shape only** - the
 diagnosis L706, L759 and the capability-claims rule have each recorded, arriving here in the reporting
 path rather than the test path.
