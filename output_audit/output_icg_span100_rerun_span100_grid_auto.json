@@ -1,0 +1,560 @@
+{
+ "config": {
+  "P4_min_consecutive_quarters": 4,
+  "P5_growth_lookback_quarters": 4,
+  "P6_growth_multiple": 1.1,
+  "P9_span": 100
+ },
+ "strategy": "institutional_committed_growth_long",
+ "grader": "scripts/grade_institutional_config.py (B2520)",
+ "cube": "C:/Users/jeetm/Github/stock-picks-app/output_icg_span100_rerun_span100/trade_exit_detail.csv",
+ "note": "B2520: Step-1 ranking, graded via roster_core.evaluate per exit on the IS rows; is_ci_lo is the ranking key, not a gate (B1608); holdout counted, never graded. Config keys follow the B2505 contract.",
+ "window": {
+  "is": [
+   "2022-05-05",
+   "2025-05-05"
+  ],
+  "holdout": [
+   "2025-05-05",
+   "2026-05-05"
+  ],
+  "cube_entry_min": "2024-05-06",
+  "cube_entry_max": "2025-05-02"
+ },
+ "rows": 8976,
+ "is_rows": 8976,
+ "holdout_rows": 0,
+ "min_n": 10,
+ "results": [
+  {
+   "combo": {
+    "P4_min_consecutive_quarters": 4,
+    "P5_growth_lookback_quarters": 4,
+    "P6_growth_multiple": 1.1,
+    "P9_span": 100,
+    "min_committed_growth": 3,
+    "fallback_min_increased": 5
+   },
+   "verdict": "RANKED",
+   "n_exits_graded": 24,
+   "n_exits_ranked": 24
+  }
+ ],
+ "step1_combinations_carried": 1,
+ "step1_distinct_outcomes": 1,
+ "step1_ranking": [
+  {
+   "exit": "breakeven_plus_trail",
+   "fires": 374,
+   "is_sharpe": 0.281,
+   "is_ci_lo": -0.078,
+   "class_size": 1,
+   "admit": {
+    "min_committed_growth": 3,
+    "fallback_min_increased": 5,
+    "holdout_n": 0,
+    "full_period_n": 374,
+    "verdict": "RANKED"
+   },
+   "rank": 1
+  },
+  {
+   "exit": "hybrid_50pct_target",
+   "fires": 374,
+   "is_sharpe": -0.059,
+   "is_ci_lo": -0.341,
+   "class_size": 1,
+   "admit": {
+    "min_committed_growth": 3,
+    "fallback_min_increased": 5,
+    "holdout_n": 0,
+    "full_period_n": 374,
+    "verdict": "RANKED"
+   },
+   "rank": 2
+  },
+  {
+   "exit": "trailing_10pct",
+   "fires": 374,
+   "is_sharpe": -0.172,
+   "is_ci_lo": -0.47,
+   "class_size": 1,
+   "admit": {
+    "min_committed_growth": 3,
+    "fallback_min_increased": 5,
+    "holdout_n": 0,
+    "full_period_n": 374,
+    "verdict": "RANKED"
+   },
+   "rank": 3
+  },
+  {
+   "exit": "regime_flip",
+   "fires": 374,
+   "is_sharpe": -0.207,
+   "is_ci_lo": -0.611,
+   "class_size": 1,
+   "admit": {
+    "min_committed_growth": 3,
+    "fallback_min_increased": 5,
+    "holdout_n": 0,
+    "full_period_n": 374,
+    "verdict": "RANKED"
+   },
+   "rank": 4
+  },
+  {
+   "exit": "earnings_blackout",
+   "fires": 374,
+   "is_sharpe": -0.399,
+   "is_ci_lo": -0.634,
+   "class_size": 1,
+   "admit": {
+    "min_committed_growth": 3,
+    "fallback_min_increased": 5,
+    "holdout_n": 0,
+    "full_period_n": 374,
+    "verdict": "RANKED"
+   },
+   "rank": 5
+  },
+  {
+   "exit": "class_time_stop",
+   "fires": 374,
+   "is_sharpe": -0.337,
+   "is_ci_lo": -0.649,
+   "class_size": 1,
+   "admit": {
+    "min_committed_growth": 3,
+    "fallback_min_increased": 5,
+    "holdout_n": 0,
+    "full_period_n": 374,
+    "verdict": "RANKED"
+   },
+   "rank": 6
+  },
+  {
+   "exit": "time_stop_20d",
+   "fires": 374,
+   "is_sharpe": -0.292,
+   "is_ci_lo": -0.664,
+   "class_size": 1,
+   "admit": {
+    "min_committed_growth": 3,
+    "fallback_min_increased": 5,
+    "holdout_n": 0,
+    "full_period_n": 374,
+    "verdict": "RANKED"
+   },
+   "rank": 7
+  },
+  {
+   "exit": "break_even_at_1r",
+   "fires": 374,
+   "is_sharpe": -0.198,
+   "is_ci_lo": -0.693,
+   "class_size": 1,
+   "admit": {
+    "min_committed_growth": 3,
+    "fallback_min_increased": 5,
+    "holdout_n": 0,
+    "full_period_n": 374,
+    "verdict": "RANKED"
+   },
+   "rank": 8
+  },
+  {
+   "exit": "trailing_15pct",
+   "fires": 374,
+   "is_sharpe": -0.501,
+   "is_ci_lo": -0.743,
+   "class_size": 1,
+   "admit": {
+    "min_committed_growth": 3,
+    "fallback_min_increased": 5,
+    "holdout_n": 0,
+    "full_period_n": 374,
+    "verdict": "RANKED"
+   },
+   "rank": 9
+  },
+  {
+   "exit": "fixed_4r_2r",
+   "fires": 374,
+   "is_sharpe": -0.452,
+   "is_ci_lo": -0.886,
+   "class_size": 1,
+   "admit": {
+    "min_committed_growth": 3,
+    "fallback_min_increased": 5,
+    "holdout_n": 0,
+    "full_period_n": 374,
+    "verdict": "RANKED"
+   },
+   "rank": 10
+  }
+ ],
+ "per_exit": [
+  {
+   "exit": "breakeven_plus_trail",
+   "fires": 374,
+   "is_sharpe": 0.281,
+   "is_ci_lo": -0.078,
+   "class_size": 1,
+   "admit": {
+    "min_committed_growth": 3,
+    "fallback_min_increased": 5,
+    "holdout_n": 0,
+    "full_period_n": 374,
+    "verdict": "RANKED"
+   },
+   "rank": 1
+  },
+  {
+   "exit": "hybrid_50pct_target",
+   "fires": 374,
+   "is_sharpe": -0.059,
+   "is_ci_lo": -0.341,
+   "class_size": 1,
+   "admit": {
+    "min_committed_growth": 3,
+    "fallback_min_increased": 5,
+    "holdout_n": 0,
+    "full_period_n": 374,
+    "verdict": "RANKED"
+   },
+   "rank": 2
+  },
+  {
+   "exit": "trailing_10pct",
+   "fires": 374,
+   "is_sharpe": -0.172,
+   "is_ci_lo": -0.47,
+   "class_size": 1,
+   "admit": {
+    "min_committed_growth": 3,
+    "fallback_min_increased": 5,
+    "holdout_n": 0,
+    "full_period_n": 374,
+    "verdict": "RANKED"
+   },
+   "rank": 3
+  },
+  {
+   "exit": "regime_flip",
+   "fires": 374,
+   "is_sharpe": -0.207,
+   "is_ci_lo": -0.611,
+   "class_size": 1,
+   "admit": {
+    "min_committed_growth": 3,
+    "fallback_min_increased": 5,
+    "holdout_n": 0,
+    "full_period_n": 374,
+    "verdict": "RANKED"
+   },
+   "rank": 4
+  },
+  {
+   "exit": "earnings_blackout",
+   "fires": 374,
+   "is_sharpe": -0.399,
+   "is_ci_lo": -0.634,
+   "class_size": 1,
+   "admit": {
+    "min_committed_growth": 3,
+    "fallback_min_increased": 5,
+    "holdout_n": 0,
+    "full_period_n": 374,
+    "verdict": "RANKED"
+   },
+   "rank": 5
+  },
+  {
+   "exit": "class_time_stop",
+   "fires": 374,
+   "is_sharpe": -0.337,
+   "is_ci_lo": -0.649,
+   "class_size": 1,
+   "admit": {
+    "min_committed_growth": 3,
+    "fallback_min_increased": 5,
+    "holdout_n": 0,
+    "full_period_n": 374,
+    "verdict": "RANKED"
+   },
+   "rank": 6
+  },
+  {
+   "exit": "time_stop_20d",
+   "fires": 374,
+   "is_sharpe": -0.292,
+   "is_ci_lo": -0.664,
+   "class_size": 1,
+   "admit": {
+    "min_committed_growth": 3,
+    "fallback_min_increased": 5,
+    "holdout_n": 0,
+    "full_period_n": 374,
+    "verdict": "RANKED"
+   },
+   "rank": 7
+  },
+  {
+   "exit": "break_even_at_1r",
+   "fires": 374,
+   "is_sharpe": -0.198,
+   "is_ci_lo": -0.693,
+   "class_size": 1,
+   "admit": {
+    "min_committed_growth": 3,
+    "fallback_min_increased": 5,
+    "holdout_n": 0,
+    "full_period_n": 374,
+    "verdict": "RANKED"
+   },
+   "rank": 8
+  },
+  {
+   "exit": "trailing_15pct",
+   "fires": 374,
+   "is_sharpe": -0.501,
+   "is_ci_lo": -0.743,
+   "class_size": 1,
+   "admit": {
+    "min_committed_growth": 3,
+    "fallback_min_increased": 5,
+    "holdout_n": 0,
+    "full_period_n": 374,
+    "verdict": "RANKED"
+   },
+   "rank": 9
+  },
+  {
+   "exit": "fixed_4r_2r",
+   "fires": 374,
+   "is_sharpe": -0.452,
+   "is_ci_lo": -0.886,
+   "class_size": 1,
+   "admit": {
+    "min_committed_growth": 3,
+    "fallback_min_increased": 5,
+    "holdout_n": 0,
+    "full_period_n": 374,
+    "verdict": "RANKED"
+   },
+   "rank": 10
+  },
+  {
+   "exit": "time_stop_10d",
+   "fires": 374,
+   "is_sharpe": -0.384,
+   "is_ci_lo": -0.899,
+   "class_size": 1,
+   "admit": {
+    "min_committed_growth": 3,
+    "fallback_min_increased": 5,
+    "holdout_n": 0,
+    "full_period_n": 374,
+    "verdict": "RANKED"
+   },
+   "rank": 11
+  },
+  {
+   "exit": "atr_trail_2x",
+   "fires": 374,
+   "is_sharpe": -0.526,
+   "is_ci_lo": -1.009,
+   "class_size": 1,
+   "admit": {
+    "min_committed_growth": 3,
+    "fallback_min_increased": 5,
+    "holdout_n": 0,
+    "full_period_n": 374,
+    "verdict": "RANKED"
+   },
+   "rank": 12
+  },
+  {
+   "exit": "r_multiple_2r",
+   "fires": 374,
+   "is_sharpe": -0.53,
+   "is_ci_lo": -1.219,
+   "class_size": 1,
+   "admit": {
+    "min_committed_growth": 3,
+    "fallback_min_increased": 5,
+    "holdout_n": 0,
+    "full_period_n": 374,
+    "verdict": "RANKED"
+   },
+   "rank": 13
+  },
+  {
+   "exit": "ma_exit_ema9",
+   "fires": 374,
+   "is_sharpe": -0.567,
+   "is_ci_lo": -1.222,
+   "class_size": 1,
+   "admit": {
+    "min_committed_growth": 3,
+    "fallback_min_increased": 5,
+    "holdout_n": 0,
+    "full_period_n": 374,
+    "verdict": "RANKED"
+   },
+   "rank": 14
+  },
+  {
+   "exit": "chandelier_3x",
+   "fires": 374,
+   "is_sharpe": -0.68,
+   "is_ci_lo": -1.23,
+   "class_size": 1,
+   "admit": {
+    "min_committed_growth": 3,
+    "fallback_min_increased": 5,
+    "holdout_n": 0,
+    "full_period_n": 374,
+    "verdict": "RANKED"
+   },
+   "rank": 15
+  },
+  {
+   "exit": "next_pivot_target",
+   "fires": 374,
+   "is_sharpe": -0.643,
+   "is_ci_lo": -1.232,
+   "class_size": 1,
+   "admit": {
+    "min_committed_growth": 3,
+    "fallback_min_increased": 5,
+    "holdout_n": 0,
+    "full_period_n": 374,
+    "verdict": "RANKED"
+   },
+   "rank": 16
+  },
+  {
+   "exit": "trailing_5pct",
+   "fires": 374,
+   "is_sharpe": -0.756,
+   "is_ci_lo": -1.24,
+   "class_size": 1,
+   "admit": {
+    "min_committed_growth": 3,
+    "fallback_min_increased": 5,
+    "holdout_n": 0,
+    "full_period_n": 374,
+    "verdict": "RANKED"
+   },
+   "rank": 17
+  },
+  {
+   "exit": "r_multiple_3r",
+   "fires": 374,
+   "is_sharpe": -0.64,
+   "is_ci_lo": -1.243,
+   "class_size": 1,
+   "admit": {
+    "min_committed_growth": 3,
+    "fallback_min_increased": 5,
+    "holdout_n": 0,
+    "full_period_n": 374,
+    "verdict": "RANKED"
+   },
+   "rank": 18
+  },
+  {
+   "exit": "atr_trail_vix_conditional",
+   "fires": 374,
+   "is_sharpe": -1.38,
+   "is_ci_lo": -2.061,
+   "class_size": 1,
+   "admit": {
+    "min_committed_growth": 3,
+    "fallback_min_increased": 5,
+    "holdout_n": 0,
+    "full_period_n": 374,
+    "verdict": "RANKED"
+   },
+   "rank": 19
+  },
+  {
+   "exit": "multi_tier_partial",
+   "fires": 374,
+   "is_sharpe": -1.642,
+   "is_ci_lo": -2.457,
+   "class_size": 1,
+   "admit": {
+    "min_committed_growth": 3,
+    "fallback_min_increased": 5,
+    "holdout_n": 0,
+    "full_period_n": 374,
+    "verdict": "RANKED"
+   },
+   "rank": 20
+  },
+  {
+   "exit": "atr_trail_1x",
+   "fires": 374,
+   "is_sharpe": -1.863,
+   "is_ci_lo": -2.651,
+   "class_size": 1,
+   "admit": {
+    "min_committed_growth": 3,
+    "fallback_min_increased": 5,
+    "holdout_n": 0,
+    "full_period_n": 374,
+    "verdict": "RANKED"
+   },
+   "rank": 21
+  },
+  {
+   "exit": "reverse_signal",
+   "fires": 374,
+   "is_sharpe": -1.863,
+   "is_ci_lo": -2.651,
+   "class_size": 1,
+   "admit": {
+    "min_committed_growth": 3,
+    "fallback_min_increased": 5,
+    "holdout_n": 0,
+    "full_period_n": 374,
+    "verdict": "RANKED"
+   },
+   "rank": 22
+  },
+  {
+   "exit": "mfe_lockin_trail",
+   "fires": 374,
+   "is_sharpe": -2.417,
+   "is_ci_lo": -3.24,
+   "class_size": 1,
+   "admit": {
+    "min_committed_growth": 3,
+    "fallback_min_increased": 5,
+    "holdout_n": 0,
+    "full_period_n": 374,
+    "verdict": "RANKED"
+   },
+   "rank": 23
+  },
+  {
+   "exit": "smc_mitigation_zone",
+   "fires": 374,
+   "is_sharpe": -3.548,
+   "is_ci_lo": -4.636,
+   "class_size": 1,
+   "admit": {
+    "min_committed_growth": 3,
+    "fallback_min_increased": 5,
+    "holdout_n": 0,
+    "full_period_n": 374,
+    "verdict": "RANKED"
+   },
+   "rank": 24
+  }
+ ],
+ "results_n_exits": 24
+}
