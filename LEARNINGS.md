@@ -19698,3 +19698,40 @@ of drafting markers, with inline-code spans stripped first (B1738) so a row RECO
 not refused by the rule it records - the self-reference trap built in from the start rather than bolted
 on after the gate blocks its own incident report. DURABILITY: `test_b2608_a_drafting_marker_in_a_queue_row_is_refused`,
 proved in both directions.
+
+### L766 - A contamination correction can change a SIGN, and the size of the contamination is the wrong question
+
+**Measured 2026-09-04.** The span100 rerun landed under the B2574-fixed engine and re-graded the same
+config on real ATR. The contaminated cube reported best `is_ci_lo` **+0.062**; the clean one reports
+**-0.078**. That config had been sitting in the programme's POSITIVE set - the set that decides which
+parameter directions are worth another engine hour - on a number produced by pricing 83.7% of its
+trades off a 2%-of-price proxy.
+
+**Why the instinct fails.** Contamination invites a magnitude argument: *6% is small, 84% is large,
+somewhere between them it starts to matter.* That frame is wrong because it reasons about the INPUT
+when the decision reads an OUTPUT with a threshold in it. A `ci_lo` is consulted for one bit - is it
+above zero - so any perturbation large enough to cross zero is total, and one that moves the value
+twice as far while staying on the same side is nil. **Ask which quantity the decision reads and where
+its threshold sits, not how much of the data was affected.**
+
+**The corollary that costs money.** A correction is cheap to skip precisely when the contaminated
+figure looks GOOD, because a good number attracts no scrutiny and re-running it can only lose you the
+result. Here the contaminated figure was the fourth-best in a sixteen-config programme. **The runs most
+worth re-grading are the ones you would least like to lose.**
+
+**And the same defect sits one row away, unruled.** `output_icg_cfg1/trade_log.csv` carries 23 empty
+`signals_at_entry` of 373 (6.2%, above the 5% threshold at `backtest/engine/backtest.py:87`), and
+`output_audit/output_icg_cfg1_free_levels.json` already grades its production baseline on the 350 clean
+fires at `ci_lo` **-0.043** against the published **-0.087**. That is S6-B2605a, and this entry is the
+evidence for it rather than an argument from principle.
+
+**Compliance failure against CHECKLIST item 270 in the same turn**, separately: I wrote that cfg1 is
+*the baseline every other config is measured against* having read the sixteen Table C rows and the
+sixteen free-level artifacts - not every consumer of that figure in the repo. The defensible statement
+is narrower: cfg1 is the production-default row and each of the other fifteen varies one parameter from
+it. `scan_partial_read` caught it.
+
+**Mechanisms.** Detection of the general rule is JUDGMENT-ONLY - no scan knows which threshold a given
+figure will be read against. Durability is mechanised: the SKILL row plus
+`test_b2609_a_contamination_correction_can_change_a_sign`, which pins the rule AND the measured
+reversal so the entry cannot outlive its evidence.

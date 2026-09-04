@@ -33463,3 +33463,47 @@ def test_b2608_a_drafting_marker_in_a_queue_row_is_refused():
         assert pf.check_queue_row_is_not_a_draft() == []
     finally:
         pf.get_staged_added_lines = real
+
+
+def test_b2609_a_contamination_correction_can_change_a_sign():
+    """L766: the size of a contamination predicts nothing about its effect.
+
+    MEASURED 2026-09-04: span100 graded best is_ci_lo +0.062 with 83.7% of its
+    trades priced off the 2%-of-price ATR proxy, and -0.078 on the rerun under
+    the fixed engine. A ci_lo is read for one bit - above zero or not - so the
+    perturbation was total even though the ranking barely moved.
+
+    Detection is JUDGMENT-ONLY (no scan knows which threshold a figure will be
+    read against), so this pins DURABILITY plus the live evidence, so the rule
+    cannot outlive the measurement it rests on.
+    """
+    import json as _json
+
+    root = Path(__file__).parent.parent.parent
+    skill = (root / ".claude" / "skills" / "execution-discipline"
+             / "SKILL.md").read_text(encoding="utf-8", errors="replace")
+    assert "ASK WHICH QUANTITY THE DECISION READS" in skill, \
+        "L766's rule is missing from the tripwire table"
+    assert "L766" in skill
+
+    # the evidence: the two cubes still disagree in SIGN, and the clean one is
+    # the one produced under the fixed engine
+    contaminated = root / "output_icg_span100_span100" / "trade_log.csv"
+    clean = root / "output_icg_span100_rerun_span100" / "trade_log.csv"
+    if not (contaminated.is_file() and clean.is_file()):
+        import pytest as _pytest
+        _pytest.skip("span100 cubes not on this machine")
+
+    import pandas as _pd
+    for path, want_empty in ((contaminated, True), (clean, False)):
+        s = _pd.read_csv(path, low_memory=False,
+                         usecols=["signals_at_entry"])["signals_at_entry"].astype(str)
+        share = float(s.isin(["{}", "", "nan", "None"]).mean())
+        if want_empty:
+            assert share > 0.05, (
+                f"{path.parent.name} no longer shows the contamination that "
+                f"produced L766 (empty share {share:.3f})")
+        else:
+            assert share <= 0.05, (
+                f"{path.parent.name} was the CLEAN rerun and now shows an empty "
+                f"share of {share:.3f} - L766's evidence has moved")
