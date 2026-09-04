@@ -4015,6 +4015,7 @@ B1736 (`#230` extension with no hook).
 **Every turn that edits CHECKLIST.md or SKILL.md must also touch
 `scripts/verify_turn_compliance.py` or `backtest/tests/test_unit.py`** - or state **PROSE-ONLY**
 and say why a mechanism is not possible. Enforced by `scan_prose_only_rule()`.
+**AND A CO-OCCURRENCE TRIGGER CANNOT REPORT COVERAGE (B2592 / L760).** This item's gate fires when a turn edits a rule file and touches no test - so it protects the TRANSITION and is silent about every rule that predates the convention. MEASURED 2026-09-04: 6 of 30 tripwire rows with an L-lineage cell contain a string test_b2123 pins, a LOWER BOUND on both sides since each extractor is pattern-derived. When you rely on this item for assurance that rules are pinned, measure the population once and record the figure; the gate holds the line from that day forward and cannot say where the line is.
 
 **And the companion: a gate that checks a CATEGORY was touched does not check that every MEMBER was
 handled.** `#225` fired only when the queue was UNTOUCHED, so one ticket satisfied it while other

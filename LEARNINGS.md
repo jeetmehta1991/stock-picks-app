@@ -19502,3 +19502,36 @@ the shell does not know which of them you consider important.
 **Mechanism: none added, and none needed.** Detection is `scan_shell_substitution` (it fired);
 durability is #245's own text plus this entry. Retroactive coverage (#136): the same scan would have
 caught every one of this turn's probe instances at their own turn close, which is what it did.
+
+### L760 - A gate scoped to a CO-OCCURRENCE protects the transition, never the state
+
+**Measured 2026-09-04.** The execution-discipline tripwire table holds 30 rows carrying an L-number
+lineage cell. Extracting the fragment strings `test_b2123` pins from its own tuples and matching them
+against those rows gives **6 covered, 24 not**. Both figures are LOWER BOUNDS on coverage rather than
+verdicts - the row matcher requires the lineage cell to read `| L<digits> ` and the fragment extractor
+takes only tuples whose string sits alone on its line, so anything formatted otherwise is outside the
+count (the L757-addendum rule applied to this measurement).
+
+**Why the gap survived a gate built to prevent exactly it.** B1739 fires when a turn EDITS
+CHECKLIST.md or SKILL.md and touches no test - a CO-OCCURRENCE. A row nobody has edited since the pin
+convention existed triggers nothing, forever. The gate is not wrong; its subject is the transition,
+and I had been reading it as though its subject were the state. **A trigger of the form "changed X
+without Y" reports on turns, and a coverage question is about the population.**
+
+**The class, not the instance.** Reading their signatures, three siblings share the shape:
+`scan_skill_not_updated` (LEARNINGS touched, skill not), `scan_prose_only_rule` (docs touched, code
+not), `scan_queue_not_updated` (queue untouched in the turn). Each is correct about the turn it
+watches and silent about everything that predates it. So: **when you rely on a co-occurrence gate for
+assurance about coverage, measure the population once and record the number** - the gate will hold
+the line from that day forward and cannot tell you where the line currently is.
+
+**And the report that prompted it was itself over-reached.** I wrote that an amendment to a pinned row
+inherits none of that row's pin - verified on ONE row by mutation - as though it were a property of
+every pinned row. Compliance failure against #270; corrected to the one-row claim, with the population
+figure measured separately and labelled.
+
+**Mechanisms.** Durability of the rule: the #231 amendment plus this entry. Detection: JUDGMENT-ONLY -
+a scan can count fragments against rows (this entry's own measurement is that scan, run by hand), but
+nothing can decide which rows OUGHT to carry one, and freezing a coverage ratchet over 24 unpinned
+rows would be the tightening-over-a-backlog defect L721 records. The 24 are a candidate batch, named
+here so the number cannot be quietly forgotten, not a queued obligation.
