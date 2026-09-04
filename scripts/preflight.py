@@ -591,6 +591,49 @@ def check_duplicate_learning_numbers(paths: Iterable[Path],
             f"(highest is currently L{max(int(x) for x in nums)})."]
 
 
+# C14 (B2608 / L765): drafting markers in an APPEND-ONLY record.
+#
+# EXECUTION_QUEUE.md is read last-row-wins and never edited in place, so a
+# half-thought written into a row is permanent - correcting it costs a SECOND
+# row, and until someone reads that far the garbled figure stays quotable.
+# MEASURED: `minq8 +0.043... wait, minq8 +0.054` shipped at cd9650a36 and
+# needed B2607b to restate the band cleanly.
+#
+# The marker set is deliberately TINY. A gate over prose earns false positives
+# fast, and the cost of one here is a blocked commit on a legitimate row.
+_DRAFT_MARKERS = ("... wait", "...wait", " wait, no", " oops", " scratch that",
+                  " i mean,", " actually, no")
+
+
+def _strip_code_spans(text: str) -> str:
+    """B1738: vocabulary inside backticks is a MENTION, not a use.
+
+    Without this the gate refuses the very row that RECORDS the defect - the
+    self-reference trap this repo has hit repeatedly - so it is built in here
+    rather than bolted on after the gate blocks its own incident report.
+    """
+    return re.sub(r"`[^`]*`", " ", text)
+
+
+def check_queue_row_is_not_a_draft() -> list[str]:
+    """C14: refuse a staged EXECUTION_QUEUE.md row containing a drafting marker."""
+    violations = []
+    for f, line in get_staged_added_lines():
+        if Path(f).name != "EXECUTION_QUEUE.md":
+            continue
+        stripped = _strip_code_spans(line).lower()
+        hits = [m for m in _DRAFT_MARKERS if m in stripped]
+        if hits:
+            violations.append(
+                f"C14 QUEUE-ROW-IS-A-DRAFT | a staged EXECUTION_QUEUE.md row "
+                f"carries {hits!r}. The ledger is APPEND-ONLY: a correction "
+                f"costs a second row and the garbled text stays quotable until "
+                f"someone reads that far (L765). Restate the row before "
+                f"committing. Quoting the marker inside `backticks` is a "
+                f"mention and is not refused.")
+    return violations
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--staged", action="store_true", help="check git-staged files only")
@@ -637,6 +680,8 @@ def main() -> int:
         all_violations += check_duplicate_learning_numbers(files)
         # C13 (B2581 / L756): no line-ending rewrite
         all_violations += check_line_ending_rewrite()
+        # C14 (B2608 / L765): no drafting marker in an append-only ledger row
+        all_violations += check_queue_row_is_not_a_draft()
 
     if not all_violations:
         print("preflight: PASS - no rule violations found")

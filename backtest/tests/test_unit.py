@@ -25026,6 +25026,13 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
         # the scope still correct - rather than the heading (L548).
         ("STATE THE COUNT BOTH WAYS",
          "B2594/L761: a caveat must not silently remove a member from a count"),
+        # B2608b: the L765 row. Pins the DIAGNOSTIC - an append log cannot be
+        # edited, so the correction costs a second row - rather than the
+        # heading (L548). Added because the B2608 pyramid went RED on the
+        # orphan gate: I declined a CHECKLIST item and gave the entry no
+        # anchor at all, which is a different decision from the one I made.
+        ("DERIVE FIRST, THEN WRITE ONCE",
+         "B2608/L765: a half-thought in an append-only record is permanent"),
         # B2596: the L762 clause on the L705 row. Pins the DIAGNOSTIC - the
         # rule reads as a rule about tests and is a rule about the expression
         # - rather than the heading (L548).
@@ -25582,7 +25589,10 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # 239 -> 240 at B2596 (the L762 clause amended into the L705 row; an
     # amendment needs its own fragment or it can be deleted while the row's
     # original pin stays green - B2591's rule, second application).
-    assert len(gutted) == 240, gutted
+    # 240 -> 241 at B2608b (the L765 append-only row, added after the orphan
+    # gate refused the entry: declining a CHECKLIST item is not the same
+    # decision as giving a rule no anchor at all).
+    assert len(gutted) == 241, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -33402,3 +33412,54 @@ def test_b2606_a_refusal_on_your_path_is_not_evidence_about_another_actors_path(
     assert "def _append_landing_queue_row" in landing
     assert "paths.append(QUEUE)" in landing, \
         "the automated commit no longer stages the queue - L764's premise moved"
+
+
+def test_b2608_a_drafting_marker_in_a_queue_row_is_refused():
+    """C14 / L765: a draft written into an append-only ledger is permanent.
+
+    MEASURED: `minq8 +0.043... wait, minq8 +0.054` shipped at cd9650a36 and
+    needed a second row to restate the band.
+
+    Both directions, because a gate proved only on its must-FIRE case cannot
+    be told from one that fires on everything (L686), and the must-QUIET arm
+    here carries the self-reference case: a row DOCUMENTING the defect quotes
+    the marker in backticks and must still pass.
+    """
+    import importlib
+    import sys as _sys
+    _sys.path.insert(0, str(Path(__file__).parent.parent.parent / "scripts"))
+    pf = importlib.import_module("preflight")
+
+    real = pf.get_staged_added_lines
+
+    def _staged(pairs):
+        return lambda: pairs
+
+    try:
+        # must FIRE - the incident's own text, unquoted
+        pf.get_staged_added_lines = _staged(
+            [("EXECUTION_QUEUE.md",
+              "| **S6-X** | **EXECUTED** | P2 | minq8 +0.043... wait, minq8 +0.054 |")])
+        v = pf.check_queue_row_is_not_a_draft()
+        assert len(v) == 1 and "C14" in v[0], v
+
+        # must be QUIET - the SAME text quoted, which is how the defect gets
+        # recorded (B1738: a mention is not a use)
+        pf.get_staged_added_lines = _staged(
+            [("EXECUTION_QUEUE.md",
+              "| **S6-Y** | **EXECUTED** | P2 | the row read "
+              "`minq8 +0.043... wait, minq8 +0.054` and was restated |")])
+        assert pf.check_queue_row_is_not_a_draft() == []
+
+        # must be QUIET - an ordinary row
+        pf.get_staged_added_lines = _staged(
+            [("EXECUTION_QUEUE.md",
+              "| **S6-Z** | **EXECUTED** | P1 | minq8 is_ci_lo +0.054, minq6 +0.043 |")])
+        assert pf.check_queue_row_is_not_a_draft() == []
+
+        # must be QUIET - the marker in ANOTHER file is not this gate's business
+        pf.get_staged_added_lines = _staged(
+            [("LEARNINGS.md", "the row said ... wait, and that is the defect")])
+        assert pf.check_queue_row_is_not_a_draft() == []
+    finally:
+        pf.get_staged_added_lines = real

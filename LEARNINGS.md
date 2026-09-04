@@ -19671,3 +19671,30 @@ gate for it (`scan_unverified_structure`) is what has fired on this class before
 observations of actor A, because both are true sentences about the same gate. Durability is mechanised -
 the skill row plus `test_b2606_a_refusal_on_your_path_is_not_evidence_about_another_actors_path`, which
 asserts the rule survives in the tripwire table.
+
+### L765 - An append-only record cannot be edited, so a draft written into it is permanent
+
+**Measured 2026-09-04.** The ledger row I appended for the completed minq band read
+*`minq8 +0.043... wait, minq8 +0.054`* - me thinking aloud, committed at cd9650a36 into the record the
+owner reads. Correcting it cost a **second row** (B2607b) restating the band, because
+`EXECUTION_QUEUE.md` is append-only and read last-row-wins: editing the original in place would have
+left cd9650a36's commit message describing text that no longer existed.
+
+**Why this is not just a typo.** In an editable document a slip costs one edit. In an append log it
+costs a permanent extra row, and the garbled figure stays quotable for every reader who stops before
+the correction. **The record's durability, which is the property that makes it trustworthy, is exactly
+what makes sloppiness in it expensive.**
+
+**And the shape is specific: I wrote the row while still deriving the number.** The band's four values
+came from four different reads, and I composed the row during the last of them rather than after. A
+durable artifact is written, not drafted - derive first, then write once.
+
+**Compliance failure against no existing item.** I checked: nothing in CHECKLIST covers drafting text
+in a durable record, and I am deliberately NOT adding an item (#136) - the enforceable slice is twelve
+lines of preflight, which costs less than an item a future agent must reason about.
+
+**Mechanisms.** DETECTION: preflight C14 refuses a staged `EXECUTION_QUEUE.md` row carrying a small set
+of drafting markers, with inline-code spans stripped first (B1738) so a row RECORDING this defect is
+not refused by the rule it records - the self-reference trap built in from the start rather than bolted
+on after the gate blocks its own incident report. DURABILITY: `test_b2608_a_drafting_marker_in_a_queue_row_is_refused`,
+proved in both directions.
