@@ -220,6 +220,16 @@ def check_pyramid_stamp(paths: Iterable[Path]) -> list[str]:
     require the stamp be FRESHER than the newest staged .py mtime.
     Stamp written by backtest/tests/conftest.py pytest_sessionfinish
     only when BOTH tiers ran and passed.
+
+    B2613 (L768 / #292 ext): the freshness test covers EVERY staged file a
+    pin READS, not only non-test .py - the root canonical docs (test_b1486
+    reads the CLAUDE.md banner; test_b2526 reads LEARNINGS.md against
+    CHECKLIST.md and SKILL.md) and .claude/skills/**. MEASURED: B2612's
+    pyramid ran at 08:35, L767 was appended after it, and commit 371a6484f
+    at 08:39 shipped two RED pins this check never saw - the second instance
+    of the class pyramid_gate.py names (B2570 -> B2571). EXECUTION_QUEUE.md
+    is the one exemption: its row records the pyramid's own outcome and must
+    follow the run; C8 / C14 scan that row directly.
     """
     import json
     staged_any = [p for p in paths if p.exists()]
@@ -228,6 +238,7 @@ def check_pyramid_stamp(paths: Iterable[Path]) -> list[str]:
     py_staged = [p for p in staged_any if p.suffix == ".py"
                  and ("backtest" in p.parts or "scripts" in p.parts)
                  and "vendored" not in p.parts and "tests" not in p.parts]
+    doc_staged = [p for p in staged_any if _pin_reads(p)]
     stamp_path = REPO_ROOT / ".pyramid_stamp"
     if not stamp_path.exists():
         return ["C6 PYRAMID-STAMP | no .pyramid_stamp; every commit requires "
@@ -240,12 +251,30 @@ def check_pyramid_stamp(paths: Iterable[Path]) -> list[str]:
     if not stamp.get("green"):
         return ["C6 PYRAMID-STAMP | last full-pyramid run was RED; fix tests before commit"]
     stamp_ts = float(stamp.get("timestamp", 0))
-    stale = [str(p.relative_to(REPO_ROOT)) for p in py_staged
+    stale = [str(p.relative_to(REPO_ROOT)) for p in py_staged + doc_staged
              if p.stat().st_mtime > stamp_ts]
     if stale:
-        return [f"C6 PYRAMID-STAMP | staged .py modified AFTER last green pyramid: "
-                f"{stale[:5]}; re-run the full pyramid"]
+        return [f"C6 PYRAMID-STAMP | staged file(s) a pin reads modified AFTER "
+                f"last green pyramid: {stale[:5]}; re-run the full pyramid "
+                f"(L768: the pyramid vouches for the tree it measured)"]
     return []
+
+
+# B2613 (L768): the files whose content a pyramid pin reads, beyond .py.
+# Kept as a function so the pin and the check share one definition.
+C6_QUEUE_EXEMPT = "EXECUTION_QUEUE.md"
+
+
+def _pin_reads(p: Path) -> bool:
+    """True for a staged root *.md (except the queue) or a .claude/skills file."""
+    try:
+        rel = p.relative_to(REPO_ROOT)
+    except ValueError:
+        return False
+    parts = rel.parts
+    if len(parts) == 1 and p.suffix == ".md" and p.name != C6_QUEUE_EXEMPT:
+        return True
+    return len(parts) >= 3 and parts[0] == ".claude" and parts[1] == "skills"
 
 
 # C7 banned patterns: (rule-id, compiled regex, path-scope substring, message)

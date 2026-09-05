@@ -12,7 +12,9 @@ was previously a habit enforced in code:
      including the OPEN-TRADE-DROP caveat below).
   2. PRELAUNCH GATE per arm - non-zero = the arm never launches (the
      launch_sweep.py contract, reused not re-implemented).
-  3. CHUNKED-RESUME LEGS under the owner's 3h local cap: each leg runs
+  3. CHUNKED-RESUME LEGS under the owner's local cap (OWNER_LOCAL_CAP_HOURS
+     in prelaunch_gate.py, the one constant the gate enforces; B2613 stopped
+     this file retyping the retired 3h figure): each leg runs
      with --max-run-hours <leg_cap>; a leg that checkpoints out is
      resumed with --resume-from-checkpoint on the same output dir until
      the cube exists. COMPLETION = the cube file exists (written only
@@ -57,6 +59,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "scripts"))
 from producer_variant_table import launch_refusals  # noqa: E402  (B2578 launch gate)
+from prelaunch_gate import OWNER_LOCAL_CAP_HOURS  # noqa: E402  (B2613 S6-B2612g)
 RATE_S_PER_TICKER_DAY = 0.2613   # canonical, B2021-bracketed end to end
 
 
@@ -117,7 +120,7 @@ def build_manifest(spec: dict, arm: dict, out_dir: Path, sha: str) -> Path:
         "wall_clock_projection_basis": (
             f"{RATE_S_PER_TICKER_DAY} s/ticker-day x {len(tickers)}t x "
             f"{days}d; chunked at {spec['leg_cap_hours']}h legs under the "
-            "owner's 3h local cap"),
+            f"owner's {OWNER_LOCAL_CAP_HOURS:g}h local cap"),
         # B2174: spec passthrough for the drift waiver. Hourly owner updates
         # are commits, commits move HEAD, and the sha half of drift_check
         # would refuse every resume leg after the first report. The waiver is
@@ -128,7 +131,10 @@ def build_manifest(spec: dict, arm: dict, out_dir: Path, sha: str) -> Path:
             {"risk": "open trades dropped at chunk boundaries (B1076)",
              "status": "DISCLOSED - leg count recorded per arm; the auction "
                        "box runs single-piece and will not carry this"},
-            {"risk": "3h local cap", "status": f"GATED - leg cap "
+            # B2613 (S6-B2612g): the cap is READ from the constant the gate
+            # enforces (prelaunch_gate.py OWNER_LOCAL_CAP_HOURS), not retyped -
+            # every manifest to date said '3h' against an enforced 5.0h.
+            {"risk": f"{OWNER_LOCAL_CAP_HOURS:g}h local cap", "status": f"GATED - leg cap "
              f"{spec['leg_cap_hours']}h enforced per leg"}],
     }
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -167,7 +173,7 @@ def run_arm(spec: dict, arm: dict, engine_cmd: str | None = None) -> dict:
             # - and why the N=3 concurrency figure (2.04x/arm) was measured
             # pool-OFF. Those two speedups draw on the SAME ten cores and must
             # never be multiplied: 3 pooled arms get ~3.3 cores each and the
-            # pool dividend that brings a config under the owner's 3h cap
+            # pool dividend that brings a config under the owner's local cap
             # collapses. Default stays 0 so no existing spec changes behaviour.
             "--no-walk-forward",
             "--screen-pool-workers", str(spec.get("pool_workers", 0)),

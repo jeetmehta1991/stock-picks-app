@@ -19774,3 +19774,30 @@ owner re-ruled (a) at the true price 2026-09-05); the grader gap S6-B2612a; the 
 S6-B2611j + `output_audit/b2612_icg_step2_span9_spec.json`, whose `wall_clock_projection_basis` names
 both measurements. Detection is JUDGMENT-ONLY - no scan can price an option. Candidate CHECKLIST #296
 filed as S6-B2612f (three retroactive instances, #136).
+
+### L768 - A GREEN pyramid vouches for the tree it MEASURED; every edit after it, docs included, is unmeasured - and C6 tested freshness on .py only
+
+**Measured 2026-09-05.** B2612's pyramid (`output_audit/b2612_pyramid.log`, file time 08:35:16, 1297 passed,
+exit=0) ran BEFORE the batch's doc patcher appended L767 to LEARNINGS.md; commit 371a6484f at 08:39:54
+carried L767 and passed preflight C6, because `check_pyramid_stamp` (`scripts/preflight.py:214-248`)
+compared the stamp's timestamp against staged NON-TEST `.py` files and nothing else. The next pyramid
+(`output_audit/b2613_pyramid.log`: 2 failed, 1296 passed) failed two pins the shipped tree already
+violated - `test_b1486_claude_md_banner_counts_are_fresh` (the banner still said L1-L766) and
+`test_b2526_recent_learnings_are_anchored_and_l735_is_not_an_orphan` (L767 anchored in neither
+CHECKLIST.md nor SKILL.md). This is the SECOND instance of a class `scripts/pyramid_gate.py`'s own
+docstring names - *"a gate run pre-dated the doc edits it vouched for (B2570 -> test_b1486 at B2571)"* -
+and the wrapper built for it closes edits DURING the run (tree=SAME) while nothing closed edits AFTER
+it. C6's docstring says *no doc/data carve-outs* (owner decision 2a, B1267); its freshness clause carved
+out every document a pin reads.
+
+**The rule.** A pyramid measures ONE tree and the commit must be OF that tree. Any staged file a pin
+READS - the root canonical docs, `.claude/skills/**`, every `.py` - must be older than the stamp, or the
+pyramid re-runs. EXECUTION_QUEUE.md alone is exempt: its row records the pyramid's own outcome and so
+must follow the run, and preflight C8 / C14 scan that row directly. Cadence, in this order: L-entry,
+banner and skill row FIRST; then the pyramid; then the queue row and the commit. "Just docs" after a
+GREEN run is the tell - the pins that read docs are exactly the ones that go RED.
+
+**Mechanism.** C6 extended at B2613: `check_pyramid_stamp` applies the freshness test to staged root
+`*.md` (EXECUTION_QUEUE.md excepted) and `.claude/skills/**` alongside `.py`; pin
+`test_b2613_c6_freshness_covers_every_file_a_pin_reads`. Tripwire row L768 / #292 ext. Detection
+before the fix was JUDGMENT-ONLY; after it, C6 refuses the commit.

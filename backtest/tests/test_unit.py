@@ -33730,3 +33730,81 @@ def test_b2612_step2_cube_without_gate_verdicts_fails_closed(tmp_path, monkeypat
     assert inst["step2_flag"] == "--step2" and inst["preregistered_flag"] == "--preregistered-exit"
     smc = rp._tools("smc_breaker_block_long")["grade"]
     assert "step2_flag" not in smc and "preregistered_flag" not in smc
+
+
+def test_b2613_manifest_basis_names_the_enforced_cap(tmp_path, monkeypatch):
+    """S6-B2612g: every wave manifest to date read 'under the owner's 3h
+    local cap' while the gate enforces OWNER_LOCAL_CAP_HOURS = 5.0
+    (prelaunch_gate.py, ruling 2026-08-24) - the cfg1 rerun manifest said
+    'chunked at 4.0h legs under the owner's 3h local cap', a self-
+    contradiction. CLASS: a cap retyped as prose in four places instead of
+    read from the one constant the gate enforces. The manifest's basis and
+    risk strings now carry the constant, and the source no longer names the
+    retired figure."""
+    import json as _json
+    from pathlib import Path
+
+    root = _b2520_scripts_on_path()
+    import run_wave as rw
+    import prelaunch_gate as pg
+    assert rw.OWNER_LOCAL_CAP_HOURS is pg.OWNER_LOCAL_CAP_HOURS
+
+    (tmp_path / "t.txt").write_text("AAPL\nMSFT\n", encoding="utf-8")
+    monkeypatch.setattr(rw, "ROOT", tmp_path)
+    spec = {"wave": "w", "tickers_file": "t.txt", "strategy_subset": "s.txt",
+            "window": {"start": "2022-05-05", "end": "2026-05-05"},
+            "leg_cap_hours": 4.5}
+    mp = rw.build_manifest(spec, {"tag": "a", "env": {}}, tmp_path / "out", "abc")
+    m = _json.loads(Path(mp).read_text(encoding="utf-8"))
+    want = f"{pg.OWNER_LOCAL_CAP_HOURS:g}h local cap"
+    assert m["wall_clock_projection_basis"].endswith("under the owner's " + want), m
+    assert "3h" not in m["wall_clock_projection_basis"]
+    risks = [r["risk"] for r in m["obsolescence_risks"]]
+    assert want in risks and "3h local cap" not in risks, risks
+    # the source no longer retypes the figure anywhere
+    src = (root / "scripts" / "run_wave.py").read_text(encoding="utf-8")
+    assert "3h local cap" not in src.replace("retired 3h figure", "")
+    assert "owner's 3h cap" not in src
+
+
+def test_b2613_c6_freshness_covers_every_file_a_pin_reads(tmp_path, monkeypatch):
+    """L768 / #292 ext: C6's freshness test covered non-test .py only, so a
+    doc edited AFTER a GREEN pyramid committed unmeasured - B2612 shipped
+    L767 four minutes after its pyramid and two pins (test_b1486, test_b2526)
+    went RED on the committed tree. Root canonical docs and .claude/skills
+    files now fail freshness like .py; EXECUTION_QUEUE.md alone is exempt
+    (its row records the pyramid's own outcome and must follow the run)."""
+    import json
+    import os
+    import time
+    pf = _load_preflight_module()
+    monkeypatch.setattr(pf, "REPO_ROOT", tmp_path)
+    stale_ts = time.time() - 9999
+    (tmp_path / ".pyramid_stamp").write_text(
+        json.dumps({"green": True, "timestamp": stale_ts}), encoding="utf-8")
+
+    def _mk(rel):
+        p = tmp_path / rel
+        p.parent.mkdir(parents=True, exist_ok=True)
+        p.write_text("x\n", encoding="utf-8")
+        return p
+
+    # every file a pin reads, edited after the stamp -> BLOCKED
+    for rel in ("CLAUDE.md", "LEARNINGS.md", "CHECKLIST.md",
+                ".claude/skills/execution-discipline/SKILL.md"):
+        v = pf.check_pyramid_stamp([_mk(rel)])
+        assert v and "AFTER" in v[0] and rel.split("/")[-1] in v[0], (rel, v)
+    # the queue is exempt: its row must follow the pyramid it cites
+    assert pf.check_pyramid_stamp([_mk("EXECUTION_QUEUE.md")]) == []
+    # a doc in a subdirectory is not a pinned root doc
+    assert pf.check_pyramid_stamp([_mk("output_audit/note.md")]) == []
+    # an older-than-stamp doc passes: the tree the pyramid measured
+    old = _mk("LEARNINGS.md")
+    os.utime(old, (stale_ts - 60, stale_ts - 60))
+    assert pf.check_pyramid_stamp([old]) == []
+    # the shared definition, not a second list: the check and the pin agree
+    assert pf._pin_reads(tmp_path / "CLAUDE.md")
+    assert not pf._pin_reads(tmp_path / pf.C6_QUEUE_EXEMPT)
+    from pathlib import Path as _P
+    src = _P(pf.__file__).read_text(encoding="utf-8")
+    assert "py_staged + doc_staged" in src
