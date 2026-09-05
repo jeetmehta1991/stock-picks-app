@@ -33507,3 +33507,226 @@ def test_b2609_a_contamination_correction_can_change_a_sign():
             assert share <= 0.05, (
                 f"{path.parent.name} was the CLEAN rerun and now shows an empty "
                 f"share of {share:.3f} - L766's evidence has moved")
+
+
+def test_b2612_institutional_grader_emits_six_gates_on_a_step2_cube(tmp_path):
+    """S6-B2612a (owner ruling 2(i) 2026-09-05): the institutional grader has a
+    Step-2 leg. Before B2612 it counted the holdout and never graded it, so a
+    Step-2 cube landed with a Step-1-shaped grid carrying NO gate verdict and
+    the battery passed it (fail-open). Now, on a cube DECLARED Step-2:
+
+      * the exit is chosen on IS rows only by rc.select_exit (plan mechanism,
+        the tighten_breaker_block.py:338-353 precedent);
+      * that exit's holdout rows are read ONCE and the six LIVE_GATES decide;
+      * the Step-1 pre-registered exit is RECORDED beside it and a mismatch is
+        DISCLOSED, never re-rolled, never a second holdout read;
+      * NOT declared Step-2 -> the holdout is not read at all, whatever rows
+        exist (a Step-1 cube that touched the holdout is M4's finding, not a
+        second admission path).
+    Synthetic cube in CUBE_COLUMNS; no cube dir needed (L735/#166)."""
+    import numpy as _np
+    import pandas as _pd
+
+    root = _b2520_scripts_on_path()
+    import grade_institutional_config as g
+    import roster_core as rc
+
+    rng = _np.random.default_rng(2612)
+    is_days = _pd.bdate_range("2022-06-01", "2025-04-30")
+    ho_days = _pd.bdate_range("2025-05-06", "2026-04-30")
+    rows = []
+    # alpha: strong in IS (selected) and healthy on the holdout; beta: weak
+    for ex, mu_is, mu_ho in (("alpha", 3.0, 3.0), ("beta", 0.2, 0.2)):
+        for d in rng.choice(is_days, 60, replace=False):
+            rows.append((g.STRAT, "long", ex, str(_pd.Timestamp(d).date()),
+                         f"T{rng.integers(0, 40):02d}",
+                         float(mu_is + rng.normal(0, 1.0)), int(rng.integers(3, 15))))
+        for d in rng.choice(ho_days, 30, replace=False):
+            rows.append((g.STRAT, "long", ex, str(_pd.Timestamp(d).date()),
+                         f"T{rng.integers(0, 40):02d}",
+                         float(mu_ho + rng.normal(0, 1.0)), int(rng.integers(3, 15))))
+    csv = tmp_path / "trade_exit_detail.csv"
+    _pd.DataFrame(rows, columns=rc.CUBE_COLUMNS).to_csv(csv, index=False)
+    config = {"P4_min_consecutive_quarters": 4, "P5_growth_lookback_quarters": 4,
+              "P6_growth_multiple": 1.1, "P9_span": 9}
+    admit = {"min_committed_growth": 3, "fallback_min_increased": 5}
+
+    # (1) declared Step-2, pre-registered exit differs from the IS selection
+    doc = g.grade(csv, config, admit, min_n=10, step2=True,
+                  preregistered_exit="beta")
+    s2 = doc["step2"]
+    assert s2["holdout_read"] is True and s2["holdout_rows"] == 60, s2
+    assert s2["selected_exit"] == "alpha", s2
+    assert s2["is_stats"]["n"] == 60 and s2["is_stats"]["exits_effective"] == 2, s2
+    assert s2["holdout_n"] == 30 and s2["full_period_n"] == 90, s2
+    assert isinstance(s2["gates"], dict) and set(s2["gates"]) == set(rc.LIVE_GATES), s2
+    assert s2["verdict"] in ("PASS", "FAIL") and s2["gates_passed"] == sum(
+        s2["gates"].values()), s2
+    assert s2["gates"]["min_trades_holdout"] is True, "30 >= 15 holdout floor"
+    assert s2["gates"]["min_trades_full_period"] is True, "90 >= 75 full-period floor"
+    assert s2["preregistered_exit"] == "beta" and s2["mismatch"] is True, s2
+    assert "NOT evaluated on the holdout" in s2["mismatch_disclosure"], s2
+    if s2["verdict"] == "PASS":
+        assert s2["margin"] == rc.qualifier_margin(s2["sharpe"])
+    # the per-exit Step-1 block is unchanged beside it
+    assert doc["results_n_exits"] == 2 and doc["step1_ranking"][0]["exit"] == "alpha"
+
+    # (2) declared Step-2, pre-registered exit MATCHES -> mismatch False
+    s2b = g.grade(csv, config, admit, min_n=10, step2=True,
+                  preregistered_exit="alpha")["step2"]
+    assert s2b["mismatch"] is False and "mismatch_disclosure" not in s2b, s2b
+    assert s2b["gates"] == s2["gates"] and s2b["sharpe"] == s2["sharpe"]
+
+    # (3) NOT declared -> the holdout is not read, gates None, verdict says so
+    s1 = g.grade(csv, config, admit, min_n=10)["step2"]
+    assert s1["holdout_read"] is False and s1["gates"] is None, s1
+    assert s1["verdict"] == "NOT_GRADED" and "M4_holdout_touch" in s1["reason"], s1
+    assert s1["selected_exit"] is None and s1["holdout_rows"] == 60, s1
+
+    # (4) declared on a cube with NO holdout rows (the cfg1 rerun shape)
+    _pd.DataFrame([r for r in rows if r[3] < "2025-05-05"],
+                  columns=rc.CUBE_COLUMNS).to_csv(csv, index=False)
+    s0 = g.grade(csv, config, admit, min_n=10, step2=True)["step2"]
+    assert s0["verdict"] == "NO_HOLDOUT_ROWS" and s0["holdout_read"] is False, s0
+    assert s0["gates"] is None and s0["holdout_rows"] == 0, s0
+
+    # (5) the CLI declares both flags (MECHANISM-EXISTENCE, #224)
+    src = (root / "scripts" / "grade_institutional_config.py").read_text(encoding="utf-8")
+    assert '"--step2"' in src and '"--preregistered-exit"' in src
+
+
+def test_b2612_step2_cube_without_gate_verdicts_fails_closed(tmp_path, monkeypatch):
+    """S6-B2612a, the battery side (L642: a guard fails CLOSED on the absent
+    input). The B2579 generic adapter's step 2 was `exit 0 and grid exists` -
+    a Step-2 cube whose grader wrote a Step-1-shaped grid (no gate verdict)
+    PASSED, and step 8 wrote 'PASS rows are the admission candidates' over a
+    grid with nothing to admit. Now, on a Step-2 cube:
+
+      * the grader is TOLD the step (`--step2`) and handed the spec arm's
+        pre-registered exit (`--preregistered-exit`) when its tools block
+        declares the flags (institutional does; tighten_breaker_block does
+        not and is run exactly as before);
+      * a grid with NO gate verdict FAILS step 2, closed;
+      * a `step2` block with a gates dict, or any result row carrying gates
+        (the smc grid shape), PASSES;
+      * a Step-1 cube is untouched - the B2579 command pin stays byte-exact."""
+    import importlib.util
+    import json as _json
+    import types
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parents[2]
+    spec = importlib.util.spec_from_file_location(
+        "run_postconfig_b2612", root / "scripts" / "run_postconfig.py")
+    rp = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(rp)
+
+    (tmp_path / "output_audit").mkdir()
+    monkeypatch.setattr(rp, "ROOT", tmp_path)
+    monkeypatch.setattr(rp, "spot_summary", lambda p: "50 agree / 0 disagree")
+    cube = tmp_path / "output_icg_step2_fake_step2_fake"
+    cube.mkdir()
+    params = {"min_consecutive_quarters": 4, "growth_lookback_quarters": 4,
+              "growth_multiple": 1.1, "ema_span": 9}
+    step2_manifest = {"window": {"start": "2022-05-05", "end": "2026-05-05"},
+                      "arms": [{"env": {"STRAT_EMA_SPAN": "9"},
+                                "preregistered_exit": "regime_flip"}]}
+    six = {"pooled_sharpe": False, "profit_factor": True, "sortino": True,
+           "psr": True, "min_trades_holdout": True, "min_trades_full_period": True}
+    seen = []
+
+    def make_run(grid_doc):
+        def fake_run(cmd, env_extra=None):
+            cmd = [str(c) for c in cmd]
+            seen.append(cmd)
+            for i, c in enumerate(cmd):
+                if c == "--out":
+                    doc = grid_doc if "grade_institutional_config" in " ".join(cmd) else {}
+                    if "spot_check_institutional" in " ".join(cmd):
+                        doc = {"precompute_dir": "data_prefetch/derived/institutional_persistence_t1a"}
+                    Path(cmd[i + 1]).write_text(_json.dumps(doc), encoding="utf-8")
+            return types.SimpleNamespace(returncode=0, stdout="[PASS] ok", stderr="")
+        return fake_run
+
+    # (a) Step-2 cube, Step-1-shaped grid -> step 2 FAILS closed
+    monkeypatch.setattr(rp, "_run", make_run({"per_exit": [], "step1_ranking": []}))
+    results, notes, grid_out, _ = rp.run_institutional(cube, params, step2_manifest, step=2)
+    by = {n: (s, m) for n, s, m in results}
+    assert by["step2_grade_auto"][0] == "FAIL", by["step2_grade_auto"]
+    assert "NO gate verdict" in by["step2_grade_auto"][1], by["step2_grade_auto"]
+    assert "fail closed" in by["step2_grade_auto"][1]
+    assert notes["2_grade_with_config_params"][0] == "FAIL", notes
+    gcmd = [c for c in seen if "grade_institutional_config" in " ".join(c)][0]
+    assert gcmd[2:] == ["--cube", str(cube), "--min-consecutive-quarters", "4",
+                        "--growth-lookback-quarters", "4", "--growth-multiple", "1.1",
+                        "--span", "9", "--min-n", "10", "--step2",
+                        "--preregistered-exit", "regime_flip", "--out", str(grid_out)], gcmd
+
+    # (a2) the step is DERIVED from the manifest when the caller passes none
+    seen.clear()
+    results, _, _, _ = rp.run_institutional(cube, params, step2_manifest)
+    by = {n: (s, m) for n, s, m in results}
+    assert by["step2_grade_auto"][0] == "FAIL", "derive_step must say 2 for a 4-year window"
+    assert "--step2" in [c for c in seen if "grade_institutional_config" in " ".join(c)][0]
+
+    # (b) a step2 block that graded NOTHING (declared, but no holdout rows) fails
+    seen.clear()
+    monkeypatch.setattr(rp, "_run", make_run(
+        {"per_exit": [], "step2": {"holdout_read": False, "gates": None,
+                                   "verdict": "NO_HOLDOUT_ROWS",
+                                   "reason": "declared Step-2 but the cube has no rows"}}))
+    results, _, _, _ = rp.run_institutional(cube, params, step2_manifest, step=2)
+    by = {n: (s, m) for n, s, m in results}
+    assert by["step2_grade_auto"][0] == "FAIL" and "NO_HOLDOUT_ROWS" in by["step2_grade_auto"][1]
+
+    # (c) a step2 block with the six gates -> PASS, and step 8 names the verdict
+    seen.clear()
+    grid = {"per_exit": [{"exit": "alpha", "rank": 1, "is_ci_lo": 0.1, "is_sharpe": 0.4,
+                          "fires": 100, "admit": {"verdict": "RANKED"}}],
+            "step2": {"holdout_read": True, "selected_exit": "alpha", "gates": dict(six),
+                      "verdict": "FAIL", "holdout_n": 30, "full_period_n": 90,
+                      "sharpe": 0.767, "preregistered_exit": "regime_flip",
+                      "mismatch": True}}
+    monkeypatch.setattr(rp, "_run", make_run(grid))
+    results, notes, _, _ = rp.run_institutional(cube, params, step2_manifest, step=2)
+    by = {n: (s, m) for n, s, m in results}
+    assert by["step2_grade_auto"][0] == "PASS", by["step2_grade_auto"]
+    assert "Step-2 gate verdict present" in by["step2_grade_auto"][1]
+    assert notes["2_grade_with_config_params"][0] == "DONE"
+    line = rp.verdict_from_grid(grid, 2)
+    assert "Step-2 admission on the IS-selected exit alpha" in line, line
+    assert "holdout n 30 of full-period 90" in line and "5 of 6 PASS -> FAIL" in line, line
+    assert "pre-registered exit regime_flip MISMATCH - disclosed, not re-rolled" in line
+    assert "PASS rows are the admission candidates" not in line
+    grid["step2"]["mismatch"] = False
+    assert "pre-registered exit regime_flip matches" in rp.verdict_from_grid(grid, 2)
+
+    # (d) the smc grid shape - rows carrying gates - passes the same check
+    ok, why = rp.grid_step2_graded({"results": [{"gates": dict(six)}, {"verdict": "x"}]})
+    assert ok and "1 of 2 rows carry gates" in why, why
+    ok, why = rp.grid_step2_graded({"results": [{"verdict": "BELOW_POWER_FLOOR"}]})
+    assert not ok and "no `step2` block" in why, why
+
+    # (e) a Step-1 cube: no flags, no fail-closed check - the B2579 pin holds
+    seen.clear()
+    monkeypatch.setattr(rp, "_run", make_run({}))
+    step1_manifest = {"window": {"start": "2024-05-05", "end": "2025-05-05"},
+                      "arms": [{"env": {"STRAT_EMA_SPAN": "9"}}]}
+    results, _, grid_out, _ = rp.run_institutional(cube, params, step1_manifest)
+    by = {n: (s, m) for n, s, m in results}
+    assert by["step2_grade_auto"][0] == "PASS", by["step2_grade_auto"]
+    gcmd = [c for c in seen if "grade_institutional_config" in " ".join(c)][0]
+    assert "--step2" not in gcmd and "--preregistered-exit" not in gcmd, gcmd
+    assert gcmd[-2:] == ["--out", str(grid_out)]
+    # and a Step-1 arm that pre-registered an exit still records it (no step flag)
+    seen.clear()
+    step1_manifest["arms"][0]["preregistered_exit"] = "regime_flip"
+    rp.run_institutional(cube, params, step1_manifest)
+    gcmd = [c for c in seen if "grade_institutional_config" in " ".join(c)][0]
+    assert "--step2" not in gcmd and gcmd[-4:-2] == ["--preregistered-exit", "regime_flip"], gcmd
+
+    # (f) the institutional tools block declares both flags; smc declares neither
+    inst = rp._tools("institutional_committed_growth_long")["grade"]
+    assert inst["step2_flag"] == "--step2" and inst["preregistered_flag"] == "--preregistered-exit"
+    smc = rp._tools("smc_breaker_block_long")["grade"]
+    assert "step2_flag" not in smc and "preregistered_flag" not in smc

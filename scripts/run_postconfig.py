@@ -452,29 +452,88 @@ def _sub_env(arm_env: dict, blk: dict) -> dict:
     return {**arm_env, "PYTHONPATH": pp} if pp else dict(arm_env)
 
 
+def preregistered_exit(manifest: dict) -> str | None:
+    """B2612: the exit the spec arm pre-registered at Step 1 (arm key
+    `preregistered_exit`), or None. Recorded beside the grader's own
+    selection; never a selector."""
+    arm, _ = _arm0(manifest)
+    v = arm.get("preregistered_exit")
+    return str(v) if v else None
+
+
+def grid_step2_graded(grid: dict) -> tuple[bool, str]:
+    """B2612 (S6-B2612a, L642): did the grader actually grade the holdout?
+
+    True when the grid carries a Step-2 gate verdict: a `step2` block whose
+    `gates` is a dict (the institutional grader), or any result row carrying
+    a `gates` dict (tighten_breaker_block's per-combination rows). A Step-2
+    cube whose grid has neither was graded Step-1-shaped - before this check
+    the battery passed it and step 8 wrote 'PASS rows are the admission
+    candidates' over a grid that had no PASS row to offer."""
+    s2 = grid.get("step2")
+    if isinstance(s2, dict) and isinstance(s2.get("gates"), dict):
+        return True, f"step2 block: {s2.get('verdict')} on {s2.get('selected_exit')}"
+    rows = [r for r in (grid.get("results") or [])
+            if isinstance(r, dict) and isinstance(r.get("gates"), dict)]
+    if rows:
+        return True, f"{len(rows)} of {len(grid.get('results') or [])} rows carry gates"
+    if isinstance(s2, dict):
+        return False, (f"step2 block graded nothing: {s2.get('verdict')} - "
+                       f"{str(s2.get('reason') or '')[:120]}")
+    return False, ("no `step2` block and no result row carries `gates` - the "
+                   "grader has no Step-2 leg, or nothing reached the holdout floor")
+
+
 def run_family(fam_name: str, cube_dir: Path, p: dict,
-               manifest: dict) -> tuple[list, dict, Path, Path]:
+               manifest: dict, step: int | None = None) -> tuple[list, dict, Path, Path]:
     """Steps 2 (grade + optional reproduction-gated free levels), 4 (spot
     check, window + precompute-dir check when the contract says so) and 7
     (engine anchors) for ANY family, from its tools block. Every subprocess
-    runs under the landed arm's env (B2576)."""
+    runs under the landed arm's env (B2576). `step` is the battery's derived
+    step (main passes it); None derives it from the manifest alone."""
     spec, tools = SPECS[fam_name], _tools(fam_name)
     results, notes = [], {}
     arm_env = _arm_env(manifest)          # B2576: every subprocess runs armed
     grid_out = ROOT / "output_audit" / f"{cube_dir.name}_grid_auto.json"
     spot_out = ROOT / "output_audit" / f"{cube_dir.name}_spot_check.json"
     label = " ".join(f"{k}={p[k]}" for k in tools["keys"].values())
+    if step is None:
+        step, _ = derive_step(manifest, step1_flag=False, step2_flag=False)
 
     # ---- step 2: the family grader at the manifest's own parameters
     gb = tools["grade"]
+    # B2612: a grader whose tools block declares the flags is TOLD the step
+    # and the pre-registered exit; one that does not (tighten_breaker_block
+    # grades whatever holdout it finds) is run as before.
+    pre = preregistered_exit(manifest)
+    s2_args: list[str] = []
+    if step == 2 and gb.get("step2_flag"):
+        s2_args.append(str(gb["step2_flag"]))
+    if pre and gb.get("preregistered_flag"):
+        s2_args += [str(gb["preregistered_flag"]), pre]
     g = _run([sys.executable, str(ROOT / "scripts" / gb["script"]),
               "--cube", _cube_arg(cube_dir, gb), *_flag_args(gb, tools, p),
-              *list(gb.get("extra") or []), "--out", str(grid_out)],
+              *list(gb.get("extra") or []), *s2_args, "--out", str(grid_out)],
              _sub_env(arm_env, gb))
     ok2 = g.returncode == 0 and grid_out.exists()
+    why2 = ""
+    if ok2 and step == 2:
+        # B2612 (S6-B2612a): a Step-2 cube's grid MUST carry a gate verdict;
+        # a Step-1-shaped grid on a Step-2 cube fails step 2 CLOSED (L642) -
+        # the old fail-open path graded the holdout of nothing and passed.
+        try:
+            _grid = json.loads(grid_out.read_text(encoding="utf-8")) or {}
+        except (OSError, ValueError) as exc:
+            _grid, why2 = {}, f"grid unreadable: {exc!r}"
+        if not why2:
+            graded, why2 = grid_step2_graded(_grid)
+            ok2 = bool(graded)
+            why2 = ("Step-2 gate verdict present: " if graded else
+                    "Step-2 cube with NO gate verdict (fail closed, L642): ") + why2
     results.append(("step2_grade_auto", "PASS" if ok2 else "FAIL",
                     f"exit {g.returncode}; {label} -> {grid_out.name}"
-                    + ("" if ok2 else f"; {_tail(g)[:160]}")))
+                    + (f"; {why2[:200]}" if why2 else "")
+                    + ("" if ok2 or why2 else f"; {_tail(g)[:160]}")))
     # B2569 (owner directive 2026-09-02): a family whose band carries FREE
     # levels grades them on EVERY landing, reproduction-gated - never once at
     # strategy level (the S6-B2501/B2504 class bug). A reproduction failure
@@ -495,10 +554,11 @@ def run_family(fam_name: str, cube_dir: Path, p: dict,
     notes["2_grade_with_config_params"] = (
         ("DONE", f"{note2}: {Path(gb['script']).stem} at manifest {label} -> "
                  f"{grid_out.name}"
+                 + (f"; {why2[:160]}" if why2 else "")
                  + (f"; free levels reproduction-gated -> {free_out.name}"
                     if fb else "")) if ok2 and okf else
         ("FAIL", (f"{Path(gb['script']).stem} exit {g.returncode} at {label}: "
-                  f"{_tail(g)[:140]}" if not ok2 else
+                  f"{why2[:200] if why2 else _tail(g)[:140]}" if not ok2 else
                   f"free-levels grade exit {fl.returncode} (reproduction gate "
                   f"or grading failed): {_verdict_line(fl)[:140]}")))
 
@@ -559,7 +619,8 @@ def family_entry(fam_name: str) -> dict | None:
         return None
     tools = SPECS[fam_name]["tools"]
     return {"params": (lambda m, _f=fam_name: params_from_manifest(_f, m)),
-            "run": (lambda c, p, m, _f=fam_name: run_family(_f, c, p, m)),
+            "run": (lambda c, p, m, step=None, _f=fam_name:
+                    run_family(_f, c, p, m, step=step)),
             "single_combination": bool(tools["single_combination"])}
 
 
@@ -576,12 +637,15 @@ def _institutional_params(manifest: dict) -> tuple[dict | None, str]:
                 "growth_multiple", "ema_span"))
 
 
-def run_smc(cube_dir: Path, p: dict, manifest: dict) -> tuple[list, dict, Path, Path]:
-    return run_family("smc_breaker_block_long", cube_dir, p, manifest)
+def run_smc(cube_dir: Path, p: dict, manifest: dict,
+            step: int | None = None) -> tuple[list, dict, Path, Path]:
+    return run_family("smc_breaker_block_long", cube_dir, p, manifest, step=step)
 
 
-def run_institutional(cube_dir: Path, p: dict, manifest: dict) -> tuple[list, dict, Path, Path]:
-    return run_family("institutional_committed_growth_long", cube_dir, p, manifest)
+def run_institutional(cube_dir: Path, p: dict, manifest: dict,
+                      step: int | None = None) -> tuple[list, dict, Path, Path]:
+    return run_family("institutional_committed_growth_long", cube_dir, p, manifest,
+                      step=step)
 
 
 # DERIVED from SPECS (S6-B2573a): a strategy is a battery family exactly when
@@ -804,10 +868,32 @@ def verdict_from_grid(grid: dict, step: int) -> str:
               f"is_sharpe {t.get('is_sharpe')} fires {t.get('fires')}")
     else:
         s += "; NO ranked row (nothing cleared the power floor)"
-    s += (" - Step-1: ranking only, no admission (B1608)" if step == 1 else
-          " - Step-2: PASS rows are the admission candidates (S6-B2409: "
-          "clearing the six live gates IS qualification)")
+    if step == 1:
+        s += " - Step-1: ranking only, no admission (B1608)"
+    elif isinstance(grid.get("step2"), dict):
+        # B2612: the single-combination Step-2 verdict, with its denominators
+        s2 = grid["step2"]
+        gates = s2.get("gates") or {}
+        s += (f" - Step-2 admission on the IS-selected exit {s2.get('selected_exit')}: "
+              f"holdout n {s2.get('holdout_n')} of full-period {s2.get('full_period_n')}, "
+              f"holdout sharpe {s2.get('sharpe')}, gates {sum(bool(v) for v in gates.values())} "
+              f"of {len(rc_live_gates())} PASS -> {s2.get('verdict')}"
+              + (f" (margin {s2.get('margin')})" if s2.get('margin') is not None else "")
+              + (f"; pre-registered exit {s2.get('preregistered_exit')} "
+                 f"{'MISMATCH - disclosed, not re-rolled' if s2.get('mismatch') else 'matches'}"
+                 if s2.get("preregistered_exit") else "")
+              + ("" if isinstance(s2.get("gates"), dict) else
+                 f"; NO gate verdict ({s2.get('verdict')}) - fail closed (L642)")
+              + " (S6-B2409: clearing the six live gates IS qualification)")
+    else:
+        s += (" - Step-2: PASS rows are the admission candidates (S6-B2409: "
+              "clearing the six live gates IS qualification)")
     return s
+
+
+def rc_live_gates() -> tuple:
+    from roster_core import LIVE_GATES
+    return LIVE_GATES
 
 
 # --------------------------------------------------------------------------
@@ -948,7 +1034,8 @@ def main() -> int:
             results.append(("family_dispatch", "FAIL", fam_fail))
         else:
             results.append(("family_dispatch", "PASS", f"{fam_name}: {basis}"))
-            fr, notes, grid_out, spot_out = fam["run"](cube_dir, params, manifest)
+            fr, notes, grid_out, spot_out = fam["run"](cube_dir, params, manifest,
+                                                       step=step)
             results.extend(fr)
 
     grid: dict = {}

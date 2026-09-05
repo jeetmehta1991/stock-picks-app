@@ -244,7 +244,13 @@ fires            =  ( breaker_bullish )  AND  ( price_above_ema_200 ) [from P6]"
                                 "P5": "--growth-lookback-quarters",
                                 "P6": "--growth-multiple", "P9": "--span"},
                       "extra": ["--min-n", "10"], "pythonpath": None,
-                      "note": "AUTO (B2520/B2569)"},
+                      # B2612: the battery TELLS this grader the step (its
+                      # holdout read is by declaration) and hands it the spec
+                      # arm's pre-registered exit to record beside its own
+                      # selection; tighten_breaker_block has neither flag.
+                      "step2_flag": "--step2",
+                      "preregistered_flag": "--preregistered-exit",
+                      "note": "AUTO (B2520/B2569/B2612)"},
             "free_levels": {"script": "grade_free_levels_institutional.py"},
             "spot_check": {"script": "spot_check_institutional.py", "cube": "",
                            "flags": {"P9": "--ema-span"}, "extra": ["--n", "50"],

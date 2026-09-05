@@ -1,0 +1,43 @@
+{
+  "wave": "icg_step2_span9",
+  "tickers_file": "output_audit/r5_universe_544.txt",
+  "strategy_subset": "output_audit/_subset_institutional_committed_growth_long.txt",
+  "window": {
+    "start": "2022-05-05",
+    "end": "2026-05-05",
+    "note": "the ruled Step-2 shape (STRATEGY_OPTIMISATION_PLAN.md s11 row '2 VALIDATE'): 4 years, ALL 544 tickers, gate verdicts on the 2025-05-05 -> 2026-05-05 holdout. Same shape as output_audit/b2399_step2_sw50sp50_spec.json, the only Step-2 cube the programme has run. A 1-year holdout-only cube CANNOT evaluate min_trades_full_period (75 over the 4-year span, roster_core.py:265) and would spend the single holdout read without being able to admit - which is why S6-B2611j's first shape was withdrawn (S6-B2612b)."
+  },
+  "leg_cap_hours": 4.5,
+  "max_legs": 10,
+  "step1_cube": false,
+  "pool_workers": 6,
+  "allow_engine_drift": true,
+  "arms": [
+    {
+      "tag": "step2_span9",
+      "env": {
+        "STRAT_EMA_SPAN": "9"
+      },
+      "note": "B2612: Step-2 config 1 of the institutional_committed_growth_long waterfall on the owner's ruling 3(a) 2026-09-04 (one pre-registered holdout shot, then move on). span9 is rank-1 of the 16 b2527 Step-1 configs at is_ci_lo +0.167 / is_sharpe 0.489 / n 609 on exit regime_flip (output_audit/output_icg_span9_span9_grid_auto.json). PRE-REGISTERED CELL: span9 / regime_flip - named in S6-B2611j BEFORE any holdout row is read; the holdout is read ONCE, by the Step-2 grader leg, and reported for THIS cell only (rank-2 breakeven_plus_trail at +0.134 is 0.033 behind, below the 0.05 the B2598 lens WARNs at - disclosed, not a second shot). The four plain keys below are what the battery's _institutional_params reads (run_postconfig.py:575); the env entry is the actuator. Output dir output_icg_step2_span9_step2_span9.",
+      "min_consecutive_quarters": 4,
+      "growth_lookback_quarters": 4,
+      "growth_multiple": 1.1,
+      "ema_span": 9
+    }
+  ],
+  "obsolescence_risks": [
+    "GRADER LEG MISSING (S6-B2612a, PROPOSED-NOT-BUILT): scripts/grade_institutional_config.py:20 counts the holdout (holdout_n) but never grades it, so the landing battery would write a Step-1-shaped grid with NO gate verdicts for a Step-2 cube. The engine run and the grader fix are independent; the cube must not be graded on the holdout until the grader leg ships with its pin test. If the owner declines the grader change this cube has no admission path and must not be launched.",
+    "WALL-CLOCK: the smc Step-2 cube of the same shape measured 59993 s (16.7 h) over 4 legs at 6 workers (output_audit/b2399_step2_sw50sp50_wave_summary.json). icg costs more per ticker-day than smc: the cfg1 rerun runs 200 tickers at 4 workers at ~52 s/sim-day (run_heartbeat.json 44 days / 0.6419 h). Scaled to 544 tickers: 39.6 h unscaled at the canonical 0.2613 s/ticker-day (run_wave.py:60, which the rerun heartbeat reproduces), ~16 h only if 10-worker scaling were linear (UNVERIFIED) - a 16-40 h band over 1004 sim-days. DERIVED, not measured; the first leg's measured_rates line is the number that replaces it. Each leg is capped at 4.5 h under the owner's 5 h local rule; max_legs 10 covers the worst case (6 legs).",
+    "BOUNDARY CARRIES: every leg boundary is a resume; under the pre-fix engine b2399's three boundaries dropped 35 + 83 + 39 open trades (MEASURED, its wave summary boundary_drops) and 214 of 437 of its closed trades carry signals_at_entry={} (MEASURED, S6-B2605b) - attributed to the S6-B2512 resume-boundary class (DERIVED: cfg1's 23 empties were exactly the trades closed before its one boundary). The S6-B2512 fix (closed_trade_rows single checkpoint writer) is what must hold across 4-6 boundaries here; the cfg1 rerun's first checkpoint (8 closed / 0 empty at sim-day 27 vs the original's 8 / 8) is the only in-flight evidence so far. The landing battery's replay_atr_proxy lens reports the measured rate; above REPLAY_ATR_FALLBACK_WARN_RATE the verdict is NOT COMPARABLE and this shot is void, not re-rolled.",
+    "TABLE C INGESTION (S6-B2612e): scripts/show_table_c.py GRID_GLOB output_*_grid_auto.json already renders the b2399 Step-2 cube beside the 200x1y Step-1 configs with no window/universe column; this cube's artifact will be ingested the same way and is distinguishable only by the 'step2' in its name.",
+    "CHAIN ORDER: launched only through launch_detached.py --chain with --wait-for output_audit/icg_cfg1_rerun_wave_summary.json so it starts after the cfg1 rerun lands (the machine carries one engine at a time); run_serial_chain halts if the predecessor's status is not COMPLETE.",
+    "Engine drift is ALLOWED (allow_engine_drift): this cube deliberately runs under the S6-B2512-fixed engine, not the engine that landed span9's Step-1 cube; the landing record carries the engine hash."
+  ],
+  "wall_clock_projection_hours": 21.0,
+  "wall_clock_projection_basis": "inside the DERIVED 16-40 h band: 39.6 h unscaled from run_wave.py RATE_S_PER_TICKER_DAY 0.2613 x 544 tickers x 1004 sim-days (the rate the cfg1 rerun heartbeat reproduces at 4 workers: 0.26 s/ticker-day); ~16 h only if 10-worker scaling were linear (UNVERIFIED); smc same-shape measured 16.7 h at 6 workers. 21 h is a working midpoint, not a measurement - the first leg's measured_rates line replaces it. Over the 5 h cap as a single run by design; delivered as 4-6 resume legs of <= 4.5 h each, the same mechanism b2399 used.",
+  "budget_cap_usd": 0,
+  "projected_batch_usd": 0,
+  "calendar": "nyse_mcal",
+  "isolation": true,
+  "launch_status": "NOT LAUNCHED - owner decision pending (B2612): the ruling-3(a) shot was approved on a 'nearly free' framing that this spec's measured basis contradicts, and its grader leg does not exist yet."
+}

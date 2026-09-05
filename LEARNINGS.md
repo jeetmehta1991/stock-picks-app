@@ -19743,3 +19743,34 @@ it. `scan_partial_read` caught it.
 figure will be read against. Durability is mechanised: the SKILL row plus
 `test_b2609_a_contamination_correction_can_change_a_sign`, which pins the rule AND the measured
 reversal so the entry cannot outlive its evidence.
+
+### L767 - An OPTION's price is inherited from the plan row that defines it - open the row before pricing the option
+
+**Measured 2026-09-05.** The 2026-09-04 decision package priced option 3(a) - a pre-registered holdout
+shot for institutional_committed_growth_long - as *"costs nothing but discipline"* and *"nearly free"*,
+and the owner ruled (a) on that. The plan row that defines what a holdout read IS
+(`STRATEGY_OPTIMISATION_PLAN.md` s11 row "2 VALIDATE") gives it a shape: 4 years x all 544 tickers, six
+live gates on the holdout year - because `min_trades_full_period` (`scripts/roster_core.py:265`, 75 over
+the 4-year span) cannot be evaluated on anything shorter, and a shorter cube would spend the read-once
+holdout with no admission path. The one cube the programme has run at that shape took 59,993 s over
+4 legs (`output_audit/b2399_step2_sw50sp50_wave_summary.json`); this strategy costs ~0.26 s per
+ticker-day at 4 workers (`output_icg_cfg1_rerun_cfg1_rerun/run_heartbeat.json`: 44 sim-days in
+0.6419 h on 200 tickers), which over 544 x 1004 is 16 to 40 h in 4-9 legs depending on worker scaling.
+And the grader that would read the holdout did not exist: `scripts/grade_institutional_config.py`
+counted the holdout and never graded it (S6-B2612a, built at B2612). "Nearly free" was the price of the
+*discipline*, not of the *run*; the two were conflated because the shape was never opened. The first
+shape I then wrote into S6-B2611j (a 1-year holdout-only cube) inherited the same omission and promised
+a gate its cube could not evaluate.
+
+**The rule.** L506(b) already says an effort estimate is a quantitative claim. This is the shape that
+rule did not name: **an option's cost is inherited from the plan row that defines the option**, so the
+artifact to open is the plan row, not the prose of the package. Before pricing any option: name the
+plan row that gives it its shape, name the last artifact that ran at that shape, and name the mechanism
+that would consume its output - each EXECUTED / READ, or the option is priced UNVERIFIED. The tell is a
+price with no unit: *free*, *nearly free*, *just*, *only discipline*.
+
+**Mechanisms.** Retraction S6-B2612c; the decision re-put with the band and its basis S6-B2612d (the
+owner re-ruled (a) at the true price 2026-09-05); the grader gap S6-B2612a; the corrected shape
+S6-B2611j + `output_audit/b2612_icg_step2_span9_spec.json`, whose `wall_clock_projection_basis` names
+both measurements. Detection is JUDGMENT-ONLY - no scan can price an option. Candidate CHECKLIST #296
+filed as S6-B2612f (three retroactive instances, #136).

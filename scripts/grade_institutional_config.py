@@ -17,7 +17,17 @@ METHOD (identical to the smc grader's Step-1 leg, S6-B2409 vocabulary):
     a silent drop;
   * ranked by is_ci_lo desc then fires desc - is_ci_lo is the RANKING KEY,
     not a gate (owner ruling B1608);
-  * the holdout is counted (holdout_n) but never graded here.
+  * the holdout is counted (holdout_n) per exit and, ONLY on a cube declared
+    Step-2 (--step2, which the battery passes when run_postconfig.derive_step
+    says 2), read ONCE by grade_step2: the exit the cube's own IS selects
+    (rc.select_exit, objective gates - the tighten_breaker_block.py:338-353
+    mechanism) is evaluated on the holdout with full_period_n, and the six
+    LIVE_GATES decide PASS / FAIL (S6-B2409: clearing them IS qualification).
+    B2612 / S6-B2612a: before this leg existed a Step-2 cube was graded
+    Step-1-shaped, with NO gate verdict, and the battery passed it (fail-open).
+    A pre-registered exit (--preregistered-exit, from the spec arm) is
+    RECORDED beside the selected one; a mismatch is DISCLOSED, never re-rolled
+    and never a second holdout read (owner ruling 2(i) 2026-09-05).
 
 CONFIG KEYS follow the B2505 pinned contract (producer_variant_table.
 D_AXIS_FAMILIES["institutional_committed_growth_long"]) so Table D renders
@@ -63,8 +73,91 @@ def refuse_nonproduction(p7: int, p8: int) -> str | None:
     return None
 
 
+def grade_step2(cube, ho_rows, *, min_n: int, declared_step2: bool,
+                preregistered_exit: str | None = None) -> dict:
+    """B2612: the ONE holdout read of a Step-2 cube (owner ruling 2(i)).
+
+    The exit is chosen on IN-SAMPLE rows only by rc.select_exit (it slices
+    in_sample() itself, so the holdout cannot leak into the choice); that
+    exit's holdout rows are evaluated once, with full_period_n = its IS + HO
+    count so min_trades_full_period is a real gate (roster_core.py:265-266),
+    and the six LIVE_GATES decide. Returns a dict that ALWAYS carries
+    `holdout_read` (bool) and `gates` (dict of the six, or None) so the
+    battery can fail closed on a grid that graded nothing (L642).
+
+    Not declared Step-2 -> the holdout is NOT read, whatever rows exist:
+    a Step-1 cube that touched the holdout is M4's finding, not a second
+    admission path (the smc grader reads any holdout it finds; this one
+    grades by declaration).
+    """
+    out = {"holdout_read": False, "holdout_rows": int(len(ho_rows)),
+           "selected_exit": None, "selection": None,
+           "preregistered_exit": preregistered_exit, "mismatch": None,
+           "gates": None, "verdict": None,
+           "rule": ("S6-B2409: PASS = all six LIVE_GATES clear on the holdout of "
+                    "the IS-selected exit; FAIL otherwise; margin is a number, "
+                    "not a gate")}
+    if not declared_step2:
+        out["verdict"] = "NOT_GRADED"
+        out["reason"] = ("cube not declared Step-2 (--step2 absent) - the holdout "
+                         f"({len(ho_rows)} rows) is not read; a Step-1 cube with "
+                         "holdout rows is M4_holdout_touch's finding")
+        return out
+    if not len(ho_rows):
+        out["verdict"] = "NO_HOLDOUT_ROWS"
+        out["reason"] = ("declared Step-2 but the cube has no rows in "
+                         f"[{rc.HO_START}, {rc.HO_END}) - nothing to admit on")
+        return out
+    out["holdout_read"] = True
+    exit_pick, is_stats = rc.select_exit(cube, objective="gates", min_n=min_n)
+    out["selection"] = (f"rc.select_exit(objective='gates', min_n={min_n}) on IS "
+                        "rows only - key (n_gates, sharpe); byte-identical exits "
+                        "collapsed (S6-B2216), next_pivot_target refused for "
+                        "NPT-spanning cells (B2014/D7)")
+    out["selected_exit"] = exit_pick
+    out["is_stats"] = None if not is_stats else {
+        k: is_stats.get(k) for k in ("n", "sharpe", "ci_lo", "n_gates",
+                                     "exits_effective", "exits_collapsed",
+                                     "npt_excluded_identity_boundary")}
+    if preregistered_exit is not None:
+        out["mismatch"] = (exit_pick != preregistered_exit)
+        if out["mismatch"]:
+            out["mismatch_disclosure"] = (
+                f"the Step-1 pre-registered exit {preregistered_exit!r} is NOT "
+                f"the exit this cube's own IS selected ({exit_pick!r}); the "
+                "admission verdict is on the selected exit (plan mechanism), the "
+                "pre-registered exit is recorded here and NOT evaluated on the "
+                "holdout - one read, no re-roll (owner ruling 2(i) 2026-09-05)")
+    if exit_pick is None:
+        out["verdict"] = "NO_EXIT_SELECTABLE"
+        out["reason"] = f"no exit cleared min_n={min_n} on the IS rows"
+        return out
+    hb = ho_rows[ho_rows.exit_method == exit_pick]
+    fp_n = int((cube.exit_method == exit_pick).sum())
+    out["holdout_n"] = int(len(hb))
+    out["full_period_n"] = fp_n
+    res = rc.evaluate(hb["pnl_pct"], hb["hold_days"], min_n=min_n,
+                      full_period_n=fp_n)
+    if res is None:
+        out["verdict"] = "BELOW_POWER_FLOOR"
+        out["reason"] = (f"holdout n {len(hb)} < min_n {min_n} on {exit_pick!r} - "
+                         "the gates were not evaluable")
+        return out
+    gates = {k: bool(res["gates"][k]) for k in rc.LIVE_GATES}
+    out.update({k: res.get(k) for k in
+                ("sharpe", "sortino", "psr", "profit_factor", "payoff",
+                 "expectancy", "win_rate", "p", "ci_lo")})
+    out["gates"] = gates
+    out["gates_passed"] = int(sum(gates.values()))
+    out["verdict"] = "PASS" if all(gates.values()) else "FAIL"
+    if out["verdict"] == "PASS":
+        out["margin"] = rc.qualifier_margin(res.get("sharpe"))
+    return out
+
+
 def grade(cube_csv: Path, config: dict, admit: dict, *, min_n: int = 10,
-          top_n: int = 10, note: str = "") -> dict:
+          top_n: int = 10, note: str = "", step2: bool = False,
+          preregistered_exit: str | None = None) -> dict:
     cube = rc.load_cube(cube_csv, chunksize=500_000)
     strategies = sorted(set(cube["strategy"].astype(str).unique()))
     if strategies != [STRAT]:
@@ -119,6 +212,10 @@ def grade(cube_csv: Path, config: dict, admit: dict, *, min_n: int = 10,
         "step1_ranking": ranked[:top_n],
         "per_exit": per_exit,
         "results_n_exits": len(per_exit),
+        # B2612: the Step-2 leg - ALWAYS present so a reader (and the battery's
+        # fail-closed check) can tell "not graded" from "graded and failed".
+        "step2": grade_step2(cube, ho_rows, min_n=min_n, declared_step2=step2,
+                             preregistered_exit=preregistered_exit),
     }
 
 
@@ -135,6 +232,13 @@ def main() -> int:
     ap.add_argument("--min-n", type=int, default=10)
     ap.add_argument("--top-n", type=int, default=10)
     ap.add_argument("--note", default="")
+    ap.add_argument("--step2", action="store_true",
+                    help="B2612: declare a Step-2 cube - the holdout is read ONCE "
+                         "on the IS-selected exit and the six LIVE_GATES decide")
+    ap.add_argument("--preregistered-exit", default=None,
+                    help="B2612: the exit pre-registered at Step 1 (spec arm "
+                         "key preregistered_exit); recorded beside the selected "
+                         "exit, a mismatch is disclosed, never re-rolled")
     ap.add_argument("--out", default=None,
                     help="default output_audit/<cube dir>_grid_auto.json")
     a = ap.parse_args()
@@ -156,7 +260,8 @@ def main() -> int:
               "P6_growth_multiple": a.growth_multiple, "P9_span": a.span}
     admit = {"min_committed_growth": a.min_committed_growth,
              "fallback_min_increased": a.fallback_min_increased}
-    doc = grade(cube, config, admit, min_n=a.min_n, top_n=a.top_n, note=a.note)
+    doc = grade(cube, config, admit, min_n=a.min_n, top_n=a.top_n, note=a.note,
+                step2=a.step2, preregistered_exit=a.preregistered_exit)
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(doc, indent=1, default=float), encoding="utf-8")
     top = doc["step1_ranking"][0] if doc["step1_ranking"] else None
@@ -165,6 +270,15 @@ def main() -> int:
           + (f"best {top['exit']} is_ci_lo {top['is_ci_lo']} is_sharpe "
              f"{top['is_sharpe']} fires {top['fires']}" if top
              else "NO exit cleared the power floor"))
+    s2 = doc["step2"]
+    if s2.get("holdout_read"):
+        print(f"[STEP-2] {s2['verdict']}: exit {s2['selected_exit']} holdout_n "
+              f"{s2.get('holdout_n')} full_period_n {s2.get('full_period_n')} "
+              f"sharpe {s2.get('sharpe')} gates {s2.get('gates')}"
+              + (f"; PRE-REGISTERED {s2['preregistered_exit']} "
+                 f"mismatch={s2['mismatch']}" if s2.get('preregistered_exit') else ""))
+    else:
+        print(f"[STEP-2] {s2['verdict']}: {s2.get('reason')}")
     print(f"wrote {out}")
     return 0
 
