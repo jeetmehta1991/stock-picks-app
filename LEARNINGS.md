@@ -19575,16 +19575,18 @@ first table; the extraction that produced them was not.
 line first. Every case it names is an ASSERTION inside a pytest pin - MEASURED over the whole entry
 (LEARNINGS.md, the block from its heading to L706's): **5 of 5** in its retroactive sweep, test_b2330's
 tier check, test_b2330's `'| n |'` check, test_b2299, test_b2310 and test_b2286, with the SKILL row
-carrying one worked example and that same 2-of-5 figure. So I read it as a rule about TESTS. This was
-an extraction for a REPORT.
+carrying one worked example and its own sweep figure (2 of 5 substring assertions). So I read it as a
+rule about TESTS. This was an extraction for a REPORT. The purpose differs and nothing else does: same
+pattern, same whole-document scope, same missing selector. **A rule whose examples share one shape
+gets applied to that shape only** - the diagnosis L706, L759 and the capability-claims rule have each
+recorded, arriving here in the reporting path rather than the test path.
 
-**B2597 CORRECTION, and it belongs in this entry rather than a new one.** The sentence above first
+**B2597 CORRECTION, and it belongs in this entry rather than a new one.** The paragraph above first
 shipped as *all three of its examples*, a number I never counted, inside the paragraph diagnosing a
 defect of counting without reading. The claim's substance was right and its arithmetic was invented -
-which is the failure mode this entry is about, one level in. Compliance failure against #270. The purpose differs and nothing else does: same pattern, same whole-document scope, same
-missing selector. **A rule whose examples share one shape gets applied to that shape only** - the
-diagnosis L706, L759 and the capability-claims rule have each recorded, arriving here in the reporting
-path rather than the test path.
+which is the failure mode this entry is about, one level in. Compliance failure against #270. (B2611:
+this correction had been spliced INTO the sentence it corrected, leaving the original clause trailing
+it and its 2-of-5 figure without an antecedent; re-ordered so the sentence reads whole.)
 
 **What made it benign, and why that is not reassurance.** The two tables' cells differ in TYPE, so
 `5,6(free)` could never be mistaken for a Sharpe and the defect announced itself. That is a property of
@@ -19638,8 +19640,10 @@ original rule's pin stays green (B2591's rule, third application).
 
 ### L764 - A refusal you reproduce on YOUR path is not evidence about ANOTHER actor's path
 
-**Measured 2026-09-04.** My reporting commits - artifacts only, no ledger row - were refused three times
-by preflight's C8 queue-anchor check. I filed that as **S6-B2599a, P1, a class defect**, asserting the
+**Measured 2026-09-04.** My reporting commits - artifacts only, no ledger row - were refused twice by
+preflight's C8 queue-anchor check (B2599, B2601) and a third (B2602) pre-empted the refusal through the
+logged GIT_QUEUE_EXEMPT escape (B2611 correction: this first read *three times*; the queue rows count
+two refusals and one escape). I filed that as **S6-B2599a, P1, a class defect**, asserting the
 ENGINE's automated landing commit fails the same way, and wrote it into three commit messages. A
 council advisor disputed it and one file settled it against me:
 `scripts/postconfig_landing.py:220` defines `_append_landing_queue_row`, `commit_and_push` appends
@@ -19723,7 +19727,11 @@ worth re-grading are the ones you would least like to lose.**
 `signals_at_entry` of 373 (6.2%, above the 5% threshold at `backtest/engine/backtest.py:87`), and
 `output_audit/output_icg_cfg1_free_levels.json` already grades its production baseline on the 350 clean
 fires at `ci_lo` **-0.043** against the published **-0.087**. That is S6-B2605a, and this entry is the
-evidence for it rather than an argument from principle.
+evidence for it rather than an argument from principle. (B2611 caveat, S6-B2611b: that artifact
+predates the grader's coverage floor - 350 of 373 is 0.938, below `COVERAGE_FLOOR = 0.95` at
+`scripts/grade_free_levels_institutional.py:83` - so under the current grader the -0.043 renders
+NOT_COMPARABLE. It is a sensitivity bound, not a publishable baseline; the clean measurement is the
+B2610 rerun the owner ruled on 2026-09-04.)
 
 **Compliance failure against CHECKLIST item 270 in the same turn**, separately: I wrote that cfg1 is
 *the baseline every other config is measured against* having read the sixteen Table C rows and the

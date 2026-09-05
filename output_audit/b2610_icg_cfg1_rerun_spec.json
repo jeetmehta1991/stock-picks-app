@@ -1,0 +1,38 @@
+{
+  "wave": "icg_cfg1_rerun",
+  "tickers_file": "output_audit/_sweep_200.txt",
+  "strategy_subset": "output_audit/_subset_institutional_committed_growth_long.txt",
+  "window": {
+    "start": "2024-05-05",
+    "end": "2025-05-05",
+    "note": "the ruled Step-1 window - ends AT the holdout boundary (S6-B1605c). Identical to the original cfg1 landing so the rerun is a REPLACEMENT, not a new sample of a different period."
+  },
+  "leg_cap_hours": 4.0,
+  "max_legs": 3,
+  "step1_cube": true,
+  "pool_workers": 4,
+  "allow_engine_drift": true,
+  "arms": [
+    {
+      "tag": "cfg1_rerun",
+      "env": {},
+      "note": "B2610 RERUN of the b2527 PRODUCTION BASELINE (output_icg_cfg1, landed 2026-09-02) under the S6-B2512-fixed engine, on the owner's ruling 2026-09-04 ('1 re run'). WHY: 23 of 373 closed trades carry signals_at_entry={} (6.2%), above the 5% REPLAY_ATR_FALLBACK_WARN_RATE, so replay_atr_proxy_lens returns FAIL / NOT COMPARABLE - measured this session by running the lens against the landed cube. cfg1 landed BEFORE that lens shipped (B2574) and was dispositioned DONE 9-of-9 by a battery that did not contain the check that fails it. Its free-levels artifact already grades the same config and the same winning exit on the 350 clean fires at is_ci_lo -0.043 against the published -0.087, and correcting that inverts two of the fifteen comparisons (span50 -0.067 and lookback2 -0.075 beat -0.087 but lose to -0.043). PRECEDENT: the span100 rerun under the same fixed engine moved is_ci_lo from +0.062 to -0.078 - a SIGN change, not a magnitude change (L766). Every value here is the built-in default; no env override is applied or possible, which is what makes this the production baseline. Same four graded keys, same window, same tickers, same subset; only the engine differs (closed_trade_rows is now the single checkpoint writer + the datetime-repr rescue on read). Output dir output_icg_cfg1_rerun_cfg1_rerun.",
+      "min_consecutive_quarters": 4,
+      "growth_lookback_quarters": 4,
+      "growth_multiple": 1.1,
+      "ema_span": 200
+    }
+  ],
+  "obsolescence_risks": [
+    "The rerun is a NEW SAMPLE, not a repair: pool ordering and RNG differ, so its number will not equal -0.043 exactly. -0.043 is the free-levels re-grade on the 350 clean fires of the ORIGINAL cube and remains the sensitivity bound; this rerun is the clean measurement. Both are reported, neither is silently substituted for the other.",
+    "The 23 contaminated trades cluster in the run's opening weeks, so the original cfg1 and its clean subset are not the same WINDOW. The rerun removes that objection by covering the full window with no wipe.",
+    "If this rerun's own legs cross a resume boundary, the B2574 fix is what must hold; the landing battery's replay_atr_proxy lens will report the MEASURED rate from replay_atr_fallback.json rather than inferring it, which is the check that decides whether the rerun succeeded on its own terms.",
+    "Engine drift is ALLOWED here by design (allow_engine_drift), because the whole point is to run under a DIFFERENT engine than the original landing. The landing record carries the engine hash so the two cubes remain distinguishable."
+  ],
+  "wall_clock_projection_hours": 4.04,
+  "wall_clock_projection_basis": "the original cfg1 landing's own manifest projection, 200 tickers x 1 year pooled at 4 workers. The sixteen b2527 configs measured 7289 s to 22949 s elapsed (output_audit/icg_*_wave_summary.json), so 4.04 h sits inside that range and under the owner's 5 h local cap.",
+  "budget_cap_usd": 0,
+  "projected_batch_usd": 0,
+  "calendar": "nyse_mcal",
+  "isolation": true
+}
