@@ -33921,3 +33921,78 @@ def test_b2615_rebuild_cube_feeds_derived_atr_and_fails_closed(tmp_path, monkeyp
     with pytest.raises(ra.ATRUnresolved):
         rb.rebuild_cube(tmp_path / "tl2.csv", ohlcv_dir, tmp_path / "out2")
     assert not (tmp_path / "out2" / "trade_exit_detail_phase_1a_beta_rebuilt.csv").exists()
+
+
+# ---------------------------------------------------------------------------
+# B2618 (S6-B2548): the peer reporter's decision function, both directions
+# ---------------------------------------------------------------------------
+
+def _b2618_pr():
+    import importlib, sys
+    from pathlib import Path
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts"))
+    import peer_reporter
+    return importlib.reload(peer_reporter)
+
+
+def test_b2618_peer_reporter_decides_and_dedupes_toasts():
+    """B2618: DONE/DEAD/STALL each toast exactly once; GAP and ADVANCING never
+    toast; DEAD requires BOTH a missing heartbeat and zero engine pids (a
+    missing heartbeat beside a live engine is a GAP, not a death)."""
+    pr = _b2618_pr()
+    # DONE fires once...
+    st, body = pr.decide(True, True, 0, 0, {})
+    assert st == "DONE" and body is not None
+    # ...and is quiet after the dedupe flag is set (must-quiet arm)
+    st, body = pr.decide(True, True, 0, 0, {"done_toasted": True})
+    assert st == "DONE" and body is None
+    # DEAD needs missing hb AND no pids
+    st, body = pr.decide(False, False, 0, 0, {})
+    assert st == "DEAD" and body is not None
+    st, body = pr.decide(False, False, 0, 0, {"dead_toasted": True})
+    assert st == "DEAD" and body is None
+    # missing hb + live engine = GAP, no toast (the arm that keeps a healthy
+    # warmup from paging the owner)
+    st, body = pr.decide(False, False, 3, 0, {})
+    assert st == "GAP" and body is None
+    # STALL from progress code 2, once per episode
+    st, body = pr.decide(False, True, 4, 2, {})
+    assert st == "STALL" and body is not None
+    st, body = pr.decide(False, True, 4, 2, {"stall_toasted": True})
+    assert st == "STALL" and body is None
+    # ADVANCING never toasts
+    st, body = pr.decide(False, True, 4, 0, {})
+    assert st == "ADVANCING" and body is None
+
+
+def test_b2618_peer_reporter_sample_appends_durable_line(tmp_path, monkeypatch):
+    """B2618: one invocation appends exactly one json line to the durable
+    status file and re-arms the stall toast on ADVANCING - the reader any
+    session uses instead of a session-held pipe (L637)."""
+    import json as _json
+    import sys as _sys
+    import types
+    pr = _b2618_pr()
+    durable = tmp_path / "chain_status_durable.jsonl"
+    monkeypatch.setattr(pr, "DURABLE", durable)
+    monkeypatch.setattr(pr, "_state_path", lambda w: tmp_path / f"_st_{w}.json")
+    # fake collaborators: heartbeat exists + advancing counter, no summary
+    monkeypatch.setattr(pr, "ROOT", tmp_path)
+    (tmp_path / "cube").mkdir()
+    (tmp_path / "cube" / "run_heartbeat.json").write_text("{}", encoding="utf-8")
+    fake_wrp = types.ModuleType("watch_run_progress")
+    fake_wrp.check = lambda out_dir, stall_after=2: (0, "ADVANCING (fixture)")
+    fake_crl = types.ModuleType("classify_run_log")
+    fake_crl.live_engine_pids = lambda: {111, 222}
+    monkeypatch.setitem(_sys.modules, "watch_run_progress", fake_wrp)
+    monkeypatch.setitem(_sys.modules, "classify_run_log", fake_crl)
+    (tmp_path / f"_st_w1.json").write_text('{"stall_toasted": true}', encoding="utf-8")
+    rc = pr.sample_once("cube", "w1", "no_summary.json")
+    assert rc == 0
+    lines = [l for l in durable.read_text(encoding="utf-8").splitlines() if l.strip()]
+    assert len(lines) == 1
+    row = _json.loads(lines[0])
+    assert row["wave"] == "w1" and row["status"] == "ADVANCING"
+    # ADVANCING re-armed the stall toast for the next episode
+    st = _json.loads((tmp_path / "_st_w1.json").read_text(encoding="utf-8"))
+    assert st.get("stall_toasted") is False
