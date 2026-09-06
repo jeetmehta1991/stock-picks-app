@@ -33996,3 +33996,56 @@ def test_b2618_peer_reporter_sample_appends_durable_line(tmp_path, monkeypatch):
     # ADVANCING re-armed the stall toast for the next episode
     st = _json.loads((tmp_path / "_st_w1.json").read_text(encoding="utf-8"))
     assert st.get("stall_toasted") is False
+
+
+# ---------------------------------------------------------------------------
+# B2619 (S6-B2566): a count renders WITH its unit; the population question
+# goes through grid_population at every consumer
+# ---------------------------------------------------------------------------
+
+def test_b2619_verdict_sentence_names_the_population_via_grid_population():
+    """B2619: verdict_from_grid discriminates on grid_population's field name,
+    not on a raw `'per_exit' in grid` probe - and the two grid shapes yield
+    sentences carrying their own units (exits vs combinations)."""
+    import sys
+    from pathlib import Path
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts"))
+    import run_postconfig as rp
+    pe_grid = {"per_exit": [
+        {"exit": "a", "admit": {"verdict": "RANKED"}},
+        {"exit": "b", "admit": {"verdict": "BELOW_POWER_FLOOR"}}],
+        "min_n": 10, "is_rows": 100, "rows": 100, "holdout_rows": 0}
+    s = rp.verdict_from_grid(pe_grid, 1)
+    assert "1 of 2 exits RANKED" in s
+    combo_grid = {"results": [{"verdict": "RANKED"}, {"verdict": "ZERO_FIRES"}],
+                  "step1_ranking": []}
+    s2 = rp.verdict_from_grid(combo_grid, 1)
+    assert "2 combinations enumerated" in s2
+    # the raw probe is gone from this function's source (the helper exists to
+    # replace it); the module-level single-combination path elsewhere may
+    # legitimately read the field the helper RETURNED
+    import inspect
+    src = inspect.getsource(rp.verdict_from_grid)
+    assert '"per_exit" in grid' not in src
+
+
+def test_b2619_table_d_combo_cell_is_unit_aware_at_every_branch():
+    """B2619: all Table D row branches render _combo_cell (unit-aware), and
+    the bare len(res) cell that read 24 exits as 24 combinations is gone."""
+    from pathlib import Path
+    src = (Path(__file__).resolve().parents[2] / "scripts" /
+           "producer_variant_table.py").read_text(encoding="utf-8")
+    assert src.count('rows.append(f"| `{name}` | {_combo_cell} |') == 3
+    assert 'rows.append(f"| `{name}` | {len(res)} |' not in src
+    # and the cell logic itself keeps combinations bare while naming any
+    # other unit - asserted against the executable assignment, not prose
+    assert '_combo_cell = (str(len(res)) if _pu == "combinations"' in src
+
+
+def test_b2619_index_table_starved_cell_names_its_unit():
+    """B2619: the postconfig_doc index table's starved cell carries the
+    population unit so 0/24 reads as 0/24 exits, never 0/24 combinations."""
+    from pathlib import Path
+    src = (Path(__file__).resolve().parents[2] / "scripts" /
+           "postconfig_doc.py").read_text(encoding="utf-8")
+    assert "{starved}/{len(res)} {_pu} | " in src

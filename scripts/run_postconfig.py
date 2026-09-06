@@ -849,8 +849,12 @@ def verdict_from_grid(grid: dict, step: int) -> str:
     """Step 8: the verdict sentence names its denominators (CHECKLIST #182)."""
     res = grid.get("results") or []
     top = grid.get("step1_ranking") or []
-    if "per_exit" in grid:                       # single-combination grid
-        pe = grid["per_exit"]
+    # B2619 (S6-B2566): the population question goes through grid_population -
+    # this asked `'per_exit' in grid` directly, the raw probe the helper was
+    # written to replace, while run_family already used the helper correctly.
+    _rows, _pf, _pu = grid_population(grid)
+    if _pf == "per_exit":                        # single-combination grid
+        pe = _rows
         ranked = [r for r in pe if (r.get("admit") or {}).get("verdict") == "RANKED"]
         s = (f"{len(ranked)} of {len(pe)} exits RANKED at min-trades >= "
              f"{grid.get('min_n')} on {grid.get('is_rows')} IS rows "

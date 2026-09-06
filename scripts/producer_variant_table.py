@@ -1319,6 +1319,12 @@ def table_c(grids: dict[str, dict], root=None) -> list[str]:
     for name, g in grids.items():
         # B2521 (S6-B2520m): the declared population, not the field name.
         res, _pf, _pu = grid_population(g)
+        # B2619 (S6-B2566): the "combos" header is locked; when the population
+        # is NOT combinations the CELL names its unit, so a single-combination
+        # grid reads "1 combination (24 exits ranked)" instead of a bare 24 -
+        # the owner-found mislabel ("why is it just 24 combinations?").
+        _combo_cell = (str(len(res)) if _pu == "combinations"
+                       else f"1 combination ({len(res)} {_pu} ranked)")
         # B2181 (S6-B2176b): a pure Step-1 grid populates ONLY the IS fields
         # (holdout untouched by design post-B2136), so bucketing on the
         # holdout `sharpe` rendered graded=0 beside 89 real distinct
@@ -1423,7 +1429,7 @@ def table_c(grids: dict[str, dict], root=None) -> list[str]:
         _pb = producer_bands(name, g, root)
         if _pb:
             p_col = "; ".join(pid + "=" + cell for pid, _nm, cell in _pb)
-            rows.append(f"| `{name}` | {len(res)} | {len(no_exit)} | {len(no_sh)} | "
+            rows.append(f"| `{name}` | {_combo_cell} | {len(no_exit)} | {len(no_sh)} | "
                         f"{len(graded)} | {g.get('step1_distinct_outcomes', '-')} | "
                         f"{_measured_fmt(bands)} | {p_col} | {_measured_fmt(med)} | "
                         f"{sh} | {cl} | {combo} |")
@@ -1434,7 +1440,7 @@ def table_c(grids: dict[str, dict], root=None) -> list[str]:
         if not _smc_shaped and cfg:
             p_col = "; ".join(
                 f"{k.split('_', 1)[0]}={_fmt(v)}(fixed)" for k, v in sorted(cfg.items()))
-            rows.append(f"| `{name}` | {len(res)} | {len(no_exit)} | {len(no_sh)} | "
+            rows.append(f"| `{name}` | {_combo_cell} | {len(no_exit)} | {len(no_sh)} | "
                         f"{len(graded)} | {g.get('step1_distinct_outcomes', '-')} | "
                         f"{_measured_fmt(bands)} | {p_col} | {_measured_fmt(med)} | "
                         f"{sh} | {cl} | {combo} |")
@@ -1454,7 +1460,7 @@ def table_c(grids: dict[str, dict], root=None) -> list[str]:
         # the table - caught by rendering it. Semicolon is safe inside a
         # markdown cell.
         p_col = "; ".join(p_cells)
-        rows.append(f"| `{name}` | {len(res)} | {len(no_exit)} | {len(no_sh)} | {len(graded)} | "
+        rows.append(f"| `{name}` | {_combo_cell} | {len(no_exit)} | {len(no_sh)} | {len(graded)} | "
                     f"{g.get('step1_distinct_outcomes', '-')} | {_measured_fmt(bands)} | {p_col} | "
                     f"{_measured_fmt(med)} | {sh} | {cl} | {combo} |")
         if other:

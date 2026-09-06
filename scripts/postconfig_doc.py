@@ -439,7 +439,7 @@ def build(cubes: list[str] | None = None) -> str:
         n_closed = sum(1 for s in STEPS if is_closed(entry.get(s)))
         open_names = [s for s in STEPS if not is_closed(entry.get(s))]
         out.append(f"| {c} | {cl if cl is not None else '-'} | "
-                   f"{top.get('fires', '-')} | {starved}/{len(res)} | "
+                   f"{top.get('fires', '-')} | {starved}/{len(res)} {_pu} | "
                    f"{n_closed}/{len(STEPS)}"
                    + (f" **OPEN: {', '.join(open_names)}**" if open_names else "")
                    + " |")
