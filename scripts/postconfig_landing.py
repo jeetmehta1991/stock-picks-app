@@ -243,6 +243,20 @@ def _append_landing_queue_row(cube: str, battery_exit: int, summary: str) -> boo
         return False
 
 
+
+def _diag(stderr: str, stdout: str = "") -> str:
+    """B2620 (S6-B2580b): the first stderr line that is NOT a `warning:`,
+    else the LAST 200 characters - a diagnostic that truncates away the
+    diagnosis is worse than none (the icg_mult1.25 landing recorded 200
+    chars of CRLF warning and hid both the error and whether the
+    index.lock retry was taken)."""
+    text = (stderr or stdout or "").strip()
+    for line in text.splitlines():
+        line = line.strip()
+        if line and not line.startswith("warning:"):
+            return line[:200]
+    return text[-200:]
+
 def commit_and_push(cube: str, battery_exit: int, summary: str) -> dict:
     """Scoped commit of the AUDIT artifacts only - never a cube dir (L735 /
     CHECKLIST #166), never the landings jsonl (it is the record of what was
@@ -259,6 +273,13 @@ def commit_and_push(cube: str, battery_exit: int, summary: str) -> dict:
     # and that row is what the owner reads. Stubs could never have caught this
     # - the gate lives in a git hook, outside every mock.
     queue_row = _append_landing_queue_row(cube, battery_exit, summary)
+    if not queue_row:
+        # B2620 (S6-B2599a i): the docstring always promised this skip;
+        # the code attempted the commit anyway with QUEUE unstaged and
+        # C8 refused it (the recorded cfg1 preflight FAIL note).
+        out["note"] = ("queue row could not be appended - commit skipped "
+                       "(C8 would refuse an unstaged-queue commit)")
+        return out
     # B2574: free_levels joined the list - B2569 added the artifact to the
     # battery but not to this commit, so five landings left their
     # <cube>_free_levels.json untracked (git status 2026-09-03).
@@ -287,10 +308,14 @@ def commit_and_push(cube: str, battery_exit: int, summary: str) -> dict:
                            cwd=str(ROOT), input=msg, capture_output=True, text=True)
         if c.returncode == 0:
             break
-        if "index.lock" in (c.stderr or "") and attempt < INDEX_LOCK_RETRIES:
+        # B2620 (S6-B2580b): ANY non-zero exit retries - the observed race
+        # is transient (index.lock vs a concurrent pyramid) and the old
+        # text-match missed every phrasing but one.
+        if attempt < INDEX_LOCK_RETRIES:
             time.sleep(INDEX_LOCK_WAIT_S)
             continue
-        out["note"] = f"git commit failed: {(c.stderr or c.stdout).strip()[:200]}"
+        out["note"] = (f"git commit failed (attempt {attempt}/{INDEX_LOCK_RETRIES}): "
+                       f"{_diag(c.stderr, c.stdout)}")
         return out
     head = _git(["rev-parse", "--short", "HEAD"])
     out["committed"] = head.stdout.strip() if head.returncode == 0 else True

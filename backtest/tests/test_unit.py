@@ -34049,3 +34049,94 @@ def test_b2619_index_table_starved_cell_names_its_unit():
     src = (Path(__file__).resolve().parents[2] / "scripts" /
            "postconfig_doc.py").read_text(encoding="utf-8")
     assert "{starved}/{len(res)} {_pu} | " in src
+
+
+# ---------------------------------------------------------------------------
+# B2620 (S6-B2580b + S6-B2599a i): the landing commit path keeps its
+# diagnosis, retries any transient failure, and honors its own docstring
+# ---------------------------------------------------------------------------
+
+def _b2620_pl():
+    import importlib, sys
+    from pathlib import Path
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts"))
+    import postconfig_landing
+    return importlib.reload(postconfig_landing)
+
+
+def test_b2620_diag_keeps_the_diagnosis_not_the_warning():
+    """B2620 (S6-B2580b): the recorded note is the first NON-warning stderr
+    line; a stderr that is all warnings yields its LAST 200 chars - never the
+    first 200 (which on Windows is the CRLF warning that hid the icg_mult1.25
+    failure's actual error and its retry path). Fixture lines are joined with
+    chr(10) - no escape sequences travel through any shell layer (L638)."""
+    pl = _b2620_pl()
+    two = ("warning: in the working copy of X, LF will be replaced by CRLF"
+           + chr(10) + "fatal: Unable to create index.lock: File exists")
+    assert pl._diag(two) == "fatal: Unable to create index.lock: File exists"
+    only_warn = "warning: aaa" + chr(10) + "warning: bbb ending-tail"
+    assert pl._diag(only_warn).endswith("ending-tail")
+    assert pl._diag("", "error: from stdout") == "error: from stdout"
+
+
+def test_b2620_commit_skipped_when_queue_row_cannot_append(monkeypatch):
+    """B2620 (S6-B2599a i): when the queue row fails to append, the commit is
+    SKIPPED with a note - the docstring's promise, previously broken by
+    attempting the commit with QUEUE unstaged (C8 refused it, the recorded
+    cfg1 preflight FAIL note)."""
+    pl = _b2620_pl()
+    calls = []
+
+    def _no_git(args, **k):
+        calls.append(args)
+        raise AssertionError(f"git touched after skip: {args}")
+
+    monkeypatch.setattr(pl, "_append_landing_queue_row", lambda *a, **k: False)
+    monkeypatch.setattr(pl, "_git", _no_git)
+    out = pl.commit_and_push("cube_x", 0, "s")
+    assert out["committed"] is False and "commit skipped" in out["note"]
+    assert calls == []
+
+
+def test_b2620_commit_retries_any_nonzero_then_succeeds(monkeypatch, tmp_path):
+    """B2620 (S6-B2580b): a transient commit failure with NO index.lock text
+    still retries; the third attempt succeeding yields committed=truthy. The
+    old text-match retried only on the literal string index.lock, so any
+    other transient phrasing failed the landing commit on attempt one."""
+    import types
+    pl = _b2620_pl()
+    monkeypatch.setattr(pl, "_append_landing_queue_row", lambda *a, **k: True)
+    monkeypatch.setattr(pl, "INDEX_LOCK_WAIT_S", 0)
+    art = tmp_path / "a.json"
+    art.write_text("{}", encoding="utf-8")
+    monkeypatch.setattr(pl, "LEDGER", art)
+    monkeypatch.setattr(pl, "REPORT", art)
+    monkeypatch.setattr(pl, "AUDIT", tmp_path)
+    monkeypatch.setattr(pl, "QUEUE", art)
+    monkeypatch.setattr(pl, "ROOT", tmp_path)
+
+    def fake_git(args, **k):
+        if args[0] == "add":
+            return types.SimpleNamespace(returncode=0, stdout="", stderr="")
+        if args[0] == "diff":
+            return types.SimpleNamespace(returncode=1, stdout="", stderr="")
+        if args[0] == "rev-parse":
+            return types.SimpleNamespace(returncode=0, stdout="abc123", stderr="")
+        if args[0] == "push":
+            return types.SimpleNamespace(returncode=0, stdout="", stderr="")
+        raise AssertionError(args)
+
+    monkeypatch.setattr(pl, "_git", fake_git)
+    n = {"tries": 0}
+
+    def fake_run(cmd, **k):
+        assert cmd[:2] == ["git", "commit"], cmd
+        n["tries"] += 1
+        if n["tries"] < 3:
+            return types.SimpleNamespace(returncode=1, stdout="",
+                                         stderr="transient failure, no lock text")
+        return types.SimpleNamespace(returncode=0, stdout="", stderr="")
+
+    monkeypatch.setattr(pl.subprocess, "run", fake_run)
+    out = pl.commit_and_push("cube_x", 0, "s")
+    assert n["tries"] == 3 and out["committed"]
