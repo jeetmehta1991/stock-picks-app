@@ -210,7 +210,8 @@ def main() -> int:
     # Sanity: rows per closed trade
     n_closed = len(df_trades)
     rows_per_trade = len(trade_exit_detail) / n_closed if n_closed > 0 else 0
-    logger.info(f"Rows-per-closed-trade ratio: {rows_per_trade:.2f} (target: 26 = count(EXIT_STRATEGIES))")
+    from backtest.engine.exit_strategies import EXIT_STRATEGIES  # noqa: E402  (B2616)
+    logger.info(f"Rows-per-closed-trade ratio: {rows_per_trade:.2f} (target: {len(EXIT_STRATEGIES)} = count(EXIT_STRATEGIES); was hardcoded 26 pre-B2616)")
 
     return 0
 
