@@ -1,0 +1,54 @@
+{
+ "cube": "output_icg_step2_span9_step2_span9",
+ "step": 2,
+ "step_basis": "manifest window.end 2026-05-05 > HO_START 2025-05-05 -> Step-2 cube",
+ "family": "institutional_committed_growth_long",
+ "ts": "2026-09-06T18:55:07",
+ "lenses": [
+  {
+   "lens": "holdout_untouched",
+   "level": "INFO",
+   "evidence": "1107 of 4616 entries in the holdout (Step-2 cube: the holdout is graded separately, never ranked on)"
+  },
+  {
+   "lens": "period_concentration",
+   "level": "INFO",
+   "evidence": "max year share 0.34 (2025) over 5 years of 4616 entries; WARN > 0.6"
+  },
+  {
+   "lens": "ticker_concentration",
+   "level": "INFO",
+   "evidence": "top-5 tickers carry 0.04 of 4616 entries across 498 tickers; WARN > 0.30"
+  },
+  {
+   "lens": "selection_margin",
+   "level": "INFO",
+   "evidence": "rank-1 [breakeven_plus_trail] is_ci_lo 0.428 vs rank-2 [earnings_blackout] 0.319: margin 0.109 between exits; WARN < 0.05 (selection at noise level); Step-2 cube: the IS selection names the admission exit (ruling 2i), so a noise margin is a live risk at any sign"
+  },
+  {
+   "lens": "empty_signals_share",
+   "level": "INFO",
+   "evidence": "0 of 4616 trade_log rows carry an empty signals_at_entry (S6-B2512 class)"
+  },
+  {
+   "lens": "replay_atr_proxy",
+   "level": "INFO",
+   "evidence": "ATR proxy on 0.0% of replayed trades (<= 5%; MEASURED 0/4616 (0.0%) from replay_atr_fallback.json)"
+  },
+  {
+   "lens": "direction_consistency",
+   "level": "INFO",
+   "evidence": "directions ['long'] (one strategy, one direction expected)"
+  },
+  {
+   "lens": "spot_check_disagreements",
+   "level": "INFO",
+   "evidence": "50 agree / 0 DISAGREE / 0 skipped in output_icg_step2_span9_step2_span9_spot_check.json"
+  },
+  {
+   "lens": "min_trades_floor",
+   "level": "INFO",
+   "evidence": "4616 distinct entries; the live gates need holdout >= 15 and full-period >= 75 (applied by the grader, not here)"
+  }
+ ]
+}
