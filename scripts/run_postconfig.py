@@ -701,31 +701,36 @@ def replay_atr_proxy_lens(cube_dir: Path, empty_share: float | None) -> tuple:
 # step 5: the mechanical lens battery. Each lens returns INFO / WARN / FAIL
 # with its evidence; WARN or FAIL is a FINDING and makes step 6 OPEN.
 # --------------------------------------------------------------------------
-def selection_margin_row(rk: list, unit: str) -> tuple:
-    """The rank-1 vs rank-2 margin lens (S6-B2581b).
+def selection_margin_row(rk: list, unit: str, step: int = 1) -> tuple:
+    """The rank-1 vs rank-2 margin lens (S6-B2581b, re-cut B2621/S6-B2611a).
 
-    WARN means "the top two are within noise of each other, so which one you
-    picked is arbitrary". That reading only holds when rank-1 is a CANDIDATE.
-    MEASURED at the output_icg_mult1.25_mult1.25 landing: rank-1 and rank-2
-    both carried is_ci_lo -0.297, margin 0.000, and the resulting WARN held
-    the landing in a blocking state - a warning about choosing between two
-    exits neither of which would be chosen.
+    THE AXIS, labeled (the B2611 audit's finding): this lens informs the EXIT
+    choice inside one cube and nothing else - Step-1 admission ranks CONFIGS
+    by their best exit, so an exit tie never moves a config's score there.
 
-    Step 1 ranks and does not admit (B1608), so a negative rank-1 means the
-    selection question is not live and the row is INFO. The margin is still
-    reported either way; only the LEVEL changes, so nothing is hidden.
+    THE DISCRIMINATOR IS THE STEP, NOT THE SIGN. The old predicate (a
+    sign gate on rank-1) imported a bar the Step-1 admission rule forbids
+    (B1608: ranked list, NO gates - a negative rank-1 is still admitted).
+    Where the exit choice IS consumed - a Step-2 cube, whose own in-sample
+    selection names the ADMISSION exit (owner ruling 2(i), 2026-09-05) - a
+    noise-level margin is a live selection risk whatever the sign. Where it
+    is not (Step 1), the row is INFO with the axis stated, which also keeps
+    the S6-B2581b incident closed (the mult1.25 WARN that held a Step-1
+    landing hostage over a tie between two exits nothing would consume).
     """
     if len(rk) >= 2 and rk[0].get("is_ci_lo") is not None \
             and rk[1].get("is_ci_lo") is not None:
         r1 = float(rk[0]["is_ci_lo"])
         margin = r1 - float(rk[1]["is_ci_lo"])
-        selectable = r1 > 0
-        why = ("" if selectable else
-               f"; INFO not WARN - rank-1 is_ci_lo {r1} is not above zero, so "
-               "nothing is selectable and a narrow margin is not a selection "
-               "risk (S6-B2581b)")
+        live = step == 2
+        why = ("; Step-2 cube: the IS selection names the admission exit "
+               "(ruling 2i), so a noise margin is a live risk at any sign"
+               if live else
+               "; INFO not WARN - Step-1 admission ranks CONFIGS (exit ties "
+               "never move a config score); this lens informs only a "
+               "pre-registered exit choice (S6-B2611a)")
         return ("selection_margin",
-                "WARN" if (margin < 0.05 and selectable) else "INFO",
+                "WARN" if (margin < 0.05 and live) else "INFO",
                 f"rank-1 [{row_label(rk[0])}] is_ci_lo {rk[0]['is_ci_lo']} vs "
                 f"rank-2 [{row_label(rk[1])}] {rk[1]['is_ci_lo']}: margin "
                 f"{margin:.3f} between {unit}; WARN < 0.05 (selection at "
@@ -786,7 +791,7 @@ def lenses(cube_dir: Path, step: int, grid: dict, spot_out: Path | None) -> list
     # B2521 (S6-B2520m): the population question has ONE owner now.
     _, _pop_field, _pop_unit = grid_population(grid)
     unit = "exits" if _pop_field == "per_exit" else "outcome classes"
-    out.append(selection_margin_row(rk, unit))
+    out.append(selection_margin_row(rk, unit, step))
 
     # B2574 (S6-B2512 CAUSE FOUND): the empty share is the SYMPTOM; the
     # consequence is that the cube replay priced every such trade's exits

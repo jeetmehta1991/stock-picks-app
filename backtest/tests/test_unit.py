@@ -33268,18 +33268,23 @@ def test_b2598_selection_margin_is_info_when_nothing_is_selectable():
     def _row(ci):
         return {"is_ci_lo": ci, "exit": "breakeven_plus_trail"}
 
-    # must-FIRE: a real near-tie between two selectable candidates
+    # B2621 SUPERSEDES the sign gate (S6-B2611a): the discriminator is the
+    # STEP. A near-tie at the DEFAULT step (1) is INFO whatever the sign -
+    # exit ties never move a config score at Step-1 admission (B1608) - and
+    # the SAME tie on a Step-2 cube WARNs, because there the IS selection
+    # names the admission exit (owner ruling 2i).
     name, lvl, ev = rp.selection_margin_row([_row(0.30), _row(0.28)], "exits")
-    assert (name, lvl) == ("selection_margin", "WARN"), (name, lvl, ev)
+    assert (name, lvl) == ("selection_margin", "INFO"), (name, lvl, ev)
     assert "0.020" in ev, ev
+    _, lvl, _ = rp.selection_margin_row([_row(0.30), _row(0.28)], "exits", 2)
+    assert lvl == "WARN", lvl
 
-    # must-QUIET: the SAME margin, rank-1 not above zero - the incident
+    # must-QUIET: the SAME margin, negative pair, step 1 - the incident
     name, lvl, ev = rp.selection_margin_row([_row(-0.297), _row(-0.297)], "exits")
     assert lvl == "INFO", (lvl, ev)
-    assert "nothing is selectable" in ev, ev
     assert "0.000" in ev, ev          # the margin is still REPORTED, not hidden
 
-    # boundary: exactly zero is not above zero
+    # boundary: zero-crossing pair still INFO at step 1
     _, lvl, _ = rp.selection_margin_row([_row(0.0), _row(-0.01)], "exits")
     assert lvl == "INFO", lvl
 
@@ -34140,3 +34145,44 @@ def test_b2620_commit_retries_any_nonzero_then_succeeds(monkeypatch, tmp_path):
     monkeypatch.setattr(pl.subprocess, "run", fake_run)
     out = pl.commit_and_push("cube_x", 0, "s")
     assert n["tries"] == 3 and out["committed"]
+
+
+# ---------------------------------------------------------------------------
+# B2621 (S6-B2611a): the selection-margin lens discriminates on the STEP
+# (is the exit choice consumed?), never on the SIGN of rank-1
+# ---------------------------------------------------------------------------
+
+def test_b2621_margin_lens_discriminates_on_step_not_sign():
+    """B2621: on a Step-2 cube the IS selection names the ADMISSION exit
+    (owner ruling 2i), so a noise-level margin WARNs at any sign; on Step-1
+    an exit tie never moves a config score, so the row is INFO with the axis
+    labeled - which also keeps the S6-B2581b mult1.25 incident closed (two
+    negative exits at margin 0.000 on a Step-1 landing must NOT warn)."""
+    import sys
+    from pathlib import Path
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts"))
+    import run_postconfig as rp
+    neg_tie = [{"exit": "a", "is_ci_lo": -0.297},
+               {"exit": "b", "is_ci_lo": -0.297}]
+    # the B2581b regression case: Step-1, negative tie -> INFO (must-quiet)
+    name, level, ev = rp.selection_margin_row(neg_tie, "exits", 1)
+    assert (name, level) == ("selection_margin", "INFO")
+    assert "S6-B2611a" in ev
+    # the B2611a case: Step-2, SAME negative tie -> WARN (the sign gate the
+    # admission rule forbids is gone; the exit choice is consumed here)
+    name, level, ev = rp.selection_margin_row(neg_tie, "exits", 2)
+    assert level == "WARN" and "ruling 2i" in ev
+    # a wide margin never warns at either step
+    wide = [{"exit": "a", "is_ci_lo": 0.30}, {"exit": "b", "is_ci_lo": 0.10}]
+    assert rp.selection_margin_row(wide, "exits", 2)[1] == "INFO"
+    assert rp.selection_margin_row(wide, "exits", 1)[1] == "INFO"
+    # default step keeps the pre-B2621 caller shape safe (INFO on ties)
+    assert rp.selection_margin_row(neg_tie, "exits")[1] == "INFO"
+    # and the retired sign gate is gone as an executable line (the docstring
+    # may describe it; match the code shape, L748)
+    import inspect
+    src_lines = inspect.getsource(rp.selection_margin_row).splitlines()
+    assert not any(l.strip() == "selectable = r1 > 0" for l in src_lines)
+    # the live call site passes the step through
+    mod_src = (Path(rp.__file__).read_text(encoding="utf-8"))
+    assert "selection_margin_row(rk, unit, step)" in mod_src
