@@ -19,6 +19,14 @@ How it works:
 Post-run, run scripts/verify_batch_completion.py to confirm Gate 1 EQUAL-count
 verification passes.
 
+B2615 (S6-B2611e): ATR comes from signals_at_entry or is DERIVED from the
+reloaded OHLCV (scripts/replay_atr.py); a trade with neither makes the script
+exit 1 before writing - the former `entry_price * 0.02` proxy was silent.
+The OHLCV window is loaded from `--start-date` minus `--atr-warmup-days`
+(default 365: the engine's own 1y warmup, config.DATA_LOAD_START), so the
+Wilder EWM seeds on the same first bar the engine's producer saw and the
+derived value reproduces the recorded one.
+
 Usage:
   python scripts/recompute_cube_from_trade_log.py --batch-dir output_batch_A_150
 """
@@ -65,6 +73,10 @@ def main() -> int:
     ap.add_argument("--batch-dir", required=True)
     ap.add_argument("--start-date", default="2022-05-05", help="OHLCV cache window start")
     ap.add_argument("--end-date", default="2026-05-05", help="OHLCV cache window end")
+    ap.add_argument("--atr-warmup-days", type=int, default=365,
+                    help="B2615: calendar days loaded BEFORE --start-date (365 = "
+                         "the engine's DATA_LOAD_START warmup) so a derived ATR "
+                         "seeds its EWM on the engine's first bar")
     args = ap.parse_args()
 
     batch_dir = Path(args.batch_dir)
@@ -85,8 +97,8 @@ def main() -> int:
     # 2. Load OHLCV cache via bulk fetch
     logger.info(f"Loading OHLCV for {len(unique_tickers)} tickers ({args.start_date} -> {args.end_date})")
     from backtest.data.cache import get_ohlcv_bulk
-    from datetime import date
-    start = date.fromisoformat(args.start_date)
+    from datetime import date, timedelta
+    start = date.fromisoformat(args.start_date) - timedelta(days=args.atr_warmup_days)
     end = date.fromisoformat(args.end_date)
     ohlcv_dict = get_ohlcv_bulk(unique_tickers, start, end)
     loaded = sum(1 for t in unique_tickers if ohlcv_dict.get(t) is not None and not ohlcv_dict[t].empty)
@@ -96,6 +108,9 @@ def main() -> int:
     from backtest.engine.exit_context import build_entry_context
     from backtest.engine.exit_strategies import run_exit_comparison
     from datetime import datetime as _dt
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    import replay_atr  # noqa: E402  (B2615 S6-B2611e)
+    atr_counters = replay_atr.new_counters()
 
     # For SPY reference (needed by build_entry_context)
     spy_df = ohlcv_dict.get("SPY")
@@ -124,8 +139,12 @@ def main() -> int:
                     sig = _json.loads(sig.replace("'", '"')) if sig else {}
                 except Exception:
                     sig = {}
-            atr = (sig.get("atr", row["entry_price"] * 0.02)
-                   if isinstance(sig, dict) else row["entry_price"] * 0.02)
+            # B2615 (S6-B2611e): signals_at_entry, else derived from df_full;
+            # None is counted and fails the run below - never a proxy.
+            atr = replay_atr.resolve_atr(sig, row["entry_price"], df_full,
+                                         entry_date, atr_counters)
+            if atr is None:
+                continue
 
             entry_context = build_entry_context(
                 row=row,
@@ -159,6 +178,13 @@ def main() -> int:
         if idx % 20 == 0 or idx == total_strategies:
             logger.info(f"Progress: {idx}/{total_strategies} strategies processed; "
                         f"exit_frames={len(exit_frames)} trade_detail_frames={len(trade_detail_frames)}")
+
+    logger.info(replay_atr.report(atr_counters))
+    try:
+        replay_atr.assert_resolved(atr_counters, "recompute_cube")
+    except replay_atr.ATRUnresolved as e:
+        logger.error(str(e))
+        return 1
 
     # 4. Concatenate + write
     exit_compare = (pd.concat(exit_frames, ignore_index=True)

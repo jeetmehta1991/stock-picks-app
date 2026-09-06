@@ -42,6 +42,10 @@ if str(_REPO) not in sys.path:
 
 from backtest.engine.exit_strategies import run_exit_comparison  # noqa: E402
 
+if str(Path(__file__).resolve().parent) not in sys.path:
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+import replay_atr  # noqa: E402  (B2615 S6-B2611e: no silent ATR proxy)
+
 
 logger = logging.getLogger(__name__)
 
@@ -119,6 +123,7 @@ def rebuild_cube(trade_log_path: Path, ohlcv_dir: Path,
 
     ohlcv_cache: dict = {}
     all_detail_frames: list = []
+    atr_counters = replay_atr.new_counters()
 
     # Group by strategy so run_exit_comparison receives all that strategy's
     # trades together (matches the engine's per-strategy call pattern at
@@ -135,7 +140,12 @@ def rebuild_cube(trade_log_path: Path, ohlcv_dir: Path,
                 continue
             entry_date = _parse_entry_date(row["entry_date"])
             sig = _parse_signals_at_entry(row.get("signals_at_entry"))
-            atr = sig.get("atr", row["entry_price"] * 0.02)
+            # B2615 (S6-B2611e): signals_at_entry, else derived from df_full;
+            # None is counted and fails the rebuild below - never a proxy.
+            atr = replay_atr.resolve_atr(sig, row["entry_price"], df_full,
+                                         entry_date, atr_counters)
+            if atr is None:
+                continue
             trades_data.append({
                 "ticker":      ticker,
                 "df":          df_full,
@@ -161,6 +171,8 @@ def rebuild_cube(trade_log_path: Path, ohlcv_dir: Path,
                     i_strat, n_strategies, strategy,
                     len(trades_data), len(td), missing_ohlcv)
 
+    logger.info(replay_atr.report(atr_counters))
+    replay_atr.assert_resolved(atr_counters, "rebuild_cube")  # raises: fail closed
     if not all_detail_frames:
         logger.error("No cube rows produced")
         return pd.DataFrame()

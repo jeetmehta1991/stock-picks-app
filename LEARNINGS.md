@@ -19801,3 +19801,45 @@ GREEN run is the tell - the pins that read docs are exactly the ones that go RED
 `*.md` (EXECUTION_QUEUE.md excepted) and `.claude/skills/**` alongside `.py`; pin
 `test_b2613_c6_freshness_covers_every_file_a_pin_reads`. Tripwire row L768 / #292 ext. Detection
 before the fix was JUDGMENT-ONLY; after it, C6 refuses the commit.
+
+### L769 - An observability fix lands on ONE caller; the fallback it observes has siblings - grep the EXPRESSION, not the function, and a sibling with nowhere to warn fails CLOSED
+
+**Measured 2026-09-05 (B2611 audit -> S6-B2611e, fixed B2615).** B1261 gave the engine's replay-ATR proxy
+(`backtest/engine/backtest.py::resolve_replay_atr`, `entry_price * 0.02` when signals_at_entry carries no
+`atr`) a counter and a >5% warning, and B2574 added `replay_atr_fallback.json`, which the battery's lens
+review reads (`scripts/run_postconfig.py::replay_atr_proxy_lens`, FAIL above 5%). The SAME expression sat
+in two offline re-scorers - `scripts/recompute_cube_from_trade_log.py` and
+`scripts/rebuild_cube_from_trade_log.py` - with no count, no warning and no report, for the 1,354 batch
+numbers between B1261 and B2615. The exposure was live, not hypothetical: the b2399 Step-2 cube behind the
+only Phase-1B Step-2 admission carries 214 of 437 trades with an empty signals_at_entry (S6-B2605b), and
+recompute_cube_from_trade_log.py is the mechanism owner ruling 2(b) would run over it - it would have
+priced every ATR-dependent exit on those 214 trades off 2% of price and said nothing. MEASURED at B2615
+(`scratchpad verify_b2615_real.py` on the reloaded OHLCV): on those 214 rows the proxy differs from the
+true ATR by a median 20.8%; on the 223 rows that do carry one, median 19.2%.
+
+**A second finding from the same check, on the fix itself.** The first draft derived ATR on the bars
+STRICTLY BEFORE entry_date, reasoning from `_get_next_open` that the fill follows the signal bar. Against
+the 373 cfg1-rerun trades it reproduced 0 of 373 recorded values (median miss 2.5%, max 40% - FTNT
+2024-08-07, an earnings-gap bar). The engine records `entry_date = as_of`, the signal bar itself
+(`backtest.py` OpenTrade(entry_date=as_of)), and its producer ran on `df[df.index.date <= as_of]`
+(`screener.py::_worker_screen_ticker`); bars THROUGH entry_date reproduce 373 of 373 and 223 of 223 within
+the producer's 4-dp rounding. A derivation that "should match" is a claim; the artifact it must match was
+on disk.
+
+**The rule.** When a fallback gets observability (a counter, a warning, a report, a gate), the class is
+EVERY SITE THAT TAKES THAT FALLBACK, not the caller the finding arrived through. Grep the expression - the
+literal default inside `.get(key, default)`, the `* 0.02` - not the function name: the siblings were copies
+of the expression, not calls to the function, so a call-site grep finds zero. And the sibling fix is not
+"add a counter": an offline re-scorer has no landing to warn into, so it must FAIL CLOSED (L642) - derive
+the value from the data it already holds, count the derivations, and refuse to write when any row is still
+unresolved. Then test the derivation against the recorded values it claims to reproduce, before the
+docstring says "reproduces".
+
+**Mechanism.** B2615: one resolver, `scripts/replay_atr.py::resolve_atr` (signals_at_entry, else ATR-14
+through the entry_date bar with the producer's own `_atr_series`, else None), shared by both re-scorers;
+both log `report()` and call `assert_resolved` before writing; recompute gains `--atr-warmup-days`
+(365 = the engine's DATA_LOAD_START warmup, so the Wilder EWM seeds on the engine's first bar). Pins
+`test_b2615_rescorer_atr_is_derived_never_proxied` (also asserts `* 0.02` is gone from both scripts'
+source) and `test_b2615_rebuild_cube_feeds_derived_atr_and_fails_closed`. The engine's own proxy is
+unchanged - it is counted and surfaced. Tripwire row L769 / L642 ext. Detection before the fix was
+JUDGMENT-ONLY (the B2611 audit found it by reading); after it, the source pin refuses the expression.

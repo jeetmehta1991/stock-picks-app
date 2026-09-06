@@ -33808,3 +33808,116 @@ def test_b2613_c6_freshness_covers_every_file_a_pin_reads(tmp_path, monkeypatch)
     from pathlib import Path as _P
     src = _P(pf.__file__).read_text(encoding="utf-8")
     assert "py_staged + doc_staged" in src
+
+
+def _b2615_synthetic_ohlcv(n_bars: int, start="2024-01-02"):
+    """Deterministic OHLCV frame: a drifting close with a VARYING 3.0-3.9
+    range. The first draft used a fixed 2.0 range, so ATR-14 was exactly 2.0
+    = 100 * 0.02 and the derived value could not be told from the proxy it
+    exists to replace (a fixture that cannot fail the claim, Gate 4)."""
+    import numpy as _np
+    import pandas as _pd
+    idx = _pd.bdate_range(start, periods=n_bars)
+    i = _np.arange(n_bars)
+    close = 100.0 + i * 0.5
+    return _pd.DataFrame({"open": close - 0.2, "high": close + 1.5 + 0.1 * (i % 5),
+                          "low": close - 1.5 - 0.1 * ((i + 2) % 3), "close": close,
+                          "volume": 1_000_000}, index=idx)
+
+
+def test_b2615_rescorer_atr_is_derived_never_proxied():
+    """S6-B2611e: recompute_cube_from_trade_log.py and
+    rebuild_cube_from_trade_log.py both read `sig.get("atr",
+    entry_price * 0.02)` - the engine's crude replay proxy WITHOUT the
+    engine's counter, warning or replay_atr_fallback.json (B1261/B2574), so
+    a wiped signals_at_entry was re-scored on a fabricated ATR silently.
+    CLASS: a fallback observable in one caller and silent in its siblings.
+    The shared resolver takes the recorded ATR, else derives it on the bars
+    THROUGH entry_date with the producer's own _atr_series (entry_date is
+    the signal bar, as_of - MEASURED at B2615 on 373 real trades: bars
+    strictly before entry missed every recorded value, bars <= entry
+    reproduced them), else returns None and the caller fails closed."""
+    from datetime import date as _date
+    root = _b2520_scripts_on_path()
+    import replay_atr as ra
+    from backtest.signals.technical import _atr_series
+
+    df = _b2615_synthetic_ohlcv(40)
+    entry = df.index[30].date()
+    # 1. recorded ATR wins
+    c = ra.new_counters()
+    assert ra.resolve_atr({"atr": 1.5}, 100.0, df, entry, c) == 1.5
+    assert c["from_signals"] == 1 and c["derived"] == 0
+    # 2. no recorded ATR -> derived on bars THROUGH entry_date (the engine's
+    #    entry_date is the signal bar and its producer saw bars <= as_of),
+    #    never entry_price*0.02
+    c = ra.new_counters()
+    got = ra.resolve_atr({}, 100.0, df, entry, c)
+    want = float(_atr_series(df.iloc[:31], 14).iloc[-1])
+    assert want != float(_atr_series(df.iloc[:30], 14).iloc[-1])  # bar 30 counts
+    assert got == want and got != 100.0 * 0.02, (got, want)
+    assert c["derived"] == 1 and c["unresolved"] == 0
+    # a non-dict / non-positive recorded value also falls through to derive
+    c = ra.new_counters()
+    assert ra.resolve_atr("nan", 100.0, df, entry, c) == want
+    assert ra.resolve_atr({"atr": 0}, 100.0, df, entry, c) == want
+    # 3. too little history -> None, counted, and assert_resolved raises
+    c = ra.new_counters()
+    assert ra.resolve_atr({}, 100.0, df, df.index[5].date(), c) is None
+    assert c["unresolved"] == 1
+    with pytest.raises(ra.ATRUnresolved):
+        ra.assert_resolved(c, "pin")
+    ra.assert_resolved(ra.new_counters(), "pin")  # nothing unresolved: no raise
+    assert "UNRESOLVED" in ra.report(c)
+    assert isinstance(entry, _date)
+    # 4. the proxy is gone from both scripts' source
+    for name in ("recompute_cube_from_trade_log.py", "rebuild_cube_from_trade_log.py"):
+        src = (root / "scripts" / name).read_text(encoding="utf-8")
+        assert "* 0.02" not in src.replace("entry_price * 0.02` proxy was silent", ""), name
+        assert "replay_atr.resolve_atr(" in src, name
+
+
+def test_b2615_rebuild_cube_feeds_derived_atr_and_fails_closed(tmp_path, monkeypatch):
+    """End to end on rebuild_cube: a trade with an EMPTY signals_at_entry
+    reaches run_exit_comparison with the DERIVED ATR (not 2pct of price),
+    and a trade whose ticker has too few bars before entry makes the rebuild
+    raise instead of writing a cube."""
+    import importlib.util as _ilu
+    import pandas as _pd
+    root = _b2520_scripts_on_path()
+    spec = _ilu.spec_from_file_location(
+        "rebuild_cube_b2615", root / "scripts" / "rebuild_cube_from_trade_log.py")
+    rb = _ilu.module_from_spec(spec)
+    spec.loader.exec_module(rb)
+    from backtest.signals.technical import _atr_series
+
+    ohlcv_dir = tmp_path / "ohlcv"
+    ohlcv_dir.mkdir()
+    df = _b2615_synthetic_ohlcv(60)
+    df.reset_index().rename(columns={"index": "date"}).to_parquet(ohlcv_dir / "SYNTH.parquet")
+    entry = df.index[40].date()
+    seen = []
+
+    def fake_rec(strategy, trades_data):
+        seen.extend(trades_data)
+        return _pd.DataFrame(), _pd.DataFrame([{"strategy": strategy, "exit_method": "x",
+                                                 "pnl_pct": 0.0}])
+    monkeypatch.setattr(rb, "run_exit_comparison", fake_rec)
+
+    tl = _pd.DataFrame([{"ticker": "SYNTH", "strategy": "synthetic", "entry_date": str(entry),
+                         "entry_price": 120.0, "direction": "long", "signals_at_entry": "{}"}])
+    tl.to_csv(tmp_path / "tl.csv", index=False)
+    cube = rb.rebuild_cube(tmp_path / "tl.csv", ohlcv_dir, tmp_path / "out")
+    assert len(cube) == 1 and len(seen) == 1
+    want = float(_atr_series(df.iloc[:41], 14).iloc[-1])
+    assert seen[0]["atr"] == want and seen[0]["atr"] != 120.0 * 0.02, seen[0]["atr"]
+
+    # fail closed: an entry on the 3rd bar has no ATR history
+    seen.clear()
+    tl2 = tl.copy()
+    tl2.loc[0, "entry_date"] = str(df.index[2].date())
+    tl2.to_csv(tmp_path / "tl2.csv", index=False)
+    import replay_atr as ra
+    with pytest.raises(ra.ATRUnresolved):
+        rb.rebuild_cube(tmp_path / "tl2.csv", ohlcv_dir, tmp_path / "out2")
+    assert not (tmp_path / "out2" / "trade_exit_detail_phase_1a_beta_rebuilt.csv").exists()
