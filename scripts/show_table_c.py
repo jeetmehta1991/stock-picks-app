@@ -54,10 +54,33 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--only", default="",
                     help="comma-separated config names to include")
+    ap.add_argument("--strategy", default="latest",
+                    help="strategy to show (Table C is PER-STRATEGY - owner, "
+                         "twice: 2026-09-06 'Its specific to a strategy only'). "
+                         "Default 'latest' = the strategy of the most recently "
+                         "landed grid; 'all' shows every family (the pre-B2626 "
+                         "behaviour, for cross-programme audits only)")
     a = ap.parse_args()
     from producer_variant_table import table_c
 
     grids = discover()
+    # B2626 (owner correction, SECOND ask - L736 count-the-asks: fix the
+    # OUTCOME): the default render is scoped to ONE strategy, read from each
+    # grid's own `strategy` field; the newest-mtime grid names the current one.
+    if a.strategy != "all" and grids:
+        target = (a.strategy if a.strategy != "latest"
+                  else (list(grids.values())[-1].get("strategy") or ""))
+        scoped = {k: v for k, v in grids.items()
+                  if v.get("strategy") == target}
+        if scoped:
+            grids = scoped
+            print(f"_Table C scoped to strategy `{target}` "
+                  f"({len(grids)} config(s)); --strategy all for every family._")
+            print("")
+        else:
+            print(f"NO GRADED CONFIGS for strategy {target!r} - showing "
+                  f"nothing rather than the wrong family.")
+            return 1
     if a.only:
         want = [w.strip() for w in a.only.split(",") if w.strip()]
         missing = [w for w in want if not any(w in k for k in grids)]

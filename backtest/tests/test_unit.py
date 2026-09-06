@@ -34371,3 +34371,50 @@ def test_b2623_pending_landings_reduce_and_sweep(tmp_path, monkeypatch):
     pl.mark_swept(["b"], "def456")
     assert pl.uncommitted_events(events) and all(
         ev["cube"] != "b" for ev in pl.uncommitted_events(events))
+
+
+# ---------------------------------------------------------------------------
+# B2626 (owner correction x2): Table C defaults to ONE strategy
+# ---------------------------------------------------------------------------
+
+def test_b2626_table_c_defaults_to_the_latest_strategy(monkeypatch, capsys):
+    """B2626 (L736 count-the-asks - the owner asked twice): the show_table_c
+    DEFAULT render is scoped to the strategy of the most recently landed
+    grid; --strategy all restores the cross-programme view; an unknown
+    strategy renders nothing rather than the wrong family."""
+    import importlib.util as ilu
+    import sys
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[2]
+    spec = ilu.spec_from_file_location("show_table_c_b2626",
+                                      root / "scripts" / "show_table_c.py")
+    stc = ilu.module_from_spec(spec)
+    spec.loader.exec_module(stc)
+
+    grids = {
+        "old_smc": {"strategy": "smc_breaker_block_long", "results": [],
+                    "step1_ranking": [], "config": {}},
+        "new_icg": {"strategy": "institutional_committed_growth_long",
+                    "results": [], "step1_ranking": [], "config": {}},
+    }
+    monkeypatch.setattr(stc, "discover", lambda: dict(grids))
+    fake_tc = lambda g, root=None: [f"ROW {k}" for k in g]
+    import types
+    monkeypatch.setitem(sys.modules, "producer_variant_table",
+                        types.SimpleNamespace(table_c=fake_tc))
+
+    monkeypatch.setattr(sys, "argv", ["show_table_c.py"])
+    assert stc.main() == 0
+    out = capsys.readouterr().out
+    assert "scoped to strategy `institutional_committed_growth_long`" in out
+    assert "ROW new_icg" in out and "ROW old_smc" not in out
+
+    monkeypatch.setattr(sys, "argv", ["show_table_c.py", "--strategy", "all"])
+    assert stc.main() == 0
+    out = capsys.readouterr().out
+    assert "ROW new_icg" in out and "ROW old_smc" in out
+
+    monkeypatch.setattr(sys, "argv", ["show_table_c.py", "--strategy", "nope"])
+    assert stc.main() == 1
+    out = capsys.readouterr().out
+    assert "NO GRADED CONFIGS for strategy" in out
