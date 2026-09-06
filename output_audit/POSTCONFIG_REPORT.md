@@ -10,10 +10,11 @@ REGENERATED WHOLE at every config landing - by the landing supervisor the engine
 
 ## Landings - what the supervisor recorded (B2520)
 
-20 cube(s) landed through the supervisor; **0 not yet reported to the owner**.
+21 cube(s) landed through the supervisor; **1 not yet reported to the owner** (output_icg_step2_span9_step2_span9).
 
 | cube | landed | via | battery exit | blocking | WARN/FAIL findings | committed | pushed | reported |
 |---|---|---|---|---|---|---|---|---|
+| output_icg_step2_span9_step2_span9 | 2026-09-06T18:55:21 | engine-hook | 0 | none | 0 | adfba9d5d | True | **NO** |
 | output_icg_cfg1_rerun_cfg1_rerun | 2026-09-05T01:17:34 | engine-hook | 0 | none | 0 | d85126201 | True | yes 2026-09-06T05:40:01 |
 | output_icg_span100_rerun_span100 | 2026-09-04T12:26:03 | engine-hook | 0 | none | 0 | 0f0e440e6 | True | yes 2026-09-04T12:27:40 |
 | output_icg_minq2_minq2 | 2026-09-04T10:54:23 | engine-hook | 0 | none | 0 | f9f2331c9 | True | yes 2026-09-04T11:28:26 |
@@ -219,7 +220,7 @@ _The SIX swept axes for the same rows, same order - join on `#`. P1 swing_length
 |---|---|---|---|
 | NaN/inf PnL, and values beyond the winsorize bound | 0 NaN/inf | PASS | NaN/inf = arithmetic corruption; beyond-bound is disclosure only, clipped at grade time |
 | exit methods that silently fell back to another | degraded map (B1623 measure-not-assume): {'reverse_signal': | PASS | each mapping = an exit you paid to test and did not actually test |
-| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence | PASS | any non-zero = the ledger is lying about itself |
+| rows claiming DONE whose evidence contradicts it | 0 row(s) claim DONE with contradicting evidence) / run_wave verified 110784 cube rows across 6 leg(s | PASS | any non-zero = the ledger is lying about itself |
 | grading ran at this config's own parameters | exit 0 | PASS | non-zero = the grid was never produced |
 | independent spot check ran | exit 0 | PASS | non-zero = no re-derivation happened |
 | engine-side implementation check exit code | 4 of 4 declared knobs read from the environment + consumer l | PASS | non-zero = the wiring is absent |
