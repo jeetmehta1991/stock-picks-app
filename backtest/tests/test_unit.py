@@ -34186,3 +34186,100 @@ def test_b2621_margin_lens_discriminates_on_step_not_sign():
     # the live call site passes the step through
     mod_src = (Path(rp.__file__).read_text(encoding="utf-8"))
     assert "selection_margin_row(rk, unit, step)" in mod_src
+
+
+# ---------------------------------------------------------------------------
+# B2622 (S6-B2540a + S6-B2578a): re-gate with history, fail closed on the
+# unblessed cube; precompute provenance recorded and enforced
+# ---------------------------------------------------------------------------
+
+def test_b2622_regate_reissues_with_history_and_fails_closed(tmp_path):
+    """B2622 (S6-B2540a): a legitimate manifest repair earns a fresh receipt
+    whose regate_history preserves every prior state; a cube with NO receipt
+    is refused (re-gating cannot bless a cube launched around the gate,
+    L642), and a trivial --why is refused."""
+    import hashlib
+    import json
+    import sys
+    from pathlib import Path
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts"))
+    import regate_manifest as rg
+
+    cube = tmp_path / "cube"
+    cube.mkdir()
+    man = cube / "run_manifest.json"
+    man.write_text('{"a": 1}', encoding="utf-8")
+    old_sha = hashlib.sha256(man.read_bytes()).hexdigest()
+    (cube / "gate_receipt.json").write_text(
+        json.dumps({"manifest_sha256": old_sha, "timestamp": "t0"}),
+        encoding="utf-8")
+
+    # no-op when the receipt already matches
+    code, msg = rg.regate(cube, "a perfectly reasonable stated repair reason")
+    assert code == 0 and "no-op" in msg
+
+    # repair the manifest -> mismatch -> re-gate records why + prior sha
+    man.write_text('{"a": 1, "repaired": true}', encoding="utf-8")
+    code, msg = rg.regate(cube, "B2540-style grading-key backfill, engine env untouched")
+    assert code == 0 and "re-gated" in msg
+    rec = json.loads((cube / "gate_receipt.json").read_text(encoding="utf-8"))
+    new_sha = hashlib.sha256(man.read_bytes()).hexdigest()
+    assert rec["manifest_sha256"] == new_sha
+    assert rec["regate_history"][0]["previous_manifest_sha256"] == old_sha
+    assert "backfill" in rec["regate_history"][0]["why"]
+
+    # refusals: trivial why; missing receipt
+    code, msg = rg.regate(cube, "short why")
+    assert code == 2 and "REFUSED" in msg
+    bare = tmp_path / "bare"
+    bare.mkdir()
+    (bare / "run_manifest.json").write_text("{}", encoding="utf-8")
+    code, msg = rg.regate(bare, "a perfectly reasonable stated repair reason")
+    assert code == 2 and "AROUND the gate" in msg
+
+
+def test_b2622_precompute_dir_check_enforces_build_params(tmp_path, monkeypatch):
+    """B2622 (S6-B2578a): when the tag dir records build_params.json, the
+    arm's declared INST_* values must match it (mismatch FAILS closed); a dir
+    with no record stays PASS with the absence disclosed (pre-B2622 tags -
+    failing them would HALT a live landing on its own gate)."""
+    import json
+    import sys
+    from pathlib import Path
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts"))
+    import run_postconfig as rp
+
+    exp = tmp_path / "institutional_persistence_t1a_x"
+    exp.mkdir()
+    monkeypatch.setattr(rp, "_expected_precompute_dir", lambda env: exp)
+    spot = tmp_path / "spot.json"
+    spot.write_text(json.dumps({"precompute_dir": str(exp)}), encoding="utf-8")
+    env = {"INST_MIN_CONSECUTIVE_QUARTERS": "4",
+           "INST_GROWTH_LOOKBACK_QUARTERS": "4",
+           "INST_GROWTH_MULTIPLE": "1.10"}
+
+    ok, why = rp._precompute_dir_check(spot, env)
+    assert ok and "pre-B2622" in why          # absence disclosed, not failed
+
+    (exp / "build_params.json").write_text(json.dumps(
+        {"min_consecutive_quarters": 4, "growth_lookback_quarters": 4,
+         "growth_multiple": 1.10}), encoding="utf-8")
+    ok, why = rp._precompute_dir_check(spot, env)
+    assert ok and "verified" in why           # record present and matching
+
+    bad_env = dict(env, INST_MIN_CONSECUTIVE_QUARTERS="8")
+    ok, why = rp._precompute_dir_check(spot, bad_env)
+    assert not ok and "DIFFERENT PARAMS" in why
+
+
+def test_b2622_builder_refuses_a_mixed_tag_dir():
+    """B2622 (S6-B2578a): the builder's guard is present and fail-closed -
+    asserted on the executable shape (a mismatch path that exits nonzero and
+    a first-build path that writes the record), never on prose (L748)."""
+    from pathlib import Path
+    src = (Path(__file__).resolve().parents[2] / "scripts" /
+           "build_institutional_persistence_precompute.py").read_text(encoding="utf-8")
+    lines = [l.strip() for l in src.splitlines()]
+    assert "_write_or_enforce_build_params()" in lines           # wired in main
+    assert any(l.startswith("_sys.exit(2)") for l in lines)      # refusal exists
+    assert 'rec_path.write_text(_json.dumps(current, indent=1), encoding="utf-8")' in lines

@@ -254,7 +254,34 @@ def _precompute_dir_check(spot_out: Path, arm_env: dict) -> tuple[bool, str]:
                        f"{Path(str(got)).name} but the arm expects {exp.name} "
                        f"(battery ran against the wrong persistence artifact - "
                        f"S6-B2574b class)")
-    return True, f"precompute_dir {exp.name} matches the arm"
+    # B2622 (S6-B2578a): when the dir records its build params, the arm's
+    # declared INST_* values must match them - a mis-built tag becomes a
+    # FAIL here instead of a wrong-population grade. Absence is disclosed,
+    # not failed: the pre-B2622 tags carry no record, and failing them
+    # would HALT a live landing on its own gate (backfill-first caveat).
+    rec_path = exp / "build_params.json"
+    if rec_path.exists():
+        try:
+            rec = json.loads(rec_path.read_text(encoding="utf-8"))
+        except (OSError, ValueError) as exc:
+            return False, f"build_params.json unreadable: {exc!r}"
+        pairs = (("min_consecutive_quarters", "INST_MIN_CONSECUTIVE_QUARTERS", int, 4),
+                 ("growth_lookback_quarters", "INST_GROWTH_LOOKBACK_QUARTERS", int, 4),
+                 ("growth_multiple", "INST_GROWTH_MULTIPLE", float, 1.10))
+        bad = []
+        for rk, ek, cast, dflt in pairs:
+            want = cast(arm_env.get(ek, dflt))
+            got_v = rec.get(rk)
+            if got_v is not None and cast(got_v) != want:
+                bad.append(f"{rk}: dir built at {got_v}, arm declares {want}")
+        if bad:
+            return False, ("precompute BUILT AT DIFFERENT PARAMS than the arm "
+                           "declares (S6-B2578a): " + "; ".join(bad))
+        return True, (f"precompute_dir {exp.name} matches the arm; "
+                      f"build_params.json verified")
+    return True, (f"precompute_dir {exp.name} matches the arm "
+                  f"(no build_params.json - pre-B2622 tag, provenance "
+                  f"unverifiable, disclosed)")
 
 
 def spot_summary(spot_out: Path) -> str:

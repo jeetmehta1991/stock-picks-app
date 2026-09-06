@@ -168,6 +168,42 @@ def _per_ticker_persistence(ticker: str, as_of: _date) -> dict | None:
     }
 
 
+
+def _write_or_enforce_build_params() -> None:
+    """B2622 (S6-B2578a): the tag dir records the params it was built at.
+
+    A precompute built out of band at the arm's P4/P5/P6 values recorded NONE
+    of them, so the launch gate could check only that the tagged dir exists -
+    a mis-built tag landed as a wrong-population grade, not a refusal. The
+    record is written on the FIRST build into a dir; every later build into
+    the same dir must match it or is REFUSED (fail closed, L642) - one tag,
+    one parameter population, by construction.
+    """
+    import json as _json
+    import sys as _sys
+    import time as _time
+    rec_path = OUT_DIR / "build_params.json"
+    current = {
+        "min_consecutive_quarters": MIN_CONSECUTIVE_QUARTERS,
+        "growth_lookback_quarters": GROWTH_LOOKBACK_QUARTERS,
+        "growth_multiple": GROWTH_MULTIPLE,
+        "tag": _os.environ.get("INST_PERSIST_CACHE_TAG") or "",
+    }
+    if rec_path.exists():
+        rec = _json.loads(rec_path.read_text(encoding="utf-8"))
+        mismatches = {k: (rec.get(k), v) for k, v in current.items()
+                      if rec.get(k) != v}
+        if mismatches:
+            print("REFUSED: this tag dir was built at different parameters "
+                  f"(recorded vs current): {mismatches}. One tag holds ONE "
+                  "parameter population (S6-B2578a); use a new "
+                  "INST_PERSIST_CACHE_TAG or delete the dir deliberately.")
+            _sys.exit(2)
+        return
+    current["built_at"] = _time.strftime("%Y-%m-%dT%H:%M:%SZ", _time.gmtime())
+    rec_path.write_text(_json.dumps(current, indent=1), encoding="utf-8")
+    print(f"build_params.json written to {rec_path}")
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--as-of", default="2024-01-01")
@@ -177,6 +213,7 @@ def main():
 
     as_of = _date.fromisoformat(args.as_of)
     OUT_DIR.mkdir(parents=True, exist_ok=True)
+    _write_or_enforce_build_params()
     out_path = OUT_DIR / f"{as_of.isoformat()}.parquet"
 
     if args.smoke:
