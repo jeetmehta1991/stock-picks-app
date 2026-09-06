@@ -135,6 +135,58 @@ def undelivered(path: Path = LANDINGS) -> list[dict]:
     return undelivered_events(read_landings(path))
 
 
+_SWEPT = AUDIT / "_commit_pending_swept.json"
+
+
+def uncommitted_events(events: list[dict]) -> list[dict]:
+    """B2623 (S6-B2620a): landings whose LAST event says committed falsy -
+    same last-row-wins reducer shape as undelivered_events (L737: an append
+    log answers only through its reducer). Cubes already swept (recorded in
+    the side file, never in the append-only ledger - a synthetic ledger row
+    would re-arm the B2520 delivery gate) are excluded."""
+    swept = {}
+    if _SWEPT.exists():
+        try:
+            swept = json.loads(_SWEPT.read_text(encoding="utf-8")) or {}
+        except ValueError:
+            swept = {}
+    latest: dict[str, dict] = {}
+    for ev in events:
+        if isinstance(ev, dict) and ev.get("cube"):
+            latest[ev["cube"]] = ev
+    return [ev for ev in latest.values()
+            if not ev.get("committed") and ev["cube"] not in swept]
+
+
+def pending_artifact_paths(exclude: str = "") -> tuple[list, list[str]]:
+    """(paths still on disk, cube names) for every uncommitted landing except
+    `exclude` (the landing currently being committed carries its own)."""
+    pend = [ev for ev in uncommitted_events(read_landings(LANDINGS))
+            if ev.get("cube") != exclude]
+    paths, cubes = [], []
+    for ev in pend:
+        cube = ev["cube"]
+        arts = [AUDIT / f"{cube}_{k}.json"
+                for k in ("grid_auto", "spot_check", "lenses", "free_levels")]
+        arts = [a for a in arts if a.is_file()]
+        if arts:
+            paths += arts
+            cubes.append(cube)
+    return paths, cubes
+
+
+def mark_swept(cubes: list[str], commit_ref: str) -> None:
+    swept = {}
+    if _SWEPT.exists():
+        try:
+            swept = json.loads(_SWEPT.read_text(encoding="utf-8")) or {}
+        except ValueError:
+            swept = {}
+    for c in cubes:
+        swept[c] = commit_ref
+    _SWEPT.write_text(json.dumps(swept, indent=1), encoding="utf-8")
+
+
 def mark_reported(cubes: list[str], path: Path = LANDINGS, *, by: str = "") -> int:
     """Append a reported=true event per cube (append-only; the reader takes
     the LAST event per cube). Returns how many were marked."""
@@ -288,6 +340,11 @@ def commit_and_push(cube: str, battery_exit: int, summary: str) -> dict:
                                           "free_levels")]
     if queue_row:
         paths.append(QUEUE)
+    # B2623 (S6-B2620a): a landing whose commit failed was never revisited -
+    # every landing commit now sweeps the strays in with it (no extra
+    # commit; the sweep is recorded in the side file after success).
+    _pend_paths, _pend_cubes = pending_artifact_paths(exclude=cube)
+    paths += _pend_paths
     rel = [str(p.relative_to(ROOT)).replace("\\", "/") for p in paths if p.is_file()]
     if not rel:
         out["note"] = "no audit artifacts on disk to commit"
@@ -319,6 +376,10 @@ def commit_and_push(cube: str, battery_exit: int, summary: str) -> dict:
         return out
     head = _git(["rev-parse", "--short", "HEAD"])
     out["committed"] = head.stdout.strip() if head.returncode == 0 else True
+    if _pend_cubes:
+        mark_swept(_pend_cubes, str(out["committed"]))
+        out["note"] = (f"swept {len(_pend_cubes)} pending landing(s) into this "
+                       f"commit: {', '.join(_pend_cubes)}")
     try:
         p = _git(["push", "-q", "origin", "HEAD"], timeout=PUSH_TIMEOUT_S)
         out["pushed"] = p.returncode == 0

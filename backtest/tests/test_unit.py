@@ -34283,3 +34283,83 @@ def test_b2622_builder_refuses_a_mixed_tag_dir():
     assert "_write_or_enforce_build_params()" in lines           # wired in main
     assert any(l.startswith("_sys.exit(2)") for l in lines)      # refusal exists
     assert 'rec_path.write_text(_json.dumps(current, indent=1), encoding="utf-8")' in lines
+
+
+# ---------------------------------------------------------------------------
+# B2623 (S6-B2569b + S6-B2620a): free-level grades render in the report;
+# failed landing commits are swept into the next landing's commit
+# ---------------------------------------------------------------------------
+
+def test_b2623_free_level_grades_render_in_the_report():
+    """B2623 (S6-B2569b): a config section with a free-levels artifact renders
+    the per-level table (baseline first) with IS-legged headers; a section
+    without one renders no free-level block (must-quiet arm)."""
+    import sys
+    from pathlib import Path
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts"))
+    import postconfig_doc as pd_doc
+    art = {"grid": {"config": {"P9_span": 9}, "step1_ranking": [
+        {"is_ci_lo": -0.1, "is_sharpe": 0.2, "fires": 100, "exit": "x"}]},
+        "spot": None, "lenses": None,
+        "free": {"reproduction": {"landed_fires": 100, "covered": 100,
+                                  "coverage": 1.0},
+                 "levels": {
+                     "p7_5": {"p7": 5, "p8": 5, "is_fires": 40,
+                              "sharpe_selected_exit": "e1",
+                              "sharpe_selected_stats": {"sharpe": 0.1,
+                                                        "ci_lo": -0.4}},
+                     "baseline_p7_3": {"p7": 3, "p8": 5, "is_fires": 100,
+                                       "sharpe_selected_exit": "e1",
+                                       "sharpe_selected_stats": {
+                                           "sharpe": 0.2, "ci_lo": -0.1}}}}}
+    out = pd_doc.config_section("cube_x", {}, art)
+    txt = chr(10).join(out)
+    assert "FREE-LEVEL GRADES" in txt
+    assert "100 of 100 landed fires covered" in txt
+    rows = [l for l in out if l.startswith("| baseline_p7_3")
+            or l.startswith("| p7_5")]
+    assert len(rows) == 2 and rows[0].startswith("| baseline_p7_3")
+    assert "p7=3 p8=5" in rows[0] and "-0.1" in rows[0]
+    # must-quiet: no artifact, no block
+    art2 = dict(art, free=None)
+    assert "FREE-LEVEL" not in chr(10).join(
+        pd_doc.config_section("cube_x", {}, art2))
+
+
+def test_b2623_pending_landings_reduce_and_sweep(tmp_path, monkeypatch):
+    """B2623 (S6-B2620a): uncommitted_events reduces last-row-wins and
+    excludes swept cubes; pending_artifact_paths returns only artifacts still
+    on disk; mark_swept makes the sweep one-shot."""
+    import importlib
+    import json
+    import sys
+    from pathlib import Path
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts"))
+    import postconfig_landing as pl
+    pl = importlib.reload(pl)
+    monkeypatch.setattr(pl, "_SWEPT", tmp_path / "swept.json")
+    monkeypatch.setattr(pl, "AUDIT", tmp_path)
+
+    events = [
+        {"cube": "a", "committed": False},
+        {"cube": "a", "committed": "abc123"},   # later row wins: committed
+        {"cube": "b", "committed": False},
+        {"cube": "c", "committed": False},
+    ]
+    pend = pl.uncommitted_events(events)
+    assert sorted(ev["cube"] for ev in pend) == ["b", "c"]
+
+    # only artifacts on disk are staged
+    (tmp_path / "b_grid_auto.json").write_text("{}", encoding="utf-8")
+    monkeypatch.setattr(pl, "read_landings", lambda p: events)
+    paths, cubes = pl.pending_artifact_paths()
+    assert cubes == ["b"] and [p.name for p in paths] == ["b_grid_auto.json"]
+
+    # the current landing's own cube is excluded from the sweep
+    paths, cubes = pl.pending_artifact_paths(exclude="b")
+    assert cubes == []
+
+    # sweeping is one-shot: after mark_swept the cube stops reducing as pending
+    pl.mark_swept(["b"], "def456")
+    assert pl.uncommitted_events(events) and all(
+        ev["cube"] != "b" for ev in pl.uncommitted_events(events))

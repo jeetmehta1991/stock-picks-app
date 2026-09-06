@@ -144,7 +144,8 @@ def load_artifacts(cube: str) -> dict:
     d: dict = {"cube": cube}
     for key, path in (("grid", AUDIT / (cube + "_grid_auto.json")),
                       ("spot", AUDIT / (cube + "_spot_check.json")),
-                      ("lenses", AUDIT / (cube + "_lenses.json"))):
+                      ("lenses", AUDIT / (cube + "_lenses.json")),
+                      ("free", AUDIT / (cube + "_free_levels.json"))):
         d[key] = (json.loads(path.read_text(encoding="utf-8"))
                   if path.exists() else None)
     return d
@@ -238,6 +239,34 @@ def config_section(cube: str, entry: dict, art: dict) -> list[str]:
                   f"framing is retired.)", ""]
     else:
         lines += ["**NO GRADED GRID** - step 2 produced no artifact.", ""]
+
+    # B2623 (S6-B2569b): the per-landing free-level grades render IN the
+    # report - the owner sees the verdict without opening JSON. Family-
+    # generic: knob columns are whatever non-metric keys a level carries.
+    free = art.get("free")
+    if free and isinstance(free.get("levels"), dict) and free["levels"]:
+        rep = free.get("reproduction") or {}
+        _metric = {"is_fires", "is_rows_all_exits", "sharpe_selected_exit",
+                   "sharpe_selected_stats", "per_exit_ranked_by_ci_lo"}
+        lines += [f"**FREE-LEVEL GRADES (B2569, reproduction-gated every "
+                  f"landing):** reproduction {rep.get('covered', '-')} of "
+                  f"{rep.get('landed_fires', '-')} landed fires covered "
+                  f"(coverage {rep.get('coverage', '-')}); IS window only, "
+                  f"holdout never read (grade_free_levels_institutional).", "",
+                  "| level | knobs | IS fires | selected exit | is_sharpe "
+                  "| is_ci_lo |", "|---|---|---|---|---|---|"]
+        def _lv_key(item):
+            name = item[0]
+            return (0 if name.startswith("baseline") else 1, name)
+        for name, lv in sorted(free["levels"].items(), key=_lv_key):
+            knobs = " ".join(f"{k}={lv[k]}" for k in sorted(lv)
+                             if k not in _metric)
+            st = lv.get("sharpe_selected_stats") or {}
+            lines.append(
+                f"| {name} | {knobs or '-'} | {lv.get('is_fires', '-')} | "
+                f"{lv.get('sharpe_selected_exit', '-')} | "
+                f"{st.get('sharpe', '-')} | {st.get('ci_lo', '-')} |")
+        lines.append("")
 
     # B2520: completeness is the GATE's verdict, not a second tally. Before
     # B2520 this line counted DONE + SKIPPED as "steps ran" and called the
