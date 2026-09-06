@@ -1314,7 +1314,7 @@ def table_c(grids: dict[str, dict], root=None) -> list[str]:
             "family's own SPECS entry - 6 for smc_breaker_block_long, 9 for "
             "institutional_committed_growth_long._",
             "",
-            "| config | combos | starved-IS | no-Sharpe | graded | distinct | bands | all producer bands tested | median IS-Sharpe | best IS-Sharpe | best IS-CI-lo | best combination |",
+            "| config | combos | starved-IS | no-Sharpe | graded | distinct | bands | all producer bands tested | median IS-Sharpe | best IS-Sharpe | best IS-CI-lo | best combination | entry window |",
             "|---|---|---|---|---|---|---|---|---|---|---|---|"]
     for name, g in grids.items():
         # B2521 (S6-B2520m): the declared population, not the field name.
@@ -1325,6 +1325,16 @@ def table_c(grids: dict[str, dict], root=None) -> list[str]:
         # the owner-found mislabel ("why is it just 24 combinations?").
         _combo_cell = (str(len(res)) if _pu == "combinations"
                        else f"1 combination ({len(res)} {_pu} ranked)")
+        # B2625 (S6-B2612e, owner blanket 2026-09-06 + the row's own
+        # recommendation): the 13th column reads the grid's OWN window
+        # block (cube entry span), so a 4-year Step-2 cube and a 1-year
+        # Step-1 config are distinguishable from the table itself. A
+        # grid with no window block renders "-" (absent, never guessed);
+        # tickers stay OUT - the artifact carries no such field (#230a).
+        _w = g.get("window") or {}
+        _win_cell = (f"{_w['cube_entry_min']}..{_w['cube_entry_max']}"
+                     if _w.get("cube_entry_min") and _w.get("cube_entry_max")
+                     else "-")
         # B2181 (S6-B2176b): a pure Step-1 grid populates ONLY the IS fields
         # (holdout untouched by design post-B2136), so bucketing on the
         # holdout `sharpe` rendered graded=0 beside 89 real distinct
@@ -1432,7 +1442,7 @@ def table_c(grids: dict[str, dict], root=None) -> list[str]:
             rows.append(f"| `{name}` | {_combo_cell} | {len(no_exit)} | {len(no_sh)} | "
                         f"{len(graded)} | {g.get('step1_distinct_outcomes', '-')} | "
                         f"{_measured_fmt(bands)} | {p_col} | {_measured_fmt(med)} | "
-                        f"{sh} | {cl} | {combo} |")
+                        f"{sh} | {cl} | {combo} | {_win_cell} |")
             per_config_axes[name] = (axes, cfg)
             _per_config_grid[name] = g
             continue
@@ -1443,7 +1453,7 @@ def table_c(grids: dict[str, dict], root=None) -> list[str]:
             rows.append(f"| `{name}` | {_combo_cell} | {len(no_exit)} | {len(no_sh)} | "
                         f"{len(graded)} | {g.get('step1_distinct_outcomes', '-')} | "
                         f"{_measured_fmt(bands)} | {p_col} | {_measured_fmt(med)} | "
-                        f"{sh} | {cl} | {combo} |")
+                        f"{sh} | {cl} | {combo} | {_win_cell} |")
             per_config_axes[name] = (axes, cfg)
             continue
         p_cells = []
@@ -1462,7 +1472,7 @@ def table_c(grids: dict[str, dict], root=None) -> list[str]:
         p_col = "; ".join(p_cells)
         rows.append(f"| `{name}` | {_combo_cell} | {len(no_exit)} | {len(no_sh)} | {len(graded)} | "
                     f"{g.get('step1_distinct_outcomes', '-')} | {_measured_fmt(bands)} | {p_col} | "
-                    f"{_measured_fmt(med)} | {sh} | {cl} | {combo} |")
+                    f"{_measured_fmt(med)} | {sh} | {cl} | {combo} | {_win_cell} |")
         if other:
             rows.append(f"| | | | | | | | | | | | **UNCLASSIFIED {other} rows - the funnel does not "
                         f"reconcile, do not trust this row** |")

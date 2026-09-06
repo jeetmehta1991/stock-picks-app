@@ -26861,11 +26861,16 @@ def test_b2199_table_c_is_printed_with_every_locked_column(tmp_path, monkeypatch
     # B2585, owner directive 2026-09-03: the column is `all producer bands
     # tested` - EVERY parameter of the config's family, not the SMC six. The
     # lock moved, so this pin moves with it, in the same commit.
+    # B2625 (S6-B2612e): the lock moved to 13 columns - `entry window`
+    # reads the grid's own window block so Step-2 and Step-1 shapes are
+    # distinguishable from the table itself; pin moves in the same commit
+    # (B2585 precedent).
     for col in ("combos", "starved-IS", "no-Sharpe", "graded", "distinct",
                 "bands", "all producer bands tested", "median IS-Sharpe",
-                "best IS-Sharpe", "best IS-CI-lo", "best combination"):
+                "best IS-Sharpe", "best IS-CI-lo", "best combination",
+                "entry window"):
         assert col in header, f"locked column missing from Table C: {col}"
-    assert header.count("|") == 13, "locked Table C is 12 columns"
+    assert header.count("|") == 14, "locked Table C is 13 columns"
 
 def test_b2203a_hardened_registration_uses_system_principal(monkeypatch):
     """B2203a (S6-B2202a class): the hardened detached launch must register
@@ -33224,7 +33229,10 @@ def test_b2585_table_c_bands_column_carries_every_producer_parameter(tmp_path, m
     hdr = [l for l in out.splitlines() if l.startswith("| config | combos")][0]
     assert "all producer bands tested" in hdr, hdr
     assert "P1-P6 bands tested" not in hdr
-    assert hdr.count("|") == 13, "the locked table is 12 columns"
+    # B2625: the lock moved to 13 columns (entry window, S6-B2612e) -
+    # this SIBLING pin of test_b2199 moves with it (L592: count the
+    # sites; the first B2625 pyramid caught exactly this one unmoved).
+    assert hdr.count("|") == 14, "the locked table is 13 columns"
     row = [l for l in out.splitlines() if l.startswith("| `icg_probe` | 1 ")][0]
     assert "P7=" in row and "P8=" in row and "P1=" in row, row
     # refused artifact in place -> nothing graded free -> bands is not a number

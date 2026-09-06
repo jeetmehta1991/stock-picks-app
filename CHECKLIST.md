@@ -5680,3 +5680,20 @@ proposing more of it are closed by the ruling, not by a measurement. Detection i
 zoom-out is a true sentence about the repo, indistinguishable to a scan from a relevant one);
 durability is pinned by the skill fragment in test_b2123 and the memory entry
 feedback_strategy_scope_no_zoom_out.
+
+### #296 - PRICE AN OPTION FROM THE PLAN ROW THAT DEFINES IT (B2612 / L767)
+
+**Before stating any option's cost** ("free", "nearly free", "just discipline", "only a re-grade",
+"~2-3h engine"), name THREE things, each EXECUTED or READ this turn - or the price is UNVERIFIED:
+(1) the PLAN ROW that gives the option its shape (window, universe, legs); (2) the LAST ARTIFACT
+that actually ran at that shape; (3) the MECHANISM that consumes its output (does the grader/
+renderer for this shape exist?). A price with no unit is the tell.
+
+**Retroactive coverage (#136), three instances:** L506(b) "offline on cached cubes, seconds" for
+work needing a per-trade re-grade at a different grain (B1736); the B2611 audit's F15 - option 1(b)
+priced "~2-3h engine" unsourced (S6-B2611g); S6-B2612c "nearly free" for a holdout shot whose plan
+row is 4y x 544 tickers - 16-40 h in 4-9 legs - with a grader that did not exist (retracted, re-ruled
+at the true price S6-B2612d). All three would have been caught by opening the plan row and the last
+same-shape artifact. Mechanism: the L767 tripwire row in the execution-discipline skill (fragment-
+pinned via test_b2123); detection of an unpriced option in prose remains scan_unmeasured_quantity's
+domain, whose cost vocabulary already fires on the quoted forms.
