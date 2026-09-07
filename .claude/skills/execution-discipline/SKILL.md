@@ -4066,6 +4066,7 @@ check FIRST. Each row is a real failure that recurred until its check existed.
 | Produce a routing table / candidate list / "remaining N" | File S6-xxx tickets with item NAMES inlined, not prose counts | CHECKLIST #164; B1410 177 strategies |
 | Reject a candidate for being the wrong KIND of change | Re-route to the opposite queue; never `continue` it out | CHECKLIST #167; 10 strategies dropped |
 | Skip pyramid because "docs only" | No carve-outs — pyramid every commit | `feedback_pyramid_no_exceptions` |
+| Report a parameter search - a ranked list, a best cell, an argmax over a grid | PARTITION ITS AXES BY PRIOR PREDICTION FIRST. An axis carrying a directional prediction from the literature or the design is a CONFIRMATION replicated across the levels of the others, and N independent confirmations of one ordering is evidence of a different KIND than an argmax over N x M cells; only the UNPREDICTED axes spend multiplicity budget and carry the trials count. The tell: you can state what the literature predicts about one knob and not the other, and your report treats them identically | L770 / #297 (MEASURED 2026-09-07: five council advisors read a 390-trial pead grid as one max-search and three predicted a variance-mined winner; the drift-window axis was monotone at 5 of 5 levels of the other axis - the Bernard-Thomas prediction - and the tightest cell ranked FIFTH, refuting the objection) |
 
 ## Quick-reference: the five commitments
 

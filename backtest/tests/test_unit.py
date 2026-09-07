@@ -25510,6 +25510,8 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
          "L717: code reach spliced onto artifact precision"),
         ("BISECT THE PAYLOAD BEFORE CHANGING ROUTE - A TRANSPORT FAILURE MAY BE CONTENT",
          "L638 addendum (B2404): diagnose the layer before changing it"),
+        ("different KIND than an argmax",
+         "L770 (B2638): a grid's axes can have different epistemic status"),
     ):
         if frag not in discipline_text:
             missing.append(f"execution-discipline lost [{why}]: {frag!r}")
@@ -25592,7 +25594,10 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # 240 -> 241 at B2608b (the L765 append-only row, added after the orphan
     # gate refused the entry: declining a CHECKLIST item is not the same
     # decision as giving a rule no anchor at all).
-    assert len(gutted) == 241, gutted
+    # 241 -> 242 at B2638c (the L770 grid-axis-epistemics row; shipped in
+    # the same call as its tripwire row per B2130, after the turn gate
+    # caught the entry landing in LEARNINGS and CHECKLIST alone).
+    assert len(gutted) == 242, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
