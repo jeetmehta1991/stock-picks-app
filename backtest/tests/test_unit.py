@@ -34581,3 +34581,72 @@ def test_b2634_pead_phase0_draft_validates_and_stays_out_of_the_battery():
     body = chr(10).join(rows)
     for p in draft["params"]:
         assert str(p["evidence"]) in body
+
+
+# ---------------------------------------------------------------------------
+# B2635 (S6-B2630): a ticker with NO 13F data is COUNTED and SHOUTED, never
+# silently skipped
+# ---------------------------------------------------------------------------
+
+def test_b2635_13f_coverage_is_recorded_and_shouted_below_the_floor(tmp_path,
+                                                                    monkeypatch,
+                                                                    capsys):
+    """B2635: the precompute writes a coverage record naming every ticker that
+    produced nothing, and prints a LOUD warning below the floor. Before this,
+    89 of 1,941 vendor files (4.6pct) were valid-but-empty - 28 of the R5
+    universe's 544, mega-caps included - and the producer returned None for
+    each with no counter, no warning and no record (the L769 class on a
+    data-absence path)."""
+    import importlib.util as ilu
+    import json
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[2]
+    spec = ilu.spec_from_file_location(
+        "bipp_b2635",
+        root / "scripts" / "build_institutional_persistence_precompute.py")
+    m = ilu.module_from_spec(spec)
+    spec.loader.exec_module(m)
+
+    monkeypatch.setattr(m, "OUT_DIR", tmp_path)
+    tickers = [f"T{i}" for i in range(10)]
+
+    # below the floor -> loud, and every missing ticker named
+    cov = m._write_coverage("2024-01-01", tickers, ["T1", "T2", "T3"])
+    out = capsys.readouterr().out
+    assert cov == 0.7
+    assert "BELOW THE" in out and "90%" in out
+    assert "T1" in out
+    rec = json.loads((tmp_path / "coverage_2024-01-01.json").read_text(encoding="utf-8"))
+    assert rec["tickers_requested"] == 10 and rec["tickers_with_data"] == 7
+    assert rec["no_data_tickers"] == ["T1", "T2", "T3"]
+
+    # at/above the floor -> quiet line, record still written (must-quiet arm)
+    cov = m._write_coverage("2024-04-01", tickers, ["T9"])
+    out = capsys.readouterr().out
+    assert cov == 0.9 and "BELOW THE" not in out
+    assert (tmp_path / "coverage_2024-04-01.json").exists()
+
+    # the loop records absences: the collector must exist in main's body
+    import inspect
+    src = inspect.getsource(m.main)
+    assert "no_data.append(t)" in src
+    assert "_write_coverage(as_of, tickers, no_data)" in src
+
+
+def test_b2635_census_artifact_matches_the_vendor_directory():
+    """B2635: the committed census is a MEASUREMENT of the live directory, not
+    a remembered figure - it must still describe what is on disk (counts
+    reconcile), and it must carry the L724 correction note (the first pass
+    called zero-column files CORRUPT; a column filter was the defect)."""
+    import json
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[2]
+    p = root / "output_audit" / "b2635_13f_coverage_census.json"
+    c = json.loads(p.read_text(encoding="utf-8"))
+    assert c["with_data"] + c["no_data_total"] == c["files"]
+    assert len(c["empty_with_schema"]) + len(c["empty_no_schema"]) == c["no_data_total"]
+    assert c["unreadable"] == []          # nothing is corrupt - the L724 finding
+    assert "reader artifact" in c["note"]
+    # the mega-cap concentration is the reason this is P0, not cosmetic
+    for t in ("AAPL", "AMZN", "GOOGL"):
+        assert t in c["r5_universe_affected"]

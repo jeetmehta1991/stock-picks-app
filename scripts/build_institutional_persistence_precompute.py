@@ -204,6 +204,40 @@ def _write_or_enforce_build_params() -> None:
     rec_path.write_text(_json.dumps(current, indent=1), encoding="utf-8")
     print(f"build_params.json written to {rec_path}")
 
+COVERAGE_FLOOR = 0.90   # B2635: below this, the build SHOUTS
+
+
+def _write_coverage(as_of, tickers, no_data: list[str]) -> float:
+    """B2635 (S6-B2630): a ticker whose 13F file holds ZERO rows produces no
+    signals and no error - the producer just returns None and the strategy
+    never fires on it. MEASURED 2026-09-07: 89 of 1,941 vendor files (4.6pct)
+    are valid-but-empty stubs, and 28 of the R5 universe's 544 tickers are
+    among them - AAPL, AMZN, GOOGL, AMD, T and 23 more, i.e. the gap is
+    concentrated in mega-caps. Every institutional grade ever published was
+    computed on a universe silently missing them.
+
+    The absence is now RECORDED beside the artifact and SHOUTED below the
+    floor - the L769 rule (a silent fallback needs a landing to warn into)
+    applied to a data-absence path rather than a value fallback.
+    """
+    import json as _json
+    cov = (len(tickers) - len(no_data)) / len(tickers) if tickers else 0.0
+    rec = {"as_of": str(as_of), "tickers_requested": len(tickers),
+           "tickers_with_data": len(tickers) - len(no_data),
+           "coverage": round(cov, 4), "no_data_tickers": sorted(no_data),
+           "floor": COVERAGE_FLOOR}
+    (OUT_DIR / f"coverage_{as_of}.json").write_text(
+        _json.dumps(rec, indent=1), encoding="utf-8")
+    if cov < COVERAGE_FLOOR:
+        print(f"*** 13F COVERAGE {cov:.1%} IS BELOW THE {COVERAGE_FLOOR:.0%} "
+              f"FLOOR: {len(no_data)} of {len(tickers)} tickers have NO 13F "
+              f"data and will silently never fire. First 10: "
+              f"{sorted(no_data)[:10]} ***")
+    else:
+        print(f"13F coverage {cov:.1%} ({len(no_data)} tickers without data)")
+    return cov
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--as-of", default="2024-01-01")
@@ -233,6 +267,7 @@ def main():
 
     print(f"Computing persistence at {as_of} for {len(tickers)} tickers...")
     rows = []
+    no_data: list[str] = []
     n_data = 0
     for i, t in enumerate(tickers):
         if i % 100 == 0 and i > 0:
@@ -241,6 +276,9 @@ def main():
         if out is not None:
             rows.append(out)
             n_data += 1
+        else:
+            no_data.append(t)   # B2635: the absence is recorded, never silent
+    _write_coverage(as_of, tickers, no_data)
     if not rows:
         print(f"WARN: No persistence data extracted at {as_of}")
         empty = pd.DataFrame(columns=[
