@@ -1,0 +1,407 @@
+{
+ "prereg": "b2628_family_pass_prereg.json",
+ "reference": "institutional_committed_growth_long",
+ "reference_holdout_sharpe": 0.757,
+ "graded_at": "2026-09-07T01:26:57Z",
+ "siblings": {
+  "institutional_breakout_confirmation_long": {
+   "n_trades": 642,
+   "overlap_with_icg": 0.626,
+   "selected_exit": "breakeven_plus_trail",
+   "holdout_n": 140,
+   "holdout_sharpe": 0.835,
+   "gates": {
+    "pooled_sharpe": false,
+    "profit_factor": true,
+    "sortino": true,
+    "psr": true,
+    "min_trades_holdout": true,
+    "min_trades_full_period": true
+   },
+   "gates_passed": 5,
+   "verdict": "FAIL",
+   "non_shared_holdout_n": 15,
+   "non_shared_holdout_sharpe": 0.552,
+   "R1_campaign_consideration": false,
+   "R2_campaign_consideration": true
+  },
+  "institutional_buy_momentum_long": {
+   "n_trades": 2644,
+   "overlap_with_icg": 0.239,
+   "selected_exit": "r_multiple_2r",
+   "holdout_n": 580,
+   "holdout_sharpe": -0.308,
+   "gates": {
+    "pooled_sharpe": false,
+    "profit_factor": false,
+    "sortino": false,
+    "psr": false,
+    "min_trades_holdout": true,
+    "min_trades_full_period": true
+   },
+   "gates_passed": 2,
+   "verdict": "FAIL",
+   "non_shared_holdout_n": 375,
+   "non_shared_holdout_sharpe": -0.571,
+   "R1_campaign_consideration": false,
+   "R2_campaign_consideration": true
+  },
+  "institutional_cluster_long": {
+   "n_trades": 2451,
+   "overlap_with_icg": 0.712,
+   "selected_exit": "breakeven_plus_trail",
+   "holdout_n": 596,
+   "holdout_sharpe": 0.772,
+   "gates": {
+    "pooled_sharpe": false,
+    "profit_factor": true,
+    "sortino": true,
+    "psr": true,
+    "min_trades_holdout": true,
+    "min_trades_full_period": true
+   },
+   "gates_passed": 5,
+   "verdict": "FAIL",
+   "non_shared_holdout_n": 47,
+   "non_shared_holdout_sharpe": 0.567,
+   "R1_campaign_consideration": false,
+   "R2_campaign_consideration": true
+  },
+  "institutional_high_conviction_long": {
+   "n_trades": 2473,
+   "overlap_with_icg": 0.33,
+   "selected_exit": "breakeven_plus_trail",
+   "holdout_n": 738,
+   "holdout_sharpe": 0.711,
+   "gates": {
+    "pooled_sharpe": false,
+    "profit_factor": true,
+    "sortino": true,
+    "psr": true,
+    "min_trades_holdout": true,
+    "min_trades_full_period": true
+   },
+   "gates_passed": 5,
+   "verdict": "FAIL",
+   "non_shared_holdout_n": 432,
+   "non_shared_holdout_sharpe": 0.571,
+   "R1_campaign_consideration": false,
+   "R2_campaign_consideration": true
+  },
+  "institutional_increased_with_directors_long": {
+   "n_trades": 103,
+   "overlap_with_icg": 0.748,
+   "selected_exit": "time_stop_10d",
+   "holdout_n": 29,
+   "holdout_sharpe": -0.333,
+   "gates": {
+    "pooled_sharpe": false,
+    "profit_factor": false,
+    "sortino": false,
+    "psr": false,
+    "min_trades_holdout": true,
+    "min_trades_full_period": true
+   },
+   "gates_passed": 2,
+   "verdict": "FAIL",
+   "non_shared_holdout_n": 5,
+   "non_shared_holdout_sharpe": null,
+   "R1_campaign_consideration": false,
+   "R2_campaign_consideration": true
+  },
+  "institutional_insider_combo_long": {
+   "n_trades": 2751,
+   "overlap_with_icg": 0.663,
+   "selected_exit": "breakeven_plus_trail",
+   "holdout_n": 616,
+   "holdout_sharpe": 0.775,
+   "gates": {
+    "pooled_sharpe": false,
+    "profit_factor": true,
+    "sortino": true,
+    "psr": true,
+    "min_trades_holdout": true,
+    "min_trades_full_period": true
+   },
+   "gates_passed": 5,
+   "verdict": "FAIL",
+   "non_shared_holdout_n": 57,
+   "non_shared_holdout_sharpe": 0.536,
+   "R1_campaign_consideration": false,
+   "R2_campaign_consideration": true
+  },
+  "institutional_multi_quarter_persistence_long": {
+   "n_trades": 2516,
+   "overlap_with_icg": 0.725,
+   "selected_exit": "breakeven_plus_trail",
+   "holdout_n": 667,
+   "holdout_sharpe": 0.803,
+   "gates": {
+    "pooled_sharpe": false,
+    "profit_factor": true,
+    "sortino": true,
+    "psr": true,
+    "min_trades_holdout": true,
+    "min_trades_full_period": true
+   },
+   "gates_passed": 5,
+   "verdict": "FAIL",
+   "non_shared_holdout_n": 47,
+   "non_shared_holdout_sharpe": 0.63,
+   "R1_campaign_consideration": false,
+   "R2_campaign_consideration": true
+  },
+  "institutional_oversold_long": {
+   "n_trades": 386,
+   "overlap_with_icg": 0.692,
+   "selected_exit": "breakeven_plus_trail",
+   "holdout_n": 93,
+   "holdout_sharpe": 0.649,
+   "gates": {
+    "pooled_sharpe": false,
+    "profit_factor": true,
+    "sortino": true,
+    "psr": true,
+    "min_trades_holdout": true,
+    "min_trades_full_period": true
+   },
+   "gates_passed": 5,
+   "verdict": "FAIL",
+   "non_shared_holdout_n": 8,
+   "non_shared_holdout_sharpe": null,
+   "R1_campaign_consideration": false,
+   "R2_campaign_consideration": true
+  },
+  "institutional_persistence_breakout_long": {
+   "n_trades": 532,
+   "overlap_with_icg": 0.699,
+   "selected_exit": "breakeven_plus_trail",
+   "holdout_n": 136,
+   "holdout_sharpe": 0.852,
+   "gates": {
+    "pooled_sharpe": false,
+    "profit_factor": true,
+    "sortino": true,
+    "psr": true,
+    "min_trades_holdout": true,
+    "min_trades_full_period": true
+   },
+   "gates_passed": 5,
+   "verdict": "FAIL",
+   "non_shared_holdout_n": 12,
+   "non_shared_holdout_sharpe": null,
+   "R1_campaign_consideration": false,
+   "R2_campaign_consideration": true
+  },
+  "institutional_persistence_momentum_long": {
+   "n_trades": 2324,
+   "overlap_with_icg": 0.258,
+   "selected_exit": "breakeven_plus_trail",
+   "holdout_n": 564,
+   "holdout_sharpe": 0.631,
+   "gates": {
+    "pooled_sharpe": false,
+    "profit_factor": true,
+    "sortino": true,
+    "psr": true,
+    "min_trades_holdout": true,
+    "min_trades_full_period": true
+   },
+   "gates_passed": 5,
+   "verdict": "FAIL",
+   "non_shared_holdout_n": 361,
+   "non_shared_holdout_sharpe": 0.534,
+   "R1_campaign_consideration": false,
+   "R2_campaign_consideration": true
+  },
+  "institutional_persistence_oversold_long": {
+   "n_trades": 716,
+   "overlap_with_icg": 0.786,
+   "selected_exit": "breakeven_plus_trail",
+   "holdout_n": 199,
+   "holdout_sharpe": 0.675,
+   "gates": {
+    "pooled_sharpe": false,
+    "profit_factor": true,
+    "sortino": true,
+    "psr": true,
+    "min_trades_holdout": true,
+    "min_trades_full_period": true
+   },
+   "gates_passed": 5,
+   "verdict": "FAIL",
+   "non_shared_holdout_n": 12,
+   "non_shared_holdout_sharpe": null,
+   "R1_campaign_consideration": false,
+   "R2_campaign_consideration": true
+  },
+  "institutional_persistence_volume_long": {
+   "n_trades": 1199,
+   "overlap_with_icg": 0.324,
+   "selected_exit": "breakeven_plus_trail",
+   "holdout_n": 286,
+   "holdout_sharpe": 0.615,
+   "gates": {
+    "pooled_sharpe": false,
+    "profit_factor": true,
+    "sortino": true,
+    "psr": true,
+    "min_trades_holdout": true,
+    "min_trades_full_period": true
+   },
+   "gates_passed": 5,
+   "verdict": "FAIL",
+   "non_shared_holdout_n": 151,
+   "non_shared_holdout_sharpe": 0.387,
+   "R1_campaign_consideration": false,
+   "R2_campaign_consideration": true
+  },
+  "institutional_persistent_holders_long": {
+   "n_trades": 1955,
+   "overlap_with_icg": 0.826,
+   "selected_exit": "breakeven_plus_trail",
+   "holdout_n": 590,
+   "holdout_sharpe": 0.774,
+   "gates": {
+    "pooled_sharpe": false,
+    "profit_factor": true,
+    "sortino": true,
+    "psr": true,
+    "min_trades_holdout": true,
+    "min_trades_full_period": true
+   },
+   "gates_passed": 5,
+   "verdict": "FAIL",
+   "non_shared_holdout_n": 41,
+   "non_shared_holdout_sharpe": 0.53,
+   "R1_campaign_consideration": false,
+   "R2_campaign_consideration": false
+  },
+  "institutional_recent_init_momentum_long": {
+   "n_trades": 2268,
+   "overlap_with_icg": 0.309,
+   "selected_exit": "breakeven_plus_trail",
+   "holdout_n": 611,
+   "holdout_sharpe": 0.635,
+   "gates": {
+    "pooled_sharpe": false,
+    "profit_factor": true,
+    "sortino": true,
+    "psr": true,
+    "min_trades_holdout": true,
+    "min_trades_full_period": true
+   },
+   "gates_passed": 5,
+   "verdict": "FAIL",
+   "non_shared_holdout_n": 370,
+   "non_shared_holdout_sharpe": 0.54,
+   "R1_campaign_consideration": false,
+   "R2_campaign_consideration": true
+  },
+  "institutional_recent_init_volume_long": {
+   "n_trades": 1075,
+   "overlap_with_icg": 0.346,
+   "selected_exit": "breakeven_plus_trail",
+   "holdout_n": 286,
+   "holdout_sharpe": 0.615,
+   "gates": {
+    "pooled_sharpe": false,
+    "profit_factor": true,
+    "sortino": true,
+    "psr": true,
+    "min_trades_holdout": true,
+    "min_trades_full_period": true
+   },
+   "gates_passed": 5,
+   "verdict": "FAIL",
+   "non_shared_holdout_n": 151,
+   "non_shared_holdout_sharpe": 0.387,
+   "R1_campaign_consideration": false,
+   "R2_campaign_consideration": true
+  },
+  "institutional_strong_conviction_long": {
+   "n_trades": 1826,
+   "overlap_with_icg": 0.838,
+   "selected_exit": "breakeven_plus_trail",
+   "holdout_n": 590,
+   "holdout_sharpe": 0.774,
+   "gates": {
+    "pooled_sharpe": false,
+    "profit_factor": true,
+    "sortino": true,
+    "psr": true,
+    "min_trades_holdout": true,
+    "min_trades_full_period": true
+   },
+   "gates_passed": 5,
+   "verdict": "FAIL",
+   "non_shared_holdout_n": 41,
+   "non_shared_holdout_sharpe": 0.53,
+   "R1_campaign_consideration": false,
+   "R2_campaign_consideration": false
+  },
+  "institutional_volume_confirmation_long": {
+   "n_trades": 1387,
+   "overlap_with_icg": 0.294,
+   "selected_exit": "hybrid_50pct_target",
+   "holdout_n": 295,
+   "holdout_sharpe": 0.399,
+   "gates": {
+    "pooled_sharpe": false,
+    "profit_factor": true,
+    "sortino": true,
+    "psr": true,
+    "min_trades_holdout": true,
+    "min_trades_full_period": true
+   },
+   "gates_passed": 5,
+   "verdict": "FAIL",
+   "non_shared_holdout_n": 160,
+   "non_shared_holdout_sharpe": 0.21,
+   "R1_campaign_consideration": false,
+   "R2_campaign_consideration": true
+  },
+  "institutional_with_directors_long": {
+   "n_trades": 110,
+   "overlap_with_icg": 0.709,
+   "selected_exit": "time_stop_10d",
+   "holdout_n": 31,
+   "holdout_sharpe": -0.06,
+   "gates": {
+    "pooled_sharpe": false,
+    "profit_factor": false,
+    "sortino": false,
+    "psr": false,
+    "min_trades_holdout": true,
+    "min_trades_full_period": true
+   },
+   "gates_passed": 2,
+   "verdict": "FAIL",
+   "non_shared_holdout_n": 7,
+   "non_shared_holdout_sharpe": null,
+   "R1_campaign_consideration": false,
+   "R2_campaign_consideration": true
+  },
+  "institutional_with_officers_long": {
+   "n_trades": 98,
+   "overlap_with_icg": 0.694,
+   "selected_exit": "r_multiple_3r",
+   "holdout_n": 24,
+   "holdout_sharpe": -3.24,
+   "gates": {
+    "pooled_sharpe": false,
+    "profit_factor": false,
+    "sortino": false,
+    "psr": false,
+    "min_trades_holdout": true,
+    "min_trades_full_period": true
+   },
+   "gates_passed": 2,
+   "verdict": "FAIL",
+   "non_shared_holdout_n": 6,
+   "non_shared_holdout_sharpe": null,
+   "R1_campaign_consideration": false,
+   "R2_campaign_consideration": true
+  }
+ }
+}
