@@ -1,2918 +1,2983 @@
-<!-- B1497 (2026-08-09). Owner-requested optimisation plan for the 207-strategy population.
-     STATUS: PROPOSAL. Nothing here is implemented. Owner approval required per phase. -->
-
-# Strategy Optimisation Plan — Phase 1 (tightening) and Phase 2 (loosening)
-
-**Population:** 207 strategies (`222 registered - 3 Phase-1B roster - 12 disabled`).
-**Current roster:** 3 cells / 3 distinct strategies, all QUALIFIERS (S6-B2409, owner ruling
-2026-08-30, retired the ROBUST/PROVISIONAL split - see PHASE_1B_ROSTER.md).
-**Purpose of this programme:** the roster is 3 cells. Optimisation is not an enhancement; it is the
-only remaining path to a deployable Phase 1B.
-
----
-
-## 0a. SUPERSESSION BANNER — B1500-B1510 (2026-08-10)
-
-The first worked example (`smc_breaker_block_long`) ran end-to-end and **corrected four load-bearing
-claims in this plan.** Read this before Sections 2.2 / 2.3 / 2.3a, which are marked inline.
-
-| # | claim as originally written | corrected by measurement |
-|---|---|---|
-| 1 | "no resimulation is required for tightening" | **Only for SUBSET-SAFE parameters.** A parameter that can ADD fires (`swing_length`, EMA `span`) produces trades R5 never took, and the cube holds no P&L for those. §2.3a corrected. |
-| 2 | population = 41 strategies at n>300 | **The band is built on UNVERIFIED n.** The worked example's measured holdout n is **147**, not the 356 carried — it was never in the n>300 band. **The whole partition must be re-derived from measured n (S6-B1502a).** |
-| 3 | tunable surface = numerics in the gate expression | **Wrong layer.** The surface is the transitive closure of the PRODUCER parameters. A strategy whose gate is two booleans still had 6 producer parameters (L355). |
-| 4 | cost scales with combinations | **Cost = ENGINE RUNS = product of the fire-ADDING bands only.** 4,000 combinations needed **20** runs, not 4,000 (L371). |
-
-**Reporting is now standardised and mechanically enforced — see §6.**
-
-## 0b. STEP-1 WINDOW — THE THREE CONSTRAINTS CANNOT ALL BE MET (B1817, MEASURED)
-
-**`S6-B1605c` withdrew the acceptance of Step 1 reading the holdout and proposed moving Step 1 to
-`2023-05-05 -> 2025-05-05`. That remedy CONTRADICTS the 2026-08-17 ruling** in SS10.1: *"2022-23 data
-is not wanted even for exit selection. Both phases run 2024-05-05 -> 2026-05-05."*
-
-Three standing constraints, and no window satisfies all three:
-
-| constraint | source |
-|---|---|
-| holdout LOCKED to `2025-05-05 -> 2026-05-05` | SS0, owner 2026-08-09 |
-| no 2022-23 data, even for exit selection | SS10.1, owner 2026-08-17 |
-| Step 1 must not rank on the holdout | `S6-B1605c`, owner 2026-08-17 (*"undo"*) |
-
-**The obvious compromise is measurably self-defeating.** A Step-1 window of
-`2024-05-05 -> 2025-05-05` honours all three by construction, but MEASURED on the four existing
-cubes it keeps only **50-56 pct of entries**:
-
-```
-cfg1              330 entries  ->  183 (55.5pct) before the holdout boundary
-cfg2              420          ->  236 (56.2pct)
-w1_sw20_span21    320          ->  167 (52.2pct)
-w1_sw20_span50    302          ->  152 (50.3pct)
-```
-
-**At the FULL sample, `--min-n 10` still leaves 32-60 pct of the grid `NO_EXIT_SELECTABLE`.** Halving
-the sample pushes most of it back to unanswerable, so the window fix destroys the search it is meant
-to make trustworthy.
-
-**Therefore `S6-B1605c` and `S6-B1696c` are ONE decision, not two.** Restoring the sample at a
-holdout-respecting window needs the universe lever - 100 -> ~200 tickers, roughly doubling fires at
-~2x runtime (`S6-B1696c` option (a)). **That is the only path that satisfies every constraint; it
-pays in runtime rather than in correctness or data policy.**
-
-## 0. HOLDOUT POLICY — SETTLED BY OWNER (2026-08-09)
-
-**RULING: the holdout window is LOCKED to R5's dates. `2025-05-05 -> 2026-05-05`, 1 year, unchanged.**
-Owner: *"We do not change the dates and duration of the holdout period. they remain the same as in
-r5. this is to ensure comparibility. No logic changing that even if its been graded 9 times on
-pre-optimized gates."*
-
-**Option A (re-partition) is REJECTED. Option B (extend forward) is unavailable.**
-
-**The rationale is sound and worth recording:** moving the holdout would make the optimised roster
-incomparable to the R5 baseline, the R6b result, and every measurement taken this session. A
-programme whose purpose is to show that optimisation improves on R5 cannot be graded on a different
-window than R5 was. **Comparability is the point of a fixed holdout, and it outranks the marginal
-statistical benefit of a fresher one.**
-
-### This does NOT conflict with Option C — C is now the operative design
-Option C (nested cross-validation inside the IS folds, holdout read exactly ONCE at the end)
-**never proposed changing the holdout's dates.** It governs how many TIMES the fixed window is read,
-not where it sits. So the owner's ruling and Option C are complementary, and C is now the design:
-
-- **The holdout window is fixed** (owner ruling)
-- **Phase 1 reads it exactly once**, on the final <=41-config candidate set (Option C)
-- **All intermediate optimisation happens inside F1/F2/F3**, which the holdout ruling does not touch
-
-### Moderating the L351 concern — the owner's distinction is correct
-L351 counted ~9 holdout regrades and treated them as accumulated selection pressure. The owner's
-phrase **"pre-optimized gates"** identifies a real distinction I understated:
-
-| what those 9 reads did | what they did NOT do |
-|---|---|
-| calibrated a handful of GLOBAL gate parameters (Sharpe 0.5 -> 1.0; `min_trades` 100 -> 25/100) | select among strategies on holdout performance |
-| effective search space: ~3-5 distinct gate configurations | 41 x 20 strategy-specific configs |
-
-Tuning a few global thresholds is a far smaller multiple-testing spend than cherry-picking
-strategies, and the Sharpe bar in particular was chosen **on principle** ("0.5 is too weak"), from a
-sensitivity curve presented before the choice -- not by scanning for whichever value produced the
-nicest roster. That is materially different from optimisation.
-
-**The spend is real but small.** L351 stands as a discipline (count holdout reads project-wide) with
-its magnitude corrected: the prior reads consumed little, and the reason to adopt Option C is
-FORWARD-LOOKING -- Phase 1's 820 candidate configs are the genuine threat, not the 9 that happened.
-
-## 1. GOVERNING CONSTRAINTS (bind both phases)
-
-1. **The holdout is read ONCE per phase, at the end, on the final candidate set.** Not per
-   strategy, not per iteration, not to "check how it's going".
-2. **Pre-registration.** The search space -- which signals, which thresholds, which objective -- is
-   written to `EXECUTION_QUEUE.md` and committed BEFORE any score is computed. A grid chosen after
-   seeing results is not a grid, it is a story.
-3. **FDR budget is declared up front.** Every config tested counts toward the family. If Phase 1
-   tests 41 strategies x 20 configs, the family is 820 and BH-FDR is applied at that m -- not at the
-   number that happened to survive.
-4. **Selection statistics never touch the grading window.** The B1452 retraction and the B1454
-   de-dup correction are both instances of this being violated in mild forms.
-5. **Every reported number ships with its diagnostics** -- sensitivity curve, leave-one-out
-   contribution, churn (in/out), and effective breadth (CHECKLIST #175, #176).
-6. **There is NO usable prior for this population.** *(Corrected 2026-08-09 - owner: "The R6b prior
-   is the base rate - this is incorrect especially for the untouched strategies.")* R6b was a
-   **LOOSENING** experiment on **14 already-examined** strategies and graded 4 held / 9 failed
-   (p=0.954). Phase 1 is **TIGHTENING** on **41 mostly-never-touched** strategies. Different
-   operation, different population - citing it as the base rate was a category error. R6b remains
-   relevant as evidence that *IS-fitted changes can fail on holdout*, i.e. as motivation for the
-   discipline, but **not as a numerical expectation.** Phase 1 has no prior; that is itself a reason
-   to run it.
-
----
-
-## 2. PHASE 1 — TIGHTENING (offline for SUBSET-SAFE params only — see §2.3a)
-
-### 2.1 Why tightening is cheap and loosening is not
-`trade_log.csv` carries a `signals_at_entry` column: the **complete producer signal dict at the
-entry bar**, ~22 KB per trade (verified B1497: `{"pivot": 158.6, "cpr_narrow": true, "cam_r4":
-161.79, ...}`). Therefore:
-
-- **TIGHTENING is exact and free.** A tighter threshold selects a strict SUBSET of trades that
-  already exist, with known outcomes. Recomputing any subset's statistics needs no engine.
-- **LOOSENING is impossible offline.** A looser threshold admits trades that were never generated.
-  No amount of replay conjures them.
-
-### 2.2 Population — 41 strategies (n > 300)  🔴 SUPERSEDED, see §0a #2
-
-> **CORRECTION B1502.** The band assignments below were never validated against measured holdout n.
-> The first strategy examined, `smc_breaker_block_long`, was treated as n>300; its MEASURED holdout
-> n is **147** (full-period 352), which places it MID-BAND. **Re-derive every band from measured n
-> before Phase 1 is scoped (S6-B1502a).** The counts below are retained for lineage only.
-
-
-| band | strategies | in Phase 1? |
-|---|---|---|
-| **n > 300** | **41** | **YES — Phase 1.1 / 1.2** |
-| 100 < n <= 300 | 58 | Phase 1.3, only after 1.1 validates (n-floor risk) |
-| n <= 100 | 45 | NO — Phase 2 |
-| no gradable cell | 63 | NO — Phase 2 |
-
-**Why n > 300 first:** in that band neither `min_trades` leg can bind, so the search has no
-n-floor interaction and tightening cannot starve a cell into failing a different gate. It is the
-clean test of whether the method works at all.
-
-### 2.3 Method — six steps
-
-**Step 1 — EXTRACT.** Parse `signals_at_entry` per strategy into a feature matrix, IS rows only
-(`2022-05-05 -> 2025-05-05`). Chunked parsing; ~22 KB/trade means a strategy with 1,200 IS trades
-is ~26 MB of JSON. Holdout rows extracted to a **separate sealed file** that the optimiser cannot
-read (enforced by a path the Phase-1 code has no reference to).
-
-**Step 2 — PRE-REGISTER THE GRID.** Per strategy:
-- **Which signals:** ONLY those the strategy's source actually consumes, read from the gate
-  expression via `inspect.getsource` -- never guessed from names (L279: a name-based inference
-  wrongly excused a mirror because B1194 had made the name stale).
-- **Which thresholds:** fixed quantiles of the observed IS distribution (deciles), so the grid is
-  data-defined but *rule*-defined, not cherry-picked.
-- **Cap: ARBITRARY-PENDING-JUSTIFICATION.** *(Owner: "why 41 x 20?")* **41 is measured** -- the
-  n>300 population. **20 was arbitrary** -- I wrote it without a basis, which violates CHECKLIST
-  #165 (every selection rule must be justified on a measured basis or explicitly labelled
-  arbitrary). Labelling it now rather than defending it. The cap should be DERIVED, and the honest
-  way is: cap = the number of decile thresholds x the number of consumed numeric signals, computed
-  PER STRATEGY from its actual gate expression. A strategy gating on one numeric signal has ~9
-  candidate thresholds; one gating on three has ~27. **The real family size is therefore the sum of
-  per-strategy grids, not 41 x a round number** -- and it must be counted before scoring, not
-  estimated. S6-B1499a.
-- Committed to the queue BEFORE any scoring.
-
-**Step 3 — SCORE ON IS FOLDS SEPARATELY.**
-*(Owner challenge 2026-08-09: "is this step really necessary? Holdout is the only one that should
-matter and not these folds? same for step 4?")*
-
-**The folds are not a grading mechanism. They are where SELECTION happens.** Every config must be
-chosen somewhere, and there are only two places:
-- **On the holdout** -- this is the B1452 lookahead, retracted. With 20 configs per strategy a
-  maximum-over-20 on the graded window almost always "passes", and the number means nothing.
-- **On the IS** -- the config is chosen blind to the holdout, then graded once.
-
-So Step 3's existence is not optional; the holdout *is* the only thing that decides, and Step 3 is
-what keeps it able to decide.
-
-**Step 4 — FOLD-STABILITY FILTER. This one IS optional, and here is the honest trade-off.**
-
-| | select on POOLED IS (skip Step 4) | require all 3 folds (Step 4) |
-|---|---|---|
-| candidates reaching the holdout | more | far fewer |
-| protection against IS overfit | none beyond the holdout itself | strong -- a config must work in 2022-23 AND 2023-24 AND 2024-25 |
-| cost | some holdout tests wasted on IS-noise winners | **kills real candidates that happen to be fold-uneven** |
-
-**Recommendation: keep Step 4, but as a REPORTED TAG rather than a hard filter.** Score every config
-on pooled IS *and* record its fold-stability; select the pooled-IS winner but carry
-`fold_stable: true/false` into the holdout grade. That way:
-- nothing real is silently killed before it reaches the holdout (the owner's concern), and
-- if fold-unstable configs systematically fail the holdout, that is measured evidence for
-  hard-filtering in Phase 2 rather than an assumption imposed now.
-
-This is strictly more informative than either extreme and costs nothing.
-
-**Step 5 — ONE CONFIG PER STRATEGY, and why the FDR family is 41 not 820.**
-*(Owner: "explain")*
-
-BH-FDR controls false discoveries among **hypotheses tested on the grading data**. The 820 IS scores
-are not hypotheses tested on the holdout -- **they never touch it**. The holdout sees exactly one
-hypothesis per strategy: *"does this strategy's chosen config have positive edge out of sample?"*
-That is <= 41 tests, so m = 41 + 2 incumbents.
-
-**This is only valid if the IS/holdout separation is airtight.** If any holdout information leaks
-into the choice of config, the 820 become real holdout tests and m must be 820.
-
-**CORRECTED B1820 (`S6-B1705c`, owner: *"major and unforgivable"*).** This paragraph previously
-claimed the separation was *"enforced mechanically ... a file path containing IS rows only and no
-reference to the holdout file"*. **NO SUCH FILE PATH EXISTS** - the grader is handed the full cube
-and slices it itself. **The separation is nonetheless real, by two mechanisms this document never
-named:**
-
-| mechanism | where | verified |
-|---|---|---|
-| `select_exit` slices `in_sample()` ITSELF, so the EXIT choice cannot see the holdout | `roster_core.py:241` | `test_b1800_step1_exit_selection_is_is_only` - a holdout-only frame yields NO exit, with a live control proving the fixture can select |
-| Step 1 ranks on **`is_sharpe`**, not `sharpe`; `rankable` REQUIRES a non-null IS Sharpe | `tighten_breaker_block.py:376` | B1718 P0-2, owner-approved |
-
-**A claimed mechanism that does not exist is worse than an acknowledged gap**, because it stops
-anyone looking. Both real mechanisms are code-level and testable; the promised one was neither.
-
-**The conservative alternative is m = 820**, which would raise the BH threshold roughly 20x tighter
-and almost certainly admit nothing. Both readings are defensible; the choice is owner decision #4.
-
-**Step 6 — GRADE ONCE.** The <= 41 chosen configs are graded on the holdout in a single pass, with
-BH-FDR across that family plus the 2 incumbents. **This is the only holdout read in Phase 1.**
-
-### 2.3a RESIMULATION — the rule is SUBSET-SAFETY, not "tightening"  🔴 CORRECTED B1508
-
-*(Owner concern: "we would need to resimulate on the entire cube. thus the best strategy x exit cell
-post optimization and rerun may change after tightening.")*
-
-**The original answer — "tightening never needs the engine" — was too broad.** The correct
-criterion is whether a parameter can only REMOVE fires or can also ADD them.
-
-| | parameter class | cube-gradable? | why |
-|---|---|---|---|
-| ✅ | **SUBSET-SAFE** — can only remove fires | **YES, free and exact** | every surviving trade already exists in the cube under all 26 exits, so grading is a lookup |
-| 🔴 | **FIRE-ADDING** — can change WHICH bars fire | **NO — needs the engine** | produces `(ticker, date)` pairs R5 never took; the cube holds no P&L for them |
-
-A parameter is fire-adding whenever it changes the producer's own detection (e.g. `swing_length`
-rebuilds the order-block set) or swaps one leg of the gate for a different signal (e.g. EMA span
-200 -> 50). **Neither is "loosening" in the ordinary sense, and both were mis-classified as free
-under the original wording.**
-
-VERIFIED B1499: for `macd_crossover|long`, all 202 sampled `(ticker, entry_date)` trades carry
-**26 distinct `exit_method` rows each**. So the subset-safe half is genuinely exact — the best exit
-CAN change when the population changes, and Step 3 re-selects it, but no simulation is involved.
-
-**Cost consequence (L371).** The run count is the product of the FIRE-ADDING bands alone; every
-subset-safe combination then derives offline from each run. For the worked example: 4,000
-combinations, but **20 engine runs** (4 `swing_length` x 5 EMA `span`), with all 200 subset-safe
-combinations free inside each. Costing by combinations would have overstated the workload 200x.
-
-### 2.4 Error checks (each one closes a defect this session actually produced)
-
-| check | guards against | lineage |
-|---|---|---|
-| Assert the optimiser has no holdout path in scope | accidental leakage | L276 (B1452) |
-| Assert `full_period_n` is passed wherever the gate is evaluated | a silently no-op gate leg | B1492 |
-| Positive control: a config identical to the current gates must reproduce the current result | extractor/replay bugs | L323 |
-| Negative control: a deliberately absurd threshold must produce zero trades | silent no-op filters | L322 |
-| Assert every scored config's trade count > 0 before scoring | vacuous passes | L325 |
-| Re-derive every published count from the artifact, never from a running tally | count drift | L298 |
-| Run `audit_registration_redundancy.py` after the phase | tightening collapsing two strategies together | CHECKLIST #169 |
-| Report churn (in/out), never only the net | direction assumed rather than measured | L291 |
-
-### 2.5 Standards
-- Every number in the report carries its funnel stage (L295).
-- Sensitivity curve published for any threshold that ends up chosen (L288 / #175).
-- Effective breadth (`N_eff`) reported for the resulting roster, not just the count (#175).
-- ~~PROVISIONAL/ROBUST status applied against the measured selection-noise floor~~ **RETIRED (S6-B2409, owner ruling 2026-08-30): the floor and the split are removed in their entirety - clearing the six live gates IS qualification.** Historical measurements preserved for lineage: per-cell twin grain 0.333 (S6-B1467c/B2009); family-pooled grains B2068/B2080 (iid 0.088, entry-day block 0.2245 at the 62,064-trade EMA pool; SMC pool 10,862 trades, block 0.3115 - b2068/b2081 artifacts).
-- Any strategy whose tightened config differs from its shipped gates is a **strategy change** and
-  needs owner approval before it is written to `screener.py`.
-
-### 2.6 Expected outcome, stated honestly
-The R6b base rate is 4/13. Steps 2 and 4 are designed to beat it, but **the realistic expectation is
-that a minority of the 41 convert** -- and at the Sharpe >= 1.0 bar, possibly very few. If Phase 1
-delivers 3-5 additional qualifying cells that is a doubling of the roster and a success. If it delivers
-zero, that is also an answer: it says the library's edges are not recoverable by threshold tuning,
-and Phase 2 or a new strategy class is required.
-
----
-
-## 3. PHASE 2 — LOOSENING (requires engine runs)
-
-### 3.1 Population — 108 strategies
-45 with n <= 100, plus 63 with no gradable cell at all. These cannot be tightened -- they do not
-fire enough to have a subset worth selecting.
-
-### 3.2 The structural choice
-| approach | cost | notes |
-|---|---|---|
-| **Per-strategy loosening runs** | N engine runs | infeasible: multi-hour each |
-| **ONE permissive superset run** | 1 engine run | loosen gates broadly, generate a superset, then optimise offline by subset selection exactly as Phase 1 |
-
-**Recommendation: the superset run.** One expensive run converts all subsequent loosening
-optimisation into the same free offline problem Phase 1 solves. It is the only approach that scales
-to 108 strategies.
-
-### 3.3 Pre-spend requirements (B1335 Rule 1, and the S6-B1465c precedent)
-Before any engine run: a `run_manifest.json` pinning code SHA, isolation mode, calendar, universe,
-**and a wall-clock projection derived from a timed smoke** -- the field my B1465c manifest initially
-omitted (L333). Plus the written answer to *"what could make this run obsolete?"*, and
-`prelaunch_gate.py --manifest` passing in LOCAL mode (B1488).
-
-**Explicitly: do not launch Phase 2's superset run until Phase 1 has reported.** If threshold
-optimisation cannot rescue strategies that already fire 300+ times, it is unlikely to rescue ones
-that barely fire, and that result should change Phase 2's design before it is paid for.
-
----
-
-## 4. KILL CRITERIA
-
-State these now, so the programme can be stopped on evidence rather than fatigue:
-
-1. **Phase 1 kills itself** if fold-stability (Step 4) eliminates >95% of configs AND the survivors
-   fail holdout FDR. That is the R6b result repeating with better instrumentation, and it means
-   threshold tuning is not the lever.
-2. **Phase 2 is not launched** if Phase 1 converts zero strategies.
-3. **The programme kills itself** if the resulting roster's `N_eff` stays below ~3 regardless of
-   cell count -- a book of correlated cells is not diversified no matter how many pass.
-
----
-
-## 5. OWNER DECISIONS REQUIRED BEFORE ANY WORK  (superseded by §8 — live list)
-
-1. ~~Holdout strategy A/B/C~~ — **SETTLED 2026-08-09.** Window LOCKED to R5 dates for
-   comparability; Option C (read it once, optimise inside the IS folds) is the operative design.
-2. **Mid-band (58 strategies at 100 < n <= 300): in Phase 1 or deferred?**
-3. **Do the 3 AUTO-FAIL screens get implemented against the IS/full-period series (S6-B1495a)
-   before Phase 1 grades?** They currently return `None` on a 1-year holdout.
-4. **FDR family size:** 41 (one config per strategy) or 820 (every config tested)? The conservative
-   reading is 820; the pre-registration + one-winner-per-strategy design is what makes 41 defensible.
-
----
-
-## 6. LOCKED REPORTING STANDARD — CHECKLIST #183 (owner-locked B1510)
-
-Every strategy entering S6-OPT-196 is reported through `scripts/producer_variant_table.py` as ONE
-artifact in three sections. Adding a strategy = adding a `SPECS` entry (formula + params); the
-renderer is strategy-agnostic. **Regenerate, never hand-edit** — a hand-edited copy is reverted by
-the next generation (L286).
-
-### 6.1 Section 1 — BOOLEAN FORMULA (REQUIRED; a SPEC without it is rejected)
-
-Header must state the formula is READ from source, never recalled. Two layers:
-
-```
-=============================== PRODUCER LAYER ===============================
-
-P1  swings  =  swing_highs_lows( ohlc, swing_length = 20 )
-                   -> a bar is a swing high if its high is the highest
-                      across swing_length bars BEFORE and AFTER it
-                   PARAMETER: swing_length = 20   (library default is 50)
-
-P2  ob_df   =  ob( ohlc, swings, close_mitigation = False )
-                   -> emits, per detected block:  OB (+1 bull / -1 bear),
-                      Top, Bottom, MitigatedIndex
-                   PARAMETER: close_mitigation = False
-                      False -> a block counts as mitigated when the HIGH/LOW
-                               pierces it
-                      True  -> only when the CLOSE pierces it  (stricter)
-
-P3  events  =  ob_df[ OB != 0 ].tail( 20 )
-                   PARAMETER: tail N = 20     (hardcoded literal, not an argument)
-
-P4  per event e:   e.is_mitigated = ( MitigatedIndex > 0 )
-                                    AND ( MitigatedIndex < today_index )
-                   -> no parameter; derived from P2's MitigatedIndex
-
-P5  per event e:   e.broken_up    = ( close > e.Top )
-                   -> no parameter; strict inequality, zero buffer
-
-P6  ema_50_200 =  compute_ema_sma( df )      # pairs (9,21),(20,50),(50,200)
-       price_above_ema_200  =  close > EMA(close, span = 200)
-                   PARAMETER: span = 200, emitted only from the (50,200) pair
-
-=============================== STRATEGY LAYER ===============================
-
-breaker_bullish  =  AT LEAST ONE event e in P3 satisfies ALL of:
-                        ( e.OB == -1 )          <- bearish block      [from P2]
-                        AND ( e.is_mitigated )                        [from P4]
-                        AND ( e.broken_up )                           [from P5]
-
-fires            =  ( breaker_bullish )  AND  ( price_above_ema_200 ) [from P6]
-```
-
-**Rules the format enforces.** Every producer gets a `Pn` id, its call signature with the LIVE
-production value inline, a plain-language note on what it emits, and an explicit `PARAMETER:` line
-— or `no parameter` where none exists. The STRATEGY LAYER spells out `AT LEAST ONE ... ALL OF`
-rather than symbolic OR/AND, and tags every clause with the `Pn` it came from, so a reader can walk
-from any gate back to the producer that computes it.
-
-**Why Section 1 exists at all:** at B1500 a strategy was called untunable because its gate read as
-two booleans. Forcing the producer layer to be written first makes that error unwritable — those
-booleans had six parameters behind them (L355).
-
-### 6.2 Section 2 — TABLE A, parameter inventory
-
-One row per `Pn`. Required fields, all test-pinned by `test_b1510_producer_artifact_standard`:
-
-| field | meaning |
-|---|---|
-| `id` | `Pn`, matching Section 1 |
-| `producer` | the function or expression that computes it |
-| `param` | parameter name, or `-` if none exists |
-| `production` | the LIVE value today |
-| `band` | every value to be tested |
-| `subset_safe` | `True` = cube-gradable free, `False` = needs engine resim, `None` = no parameter |
-| `status` | `TESTED` / `UNTESTED` / `PENDING` (tested but never gradable) / `N/A` |
-| `derivation` | **WHY this band holds these values** — must cite a measurement or a stated rule |
-| `evidence` | source `file:line`. **Never inference.** |
-
-`derivation` and `evidence` exist because at B1507 a band was silently narrowed from 5 values to 2
-on an unstated economic hunch (L369). With those fields required, the narrowing cannot be written
-down without exposing that it has no basis.
-
-### 6.3 Section 3 — TABLE B, combination results
-
-15 columns in three groups, taken from `roster_core.evaluate()`'s return dict — **what it emits,
-never a wishlist:**
-
-- **GATED (6) — decide PASS/FAIL:** `pooled_sharpe` >= 1.0, `profit_factor` >= 1.3,
-  `sortino` >= 1.0 (B2008 tier fix: the pooled tier reads `min_sortino_overall`; the 0.7 this
-  line used to quote was the per-regime bar bleeding in - S6-B1903a), `psr` >= 0.95,
-  `min_trades_holdout` >= 25, `min_trades_full_period` > 100 (both verified vs config B2117c)
-- **DIAGNOSTIC (5) — reported, not gated:** `win_rate` (demoted B1387), `payoff`, `expectancy`,
-  `p` (one-sided, H0: SR<=0), `ci_lo` (Sharpe CI lower bound)
-- **CONTEXT (4):** fires, holdout n, full-period n, exit chosen IN-SAMPLE
-
-**Known gap (S6-B1509a, re-verified B2117c):** `max_drawdown` and `calmar` remain ABSENT from
-`roster_core.evaluate()` ("diagnostic" = absent for those two; `metrics.py` has both, L374).
-`deflated_sharpe` IS computed since the B1972-era None-propagation work (roster_core.py:229) -
-the original three-way claim is half-closed.
-
-**Why all 15 and not just Sharpe (L373):** reporting Sharpe alone hid that the worked example's
-`ci_lo` is **-0.034** — its 95% Sharpe lower bound sits below zero. Omitting cheap metrics is not
-brevity, it is suppressing the interval around the headline.
-
-### 6.4 Section 4 — TABLE C, the post-config funnel
-
-Rendered by `scripts/producer_variant_table.py`; header pinned by
-`test_b1510_producer_artifact_standard` alongside Tables A and B. It answers ONE question:
-of everything this config tried, how much survived, and where did the rest stop?
-
-| config | combos | starved-IS | no-Sharpe | graded | distinct | bands | all producer bands tested | median IS-Sharpe | best IS-Sharpe | best IS-CI-lo | best combination |
-
-**ALL PRODUCER BANDS IN THE ROW (B2585, owner directive 2026-09-03 - the format is LOCKED here).** The cell carries **every parameter of the config's family**, derived from that family's own `SPECS` entry in `producer_variant_table.py` - 6 for `smc_breaker_block_long`, 9 for `institutional_committed_growth_long` - each marked with HOW it was exercised:
-
-| marker | meaning | source |
-|---|---|---|
-| `v(fixed)` | pinned by THIS config; the cross-config axis that defines which cube this is | the artifact's `config` block |
-| `v1,v2,...` (bare) | SEARCHED in-cube - the distinct values the engine actually ran | the result rows' own parameter keys |
-| `v1,v2(free)` | graded FREE from the landed cube by the battery's `step2_free_levels` leg | `output_audit/output_<cube>_free_levels.json` |
-| `v1,v2(free, declared)` | gradable free, but NOT graded on this cube - the reproduction gate refused, or no artifact exists | the SPECS `free_band` |
-| `v(not swept)` | held by design: no sweep levels, no free levels, band == production | the SPECS entry |
-| `?` | not recorded - never a number (L580) | - |
-
-**Why it changed:** the cell was built from a hardcoded P1-P6 and NAMED for one family, so every institutional row rendered 4 of its 9 parameters - P1/P2/P3 (the precompute's hygiene knobs) and P7/P8 (the free-graded thresholds) were absent entirely, and a reader could not tell a parameter held by design from one nobody had recorded. Owner, 2026-09-03: *"its not p1-p6 bands tested, it should should be all produced bands tested ... please lock this format"*. The `bands` COUNT now includes free-graded levels for the same reason - a level the battery grades from the landed cube is a value the config exercised, and rendering `-` said *not recorded* about work that was done. Pinned by `test_b2585_table_c_bands_column_carries_every_producer_parameter`, which asserts the family's own parameter count in both directions: removing a parameter from SPECS must remove its cell, which a hardcoded list would survive.
-
-**Superseded text (B2138/B2141, kept for lineage).** The funnel row itself carries the BAND VALUES, comma-separated and semicolon-delimited: `P1=20(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=200(fixed)` - the values for each SEARCHED axis and the fixed VALUE for the two cross-config axes. B2141 replaced counts with values because two configs that searched DIFFERENT grids of the same width are indistinguishable by count alone. The delimiter is a SEMICOLON: a pipe splits the cell into six columns and destroys the table, which is what the first render showed. Values sort numerically through ONE shared helper used by both this column and the block below (L593: two sorts of the same values diverge on the first edit) - so a pasted row says which axes carried the search without a second table. P1 and P6 are read from the artifact's own `config` block, which `tighten_breaker_block.py` has recorded since B2138; before that they were written NOWHERE, which is why a swing-10 cube could be re-graded as swing-20 (S6-B2136) and why pre-B2138 artifacts read `?` there.
-
-The columns are the funnel **in order**, because every drop-off has a different cause and
-lumping them hides which one is binding: `combos` = every parameter combination enumerated;
-`starved-IS` = no exit cleared `min_n` IN-SAMPLE, so grading never happened (the dominant loss,
-85pct at wave 1) — a SAMPLE-SIZE fact, not a quality verdict; `no-Sharpe` = has a verdict but
-`evaluate()` returned no Sharpe (the fourth bucket, found only because the reconciliation assert
-fired — without it 31-66 rows per config vanished silently); `graded` = reached `evaluate()` and
-produced a Sharpe; `distinct` = graded outcomes after equivalence-class collapse, because
-combinations differing only in a SATURATED parameter are the same fire set and counting rows
-overstates the evidence (L473); `bands` = distinct parameter VALUES actually exercised, read from
-the enumerated combinations rather than the grid spec — the spec is what was INTENDED, the
-results are what ran.
-
-**Two properties that make it honest.** `best` ranks on **`is_ci_lo` — the IN-SAMPLE lower
-bound — never Sharpe and never the holdout** (L455 for the Sharpe half; B2136 for the holdout
-half, where the renderer itself was found ranking on the holdout key and reporting a
-holdout-selected pick as "best" even for honestly-graded inputs). An artifact with no in-sample
-key — every pre-B2010 grid — renders its values prefixed `HOLDOUT` so a reader cannot mistake
-one for the other. And the renderer **asserts** that
-`graded + starved-IS + no-Sharpe + zero-fires == combos` rather than trusting the arithmetic.
-
-**PARAMETERS TESTED (added B2137, owner directive; family-complete since B2585).** Beneath the funnel, a second block names the bands each config exercised, one column per parameter of its family - the same derivation and the same markers as the funnel cell above, so the two renders cannot contradict each other. For the SMC family that is P1..P6, read from the result rows' own parameter keys; for the institutional family it is P1..P9:
-
-| config | P1 swing_length | P2 close_mitigation | P3 tail_n | P4 age_bars_max | P5 break_pct_max | P6 span |
-|---|---|---|---|---|---|---|
-| `cfg1` | not recorded | 2: False, True | 6: 1, 2, 3, 5, 10, 20 | 5: 60, 120, 180, 250, None | 5: 0.01, 0.02, 0.03, 0.05, None | not recorded |
-
-A `bands` COUNT says how many values were exercised; this block says WHICH, and an axis pinned
-at a single value is a dimension that bought nothing. Values sort numerically — a string sort
-renders `tail_n` as "1, 10, 2, 20, 3, 5" and hides whether the axis is ordered. An axis absent
-from the artifact reads **`not recorded`**, never `1` (B1898b/L580: an unmeasured value must
-never render as a number). **P1 and P6 are the CROSS-CONFIG axes** — they define which config a
-cube IS, are held fixed within it, and are NOT written into the grid artifact, which is why they
-read `not recorded` for every config graded to date; S6-B2136 records the consequence, that the
-grader defaults `swing_length` to 20 and re-grades a swing-10 cube wrongly unless the value is
-recovered from the run log.
-
-**Format locked B1898 on owner review** (ticket S6-B1705j), four corrections: **(a)** the `PASS`
-column REMOVED — Step 1 is a ranked list with NO gates (B1608; gates belong to Step 2, L471), so
-it reported 0 forever and read as a verdict on unjudged work; **(b)** `no-exit` renamed
-`starved-IS` — the docstring always said sample-size and the HEADER said selection-failure, and
-the header is what gets quoted; **(c)** `bands` added; **(d)** a definition line above EVERY
-render for `starved-IS`, `graded`, `distinct`, `bands` and `ci_lo`, because a pasted table
-travels without its source file. B1898b: a value the artifact does not record renders `-`, never
-`0` — "0 bands" reads as *tested nothing* when the truth is *not recorded* (L580).
-
-**Documented B2134**, after the owner asked whether Table C's format was fixed: it had been
-fixed in CODE since B1898 and was absent from this plan entirely, so a reader working from the
-plan could not know it existed.
-
-### 6.4b Section 4b — TABLE D + D-2, the cross-config ranked list (shipped S6-B2330; documented S6-B2499)
-
-**Table C answers "what happened inside one config"; TABLE D answers "across every
-config, which outcomes rank highest"** — one row per (config × exit) outcome, top 20
-by default. Owner directive 2026-08-28. Documented here for the same reason Table C
-was (B2134): it had been fixed in CODE and absent from this plan entirely.
-
-**Format, locked (read from `producer_variant_table.py:466-626` at documentation
-time, never recalled):**
-
-- **Sort: `is_ci_lo` descending, then `n` descending — and NOTHING is filtered.**
-  Step-1 admission is min-trades ≥ 10 plus a ranked list with NO gates (owner ruling
-  B1608), so every column is displayed, never applied. Sorting on Sharpe was
-  rejected: L455 records that the higher Sharpe can carry a NEGATIVE lower bound.
-- **14 columns:** `# | config | sw | sp | exit | is_ci_lo | n | tier | dup |
-  is_sharpe | cls | holdout_n | full_period_n | verdict`.
-- **`tier` = DEEP n≥100 / MID 30-99 / THIN 10-29.** It exists because of a
-  measurement made while building the table: 0 of a naive top-20 had n ≥ 100, and
-  the best result per band ran +0.098 at n=128, +0.179 at n=40, +1.214 at n=11 —
-  **rank improving monotonically as evidence thins. RANK IS NOT TRUSTWORTHINESS**;
-  a conservative lower bound still favours a tight small sample over a noisy deep
-  one, so `n` sits beside the sort key deliberately.
-- **`dup` reads `k of m`:** this row's (ci_lo, sharpe, n, exit) signature appears in
-  m configs — ONE discovery restated, never independent confirmations. Duplicates
-  are labelled, not dropped: suppressing rows in a step the owner ruled has no gates
-  is itself a gate. `cls` = equivalence-class size.
-- **The exit-selection disclosure prints on the table itself:** Step 1 picks each
-  cell's exit by SHARPE alone (owner ruling B1605, a cheap ranking pass) while this
-  table RANKS by is_ci_lo — two objectives, disclosed because a row can lead on
-  is_ci_lo carrying the exit that won on Sharpe. 24 exit methods are registered and
-  **22 are effective per cell**: next_pivot_target refused on boundary-spanning
-  cells (B2014, `npt_excluded_identity_boundary`) and one collapsed byte-identical
-  to a survivor (B1593).
-- **A per-tier best summary is appended** — the comparison a rank order hides.
-
-**TABLE D-2 — the swept axes for the SAME rows, same order, join on `#`.** A second
-table rather than more columns because at 18 columns a markdown table wraps, which
-is exactly how Table C lost four columns three times. Columns: `# | config |
-P1 swing | P2 close_mit | P3 tail_n | P4 age_bars | P5 break_pct | P6 span |
-npt_excl`. P2-P5 were already in every ranked row's `admit` dict and simply never
-displayed — hiding four of six swept axes was a display defect, not a data gap.
-
-**The renderer is the only source: `python scripts/show_table_d.py`.** Print it,
-never retype it — Table C's docstring records that hand-retyping dropped four
-columns three times (L652). Auto-regenerated at every landing: `run_wave.py:289`
-invokes `postconfig_doc.py`, so the table needs no watcher and no cron.
-
-**Reading discipline (pinned):** `step1_ranking` — Table D's source — holds the TOP
-10 ROWS PER CONFIG, a SELECTED set. **Population claims must be taken over the
-`results` field, never over this table** (L708; test_b2342 pins that the ranking is
-bounded at 10 and its exits are a subset of the population's). Pins on the format:
-test_b2330 (proven on three mutations), test_b2331 (assertions anchored to the
-header ROW after the per-tier summary satisfied a check written for the main
-header — L703/L705).
-
-**SCOPE CAVEAT (S6-B2499 audit finding):** the `sw`/`sp` columns and ALL SIX D-2
-axes are read from HARDCODED keys of the smc_breaker_block spec
-(`P1_swing_length`, `close_mitigation`, `tail_n`, `age_bars_max`, `break_pct_max`,
-`P6_span`). A grid from another family renders `None` in those cells — it degrades
-legibly rather than crashing, but reusing Table D for the institutional family
-needs a per-strategy axis map keyed off SPECS. Ticketed S6-B2500.
-
-### 6.5 The exit registry, and why a cube's exit COUNT is a dated fact
-
-**`len(EXIT_STRATEGIES)` is 24 today** - derived by running the code, never recalled. B2110
-deprecated two on the owner-approved LEVER9 option (a) intersection - never-selected in 482 cell
-selections AND outcome-duplicate of a survivor: `atr_trail_mae_conditional` (100.0pct identical
-to `atr_trail_1x` over 52,700 shared trades) and `smart_money_reversal` (99.3pct). Their
-functions are kept for old-cube replay; only the registry shrank, 26 -> 24.
-
-**So "26 exits per entry" in a post-config ledger entry is not an error - it is a DATED FACT.**
-A cube generated before B2110 legitimately carries 26, and the step-1 sanity check judges every
-cube against the registry AT ITS OWN SHA (B2117c). Quoting that 26 in a present-tense summary
-without saying which era it belongs to is the ambiguity B2140 corrects.
-
-**`regime_flip` is NOT a third deprecation - it was FIXED, and the difference is measurable per
-cube.** The recorded defect (L526 / S6-B1771) is real and permanent for the cubes it describes:
-
-| cube | era | regime_flip rows | real flips | fallback `regime_flip_max_days_20` |
-|---|---|---|---|---|
-| `output_cfg1` | pre-B2043 | 330 | **0** | 330 (100pct) |
-| `output_w1_sw20_span21` | pre-B2043 | 320 | **0** | 320 (100pct) |
-| `output_b2114_ref` | post-B2043 | 95 | **42** | 53 (56pct) |
-
-B2043 root-caused it: `set_worker_regime_map` was defined and NEVER CALLED (one occurrence in
-the codebase - its own definition), beside a placeholder that fabricated a "no" answer. Both
-fixed; the flip branch went live. `roster_core.measure_degraded_exits` confirms it per cube -
-the four pre-fix cubes still collapse the `time_stop_20d`/`regime_flip` pair, and the post-fix
-reference cube lists only `reverse_signal` -> `atr_trail_1x`. **This is why the runbook measures
-degeneracy per cube (#252) instead of maintaining a list: a hand-kept list of broken exits goes
-stale the moment one is repaired, and a stale list nearly retired a working exit at B2139.**
-
-### 6.6 Computed, never hand-written
-
-The generator derives and prints: the **CHECKLIST #182 denominator** ("N of M combinations passed,
-across X of Y applicable producers"), **FULL FACTORIAL**, combinations run, **percent covered**, and
-the **free-vs-resim split**. Hand-counting reintroduced the exact error #182 exists to prevent
-(L368: my "3 of 6" was really "3 of 5").
-
-### 6.7 Drift guard
-
-`validate_spec()` **blocks generation** when a `Pn` appears in Section 1 but has no Table A row, or
-vice versa, and rejects any SPEC lacking a formula. Section 1 and Table A are two views of one
-inventory, and a hand-maintained pair diverges. Verified against three drift modes and in BOTH
-directions, per the B1504 lesson that a gate exercised one way may block everything (L375).
-
----
-
-## 7. WORKED EXAMPLE — `smc_breaker_block_long` (B1500-B1510)
-
-> **B2117c ANNOTATION:** this worked example was built against the STATE breaker gate
-> (`smc_breaker_block_bullish`). **B2114 (owner-approved via the A1 design section 4)
-> converted both breaker legs to the retest-EVENT keys
-> (`smc_breaker_block_*_retest_recent_5d`)** - the STATE reference cube
-> (`output_b2114_ref`) is the comparator. The example's METHOD stands; its gate
-> expressions describe the retired anchor.
-
-The first strategy taken end-to-end. Recorded because the method's failure modes only became
-visible by running it.
-
-### 7.1 What was found
-
-**The gate looked untunable and had 6 producer parameters behind it.** `fires = breaker_bullish AND
-price_above_ema_200` — two booleans, no numbers. Following each to its producer surfaced
-`swing_length`, `close_mitigation`, `tail N`, OB-age recency, the break test, and EMA `span`.
-
-**The signal was saturated.** `smc_breaker_block_bullish` fired on **124 of 124 bars** on AAPL.
-Instrumenting the QUALIFYING EVENT rather than the aggregate rate explained why: it is an `OR` over
-the last 20 order blocks with **no time limit**, so one block aged 294-469 bars, with price 7.5-60%
-away, latches TRUE forever. `tail(20)` is a COUNT window where a TIME window was intended
-(S6-B1500a). Same class as B654 `cpr_narrow` (87% True) and B655 `supertrend_bullish` (99.19%).
-
-**Two populations, cleanly separable.** Across 5 tickers: latches at 17-54% distance and 343-407
-bars old; true retests at 0.8-0.9% and 49-133 bars. An empty gap on BOTH axes (distance 3-7%, age
-134-294), and the axes agree on which bars are which — that gap is what set the bands.
-
-**The tightening DIRECTION was backwards.** A breaker block is a RETEST, so the lever is an UPPER
-bound on distance, not a lower one. The original framing would have selected harder for the latches
-(L359).
-
-### 7.2 Result
-
-**0 of 200 combinations passed, across 3 of 6 applicable producers.**
-24 gradable, 164 NO_EXIT_SELECTABLE, 12 BELOW_POWER_FLOOR.
-
-| knob | effect |
-|---|---|
-| OB-age cap <=180 | 352 -> 109 fires, Sharpe **0.473 -> 0.563** — the filter genuinely works |
-| `close_mitigation=True` | helps in **12 of 12** matched cells, median **+0.005**, best **+0.059** |
-| `tail N` | **inert** — the qualifying event is always among the newest 3 |
-| `break_pct_max` (owner-approved NEW-GATE) | **0 of 160 combinations gradable** — economically the cleanest discriminator, statistically unusable at n=352 |
-
-**All 24 gradable cells fail on `pooled_sharpe` alone**; the other five gates pass everywhere. The
-best cell reaches 0.617 and then fails TWO gates, because the filtering that lifted the ratio cut
-holdout n to 115 and PSR reads sample size.
-
-**The decisive number is not Sharpe.** The R5 baseline's `ci_lo` is **-0.034**. Since a subset
-cannot have a tighter confidence interval than its parent, no tightening can produce a subset whose
-interval excludes zero. That is a stronger argument than the Sharpe gap because it concerns sample,
-not effect size (S6-B1509b).
-
-### 7.3 Cost model, measured
-
-| quantity | value |
-|---|---|
-| full factorial | **4,000** |
-| subset-safe subspace (derives free per run) | 200 |
-| **distinct engine runs** | **20** (4 `swing_length` x 5 EMA `span`) |
-| **measured: 1 ticker x 1 config, full window** | **~35 min** (2.11 s/sim-day x 1,003 days) |
-| 20 configs at ONE ticker | ~12 h |
-| multi-ticker slope | **UNVERIFIED — S6-B1508a** |
-
-**Deliberately not extrapolated to 161 or 503 tickers.** An earlier producer-only estimate came in
-**9x light** against the first real engine measurement (L367); per-sim-day cost may amortise across
-tickers rather than scale linearly, and a ~6-minute run at 10 tickers settles it.
-
-### 7.4 Universe finding
-
-The SP50 subset (top 50 by market cap; **50/50 reconciled against T1a, 50/50 with cached OHLCV**)
-retains only **31 of 352 fires across 11 of 50 tickers**. All 40 combinations returned
-NO_EXIT_SELECTABLE — not a bad result, NO result. **Measure the retention ratio BEFORE running under
-any universe restriction, and halt below the gates' n-floor** (L365, S6-B1505c). Two disclosed
-limits on the subset itself: only 249 of 503 T1a actives carry `market_cap`, so it is the top 50 of
-249 rankable; and selection uses TODAY's cap over a 2022-2026 window, which is survivorship-
-flavoured — acceptable for tuning, not for a verdict (S6-B1504a/b).
-
-### 7.5 What this example changes about the method
-
-1. **Start at the producer layer, always.** The gate expression is not the tunable surface.
-2. **Instrument the qualifying event before tuning anything.** Saturation usually means a stale
-   member of a disjunction is latching, not that a threshold is loose.
-3. **Classify every parameter subset-safe vs fire-adding first.** It decides both the cost model
-   and what can be graded offline.
-4. **Check retention before restricting the universe.**
-5. **A strategy can be un-rescuable for sample reasons rather than edge reasons** — `ci_lo` < 0 on
-   the baseline is a stop sign that no amount of tightening addresses.
-
----
-
-## 8. OPEN OWNER DECISIONS (live as of B1510)
-
-> **2026-08-23 (B2042): E1 DROPPED as a roster path (owner ruling).** The five-arm pilot
-> closes as measurement only; Phase-1B admission runs ONLY through this document's
-> 0->1->2->3 protocol at its ruled shapes, and noise-elimination verification happens in
-> the protocol's own Step 2 on the remaining Tier-1a tickers - not via ad-hoc validation.
-> Canonical rows: S6-B1505b (closure) / S6-B2018a (unblocked).
->
-> **2026-08-22 (B2016): the A-I owner ruling set resolved this table's live members.** E1 approved -
-> the P1 swing sweep {10,20,30,50} runs on SP50 at the ruled 1y search window (arms in flight,
-> `output_b2016_e1/run_manifest.json`); F1 `EMA_PAIRS` plumb SHIPPED (B2016); F2 spans 100/250
-> NOT approved yet; E5 concurrency cap N=2. Ledger rows under S6-B1505b / S6-B1518a are canonical.
-
-| ticket | decision |
-|---|---|
-| **S6-B1508a** | 10-ticker timed run to establish the multi-ticker slope (~6 min). **Removes the last unknown from the cost model.** |
-| **S6-B1507b** | Add EMA spans 100/250? They do NOT exist in `compute_ema_sma` — producer edit, NEW-GATE class. |
-| **S6-B1505a** | Test-universe policy: SP50 vs R5-fired vs full T1a, with a retention-ratio precheck. |
-| **S6-B1509a** | Wire `max_drawdown` / `calmar` / `deflated_sharpe` into `roster_core.evaluate()` as reported-not-gated. |
-| **S6-B1502a** | Re-derive the whole band partition from MEASURED holdout n before Phase 1 is scoped. |
-| **S6-B1505b** | Approve engine resimulation for P1/P6 — gated on S6-B1508a's number. |
-
-**Standing rule (`feedback_ask_before_adding_gates_vs_threshold_only`):** whether optimisation may
-ADD a gate or stays threshold-only is situational — **ask every time**. Label every knob
-EXISTING-THRESHOLD or NEW-GATE before building any grid.
-
-
----
-
-## 9. PER-STRATEGY EXECUTION CHECKLIST (B1520, owner-directed)
-
-**Every strategy entering S6-OPT-196 runs this list in order.** Each item exists because it failed
-on `smc_breaker_block_long`, the first strategy through - the L-number is the incident.
-
-### 9.1 BEFORE any measurement
-
-| # | gate | why (incident) |
-|---|---|---|
-| 1 | **Read the PRODUCER layer, not the gate expression.** Follow every consumed signal to the function that computes it and enumerate that function's parameters. | L355 - a gate reading as two booleans had **6** producer parameters; I called it untunable. |
-| 2 | **Prove each parameter reaches the ENGINE.** Grep the engine's real call path. A parameter the producer accepts but the caller never passes is NOT tunable. | L387 - `screener` called `compute_smc_signals(df, ticker=ticker)`; a 20-config sweep would have produced 20 IDENTICAL cubes. |
-| 3 | **Check whether a variant is ALREADY emitted** before editing a producer to emit it. | L389 - EMA spans 9/20/21/50/200 already existed; the fix was a one-line consumer change, not a producer edit. |
-| 4 | **Label every knob EXISTING-THRESHOLD or NEW-GATE. Any NEW-GATE -> ASK THE OWNER.** | `feedback_ask_before_adding_gates_vs_threshold_only`; L361 - I invented `BREAK_PCT_MAX` and ran 80 out-of-scope combinations. |
-| 5 | **Classify each parameter SUBSET-SAFE (only removes fires) or FIRE-ADDING.** Run count = product of the FIRE-ADDING bands ALONE. | L371 - 4,000 combinations needed **20** engine runs; costing by combinations overstates 200x. |
-
-### 9.2 DERIVING the bands
-
-| # | gate | why |
-|---|---|---|
-| 6 | **Instrument the QUALIFYING EVENT before tuning.** Record what actually satisfied the signal - age, distance, rank - not just the aggregate fire rate. | L360 - saturation (124/124 bars) was ONE stale order block latching, invisible at the aggregate level. |
-| 7 | **Derive band values from the measured distribution.** Never percentile-by-reflex, never a round number. Anchor level 1 at the production value. **Then VERIFY the band against its own derivation text before running, and run `scripts/verify_grid_bands.py` on the grid AFTER — a level that changes nothing is a wasted dimension.** | L356 (deciles on an integer count), L369 (P6 band silently narrowed 5 -> 2), **L473 (P3 `tail_n` claimed to span rank 1-4 with a floor of 3; 10 -> 20 moved 0 of 50 groups and 72pct of cfg1's 200 combinations were redundant)**. |
-| 8 | **State the economic event the signal captures, then check the threshold DIRECTION serves it.** | L359 - a breaker block is a RETEST, so the lever is an UPPER bound; my version selected harder for the noise. |
-| 9 | **Terminate each band where holdout n < 25 or full-period n <= 100.** The gates set the last rung, not taste. | The strict end was untestable on every run - the sample, not the effect, is binding. |
-
-### 9.3 BEFORE any run
-
-| # | gate | why |
-|---|---|---|
-| 10 | **Write `run_manifest.json`, pass `prelaunch_gate.py`.** Pin frozen_sha, isolation, calendar, universe sha256, budget, and enumerate obsolescence risks each with a MECHANICAL gate. | B1335 Rule 1. It caught the P1/P6 blocker before ~14 h was spent. |
-> **B1618 - THE BASELINE UNIVERSE IS 544. OWNER RULED 2026-08-17.** This document previously said
-> **381** in eight places and **544** in section 10.1. `381` was the ABANDONED alphabetically-
-> partitioned chunk (`r5_universe_381.txt`: 100pct A-C, zero mega-caps, 248 tickers the real R5
-> never ran) - the artifact L445 was written about. MEASURED:
-> `output_r5_merged_1_7/trade_exit_detail.csv` holds **544 tickers, 25pct A-C, NVDA/MSFT/TSLA/GOOGL
-> present**. All references are now 544, with every DERIVED quantity RE-MEASURED rather than
-> find-replaced (the exclusion count was 41-of-381 and is **22 of 544**; the 4-year cost estimate
-> rescaled). **`scripts/build_sweep_100.py` still READ the 381 file** - the live `_sweep_100.txt`
-> was correct only because it had been rebuilt by hand, and re-running the builder would have
-> replaced it with a list sharing **31 of 100** tickers. Generator repointed (L479, CHECKLIST #199).
-
-| 11 | **Derive the universe from the BASELINE ARTIFACT, not a roster CSV.** | L378 - R5 ran **544**; T1a has 503. Substituting the universe breaks comparability exactly as changing holdout dates would. |
-| 12 | **Measure the RETENTION RATIO before restricting the universe. Halt below the gates' n-floor.** | L365 - SP50 retained 31 of 352 fires; all 40 combinations returned NO result. |
-| 13 | **ARM THE MONITOR IN THE LAUNCH TURN**: hourly PushNotification while active + a */13 sentinel check + CronDelete on completion. **A run is not launched until its output path to the owner is armed.** | L385 - a sentinel tripped, halted the ladder, and reached no one until the owner asked. |
-| 14 | **Classify each sentinel ERROR (invalidates -> re-run) or FINDING (result valid -> halt for a decision).** | L384 - treating every trip as failure would have discarded a valid rung and re-run it identically. |
-| 15 | **Never extrapolate cost from one point.** Two measured points minimum before any projection. | L367 (9x light), L377 (23pct light), L383 (~100x heavy). Three in one session. |
-
-### 9.4 REPORTING the result
-
-| # | gate | why |
-|---|---|---|
-| 16 | **Use the locked 3-section artifact (SS6 / CHECKLIST #183).** Formula + Table A + Table B, generated, never hand-edited. | Hand-maintained views diverge. |
-| 17 | **Report ALL metrics the evaluator emits**, not the headline. | L373 - Sharpe alone hid `ci_lo` = -0.034, below zero. |
-| 18 | **The verdict MUST carry its denominator** - "N of M combinations across X of Y producers". Computed, never hand-counted. | CHECKLIST #182; L368 - hand-counting reproduced the error the rule exists to prevent. |
-| 19 | **A small-universe PASS is an ARTIFACT until entries/ticker converges to the baseline rate.** | L382 - rung 5 passed all 6 gates at **26.63x** the R5 entry rate. |
-| 20 | **A pin test must be BEHAVIOURAL, not textual.** Set the non-default, RUN the engine, assert the FIRE SET changes. | B1520 - my first "pin test" grepped source strings. That is the grep-found trap wearing a test's clothes. |
-| 21 | **Before any differential test, assert the SUBJECT OCCURS in the chosen window.** A differential with n=0 on BOTH sides reports agreement and reads as a pass. | L393 - the behavioural pin test compared two EMPTY fire sets, because the short window excluded all six of the strategy's fire dates. |
-| 22 | **When a targeted test comes back vacuous, check whether the same artifact answers at a coarser grain before re-running.** | L394 - the cubes I was about to discard already proved the knob works (13/76 vs 16/95 entries). |
-| 23 | **The factorial is NEVER shown without the boolean producer formula.** Emit both from `producer_variant_table.py --factorial`, which cannot print one without the other. | B1523 owner directive - a bare "4,000 combinations" is unreadable without the formula that generates it, and invites debate about the number instead of the structure. |
-
-### 9.5 Standing rules that bind every step
-
-- **No silent misses.** Every scope item ends with a terminal disposition; a finding without a
-  queue ticket does not exist.
-- **Owner approval** for every threshold/gate/production-path change. Approval for one strategy is
-  not approval for the next.
-- **Pyramid green before every commit**; doc-sweep and queue entry in the same turn.
-
----
-
-## 10. THE REPEATABLE WORKFLOW (B1548 — supersedes §2's method for all strategies)
-
-Everything below is what the `smc_breaker_block_long` walkthrough actually cost us to learn. Run it
-in order for every strategy. Each numbered gate cites the incident that produced it.
-
-### 10.1 The four phases
-
-| phase | scope | window | universe | produces |
-|---|---|---|---|---|
-| **0 INVENTORY** | build the SPECS entry | — | — | formula + Table A + factorial |
-| **1 SEARCH** | all fire-adding configs | **1 year, 2024-05..2025-05** | **200** | ranked combinations |
-| **2 VALIDATE** | **top 3 CONFIGS (owner 2026-08-29 second set; was top 5 same day, top 10 combinations before)** | **4 years, `2022-05-05 -> 2026-05-05` (owner 2026-08-29: 2022-23 allowed for Step 2)** | **ALL 544 (owner 2026-08-29; was 344 disjoint)** | gate verdicts |
-| **3 ADMIT** | best 1 | 4 years (as Step 2) | 544 | Phase 1B decision |
-
-**Why no 2022-23 data (owner ruling 2026-08-17).** The market changed materially with AI
-adoption, so 2022-23 is not wanted even for exit selection.
-**SUPERSEDED FOR STEP 2 ONLY (owner ruling 2026-08-29): 2022-23 IS allowed for Step 2**, whose
-`min_trades_full_period` gate is measured over the full 4-year span - see STEP 2 ENTRY below.
-The 2026-08-17 ruling still governs Step 1 and everything else.
-
-**AMENDED FOR STEP 1 ONLY (owner ruling 2026-08-21).** Step 1 now runs **1 year,
-`2024-05-05 -> 2025-05-05`**, ending exactly at the holdout boundary, because running to
-`2026-05-05` meant ranking on the holdout year Step 2 then judges (`S6-B1605c`). Step 2 is
-unchanged. **Three standing constraints - locked holdout, no 2022-23 data, Step 1 off the holdout -
-have no window that satisfies all three at 100 tickers**, so the UNIVERSE is the lever: 100 -> 200.
-
-**TWO MORE STANDING CONSTRAINTS (owner ruling 2026-08-23, B2107 - recorded verbatim in queue row
-S6-B2107-OWNER-RULINGS-3 and in the session memory):**
-1. **NO LOCAL RUN OVER 3 HOURS.** The ruled 200t x 1y config is 3.64 h at the canonical rate, so
-   every Step-1-shape local launch is barred as a single piece; the COMPUTE VENUE decision
-   (local vs AWS vs Hetzner, ticket S6-B2107a) precedes any such launch. A resume-chunked local
-   run (two sub-3h legs on the checkpoint infra) is a candidate to PRESENT, never to assume.
-2. **PROGRAM TARGET: Phase 1B entry with >= 20 LONG + >= 20 logically-symmetric MIRROR SHORT
-   strategies.** The A1 admission funnel aims at this 40-strategy roster, not at "some breadth";
-   the mirror-shorts-by-default standing directive covers the S side.
-2b. **VENUE (owner ruling 2026-08-23 evening, B2115): HETZNER AUCTION, gated on (A) one
-   strategy completed end-to-end locally (S6-B2115a) and (B) all workflows codified as
-   automation (S6-B2115b, scripts/run_wave.py).** Local pilot legs stay under the 3h cap via
-   resume chunking at the ruled shape.
-3. **TOTAL PROGRAM COMPUTE BUDGET: $100 ACROSS ALL STRATEGIES, not per-strategy or per-run**
-   (owner ruling 2026-08-23, second message, B2109). Every venue quote, wave plan, and Step-2
-   projection counts against this ONE envelope; the ledger of spend lives with the venue
-   ticket S6-B2107a.
-
-## STEP 2 ENTRY - THE MECHANICAL TOP-3 CONFIG SELECTION (owner ruling 2026-08-29)
-
-Step 2's unit of execution is the CONFIG (one holdout cube per config); its unit of evidence is the
-combination. The plan's top-10-combinations spec is superseded: **the top 3 CONFIGS advance**,
-selected by this mechanical process - no judgement calls, reproducible from the grid artifacts:
-
-1. For every graded config, take `step1_ranking[0].is_ci_lo` - the best distinct combination the
-   config produced (the ranking is already equivalence-class collapsed).
-2. Rank configs descending on that value.
-3. **Duplicate-signature collapse:** if a config's best row carries the same
-   (is_ci_lo, is_sharpe, fires, exit) signature as a HIGHER-ranked config's best row (Table D's
-   `dup` column), it is the same discovery - skip it and continue down the list. **ALL ordering ties -
-   equal ci_lo across different signatures at step 2, or tied signatures here - resolve to
-   the LOWEST-span config** (deterministic; without this the holder is
-   sort-order-dependent, which the verification run caught before this section shipped).
-4. Take the first **3** survivors (owner ruling 2026-08-29 second set, was 5 - a 5-config
-   slate projected ~92h serial at the 4-year span, judged too long for the execution
-   timeline).
-
-**COST, PROJECTED PER CONFIG - NOT FROM THE MEDIAN (S6-B2364).** Source:
-output_audit/serial_chain.log, 26 START/DONE timestamp pairs. Step-1 durations at identical
-ticker-years range 1.32h (sw30sp50) to 4.04h (sw50sp20), median 1.68h - so runtime is NOT
-purely ticker-year-driven and a median-scaled figure is wrong for a SELECTED slate. Scaling
-each config by ITS OWN base at 544x4y over 200x1y = 10.88x:
-
-| config | step-1 | step-2 projected | 5h legs |
-|---|---|---|---|
-| sw50sp50 | 1.71h | **18.7h** | 4 |
-| sw30sp150 | 1.59h | **17.3h** | 4 |
-| sw50sp20 | 4.04h | **43.9h** | 9 |
-| **top-3 serial** | | **~80h (3.3 days)** | |
-| top-2, dropping sw50sp20 | | ~36h (1.5 days) | |
-
-**The median-based figure said ~55h and understated by ~25h**, because the third-ranked
-config is also the SLOWEST of the 26 - selection on `is_ci_lo` is not independent of runtime.
-Same shape as L708: a statistic computed over a population and applied to a selected subset.
-**Still an ESTIMATE** - linearity in ticker-years is assumed, and the 1.32-4.04h spread at
-constant ticker-years is direct evidence that assumption is imperfect. The first cube settles it.
-
-Applied to the completed b2197 program this yields, in order: **sw50sp50 (+1.250), sw30sp150
-(+1.214), sw50sp20 (+0.930)** - the top 3 that advance. The next two under the old
-5-slate rule were sw30sp20 (+0.816, first holder of the triplicate signature; sw30sp50 and
-sw30sp100 collapse into it) and sw50sp9 (+0.724); both are recorded here so a later
-widening does not have to re-derive them.
-
-**TRADE FLOORS (owner rulings 2026-08-29):** `min_trades_holdout >= 15` in the 1-year holdout
-and `min_trades_full_period > 75` across all 544 tickers over the FULL 4-year span (config.py;
-history 100 at B1492 -> 75 -> 60 -> **75**). Owner logic on the holdout floor: 25 fires per year
-forced ~2 per month - HFT territory for a swing library and illogical across bear/consolidation
-regimes. The full-period floor moved to 60 on a 3-year reading and **back to 75** once the grain
-was surfaced.
-
-**GRAIN FLAG - RAISED, THEN RESOLVED BY THE OWNER (2026-08-29, third ruling set).** The
-full-period gate COUNTS over the whole cube span: `tighten_breaker_block.py:348` sums the entire
-frame, which is **4 years** (IS 3.00 + HO 1.00 per roster_core.py:56-57), not the 3-year IS leg.
-The 60 had been sized for a 3-year count the code does not perform. Told this, the owner ruled
-**"in that case revert back to 75"** - keeping the COUNTER and restoring the 4-year-sized BAR,
-rather than re-cutting the counter to IS-only. **This is the resolution L711 asks for: a
-threshold and the window it is measured over are ONE object, and the pair is now consistent.**
-
-**WINDOW (owner ruling 2026-08-29): 2022-23 data is ALLOWED for Step 2.** This supersedes, for
-Step 2 only, the 2026-08-17 *no 2022-23 even for exit selection* ruling, and it resolves the
-three-way conflict recorded at S6-B2358. Step 2 therefore runs the FULL 4-year span
-`2022-05-05 -> 2026-05-05`, which is what the full-period gate is measured over.
-
-### STEP 2 EXECUTION - THE WATERFALL (owner ruling 2026-08-29, third set)
-
-**Owner, verbatim:** *"Lets do a waterfall method. If any of the 300 combinations from config 1
-qualify for phase 1B after clearing all gates we do not run the next two configs else we continue to
-config 2 then 3 then terminate."*
-
-**THE RULE.** Configs run SEQUENTIALLY in the mechanical rank order. After each config's cube is
-graded, evaluate its 300 combinations:
-
-1. **Config 1 = sw50sp50.** Run the config **IN ITS ENTIRETY** - all 300 combinations graded; the waterfall never stops mid-config. Then: if any combination qualifies -> **STOP. Configs 2 and 3 are not run.** *(2026-08-30 amendment, S6-B2409: the original "AND is ROBUST" condition is retired - see the STOPPING RULE section below.)*
-2. Otherwise **config 2 = sw30sp150**, again in its entirety. If any qualifies -> STOP.
-3. Otherwise **config 3 = sw50sp20**, in its entirety. If any qualifies -> admit it; otherwise **TERMINATE** - `smc_breaker_block_long` closes NEGATIVE for Phase 1B and the program moves to the next of the 207-strategy optimisation backlog.
-   `smc_breaker_block_long` does not enter Phase 1B and its optimisation-backlog entry closes NEGATIVE.
-
-**WHAT "QUALIFY" MEANS, IN CODE - not paraphrased.** `tighten_breaker_block.py:373-383`: a row gets
-`verdict = "PASS"` iff `all(gates.values())` over the six `LIVE_GATES` (`roster_core.py:60-61`:
-pooled_sharpe, profit_factor, sortino, psr, min_trades_holdout, min_trades_full_period). Anything that
-returns `None` from `evaluate` never reaches the gate branch at all and is `BELOW_POWER_FLOOR`.
-**Qualification is that PASS, full stop** (S6-B2409, owner ruling 2026-08-30 - the former
-ROBUST/PROVISIONAL label against the 0.333 selection-noise floor is retired in its entirety;
-`roster_core.qualifier_margin` reports the margin over the live gate as a number, gating nothing).
-
-**COST PROFILE.** Best case 18.7h (config 1 qualifies). Then 36.0h. Worst case 80.0h (all three run
-and none qualifies). The waterfall is therefore **never more expensive than the flat top-3 slate and
-usually cheaper** - and the rank order happens to be cost-favourable, because the 43.9h config sorts
-LAST, so it is only paid for if the two cheap ones both fail.
-
-**WHAT THIS SUPERSEDES, stated rather than applied silently (L633).** The 2026-08-29 ruling recorded
-at S6-B2242 was *"We decide based on over all ranked list. That itself is the goal of step 2."* The
-waterfall is a **first-success stopping rule**, not a ranked comparison: under it, if config 1
-qualifies, configs 2 and 3 are never measured and no cross-config ranking exists. That is a coherent
-goal ("find one that clears") but it is a DIFFERENT goal from the earlier ruling ("pick the best").
-The waterfall governs; the earlier ruling is superseded for Step 2 only.
-
-**FOUR THINGS THE WATERFALL MAKES LOAD-BEARING THAT THE RANKED LIST DID NOT.** Under a ranked list a
-marginal winner is one row among many the reader judges; under first-success-wins it ENDS the
-program. See the DECISIONS PENDING block below - none of these is resolved here.
-
-### DECISIONS RULED - ALL SIX (owner, 2026-08-29, S6-B2375)
-
-**D1 - RULED: ROBUST. [SUPERSEDED 2026-08-30, S6-B2409 - preserved as history.]** *"D1 robust that
-said the config runs to be run in its entirety."* Two things: the stop condition was **ROBUST, not
-bare PASS** - a qualifier whose holdout-Sharpe margin was below the 0.333 selection-noise floor was
-PROVISIONAL and did **not** stop the waterfall; and **a config always runs to completion** - all
-300 combinations are graded before the stop test, so the waterfall never halts mid-config.
-**The 2026-08-30 ruling retired the ROBUST half in its entirety** (*"noise floor is 0.333 meaning
-that the result has to be more than 1.333 in the holdout period to qualify. Remove the 0.333
-selection-noise floor requirement in its entirety"*): the stop condition is now bare PASS over the
-six gates. The run-to-completion half of D1 STANDS. Note for the record (L633, disagreement stated
-once): D2's no-BH-FDR ruling was recorded as partly weighing on the D1 ROBUST hurdle; with that
-hurdle retired, `psr >= 0.95` is the remaining significance-style control on a qualifier.
-
-> **CONSEQUENCE RESOLVED BY THE SAME RULING.** The flagged case - a program terminating NEGATIVE
-> while holding a gate-clearing cell - can no longer occur: a gate-clearing cell now stops the
-> waterfall itself. Config 1's qualifier (retained by ruling 2 of 2026-08-30, S6-B2410) closes the
-> question S6-B2407 raised.
-
-### DECISIONS RULED 2026-08-30 (S6-B2409 / S6-B2410) - the floor retired; the qualifier retained
-
-**RULING 1 (S6-B2409), owner verbatim:** *"noise floor is 0.333 meaning that the result has to be
-more than 1.333 in the holdout period to qualify. Remove the 0.333 selection-noise floor
-requirement in its entirety."* Implemented same day: `roster_core.robust_status` ->
-`qualifier_margin` (margin as a plain number, no floor, no label); `SELECTION_NOISE_FLOOR` deleted
-from the roster builder; the grid payload's `provisional_qualifiers` key -> `qualifiers` (every
-PASS row); the postconfig renderers no longer frame any value against a floor; pins rewritten
-(test_b2409_*). My prior recommendation of the floor as the grid-stage selection-noise control is
-recorded as overruled (L633 - stated once, ruling governs).
-
-**RULING 2 (S6-B2410), owner verbatim:** *"Lets retain the break_pct_max 0.02, close_mitigation
-True, age_bars_max None, exit time_stop_10d, tail_n (20) combination."* That is config 1
-(sw50sp50)'s qualifying parameter set at its tail_n=20 member - `smc_breaker_block_long`, P1
-swing_length=50, P6 span=50, close_mitigation=True, break_pct_max=0.02, age_bars_max=None,
-tail_n=20, exit `time_stop_10d`; holdout sharpe 1.152, profit factor 1.937, sortino 1.925, psr
-1.0, holdout_n 41, full_period_n 180 (S6-B2399 grid). The three passers were ONE parameter set
-differing only in tail_n {10, 20, 2}; the owner's pick resolves that tie explicitly (#165 - no
-criterion of mine).
-
-**CONSEQUENCE UNDER THE AMENDED WATERFALL:** config 1 holds a qualifier, so **the stop condition
-is MET - configs 2 and 3 are not run** and `smc_breaker_block_long` closes POSITIVE for Step 2.
-S6-B2407 (the PROVISIONAL-worth question) closes as mooted. Engine implementation of the retained
-combination (battery judgment step 7_implement_in_engine) is ticketed S6-B2411 - the retention
-ruling approves the parameter set; the wiring is follow-on work, not auto-executed.
-
-**ROSTER-DOCUMENT ADMISSION (S6-B2413, owner instruction 2026-08-30).** The retained combination
-is rendered in PHASE_1B_ROSTER.md under *Step-2 admissions (owner-ruled)* - identity from
-`output_audit/phase_1b_step2_admissions.json`, metrics re-derived at render time from the b2399
-grid artifact by exact combination+exit match (never hand-copied), refuse-loud when the evidence
-row cannot be located or did not PASS. This closes S6-B2411's roster-integration part; its engine
-wiring and battery judgment steps remain open.
-
-**D2 - RULED: no BH-FDR.** *"this doesn't apply. Apply config runs we will analyze the 300
-combinations and select the one that passes all gates. If its multiple combinations, we select the
-one with the best sharpe. No bh fdr needed here."* No multiplicity correction is applied across a
-config's 300 combinations. **My recommendation was the opposite and is recorded as overruled** (L633:
-the disagreement is stated once, then the ruling governs). **Two things weigh in the ruling's
-favour and are worth recording**, since they were not part of my original framing: the D1 ROBUST
-requirement is itself a substantial hurdle beyond bare gate-clearing, and `psr >= 0.95` is already a
-significance-style gate on the Sharpe estimate - so the procedure is not uncontrolled, it simply
-controls selection by MARGIN rather than by family-wise error rate.
-
-**D3 - RULED: best Sharpe.** Where several combinations qualify, **the highest Sharpe advances**.
-This supersedes the production-closest convention I recommended. *Reading made explicit:* "Sharpe"
-here is the **holdout pooled Sharpe** - the gated quantity at `roster_core.py` `pooled_sharpe`, not
-the in-sample `is_sharpe` Step 1 ranked on. **Note this is coherent with D1 rather than in tension
-with it:** ROBUST is defined BY the Sharpe margin, so the best-Sharpe qualifier is also the one most
-likely to be ROBUST.
-
-**D4 - RULED: confirmed.** The waterfall supersedes the ranked-list goal recorded at S6-B2242. Under
-it, a config-1 stop means configs 2 and 3 are never measured and **no cross-config ranking will
-exist**. Accepted.
-
-**D5 - RULED: approved.** Order stays the mechanical rank order - sw50sp50, sw30sp150, sw50sp20 -
-which is also cost-favourable, since the 43.9h config sorts last and is paid for only if both cheap
-ones fail.
-
-**D6 - RULED: closes this strategy.** If all three fail, `smc_breaker_block_long` closes NEGATIVE and
-the program moves to the next of the 207-strategy optimisation backlog. **The METHOD is not on
-trial** - the negative result is evidence about this strategy.
-
-
-### STEP 2 PRE-TRIAGE - EXECUTED, AND THE METHOD CHANGED (S6-B2369)
-
-**MANDATORY before any Step-2 cube. It has now been RUN, and the answer is recorded here.**
-
-**THE METHOD CHANGED, and this supersedes the `measure_fire_count.py` step approved earlier the same
-day.** That tool sweeps only 2 of the 6 config axes and counts ENTRY FIRES, an upper bound. The
-Step-1 grids already on disk carry `full_period_n` **per combination, for the exit each combination
-actually selected, across all 6 axes** - a strictly better instrument requiring no engine run. Two
-findings made this possible and are worth recording:
-
-- **Every Step-1 `holdout_n` is EXACTLY 0 - all 5,354 gradable rows across all 26 grids.** Step 1
-  runs `2024-05-05 -> 2025-05-05`, ending exactly at `HO_START`, so `roster_core.holdout()` returns an
-  empty frame BY CONSTRUCTION. **Therefore `PASS: 0, FAIL: 0` across all 7,800 Step-1 combinations is
-  a STRUCTURAL fact about the window, not a quality verdict** - the gate branch has never executed in
-  this program, and no Step-1 artifact says anything about whether a combination can clear a gate.
-- `full_period_n` IS populated at Step 1 (over its 200 ticker-years), so it projects.
-
-**THE PROJECTION.** Step-1 scope 200 ticker-years; Step-2 full period 544 x 4 = 2,176 (**10.88x**) and
-Step-2 holdout 544 x 1 = 544 (**2.72x**). A combination needs Step-1 `full_period_n` > 6.9 for the
-75 bar and > 5.5 for the 15 bar, so **the full-period bar binds**.
-
-| config | gradable of 300 | worst `full_period_n` | projects to full / holdout | clear BOTH floors |
-|---|---|---|---|---|
-| sw50sp50 | 100 | 10 | 109 / 27 | **100 of 100** |
-| sw30sp150 | 194 | 11 | 120 / 30 | **194 of 194** |
-| sw50sp20 | 100 | 10 | 109 / 27 | **100 of 100** |
-
-**RESULT: 394 of 394 gradable combinations across all three configs project past both trade floors,
-the WORST by a 45% margin.** The pre-triage excludes nothing. **Its real value is the inversion it
-delivers: the trade floors will NOT be what stops these configs - the four STATISTICAL gates
-(pooled_sharpe, profit_factor, sortino, psr) will decide, one way or the other.** This contradicts
-the earlier expectation, recorded here so it is not repeated, that the thin-n leaders were the ones at
-risk of failing the trade floors.
-
-**LIMITATION, stated so the projection is not over-read:** it assumes the measured 2024-25 fire rate
-holds across 2022-2026. **No Step-1 config ran a single day of 2022-23** - that era was excluded until
-this same day's ruling admitted it - so the rate in the added two years is UNMEASURED, and 2022 in
-particular was a distinct regime. If the rate there is materially lower the projection falls; the
-worst margin is 45%, so the rate would have to be roughly a third of the 2024-25 rate in the added
-years before the floor binds.
-
-**STEP-1 UNIVERSE, PINNED BY NAME:** the exact 200 tickers Step 1 searched are recorded in
-APPENDIX S1-200 at the end of this document (source: output_audit/_sweep_200.txt, the tickers_file
-every b2197 spec references). A ticker list referenced only by path is one file-move from being
-unreconstructable.
-
-**STEP 2 UNIVERSE (owner ruling 2026-08-29): ALL 544 tickers, graded and analysed across the
-FULL in-sample AND holdout window.** This supersedes the 344-disjoint design. **Stated
-consequence, flagged once and accepted by the ruling:** the 544 include the 200 tickers Step 1
-selected on, so Step 2 is no longer cross-sectionally disjoint - its out-of-sample content is
-the LOCKED HOLDOUT YEAR (never read by Step 1) plus the 344 tickers Step 1 never saw. The
-deeper 544-ticker base is what makes the 75/15 trade floors meaningful. **Accepted
-limitation (unchanged):** nothing tests whether an edge survives a regime change.
-
-**COST, stated honestly.** I told the owner this lever costs ~2x runtime. **In ticker-years it is
-approximately NEUTRAL** - 100 tickers x 2 years and 200 tickers x 1 year are both 200 ticker-years.
-**Approximately, not exactly**: warmup and per-run fixed costs are not linear in ticker-days, so the
-first config of the next wave is the measurement that settles it (`S6-B1831b`).
-
-**STEP 1 PRODUCES A RANKING, NOT VERDICTS.** Gates are STEP 2's admission criteria. Step 1
-emits a Sharpe-ranked list, excludes `NO_EXIT_SELECTABLE` (no exit with >=10 in-sample
-trades), and hands the **top 10** forward. Step 1 can never produce a PASS - if it does,
-it is doing Step 2's job (L471).
-
-**Why 100 then 444?** The 444 are DISJOINT from the 100, so validation is genuine out-of-sample
-across the ticker dimension — a combination selected by luck on 100 will not replicate. Appending
-the two reconstructs 544 (valid because `--cube-isolation` bypasses the candidate cap, verified
-`backtest.py:1763`; R5's cap bound on 1 of 972 days and isolation ignores it entirely).
-
-**NO separate baseline run (L423).** All 6 gates are ABSOLUTE thresholds, so admission depends on a
-candidate's own metrics. Production parameters are one of the configs anyway, so that number arrives
-free if it ranks. Scoping a baseline run wasted 7.3 h of plan before this was caught.
-
-### 10.2 Cost model — measured, not assumed
-
-```
-0.2613 s per ticker-day   (pool=10; two concordant points, 10pct apart:
-                           0.2484 @ 50t x 4y, 0.2743 @ 20t x 2y)
-
-per run  =  tickers x sim-days x 0.2613
-100 tickers x  503 days (2y)  ~= 3.65 h      <- Phase 1, per config  [B2573: PRE-RULING SHAPE. The ruled Step-1 shape is 200 tickers x 1 year (SS10.1); measured 2026-09-02 on the ICG chain: 2.0 h / 2.1 h / 4.0 h per config at pool 0 - serial_chain.log]
-100 tickers x 1003 days (4y)  ~= 7.3 h
-544 tickers x 1003 days (4y)  ~= 39.7 h   <- 7.3 h x (544/100), rescaled B1618
-```
-
-**ALWAYS set `--screen-pool-workers`.** The default is **0 = SEQUENTIAL** (L407). On a 12-core box
-`pool=10` measured **1.53x** like-for-like. It is not more because ~62pct of per-day work is serial.
-
-**Run configs CONCURRENTLY, not the pool wider.** Amdahl caps in-run parallelism at ~1.6x; separate
-configs are independent processes and scale far better.
-
-**Never extrapolate from one point.** Five extrapolations were wrong this session: 9x light
-(L367), 23pct light (L377), ~100x heavy (L383), flat-scaling read from noise (L401), and a
-profiler-share mistaken for a wall-clock saving (L418). **Two concordant measurements minimum
-before any projection.**
-
-### 10.3 Engine settings for optimisation runs
-
-| setting | value | why |
-|---|---|---|
-| `--cube-isolation` | ON | bypasses ALL cross-strategy gates (`backtest.py:134`) |
-| `--screen-pool-workers` | 10 | default 0 is sequential (L407) [B2573: STALE - STEP 1.3 says 3 per concurrent config; the live launch stack hardcodes 0 (RUN-SAFETY, 1 of 10 cores). Authority: the spec file's arm, read by launch_sweep - not this cell] |
-| `--no-agents --no-news --no-git --no-walk-forward` | ON | not consumed by the 6 gates |
-| `--max-run-hours` | set | the runner REFUSES to start without it |
-| `OPTIMIZATION_MODE` | 1 | uncaps `max_cands` (no-op under isolation, L419) |
-| `SMC_SWING_LENGTH` / `STRAT_EMA_SPAN` | per config | env-plumbed B1519; verify they reach the ENGINE |
-
-**Isolation also bypasses TIER SIZING (B1545, owner-approved).** `TIER_POSITION_SIZE_PCT` maps
-LOW/AVOID to **0.0**, and a zero size SKIPS the trade — so tier data was deciding which signals
-became trades. Under isolation every valid signal opens at `CUBE_ISOLATION_SIZE_PCT`. Size cannot
-affect any gate because the cube records `pnl_pct`, a PERCENTAGE.
-
-**Do NOT skip `smart_money_score` (L418).** It looks like pure sizing, but tier gates ENTRY via
-LOW→skip. A measured A/B showed 245/124 entry differences. The saving was 6.3pct, not the 14.3pct
-profiler share.
-
-### 10.4 Monitor arming — MANDATORY, MECHANICALLY ENFORCED
-
-**A run is not launched until its reporting path is armed IN THE SAME TURN** (CHECKLIST #185).
-
-The arming call must promise BOTH:
-1. a **PERIODIC** report — "every hour" / "hourly"
-2. that it is **UNCONDITIONAL** — "do not withhold", "silence is correct only when nothing is running"
-
-**Exception-only alerting does NOT satisfy this.** It was armed wrongly FOUR times (L385 wrote only
-to a log; L392 exception-only; L420 no monitor at all; L424 exception-only again — and #185's first
-version PASSED that last one because it checked EXISTENCE, not CADENCE).
-
-`scan_unmonitored_launch()` in `scripts/verify_turn_compliance.py` blocks the turn otherwise.
-Pinned both directions by `test_b1545_monitor_armed_gate`.
-
-Also required: **trip conditions** for non-zero exit, death-without-artifact, and overrun past 2x
-projection; and **CronDelete on completion** so stale monitors do not train everyone to ignore alerts.
-
-### 10.5 Completion is an ARTIFACT, never a percentage
-
-A run is complete when `trade_exit_detail.csv` EXISTS. **A run once finished all 1,003 sim-days and
-wrote no cube** (L410) — post-processing is a separate phase and died with the session. Checking
-sim-day percentage would have reported 100pct.
-
-Verify on completion: cube exists · every entry carries exactly 26 exits (#130) · entries/ticker vs
-the baseline rate · gradability (how many combinations produced a verdict at all).
-
-### 10.6 Interpreting results
-
-- **A small-universe PASS is an ARTIFACT until entries/ticker converges** (L382). Rung 5 passed all
-  6 gates at **26.63x** the R5 entry rate.
-- **Report ALL 15 metrics**, never Sharpe alone (L373) — it hid a `ci_lo` of -0.034, below zero.
-- **The verdict carries its denominator** (#182): "N of M combinations across X of Y producers",
-  COMPUTED from Table A, never hand-counted.
-- **`ci_lo < 0` on a baseline is a stop sign.** A subset cannot have a tighter interval than its
-  parent, so no tightening fixes it.
-- **Disabling `min_trades` during Phase 1 ranking is correct** — at 100 tickers the floor would
-  reject candidates for sample size rather than quality. It is re-enabled for Phase 2 grading.
-
-### 10.7 Standing owner rulings
-
-| ruling | status |
-|---|---|
-| Holdout dates and duration NEVER change | LOCKED |
-| Fewer configs to save time | **OUT OF QUESTION** — cost comes from speed or machine |
-| Threshold-only vs adding a NEW gate | **ASK EVERY TIME** — no default |
-| Universe 100 for search | approved; speed is key [B2573: SUPERSEDED - owner ruled 200 tickers 2026-08-29 (SS10.1 + APPENDIX S1-200); the 100 here is the B1548 shape] |
-| Isolation bypasses tier sizing | approved, comparability loss accepted |
-| Hourly updates while any run is active | STANDING |
-| AWS | requires a REAL quote against the $50 CAD cap and typed approval [B2573: SUPERSEDED - B2109 set ONE $100 total compute budget across all strategies; venue ruling S6-B2107a = Hetzner auction gated on the local pilot] |
-
-### 10.8 Per-strategy checklist
-
-Run §9's 23 items in order. The five that cost the most when skipped:
-
-1. **Read the PRODUCER layer, not the gate expression** (L355) — a gate of two booleans had 6
-   producer parameters behind it.
-2. **Prove each parameter reaches the ENGINE** (L387) — `screener` called
-   `compute_smc_signals(df, ticker=ticker)`; a 20-config sweep would have produced 20 IDENTICAL cubes.
-3. **Classify subset-safe vs fire-adding FIRST** (L371) — run count is the product of the
-   fire-ADDING bands alone; 4,000 combinations needed 20 runs, not 4,000.
-4. **Harvest ALL strategies from every cube** (L404) — one run computes 128; reading one wastes 99.2pct.
-5. **Pin tests must be BEHAVIOURAL** (L391, L393) — assert the ENGINE ARTIFACT changes, and verify
-   the subject actually OCCURS in the window, or the test passes on two empty sets.
-
----
-
-# 11. RUNBOOK — EXACT COMMANDS TO OPTIMISE ONE STRATEGY
-
-§10 explains WHY. **This section is HOW.** Copy-paste, substitute `<STRATEGY>`, run in order.
-Everything here is EXECUTED-verified on `smc_breaker_block_long` (B1546-B1558).
-
----
-
-## STEP 0 — Build the SPECS entry (no run; ~1 hour of reading)
-
-**0.1** Read the strategy's gate in `backtest/signals/screener.py`:
-```bash
-grep -n "def strat_<STRATEGY>" -A 12 backtest/signals/screener.py
-```
-
-**0.2** For EVERY signal in the gate, find its producer and that producer's parameters.
-**Do not stop at the gate expression** — a gate of two booleans had 6 producer parameters (L355).
-```bash
-grep -rn "<signal_name>" backtest/signals/*.py | grep -v screener
-```
-
-**0.3** For every parameter, PROVE it reaches the engine, not just the producer (L387):
-```bash
-grep -n "compute_<producer>(" backtest/signals/screener.py     # is the arg PASSED?
-```
-A parameter the producer accepts but the caller never passes is **NOT tunable** — plumb it first
-(pattern: `backtest/config.py` env-var + pass at the call site, see `SMC_SWING_LENGTH` B1519).
-
-**0.4** Classify each parameter:
-- **SUBSET-SAFE** — can only REMOVE fires -> derives offline from any cube, FREE
-- **FIRE-ADDING** — changes WHICH bars fire -> needs its own engine run
-
-**Engine runs = product of the FIRE-ADDING bands only.** Everything else is free (L371).
-
-**0.5** Derive each band from MEASURED distributions, never round numbers (L356, L369).
-Instrument the qualifying event first. **FAMILY EXAMPLE (smc) - generic form (SS11.2 step 0.5):
-count the strategy's fires on 6 megacaps at production params via the producer or precompute
-(institutional used `build_institutional_persistence_precompute.py` + a `python -c` count):**
-```bash
-PYTHONPATH=. python scripts/instrument_breaker_block.py --ticker AAPL \
-  --start 2022-05-05 --end 2026-05-05 --out output_audit/<STRATEGY>_instr.json
-```
-
-**0.6** Add the SPECS entry to `scripts/producer_variant_table.py` — `formula` + `params`, every row
-citing `evidence` as `file:line`. Then verify:
-```bash
-PYTHONPATH=. python scripts/producer_variant_table.py --strategy <STRATEGY> --factorial
-```
-This BLOCKS if the formula and Table A disagree, and prints the factorial + engine-run count.
-
-**0.7 BAND COMPLETENESS (B2569/#290 — every level must have a path to a measurement).** Free
-grading moves ONE direction — tighter (§0a #1). So for every PERSISTED threshold parameter, the
-looser-than-production side is ENGINE-ONLY **by construction**, and each such level must at band
-time be either (a) SCHEDULED as an engine config **with an actuation mechanism proven to exist**
-(env knob reaching the gate — 0.3's check applies to gate thresholds too, not just producer
-params), or (b) STRUCK with an explicit NOT-MEASURED-BY-DESIGN disposition and its reason. A band
-row that is neither is dead weight advertising coverage the programme cannot deliver — the P7
-resim {1,2} / P8 resim {2,3} defect (S6-B2569a): banded, unscheduled, AND unrunnable, because the
-screener hardcodes both thresholds and no env knob was ever built. Assert this per parameter
-before §1.0 signs the pre-spend manifest.
-
----
-
-## STEP 1 — SEARCH: all fire-adding configs (RULED SHAPE per 10.1: 200 tickers x 1 year 2024-05-05 -> 2025-05-05; this heading's original '100 tickers, 2 years' is the pre-2026-08-21 shape, kept in the lineage note below - B2117c)
-
-### 1.0 PRE-LAUNCH GATE - run BEFORE building anything
-
-**Each config costs ~3.3 h. These checks cost seconds and each one has already caught a
-defect that would have wasted a full run.**
-
-```bash
-# (a) UNIVERSE PROVENANCE - is this the artifact you think it is?  (L445)
-python scripts/verify_universe_artifact.py output_audit/_sweep_100.txt \
-  --compare-cube output_r5_merged_1_7/trade_exit_detail.csv
-```
-Must print **"looks like a broad universe"**. A SLICE verdict means alphabetical skew, absent
-mega-caps, or tickers the baseline never ran - the exact defect that made 2 configs search an
-abandoned A-C chunk.
-
-```bash
-# (b) RAM CEILING - how many configs fit CONCURRENTLY?  (measured, not assumed)
-powershell -c "$os=Get-CimInstance Win32_OperatingSystem; \
-  'free_MB={0} total_MB={1}' -f [math]::Round($os.FreePhysicalMemory/1KB), \
-  [math]::Round($os.TotalVisibleMemorySize/1KB)"
-```
-**PEAK per worker measured at 3,223 MB** **[GRAIN-STALE - B2204b/L653: this was
-measured when one PROCESS was one CONFIG (pre-B2142 pools). At pool-10 the live
-per-CONFIG peak-sum is 12.04 GB (18-process tree, PeakWorkingSet64, measured
-2026-08-26); per-process peaks now run ~1.0-1.2 GB. Corrected concurrency
-ceilings: 64GB ~4 configs, 128GB ~10 - cores bind first at 128GB. The '3
-concurrent configs' conclusion below and the line-1391 monitor threshold carry
-the old grain; the monitor errs conservative (fires early), left as-is.]** (`PeakWorkingSet64`, NOT a spot reading - spot
-readings understated it three times). Non-python baseline ~6.4 GB of 15.6 GB, so
-**3 concurrent configs**, not 5-6. Exceeding it risks MemoryError mid-sweep.
-
-> **[WRONG-QUANTITY - B2229/L670, measured 2026-08-27. This whole section sizes on
-> WORKING SET; the runs die of COMMIT EXHAUSTION, and the two were measured 6.93x
-> apart on the live box.]** Live 18-process pool: python tree held **42.63 GB of
-> private commit against 6.16 GB of working set**; individual workers showed 4.11 GB
-> of commit behind 0.55 GB of working set. At the same instant free PHYSICAL memory
-> read a comfortable 2.11 GB while available COMMIT was 1.28 GB, **97.8pct used**.
-> Working set is RESIDENT pages; commit is reserved address space backed by RAM plus
-> pagefile, and **the allocation that FAILS is a commit**. So the "3 concurrent
-> configs" conclusion above, and the corrected 64GB/128GB ceilings, are derived from
-> a quantity that does not govern the failure mode.
-> **AND THE LIMIT IS NOT FIXED:** the commit limit read 58.49, then 61.517, then
-> 45.27, then 48.3 GB across one session as Windows resized the system-managed
-> pagefile - so any ceiling quoting a fixed limit quotes a moving number.
-> **Calibration for the sizing decision (S6-B2107a):** a single pytest invocation
-> costs a MEASURED 1.183 GB of commit (import-dominated, B2229c).
-> Figures ANNOTATED rather than replaced - changing the concurrency conclusion is an
-> owner call, and this note gives that call the right quantity to make it on.
-> Live monitor: `python scripts/commit_watchdog.py` (samples commit, never physical).
-
-**(c) CONFIRM THE SWEEP KNOBS DIFFER.** The engine does NOT log `SMC_SWING_LENGTH` /
-`STRAT_EMA_SPAN` (S6-B1576b), so a sweep can silently run N identical configs. Assert distinct
-values across concurrent launches before starting.
-
-### 1.1 Build the input files
-
-```bash
-# ONE strategy only. This is the difference between a 4.6 h run and a 20 min run.
-echo "<STRATEGY>" > output_audit/_subset_<STRATEGY>.txt
-
-# THE SEARCH UNIVERSE IS SHARED BY EVERY STRATEGY.
-# B1830 (owner ruling 2026-08-21): size is now 200, and the builder takes --n.
-# This SUPERSEDES the 2026-08-14 "fixed at 100" ruling. _sweep_200.txt is a
-# SUPERSET of _sweep_100.txt by construction (both are top-N of one ADV-sorted
-# list), so earlier 100-ticker results stay interpretable as a subset.
-# Rebuild ONLY if the 544-universe changes. Owner ruling 2026-08-14,
-    # re-anchored to the CORRECT universe by owner ruling 2026-08-17 (B1618).
-# Builder: scripts/build_sweep_100.py
-```
-
-#### CRITERION: top 100 by average dollar volume (ADV) over the WARMUP window
-
-**Owner ruling 2026-08-14.** ONE fixed list, shared by every strategy.
-
-**Why fixed, not per-strategy.** The previous builder ranked tickers by *that strategy's* R5 fire
-count, so each strategy was searched on the 100 tickers where it had historically fired most. That
-is **in-sample selection**: it inflates apparent edge, and by a different amount per strategy, so
-cross-strategy comparisons are corrupted too. A fixed list costs statistical power for
-rarely-firing strategies and buys an unbiased, comparable result.
-
-**Why ADV.** The search phase exists to RANK combinations on 100 tickers such that the ranking
-transfers to 544. Liquidity is strategy-neutral, stable, and matches what would actually be traded,
-so fills and slippage stay realistic.
-
-**Why the WARMUP window (2021-05-06 to 2022-05-05).** It precedes the locked backtest window
-entirely, so universe selection carries no lookahead into the period being measured.
-
-**TWO DISCLOSED BIASES — do not rediscover these later:**
-
-1. **SPY is in the list** (ADV $37.2B, ~2.8x AAPL). It is a Tier-1 ETF and legitimately inside the
-   544, but it is an index, not a single stock, and strategies behave differently on it.
-2. **22 of 544 are excluded** (MEASURED B1618; the old 41-of-381 was the abandoned chunk's
-   figure, wrong in both halves) for lacking 100 warmup bars, which means **every ticker that listed
-   after 2021-05-06 is structurally ineligible** (ACLX, ALAB, AISP, AMLX, ...). Recent IPOs can
-   never enter this SEARCH universe. They remain in the 544 used for Phase-2 VALIDATION, so no
-   combination is ever *admitted* on the biased universe — but its RANKING is derived from one.
-
-**The fixed 100 (ADV-ranked, highest first):**
-
-**Source universe: `output_audit/r5_universe_544.txt`** (from `output_r5_merged_1_7`, the R5 baseline `PHASE_1B_ROSTER.md` cites). **NOT** the former `r5_universe_381.txt`, which came from an abandoned alphabetically-partitioned chunk - 380/381 tickers A-C, no MSFT/NVDA/GOOGL, 248 tickers R5 never ran (L445). Verify any universe file before use:
-```
-python scripts/verify_universe_artifact.py output_audit/_sweep_100.txt --compare-cube output_r5_merged_1_7/trade_exit_detail.csv
-```
-
-```
-SPY  TSLA  AAPL  AMZN  NVDA  MSFT  AMD  GOOGL  GOOG  MRNA
-NFLX  PYPL  BA  BAC  JPM  V  XOM  DIS  MU  PFE
-CVX  INTC  CRM  MA  ADBE  QCOM  C  F  BRK-B  WFC
-UNH  HD  T  JNJ  TWTR  COIN  PG  WMT  UBER  AVGO
-VZ  CSCO  ABNB  COST  AMAT  GS  MRK  CMCSA  NKE  GM
-KO  PLTR  MS  ABBV  CRWD  TXN  ORCL  OXY  BKNG  TGT
-TMO  LRCX  LOW  INTU  BMY  FCX  NOW  CCL  SBUX  PEP
-CAT  DHR  GE  LLY  CHTR  ACN  ATVI  UNP  ABT  AAL
-PANW  MCD  DE  IBM  SPGI  NEE  AXP  LMT  AMGN  ADI
-TMUS  HON  MDT  COP  FDX  UAL  UPS  DASH  LIN  CVS
-```
-
-
-### 1.2 ARM THE MONITOR — **BEFORE** the launch, in the SAME turn
-
-**The Stop hook BLOCKS the turn otherwise** (CHECKLIST #185/#186). The CronCreate prompt MUST
-contain a PERIODIC marker (`every hour` / `hourly`) AND an UNCONDITIONAL marker
-(`do not withhold` / `silence is correct only when nothing is running`).
-Exception-only alerting does NOT satisfy it — that was armed wrongly four times.
-
-### 1.3 Launch one config
-
-**LAUNCH MECHANISM (S6-B1535b, anchored B2051): one INDEPENDENT DETACHED invocation per
-arm - never a shared shell-function wrapper.** The b1571 wrapper turned one process kill
-into EXIT=127 for every remaining arm (L589's sibling); independent invocations bound a
-kill's blast radius to its own arm. EVIDENCE the pattern holds: the six B2016-B2030 E1
-launches each ran as a separate detached command (separate process trees, per-arm logs);
-killing any one could not have produced exit codes in the others. RESIDUAL, stated: survival
-across a HARNESS death is untested (testing it costs a deliberate session kill); the per-15-min
-monitor contract bounds the loss either way.
-
-**THE LIVE LAUNCH PATH (B2580 / S6-B2573e item 2; EXECUTED process tree of the b2527 chain:
-run_serial_chain 24172 -> run_wave 27488 -> launch_sweep 28236 -> run_phase1a 21376, measured 2026-09-03T15:46Z):** write ONE spec per
-config and launch the chain DETACHED - every flag below is derived from the spec by `run_wave.py`
-(manifest) and checked by `prelaunch_gate.py` through `launch_sweep.py`; the B2578 launch gate
-(`producer_variant_table.launch_refusals`) refuses an unregistered strategy or an off-band knob
-BEFORE the engine.
-```bash
-# spec: copy output_audit/b2527_icg_span50_spec.json, change ONLY strategy_subset / wave / arms[0].env
-PYTHONPATH=.:scripts python scripts/launch_detached.py --chain --batch <bNNNN> \
-  --specs output_audit/<bNNNN>_<STRATEGY>_cfg<N>_spec.json [more specs, information order] \
-  [--wait-for output_audit/<running wave>_wave_summary.json]
-# -> Task Scheduler task stockpicks_chain_<bNNNN>_<ts> (observe it Running - S6-B2529a);
-#    per spec: run_wave.py -> launch_sweep.py -> prelaunch_gate.py -> run_phase1a.py, gate_receipt.json
-```
-
-**AROUND-THE-GATE ROUTE - the direct engine command the spec expands to. NEVER launch this way
-(S6-B2159b class: no manifest, no gate receipt, no battery hook registration, no chain HALT record);
-it is kept so the flags stay readable:**
-```bash
-STRATEGY_SUBSET_FILE=output_audit/_subset_<STRATEGY>.txt \
-OPTIMIZATION_MODE=1 \
-SMC_SWING_LENGTH=<P1_value> STRAT_EMA_SPAN=<P6_value> \
-PYTHONPATH=. python backtest/run_phase1a.py \
-  --tickers-file output_audit/_sweep_200.txt \
-  --phase 1a-beta --cube-isolation \
-  --no-agents --no-news --no-git --no-walk-forward \
-  --screen-pool-workers 3 \
-  --start 2024-05-05 --end 2025-05-05 \
-  --max-run-hours 4.0 \
-  --output-dir output_<STRATEGY>_cfg<N>
-```
-
-**Every flag matters:**
-
-| flag / env | why |
-|---|---|
-| `STRATEGY_SUBSET_FILE` | **MANDATORY — never optional.** Runs ONE strategy instead of 182 AND is the gate that enables demand pruning. Omitting it loses BOTH savings, **silently**, exactly as B1558 did (4.56 h, L432). Owner-agreed 2026-08-14 to make it non-optional in this command. **Never set it for Phase 1B / full-roster runs.** |
-| `OPTIMIZATION_MODE=1` | uncaps `max_cands`; **no-op under `--cube-isolation`** (L419). Does NOT skip `smart_money_score` — that was tried and REVERTED (L418) |
-| `SMC_SWING_LENGTH`, `STRAT_EMA_SPAN` | the FIRE-ADDING config; one run per combination of these |
-| `DEMAND_PRUNING=0` | **only if a run dies with `SkippedSignalError`** — that means warmup missed a key some regime reads. Default `1`. Raise `DEMAND_PRUNING_WARMUP` (default 25) before disabling |
-| `--cube-isolation` | bypasses ALL cross-strategy gates AND tier sizing (B1545) |
-| `--screen-pool-workers` | **default is 0 = SEQUENTIAL** (L407). Use 0 for a clean timing measurement; ~3 per config when running several concurrently. **Total workers must never exceed 10 physical cores** |
-| `--max-run-hours` | the runner REFUSES to start without it |
-| `--start 2024-05-05 --end 2025-05-05` | **1-year SEARCH window that ENDS AT THE HOLDOUT BOUNDARY** (owner ruling 2026-08-21). Step 1 previously ran to `2026-05-05` and therefore ranked on the holdout year it is judged against - `S6-B1605c`. |
-
-**RETRACTED 2026-08-22 (B1877) - THE SECTION BELOW BLAMED THE WRONG THING.** The note said demand
-pruning can silently produce a zero-fire run. **It cannot.** MEASURED with one variable changed:
-
-```
-venv python, DEMAND_PRUNING=1  -> 10 trades
-venv python, DEMAND_PRUNING=0  -> 10 trades       pruning changes NOTHING
-
-subprocess + sys.executable (venv)  -> 3/33 producers kept, 10 trades
-subprocess + bare "python" (system) -> 2/33 producers kept,  0 trades
-```
-
-**The cause is the INTERPRETER.** `subprocess.run(["python", ...])` from inside the venv resolves
-to the SYSTEM python, which keeps 2 of 33 producers and fires nothing. The B1849 "causal test"
-varied pruning AND the launch path at once and attributed the whole difference to pruning.
-
-**What survives:** the Step-1 window at 200 tickers FIRES (29 of 29 screen-days) - that run went
-through bash, i.e. the venv. **What does not:** every claim below about pruning zeroing a run.
-**ALWAYS launch with an explicit interpreter path**, never a bare `python`, from any script.
-
-**ORIGINAL NOTE, PRESERVED FOR LINEAGE AND KNOWN WRONG ON ITS CENTRAL CLAIM:**
-
-**DEMAND PRUNING AND UNIVERSE SIZE - MEASURED 2026-08-21 (B1861).** Demand pruning can
-silently produce a ZERO-FIRE run: exit 0, no `SkippedSignalError`, correct windows, and an empty
-cube that passes every completion check. **It is a SMALL-UNIVERSE effect and Step 1 at 200 tickers
-is clear:**
-
-```
-run          universe      demand-pruning ARMED    screen-days   days with >0 candidates
-arm A        10 tickers    2/33 kept, 4 reads      249            0
-fire-check   185 active    3/33 kept, 5 reads       29           29      (7..29 per day)
-```
-
-**Warmup observes what the active strategies READ. A wider universe reads more, so more producers
-survive pruning.** Causally confirmed on the narrow side: same window and tickers with
-`DEMAND_PRUNING=0` gave 20 trades and 75 files against 0 trades and 1 file.
-
-**Consequence for the runbook: never diagnose a strategy on a 10-20 ticker slice.** A zero-fire
-result there is as likely to be pruning as it is to be the strategy. `zero_output_runs()` in
-`scripts/verify_postconfig_complete.py` detects the signature - `status=complete`, `trades=0`, no
-`trade_log.csv` - independently of the post-config ledger.
-
-**Denominator caution (L568):** the screener reports against the **PIT-ACTIVE** universe, not the
-ticker file's line count - `/185`, not `/200`. A monitor grepping the file count matches nothing
-and reads as silence.
-
-**UNIVERSE ARTIFACT VERIFIED 2026-08-21 (B1846, `#193`).** `verify_universe_artifact.py
-output_audit/_sweep_200.txt --compare-cube output_r5_merged_1_7/trade_exit_detail.csv`:
-
-```
-baseline cube      : output_r5_merged_1_7 (544 tickers)
-overlap            : 200
-in file, NOT cube  : 0            <- no orphan tickers
-in cube, NOT file  : 344
-VERDICT: looks like a broad universe
-```
-
-**This is the check two configs skipped once and paid 3.30 h each for** (`S6-B1576a` measured that
-elapsed; L445) - they searched an abandoned A-C chunk because nobody looked at the ticker list.
-`_sweep_200` is clean on both axes: every ticker exists in the baseline, and the spread is broad
-rather than alphabetically partitioned.
-
-**INTENTIONALLY NARROW (stated here because the verifier asks for it).** `_t10.txt` / `_t20.txt`
-are `head -N` slices of `_sweep_200` used ONLY by the B1845 timing probe, and `_t10` flags
-`SLICE / SUSPECT - 70pct alphabetical skew`. That is what a 10-line head produces and it is fine
-for timing, **but it is a stated LIMITATION of that probe, not a clean bill** - see `S6-B1846c`.
-
-| `--tickers-file _sweep_200.txt` | **200 tickers, not 100** (same ruling). Halving the window alone keeps only **50-56pct of entries** (MEASURED B1817) and pushes most of the grid back to `NO_EXIT_SELECTABLE`; widening the universe restores the sample. **Superset of `_sweep_100.txt` by construction**, so wave-1 results stay interpretable. |
-
-### 1.4 Concurrency
-
-Launch several configs as **separate processes**, each with `--screen-pool-workers 3`.
-In-run parallelism caps at ~1.6x (Amdahl, ~62pct serial), so concurrency across configs scales
-better. **Keep total workers <= cores.** Watch for `MemoryError` in the log — the 182-strategy
-pilot hit it during cube replay; single-strategy cubes are ~1/182 the size, which is what makes
-concurrency viable.
-
-### 1.5 Completion is an ARTIFACT, never a percentage
-
-```bash
-ls -la output_<STRATEGY>_cfg<N>/trade_exit_detail.csv   # THIS is completion
-```
-A run once finished all 1,003 sim-days and wrote **no cube** (L410). Also expect the process to
-hang after writing — the pool does not always exit. Verify the artifact, then kill if needed.
-
----
-
-## STEP 2 — GRADE: derive the subset-safe combinations
-
-**FAMILY EXAMPLE (smc) - generic form: the family grader named in SS11.1 R4 (institutional:
-`grade_institutional_config.py --cube output_icg_<cfg> --min-consecutive-quarters <P4>
---growth-lookback-quarters <P5> --growth-multiple <P6> --span <P9>`); the battery runs it on every
-landing (B2520), so this hand form is for a re-grade only:**
-```bash
-PYTHONPATH=.:scripts python scripts/tighten_breaker_block.py \
-  --cube output_<STRATEGY>_cfg<N>/trade_exit_detail.csv \
-  --out output_audit/<STRATEGY>_cfg<N>_grid.json
-```
-
-Per combination this: filters the cube to surviving fires, selects the best exit **IN-SAMPLE ONLY**,
-grades the holdout on all 6 gates via `roster_core` (identical bar to the Phase 1B roster), and
-records all 15 metrics.
-
-**Verdicts:** `PASS` · `FAIL` · `BELOW_POWER_FLOOR` (**holdout n < `--min-n`** - the CLI floor, default 10, and Step 1 ran
-at 10. **This is NOT `min_trades_holdout`**, which S6-B2353 and its own correction both got wrong: the
-power floor is the EARLY RETURN at `roster_core.py:215` (`if n < min_n: return None`), taken
-BEFORE any gate is computed, while `min_trades_holdout >= 15` is one of the six LIVE_GATES
-evaluated only for cells that already cleared it. **EXECUTED probe at `--min-n 10`:** n=8 ->
-None; n=10 and n=12 -> GRADED with `min_trades_holdout=False`; n=15 -> GRADED with it True.
-So a cell with 10-14 holdout trades IS graded and FAILS the holdout gate; below 10 it is never
-graded at all. Two cuts, two numbers, both live) ·
-`NO_EXIT_SELECTABLE` (too few IS trades to rank 26 exits) · `ZERO_FIRES`
-
-**Generate the locked artifact. Since B2579 (S6-B2573c) `--keys` DEFAULTS to the family's own
-`tools.grid_keys` (smc `close_mitigation,break_pct_max,age_bars_max,tail_n`; institutional
-`combo`), so pass it only to override - the smc keys spelled out below are that default, not a
-value to copy onto another family:**
-```bash
-PYTHONPATH=. python scripts/producer_variant_table.py \
-  --strategy <STRATEGY> \
-  --results output_audit/<STRATEGY>_cfg<N>_grid.json \
-  --keys close_mitigation,break_pct_max,age_bars_max,tail_n \
-  --out output_audit/PRODUCER_VARIANT_TABLE_<STRATEGY>.md
-```
-
----
-
-## STEP 3 - VALIDATE: the WATERFALL over the top 3 configs (4 years, ALL 544 tickers)
-
-> **THIS SECTION WAS REWRITTEN AT B2402.** Every sentence of the previous version was superseded by
-> the owner rulings of 2026-08-29 and had been left standing beside them - the doc-drift class this
-> runbook records against itself. The old text said *top 10*, *disjoint tickers*, *the 444 NOT in
-> the search set*, and *100 tickers*. **All four are now wrong.** Lineage: top 10 -> **top 3**;
-> 444 disjoint -> **all 544**; 100 -> **200** for Step 1.
-
-**UNIT OF EXECUTION: the CONFIG. UNIT OF EVIDENCE: the combination.** Step 2 runs one cube per
-config, and each cube re-evaluates **all 300 parameter combinations x all registered exits**.
-
-**THE THREE CONFIGS**, from the mechanical rule in STEP 2 ENTRY, re-derived over 26 of 26 Step-1
-grids on step1_ranking[0].is_ci_lo:
-
-| order | config | is_ci_lo | is_sharpe | fires | exit chosen |
-|---|---|---|---|---|---|
-| 1 | **sw50sp50** | +1.250 | 4.301 | 14 | time_stop_10d |
-| 2 | **sw30sp150** | +1.214 | 4.807 | 11 | time_stop_10d |
-| 3 | **sw50sp20** | +0.930 | 3.915 | 14 | time_stop_10d |
-
-Recorded so a later widening need not re-derive them: sw30sp20 (+0.816, first holder of a
-triplicate signature - sw30sp50 and sw30sp100 collapse into it) and sw50sp9 (+0.724).
-
-**THE STOPPING RULE (owner, D1; AMENDED by owner ruling 2026-08-30, S6-B2409).** Each config runs
-**IN ITS ENTIRETY** - all 300 combinations graded; the waterfall never halts mid-config. Then, and
-only then: if any combination **clears all six gates**, STOP - the remaining configs are not run.
-If none of the three yields a qualifier, **TERMINATE**: smc_breaker_block_long closes NEGATIVE for
-Phase 1B and the program moves to the next of the 207-strategy backlog (owner, D6 - the METHOD is
-not on trial).
-
-**THE 2026-08-30 AMENDMENT (S6-B2409).** The original D1 stop condition was *qualifies AND is
-ROBUST* - ROBUST meaning the holdout Sharpe cleared the 1.0 gate by more than the 0.333
-selection-noise floor (i.e. holdout > 1.333). The owner retired that floor and the
-ROBUST/PROVISIONAL split **in their entirety**: clearing the six gates IS qualification and IS the
-stop condition. In code, roster_core.qualifier_margin(holdout_sharpe) reports the margin over the
-live pooled gate as a plain number - no floor argument, no label - and the grid payload's
-qualifier key is `qualifiers` (every PASS row). The old mechanics (robust_status, the floor
-constant, the provisional_qualifiers key) are removed and pinned removed
-(test_b2409_floor_retired_margin_measures_live_gate). Applied retroactively to config 1: its 3
-gate-clearing combinations (one parameter set, tail_n variants) are QUALIFIERS, so **the waterfall
-stop condition is MET at config 1 and configs 2/3 are not run**. The owner retained the tail_n=20
-member (ruling 2 of the same date, S6-B2410).
-
-**NO separate baseline run is needed** (L423) - all six gates are ABSOLUTE thresholds, so admission
-depends on a candidate's own metrics. Valid on the appended universe because `--cube-isolation`
-bypasses the candidate cap (backtest.py:1763).
-
-### STEP 3.1 - THE PRE-LAUNCH GATES, in order, every one of them
-
-Run these IN THE LAUNCH TURN. The tripwire table admits **no duration exemption** - probe, smoke or
-wave, all of them apply.
-
-1. **Characterise the tickers file** (#187 / L445 - never infer scope from a filename):
-   `python scripts/verify_universe_artifact.py output_audit/r5_universe_544.txt --compare-cube
-   <a Step-1 cube's trade_exit_detail.csv>`. **Expect a PROVENANCE MISMATCH finding, and expect it
-   to be correct**: Step 1 ran 200 tickers and Step 2 runs 544, so ~500 names are in the file and
-   not in the Step-1 cube. **The check that matters is `in cube, NOT file: 0`** - no Step-1 ticker
-   may be missing. The tool's own guidance is that a deliberate scope must be stated in the
-   consuming doc; it is stated here. Measured for r5_universe_544.txt: 544 tickers, 26 distinct
-   letters, top-3 letter share 27 percent, mega-caps 18 of 18, in-cube-not-file **0**.
-2. **Write run_manifest.json** pinning code SHA, isolation, calendar, the ticker list BY VALUE, and
-   the wall-clock projection. LOCAL runs additionally REQUIRE `obsolescence_risks` and
-   `wall_clock_projection_hours` - and, learned the hard way, **`leg_cap_hours` must be declared in
-   the MANIFEST, not only the spec.** The gate reads the manifest and refuses an undeclared bound,
-   because a cap that is not declared cannot be enforced (L642, fail-closed).
-3. **Run the gate and paste the exit code**: `python scripts/prelaunch_gate.py --manifest
-   output_audit/<batch>_run_manifest.json`. It is HAND-RUN - nothing calls it automatically (B1704).
-   A pass prints PRELAUNCH_GATE_PASS.
-4. **Arm the cadence monitor BEFORE the launch, in the same turn** (#185).
-5. **Confirm zero pre-existing engine processes**, or two runs share an output path and corrupt both.
-
-### STEP 3.2 - THE SPEC, and the one field that is easy to get wrong
-
-```json
-{"wave": "b2399_step2_sw50sp50",
- "tickers_file": "output_audit/r5_universe_544.txt",
- "strategy_subset": "output_audit/_subset_one.txt",
- "window": {"start": "2022-05-05", "end": "2026-05-05"},
- "leg_cap_hours": 4.5, "max_legs": 10,
- "step1_cube": false,
- "pool_workers": 6,
- "allow_engine_drift": true,
- "arms": [{"tag": "step2_sw50sp50",
-           "env": {"SMC_SWING_LENGTH": "50", "STRAT_EMA_SPAN": "50"}}]}
-```
-
-- **`step1_cube: false` - THE ONE THAT IS EASY TO GET WRONG.** It arms the **holdout-touch FAIL**
-  in run_postconfig. Correct for a Step-1 search, which must not touch the holdout, and **WRONG for
-  Step 2, which grades ON the holdout by design.** Copying the Step-1 template arms a check
-  guaranteed to fail. run_wave defaults it to TRUE, so it must be set explicitly.
-- **The config axes are ENV, not CLI flags** - config.py:2472 reads SMC_SWING_LENGTH from the
-  environment, and run_wave.py:39 passes each arm's env dict.
-- **The window runs the FULL 4 years.** 2022-23 is allowed for Step 2 (owner, 2026-08-29),
-  superseding the 2026-08-17 exclusion for this phase only.
-- **leg_cap_hours x max_legs is the capacity** and must exceed the projection; the leg cap itself
-  stays under the owner's 5h hard cap.
-
-### STEP 3.3 - MEASURED RUNTIME, and the memory ceiling that stopped the first attempt
-
-**Measured on the b2399 attempt from two readings of the wave's run_heartbeat.json four minutes
-apart, uncontended:** sim_day_index 6 -> 9 across elapsed_hours 0.2668 -> 0.3335, i.e. **3 sim-days
-in 4.00 minutes = 1.333 min/day at pool_workers 10.** Trading days for this window computed from
-nyse_mcal = **1,003**, giving **22.4h** - against a manifest projection of 18.7h scaled from
-Step-1's 200-ticker rate, which proved **about 20 percent optimistic**. That is the linearity
-caveat the manifest itself recorded, then measured.
-
-**THE FIRST ATTEMPT WAS STOPPED ON COMMIT EXHAUSTION (owner ruling, option b).** At pool_workers 10
-the box reached its commit limit: PowerShell could not start (Windows 0x5AF, which FormatMessageW
-renders as *The paging file is too small for this operation to complete*), a plain file read raised
-MemoryError, and GlobalMemoryStatusEx read **2.08 GB pagefile available at 93 percent load**. After
-the stop it read **46.49 GB at 50 percent**. Relaunched at pool_workers 6, max_legs 10.
-
-**Three rules this produced, each of which cost something to learn:**
-
-- **A pyramid alongside a live wave is not free.** Engine alone ran 48-58 GB committed of 63.63;
-  engine **plus** a pytest run hit 62.03 GB with **1.61 GB free** - the exhaustion class S6-B2237
-  records as having killed three prior runs. Do not run the full suite against a live wave; defer
-  the commit to a leg boundary.
-- **Editing the spec does NOT affect a running wave.** run_wave.py reads the spec ONCE at startup
-  (line 361) and the leg loop reads max_legs from that in-memory dict (line 140). Raising max_legs
-  mid-flight changes nothing. A running process holds what it loaded.
-- **Killing the engine is not killing the wave.** run_wave is the parent and its leg loop RESPAWNS
-  the engine - measured: the tree came back within seconds. **Kill the run_wave root and its
-  descendants, parent-first.** Note scripts/kill_wave_tree.py matches on the OUT-DIR name, which
-  run_wave's own command line does not contain (it carries the SPEC path), so run_wave is **not**
-  in its target list; it also does not exclude its own pid and kills via PowerShell, which is
-  exactly what fails under commit exhaustion.
-
-### STEP 3.4 - MONITORING a Step-2 wave
-
-- **Decide alive-or-dead by the sim_day_index DIFF between firings, never by heartbeat age.** The
-  heartbeat is written by a SUPERVISOR THREAD, so it stays fresh while workers are frozen (L656) -
-  and a STALE heartbeat does not prove death either, since a run at its final sim-day has stopped
-  advancing while it writes its cube (L656 addendum). **Both directions are uninformative; only the
-  counter carries signal.**
-- **The diff interval must exceed the expected per-unit time.** At roughly 1.3-2.0 min/day, a
-  60-second window showing no movement is normal, not a stall.
-- **Read pagefile availability via GlobalMemoryStatusEx, not PowerShell counters.** Under commit
-  exhaustion PowerShell cannot start, so a monitor built on it goes blind exactly when it matters.
-  Report FREE COMMIT, never physical RAM (L670).
-
-**NO separate baseline run is needed** (L423) — all 6 gates are ABSOLUTE thresholds, so admission
-depends on a candidate's own 4-year metrics.
-
----
-
-## POST-CONFIG BATTERY — MANDATORY AFTER EVERY CONFIG, STEP 1 **AND** STEP 2
-
-**Owner directive 2026-08-30 (S6-B2436):** *"After step 2, it is mandatory to run post config
-steps as well."* This section exists because **the runbook did not describe the battery at all** —
-the nine steps lived only in `scripts/run_postconfig.py` and the ledger, so the requirement was
-invisible to anyone reading the plan. A rule with no author in the governing document is a rule
-nobody agreed to.
-
-**THE NINE STEPS - ALL NINE RUN ON EVERY LANDING, FROM EVERY LAUNCH SHAPE (B2520, owner ruling
-2026-09-01: *"Once the config lands, i want it to run automatically no exceptions and share results
-with me."*).** *(The paragraph this replaced read: "Five run automatically at arm completion
-(`run_postconfig.py`, invoked from `run_wave.py`); four are JUDGMENT steps that the code deliberately
-never auto-marks (`run_postconfig.py:225` - 'JUDGMENT PROMPTS (never auto-marked)')." Both halves are
-RETIRED: the run_wave-only wiring left direct and resume launches with no battery at all - cfg1 landed
-with no gate receipt and a hand-built grid, S6-B2515 - and the never-auto-marked design is what the
-owner asked six times to have removed. L736 / CHECKLIST #288.)*
-
-**STEP 2 HAS TWO LEGS (B2569, owner directive 2026-09-02):** the family grader at the
-manifest's own parameters AND the FREE levels of every PERSISTED parameter
-(`step2_free_levels`), graded on THIS cube behind a reproduction gate — every covered landed
-trade must re-pass the production gate offline or the step FAILS closed. Free levels are part
-of every config's band (ruled design), so grading them once at strategy level is the N1 class
-bug (b2569 audit), not a substitute. A new family's registration is incomplete without its
-free-levels grader (#290).
-
-**THE PIPELINE, by file.** `backtest/run_phase1a.py::_postconfig_landing_hook` fires the moment
-`trade_exit_detail.csv` is written (`POSTCONFIG_LANDING=0` opts out, logged; a run that dies before
-writing a cube is the monitor's case, L641) -> `scripts/postconfig_landing.py`, ONE supervisor shared
-by every launch path and idempotent per cube fingerprint (so `run_wave.py`'s own call after a real
-engine run is a no-op, after a substitute engine IS the landing, and a manual call behaves the same)
--> `scripts/run_postconfig.py` (every step written on every run, FAIL included; `FAMILIES` fails
-CLOSED on a strategy with no registered grader) -> `output_audit/postconfig_ledger.json` ->
-`output_audit/POSTCONFIG_REPORT.md` (the ONE report, B2211, re-rendered on every landing, with a
-Landings section) -> `output_audit/postconfig_landings.jsonl` (`reported_to_owner: false`) -> the turn
-preamble lists every undelivered landing, and the Stop hook BLOCKS the turn until the response carries
-a `LANDING REPORT: <cube>` block -> the supervisor commits + pushes the ledger, report and per-cube
-artifacts (never the cube directory) and raises a desktop toast.
-
-| # | step | class (B2520) | what it establishes |
-|---|---|---|---|
-| 1 | `1_cube_sanity` | AUTO | the cube exists, holds one strategy, spans the window, carries every registered exit |
-| 2 | `2_grade_with_config_params` | AUTO, per family | the grid was graded at the manifest's own parameters (SMC: `tighten_breaker_block.py`; institutional: `grade_institutional_config.py`) |
-| 3 | `3_outlier_discrepancy_sweep` | AUTO | NaN/inf, winsorize bounds, degraded-exit map |
-| 4 | `4_three_leg_spot_check` | AUTO, per family | 50 sampled trades re-derived independently |
-| 6b | `6b_equivalence_class_check` | AUTO | combinations differing only in a saturated parameter collapse |
-| 5 | `5_adversarial_lens_review` | AUTO (was JUDGMENT) | an eight-lens battery runs and writes `<cube>_lenses.json`; every WARN / FAIL finding is recorded on the row, never summarised away |
-| 6 | `6_post_fix_recheck` | AUTO-DISPOSITIONED (was JUDGMENT) | OPEN while any lens finding lacks a recheck with evidence (#196); N/A-on-evidence when there is none |
-| 7 | `7_implement_in_engine` | AUTO (was JUDGMENT) | every swept parameter reaches the engine - checked by step number, not by label |
-| 8 | `8_verdict_with_denominators` | AUTO (was JUDGMENT) | the verdict is computed from the grid artifact WITH its N of M |
-
-Every step ends DONE-with-evidence, N/A-with-a-reason, FAIL or OPEN. **SKIPPED is not a disposition
-and is in no terminal set** (`verify_postconfig_complete.py::terminal_for` returns {DONE, N/A} for every
-step; `is_closed` also requires the evidence text). FAIL and OPEN block the completeness gate until a
-human dispositions the row with evidence; a re-run never downgrades a terminal row and never truncates
-the evidence already on it (`run_postconfig.py::merge_row`).
-
-**MEASURED STATE AT S6-B2436 (2026-08-30 - historical; the reading that produced this section):**
-across all 31 Step-1 configs and the single Step-2 config, the five AUTO steps were DONE and **all four
-JUDGMENT steps were SKIPPED**, every one carrying the reason *"PENDING-WAVE-REVIEW: the wave-level
-review batch performs this step"*. **That wave-level review batch never existed.** Programme-wide the
-judgment steps stood at DONE 10 / 2 / 4 / 10 against SKIPPED 42 / 47 / 43 / 42. At B2520 the gate reads
-100 cubes, 0 incomplete, 0 steps SKIPPED (`python scripts/verify_postconfig_complete.py`, exit 0).
-
-**WHY NOTHING BLOCKED - the loophole, stated plainly (historical, closed at B2520).**
-`verify_postconfig_complete.py` then defined `TERMINAL = {"DONE", "SKIPPED", "N/A"}`, so a step marked
-SKIPPED **with any reason string** counted as dispositioned and the completeness gate passed.
-The gate checks DISPOSITION, not EXECUTION. A deferral naming a process that does not exist
-satisfied it indefinitely. The gate STILL checks disposition - which is exactly why every step now
-WRITES one, on every run, and why SKIPPED can no longer be written at all.
-
-**THE RULE, going forward:**
-
-1. **A config is not COMPLETE until all nine steps are DONE or explicitly N/A.** SKIPPED is not a
-   disposition; a step that could not run is FAIL or OPEN and BLOCKS.
-2. **Step 2 may not launch while any Step-1 config in its lineage carries an outstanding judgment
-   step.** The decision-bearing unit is the LINEAGE, not the single config: a Step-2 run validates a
-   candidate that Step-1 configs selected.
-3. **A ROSTER ADMISSION may not be taken from a config whose judgment steps are outstanding.**
-   Where one already has been, the roster row is marked and the admission is re-examined.
-4. **Any deferral must name an EXECUTABLE target** - a script path that exists and can be run -
-   plus an owner and a trigger. Free text describing a future process is a DROP, not a deferral.
-5. **Automation is not a substitute for READING the findings.** Steps 5-8 now run unattended, but
-   their output is a list of findings addressed to a human: every judgment-step DONE in the ledger
-   before B2520 carried a real finding (the tail_n band defect, the equivalence-class defect, a
-   grader-loader crash found and pinned), and the lens battery's WARN / FAIL rows are the same
-   material, delivered instead of deferred. The `LANDING REPORT: <cube>` block is where they are read.
-6. **The result reaches the owner mechanically, in the channel the owner reads.** A landing nobody
-   has reported is listed in the turn preamble and blocks the Stop hook; "I will summarise it next
-   turn" is the silence this section exists to end.
-
-## STEP 4 — ADMIT
-
-> **THE GATE TABLE BELOW WAS STALE ON 3 OF 6 THRESHOLDS UNTIL B2402**, in the section that
-> DEFINES admission. It read `sortino >= 0.7`, `min_trades_holdout >= 25`,
-> `min_trades_full_period > 100`. The live values, re-derived from PASSING_CRITERIA at B2402, are
-> **1.0**, **15** and **75**. It also said *on the 4-year holdout*, which conflates two different
-> windows - see the note under the table.
-
-A combination enters Phase 1B only if it clears **all six LIVE_GATES** (roster_core.py:60-61).
-Thresholds re-derived from backtest/config.py PASSING_CRITERIA, tier `pooled`:
-
-| # | gate | bar | config key |
-|---|---|---|---|
-| 1 | `pooled_sharpe` | **>= 1.0** | min_sharpe_overall |
-| 2 | `profit_factor` | **>= 1.3** | min_profit_factor_overall |
-| 3 | `sortino` | **>= 1.0** | min_sortino_overall |
-| 4 | `psr` | **>= 0.95** | min_psr |
-| 5 | `min_trades_holdout` | **>= 15** | min_trades_holdout |
-| 6 | `min_trades_full_period` | **> 75** | min_trades_full_period |
-
-**THE TWO WINDOWS DIFFER, and the old wording hid it.** Gates 1-5 are computed on the **1-year
-holdout** (HO_START..HO_END = 2025-05-05 -> 2026-05-05). Gate 6 counts over the **FULL 4-year
-span**: tighten_breaker_block.py:348 sums the entire frame, IS 3.00y + HO 1.00y. The owner was
-shown this grain when ruling the floor and chose to keep the COUNTER and restore the 4-year-sized
-BAR - *"in that case revert back to 75"* - rather than re-cut the counter to IS-only.
-
-**TWO GATES ARE THREE-STATE, not two.** `profit_factor` is **NOT EVALUABLE** when a cell has zero
-losing trades: an all-winners cell has pf = inf and `inf >= bar` is True, but a zero-loss sample
-says nothing about the loss side (B2012). `min_trades_full_period` is NOT EVALUABLE when the count
-is absent, because before B1624 a MISSING value PASSED - *unknown* scored better than *known bad*.
-None is neither pass nor fail; it shrinks the denominator so nobody quotes "6 of 6" when 5 were
-measured.
-
-**THE POWER FLOOR IS NOT A GATE, AND IS NOT min_trades_holdout.** roster_core.py:215 is an EARLY
-RETURN - `if n < min_n: return None` - taken **before any gate is computed**, and min_n comes from
-`--min-n` (tighten_breaker_block.py:190, default 10). A cell below it is BELOW_POWER_FLOOR and
-never reaches the gates. **Two cuts, two numbers, both live**: at --min-n 10 a cell with 10-14
-holdout trades IS graded and FAILS gate 5; below 10 it is not graded at all. Measured probe: n=8 ->
-None; n=10 and n=12 -> graded with gate 5 False; n=15 -> graded, True.
-
-**FOUR CRITERIA ARE DEMOTED to diagnostics and are NOT gates** (roster_core.DEMOTED):
-max_drawdown, calmar, deflated_sharpe, win_rate. Each is computed and reported. Note that
-CLAUDE.md's claim *multiple-testing control remains via BH-FDR + PSR* is TRUE at the ROSTER stage
-and **FALSE at the GRID stage**: BH-FDR runs only at build_phase_1b_roster.py:252 across a family
-of DIFFERENT STRATEGIES, and tighten_breaker_block.py applies **no multiplicity correction across a
-config's 300 combinations** (owner ruling D2, 2026-08-29: none is required - *select the one that
-passes all gates; if multiple, the best Sharpe*).
-
-**A PROVISIONAL QUALIFIER IS RECORDED, NOT DISCARDED** (S6-B2379). Every PASS row carries `margin`
-and `status`, and the grid emits a `provisional_qualifiers` sibling key [B2573: RENAMED to `qualifiers` at S6-B2409 - see the STEP 2 ENTRY note above; this paragraph predates the rename]. Without it, a run
-terminating NEGATIVE could do so while holding a cell that cleared every live gate, with nothing
-recording it. **Its disposition is an open owner question.**
-
-**WHICH COMBINATION ADVANCES when several qualify: the highest HOLDOUT POOLED SHARPE** (owner, D3)
-- the gated quantity, not the in-sample is_sharpe that Step 1 ranked on.
-
-**Report the verdict WITH its denominator** (#182): *"N of M combinations passed, across X of Y
-applicable producers"* — computed by the table generator, never hand-counted.
-
----
-
-## REFERENCE — ENGINE CONTROLS (code-verified B1570, 2026-08-14)
-
-**Every control on the optimisation path, what it does, and whether it is optimisation-only.**
-Values below were read from `backtest/config.py` at cite time, not from memory.
-
-| control | default | scope | what it does |
-|---|---|---|---|
-| `STRATEGY_SUBSET_FILE=<path>` | unset | **OPT-ONLY** | Newline-separated strategy names. `run_phase1a.py` REPLACES `ALL_STRATEGIES` with the matched subset, so only those strategies are evaluated. **Refuses to start if it resolves to zero** (`B1425 FATAL`), so a typo cannot silently become a full-roster run. **This is also the gate for demand pruning — without it, pruning is OFF.** |
-| `DEMAND_PRUNING` | `1` (on) | **OPT-ONLY** | Kill switch for demand-driven signal pruning. Inert anyway unless `STRATEGY_SUBSET_FILE` is set. Set `0` to disable if a run dies with `SkippedSignalError`. |
-| `DEMAND_PRUNING_WARMUP` | `25` bars | **OPT-ONLY** | Bars spent RECORDING which signal keys are read before pruning arms. Raise it if a strategy's branches are rare. |
-| `OPTIMIZATION_MODE` | `0` | **OPT-ONLY** | Uncaps `max_candidates_per_day`. **No-op under `--cube-isolation`** (isolation already bypasses the cap, L419). Does NOT skip `smart_money_score` — that was tried and REVERTED (L418), because tier maps LOW→0.0 and a zero size SKIPS the trade, so tier GATES ENTRY. |
-| `SMC_SWING_LENGTH` | `20` | sweep knob | Swing length for SMC primitives. FIRE-ADDING — each value needs its own engine run. |
-| `STRAT_EMA_SPAN` | `200` | sweep knob | Which EMA span the trend leg reads. FIRE-ADDING. Built into the key at RUNTIME (`f"price_above_ema_{span}"`) — see the L437 trap below. |
-| `STAGE2_NO_LIVE_FETCH` | `1` (on) | **ALWAYS-ON** | Raises on any OHLCV cache miss instead of degrading silently. Set `0` ONLY for prefetch/setup, never a backtest. |
-
-#### Config assignments as RUN (S6-B1537b, recovered B1915)
-
-The table above gives the sweep knobs and their DEFAULTS. It never recorded
-which value each config actually ran, which is the fact `S6-B1537b` says must
-never be re-asked. **Recovered from the run's own record,
-`output_audit/b1576_par.log`** — not from a plan, a note, or memory:
-
-| config | `SMC_SWING_LENGTH` | `STRAT_EMA_SPAN` | exit | cube rows | wall |
-|---|---|---|---|---|---|
-| `output_cfg1` | `20` | `200` | 0 | 8,581 | 11,891 s (198.2 min) |
-| `output_cfg2` | `10` | `50` | 0 | 10,921 | 11,973 s (199.6 min) |
-
-**`cfg1` is the production anchor** — both knobs at their defaults — so cfg1 vs
-cfg2 moves BOTH knobs at once and is not a single-variable comparison. Two
-later cubes, `output_w1_sw20_span21` and `output_w1_sw20_span50`, vary the span
-alone against `sw=20`.
-
-**Timing measured B1915 from `b1576_cfg1.log` / `b1576_cfg2.log`:** end-to-end
-198.1 / 199.5 min, of which the day loop is 195.9 / 197.3 and post-processing
-is **2.2 / 2.1 min — 1.1%**. Post-processing is NOT on the slow path, and
-re-costing the 20-config sweep on end-to-end rather than day-loop moves it
-**32.9 h → 33.3 h (1.2%)**. That costing assumes the **measured** 2-way
-concurrency; **3-way and above is unvalidated pending the peak-RSS measurement
-(`S6-B1552a`)** — a wall-clock that divides by N says nothing about N copies
-fitting in RAM.
-
-| `ENGINE_OUTPUT_DIR` | unset | infra | Output directory override. |
-
-**Config flags (not env), current live values:**
-`USE_PRECOMPUTED_SIGNALS=False` (B1563 — the cache is EMPTY; re-enabling needs a PIT audit first) ·
-`USE_SMC_PANEL_CACHE=False` (**UNSAFE** — 11.5pct divergence measured, B1542) ·
-`USE_PANEL_TECHNICAL_SIGNALS=True` · `SMC_PHASE='PRODUCTION'` (if not PRODUCTION, `compute_smc_signals`
-returns `{}` and every SMC strategy silently dies) · `DATA_LOAD_START=2021-05-06` ·
-`CUBE_ISOLATION_SIZE_PCT=0.01`.
-
----
-
-## REFERENCE — WHAT GETS SKIPPED, AND WHEN
-
-Demand pruning computes only the producers whose signal keys the ACTIVE strategies actually read.
-
-**It arms in three stages.** Bars 1-25 compute EVERYTHING and RECORD reads. Then the skip set is
-derived and pruning arms. From then on the signals dict is wrapped in `GuardedSignals`, so reading a
-pruned-away key RAISES `SkippedSignalError` instead of returning `.get()`'s default.
-
-**How the required-key set is built — BOTH methods, unioned (B1570):**
-- **RUNTIME recording** catches keys built at runtime, e.g. `f"price_above_ema_{STRAT_EMA_SPAN}"`.
-  A static scan sees only ONE of `smc_breaker_block_long`'s two keys (L437).
-- **STATIC extraction** catches keys a boolean SHORT-CIRCUITED past. `smc_ote_long` is
-  `s.get(zone) and (s.get(bos) or ...)`; if `zone` is False across all warmup bars the `and` never
-  evaluates the right side, so the bos keys are never READ and `bos_choch` would be pruned (L444).
-
-The two fail in COMPLEMENTARY directions. Union is strictly safer — it can only KEEP more producers.
-
-**Measured effect on `smc_breaker_block_long` (1 strategy):**
-- Technical: **32 of 33 producers skipped**, 512 → 46 keys, 95.8pct off `compute_all_signals`
-- SMC: **3 of 6 primitives skipped** (`retracements` 46.7pct + `fvg` 28.1pct + `bos_choch` 18.1pct of
-  SMC cost), 91.5pct off `compute_smc_signals`. `ob`, `liquidity`, `swings` always run.
-
-**SMC redundancy is automatic.** 22 strategies read `smc_*` keys; each keeps exactly the primitives
-it needs — verified on `smc_fvg_retest_long` (keeps fvg), `smc_ote_long` (keeps bos_choch +
-retracements), `smc_bos_continuation` (keeps bos_choch).
-
-### PHASE 1B IS DIFFERENT — pruning is INERT there by design
-`STRATEGY_SUBSET_FILE` is an OPTIMISATION-ONLY device. Phase 1B simulates all passed strategies
-together, where every producer is read anyway. With no subset file, `wrap()` returns **the same
-object** (identity-pinned by test) and `smc_skip_primitives()` returns empty — **zero overhead, zero
-behaviour change**. Never set the subset file for a Phase 1B or full-roster cube run.
-
----
-
-## REFERENCE — MEASURED COSTS (and why a percentage alone is a lie)
-
-| shape | measured |
-|---|---|
-| 182 strategies, 100 tickers, 2y, pool=10 | **4.56 h** (2.63 h day loop + 1.93 h post-processing) |
-| 182 strategies, 20 tickers, 2y, pool=3 x3 concurrent | 3,696 s |
-| **1 strategy, 5 tickers, 2y, pool=0, UNPRUNED, cold cache** | **1,920 s** (B1568) |
-| **1 strategy, 5 tickers, 2y, pool=0, UNPRUNED, warm cache** | **703 s** (B1569b) |
-| **1 strategy, 5 tickers, 2y, pool=0, PRUNED, warm cache** | **366 s** (B1569b) |
-| Machine | 10 physical / 12 logical cores, 15.6 GB RAM |
-
-**THE SAME UNPRUNED CONFIG TOOK 1,920 s AND 703 s — 2.7x apart, same machine, same code.** The only
-difference was OS file-cache warmth. Consequences you must respect:
-
-1. **Cross-session elapsed times are NOT comparable.** A/B arms must run BACK-TO-BACK in one session.
-2. **A saving is a fraction OF A BASELINE, and the baseline's composition is not constant.** Pruning
-   measured **14.64pct** against a cold baseline and **47.94pct** against a warm one — the cold
-   baseline carries I/O that pruning cannot remove and dilutes the fraction. Quote the saving WITH
-   its cache condition, never alone.
-3. Comparing B1569b's pruned arm (366 s) to B1568's cold baseline (1,920 s) would report **81pct**,
-   two-thirds of it filesystem cache. That is the trap re-running the baseline exists to avoid.
-
-**Correctness bar for any optimisation claim:** the cube must be BIT-IDENTICAL, not merely
-same-row-count. B1568 + B1569b cubes all hash to `615233dbab2756d0` (1,352 x 37).
-
----
-
-## REFERENCE — PARALLELISM
-
-- **Cores: 10 physical.** With `--screen-pool-workers 0` (sequential) each config is ~1 core.
-- **RAM is the binding constraint, not cores.** A single worker measured **2.1-2.3 GB**; at 15.6 GB
-  total that caps concurrency at roughly **5-6 configs**, not 10.
-- **Run configs CONCURRENTLY rather than widening the pool.** In-run parallelism caps at ~1.6x
-  (Amdahl, ~62pct serial); separate processes scale far better. B1558 measured 2.24x throughput at
-  3-way.
-- **Never let total workers exceed physical cores** — pool=60 on 1 ticker ran 11.6x SLOWER than
-  sequential (L-pool).
-- **Do NOT run a pyramid or any other CPU work during a timing A/B.** It inflates the arm in flight
-  and biases the saving upward.
-
-## SWEEP EXECUTION MODE - OPTION C (owner ruling 2026-08-17)
-
-**Wave 1 is OWNER-GATED. Waves 2-9 run autonomously, subject to MECHANICAL HALTs.**
-
-Wave 1 is gated because it is the first `--screen-pool-workers 3` measurement; the remaining 8
-waves are re-costed from its ELAPSED before any of them starts. Autonomy after that is safe only
-because the stop conditions are measured, not judged in the moment:
-
-| HALT condition | why it is mechanical |
-|---|---|
-| cube sanity fails: not exactly 1 strategy, not exactly `[26]` exits/entry, or a mega-cap absent | step 1, already scripted |
-| diagnosis loss > `--max-diag-loss`, or ANY ticker dropped | the grader ABORTS (B1623) |
-| spot-check agreement < 100pct on any of the three legs | step 4 |
-| a config's ELAPSED deviates > 2x from wave 1's measured figure | arithmetic on the log |
-| `MemoryError`, or free RAM below one worker's PEAK (3,223 MB) | `Get-CimInstance` in the */15 check |
-| the adversarial review produces a CONFIRMED finding | step 5 |
-
-**On any HALT: stop the sweep, do not start the next wave, notify the owner with the evidence.**
-Waves are never started to "keep the machine busy" - an unexplained result stops the sequence.
-
-## RUN-SAFETY ARCHITECTURE (B2142-B2169, 2026-08-24/25) — the launch stack as it actually is
-
-Built after one W-B arm ran 2.9h against a 2.5h cap with no kill, no warning and no
-checkpoint, computing blind for 2h34m. Every mechanism below exists because a specific
-failure was measured, and every one carries a pin.
-
-### Throughput, measured (the numbers that drive venue and cap decisions)
-
-- **Every run in program history until 2026-08-24 was single-threaded**: `run_wave.py`
-  hardcoded `--screen-pool-workers 0` (1 of 10 cores; confirmed live at 97pct of one core
-  via Get-Process). The N=3 concurrency figure (2.04x/arm, S6-B1552a) was measured in that
-  pool-OFF regime — **the pool dividend and the N-way dividend draw on the same 10 cores
-  and must never be multiplied** (council-verified, B2142).
-- Pool ON at 50 tickers: 3.21x screening, 2.33x end-to-end (the b2128 probe pair).
-- Pool ON at 200 tickers: **60.7 s/sim-day** (11 PHASE_TIMING screen_done timestamps,
-  b7xxzzhf9 capture, 15:09-15:31) vs sequential 127.9 (sw5) / 85.5 (sw10) — so the pool
-  buys ~1.4-2.1x at full width, **the speedup decays with universe size**. DERIVED
-  config cost: 60.7 x 250 days ≈ **4.2h** — fails the old 3h cap, fits the 5h cap
-  un-chunked (~19pct headroom). Memory: one pooled arm ≈ 5.3GB of 15.6GB (main 311MB +
-  10 workers at 468-584MB), so N=2 pooled would fit RAM but split the same cores.
-- `pool_workers` is spec-driven in run_wave since B2142 (default 0 — no legacy spec
-  changes behaviour).
-
-### The cap (owner ruling 2026-08-24: 5 hours)
-
-- Raised 3h -> 5h after the 4.2h measurement. Recorded in CLAUDE.md banner, memory, the
-  queue — and as the executable constant `OWNER_LOCAL_CAP_HOURS = 5.0` in
-  `scripts/prelaunch_gate.py`, which **fails CLOSED**: a manifest declaring NO leg cap is
-  refused (L642 — the check was briefly `if cap is not None`, which converted
-  "undeclared" into "approved"; caught by council review the same day it shipped).
-- Enforcement inside the engine is TWO-LAYER: the in-loop per-day check (B2132), plus the
-  **B2148 supervisor** — a daemon thread armed before the first iteration that samples
-  wall-clock on its own schedule and hard-exits at the cap wherever the loop is. L637:
-  the engine had SEVEN loop-gated guards/writers (telemetry :813, progress :830, 50-day
-  :934, kill :843, checkpoint writers :973/:1037/:1092) and one long sim-day silenced all
-  seven at once; a guard must not share the control flow it guards. B2145 freezes the
-  loop-gated writer count at 6+cap so an eighth cannot join silently.
-
-### Observability (session-agnostic by construction)
-
-- The supervisor writes **`run_heartbeat.json`** every ~30s (atomic tmp+replace):
-  elapsed_hours, sim_day_index, sim_date, closed/open trades, cap, pid, timestamp.
-  Progress lives in the filesystem — any session, or none, can read it. Session-held
-  monitors and crons are convenience only (they died with a session restart on 2026-08-24
-  and the run computed blind; L637/S6-B2143b).
-- A killed run's launcher log is shape-identical to a live one (L641): the CFG completion
-  line is written only on normal exit. **`scripts/classify_run_log.py`** is the
-  authoritative reader — COMPLETE / DEAD_WITHOUT_ENDING / RUNNING, one-directional: no
-  ending + no live pid = DEAD, never RUNNING (pin test_b2158).
-- On a wall-time kill the supervisor flushes `engine_state.json` + trade_log checkpoint
-  through an out-of-loop emitter, so a killed run stays resumable (B2126 proved
-  kill-then-resume live; B2148 proved it for a hung sim-day).
-- **B2167 caveat on historical data**: every engine_state.json written before B2167
-  records `open_trades: 0` and `tickers_processed: 0` — two getattr names
-  (`open_positions`, `_last_universe`) were never assigned (PIVOT #34 phantom class), so
-  M6 boundary-drop numbers from before B2167 are vacuous. Fixed at 6 sites; pin
-  test_b2167 bans phantom getattr-self names engine-wide.
-
-### The pre-run gate (CHECKLIST #158/#160/#161 — wired, hardened B2149-B2169)
-
-`scripts/prelaunch_gate.py`, invoked by `scripts/launch_sweep.py` (refuses on non-zero;
-the HAND-RUN-ONLY docstring era ended at B2082 and the header now says so). Checks:
-manifest completeness, isolation, calendar, obsolescence answer, wall-clock projection,
-S3 sha + ticker disjointness + budget (AWS mode), **plus B2149 run-safety**: engine must
-carry the supervisor, must write the heartbeat, and the declared leg cap must respect
-OWNER_LOCAL_CAP_HOURS (fail-closed). launch_sweep separately refuses on: git drift (HEAD
-vs frozen_sha, dirty engine paths — B2127), window contradiction (B2132), and **arm-env
-mismatch (B2168)**: every env value the manifest's arms declare (SMC_SWING_LENGTH = P1,
-STRAT_EMA_SPAN = P6) must be present AND equal in the live environment — unset would
-silently run engine defaults while the manifest names another config (the S6-B2136
-class).
-
-- **Gate credibility is tested, not assumed**: a known-bad corpus of 6 single-mutation
-  manifests must each be REFUSED with a reason naming the defect, and a reachability pin
-  asserts every `check_*` function is called from the entry point (one was briefly wired
-  to call itself and ran zero times — test_b2159 both).
-- **A PASS leaves a receipt** (B2169): `gate_receipt.json` in the run output binds the
-  gated manifest's sha256 to the launched argv; post-config check M10 FAILS a cube whose
-  manifest no longer hashes to its receipt (the gate-time/launch-time rebind hole) and
-  flags a receipt-less new cube as launched AROUND the gate.
-- **Known remaining holes, owner-gated (S6-B2159b remainder)**: the engine can still be
-  invoked directly without the gate (closing it means the engine refuses without a
-  receipt, which breaks every direct invocation by design); the supervisor checks are
-  source-text greps; LOCAL mode still waives the ticker-list requirement when `universe`
-  is present.
-
-### Post-config battery (run_postconfig.py — invoked by the ENGINE's landing hook through
-scripts/postconfig_landing.py on every landing, B2520; run_wave's own call is idempotent)
-
-Step-1 sanity + M1 content-sha, M2 exits-vs-live-registry, M3 fill_date, M4 window +
-holdout-touch, M5 pnl integrity, M7 degraded exits, M9 universe artifact, **M10 gate
-receipt** — with M6 (boundary drops; meaningful only post-B2167) recorded by run_wave and
-M8 (short borrow-rate) pending a short cube (S6-B2118b trigger).
-
-### Correlation / effective-breadth measurement (B2182 — zero engine runs)
-
-`scripts/build_strategy_return_correlation.py` answers the portfolio-reframe question from the
-R5 production trade log (IS window only, holdout untouched): **avg pairwise rho 0.087** across
-183 strategies / 136,622 trades — diversification exists — but the cross-sectional annualized
-Sharpe is **mean −2.44 / median −1.97**, so combination amplifies a negative and N=40 implies
-portfolio Sharpe −7.4. The positive-only shrunk subset has **n=5, implying 0.62** — under the
-1.0 bar. Verdict recorded in output_audit/b2182_gate_philosophy_decision.md: keep the
-per-strategy gate; the binding constraint is candidate quality, not gate philosophy; re-run at
-selected-exit grain once ~20 strategies carry graded cells. Caveats stamped in the artifact
-(production-exit grain, 2022-23 bear in-window, winner's curse both ways).
-
-### Design principle for NEW producers (B2182, external item 10 adopted)
-
-Prefer parameter-free formulations at design time: ensemble across lengths (mean of signs ->
-one continuous score, one threshold), cross-sectional ranks over absolute thresholds,
-vol-normalized triggers over fixed ones. Every parameter deleted is a selection-bias dimension
-that never needs correcting — and EVENT triggers carry fewer tunables than STATE definitions.
-Applies FORWARD (new producers / Class 7 wires); retrofits are per-strategy owner-approval work.
-
-### SPP median column (B2182, external item 7 adopted)
-
-TABLE C's funnel row now carries **median IS-Sharpe beside best** — the median across graded
-combos is a nearly unbiased live-expectancy estimate; max minus median is the selection
-artifact, visible in every render.
-
-### Standing open decisions this section feeds (owner)
-
-1. **Venue** (S6-B2107a): local pilot FAILED its gate at the old cap on measured
-   evidence; at 5h a config fits un-chunked. Hetzner auction remains ruled, gated on a
-   completed local strategy.
-2. **W-B relaunch**: no run is in flight; sw50's resume is one command (its spec carries resume=true), sw30's requires the one-line spec edit FIRST (resume=false as written - L646: a recovery quoted as cheap must have its config opened, because this one would have restarted day 0 over a day-57 checkpoint); neither is taken
-   without the owner's word (feedback_ask_before_relaunching_corrected_version).
-3. **regime_flip retirement** (S6-B2139a): refused on stale evidence — 42 of 95 rows in
-   the post-fix reference cube are REAL flips.
-4. **Wave methodology**: four completed configs = ONE grid under four cross-config
-   settings, zero above the 0.333 noise floor; the council's falsification/breadth
-   alternatives are on record (B2142 council).
-
-## MANDATORY POST-CONFIG ANALYSIS (owner directive - run after EVERY config, unprompted)
-
-**This runs after every config completes. No prompt required. Skipping a step is a silent miss.**
-
-> **B2520 (owner ruling 2026-09-01): the battery is invoked by the ENGINE on every landing and
-> runs ALL NINE steps** - see *POST-CONFIG BATTERY* above for the pipeline by file and CHECKLIST
-> #288 for the rule. The B2118 blockquote below is kept as history, because the manual blocks it
-> introduces remain the reference for what each check MEANS; *"Steps 5/6/8 remain judgment"* is
-> RETIRED - they run, and their findings land on the ledger row and in the LANDING REPORT.
->
-> **AUTOMATED since B2118 (S6-B2117b) - HISTORICAL:** `PYTHONPATH=".;scripts" python
-> scripts/run_postconfig.py --cube output_<dir> [--step1-cube] [--write-ledger]`
-> executes step 1 + step 7 + the M-checks (M1 content-sha, M2 exits-vs-live-registry,
-> M3 fill_date, M4 window + holdout-touch FAIL on Step-1 cubes, M5 NaN/inf/winsorize,
-> M7 degraded-exits, M9 universe-artifact via the cube's own manifest) and prints
-> steps 2/4 as parameterized commands. `run_wave.py` invokes it at every arm
-> completion (`postconfig_exit` recorded per arm). Steps 5/6/8 remain judgment.
-> M6 (boundary-drop counter) + M8 (borrow rate) are NOT yet in the battery
-> (S6-B2118b). The manual blocks below remain canonical for legacy cubes and
-> for understanding what each check means.
-
-### 1. Cube sanity - BEFORE trusting any number
-```bash
-python -c "
-import pandas as pd; d=pd.read_csv('output_cfg<N>/trade_exit_detail.csv',low_memory=False)
-ex=d.groupby(['ticker','entry_date']).exit_method.nunique()
-print('strategies',d.strategy.nunique(),'| exits/entry',sorted(ex.unique()),'| entries',len(ex))
-print('mega-caps',[t for t in ['NVDA','MSFT','TSLA'] if t in set(d.ticker)])"
-```
-PASS requires: exactly **1** strategy, exits/entry exactly **[len(EXIT_STRATEGIES)]** -
-**derive it live** (`python -c "from backtest.engine.exit_strategies import EXIT_STRATEGIES;
-print(len(EXIT_STRATEGIES))"` -> **24 post-B2110**; the four legacy cubes and every pre-B2110
-cube carry [26] - judge each cube against the registry AT ITS OWN SHA, B2117c) - and mega-caps
-PRESENT (their absence means the archived A-C chunk universe, L445).
-
-### 2. Grade - with the CONFIG'S OWN parameters (PER FAMILY - B2569 generalisation)
-
-**This step is family-dispatched, never strategy-specific prose.** The battery
-(`run_postconfig.py::FAMILIES`) fails CLOSED on a strategy with no registered grader; this doc
-previously showed only the smc command, which is how an entire analysis step (free levels) got
-executed once at strategy level and never per config (the N1 class bug, b2569 audit). The step
-has TWO legs on every landing and step 2 is DONE only when BOTH succeed:
-
-**(a) the family grader, at the manifest's own parameters (FAMILY EXAMPLES - both registered
-families. Since B2579 a third family is ONE declaration: a `tools` adapter block in its SPECS entry
-(keys / grid_keys / grade / spot_check / single_combination, optional free_levels + engine_anchors),
-from which `run_postconfig.family_entry` builds the row - an incomplete block is not a family and
-`run_postconfig.FAMILY_REFUSALS` says which piece is missing, so the B2578 launch gate refuses the
-spec before the engine spends the hours):**
-```bash
-# smc_breaker_block family:
-PYTHONPATH=".;scripts" python scripts/tighten_breaker_block.py --cube output_cfg<N>/trade_exit_detail.csv \
-  --swing-length <THE SW THIS CONFIG RAN> --min-n 10 --out output_audit/<batch>_cfg<N>_grid.json
-# institutional_committed_growth family:
-PYTHONPATH=".;scripts" python scripts/grade_institutional_config.py --cube output_icg_<cfg> \
-  --min-consecutive-quarters <P4> --growth-lookback-quarters <P5> --growth-multiple <P6> --span <P9>
-```
-**Parameters MUST match the run.** The smc grader RE-DERIVES every fire; a mismatch silently
-drops the fires that do not reproduce - cfg2 lost 167 of 420 that way (L454); the union
-diagnosis-loss gate aborts above 2pct. The institutional grader REFUSES non-production P7/P8
-values (L751 - they are artifact stamps, not filters).
-
-**(b) the FREE levels of every PERSISTED parameter, on THIS config's cube:**
-```bash
-PYTHONPATH=".;scripts" python scripts/grade_free_levels_institutional.py --cube output_icg_<cfg>
-```
-Levels come from SPECS `free_band` (single source). The tool gates itself: every covered landed
-trade must RE-PASS the production gate offline (REPRODUCTION line printed) before any level is
-graded - a reproduction failure exits 2 and the battery FAILS step 2 closed. Empty
-`signals_at_entry` rows (S6-B2512 class) are counted and excluded, never silently failed. A new
-family's free-levels grader is part of registering the family, not a later enhancement.
-
-### 3. Outlier + discrepancy sweep - ALL of these, every time
-| check | why |
-|---|---|
-| cube entries == grid max fires | catches silent diagnosis loss (L454) |
-| verdict distribution | `NO_EXIT_SELECTABLE` is a SAMPLE-SIZE verdict, not exit quality |
-| rank by `ci_lo`, NOT `sharpe` | the higher Sharpe can have a NEGATIVE lower bound (L455) |
-| `exits_effective` vs the LIVE registry | duplicate exits collapse; "best of N" is usually fewer (L461). **Derive N live - it is 24, not 26 (B2140)** |
-| PASS rows with marginal `ci_lo` | 5 of 200 at `ci_lo` +0.08 is a WEAK positive, not a result |
-| any PASS selecting `regime_flip` | **run `measure_degraded_exits(cube)`** - do not judge by date. It is a time stop in ALL FOUR existing cubes (owner-accepted 2026-08-21) and live in every config run after B1682 |
-| **every swept LEVEL changes the outcome** | **a level that changes nothing is a wasted dimension (L473)** |
-| **top-N holds N DISTINCT fire-sets** | **cfg2's top 10 was 4 real candidates wearing 10 rows (L473)** |
-| **measure DEGRADED exits per cube** | `regime_flip` was a time stop in every pre-B1622 cube; measured, not assumed (L483) |
-| **equivalence-class members keep the SAME FIRES** | a de-dup key of `(fires, exit, sharpe)` could merge different fire-sets that tie; verified 6 of 6 (B1612) |
-
-```bash
-python scripts/verify_grid_bands.py output_audit/<batch>_cfg<N>_grid.json --anchor tail_n=20
-```
-**This is the step that was missing.** The sweep above already carried a duplicate-collapse
-lens - `exits_effective` vs 26 - and it found `26 exits -> 23 effective`. **The same question
-was never asked of the PARAMETER axis**, so `tail_n` sat at `[3, 5, 10, 20]` through 400 graded
-combinations with `10 -> 20` moving **0 of 50** cfg1 groups. A lens is defined by its QUESTION,
-not by the axis it was first applied to (L474). `--anchor` exempts the production value, which
-is carried for reproducibility, not to discriminate.
-
-**ACCEPTED ASYMMETRY - RESTATED 2026-08-21 (owner ruling (b)).** The 2026-08-17 version of this
-note said cfg1/cfg2 were degraded *"while the 18 remaining configs carry a live one"*. **That was
-false, and the correction matters more than the acceptance.**
-
-`exit_regime_flip` needs TWO inputs - `regime_by_date` and `regime_at_entry` - supplied in two
-separate batches. MEASURED via `rc.measure_degraded_exits` on **all four existing cubes**:
-
-```
-output_cfg1              time_stop_20d == regime_flip     written Aug 15
-output_cfg2              time_stop_20d == regime_flip     written Aug 15
-output_w1_sw20_span21    time_stop_20d == regime_flip     written Aug 18 13:21
-output_w1_sw20_span50    time_stop_20d == regime_flip     written Aug 18 13:21
-```
-
-**Wave 1 is degraded too**, because it ran hours BEFORE B1682 - whose own commit title reads
-*"I fixed ONE OF THE TWO things the exit needed, and called it done"*. B1622 supplied the first
-input; B1680 then found the fix had never run.
-
-**OWNER RULING 2026-08-21: accept it.** Not re-running wave 1 (~5.8 h) or cfg1/cfg2 (~6.6 h).
-
-**What this commits us to, stated so nobody re-derives it:**
-
-- **All four existing cubes carry `regime_flip` as a 20-day time stop**, i.e. a duplicate of
-  `time_stop_20d` under another name. Their effective exit family is **25, not 26**.
-- **Every config run from now carries a LIVE `regime_flip`** - both inputs are in the code
-  (`backtest.py:2650` sets the field, `:3106` passes it, `exit_strategies.py` injects both).
-  **FALSIFIED AT FIRST MEASUREMENT 2026-08-22 (B2018, S6-B2018a P0).** The two first
-  post-B1682 cubes (`output_b2016_e1_sw10`/`sw20`) STILL collapse `time_stop_20d ==
-  regime_flip`: every regime_flip row exits via the cap branch (`regime_flip_max_days_20`),
-  and `regime_changed_during_hold` is `'no'` on all 4,472 sw10 rows while 27 of 172 holds
-  span one of the 6 in-window regime transitions. "Both inputs are in the code" was a
-  code-presence claim; the runtime says the flip is never seen. Not fixed mid-E1 (frozen
-  code keeps arms comparable; the collapse is identical in every arm).
-  **FIXED 2026-08-23 (B2043, S6-B2018a)** after the drop-E1 ruling dissolved the hold: the map
-  now rides in the pool task payload (the never-called setter and its orphan global are
-  DELETED), the flip branch is pin-proven end-to-end through run_exit_comparison, detail rows
-  record a real `exit_regime`, and exit_context no longer fabricates "no" for
-  regime_changed_during_hold (absent reads "unknown"). Every pre-B2043 cube remains cap-only;
-  cubes from now carry a LIVE flip branch - the comparability note above still governs.
-- **Therefore `regime_flip` is NOT comparable between the four existing cubes and any later one.**
-  Rankings are unaffected - no `regime_flip` appears in either wave-1 top-10 - so what is lost is
-  comparability on that one exit, not the identity of the winners.
-- **Never quote "best of 26" for these four.** `roster_core.measure_degraded_exits(cube)` MEASURES
-  it from any cube, so this needs no date bookkeeping:
-
-```bash
-python -c "import sys;sys.path.insert(0,'.');import scripts.roster_core as rc,pathlib; \
-  print(rc.measure_degraded_exits(rc.load_cube(pathlib.Path('output_cfg<N>/trade_exit_detail.csv'))))"
-```
-
-MEASURED 2026-08-17 on cfg2: **3 collapsed pairs**, not one -
-`atr_trail_mae_conditional`==`atr_trail_1x`, `reverse_signal`==`atr_trail_mae_conditional`,
-`time_stop_20d`==`regime_flip`. That independently reproduces the known **26 exits -> 23
-effective** (L460). **Never quote "best of 26" without running this first.**
-
-### 4. Spot check 50 random trades - EVERY config
-```bash
-PYTHONPATH=. python scripts/spot_check_trades.py   --cube output_cfg<N>/trade_exit_detail.csv --n 50   --swing-length <SW> --ema-span <SPAN>
-```
-**SCOPE, verified against code (B1631):**
-
-| leg | what it does | file |
-|---|---|---|
-| re-derivation | P1-P6 rebuilt from raw parquet under PIT, calling the vendored LIBRARY | `spot_check_trades.py:58` |
-| **engine** | **`compute_smc_signals` called at the same bar with the config's own parameters** | **added B1631** |
-| execution | entry is a real trading day, exit >= entry, `hold_days` matches the calendar distance, `pnl_pct` sign-consistent | `spot_check_trades.py:101` |
-
-**OHLCV-only is CORRECT here, and not by luck.** `smc_breaker_block_long` has exactly two gates -
-`smc_breaker_block_bullish` and `price_above_ema_{span}` - both OHLCV-derived, and under
-`--cube-isolation` `backtest.py:2379-2380` sets `size_pct = CUBE_ISOLATION_SIZE_PCT`, bypassing
-tier sizing. That matters because tier GATES ENTRY otherwise (LOW -> 0.0 size -> the trade is
-SKIPPED, L418/B1544), which would make `smart_money_score` an unchecked entry input.
-**At Phase 1B, with tier sizing live and the full roster running, OHLCV-only coverage is NOT
-sufficient** - the smart-money leg re-enters the entry path and must be checked too.
-
-**Two legs could only say THAT they disagreed.** Adding the engine makes it three-way, so a
-disagreement localises: engine+cube agreeing against the re-derivation means the CHECKER is wrong
-(L457); re-derivation+engine agreeing against the cube means the RUN is wrong.
-
-**Expected: 100pct agreement on all three, 0 execution failures.** Anything less is a finding.
-
-**FIRST, prove the check can verify the strategy at all (B1634, owner correction):**
-
-```bash
-PYTHONPATH=. python scripts/verify_spotcheck_coverage.py <strategy>
-```
-
-Step 4 is a STANDARD, not a check written for one strategy. OHLCV-only coverage is complete for
-`smc_breaker_block_long` because it reads two price-derived signals - **a property of the STRATEGY,
-not of the check.** The rest of the roster reads smart-money, news, earnings, short-interest,
-index-event and filing signals, and an OHLCV-only re-derivation would certify those **without ever
-reading the input that gates them**, producing output identical to a real verification.
-
-MEASURED across the roster: **185 of 222 strategies have at least one input the spot check cannot
-verify**; `smc_breaker_block_long` is in the 37 that pass, so THIS sweep is covered - proven, not
-assumed. The gate is fail-CLOSED: an unclassified key counts as unverifiable, because an
-unrecognised input is precisely the one nobody thought about.
-
-**Before the spot check certifies any strategy, this must exit 0.**
-
-### 5. ADVERSARIAL REVIEW - find bugs and logic errors (owner phrasing, verbatim)
-
-> *"Do an adversarial review of the code and map for false positives and false negatives.
-> Identify any or all bugs and add them to the execution queue."*
-> *"It was broader than this - it was also about finding bugs and logic errors."*
-
-**FP/FN is ONE lens, not the scope.** The scope is bugs and logic errors. The FP/FN lens alone
-would have MISSED the largest finding of this session - identical exit methods are neither a false
-positive nor a false negative, they are a LOSS OF INFORMATION.
-
-Run every lens, every config:
-
-| lens | question | example found |
-|---|---|---|
-| **False positive** | a trade/PASS recorded that should not exist? | - |
-| **False negative** | a fire the engine missed, a PASS suppressed? | MIN_N=30 suppressed 5 real passes (L455) |
-| **Silent degradation** | does anything FALL BACK without saying so? | `regime_flip` was a time stop in every cube (L461) |
-| **Duplicate information** | are "distinct" columns byte-identical? **Ask this of EVERY axis - exits, parameters, tickers, dates - not only the one where it first paid off.** | 26 exits -> 23 effective (L460); `tail_n` 3 of 4 levels inert (L473) |
-| **Units / scale** | do the units of every input match the constant? | 252 trading days over a CALENDAR hold (L458) |
-| **Config blindness** | does a re-deriving component get the ORIGINATING params? | grader graded cfg2 at the wrong swing_length (L454) |
-| **Provenance** | is the artifact the one you think it is? | universe was an abandoned A-C chunk (L445); the sweep BUILDER still read it (L479) |
-| **Executability** | can the ENGINE apply what the search selected, or does the knob exist only in the grader? | 4 of 6 swept parameters were grader-only; the graded winner would have run as 420 fires at Sharpe 0.789 instead of 68 at 2.239 (L475) |
-| **Fail-open** | when this component meets unexpected input, does it PASS? Every branch that `continue`s, defaults, or falls back is a candidate | a comment satisfying a code check, a missing key skipped by the band gate, a wrong file found by the grader, a dropped ticker vanishing, an exit falling back to a time stop, a gate scoring "unknown" above "known bad" (L482, L483, L484) |
-| **Self-referential verification** | does this check compare code to REALITY, or to another piece of the same author's code? | the spot check re-implemented the producer and agreed 100/100 while 4 parameters did not exist in the engine; a pin test asserting a STRING passed for the whole inert life of a fix; the orphan gate keyword-matched three phrases and missed 4 of 4 (L476, L481, L485) |
-| **Completion vs artifact** | did the work happen, or did the command merely return? | a smoke reported "PASSED" with no cube written; a killed child reported exit 0 at simulated day 25 of 504 (L486) |
-| **Effective parameter** | a flag that was ACCEPTED - does changing it change the answer? Run it at two values and compare. Enforced by `scripts/verify_flag_binds.py` | `--min-n 10` was accepted and governed admission only, while `OOS_MIN_N=30` in another module decided which cells got a Sharpe - so `--min-n 10` and `--min-n 20` were byte-identical (S6-B1705b, fixed B1714) |
-
-**The 4 lenses below the original 7 were added B1631 from THIS session's actual defects** - every
-example is a defect that the original 7 did not name and that shipped anyway. A lens list that only
-grows after a failure is working as designed; one that never grows is not being used.
-
-**LENS 12 was added B1800 (S6-B1705f, owner-approved) and is the only one with a MECHANISM rather
-than a question.** The other eleven are read and applied by judgment; this one runs:
-`binds(fn, param, a, b, ...)` returns `BINDS` / `INERT ON THIS INPUT` / `RAISED`.
-
-- **It proves BINDING, never CORRECTNESS.** A flag that binds to the wrong thing passes here - that
-  is the EXECUTABILITY lens's question, and the two are deliberately kept apart.
-- **It cannot prove inertness in general, only on the input given**, which is why the verdict says
-  `ON THIS INPUT` and names the fixture. A flag inert on one fixture may bind on another.
-- **Choose an input where the difference is observable.** `min_n` 10 vs 30 agrees for both n<10 and
-  n>=30; only n between the floors measures anything. **A two-value probe on an input where both
-  values must agree is a green result that means nothing** - the same shape as a differential test
-  with n=0 on both sides (L393, S6-B1522a).
-
-**Every finding gets an EXECUTION_QUEUE ticket the same turn.** A finding mentioned in prose and
-not ticketed does not exist (#94). Causes go in only when TESTED - otherwise `UNKNOWN - RCA NEEDED`
-(#189).
-
-### 6. POST-FIX RE-CHECK - if this config-run cycle FIXED anything (CHECKLIST #196)
-
-**A fix can invalidate a conclusion the defect itself left intact.** While the bug stood the
-numbers were self-consistent; correcting it breaks that consistency for anything already shipped.
-
-For every defect fixed during this cycle:
-1. **GREP for the shipped conclusions that depended on the old behaviour** - grids, rosters, docs.
-   Do not recall them.
-2. **MEASURE the overlap.** Do not assume a fix is purely additive.
-3. **Ticket each affected conclusion for re-derivation**, or state explicitly why it survives.
-
-*Lineage:* the `regime_flip` fix landed on one of only TWO ROBUST Phase 1B roster cells, whose
-numbers were `time_stop_20d`'s all along.
-
-### 6b. CARRYING AN EQUIVALENCE CLASS IS FREE - FOR SUBSET-SAFE PARAMETERS ONLY
-
-**MEASURED on the cfg2 cube (420 fires):**
-
-```
-FIXED   diagnosis of 420 fires, shared by ALL combinations : 3.5 s
-MARGINAL per combination graded                            : 0.01 - 0.03 s
-```
-
-So carrying **21** combinations instead of 10 costs **~0.2 s**. The grading cost is dominated
-by the FIXED diagnosis, which scales with FIRES (i.e. tickers), not with combinations. Step 2's
-real cost is the **single ENGINE RUN** that produces its cube - hours - and that is completely
-independent of how many candidates are carried, because every carried parameter is SUBSET-SAFE
-and graded from the SAME cube.
-
-**The calculus INVERTS for a FIRE-ADDING parameter.** `swing_length` (P1) and the EMA span (P6)
-change which bars fire, so each distinct value needs its OWN engine run - hours each, not
-milliseconds. **A fire-adding parameter must never be carried as an equivalence class**; its
-values are the CONFIGS of the sweep, decided before launch and capped by budget. If one is ever
-added to the graded grid, this section stops applying and the carry must be capped explicitly.
-
-### 7. IMPLEMENT IN ENGINE - a winner the engine cannot apply is not a winner
-
-```bash
-python scripts/verify_engine_implemented.py
-```
-
-**The sweep grades SUBSET-SAFE parameters OFFLINE.** That is what makes 4,000 combinations
-affordable, and it is also why the search space can contain gates **the engine cannot apply** -
-the grader will happily simulate a filter that exists only inside itself.
-
-**STATUS 2026-08-17 (B1617 re-verified): all 6 swept parameters REACH the engine.** When this
-step was written, four did not - the history is kept because it is what the step exists to catch.
-
-| | status | env knob |
-|---|---|---|
-| P1 `swing_length` | **IMPLEMENTED** | `SMC_SWING_LENGTH` |
-| P2 `close_mitigation` | **IMPLEMENTED (B1616)** | `SMC_OB_CLOSE_MITIGATION` |
-| P3 `tail_n` | **IMPLEMENTED (B1616)** | `SMC_OB_TAIL_N` |
-| P4 `age_bars_max` | **IMPLEMENTED (B1616)** | `SMC_BREAKER_AGE_BARS_MAX` |
-| P5 `break_pct_max` | **IMPLEMENTED (B1616)** | `SMC_BREAKER_BREAK_PCT_MAX` |
-| P6 `ema span` | **IMPLEMENTED** | `STRAT_EMA_SPAN` |
-
-*Until B1616 the last four existed ONLY in the offline grader. cfg2's graded winner - 68 fires at
-Sharpe 2.239 - would have run live as 420 fires at Sharpe 0.789 with a different exit method,
-because the engine applied neither cap. That is `regime_flip` (L461) moved from exits to entry
-gates.*
-
-**Because they are now real engine knobs, the remaining admission step is a REPRODUCTION CHECK
-that was previously impossible:** re-run the config with the candidate's env knobs set, and confirm
-the cube reproduces the graded fire set exactly. **Admission without it ships a backtest nobody has
-executed.**
-
-**BLAST RADIUS - set a knob and you move more than one strategy** (MEASURED B1617):
-`SMC_OB_TAIL_N` and `SMC_OB_CLOSE_MITIGATION` reach **5** strategies (both breaker legs, both
-mitigation-block legs, `strat_pre_rebalance_long`), `close_mitigation` also alters `ob_df` and so
-`strat_smc_order_block_bounce`; the two breaker caps reach **2** (LONG and SHORT). Harmless while
-the sweep runs ONE strategy under `--cube-isolation`; at Phase 1B, with the full roster in one run,
-a knob tuned for the long leg would silently retune five other strategies. S6-B1617b.
-
-### 8. Report the verdict WITH its denominators
-Never a bare PASS count. State: N of M combinations, X of Y producers varied, `exits_effective`
-of 26, and the `ci_lo` of every PASS. **Margin of error is part of the verdict, not a footnote.**
-
-## FAILURE MODES — check these before believing a result
-
-| symptom | cause | reference |
-|---|---|---|
-| all combinations `NO_EXIT_SELECTABLE` | too few IS trades to rank 26 exits | B1502 |
-| a small universe PASSES all gates | entry-rate artifact, not edge | L382 (26.63x) |
-| `ci_lo < 0` | edge indistinguishable from zero; no tightening fixes it | L373 |
-| entry sets differ across runs | universe size or tier gating changed the population | L376, L418 |
-| run completes, no cube | post-processing died; percentage lied | L410 |
-| `MemoryError` in cube replay | cube too large; use the subset filter | B1552 |
-| pyramid OOMs mid-run | an engine run holds RAM; commit BEFORE launching | L425 |
-
----
-
-## PROGRAMME STATE 2026-09-07 (B2631) — icg CLOSED, family CLOSED, working order
-
-**Verdict chain (artifacts named; this section supersedes the Step-1-era section below for
-programme state, which is kept for design lineage):**
-- **Step 2 (the pre-registered holdout shot, span9):** FAIL, 5 of 6 gates — holdout sharpe 0.757
-  vs the 1.0 bar on 1,107 holdout trades (4,616 full-period); PF 2.64 / sortino 2.60 / PSR 1.0 /
-  both min-trade gates all PASS. Exit mismatch DISCLOSED per owner ruling 2(i): IS selected
-  breakeven_plus_trail, the pre-registered regime_flip recorded and never read on holdout.
-  Artifact: output_audit/output_icg_step2_span9_step2_span9_grid_auto.json (step2 block).
-- **Family closure (owner ruling 2026-09-06 "Option (c) with pre-registration, then (b)"):**
-  the 19 siblings graded FAIL by the pre-registered offline pass — pooled_sharpe fails 19 of 19;
-  R1 (non-shared-holdout trigger) fired 0 of 19; the challenge-test holdout-peek bound cleared
-  1.0 in 0 of 480 cells (family ceiling 0.852 even with hindsight exit selection). Artifacts:
-  output_audit/b2628_family_pass_prereg.json (registered BEFORE the run),
-  output_audit/b2628_institutional_family_grades.json (every row carries overlap-with-icg).
-  Family basis: 6x trade overlap (29,397 summed entries -> 4,866 union), measured on
-  output_r5_merged_1_7/trade_exit_detail.csv.
-- **Council verdict (owner-convened, recorded S6-B2627):** no engine campaigns on collinear
-  siblings; a family-collinearity PRE-GATE runs before every future campaign-target selection
-  (S6-B2627a, helper to build). Known data gap: AAPL and GOOGL 13F files are EMPTY (S6-B2630).
-
-**TIGHTENING band accounting (measured, from output_audit/b1453_phase_1b_roster.json —
-best-cell holdout n > 300, excluding the 4 rostered longs; supersedes the unverified 41):**
-**43 total = 10 DONE (all institutional_, closed FAIL) + 2 disabled-in-band (macd_crossover_short,
-macd_ichimoku) + 31 PENDING.**
-
-**WORKING ORDER for the pending 31 (per the S6-B2418 owner-decision row, option 1 = icg consumed;
-best-cell numbers are SELECTED maxima, a sequencing key only):**
-1. **pead_long_high_yoy_growth_only** (0.704, n=422, PF 3.14) — S6-B2418 option 2; a DIFFERENT
-   producer chain (earnings/YoY growth), per the council's chain-diversity requirement.
-   RECOMMENDED next; its 5-member pead prefix family gets the collinearity pre-gate before launch.
-2. rsi_oversold_with_smart_money_long (0.735, n=618) — ranked higher but FLAGGED in S6-B2418
-   (roster-family similarity; consolidate before tune).
-3. macd_crossover (0.708, n=422) + macd_fast_crossover (0.646, n=589) — the macd family goes
-   through the pre-gate as a unit.
-4. avwap_252_breakout (0.640, n=314), force_index_breakout (0.625, n=417),
-   r1_break_retest (0.602, n=398), then the remainder of the 31.
-The pick is the owner's (S6-B2418 stands OPEN); no launch without it.
-
-### RUN-PRODUCERS-ONCE / FAMILY-CUBE REUSE (B2633, owner directive 2026-09-07)
-
-**Owner, verbatim intent: run the producers once and REUSE the data so post-run cube generation
-covers the whole family with minimal runtime.** Codified as three reuse layers, now standing
-policy for every family campaign:
-
-1. **Producer layer:** every producer precompute for a config is built ONCE into a tagged cache
-   (the S6-B2484 pattern: one shared dir-resolver imported by producer AND consumer;
-   build_params.json provenance per B2622) and every family member reads the same artifact.
-2. **Engine layer:** each engine run carries the WHOLE family in `strategy_subset`, not one
-   strategy - the engine computes every strategy's signals per bar anyway, so the marginal cost
-   of the siblings is near zero and ONE Step-1 run lands a cube for every member at that config.
-3. **Offline layer:** everything downstream of a landed cube is re-scored, never re-run - free
-   levels (B2569), sibling grades (the B2628 pre-registered pass), tightening subsets (SS2.1),
-   and the pre-gate itself all read cubes already on disk.
-
-### CURRENT CAMPAIGN - pead family / pead_long_high_yoy_growth_only (B2633, owner go 2026-09-07)
-
-**Pre-gate EXECUTED first (scripts/family_pregate.py, artifact
-output_audit/b2633_pead_pregate.json) - and it SPLITS the family, the first live proof the
-instrument earns its place:**
-- **LONG cluster (the campaign):** representative `pead_long_high_yoy_growth_only` (2,116 R5
-  trades, T-band, best-exit holdout 0.844 vs MEDIAN-exit 0.228 - the large selection lift is
-  stated up front per the B2631 objection); `pead_long` (138 trades, 87% contained in the
-  representative, holdout n=4 ungradable) and `pead_with_smart_money_long` (656 trades, 88%
-  contained) close by pre-registered sibling pass after the representative's verdict, the B2628
-  pattern.
-- **SHORT cluster (NOT campaigned on this evidence):** `pead_short` + `pead_short_negative_yoy_growth`
-  - 87% mutually overlapping, ZERO overlap with the longs, and NEGATIVE holdout everywhere
-  (best -0.237/-0.390, medians -1.4 to -1.6). They ride the mirror policy; no engine hours.
-- `pead_with_insider_confirmation_long`: no rows in the R5 cube (no-cell bucket) - nothing to
-  measure offline; falls to the loosening programme.
-
-**Phase 0 (next): the SPECS inventory for pead_long_high_yoy_growth_only.** Producer surface
-read so far: backtest/signals/pead.py (`compute_pead_signals`, drift_window_days=60) and
-backtest/signals/earnings_surprise_yoy.py (YOY_GROWTH_LONG_THRESHOLD +0.05 /
-SHORT -0.05); gates `within_pead_window AND yoy_surprise_high` (screener.py:5041). The
-inventory MUST prove each parameter reaches the engine (SS11.2 gate 2 - the S6-B2569a
-unrunnable-level class: a threshold hardcoded at the producer with no env knob cannot be swept
-as specced) and enumerate the transitive closure down to the earnings data source. No engine
-launch before the SPECS entry, Table A, and the ruled Step-1 design exist - and none without
-the owner's launch word.
-
-### OPTIMISATION POPULATION BY BUCKET AND FAMILY (B2632, owner directive 2026-09-07)
-
-**Accounting (derived live at B2632; every term from the registry + config disabled sets +
-the measured-band artifact output_audit/b1453_phase_1b_roster.json):**
-
-| bucket | count |
-|---|---|
-| Active registered | 215 |
-| - Roster (qualified, not to optimize) | 7 |
-| - institutional_* family (closed, executed grades, B2612-B2628) | 20 |
-| **= REMAINING to optimize** | **188** |
-
-**Roster 7 (4 longs + 3 retained short mirrors):** `xs_momentum_top_decile`, `52w_high_breakout_pullback_long`, `xs_momentum_with_smart_money_long`, `smc_breaker_block_long`, `smc_breaker_block_short`, `52w_low_breakdown_pullback_short`, `xs_momentum_bottom_decile_short`
-
-**institutional_* 20 (closed):** `institutional_breakout_confirmation_long`, `institutional_buy_momentum_long`, `institutional_cluster_long`, `institutional_committed_growth_long`, `institutional_high_conviction_long`, `institutional_increased_with_directors_long`, `institutional_insider_combo_long`, `institutional_multi_quarter_persistence_long`, `institutional_oversold_long`, `institutional_persistence_breakout_long`, `institutional_persistence_momentum_long`, `institutional_persistence_oversold_long`, `institutional_persistence_volume_long`, `institutional_persistent_holders_long`, `institutional_recent_init_momentum_long`, `institutional_recent_init_volume_long`, `institutional_strong_conviction_long`, `institutional_volume_confirmation_long`, `institutional_with_directors_long`, `institutional_with_officers_long`
-
-**The 188 remaining, grouped by FAMILY (name-prefix heuristic - a family is CONFIRMED or
-split only by the S6-B2627a collinearity pre-gate's measured trade overlap, which runs before
-any family's campaign target is picked). Band tags per member: (T) tightening holdout n>300,
-(M) mid-band 100<n<=300, (L) low-n 0<n<=100, (-) no graded cell in R5. Split: 29 T / 52 M /
-41 L / 66 no-cell. 41 multi-member families cover 138 strategies; 50 are singletons.**
-
-- **smc** (16) [-:4 L:6 M:5 T:1]: `smc_bos_continuation`(-), `smc_bos_retest_entry`(L), `smc_choch_reversal`(L), `smc_discount_long`(L), `smc_equal_highs_sweep_short`(M), `smc_equal_lows_sweep_long`(M), `smc_fvg_retest_long`(-), `smc_fvg_retest_short`(L), `smc_inverse_fvg`(M), `smc_liquidity_sweep_reversal`(T), `smc_mitigation_block_long`(-), `smc_mitigation_block_short`(-), `smc_order_block_bounce`(M), `smc_ote_long`(L), `smc_ote_short`(L), `smc_premium_short`(M)
-- **news** (7) [-:4 L:2 M:1]: `news_momentum_long`(-), `news_momentum_short`(-), `news_reversal_long`(-), `news_reversal_short`(-), `news_sentiment_long`(M), `news_sentiment_shift_long`(L), `news_sentiment_short`(L)
-- **pivot** (7) [-:5 L:1 M:1]: `pivot_fib_confluence`(-), `pivot_r1_breakout`(M), `pivot_r2_continuation`(-), `pivot_r3_blowoff_short`(-), `pivot_s1_bounce`(L), `pivot_s2_bounce`(-), `pivot_s3_capitulation`(-)
-- **donchian** (6) [M:6]: `donchian_10_breakout`(M), `donchian_breakdown_retest_short`(M), `donchian_breakdown_short`(M), `donchian_breakout_long`(M), `donchian_breakout_retest_long`(M), `donchian_breakout_with_smart_money_long`(M)
-- **pead** (6) [-:2 M:2 T:2]: `pead_long`(-), `pead_long_high_yoy_growth_only`(T), `pead_short`(M), `pead_short_negative_yoy_growth`(T), `pead_with_insider_confirmation_long`(-), `pead_with_smart_money_long`(M)
-- **xs** (6) [-:2 L:3 M:1]: `xs_combined_momentum_high_ivol_short`(M), `xs_combined_momentum_low_ivol`(L), `xs_low_beta_long`(-), `xs_low_beta_with_smart_money_long`(L), `xs_momentum_quality_combined`(L), `xs_quality_top_quintile_long`(-)
-- **52w** (4) [-:3 L:1]: `52w_high_breakout`(-), `52w_high_breakout_with_smart_money_long`(-), `52w_high_breakout_with_smart_money_vol_below_long`(L), `52w_low_breakdown`(-)
-- **bollinger** (4) [-:1 L:1 M:2]: `bollinger_lower`(M), `bollinger_tight`(-), `bollinger_tight_with_smart_money_long`(M), `bollinger_upper_short`(L)
-- **golden** (4) [-:2 L:1 M:1]: `golden_cross_20_50`(L), `golden_cross_50_200`(-), `golden_cross_9_21`(M), `golden_cross_volume`(-)
-- **pre** (4) [-:4]: `pre_fomc_long_sleeve`(-), `pre_fomc_quality_momentum_long`(-), `pre_holiday_long`(-), `pre_rebalance_long`(-)
-- **rsi** (4) [-:1 L:1 M:1 T:1]: `rsi_overbought_short`(-), `rsi_oversold`(M), `rsi_oversold_with_smart_money_long`(T), `rsi_volume_200ema`(L)
-- **avwap** (3) [-:1 M:1 T:1]: `avwap_20high_rejection_short`(-), `avwap_252_breakout`(T), `avwap_50_reclaim`(M)
-- **cpr** (3) [M:2 T:1]: `cpr_narrow_bullish`(M), `cpr_narrow_momentum`(M), `cpr_narrow_momentum_short`(T)
-- **flag** (3) [-:3]: `flag_bear_retest_short`(-), `flag_bull_long`(-), `flag_bull_retest_long`(-)
-- **ichimoku** (3) [L:1 M:2]: `ichimoku_cloud_breakdown`(L), `ichimoku_cloud_breakout`(M), `ichimoku_tk_cross`(M)
-- **insider** (3) [-:2 L:1]: `insider_cluster_concentrated_sell_short`(L), `insider_cluster_long`(-), `insider_cluster_with_director_long`(-)
-- **macd** (3) [M:1 T:2]: `macd_bullish_with_smart_money_long`(M), `macd_crossover`(T), `macd_fast_crossover`(T)
-- **post** (3) [-:2 L:1]: `post_deletion_drift_short`(-), `post_inclusion_drift_long`(-), `post_inclusion_reversal_short`(L)
-- **prev** (3) [M:3]: `prev_day_high_break`(M), `prev_day_low_bounce`(M), `prev_day_low_breakdown`(M)
-- **supertrend** (3) [-:1 L:2]: `supertrend_ichimoku_adx`(-), `supertrend_macd`(L), `supertrend_macd_short`(L)
-- **triangle** (3) [-:1 L:1 M:1]: `triangle_ascending_long`(L), `triangle_ascending_retest_long`(-), `triangle_descending_short`(M)
-- **break** (2) [M:1 T:1]: `break_retest_confluence`(M), `break_retest_volume`(T)
-- **camarilla** (2) [L:1 T:1]: `camarilla_r4_breakout`(T), `camarilla_s3_bounce`(L)
-- **cup** (2) [-:1 L:1]: `cup_and_handle_long`(L), `cup_and_handle_retest_long`(-)
-- **doji** (2) [L:2]: `doji_at_resistance_short`(L), `doji_at_support`(L)
-- **head** (2) [L:2]: `head_and_shoulders_bottom_long`(L), `head_and_shoulders_top_short`(L)
-- **htf** (2) [L:1 M:1]: `htf_aligned_breakout_long`(L), `htf_aligned_breakout_short`(M)
-- **judas** (2) [-:2]: `judas_swing_long`(-), `judas_swing_short`(-)
-- **mfi** (2) [-:1 L:1]: `mfi_oversold`(-), `mfi_oversold_with_smart_money_long`(L)
-- **orb** (2) [-:1 L:1]: `orb_stocks_in_play_long`(-), `orb_stocks_in_play_short`(L)
-- **pairs** (2) [T:2]: `pairs_mean_reversion_long`(T), `pairs_mean_reversion_short`(T)
-- **parabolic** (2) [M:1 T:1]: `parabolic_sar_flip`(M), `parabolic_sar_flip_short`(T)
-- **po3** (2) [M:1 T:1]: `po3_bearish`(T), `po3_bullish`(M)
-- **poc** (2) [M:2]: `poc_magnet_long`(M), `poc_magnet_short`(M)
-- **squeeze** (2) [-:1 M:1]: `squeeze_breakout`(M), `squeeze_setup_long`(-)
-- **stochrsi** (2) [T:2]: `stochrsi_overbought_short`(T), `stochrsi_oversold`(T)
-- **three** (2) [T:2]: `three_black_crows_short`(T), `three_white_soldiers`(T)
-- **turtle** (2) [L:1 T:1]: `turtle_soup_long`(L), `turtle_soup_short`(T)
-- **week** (2) [M:2]: `week_opening_gap_fill_down`(M), `week_opening_gap_fill_up`(M)
-- **weekly** (2) [-:2]: `weekly_bias_pullback_long`(-), `weekly_bias_pullback_short`(-)
-- **williams** (2) [M:1 T:1]: `williams_r_oversold`(T), `williams_stoch_dual`(M)
-
-- **singletons** (50): `52wh_break_retest`(-), `52wl_break_retest_short`(-), `activist_13d_long`(-), `adx_initiation`(-), `awesome_oscillator`(M), `bb_squeeze_volume`(M), `bullish_engulfing_support`(M), `cmf_flip`(T), `consec_downdays_quality_long`(-), `dc20_break_retest`(T), `death_cross_50_200_volume`(-), `double_bottom_long`(L), `earnings_avwap_reclaim_long`(-), `failed_breakout_2b_short`(-), `force_index_breakout`(T), `gap_and_go_long`(-), `gold_silver_risk_off_long`(-), `halloween_seasonal_long`(-), `hammer_at_support_long`(L), `hull_rsi`(M), `inside_bar_breakout`(M), `inverted_cup_and_handle_short`(L), `january_effect_small_cap_long`(-), `keltner_lower`(-), `m_and_a_target_long`(M), `mmbm_long`(T), `mmsm_short`(T), `monthly_bias_momentum_long`(-), `morning_star`(T), `naked_poc_retest_long`(T), `pocket_pivot_long`(-), `ppo_crossover`(M), `r1_break_retest`(T), `risk_off_bond_equity_short`(L), `roc_burst`(M), `rs_line_sector_leader_long`(-), `rsi21_slow`(-), `rsi9_extreme`(-), `sector_rotation_defensive_long`(-), `shooting_star_short`(L), `short_borrow_trap_avoid`(-), `simple_below_ema_50_short`(T), `stoch_oversold`(L), `tema_dema`(M), `totm_long`(L), `ultimate_oscillator`(L), `value_area_breakout_long`(L), `vix_backwardation_long`(M), `vol_spike_2x_below_ema_50_short`(M), `volume_spike_breakout`(M)
-
-**Family-level reading (the analyze-by-families directive):** the campaign unit is the
-FAMILY, not the registration - the institutional closure measured 20 names collapsing to
-~1.2 independent bets. Before any family's campaign: run the pre-gate (overlap + band
-clustering + the median-exit holdout beside the best-cell key), pick ONE representative,
-and let its verdict plus a pre-registered sibling pass close the family, as B2628 did.
-
-
-
-## CURRENT PROGRAMME — institutional_committed_growth_long STEP 1 (S6-B2481..B2499, 2026-09-01)
-
-**Inventory** — `SPECS["institutional_committed_growth_long"]` in
-`producer_variant_table.py`: 9 parameters P1-P9. P1-P3 NOT-SWEPT-BY-DESIGN (PIT
-lag / share-class floor / gap tolerance — availability and hygiene, not edge
-knobs). The per-level free/resim split corrected the factorial 31,500 → 700
-(L726). **Ruled Step-1 design: 17 engine configs** — baseline + P4 {2,3,6,8} +
-P5 {2,3,6,8} + P6 {1.0,1.25,1.5} + P9 spans {9,20,50,100,150} — **plus 4 FREE
-cache-graded levels** (P7 {5,11,14}, P8 {6}) that need no engine run because both
-counts persist in `signals_at_entry` — coverage is NOT 100 % (B2569 correction of
-this line's own claim, L749 class): measured 96.2 % of fired rows carry the
-committed key on R5 (S6-B2504) and 93.83 % on cfg1 (23 resume-restored rows empty,
-S6-B2512; span9/span20/span50 measure 100 %). **The free levels are graded on
-EVERY landing by the battery** (`step2_free_levels`, reproduction-gated, B2569) —
-the one-time R5-cube grading at S6-B2504 was the N1 class bug, not the design.
-P7 resim {1,2} and P8 resim {2,3} are recorded in the band and deliberately NOT
-scheduled — **and are UNRUNNABLE as specced: the screener hardcodes both
-thresholds (screener.py:6646-6648) and no env knob exists** (§0.7
-band-completeness defect; owner decision S6-B2569a: strike, or build the knob and
-schedule 4 configs at ~+10-12 h serial).
-The P9 band excludes producer-offered span 21 (owner directive 2026-08-31; the
-b2197 ledger measured it a near-duplicate of 20 that did not earn a run).
-
-**Mechanism (S6-B2484)** — the persistence producer is parameterised via env
-`INST_MIN_CONSECUTIVE_QUARTERS` / `INST_GROWTH_LOOKBACK_QUARTERS` /
-`INST_GROWTH_MULTIPLE`, with variant artifacts written to tagged caches via
-`INST_PERSIST_CACHE_TAG` through ONE shared helper (`persistence_cache_dir`)
-imported by producer AND consumer so the two cannot drift. Untagged = the
-production path the rest of the 13F family reads, byte-identical (defaults ARE
-production; 60-ticker equivalence run recorded 0 mismatches, S6-B2484). The
-`persistent_holders_4q`/`_8q` chains (other strategies' inputs) are deliberately
-untouched.
-
-**Offline pre-screen (S6-B2485, corrected S6-B2498)** — all 11 producer configs
-materialised at a MEASURED 283 s/config (~52 min; the shipped 104.6 s claim was a
-warm one-snapshot sample, understated 2.7×). The screen compares the PRIMARY and
-FALLBACK partitions pairwise (both Jaccards; a duplicate verdict needs both high)
-plus per-year fallback rate against that year's baseline, over the full artifact
-AND the 200-ticker sweep universe. Artifact: `output_audit/b2485_prescreen.json`.
-**Results:** `minq2`/`minq3` are NEAR-DUPLICATES of baseline on both partitions
-(primary 0.940/0.964, fallback 0.906/0.929) — dropping them from the engine queue
-saves ~3.4 h of ~29 h, an owner decision. `mult1.5`/`lookback2`/`minq8` nearly
-TRIPLE the 2022 fallback rate (0.329/0.304/0.253 vs baseline 0.124) — the B1230
-fallback-switch hazard MEASURED: those configs shift the strategy's early-year
-identity toward the fallback arm. Fallback membership diverges MORE than primary
-on all 11 baseline pairs, which is why the primary-only screen was corrected. The
-screen CANNOT see which fallback members clear `institutional_increased >= 5` —
-that column is not in the artifact; the residual stays with the engine.
-
-**Status (B2531, 2026-09-02) — cfg1 LANDED and configs 2-17 are RUNNING.**
-VERIFIED against primaries, not against this document: `output_icg_cfg1/
-engine_state.json` reads `status: complete`, `trade_log.parquet` holds 373
-trades, and all nine post-config ledger steps are terminal ({DONE, N/A}, gate
-`verify_postconfig_complete.py` COMPLETE). Best of 24 exits ranked
-`breakeven_plus_trail` at is_sharpe 0.263 / is_ci_lo -0.087 on 8,952 IS rows —
-Step-1 is ranking only, no admission (B1608). One open finding: 23 of 373 rows
-carry an empty `signals_at_entry`, RCA CLOSED at S6-B2512 (they are exactly the
-closed trades restored at `resume_sim_day=47`; historical, unrecoverable, and
-they gate nothing).
-
-**BOTH OWNER RULINGS ARE RESOLVED — the text below this paragraph said they were
-pending, and that staleness nearly produced a wrong call.** S6-B2491 is
-IMPLEMENTED in `backtest/engine/backtest.py::kill_decision`: the cap gates on
-ACTIVE hours — wall-clock minus CREDITED machine sleep, where only gaps of
-30 minutes or more earn credit — and BOTH gating sites (the supervisor thread
-and the in-loop cap) call that one function. The fail direction is conservative:
-with no credit accrued it reduces exactly to the old wall-clock kill. There is
-no wall-clock backstop, deliberately: a 3x backstop was designed and then killed
-by its own boundary matrix, because any overnight sleep exceeds 3x a sane cap
-and it would have killed the very incident it was meant to survive (L734).
-S6-B2481 (resume go) was given and the resume landed. Reading the superseded
-text, an overnight chain looks unlaunchable; the code had already closed it
-(L664 — a secondary record preserving a state the primary has moved past).
-
-**THE TWO HOUR FIGURES ARE DIFFERENT THINGS, and this section previously used
-only one of them.** **5 h is the CEILING** — the owner's hard cap (B2107, raised
-from 3 h on 2026-08-24), which no local run may exceed. **4.0 h is the value
-actually ENFORCED** — `leg_cap_hours` in every spec, passed to the engine as
-`--max-run-hours` (`run_wave.py:173`). cfg1 used 4.0 and all 16 B2527 specs use
-4.0. So the engine kills a leg at 4.0 h of ACTIVE time; 5 h is the bound that
-choice has to respect.
-
-**Launch path for configs 2-17 — EXECUTED 2026-09-02 (B2527/B2529), chain RUNNING.**
-The owner's go was given in the launch turn; 16 specs (`output_audit/
-b2527_icg_*_spec.json`) run serially under one detached Task Scheduler task via
-`run_serial_chain.py`, ordered by expected information so an early halt loses
-least: the 5 unmeasured P9 spans, then the 3 producer configs the S6-B2485
-pre-screen measured as most divergent, then the unranked middle, then
-`minq3`/`minq2`, which that same pre-screen measured as near-duplicates of
-baseline. Pre-launch gates all executed: `prelaunch_gate.py` exit 0 (it failed
-exit 3 first, on field names — which is why it is run and not assumed), tickers
-sha256-pinned at 200, subset asserted SOLO and confirmed at runtime by
-`[B1425 STRATEGY_SUBSET_FILE] requested 1, matched 1/219`, and all 11 tagged
-precomputes asserted present because a missing cache falls back to the untagged
-production artifact and would run a silent duplicate of the baseline. Projection
-38-47 h serial from cfg1's measured rate. Two defects were caught before they
-cost a night: the detached task's `ExecutionTimeLimit` was 12 h against a 38-47 h
-chain (B2528), and `launch_detached` reported success on a DENIED registration
-(S6-B2529a, still open). The original note follows.
-
-**Launch path for configs 2-17 (original)** — no new code: `run_wave.py` arms already carry
-per-arm env (run_wave.py:190-202), so a wave spec whose arms set
-`INST_PERSIST_CACHE_TAG=<tag>` (producer configs) or `STRAT_EMA_SPAN=<span>`
-(P9 configs) launches the set under the existing chain, monitor and post-config
-battery. The spec + manifest are written at launch time per §1.0-§1.3; launch
-requires the owner's explicit go in the launch turn.
-
-**Couplings and cautions** — TWO couplings, one per knob class, and both make
-every config in this programme SOLO-SUBSET-ONLY. (1) env knob: `STRAT_EMA_SPAN`
-is read by smc_breaker_block_long / _short AND this strategy
-(screener.py:4407/4442/6656) — never set it on a multi-strategy run. (2)
-artifact tag (S6-B2499b, found auditing consumers): `INST_PERSIST_CACHE_TAG`
-re-routes the WHOLE persistence artifact for the engine process, and
-`committed_growth_holders` is ALSO consumed by `strat_simple_below_ema_50_short`
-(screener.py:6144, the B1422 selectivity gate) — so a tagged producer-config run
-with more than the target strategy in its subset silently alters that
-strategy's gate input too. `strat_institutional_multi_quarter_persistence_long`
-(screener.py:6611) reads `persistent_holders_4q`, which this sweep measurably
-does not move. Table D's `sw`/`sp` and all D-2 axes are smc-spec keys (see
-§6.4b caveat, S6-B2500).
-
-**Free-level status (B2569 — supersedes the "cheapest next action" line that stood
-here, which pointed at S6-B2501 work EXECUTED 2026-09-01 and then superseded by the
-per-config directive).** The battery now grades the P7/P8 free levels on every
-landing (`step2_free_levels`), gated on reproducing the landed baseline at
-production levels first. Executed retroactively on all 4 landed cubes — every one
-reproduces (span9 609/609, span20 531/531, span50 405/405, cfg1 350/350 covered
-with the 23 S6-B2512 rows counted and excluded) — and the verdict with its
-denominators is: **0 of 4 free levels beat baseline on ANY landed config (0 of 16
-level×config cells); every P7 tightening costs 31-79 % of fires and drops top
-ci_lo; p8_6 is a 4-6-trade no-op.** Artifacts:
-`output_audit/output_icg_*_free_levels.json`; audit `output_audit/b2569_icg_programme_audit.md`.
-
-**Step-1 leaderboard after 4 of 17 landings (ranking only, no admission — B1608):**
-span9 `regime_flip` is_ci_lo **+0.167** / is_sharpe 0.489 / 609 fires; span20
-`breakeven_plus_trail` −0.015 / 0.300 / 531; span50 `breakeven_plus_trail` −0.067 /
-0.288 / 405; cfg1 (baseline, span200) `breakeven_plus_trail` −0.087 / 0.263 / 373.
-The span axis is measuring as the live one; span100/span150 land next in the chain.
-
-## 11. MECHANICAL PROCEDURE FOR ANY STRATEGY (B2573, 2026-09-02) - the ordered list Opus follows
-
-**Why this section exists.** The owner asked (2026-09-02) whether the workflow is mechanical enough for
-Opus to run across all strategies. The audit (`output_audit/b2573_optimisation_workflow_portability_audit.md`)
-measured: NO - the battery's family registry holds 2 of 219 strategies, 7 of 9 battery/runbook scripts are
-one-strategy code, nothing at launch checks registration, and this runbook had no single ordered list.
-This section IS the ordered list. Every mechanism it cites either exists (named with its file) or is
-marked **PROPOSED-NOT-BUILT (ticket)** - the B1335 mechanism-existence rule applies to a runbook too.
-Sections above remain the authority for WHY; this section is the authority for WHAT, IN WHAT ORDER.
-
-### 11.0 Standing constraints that bind every step (read once, apply always)
-
-- Owner approval before any rule/threshold/parameter change (CLAUDE.md Critical Rules). This
-  procedure never changes a strategy; it MEASURES one.
-- Local run cap **5 h** per leg (B2107 owner ruling 2026-08-24; `prelaunch_gate.OWNER_LOCAL_CAP_HOURS`).
-  Compute budget **$100 total** across all strategies (B2109). Venue ruling S6-B2107a precedes any
-  non-local launch.
-- No launch except through `run_wave.py` (which writes `run_manifest.json` from the spec, run_wave.py:133)
-  -> `launch_sweep.py` (which runs `prelaunch_gate.py --manifest` and REFUSES on non-zero, launch_sweep.py:43,
-  then writes `gate_receipt.json` - M10; the battery FAILS a cube without one). A direct `run_phase1a.py`
-  invocation bypasses all three (S6-B2159b class) - never launch that way.
-- A running chain is LIVE CODE: `run_postconfig.py`, `postconfig_landing.py`, `run_wave.py`,
-  `launch_sweep.py` and the engine are re-read at each landing/launch. An edit to any of them while a
-  chain runs is a deploy onto every queued spec (S6-B2573i). Do not edit them mid-chain without saying so.
-- Step-1 universe = the 200 tickers of APPENDIX S1-200 (`output_audit/_sweep_200.txt`); window
-  2024-05-05 -> 2025-05-05 (SS10.1). Step 2/3 = 4 years, all 544 tickers (STEP 3).
-
-### 11.1 ON-RAMP - what must exist BEFORE the first spec of a new strategy launches
-
-Run each probe; every one must print the expected line. A missing item is a STOP, not a note.
-(The launch-time check SHIPPED at B2578 (S6-B2573b): `producer_variant_table.launch_refusals` runs in
-`run_wave.main` BEFORE any arm and in `prelaunch_gate.check` for every LOCAL manifest; it refuses R1
-(no SPECS entry), R3 (not in `run_postconfig.FAMILIES`), an undeclared or off-band env knob, a resim
-level with no knob (the S6-B2569a P7/P8 class) and an INST_PERSIST_CACHE_TAG dir with no parquet (R9).
-B2579 added R8's consumer half: every knob's consumer list is MEASURED from the tree
-(`producer_variant_table.knob_consumers`) and drift from the declaration is a refusal at launch and a
-step-7 FAIL at landing. R4-R7 are now derived from the `tools` adapter block rather than probed by
-hand; R2 (the producer-level fire count) stays a hand probe.)
-
-| # | Artifact | Probe (PYTHONPATH=.:scripts) | Expected | Exists today for |
-|---|---|---|---|---|
-| R1 | `SPECS["<strategy>"]` in `scripts/producer_variant_table.py` - every swept parameter with its env knob, `free_band` / `resim_band` / `subset_safe`, and a reason for every level that is banded but not scheduled (SS0.7, #290) | `python -c "from producer_variant_table import SPECS, validate_spec; validate_spec(SPECS['<strategy>']); print('SPEC OK')"` | `SPEC OK` | smc, institutional |
-| R2 | `D_AXIS_FAMILIES["<strategy>"]` (Table D axes + `detect` key) | `python -c "from producer_variant_table import D_AXIS_FAMILIES as D; print('<strategy>' in D)"` | `True` | smc, institutional |
-| R3 | `FAMILIES["<strategy>"]` in `scripts/run_postconfig.py` with a params extractor and a `run_<family>` that executes EVERY `_GRADER_CHECKS` leg (`step2_grade_auto`, `step2_free_levels`, `step4_spot_check_auto`, `step7_engine_implemented`) | `python -c "from run_postconfig import FAMILIES, _GRADER_CHECKS; f=FAMILIES['<strategy>']; print(sorted(f))"` then read `run_<family>` and tick each leg | 4 legs present | smc (3 of 4 - no free-levels leg), institutional (4 of 4) |
-| R4 | Step-1 grader for the family (grades the landed cube at the manifest's own params; emits the B2505 grid contract: `config`, `strategy`, `grader`, `rows`, `is_rows`, `holdout_rows`, `results[]`) | `--help` of the grader | usage text | `tighten_breaker_block.py` (smc), `grade_institutional_config.py` (institutional) |
-| R5 | Free-levels re-scorer (tighter-only subset re-score off `signals_at_entry`, gated on REPRODUCING the landed baseline) | `--help` | usage text | `grade_free_levels_institutional.py` (institutional only) |
-| R6 | Three-leg spot check (precompute / production consumer / engine record, n=50 seed 42) | `--help` | usage text | `spot_check_trades.py` (smc), `spot_check_institutional.py` (institutional) |
-| R7 | Step-7 engine-anchor set (the tokens that prove each swept parameter reaches the engine path) | grep the tokens in the engine files | every token found | `verify_engine_implemented.py` (smc); inline grep in `run_institutional` |
-| R8 | Every env knob in the spec's arm is READ by the engine/precompute (`knob_is_read`, B2578) and its full consumer list is MEASURED and pinned equal to the declaration (blast radius; `knob_consumers` tokenizes `backtest/**` + reads `os.environ` sites under `scripts/`, so a name inside a docstring is prose, not a consumer - B2579) | `python -c "import sys; sys.path.insert(0,'scripts'); from producer_variant_table import SPECS, declared_consumers, knob_consumers, knob_is_read; from pathlib import Path; s=SPECS['<strategy>']; print(all(knob_is_read(p['env'], Path('.')) and declared_consumers(s,p['env'])==knob_consumers(p['env']) for p in s['params'] if p.get('env')))"` | `True` - and the launch gate refuses any drift | ENFORCED for smc + institutional (B2578 knobs, B2579 consumer lists) |
-| R9 | The precompute the strategy reads exists for every scheduled level (e.g. `INST_PERSIST_CACHE_TAG` dirs), built BEFORE the spec launches | `ls` the cache dir per level | one dir per level | institutional |
-
-**The single generic adapter replacing R3-R7 SHIPPED at B2579 (S6-B2573a).** A new strategy now
-declares ONE `tools` block in its SPECS entry and the battery derives the rest; the six pieces above
-are what that block replaces, kept as the reading of what it must contain. Write the block BEFORE the
-spec, never after the cube: since B2578 the launch gate refuses a strategy with no SPECS entry and
-since B2579 an incomplete `tools` block is not a family, so the refusal lands before the engine.
-
-### 11.2 THE RUN - STEP 0 to STEP 4, in order, with the artifact each step must leave
-
-| Step | Do | Command / mechanism | Must leave | Gate to the next step |
-|---|---|---|---|---|
-| 0 | Inventory: read the strategy block in `screener.py`, its producer, its precompute; list every parameter (fixed / searched / banded-unscheduled with reason); write R1 + R2 | STEP 0 above; `validate_spec` | SPECS entry; `PRODUCER_VARIANT_TABLE_<strategy>.md` via `producer_variant_table.py --strategy <s> --factorial` | R1-R9 all green (SS11.1) |
-| 0.5 | Instrument ONE ticker at the production params to see fires exist (family example: `instrument_breaker_block.py` for smc; institutional used the precompute builder + a `python -c` count). Generic form: count fires of the strategy on 6 megacaps at production params | family script or `python -c` | a fire count > 0 recorded in the spec's `note` | fires > 0 (a 0 here is a producer defect, not a search) |
-| 1 | Write ONE spec per fire-adding combination (`output_audit/<batch>_<cfg>_spec.json`: `strategy_subset`, `tickers_file` = `_sweep_200.txt`, window, `arms[0].env` with every knob, `max_run_hours` <= 5, `resume`); copy an existing spec (`b2527_icg_span50_spec.json`) and change ONLY the knob values + names | spec file | the spec, diffed against its template in the turn | every knob in `arms[0].env` is a declared SPECS knob at a band level - `launch_refusals` (B2578) refuses the spec otherwise, and `launch_sweep.arm_env_matches` refuses an UNSET or mismatched one in the process env |
-| 1.1 | Launch the chain DETACHED: `launch_detached.py --chain --batch <b> --specs <all specs in information order> [--wait-for <summary.json>]` (B2575; the ONLY sanctioned chain launch path - `chain_task_running` refuses a second chain; the task unregisters ITSELF at CHAIN DONE, B2577) wrapping `run_serial_chain.py`; per spec, run_wave writes the manifest and launch_sweep runs the gate (exit 0 or REFUSED) and writes `gate_receipt.json` | `scripts/run_serial_chain.py` -> `run_wave.py` -> `launch_sweep.py` -> `prelaunch_gate.py` | `output_audit/serial_chain.log` LAUNCH line; `<out-dir>/run_manifest.json` + `gate_receipt.json`; Task Scheduler task `stockpicks_chain_<batch>_<ts>` observed Running | the task is OBSERVED (S6-B2529a), not intended; the receipt exists |
-| 1.2 | Arm monitoring IN THE LAUNCH TURN: exactly ONE hourly cron per chain (delete any existing one for the same chain first - two were found armed, S6-B2573f), unconditional + periodic markers (#185/#186); read `run_heartbeat.json` at each report | CronCreate (session-held - S6-B2548) | the hourly report block in every turn while the chain runs | none - reporting is a standing duty |
-| 1.3 | Each landing: the engine hook runs the battery unprompted (`_postconfig_landing_hook` -> `postconfig_landing.py` -> `run_postconfig.py`); the turn's response carries `LANDING REPORT: <cube>` (Stop hook blocks otherwise) | automatic | `postconfig_ledger.json[<cube>]` with all nine steps dispositioned DONE / N/A / FAIL / OPEN; `postconfig_landings.jsonl` row; commit `bNNN` pushed; toast | every step DONE or N/A ON EVIDENCE; a FAIL is a B-batch, not a footnote |
-| 1.4 | Chain HALT (any non-COMPLETE): read `serial_chain.log`, `classify_run_log.py <log>` (DEAD vs live), the out-dir's `engine_state.json`; decide RESUME (`resume: true` spec + `--resume-from-checkpoint`, verify the spec points at the checkpoint dir FIRST - L646) or RE-RUN; relaunch the chain from the halted spec with `--wait-for` if another run is live. HALT notification SHIPPED at B2577 (S6-B2573f.a): every HALT appends `output_audit/chain_halts.jsonl`, toasts, and the Stop hook blocks the turn until the response carries `CHAIN HALT REPORT: <wave>`; the session-independent 15-min watcher is **PROPOSED-NOT-BUILT (S6-B2573f.c)** | `scripts/classify_run_log.py`, `scripts/run_serial_chain.py --wait-for` | a queue row naming the halted spec, the cause class, and the relaunch command | chain log shows the relaunch |
-| 2 | When every Step-1 spec is COMPLETE: grade every landed cube with the family grader (already done per landing by the battery); render Tables A-D (`producer_variant_table.py --strategy <s> --results <grid...> --keys <params> --out`; NOTE `--keys` DEFAULTS to the smc keys `close_mitigation,age_bars_max,tail_n` - always pass the family's own, S6-B2573c); pick the top-3 configs by the STEP 2 ENTRY rule (mechanical: rank on `is_ci_lo`, min-trades >= 10, no gates - B1608) | family grader + `producer_variant_table.py` | `PRODUCER_VARIANT_TABLE_<strategy>.md` Tables A-D populated; top-3 list in the queue row | top-3 named with `is_ci_lo` values |
-| 3 | WATERFALL: run config 1 at 4 y x 544 tickers (legs <= 5 h each, `resume: true`); the battery grades it against the six LIVE_GATES; STOP at the first config that qualifies; else config 2, then 3 (STEP 2 EXECUTION) | same launch path as 1.1; `roster_core.LIVE_GATES` | `output_audit/<batch>_cfgN_grid.json` with `qualifiers` (renamed from `provisional_qualifiers` at S6-B2409) | a qualifier, or 3 of 3 non-qualifying with denominators |
-| 4 | ADMIT: render the qualifier into `PHASE_1B_ROSTER.md` (`phase_1b_step2_admissions.json`, metrics re-derived from the grid at render time - S6-B2413); count the REGISTERED mirror short (S6-B2417); engine wiring is DEFERRED to Phase 1B deployment (S6-B2411, trigger named there) | `scripts/build_phase_1b_roster.py` | roster row + queue row | owner-visible roster diff in the turn |
-
-### 11.3 The turn-close that every step above requires
-
-Ticket table with six classes and the delta (`scripts/queue_state.py`), SKILLS INVOKED three-skill
-block, #237 sweep, compliance statement, and - while a chain runs - the hourly report and any
-`LANDING REPORT: <cube>` the landings file says is unreported.
-
-## APPENDIX S1-200 - THE 200 STEP-1 TICKERS (owner ruling 2026-08-29)
-
-Source: output_audit/_sweep_200.txt (the `tickers_file` in every b2197 spec), 200 names,
-recorded here verbatim so the Step-1 universe is reconstructable from this document alone.
-
-`SPY` `TSLA` `AAPL` `AMZN` `NVDA` `MSFT` `AMD` `GOOGL` `GOOG` `MRNA`
-`NFLX` `PYPL` `BA` `BAC` `JPM` `V` `XOM` `DIS` `MU` `PFE`
-`CVX` `INTC` `CRM` `MA` `ADBE` `QCOM` `C` `F` `BRK-B` `WFC`
-`UNH` `HD` `T` `JNJ` `TWTR` `COIN` `PG` `WMT` `UBER` `AVGO`
-`VZ` `CSCO` `ABNB` `COST` `AMAT` `GS` `MRK` `CMCSA` `NKE` `GM`
-`KO` `PLTR` `MS` `ABBV` `CRWD` `TXN` `ORCL` `OXY` `BKNG` `TGT`
-`TMO` `LRCX` `LOW` `INTU` `BMY` `FCX` `NOW` `CCL` `SBUX` `PEP`
-`CAT` `DHR` `GE` `LLY` `CHTR` `ACN` `ATVI` `UNP` `ABT` `AAL`
-`PANW` `MCD` `DE` `IBM` `SPGI` `NEE` `AXP` `LMT` `AMGN` `ADI`
-`TMUS` `HON` `MDT` `COP` `FDX` `UAL` `UPS` `DASH` `LIN` `CVS`
-`SCHW` `DAL` `ISRG` `ETSY` `BLK` `GILD` `PM` `RTX` `BX` `NXPI`
-`DDOG` `DVN` `HOOD` `CVNA` `MMM` `REGN` `EBAY` `AMT` `EXPE` `TJX`
-`TTD` `COF` `ENPH` `WDAY` `SLB` `MDLZ` `NEM` `KLAC` `PXD` `CMG`
-`FIS` `NCLH` `LULU` `CSX` `MPC` `FISV` `AON` `CI` `EOG` `BIIB`
-`MTCH` `HUM` `VRTX` `EL` `NUE` `ADSK` `DG` `MO` `EQIX` `ALGN`
-`PLD` `SHW` `HPQ` `ZTS` `LUV` `PNC` `CL` `USB` `DLTR` `HCA`
-`LVS` `GPN` `ADP` `DXCM` `BDX` `MAR` `CB` `NSC` `FTNT` `KR`
-`SYK` `TFC` `VLO` `ILMN` `BSX` `WYNN` `NOC` `EA` `RCL` `ON`
-`MRO` `MCHP` `DOW` `ICE` `SO` `CME` `EXC` `HLT` `CCI` `ORLY`
-`DUK` `WBA` `APD` `SPG` `EPAM` `MET` `INFO` `BBY` `PENN` `PSX`
+<!-- B1497 (2026-08-09). Owner-requested optimisation plan for the 207-strategy population.
+     STATUS: PROPOSAL. Nothing here is implemented. Owner approval required per phase. -->
+
+# Strategy Optimisation Plan — Phase 1 (tightening) and Phase 2 (loosening)
+
+**Population:** 207 strategies (`222 registered - 3 Phase-1B roster - 12 disabled`).
+**Current roster:** 3 cells / 3 distinct strategies, all QUALIFIERS (S6-B2409, owner ruling
+2026-08-30, retired the ROBUST/PROVISIONAL split - see PHASE_1B_ROSTER.md).
+**Purpose of this programme:** the roster is 3 cells. Optimisation is not an enhancement; it is the
+only remaining path to a deployable Phase 1B.
+
+---
+
+## 0a. SUPERSESSION BANNER — B1500-B1510 (2026-08-10)
+
+The first worked example (`smc_breaker_block_long`) ran end-to-end and **corrected four load-bearing
+claims in this plan.** Read this before Sections 2.2 / 2.3 / 2.3a, which are marked inline.
+
+| # | claim as originally written | corrected by measurement |
+|---|---|---|
+| 1 | "no resimulation is required for tightening" | **Only for SUBSET-SAFE parameters.** A parameter that can ADD fires (`swing_length`, EMA `span`) produces trades R5 never took, and the cube holds no P&L for those. §2.3a corrected. |
+| 2 | population = 41 strategies at n>300 | **The band is built on UNVERIFIED n.** The worked example's measured holdout n is **147**, not the 356 carried — it was never in the n>300 band. **The whole partition must be re-derived from measured n (S6-B1502a).** |
+| 3 | tunable surface = numerics in the gate expression | **Wrong layer.** The surface is the transitive closure of the PRODUCER parameters. A strategy whose gate is two booleans still had 6 producer parameters (L355). |
+| 4 | cost scales with combinations | **Cost = ENGINE RUNS = product of the fire-ADDING bands only.** 4,000 combinations needed **20** runs, not 4,000 (L371). |
+
+**Reporting is now standardised and mechanically enforced — see §6.**
+
+## 0b. STEP-1 WINDOW — THE THREE CONSTRAINTS CANNOT ALL BE MET (B1817, MEASURED)
+
+**`S6-B1605c` withdrew the acceptance of Step 1 reading the holdout and proposed moving Step 1 to
+`2023-05-05 -> 2025-05-05`. That remedy CONTRADICTS the 2026-08-17 ruling** in SS10.1: *"2022-23 data
+is not wanted even for exit selection. Both phases run 2024-05-05 -> 2026-05-05."*
+
+Three standing constraints, and no window satisfies all three:
+
+| constraint | source |
+|---|---|
+| holdout LOCKED to `2025-05-05 -> 2026-05-05` | SS0, owner 2026-08-09 |
+| no 2022-23 data, even for exit selection | SS10.1, owner 2026-08-17 |
+| Step 1 must not rank on the holdout | `S6-B1605c`, owner 2026-08-17 (*"undo"*) |
+
+**The obvious compromise is measurably self-defeating.** A Step-1 window of
+`2024-05-05 -> 2025-05-05` honours all three by construction, but MEASURED on the four existing
+cubes it keeps only **50-56 pct of entries**:
+
+```
+cfg1              330 entries  ->  183 (55.5pct) before the holdout boundary
+cfg2              420          ->  236 (56.2pct)
+w1_sw20_span21    320          ->  167 (52.2pct)
+w1_sw20_span50    302          ->  152 (50.3pct)
+```
+
+**At the FULL sample, `--min-n 10` still leaves 32-60 pct of the grid `NO_EXIT_SELECTABLE`.** Halving
+the sample pushes most of it back to unanswerable, so the window fix destroys the search it is meant
+to make trustworthy.
+
+**Therefore `S6-B1605c` and `S6-B1696c` are ONE decision, not two.** Restoring the sample at a
+holdout-respecting window needs the universe lever - 100 -> ~200 tickers, roughly doubling fires at
+~2x runtime (`S6-B1696c` option (a)). **That is the only path that satisfies every constraint; it
+pays in runtime rather than in correctness or data policy.**
+
+## 0. HOLDOUT POLICY — SETTLED BY OWNER (2026-08-09)
+
+**RULING: the holdout window is LOCKED to R5's dates. `2025-05-05 -> 2026-05-05`, 1 year, unchanged.**
+Owner: *"We do not change the dates and duration of the holdout period. they remain the same as in
+r5. this is to ensure comparibility. No logic changing that even if its been graded 9 times on
+pre-optimized gates."*
+
+**Option A (re-partition) is REJECTED. Option B (extend forward) is unavailable.**
+
+**The rationale is sound and worth recording:** moving the holdout would make the optimised roster
+incomparable to the R5 baseline, the R6b result, and every measurement taken this session. A
+programme whose purpose is to show that optimisation improves on R5 cannot be graded on a different
+window than R5 was. **Comparability is the point of a fixed holdout, and it outranks the marginal
+statistical benefit of a fresher one.**
+
+### This does NOT conflict with Option C — C is now the operative design
+Option C (nested cross-validation inside the IS folds, holdout read exactly ONCE at the end)
+**never proposed changing the holdout's dates.** It governs how many TIMES the fixed window is read,
+not where it sits. So the owner's ruling and Option C are complementary, and C is now the design:
+
+- **The holdout window is fixed** (owner ruling)
+- **Phase 1 reads it exactly once**, on the final <=41-config candidate set (Option C)
+- **All intermediate optimisation happens inside F1/F2/F3**, which the holdout ruling does not touch
+
+### Moderating the L351 concern — the owner's distinction is correct
+L351 counted ~9 holdout regrades and treated them as accumulated selection pressure. The owner's
+phrase **"pre-optimized gates"** identifies a real distinction I understated:
+
+| what those 9 reads did | what they did NOT do |
+|---|---|
+| calibrated a handful of GLOBAL gate parameters (Sharpe 0.5 -> 1.0; `min_trades` 100 -> 25/100) | select among strategies on holdout performance |
+| effective search space: ~3-5 distinct gate configurations | 41 x 20 strategy-specific configs |
+
+Tuning a few global thresholds is a far smaller multiple-testing spend than cherry-picking
+strategies, and the Sharpe bar in particular was chosen **on principle** ("0.5 is too weak"), from a
+sensitivity curve presented before the choice -- not by scanning for whichever value produced the
+nicest roster. That is materially different from optimisation.
+
+**The spend is real but small.** L351 stands as a discipline (count holdout reads project-wide) with
+its magnitude corrected: the prior reads consumed little, and the reason to adopt Option C is
+FORWARD-LOOKING -- Phase 1's 820 candidate configs are the genuine threat, not the 9 that happened.
+
+## 1. GOVERNING CONSTRAINTS (bind both phases)
+
+1. **The holdout is read ONCE per phase, at the end, on the final candidate set.** Not per
+   strategy, not per iteration, not to "check how it's going".
+2. **Pre-registration.** The search space -- which signals, which thresholds, which objective -- is
+   written to `EXECUTION_QUEUE.md` and committed BEFORE any score is computed. A grid chosen after
+   seeing results is not a grid, it is a story.
+3. **FDR budget is declared up front.** Every config tested counts toward the family. If Phase 1
+   tests 41 strategies x 20 configs, the family is 820 and BH-FDR is applied at that m -- not at the
+   number that happened to survive.
+4. **Selection statistics never touch the grading window.** The B1452 retraction and the B1454
+   de-dup correction are both instances of this being violated in mild forms.
+5. **Every reported number ships with its diagnostics** -- sensitivity curve, leave-one-out
+   contribution, churn (in/out), and effective breadth (CHECKLIST #175, #176).
+6. **There is NO usable prior for this population.** *(Corrected 2026-08-09 - owner: "The R6b prior
+   is the base rate - this is incorrect especially for the untouched strategies.")* R6b was a
+   **LOOSENING** experiment on **14 already-examined** strategies and graded 4 held / 9 failed
+   (p=0.954). Phase 1 is **TIGHTENING** on **41 mostly-never-touched** strategies. Different
+   operation, different population - citing it as the base rate was a category error. R6b remains
+   relevant as evidence that *IS-fitted changes can fail on holdout*, i.e. as motivation for the
+   discipline, but **not as a numerical expectation.** Phase 1 has no prior; that is itself a reason
+   to run it.
+
+---
+
+## 2. PHASE 1 — TIGHTENING (offline for SUBSET-SAFE params only — see §2.3a)
+
+### 2.1 Why tightening is cheap and loosening is not
+`trade_log.csv` carries a `signals_at_entry` column: the **complete producer signal dict at the
+entry bar**, ~22 KB per trade (verified B1497: `{"pivot": 158.6, "cpr_narrow": true, "cam_r4":
+161.79, ...}`). Therefore:
+
+- **TIGHTENING is exact and free.** A tighter threshold selects a strict SUBSET of trades that
+  already exist, with known outcomes. Recomputing any subset's statistics needs no engine.
+- **LOOSENING is impossible offline.** A looser threshold admits trades that were never generated.
+  No amount of replay conjures them.
+
+### 2.2 Population — 41 strategies (n > 300)  🔴 SUPERSEDED, see §0a #2
+
+> **CORRECTION B1502.** The band assignments below were never validated against measured holdout n.
+> The first strategy examined, `smc_breaker_block_long`, was treated as n>300; its MEASURED holdout
+> n is **147** (full-period 352), which places it MID-BAND. **Re-derive every band from measured n
+> before Phase 1 is scoped (S6-B1502a).** The counts below are retained for lineage only.
+
+
+| band | strategies | in Phase 1? |
+|---|---|---|
+| **n > 300** | **41** | **YES — Phase 1.1 / 1.2** |
+| 100 < n <= 300 | 58 | Phase 1.3, only after 1.1 validates (n-floor risk) |
+| n <= 100 | 45 | NO — Phase 2 |
+| no gradable cell | 63 | NO — Phase 2 |
+
+**Why n > 300 first:** in that band neither `min_trades` leg can bind, so the search has no
+n-floor interaction and tightening cannot starve a cell into failing a different gate. It is the
+clean test of whether the method works at all.
+
+### 2.3 Method — six steps
+
+**Step 1 — EXTRACT.** Parse `signals_at_entry` per strategy into a feature matrix, IS rows only
+(`2022-05-05 -> 2025-05-05`). Chunked parsing; ~22 KB/trade means a strategy with 1,200 IS trades
+is ~26 MB of JSON. Holdout rows extracted to a **separate sealed file** that the optimiser cannot
+read (enforced by a path the Phase-1 code has no reference to).
+
+**Step 2 — PRE-REGISTER THE GRID.** Per strategy:
+- **Which signals:** ONLY those the strategy's source actually consumes, read from the gate
+  expression via `inspect.getsource` -- never guessed from names (L279: a name-based inference
+  wrongly excused a mirror because B1194 had made the name stale).
+- **Which thresholds:** fixed quantiles of the observed IS distribution (deciles), so the grid is
+  data-defined but *rule*-defined, not cherry-picked.
+- **Cap: ARBITRARY-PENDING-JUSTIFICATION.** *(Owner: "why 41 x 20?")* **41 is measured** -- the
+  n>300 population. **20 was arbitrary** -- I wrote it without a basis, which violates CHECKLIST
+  #165 (every selection rule must be justified on a measured basis or explicitly labelled
+  arbitrary). Labelling it now rather than defending it. The cap should be DERIVED, and the honest
+  way is: cap = the number of decile thresholds x the number of consumed numeric signals, computed
+  PER STRATEGY from its actual gate expression. A strategy gating on one numeric signal has ~9
+  candidate thresholds; one gating on three has ~27. **The real family size is therefore the sum of
+  per-strategy grids, not 41 x a round number** -- and it must be counted before scoring, not
+  estimated. S6-B1499a.
+- Committed to the queue BEFORE any scoring.
+
+**Step 3 — SCORE ON IS FOLDS SEPARATELY.**
+*(Owner challenge 2026-08-09: "is this step really necessary? Holdout is the only one that should
+matter and not these folds? same for step 4?")*
+
+**The folds are not a grading mechanism. They are where SELECTION happens.** Every config must be
+chosen somewhere, and there are only two places:
+- **On the holdout** -- this is the B1452 lookahead, retracted. With 20 configs per strategy a
+  maximum-over-20 on the graded window almost always "passes", and the number means nothing.
+- **On the IS** -- the config is chosen blind to the holdout, then graded once.
+
+So Step 3's existence is not optional; the holdout *is* the only thing that decides, and Step 3 is
+what keeps it able to decide.
+
+**Step 4 — FOLD-STABILITY FILTER. This one IS optional, and here is the honest trade-off.**
+
+| | select on POOLED IS (skip Step 4) | require all 3 folds (Step 4) |
+|---|---|---|
+| candidates reaching the holdout | more | far fewer |
+| protection against IS overfit | none beyond the holdout itself | strong -- a config must work in 2022-23 AND 2023-24 AND 2024-25 |
+| cost | some holdout tests wasted on IS-noise winners | **kills real candidates that happen to be fold-uneven** |
+
+**Recommendation: keep Step 4, but as a REPORTED TAG rather than a hard filter.** Score every config
+on pooled IS *and* record its fold-stability; select the pooled-IS winner but carry
+`fold_stable: true/false` into the holdout grade. That way:
+- nothing real is silently killed before it reaches the holdout (the owner's concern), and
+- if fold-unstable configs systematically fail the holdout, that is measured evidence for
+  hard-filtering in Phase 2 rather than an assumption imposed now.
+
+This is strictly more informative than either extreme and costs nothing.
+
+**Step 5 — ONE CONFIG PER STRATEGY, and why the FDR family is 41 not 820.**
+*(Owner: "explain")*
+
+BH-FDR controls false discoveries among **hypotheses tested on the grading data**. The 820 IS scores
+are not hypotheses tested on the holdout -- **they never touch it**. The holdout sees exactly one
+hypothesis per strategy: *"does this strategy's chosen config have positive edge out of sample?"*
+That is <= 41 tests, so m = 41 + 2 incumbents.
+
+**This is only valid if the IS/holdout separation is airtight.** If any holdout information leaks
+into the choice of config, the 820 become real holdout tests and m must be 820.
+
+**CORRECTED B1820 (`S6-B1705c`, owner: *"major and unforgivable"*).** This paragraph previously
+claimed the separation was *"enforced mechanically ... a file path containing IS rows only and no
+reference to the holdout file"*. **NO SUCH FILE PATH EXISTS** - the grader is handed the full cube
+and slices it itself. **The separation is nonetheless real, by two mechanisms this document never
+named:**
+
+| mechanism | where | verified |
+|---|---|---|
+| `select_exit` slices `in_sample()` ITSELF, so the EXIT choice cannot see the holdout | `roster_core.py:241` | `test_b1800_step1_exit_selection_is_is_only` - a holdout-only frame yields NO exit, with a live control proving the fixture can select |
+| Step 1 ranks on **`is_sharpe`**, not `sharpe`; `rankable` REQUIRES a non-null IS Sharpe | `tighten_breaker_block.py:376` | B1718 P0-2, owner-approved |
+
+**A claimed mechanism that does not exist is worse than an acknowledged gap**, because it stops
+anyone looking. Both real mechanisms are code-level and testable; the promised one was neither.
+
+**The conservative alternative is m = 820**, which would raise the BH threshold roughly 20x tighter
+and almost certainly admit nothing. Both readings are defensible; the choice is owner decision #4.
+
+**Step 6 — GRADE ONCE.** The <= 41 chosen configs are graded on the holdout in a single pass, with
+BH-FDR across that family plus the 2 incumbents. **This is the only holdout read in Phase 1.**
+
+### 2.3a RESIMULATION — the rule is SUBSET-SAFETY, not "tightening"  🔴 CORRECTED B1508
+
+*(Owner concern: "we would need to resimulate on the entire cube. thus the best strategy x exit cell
+post optimization and rerun may change after tightening.")*
+
+**The original answer — "tightening never needs the engine" — was too broad.** The correct
+criterion is whether a parameter can only REMOVE fires or can also ADD them.
+
+| | parameter class | cube-gradable? | why |
+|---|---|---|---|
+| ✅ | **SUBSET-SAFE** — can only remove fires | **YES, free and exact** | every surviving trade already exists in the cube under all 26 exits, so grading is a lookup |
+| 🔴 | **FIRE-ADDING** — can change WHICH bars fire | **NO — needs the engine** | produces `(ticker, date)` pairs R5 never took; the cube holds no P&L for them |
+
+A parameter is fire-adding whenever it changes the producer's own detection (e.g. `swing_length`
+rebuilds the order-block set) or swaps one leg of the gate for a different signal (e.g. EMA span
+200 -> 50). **Neither is "loosening" in the ordinary sense, and both were mis-classified as free
+under the original wording.**
+
+VERIFIED B1499: for `macd_crossover|long`, all 202 sampled `(ticker, entry_date)` trades carry
+**26 distinct `exit_method` rows each**. So the subset-safe half is genuinely exact — the best exit
+CAN change when the population changes, and Step 3 re-selects it, but no simulation is involved.
+
+**Cost consequence (L371).** The run count is the product of the FIRE-ADDING bands alone; every
+subset-safe combination then derives offline from each run. For the worked example: 4,000
+combinations, but **20 engine runs** (4 `swing_length` x 5 EMA `span`), with all 200 subset-safe
+combinations free inside each. Costing by combinations would have overstated the workload 200x.
+
+### 2.4 Error checks (each one closes a defect this session actually produced)
+
+| check | guards against | lineage |
+|---|---|---|
+| Assert the optimiser has no holdout path in scope | accidental leakage | L276 (B1452) |
+| Assert `full_period_n` is passed wherever the gate is evaluated | a silently no-op gate leg | B1492 |
+| Positive control: a config identical to the current gates must reproduce the current result | extractor/replay bugs | L323 |
+| Negative control: a deliberately absurd threshold must produce zero trades | silent no-op filters | L322 |
+| Assert every scored config's trade count > 0 before scoring | vacuous passes | L325 |
+| Re-derive every published count from the artifact, never from a running tally | count drift | L298 |
+| Run `audit_registration_redundancy.py` after the phase | tightening collapsing two strategies together | CHECKLIST #169 |
+| Report churn (in/out), never only the net | direction assumed rather than measured | L291 |
+
+### 2.5 Standards
+- Every number in the report carries its funnel stage (L295).
+- Sensitivity curve published for any threshold that ends up chosen (L288 / #175).
+- Effective breadth (`N_eff`) reported for the resulting roster, not just the count (#175).
+- ~~PROVISIONAL/ROBUST status applied against the measured selection-noise floor~~ **RETIRED (S6-B2409, owner ruling 2026-08-30): the floor and the split are removed in their entirety - clearing the six live gates IS qualification.** Historical measurements preserved for lineage: per-cell twin grain 0.333 (S6-B1467c/B2009); family-pooled grains B2068/B2080 (iid 0.088, entry-day block 0.2245 at the 62,064-trade EMA pool; SMC pool 10,862 trades, block 0.3115 - b2068/b2081 artifacts).
+- Any strategy whose tightened config differs from its shipped gates is a **strategy change** and
+  needs owner approval before it is written to `screener.py`.
+
+### 2.6 Expected outcome, stated honestly
+The R6b base rate is 4/13. Steps 2 and 4 are designed to beat it, but **the realistic expectation is
+that a minority of the 41 convert** -- and at the Sharpe >= 1.0 bar, possibly very few. If Phase 1
+delivers 3-5 additional qualifying cells that is a doubling of the roster and a success. If it delivers
+zero, that is also an answer: it says the library's edges are not recoverable by threshold tuning,
+and Phase 2 or a new strategy class is required.
+
+---
+
+## 3. PHASE 2 — LOOSENING (requires engine runs)
+
+### 3.1 Population — 108 strategies
+45 with n <= 100, plus 63 with no gradable cell at all. These cannot be tightened -- they do not
+fire enough to have a subset worth selecting.
+
+### 3.2 The structural choice
+| approach | cost | notes |
+|---|---|---|
+| **Per-strategy loosening runs** | N engine runs | infeasible: multi-hour each |
+| **ONE permissive superset run** | 1 engine run | loosen gates broadly, generate a superset, then optimise offline by subset selection exactly as Phase 1 |
+
+**Recommendation: the superset run.** One expensive run converts all subsequent loosening
+optimisation into the same free offline problem Phase 1 solves. It is the only approach that scales
+to 108 strategies.
+
+### 3.3 Pre-spend requirements (B1335 Rule 1, and the S6-B1465c precedent)
+Before any engine run: a `run_manifest.json` pinning code SHA, isolation mode, calendar, universe,
+**and a wall-clock projection derived from a timed smoke** -- the field my B1465c manifest initially
+omitted (L333). Plus the written answer to *"what could make this run obsolete?"*, and
+`prelaunch_gate.py --manifest` passing in LOCAL mode (B1488).
+
+**Explicitly: do not launch Phase 2's superset run until Phase 1 has reported.** If threshold
+optimisation cannot rescue strategies that already fire 300+ times, it is unlikely to rescue ones
+that barely fire, and that result should change Phase 2's design before it is paid for.
+
+---
+
+## 4. KILL CRITERIA
+
+State these now, so the programme can be stopped on evidence rather than fatigue:
+
+1. **Phase 1 kills itself** if fold-stability (Step 4) eliminates >95% of configs AND the survivors
+   fail holdout FDR. That is the R6b result repeating with better instrumentation, and it means
+   threshold tuning is not the lever.
+2. **Phase 2 is not launched** if Phase 1 converts zero strategies.
+3. **The programme kills itself** if the resulting roster's `N_eff` stays below ~3 regardless of
+   cell count -- a book of correlated cells is not diversified no matter how many pass.
+
+---
+
+## 5. OWNER DECISIONS REQUIRED BEFORE ANY WORK  (superseded by §8 — live list)
+
+1. ~~Holdout strategy A/B/C~~ — **SETTLED 2026-08-09.** Window LOCKED to R5 dates for
+   comparability; Option C (read it once, optimise inside the IS folds) is the operative design.
+2. **Mid-band (58 strategies at 100 < n <= 300): in Phase 1 or deferred?**
+3. **Do the 3 AUTO-FAIL screens get implemented against the IS/full-period series (S6-B1495a)
+   before Phase 1 grades?** They currently return `None` on a 1-year holdout.
+4. **FDR family size:** 41 (one config per strategy) or 820 (every config tested)? The conservative
+   reading is 820; the pre-registration + one-winner-per-strategy design is what makes 41 defensible.
+
+---
+
+## 6. LOCKED REPORTING STANDARD — CHECKLIST #183 (owner-locked B1510)
+
+Every strategy entering S6-OPT-196 is reported through `scripts/producer_variant_table.py` as ONE
+artifact in three sections. Adding a strategy = adding a `SPECS` entry (formula + params); the
+renderer is strategy-agnostic. **Regenerate, never hand-edit** — a hand-edited copy is reverted by
+the next generation (L286).
+
+### 6.1 Section 1 — BOOLEAN FORMULA (REQUIRED; a SPEC without it is rejected)
+
+Header must state the formula is READ from source, never recalled. Two layers:
+
+```
+=============================== PRODUCER LAYER ===============================
+
+P1  swings  =  swing_highs_lows( ohlc, swing_length = 20 )
+                   -> a bar is a swing high if its high is the highest
+                      across swing_length bars BEFORE and AFTER it
+                   PARAMETER: swing_length = 20   (library default is 50)
+
+P2  ob_df   =  ob( ohlc, swings, close_mitigation = False )
+                   -> emits, per detected block:  OB (+1 bull / -1 bear),
+                      Top, Bottom, MitigatedIndex
+                   PARAMETER: close_mitigation = False
+                      False -> a block counts as mitigated when the HIGH/LOW
+                               pierces it
+                      True  -> only when the CLOSE pierces it  (stricter)
+
+P3  events  =  ob_df[ OB != 0 ].tail( 20 )
+                   PARAMETER: tail N = 20     (hardcoded literal, not an argument)
+
+P4  per event e:   e.is_mitigated = ( MitigatedIndex > 0 )
+                                    AND ( MitigatedIndex < today_index )
+                   -> no parameter; derived from P2's MitigatedIndex
+
+P5  per event e:   e.broken_up    = ( close > e.Top )
+                   -> no parameter; strict inequality, zero buffer
+
+P6  ema_50_200 =  compute_ema_sma( df )      # pairs (9,21),(20,50),(50,200)
+       price_above_ema_200  =  close > EMA(close, span = 200)
+                   PARAMETER: span = 200, emitted only from the (50,200) pair
+
+=============================== STRATEGY LAYER ===============================
+
+breaker_bullish  =  AT LEAST ONE event e in P3 satisfies ALL of:
+                        ( e.OB == -1 )          <- bearish block      [from P2]
+                        AND ( e.is_mitigated )                        [from P4]
+                        AND ( e.broken_up )                           [from P5]
+
+fires            =  ( breaker_bullish )  AND  ( price_above_ema_200 ) [from P6]
+```
+
+**Rules the format enforces.** Every producer gets a `Pn` id, its call signature with the LIVE
+production value inline, a plain-language note on what it emits, and an explicit `PARAMETER:` line
+— or `no parameter` where none exists. The STRATEGY LAYER spells out `AT LEAST ONE ... ALL OF`
+rather than symbolic OR/AND, and tags every clause with the `Pn` it came from, so a reader can walk
+from any gate back to the producer that computes it.
+
+**Why Section 1 exists at all:** at B1500 a strategy was called untunable because its gate read as
+two booleans. Forcing the producer layer to be written first makes that error unwritable — those
+booleans had six parameters behind them (L355).
+
+### 6.2 Section 2 — TABLE A, parameter inventory
+
+One row per `Pn`. Required fields, all test-pinned by `test_b1510_producer_artifact_standard`:
+
+| field | meaning |
+|---|---|
+| `id` | `Pn`, matching Section 1 |
+| `producer` | the function or expression that computes it |
+| `param` | parameter name, or `-` if none exists |
+| `production` | the LIVE value today |
+| `band` | every value to be tested |
+| `subset_safe` | `True` = cube-gradable free, `False` = needs engine resim, `None` = no parameter |
+| `status` | `TESTED` / `UNTESTED` / `PENDING` (tested but never gradable) / `N/A` |
+| `derivation` | **WHY this band holds these values** — must cite a measurement or a stated rule |
+| `evidence` | source `file:line`. **Never inference.** |
+
+`derivation` and `evidence` exist because at B1507 a band was silently narrowed from 5 values to 2
+on an unstated economic hunch (L369). With those fields required, the narrowing cannot be written
+down without exposing that it has no basis.
+
+### 6.3 Section 3 — TABLE B, combination results
+
+15 columns in three groups, taken from `roster_core.evaluate()`'s return dict — **what it emits,
+never a wishlist:**
+
+- **GATED (6) — decide PASS/FAIL:** `pooled_sharpe` >= 1.0, `profit_factor` >= 1.3,
+  `sortino` >= 1.0 (B2008 tier fix: the pooled tier reads `min_sortino_overall`; the 0.7 this
+  line used to quote was the per-regime bar bleeding in - S6-B1903a), `psr` >= 0.95,
+  `min_trades_holdout` >= 25, `min_trades_full_period` > 100 (both verified vs config B2117c)
+- **DIAGNOSTIC (5) — reported, not gated:** `win_rate` (demoted B1387), `payoff`, `expectancy`,
+  `p` (one-sided, H0: SR<=0), `ci_lo` (Sharpe CI lower bound)
+- **CONTEXT (4):** fires, holdout n, full-period n, exit chosen IN-SAMPLE
+
+**Known gap (S6-B1509a, re-verified B2117c):** `max_drawdown` and `calmar` remain ABSENT from
+`roster_core.evaluate()` ("diagnostic" = absent for those two; `metrics.py` has both, L374).
+`deflated_sharpe` IS computed since the B1972-era None-propagation work (roster_core.py:229) -
+the original three-way claim is half-closed.
+
+**Why all 15 and not just Sharpe (L373):** reporting Sharpe alone hid that the worked example's
+`ci_lo` is **-0.034** — its 95% Sharpe lower bound sits below zero. Omitting cheap metrics is not
+brevity, it is suppressing the interval around the headline.
+
+### 6.4 Section 4 — TABLE C, the post-config funnel
+
+Rendered by `scripts/producer_variant_table.py`; header pinned by
+`test_b1510_producer_artifact_standard` alongside Tables A and B. It answers ONE question:
+of everything this config tried, how much survived, and where did the rest stop?
+
+| config | combos | starved-IS | no-Sharpe | graded | distinct | bands | all producer bands tested | median IS-Sharpe | best IS-Sharpe | best IS-CI-lo | best combination |
+
+**ALL PRODUCER BANDS IN THE ROW (B2585, owner directive 2026-09-03 - the format is LOCKED here).** The cell carries **every parameter of the config's family**, derived from that family's own `SPECS` entry in `producer_variant_table.py` - 6 for `smc_breaker_block_long`, 9 for `institutional_committed_growth_long` - each marked with HOW it was exercised:
+
+| marker | meaning | source |
+|---|---|---|
+| `v(fixed)` | pinned by THIS config; the cross-config axis that defines which cube this is | the artifact's `config` block |
+| `v1,v2,...` (bare) | SEARCHED in-cube - the distinct values the engine actually ran | the result rows' own parameter keys |
+| `v1,v2(free)` | graded FREE from the landed cube by the battery's `step2_free_levels` leg | `output_audit/output_<cube>_free_levels.json` |
+| `v1,v2(free, declared)` | gradable free, but NOT graded on this cube - the reproduction gate refused, or no artifact exists | the SPECS `free_band` |
+| `v(not swept)` | held by design: no sweep levels, no free levels, band == production | the SPECS entry |
+| `?` | not recorded - never a number (L580) | - |
+
+**Why it changed:** the cell was built from a hardcoded P1-P6 and NAMED for one family, so every institutional row rendered 4 of its 9 parameters - P1/P2/P3 (the precompute's hygiene knobs) and P7/P8 (the free-graded thresholds) were absent entirely, and a reader could not tell a parameter held by design from one nobody had recorded. Owner, 2026-09-03: *"its not p1-p6 bands tested, it should should be all produced bands tested ... please lock this format"*. The `bands` COUNT now includes free-graded levels for the same reason - a level the battery grades from the landed cube is a value the config exercised, and rendering `-` said *not recorded* about work that was done. Pinned by `test_b2585_table_c_bands_column_carries_every_producer_parameter`, which asserts the family's own parameter count in both directions: removing a parameter from SPECS must remove its cell, which a hardcoded list would survive.
+
+**Superseded text (B2138/B2141, kept for lineage).** The funnel row itself carries the BAND VALUES, comma-separated and semicolon-delimited: `P1=20(fixed); P2=False,True; P3=1,2,3,5,10,20; P4=60,120,180,250,None; P5=0.01,0.02,0.03,0.05,None; P6=200(fixed)` - the values for each SEARCHED axis and the fixed VALUE for the two cross-config axes. B2141 replaced counts with values because two configs that searched DIFFERENT grids of the same width are indistinguishable by count alone. The delimiter is a SEMICOLON: a pipe splits the cell into six columns and destroys the table, which is what the first render showed. Values sort numerically through ONE shared helper used by both this column and the block below (L593: two sorts of the same values diverge on the first edit) - so a pasted row says which axes carried the search without a second table. P1 and P6 are read from the artifact's own `config` block, which `tighten_breaker_block.py` has recorded since B2138; before that they were written NOWHERE, which is why a swing-10 cube could be re-graded as swing-20 (S6-B2136) and why pre-B2138 artifacts read `?` there.
+
+The columns are the funnel **in order**, because every drop-off has a different cause and
+lumping them hides which one is binding: `combos` = every parameter combination enumerated;
+`starved-IS` = no exit cleared `min_n` IN-SAMPLE, so grading never happened (the dominant loss,
+85pct at wave 1) — a SAMPLE-SIZE fact, not a quality verdict; `no-Sharpe` = has a verdict but
+`evaluate()` returned no Sharpe (the fourth bucket, found only because the reconciliation assert
+fired — without it 31-66 rows per config vanished silently); `graded` = reached `evaluate()` and
+produced a Sharpe; `distinct` = graded outcomes after equivalence-class collapse, because
+combinations differing only in a SATURATED parameter are the same fire set and counting rows
+overstates the evidence (L473); `bands` = distinct parameter VALUES actually exercised, read from
+the enumerated combinations rather than the grid spec — the spec is what was INTENDED, the
+results are what ran.
+
+**Two properties that make it honest.** `best` ranks on **`is_ci_lo` — the IN-SAMPLE lower
+bound — never Sharpe and never the holdout** (L455 for the Sharpe half; B2136 for the holdout
+half, where the renderer itself was found ranking on the holdout key and reporting a
+holdout-selected pick as "best" even for honestly-graded inputs). An artifact with no in-sample
+key — every pre-B2010 grid — renders its values prefixed `HOLDOUT` so a reader cannot mistake
+one for the other. And the renderer **asserts** that
+`graded + starved-IS + no-Sharpe + zero-fires == combos` rather than trusting the arithmetic.
+
+**PARAMETERS TESTED (added B2137, owner directive; family-complete since B2585).** Beneath the funnel, a second block names the bands each config exercised, one column per parameter of its family - the same derivation and the same markers as the funnel cell above, so the two renders cannot contradict each other. For the SMC family that is P1..P6, read from the result rows' own parameter keys; for the institutional family it is P1..P9:
+
+| config | P1 swing_length | P2 close_mitigation | P3 tail_n | P4 age_bars_max | P5 break_pct_max | P6 span |
+|---|---|---|---|---|---|---|
+| `cfg1` | not recorded | 2: False, True | 6: 1, 2, 3, 5, 10, 20 | 5: 60, 120, 180, 250, None | 5: 0.01, 0.02, 0.03, 0.05, None | not recorded |
+
+A `bands` COUNT says how many values were exercised; this block says WHICH, and an axis pinned
+at a single value is a dimension that bought nothing. Values sort numerically — a string sort
+renders `tail_n` as "1, 10, 2, 20, 3, 5" and hides whether the axis is ordered. An axis absent
+from the artifact reads **`not recorded`**, never `1` (B1898b/L580: an unmeasured value must
+never render as a number). **P1 and P6 are the CROSS-CONFIG axes** — they define which config a
+cube IS, are held fixed within it, and are NOT written into the grid artifact, which is why they
+read `not recorded` for every config graded to date; S6-B2136 records the consequence, that the
+grader defaults `swing_length` to 20 and re-grades a swing-10 cube wrongly unless the value is
+recovered from the run log.
+
+**Format locked B1898 on owner review** (ticket S6-B1705j), four corrections: **(a)** the `PASS`
+column REMOVED — Step 1 is a ranked list with NO gates (B1608; gates belong to Step 2, L471), so
+it reported 0 forever and read as a verdict on unjudged work; **(b)** `no-exit` renamed
+`starved-IS` — the docstring always said sample-size and the HEADER said selection-failure, and
+the header is what gets quoted; **(c)** `bands` added; **(d)** a definition line above EVERY
+render for `starved-IS`, `graded`, `distinct`, `bands` and `ci_lo`, because a pasted table
+travels without its source file. B1898b: a value the artifact does not record renders `-`, never
+`0` — "0 bands" reads as *tested nothing* when the truth is *not recorded* (L580).
+
+**Documented B2134**, after the owner asked whether Table C's format was fixed: it had been
+fixed in CODE since B1898 and was absent from this plan entirely, so a reader working from the
+plan could not know it existed.
+
+### 6.4b Section 4b — TABLE D + D-2, the cross-config ranked list (shipped S6-B2330; documented S6-B2499)
+
+**Table C answers "what happened inside one config"; TABLE D answers "across every
+config, which outcomes rank highest"** — one row per (config × exit) outcome, top 20
+by default. Owner directive 2026-08-28. Documented here for the same reason Table C
+was (B2134): it had been fixed in CODE and absent from this plan entirely.
+
+**Format, locked (read from `producer_variant_table.py:466-626` at documentation
+time, never recalled):**
+
+- **Sort: `is_ci_lo` descending, then `n` descending — and NOTHING is filtered.**
+  Step-1 admission is min-trades ≥ 10 plus a ranked list with NO gates (owner ruling
+  B1608), so every column is displayed, never applied. Sorting on Sharpe was
+  rejected: L455 records that the higher Sharpe can carry a NEGATIVE lower bound.
+- **14 columns:** `# | config | sw | sp | exit | is_ci_lo | n | tier | dup |
+  is_sharpe | cls | holdout_n | full_period_n | verdict`.
+- **`tier` = DEEP n≥100 / MID 30-99 / THIN 10-29.** It exists because of a
+  measurement made while building the table: 0 of a naive top-20 had n ≥ 100, and
+  the best result per band ran +0.098 at n=128, +0.179 at n=40, +1.214 at n=11 —
+  **rank improving monotonically as evidence thins. RANK IS NOT TRUSTWORTHINESS**;
+  a conservative lower bound still favours a tight small sample over a noisy deep
+  one, so `n` sits beside the sort key deliberately.
+- **`dup` reads `k of m`:** this row's (ci_lo, sharpe, n, exit) signature appears in
+  m configs — ONE discovery restated, never independent confirmations. Duplicates
+  are labelled, not dropped: suppressing rows in a step the owner ruled has no gates
+  is itself a gate. `cls` = equivalence-class size.
+- **The exit-selection disclosure prints on the table itself:** Step 1 picks each
+  cell's exit by SHARPE alone (owner ruling B1605, a cheap ranking pass) while this
+  table RANKS by is_ci_lo — two objectives, disclosed because a row can lead on
+  is_ci_lo carrying the exit that won on Sharpe. 24 exit methods are registered and
+  **22 are effective per cell**: next_pivot_target refused on boundary-spanning
+  cells (B2014, `npt_excluded_identity_boundary`) and one collapsed byte-identical
+  to a survivor (B1593).
+- **A per-tier best summary is appended** — the comparison a rank order hides.
+
+**TABLE D-2 — the swept axes for the SAME rows, same order, join on `#`.** A second
+table rather than more columns because at 18 columns a markdown table wraps, which
+is exactly how Table C lost four columns three times. Columns: `# | config |
+P1 swing | P2 close_mit | P3 tail_n | P4 age_bars | P5 break_pct | P6 span |
+npt_excl`. P2-P5 were already in every ranked row's `admit` dict and simply never
+displayed — hiding four of six swept axes was a display defect, not a data gap.
+
+**The renderer is the only source: `python scripts/show_table_d.py`.** Print it,
+never retype it — Table C's docstring records that hand-retyping dropped four
+columns three times (L652). Auto-regenerated at every landing: `run_wave.py:289`
+invokes `postconfig_doc.py`, so the table needs no watcher and no cron.
+
+**Reading discipline (pinned):** `step1_ranking` — Table D's source — holds the TOP
+10 ROWS PER CONFIG, a SELECTED set. **Population claims must be taken over the
+`results` field, never over this table** (L708; test_b2342 pins that the ranking is
+bounded at 10 and its exits are a subset of the population's). Pins on the format:
+test_b2330 (proven on three mutations), test_b2331 (assertions anchored to the
+header ROW after the per-tier summary satisfied a check written for the main
+header — L703/L705).
+
+**SCOPE CAVEAT (S6-B2499 audit finding):** the `sw`/`sp` columns and ALL SIX D-2
+axes are read from HARDCODED keys of the smc_breaker_block spec
+(`P1_swing_length`, `close_mitigation`, `tail_n`, `age_bars_max`, `break_pct_max`,
+`P6_span`). A grid from another family renders `None` in those cells — it degrades
+legibly rather than crashing, but reusing Table D for the institutional family
+needs a per-strategy axis map keyed off SPECS. Ticketed S6-B2500.
+
+### 6.5 The exit registry, and why a cube's exit COUNT is a dated fact
+
+**`len(EXIT_STRATEGIES)` is 24 today** - derived by running the code, never recalled. B2110
+deprecated two on the owner-approved LEVER9 option (a) intersection - never-selected in 482 cell
+selections AND outcome-duplicate of a survivor: `atr_trail_mae_conditional` (100.0pct identical
+to `atr_trail_1x` over 52,700 shared trades) and `smart_money_reversal` (99.3pct). Their
+functions are kept for old-cube replay; only the registry shrank, 26 -> 24.
+
+**So "26 exits per entry" in a post-config ledger entry is not an error - it is a DATED FACT.**
+A cube generated before B2110 legitimately carries 26, and the step-1 sanity check judges every
+cube against the registry AT ITS OWN SHA (B2117c). Quoting that 26 in a present-tense summary
+without saying which era it belongs to is the ambiguity B2140 corrects.
+
+**`regime_flip` is NOT a third deprecation - it was FIXED, and the difference is measurable per
+cube.** The recorded defect (L526 / S6-B1771) is real and permanent for the cubes it describes:
+
+| cube | era | regime_flip rows | real flips | fallback `regime_flip_max_days_20` |
+|---|---|---|---|---|
+| `output_cfg1` | pre-B2043 | 330 | **0** | 330 (100pct) |
+| `output_w1_sw20_span21` | pre-B2043 | 320 | **0** | 320 (100pct) |
+| `output_b2114_ref` | post-B2043 | 95 | **42** | 53 (56pct) |
+
+B2043 root-caused it: `set_worker_regime_map` was defined and NEVER CALLED (one occurrence in
+the codebase - its own definition), beside a placeholder that fabricated a "no" answer. Both
+fixed; the flip branch went live. `roster_core.measure_degraded_exits` confirms it per cube -
+the four pre-fix cubes still collapse the `time_stop_20d`/`regime_flip` pair, and the post-fix
+reference cube lists only `reverse_signal` -> `atr_trail_1x`. **This is why the runbook measures
+degeneracy per cube (#252) instead of maintaining a list: a hand-kept list of broken exits goes
+stale the moment one is repaired, and a stale list nearly retired a working exit at B2139.**
+
+### 6.6 Computed, never hand-written
+
+The generator derives and prints: the **CHECKLIST #182 denominator** ("N of M combinations passed,
+across X of Y applicable producers"), **FULL FACTORIAL**, combinations run, **percent covered**, and
+the **free-vs-resim split**. Hand-counting reintroduced the exact error #182 exists to prevent
+(L368: my "3 of 6" was really "3 of 5").
+
+### 6.7 Drift guard
+
+`validate_spec()` **blocks generation** when a `Pn` appears in Section 1 but has no Table A row, or
+vice versa, and rejects any SPEC lacking a formula. Section 1 and Table A are two views of one
+inventory, and a hand-maintained pair diverges. Verified against three drift modes and in BOTH
+directions, per the B1504 lesson that a gate exercised one way may block everything (L375).
+
+---
+
+## 7. WORKED EXAMPLE — `smc_breaker_block_long` (B1500-B1510)
+
+> **B2117c ANNOTATION:** this worked example was built against the STATE breaker gate
+> (`smc_breaker_block_bullish`). **B2114 (owner-approved via the A1 design section 4)
+> converted both breaker legs to the retest-EVENT keys
+> (`smc_breaker_block_*_retest_recent_5d`)** - the STATE reference cube
+> (`output_b2114_ref`) is the comparator. The example's METHOD stands; its gate
+> expressions describe the retired anchor.
+
+The first strategy taken end-to-end. Recorded because the method's failure modes only became
+visible by running it.
+
+### 7.1 What was found
+
+**The gate looked untunable and had 6 producer parameters behind it.** `fires = breaker_bullish AND
+price_above_ema_200` — two booleans, no numbers. Following each to its producer surfaced
+`swing_length`, `close_mitigation`, `tail N`, OB-age recency, the break test, and EMA `span`.
+
+**The signal was saturated.** `smc_breaker_block_bullish` fired on **124 of 124 bars** on AAPL.
+Instrumenting the QUALIFYING EVENT rather than the aggregate rate explained why: it is an `OR` over
+the last 20 order blocks with **no time limit**, so one block aged 294-469 bars, with price 7.5-60%
+away, latches TRUE forever. `tail(20)` is a COUNT window where a TIME window was intended
+(S6-B1500a). Same class as B654 `cpr_narrow` (87% True) and B655 `supertrend_bullish` (99.19%).
+
+**Two populations, cleanly separable.** Across 5 tickers: latches at 17-54% distance and 343-407
+bars old; true retests at 0.8-0.9% and 49-133 bars. An empty gap on BOTH axes (distance 3-7%, age
+134-294), and the axes agree on which bars are which — that gap is what set the bands.
+
+**The tightening DIRECTION was backwards.** A breaker block is a RETEST, so the lever is an UPPER
+bound on distance, not a lower one. The original framing would have selected harder for the latches
+(L359).
+
+### 7.2 Result
+
+**0 of 200 combinations passed, across 3 of 6 applicable producers.**
+24 gradable, 164 NO_EXIT_SELECTABLE, 12 BELOW_POWER_FLOOR.
+
+| knob | effect |
+|---|---|
+| OB-age cap <=180 | 352 -> 109 fires, Sharpe **0.473 -> 0.563** — the filter genuinely works |
+| `close_mitigation=True` | helps in **12 of 12** matched cells, median **+0.005**, best **+0.059** |
+| `tail N` | **inert** — the qualifying event is always among the newest 3 |
+| `break_pct_max` (owner-approved NEW-GATE) | **0 of 160 combinations gradable** — economically the cleanest discriminator, statistically unusable at n=352 |
+
+**All 24 gradable cells fail on `pooled_sharpe` alone**; the other five gates pass everywhere. The
+best cell reaches 0.617 and then fails TWO gates, because the filtering that lifted the ratio cut
+holdout n to 115 and PSR reads sample size.
+
+**The decisive number is not Sharpe.** The R5 baseline's `ci_lo` is **-0.034**. Since a subset
+cannot have a tighter confidence interval than its parent, no tightening can produce a subset whose
+interval excludes zero. That is a stronger argument than the Sharpe gap because it concerns sample,
+not effect size (S6-B1509b).
+
+### 7.3 Cost model, measured
+
+| quantity | value |
+|---|---|
+| full factorial | **4,000** |
+| subset-safe subspace (derives free per run) | 200 |
+| **distinct engine runs** | **20** (4 `swing_length` x 5 EMA `span`) |
+| **measured: 1 ticker x 1 config, full window** | **~35 min** (2.11 s/sim-day x 1,003 days) |
+| 20 configs at ONE ticker | ~12 h |
+| multi-ticker slope | **UNVERIFIED — S6-B1508a** |
+
+**Deliberately not extrapolated to 161 or 503 tickers.** An earlier producer-only estimate came in
+**9x light** against the first real engine measurement (L367); per-sim-day cost may amortise across
+tickers rather than scale linearly, and a ~6-minute run at 10 tickers settles it.
+
+### 7.4 Universe finding
+
+The SP50 subset (top 50 by market cap; **50/50 reconciled against T1a, 50/50 with cached OHLCV**)
+retains only **31 of 352 fires across 11 of 50 tickers**. All 40 combinations returned
+NO_EXIT_SELECTABLE — not a bad result, NO result. **Measure the retention ratio BEFORE running under
+any universe restriction, and halt below the gates' n-floor** (L365, S6-B1505c). Two disclosed
+limits on the subset itself: only 249 of 503 T1a actives carry `market_cap`, so it is the top 50 of
+249 rankable; and selection uses TODAY's cap over a 2022-2026 window, which is survivorship-
+flavoured — acceptable for tuning, not for a verdict (S6-B1504a/b).
+
+### 7.5 What this example changes about the method
+
+1. **Start at the producer layer, always.** The gate expression is not the tunable surface.
+2. **Instrument the qualifying event before tuning anything.** Saturation usually means a stale
+   member of a disjunction is latching, not that a threshold is loose.
+3. **Classify every parameter subset-safe vs fire-adding first.** It decides both the cost model
+   and what can be graded offline.
+4. **Check retention before restricting the universe.**
+5. **A strategy can be un-rescuable for sample reasons rather than edge reasons** — `ci_lo` < 0 on
+   the baseline is a stop sign that no amount of tightening addresses.
+
+---
+
+## 8. OPEN OWNER DECISIONS (live as of B1510)
+
+> **2026-08-23 (B2042): E1 DROPPED as a roster path (owner ruling).** The five-arm pilot
+> closes as measurement only; Phase-1B admission runs ONLY through this document's
+> 0->1->2->3 protocol at its ruled shapes, and noise-elimination verification happens in
+> the protocol's own Step 2 on the remaining Tier-1a tickers - not via ad-hoc validation.
+> Canonical rows: S6-B1505b (closure) / S6-B2018a (unblocked).
+>
+> **2026-08-22 (B2016): the A-I owner ruling set resolved this table's live members.** E1 approved -
+> the P1 swing sweep {10,20,30,50} runs on SP50 at the ruled 1y search window (arms in flight,
+> `output_b2016_e1/run_manifest.json`); F1 `EMA_PAIRS` plumb SHIPPED (B2016); F2 spans 100/250
+> NOT approved yet; E5 concurrency cap N=2. Ledger rows under S6-B1505b / S6-B1518a are canonical.
+
+| ticket | decision |
+|---|---|
+| **S6-B1508a** | 10-ticker timed run to establish the multi-ticker slope (~6 min). **Removes the last unknown from the cost model.** |
+| **S6-B1507b** | Add EMA spans 100/250? They do NOT exist in `compute_ema_sma` — producer edit, NEW-GATE class. |
+| **S6-B1505a** | Test-universe policy: SP50 vs R5-fired vs full T1a, with a retention-ratio precheck. |
+| **S6-B1509a** | Wire `max_drawdown` / `calmar` / `deflated_sharpe` into `roster_core.evaluate()` as reported-not-gated. |
+| **S6-B1502a** | Re-derive the whole band partition from MEASURED holdout n before Phase 1 is scoped. |
+| **S6-B1505b** | Approve engine resimulation for P1/P6 — gated on S6-B1508a's number. |
+
+**Standing rule (`feedback_ask_before_adding_gates_vs_threshold_only`):** whether optimisation may
+ADD a gate or stays threshold-only is situational — **ask every time**. Label every knob
+EXISTING-THRESHOLD or NEW-GATE before building any grid.
+
+
+---
+
+## 9. PER-STRATEGY EXECUTION CHECKLIST (B1520, owner-directed)
+
+**Every strategy entering S6-OPT-196 runs this list in order.** Each item exists because it failed
+on `smc_breaker_block_long`, the first strategy through - the L-number is the incident.
+
+### 9.1 BEFORE any measurement
+
+| # | gate | why (incident) |
+|---|---|---|
+| 1 | **Read the PRODUCER layer, not the gate expression.** Follow every consumed signal to the function that computes it and enumerate that function's parameters. | L355 - a gate reading as two booleans had **6** producer parameters; I called it untunable. |
+| 2 | **Prove each parameter reaches the ENGINE.** Grep the engine's real call path. A parameter the producer accepts but the caller never passes is NOT tunable. | L387 - `screener` called `compute_smc_signals(df, ticker=ticker)`; a 20-config sweep would have produced 20 IDENTICAL cubes. |
+| 3 | **Check whether a variant is ALREADY emitted** before editing a producer to emit it. | L389 - EMA spans 9/20/21/50/200 already existed; the fix was a one-line consumer change, not a producer edit. |
+| 4 | **Label every knob EXISTING-THRESHOLD or NEW-GATE. Any NEW-GATE -> ASK THE OWNER.** | `feedback_ask_before_adding_gates_vs_threshold_only`; L361 - I invented `BREAK_PCT_MAX` and ran 80 out-of-scope combinations. |
+| 5 | **Classify each parameter SUBSET-SAFE (only removes fires) or FIRE-ADDING.** Run count = product of the FIRE-ADDING bands ALONE. | L371 - 4,000 combinations needed **20** engine runs; costing by combinations overstates 200x. |
+
+### 9.2 DERIVING the bands
+
+| # | gate | why |
+|---|---|---|
+| 6 | **Instrument the QUALIFYING EVENT before tuning.** Record what actually satisfied the signal - age, distance, rank - not just the aggregate fire rate. | L360 - saturation (124/124 bars) was ONE stale order block latching, invisible at the aggregate level. |
+| 7 | **Derive band values from the measured distribution.** Never percentile-by-reflex, never a round number. Anchor level 1 at the production value. **Then VERIFY the band against its own derivation text before running, and run `scripts/verify_grid_bands.py` on the grid AFTER — a level that changes nothing is a wasted dimension.** | L356 (deciles on an integer count), L369 (P6 band silently narrowed 5 -> 2), **L473 (P3 `tail_n` claimed to span rank 1-4 with a floor of 3; 10 -> 20 moved 0 of 50 groups and 72pct of cfg1's 200 combinations were redundant)**. |
+| 8 | **State the economic event the signal captures, then check the threshold DIRECTION serves it.** | L359 - a breaker block is a RETEST, so the lever is an UPPER bound; my version selected harder for the noise. |
+| 9 | **Terminate each band where holdout n < 25 or full-period n <= 100.** The gates set the last rung, not taste. | The strict end was untestable on every run - the sample, not the effect, is binding. |
+
+### 9.3 BEFORE any run
+
+| # | gate | why |
+|---|---|---|
+| 10 | **Write `run_manifest.json`, pass `prelaunch_gate.py`.** Pin frozen_sha, isolation, calendar, universe sha256, budget, and enumerate obsolescence risks each with a MECHANICAL gate. | B1335 Rule 1. It caught the P1/P6 blocker before ~14 h was spent. |
+> **B1618 - THE BASELINE UNIVERSE IS 544. OWNER RULED 2026-08-17.** This document previously said
+> **381** in eight places and **544** in section 10.1. `381` was the ABANDONED alphabetically-
+> partitioned chunk (`r5_universe_381.txt`: 100pct A-C, zero mega-caps, 248 tickers the real R5
+> never ran) - the artifact L445 was written about. MEASURED:
+> `output_r5_merged_1_7/trade_exit_detail.csv` holds **544 tickers, 25pct A-C, NVDA/MSFT/TSLA/GOOGL
+> present**. All references are now 544, with every DERIVED quantity RE-MEASURED rather than
+> find-replaced (the exclusion count was 41-of-381 and is **22 of 544**; the 4-year cost estimate
+> rescaled). **`scripts/build_sweep_100.py` still READ the 381 file** - the live `_sweep_100.txt`
+> was correct only because it had been rebuilt by hand, and re-running the builder would have
+> replaced it with a list sharing **31 of 100** tickers. Generator repointed (L479, CHECKLIST #199).
+
+| 11 | **Derive the universe from the BASELINE ARTIFACT, not a roster CSV.** | L378 - R5 ran **544**; T1a has 503. Substituting the universe breaks comparability exactly as changing holdout dates would. |
+| 12 | **Measure the RETENTION RATIO before restricting the universe. Halt below the gates' n-floor.** | L365 - SP50 retained 31 of 352 fires; all 40 combinations returned NO result. |
+| 13 | **ARM THE MONITOR IN THE LAUNCH TURN**: hourly PushNotification while active + a */13 sentinel check + CronDelete on completion. **A run is not launched until its output path to the owner is armed.** | L385 - a sentinel tripped, halted the ladder, and reached no one until the owner asked. |
+| 14 | **Classify each sentinel ERROR (invalidates -> re-run) or FINDING (result valid -> halt for a decision).** | L384 - treating every trip as failure would have discarded a valid rung and re-run it identically. |
+| 15 | **Never extrapolate cost from one point.** Two measured points minimum before any projection. | L367 (9x light), L377 (23pct light), L383 (~100x heavy). Three in one session. |
+
+### 9.4 REPORTING the result
+
+| # | gate | why |
+|---|---|---|
+| 16 | **Use the locked 3-section artifact (SS6 / CHECKLIST #183).** Formula + Table A + Table B, generated, never hand-edited. | Hand-maintained views diverge. |
+| 17 | **Report ALL metrics the evaluator emits**, not the headline. | L373 - Sharpe alone hid `ci_lo` = -0.034, below zero. |
+| 18 | **The verdict MUST carry its denominator** - "N of M combinations across X of Y producers". Computed, never hand-counted. | CHECKLIST #182; L368 - hand-counting reproduced the error the rule exists to prevent. |
+| 19 | **A small-universe PASS is an ARTIFACT until entries/ticker converges to the baseline rate.** | L382 - rung 5 passed all 6 gates at **26.63x** the R5 entry rate. |
+| 20 | **A pin test must be BEHAVIOURAL, not textual.** Set the non-default, RUN the engine, assert the FIRE SET changes. | B1520 - my first "pin test" grepped source strings. That is the grep-found trap wearing a test's clothes. |
+| 21 | **Before any differential test, assert the SUBJECT OCCURS in the chosen window.** A differential with n=0 on BOTH sides reports agreement and reads as a pass. | L393 - the behavioural pin test compared two EMPTY fire sets, because the short window excluded all six of the strategy's fire dates. |
+| 22 | **When a targeted test comes back vacuous, check whether the same artifact answers at a coarser grain before re-running.** | L394 - the cubes I was about to discard already proved the knob works (13/76 vs 16/95 entries). |
+| 23 | **The factorial is NEVER shown without the boolean producer formula.** Emit both from `producer_variant_table.py --factorial`, which cannot print one without the other. | B1523 owner directive - a bare "4,000 combinations" is unreadable without the formula that generates it, and invites debate about the number instead of the structure. |
+
+### 9.5 Standing rules that bind every step
+
+- **No silent misses.** Every scope item ends with a terminal disposition; a finding without a
+  queue ticket does not exist.
+- **Owner approval** for every threshold/gate/production-path change. Approval for one strategy is
+  not approval for the next.
+- **Pyramid green before every commit**; doc-sweep and queue entry in the same turn.
+
+---
+
+## 10. THE REPEATABLE WORKFLOW (B1548 — supersedes §2's method for all strategies)
+
+Everything below is what the `smc_breaker_block_long` walkthrough actually cost us to learn. Run it
+in order for every strategy. Each numbered gate cites the incident that produced it.
+
+### 10.1 The four phases
+
+| phase | scope | window | universe | produces |
+|---|---|---|---|---|
+| **0 INVENTORY** | build the SPECS entry | — | — | formula + Table A + factorial |
+| **1 SEARCH** | all fire-adding configs | **1 year, 2024-05..2025-05** | **200** | ranked combinations |
+| **2 VALIDATE** | **top 3 CONFIGS (owner 2026-08-29 second set; was top 5 same day, top 10 combinations before)** | **4 years, `2022-05-05 -> 2026-05-05` (owner 2026-08-29: 2022-23 allowed for Step 2)** | **ALL 544 (owner 2026-08-29; was 344 disjoint)** | gate verdicts |
+| **3 ADMIT** | best 1 | 4 years (as Step 2) | 544 | Phase 1B decision |
+
+**Why no 2022-23 data (owner ruling 2026-08-17).** The market changed materially with AI
+adoption, so 2022-23 is not wanted even for exit selection.
+**SUPERSEDED FOR STEP 2 ONLY (owner ruling 2026-08-29): 2022-23 IS allowed for Step 2**, whose
+`min_trades_full_period` gate is measured over the full 4-year span - see STEP 2 ENTRY below.
+The 2026-08-17 ruling still governs Step 1 and everything else.
+
+**AMENDED FOR STEP 1 ONLY (owner ruling 2026-08-21).** Step 1 now runs **1 year,
+`2024-05-05 -> 2025-05-05`**, ending exactly at the holdout boundary, because running to
+`2026-05-05` meant ranking on the holdout year Step 2 then judges (`S6-B1605c`). Step 2 is
+unchanged. **Three standing constraints - locked holdout, no 2022-23 data, Step 1 off the holdout -
+have no window that satisfies all three at 100 tickers**, so the UNIVERSE is the lever: 100 -> 200.
+
+**TWO MORE STANDING CONSTRAINTS (owner ruling 2026-08-23, B2107 - recorded verbatim in queue row
+S6-B2107-OWNER-RULINGS-3 and in the session memory):**
+1. **NO LOCAL RUN OVER 3 HOURS.** The ruled 200t x 1y config is 3.64 h at the canonical rate, so
+   every Step-1-shape local launch is barred as a single piece; the COMPUTE VENUE decision
+   (local vs AWS vs Hetzner, ticket S6-B2107a) precedes any such launch. A resume-chunked local
+   run (two sub-3h legs on the checkpoint infra) is a candidate to PRESENT, never to assume.
+2. **PROGRAM TARGET: Phase 1B entry with >= 20 LONG + >= 20 logically-symmetric MIRROR SHORT
+   strategies.** The A1 admission funnel aims at this 40-strategy roster, not at "some breadth";
+   the mirror-shorts-by-default standing directive covers the S side.
+2b. **VENUE (owner ruling 2026-08-23 evening, B2115): HETZNER AUCTION, gated on (A) one
+   strategy completed end-to-end locally (S6-B2115a) and (B) all workflows codified as
+   automation (S6-B2115b, scripts/run_wave.py).** Local pilot legs stay under the 3h cap via
+   resume chunking at the ruled shape.
+3. **TOTAL PROGRAM COMPUTE BUDGET: $100 ACROSS ALL STRATEGIES, not per-strategy or per-run**
+   (owner ruling 2026-08-23, second message, B2109). Every venue quote, wave plan, and Step-2
+   projection counts against this ONE envelope; the ledger of spend lives with the venue
+   ticket S6-B2107a.
+
+## STEP 2 ENTRY - THE MECHANICAL TOP-3 CONFIG SELECTION (owner ruling 2026-08-29)
+
+Step 2's unit of execution is the CONFIG (one holdout cube per config); its unit of evidence is the
+combination. The plan's top-10-combinations spec is superseded: **the top 3 CONFIGS advance**,
+selected by this mechanical process - no judgement calls, reproducible from the grid artifacts:
+
+1. For every graded config, take `step1_ranking[0].is_ci_lo` - the best distinct combination the
+   config produced (the ranking is already equivalence-class collapsed).
+2. Rank configs descending on that value.
+3. **Duplicate-signature collapse:** if a config's best row carries the same
+   (is_ci_lo, is_sharpe, fires, exit) signature as a HIGHER-ranked config's best row (Table D's
+   `dup` column), it is the same discovery - skip it and continue down the list. **ALL ordering ties -
+   equal ci_lo across different signatures at step 2, or tied signatures here - resolve to
+   the LOWEST-span config** (deterministic; without this the holder is
+   sort-order-dependent, which the verification run caught before this section shipped).
+4. Take the first **3** survivors (owner ruling 2026-08-29 second set, was 5 - a 5-config
+   slate projected ~92h serial at the 4-year span, judged too long for the execution
+   timeline).
+
+**COST, PROJECTED PER CONFIG - NOT FROM THE MEDIAN (S6-B2364).** Source:
+output_audit/serial_chain.log, 26 START/DONE timestamp pairs. Step-1 durations at identical
+ticker-years range 1.32h (sw30sp50) to 4.04h (sw50sp20), median 1.68h - so runtime is NOT
+purely ticker-year-driven and a median-scaled figure is wrong for a SELECTED slate. Scaling
+each config by ITS OWN base at 544x4y over 200x1y = 10.88x:
+
+| config | step-1 | step-2 projected | 5h legs |
+|---|---|---|---|
+| sw50sp50 | 1.71h | **18.7h** | 4 |
+| sw30sp150 | 1.59h | **17.3h** | 4 |
+| sw50sp20 | 4.04h | **43.9h** | 9 |
+| **top-3 serial** | | **~80h (3.3 days)** | |
+| top-2, dropping sw50sp20 | | ~36h (1.5 days) | |
+
+**The median-based figure said ~55h and understated by ~25h**, because the third-ranked
+config is also the SLOWEST of the 26 - selection on `is_ci_lo` is not independent of runtime.
+Same shape as L708: a statistic computed over a population and applied to a selected subset.
+**Still an ESTIMATE** - linearity in ticker-years is assumed, and the 1.32-4.04h spread at
+constant ticker-years is direct evidence that assumption is imperfect. The first cube settles it.
+
+Applied to the completed b2197 program this yields, in order: **sw50sp50 (+1.250), sw30sp150
+(+1.214), sw50sp20 (+0.930)** - the top 3 that advance. The next two under the old
+5-slate rule were sw30sp20 (+0.816, first holder of the triplicate signature; sw30sp50 and
+sw30sp100 collapse into it) and sw50sp9 (+0.724); both are recorded here so a later
+widening does not have to re-derive them.
+
+**TRADE FLOORS (owner rulings 2026-08-29):** `min_trades_holdout >= 15` in the 1-year holdout
+and `min_trades_full_period > 75` across all 544 tickers over the FULL 4-year span (config.py;
+history 100 at B1492 -> 75 -> 60 -> **75**). Owner logic on the holdout floor: 25 fires per year
+forced ~2 per month - HFT territory for a swing library and illogical across bear/consolidation
+regimes. The full-period floor moved to 60 on a 3-year reading and **back to 75** once the grain
+was surfaced.
+
+**GRAIN FLAG - RAISED, THEN RESOLVED BY THE OWNER (2026-08-29, third ruling set).** The
+full-period gate COUNTS over the whole cube span: `tighten_breaker_block.py:348` sums the entire
+frame, which is **4 years** (IS 3.00 + HO 1.00 per roster_core.py:56-57), not the 3-year IS leg.
+The 60 had been sized for a 3-year count the code does not perform. Told this, the owner ruled
+**"in that case revert back to 75"** - keeping the COUNTER and restoring the 4-year-sized BAR,
+rather than re-cutting the counter to IS-only. **This is the resolution L711 asks for: a
+threshold and the window it is measured over are ONE object, and the pair is now consistent.**
+
+**WINDOW (owner ruling 2026-08-29): 2022-23 data is ALLOWED for Step 2.** This supersedes, for
+Step 2 only, the 2026-08-17 *no 2022-23 even for exit selection* ruling, and it resolves the
+three-way conflict recorded at S6-B2358. Step 2 therefore runs the FULL 4-year span
+`2022-05-05 -> 2026-05-05`, which is what the full-period gate is measured over.
+
+### STEP 2 EXECUTION - THE WATERFALL (owner ruling 2026-08-29, third set)
+
+**Owner, verbatim:** *"Lets do a waterfall method. If any of the 300 combinations from config 1
+qualify for phase 1B after clearing all gates we do not run the next two configs else we continue to
+config 2 then 3 then terminate."*
+
+**THE RULE.** Configs run SEQUENTIALLY in the mechanical rank order. After each config's cube is
+graded, evaluate its 300 combinations:
+
+1. **Config 1 = sw50sp50.** Run the config **IN ITS ENTIRETY** - all 300 combinations graded; the waterfall never stops mid-config. Then: if any combination qualifies -> **STOP. Configs 2 and 3 are not run.** *(2026-08-30 amendment, S6-B2409: the original "AND is ROBUST" condition is retired - see the STOPPING RULE section below.)*
+2. Otherwise **config 2 = sw30sp150**, again in its entirety. If any qualifies -> STOP.
+3. Otherwise **config 3 = sw50sp20**, in its entirety. If any qualifies -> admit it; otherwise **TERMINATE** - `smc_breaker_block_long` closes NEGATIVE for Phase 1B and the program moves to the next of the 207-strategy optimisation backlog.
+   `smc_breaker_block_long` does not enter Phase 1B and its optimisation-backlog entry closes NEGATIVE.
+
+**WHAT "QUALIFY" MEANS, IN CODE - not paraphrased.** `tighten_breaker_block.py:373-383`: a row gets
+`verdict = "PASS"` iff `all(gates.values())` over the six `LIVE_GATES` (`roster_core.py:60-61`:
+pooled_sharpe, profit_factor, sortino, psr, min_trades_holdout, min_trades_full_period). Anything that
+returns `None` from `evaluate` never reaches the gate branch at all and is `BELOW_POWER_FLOOR`.
+**Qualification is that PASS, full stop** (S6-B2409, owner ruling 2026-08-30 - the former
+ROBUST/PROVISIONAL label against the 0.333 selection-noise floor is retired in its entirety;
+`roster_core.qualifier_margin` reports the margin over the live gate as a number, gating nothing).
+
+**COST PROFILE.** Best case 18.7h (config 1 qualifies). Then 36.0h. Worst case 80.0h (all three run
+and none qualifies). The waterfall is therefore **never more expensive than the flat top-3 slate and
+usually cheaper** - and the rank order happens to be cost-favourable, because the 43.9h config sorts
+LAST, so it is only paid for if the two cheap ones both fail.
+
+**WHAT THIS SUPERSEDES, stated rather than applied silently (L633).** The 2026-08-29 ruling recorded
+at S6-B2242 was *"We decide based on over all ranked list. That itself is the goal of step 2."* The
+waterfall is a **first-success stopping rule**, not a ranked comparison: under it, if config 1
+qualifies, configs 2 and 3 are never measured and no cross-config ranking exists. That is a coherent
+goal ("find one that clears") but it is a DIFFERENT goal from the earlier ruling ("pick the best").
+The waterfall governs; the earlier ruling is superseded for Step 2 only.
+
+**FOUR THINGS THE WATERFALL MAKES LOAD-BEARING THAT THE RANKED LIST DID NOT.** Under a ranked list a
+marginal winner is one row among many the reader judges; under first-success-wins it ENDS the
+program. See the DECISIONS PENDING block below - none of these is resolved here.
+
+### DECISIONS RULED - ALL SIX (owner, 2026-08-29, S6-B2375)
+
+**D1 - RULED: ROBUST. [SUPERSEDED 2026-08-30, S6-B2409 - preserved as history.]** *"D1 robust that
+said the config runs to be run in its entirety."* Two things: the stop condition was **ROBUST, not
+bare PASS** - a qualifier whose holdout-Sharpe margin was below the 0.333 selection-noise floor was
+PROVISIONAL and did **not** stop the waterfall; and **a config always runs to completion** - all
+300 combinations are graded before the stop test, so the waterfall never halts mid-config.
+**The 2026-08-30 ruling retired the ROBUST half in its entirety** (*"noise floor is 0.333 meaning
+that the result has to be more than 1.333 in the holdout period to qualify. Remove the 0.333
+selection-noise floor requirement in its entirety"*): the stop condition is now bare PASS over the
+six gates. The run-to-completion half of D1 STANDS. Note for the record (L633, disagreement stated
+once): D2's no-BH-FDR ruling was recorded as partly weighing on the D1 ROBUST hurdle; with that
+hurdle retired, `psr >= 0.95` is the remaining significance-style control on a qualifier.
+
+> **CONSEQUENCE RESOLVED BY THE SAME RULING.** The flagged case - a program terminating NEGATIVE
+> while holding a gate-clearing cell - can no longer occur: a gate-clearing cell now stops the
+> waterfall itself. Config 1's qualifier (retained by ruling 2 of 2026-08-30, S6-B2410) closes the
+> question S6-B2407 raised.
+
+### DECISIONS RULED 2026-08-30 (S6-B2409 / S6-B2410) - the floor retired; the qualifier retained
+
+**RULING 1 (S6-B2409), owner verbatim:** *"noise floor is 0.333 meaning that the result has to be
+more than 1.333 in the holdout period to qualify. Remove the 0.333 selection-noise floor
+requirement in its entirety."* Implemented same day: `roster_core.robust_status` ->
+`qualifier_margin` (margin as a plain number, no floor, no label); `SELECTION_NOISE_FLOOR` deleted
+from the roster builder; the grid payload's `provisional_qualifiers` key -> `qualifiers` (every
+PASS row); the postconfig renderers no longer frame any value against a floor; pins rewritten
+(test_b2409_*). My prior recommendation of the floor as the grid-stage selection-noise control is
+recorded as overruled (L633 - stated once, ruling governs).
+
+**RULING 2 (S6-B2410), owner verbatim:** *"Lets retain the break_pct_max 0.02, close_mitigation
+True, age_bars_max None, exit time_stop_10d, tail_n (20) combination."* That is config 1
+(sw50sp50)'s qualifying parameter set at its tail_n=20 member - `smc_breaker_block_long`, P1
+swing_length=50, P6 span=50, close_mitigation=True, break_pct_max=0.02, age_bars_max=None,
+tail_n=20, exit `time_stop_10d`; holdout sharpe 1.152, profit factor 1.937, sortino 1.925, psr
+1.0, holdout_n 41, full_period_n 180 (S6-B2399 grid). The three passers were ONE parameter set
+differing only in tail_n {10, 20, 2}; the owner's pick resolves that tie explicitly (#165 - no
+criterion of mine).
+
+**CONSEQUENCE UNDER THE AMENDED WATERFALL:** config 1 holds a qualifier, so **the stop condition
+is MET - configs 2 and 3 are not run** and `smc_breaker_block_long` closes POSITIVE for Step 2.
+S6-B2407 (the PROVISIONAL-worth question) closes as mooted. Engine implementation of the retained
+combination (battery judgment step 7_implement_in_engine) is ticketed S6-B2411 - the retention
+ruling approves the parameter set; the wiring is follow-on work, not auto-executed.
+
+**ROSTER-DOCUMENT ADMISSION (S6-B2413, owner instruction 2026-08-30).** The retained combination
+is rendered in PHASE_1B_ROSTER.md under *Step-2 admissions (owner-ruled)* - identity from
+`output_audit/phase_1b_step2_admissions.json`, metrics re-derived at render time from the b2399
+grid artifact by exact combination+exit match (never hand-copied), refuse-loud when the evidence
+row cannot be located or did not PASS. This closes S6-B2411's roster-integration part; its engine
+wiring and battery judgment steps remain open.
+
+**D2 - RULED: no BH-FDR.** *"this doesn't apply. Apply config runs we will analyze the 300
+combinations and select the one that passes all gates. If its multiple combinations, we select the
+one with the best sharpe. No bh fdr needed here."* No multiplicity correction is applied across a
+config's 300 combinations. **My recommendation was the opposite and is recorded as overruled** (L633:
+the disagreement is stated once, then the ruling governs). **Two things weigh in the ruling's
+favour and are worth recording**, since they were not part of my original framing: the D1 ROBUST
+requirement is itself a substantial hurdle beyond bare gate-clearing, and `psr >= 0.95` is already a
+significance-style gate on the Sharpe estimate - so the procedure is not uncontrolled, it simply
+controls selection by MARGIN rather than by family-wise error rate.
+
+**D3 - RULED: best Sharpe.** Where several combinations qualify, **the highest Sharpe advances**.
+This supersedes the production-closest convention I recommended. *Reading made explicit:* "Sharpe"
+here is the **holdout pooled Sharpe** - the gated quantity at `roster_core.py` `pooled_sharpe`, not
+the in-sample `is_sharpe` Step 1 ranked on. **Note this is coherent with D1 rather than in tension
+with it:** ROBUST is defined BY the Sharpe margin, so the best-Sharpe qualifier is also the one most
+likely to be ROBUST.
+
+**D4 - RULED: confirmed.** The waterfall supersedes the ranked-list goal recorded at S6-B2242. Under
+it, a config-1 stop means configs 2 and 3 are never measured and **no cross-config ranking will
+exist**. Accepted.
+
+**D5 - RULED: approved.** Order stays the mechanical rank order - sw50sp50, sw30sp150, sw50sp20 -
+which is also cost-favourable, since the 43.9h config sorts last and is paid for only if both cheap
+ones fail.
+
+**D6 - RULED: closes this strategy.** If all three fail, `smc_breaker_block_long` closes NEGATIVE and
+the program moves to the next of the 207-strategy optimisation backlog. **The METHOD is not on
+trial** - the negative result is evidence about this strategy.
+
+
+### STEP 2 PRE-TRIAGE - EXECUTED, AND THE METHOD CHANGED (S6-B2369)
+
+**MANDATORY before any Step-2 cube. It has now been RUN, and the answer is recorded here.**
+
+**THE METHOD CHANGED, and this supersedes the `measure_fire_count.py` step approved earlier the same
+day.** That tool sweeps only 2 of the 6 config axes and counts ENTRY FIRES, an upper bound. The
+Step-1 grids already on disk carry `full_period_n` **per combination, for the exit each combination
+actually selected, across all 6 axes** - a strictly better instrument requiring no engine run. Two
+findings made this possible and are worth recording:
+
+- **Every Step-1 `holdout_n` is EXACTLY 0 - all 5,354 gradable rows across all 26 grids.** Step 1
+  runs `2024-05-05 -> 2025-05-05`, ending exactly at `HO_START`, so `roster_core.holdout()` returns an
+  empty frame BY CONSTRUCTION. **Therefore `PASS: 0, FAIL: 0` across all 7,800 Step-1 combinations is
+  a STRUCTURAL fact about the window, not a quality verdict** - the gate branch has never executed in
+  this program, and no Step-1 artifact says anything about whether a combination can clear a gate.
+- `full_period_n` IS populated at Step 1 (over its 200 ticker-years), so it projects.
+
+**THE PROJECTION.** Step-1 scope 200 ticker-years; Step-2 full period 544 x 4 = 2,176 (**10.88x**) and
+Step-2 holdout 544 x 1 = 544 (**2.72x**). A combination needs Step-1 `full_period_n` > 6.9 for the
+75 bar and > 5.5 for the 15 bar, so **the full-period bar binds**.
+
+| config | gradable of 300 | worst `full_period_n` | projects to full / holdout | clear BOTH floors |
+|---|---|---|---|---|
+| sw50sp50 | 100 | 10 | 109 / 27 | **100 of 100** |
+| sw30sp150 | 194 | 11 | 120 / 30 | **194 of 194** |
+| sw50sp20 | 100 | 10 | 109 / 27 | **100 of 100** |
+
+**RESULT: 394 of 394 gradable combinations across all three configs project past both trade floors,
+the WORST by a 45% margin.** The pre-triage excludes nothing. **Its real value is the inversion it
+delivers: the trade floors will NOT be what stops these configs - the four STATISTICAL gates
+(pooled_sharpe, profit_factor, sortino, psr) will decide, one way or the other.** This contradicts
+the earlier expectation, recorded here so it is not repeated, that the thin-n leaders were the ones at
+risk of failing the trade floors.
+
+**LIMITATION, stated so the projection is not over-read:** it assumes the measured 2024-25 fire rate
+holds across 2022-2026. **No Step-1 config ran a single day of 2022-23** - that era was excluded until
+this same day's ruling admitted it - so the rate in the added two years is UNMEASURED, and 2022 in
+particular was a distinct regime. If the rate there is materially lower the projection falls; the
+worst margin is 45%, so the rate would have to be roughly a third of the 2024-25 rate in the added
+years before the floor binds.
+
+**STEP-1 UNIVERSE, PINNED BY NAME:** the exact 200 tickers Step 1 searched are recorded in
+APPENDIX S1-200 at the end of this document (source: output_audit/_sweep_200.txt, the tickers_file
+every b2197 spec references). A ticker list referenced only by path is one file-move from being
+unreconstructable.
+
+**STEP 2 UNIVERSE (owner ruling 2026-08-29): ALL 544 tickers, graded and analysed across the
+FULL in-sample AND holdout window.** This supersedes the 344-disjoint design. **Stated
+consequence, flagged once and accepted by the ruling:** the 544 include the 200 tickers Step 1
+selected on, so Step 2 is no longer cross-sectionally disjoint - its out-of-sample content is
+the LOCKED HOLDOUT YEAR (never read by Step 1) plus the 344 tickers Step 1 never saw. The
+deeper 544-ticker base is what makes the 75/15 trade floors meaningful. **Accepted
+limitation (unchanged):** nothing tests whether an edge survives a regime change.
+
+**COST, stated honestly.** I told the owner this lever costs ~2x runtime. **In ticker-years it is
+approximately NEUTRAL** - 100 tickers x 2 years and 200 tickers x 1 year are both 200 ticker-years.
+**Approximately, not exactly**: warmup and per-run fixed costs are not linear in ticker-days, so the
+first config of the next wave is the measurement that settles it (`S6-B1831b`).
+
+**STEP 1 PRODUCES A RANKING, NOT VERDICTS.** Gates are STEP 2's admission criteria. Step 1
+emits a Sharpe-ranked list, excludes `NO_EXIT_SELECTABLE` (no exit with >=10 in-sample
+trades), and hands the **top 10** forward. Step 1 can never produce a PASS - if it does,
+it is doing Step 2's job (L471).
+
+**Why 100 then 444?** The 444 are DISJOINT from the 100, so validation is genuine out-of-sample
+across the ticker dimension — a combination selected by luck on 100 will not replicate. Appending
+the two reconstructs 544 (valid because `--cube-isolation` bypasses the candidate cap, verified
+`backtest.py:1763`; R5's cap bound on 1 of 972 days and isolation ignores it entirely).
+
+**NO separate baseline run (L423).** All 6 gates are ABSOLUTE thresholds, so admission depends on a
+candidate's own metrics. Production parameters are one of the configs anyway, so that number arrives
+free if it ranks. Scoping a baseline run wasted 7.3 h of plan before this was caught.
+
+### 10.2 Cost model — measured, not assumed
+
+```
+0.2613 s per ticker-day   (pool=10; two concordant points, 10pct apart:
+                           0.2484 @ 50t x 4y, 0.2743 @ 20t x 2y)
+
+per run  =  tickers x sim-days x 0.2613
+100 tickers x  503 days (2y)  ~= 3.65 h      <- Phase 1, per config  [B2573: PRE-RULING SHAPE. The ruled Step-1 shape is 200 tickers x 1 year (SS10.1); measured 2026-09-02 on the ICG chain: 2.0 h / 2.1 h / 4.0 h per config at pool 0 - serial_chain.log]
+100 tickers x 1003 days (4y)  ~= 7.3 h
+544 tickers x 1003 days (4y)  ~= 39.7 h   <- 7.3 h x (544/100), rescaled B1618
+```
+
+**ALWAYS set `--screen-pool-workers`.** The default is **0 = SEQUENTIAL** (L407). On a 12-core box
+`pool=10` measured **1.53x** like-for-like. It is not more because ~62pct of per-day work is serial.
+
+**Run configs CONCURRENTLY, not the pool wider.** Amdahl caps in-run parallelism at ~1.6x; separate
+configs are independent processes and scale far better.
+
+**Never extrapolate from one point.** Five extrapolations were wrong this session: 9x light
+(L367), 23pct light (L377), ~100x heavy (L383), flat-scaling read from noise (L401), and a
+profiler-share mistaken for a wall-clock saving (L418). **Two concordant measurements minimum
+before any projection.**
+
+### 10.3 Engine settings for optimisation runs
+
+| setting | value | why |
+|---|---|---|
+| `--cube-isolation` | ON | bypasses ALL cross-strategy gates (`backtest.py:134`) |
+| `--screen-pool-workers` | 10 | default 0 is sequential (L407) [B2573: STALE - STEP 1.3 says 3 per concurrent config; the live launch stack hardcodes 0 (RUN-SAFETY, 1 of 10 cores). Authority: the spec file's arm, read by launch_sweep - not this cell] |
+| `--no-agents --no-news --no-git --no-walk-forward` | ON | not consumed by the 6 gates |
+| `--max-run-hours` | set | the runner REFUSES to start without it |
+| `OPTIMIZATION_MODE` | 1 | uncaps `max_cands` (no-op under isolation, L419) |
+| `SMC_SWING_LENGTH` / `STRAT_EMA_SPAN` | per config | env-plumbed B1519; verify they reach the ENGINE |
+
+**Isolation also bypasses TIER SIZING (B1545, owner-approved).** `TIER_POSITION_SIZE_PCT` maps
+LOW/AVOID to **0.0**, and a zero size SKIPS the trade — so tier data was deciding which signals
+became trades. Under isolation every valid signal opens at `CUBE_ISOLATION_SIZE_PCT`. Size cannot
+affect any gate because the cube records `pnl_pct`, a PERCENTAGE.
+
+**Do NOT skip `smart_money_score` (L418).** It looks like pure sizing, but tier gates ENTRY via
+LOW→skip. A measured A/B showed 245/124 entry differences. The saving was 6.3pct, not the 14.3pct
+profiler share.
+
+### 10.4 Monitor arming — MANDATORY, MECHANICALLY ENFORCED
+
+**A run is not launched until its reporting path is armed IN THE SAME TURN** (CHECKLIST #185).
+
+The arming call must promise BOTH:
+1. a **PERIODIC** report — "every hour" / "hourly"
+2. that it is **UNCONDITIONAL** — "do not withhold", "silence is correct only when nothing is running"
+
+**Exception-only alerting does NOT satisfy this.** It was armed wrongly FOUR times (L385 wrote only
+to a log; L392 exception-only; L420 no monitor at all; L424 exception-only again — and #185's first
+version PASSED that last one because it checked EXISTENCE, not CADENCE).
+
+`scan_unmonitored_launch()` in `scripts/verify_turn_compliance.py` blocks the turn otherwise.
+Pinned both directions by `test_b1545_monitor_armed_gate`.
+
+Also required: **trip conditions** for non-zero exit, death-without-artifact, and overrun past 2x
+projection; and **CronDelete on completion** so stale monitors do not train everyone to ignore alerts.
+
+### 10.5 Completion is an ARTIFACT, never a percentage
+
+A run is complete when `trade_exit_detail.csv` EXISTS. **A run once finished all 1,003 sim-days and
+wrote no cube** (L410) — post-processing is a separate phase and died with the session. Checking
+sim-day percentage would have reported 100pct.
+
+Verify on completion: cube exists · every entry carries exactly 26 exits (#130) · entries/ticker vs
+the baseline rate · gradability (how many combinations produced a verdict at all).
+
+### 10.6 Interpreting results
+
+- **A small-universe PASS is an ARTIFACT until entries/ticker converges** (L382). Rung 5 passed all
+  6 gates at **26.63x** the R5 entry rate.
+- **Report ALL 15 metrics**, never Sharpe alone (L373) — it hid a `ci_lo` of -0.034, below zero.
+- **The verdict carries its denominator** (#182): "N of M combinations across X of Y producers",
+  COMPUTED from Table A, never hand-counted.
+- **`ci_lo < 0` on a baseline is a stop sign.** A subset cannot have a tighter interval than its
+  parent, so no tightening fixes it.
+- **Disabling `min_trades` during Phase 1 ranking is correct** — at 100 tickers the floor would
+  reject candidates for sample size rather than quality. It is re-enabled for Phase 2 grading.
+
+### 10.7 Standing owner rulings
+
+| ruling | status |
+|---|---|
+| Holdout dates and duration NEVER change | LOCKED |
+| Fewer configs to save time | **OUT OF QUESTION** — cost comes from speed or machine |
+| Threshold-only vs adding a NEW gate | **ASK EVERY TIME** — no default |
+| Universe 100 for search | approved; speed is key [B2573: SUPERSEDED - owner ruled 200 tickers 2026-08-29 (SS10.1 + APPENDIX S1-200); the 100 here is the B1548 shape] |
+| Isolation bypasses tier sizing | approved, comparability loss accepted |
+| Hourly updates while any run is active | STANDING |
+| AWS | requires a REAL quote against the $50 CAD cap and typed approval [B2573: SUPERSEDED - B2109 set ONE $100 total compute budget across all strategies; venue ruling S6-B2107a = Hetzner auction gated on the local pilot] |
+
+### 10.8 Per-strategy checklist
+
+Run §9's 23 items in order. The five that cost the most when skipped:
+
+1. **Read the PRODUCER layer, not the gate expression** (L355) — a gate of two booleans had 6
+   producer parameters behind it.
+2. **Prove each parameter reaches the ENGINE** (L387) — `screener` called
+   `compute_smc_signals(df, ticker=ticker)`; a 20-config sweep would have produced 20 IDENTICAL cubes.
+3. **Classify subset-safe vs fire-adding FIRST** (L371) — run count is the product of the
+   fire-ADDING bands alone; 4,000 combinations needed 20 runs, not 4,000.
+4. **Harvest ALL strategies from every cube** (L404) — one run computes 128; reading one wastes 99.2pct.
+5. **Pin tests must be BEHAVIOURAL** (L391, L393) — assert the ENGINE ARTIFACT changes, and verify
+   the subject actually OCCURS in the window, or the test passes on two empty sets.
+
+---
+
+# 11. RUNBOOK — EXACT COMMANDS TO OPTIMISE ONE STRATEGY
+
+§10 explains WHY. **This section is HOW.** Copy-paste, substitute `<STRATEGY>`, run in order.
+Everything here is EXECUTED-verified on `smc_breaker_block_long` (B1546-B1558).
+
+---
+
+## STEP 0 — Build the SPECS entry (no run; ~1 hour of reading)
+
+**0.1** Read the strategy's gate in `backtest/signals/screener.py`:
+```bash
+grep -n "def strat_<STRATEGY>" -A 12 backtest/signals/screener.py
+```
+
+**0.2** For EVERY signal in the gate, find its producer and that producer's parameters.
+**Do not stop at the gate expression** — a gate of two booleans had 6 producer parameters (L355).
+```bash
+grep -rn "<signal_name>" backtest/signals/*.py | grep -v screener
+```
+
+**0.3** For every parameter, PROVE it reaches the engine, not just the producer (L387):
+```bash
+grep -n "compute_<producer>(" backtest/signals/screener.py     # is the arg PASSED?
+```
+A parameter the producer accepts but the caller never passes is **NOT tunable** — plumb it first
+(pattern: `backtest/config.py` env-var + pass at the call site, see `SMC_SWING_LENGTH` B1519).
+
+**0.4** Classify each parameter:
+- **SUBSET-SAFE** — can only REMOVE fires -> derives offline from any cube, FREE
+- **FIRE-ADDING** — changes WHICH bars fire -> needs its own engine run
+
+**Engine runs = product of the FIRE-ADDING bands only.** Everything else is free (L371).
+
+**0.5** Derive each band from MEASURED distributions, never round numbers (L356, L369).
+Instrument the qualifying event first. **FAMILY EXAMPLE (smc) - generic form (SS11.2 step 0.5):
+count the strategy's fires on 6 megacaps at production params via the producer or precompute
+(institutional used `build_institutional_persistence_precompute.py` + a `python -c` count):**
+```bash
+PYTHONPATH=. python scripts/instrument_breaker_block.py --ticker AAPL \
+  --start 2022-05-05 --end 2026-05-05 --out output_audit/<STRATEGY>_instr.json
+```
+
+**0.6** Add the SPECS entry to `scripts/producer_variant_table.py` — `formula` + `params`, every row
+citing `evidence` as `file:line`. Then verify:
+```bash
+PYTHONPATH=. python scripts/producer_variant_table.py --strategy <STRATEGY> --factorial
+```
+This BLOCKS if the formula and Table A disagree, and prints the factorial + engine-run count.
+
+**0.7 BAND COMPLETENESS (B2569/#290 — every level must have a path to a measurement).** Free
+grading moves ONE direction — tighter (§0a #1). So for every PERSISTED threshold parameter, the
+looser-than-production side is ENGINE-ONLY **by construction**, and each such level must at band
+time be either (a) SCHEDULED as an engine config **with an actuation mechanism proven to exist**
+(env knob reaching the gate — 0.3's check applies to gate thresholds too, not just producer
+params), or (b) STRUCK with an explicit NOT-MEASURED-BY-DESIGN disposition and its reason. A band
+row that is neither is dead weight advertising coverage the programme cannot deliver — the P7
+resim {1,2} / P8 resim {2,3} defect (S6-B2569a): banded, unscheduled, AND unrunnable, because the
+screener hardcodes both thresholds and no env knob was ever built. Assert this per parameter
+before §1.0 signs the pre-spend manifest.
+
+---
+
+## STEP 1 — SEARCH: all fire-adding configs (RULED SHAPE per 10.1: 200 tickers x 1 year 2024-05-05 -> 2025-05-05; this heading's original '100 tickers, 2 years' is the pre-2026-08-21 shape, kept in the lineage note below - B2117c)
+
+### 1.0 PRE-LAUNCH GATE - run BEFORE building anything
+
+**Each config costs ~3.3 h. These checks cost seconds and each one has already caught a
+defect that would have wasted a full run.**
+
+```bash
+# (a) UNIVERSE PROVENANCE - is this the artifact you think it is?  (L445)
+python scripts/verify_universe_artifact.py output_audit/_sweep_100.txt \
+  --compare-cube output_r5_merged_1_7/trade_exit_detail.csv
+```
+Must print **"looks like a broad universe"**. A SLICE verdict means alphabetical skew, absent
+mega-caps, or tickers the baseline never ran - the exact defect that made 2 configs search an
+abandoned A-C chunk.
+
+```bash
+# (b) RAM CEILING - how many configs fit CONCURRENTLY?  (measured, not assumed)
+powershell -c "$os=Get-CimInstance Win32_OperatingSystem; \
+  'free_MB={0} total_MB={1}' -f [math]::Round($os.FreePhysicalMemory/1KB), \
+  [math]::Round($os.TotalVisibleMemorySize/1KB)"
+```
+**PEAK per worker measured at 3,223 MB** **[GRAIN-STALE - B2204b/L653: this was
+measured when one PROCESS was one CONFIG (pre-B2142 pools). At pool-10 the live
+per-CONFIG peak-sum is 12.04 GB (18-process tree, PeakWorkingSet64, measured
+2026-08-26); per-process peaks now run ~1.0-1.2 GB. Corrected concurrency
+ceilings: 64GB ~4 configs, 128GB ~10 - cores bind first at 128GB. The '3
+concurrent configs' conclusion below and the line-1391 monitor threshold carry
+the old grain; the monitor errs conservative (fires early), left as-is.]** (`PeakWorkingSet64`, NOT a spot reading - spot
+readings understated it three times). Non-python baseline ~6.4 GB of 15.6 GB, so
+**3 concurrent configs**, not 5-6. Exceeding it risks MemoryError mid-sweep.
+
+> **[WRONG-QUANTITY - B2229/L670, measured 2026-08-27. This whole section sizes on
+> WORKING SET; the runs die of COMMIT EXHAUSTION, and the two were measured 6.93x
+> apart on the live box.]** Live 18-process pool: python tree held **42.63 GB of
+> private commit against 6.16 GB of working set**; individual workers showed 4.11 GB
+> of commit behind 0.55 GB of working set. At the same instant free PHYSICAL memory
+> read a comfortable 2.11 GB while available COMMIT was 1.28 GB, **97.8pct used**.
+> Working set is RESIDENT pages; commit is reserved address space backed by RAM plus
+> pagefile, and **the allocation that FAILS is a commit**. So the "3 concurrent
+> configs" conclusion above, and the corrected 64GB/128GB ceilings, are derived from
+> a quantity that does not govern the failure mode.
+> **AND THE LIMIT IS NOT FIXED:** the commit limit read 58.49, then 61.517, then
+> 45.27, then 48.3 GB across one session as Windows resized the system-managed
+> pagefile - so any ceiling quoting a fixed limit quotes a moving number.
+> **Calibration for the sizing decision (S6-B2107a):** a single pytest invocation
+> costs a MEASURED 1.183 GB of commit (import-dominated, B2229c).
+> Figures ANNOTATED rather than replaced - changing the concurrency conclusion is an
+> owner call, and this note gives that call the right quantity to make it on.
+> Live monitor: `python scripts/commit_watchdog.py` (samples commit, never physical).
+
+**(c) CONFIRM THE SWEEP KNOBS DIFFER.** The engine does NOT log `SMC_SWING_LENGTH` /
+`STRAT_EMA_SPAN` (S6-B1576b), so a sweep can silently run N identical configs. Assert distinct
+values across concurrent launches before starting.
+
+### 1.1 Build the input files
+
+```bash
+# ONE strategy only. This is the difference between a 4.6 h run and a 20 min run.
+echo "<STRATEGY>" > output_audit/_subset_<STRATEGY>.txt
+
+# THE SEARCH UNIVERSE IS SHARED BY EVERY STRATEGY.
+# B1830 (owner ruling 2026-08-21): size is now 200, and the builder takes --n.
+# This SUPERSEDES the 2026-08-14 "fixed at 100" ruling. _sweep_200.txt is a
+# SUPERSET of _sweep_100.txt by construction (both are top-N of one ADV-sorted
+# list), so earlier 100-ticker results stay interpretable as a subset.
+# Rebuild ONLY if the 544-universe changes. Owner ruling 2026-08-14,
+    # re-anchored to the CORRECT universe by owner ruling 2026-08-17 (B1618).
+# Builder: scripts/build_sweep_100.py
+```
+
+#### CRITERION: top 100 by average dollar volume (ADV) over the WARMUP window
+
+**Owner ruling 2026-08-14.** ONE fixed list, shared by every strategy.
+
+**Why fixed, not per-strategy.** The previous builder ranked tickers by *that strategy's* R5 fire
+count, so each strategy was searched on the 100 tickers where it had historically fired most. That
+is **in-sample selection**: it inflates apparent edge, and by a different amount per strategy, so
+cross-strategy comparisons are corrupted too. A fixed list costs statistical power for
+rarely-firing strategies and buys an unbiased, comparable result.
+
+**Why ADV.** The search phase exists to RANK combinations on 100 tickers such that the ranking
+transfers to 544. Liquidity is strategy-neutral, stable, and matches what would actually be traded,
+so fills and slippage stay realistic.
+
+**Why the WARMUP window (2021-05-06 to 2022-05-05).** It precedes the locked backtest window
+entirely, so universe selection carries no lookahead into the period being measured.
+
+**TWO DISCLOSED BIASES — do not rediscover these later:**
+
+1. **SPY is in the list** (ADV $37.2B, ~2.8x AAPL). It is a Tier-1 ETF and legitimately inside the
+   544, but it is an index, not a single stock, and strategies behave differently on it.
+2. **22 of 544 are excluded** (MEASURED B1618; the old 41-of-381 was the abandoned chunk's
+   figure, wrong in both halves) for lacking 100 warmup bars, which means **every ticker that listed
+   after 2021-05-06 is structurally ineligible** (ACLX, ALAB, AISP, AMLX, ...). Recent IPOs can
+   never enter this SEARCH universe. They remain in the 544 used for Phase-2 VALIDATION, so no
+   combination is ever *admitted* on the biased universe — but its RANKING is derived from one.
+
+**The fixed 100 (ADV-ranked, highest first):**
+
+**Source universe: `output_audit/r5_universe_544.txt`** (from `output_r5_merged_1_7`, the R5 baseline `PHASE_1B_ROSTER.md` cites). **NOT** the former `r5_universe_381.txt`, which came from an abandoned alphabetically-partitioned chunk - 380/381 tickers A-C, no MSFT/NVDA/GOOGL, 248 tickers R5 never ran (L445). Verify any universe file before use:
+```
+python scripts/verify_universe_artifact.py output_audit/_sweep_100.txt --compare-cube output_r5_merged_1_7/trade_exit_detail.csv
+```
+
+```
+SPY  TSLA  AAPL  AMZN  NVDA  MSFT  AMD  GOOGL  GOOG  MRNA
+NFLX  PYPL  BA  BAC  JPM  V  XOM  DIS  MU  PFE
+CVX  INTC  CRM  MA  ADBE  QCOM  C  F  BRK-B  WFC
+UNH  HD  T  JNJ  TWTR  COIN  PG  WMT  UBER  AVGO
+VZ  CSCO  ABNB  COST  AMAT  GS  MRK  CMCSA  NKE  GM
+KO  PLTR  MS  ABBV  CRWD  TXN  ORCL  OXY  BKNG  TGT
+TMO  LRCX  LOW  INTU  BMY  FCX  NOW  CCL  SBUX  PEP
+CAT  DHR  GE  LLY  CHTR  ACN  ATVI  UNP  ABT  AAL
+PANW  MCD  DE  IBM  SPGI  NEE  AXP  LMT  AMGN  ADI
+TMUS  HON  MDT  COP  FDX  UAL  UPS  DASH  LIN  CVS
+```
+
+
+### 1.2 ARM THE MONITOR — **BEFORE** the launch, in the SAME turn
+
+**The Stop hook BLOCKS the turn otherwise** (CHECKLIST #185/#186). The CronCreate prompt MUST
+contain a PERIODIC marker (`every hour` / `hourly`) AND an UNCONDITIONAL marker
+(`do not withhold` / `silence is correct only when nothing is running`).
+Exception-only alerting does NOT satisfy it — that was armed wrongly four times.
+
+### 1.3 Launch one config
+
+**LAUNCH MECHANISM (S6-B1535b, anchored B2051): one INDEPENDENT DETACHED invocation per
+arm - never a shared shell-function wrapper.** The b1571 wrapper turned one process kill
+into EXIT=127 for every remaining arm (L589's sibling); independent invocations bound a
+kill's blast radius to its own arm. EVIDENCE the pattern holds: the six B2016-B2030 E1
+launches each ran as a separate detached command (separate process trees, per-arm logs);
+killing any one could not have produced exit codes in the others. RESIDUAL, stated: survival
+across a HARNESS death is untested (testing it costs a deliberate session kill); the per-15-min
+monitor contract bounds the loss either way.
+
+**THE LIVE LAUNCH PATH (B2580 / S6-B2573e item 2; EXECUTED process tree of the b2527 chain:
+run_serial_chain 24172 -> run_wave 27488 -> launch_sweep 28236 -> run_phase1a 21376, measured 2026-09-03T15:46Z):** write ONE spec per
+config and launch the chain DETACHED - every flag below is derived from the spec by `run_wave.py`
+(manifest) and checked by `prelaunch_gate.py` through `launch_sweep.py`; the B2578 launch gate
+(`producer_variant_table.launch_refusals`) refuses an unregistered strategy or an off-band knob
+BEFORE the engine.
+```bash
+# spec: copy output_audit/b2527_icg_span50_spec.json, change ONLY strategy_subset / wave / arms[0].env
+PYTHONPATH=.:scripts python scripts/launch_detached.py --chain --batch <bNNNN> \
+  --specs output_audit/<bNNNN>_<STRATEGY>_cfg<N>_spec.json [more specs, information order] \
+  [--wait-for output_audit/<running wave>_wave_summary.json]
+# -> Task Scheduler task stockpicks_chain_<bNNNN>_<ts> (observe it Running - S6-B2529a);
+#    per spec: run_wave.py -> launch_sweep.py -> prelaunch_gate.py -> run_phase1a.py, gate_receipt.json
+```
+
+**AROUND-THE-GATE ROUTE - the direct engine command the spec expands to. NEVER launch this way
+(S6-B2159b class: no manifest, no gate receipt, no battery hook registration, no chain HALT record);
+it is kept so the flags stay readable:**
+```bash
+STRATEGY_SUBSET_FILE=output_audit/_subset_<STRATEGY>.txt \
+OPTIMIZATION_MODE=1 \
+SMC_SWING_LENGTH=<P1_value> STRAT_EMA_SPAN=<P6_value> \
+PYTHONPATH=. python backtest/run_phase1a.py \
+  --tickers-file output_audit/_sweep_200.txt \
+  --phase 1a-beta --cube-isolation \
+  --no-agents --no-news --no-git --no-walk-forward \
+  --screen-pool-workers 3 \
+  --start 2024-05-05 --end 2025-05-05 \
+  --max-run-hours 4.0 \
+  --output-dir output_<STRATEGY>_cfg<N>
+```
+
+**Every flag matters:**
+
+| flag / env | why |
+|---|---|
+| `STRATEGY_SUBSET_FILE` | **MANDATORY — never optional.** Runs ONE strategy instead of 182 AND is the gate that enables demand pruning. Omitting it loses BOTH savings, **silently**, exactly as B1558 did (4.56 h, L432). Owner-agreed 2026-08-14 to make it non-optional in this command. **Never set it for Phase 1B / full-roster runs.** |
+| `OPTIMIZATION_MODE=1` | uncaps `max_cands`; **no-op under `--cube-isolation`** (L419). Does NOT skip `smart_money_score` — that was tried and REVERTED (L418) |
+| `SMC_SWING_LENGTH`, `STRAT_EMA_SPAN` | the FIRE-ADDING config; one run per combination of these |
+| `DEMAND_PRUNING=0` | **only if a run dies with `SkippedSignalError`** — that means warmup missed a key some regime reads. Default `1`. Raise `DEMAND_PRUNING_WARMUP` (default 25) before disabling |
+| `--cube-isolation` | bypasses ALL cross-strategy gates AND tier sizing (B1545) |
+| `--screen-pool-workers` | **default is 0 = SEQUENTIAL** (L407). Use 0 for a clean timing measurement; ~3 per config when running several concurrently. **Total workers must never exceed 10 physical cores** |
+| `--max-run-hours` | the runner REFUSES to start without it |
+| `--start 2024-05-05 --end 2025-05-05` | **1-year SEARCH window that ENDS AT THE HOLDOUT BOUNDARY** (owner ruling 2026-08-21). Step 1 previously ran to `2026-05-05` and therefore ranked on the holdout year it is judged against - `S6-B1605c`. |
+
+**RETRACTED 2026-08-22 (B1877) - THE SECTION BELOW BLAMED THE WRONG THING.** The note said demand
+pruning can silently produce a zero-fire run. **It cannot.** MEASURED with one variable changed:
+
+```
+venv python, DEMAND_PRUNING=1  -> 10 trades
+venv python, DEMAND_PRUNING=0  -> 10 trades       pruning changes NOTHING
+
+subprocess + sys.executable (venv)  -> 3/33 producers kept, 10 trades
+subprocess + bare "python" (system) -> 2/33 producers kept,  0 trades
+```
+
+**The cause is the INTERPRETER.** `subprocess.run(["python", ...])` from inside the venv resolves
+to the SYSTEM python, which keeps 2 of 33 producers and fires nothing. The B1849 "causal test"
+varied pruning AND the launch path at once and attributed the whole difference to pruning.
+
+**What survives:** the Step-1 window at 200 tickers FIRES (29 of 29 screen-days) - that run went
+through bash, i.e. the venv. **What does not:** every claim below about pruning zeroing a run.
+**ALWAYS launch with an explicit interpreter path**, never a bare `python`, from any script.
+
+**ORIGINAL NOTE, PRESERVED FOR LINEAGE AND KNOWN WRONG ON ITS CENTRAL CLAIM:**
+
+**DEMAND PRUNING AND UNIVERSE SIZE - MEASURED 2026-08-21 (B1861).** Demand pruning can
+silently produce a ZERO-FIRE run: exit 0, no `SkippedSignalError`, correct windows, and an empty
+cube that passes every completion check. **It is a SMALL-UNIVERSE effect and Step 1 at 200 tickers
+is clear:**
+
+```
+run          universe      demand-pruning ARMED    screen-days   days with >0 candidates
+arm A        10 tickers    2/33 kept, 4 reads      249            0
+fire-check   185 active    3/33 kept, 5 reads       29           29      (7..29 per day)
+```
+
+**Warmup observes what the active strategies READ. A wider universe reads more, so more producers
+survive pruning.** Causally confirmed on the narrow side: same window and tickers with
+`DEMAND_PRUNING=0` gave 20 trades and 75 files against 0 trades and 1 file.
+
+**Consequence for the runbook: never diagnose a strategy on a 10-20 ticker slice.** A zero-fire
+result there is as likely to be pruning as it is to be the strategy. `zero_output_runs()` in
+`scripts/verify_postconfig_complete.py` detects the signature - `status=complete`, `trades=0`, no
+`trade_log.csv` - independently of the post-config ledger.
+
+**Denominator caution (L568):** the screener reports against the **PIT-ACTIVE** universe, not the
+ticker file's line count - `/185`, not `/200`. A monitor grepping the file count matches nothing
+and reads as silence.
+
+**UNIVERSE ARTIFACT VERIFIED 2026-08-21 (B1846, `#193`).** `verify_universe_artifact.py
+output_audit/_sweep_200.txt --compare-cube output_r5_merged_1_7/trade_exit_detail.csv`:
+
+```
+baseline cube      : output_r5_merged_1_7 (544 tickers)
+overlap            : 200
+in file, NOT cube  : 0            <- no orphan tickers
+in cube, NOT file  : 344
+VERDICT: looks like a broad universe
+```
+
+**This is the check two configs skipped once and paid 3.30 h each for** (`S6-B1576a` measured that
+elapsed; L445) - they searched an abandoned A-C chunk because nobody looked at the ticker list.
+`_sweep_200` is clean on both axes: every ticker exists in the baseline, and the spread is broad
+rather than alphabetically partitioned.
+
+**INTENTIONALLY NARROW (stated here because the verifier asks for it).** `_t10.txt` / `_t20.txt`
+are `head -N` slices of `_sweep_200` used ONLY by the B1845 timing probe, and `_t10` flags
+`SLICE / SUSPECT - 70pct alphabetical skew`. That is what a 10-line head produces and it is fine
+for timing, **but it is a stated LIMITATION of that probe, not a clean bill** - see `S6-B1846c`.
+
+| `--tickers-file _sweep_200.txt` | **200 tickers, not 100** (same ruling). Halving the window alone keeps only **50-56pct of entries** (MEASURED B1817) and pushes most of the grid back to `NO_EXIT_SELECTABLE`; widening the universe restores the sample. **Superset of `_sweep_100.txt` by construction**, so wave-1 results stay interpretable. |
+
+### 1.4 Concurrency
+
+Launch several configs as **separate processes**, each with `--screen-pool-workers 3`.
+In-run parallelism caps at ~1.6x (Amdahl, ~62pct serial), so concurrency across configs scales
+better. **Keep total workers <= cores.** Watch for `MemoryError` in the log — the 182-strategy
+pilot hit it during cube replay; single-strategy cubes are ~1/182 the size, which is what makes
+concurrency viable.
+
+### 1.5 Completion is an ARTIFACT, never a percentage
+
+```bash
+ls -la output_<STRATEGY>_cfg<N>/trade_exit_detail.csv   # THIS is completion
+```
+A run once finished all 1,003 sim-days and wrote **no cube** (L410). Also expect the process to
+hang after writing — the pool does not always exit. Verify the artifact, then kill if needed.
+
+---
+
+## STEP 2 — GRADE: derive the subset-safe combinations
+
+**FAMILY EXAMPLE (smc) - generic form: the family grader named in SS11.1 R4 (institutional:
+`grade_institutional_config.py --cube output_icg_<cfg> --min-consecutive-quarters <P4>
+--growth-lookback-quarters <P5> --growth-multiple <P6> --span <P9>`); the battery runs it on every
+landing (B2520), so this hand form is for a re-grade only:**
+```bash
+PYTHONPATH=.:scripts python scripts/tighten_breaker_block.py \
+  --cube output_<STRATEGY>_cfg<N>/trade_exit_detail.csv \
+  --out output_audit/<STRATEGY>_cfg<N>_grid.json
+```
+
+Per combination this: filters the cube to surviving fires, selects the best exit **IN-SAMPLE ONLY**,
+grades the holdout on all 6 gates via `roster_core` (identical bar to the Phase 1B roster), and
+records all 15 metrics.
+
+**Verdicts:** `PASS` · `FAIL` · `BELOW_POWER_FLOOR` (**holdout n < `--min-n`** - the CLI floor, default 10, and Step 1 ran
+at 10. **This is NOT `min_trades_holdout`**, which S6-B2353 and its own correction both got wrong: the
+power floor is the EARLY RETURN at `roster_core.py:215` (`if n < min_n: return None`), taken
+BEFORE any gate is computed, while `min_trades_holdout >= 15` is one of the six LIVE_GATES
+evaluated only for cells that already cleared it. **EXECUTED probe at `--min-n 10`:** n=8 ->
+None; n=10 and n=12 -> GRADED with `min_trades_holdout=False`; n=15 -> GRADED with it True.
+So a cell with 10-14 holdout trades IS graded and FAILS the holdout gate; below 10 it is never
+graded at all. Two cuts, two numbers, both live) ·
+`NO_EXIT_SELECTABLE` (too few IS trades to rank 26 exits) · `ZERO_FIRES`
+
+**Generate the locked artifact. Since B2579 (S6-B2573c) `--keys` DEFAULTS to the family's own
+`tools.grid_keys` (smc `close_mitigation,break_pct_max,age_bars_max,tail_n`; institutional
+`combo`), so pass it only to override - the smc keys spelled out below are that default, not a
+value to copy onto another family:**
+```bash
+PYTHONPATH=. python scripts/producer_variant_table.py \
+  --strategy <STRATEGY> \
+  --results output_audit/<STRATEGY>_cfg<N>_grid.json \
+  --keys close_mitigation,break_pct_max,age_bars_max,tail_n \
+  --out output_audit/PRODUCER_VARIANT_TABLE_<STRATEGY>.md
+```
+
+---
+
+## STEP 3 - VALIDATE: the WATERFALL over the top 3 configs (4 years, ALL 544 tickers)
+
+> **THIS SECTION WAS REWRITTEN AT B2402.** Every sentence of the previous version was superseded by
+> the owner rulings of 2026-08-29 and had been left standing beside them - the doc-drift class this
+> runbook records against itself. The old text said *top 10*, *disjoint tickers*, *the 444 NOT in
+> the search set*, and *100 tickers*. **All four are now wrong.** Lineage: top 10 -> **top 3**;
+> 444 disjoint -> **all 544**; 100 -> **200** for Step 1.
+
+**UNIT OF EXECUTION: the CONFIG. UNIT OF EVIDENCE: the combination.** Step 2 runs one cube per
+config, and each cube re-evaluates **all 300 parameter combinations x all registered exits**.
+
+**THE THREE CONFIGS**, from the mechanical rule in STEP 2 ENTRY, re-derived over 26 of 26 Step-1
+grids on step1_ranking[0].is_ci_lo:
+
+| order | config | is_ci_lo | is_sharpe | fires | exit chosen |
+|---|---|---|---|---|---|
+| 1 | **sw50sp50** | +1.250 | 4.301 | 14 | time_stop_10d |
+| 2 | **sw30sp150** | +1.214 | 4.807 | 11 | time_stop_10d |
+| 3 | **sw50sp20** | +0.930 | 3.915 | 14 | time_stop_10d |
+
+Recorded so a later widening need not re-derive them: sw30sp20 (+0.816, first holder of a
+triplicate signature - sw30sp50 and sw30sp100 collapse into it) and sw50sp9 (+0.724).
+
+**THE STOPPING RULE (owner, D1; AMENDED by owner ruling 2026-08-30, S6-B2409).** Each config runs
+**IN ITS ENTIRETY** - all 300 combinations graded; the waterfall never halts mid-config. Then, and
+only then: if any combination **clears all six gates**, STOP - the remaining configs are not run.
+If none of the three yields a qualifier, **TERMINATE**: smc_breaker_block_long closes NEGATIVE for
+Phase 1B and the program moves to the next of the 207-strategy backlog (owner, D6 - the METHOD is
+not on trial).
+
+**THE 2026-08-30 AMENDMENT (S6-B2409).** The original D1 stop condition was *qualifies AND is
+ROBUST* - ROBUST meaning the holdout Sharpe cleared the 1.0 gate by more than the 0.333
+selection-noise floor (i.e. holdout > 1.333). The owner retired that floor and the
+ROBUST/PROVISIONAL split **in their entirety**: clearing the six gates IS qualification and IS the
+stop condition. In code, roster_core.qualifier_margin(holdout_sharpe) reports the margin over the
+live pooled gate as a plain number - no floor argument, no label - and the grid payload's
+qualifier key is `qualifiers` (every PASS row). The old mechanics (robust_status, the floor
+constant, the provisional_qualifiers key) are removed and pinned removed
+(test_b2409_floor_retired_margin_measures_live_gate). Applied retroactively to config 1: its 3
+gate-clearing combinations (one parameter set, tail_n variants) are QUALIFIERS, so **the waterfall
+stop condition is MET at config 1 and configs 2/3 are not run**. The owner retained the tail_n=20
+member (ruling 2 of the same date, S6-B2410).
+
+**NO separate baseline run is needed** (L423) - all six gates are ABSOLUTE thresholds, so admission
+depends on a candidate's own metrics. Valid on the appended universe because `--cube-isolation`
+bypasses the candidate cap (backtest.py:1763).
+
+### STEP 3.1 - THE PRE-LAUNCH GATES, in order, every one of them
+
+Run these IN THE LAUNCH TURN. The tripwire table admits **no duration exemption** - probe, smoke or
+wave, all of them apply.
+
+1. **Characterise the tickers file** (#187 / L445 - never infer scope from a filename):
+   `python scripts/verify_universe_artifact.py output_audit/r5_universe_544.txt --compare-cube
+   <a Step-1 cube's trade_exit_detail.csv>`. **Expect a PROVENANCE MISMATCH finding, and expect it
+   to be correct**: Step 1 ran 200 tickers and Step 2 runs 544, so ~500 names are in the file and
+   not in the Step-1 cube. **The check that matters is `in cube, NOT file: 0`** - no Step-1 ticker
+   may be missing. The tool's own guidance is that a deliberate scope must be stated in the
+   consuming doc; it is stated here. Measured for r5_universe_544.txt: 544 tickers, 26 distinct
+   letters, top-3 letter share 27 percent, mega-caps 18 of 18, in-cube-not-file **0**.
+2. **Write run_manifest.json** pinning code SHA, isolation, calendar, the ticker list BY VALUE, and
+   the wall-clock projection. LOCAL runs additionally REQUIRE `obsolescence_risks` and
+   `wall_clock_projection_hours` - and, learned the hard way, **`leg_cap_hours` must be declared in
+   the MANIFEST, not only the spec.** The gate reads the manifest and refuses an undeclared bound,
+   because a cap that is not declared cannot be enforced (L642, fail-closed).
+3. **Run the gate and paste the exit code**: `python scripts/prelaunch_gate.py --manifest
+   output_audit/<batch>_run_manifest.json`. It is HAND-RUN - nothing calls it automatically (B1704).
+   A pass prints PRELAUNCH_GATE_PASS.
+4. **Arm the cadence monitor BEFORE the launch, in the same turn** (#185).
+5. **Confirm zero pre-existing engine processes**, or two runs share an output path and corrupt both.
+
+### STEP 3.2 - THE SPEC, and the one field that is easy to get wrong
+
+```json
+{"wave": "b2399_step2_sw50sp50",
+ "tickers_file": "output_audit/r5_universe_544.txt",
+ "strategy_subset": "output_audit/_subset_one.txt",
+ "window": {"start": "2022-05-05", "end": "2026-05-05"},
+ "leg_cap_hours": 4.5, "max_legs": 10,
+ "step1_cube": false,
+ "pool_workers": 6,
+ "allow_engine_drift": true,
+ "arms": [{"tag": "step2_sw50sp50",
+           "env": {"SMC_SWING_LENGTH": "50", "STRAT_EMA_SPAN": "50"}}]}
+```
+
+- **`step1_cube: false` - THE ONE THAT IS EASY TO GET WRONG.** It arms the **holdout-touch FAIL**
+  in run_postconfig. Correct for a Step-1 search, which must not touch the holdout, and **WRONG for
+  Step 2, which grades ON the holdout by design.** Copying the Step-1 template arms a check
+  guaranteed to fail. run_wave defaults it to TRUE, so it must be set explicitly.
+- **The config axes are ENV, not CLI flags** - config.py:2472 reads SMC_SWING_LENGTH from the
+  environment, and run_wave.py:39 passes each arm's env dict.
+- **The window runs the FULL 4 years.** 2022-23 is allowed for Step 2 (owner, 2026-08-29),
+  superseding the 2026-08-17 exclusion for this phase only.
+- **leg_cap_hours x max_legs is the capacity** and must exceed the projection; the leg cap itself
+  stays under the owner's 5h hard cap.
+
+### STEP 3.3 - MEASURED RUNTIME, and the memory ceiling that stopped the first attempt
+
+**Measured on the b2399 attempt from two readings of the wave's run_heartbeat.json four minutes
+apart, uncontended:** sim_day_index 6 -> 9 across elapsed_hours 0.2668 -> 0.3335, i.e. **3 sim-days
+in 4.00 minutes = 1.333 min/day at pool_workers 10.** Trading days for this window computed from
+nyse_mcal = **1,003**, giving **22.4h** - against a manifest projection of 18.7h scaled from
+Step-1's 200-ticker rate, which proved **about 20 percent optimistic**. That is the linearity
+caveat the manifest itself recorded, then measured.
+
+**THE FIRST ATTEMPT WAS STOPPED ON COMMIT EXHAUSTION (owner ruling, option b).** At pool_workers 10
+the box reached its commit limit: PowerShell could not start (Windows 0x5AF, which FormatMessageW
+renders as *The paging file is too small for this operation to complete*), a plain file read raised
+MemoryError, and GlobalMemoryStatusEx read **2.08 GB pagefile available at 93 percent load**. After
+the stop it read **46.49 GB at 50 percent**. Relaunched at pool_workers 6, max_legs 10.
+
+**Three rules this produced, each of which cost something to learn:**
+
+- **A pyramid alongside a live wave is not free.** Engine alone ran 48-58 GB committed of 63.63;
+  engine **plus** a pytest run hit 62.03 GB with **1.61 GB free** - the exhaustion class S6-B2237
+  records as having killed three prior runs. Do not run the full suite against a live wave; defer
+  the commit to a leg boundary.
+- **Editing the spec does NOT affect a running wave.** run_wave.py reads the spec ONCE at startup
+  (line 361) and the leg loop reads max_legs from that in-memory dict (line 140). Raising max_legs
+  mid-flight changes nothing. A running process holds what it loaded.
+- **Killing the engine is not killing the wave.** run_wave is the parent and its leg loop RESPAWNS
+  the engine - measured: the tree came back within seconds. **Kill the run_wave root and its
+  descendants, parent-first.** Note scripts/kill_wave_tree.py matches on the OUT-DIR name, which
+  run_wave's own command line does not contain (it carries the SPEC path), so run_wave is **not**
+  in its target list; it also does not exclude its own pid and kills via PowerShell, which is
+  exactly what fails under commit exhaustion.
+
+### STEP 3.4 - MONITORING a Step-2 wave
+
+- **Decide alive-or-dead by the sim_day_index DIFF between firings, never by heartbeat age.** The
+  heartbeat is written by a SUPERVISOR THREAD, so it stays fresh while workers are frozen (L656) -
+  and a STALE heartbeat does not prove death either, since a run at its final sim-day has stopped
+  advancing while it writes its cube (L656 addendum). **Both directions are uninformative; only the
+  counter carries signal.**
+- **The diff interval must exceed the expected per-unit time.** At roughly 1.3-2.0 min/day, a
+  60-second window showing no movement is normal, not a stall.
+- **Read pagefile availability via GlobalMemoryStatusEx, not PowerShell counters.** Under commit
+  exhaustion PowerShell cannot start, so a monitor built on it goes blind exactly when it matters.
+  Report FREE COMMIT, never physical RAM (L670).
+
+**NO separate baseline run is needed** (L423) — all 6 gates are ABSOLUTE thresholds, so admission
+depends on a candidate's own 4-year metrics.
+
+---
+
+## POST-CONFIG BATTERY — MANDATORY AFTER EVERY CONFIG, STEP 1 **AND** STEP 2
+
+**Owner directive 2026-08-30 (S6-B2436):** *"After step 2, it is mandatory to run post config
+steps as well."* This section exists because **the runbook did not describe the battery at all** —
+the nine steps lived only in `scripts/run_postconfig.py` and the ledger, so the requirement was
+invisible to anyone reading the plan. A rule with no author in the governing document is a rule
+nobody agreed to.
+
+**THE NINE STEPS - ALL NINE RUN ON EVERY LANDING, FROM EVERY LAUNCH SHAPE (B2520, owner ruling
+2026-09-01: *"Once the config lands, i want it to run automatically no exceptions and share results
+with me."*).** *(The paragraph this replaced read: "Five run automatically at arm completion
+(`run_postconfig.py`, invoked from `run_wave.py`); four are JUDGMENT steps that the code deliberately
+never auto-marks (`run_postconfig.py:225` - 'JUDGMENT PROMPTS (never auto-marked)')." Both halves are
+RETIRED: the run_wave-only wiring left direct and resume launches with no battery at all - cfg1 landed
+with no gate receipt and a hand-built grid, S6-B2515 - and the never-auto-marked design is what the
+owner asked six times to have removed. L736 / CHECKLIST #288.)*
+
+**STEP 2 HAS TWO LEGS (B2569, owner directive 2026-09-02):** the family grader at the
+manifest's own parameters AND the FREE levels of every PERSISTED parameter
+(`step2_free_levels`), graded on THIS cube behind a reproduction gate — every covered landed
+trade must re-pass the production gate offline or the step FAILS closed. Free levels are part
+of every config's band (ruled design), so grading them once at strategy level is the N1 class
+bug (b2569 audit), not a substitute. A new family's registration is incomplete without its
+free-levels grader (#290).
+
+**THE PIPELINE, by file.** `backtest/run_phase1a.py::_postconfig_landing_hook` fires the moment
+`trade_exit_detail.csv` is written (`POSTCONFIG_LANDING=0` opts out, logged; a run that dies before
+writing a cube is the monitor's case, L641) -> `scripts/postconfig_landing.py`, ONE supervisor shared
+by every launch path and idempotent per cube fingerprint (so `run_wave.py`'s own call after a real
+engine run is a no-op, after a substitute engine IS the landing, and a manual call behaves the same)
+-> `scripts/run_postconfig.py` (every step written on every run, FAIL included; `FAMILIES` fails
+CLOSED on a strategy with no registered grader) -> `output_audit/postconfig_ledger.json` ->
+`output_audit/POSTCONFIG_REPORT.md` (the ONE report, B2211, re-rendered on every landing, with a
+Landings section) -> `output_audit/postconfig_landings.jsonl` (`reported_to_owner: false`) -> the turn
+preamble lists every undelivered landing, and the Stop hook BLOCKS the turn until the response carries
+a `LANDING REPORT: <cube>` block -> the supervisor commits + pushes the ledger, report and per-cube
+artifacts (never the cube directory) and raises a desktop toast.
+
+| # | step | class (B2520) | what it establishes |
+|---|---|---|---|
+| 1 | `1_cube_sanity` | AUTO | the cube exists, holds one strategy, spans the window, carries every registered exit |
+| 2 | `2_grade_with_config_params` | AUTO, per family | the grid was graded at the manifest's own parameters (SMC: `tighten_breaker_block.py`; institutional: `grade_institutional_config.py`) |
+| 3 | `3_outlier_discrepancy_sweep` | AUTO | NaN/inf, winsorize bounds, degraded-exit map |
+| 4 | `4_three_leg_spot_check` | AUTO, per family | 50 sampled trades re-derived independently |
+| 6b | `6b_equivalence_class_check` | AUTO | combinations differing only in a saturated parameter collapse |
+| 5 | `5_adversarial_lens_review` | AUTO (was JUDGMENT) | an eight-lens battery runs and writes `<cube>_lenses.json`; every WARN / FAIL finding is recorded on the row, never summarised away |
+| 6 | `6_post_fix_recheck` | AUTO-DISPOSITIONED (was JUDGMENT) | OPEN while any lens finding lacks a recheck with evidence (#196); N/A-on-evidence when there is none |
+| 7 | `7_implement_in_engine` | AUTO (was JUDGMENT) | every swept parameter reaches the engine - checked by step number, not by label |
+| 8 | `8_verdict_with_denominators` | AUTO (was JUDGMENT) | the verdict is computed from the grid artifact WITH its N of M |
+
+Every step ends DONE-with-evidence, N/A-with-a-reason, FAIL or OPEN. **SKIPPED is not a disposition
+and is in no terminal set** (`verify_postconfig_complete.py::terminal_for` returns {DONE, N/A} for every
+step; `is_closed` also requires the evidence text). FAIL and OPEN block the completeness gate until a
+human dispositions the row with evidence; a re-run never downgrades a terminal row and never truncates
+the evidence already on it (`run_postconfig.py::merge_row`).
+
+**MEASURED STATE AT S6-B2436 (2026-08-30 - historical; the reading that produced this section):**
+across all 31 Step-1 configs and the single Step-2 config, the five AUTO steps were DONE and **all four
+JUDGMENT steps were SKIPPED**, every one carrying the reason *"PENDING-WAVE-REVIEW: the wave-level
+review batch performs this step"*. **That wave-level review batch never existed.** Programme-wide the
+judgment steps stood at DONE 10 / 2 / 4 / 10 against SKIPPED 42 / 47 / 43 / 42. At B2520 the gate reads
+100 cubes, 0 incomplete, 0 steps SKIPPED (`python scripts/verify_postconfig_complete.py`, exit 0).
+
+**WHY NOTHING BLOCKED - the loophole, stated plainly (historical, closed at B2520).**
+`verify_postconfig_complete.py` then defined `TERMINAL = {"DONE", "SKIPPED", "N/A"}`, so a step marked
+SKIPPED **with any reason string** counted as dispositioned and the completeness gate passed.
+The gate checks DISPOSITION, not EXECUTION. A deferral naming a process that does not exist
+satisfied it indefinitely. The gate STILL checks disposition - which is exactly why every step now
+WRITES one, on every run, and why SKIPPED can no longer be written at all.
+
+**THE RULE, going forward:**
+
+1. **A config is not COMPLETE until all nine steps are DONE or explicitly N/A.** SKIPPED is not a
+   disposition; a step that could not run is FAIL or OPEN and BLOCKS.
+2. **Step 2 may not launch while any Step-1 config in its lineage carries an outstanding judgment
+   step.** The decision-bearing unit is the LINEAGE, not the single config: a Step-2 run validates a
+   candidate that Step-1 configs selected.
+3. **A ROSTER ADMISSION may not be taken from a config whose judgment steps are outstanding.**
+   Where one already has been, the roster row is marked and the admission is re-examined.
+4. **Any deferral must name an EXECUTABLE target** - a script path that exists and can be run -
+   plus an owner and a trigger. Free text describing a future process is a DROP, not a deferral.
+5. **Automation is not a substitute for READING the findings.** Steps 5-8 now run unattended, but
+   their output is a list of findings addressed to a human: every judgment-step DONE in the ledger
+   before B2520 carried a real finding (the tail_n band defect, the equivalence-class defect, a
+   grader-loader crash found and pinned), and the lens battery's WARN / FAIL rows are the same
+   material, delivered instead of deferred. The `LANDING REPORT: <cube>` block is where they are read.
+6. **The result reaches the owner mechanically, in the channel the owner reads.** A landing nobody
+   has reported is listed in the turn preamble and blocks the Stop hook; "I will summarise it next
+   turn" is the silence this section exists to end.
+
+## STEP 4 — ADMIT
+
+> **THE GATE TABLE BELOW WAS STALE ON 3 OF 6 THRESHOLDS UNTIL B2402**, in the section that
+> DEFINES admission. It read `sortino >= 0.7`, `min_trades_holdout >= 25`,
+> `min_trades_full_period > 100`. The live values, re-derived from PASSING_CRITERIA at B2402, are
+> **1.0**, **15** and **75**. It also said *on the 4-year holdout*, which conflates two different
+> windows - see the note under the table.
+
+A combination enters Phase 1B only if it clears **all six LIVE_GATES** (roster_core.py:60-61).
+Thresholds re-derived from backtest/config.py PASSING_CRITERIA, tier `pooled`:
+
+| # | gate | bar | config key |
+|---|---|---|---|
+| 1 | `pooled_sharpe` | **>= 1.0** | min_sharpe_overall |
+| 2 | `profit_factor` | **>= 1.3** | min_profit_factor_overall |
+| 3 | `sortino` | **>= 1.0** | min_sortino_overall |
+| 4 | `psr` | **>= 0.95** | min_psr |
+| 5 | `min_trades_holdout` | **>= 15** | min_trades_holdout |
+| 6 | `min_trades_full_period` | **> 75** | min_trades_full_period |
+
+**THE TWO WINDOWS DIFFER, and the old wording hid it.** Gates 1-5 are computed on the **1-year
+holdout** (HO_START..HO_END = 2025-05-05 -> 2026-05-05). Gate 6 counts over the **FULL 4-year
+span**: tighten_breaker_block.py:348 sums the entire frame, IS 3.00y + HO 1.00y. The owner was
+shown this grain when ruling the floor and chose to keep the COUNTER and restore the 4-year-sized
+BAR - *"in that case revert back to 75"* - rather than re-cut the counter to IS-only.
+
+**TWO GATES ARE THREE-STATE, not two.** `profit_factor` is **NOT EVALUABLE** when a cell has zero
+losing trades: an all-winners cell has pf = inf and `inf >= bar` is True, but a zero-loss sample
+says nothing about the loss side (B2012). `min_trades_full_period` is NOT EVALUABLE when the count
+is absent, because before B1624 a MISSING value PASSED - *unknown* scored better than *known bad*.
+None is neither pass nor fail; it shrinks the denominator so nobody quotes "6 of 6" when 5 were
+measured.
+
+**THE POWER FLOOR IS NOT A GATE, AND IS NOT min_trades_holdout.** roster_core.py:215 is an EARLY
+RETURN - `if n < min_n: return None` - taken **before any gate is computed**, and min_n comes from
+`--min-n` (tighten_breaker_block.py:190, default 10). A cell below it is BELOW_POWER_FLOOR and
+never reaches the gates. **Two cuts, two numbers, both live**: at --min-n 10 a cell with 10-14
+holdout trades IS graded and FAILS gate 5; below 10 it is not graded at all. Measured probe: n=8 ->
+None; n=10 and n=12 -> graded with gate 5 False; n=15 -> graded, True.
+
+**FOUR CRITERIA ARE DEMOTED to diagnostics and are NOT gates** (roster_core.DEMOTED):
+max_drawdown, calmar, deflated_sharpe, win_rate. Each is computed and reported. Note that
+CLAUDE.md's claim *multiple-testing control remains via BH-FDR + PSR* is TRUE at the ROSTER stage
+and **FALSE at the GRID stage**: BH-FDR runs only at build_phase_1b_roster.py:252 across a family
+of DIFFERENT STRATEGIES, and tighten_breaker_block.py applies **no multiplicity correction across a
+config's 300 combinations** (owner ruling D2, 2026-08-29: none is required - *select the one that
+passes all gates; if multiple, the best Sharpe*).
+
+**A PROVISIONAL QUALIFIER IS RECORDED, NOT DISCARDED** (S6-B2379). Every PASS row carries `margin`
+and `status`, and the grid emits a `provisional_qualifiers` sibling key [B2573: RENAMED to `qualifiers` at S6-B2409 - see the STEP 2 ENTRY note above; this paragraph predates the rename]. Without it, a run
+terminating NEGATIVE could do so while holding a cell that cleared every live gate, with nothing
+recording it. **Its disposition is an open owner question.**
+
+**WHICH COMBINATION ADVANCES when several qualify: the highest HOLDOUT POOLED SHARPE** (owner, D3)
+- the gated quantity, not the in-sample is_sharpe that Step 1 ranked on.
+
+**Report the verdict WITH its denominator** (#182): *"N of M combinations passed, across X of Y
+applicable producers"* — computed by the table generator, never hand-counted.
+
+---
+
+## REFERENCE — ENGINE CONTROLS (code-verified B1570, 2026-08-14)
+
+**Every control on the optimisation path, what it does, and whether it is optimisation-only.**
+Values below were read from `backtest/config.py` at cite time, not from memory.
+
+| control | default | scope | what it does |
+|---|---|---|---|
+| `STRATEGY_SUBSET_FILE=<path>` | unset | **OPT-ONLY** | Newline-separated strategy names. `run_phase1a.py` REPLACES `ALL_STRATEGIES` with the matched subset, so only those strategies are evaluated. **Refuses to start if it resolves to zero** (`B1425 FATAL`), so a typo cannot silently become a full-roster run. **This is also the gate for demand pruning — without it, pruning is OFF.** |
+| `DEMAND_PRUNING` | `1` (on) | **OPT-ONLY** | Kill switch for demand-driven signal pruning. Inert anyway unless `STRATEGY_SUBSET_FILE` is set. Set `0` to disable if a run dies with `SkippedSignalError`. |
+| `DEMAND_PRUNING_WARMUP` | `25` bars | **OPT-ONLY** | Bars spent RECORDING which signal keys are read before pruning arms. Raise it if a strategy's branches are rare. |
+| `OPTIMIZATION_MODE` | `0` | **OPT-ONLY** | Uncaps `max_candidates_per_day`. **No-op under `--cube-isolation`** (isolation already bypasses the cap, L419). Does NOT skip `smart_money_score` — that was tried and REVERTED (L418), because tier maps LOW→0.0 and a zero size SKIPS the trade, so tier GATES ENTRY. |
+| `SMC_SWING_LENGTH` | `20` | sweep knob | Swing length for SMC primitives. FIRE-ADDING — each value needs its own engine run. |
+| `STRAT_EMA_SPAN` | `200` | sweep knob | Which EMA span the trend leg reads. FIRE-ADDING. Built into the key at RUNTIME (`f"price_above_ema_{span}"`) — see the L437 trap below. |
+| `STAGE2_NO_LIVE_FETCH` | `1` (on) | **ALWAYS-ON** | Raises on any OHLCV cache miss instead of degrading silently. Set `0` ONLY for prefetch/setup, never a backtest. |
+
+#### Config assignments as RUN (S6-B1537b, recovered B1915)
+
+The table above gives the sweep knobs and their DEFAULTS. It never recorded
+which value each config actually ran, which is the fact `S6-B1537b` says must
+never be re-asked. **Recovered from the run's own record,
+`output_audit/b1576_par.log`** — not from a plan, a note, or memory:
+
+| config | `SMC_SWING_LENGTH` | `STRAT_EMA_SPAN` | exit | cube rows | wall |
+|---|---|---|---|---|---|
+| `output_cfg1` | `20` | `200` | 0 | 8,581 | 11,891 s (198.2 min) |
+| `output_cfg2` | `10` | `50` | 0 | 10,921 | 11,973 s (199.6 min) |
+
+**`cfg1` is the production anchor** — both knobs at their defaults — so cfg1 vs
+cfg2 moves BOTH knobs at once and is not a single-variable comparison. Two
+later cubes, `output_w1_sw20_span21` and `output_w1_sw20_span50`, vary the span
+alone against `sw=20`.
+
+**Timing measured B1915 from `b1576_cfg1.log` / `b1576_cfg2.log`:** end-to-end
+198.1 / 199.5 min, of which the day loop is 195.9 / 197.3 and post-processing
+is **2.2 / 2.1 min — 1.1%**. Post-processing is NOT on the slow path, and
+re-costing the 20-config sweep on end-to-end rather than day-loop moves it
+**32.9 h → 33.3 h (1.2%)**. That costing assumes the **measured** 2-way
+concurrency; **3-way and above is unvalidated pending the peak-RSS measurement
+(`S6-B1552a`)** — a wall-clock that divides by N says nothing about N copies
+fitting in RAM.
+
+| `ENGINE_OUTPUT_DIR` | unset | infra | Output directory override. |
+
+**Config flags (not env), current live values:**
+`USE_PRECOMPUTED_SIGNALS=False` (B1563 — the cache is EMPTY; re-enabling needs a PIT audit first) ·
+`USE_SMC_PANEL_CACHE=False` (**UNSAFE** — 11.5pct divergence measured, B1542) ·
+`USE_PANEL_TECHNICAL_SIGNALS=True` · `SMC_PHASE='PRODUCTION'` (if not PRODUCTION, `compute_smc_signals`
+returns `{}` and every SMC strategy silently dies) · `DATA_LOAD_START=2021-05-06` ·
+`CUBE_ISOLATION_SIZE_PCT=0.01`.
+
+---
+
+## REFERENCE — WHAT GETS SKIPPED, AND WHEN
+
+Demand pruning computes only the producers whose signal keys the ACTIVE strategies actually read.
+
+**It arms in three stages.** Bars 1-25 compute EVERYTHING and RECORD reads. Then the skip set is
+derived and pruning arms. From then on the signals dict is wrapped in `GuardedSignals`, so reading a
+pruned-away key RAISES `SkippedSignalError` instead of returning `.get()`'s default.
+
+**How the required-key set is built — BOTH methods, unioned (B1570):**
+- **RUNTIME recording** catches keys built at runtime, e.g. `f"price_above_ema_{STRAT_EMA_SPAN}"`.
+  A static scan sees only ONE of `smc_breaker_block_long`'s two keys (L437).
+- **STATIC extraction** catches keys a boolean SHORT-CIRCUITED past. `smc_ote_long` is
+  `s.get(zone) and (s.get(bos) or ...)`; if `zone` is False across all warmup bars the `and` never
+  evaluates the right side, so the bos keys are never READ and `bos_choch` would be pruned (L444).
+
+The two fail in COMPLEMENTARY directions. Union is strictly safer — it can only KEEP more producers.
+
+**Measured effect on `smc_breaker_block_long` (1 strategy):**
+- Technical: **32 of 33 producers skipped**, 512 → 46 keys, 95.8pct off `compute_all_signals`
+- SMC: **3 of 6 primitives skipped** (`retracements` 46.7pct + `fvg` 28.1pct + `bos_choch` 18.1pct of
+  SMC cost), 91.5pct off `compute_smc_signals`. `ob`, `liquidity`, `swings` always run.
+
+**SMC redundancy is automatic.** 22 strategies read `smc_*` keys; each keeps exactly the primitives
+it needs — verified on `smc_fvg_retest_long` (keeps fvg), `smc_ote_long` (keeps bos_choch +
+retracements), `smc_bos_continuation` (keeps bos_choch).
+
+### PHASE 1B IS DIFFERENT — pruning is INERT there by design
+`STRATEGY_SUBSET_FILE` is an OPTIMISATION-ONLY device. Phase 1B simulates all passed strategies
+together, where every producer is read anyway. With no subset file, `wrap()` returns **the same
+object** (identity-pinned by test) and `smc_skip_primitives()` returns empty — **zero overhead, zero
+behaviour change**. Never set the subset file for a Phase 1B or full-roster cube run.
+
+---
+
+## REFERENCE — MEASURED COSTS (and why a percentage alone is a lie)
+
+| shape | measured |
+|---|---|
+| 182 strategies, 100 tickers, 2y, pool=10 | **4.56 h** (2.63 h day loop + 1.93 h post-processing) |
+| 182 strategies, 20 tickers, 2y, pool=3 x3 concurrent | 3,696 s |
+| **1 strategy, 5 tickers, 2y, pool=0, UNPRUNED, cold cache** | **1,920 s** (B1568) |
+| **1 strategy, 5 tickers, 2y, pool=0, UNPRUNED, warm cache** | **703 s** (B1569b) |
+| **1 strategy, 5 tickers, 2y, pool=0, PRUNED, warm cache** | **366 s** (B1569b) |
+| Machine | 10 physical / 12 logical cores, 15.6 GB RAM |
+
+**THE SAME UNPRUNED CONFIG TOOK 1,920 s AND 703 s — 2.7x apart, same machine, same code.** The only
+difference was OS file-cache warmth. Consequences you must respect:
+
+1. **Cross-session elapsed times are NOT comparable.** A/B arms must run BACK-TO-BACK in one session.
+2. **A saving is a fraction OF A BASELINE, and the baseline's composition is not constant.** Pruning
+   measured **14.64pct** against a cold baseline and **47.94pct** against a warm one — the cold
+   baseline carries I/O that pruning cannot remove and dilutes the fraction. Quote the saving WITH
+   its cache condition, never alone.
+3. Comparing B1569b's pruned arm (366 s) to B1568's cold baseline (1,920 s) would report **81pct**,
+   two-thirds of it filesystem cache. That is the trap re-running the baseline exists to avoid.
+
+**Correctness bar for any optimisation claim:** the cube must be BIT-IDENTICAL, not merely
+same-row-count. B1568 + B1569b cubes all hash to `615233dbab2756d0` (1,352 x 37).
+
+---
+
+## REFERENCE — PARALLELISM
+
+- **Cores: 10 physical.** With `--screen-pool-workers 0` (sequential) each config is ~1 core.
+- **RAM is the binding constraint, not cores.** A single worker measured **2.1-2.3 GB**; at 15.6 GB
+  total that caps concurrency at roughly **5-6 configs**, not 10.
+- **Run configs CONCURRENTLY rather than widening the pool.** In-run parallelism caps at ~1.6x
+  (Amdahl, ~62pct serial); separate processes scale far better. B1558 measured 2.24x throughput at
+  3-way.
+- **Never let total workers exceed physical cores** — pool=60 on 1 ticker ran 11.6x SLOWER than
+  sequential (L-pool).
+- **Do NOT run a pyramid or any other CPU work during a timing A/B.** It inflates the arm in flight
+  and biases the saving upward.
+
+## SWEEP EXECUTION MODE - OPTION C (owner ruling 2026-08-17)
+
+**Wave 1 is OWNER-GATED. Waves 2-9 run autonomously, subject to MECHANICAL HALTs.**
+
+Wave 1 is gated because it is the first `--screen-pool-workers 3` measurement; the remaining 8
+waves are re-costed from its ELAPSED before any of them starts. Autonomy after that is safe only
+because the stop conditions are measured, not judged in the moment:
+
+| HALT condition | why it is mechanical |
+|---|---|
+| cube sanity fails: not exactly 1 strategy, not exactly `[26]` exits/entry, or a mega-cap absent | step 1, already scripted |
+| diagnosis loss > `--max-diag-loss`, or ANY ticker dropped | the grader ABORTS (B1623) |
+| spot-check agreement < 100pct on any of the three legs | step 4 |
+| a config's ELAPSED deviates > 2x from wave 1's measured figure | arithmetic on the log |
+| `MemoryError`, or free RAM below one worker's PEAK (3,223 MB) | `Get-CimInstance` in the */15 check |
+| the adversarial review produces a CONFIRMED finding | step 5 |
+
+**On any HALT: stop the sweep, do not start the next wave, notify the owner with the evidence.**
+Waves are never started to "keep the machine busy" - an unexplained result stops the sequence.
+
+## RUN-SAFETY ARCHITECTURE (B2142-B2169, 2026-08-24/25) — the launch stack as it actually is
+
+Built after one W-B arm ran 2.9h against a 2.5h cap with no kill, no warning and no
+checkpoint, computing blind for 2h34m. Every mechanism below exists because a specific
+failure was measured, and every one carries a pin.
+
+### Throughput, measured (the numbers that drive venue and cap decisions)
+
+- **Every run in program history until 2026-08-24 was single-threaded**: `run_wave.py`
+  hardcoded `--screen-pool-workers 0` (1 of 10 cores; confirmed live at 97pct of one core
+  via Get-Process). The N=3 concurrency figure (2.04x/arm, S6-B1552a) was measured in that
+  pool-OFF regime — **the pool dividend and the N-way dividend draw on the same 10 cores
+  and must never be multiplied** (council-verified, B2142).
+- Pool ON at 50 tickers: 3.21x screening, 2.33x end-to-end (the b2128 probe pair).
+- Pool ON at 200 tickers: **60.7 s/sim-day** (11 PHASE_TIMING screen_done timestamps,
+  b7xxzzhf9 capture, 15:09-15:31) vs sequential 127.9 (sw5) / 85.5 (sw10) — so the pool
+  buys ~1.4-2.1x at full width, **the speedup decays with universe size**. DERIVED
+  config cost: 60.7 x 250 days ≈ **4.2h** — fails the old 3h cap, fits the 5h cap
+  un-chunked (~19pct headroom). Memory: one pooled arm ≈ 5.3GB of 15.6GB (main 311MB +
+  10 workers at 468-584MB), so N=2 pooled would fit RAM but split the same cores.
+- `pool_workers` is spec-driven in run_wave since B2142 (default 0 — no legacy spec
+  changes behaviour).
+
+### The cap (owner ruling 2026-08-24: 5 hours)
+
+- Raised 3h -> 5h after the 4.2h measurement. Recorded in CLAUDE.md banner, memory, the
+  queue — and as the executable constant `OWNER_LOCAL_CAP_HOURS = 5.0` in
+  `scripts/prelaunch_gate.py`, which **fails CLOSED**: a manifest declaring NO leg cap is
+  refused (L642 — the check was briefly `if cap is not None`, which converted
+  "undeclared" into "approved"; caught by council review the same day it shipped).
+- Enforcement inside the engine is TWO-LAYER: the in-loop per-day check (B2132), plus the
+  **B2148 supervisor** — a daemon thread armed before the first iteration that samples
+  wall-clock on its own schedule and hard-exits at the cap wherever the loop is. L637:
+  the engine had SEVEN loop-gated guards/writers (telemetry :813, progress :830, 50-day
+  :934, kill :843, checkpoint writers :973/:1037/:1092) and one long sim-day silenced all
+  seven at once; a guard must not share the control flow it guards. B2145 freezes the
+  loop-gated writer count at 6+cap so an eighth cannot join silently.
+
+### Observability (session-agnostic by construction)
+
+- The supervisor writes **`run_heartbeat.json`** every ~30s (atomic tmp+replace):
+  elapsed_hours, sim_day_index, sim_date, closed/open trades, cap, pid, timestamp.
+  Progress lives in the filesystem — any session, or none, can read it. Session-held
+  monitors and crons are convenience only (they died with a session restart on 2026-08-24
+  and the run computed blind; L637/S6-B2143b).
+- A killed run's launcher log is shape-identical to a live one (L641): the CFG completion
+  line is written only on normal exit. **`scripts/classify_run_log.py`** is the
+  authoritative reader — COMPLETE / DEAD_WITHOUT_ENDING / RUNNING, one-directional: no
+  ending + no live pid = DEAD, never RUNNING (pin test_b2158).
+- On a wall-time kill the supervisor flushes `engine_state.json` + trade_log checkpoint
+  through an out-of-loop emitter, so a killed run stays resumable (B2126 proved
+  kill-then-resume live; B2148 proved it for a hung sim-day).
+- **B2167 caveat on historical data**: every engine_state.json written before B2167
+  records `open_trades: 0` and `tickers_processed: 0` — two getattr names
+  (`open_positions`, `_last_universe`) were never assigned (PIVOT #34 phantom class), so
+  M6 boundary-drop numbers from before B2167 are vacuous. Fixed at 6 sites; pin
+  test_b2167 bans phantom getattr-self names engine-wide.
+
+### The pre-run gate (CHECKLIST #158/#160/#161 — wired, hardened B2149-B2169)
+
+`scripts/prelaunch_gate.py`, invoked by `scripts/launch_sweep.py` (refuses on non-zero;
+the HAND-RUN-ONLY docstring era ended at B2082 and the header now says so). Checks:
+manifest completeness, isolation, calendar, obsolescence answer, wall-clock projection,
+S3 sha + ticker disjointness + budget (AWS mode), **plus B2149 run-safety**: engine must
+carry the supervisor, must write the heartbeat, and the declared leg cap must respect
+OWNER_LOCAL_CAP_HOURS (fail-closed). launch_sweep separately refuses on: git drift (HEAD
+vs frozen_sha, dirty engine paths — B2127), window contradiction (B2132), and **arm-env
+mismatch (B2168)**: every env value the manifest's arms declare (SMC_SWING_LENGTH = P1,
+STRAT_EMA_SPAN = P6) must be present AND equal in the live environment — unset would
+silently run engine defaults while the manifest names another config (the S6-B2136
+class).
+
+- **Gate credibility is tested, not assumed**: a known-bad corpus of 6 single-mutation
+  manifests must each be REFUSED with a reason naming the defect, and a reachability pin
+  asserts every `check_*` function is called from the entry point (one was briefly wired
+  to call itself and ran zero times — test_b2159 both).
+- **A PASS leaves a receipt** (B2169): `gate_receipt.json` in the run output binds the
+  gated manifest's sha256 to the launched argv; post-config check M10 FAILS a cube whose
+  manifest no longer hashes to its receipt (the gate-time/launch-time rebind hole) and
+  flags a receipt-less new cube as launched AROUND the gate.
+- **Known remaining holes, owner-gated (S6-B2159b remainder)**: the engine can still be
+  invoked directly without the gate (closing it means the engine refuses without a
+  receipt, which breaks every direct invocation by design); the supervisor checks are
+  source-text greps; LOCAL mode still waives the ticker-list requirement when `universe`
+  is present.
+
+### Post-config battery (run_postconfig.py — invoked by the ENGINE's landing hook through
+scripts/postconfig_landing.py on every landing, B2520; run_wave's own call is idempotent)
+
+Step-1 sanity + M1 content-sha, M2 exits-vs-live-registry, M3 fill_date, M4 window +
+holdout-touch, M5 pnl integrity, M7 degraded exits, M9 universe artifact, **M10 gate
+receipt** — with M6 (boundary drops; meaningful only post-B2167) recorded by run_wave and
+M8 (short borrow-rate) pending a short cube (S6-B2118b trigger).
+
+### Correlation / effective-breadth measurement (B2182 — zero engine runs)
+
+`scripts/build_strategy_return_correlation.py` answers the portfolio-reframe question from the
+R5 production trade log (IS window only, holdout untouched): **avg pairwise rho 0.087** across
+183 strategies / 136,622 trades — diversification exists — but the cross-sectional annualized
+Sharpe is **mean −2.44 / median −1.97**, so combination amplifies a negative and N=40 implies
+portfolio Sharpe −7.4. The positive-only shrunk subset has **n=5, implying 0.62** — under the
+1.0 bar. Verdict recorded in output_audit/b2182_gate_philosophy_decision.md: keep the
+per-strategy gate; the binding constraint is candidate quality, not gate philosophy; re-run at
+selected-exit grain once ~20 strategies carry graded cells. Caveats stamped in the artifact
+(production-exit grain, 2022-23 bear in-window, winner's curse both ways).
+
+### Design principle for NEW producers (B2182, external item 10 adopted)
+
+Prefer parameter-free formulations at design time: ensemble across lengths (mean of signs ->
+one continuous score, one threshold), cross-sectional ranks over absolute thresholds,
+vol-normalized triggers over fixed ones. Every parameter deleted is a selection-bias dimension
+that never needs correcting — and EVENT triggers carry fewer tunables than STATE definitions.
+Applies FORWARD (new producers / Class 7 wires); retrofits are per-strategy owner-approval work.
+
+### SPP median column (B2182, external item 7 adopted)
+
+TABLE C's funnel row now carries **median IS-Sharpe beside best** — the median across graded
+combos is a nearly unbiased live-expectancy estimate; max minus median is the selection
+artifact, visible in every render.
+
+### Standing open decisions this section feeds (owner)
+
+1. **Venue** (S6-B2107a): local pilot FAILED its gate at the old cap on measured
+   evidence; at 5h a config fits un-chunked. Hetzner auction remains ruled, gated on a
+   completed local strategy.
+2. **W-B relaunch**: no run is in flight; sw50's resume is one command (its spec carries resume=true), sw30's requires the one-line spec edit FIRST (resume=false as written - L646: a recovery quoted as cheap must have its config opened, because this one would have restarted day 0 over a day-57 checkpoint); neither is taken
+   without the owner's word (feedback_ask_before_relaunching_corrected_version).
+3. **regime_flip retirement** (S6-B2139a): refused on stale evidence — 42 of 95 rows in
+   the post-fix reference cube are REAL flips.
+4. **Wave methodology**: four completed configs = ONE grid under four cross-config
+   settings, zero above the 0.333 noise floor; the council's falsification/breadth
+   alternatives are on record (B2142 council).
+
+## MANDATORY POST-CONFIG ANALYSIS (owner directive - run after EVERY config, unprompted)
+
+**This runs after every config completes. No prompt required. Skipping a step is a silent miss.**
+
+> **B2520 (owner ruling 2026-09-01): the battery is invoked by the ENGINE on every landing and
+> runs ALL NINE steps** - see *POST-CONFIG BATTERY* above for the pipeline by file and CHECKLIST
+> #288 for the rule. The B2118 blockquote below is kept as history, because the manual blocks it
+> introduces remain the reference for what each check MEANS; *"Steps 5/6/8 remain judgment"* is
+> RETIRED - they run, and their findings land on the ledger row and in the LANDING REPORT.
+>
+> **AUTOMATED since B2118 (S6-B2117b) - HISTORICAL:** `PYTHONPATH=".;scripts" python
+> scripts/run_postconfig.py --cube output_<dir> [--step1-cube] [--write-ledger]`
+> executes step 1 + step 7 + the M-checks (M1 content-sha, M2 exits-vs-live-registry,
+> M3 fill_date, M4 window + holdout-touch FAIL on Step-1 cubes, M5 NaN/inf/winsorize,
+> M7 degraded-exits, M9 universe-artifact via the cube's own manifest) and prints
+> steps 2/4 as parameterized commands. `run_wave.py` invokes it at every arm
+> completion (`postconfig_exit` recorded per arm). Steps 5/6/8 remain judgment.
+> M6 (boundary-drop counter) + M8 (borrow rate) are NOT yet in the battery
+> (S6-B2118b). The manual blocks below remain canonical for legacy cubes and
+> for understanding what each check means.
+
+### 1. Cube sanity - BEFORE trusting any number
+```bash
+python -c "
+import pandas as pd; d=pd.read_csv('output_cfg<N>/trade_exit_detail.csv',low_memory=False)
+ex=d.groupby(['ticker','entry_date']).exit_method.nunique()
+print('strategies',d.strategy.nunique(),'| exits/entry',sorted(ex.unique()),'| entries',len(ex))
+print('mega-caps',[t for t in ['NVDA','MSFT','TSLA'] if t in set(d.ticker)])"
+```
+PASS requires: exactly **1** strategy, exits/entry exactly **[len(EXIT_STRATEGIES)]** -
+**derive it live** (`python -c "from backtest.engine.exit_strategies import EXIT_STRATEGIES;
+print(len(EXIT_STRATEGIES))"` -> **24 post-B2110**; the four legacy cubes and every pre-B2110
+cube carry [26] - judge each cube against the registry AT ITS OWN SHA, B2117c) - and mega-caps
+PRESENT (their absence means the archived A-C chunk universe, L445).
+
+### 2. Grade - with the CONFIG'S OWN parameters (PER FAMILY - B2569 generalisation)
+
+**This step is family-dispatched, never strategy-specific prose.** The battery
+(`run_postconfig.py::FAMILIES`) fails CLOSED on a strategy with no registered grader; this doc
+previously showed only the smc command, which is how an entire analysis step (free levels) got
+executed once at strategy level and never per config (the N1 class bug, b2569 audit). The step
+has TWO legs on every landing and step 2 is DONE only when BOTH succeed:
+
+**(a) the family grader, at the manifest's own parameters (FAMILY EXAMPLES - both registered
+families. Since B2579 a third family is ONE declaration: a `tools` adapter block in its SPECS entry
+(keys / grid_keys / grade / spot_check / single_combination, optional free_levels + engine_anchors),
+from which `run_postconfig.family_entry` builds the row - an incomplete block is not a family and
+`run_postconfig.FAMILY_REFUSALS` says which piece is missing, so the B2578 launch gate refuses the
+spec before the engine spends the hours):**
+```bash
+# smc_breaker_block family:
+PYTHONPATH=".;scripts" python scripts/tighten_breaker_block.py --cube output_cfg<N>/trade_exit_detail.csv \
+  --swing-length <THE SW THIS CONFIG RAN> --min-n 10 --out output_audit/<batch>_cfg<N>_grid.json
+# institutional_committed_growth family:
+PYTHONPATH=".;scripts" python scripts/grade_institutional_config.py --cube output_icg_<cfg> \
+  --min-consecutive-quarters <P4> --growth-lookback-quarters <P5> --growth-multiple <P6> --span <P9>
+```
+**Parameters MUST match the run.** The smc grader RE-DERIVES every fire; a mismatch silently
+drops the fires that do not reproduce - cfg2 lost 167 of 420 that way (L454); the union
+diagnosis-loss gate aborts above 2pct. The institutional grader REFUSES non-production P7/P8
+values (L751 - they are artifact stamps, not filters).
+
+**(b) the FREE levels of every PERSISTED parameter, on THIS config's cube:**
+```bash
+PYTHONPATH=".;scripts" python scripts/grade_free_levels_institutional.py --cube output_icg_<cfg>
+```
+Levels come from SPECS `free_band` (single source). The tool gates itself: every covered landed
+trade must RE-PASS the production gate offline (REPRODUCTION line printed) before any level is
+graded - a reproduction failure exits 2 and the battery FAILS step 2 closed. Empty
+`signals_at_entry` rows (S6-B2512 class) are counted and excluded, never silently failed. A new
+family's free-levels grader is part of registering the family, not a later enhancement.
+
+### 3. Outlier + discrepancy sweep - ALL of these, every time
+| check | why |
+|---|---|
+| cube entries == grid max fires | catches silent diagnosis loss (L454) |
+| verdict distribution | `NO_EXIT_SELECTABLE` is a SAMPLE-SIZE verdict, not exit quality |
+| rank by `ci_lo`, NOT `sharpe` | the higher Sharpe can have a NEGATIVE lower bound (L455) |
+| `exits_effective` vs the LIVE registry | duplicate exits collapse; "best of N" is usually fewer (L461). **Derive N live - it is 24, not 26 (B2140)** |
+| PASS rows with marginal `ci_lo` | 5 of 200 at `ci_lo` +0.08 is a WEAK positive, not a result |
+| any PASS selecting `regime_flip` | **run `measure_degraded_exits(cube)`** - do not judge by date. It is a time stop in ALL FOUR existing cubes (owner-accepted 2026-08-21) and live in every config run after B1682 |
+| **every swept LEVEL changes the outcome** | **a level that changes nothing is a wasted dimension (L473)** |
+| **top-N holds N DISTINCT fire-sets** | **cfg2's top 10 was 4 real candidates wearing 10 rows (L473)** |
+| **measure DEGRADED exits per cube** | `regime_flip` was a time stop in every pre-B1622 cube; measured, not assumed (L483) |
+| **equivalence-class members keep the SAME FIRES** | a de-dup key of `(fires, exit, sharpe)` could merge different fire-sets that tie; verified 6 of 6 (B1612) |
+
+```bash
+python scripts/verify_grid_bands.py output_audit/<batch>_cfg<N>_grid.json --anchor tail_n=20
+```
+**This is the step that was missing.** The sweep above already carried a duplicate-collapse
+lens - `exits_effective` vs 26 - and it found `26 exits -> 23 effective`. **The same question
+was never asked of the PARAMETER axis**, so `tail_n` sat at `[3, 5, 10, 20]` through 400 graded
+combinations with `10 -> 20` moving **0 of 50** cfg1 groups. A lens is defined by its QUESTION,
+not by the axis it was first applied to (L474). `--anchor` exempts the production value, which
+is carried for reproducibility, not to discriminate.
+
+**ACCEPTED ASYMMETRY - RESTATED 2026-08-21 (owner ruling (b)).** The 2026-08-17 version of this
+note said cfg1/cfg2 were degraded *"while the 18 remaining configs carry a live one"*. **That was
+false, and the correction matters more than the acceptance.**
+
+`exit_regime_flip` needs TWO inputs - `regime_by_date` and `regime_at_entry` - supplied in two
+separate batches. MEASURED via `rc.measure_degraded_exits` on **all four existing cubes**:
+
+```
+output_cfg1              time_stop_20d == regime_flip     written Aug 15
+output_cfg2              time_stop_20d == regime_flip     written Aug 15
+output_w1_sw20_span21    time_stop_20d == regime_flip     written Aug 18 13:21
+output_w1_sw20_span50    time_stop_20d == regime_flip     written Aug 18 13:21
+```
+
+**Wave 1 is degraded too**, because it ran hours BEFORE B1682 - whose own commit title reads
+*"I fixed ONE OF THE TWO things the exit needed, and called it done"*. B1622 supplied the first
+input; B1680 then found the fix had never run.
+
+**OWNER RULING 2026-08-21: accept it.** Not re-running wave 1 (~5.8 h) or cfg1/cfg2 (~6.6 h).
+
+**What this commits us to, stated so nobody re-derives it:**
+
+- **All four existing cubes carry `regime_flip` as a 20-day time stop**, i.e. a duplicate of
+  `time_stop_20d` under another name. Their effective exit family is **25, not 26**.
+- **Every config run from now carries a LIVE `regime_flip`** - both inputs are in the code
+  (`backtest.py:2650` sets the field, `:3106` passes it, `exit_strategies.py` injects both).
+  **FALSIFIED AT FIRST MEASUREMENT 2026-08-22 (B2018, S6-B2018a P0).** The two first
+  post-B1682 cubes (`output_b2016_e1_sw10`/`sw20`) STILL collapse `time_stop_20d ==
+  regime_flip`: every regime_flip row exits via the cap branch (`regime_flip_max_days_20`),
+  and `regime_changed_during_hold` is `'no'` on all 4,472 sw10 rows while 27 of 172 holds
+  span one of the 6 in-window regime transitions. "Both inputs are in the code" was a
+  code-presence claim; the runtime says the flip is never seen. Not fixed mid-E1 (frozen
+  code keeps arms comparable; the collapse is identical in every arm).
+  **FIXED 2026-08-23 (B2043, S6-B2018a)** after the drop-E1 ruling dissolved the hold: the map
+  now rides in the pool task payload (the never-called setter and its orphan global are
+  DELETED), the flip branch is pin-proven end-to-end through run_exit_comparison, detail rows
+  record a real `exit_regime`, and exit_context no longer fabricates "no" for
+  regime_changed_during_hold (absent reads "unknown"). Every pre-B2043 cube remains cap-only;
+  cubes from now carry a LIVE flip branch - the comparability note above still governs.
+- **Therefore `regime_flip` is NOT comparable between the four existing cubes and any later one.**
+  Rankings are unaffected - no `regime_flip` appears in either wave-1 top-10 - so what is lost is
+  comparability on that one exit, not the identity of the winners.
+- **Never quote "best of 26" for these four.** `roster_core.measure_degraded_exits(cube)` MEASURES
+  it from any cube, so this needs no date bookkeeping:
+
+```bash
+python -c "import sys;sys.path.insert(0,'.');import scripts.roster_core as rc,pathlib; \
+  print(rc.measure_degraded_exits(rc.load_cube(pathlib.Path('output_cfg<N>/trade_exit_detail.csv'))))"
+```
+
+MEASURED 2026-08-17 on cfg2: **3 collapsed pairs**, not one -
+`atr_trail_mae_conditional`==`atr_trail_1x`, `reverse_signal`==`atr_trail_mae_conditional`,
+`time_stop_20d`==`regime_flip`. That independently reproduces the known **26 exits -> 23
+effective** (L460). **Never quote "best of 26" without running this first.**
+
+### 4. Spot check 50 random trades - EVERY config
+```bash
+PYTHONPATH=. python scripts/spot_check_trades.py   --cube output_cfg<N>/trade_exit_detail.csv --n 50   --swing-length <SW> --ema-span <SPAN>
+```
+**SCOPE, verified against code (B1631):**
+
+| leg | what it does | file |
+|---|---|---|
+| re-derivation | P1-P6 rebuilt from raw parquet under PIT, calling the vendored LIBRARY | `spot_check_trades.py:58` |
+| **engine** | **`compute_smc_signals` called at the same bar with the config's own parameters** | **added B1631** |
+| execution | entry is a real trading day, exit >= entry, `hold_days` matches the calendar distance, `pnl_pct` sign-consistent | `spot_check_trades.py:101` |
+
+**OHLCV-only is CORRECT here, and not by luck.** `smc_breaker_block_long` has exactly two gates -
+`smc_breaker_block_bullish` and `price_above_ema_{span}` - both OHLCV-derived, and under
+`--cube-isolation` `backtest.py:2379-2380` sets `size_pct = CUBE_ISOLATION_SIZE_PCT`, bypassing
+tier sizing. That matters because tier GATES ENTRY otherwise (LOW -> 0.0 size -> the trade is
+SKIPPED, L418/B1544), which would make `smart_money_score` an unchecked entry input.
+**At Phase 1B, with tier sizing live and the full roster running, OHLCV-only coverage is NOT
+sufficient** - the smart-money leg re-enters the entry path and must be checked too.
+
+**Two legs could only say THAT they disagreed.** Adding the engine makes it three-way, so a
+disagreement localises: engine+cube agreeing against the re-derivation means the CHECKER is wrong
+(L457); re-derivation+engine agreeing against the cube means the RUN is wrong.
+
+**Expected: 100pct agreement on all three, 0 execution failures.** Anything less is a finding.
+
+**FIRST, prove the check can verify the strategy at all (B1634, owner correction):**
+
+```bash
+PYTHONPATH=. python scripts/verify_spotcheck_coverage.py <strategy>
+```
+
+Step 4 is a STANDARD, not a check written for one strategy. OHLCV-only coverage is complete for
+`smc_breaker_block_long` because it reads two price-derived signals - **a property of the STRATEGY,
+not of the check.** The rest of the roster reads smart-money, news, earnings, short-interest,
+index-event and filing signals, and an OHLCV-only re-derivation would certify those **without ever
+reading the input that gates them**, producing output identical to a real verification.
+
+MEASURED across the roster: **185 of 222 strategies have at least one input the spot check cannot
+verify**; `smc_breaker_block_long` is in the 37 that pass, so THIS sweep is covered - proven, not
+assumed. The gate is fail-CLOSED: an unclassified key counts as unverifiable, because an
+unrecognised input is precisely the one nobody thought about.
+
+**Before the spot check certifies any strategy, this must exit 0.**
+
+### 5. ADVERSARIAL REVIEW - find bugs and logic errors (owner phrasing, verbatim)
+
+> *"Do an adversarial review of the code and map for false positives and false negatives.
+> Identify any or all bugs and add them to the execution queue."*
+> *"It was broader than this - it was also about finding bugs and logic errors."*
+
+**FP/FN is ONE lens, not the scope.** The scope is bugs and logic errors. The FP/FN lens alone
+would have MISSED the largest finding of this session - identical exit methods are neither a false
+positive nor a false negative, they are a LOSS OF INFORMATION.
+
+Run every lens, every config:
+
+| lens | question | example found |
+|---|---|---|
+| **False positive** | a trade/PASS recorded that should not exist? | - |
+| **False negative** | a fire the engine missed, a PASS suppressed? | MIN_N=30 suppressed 5 real passes (L455) |
+| **Silent degradation** | does anything FALL BACK without saying so? | `regime_flip` was a time stop in every cube (L461) |
+| **Duplicate information** | are "distinct" columns byte-identical? **Ask this of EVERY axis - exits, parameters, tickers, dates - not only the one where it first paid off.** | 26 exits -> 23 effective (L460); `tail_n` 3 of 4 levels inert (L473) |
+| **Units / scale** | do the units of every input match the constant? | 252 trading days over a CALENDAR hold (L458) |
+| **Config blindness** | does a re-deriving component get the ORIGINATING params? | grader graded cfg2 at the wrong swing_length (L454) |
+| **Provenance** | is the artifact the one you think it is? | universe was an abandoned A-C chunk (L445); the sweep BUILDER still read it (L479) |
+| **Executability** | can the ENGINE apply what the search selected, or does the knob exist only in the grader? | 4 of 6 swept parameters were grader-only; the graded winner would have run as 420 fires at Sharpe 0.789 instead of 68 at 2.239 (L475) |
+| **Fail-open** | when this component meets unexpected input, does it PASS? Every branch that `continue`s, defaults, or falls back is a candidate | a comment satisfying a code check, a missing key skipped by the band gate, a wrong file found by the grader, a dropped ticker vanishing, an exit falling back to a time stop, a gate scoring "unknown" above "known bad" (L482, L483, L484) |
+| **Self-referential verification** | does this check compare code to REALITY, or to another piece of the same author's code? | the spot check re-implemented the producer and agreed 100/100 while 4 parameters did not exist in the engine; a pin test asserting a STRING passed for the whole inert life of a fix; the orphan gate keyword-matched three phrases and missed 4 of 4 (L476, L481, L485) |
+| **Completion vs artifact** | did the work happen, or did the command merely return? | a smoke reported "PASSED" with no cube written; a killed child reported exit 0 at simulated day 25 of 504 (L486) |
+| **Effective parameter** | a flag that was ACCEPTED - does changing it change the answer? Run it at two values and compare. Enforced by `scripts/verify_flag_binds.py` | `--min-n 10` was accepted and governed admission only, while `OOS_MIN_N=30` in another module decided which cells got a Sharpe - so `--min-n 10` and `--min-n 20` were byte-identical (S6-B1705b, fixed B1714) |
+
+**The 4 lenses below the original 7 were added B1631 from THIS session's actual defects** - every
+example is a defect that the original 7 did not name and that shipped anyway. A lens list that only
+grows after a failure is working as designed; one that never grows is not being used.
+
+**LENS 12 was added B1800 (S6-B1705f, owner-approved) and is the only one with a MECHANISM rather
+than a question.** The other eleven are read and applied by judgment; this one runs:
+`binds(fn, param, a, b, ...)` returns `BINDS` / `INERT ON THIS INPUT` / `RAISED`.
+
+- **It proves BINDING, never CORRECTNESS.** A flag that binds to the wrong thing passes here - that
+  is the EXECUTABILITY lens's question, and the two are deliberately kept apart.
+- **It cannot prove inertness in general, only on the input given**, which is why the verdict says
+  `ON THIS INPUT` and names the fixture. A flag inert on one fixture may bind on another.
+- **Choose an input where the difference is observable.** `min_n` 10 vs 30 agrees for both n<10 and
+  n>=30; only n between the floors measures anything. **A two-value probe on an input where both
+  values must agree is a green result that means nothing** - the same shape as a differential test
+  with n=0 on both sides (L393, S6-B1522a).
+
+**Every finding gets an EXECUTION_QUEUE ticket the same turn.** A finding mentioned in prose and
+not ticketed does not exist (#94). Causes go in only when TESTED - otherwise `UNKNOWN - RCA NEEDED`
+(#189).
+
+### 6. POST-FIX RE-CHECK - if this config-run cycle FIXED anything (CHECKLIST #196)
+
+**A fix can invalidate a conclusion the defect itself left intact.** While the bug stood the
+numbers were self-consistent; correcting it breaks that consistency for anything already shipped.
+
+For every defect fixed during this cycle:
+1. **GREP for the shipped conclusions that depended on the old behaviour** - grids, rosters, docs.
+   Do not recall them.
+2. **MEASURE the overlap.** Do not assume a fix is purely additive.
+3. **Ticket each affected conclusion for re-derivation**, or state explicitly why it survives.
+
+*Lineage:* the `regime_flip` fix landed on one of only TWO ROBUST Phase 1B roster cells, whose
+numbers were `time_stop_20d`'s all along.
+
+### 6b. CARRYING AN EQUIVALENCE CLASS IS FREE - FOR SUBSET-SAFE PARAMETERS ONLY
+
+**MEASURED on the cfg2 cube (420 fires):**
+
+```
+FIXED   diagnosis of 420 fires, shared by ALL combinations : 3.5 s
+MARGINAL per combination graded                            : 0.01 - 0.03 s
+```
+
+So carrying **21** combinations instead of 10 costs **~0.2 s**. The grading cost is dominated
+by the FIXED diagnosis, which scales with FIRES (i.e. tickers), not with combinations. Step 2's
+real cost is the **single ENGINE RUN** that produces its cube - hours - and that is completely
+independent of how many candidates are carried, because every carried parameter is SUBSET-SAFE
+and graded from the SAME cube.
+
+**The calculus INVERTS for a FIRE-ADDING parameter.** `swing_length` (P1) and the EMA span (P6)
+change which bars fire, so each distinct value needs its OWN engine run - hours each, not
+milliseconds. **A fire-adding parameter must never be carried as an equivalence class**; its
+values are the CONFIGS of the sweep, decided before launch and capped by budget. If one is ever
+added to the graded grid, this section stops applying and the carry must be capped explicitly.
+
+### 7. IMPLEMENT IN ENGINE - a winner the engine cannot apply is not a winner
+
+```bash
+python scripts/verify_engine_implemented.py
+```
+
+**The sweep grades SUBSET-SAFE parameters OFFLINE.** That is what makes 4,000 combinations
+affordable, and it is also why the search space can contain gates **the engine cannot apply** -
+the grader will happily simulate a filter that exists only inside itself.
+
+**STATUS 2026-08-17 (B1617 re-verified): all 6 swept parameters REACH the engine.** When this
+step was written, four did not - the history is kept because it is what the step exists to catch.
+
+| | status | env knob |
+|---|---|---|
+| P1 `swing_length` | **IMPLEMENTED** | `SMC_SWING_LENGTH` |
+| P2 `close_mitigation` | **IMPLEMENTED (B1616)** | `SMC_OB_CLOSE_MITIGATION` |
+| P3 `tail_n` | **IMPLEMENTED (B1616)** | `SMC_OB_TAIL_N` |
+| P4 `age_bars_max` | **IMPLEMENTED (B1616)** | `SMC_BREAKER_AGE_BARS_MAX` |
+| P5 `break_pct_max` | **IMPLEMENTED (B1616)** | `SMC_BREAKER_BREAK_PCT_MAX` |
+| P6 `ema span` | **IMPLEMENTED** | `STRAT_EMA_SPAN` |
+
+*Until B1616 the last four existed ONLY in the offline grader. cfg2's graded winner - 68 fires at
+Sharpe 2.239 - would have run live as 420 fires at Sharpe 0.789 with a different exit method,
+because the engine applied neither cap. That is `regime_flip` (L461) moved from exits to entry
+gates.*
+
+**Because they are now real engine knobs, the remaining admission step is a REPRODUCTION CHECK
+that was previously impossible:** re-run the config with the candidate's env knobs set, and confirm
+the cube reproduces the graded fire set exactly. **Admission without it ships a backtest nobody has
+executed.**
+
+**BLAST RADIUS - set a knob and you move more than one strategy** (MEASURED B1617):
+`SMC_OB_TAIL_N` and `SMC_OB_CLOSE_MITIGATION` reach **5** strategies (both breaker legs, both
+mitigation-block legs, `strat_pre_rebalance_long`), `close_mitigation` also alters `ob_df` and so
+`strat_smc_order_block_bounce`; the two breaker caps reach **2** (LONG and SHORT). Harmless while
+the sweep runs ONE strategy under `--cube-isolation`; at Phase 1B, with the full roster in one run,
+a knob tuned for the long leg would silently retune five other strategies. S6-B1617b.
+
+### 8. Report the verdict WITH its denominators
+Never a bare PASS count. State: N of M combinations, X of Y producers varied, `exits_effective`
+of 26, and the `ci_lo` of every PASS. **Margin of error is part of the verdict, not a footnote.**
+
+## FAILURE MODES — check these before believing a result
+
+| symptom | cause | reference |
+|---|---|---|
+| all combinations `NO_EXIT_SELECTABLE` | too few IS trades to rank 26 exits | B1502 |
+| a small universe PASSES all gates | entry-rate artifact, not edge | L382 (26.63x) |
+| `ci_lo < 0` | edge indistinguishable from zero; no tightening fixes it | L373 |
+| entry sets differ across runs | universe size or tier gating changed the population | L376, L418 |
+| run completes, no cube | post-processing died; percentage lied | L410 |
+| `MemoryError` in cube replay | cube too large; use the subset filter | B1552 |
+| pyramid OOMs mid-run | an engine run holds RAM; commit BEFORE launching | L425 |
+
+---
+
+## PROGRAMME STATE 2026-09-07 (B2631) — icg CLOSED, family CLOSED, working order
+
+**Verdict chain (artifacts named; this section supersedes the Step-1-era section below for
+programme state, which is kept for design lineage):**
+- **Step 2 (the pre-registered holdout shot, span9):** FAIL, 5 of 6 gates — holdout sharpe 0.757
+  vs the 1.0 bar on 1,107 holdout trades (4,616 full-period); PF 2.64 / sortino 2.60 / PSR 1.0 /
+  both min-trade gates all PASS. Exit mismatch DISCLOSED per owner ruling 2(i): IS selected
+  breakeven_plus_trail, the pre-registered regime_flip recorded and never read on holdout.
+  Artifact: output_audit/output_icg_step2_span9_step2_span9_grid_auto.json (step2 block).
+- **Family closure (owner ruling 2026-09-06 "Option (c) with pre-registration, then (b)"):**
+  the 19 siblings graded FAIL by the pre-registered offline pass — pooled_sharpe fails 19 of 19;
+  R1 (non-shared-holdout trigger) fired 0 of 19; the challenge-test holdout-peek bound cleared
+  1.0 in 0 of 480 cells (family ceiling 0.852 even with hindsight exit selection). Artifacts:
+  output_audit/b2628_family_pass_prereg.json (registered BEFORE the run),
+  output_audit/b2628_institutional_family_grades.json (every row carries overlap-with-icg).
+  Family basis: 6x trade overlap (29,397 summed entries -> 4,866 union), measured on
+  output_r5_merged_1_7/trade_exit_detail.csv.
+- **Council verdict (owner-convened, recorded S6-B2627):** no engine campaigns on collinear
+  siblings; a family-collinearity PRE-GATE runs before every future campaign-target selection
+  (S6-B2627a, helper to build). Known data gap: AAPL and GOOGL 13F files are EMPTY (S6-B2630).
+
+**TIGHTENING band accounting (measured, from output_audit/b1453_phase_1b_roster.json —
+best-cell holdout n > 300, excluding the 4 rostered longs; supersedes the unverified 41):**
+**43 total = 10 DONE (all institutional_, closed FAIL) + 2 disabled-in-band (macd_crossover_short,
+macd_ichimoku) + 31 PENDING.**
+
+**WORKING ORDER for the pending 31 (per the S6-B2418 owner-decision row, option 1 = icg consumed;
+best-cell numbers are SELECTED maxima, a sequencing key only):**
+1. **pead_long_high_yoy_growth_only** (0.704, n=422, PF 3.14) — S6-B2418 option 2; a DIFFERENT
+   producer chain (earnings/YoY growth), per the council's chain-diversity requirement.
+   RECOMMENDED next; its 5-member pead prefix family gets the collinearity pre-gate before launch.
+2. rsi_oversold_with_smart_money_long (0.735, n=618) — ranked higher but FLAGGED in S6-B2418
+   (roster-family similarity; consolidate before tune).
+3. macd_crossover (0.708, n=422) + macd_fast_crossover (0.646, n=589) — the macd family goes
+   through the pre-gate as a unit.
+4. avwap_252_breakout (0.640, n=314), force_index_breakout (0.625, n=417),
+   r1_break_retest (0.602, n=398), then the remainder of the 31.
+The pick is the owner's (S6-B2418 stands OPEN); no launch without it.
+
+### RUN-PRODUCERS-ONCE / FAMILY-CUBE REUSE (B2633, owner directive 2026-09-07)
+
+**Owner, verbatim intent: run the producers once and REUSE the data so post-run cube generation
+covers the whole family with minimal runtime.** Codified as three reuse layers, now standing
+policy for every family campaign:
+
+1. **Producer layer:** every producer precompute for a config is built ONCE into a tagged cache
+   (the S6-B2484 pattern: one shared dir-resolver imported by producer AND consumer;
+   build_params.json provenance per B2622) and every family member reads the same artifact.
+2. **Engine layer:** each engine run carries the WHOLE family in `strategy_subset`, not one
+   strategy - the engine computes every strategy's signals per bar anyway, so the marginal cost
+   of the siblings is near zero and ONE Step-1 run lands a cube for every member at that config.
+3. **Offline layer:** everything downstream of a landed cube is re-scored, never re-run - free
+   levels (B2569), sibling grades (the B2628 pre-registered pass), tightening subsets (SS2.1),
+   and the pre-gate itself all read cubes already on disk.
+
+### CURRENT CAMPAIGN - pead family / pead_long_high_yoy_growth_only (B2633, owner go 2026-09-07)
+
+**Pre-gate EXECUTED first (scripts/family_pregate.py, artifact
+output_audit/b2633_pead_pregate.json) - and it SPLITS the family, the first live proof the
+instrument earns its place:**
+- **LONG cluster (the campaign):** representative `pead_long_high_yoy_growth_only` (2,116 R5
+  trades, T-band, best-exit holdout 0.844 vs MEDIAN-exit 0.228 - the large selection lift is
+  stated up front per the B2631 objection); `pead_long` (138 trades, 87% contained in the
+  representative, holdout n=4 ungradable) and `pead_with_smart_money_long` (656 trades, 88%
+  contained) close by pre-registered sibling pass after the representative's verdict, the B2628
+  pattern.
+- **SHORT cluster (NOT campaigned on this evidence):** `pead_short` + `pead_short_negative_yoy_growth`
+  - 87% mutually overlapping, ZERO overlap with the longs, and NEGATIVE holdout everywhere
+  (best -0.237/-0.390, medians -1.4 to -1.6). They ride the mirror policy; no engine hours.
+- `pead_with_insider_confirmation_long`: no rows in the R5 cube (no-cell bucket) - nothing to
+  measure offline; falls to the loosening programme.
+
+**Phase 0 (next): the SPECS inventory for pead_long_high_yoy_growth_only.** Producer surface
+read so far: backtest/signals/pead.py (`compute_pead_signals`, drift_window_days=60) and
+backtest/signals/earnings_surprise_yoy.py (YOY_GROWTH_LONG_THRESHOLD +0.05 /
+SHORT -0.05); gates `within_pead_window AND yoy_surprise_high` (screener.py:5041). The
+inventory MUST prove each parameter reaches the engine (SS11.2 gate 2 - the S6-B2569a
+unrunnable-level class: a threshold hardcoded at the producer with no env knob cannot be swept
+as specced) and enumerate the transitive closure down to the earnings data source. No engine
+launch before the SPECS entry, Table A, and the ruled Step-1 design exist - and none without
+the owner's launch word.
+
+### STEP-1 LANDED OFFLINE - pead_long_high_yoy_growth_only (B2638, council 2026-09-07)
+
+**THE CAMPAIGN NEEDS ZERO ENGINE HOURS, and that is now MEASURED, not assumed.** Every
+magnitude the two live gates threshold was persisted at fire time: coverage 2,116 of 2,116
+fires = 1.000, and re-applying the PRODUCTION levels returns 2,116 of 2,116 landed fires
+= 1.0000. So a tighter level is a SUBSET of the landed fire set, and Step-1 is a filter,
+not a simulation. Instrument: `scripts/offline_level_sweep.py` (generic - the axis map is
+an argument, pead is its first caller, per the owner's run-producers-once directive).
+Artifact: `output_audit/b2638_pead_step1_is_surface.json`.
+
+**CORRECTION to the B2634 Table A framing.** That table listed SEVEN parameters. Reading
+the producers shows only TWO of the 7 reach THIS strategy's gate: P3 `drift_window_days`
+gates `within_pead_window` (pead.py:179) and P6 `YOY_GROWTH_LONG_THRESHOLD` gates
+`yoy_surprise_high` (earnings_surprise_yoy.py:81). P4/P5/P7 gate `pead_positive_surprise` /
+`pead_negative_surprise` (pead.py:259-265), which screener.py:5041 never reads - they are
+SIBLING knobs, live for the short and standard variants only. Table A is the FAMILY's
+producer surface; this strategy's search space is 3 x 5 = 15 cells, all 15 gradable.
+
+**Step-1 result (IN-SAMPLE ONLY, 2022-05-05..2025-05-05; no gates per B1608; holdout NOT
+read).** Best pooled Sharpe over 26 exits per cell:
+
+| drift window | yoy>=0.05 | 0.10 | 0.20 | 0.35 | 0.50 |
+|---|---|---|---|---|---|
+| <=20d | 1.473 | **1.475** | 1.347 | 1.300 | 1.261 |
+| <=40d | 1.003 | 1.094 | 0.968 | 0.841 | 0.800 |
+| <=60d (production) | 0.748 | 0.851 | 0.772 | 0.714 | 0.721 |
+
+**The drift-window axis is monotone at 5 of 5 threshold levels** (tighter window strictly
+better, every time) - which is the Bernard-Thomas PEAD prediction that drift is strongest
+immediately post-announcement and decays. Five independent confirmations of one ordering is
+a structural signature, not a lucky cell. **The surprise-size axis is NOT monotone**: it
+peaks at 0.10 and decays in 3 of 3 rows - consistently, so the shape is real, but bigger
+surprises do not help.
+
+**The variance-mining hypothesis is REFUTED for this grid.** The council's Contrarian and
+Outsider both predicted the winner would be the tightest, smallest-n cell winning on noise.
+Measured: the tightest cell (20d / 0.50, 384 IS trades) ranks 5th at 1.261; the winner
+(20d / 0.10) holds 792 IS trades of the 1,694 available and 196 holdout trades. The lift
+comes from the axis with the literature prediction, not from sample shrinkage.
+
+**PRE-REGISTRATION (recorded BEFORE any holdout read - that ordering is the whole point).**
+Cell: `drift_window_days<=20, yoy_growth_long_threshold>=0.10, exit time_stop_10d`.
+**Trials searched: 390** (15 cells x 26 exits) - the number a grid-stage multiplicity
+correction needs, and which B2376 measured as ABSENT from the pipeline (BH-FDR runs at the
+roster stage across strategies; PSR is a single-candidate statistic, blind to trials).
+
+**The candidate-cap objection, costed and void (L645).** A tightened gate could only be
+non-exact if the engine had TRUNCATED candidates at `max_candidates_per_day=30`, since the
+freed slots would hold trades never simulated. MEASURED: pead has a 48-fire day against
+that cap, which is positive evidence the cap did not apply - `backtest.py:2417` bypasses it
+under cube isolation (`_cand_iter = candidates if self.cube_isolation`). Subsetting is
+exact for this cube. The sweep re-checks this per strategy and DISCLOSES when a cube offers
+no such evidence.
+
+**NOT on the critical path: the family battery adapter.** The 9-step post-config battery
+fires only from the engine's landing hook (`run_phase1a.py:713`). No engine run means no
+landing, so the adapter buys this campaign nothing; it stays ticketed for whenever a pead
+engine run is actually launched.
+
+**OPEN, owner-gated: the single holdout read.** It is a one-way door - firing it ends the
+pre-registration for this strategy forever, and the production cell's holdout (0.844 best
+exit) is already known. Recommended gating: run the permutation / block-bootstrap null over
+the same 390-trial max-selection FIRST, so the holdout number is read against a calibrated
+threshold instead of a bare 1.0. See S6-B2638a/b/c.
+
+### OPTIMISATION POPULATION BY BUCKET AND FAMILY (B2632, owner directive 2026-09-07)
+
+**Accounting (derived live at B2632; every term from the registry + config disabled sets +
+the measured-band artifact output_audit/b1453_phase_1b_roster.json):**
+
+| bucket | count |
+|---|---|
+| Active registered | 215 |
+| - Roster (qualified, not to optimize) | 7 |
+| - institutional_* family (closed, executed grades, B2612-B2628) | 20 |
+| **= REMAINING to optimize** | **188** |
+
+**Roster 7 (4 longs + 3 retained short mirrors):** `xs_momentum_top_decile`, `52w_high_breakout_pullback_long`, `xs_momentum_with_smart_money_long`, `smc_breaker_block_long`, `smc_breaker_block_short`, `52w_low_breakdown_pullback_short`, `xs_momentum_bottom_decile_short`
+
+**institutional_* 20 (closed):** `institutional_breakout_confirmation_long`, `institutional_buy_momentum_long`, `institutional_cluster_long`, `institutional_committed_growth_long`, `institutional_high_conviction_long`, `institutional_increased_with_directors_long`, `institutional_insider_combo_long`, `institutional_multi_quarter_persistence_long`, `institutional_oversold_long`, `institutional_persistence_breakout_long`, `institutional_persistence_momentum_long`, `institutional_persistence_oversold_long`, `institutional_persistence_volume_long`, `institutional_persistent_holders_long`, `institutional_recent_init_momentum_long`, `institutional_recent_init_volume_long`, `institutional_strong_conviction_long`, `institutional_volume_confirmation_long`, `institutional_with_directors_long`, `institutional_with_officers_long`
+
+**The 188 remaining, grouped by FAMILY (name-prefix heuristic - a family is CONFIRMED or
+split only by the S6-B2627a collinearity pre-gate's measured trade overlap, which runs before
+any family's campaign target is picked). Band tags per member: (T) tightening holdout n>300,
+(M) mid-band 100<n<=300, (L) low-n 0<n<=100, (-) no graded cell in R5. Split: 29 T / 52 M /
+41 L / 66 no-cell. 41 multi-member families cover 138 strategies; 50 are singletons.**
+
+- **smc** (16) [-:4 L:6 M:5 T:1]: `smc_bos_continuation`(-), `smc_bos_retest_entry`(L), `smc_choch_reversal`(L), `smc_discount_long`(L), `smc_equal_highs_sweep_short`(M), `smc_equal_lows_sweep_long`(M), `smc_fvg_retest_long`(-), `smc_fvg_retest_short`(L), `smc_inverse_fvg`(M), `smc_liquidity_sweep_reversal`(T), `smc_mitigation_block_long`(-), `smc_mitigation_block_short`(-), `smc_order_block_bounce`(M), `smc_ote_long`(L), `smc_ote_short`(L), `smc_premium_short`(M)
+- **news** (7) [-:4 L:2 M:1]: `news_momentum_long`(-), `news_momentum_short`(-), `news_reversal_long`(-), `news_reversal_short`(-), `news_sentiment_long`(M), `news_sentiment_shift_long`(L), `news_sentiment_short`(L)
+- **pivot** (7) [-:5 L:1 M:1]: `pivot_fib_confluence`(-), `pivot_r1_breakout`(M), `pivot_r2_continuation`(-), `pivot_r3_blowoff_short`(-), `pivot_s1_bounce`(L), `pivot_s2_bounce`(-), `pivot_s3_capitulation`(-)
+- **donchian** (6) [M:6]: `donchian_10_breakout`(M), `donchian_breakdown_retest_short`(M), `donchian_breakdown_short`(M), `donchian_breakout_long`(M), `donchian_breakout_retest_long`(M), `donchian_breakout_with_smart_money_long`(M)
+- **pead** (6) [-:2 M:2 T:2]: `pead_long`(-), `pead_long_high_yoy_growth_only`(T), `pead_short`(M), `pead_short_negative_yoy_growth`(T), `pead_with_insider_confirmation_long`(-), `pead_with_smart_money_long`(M)
+- **xs** (6) [-:2 L:3 M:1]: `xs_combined_momentum_high_ivol_short`(M), `xs_combined_momentum_low_ivol`(L), `xs_low_beta_long`(-), `xs_low_beta_with_smart_money_long`(L), `xs_momentum_quality_combined`(L), `xs_quality_top_quintile_long`(-)
+- **52w** (4) [-:3 L:1]: `52w_high_breakout`(-), `52w_high_breakout_with_smart_money_long`(-), `52w_high_breakout_with_smart_money_vol_below_long`(L), `52w_low_breakdown`(-)
+- **bollinger** (4) [-:1 L:1 M:2]: `bollinger_lower`(M), `bollinger_tight`(-), `bollinger_tight_with_smart_money_long`(M), `bollinger_upper_short`(L)
+- **golden** (4) [-:2 L:1 M:1]: `golden_cross_20_50`(L), `golden_cross_50_200`(-), `golden_cross_9_21`(M), `golden_cross_volume`(-)
+- **pre** (4) [-:4]: `pre_fomc_long_sleeve`(-), `pre_fomc_quality_momentum_long`(-), `pre_holiday_long`(-), `pre_rebalance_long`(-)
+- **rsi** (4) [-:1 L:1 M:1 T:1]: `rsi_overbought_short`(-), `rsi_oversold`(M), `rsi_oversold_with_smart_money_long`(T), `rsi_volume_200ema`(L)
+- **avwap** (3) [-:1 M:1 T:1]: `avwap_20high_rejection_short`(-), `avwap_252_breakout`(T), `avwap_50_reclaim`(M)
+- **cpr** (3) [M:2 T:1]: `cpr_narrow_bullish`(M), `cpr_narrow_momentum`(M), `cpr_narrow_momentum_short`(T)
+- **flag** (3) [-:3]: `flag_bear_retest_short`(-), `flag_bull_long`(-), `flag_bull_retest_long`(-)
+- **ichimoku** (3) [L:1 M:2]: `ichimoku_cloud_breakdown`(L), `ichimoku_cloud_breakout`(M), `ichimoku_tk_cross`(M)
+- **insider** (3) [-:2 L:1]: `insider_cluster_concentrated_sell_short`(L), `insider_cluster_long`(-), `insider_cluster_with_director_long`(-)
+- **macd** (3) [M:1 T:2]: `macd_bullish_with_smart_money_long`(M), `macd_crossover`(T), `macd_fast_crossover`(T)
+- **post** (3) [-:2 L:1]: `post_deletion_drift_short`(-), `post_inclusion_drift_long`(-), `post_inclusion_reversal_short`(L)
+- **prev** (3) [M:3]: `prev_day_high_break`(M), `prev_day_low_bounce`(M), `prev_day_low_breakdown`(M)
+- **supertrend** (3) [-:1 L:2]: `supertrend_ichimoku_adx`(-), `supertrend_macd`(L), `supertrend_macd_short`(L)
+- **triangle** (3) [-:1 L:1 M:1]: `triangle_ascending_long`(L), `triangle_ascending_retest_long`(-), `triangle_descending_short`(M)
+- **break** (2) [M:1 T:1]: `break_retest_confluence`(M), `break_retest_volume`(T)
+- **camarilla** (2) [L:1 T:1]: `camarilla_r4_breakout`(T), `camarilla_s3_bounce`(L)
+- **cup** (2) [-:1 L:1]: `cup_and_handle_long`(L), `cup_and_handle_retest_long`(-)
+- **doji** (2) [L:2]: `doji_at_resistance_short`(L), `doji_at_support`(L)
+- **head** (2) [L:2]: `head_and_shoulders_bottom_long`(L), `head_and_shoulders_top_short`(L)
+- **htf** (2) [L:1 M:1]: `htf_aligned_breakout_long`(L), `htf_aligned_breakout_short`(M)
+- **judas** (2) [-:2]: `judas_swing_long`(-), `judas_swing_short`(-)
+- **mfi** (2) [-:1 L:1]: `mfi_oversold`(-), `mfi_oversold_with_smart_money_long`(L)
+- **orb** (2) [-:1 L:1]: `orb_stocks_in_play_long`(-), `orb_stocks_in_play_short`(L)
+- **pairs** (2) [T:2]: `pairs_mean_reversion_long`(T), `pairs_mean_reversion_short`(T)
+- **parabolic** (2) [M:1 T:1]: `parabolic_sar_flip`(M), `parabolic_sar_flip_short`(T)
+- **po3** (2) [M:1 T:1]: `po3_bearish`(T), `po3_bullish`(M)
+- **poc** (2) [M:2]: `poc_magnet_long`(M), `poc_magnet_short`(M)
+- **squeeze** (2) [-:1 M:1]: `squeeze_breakout`(M), `squeeze_setup_long`(-)
+- **stochrsi** (2) [T:2]: `stochrsi_overbought_short`(T), `stochrsi_oversold`(T)
+- **three** (2) [T:2]: `three_black_crows_short`(T), `three_white_soldiers`(T)
+- **turtle** (2) [L:1 T:1]: `turtle_soup_long`(L), `turtle_soup_short`(T)
+- **week** (2) [M:2]: `week_opening_gap_fill_down`(M), `week_opening_gap_fill_up`(M)
+- **weekly** (2) [-:2]: `weekly_bias_pullback_long`(-), `weekly_bias_pullback_short`(-)
+- **williams** (2) [M:1 T:1]: `williams_r_oversold`(T), `williams_stoch_dual`(M)
+
+- **singletons** (50): `52wh_break_retest`(-), `52wl_break_retest_short`(-), `activist_13d_long`(-), `adx_initiation`(-), `awesome_oscillator`(M), `bb_squeeze_volume`(M), `bullish_engulfing_support`(M), `cmf_flip`(T), `consec_downdays_quality_long`(-), `dc20_break_retest`(T), `death_cross_50_200_volume`(-), `double_bottom_long`(L), `earnings_avwap_reclaim_long`(-), `failed_breakout_2b_short`(-), `force_index_breakout`(T), `gap_and_go_long`(-), `gold_silver_risk_off_long`(-), `halloween_seasonal_long`(-), `hammer_at_support_long`(L), `hull_rsi`(M), `inside_bar_breakout`(M), `inverted_cup_and_handle_short`(L), `january_effect_small_cap_long`(-), `keltner_lower`(-), `m_and_a_target_long`(M), `mmbm_long`(T), `mmsm_short`(T), `monthly_bias_momentum_long`(-), `morning_star`(T), `naked_poc_retest_long`(T), `pocket_pivot_long`(-), `ppo_crossover`(M), `r1_break_retest`(T), `risk_off_bond_equity_short`(L), `roc_burst`(M), `rs_line_sector_leader_long`(-), `rsi21_slow`(-), `rsi9_extreme`(-), `sector_rotation_defensive_long`(-), `shooting_star_short`(L), `short_borrow_trap_avoid`(-), `simple_below_ema_50_short`(T), `stoch_oversold`(L), `tema_dema`(M), `totm_long`(L), `ultimate_oscillator`(L), `value_area_breakout_long`(L), `vix_backwardation_long`(M), `vol_spike_2x_below_ema_50_short`(M), `volume_spike_breakout`(M)
+
+**Family-level reading (the analyze-by-families directive):** the campaign unit is the
+FAMILY, not the registration - the institutional closure measured 20 names collapsing to
+~1.2 independent bets. Before any family's campaign: run the pre-gate (overlap + band
+clustering + the median-exit holdout beside the best-cell key), pick ONE representative,
+and let its verdict plus a pre-registered sibling pass close the family, as B2628 did.
+
+
+
+## CURRENT PROGRAMME — institutional_committed_growth_long STEP 1 (S6-B2481..B2499, 2026-09-01)
+
+**Inventory** — `SPECS["institutional_committed_growth_long"]` in
+`producer_variant_table.py`: 9 parameters P1-P9. P1-P3 NOT-SWEPT-BY-DESIGN (PIT
+lag / share-class floor / gap tolerance — availability and hygiene, not edge
+knobs). The per-level free/resim split corrected the factorial 31,500 → 700
+(L726). **Ruled Step-1 design: 17 engine configs** — baseline + P4 {2,3,6,8} +
+P5 {2,3,6,8} + P6 {1.0,1.25,1.5} + P9 spans {9,20,50,100,150} — **plus 4 FREE
+cache-graded levels** (P7 {5,11,14}, P8 {6}) that need no engine run because both
+counts persist in `signals_at_entry` — coverage is NOT 100 % (B2569 correction of
+this line's own claim, L749 class): measured 96.2 % of fired rows carry the
+committed key on R5 (S6-B2504) and 93.83 % on cfg1 (23 resume-restored rows empty,
+S6-B2512; span9/span20/span50 measure 100 %). **The free levels are graded on
+EVERY landing by the battery** (`step2_free_levels`, reproduction-gated, B2569) —
+the one-time R5-cube grading at S6-B2504 was the N1 class bug, not the design.
+P7 resim {1,2} and P8 resim {2,3} are recorded in the band and deliberately NOT
+scheduled — **and are UNRUNNABLE as specced: the screener hardcodes both
+thresholds (screener.py:6646-6648) and no env knob exists** (§0.7
+band-completeness defect; owner decision S6-B2569a: strike, or build the knob and
+schedule 4 configs at ~+10-12 h serial).
+The P9 band excludes producer-offered span 21 (owner directive 2026-08-31; the
+b2197 ledger measured it a near-duplicate of 20 that did not earn a run).
+
+**Mechanism (S6-B2484)** — the persistence producer is parameterised via env
+`INST_MIN_CONSECUTIVE_QUARTERS` / `INST_GROWTH_LOOKBACK_QUARTERS` /
+`INST_GROWTH_MULTIPLE`, with variant artifacts written to tagged caches via
+`INST_PERSIST_CACHE_TAG` through ONE shared helper (`persistence_cache_dir`)
+imported by producer AND consumer so the two cannot drift. Untagged = the
+production path the rest of the 13F family reads, byte-identical (defaults ARE
+production; 60-ticker equivalence run recorded 0 mismatches, S6-B2484). The
+`persistent_holders_4q`/`_8q` chains (other strategies' inputs) are deliberately
+untouched.
+
+**Offline pre-screen (S6-B2485, corrected S6-B2498)** — all 11 producer configs
+materialised at a MEASURED 283 s/config (~52 min; the shipped 104.6 s claim was a
+warm one-snapshot sample, understated 2.7×). The screen compares the PRIMARY and
+FALLBACK partitions pairwise (both Jaccards; a duplicate verdict needs both high)
+plus per-year fallback rate against that year's baseline, over the full artifact
+AND the 200-ticker sweep universe. Artifact: `output_audit/b2485_prescreen.json`.
+**Results:** `minq2`/`minq3` are NEAR-DUPLICATES of baseline on both partitions
+(primary 0.940/0.964, fallback 0.906/0.929) — dropping them from the engine queue
+saves ~3.4 h of ~29 h, an owner decision. `mult1.5`/`lookback2`/`minq8` nearly
+TRIPLE the 2022 fallback rate (0.329/0.304/0.253 vs baseline 0.124) — the B1230
+fallback-switch hazard MEASURED: those configs shift the strategy's early-year
+identity toward the fallback arm. Fallback membership diverges MORE than primary
+on all 11 baseline pairs, which is why the primary-only screen was corrected. The
+screen CANNOT see which fallback members clear `institutional_increased >= 5` —
+that column is not in the artifact; the residual stays with the engine.
+
+**Status (B2531, 2026-09-02) — cfg1 LANDED and configs 2-17 are RUNNING.**
+VERIFIED against primaries, not against this document: `output_icg_cfg1/
+engine_state.json` reads `status: complete`, `trade_log.parquet` holds 373
+trades, and all nine post-config ledger steps are terminal ({DONE, N/A}, gate
+`verify_postconfig_complete.py` COMPLETE). Best of 24 exits ranked
+`breakeven_plus_trail` at is_sharpe 0.263 / is_ci_lo -0.087 on 8,952 IS rows —
+Step-1 is ranking only, no admission (B1608). One open finding: 23 of 373 rows
+carry an empty `signals_at_entry`, RCA CLOSED at S6-B2512 (they are exactly the
+closed trades restored at `resume_sim_day=47`; historical, unrecoverable, and
+they gate nothing).
+
+**BOTH OWNER RULINGS ARE RESOLVED — the text below this paragraph said they were
+pending, and that staleness nearly produced a wrong call.** S6-B2491 is
+IMPLEMENTED in `backtest/engine/backtest.py::kill_decision`: the cap gates on
+ACTIVE hours — wall-clock minus CREDITED machine sleep, where only gaps of
+30 minutes or more earn credit — and BOTH gating sites (the supervisor thread
+and the in-loop cap) call that one function. The fail direction is conservative:
+with no credit accrued it reduces exactly to the old wall-clock kill. There is
+no wall-clock backstop, deliberately: a 3x backstop was designed and then killed
+by its own boundary matrix, because any overnight sleep exceeds 3x a sane cap
+and it would have killed the very incident it was meant to survive (L734).
+S6-B2481 (resume go) was given and the resume landed. Reading the superseded
+text, an overnight chain looks unlaunchable; the code had already closed it
+(L664 — a secondary record preserving a state the primary has moved past).
+
+**THE TWO HOUR FIGURES ARE DIFFERENT THINGS, and this section previously used
+only one of them.** **5 h is the CEILING** — the owner's hard cap (B2107, raised
+from 3 h on 2026-08-24), which no local run may exceed. **4.0 h is the value
+actually ENFORCED** — `leg_cap_hours` in every spec, passed to the engine as
+`--max-run-hours` (`run_wave.py:173`). cfg1 used 4.0 and all 16 B2527 specs use
+4.0. So the engine kills a leg at 4.0 h of ACTIVE time; 5 h is the bound that
+choice has to respect.
+
+**Launch path for configs 2-17 — EXECUTED 2026-09-02 (B2527/B2529), chain RUNNING.**
+The owner's go was given in the launch turn; 16 specs (`output_audit/
+b2527_icg_*_spec.json`) run serially under one detached Task Scheduler task via
+`run_serial_chain.py`, ordered by expected information so an early halt loses
+least: the 5 unmeasured P9 spans, then the 3 producer configs the S6-B2485
+pre-screen measured as most divergent, then the unranked middle, then
+`minq3`/`minq2`, which that same pre-screen measured as near-duplicates of
+baseline. Pre-launch gates all executed: `prelaunch_gate.py` exit 0 (it failed
+exit 3 first, on field names — which is why it is run and not assumed), tickers
+sha256-pinned at 200, subset asserted SOLO and confirmed at runtime by
+`[B1425 STRATEGY_SUBSET_FILE] requested 1, matched 1/219`, and all 11 tagged
+precomputes asserted present because a missing cache falls back to the untagged
+production artifact and would run a silent duplicate of the baseline. Projection
+38-47 h serial from cfg1's measured rate. Two defects were caught before they
+cost a night: the detached task's `ExecutionTimeLimit` was 12 h against a 38-47 h
+chain (B2528), and `launch_detached` reported success on a DENIED registration
+(S6-B2529a, still open). The original note follows.
+
+**Launch path for configs 2-17 (original)** — no new code: `run_wave.py` arms already carry
+per-arm env (run_wave.py:190-202), so a wave spec whose arms set
+`INST_PERSIST_CACHE_TAG=<tag>` (producer configs) or `STRAT_EMA_SPAN=<span>`
+(P9 configs) launches the set under the existing chain, monitor and post-config
+battery. The spec + manifest are written at launch time per §1.0-§1.3; launch
+requires the owner's explicit go in the launch turn.
+
+**Couplings and cautions** — TWO couplings, one per knob class, and both make
+every config in this programme SOLO-SUBSET-ONLY. (1) env knob: `STRAT_EMA_SPAN`
+is read by smc_breaker_block_long / _short AND this strategy
+(screener.py:4407/4442/6656) — never set it on a multi-strategy run. (2)
+artifact tag (S6-B2499b, found auditing consumers): `INST_PERSIST_CACHE_TAG`
+re-routes the WHOLE persistence artifact for the engine process, and
+`committed_growth_holders` is ALSO consumed by `strat_simple_below_ema_50_short`
+(screener.py:6144, the B1422 selectivity gate) — so a tagged producer-config run
+with more than the target strategy in its subset silently alters that
+strategy's gate input too. `strat_institutional_multi_quarter_persistence_long`
+(screener.py:6611) reads `persistent_holders_4q`, which this sweep measurably
+does not move. Table D's `sw`/`sp` and all D-2 axes are smc-spec keys (see
+§6.4b caveat, S6-B2500).
+
+**Free-level status (B2569 — supersedes the "cheapest next action" line that stood
+here, which pointed at S6-B2501 work EXECUTED 2026-09-01 and then superseded by the
+per-config directive).** The battery now grades the P7/P8 free levels on every
+landing (`step2_free_levels`), gated on reproducing the landed baseline at
+production levels first. Executed retroactively on all 4 landed cubes — every one
+reproduces (span9 609/609, span20 531/531, span50 405/405, cfg1 350/350 covered
+with the 23 S6-B2512 rows counted and excluded) — and the verdict with its
+denominators is: **0 of 4 free levels beat baseline on ANY landed config (0 of 16
+level×config cells); every P7 tightening costs 31-79 % of fires and drops top
+ci_lo; p8_6 is a 4-6-trade no-op.** Artifacts:
+`output_audit/output_icg_*_free_levels.json`; audit `output_audit/b2569_icg_programme_audit.md`.
+
+**Step-1 leaderboard after 4 of 17 landings (ranking only, no admission — B1608):**
+span9 `regime_flip` is_ci_lo **+0.167** / is_sharpe 0.489 / 609 fires; span20
+`breakeven_plus_trail` −0.015 / 0.300 / 531; span50 `breakeven_plus_trail` −0.067 /
+0.288 / 405; cfg1 (baseline, span200) `breakeven_plus_trail` −0.087 / 0.263 / 373.
+The span axis is measuring as the live one; span100/span150 land next in the chain.
+
+## 11. MECHANICAL PROCEDURE FOR ANY STRATEGY (B2573, 2026-09-02) - the ordered list Opus follows
+
+**Why this section exists.** The owner asked (2026-09-02) whether the workflow is mechanical enough for
+Opus to run across all strategies. The audit (`output_audit/b2573_optimisation_workflow_portability_audit.md`)
+measured: NO - the battery's family registry holds 2 of 219 strategies, 7 of 9 battery/runbook scripts are
+one-strategy code, nothing at launch checks registration, and this runbook had no single ordered list.
+This section IS the ordered list. Every mechanism it cites either exists (named with its file) or is
+marked **PROPOSED-NOT-BUILT (ticket)** - the B1335 mechanism-existence rule applies to a runbook too.
+Sections above remain the authority for WHY; this section is the authority for WHAT, IN WHAT ORDER.
+
+### 11.0 Standing constraints that bind every step (read once, apply always)
+
+- Owner approval before any rule/threshold/parameter change (CLAUDE.md Critical Rules). This
+  procedure never changes a strategy; it MEASURES one.
+- Local run cap **5 h** per leg (B2107 owner ruling 2026-08-24; `prelaunch_gate.OWNER_LOCAL_CAP_HOURS`).
+  Compute budget **$100 total** across all strategies (B2109). Venue ruling S6-B2107a precedes any
+  non-local launch.
+- No launch except through `run_wave.py` (which writes `run_manifest.json` from the spec, run_wave.py:133)
+  -> `launch_sweep.py` (which runs `prelaunch_gate.py --manifest` and REFUSES on non-zero, launch_sweep.py:43,
+  then writes `gate_receipt.json` - M10; the battery FAILS a cube without one). A direct `run_phase1a.py`
+  invocation bypasses all three (S6-B2159b class) - never launch that way.
+- A running chain is LIVE CODE: `run_postconfig.py`, `postconfig_landing.py`, `run_wave.py`,
+  `launch_sweep.py` and the engine are re-read at each landing/launch. An edit to any of them while a
+  chain runs is a deploy onto every queued spec (S6-B2573i). Do not edit them mid-chain without saying so.
+- Step-1 universe = the 200 tickers of APPENDIX S1-200 (`output_audit/_sweep_200.txt`); window
+  2024-05-05 -> 2025-05-05 (SS10.1). Step 2/3 = 4 years, all 544 tickers (STEP 3).
+
+### 11.1 ON-RAMP - what must exist BEFORE the first spec of a new strategy launches
+
+Run each probe; every one must print the expected line. A missing item is a STOP, not a note.
+(The launch-time check SHIPPED at B2578 (S6-B2573b): `producer_variant_table.launch_refusals` runs in
+`run_wave.main` BEFORE any arm and in `prelaunch_gate.check` for every LOCAL manifest; it refuses R1
+(no SPECS entry), R3 (not in `run_postconfig.FAMILIES`), an undeclared or off-band env knob, a resim
+level with no knob (the S6-B2569a P7/P8 class) and an INST_PERSIST_CACHE_TAG dir with no parquet (R9).
+B2579 added R8's consumer half: every knob's consumer list is MEASURED from the tree
+(`producer_variant_table.knob_consumers`) and drift from the declaration is a refusal at launch and a
+step-7 FAIL at landing. R4-R7 are now derived from the `tools` adapter block rather than probed by
+hand; R2 (the producer-level fire count) stays a hand probe.)
+
+| # | Artifact | Probe (PYTHONPATH=.:scripts) | Expected | Exists today for |
+|---|---|---|---|---|
+| R1 | `SPECS["<strategy>"]` in `scripts/producer_variant_table.py` - every swept parameter with its env knob, `free_band` / `resim_band` / `subset_safe`, and a reason for every level that is banded but not scheduled (SS0.7, #290) | `python -c "from producer_variant_table import SPECS, validate_spec; validate_spec(SPECS['<strategy>']); print('SPEC OK')"` | `SPEC OK` | smc, institutional |
+| R2 | `D_AXIS_FAMILIES["<strategy>"]` (Table D axes + `detect` key) | `python -c "from producer_variant_table import D_AXIS_FAMILIES as D; print('<strategy>' in D)"` | `True` | smc, institutional |
+| R3 | `FAMILIES["<strategy>"]` in `scripts/run_postconfig.py` with a params extractor and a `run_<family>` that executes EVERY `_GRADER_CHECKS` leg (`step2_grade_auto`, `step2_free_levels`, `step4_spot_check_auto`, `step7_engine_implemented`) | `python -c "from run_postconfig import FAMILIES, _GRADER_CHECKS; f=FAMILIES['<strategy>']; print(sorted(f))"` then read `run_<family>` and tick each leg | 4 legs present | smc (3 of 4 - no free-levels leg), institutional (4 of 4) |
+| R4 | Step-1 grader for the family (grades the landed cube at the manifest's own params; emits the B2505 grid contract: `config`, `strategy`, `grader`, `rows`, `is_rows`, `holdout_rows`, `results[]`) | `--help` of the grader | usage text | `tighten_breaker_block.py` (smc), `grade_institutional_config.py` (institutional) |
+| R5 | Free-levels re-scorer (tighter-only subset re-score off `signals_at_entry`, gated on REPRODUCING the landed baseline) | `--help` | usage text | `grade_free_levels_institutional.py` (institutional only) |
+| R6 | Three-leg spot check (precompute / production consumer / engine record, n=50 seed 42) | `--help` | usage text | `spot_check_trades.py` (smc), `spot_check_institutional.py` (institutional) |
+| R7 | Step-7 engine-anchor set (the tokens that prove each swept parameter reaches the engine path) | grep the tokens in the engine files | every token found | `verify_engine_implemented.py` (smc); inline grep in `run_institutional` |
+| R8 | Every env knob in the spec's arm is READ by the engine/precompute (`knob_is_read`, B2578) and its full consumer list is MEASURED and pinned equal to the declaration (blast radius; `knob_consumers` tokenizes `backtest/**` + reads `os.environ` sites under `scripts/`, so a name inside a docstring is prose, not a consumer - B2579) | `python -c "import sys; sys.path.insert(0,'scripts'); from producer_variant_table import SPECS, declared_consumers, knob_consumers, knob_is_read; from pathlib import Path; s=SPECS['<strategy>']; print(all(knob_is_read(p['env'], Path('.')) and declared_consumers(s,p['env'])==knob_consumers(p['env']) for p in s['params'] if p.get('env')))"` | `True` - and the launch gate refuses any drift | ENFORCED for smc + institutional (B2578 knobs, B2579 consumer lists) |
+| R9 | The precompute the strategy reads exists for every scheduled level (e.g. `INST_PERSIST_CACHE_TAG` dirs), built BEFORE the spec launches | `ls` the cache dir per level | one dir per level | institutional |
+
+**The single generic adapter replacing R3-R7 SHIPPED at B2579 (S6-B2573a).** A new strategy now
+declares ONE `tools` block in its SPECS entry and the battery derives the rest; the six pieces above
+are what that block replaces, kept as the reading of what it must contain. Write the block BEFORE the
+spec, never after the cube: since B2578 the launch gate refuses a strategy with no SPECS entry and
+since B2579 an incomplete `tools` block is not a family, so the refusal lands before the engine.
+
+### 11.2 THE RUN - STEP 0 to STEP 4, in order, with the artifact each step must leave
+
+| Step | Do | Command / mechanism | Must leave | Gate to the next step |
+|---|---|---|---|---|
+| 0 | Inventory: read the strategy block in `screener.py`, its producer, its precompute; list every parameter (fixed / searched / banded-unscheduled with reason); write R1 + R2 | STEP 0 above; `validate_spec` | SPECS entry; `PRODUCER_VARIANT_TABLE_<strategy>.md` via `producer_variant_table.py --strategy <s> --factorial` | R1-R9 all green (SS11.1) |
+| 0.5 | Instrument ONE ticker at the production params to see fires exist (family example: `instrument_breaker_block.py` for smc; institutional used the precompute builder + a `python -c` count). Generic form: count fires of the strategy on 6 megacaps at production params | family script or `python -c` | a fire count > 0 recorded in the spec's `note` | fires > 0 (a 0 here is a producer defect, not a search) |
+| 1 | Write ONE spec per fire-adding combination (`output_audit/<batch>_<cfg>_spec.json`: `strategy_subset`, `tickers_file` = `_sweep_200.txt`, window, `arms[0].env` with every knob, `max_run_hours` <= 5, `resume`); copy an existing spec (`b2527_icg_span50_spec.json`) and change ONLY the knob values + names | spec file | the spec, diffed against its template in the turn | every knob in `arms[0].env` is a declared SPECS knob at a band level - `launch_refusals` (B2578) refuses the spec otherwise, and `launch_sweep.arm_env_matches` refuses an UNSET or mismatched one in the process env |
+| 1.1 | Launch the chain DETACHED: `launch_detached.py --chain --batch <b> --specs <all specs in information order> [--wait-for <summary.json>]` (B2575; the ONLY sanctioned chain launch path - `chain_task_running` refuses a second chain; the task unregisters ITSELF at CHAIN DONE, B2577) wrapping `run_serial_chain.py`; per spec, run_wave writes the manifest and launch_sweep runs the gate (exit 0 or REFUSED) and writes `gate_receipt.json` | `scripts/run_serial_chain.py` -> `run_wave.py` -> `launch_sweep.py` -> `prelaunch_gate.py` | `output_audit/serial_chain.log` LAUNCH line; `<out-dir>/run_manifest.json` + `gate_receipt.json`; Task Scheduler task `stockpicks_chain_<batch>_<ts>` observed Running | the task is OBSERVED (S6-B2529a), not intended; the receipt exists |
+| 1.2 | Arm monitoring IN THE LAUNCH TURN: exactly ONE hourly cron per chain (delete any existing one for the same chain first - two were found armed, S6-B2573f), unconditional + periodic markers (#185/#186); read `run_heartbeat.json` at each report | CronCreate (session-held - S6-B2548) | the hourly report block in every turn while the chain runs | none - reporting is a standing duty |
+| 1.3 | Each landing: the engine hook runs the battery unprompted (`_postconfig_landing_hook` -> `postconfig_landing.py` -> `run_postconfig.py`); the turn's response carries `LANDING REPORT: <cube>` (Stop hook blocks otherwise) | automatic | `postconfig_ledger.json[<cube>]` with all nine steps dispositioned DONE / N/A / FAIL / OPEN; `postconfig_landings.jsonl` row; commit `bNNN` pushed; toast | every step DONE or N/A ON EVIDENCE; a FAIL is a B-batch, not a footnote |
+| 1.4 | Chain HALT (any non-COMPLETE): read `serial_chain.log`, `classify_run_log.py <log>` (DEAD vs live), the out-dir's `engine_state.json`; decide RESUME (`resume: true` spec + `--resume-from-checkpoint`, verify the spec points at the checkpoint dir FIRST - L646) or RE-RUN; relaunch the chain from the halted spec with `--wait-for` if another run is live. HALT notification SHIPPED at B2577 (S6-B2573f.a): every HALT appends `output_audit/chain_halts.jsonl`, toasts, and the Stop hook blocks the turn until the response carries `CHAIN HALT REPORT: <wave>`; the session-independent 15-min watcher is **PROPOSED-NOT-BUILT (S6-B2573f.c)** | `scripts/classify_run_log.py`, `scripts/run_serial_chain.py --wait-for` | a queue row naming the halted spec, the cause class, and the relaunch command | chain log shows the relaunch |
+| 2 | When every Step-1 spec is COMPLETE: grade every landed cube with the family grader (already done per landing by the battery); render Tables A-D (`producer_variant_table.py --strategy <s> --results <grid...> --keys <params> --out`; NOTE `--keys` DEFAULTS to the smc keys `close_mitigation,age_bars_max,tail_n` - always pass the family's own, S6-B2573c); pick the top-3 configs by the STEP 2 ENTRY rule (mechanical: rank on `is_ci_lo`, min-trades >= 10, no gates - B1608) | family grader + `producer_variant_table.py` | `PRODUCER_VARIANT_TABLE_<strategy>.md` Tables A-D populated; top-3 list in the queue row | top-3 named with `is_ci_lo` values |
+| 3 | WATERFALL: run config 1 at 4 y x 544 tickers (legs <= 5 h each, `resume: true`); the battery grades it against the six LIVE_GATES; STOP at the first config that qualifies; else config 2, then 3 (STEP 2 EXECUTION) | same launch path as 1.1; `roster_core.LIVE_GATES` | `output_audit/<batch>_cfgN_grid.json` with `qualifiers` (renamed from `provisional_qualifiers` at S6-B2409) | a qualifier, or 3 of 3 non-qualifying with denominators |
+| 4 | ADMIT: render the qualifier into `PHASE_1B_ROSTER.md` (`phase_1b_step2_admissions.json`, metrics re-derived from the grid at render time - S6-B2413); count the REGISTERED mirror short (S6-B2417); engine wiring is DEFERRED to Phase 1B deployment (S6-B2411, trigger named there) | `scripts/build_phase_1b_roster.py` | roster row + queue row | owner-visible roster diff in the turn |
+
+### 11.3 The turn-close that every step above requires
+
+Ticket table with six classes and the delta (`scripts/queue_state.py`), SKILLS INVOKED three-skill
+block, #237 sweep, compliance statement, and - while a chain runs - the hourly report and any
+`LANDING REPORT: <cube>` the landings file says is unreported.
+
+## APPENDIX S1-200 - THE 200 STEP-1 TICKERS (owner ruling 2026-08-29)
+
+Source: output_audit/_sweep_200.txt (the `tickers_file` in every b2197 spec), 200 names,
+recorded here verbatim so the Step-1 universe is reconstructable from this document alone.
+
+`SPY` `TSLA` `AAPL` `AMZN` `NVDA` `MSFT` `AMD` `GOOGL` `GOOG` `MRNA`
+`NFLX` `PYPL` `BA` `BAC` `JPM` `V` `XOM` `DIS` `MU` `PFE`
+`CVX` `INTC` `CRM` `MA` `ADBE` `QCOM` `C` `F` `BRK-B` `WFC`
+`UNH` `HD` `T` `JNJ` `TWTR` `COIN` `PG` `WMT` `UBER` `AVGO`
+`VZ` `CSCO` `ABNB` `COST` `AMAT` `GS` `MRK` `CMCSA` `NKE` `GM`
+`KO` `PLTR` `MS` `ABBV` `CRWD` `TXN` `ORCL` `OXY` `BKNG` `TGT`
+`TMO` `LRCX` `LOW` `INTU` `BMY` `FCX` `NOW` `CCL` `SBUX` `PEP`
+`CAT` `DHR` `GE` `LLY` `CHTR` `ACN` `ATVI` `UNP` `ABT` `AAL`
+`PANW` `MCD` `DE` `IBM` `SPGI` `NEE` `AXP` `LMT` `AMGN` `ADI`
+`TMUS` `HON` `MDT` `COP` `FDX` `UAL` `UPS` `DASH` `LIN` `CVS`
+`SCHW` `DAL` `ISRG` `ETSY` `BLK` `GILD` `PM` `RTX` `BX` `NXPI`
+`DDOG` `DVN` `HOOD` `CVNA` `MMM` `REGN` `EBAY` `AMT` `EXPE` `TJX`
+`TTD` `COF` `ENPH` `WDAY` `SLB` `MDLZ` `NEM` `KLAC` `PXD` `CMG`
+`FIS` `NCLH` `LULU` `CSX` `MPC` `FISV` `AON` `CI` `EOG` `BIIB`
+`MTCH` `HUM` `VRTX` `EL` `NUE` `ADSK` `DG` `MO` `EQIX` `ALGN`
+`PLD` `SHW` `HPQ` `ZTS` `LUV` `PNC` `CL` `USB` `DLTR` `HCA`
+`LVS` `GPN` `ADP` `DXCM` `BDX` `MAR` `CB` `NSC` `FTNT` `KR`
+`SYK` `TFC` `VLO` `ILMN` `BSX` `WYNN` `NOC` `EA` `RCL` `ON`
+`MRO` `MCHP` `DOW` `ICE` `SO` `CME` `EXC` `HLT` `CCI` `ORLY`
+`DUK` `WBA` `APD` `SPG` `EPAM` `MET` `INFO` `BBY` `PENN` `PSX`

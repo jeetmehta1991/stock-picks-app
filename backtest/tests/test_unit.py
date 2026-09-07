@@ -34822,3 +34822,95 @@ def test_b2637_launch_gate_refuses_a_mis_built_precompute(tmp_path):
     doc["arms"][0]["env"]["INST_MIN_CONSECUTIVE_QUARTERS"] = "4"
     errs = pvt.launch_refusals(doc, root=tmp_path)
     assert not [e for e in errs if "BUILT at" in e], errs
+
+
+
+# ---------------------------------------------------------------------------
+# B2638 (S6-B2633): Step-1 for an offline-free strategy - the sweep refuses a
+# broken reproduction, reports TRADES not cube rows, and cannot read the holdout
+# ---------------------------------------------------------------------------
+
+def _b2638_mod():
+    import importlib.util as ilu
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[2]
+    spec = ilu.spec_from_file_location(
+        "ols_b2638", root / "scripts" / "offline_level_sweep.py")
+    m = ilu.module_from_spec(spec)
+    spec.loader.exec_module(m)
+    return m, root
+
+
+def test_b2638_sweep_has_no_holdout_code_path():
+    """B2638: Step-1 is a ranked list with NO gates and NO holdout contact
+    (owner ruling B1608). The guarantee is STRUCTURAL, not procedural: the
+    module must contain no reference to the holdout window at all, so a
+    later edit cannot quietly slice it. Asserted over the AST - the docstring
+    names the holdout repeatedly, so a substring scan would pass on prose and
+    fail on code, which is the L748 defect."""
+    import ast
+    m, root = _b2638_mod()
+    tree = ast.parse((root / "scripts" / "offline_level_sweep.py").read_text(
+        encoding="utf-8"))
+    banned = {"holdout", "HO_START", "HO_END"}
+    hits = []
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Attribute) and node.attr in banned:
+            hits.append(node.attr)
+        if isinstance(node, ast.Name) and node.id in banned:
+            hits.append(node.id)
+    assert hits == [], f"a holdout code path exists: {hits}"
+    # and the window it DOES read is in-sample, through the shared constants
+    assert any(isinstance(n, ast.Attribute) and n.attr == "in_sample"
+               for n in ast.walk(tree))
+
+
+def test_b2638_reproduction_failure_refuses(tmp_path):
+    """B2638 (L642, fail-closed): if re-applying the declared PRODUCTION levels
+    does not return the landed fire set, the persisted magnitude is not the
+    quantity the engine thresholded - so every derived level measures a
+    different gate. MUST-FIRE arm: declaring the tightest cell as production
+    reproduces 0.22 and has to refuse. MUST-QUIET arm: the true production
+    levels reproduce 1.0000 and grade all 15 cells."""
+    m, root = _b2638_mod()
+    if not m.TRADE_LOG.exists():          # artifact-dependent; skip if absent
+        import pytest
+        pytest.skip("R5 merged cube not present")
+    axes = [m.parse_axis("days_since_last_earnings:le:20,40,60"),
+            m.parse_axis("earnings_eps_yoy_growth:ge:0.05,0.10,0.20,0.35,0.50")]
+    strat = "pead_long_high_yoy_growth_only"
+    import pytest
+    with pytest.raises(SystemExit) as e:
+        m.sweep(strat, axes, (20.0, 0.50), 0.99, 0.999, 30)
+    assert "reproduce" in str(e.value)
+
+    rec = m.sweep(strat, axes, (60.0, 0.05), 0.99, 0.999, 30)
+    assert rec["reproduction"] == 1.0 and rec["evidence"]["coverage"] == 1.0
+    assert rec["cells_graded"] == 15 and rec["cells_total"] == 15
+    # the trials count is what a multiplicity correction needs; it must be the
+    # number of (cell, exit) evaluations, never the number of cells
+    assert rec["trials_searched"] == 390
+    assert rec["holdout_read"].startswith("NOT FIRED")
+
+
+def test_b2638_cells_report_trades_not_cube_rows():
+    """B2638 (owner directive, twice-corrected): a cell's row count is trades x
+    exits and overstates the evidence ~26x. The first run of this harness
+    printed n=20592 for a cell holding 792 trades. Both fields must exist and
+    the row count must be the larger one."""
+    m, root = _b2638_mod()
+    import json
+    p = root / "output_audit" / "b2638_pead_step1_is_surface.json"
+    rec = json.loads(p.read_text(encoding="utf-8"))
+    top = rec["preregistration_candidate"]
+    assert top["levels"] == [20.0, 0.10] and top["best_exit"] == "time_stop_10d"
+    assert top["is_trades"] == 792 and top["is_cube_rows"] == 792 * 26
+    for c in rec["ranked"]:
+        assert c["is_cube_rows"] >= c["is_trades"]
+    # the axis with a literature prediction is monotone at EVERY level of the
+    # other; the surprise-size axis is NOT (it peaks at 0.10 in 3 of 3 rows)
+    s = {(c["levels"][0], c["levels"][1]): c["is_sharpe"] for c in rec["ranked"]}
+    for p6 in (0.05, 0.10, 0.20, 0.35, 0.50):
+        assert s[(20.0, p6)] > s[(40.0, p6)] > s[(60.0, p6)], p6
+    for p3 in (20.0, 40.0, 60.0):
+        assert s[(p3, 0.10)] > s[(p3, 0.05)], (p3, "peak is at 0.10, not 0.05")
