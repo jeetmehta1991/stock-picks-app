@@ -2557,6 +2557,49 @@ best-cell numbers are SELECTED maxima, a sequencing key only):**
    r1_break_retest (0.602, n=398), then the remainder of the 31.
 The pick is the owner's (S6-B2418 stands OPEN); no launch without it.
 
+### RUN-PRODUCERS-ONCE / FAMILY-CUBE REUSE (B2633, owner directive 2026-09-07)
+
+**Owner, verbatim intent: run the producers once and REUSE the data so post-run cube generation
+covers the whole family with minimal runtime.** Codified as three reuse layers, now standing
+policy for every family campaign:
+
+1. **Producer layer:** every producer precompute for a config is built ONCE into a tagged cache
+   (the S6-B2484 pattern: one shared dir-resolver imported by producer AND consumer;
+   build_params.json provenance per B2622) and every family member reads the same artifact.
+2. **Engine layer:** each engine run carries the WHOLE family in `strategy_subset`, not one
+   strategy - the engine computes every strategy's signals per bar anyway, so the marginal cost
+   of the siblings is near zero and ONE Step-1 run lands a cube for every member at that config.
+3. **Offline layer:** everything downstream of a landed cube is re-scored, never re-run - free
+   levels (B2569), sibling grades (the B2628 pre-registered pass), tightening subsets (SS2.1),
+   and the pre-gate itself all read cubes already on disk.
+
+### CURRENT CAMPAIGN - pead family / pead_long_high_yoy_growth_only (B2633, owner go 2026-09-07)
+
+**Pre-gate EXECUTED first (scripts/family_pregate.py, artifact
+output_audit/b2633_pead_pregate.json) - and it SPLITS the family, the first live proof the
+instrument earns its place:**
+- **LONG cluster (the campaign):** representative `pead_long_high_yoy_growth_only` (2,116 R5
+  trades, T-band, best-exit holdout 0.844 vs MEDIAN-exit 0.228 - the large selection lift is
+  stated up front per the B2631 objection); `pead_long` (138 trades, 87% contained in the
+  representative, holdout n=4 ungradable) and `pead_with_smart_money_long` (656 trades, 88%
+  contained) close by pre-registered sibling pass after the representative's verdict, the B2628
+  pattern.
+- **SHORT cluster (NOT campaigned on this evidence):** `pead_short` + `pead_short_negative_yoy_growth`
+  - 87% mutually overlapping, ZERO overlap with the longs, and NEGATIVE holdout everywhere
+  (best -0.237/-0.390, medians -1.4 to -1.6). They ride the mirror policy; no engine hours.
+- `pead_with_insider_confirmation_long`: no rows in the R5 cube (no-cell bucket) - nothing to
+  measure offline; falls to the loosening programme.
+
+**Phase 0 (next): the SPECS inventory for pead_long_high_yoy_growth_only.** Producer surface
+read so far: backtest/signals/pead.py (`compute_pead_signals`, drift_window_days=60) and
+backtest/signals/earnings_surprise_yoy.py (YOY_GROWTH_LONG_THRESHOLD +0.05 /
+SHORT -0.05); gates `within_pead_window AND yoy_surprise_high` (screener.py:5041). The
+inventory MUST prove each parameter reaches the engine (SS11.2 gate 2 - the S6-B2569a
+unrunnable-level class: a threshold hardcoded at the producer with no env knob cannot be swept
+as specced) and enumerate the transitive closure down to the earnings data source. No engine
+launch before the SPECS entry, Table A, and the ruled Step-1 design exist - and none without
+the owner's launch word.
+
 ### OPTIMISATION POPULATION BY BUCKET AND FAMILY (B2632, owner directive 2026-09-07)
 
 **Accounting (derived live at B2632; every term from the registry + config disabled sets +

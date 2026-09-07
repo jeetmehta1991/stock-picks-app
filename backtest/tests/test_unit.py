@@ -34480,3 +34480,60 @@ def test_b2628_family_pass_grades_by_prereg_rules(tmp_path, monkeypatch):
     # R2: 50% overlap < 80% -> fires (must-fire arm)
     assert r["R2_campaign_consideration"] is True
     # SYNTHETIC fixture: values prove structure, never levels (L695)
+
+
+# ---------------------------------------------------------------------------
+# B2633 (S6-B2627a): the family pre-gate measures overlap, both sharpe keys
+# and the band - and stays a measurement (launches nothing)
+# ---------------------------------------------------------------------------
+
+def test_b2633_family_pregate_measures_overlap_and_both_keys(tmp_path, monkeypatch):
+    """B2633: the pre-gate reports pairwise overlap in BOTH denominators,
+    best-exit AND median-exit holdout sharpe (the deflated key the B2631
+    objection required), and the band tag; deterministic fixture proves
+    structure, never levels (L695 SYNTHETIC)."""
+    import pandas as pd
+    import sys
+    from pathlib import Path
+    from datetime import date, timedelta
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts"))
+    import family_pregate as fp
+
+    rows = []
+    d0, h0 = date(2024, 6, 3), date(2025, 6, 2)
+    # member A: 40 IS + 20 HO entries; member B: half of A's plus 10 own
+    for i in range(40):
+        for st, tk in (("fam_a", f"T{i:02}"),
+                       ("fam_b", f"T{i:02}" if i < 20 else f"U{i:02}")):
+            for ex, pnl in (("e1", 2.0 + (i % 5)), ("e2", 0.5 + (i % 3)),
+                            ("e3", -1.0 + (i % 2))):
+                rows.append((st, ex, d0 + timedelta(days=i), tk, pnl, 10.0))
+    for i in range(20):
+        for st, tk in (("fam_a", f"H{i:02}"),
+                       ("fam_b", f"H{i:02}" if i < 10 else f"V{i:02}")):
+            for ex, pnl in (("e1", 1.5 + (i % 4)), ("e2", 0.4 + (i % 3)),
+                            ("e3", -0.5 + (i % 2))):
+                rows.append((st, ex, h0 + timedelta(days=i), tk, pnl, 10.0))
+    df = pd.DataFrame(rows, columns=["strategy", "exit_method", "entry_date",
+                                     "ticker", "pnl_pct", "hold_days"])
+    monkeypatch.setattr(fp, "load", lambda sts, cube_path=None: df[df["strategy"].isin(sts)])
+
+    out = fp.pregate(["fam_a", "fam_b"])
+    a, b = out["members"]["fam_a"], out["members"]["fam_b"]
+    assert a["n_trades"] == 60 and a["holdout_n"] == 20 and a["band"] == "L"
+    # both keys present, and median <= best by construction
+    assert a["best_exit"] == "e1"
+    assert a["median_exit_holdout_sharpe"] <= a["best_exit_holdout_sharpe"]
+    ov = out["overlap"]["fam_a|fam_b"]
+    assert ov["shared"] == 30 and ov["of_a"] == 0.5 and ov["of_b"] == 0.5
+    # the gate is a measurement: its module invokes no engine. Asserted on
+    # EXECUTABLE content (L748 - the first draft's word-check matched the
+    # module docstring's own prose "so launch decisions see both"): no
+    # subprocess import, no run_phase1a reference outside prose.
+    import ast as _ast
+    tree = _ast.parse((Path(fp.__file__)).read_text(encoding="utf-8"))
+    imported = {n.name for node in _ast.walk(tree)
+                for n in getattr(node, "names", [])}
+    assert "subprocess" not in imported
+    code_only = _ast.unparse(tree)
+    assert "run_phase1a" not in code_only

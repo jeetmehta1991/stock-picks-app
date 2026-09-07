@@ -1,0 +1,104 @@
+{
+ "generated": "2026-09-07T12:02:12Z",
+ "cube": "trade_exit_detail.csv",
+ "members": {
+  "pead_long": {
+   "n_trades": 138,
+   "holdout_n": 4,
+   "band": "L",
+   "holdout_gradable_exits": 0
+  },
+  "pead_long_high_yoy_growth_only": {
+   "n_trades": 2116,
+   "holdout_n": 422,
+   "band": "T",
+   "holdout_gradable_exits": 26,
+   "best_exit": "time_stop_10d",
+   "best_exit_holdout_sharpe": 0.844,
+   "best_exit_holdout_n": 422,
+   "median_exit_holdout_sharpe": 0.228
+  },
+  "pead_short": {
+   "n_trades": 872,
+   "holdout_n": 205,
+   "band": "M",
+   "holdout_gradable_exits": 26,
+   "best_exit": "breakeven_plus_trail",
+   "best_exit_holdout_sharpe": -0.237,
+   "best_exit_holdout_n": 205,
+   "median_exit_holdout_sharpe": -1.623
+  },
+  "pead_short_negative_yoy_growth": {
+   "n_trades": 2215,
+   "holdout_n": 496,
+   "band": "T",
+   "holdout_gradable_exits": 26,
+   "best_exit": "breakeven_plus_trail",
+   "best_exit_holdout_sharpe": -0.39,
+   "best_exit_holdout_n": 496,
+   "median_exit_holdout_sharpe": -1.421
+  },
+  "pead_with_smart_money_long": {
+   "n_trades": 656,
+   "holdout_n": 106,
+   "band": "M",
+   "holdout_gradable_exits": 26,
+   "best_exit": "breakeven_plus_trail",
+   "best_exit_holdout_sharpe": 0.678,
+   "best_exit_holdout_n": 106,
+   "median_exit_holdout_sharpe": 0.231
+  }
+ },
+ "overlap": {
+  "pead_long|pead_long_high_yoy_growth_only": {
+   "shared": 120,
+   "of_a": 0.87,
+   "of_b": 0.057
+  },
+  "pead_long|pead_short": {
+   "shared": 0,
+   "of_a": 0.0,
+   "of_b": 0.0
+  },
+  "pead_long|pead_short_negative_yoy_growth": {
+   "shared": 0,
+   "of_a": 0.0,
+   "of_b": 0.0
+  },
+  "pead_long|pead_with_smart_money_long": {
+   "shared": 122,
+   "of_a": 0.884,
+   "of_b": 0.186
+  },
+  "pead_long_high_yoy_growth_only|pead_short": {
+   "shared": 0,
+   "of_a": 0.0,
+   "of_b": 0.0
+  },
+  "pead_long_high_yoy_growth_only|pead_short_negative_yoy_growth": {
+   "shared": 0,
+   "of_a": 0.0,
+   "of_b": 0.0
+  },
+  "pead_long_high_yoy_growth_only|pead_with_smart_money_long": {
+   "shared": 579,
+   "of_a": 0.274,
+   "of_b": 0.883
+  },
+  "pead_short|pead_short_negative_yoy_growth": {
+   "shared": 755,
+   "of_a": 0.866,
+   "of_b": 0.341
+  },
+  "pead_short|pead_with_smart_money_long": {
+   "shared": 0,
+   "of_a": 0.0,
+   "of_b": 0.0
+  },
+  "pead_short_negative_yoy_growth|pead_with_smart_money_long": {
+   "shared": 0,
+   "of_a": 0.0,
+   "of_b": 0.0
+  }
+ }
+}
