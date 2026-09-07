@@ -419,6 +419,158 @@ fires =  ( P7  OR  P8 )  AND  P9
     },
 }
 
+# B2634 (S6-B2633 Phase 0): inventories whose FAMILY ADAPTER does not exist
+# yet. They render Table A and validate like any SPEC, but the battery and
+# the launch gate read SPECS alone, so nothing can treat a Phase-0 draft as
+# a runnable family (family_refusal's tools contract stays intact - a fake
+# tools block naming graders that do not exist would be WORSE than none).
+# An entry graduates by gaining its real tools block and moving into SPECS.
+SPECS_PHASE0: dict[str, dict] = {
+    "pead_long_high_yoy_growth_only": {
+        # B2634 (S6-B2633 Phase 0): the pead family's first inventory. NO
+        # `tools` block yet - this is DELIBERATE and load-bearing: the B2578
+        # launch gate refuses a spec whose family has no complete adapter
+        # (fail closed, L642), so nothing can launch this family until its
+        # graders exist. The pre-gate artifact for the family split is
+        # output_audit/b2633_pead_pregate.json.
+        #
+        # ENGINE-REACHABILITY FINDING (the S6-B2569a class, found at Phase 0
+        # instead of after 11 configs): BOTH engine call sites pass NO
+        # parameters - signal_loader.py:238 compute_yoy_surprise_signal(
+        # ticker, df, as_of) and :278 compute_pead_signals(ticker, df,
+        # as_of) - so every knob below is a Python default with no env knob.
+        # A resim sweep as coded would produce IDENTICAL cubes (the L387
+        # class). Consequence: every resim_band here is EMPTY; the free
+        # (tightening) levels are gradable from the cube because the
+        # CONTINUOUS earnings_eps_yoy_growth and days_since_last_earnings
+        # persist in signals_at_entry (verified on the R5 trade log,
+        # 2,116/2,116 parsed rows carry both).
+        "baseline": {"artifact": "output_r5_merged_1_7", "fires": 2116,
+                     "tickers": 480, "holdout_n": 422,
+                     "window": "2022-05-05..2026-05-05"},
+        "gate": "within_pead_window AND yoy_surprise_high (screener.py:5041)",
+        "params": [
+            {"id": "P1", "producer": "pead.load_quarterly_eps",
+             "param": "eps_source", "production": "polygon_financials",
+             "band": ["polygon_financials"],
+             "free_band": ["polygon_financials"], "resim_band": [],
+             "sweep_levels": [], "subset_safe": None,
+             "status": "NOT-SWEPT-BY-DESIGN", "type": "str",
+             "engine_implemented": True,
+             "evidence": "pead.py:75-131",
+             "derivation": "data availability, not an edge knob: quarterly "
+                           "diluted-else-basic EPS from data_prefetch/polygon/"
+                           "financials/<T>.parquet, PIT via filing_date <= as_of"},
+            {"id": "P2", "producer": "pead.load_quarterly_eps",
+             "param": "quarter_filter", "production": "Q1-Q4_only",
+             "band": ["Q1-Q4_only"],
+             "free_band": ["Q1-Q4_only"], "resim_band": [],
+             "sweep_levels": [], "subset_safe": None,
+             "status": "NOT-SWEPT-BY-DESIGN", "type": "str",
+             "engine_implemented": True,
+             "evidence": "pead.py:115-117",
+             "derivation": "structural: TTM rows are skipped so YoY compare "
+                           "is well-defined per quarter"},
+            {"id": "P3", "producer": "pead.compute_pead_signals",
+             "param": "drift_window_days", "production": 60,
+             "band": [20, 40, 60],
+             "free_band": [20, 40, 60], "resim_band": [],
+             "sweep_levels": [], "subset_safe": None,
+             "status": "UNTESTED", "type": "int",
+             "engine_implemented": True,
+             "evidence": "pead.py:136 + signal_loader.py:278 (called with NO args)",
+             "derivation": "TIGHTENING-ONLY band, retention MEASURED "
+                           "2026-09-07 on the 2,116 R5 fires (days_since "
+                           "persisted): <=20d keeps 53pct, <=40d keeps 76pct; "
+                           "quartiles 6/19/40. Loosening (>60d) has NO env "
+                           "knob - unrunnable as coded (S6-B2569a class), "
+                           "struck until a knob is built"},
+            {"id": "P4", "producer": "pead.compute_pead_signals",
+             "param": "yoy_growth_threshold", "production": 0.0,
+             "band": [0.0],
+             "free_band": [0.0], "resim_band": [],
+             "sweep_levels": [], "subset_safe": None,
+             "status": "NOT-SWEPT-BY-DESIGN", "type": "float",
+             "engine_implemented": True,
+             "evidence": "pead.py:137",
+             "derivation": "feeds pead_positive/negative_surprise, consumed "
+                           "by SIBLINGS (pead_long/pead_short), not this "
+                           "strategy - held fixed in this campaign"},
+            {"id": "P5", "producer": "pead.compute_pead_signals",
+             "param": "announcement_return_threshold", "production": 0.01,
+             "band": [0.01],
+             "free_band": [0.01], "resim_band": [],
+             "sweep_levels": [], "subset_safe": None,
+             "status": "NOT-SWEPT-BY-DESIGN", "type": "float",
+             "engine_implemented": True,
+             "evidence": "pead.py:138 (B1136 loosened 0.02 -> 0.01)",
+             "derivation": "sibling-only knob (surprise flags), held fixed "
+                           "in this campaign"},
+            {"id": "P6", "producer": "earnings_surprise_yoy.compute_yoy_surprise_signal",
+             "param": "YOY_GROWTH_LONG_THRESHOLD", "production": 0.05,
+             "band": [0.05, 0.10, 0.20, 0.35, 0.50],
+             "free_band": [0.05, 0.10, 0.20, 0.35, 0.50], "resim_band": [],
+             "sweep_levels": [], "subset_safe": None,
+             "status": "UNTESTED", "type": "float",
+             "engine_implemented": True,
+             "evidence": "earnings_surprise_yoy.py:42 + signal_loader.py:238 (NO args)",
+             "derivation": "THE strategy's primary knob. TIGHTENING-ONLY "
+                           "band, retention MEASURED 2026-09-07 (continuous "
+                           "earnings_eps_yoy_growth persisted on all 2,116 "
+                           "fires): >=0.10 keeps 88pct, >=0.20 keeps 69pct, "
+                           ">=0.35 keeps 53pct, >=0.50 keeps 44pct; yoy "
+                           "quantiles 0.091/0.167/0.383/1.182/3.391 at "
+                           "p10/p25/p50/p75/p90. Loosening (<0.05) has NO "
+                           "env knob - struck until built"},
+            {"id": "P7", "producer": "earnings_surprise_yoy.compute_yoy_surprise_signal",
+             "param": "YOY_GROWTH_SHORT_THRESHOLD", "production": -0.05,
+             "band": [-0.05],
+             "free_band": [-0.05], "resim_band": [],
+             "sweep_levels": [], "subset_safe": None,
+             "status": "NOT-SWEPT-BY-DESIGN", "type": "float",
+             "engine_implemented": True,
+             "evidence": "earnings_surprise_yoy.py:43",
+             "derivation": "short-sleeve knob (pead_short_negative_yoy_"
+                           "growth, whose cluster the B2633 pre-gate "
+                           "measured negative-holdout and excluded from "
+                           "campaigning) - held fixed here"},
+        ],
+        "formula": """=============================== PRODUCER LAYER ===============================
+
+P1  eps history  =  load_quarterly_eps(ticker): quarterly diluted-else-basic
+                    EPS from data_prefetch/polygon/financials/<T>.parquet,
+                    PIT via filing_date <= as_of
+                    PARAMETER: eps_source = polygon_financials (fixed)
+
+P2  quarter rows =  keep fiscal_period in {Q1..Q4}; TTM skipped
+                    PARAMETER: quarter_filter = Q1-Q4_only (fixed)
+
+P3  drift window =  days_since_last_earnings <= N  ->  within_pead_window
+                    PARAMETER: drift_window_days = 60
+                    (calendar-day proxy; engine call passes NO args)
+
+P4  surprise flags (SIBLING-only): yoy > t AND ann_ret > t
+                    PARAMETER: yoy_growth_threshold = 0.0
+
+P5  surprise flags (SIBLING-only): announcement-day return leg
+                    PARAMETER: announcement_return_threshold = 0.01
+
+P6  yoy_surprise_high  =  earnings_eps_yoy_growth >= T
+                    PARAMETER: YOY_GROWTH_LONG_THRESHOLD = 0.05
+                    (current-quarter EPS vs same quarter prior year;
+                     the CONTINUOUS yoy value persists in signals_at_entry,
+                     so tighter T re-scores FREE from the cube)
+
+P7  yoy_surprise_negative = yoy <= T   (short sleeve, excluded cluster)
+                    PARAMETER: YOY_GROWTH_SHORT_THRESHOLD = -0.05
+
+=============================== STRATEGY LAYER ===============================
+
+fires  =  within_pead_window  AND  yoy_surprise_high     (screener.py:5041)
+""",
+    },
+}
+
 GATE_ORDER = ("pooled_sharpe", "profit_factor", "sortino", "psr",
               "min_trades_holdout", "min_trades_full_period")
 
@@ -1619,7 +1771,9 @@ def main() -> int:
     ap.add_argument("--out", default="")
     a = ap.parse_args()
 
-    spec = SPECS.get(a.strategy)
+    # B2634: the RENDER path also serves Phase-0 drafts (Table A before the
+    # family adapter exists); battery/launch lookups read SPECS alone.
+    spec = SPECS.get(a.strategy) or SPECS_PHASE0.get(a.strategy)
     if spec is None:
         print(f"no SPEC for {a.strategy}; add one to SPECS (never infer at runtime)")
         return 1

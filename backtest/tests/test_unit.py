@@ -34537,3 +34537,42 @@ def test_b2633_family_pregate_measures_overlap_and_both_keys(tmp_path, monkeypat
     assert "subprocess" not in imported
     code_only = _ast.unparse(tree)
     assert "run_phase1a" not in code_only
+
+
+# ---------------------------------------------------------------------------
+# B2634 (S6-B2633 Phase 0): the pead SPECS draft - validates, renders Table A,
+# and stays INVISIBLE to the battery until its family adapter exists
+# ---------------------------------------------------------------------------
+
+def test_b2634_pead_phase0_draft_validates_and_stays_out_of_the_battery():
+    """B2634: SPECS_PHASE0['pead_long_high_yoy_growth_only'] passes the same
+    validate_spec contract as shipped SPECS, renders a full Table A, records
+    the engine-reachability finding (every resim_band EMPTY - no env knobs
+    exist, signal_loader calls the producers bare), and is NOT in SPECS - so
+    family_refusal's tools contract keeps the launch/battery path closed."""
+    import importlib.util as ilu
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[2]
+    spec = ilu.spec_from_file_location(
+        "pvt_b2634", root / "scripts" / "producer_variant_table.py")
+    m = ilu.module_from_spec(spec)
+    spec.loader.exec_module(m)
+
+    assert "pead_long_high_yoy_growth_only" not in m.SPECS
+    draft = m.SPECS_PHASE0["pead_long_high_yoy_growth_only"]
+    assert m.validate_spec(draft) == []
+    # the reachability finding is structural: NO param may promise a resim
+    # level, because no env knob exists (signal_loader.py:238/278 pass no
+    # args) - the S6-B2569a unrunnable-level class caught at Phase 0
+    for p in draft["params"]:
+        assert p["resim_band"] == [], (p["id"], "a resim level with no knob")
+        assert p.get("env") is None
+    # the two swept axes are free (persisted values), production included
+    by = {p["id"]: p for p in draft["params"]}
+    assert by["P3"]["free_band"] == [20, 40, 60]
+    assert by["P6"]["free_band"] == [0.05, 0.10, 0.20, 0.35, 0.50]
+    # Table A renders with every evidence cell present (the b2465 contract)
+    rows = m.table_a(draft)
+    body = chr(10).join(rows)
+    for p in draft["params"]:
+        assert str(p["evidence"]) in body
