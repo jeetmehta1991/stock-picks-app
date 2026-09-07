@@ -33,6 +33,22 @@ logger = logging.getLogger(__name__)
 _TIME_STOP_EXC_SEEN: set = set()
 
 
+# B2637 (S6-B2617): the R-fallback tally. A counter nobody reads is not
+# observability, so `r_fallback_report()` renders it and returns None when
+# the fallback never fired - an absent line means it never happened,
+# never that nobody looked.
+R_FALLBACK_COUNTERS: dict[str, int] = {}
+
+
+def r_fallback_report() -> str | None:
+    """One line naming every R-fallback that fired, or None."""
+    if not R_FALLBACK_COUNTERS:
+        return None
+    parts = ', '.join(f'{k}={v}' for k, v in
+                      sorted(R_FALLBACK_COUNTERS.items()))
+    return ('R-multiple fallback fired (B2637/S6-B2617): ' + parts
+            + ' - each used 2pct of entry price as R because the trade carried no initial_stop')
+
 def make_trade_id(ticker: str, entry_date: date, strategy: str,
                     direction: str = "long", seq: int = 0) -> str:
     """DEC-493  -  generate a time-ordered, human-readable trade_id.
@@ -233,6 +249,15 @@ def _check_per_strategy_exit_hit(
     if trade.initial_stop and trade.initial_stop > 0:
         r_value = abs(ep - trade.initial_stop)
     else:
+        # B2637 (S6-B2617, L769): this fallback was the family's one SILENT
+        # site - no counter, no warning, on a live engine path. A missing
+        # initial_stop makes every R-multiple target and stop below a
+        # fabrication off 2pct of price, and nothing said so. It is now
+        # COUNTED; the engine reports the tally through
+        # R_FALLBACK_COUNTERS at save time, the same shape as the replay-ATR
+        # proxy (B1261) whose visibility this one lacked.
+        R_FALLBACK_COUNTERS["missing_initial_stop"] = (
+            R_FALLBACK_COUNTERS.get("missing_initial_stop", 0) + 1)
         r_value = ep * 0.02   # fallback per ATR_FALLBACK_PCT semantics
     if r_value <= 0:
         return (None, None)

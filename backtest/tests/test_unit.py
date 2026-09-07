@@ -34740,3 +34740,85 @@ def test_b2636_finishing_run_is_done_not_stalled():
     src = (root / "scripts" / "peer_reporter.py").read_text(encoding="utf-8")
     code = [l.strip() for l in src.splitlines() if not l.strip().startswith("#")]
     assert any(l.startswith("summary_exists = summary_exists or") for l in code)
+
+
+# ---------------------------------------------------------------------------
+# B2637 (S6-B2617, S6-B2622a): the silent R fallback is counted; the
+# provenance check refuses BEFORE the engine spend
+# ---------------------------------------------------------------------------
+
+def test_b2637_r_fallback_is_counted_not_silent():
+    """B2637 (S6-B2617, L769): the R-multiple fallback on a missing
+    initial_stop was the family's one silent live site - no counter, no
+    warning - so every R target and stop derived from it was a fabrication off
+    2pct of price with nothing saying so. Both arms: a trade WITH a stop must
+    not touch the counter; a trade WITHOUT one must."""
+    import importlib
+    import backtest.engine.exit_manager as em
+    importlib.reload(em)
+    em.R_FALLBACK_COUNTERS.clear()
+    assert em.r_fallback_report() is None      # never fired -> no line at all
+
+    class _T:
+        strategy = "_b2637_probe"
+        entry_price = 100.0
+        direction = "long"
+        initial_stop = 90.0
+
+    from datetime import date as _date
+    from backtest.config import STRATEGY_EXIT_OVERRIDE as _SEO
+    _SEO["_b2637_probe"] = {"exit_method": "fixed_4r_2r"}
+
+    def _hit(t):
+        return em._check_per_strategy_exit_hit(t, 101.0, 99.0, 100.0,
+                                               _date(2025, 1, 2))
+    try:
+        _hit(_T())                                  # has a stop -> no fallback
+        assert em.R_FALLBACK_COUNTERS == {}, em.R_FALLBACK_COUNTERS
+        t = _T(); t.initial_stop = None
+        _hit(t)                                     # no stop -> counted
+        assert em.R_FALLBACK_COUNTERS.get("missing_initial_stop") == 1
+        line = em.r_fallback_report()
+        assert line and "missing_initial_stop=1" in line and "2pct" in line
+    finally:
+        _SEO.pop("_b2637_probe", None)
+        em.R_FALLBACK_COUNTERS.clear()
+
+
+def test_b2637_launch_gate_refuses_a_mis_built_precompute(tmp_path):
+    """B2637 (S6-B2622a): a tag built at different parameters than the arm
+    declares is refused at LAUNCH, before the 2-4h engine spend - B2622 caught
+    it only at landing. A dir with NO record is DISCLOSED, not refused (the
+    pre-B2622 tags carry none; refusing them would halt every live arm)."""
+    import json
+    import sys
+    from pathlib import Path
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts"))
+    import producer_variant_table as pvt
+
+    strat = "institutional_committed_growth_long"
+    sub = tmp_path / "subset.txt"
+    sub.write_text(strat + "\n", encoding="utf-8")
+    tagdir = tmp_path / "data_prefetch" / "derived" / "institutional_persistence_t1a_x"
+    tagdir.mkdir(parents=True)
+    (tagdir / "2024-01-01.parquet").write_bytes(b"stub")
+
+    doc = {"strategy_subset": "subset.txt",
+           "arms": [{"tag": "a1", "env": {"INST_PERSIST_CACHE_TAG": "x",
+                                          "INST_MIN_CONSECUTIVE_QUARTERS": "8"}}]}
+    # no record -> the provenance rule contributes nothing (disclosure, not refusal)
+    errs = pvt.launch_refusals(doc, root=tmp_path)
+    assert not [e for e in errs if "BUILT at" in e]
+
+    # record disagreeing with the arm -> refused at launch
+    (tagdir / "build_params.json").write_text(json.dumps(
+        {"min_consecutive_quarters": 4, "growth_lookback_quarters": 4,
+         "growth_multiple": 1.10}), encoding="utf-8")
+    errs = pvt.launch_refusals(doc, root=tmp_path)
+    assert [e for e in errs if "BUILT at min_consecutive_quarters=4" in e
+            and "declares 8" in e], errs
+
+    # record agreeing -> no provenance refusal (must-quiet arm)
+    doc["arms"][0]["env"]["INST_MIN_CONSECUTIVE_QUARTERS"] = "4"
+    errs = pvt.launch_refusals(doc, root=tmp_path)
+    assert not [e for e in errs if "BUILT at" in e], errs

@@ -981,6 +981,41 @@ def launch_refusals(doc: dict, root: Path | None = None,
                                         f"read to {d} via {k}={v!r} but that "
                                         "directory holds no parquet - the engine "
                                         "would run on nothing (S6-B2484 class)")
+                        # B2637 (S6-B2622a): the provenance check moves to the
+                        # LAUNCH gate. B2622 put it in the battery, which fires
+                        # at LANDING - after the engine has already spent 2-4 h
+                        # on a tag built at the wrong parameters. A dir with no
+                        # record is DISCLOSED, not refused: the pre-B2622 tags
+                        # carry none and refusing them would HALT every live arm
+                        # (the tightening-over-a-backlog rule).
+                        elif (d / "build_params.json").is_file():
+                            import json as _j
+                            try:
+                                _rec = _j.loads((d / "build_params.json")
+                                                .read_text(encoding="utf-8"))
+                            except (OSError, ValueError) as _exc:
+                                errs.append(f"{s}: arm '{tag}' precompute dir {d} "
+                                            f"has an unreadable build_params.json "
+                                            f"({_exc!r}) - fail CLOSED (L642)")
+                                _rec = None
+                            if _rec:
+                                _pairs = (("min_consecutive_quarters",
+                                           "INST_MIN_CONSECUTIVE_QUARTERS", int, 4),
+                                          ("growth_lookback_quarters",
+                                           "INST_GROWTH_LOOKBACK_QUARTERS", int, 4),
+                                          ("growth_multiple",
+                                           "INST_GROWTH_MULTIPLE", float, 1.10))
+                                _env = dict(arm.get("env") or {})
+                                for _rk, _ek, _cast, _dflt in _pairs:
+                                    _want = _cast(_env.get(_ek, _dflt))
+                                    _got = _rec.get(_rk)
+                                    if _got is not None and _cast(_got) != _want:
+                                        errs.append(
+                                            f"{s}: arm '{tag}' precompute {d.name} "
+                                            f"was BUILT at {_rk}={_got} but the arm "
+                                            f"declares {_want} - the engine would "
+                                            "grade a wrong-population cube "
+                                            "(S6-B2578a; refused BEFORE the spend)")
                 else:
                     errs.append(f"{s}: arm '{tag}' sets {k}={v!r}, which the SPECS "
                                 "entry declares neither as a param knob nor as an "
