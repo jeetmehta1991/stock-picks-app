@@ -5697,3 +5697,21 @@ at the true price S6-B2612d). All three would have been caught by opening the pl
 same-shape artifact. Mechanism: the L767 tripwire row in the execution-discipline skill (fragment-
 pinned via test_b2123); detection of an unpriced option in prose remains scan_unmeasured_quantity's
 domain, whose cost vocabulary already fires on the quoted forms.
+
+### #297 - PARTITION A GRID'S AXES BY PRIOR PREDICTION BEFORE SEARCHING IT (L770, B2638)
+
+Before reporting any parameter search as a ranked list or an argmax, state for EACH axis
+whether it carries a prior directional prediction from the literature or the design.
+
+- A **predicted** axis is evaluated as a CONFIRMATION replicated across the levels of the
+  others, and reported with its replication count ("monotone at 5 of 5 levels"). That is
+  evidence of a different KIND than an argmax, and it does not spend multiplicity budget.
+- An **unpredicted** axis is a search, and it carries the trials count and whatever
+  multiplicity correction the stage provides.
+- **Report the trials count for the unpredicted axes only**, and say which axes are which.
+
+*Lineage:* B2638 - a 390-trial pead grid read as one max-search by five independent council
+advisors; the drift-window axis was monotone at 5 of 5 levels of the other axis (the
+Bernard-Thomas prediction), and the variance-mining objection was refuted because the
+tightest cell ranked fifth. **Would NOT have caught** a grid where every axis is
+unpredicted - there it reduces to the existing trials-count rule.

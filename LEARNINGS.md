@@ -19843,3 +19843,41 @@ both log `report()` and call `assert_resolved` before writing; recompute gains `
 source) and `test_b2615_rebuild_cube_feeds_derived_atr_and_fails_closed`. The engine's own proxy is
 unchanged - it is counted and surfaced. Tripwire row L769 / L642 ext. Detection before the fix was
 JUDGMENT-ONLY (the B2611 audit found it by reading); after it, the source pin refuses the expression.
+
+### L770 - A GRID'S AXES CAN HAVE DIFFERENT EPISTEMIC STATUS; A MAX-SEARCH DISCARDS THE STRONGEST EVIDENCE (B2638)
+
+**MEASURED 2026-09-07** (output_audit/b2638_pead_step1_is_surface.json, produced by
+scripts/offline_level_sweep.py over output_r5_merged_1_7): the pead_long_high_yoy_growth_only
+grid is 3 drift-window levels x 5 surprise-size levels = 15 cells x 26 exits = **390 trials**.
+Read as ONE max-search, the best cell (in-sample Sharpe 1.475) is the maximum of 390 correlated
+draws with no grid-stage multiplicity correction - and **five council advisors independently
+framed it exactly that way**, three of them predicting the winner would be the tightest,
+smallest-n cell winning on variance.
+
+**The two axes are not equivalent, and nobody said so.** The drift-window axis carries a
+DIRECTIONAL PREDICTION from published literature (Bernard-Thomas: post-earnings drift is
+strongest immediately after the announcement and decays), so movement along it is testable as a
+CONFIRMATION REPLICATED across the levels of the other axis - measured monotone at **5 of 5**
+surprise-size levels. The surprise-size axis carries no such prediction and peaks mid-range at
+0.10 in **3 of 3** rows. The variance-mining prediction was refuted by the same read: the
+tightest cell (384 in-sample trades) ranks **fifth** at 1.261 while the winner holds 792 of
+1,694 in-sample trades.
+
+**THE RULE: before treating a parameter grid as a max-search, partition its axes by whether each
+carries a prior directional prediction.** A predicted axis is evaluated as a confirmation
+replicated across the levels of the others - **N independent confirmations of one ordering is
+evidence of a different KIND than an argmax over N x M cells** - and multiplicity concern belongs
+to the unpredicted axes. **The tell that you have skipped this: you can state what the literature
+predicts about one knob and not the other, and your report treats them identically.**
+
+**Companion, a compliance failure against #230 EXT (L506b), not a new class:** the same turn
+called the sweep *"seconds"* without running it. MEASURED: **103.9 s** for 390 gradings,
+dominated by loading the 4.9M-row cube CSV - still ~550x cheaper than one engine config at
+16-40 h, and the adjective was wrong by an order of magnitude. An effort estimate is a
+quantitative claim even when the conclusion it supports survives.
+
+**Mechanism: JUDGMENT-ONLY for detection.** No scan can know which of a grid's axes carry a
+prior prediction - that is a fact about the literature, not about the artifact. Durability
+pinned by test_b2638_grid_axis_epistemics_rule_survives, which asserts the rule in BOTH
+durable docs (L548: the detection half and the durability half are different claims).
+Anchored at CHECKLIST #297.

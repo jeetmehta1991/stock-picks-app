@@ -34914,3 +34914,30 @@ def test_b2638_cells_report_trades_not_cube_rows():
         assert s[(20.0, p6)] > s[(40.0, p6)] > s[(60.0, p6)], p6
     for p3 in (20.0, 40.0, 60.0):
         assert s[(p3, 0.10)] > s[(p3, 0.05)], (p3, "peak is at 0.10, not 0.05")
+
+
+# ---------------------------------------------------------------------------
+# B2638 (L770 / #297): the grid-axis epistemics rule survives in both durable docs
+# ---------------------------------------------------------------------------
+
+def test_b2638_grid_axis_epistemics_rule_survives():
+    """B2638 (L770, L548 durability half): detection is JUDGMENT-ONLY - no scan
+    knows which of a grid's axes carry a literature prediction - so the
+    mechanisable half is keeping the rule from vanishing from the files that are
+    read every turn. Asserts the DIAGNOSTIC, not just the heading (L548: without
+    the diagnostic the entry is trivia), in BOTH docs."""
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[2]
+    lea = (root / "LEARNINGS.md").read_text(encoding="utf-8", errors="replace")
+    chk = (root / "CHECKLIST.md").read_text(encoding="utf-8", errors="replace")
+
+    assert "L770" in lea and "#297" in chk
+    # The diagnostic: a predicted axis is a REPLICATED CONFIRMATION, not a search.
+    # Both strings MEASURED absent from both docs before B2638 (0 -> 1 each), so
+    # neither arm can pass on pre-existing prose. A bare "confirmation" check was
+    # tried first and REJECTED: 18 prior occurrences in LEARNINGS, 12 in CHECKLIST,
+    # so it would have passed with this entire entry deleted (L748).
+    for doc, name in ((lea, "LEARNINGS.md"), (chk, "CHECKLIST.md")):
+        assert "prior directional prediction" in doc, name
+        assert "different KIND than an argmax" in doc, name
+    assert "103.9" in lea, "the costed effort figure (L506b companion) must survive"
