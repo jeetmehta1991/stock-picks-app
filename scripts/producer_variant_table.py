@@ -487,25 +487,32 @@ SPECS_PHASE0: dict[str, dict] = {
                            "struck until a knob is built"},
             {"id": "P4", "producer": "pead.compute_pead_signals",
              "param": "yoy_growth_threshold", "production": 0.0,
-             "band": [0.0],
-             "free_band": [0.0], "resim_band": [],
+             "band": [0.0, 0.02, 0.05, 0.10],
+             "free_band": [0.0, 0.02, 0.05, 0.10], "resim_band": [],
              "sweep_levels": [], "subset_safe": None,
              "status": "NOT-SWEPT-BY-DESIGN", "type": "float",
              "engine_implemented": True,
              "evidence": "pead.py:137",
-             "derivation": "feeds pead_positive/negative_surprise, consumed "
-                           "by SIBLINGS (pead_long/pead_short), not this "
-                           "strategy - held fixed in this campaign"},
+             "derivation": "SIBLING knob (pead_long/pead_short surprise flags), "
+                           "banded for the FAMILY campaign (owner 2026-09-07). "
+                           "TIGHTENING-ONLY, free: continuous yoy persists on "
+                           "140/140 pead_long R5 rows; retention MEASURED "
+                           "2026-09-07: 0.02 keeps 94pct, 0.05 86pct, 0.10 "
+                           "74pct. Loosening impossible (0.0 is the floor)"},
             {"id": "P5", "producer": "pead.compute_pead_signals",
              "param": "announcement_return_threshold", "production": 0.01,
-             "band": [0.01],
-             "free_band": [0.01], "resim_band": [],
+             "band": [0.01, 0.02, 0.03, 0.05],
+             "free_band": [0.01, 0.02, 0.03, 0.05], "resim_band": [],
              "sweep_levels": [], "subset_safe": None,
              "status": "NOT-SWEPT-BY-DESIGN", "type": "float",
              "engine_implemented": True,
              "evidence": "pead.py:138 (B1136 loosened 0.02 -> 0.01)",
-             "derivation": "sibling-only knob (surprise flags), held fixed "
-                           "in this campaign"},
+             "derivation": "SIBLING knob, banded for the FAMILY campaign. "
+                           "TIGHTENING-ONLY, free: earnings_announcement_return "
+                           "persists on 140/140 pead_long rows; retention "
+                           "MEASURED 2026-09-07: 0.02 keeps 76pct, 0.03 53pct, "
+                           "0.05 31pct. Loosening (<0.01) has NO env knob - "
+                           "struck (S6-B2569a class)"},
             {"id": "P6", "producer": "earnings_surprise_yoy.compute_yoy_surprise_signal",
              "param": "YOY_GROWTH_LONG_THRESHOLD", "production": 0.05,
              "band": [0.05, 0.10, 0.20, 0.35, 0.50],
@@ -524,16 +531,21 @@ SPECS_PHASE0: dict[str, dict] = {
                            "env knob - struck until built"},
             {"id": "P7", "producer": "earnings_surprise_yoy.compute_yoy_surprise_signal",
              "param": "YOY_GROWTH_SHORT_THRESHOLD", "production": -0.05,
-             "band": [-0.05],
-             "free_band": [-0.05], "resim_band": [],
+             "band": [-0.05, -0.10, -0.20, -0.35, -0.50],
+             "free_band": [-0.05, -0.10, -0.20, -0.35, -0.50], "resim_band": [],
              "sweep_levels": [], "subset_safe": None,
              "status": "NOT-SWEPT-BY-DESIGN", "type": "float",
              "engine_implemented": True,
              "evidence": "earnings_surprise_yoy.py:43",
-             "derivation": "short-sleeve knob (pead_short_negative_yoy_"
-                           "growth, whose cluster the B2633 pre-gate "
-                           "measured negative-holdout and excluded from "
-                           "campaigning) - held fixed here"},
+             "derivation": "short-sleeve knob, banded for the FAMILY "
+                           "campaign even though the B2633 pre-gate excluded "
+                           "the short cluster from campaigning (negative "
+                           "holdout) - the levels are FREE, so recording them "
+                           "costs nothing. TIGHTENING-ONLY: yoy persists on "
+                           "2,215/2,215 short-sleeve R5 rows; retention "
+                           "MEASURED 2026-09-07: -0.10 keeps 90pct, -0.20 "
+                           "73pct, -0.35 53pct, -0.50 38pct (quantiles "
+                           "-1.40/-0.72/-0.38/-0.19/-0.10 at p10..p90)"},
         ],
         "formula": """=============================== PRODUCER LAYER ===============================
 

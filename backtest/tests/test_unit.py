@@ -34571,6 +34571,11 @@ def test_b2634_pead_phase0_draft_validates_and_stays_out_of_the_battery():
     by = {p["id"]: p for p in draft["params"]}
     assert by["P3"]["free_band"] == [20, 40, 60]
     assert by["P6"]["free_band"] == [0.05, 0.10, 0.20, 0.35, 0.50]
+    # B2634b (owner 2026-09-07): the SIBLING knobs are banded for the FAMILY
+    # campaign - all free, retention measured before any engine cost (L727)
+    assert by["P4"]["free_band"] == [0.0, 0.02, 0.05, 0.10]
+    assert by["P5"]["free_band"] == [0.01, 0.02, 0.03, 0.05]
+    assert by["P7"]["free_band"] == [-0.05, -0.10, -0.20, -0.35, -0.50]
     # Table A renders with every evidence cell present (the b2465 contract)
     rows = m.table_a(draft)
     body = chr(10).join(rows)
