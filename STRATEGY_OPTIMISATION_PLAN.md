@@ -2557,6 +2557,80 @@ best-cell numbers are SELECTED maxima, a sequencing key only):**
    r1_break_retest (0.602, n=398), then the remainder of the 31.
 The pick is the owner's (S6-B2418 stands OPEN); no launch without it.
 
+### OPTIMISATION POPULATION BY BUCKET AND FAMILY (B2632, owner directive 2026-09-07)
+
+**Accounting (derived live at B2632; every term from the registry + config disabled sets +
+the measured-band artifact output_audit/b1453_phase_1b_roster.json):**
+
+| bucket | count |
+|---|---|
+| Active registered | 215 |
+| - Roster (qualified, not to optimize) | 7 |
+| - institutional_* family (closed, executed grades, B2612-B2628) | 20 |
+| **= REMAINING to optimize** | **188** |
+
+**Roster 7 (4 longs + 3 retained short mirrors):** `xs_momentum_top_decile`, `52w_high_breakout_pullback_long`, `xs_momentum_with_smart_money_long`, `smc_breaker_block_long`, `smc_breaker_block_short`, `52w_low_breakdown_pullback_short`, `xs_momentum_bottom_decile_short`
+
+**institutional_* 20 (closed):** `institutional_breakout_confirmation_long`, `institutional_buy_momentum_long`, `institutional_cluster_long`, `institutional_committed_growth_long`, `institutional_high_conviction_long`, `institutional_increased_with_directors_long`, `institutional_insider_combo_long`, `institutional_multi_quarter_persistence_long`, `institutional_oversold_long`, `institutional_persistence_breakout_long`, `institutional_persistence_momentum_long`, `institutional_persistence_oversold_long`, `institutional_persistence_volume_long`, `institutional_persistent_holders_long`, `institutional_recent_init_momentum_long`, `institutional_recent_init_volume_long`, `institutional_strong_conviction_long`, `institutional_volume_confirmation_long`, `institutional_with_directors_long`, `institutional_with_officers_long`
+
+**The 188 remaining, grouped by FAMILY (name-prefix heuristic - a family is CONFIRMED or
+split only by the S6-B2627a collinearity pre-gate's measured trade overlap, which runs before
+any family's campaign target is picked). Band tags per member: (T) tightening holdout n>300,
+(M) mid-band 100<n<=300, (L) low-n 0<n<=100, (-) no graded cell in R5. Split: 29 T / 52 M /
+41 L / 66 no-cell. 41 multi-member families cover 138 strategies; 50 are singletons.**
+
+- **smc** (16) [-:4 L:6 M:5 T:1]: `smc_bos_continuation`(-), `smc_bos_retest_entry`(L), `smc_choch_reversal`(L), `smc_discount_long`(L), `smc_equal_highs_sweep_short`(M), `smc_equal_lows_sweep_long`(M), `smc_fvg_retest_long`(-), `smc_fvg_retest_short`(L), `smc_inverse_fvg`(M), `smc_liquidity_sweep_reversal`(T), `smc_mitigation_block_long`(-), `smc_mitigation_block_short`(-), `smc_order_block_bounce`(M), `smc_ote_long`(L), `smc_ote_short`(L), `smc_premium_short`(M)
+- **news** (7) [-:4 L:2 M:1]: `news_momentum_long`(-), `news_momentum_short`(-), `news_reversal_long`(-), `news_reversal_short`(-), `news_sentiment_long`(M), `news_sentiment_shift_long`(L), `news_sentiment_short`(L)
+- **pivot** (7) [-:5 L:1 M:1]: `pivot_fib_confluence`(-), `pivot_r1_breakout`(M), `pivot_r2_continuation`(-), `pivot_r3_blowoff_short`(-), `pivot_s1_bounce`(L), `pivot_s2_bounce`(-), `pivot_s3_capitulation`(-)
+- **donchian** (6) [M:6]: `donchian_10_breakout`(M), `donchian_breakdown_retest_short`(M), `donchian_breakdown_short`(M), `donchian_breakout_long`(M), `donchian_breakout_retest_long`(M), `donchian_breakout_with_smart_money_long`(M)
+- **pead** (6) [-:2 M:2 T:2]: `pead_long`(-), `pead_long_high_yoy_growth_only`(T), `pead_short`(M), `pead_short_negative_yoy_growth`(T), `pead_with_insider_confirmation_long`(-), `pead_with_smart_money_long`(M)
+- **xs** (6) [-:2 L:3 M:1]: `xs_combined_momentum_high_ivol_short`(M), `xs_combined_momentum_low_ivol`(L), `xs_low_beta_long`(-), `xs_low_beta_with_smart_money_long`(L), `xs_momentum_quality_combined`(L), `xs_quality_top_quintile_long`(-)
+- **52w** (4) [-:3 L:1]: `52w_high_breakout`(-), `52w_high_breakout_with_smart_money_long`(-), `52w_high_breakout_with_smart_money_vol_below_long`(L), `52w_low_breakdown`(-)
+- **bollinger** (4) [-:1 L:1 M:2]: `bollinger_lower`(M), `bollinger_tight`(-), `bollinger_tight_with_smart_money_long`(M), `bollinger_upper_short`(L)
+- **golden** (4) [-:2 L:1 M:1]: `golden_cross_20_50`(L), `golden_cross_50_200`(-), `golden_cross_9_21`(M), `golden_cross_volume`(-)
+- **pre** (4) [-:4]: `pre_fomc_long_sleeve`(-), `pre_fomc_quality_momentum_long`(-), `pre_holiday_long`(-), `pre_rebalance_long`(-)
+- **rsi** (4) [-:1 L:1 M:1 T:1]: `rsi_overbought_short`(-), `rsi_oversold`(M), `rsi_oversold_with_smart_money_long`(T), `rsi_volume_200ema`(L)
+- **avwap** (3) [-:1 M:1 T:1]: `avwap_20high_rejection_short`(-), `avwap_252_breakout`(T), `avwap_50_reclaim`(M)
+- **cpr** (3) [M:2 T:1]: `cpr_narrow_bullish`(M), `cpr_narrow_momentum`(M), `cpr_narrow_momentum_short`(T)
+- **flag** (3) [-:3]: `flag_bear_retest_short`(-), `flag_bull_long`(-), `flag_bull_retest_long`(-)
+- **ichimoku** (3) [L:1 M:2]: `ichimoku_cloud_breakdown`(L), `ichimoku_cloud_breakout`(M), `ichimoku_tk_cross`(M)
+- **insider** (3) [-:2 L:1]: `insider_cluster_concentrated_sell_short`(L), `insider_cluster_long`(-), `insider_cluster_with_director_long`(-)
+- **macd** (3) [M:1 T:2]: `macd_bullish_with_smart_money_long`(M), `macd_crossover`(T), `macd_fast_crossover`(T)
+- **post** (3) [-:2 L:1]: `post_deletion_drift_short`(-), `post_inclusion_drift_long`(-), `post_inclusion_reversal_short`(L)
+- **prev** (3) [M:3]: `prev_day_high_break`(M), `prev_day_low_bounce`(M), `prev_day_low_breakdown`(M)
+- **supertrend** (3) [-:1 L:2]: `supertrend_ichimoku_adx`(-), `supertrend_macd`(L), `supertrend_macd_short`(L)
+- **triangle** (3) [-:1 L:1 M:1]: `triangle_ascending_long`(L), `triangle_ascending_retest_long`(-), `triangle_descending_short`(M)
+- **break** (2) [M:1 T:1]: `break_retest_confluence`(M), `break_retest_volume`(T)
+- **camarilla** (2) [L:1 T:1]: `camarilla_r4_breakout`(T), `camarilla_s3_bounce`(L)
+- **cup** (2) [-:1 L:1]: `cup_and_handle_long`(L), `cup_and_handle_retest_long`(-)
+- **doji** (2) [L:2]: `doji_at_resistance_short`(L), `doji_at_support`(L)
+- **head** (2) [L:2]: `head_and_shoulders_bottom_long`(L), `head_and_shoulders_top_short`(L)
+- **htf** (2) [L:1 M:1]: `htf_aligned_breakout_long`(L), `htf_aligned_breakout_short`(M)
+- **judas** (2) [-:2]: `judas_swing_long`(-), `judas_swing_short`(-)
+- **mfi** (2) [-:1 L:1]: `mfi_oversold`(-), `mfi_oversold_with_smart_money_long`(L)
+- **orb** (2) [-:1 L:1]: `orb_stocks_in_play_long`(-), `orb_stocks_in_play_short`(L)
+- **pairs** (2) [T:2]: `pairs_mean_reversion_long`(T), `pairs_mean_reversion_short`(T)
+- **parabolic** (2) [M:1 T:1]: `parabolic_sar_flip`(M), `parabolic_sar_flip_short`(T)
+- **po3** (2) [M:1 T:1]: `po3_bearish`(T), `po3_bullish`(M)
+- **poc** (2) [M:2]: `poc_magnet_long`(M), `poc_magnet_short`(M)
+- **squeeze** (2) [-:1 M:1]: `squeeze_breakout`(M), `squeeze_setup_long`(-)
+- **stochrsi** (2) [T:2]: `stochrsi_overbought_short`(T), `stochrsi_oversold`(T)
+- **three** (2) [T:2]: `three_black_crows_short`(T), `three_white_soldiers`(T)
+- **turtle** (2) [L:1 T:1]: `turtle_soup_long`(L), `turtle_soup_short`(T)
+- **week** (2) [M:2]: `week_opening_gap_fill_down`(M), `week_opening_gap_fill_up`(M)
+- **weekly** (2) [-:2]: `weekly_bias_pullback_long`(-), `weekly_bias_pullback_short`(-)
+- **williams** (2) [M:1 T:1]: `williams_r_oversold`(T), `williams_stoch_dual`(M)
+
+- **singletons** (50): `52wh_break_retest`(-), `52wl_break_retest_short`(-), `activist_13d_long`(-), `adx_initiation`(-), `awesome_oscillator`(M), `bb_squeeze_volume`(M), `bullish_engulfing_support`(M), `cmf_flip`(T), `consec_downdays_quality_long`(-), `dc20_break_retest`(T), `death_cross_50_200_volume`(-), `double_bottom_long`(L), `earnings_avwap_reclaim_long`(-), `failed_breakout_2b_short`(-), `force_index_breakout`(T), `gap_and_go_long`(-), `gold_silver_risk_off_long`(-), `halloween_seasonal_long`(-), `hammer_at_support_long`(L), `hull_rsi`(M), `inside_bar_breakout`(M), `inverted_cup_and_handle_short`(L), `january_effect_small_cap_long`(-), `keltner_lower`(-), `m_and_a_target_long`(M), `mmbm_long`(T), `mmsm_short`(T), `monthly_bias_momentum_long`(-), `morning_star`(T), `naked_poc_retest_long`(T), `pocket_pivot_long`(-), `ppo_crossover`(M), `r1_break_retest`(T), `risk_off_bond_equity_short`(L), `roc_burst`(M), `rs_line_sector_leader_long`(-), `rsi21_slow`(-), `rsi9_extreme`(-), `sector_rotation_defensive_long`(-), `shooting_star_short`(L), `short_borrow_trap_avoid`(-), `simple_below_ema_50_short`(T), `stoch_oversold`(L), `tema_dema`(M), `totm_long`(L), `ultimate_oscillator`(L), `value_area_breakout_long`(L), `vix_backwardation_long`(M), `vol_spike_2x_below_ema_50_short`(M), `volume_spike_breakout`(M)
+
+**Family-level reading (the analyze-by-families directive):** the campaign unit is the
+FAMILY, not the registration - the institutional closure measured 20 names collapsing to
+~1.2 independent bets. Before any family's campaign: run the pre-gate (overlap + band
+clustering + the median-exit holdout beside the best-cell key), pick ONE representative,
+and let its verdict plus a pre-registered sibling pass close the family, as B2628 did.
+
+
+
 ## CURRENT PROGRAMME — institutional_committed_growth_long STEP 1 (S6-B2481..B2499, 2026-09-01)
 
 **Inventory** — `SPECS["institutional_committed_growth_long"]` in
