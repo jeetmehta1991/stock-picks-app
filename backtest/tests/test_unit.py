@@ -34418,3 +34418,65 @@ def test_b2626_table_c_defaults_to_the_latest_strategy(monkeypatch, capsys):
     assert stc.main() == 1
     out = capsys.readouterr().out
     assert "NO GRADED CONFIGS for strategy" in out
+
+
+# ---------------------------------------------------------------------------
+# B2628 (S6-B2627): the pre-registered family pass - rules bind as registered
+# ---------------------------------------------------------------------------
+
+def _b2628_fixture_df():
+    """Two strategies over the IS/HO boundary: the reference and one sibling
+    whose trades half-overlap it. Deterministic values (no rng); the point is
+    STRUCTURE - selection stays IS-only, R1 reads the non-shared subset."""
+    import pandas as pd
+    from datetime import date, timedelta
+    rows = []
+    d0 = date(2024, 6, 3)
+    for i in range(40):                        # IS entries
+        for st, tk in (("institutional_committed_growth_long", f"T{i:02}"),
+                       ("sib_x", f"T{i:02}" if i < 20 else f"U{i:02}")):
+            for ex, pnl in (("e1", 2.0 + (i % 5)), ("e2", -1.0 + (i % 3))):
+                rows.append((st, ex, d0 + timedelta(days=i), tk, pnl, 10.0))
+    h0 = date(2025, 6, 2)
+    for i in range(20):                        # HO entries
+        for st, tk in (("institutional_committed_growth_long", f"H{i:02}"),
+                       ("sib_x", f"H{i:02}" if i < 10 else f"V{i:02}")):
+            for ex, pnl in (("e1", 1.5 + (i % 4)), ("e2", -0.5 + (i % 2))):
+                rows.append((st, ex, h0 + timedelta(days=i), tk, pnl, 10.0))
+    df = pd.DataFrame(rows, columns=["strategy", "exit_method", "entry_date",
+                                     "ticker", "pnl_pct", "hold_days"])
+    return df
+
+
+def test_b2628_family_pass_grades_by_prereg_rules(tmp_path, monkeypatch):
+    """B2628: exit selected IS-only; six gates on ONE holdout read; overlap
+    carried inline; R1 reads the NON-SHARED holdout only (here 10 non-shared
+    trades < 15 floor -> R1 stays quiet however good the grade - the
+    correlated-maximum mitigation binding); R2 fires below 80% overlap."""
+    import json
+    import sys
+    from pathlib import Path
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts"))
+    import grade_family_siblings as gfs
+
+    prereg = {"population": ["sib_x"],
+              "reference_holdout_sharpe": 0.757}
+    p = tmp_path / "prereg.json"
+    p.write_text(json.dumps(prereg), encoding="utf-8")
+    monkeypatch.setattr(gfs, "PREREG", p)
+
+    out = gfs.grade_all(_b2628_fixture_df())
+    r = out["siblings"]["sib_x"]
+    assert r["selected_exit"] == "e1"            # IS argmax, never holdout
+    assert r["overlap_with_icg"] == 0.5          # 30 of 60 entries shared
+    assert set(r["gates"]) == {"pooled_sharpe", "profit_factor", "sortino",
+                               "psr", "min_trades_holdout",
+                               "min_trades_full_period"}
+    assert r["holdout_n"] == 20 and r["gates"]["min_trades_holdout"]
+    # R1: non-shared holdout is 10 entries - BELOW the registered 15 floor,
+    # so consideration stays off no matter the sharpe (must-quiet arm)
+    assert r["non_shared_holdout_n"] == 10
+    assert r["R1_campaign_consideration"] is False
+    # R2: 50% overlap < 80% -> fires (must-fire arm)
+    assert r["R2_campaign_consideration"] is True
+    # SYNTHETIC fixture: values prove structure, never levels (L695)

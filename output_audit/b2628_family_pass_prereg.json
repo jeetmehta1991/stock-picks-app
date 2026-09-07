@@ -1,0 +1,38 @@
+{
+ "ticket": "S6-B2627",
+ "owner_ruling": "Option (c) with pre-registration, then (b). (2026-09-06, verbatim)",
+ "registered_before_any_grade_was_computed": true,
+ "population": [
+  "institutional_breakout_confirmation_long",
+  "institutional_buy_momentum_long",
+  "institutional_cluster_long",
+  "institutional_high_conviction_long",
+  "institutional_increased_with_directors_long",
+  "institutional_insider_combo_long",
+  "institutional_multi_quarter_persistence_long",
+  "institutional_oversold_long",
+  "institutional_persistence_breakout_long",
+  "institutional_persistence_momentum_long",
+  "institutional_persistence_oversold_long",
+  "institutional_persistence_volume_long",
+  "institutional_persistent_holders_long",
+  "institutional_recent_init_momentum_long",
+  "institutional_recent_init_volume_long",
+  "institutional_strong_conviction_long",
+  "institutional_volume_confirmation_long",
+  "institutional_with_directors_long",
+  "institutional_with_officers_long"
+ ],
+ "population_note": "the 20 institutional_ strategies in output_r5_merged_1_7 minus institutional_committed_growth_long (already graded by its own Step-2 campaign, holdout 0.757 FAIL 5-of-6)",
+ "cube": "output_r5_merged_1_7/trade_exit_detail.csv",
+ "reference_strategy": "institutional_committed_growth_long",
+ "reference_holdout_sharpe": 0.757,
+ "mechanism": "per sibling, ONE read: exit selected on IN-SAMPLE rows only (roster_core.select_exit objective=gates min_n=10, the same selector as the icg Step-2 grade); that exit's HOLDOUT rows graded once via roster_core.evaluate(min_n=10); verdict = the six LIVE_GATES (pooled_sharpe>=1.0, profit_factor>=1.3, sortino>=1.0, psr>=0.95, min_trades_holdout>=15, min_trades_full_period>=75). No re-selection, no second read.",
+ "decision_rules_registered_before_running": {
+  "R1": "a sibling earns CAMPAIGN CONSIDERATION only if its NON-SHARED-with-icg holdout trades (entries absent from icg's entry set) number >= 15 AND grade pooled_sharpe > 0.757 - the full-population trigger was struck by the costed Contrarian objection (the max of 19 correlated readings exceeds 0.757 by chance even when every true level equals icg's; the first grade, multi_quarter 0.803 on 94%-shared trades, is that inflation live)",
+  "R2": "a sibling with trade overlap < 80% vs icg earns campaign consideration regardless of grade (the proxy argument does not reach it)",
+  "otherwise": "the sibling closes with an EXECUTED grade (never a proxy stamp); after all 19, the family closes and the programme moves to a different producer chain, its target selected through the S6-B2627a collinearity pre-gate"
+ },
+ "reporting_mitigation": "every reported row carries its overlap-with-icg percentage inline, so a future reader cannot mistake 19 correlated grades for independent evidence",
+ "cost_basis": "EXECUTED 2026-09-06: one load+grade measured 18s; 19 siblings upper-bounded ~6 min (single load amortises); zero engine hours"
+}
