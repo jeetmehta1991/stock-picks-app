@@ -73,16 +73,10 @@ def scan_transcript_entries(entries: list[dict]) -> tuple[bool, bool]:
     """B1338 compliance-marker check (skill Phase 6 made mechanical).
     Returns (commit_made_this_turn, compliance_marker_present) scanning
     entries AFTER the last genuine user text message. Pure for testability."""
-    last_user = -1
-    for i, e in enumerate(entries):
-        if e.get("type") != "user":
-            continue
-        content = (e.get("message") or {}).get("content")
-        if isinstance(content, str) and content.strip():
-            last_user = i
-        elif isinstance(content, list) and any(
-                isinstance(c, dict) and c.get("type") == "text" for c in content):
-            last_user = i
+    # B2636 (S6-B2555a): ONE definition. The hand-written copy here
+    # did not skip gate feedback, so a Stop-hook block reset the
+    # window and this gate judged a truncated turn.
+    last_user = _last_instruction_index(entries)
     commit_made = marker = False
     for e in entries[last_user + 1:]:
         if e.get("type") != "assistant":
@@ -198,16 +192,10 @@ def scan_verdict_denominators(entries: list[dict]) -> list[str]:
     about an object's capability but names no "N of M" scope anywhere in it.
     """
     import re as _re
-    last_user = -1
-    for i, e in enumerate(entries):
-        if e.get("type") != "user":
-            continue
-        content = (e.get("message") or {}).get("content")
-        if isinstance(content, str) and content.strip():
-            last_user = i
-        elif isinstance(content, list) and any(
-                isinstance(c, dict) and c.get("type") == "text" for c in content):
-            last_user = i
+    # B2636 (S6-B2555a): ONE definition. The hand-written copy here
+    # did not skip gate feedback, so a Stop-hook block reset the
+    # window and this gate judged a truncated turn.
+    last_user = _last_instruction_index(entries)
     offenders = []
     for e in entries[last_user + 1:]:
         if e.get("type") != "assistant":
@@ -322,10 +310,18 @@ def _is_gate_feedback(text: str) -> bool:
 
 
 def _last_instruction_index(entries) -> int:
-    """Index of the last REAL user instruction, ignoring gate feedback."""
+    """Index of the last REAL user instruction, ignoring gate feedback.
+
+    B2636 (S6-B2555a): HARDENED to the union of the guards the ten
+    hand-written copies carried, so a mechanical swap is safe at every
+    site - `entries or ()` for a None list, an isinstance check for a
+    non-dict element, and non-empty text required. Those guards are
+    exactly why the swap LOOKED unsafe: the helper was stricter about
+    gate feedback and looser about None than its callers.
+    """
     last = -1
     for i, e in enumerate(entries or ()):
-        if e.get("type") != "user":
+        if not isinstance(e, dict) or e.get("type") != "user":
             continue
         content = (e.get("message") or {}).get("content")
         if isinstance(content, str) and content.strip():
@@ -444,16 +440,10 @@ def scan_unverified_cause(entries):
     expensive.
     """
     entries = list(entries or [])
-    last_user = -1
-    for i, e in enumerate(entries):
-        if (e or {}).get("type") != "user":
-            continue
-        content = ((e.get("message") or {}).get("content"))
-        if isinstance(content, str) or (
-                isinstance(content, list) and any(
-                    isinstance(c, dict) and c.get("type") == "text"
-                    for c in content)):
-            last_user = i
+    # B2636 (S6-B2555a): ONE definition. The hand-written copy here
+    # did not skip gate feedback, so a Stop-hook block reset the
+    # window and this gate judged a truncated turn.
+    last_user = _last_instruction_index(entries)
     entries = entries[last_user + 1:] if last_user >= 0 else entries
 
     blob = []
@@ -645,14 +635,10 @@ def scan_postfix_recheck(commit_msg, changed_files):
 def scan_unverified_universe(entries):
     """Flag a LAUNCH whose turn never ran verify_universe_artifact.py."""
     entries = list(entries or [])
-    last_user = -1
-    for i, e in enumerate(entries):
-        if (e or {}).get("type") != "user":
-            continue
-        c = ((e.get("message") or {}).get("content"))
-        if isinstance(c, str) or (isinstance(c, list) and any(
-                isinstance(x, dict) and x.get("type") == "text" for x in c)):
-            last_user = i
+    # B2636 (S6-B2555a): ONE definition. The hand-written copy here
+    # did not skip gate feedback, so a Stop-hook block reset the
+    # window and this gate judged a truncated turn.
+    last_user = _last_instruction_index(entries)
     entries = entries[last_user + 1:] if last_user >= 0 else entries
 
     # B1603: same discrimination as scan_unmonitored_launch - only an EXECUTED
@@ -778,14 +764,10 @@ def scan_unmeasured_quantity(entries, *, text=None):
     **The gate that misfires is the one that most needs to be askable.**
     """
     entries = list(entries or [])
-    last_user = -1
-    for i, e in enumerate(entries):
-        if (e or {}).get("type") != "user":
-            continue
-        c = ((e.get("message") or {}).get("content"))
-        if isinstance(c, str) or (isinstance(c, list) and any(
-                isinstance(x, dict) and x.get("type") == "text" for x in c)):
-            last_user = i
+    # B2636 (S6-B2555a): ONE definition. The hand-written copy here
+    # did not skip gate feedback, so a Stop-hook block reset the
+    # window and this gate judged a truncated turn.
+    last_user = _last_instruction_index(entries)
     entries = entries[last_user + 1:] if last_user >= 0 else entries
 
     blob = []
@@ -848,14 +830,10 @@ INSPECTION_TOOLS = ("Read", "Grep", "Bash", "PowerShell", "Glob")
 def scan_unverified_structure(entries):
     """Flag a STRUCTURAL claim made in a turn that never opened a file."""
     entries = list(entries or [])
-    last_user = -1
-    for i, e in enumerate(entries):
-        if (e or {}).get("type") != "user":
-            continue
-        c = ((e.get("message") or {}).get("content"))
-        if isinstance(c, str) or (isinstance(c, list) and any(
-                isinstance(x, dict) and x.get("type") == "text" for x in c)):
-            last_user = i
+    # B2636 (S6-B2555a): ONE definition. The hand-written copy here
+    # did not skip gate feedback, so a Stop-hook block reset the
+    # window and this gate judged a truncated turn.
+    last_user = _last_instruction_index(entries)
     entries = entries[last_user + 1:] if last_user >= 0 else entries
 
     text, used_tools = [], set()
@@ -1256,17 +1234,10 @@ def _turn_entries(entries):
     entries`, the Phase-5 slicer): a "user" entry counts only if it carries
     genuine TEXT - tool_result blocks are typed "user" but are not the user.
     """
-    last_user = -1
-    for i, e in enumerate(entries or ()):
-        if not isinstance(e, dict) or e.get("type") != "user":
-            continue
-        content = (e.get("message") or {}).get("content")
-        if isinstance(content, str) and content.strip():
-            last_user = i
-        elif isinstance(content, list) and any(
-                isinstance(c, dict) and c.get("type") == "text"
-                for c in content):
-            last_user = i
+    # B2636 (S6-B2555a): ONE definition. The hand-written copy here
+    # did not skip gate feedback, so a Stop-hook block reset the
+    # window and this gate judged a truncated turn.
+    last_user = _last_instruction_index(entries)
     return list(entries or ())[last_user + 1:]
 
 
@@ -3803,15 +3774,10 @@ def _launch_blobs(entries) -> list[str]:
     import re as _re2
 
     out = []
-    last_user = -1
-    for i, e in enumerate(entries or ()):
-        if e.get("type") != "user":
-            continue
-        c = (e.get("message") or {}).get("content")
-        if (isinstance(c, str) and c.strip()) or (
-                isinstance(c, list) and any(
-                    isinstance(x, dict) and x.get("type") == "text" for x in c)):
-            last_user = i
+    # B2636 (S6-B2555a): ONE definition. The hand-written copy here
+    # did not skip gate feedback, so a Stop-hook block reset the
+    # window and this gate judged a truncated turn.
+    last_user = _last_instruction_index(entries)
     for e in (entries or ())[last_user + 1:]:
         if e.get("type") != "assistant":
             continue
@@ -3944,15 +3910,10 @@ def scan_monitor_without_stall_check(entries, *, blobs=None) -> list[str]:
     import json as _json
 
     arms = []
-    last_user = -1
-    for i, e in enumerate(entries or ()):
-        if e.get("type") != "user":
-            continue
-        c = (e.get("message") or {}).get("content")
-        if (isinstance(c, str) and c.strip()) or (
-                isinstance(c, list) and any(
-                    isinstance(x, dict) and x.get("type") == "text" for x in c)):
-            last_user = i
+    # B2636 (S6-B2555a): ONE definition. The hand-written copy here
+    # did not skip gate feedback, so a Stop-hook block reset the
+    # window and this gate judged a truncated turn.
+    last_user = _last_instruction_index(entries)
     for e in (entries or ())[last_user + 1:]:
         if e.get("type") != "assistant":
             continue
@@ -4337,16 +4298,10 @@ def scan_unrecorded_miss(entries, learnings_modified: bool):
     # no miss is the same defect L447 fixed, one layer up. The sibling scanners
     # already window on the last real user message; this now matches them.
     entries = list(entries or [])
-    last_user = -1
-    for i, e in enumerate(entries):
-        if (e or {}).get("type") != "user":
-            continue
-        content = ((e.get("message") or {}).get("content"))
-        if isinstance(content, str):
-            last_user = i
-        elif isinstance(content, list) and any(
-                isinstance(c, dict) and c.get("type") == "text" for c in content):
-            last_user = i
+    # B2636 (S6-B2555a): ONE definition. The hand-written copy here
+    # did not skip gate feedback, so a Stop-hook block reset the
+    # window and this gate judged a truncated turn.
+    last_user = _last_instruction_index(entries)
     entries = entries[last_user + 1:] if last_user >= 0 else entries
 
     hits = []

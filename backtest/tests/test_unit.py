@@ -34650,3 +34650,93 @@ def test_b2635_census_artifact_matches_the_vendor_directory():
     # the mega-cap concentration is the reason this is P0, not cosmetic
     for t in ("AAPL", "AMZN", "GOOGL"):
         assert t in c["r5_universe_affected"]
+
+
+# ---------------------------------------------------------------------------
+# B2636 (S6-B2555a, S6-B2629, S6-B2626a): one window definition; the roster
+# header reads every disabled set; a finishing run is DONE, not STALLED
+# ---------------------------------------------------------------------------
+
+def _b2636_gate():
+    import importlib.util as ilu
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[2]
+    spec = ilu.spec_from_file_location(
+        "vtc_b2636", root / "scripts" / "verify_turn_compliance.py")
+    m = ilu.module_from_spec(spec)
+    spec.loader.exec_module(m)
+    return m, root
+
+
+def test_b2636_turn_window_has_exactly_one_definition():
+    """B2636 (S6-B2555a): every gate reads the window through the SHARED
+    helper. The ten hand-written copies each recomputed it WITHOUT skipping
+    gate feedback, so a Stop-hook block message reset the window and the gate
+    judged a truncated turn - the S6-B2549 defect, ten times over. Asserted on
+    executable content: no `last_user = -1` loop survives anywhere."""
+    m, root = _b2636_gate()
+    src = (root / "scripts" / "verify_turn_compliance.py").read_text(encoding="utf-8")
+    code_lines = [l for l in src.splitlines() if not l.strip().startswith("#")]
+    assert not [l for l in code_lines if l.strip() == "last_user = -1"], (
+        "a hand-written window block is back - it will not skip gate feedback")
+    assert sum(1 for l in code_lines
+               if "_last_instruction_index(entries)" in l) >= 11
+
+    # the helper itself: skips gate feedback, and carries the UNION of guards
+    # the copies had (None list, non-dict element, empty text)
+    def u(text):
+        return {"type": "user", "message": {"content": text}}
+    entries = [u("real instruction"), {"type": "assistant", "message": {}},
+               u("TURN-GATE BLOCK - 1 violation(s), ALL listed:")]
+    assert m._last_instruction_index(entries) == 0, (
+        "gate feedback must NOT reset the window - that is the whole defect")
+    assert m._last_instruction_index(None) == -1
+    assert m._last_instruction_index([None, "junk", 7]) == -1
+    assert m._last_instruction_index([u("   ")]) == -1
+    assert m._last_instruction_index([u("a"), u("b")]) == 1
+
+
+def test_b2636_roster_header_counts_every_disabled_set():
+    """B2636 (S6-B2629): the generated header read only MISSING_PRODUCER, so
+    it printed Disabled 0 / Active 219 against the canonical 4 / 215. It now
+    derives from all four sets - asserted on the executable line."""
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[2]
+    src = (root / "scripts" / "build_strategy_roster.py").read_text(encoding="utf-8")
+    code = [l.strip() for l in src.splitlines() if not l.strip().startswith("#")]
+    assert any(l.startswith("_disabled = (set(DEPRECATED_STRATEGIES)") for l in code)
+    assert any("STRATEGIES_DISABLED_DATA_SCARCITY as _DS" in l for l in code)
+    assert any("**Disabled:** {len(_disabled)}" in l for l in code)
+    # and the four sets really do total 4 today (the canonical 215 active)
+    from backtest.config import (STRATEGIES_DISABLED_DATA_SCARCITY,
+                                 STRATEGIES_DISABLED_DUPLICATE)
+    import backtest.config as cfg
+    dis = (set(STRATEGIES_DISABLED_DATA_SCARCITY) | set(STRATEGIES_DISABLED_DUPLICATE)
+           | set(getattr(cfg, "DEPRECATED_STRATEGIES", set()) or set())
+           | set(getattr(cfg, "STRATEGIES_DISABLED_MISSING_PRODUCER", set()) or set()))
+    assert len(dis) == 4, sorted(dis)
+
+
+def test_b2636_finishing_run_is_done_not_stalled():
+    """B2636 (S6-B2626a): a frozen counter WITH the completion artifact on
+    disk is DONE, never STALL - measured live when a STALL toast fired six
+    minutes before the wave summary landed. Must-fire arm kept: a frozen
+    counter with NO artifact still STALLs."""
+    import importlib.util as ilu
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[2]
+    spec = ilu.spec_from_file_location(
+        "pr_b2636", root / "scripts" / "peer_reporter.py")
+    pr = ilu.module_from_spec(spec)
+    spec.loader.exec_module(pr)
+
+    # finishing: counter frozen (code 2) but the summary exists -> DONE
+    st, body = pr.decide(True, True, 4, 2, {})
+    assert st == "DONE" and body is not None
+    # genuinely stalled: counter frozen, no summary -> STALL (must-fire)
+    st, body = pr.decide(False, True, 4, 2, {})
+    assert st == "STALL" and body is not None
+    # and the caller re-reads the artifact just before deciding
+    src = (root / "scripts" / "peer_reporter.py").read_text(encoding="utf-8")
+    code = [l.strip() for l in src.splitlines() if not l.strip().startswith("#")]
+    assert any(l.startswith("summary_exists = summary_exists or") for l in code)

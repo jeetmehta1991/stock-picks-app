@@ -1097,7 +1097,15 @@ def main() -> int:
     # RETAINED COLUMNS (derivable from current screener.py + regime_selector.py):
     # name | category | direction | trigger | signals | conditions |
     # regime_affinity | active_status
-    out_lines.append(f"**Total strategies:** {len(ALL_STRATEGIES)} | **Deprecated:** {len(DEPRECATED_STRATEGIES)} | **Disabled:** {len(STRATEGIES_DISABLED_MISSING_PRODUCER)} | **Active for cube:** {len(ALL_STRATEGIES) - len(DEPRECATED_STRATEGIES | STRATEGIES_DISABLED_MISSING_PRODUCER)}")
+    # B2636 (S6-B2629): the header read every disabled set EXCEPT the two
+    # that actually hold members - DATA_SCARCITY (B1441) and DUPLICATE
+    # (B1465) - so it printed "Disabled: 0 / Active: 219" against a
+    # canonical 4 / 215. The count is now derived from ALL FOUR sets.
+    from backtest.config import (STRATEGIES_DISABLED_DATA_SCARCITY as _DS,
+                                 STRATEGIES_DISABLED_DUPLICATE as _DUP)
+    _disabled = (set(DEPRECATED_STRATEGIES) | set(STRATEGIES_DISABLED_MISSING_PRODUCER)
+                 | set(_DS) | set(_DUP))
+    out_lines.append(f"**Total strategies:** {len(ALL_STRATEGIES)} | **Deprecated:** {len(DEPRECATED_STRATEGIES)} | **Disabled:** {len(_disabled)} | **Active for cube:** {len(ALL_STRATEGIES) - len(_disabled)}")
     out_lines.append("")
     out_lines.append("> **B894 NOTE (2026-06-18 Council 18 verdict per CHECKLIST #111):** R4 cube fire status, S4 Review progress, Producer Bug Fix ledger, and per-row Stage 4 Awaiting columns SCRUBBED from this doc - those data sources are stale (R4 era May 31; pre-B722/B874 deletions). Per `feedback_no_a_priori_strategy_pruning` + Council 18 Contrarian: \"anything that lies is worse than absent.\" Live cube fire status + S4 status will be restored after R5 cube execution with fresh data sources. Until then this doc shows only what's derivable from current `screener.py` + `regime_selector.py`.")
     out_lines.append("")

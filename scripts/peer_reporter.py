@@ -80,6 +80,15 @@ def decide(summary_exists: bool, hb_exists: bool, engine_pids: int,
     if not hb_exists:
         return "GAP", None            # engine alive, heartbeat not yet written
     if progress_code == 2:
+        # B2636 (S6-B2626a): a run at its FINAL step has stopped advancing the
+        # counter and is writing its outputs - MEASURED once live, a STALL
+        # toast fired at 22:49:54Z and the wave summary landed six minutes
+        # later. The general fix is to re-read the completion artifact right
+        # before shouting (covers every finishing shape, not just the last
+        # sim-day), which the caller does by passing summary_exists fresh.
+        if summary_exists:
+            return "DONE", (None if prev.get("done_toasted")
+                            else "wave COMPLETE - summary landed")
         toast = None if prev.get("stall_toasted") else (
             "run STALLED - counter frozen across 2+ observations while the "
             "heartbeat stays fresh (L656)")
@@ -98,6 +107,10 @@ def sample_once(out_dir: str, wave: str, summary: str) -> int:
     pids = len(crl.live_engine_pids()) if not summary_exists else 0
     code, msg = wrp.check(out_dir) if hb_exists else (1, "no heartbeat")
 
+    # B2636 (S6-B2626a): re-read the completion artifact immediately before
+    # deciding - the first read happened before the (slow) progress sample, and
+    # a run finishing in that gap looked STALLED.
+    summary_exists = summary_exists or (ROOT / summary).exists()
     status, toast_body = decide(summary_exists, hb_exists, pids, code, prev)
 
     line = {"ts": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
