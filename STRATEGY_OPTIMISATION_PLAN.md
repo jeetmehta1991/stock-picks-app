@@ -2518,6 +2518,45 @@ of 26, and the `ci_lo` of every PASS. **Margin of error is part of the verdict, 
 
 ---
 
+## PROGRAMME STATE 2026-09-07 (B2631) — icg CLOSED, family CLOSED, working order
+
+**Verdict chain (artifacts named; this section supersedes the Step-1-era section below for
+programme state, which is kept for design lineage):**
+- **Step 2 (the pre-registered holdout shot, span9):** FAIL, 5 of 6 gates — holdout sharpe 0.757
+  vs the 1.0 bar on 1,107 holdout trades (4,616 full-period); PF 2.64 / sortino 2.60 / PSR 1.0 /
+  both min-trade gates all PASS. Exit mismatch DISCLOSED per owner ruling 2(i): IS selected
+  breakeven_plus_trail, the pre-registered regime_flip recorded and never read on holdout.
+  Artifact: output_audit/output_icg_step2_span9_step2_span9_grid_auto.json (step2 block).
+- **Family closure (owner ruling 2026-09-06 "Option (c) with pre-registration, then (b)"):**
+  the 19 siblings graded FAIL by the pre-registered offline pass — pooled_sharpe fails 19 of 19;
+  R1 (non-shared-holdout trigger) fired 0 of 19; the challenge-test holdout-peek bound cleared
+  1.0 in 0 of 480 cells (family ceiling 0.852 even with hindsight exit selection). Artifacts:
+  output_audit/b2628_family_pass_prereg.json (registered BEFORE the run),
+  output_audit/b2628_institutional_family_grades.json (every row carries overlap-with-icg).
+  Family basis: 6x trade overlap (29,397 summed entries -> 4,866 union), measured on
+  output_r5_merged_1_7/trade_exit_detail.csv.
+- **Council verdict (owner-convened, recorded S6-B2627):** no engine campaigns on collinear
+  siblings; a family-collinearity PRE-GATE runs before every future campaign-target selection
+  (S6-B2627a, helper to build). Known data gap: AAPL and GOOGL 13F files are EMPTY (S6-B2630).
+
+**TIGHTENING band accounting (measured, from output_audit/b1453_phase_1b_roster.json —
+best-cell holdout n > 300, excluding the 4 rostered longs; supersedes the unverified 41):**
+**43 total = 10 DONE (all institutional_, closed FAIL) + 2 disabled-in-band (macd_crossover_short,
+macd_ichimoku) + 31 PENDING.**
+
+**WORKING ORDER for the pending 31 (per the S6-B2418 owner-decision row, option 1 = icg consumed;
+best-cell numbers are SELECTED maxima, a sequencing key only):**
+1. **pead_long_high_yoy_growth_only** (0.704, n=422, PF 3.14) — S6-B2418 option 2; a DIFFERENT
+   producer chain (earnings/YoY growth), per the council's chain-diversity requirement.
+   RECOMMENDED next; its 5-member pead prefix family gets the collinearity pre-gate before launch.
+2. rsi_oversold_with_smart_money_long (0.735, n=618) — ranked higher but FLAGGED in S6-B2418
+   (roster-family similarity; consolidate before tune).
+3. macd_crossover (0.708, n=422) + macd_fast_crossover (0.646, n=589) — the macd family goes
+   through the pre-gate as a unit.
+4. avwap_252_breakout (0.640, n=314), force_index_breakout (0.625, n=417),
+   r1_break_retest (0.602, n=398), then the remainder of the 31.
+The pick is the owner's (S6-B2418 stands OPEN); no launch without it.
+
 ## CURRENT PROGRAMME — institutional_committed_growth_long STEP 1 (S6-B2481..B2499, 2026-09-01)
 
 **Inventory** — `SPECS["institutional_committed_growth_long"]` in
