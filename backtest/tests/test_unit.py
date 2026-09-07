@@ -25512,6 +25512,8 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
          "L638 addendum (B2404): diagnose the layer before changing it"),
         ("different KIND than an argmax",
          "L770 (B2638): a grid's axes can have different epistemic status"),
+        ("SAME comparison the assertion performs",
+         "L771 (B2638): a probe must compare the way its assertion compares"),
     ):
         if frag not in discipline_text:
             missing.append(f"execution-discipline lost [{why}]: {frag!r}")
@@ -25597,7 +25599,9 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # 241 -> 242 at B2638c (the L770 grid-axis-epistemics row; shipped in
     # the same call as its tripwire row per B2130, after the turn gate
     # caught the entry landing in LEARNINGS and CHECKLIST alone).
-    assert len(gutted) == 242, gutted
+    # 242 -> 243 at B2638d (the L771 probe-semantics row; same call as its
+    # LEARNINGS entry and its pin assertion per B2130/L632).
+    assert len(gutted) == 243, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -34946,3 +34950,12 @@ def test_b2638_grid_axis_epistemics_rule_survives():
         assert "prior directional prediction" in doc, name
         assert "different KIND than an argmax" in doc, name
     assert "103.9" in lea, "the costed effort figure (L506b companion) must survive"
+    # L771 (B2638d): the probe-semantics lesson, whose own diagnostic is the
+    # case mismatch that produced it - asserted case-SENSITIVELY on purpose.
+    # Whitespace IS normalised, because the phrase wraps a line in LEARNINGS.md
+    # and a raw substring cannot match across the break. That failure was L771
+    # recurring inside L771's own pin: the assertion has to compare the way the
+    # claim is actually written, not the way it was drafted.
+    assert "SAME comparison the assertion performs" in " ".join(lea.split())
+    assert "different kind" not in lea.split("L771")[-1], (
+        "the L771 entry must keep the emphasis that made the mismatch visible")

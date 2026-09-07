@@ -19881,3 +19881,34 @@ prior prediction - that is a fact about the literature, not about the artifact. 
 pinned by test_b2638_grid_axis_epistemics_rule_survives, which asserts the rule in BOTH
 durable docs (L548: the detection half and the durability half are different claims).
 Anchored at CHECKLIST #297.
+
+### L771 - A VALIDATION PROBE MUST PERFORM THE SAME COMPARISON AS THE ASSERTION IT VALIDATES (B2638)
+
+**MEASURED 2026-09-07.** Before committing a durability pin I ran a vacuity probe - counting
+each asserted string in LEARNINGS.md and CHECKLIST.md before and after my edit - to prove no arm
+could pass on pre-existing prose. **It worked, and then it lied.** It correctly rejected one
+draft arm (the bare word *confirmation*, present 18 times in LEARNINGS.md and 12 times in
+CHECKLIST.md before the edit, so that arm would have passed with the entire entry deleted). It
+then CERTIFIED an arm that failed on the very next pyramid: the probe counted
+case-INsensitively (`.lower().count(s.lower())`) while the assertion compared case-SENSITIVELY
+(`s in doc`), and I had written *different kind* in CHECKLIST.md against *different KIND* in
+LEARNINGS.md. The probe reported 0 -> 1 in both files. The assertion found the string in one.
+
+**THE RULE: a probe that validates an assertion must perform the SAME comparison the assertion
+performs** - same case sensitivity, same normalisation, same whitespace handling. **A probe
+LOOSER than its assertion produces FALSE CONFIRMATIONS, and that is the expensive direction:**
+a stricter probe merely nags, while a looser one certifies an arm that will fail later, after
+you have stopped looking at it. **The tell: the probe and the assertion are written as two
+different expressions of "is this string there"** - one a `count`, one an `in` - and nothing
+requires the two expressions to agree.
+
+**Compliance failure against item 226** (prove-it-can-fail), which the probe was implementing;
+no new CHECKLIST item is warranted, because #226 already requires the arm be exercised and
+running the pyramid is exactly what caught this. The probe was an ADDITION to #226, not a
+substitute for it - and the addition is what was wrong.
+
+**Mechanism: JUDGMENT-ONLY for detection** - no scan compares a probe's comparison semantics to
+the assertion it certifies; the two live in different files and often in different turns.
+Durability pinned by the L771 assertion inside
+test_b2638_grid_axis_epistemics_rule_survives, and by the skill tripwire row shipped in the
+same call (B2130).
