@@ -2548,7 +2548,7 @@ macd_ichimoku) + 31 PENDING.**
 best-cell numbers are SELECTED maxima, a sequencing key only):**
 1. **pead_long_high_yoy_growth_only** (0.704, n=422, PF 3.14) — S6-B2418 option 2; a DIFFERENT
    producer chain (earnings/YoY growth), per the council's chain-diversity requirement.
-   RECOMMENDED next; its 5-member pead prefix family gets the collinearity pre-gate before launch.
+   **IN PROGRESS - Step 1 LANDED OFFLINE at B2638 with zero engine hours (SS11.2b).** The pre-gate ran first and SPLIT the family (output_audit/b2633_pead_pregate.json). Awaiting the owner's call on the single pre-registered holdout read (S6-B2638b).
 2. rsi_oversold_with_smart_money_long (0.735, n=618) — ranked higher but FLAGGED in S6-B2418
    (roster-family similarity; consolidate before tune).
 3. macd_crossover (0.708, n=422) + macd_fast_crossover (0.646, n=589) — the macd family goes
@@ -2590,7 +2590,7 @@ instrument earns its place:**
 - `pead_with_insider_confirmation_long`: no rows in the R5 cube (no-cell bucket) - nothing to
   measure offline; falls to the loosening programme.
 
-**Phase 0 (next): the SPECS inventory for pead_long_high_yoy_growth_only.** Producer surface
+**Phase 0 - DONE at B2634, and Step 1 DONE at B2638 (see the STEP-1 LANDED OFFLINE section below, which supersedes the 'next' framing in this paragraph).** Producer surface
 read so far: backtest/signals/pead.py (`compute_pead_signals`, drift_window_days=60) and
 backtest/signals/earnings_surprise_yoy.py (YOY_GROWTH_LONG_THRESHOLD +0.05 /
 SHORT -0.05); gates `within_pead_window AND yoy_surprise_high` (screener.py:5041). The
@@ -2907,7 +2907,7 @@ Sections above remain the authority for WHY; this section is the authority for W
 
 ### 11.1 ON-RAMP - what must exist BEFORE the first spec of a new strategy launches
 
-Run each probe; every one must print the expected line. A missing item is a STOP, not a note.
+Run each probe; every one must print the expected line. A missing item is a STOP, not a note - **but R3-R7 are LANDING-TIME contracts, so they gate only a campaign that LAUNCHES THE ENGINE.** MEASURED at B2638: the battery fires solely from the engine's landing hook (`run_phase1a.py:713`), so with no engine run there is no landing and the family adapter cannot fire at all; requiring it before an OFFLINE-FREE Step 1 (SS11.2b) would have stopped a Step-1 that completed correctly. R1/R2 still bind every campaign - the SPECS entry is what makes the parameter surface auditable - and R3-R9 bind the moment a spec is written.
 (The launch-time check SHIPPED at B2578 (S6-B2573b): `producer_variant_table.launch_refusals` runs in
 `run_wave.main` BEFORE any arm and in `prelaunch_gate.check` for every LOCAL manifest; it refuses R1
 (no SPECS entry), R3 (not in `run_postconfig.FAMILIES`), an undeclared or off-band env knob, a resim
@@ -2923,7 +2923,7 @@ hand; R2 (the producer-level fire count) stays a hand probe.)
 | R2 | `D_AXIS_FAMILIES["<strategy>"]` (Table D axes + `detect` key) | `python -c "from producer_variant_table import D_AXIS_FAMILIES as D; print('<strategy>' in D)"` | `True` | smc, institutional |
 | R3 | `FAMILIES["<strategy>"]` in `scripts/run_postconfig.py` with a params extractor and a `run_<family>` that executes EVERY `_GRADER_CHECKS` leg (`step2_grade_auto`, `step2_free_levels`, `step4_spot_check_auto`, `step7_engine_implemented`) | `python -c "from run_postconfig import FAMILIES, _GRADER_CHECKS; f=FAMILIES['<strategy>']; print(sorted(f))"` then read `run_<family>` and tick each leg | 4 legs present | smc (3 of 4 - no free-levels leg), institutional (4 of 4) |
 | R4 | Step-1 grader for the family (grades the landed cube at the manifest's own params; emits the B2505 grid contract: `config`, `strategy`, `grader`, `rows`, `is_rows`, `holdout_rows`, `results[]`) | `--help` of the grader | usage text | `tighten_breaker_block.py` (smc), `grade_institutional_config.py` (institutional) |
-| R5 | Free-levels re-scorer (tighter-only subset re-score off `signals_at_entry`, gated on REPRODUCING the landed baseline) | `--help` | usage text | `grade_free_levels_institutional.py` (institutional only) |
+| R5 | Free-levels re-scorer (tighter-only subset re-score off `signals_at_entry`, gated on REPRODUCING the landed baseline) | `--help` | usage text | `grade_free_levels_institutional.py` (institutional); **`scripts/offline_level_sweep.py` is the GENERIC one (B2638)** - the axis map is an argument, so a new strategy is a new `--axes`, not a new script |
 | R6 | Three-leg spot check (precompute / production consumer / engine record, n=50 seed 42) | `--help` | usage text | `spot_check_trades.py` (smc), `spot_check_institutional.py` (institutional) |
 | R7 | Step-7 engine-anchor set (the tokens that prove each swept parameter reaches the engine path) | grep the tokens in the engine files | every token found | `verify_engine_implemented.py` (smc); inline grep in `run_institutional` |
 | R8 | Every env knob in the spec's arm is READ by the engine/precompute (`knob_is_read`, B2578) and its full consumer list is MEASURED and pinned equal to the declaration (blast radius; `knob_consumers` tokenizes `backtest/**` + reads `os.environ` sites under `scripts/`, so a name inside a docstring is prose, not a consumer - B2579) | `python -c "import sys; sys.path.insert(0,'scripts'); from producer_variant_table import SPECS, declared_consumers, knob_consumers, knob_is_read; from pathlib import Path; s=SPECS['<strategy>']; print(all(knob_is_read(p['env'], Path('.')) and declared_consumers(s,p['env'])==knob_consumers(p['env']) for p in s['params'] if p.get('env')))"` | `True` - and the launch gate refuses any drift | ENFORCED for smc + institutional (B2578 knobs, B2579 consumer lists) |
@@ -2941,6 +2941,7 @@ since B2579 an incomplete `tools` block is not a family, so the refusal lands be
 |---|---|---|---|---|
 | 0 | Inventory: read the strategy block in `screener.py`, its producer, its precompute; list every parameter (fixed / searched / banded-unscheduled with reason); write R1 + R2 | STEP 0 above; `validate_spec` | SPECS entry; `PRODUCER_VARIANT_TABLE_<strategy>.md` via `producer_variant_table.py --strategy <s> --factorial` | R1-R9 all green (SS11.1) |
 | 0.5 | Instrument ONE ticker at the production params to see fires exist (family example: `instrument_breaker_block.py` for smc; institutional used the precompute builder + a `python -c` count). Generic form: count fires of the strategy on 6 megacaps at production params | family script or `python -c` | a fire count > 0 recorded in the spec's `note` | fires > 0 (a 0 here is a producer defect, not a search) |
+| 0.6 | **BRANCH: is every swept level OFFLINE-FREE?** For each parameter, ask whether the MAGNITUDE it thresholds was persisted in `signals_at_entry` at fire time. If EVERY scheduled level is a tightening of a persisted magnitude, Step 1 needs NO engine run - go to SS11.2b and skip steps 1-1.4. If ANY level loosens, or reads a magnitude the cube does not carry, that level is engine-only and the normal path applies to it | `scripts/offline_level_sweep.py` (its four refusals answer this mechanically: reproduction, coverage, join, truncation) | the decision recorded in the spec's `note` and in the queue row, per parameter | a level called free must REPRODUCE the landed fire set at the production values - anything below 1.0 means the persisted magnitude is not the quantity the engine thresholded, and the sweep refuses |
 | 1 | Write ONE spec per fire-adding combination (`output_audit/<batch>_<cfg>_spec.json`: `strategy_subset`, `tickers_file` = `_sweep_200.txt`, window, `arms[0].env` with every knob, `max_run_hours` <= 5, `resume`); copy an existing spec (`b2527_icg_span50_spec.json`) and change ONLY the knob values + names | spec file | the spec, diffed against its template in the turn | every knob in `arms[0].env` is a declared SPECS knob at a band level - `launch_refusals` (B2578) refuses the spec otherwise, and `launch_sweep.arm_env_matches` refuses an UNSET or mismatched one in the process env |
 | 1.1 | Launch the chain DETACHED: `launch_detached.py --chain --batch <b> --specs <all specs in information order> [--wait-for <summary.json>]` (B2575; the ONLY sanctioned chain launch path - `chain_task_running` refuses a second chain; the task unregisters ITSELF at CHAIN DONE, B2577) wrapping `run_serial_chain.py`; per spec, run_wave writes the manifest and launch_sweep runs the gate (exit 0 or REFUSED) and writes `gate_receipt.json` | `scripts/run_serial_chain.py` -> `run_wave.py` -> `launch_sweep.py` -> `prelaunch_gate.py` | `output_audit/serial_chain.log` LAUNCH line; `<out-dir>/run_manifest.json` + `gate_receipt.json`; Task Scheduler task `stockpicks_chain_<batch>_<ts>` observed Running | the task is OBSERVED (S6-B2529a), not intended; the receipt exists |
 | 1.2 | Arm monitoring IN THE LAUNCH TURN: exactly ONE hourly cron per chain (delete any existing one for the same chain first - two were found armed, S6-B2573f), unconditional + periodic markers (#185/#186); read `run_heartbeat.json` at each report | CronCreate (session-held - S6-B2548) | the hourly report block in every turn while the chain runs | none - reporting is a standing duty |
@@ -2949,6 +2950,51 @@ since B2579 an incomplete `tools` block is not a family, so the refusal lands be
 | 2 | When every Step-1 spec is COMPLETE: grade every landed cube with the family grader (already done per landing by the battery); render Tables A-D (`producer_variant_table.py --strategy <s> --results <grid...> --keys <params> --out`; NOTE `--keys` DEFAULTS to the smc keys `close_mitigation,age_bars_max,tail_n` - always pass the family's own, S6-B2573c); pick the top-3 configs by the STEP 2 ENTRY rule (mechanical: rank on `is_ci_lo`, min-trades >= 10, no gates - B1608) | family grader + `producer_variant_table.py` | `PRODUCER_VARIANT_TABLE_<strategy>.md` Tables A-D populated; top-3 list in the queue row | top-3 named with `is_ci_lo` values |
 | 3 | WATERFALL: run config 1 at 4 y x 544 tickers (legs <= 5 h each, `resume: true`); the battery grades it against the six LIVE_GATES; STOP at the first config that qualifies; else config 2, then 3 (STEP 2 EXECUTION) | same launch path as 1.1; `roster_core.LIVE_GATES` | `output_audit/<batch>_cfgN_grid.json` with `qualifiers` (renamed from `provisional_qualifiers` at S6-B2409) | a qualifier, or 3 of 3 non-qualifying with denominators |
 | 4 | ADMIT: render the qualifier into `PHASE_1B_ROSTER.md` (`phase_1b_step2_admissions.json`, metrics re-derived from the grid at render time - S6-B2413); count the REGISTERED mirror short (S6-B2417); engine wiring is DEFERRED to Phase 1B deployment (S6-B2411, trigger named there) | `scripts/build_phase_1b_roster.py` | roster row + queue row | owner-visible roster diff in the turn |
+
+### 11.2b THE OFFLINE-FREE RUN - Step 1 with zero engine hours (B2638)
+
+**When this applies.** Every scheduled level tightens a threshold whose MAGNITUDE was persisted
+in `signals_at_entry`. Then a level is a SUBSET of the landed fire set, not a new simulation, and
+Step 1 is a filter over the existing cube. MEASURED for `pead_long_high_yoy_growth_only`: signal
+coverage 2,116 of 2,116 fires, and re-applying the production levels returns 2,116 of 2,116
+landed fires - so the subset is exact and the whole Step-1 grid costs no engine time.
+**Wall-clock MEASURED: 103.9 s** for 15 cells x 26 exits = 390 gradings, dominated by loading the
+4.9M-row cube CSV - against 16-40 h for one engine config. This is the owner's
+run-producers-once directive in its strongest form: the producers already ran, in R5.
+
+**The path.**
+
+| Step | Do | Command | Must leave |
+|---|---|---|---|
+| F1 | Write the SPECS entry (R1) with every parameter's `free_band` / `resim_band`. A parameter with NO env knob can have NO resim level - `validate_spec` refuses it (the S6-B2569a class) | `producer_variant_table.py --strategy <s>` | the SPECS entry + Table A |
+| F2 | Confirm which parameters actually reach THIS strategy's gate. Read the gate expression in `screener.py` and follow each signal to its producer | grep the gate, read the producer | a per-parameter LIVE / SIBLING mark |
+| F3 | Run the sweep IN-SAMPLE ONLY | `offline_level_sweep.py --strategy <s> --axes '<key>:le|ge:<levels>' --production <values> --out output_audit/<b>_<s>_step1_is_surface.json` | the ranked artifact, carrying `trials_searched` and `preregistration_candidate` |
+| F4 | PRE-REGISTER the single cell BEFORE any holdout code path runs, in a COMMITTED artifact. The ordering IS the pre-registration | the artifact + the commit | the commit hash in the queue row |
+| F5 | Owner-gated: the single holdout read against the named cell | STEP 2 EXECUTION | the Step-2 grid |
+
+**What does NOT apply, and why.** The post-config battery, the landing hook, `LANDING REPORT`, the launch gate, `gate_receipt.json`, the chain and its monitor are all triggered by an ENGINE
+RUN. With none, none of them fires, and the family adapter (R3-R7) is not on the critical path -
+it becomes required the moment any level needs the engine. Ticket the adapter, do not build it to
+satisfy a gate that cannot run.
+
+**What binds HARDER here than on the engine path.** Search is free, so the only remaining cost of
+a bad search is statistical, and two rules carry the whole load:
+
+- **Multiplicity.** The artifact records `trials_searched` (cells x exits). BH-FDR runs only at
+  the roster stage across DIFFERENT STRATEGIES (`build_phase_1b_roster.py:350`, re-derived at B2639 - the 252 I first wrote was carried from an earlier session's record, L664); there is no
+  grid-stage correction, and PSR is a single-candidate statistic blind to the trials count
+  (B2376). Report the trials count with every ranked list.
+- **Axis epistemics (L770 / #297).** Partition the axes: one carrying a directional prediction
+  from the literature is a CONFIRMATION replicated across the levels of the others, and N
+  independent confirmations of one ordering is evidence of a different KIND than an argmax over
+  N x M cells. Only the UNPREDICTED axes spend multiplicity budget. MEASURED for pead: the
+  drift-window axis is monotone at 5 of 5 levels of the surprise-size axis (the Bernard-Thomas
+  prediction), while surprise-size peaks mid-range at 0.10 in 3 of 3 rows.
+
+**The holdout is on the same disk.** Nothing physically prevents reading it; the discipline is
+procedural. That is why F4's ordering - commit the ranked artifact, THEN read - is the whole
+mechanism, and why the sweep carries no holdout code path at all (pinned AST-side, not by
+convention).
 
 ### 11.3 The turn-close that every step above requires
 
