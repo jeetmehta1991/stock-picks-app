@@ -19912,3 +19912,36 @@ the assertion it certifies; the two live in different files and often in differe
 Durability pinned by the L771 assertion inside
 test_b2638_grid_axis_epistemics_rule_survives, and by the skill tripwire row shipped in the
 same call (B2130).
+
+### L772 - THE SHELL-SUBSTITUTION LAPSE HAS A PREDICTABLE LOCATION: THE COMMAND THAT VERIFIES A DOC EDIT (B2640)
+
+**L759 says sweep the turn's OTHER calls. This says WHERE to expect the hit.**
+
+**MEASURED 2026-09-08**, over the 18 shell calls of one document-editing turn (counted from the
+session transcript, scoped to the turn's own user instruction): **4 used the heredoc form, 9 used
+a double-quoted `-c "..."`, and exactly 1 of those 9 carried a backtick.** That one was not a
+patcher and not a commit - it was **the command VERIFYING that the markdown edits had landed**,
+which had to quote the document's own text, and this repo's documents are full of inline-code
+backticks. The escape held (`\``, so bash passed a literal), so nothing ran. **That is luck about
+the ESCAPE, not care about the FORM** - the L520/B2457 reading, one layer in: there the payload
+happened to be `printf`, here the backtick happened to be escaped.
+
+**Why this location and not another.** A patcher's content is authored INTO a file, so it travels
+by heredoc naturally. A commit message is long, so the heredoc habit fires. **A verification is
+SHORT and its content is COPIED FROM THE ARTIFACT** - which is exactly the content most likely to
+contain backticks, `$(`, or a literal `$`. The three properties that make a call feel safe -
+short, read-only, quoting something that already exists - are the three that make it dangerous.
+
+**THE RULE: any command whose payload is COPIED FROM A FILE goes through a heredoc, however short
+it is - and a read-only verification is not an exemption.** The blast radius of a
+verification is identical to a patcher's, because bash substitutes before it knows which one it
+is running.
+
+**Compliance failure against item 245**, not a new class - the mechanism
+(`scan_shell_substitution`) FIRED and named the exact call, which is how this was found. What is
+new is the location, and it is worth recording because the sweep L759 mandates is cheap only if
+you know where to look first.
+
+**Mechanism:** `scan_shell_substitution` already detects the form; no new gate. Durability for
+the location clause is pinned by the b2123 fragment shipped in this same call (B2591: an
+amendment needs its own fragment, or it can be deleted while the row's original pin stays green).
