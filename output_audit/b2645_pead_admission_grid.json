@@ -1,0 +1,34 @@
+{
+  "_doc": "B2645 admission-grid artifact for the OFFLINE pead campaign - renderer-schema row derived from output_r5_merged_1_7 via offline_level_sweep.load at the admitted levels; Step-2 read of record is output_audit/b2644_pead_step2_holdout.json",
+  "config": "pead_offline_b2638",
+  "strategy": "pead_long_high_yoy_growth_only",
+  "results": [
+    {
+      "drift_window_days": 20.0,
+      "yoy_growth_long_threshold": 0.1,
+      "exit": "time_stop_10d",
+      "verdict": "PASS",
+      "verdict_basis": "owner ruling 2026-09-08 option (a): psr INCOMPUTABLE (denominator_invalid) reads NOT-EVALUABLE per the B2012 three-state precedent; 5 of 5 evaluable live gates cleared. Under the pre-ruling fail-closed psr gate this row graded FAIL 5 of 6 - see output_audit/b2644_pead_step2_holdout.json",
+      "is_sharpe": 1.475,
+      "is_ci_lo": 1.117,
+      "sharpe": 1.148,
+      "ci_lo": 0.43,
+      "margin": 0.148,
+      "psr": null,
+      "profit_factor": 1.91,
+      "sortino": 2.366,
+      "win_rate": 0.51,
+      "expectancy": 1.5518,
+      "holdout_n": 196,
+      "full_period_n": 988,
+      "gates": {
+        "pooled_sharpe": true,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": false,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      }
+    }
+  ]
+}

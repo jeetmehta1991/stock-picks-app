@@ -7,14 +7,42 @@
       "ruling_verbatim": "Lets retain the break_pct_max 0.02, close_mitigation True, age_bars_max None, exit time_stop_10d, tail_n (20) combination",
       "strategy": "smc_breaker_block_long",
       "direction": "long",
-      "config": {"P1_swing_length": 50, "P6_span": 50},
+      "config": {
+        "P1_swing_length": 50,
+        "P6_span": 50
+      },
       "grid_artifact": "output_audit/output_b2399_step2_sw50sp50_step2_sw50sp50_grid_auto.json",
-      "combination": {"close_mitigation": true, "break_pct_max": 0.02, "age_bars_max": null, "tail_n": 20},
+      "combination": {
+        "close_mitigation": true,
+        "break_pct_max": 0.02,
+        "age_bars_max": null,
+        "tail_n": 20
+      },
       "exit": "time_stop_10d",
       "universe": "544 tickers (output_audit/r5_universe_544.txt)",
       "window": "4 years 2022-05-06 .. 2026-04-30 (IS 3y + 1y holdout)",
       "review_status": "PROVISIONAL-UNREVIEWED",
       "review_note": "S6-B2441 (owner-approved 2026-08-30, council recommendation). This admission was taken from a Step-2 config whose FOUR JUDGMENT post-config steps (5_adversarial_lens_review, 6_post_fix_recheck, 7_implement_in_engine, 8_verdict_with_denominators) have NOT been run - they were SKIPPED citing a wave-level review batch that has never existed (S6-B2436/L721). The five AUTO steps did run and are DONE. The gate now BLOCKS this config (S6-B2440). The admission stands in the document but is marked unreviewed until the pilot review clears it; if that review changes the verdict, the admission is revisited."
+    },
+    {
+      "ticket": "S6-B2644a",
+      "ruled": "2026-09-08",
+      "ruling_verbatim": "Note that psr is missing and move to phase 1B strategy roster along with the metrics. Add mirror short as well in the selected roster doc",
+      "strategy": "pead_long_high_yoy_growth_only",
+      "direction": "long",
+      "config": {
+        "offline_campaign": "B2638/B2644"
+      },
+      "grid_artifact": "output_audit/b2645_pead_admission_grid.json",
+      "combination": {
+        "drift_window_days": 20.0,
+        "yoy_growth_long_threshold": 0.1
+      },
+      "exit": "time_stop_10d",
+      "universe": "R5 merged cube output_r5_merged_1_7 (544-ticker universe; 480 with pead fires)",
+      "window": "4 years 2022-05-05 .. 2026-05-05 (IS 3y + 1y holdout)",
+      "review_status": "OFFLINE-CAMPAIGN-PSR-N/E",
+      "review_note": "Offline-free campaign (SS11.2b): zero engine hours, so the post-config battery never fired (it is landing-hook triggered). psr is INCOMPUTABLE for this cell (denominator_invalid) and reads NOT-EVALUABLE per owner ruling 2026-09-08 option (a); under the fail-closed gate the same cell graded FAIL 5 of 6 (output_audit/b2644_pead_step2_holdout.json). ENGINE WIRING of the admitted levels (drift 20 vs production 60; threshold 0.10 vs 0.05) requires knobs that DO NOT EXIST YET - signal_loader.py calls the producers bare - tracked S6-B2645a; admission is not deployment."
     }
   ]
 }

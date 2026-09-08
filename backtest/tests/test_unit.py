@@ -29873,13 +29873,16 @@ def test_b2417_admission_mirror_is_counted_in_the_rollup():
     adm_lines = [l for l in doc.splitlines()
                  if l.startswith("- **REGISTERED and retained, Step-2 admissions")]
     assert len(adm_lines) == 1, adm_lines
+    # B2645 (owner ruling 2026-09-08): the pead admission joined - the
+    # roll-up now carries TWO admission mirrors, and the total is NINE.
     assert "smc_breaker_block_short" in adm_lines[0], adm_lines[0]
-    assert "(1)" in adm_lines[0], adm_lines[0]
+    assert "pead_short_negative_yoy_growth" in adm_lines[0], adm_lines[0]
+    assert "(2)" in adm_lines[0], adm_lines[0]
 
     tot = [l for l in doc.splitlines() if l.startswith("**Deployable total:")]
     assert len(tot) == 1, tot
     assert "Step-2 admissions" in tot[0] and "admission mirrors" in tot[0], tot[0]
-    assert "= 7 distinct strategies" in tot[0], tot[0]
+    assert "= 9 distinct strategies" in tot[0], tot[0]
 
     # reachability (B2208): the generator derives the roll-up from the
     # admissions record, not from a hand count
