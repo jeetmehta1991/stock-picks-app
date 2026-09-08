@@ -35007,3 +35007,74 @@ def test_b2643_offline_table_d_ships_with_the_artifact():
     rec2 = copy.deepcopy(rec)
     rec2["ranked"] = rec2["ranked"][:-1]
     assert m.render_table(rec2) != rendered
+
+
+
+# ---------------------------------------------------------------------------
+# B2644 (S6-B2638b, owner-fired): the Step-2 holdout artifact's contract
+# ---------------------------------------------------------------------------
+
+def test_b2644_step2_artifact_carries_every_line_and_one_admission():
+    """B2644: the one-shot Step-2 read persists ALL (cell, exit) lines (the
+    L659 fix - run 1 wrote only the admission row), exactly ONE line is
+    admission-bearing, every other is labelled peeked_by_construction, the
+    verdict equals the admission line's, the gates dict speaks roster_core's
+    six-gate vocabulary, and the disk table equals the renderer (PIVOT #37).
+    Must-fail arm: a mutated record renders differently."""
+    import copy
+    import importlib.util as ilu
+    import json
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[2]
+    spec = ilu.spec_from_file_location(
+        "ohr_b2644", root / "scripts" / "offline_holdout_read.py")
+    m = ilu.module_from_spec(spec)
+    spec.loader.exec_module(m)
+
+    jp = root / "output_audit" / "b2644_pead_step2_holdout.json"
+    rec = json.loads(jp.read_text(encoding="utf-8"))
+    rows = rec["rows"]
+    assert len(rows) == rec["trials"] == 390
+    adm = [r for r in rows if r["admission_bearing"]]
+    assert len(adm) == 1
+    assert all(r["peeked_by_construction"] for r in rows if not r["admission_bearing"])
+    assert rec["verdict"] == adm[0]["verdict"]
+    import roster_core as rc
+    assert set(adm[0]["gates"]) == set(rc.LIVE_GATES)
+
+    rendered = m.render_table(rec)
+    assert jp.with_suffix(".md").read_text(encoding="utf-8") == rendered
+    assert rendered.count("**ADMISSION**") <= 1   # admission may sit below top-N
+    # L686: mutate what the renderer actually reads - the table shows the TOP
+    # 20 by holdout sharpe, so dropping the LAST row changes nothing (measured:
+    # the first draft of this arm passed vacuously exactly that way). Remove
+    # the top-ranked row instead; rank 1 must change.
+    rec2 = copy.deepcopy(rec)
+    top = max((r for r in rec2["rows"] if r.get("holdout_sharpe") is not None),
+              key=lambda r: r["holdout_sharpe"])
+    rec2["rows"].remove(top)
+    assert m.render_table(rec2) != rendered
+
+
+def test_b2644_second_read_of_a_spent_holdout_is_refused(tmp_path, monkeypatch):
+    """B2644: the holdout is spent by its first read - a second invocation
+    against an existing artifact REFUSES unless --force-rerun, which labels
+    the output. The guard runs before any data is touched."""
+    import sys
+    import pytest
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[2]
+    out = tmp_path / "spent.json"
+    out.write_text("{}", encoding="utf-8")
+    monkeypatch.setattr(sys, "argv",
+                        ["offline_holdout_read.py",
+                         "--sweep-artifact", "does_not_matter.json",
+                         "--out", str(out)])
+    import importlib.util as ilu
+    spec = ilu.spec_from_file_location(
+        "ohr_b2644b", root / "scripts" / "offline_holdout_read.py")
+    m = ilu.module_from_spec(spec)
+    spec.loader.exec_module(m)
+    with pytest.raises(SystemExit) as e:
+        m.main()
+    assert "spent" in str(e.value)

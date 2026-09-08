@@ -2659,6 +2659,23 @@ fires only from the engine's landing hook (`run_phase1a.py:713`). No engine run 
 landing, so the adapter buys this campaign nothing; it stays ticketed for whenever a pead
 engine run is actually launched.
 
+**STEP 2 EXECUTED (B2644, owner-fired 2026-09-08: 'build the reader and run step 2').**
+Reader: `scripts/offline_holdout_read.py` (all 390 lines in one read per the F5 design; refuses
+a second read of the spent holdout). Artifact: `output_audit/b2644_pead_step2_holdout.json` +
+its table. **VERDICT: FAIL, 5 of 6 gates.** The pre-registered cell's holdout: sharpe **1.148**
+vs the 1.0 bar (PASS, +0.148 over the gate), PF 1.91 vs 1.3 PASS, sortino 2.366 vs 1.0 PASS,
+n 196 holdout / 988 full PASS+PASS - **the single failing gate is PSR, which returns None**
+(denominator_invalid: 1 - skew x SR + excess_kurt/4 x SR^2 = 1 - 1.334x1.148 + 0.181x1.318 =
+-0.29, computed from the cell's own moments). MEASURED across the read: PSR is None on 46 of
+390 lines whose median holdout sharpe is 1.264, vs 0.382 for the 344 computable lines - the
+gate goes incomputable precisely on strongly-skewed winners. Whether an incomputable PSR reads
+FAIL (current, fail-closed) or NOT-EVALUABLE (the B2012 three-state precedent for inf PF) is an
+OWNER DECISION - S6-B2644a - because it decides this admission; changing a gate after it failed
+the cell in front of me is the B2459 class and was not done. Peek bound (diagnostic, labelled):
+25 of 390 peeked lines clear all six gates, sharpe 1.001..1.463; none can be promoted off this
+read. The Step-1 selection VALIDATED out of sample: production cell holdout 0.844 -> chosen
+cell 1.148.
+
 **OPEN, owner-gated: the single holdout read.** It is a one-way door - firing it ends the
 pre-registration for this strategy forever, and the production cell's holdout (0.844 best
 exit) is already known. Recommended gating: run the permutation / block-bootstrap null over
