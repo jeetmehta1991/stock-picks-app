@@ -25516,6 +25516,8 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
          "L771 (B2638): a probe must compare the way its assertion compares"),
         ("verifying a MARKDOWN edit is where the unsafe form appears",
          "L772 (B2640): the shell-substitution lapse has a predictable location"),
+        ("evidence window is ONE COMMIT DEEP",
+         "L772 addendum (B2641): the Phase-5 commit is the LAST of the turn"),
     ):
         if frag not in discipline_text:
             missing.append(f"execution-discipline lost [{why}]: {frag!r}")
@@ -25605,7 +25607,9 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # LEARNINGS entry and its pin assertion per B2130/L632).
     # 243 -> 244 at B2640 (the L772 location clause amended into the L759 row;
     # an amendment needs its own fragment per B2591).
-    assert len(gutted) == 244, gutted
+    # 244 -> 245 at B2642 (the L772-addendum clause: the Phase-5 commit is the
+    # LAST commit of the turn, because the gate's window is one commit deep).
+    assert len(gutted) == 245, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 

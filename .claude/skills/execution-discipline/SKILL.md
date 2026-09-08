@@ -839,6 +839,21 @@ record, and this file is what actually gets read at the start of every turn.
    B2132d), each time with this rule already written. Staging the doc edit and
    the pin edit in ONE python call makes them inseparable by construction; a
    habit that depends on remembering, after three failures, is not a habit.
+   **AND THE PHASE-5 COMMIT IS THE LAST COMMIT OF THE TURN (B2641 / L772
+   addendum) - because the gate's evidence window is ONE COMMIT DEEP.** The two
+   rules above say WHAT to land together and HOW; this says WHEN, and it is not
+   tidiness. MEASURED: `scan_miss_capture_complete` proves each member through
+   `_artifact_touched`, which runs `git status --porcelain <path>` and
+   `git log -1 --name-only` - so a correctly-landed LEARNINGS entry goes
+   INVISIBLE the moment any later commit lands in the same turn, and the gate
+   reports a member missing that is sitting in HEAD~1. Six blocked closes came
+   from exactly that. The batch-cap rule (<=3 fixes per batch) GUARANTEES
+   multi-commit turns, so this is structural, not incidental. Note the two text
+   escapes are NOT equivalent: the mechanism member accepts a plain-text `scan_`
+   name near the word mechanism, while the LEARNINGS member accepts NO text at
+   all - only ordering satisfies it. Do not widen the gate: letting a PRIOR
+   turn's entry satisfy this turn's requirement is the false-negative direction
+   B1948 names as the expensive one.
 
 ## LOAD-THE-SKILL RULE (B1728/B1729 — L504, CHECKLIST #229, mechanically enforced)
 

@@ -19959,3 +19959,10 @@ member accepts a plain-text scan_ name near the word mechanism, while the LEARNI
 NO text at all, so only commit ordering can satisfy it. Practical rule: **the Phase-5 commit is the
 LAST commit of the turn.** Compliance failure against B2129/L630, whose remedy I knew and whose
 reason I had not read.
+
+**L772 ADDENDUM, SKILL ROW LANDED (B2642).** The addendum's rule - *the Phase-5 commit is the LAST
+commit of the turn* - now sits in the always-read skill beside B2129/L630 and B2132/L632, with its
+own fragment pin (B2591: an amendment needs one, or it can be deleted while the row's original pin
+stays green). It landed in ONE scripted call and ONE commit with this line, because recording a
+rule about landing members together while splitting them would refute the rule in the act of
+writing it.
