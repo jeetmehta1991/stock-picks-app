@@ -34967,3 +34967,43 @@ def test_b2638_grid_axis_epistemics_rule_survives():
     assert "SAME comparison the assertion performs" in " ".join(lea.split())
     assert "different kind" not in lea.split("L771")[-1], (
         "the L771 entry must keep the emphasis that made the mismatch visible")
+
+
+
+# ---------------------------------------------------------------------------
+# B2643 (owner directive 2026-09-08): TABLE D renders for OFFLINE runs too
+# ---------------------------------------------------------------------------
+
+def test_b2643_offline_table_d_ships_with_the_artifact():
+    """B2643: the ranked producer-combination view must not wait for an engine
+    run - the sweep writes TABLE D (offline form) beside its JSON, and the two
+    agree (writer-reader contract, PIVOT #37 class). Proven able to fail: a
+    mutated record renders a different table than the one on disk."""
+    import importlib.util as ilu
+    import json
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[2]
+    spec = ilu.spec_from_file_location(
+        "ols_b2643", root / "scripts" / "offline_level_sweep.py")
+    m = ilu.module_from_spec(spec)
+    spec.loader.exec_module(m)
+
+    jp = root / "output_audit" / "b2638_pead_step1_is_surface.json"
+    mp = jp.with_suffix(".md")
+    rec = json.loads(jp.read_text(encoding="utf-8"))
+    rendered = m.render_table(rec)
+
+    assert mp.exists(), "the offline Table D must sit beside the artifact"
+    assert mp.read_text(encoding="utf-8") == rendered, (
+        "disk table and renderer disagree - one of them is stale")
+    # every graded cell appears, ranked; the production cell is marked ONCE
+    n = rec["cells_graded"]
+    for i in range(1, n + 1):
+        assert f"| {i} |" in rendered, f"rank {i} missing"
+    assert rendered.count("(production)") == 1
+    assert f"{rec['trials_searched']} trials" in rendered
+    # must-fail arm: dropping a cell changes the rendering
+    import copy
+    rec2 = copy.deepcopy(rec)
+    rec2["ranked"] = rec2["ranked"][:-1]
+    assert m.render_table(rec2) != rendered

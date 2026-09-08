@@ -179,6 +179,33 @@ def sweep(strategy: str, axes: list[dict], production: tuple,
                             "preregistration_candidate named above"}
 
 
+def render_table(rec: dict) -> str:
+    """B2643 (owner directive 2026-09-08): TABLE D, OFFLINE FORM.
+
+    The ranked producer-combination view must NOT wait for an engine run - for
+    an offline campaign the Step-1 artifact IS the run, so its ranking renders
+    to markdown beside the JSON, automatically, every sweep (L651: delivery
+    cannot depend on the reporter remembering; the runner invokes the renderer).
+    """
+    axes = rec["axes"]
+    head = (f"# TABLE D (OFFLINE FORM) - {rec['strategy']}\n\n"
+            f"Ranked producer combinations from the IN-SAMPLE sweep: "
+            f"{rec['cells_graded']} of {rec['cells_total']} cells, "
+            f"{rec['trials_searched']} trials (cells x exits); window "
+            f"{rec['window']['is'][0]} .. {rec['window']['is'][1]}; "
+            f"holdout NOT read by this artifact.\n\n")
+    cols = " | ".join(f"{a['key']} ({a['op']})" for a in axes)
+    lines = [f"| rank | {cols} | IS trades | best exit | IS sharpe |",
+             "|" + "---|" * (len(axes) + 4)]
+    prod = list(rec.get("production_levels", ()))
+    for i, c in enumerate(rec["ranked"], 1):
+        vals = " | ".join(str(v) for v in c["levels"])
+        mark = " (production)" if list(c["levels"]) == prod else ""
+        lines.append(f"| {i} | {vals}{mark} | {c['is_trades']} | "
+                     f"{c['best_exit']} | {c['is_sharpe']:.3f} |")
+    return head + "\n".join(lines) + "\n"
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--strategy", required=True)
@@ -199,6 +226,9 @@ def main() -> int:
                          f"{len(axes)} axes")
     rec = sweep(a.strategy, axes, production, a.coverage_min, a.repro_min, a.min_n)
     Path(a.out).write_text(json.dumps(rec, indent=2), encoding="utf-8")
+    # B2643: the offline Table D ships WITH the artifact, unconditionally.
+    table_path = Path(a.out).with_suffix(".md")
+    table_path.write_text(render_table(rec), encoding="utf-8")
 
     print(f"{rec['strategy']}: reproduction {rec['reproduction']:.4f} | coverage "
           f"{rec['evidence']['coverage']:.4f} | {rec['cells_graded']} of "
@@ -207,6 +237,7 @@ def main() -> int:
         print(f"   {c['levels']}  IS sharpe {c['is_sharpe']:.3f}  "
               f"exit {c['best_exit']}  n={c['is_trades']}")
     print(f"wrote {a.out}  (holdout NOT read)")
+    print(f"wrote {table_path}  (TABLE D, offline form)")
     return 0
 
 
