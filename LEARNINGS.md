@@ -19945,3 +19945,17 @@ you know where to look first.
 **Mechanism:** `scan_shell_substitution` already detects the form; no new gate. Durability for
 the location clause is pinned by the b2123 fragment shipped in this same call (B2591: an
 amendment needs its own fragment, or it can be deleted while the row's original pin stays green).
+
+**L772 ADDENDUM (B2641) - WHY 'ONE COMMIT' IS A MECHANISM CLAIM, NOT TIDINESS.** B2129/L630 says
+land all Phase-5 members in ONE commit and predicts a gate storm otherwise. **This arc split across
+three commits and produced exactly that: 6 blocked closes.** The reason is now READ rather than
+inferred - `scan_miss_capture_complete` proves each member through `_artifact_touched`, which runs
+`git status --porcelain <path>` and `git log -1 --name-only`. **Its evidence window is ONE commit
+deep.** So a correctly-landed LEARNINGS entry becomes invisible the moment ANY later commit lands in
+the same turn, and the gate reports a member missing that is sitting in HEAD~1. Two consequences
+worth carrying: the batch-cap rule (<=3 fixes per batch) GUARANTEES multi-commit turns, so this is
+structural rather than incidental; and the two text escapes are not equivalent - the mechanism
+member accepts a plain-text scan_ name near the word mechanism, while the LEARNINGS member accepts
+NO text at all, so only commit ordering can satisfy it. Practical rule: **the Phase-5 commit is the
+LAST commit of the turn.** Compliance failure against B2129/L630, whose remedy I knew and whose
+reason I had not read.
