@@ -104,7 +104,11 @@ def main() -> int:
         sortino = _sortino_ratio(pnl, hold)
         calmar = _calmar(pnl, hold)
         # B1977: an UNMEASURABLE Sharpe must not reach DSR as a MEASURED zero.
-        dsr = (_deflated_sharpe(sharpe, n, float(pnl.skew()), float(pnl.kurtosis()))
+        # B2646: per-period SR + raw kurtosis (see roster_core.evaluate)
+        _pnl_std = float(pnl.std(ddof=1)) if n > 1 else 0.0
+        _sr_pp = float(pnl.mean()) / _pnl_std if _pnl_std > 0 else 0.0
+        dsr = (_deflated_sharpe(_sr_pp, n, float(pnl.skew()),
+                                float(pnl.kurtosis()) + 3.0)
                if sharpe is not None else None)
         cs = _cost_sensitivity_sharpe(pnl, hold)
         chow = _chow_test(eq)

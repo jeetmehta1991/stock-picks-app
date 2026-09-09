@@ -507,10 +507,12 @@ def _deflated_sharpe(sharpe: float, n_trades: int, skew: float, kurtosis: float)
     Formula: PSR = Phi((SR - SR*) * sqrt(n-1) / sqrt(1 - skew*SR + (kurtosis-1)/4 * SR^2))
 
     Inputs:
-      sharpe: realised per-trade Sharpe ratio (annualised)
+      sharpe: PER-PERIOD (per-trade) Sharpe ratio - NOT annualised (B2646:
+        feeding the annualised SR made the radicand negative on skewed winners)
       n_trades: trade count (sample size)
       skew: skewness of trade pnl distribution
-      kurtosis: excess kurtosis of trade pnl distribution
+      kurtosis: RAW (Pearson) kurtosis of trade pnl distribution, normal = 3.0
+        (B2646: the convention this function's own tests always used)
 
     SR_star (the benchmark Sharpe we test against) = 0 (testing "is Sharpe > 0?").
 
@@ -523,7 +525,9 @@ def _deflated_sharpe(sharpe: float, n_trades: int, skew: float, kurtosis: float)
     if pd.isna(skew) or pd.isna(kurtosis):
         skew = 0.0
         kurtosis = 3.0  # normal kurtosis baseline
-    excess_kurt = kurtosis - 3.0 if kurtosis >= 3.0 else 0.0
+    # B2646 (owner ruling 'then c'): input is RAW kurtosis; excess derives
+    # from it WITHOUT the old floor - platykurtic samples are legitimate.
+    excess_kurt = kurtosis - 3.0
     # Batch 197 (Phase 1A-beta batch_2 crash fix 2026-05-17): the deflated
     # Sharpe formula uses (1 - (kurt/4) * sharpe^2)**0.5 whose radicand can be
     # NEGATIVE when (excess_kurt/4) * sharpe^2 > 1.0 (high excess kurtosis +
@@ -535,7 +539,8 @@ def _deflated_sharpe(sharpe: float, n_trades: int, skew: float, kurtosis: float)
     deflated_radicand = 1.0 - (excess_kurt / 4.0) * sharpe**2
     try:
         from scipy.stats import norm
-        denominator_sq = 1.0 - skew * sharpe + (excess_kurt / 4.0) * sharpe**2
+        # B2646: Bailey-Lopez de Prado uses (raw_kurtosis - 1)/4, not excess/4.
+        denominator_sq = 1.0 - skew * sharpe + ((kurtosis - 1.0) / 4.0) * sharpe**2
         if denominator_sq <= 0:
             return {"psr": None, "deflated_sharpe": None, "note": "denominator_invalid"}
         denom = (denominator_sq / (n_trades - 1)) ** 0.5
@@ -556,7 +561,8 @@ def _deflated_sharpe(sharpe: float, n_trades: int, skew: float, kurtosis: float)
         # scipy not available - compute psr via numpy normal CDF approximation
         # Erfc-based normal CDF: 0.5 * (1 + erf(x / sqrt(2)))
         from math import erf, sqrt
-        denominator_sq = 1.0 - skew * sharpe + (excess_kurt / 4.0) * sharpe**2
+        # B2646: Bailey-Lopez de Prado uses (raw_kurtosis - 1)/4, not excess/4.
+        denominator_sq = 1.0 - skew * sharpe + ((kurtosis - 1.0) / 4.0) * sharpe**2
         if denominator_sq <= 0:
             return {"psr": None, "deflated_sharpe": None, "note": "denominator_invalid"}
         denom = (denominator_sq / (n_trades - 1)) ** 0.5
@@ -2329,10 +2335,13 @@ def compute_strategy_metrics(df: pd.DataFrame, strategy: str) -> dict:
     chow_result = _chow_test(equity_curve)
     try:
         skew_val = float(pnl.skew()) if len(pnl) >= 3 else 0.0
-        kurt_val = float(pnl.kurt()) if len(pnl) >= 4 else 3.0
+        # B2646: raw kurtosis for PSR (pandas .kurt() is EXCESS)
+        kurt_val = float(pnl.kurt()) + 3.0 if len(pnl) >= 4 else 3.0
     except Exception:
         skew_val, kurt_val = 0.0, 3.0
-    psr_dict = _deflated_sharpe(sharpe, n, skew_val, kurt_val)
+    _pnl_std_psr = float(pnl.std(ddof=1)) if n > 1 else 0.0
+    _sr_pp_psr = float(pnl.mean()) / _pnl_std_psr if _pnl_std_psr > 0 else 0.0
+    psr_dict = _deflated_sharpe(_sr_pp_psr, n, skew_val, kurt_val)
     cost_sensitivity = _cost_sensitivity_sharpe(pnl, hold_s)
     # DEC-435 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 49 2026-05-11.
     # Adverse Exit Pct (mean giveback from MFE) for exit-quality assessment.

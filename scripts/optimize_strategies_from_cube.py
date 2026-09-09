@@ -158,11 +158,15 @@ def _dec426_verdict(stats: dict, m_total_candidates: int = 1) -> dict:
     # queue items AU1 + #4 (PSR-hardcoded-False P0).
     # Requires _cell_stats to have populated skew + kurtosis (Batch 457).
     from backtest.results.metrics import _deflated_sharpe
+    # B2646 PARTIAL, DISCLOSED: kurtosis converted to RAW; the SR stays
+    # ANNUALISED because _cell_stats persists no per-period mean/std. This
+    # is the legacy pre-R5 optimizer, not on the live Step-2 path - the
+    # residue is recorded on the B2646 queue row.
     psr_result = _deflated_sharpe(
         sharpe=stats.get("sharpe", 0.0),
         n_trades=n,
         skew=stats.get("skew", 0.0),
-        kurtosis=stats.get("kurtosis", 3.0),
+        kurtosis=stats.get("kurtosis", 0.0) + 3.0,
     )
     psr_value = psr_result.get("psr")
     psr_pass = (psr_value is not None) and (psr_value >= GATE_PSR_MIN)

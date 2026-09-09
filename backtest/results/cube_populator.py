@@ -168,11 +168,12 @@ def compute_cell_metrics(trades: pd.DataFrame) -> dict:
     pnls_series = pd.Series(pnls)
     skew_val = float(pnls_series.skew()) if n >= 4 and std > 0 else 0.0
     kurt_val = float(pnls_series.kurt()) if n >= 4 and std > 0 else 0.0
+    # B2646: per-period SR (mean/std, no annualisation factor) + raw kurtosis
     psr_result = _deflated_sharpe(
-        sharpe=sharpe,
+        sharpe=(expected_value / std) if std > 0 else 0.0,
         n_trades=n,
         skew=skew_val,
-        kurtosis=kurt_val,
+        kurtosis=kurt_val + 3.0,
     )
     psr_value = psr_result.get("psr")
     psr = round(psr_value, 4) if psr_value is not None else 0.0

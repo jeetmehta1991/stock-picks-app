@@ -32,9 +32,9 @@
 |---|---|---|
 | 0 | (strategy x direction) cells with a selectable IS exit | 253 |
 | 1 | Holdout-evaluable (n >= 30 at the chosen exit) | 211 |
-| 2 | Clear all 6 live gates on the holdout | 4 |
-| 3 | Survive BH-FDR (q<0.05, threshold p<=0.01327) | 3 |
-| 4 | De-duplicated (Jaccard < 0.7) | **3** |
+| 2 | Clear all 6 live gates on the holdout | 10 |
+| 3 | Survive BH-FDR (q<0.05, threshold p<=0.01351) | 7 |
+| 4 | De-duplicated (Jaccard < 0.7) | **7** |
 
 ### Gate contribution (leave-one-out)
 
@@ -42,12 +42,12 @@ A pass count hides whether a screen has five independent constraints or one bind
 
 | gate | cells passing if this gate is DROPPED | uniquely rejects |
 |---|---|---|
-| `pooled_sharpe` | 59 | 55 |
-| `profit_factor` | 4 | 0 **(rejects nothing)** |
-| `sortino` | 4 | 0 **(rejects nothing)** |
-| `psr` | 11 | 7 |
-| `min_trades_holdout` | 4 | 0 **(rejects nothing)** |
-| `min_trades_full_period` | 4 | 0 **(rejects nothing)** |
+| `pooled_sharpe` | 73 | 63 |
+| `profit_factor` | 10 | 0 **(rejects nothing)** |
+| `sortino` | 10 | 0 **(rejects nothing)** |
+| `psr` | 12 | 2 |
+| `min_trades_holdout` | 10 | 0 **(rejects nothing)** |
+| `min_trades_full_period` | 10 | 0 **(rejects nothing)** |
 
 ### Effective breadth - READ THIS BEFORE SIZING
 
@@ -60,13 +60,17 @@ The cell count is NOT the number of independent bets. De-dup compares (ticker, e
 
 **The deployable figure is carried by the short legs, which have NO holdout evidence of positive edge** - they are retained by the owner's symmetry directive, 0 of 82 shorts cleared all five gates in bear (B1455), and several carry negative alpha. Evidenced breadth is the LONG ONLY row.
 
-## THE ROSTER - 3 cells
+## THE ROSTER - 7 cells
 
 | # | Strategy | Dir | Cube | Tkrs | Exit | IS Shrp | HO Shrp | margin | HO n | Exp | WR | PF | Payoff | Mirror |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 1 | `xs_momentum_top_decile` | long | R5 | 544 | `time_stop_10d` |   0.81 |   1.62 | +0.624 | 50 |   2.23 | 0.660 |   2.34 |   1.20 | `xs_momentum_bottom_decile_short` |
-| 2 | `52w_high_breakout_pullback_long` | long | R5 | 544 | `breakeven_plus_trail` |   0.56 |   1.28 | +0.281 | 50 |   7.83 | 0.420 |   4.38 |   6.04 | `52w_low_breakdown_pullback_short` |
-| 3 | `xs_momentum_with_smart_money_long` | long | R5 | 544 | `time_stop_20d` |   0.69 |   1.21 | +0.209 | 162 |   5.63 | 0.593 |   2.94 |   2.02 | `xs_momentum_bottom_decile_short` |
+| 1 | `52w_high_breakout_pullback_long` | long | R5 | 544 | `breakeven_plus_trail` |   0.56 |   1.28 | +0.281 | 50 |   7.83 | 0.420 |   4.38 |   6.04 | `52w_low_breakdown_pullback_short` |
+| 2 | `totm_long` | long | R5 | 544 | `breakeven_plus_trail` |   0.56 |   1.16 | +0.159 | 86 |   9.80 | 0.314 |   4.70 |  10.27 | **NEEDS CREATION** |
+| 3 | `xs_combined_momentum_low_ivol` | long | R5 | 544 | `breakeven_plus_trail` |   0.54 |   1.16 | +0.158 | 35 |   7.34 | 0.371 |   5.75 |   9.73 | `xs_combined_momentum_high_ivol_short` |
+| 4 | `xs_momentum_with_smart_money_long` | long | R5 | 544 | `breakeven_plus_trail` |   0.75 |   1.15 | +0.146 | 162 |   7.78 | 0.457 |   4.23 |   5.04 | `xs_momentum_bottom_decile_short` |
+| 5 | `poc_magnet_long` | long | R5 | 544 | `breakeven_plus_trail` |   0.52 |   1.03 | +0.026 | 151 |   6.97 | 0.411 |   4.98 |   7.15 | `poc_magnet_short` |
+| 6 | `smc_bos_retest_entry` | long | R5 | 544 | `breakeven_plus_trail` |   0.44 |   1.01 | +0.013 | 55 |   4.90 | 0.382 |   4.63 |   7.50 | DUAL (own short leg) |
+| 7 | `mfi_oversold_with_smart_money_long` | long | R5 | 544 | `breakeven_plus_trail` |   0.55 |   1.01 | +0.010 | 71 |   3.44 | 0.366 |   2.57 |   4.45 | **NEEDS CREATION** |
 
 **Qualification (S6-B2409, owner ruling 2026-08-30).** A cell on this roster cleared all six live gates - that IS qualification. The former ROBUST/PROVISIONAL split against a selection-noise floor is retired in its entirety; `margin` reports how far the holdout Sharpe cleared the live pooled gate, as a number, gating nothing.
 
@@ -77,7 +81,7 @@ Cells admitted by explicit owner ruling from the STRATEGY_OPTIMISATION_PLAN Step
 | Strategy | Dir | Review | Producer combination | Exit | IS Shrp | IS ci_lo | HO Shrp | HO ci_lo | margin | psr | PF | Sortino | WR | Exp | HO n | Full n | Mirror |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `smc_breaker_block_long` | long | **PROVISIONAL-UNREVIEWED** | P1_swing_length=50, P6_span=50; close_mitigation=True, break_pct_max=0.02, age_bars_max=None, tail_n=20 | `time_stop_10d` |   0.45 |  -0.39 |   1.15 |  -0.41 | +0.152 |   1.00 |   1.94 |   1.93 | 0.537 |   1.31 | 41 | 180 | `smc_breaker_block_short` |
-| `pead_long_high_yoy_growth_only` | long | **OFFLINE-CAMPAIGN-PSR-N/E** | offline_campaign=B2638/B2644; drift_window_days=20.0, yoy_growth_long_threshold=0.1 | `time_stop_10d` |   1.48 |   1.12 |   1.15 |   0.43 | +0.148 |      - |   1.91 |   2.37 | 0.510 |   1.55 | 196 | 988 | `pead_short_negative_yoy_growth` |
+| `pead_long_high_yoy_growth_only` | long | **OFFLINE-CAMPAIGN-PSR-N/E** | offline_campaign=B2638/B2644; drift_window_days=20.0, yoy_growth_long_threshold=0.1 | `time_stop_10d` |   1.48 |   1.12 |   1.15 |   0.43 | +0.148 |   1.00 |   1.91 |   2.37 | 0.510 |   1.55 | 196 | 988 | `pead_short_negative_yoy_growth` |
 
 **PROVISIONAL-UNREVIEWED (1 of 2).** These admissions come from a Step-2 config whose four JUDGMENT post-config steps have NOT been run - they were SKIPPED citing a wave-level review batch that has never existed (S6-B2436 / L721). The five AUTO steps DID run and are DONE. The completeness gate now BLOCKS such a config (S6-B2440). The row stands, marked, until the pilot review clears it; if that review changes the verdict, the admission is revisited.
     - `smc_breaker_block_long`: S6-B2441 (owner-approved 2026-08-30, council recommendation). This admission was taken from a Step-2 config whose FOUR JUDGMENT post-config steps (5_adversarial_lens_review, 6_post_fix_recheck, 7_implement_in_engine, 8_verdict_with_denominators) have NOT been run - they were SKIPPED citing a wave-level review batch that has never existed (S6-B2436/L721). The five AUTO steps did run and are DONE. The gate now BLOCKS this config (S6-B2440). The admission stands in the document but is marked unreviewed until the pilot review clears it; if that review changes the verdict, the admission is revisited.
@@ -91,14 +95,14 @@ Cells admitted by explicit owner ruling from the STRATEGY_OPTIMISATION_PLAN Step
 
 Owner standing directive: *promoted longs carry short mirrors by default* - the mirror is retained irrespective of its own cube result. The single excuse is a **long-only DATA SOURCE** (13F / insider / congressional / buyback), where a mechanical inverse is economically false rather than merely untested (B611 reversal).
 
-- **REGISTERED and retained, funnel cells (2):** `52w_low_breakdown_pullback_short`, `xs_momentum_bottom_decile_short`
+- **REGISTERED and retained, funnel cells (4):** `52w_low_breakdown_pullback_short`, `poc_magnet_short`, `xs_combined_momentum_high_ivol_short`, `xs_momentum_bottom_decile_short`
 - **REGISTERED and retained, Step-2 admissions (2):** `smc_breaker_block_short`, `pead_short_negative_yoy_growth`
 - **LONG-ONLY DATA, mirror excused (0):**
     - none
-- **DUAL - own short branch is the mirror, nothing to create (0):** none
-- **NEEDS CREATION (0):** none
+- **DUAL - own short branch is the mirror, nothing to create (1):** `smc_bos_retest_entry`
+- **NEEDS CREATION (2):** `mfi_oversold_with_smart_money_long`, `totm_long`
 
-**Deployable total: 3 graded cells + 2 funnel mirrors + 0 dual self-mirrors + 2 Step-2 admissions + 2 admission mirrors = 9 distinct strategies** (dual mirrors are already counted in their parent cell), plus 0 mirrors to create.
+**Deployable total: 7 graded cells + 4 funnel mirrors + 1 dual self-mirrors + 2 Step-2 admissions + 2 admission mirrors = 15 distinct strategies** (dual mirrors are already counted in their parent cell), plus 2 mirrors to create.
 
 ## What this roster does NOT establish
 

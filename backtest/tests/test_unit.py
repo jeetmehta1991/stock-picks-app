@@ -29882,7 +29882,8 @@ def test_b2417_admission_mirror_is_counted_in_the_rollup():
     tot = [l for l in doc.splitlines() if l.startswith("**Deployable total:")]
     assert len(tot) == 1, tot
     assert "Step-2 admissions" in tot[0] and "admission mirrors" in tot[0], tot[0]
-    assert "= 9 distinct strategies" in tot[0], tot[0]
+    # B2646: the corrected psr re-judged the funnel - 7 graded cells, 15 total.
+    assert "= 15 distinct strategies" in tot[0], tot[0]
 
     # reachability (B2208): the generator derives the roll-up from the
     # admissions record, not from a hand count
@@ -35081,3 +35082,47 @@ def test_b2644_second_read_of_a_spent_holdout_is_refused(tmp_path, monkeypatch):
     with pytest.raises(SystemExit) as e:
         m.main()
     assert "spent" in str(e.value)
+
+
+
+# ---------------------------------------------------------------------------
+# B2646 (owner ruling 'then c'): PSR takes the PER-PERIOD SR and RAW kurtosis
+# ---------------------------------------------------------------------------
+
+def test_b2646_psr_takes_per_period_sr_and_raw_kurtosis():
+    """B2646: the units class measured at B2644 - 5 production sites fed pandas
+    EXCESS kurtosis and the ANNUALISED sharpe into a per-period RAW-kurtosis
+    formula, so the radicand went negative exactly on strongly-skewed winners
+    (46 of 390 pead Step-2 lines; post-fix 0 of 390, admission psr 0.9998).
+
+    Must-fire: pead-SHAPED moments (SYNTHETIC values near the measured cell:
+    per-period SR ~0.16, skew 1.334, raw kurtosis 6.725) must COMPUTE a psr -
+    under the old annualised feed this exact shape returned None.
+    Must-quiet: a plain sample still computes, in (0, 1]; platykurtic input
+    (raw kurtosis < 3) is legitimate and computes - the old floor clamped it.
+    Call-site half: roster_core.evaluate converts to per-period + raw."""
+    from backtest.results.metrics import _deflated_sharpe
+
+    shaped = _deflated_sharpe(sharpe=0.16, n_trades=196, skew=1.334,
+                              kurtosis=6.725)
+    assert shaped["psr"] is not None and 0.0 < shaped["psr"] <= 1.0
+    # NOTE (L551, measured while writing this pin): the corrected (raw-1)/4
+    # constant ALSO removes the old blow-up for these moments - an annualised
+    # feed now computes a (meaningless) psr instead of returning None, so the
+    # protection against wrong units is the CALL-SITE half below, not a
+    # visible in-function refusal.
+
+    plain = _deflated_sharpe(sharpe=0.10, n_trades=200, skew=0.0, kurtosis=3.0)
+    assert plain["psr"] is not None and 0.0 < plain["psr"] <= 1.0
+    platy = _deflated_sharpe(sharpe=0.10, n_trades=200, skew=0.0, kurtosis=2.4)
+    assert platy["psr"] is not None, "platykurtic input must not be floored away"
+
+    # the call-site half, on the live six-gate evaluator's source
+    from pathlib import Path
+    src = (Path(__file__).resolve().parents[2] / "scripts" /
+           "roster_core.py").read_text(encoding="utf-8")
+    code = [l for l in src.splitlines() if not l.strip().startswith("#")]
+    assert any("float(pnl.kurtosis()) + 3.0" in l for l in code), (
+        "roster_core must convert pandas EXCESS kurtosis to RAW at the call")
+    assert any("_sr_pp" in l and "_deflated_sharpe" in l for l in code), (
+        "roster_core must feed the PER-PERIOD SR, not the annualised one")

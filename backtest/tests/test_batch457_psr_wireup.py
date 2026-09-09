@@ -86,11 +86,15 @@ def test_cube_populator_psr_is_real_not_placeholder_approximation():
     trades = _strong_edge_pnls()
     metrics = compute_cell_metrics(trades)
     # Pull the standalone real PSR for the same inputs:
+    # B2646: the contract is PER-PERIOD SR + RAW kurtosis (see the sibling
+    # agreement test) - this expected-value call had pinned the broken feed.
+    _pnl = trades["pnl_pct"]
+    _sr_pp = float(_pnl.mean()) / float(_pnl.std(ddof=1))
     expected = _deflated_sharpe(
-        sharpe=metrics["sharpe"],
+        sharpe=_sr_pp,
         n_trades=metrics["n_trades"],
         skew=metrics["skew"],
-        kurtosis=metrics["kurtosis"],
+        kurtosis=metrics["kurtosis"] + 3.0,
     )
     assert "psr" in metrics, "PSR field must be present in metrics dict"
     assert metrics["psr"] == pytest.approx(expected["psr"], abs=1e-4), \
@@ -210,11 +214,16 @@ def test_cube_populator_and_optimize_script_psr_agree():
 
     # PSR must be identical given identical sharpe + n + skew + kurtosis
     psr_cube = cube_metrics["psr"]
+    # B2646 (owner ruling): the contract is PER-PERIOD SR + RAW kurtosis.
+    # This expected-value call previously encoded the old broken feed
+    # (annualised SR + excess kurtosis) and pinned the defect in green.
+    _pnl = trades["pnl_pct"]
+    _sr_pp = float(_pnl.mean()) / float(_pnl.std(ddof=1))
     expected = _deflated_sharpe(
-        sharpe=script_stats["sharpe"],
+        sharpe=_sr_pp,
         n_trades=script_stats["n"],
         skew=script_stats["skew"],
-        kurtosis=script_stats["kurtosis"],
+        kurtosis=script_stats["kurtosis"] + 3.0,
     )
     assert psr_cube == pytest.approx(expected["psr"], abs=1e-4), \
         f"PSR mismatch: cube={psr_cube} vs script-equivalent={expected['psr']}"

@@ -226,7 +226,14 @@ def evaluate(pnl: pd.Series, hold: pd.Series, *, min_n: int | None = None,
     # an observation. None propagates instead: B1436 already demoted DSR to
     # DIAGNOSTIC because it returns None for many cells, so None is expected
     # downstream and 0.0 never was.
-    dsr = (_deflated_sharpe(sharpe, n, float(pnl.skew()), float(pnl.kurtosis()))
+    # B2646 (owner ruling 'then c'): PSR takes the PER-PERIOD SR and RAW
+    # kurtosis. The annualised sharpe fed here made the radicand negative on
+    # skewed winners - 46 of 390 pead Step-2 lines, median holdout sharpe
+    # 1.264 vs 0.382 where it computed (output_audit/b2644_pead_step2_holdout.json).
+    _pnl_std = float(pnl.std(ddof=1)) if n > 1 else 0.0
+    _sr_pp = float(pnl.mean()) / _pnl_std if _pnl_std > 0 else 0.0
+    dsr = (_deflated_sharpe(_sr_pp, n, float(pnl.skew()),
+                            float(pnl.kurtosis()) + 3.0)
            if sharpe is not None else None)
     w, l = pnl[pnl > 0], pnl[pnl <= 0]
     pf = float(w.sum() / abs(l.sum())) if len(l) and l.sum() != 0 else float("inf")
