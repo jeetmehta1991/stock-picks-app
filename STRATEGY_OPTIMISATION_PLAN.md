@@ -2686,7 +2686,7 @@ b2647_pead_sibling_pass.json): `pead_long` 87% contained, own grade BELOW_POWER_
 n=4); `pead_with_smart_money_long` 88.3% contained, own IS-selected line holdout sharpe 0.17 /
 psr 0.635 - both CONTAINED-IN-ADMITTED-REPRESENTATIVE per the rule fixed in advance.
 `pead_short` stays un-campaigned (negative holdout throughout the pre-gate);
-`pead_with_insider_confirmation_long` has no R5 rows. NEXT per the working order:
+`pead_with_insider_confirmation_long` has no rows in the EXIT-EXPANDED cube - CORRECTED at B2649: the trade log holds 10 CLOSED trades for it (2022-11..2025-05, dropped at cube expansion, cause UNKNOWN - RCA S6-B2649c); 10 trades in 4 years is 7.5x under the 75-trade full-period gate by construction, the insider-cluster leg being True on ~1 of 140 base pead bars. NEXT per the working order:
 `rsi_oversold_with_smart_money_long` (FLAGGED consolidate-before-tune, S6-B2418), then the
 macd family through the collinearity pre-gate.
 

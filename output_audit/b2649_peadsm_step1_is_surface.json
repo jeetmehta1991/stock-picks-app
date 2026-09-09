@@ -1,0 +1,650 @@
+{
+  "strategy": "pead_with_smart_money_long",
+  "axes": [
+    {
+      "key": "days_since_last_earnings",
+      "op": "le",
+      "levels": [
+        20.0,
+        40.0,
+        60.0
+      ]
+    },
+    {
+      "key": "earnings_eps_yoy_growth",
+      "op": "ge",
+      "levels": [
+        0.0,
+        0.02,
+        0.05,
+        0.1
+      ]
+    },
+    {
+      "key": "earnings_announcement_return",
+      "op": "ge",
+      "levels": [
+        0.01,
+        0.02,
+        0.03,
+        0.05
+      ]
+    }
+  ],
+  "production_levels": [
+    60.0,
+    0.0,
+    0.01
+  ],
+  "evidence": {
+    "landed_fires": 656,
+    "coverage": 1.0,
+    "cube_rows": 17056,
+    "unmatched_join_rows": 0,
+    "max_fires_per_day": 20,
+    "candidate_cap": 30,
+    "cap_bypassed_evidence": false,
+    "truncation_note": "max fires/day 20 <= cap 30: no positive evidence the cap was bypassed. Subsetting is exact only if the cube ran under isolation (backtest.py:2417)."
+  },
+  "reproduction": 1.0,
+  "cells_total": 48,
+  "cells_graded": 48,
+  "trials_searched": 1248,
+  "window": {
+    "is": [
+      "2022-05-05",
+      "2025-05-05"
+    ]
+  },
+  "ranked": [
+    {
+      "levels": [
+        20.0,
+        0.1,
+        0.05
+      ],
+      "is_trades": 72,
+      "is_cube_rows": 1872,
+      "best_exit": "time_stop_10d",
+      "is_sharpe": 3.22,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        20.0,
+        0.02,
+        0.05
+      ],
+      "is_trades": 86,
+      "is_cube_rows": 2236,
+      "best_exit": "time_stop_10d",
+      "is_sharpe": 3.099,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        20.0,
+        0.05,
+        0.05
+      ],
+      "is_trades": 80,
+      "is_cube_rows": 2080,
+      "best_exit": "time_stop_10d",
+      "is_sharpe": 3.076,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        20.0,
+        0.1,
+        0.03
+      ],
+      "is_trades": 124,
+      "is_cube_rows": 3224,
+      "best_exit": "time_stop_10d",
+      "is_sharpe": 2.897,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        20.0,
+        0.0,
+        0.05
+      ],
+      "is_trades": 90,
+      "is_cube_rows": 2340,
+      "best_exit": "time_stop_10d",
+      "is_sharpe": 2.885,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        20.0,
+        0.02,
+        0.03
+      ],
+      "is_trades": 150,
+      "is_cube_rows": 3900,
+      "best_exit": "time_stop_10d",
+      "is_sharpe": 2.881,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        20.0,
+        0.05,
+        0.03
+      ],
+      "is_trades": 139,
+      "is_cube_rows": 3614,
+      "best_exit": "time_stop_10d",
+      "is_sharpe": 2.82,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        20.0,
+        0.0,
+        0.03
+      ],
+      "is_trades": 156,
+      "is_cube_rows": 4056,
+      "best_exit": "time_stop_10d",
+      "is_sharpe": 2.79,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        20.0,
+        0.1,
+        0.01
+      ],
+      "is_trades": 206,
+      "is_cube_rows": 5356,
+      "best_exit": "time_stop_10d",
+      "is_sharpe": 2.546,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        20.0,
+        0.1,
+        0.02
+      ],
+      "is_trades": 164,
+      "is_cube_rows": 4264,
+      "best_exit": "time_stop_10d",
+      "is_sharpe": 2.532,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        20.0,
+        0.05,
+        0.01
+      ],
+      "is_trades": 230,
+      "is_cube_rows": 5980,
+      "best_exit": "time_stop_10d",
+      "is_sharpe": 2.435,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        20.0,
+        0.02,
+        0.01
+      ],
+      "is_trades": 249,
+      "is_cube_rows": 6474,
+      "best_exit": "time_stop_10d",
+      "is_sharpe": 2.402,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        20.0,
+        0.02,
+        0.02
+      ],
+      "is_trades": 200,
+      "is_cube_rows": 5200,
+      "best_exit": "time_stop_10d",
+      "is_sharpe": 2.378,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        20.0,
+        0.05,
+        0.02
+      ],
+      "is_trades": 185,
+      "is_cube_rows": 4810,
+      "best_exit": "time_stop_10d",
+      "is_sharpe": 2.358,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        20.0,
+        0.0,
+        0.01
+      ],
+      "is_trades": 257,
+      "is_cube_rows": 6682,
+      "best_exit": "time_stop_10d",
+      "is_sharpe": 2.334,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        20.0,
+        0.0,
+        0.02
+      ],
+      "is_trades": 206,
+      "is_cube_rows": 5356,
+      "best_exit": "time_stop_10d",
+      "is_sharpe": 2.326,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        40.0,
+        0.1,
+        0.03
+      ],
+      "is_trades": 189,
+      "is_cube_rows": 4914,
+      "best_exit": "time_stop_10d",
+      "is_sharpe": 1.688,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        40.0,
+        0.02,
+        0.03
+      ],
+      "is_trades": 232,
+      "is_cube_rows": 6032,
+      "best_exit": "time_stop_10d",
+      "is_sharpe": 1.682,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        40.0,
+        0.1,
+        0.01
+      ],
+      "is_trades": 311,
+      "is_cube_rows": 8086,
+      "best_exit": "time_stop_10d",
+      "is_sharpe": 1.678,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        40.0,
+        0.02,
+        0.05
+      ],
+      "is_trades": 133,
+      "is_cube_rows": 3458,
+      "best_exit": "time_stop_10d",
+      "is_sharpe": 1.64,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        40.0,
+        0.05,
+        0.03
+      ],
+      "is_trades": 214,
+      "is_cube_rows": 5564,
+      "best_exit": "time_stop_10d",
+      "is_sharpe": 1.61,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        40.0,
+        0.1,
+        0.05
+      ],
+      "is_trades": 111,
+      "is_cube_rows": 2886,
+      "best_exit": "ma_exit_ema9",
+      "is_sharpe": 1.605,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        40.0,
+        0.05,
+        0.01
+      ],
+      "is_trades": 353,
+      "is_cube_rows": 9178,
+      "best_exit": "time_stop_10d",
+      "is_sharpe": 1.561,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        40.0,
+        0.1,
+        0.02
+      ],
+      "is_trades": 247,
+      "is_cube_rows": 6422,
+      "best_exit": "time_stop_10d",
+      "is_sharpe": 1.558,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        40.0,
+        0.02,
+        0.01
+      ],
+      "is_trades": 383,
+      "is_cube_rows": 9958,
+      "best_exit": "time_stop_10d",
+      "is_sharpe": 1.553,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        40.0,
+        0.05,
+        0.05
+      ],
+      "is_trades": 124,
+      "is_cube_rows": 3224,
+      "best_exit": "time_stop_10d",
+      "is_sharpe": 1.526,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        40.0,
+        0.0,
+        0.03
+      ],
+      "is_trades": 243,
+      "is_cube_rows": 6318,
+      "best_exit": "time_stop_10d",
+      "is_sharpe": 1.519,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        40.0,
+        0.02,
+        0.02
+      ],
+      "is_trades": 308,
+      "is_cube_rows": 8008,
+      "best_exit": "time_stop_10d",
+      "is_sharpe": 1.461,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        40.0,
+        0.0,
+        0.01
+      ],
+      "is_trades": 397,
+      "is_cube_rows": 10322,
+      "best_exit": "time_stop_10d",
+      "is_sharpe": 1.444,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        40.0,
+        0.05,
+        0.02
+      ],
+      "is_trades": 284,
+      "is_cube_rows": 7384,
+      "best_exit": "time_stop_10d",
+      "is_sharpe": 1.409,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        40.0,
+        0.0,
+        0.05
+      ],
+      "is_trades": 141,
+      "is_cube_rows": 3666,
+      "best_exit": "time_stop_10d",
+      "is_sharpe": 1.375,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        40.0,
+        0.0,
+        0.02
+      ],
+      "is_trades": 319,
+      "is_cube_rows": 8294,
+      "best_exit": "time_stop_10d",
+      "is_sharpe": 1.354,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        60.0,
+        0.1,
+        0.03
+      ],
+      "is_trades": 261,
+      "is_cube_rows": 6786,
+      "best_exit": "time_stop_10d",
+      "is_sharpe": 1.299,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        60.0,
+        0.1,
+        0.01
+      ],
+      "is_trades": 435,
+      "is_cube_rows": 11310,
+      "best_exit": "time_stop_10d",
+      "is_sharpe": 1.286,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        60.0,
+        0.02,
+        0.03
+      ],
+      "is_trades": 313,
+      "is_cube_rows": 8138,
+      "best_exit": "next_pivot_target",
+      "is_sharpe": 1.234,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        60.0,
+        0.0,
+        0.03
+      ],
+      "is_trades": 332,
+      "is_cube_rows": 8632,
+      "best_exit": "next_pivot_target",
+      "is_sharpe": 1.224,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        60.0,
+        0.05,
+        0.01
+      ],
+      "is_trades": 487,
+      "is_cube_rows": 12662,
+      "best_exit": "time_stop_10d",
+      "is_sharpe": 1.147,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        60.0,
+        0.1,
+        0.05
+      ],
+      "is_trades": 161,
+      "is_cube_rows": 4186,
+      "best_exit": "time_stop_10d",
+      "is_sharpe": 1.129,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        60.0,
+        0.1,
+        0.02
+      ],
+      "is_trades": 347,
+      "is_cube_rows": 9022,
+      "best_exit": "time_stop_10d",
+      "is_sharpe": 1.114,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        60.0,
+        0.05,
+        0.03
+      ],
+      "is_trades": 291,
+      "is_cube_rows": 7566,
+      "best_exit": "time_stop_10d",
+      "is_sharpe": 1.108,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        60.0,
+        0.02,
+        0.01
+      ],
+      "is_trades": 525,
+      "is_cube_rows": 13650,
+      "best_exit": "time_stop_10d",
+      "is_sharpe": 1.107,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        60.0,
+        0.0,
+        0.01
+      ],
+      "is_trades": 550,
+      "is_cube_rows": 14300,
+      "best_exit": "time_stop_10d",
+      "is_sharpe": 1.036,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        60.0,
+        0.02,
+        0.05
+      ],
+      "is_trades": 188,
+      "is_cube_rows": 4888,
+      "best_exit": "next_pivot_target",
+      "is_sharpe": 0.978,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        60.0,
+        0.02,
+        0.02
+      ],
+      "is_trades": 420,
+      "is_cube_rows": 10920,
+      "best_exit": "time_stop_10d",
+      "is_sharpe": 0.966,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        60.0,
+        0.05,
+        0.05
+      ],
+      "is_trades": 178,
+      "is_cube_rows": 4628,
+      "best_exit": "ma_exit_ema9",
+      "is_sharpe": 0.965,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        60.0,
+        0.05,
+        0.02
+      ],
+      "is_trades": 392,
+      "is_cube_rows": 10192,
+      "best_exit": "time_stop_10d",
+      "is_sharpe": 0.935,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        60.0,
+        0.0,
+        0.05
+      ],
+      "is_trades": 201,
+      "is_cube_rows": 5226,
+      "best_exit": "next_pivot_target",
+      "is_sharpe": 0.934,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        60.0,
+        0.0,
+        0.02
+      ],
+      "is_trades": 440,
+      "is_cube_rows": 11440,
+      "best_exit": "time_stop_10d",
+      "is_sharpe": 0.915,
+      "exits_evaluated": 26
+    }
+  ],
+  "preregistration_candidate": {
+    "levels": [
+      20.0,
+      0.1,
+      0.05
+    ],
+    "is_trades": 72,
+    "is_cube_rows": 1872,
+    "best_exit": "time_stop_10d",
+    "is_sharpe": 3.22,
+    "exits_evaluated": 26
+  },
+  "holdout_read": "NOT FIRED - owner-gated, one shot, against the preregistration_candidate named above"
+}
