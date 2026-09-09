@@ -20015,3 +20015,31 @@ item. Detection of a grain-slip in prose is judgment-only; the mechanism already
 neighbouring provenance class is scan_synthetic_provenance, and the durable half here is the
 amended plan-doc sentence plus the S6-B2649b/c queue rows, all committed at 8a6e9c780 and this
 commit.
+
+### L775 - CONTAINMENT BARS A SECOND BET, NOT A BETTER STRATEGY; AND A COMPUTE-ECONOMY RULE DOES NOT APPLY WHERE THERE IS NO COMPUTE (B2651)
+
+**MEASURED, owner-caught.** I dismissed pead_with_smart_money_long - a subset of an admitted
+representative - as "already banked, adding zero new trades", citing the S6-B2627 collinearity
+ruling. Two errors. (1) CONTAINMENT is a BREADTH fact: 100pct overlap means the two are not
+independent bets, so you would not SIZE both. It says nothing about which is the BETTER strategy;
+a filtered subset that clears the gates better should be admitted, possibly INSTEAD of the broad
+parent. (2) The S6-B2627 ruling is a COMPUTE-ECONOMY rule - do not spend engine hours re-running
+collinear siblings - and this campaign costs ZERO engine hours, so the rule never applied. I
+invoked a rule outside its scope to reject a candidate I had not graded.
+
+**And the grain error underneath the dismissal:** I compared the subset's IN-SAMPLE Sharpe (3.220)
+against the parent's PRODUCTION-level holdout, never grading the subset's own tightened cell on the
+holdout. When graded honestly: the IS-star cell is UNGRADABLE (holdout n=13 < 15 - the tightening
+that makes the IS number cuts the holdout below the floor), 0 of 48 IS-selected cells clear 6/6,
+and exactly 1 of 1,248 hindsight lines clears at holdout sharpe 1.308 (> the parent's 1.148). The
+signal is real; the honest process does not reach it, and containment was never the reason.
+
+**THE RULE: before rejecting a candidate as redundant with an admitted one, GRADE IT on the same
+out-of-sample gates and compare like-for-like; and check any economy/collinearity ruling you cite
+for whether its precondition (here, engine cost) is even present.** A subset can be the better
+strategy - overlap decides portfolio breadth, not admissibility.
+
+**Compliance failure against item 182** (verdict-scope): "already banked" was a verdict about the
+subset stated without the holdout denominator that decides admission. No new CHECKLIST item;
+detection is judgment-only (no scan reads whether two strategies were graded like-for-like), and
+the durable half is the S6-B2651 campaign ticket that replaces the dismissal.

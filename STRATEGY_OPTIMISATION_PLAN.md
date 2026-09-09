@@ -2676,6 +2676,8 @@ the cell in front of me is the B2459 class and was not done. Peek bound (diagnos
 read. The Step-1 selection VALIDATED out of sample: production cell holdout 0.844 -> chosen
 cell 1.148.
 
+**CORRECTION (B2651, owner-caught 2026-09-08).** pead_with_smart_money_long was earlier waved off as "contained, adds nothing" - WRONG on two counts: containment bars a second independent BET, not a better strategy, and the collinearity ruling cited is a compute-economy rule that does not apply to a zero-engine-hour campaign (L775). Graded honestly on the holdout its IS-star cell is ungradable (n=13) and 0 of 48 IS-selected cells clear 6/6, but 1 hindsight cell clears at holdout sharpe 1.308 > the parent's 1.148 - so it gets its OWN pre-registered Step-2 (S6-B2651), not a dismissal. 
+
 **FAMILY CLOSED (B2645-B2647, owner rulings 2026-09-08).** The representative was ADMITTED to
 PHASE_1B_ROSTER.md (B2645: psr noted missing under ruling (a); B2646's units fix then made psr
 COMPUTE at 0.9998 - 6 of 6 gates, no ruling needed - and re-judged the whole roster funnel,
