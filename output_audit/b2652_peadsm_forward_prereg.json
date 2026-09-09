@@ -1,0 +1,15 @@
+{
+  "_doc": "B2652 FORWARD pre-registration for pead_with_smart_money_long - owner ruling 2026-09-09: option 1 (option 2 was chosen mid-turn and ROLLED BACK by the owner before any write landed). The cell below was identified on the 2025-05-05..2026-05-05 holdout (the 1 of 1,248 lines clearing all six gates in output_audit/b2651_peadsm_step2_holdout.json) - that read SPENT the old holdout, so this registration names the cell as a HYPOTHESIS to be tested ONCE on data that does not yet exist. No peek is possible against future data; this is the strongest pre-registration form.",
+  "registered_utc": "2026-09-09T20:53:02Z",
+  "strategy": "pead_with_smart_money_long",
+  "cell": {
+    "drift_window_days": 60,
+    "yoy_growth_threshold": 0.05,
+    "announcement_return_threshold": 0.05,
+    "exit": "time_stop_10d"
+  },
+  "hypothesis_source": "old-holdout figures (PEEKED, evidence only for the hypothesis, never for admission): holdout sharpe 1.308, psr 0.9596, holdout n 37, full n 215 - output_audit/b2651_peadsm_step2_holdout.json",
+  "test": "grade this exact (cell, exit) against the SIX LIVE GATES (roster_core.LIVE_GATES, current thresholds at read time) on the first FORWARD window satisfying the trigger; ONE read; QUALIFIES -> admission to PHASE_1B_ROSTER.md by the standard S6-B2413 identity-only pipeline; FAIL or ungradable -> the strategy closes FAIL, no re-pick",
+  "trigger": "a landed cube (or engine run) covering entries AFTER 2026-05-05 spanning >= 12 months, with signal coverage and reproduction clearing offline_level_sweep's refusals; the read requires >= 15 forward-window trades for this cell, else the read is UNGRADABLE and the registration expires without verdict",
+  "no_other_cells": "no other cell or exit of this strategy may be graded on the forward window under this registration - one hypothesis, one read"
+}
