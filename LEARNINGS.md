@@ -19966,3 +19966,29 @@ own fragment pin (B2591: an amendment needs one, or it can be deleted while the 
 stays green). It landed in ONE scripted call and ONE commit with this line, because recording a
 rule about landing members together while splitting them would refute the rule in the act of
 writing it.
+
+### L773 - A FORMULA'S UNIT CONVENTION IS A BOUNDARY CONTRACT; TESTS THAT COMPUTE EXPECTED VALUES THE SAME WRONG WAY PIN THE DEFECT IN GREEN (B2646)
+
+**MEASURED at B2644/B2646.** _deflated_sharpe's executable convention was RAW kurtosis (its own
+tests pass 3.0 as normal), its docstring said EXCESS, and 5 of 5 production call sites fed pandas
+EXCESS kurtosis plus the ANNUALISED sharpe into a formula defined on the PER-PERIOD SR. The psr
+radicand went negative precisely on strongly-skewed winners - 46 of 390 pead Step-2 lines, median
+holdout sharpe 1.264 against 0.382 where psr computed - and the corrected gate re-judged the
+roster funnel from 3 graded cells to 7 (deployable 15), with the pead admission cell's psr
+computing at 0.9998 where it had been incomputable.
+
+**The sharpest part: the agreement tests agreed with the defect.** Two B457-era wire-up tests
+compared the production path against expected values computed BY THE SAME WRONG FEED (annualised
+SR + excess kurtosis), so both passed for the defect's whole life - B1944's fixture-rot one level
+up, where the fixture is the CONVENTION itself. Two callers sharing a convention agree whether it
+is right or wrong, so cross-caller agreement can never test units.
+
+**THE RULE: a numeric function consumed across modules pins its unit conventions AT THE BOUNDARY,
+in data** - a shaped must-fire case carrying real-world moments (here: per-period SR ~0.16, skew
+1.334, raw kurtosis 6.725 must COMPUTE a psr), never only agreement between two call sites. **The
+tell is a docstring and its body disagreeing about units while every test passes.**
+
+**Compliance failure against item 201's grain discipline** (L664: a right number at the wrong
+grain) - no new CHECKLIST item warranted. The mechanism for the class is the shaped must-fire
+plus the call-site source half in test_b2646_psr_takes_per_period_sr_and_raw_kurtosis, committed
+at 3a7b39c22.

@@ -25518,6 +25518,8 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
          "L772 (B2640): the shell-substitution lapse has a predictable location"),
         ("evidence window is ONE COMMIT DEEP",
          "L772 addendum (B2641): the Phase-5 commit is the LAST of the turn"),
+        ("agree whether it is right or wrong",
+         "L773 (B2646): units pin at the boundary, in data - never by agreement"),
     ):
         if frag not in discipline_text:
             missing.append(f"execution-discipline lost [{why}]: {frag!r}")
@@ -25609,7 +25611,9 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # an amendment needs its own fragment per B2591).
     # 244 -> 245 at B2642 (the L772-addendum clause: the Phase-5 commit is the
     # LAST commit of the turn, because the gate's window is one commit deep).
-    assert len(gutted) == 245, gutted
+    # 245 -> 246 at B2648 (the L773 units-boundary row, same call as its
+    # fragment per B2130).
+    assert len(gutted) == 246, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
