@@ -2548,7 +2548,7 @@ macd_ichimoku) + 31 PENDING.**
 best-cell numbers are SELECTED maxima, a sequencing key only):**
 1. **pead_long_high_yoy_growth_only** (0.704, n=422, PF 3.14) — S6-B2418 option 2; a DIFFERENT
    producer chain (earnings/YoY growth), per the council's chain-diversity requirement.
-   **IN PROGRESS - Step 1 LANDED OFFLINE at B2638 with zero engine hours (SS11.2b).** The pre-gate ran first and SPLIT the family (output_audit/b2633_pead_pregate.json). Awaiting the owner's call on the single pre-registered holdout read (S6-B2638b).
+   **DONE - ADMITTED to the roster (B2645/B2646; psr computes 0.9998 post-fix); family CLOSED at B2647 by pre-registered sibling pass. See the FAMILY CLOSED paragraph in the campaign section.**
 2. rsi_oversold_with_smart_money_long (0.735, n=618) — ranked higher but FLAGGED in S6-B2418
    (roster-family similarity; consolidate before tune).
 3. macd_crossover (0.708, n=422) + macd_fast_crossover (0.646, n=589) — the macd family goes
@@ -2675,6 +2675,20 @@ the cell in front of me is the B2459 class and was not done. Peek bound (diagnos
 25 of 390 peeked lines clear all six gates, sharpe 1.001..1.463; none can be promoted off this
 read. The Step-1 selection VALIDATED out of sample: production cell holdout 0.844 -> chosen
 cell 1.148.
+
+**FAMILY CLOSED (B2645-B2647, owner rulings 2026-09-08).** The representative was ADMITTED to
+PHASE_1B_ROSTER.md (B2645: psr noted missing under ruling (a); B2646's units fix then made psr
+COMPUTE at 0.9998 - 6 of 6 gates, no ruling needed - and re-judged the whole roster funnel,
+3 -> 7 graded cells, deployable 15). Its declared mirror `pead_short_negative_yoy_growth` is
+counted in the roster roll-up. The two contained longs closed by the PRE-REGISTERED sibling
+pass (output_audit/b2647_pead_sibling_pass_prereg.json committed BEFORE grading, results in
+b2647_pead_sibling_pass.json): `pead_long` 87% contained, own grade BELOW_POWER_FLOOR (holdout
+n=4); `pead_with_smart_money_long` 88.3% contained, own IS-selected line holdout sharpe 0.17 /
+psr 0.635 - both CONTAINED-IN-ADMITTED-REPRESENTATIVE per the rule fixed in advance.
+`pead_short` stays un-campaigned (negative holdout throughout the pre-gate);
+`pead_with_insider_confirmation_long` has no R5 rows. NEXT per the working order:
+`rsi_oversold_with_smart_money_long` (FLAGGED consolidate-before-tune, S6-B2418), then the
+macd family through the collinearity pre-gate.
 
 **OPEN, owner-gated: the single holdout read.** It is a one-way door - firing it ends the
 pre-registration for this strategy forever, and the production cell's holdout (0.844 best

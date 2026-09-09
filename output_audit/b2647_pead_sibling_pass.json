@@ -1,0 +1,33 @@
+{
+  "pass": "B2647",
+  "prereg": "output_audit/b2647_pead_sibling_pass_prereg.json",
+  "graded": [
+    {
+      "strategy": "pead_long",
+      "n_fires": 138,
+      "containment_in_representative": 0.87,
+      "is_selected_exit": "chandelier_3x",
+      "disposition": "CONTAINED-IN-ADMITTED-REPRESENTATIVE (pre-registered)",
+      "own_grade": "BELOW_POWER_FLOOR",
+      "holdout_n": 4
+    },
+    {
+      "strategy": "pead_with_smart_money_long",
+      "n_fires": 656,
+      "containment_in_representative": 0.883,
+      "is_selected_exit": "time_stop_10d",
+      "disposition": "CONTAINED-IN-ADMITTED-REPRESENTATIVE (pre-registered)",
+      "own_grade": {
+        "holdout_sharpe": 0.17,
+        "psr": 0.6354,
+        "profit_factor": 1.105,
+        "sortino": 0.19,
+        "gates_passed": 2,
+        "gates_evaluable": 6,
+        "all_live_gates": false,
+        "holdout_n": 106,
+        "full_n": 656
+      }
+    }
+  ]
+}
