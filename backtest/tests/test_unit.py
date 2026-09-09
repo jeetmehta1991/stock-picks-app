@@ -25520,6 +25520,8 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
          "L772 addendum (B2641): the Phase-5 commit is the LAST of the turn"),
         ("agree whether it is right or wrong",
          "L773 (B2646): units pin at the boundary, in data - never by agreement"),
+        ("a bucket label travels with the artifact that computed it",
+         "L774 (B2649): a bucket label quoted as a fact about the run"),
     ):
         if frag not in discipline_text:
             missing.append(f"execution-discipline lost [{why}]: {frag!r}")
@@ -25613,7 +25615,8 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # LAST commit of the turn, because the gate's window is one commit deep).
     # 245 -> 246 at B2648 (the L773 units-boundary row, same call as its
     # fragment per B2130).
-    assert len(gutted) == 246, gutted
+    # 246 -> 247 at B2650 (the L774 bucket-label row, same call per B2130).
+    assert len(gutted) == 247, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 

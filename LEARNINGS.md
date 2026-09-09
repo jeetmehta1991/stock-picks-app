@@ -19992,3 +19992,26 @@ tell is a docstring and its body disagreeing about units while every test passes
 grain) - no new CHECKLIST item warranted. The mechanism for the class is the shaped must-fire
 plus the call-site source half in test_b2646_psr_takes_per_period_sr_and_raw_kurtosis, committed
 at 3a7b39c22.
+
+### L774 - A BUCKET LABEL FROM ONE ARTIFACT'S GRAIN, QUOTED AS A FACT ABOUT THE STRATEGY (B2649)
+
+**MEASURED.** The b2633 family pre-gate put pead_with_insider_confirmation_long in its "no-cell"
+bucket - a TRUE statement about the EXIT-EXPANDED CUBE it read, which holds 0 rows for the
+strategy. I then repeated it to the owner, in the plan document and in a pre-registration, as
+"has no R5 rows" - a claim about the RUN. The trade log holds **10 CLOSED trades** for it
+(2022-11 .. 2025-05, every one trailing_stop). The two artifacts genuinely disagree - the cube
+writer dropped 10 closed trades, its own open RCA (S6-B2649c) - and my sentence silently picked
+the narrower artifact's truth and gave it the wider scope. L717's split one level down: the
+bucket label carried the ARTIFACT's denominator, my sentence claimed the RUN's.
+
+**THE RULE: a bucket label travels with the artifact that computed it.** Before quoting one as a
+fact about a strategy, name the artifact in the sentence ("no rows in the exit-expanded cube")
+or check the CLAIM's grain against a second artifact that could disagree - here one trade-log
+filter, which is what surfaced both the retraction and the cube-drop finding. The tell: a
+label like "no-cell" or "empty" that describes what a reader FOUND, repeated as what a run DID.
+
+**Compliance failure against item 201's grain discipline** (L664 family) - no new CHECKLIST
+item. Detection of a grain-slip in prose is judgment-only; the mechanism already enforcing the
+neighbouring provenance class is scan_synthetic_provenance, and the durable half here is the
+amended plan-doc sentence plus the S6-B2649b/c queue rows, all committed at 8a6e9c780 and this
+commit.
