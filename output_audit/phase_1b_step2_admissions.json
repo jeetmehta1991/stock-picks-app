@@ -43,6 +43,27 @@
       "window": "4 years 2022-05-05 .. 2026-05-05 (IS 3y + 1y holdout)",
       "review_status": "OFFLINE-CAMPAIGN-PSR-N/E",
       "review_note": "Offline-free campaign (SS11.2b): zero engine hours, so the post-config battery never fired (it is landing-hook triggered). psr is INCOMPUTABLE for this cell (denominator_invalid) and reads NOT-EVALUABLE per owner ruling 2026-09-08 option (a); under the fail-closed gate the same cell graded FAIL 5 of 6 (output_audit/b2644_pead_step2_holdout.json). ENGINE WIRING of the admitted levels (drift 20 vs production 60; threshold 0.10 vs 0.05) requires knobs that DO NOT EXIST YET - signal_loader.py calls the producers bare - tracked S6-B2645a; admission is not deployment."
+    },
+    {
+      "ticket": "S6-B2651",
+      "ruled": "2026-09-09",
+      "ruling_verbatim": "admit 60d / 0.05 / 0.05 / time_stop_10d (holdout 1.308, psr 0.9596, n 37) with a review tag that says peeked-by-construction, no pre-registration, so the roster never pretends it was clean",
+      "strategy": "pead_with_smart_money_long",
+      "direction": "long",
+      "config": {
+        "offline_campaign": "B2649/B2651"
+      },
+      "grid_artifact": "output_audit/b2653_peadsm_admission_grid.json",
+      "combination": {
+        "drift_window_days": 60.0,
+        "yoy_growth_threshold": 0.05,
+        "announcement_return_threshold": 0.05
+      },
+      "exit": "time_stop_10d",
+      "universe": "R5 merged cube output_r5_merged_1_7 (544-ticker universe; 656 fires)",
+      "window": "4 years 2022-05-05 .. 2026-05-05 (IS 3y + 1y holdout)",
+      "review_status": "PEEKED-BY-CONSTRUCTION-NO-PREREGISTRATION",
+      "review_note": "Owner instruction 2026-09-09, after the selection-inflation risk was flagged twice and an earlier admission attempt was rolled back: the admitted cell is the single line of 1,248 clearing all six gates in the all-cells holdout read, selected AFTER seeing every line (the strategy's pre-registered IS rank-1 cell was ungradable at holdout n=13). Evidence is WEAKER than a pre-registered admission and this label must travel with the row. CONFIRM-OR-STRIKE: the forward registration output_audit/b2652_peadsm_forward_prereg.json stays live - one clean six-gate read on the first cube spanning >= 12 months after 2026-05-05 either confirms this row or strikes it. Engine wiring shares S6-B2645a's class (admitted levels differ from production; no env knobs exist); admission is not deployment."
     }
   ]
 }

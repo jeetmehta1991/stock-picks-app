@@ -29893,7 +29893,8 @@ def test_b2417_admission_mirror_is_counted_in_the_rollup():
     assert len(tot) == 1, tot
     assert "Step-2 admissions" in tot[0] and "admission mirrors" in tot[0], tot[0]
     # B2646: the corrected psr re-judged the funnel - 7 graded cells, 15 total.
-    assert "= 15 distinct strategies" in tot[0], tot[0]
+    # B2653: the peadsm labelled admission (owner instruction 2026-09-09) -> 16.
+    assert "= 16 distinct strategies" in tot[0], tot[0]
 
     # reachability (B2208): the generator derives the roll-up from the
     # admissions record, not from a hand count

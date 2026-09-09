@@ -1,0 +1,36 @@
+{
+  "_doc": "B2653 admission-grid artifact for pead_with_smart_money_long - renderer-schema row derived fresh from output_r5_merged_1_7 via offline_level_sweep.load; Step-2 read of record is output_audit/b2651_peadsm_step2_holdout.json",
+  "config": "peadsm_offline_b2649",
+  "strategy": "pead_with_smart_money_long",
+  "results": [
+    {
+      "drift_window_days": 60.0,
+      "yoy_growth_threshold": 0.05,
+      "announcement_return_threshold": 0.05,
+      "exit": "time_stop_10d",
+      "verdict": "PASS",
+      "verdict_basis": "owner instruction 2026-09-09 (verbatim in the admissions entry): admitted WITH the peeked-by-construction / no-pre-registration label. This is the 1 of 1,248 lines clearing all six gates in the all-cells holdout read (output_audit/b2651_peadsm_step2_holdout.json), selected after seeing every line; the risk was flagged twice. The forward registration b2652_peadsm_forward_prereg.json stays live as confirm-or-strike on post-2026-05-05 data.",
+      "is_sharpe": 0.874,
+      "is_ci_lo": 0.137,
+      "sharpe": 1.308,
+      "ci_lo": -0.325,
+      "margin": 0.308,
+      "psr": 0.9596,
+      "profit_factor": 2.317,
+      "sortino": 2.107,
+      "win_rate": 0.568,
+      "expectancy": 1.5343,
+      "holdout_n": 37,
+      "full_period_n": 215,
+      "gates": {
+        "pooled_sharpe": true,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "holdout_completeness": "37 of 37 - the complete engine trade set for these levels in 2025-05-05..2026-05-05: coverage 1.0, 0 unmatched joins, trade_log 656 = cube 656 (zero open-trade gap), max 20 fires/day vs cap 30 (no truncation possible), both tightened axes strict subsets of production, latest entry 2026-04-13 closes before run end"
+    }
+  ]
+}
