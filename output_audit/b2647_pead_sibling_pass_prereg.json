@@ -1,0 +1,12 @@
+{
+  "_doc": "B2647 pead SIBLING PASS pre-registration - written and saved BEFORE any sibling grading runs (the b2628 institutional pattern). The rule below is committed to regardless of what the grades come back as.",
+  "registered_utc": "2026-09-09T00:14:05Z",
+  "representative": "pead_long_high_yoy_growth_only",
+  "representative_verdict": "QUALIFIES 6 of 6 post-B2646 (output_audit/b2646_pead_step2_postfix.json); ADMITTED to PHASE_1B_ROSTER.md at B2645",
+  "siblings": [
+    "pead_long",
+    "pead_with_smart_money_long"
+  ],
+  "rule": "Each sibling is graded OFFLINE at its PRODUCTION levels from the R5 cube: exit selected IN-SAMPLE ONLY via roster_core.select_exit, then the six LIVE_GATES read on the holdout year at that exit. DISPOSITION IS FIXED IN ADVANCE: both siblings close as CONTAINED-IN-ADMITTED-REPRESENTATIVE regardless of their own grade - measured containment 87% (pead_long) and 88% (pead_with_smart_money_long) of their entries lie inside the representative's fire set (output_audit/b2633_pead_pregate.json), and the S6-B2627 council ruling forbids separate campaigns on collinear siblings because admitting a contained sibling double-counts the same trades. Their own six-gate lines are recorded for the record only.",
+  "short_cluster": "pead_short + pead_short_negative_yoy_growth: NOT part of this pass - 0% overlap with the longs, negative holdout throughout the pre-gate; pead_short_negative_yoy_growth rides the roster as the admitted representative's declared mirror. pead_with_insider_confirmation_long: no R5 rows, nothing to grade."
+}
