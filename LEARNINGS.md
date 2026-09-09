@@ -20043,3 +20043,28 @@ strategy - overlap decides portfolio breadth, not admissibility.
 subset stated without the holdout denominator that decides admission. No new CHECKLIST item;
 detection is judgment-only (no scan reads whether two strategies were graded like-for-like), and
 the durable half is the S6-B2651 campaign ticket that replaces the dismissal.
+
+### L776 - PROSE DRAFTED WHILE THE PROBE IS IN FLIGHT ARRIVES CARRYING INVENTED NUMBERS (B2657)
+
+**MEASURED, third instance of the class in two days.** (1) B2654: a queue row said "13 call
+sites" before the grep returned 9. (2) B2653: a row claimed the long-only exemption while
+mirror_status was returning NEEDS-CREATION. (3) B2657, the worst shape: a plan-doc paragraph
+shipped "Q5 +21.9 vs Q1 -18.9" - two specific decimals THAT EXIST NOWHERE - while the sanity
+probe was still running; the artifact says Q5 +40.97 vs Q1 +0.21. The spread (+40.8) was right
+because it came from a real read; the components were fabricated because they came from the
+drafting hand. All three were caught before commit by a check that ran AFTER the prose was
+written - the catches were luck-shaped, not designed.
+
+**THE MECHANISM:** batching "measure" and "write it up" into one scripted call puts the writing
+BEFORE the measurement in wall-clock order while FEELING simultaneous. A number typed into prose
+while its probe is in flight is not a placeholder - it is a fabrication with a delivery date.
+
+**THE RULE: the probe returns, THEN the sentence is written.** Any specific figure in owner-bound
+prose must be pasted from output already on screen, never typed from anticipation. When a batch
+script both measures and writes, the written text must take the figure from the measurement
+VARIABLE, not from a literal retyped by hand - the B2657 fix was exactly that change. Tell: a
+draft containing a specific decimal you cannot point to in a tool result above it.
+
+**Compliance failure against item 201** (figure with no source - the source did not exist yet).
+Detection is judgment-only; the durable half is this rule plus the skill tripwire row, and the
+class's strongest mechanical ally is writing artifacts from variables, never literals.

@@ -2698,6 +2698,32 @@ exit) is already known. Recommended gating: run the permutation / block-bootstra
 the same 390-trial max-selection FIRST, so the holdout number is read against a calibrated
 threshold instead of a bare 1.0. See S6-B2638a/b/c.
 
+### COMPANION-SIGNAL SCREEN - institutional family (B2657, owner green-light 2026-09-09)
+
+**The owner's challenge:** the 20-strategy institutional family failed on low sharpe, yet
+institutional direction should indicate momentum - so what separates its WINNING trades from its
+losers? **Instrument:** `scripts/institutional_companion_screen.py` - 3,719 unique IS entries
+(29,411 fires deduplicated across the collinear family), 595 persisted signals tested against
+per-trade pnl at TWO fixed exits (time_stop_10d + breakeven_plus_trail; no exit selection), one
+BH-FDR at q=0.05 per run, and only SAME-SIGN survivors under both exits kept: **29 of 595**.
+Artifacts: output_audit/b2657_inst_companions_{ts10,bept,consistent}.json. A SCREEN, not a gate.
+
+**THE PATTERN (top consistent discriminators):** price-momentum confirmation. pct_from_avwap_20low
+tops the list (Q5-Q1 spread +40.8 pnl points at ts10, +43.9 at bept; Q5 mean +40.97 vs Q1 +0.21 on
+n 3,464) with pct_from_avwap_50low, xs_max_anomaly, roc_12, pct_change_10d, rsi_9, ppo_hist and
+bb pctb behind it - institutional fires on an ALREADY-CONFIRMED tape win; institutional
+accumulation against a flat tape is the family's noise. Macro overlays survive too
+(cot_copper_commercials rho +0.15-0.18, cot_ndx/dxy pctiles, gold_silver), and sector_strongest_rs
+is NEGATIVE (-34 to -37: the most-crowded sector underperforms). Notably: no raw VOLUME metric
+survived both-exit FDR - the tape confirmation that matters is PRICE, not volume.
+
+**Why this is immediately actionable at zero engine hours:** the top discriminators are PERSISTED
+MAGNITUDES, so a companion-confirmation axis (e.g. pct_from_avwap_20low >= t) is a TIGHTENING and
+sweeps offline through `offline_level_sweep.py` on any institutional strategy's existing fires -
+the S6-B2657a campaign. The 13F DEPTH producers (fund segregation / conviction size / breadth /
+skilled-subset - S6-B2656's directions) are separately buildable from the cached vendor data:
+sec13f + sec13fchanges schemas VERIFIED (Fund, Ticker, ReportPeriod, filing Date for PIT, Value,
+Shares, Change, Change_Pct, Held) - S6-B2657b.
 ### OPTIMISATION POPULATION BY BUCKET AND FAMILY (B2632, owner directive 2026-09-07)
 
 **Accounting (derived live at B2632; every term from the registry + config disabled sets +
