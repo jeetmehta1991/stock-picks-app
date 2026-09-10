@@ -35140,3 +35140,45 @@ def test_b2646_psr_takes_per_period_sr_and_raw_kurtosis():
         "roster_core must convert pandas EXCESS kurtosis to RAW at the call")
     assert any("_sr_pp" in l and "_deflated_sharpe" in l for l in code), (
         "roster_core must feed the PER-PERIOD SR, not the annualised one")
+
+
+
+# ---------------------------------------------------------------------------
+# B2659 (S6-B2657b): the 13F depth precompute's contracts - and its honest limits
+# ---------------------------------------------------------------------------
+
+def test_b2659_depth_precompute_contracts_and_density_caveat():
+    """B2659: the depth table's identities hold, PIT is never violated, the
+    coverage record reconciles with the b2635 census (89 empty vendor files),
+    and the panel's KNOWN LIMITATION is pinned so nobody mistakes it later:
+    panel density ramps ~2.8x across the last 10 quarters (344,688 ->
+    967,066 funds-held measured at build), so n_init / n_exit conflate real
+    flows with coverage growth - the density-robust flow columns are n_add /
+    n_reduce (intersection-based by construction)."""
+    import json
+    from pathlib import Path
+    import pytest
+    root = Path(__file__).resolve().parents[2]
+    out = root / "data_prefetch" / "derived" / "inst_depth_13f"
+    if not (out / "depth_by_ticker_quarter.parquet").exists():
+        pytest.skip("depth precompute not built on this machine")
+    import pandas as pd
+    d = pd.read_parquet(out / "depth_by_ticker_quarter.parquet")
+
+    flows = d.dropna(subset=["breadth_delta"])
+    assert (flows.breadth_delta == flows.n_init - flows.n_exit).all()
+    rp = pd.to_datetime(d["report_period"])
+    av = pd.to_datetime(d["availability_q90"])
+    assert int((av < rp).sum()) == 0, "a filing cannot predate its quarter end"
+    for col in ("n_add", "n_reduce"):
+        assert col in d.columns, f"density-robust flow column {col} missing"
+
+    cov = json.loads((out / "coverage.json").read_text(encoding="utf-8"))
+    assert cov["files"] == cov["with_rows"] + cov["empty"]
+    assert cov["empty"] == 89, "must reconcile with the b2635 vendor census"
+
+    dens = d.assign(q=rp.dt.date).groupby("q")["n_funds_held"].sum().sort_index()
+    tail = dens.tail(10)
+    assert tail.iloc[-1] > 2 * tail.iloc[0], (
+        "the coverage-growth caveat has disappeared - if the panel became "
+        "density-stable, REVISIT the init/exit usability restriction")

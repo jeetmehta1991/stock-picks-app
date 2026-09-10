@@ -2749,6 +2749,22 @@ DEPTH producers (S6-B2657b): fund skill/type/size from data_prefetch/quiver/inst
 (1,942 per-ticker files, panel spans 2015-03-31..2025-12-31 measured on MSFT - the bulk
 sec13f/sec13fchanges globals are single-snapshot 500k-row caps and are NOT the historical
 source).
+### 13F DEPTH PRECOMPUTE BUILT - forward-usable, with a measured density caveat (B2659)
+
+**S6-B2657b delivered.** `scripts/build_13f_depth_precompute.py` streams the 1,941 per-ticker
+fund-level files (89 empty, reconciling the b2635 census exactly) into two derived tables under
+data_prefetch/derived/inst_depth_13f: depth_by_ticker_quarter (60,627 rows - held/init/exit/
+add/reduce counts, breadth_delta, init value sums, small-filer vs mega-filer segregation at
+<100 / >500 positions, availability_q90 PIT stamp) and fund_scale (117,729 fund-quarters).
+VERIFIED at build: breadth identity 0 violations of 58,775; PIT impossibilities 0 of 60,627;
+one raw recount exact (44 = 44).
+
+**THE HONEST LIMIT, measured:** panel density ramps 344,688 -> 967,066 funds-held across the
+last 10 quarters (2.8x), so n_init / n_exit conflate real initiations with coverage growth -
+HISTORICAL breadth flows are not backtestable from this panel as-is. Density-robust columns:
+n_add / n_reduce (intersection-based). Depth GATES therefore ride the FORWARD window (the same
+posture as the b2652-class preregistrations), and a full historical 13F snapshot feed is the
+data-acquisition decision S6-B2659a puts to the owner.
 ### OPTIMISATION POPULATION BY BUCKET AND FAMILY (B2632, owner directive 2026-09-07)
 
 **Accounting (derived live at B2632; every term from the registry + config disabled sets +
