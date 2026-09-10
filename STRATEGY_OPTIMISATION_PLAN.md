@@ -2724,6 +2724,31 @@ the S6-B2657a campaign. The 13F DEPTH producers (fund segregation / conviction s
 skilled-subset - S6-B2656's directions) are separately buildable from the cached vendor data:
 sec13f + sec13fchanges schemas VERIFIED (Fund, Ticker, ReportPeriod, filing Date for PIT, Value,
 Shares, Change, Change_Pct, Held) - S6-B2657b.
+### COMPANION-AXIS CAMPAIGN RESULT - the control REFUTES the institutional reading (B2658)
+
+**S6-B2657a executed with the pre-declared control, and the control decided it.** The roc_12
+companion axis swept offline on the institutional representative vs the pead control (same
+levels {-999 sentinel, -6.5, -2.2, 0, 2.14, 6.99}, IS-only, artifacts
+output_audit/b2658_{icg_companion,pead_control}_step1.json):
+
+| roc_12 >= | icg IS sharpe (lift) | control IS sharpe (lift) |
+|---|---|---|
+| none | 0.537 | 0.748 |
+| 2.14 | 0.614 (+0.077) | 1.458 (+0.710) |
+| 6.99 | 0.658 (+0.121), n 235 | 1.620 (+0.872), n 141 |
+
+**Verdict with denominators: the tape-confirmation lift is a GENERAL momentum effect, 6x
+stronger on the event-driven control than on the institutional representative (+0.710 vs +0.121
+at the 2.14 level) - the B2657 screen's discriminators were measured across the pooled family
+(3,719 entries) where cross-sectional spread dominates, and do NOT rescue icg within-strategy.**
+NO forward pre-registration is written for icg on this evidence: its best filtered cell (IS
+0.658) sits far under the 1.0 gate before any holdout decay. The pead lift is noted as context
+only - that family is CLOSED and admitted; its drift-tightening already banks the momentum-
+adjacent effect. The remaining live path for the owner's institutional conviction is the 13F
+DEPTH producers (S6-B2657b): fund skill/type/size from data_prefetch/quiver/institutional
+(1,942 per-ticker files, panel spans 2015-03-31..2025-12-31 measured on MSFT - the bulk
+sec13f/sec13fchanges globals are single-snapshot 500k-row caps and are NOT the historical
+source).
 ### OPTIMISATION POPULATION BY BUCKET AND FAMILY (B2632, owner directive 2026-09-07)
 
 **Accounting (derived live at B2632; every term from the registry + config disabled sets +

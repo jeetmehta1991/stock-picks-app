@@ -1,0 +1,112 @@
+{
+  "strategy": "institutional_committed_growth_long",
+  "axes": [
+    {
+      "key": "roc_12",
+      "op": "ge",
+      "levels": [
+        -999.0,
+        -6.5,
+        -2.2,
+        0.0,
+        2.14,
+        6.99
+      ]
+    }
+  ],
+  "production_levels": [
+    -999.0
+  ],
+  "evidence": {
+    "landed_fires": 1941,
+    "coverage": 1.0,
+    "cube_rows": 50466,
+    "unmatched_join_rows": 0,
+    "max_fires_per_day": 74,
+    "candidate_cap": 30,
+    "cap_bypassed_evidence": true
+  },
+  "reproduction": 1.0,
+  "cells_total": 6,
+  "cells_graded": 6,
+  "trials_searched": 156,
+  "window": {
+    "is": [
+      "2022-05-05",
+      "2025-05-05"
+    ]
+  },
+  "ranked": [
+    {
+      "levels": [
+        6.99
+      ],
+      "is_trades": 235,
+      "is_cube_rows": 6110,
+      "best_exit": "ma_exit_ema9",
+      "is_sharpe": 0.658,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        2.14
+      ],
+      "is_trades": 490,
+      "is_cube_rows": 12740,
+      "best_exit": "ma_exit_ema9",
+      "is_sharpe": 0.614,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        -999.0
+      ],
+      "is_trades": 1275,
+      "is_cube_rows": 33150,
+      "best_exit": "breakeven_plus_trail",
+      "is_sharpe": 0.537,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        -6.5
+      ],
+      "is_trades": 1042,
+      "is_cube_rows": 27092,
+      "best_exit": "breakeven_plus_trail",
+      "is_sharpe": 0.525,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        0.0
+      ],
+      "is_trades": 624,
+      "is_cube_rows": 16224,
+      "best_exit": "breakeven_plus_trail",
+      "is_sharpe": 0.49,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        -2.2
+      ],
+      "is_trades": 767,
+      "is_cube_rows": 19942,
+      "best_exit": "breakeven_plus_trail",
+      "is_sharpe": 0.48,
+      "exits_evaluated": 26
+    }
+  ],
+  "preregistration_candidate": {
+    "levels": [
+      6.99
+    ],
+    "is_trades": 235,
+    "is_cube_rows": 6110,
+    "best_exit": "ma_exit_ema9",
+    "is_sharpe": 0.658,
+    "exits_evaluated": 26
+  },
+  "holdout_read": "NOT FIRED - owner-gated, one shot, against the preregistration_candidate named above"
+}
