@@ -20086,3 +20086,24 @@ The tell: a response whose first paragraph could be deleted without losing the a
 is that mandatory structure serves the reader; ballooning it into narration inverts that). No
 new CHECKLIST item: the skill section IS the rule, its tripwire row and fragment pin are the
 durable half, and the owner's next complaint is the failure signal.
+
+### L778 - I EXECUTED THE NARROW READING OF A BROAD ASK, CLOSED THE TICKET, AND THE OWNER CAUGHT IT (B2662)
+
+**OWNER-CAUGHT, verbatim 2026-09-10:** "I believe you have executed in a very narrow and limited
+fashion against asks." The ask was BROAD - improve/test institutional knobs across smart-money
+scores AND other institutional strategies, find co-moving noise-eliminating metrics - across ~20
+strategies. I ran ONE axis on ONE strategy (roc_12 on icg), its control refuted that one pairing,
+and I closed S6-B2657a as if the ask were answered. The full grid the ask actually described
+(20 strategies x 7 axes x levels x 26 exits = 13,104 trials, offline, 96 seconds) found 299
+all-six-gate holdout qualifiers across 17 of 20 strategies - the narrow reading would have
+buried the entire result.
+
+**THE RULE: scope the EXECUTION to the ask's stated breadth, or say explicitly which slice is
+being run and why before closing anything.** A control refuting one pairing refutes THAT pairing
+- closing the family-wide question on it is the verdict-scope error (#182) applied to effort.
+The tell: the ask names a population ("around 20 strategies", "other metrics") and the plan
+names one member.
+
+**Compliance failure against the GENERALIZATION MANDATE** (fix the class, not the instance - its
+execution mirror). Detection JUDGMENT-ONLY; the durable half is this rule, the tripwire row, and
+the B2662 grid instrument that now makes the broad pass one command.

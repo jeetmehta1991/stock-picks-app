@@ -2778,6 +2778,20 @@ risk was flagged and stands on record; the ruling is the owner's.
 (output_audit/b2660_icg_companion_step2.json): **0 of 156 (cell, exit) lines clear all six
 gates** - best cell (roc>=6.99, ma_exit_ema9) holdout sharpe 0.485, 4 of 6. S6-B2657a is
 CLOSED FAIL under the owner's own standard as well.
+### THE FULL INSTITUTIONAL GRID - 299 all-six-gate holdout qualifiers across 17 of 20 (B2662)
+
+**Owner-directed breadth (after catching the narrow B2658 execution):** all 20 institutional
+strategies x 7 axes (ask-1 knobs institutional_new_positions / institutional_increased - both
+PERSISTED numerics - plus ask-2 companions xs_max_anomaly, roc_12, cot_copper_commercials,
+sector_strongest_rs as an avoid-gate, pct_from_avwap_20low) x retention levels x 26 exits =
+**13,104 trials, 11,544 above the power floor, 299 clearing ALL SIX holdout gates, spread over
+17 of 20 strategies** (scripts/institutional_companion_grid.py; output_audit/b2662_inst_grid).
+Axis mix among qualifiers: xs_max_anomaly 153, sector-avoid 61, copper commercials 37,
+new_positions 32, roc_12 7, avwap 5, increased 4. Top lines: HO sharpe 3.132 (breakout_
+confirmation + xs_max_anomaly, n 34/128), 2.877, 2.723. Under the B2660 admission doctrine
+every qualifier is admissible; the 13,104-trial max-selection risk is DISCLOSED on the artifact
+and stands flagged. OWNER SCOPE DECISION (S6-B2662a): admit what - all, top-1 per strategy, or
+review-first; and gate-wiring (NEW-GATE class) needs per-strategy approval regardless.
 ### OPTIMISATION POPULATION BY BUCKET AND FAMILY (B2632, owner directive 2026-09-07)
 
 **Accounting (derived live at B2632; every term from the registry + config disabled sets +
