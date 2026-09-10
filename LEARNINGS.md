@@ -20068,3 +20068,21 @@ draft containing a specific decimal you cannot point to in a tool result above i
 **Compliance failure against item 201** (figure with no source - the source did not exist yet).
 Detection is judgment-only; the durable half is this rule plus the skill tripwire row, and the
 class's strongest mechanical ally is writing artifacts from variables, never literals.
+
+### L777 - THE ANSWER THE OWNER NEEDED WAS BURIED IN THE PROCESS I NARRATED (B2660)
+
+**OWNER-CAUGHT, verbatim 2026-09-10:** "you have been providing long responses and are not
+structured well" - after asking three times for simple, brief explanations across the same two
+days. The misses were real: answer-turns routinely ran 800+ words of process narration before
+the figure the question asked for, quant terms went unglossed, and the same fact appeared in
+prose AND a table AND a closing recap.
+
+**THE RULE (codified as the skill's BREVITY AND STRUCTURE section, JUDGMENT-ONLY):** first
+sentence = the answer; ~300 words before the mandatory end blocks on answer-turns; tables over
+prose; every quant term gets a one-line plain gloss; end blocks in minimum satisfying form.
+The tell: a response whose first paragraph could be deleted without losing the answer.
+
+**Compliance failure against item 45** (the end-of-response statement discipline - its spirit
+is that mandatory structure serves the reader; ballooning it into narration inverts that). No
+new CHECKLIST item: the skill section IS the rule, its tripwire row and fragment pin are the
+durable half, and the owner's next complaint is the failure signal.
