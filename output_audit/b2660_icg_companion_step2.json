@@ -1,0 +1,4280 @@
+{
+  "strategy": "institutional_committed_growth_long",
+  "step": 2,
+  "design": "owner ruling 2026-09-08 - all cells x exits, one read; pre-registered cell carries admission",
+  "window": {
+    "holdout": [
+      "2025-05-05",
+      "2026-05-05"
+    ]
+  },
+  "sweep_artifact": "output_audit\\b2658_icg_companion_step1.json",
+  "preregistered": {
+    "levels": [
+      6.99
+    ],
+    "is_trades": 235,
+    "is_cube_rows": 6110,
+    "best_exit": "ma_exit_ema9",
+    "is_sharpe": 0.658,
+    "exits_evaluated": 26
+  },
+  "evidence": {
+    "landed_fires": 1941,
+    "coverage": 1.0,
+    "cube_rows": 50466,
+    "unmatched_join_rows": 0,
+    "max_fires_per_day": 74,
+    "candidate_cap": 30,
+    "cap_bypassed_evidence": true
+  },
+  "reproduction": 1.0,
+  "trials": 156,
+  "graded": 156,
+  "admission": {
+    "levels": [
+      6.99
+    ],
+    "exit": "ma_exit_ema9",
+    "holdout_n": 153,
+    "full_n": 388,
+    "admission_bearing": true,
+    "peeked_by_construction": false,
+    "holdout_sharpe": 0.485,
+    "sortino": 1.71,
+    "psr": 0.9116,
+    "profit_factor": 1.395,
+    "win_rate": 0.359,
+    "gates": {
+      "pooled_sharpe": false,
+      "profit_factor": true,
+      "sortino": true,
+      "psr": false,
+      "min_trades_holdout": true,
+      "min_trades_full_period": true
+    },
+    "n_gates": 4,
+    "n_gates_evaluable": 6,
+    "all_live_gates": false,
+    "verdict": "FAIL"
+  },
+  "verdict": "FAIL",
+  "peek_bound": {
+    "cells_clearing_all_gates_besides_admission": 0,
+    "note": "diagnostic only - none of these was chosen before holdout contact and none can be promoted off this read"
+  },
+  "rows": [
+    {
+      "levels": [
+        -999.0
+      ],
+      "exit": "atr_trail_1x",
+      "holdout_n": 666,
+      "full_n": 1941,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": -1.29,
+      "sortino": -2.488,
+      "psr": 0.0003,
+      "profit_factor": 0.615,
+      "win_rate": 0.267,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": false,
+        "sortino": false,
+        "psr": false,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 2,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        -999.0
+      ],
+      "exit": "atr_trail_2x",
+      "holdout_n": 666,
+      "full_n": 1941,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.376,
+      "sortino": 1.283,
+      "psr": 0.997,
+      "profit_factor": 1.366,
+      "win_rate": 0.392,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 5,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        -999.0
+      ],
+      "exit": "atr_trail_mae_conditional",
+      "holdout_n": 666,
+      "full_n": 1941,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": -1.29,
+      "sortino": -2.488,
+      "psr": 0.0003,
+      "profit_factor": 0.615,
+      "win_rate": 0.267,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": false,
+        "sortino": false,
+        "psr": false,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 2,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        -999.0
+      ],
+      "exit": "atr_trail_vix_conditional",
+      "holdout_n": 666,
+      "full_n": 1941,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.046,
+      "sortino": 0.12,
+      "psr": 0.5728,
+      "profit_factor": 1.025,
+      "win_rate": 0.3,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": false,
+        "sortino": false,
+        "psr": false,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 2,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        -999.0
+      ],
+      "exit": "break_even_at_1r",
+      "holdout_n": 666,
+      "full_n": 1941,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.066,
+      "sortino": 0.246,
+      "psr": 0.6239,
+      "profit_factor": 1.055,
+      "win_rate": 0.138,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": false,
+        "sortino": false,
+        "psr": false,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 2,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        -999.0
+      ],
+      "exit": "breakeven_plus_trail",
+      "holdout_n": 666,
+      "full_n": 1941,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.803,
+      "sortino": 4.087,
+      "psr": 1.0,
+      "profit_factor": 3.007,
+      "win_rate": 0.386,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 5,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        -999.0
+      ],
+      "exit": "chandelier_3x",
+      "holdout_n": 666,
+      "full_n": 1941,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.397,
+      "sortino": 1.362,
+      "psr": 0.9931,
+      "profit_factor": 1.488,
+      "win_rate": 0.189,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 5,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        -999.0
+      ],
+      "exit": "class_time_stop",
+      "holdout_n": 666,
+      "full_n": 1941,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.689,
+      "sortino": 1.315,
+      "psr": 1.0,
+      "profit_factor": 2.059,
+      "win_rate": 0.562,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 5,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        -999.0
+      ],
+      "exit": "earnings_blackout",
+      "holdout_n": 666,
+      "full_n": 1941,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.674,
+      "sortino": 1.42,
+      "psr": 1.0,
+      "profit_factor": 2.588,
+      "win_rate": 0.581,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 5,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        -999.0
+      ],
+      "exit": "fixed_4r_2r",
+      "holdout_n": 666,
+      "full_n": 1941,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.7,
+      "sortino": 2.097,
+      "psr": 1.0,
+      "profit_factor": 1.545,
+      "win_rate": 0.45,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 5,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        -999.0
+      ],
+      "exit": "hybrid_50pct_target",
+      "holdout_n": 666,
+      "full_n": 1941,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.663,
+      "sortino": 2.663,
+      "psr": 1.0,
+      "profit_factor": 1.908,
+      "win_rate": 0.607,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 5,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        -999.0
+      ],
+      "exit": "ma_exit_ema9",
+      "holdout_n": 666,
+      "full_n": 1941,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.609,
+      "sortino": 2.473,
+      "psr": 0.9994,
+      "profit_factor": 1.592,
+      "win_rate": 0.396,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 5,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        -999.0
+      ],
+      "exit": "mfe_lockin_trail",
+      "holdout_n": 666,
+      "full_n": 1941,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": -1.538,
+      "sortino": -2.713,
+      "psr": 0.0,
+      "profit_factor": 0.592,
+      "win_rate": 0.269,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": false,
+        "sortino": false,
+        "psr": false,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 2,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        -999.0
+      ],
+      "exit": "multi_tier_partial",
+      "holdout_n": 666,
+      "full_n": 1941,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": -1.1,
+      "sortino": -1.977,
+      "psr": 0.0005,
+      "profit_factor": 0.71,
+      "win_rate": 0.431,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": false,
+        "sortino": false,
+        "psr": false,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 2,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        -999.0
+      ],
+      "exit": "next_pivot_target",
+      "holdout_n": 666,
+      "full_n": 1941,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.404,
+      "sortino": 0.645,
+      "psr": 0.9553,
+      "profit_factor": 1.216,
+      "win_rate": 0.793,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": false,
+        "sortino": false,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 3,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        -999.0
+      ],
+      "exit": "r_multiple_2r",
+      "holdout_n": 666,
+      "full_n": 1941,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.378,
+      "sortino": 1.097,
+      "psr": 0.9334,
+      "profit_factor": 1.142,
+      "win_rate": 0.366,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": false,
+        "sortino": true,
+        "psr": false,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 3,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        -999.0
+      ],
+      "exit": "r_multiple_3r",
+      "holdout_n": 666,
+      "full_n": 1941,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.495,
+      "sortino": 1.531,
+      "psr": 0.992,
+      "profit_factor": 1.253,
+      "win_rate": 0.311,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": false,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 4,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        -999.0
+      ],
+      "exit": "regime_flip",
+      "holdout_n": 666,
+      "full_n": 1941,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.613,
+      "sortino": 1.177,
+      "psr": 1.0,
+      "profit_factor": 1.688,
+      "win_rate": 0.542,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 5,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        -999.0
+      ],
+      "exit": "reverse_signal",
+      "holdout_n": 666,
+      "full_n": 1941,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": -1.29,
+      "sortino": -2.488,
+      "psr": 0.0003,
+      "profit_factor": 0.615,
+      "win_rate": 0.267,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": false,
+        "sortino": false,
+        "psr": false,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 2,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        -999.0
+      ],
+      "exit": "smart_money_reversal",
+      "holdout_n": 666,
+      "full_n": 1941,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": -1.345,
+      "sortino": -2.518,
+      "psr": 0.0002,
+      "profit_factor": 0.604,
+      "win_rate": 0.261,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": false,
+        "sortino": false,
+        "psr": false,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 2,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        -999.0
+      ],
+      "exit": "smc_mitigation_zone",
+      "holdout_n": 666,
+      "full_n": 1941,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": -1.525,
+      "sortino": -2.432,
+      "psr": 0.0012,
+      "profit_factor": 0.625,
+      "win_rate": 0.351,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": false,
+        "sortino": false,
+        "psr": false,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 2,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        -999.0
+      ],
+      "exit": "time_stop_10d",
+      "holdout_n": 666,
+      "full_n": 1941,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.772,
+      "sortino": 1.258,
+      "psr": 1.0,
+      "profit_factor": 1.568,
+      "win_rate": 0.545,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 5,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        -999.0
+      ],
+      "exit": "time_stop_20d",
+      "holdout_n": 666,
+      "full_n": 1941,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.613,
+      "sortino": 1.177,
+      "psr": 1.0,
+      "profit_factor": 1.688,
+      "win_rate": 0.542,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 5,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        -999.0
+      ],
+      "exit": "trailing_10pct",
+      "holdout_n": 666,
+      "full_n": 1941,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.464,
+      "sortino": 1.863,
+      "psr": 1.0,
+      "profit_factor": 1.692,
+      "win_rate": 0.452,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 5,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        -999.0
+      ],
+      "exit": "trailing_15pct",
+      "holdout_n": 666,
+      "full_n": 1941,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.387,
+      "sortino": 1.34,
+      "psr": 1.0,
+      "profit_factor": 1.735,
+      "win_rate": 0.483,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 5,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        -999.0
+      ],
+      "exit": "trailing_5pct",
+      "holdout_n": 666,
+      "full_n": 1941,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": -0.105,
+      "sortino": -0.28,
+      "psr": 0.2877,
+      "profit_factor": 0.941,
+      "win_rate": 0.338,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": false,
+        "sortino": false,
+        "psr": false,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 2,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        -6.5
+      ],
+      "exit": "atr_trail_1x",
+      "holdout_n": 510,
+      "full_n": 1552,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": -1.899,
+      "sortino": -3.324,
+      "psr": 0.0,
+      "profit_factor": 0.502,
+      "win_rate": 0.245,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": false,
+        "sortino": false,
+        "psr": false,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 2,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        -6.5
+      ],
+      "exit": "atr_trail_2x",
+      "holdout_n": 510,
+      "full_n": 1552,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.339,
+      "sortino": 1.278,
+      "psr": 0.9845,
+      "profit_factor": 1.345,
+      "win_rate": 0.363,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 5,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        -6.5
+      ],
+      "exit": "atr_trail_mae_conditional",
+      "holdout_n": 510,
+      "full_n": 1552,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": -1.899,
+      "sortino": -3.324,
+      "psr": 0.0,
+      "profit_factor": 0.502,
+      "win_rate": 0.245,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": false,
+        "sortino": false,
+        "psr": false,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 2,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        -6.5
+      ],
+      "exit": "atr_trail_vix_conditional",
+      "holdout_n": 510,
+      "full_n": 1552,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": -0.048,
+      "sortino": -0.137,
+      "psr": 0.4367,
+      "profit_factor": 0.973,
+      "win_rate": 0.265,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": false,
+        "sortino": false,
+        "psr": false,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 2,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        -6.5
+      ],
+      "exit": "break_even_at_1r",
+      "holdout_n": 510,
+      "full_n": 1552,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.098,
+      "sortino": 0.409,
+      "psr": 0.6634,
+      "profit_factor": 1.091,
+      "win_rate": 0.12,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": false,
+        "sortino": false,
+        "psr": false,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 2,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        -6.5
+      ],
+      "exit": "breakeven_plus_trail",
+      "holdout_n": 510,
+      "full_n": 1552,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.776,
+      "sortino": 4.703,
+      "psr": 1.0,
+      "profit_factor": 3.204,
+      "win_rate": 0.357,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 5,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        -6.5
+      ],
+      "exit": "chandelier_3x",
+      "holdout_n": 510,
+      "full_n": 1552,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.43,
+      "sortino": 1.592,
+      "psr": 0.996,
+      "profit_factor": 1.542,
+      "win_rate": 0.241,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 5,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        -6.5
+      ],
+      "exit": "class_time_stop",
+      "holdout_n": 510,
+      "full_n": 1552,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.607,
+      "sortino": 1.164,
+      "psr": 1.0,
+      "profit_factor": 1.914,
+      "win_rate": 0.541,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 5,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        -6.5
+      ],
+      "exit": "earnings_blackout",
+      "holdout_n": 510,
+      "full_n": 1552,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.632,
+      "sortino": 1.31,
+      "psr": 1.0,
+      "profit_factor": 2.458,
+      "win_rate": 0.571,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 5,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        -6.5
+      ],
+      "exit": "fixed_4r_2r",
+      "holdout_n": 510,
+      "full_n": 1552,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.553,
+      "sortino": 1.611,
+      "psr": 0.9997,
+      "profit_factor": 1.407,
+      "win_rate": 0.424,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 5,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        -6.5
+      ],
+      "exit": "hybrid_50pct_target",
+      "holdout_n": 510,
+      "full_n": 1552,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.553,
+      "sortino": 2.051,
+      "psr": 1.0,
+      "profit_factor": 1.757,
+      "win_rate": 0.594,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 5,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        -6.5
+      ],
+      "exit": "ma_exit_ema9",
+      "holdout_n": 510,
+      "full_n": 1552,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.624,
+      "sortino": 2.879,
+      "psr": 0.9992,
+      "profit_factor": 1.671,
+      "win_rate": 0.363,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 5,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        -6.5
+      ],
+      "exit": "mfe_lockin_trail",
+      "holdout_n": 510,
+      "full_n": 1552,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": -2.19,
+      "sortino": -3.518,
+      "psr": 0.0,
+      "profit_factor": 0.486,
+      "win_rate": 0.247,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": false,
+        "sortino": false,
+        "psr": false,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 2,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        -6.5
+      ],
+      "exit": "multi_tier_partial",
+      "holdout_n": 510,
+      "full_n": 1552,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": -1.557,
+      "sortino": -2.648,
+      "psr": 0.0001,
+      "profit_factor": 0.623,
+      "win_rate": 0.416,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": false,
+        "sortino": false,
+        "psr": false,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 2,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        -6.5
+      ],
+      "exit": "next_pivot_target",
+      "holdout_n": 510,
+      "full_n": 1552,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.26,
+      "sortino": 0.391,
+      "psr": 0.8338,
+      "profit_factor": 1.138,
+      "win_rate": 0.786,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": false,
+        "sortino": false,
+        "psr": false,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 2,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        -6.5
+      ],
+      "exit": "r_multiple_2r",
+      "holdout_n": 510,
+      "full_n": 1552,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.167,
+      "sortino": 0.482,
+      "psr": 0.7123,
+      "profit_factor": 1.059,
+      "win_rate": 0.347,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": false,
+        "sortino": false,
+        "psr": false,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 2,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        -6.5
+      ],
+      "exit": "r_multiple_3r",
+      "holdout_n": 510,
+      "full_n": 1552,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.254,
+      "sortino": 0.724,
+      "psr": 0.847,
+      "profit_factor": 1.119,
+      "win_rate": 0.286,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": false,
+        "sortino": false,
+        "psr": false,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 2,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        -6.5
+      ],
+      "exit": "regime_flip",
+      "holdout_n": 510,
+      "full_n": 1552,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.577,
+      "sortino": 1.143,
+      "psr": 1.0,
+      "profit_factor": 1.675,
+      "win_rate": 0.529,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 5,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        -6.5
+      ],
+      "exit": "reverse_signal",
+      "holdout_n": 510,
+      "full_n": 1552,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": -1.899,
+      "sortino": -3.324,
+      "psr": 0.0,
+      "profit_factor": 0.502,
+      "win_rate": 0.245,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": false,
+        "sortino": false,
+        "psr": false,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 2,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        -6.5
+      ],
+      "exit": "smart_money_reversal",
+      "holdout_n": 510,
+      "full_n": 1552,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": -1.898,
+      "sortino": -3.275,
+      "psr": 0.0,
+      "profit_factor": 0.503,
+      "win_rate": 0.243,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": false,
+        "sortino": false,
+        "psr": false,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 2,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        -6.5
+      ],
+      "exit": "smc_mitigation_zone",
+      "holdout_n": 510,
+      "full_n": 1552,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": -1.986,
+      "sortino": -3.094,
+      "psr": 0.0007,
+      "profit_factor": 0.542,
+      "win_rate": 0.329,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": false,
+        "sortino": false,
+        "psr": false,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 2,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        -6.5
+      ],
+      "exit": "time_stop_10d",
+      "holdout_n": 510,
+      "full_n": 1552,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.735,
+      "sortino": 1.392,
+      "psr": 0.9999,
+      "profit_factor": 1.562,
+      "win_rate": 0.539,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 5,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        -6.5
+      ],
+      "exit": "time_stop_20d",
+      "holdout_n": 510,
+      "full_n": 1552,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.577,
+      "sortino": 1.143,
+      "psr": 1.0,
+      "profit_factor": 1.675,
+      "win_rate": 0.529,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 5,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        -6.5
+      ],
+      "exit": "trailing_10pct",
+      "holdout_n": 510,
+      "full_n": 1552,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.405,
+      "sortino": 1.66,
+      "psr": 1.0,
+      "profit_factor": 1.629,
+      "win_rate": 0.425,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 5,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        -6.5
+      ],
+      "exit": "trailing_15pct",
+      "holdout_n": 510,
+      "full_n": 1552,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.343,
+      "sortino": 1.225,
+      "psr": 1.0,
+      "profit_factor": 1.689,
+      "win_rate": 0.465,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 5,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        -6.5
+      ],
+      "exit": "trailing_5pct",
+      "holdout_n": 510,
+      "full_n": 1552,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": -0.145,
+      "sortino": -0.385,
+      "psr": 0.2421,
+      "profit_factor": 0.914,
+      "win_rate": 0.325,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": false,
+        "sortino": false,
+        "psr": false,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 2,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        -2.2
+      ],
+      "exit": "atr_trail_1x",
+      "holdout_n": 399,
+      "full_n": 1166,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": -2.007,
+      "sortino": -3.432,
+      "psr": 0.0002,
+      "profit_factor": 0.479,
+      "win_rate": 0.236,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": false,
+        "sortino": false,
+        "psr": false,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 2,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        -2.2
+      ],
+      "exit": "atr_trail_2x",
+      "holdout_n": 399,
+      "full_n": 1166,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.359,
+      "sortino": 1.395,
+      "psr": 0.9801,
+      "profit_factor": 1.388,
+      "win_rate": 0.361,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 5,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        -2.2
+      ],
+      "exit": "atr_trail_mae_conditional",
+      "holdout_n": 399,
+      "full_n": 1166,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": -2.007,
+      "sortino": -3.432,
+      "psr": 0.0002,
+      "profit_factor": 0.479,
+      "win_rate": 0.236,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": false,
+        "sortino": false,
+        "psr": false,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 2,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        -2.2
+      ],
+      "exit": "atr_trail_vix_conditional",
+      "holdout_n": 399,
+      "full_n": 1166,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": -0.052,
+      "sortino": -0.153,
+      "psr": 0.4397,
+      "profit_factor": 0.969,
+      "win_rate": 0.256,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": false,
+        "sortino": false,
+        "psr": false,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 2,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        -2.2
+      ],
+      "exit": "break_even_at_1r",
+      "holdout_n": 399,
+      "full_n": 1166,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.037,
+      "sortino": 0.147,
+      "psr": 0.5523,
+      "profit_factor": 1.033,
+      "win_rate": 0.108,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": false,
+        "sortino": false,
+        "psr": false,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 2,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        -2.2
+      ],
+      "exit": "breakeven_plus_trail",
+      "holdout_n": 399,
+      "full_n": 1166,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.804,
+      "sortino": 4.58,
+      "psr": 1.0,
+      "profit_factor": 3.293,
+      "win_rate": 0.368,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 5,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        -2.2
+      ],
+      "exit": "chandelier_3x",
+      "holdout_n": 399,
+      "full_n": 1166,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.496,
+      "sortino": 2.022,
+      "psr": 0.999,
+      "profit_factor": 1.661,
+      "win_rate": 0.298,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 5,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        -2.2
+      ],
+      "exit": "class_time_stop",
+      "holdout_n": 399,
+      "full_n": 1166,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.657,
+      "sortino": 1.303,
+      "psr": 1.0,
+      "profit_factor": 2.068,
+      "win_rate": 0.549,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 5,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        -2.2
+      ],
+      "exit": "earnings_blackout",
+      "holdout_n": 399,
+      "full_n": 1166,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.647,
+      "sortino": 1.3,
+      "psr": 1.0,
+      "profit_factor": 2.459,
+      "win_rate": 0.561,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 5,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        -2.2
+      ],
+      "exit": "fixed_4r_2r",
+      "holdout_n": 399,
+      "full_n": 1166,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.632,
+      "sortino": 1.788,
+      "psr": 0.9997,
+      "profit_factor": 1.478,
+      "win_rate": 0.431,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 5,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        -2.2
+      ],
+      "exit": "hybrid_50pct_target",
+      "holdout_n": 399,
+      "full_n": 1166,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.577,
+      "sortino": 2.02,
+      "psr": 1.0,
+      "profit_factor": 1.824,
+      "win_rate": 0.599,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 5,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        -2.2
+      ],
+      "exit": "ma_exit_ema9",
+      "holdout_n": 399,
+      "full_n": 1166,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.691,
+      "sortino": 3.388,
+      "psr": 0.9997,
+      "profit_factor": 1.824,
+      "win_rate": 0.371,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 5,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        -2.2
+      ],
+      "exit": "mfe_lockin_trail",
+      "holdout_n": 399,
+      "full_n": 1166,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": -2.314,
+      "sortino": -3.604,
+      "psr": 0.0,
+      "profit_factor": 0.465,
+      "win_rate": 0.238,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": false,
+        "sortino": false,
+        "psr": false,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 2,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        -2.2
+      ],
+      "exit": "multi_tier_partial",
+      "holdout_n": 399,
+      "full_n": 1166,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": -1.627,
+      "sortino": -2.639,
+      "psr": 0.0003,
+      "profit_factor": 0.611,
+      "win_rate": 0.419,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": false,
+        "sortino": false,
+        "psr": false,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 2,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        -2.2
+      ],
+      "exit": "next_pivot_target",
+      "holdout_n": 399,
+      "full_n": 1166,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.442,
+      "sortino": 0.674,
+      "psr": 0.9257,
+      "profit_factor": 1.242,
+      "win_rate": 0.787,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": false,
+        "sortino": false,
+        "psr": false,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 2,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        -2.2
+      ],
+      "exit": "r_multiple_2r",
+      "holdout_n": 399,
+      "full_n": 1166,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.216,
+      "sortino": 0.605,
+      "psr": 0.7406,
+      "profit_factor": 1.078,
+      "win_rate": 0.346,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": false,
+        "sortino": false,
+        "psr": false,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 2,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        -2.2
+      ],
+      "exit": "r_multiple_3r",
+      "holdout_n": 399,
+      "full_n": 1166,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.36,
+      "sortino": 0.992,
+      "psr": 0.9047,
+      "profit_factor": 1.178,
+      "win_rate": 0.288,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": false,
+        "sortino": false,
+        "psr": false,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 2,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        -2.2
+      ],
+      "exit": "regime_flip",
+      "holdout_n": 399,
+      "full_n": 1166,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.648,
+      "sortino": 1.368,
+      "psr": 1.0,
+      "profit_factor": 1.819,
+      "win_rate": 0.529,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 5,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        -2.2
+      ],
+      "exit": "reverse_signal",
+      "holdout_n": 399,
+      "full_n": 1166,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": -2.007,
+      "sortino": -3.432,
+      "psr": 0.0002,
+      "profit_factor": 0.479,
+      "win_rate": 0.236,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": false,
+        "sortino": false,
+        "psr": false,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 2,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        -2.2
+      ],
+      "exit": "smart_money_reversal",
+      "holdout_n": 399,
+      "full_n": 1166,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": -2.022,
+      "sortino": -3.408,
+      "psr": 0.0002,
+      "profit_factor": 0.478,
+      "win_rate": 0.233,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": false,
+        "sortino": false,
+        "psr": false,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 2,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        -2.2
+      ],
+      "exit": "smc_mitigation_zone",
+      "holdout_n": 399,
+      "full_n": 1166,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": -2.137,
+      "sortino": -3.277,
+      "psr": 0.0016,
+      "profit_factor": 0.51,
+      "win_rate": 0.326,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": false,
+        "sortino": false,
+        "psr": false,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 2,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        -2.2
+      ],
+      "exit": "time_stop_10d",
+      "holdout_n": 399,
+      "full_n": 1166,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.745,
+      "sortino": 1.423,
+      "psr": 0.9997,
+      "profit_factor": 1.594,
+      "win_rate": 0.536,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 5,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        -2.2
+      ],
+      "exit": "time_stop_20d",
+      "holdout_n": 399,
+      "full_n": 1166,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.648,
+      "sortino": 1.368,
+      "psr": 1.0,
+      "profit_factor": 1.819,
+      "win_rate": 0.529,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 5,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        -2.2
+      ],
+      "exit": "trailing_10pct",
+      "holdout_n": 399,
+      "full_n": 1166,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.43,
+      "sortino": 1.77,
+      "psr": 1.0,
+      "profit_factor": 1.707,
+      "win_rate": 0.429,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 5,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        -2.2
+      ],
+      "exit": "trailing_15pct",
+      "holdout_n": 399,
+      "full_n": 1166,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.34,
+      "sortino": 1.211,
+      "psr": 1.0,
+      "profit_factor": 1.709,
+      "win_rate": 0.461,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 5,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        -2.2
+      ],
+      "exit": "trailing_5pct",
+      "holdout_n": 399,
+      "full_n": 1166,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": -0.145,
+      "sortino": -0.366,
+      "psr": 0.2638,
+      "profit_factor": 0.912,
+      "win_rate": 0.321,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": false,
+        "sortino": false,
+        "psr": false,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 2,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        0.0
+      ],
+      "exit": "atr_trail_1x",
+      "holdout_n": 348,
+      "full_n": 972,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": -1.88,
+      "sortino": -3.292,
+      "psr": 0.0008,
+      "profit_factor": 0.498,
+      "win_rate": 0.236,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": false,
+        "sortino": false,
+        "psr": false,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 2,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        0.0
+      ],
+      "exit": "atr_trail_2x",
+      "holdout_n": 348,
+      "full_n": 972,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.352,
+      "sortino": 1.288,
+      "psr": 0.9668,
+      "profit_factor": 1.356,
+      "win_rate": 0.365,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 5,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        0.0
+      ],
+      "exit": "atr_trail_mae_conditional",
+      "holdout_n": 348,
+      "full_n": 972,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": -1.88,
+      "sortino": -3.292,
+      "psr": 0.0008,
+      "profit_factor": 0.498,
+      "win_rate": 0.236,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": false,
+        "sortino": false,
+        "psr": false,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 2,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        0.0
+      ],
+      "exit": "atr_trail_vix_conditional",
+      "holdout_n": 348,
+      "full_n": 972,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": -0.089,
+      "sortino": -0.246,
+      "psr": 0.4051,
+      "profit_factor": 0.95,
+      "win_rate": 0.25,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": false,
+        "sortino": false,
+        "psr": false,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 2,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        0.0
+      ],
+      "exit": "break_even_at_1r",
+      "holdout_n": 348,
+      "full_n": 972,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.163,
+      "sortino": 0.684,
+      "psr": 0.7188,
+      "profit_factor": 1.154,
+      "win_rate": 0.115,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": false,
+        "sortino": false,
+        "psr": false,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 2,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        0.0
+      ],
+      "exit": "breakeven_plus_trail",
+      "holdout_n": 348,
+      "full_n": 972,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.84,
+      "sortino": 4.689,
+      "psr": 1.0,
+      "profit_factor": 3.418,
+      "win_rate": 0.376,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 5,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        0.0
+      ],
+      "exit": "chandelier_3x",
+      "holdout_n": 348,
+      "full_n": 972,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.481,
+      "sortino": 1.877,
+      "psr": 0.9976,
+      "profit_factor": 1.601,
+      "win_rate": 0.319,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 5,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        0.0
+      ],
+      "exit": "class_time_stop",
+      "holdout_n": 348,
+      "full_n": 972,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.673,
+      "sortino": 1.284,
+      "psr": 1.0,
+      "profit_factor": 2.061,
+      "win_rate": 0.555,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 5,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        0.0
+      ],
+      "exit": "earnings_blackout",
+      "holdout_n": 348,
+      "full_n": 972,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.668,
+      "sortino": 1.302,
+      "psr": 1.0,
+      "profit_factor": 2.473,
+      "win_rate": 0.569,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 5,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        0.0
+      ],
+      "exit": "fixed_4r_2r",
+      "holdout_n": 348,
+      "full_n": 972,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.761,
+      "sortino": 2.141,
+      "psr": 1.0,
+      "profit_factor": 1.604,
+      "win_rate": 0.448,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 5,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        0.0
+      ],
+      "exit": "hybrid_50pct_target",
+      "holdout_n": 348,
+      "full_n": 972,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.647,
+      "sortino": 2.216,
+      "psr": 1.0,
+      "profit_factor": 1.983,
+      "win_rate": 0.609,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 5,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        0.0
+      ],
+      "exit": "ma_exit_ema9",
+      "holdout_n": 348,
+      "full_n": 972,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.665,
+      "sortino": 3.018,
+      "psr": 0.9989,
+      "profit_factor": 1.74,
+      "win_rate": 0.382,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 5,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        0.0
+      ],
+      "exit": "mfe_lockin_trail",
+      "holdout_n": 348,
+      "full_n": 972,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": -2.204,
+      "sortino": -3.486,
+      "psr": 0.0001,
+      "profit_factor": 0.481,
+      "win_rate": 0.239,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": false,
+        "sortino": false,
+        "psr": false,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 2,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        0.0
+      ],
+      "exit": "multi_tier_partial",
+      "holdout_n": 348,
+      "full_n": 972,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": -1.461,
+      "sortino": -2.414,
+      "psr": 0.0016,
+      "profit_factor": 0.641,
+      "win_rate": 0.417,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": false,
+        "sortino": false,
+        "psr": false,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 2,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        0.0
+      ],
+      "exit": "next_pivot_target",
+      "holdout_n": 348,
+      "full_n": 972,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.61,
+      "sortino": 0.94,
+      "psr": 0.9692,
+      "profit_factor": 1.349,
+      "win_rate": 0.79,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": false,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 4,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        0.0
+      ],
+      "exit": "r_multiple_2r",
+      "holdout_n": 348,
+      "full_n": 972,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.281,
+      "sortino": 0.777,
+      "psr": 0.7868,
+      "profit_factor": 1.104,
+      "win_rate": 0.351,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": false,
+        "sortino": false,
+        "psr": false,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 2,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        0.0
+      ],
+      "exit": "r_multiple_3r",
+      "holdout_n": 348,
+      "full_n": 972,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.4,
+      "sortino": 1.072,
+      "psr": 0.9157,
+      "profit_factor": 1.202,
+      "win_rate": 0.293,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": false,
+        "sortino": true,
+        "psr": false,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 3,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        0.0
+      ],
+      "exit": "regime_flip",
+      "holdout_n": 348,
+      "full_n": 972,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.643,
+      "sortino": 1.351,
+      "psr": 1.0,
+      "profit_factor": 1.811,
+      "win_rate": 0.532,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 5,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        0.0
+      ],
+      "exit": "reverse_signal",
+      "holdout_n": 348,
+      "full_n": 972,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": -1.88,
+      "sortino": -3.292,
+      "psr": 0.0008,
+      "profit_factor": 0.498,
+      "win_rate": 0.236,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": false,
+        "sortino": false,
+        "psr": false,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 2,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        0.0
+      ],
+      "exit": "smart_money_reversal",
+      "holdout_n": 348,
+      "full_n": 972,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": -1.91,
+      "sortino": -3.297,
+      "psr": 0.0009,
+      "profit_factor": 0.494,
+      "win_rate": 0.233,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": false,
+        "sortino": false,
+        "psr": false,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 2,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        0.0
+      ],
+      "exit": "smc_mitigation_zone",
+      "holdout_n": 348,
+      "full_n": 972,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": -1.989,
+      "sortino": -3.101,
+      "psr": 0.0044,
+      "profit_factor": 0.533,
+      "win_rate": 0.336,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": false,
+        "sortino": false,
+        "psr": false,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 2,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        0.0
+      ],
+      "exit": "time_stop_10d",
+      "holdout_n": 348,
+      "full_n": 972,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.762,
+      "sortino": 1.405,
+      "psr": 0.9994,
+      "profit_factor": 1.609,
+      "win_rate": 0.543,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 5,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        0.0
+      ],
+      "exit": "time_stop_20d",
+      "holdout_n": 348,
+      "full_n": 972,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.643,
+      "sortino": 1.351,
+      "psr": 1.0,
+      "profit_factor": 1.811,
+      "win_rate": 0.532,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 5,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        0.0
+      ],
+      "exit": "trailing_10pct",
+      "holdout_n": 348,
+      "full_n": 972,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.513,
+      "sortino": 2.156,
+      "psr": 1.0,
+      "profit_factor": 1.928,
+      "win_rate": 0.448,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 5,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        0.0
+      ],
+      "exit": "trailing_15pct",
+      "holdout_n": 348,
+      "full_n": 972,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.384,
+      "sortino": 1.354,
+      "psr": 1.0,
+      "profit_factor": 1.834,
+      "win_rate": 0.471,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 5,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        0.0
+      ],
+      "exit": "trailing_5pct",
+      "holdout_n": 348,
+      "full_n": 972,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": -0.164,
+      "sortino": -0.41,
+      "psr": 0.2546,
+      "profit_factor": 0.902,
+      "win_rate": 0.319,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": false,
+        "sortino": false,
+        "psr": false,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 2,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        2.14
+      ],
+      "exit": "atr_trail_1x",
+      "holdout_n": 285,
+      "full_n": 775,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": -1.766,
+      "sortino": -2.988,
+      "psr": 0.0027,
+      "profit_factor": 0.521,
+      "win_rate": 0.239,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": false,
+        "sortino": false,
+        "psr": false,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 2,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        2.14
+      ],
+      "exit": "atr_trail_2x",
+      "holdout_n": 285,
+      "full_n": 775,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.446,
+      "sortino": 1.768,
+      "psr": 0.9881,
+      "profit_factor": 1.491,
+      "win_rate": 0.368,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 5,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        2.14
+      ],
+      "exit": "atr_trail_mae_conditional",
+      "holdout_n": 285,
+      "full_n": 775,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": -1.766,
+      "sortino": -2.988,
+      "psr": 0.0027,
+      "profit_factor": 0.521,
+      "win_rate": 0.239,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": false,
+        "sortino": false,
+        "psr": false,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 2,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        2.14
+      ],
+      "exit": "atr_trail_vix_conditional",
+      "holdout_n": 285,
+      "full_n": 775,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.069,
+      "sortino": 0.199,
+      "psr": 0.571,
+      "profit_factor": 1.042,
+      "win_rate": 0.263,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": false,
+        "sortino": false,
+        "psr": false,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 2,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        2.14
+      ],
+      "exit": "break_even_at_1r",
+      "holdout_n": 285,
+      "full_n": 775,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.312,
+      "sortino": 1.347,
+      "psr": 0.8695,
+      "profit_factor": 1.336,
+      "win_rate": 0.13,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": false,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 4,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        2.14
+      ],
+      "exit": "breakeven_plus_trail",
+      "holdout_n": 285,
+      "full_n": 775,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.871,
+      "sortino": 5.181,
+      "psr": 1.0,
+      "profit_factor": 3.745,
+      "win_rate": 0.379,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 5,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        2.14
+      ],
+      "exit": "chandelier_3x",
+      "holdout_n": 285,
+      "full_n": 775,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.549,
+      "sortino": 2.237,
+      "psr": 0.9993,
+      "profit_factor": 1.758,
+      "win_rate": 0.351,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 5,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        2.14
+      ],
+      "exit": "class_time_stop",
+      "holdout_n": 285,
+      "full_n": 775,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.654,
+      "sortino": 1.265,
+      "psr": 1.0,
+      "profit_factor": 2.06,
+      "win_rate": 0.547,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 5,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        2.14
+      ],
+      "exit": "earnings_blackout",
+      "holdout_n": 285,
+      "full_n": 775,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.671,
+      "sortino": 1.317,
+      "psr": 1.0,
+      "profit_factor": 2.525,
+      "win_rate": 0.579,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 5,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        2.14
+      ],
+      "exit": "fixed_4r_2r",
+      "holdout_n": 285,
+      "full_n": 775,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.824,
+      "sortino": 2.287,
+      "psr": 1.0,
+      "profit_factor": 1.685,
+      "win_rate": 0.456,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 5,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        2.14
+      ],
+      "exit": "hybrid_50pct_target",
+      "holdout_n": 285,
+      "full_n": 775,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.664,
+      "sortino": 2.35,
+      "psr": 1.0,
+      "profit_factor": 2.063,
+      "win_rate": 0.611,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 5,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        2.14
+      ],
+      "exit": "ma_exit_ema9",
+      "holdout_n": 285,
+      "full_n": 775,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.693,
+      "sortino": 3.315,
+      "psr": 0.9989,
+      "profit_factor": 1.824,
+      "win_rate": 0.389,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 5,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        2.14
+      ],
+      "exit": "mfe_lockin_trail",
+      "holdout_n": 285,
+      "full_n": 775,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": -2.055,
+      "sortino": -3.176,
+      "psr": 0.0006,
+      "profit_factor": 0.505,
+      "win_rate": 0.242,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": false,
+        "sortino": false,
+        "psr": false,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 2,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        2.14
+      ],
+      "exit": "multi_tier_partial",
+      "holdout_n": 285,
+      "full_n": 775,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": -1.181,
+      "sortino": -1.873,
+      "psr": 0.0134,
+      "profit_factor": 0.697,
+      "win_rate": 0.432,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": false,
+        "sortino": false,
+        "psr": false,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 2,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        2.14
+      ],
+      "exit": "next_pivot_target",
+      "holdout_n": 285,
+      "full_n": 775,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.649,
+      "sortino": 0.998,
+      "psr": 0.9665,
+      "profit_factor": 1.381,
+      "win_rate": 0.786,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": false,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 4,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        2.14
+      ],
+      "exit": "r_multiple_2r",
+      "holdout_n": 285,
+      "full_n": 775,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.459,
+      "sortino": 1.244,
+      "psr": 0.8842,
+      "profit_factor": 1.177,
+      "win_rate": 0.361,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": false,
+        "sortino": true,
+        "psr": false,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 3,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        2.14
+      ],
+      "exit": "r_multiple_3r",
+      "holdout_n": 285,
+      "full_n": 775,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.58,
+      "sortino": 1.496,
+      "psr": 0.9692,
+      "profit_factor": 1.315,
+      "win_rate": 0.312,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 5,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        2.14
+      ],
+      "exit": "regime_flip",
+      "holdout_n": 285,
+      "full_n": 775,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.684,
+      "sortino": 1.528,
+      "psr": 1.0,
+      "profit_factor": 1.936,
+      "win_rate": 0.53,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 5,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        2.14
+      ],
+      "exit": "reverse_signal",
+      "holdout_n": 285,
+      "full_n": 775,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": -1.766,
+      "sortino": -2.988,
+      "psr": 0.0027,
+      "profit_factor": 0.521,
+      "win_rate": 0.239,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": false,
+        "sortino": false,
+        "psr": false,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 2,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        2.14
+      ],
+      "exit": "smart_money_reversal",
+      "holdout_n": 285,
+      "full_n": 775,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": -1.8,
+      "sortino": -2.997,
+      "psr": 0.0028,
+      "profit_factor": 0.517,
+      "win_rate": 0.235,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": false,
+        "sortino": false,
+        "psr": false,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 2,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        2.14
+      ],
+      "exit": "smc_mitigation_zone",
+      "holdout_n": 285,
+      "full_n": 775,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": -2.095,
+      "sortino": -3.097,
+      "psr": 0.0053,
+      "profit_factor": 0.528,
+      "win_rate": 0.34,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": false,
+        "sortino": false,
+        "psr": false,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 2,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        2.14
+      ],
+      "exit": "time_stop_10d",
+      "holdout_n": 285,
+      "full_n": 775,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.895,
+      "sortino": 1.726,
+      "psr": 0.9998,
+      "profit_factor": 1.772,
+      "win_rate": 0.554,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 5,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        2.14
+      ],
+      "exit": "time_stop_20d",
+      "holdout_n": 285,
+      "full_n": 775,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.684,
+      "sortino": 1.528,
+      "psr": 1.0,
+      "profit_factor": 1.936,
+      "win_rate": 0.53,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 5,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        2.14
+      ],
+      "exit": "trailing_10pct",
+      "holdout_n": 285,
+      "full_n": 775,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.56,
+      "sortino": 2.468,
+      "psr": 1.0,
+      "profit_factor": 2.107,
+      "win_rate": 0.453,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 5,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        2.14
+      ],
+      "exit": "trailing_15pct",
+      "holdout_n": 285,
+      "full_n": 775,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.418,
+      "sortino": 1.558,
+      "psr": 1.0,
+      "profit_factor": 1.983,
+      "win_rate": 0.481,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 5,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        2.14
+      ],
+      "exit": "trailing_5pct",
+      "holdout_n": 285,
+      "full_n": 775,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": -0.116,
+      "sortino": -0.289,
+      "psr": 0.3353,
+      "profit_factor": 0.929,
+      "win_rate": 0.319,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": false,
+        "sortino": false,
+        "psr": false,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 2,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        6.99
+      ],
+      "exit": "atr_trail_1x",
+      "holdout_n": 153,
+      "full_n": 388,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": -2.217,
+      "sortino": -3.526,
+      "psr": 0.0027,
+      "profit_factor": 0.47,
+      "win_rate": 0.235,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": false,
+        "sortino": false,
+        "psr": false,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 2,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        6.99
+      ],
+      "exit": "atr_trail_2x",
+      "holdout_n": 153,
+      "full_n": 388,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.038,
+      "sortino": 0.086,
+      "psr": 0.5424,
+      "profit_factor": 1.023,
+      "win_rate": 0.353,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": false,
+        "sortino": false,
+        "psr": false,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 2,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        6.99
+      ],
+      "exit": "atr_trail_mae_conditional",
+      "holdout_n": 153,
+      "full_n": 388,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": -2.217,
+      "sortino": -3.526,
+      "psr": 0.0027,
+      "profit_factor": 0.47,
+      "win_rate": 0.235,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": false,
+        "sortino": false,
+        "psr": false,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 2,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        6.99
+      ],
+      "exit": "atr_trail_vix_conditional",
+      "holdout_n": 153,
+      "full_n": 388,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": -0.732,
+      "sortino": -1.553,
+      "psr": 0.1207,
+      "profit_factor": 0.719,
+      "win_rate": 0.235,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": false,
+        "sortino": false,
+        "psr": false,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 2,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        6.99
+      ],
+      "exit": "break_even_at_1r",
+      "holdout_n": 153,
+      "full_n": 388,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": -0.518,
+      "sortino": -1.247,
+      "psr": 0.1601,
+      "profit_factor": 0.72,
+      "win_rate": 0.137,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": false,
+        "sortino": false,
+        "psr": false,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 2,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        6.99
+      ],
+      "exit": "breakeven_plus_trail",
+      "holdout_n": 153,
+      "full_n": 388,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.838,
+      "sortino": 4.045,
+      "psr": 1.0,
+      "profit_factor": 3.429,
+      "win_rate": 0.438,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 5,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        6.99
+      ],
+      "exit": "chandelier_3x",
+      "holdout_n": 153,
+      "full_n": 388,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.463,
+      "sortino": 1.433,
+      "psr": 0.9651,
+      "profit_factor": 1.493,
+      "win_rate": 0.373,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 5,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        6.99
+      ],
+      "exit": "class_time_stop",
+      "holdout_n": 153,
+      "full_n": 388,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.708,
+      "sortino": 1.282,
+      "psr": 0.9997,
+      "profit_factor": 2.046,
+      "win_rate": 0.542,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 5,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        6.99
+      ],
+      "exit": "earnings_blackout",
+      "holdout_n": 153,
+      "full_n": 388,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.792,
+      "sortino": 1.51,
+      "psr": 1.0,
+      "profit_factor": 2.925,
+      "win_rate": 0.614,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 5,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        6.99
+      ],
+      "exit": "fixed_4r_2r",
+      "holdout_n": 153,
+      "full_n": 388,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.726,
+      "sortino": 2.091,
+      "psr": 0.9935,
+      "profit_factor": 1.571,
+      "win_rate": 0.451,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 5,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        6.99
+      ],
+      "exit": "hybrid_50pct_target",
+      "holdout_n": 153,
+      "full_n": 388,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.645,
+      "sortino": 1.995,
+      "psr": 0.9996,
+      "profit_factor": 1.855,
+      "win_rate": 0.588,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 5,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        6.99
+      ],
+      "exit": "ma_exit_ema9",
+      "holdout_n": 153,
+      "full_n": 388,
+      "admission_bearing": true,
+      "peeked_by_construction": false,
+      "holdout_sharpe": 0.485,
+      "sortino": 1.71,
+      "psr": 0.9116,
+      "profit_factor": 1.395,
+      "win_rate": 0.359,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": false,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 4,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        6.99
+      ],
+      "exit": "mfe_lockin_trail",
+      "holdout_n": 153,
+      "full_n": 388,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": -2.537,
+      "sortino": -3.79,
+      "psr": 0.0006,
+      "profit_factor": 0.453,
+      "win_rate": 0.235,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": false,
+        "sortino": false,
+        "psr": false,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 2,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        6.99
+      ],
+      "exit": "multi_tier_partial",
+      "holdout_n": 153,
+      "full_n": 388,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": -1.536,
+      "sortino": -2.376,
+      "psr": 0.0136,
+      "profit_factor": 0.628,
+      "win_rate": 0.418,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": false,
+        "sortino": false,
+        "psr": false,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 2,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        6.99
+      ],
+      "exit": "next_pivot_target",
+      "holdout_n": 153,
+      "full_n": 388,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.527,
+      "sortino": 0.89,
+      "psr": 0.8726,
+      "profit_factor": 1.3,
+      "win_rate": 0.752,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": false,
+        "psr": false,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 3,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        6.99
+      ],
+      "exit": "r_multiple_2r",
+      "holdout_n": 153,
+      "full_n": 388,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": -0.032,
+      "sortino": -0.091,
+      "psr": 0.4765,
+      "profit_factor": 0.989,
+      "win_rate": 0.32,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": false,
+        "sortino": false,
+        "psr": false,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 2,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        6.99
+      ],
+      "exit": "r_multiple_3r",
+      "holdout_n": 153,
+      "full_n": 388,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.306,
+      "sortino": 1.057,
+      "psr": 0.755,
+      "profit_factor": 1.145,
+      "win_rate": 0.288,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": false,
+        "sortino": true,
+        "psr": false,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 3,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        6.99
+      ],
+      "exit": "regime_flip",
+      "holdout_n": 153,
+      "full_n": 388,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.728,
+      "sortino": 1.719,
+      "psr": 0.9997,
+      "profit_factor": 2.026,
+      "win_rate": 0.542,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 5,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        6.99
+      ],
+      "exit": "reverse_signal",
+      "holdout_n": 153,
+      "full_n": 388,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": -2.217,
+      "sortino": -3.526,
+      "psr": 0.0027,
+      "profit_factor": 0.47,
+      "win_rate": 0.235,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": false,
+        "sortino": false,
+        "psr": false,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 2,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        6.99
+      ],
+      "exit": "smart_money_reversal",
+      "holdout_n": 153,
+      "full_n": 388,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": -2.274,
+      "sortino": -3.506,
+      "psr": 0.0028,
+      "profit_factor": 0.466,
+      "win_rate": 0.229,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": false,
+        "sortino": false,
+        "psr": false,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 2,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        6.99
+      ],
+      "exit": "smc_mitigation_zone",
+      "holdout_n": 153,
+      "full_n": 388,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": -2.04,
+      "sortino": -3.196,
+      "psr": 0.0216,
+      "profit_factor": 0.554,
+      "win_rate": 0.333,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": false,
+        "sortino": false,
+        "psr": false,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 2,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        6.99
+      ],
+      "exit": "time_stop_10d",
+      "holdout_n": 153,
+      "full_n": 388,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.689,
+      "sortino": 1.295,
+      "psr": 0.9733,
+      "profit_factor": 1.562,
+      "win_rate": 0.529,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 5,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        6.99
+      ],
+      "exit": "time_stop_20d",
+      "holdout_n": 153,
+      "full_n": 388,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.728,
+      "sortino": 1.719,
+      "psr": 0.9997,
+      "profit_factor": 2.026,
+      "win_rate": 0.542,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 5,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        6.99
+      ],
+      "exit": "trailing_10pct",
+      "holdout_n": 153,
+      "full_n": 388,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.455,
+      "sortino": 1.873,
+      "psr": 0.9941,
+      "profit_factor": 1.67,
+      "win_rate": 0.451,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 5,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        6.99
+      ],
+      "exit": "trailing_15pct",
+      "holdout_n": 153,
+      "full_n": 388,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": 0.361,
+      "sortino": 1.078,
+      "psr": 0.9906,
+      "profit_factor": 1.642,
+      "win_rate": 0.464,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": true,
+        "sortino": true,
+        "psr": true,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 5,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    },
+    {
+      "levels": [
+        6.99
+      ],
+      "exit": "trailing_5pct",
+      "holdout_n": 153,
+      "full_n": 388,
+      "admission_bearing": false,
+      "peeked_by_construction": true,
+      "holdout_sharpe": -0.164,
+      "sortino": -0.439,
+      "psr": 0.3389,
+      "profit_factor": 0.907,
+      "win_rate": 0.301,
+      "gates": {
+        "pooled_sharpe": false,
+        "profit_factor": false,
+        "sortino": false,
+        "psr": false,
+        "min_trades_holdout": true,
+        "min_trades_full_period": true
+      },
+      "n_gates": 2,
+      "n_gates_evaluable": 6,
+      "all_live_gates": false,
+      "verdict": "FAIL"
+    }
+  ]
+}

@@ -2765,6 +2765,19 @@ HISTORICAL breadth flows are not backtestable from this panel as-is. Density-rob
 n_add / n_reduce (intersection-based). Depth GATES therefore ride the FORWARD window (the same
 posture as the b2652-class preregistrations), and a full historical 13F snapshot feed is the
 data-acquisition decision S6-B2659a puts to the owner.
+### ADMISSION DOCTRINE RULED + the icg companion holdout read (B2660, owner 2026-09-10)
+
+**OWNER RULING (supersedes the forward-window conditionality):** *"As long as the strategy
+works well in the holdout period and clears all gates it is good enough to go to phase 1b."*
+A cell clearing all six live gates on the holdout IS admissible regardless of prior reads or
+selection provenance; provenance labels (peeked etc.) stay on rows as information, and forward
+registrations become ADDITIONAL evidence, never a strike condition. The selection-inflation
+risk was flagged and stands on record; the ruling is the owner's.
+
+**Applied immediately:** the icg roc_12 companion cells were graded on the holdout
+(output_audit/b2660_icg_companion_step2.json): **0 of 156 (cell, exit) lines clear all six
+gates** - best cell (roc>=6.99, ma_exit_ema9) holdout sharpe 0.485, 4 of 6. S6-B2657a is
+CLOSED FAIL under the owner's own standard as well.
 ### OPTIMISATION POPULATION BY BUCKET AND FAMILY (B2632, owner directive 2026-09-07)
 
 **Accounting (derived live at B2632; every term from the registry + config disabled sets +

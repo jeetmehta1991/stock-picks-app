@@ -25526,6 +25526,8 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
          "L775 (B2651): grade a contained candidate like-for-like before rejecting it"),
         ("the probe returns, THEN the sentence is written",
          "L776 (B2657): figures are pasted from returned output, never typed ahead"),
+        ("lead with the answer; tables over prose; plain words",
+         "owner directive 2026-09-10: brief, structured, plain responses"),
     ):
         if frag not in discipline_text:
             missing.append(f"execution-discipline lost [{why}]: {frag!r}")
@@ -25622,7 +25624,8 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # 246 -> 247 at B2650 (the L774 bucket-label row, same call per B2130).
     # 247 -> 248 at B2651 (the L775 containment-vs-better row, same call per B2130).
     # 248 -> 249 at B2657 (the L776 probe-then-prose row, same call per B2130).
-    assert len(gutted) == 249, gutted
+    # 249 -> 250 at B2660 (the brevity-and-structure row, same call per B2130).
+    assert len(gutted) == 250, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 

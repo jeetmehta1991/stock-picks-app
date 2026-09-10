@@ -24,6 +24,23 @@ suggestions. A skipped phase makes the turn non-compliant.**
 
 **Mechanically enforced** by the B1744 auto-injection hook and scan_discipline_not_loaded (a substantive turn without the full skill in context is blocked).
 
+## BREVITY AND STRUCTURE (owner directive 2026-09-10 - HARD)
+
+Owner, verbatim: *"Explain in simple and brief manner. Add this req to the skill as
+well as you have been providing long responses and are not structured well."*
+
+1. **Lead with the direct answer** in the first one or two sentences - never with process.
+2. **Answer-turns cap ~300 words** before the mandatory end blocks. Headers and tables
+   over prose; one idea per bullet; no repetition of what a table already says.
+3. **Plain language.** Every quant term gets a one-line gloss a non-specialist can read.
+   The zero-context test applies to WORDING, not just content.
+4. The mandatory end blocks (ticket table, compliance, skills) stay but in their MINIMUM
+   satisfying form - one line per checklist item, no re-narration.
+
+Enforcement: **JUDGMENT-ONLY** - answer length and structure are prose properties no scan
+measures reliably; the durable half is the tripwire row above the table and the fragment
+pin in test_b2123, and the owner's next complaint is the failure signal.
+
 ## GENERALIZATION MANDATE (owner directive 2026-07-18 — Council 341, HARD)
 
 Two mandatory requirements, owner-set after L207→L208→L209 (a silent
@@ -4081,6 +4098,7 @@ check FIRST. Each row is a real failure that recurred until its check existed.
 | Produce a routing table / candidate list / "remaining N" | File S6-xxx tickets with item NAMES inlined, not prose counts | CHECKLIST #164; B1410 177 strategies |
 | Reject a candidate for being the wrong KIND of change | Re-route to the opposite queue; never `continue` it out | CHECKLIST #167; 10 strategies dropped |
 | Skip pyramid because "docs only" | No carve-outs — pyramid every commit | `feedback_pyramid_no_exceptions` |
+| Ship a long, winding answer-turn | lead with the answer; tables over prose; plain words - ~300 words before the end blocks (owner directive 2026-09-10: 'you have been providing long responses and are not structured well') | BREVITY AND STRUCTURE section |
 | Type a specific figure into owner-bound prose while its probe is still running (or batched in the same call) | the probe returns, THEN the sentence is written - paste figures from output on screen, and when one script measures and writes, the text takes the figure from the VARIABLE, never a retyped literal. Tell: a decimal you cannot point to in a tool result above it | L776 / #201 (B2657: 'Q5 +21.9 vs Q1 -18.9' existed nowhere; artifact said +40.97 / +0.21; third instance of the class in two days) |
 | Reject a candidate as redundant with / contained in / collinear with an admitted one | GRADE IT on the same out-of-sample gates and compare like-for-like FIRST - containment bars a second independent BET, not a better STRATEGY, and a subset that clears better should be admitted, possibly instead of the parent. Also check any economy/collinearity ruling you cite for whether its precondition (engine cost) is even present | L775 / #182 (B2651: dismissed pead_with_smart_money_long as 'already banked' on containment + a compute-economy ruling, in a zero-compute campaign, without grading its holdout; graded, 1 cell clears at 1.308 > the parent's 1.148) |
 | Quote a BUCKET LABEL from a census, pre-gate or funnel artifact - 'no-cell', 'empty', 'unparsed' - as a fact about a strategy or run | a bucket label travels with the artifact that computed it: name that artifact IN THE SENTENCE, or check the claim against a second artifact that could disagree (one trade-log filter surfaced both a retraction and a cube-writer drop). The tell: a label describing what a READER found, repeated as what a RUN did | L774 / #201 (B2649: the pre-gate's 'no-cell' - true of the exit-expanded cube - was repeated as 'no R5 rows' while the trade log held 10 closed trades) |
