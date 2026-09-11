@@ -1,0 +1,483 @@
+{
+  "strategy": "xs_momentum_top_decile",
+  "axes": [
+    {
+      "key": "xs_momentum_12_1",
+      "op": "ge",
+      "levels": [
+        -999.0,
+        0.356,
+        0.529,
+        0.725
+      ]
+    },
+    {
+      "key": "xs_max_anomaly_decile",
+      "op": "le",
+      "levels": [
+        999.0,
+        7.0,
+        5.0,
+        2.0
+      ]
+    },
+    {
+      "key": "xs_ivol_decile",
+      "op": "le",
+      "levels": [
+        999.0,
+        8.0,
+        6.0,
+        4.0
+      ]
+    }
+  ],
+  "production_levels": [
+    -999.0,
+    999.0,
+    999.0
+  ],
+  "evidence": {
+    "landed_fires": 255,
+    "coverage": 1.0,
+    "cube_rows": 6578,
+    "unmatched_join_rows": 0,
+    "max_fires_per_day": 15,
+    "candidate_cap": 30,
+    "cap_bypassed_evidence": false,
+    "truncation_note": "max fires/day 15 <= cap 30: no positive evidence the cap was bypassed. Subsetting is exact only if the cube ran under isolation (backtest.py:2417)."
+  },
+  "reproduction": 1.0,
+  "cells_total": 64,
+  "cells_graded": 34,
+  "trials_searched": 1664,
+  "window": {
+    "is": [
+      "2022-05-05",
+      "2025-05-05"
+    ]
+  },
+  "ranked": [
+    {
+      "levels": [
+        0.529,
+        999.0,
+        6.0
+      ],
+      "is_trades": 43,
+      "is_cube_rows": 1118,
+      "best_exit": "next_pivot_target",
+      "is_sharpe": 3.004,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        0.529,
+        7.0,
+        6.0
+      ],
+      "is_trades": 35,
+      "is_cube_rows": 910,
+      "best_exit": "next_pivot_target",
+      "is_sharpe": 2.726,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        0.356,
+        999.0,
+        4.0
+      ],
+      "is_trades": 37,
+      "is_cube_rows": 962,
+      "best_exit": "next_pivot_target",
+      "is_sharpe": 2.315,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        -999.0,
+        2.0,
+        6.0
+      ],
+      "is_trades": 39,
+      "is_cube_rows": 1014,
+      "best_exit": "time_stop_10d",
+      "is_sharpe": 2.131,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        0.356,
+        7.0,
+        4.0
+      ],
+      "is_trades": 33,
+      "is_cube_rows": 858,
+      "best_exit": "next_pivot_target",
+      "is_sharpe": 1.983,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        0.529,
+        5.0,
+        999.0
+      ],
+      "is_trades": 40,
+      "is_cube_rows": 1040,
+      "best_exit": "time_stop_10d",
+      "is_sharpe": 1.427,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        0.529,
+        5.0,
+        8.0
+      ],
+      "is_trades": 40,
+      "is_cube_rows": 1040,
+      "best_exit": "time_stop_10d",
+      "is_sharpe": 1.427,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        0.356,
+        999.0,
+        6.0
+      ],
+      "is_trades": 85,
+      "is_cube_rows": 2210,
+      "best_exit": "next_pivot_target",
+      "is_sharpe": 1.396,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        -999.0,
+        2.0,
+        999.0
+      ],
+      "is_trades": 47,
+      "is_cube_rows": 1222,
+      "best_exit": "time_stop_10d",
+      "is_sharpe": 1.394,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        -999.0,
+        2.0,
+        8.0
+      ],
+      "is_trades": 47,
+      "is_cube_rows": 1222,
+      "best_exit": "time_stop_10d",
+      "is_sharpe": 1.394,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        0.529,
+        7.0,
+        999.0
+      ],
+      "is_trades": 72,
+      "is_cube_rows": 1872,
+      "best_exit": "time_stop_10d",
+      "is_sharpe": 1.363,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        0.529,
+        7.0,
+        8.0
+      ],
+      "is_trades": 72,
+      "is_cube_rows": 1872,
+      "best_exit": "time_stop_10d",
+      "is_sharpe": 1.363,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        0.529,
+        999.0,
+        999.0
+      ],
+      "is_trades": 87,
+      "is_cube_rows": 2262,
+      "best_exit": "next_pivot_target",
+      "is_sharpe": 1.36,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        0.529,
+        999.0,
+        8.0
+      ],
+      "is_trades": 87,
+      "is_cube_rows": 2262,
+      "best_exit": "next_pivot_target",
+      "is_sharpe": 1.36,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        -999.0,
+        999.0,
+        4.0
+      ],
+      "is_trades": 58,
+      "is_cube_rows": 1508,
+      "best_exit": "next_pivot_target",
+      "is_sharpe": 1.32,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        0.356,
+        7.0,
+        999.0
+      ],
+      "is_trades": 133,
+      "is_cube_rows": 3458,
+      "best_exit": "time_stop_10d",
+      "is_sharpe": 1.285,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        0.356,
+        7.0,
+        8.0
+      ],
+      "is_trades": 133,
+      "is_cube_rows": 3458,
+      "best_exit": "time_stop_10d",
+      "is_sharpe": 1.285,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        -999.0,
+        999.0,
+        6.0
+      ],
+      "is_trades": 124,
+      "is_cube_rows": 3224,
+      "best_exit": "time_stop_10d",
+      "is_sharpe": 1.226,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        0.356,
+        7.0,
+        6.0
+      ],
+      "is_trades": 74,
+      "is_cube_rows": 1924,
+      "best_exit": "time_stop_10d",
+      "is_sharpe": 1.199,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        -999.0,
+        7.0,
+        999.0
+      ],
+      "is_trades": 178,
+      "is_cube_rows": 4628,
+      "best_exit": "time_stop_10d",
+      "is_sharpe": 1.105,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        -999.0,
+        7.0,
+        8.0
+      ],
+      "is_trades": 178,
+      "is_cube_rows": 4628,
+      "best_exit": "time_stop_10d",
+      "is_sharpe": 1.105,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        -999.0,
+        7.0,
+        6.0
+      ],
+      "is_trades": 112,
+      "is_cube_rows": 2912,
+      "best_exit": "time_stop_10d",
+      "is_sharpe": 1.054,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        0.356,
+        999.0,
+        999.0
+      ],
+      "is_trades": 154,
+      "is_cube_rows": 4004,
+      "best_exit": "time_stop_10d",
+      "is_sharpe": 1.047,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        0.356,
+        999.0,
+        8.0
+      ],
+      "is_trades": 154,
+      "is_cube_rows": 4004,
+      "best_exit": "time_stop_10d",
+      "is_sharpe": 1.047,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        -999.0,
+        999.0,
+        999.0
+      ],
+      "is_trades": 203,
+      "is_cube_rows": 5278,
+      "best_exit": "time_stop_10d",
+      "is_sharpe": 0.992,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        -999.0,
+        999.0,
+        8.0
+      ],
+      "is_trades": 203,
+      "is_cube_rows": 5278,
+      "best_exit": "time_stop_10d",
+      "is_sharpe": 0.992,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        -999.0,
+        7.0,
+        4.0
+      ],
+      "is_trades": 54,
+      "is_cube_rows": 1404,
+      "best_exit": "next_pivot_target",
+      "is_sharpe": 0.986,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        0.356,
+        5.0,
+        6.0
+      ],
+      "is_trades": 51,
+      "is_cube_rows": 1326,
+      "best_exit": "time_stop_10d",
+      "is_sharpe": 0.895,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        0.356,
+        5.0,
+        999.0
+      ],
+      "is_trades": 81,
+      "is_cube_rows": 2106,
+      "best_exit": "time_stop_10d",
+      "is_sharpe": 0.792,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        0.356,
+        5.0,
+        8.0
+      ],
+      "is_trades": 81,
+      "is_cube_rows": 2106,
+      "best_exit": "time_stop_10d",
+      "is_sharpe": 0.792,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        -999.0,
+        5.0,
+        6.0
+      ],
+      "is_trades": 81,
+      "is_cube_rows": 2106,
+      "best_exit": "time_stop_10d",
+      "is_sharpe": 0.6,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        -999.0,
+        5.0,
+        999.0
+      ],
+      "is_trades": 117,
+      "is_cube_rows": 3042,
+      "best_exit": "time_stop_10d",
+      "is_sharpe": 0.552,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        -999.0,
+        5.0,
+        8.0
+      ],
+      "is_trades": 117,
+      "is_cube_rows": 3042,
+      "best_exit": "time_stop_10d",
+      "is_sharpe": 0.552,
+      "exits_evaluated": 26
+    },
+    {
+      "levels": [
+        -999.0,
+        5.0,
+        4.0
+      ],
+      "is_trades": 43,
+      "is_cube_rows": 1118,
+      "best_exit": "earnings_blackout",
+      "is_sharpe": 0.538,
+      "exits_evaluated": 26
+    }
+  ],
+  "preregistration_candidate": {
+    "levels": [
+      0.529,
+      999.0,
+      6.0
+    ],
+    "is_trades": 43,
+    "is_cube_rows": 1118,
+    "best_exit": "next_pivot_target",
+    "is_sharpe": 3.004,
+    "exits_evaluated": 26
+  },
+  "holdout_read": "NOT FIRED - owner-gated, one shot, against the preregistration_candidate named above"
+}

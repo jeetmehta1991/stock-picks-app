@@ -1,0 +1,28 @@
+{
+  "_doc": "B2668 admission-grid artifact for xs_momentum_top_decile (campaign S6-B2649)",
+  "config": "topdecile_offline_b2667",
+  "results": [
+    {
+      "xs_momentum_12_1": 0.529,
+      "xs_max_anomaly_decile": 999.0,
+      "xs_ivol_decile": 999.0,
+      "strategy": "xs_momentum_top_decile",
+      "gate_op": "mixed",
+      "exit": "time_stop_10d",
+      "verdict": "PASS",
+      "verdict_basis": "owner doctrine (B2660) + campaign ruling (S6-B2649) + npt bar: best non-next_pivot_target all-six-gate line of the 1,664-trial B2667 grid (output_audit/b2667_topdecile_step2.json)",
+      "is_sharpe": 0.751,
+      "is_ci_lo": -0.306,
+      "sharpe": 2.183,
+      "ci_lo": 0.586,
+      "margin": 1.183,
+      "psr": 0.9953,
+      "profit_factor": 3.029,
+      "sortino": 3.265,
+      "win_rate": 0.659,
+      "expectancy": 3.1593,
+      "holdout_n": 41,
+      "full_period_n": 128
+    }
+  ]
+}
