@@ -62,6 +62,39 @@ def _axis_spec(txt):
     return key, op
 
 
+def build_frame(strategy: str, depth: str | None, axis_keys: list[str]):
+    """B2678: the joined fires+cube frame both steps read - ONE loader so
+    Step-1 and Step-2 cannot drift. Returns (m, depth_tuple)."""
+    tl = pd.read_csv(TRADE_LOG, low_memory=False,
+                     usecols=["strategy", "ticker", "entry_date", "signals_at_entry"])
+    fam = tl[tl.strategy == strategy].drop_duplicates(["ticker", "entry_date"]).copy()
+    if fam.empty:
+        raise SystemExit(f"REFUSED: no fires for {strategy}")
+    sigs = [_parse(s) for s in fam["signals_at_entry"]]
+    need = list(axis_keys)
+    dep = None
+    if depth:
+        dk, dop, dlev = depth.split(":")
+        dep = (dk, dop, float(dlev))
+        need = [dk] + need
+    for k in dict.fromkeys(need):
+        fam[k] = pd.to_numeric(pd.Series([d.get(k) if not isinstance(d.get(k), bool)
+                                          else float(d.get(k)) for d in sigs]),
+                               errors="coerce").values
+    fam = fam.drop(columns=["signals_at_entry"])
+    cube = pd.read_csv(CUBE, low_memory=False,
+                       usecols=["strategy", "ticker", "entry_date",
+                                "exit_method", "pnl_pct", "hold_days"])
+    cube = cube[cube.strategy == strategy]
+    m = cube.merge(fam, on=["strategy", "ticker", "entry_date"], how="left")
+    m["entry_date"] = pd.to_datetime(m["entry_date"], errors="coerce").dt.date
+    if dep:
+        dk, dop, dlev = dep
+        keepm = (m[dk] >= dlev) if dop == "ge" else (m[dk] <= dlev)
+        m = m[keepm & m[dk].notna()]
+    return m, dep
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--strategy", required=True)
@@ -77,37 +110,8 @@ def main() -> int:
     t0 = time.time()
     axes = [_axis_spec(x) for x in a.axes.split(",")]
 
-    tl = pd.read_csv(TRADE_LOG, low_memory=False,
-                     usecols=["strategy", "ticker", "entry_date", "signals_at_entry"])
-    fam = tl[tl.strategy == a.strategy].drop_duplicates(["ticker", "entry_date"]).copy()
-    if fam.empty:
-        raise SystemExit(f"REFUSED: no fires for {a.strategy}")
-    sigs = [_parse(s) for s in fam["signals_at_entry"]]
-    need = [k for k, _ in axes]
-    depth = None
-    if a.depth:
-        dk, dop, dlev = a.depth.split(":")
-        depth = (dk, dop, float(dlev))
-        need = [dk] + need
-    for k in dict.fromkeys(need):
-        fam[k] = pd.to_numeric(pd.Series([d.get(k) if not isinstance(d.get(k), bool)
-                                          else float(d.get(k)) for d in sigs]),
-                               errors="coerce").values
-    fam = fam.drop(columns=["signals_at_entry"])
-
-    cube = pd.read_csv(CUBE, low_memory=False,
-                       usecols=["strategy", "ticker", "entry_date",
-                                "exit_method", "pnl_pct", "hold_days"])
-    cube = cube[cube.strategy == a.strategy]
-    m = cube.merge(fam, on=["strategy", "ticker", "entry_date"], how="left")
-    m["entry_date"] = pd.to_datetime(m["entry_date"], errors="coerce").dt.date
-    print(f"fires {len(fam):,} unique; cube rows {len(m):,} ({time.time()-t0:.0f}s)")
-
-    if depth:
-        dk, dop, dlev = depth
-        keep = (m[dk] >= dlev) if dop == "ge" else (m[dk] <= dlev)
-        m = m[keep & m[dk].notna()]
-        print(f"depth base {dk} {dop} {dlev}: cube rows {len(m):,}")
+    m, _dep = build_frame(a.strategy, a.depth, [k for k, _ in axes])
+    print(f"frame ready: cube rows {len(m):,} after depth base ({time.time()-t0:.0f}s)")
 
     # ---- REPRODUCTION GATE (fail-closed) ------------------------------------
     base_cell = m[m.exit_method == a.repro_exit]

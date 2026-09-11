@@ -2850,6 +2850,24 @@ hours. Two reader defects self-caught by the L644 hand-read of anchors before qu
 a head-sample keyspace missed sparse true-only keys, and boolean .get(k, False) gates
 are reconstructable with absent=False (the B2674 lesson) - fixed, anchors re-verified.
 
+### TOP_DECILE BREADTH STEP-2 READ + CONTROL VERDICTS (B2678, owner word 2026-09-11)
+
+S6-B2671c executed on the owner's word ('S6-b2671c proceed'; DISCLOSED-RE-READ - the
+subject holdout was first read at B2668, disclosure accepted). ONE read of all 650
+registered b2673 cells via scripts/breadth_step2_read.py (shared build_frame with
+Step-1 so the steps cannot drift; fail-closed --ruling):
+**66 of 650 cells clear all six non-npt gates**
+(output_audit/b2678_topdecile_breadth_step2.json). Baseline = the admitted depth line,
+HO 2.183 n 41/128 at ts10 - REPRODUCED exactly by the monthly_above_sma_12 cell, which
+is a measured NO-OP on this base (True on 128 of 128 base fires), an incidental
+verification of the B2668 admission. CONTROL VERDICTS (pead control, promoted B2658
+rule): pct_from_vwap's big lift (HO 3.085 vs 2.183) is CONTROL-REFUTED as general
+structure (control lift +0.864 vs subject +0.90); monthly_above_sma_12 likewise
+(+0.776). news_sentiment_30d >= 0.188 is the one subject-specific axis (control lift
+-0.019) and adds +0.13 HO at a LOWER ci_lo (0.494 vs 0.586) on fewer holdout trades
+(32 vs 41). Admission options ticketed S6-B2678a for the owner; recommendation: admit
+nothing new - the depth line stands as top_decile's final form.
+
 ### OPTIMISATION POPULATION BY BUCKET AND FAMILY (B2632, owner directive 2026-09-07)
 
 **Accounting (derived live at B2632; every term from the registry + config disabled sets +
