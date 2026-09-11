@@ -1,0 +1,1755 @@
+{
+  "_doc": "B2677 offline-gradability census (S6-B2638c) - a feasibility SCREEN for campaign planning, never a gate; labels per the module docstring, limits stated there",
+  "active_strategies": 217,
+  "registered": 221,
+  "min_fires": 75,
+  "keyspace_size": 837,
+  "counts": {
+    "PARTIAL": 36,
+    "FULLY-FREE": 160,
+    "NEEDS-ENGINE": 21
+  },
+  "rows": [
+    {
+      "strategy": "52w_high_breakout",
+      "label": "PARTIAL",
+      "recorded_fires": 33,
+      "keys_consumed": 6,
+      "keys_persisted": 6,
+      "keys_missing": []
+    },
+    {
+      "strategy": "52w_high_breakout_pullback_long",
+      "label": "FULLY-FREE",
+      "recorded_fires": 150,
+      "keys_consumed": 1,
+      "keys_persisted": 1,
+      "keys_missing": []
+    },
+    {
+      "strategy": "52w_high_breakout_with_smart_money_long",
+      "label": "PARTIAL",
+      "recorded_fires": 66,
+      "keys_consumed": 9,
+      "keys_persisted": 9,
+      "keys_missing": []
+    },
+    {
+      "strategy": "52w_high_breakout_with_smart_money_vol_below_long",
+      "label": "FULLY-FREE",
+      "recorded_fires": 203,
+      "keys_consumed": 5,
+      "keys_persisted": 5,
+      "keys_missing": []
+    },
+    {
+      "strategy": "52w_low_breakdown",
+      "label": "FULLY-FREE",
+      "recorded_fires": 95,
+      "keys_consumed": 4,
+      "keys_persisted": 4,
+      "keys_missing": []
+    },
+    {
+      "strategy": "52w_low_breakdown_pullback_short",
+      "label": "FULLY-FREE",
+      "recorded_fires": 427,
+      "keys_consumed": 1,
+      "keys_persisted": 1,
+      "keys_missing": []
+    },
+    {
+      "strategy": "52wh_break_retest",
+      "label": "PARTIAL",
+      "recorded_fires": 18,
+      "keys_consumed": 5,
+      "keys_persisted": 5,
+      "keys_missing": []
+    },
+    {
+      "strategy": "52wl_break_retest_short",
+      "label": "PARTIAL",
+      "recorded_fires": 77,
+      "keys_consumed": 7,
+      "keys_persisted": 6,
+      "keys_missing": [
+        "year_low_break_retest_short_held"
+      ]
+    },
+    {
+      "strategy": "activist_13d_long",
+      "label": "FULLY-FREE",
+      "recorded_fires": 119,
+      "keys_consumed": 3,
+      "keys_persisted": 3,
+      "keys_missing": []
+    },
+    {
+      "strategy": "adx_initiation",
+      "label": "PARTIAL",
+      "recorded_fires": 39,
+      "keys_consumed": 3,
+      "keys_persisted": 3,
+      "keys_missing": []
+    },
+    {
+      "strategy": "avwap_20high_rejection_short",
+      "label": "FULLY-FREE",
+      "recorded_fires": 81,
+      "keys_consumed": 6,
+      "keys_persisted": 6,
+      "keys_missing": []
+    },
+    {
+      "strategy": "avwap_252_breakout",
+      "label": "FULLY-FREE",
+      "recorded_fires": 2294,
+      "keys_consumed": 4,
+      "keys_persisted": 4,
+      "keys_missing": []
+    },
+    {
+      "strategy": "avwap_50_reclaim",
+      "label": "FULLY-FREE",
+      "recorded_fires": 1336,
+      "keys_consumed": 5,
+      "keys_persisted": 5,
+      "keys_missing": []
+    },
+    {
+      "strategy": "awesome_oscillator",
+      "label": "FULLY-FREE",
+      "recorded_fires": 1012,
+      "keys_consumed": 5,
+      "keys_persisted": 5,
+      "keys_missing": []
+    },
+    {
+      "strategy": "bb_squeeze_volume",
+      "label": "FULLY-FREE",
+      "recorded_fires": 1013,
+      "keys_consumed": 3,
+      "keys_persisted": 3,
+      "keys_missing": []
+    },
+    {
+      "strategy": "bollinger_lower",
+      "label": "FULLY-FREE",
+      "recorded_fires": 1622,
+      "keys_consumed": 9,
+      "keys_persisted": 9,
+      "keys_missing": []
+    },
+    {
+      "strategy": "bollinger_tight",
+      "label": "FULLY-FREE",
+      "recorded_fires": 271,
+      "keys_consumed": 10,
+      "keys_persisted": 10,
+      "keys_missing": []
+    },
+    {
+      "strategy": "bollinger_tight_with_smart_money_long",
+      "label": "FULLY-FREE",
+      "recorded_fires": 840,
+      "keys_consumed": 9,
+      "keys_persisted": 9,
+      "keys_missing": []
+    },
+    {
+      "strategy": "bollinger_upper_short",
+      "label": "FULLY-FREE",
+      "recorded_fires": 130,
+      "keys_consumed": 3,
+      "keys_persisted": 3,
+      "keys_missing": []
+    },
+    {
+      "strategy": "break_retest_confluence",
+      "label": "FULLY-FREE",
+      "recorded_fires": 1889,
+      "keys_consumed": 13,
+      "keys_persisted": 13,
+      "keys_missing": []
+    },
+    {
+      "strategy": "break_retest_volume",
+      "label": "FULLY-FREE",
+      "recorded_fires": 2164,
+      "keys_consumed": 10,
+      "keys_persisted": 10,
+      "keys_missing": []
+    },
+    {
+      "strategy": "bullish_engulfing_support",
+      "label": "FULLY-FREE",
+      "recorded_fires": 991,
+      "keys_consumed": 13,
+      "keys_persisted": 13,
+      "keys_missing": []
+    },
+    {
+      "strategy": "camarilla_r4_breakout",
+      "label": "FULLY-FREE",
+      "recorded_fires": 5774,
+      "keys_consumed": 4,
+      "keys_persisted": 4,
+      "keys_missing": []
+    },
+    {
+      "strategy": "camarilla_s3_bounce",
+      "label": "FULLY-FREE",
+      "recorded_fires": 228,
+      "keys_consumed": 5,
+      "keys_persisted": 5,
+      "keys_missing": []
+    },
+    {
+      "strategy": "cmf_flip",
+      "label": "FULLY-FREE",
+      "recorded_fires": 2994,
+      "keys_consumed": 4,
+      "keys_persisted": 4,
+      "keys_missing": []
+    },
+    {
+      "strategy": "consec_downdays_quality_long",
+      "label": "NEEDS-ENGINE",
+      "recorded_fires": 0,
+      "keys_consumed": 2,
+      "keys_persisted": 2,
+      "keys_missing": []
+    },
+    {
+      "strategy": "cpr_narrow_bullish",
+      "label": "FULLY-FREE",
+      "recorded_fires": 1248,
+      "keys_consumed": 7,
+      "keys_persisted": 7,
+      "keys_missing": []
+    },
+    {
+      "strategy": "cpr_narrow_momentum",
+      "label": "FULLY-FREE",
+      "recorded_fires": 1001,
+      "keys_consumed": 8,
+      "keys_persisted": 8,
+      "keys_missing": []
+    },
+    {
+      "strategy": "cpr_narrow_momentum_short",
+      "label": "FULLY-FREE",
+      "recorded_fires": 1696,
+      "keys_consumed": 4,
+      "keys_persisted": 4,
+      "keys_missing": []
+    },
+    {
+      "strategy": "cup_and_handle_long",
+      "label": "FULLY-FREE",
+      "recorded_fires": 164,
+      "keys_consumed": 4,
+      "keys_persisted": 4,
+      "keys_missing": []
+    },
+    {
+      "strategy": "cup_and_handle_retest_long",
+      "label": "FULLY-FREE",
+      "recorded_fires": 99,
+      "keys_consumed": 5,
+      "keys_persisted": 5,
+      "keys_missing": []
+    },
+    {
+      "strategy": "dc20_break_retest",
+      "label": "FULLY-FREE",
+      "recorded_fires": 2414,
+      "keys_consumed": 6,
+      "keys_persisted": 6,
+      "keys_missing": []
+    },
+    {
+      "strategy": "death_cross_50_200_volume",
+      "label": "PARTIAL",
+      "recorded_fires": 31,
+      "keys_consumed": 2,
+      "keys_persisted": 2,
+      "keys_missing": []
+    },
+    {
+      "strategy": "doji_at_resistance_short",
+      "label": "FULLY-FREE",
+      "recorded_fires": 306,
+      "keys_consumed": 5,
+      "keys_persisted": 5,
+      "keys_missing": []
+    },
+    {
+      "strategy": "doji_at_support",
+      "label": "FULLY-FREE",
+      "recorded_fires": 232,
+      "keys_consumed": 5,
+      "keys_persisted": 5,
+      "keys_missing": []
+    },
+    {
+      "strategy": "donchian_10_breakout",
+      "label": "FULLY-FREE",
+      "recorded_fires": 966,
+      "keys_consumed": 11,
+      "keys_persisted": 11,
+      "keys_missing": []
+    },
+    {
+      "strategy": "donchian_breakdown_retest_short",
+      "label": "FULLY-FREE",
+      "recorded_fires": 999,
+      "keys_consumed": 5,
+      "keys_persisted": 5,
+      "keys_missing": []
+    },
+    {
+      "strategy": "donchian_breakdown_short",
+      "label": "FULLY-FREE",
+      "recorded_fires": 872,
+      "keys_consumed": 5,
+      "keys_persisted": 5,
+      "keys_missing": []
+    },
+    {
+      "strategy": "donchian_breakout_long",
+      "label": "FULLY-FREE",
+      "recorded_fires": 507,
+      "keys_consumed": 5,
+      "keys_persisted": 5,
+      "keys_missing": []
+    },
+    {
+      "strategy": "donchian_breakout_retest_long",
+      "label": "FULLY-FREE",
+      "recorded_fires": 547,
+      "keys_consumed": 5,
+      "keys_persisted": 5,
+      "keys_missing": []
+    },
+    {
+      "strategy": "donchian_breakout_with_smart_money_long",
+      "label": "FULLY-FREE",
+      "recorded_fires": 985,
+      "keys_consumed": 7,
+      "keys_persisted": 7,
+      "keys_missing": []
+    },
+    {
+      "strategy": "double_bottom_long",
+      "label": "FULLY-FREE",
+      "recorded_fires": 291,
+      "keys_consumed": 3,
+      "keys_persisted": 3,
+      "keys_missing": []
+    },
+    {
+      "strategy": "earnings_avwap_reclaim_long",
+      "label": "NEEDS-ENGINE",
+      "recorded_fires": 0,
+      "keys_consumed": 2,
+      "keys_persisted": 2,
+      "keys_missing": []
+    },
+    {
+      "strategy": "failed_breakout_2b_short",
+      "label": "NEEDS-ENGINE",
+      "recorded_fires": 0,
+      "keys_consumed": 1,
+      "keys_persisted": 1,
+      "keys_missing": []
+    },
+    {
+      "strategy": "flag_bear_retest_short",
+      "label": "PARTIAL",
+      "recorded_fires": 55,
+      "keys_consumed": 5,
+      "keys_persisted": 5,
+      "keys_missing": []
+    },
+    {
+      "strategy": "flag_bull_long",
+      "label": "PARTIAL",
+      "recorded_fires": 63,
+      "keys_consumed": 2,
+      "keys_persisted": 2,
+      "keys_missing": []
+    },
+    {
+      "strategy": "flag_bull_retest_long",
+      "label": "PARTIAL",
+      "recorded_fires": 33,
+      "keys_consumed": 4,
+      "keys_persisted": 4,
+      "keys_missing": []
+    },
+    {
+      "strategy": "force_index_breakout",
+      "label": "FULLY-FREE",
+      "recorded_fires": 3013,
+      "keys_consumed": 6,
+      "keys_persisted": 6,
+      "keys_missing": []
+    },
+    {
+      "strategy": "gap_and_go_long",
+      "label": "NEEDS-ENGINE",
+      "recorded_fires": 0,
+      "keys_consumed": 2,
+      "keys_persisted": 2,
+      "keys_missing": []
+    },
+    {
+      "strategy": "gold_silver_risk_off_long",
+      "label": "NEEDS-ENGINE",
+      "recorded_fires": 0,
+      "keys_consumed": 2,
+      "keys_persisted": 2,
+      "keys_missing": []
+    },
+    {
+      "strategy": "golden_cross_20_50",
+      "label": "FULLY-FREE",
+      "recorded_fires": 413,
+      "keys_consumed": 2,
+      "keys_persisted": 2,
+      "keys_missing": []
+    },
+    {
+      "strategy": "golden_cross_50_200",
+      "label": "FULLY-FREE",
+      "recorded_fires": 109,
+      "keys_consumed": 2,
+      "keys_persisted": 2,
+      "keys_missing": []
+    },
+    {
+      "strategy": "golden_cross_9_21",
+      "label": "FULLY-FREE",
+      "recorded_fires": 889,
+      "keys_consumed": 4,
+      "keys_persisted": 4,
+      "keys_missing": []
+    },
+    {
+      "strategy": "golden_cross_volume",
+      "label": "PARTIAL",
+      "recorded_fires": 43,
+      "keys_consumed": 3,
+      "keys_persisted": 3,
+      "keys_missing": []
+    },
+    {
+      "strategy": "halloween_seasonal_long",
+      "label": "PARTIAL",
+      "recorded_fires": 7,
+      "keys_consumed": 2,
+      "keys_persisted": 2,
+      "keys_missing": []
+    },
+    {
+      "strategy": "hammer_at_support_long",
+      "label": "FULLY-FREE",
+      "recorded_fires": 110,
+      "keys_consumed": 5,
+      "keys_persisted": 5,
+      "keys_missing": []
+    },
+    {
+      "strategy": "head_and_shoulders_bottom_long",
+      "label": "FULLY-FREE",
+      "recorded_fires": 146,
+      "keys_consumed": 2,
+      "keys_persisted": 2,
+      "keys_missing": []
+    },
+    {
+      "strategy": "head_and_shoulders_top_short",
+      "label": "FULLY-FREE",
+      "recorded_fires": 477,
+      "keys_consumed": 3,
+      "keys_persisted": 3,
+      "keys_missing": []
+    },
+    {
+      "strategy": "htf_aligned_breakout_long",
+      "label": "FULLY-FREE",
+      "recorded_fires": 326,
+      "keys_consumed": 3,
+      "keys_persisted": 3,
+      "keys_missing": []
+    },
+    {
+      "strategy": "htf_aligned_breakout_short",
+      "label": "FULLY-FREE",
+      "recorded_fires": 996,
+      "keys_consumed": 3,
+      "keys_persisted": 3,
+      "keys_missing": []
+    },
+    {
+      "strategy": "hull_rsi",
+      "label": "FULLY-FREE",
+      "recorded_fires": 1270,
+      "keys_consumed": 8,
+      "keys_persisted": 8,
+      "keys_missing": []
+    },
+    {
+      "strategy": "ichimoku_cloud_breakdown",
+      "label": "FULLY-FREE",
+      "recorded_fires": 197,
+      "keys_consumed": 2,
+      "keys_persisted": 2,
+      "keys_missing": []
+    },
+    {
+      "strategy": "ichimoku_cloud_breakout",
+      "label": "FULLY-FREE",
+      "recorded_fires": 511,
+      "keys_consumed": 6,
+      "keys_persisted": 6,
+      "keys_missing": []
+    },
+    {
+      "strategy": "ichimoku_tk_cross",
+      "label": "FULLY-FREE",
+      "recorded_fires": 1319,
+      "keys_consumed": 4,
+      "keys_persisted": 4,
+      "keys_missing": []
+    },
+    {
+      "strategy": "inside_bar_breakout",
+      "label": "FULLY-FREE",
+      "recorded_fires": 677,
+      "keys_consumed": 4,
+      "keys_persisted": 4,
+      "keys_missing": []
+    },
+    {
+      "strategy": "insider_cluster_concentrated_sell_short",
+      "label": "FULLY-FREE",
+      "recorded_fires": 269,
+      "keys_consumed": 2,
+      "keys_persisted": 2,
+      "keys_missing": []
+    },
+    {
+      "strategy": "insider_cluster_long",
+      "label": "PARTIAL",
+      "recorded_fires": 24,
+      "keys_consumed": 3,
+      "keys_persisted": 3,
+      "keys_missing": []
+    },
+    {
+      "strategy": "insider_cluster_with_director_long",
+      "label": "PARTIAL",
+      "recorded_fires": 24,
+      "keys_consumed": 5,
+      "keys_persisted": 5,
+      "keys_missing": []
+    },
+    {
+      "strategy": "institutional_breakout_confirmation_long",
+      "label": "FULLY-FREE",
+      "recorded_fires": 642,
+      "keys_consumed": 4,
+      "keys_persisted": 4,
+      "keys_missing": []
+    },
+    {
+      "strategy": "institutional_buy_momentum_long",
+      "label": "FULLY-FREE",
+      "recorded_fires": 2644,
+      "keys_consumed": 3,
+      "keys_persisted": 3,
+      "keys_missing": []
+    },
+    {
+      "strategy": "institutional_cluster_long",
+      "label": "FULLY-FREE",
+      "recorded_fires": 2451,
+      "keys_consumed": 4,
+      "keys_persisted": 4,
+      "keys_missing": []
+    },
+    {
+      "strategy": "institutional_committed_growth_long",
+      "label": "FULLY-FREE",
+      "recorded_fires": 1941,
+      "keys_consumed": 2,
+      "keys_persisted": 2,
+      "keys_missing": []
+    },
+    {
+      "strategy": "institutional_high_conviction_long",
+      "label": "FULLY-FREE",
+      "recorded_fires": 2473,
+      "keys_consumed": 2,
+      "keys_persisted": 2,
+      "keys_missing": []
+    },
+    {
+      "strategy": "institutional_increased_with_directors_long",
+      "label": "FULLY-FREE",
+      "recorded_fires": 107,
+      "keys_consumed": 3,
+      "keys_persisted": 3,
+      "keys_missing": []
+    },
+    {
+      "strategy": "institutional_insider_combo_long",
+      "label": "FULLY-FREE",
+      "recorded_fires": 2751,
+      "keys_consumed": 3,
+      "keys_persisted": 3,
+      "keys_missing": []
+    },
+    {
+      "strategy": "institutional_multi_quarter_persistence_long",
+      "label": "FULLY-FREE",
+      "recorded_fires": 2516,
+      "keys_consumed": 3,
+      "keys_persisted": 3,
+      "keys_missing": []
+    },
+    {
+      "strategy": "institutional_oversold_long",
+      "label": "FULLY-FREE",
+      "recorded_fires": 386,
+      "keys_consumed": 3,
+      "keys_persisted": 3,
+      "keys_missing": []
+    },
+    {
+      "strategy": "institutional_persistence_breakout_long",
+      "label": "FULLY-FREE",
+      "recorded_fires": 532,
+      "keys_consumed": 3,
+      "keys_persisted": 3,
+      "keys_missing": []
+    },
+    {
+      "strategy": "institutional_persistence_momentum_long",
+      "label": "FULLY-FREE",
+      "recorded_fires": 2324,
+      "keys_consumed": 3,
+      "keys_persisted": 3,
+      "keys_missing": []
+    },
+    {
+      "strategy": "institutional_persistence_oversold_long",
+      "label": "FULLY-FREE",
+      "recorded_fires": 716,
+      "keys_consumed": 3,
+      "keys_persisted": 3,
+      "keys_missing": []
+    },
+    {
+      "strategy": "institutional_persistence_volume_long",
+      "label": "FULLY-FREE",
+      "recorded_fires": 1199,
+      "keys_consumed": 3,
+      "keys_persisted": 3,
+      "keys_missing": []
+    },
+    {
+      "strategy": "institutional_persistent_holders_long",
+      "label": "FULLY-FREE",
+      "recorded_fires": 1955,
+      "keys_consumed": 2,
+      "keys_persisted": 2,
+      "keys_missing": []
+    },
+    {
+      "strategy": "institutional_recent_init_momentum_long",
+      "label": "FULLY-FREE",
+      "recorded_fires": 2268,
+      "keys_consumed": 4,
+      "keys_persisted": 4,
+      "keys_missing": []
+    },
+    {
+      "strategy": "institutional_recent_init_volume_long",
+      "label": "FULLY-FREE",
+      "recorded_fires": 1075,
+      "keys_consumed": 3,
+      "keys_persisted": 3,
+      "keys_missing": []
+    },
+    {
+      "strategy": "institutional_strong_conviction_long",
+      "label": "FULLY-FREE",
+      "recorded_fires": 1826,
+      "keys_consumed": 3,
+      "keys_persisted": 3,
+      "keys_missing": []
+    },
+    {
+      "strategy": "institutional_volume_confirmation_long",
+      "label": "FULLY-FREE",
+      "recorded_fires": 1387,
+      "keys_consumed": 4,
+      "keys_persisted": 4,
+      "keys_missing": []
+    },
+    {
+      "strategy": "institutional_with_directors_long",
+      "label": "FULLY-FREE",
+      "recorded_fires": 115,
+      "keys_consumed": 3,
+      "keys_persisted": 3,
+      "keys_missing": []
+    },
+    {
+      "strategy": "institutional_with_officers_long",
+      "label": "FULLY-FREE",
+      "recorded_fires": 103,
+      "keys_consumed": 4,
+      "keys_persisted": 4,
+      "keys_missing": []
+    },
+    {
+      "strategy": "inverted_cup_and_handle_short",
+      "label": "FULLY-FREE",
+      "recorded_fires": 366,
+      "keys_consumed": 4,
+      "keys_persisted": 4,
+      "keys_missing": []
+    },
+    {
+      "strategy": "january_effect_small_cap_long",
+      "label": "PARTIAL",
+      "recorded_fires": 1,
+      "keys_consumed": 3,
+      "keys_persisted": 3,
+      "keys_missing": []
+    },
+    {
+      "strategy": "judas_swing_long",
+      "label": "PARTIAL",
+      "recorded_fires": 65,
+      "keys_consumed": 3,
+      "keys_persisted": 3,
+      "keys_missing": []
+    },
+    {
+      "strategy": "judas_swing_short",
+      "label": "FULLY-FREE",
+      "recorded_fires": 84,
+      "keys_consumed": 2,
+      "keys_persisted": 2,
+      "keys_missing": []
+    },
+    {
+      "strategy": "keltner_lower",
+      "label": "PARTIAL",
+      "recorded_fires": 41,
+      "keys_consumed": 10,
+      "keys_persisted": 10,
+      "keys_missing": []
+    },
+    {
+      "strategy": "m_and_a_target_long",
+      "label": "FULLY-FREE",
+      "recorded_fires": 1023,
+      "keys_consumed": 2,
+      "keys_persisted": 2,
+      "keys_missing": []
+    },
+    {
+      "strategy": "macd_bullish_with_smart_money_long",
+      "label": "FULLY-FREE",
+      "recorded_fires": 1162,
+      "keys_consumed": 7,
+      "keys_persisted": 7,
+      "keys_missing": []
+    },
+    {
+      "strategy": "macd_crossover",
+      "label": "FULLY-FREE",
+      "recorded_fires": 2910,
+      "keys_consumed": 2,
+      "keys_persisted": 2,
+      "keys_missing": []
+    },
+    {
+      "strategy": "macd_fast_crossover",
+      "label": "FULLY-FREE",
+      "recorded_fires": 4070,
+      "keys_consumed": 2,
+      "keys_persisted": 2,
+      "keys_missing": []
+    },
+    {
+      "strategy": "mfi_overbought_short",
+      "label": "NEEDS-ENGINE",
+      "recorded_fires": 0,
+      "keys_consumed": 2,
+      "keys_persisted": 2,
+      "keys_missing": []
+    },
+    {
+      "strategy": "mfi_oversold",
+      "label": "FULLY-FREE",
+      "recorded_fires": 77,
+      "keys_consumed": 8,
+      "keys_persisted": 8,
+      "keys_missing": []
+    },
+    {
+      "strategy": "mfi_oversold_with_smart_money_long",
+      "label": "FULLY-FREE",
+      "recorded_fires": 244,
+      "keys_consumed": 7,
+      "keys_persisted": 7,
+      "keys_missing": []
+    },
+    {
+      "strategy": "mmbm_long",
+      "label": "FULLY-FREE",
+      "recorded_fires": 1337,
+      "keys_consumed": 1,
+      "keys_persisted": 1,
+      "keys_missing": []
+    },
+    {
+      "strategy": "mmsm_short",
+      "label": "FULLY-FREE",
+      "recorded_fires": 2456,
+      "keys_consumed": 1,
+      "keys_persisted": 1,
+      "keys_missing": []
+    },
+    {
+      "strategy": "monthly_bias_momentum_long",
+      "label": "PARTIAL",
+      "recorded_fires": 37,
+      "keys_consumed": 3,
+      "keys_persisted": 3,
+      "keys_missing": []
+    },
+    {
+      "strategy": "morning_star",
+      "label": "FULLY-FREE",
+      "recorded_fires": 2280,
+      "keys_consumed": 4,
+      "keys_persisted": 4,
+      "keys_missing": []
+    },
+    {
+      "strategy": "naked_poc_retest_long",
+      "label": "FULLY-FREE",
+      "recorded_fires": 1788,
+      "keys_consumed": 3,
+      "keys_persisted": 3,
+      "keys_missing": []
+    },
+    {
+      "strategy": "news_momentum_long",
+      "label": "FULLY-FREE",
+      "recorded_fires": 113,
+      "keys_consumed": 6,
+      "keys_persisted": 6,
+      "keys_missing": []
+    },
+    {
+      "strategy": "news_momentum_short",
+      "label": "PARTIAL",
+      "recorded_fires": 13,
+      "keys_consumed": 8,
+      "keys_persisted": 8,
+      "keys_missing": []
+    },
+    {
+      "strategy": "news_reversal_long",
+      "label": "PARTIAL",
+      "recorded_fires": 1,
+      "keys_consumed": 6,
+      "keys_persisted": 6,
+      "keys_missing": []
+    },
+    {
+      "strategy": "news_reversal_short",
+      "label": "PARTIAL",
+      "recorded_fires": 60,
+      "keys_consumed": 6,
+      "keys_persisted": 6,
+      "keys_missing": []
+    },
+    {
+      "strategy": "news_sentiment_long",
+      "label": "FULLY-FREE",
+      "recorded_fires": 906,
+      "keys_consumed": 3,
+      "keys_persisted": 3,
+      "keys_missing": []
+    },
+    {
+      "strategy": "news_sentiment_shift_long",
+      "label": "FULLY-FREE",
+      "recorded_fires": 357,
+      "keys_consumed": 3,
+      "keys_persisted": 3,
+      "keys_missing": []
+    },
+    {
+      "strategy": "news_sentiment_short",
+      "label": "NEEDS-ENGINE",
+      "recorded_fires": 0,
+      "keys_consumed": 3,
+      "keys_persisted": 3,
+      "keys_missing": []
+    },
+    {
+      "strategy": "orb_stocks_in_play_long",
+      "label": "PARTIAL",
+      "recorded_fires": 54,
+      "keys_consumed": 5,
+      "keys_persisted": 5,
+      "keys_missing": []
+    },
+    {
+      "strategy": "orb_stocks_in_play_short",
+      "label": "FULLY-FREE",
+      "recorded_fires": 115,
+      "keys_consumed": 5,
+      "keys_persisted": 5,
+      "keys_missing": []
+    },
+    {
+      "strategy": "pairs_mean_reversion_long",
+      "label": "FULLY-FREE",
+      "recorded_fires": 5036,
+      "keys_consumed": 4,
+      "keys_persisted": 4,
+      "keys_missing": []
+    },
+    {
+      "strategy": "pairs_mean_reversion_short",
+      "label": "FULLY-FREE",
+      "recorded_fires": 5698,
+      "keys_consumed": 5,
+      "keys_persisted": 5,
+      "keys_missing": []
+    },
+    {
+      "strategy": "parabolic_sar_flip",
+      "label": "FULLY-FREE",
+      "recorded_fires": 1618,
+      "keys_consumed": 3,
+      "keys_persisted": 3,
+      "keys_missing": []
+    },
+    {
+      "strategy": "parabolic_sar_flip_short",
+      "label": "FULLY-FREE",
+      "recorded_fires": 1672,
+      "keys_consumed": 1,
+      "keys_persisted": 1,
+      "keys_missing": []
+    },
+    {
+      "strategy": "pead_long",
+      "label": "FULLY-FREE",
+      "recorded_fires": 140,
+      "keys_consumed": 4,
+      "keys_persisted": 4,
+      "keys_missing": []
+    },
+    {
+      "strategy": "pead_long_high_yoy_growth_only",
+      "label": "FULLY-FREE",
+      "recorded_fires": 2116,
+      "keys_consumed": 4,
+      "keys_persisted": 4,
+      "keys_missing": []
+    },
+    {
+      "strategy": "pead_short",
+      "label": "FULLY-FREE",
+      "recorded_fires": 872,
+      "keys_consumed": 4,
+      "keys_persisted": 4,
+      "keys_missing": []
+    },
+    {
+      "strategy": "pead_short_negative_yoy_growth",
+      "label": "FULLY-FREE",
+      "recorded_fires": 2215,
+      "keys_consumed": 4,
+      "keys_persisted": 4,
+      "keys_missing": []
+    },
+    {
+      "strategy": "pead_with_insider_confirmation_long",
+      "label": "PARTIAL",
+      "recorded_fires": 10,
+      "keys_consumed": 3,
+      "keys_persisted": 3,
+      "keys_missing": []
+    },
+    {
+      "strategy": "pead_with_smart_money_long",
+      "label": "FULLY-FREE",
+      "recorded_fires": 656,
+      "keys_consumed": 7,
+      "keys_persisted": 7,
+      "keys_missing": []
+    },
+    {
+      "strategy": "pivot_fib_confluence",
+      "label": "FULLY-FREE",
+      "recorded_fires": 91,
+      "keys_consumed": 11,
+      "keys_persisted": 11,
+      "keys_missing": []
+    },
+    {
+      "strategy": "pivot_r1_breakout",
+      "label": "FULLY-FREE",
+      "recorded_fires": 860,
+      "keys_consumed": 7,
+      "keys_persisted": 7,
+      "keys_missing": []
+    },
+    {
+      "strategy": "pivot_r2_continuation",
+      "label": "PARTIAL",
+      "recorded_fires": 55,
+      "keys_consumed": 11,
+      "keys_persisted": 11,
+      "keys_missing": []
+    },
+    {
+      "strategy": "pivot_r3_blowoff_short",
+      "label": "PARTIAL",
+      "recorded_fires": 9,
+      "keys_consumed": 6,
+      "keys_persisted": 6,
+      "keys_missing": []
+    },
+    {
+      "strategy": "pivot_s1_bounce",
+      "label": "FULLY-FREE",
+      "recorded_fires": 458,
+      "keys_consumed": 8,
+      "keys_persisted": 8,
+      "keys_missing": []
+    },
+    {
+      "strategy": "pivot_s2_bounce",
+      "label": "PARTIAL",
+      "recorded_fires": 55,
+      "keys_consumed": 6,
+      "keys_persisted": 6,
+      "keys_missing": []
+    },
+    {
+      "strategy": "pivot_s3_capitulation",
+      "label": "PARTIAL",
+      "recorded_fires": 3,
+      "keys_consumed": 6,
+      "keys_persisted": 6,
+      "keys_missing": []
+    },
+    {
+      "strategy": "po3_bearish",
+      "label": "FULLY-FREE",
+      "recorded_fires": 2624,
+      "keys_consumed": 2,
+      "keys_persisted": 2,
+      "keys_missing": []
+    },
+    {
+      "strategy": "po3_bullish",
+      "label": "FULLY-FREE",
+      "recorded_fires": 731,
+      "keys_consumed": 2,
+      "keys_persisted": 2,
+      "keys_missing": []
+    },
+    {
+      "strategy": "poc_magnet_long",
+      "label": "FULLY-FREE",
+      "recorded_fires": 589,
+      "keys_consumed": 3,
+      "keys_persisted": 3,
+      "keys_missing": []
+    },
+    {
+      "strategy": "poc_magnet_short",
+      "label": "NEEDS-ENGINE",
+      "recorded_fires": 0,
+      "keys_consumed": 3,
+      "keys_persisted": 3,
+      "keys_missing": []
+    },
+    {
+      "strategy": "pocket_pivot_long",
+      "label": "NEEDS-ENGINE",
+      "recorded_fires": 0,
+      "keys_consumed": 2,
+      "keys_persisted": 2,
+      "keys_missing": []
+    },
+    {
+      "strategy": "post_deletion_drift_short",
+      "label": "NEEDS-ENGINE",
+      "recorded_fires": 54,
+      "keys_consumed": 0,
+      "keys_persisted": 0,
+      "keys_missing": []
+    },
+    {
+      "strategy": "post_inclusion_drift_long",
+      "label": "NEEDS-ENGINE",
+      "recorded_fires": 27,
+      "keys_consumed": 0,
+      "keys_persisted": 0,
+      "keys_missing": []
+    },
+    {
+      "strategy": "post_inclusion_reversal_short",
+      "label": "NEEDS-ENGINE",
+      "recorded_fires": 100,
+      "keys_consumed": 0,
+      "keys_persisted": 0,
+      "keys_missing": []
+    },
+    {
+      "strategy": "ppo_crossover",
+      "label": "FULLY-FREE",
+      "recorded_fires": 1588,
+      "keys_consumed": 3,
+      "keys_persisted": 3,
+      "keys_missing": []
+    },
+    {
+      "strategy": "pre_fomc_long_sleeve",
+      "label": "PARTIAL",
+      "recorded_fires": 69,
+      "keys_consumed": 3,
+      "keys_persisted": 3,
+      "keys_missing": []
+    },
+    {
+      "strategy": "pre_fomc_quality_momentum_long",
+      "label": "PARTIAL",
+      "recorded_fires": 25,
+      "keys_consumed": 3,
+      "keys_persisted": 3,
+      "keys_missing": []
+    },
+    {
+      "strategy": "pre_holiday_long",
+      "label": "FULLY-FREE",
+      "recorded_fires": 124,
+      "keys_consumed": 3,
+      "keys_persisted": 3,
+      "keys_missing": []
+    },
+    {
+      "strategy": "pre_rebalance_long",
+      "label": "NEEDS-ENGINE",
+      "recorded_fires": 28,
+      "keys_consumed": 0,
+      "keys_persisted": 0,
+      "keys_missing": []
+    },
+    {
+      "strategy": "prev_day_high_break",
+      "label": "FULLY-FREE",
+      "recorded_fires": 1424,
+      "keys_consumed": 3,
+      "keys_persisted": 3,
+      "keys_missing": []
+    },
+    {
+      "strategy": "prev_day_low_bounce",
+      "label": "FULLY-FREE",
+      "recorded_fires": 577,
+      "keys_consumed": 6,
+      "keys_persisted": 6,
+      "keys_missing": []
+    },
+    {
+      "strategy": "prev_day_low_breakdown",
+      "label": "FULLY-FREE",
+      "recorded_fires": 800,
+      "keys_consumed": 3,
+      "keys_persisted": 3,
+      "keys_missing": []
+    },
+    {
+      "strategy": "r1_break_retest",
+      "label": "FULLY-FREE",
+      "recorded_fires": 3371,
+      "keys_consumed": 13,
+      "keys_persisted": 13,
+      "keys_missing": []
+    },
+    {
+      "strategy": "risk_off_bond_equity_short",
+      "label": "FULLY-FREE",
+      "recorded_fires": 1895,
+      "keys_consumed": 1,
+      "keys_persisted": 1,
+      "keys_missing": []
+    },
+    {
+      "strategy": "roc_burst",
+      "label": "FULLY-FREE",
+      "recorded_fires": 918,
+      "keys_consumed": 3,
+      "keys_persisted": 3,
+      "keys_missing": []
+    },
+    {
+      "strategy": "rs_line_sector_leader_long",
+      "label": "NEEDS-ENGINE",
+      "recorded_fires": 0,
+      "keys_consumed": 2,
+      "keys_persisted": 2,
+      "keys_missing": []
+    },
+    {
+      "strategy": "rsi21_slow",
+      "label": "PARTIAL",
+      "recorded_fires": 9,
+      "keys_consumed": 3,
+      "keys_persisted": 3,
+      "keys_missing": []
+    },
+    {
+      "strategy": "rsi9_extreme",
+      "label": "PARTIAL",
+      "recorded_fires": 56,
+      "keys_consumed": 2,
+      "keys_persisted": 2,
+      "keys_missing": []
+    },
+    {
+      "strategy": "rsi_overbought_short",
+      "label": "NEEDS-ENGINE",
+      "recorded_fires": 0,
+      "keys_consumed": 2,
+      "keys_persisted": 2,
+      "keys_missing": []
+    },
+    {
+      "strategy": "rsi_oversold",
+      "label": "FULLY-FREE",
+      "recorded_fires": 1945,
+      "keys_consumed": 6,
+      "keys_persisted": 6,
+      "keys_missing": []
+    },
+    {
+      "strategy": "rsi_oversold_with_smart_money_long",
+      "label": "FULLY-FREE",
+      "recorded_fires": 2753,
+      "keys_consumed": 7,
+      "keys_persisted": 7,
+      "keys_missing": []
+    },
+    {
+      "strategy": "rsi_volume_200ema",
+      "label": "FULLY-FREE",
+      "recorded_fires": 548,
+      "keys_consumed": 4,
+      "keys_persisted": 4,
+      "keys_missing": []
+    },
+    {
+      "strategy": "sector_rotation_defensive_long",
+      "label": "NEEDS-ENGINE",
+      "recorded_fires": 0,
+      "keys_consumed": 2,
+      "keys_persisted": 2,
+      "keys_missing": []
+    },
+    {
+      "strategy": "shooting_star_short",
+      "label": "PARTIAL",
+      "recorded_fires": 250,
+      "keys_consumed": 8,
+      "keys_persisted": 6,
+      "keys_missing": [
+        "dark_cloud_cover",
+        "hanging_man"
+      ]
+    },
+    {
+      "strategy": "short_borrow_trap_avoid",
+      "label": "NEEDS-ENGINE",
+      "recorded_fires": 0,
+      "keys_consumed": 1,
+      "keys_persisted": 1,
+      "keys_missing": []
+    },
+    {
+      "strategy": "simple_below_ema_50_short",
+      "label": "FULLY-FREE",
+      "recorded_fires": 3299,
+      "keys_consumed": 2,
+      "keys_persisted": 2,
+      "keys_missing": []
+    },
+    {
+      "strategy": "smc_bos_continuation",
+      "label": "FULLY-FREE",
+      "recorded_fires": 100,
+      "keys_consumed": 7,
+      "keys_persisted": 7,
+      "keys_missing": []
+    },
+    {
+      "strategy": "smc_bos_retest_entry",
+      "label": "FULLY-FREE",
+      "recorded_fires": 682,
+      "keys_consumed": 4,
+      "keys_persisted": 4,
+      "keys_missing": []
+    },
+    {
+      "strategy": "smc_breaker_block_long",
+      "label": "FULLY-FREE",
+      "recorded_fires": 948,
+      "keys_consumed": 1,
+      "keys_persisted": 1,
+      "keys_missing": []
+    },
+    {
+      "strategy": "smc_breaker_block_short",
+      "label": "FULLY-FREE",
+      "recorded_fires": 1598,
+      "keys_consumed": 2,
+      "keys_persisted": 2,
+      "keys_missing": []
+    },
+    {
+      "strategy": "smc_choch_reversal",
+      "label": "FULLY-FREE",
+      "recorded_fires": 551,
+      "keys_consumed": 4,
+      "keys_persisted": 4,
+      "keys_missing": []
+    },
+    {
+      "strategy": "smc_discount_long",
+      "label": "FULLY-FREE",
+      "recorded_fires": 333,
+      "keys_consumed": 5,
+      "keys_persisted": 5,
+      "keys_missing": []
+    },
+    {
+      "strategy": "smc_equal_highs_sweep_short",
+      "label": "FULLY-FREE",
+      "recorded_fires": 838,
+      "keys_consumed": 3,
+      "keys_persisted": 3,
+      "keys_missing": []
+    },
+    {
+      "strategy": "smc_equal_lows_sweep_long",
+      "label": "FULLY-FREE",
+      "recorded_fires": 382,
+      "keys_consumed": 2,
+      "keys_persisted": 2,
+      "keys_missing": []
+    },
+    {
+      "strategy": "smc_fvg_retest_long",
+      "label": "PARTIAL",
+      "recorded_fires": 66,
+      "keys_consumed": 2,
+      "keys_persisted": 2,
+      "keys_missing": []
+    },
+    {
+      "strategy": "smc_fvg_retest_short",
+      "label": "FULLY-FREE",
+      "recorded_fires": 288,
+      "keys_consumed": 2,
+      "keys_persisted": 2,
+      "keys_missing": []
+    },
+    {
+      "strategy": "smc_inverse_fvg",
+      "label": "FULLY-FREE",
+      "recorded_fires": 953,
+      "keys_consumed": 6,
+      "keys_persisted": 6,
+      "keys_missing": []
+    },
+    {
+      "strategy": "smc_liquidity_sweep_reversal",
+      "label": "FULLY-FREE",
+      "recorded_fires": 2933,
+      "keys_consumed": 6,
+      "keys_persisted": 6,
+      "keys_missing": []
+    },
+    {
+      "strategy": "smc_mitigation_block_long",
+      "label": "PARTIAL",
+      "recorded_fires": 15,
+      "keys_consumed": 3,
+      "keys_persisted": 3,
+      "keys_missing": []
+    },
+    {
+      "strategy": "smc_mitigation_block_short",
+      "label": "PARTIAL",
+      "recorded_fires": 44,
+      "keys_consumed": 3,
+      "keys_persisted": 3,
+      "keys_missing": []
+    },
+    {
+      "strategy": "smc_order_block_bounce",
+      "label": "FULLY-FREE",
+      "recorded_fires": 1340,
+      "keys_consumed": 5,
+      "keys_persisted": 5,
+      "keys_missing": []
+    },
+    {
+      "strategy": "smc_ote_long",
+      "label": "FULLY-FREE",
+      "recorded_fires": 231,
+      "keys_consumed": 4,
+      "keys_persisted": 4,
+      "keys_missing": []
+    },
+    {
+      "strategy": "smc_ote_short",
+      "label": "FULLY-FREE",
+      "recorded_fires": 262,
+      "keys_consumed": 4,
+      "keys_persisted": 4,
+      "keys_missing": []
+    },
+    {
+      "strategy": "smc_premium_short",
+      "label": "FULLY-FREE",
+      "recorded_fires": 433,
+      "keys_consumed": 5,
+      "keys_persisted": 5,
+      "keys_missing": []
+    },
+    {
+      "strategy": "squeeze_breakout",
+      "label": "FULLY-FREE",
+      "recorded_fires": 1141,
+      "keys_consumed": 1,
+      "keys_persisted": 1,
+      "keys_missing": []
+    },
+    {
+      "strategy": "squeeze_setup_long",
+      "label": "NEEDS-ENGINE",
+      "recorded_fires": 0,
+      "keys_consumed": 11,
+      "keys_persisted": 11,
+      "keys_missing": []
+    },
+    {
+      "strategy": "stoch_oversold",
+      "label": "FULLY-FREE",
+      "recorded_fires": 286,
+      "keys_consumed": 6,
+      "keys_persisted": 6,
+      "keys_missing": []
+    },
+    {
+      "strategy": "stochrsi_overbought_short",
+      "label": "FULLY-FREE",
+      "recorded_fires": 4287,
+      "keys_consumed": 3,
+      "keys_persisted": 3,
+      "keys_missing": []
+    },
+    {
+      "strategy": "stochrsi_oversold",
+      "label": "FULLY-FREE",
+      "recorded_fires": 2433,
+      "keys_consumed": 8,
+      "keys_persisted": 8,
+      "keys_missing": []
+    },
+    {
+      "strategy": "supertrend_ichimoku_adx",
+      "label": "PARTIAL",
+      "recorded_fires": 4,
+      "keys_consumed": 5,
+      "keys_persisted": 5,
+      "keys_missing": []
+    },
+    {
+      "strategy": "supertrend_macd",
+      "label": "FULLY-FREE",
+      "recorded_fires": 486,
+      "keys_consumed": 4,
+      "keys_persisted": 4,
+      "keys_missing": []
+    },
+    {
+      "strategy": "supertrend_macd_short",
+      "label": "FULLY-FREE",
+      "recorded_fires": 271,
+      "keys_consumed": 3,
+      "keys_persisted": 3,
+      "keys_missing": []
+    },
+    {
+      "strategy": "tema_dema",
+      "label": "FULLY-FREE",
+      "recorded_fires": 1876,
+      "keys_consumed": 5,
+      "keys_persisted": 5,
+      "keys_missing": []
+    },
+    {
+      "strategy": "three_black_crows_short",
+      "label": "FULLY-FREE",
+      "recorded_fires": 1674,
+      "keys_consumed": 2,
+      "keys_persisted": 2,
+      "keys_missing": []
+    },
+    {
+      "strategy": "three_white_soldiers",
+      "label": "FULLY-FREE",
+      "recorded_fires": 1596,
+      "keys_consumed": 2,
+      "keys_persisted": 2,
+      "keys_missing": []
+    },
+    {
+      "strategy": "totm_long",
+      "label": "FULLY-FREE",
+      "recorded_fires": 343,
+      "keys_consumed": 2,
+      "keys_persisted": 2,
+      "keys_missing": []
+    },
+    {
+      "strategy": "totm_short",
+      "label": "NEEDS-ENGINE",
+      "recorded_fires": 0,
+      "keys_consumed": 2,
+      "keys_persisted": 2,
+      "keys_missing": []
+    },
+    {
+      "strategy": "triangle_ascending_long",
+      "label": "FULLY-FREE",
+      "recorded_fires": 330,
+      "keys_consumed": 2,
+      "keys_persisted": 2,
+      "keys_missing": []
+    },
+    {
+      "strategy": "triangle_ascending_retest_long",
+      "label": "FULLY-FREE",
+      "recorded_fires": 112,
+      "keys_consumed": 3,
+      "keys_persisted": 3,
+      "keys_missing": []
+    },
+    {
+      "strategy": "triangle_descending_short",
+      "label": "FULLY-FREE",
+      "recorded_fires": 1064,
+      "keys_consumed": 2,
+      "keys_persisted": 2,
+      "keys_missing": []
+    },
+    {
+      "strategy": "turtle_soup_long",
+      "label": "FULLY-FREE",
+      "recorded_fires": 324,
+      "keys_consumed": 4,
+      "keys_persisted": 4,
+      "keys_missing": []
+    },
+    {
+      "strategy": "turtle_soup_short",
+      "label": "FULLY-FREE",
+      "recorded_fires": 1880,
+      "keys_consumed": 5,
+      "keys_persisted": 5,
+      "keys_missing": []
+    },
+    {
+      "strategy": "ultimate_oscillator",
+      "label": "FULLY-FREE",
+      "recorded_fires": 592,
+      "keys_consumed": 8,
+      "keys_persisted": 8,
+      "keys_missing": []
+    },
+    {
+      "strategy": "value_area_breakout_long",
+      "label": "FULLY-FREE",
+      "recorded_fires": 375,
+      "keys_consumed": 3,
+      "keys_persisted": 3,
+      "keys_missing": []
+    },
+    {
+      "strategy": "vix_backwardation_long",
+      "label": "FULLY-FREE",
+      "recorded_fires": 543,
+      "keys_consumed": 2,
+      "keys_persisted": 2,
+      "keys_missing": []
+    },
+    {
+      "strategy": "vol_spike_2x_below_ema_50_short",
+      "label": "FULLY-FREE",
+      "recorded_fires": 1140,
+      "keys_consumed": 2,
+      "keys_persisted": 2,
+      "keys_missing": []
+    },
+    {
+      "strategy": "volume_spike_breakout",
+      "label": "FULLY-FREE",
+      "recorded_fires": 1500,
+      "keys_consumed": 9,
+      "keys_persisted": 9,
+      "keys_missing": []
+    },
+    {
+      "strategy": "week_opening_gap_fill_down",
+      "label": "FULLY-FREE",
+      "recorded_fires": 633,
+      "keys_consumed": 2,
+      "keys_persisted": 2,
+      "keys_missing": []
+    },
+    {
+      "strategy": "week_opening_gap_fill_up",
+      "label": "FULLY-FREE",
+      "recorded_fires": 834,
+      "keys_consumed": 2,
+      "keys_persisted": 2,
+      "keys_missing": []
+    },
+    {
+      "strategy": "weekly_bias_pullback_long",
+      "label": "PARTIAL",
+      "recorded_fires": 27,
+      "keys_consumed": 2,
+      "keys_persisted": 2,
+      "keys_missing": []
+    },
+    {
+      "strategy": "weekly_bias_pullback_short",
+      "label": "NEEDS-ENGINE",
+      "recorded_fires": 0,
+      "keys_consumed": 4,
+      "keys_persisted": 4,
+      "keys_missing": []
+    },
+    {
+      "strategy": "williams_r_oversold",
+      "label": "FULLY-FREE",
+      "recorded_fires": 2535,
+      "keys_consumed": 7,
+      "keys_persisted": 7,
+      "keys_missing": []
+    },
+    {
+      "strategy": "williams_stoch_dual",
+      "label": "FULLY-FREE",
+      "recorded_fires": 750,
+      "keys_consumed": 13,
+      "keys_persisted": 13,
+      "keys_missing": []
+    },
+    {
+      "strategy": "xs_combined_momentum_high_ivol_short",
+      "label": "NEEDS-ENGINE",
+      "recorded_fires": 0,
+      "keys_consumed": 3,
+      "keys_persisted": 3,
+      "keys_missing": []
+    },
+    {
+      "strategy": "xs_combined_momentum_low_ivol",
+      "label": "FULLY-FREE",
+      "recorded_fires": 212,
+      "keys_consumed": 3,
+      "keys_persisted": 3,
+      "keys_missing": []
+    },
+    {
+      "strategy": "xs_low_beta_long",
+      "label": "FULLY-FREE",
+      "recorded_fires": 78,
+      "keys_consumed": 2,
+      "keys_persisted": 2,
+      "keys_missing": []
+    },
+    {
+      "strategy": "xs_low_beta_with_smart_money_long",
+      "label": "FULLY-FREE",
+      "recorded_fires": 452,
+      "keys_consumed": 8,
+      "keys_persisted": 8,
+      "keys_missing": []
+    },
+    {
+      "strategy": "xs_momentum_bottom_decile_short",
+      "label": "FULLY-FREE",
+      "recorded_fires": 1384,
+      "keys_consumed": 2,
+      "keys_persisted": 2,
+      "keys_missing": []
+    },
+    {
+      "strategy": "xs_momentum_quality_combined",
+      "label": "FULLY-FREE",
+      "recorded_fires": 163,
+      "keys_consumed": 3,
+      "keys_persisted": 3,
+      "keys_missing": []
+    },
+    {
+      "strategy": "xs_momentum_top_decile",
+      "label": "FULLY-FREE",
+      "recorded_fires": 255,
+      "keys_consumed": 4,
+      "keys_persisted": 4,
+      "keys_missing": []
+    },
+    {
+      "strategy": "xs_momentum_with_smart_money_long",
+      "label": "FULLY-FREE",
+      "recorded_fires": 658,
+      "keys_consumed": 2,
+      "keys_persisted": 2,
+      "keys_missing": []
+    },
+    {
+      "strategy": "xs_quality_top_quintile_long",
+      "label": "FULLY-FREE",
+      "recorded_fires": 89,
+      "keys_consumed": 2,
+      "keys_persisted": 2,
+      "keys_missing": []
+    }
+  ]
+}

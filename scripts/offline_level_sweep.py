@@ -125,6 +125,42 @@ def load(strategy: str, axes: list[dict]) -> tuple[pd.DataFrame, dict]:
     return m, ev
 
 
+def permutation_null(IS, axes, min_n, n_perms, seed):
+    """B2676 (S6-B2638a): the grid-stage multiplicity instrument.
+
+    Under NO signal->outcome link, what does the BEST IS sharpe over this
+    exact grid look like? Each permutation shuffles the MAGNITUDE block
+    jointly across unique fires (preserving the magnitudes' joint
+    distribution and the per-exit pnl structure) and re-grades the identical
+    cells x exits grid. The returned maxima are SYNTHETIC (rng) by
+    construction - they price the search, they are never performance.
+    B2376 measured that NO multiplicity correction existed at the grid
+    stage; this is that correction, inherited by every campaign that runs
+    this module with --null-perms.
+    """
+    import numpy as np
+    rng = np.random.default_rng(seed)
+    keys = [ax["key"] for ax in axes]
+    fires = (IS.drop_duplicates(["ticker", "entry_date"])
+               [["ticker", "entry_date"] + keys].reset_index(drop=True))
+    base = IS.drop(columns=keys)
+    maxima = []
+    for _ in range(n_perms):
+        idx = rng.permutation(len(fires))
+        shuf = fires[["ticker", "entry_date"]].join(
+            fires.loc[idx, keys].reset_index(drop=True))
+        mm = base.merge(shuf, on=["ticker", "entry_date"], how="left")
+        best = None
+        for combo in itertools.product(*[ax["levels"] for ax in axes]):
+            k = keep(mm, axes, combo)
+            for _ex, sub in k.groupby("exit_method"):
+                r = rc.evaluate(sub["pnl_pct"], sub["hold_days"], min_n=min_n)
+                if r and r.get("sharpe") is not None and (best is None or r["sharpe"] > best):
+                    best = r["sharpe"]
+        maxima.append(best)
+    return maxima
+
+
 def sweep(strategy: str, axes: list[dict], production: tuple,
           coverage_min: float, repro_min: float, min_n: int) -> dict:
     m, ev = load(strategy, axes)
@@ -179,6 +215,31 @@ def sweep(strategy: str, axes: list[dict], production: tuple,
                             "preregistration_candidate named above"}
 
 
+def attach_null(rec, strategy, axes, min_n, null_perms, null_seed):
+    """Compute the permutation null for a completed sweep record, in place.
+    Reloads the frame (sweep does not retain it) - the same refusals apply
+    upstream, so a record that graded is a record the null can price."""
+    import numpy as np
+    m, _ = load(strategy, axes)
+    IS = rc.in_sample(m)
+    maxima = permutation_null(IS, axes, min_n, null_perms, null_seed)
+    valid = [x for x in maxima if x is not None]
+    obs = (rec.get("preregistration_candidate") or {}).get("is_sharpe")
+    p = ((1 + sum(1 for x in valid if x >= obs)) / (len(valid) + 1)
+         if (obs is not None and valid) else None)
+    qs = ({str(q): round(float(np.quantile(valid, q)), 3)
+           for q in (0.5, 0.9, 0.95, 0.99)} if valid else {})
+    rec["permutation_null"] = {
+        "provenance": "SYNTHETIC - rng permutations of the magnitude block "
+                      "across fires; prices the search, never performance",
+        "n_perms": null_perms, "seed": null_seed,
+        "null_none_count": null_perms - len(valid),
+        "null_max_is_sharpe_quantiles": qs,
+        "observed_best_is_sharpe": obs,
+        "p_value_best": round(p, 4) if p is not None else None}
+
+
+
 def render_table(rec: dict) -> str:
     """B2643 (owner directive 2026-09-08): TABLE D, OFFLINE FORM.
 
@@ -217,6 +278,10 @@ def main() -> int:
     ap.add_argument("--coverage-min", type=float, default=0.99)
     ap.add_argument("--repro-min", type=float, default=0.999)
     ap.add_argument("--min-n", type=int, default=30)
+    ap.add_argument("--null-perms", type=int, default=0,
+                    help="B2676: permutation-null size for the best-of-grid "
+                         "multiplicity price; 0 = off")
+    ap.add_argument("--null-seed", type=int, default=13)
     a = ap.parse_args()
 
     axes = [parse_axis(s) for s in a.axes]
@@ -225,6 +290,12 @@ def main() -> int:
         raise SystemExit(f"REFUSED: --production has {len(production)} values for "
                          f"{len(axes)} axes")
     rec = sweep(a.strategy, axes, production, a.coverage_min, a.repro_min, a.min_n)
+    if a.null_perms > 0:
+        attach_null(rec, a.strategy, axes, a.min_n, a.null_perms, a.null_seed)
+        pn = rec["permutation_null"]
+        print(f"permutation null ({pn['n_perms']} perms): observed best "
+              f"{pn['observed_best_is_sharpe']} | null q95 "
+              f"{pn['null_max_is_sharpe_quantiles'].get('0.95')} | p {pn['p_value_best']}")
     Path(a.out).write_text(json.dumps(rec, indent=2), encoding="utf-8")
     # B2643: the offline Table D ships WITH the artifact, unconditionally.
     table_path = Path(a.out).with_suffix(".md")

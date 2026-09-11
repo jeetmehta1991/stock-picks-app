@@ -2829,6 +2829,27 @@ SIDE-FINDING: xs_low_beta_with_smart_money_long BASELINE clears all six non-npt 
 NEITHER the roster nor the admissions - candidate ticketed S6-B2674a for the owner
 (IS -0.198: the IS/holdout inversion travels as a provenance label).
 
+### GRID-STAGE MULTIPLICITY PRICED + THE GRADABILITY CENSUS (B2676/B2677)
+
+S6-B2638a EXECUTED: offline_level_sweep.py now carries a permutation null
+(--null-perms; magnitudes shuffled across fires, identical grid re-graded; maxima are
+SYNTHETIC and price the search, never performance; two-arm pin
+test_b2676_permutation_null_prices_the_grid). RETRO-PRICE of the pead 390-trial grid
+(200 perms, seed 13, output_audit/b2676_pead_null_retroprice.json): observed best IS
+1.475 vs null best-of-390 q50 0.905 / q95 1.205 / q99 1.351 -> p 0.005 (0 of 200
+reached it) - the pead Step-1 best survives its multiplicity price. CALIBRATION
+READING: on this population a 390-trial search manufactures ~1.2 at q95 by luck, so a
+bare 1.0 IS bar is inside search-luck range - every future offline campaign should run
+--null-perms and read its best against ITS OWN null.
+
+S6-B2638c EXECUTED: scripts/offline_gradability_census.py - 217 actives mapped onto
+the persisted keyspace (837 keys, 2,000 stride-sampled trades):
+**160 FULLY-FREE / 36 PARTIAL / 21 NEEDS-ENGINE** (b2677_offline_gradability_census
+.json). 160 of 217 backlog campaigns are offline-seconds instead of 16-40 engine
+hours. Two reader defects self-caught by the L644 hand-read of anchors before quoting:
+a head-sample keyspace missed sparse true-only keys, and boolean .get(k, False) gates
+are reconstructable with absent=False (the B2674 lesson) - fixed, anchors re-verified.
+
 ### OPTIMISATION POPULATION BY BUCKET AND FAMILY (B2632, owner directive 2026-09-07)
 
 **Accounting (derived live at B2632; every term from the registry + config disabled sets +

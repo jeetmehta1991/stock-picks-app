@@ -35274,3 +35274,54 @@ def test_b2675_legacy_optimizer_psr_feeds_per_period_sr():
     assert v["psr"] == round(want, 4), (v["psr"], want)
     assert round(want, 4) != round(bad, 4), "feeds do not diverge - test is vacuous"
 
+
+def test_b2676_permutation_null_prices_the_grid():
+    """B2676 (S6-B2638a): the grid-stage multiplicity instrument. SYNTHETIC
+    frame by design (structure evidence, not value evidence): a PLANTED
+    signal->outcome link must put the observed grid best above nearly all
+    permuted maxima; the must-QUIET arm destroys the link and the observed
+    best must NOT dominate the null - a null the observed value always beats
+    prices nothing."""
+    import itertools as _it
+    import sys as _sys
+    from pathlib import Path as _P
+    _sys.path.insert(0, str(_P(__file__).resolve().parents[2] / "scripts"))
+    import numpy as _np
+    import pandas as _pd
+    import offline_level_sweep as ols
+    import roster_core as _rc
+
+    def grid_best(frame, axes):
+        best = None
+        for combo in _it.product(*[ax["levels"] for ax in axes]):
+            k = ols.keep(frame, axes, combo)
+            r = _rc.evaluate(k["pnl_pct"], k["hold_days"], min_n=10)
+            if r and r.get("sharpe") is not None and (best is None or r["sharpe"] > best):
+                best = r["sharpe"]
+        return best
+
+    rng = _np.random.default_rng(7)
+    n = 120
+    mag = rng.normal(0, 1, n)
+    dates = _pd.date_range("2023-01-02", periods=n, freq="B").date
+    linked = _pd.DataFrame({
+        "ticker": [f"T{i}" for i in range(n)], "entry_date": dates,
+        "exit_method": "time_stop_10d",
+        "pnl_pct": mag * 3.0 + rng.normal(0, 0.5, n),   # planted link
+        "hold_days": 10.0, "sig": mag})
+    axes = [{"key": "sig", "op": "ge", "levels": [-10.0, 0.0, 0.5]}]
+    IS = _rc.in_sample(linked)
+    assert len(IS) == n, "fixture must sit inside the IS window"
+    maxima = ols.permutation_null(IS, axes, min_n=10, n_perms=20, seed=3)
+    assert len(maxima) == 20
+    best = grid_best(IS, axes)
+    beat = sum(1 for x in maxima if x is not None and x >= best)
+    assert beat <= 2, f"planted link should beat the null (beat={beat} of 20)"
+    # must-QUIET arm: independent outcome - observed best must not dominate
+    indep = linked.assign(pnl_pct=rng.normal(1.0, 3.0, n))
+    IS2 = _rc.in_sample(indep)
+    m2 = ols.permutation_null(IS2, axes, min_n=10, n_perms=20, seed=3)
+    best2 = grid_best(IS2, axes)
+    beat2 = sum(1 for x in m2 if x is not None and x >= best2)
+    assert beat2 >= 2, f"no-edge case must not look significant (beat2={beat2} of 20)"
+
