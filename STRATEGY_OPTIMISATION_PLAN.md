@@ -2810,6 +2810,25 @@ time_stop_10d, IS 1.928 (ci_lo 0.521) n 52/84 vs base IS 0.751. Step-2 one holdo
 S6-B2671c, awaiting its own owner word; any qualifier gets the pead control-family
 comparison (promoted B2658 rule) before an admission proposal.
 
+### COMPOSITE VARIANT TEST - the upgrade thesis fails on this data (B2674, owner-ruled)
+
+S6-B2654 executed per the owner's 'Test composite upgrades' ruling (2026-09-10):
+scripts/composite_variant_test.py graded the 3 tightened _has_smart_money_buy variants
+across the 7 hard-gate consumers (8 call sites minus the B1195 annotation-only one) x
+all exits = 728 lines, IS + all-six holdout gates, faithfulness gate on baseline
+reconstruction (output_audit/b2674_composite_variant_test.json). VERDICT, denominators
+on their face: v1(drop institutional_buy) = v2(strong-replaces-buy) SET-IDENTICAL on 7
+of 7 (measured, not assumed); v3(drop cfo) is a NO-OP on 7 of 7 (identical n and
+metrics - the cfo leg admits zero unique fires anywhere, generalising the peadsm 4-of-4
+overlap); v1 removes 8-17pct of fires and makes the two already-passing cells slightly
+WEAKER (mfi 1.267 -> 1.127; xs_low_beta 1.510 -> 1.480 holdout at ts10). 0 of 7
+consumers improve their six-gate outcome under any variant -> the composite stays AS-IS,
+now on evidence rather than caution; ceo/director loosenings remain next-cube.
+SIDE-FINDING: xs_low_beta_with_smart_money_long BASELINE clears all six non-npt gates
+(ts10 HO 1.510 psr 0.995 PF 2.286 n 73/452; also r_multiple_2r 1.296) and sits in
+NEITHER the roster nor the admissions - candidate ticketed S6-B2674a for the owner
+(IS -0.198: the IS/holdout inversion travels as a provenance label).
+
 ### OPTIMISATION POPULATION BY BUCKET AND FAMILY (B2632, owner directive 2026-09-07)
 
 **Accounting (derived live at B2632; every term from the registry + config disabled sets +
