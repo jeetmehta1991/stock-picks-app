@@ -65,12 +65,12 @@ The cell count is NOT the number of independent bets. De-dup compares (ticker, e
 | # | Strategy | Dir | Cube | Tkrs | Exit | IS Shrp | HO Shrp | margin | HO n | Exp | WR | PF | Payoff | Mirror |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | 1 | `52w_high_breakout_pullback_long` | long | R5 | 544 | `breakeven_plus_trail` |   0.56 |   1.28 | +0.281 | 50 |   7.83 | 0.420 |   4.38 |   6.04 | `52w_low_breakdown_pullback_short` |
-| 2 | `totm_long` | long | R5 | 544 | `breakeven_plus_trail` |   0.56 |   1.16 | +0.159 | 86 |   9.80 | 0.314 |   4.70 |  10.27 | **NEEDS CREATION** |
+| 2 | `totm_long` | long | R5 | 544 | `breakeven_plus_trail` |   0.56 |   1.16 | +0.159 | 86 |   9.80 | 0.314 |   4.70 |  10.27 | `totm_short` |
 | 3 | `xs_combined_momentum_low_ivol` | long | R5 | 544 | `breakeven_plus_trail` |   0.54 |   1.16 | +0.158 | 35 |   7.34 | 0.371 |   5.75 |   9.73 | `xs_combined_momentum_high_ivol_short` |
 | 4 | `xs_momentum_with_smart_money_long` | long | R5 | 544 | `breakeven_plus_trail` |   0.75 |   1.15 | +0.146 | 162 |   7.78 | 0.457 |   4.23 |   5.04 | `xs_momentum_bottom_decile_short` |
 | 5 | `poc_magnet_long` | long | R5 | 544 | `breakeven_plus_trail` |   0.52 |   1.03 | +0.026 | 151 |   6.97 | 0.411 |   4.98 |   7.15 | `poc_magnet_short` |
 | 6 | `smc_bos_retest_entry` | long | R5 | 544 | `breakeven_plus_trail` |   0.44 |   1.01 | +0.013 | 55 |   4.90 | 0.382 |   4.63 |   7.50 | DUAL (own short leg) |
-| 7 | `mfi_oversold_with_smart_money_long` | long | R5 | 544 | `breakeven_plus_trail` |   0.55 |   1.01 | +0.010 | 71 |   3.44 | 0.366 |   2.57 |   4.45 | **NEEDS CREATION** |
+| 7 | `mfi_oversold_with_smart_money_long` | long | R5 | 544 | `breakeven_plus_trail` |   0.55 |   1.01 | +0.010 | 71 |   3.44 | 0.366 |   2.57 |   4.45 | `mfi_overbought_short` |
 
 **Qualification (S6-B2409, owner ruling 2026-08-30).** A cell on this roster cleared all six live gates - that IS qualification. The former ROBUST/PROVISIONAL split against a selection-noise floor is retired in its entirety; `margin` reports how far the holdout Sharpe cleared the live pooled gate, as a number, gating nothing.
 
@@ -82,7 +82,7 @@ Cells admitted by explicit owner ruling from the STRATEGY_OPTIMISATION_PLAN Step
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `smc_breaker_block_long` | long | **PROVISIONAL-UNREVIEWED** | P1_swing_length=50, P6_span=50; close_mitigation=True, break_pct_max=0.02, age_bars_max=None, tail_n=20 | `time_stop_10d` |   0.45 |  -0.39 |   1.15 |  -0.41 | +0.152 |   1.00 |   1.94 |   1.93 | 0.537 |   1.31 | 41 | 180 | `smc_breaker_block_short` |
 | `pead_long_high_yoy_growth_only` | long | **OFFLINE-CAMPAIGN-PSR-N/E** | offline_campaign=B2638/B2644; drift_window_days=20.0, yoy_growth_long_threshold=0.1 | `time_stop_10d` |   1.48 |   1.12 |   1.15 |   0.43 | +0.148 |   1.00 |   1.91 |   2.37 | 0.510 |   1.55 | 196 | 988 | `pead_short_negative_yoy_growth` |
-| `pead_with_smart_money_long` | long | **PEEKED-BY-CONSTRUCTION-NO-PREREGISTRATION** | offline_campaign=B2649/B2651; drift_window_days=60.0, yoy_growth_threshold=0.05, announcement_return_threshold=0.05 | `time_stop_10d` |   0.87 |   0.14 |   1.31 |  -0.33 | +0.308 |   0.96 |   2.32 |   2.11 | 0.568 |   1.53 | 37 | 215 | NEEDS-CREATION |
+| `pead_with_smart_money_long` | long | **PEEKED-BY-CONSTRUCTION-NO-PREREGISTRATION** | offline_campaign=B2649/B2651; drift_window_days=60.0, yoy_growth_threshold=0.05, announcement_return_threshold=0.05 | `time_stop_10d` |   0.87 |   0.14 |   1.31 |  -0.33 | +0.308 |   0.96 |   2.32 |   2.11 | 0.568 |   1.53 | 37 | 215 | LONG-ONLY-DATA |
 | `institutional_breakout_confirmation_long` | long | **GRID-SELECTED-OWNER-RULED** | grid=B2662, axis=xs_max_anomaly, op=ge; xs_max_anomaly=0.0719, strategy=institutional_breakout_confirmation_long | `r_multiple_2r` |   0.45 |  -0.84 |   3.13 |   0.73 | +2.132 |   1.00 |   2.84 |  10.01 | 0.529 |   2.97 | 34 | 128 | LONG-ONLY-DATA |
 | `institutional_committed_growth_long` | long | **GRID-SELECTED-OWNER-RULED** | grid=B2662, axis=xs_max_anomaly, op=ge; xs_max_anomaly=0.0705, strategy=institutional_committed_growth_long | `time_stop_10d` |   1.19 |   0.55 |   1.66 |   0.81 | +0.658 |   1.00 |   2.62 |   3.39 | 0.625 |   3.94 | 144 | 387 | LONG-ONLY-DATA |
 | `institutional_high_conviction_long` | long | **GRID-SELECTED-OWNER-RULED** | grid=B2662, axis=xs_max_anomaly, op=ge; xs_max_anomaly=0.0791, strategy=institutional_high_conviction_long | `time_stop_10d` |   0.76 |   0.23 |   1.40 |   0.56 | +0.399 |   1.00 |   2.24 |   2.77 | 0.555 |   3.35 | 146 | 492 | LONG-ONLY-DATA |
@@ -117,14 +117,14 @@ Cells admitted by explicit owner ruling from the STRATEGY_OPTIMISATION_PLAN Step
 
 Owner standing directive: *promoted longs carry short mirrors by default* - the mirror is retained irrespective of its own cube result. The single excuse is a **long-only DATA SOURCE** (13F / insider / congressional / buyback), where a mechanical inverse is economically false rather than merely untested (B611 reversal).
 
-- **REGISTERED and retained, funnel cells (4):** `52w_low_breakdown_pullback_short`, `poc_magnet_short`, `xs_combined_momentum_high_ivol_short`, `xs_momentum_bottom_decile_short`
+- **REGISTERED and retained, funnel cells (6):** `52w_low_breakdown_pullback_short`, `mfi_overbought_short`, `poc_magnet_short`, `totm_short`, `xs_combined_momentum_high_ivol_short`, `xs_momentum_bottom_decile_short`
 - **REGISTERED and retained, Step-2 admissions (2):** `smc_breaker_block_short`, `pead_short_negative_yoy_growth`
 - **LONG-ONLY DATA, mirror excused (0):**
     - none
 - **DUAL - own short branch is the mirror, nothing to create (1):** `smc_bos_retest_entry`
-- **NEEDS CREATION (2):** `mfi_oversold_with_smart_money_long`, `totm_long`
+- **NEEDS CREATION (0):** none
 
-**Deployable total: 7 graded cells + 4 funnel mirrors + 1 dual self-mirrors + 13 Step-2 admissions + 2 admission mirrors = 26 distinct strategies** (dual mirrors are already counted in their parent cell), plus 2 mirrors to create.
+**Deployable total: 7 graded cells + 6 funnel mirrors + 1 dual self-mirrors + 13 Step-2 admissions + 2 admission mirrors = 28 distinct strategies** (dual mirrors are already counted in their parent cell), plus 0 mirrors to create.
 
 ## What this roster does NOT establish
 

@@ -68,6 +68,10 @@ import numpy as np
 # (looser gate set, different EMA windows), the EXPLORATORY marker
 # can be re-evaluated.
 EXPLORATORY_STRATEGIES = frozenset({
+    # B2669 (2026-09-10) owner-instructed mirror shorts - unvalidated-by-
+    # construction (L229); totm_short also inherits Pattern-AA (B830).
+    "totm_short",
+    "mfi_overbought_short",
     # B1382 (2026-07-25) owner standing directive "mirror shorts by default":
     # 3 Class 7 NEW symmetric SHORT mirrors of promoted longs. Tagged EXPLORATORY
     # because ZERO short rows cleared the B1378 true holdout -- the R5 window holds

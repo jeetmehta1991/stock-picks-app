@@ -3982,6 +3982,9 @@ def strat_xs_momentum_top_decile(s):
 
 def strat_xs_momentum_bottom_decile_short(s):
     """EXACT MIRROR of strat_xs_momentum_with_smart_money_long (annotated B1452 per owner
+    directive). Also the EXACT MIRROR of strat_xs_momentum_top_decile (B2669): B1194
+    made the smart-money parent's logic identical to top_decile AND the 200-EMA gate,
+    so this one short is the declared mirror of BOTH near-identical parents.
     directive 2026-08-04: "no need for name change just notate that its an exact mirror").
 
     The pairing is exact on the CURRENT logic of the parent, not on its name. B1194
@@ -8023,6 +8026,46 @@ def strat_pre_rebalance_long(s):
     return _strat_pre_rebalance_long(s)
 
 
+
+def strat_totm_short(s):
+    """EXACT MIRROR of strat_totm_long (B2669, owner instruction 2026-09-10
+    'Create all needed short mirrors' under the B1382 mirror-by-default rule).
+    Shorts the bar ENTERING the turn-of-month window when price is below the
+    200 EMA (positive-symmetric regime flip per feedback_never_use_NOT_s_get_
+    pattern, the B1382 template). ECONOMIC ASYMMETRY, surfaced per CHECKLIST
+    (m): Ariel 1987 documents TOTM as a POSITIVE drift - this mirror fades a
+    documented long effect and is unvalidated-by-construction; the cube gets
+    the verdict per feedback_no_a_priori_strategy_pruning. STATUS: EXPLORATORY
+    (registered in EXPLORATORY_STRATEGIES); inherits the parent's Pattern-AA
+    DO-NOT-DEPLOY caveat (B830) - event-strategy effective-N limits apply to
+    both directions."""
+    fires = s.get("is_totm_window_first_day", False) and s.get("below_ema_200", False)
+    return _strat(fires, "short", "calendar",
+        ["is_totm_window_first_day", "below_ema_200"],
+        ["Bar entering the TOTM window (last-4 + first-3 trading days)",
+         "Below 200 EMA (positive-symmetric regime gate)"])
+
+
+def strat_mfi_overbought_short(s):
+    """EXACT MIRROR of strat_mfi_oversold_with_smart_money_long (B2669, owner
+    instruction 2026-09-10 under the B1382 mirror-by-default rule) - SYMMETRIC
+    LEGS ONLY. The parent's third leg, the _has_smart_money_buy composite, is
+    built on SEC-long-only data (13F/insider) and CANNOT invert: B613 deleted
+    _has_smart_money_sell after measuring 4 of 5 sell legs never emitted, and
+    feedback_asymmetric_data_sources_break_mechanical_inverse codifies the
+    class. So this mirror is money-flow overbought (mfi > 70, the broad
+    threshold matching the parent's B1199 broad-oversold) in a downtrend -
+    the economically defensible half. STATUS: EXPLORATORY (registered in
+    EXPLORATORY_STRATEGIES); zero short rows cleared the B1378 true holdout
+    on the R5 window (L229), so unvalidated-by-construction until a
+    bear-inclusive window tests it."""
+    fires = s.get("mfi_broad_overbought", False) and s.get("below_ema_200", False)
+    return _strat(fires, "short", "mean_reversion",
+        ["mfi_broad_overbought", "below_ema_200"],
+        ["MFI > 70 - broad money-flow overbought (mirror of the parent's mfi < 30)",
+         "Below 200 EMA (positive-symmetric regime gate)"])
+
+
 ALL_STRATEGIES = {
     # ORB stocks-in-play (2 - Batch 211 2026-05-17 owner-approved research review)
     "orb_stocks_in_play_long":      strat_orb_stocks_in_play_long,
@@ -8376,6 +8419,8 @@ ALL_STRATEGIES = {
     # SM1 smart-money sleeves (10 - Batch 487 2026-05-30)
     "bollinger_tight_with_smart_money_long":    strat_bollinger_tight_with_smart_money_long,
     "mfi_oversold_with_smart_money_long":       strat_mfi_oversold_with_smart_money_long,
+    # B2669 owner-instructed mirror (symmetric legs; smart-money leg cannot invert, B613)
+    "mfi_overbought_short":                     strat_mfi_overbought_short,
     "rsi_oversold_with_smart_money_long":       strat_rsi_oversold_with_smart_money_long,
     "52w_high_breakout_with_smart_money_long":  strat_52w_high_breakout_with_smart_money_long,
     # B613 (2026-06-07 owner-directed B-twin for A/B test of (b)
@@ -8393,6 +8438,8 @@ ALL_STRATEGIES = {
     "pead_with_smart_money_long":               strat_pead_with_smart_money_long,
     # Calendar effects (4 - Batch 254 2026-05-20 / DEC-368)
     "totm_long":                        strat_totm_long,
+    # B2669 owner-instructed mirror (EXPLORATORY; economic asymmetry surfaced)
+    "totm_short":                       strat_totm_short,
     "pre_holiday_long":                 strat_pre_holiday_long,
     "january_effect_small_cap_long":    strat_january_effect_small_cap_long,
     "halloween_seasonal_long":          strat_halloween_seasonal_long,

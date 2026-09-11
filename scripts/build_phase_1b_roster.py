@@ -99,6 +99,21 @@ def uses_long_only_data(name: str) -> tuple[bool, list[str]]:
     except Exception:
         return False, []
     keys = set(_re.findall(r"s\.get\(\"([a-z0-9_]+)\"", src))
+    # B2669 (S6-B2646b class fix): a strategy consuming its asymmetric keys
+    # INSIDE a module-level helper (e.g. _has_smart_money_buy(s)) hid them
+    # from this scan - four measured members. Follow ONE level of helper
+    # calls and union their consumed keys; keys, never names (B1453).
+    import sys as _sys
+    _mod = _sys.modules.get(ALL_STRATEGIES[name].__module__)
+    for _h in set(_re.findall(r"(_has_[a-z_]+)\(s\)", src)):
+        try:
+            _hsrc = inspect.getsource(getattr(_mod, _h))
+            keys |= set(_re.findall(r"s\.get\(\"([a-z0-9_]+)\"", _hsrc))
+        except Exception as _he:
+            # B2669/b2128: LOGGED, never silent - an unreadable helper leaves
+            # its keys unknown, which biases toward NEEDS-CREATION (fail-safe
+            # toward creating a mirror, never toward excusing one).
+            print(f"[mirror-classifier] helper {_h} unreadable for {name}: {_he}")
     hits = sorted(k for k in keys if any(a in k for a in ASYM_MARKERS))
     return bool(hits), hits
 
@@ -121,8 +136,9 @@ def _declared_mirrors() -> dict[str, str]:
             doc = inspect.getdoc(fn) or ""
         except Exception:
             continue
-        m = _re.search(r"EXACT MIRROR of\s+(?:strat_)?([a-z0-9_]+)", doc)
-        if m:
+        # B2669: finditer, so ONE short can declare MULTIPLE parents (the
+        # bottom_decile case - B1194 made two parents' logic identical).
+        for m in _re.finditer(r"EXACT MIRROR of\s+(?:strat_)?([a-z0-9_]+)", doc):
             parent = m.group(1)
             if parent in ALL_STRATEGIES:
                 out[parent] = nm      # parent -> its declared mirror

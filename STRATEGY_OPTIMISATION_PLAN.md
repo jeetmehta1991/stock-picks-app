@@ -3125,6 +3125,26 @@ procedural. That is why F4's ordering - commit the ranked artifact, THEN read - 
 mechanism, and why the sweep carries no holdout code path at all (pinned AST-side, not by
 convention).
 
+### 11.2c APPROVAL FLOW - which word covers which stage (L779, owner-mandated 2026-09-10)
+
+An instruction covers the stages up to the next irreversible or owner-owned gate, NEVER past
+it. Mapped per stage - this is the mandatory pre-execution check for every campaign:
+
+| stage | reversible? | approval that covers it |
+|---|---|---|
+| Family pre-gate, step 0.6 branch decision | yes | campaign start ('start X', working-order go) |
+| BANDS / axis levels (Table A) | yes, but shapes everything after | OWNER REVIEWS the bands before Step 1 (pead precedent: 'Table A p4 p5 p7 should have more bands') |
+| Step 1 - IS-only ranked list + Table D | yes (no holdout contact) | campaign start covers it once bands are reviewed |
+| STEP 2 - the holdout read | **NO - one-way door** | its OWN explicit word, every time ('build the reader and run step 2'; 'admit all... as long as it clears') |
+| Admission to PHASE_1B_ROSTER | reversible (strike) but owner-owned | its OWN ruling per admission or an explicit standing scope ('top 1 per strategy', 'admit all in table A') |
+| NEW-GATE wiring into strategies / engine knobs | code change | per-strategy owner approval (ask-every-time rule) |
+| Engine launch | cost + hours | NEVER without the owner's launch word (standing) |
+
+The B2660 admission doctrine (all-six-holdout-gates = admissible) sets the CRITERION; it does
+not waive the per-stage APPROVALS above. Violation lineage: L779 - the top_decile campaign ran
+band design, the Step-2 spend and admission on 'start the queued campaign' alone; the owner
+caught it and RATIFIED the admission after the fact (2026-09-10), and this section exists so
+ratification is never needed again.
 ### 11.3 The turn-close that every step above requires
 
 Ticket table with six classes and the delta (`scripts/queue_state.py`), SKILLS INVOKED three-skill

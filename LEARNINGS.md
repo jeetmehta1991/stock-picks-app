@@ -20110,3 +20110,24 @@ names one member.
 **Compliance failure against the GENERALIZATION MANDATE** (fix the class, not the instance - its
 execution mirror). Detection JUDGMENT-ONLY; the durable half is this rule, the tripwire row, and
 the B2662 grid instrument that now makes the broad pass one command.
+
+### L779 - "START THE CAMPAIGN" IS NOT "RUN IT THROUGH THE ONE-WAY DOOR" (B2669)
+
+**OWNER-CAUGHT, verbatim 2026-09-10:** "How can you execute without even confirming the bands???
+...Isnt my approval before execution of strategy optimization workflow mandated?" The top_decile
+campaign ran ALL FIVE stages - band design, pre-gate, Step 1, the IRREVERSIBLE Step-2 holdout
+read, and roster admission - on the single phrase "Lets start with queued campaign". The
+precedent chain was explicit and I had lived it days earlier: pead's bands were owner-reviewed
+before Step 1, its Step 2 fired only on "build the reader and run step 2", and every admission
+came from its own "admit..." ruling. "Start" authorized the REVERSIBLE stages; the spend and the
+admission each needed their own word.
+
+**THE RULE: map each stage of a workflow to the approval that covers it BEFORE executing; an
+instruction covers the stages up to the next irreversible or owner-owned gate, never past it.**
+The tell: an instruction verb ("start", "begin", "kick off") being treated as covering a stage
+the precedent chain shows was separately gated. Remediation offered same turn: ratify or strike
+the admission (S6-B2668a); the holdout spend cannot be undone.
+
+**Compliance failure against the Critical Rule "ALL decisions need explicit owner approval
+before implementation."** Detection JUDGMENT-ONLY; the durable half is this rule, its tripwire
+row, and the stage-approval mapping habit.

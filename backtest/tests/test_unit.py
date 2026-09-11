@@ -10646,9 +10646,11 @@ def test_batch373_e1_doc_count_pin_against_code():
     # subsets reconstructable offline from the survivor's cube fires.
     # B2101 (tranche A pair 1 of 3): +2 EXPLORATORY (pocket_pivot_long +
     # consec_downdays_quality_long) per the owner-approved M1-M15 rec.
-    assert len(ALL_STRATEGIES) == 219, (
-        f"F-002 drift: ALL_STRATEGIES expected 219 post-B2103 (tranche A "
-        f"pair 1; 213 post-B2098); got {len(ALL_STRATEGIES)}. "
+    # B2669: 219 -> 221 (+2 owner-instructed mirror shorts: totm_short,
+    # mfi_overbought_short).
+    assert len(ALL_STRATEGIES) == 221, (
+        f"F-002 drift: ALL_STRATEGIES expected 221 post-B2669 (219 "
+        f"post-B2103); got {len(ALL_STRATEGIES)}. "
         f"Update doc count references in the same commit."
     )
     assert len(DEPRECATED_STRATEGIES) == 0, (
@@ -10676,9 +10678,9 @@ def test_batch373_e1_doc_count_pin_against_code():
     )
     # B2098: 213 registered; this leg's "active" excludes only DEPRECATED +
     # MISSING_PRODUCER (both empty), so it tracks the registration count.
-    assert active == 219, (
-        f"F-002 drift: active strategy count expected 219 (219 registered "
-        f"post-B2103 tranche-A complete); got {active}."
+    assert active == 221, (
+        f"F-002 drift: active strategy count expected 221 (221 registered "
+        f"post-B2669); got {active}."
     )
 
     # F-004 exit method count
@@ -13269,8 +13271,8 @@ def test_b1441_data_scarcity_retirement_is_wired_and_semantically_separate():
         "producer removed - retirement was supposed to be reversible when "
         "sector_history.csv is extended (S6-B1434b)"
     )
-    assert len(set(ALL_STRATEGIES) - DS - MP - DEP) == 218, (
-        "active count drifted from 218 (219 registered post-B2103 minus the "
+    assert len(set(ALL_STRATEGIES) - DS - MP - DEP) == 220, (
+        "active count drifted from 220 (221 registered post-B2669 minus the "
         "data-scarce survivor)")
 
 
@@ -15444,7 +15446,7 @@ def test_b1619_variant_strategy_binds_to_its_own_signal():
         ALL_STRATEGIES, BREAKER_VARIANT_STRATEGIES,
         make_breaker_variant_strategy, assert_variant_strategies_are_configured)
 
-    assert len(ALL_STRATEGIES) == 219, (
+    assert len(ALL_STRATEGIES) == 221, (
         f"roster is {len(ALL_STRATEGIES)}; the variant factory must not "
         f"register anything until an admission is owner-approved")
     assert BREAKER_VARIANT_STRATEGIES == {}
@@ -25530,6 +25532,8 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
          "owner directive 2026-09-10: brief, structured, plain responses"),
         ("scope the EXECUTION to the ask's stated breadth",
          "L778 (B2662): one member of a named population does not close the ask"),
+        ("an instruction covers the stages up to the next irreversible or owner-owned gate",
+         "L779 (B2669): start is not run-through-the-one-way-door"),
     ):
         if frag not in discipline_text:
             missing.append(f"execution-discipline lost [{why}]: {frag!r}")
@@ -25628,7 +25632,8 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # 248 -> 249 at B2657 (the L776 probe-then-prose row, same call per B2130).
     # 249 -> 250 at B2660 (the brevity-and-structure row, same call per B2130).
     # 250 -> 251 at B2662 (the L778 breadth row, same call per B2130).
-    assert len(gutted) == 251, gutted
+    # 251 -> 252 at B2669 (the L779 stage-approval row, same call per B2130).
+    assert len(gutted) == 252, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -29906,7 +29911,8 @@ def test_b2417_admission_mirror_is_counted_in_the_rollup():
     # B2664: 17 institutional grid-selected admissions (owner rulings) -> 33.
     # B2666: owner ruling B2665(a) - Jaccard-0.7 prune kept 9 of 17 -> 25.
     # B2668: the S6-B2649 campaign admission (top_decile) -> 26.
-    assert "= 26 distinct strategies" in tot[0], tot[0]
+    # B2669: +2 created mirrors and the classifier fix -> 28, 0 to create.
+    assert "= 28 distinct strategies" in tot[0], tot[0]
 
     # reachability (B2208): the generator derives the roll-up from the
     # admissions record, not from a hand count

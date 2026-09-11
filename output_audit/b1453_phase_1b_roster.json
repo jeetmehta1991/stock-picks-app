@@ -37,7 +37,9 @@
   "mirrors": {
     "registered": [
       "52w_low_breakdown_pullback_short",
+      "mfi_overbought_short",
       "poc_magnet_short",
+      "totm_short",
       "xs_combined_momentum_high_ivol_short",
       "xs_momentum_bottom_decile_short"
     ],
@@ -45,10 +47,7 @@
     "dual_self": [
       "smc_bos_retest_entry"
     ],
-    "needs_creation": [
-      "mfi_oversold_with_smart_money_long",
-      "totm_long"
-    ]
+    "needs_creation": []
   },
   "roster": [
     {
@@ -123,10 +122,10 @@
       },
       "bh": true,
       "verdict": "PASS",
-      "mirror_status": "NEEDS-CREATION",
-      "mirror": null,
+      "mirror_status": "REGISTERED",
+      "mirror": "totm_short",
       "asym_signals": [],
-      "mirror_registered": false,
+      "mirror_registered": true,
       "margin": 0.159
     },
     {
@@ -201,10 +200,14 @@
       },
       "bh": true,
       "verdict": "PASS",
-      "mirror_status": "NEEDS-CREATION",
-      "mirror": null,
-      "asym_signals": [],
-      "mirror_registered": false,
+      "mirror_status": "REGISTERED",
+      "mirror": "mfi_overbought_short",
+      "asym_signals": [
+        "insider_cluster_active",
+        "institutional_buy",
+        "institutional_strong_buy"
+      ],
+      "mirror_registered": true,
       "margin": 0.01
     },
     {
@@ -3696,10 +3699,14 @@
       },
       "bh": true,
       "verdict": "PASS",
-      "mirror_status": "NEEDS-CREATION",
-      "mirror": null,
-      "asym_signals": [],
-      "mirror_registered": false,
+      "mirror_status": "REGISTERED",
+      "mirror": "mfi_overbought_short",
+      "asym_signals": [
+        "insider_cluster_active",
+        "institutional_buy",
+        "institutional_strong_buy"
+      ],
+      "mirror_registered": true,
       "margin": 0.01
     },
     {
@@ -6433,10 +6440,10 @@
       },
       "bh": true,
       "verdict": "PASS",
-      "mirror_status": "NEEDS-CREATION",
-      "mirror": null,
+      "mirror_status": "REGISTERED",
+      "mirror": "totm_short",
       "asym_signals": [],
-      "mirror_registered": false,
+      "mirror_registered": true,
       "margin": 0.159
     },
     {
