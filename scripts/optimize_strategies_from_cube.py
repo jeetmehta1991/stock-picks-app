@@ -158,12 +158,16 @@ def _dec426_verdict(stats: dict, m_total_candidates: int = 1) -> dict:
     # queue items AU1 + #4 (PSR-hardcoded-False P0).
     # Requires _cell_stats to have populated skew + kurtosis (Batch 457).
     from backtest.results.metrics import _deflated_sharpe
-    # B2646 PARTIAL, DISCLOSED: kurtosis converted to RAW; the SR stays
-    # ANNUALISED because _cell_stats persists no per-period mean/std. This
-    # is the legacy pre-R5 optimizer, not on the live Step-2 path - the
-    # residue is recorded on the B2646 queue row.
+    # B2675 (S6-B2646a): feed the PER-PERIOD SR - the B2646 units contract
+    # (L773: per-period SR + raw kurtosis into Bailey-Lopez de Prado). The
+    # B2646 disclosure said _cell_stats 'persists no per-period mean/std';
+    # that premise had decayed (L639) - mean_pp/std_pp are per-trade and
+    # have been in the dict since Batch 375. Pinned by
+    # test_b2675_legacy_optimizer_psr_feeds_per_period_sr.
+    _std_pp = stats.get("std_pp", 0.0)
+    _per_period_sr = (stats.get("mean_pp", 0.0) / _std_pp) if _std_pp > 0 else 0.0
     psr_result = _deflated_sharpe(
-        sharpe=stats.get("sharpe", 0.0),
+        sharpe=_per_period_sr,
         n_trades=n,
         skew=stats.get("skew", 0.0),
         kurtosis=stats.get("kurtosis", 0.0) + 3.0,

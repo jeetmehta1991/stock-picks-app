@@ -35249,3 +35249,28 @@ def test_b2671_two_legs_rule_is_in_the_runbook():
     assert "next_pivot_target BARRED as a selected exit" in rb
     assert "ADMISSION DE-DUP" in rb and "Jaccard-0.70" in rb
 
+
+def test_b2675_legacy_optimizer_psr_feeds_per_period_sr():
+    """B2675 (S6-B2646a; L773 units contract): the legacy optimizer's psr must
+    be computed from the PER-PERIOD SR (mean_pp/std_pp), never the annualised
+    sharpe. SYNTHETIC deterministic sample (structure evidence, not value
+    evidence): long holds make the annualised and per-period feeds diverge, so
+    a regression to the annualised feed flips this assertion."""
+    import sys as _sys
+    from pathlib import Path as _P
+    _sys.path.insert(0, str(_P(__file__).resolve().parents[2] / "scripts"))
+    import pandas as _pd
+    import optimize_strategies_from_cube as opt
+    from backtest.results.metrics import _deflated_sharpe as dsr
+    pnls = _pd.Series([2.0, -1.0] * 15)          # n=30, mean 0.5, sd ~1.526
+    hold = _pd.Series([5.0] * 30)
+    st = opt._cell_stats(pnls, hold)
+    v = opt._dec426_verdict(st, m_total_candidates=1)
+    per_period = st["mean_pp"] / st["std_pp"]
+    want = dsr(sharpe=per_period, n_trades=st["n"], skew=st["skew"],
+               kurtosis=st["kurtosis"] + 3.0).get("psr")
+    bad = dsr(sharpe=st["sharpe"], n_trades=st["n"], skew=st["skew"],
+              kurtosis=st["kurtosis"] + 3.0).get("psr")
+    assert v["psr"] == round(want, 4), (v["psr"], want)
+    assert round(want, 4) != round(bad, 4), "feeds do not diverge - test is vacuous"
+
