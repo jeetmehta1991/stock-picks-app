@@ -25536,6 +25536,8 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
          "L779 (B2669): start is not run-through-the-one-way-door"),
         ("a rectification recorded only in the family section it was learned on",
          "L780 (B2671): rectifications generalize into the campaign template same turn"),
+        ("check the sweep enumerates THAT population",
+         "L781 (B2672): a sweep population must match the correction-named class"),
     ):
         if frag not in discipline_text:
             missing.append(f"execution-discipline lost [{why}]: {frag!r}")
@@ -25636,7 +25638,8 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # 250 -> 251 at B2662 (the L778 breadth row, same call per B2130).
     # 251 -> 252 at B2669 (the L779 stage-approval row, same call per B2130).
     # 252 -> 253 at B2671 (the L780 family-local-rectification fragment).
-    assert len(gutted) == 253, gutted
+    # 253 -> 254 at B2672b (the L781 sweep-population fragment).
+    assert len(gutted) == 254, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
