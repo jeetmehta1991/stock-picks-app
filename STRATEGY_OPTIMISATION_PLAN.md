@@ -1842,7 +1842,11 @@ WRITES one, on every run, and why SKIPPED can no longer be written at all.
    has reported is listed in the turn preamble and blocks the Stop hook; "I will summarise it next
    turn" is the silence this section exists to end.
 
-## STEP 4 — ADMIT
+## STEP 4 — ADMIT
+
+> **B2672 pointer:** admission is now governed by the B2660 doctrine (all six holdout
+> gates = admissible; provenance labels travel) + 11.2b2's npt-bar and Jaccard de-dup +
+> the 11.2c approval flow. Read those before this legacy section.
 
 > **THE GATE TABLE BELOW WAS STALE ON 3 OF 6 THRESHOLDS UNTIL B2402**, in the section that
 > DEFINES admission. It read `sortino >= 0.7`, `min_trades_holdout >= 25`,
@@ -3141,6 +3145,20 @@ companion axes - output_audit/b2667_topdecile_step1.json) because the rectificat
 recorded family-locally. A campaign spec queued BEFORE a template change is re-checked
 against the template AT EXECUTION. Both legs stay inside the standing approval flow
 (11.2c): bands reviewed before Step 1, one owner-worded Step-2 read, admissions ruled.
+
+**Three more family-born rules promoted to the template (B2672, owner class-directive
+2026-09-11 'Class is to be rectified and not just the instance' - swept from the family
+history sections; the template carried none of them):**
+
+- **CONTROL-FAMILY COMPARISON (from B2658):** a breadth axis's lift is attributed to the
+  signal only after the SAME axis is swept on a control family - if the control shows the
+  same lift, the axis is general momentum, not the family's signal (the institutional
+  reading was refuted exactly this way). Run or waive-with-reason per campaign.
+- **next_pivot_target BARRED as a selected exit (owner ruling 2026-09-10):** family-
+  agnostic - use the best NON-npt exit that clears the gates (applied B2664 and B2668).
+- **ADMISSION DE-DUP (from B2666):** every owner-ruled admission set passes the funnel's
+  Jaccard-0.70 de-dup before entering the deployable count; canonical = highest holdout
+  sharpe, pruned rows keep an audit trail.
 
 ### 11.2c APPROVAL FLOW - which word covers which stage (L779, owner-mandated 2026-09-10)
 

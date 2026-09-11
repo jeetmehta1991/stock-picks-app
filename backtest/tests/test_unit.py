@@ -35240,4 +35240,9 @@ def test_b2671_two_legs_rule_is_in_the_runbook():
     assert "each run or explicitly waived with a recorded reason" in rb
     ck = (root / "CHECKLIST.md").read_text(encoding="utf-8", errors="ignore")
     assert "the WORKBOOK AS AMENDED" in ck, "the #202 L780 extension vanished"
+    # B2672 (L781): the three family-born generals promoted to the template
+    # must survive there - a promotion that vanishes re-creates the class.
+    assert "CONTROL-FAMILY COMPARISON" in rb
+    assert "next_pivot_target BARRED as a selected exit" in rb
+    assert "ADMISSION DE-DUP" in rb and "Jaccard-0.70" in rb
 

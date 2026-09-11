@@ -158,7 +158,7 @@ def screen(m: pd.DataFrame, min_side: int, min_n: int) -> tuple[list, dict]:
 def render(rows: list, meta: dict, args) -> str:
     surv = [r for r in rows if r["fdr_survivor"]]
     surv.sort(key=lambda r: -(abs(r.get("pnl_lift", 0)) + abs(r.get("q5_minus_q1", 0))))
-    head = (f"# COMPANION-SIGNAL SCREEN - institutional family\n\n"
+    head = (f"# COMPANION-SIGNAL SCREEN - {FAMILY_PREFIX}family\n\n"
             f"exit {args.exit}; window {args.window}"
             f"{' (PEEKED - spent holdout, confirmation only)' if args.window == 'holdout' else ''}; "
             f"{meta['entries']} unique entries; {meta['trials']} signals tested; "
@@ -180,14 +180,19 @@ def render(rows: list, meta: dict, args) -> str:
 
 
 def main() -> int:
+    global FAMILY_PREFIX
     ap = argparse.ArgumentParser()
     ap.add_argument("--exit", required=True)
+    # B2672 (L754: second family extracts the contract): the family is a
+    # parameter, not a constant. Default preserves institutional behaviour.
+    ap.add_argument("--family", default=FAMILY_PREFIX)
     ap.add_argument("--window", default="is", choices=["is", "holdout"])
     ap.add_argument("--min-side", type=int, default=100)
     ap.add_argument("--min-n", type=int, default=500)
     ap.add_argument("--out", required=True)
     args = ap.parse_args()
 
+    FAMILY_PREFIX = args.family
     m = load_entries(args.exit, args.window)
     if len(m) < 500:
         raise SystemExit(f"REFUSED: only {len(m)} entries in window - underpowered")

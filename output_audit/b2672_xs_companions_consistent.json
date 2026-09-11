@@ -1,0 +1,255 @@
+{
+  "_doc": "B2672 xs-family companion screen - consistent FDR survivors (same effect sign under BOTH exits ts10 + bept; IS window only, holdout untouched). Sources: b2672_xs_companions_ts10.json (43 survivors) + _bept.json (215); a SCREEN, never a gate.",
+  "entries": 2091,
+  "signals_tested": 571,
+  "survivors_ts10": 43,
+  "survivors_bept": 215,
+  "consistent_both_exits": 35,
+  "consistent": [
+    {
+      "key": "pct_from_vwap",
+      "kind": "numeric",
+      "effect_ts10": 4.885,
+      "effect_bept": 37.594,
+      "n": 2091
+    },
+    {
+      "key": "monthly_momentum_6m",
+      "kind": "numeric",
+      "effect_ts10": 1.837,
+      "effect_bept": 35.618,
+      "n": 1971
+    },
+    {
+      "key": "vp_close_near_poc_pct",
+      "kind": "numeric",
+      "effect_ts10": -2.562,
+      "effect_bept": -33.807,
+      "n": 2091
+    },
+    {
+      "key": "news_sentiment_30d",
+      "kind": "numeric",
+      "effect_ts10": 2.123,
+      "effect_bept": 33.652,
+      "n": 2091
+    },
+    {
+      "key": "naked_poc_nearest_distance_pct",
+      "kind": "numeric",
+      "effect_ts10": -2.559,
+      "effect_bept": -32.091,
+      "n": 2091
+    },
+    {
+      "key": "bb_20_20_bandwidth",
+      "kind": "numeric",
+      "effect_ts10": -2.454,
+      "effect_bept": -31.751,
+      "n": 2091
+    },
+    {
+      "key": "bb_20_15_bandwidth",
+      "kind": "numeric",
+      "effect_ts10": -2.489,
+      "effect_bept": -31.695,
+      "n": 2091
+    },
+    {
+      "key": "bb_10_20_bandwidth",
+      "kind": "numeric",
+      "effect_ts10": -2.198,
+      "effect_bept": -30.515,
+      "n": 2091
+    },
+    {
+      "key": "htf_aligned_bear",
+      "kind": "bool",
+      "effect_ts10": -1.886,
+      "effect_bept": -25.118,
+      "n": 573
+    },
+    {
+      "key": "cot_sp500_mmoney_pctile_3y",
+      "kind": "numeric",
+      "effect_ts10": -4.012,
+      "effect_bept": -18.658,
+      "n": 2091
+    },
+    {
+      "key": "monthly_bias_bear",
+      "kind": "bool",
+      "effect_ts10": -1.649,
+      "effect_bept": -19.309,
+      "n": 790
+    },
+    {
+      "key": "ichi_weekly_below_cloud",
+      "kind": "bool",
+      "effect_ts10": -2.734,
+      "effect_bept": -17.645,
+      "n": 896
+    },
+    {
+      "key": "close_above_open",
+      "kind": "bool",
+      "effect_ts10": 2.154,
+      "effect_bept": 15.517,
+      "n": 1029
+    },
+    {
+      "key": "close_below_open",
+      "kind": "bool",
+      "effect_ts10": -2.154,
+      "effect_bept": -15.517,
+      "n": 1062
+    },
+    {
+      "key": "monthly_above_sma_12",
+      "kind": "bool",
+      "effect_ts10": 1.717,
+      "effect_bept": 15.155,
+      "n": 874
+    },
+    {
+      "key": "below_ema_200",
+      "kind": "bool",
+      "effect_ts10": -1.999,
+      "effect_bept": -14.86,
+      "n": 1113
+    },
+    {
+      "key": "price_above_ema_200",
+      "kind": "bool",
+      "effect_ts10": 1.999,
+      "effect_bept": 14.86,
+      "n": 978
+    },
+    {
+      "key": "ichi_weekly_above_cloud",
+      "kind": "bool",
+      "effect_ts10": 2.171,
+      "effect_bept": 13.849,
+      "n": 617
+    },
+    {
+      "key": "above_vwap",
+      "kind": "bool",
+      "effect_ts10": 1.849,
+      "effect_bept": 13.859,
+      "n": 919
+    },
+    {
+      "key": "below_vwap",
+      "kind": "bool",
+      "effect_ts10": -1.849,
+      "effect_bept": -13.859,
+      "n": 1172
+    },
+    {
+      "key": "ema_50_200_bearish",
+      "kind": "bool",
+      "effect_ts10": -1.819,
+      "effect_bept": -13.775,
+      "n": 1243
+    },
+    {
+      "key": "ema_50_200_bullish",
+      "kind": "bool",
+      "effect_ts10": 1.819,
+      "effect_bept": 13.775,
+      "n": 848
+    },
+    {
+      "key": "vix_band_high",
+      "kind": "bool",
+      "effect_ts10": 1.551,
+      "effect_bept": 12.377,
+      "n": 964
+    },
+    {
+      "key": "close_in_top_40pct_of_range",
+      "kind": "bool",
+      "effect_ts10": 1.562,
+      "effect_bept": 12.144,
+      "n": 848
+    },
+    {
+      "key": "price_above_ema_200_break_recent_5d",
+      "kind": "bool",
+      "effect_ts10": 1.643,
+      "effect_bept": 10.731,
+      "n": 335
+    },
+    {
+      "key": "po3_bullish",
+      "kind": "bool",
+      "effect_ts10": 2.047,
+      "effect_bept": 9.561,
+      "n": 223
+    },
+    {
+      "key": "drying_volume_on_up_turn",
+      "kind": "bool",
+      "effect_ts10": 1.287,
+      "effect_bept": 9.938,
+      "n": 580
+    },
+    {
+      "key": "po3_close_position",
+      "kind": "numeric",
+      "effect_ts10": 2.452,
+      "effect_bept": 8.67,
+      "n": 2091
+    },
+    {
+      "key": "at_key_fib",
+      "kind": "bool",
+      "effect_ts10": 1.399,
+      "effect_bept": 7.743,
+      "n": 312
+    },
+    {
+      "key": "gap_up_pct",
+      "kind": "numeric",
+      "effect_ts10": -2.464,
+      "effect_bept": -6.513,
+      "n": 2091
+    },
+    {
+      "key": "gap_dn_pct",
+      "kind": "numeric",
+      "effect_ts10": 2.449,
+      "effect_bept": 6.504,
+      "n": 2091
+    },
+    {
+      "key": "earnings_eps_yoy_growth",
+      "kind": "numeric",
+      "effect_ts10": 1.912,
+      "effect_bept": 2.917,
+      "n": 1965
+    },
+    {
+      "key": "pead_negative_surprise",
+      "kind": "bool",
+      "effect_ts10": -1.667,
+      "effect_bept": -2.034,
+      "n": 401
+    },
+    {
+      "key": "yoy_surprise_negative",
+      "kind": "bool",
+      "effect_ts10": -1.264,
+      "effect_bept": -1.867,
+      "n": 887
+    },
+    {
+      "key": "yoy_surprise_high",
+      "kind": "bool",
+      "effect_ts10": 1.131,
+      "effect_bept": 1.952,
+      "n": 932
+    }
+  ]
+}

@@ -20157,3 +20157,17 @@ the family section it was learned on is a story about that family, not a rule.
 **Detection signal:** a campaign artifact whose axes all share the strategy's own signal
 family while the runbook carries a companion-screen instrument for another family.
 
+### L781 - A RETROACTIVE SWEEP'S POPULATION IS CHOSEN, AND THE CHOICE CAN MISS THE CLASS THE CORRECTION NAMED (B2672, owner-caught 2026-09-11)
+
+L780's remediation added the template clause and swept CAMPAIGNS (2 members, 1 non-compliant).
+The owner replied "this is the same issue - class is to be rectified, not just the instance":
+the class was the workbook's RULES recorded family-locally, and that population had not been
+swept. EXECUTED rules-sweep (B2672): section-11 template + STEP-4 ADMIT probed for the four
+family-born generals - control-family comparison (B2658), npt-bar (owner 2026-09-10), Jaccard
+admission de-dup (B2666), admission doctrine (B2660) - and carried ONE of four (doctrine, via
+11.2c). Three promoted same turn; STEP-4 got a doctrine pointer. Rule: when a correction names
+a class, restate the class's POPULATION in your own words and check the sweep enumerates THAT
+population - a sweep over an adjacent population reads as compliance and leaves the named class
+open. Mechanism: JUDGMENT-ONLY for detection (no scan reads which population a correction
+means); durability - the three promotions are pinned by test_b2671's fragment asserts.
+
