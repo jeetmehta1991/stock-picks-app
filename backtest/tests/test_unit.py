@@ -35197,3 +35197,28 @@ def test_b2659_depth_precompute_contracts_and_density_caveat():
     assert tail.iloc[-1] > 2 * tail.iloc[0], (
         "the coverage-growth caveat has disappeared - if the panel became "
         "density-stable, REVISIT the init/exit usability restriction")
+
+
+
+# ---------------------------------------------------------------------------
+# B2669: the two owner-instructed mirror shorts - registration + firing pins
+# ---------------------------------------------------------------------------
+
+def test_b2669_mirror_shorts_fire_correctly():
+    """B2669 (#118 lint, persisted): totm_short and mfi_overbought_short are
+    registered, EXPLORATORY-tagged, and their gates fire on the documented
+    keys - must-fire (both legs True), must-quiet (empty dict), and the
+    half-arm (one leg alone must NOT fire). SYNTHETIC dicts by design: this
+    pins GATE LOGIC; key EMISSION was verified against 3,000 persisted R5
+    fire dicts at build (present 3000/3000)."""
+    from backtest.signals.screener import (ALL_STRATEGIES, strat_totm_short,
+                                           strat_mfi_overbought_short)
+    from backtest.engine.multiple_testing_correction import EXPLORATORY_STRATEGIES
+    assert "totm_short" in ALL_STRATEGIES and "mfi_overbought_short" in ALL_STRATEGIES
+    assert {"totm_short", "mfi_overbought_short"} <= set(EXPLORATORY_STRATEGIES)
+    for fn, keys in ((strat_totm_short, ("is_totm_window_first_day", "below_ema_200")),
+                     (strat_mfi_overbought_short, ("mfi_broad_overbought", "below_ema_200"))):
+        on = fn({k: True for k in keys})
+        assert on["fires"] is True and on["direction"] == "short"
+        assert fn({})["fires"] is False
+        assert fn({keys[0]: True})["fires"] is False, "half-arm must not fire"
