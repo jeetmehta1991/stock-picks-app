@@ -2796,6 +2796,20 @@ confirmation + xs_max_anomaly, n 34/128), 2.877, 2.723. Under the B2660 admissio
 every qualifier is admissible; the 13,104-trial max-selection risk is DISCLOSED on the artifact
 and stands flagged. OWNER SCOPE DECISION (S6-B2662a): admit what - all, top-1 per strategy, or
 review-first; and gate-wiring (NEW-GATE class) needs per-strategy approval regardless.
+### TOP_DECILE BREADTH STEP-1 LANDED OFFLINE (B2673, owner word 'Proceed' 2026-09-11)
+
+First campaign run under 11.2b2's two-legs rule and the first use of the extracted
+scripts/breadth_step1_grid.py (parameterized by strategy - the L754 contract; the
+institutional grid remains the family-hardcoded first instance). Base = the ADMITTED depth
+line (xs_momentum_12_1 >= 0.529); reproduction gate matched the admission artifact exactly
+(IS 0.751, full n 128). 7 companion axes x IS-retention-quantile levels x exits = 650
+graded IS lines, 0 axes coverage-skipped, npt excluded from ranking, HOLDOUT UNTOUCHED
+(output_audit/b2673_topdecile_breadth_step1.json). Power floors (15 holdout / 75 full,
+counts only): 4 of 7 axes have a viable line; best = pct_from_vwap >= 36.63 /
+time_stop_10d, IS 1.928 (ci_lo 0.521) n 52/84 vs base IS 0.751. Step-2 one holdout read is
+S6-B2671c, awaiting its own owner word; any qualifier gets the pead control-family
+comparison (promoted B2658 rule) before an admission proposal.
+
 ### OPTIMISATION POPULATION BY BUCKET AND FAMILY (B2632, owner directive 2026-09-07)
 
 **Accounting (derived live at B2632; every term from the registry + config disabled sets +
