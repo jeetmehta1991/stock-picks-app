@@ -17340,7 +17340,8 @@ SKILL.md and by both assertions in test_b2330 now carrying the anchoring comment
 next reader meets the reasoning at the site.
 **Retroactive sweep (#237): every assertion in test_b2330 checked for the same shape.** 9
 assertions: 2 were substring-over-whole-output on a column name - **both instances above, both
-now anchored**; 3 assert on CONTENT that appears nowhere else (`deep_exit`, `1 of 2`, `2 of 2`)
+now anchored**; 3 assert on CONTENT that appears nowhere else (`deep_exit`, `1 of 2`, `2 of 2`)
+
 - **NAMING THE CALL THAT PRODUCED A FIGURE IS ITSELF A CLAIM, AND IT IS THE ONE
   NOBODY RE-OPENS (L695 addendum, B2532).** MEASURED: I published a ticket table
   reading EXECUTED 1734 / TOTAL 1781 and wrote that it was *run in the commit
@@ -20066,6 +20067,8 @@ VARIABLE, not from a literal retyped by hand - the B2657 fix was exactly that ch
 draft containing a specific decimal you cannot point to in a tool result above it.
 
 **Compliance failure against item 201** (figure with no source - the source did not exist yet).
+
+**Instance 4 (B2666, same day as the rule):** the CLAUDE.md banner shipped "(18 long + 7 short)" for the 25-strategy roster; the roster's own arithmetic is 19 long + 6 mirror shorts (25 - 6). Caught in the very next accounting pass and corrected in the following commit. The rule held everywhere probes ran; it failed in a BANNER EDIT - prose written inside a patcher, where no probe output sits above the sentence. Banner splits now come from the roster's Deployable line, never from mental subtraction.
 Detection is judgment-only; the durable half is this rule plus the skill tripwire row, and the
 class's strongest mechanical ally is writing artifacts from variables, never literals.
 
