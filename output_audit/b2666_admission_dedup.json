@@ -1,0 +1,25 @@
+{
+  "jaccard": 0.7,
+  "canonical_metric": "holdout_sharpe",
+  "kept": [
+    "institutional_breakout_confirmation_long",
+    "institutional_oversold_long",
+    "institutional_recent_init_volume_long",
+    "institutional_persistence_oversold_long",
+    "institutional_strong_conviction_long",
+    "institutional_committed_growth_long",
+    "institutional_multi_quarter_persistence_long",
+    "institutional_high_conviction_long",
+    "institutional_recent_init_momentum_long"
+  ],
+  "pruned_dup_of": {
+    "institutional_persistence_breakout_long": "institutional_breakout_confirmation_long",
+    "institutional_persistence_volume_long": "institutional_recent_init_volume_long",
+    "institutional_volume_confirmation_long": "institutional_recent_init_volume_long",
+    "institutional_persistent_holders_long": "institutional_strong_conviction_long",
+    "institutional_cluster_long": "institutional_strong_conviction_long",
+    "institutional_insider_combo_long": "institutional_multi_quarter_persistence_long",
+    "institutional_persistence_momentum_long": "institutional_recent_init_momentum_long",
+    "institutional_buy_momentum_long": "institutional_recent_init_momentum_long"
+  }
+}
