@@ -20131,3 +20131,29 @@ the admission (S6-B2668a); the holdout spend cannot be undone.
 **Compliance failure against the Critical Rule "ALL decisions need explicit owner approval
 before implementation."** Detection JUDGMENT-ONLY; the durable half is this rule, its tripwire
 row, and the stage-approval mapping habit.
+
+### L780 - A RECTIFIED MISS RECORDED FAMILY-LOCALLY REPEATS ON THE NEXT FAMILY (B2671, owner-caught 2026-09-11)
+
+**What happened:** the institutional campaign's narrow first execution (B2658, 1 strategy x 1
+axis) was owner-caught and rectified into the full DEPTH + BREADTH grid (B2662: own knobs +
+5 FDR-screened companion axes across 20 strategies), and the rectification was recorded in the
+runbook as INSTITUTIONAL-FAMILY sections (2701-2788). The next campaign - top_decile, B2667,
+executed AFTER that rectification - swept 3 axes, all its OWN knobs (EXECUTED read of
+output_audit/b2667_topdecile_step1.json: xs_momentum_12_1, xs_ivol_decile,
+xs_max_anomaly_decile), and NO companion screen was ever run for the xs family. The owner had
+to ask "we do both depth and breadth - why hasn't that been done here?"
+
+**Root cause:** the rectification was captured as family HISTORY, not as campaign TEMPLATE.
+The queued top_decile campaign (S6-B2649) predated the breadth ruling and executed its
+original depth-only design; nothing in the workflow re-read the updated workbook at execution
+time. Compliance failure against the GENERALIZATION MANDATE (owner 2026-07-18) and #202's
+re-read-the-decision clause - no new checklist item.
+
+**Rule:** when the owner rectifies a campaign-shape miss, the SAME TURN writes the general
+form into the campaign template section of the runbook (now 11.2d), and any already-queued
+campaign specs are re-checked against it before execution. A rectification that lives only in
+the family section it was learned on is a story about that family, not a rule.
+
+**Detection signal:** a campaign artifact whose axes all share the strategy's own signal
+family while the runbook carries a companion-screen instrument for another family.
+

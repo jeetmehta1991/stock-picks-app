@@ -3125,6 +3125,23 @@ procedural. That is why F4's ordering - commit the ranked artifact, THEN read - 
 mechanism, and why the sweep carries no holdout code path at all (pinned AST-side, not by
 convention).
 
+### 11.2b2 TWO LEGS PER CAMPAIGN - DEPTH AND BREADTH (L780, owner-caught 2026-09-11)
+
+Every per-strategy campaign has TWO legs, each run or explicitly waived with a recorded reason:
+
+- **DEPTH** - level sweep over the strategy's OWN knobs (its gate signals' persisted
+  magnitudes and cutoffs), the offline_level_sweep pattern.
+- **BREADTH** - companion axes from OTHER producer families, sourced from a
+  family companion screen (the B2657 instrument: IS-only, one BH-FDR pass, a ranked
+  hypothesis list - never a gate), then swept as tightening axes in the same Step-1.
+
+Lineage: the institutional family got both legs only after an owner catch (B2658 narrow
+-> B2662 full grid); top_decile then ran depth-only (B2667: 3 own-knob axes, zero
+companion axes - output_audit/b2667_topdecile_step1.json) because the rectification was
+recorded family-locally. A campaign spec queued BEFORE a template change is re-checked
+against the template AT EXECUTION. Both legs stay inside the standing approval flow
+(11.2c): bands reviewed before Step 1, one owner-worded Step-2 read, admissions ruled.
+
 ### 11.2c APPROVAL FLOW - which word covers which stage (L779, owner-mandated 2026-09-10)
 
 An instruction covers the stages up to the next irreversible or owner-owned gate, NEVER past

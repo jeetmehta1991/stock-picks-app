@@ -25534,6 +25534,8 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
          "L778 (B2662): one member of a named population does not close the ask"),
         ("an instruction covers the stages up to the next irreversible or owner-owned gate",
          "L779 (B2669): start is not run-through-the-one-way-door"),
+        ("a rectification recorded only in the family section it was learned on",
+         "L780 (B2671): rectifications generalize into the campaign template same turn"),
     ):
         if frag not in discipline_text:
             missing.append(f"execution-discipline lost [{why}]: {frag!r}")
@@ -25633,7 +25635,8 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # 249 -> 250 at B2660 (the brevity-and-structure row, same call per B2130).
     # 250 -> 251 at B2662 (the L778 breadth row, same call per B2130).
     # 251 -> 252 at B2669 (the L779 stage-approval row, same call per B2130).
-    assert len(gutted) == 252, gutted
+    # 252 -> 253 at B2671 (the L780 family-local-rectification fragment).
+    assert len(gutted) == 253, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -35222,3 +35225,19 @@ def test_b2669_mirror_shorts_fire_correctly():
         assert on["fires"] is True and on["direction"] == "short"
         assert fn({})["fires"] is False
         assert fn({keys[0]: True})["fires"] is False, "half-arm must not fire"
+
+
+def test_b2671_two_legs_rule_is_in_the_runbook():
+    """L780 (B2671, owner-caught): the depth+breadth two-legs campaign rule
+    must survive in the runbook's template section - a rectification recorded
+    only in the family section it was learned on repeats on the next family
+    (top_decile ran depth-only after the institutional breadth rectification).
+    Pins the SOURCE the habit must reach (L720), in both anchor docs."""
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    rb = (root / "STRATEGY_OPTIMISATION_PLAN.md").read_text(encoding="utf-8", errors="ignore")
+    assert "TWO LEGS PER CAMPAIGN - DEPTH AND BREADTH" in rb
+    assert "each run or explicitly waived with a recorded reason" in rb
+    ck = (root / "CHECKLIST.md").read_text(encoding="utf-8", errors="ignore")
+    assert "the WORKBOOK AS AMENDED" in ck, "the #202 L780 extension vanished"
+

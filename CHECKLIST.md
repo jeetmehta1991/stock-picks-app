@@ -3192,6 +3192,8 @@ rate-for-total substitutions above.
 
 ### #202 — READ THE SPEC BEFORE REPORTING THE RESULT (B1608 / L471)
 
+**L780 EXTENSION (B2671): the spec you must re-read includes the WORKBOOK AS AMENDED.** A queued campaign executed after a workbook rectification runs against the CURRENT template, not the design it was queued with - the top_decile campaign ran depth-only (3 own-knob axes) after the depth+breadth rectification had landed for the institutional family. Rectifications generalize into the template the turn they are ruled (runbook 11.2b2; pin test_b2671_two_legs_rule_is_in_the_runbook).
+
 **Every verification habit in this repo checks code against REALITY — does it run, does it
 reproduce, is the artifact right. None checks code against INTENT.**
 
