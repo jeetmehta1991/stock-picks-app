@@ -5733,3 +5733,14 @@ which artifact a paragraph summarizes); durability is mechanical - the L783
 fragment pin (test_b2123) plus test_b1486's banner-sync forcing this item into
 the always-checked range.
 
+**B2699 AMENDMENT (owner-caught #4, 2026-09-12): 'the standard renderer' is now
+a NAMED PROGRAM and the form is UNIFIED-INVENTORY.** Table D for a campaign is
+ONE table - never a main-plus-addendum split - whose columns are the campaign's
+FULL Table A inventory (every P<n> and B<n> row): tested axes carry their
+thresholds, untested axes appear at production value marked
+resim-only/UNTESTED-OFFLINE, and a late-landing axis RE-RENDERS the one table.
+Render via scripts/table_d_render.py (the show_table_c.py pattern, L652); a
+Table D not emitted by the renderer is non-compliant. Pinned by
+test_b2699_table_d_is_one_unified_table_with_every_inventory_column; lineage
+L784.
+

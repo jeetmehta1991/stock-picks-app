@@ -25543,6 +25543,8 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
          "L782 (B2682a): gate on the verdict token, never on a live output file"),
         ("a skip/refusal row in the artifact appears in the summary",
          "L783 (B2696): the standard form first; home-made views hide disclosures"),
+        ("ONE unified table whose columns are the campaign's FULL Table A inventory",
+         "L784 (B2699): table_d_render.py; untested axes shown, never omitted"),
     ):
         if frag not in discipline_text:
             missing.append(f"execution-discipline lost [{why}]: {frag!r}")
@@ -25646,7 +25648,8 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # 253 -> 254 at B2672b (the L781 sweep-population fragment).
     # 254 -> 255 at B2682a (the L782 file-is-not-result fragment).
     # 255 -> 256 at B2696 (the L783 standard-form-first fragment).
-    assert len(gutted) == 256, gutted
+    # 256 -> 257 at B2699 (the L784 unified-inventory-table fragment).
+    assert len(gutted) == 257, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -35494,4 +35497,35 @@ def test_b2689_shell_substitution_reports_an_incident_once():
     bad2 = 'python -c "z=$(whoami)"'
     v3 = v.scan_shell_substitution([fb], tool_text=bad2)
     assert v3 and "SHELL SUBSTITUTION" in v3[0], v3
+
+
+def test_b2699_table_d_is_one_unified_table_with_every_inventory_column():
+    """L784 (B2699, owner-caught): Table D = ONE table; columns = the FULL
+    Table A inventory (every P<n> and B<n>), untested axes shown at
+    production value with their status disclosed in the preamble."""
+    import sys as _sys
+    from pathlib import Path as _P
+    _root = _P(__file__).resolve().parents[2]
+    _sp = str(_root / "scripts")
+    if _sp not in _sys.path:
+        _sys.path.insert(0, _sp)
+    import table_d_render as tdr
+    from producer_variant_table import SPECS_PHASE0
+    strat = "smc_liquidity_sweep_reversal"
+    arts = [_root / "output_audit" / "b2694_smc_lsr_step1.json",
+            _root / "output_audit" / "b2698_momentum_resweep.json"]
+    for a in arts:
+        assert a.exists(), a
+    out = tdr.build_table(strat, [str(a) for a in arts], top=25)
+    headers = [l for l in out.splitlines() if l.startswith("| rank |")]
+    assert len(headers) == 1, "ONE unified table - never a main-plus-addendum split"
+    header = headers[0]
+    for p in SPECS_PHASE0[strat]["params"]:
+        assert p["param"] in header, f"inventory column missing from Table D: {p['param']}"
+    pre = out.split("| rank |")[0]
+    assert "resim-only" in pre and "UNTESTED-OFFLINE" in pre, (
+        "untested depth knobs must be disclosed, not omitted")
+    assert "WIDENED COVERAGE 0.942" in pre, (
+        "the momentum coverage disclosure must travel to the unified view")
+    assert "SUPERSEDED" in pre, "the b2694 SKIP row's disposition must travel"
 

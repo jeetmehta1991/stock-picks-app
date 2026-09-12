@@ -20215,3 +20215,35 @@ skip/refusal row in an artifact appears in the summary or the summary is
 wrong. Correction shipped same turn: the runbook and ledger now carry the
 3-of-4 denominators and the untested-axis disposition.
 
+### L784 - A STANDARD REVERSE-ENGINEERED FROM THE INCIDENT ENCODES THE INCIDENT'S SLICE (B2699, owner-caught 2026-09-12)
+
+**What happened - the THIRD form correction on ONE table in ONE campaign:**
+Table D shipped as TWO tables (main + a momentum addendum) whose columns were
+the SWEPT axes only - P1-P3 (swing_length, liquidity_range_pct,
+event_recency_bars) appeared nowhere, so a reader could not see that three
+depth knobs were untested offline. Owner: "table D should be a unified table
+that contains the thresholds for each producer tested. no separate table ds
+are logical... why this repeated error."
+
+**Why it repeated (the honest RCA, two mechanisms):** (1) each correction
+encoded the fix for the slice in front of it - L783's "one column per axis"
+was reverse-engineered from the b2694 incident, where "axis" meant the swept
+axes, so the standard never said WHICH columns and never said ONE table; the
+L757 class (a rule fitted to the instances that bit) landing on the reporting
+layer. (2) Table C has ONE renderer (show_table_c.py, L652) while Table
+D-offline had none, so every render was hand-authored and each hand-render
+re-decided the form. The addendum split happened because a PROCESS constraint
+(a running pyramid gate barred file edits) leaked into the DELIVERABLE's
+shape - the artifact took the shape of my constraint, not of the standard.
+
+**Rule:** Table D is ONE unified table per campaign whose columns are the
+FULL Table A inventory - every P<n> and B<n> row: tested axes carry their
+thresholds, untested axes appear at production value marked
+resim-only/UNTESTED-OFFLINE, and a late-landing axis RE-RENDERS the one
+table. The form derives from the INVENTORY the campaign reports on (the
+owner's Table A ruling + #182's enumerate-the-space, applied to the VIEW),
+never from what a given sweep happened to test. Mechanism:
+scripts/table_d_render.py is the single renderer; pinned by
+test_b2699_table_d_is_one_unified_table_with_every_inventory_column; #298
+amended to name it.
+
