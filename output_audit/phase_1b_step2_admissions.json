@@ -283,6 +283,24 @@
       "window": "4 years 2022-05-05 .. 2026-05-05 (IS 3y + 1y holdout)",
       "review_status": "GRID-SELECTED-OWNER-RULED / CONTROL-REFUTED-ATTRIBUTION / DISCLOSED-RE-READ",
       "review_note": "SUPERSESSION CHAIN: B2668 depth admission (HO 2.183 n 41/128) -> B2678a option A (2026-09-11, nothing new) -> RE-RULED option C same day under S6-B2678b on the B2682 per-year evidence (filtered beats base 4 of 4 gradable years; 2022 = abstention, n=1). Admitted line = depth 0.529 AND pct_from_vwap >= 36.6266 at time_stop_10d, HO 3.085 ci_lo 1.200 psr 0.999 n 32/84 (all six gates). LABELS: the pct_from_vwap lift is CONTROL-REFUTED as general structure (pead control +0.864 vs subject +0.90, b2678); the subject holdout was re-read under the accepted disclosure. The B787 EXPLORATORY tag still rides; admission is not deployment; engine wiring of BOTH added gates is the NEW-GATE build (S6-B2411 class, per-strategy approval)."
+    },
+    {
+      "ticket": "S6-B2674a",
+      "ruled": "2026-09-11",
+      "ruling_verbatim": "All open tickets implement now",
+      "strategy": "xs_low_beta_with_smart_money_long",
+      "direction": "long",
+      "config": {
+        "campaign": "B2674 composite variant test (owner-ruled measurement)",
+        "axes": "none - baseline admission"
+      },
+      "grid_artifact": "output_audit/b2685_xslowbeta_admission_grid.json",
+      "combination": {},
+      "exit": "time_stop_10d",
+      "universe": "R5 merged cube output_r5_merged_1_7 (544-ticker universe; 452 fires)",
+      "window": "4 years 2022-05-05 .. 2026-05-05 (IS 3y + 1y holdout)",
+      "review_status": "MEASUREMENT-SURFACED-OWNER-RULED / IS-HOLDOUT-INVERSION",
+      "review_note": "Surfaced as a side-finding of the owner-ruled B2674 composite test (not a search grid: baseline + 3 variants x exits, and the baseline clears at multiple exits - r_multiple_2r 1.296 too). All six gates at ts10: HO 1.510 ci_lo n/a psr 0.995 PF 2.286 n 73/452. LABEL: IS sharpe -0.198 - the IS/holdout inversion travels with the row. The smart-money composite leg is SEC-long-only data; mirror policy per the roster classifier at render. Admission is not deployment; no engine change needed (production line as-is)."
     }
   ],
   "pruned_collinear_b2666": [

@@ -1,0 +1,25 @@
+{
+  "_doc": "B2685 admission-grid artifact - xs_low_beta_with_smart_money_long BASELINE at time_stop_10d (no added gate); metrics re-derived fresh from output_r5_merged_1_7 and asserted equal to the B2674 measurement row (output_audit/b2674_composite_variant_test.json)",
+  "config": "baseline_b2674",
+  "results": [
+    {
+      "gate_op": "none",
+      "exit": "time_stop_10d",
+      "verdict": "PASS",
+      "verdict_basis": "owner word 2026-09-11 ('All open tickets implement now' resolving S6-B2674a): BASELINE line - composite as-is, no added gate - clears all six live holdout gates; surfaced by the owner-ruled B2674 composite variant measurement, not a search grid. PROVENANCE: IS/holdout inversion label rides (IS -0.198 vs HO 1.510, B2660 doctrine: labels travel as information)",
+      "is_sharpe": -0.198,
+      "is_ci_lo": -0.701,
+      "sharpe": 1.51,
+      "ci_lo": 0.327,
+      "margin": 0.51,
+      "psr": 0.995,
+      "profit_factor": 2.286,
+      "sortino": 2.161,
+      "win_rate": 0.658,
+      "expectancy": 1.6196,
+      "holdout_n": 73,
+      "full_period_n": 452,
+      "strategy": "xs_low_beta_with_smart_money_long"
+    }
+  ]
+}

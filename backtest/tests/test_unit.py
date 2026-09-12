@@ -29922,7 +29922,8 @@ def test_b2417_admission_mirror_is_counted_in_the_rollup():
     # B2666: owner ruling B2665(a) - Jaccard-0.7 prune kept 9 of 17 -> 25.
     # B2668: the S6-B2649 campaign admission (top_decile) -> 26.
     # B2669: +2 created mirrors and the classifier fix -> 28, 0 to create.
-    assert "= 28 distinct strategies" in tot[0], tot[0]
+    # B2685: 28 -> 29 (xs_low_beta_with_smart_money_long admitted, S6-B2674a).
+    assert "= 29 distinct strategies" in tot[0], tot[0]
 
     # reachability (B2208): the generator derives the roll-up from the
     # admissions record, not from a hand count

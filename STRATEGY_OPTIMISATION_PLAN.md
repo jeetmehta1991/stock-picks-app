@@ -2900,6 +2900,16 @@ added gates remains the S6-B2411-class NEW-GATE build. The A-ruling's rationale 
 tape factor double-counted across strategies) survives as a PORTFOLIO-level concern -
 flagged for the Phase-1B blended review where max_drawdown/calmar re-engage.
 
+### XS_LOW_BETA ADMITTED AT BASELINE (B2685, owner word 2026-09-11)
+
+S6-B2674a resolved by 'All open tickets implement now': xs_low_beta_with_smart_money_long admitted at its BASELINE time_stop_10d line - no
+added gate, so no engine change is needed for this row. HO 1.510 psr 0.995 PF 2.286
+n 73/452, IS -0.198 (the IS/holdout-inversion label rides). Metrics re-derived fresh
+and asserted equal to the B2674 measurement row (fail-closed) in
+output_audit/b2685_xslowbeta_admission_grid.json; roster re-rendered -> 29 distinct
+(test_b2417 moved 28 -> 29). Surfaced by an owner-ruled measurement, not a search grid;
+it also clears at r_multiple_2r (1.296), so the line is not single-exit fragile.
+
 ### OPTIMISATION POPULATION BY BUCKET AND FAMILY (B2632, owner directive 2026-09-07)
 
 **Accounting (derived live at B2632; every term from the registry + config disabled sets +
