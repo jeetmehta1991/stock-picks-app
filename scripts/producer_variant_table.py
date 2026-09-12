@@ -440,7 +440,16 @@ SPECS_PHASE0: dict[str, dict] = {
         # ticker, df, as_of) and :278 compute_pead_signals(ticker, df,
         # as_of) - so every knob below is a Python default with no env knob.
         # A resim sweep as coded would produce IDENTICAL cubes (the L387
-        # class). Consequence: every resim_band here is EMPTY; the free
+        # class). B2686 CORRECTION (S6-B2645a, owner word 2026-09-11): TWO
+        # env knobs now exist and are pinned - PEAD_DRIFT_WINDOW_DAYS
+        # (reaches drift_window_days at BOTH call sites) and
+        # PEAD_YOY_LONG_THRESHOLD (reaches long_threshold at :238);
+        # kwargs are built only when set, so production stays
+        # byte-identical unset (test_b2686_pead_env_knobs_reach_the_
+        # producers). The admitted cell (drift<=20 / yoy>=0.10) is now
+        # RESIM-CAPABLE; resim_band membership stays a band-review call.
+        # Consequence AS ORIGINALLY WRITTEN (pre-B2686): every resim_band
+        # here is EMPTY; the free
         # (tightening) levels are gradable from the cube because the
         # CONTINUOUS earnings_eps_yoy_growth and days_since_last_earnings
         # persist in signals_at_entry (verified on the R5 trade log,
@@ -482,9 +491,10 @@ SPECS_PHASE0: dict[str, dict] = {
              "derivation": "TIGHTENING-ONLY band, retention MEASURED "
                            "2026-09-07 on the 2,116 R5 fires (days_since "
                            "persisted): <=20d keeps 53pct, <=40d keeps 76pct; "
-                           "quartiles 6/19/40. Loosening (>60d) has NO env "
-                           "knob - unrunnable as coded (S6-B2569a class), "
-                           "struck until a knob is built"},
+                           "quartiles 6/19/40. Loosening (>60d) was struck "
+                           "for lack of a knob; B2686 built the env knob "
+                           "PEAD_DRIFT_WINDOW_DAYS (pinned), so >60d is now "
+                           "resim-capable pending a band review"},
             {"id": "P4", "producer": "pead.compute_pead_signals",
              "param": "yoy_growth_threshold", "production": 0.0,
              "band": [0.0, 0.02, 0.05, 0.10],

@@ -235,7 +235,17 @@ def inject_earnings_surprise_yoy_signals(
     """
     try:
         from backtest.signals.earnings_surprise_yoy import compute_yoy_surprise_signal
-        yoy_signal = compute_yoy_surprise_signal(ticker, df, as_of)
+        # B2686 (S6-B2645a): resim knobs for the ADMITTED pead cell - kwargs
+        # built ONLY when the env vars are set, so production behavior is
+        # byte-identical when unset (defaults live in the producer's own
+        # signature). Pinned by test_b2686_pead_env_knobs_reach_the_producers.
+        import os as _os
+        _kw = {}
+        if _os.environ.get("PEAD_DRIFT_WINDOW_DAYS"):
+            _kw["drift_window_days"] = int(_os.environ["PEAD_DRIFT_WINDOW_DAYS"])
+        if _os.environ.get("PEAD_YOY_LONG_THRESHOLD"):
+            _kw["long_threshold"] = float(_os.environ["PEAD_YOY_LONG_THRESHOLD"])
+        yoy_signal = compute_yoy_surprise_signal(ticker, df, as_of, **_kw)
         if yoy_signal:
             signals.update(yoy_signal)
     except Exception as _e:
@@ -275,7 +285,14 @@ def inject_pead_signals(
     """
     try:
         from backtest.signals.pead import compute_pead_signals
-        pead = compute_pead_signals(ticker, df, as_of)
+        # B2686 (S6-B2645a): same drift knob for the base pead producer;
+        # the yoy threshold knob belongs to the yoy sleeve only (scope:
+        # the two ticketed knobs, nothing else).
+        import os as _os
+        _kw = {}
+        if _os.environ.get("PEAD_DRIFT_WINDOW_DAYS"):
+            _kw["drift_window_days"] = int(_os.environ["PEAD_DRIFT_WINDOW_DAYS"])
+        pead = compute_pead_signals(ticker, df, as_of, **_kw)
         if pead:
             signals.update(pead)
     except Exception as _e:

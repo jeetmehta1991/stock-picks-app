@@ -2910,6 +2910,23 @@ output_audit/b2685_xslowbeta_admission_grid.json; roster re-rendered -> 29 disti
 (test_b2417 moved 28 -> 29). Surfaced by an owner-ruled measurement, not a search grid;
 it also clears at r_multiple_2r (1.296), so the line is not single-exit fragile.
 
+### PEAD RESIM KNOBS WIRED + EXPLORATORY BUCKET RECONCILED (B2686/B2687, owner word 2026-09-11)
+
+S6-B2645a EXECUTED: PEAD_DRIFT_WINDOW_DAYS + PEAD_YOY_LONG_THRESHOLD env knobs wired at
+signal_loader.py's two bare call sites - kwargs built only when set, production
+byte-identical unset; pinned by test_b2686_pead_env_knobs_reach_the_producers (recorder
+arms both directions). The admitted pead cell (drift<=20 / yoy>=0.10) is now
+RESIM-CAPABLE; the SPECS entry's engine-reachability note corrected in place
+(producer_variant_table.py). Band membership for any resim sweep stays a band-review
+call (11.2c).
+
+S6-B2636a EXECUTED (build) - premise decayed and re-measured: the importable registry
+EXISTS (multiple_testing_correction.EXPLORATORY_STRATEGIES:70, 25 live members) vs 51
+docstring-marked; reconciliation in output_audit/b2687_exploratory_reconciliation.json
+- 33 marked-not-in-registry + 7 in-registry-unmarked. MEMBERSHIP is owner-ruled: the
+33-name promotion menu awaits the owner's word (S6-B2687a); the 7 unmarked need only
+cosmetic docstring lines.
+
 ### OPTIMISATION POPULATION BY BUCKET AND FAMILY (B2632, owner directive 2026-09-07)
 
 **Accounting (derived live at B2632; every term from the registry + config disabled sets +

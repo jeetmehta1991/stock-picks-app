@@ -35403,3 +35403,59 @@ def test_b2682a_pyramid_artifacts_carry_their_verdict():
     v4 = with_staged(["D\toutput_audit/b9999_pyramid.json"], lambda n: "")
     assert v4 == [], v4
 
+
+def test_b2686_pead_env_knobs_reach_the_producers():
+    """B2686 (S6-B2645a): the PEAD_DRIFT_WINDOW_DAYS / PEAD_YOY_LONG_THRESHOLD
+    env knobs must reach the producers THROUGH the loader's call sites - and
+    with the env unset the producers must receive NO overriding kwargs
+    (production byte-identical). Recorders replace the producers in their
+    defining modules; the loader's function-local import-from resolves at
+    call time, so the recorder is what the wiring delivers to."""
+    import os
+    import pandas as _pd
+    from datetime import date as _date
+    import backtest.signals.pead as pead_mod
+    import backtest.signals.earnings_surprise_yoy as yoy_mod
+    from backtest.data import signal_loader as sl
+
+    seen = {}
+
+    def rec_yoy(ticker, df, as_of, **kw):
+        seen["yoy"] = kw
+        return {}
+
+    def rec_pead(ticker, df, as_of, **kw):
+        seen["pead"] = kw
+        return {}
+
+    df = _pd.DataFrame({"close": [1.0], "high": [1.0], "low": [1.0],
+                        "open": [1.0], "volume": [1.0]})
+    real_yoy, real_pead = yoy_mod.compute_yoy_surprise_signal, pead_mod.compute_pead_signals
+    saved = {k: os.environ.get(k) for k in
+             ("PEAD_DRIFT_WINDOW_DAYS", "PEAD_YOY_LONG_THRESHOLD")}
+    try:
+        yoy_mod.compute_yoy_surprise_signal = rec_yoy
+        pead_mod.compute_pead_signals = rec_pead
+        # arm 1: knobs SET -> kwargs arrive
+        os.environ["PEAD_DRIFT_WINDOW_DAYS"] = "20"
+        os.environ["PEAD_YOY_LONG_THRESHOLD"] = "0.10"
+        sl.inject_earnings_surprise_yoy_signals("TEST", df, _date(2024, 1, 2), {})
+        sl.inject_pead_signals("TEST", df, _date(2024, 1, 2), {})
+        assert seen["yoy"] == {"drift_window_days": 20, "long_threshold": 0.10}, seen
+        assert seen["pead"] == {"drift_window_days": 20}, seen
+        # arm 2 (must-quiet): knobs UNSET -> no overriding kwargs
+        del os.environ["PEAD_DRIFT_WINDOW_DAYS"]
+        del os.environ["PEAD_YOY_LONG_THRESHOLD"]
+        seen.clear()
+        sl.inject_earnings_surprise_yoy_signals("TEST", df, _date(2024, 1, 2), {})
+        sl.inject_pead_signals("TEST", df, _date(2024, 1, 2), {})
+        assert seen["yoy"] == {} and seen["pead"] == {}, seen
+    finally:
+        yoy_mod.compute_yoy_surprise_signal = real_yoy
+        pead_mod.compute_pead_signals = real_pead
+        for k, v in saved.items():
+            if v is None:
+                os.environ.pop(k, None)
+            else:
+                os.environ[k] = v
+
