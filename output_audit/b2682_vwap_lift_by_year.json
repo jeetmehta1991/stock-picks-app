@@ -1,0 +1,131 @@
+{
+  "_doc": "B2682: per-YEAR base-vs-filtered (pct_from_vwap >= 35) sharpe at time_stop_10d over the momentum family's recorded R5 fires - the IS years (2022 bear included) vs the holdout year; owner-question measurement",
+  "rows": {
+    "per_year": [
+      {
+        "year": 2022,
+        "base": 0.065,
+        "base_n": 2840,
+        "filt": 0.219,
+        "filt_n": 59,
+        "lift": 0.154
+      },
+      {
+        "year": 2023,
+        "base": 0.108,
+        "base_n": 3165,
+        "filt": -0.099,
+        "filt_n": 96,
+        "lift": -0.207
+      },
+      {
+        "year": 2024,
+        "base": -0.162,
+        "base_n": 2378,
+        "filt": 0.758,
+        "filt_n": 347,
+        "lift": 0.92
+      },
+      {
+        "year": 2025,
+        "base": -0.41,
+        "base_n": 3734,
+        "filt": 0.331,
+        "filt_n": 748,
+        "lift": 0.741
+      },
+      {
+        "year": 2026,
+        "base": 0.723,
+        "base_n": 1245,
+        "filt": 1.497,
+        "filt_n": 333,
+        "lift": 0.774
+      }
+    ],
+    "long_only_per_year": [
+      {
+        "year": 2022,
+        "base": 0.15,
+        "base_n": 2281,
+        "filt": -0.653,
+        "filt_n": 51,
+        "lift": -0.803
+      },
+      {
+        "year": 2023,
+        "base": 0.125,
+        "base_n": 2482,
+        "filt": 0.406,
+        "filt_n": 78,
+        "lift": 0.281
+      },
+      {
+        "year": 2024,
+        "base": 0.028,
+        "base_n": 1689,
+        "filt": 1.405,
+        "filt_n": 256,
+        "lift": 1.377
+      },
+      {
+        "year": 2025,
+        "base": -0.046,
+        "base_n": 2862,
+        "filt": 0.644,
+        "filt_n": 619,
+        "lift": 0.69
+      },
+      {
+        "year": 2026,
+        "base": 0.867,
+        "base_n": 968,
+        "filt": 2.036,
+        "filt_n": 273,
+        "lift": 1.169
+      }
+    ],
+    "top_decile_per_year": [
+      {
+        "year": 2022,
+        "base": -0.085,
+        "base_n": 35,
+        "filt": null,
+        "filt_n": 1,
+        "lift": null
+      },
+      {
+        "year": 2023,
+        "base": 0.858,
+        "base_n": 55,
+        "filt": 1.63,
+        "filt_n": 10,
+        "lift": 0.772
+      },
+      {
+        "year": 2024,
+        "base": 1.477,
+        "base_n": 44,
+        "filt": 1.936,
+        "filt_n": 29,
+        "lift": 0.459
+      },
+      {
+        "year": 2025,
+        "base": 0.994,
+        "base_n": 91,
+        "filt": 1.308,
+        "filt_n": 61,
+        "lift": 0.314
+      },
+      {
+        "year": 2026,
+        "base": 2.774,
+        "base_n": 28,
+        "filt": 4.389,
+        "filt_n": 21,
+        "lift": 1.615
+      }
+    ]
+  }
+}
