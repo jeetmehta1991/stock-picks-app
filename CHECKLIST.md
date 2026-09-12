@@ -5717,3 +5717,19 @@ advisors; the drift-window axis was monotone at 5 of 5 levels of the other axis 
 Bernard-Thomas prediction), and the variance-mining objection was refuted because the
 tightest cell ranked fifth. **Would NOT have caught** a grid where every axis is
 unpredicted - there it reduces to the existing trials-count rule.
+
+### #298 — CAMPAIGN SUMMARIES DERIVE FROM THE STANDARD RENDERER (B2696 / L783, owner-mandated 2026-09-12)
+
+Before summarizing any campaign artifact in-response, render it through the
+STANDARD form first (one column per axis, bands in the header) and summarize
+from THAT render. Every SKIP / REFUSED / coverage row in the artifact appears
+in the summary, or the summary is wrong. Lineage: a home-made collapsed Table D
+hid the artifact's own coverage-skip row, and "numeric breadth found nothing"
+shipped as a 4-of-4 claim over a 3-of-4 test while the screen's rank-1 axis was
+untested. Owner asked why the class reached LEARNINGS but not CHECKLIST - this
+item is the answer: #285 binds the QUOTER of a locked table; this binds the
+SUMMARIZER of a campaign artifact. Detection is JUDGMENT-ONLY (no scan knows
+which artifact a paragraph summarizes); durability is mechanical - the L783
+fragment pin (test_b2123) plus test_b1486's banner-sync forcing this item into
+the always-checked range.
+

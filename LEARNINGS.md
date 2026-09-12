@@ -20196,3 +20196,22 @@ gate the commit on the verdict token in the same guard, or wait for the
 completion notification. And an empty `*_pyramid.json` is never legitimate:
 pinned by test_b2682a_pyramid_artifacts_carry_their_verdict.
 
+### L783 - A HOME-MADE RESULTS VIEW CAN HIDE THE ARTIFACT'S OWN DISCLOSURES (B2696, owner-caught 2026-09-12)
+
+**What happened, two faces of one act:** the b2694 Step-1 Table D was authored
+as a collapsed three-column dialect instead of the standard one-column-per-axis
+offline form (compliance failure against item 285 - a locked format binds the
+writer, and WRITING a new form is worse than retyping one). Re-rendering in the
+STANDARD form immediately exposed what the collapsed view had hidden: the
+artifact's own SKIP row - monthly_momentum_6m coverage 0.942 < 0.98, never
+swept - which the in-response summary had dropped, so "numeric breadth found
+nothing" overstated a 3-of-4-tested result and called the screen's rank-1 axis
+refuted when it was UNTESTED (the L659 disclosure-dies-at-the-reporter class).
+
+**Rule:** render campaign results through the STANDARD form BEFORE summarizing
+- the standard's one-column-per-axis shape forces every band and every skip
+into view, which is precisely what a purpose-built view optimizes away. A
+skip/refusal row in an artifact appears in the summary or the summary is
+wrong. Correction shipped same turn: the runbook and ledger now carry the
+3-of-4 denominators and the untested-axis disposition.
+

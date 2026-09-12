@@ -2978,9 +2978,19 @@ until the owner's band word; Step-2 needs its own word.
 
 scripts/smc_lsr_step1.py on the approved 11-row band: reproduction gate exact (2,933
 fires = b2690), 598 graded IS cells, holdout untouched
-(output_audit/b2694_smc_lsr_step1.json). READINGS: (1) the NUMERIC breadth axes found
-NOTHING - best IS 0.284 vs its own 100-perm null q95 0.408, p 0.2079: the B2676-class
-null's first fully-negative verdict, working as designed. (2) The LEADER is B5 -
+(output_audit/b2694_smc_lsr_step1.json). READINGS: (1) THREE OF FOUR numeric breadth axes were swept (bb_bandwidth, vp_poc_pct,
+atr_pct) and found nothing - best IS 0.284 vs their own 100-perm null q95 0.408,
+p 0.2079; the FOURTH, monthly_momentum_6m (the screen's rank-1), was
+COVERAGE-SKIPPED at 0.942 < 0.98 and is UNTESTED on this hub, not refuted
+(B2696 correction - the artifact's SKIP row had been dropped from the summary).
+B2698 (owner option (b) 2026-09-12) RE-SWEPT monthly_momentum_6m under a WIDENED
+COVERAGE RULE (grade only the covered 94.2% of IS fires, 5.8% gap disclosed on the
+artifact's face; the 0.98 floor stands elsewhere): best cell >=0.0871 (q80) @
+breakeven_plus_trail IS 0.486 ci_lo 0.222 n 445/581, and the q40 line 0.475 ci_lo
+0.327 n 1335/1710; single-axis permutation null q95 0.235, p 0.0099 - the ONE axis
+that was untested is the ONE that clears its own null (the other three sat inside
+theirs at p 0.2079). Verdict binds the covered subpopulation only; holdout NOT read
+(output_audit/b2698_momentum_resweep.json + standard-form .md). (2) The LEADER is B5 -
 bullish_engulfing on the LONG leg: IS 2.078 ci_lo 1.474 at class_time_stop, positive
 ci_lo across ~9 exits (not single-exit fragile), n 111 IS / 129 full; DISCLOSURE: the
 boolean axes sat outside the numeric null, a 2-candidate x exits search - stated, not

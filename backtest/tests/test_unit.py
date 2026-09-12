@@ -25541,6 +25541,8 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
          "L781 (B2672): a sweep population must match the correction-named class"),
         ("the FILE is not the RESULT",
          "L782 (B2682a): gate on the verdict token, never on a live output file"),
+        ("a skip/refusal row in the artifact appears in the summary",
+         "L783 (B2696): the standard form first; home-made views hide disclosures"),
     ):
         if frag not in discipline_text:
             missing.append(f"execution-discipline lost [{why}]: {frag!r}")
@@ -25643,7 +25645,8 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # 252 -> 253 at B2671 (the L780 family-local-rectification fragment).
     # 253 -> 254 at B2672b (the L781 sweep-population fragment).
     # 254 -> 255 at B2682a (the L782 file-is-not-result fragment).
-    assert len(gutted) == 255, gutted
+    # 255 -> 256 at B2696 (the L783 standard-form-first fragment).
+    assert len(gutted) == 256, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
