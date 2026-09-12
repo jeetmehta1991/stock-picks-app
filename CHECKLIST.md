@@ -5790,3 +5790,43 @@ an attempted-search clause); the response-level scan is ticketed
 S6-B2705a for the next enforcement batch - editing the live Stop-hook file
 mid-session risks blocking every close, the stated reason for the split.
 
+### #301 - COPY THE STEP'S RULED SHAPE FROM THE PHASE TABLE (B2711 / L787, owner-caught 2026-09-12)
+
+Before writing a campaign spec, read the runbook phase table row for that
+step and copy its WINDOW and UNIVERSE verbatim. Step 1 = 200 tickers x 1
+year 2024-05-05..2025-05-05; Step 2 = 4 years x 544. A deviation needs the
+owner's words quoted in the spec (`step1_shape_waiver`), and **a Step-1
+window reaching past the IS/HO boundary 2025-05-05 is refused outright** -
+it would rank combinations on holdout data and spend the family's
+pre-registration. Lineage: a pilot ran 4 years in Step 1's slot, killed at
+sim-day 45 on the owner's question (L787). Mechanism: enforced by
+`producer_variant_table._step1_shape_refusals` inside `launch_refusals`
+(so `run_wave` and `prelaunch_gate` both refuse pre-engine), pinned by
+test_b2711 whose must-fire case is the killed spec itself.
+
+### #302 - DELETE THE DEGREE OF FREEDOM BEFORE ADDING A RULE (B2713 / L788, LLM-council unanimous, owner-directed 2026-09-12)
+
+Two clauses.
+
+**(a) Ruled values are resolved, never typed.** A campaign spec declares its
+STEP; `scripts/phase_table.resolve` parses the runbook's phase table and
+injects the window and universe; `phase_table.spec_refusals` (reached via
+`producer_variant_table.launch_refusals`, so `run_wave` AND `prelaunch_gate`
+both enforce it) refuses a step-declaring spec that types `window`,
+`tickers_file`, `universe`, `start` or `end`. Every run stamps the table's
+content hash. Pinned by test_b2713.
+
+**(b) When remediating a miss, prefer deleting the authoring surface to
+adding a rule - and if you add a rule instead, SAY SO and say why the
+deletion was not possible.** Measured basis for this clause: 7 owner-caught
+misses in one session, each answered by adding rules (a LEARNINGS entry, a
+CHECKLIST item, a tripwire row, a pin), and the 7th miss was caused by
+SUCCESSFUL retrieval of one of those rules used as justification. The
+corpus's own density is now a failure mode (L788). This item is the standing
+counterweight; it cannot be mechanised (no scan reads whether a cheaper
+deletion existed) - **attempted searches for a mechanism, per #300: a scan
+for rule-additions-without-a-deletion would fire on every legitimate new
+rule, and a ratchet on corpus size would tax the incident record itself, the
+L586 costly-in-the-wrong-place class. Durability instead: the L788 fragment
+pin in test_b2123 plus test_b1486's banner sync.**
+

@@ -100,6 +100,32 @@ def project_from_leg(elapsed_s: float, sim_day: int, total_days: int,
             "legs_still_needed_at_cap": legs_needed}
 
 
+def resolve_ruled_scope(spec: dict) -> dict:
+    """B2713 (LLM-council verdict 2026-09-12): a spec that declares `step`
+    gets its window and universe INJECTED from the runbook's phase table -
+    it cannot type them (phase_table.spec_refusals refuses that at the
+    launch gate). Returns the spec with the resolved fields filled in and
+    the table's content hash recorded, so every artifact carries the ruling
+    it ran under. A spec with no `step` passes through unchanged (legacy
+    shape; the gate makes it need a waiver)."""
+    if "step" not in spec:
+        return spec
+    from phase_table import resolve as _resolve
+    ruled = _resolve(int(spec["step"]))
+    spec = dict(spec)
+    spec["window"] = ruled["window"]
+    spec["tickers_file"] = ruled["tickers_file"]
+    spec["_resolved_scope"] = {
+        "step": ruled["step"], "universe_n": ruled["universe_n"],
+        "produces": ruled["produces"],
+        "phase_table_sha256": ruled["phase_table_sha256"],
+        "resolved_from": ruled["resolved_from"]}
+    print(f"phase table step {ruled['step']}: window "
+          f"{ruled['window']['start']}..{ruled['window']['end']}, universe "
+          f"{ruled['universe_n']} (table sha {ruled['phase_table_sha256']})")
+    return spec
+
+
 def _engine_strategy_file(spec: dict) -> str:
     """B2710 (B2707 reuse doctrine): the ENGINE runs graded subset + cube
     riders; the post-config battery grades ONLY strategy_subset. The merged
@@ -137,6 +163,15 @@ def build_manifest(spec: dict, arm: dict, out_dir: Path, sha: str) -> Path:
                         "\n".join(tickers).encode()).hexdigest()},
         "strategy_subset": spec["strategy_subset"],
         "cube_riders": spec.get("cube_riders"),
+        # B2714c: this manifest is GENERATED from a spec that the launch
+        # gate already judged; the typed-scope rule binds the AUTHORED
+        # spec, so the derived artifact says so and carries the spec's
+        # step / resolved-scope / waiver for audit.
+        "_derived_from_spec": spec["wave"],
+        "step": spec.get("step"),
+        "_resolved_scope": spec.get("_resolved_scope"),
+        "shape_waiver": (spec.get("shape_waiver")
+                         or spec.get("step1_shape_waiver")),
         "window": spec["window"], "arms": [arm],
         "concurrency": "orchestrated legs, solo per arm",
         "budget_cap_usd": 0, "spent_usd": 0, "projected_batch_usd": 0,
@@ -429,6 +464,8 @@ def main() -> int:
                     help="TEST SEAM ONLY - forwarded to launch_sweep.py")
     a = ap.parse_args()
     spec = json.loads(Path(a.spec).read_text(encoding="utf-8"))
+    # B2713: ruled scope is RESOLVED, never typed (council verdict)
+    spec = resolve_ruled_scope(spec)
     stale = archive_stale_summary(spec["wave"])
     if stale:
         print(f"[STALE] prior wave summary archived -> {stale.name}")

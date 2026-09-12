@@ -24112,6 +24112,11 @@ def test_b2082_launch_sweep_refuses_without_a_passing_gate():
         # this historical manifest predates the field. The pin firing here
         # is the new rule working - this manifest passed an hour ago.
         _m["leg_cap_hours"] = 2.5
+        # B2713/B2714: same fixtures-rot class one more time - the
+        # typed-scope rule refuses a no-step manifest, and this is a
+        # HISTORICAL manifest driving the GATE, not a campaign step.
+        _m["shape_waiver"] = ("test fixture: a historical manifest driving "
+                              "the launch gate, not an engine campaign step")
         # B2578: same class again. The B2578 launch gate is the FIRST consumer
         # of `strategy_subset` as a path, and this historical manifest holds
         # "output_audit/_subset_one.txt (smc_breaker_block_long)" - a path with
@@ -24788,6 +24793,12 @@ if n == 1:
     spec = {"wave": wave, "tickers_file": str(tick),
             "strategy_subset": str(sub),
             "window": {"start": "2024-05-05", "end": "2025-05-05"},
+            # B2714: synthetic resume-loop fixture on its own 2-ticker
+            # temp universe - it drives the loop, not a campaign step,
+            # so it states its reason instead of inheriting the ruled
+            # universe (and exercises the waiver path while doing it).
+            "shape_waiver": ("test fixture: resume-loop probe on a "
+                             "2-ticker temp universe, not a campaign step"),
             "leg_cap_hours": 0.1, "max_legs": 3,
             "arms": [{"tag": "armx", "env": {"SMC_SWING_LENGTH": "20"}}]}
 
@@ -25549,6 +25560,10 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
          "L785 (B2702): depth = all producer bands, resim included, Priority 1"),
         ("MECHANIZE FIRST: name the mechanism designs attempted",
          "L786 (B2705): a mechanizable slice is built in the same batch"),
+        ("COPY THE RULED ROW: open the runbook phase table",
+         "L787 (B2711): a step's shape is ruled, not reasoned"),
+        ("ASK FIRST WHETHER A DEGREE OF FREEDOM CAN BE DELETED INSTEAD",
+         "L788 (B2713): council unanimous - delete, do not police"),
     ):
         if frag not in discipline_text:
             missing.append(f"execution-discipline lost [{why}]: {frag!r}")
@@ -25655,7 +25670,9 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # 256 -> 257 at B2699 (the L784 unified-inventory-table fragment).
     # 257 -> 258 at B2702 (the L785 venue-never-narrows-the-mandate fragment).
     # 258 -> 259 at B2705 (the L786 mechanize-first fragment).
-    assert len(gutted) == 259, gutted
+    # 259 -> 260 at B2711 (the L787 copy-the-ruled-row fragment).
+    # 260 -> 261 at B2713 (the L788 delete-the-degree-of-freedom fragment).
+    assert len(gutted) == 261, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -32572,6 +32589,8 @@ def test_b2578_launch_gate_refuses_before_the_engine_and_p7_p8_are_struck(tmp_pa
     sub_smc = tmp_path / "smc.txt"
     sub_smc.write_text("smc_breaker_block_long\n", encoding="utf-8")
     smc = {"wave": "b2578t", "strategy_subset": str(sub_smc),
+           "shape_waiver": ("test fixture: synthetic smc doc exercising "
+                            "the adapter refusals, not a campaign step"),
            "arms": [{"tag": "sw10sp21",
                      "env": {"SMC_SWING_LENGTH": "10", "STRAT_EMA_SPAN": "21"}}]}
     assert pvt.launch_refusals(smc, root) == []
@@ -35746,4 +35765,159 @@ def test_b2710_cube_riders_are_validated_and_battery_exempt():
         assert len(lines) == 22 and len(set(lines)) == 22, len(lines)
     finally:
         mf.unlink()
+
+
+def test_b2711_step1_shape_is_gate_enforced():
+    """L787/#301: the RULED Step-1 shape is enforced at launch. MUST-FIRE
+    corpus case is the KILLED b2709 spec (4y window = Step 2's row, reaching
+    a year past the IS/HO boundary); MUST-QUIET is the corrected b2712 spec;
+    and the holdout-reach refusal is ABSOLUTE - a waiver cannot buy it."""
+    import sys as _sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    sp = str(root / "scripts")
+    if sp not in _sys.path:
+        _sys.path.insert(0, sp)
+    from producer_variant_table import (_step1_shape_refusals,
+                                        RULED_STEP1_WINDOW, IS_HO_BOUNDARY)
+    assert RULED_STEP1_WINDOW == {"start": "2024-05-05", "end": "2025-05-05"}
+    assert IS_HO_BOUNDARY == "2025-05-05"
+
+    killed = {"tickers_file": "output_audit/_sweep_200.txt",
+              "window": {"start": "2022-05-05", "end": "2026-05-05"}}
+    errs = _step1_shape_refusals(killed)
+    # B2713: the emission is "PAST the IS/HO boundary" - this assertion
+    # first read "past" and failed against a CORRECT gate (L771: a probe
+    # must perform the same comparison the assertion performs).
+    assert any("PAST the IS/HO boundary" in e for e in errs), errs
+    assert any("not the RULED Step-1 window" in e for e in errs), errs
+
+    # a waiver does NOT buy the holdout reach
+    waived = {**killed, "step1_shape_waiver":
+              "owner said run four years for this pilot, quoted at length here"}
+    e2 = _step1_shape_refusals(waived)
+    assert any("PAST the IS/HO boundary" in e for e in e2), e2
+    assert not any("not the RULED Step-1 window" in e for e in e2), e2
+
+    # the corrected TYPED shape is QUIET
+    ruled = {"tickers_file": "output_audit/_sweep_200.txt",
+             "window": {"start": "2024-05-05", "end": "2025-05-05"}}
+    assert _step1_shape_refusals(ruled) == []
+    # B2713c: a POINTER spec defers to phase_table.resolve - this gate
+    # must not judge a field the resolver owns (the layering bug this
+    # pin caught: it refused the very form the council mandated)
+    assert _step1_shape_refusals({"step": 1}) == []
+
+    # and it is reachable from the launch path on the real corrected spec
+    import json as _json
+    from producer_variant_table import launch_refusals
+    spec = _json.loads((root / "output_audit" / "b2712_smc_sw10_spec.json")
+                       .read_text(encoding="utf-8"))
+    # B2713 changed the contract: the spec is POINTER form and types no
+    # window - this arm first asserted the typed value and failed against
+    # correct code, which is the pin encoding a superseded contract.
+    assert "window" not in spec and spec.get("step") == 1
+    import run_wave as _rw
+    assert _rw.resolve_ruled_scope(spec)["window"] == RULED_STEP1_WINDOW
+    live = launch_refusals(spec, root)
+    assert not any("Step-1 window" in e or "IS/HO" in e for e in live), live
+
+
+def test_b2713_ruled_scope_is_resolved_not_typed():
+    """L788/#302 (LLM-council verdict): the phase table is PARSED, the ruled
+    Step-1 row resolves to 200 tickers x 2024-05-05..2025-05-05, a spec
+    declaring `step` may not type the resolver-owned fields, and run_wave
+    injects them. MUST-FIRE cases: the killed b2709 shape is now
+    unrepresentable (typed window + no step), and a step-declaring spec that
+    types a window is refused."""
+    import sys as _sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    sp = str(root / "scripts")
+    if sp not in _sys.path:
+        _sys.path.insert(0, sp)
+    import phase_table as pt
+
+    # (a) the table parses and the ruled row resolves - no typed numbers
+    ruled = pt.resolve(1)
+    assert ruled["window"] == {"start": "2024-05-05", "end": "2025-05-05"}, ruled
+    assert ruled["universe_n"] == 200 and ruled["tickers_file"].endswith("_sweep_200.txt")
+    assert ruled["window"]["end"] == pt.IS_HO_BOUNDARY
+    assert len(ruled["phase_table_sha256"]) == 16
+    step2 = pt.resolve(2)
+    assert step2["window"]["start"] == "2022-05-05" and step2["window"]["end"] == "2026-05-05"
+
+    # (b) authoring surface: typed fields refused
+    assert pt.spec_refusals({"step": 1}) == []
+    e1 = pt.spec_refusals({"step": 1, "window": {"start": "2022-05-05",
+                                                 "end": "2026-05-05"}})
+    assert any("phase table owns those fields" in x for x in e1), e1
+    e2 = pt.spec_refusals({"window": {"start": "2022-05-05", "end": "2026-05-05"},
+                           "tickers_file": "output_audit/_sweep_200.txt"})
+    assert any("declares no `step`" in x for x in e2), e2
+    assert pt.spec_refusals({
+        "window": {"start": "2024-05-05", "end": "2025-05-05"},
+        "shape_waiver": "owner said keep the legacy typed shape for this replay"}) == []
+
+    # (c) the live spec is in pointer form and run_wave injects the ruled row
+    import json as _json
+    import run_wave as rw
+    spec = _json.loads((root / "output_audit" / "b2712_smc_sw10_spec.json")
+                       .read_text(encoding="utf-8"))
+    assert spec.get("step") == 1
+    assert not any(k in spec for k in pt.RESOLVER_OWNED), spec.keys()
+    filled = rw.resolve_ruled_scope(spec)
+    assert filled["window"] == {"start": "2024-05-05", "end": "2025-05-05"}
+    assert filled["tickers_file"].endswith("_sweep_200.txt")
+    assert filled["_resolved_scope"]["phase_table_sha256"] == ruled["phase_table_sha256"]
+
+    # (d) reachable from the launch gate
+    from producer_variant_table import launch_refusals
+    assert launch_refusals(spec, root) == [], launch_refusals(spec, root)
+
+
+def test_b2714_legacy_typed_spec_register_is_named_and_shrink_only():
+    """B2714 (#279 + L747): the B2713 rule's backlog is disposed of by a
+    NAMED register, not a bare count, and it can only shrink. The first
+    pointer-form spec is deliberately absent, and every live icg spec the
+    running chain uses still passes the launch gate."""
+    import glob as _glob
+    import json as _json
+    import sys as _sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    sp = str(root / "scripts")
+    if sp not in _sys.path:
+        _sys.path.insert(0, sp)
+    import phase_table as pt
+    reg = _json.loads((root / "output_audit" / "_legacy_typed_specs.json")
+                      .read_text(encoding="utf-8"))
+    names = reg["names"]
+    assert names, "an empty register would make the rule retroactive"
+    assert len(names) == len(set(names)), "duplicate names"
+    assert len(names) <= 66, (
+        f"register GREW to {len(names)} - it is shrink-only (B2714)")
+    assert "b2712_smc_sw10_spec.json" not in names, (
+        "the first pointer-form spec must never be grandfathered")
+    assert reg["count"] == len(names)
+    assert pt.legacy_typed_specs() == frozenset(names)
+    # B2714c: a GENERATED manifest is exempt - run_wave builds it FROM a
+    # spec the gate already judged, so re-judging it refused a correct
+    # launch (caught by test_b2116 driving the real run_wave path).
+    gen = {"_derived_from_spec": "w", "window": {"start": "2022-05-05",
+           "end": "2026-05-05"}, "tickers_file": "x.txt"}
+    assert pt.spec_refusals(gen) == []
+    import producer_variant_table as _pvt
+    assert _pvt._step1_shape_refusals(gen) == []
+    import producer_variant_table as pvt
+    # MEASURED: the b2527 glob returns 16; the 17th live spec is the
+    # b2574 rerun, exactly as test_b2578 assembles it (my first version
+    # asserted >= 17 on the glob alone - a count I assumed).
+    live = sorted(_glob.glob(str(root / "output_audit" / "b2527_icg_*_spec.json")))
+    assert len(live) == 16, live
+    live.append(str(root / "output_audit" / "b2574_icg_span100_rerun_spec.json"))
+    for f in live:
+        d = _json.loads(_P(f).read_text(encoding="utf-8"))
+        d["_spec_path"] = _P(f).name
+        assert pvt.launch_refusals(d, root) == [], (f, pvt.launch_refusals(d, root))
 

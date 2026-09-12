@@ -1089,6 +1089,92 @@ def _level_in_band(value, row: dict) -> bool:
     return False
 
 
+# B2711 (owner-caught 2026-09-12): the RULED Step-1 search shape, from the
+# runbook's phase table (STRATEGY_OPTIMISATION_PLAN.md line 838 "1 SEARCH |
+# all fire-adding configs | 1 year, 2024-05..2025-05 | 200") and SS10.1. The
+# window ENDS at the IS/HO boundary 2025-05-05 BY DESIGN: a Step-1 search
+# that reaches past it ranks combinations on holdout data and destroys the
+# pre-registration for the whole family. Step 2 is the 4y/544 shape and is
+# NOT a Step-1 option.
+def _legacy_names() -> frozenset:
+    """B2715: the grandfather register, read WITHOUT a silent swallow.
+    An unavailable resolver or register yields the empty set, i.e. the
+    typed-scope rule applies to every spec (the strict direction)."""
+    import importlib.util as _ilu
+    if _ilu.find_spec("phase_table") is None:
+        return frozenset()
+    import phase_table as _pt
+    return _pt.legacy_typed_specs()
+
+
+RULED_STEP1_WINDOW = {"start": "2024-05-05", "end": "2025-05-05"}
+RULED_STEP1_TICKERS = "output_audit/_sweep_200.txt"
+IS_HO_BOUNDARY = "2025-05-05"
+
+
+def _step1_shape_refusals(doc: dict) -> list[str]:
+    """A wave spec is a Step-1 search config by construction (launch_refusals
+    require_subset). Refuse any window that reaches past the IS/HO boundary,
+    and any deviation from the ruled shape that carries no explicit owner
+    waiver. `step1_shape_waiver` must name the owner's words - a bare true
+    is not a waiver (L642: the absent case is the case the guard exists for).
+    """
+    # B2713c LAYERING: a spec declaring `step` does not TYPE its scope -
+    # phase_table.resolve owns it and refuses a past-boundary resolution
+    # at source. Judging an absent field here would refuse the very
+    # pointer form the council verdict mandates (caught by test_b2711).
+    if "step" in doc or doc.get("_derived_from_spec"):
+        return []
+    # B2714: grandfathered legacy specs (register) are exempt - a
+    # no-step spec cannot be judged against a step's row, and the two
+    # committed STEP-2 specs legitimately carry the 4-year window.
+    # B2715: this read used `except ImportError: pass` and tripped the
+    # B2128 silent-swallow ratchet (correctly, #122). No swallow now:
+    # _legacy_names() returns an EMPTY set when the register or the
+    # resolver is unavailable, which applies the rule to everything -
+    # the strict direction - and launch_refusals separately REFUSES on
+    # an unimportable phase_table, so the loud path is not lost.
+    _src = str(doc.get("_spec_path") or doc.get("wave") or "")
+    if _src and any(_src == n or n.startswith(_src)
+                    for n in _legacy_names()):
+        return []
+    w = doc.get("window") or {}
+    start, end = str(w.get("start", "")), str(w.get("end", ""))
+    # B2714d: this gate judges a TYPED window. A doc that types none is
+    # not deviating - it relies on the resolver or the launcher default,
+    # and the "declare your step" requirement lives in
+    # phase_table.spec_refusals. Treating absent as WRONG refused a spec
+    # that typed nothing at all (caught by test_b2578's good-spec arm).
+    if not (start or end):
+        return []
+    # B2714b: accept EITHER waiver key - phase_table.spec_refusals takes
+    # `shape_waiver` too, and two gates with two vocabularies refused a
+    # doc the sibling accepted (L602 class, in code I wrote an hour apart).
+    waiver = doc.get("step1_shape_waiver") or doc.get("shape_waiver")
+    errs: list[str] = []
+    if end > IS_HO_BOUNDARY:
+        errs.append(
+            f"window end {end} reaches PAST the IS/HO boundary "
+            f"{IS_HO_BOUNDARY} - a Step-1 search on holdout data destroys the "
+            "pre-registration (B2711; this is refused WITH or WITHOUT a "
+            "waiver, it is not a scope choice)")
+    if (start, end) != (RULED_STEP1_WINDOW["start"], RULED_STEP1_WINDOW["end"]):
+        if not (isinstance(waiver, str) and len(waiver.strip()) >= 20):
+            errs.append(
+                f"window {start}..{end} is not the RULED Step-1 window "
+                f"{RULED_STEP1_WINDOW['start']}..{RULED_STEP1_WINDOW['end']} "
+                "(runbook phase table / SS10.1) and carries no "
+                "`step1_shape_waiver` quoting the owner's words (B2711)")
+    tf = str(doc.get("tickers_file", ""))
+    if tf and tf != RULED_STEP1_TICKERS:
+        if not (isinstance(waiver, str) and len(waiver.strip()) >= 20):
+            errs.append(
+                f"tickers_file {tf} is not the ruled Step-1 universe "
+                f"{RULED_STEP1_TICKERS} and carries no `step1_shape_waiver` "
+                "(B2711)")
+    return errs
+
+
 def _rider_refusals(doc: dict, root: Path, graded: list[str]) -> list[str]:
     """B2710 (B2707 reuse doctrine): `cube_riders` names strategies the
     ENGINE runs for cube trades only - BATTERY-EXEMPT BY DESIGN, exemption
@@ -1163,6 +1249,15 @@ def launch_refusals(doc: dict, root: Path | None = None,
     errs: list[str] = []
     # B2710: riders validated up front; graded-subset checks unchanged
     errs += _rider_refusals(doc, root, strats)
+    # B2711: the ruled Step-1 search shape (holdout reach is absolute)
+    errs += _step1_shape_refusals(doc)
+    # B2713 (council verdict): resolver-owned fields are not typeable
+    try:
+        from phase_table import spec_refusals as _pt_spec_refusals
+        errs += _pt_spec_refusals(doc)
+    except ImportError as _e:  # fail CLOSED (L642)
+        errs.append(f"phase_table resolver unavailable ({_e}) - refusing "
+                    "rather than launching on typed scope (B2713)")
     for s in strats:
         spec = SPECS.get(s)
         if spec is None:

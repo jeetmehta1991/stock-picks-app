@@ -1,0 +1,35 @@
+{
+ "wave": "b2712_smc_sw10",
+ "step": 1,
+ "strategy_subset": "output_audit/_subset_one.txt",
+ "cube_riders": "output_audit/_subset_smc_riders.txt",
+ "leg_cap_hours": 4.5,
+ "max_legs": 3,
+ "step1_cube": true,
+ "pool_workers": 10,
+ "allow_engine_drift": true,
+ "_doc": [
+  "B2712 = S6-B2702a Step 1, config 1 of 45. POINTER FORM (B2713, LLM-council",
+  "verdict): this spec declares step 1 and CANNOT type a window or universe -",
+  "scripts/phase_table.resolve parses the runbook's own phase table and injects",
+  "the ruled 200 tickers x 2024-05-05..2025-05-05, stamping the table's content",
+  "hash into the run. Supersedes the killed b2709 wave, which I had specced at",
+  "STEP 2's 4-year window: 4x compute and a search reaching past the IS/HO",
+  "boundary into the holdout year (L787/L788).",
+  "Riders per B2707/B2710: the engine runs 22 smc consumers so every smc",
+  "strategy's depth leg can be graded OFFLINE from this one cube; the battery",
+  "grades smc_breaker_block_long.",
+  "B2715 (council): resume=true added - the runbook's Step-1 spec row mandates it and this box has a recorded 1.3h worker-spawn death and a sleep death; without resume a death restarts from day 0 (L731 says TOLERATE, not prevent). max_run_hours mirrors leg_cap under the B2107 5h owner cap."
+ ],
+ "arms": [
+  {
+   "tag": "sw10",
+   "env": {
+    "SMC_SWING_LENGTH": "10"
+   },
+   "note": "P1 swing_length=10 (production 20); config 1 of 45"
+  }
+ ],
+ "resume": true,
+ "max_run_hours": 4.5
+}

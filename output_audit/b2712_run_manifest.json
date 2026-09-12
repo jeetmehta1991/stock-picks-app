@@ -1,0 +1,26 @@
+{
+ "sequence": "smc-depth-factorial-S6-B2702a",
+ "batch": "b2712_sw10",
+ "frozen_sha": "PENDING-THIS-BATCH",
+ "isolation": false,
+ "isolation_note": "local detached run from the committed tree; no AWS tar isolation on the local venue",
+ "calendar": "nyse_mcal",
+ "tickers": "output_audit/_sweep_200.txt (200) - the ruled Step-1 universe",
+ "graded_subset": "smc_breaker_block_long (the one smc battery family)",
+ "cube_riders": "21 smc consumers, engine-run for cube trades, battery-exempt BY DESIGN (B2710)",
+ "window": "RESOLVED at launch by scripts/phase_table.resolve from the runbook phase table (B2713) - the spec declares step 1 and cannot type a window; resolved value 2024-05-05..2025-05-05 ends AT the IS/HO boundary by design",
+ "budget_cap_usd": 100,
+ "spent_usd": 0,
+ "projected_batch_usd": 0,
+ "leg_cap_hours": 4.5,
+ "max_run_hours": 4.5,
+ "projected_wall_clock_hours": 2.6,
+ "wall_clock_basis": "MEASURED from the killed b2709 wave's own heartbeat before it was stopped: 45 sim-days in 0.4585 active_hours = 98.1 sim-days/h (output_b2709_smc_sw10_pilot_sw10/run_heartbeat.json); 251 trading days / 98.1 = 2.6 h. Same code, same universe, same 22 strategies - only the window differs, so the rate transfers.",
+ "obsolescence_risks": [
+  "RISK: Step-1 shape drift (THE B2711 INCIDENT) - CLOSED MECHANICALLY: launch_refusals._step1_shape_refusals refuses any window past the IS/HO boundary and any unwaivered deviation from the ruled shape",
+  "RISK: engine code changes mid-run - GATED: detached run holds launch-time code; tree clean at commit",
+  "RISK: machine sleep freezes in-process guards - TOLERATED (L731): legs checkpoint and resume; the cron observes from outside",
+  "RISK: killed-wave artifacts shadow this run (L649) - CLOSED: NEW wave name b2712, the b2709 dir left in place as the kill record"
+ ],
+ "largest_recovery_window_minutes": "one leg (leg_cap_hours 4.5; at the measured rate the whole config is ~2.6 h, so a single leg carries it)"
+}

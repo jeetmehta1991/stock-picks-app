@@ -3307,6 +3307,19 @@ run-producers-once directive in its strongest form: the producers already ran, i
 | F4 | PRE-REGISTER the single cell BEFORE any holdout code path runs, in a COMMITTED artifact. The ordering IS the pre-registration | the artifact + the commit | the commit hash in the queue row |
 | F5 | Owner-gated Step 2 (owner ruling 2026-09-08): compute the holdout for ALL cells x exits IN ONE READ - offline, one artifact, every cell's six-gate line rendered. The PRE-REGISTERED cell's numbers CARRY ADMISSION against the six LIVE_GATES; every OTHER cell's holdout figure is DIAGNOSTIC/PEEKED BY CONSTRUCTION and is labelled so in the artifact - it can never be used to pick a different winner, because the pre-registration is spent the moment this read runs (the icg challenge-bound pattern, output_audit/b2628_family_pass_prereg.json precedent). Reader: PROPOSED-NOT-BUILT (S6-B2638b) | offline holdout reader | the Step-2 grid with peeked cells LABELLED |
 
+**STEP-1 SHAPE IS GATE-ENFORCED (B2711, owner-caught 2026-09-12).** The phase
+table's Step-1 row (200 tickers x 1 year 2024-05-05..2025-05-05) is MECHANICAL:
+`producer_variant_table._step1_shape_refusals`, called inside `launch_refusals`,
+refuses (a) ANY Step-1 window reaching past the IS/HO boundary 2025-05-05 -
+absolute, no waiver buys it, because such a search ranks combinations on holdout
+data and spends the family's pre-registration - and (b) any other deviation from
+the ruled window or the ruled 200-ticker universe carrying no
+`step1_shape_waiver` that quotes the owner. Incident: the b2709 pilot was specced
+at STEP 2's 4-year window and killed at sim-day 45 (L787 / CHECKLIST #301; pin
+test_b2711 uses that spec as its must-fire case). Same table, same reminder:
+Step 2 advances the **top 3 CONFIGS** (owner 2026-08-29; the older 'top 10
+combinations' is superseded).
+
 **BAND-COVERAGE GATE (B2704, owner-mandated 2026-09-12, verbatim): "Each and
 every band once approved in table A needs to be tested before a strategy can
 be declared as a failure in step 2. Bands can be discarded in step 1 as per
