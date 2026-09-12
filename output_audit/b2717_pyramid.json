@@ -1,0 +1,125 @@
+........................................................................ [  5%]
+........................................................................ [ 10%]
+........................................................................ [ 15%]
+........................................................................ [ 21%]
+........................................................................ [ 26%]
+........................................................................ [ 31%]
+........................................................................ [ 37%]
+........................................................................ [ 42%]
+..............................................s......................... [ 47%]
+....................s.................................................s. [ 53%]
+........................................................................ [ 58%]
+........................................................................ [ 63%]
+........................................................................ [ 68%]
+........................................................................ [ 74%]
+........................................................................ [ 79%]
+..........................................................F............. [ 84%]
+........................................................................ [ 90%]
+........................................................................ [ 95%]
+.............................................................            [100%]
+================================== FAILURES ===================================
+_ test_b2579_battery_families_and_knob_blast_radius_are_derived_not_handwritten _
+
+tmp_path = WindowsPath('C:/Users/jeetm/AppData/Local/Temp/pytest-of-jeetm/pytest-1522/test_b2579_battery_families_an0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001418BAF6190>
+
+    def test_b2579_battery_families_and_knob_blast_radius_are_derived_not_handwritten(
+            tmp_path, monkeypatch):
+        """B2579 (S6-B2573a/c/d): the post-config battery's per-family plumbing is
+        DERIVED from one declaration, and a knob's blast radius is MEASURED.
+    
+        Before this, `run_postconfig.FAMILIES` held two hand-written closures and
+        every grader flag, cube path, PYTHONPATH and window rule was typed twice
+        (once per family); a third strategy meant six more hand-written pieces,
+        and the four institutional configs that landed ungraded pre-B2520 are what
+        a missing piece costs. Now each SPECS entry carries a `tools` adapter
+        block, `family_entry` builds the row from it, `family_refusal` says why an
+        incomplete block is NOT a family (fail closed, L642), and R8's consumer
+        half is a measurement (`knob_consumers` tokenizes the tree) pinned equal
+        to the declaration - drift refuses at launch AND fails step 7 at landing.
+        """
+        import copy
+        import importlib.util
+        import json
+        import types
+        from pathlib import Path
+    
+        root = Path(__file__).resolve().parents[2]
+    
+        def load(name, rel):
+            spec = importlib.util.spec_from_file_location(name, root / rel)
+            m = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(m)
+            return m
+    
+        pvt = load("pvt_b2579", "scripts/producer_variant_table.py")
+    
+        # ---- (1) S6-B2573d: declared consumer list == the measured one, for
+        # every env knob AND every env actuator in every SPECS entry.
+        n_knobs = 0
+        for sname, spec in pvt.SPECS.items():
+            for row in spec["params"]:
+                if row.get("env"):
+                    dec = pvt.declared_consumers(spec, row["env"])
+                    got = pvt.knob_consumers(row["env"])
+                    assert dec == got, (sname, row["env"], dec, got)
+                    assert got, (sname, row["env"], "a declared knob nothing reads")
+                    n_knobs += 1
+            for k in (spec.get("env_actuators") or {}):
+                dec, got = pvt.declared_consumers(spec, k), pvt.knob_consumers(k)
+                assert dec == got, (sname, k, dec, got)
+                n_knobs += 1
+        assert n_knobs >= 11, n_knobs
+        # A mention inside a module docstring is prose, not a consumer. MEASURED
+        # instances: demand_pruning.py:13 names STRAT_EMA_SPAN in its docstring
+        # (a hand-written list had it as a consumer - the tokenizer caught it),
+        # spot_check_institutional.py names INST_PERSIST_CACHE_TAG in its.
+        assert "backtest/signals/demand_pruning.py" not in pvt.knob_consumers("STRAT_EMA_SPAN")
+        assert "scripts/spot_check_institutional.py" not in pvt.knob_consumers("INST_PERSIST_CACHE_TAG")
+        assert pvt.knob_consumers("NO_SUCH_KNOB_XYZ") == []
+        assert pvt.declared_consumers(pvt.SPECS["smc_breaker_block_long"],
+                                      "NO_SUCH_KNOB_XYZ") is None
+        # B2579b: the scripts/ half reads the AST, not the file's text. MEASURED
+        # the moment B2579 landed - knob_consumers' own docstring names
+        # `environ.get("SMC_SWING_LENGTH")` as its example, and the regex version
+        # made THIS module report itself as a consumer (L748: a good comment names
+        # the exact token your matcher greps). A docstring is not a read; a real
+        # os.environ access is, whatever spelling it uses.
+        assert "scripts/producer_variant_table.py" not in pvt.knob_consumers("SMC_SWING_LENGTH")
+        assert pvt._env_reads(
+            root / "scripts" / "build_institutional_persistence_precompute.py") >= {
+            "INST_MIN_CONSECUTIVE_QUARTERS", "INST_GROWTH_LOOKBACK_QUARTERS",
+            "INST_GROWTH_MULTIPLE", "INST_PERSIST_CACHE_TAG"}
+        fake_script = tmp_path / "fake_env_script.py"
+        fake_script.write_text(
+            '"""doc example: os.environ.get(\'DOC_ONLY_KNOB\')"""\n'
+            "import os\n"
+            "a = os.environ.get('GET_KNOB')\n"
+            "b = os.environ['SUB_KNOB']\n"
+            "c = os.getenv('GETENV_KNOB')\n"
+            "d = os.environ.pop('POP_KNOB', None)\n"
+            "e = 'MENTIONED_KNOB'\n", encoding="utf-8")
+        assert pvt._env_reads(fake_script) == {
+            "GET_KNOB", "SUB_KNOB", "GETENV_KNOB", "POP_KNOB"}, pvt._env_reads(fake_script)
+        unparseable = tmp_path / "broken.py"
+        unparseable.write_text("def (:\n", encoding="utf-8")
+        assert pvt._env_reads(unparseable) == frozenset()
+    
+        # ---- (2) the launch gate refuses DRIFT and an undeclared list
+        good = json.loads((root / "output_audit" / "b2527_icg_span50_spec.json")
+                          .read_text(encoding="utf-8"))
+>       assert pvt.launch_refusals(good, root) == []
+E       assert ["spec types ...ng the owner"] == []
+E         
+E         Left contains one more item: "spec types ['window', 'tickers_file'] and declares no `step` - a campaign spec names its step and lets the ruled window/universe resolve (B2713); typing them needs a waiver quoting the owner"
+E         Use -v to get more diff
+
+backtest\tests\test_unit.py:32777: AssertionError
+=========================== short test summary info ===========================
+FAILED backtest/tests/test_unit.py::test_b2579_battery_families_and_knob_blast_radius_are_derived_not_handwritten
+1 failed, 1353 passed, 3 skipped in 639.13s (0:10:39)
+
+pytest_exit=1
+tree=CHANGED (1 paths): EXECUTION_QUEUE.md
+exit=4
+elapsed_s=667

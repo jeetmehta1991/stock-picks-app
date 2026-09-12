@@ -464,14 +464,19 @@ def main() -> int:
                     help="TEST SEAM ONLY - forwarded to launch_sweep.py")
     a = ap.parse_args()
     spec = json.loads(Path(a.spec).read_text(encoding="utf-8"))
-    # B2713: ruled scope is RESOLVED, never typed (council verdict)
-    spec = resolve_ruled_scope(spec)
+    # B2717: stamp the spec's own basename so grandfather identity is
+    # EXACT rather than inferred from the wave name.
+    spec["_spec_path"] = Path(a.spec).name
     stale = archive_stale_summary(spec["wave"])
     if stale:
         print(f"[STALE] prior wave summary archived -> {stale.name}")
     # B2578 (S6-B2573b): the launch gate runs BEFORE any arm. A refusal
     # writes a REFUSED summary (so run_serial_chain HALTs on it and an
     # idempotent restart does not relaunch the same spec) and exits 3.
+    # B2716 ORDER: the gate judges the AUTHORED spec; the resolver fills
+    # the ruled fields only after it passes. Resolving first fed the gate
+    # its own injection and drew "declares step AND types window" - a
+    # correct verdict on the wrong input (live chain HALT, attempt 3).
     refusals = launch_refusals(spec, ROOT)
     if refusals:
         for r in refusals:
@@ -484,6 +489,9 @@ def main() -> int:
             indent=1), encoding="utf-8")
         print(f"[REFUSED] wrote {out}")
         return 3
+    # B2713 + B2716: the gate has passed the AUTHORED spec - NOW inject
+    # the ruled window/universe from the phase table.
+    spec = resolve_ruled_scope(spec)
     results = [run_arm(spec, arm, engine_cmd=a.engine_cmd)
                for arm in spec["arms"]]
     out = ROOT / "output_audit" / f"{spec['wave']}_wave_summary.json"

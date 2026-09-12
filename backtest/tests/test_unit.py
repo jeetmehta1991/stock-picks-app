@@ -32583,6 +32583,10 @@ def test_b2578_launch_gate_refuses_before_the_engine_and_p7_p8_are_struck(tmp_pa
     assert len(live) >= 17, live
     for f in live:
         d = _json.loads(_P(f).read_text(encoding="utf-8"))
+        # B2717: identity is EXACT, so a spec loaded from disk carries
+        # its own basename - what run_wave.main stamps. (Before B2717 a
+        # substring match let a short wave name grandfather itself.)
+        d["_spec_path"] = _P(f).name
         assert pvt.launch_refusals(d, root) == [], (f, pvt.launch_refusals(d, root))
     # an smc spec of the b2197 shape, with its own subset file (the live
     # _subset_one.txt is untracked); pathlib keeps an absolute subset path
@@ -32770,6 +32774,9 @@ def test_b2579_battery_families_and_knob_blast_radius_are_derived_not_handwritte
     # ---- (2) the launch gate refuses DRIFT and an undeclared list
     good = json.loads((root / "output_audit" / "b2527_icg_span50_spec.json")
                       .read_text(encoding="utf-8"))
+    # B2717: identity is EXACT - a spec loaded from disk carries its own
+    # basename, which run_wave.main stamps on the live path.
+    good["_spec_path"] = "b2527_icg_span50_spec.json"
     assert pvt.launch_refusals(good, root) == []
     inst = pvt.SPECS["institutional_committed_growth_long"]
     row = [p for p in inst["params"]
@@ -35920,4 +35927,41 @@ def test_b2714_legacy_typed_spec_register_is_named_and_shrink_only():
         d = _json.loads(_P(f).read_text(encoding="utf-8"))
         d["_spec_path"] = _P(f).name
         assert pvt.launch_refusals(d, root) == [], (f, pvt.launch_refusals(d, root))
+
+
+def test_b2716_the_gate_judges_the_authored_spec_then_the_resolver_fills_it():
+    """B2716 (live chain HALT, launch attempt 3): run_wave must call
+    launch_refusals on the AUTHORED spec and resolve_ruled_scope only AFTER
+    it passes. Resolving first fed the gate its own injection, which drew a
+    correct 'declares step AND types window' verdict on the wrong input.
+    Pinned by SOURCE ORDER plus the behaviour that made it visible."""
+    import inspect as _insp
+    import sys as _sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    sp = str(root / "scripts")
+    if sp not in _sys.path:
+        _sys.path.insert(0, sp)
+    import run_wave as rw
+    src = _insp.getsource(rw.main)
+    i_gate = src.index("launch_refusals(spec, ROOT)")
+    i_res = src.index("resolve_ruled_scope(spec)")
+    assert i_gate < i_res, (
+        "resolve_ruled_scope runs BEFORE the launch gate - the gate would "
+        "judge its own injection (B2716)")
+    # and the behaviour: a resolved spec IS refused, which is why order matters
+    import phase_table as pt
+    authored = {"wave": "t", "step": 1}
+    assert pt.spec_refusals(authored) == []
+    injected = dict(authored, window=pt.resolve(1)["window"],
+                    tickers_file=pt.resolve(1)["tickers_file"])
+    errs = pt.spec_refusals(injected)
+    assert any("phase table owns those fields" in e for e in errs), errs
+    # B2717 MUST-FIRE: a short wave name must NOT grandfather itself.
+    # The first matcher was substring-based, so wave "t" matched
+    # "b2709_smc_sw10_pilot_spec.json" and exempted itself in silence.
+    assert not (pt.spec_identity({"wave": "t"}) & pt.legacy_typed_specs())
+    assert (pt.spec_identity({"_spec_path": "b2118_pilot_spec.json"})
+            & pt.legacy_typed_specs()), (
+        "an exact register name must still match")
 

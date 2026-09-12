@@ -154,6 +154,22 @@ RESOLVER_OWNED = ("window", "tickers_file", "universe", "start", "end")
 LEGACY_REGISTER = ROOT / "output_audit" / "_legacy_typed_specs.json"
 
 
+def spec_identity(doc: dict) -> frozenset:
+    """B2717: the EXACT names a doc could carry in the register.
+
+    The first version matched substrings - `src + "_spec.json" in n`
+    and `n.startswith(src)` - so a one-character wave name ("t") hit
+    "b2709_smc_sw10_pilot_spec.json", because that name CONTAINS
+    "t_spec.json", and the spec grandfathered ITSELF out of the rule.
+    A loose ESCAPE is the dangerous direction: it lets work through in
+    silence (L596). Exact candidates only, basename-normalised."""
+    src = str(doc.get("_spec_path") or doc.get("wave") or "")
+    if not src:
+        return frozenset()
+    base = src.replace("\\", "/").rsplit("/", 1)[-1]
+    return frozenset({base, base + "_spec.json", base + ".json"})
+
+
 def legacy_typed_specs() -> frozenset:
     """B2714 (the B2450 disposal plan): spec files that predate the
     typed-scope rule, grandfathered BY NAME and shrink-only. A no-step
@@ -184,9 +200,7 @@ def spec_refusals(doc: dict) -> list[str]:
         return []
     # B2714: a grandfathered spec (named in the register) is exempt -
     # the disposal plan for this rule's own backlog.
-    src = str(doc.get("_spec_path") or doc.get("wave") or "")
-    if src and any(src == n or src + "_spec.json" in n or n.startswith(src)
-                   for n in legacy_typed_specs()):
+    if spec_identity(doc) & legacy_typed_specs():
         return []
     typed = [k for k in RESOLVER_OWNED if k in doc]
     waiver = doc.get("step1_shape_waiver") or doc.get("shape_waiver")

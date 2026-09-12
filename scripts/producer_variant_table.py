@@ -1096,6 +1096,16 @@ def _level_in_band(value, row: dict) -> bool:
 # that reaches past it ranks combinations on holdout data and destroys the
 # pre-registration for the whole family. Step 2 is the 4y/544 shape and is
 # NOT a Step-1 option.
+def _spec_identity(doc: dict) -> frozenset:
+    """B2717: exact register candidates for `doc` (delegates to
+    phase_table.spec_identity; empty when the resolver is absent)."""
+    import importlib.util as _ilu
+    if _ilu.find_spec("phase_table") is None:
+        return frozenset()
+    import phase_table as _pt
+    return _pt.spec_identity(doc)
+
+
 def _legacy_names() -> frozenset:
     """B2715: the grandfather register, read WITHOUT a silent swallow.
     An unavailable resolver or register yields the empty set, i.e. the
@@ -1134,9 +1144,9 @@ def _step1_shape_refusals(doc: dict) -> list[str]:
     # resolver is unavailable, which applies the rule to everything -
     # the strict direction - and launch_refusals separately REFUSES on
     # an unimportable phase_table, so the loud path is not lost.
-    _src = str(doc.get("_spec_path") or doc.get("wave") or "")
-    if _src and any(_src == n or n.startswith(_src)
-                    for n in _legacy_names()):
+    # B2717: EXACT identity (phase_table.spec_identity) - the first form
+    # was substring-based and let a short wave name grandfather itself.
+    if _spec_identity(doc) & _legacy_names():
         return []
     w = doc.get("window") or {}
     start, end = str(w.get("start", "")), str(w.get("end", ""))
