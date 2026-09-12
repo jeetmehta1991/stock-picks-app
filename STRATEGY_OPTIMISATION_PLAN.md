@@ -3464,4 +3464,32 @@ recorded here verbatim so the Step-1 universe is reconstructable from this docum
 `LVS` `GPN` `ADP` `DXCM` `BDX` `MAR` `CB` `NSC` `FTNT` `KR`
 `SYK` `TFC` `VLO` `ILMN` `BSX` `WYNN` `NOC` `EA` `RCL` `ON`
 `MRO` `MCHP` `DOW` `ICE` `SO` `CME` `EXC` `HLT` `CCI` `ORLY`
-`DUK` `WBA` `APD` `SPG` `EPAM` `MET` `INFO` `BBY` `PENN` `PSX`
+`DUK` `WBA` `APD` `SPG` `EPAM` `MET` `INFO` `BBY` `PENN` `PSX`
+
+### B2701 - smc hub-1 STEP-2: the one holdout read, CLEAN NEGATIVE (2026-09-12)
+
+Owner word verbatim: "proceed, engulfing + momentum q40 both pre-registered"
+(S6-B2694a). F4 honored: the two-cell pre-registration was COMMITTED
+(output_audit/b2701_prereg.json, 301cded1a) before the reader existed. ONE
+offline read graded the holdout six-gate line for every Step-1 cell x exit
+(602 lines meeting the 15-trade holdout floor; the remainder sat below it).
+
+VERDICT - NO ADMISSION, pre-registration SPENT:
+- Cell A (bullish_engulfing long @ class_time_stop): IS 2.078 -> HOLDOUT
+  -0.37 (ci_lo -1.722, n 18); 2 of 6 gates (both count legs only). The
+  Step-1 leader did not survive its first out-of-sample contact.
+- Cell B (monthly_momentum_6m >= -0.1122 q40, covered subpop @
+  breakeven_plus_trail): HOLDOUT 0.331 (ci_lo -0.02, n 375); 5 of 6 gates -
+  pf 1.566, sortino 1.744, psr 0.9952, both counts - failing ONLY
+  pooled_sharpe (0.331 < 1.0). A real but sub-bar signature.
+- 0 of 602 lines clear all six (best peeked 0.565) - the whole grid is
+  below the bar out of sample, so nothing was lost by pre-registering.
+- Controls (11.2b2): engulfing on pead control lift -0.393; momentum lift
+  +0.038 - no general-structure story.
+
+Campaign disposition: hub-1 optimisation CLOSED-NEGATIVE at Step 2; the
+production strategy stays as-is; remaining smc wave (hub 2
+smc_order_block_bounce, Wave-2 independents) unaffected and each needs its
+own band word. Artifacts: b2701_smc_lsr_step2.json + .md (Step-2 unified
+form, full length).
+
