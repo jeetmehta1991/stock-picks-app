@@ -2927,6 +2927,30 @@ docstring-marked; reconciliation in output_audit/b2687_exploratory_reconciliatio
 33-name promotion menu awaits the owner's word (S6-B2687a); the 7 unmarked need only
 cosmetic docstring lines.
 
+### SMC FAMILY CAMPAIGN OPENED - PRE-GATE VERDICT: TWO HUBS + INDEPENDENTS (B2690, owner word 2026-09-11)
+
+Owner word 'Lets start with smc family'. Pre-gate run on the 15 pending members
+(breaker_block pair FINALISED and excluded; bos_retest_entry is a funnel qualifier,
+roster row 6) - output_audit/b2690_smc_pregate.json, 105 pairs measured, 64 with shared
+entries. STRUCTURE: NOT a uniform collapse - a HUB pattern:
+- CLUSTER A, hub smc_liquidity_sweep_reversal (T, 2,933 trades / 570 holdout): CONTAINS
+  bos_continuation 100pct, discount_long 86pct, premium_short 77pct, equal_highs_sweep
+  64pct, ote_long 62pct, ote_short 54pct of those members' trades.
+- CLUSTER B, hub smc_order_block_bounce (T, 1,340 / 352): contains mitigation_block
+  short 82.5pct / long 80pct (5 and 40 trades - both sub-gate anyway); premium_short
+  47pct, discount_long 45pct shared with it.
+- QUASI-INDEPENDENT: inverse_fvg (M, 953/231), equal_lows_sweep_long (M, 382/113,
+  ~zero overlap), choch_reversal (551/95), fvg_retest_long (61/17, best-exit HO 2.492 -
+  thin), fvg_retest_short (288/60).
+Best-vs-median exit holdout gaps are wide family-wide (selection inflation visible on
+the artifact's face). CAMPAIGN PLAN (B2628 pattern, bands owner-reviewed before any
+Step-1 per 11.2c): WAVE 1 = two hub campaigns - liquidity_sweep_reversal and
+order_block_bounce, both T-band and offline-free per the B2677 census - each with the
+11.2b2 two legs (depth knobs + companion breadth) and contained-sibling pre-registered
+passes; WAVE 2 = inverse_fvg + equal_lows_sweep_long; the thin L-band members ride
+their hubs' verdicts or wait for the next cube. NEXT: Step-0 knob inventory for the two
+hubs, then the band proposal to the owner.
+
 ### OPTIMISATION POPULATION BY BUCKET AND FAMILY (B2632, owner directive 2026-09-07)
 
 **Accounting (derived live at B2632; every term from the registry + config disabled sets +
