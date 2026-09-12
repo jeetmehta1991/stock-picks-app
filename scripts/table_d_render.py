@@ -161,7 +161,8 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--strategy", required=True)
     ap.add_argument("--artifacts", nargs="+", required=True)
-    ap.add_argument("--top", type=int, default=25)
+    ap.add_argument("--top", type=int, default=10**9,
+                    help="rows to show (default: ALL - S6-B2700 deferred half closed at B2702)")
     ap.add_argument("--out", required=True)
     a = ap.parse_args()
     md = build_table(a.strategy, a.artifacts, a.top)

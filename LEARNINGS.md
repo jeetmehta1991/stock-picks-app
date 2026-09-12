@@ -20247,3 +20247,31 @@ scripts/table_d_render.py is the single renderer; pinned by
 test_b2699_table_d_is_one_unified_table_with_every_inventory_column; #298
 amended to name it.
 
+### L785 - A VENUE CONSTRAINT SILENTLY NARROWED A MANDATE, AND THE VERDICT SPOKE FOR THE WHOLE (B2702, owner-caught 2026-09-12)
+
+**What happened:** hub-1 ran as an offline campaign; the depth leg's producer
+bands (P1 swing_length, P2 liquidity_range_pct, P3 event_recency_bars -
+resim-only) went untested BECAUSE the venue could not reach them, and the
+Step-2 negative shipped as "hub-1 CLOSED-NEGATIVE" - a verdict over the
+STRATEGY, measured over the offline-reachable slice (8 of 11 Table A axes).
+Owner, verbatim: "thats the whole point of this exercise and the biggest
+error! How are we testing depth if we simply do not test the resim bands...
+Even if resim, we need to test the depth. That is not negotiable... You can
+not simply change the original workflow and default to a recent and assumed
+methodology while ignoring the old approved methodology and workflow." The
+original approved depth methodology is the breaker_block pattern - an ENGINE
+grid over producer bands; the roster's own smc qualifier (sw50sp50) IS a
+resim result - and the newer offline methodology displaced it with no owner
+ruling saying offline replaces resim depth.
+
+**Rule (owner ruling verbatim, encoded in 11.2b2):** Step 1 Priority 1 =
+TEST DEPTH by analyzing ALL bands of existing producers - mandatory and
+crucial, even if resim. Priority 2 = breadth - more important if no
+Priority-1 combination is likely to clear the Step-2 gates. THE VENUE NEVER
+NARROWS THE MANDATE: an axis the campaign's venue cannot reach is
+resim-SCHEDULED or owner-WAIVED in words at band review, and NO campaign
+closes while a mandatory leg is unrun - the disposition is "offline leg
+negative; depth leg NOT RUN", never "strategy negative". This is #182's
+denominator discipline at the CAMPAIGN grain: the verdict sentence names
+which legs were run. Anchored as CHECKLIST #299.
+

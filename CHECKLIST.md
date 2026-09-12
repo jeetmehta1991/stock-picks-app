@@ -5744,3 +5744,22 @@ Table D not emitted by the renderer is non-compliant. Pinned by
 test_b2699_table_d_is_one_unified_table_with_every_inventory_column; lineage
 L784.
 
+### #299 - THE VENUE NEVER NARROWS THE MANDATE (B2702 / L785, owner-ruled 2026-09-12)
+
+Owner ruling, verbatim: "Step 1 / Priority 1: Test depth by analyzing all
+bands of existing producers - mandatory and crucial. Priority 2 is the
+breadth analysis. Becomes more important if no combination from priority 1
+is likely to clear step 2 gates."
+
+A campaign's VENUE (offline vs engine) is a cost decision, never a scope
+decision. Depth = ALL Table A producer bands, resim included - the original
+approved methodology (the breaker_block engine grid; the roster's smc
+qualifier sw50sp50 is itself a resim result). An axis the venue cannot reach
+is either resim-SCHEDULED (a ticket with the band) or owner-WAIVED in words
+at band review. NO campaign closes, and no Step-2 verdict speaks for the
+strategy, while a mandatory leg is unrun: dispositions name the legs -
+"offline leg negative; depth leg NOT RUN". Lineage: hub-1 shipped
+CLOSED-NEGATIVE over 8 of 11 axes (L785). Detection is JUDGMENT-ONLY (leg
+completeness is a semantic judgment); durability is mechanical - the L785
+fragment pin (test_b2123) and test_b1486's banner sync.
+

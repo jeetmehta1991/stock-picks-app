@@ -25545,6 +25545,8 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
          "L783 (B2696): the standard form first; home-made views hide disclosures"),
         ("ONE unified table whose columns are the campaign's FULL Table A inventory",
          "L784 (B2699): table_d_render.py; untested axes shown, never omitted"),
+        ("the venue never narrows the mandate",
+         "L785 (B2702): depth = all producer bands, resim included, Priority 1"),
     ):
         if frag not in discipline_text:
             missing.append(f"execution-discipline lost [{why}]: {frag!r}")
@@ -25649,7 +25651,8 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # 254 -> 255 at B2682a (the L782 file-is-not-result fragment).
     # 255 -> 256 at B2696 (the L783 standard-form-first fragment).
     # 256 -> 257 at B2699 (the L784 unified-inventory-table fragment).
-    assert len(gutted) == 257, gutted
+    # 257 -> 258 at B2702 (the L785 venue-never-narrows-the-mandate fragment).
+    assert len(gutted) == 258, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 

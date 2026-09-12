@@ -3373,6 +3373,20 @@ history sections; the template carried none of them):**
   Jaccard-0.70 de-dup before entering the deployable count; canonical = highest holdout
   sharpe, pruned rows keep an audit trail.
 
+### 11.2b2b DEPTH IS PRIORITY 1, AND THE VENUE NEVER NARROWS IT (B2702, owner-ruled 2026-09-12)
+
+Owner ruling, verbatim: "Step 1 / Priority 1: Test depth by analyzing all bands of
+existing producers - mandatory and crucial. Priority 2 is the breadth analysis.
+Becomes more important if no combination from priority 1 is likely to clear step 2
+gates." The DEPTH leg covers ALL Table A producer bands - resim included; the
+original approved depth methodology is the ENGINE grid over producer bands (the
+breaker_block pattern; the roster's smc qualifier sw50sp50 is a resim result). An
+offline venue reaches only subset-safe axes and therefore CANNOT by itself complete
+the depth leg for producer-boolean strategies: the unreachable axes are
+resim-SCHEDULED or owner-WAIVED in words at band review, and no campaign closes
+while a mandatory leg is unrun - dispositions name the legs run and not run
+(CHECKLIST #299 / L785; hub-1's retracted CLOSED-NEGATIVE is the incident).
+
 ### 11.2b3 BREADTH WORKFLOW STANDARD (B2693, owner-ruled 2026-09-12)
 
 The 11.2b2 rule says every campaign has a breadth leg; THIS is the procedure, standard
@@ -3487,9 +3501,12 @@ VERDICT - NO ADMISSION, pre-registration SPENT:
 - Controls (11.2b2): engulfing on pead control lift -0.393; momentum lift
   +0.038 - no general-structure story.
 
-Campaign disposition: hub-1 optimisation CLOSED-NEGATIVE at Step 2; the
-production strategy stays as-is; remaining smc wave (hub 2
-smc_order_block_bounce, Wave-2 independents) unaffected and each needs its
-own band word. Artifacts: b2701_smc_lsr_step2.json + .md (Step-2 unified
+Campaign disposition - CORRECTED B2702 (owner-caught; the original line
+here read CLOSED-NEGATIVE): the OFFLINE leg (8 of 11 Table A axes: arm,
+leg, six breadth axes) is NEGATIVE out of sample; the DEPTH leg over the
+producer bands (P1 swing_length, P2 liquidity_range_pct, P3
+event_recency_bars - resim) was NOT RUN and is Priority 1 (S6-B2702a,
+band + venue word pending). The strategy carries NO verdict until the
+depth leg runs; production unchanged meanwhile. Artifacts: b2701_smc_lsr_step2.json + .md (Step-2 unified
 form, full length).
 
