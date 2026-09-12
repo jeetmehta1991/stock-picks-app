@@ -3,7 +3,7 @@
  "step": 1,
  "step_basis": "manifest window.end 2025-05-05 <= HO_START 2025-05-05 -> Step-1 cube",
  "family": "smc_breaker_block_long",
- "ts": "2026-09-12T14:56:02",
+ "ts": "2026-09-12T15:00:02",
  "lenses": [
   {
    "lens": "holdout_untouched",
@@ -37,13 +37,13 @@
   },
   {
    "lens": "direction_consistency",
-   "level": "FAIL",
-   "evidence": "directions ['long', 'short'] (one strategy, one direction expected)"
+   "level": "INFO",
+   "evidence": "graded smc_breaker_block_long directions ['long']; the cube also carries ['long', 'short'] across 21 declared riders, which is the B2710 design and not a finding"
   },
   {
    "lens": "spot_check_disagreements",
-   "level": "WARN",
-   "evidence": "25 agree / 25 DISAGREE / 0 skipped in output_b2712_smc_sw10_sw10_spot_check.json"
+   "level": "INFO",
+   "evidence": "50 agree / 0 DISAGREE / 0 skipped in output_b2712_smc_sw10_sw10_spot_check.json"
   },
   {
    "lens": "min_trades_floor",
