@@ -8911,6 +8911,10 @@ def screen_instrument(
         _smc_skip = _dp.smc_skip_primitives()
         smc_out = compute_smc_signals(
             df, ticker=ticker, swing_length=_cfg.SMC_SWING_LENGTH,
+            # B2706 / S6-B2702a Step 0: hub-1 depth knobs reach the engine;
+            # defaults reproduce prior behaviour exactly (test_b2706).
+            liquidity_range_pct=getattr(_cfg, "SMC_LIQUIDITY_RANGE_PCT", 0.01),
+            event_recency_bars=getattr(_cfg, "SMC_EVENT_RECENCY_BARS", 90),
             skip_primitives=_smc_skip,
             # B1616 / S6-B1612f: the breaker-block sweep parameters now REACH
             # the engine. Defaults reproduce pre-B1616 behaviour exactly.

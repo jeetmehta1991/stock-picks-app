@@ -35640,3 +35640,67 @@ def test_b2705_judgment_only_declarations_carry_their_search():
               or "attempted" in sec or "Mechanism" in sec)
         assert ok, "a JUDGMENT-ONLY with no durability/attempted-search "                    "clause in item section: #" + sec[:60]
 
+
+def test_b2706_smc_depth_knobs_reach_the_engine_and_bite():
+    """S6-B2702a Step 0 (B2706): P2 liquidity_range_pct and P3
+    event_recency_bars reach the engine via config env knobs, the default
+    path is byte-identical to pre-B2706, and each knob demonstrably MOVES a
+    persisted signal - bite cases found by searching 8 cached tickers x 3
+    windows (the B1616 pattern; L751's three links: parsed, passed, read)."""
+    import os as _os
+    import subprocess as _sp
+    import sys as _sys
+    import pathlib as _pl
+    import pandas as _pd
+    from backtest import config as _cfg
+    from backtest.signals.smc_ict import compute_smc_signals
+
+    # (a) defaults: env unset in the pyramid -> config carries the signature
+    # defaults, and the explicit-default call is identical to the bare call
+    assert _cfg.SMC_LIQUIDITY_RANGE_PCT == 0.01
+    assert _cfg.SMC_EVENT_RECENCY_BARS == 90
+
+    def _load(sym):
+        p = _pl.Path(f"backtest/data/cache/ohlcv/{sym}.parquet")
+        if not p.exists():
+            return None
+        d = _pd.read_parquet(p)
+        if not isinstance(d.index, _pd.DatetimeIndex) and "date" in d.columns:
+            d = d.set_index("date")
+        return d.sort_index()
+
+    jpm, nvda = _load("JPM"), _load("NVDA")
+    if jpm is not None and len(jpm) >= 1200:
+        win = jpm.iloc[800:1200]
+        base = compute_smc_signals(win.copy())
+        same = compute_smc_signals(win.copy(), liquidity_range_pct=0.01,
+                                   event_recency_bars=90)
+        for k in ("smc_liquidity_swept_dn", "smc_liquidity_swept_up",
+                  "smc_bos_bullish", "smc_choch_bullish"):
+            assert bool(base.get(k)) == bool(same.get(k)), k
+        # (b) bite: JPM@1200, liquidity_range_pct 0.02 flips swept_dn
+        alt = compute_smc_signals(win.copy(), liquidity_range_pct=0.02)
+        assert bool(base.get("smc_liquidity_swept_dn")) !=             bool(alt.get("smc_liquidity_swept_dn")),             "liquidity_range_pct is wired in name only (L751)"
+    if nvda is not None and len(nvda) >= 600:
+        win = nvda.iloc[200:600]
+        base = compute_smc_signals(win.copy())
+        alt = compute_smc_signals(win.copy(), event_recency_bars=20)
+        assert bool(base.get("smc_bos_bullish")) !=             bool(alt.get("smc_bos_bullish")),             "event_recency_bars is wired in name only (L751)"
+
+    # (c) wiring: the screener call passes both kwargs from config, and an
+    # env value reaches config (subprocess list-form, no shell - L759)
+    src = _pl.Path("backtest/signals/screener.py").read_text(
+        encoding="utf-8", errors="replace")
+    assert 'liquidity_range_pct=getattr(_cfg, "SMC_LIQUIDITY_RANGE_PCT"' in src
+    assert 'event_recency_bars=getattr(_cfg, "SMC_EVENT_RECENCY_BARS"' in src
+    env = dict(_os.environ)
+    env["SMC_LIQUIDITY_RANGE_PCT"] = "0.02"
+    env["SMC_EVENT_RECENCY_BARS"] = "45"
+    out = _sp.run([_sys.executable, "-c",
+                   "from backtest import config as c; "
+                   "print(c.SMC_LIQUIDITY_RANGE_PCT, c.SMC_EVENT_RECENCY_BARS)"],
+                  capture_output=True, text=True, env=env, timeout=120,
+                  cwd=str(_pl.Path.cwd()))
+    assert out.returncode == 0, out.stderr[-400:]
+    assert out.stdout.split() == ["0.02", "45"], out.stdout
+

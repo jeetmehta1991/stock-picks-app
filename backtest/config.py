@@ -2472,6 +2472,17 @@ STAGE2_NO_LIVE_FETCH: bool = os.environ.get("STAGE2_NO_LIVE_FETCH", "1") == "1"
 
 SMC_SWING_LENGTH: int = int(os.environ.get("SMC_SWING_LENGTH", "20"))
 
+# B2706 / S6-B2702a STEP 0 (owner-armed depth campaign, option (b) full
+# factorial, 2026-09-12): the two remaining hub-1 producer knobs reach the
+# engine through the same pattern as SMC_SWING_LENGTH (B1616 lineage).
+# DEFAULTS REPRODUCE CURRENT BEHAVIOUR EXACTLY - 0.01 and 90 are the
+# smc_ict.py:196/:198 signature defaults; an unset env is a no-op.
+# Pinned by test_b2706_smc_depth_knobs_reach_the_engine_and_bite.
+SMC_LIQUIDITY_RANGE_PCT: float = float(
+    os.environ.get("SMC_LIQUIDITY_RANGE_PCT", "0.01"))
+SMC_EVENT_RECENCY_BARS: int = int(
+    os.environ.get("SMC_EVENT_RECENCY_BARS", "90"))
+
 # B2016 / S6-B1518a second half (owner-approved 2026-08-22 F1, "approve all
 # your recs" with E1). The producer's EMA/SMA pair list, env-overridable so a
 # P6 sweep can change spans without editing technical.py. The DEFAULT is the

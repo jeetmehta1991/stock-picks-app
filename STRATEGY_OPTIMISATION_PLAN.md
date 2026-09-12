@@ -3403,6 +3403,11 @@ while a mandatory leg is unrun - dispositions name the legs run and not run
 MECHANISM (B2704): scripts/band_coverage_gate.py - see the BAND-COVERAGE
 GATE paragraph in section 11.1's offline path; Step-1 discards count as
 testing, per the owner's words.
+STEP 0 DONE (B2706): all three hub-1 producer knobs are engine-reachable -
+SMC_SWING_LENGTH (B1616), SMC_LIQUIDITY_RANGE_PCT + SMC_EVENT_RECENCY_BARS
+(B2706, bite-proven on cached data, pinned test_b2706). The 44-config
+factorial awaits Step 1: band spec + manifest + prelaunch gate + the venue
+word (B2107 rules).
 
 ### 11.2b3 BREADTH WORKFLOW STANDARD (B2693, owner-ruled 2026-09-12)
 
