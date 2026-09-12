@@ -20275,3 +20275,24 @@ negative; depth leg NOT RUN", never "strategy negative". This is #182's
 denominator discipline at the CAMPAIGN grain: the verdict sentence names
 which legs were run. Anchored as CHECKLIST #299.
 
+### L786 - JUDGMENT-ONLY WAS DECLARED WITHOUT SEARCHING FOR THE MECHANIZABLE SLICE (B2705, owner-caught 2026-09-12)
+
+**What happened:** #299 shipped labelled JUDGMENT-ONLY for detection; hours
+later, on the owner's "Wire this", its declare-failure slice was mechanized
+in ~150 lines (scripts/band_coverage_gate.py) the same day - proving the
+label wrong at write time. Owner, verbatim: "Mechanical test for above
+should have been added at the start itself as per execution discipline
+standards!... make all things mechanical especially if errors for the
+class vs keeping it prose or judgement only." L698 already said "no
+mechanism is possible" is a claim about the search space; the label was
+written without running that search.
+
+**Rule - MECHANIZE FIRST:** a JUDGMENT-ONLY declaration is permitted only
+AFTER naming the mechanism designs attempted and why each fails; if ANY
+slice of the class is mechanizable, that slice is BUILT IN THE SAME BATCH
+(the narrowest enforceable slice is the minimum - a scan, a pin over repo
+text, a fail-closed CLI). A JUDGMENT-ONLY that a later "wire this"
+overturns within a session is this incident recurring. Anchored as
+CHECKLIST #300; the repo-text invariant is pinned by
+test_b2705_judgment_only_declarations_carry_their_search.
+

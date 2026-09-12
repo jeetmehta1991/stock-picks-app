@@ -3307,6 +3307,20 @@ run-producers-once directive in its strongest form: the producers already ran, i
 | F4 | PRE-REGISTER the single cell BEFORE any holdout code path runs, in a COMMITTED artifact. The ordering IS the pre-registration | the artifact + the commit | the commit hash in the queue row |
 | F5 | Owner-gated Step 2 (owner ruling 2026-09-08): compute the holdout for ALL cells x exits IN ONE READ - offline, one artifact, every cell's six-gate line rendered. The PRE-REGISTERED cell's numbers CARRY ADMISSION against the six LIVE_GATES; every OTHER cell's holdout figure is DIAGNOSTIC/PEEKED BY CONSTRUCTION and is labelled so in the artifact - it can never be used to pick a different winner, because the pre-registration is spent the moment this read runs (the icg challenge-bound pattern, output_audit/b2628_family_pass_prereg.json precedent). Reader: PROPOSED-NOT-BUILT (S6-B2638b) | offline holdout reader | the Step-2 grid with peeked cells LABELLED |
 
+**BAND-COVERAGE GATE (B2704, owner-mandated 2026-09-12, verbatim): "Each and
+every band once approved in table A needs to be tested before a strategy can
+be declared as a failure in step 2. Bands can be discarded in step 1 as per
+our methodology thats allowed as testing."** MECHANICAL: `python
+scripts/band_coverage_gate.py --strategy <s> --artifacts <step1 artifacts...>
+--declare-step2-failure` exits 2 naming every untested (param, level) while
+any Table A band level lacks Step-1 grading, a Step-1 discard
+(`discarded_levels`), engine resim evidence (`resim_configs` /
+--resim-evidence), or production-baseline status. breadth_step2_read.py
+stamps `band_coverage` + `disposition` into every Step-2 artifact
+unconditionally. Pinned by test_b2704 (must-fire on the REAL hub-1
+artifacts; must-quiet + discard arms). A strategy without a
+band-inventoried Table A entry cannot be declared a failure at all.
+
 **TABLE D EXISTS AT BOTH STEPS (owner directive 2026-09-08).** The STEP-1 FORM is the in-sample ranked producer-combination table `offline_level_sweep.py` writes unconditionally beside its JSON (`<out>.md`). The STEP-2 FORM is the holdout ranked table `offline_holdout_read.py` writes beside ITS artifact - every (cell, exit) line with its six-gate result, the admission-bearing line marked and every other line labelled peeked. One campaign therefore leaves BOTH views on disk, and neither waits for an engine run.
 
 **B2699 AMENDMENT (owner-caught 2026-09-12): the offline form is ONE UNIFIED
@@ -3386,6 +3400,9 @@ the depth leg for producer-boolean strategies: the unreachable axes are
 resim-SCHEDULED or owner-WAIVED in words at band review, and no campaign closes
 while a mandatory leg is unrun - dispositions name the legs run and not run
 (CHECKLIST #299 / L785; hub-1's retracted CLOSED-NEGATIVE is the incident).
+MECHANISM (B2704): scripts/band_coverage_gate.py - see the BAND-COVERAGE
+GATE paragraph in section 11.1's offline path; Step-1 discards count as
+testing, per the owner's words.
 
 ### 11.2b3 BREADTH WORKFLOW STANDARD (B2693, owner-ruled 2026-09-12)
 

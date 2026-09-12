@@ -25547,6 +25547,8 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
          "L784 (B2699): table_d_render.py; untested axes shown, never omitted"),
         ("the venue never narrows the mandate",
          "L785 (B2702): depth = all producer bands, resim included, Priority 1"),
+        ("MECHANIZE FIRST: name the mechanism designs attempted",
+         "L786 (B2705): a mechanizable slice is built in the same batch"),
     ):
         if frag not in discipline_text:
             missing.append(f"execution-discipline lost [{why}]: {frag!r}")
@@ -25652,7 +25654,8 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # 255 -> 256 at B2696 (the L783 standard-form-first fragment).
     # 256 -> 257 at B2699 (the L784 unified-inventory-table fragment).
     # 257 -> 258 at B2702 (the L785 venue-never-narrows-the-mandate fragment).
-    assert len(gutted) == 258, gutted
+    # 258 -> 259 at B2705 (the L786 mechanize-first fragment).
+    assert len(gutted) == 259, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -35531,4 +35534,109 @@ def test_b2699_table_d_is_one_unified_table_with_every_inventory_column():
     assert "WIDENED COVERAGE 0.942" in pre, (
         "the momentum coverage disclosure must travel to the unified view")
     assert "SUPERSEDED" in pre, "the b2694 SKIP row's disposition must travel"
+
+
+def _bcg():
+    import sys as _sys
+    from pathlib import Path as _P
+    _sp = str(_P(__file__).resolve().parents[2] / "scripts")
+    if _sp not in _sys.path:
+        _sys.path.insert(0, _sp)
+    import band_coverage_gate as bcg
+    return bcg
+
+
+def test_b2704_band_coverage_gate_refuses_hub1_failure_declaration():
+    """MUST-FIRE on the REAL committed incident: hub-1's Step-1 artifacts
+    leave P1-P3 resim bands untested, so a Step-2 failure declaration is
+    refused, naming all three producers (owner ruling 2026-09-12 / #299)."""
+    import pytest
+    bcg = _bcg()
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    arts = [str(root / "output_audit" / "b2694_smc_lsr_step1.json"),
+            str(root / "output_audit" / "b2698_momentum_resweep.json")]
+    rep = bcg.coverage_report("smc_liquidity_sweep_reversal", arts)
+    assert rep["evaluable"] and not rep["complete"]
+    untested = {p["param"] for p in rep["params"] if p["untested"]}
+    assert untested == {"swing_length", "liquidity_range_pct",
+                        "event_recency_bars"}, untested
+    covered = {p["param"] for p in rep["params"] if not p["untested"]}
+    assert {"confirmation_arm", "leg", "monthly_momentum_6m",
+            "bullish_engulfing"} <= covered
+    with pytest.raises(SystemExit) as ei:
+        bcg.declare_step2_failure("smc_liquidity_sweep_reversal", arts)
+    assert "REFUSED" in str(ei.value) and "swing_length" in str(ei.value)
+
+
+def test_b2704_complete_coverage_permits_and_discard_counts_as_tested():
+    """MUST-QUIET (SYNTHETIC fixture, structure not values): every band level
+    graded, discarded-in-Step-1, resim-evidenced, or production passes; and
+    removing the discard record flips it to refused - proving the discard
+    arm is load-bearing, not decorative."""
+    import pytest
+    bcg = _bcg()
+    spec = {"params": [
+        {"id": "P1", "param": "k1", "production": 20, "band": [10, 20, 30]},
+        {"id": "B1", "param": "ax1", "production": "not gated",
+         "band": ["q20", "q40"]},
+    ]}
+    art = {"rows": [
+        {"is_sharpe": 0.1, "cell": "breadth:ax1", "axis": "ax1",
+         "level": 0.5, "exit": "e"},
+        {"is_sharpe": 0.2, "cell": "breadth:ax1", "axis": "ax1",
+         "level": 0.9, "exit": "e"},
+    ], "discarded_levels": {"k1": [10]}, "resim_configs": [{"k1": 30}]}
+    rep = bcg.coverage_report("syn", [], spec=spec, arts=[art])
+    assert rep["complete"], rep
+    art2 = dict(art)
+    art2 = {**art, "discarded_levels": {}}
+    rep2 = bcg.coverage_report("syn", [], spec=spec, arts=[art2])
+    assert not rep2["complete"]
+    with pytest.raises(SystemExit):
+        bcg.declare_step2_failure("syn", [], spec=spec, arts=[art2])
+
+
+def test_b2704_step2_reader_calls_the_coverage_gate_reachably():
+    """The wire is reachable, not decorative (the B2208 dead-code class):
+    breadth_step2_read.main() contains a coverage_report call that precedes
+    the artifact write, and no statement follows a return in any function."""
+    import ast as _ast
+    from pathlib import Path as _P
+    src = (_P(__file__).resolve().parents[2] / "scripts"
+           / "breadth_step2_read.py").read_text(encoding="utf-8")
+    tree = _ast.parse(src)
+    calls = [n for n in _ast.walk(tree)
+             if isinstance(n, _ast.Call)
+             and getattr(n.func, "id", "") == "coverage_report"]
+    assert calls, "coverage_report is never called in breadth_step2_read"
+    for fn in [n for n in _ast.walk(tree) if isinstance(n, _ast.FunctionDef)]:
+        body = fn.body
+        for stmt_list in [body]:
+            seen_return = False
+            for s in stmt_list:
+                if seen_return:
+                    raise AssertionError(f"dead code after return in {fn.name}")
+                if isinstance(s, _ast.Return):
+                    seen_return = True
+
+
+def test_b2705_judgment_only_declarations_carry_their_search():
+    """L786/#300 (MECHANIZE FIRST): every JUDGMENT-ONLY in the modern
+    CHECKLIST items (#298 onward) names its durability mechanism or an
+    attempted-search clause in the same section - a bare label is the
+    incident. Repo-text invariant: the narrowest mechanizable slice of a
+    rule that is otherwise about my own judgment at write time."""
+    from pathlib import Path as _P
+    text = (_P(__file__).resolve().parents[2] / "CHECKLIST.md").read_text(
+        encoding="utf-8", errors="replace")
+    tail = text.split("### #298", 1)
+    assert len(tail) == 2, "modern items start at #298"
+    sections = ("### #298" + tail[1]).split("### #")
+    for sec in sections:
+        if "JUDGMENT-ONLY" not in sec:
+            continue
+        ok = ("durability" in sec or "pinned by" in sec.lower()
+              or "attempted" in sec or "Mechanism" in sec)
+        assert ok, "a JUDGMENT-ONLY with no durability/attempted-search "                    "clause in item section: #" + sec[:60]
 

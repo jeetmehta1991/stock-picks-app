@@ -35,6 +35,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "scripts"))
 import roster_core as rc  # noqa: E402
+from band_coverage_gate import coverage_report  # noqa: E402  (B2704 #299)
 from breadth_step1_grid import BARRED_EXIT, build_frame  # noqa: E402
 
 
@@ -119,7 +120,21 @@ def main() -> int:
                 "control_filtered_ho_n": int(len(hf)),
                 "subject_qualifier_ho_sharpe": q["holdout_sharpe"]})
 
-    rec = {"_doc": ("B2678 breadth Step-2 - one holdout read of every registered "
+    # B2704 (#299, owner-mandated): the band-coverage verdict is stamped
+    # UNCONDITIONALLY; a zero-qualifier outcome with incomplete coverage
+    # is "leg negative; depth leg NOT RUN", never a strategy failure.
+    try:
+        bc = coverage_report(strategy, [a.step1_artifact])
+    except SystemExit as e:
+        bc = {"evaluable": False, "reason": str(e)}
+    disposition = (
+        "STEP-2 NEGATIVE - ALL TABLE A BANDS TESTED - failure declarable"
+        if (not quals) and bc.get("complete") else
+        "READ LEG NEGATIVE; UNTESTED TABLE A BAND LEVELS REMAIN - NO "
+        "FAILURE VERDICT (CHECKLIST #299/B2704)" if not quals else
+        "QUALIFIERS FOUND - see rows")
+    rec = {"band_coverage": bc, "disposition": disposition,
+           "_doc": ("B2678 breadth Step-2 - one holdout read of every registered "
                     "b2673 cell (S6-B2671c) + B2658 control comparison; "
                     "DISCLOSED-RE-READ provenance travels with any admission"),
            "ruling_verbatim": a.ruling,

@@ -5759,7 +5759,34 @@ is either resim-SCHEDULED (a ticket with the band) or owner-WAIVED in words
 at band review. NO campaign closes, and no Step-2 verdict speaks for the
 strategy, while a mandatory leg is unrun: dispositions name the legs -
 "offline leg negative; depth leg NOT RUN". Lineage: hub-1 shipped
-CLOSED-NEGATIVE over 8 of 11 axes (L785). Detection is JUDGMENT-ONLY (leg
-completeness is a semantic judgment); durability is mechanical - the L785
+CLOSED-NEGATIVE over 8 of 11 axes (L785).
+
+**MECHANISM (B2704, owner-mandated "Wire this" 2026-09-12): the
+declare-failure path is now MECHANICAL** - scripts/band_coverage_gate.py:
+coverage_report() derives tested/untested per Table A band level from the
+campaign ARTIFACTS (graded rows, depth cell tags, Step-1 discarded_levels -
+which count as testing per the ruling - and engine resim evidence);
+declare_step2_failure() refuses (exit 2) while any level is untested;
+breadth_step2_read.py stamps band_coverage + disposition into every Step-2
+artifact unconditionally. Pinned by test_b2704 must-fire (REAL hub-1
+artifacts -> refuses, naming P1/P2/P3) + must-quiet + discard arms +
+call-site reachability. The broader leg-completeness judgment for
+non-failure closures remains JUDGMENT-ONLY; durability via the L785
 fragment pin (test_b2123) and test_b1486's banner sync.
+
+### #300 - MECHANIZE FIRST; JUDGMENT-ONLY IS EARNED BY A NAMED SEARCH (B2705 / L786, owner-mandated 2026-09-12)
+
+Owner, verbatim: "make all things mechanical especially if errors for the
+class vs keeping it prose or judgement only." A new rule (CHECKLIST item,
+skill row, L-entry) may carry JUDGMENT-ONLY only after the response NAMES
+the mechanism designs attempted and why each fails - and any mechanizable
+SLICE of the class is built in the same batch (a scan, a repo-text pin, a
+fail-closed CLI; the narrowest enforceable slice is the minimum). Lineage:
+#299 was labelled JUDGMENT-ONLY while its declare-failure slice was
+mechanizable the same day (band_coverage_gate.py). Mechanism for THIS item:
+test_b2705_judgment_only_declarations_carry_their_search pins the repo-text
+invariant (every JUDGMENT-ONLY in CHECKLIST items #298+ names durability or
+an attempted-search clause); the response-level scan is ticketed
+S6-B2705a for the next enforcement batch - editing the live Stop-hook file
+mid-session risks blocking every close, the stated reason for the split.
 
