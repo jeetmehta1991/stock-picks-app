@@ -5830,3 +5830,85 @@ rule, and a ratchet on corpus size would tax the incident record itself, the
 L586 costly-in-the-wrong-place class. Durability instead: the L788 fragment
 pin in test_b2123 plus test_b1486's banner sync.**
 
+### #303 - A FORMAT RULING BINDS EVERY RENDERER OF THAT FORMAT; PIN A LOCKED FORMAT ON ITS COLUMNS (B2725 / L790, owner-caught 2026-09-12)
+
+An owner ruling about a DOCUMENT ("Table D is one unified table, a column per
+producer band") is satisfied per-RENDERER, and a repo can hold more than one
+renderer for the same document. Before calling such a ruling satisfied:
+
+1. **GREP FOR EVERY RENDERER THAT EMITS THAT FORMAT** and say which ones the
+   ruling binds. MEASURED: `table_d_render.py` (offline artifacts) was built to
+   the ruling and pinned by `test_b2699`; `producer_variant_table.table_d`
+   (grid artifacts) kept the rejected two-table shape at top=20, and nothing
+   connected the two.
+2. **CONFIRM THE THING YOU WIRE INTO AN AUTOMATIC PATH IS THE RULED VERSION.**
+   Wiring converts a local defect into an enforced one: B2723 wired the UNRULED
+   sibling into the landing supervisor, so the shape the owner had rejected was
+   regenerated and committed on every landing.
+3. **PIN A LOCKED FORMAT ON ITS COLUMNS, NEVER ITS SECTION HEADERS.**
+   `test_b2723` asserted `## TABLE C` / `## TABLE D` EXIST and said nothing
+   about their columns, so it went green on the rejected shape - a
+   presence-check standing in for a shape-check (the L706 class, applied to a
+   whole document rather than one row). Assert every required column in the
+   HEADER ROW, and assert the separator's column count agrees with it.
+
+Would have caught: B2725 (this instance) and B2699 (the same ruling's first
+application, where the split survived in the sibling renderer). Mechanism:
+`test_b2725_landing_table_d_is_unified_with_every_producer_band`, four arms,
+fail-proofed by deleting one band from the header.
+
+### #304 - AN ADMITTED STRATEGY IS CLOSED; RESTATE THE CAMPAIGN SUBJECT BEFORE EVERY LAUNCH (B2731 / L791, owner-caught 2026-09-12)
+
+Owner ruling 2026-09-12: *"We stop testing the strategies once they are in the
+phase 1B unless you get specific over rides from me."*
+
+1. **A strategy in `phase_1b_step2_admissions.json` is CLOSED to optimisation
+   testing.** The override is the owner's words, dated, IN THE SPEC under
+   `owner_override_retest_admitted[<strategy>]` - an artifact, not a sentence
+   in a turn. A bare boolean is refused (L789: an escape names its target).
+2. **Before any launch, restate the CAMPAIGN SUBJECT from its ticket and check
+   the graded subset names that strategy.** The subject lives in the ticket;
+   the knob cannot tell you - a shared producer knob reads as sensible for
+   every consumer of it, which is what made this miss invisible.
+3. **A memory you have quoted in a response is a memory you must obey.**
+   Surfacing a conflict and then resolving it yourself in the next clause is
+   the defect; the rule is state-it-and-proceed-as-instructed.
+
+Would have caught: B2731 (this instance - 2.41 h graded an admitted strategy
+while the real subject rode ungraded). Mechanism:
+`test_b2731_an_admitted_strategy_is_refused_at_launch`, five arms, verified
+retroactively against the real `b2712_smc_sw10_spec.json` (refusal fires).
+
+### #305 - A GATE READING A LEDGER MUST ASK WHICH TREE THAT LEDGER BELONGS TO (B2739 / L792, self-caught 2026-09-12)
+
+A gate's inputs divide into REPO FACTS and RUN FACTS, and they live in
+different trees:
+
+- **REPO facts** - the admissions ledger, the roster, the phase table, a
+  parameter registry, the code itself. These come from the CODE tree
+  (`CODE_ROOT`), and they are the same for every launch.
+- **RUN facts** - the spec, its subset file, the manifest, the cube. These come
+  from the RUN'S root, which a test, a staging directory or a remote working
+  dir may legitimately relocate.
+
+**A gate that reads a repo fact from the run's root fails CLOSED ON THE
+ENVIRONMENT rather than on the defect.** MEASURED: `phase1b_admitted(root)`
+read the Phase 1B admissions JSON from the caller's `root`, so a spec staged
+outside the repo produced *"admissions unreadable"* and the launch was refused
+**whatever strategy it graded**. Fail-closed is the right posture (L642);
+failing closed because you looked in the wrong place is not, and it is
+indistinguishable from the gate working.
+
+So: for each input a new gate reads, say out loud whether it is a repo fact or
+a run fact, and take it from the matching tree. Keep an explicit override
+parameter so the pins can drive BOTH trees, and pin all three arms - the repo
+tree resolves it, a relocated root STILL resolves it and still refuses the real
+defect, and the fail-closed branch stays reachable when the input is genuinely
+absent.
+
+Would have caught: B2739 (this instance). Mechanism:
+`test_b2739_admissions_are_read_from_the_code_tree_not_the_spec_root`, three
+arms. L792's other two rules are COMPLIANCE FAILURES against existing rules -
+the disposal-plan half against B2450/L721, the count-the-sites half against
+L592/B1936 - and warrant no new items.
+

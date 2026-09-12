@@ -150,6 +150,12 @@ def check_execution(row, df, start, end):
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--cube", required=True)
+    ap.add_argument("--strategy", default=None,
+                    help="B2724: sample ONLY this strategy's entries. A "
+                         "rider cube (B2710) holds the whole consumer set, "
+                         "and recomputing the breaker condition against a "
+                         "rider's trade is a guaranteed DISAGREE - measured "
+                         "25 of 50 before this flag existed")
     ap.add_argument("--n", type=int, default=50)
     ap.add_argument("--seed", type=int, default=20260816)
     ap.add_argument("--swing-length", type=int, required=True)
@@ -171,6 +177,14 @@ def main() -> int:
     end = _dt.date.fromisoformat(a.end)
 
     cube = pd.read_csv(a.cube, low_memory=False)
+    # B2724: restrict to the graded strategy BEFORE sampling (see --strategy)
+    if a.strategy and "strategy" in cube.columns:
+        _n0 = len(cube)
+        cube = cube[cube["strategy"] == a.strategy]
+        print(f"restricted to strategy={a.strategy}: {len(cube)} of {_n0} rows")
+        if cube.empty:
+            raise SystemExit(f"REFUSED: no rows for strategy {a.strategy!r} "
+                             "- nothing to spot-check (fail closed, L642)")
     # one row per entry: the spot check is about ENTRIES, not exit variants
     ent = cube.drop_duplicates(subset=["ticker", "entry_date"])
     random.seed(a.seed)

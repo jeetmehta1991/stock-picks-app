@@ -1,0 +1,96 @@
+{
+  "judas_swing_long": [
+    "smc_liquidity_swept_dn"
+  ],
+  "judas_swing_short": [
+    "smc_liquidity_swept_up"
+  ],
+  "smc_bos_continuation": [
+    "smc_bos_bearish",
+    "smc_bos_bullish"
+  ],
+  "smc_bos_retest_entry": [
+    "smc_bos_retest_long",
+    "smc_bos_retest_short"
+  ],
+  "smc_breaker_block_long": [
+    "smc_breaker_block_bullish_retest_recent_5d"
+  ],
+  "smc_breaker_block_short": [
+    "smc_breaker_block_bearish_retest_recent_5d"
+  ],
+  "smc_choch_reversal": [
+    "smc_choch_bearish",
+    "smc_choch_bullish",
+    "smc_fvg_bearish_active",
+    "smc_fvg_bullish_active"
+  ],
+  "smc_discount_long": [
+    "smc_bos_bullish",
+    "smc_choch_bullish",
+    "smc_dealing_range_pct",
+    "smc_in_discount_zone"
+  ],
+  "smc_equal_highs_sweep_short": [
+    "smc_bos_bearish",
+    "smc_equal_highs_swept",
+    "smc_fvg_bearish_active"
+  ],
+  "smc_equal_lows_sweep_long": [
+    "smc_equal_lows_swept",
+    "smc_fvg_bullish_active"
+  ],
+  "smc_fvg_retest_long": [
+    "smc_fvg_retest_long_zone"
+  ],
+  "smc_fvg_retest_short": [
+    "smc_fvg_retest_short_zone"
+  ],
+  "smc_inverse_fvg": [
+    "smc_inverse_fvg_bearish",
+    "smc_inverse_fvg_bullish"
+  ],
+  "smc_liquidity_sweep_reversal": [
+    "smc_bos_bearish",
+    "smc_bos_bullish",
+    "smc_choch_bearish",
+    "smc_choch_bullish",
+    "smc_liquidity_swept_dn",
+    "smc_liquidity_swept_up"
+  ],
+  "smc_mitigation_block_long": [
+    "smc_mitigation_block_long"
+  ],
+  "smc_mitigation_block_short": [
+    "smc_mitigation_block_short"
+  ],
+  "smc_order_block_bounce": [
+    "smc_ob_bearish_tap_recent_5d",
+    "smc_ob_bullish_tap_recent_5d"
+  ],
+  "smc_ote_long": [
+    "smc_bos_bullish",
+    "smc_choch_bullish",
+    "smc_ote_long_zone",
+    "smc_retracement_pct"
+  ],
+  "smc_ote_short": [
+    "smc_bos_bearish",
+    "smc_choch_bearish",
+    "smc_ote_short_zone",
+    "smc_retracement_pct"
+  ],
+  "smc_premium_short": [
+    "smc_bos_bearish",
+    "smc_choch_bearish",
+    "smc_dealing_range_pct",
+    "smc_in_premium_zone"
+  ],
+  "turtle_soup_long": [
+    "smc_liquidity_swept_dn"
+  ],
+  "turtle_soup_short": [
+    "smc_bos_bearish",
+    "smc_liquidity_swept_up"
+  ]
+}

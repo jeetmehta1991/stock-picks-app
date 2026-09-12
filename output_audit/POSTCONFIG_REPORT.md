@@ -14,7 +14,7 @@ REGENERATED WHOLE at every config landing - by the landing supervisor the engine
 
 | cube | landed | via | battery exit | blocking | WARN/FAIL findings | committed | pushed | reported |
 |---|---|---|---|---|---|---|---|---|
-| output_b2712_smc_sw10_sw10 | 2026-09-12T14:56:10 | manual | 2 | 6_post_fix_recheck | 2: direction_consistency FAIL: directions ['long', 'short'] (one strategy, one direction expected); spot_check_disagreements WARN: 25 agree / 25 DISAGREE / 0 skipped in output_b2712_smc_sw10_sw10_spot_check.json | 11a60acfe | True | yes 2026-09-12T14:56:42 |
+| output_b2712_smc_sw10_sw10 | 2026-09-12T15:00:10 | manual | 2 | none | 0 | 4e376ad94 | True | yes 2026-09-12T15:00:46 |
 | output_icg_step2_span9_step2_span9 | 2026-09-06T18:55:21 | engine-hook | 0 | none | 0 | adfba9d5d | True | yes 2026-09-06T19:01:07 |
 | output_icg_cfg1_rerun_cfg1_rerun | 2026-09-05T01:17:34 | engine-hook | 0 | none | 0 | d85126201 | True | yes 2026-09-06T05:40:01 |
 | output_icg_span100_rerun_span100 | 2026-09-04T12:26:03 | engine-hook | 0 | none | 0 | 0f0e440e6 | True | yes 2026-09-04T12:27:40 |
@@ -161,7 +161,7 @@ _`starved-IS` = no exit cleared min_n IN-SAMPLE, a SAMPLE-SIZE fact rather than 
 | `icg_cfg1_rerun_cfg1_rerun` | 45(not swept) | 0(not swept) | 70..100(not swept) | 4(fixed) | 4(fixed) | 1.100(fixed) | 3,5,11,14(free) | 5,6(free) | 200(fixed) |
 | `icg_step2_span9_step2_span9` | 45(not swept) | 0(not swept) | 70..100(not swept) | 4(fixed) | 4(fixed) | 1.100(fixed) | 3,5,11,14(free) | 5,6(free) | 9(fixed) |
 
-## TABLE D - STEP-1 RANKED LIST (top 20)
+## TABLE D - STEP-1 RANKED LIST (top 25)
 
 _Step-1 ranked list. `is_ci_lo` is the RANKING KEY, not a gate - Step-1 admission is min-trades >= 10 plus this list, with NO gates applied (owner ruling B1608). `n` = fires in-sample, placed beside the sort key on purpose. `tier` = DEEP n>=100 / MID 30-99 / THIN 10-29. `dup` = this row's (ci_lo, sharpe, n, exit) signature appears in more than one config - one discovery, several parameter pairs, NOT independent confirmations. `cls` = equivalence-class size. Nothing here is filtered._
 
@@ -169,28 +169,35 @@ _Step-1 ranked list. `is_ci_lo` is the RANKING KEY, not a gate - Step-1 admissio
 
 **HOW `exit` WAS CHOSEN, AND BY WHICH RULER.** Step 1 picks each cell's exit by SHARPE alone - a cheap ranking pass (owner ruling B1605) - while this table RANKS by is_ci_lo. Two different objectives, disclosed because a row can lead on is_ci_lo while carrying the exit that won on Sharpe. Step 2 re-ranks ALL exits by gates passed and is the admission criterion; it has not run. **24 exit methods are registered; 22 are effective per cell** - next_pivot_target is refused on boundary-spanning cells (B2014, flagged by npt_excluded_identity_boundary) and 1 more is collapsed as byte-identical to a survivor (B1593). 24 - 1 - 1 = 22.
 
-| # | config | sw | sp | exit | is_ci_lo | n | tier | dup | is_sharpe | cls | holdout_n | full_period_n | verdict |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 1 | b2197_sw50sp50_sw50sp50 | 50 | 50 | time_stop_10d | +1.250 | 14 | THIN | - | 4.301 | 1 | 0 | 14 | BELOW_POWER_FLOOR |
-| 2 | b2197_sw30sp150_sw30sp150 | 30 | 150 | time_stop_10d | +1.214 | 11 | THIN | - | 4.807 | 5 | 0 | 11 | BELOW_POWER_FLOOR |
-| 3 | b2197_sw50sp50_sw50sp50 | 50 | 50 | time_stop_10d | +1.189 | 19 | THIN | - | 3.724 | 1 | 0 | 19 | BELOW_POWER_FLOOR |
-| 4 | b2197_sw50sp50_sw50sp50 | 50 | 50 | time_stop_10d | +1.110 | 22 | THIN | - | 3.427 | 1 | 0 | 22 | BELOW_POWER_FLOOR |
-| 5 | b2197_sw50sp50_sw50sp50 | 50 | 50 | time_stop_10d | +1.044 | 15 | THIN | - | 3.929 | 3 | 0 | 15 | BELOW_POWER_FLOOR |
-| 6 | b2197_sw50sp50_sw50sp50 | 50 | 50 | time_stop_10d | +1.013 | 23 | THIN | - | 3.260 | 3 | 0 | 23 | BELOW_POWER_FLOOR |
-| 7 | b2197_sw50sp50_sw50sp50 | 50 | 50 | time_stop_10d | +0.993 | 13 | THIN | - | 4.127 | 1 | 0 | 13 | BELOW_POWER_FLOOR |
-| 8 | b2197_sw50sp20_sw50sp20 | 50 | 20 | time_stop_10d | +0.930 | 14 | THIN | - | 3.915 | 2 | 0 | 14 | BELOW_POWER_FLOOR |
-| 9 | b2197_sw30sp20_sw30sp20 | 30 | 20 | time_stop_10d | +0.816 | 12 | THIN | 1 of 3 | 4.103 | 5 | 0 | 12 | BELOW_POWER_FLOOR |
-| 10 | b2197_sw30sp50_sw30sp50 | 30 | 50 | time_stop_10d | +0.816 | 12 | THIN | 2 of 3 | 4.103 | 5 | 0 | 12 | BELOW_POWER_FLOOR |
-| 11 | b2197_sw30sp100_sw30sp100 | 30 | 100 | time_stop_10d | +0.816 | 12 | THIN | 3 of 3 | 4.103 | 5 | 0 | 12 | BELOW_POWER_FLOOR |
-| 12 | b2712_smc_sw10_sw10 | 10 | 200 | earnings_blackout | +0.803 | 13 | THIN | - | 2.221 | 1 | 0 | 13 | BELOW_POWER_FLOOR |
-| 13 | b2712_smc_sw10_sw10 | 10 | 200 | earnings_blackout | +0.766 | 12 | THIN | - | 2.252 | 4 | 0 | 12 | BELOW_POWER_FLOOR |
-| 14 | b2197_sw50sp20_sw50sp20 | 50 | 20 | time_stop_10d | +0.759 | 15 | THIN | - | 3.592 | 3 | 0 | 15 | BELOW_POWER_FLOOR |
-| 15 | b2197_sw50sp9_sw50sp9 | 50 | 9 | time_stop_10d | +0.724 | 25 | THIN | - | 2.820 | 1 | 0 | 25 | BELOW_POWER_FLOOR |
-| 16 | b2197_sw30sp20_sw30sp20 | 30 | 20 | earnings_blackout | +0.701 | 22 | THIN | - | 1.702 | 5 | 0 | 22 | BELOW_POWER_FLOOR |
-| 17 | b2197_sw30sp9_sw30sp9 | 30 | 9 | earnings_blackout | +0.687 | 22 | THIN | - | 1.684 | 5 | 0 | 22 | BELOW_POWER_FLOOR |
-| 18 | b2197_sw30sp150_sw30sp150 | 30 | 150 | earnings_blackout | +0.671 | 14 | THIN | - | 1.990 | 5 | 0 | 14 | BELOW_POWER_FLOOR |
-| 19 | b2197_sw50sp9_sw50sp9 | 50 | 9 | time_stop_10d | +0.661 | 26 | THIN | - | 2.706 | 3 | 0 | 26 | BELOW_POWER_FLOOR |
-| 20 | b2197_sw50sp9_sw50sp9 | 50 | 9 | fixed_4r_2r | +0.656 | 33 | MID | - | 1.930 | 1 | 0 | 33 | BELOW_POWER_FLOOR |
+_**EVERY PRODUCER BAND IS A COLUMN HERE** (owner ruling: one unified table, no separate Table Ds). Axis labels come from the per-family registry D_AXIS_FAMILIES: P1 swing, P2 close_mit, P3 tail_n, P4 age_bars, P5 break_pct, P6 span. For smc_breaker_block: P2 close_mitigation (False = production, mitigate on high/low), P4 age_bars_max (None = production, no cap), P5 break_pct_max (None = production, no cap). `npt_excl` = next_pivot_target refused on this cell as boundary-spanning (B2014), one of the two exits missing from 24._
+
+| # | config | P1 swing | P2 close_mit | P3 tail_n | P4 age_bars | P5 break_pct | P6 span | exit | is_ci_lo | n | tier | dup | is_sharpe | cls | holdout_n | full_period_n | verdict | npt_excl |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 1 | b2197_sw50sp50_sw50sp50 | 50 | True | 3 | None | 0.01 | 50 | time_stop_10d | +1.250 | 14 | THIN | - | 4.301 | 1 | 0 | 14 | BELOW_POWER_FLOOR | yes |
+| 2 | b2197_sw30sp150_sw30sp150 | 30 | False | 20 | 250 | 0.01 | 150 | time_stop_10d | +1.214 | 11 | THIN | - | 4.807 | 5 | 0 | 11 | BELOW_POWER_FLOOR | - |
+| 3 | b2197_sw50sp50_sw50sp50 | 50 | True | 2 | None | 0.02 | 50 | time_stop_10d | +1.189 | 19 | THIN | - | 3.724 | 1 | 0 | 19 | BELOW_POWER_FLOOR | - |
+| 4 | b2197_sw50sp50_sw50sp50 | 50 | True | 3 | None | 0.02 | 50 | time_stop_10d | +1.110 | 22 | THIN | - | 3.427 | 1 | 0 | 22 | BELOW_POWER_FLOOR | yes |
+| 5 | b2197_sw50sp50_sw50sp50 | 50 | True | 20 | None | 0.01 | 50 | time_stop_10d | +1.044 | 15 | THIN | - | 3.929 | 3 | 0 | 15 | BELOW_POWER_FLOOR | yes |
+| 6 | b2197_sw50sp50_sw50sp50 | 50 | True | 20 | None | 0.02 | 50 | time_stop_10d | +1.013 | 23 | THIN | - | 3.260 | 3 | 0 | 23 | BELOW_POWER_FLOOR | yes |
+| 7 | b2197_sw50sp50_sw50sp50 | 50 | True | 2 | None | 0.01 | 50 | time_stop_10d | +0.993 | 13 | THIN | - | 4.127 | 1 | 0 | 13 | BELOW_POWER_FLOOR | - |
+| 8 | b2197_sw50sp20_sw50sp20 | 50 | True | 3 | None | 0.01 | 20 | time_stop_10d | +0.930 | 14 | THIN | - | 3.915 | 2 | 0 | 14 | BELOW_POWER_FLOOR | - |
+| 9 | b2197_sw30sp20_sw30sp20 | 30 | False | 20 | 250 | 0.01 | 20 | time_stop_10d | +0.816 | 12 | THIN | 1 of 3 | 4.103 | 5 | 0 | 12 | BELOW_POWER_FLOOR | - |
+| 10 | b2197_sw30sp50_sw30sp50 | 30 | False | 20 | 250 | 0.01 | 50 | time_stop_10d | +0.816 | 12 | THIN | 2 of 3 | 4.103 | 5 | 0 | 12 | BELOW_POWER_FLOOR | - |
+| 11 | b2197_sw30sp100_sw30sp100 | 30 | False | 20 | 250 | 0.01 | 100 | time_stop_10d | +0.816 | 12 | THIN | 3 of 3 | 4.103 | 5 | 0 | 12 | BELOW_POWER_FLOOR | - |
+| 12 | b2712_smc_sw10_sw10 | 10 | True | 3 | 180 | 0.01 | 200 | earnings_blackout | +0.803 | 13 | THIN | - | 2.221 | 1 | 0 | 13 | BELOW_POWER_FLOOR | yes |
+| 13 | b2712_smc_sw10_sw10 | 10 | True | 20 | 120 | 0.01 | 200 | earnings_blackout | +0.766 | 12 | THIN | - | 2.252 | 4 | 0 | 12 | BELOW_POWER_FLOOR | yes |
+| 14 | b2197_sw50sp20_sw50sp20 | 50 | True | 20 | None | 0.01 | 20 | time_stop_10d | +0.759 | 15 | THIN | - | 3.592 | 3 | 0 | 15 | BELOW_POWER_FLOOR | - |
+| 15 | b2197_sw50sp9_sw50sp9 | 50 | True | 3 | None | 0.02 | 9 | time_stop_10d | +0.724 | 25 | THIN | - | 2.820 | 1 | 0 | 25 | BELOW_POWER_FLOOR | yes |
+| 16 | b2197_sw30sp20_sw30sp20 | 30 | False | 20 | 250 | 0.02 | 20 | earnings_blackout | +0.701 | 22 | THIN | - | 1.702 | 5 | 0 | 22 | BELOW_POWER_FLOOR | - |
+| 17 | b2197_sw30sp9_sw30sp9 | 30 | False | 20 | 250 | 0.02 | 9 | earnings_blackout | +0.687 | 22 | THIN | - | 1.684 | 5 | 0 | 22 | BELOW_POWER_FLOOR | - |
+| 18 | b2197_sw30sp150_sw30sp150 | 30 | True | 20 | 120 | 0.03 | 150 | earnings_blackout | +0.671 | 14 | THIN | - | 1.990 | 5 | 0 | 14 | BELOW_POWER_FLOOR | - |
+| 19 | b2197_sw50sp9_sw50sp9 | 50 | True | 20 | None | 0.02 | 9 | time_stop_10d | +0.661 | 26 | THIN | - | 2.706 | 3 | 0 | 26 | BELOW_POWER_FLOOR | yes |
+| 20 | b2197_sw50sp9_sw50sp9 | 50 | False | 3 | None | 0.02 | 9 | fixed_4r_2r | +0.656 | 33 | MID | - | 1.930 | 1 | 0 | 33 | BELOW_POWER_FLOOR | yes |
+| 21 | b2197_sw30sp50_sw30sp50 | 30 | True | 20 | 250 | 0.02 | 50 | earnings_blackout | +0.644 | 16 | THIN | 1 of 2 | 1.830 | 5 | 0 | 16 | BELOW_POWER_FLOOR | - |
+| 22 | b2197_sw30sp100_sw30sp100 | 30 | True | 20 | 250 | 0.02 | 100 | earnings_blackout | +0.644 | 16 | THIN | 2 of 2 | 1.830 | 5 | 0 | 16 | BELOW_POWER_FLOOR | - |
+| 23 | b2197_sw50sp50_sw50sp50 | 50 | True | 2 | None | 0.03 | 50 | time_stop_10d | +0.613 | 22 | THIN | - | 2.865 | 1 | 0 | 22 | BELOW_POWER_FLOOR | yes |
+| 24 | b2197_sw30sp20_sw30sp20 | 30 | True | 20 | 120 | 0.03 | 20 | earnings_blackout | +0.604 | 15 | THIN | 1 of 3 | 1.849 | 5 | 0 | 15 | BELOW_POWER_FLOOR | - |
+| 25 | b2197_sw30sp50_sw30sp50 | 30 | True | 20 | 120 | 0.03 | 50 | earnings_blackout | +0.604 | 15 | THIN | 2 of 3 | 1.849 | 5 | 0 | 15 | BELOW_POWER_FLOOR | - |
 
 _530 ranked outcomes across 53 graded configs; 504 distinct signatures._
 
@@ -201,33 +208,6 @@ _530 ranked outcomes across 53 graded configs; 504 distinct signatures._
 | DEEP | +0.428 | 3509 | 308 |
 | MID | +0.656 | 33 | 141 |
 | THIN | +1.250 | 14 | 81 |
-
-### TABLE D-2 - THE SIX SWEPT AXES
-
-_The SIX swept axes for the same rows, same order - join on `#`. P1 swing_length, P2 close_mitigation (False = production, mitigate on high/low), P3 tail_n, P4 age_bars_max (None = production, no cap), P5 break_pct_max (None = production, no cap), P6 span. `npt_excl` = next_pivot_target was refused on this cell as boundary-spanning (B2014), which is one of the two exits missing from 24._
-
-| # | config | P1 swing | P2 close_mit | P3 tail_n | P4 age_bars | P5 break_pct | P6 span | npt_excl |
-|---|---|---|---|---|---|---|---|---|
-| 1 | b2197_sw50sp50_sw50sp50 | 50 | True | 3 | None | 0.01 | 50 | True |
-| 2 | b2197_sw30sp150_sw30sp150 | 30 | False | 20 | 250 | 0.01 | 150 | None |
-| 3 | b2197_sw50sp50_sw50sp50 | 50 | True | 2 | None | 0.02 | 50 | None |
-| 4 | b2197_sw50sp50_sw50sp50 | 50 | True | 3 | None | 0.02 | 50 | True |
-| 5 | b2197_sw50sp50_sw50sp50 | 50 | True | 20 | None | 0.01 | 50 | True |
-| 6 | b2197_sw50sp50_sw50sp50 | 50 | True | 20 | None | 0.02 | 50 | True |
-| 7 | b2197_sw50sp50_sw50sp50 | 50 | True | 2 | None | 0.01 | 50 | None |
-| 8 | b2197_sw50sp20_sw50sp20 | 50 | True | 3 | None | 0.01 | 20 | None |
-| 9 | b2197_sw30sp20_sw30sp20 | 30 | False | 20 | 250 | 0.01 | 20 | None |
-| 10 | b2197_sw30sp50_sw30sp50 | 30 | False | 20 | 250 | 0.01 | 50 | None |
-| 11 | b2197_sw30sp100_sw30sp100 | 30 | False | 20 | 250 | 0.01 | 100 | None |
-| 12 | b2712_smc_sw10_sw10 | 10 | True | 3 | 180 | 0.01 | 200 | True |
-| 13 | b2712_smc_sw10_sw10 | 10 | True | 20 | 120 | 0.01 | 200 | True |
-| 14 | b2197_sw50sp20_sw50sp20 | 50 | True | 20 | None | 0.01 | 20 | None |
-| 15 | b2197_sw50sp9_sw50sp9 | 50 | True | 3 | None | 0.02 | 9 | True |
-| 16 | b2197_sw30sp20_sw30sp20 | 30 | False | 20 | 250 | 0.02 | 20 | None |
-| 17 | b2197_sw30sp9_sw30sp9 | 30 | False | 20 | 250 | 0.02 | 9 | None |
-| 18 | b2197_sw30sp150_sw30sp150 | 30 | True | 20 | 120 | 0.03 | 150 | None |
-| 19 | b2197_sw50sp9_sw50sp9 | 50 | True | 20 | None | 0.02 | 9 | True |
-| 20 | b2197_sw50sp9_sw50sp9 | 50 | False | 3 | None | 0.02 | 9 | True |
 
 ## Index - 53 graded config(s), newest first
 

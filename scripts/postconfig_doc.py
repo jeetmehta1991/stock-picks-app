@@ -414,16 +414,30 @@ def build(cubes: list[str] | None = None) -> str:
         import sys as _sys
         _sys.path.insert(0, str(ROOT / "scripts"))
         from producer_variant_table import (table_d as _table_d,
-                                            table_d_params as _table_dp)
+                                            table_c as _table_c)
         _grids = {}
         for _p in sorted(AUDIT.glob("output_*_grid_auto.json"),
                          key=lambda x: x.stat().st_mtime):
             _n = _p.name[len("output_"):-len("_grid_auto.json")]
             _grids[_n] = json.loads(_p.read_text(encoding="utf-8"))
-        _td = (_table_d(_grids) + ["", "### TABLE D-2 - THE SIX SWEPT AXES", ""]
-               + _table_dp(_grids)) if _grids else ["_no graded grids yet_"]
+        # B2725 (owner catch): ONE table, every producer band a column of
+        # it, top 25. The D-2 append is GONE - it was the rejected shape,
+        # and wiring it here had mechanically enforced that shape.
+        _td = _table_d(_grids, top=25) if _grids else ["_no graded grids yet_"]
+        # B2723 (owner question): TABLE C was NEVER auto-generated - it
+        # lived only in the hand-run show_table_c.py. The L651 class:
+        # the analysis existed, the delivery did not.
+        # B2728 CORRECTION: this comment used to cite 'the runbook
+        # step-2 row says render Tables A-D at the landing'. Read at
+        # STRATEGY_OPTIMISATION_PLAN.md:3285 that row is a STEP-2
+        # MILESTONE activity ('when every Step-1 spec is COMPLETE'),
+        # run through the producer_variant_table CLI into
+        # PRODUCER_VARIANT_TABLE_<strategy>.md - not a per-landing
+        # obligation. The per-landing duty rests on B2330/B2520.
+        _tc = _table_c(_grids) if _grids else ["_no graded grids yet_"]
     except Exception as _e:  # never let the ranked list break the whole report
         _td = [f"_TABLE D unavailable: {type(_e).__name__}: {_e}_"]
+        _tc = [f"_TABLE C unavailable: {type(_e).__name__}: {_e}_"]
 
     out = ["# POST-CONFIG ANALYSIS - all configs, all findings", "",
            "Source: output_audit/postconfig_ledger.json plus each config's "
@@ -441,7 +455,9 @@ def build(cubes: list[str] | None = None) -> str:
            f"checks have run and {bad} have ever returned non-PASS.**"]
     out += ["", "## Landings - what the supervisor recorded (B2520)", ""]
     out += landings_section()
-    out += ["", "## TABLE D - STEP-1 RANKED LIST (top 20)", ""] + _td
+    out += ["", "## TABLE C - POST-RUN CONFIG FUNNEL (one row per config)",
+            ""] + _tc
+    out += ["", "## TABLE D - STEP-1 RANKED LIST (top 25)", ""] + _td
     if bad == 0:
         out += ["", "**Read that as a caution, not a reassurance.** A check "
                 "that has never failed has not been shown capable of failing, "

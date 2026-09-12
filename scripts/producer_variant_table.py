@@ -53,7 +53,12 @@ SPECS: dict[str, dict] = {
             "free_levels": None,
             "spot_check": {"script": "spot_check_trades.py", "cube": "trade_exit_detail.csv",
                            "flags": {"P1": "--swing-length", "P6": "--ema-span"},
-                           "extra": ["--n", "50"], "window": False,
+                           # B2724: the graded strategy, so a RIDER cube
+                           # (B2710) is spot-checked on its OWN rows -
+                           # measured 25 of 50 DISAGREE without this.
+                           "extra": ["--n", "50", "--strategy",
+                                     "smc_breaker_block_long"],
+                           "window": False,
                            "precompute_check": False, "pythonpath": ".",
                            "note": "AUTO (B2177)"},
             "engine_anchors": {"script": "verify_engine_implemented.py"},
@@ -788,6 +793,91 @@ GATE_ORDER = ("pooled_sharpe", "profit_factor", "sortino", "psr",
               "min_trades_holdout", "min_trades_full_period")
 
 
+FORMULA_SMC_LSR = (
+    "=============================== PRODUCER LAYER ===============================\n\nP1  swings  =  swing_highs_lows( ohlc, swing_length = 20 )\n                   -> a bar is a swing high if its high is the highest\n                      across swing_length bars BEFORE and AFTER it\n\nP2  liq     =  liquidity( ohlc, swings, range_percent = 0.01 )\n                   -> clusters swing highs/lows within range_percent of\n                      each other; a SWEEP is price taking out the cluster\n\nP3  recency =  _most_recent_event_within( <event series>, i,\n                                          event_recency_bars = 90 )\n                   -> the lookback that turns a dated event (sweep, BOS,\n                      CHoCH) into a boolean ACTIVE at bar i\n\n============================== STRATEGY LAYER ===============================\n\nlong   =  smc_liquidity_swept_dn  AND ( smc_choch_bullish OR smc_bos_bullish )\nshort  =  smc_liquidity_swept_up  AND ( smc_choch_bearish OR smc_bos_bearish )\n                                  AND NOT _short_borrow_trap_active\n"
+)
+
+# S6-B2732a (owner "Step 1 code change approved" 2026-09-12): hub-1 registered.
+# MEASURED BLOCKER this closes - 1 of 22 smc consumers had a SPECS entry and it
+# was the ADMITTED smc_breaker_block_long, so launch_refusals correctly refused
+# hub-1 (no SPECS entry = the battery fails closed at landing AFTER the engine
+# spend, S6-B2573b) while the only launchable smc strategy was the one B2731
+# refuses as banked. FAMILIES is DERIVED from SPECS (run_postconfig.py:732), so
+# this entry registers the battery family too.
+SPECS["smc_liquidity_sweep_reversal"] = {
+    "gate": ("(smc_liquidity_swept_dn) AND (smc_choch_bullish OR "
+             "smc_bos_bullish)"),
+    "formula": FORMULA_SMC_LSR,
+    "baseline": {"artifact": "output_r5_merged_1_7", "fires": 2933,
+                 "tickers": 544, "holdout_n": 570,
+                 "window": "2022-05-06..2026-05-04"},
+    "params": [
+        {"id": "P1", "producer": "_smc.swing_highs_lows",
+         "param": "swing_length", "env": "SMC_SWING_LENGTH",
+         "consumers": ["backtest/config.py",
+                       "backtest/engine/exit_strategies.py",
+                       "backtest/signals/screener.py"],
+         "production": 20, "type": "int", "band": [5, 10, 20, 30, 50],
+         "derivation": ("library default 50, production 20; band brackets both "
+                        "- SHARED with the breaker family, which is why one "
+                        "variant cube serves 19 of 22 smc consumers (B2735)"),
+         "subset_safe": False, "status": "UNTESTED",
+         "evidence": "smc_ict.py:368", "engine_implemented": True},
+        {"id": "P2", "producer": "_smc.liquidity",
+         "param": "liquidity_range_pct", "env": "SMC_LIQUIDITY_RANGE_PCT",
+         "consumers": ["backtest/config.py", "backtest/signals/screener.py"],
+         "production": 0.01, "type": "float",
+         "band": [0.005, 0.01, 0.02, 0.03],
+         "derivation": ("the cluster width that defines 'equal' highs/lows; "
+                        "production 0.01 = 1pct. Band brackets it either side. "
+                        "Reaches 7 of 22 consumers - the liquidity primitive "
+                        "only (B2743)"),
+         "subset_safe": False, "status": "UNTESTED",
+         "evidence": "smc_ict.py:503", "engine_implemented": True},
+        {"id": "P3", "producer": "_most_recent_event_within",
+         "param": "event_recency_bars", "env": "SMC_EVENT_RECENCY_BARS",
+         "consumers": ["backtest/config.py", "backtest/signals/screener.py"],
+         "production": 90, "type": "int", "band": [30, 60, 90, 120, 180],
+         "derivation": ("the lookback turning a dated sweep/BOS/CHoCH into an "
+                        "ACTIVE boolean; production 90 per Batch 273 (a 5-bar "
+                        "tail never catches an OB). Reaches the same 19 of 22 "
+                        "as P1 (B2743)"),
+         "subset_safe": False, "status": "UNTESTED",
+         "evidence": "smc_ict.py:381,459,464,507", "engine_implemented": True},
+    ],
+    "tools": {
+        "keys": {"P1": "swing", "P2": "liq_range", "P3": "recency"},
+        # the OFFLINE combination space - leg x confirmation arm. The three
+        # knobs above are FIRE-ADDING and baked into each cube by the engine,
+        # so they identify a config rather than being searched inside one.
+        "grid_keys": ["leg", "confirmation_arm"],
+        "grade": {"script": "smc_lsr_step1.py",
+                  "cube": "",                      # the DIRECTORY, not a csv
+                  "flags": {"P1": "--swing-length",
+                            "P2": "--liquidity-range-pct",
+                            "P3": "--event-recency-bars"},
+                  "extra": ["--min-n", "10"],
+                  "pythonpath": ".;scripts",
+                  "note": "AUTO (S6-B2732a)"},
+        "free_levels": None,
+        "spot_check": {"script": "spot_check_smc_lsr.py",
+                       "cube": "",
+                       "flags": {"P1": "--swing-length",
+                                 "P2": "--liquidity-range-pct",
+                                 "P3": "--event-recency-bars"},
+                       "extra": ["--n", "50"],
+                       "window": False, "precompute_check": False,
+                       "pythonpath": ".",
+                       "note": "AUTO (S6-B2732a); hub-1 has its OWN checker - "
+                               "spot_check_trades.py re-derives the BREAKER "
+                               "condition and produced the B2724 defect when "
+                               "pointed at a strategy that does not read it"},
+        "engine_anchors": {"script": "verify_engine_implemented.py"},
+        "single_combination": False,
+    },
+}
+
+
 def validate_spec(spec: dict) -> list[str]:
     """Formula and Table A must not drift apart. Every P-id in the formula needs
     a params row and every params row needs a formula step - a mechanical check,
@@ -1221,6 +1311,108 @@ def _rider_refusals(doc: dict, root: Path, graded: list[str]) -> list[str]:
     return errs
 
 
+def phase1b_admitted(root: Path | None = None) -> tuple:
+    """(admitted strategy names, why-unreadable) from the Phase 1B admissions.
+
+    B2731. A strategy admitted to Phase 1B is CLOSED to further optimisation
+    testing - owner ruling 2026-09-12: "We stop testing the strategies once
+    they are in the phase 1B unless you get specific over rides from me".
+
+    Returns (frozenset(), reason) when the file cannot be read, and the caller
+    REFUSES on that - unknown admission status is not permission (L642).
+
+    B2739: the ledger is read from CODE_ROOT, not from the caller's `root`.
+    The admissions JSON and PHASE_1B_ROSTER.md are REPO facts; `root` is
+    where a SPEC'S FILES live and a test (or a staged launch) may relocate
+    it. Reading `root` made the fail-closed branch fire on every launch
+    whose spec directory was not the repo - MEASURED: test_b2578 refused a
+    valid spec with "admissions unreadable" pointing at a pytest tmp dir,
+    i.e. the gate refused everything for an environmental reason. The
+    precedent is three lines away at the consumer-drift check: "Measured
+    against THIS repo's code (CODE_ROOT) - `root` is where the spec's files
+    live, which a test may relocate; the code tree is not." An explicit
+    `root` is still honored so the pins can drive both trees.
+    """
+    import json as _json
+    root = Path(root) if root is not None else CODE_ROOT
+    f = root / "output_audit" / "phase_1b_step2_admissions.json"
+    if not f.exists():
+        return frozenset(), f"{f} does not exist"
+    try:
+        d = _json.loads(f.read_text(encoding="utf-8"))
+    except (OSError, ValueError) as exc:
+        return frozenset(), f"{f} unreadable: {exc!r}"
+    names = set()
+    for a in (d.get("admissions") or []):
+        s = a.get("strategy")
+        if s:
+            names.add(str(s))
+        # a declared mirror leg is admitted too - it rides the same decision
+        m = a.get("mirror") or a.get("declared_mirror")
+        if m:
+            names.add(str(m))
+    # B2733: the JSON is NOT the only record of an admission. MEASURED -
+    # PHASE_1B_ROSTER.md line 123 retains smc_breaker_block_short and
+    # pead_short_negative_yoy_growth as Step-2 admissions, and NEITHER
+    # appears in the JSON (no admission carries a mirror field either), so
+    # the B2731 gate would have passed a spec grading a banked SHORT leg.
+    # A mirror rides its long's decision - same defect, same refusal. The
+    # roster is source-of-truth per its own header, so both are read and
+    # unioned; either being unreadable fails CLOSED (L642/L742).
+    r = root / "PHASE_1B_ROSTER.md"
+    if not r.exists():
+        return frozenset(), f"{r} does not exist"
+    import re as _re
+    try:
+        rt = r.read_text(encoding="utf-8", errors="replace")
+    except OSError as exc:
+        return frozenset(), f"{r} unreadable: {exc!r}"
+    for line in rt.splitlines():
+        if "retained, Step-2 admissions" in line:
+            names.update(_re.findall(r"`([A-Za-z0-9_]+)`", line))
+    return frozenset(names), ""
+
+
+def _admitted_retest_refusals(doc: dict, root: Path, strats: list) -> list:
+    """B2731: refuse to spend engine time re-testing an ADMITTED strategy.
+
+    The escape is an explicit owner override IN THE SPEC:
+
+        "owner_override_retest_admitted": {"<strategy>": "<owner words + date>"}
+
+    so an override is a dated artifact rather than a claim in a turn. The
+    override must NAME the strategy - a bare `true` is refused, because a
+    blanket flag is exactly the silent exemption L789 warns about.
+    """
+    # B2739: CODE_ROOT, not the spec-relative root (see phase1b_admitted)
+    admitted, why = phase1b_admitted(None)
+    if why:
+        return [f"Phase 1B admissions unreadable ({why}) - refusing rather "
+                "than launching against unknown admission status (L642/B2731)"]
+    ov = doc.get("owner_override_retest_admitted") or {}
+    if ov is True or ov is False:
+        return ["owner_override_retest_admitted must be a MAPPING of strategy "
+                "-> the owner's words; a bare boolean is a blanket exemption "
+                "(L789 - an escape must name its target)"]
+    out = []
+    for s in strats:
+        if s not in admitted:
+            continue
+        quote = (ov or {}).get(s)
+        if not quote or not str(quote).strip():
+            out.append(
+                f"{s}: ALREADY ADMITTED to Phase 1B - a strategy in the roster "
+                "is CLOSED to further optimisation testing (owner ruling "
+                "2026-09-12: 'We stop testing the strategies once they are in "
+                "the phase 1B unless you get specific over rides from me'). "
+                "MEASURED COST OF THE INSTANCE THAT PRODUCED THIS GATE: 2.41 h "
+                "of engine time graded an admitted strategy while the actual "
+                "campaign subject rode along ungraded (S6-B2731). To override, "
+                "put the owner's words in the spec under "
+                f"owner_override_retest_admitted[{s!r}]")
+    return out
+
+
 def launch_refusals(doc: dict, root: Path | None = None,
                     require_subset: bool = True) -> list[str]:
     """Reasons NOT to launch `doc` (a wave spec or a run manifest - both carry
@@ -1259,6 +1451,8 @@ def launch_refusals(doc: dict, root: Path | None = None,
     errs: list[str] = []
     # B2710: riders validated up front; graded-subset checks unchanged
     errs += _rider_refusals(doc, root, strats)
+    # B2731: an ADMITTED strategy is closed to re-testing (owner ruling)
+    errs += _admitted_retest_refusals(doc, root, strats)
     # B2711: the ruled Step-1 search shape (holdout reach is absolute)
     errs += _step1_shape_refusals(doc)
     # B2713 (council verdict): resolver-owned fields are not typeable
@@ -1541,8 +1735,17 @@ def _d_axis_value(spec, cfg: dict, admit: dict):
     return (cfg if src == "cfg" else (admit or {})).get(key)
 
 
-def table_d(grids: dict[str, dict], top: int = 20) -> list[str]:
+def table_d(grids: dict[str, dict], top: int = 25) -> list[str]:
     """STEP-1 RANKED LIST - one row per (config x exit) outcome, top N.
+
+    B2725, OWNER CATCH: this is ONE UNIFIED TABLE carrying a column per
+    producer band. It used to show only `sw` and `sp` and exile the other
+    four swept axes to a second table (`table_d_params`, "TABLE D-2"), on
+    a readability rationale authored BEFORE the owner ruled "no separate
+    table ds are logical" - so the ruling was applied to the OFFLINE
+    renderer (table_d_render.py, B2699) and this GRID sibling kept the
+    rejected shape, which B2723 then wired into every landing. The
+    duplicated `sw`/`sp` columns are GONE because they ARE P1 and P6.
 
     Owner directive 2026-08-28. Table C answers "what happened inside one
     config"; this answers "across every config, which outcomes rank highest".
@@ -1577,21 +1780,26 @@ def table_d(grids: dict[str, dict], top: int = 20) -> list[str]:
     from collections import Counter
 
     rows = []
+    fam_seen = None
     for name, g in grids.items():
         cfg = g.get("config") or {}
         _fam = _d_family(cfg)
+        fam_seen = fam_seen or _fam
         for r in (g.get("step1_ranking") or []):
             a = r.get("admit") or {}
-            rows.append({
+            row = {
                 "config": name,
-                "sw": _d_axis_value(_fam["d1"][0], cfg, a),
-                "sp": _d_axis_value(_fam["d1"][1], cfg, a),
                 "exit": r.get("exit"),
                 "ci": r.get("is_ci_lo"), "n": r.get("fires"),
                 "sh": r.get("is_sharpe"), "cls": r.get("class_size"),
                 "ho": a.get("holdout_n"), "fp": a.get("full_period_n"),
                 "verdict": a.get("verdict"),
-            })
+                "npt": a.get("npt_excluded_identity_boundary"),
+            }
+            # B2725: every producer band is a COLUMN of this table now
+            for _j, spec in enumerate(_fam["d2"], 1):
+                row[f"A{_j}"] = _d_axis_value(spec, cfg, a)
+            rows.append(row)
 
     sig = lambda r: (round(r["ci"], 3) if r["ci"] is not None else None,
                      round(r["sh"], 3) if r["sh"] is not None else None,
@@ -1600,6 +1808,8 @@ def table_d(grids: dict[str, dict], top: int = 20) -> list[str]:
     rows.sort(key=lambda r: (-(r["ci"] if r["ci"] is not None else -9e9),
                              -(r["n"] or 0)))
     seen = Counter()
+    _fam_d = fam_seen or D_AXIS_FAMILIES["smc_breaker_block"]
+    _labels = [spec[0] for spec in _fam_d["d2"]]
 
     out = [
         "_Step-1 ranked list. `is_ci_lo` is the RANKING KEY, not a gate - Step-1 "
@@ -1625,9 +1835,21 @@ def table_d(grids: dict[str, dict], top: int = 20) -> list[str]:
         "flagged by npt_excluded_identity_boundary) and 1 more is collapsed as "
         "byte-identical to a survivor (B1593). 24 - 1 - 1 = 22.",
         "",
-        "| # | config | sw | sp | exit | is_ci_lo | n | tier | dup | is_sharpe "
-        "| cls | holdout_n | full_period_n | verdict |",
-        "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|",
+        # B2725: the producer-band glossary belongs ON the unified table.
+        ("_**EVERY PRODUCER BAND IS A COLUMN HERE** (owner ruling: one "
+         "unified table, no separate Table Ds). Axis labels come from the "
+         "per-family registry D_AXIS_FAMILIES: " + ", ".join(_labels) +
+         ". For smc_breaker_block: P2 close_mitigation (False = "
+         "production, mitigate on high/low), P4 age_bars_max (None = "
+         "production, no cap), P5 break_pct_max (None = production, no "
+         "cap). `npt_excl` = next_pivot_target refused on this cell as "
+         "boundary-spanning (B2014), one of the two exits missing from "
+         "24._"),
+        "",
+        "| # | config | " + " | ".join(_labels) + " | exit | is_ci_lo | n "
+        "| tier | dup | is_sharpe | cls | holdout_n | full_period_n "
+        "| verdict | npt_excl |",
+        "|" + "---|" * (len(_labels) + 13),
     ]
     for i, r in enumerate(rows[:top], 1):
         k = sig(r)
@@ -1635,10 +1857,13 @@ def table_d(grids: dict[str, dict], top: int = 20) -> list[str]:
         dup = f"{seen[k]} of {counts[k]}" if counts[k] > 1 else "-"
         ci = f"{r['ci']:+.3f}" if r["ci"] is not None else "n/a"
         sh = f"{r['sh']:.3f}" if r["sh"] is not None else "n/a"
+        _axes = " | ".join(str(r.get(f"A{_j}"))
+                           for _j in range(1, len(_labels) + 1))
+        _npt = "yes" if r.get("npt") else "-"
         out.append(
-            f"| {i} | {r['config']} | {r['sw']} | {r['sp']} | {r['exit']} | "
+            f"| {i} | {r['config']} | {_axes} | {r['exit']} | "
             f"{ci} | {r['n']} | {_d_tier(r['n'])} | {dup} | {sh} | {r['cls']} | "
-            f"{r['ho']} | {r['fp']} | {r['verdict']} |")
+            f"{r['ho']} | {r['fp']} | {r['verdict']} | {_npt} |")
 
     out += ["", f"_{len(rows)} ranked outcomes across {len(grids)} graded "
                 f"configs; {len(counts)} distinct signatures._"]
@@ -1655,8 +1880,18 @@ def table_d(grids: dict[str, dict], top: int = 20) -> list[str]:
     return out
 
 
-def table_d_params(grids: dict[str, dict], top: int = 20) -> list[str]:
-    """TABLE D-2 - the SIX swept axes for the same top-N rows as table_d.
+def table_d_params(grids: dict[str, dict], top: int = 25) -> list[str]:
+    """SUPERSEDED at B2725 - its columns are now IN table_d.
+
+    Kept callable because scripts/show_table_d.py offers it as an
+    axes-only view, but it is NO LONGER part of any report: emitting it
+    beside table_d recreates the two-table shape the owner rejected, and
+    test_b2725 fails the landing report if a "TABLE D-2" section returns.
+
+    Historical docstring below; its readability rationale ("at 18 a
+    markdown table wraps") predates the ruling and no longer governs.
+
+    TABLE D-2 - the SIX swept axes for the same top-N rows as table_d.
 
     Owner directive 2026-08-28: show all of P1-P6, not just swing and span.
 

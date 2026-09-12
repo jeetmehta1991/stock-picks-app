@@ -527,10 +527,10 @@ travels without its source file. B1898b: a value the artifact does not record re
 fixed in CODE since B1898 and was absent from this plan entirely, so a reader working from the
 plan could not know it existed.
 
-### 6.4b Section 4b — TABLE D + D-2, the cross-config ranked list (shipped S6-B2330; documented S6-B2499)
+### 6.4b Section 4b — TABLE D, the cross-config ranked list (shipped S6-B2330; documented S6-B2499; **D-2 MERGED IN AND RETIRED at B2725**)
 
 **Table C answers "what happened inside one config"; TABLE D answers "across every
-config, which outcomes rank highest"** — one row per (config × exit) outcome, top 20
+config, which outcomes rank highest"** — one row per (config × exit) outcome, top 25
 by default. Owner directive 2026-08-28. Documented here for the same reason Table C
 was (B2134): it had been fixed in CODE and absent from this plan entirely.
 
@@ -562,7 +562,7 @@ time, never recalled):**
   to a survivor (B1593).
 - **A per-tier best summary is appended** — the comparison a rank order hides.
 
-**TABLE D-2 — the swept axes for the SAME rows, same order, join on `#`.** A second
+**TABLE D-2 IS RETIRED — B2725, OWNER CATCH. Its axis columns are now columns of TABLE D itself, and the landing report emits no D-2 section.** MEASURED CAUSE: there were TWO Table D renderers. `table_d_render.py` was built to the B2699 ruling (one unified table, a column per producer band) and renders the OFFLINE level-sweep artifacts; `producer_variant_table.table_d` renders the GRID artifacts and kept this split, which B2723 then wired into every landing - making the shape the owner had rejected the one MECHANICALLY REGENERATED per config. The duplicated `sw`/`sp` columns are gone because they ARE P1 and P6. Pin: `test_b2725_landing_table_d_is_unified_with_every_producer_band` (five arms, fail-proofed by deleting a band from the header); CHECKLIST #303 / L790. The superseded rationale is preserved below for lineage and NO LONGER GOVERNS. A second
 table rather than more columns because at 18 columns a markdown table wraps, which
 is exactly how Table C lost four columns three times. Columns: `# | config |
 P1 swing | P2 close_mit | P3 tail_n | P4 age_bars | P5 break_pct | P6 span |
@@ -3433,7 +3433,7 @@ consumers by grepping every gate expression for smc_* keys - no
 strategy-subset pruning that drops a family member), persist
 signals_at_entry as standard, and carry the variant identity in the cube
 dir name + run_manifest (the icg wave pattern). Each landed variant cube
-then serves EVERY later smc campaign's depth leg OFFLINE - hub 2
+then serves later smc campaigns' depth legs OFFLINE **within its producer reach, which B2735 MEASURED rather than assumed: a SMC_SWING_LENGTH factorial reaches 19 of the 22 consumers (17 of 22 reachable AND open, the 2 breaker legs being admitted-closed), because `swing_highs_lows(swing_length)` feeds exactly four primitives - `ob`, `bos_choch`, `liquidity`, `retracements` (smc_ict.py:375/453/503/559). It reaches NEITHER of the swing-independent sources: `fvg` takes no swings (smc_ict.py:298) and dealing-range is a raw high/low window (smc_ict.py:583), so smc_fvg_retest_long, smc_fvg_retest_short and smc_inverse_fvg read only swing-independent keys and their depth needs its OWN axis (SMC_LIQUIDITY_RANGE_PCT feeds `liquidity`; the FVG parameters are a separate lever). Producer map: output_audit/b2735_smc_producer_map.json** - hub 2
 (order_block_bounce) and the Wave-2 independents take their producer-band
 depth from these 44 cubes with ZERO additional engine hours, the same way
 offline campaigns filter R5 today. The band_coverage_gate accepts these
@@ -3561,4 +3561,76 @@ event_recency_bars - resim) was NOT RUN and is Priority 1 (S6-B2702a,
 band + venue word pending). The strategy carries NO verdict until the
 depth leg runs; production unchanged meanwhile. Artifacts: b2701_smc_lsr_step2.json + .md (Step-2 unified
 form, full length).
+
+### 11.2b2c HUB-1's DEPTH CAMPAIGN IS BLOCKED ON REGISTRATION, AND THE FIRST ATTEMPT GRADED THE WRONG STRATEGY (B2731-B2737, owner-caught 2026-09-12)
+
+**What was attempted and retracted.** The S6-B2702a depth factorial was
+launched twice - b2709 (pilot) and b2712 (config 1) - and BOTH declared
+`smc_breaker_block_long` as the graded strategy. That strategy is ADMITTED to
+Phase 1B at S6-B2410 (holdout 1.152), so the runs re-searched a banked
+decision while hub-1, the actual subject, rode along UNGRADED as one of 21
+riders. MEASURED: config 1 spent 2.41 h (elapsed_s 8668,
+b2712_smc_sw10_wave_summary.json results[0]) and left 305 hub-1 entries
+unread in its cube. **Every number reported from b2712 is RETRACTED as
+campaign evidence** - its Table C funnel row and Table D ranks 12/13 (is_ci_lo
++0.803 n 13, +0.766 n 12) describe the closed strategy. Owner ruling, verbatim:
+*"We stop testing the strategies once they are in the phase 1B unless you get
+specific over rides from me!!"*
+
+**Why it could happen, stated as a REGISTRATION fact rather than an excuse.**
+MEASURED at B2737: **1 of 22 smc consumers has a SPECS entry in
+`producer_variant_table` and is a registered post-config battery family - and
+it is `smc_breaker_block_long`, the admitted one.** `launch_refusals` refuses
+any graded strategy with no SPECS entry (S6-B2573b: the battery would fail
+closed at landing AFTER the engine spend), so hub-1 was NOT launchable, and
+the only launchable smc strategy was the one that must not be re-tested. The
+generic family adapter exists (S6-B2573a, `tools` block per SPECS entry); the
+hub-1 INSTANCE was never registered.
+
+**Two gates now close the class:**
+- **B2731** - `phase1b_admitted()` + `_admitted_retest_refusals()`, wired into
+  `launch_refusals`: an ADMITTED graded strategy is REFUSED AT LAUNCH. The
+  escape is the owner's dated words in the spec under
+  `owner_override_retest_admitted[<strategy>]`; a bare boolean is refused
+  (L789). Verified retroactively against the real `b2712_smc_sw10_spec.json` -
+  the refusal fires. Pin `test_b2731`, five arms. CHECKLIST #304 / L791.
+- **B2733** - a HOLE in B2731 found one batch later: it read only
+  `phase_1b_step2_admissions.json`, while PHASE_1B_ROSTER.md retains
+  `smc_breaker_block_short` and `pead_short_negative_yoy_growth` as Step-2
+  admissions that appear NOWHERE in that JSON. Both sources now unioned,
+  fail-closed; admitted set 14 -> 16. Pin `test_b2733` guards its own premise.
+
+**Blast radius, measured not assumed (B2734, #237 sweep over 70 of 70
+manifests, classified per L643): 3 DEFECTS** - b2207a_lockprobe_p1, b2709
+pilot, b2712 - all three `smc_breaker_block_long`. **59 ran in the correct
+search-then-admit order, including 18 of 18 `icg_*` configs, so the
+institutional campaign is CLEAN.** Also measured: only 2 of 70 cubes declare
+`cube_riders`, which bounds the offline salvage to swing_length=10 and
+retracts an overclaim quantified over all variant cubes.
+
+**THEREFORE the ruled order for hub-1 (11.2b2b unchanged: DEPTH is Priority 1,
+BREADTH Priority 2).** Hub-1's BREADTH leg is already SPENT - 8 of 11 Table A
+axes ran offline and B2701's single holdout read was a clean negative (0 of 602
+lines clear six gates). Its DEPTH leg over the producer bands (P1
+swing_length, P2 liquidity_range_pct, P3 event_recency_bars) remains the ONLY
+unrun mandatory leg, so the strategy still carries NO verdict (CHECKLIST #299
+/ L785). The sequence, each step gated by 11.2c:
+
+1. **REGISTER hub-1** - a SPECS entry with its Table A producer bands plus a
+   `tools` adapter block, and registration as a post-config battery family.
+   Without this the launch gate refuses, correctly. (S6-B2732a)
+2. **BAND REVIEW** - the owner reviews hub-1's depth band (the three producer
+   knobs and their levels) before anything runs.
+3. **OFFLINE SALVAGE FIRST, ZERO ENGINE COST** - b2712's cube already carries
+   305 hub-1 entries at swing_length=10, so config 1 of the depth band is
+   gradable by re-pointing the graded subset at hub-1 and re-running the
+   battery. This is the B2707 reuse doctrine paying for itself against the
+   misaim.
+4. **THE REMAINING ENGINE CONFIGS** - re-specced with hub-1 graded and the full
+   smc consumer set as riders (B2707), at the ruled Step-1 shape (200 tickers x
+   1 year ending at the IS/HO boundary, injected by `phase_table.resolve` and
+   not typeable). Measured rate 2.41 h/config. Venue word required (B2107).
+5. **G1 + G2 RIDE IT** - per B2735 the same cubes serve the depth legs of 17 of
+   22 open consumers offline, which is why G1 and G2 are worked as one campaign
+   rather than nineteen.
 

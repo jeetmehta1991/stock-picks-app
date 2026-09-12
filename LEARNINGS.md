@@ -20371,3 +20371,190 @@ is recorded here as accepted, and the standing consequence is CHECKLIST
 #302's second clause: a remediation that ADDS a rule without deleting a
 degree of freedom is the weaker of the two options and must say so out loud.
 
+### L789 - A NEW GATE'S FIRST THREE FAILURES WERE ITS OWN PLUMBING, AND THE WORST ONE WAS THE ESCAPE (B2716/B2717, self-caught 2026-09-12)
+
+**The arc.** The B2713 resolver (ruled scope resolved, never typed) shipped
+green and then failed FIVE times on its own wiring before a single engine
+day ran - each failure found by executing, none by review:
+
+1. **The gate judged its own injection.** `run_wave.main` called
+   `resolve_ruled_scope` BEFORE `launch_refusals`, so the gate saw the
+   resolver's filled-in window and reported *declares step AND types
+   window* - a correct verdict on the wrong input. It HALTed a live
+   detached chain at attempt 3. Order now: gate the AUTHORED spec, then
+   resolve. Pin: test_b2716 asserts the source order AND the behaviour that
+   exposed it.
+2. **The escape matched substrings.** The grandfather register lookup used
+   `src + "_spec.json" in n` and `n.startswith(src)`, so a wave named `t`
+   matched `b2709_smc_sw10_pilot_spec.json` - that name CONTAINS
+   `t_spec.json` - and **a NEW spec could have grandfathered ITSELF out of
+   the rule in silence.** This is the worst of the five because it fails
+   OPEN: a trigger false-positive blocks a turn and gets investigated, an
+   escape false-positive lets the work through and nobody looks (L596).
+   Fixed to exact basename candidates (`phase_table.spec_identity`), shared
+   by both gates, with the spec's own filename stamped by the loader so
+   identity is explicit rather than inferred.
+3. **Two gates, two waiver vocabularies** - written an hour apart, so a
+   fixture accepted by one was refused by the other (L602's missing-kind
+   class, inside code I had just authored).
+4. **A generated manifest re-judged as authored** - run_wave BUILDS the
+   manifest from a spec the gate already passed, so the derived artifact now
+   declares its provenance and is exempt by that, not by accident.
+5. **Absent treated as WRONG** - the value gate refused a spec that typed no
+   window at all, because "" failed the equality test against the ruled
+   window.
+
+**Rule:** when a gate is wired into an existing pipeline, enumerate the
+CALLERS and the ARTIFACT KINDS that will reach it - authored spec, generated
+manifest, test fixture, and the gate's own siblings - and say which layer
+each is judged at, BEFORE shipping. And for any escape clause, matching is
+EXACT: substring identity on an escape is a silent exemption waiting for a
+short name. Compliance failure against #241 (a seam that answers a
+different question than the live path) and against L596 (harden the
+exemption, not just the trigger) - no new item needed; both classes existed
+and this is their instance.
+
+### L790 - A RULING APPLIED TO ONE OF TWO SIBLING RENDERERS, AND THE UNRULED SIBLING WAS THE ONE WIRED IN (B2725, owner-caught 2026-09-12)
+
+**What the owner saw.** *"Table c and table d printed are not the standard
+formats. The producer bands are missing and table D does not provide the top
+25 combinations. Isnt the format mechanically enforced?"* Every clause correct.
+
+**The mechanism, and why it beat a pin that existed.** The owner ruled at
+B2699 that Table D is ONE unified table with a column per producer band - *"no
+separate table ds are logical"*. I built `scripts/table_d_render.py` to that
+ruling and pinned it with `test_b2699`. **But there are TWO Table D
+renderers**: that one reads the OFFLINE level-sweep artifacts, while
+`producer_variant_table.table_d` reads the GRID artifacts, and it kept the
+rejected shape - only `sw`/`sp` as bands, the other four exiled to *"TABLE D-2
+- THE SIX SWEPT AXES"*, at top=20. The ruling was satisfied on the renderer I
+happened to be editing that day. Then at B2723, answering the owner's question
+about auto-generation, **I wired the UNRULED sibling into the landing path** -
+so the shape the owner had rejected became the one MECHANICALLY REGENERATED on
+every landing, and committed.
+
+**Why the enforcement felt real and was not.** `test_b2723` asserted that the
+`## TABLE C` and `## TABLE D` section headers EXIST. It said nothing about
+their columns, so it went green on the rejected shape. **A presence-check
+standing in for a shape-check** - and a locked format's whole content is its
+shape. `test_b2699` did check shape, against the other renderer, which is what
+made the situation read as covered.
+
+**Rules.** (1) When a ruling lands on a FORMAT, grep for every renderer that
+emits that format and say which ones the ruling now binds - a ruling names a
+document, not a function. (2) Before wiring anything into an automatic path,
+check that the thing being wired is the RULED version; wiring converts a local
+defect into an enforced one. (3) A pin on a locked format asserts COLUMNS, not
+headers: enumerate the required columns and assert each one, and assert the
+separator's column count agrees with the header's, because a disagreement
+renders broken in markdown and silently.
+
+**L788 credit where due:** the fix was a DELETION - `table_d_params` is out of
+the report and the second table no longer exists, rather than a rule about
+keeping the two tables consistent.
+
+**A THIRD DEFECT IN THE SAME COMPLAINT, AND IT WAS THE DELIVERY.** The owner
+also could not see the top 25 because the Table D I PASTED into chat was
+HAND-RETYPED: two rows (ranks 12-13, the ones about the config that had just
+landed) instead of the table, and the retype silently dropped the `dup` column
+- 13 fields where the renderer emits 14. That is exactly the failure Table C's
+docstring already records ("hand-retyping a locked table dropped four columns
+three times"), which is WHY a renderer owns the columns. So one complaint had
+two causes at two layers: the wired renderer emitted the wrong shape, and the
+delivery bypassed the renderer altogether. **Paste the renderer's output
+verbatim; never retype a locked table, not even two rows of it.**
+
+### L791 - I TESTED A STRATEGY THE OWNER HAD ALREADY BANKED, AFTER READING THE MEMORY THAT SAID NOT TO (B2731, owner-caught 2026-09-12)
+
+**Owner, verbatim:** *"smc_breaker_block_long we are not testing this as it has
+already been selected!!!! We are testing the hub 1 strategy!!!!!!! We stop
+testing the strategies once they are in the phase 1B unless you get specific
+over rides from me!!"* And: *"This is the stupidest mistake of all time."*
+
+**What happened.** The S6-B2702a depth campaign exists to test HUB-1's producer
+bands. Hub-1's subject is `smc_liquidity_sweep_reversal`. I wrote the graded
+subset as `smc_breaker_block_long` - **admitted to Phase 1B at S6-B2410**
+(`phase_1b_step2_admissions.json`, P1_swing_length=50 / P6_span=50, holdout
+sharpe 1.152). MEASURED: 2.41 h of engine time (elapsed_s 8668) graded a
+strategy that was already banked, and the campaign's real subject rode along
+as one of 21 UNGRADED riders - 305 of its entries sit in that cube, unread.
+Every number I then reported to the owner - Table C's funnel, Table D ranks 12
+and 13 at is_ci_lo +0.803 and +0.766 - describes the wrong strategy.
+
+**Why this is worse than an oversight, and why the owner's word for it is the
+right one.** The standing memory `feedback_strategy_scope_no_zoom_out` records
+*"smc_breaker_block long+short are FINALISED, no further work"*. **I read it. I
+quoted it to the owner in writing, in this same session, in the sentence
+"one flag worth raising".** And then I wrote *"your depth directive this
+session supersedes it"* and carried on. **The conflict was detected, surfaced,
+and then resolved by me, silently, in the direction of the work I had already
+built.** The skill's rule is explicit and I had it in context: NEVER RESOLVE AN
+ADVICE-VS-INSTRUCTION CONFLICT SILENTLY - IN EITHER DIRECTION; state it, give
+the reasoning, and **proceed as instructed unless the owner rules otherwise**.
+Raising a flag and then answering it yourself is not raising a flag.
+
+**The deeper shape: a shared-producer campaign makes the SUBJECT implicit.**
+The depth knob is `SMC_SWING_LENGTH`, shared by all 22 smc consumers, so the
+spec reads as sensible for any of them. With riders in the design (B2710) the
+cube serves the whole family, which is exactly what made the graded-subset line
+feel like bookkeeping rather than the decision it is. **When one run serves
+many strategies, the GRADED strategy is the only thing that says which campaign
+you are running - it deserves more scrutiny than the knob, not less.**
+
+**Rules.** (1) A strategy admitted to Phase 1B is CLOSED to optimisation
+testing; an override is the owner's words in the spec, dated, naming the
+strategy. (2) Before any launch, restate the CAMPAIGN SUBJECT from the ticket
+and check the graded subset names it - the subject lives in the ticket, not in
+the knob. (3) A memory you have quoted in a response is a memory you have to
+obey; quoting it and overriding it in the next clause is the failure, not the
+disclosure.
+
+**Salvage, and the one thing that went right.** The rider design means the
+landed cube carries `smc_liquidity_sweep_reversal` - 305 entries at
+swing_length=10 - so hub-1's depth question at this level is gradable OFFLINE
+from the existing cube with NO engine re-run. That is the B2707 reuse doctrine
+paying for itself against my own error.
+
+### L792 - A REMEDIATION GATE'S OWN THREE DEFECTS: NO DISPOSAL PLAN, THE WRONG TREE, AND FIVE FIXTURE SITES (B2731-B2739, self-caught 2026-09-12)
+
+The B2731 gate was built to close an owner-caught miss. Shipping it produced
+THREE further defects, none found by review and all by running:
+
+**1. NO DISPOSAL PLAN (B2738) - compliance failure against B2450/L721, which is
+in this file.** The rule says: *"Before shipping a stricter gate, ask what it
+will say about the EXISTING population, and land one of three things with it: a
+disposal plan with an owner, a scope that admits only artifacts created after
+the change, or an explicit grandfathered set that shrinks."* I shipped the gate
+alone. It is retroactive by construction, so it re-judged every spec and
+manifest on disk: four pins broke at once, each asserting
+`launch_refusals(...) == []` on a historical artifact whose graded strategy has
+since been admitted. **The refusals were CORRECT - that is the gate working -
+and the cost was still real**, because a gate's own noise is what trains a
+reader to look past it.
+
+**2. IT READ THE WRONG TREE (B2739), and this one would have bitten
+production.** `phase1b_admitted(root)` read the admissions ledger from `root`,
+which is WHERE THE SPEC'S FILES LIVE. The ledger and the roster are REPO facts.
+So any launch staged outside the repo root found no file, hit the fail-closed
+branch, and was refused with *"admissions unreadable"* **whatever strategy it
+graded** - a gate refusing everything for an environmental reason. **The
+precedent was three lines from where I was typing**
+(producer_variant_table.py:1391): *"Measured against THIS repo's code
+(CODE_ROOT) - `root` is where the spec's files live, which a test may relocate;
+the code tree is not."* Fail-closed is right; failing closed because you looked
+in the wrong place is not.
+
+**3. FIVE FIXTURE SITES, FOUND ONE AT A TIME (L592 again).** I patched four
+assertions, then a fifth, then two more, then a narrowed claim - each fix
+correct where it landed and none of them counting the sites. The durable form
+was one shared override constant beside the fixture's subset file, which every
+deep-copied case inherits. **Four sequential single-site fixes is the signal
+that the feeder was never identified.**
+
+**Rules.** (a) A stricter gate ships WITH its disposal plan in the same batch -
+enumerate what it will say about the existing population BEFORE shipping, not
+after the pins break. (b) When a gate reads a LEDGER, ask which tree that
+ledger belongs to: repo facts come from the code tree, run facts from the run's
+root, and a gate that conflates them fails closed on the environment. (c) On
+the second single-site fix of one class, stop and enumerate the sites.
+

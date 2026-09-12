@@ -24124,6 +24124,16 @@ def test_b2082_launch_sweep_refuses_without_a_passing_gate():
         # pre-B2118 manifests share the form; every manifest run_wave writes
         # carries a bare path). Re-point the COPY at the bare path that exists.
         _m["strategy_subset"] = "output_audit/_subset_one.txt"
+        # B2738 (B2450/L721 disposal): this pin drives a REAL launch through
+        # launch_sweep.py, and B2731 now refuses a graded strategy that is
+        # admitted to Phase 1B. smc_breaker_block_long is admitted, so the
+        # manifest carries the DOCUMENTED escape - the owner's words naming
+        # the strategy - which is exactly what a sanctioned re-test needs.
+        # A bare boolean would be refused (L789), so this also exercises the
+        # override's required SHAPE on the live path.
+        _m["owner_override_retest_admitted"] = {
+            "smc_breaker_block_long":
+                "test fixture: exercising the launch path, not a real re-test"}
         good = str(td / "good_manifest.json")
         (td / "good_manifest.json").write_text(_bj.dumps(_m), encoding="utf-8")
         r = subprocess.run(
@@ -24757,6 +24767,15 @@ def test_b2116_run_wave_resume_loop_both_ways(tmp_path, monkeypatch):
     # substitute engine).
     monkeypatch.setenv("POSTCONFIG_LANDINGS_PATH", str(tmp_path / "landings.jsonl"))
     monkeypatch.setenv("POSTCONFIG_LANDING_NO_GIT", "1")
+    # B2747 (B2738/B2450 disposal, site 6): this test drives run_wave with
+    # smc_breaker_block_long, which B2731 refuses as ADMITTED. It exercises
+    # the RESUME LOOP, not admission, so it carries the documented owner
+    # override - the same escape a sanctioned re-test would need. My
+    # earlier sweep covered test_b2578 only and could not see this site,
+    # which is L592 once more: count the sites across the FILE, not the
+    # function in front of you.
+    _ov_b2116 = {"smc_breaker_block_long":
+                 "test fixture: run_wave resume loop, not a re-test"}
     out_dir = root / f"output_{wave}_armx"
     # B2277 (S6-B2269, owner-approved option b): this test drives run_wave
     # against the PRODUCTION ledger, and run_arm regenerates the findings doc
@@ -24792,6 +24811,7 @@ if n == 1:
     sub.write_text("smc_breaker_block_long\n", encoding="utf-8")
     spec = {"wave": wave, "tickers_file": str(tick),
             "strategy_subset": str(sub),
+            "owner_override_retest_admitted": _ov_b2116,
             "window": {"start": "2024-05-05", "end": "2025-05-05"},
             # B2714: synthetic resume-loop fixture on its own 2-ticker
             # temp universe - it drives the loop, not a campaign step,
@@ -25564,6 +25584,15 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
          "L787 (B2711): a step's shape is ruled, not reasoned"),
         ("ASK FIRST WHETHER A DEGREE OF FREEDOM CAN BE DELETED INSTEAD",
          "L788 (B2713): council unanimous - delete, do not police"),
+        ("ENUMERATE THE CALLERS AND ARTIFACT KINDS FIRST",
+         "L789 (B2716/B2717): a new gate's own plumbing fails first; "
+         "an escape must match EXACTLY"),
+        ("GREP FOR EVERY RENDERER THAT EMITS THAT FORMAT",
+         "L790 (B2725): a ruling names a DOCUMENT, not a function; pin a "
+         "locked format on its COLUMNS"),
+        ("ASK WHICH TREE THAT FACT BELONGS TO",
+         "L792 (B2739): repo facts from the CODE tree, run facts from the "
+         "run root; the wrong tree fails closed on the environment"),
     ):
         if frag not in discipline_text:
             missing.append(f"execution-discipline lost [{why}]: {frag!r}")
@@ -25672,7 +25701,10 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # 258 -> 259 at B2705 (the L786 mechanize-first fragment).
     # 259 -> 260 at B2711 (the L787 copy-the-ruled-row fragment).
     # 260 -> 261 at B2713 (the L788 delete-the-degree-of-freedom fragment).
-    assert len(gutted) == 261, gutted
+    # 261 -> 262 at B2719 (the L789 enumerate-the-callers fragment).
+    # 262 -> 263 at B2726 (the L790 every-renderer-of-the-format fragment).
+    # 263 -> 264 at B2741 (the L792 which-tree-does-this-fact-belong-to).
+    assert len(gutted) == 264, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -28189,7 +28221,17 @@ def test_b2330_table_d_ranks_without_gating_and_shows_depth():
         'the registered-vs-effective exit counts must be disclosed: 24 - 1 npt'
         ' - 1 collapsed = 22, so a reader is not told all 24 competed')
 
-    # S6-B2334 (owner Q3): all six axes, in a joined second table
+    # S6-B2334 (owner Q3): all six axes. B2725 CONTRACT CHANGE - they are
+    # columns of the MAIN table now, not a joined second one: the owner
+    # ruled one unified table, and the split survived here because the
+    # ruling had only been applied to the offline renderer.
+    for axis in ('P1 swing', 'P2 close_mit', 'P3 tail_n', 'P4 age_bars',
+                 'P5 break_pct', 'P6 span'):
+        assert axis in main_hdr[0], (
+            'axis %r missing from the UNIFIED Table D header; header was:'
+            ' %r' % (axis, main_hdr[0]))
+    assert '| sw |' not in main_hdr[0] and '| sp |' not in main_hdr[0], (
+        'sw/sp are P1 and P6 - keeping them duplicates two bands')
     pout = '\n'.join(mod.table_d_params(grids))
     # B2334a: the first version asserted each axis was somewhere in the output,
     # which the PREAMBLE's own prose satisfies - so renaming a column header
@@ -30519,7 +30561,20 @@ def test_b2505_table_d_axes_come_from_the_family_registry():
                                      "holdout_n": 0, "full_period_n": 100,
                                      "verdict": "RANKED"}}]}}
     d1 = "\n".join(pvt.table_d(grid))
-    assert "| 2 | 200 |" in d1, "sw/sp must carry the institutional axes"
+    # B2725: the UNIFIED table carries all six institutional axes inline
+    # (it used to carry only sw/sp, i.e. "| 2 | 200 |").
+    assert "| 2 | 4 | 1.1 | 3 | 5 | 200 |" in d1, (
+        "the unified Table D must carry the six institutional axis values"
+        " in registry order")
+    # B2728: ANCHOR ON THE HEADER ROW. Asserting these against the whole
+    # render was hollow the moment B2725 added the axis labels to the
+    # preamble glossary - the strings appear in prose, so the assertion
+    # passed with the COLUMN deleted (L706, introduced by my own change).
+    _h = [l for l in d1.splitlines() if l.startswith("| # | config |")]
+    assert _h, "the unified Table D header row is missing"
+    assert "P4 minq" in _h[0] and "P7 min_committed" in _h[0], (
+        "the unified HEADER must use the institutional labels; header was: "
+        + repr(_h[0]))
     d2 = "\n".join(pvt.table_d_params(grid))
     assert "P4 minq" in d2 and "P7 min_committed" in d2, (
         "D-2 header must use the institutional labels")
@@ -32587,12 +32642,28 @@ def test_b2578_launch_gate_refuses_before_the_engine_and_p7_p8_are_struck(tmp_pa
         # its own basename - what run_wave.main stamps. (Before B2717 a
         # substring match let a short wave name grandfather itself.)
         d["_spec_path"] = _P(f).name
-        assert pvt.launch_refusals(d, root) == [], (f, pvt.launch_refusals(d, root))
+        # B2738 (B2450/L721 disposal): see test_b2714 - icg is admitted, so
+        # B2731 refuses these historical specs; this pin is about the
+        # pre-engine refusal classes, not admission.
+        _r = [x for x in pvt.launch_refusals(d, root)
+              if "ALREADY ADMITTED" not in x]
+        assert _r == [], (f, _r)
     # an smc spec of the b2197 shape, with its own subset file (the live
     # _subset_one.txt is untracked); pathlib keeps an absolute subset path
     sub_smc = tmp_path / "smc.txt"
     sub_smc.write_text("smc_breaker_block_long\n", encoding="utf-8")
+    # B2738 (B2450/L721 disposal): every fixture built on sub_smc grades an
+    # ADMITTED strategy, which B2731 refuses. Declared ONCE here and spread
+    # into each fixture, so a future fixture on this subset inherits it
+    # (L592: count the sites, fix the feeder - this was found at site 5 of 5).
+    _ov_smc = {"smc_breaker_block_long": "test fixture: launch-gate classes"}
+    # B2738 (B2450/L721 disposal): these synthetic docs exercise OTHER
+    # refusal classes, and B2731 refuses smc_breaker_block_long as banked.
+    # The override goes on the BASE fixture so all deep-copied cases inherit
+    # it - one fixture edit instead of eight per-assertion filters (L592:
+    # count the sites, fix the feeder).
     smc = {"wave": "b2578t", "strategy_subset": str(sub_smc),
+           "owner_override_retest_admitted": _ov_smc,
            "shape_waiver": ("test fixture: synthetic smc doc exercising "
                             "the adapter refusals, not a campaign step"),
            "arms": [{"tag": "sw10sp21",
@@ -32620,7 +32691,13 @@ def test_b2578_launch_gate_refuses_before_the_engine_and_p7_p8_are_struck(tmp_pa
     one(x, "declares swing_length=12 but that is not a level of P1")
     x = {"strategy_subset": "output_audit/_subset_iso2.txt", "arms": []}   # tracked, 2 strategies
     r = one(x, "smc_order_block_bounce: no SPECS entry")
-    assert not any("smc_breaker_block_long" in e for e in r), "the registered one is not blamed"
+    # B2738: the claim is that the REGISTERED strategy is not blamed FOR THAT
+    # CLASS. B2731 does blame it for being ADMITTED, which is a different and
+    # correct refusal, so the assertion is narrowed to its actual question
+    # rather than loosened away (L574: being right about the content is not
+    # being right about the claim).
+    assert not any("smc_breaker_block_long" in e and "SPECS entry" in e
+                   for e in r), "the registered one is not blamed for MISSING SPECS"
     one({"strategy_subset": str(tmp_path / "missing.txt"), "arms": []}, "does not exist")
     one({"arms": [{"tag": "a"}]}, "carries no strategy_subset")
     one({}, "carries no strategy_subset")
@@ -32668,6 +32745,7 @@ def test_b2578_launch_gate_refuses_before_the_engine_and_p7_p8_are_struck(tmp_pa
     assert rsc.summary_status({"wave": "b2578ref"}) == "REFUSED", "HALT, not SKIP"
     # a registered spec goes through to run_arm - the gate is not a wall
     good = {"wave": "b2578ok", "strategy_subset": str(sub_smc),
+            "owner_override_retest_admitted": _ov_smc,
             "arms": [{"tag": "sw10", "env": {"SMC_SWING_LENGTH": "10"}}]}
     sp_g = tmp_path / "good.json"
     sp_g.write_text(_json.dumps(good), encoding="utf-8")
@@ -32682,6 +32760,7 @@ def test_b2578_launch_gate_refuses_before_the_engine_and_p7_p8_are_struck(tmp_pa
     fails = pg.check(m, {}, "")
     assert any("LAUNCH REFUSED (S6-B2573b)" in f and "not_a_strategy" in f for f in fails), fails
     m2 = dict(ok, strategy_subset=str(sub_smc),
+              owner_override_retest_admitted=_ov_smc,
               arms=[{"tag": "sw10", "env": {"SMC_SWING_LENGTH": "10"}}])
     assert pg.check(m2, {}, "") == [], pg.check(m2, {}, "")
     # wired, not merely defined (B1864 shape): both callers name the gate
@@ -32777,6 +32856,11 @@ def test_b2579_battery_families_and_knob_blast_radius_are_derived_not_handwritte
     # B2717: identity is EXACT - a spec loaded from disk carries its own
     # basename, which run_wave.main stamps on the live path.
     good["_spec_path"] = "b2527_icg_span50_spec.json"
+    # B2738 (B2450/L721 disposal): icg is ADMITTED since 2026-09-10, so
+    # B2731 refuses this historical spec. This block tests consumer DRIFT,
+    # so the override rides the fixture and the drift assertions stay exact.
+    good["owner_override_retest_admitted"] = {
+        "institutional_committed_growth_long": "test fixture: drift cases"}
     assert pvt.launch_refusals(good, root) == []
     inst = pvt.SPECS["institutional_committed_growth_long"]
     row = [p for p in inst["params"]
@@ -32805,8 +32889,12 @@ def test_b2579_battery_families_and_knob_blast_radius_are_derived_not_handwritte
     # ---- (3) FAMILIES is derived from SPECS, and family_refusal names the
     # shapes an incomplete adapter block can take.
     rp = load("run_postconfig_b2579", "scripts/run_postconfig.py")
+    # S6-B2732a: hub-1 registered, so the DERIVED set grew to three. This is
+    # a contract change, not a loosening - the assertion stays EXACT so a
+    # silent registration still fails here.
     assert set(rp.FAMILIES) == {"smc_breaker_block_long",
-                                "institutional_committed_growth_long"}, sorted(rp.FAMILIES)
+                                "institutional_committed_growth_long",
+                                "smc_liquidity_sweep_reversal"}, sorted(rp.FAMILIES)
     assert rp.FAMILY_REFUSALS == {}, rp.FAMILY_REFUSALS
     for name, fam in rp.FAMILIES.items():
         assert callable(fam["params"]) and callable(fam["run"]), name
@@ -32941,7 +33029,12 @@ def test_b2579_battery_families_and_knob_blast_radius_are_derived_not_handwritte
                       "--swing-length", "50", "--span", "50",
                       "--min-n", "10", "--out", str(grid_out)], tb
     st = [c for c, e in smc_armed if "spot_check_trades" in " ".join(c)][0]
+    # B2724: the adapter now passes --strategy so a RIDER cube (B2710,
+    # 22 consumers in one cube) is spot-checked on the GRADED strategy's
+    # own rows - measured 25 of 50 DISAGREE without it, because the
+    # checker recomputed the breaker condition against rider trades.
     assert st[2:] == ["--cube", str(cube / "trade_exit_detail.csv"), "--n", "50",
+                      "--strategy", "smc_breaker_block_long",
                       "--swing-length", "50", "--ema-span", "50",
                       "--out", str(spot_out)], st
     by = {n: (s, m) for n, s, m in results}
@@ -35880,7 +35973,16 @@ def test_b2713_ruled_scope_is_resolved_not_typed():
 
     # (d) reachable from the launch gate
     from producer_variant_table import launch_refusals
-    assert launch_refusals(spec, root) == [], launch_refusals(spec, root)
+    # B2738 (B2450/L721 disposal): B2731 made an ADMITTED graded strategy a
+    # launch refusal, which is RETROACTIVE - this historical artifact would
+    # be refused today, correctly. That refusal is orthogonal to what this
+    # pin proves, so it is filtered by name rather than weakening the gate.
+    _adm = "ALREADY ADMITTED"
+    _r = [x for x in launch_refusals(spec, root) if _adm not in x]
+    assert _r == [], _r
+    # and the admitted-retest refusal IS present, because b2712 graded a
+    # banked strategy - the B2731 incident, pinned here as a fact
+    assert any(_adm in x for x in launch_refusals(spec, root))
 
 
 def test_b2714_legacy_typed_spec_register_is_named_and_shrink_only():
@@ -35926,7 +36028,12 @@ def test_b2714_legacy_typed_spec_register_is_named_and_shrink_only():
     for f in live:
         d = _json.loads(_P(f).read_text(encoding="utf-8"))
         d["_spec_path"] = _P(f).name
-        assert pvt.launch_refusals(d, root) == [], (f, pvt.launch_refusals(d, root))
+        # B2738 (B2450/L721 disposal): icg is ADMITTED since 2026-09-10, so
+        # B2731 refuses these historical specs - correctly. Filter that one
+        # refusal; this pin is about the legacy typed register.
+        _r = [x for x in pvt.launch_refusals(d, root)
+              if "ALREADY ADMITTED" not in x]
+        assert _r == [], (f, _r)
 
 
 def test_b2716_the_gate_judges_the_authored_spec_then_the_resolver_fills_it():
@@ -35964,4 +36071,407 @@ def test_b2716_the_gate_judges_the_authored_spec_then_the_resolver_fills_it():
     assert (pt.spec_identity({"_spec_path": "b2118_pilot_spec.json"})
             & pt.legacy_typed_specs()), (
         "an exact register name must still match")
+
+
+def test_b2723_landing_report_carries_table_c_and_table_d():
+    """B2723 (owner question 2026-09-12): both locked tables are AUTO-generated
+    at every landing, not one of them. MEASURED before the fix: table_d was
+    rendered by postconfig_doc and table_c existed only in the hand-run
+    show_table_c.py, so the runbook's render-Tables-A-D-at-landing standard was
+    half-wired (the L651 class - the analysis existed, the delivery did not).
+
+    Two arms: the renderer is CALLED from the doc builder (wiring, not mere
+    presence - the B2208 dead-code class), and the generated document carries
+    both section headers."""
+    import inspect as _insp
+    import sys as _sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    sp = str(root / "scripts")
+    if sp not in _sys.path:
+        _sys.path.insert(0, sp)
+    import postconfig_doc as _pcd
+    src = _insp.getsource(_pcd)
+    assert "table_c as _table_c" in src, "table_c is not imported by the doc builder"
+    assert "_table_c(_grids)" in src, "table_c is imported but never CALLED"
+    assert "## TABLE C" in src and "## TABLE D" in src, "a section header is missing"
+    # the live document, regenerated by the landing supervisor, carries both
+    doc = root / "output_audit" / "POSTCONFIG_REPORT.md"
+    if doc.exists():
+        text = doc.read_text(encoding="utf-8", errors="replace")
+        heads = [l for l in text.splitlines() if l.startswith("## TABLE ")]
+        assert any("TABLE C" in h for h in heads), heads[:6]
+        assert any("TABLE D" in h for h in heads), heads[:6]
+
+
+def test_b2724_rider_cube_checks_judge_the_graded_strategy():
+    """B2724 (the B2721 class swept): every post-config check that assumed one
+    strategy per cube now judges the GRADED strategy, with the declared riders
+    treated as design rather than findings. One arm per fixed instance."""
+    import inspect as _insp
+    import sys as _sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    sp = str(root / "scripts")
+    if sp not in _sys.path:
+        _sys.path.insert(0, sp)
+    import run_postconfig as rp
+    src = _insp.getsource(rp)
+    assert '["strategy", "ticker", "entry_date"]' in src, "M2 still ignores strategy"
+    assert "graded {_g} directions" in src, "direction lens ignores the graded strategy"
+    assert "one_strategy_or_declared_riders" in src, "B2721 sanity fix regressed"
+    assert "_graded_name if (_graded_name and _declared_riders)" in src, (
+        "B2721 family dispatch fix regressed")
+    spot = (root / "scripts" / "spot_check_trades.py").read_text(
+        encoding="utf-8", errors="replace")
+    assert '"--strategy"' in spot, "spot checker cannot restrict by strategy"
+    assert 'cube["strategy"] == a.strategy' in spot, "the restriction is not applied"
+    from producer_variant_table import SPECS
+    extra = SPECS["smc_breaker_block_long"]["tools"]["spot_check"]["extra"]
+    assert "--strategy" in extra and "smc_breaker_block_long" in extra, extra
+
+
+def test_b2725_landing_table_d_is_unified_with_every_producer_band():
+    """B2725 (owner catch 2026-09-12: "table c and table d printed are not the
+    standard formats. The producer bands are missing and table D does not
+    provide the top 25 combinations. Isnt the format mechanically enforced?").
+
+    IT WAS NOT. The autonomy was enforced - the engine hook regenerates the
+    report at every landing - but the SHAPE was not: test_b2699 pins "one
+    unified table with every inventory column" against table_d_render (the
+    OFFLINE renderer), while the renderer actually wired into the landing path
+    is producer_variant_table.table_d, which emitted only sw/sp and exiled the
+    other four bands to a "TABLE D-2" section at top=20. test_b2723 asserted
+    the `## TABLE C` / `## TABLE D` headers EXIST and nothing about their
+    columns, so it went green on the shape the owner had rejected - a
+    presence-check standing in for a shape-check.
+
+    Four arms, each one of the owner's words made mechanical."""
+    import inspect as _insp
+    import sys as _sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    sp = str(root / "scripts")
+    if sp not in _sys.path:
+        _sys.path.insert(0, sp)
+    import producer_variant_table as pvt
+    import postconfig_doc as _pcd
+
+    # (a) ONE table: the doc builder must not append a D-2 section any more
+    src = _insp.getsource(_pcd)
+    assert "TABLE D-2" not in src, (
+        "the landing report re-emits TABLE D-2; the owner ruled one unified "
+        "table, and appending the axes-only view recreates the split")
+    assert "table_d_params" not in src, "the superseded renderer is wired again"
+
+    # (b) TOP 25, in the renderer default AND at the call site AND in the header
+    import inspect as _i2
+    assert _i2.signature(pvt.table_d).parameters["top"].default == 25, (
+        "table_d's default top is not 25")
+    assert "top=25" in src and "(top 25)" in src, (
+        "the landing call site or its section header still says a different top")
+
+    # (c) EVERY producer band is a column of the main header, for BOTH families
+    for fam_key, cfg, admit, labels in (
+        ("smc_breaker_block",
+         {"P1_swing_length": 10, "P6_span": 200},
+         {"close_mitigation": True, "tail_n": 3, "age_bars_max": 180,
+          "break_pct_max": 0.01},
+         ("P1 swing", "P2 close_mit", "P3 tail_n", "P4 age_bars",
+          "P5 break_pct", "P6 span")),
+        ("institutional_committed_growth_long",
+         {"P4_min_consecutive_quarters": 2, "P9_span": 200,
+          "P5_growth_lookback_quarters": 4, "P6_growth_multiple": 1.10},
+         {"min_committed_growth": 3, "fallback_min_increased": 5},
+         ("P4 minq", "P5 lookback", "P6 mult", "P7 min_committed",
+          "P8 fb_min_incr", "P9 span")),
+    ):
+        admit = dict(admit, holdout_n=0, full_period_n=40, verdict="RANKED")
+        grid = {"cfg1": {"config": cfg, "step1_ranking": [
+            {"exit": "time_stop_10d", "is_ci_lo": 0.5, "fires": 40,
+             "is_sharpe": 1.5, "class_size": 1, "admit": admit}]}}
+        out = "\n".join(pvt.table_d(grid))
+        hdr = [l for l in out.splitlines() if l.startswith("| # | config |")]
+        assert hdr, f"{fam_key}: no main header row"
+        for lab in labels:
+            assert lab in hdr[0], (
+                f"{fam_key}: producer band {lab!r} is MISSING from the unified "
+                f"Table D header - the owner's exact complaint. Header: {hdr[0]!r}")
+        # the separator must match the header's own column count, or the table
+        # renders broken in markdown (a silent display defect)
+        sep = [l for l in out.splitlines() if set(l) <= set("|-") and l.count("|") > 3]
+        assert sep and sep[0].count("|") == hdr[0].count("|"), (
+            f"{fam_key}: separator/header column counts disagree: "
+            f"{sep[0].count('|') if sep else None} vs {hdr[0].count('|')}")
+
+    # (d) 25 rows are actually rendered when 25 ranked outcomes exist
+    many = {"cfgN": {"config": {"P1_swing_length": 10, "P6_span": 200},
+                     "step1_ranking": [
+                         {"exit": f"e{k}", "is_ci_lo": 1.0 - k / 100,
+                          "fires": 40, "is_sharpe": 1.0, "class_size": 1,
+                          "admit": {"holdout_n": 0, "full_period_n": 40,
+                                    "verdict": "RANKED"}}
+                         for k in range(40)]}}
+    body = [l for l in "\n".join(pvt.table_d(many)).splitlines()
+            if l.startswith("| ") and l.split("|")[1].strip().isdigit()]
+    assert len(body) == 25, (
+        f"top 25 was asked for and {len(body)} data rows rendered")
+
+    # (e) the Phase-5 CHECKLIST member survives in the anchor doc
+    chk = (root / "CHECKLIST.md").read_text(encoding="utf-8", errors="replace")
+    assert "#303" in chk and "L790" in chk, (
+        "CHECKLIST #303 (the format-ruling rule) is missing its L790 anchor")
+    assert "EVERY RENDERER THAT EMITS THAT FORMAT" in chk, (
+        "the #303 rule text was gutted while its number survived")
+
+
+def test_b2731_an_admitted_strategy_is_refused_at_launch():
+    """B2731 (owner-caught 2026-09-12): a strategy already ADMITTED to Phase 1B
+    is CLOSED to further optimisation testing, and the gate refuses it at
+    LAUNCH rather than after the engine spend.
+
+    MEASURED INSTANCE: the S6-B2702a depth campaign's graded subset was
+    smc_breaker_block_long, admitted at S6-B2410, while the campaign's real
+    subject (hub-1's smc_liquidity_sweep_reversal) rode along ungraded - 2.41 h
+    of engine time on a closed strategy.
+
+    Four arms: must-FIRE on an admitted strategy; must-QUIET on a
+    non-admitted one; must-QUIET when the owner's override names it; and
+    must-FIRE on a blanket boolean override (L789 - an escape names its
+    target)."""
+    import sys as _sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    sp = str(root / "scripts")
+    if sp not in _sys.path:
+        _sys.path.insert(0, sp)
+    import producer_variant_table as pvt
+
+    admitted, why = pvt.phase1b_admitted(root)
+    assert not why, f"the admissions file must be readable for this pin: {why}"
+    assert "smc_breaker_block_long" in admitted, (
+        "smc_breaker_block_long is admitted at S6-B2410 and must be in the set")
+
+    # (a) must-FIRE: an admitted strategy, no override
+    fired = pvt._admitted_retest_refusals({}, root, ["smc_breaker_block_long"])
+    assert len(fired) == 1 and "ALREADY ADMITTED" in fired[0], fired
+
+    # (b) must-QUIET: hub-1's subject is NOT admitted, so it is testable
+    assert "smc_liquidity_sweep_reversal" not in admitted, (
+        "hub-1's subject must not be admitted - it is the campaign subject")
+    assert pvt._admitted_retest_refusals(
+        {}, root, ["smc_liquidity_sweep_reversal"]) == []
+
+    # (c) must-QUIET: the owner's override, naming the strategy
+    doc = {"owner_override_retest_admitted":
+           {"smc_breaker_block_long": "owner 2026-01-01: re-test it"}}
+    assert pvt._admitted_retest_refusals(
+        doc, root, ["smc_breaker_block_long"]) == []
+
+    # (d) must-FIRE: a blanket boolean is not an override
+    blanket = pvt._admitted_retest_refusals(
+        {"owner_override_retest_admitted": True}, root,
+        ["smc_breaker_block_long"])
+    assert blanket and "blanket exemption" in blanket[0], blanket
+
+    # (e) the refusal is WIRED into launch_refusals, not merely defined
+    import inspect as _insp
+    src = _insp.getsource(pvt.launch_refusals)
+    assert "_admitted_retest_refusals(doc, root, strats)" in src, (
+        "the refusal is defined but never called - the B2208 dead-code class")
+
+
+def test_b2733_a_banked_mirror_leg_is_admitted_too():
+    """B2733: the B2731 gate read only the admissions JSON and so had a HOLE -
+    a retained Step-2 mirror leg recorded ONLY in PHASE_1B_ROSTER.md would have
+    passed. MEASURED at authoring: smc_breaker_block_short and
+    pead_short_negative_yoy_growth are retained admissions on roster line 123
+    and appear NOWHERE in phase_1b_step2_admissions.json.
+
+    A mirror rides its long's banked decision, so grading it is the same defect
+    the gate exists to stop (L742 - a population asserted from the nearest
+    single artifact rather than every source that records it)."""
+    import sys as _sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    sp = str(root / "scripts")
+    if sp not in _sys.path:
+        _sys.path.insert(0, sp)
+    import producer_variant_table as pvt
+
+    adm, why = pvt.phase1b_admitted(root)
+    assert not why, why
+    # (a) the mirror legs the JSON does NOT carry are admitted
+    import json as _json
+    raw = (root / "output_audit" / "phase_1b_step2_admissions.json").read_text(
+        encoding="utf-8")
+    for leg in ("smc_breaker_block_short", "pead_short_negative_yoy_growth"):
+        assert leg not in raw, (
+            f"{leg} now IS in the JSON - this pin's premise changed; re-derive "
+            "the hole before loosening it")
+        assert leg in adm, (
+            f"{leg} is a retained Step-2 admission on the roster and must be "
+            "treated as admitted - the B2733 hole")
+    # (b) and the refusal actually fires on one
+    fired = pvt._admitted_retest_refusals({}, root, ["smc_breaker_block_short"])
+    assert len(fired) == 1 and "ALREADY ADMITTED" in fired[0], fired
+    # (c) must-QUIET still holds for the campaign subject
+    assert pvt._admitted_retest_refusals(
+        {}, root, ["smc_liquidity_sweep_reversal"]) == []
+
+
+def test_b2739_admissions_are_read_from_the_code_tree_not_the_spec_root(tmp_path):
+    """B2739: the B2731 gate read the admissions ledger from the caller's
+    `root` - where a SPEC'S FILES live - so any launch staged outside the repo
+    hit the fail-closed branch and was refused with "admissions unreadable",
+    whatever strategy it graded.
+
+    MEASURED before the fix, from test_b2578's own stdout: a valid spec was
+    refused with the admissions path pointing into a pytest tmp dir.
+
+    Three arms: the repo tree resolves the ledger; a RELOCATED root still
+    resolves it (the defect); and the fail-closed branch is still reachable
+    when the ledger genuinely cannot be read."""
+    import sys as _sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    sp = str(root / "scripts")
+    if sp not in _sys.path:
+        _sys.path.insert(0, sp)
+    import producer_variant_table as pvt
+
+    # (a) the repo tree resolves it
+    adm, why = pvt.phase1b_admitted(root)
+    assert not why and "smc_breaker_block_long" in adm, (why, sorted(adm)[:3])
+
+    # (b) THE DEFECT: a relocated root must still resolve the REPO ledger
+    assert not (tmp_path / "output_audit").exists()
+    adm2, why2 = pvt.phase1b_admitted()          # default = CODE_ROOT
+    assert not why2 and adm2 == adm, (why2, adm2 ^ adm)
+    # and a spec whose files live in tmp_path is NOT refused for admissions
+    sub = tmp_path / "s.txt"
+    sub.write_text("smc_liquidity_sweep_reversal\n", encoding="utf-8")
+    r = pvt._admitted_retest_refusals({}, tmp_path, ["smc_liquidity_sweep_reversal"])
+    assert r == [], r
+    # the ADMITTED one is still refused from a relocated root - the gate did
+    # not lose its teeth, it stopped looking in the wrong tree
+    r2 = pvt._admitted_retest_refusals({}, tmp_path, ["smc_breaker_block_long"])
+    assert len(r2) == 1 and "ALREADY ADMITTED" in r2[0], r2
+
+    # (c) fail-closed is still REACHABLE when the ledger truly cannot be read
+    empty, why3 = pvt.phase1b_admitted(tmp_path / "no_such_tree")
+    assert empty == frozenset() and why3, (empty, why3)
+
+
+def test_b2732a_hub1_is_a_registered_launchable_family(tmp_path):
+    """S6-B2732a (owner "Step 1 code change approved" 2026-09-12): hub-1 -
+    smc_liquidity_sweep_reversal - is registered, so its depth campaign can
+    launch.
+
+    MEASURED BLOCKER this closes: 1 of 22 smc consumers had a SPECS entry and
+    it was the ADMITTED smc_breaker_block_long, so launch_refusals refused
+    hub-1 (no SPECS entry means the battery fails closed at landing AFTER the
+    engine spend, S6-B2573b) while the only launchable smc strategy was the one
+    B2731 refuses as banked. The campaign was unlaunchable in both directions.
+
+    Five arms: the entry validates; the battery family is DERIVED and present;
+    a hub-1 Step-1 spec passes the launch gate; an OUT-OF-BAND level is still
+    refused (the gate kept its teeth); and hub-1's own spot checker is wired
+    rather than the breaker's, which is the B2724 defect this avoids."""
+    import sys as _sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    sp = str(root / "scripts")
+    if sp not in _sys.path:
+        _sys.path.insert(0, sp)
+    import producer_variant_table as pvt
+    import run_postconfig as rp
+
+    HUB = "smc_liquidity_sweep_reversal"
+
+    # (a) the entry exists and validates
+    assert HUB in pvt.SPECS, "hub-1 has no SPECS entry"
+    assert pvt.validate_spec(pvt.SPECS[HUB]) == [], pvt.validate_spec(pvt.SPECS[HUB])
+
+    # (b) FAMILIES is DERIVED from SPECS, so registration is automatic
+    assert rp.family_refusal(HUB) == "", rp.family_refusal(HUB)
+    assert HUB in rp.FAMILIES, sorted(rp.FAMILIES)
+
+    # (c) a hub-1 Step-1 spec passes the launch gate
+    sub = tmp_path / "hub1.txt"
+    sub.write_text(HUB + "\n", encoding="utf-8")
+    spec = {"wave": "b2732a_pin", "step": 1, "strategy_subset": str(sub),
+            "arms": [{"tag": "sw10", "env": {"SMC_SWING_LENGTH": "10"}}]}
+    assert pvt.launch_refusals(spec, root) == [], pvt.launch_refusals(spec, root)
+
+    # (d) the gate KEPT ITS TEETH - an out-of-band level is still refused
+    bad = dict(spec, arms=[{"tag": "x", "env": {"SMC_SWING_LENGTH": "12"}}])
+    r = pvt.launch_refusals(bad, root)
+    assert r and any("not a level of P1" in x for x in r), r
+
+    # (e) hub-1 uses its OWN spot checker, not the breaker's (the B2724 class:
+    # spot_check_trades.py re-derives the BREAKER condition and reported
+    # engine_agrees on a condition hub-1 does not read)
+    sc = pvt.SPECS[HUB]["tools"]["spot_check"]["script"]
+    assert sc == "spot_check_smc_lsr.py", sc
+    assert (root / "scripts" / sc).exists()
+    assert pvt.SPECS["smc_breaker_block_long"]["tools"]["spot_check"]["script"] \
+        == "spot_check_trades.py", "the breaker keeps its own checker"
+
+    # (f) the grader is cube-parameterized (the L754 contract) and the R5
+    # reproduction gate binds the BASELINE only - a variant cube fires a
+    # different set BY DESIGN, so comparing it to R5 would refuse every config
+    # that did what it was asked
+    g = (root / "scripts" / "smc_lsr_step1.py").read_text(
+        encoding="utf-8", errors="replace")
+    assert '"--cube"' in g, "the grader is not cube-parameterized"
+    assert "VARIANT-CUBE-NO-R5-REPRODUCTION" in g, (
+        "the R5 reproduction gate is unconditional - it would refuse every "
+        "variant cube")
+    assert "def build(cube_dir" in g, "build() still hardcodes the R5 cube"
+
+
+def test_b2748_the_admitted_override_travels_to_the_generated_manifest(tmp_path):
+    """B2748: an escape that lives only on the AUTHORED spec vanishes when
+    run_wave builds the manifest, and prelaunch_gate judges the MANIFEST.
+
+    MEASURED before the fix, from test_b2116's subprocess: the spec carried
+    owner_override_retest_admitted and passed launch_refusals, then
+    `prelaunch_gate failed for ...run_manifest.json` with the ALREADY ADMITTED
+    reason - the escape existed at one layer and not the next (L789).
+
+    Three arms: the manifest CARRIES the field; a manifest built from a spec
+    WITHOUT the override is still refused (the gate keeps its teeth); and the
+    field's absence on the spec does not invent one."""
+    import sys as _sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    sp = str(root / "scripts")
+    if sp not in _sys.path:
+        _sys.path.insert(0, sp)
+    import run_wave as rw
+    import producer_variant_table as pvt
+    import inspect as _insp
+
+    src = _insp.getsource(rw.build_manifest)
+    assert "owner_override_retest_admitted" in src, (
+        "build_manifest drops the override - prelaunch_gate will refuse an "
+        "approved launch (L789: enumerate the artifact kinds)")
+
+    sub = tmp_path / "s.txt"
+    sub.write_text("smc_breaker_block_long\n", encoding="utf-8")
+    ov = {"smc_breaker_block_long": "pin: the owner's words"}
+
+    # (a) WITH the override on the spec, the refusal does not fire
+    doc_ok = {"strategy_subset": str(sub),
+              "owner_override_retest_admitted": ov,
+              "arms": [{"tag": "a", "env": {"SMC_SWING_LENGTH": "20"}}]}
+    assert pvt._admitted_retest_refusals(
+        doc_ok, root, ["smc_breaker_block_long"]) == []
+
+    # (b) WITHOUT it, the gate still refuses - teeth intact
+    doc_no = {"strategy_subset": str(sub),
+              "arms": [{"tag": "a", "env": {"SMC_SWING_LENGTH": "20"}}]}
+    r = pvt._admitted_retest_refusals(doc_no, root, ["smc_breaker_block_long"])
+    assert len(r) == 1 and "ALREADY ADMITTED" in r[0], r
 

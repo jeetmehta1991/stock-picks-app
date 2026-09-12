@@ -172,6 +172,14 @@ def build_manifest(spec: dict, arm: dict, out_dir: Path, sha: str) -> Path:
         "_resolved_scope": spec.get("_resolved_scope"),
         "shape_waiver": (spec.get("shape_waiver")
                          or spec.get("step1_shape_waiver")),
+        # B2748: the B2731 admitted-retest override must TRAVEL to the
+        # generated manifest. prelaunch_gate judges the MANIFEST, so an
+        # escape that lives only on the authored spec vanishes at the next
+        # layer and refuses a launch the owner sanctioned. L789 names this
+        # class - enumerate the artifact KINDS a gate will judge - and
+        # `shape_waiver` directly above is the same pattern.
+        "owner_override_retest_admitted":
+            spec.get("owner_override_retest_admitted"),
         "window": spec["window"], "arms": [arm],
         "concurrency": "orchestrated legs, solo per arm",
         "budget_cap_usd": 0, "spent_usd": 0, "projected_batch_usd": 0,

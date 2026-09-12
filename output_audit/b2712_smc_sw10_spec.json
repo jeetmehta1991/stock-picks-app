@@ -19,15 +19,17 @@
   "Riders per B2707/B2710: the engine runs 22 smc consumers so every smc",
   "strategy's depth leg can be graded OFFLINE from this one cube; the battery",
   "grades smc_breaker_block_long.",
-  "B2715 (council): resume=true added - the runbook's Step-1 spec row mandates it and this box has a recorded 1.3h worker-spawn death and a sleep death; without resume a death restarts from day 0 (L731 says TOLERATE, not prevent). max_run_hours mirrors leg_cap under the B2107 5h owner cap."
+  "B2715 (council): resume=true added - the runbook's Step-1 spec row mandates it and this box has a recorded 1.3h worker-spawn death and a sleep death; without resume a death restarts from day 0 (L731 says TOLERATE, not prevent). max_run_hours mirrors leg_cap under the B2107 5h owner cap.",
+  "B2722: the registered battery family smc_breaker_block_long identifies a config by BOTH its knobs (tools.keys P1 swing + P6 span). An arm naming only P1 left the grader unable to name the config, so steps 2/4/6b/7/8 could not run. Declaring span at its production 200 completes the identity without changing the run."
  ],
  "arms": [
   {
    "tag": "sw10",
    "env": {
-    "SMC_SWING_LENGTH": "10"
+    "SMC_SWING_LENGTH": "10",
+    "STRAT_EMA_SPAN": "200"
    },
-   "note": "P1 swing_length=10 (production 20); config 1 of 45"
+   "note": "P1 swing_length=10 (production 20); STRAT_EMA_SPAN=200 is P6's PRODUCTION value, declared so the battery family's params extractor can name the config (B2722) - the engine default is 200 at config.py:2567, so no behaviour changes"
   }
  ],
  "resume": true,

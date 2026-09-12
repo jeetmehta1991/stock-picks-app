@@ -70,6 +70,36 @@ _GRADER_CHECKS = ("step2_grade_auto", "step2_free_levels",
 _LEDGER_WIDE = ("ledger_status_matches_evidence",)
 
 
+def graded_and_riders(cube_dir: Path) -> tuple:
+    """B2721: (graded strategy, declared riders) from the cube's manifest.
+
+    B2710 runs the whole smc consumer set per variant cube so one engine run
+    serves every family member's offline depth (B2707). The BATTERY still
+    grades exactly one strategy - the manifest's `strategy_subset` - and the
+    others are declared `cube_riders`. Returns (None, []) when the manifest
+    declares nothing, so the pre-B2721 one-strategy rule stands (L642)."""
+    import json as _json
+    m = cube_dir / "run_manifest.json"
+    if not m.exists():
+        return None, []
+    try:
+        d = _json.loads(m.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None, []
+    sub = d.get("strategy_subset")
+    riders_rel = d.get("cube_riders")
+    def _names(rel):
+        if not rel:
+            return []
+        p = ROOT / str(rel)
+        if not p.exists():
+            return []
+        return [ln.strip() for ln in p.read_text(encoding="utf-8").splitlines()
+                if ln.strip() and not ln.lstrip().startswith("#")]
+    graded = _names(sub)
+    return (graded[0] if len(graded) == 1 else None), _names(riders_rel)
+
+
 def checks(cube_dir: Path, step1: bool = False):
     import pandas as pd
     from roster_core import HO_START, WINSORIZE
@@ -83,10 +113,32 @@ def checks(cube_dir: Path, step1: bool = False):
 
     # 1. sanity: strategies / exits-per-entry / mega-caps
     n_strat = df["strategy"].nunique()
-    out.append(("one_strategy", "PASS" if n_strat == 1 else "FAIL",
-                f"{n_strat} strategies"))
+    # B2721: a RIDER cube legitimately carries the whole consumer set
+    # (B2707/B2710). The check is not "one strategy" but "the graded
+    # strategy plus EXACTLY the declared riders" - an undeclared extra
+    # is still a FAIL, which is the property the old rule protected.
+    _graded, _riders = graded_and_riders(cube_dir)
+    if _graded and _riders:
+        _seen = set(df["strategy"].unique())
+        _want = {_graded} | set(_riders)
+        _extra, _missing = sorted(_seen - _want), sorted(_want - _seen)
+        out.append(("one_strategy_or_declared_riders",
+                    "PASS" if not _extra else "FAIL",
+                    f"graded {_graded} + {len(_riders)} declared riders; "
+                    f"cube carries {n_strat}"
+                    + (f"; UNDECLARED {_extra}" if _extra else "")
+                    + (f"; declared-but-absent {_missing} (a rider that "
+                       "never fired is not an error)" if _missing else "")))
+    else:
+        out.append(("one_strategy", "PASS" if n_strat == 1 else "FAIL",
+                    f"{n_strat} strategies"))
     from backtest.engine.exit_strategies import EXIT_STRATEGIES
-    epe = df.groupby(["ticker", "entry_date"]).exit_method.nunique().unique()
+    # B2724 instance 5 (LATENT): without the strategy key, two strategies
+    # firing one ticker on one day summed their exits and read as a
+    # registry mismatch. It passed on this cube; fixed before it bites.
+    _gb = (["strategy", "ticker", "entry_date"] if "strategy" in df.columns
+           else ["ticker", "entry_date"])
+    epe = df.groupby(_gb).exit_method.nunique().unique()
     reg = len(EXIT_STRATEGIES)
     ok = len(epe) == 1 and (epe[0] == reg or epe[0] in (24, 25, 26))
     out.append(("M2_exits_per_entry_vs_registry",
@@ -848,9 +900,25 @@ def lenses(cube_dir: Path, step: int, grid: dict, spot_out: Path | None) -> list
     out.append(replay_atr_proxy_lens(cube_dir, empty_share))
 
     if "direction" in df.columns:
-        dirs = sorted(str(x) for x in df["direction"].dropna().unique())
-        out.append(("direction_consistency", "INFO" if len(dirs) == 1 else "FAIL",
-                    f"directions {dirs} (one strategy, one direction expected)"))
+        # B2724 instance 3: a RIDER cube carries both directions BY DESIGN
+        # (B2707/B2710 - long and short consumers share one variant run).
+        # The property worth checking is that the GRADED strategy is
+        # single-direction; the riders' directions are not a finding.
+        _g, _r = graded_and_riders(cube_dir)
+        if _g and _r and "strategy" in df.columns:
+            _sub = df[df["strategy"] == _g]
+            dirs = sorted(str(x) for x in _sub["direction"].dropna().unique())
+            _all = sorted(str(x) for x in df["direction"].dropna().unique())
+            out.append(("direction_consistency",
+                        "INFO" if len(dirs) <= 1 else "FAIL",
+                        f"graded {_g} directions {dirs}; the cube also "
+                        f"carries {_all} across {len(_r)} declared riders, "
+                        "which is the B2710 design and not a finding"))
+        else:
+            dirs = sorted(str(x) for x in df["direction"].dropna().unique())
+            out.append(("direction_consistency",
+                        "INFO" if len(dirs) == 1 else "FAIL",
+                        f"directions {dirs} (one strategy, one direction expected)"))
 
     if spot_out is not None and spot_out.exists():
         try:
@@ -1048,15 +1116,22 @@ def main() -> int:
         results.append(("M9_universe_artifact", "SKIP",
                         f"no manifest tickers file resolvable ({tf!r})"))
 
-    # family dispatch - the cube's own strategy column decides; nothing skips
+    # family dispatch - B2721: the MANIFEST's graded strategy decides. The
+    # cube's strategy column is the wrong source for a rider cube (B2710):
+    # it holds the whole consumer set, so a 22-strategy cube dispatched to
+    # no family and five steps FAILed on a shape the design intends. The
+    # cube column remains the fallback when the manifest declares nothing.
     strategies = cube_strategies(cube_dir)
-    fam_name = strategies[0] if len(strategies) == 1 else None
+    _graded_name, _declared_riders = graded_and_riders(cube_dir)
+    fam_name = (_graded_name if (_graded_name and _declared_riders)
+                else (strategies[0] if len(strategies) == 1 else None))
     fam = FAMILIES.get(fam_name) if fam_name else None
     notes: dict = {}
     grid_out = spot_out = None
     fam_fail = None
     if fam is None:
         fam_fail = (f"no registered post-config family for strategies "
+                    f"(graded={_graded_name!r}, riders={len(_declared_riders)}) "
                     f"{strategies or '[]'} - give its SPECS entry a complete "
                     f"`tools` adapter block (B2579; "
                     f"{FAMILY_REFUSALS.get(fam_name or '', 'no SPECS entry')}) "

@@ -36,8 +36,13 @@ import roster_core as rc  # noqa: E402
 from breadth_step1_grid import QUANTS, BARRED_EXIT, _parse  # noqa: E402
 
 STRAT = "smc_liquidity_sweep_reversal"
-CUBE = ROOT / "output_r5_merged_1_7" / "trade_exit_detail.csv"
-TRADE_LOG = ROOT / "output_r5_merged_1_7" / "trade_log.csv"
+# S6-B2732a: the R5 baseline is the DEFAULT, no longer the only cube.
+# A depth config lands its own cube and the battery grades THAT one
+# (the L754 portability contract; the family-hardcoded form was the
+# first instance and this is its parameterization).
+R5_DIR = ROOT / "output_r5_merged_1_7"
+CUBE = R5_DIR / "trade_exit_detail.csv"
+TRADE_LOG = R5_DIR / "trade_log.csv"
 ARM_KEYS = {"long": ("smc_choch_bullish", "smc_bos_bullish"),
             "short": ("smc_choch_bearish", "smc_bos_bearish")}
 B_AXES = [("monthly_momentum_6m", "ge"), ("bb_20_20_bandwidth", "le"),
@@ -45,9 +50,15 @@ B_AXES = [("monthly_momentum_6m", "ge"), ("bb_20_20_bandwidth", "le"),
           ("bullish_engulfing", "eq_true_long"), ("gap_up_2pct", "eq_false")]
 
 
-def build() -> pd.DataFrame:
+def build(cube_dir: Path | None = None) -> pd.DataFrame:
+    """The graded frame for STRAT from `cube_dir` (default: the R5 baseline)."""
+    trade_log = (cube_dir / "trade_log.csv") if cube_dir else TRADE_LOG
+    cube_csv = (cube_dir / "trade_exit_detail.csv") if cube_dir else CUBE
+    for _p in (trade_log, cube_csv):
+        if not _p.exists():
+            raise SystemExit(f"REFUSED: {_p} does not exist (fail closed)")
     keys = [k for k, _ in B_AXES] + [k for pair in ARM_KEYS.values() for k in pair]
-    tl = pd.read_csv(TRADE_LOG, low_memory=False,
+    tl = pd.read_csv(trade_log, low_memory=False,
                      usecols=["strategy", "ticker", "entry_date", "direction",
                               "signals_at_entry"])
     fam = tl[tl.strategy == STRAT].drop_duplicates(["ticker", "entry_date"]).copy()
@@ -57,7 +68,7 @@ def build() -> pd.DataFrame:
             pd.Series([float(d.get(k)) if isinstance(d.get(k), bool)
                        else d.get(k) for d in sigs]), errors="coerce").values
     fam = fam.drop(columns=["signals_at_entry"])
-    cube = pd.read_csv(CUBE, low_memory=False,
+    cube = pd.read_csv(cube_csv, low_memory=False,
                        usecols=["strategy", "ticker", "entry_date",
                                 "exit_method", "pnl_pct", "hold_days"])
     cube = cube[cube.strategy == STRAT]
@@ -157,16 +168,43 @@ def main() -> int:
     ap.add_argument("--null-perms", type=int, default=100)
     ap.add_argument("--null-seed", type=int, default=13)
     ap.add_argument("--out", required=True)
+    # S6-B2732a: the cube to grade, and this config's knob IDENTITY.
+    # The knobs are NOT search axes here - they are baked into the cube
+    # by the engine run, exactly as --swing-length identifies a breaker
+    # config rather than sweeping one. They are recorded so the grid
+    # names the config it graded.
+    ap.add_argument("--cube", default="",
+                    help="cube DIRECTORY to grade; default the R5 baseline")
+    ap.add_argument("--swing-length", type=int, default=None)
+    ap.add_argument("--liquidity-range-pct", type=float, default=None)
+    ap.add_argument("--event-recency-bars", type=int, default=None)
     a = ap.parse_args()
     t0 = time.time()
 
-    m = build()
+    _cube_dir = Path(a.cube).resolve() if a.cube else None
+    if _cube_dir is not None and _cube_dir.is_file():
+        _cube_dir = _cube_dir.parent
+    _is_r5 = _cube_dir is None or _cube_dir == R5_DIR.resolve()
+    m = build(None if _is_r5 else _cube_dir)
     fires = m.drop_duplicates(["ticker", "entry_date"])
-    pre = json.loads((ROOT / "output_audit" / "b2690_smc_pregate.json").read_text(encoding="utf-8"))
-    want = pre["members"][STRAT]["n_trades"]
-    if len(fires) != want:
-        raise SystemExit(f"REFUSED: {len(fires)} unique fires != pre-gate {want}")
-    print(f"reproduction OK: {len(fires)} fires ({time.time()-t0:.0f}s)")
+    # S6-B2732a: the R5 reproduction gate binds the BASELINE only. A
+    # variant cube fires a DIFFERENT set by construction - changing a
+    # producer knob is the whole point of the depth leg - so comparing
+    # it to the R5 pre-gate count would refuse every config that did
+    # what it was asked to do. Recorded either way; never silent.
+    if _is_r5:
+        pre = json.loads((ROOT / "output_audit" / "b2690_smc_pregate.json").read_text(encoding="utf-8"))
+        want = pre["members"][STRAT]["n_trades"]
+        if len(fires) != want:
+            raise SystemExit(f"REFUSED: {len(fires)} unique fires != pre-gate {want}")
+        _repro = f"R5 BASELINE reproduction OK: {len(fires)} fires == pre-gate {want}"
+    else:
+        _repro = ("VARIANT-CUBE-NO-R5-REPRODUCTION: this cube was produced at "
+                  f"knobs swing_length={a.swing_length} "
+                  f"liquidity_range_pct={a.liquidity_range_pct} "
+                  f"event_recency_bars={a.event_recency_bars}, so its fire set "
+                  f"DIFFERS from the R5 baseline by design; own fires {len(fires)}")
+    print(f"{_repro} ({time.time()-t0:.0f}s)")
 
     rows = grade_cells(m, a.min_n)
     graded = [r for r in rows if r["is_sharpe"] is not None]
@@ -196,6 +234,11 @@ def main() -> int:
               f"({time.time()-t0:.0f}s)")
 
     rec = {"strategy": STRAT,
+           "cube": str(_cube_dir) if _cube_dir else str(R5_DIR),
+           "config": {"P1_swing_length": a.swing_length,
+                      "P2_liquidity_range_pct": a.liquidity_range_pct,
+                      "P3_event_recency_bars": a.event_recency_bars},
+           "reproduction": _repro,
            "ruling": "owner band word 'Lets proceed with step 1' 2026-09-12 (S6-B2691a)",
            "design": "9 depth cells (leg x arm) + 6 breadth axes one-at-a-time on the "
                      "production base; IS-only; holdout untouched; npt barred from ranking",
