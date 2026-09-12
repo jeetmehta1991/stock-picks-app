@@ -6,15 +6,15 @@ REGENERATED WHOLE at every config landing - by the landing supervisor the engine
 
 ## How much confidence these checks earn
 
-**Across the entire ledger (126 entries), 904 named checks have run and 5 have ever returned non-PASS.**
+**Across the entire ledger (127 entries), 919 named checks have run and 7 have ever returned non-PASS.**
 
 ## Landings - what the supervisor recorded (B2520)
 
-21 cube(s) landed through the supervisor; **1 not yet reported to the owner** (output_icg_step2_span9_step2_span9).
+21 cube(s) landed through the supervisor; **0 not yet reported to the owner**.
 
 | cube | landed | via | battery exit | blocking | WARN/FAIL findings | committed | pushed | reported |
 |---|---|---|---|---|---|---|---|---|
-| output_icg_step2_span9_step2_span9 | 2026-09-06T18:55:21 | engine-hook | 0 | none | 0 | adfba9d5d | True | **NO** |
+| output_icg_step2_span9_step2_span9 | 2026-09-06T18:55:21 | engine-hook | 0 | none | 0 | adfba9d5d | True | yes 2026-09-06T19:01:07 |
 | output_icg_cfg1_rerun_cfg1_rerun | 2026-09-05T01:17:34 | engine-hook | 0 | none | 0 | d85126201 | True | yes 2026-09-06T05:40:01 |
 | output_icg_span100_rerun_span100 | 2026-09-04T12:26:03 | engine-hook | 0 | none | 0 | 0f0e440e6 | True | yes 2026-09-04T12:27:40 |
 | output_icg_minq2_minq2 | 2026-09-04T10:54:23 | engine-hook | 0 | none | 0 | f9f2331c9 | True | yes 2026-09-04T11:28:26 |
