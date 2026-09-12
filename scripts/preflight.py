@@ -663,6 +663,54 @@ def check_queue_row_is_not_a_draft() -> list[str]:
     return violations
 
 
+def check_pyramid_artifact_has_verdict(read=None) -> list[str]:
+    """C15 (B2683 / L782): a STAGED gate-era pyramid artifact must carry its
+    verdict token. pyramid_gate.py writes pytest stdout into --out while
+    running and appends "pytest_exit=..." only at COMPLETION - so a staged
+    b2670+ *_pyramid.json without the token is a commit racing a live gate
+    (the 10e612446 incident: GREEN claimed in the message, artifact empty).
+    Enforced at the COMMIT boundary because a repo-population pin cannot
+    tell a racing commit from the gate currently running it (measured: the
+    first pin form failed on the very gate executing it). `read` is the
+    test seam (B1761): maps name -> staged text; default reads the index.
+    """
+    import re as _re
+    try:
+        r = subprocess.run(["git", "diff", "--cached", "--name-status"],
+                           cwd=REPO_ROOT, capture_output=True, text=True,
+                           encoding="utf-8", errors="replace", check=False)
+        # B2683b (first live firing, on its author): a staged DELETION is
+        # the REMEDY for a racing artifact, not the race - skip status D.
+        staged = []
+        for ln in r.stdout.splitlines():
+            parts = ln.split("\t")
+            if len(parts) >= 2 and parts[0].strip() and parts[0][0] != "D":
+                staged.append(parts[-1].strip())
+    except Exception:
+        staged = []
+    out = []
+    for name in staged:
+        base = name.rsplit("/", 1)[-1]
+        m = _re.match(r"b(\d+)[a-z]?_.*pyramid.*\.json$", base)
+        if not m or int(m.group(1)) < 2670 or not name.startswith("output_audit/"):
+            continue
+        if read is not None:
+            txt = read(name)
+        else:
+            rr = subprocess.run(["git", "show", f":{name}"], cwd=REPO_ROOT,
+                                capture_output=True, text=True,
+                                encoding="utf-8", errors="replace", check=False)
+            txt = rr.stdout if rr.returncode == 0 else ""
+        if "pytest_exit=" not in (txt or ""):
+            out.append(
+                f"C15 RACING PYRAMID ARTIFACT (B2683/L782): {name} is staged "
+                "without its 'pytest_exit=' verdict token - the gate that "
+                "writes it appends the verdict at COMPLETION, so this commit "
+                "is racing a live (or killed) gate run. Wait for the "
+                "completion notification and stage the finished artifact.")
+    return out
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--staged", action="store_true", help="check git-staged files only")
@@ -711,6 +759,7 @@ def main() -> int:
         all_violations += check_line_ending_rewrite()
         # C14 (B2608 / L765): no drafting marker in an append-only ledger row
         all_violations += check_queue_row_is_not_a_draft()
+        all_violations += check_pyramid_artifact_has_verdict()
 
     if not all_violations:
         print("preflight: PASS - no rule violations found")

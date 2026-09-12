@@ -25539,6 +25539,8 @@ def _b2123_skill_rules_present(fable_text: str, discipline_text: str) -> list[st
          "L780 (B2671): rectifications generalize into the campaign template same turn"),
         ("check the sweep enumerates THAT population",
          "L781 (B2672): a sweep population must match the correction-named class"),
+        ("the FILE is not the RESULT",
+         "L782 (B2682a): gate on the verdict token, never on a live output file"),
     ):
         if frag not in discipline_text:
             missing.append(f"execution-discipline lost [{why}]: {frag!r}")
@@ -25640,7 +25642,8 @@ def test_b2123_session_rules_survive_in_the_always_read_skills():
     # 251 -> 252 at B2669 (the L779 stage-approval row, same call per B2130).
     # 252 -> 253 at B2671 (the L780 family-local-rectification fragment).
     # 253 -> 254 at B2672b (the L781 sweep-population fragment).
-    assert len(gutted) == 254, gutted
+    # 254 -> 255 at B2682a (the L782 file-is-not-result fragment).
+    assert len(gutted) == 255, gutted
     assert any("fable-mode lost" in m for m in gutted)
     assert any("execution-discipline lost" in m for m in gutted)
 
@@ -35353,4 +35356,49 @@ def test_b2680_vwap_extension_pair_fires_correctly():
     assert sho({})["fires"] is False
     assert sho({"pct_from_vwap": -40.0})["fires"] is False, "half-arm must not fire"
     assert sho({"pct_from_vwap": -20.0, "below_ema_200": True})["fires"] is False
+
+
+def test_b2682a_pyramid_artifacts_carry_their_verdict():
+    """L782 (B2683): the C15 preflight check refuses a staged gate-era
+    pyramid artifact lacking its 'pytest_exit=' verdict token (the 10e612446
+    racing-commit incident), and stays quiet on a finished artifact and on
+    legacy pre-b2670 names. Driven through the check's test seam - a
+    repo-population scan cannot tell a racing commit from the gate currently
+    running it (measured: the first pin form failed inside its own gate)."""
+    import subprocess as _sp
+    import sys as _sys
+    from pathlib import Path as _P
+    _sys.path.insert(0, str(_P(__file__).resolve().parents[2] / "scripts"))
+    import preflight
+
+    real_run = _sp.run
+
+    def with_staged(status_lines, read):
+        def stub(cmd, **kw):
+            if isinstance(cmd, list) and "--name-status" in cmd:
+                class R:
+                    returncode = 0
+                    stdout = "\n".join(status_lines)
+                return R()
+            return real_run(cmd, **kw)
+        _sp.run = stub
+        try:
+            return preflight.check_pyramid_artifact_has_verdict(read=read)
+        finally:
+            _sp.run = real_run
+
+    # must-FIRE: staged gate-era artifact without the token
+    v = with_staged(["M\toutput_audit/b9999_pyramid.json"], lambda n: "dots only")
+    assert len(v) == 1 and "C15" in v[0], v
+    # must-QUIET: finished artifact carries the token
+    v2 = with_staged(["A\toutput_audit/b9999_pyramid.json"],
+                     lambda n: "dots\npytest_exit=0\ntree=SAME\n")
+    assert v2 == [], v2
+    # must-QUIET: legacy pre-b2670 artifact is out of scope
+    v3 = with_staged(["M\toutput_audit/b2638_pyramid.json"], lambda n: "dots")
+    assert v3 == [], v3
+    # must-QUIET (B2683b, the check's own first live firing): a staged
+    # DELETION is the remedy for a racing artifact, never the race
+    v4 = with_staged(["D\toutput_audit/b9999_pyramid.json"], lambda n: "")
+    assert v4 == [], v4
 

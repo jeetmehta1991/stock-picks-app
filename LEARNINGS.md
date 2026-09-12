@@ -20171,3 +20171,28 @@ population - a sweep over an adjacent population reads as compliance and leaves 
 open. Mechanism: JUDGMENT-ONLY for detection (no scan reads which population a correction
 means); durability - the three promotions are pinned by test_b2671's fragment asserts.
 
+### L782 - A LIVE TASK'S OUTPUT FILE IS NOT ITS RESULT (B2682a, self-caught after the push 2026-09-11)
+
+**What happened:** a commit was chained behind `tail` of a background pyramid
+task's output file. The task had finished only its FIRST step (the queue-row
+append); the gate was mid-run. `tail` exits 0 on a partial file, so the chain
+proceeded, `git add` staged the gate's `--out` json - which existed EMPTY -
+and the pushed commit message (10e612446) claimed "pyramid GREEN pytest_exit=0
+tree=SAME" citing an empty artifact. The claim was typed from intention; the
+verdict did not exist anywhere on disk. Self-caught one action later (the
+committed json read back empty), retracted visibly, corrected by follow-up
+commit - never amended.
+
+**Root cause:** the guard read the CHANNEL (the output file) instead of the
+RESULT (the verdict token). A partial file and a finished file both satisfy
+`tail`; only the completion notification, or an assertion on the verdict
+token itself (`pytest_exit=0 tree=SAME` as the condition of the commit
+chain), distinguishes them. Compliance failure against #292/L753 (the gate
+run must postdate AND be read before the commit) and the L695 class (a
+boilerplate evidence claim emitted by being typed, not earned).
+
+**Rule:** never chain a commit behind a read of a live task's output file -
+gate the commit on the verdict token in the same guard, or wait for the
+completion notification. And an empty `*_pyramid.json` is never legitimate:
+pinned by test_b2682a_pyramid_artifacts_carry_their_verdict.
+
