@@ -2885,6 +2885,21 @@ INTERSECTION with already-selective entries (top_decile 3.085, pead control 1.70
 not in the raw condition on a broad population - the standalone thesis is WEAK at the
 naive threshold on the proxy; the next cube gives the true-universe verdict.
 
+### TOP_DECILE RE-RULED TO OPTION C - the breadth stack ADMITTED (B2684, owner word 2026-09-11)
+
+S6-B2678b: the owner re-ruled the B2678a option-A decision to OPTION C on the B2682
+per-year evidence (filtered beats base 4 of 4 gradable years; 2022 = abstention).
+Admitted line: depth xs_momentum_12_1 >= 0.529 AND breadth pct_from_vwap >= 36.6266,
+time_stop_10d - HO 3.085 ci_lo 1.200 psr 0.999 PF 4.829 n 32/84, IS 1.928; metrics
+re-derived fresh and asserted equal to the b2678 Step-2 row (fail-closed) in
+output_audit/b2684_topdecile_breadth_admission_grid.json; admission entry SUPERSEDED in
+place with the full chain (B2668 -> B2678a A -> B2678b C) and labels
+CONTROL-REFUTED-ATTRIBUTION + DISCLOSED-RE-READ + GRID-SELECTED. Deployable stays 28
+distinct (same strategy set); the B787 EXPLORATORY tag rides; engine wiring of BOTH
+added gates remains the S6-B2411-class NEW-GATE build. The A-ruling's rationale (one
+tape factor double-counted across strategies) survives as a PORTFOLIO-level concern -
+flagged for the Phase-1B blended review where max_drawdown/calmar re-engage.
+
 ### OPTIMISATION POPULATION BY BUCKET AND FAMILY (B2632, owner directive 2026-09-07)
 
 **Accounting (derived live at B2632; every term from the registry + config disabled sets +

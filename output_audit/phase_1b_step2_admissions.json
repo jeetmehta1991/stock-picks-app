@@ -264,26 +264,25 @@
       "review_note": "Owner rulings 2026-09-10: admitted as this strategy's best non-next_pivot_target all-six-gate line from the 13,104-trial B2662 companion/knob grid; the multiplicity flag stands on record (B2660). Engine wiring of the added gate is a NEW-GATE build tracked with the family wiring tickets; admission is not deployment."
     },
     {
-      "ticket": "S6-B2649",
-      "ruled": "2026-09-10",
-      "ruling_verbatim": "Lets start with queued campaign",
+      "ticket": "S6-B2678b",
+      "ruled": "2026-09-11",
+      "ruling_verbatim": "re-rule S6-B2678a to option C on the strengthened evidence",
       "strategy": "xs_momentum_top_decile",
       "direction": "long",
       "config": {
-        "campaign": "B2667 offline",
-        "axes": "momentum_12_1/max_decile/ivol_decile"
+        "campaign": "B2673/B2678 breadth (two-legs 11.2b2)",
+        "axes": "pct_from_vwap stacked on the depth-admitted base"
       },
-      "grid_artifact": "output_audit/b2668_topdecile_admission_grid.json",
+      "grid_artifact": "output_audit/b2684_topdecile_breadth_admission_grid.json",
       "combination": {
         "xs_momentum_12_1": 0.529,
-        "xs_max_anomaly_decile": 999.0,
-        "xs_ivol_decile": 999.0
+        "pct_from_vwap": 36.6266
       },
       "exit": "time_stop_10d",
       "universe": "R5 merged cube output_r5_merged_1_7 (544-ticker universe; 255 fires)",
       "window": "4 years 2022-05-05 .. 2026-05-05 (IS 3y + 1y holdout)",
-      "review_status": "GRID-SELECTED-OWNER-RULED",
-      "review_note": "Campaign S6-B2649 (owner-ruled 2026-09-08, started on the owner's word 2026-09-10): family pre-gate showed the xs family LOW-overlap (top_decile shares <=3 entries with any member - b2667_xs_family_pregate.json), step 0.6 = offline-free, Step 1 = 64 cells / 1,664 trials, Step 2 all-cells read: 73 of 1,664 clear all six; admitted line = best non-next_pivot_target qualifier per the standing npt bar. The strategy carries B787's EXPLORATORY tag (fire-starved history, 255 R5 fires) - admission is not deployment, and the tag rides until the owner lifts it. The former funnel row's corrected-psr exit from the roster (B2646) is superseded by this campaign admission at a DIFFERENT cell chosen under the current doctrine"
+      "review_status": "GRID-SELECTED-OWNER-RULED / CONTROL-REFUTED-ATTRIBUTION / DISCLOSED-RE-READ",
+      "review_note": "SUPERSESSION CHAIN: B2668 depth admission (HO 2.183 n 41/128) -> B2678a option A (2026-09-11, nothing new) -> RE-RULED option C same day under S6-B2678b on the B2682 per-year evidence (filtered beats base 4 of 4 gradable years; 2022 = abstention, n=1). Admitted line = depth 0.529 AND pct_from_vwap >= 36.6266 at time_stop_10d, HO 3.085 ci_lo 1.200 psr 0.999 n 32/84 (all six gates). LABELS: the pct_from_vwap lift is CONTROL-REFUTED as general structure (pead control +0.864 vs subject +0.90, b2678); the subject holdout was re-read under the accepted disclosure. The B787 EXPLORATORY tag still rides; admission is not deployment; engine wiring of BOTH added gates is the NEW-GATE build (S6-B2411 class, per-strategy approval)."
     }
   ],
   "pruned_collinear_b2666": [

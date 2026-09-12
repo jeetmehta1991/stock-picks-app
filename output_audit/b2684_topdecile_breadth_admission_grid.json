@@ -1,0 +1,27 @@
+{
+  "_doc": "B2684 admission-grid artifact - the option-C re-ruled top_decile line (depth 0.529 base + breadth pct_from_vwap >= 36.6266, time_stop_10d); metrics re-derived fresh from output_r5_merged_1_7 and asserted equal to the b2678 Step-2 row; Step-2 grid of record = output_audit/b2678_topdecile_breadth_step2.json (650 cells, one read)",
+  "config": "topdecile_breadth_b2678",
+  "results": [
+    {
+      "xs_momentum_12_1": 0.529,
+      "pct_from_vwap": 36.6266,
+      "gate_op": "ge",
+      "exit": "time_stop_10d",
+      "verdict": "PASS",
+      "verdict_basis": "owner re-rule 2026-09-11 (S6-B2678b, option C): all-six-holdout-gate qualifier of the B2678 one-read (66 of 650 cells cleared; this is the top line); labels riding: CONTROL-REFUTED-ATTRIBUTION (pead control lift +0.864 vs subject +0.90 - general structure) + DISCLOSED-RE-READ (subject holdout first read at B2668; disclosure accepted 2026-09-11) + GRID-SELECTED. Strengthened-evidence basis: B2682 per-year read - filtered beats base in 4 of 4 gradable years, 2022 = abstention",
+      "is_sharpe": 1.928,
+      "is_ci_lo": 0.521,
+      "sharpe": 3.085,
+      "ci_lo": 1.2,
+      "margin": 2.085,
+      "psr": 0.999,
+      "profit_factor": 4.829,
+      "sortino": 4.83,
+      "win_rate": 0.719,
+      "expectancy": 4.1864,
+      "holdout_n": 32,
+      "full_period_n": 84,
+      "strategy": "xs_momentum_top_decile"
+    }
+  ]
+}
