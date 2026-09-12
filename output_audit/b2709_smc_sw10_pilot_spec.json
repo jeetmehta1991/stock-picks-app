@@ -1,0 +1,36 @@
+{
+ "wave": "b2709_smc_sw10_pilot",
+ "tickers_file": "output_audit/_sweep_200.txt",
+ "strategy_subset": "output_audit/_subset_smc.txt",
+ "window": {
+  "start": "2022-05-05",
+  "end": "2026-05-05"
+ },
+ "leg_cap_hours": 4.5,
+ "max_legs": 12,
+ "step1_cube": true,
+ "pool_workers": 10,
+ "allow_engine_drift": true,
+ "_doc": [
+  "B2709 = S6-B2702a STEP 1 PILOT (owner word 'Launch now' 2026-09-12).",
+  "Factorial config 1 of 44: P1 swing_length=10, P2/P3 at production.",
+  "Doubles as the B2107 venue-rate pilot for the remaining 43 configs.",
+  "WINDOW is the FULL funnel window 2022-05-05..2026-05-05 - a stated",
+  "deviation from the icg-wave 1y precedent, because the six-gate funnel",
+  "needs the holdout year and the 4y min_trades_full_period count (L711).",
+  "STRATEGY SUBSET is the FULL smc consumer set, 22 strategies (B2707",
+  "reuse doctrine): one variant cube serves every smc strategy's depth",
+  "leg offline. UNIVERSE is the 200-ticker sweep set every recent",
+  "campaign used - variant cubes are internally comparable across the 45",
+  "configs; they subset R5's 544, stated not hidden."
+ ],
+ "arms": [
+  {
+   "tag": "sw10",
+   "env": {
+    "SMC_SWING_LENGTH": "10"
+   },
+   "note": "P1 swing_length=10 (production 20); pilot config 1 of 44"
+  }
+ ]
+}

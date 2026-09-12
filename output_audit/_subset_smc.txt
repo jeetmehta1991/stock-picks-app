@@ -1,0 +1,24 @@
+# B2709: FULL smc consumer set (B2707 reuse doctrine) - every
+# registered strategy whose gate source reads an smc_* key
+smc_bos_continuation
+smc_choch_reversal
+smc_order_block_bounce
+smc_liquidity_sweep_reversal
+turtle_soup_long
+turtle_soup_short
+judas_swing_long
+judas_swing_short
+smc_fvg_retest_long
+smc_fvg_retest_short
+smc_inverse_fvg
+smc_breaker_block_short
+smc_breaker_block_long
+smc_mitigation_block_long
+smc_mitigation_block_short
+smc_discount_long
+smc_premium_short
+smc_ote_long
+smc_ote_short
+smc_equal_highs_sweep_short
+smc_equal_lows_sweep_long
+smc_bos_retest_entry
