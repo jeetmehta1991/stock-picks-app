@@ -10648,9 +10648,10 @@ def test_batch373_e1_doc_count_pin_against_code():
     # consec_downdays_quality_long) per the owner-approved M1-M15 rec.
     # B2669: 219 -> 221 (+2 owner-instructed mirror shorts: totm_short,
     # mfi_overbought_short).
-    assert len(ALL_STRATEGIES) == 221, (
-        f"F-002 drift: ALL_STRATEGIES expected 221 post-B2669 (219 "
-        f"post-B2103); got {len(ALL_STRATEGIES)}. "
+    # B2680: 221 -> 223 (+2 owner-worded vwap-extension pair).
+    assert len(ALL_STRATEGIES) == 223, (
+        f"F-002 drift: ALL_STRATEGIES expected 223 post-B2680 (221 "
+        f"post-B2669); got {len(ALL_STRATEGIES)}. "
         f"Update doc count references in the same commit."
     )
     assert len(DEPRECATED_STRATEGIES) == 0, (
@@ -10678,9 +10679,9 @@ def test_batch373_e1_doc_count_pin_against_code():
     )
     # B2098: 213 registered; this leg's "active" excludes only DEPRECATED +
     # MISSING_PRODUCER (both empty), so it tracks the registration count.
-    assert active == 221, (
-        f"F-002 drift: active strategy count expected 221 (221 registered "
-        f"post-B2669); got {active}."
+    assert active == 223, (
+        f"F-002 drift: active strategy count expected 223 (223 registered "
+        f"post-B2680); got {active}."
     )
 
     # F-004 exit method count
@@ -13271,8 +13272,8 @@ def test_b1441_data_scarcity_retirement_is_wired_and_semantically_separate():
         "producer removed - retirement was supposed to be reversible when "
         "sector_history.csv is extended (S6-B1434b)"
     )
-    assert len(set(ALL_STRATEGIES) - DS - MP - DEP) == 220, (
-        "active count drifted from 220 (221 registered post-B2669 minus the "
+    assert len(set(ALL_STRATEGIES) - DS - MP - DEP) == 222, (
+        "active count drifted from 222 (223 registered post-B2680 minus the "
         "data-scarce survivor)")
 
 
@@ -15446,7 +15447,7 @@ def test_b1619_variant_strategy_binds_to_its_own_signal():
         ALL_STRATEGIES, BREAKER_VARIANT_STRATEGIES,
         make_breaker_variant_strategy, assert_variant_strategies_are_configured)
 
-    assert len(ALL_STRATEGIES) == 221, (
+    assert len(ALL_STRATEGIES) == 223, (
         f"roster is {len(ALL_STRATEGIES)}; the variant factory must not "
         f"register anything until an admission is owner-approved")
     assert BREAKER_VARIANT_STRATEGIES == {}
@@ -35324,4 +35325,32 @@ def test_b2676_permutation_null_prices_the_grid():
     best2 = grid_best(IS2, axes)
     beat2 = sum(1 for x in m2 if x is not None and x >= best2)
     assert beat2 >= 2, f"no-edge case must not look significant (beat2={beat2} of 20)"
+
+
+def test_b2680_vwap_extension_pair_fires_correctly():
+    """B2680 (#118 lint at wire time): the owner-worded vwap-extension pair is
+    registered, EXPLORATORY-tagged, and gates fire on the documented keys -
+    must-fire, must-quiet, and half-arms (each leg alone must NOT fire).
+    SYNTHETIC dicts by design: this pins GATE LOGIC; pct_from_vwap EMISSION is
+    a producer fact verified against persisted R5 dicts at build (present with
+    full coverage on the 2,091-entry xs screen population, b2672)."""
+    from backtest.signals.screener import (ALL_STRATEGIES,
+                                           strat_vwap_extension_momentum_long,
+                                           strat_vwap_extension_momentum_short)
+    from backtest.engine.multiple_testing_correction import EXPLORATORY_STRATEGIES
+    assert "vwap_extension_momentum_long" in ALL_STRATEGIES
+    assert "vwap_extension_momentum_short" in ALL_STRATEGIES
+    assert {"vwap_extension_momentum_long",
+            "vwap_extension_momentum_short"} <= set(EXPLORATORY_STRATEGIES)
+    lon, sho = strat_vwap_extension_momentum_long, strat_vwap_extension_momentum_short
+    on = lon({"pct_from_vwap": 40.0, "price_above_ema_200": True})
+    assert on["fires"] is True and on["direction"] == "long"
+    assert lon({})["fires"] is False
+    assert lon({"pct_from_vwap": 40.0})["fires"] is False, "half-arm must not fire"
+    assert lon({"pct_from_vwap": 20.0, "price_above_ema_200": True})["fires"] is False
+    s_on = sho({"pct_from_vwap": -40.0, "below_ema_200": True})
+    assert s_on["fires"] is True and s_on["direction"] == "short"
+    assert sho({})["fires"] is False
+    assert sho({"pct_from_vwap": -40.0})["fires"] is False, "half-arm must not fire"
+    assert sho({"pct_from_vwap": -20.0, "below_ema_200": True})["fires"] is False
 

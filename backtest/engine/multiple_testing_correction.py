@@ -72,6 +72,10 @@ EXPLORATORY_STRATEGIES = frozenset({
     # construction (L229); totm_short also inherits Pattern-AA (B830).
     "totm_short",
     "mfi_overbought_short",
+    # B2680 (2026-09-11) owner-worded vwap-extension pair - no recorded
+    # fires yet (registered post-R5); DO-NOT-DEPLOY pending cube.
+    "vwap_extension_momentum_long",
+    "vwap_extension_momentum_short",
     # B1382 (2026-07-25) owner standing directive "mirror shorts by default":
     # 3 Class 7 NEW symmetric SHORT mirrors of promoted longs. Tagged EXPLORATORY
     # because ZERO short rows cleared the B1378 true holdout -- the R5 window holds

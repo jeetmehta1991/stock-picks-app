@@ -8066,6 +8066,55 @@ def strat_mfi_overbought_short(s):
          "Below 200 EMA (positive-symmetric regime gate)"])
 
 
+
+def strat_vwap_extension_momentum_long(s):
+    """B2680 (S6-B2679, owner word 2026-09-11 'Lets build and test such
+    strategies'): STANDALONE promotion of the B2678 control finding - the
+    pct_from_vwap extension lifted TWO unrelated strategies' holdouts by the
+    same amount (+0.90 top_decile, +0.864 pead control), i.e. it is general
+    tape structure, so it gets its own strategy where its behaviour is
+    visible instead of hiding inside another strategy's definition.
+
+    ENTRY: close >= 35pct above the CUMULATIVE volume-weighted average price
+    of the loaded history (technical.py compute_vwap - a long-horizon
+    extension measure, NOT a session VWAP; Shannon 2022 anchored-VWAP logic:
+    sustained volume-weighted uptrend extension = momentum continuation),
+    with the 200-EMA regime gate. THRESHOLD 35.0 is CHOSEN, not measured:
+    the midpoint of the ~35-40pct band described to and approved by the
+    owner; its band is swept at this strategy's OWN Step-1 on next-cube
+    fires (11.2b2). STATUS: EXPLORATORY, DO-NOT-DEPLOY pending cube
+    validation - no recorded fires exist yet (registered post-R5)."""
+    fires = (
+        s.get("pct_from_vwap", 0) >= 35.0
+        and s.get("price_above_ema_200", False)
+    )
+    return _strat(fires, "long", "momentum",
+        ["pct_from_vwap>=35", "price_above_ema_200"],
+        ["Close >= 35pct above cumulative VWAP (long-horizon extension; "
+         "CHOSEN level, band-swept at own Step-1)",
+         "Above 200 EMA (regime gate)"])
+
+
+def strat_vwap_extension_momentum_short(s):
+    """EXACT MIRROR of strat_vwap_extension_momentum_long (B2680, B1382
+    mirror-by-default; price/volume data is symmetric so no long-only-data
+    excuse applies). Shorts deep extension BELOW the cumulative VWAP in a
+    downtrend regime. ECONOMIC ASYMMETRY surfaced per CHECKLIST (m): equity
+    drift, squeeze risk and borrow costs bias against shorts, and zero short
+    rows cleared the B1378 true holdout (L229) - unvalidated-by-construction
+    until a bear-inclusive window tests it. STATUS: EXPLORATORY,
+    DO-NOT-DEPLOY pending cube validation."""
+    fires = (
+        s.get("pct_from_vwap", 0) <= -35.0
+        and s.get("below_ema_200", False)
+    )
+    return _strat(fires, "short", "momentum",
+        ["pct_from_vwap<=-35", "below_ema_200"],
+        ["Close >= 35pct BELOW cumulative VWAP (mirror extension; CHOSEN "
+         "level, band-swept at own Step-1)",
+         "Below 200 EMA (positive-symmetric regime gate)"])
+
+
 ALL_STRATEGIES = {
     # ORB stocks-in-play (2 - Batch 211 2026-05-17 owner-approved research review)
     "orb_stocks_in_play_long":      strat_orb_stocks_in_play_long,
@@ -8440,6 +8489,9 @@ ALL_STRATEGIES = {
     "totm_long":                        strat_totm_long,
     # B2669 owner-instructed mirror (EXPLORATORY; economic asymmetry surfaced)
     "totm_short":                       strat_totm_short,
+    # B2680 owner-worded Class 7 pair (EXPLORATORY; from the B2678 control finding)
+    "vwap_extension_momentum_long":     strat_vwap_extension_momentum_long,
+    "vwap_extension_momentum_short":    strat_vwap_extension_momentum_short,
     "pre_holiday_long":                 strat_pre_holiday_long,
     "january_effect_small_cap_long":    strat_january_effect_small_cap_long,
     "halloween_seasonal_long":          strat_halloween_seasonal_long,

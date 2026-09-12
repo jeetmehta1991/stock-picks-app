@@ -1,0 +1,30 @@
+{
+  "_doc": "B2680 PROXY feasibility read for vwap_extension_momentum_long - PROXY-POPULATION: entries are bars where SOME recorded R5 strategy fired (not the standalone's true universe); a feasibility read, never a campaign; true fires need the next cube",
+  "entry_rule": "pct_from_vwap >= 35.0 AND price_above_ema_200 (CHOSEN level)",
+  "unique_fire_bars": 52725,
+  "coverage": 1.0,
+  "long_proxy_entries": 6552,
+  "short_extension_bars": 3509,
+  "results": {
+    "breakeven_plus_trail": {
+      "is_sharpe": 0.451,
+      "is_n": 3545,
+      "holdout_sharpe": 0.228,
+      "holdout_n": 3005,
+      "psr": 1.0,
+      "profit_factor": 1.293,
+      "all_live_gates": false,
+      "full_n": 6550
+    },
+    "time_stop_10d": {
+      "is_sharpe": -0.08,
+      "is_n": 3545,
+      "holdout_sharpe": -0.349,
+      "holdout_n": 3005,
+      "psr": 0.0001,
+      "profit_factor": 0.819,
+      "all_live_gates": false,
+      "full_n": 6550
+    }
+  }
+}

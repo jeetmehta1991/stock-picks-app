@@ -2868,6 +2868,23 @@ structure (control lift +0.864 vs subject +0.90); monthly_above_sma_12 likewise
 (32 vs 41). Admission options ticketed S6-B2678a for the owner; recommendation: admit
 nothing new - the depth line stands as top_decile's final form.
 
+### VWAP-EXTENSION STANDALONE PAIR WIRED + PROXY READ (B2680, owner word 2026-09-11)
+
+S6-B2679 executed on the owner's word ('Lets build and test such strategies'): Class 7
+pair strat_vwap_extension_momentum_long/_short wired same-turn (221 -> 223 registered,
+both EXPLORATORY + DO-NOT-DEPLOY pending cube; threshold 35.0 CHOSEN - midpoint of the
+owner-approved ~35-40 band, to be band-swept at the pair's OWN Step-1 on next-cube
+fires; mirror per B1382, asymmetry surfaced; lint pin
+test_b2680_vwap_extension_pair_fires_correctly; four F-002 pins -> 223; roster + drift
+snapshot regenerated). PROXY FEASIBILITY READ (PROXY-POPULATION label - entries are
+bars where SOME recorded R5 strategy fired, 52,725 unique, coverage 1.0000; NOT the
+standalone's true universe; output_audit/b2680_vwap_extension_proxy.json): 6,550
+long-proxy entries -> holdout 0.228 at breakeven_plus_trail, -0.349 at time_stop_10d -
+0 of 2 exits near the gates. HONEST REVISION: the filter's lift lives in the
+INTERSECTION with already-selective entries (top_decile 3.085, pead control 1.708),
+not in the raw condition on a broad population - the standalone thesis is WEAK at the
+naive threshold on the proxy; the next cube gives the true-universe verdict.
+
 ### OPTIMISATION POPULATION BY BUCKET AND FAMILY (B2632, owner directive 2026-09-07)
 
 **Accounting (derived live at B2632; every term from the registry + config disabled sets +
