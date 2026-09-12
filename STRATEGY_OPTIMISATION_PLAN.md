@@ -2951,6 +2951,45 @@ passes; WAVE 2 = inverse_fvg + equal_lows_sweep_long; the thin L-band members ri
 their hubs' verdicts or wait for the next cube. NEXT: Step-0 knob inventory for the two
 hubs, then the band proposal to the owner.
 
+### SMC WAVE-1 BAND PROPOSAL - AWAITING OWNER REVIEW (B2691, 11.2c gate)
+
+Companion screen for the smc family run IS-only (6,128 entries, 650 signals, one
+BH-FDR pass per exit): 100 ts10 + 255 bept survivors, 56 consistent under both
+(b2691_smc_companions_{ts10,bept,consistent}.json). PROPOSED Step-1 bands, offline,
+levels = retention quantiles 0.2/0.4/0.6/0.8 on each hub's OWN fires at grid time,
+all exits with npt barred from selection, per-leg grading, null-perms priced:
+
+HUB 1 smc_liquidity_sweep_reversal (T, 2,933/570) - DEPTH: confirmation-arm split
+{either(prod) / choch-only / bos-only} x leg {long/short} (boolean subset-safe
+splits; the gate is boolean-only so leg/arm splits ARE the depth axes). BREADTH (one
+rep per survivor cluster): monthly_momentum_6m >=, bb_20_20_bandwidth <=,
+vp_close_near_poc_pct <=, atr_pct <=, bullish_engulfing =True (long leg only,
+thesis-aligned reversal candle), gap_up_2pct =False.
+
+HUB 2 smc_order_block_bounce (T, 1,340/352) - DEPTH: rsi_14 threshold band long
+{45(prod), 40, 35, 30} / short {55, 60, 65, 70} (persisted numeric, subset-safe
+tightenings) x leg split. BREADTH: same axes minus the engulfing.
+
+Wave-1 trials ~1,300 per hub; multiplicity priced per grid (the B2676 null pattern).
+Contained-sibling pre-registered passes ride each hub verdict (B2628). NOTHING RUNS
+until the owner's band word; Step-2 needs its own word.
+
+### SMC HUB-1 STEP-1 LANDED (B2694, owner band word 'Lets proceed with step 1')
+
+scripts/smc_lsr_step1.py on the approved 11-row band: reproduction gate exact (2,933
+fires = b2690), 598 graded IS cells, holdout untouched
+(output_audit/b2694_smc_lsr_step1.json). READINGS: (1) the NUMERIC breadth axes found
+NOTHING - best IS 0.284 vs its own 100-perm null q95 0.408, p 0.2079: the B2676-class
+null's first fully-negative verdict, working as designed. (2) The LEADER is B5 -
+bullish_engulfing on the LONG leg: IS 2.078 ci_lo 1.474 at class_time_stop, positive
+ci_lo across ~9 exits (not single-exit fragile), n 111 IS / 129 full; DISCLOSURE: the
+boolean axes sat outside the numeric null, a 2-candidate x exits search - stated, not
+hidden. (3) DEPTH: long >> short everywhere (long/either 0.607 bept vs short negative);
+choch_only cells are tiny (n 10-41 - the arm split mostly collapses to bos). POWER for
+the candidate: full 129 >= 75, projected holdout ~18 >= 15 - both floors clear on
+counts. PRE-REGISTRATION CANDIDATE: LONG leg + bullish_engulfing confirmation; Step-2
+one read awaits the owner's word (S6-B2694a).
+
 ### OPTIMISATION POPULATION BY BUCKET AND FAMILY (B2632, owner directive 2026-09-07)
 
 **Accounting (derived live at B2632; every term from the registry + config disabled sets +
@@ -3314,6 +3353,47 @@ history sections; the template carried none of them):**
 - **ADMISSION DE-DUP (from B2666):** every owner-ruled admission set passes the funnel's
   Jaccard-0.70 de-dup before entering the deployable count; canonical = highest holdout
   sharpe, pruned rows keep an audit trail.
+
+### 11.2b3 BREADTH WORKFLOW STANDARD (B2693, owner-ruled 2026-09-12)
+
+The 11.2b2 rule says every campaign has a breadth leg; THIS is the procedure, standard
+for every campaign. Owner rulings encoded here verbatim in spirit: breadth companions
+that enter the combination space ARE Table A members, and every Phase-0 entry carries
+the two-layer formula that gives the row ids their meaning.
+
+1. FAMILY COMPANION SCREEN - scripts/institutional_companion_screen.py --family <pfx>,
+   IS-only window, run at TWO exits (time_stop_10d + breakeven_plus_trail), one
+   BH-FDR pass per run; keep only signals whose effect sign is CONSISTENT under both
+   exits (the _consistent intersect artifact). A SCREEN, never a gate.
+2. CLUSTER -> REPRESENTATIVES - group consistent survivors by producer family
+   (momentum / compression / volume-profile / volatility / candle / gap ...); pick ONE
+   representative per cluster with the criterion stated (#165). Collinearity with an
+   existing depth axis is flagged on the row.
+3. TABLE A MEMBERSHIP (owner ruling 2026-09-12) - each chosen axis becomes a B<n> row
+   in the strategy's SPECS entry: producer named, effect sizes from the screen as
+   evidence, band = retention quantiles (QUANTS, breadth_step1_grid.py:44 - CHOSEN
+   convention) derived on the SUBJECT'S OWN FIRES at grid time, subset-safe TRUE by
+   construction (added AND-conditions tighten). ID SEMANTICS: P<n> = numbered
+   computation step of the producer->gate derivation; B<n> = breadth companion axis.
+   The FORMULA block (breaker two-layer format) shows both layers plus a BREADTH LAYER
+   listing the B-axes.
+4. BAND REVIEW - the owner reviews the full band (depth + breadth rows) before Step-1
+   (11.2c). Nothing runs earlier.
+5. STEP-1 GRID - scripts/breadth_step1_grid.py (shared build_frame; fail-closed
+   reproduction gate against the admitted/production base; IS-only grading; npt barred
+   from ranking; per-leg for duals).
+6. MULTIPLICITY PRICE - the grid's best is priced against its own permutation null
+   (the B2676 instrument pattern; SYNTHETIC maxima, p on the artifact's face).
+7. STEP-2 - ONE holdout read of every registered cell, on the owner's explicit word
+   (scripts/breadth_step2_read.py, fail-closed --ruling; DISCLOSED-RE-READ label when
+   the subject's holdout was previously read).
+8. CONTROL-FAMILY COMPARISON - every all-six qualifier gets the same axis/level/exit
+   applied to a CONTROL strategy's fires (11.2b2 promoted rule, B2658). Attribution
+   split: control-clean lift -> candidate gate for THIS strategy; control-shared lift
+   -> general structure, relocated to its own standalone strategy or a Phase-1B
+   overlay (the B2678/B2680 precedent), never double-counted into many strategies.
+9. ADMISSION PROPOSAL - options with labels riding (B2660 doctrine); the ruling is the
+   owner's; contained-sibling pre-registered passes ride hub verdicts (B2628).
 
 ### 11.2c APPROVAL FLOW - which word covers which stage (L779, owner-mandated 2026-09-10)
 

@@ -426,6 +426,226 @@ fires =  ( P7  OR  P8 )  AND  P9
 # tools block naming graders that do not exist would be WORSE than none).
 # An entry graduates by gaining its real tools block and moving into SPECS.
 SPECS_PHASE0: dict[str, dict] = {
+    "smc_liquidity_sweep_reversal": {
+        "formula": """
+ID SEMANTICS (owner ruling 2026-09-12): P<n> = a numbered COMPUTATION STEP in
+the producer->gate derivation below (each step that carries a tunable value is
+also a Table A row with that id). B<n> = a BREADTH COMPANION AXIS - a signal
+from ANOTHER producer family, surfaced by the family companion screen, entering
+the campaign's combination space as an added AND-condition candidate; breadth
+axes are Table A members because anything in the combination space is inventory.
+
+=============================== PRODUCER LAYER ===============================
+
+P1  swings  =  swing_highs_lows( ohlc, swing_length = 20 )
+                   PARAMETER: swing_length = 20 (smc_ict.py:194)
+
+P2  liq_df  =  liquidity( ohlc, swings, range_percent = 0.01 )
+                   -> clusters equal highs / equal lows within 1pct and flags
+                      the bar that SWEEPS the cluster (Liquidity +1 up / -1 dn)
+                   PARAMETER: liquidity_range_pct = 0.01 (smc_ict.py:196,:503)
+
+P3  smc_liquidity_swept_dn = most_recent_event_within( liq_df.Liquidity == -1,
+                                                       event_recency_bars = 90 )
+    smc_liquidity_swept_up = same, == +1
+                   PARAMETER: event_recency_bars = 90 (smc_ict.py:198,:507-509)
+                   -> the PERSISTED key is this post-recency boolean
+
+P4  bos/choch_df = bos_choch( ohlc, swings )  ->  smc_bos_bullish/bearish,
+    smc_choch_bullish/bearish, same recency treatment (P3's parameter)
+                   -> no own parameter beyond P1/P3
+
+=============================== STRATEGY LAYER ===============================
+
+long_fires  =  ( smc_liquidity_swept_dn )                              [from P3]
+               AND ( smc_choch_bullish OR smc_bos_bullish )            [from P4]
+
+short_fires =  ( smc_liquidity_swept_up )                              [from P3]
+               AND ( smc_choch_bearish OR smc_bos_bearish )            [from P4]
+               AND ( borrow_ok )
+
+P5  confirmation_arm: the OR in clause two - FREE depth axis
+        either (production) / choch_only / bos_only
+P6  leg: long / short graded separately - FREE depth axis
+
+=============================== BREADTH LAYER (11.2b3) =======================
+Candidate added AND-conditions from the b2691 family screen (56 consistent
+FDR survivors; one representative per cluster). Levels are retention
+quantiles (QUANTS, breadth_step1_grid.py:44) of each axis over THIS
+strategy's own fires, derived at grid time:
+
+B1  monthly_momentum_6m       >= q   (momentum cluster rep)
+B2  bb_20_20_bandwidth        <= q   (volatility-compression rep)
+B3  vp_close_near_poc_pct     <= q   (volume-profile-distance rep)
+B4  atr_pct                   <= q   (volatility rep)
+B5  bullish_engulfing         == True  (long leg only - reversal candle)
+B6  gap_up_2pct               == False (avoid gap entries; negative effect)
+""",
+        # B2692 (S6-B2690 Wave-1 hub 1, Phase 0): boolean-only gate, so the
+        # FREE depth axes are structural splits (confirmation arm + leg);
+        # every producer knob below is resim-only (no env knob exists - the
+        # S6-B2569a class, stated not hidden). Baseline from the B2690
+        # pre-gate artifact.
+        "baseline": {"artifact": "output_r5_merged_1_7", "fires": 2933,
+                     "holdout_n": 570, "band": "T",
+                     "window": "2022-05-05..2026-05-05"},
+        "gate": "(smc_liquidity_swept_dn AND (choch_bullish OR bos_bullish)) "
+                "| short mirror + borrow gate (screener strat_smc_liquidity_sweep_reversal)",
+        "params": [
+            {"id": "P1", "producer": "_smc.swing_highs_lows",
+             "param": "swing_length", "production": 20,
+             "band": [5, 10, 20, 30, 50], "free_band": [], "resim_band": [5, 10, 30, 50],
+             "sweep_levels": [], "subset_safe": False,
+             "status": "UNTESTED", "type": "int", "engine_implemented": True,
+             "evidence": "smc_ict.py:194 (default 20); band CHOSEN = the "
+                         "smc_breaker_block P1 precedent",
+             "derivation": "feeds swings -> liquidity + structure detection; "
+                           "resim-only (no env knob)"},
+            {"id": "P2", "producer": "_smc.liquidity",
+             "param": "liquidity_range_pct", "production": 0.01,
+             "band": [0.005, 0.01, 0.02], "free_band": [], "resim_band": [0.005, 0.02],
+             "sweep_levels": [], "subset_safe": False,
+             "status": "UNTESTED", "type": "float", "engine_implemented": True,
+             "evidence": "smc_ict.py:196 + :503 (range_percent); band CHOSEN "
+                         "(half/double production)",
+             "derivation": "equal-highs/lows clustering tolerance; resim-only"},
+            {"id": "P3", "producer": "_most_recent_event_within",
+             "param": "event_recency_bars", "production": 90,
+             "band": [20, 45, 90], "free_band": [], "resim_band": [20, 45],
+             "sweep_levels": [], "subset_safe": False,
+             "status": "UNTESTED", "type": "int", "engine_implemented": True,
+             "evidence": "smc_ict.py:198 + :507-509 (Batch 273 lag fix); band "
+                         "CHOSEN (tighter recency = fresher sweeps)",
+             "derivation": "how recent the sweep/CHoCH/BOS event must be; the "
+                           "persisted key is the POST-recency boolean, so this "
+                           "cannot be re-derived offline - resim-only"},
+            {"id": "P4", "producer": "gate structure (screener)",
+             "param": "confirmation_arm", "production": "either",
+             "band": ["either", "choch_only", "bos_only"],
+             "free_band": ["either", "choch_only", "bos_only"], "resim_band": [],
+             "sweep_levels": [], "subset_safe": True,
+             "status": "UNTESTED", "type": "str", "engine_implemented": True,
+             "evidence": "strat source (B2075 restored sweep-required; B1202 "
+                         "added the BOS arm); smc_choch_*/smc_bos_* persisted "
+                         "booleans - offline subset-safe",
+             "derivation": "FREE depth axis 1: requiring one arm keeps a "
+                           "subset of recorded fires"},
+            {"id": "P5", "producer": "gate structure (screener)",
+             "param": "leg", "production": "both",
+             "band": ["long", "short"], "free_band": ["long", "short"],
+             "resim_band": [], "sweep_levels": [], "subset_safe": True,
+             "status": "UNTESTED", "type": "str", "engine_implemented": True,
+             "evidence": "dual _strat3; direction persisted per trade",
+             "derivation": "FREE depth axis 2: per-leg grading"},
+            {"id": "B1", "producer": "compute (cross_sectional/monthly momentum)",
+             "param": "monthly_momentum_6m", "production": "not gated",
+             "band": ["q20", "q40", "q60", "q80"],
+             "free_band": ["q20", "q40", "q60", "q80"], "resim_band": [],
+             "sweep_levels": [], "subset_safe": True,
+             "status": "UNTESTED", "type": "float>=q", "engine_implemented": False,
+             "evidence": "b2691_smc_companions_consistent.json rank 1 "
+                         "(ts10 +1.764 / bept +13.586); persisted numeric",
+             "derivation": "BREADTH axis (11.2b3): momentum-cluster rep; "
+                           "levels = retention quantiles on own fires at grid time"},
+            {"id": "B2", "producer": "compute_bollinger (technical.py)",
+             "param": "bb_20_20_bandwidth", "production": "not gated",
+             "band": ["q20", "q40", "q60", "q80"],
+             "free_band": ["q20", "q40", "q60", "q80"], "resim_band": [],
+             "sweep_levels": [], "subset_safe": True,
+             "status": "UNTESTED", "type": "float<=q", "engine_implemented": False,
+             "evidence": "b2691 consistent (ts10 -1.148 / bept -10.500)",
+             "derivation": "BREADTH: compression rep (tight bands favored)"},
+            {"id": "B3", "producer": "compute_volume_profile",
+             "param": "vp_close_near_poc_pct", "production": "not gated",
+             "band": ["q20", "q40", "q60", "q80"],
+             "free_band": ["q20", "q40", "q60", "q80"], "resim_band": [],
+             "sweep_levels": [], "subset_safe": True,
+             "status": "UNTESTED", "type": "float<=q", "engine_implemented": False,
+             "evidence": "b2691 consistent (ts10 -0.945 / bept -11.561)",
+             "derivation": "BREADTH: volume-profile rep (far from POC favored)"},
+            {"id": "B4", "producer": "compute_atr",
+             "param": "atr_pct", "production": "not gated",
+             "band": ["q20", "q40", "q60", "q80"],
+             "free_band": ["q20", "q40", "q60", "q80"], "resim_band": [],
+             "sweep_levels": [], "subset_safe": True,
+             "status": "UNTESTED", "type": "float<=q", "engine_implemented": False,
+             "evidence": "b2691 consistent (ts10 -1.360 / bept -9.788)",
+             "derivation": "BREADTH: volatility rep (calmer names favored)"},
+            {"id": "B5", "producer": "compute_candles",
+             "param": "bullish_engulfing", "production": "not gated",
+             "band": [True], "free_band": [True], "resim_band": [],
+             "sweep_levels": [], "subset_safe": True,
+             "status": "UNTESTED", "type": "bool==True", "engine_implemented": False,
+             "evidence": "b2691 consistent (ts10 +1.855 / bept +10.115)",
+             "derivation": "BREADTH: reversal-candle confirmation, LONG LEG "
+                           "only - thesis-aligned with the sweep reversal"},
+            {"id": "B6", "producer": "compute_gaps",
+             "param": "gap_up_2pct", "production": "not gated",
+             "band": [False], "free_band": [False], "resim_band": [],
+             "sweep_levels": [], "subset_safe": True,
+             "status": "UNTESTED", "type": "bool==False", "engine_implemented": False,
+             "evidence": "b2691 consistent (ts10 -2.744 / bept -8.692)",
+             "derivation": "BREADTH: avoid gap-up entries (negative effect "
+                           "both exits)"},
+        ],
+    },
+    "smc_order_block_bounce": {
+        # B2692 (Wave-1 hub 2, Phase 0): carries a PERSISTED numeric gate
+        # knob (rsi_14) - the only free threshold; producer knobs resim-only.
+        "baseline": {"artifact": "output_r5_merged_1_7", "fires": 1340,
+                     "holdout_n": 352, "band": "T",
+                     "window": "2022-05-05..2026-05-05"},
+        "gate": "(smc_ob_bullish_tap_recent_5d AND rsi_14<45 AND above_ema_200) "
+                "| short mirror + borrow gate (screener strat_smc_order_block_bounce)",
+        "params": [
+            {"id": "P1", "producer": "_smc.swing_highs_lows",
+             "param": "swing_length", "production": 20,
+             "band": [5, 10, 20, 30, 50], "free_band": [], "resim_band": [5, 10, 30, 50],
+             "sweep_levels": [], "subset_safe": False,
+             "status": "UNTESTED", "type": "int", "engine_implemented": True,
+             "evidence": "smc_ict.py:194; shared family knob",
+             "derivation": "feeds swings -> OB detection; resim-only"},
+            {"id": "P2", "producer": "_smc.ob",
+             "param": "close_mitigation", "production": False,
+             "band": [False, True], "free_band": [], "resim_band": [True],
+             "sweep_levels": [], "subset_safe": False,
+             "status": "UNTESTED", "type": "bool", "engine_implemented": True,
+             "evidence": "smc_ict.py:375 (ob call); breaker P2 precedent",
+             "derivation": "OB mitigation rule; resim-only"},
+            {"id": "P3", "producer": "_ob_tap_scan",
+             "param": "tap_window", "production": 5,
+             "band": [3, 5, 10], "free_band": [], "resim_band": [3, 10],
+             "sweep_levels": [], "subset_safe": False,
+             "status": "UNTESTED", "type": "int", "engine_implemented": True,
+             "evidence": "smc_ict.py:75 (default 5; B2076 EVENT key); band "
+                         "CHOSEN around production",
+             "derivation": "the bounce-tap lookback; persisted key is the "
+                           "post-window boolean - resim-only"},
+            {"id": "P4", "producer": "gate threshold (screener)",
+             "param": "rsi_threshold_long", "production": 45,
+             "band": [45, 40, 35, 30], "free_band": [45, 40, 35, 30],
+             "resim_band": [], "sweep_levels": [], "subset_safe": True,
+             "status": "UNTESTED", "type": "int", "engine_implemented": True,
+             "evidence": "strat source rsi_14<45; rsi_14 persisted numeric "
+                         "(b2691 screen population carries it)",
+             "derivation": "FREE: lowering the ceiling keeps a subset"},
+            {"id": "P5", "producer": "gate threshold (screener)",
+             "param": "rsi_threshold_short", "production": 55,
+             "band": [55, 60, 65, 70], "free_band": [55, 60, 65, 70],
+             "resim_band": [], "sweep_levels": [], "subset_safe": True,
+             "status": "UNTESTED", "type": "int", "engine_implemented": True,
+             "evidence": "strat source rsi_14>55",
+             "derivation": "FREE: raising the floor keeps a subset"},
+            {"id": "P6", "producer": "gate structure (screener)",
+             "param": "leg", "production": "both",
+             "band": ["long", "short"], "free_band": ["long", "short"],
+             "resim_band": [], "sweep_levels": [], "subset_safe": True,
+             "status": "UNTESTED", "type": "str", "engine_implemented": True,
+             "evidence": "dual _strat3",
+             "derivation": "FREE depth axis: per-leg grading"},
+        ],
+    },
+
     "pead_long_high_yoy_growth_only": {
         # B2634 (S6-B2633 Phase 0): the pead family's first inventory. NO
         # `tools` block yet - this is DELIBERATE and load-bearing: the B2578

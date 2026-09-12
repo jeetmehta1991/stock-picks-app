@@ -1,0 +1,346 @@
+{
+  "_doc": "B2691 smc-family companion screen - consistent FDR survivors (same effect sign under ts10 + bept; IS-only, holdout untouched); a SCREEN, never a gate; sources b2691_smc_companions_{ts10,bept}.json",
+  "entries": 6128,
+  "signals_tested": 650,
+  "survivors_ts10": 100,
+  "survivors_bept": 255,
+  "consistent_both_exits": 56,
+  "consistent": [
+    {
+      "key": "monthly_momentum_6m",
+      "kind": "numeric",
+      "effect_ts10": 1.764,
+      "effect_bept": 13.586
+    },
+    {
+      "key": "pct_from_vwap",
+      "kind": "numeric",
+      "effect_ts10": 1.03,
+      "effect_bept": 13.155
+    },
+    {
+      "key": "ppo_signal",
+      "kind": "numeric",
+      "effect_ts10": 1.505,
+      "effect_bept": 12.23
+    },
+    {
+      "key": "ppo",
+      "kind": "numeric",
+      "effect_ts10": 1.173,
+      "effect_bept": 11.721
+    },
+    {
+      "key": "xs_momentum_12_1",
+      "kind": "numeric",
+      "effect_ts10": 1.076,
+      "effect_bept": 11.472
+    },
+    {
+      "key": "vp_close_near_poc_pct",
+      "kind": "numeric",
+      "effect_ts10": -0.945,
+      "effect_bept": -11.561
+    },
+    {
+      "key": "rsi_21",
+      "kind": "numeric",
+      "effect_ts10": 0.685,
+      "effect_bept": 11.804
+    },
+    {
+      "key": "bullish_engulfing",
+      "kind": "bool",
+      "effect_ts10": 1.855,
+      "effect_bept": 10.115
+    },
+    {
+      "key": "naked_poc_nearest_distance_pct",
+      "kind": "numeric",
+      "effect_ts10": -0.732,
+      "effect_bept": -11.065
+    },
+    {
+      "key": "bb_20_20_bandwidth",
+      "kind": "numeric",
+      "effect_ts10": -1.148,
+      "effect_bept": -10.5
+    },
+    {
+      "key": "bb_20_15_bandwidth",
+      "kind": "numeric",
+      "effect_ts10": -1.147,
+      "effect_bept": -10.495
+    },
+    {
+      "key": "macd_12_26_9_signal",
+      "kind": "numeric",
+      "effect_ts10": 1.082,
+      "effect_bept": 10.472
+    },
+    {
+      "key": "gap_up_2pct",
+      "kind": "bool",
+      "effect_ts10": -2.744,
+      "effect_bept": -8.692
+    },
+    {
+      "key": "pct_from_avwap_20high",
+      "kind": "numeric",
+      "effect_ts10": 0.808,
+      "effect_bept": 10.578
+    },
+    {
+      "key": "xs_beta_decile",
+      "kind": "numeric",
+      "effect_ts10": -0.14,
+      "effect_bept": -11.203
+    },
+    {
+      "key": "po3_bullish",
+      "kind": "bool",
+      "effect_ts10": 2.752,
+      "effect_bept": 8.436
+    },
+    {
+      "key": "atr_pct",
+      "kind": "numeric",
+      "effect_ts10": -1.36,
+      "effect_bept": -9.788
+    },
+    {
+      "key": "bb_10_20_bandwidth",
+      "kind": "numeric",
+      "effect_ts10": -1.421,
+      "effect_bept": -9.034
+    },
+    {
+      "key": "sector_weakest_rs",
+      "kind": "numeric",
+      "effect_ts10": 0.954,
+      "effect_bept": 9.18
+    },
+    {
+      "key": "po3_accum_range_pct",
+      "kind": "numeric",
+      "effect_ts10": -1.136,
+      "effect_bept": -8.737
+    },
+    {
+      "key": "close_above_open",
+      "kind": "bool",
+      "effect_ts10": 1.797,
+      "effect_bept": 8.069
+    },
+    {
+      "key": "close_below_open",
+      "kind": "bool",
+      "effect_ts10": -1.797,
+      "effect_bept": -8.069
+    },
+    {
+      "key": "xs_max_anomaly",
+      "kind": "numeric",
+      "effect_ts10": -0.804,
+      "effect_bept": -8.159
+    },
+    {
+      "key": "cot_copper_commercials_pctile_3y",
+      "kind": "numeric",
+      "effect_ts10": -0.132,
+      "effect_bept": -8.38
+    },
+    {
+      "key": "po3_close_position",
+      "kind": "numeric",
+      "effect_ts10": 2.207,
+      "effect_bept": 6.302
+    },
+    {
+      "key": "gap_up_1_5pct",
+      "kind": "bool",
+      "effect_ts10": -2.2,
+      "effect_bept": -6.22
+    },
+    {
+      "key": "close_in_top_40pct_of_range",
+      "kind": "bool",
+      "effect_ts10": 1.32,
+      "effect_bept": 6.356
+    },
+    {
+      "key": "htf_aligned_bear",
+      "kind": "bool",
+      "effect_ts10": -1.265,
+      "effect_bept": -6.346
+    },
+    {
+      "key": "ichi_weekly_below_cloud",
+      "kind": "bool",
+      "effect_ts10": -0.882,
+      "effect_bept": -6.336
+    },
+    {
+      "key": "monthly_bias_bear",
+      "kind": "bool",
+      "effect_ts10": -1.259,
+      "effect_bept": -5.898
+    },
+    {
+      "key": "drying_volume_on_up_turn",
+      "kind": "bool",
+      "effect_ts10": 1.186,
+      "effect_bept": 5.61
+    },
+    {
+      "key": "monthly_above_sma_12",
+      "kind": "bool",
+      "effect_ts10": 1.508,
+      "effect_bept": 5.144
+    },
+    {
+      "key": "gap_up_pct",
+      "kind": "numeric",
+      "effect_ts10": -1.841,
+      "effect_bept": -4.704
+    },
+    {
+      "key": "gap_dn_pct",
+      "kind": "numeric",
+      "effect_ts10": 1.841,
+      "effect_bept": 4.704
+    },
+    {
+      "key": "ichi_weekly_above_cloud",
+      "kind": "bool",
+      "effect_ts10": 1.106,
+      "effect_bept": 5.429
+    },
+    {
+      "key": "williams_r_rising",
+      "kind": "bool",
+      "effect_ts10": 0.803,
+      "effect_bept": 5.594
+    },
+    {
+      "key": "price_above_sma_200",
+      "kind": "bool",
+      "effect_ts10": 1.16,
+      "effect_bept": 5.15
+    },
+    {
+      "key": "below_sma_200",
+      "kind": "bool",
+      "effect_ts10": -1.16,
+      "effect_bept": -5.15
+    },
+    {
+      "key": "monthly_momentum_pos",
+      "kind": "bool",
+      "effect_ts10": 1.113,
+      "effect_bept": 5.175
+    },
+    {
+      "key": "sma_50_200_bullish",
+      "kind": "bool",
+      "effect_ts10": 0.806,
+      "effect_bept": 5.372
+    },
+    {
+      "key": "close_in_bottom_40pct_of_range",
+      "kind": "bool",
+      "effect_ts10": -1.165,
+      "effect_bept": -4.866
+    },
+    {
+      "key": "ema_50_200_bearish",
+      "kind": "bool",
+      "effect_ts10": -0.84,
+      "effect_bept": -5.13
+    },
+    {
+      "key": "ema_50_200_bullish",
+      "kind": "bool",
+      "effect_ts10": 0.84,
+      "effect_bept": 5.13
+    },
+    {
+      "key": "price_above_ema_200_break_recent_5d",
+      "kind": "bool",
+      "effect_ts10": 1.052,
+      "effect_bept": 4.806
+    },
+    {
+      "key": "price_above_ema_200",
+      "kind": "bool",
+      "effect_ts10": 1.061,
+      "effect_bept": 4.765
+    },
+    {
+      "key": "below_ema_200",
+      "kind": "bool",
+      "effect_ts10": -1.061,
+      "effect_bept": -4.765
+    },
+    {
+      "key": "ema_20_50_bearish",
+      "kind": "bool",
+      "effect_ts10": -0.996,
+      "effect_bept": -4.447
+    },
+    {
+      "key": "ema_20_50_bullish",
+      "kind": "bool",
+      "effect_ts10": 0.996,
+      "effect_bept": 4.447
+    },
+    {
+      "key": "sma_20_50_bullish",
+      "kind": "bool",
+      "effect_ts10": 0.985,
+      "effect_bept": 4.435
+    },
+    {
+      "key": "weekly_above_ema_20",
+      "kind": "bool",
+      "effect_ts10": 0.794,
+      "effect_bept": 3.899
+    },
+    {
+      "key": "weekly_bias_bull",
+      "kind": "bool",
+      "effect_ts10": 0.664,
+      "effect_bept": 3.441
+    },
+    {
+      "key": "near_52w_high_95pct",
+      "kind": "bool",
+      "effect_ts10": 0.927,
+      "effect_bept": 2.87
+    },
+    {
+      "key": "htf_aligned_bull",
+      "kind": "bool",
+      "effect_ts10": 0.789,
+      "effect_bept": 2.822
+    },
+    {
+      "key": "cot_copper_commercials_net_pct",
+      "kind": "numeric",
+      "effect_ts10": -0.804,
+      "effect_bept": -1.897
+    },
+    {
+      "key": "cot_dxy_mmoney_pctile_3y",
+      "kind": "numeric",
+      "effect_ts10": -0.534,
+      "effect_bept": -2.062
+    },
+    {
+      "key": "dxy_20d_pct_change",
+      "kind": "numeric",
+      "effect_ts10": 1.33,
+      "effect_bept": 0.439
+    }
+  ]
+}
