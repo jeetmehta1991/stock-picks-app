@@ -1089,6 +1089,42 @@ def _level_in_band(value, row: dict) -> bool:
     return False
 
 
+def _rider_refusals(doc: dict, root: Path, graded: list[str]) -> list[str]:
+    """B2710 (B2707 reuse doctrine): `cube_riders` names strategies the
+    ENGINE runs for cube trades only - BATTERY-EXEMPT BY DESIGN, exemption
+    stamped in the merged engine file and the manifest, never silent. Fail
+    closed on: missing file, overlap with the graded subset, unreadable
+    strategy registry, unregistered rider (L642)."""
+    rel = doc.get("cube_riders")
+    if not rel:
+        return []
+    p = root / str(rel)
+    if not p.exists():
+        return [f"cube_riders {rel} does not exist under {root} (fail CLOSED, L642)"]
+    riders = [ln.strip() for ln in p.read_text(encoding="utf-8").splitlines()
+              if ln.strip() and not ln.lstrip().startswith("#")]
+    errs: list[str] = []
+    both = sorted(set(riders) & set(graded))
+    if both:
+        errs.append(f"cube_riders overlap the graded subset: {both} - a "
+                    "strategy is graded or a rider, never both (B2710)")
+    try:
+        from backtest.signals.screener import ALL_STRATEGIES as _ALL
+        if isinstance(_ALL, dict):
+            names = set(_ALL.keys())
+        else:
+            names = {getattr(f, "__name__", str(f)) for f in _ALL}
+            names |= {str(getattr(f, "name", "")) for f in _ALL}
+    except Exception as e:
+        return errs + [f"cube_riders: strategy registry unreadable ({e}) - "
+                       "refusing rather than guessing (L642)"]
+    for r in riders:
+        if r not in names:
+            errs.append(f"cube rider {r}: not a registered strategy "
+                        "(fail CLOSED, B2710)")
+    return errs
+
+
 def launch_refusals(doc: dict, root: Path | None = None,
                     require_subset: bool = True) -> list[str]:
     """Reasons NOT to launch `doc` (a wave spec or a run manifest - both carry
@@ -1125,6 +1161,8 @@ def launch_refusals(doc: dict, root: Path | None = None,
         return [f"strategy_subset {rel} lists no strategy"]
     fams, why = _battery_families()
     errs: list[str] = []
+    # B2710: riders validated up front; graded-subset checks unchanged
+    errs += _rider_refusals(doc, root, strats)
     for s in strats:
         spec = SPECS.get(s)
         if spec is None:

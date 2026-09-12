@@ -35705,3 +35705,45 @@ def test_b2706_smc_depth_knobs_reach_the_engine_and_bite():
     assert out.returncode == 0, out.stderr[-400:]
     assert out.stdout.split() == ["0.02", "45"], out.stdout
 
+
+def test_b2710_cube_riders_are_validated_and_battery_exempt():
+    """B2710: riders (B2707 reuse doctrine) - the gate passes a valid rider
+    set, refuses an unregistered rider and a graded/rider overlap; the
+    engine set merges graded-first with no duplicates."""
+    import sys as _sys
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    sp = str(root / "scripts")
+    if sp not in _sys.path:
+        _sys.path.insert(0, sp)
+    from producer_variant_table import launch_refusals
+    doc = {"wave": "t", "strategy_subset": "output_audit/_subset_one.txt",
+           "cube_riders": "output_audit/_subset_smc_riders.txt", "arms": []}
+    errs = launch_refusals(doc, root)
+    assert not any("cube rider" in e.lower() for e in errs), errs
+    tmp = root / "output_audit" / "_tmp_test_b2710_riders.txt"
+    tmp.write_text("not_a_real_strategy_xyz\n", encoding="utf-8")
+    try:
+        e2 = launch_refusals({**doc, "cube_riders":
+                              "output_audit/_tmp_test_b2710_riders.txt"}, root)
+        assert any("not a registered strategy" in x for x in e2), e2
+        tmp.write_text("smc_breaker_block_long\n", encoding="utf-8")
+        e3 = launch_refusals({**doc, "cube_riders":
+                              "output_audit/_tmp_test_b2710_riders.txt"}, root)
+        assert any("overlap the graded subset" in x for x in e3), e3
+    finally:
+        tmp.unlink()
+    import run_wave as rw
+    spec = {"wave": "_tmp_test_b2710",
+            "strategy_subset": "output_audit/_subset_one.txt",
+            "cube_riders": "output_audit/_subset_smc_riders.txt"}
+    rel = rw._engine_strategy_file(spec)
+    mf = root / rel
+    try:
+        lines = [l for l in mf.read_text(encoding="utf-8").splitlines()
+                 if l.strip() and not l.startswith("#")]
+        assert lines[0] == "smc_breaker_block_long"
+        assert len(lines) == 22 and len(set(lines)) == 22, len(lines)
+    finally:
+        mf.unlink()
+

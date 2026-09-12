@@ -1,7 +1,8 @@
 {
  "wave": "b2709_smc_sw10_pilot",
  "tickers_file": "output_audit/_sweep_200.txt",
- "strategy_subset": "output_audit/_subset_smc.txt",
+ "strategy_subset": "output_audit/_subset_one.txt",
+ "cube_riders": "output_audit/_subset_smc_riders.txt",
  "window": {
   "start": "2022-05-05",
   "end": "2026-05-05"
