@@ -35459,3 +35459,36 @@ def test_b2686_pead_env_knobs_reach_the_producers():
             else:
                 os.environ[k] = v
 
+
+def test_b2689_shell_substitution_reports_an_incident_once():
+    """B2689 (B2450 gate-window class): scan_shell_substitution fires on a
+    fresh offending snippet, goes QUIET once a prior gate-feedback entry
+    quotes that snippet's repr (the close is then a remediation pass, L753),
+    and fires again on a NEW snippet the feedback never quoted. The
+    suppression source is harness-injected gate feedback - user-type
+    entries - which assistant text cannot fake."""
+    import sys as _sys
+    from pathlib import Path as _P
+    _sys.path.insert(0, str(_P(__file__).resolve().parents[2] / "scripts"))
+    import verify_turn_compliance as v
+
+    bad = 'python -c "x=1; y=`date`"'
+    snippet = "x=1; y=`date`"
+
+    def feedback(text):
+        return {"type": "user",
+                "message": {"content": [{"type": "text", "text": text}]}}
+
+    # arm 1: fresh incident fires
+    v1 = v.scan_shell_substitution([], tool_text=bad)
+    assert v1 and "SHELL SUBSTITUTION" in v1[0], v1
+    # arm 2: already-reported incident is quiet (feedback quotes the repr)
+    fb = feedback("TURN-GATE BLOCK ... SHELL SUBSTITUTION IN A DOUBLE-QUOTED "
+                  "ARGUMENT (B1765/#245, B2363): " + repr(snippet) + " ...")
+    v2 = v.scan_shell_substitution([fb], tool_text=bad)
+    assert v2 == [], v2
+    # arm 3: a NEW snippet still fires despite old feedback
+    bad2 = 'python -c "z=$(whoami)"'
+    v3 = v.scan_shell_substitution([fb], tool_text=bad2)
+    assert v3 and "SHELL SUBSTITUTION" in v3[0], v3
+

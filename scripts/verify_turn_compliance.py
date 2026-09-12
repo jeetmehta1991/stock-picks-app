@@ -2051,6 +2051,29 @@ def scan_shell_substitution(entries, *, tool_text=None) -> list[str]:
             hits.append(arg[:70])
     if not hits:
         return []
+    # B2689 (the B2450 gate-window class): ONE incident, ONE report. The
+    # block message embeds {hits[0]!r}; if a prior gate-feedback entry
+    # already quotes that repr, the incident was reported and this close
+    # is a remediation pass (L753) - measured: four consecutive blocked
+    # closes on one historical command with no satisfiable remedy. A NEW
+    # snippet still fires. The suppression source is HARNESS-injected
+    # gate feedback (user-type entries quoting the repr), which the
+    # response text cannot fake - assistant text is never read here.
+    reported = ""
+    for _d in (entries or ()):
+        if not (isinstance(_d, dict) and _d.get("type") == "user"):
+            continue
+        _c = (_d.get("message") or {}).get("content")
+        if isinstance(_c, str):
+            if "SHELL SUBSTITUTION" in _c:
+                reported += _c
+            continue
+        for _blk in _c or ():
+            if isinstance(_blk, dict) and "SHELL SUBSTITUTION" in str(_blk.get("text", "")) + str(_blk.get("content", "")):
+                reported += str(_blk.get("text", "")) + str(_blk.get("content", ""))
+    hits = [h for h in hits if repr(h) not in reported]
+    if not hits:
+        return []
     return [f"SHELL SUBSTITUTION IN A DOUBLE-QUOTED ARGUMENT (B1765/#245, B2363): "
             f"{hits[0]!r}. NOTE THE SCOPE - B1768 widened this from commit "
             "messages to ANY double-quoted -m/-c/-F/--message/--eval argument, "
