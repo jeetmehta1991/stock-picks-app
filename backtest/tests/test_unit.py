@@ -35562,8 +35562,9 @@ def test_b2704_band_coverage_gate_refuses_hub1_failure_declaration():
     assert untested == {"swing_length", "liquidity_range_pct",
                         "event_recency_bars"}, untested
     covered = {p["param"] for p in rep["params"] if not p["untested"]}
-    assert {"confirmation_arm", "leg", "monthly_momentum_6m",
-            "bullish_engulfing"} <= covered
+    # B2708: B5 bullish_engulfing pruned from the inventory by owner
+    # ruling - coverage now speaks over the retained band only
+    assert {"confirmation_arm", "leg", "monthly_momentum_6m"} <= covered
     with pytest.raises(SystemExit) as ei:
         bcg.declare_step2_failure("smc_liquidity_sweep_reversal", arts)
     assert "REFUSED" in str(ei.value) and "swing_length" in str(ei.value)

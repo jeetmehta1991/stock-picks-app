@@ -72,6 +72,12 @@ def _row_cells(r: dict, params: list) -> dict:
 def build_table(strategy: str, artifact_paths: list, top: int = 25) -> str:
     arts, rows, skips = load(artifact_paths)
     params = SPECS_PHASE0[strategy]["params"]
+    # B2708: Table D renders the LIVE Table A inventory - artifact rows for
+    # axes an owner ruling has since pruned from the band drop out of the
+    # view (their tested history stays in the committed artifacts).
+    known = {p["param"] for p in params}
+    rows = [r for r in rows if not r.get("axis") or r["axis"] in known]
+    skips = [s for s in skips if s.get("axis") in known]
     ranked = sorted((r for r in rows if not r.get("npt_barred")),
                     key=lambda r: -r["is_sharpe"])
 

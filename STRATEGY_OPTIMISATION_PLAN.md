@@ -3409,6 +3409,23 @@ SMC_SWING_LENGTH (B1616), SMC_LIQUIDITY_RANGE_PCT + SMC_EVENT_RECENCY_BARS
 factorial awaits Step 1: band spec + manifest + prelaunch gate + the venue
 word (B2107 rules).
 
+**SHARED-PRODUCER RESIM REUSE (B2707, owner philosophy verbatim 2026-09-12:
+"we will do a resim and re use the data for shared producer fot offline
+cube generation").** A producer-band resim is a FAMILY asset, never a
+one-strategy expense: the P1-P3 knobs are GLOBAL, so one variant config
+recomputes every smc_* signal, and every strategy whose gate reads them
+fires against the variant in the same run. THEREFORE each variant config
+MUST run with the FULL smc consumer set active (Step-1 spec enumerates the
+consumers by grepping every gate expression for smc_* keys - no
+strategy-subset pruning that drops a family member), persist
+signals_at_entry as standard, and carry the variant identity in the cube
+dir name + run_manifest (the icg wave pattern). Each landed variant cube
+then serves EVERY later smc campaign's depth leg OFFLINE - hub 2
+(order_block_bounce) and the Wave-2 independents take their producer-band
+depth from these 44 cubes with ZERO additional engine hours, the same way
+offline campaigns filter R5 today. The band_coverage_gate accepts these
+cubes as resim evidence via resim_configs / --resim-evidence.
+
 ### 11.2b3 BREADTH WORKFLOW STANDARD (B2693, owner-ruled 2026-09-12)
 
 The 11.2b2 rule says every campaign has a breadth leg; THIS is the procedure, standard
