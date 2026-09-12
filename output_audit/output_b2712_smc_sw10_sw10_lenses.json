@@ -3,7 +3,7 @@
  "step": 1,
  "step_basis": "manifest window.end 2025-05-05 <= HO_START 2025-05-05 -> Step-1 cube",
  "family": "smc_breaker_block_long",
- "ts": "2026-09-12T14:53:43",
+ "ts": "2026-09-12T14:56:02",
  "lenses": [
   {
    "lens": "holdout_untouched",
