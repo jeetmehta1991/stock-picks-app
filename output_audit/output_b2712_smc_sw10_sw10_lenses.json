@@ -2,8 +2,8 @@
  "cube": "output_b2712_smc_sw10_sw10",
  "step": 1,
  "step_basis": "manifest window.end 2025-05-05 <= HO_START 2025-05-05 -> Step-1 cube",
- "family": null,
- "ts": "2026-09-12T14:30:55",
+ "family": "smc_breaker_block_long",
+ "ts": "2026-09-12T14:52:00",
  "lenses": [
   {
    "lens": "holdout_untouched",

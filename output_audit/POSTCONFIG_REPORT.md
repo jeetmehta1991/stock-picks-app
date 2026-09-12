@@ -6,14 +6,15 @@ REGENERATED WHOLE at every config landing - by the landing supervisor the engine
 
 ## How much confidence these checks earn
 
-**Across the entire ledger (127 entries), 919 named checks have run and 7 have ever returned non-PASS.**
+**Across the entire ledger (127 entries), 933 named checks have run and 8 have ever returned non-PASS.**
 
 ## Landings - what the supervisor recorded (B2520)
 
-21 cube(s) landed through the supervisor; **0 not yet reported to the owner**.
+22 cube(s) landed through the supervisor; **0 not yet reported to the owner**.
 
 | cube | landed | via | battery exit | blocking | WARN/FAIL findings | committed | pushed | reported |
 |---|---|---|---|---|---|---|---|---|
+| output_b2712_smc_sw10_sw10 | 2026-09-12T14:31:09 | engine-hook | 2 | 1_cube_sanity, 2_grade_with_config_params, 4_three_leg_spot_check, 6_post_fix_recheck, 6b_equivalence_class_check, 7_implement_in_engine, 8_verdict_with_denominators | 2: direction_consistency FAIL: directions ['long', 'short'] (one strategy, one direction expected); spot_check_disagreements WARN: no spot-check artifact - step 4 produced nothing to read | 00594c1f0 | True | yes 2026-09-12T14:49:44 |
 | output_icg_step2_span9_step2_span9 | 2026-09-06T18:55:21 | engine-hook | 0 | none | 0 | adfba9d5d | True | yes 2026-09-06T19:01:07 |
 | output_icg_cfg1_rerun_cfg1_rerun | 2026-09-05T01:17:34 | engine-hook | 0 | none | 0 | d85126201 | True | yes 2026-09-06T05:40:01 |
 | output_icg_span100_rerun_span100 | 2026-09-04T12:26:03 | engine-hook | 0 | none | 0 | 0f0e440e6 | True | yes 2026-09-04T12:27:40 |
