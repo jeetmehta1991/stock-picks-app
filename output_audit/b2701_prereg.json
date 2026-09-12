@@ -1,0 +1,35 @@
+{
+  "what": "B2701 STEP-2 PRE-REGISTRATION - smc_liquidity_sweep_reversal hub-1 (S6-B2694a word received)",
+  "ruling_verbatim": "proceed, engulfing + momentum q40 both pre-registered",
+  "ruling_date": "2026-09-12",
+  "committed_before_any_holdout_code_ran": true,
+  "admission_bearing_cells": [
+    {
+      "id": "A",
+      "predicate": "direction == long AND bullish_engulfing == True",
+      "exit": "class_time_stop",
+      "base": "production gate (either arm)",
+      "step1_line": {"is_sharpe": 2.078, "is_ci_lo": 1.474, "is_n": 111, "full_n": 129,
+                     "rank_unified": 1, "source": "output_audit/b2694_smc_lsr_step1.json"},
+      "labels": ["DISCLOSED-RE-READ", "GRID-SELECTED"]
+    },
+    {
+      "id": "B",
+      "predicate": "monthly_momentum_6m NOT NULL AND monthly_momentum_6m >= -0.1122 (q40 retention quantile)",
+      "exit": "breakeven_plus_trail",
+      "base": "production gate (both legs, either arm), COVERED subpopulation only",
+      "step1_line": {"is_sharpe": 0.475, "is_ci_lo": 0.327, "is_n": 1335, "full_n": 1710,
+                     "rank_unified": 21, "source": "output_audit/b2698_momentum_resweep.json"},
+      "labels": ["DISCLOSED-RE-READ", "GRID-SELECTED", "WIDENED-COVERAGE-0.942",
+                 "verdict binds the covered subpopulation only (5.8% gap excluded from both arms)"]
+    }
+  ],
+  "every_other_cell": "holdout computed in the same one read, labelled PEEKED-BY-CONSTRUCTION / DIAGNOSTIC - can never carry admission (the pre-registration is spent when the read runs)",
+  "step1_sources_committed": {
+    "b2694_smc_lsr_step1.json": "commit 6c05532cd",
+    "b2698_momentum_resweep.json": "commit 13b65b872",
+    "unified_table_d": "output_audit/b2699_table_d_smc_lsr_unified.md (commits 4816eddeb + caf8e1a27)"
+  },
+  "gates": "the six LIVE_GATES (roster_core.py:60-61) at tier=pooled, min_trades_holdout>=15, min_trades_full_period>75",
+  "provenance_disclosure": "the strategy's holdout window has been read historically by the R5 roster grading passes - DISCLOSED-RE-READ rides any admission (B2660 doctrine: labels travel as information)"
+}
