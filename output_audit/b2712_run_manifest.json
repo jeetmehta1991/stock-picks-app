@@ -1,7 +1,7 @@
 {
  "sequence": "smc-depth-factorial-S6-B2702a",
  "batch": "b2712_sw10",
- "frozen_sha": "dbce3f669",
+ "frozen_sha": "2b11e6029",
  "isolation": false,
  "isolation_note": "local detached run from the committed tree; no AWS tar isolation on the local venue",
  "calendar": "nyse_mcal",
