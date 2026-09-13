@@ -20803,3 +20803,49 @@ convention I failed to copy was also the convention two other call sites lack.
 readers and copy the bucket list you find - the extra buckets are paid-for
 knowledge, and a partition that does not reconcile loses rows in the direction
 nobody checks.
+
+### L800 - A TICKET THAT DESCRIBES WORK BY ANALOGY IS PREDICTING A SYSTEM NOBODY OPENED (B2752a, 2026-09-13)
+
+**What happened.** S6-B2752 scoped three registrations as *"the S6-B2732a
+template applied three more times, which is also the first real test of whether
+that template generalises"*. Measuring the first subject before executing it,
+**2 of 3 load-bearing assumptions were false**: `smc_order_block_bounce` has 2
+engine-reachable producer knobs and not 3 (P3 `tap_window` has no env knob, and
+`smc_ict.py:387` calls `_ob_tap_scan` passing none), and the strategy's PRIMARY
+gate key is persisted on **0 of 1340** recorded fires, so the spot-check leg the
+template relies on is blind on the one key that defines the strategy.
+
+**Why this is not L639.** L639 is a NUMBER inside an open ticket going stale
+while its status stays true. Here the ticket carried no number about any of
+this. **The SHAPE of the work was wrong at the moment it was written**, because
+the person writing it - me - had characterised hub-2 by its resemblance to
+hub-1 rather than by opening it.
+
+**Why an analogy is the most expensive kind of scope claim.** It is compact, it
+reads as insight, and it carries no figure for `#201` to demand a source for.
+*"The same as X applied to Y"*, *"a straightforward port"*, *"the template"*,
+*"three more times"* - each is a PREDICTION about a system's properties stated
+in the vocabulary of a plan. Worse, the prediction usually comes from the one
+subject already opened, so it inherits every accident of that subject.
+
+**What it would have cost.** Executing the analogy would have produced a SPECS
+entry declaring a resim band on a knob no arm can actuate - a promise the engine
+cannot keep (the B2578 class) - and a spot-check registered against a key the
+cube does not carry. Both would have passed registration and failed at a
+landing, after the engine spend.
+
+**How it was caught.** Two greps and one coverage probe, before any code was
+written: `grep -o "SMC_[A-Z_]*" backtest/config.py`, the `_ob_tap_scan` call
+site, and a coverage count over `signals_at_entry`. Under a minute.
+
+**Rule.** When a ticket states its scope by ANALOGY rather than by enumeration,
+open the NEW subject and verify the analogy's load-bearing properties BEFORE
+executing - and correct the ticket in the same turn, because the analogy is
+what the next reader will act on. **Compliance failure against #222**: the
+Phase-0 row said `engine_implemented: True` and I had not read the code behind
+it, which is that item exactly - a value you have not read carries its
+neighbourhood unread too.
+
+**Mechanism: JUDGMENT-ONLY for detection** - no scan can tell an analogy from a
+description, and the load-bearing property differs per subject. Durability
+pinned by `test_b2800_analogy_scope_rule_survives`.

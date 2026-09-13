@@ -37103,3 +37103,28 @@ def test_b2752_tap_window_is_not_engine_reachable():
     assert "tap_window" not in args, (
         f"the call site now passes tap_window ({args!r}) - the row is "
         "reachable again, so re-measure it")
+
+
+def test_b2800_analogy_scope_rule_survives():
+    """L800/#222: a ticket scoping work by ANALOGY predicts a system nobody
+    opened. DETECTION is JUDGMENT-ONLY - no scan tells an analogy from a
+    description. Durability only; the batch's behaviour is pinned by
+    test_b2752."""
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[2]
+    lrn = (root / "LEARNINGS.md").read_text(encoding="utf-8", errors="replace")
+    heads = [l for l in lrn.splitlines() if l.startswith("### L800 ")]
+    assert len(heads) == 1, f"expected one L800 heading, got {len(heads)}"
+    # unsplittable tokens only - a fragment spanning a line wrap can never
+    # match, and that has cost this session four separate pins (L771)
+    assert "0 of 1340" in lrn, "L800 must keep the measured coverage"
+    assert "#222" in lrn, "L800 must keep its compliance-failure citation"
+    skill = (root / ".claude" / "skills" / "execution-discipline"
+             / "SKILL.md").read_text(encoding="utf-8", errors="replace")
+    rows = [l for l in skill.splitlines()
+            if l.startswith("| Execute a ticket whose scope is stated by ANALOGY")]
+    assert len(rows) == 1, f"expected one L800 tripwire row, got {len(rows)}"
+    assert "L800 / #222 (MEASURED" in rows[0], "lineage cell missing"
+    assert "OPEN THE NEW SUBJECT" in rows[0], "diagnostic missing"
+    banner = (root / "CLAUDE.md").read_text(encoding="utf-8", errors="replace")
+    assert "LEARNINGS L1-L800" in banner, "banner not synced"
