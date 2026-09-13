@@ -5912,3 +5912,30 @@ arms. L792's other two rules are COMPLIANCE FAILURES against existing rules -
 the disposal-plan half against B2450/L721, the count-the-sites half against
 L592/B1936 - and warrant no new items.
 
+### #306 - ASK WHAT PROPORTION OF COMMITS A FILE-TYPE-SCOPED GATE CAN EVEN FIRE ON (B2754 / L793, gate-caught 2026-09-12; mechanism: `test_b2754_file_type_scoped_gate_blindness_rule_survives` for durability, DETECTION is JUDGMENT-ONLY because no scan reads whether a turn measured a gate's reach before trusting it)
+
+A gate keyed on a FILE TYPE is structurally blind to a commit class that by
+construction never contains that type. The blindness produces no error and no
+alarm - it produces a commit that sailed through, indistinguishable from one
+that passed.
+
+Before citing such a gate as protection, MEASURE its reach: what fraction of
+recent commits stage a file it keys on? MEASURED at B2754 over the last 40
+commits, **15 of 40 staged zero `.py` files**, so C6's pyramid stamp could not
+fire on 37.5 percent of them.
+
+And run the sweep BEFORE judging the instance. Here it inverted the verdict:
+the largest ungateable group is the B2520 automatic landing commits, written by
+the engine-invoked supervisor under a standing owner ruling, which cannot run an
+~11-minute pyramid per landing without blocking the engine. **The scope is
+load-bearing for an owner-ruled automation, not an oversight** - stopping at the
+instance would have filed a P0 against a resolution already reasoned through.
+
+Companion, same incident: a compound task's NAME is not evidence of what it did.
+"Gate and commit" committed and never gated, at exit 0, because the status
+belonged to the trailing command. Read the output for the VERDICT TOKEN.
+
+Would have caught: B2754 (this instance). Mechanism:
+`test_b2754_file_type_scoped_gate_blindness_rule_survives` - durability only;
+DETECTION is judgment-only, since no scan reads whether a turn asked a gate's
+reach before trusting it.

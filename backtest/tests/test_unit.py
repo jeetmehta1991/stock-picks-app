@@ -36475,3 +36475,37 @@ def test_b2748_the_admitted_override_travels_to_the_generated_manifest(tmp_path)
     r = pvt._admitted_retest_refusals(doc_no, root, ["smc_breaker_block_long"])
     assert len(r) == 1 and "ALREADY ADMITTED" in r[0], r
 
+def test_b2754_file_type_scoped_gate_blindness_rule_survives():
+    """L793: a gate keyed on a file type cannot see a commit class that never
+    contains that type. DETECTION is judgment-only - no scan reads whether a
+    turn asked what proportion of commits a gate can fire on. What IS
+    mechanisable is DURABILITY: the rule must not vanish from LEARNINGS.
+    Proved failable by deleting the fragment (L548/#226)."""
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[2]
+    text = (root / "LEARNINGS.md").read_text(encoding="utf-8", errors="replace")
+    # line-anchored: "### L793" is a SUBSTRING of "### L793X", so a bare
+    # `in` check passes against a mutated heading (L706, caught by #226).
+    heads = [l for l in text.splitlines() if l.startswith("### L793 ")]
+    assert len(heads) == 1, f"expected exactly one L793 heading, got {len(heads)}"
+    # the diagnostic, not just the heading - without these the entry is trivia
+    for fragment in (
+        "blind to a commit class that never contains that type".upper(),
+        "15 of 40",
+        "owner-ruled automation",
+    ):
+        assert fragment in text, f"L793 diagnostic missing: {fragment!r}"
+
+    # #197/L464: a rule recorded only in LEARNINGS is a story, not a gate.
+    chk = (root / "CHECKLIST.md").read_text(encoding="utf-8", errors="replace")
+    assert len([l for l in chk.splitlines() if l.startswith("### #306 ")]) == 1
+    skill = (root / ".claude" / "skills" / "execution-discipline"
+             / "SKILL.md").read_text(encoding="utf-8", errors="replace")
+    # line-anchored: a bare `in` passes against "L793 / #306X" (L706, the
+    # third instance of this substring trap in one turn - caught by #226).
+    rows = [l for l in skill.splitlines()
+            if l.startswith("| Cite a gate as protection when it keys on a FILE TYPE")]
+    assert len(rows) == 1, f"expected one L793 tripwire row, got {len(rows)}"
+    assert rows[0].rstrip().endswith("|"), "tripwire row is not a closed table cell"
+    assert "L793 / #306 (MEASURED" in rows[0], "L793 lineage cell missing"
+    assert "MEASURE THE GATE'S REACH" in rows[0], "tripwire diagnostic missing"

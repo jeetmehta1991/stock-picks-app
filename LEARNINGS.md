@@ -20558,3 +20558,49 @@ ledger belongs to: repo facts come from the code tree, run facts from the run's
 root, and a gate that conflates them fails closed on the environment. (c) On
 the second single-site fix of one class, stop and enumerate the sites.
 
+### L793 - A GATE SCOPED TO A FILE TYPE IS BLIND TO A COMMIT CLASS THAT NEVER CONTAINS THAT TYPE (B2754, gate-caught 2026-09-12)
+
+**What happened.** A background task named "Gate and commit the two new
+tickets" returned exit 0. It committed - `b54ec8888`, EXECUTION_QUEUE.md +3
+rows - and it never ran the gate. The whole task output is 22 lines and
+carries zero hits for pytest, pyramid, stamp or `tree=`; the only match for
+the word "gate" is inside the commit SUBJECT. **Exit 0 proved that `git
+commit` succeeded, which is the layer below the claim the task's own name
+made.**
+
+**Why nothing refused it.** C6's pyramid stamp fires on commits staging
+`*.py`. This commit staged one `.md`, so the stamp was never consulted -
+while the owner's standing rule (`#69`/`#75`,
+`feedback_pyramid_no_exceptions`) has no doc carve-out. The gap matters
+here specifically because EXECUTION_QUEUE.md is PINNED: MEASURED, 37
+references in `backtest/tests/test_unit.py`, plus readers in
+`verify_turn_compliance.py` and `queue_state.py`. A queue-only commit can
+genuinely break tests.
+
+**The sweep is what corrected me (#237).** Over the last 40 commits,
+**15 of 40 staged zero `.py` files** and so were ungateable by C6. The
+largest group is five consecutive **B2520 automatic landing commits**,
+written by the engine-invoked supervisor under the owner's standing ruling
+that a landing commits itself. **The `.py` scope is load-bearing for an
+owner-ruled automation** - the supervisor cannot run an ~11-minute pyramid
+per landing without blocking the engine. So the class is mostly DELIBERATE
+and my commit is a real instance inside it. Had I stopped at the instance I
+would have filed a P0 against a resolution someone had already reasoned
+through.
+
+**The process error I made while fixing it.** I launched the gate BEFORE
+knowing Phase 5 would require file edits. `pyramid_gate.py` fingerprints the
+tree before and after pytest, so the LEARNINGS edit forces `tree=CHANGED`
+and VOIDS the run whatever pytest reports - the run was doomed at 52% and
+continuing it would have produced a misleading artifact. **L768/#292 already
+says the gate run is the LAST action before the commit; I ran it first and
+had to discard it.** Its `--out` JSON also filled with pytest progress dots
+while running, exactly as L782 warns: the file existing is not a verdict.
+
+**Rules.** (a) A gate keyed on a FILE TYPE cannot see a commit class that by
+construction never contains that type - before trusting such a gate, ask what
+proportion of recent commits it can even fire on, and get the number. (b) A
+task's NAME is not evidence of what it did: read its output for the verdict
+token, because a compound task can complete the cheap half and skip the
+expensive one at exit 0. (c) Order the turn so the gate runs last - if
+remediation is still owed, the gate has not earned its run yet.
