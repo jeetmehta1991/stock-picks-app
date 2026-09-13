@@ -17226,7 +17226,13 @@ def test_b1783_response_gates_inherit_text_scoping():
         # shrink-only set in the same commit as the conversion.
         # B1957: scan_ungated_addition CONVERTED - same commit.
         # B1943: scan_unverified_count CONVERTED - removed in the same commit.
-        "scan_transcript_entries", "scan_verdict_denominators",
+        # B2758 (S6-B2753 option (c)): scan_verdict_denominators CONVERTED -
+        # removed from this shrink-only set in the same commit as the
+        # conversion. It matched VERDICT_PATTERNS against RAW text, so a
+        # trigger word in backticks read as a USE and every response that
+        # DISCUSSED the gate armed it. The denominator is still read raw
+        # on purpose (B1806): a scope inside a fenced table must count.
+        "scan_transcript_entries",
     }
 
     unconverted = set()
@@ -36527,3 +36533,141 @@ def test_b2757_append_log_lookup_rule_survives():
     assert len(rows) == 1, f"expected one append-log tripwire row, got {len(rows)}"
     assert "OR look one up in it" in rows[0], "lookup half missing from trigger"
     assert "A LOOKUP IS NOT EXEMPT" in rows[0], "lookup diagnostic missing"
+
+def _b2758_entries(text: str) -> list[dict]:
+    """One real user instruction, then one assistant block carrying `text`."""
+    return [{"type": "user", "message": {"content": "do the thing"}},
+            {"type": "assistant",
+             "message": {"content": [{"type": "text", "text": text}]}}]
+
+
+def test_b2758_verdict_gate_reads_mention_vs_use():
+    """S6-B2753 option (c), owner-ruled 2026-09-12 after rolling back (a).
+
+    scan_verdict_denominators matched VERDICT_PATTERNS against RAW block text
+    and never routed through _response_text, so it carried no mention-vs-use
+    scrub (B1738). A response that wrote a trigger word in backticks in order
+    to DISCUSS the gate armed it - L536/B1783, a rule learned on one reader
+    that did not travel. The fix covers 7 of 7 patterns, not 1 of 7.
+
+    Three arms, because a gate proven only on its must-FIRE case is
+    indistinguishable from a gate that fires on everything (L686/#226).
+    """
+    import sys
+    from pathlib import Path as _P
+    sys.path.insert(0, str(_P(__file__).resolve().parents[2] / "scripts"))
+    import verify_turn_compliance as v
+
+    # must FIRE: a genuine verdict in prose, no denominator anywhere
+    fired = v.scan_verdict_denominators(
+        _b2758_entries("The strategy cannot clear the Sharpe bar."))
+    assert len(fired) == 1, f"expected 1 offender for a bare verdict, got {len(fired)}"
+
+    # must stay QUIET: the same trigger word as a MENTION in backticks
+    mention = v.scan_verdict_denominators(
+        _b2758_entries("I will qualify the `untunable` pattern in the gate."))
+    assert mention == [], f"a backticked mention is not a use, got {mention}"
+
+    # must stay QUIET: a verdict that names its denominator
+    scoped = v.scan_verdict_denominators(
+        _b2758_entries("0 of 20 combinations cannot clear the bar."))
+    assert scoped == [], f"a named denominator is compliant, got {scoped}"
+
+    # the DENOMINATOR is read RAW on purpose: a scope inside a fenced table
+    # still counts. Stripping fences here would make the gate fire MORE often,
+    # which is the B1806 defect. Guard that asymmetry explicitly.
+    fenced = v.scan_verdict_denominators(
+        _b2758_entries("Results:\n```\n| 3 of 14 admissions |\n```\n"
+                       "The rest cannot clear the bar."))
+    assert fenced == [], f"a denominator in a fence must still count, got {fenced}"
+
+
+def test_b2758_verdict_gate_offender_slice_comes_from_the_matched_string():
+    """The reported span must be sliced from the string the regex matched.
+
+    Slicing RAW text with offsets taken from SCRUBBED text names a different
+    span than the one that fired - the L574 class (right about the content,
+    wrong about the claim). Asserted by making the two strings differ in
+    length: a backticked span ahead of the trigger shifts every offset.
+    """
+    import sys
+    from pathlib import Path as _P
+    sys.path.insert(0, str(_P(__file__).resolve().parents[2] / "scripts"))
+    import verify_turn_compliance as v
+
+    text = "See `a-very-long-inline-code-span-here` then: it cannot clear the bar."
+    out = v.scan_verdict_denominators(_b2758_entries(text))
+    assert len(out) == 1, f"expected the trigger to fire, got {out}"
+    assert "cannot clear" in out[0].lower(), (
+        f"offender slice must contain the matched trigger, got {out[0]!r}")
+
+def _b2759_mod():
+    import sys
+    from pathlib import Path as _P
+    sys.path.insert(0, str(_P(__file__).resolve().parents[2] / "scripts"))
+    import verify_turn_compliance as v
+    return v
+
+
+def test_b2759_midturn_instruction_advances_the_window():
+    """B2759: a mid-turn user instruction arrives as type='attachment'.
+
+    MEASURED on the live transcript: the owner sent three real instructions
+    during one turn and all three landed as attachments, so both window
+    helpers - which inspect only type=='user' - could not see them. The
+    window stood open at 1132 entries and every block written in that span
+    stayed permanently in scope, which is what produced a ~40-close block
+    loop: a response that DISCUSSES a gate arms it, forever.
+
+    Both directions asserted. B2555's defect was a window advancing on GATE
+    FEEDBACK; this is the mirror, and widening one must not undo the other.
+    """
+    v = _b2759_mod()
+    MARK = "The user sent a new message while you were working: do the thing"
+
+    # must ADVANCE: a mid-turn instruction, carried as an attachment
+    ents = [
+        {"type": "user", "message": {"content": "original instruction"}},
+        {"type": "assistant", "message": {"content": [{"type": "text", "text": "work"}]}},
+        {"type": "attachment", "message": None, "payload": MARK},
+    ]
+    assert v._last_instruction_index(ents) == 2, (
+        "a mid-turn attachment instruction must advance the window")
+
+    # must NOT advance: Stop-hook feedback is not an instruction (B2555)
+    gated = [
+        {"type": "user", "message": {"content": "original instruction"}},
+        {"type": "user", "message": {"content":
+            "Stop hook feedback: TURN-GATE BLOCK - 1 violation(s)"}},
+    ]
+    assert v._last_instruction_index(gated) == 0, (
+        "gate feedback must NOT advance the window - B2555 regression")
+
+    # the predicate itself, both ways
+    assert v._is_midturn_instruction({"type": "attachment", "x": MARK}) is True
+    assert v._is_midturn_instruction({"type": "user", "message":
+                                      {"content": "ordinary text"}}) is False
+    # fails CLOSED on an entry that cannot be serialised
+    assert v._is_midturn_instruction({"bad": {1, 2, 3}}) is False
+    assert v._is_midturn_instruction("not a dict") is False
+
+
+def test_b2759_both_window_helpers_consult_the_predicate():
+    """L592: count the sites and PIN the count.
+
+    The boundary is computed in TWO helpers - _last_instruction_index and
+    _since_last_user - and _since_last_user's own docstring records that a
+    duplicated boundary already bit this file once, with the divergence at
+    zero. A third copy must not appear silently.
+    """
+    from pathlib import Path as _P
+    src = (_P(__file__).resolve().parents[2] / "scripts"
+           / "verify_turn_compliance.py").read_text(encoding="utf-8",
+                                                    errors="replace")
+    guarded = src.count("_is_midturn_instruction(e)")
+    assert guarded == 2, f"expected 2 guarded window sites, found {guarded}"
+    # and the loop shape must not exist UNguarded anywhere
+    loops = src.count("for i, e in enumerate(entries or ())")
+    assert loops == guarded, (
+        f"{loops} window loops but only {guarded} consult the predicate - "
+        "a new copy was added without the mid-turn guard")

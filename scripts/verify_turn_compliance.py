@@ -207,13 +207,24 @@ def scan_verdict_denominators(entries: list[dict]) -> list[str]:
             if not isinstance(c, dict) or c.get("type") != "text":
                 continue
             text = c.get("text") or ""
+            # B2758 (S6-B2753 option (c), owner-ruled): the DENOMINATOR is
+            # read RAW - a scope named inside a fenced table still counts,
+            # and stripping fences here would make the gate fire MORE often
+            # (the B1806 defect). The TRIGGER is read SCRUBBED, because a
+            # pattern word in backticks is a MENTION, not a claim (B1738).
+            # This gate had never adopted _response_text - L536/B1783, a
+            # rule learned on one reader that did not travel - so every
+            # response DISCUSSING the gate armed it. Covers 7 of 7 patterns.
             if _re.search(DENOMINATOR_RE, text):
                 continue  # scope is named -> compliant
+            scrubbed = _response_text(entries, text=text)
             for pat in VERDICT_PATTERNS:
-                m = _re.search(pat, text, _re.I)
+                m = _re.search(pat, scrubbed, _re.I)
                 if m:
                     lo = max(0, m.start() - 60)
-                    offenders.append(text[lo:m.end() + 60].replace(chr(10), " "))
+                    # slice the SAME string the match came from, or the
+                    # offsets name a different span than the one that fired
+                    offenders.append(scrubbed[lo:m.end() + 60].replace(chr(10), " "))
                     break
     return offenders
 
@@ -309,6 +320,33 @@ def _is_gate_feedback(text: str) -> bool:
             or "stop hook feedback" in t)
 
 
+# B2759: a MID-TURN user instruction does not arrive as type="user".
+# MEASURED on the live transcript: the owner sent three real instructions
+# and all three landed as type="attachment", so neither window helper could
+# see them and the window stood open at 1132 entries. B2555 fixed a window
+# advancing on GATE FEEDBACK; this is the mirror - a window failing to
+# advance on a REAL instruction. Both helpers consult this one predicate.
+MIDTURN_MARKER = "sent a new message while you were working"
+
+
+def _is_midturn_instruction(entry) -> bool:
+    """True when this entry carries a user message sent mid-turn.
+
+    Scans the WHOLE entry, because the marker sits inside an attachment
+    payload whose shape is not part of any contract we control. Fails
+    CLOSED on anything unserialisable: an entry we cannot read is not an
+    instruction, so the window simply does not advance.
+    """
+    import json as _j
+    if not isinstance(entry, dict):
+        return False
+    try:
+        blob = _j.dumps(entry)
+    except (TypeError, ValueError):
+        return False
+    return MIDTURN_MARKER in blob
+
+
 def _last_instruction_index(entries) -> int:
     """Index of the last REAL user instruction, ignoring gate feedback.
 
@@ -321,6 +359,10 @@ def _last_instruction_index(entries) -> int:
     """
     last = -1
     for i, e in enumerate(entries or ()):
+        # B2759: a mid-turn instruction is type="attachment", not "user"
+        if _is_midturn_instruction(e):
+            last = i
+            continue
         if not isinstance(e, dict) or e.get("type") != "user":
             continue
         content = (e.get("message") or {}).get("content")
@@ -1348,6 +1390,10 @@ def _since_last_user(entries):
     """
     last = -1
     for i, e in enumerate(entries or ()):
+        # B2759: a mid-turn instruction is type="attachment", not "user"
+        if _is_midturn_instruction(e):
+            last = i
+            continue
         if not isinstance(e, dict) or e.get("type") != "user":
             continue
         c = (e.get("message") or {}).get("content")

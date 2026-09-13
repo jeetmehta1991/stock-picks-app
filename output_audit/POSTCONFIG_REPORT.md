@@ -6,36 +6,11 @@ REGENERATED WHOLE at every config landing - by the landing supervisor the engine
 
 ## How much confidence these checks earn
 
-**Across the entire ledger (127 entries), 951 named checks have run and 9 have ever returned non-PASS.**
+**Across the entire ledger (128 entries), 956 named checks have run and 12 have ever returned non-PASS.**
 
 ## Landings - what the supervisor recorded (B2520)
 
-22 cube(s) landed through the supervisor; **0 not yet reported to the owner**.
-
-| cube | landed | via | battery exit | blocking | WARN/FAIL findings | committed | pushed | reported |
-|---|---|---|---|---|---|---|---|---|
-| output_b2712_smc_sw10_sw10 | 2026-09-12T15:00:10 | manual | 2 | none | 0 | 4e376ad94 | True | yes 2026-09-12T15:00:46 |
-| output_icg_step2_span9_step2_span9 | 2026-09-06T18:55:21 | engine-hook | 0 | none | 0 | adfba9d5d | True | yes 2026-09-06T19:01:07 |
-| output_icg_cfg1_rerun_cfg1_rerun | 2026-09-05T01:17:34 | engine-hook | 0 | none | 0 | d85126201 | True | yes 2026-09-06T05:40:01 |
-| output_icg_span100_rerun_span100 | 2026-09-04T12:26:03 | engine-hook | 0 | none | 0 | 0f0e440e6 | True | yes 2026-09-04T12:27:40 |
-| output_icg_minq2_minq2 | 2026-09-04T10:54:23 | engine-hook | 0 | none | 0 | f9f2331c9 | True | yes 2026-09-04T11:28:26 |
-| output_icg_minq3_minq3 | 2026-09-04T08:07:23 | engine-hook | 0 | none | 0 | 2e85e7d9e | True | yes 2026-09-04T08:28:13 |
-| output_icg_minq6_minq6 | 2026-09-04T05:12:47 | engine-hook | 0 | none | 0 | eff36c19b | True | yes 2026-09-04T05:27:31 |
-| output_icg_lookback8_lookback8 | 2026-09-04T02:57:37 | engine-hook | 0 | none | 0 | e6ee52ce0 | True | yes 2026-09-04T03:26:39 |
-| output_icg_lookback6_lookback6 | 2026-09-04T00:23:35 | engine-hook | 0 | none | 0 | 6425598fb | True | yes 2026-09-04T00:26:36 |
-| output_icg_lookback3_lookback3 | 2026-09-03T19:11:37 | engine-hook | 0 | none | 0 | 50257e198 | True | yes 2026-09-03T19:38:59 |
-| output_icg_mult1.25_mult1.25 | 2026-09-03T12:49:03 | engine-hook | 0 | 6_post_fix_recheck | 1: selection_margin WARN: rank-1 [breakeven_plus_trail] is_ci_lo -0.297 vs rank-2 [hybrid_50pct_target] -0.297: margin 0.000 between exits; WARN < 0.05 (selection at noise level) | False | False | yes 2026-09-03T14:52:20 |
-| output_icg_mult1.0_mult1.0 | 2026-09-03T09:41:39 | engine-hook | 0 | none | 0 | 388db03c0 | True | yes 2026-09-03T14:52:20 |
-| output_icg_minq8_minq8 | 2026-09-03T06:13:18 | engine-hook | 0 | none | 0 | 47363d1e7 | True | yes 2026-09-03T14:52:20 |
-| output_icg_lookback2_lookback2 | 2026-09-03T04:00:41 | engine-hook | 0 | none | 0 | f1861a9a4 | True | yes 2026-09-03T14:52:20 |
-| output_icg_mult1.5_mult1.5 | 2026-09-03T01:45:20 | engine-hook | 0 | none | 0 | 5b3e3c8fa | True | yes 2026-09-03T14:52:20 |
-| output_icg_span150_span150 | 2026-09-02T23:31:07 | engine-hook | 0 | none | 0 | 1946b3605 | True | yes 2026-09-03T14:52:20 |
-| output_icg_span100_span100 | 2026-09-02T21:16:40 | engine-hook | 0 | 6_post_fix_recheck | 1: empty_signals_share WARN: 313 of 374 trade_log rows carry an empty signals_at_entry (S6-B2512 class) | 7c20103da | True | yes 2026-09-03T14:52:19 |
-| output_icg_span50_span50 | 2026-09-02T16:46:26 | engine-hook | 0 | none | 0 | bafb5118e | True | yes 2026-09-02T17:08:14 |
-| output_icg_span20_span20 | 2026-09-02T12:46:15 | engine-hook | 2 | 1_cube_sanity | 0 | fb885e91e | True | yes 2026-09-02T13:04:31 |
-| output_icg_span9_span9 | 2026-09-02T10:38:38 | engine-hook | 2 | 2_grade_with_config_params, 4_three_leg_spot_check, 6_post_fix_recheck, 6b_equivalence_class_check, 7_implement_in_engine, 8_verdict_with_denominators | 1: spot_check_disagreements WARN: no spot-check artifact - step 4 produced nothing to read | 3745e05dc | True | yes 2026-09-02T11:23:02 |
-| output_icg_cfg1 | 2026-09-02T07:45:46 | manual | 0 | none | 1: empty_signals_share WARN: 23 of 373 trade_log rows carry an empty signals_at_entry (S6-B2512 class) | 42ca9c20f | True | yes 2026-09-02T07:47:02 |
-| output_b2174_sw20_sw20 | 2026-09-01T20:08:36 | manual | 0 | none | 1: selection_margin WARN: rank-1 [close_mitigation=False break_pct_max=None age_bars_max=250 tail_n=20 -> hybrid_50pct_target] is_ci_lo -0.196 vs rank-2 [close_mitigation=False break_pct_max=None age_bars_max=None tail_n=2 -> hybrid_50pct_target] -0.198: margin 0.002 between outcome classes; WARN < 0.05 (selection at noise level) | False | False | yes 2026-09-02T02:27:00 |
+_no landings recorded yet (record starts at B2520; every cube landed before it was dispositioned by hand)_
 
 
 ## TABLE C - POST-RUN CONFIG FUNNEL (one row per config)
