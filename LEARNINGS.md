@@ -20604,3 +20604,31 @@ task's NAME is not evidence of what it did: read its output for the verdict
 token, because a compound task can complete the cheap half and skip the
 expensive one at exit 0. (c) Order the turn so the gate runs last - if
 remediation is still owed, the gate has not earned its run yet.
+
+### L794 - THE AD-HOC INSPECTION IS WHERE A CANONICAL REDUCER GETS BYPASSED (B2757, self-caught 2026-09-12)
+
+**What happened.** Asked which tickets need an owner decision, I wrote a
+one-off regex over `EXECUTION_QUEUE.md` and printed ~60 OPEN rows. The true
+figure is **9**, because the ledger is an APPEND LOG and most of those ids
+carry a later terminal row. `queue_state.tickets()` answers this exactly, and
+I had called `queue_state.py` for the mandatory counter **in the same turn** -
+so the reducer was not merely available, it was already running beside the
+wrong answer.
+
+**Why the existing rule did not reach it.** L737's tripwire says *count
+anything held in an append log by calling its reducer*, and I apply it
+faithfully when REPORTING a count. This was not a count - it was a LOOKUP,
+"show me the open ones", and a lookup does not feel like a statistic. **The
+rule is filed under counting, so it is consulted when counting.** Same shape
+as L519: availability is not adoption, one level down - the reducer was
+adopted for the report and bypassed for the query.
+
+**What saved it** was noticing the two figures disagreed - 60-ish rows beside
+the counter's 9 in the same response. L600 exactly: two numbers for one name,
+and the arithmetic is never the fault. Had the question been narrower I would
+have quoted row-level ids to the owner as the decision set.
+
+**Rule.** Any read of an append-log's CURRENT state goes through its reducer,
+whether the output is a number, a list, or one row - and a hand-written parser
+over a file that has a reducer is a defect at the moment it is typed, not when
+its answer turns out wrong.

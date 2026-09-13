@@ -36509,3 +36509,21 @@ def test_b2754_file_type_scoped_gate_blindness_rule_survives():
     assert rows[0].rstrip().endswith("|"), "tripwire row is not a closed table cell"
     assert "L793 / #306 (MEASURED" in rows[0], "L793 lineage cell missing"
     assert "MEASURE THE GATE'S REACH" in rows[0], "tripwire diagnostic missing"
+
+def test_b2757_append_log_lookup_rule_survives():
+    """L794: a LOOKUP in an append log goes through its reducer, not a
+    hand-written parser. DETECTION is JUDGMENT-ONLY - no scan tells an ad-hoc
+    regex over a ledger from a legitimate text search. Durability only."""
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[2]
+    lrn = (root / "LEARNINGS.md").read_text(encoding="utf-8", errors="replace")
+    heads = [l for l in lrn.splitlines() if l.startswith("### L794 ")]
+    assert len(heads) == 1, f"expected one L794 heading, got {len(heads)}"
+    assert "canonical reducer gets bypassed".upper() in lrn.upper()
+    skill = (root / ".claude" / "skills" / "execution-discipline"
+             / "SKILL.md").read_text(encoding="utf-8", errors="replace")
+    rows = [l for l in skill.splitlines()
+            if l.startswith("| Count anything held in an APPEND LOG")]
+    assert len(rows) == 1, f"expected one append-log tripwire row, got {len(rows)}"
+    assert "OR look one up in it" in rows[0], "lookup half missing from trigger"
+    assert "A LOOKUP IS NOT EXEMPT" in rows[0], "lookup diagnostic missing"
