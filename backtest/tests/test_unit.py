@@ -37276,3 +37276,101 @@ def test_b2801_derived_fixture_rule_survives():
     code = "\n".join(l.split("#", 1)[0] for l in body.splitlines())
     assert "smc_order_block_bounce" not in code, (
         "test_b2578 names a strategy again - the fixture it expired on")
+
+
+def _b2769_mod():
+    import sys
+    from pathlib import Path as _P
+    d = _P(__file__).resolve().parents[2] / "scripts"
+    if str(d) not in sys.path:
+        sys.path.insert(0, str(d))
+    import diagnose_smc_lsr as m
+    return m
+
+
+def test_b2769_survives_reproduces_the_hub1_gate():
+    """S6-B2769: survives() must be the strategy gate, not an approximation.
+
+    long  = swept_dn  AND (choch_bullish OR bos_bullish)
+    short = swept_up  AND (choch_bearish OR bos_bearish)
+
+    Production reads the LAST event only (_most_recent_event_within), so a
+    recorded (age, value) pair is the whole state - and a fire whose most
+    recent liquidity event is an UP-sweep is NOT a long, however recent an
+    earlier DOWN-sweep was. That asymmetry is asserted here because smoothing
+    it into a per-direction age would silently loosen the gate.
+    """
+    m = _b2769_mod()
+
+    def diag(liq_age, liq_val, bos=(None, None), choch=(None, None)):
+        return {"liq": {"0.01": {"age": liq_age, "val": liq_val}},
+                "bos": {"age": bos[0], "val": bos[1]},
+                "choch": {"age": choch[0], "val": choch[1]}}
+
+    # long: sweep DOWN (-1) plus a bullish confirmation
+    assert m.survives(diag(10, -1, bos=(20, 1)), "long", 0.01, 90) is True
+    assert m.survives(diag(10, -1, choch=(20, 1)), "long", 0.01, 90) is True
+    # no confirmation -> no fire
+    assert m.survives(diag(10, -1), "long", 0.01, 90) is False
+    # confirmation of the WRONG sign -> no fire
+    assert m.survives(diag(10, -1, bos=(20, -1)), "long", 0.01, 90) is False
+    # the last liquidity event is an UP-sweep: not a long, at any age
+    assert m.survives(diag(1, 1, bos=(1, 1)), "long", 0.01, 90) is False
+    # short is the mirror
+    assert m.survives(diag(10, 1, bos=(20, -1)), "short", 0.01, 90) is True
+    assert m.survives(diag(10, -1, bos=(20, -1)), "short", 0.01, 90) is False
+    # an undiagnosed level is never a survival
+    assert m.survives(diag(10, -1, bos=(20, 1)), "long", 0.005, 90) is None
+    assert m.survives({}, "long", 0.01, 90) is None
+    assert m.survives(diag(None, None, bos=(20, 1)), "long", 0.01, 90) is False
+
+
+def test_b2769_tightening_recency_is_monotone_subset():
+    """Tightening may only REMOVE fires - that is what makes the axis free.
+
+    A looser level would admit bars the recorded cube never evaluated, and
+    nothing offline can invent trades, so the module offers only levels at or
+    below production and the survivor set must shrink monotonically.
+    """
+    m = _b2769_mod()
+    pop = [{"liq": {"0.01": {"age": a, "val": -1}},
+            "bos": {"age": a, "val": 1}, "choch": {"age": None, "val": None}}
+           for a in (5, 25, 45, 65, 85, 120)]
+    prev = None
+    for rec in sorted(m.RECENCY_BAND, reverse=True):      # 90 -> 60 -> 30
+        kept = {i for i, d in enumerate(pop)
+                if m.survives(d, "long", 0.01, rec)}
+        if prev is not None:
+            assert kept <= prev, f"recency {rec} is not a subset of the looser level"
+        prev = kept
+    assert prev is not None and len(prev) < len(pop), (
+        "the tightest level must actually drop fires, or the axis is inert")
+    # and every offered level is at or below production - a looser one would
+    # be a promise the cube cannot keep
+    assert max(m.RECENCY_BAND) <= m.PRODUCTION_RECENCY
+    assert max(m.RANGE_BAND) <= m.PRODUCTION_RANGE
+
+
+def test_b2769_r5_baseline_is_stale_for_hub1s_current_gate():
+    """The finding this build surfaced, pinned as a REPO FACT rather than prose.
+
+    The R5 cube (trade_log dated 2026-07-24) predates B2075, which made the
+    liquidity sweep REQUIRED again after B1202 had let BOS alone satisfy both
+    clauses. So the recorded fire set is an OR-gate population and the current
+    strategy would not produce it. This asserts the CODE's shape - the gate
+    requires the sweep - so that if the gate is ever changed back, the pin
+    fails and the staleness ticket is revisited rather than silently stale.
+    """
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    src = (root / "backtest" / "signals" / "screener.py").read_text(
+        encoding="utf-8", errors="replace")
+    marker = "def strat_smc_liquidity_sweep_reversal"
+    assert marker in src
+    body = src[src.index(marker):]
+    body = body[:body.index("\ndef ", 1)]
+    code = "\n".join(l.split("#", 1)[0] for l in body.splitlines())
+    # the sweep leg is REQUIRED (AND), never an OR-alternative
+    assert 's.get("smc_liquidity_swept_dn", False)' in code
+    assert 'and (s.get("smc_choch_bullish", False) or s.get("smc_bos_bullish", False))' in code
+    assert 'smc_liquidity_swept_dn", False)\\n        or ' not in code
