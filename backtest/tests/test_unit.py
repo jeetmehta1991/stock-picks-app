@@ -36778,3 +36778,61 @@ def test_b2768_both_graders_emit_the_multiplicity_report():
         assert '"multiplicity"' in src, f"{f} does not key it as multiplicity"
     defn = (root / "roster_core.py").read_text(encoding="utf-8", errors="replace")
     assert defn.count("def bh_fdr_report(") == 1, "exactly one definition"
+
+def test_b2769_classify_before_revising_rule_survives():
+    """L797/#237: on the second revision of a figure, open the field that
+    classifies its members. DETECTION is JUDGMENT-ONLY - no scan counts how
+    many times a figure was revised across turns. Durability only."""
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[2]
+    lrn = (root / "LEARNINGS.md").read_text(encoding="utf-8", errors="replace")
+    heads = [l for l in lrn.splitlines() if l.startswith("### L797 ")]
+    assert len(heads) == 1, f"expected one L797 heading, got {len(heads)}"
+    assert "91 of 91" in lrn, "L797 must keep its measured sweep result"
+    assert "BELOW_POWER_FLOOR" in lrn, (
+        "L797 must keep the follow-on defect it found in the fix itself")
+    skill = (root / ".claude" / "skills" / "execution-discipline"
+             / "SKILL.md").read_text(encoding="utf-8", errors="replace")
+    rows = [l for l in skill.splitlines()
+            if l.startswith("| Revise a figure you have already given the owner once")]
+    assert len(rows) == 1, f"expected one L797 tripwire row, got {len(rows)}"
+    assert "L797 / #237 (MEASURED" in rows[0], "lineage cell missing"
+    assert "STOP REVISING AND OPEN THE FIELD" in rows[0], "diagnostic missing"
+
+def test_b2770_exploratory_promotion_is_complete_and_roster_neutral():
+    """B2770, owner instruction 2026-09-13 ("6 execute"): promote the 33
+    docstring-marked strategies into EXPLORATORY_STRATEGIES.
+
+    MEASURED before shipping: the set feeds cube_eligible_for_multiple_testing,
+    which has ONE live call site; the Phase-1B roster imports bh_fdr from
+    walk_forward_r5_cells and never consults this set. The roster was
+    REGENERATED after the edit and is byte-identical, so the promotion is a
+    registry edit and not a methodology event.
+    """
+    import json
+    from pathlib import Path as _P
+    from backtest.engine.multiple_testing_correction import (
+        EXPLORATORY_STRATEGIES, cube_eligible_for_multiple_testing)
+
+    root = _P(__file__).resolve().parents[2]
+    rec = json.loads((root / "output_audit"
+                      / "b2687_exploratory_reconciliation.json")
+                     .read_text(encoding="utf-8", errors="replace"))
+    promote = set(rec["marked_not_in_registry"])
+    assert len(promote) == 33, f"the ratification set is 33, got {len(promote)}"
+
+    missing = sorted(promote - set(EXPLORATORY_STRATEGIES))
+    assert not missing, f"promotion incomplete, still absent: {missing}"
+    assert len(EXPLORATORY_STRATEGIES) >= 58, (
+        f"registry should be >= 58 post-promotion, got "
+        f"{len(EXPLORATORY_STRATEGIES)}")
+
+    # behaviour, both directions - a set edit that changed no behaviour would
+    # be indistinguishable from no edit at all
+    for name in sorted(promote):
+        assert cube_eligible_for_multiple_testing(name) is False, (
+            f"{name} was promoted but still counts toward the "
+            f"multiple-testing family")
+    assert cube_eligible_for_multiple_testing("pead_long") is True, (
+        "a non-member must remain confirmatory - the promotion must not "
+        "make everything exploratory")

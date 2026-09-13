@@ -20707,3 +20707,37 @@ error into a methodology decision.
 property, do not read either by hand - put the PRECEDENCE in a function and
 make it return the basis alongside the number, so the figure cannot be quoted
 without its provenance.
+
+### L797 - SUCCESSIVE REVISION OF A FIGURE IS THE SIGNAL TO CLASSIFY IT, NOT TO REVISE IT AGAIN (B2768, owner-visible 2026-09-13)
+
+**What happened.** I gave the owner THREE different readings of one number across
+three turns - a grid's 200 rows of which 31 carried a p-value. First "alarming",
+then "the correction changes nothing", then "worse than I said". Each revision
+was reasoning over the COUNT. The settled answer came from opening the `verdict`
+field, which classifies every row: all 169 ungraded rows are
+`NO_EXIT_SELECTABLE`, meaning no candidate was ever selected from them. They are
+non-observations, not trials, and the null bar is 1.90 SE rather than 2.61.
+
+**The rule already existed and I broke it.** `#237`/L643 says a sweep must
+CLASSIFY, not COUNT. What is new is the TELL: **revising the same figure twice
+is itself evidence that the figure is the wrong object.** A count that keeps
+needing reinterpretation is a count standing in for a classification nobody has
+run. Each revision FEELS like diligence - it is a correction, it is
+evidence-based - which is exactly why the loop can run three times without
+anyone noticing the field was never opened.
+
+**Retroactive sweep, and it is universal.** All 91 grid artifacts in
+`output_audit/` carry a `verdict` field, and in **91 of 91** a bare row count
+misleads. The verdicts observed are PASS, FAIL, BELOW_POWER_FLOOR,
+NO_EXIT_SELECTABLE, ZERO_FIRES and RANKED - six categories that a single
+"rows" number silently merges.
+
+**And the sweep found the next defect in my own fix.** `BELOW_POWER_FLOOR` is
+NOT the same as `NO_EXIT_SELECTABLE`: the first selected a candidate and could
+not price it, the second produced no candidate at all. `bh_fdr_report` treats
+both as ungraded, which may be wrong in the OPPOSITE direction to my original
+error. Recorded rather than silently patched.
+
+**Rule.** On the second revision of any figure, stop revising and open the field
+that classifies its members. If no such field exists, say the figure is a count
+and not a measurement.

@@ -147,6 +147,48 @@ EXPLORATORY_STRATEGIES = frozenset({
     "failed_breakout_2b_short",   # B2102 tranche A pair 2
     "rs_line_sector_leader_long",   # B2103 tranche A pair 3
     "earnings_avwap_reclaim_long",  # B2103 tranche A pair 3
+    # B2770 (owner instruction 2026-09-13: "6 execute"): the 33 strategies
+    # carrying a docstring EXPLORATORY marker but absent from this registry,
+    # promoted per the S6-B2687a ratification menu option (a). MEASURED: the
+    # set feeds cube_eligible_for_multiple_testing, ONE live call site; the
+    # Phase-1B roster imports bh_fdr from walk_forward_r5_cells and never
+    # consults this set - regenerated after the edit, BYTE-IDENTICAL, funnel
+    # unchanged at 7 BH-FDR. Intersection with the 14 Step-2 admissions is
+    # ONE name (xs_momentum_top_decile, already EXPLORATORY-tagged); 0 of 33
+    # are asserted True by any existing test.
+    "activist_13d_long",
+    "bollinger_upper_short",
+    "classification_change_recent_long",
+    "cpr_narrow_momentum",
+    "cpr_narrow_momentum_short",
+    "death_cross_50_200_volume",
+    "golden_cross_volume",
+    "halloween_seasonal_long",
+    "hammer_at_support_long",
+    "head_and_shoulders_bottom_long",
+    "head_and_shoulders_top_short",
+    "inverted_cup_and_handle_short",
+    "january_effect_small_cap_long",
+    "mfi_oversold",
+    "news_sentiment_long",
+    "po3_bearish",
+    "po3_bullish",
+    "pre_fomc_long_sleeve",
+    "pre_fomc_quality_momentum_long",
+    "pre_holiday_long",
+    "rsi21_slow",
+    "rsi_overbought_short",
+    "rsi_volume_200ema",
+    "stochrsi_overbought_short",
+    "stochrsi_oversold",
+    "supertrend_ichimoku_adx",
+    "totm_long",
+    "triangle_descending_short",
+    "ultimate_oscillator",
+    "williams_r_oversold",
+    "xs_combined_momentum_low_ivol",
+    "xs_momentum_quality_combined",
+    "xs_momentum_top_decile",
 })
 
 
