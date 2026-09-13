@@ -50,18 +50,30 @@ B_AXES = [("monthly_momentum_6m", "ge"), ("bb_20_20_bandwidth", "le"),
           ("bullish_engulfing", "eq_true_long"), ("gap_up_2pct", "eq_false")]
 
 
-def build(cube_dir: Path | None = None) -> pd.DataFrame:
-    """The graded frame for STRAT from `cube_dir` (default: the R5 baseline)."""
+def build(cube_dir: Path | None = None, strat: str = STRAT,
+          keys: list[str] | None = None) -> pd.DataFrame:
+    """The graded frame for `strat` from `cube_dir` (default: the R5 baseline).
+
+    S6-B2752a: `strat` and `keys` are PARAMETERS rather than module constants,
+    so hub-2's grader imports this builder instead of copying it. That is L799
+    applied at the moment it would have been broken again - a new grader written
+    beside an existing one inherits none of its lessons unless it inherits its
+    CODE, and this builder already carries the fail-closed path check, the
+    per-fire de-duplication and the bool->float coercion that a fresh copy would
+    have had to rediscover. Defaults reproduce hub-1 exactly.
+    """
     trade_log = (cube_dir / "trade_log.csv") if cube_dir else TRADE_LOG
     cube_csv = (cube_dir / "trade_exit_detail.csv") if cube_dir else CUBE
     for _p in (trade_log, cube_csv):
         if not _p.exists():
             raise SystemExit(f"REFUSED: {_p} does not exist (fail closed)")
-    keys = [k for k, _ in B_AXES] + [k for pair in ARM_KEYS.values() for k in pair]
+    if keys is None:
+        keys = [k for k, _ in B_AXES] + [k for pair in ARM_KEYS.values()
+                                         for k in pair]
     tl = pd.read_csv(trade_log, low_memory=False,
                      usecols=["strategy", "ticker", "entry_date", "direction",
                               "signals_at_entry"])
-    fam = tl[tl.strategy == STRAT].drop_duplicates(["ticker", "entry_date"]).copy()
+    fam = tl[tl.strategy == strat].drop_duplicates(["ticker", "entry_date"]).copy()
     sigs = [_parse(s) for s in fam["signals_at_entry"]]
     for k in keys:
         fam[k] = pd.to_numeric(
@@ -71,7 +83,7 @@ def build(cube_dir: Path | None = None) -> pd.DataFrame:
     cube = pd.read_csv(cube_csv, low_memory=False,
                        usecols=["strategy", "ticker", "entry_date",
                                 "exit_method", "pnl_pct", "hold_days"])
-    cube = cube[cube.strategy == STRAT]
+    cube = cube[cube.strategy == strat]
     m = cube.merge(fam, on=["strategy", "ticker", "entry_date"], how="left")
     m["entry_date"] = pd.to_datetime(m["entry_date"], errors="coerce").dt.date
     return m

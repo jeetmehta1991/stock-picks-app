@@ -590,13 +590,22 @@ B1  monthly_momentum_6m       >= q   (momentum cluster rep - the ONE
              "derivation": "OB mitigation rule; resim-only"},
             {"id": "P3", "producer": "_ob_tap_scan",
              "param": "tap_window", "production": 5,
-             "band": [3, 5, 10], "free_band": [], "resim_band": [3, 10],
+             "band": [3, 5, 10], "free_band": [], "resim_band": [],
              "sweep_levels": [], "subset_safe": False,
-             "status": "UNTESTED", "type": "int", "engine_implemented": True,
-             "evidence": "smc_ict.py:75 (default 5; B2076 EVENT key); band "
-                         "CHOSEN around production",
-             "derivation": "the bounce-tap lookback; persisted key is the "
-                           "post-window boolean - resim-only"},
+             "status": "NOT-ENGINE-REACHABLE", "type": "int",
+             "engine_implemented": False,
+             "evidence": "smc_ict.py:75 (signature default 5) BUT the call at "
+                         "smc_ict.py:387 passes NO tap_window, and grep of "
+                         "backtest/config.py finds no SMC_OB_TAP_WINDOW - "
+                         "MEASURED S6-B2752a",
+             "derivation": "the bounce-tap lookback. `engine_implemented` READ "
+                           "True here until S6-B2752a measured it: there is no "
+                           "env knob and no call-site plumbing, so no arm can "
+                           "actuate this level and a resim_band would be a "
+                           "promise the engine cannot keep (B2578 class). The "
+                           "persisted key NAME hardcodes the window "
+                           "(smc_ob_*_tap_recent_5d), so varying it would also "
+                           "make the key lie. Plumbing ticketed S6-B2752c"},
             {"id": "P4", "producer": "gate threshold (screener)",
              "param": "rsi_threshold_long", "production": 45,
              "band": [45, 40, 35, 30], "free_band": [45, 40, 35, 30],

@@ -36963,3 +36963,143 @@ def test_b2778_partition_prior_art_rule_survives():
             if l.startswith("| Write something that SUMMARISES or PARTITIONS")]
     assert len(rows) == 1, f"expected one L799 tripwire row, got {len(rows)}"
     assert "L799 / #262 (MEASURED" in rows[0], "lineage cell missing"
+
+def _b2752_scripts():
+    import sys
+    from pathlib import Path as _P
+    d = _P(__file__).resolve().parents[2] / "scripts"
+    if str(d) not in sys.path:
+        sys.path.insert(0, str(d))
+    return d
+
+
+def test_b2752_hub2_grader_reuses_the_sibling_builder():
+    """S6-B2752a: hub-2's grader IMPORTS smc_lsr_step1.build, it does not copy it.
+
+    This is L799 applied where it would otherwise have been broken again - a new
+    grader written beside an existing one inherits none of its lessons unless it
+    inherits its CODE. The builder carries the fail-closed path check, the
+    per-fire de-duplication and the bool->float coercion.
+    """
+    import inspect
+    _b2752_scripts()
+    import smc_lsr_step1 as lsr
+    import smc_obb_step1 as obb
+
+    sig = inspect.signature(lsr.build)
+    assert "strat" in sig.parameters, "build must take a strat parameter"
+    assert "keys" in sig.parameters, "build must take a keys parameter"
+    # hub-1's defaults are unchanged - the parameterisation is additive
+    assert sig.parameters["strat"].default == lsr.STRAT
+    assert sig.parameters["keys"].default is None
+    # and hub-2 actually calls it rather than shipping its own
+    assert obb._build is lsr.build, "hub-2 must reuse the sibling builder"
+    src = (_b2752_scripts() / "smc_obb_step1.py").read_text(
+        encoding="utf-8", errors="replace")
+    assert "def build(" not in src, "hub-2 must not define its own build()"
+
+
+def test_b2752_rsi_threshold_cells_are_strict_subsets():
+    """The free axes are free only if tightening keeps a SUBSET.
+
+    MEASURED on the R5 cube this batch: rsi_14 is persisted on 1340 of 1340
+    fires and respects the gate per leg (long max 44.99, short min 55.04), so it
+    is the AT-ENTRY value. That is what makes P4/P5 gradable at zero engine
+    cost; this pin holds the masking logic to it on synthetic rows so it never
+    silently becomes a superset.
+    """
+    import pandas as pd
+    _b2752_scripts()
+    import smc_obb_step1 as obb
+
+    m = pd.DataFrame({"direction": ["long"] * 4 + ["short"] * 4,
+                      "rsi_14": [44.0, 39.0, 34.0, 29.0,
+                                 56.0, 61.0, 66.0, 71.0]})
+    for leg, band in obb.RSI_BANDS.items():
+        prev = None
+        for thr in band:                      # band runs production -> tightest
+            got = set(m.index[obb._leg_mask(m, leg, thr)])
+            if prev is not None:
+                assert got <= prev, (
+                    f"{leg} threshold {thr} is not a subset of the looser level")
+            prev = got
+        assert prev is not None and len(prev) < 4, (
+            f"{leg}: the tightest level must actually drop fires")
+    # the bands are the SPECS bands, not a second hand-typed copy
+    import producer_variant_table as pvt
+    rows = {p["param"]: p for p in
+            pvt.SPECS_PHASE0["smc_order_block_bounce"]["params"]}
+    assert obb.RSI_BANDS["long"] == rows["rsi_threshold_long"]["band"]
+    assert obb.RSI_BANDS["short"] == rows["rsi_threshold_short"]["band"]
+
+
+def test_b2752_scored_is_not_priced():
+    """S6-B2777: a row that WAS graded and carries no p is not `unclassified`.
+
+    Found on a third live run one turn after B2775 made the report reconcile.
+    `graded` means "has a per-row p", which conflates SCORED with PRICED - so a
+    grader establishing significance by PERMUTATION NULL scored 208 rows and the
+    report said graded: 0, the same sentence B2773 had just retracted.
+    """
+    _b2752_scripts()
+    import roster_core as rc
+
+    rows = [{"is_sharpe": 1.2}, {"is_sharpe": 0.4},
+            {"verdict": "ZERO_FIRES"}, {"verdict": "BELOW_POWER_FLOOR"},
+            {"p": 0.01}, {"junk": 1}]
+    r = rc.bh_fdr_report(rows, permutation_null={"p_value_best": 0.3})
+    assert r["searched"] == 6
+    assert r["graded"] == 1, "graded keeps its meaning - rows carrying a p"
+    assert r["scored_unpriced"] == 2, "scored-but-unpriced rows must be named"
+    assert r["unpriceable"] == 1 and r["no_candidate"] == 1
+    assert r["unclassified"] == 1, "only the genuinely unexplainable row"
+    assert r["reconciles"] is True
+    assert (r["graded"] + r["scored_unpriced"] + r["unpriceable"]
+            + r["no_candidate"] + r["unclassified"]) == r["searched"]
+    # a BELOW_POWER_FLOOR row that also carries a score stays unpriceable -
+    # the verdict is what the grader SAID, and it wins over a leftover number
+    r2 = rc.bh_fdr_report([{"verdict": "BELOW_POWER_FLOOR", "is_sharpe": 0.9}])
+    assert r2["scored_unpriced"] == 0 and r2["unpriceable"] == 1
+
+
+def test_b2752_tap_window_is_not_engine_reachable():
+    """The Phase-0 row claimed engine_implemented True. MEASURED: it is not.
+
+    `_ob_tap_scan` takes tap_window with a signature default of 5, but the call
+    site passes none and no env knob exists, so no arm can actuate a level. A
+    resim_band here would be a promise the engine cannot keep (B2578 class).
+    A field claiming a property is a claim, not the property.
+    """
+    from pathlib import Path as _P
+    _b2752_scripts()
+    import producer_variant_table as pvt
+
+    root = _P(__file__).resolve().parents[2]
+    row = {p["param"]: p for p in
+           pvt.SPECS_PHASE0["smc_order_block_bounce"]["params"]}["tap_window"]
+    assert row["engine_implemented"] is False
+    assert row["resim_band"] == [], "an unreachable level cannot be scheduled"
+    cfg = (root / "backtest" / "config.py").read_text(encoding="utf-8",
+                                                      errors="replace")
+    assert "SMC_OB_TAP_WINDOW" not in cfg, (
+        "an env knob now exists - re-measure the row rather than leaving it "
+        "marked unreachable")
+    smc = (root / "backtest" / "signals" / "smc_ict.py").read_text(
+        encoding="utf-8", errors="replace")
+    # read the CALL's full argument text, not the line it starts on - the call
+    # wraps, so a line-level check would pass vacuously (the L771 class: assert
+    # something that cannot be split, or span the construct properly)
+    marker = "_ob_tap_scan("
+    starts = [i for i in range(len(smc)) if smc.startswith(marker, i)
+              and "def " not in smc[max(0, i - 8):i]]
+    assert len(starts) == 1, f"expected exactly one call site, found {len(starts)}"
+    i = starts[0] + len(marker)
+    depth, j = 1, i
+    while j < len(smc) and depth:
+        depth += (smc[j] == "(") - (smc[j] == ")")
+        j += 1
+    args = smc[i:j - 1]
+    assert "current_idx" in args, f"argument text looks wrong: {args!r}"
+    assert "tap_window" not in args, (
+        f"the call site now passes tap_window ({args!r}) - the row is "
+        "reachable again, so re-measure it")

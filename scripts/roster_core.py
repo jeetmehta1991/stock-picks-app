@@ -440,6 +440,12 @@ def select_exit(g: pd.DataFrame, objective: str = "gates",
         best[1]["npt_excluded_identity_boundary"] = True
     return best if best else (None, None)
 
+# S6-B2777: what "this row was scored" looks like across the graders that
+# call bh_fdr_report. Named here rather than guessed per call site, because
+# the whole failure mode is a row whose grade nobody can see.
+SCORE_KEYS = ("is_sharpe", "sharpe", "holdout_sharpe", "pooled_sharpe")
+
+
 def bh_fdr_report(rows, q: float = 0.10, *, permutation_null=None) -> dict:
     """Benjamini-Hochberg over a grid's graded rows, as a COMPLETE PARTITION.
 
@@ -483,7 +489,26 @@ def bh_fdr_report(rows, q: float = 0.10, *, permutation_null=None) -> dict:
                        if _verdict(r) in ("NO_EXIT_SELECTABLE", "ZERO_FIRES"))
     unpriceable = sum(1 for r in rows if _verdict(r) == "BELOW_POWER_FLOOR"
                       and not isinstance(r.get("p"), (int, float)))
-    unclassified = searched - m - no_candidate - unpriceable
+    # S6-B2777: SCORED is not PRICED. A grader that establishes
+    # significance with a permutation null measures every row and prices
+    # none, so before this bucket existed all 208 of one live grid's rows
+    # fell to `unclassified` and the report said graded: 0 over 208 graded
+    # cells - the exact sentence B2773 retracted one turn earlier.
+    def _scored(r):
+        if not isinstance(r, dict) or isinstance(r.get("p"), (int, float)):
+            return False
+        if _verdict(r) in ("NO_EXIT_SELECTABLE", "ZERO_FIRES",
+                           "BELOW_POWER_FLOOR"):
+            return False
+        for k in SCORE_KEYS:
+            v = r.get(k)
+            if isinstance(v, (int, float)) and not isinstance(v, bool):
+                return True
+        return False
+
+    scored_unpriced = sum(1 for r in rows if _scored(r))
+    unclassified = (searched - m - no_candidate - unpriceable
+                    - scored_unpriced)
 
     k = 0
     for i, pv in enumerate(ps, 1):
@@ -507,6 +532,7 @@ def bh_fdr_report(rows, q: float = 0.10, *, permutation_null=None) -> dict:
            "graded": m,
            "unpriceable": unpriceable,
            "no_candidate": no_candidate,
+           "scored_unpriced": scored_unpriced,
            "unclassified": unclassified,
            "rejected": k,
            "threshold": thr,
@@ -518,10 +544,13 @@ def bh_fdr_report(rows, q: float = 0.10, *, permutation_null=None) -> dict:
            "note": ("complete partition: graded + unpriceable + no_candidate + "
                     "unclassified == searched. no_candidate rows produced no "
                     "candidate to rank and are non-observations; unpriceable "
-                    "rows selected a candidate that could not be scored")}
+                    "rows selected a candidate that could not be scored; "
+                    "scored_unpriced rows WERE graded and carry no p - "
+                    "their significance is established elsewhere, see "
+                    "significance_basis")}
     # the reconciliation is asserted in the artifact itself, not just in a test
-    out["reconciles"] = (m + unpriceable + no_candidate + unclassified
-                         == searched)
+    out["reconciles"] = (m + unpriceable + no_candidate
+                         + scored_unpriced + unclassified == searched)
     if permutation_null:
         out["permutation_null"] = permutation_null
         out["significance_basis"] = "permutation_null"

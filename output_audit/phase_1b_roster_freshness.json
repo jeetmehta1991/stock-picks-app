@@ -1,6 +1,6 @@
 {
  "scripts/build_phase_1b_roster.py": "30ec182a9f4c50a647ae7eea4e88a5e02962ecb25f500de0bb254a1baff5485d",
- "scripts/roster_core.py": "e237ff978bfea9413477ad122e9c5dd80018c309668129903150fbdbad6593ea",
+ "scripts/roster_core.py": "008a592ab7c5313ae7e90976b58d54871bb770ac99f9c25680a2c59f9df0038c",
  "scripts/walk_forward_r5_cells.py": "80b7257099909db272d7a4bf9d5e4e0f4985eb2ac9aa48d74db202902a6d33af",
  "scripts/build_strategy_producer_map.py": "3332b83ad015f01bc909ca47d25a8d98b1982fccf0f650409dee41b0782d1c9e"
 }
