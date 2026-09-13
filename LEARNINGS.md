@@ -20849,3 +20849,49 @@ neighbourhood unread too.
 **Mechanism: JUDGMENT-ONLY for detection** - no scan can tell an analogy from a
 description, and the load-bearing property differs per subject. Durability
 pinned by `test_b2800_analogy_scope_rule_survives`.
+
+### L801 - A FIXTURE THAT NAMES ITS SUBJECT ENCODES A FACT ABOUT THE WORLD, AND EXPIRES WHEN THE WORLD CHANGES (B2752g, 2026-09-13)
+
+**What happened.** Registering `smc_order_block_bounce` turned the pyramid RED
+on **2 tests, neither of them about the code I changed**. Both had used that
+strategy as their stand-in for *an unregistered strategy*: one asserted
+`launch_refusals` reports *"no SPECS entry"* for it, the other froze
+`run_postconfig.FAMILIES` at exactly 3 members. The gates were correct
+throughout; the FIXTURES had expired.
+
+**Compliance failure against #196.** The POST-FIX RE-CHECK rule says that after
+any change you enumerate the shipped conclusions which depended on the old
+behaviour BY GREPPING for them. One `grep -n smc_order_block_bounce
+backtest/tests/test_unit.py` would have listed both sites before I ran anything.
+I ran the gate instead and let it find them, which works and costs 12 minutes a
+cycle.
+
+**Why this shape is worth naming.** The usual fixture lesson is that fixtures rot
+toward PASSING - a planted input keeps a test green after the real path stops
+producing it. **This is the opposite face: a fixture that depends on an ABSENCE
+fails LOUDLY**, which is lucky rather than principled, because the same
+construction with the polarity reversed would have gone quiet and stayed green
+while testing nothing.
+
+**A registry freeze is not the same defect and must not be fixed the same way.**
+`test_b2579` froze FAMILIES at 3 so that a new battery family is a DECISION and
+never a side effect. The correct response to it firing is to update the freeze in
+the batch that earns the new member - never to widen or delete it. Two failures
+in one run, two opposite remedies, and telling them apart is the whole skill.
+
+**The durable fix is to DERIVE the subject, not to rename it.** Swapping in
+another unregistered strategy would buy exactly one registration of runway. The
+rebuilt case picks its subject at runtime from `ALL_STRATEGIES - SPECS`, asserts
+the pick is genuinely absent (#166's positive control) and refuses outright if
+the difference is empty - so the assertion cannot go vacuous and the NEXT
+registration cannot re-break it.
+
+**Rule.** Before landing a change that makes a previously-false statement true -
+a registration, an enablement, a new member of any set - grep the test tree for
+the subject's NAME, and rebuild any fixture that named it because of the property
+you are about to change. Where a fixture needs *a member with property P*, derive
+one at runtime with a control, rather than naming today's example.
+
+**Mechanism: JUDGMENT-ONLY for detection** - no scan knows which named constant a
+fixture chose because of a world-property. Durability pinned by
+`test_b2801_derived_fixture_rule_survives`.

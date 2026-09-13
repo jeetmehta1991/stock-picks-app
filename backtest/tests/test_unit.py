@@ -37143,7 +37143,14 @@ def test_b2800_analogy_scope_rule_survives():
     assert "L800 / #222 (MEASURED" in rows[0], "lineage cell missing"
     assert "OPEN THE NEW SUBJECT" in rows[0], "diagnostic missing"
     banner = (root / "CLAUDE.md").read_text(encoding="utf-8", errors="replace")
-    assert "LEARNINGS L1-L800" in banner, "banner not synced"
+    # S6-B2801b: the banner range must COVER this entry, not EQUAL it -
+    # an equality assertion turns the gate RED on the very next LEARNINGS
+    # entry, which is a ratchet that punishes writing lessons down (L586:
+    # a gate costly in the wrong place).
+    import re as _re
+    _m = _re.search(r"LEARNINGS L1-L(\d+)", banner)
+    assert _m, "banner carries no LEARNINGS range"
+    assert int(_m.group(1)) >= 800, ("banner range does not cover L800", _m.group(0))
 
 
 def test_b2752e_hub2_is_a_registered_launchable_family():
@@ -37219,3 +37226,53 @@ def test_b2752f_leverage_does_not_price_an_unreachable_axis():
     others = {k: pvt.leverage(v)["unreachable_axes"]
               for k, v in pvt.SPECS.items() if k != "smc_order_block_bounce"}
     assert all(v == [] for v in others.values()), others
+
+
+def test_b2801_derived_fixture_rule_survives():
+    """L801/#196: a fixture naming its subject encodes a fact about the world.
+
+    DETECTION is JUDGMENT-ONLY - no scan knows which named constant a fixture
+    chose because of a world-property. Durability here; the rebuilt case's
+    behaviour is pinned by test_b2578 itself.
+    """
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[2]
+    lrn = (root / "LEARNINGS.md").read_text(encoding="utf-8", errors="replace")
+    heads = [l for l in lrn.splitlines() if l.startswith("### L801 ")]
+    assert len(heads) == 1, f"expected one L801 heading, got {len(heads)}"
+    assert "#196" in lrn, "L801 must keep its compliance-failure citation"
+    skill = (root / ".claude" / "skills" / "execution-discipline"
+             / "SKILL.md").read_text(encoding="utf-8", errors="replace")
+    rows = [l for l in skill.splitlines()
+            if l.startswith("| Land a change that makes a previously-false")]
+    assert len(rows) == 1, f"expected one L801 tripwire row, got {len(rows)}"
+    assert "L801 / #196 (MEASURED" in rows[0], "lineage cell missing"
+    assert "DERIVE one at runtime" in rows[0], "the durable remedy is missing"
+    banner = (root / "CLAUDE.md").read_text(encoding="utf-8", errors="replace")
+    # S6-B2801b: the banner range must COVER this entry, not EQUAL it -
+    # an equality assertion turns the gate RED on the very next LEARNINGS
+    # entry, which is a ratchet that punishes writing lessons down (L586:
+    # a gate costly in the wrong place).
+    import re as _re
+    _m = _re.search(r"LEARNINGS L1-L(\d+)", banner)
+    assert _m, "banner carries no LEARNINGS range"
+    assert int(_m.group(1)) >= 801, ("banner range does not cover L801", _m.group(0))
+    # And the rebuilt fixture must still DERIVE rather than name a strategy.
+    # SCOPED TO THE FUNCTION BODY, not the file: this pin lives in the same
+    # file and its own literal would satisfy a whole-file substring check -
+    # the L748 defect, caught by the mutation harness on this very assertion.
+    src = (root / "backtest" / "tests" / "test_unit.py").read_text(
+        encoding="utf-8", errors="replace")
+    marker = "def test_b2578_launch_gate_refuses_before_the_engine"
+    assert marker in src, "the b2578 pin is gone"
+    body = src[src.index(marker):]
+    body = body[:body.index("\ndef ", 1)]
+    assert "set(_ALL) - set(pvt.SPECS)" in body, (
+        "test_b2578's subject is no longer derived at runtime")
+    # B1738: a name in a COMMENT is a MENTION, not a use - and the comment
+    # explaining this very fix names the strategy, so an unstripped `not in`
+    # matches the documentation of the fix rather than the fix (L748, second
+    # instance in this one pin)
+    code = "\n".join(l.split("#", 1)[0] for l in body.splitlines())
+    assert "smc_order_block_bounce" not in code, (
+        "test_b2578 names a strategy again - the fixture it expired on")
