@@ -439,3 +439,63 @@ def select_exit(g: pd.DataFrame, objective: str = "gates",
         # B2014: the refusal travels with the result (L571 - no silent scope)
         best[1]["npt_excluded_identity_boundary"] = True
     return best if best else (None, None)
+
+def bh_fdr_report(rows, q: float = 0.10) -> dict:
+    """Benjamini-Hochberg over a grid's GRADED rows. REPORT-ONLY.
+
+    B2768, owner-approved 2026-09-13. Step 1 is a ranked list with NO gates
+    (B1608), so this rejects nothing and ranks nothing - it makes the trials
+    count visible, which is the one thing a reader of a grid artifact could not
+    previously get.
+
+    THE DENOMINATOR IS THE GRADED SET. A grid row that produced no candidate -
+    verdict NO_EXIT_SELECTABLE, holdout_n None, no p - is a NON-OBSERVATION,
+    not a trial: nothing was selected from it and it cannot win. MEASURED on
+    b1582_cfg1_grid.json, 169 of 200 rows are exactly that, and treating them
+    as trials inflates the null bar from 1.90 to 2.61 standard errors.
+
+    `searched` is reported ALONGSIDE `graded` so the distinction is visible
+    rather than buried in a choice of denominator.
+
+    Returns a dict; callers embed it in the artifact. Never raises on odd
+    input - a report that crashes a grader would cost a run.
+    """
+    import math
+
+    try:
+        rows = list(rows or [])
+    except TypeError:
+        rows = []
+    ps = sorted(x for x in (r.get("p") for r in rows if isinstance(r, dict))
+                if isinstance(x, (int, float)) and 0.0 <= float(x) <= 1.0)
+    searched = len(rows)
+    m = len(ps)
+    if m == 0:
+        return {"method": "benjamini-hochberg", "q": q, "searched": searched,
+                "graded": 0, "rejected": 0, "threshold": None,
+                "expected_best_under_null_se": None,
+                "note": "no graded row carries a p-value; nothing to correct"}
+    k = 0
+    for i, pv in enumerate(ps, 1):
+        if pv <= (i / m) * q:
+            k = i
+    thr = (k / m) * q if k else None
+
+    def _null_bar(n: int) -> float:
+        # expected maximum of n iid standard normals (Gumbel approximation)
+        ln = math.log(n)
+        if n < 2 or ln <= 0:
+            return 0.0
+        root = math.sqrt(2 * ln)
+        return root - (math.log(ln) + math.log(4 * math.pi)) / (2 * root)
+
+    return {"method": "benjamini-hochberg", "q": q,
+            "searched": searched, "graded": m, "rejected": k,
+            "threshold": thr,
+            "smallest_p": ps[0],
+            "uncorrected_p05": sum(1 for x in ps if x < 0.05),
+            "expected_best_under_null_se": round(_null_bar(m), 2),
+            "expected_best_if_all_searched_counted_se": round(_null_bar(searched), 2)
+            if searched > 1 else None,
+            "note": ("denominator is the GRADED set; ungraded rows produced no "
+                     "candidate and are non-observations, not trials")}

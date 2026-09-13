@@ -36728,3 +36728,53 @@ def test_b2767_leverage_prefers_per_level_bands():
         got = pvt.leverage(s)
         assert got["basis"] in ("per_level", "subset_safe"), (name, got)
         assert got["engine_runs"] >= 1 and got["free_combos"] >= 1, (name, got)
+
+def test_b2768_grid_bh_fdr_is_report_only_and_counts_the_graded_set():
+    """B2768, owner-approved 2026-09-13: grid-stage BH-FDR, REPORT-ONLY.
+
+    THE DENOMINATOR IS THE GRADED SET. A grid row that produced no candidate
+    (verdict NO_EXIT_SELECTABLE, holdout_n None, no p) is a NON-OBSERVATION -
+    nothing was selected from it and it cannot win. MEASURED on a real grid:
+    169 of 200 rows are exactly that, and counting them as trials inflates the
+    null bar from 1.90 to 2.61 standard errors. I asserted the opposite to the
+    owner twice before reading the verdict field.
+    """
+    import sys
+    from pathlib import Path as _P
+    sys.path.insert(0, str(_P(__file__).resolve().parents[2] / "scripts"))
+    import roster_core as rc
+
+    rows = ([{"verdict": "NO_EXIT_SELECTABLE"}] * 169
+            + [{"verdict": "FAIL", "p": 0.0003}]
+            + [{"verdict": "FAIL", "p": 0.5}] * 30)
+    rep = rc.bh_fdr_report(rows, q=0.10)
+    assert rep["searched"] == 200, rep
+    assert rep["graded"] == 31, f"ungraded rows must not enter the family: {rep}"
+    assert rep["rejected"] >= 1, rep
+    # the two null bars must DIFFER and be reported side by side, so a reader
+    # can see the denominator choice rather than inherit it
+    assert rep["expected_best_under_null_se"] <         rep["expected_best_if_all_searched_counted_se"], rep
+
+    # REPORT-ONLY: no gate/verdict key is produced. Step 1 has no gates (B1608)
+    # and a rejection rule here would silently become one.
+    for banned in ("verdict", "gates_passed", "passed", "admit", "rank"):
+        assert banned not in rep, f"report must not gate: {banned!r} in {rep}"
+
+    # never raises on odd input - a report that crashes a grader costs a run
+    assert rc.bh_fdr_report([])["graded"] == 0
+    assert rc.bh_fdr_report(None)["graded"] == 0
+    assert rc.bh_fdr_report([{"p": "x"}, {"p": 1.4}, {"p": 0.01}])["graded"] == 1
+
+
+def test_b2768_both_graders_emit_the_multiplicity_report():
+    """L592: count the sites and PIN the count. One definition, two callers -
+    a grid artifact written without the report is a silent regression."""
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2] / "scripts"
+    callers = ["tighten_breaker_block.py", "smc_lsr_step1.py"]
+    for f in callers:
+        src = (root / f).read_text(encoding="utf-8", errors="replace")
+        assert "rc.bh_fdr_report(rows)" in src, f"{f} does not emit the report"
+        assert '"multiplicity"' in src, f"{f} does not key it as multiplicity"
+    defn = (root / "roster_core.py").read_text(encoding="utf-8", errors="replace")
+    assert defn.count("def bh_fdr_report(") == 1, "exactly one definition"

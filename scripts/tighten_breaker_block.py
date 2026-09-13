@@ -488,6 +488,12 @@ def main() -> int:
     Path(a.out).parent.mkdir(parents=True, exist_ok=True)
     Path(a.out).write_text(json.dumps(
         {"strategy": STRATEGY, "r5_baseline_fires": len(fires),
+         # B2768 (owner-approved 2026-09-13): grid-stage BH-FDR, REPORT-ONLY.
+         # Changes NO gate and NO ranking - step 1 is a ranked list with no
+         # gates (B1608), so a rejection rule here would silently become a
+         # gate at the stage the plan says has none. It makes the TRIALS
+         # COUNT visible, which a reader of this artifact could not get.
+         "multiplicity": rc.bh_fdr_report(rows),
          # B2138 (S6-B2136 / owner directive): record the CROSS-CONFIG axes in
          # the artifact itself. P1 swing_length and P6 span define WHICH config
          # a cube is; they were written nowhere, so every grid was ambiguous

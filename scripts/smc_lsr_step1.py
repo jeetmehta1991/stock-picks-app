@@ -245,6 +245,9 @@ def main() -> int:
            "reproduction_fires": int(len(fires)),
            "cells_graded": len(graded),
            "permutation_null": pn,
+           # B2768 (owner-approved 2026-09-13): grid-stage BH-FDR,
+           # REPORT-ONLY - changes no gate and no ranking (B1608).
+           "multiplicity": rc.bh_fdr_report(rows),
            "step1_ranking": ranked[:80], "rows": rows,
            "holdout_read": "NOT FIRED - Step 2 needs its own owner word (11.2c)"}
     Path(a.out).write_text(json.dumps(rec, indent=2), encoding="utf-8")
